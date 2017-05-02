@@ -15,10 +15,12 @@
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
 		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
-		<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio.sln</XamarinStudioAddinProject>
+		<!--<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio.sln</XamarinStudioAddinProject>-->
 		<VisualStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
+		<VisualStudioMacAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudioMac.sln</VisualStudioMacAddinProject>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Linux'">"mdtool"</mdtool>
-		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
+		<!--<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>-->
+		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Mac'">"/Applications/Visual Studio.app/Contents/MacOS/vstool"</mdtool>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
 		<IncludeXamMac Condition="$(IncludeXamMac) == '' and (Exists('/Library/Frameworks/Xamarin.Mac.framework') or Exists('$(BuildOutputNet45Dir)/XamMac.dll'))">true</IncludeXamMac>
 		<IncludeXamiOS Condition="$(IncludeXamiOS) == '' and $(Platform) == 'Mac' and Exists('/Library/Frameworks/Xamarin.iOS.framework')">true</IncludeXamiOS>
@@ -59,9 +61,9 @@
         
         <ItemGroup>
         	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
-        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
-        	<ProjFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj" />
-        	<ProjFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj" />
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudioMac\**\*.xpt.xml" />
+        	<!--<ProjFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj" />-->
+        	<ProjFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudioMac\Eto.Addin.VisualStudioMac.csproj" />
         	<TemplateFiles Include="$(MSBuildThisFileDirectory)\packages.config" />
         </ItemGroup>
         
@@ -86,7 +88,8 @@
 	
         <ItemGroup>
         	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
-        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
+        	<!--<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />-->
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudioMac\**\*.xpt.xml" />
         	<TemplateFiles Include="$(SourceDir)\**\packages.config" />
         	<TemplateFiles Include="$(MSBuildThisFileDirectory)\nuspec\**\*.nuspec" />
 
@@ -195,15 +198,18 @@
     </Target>
     <Target Name="BuildAddins">
     	<!-- addins -->
-    	<Exec Command="$(NuGetCommand) restore $(XamarinStudioAddinProject)" Condition="$(Platform) != 'Windows'" />
+    	<!--<Exec Command="$(NuGetCommand) restore $(XamarinStudioAddinProject)" Condition="$(Platform) != 'Windows'" />-->
+    	<Exec Command="$(NuGetCommand) restore $(VisualStudioMacAddinProject)" Condition="$(Platform) != 'Windows'" />
     	<!--Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/-->
-    	<Exec Command="xbuild /t:'Build' /p:'Configuration=XSRelease' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<!--<Exec Command="xbuild /t:'Build' /p:'Configuration=XSRelease' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>-->
+    	<Exec Command="xbuild /t:'Build' /p:'Configuration=XSRelease' '$(VisualStudioMacAddinProject)'" Condition="$(Platform) != 'Windows'"/>
     	<!--
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     	-->
 
-    	<Exec Command="$(mdtool) setup pack $(BaseDir)/BuildOutput/Addins/$(Configuration)/XamarinStudio/Eto.Addin.XamarinStudio.dll -d:$(BaseDir)/BuildOutput/Addins/$(Configuration)" Condition="$(Platform) != 'Windows'"/>
+    	<!--<Exec Command="$(mdtool) setup pack $(BaseDir)/BuildOutput/Addins/$(Configuration)/XamarinStudio/Eto.Addin.XamarinStudio.dll -d:$(BaseDir)/BuildOutput/Addins/$(Configuration)" Condition="$(Platform) != 'Windows'"/>-->
+		<Exec Command="$(mdtool) setup pack $(BaseDir)/BuildOutput/Addins/$(Configuration)/VisualStudioMac/Eto.Addin.VisualStudioMac.dll -d:$(BaseDir)/BuildOutput/Addins/$(Configuration)" Condition="$(Platform) != 'Windows'"/>
 
 		<!-- Visual Studio Addin -->
     	<Exec Command="$(NuGetCommand) restore $(VisualStudioAddinProject)" Condition="$(Platform) == 'Windows'" />
