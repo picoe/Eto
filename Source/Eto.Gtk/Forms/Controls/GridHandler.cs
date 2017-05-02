@@ -9,7 +9,7 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public abstract class GridHandler<TWidget, TCallback> : GtkControl<Gtk.ScrolledWindow, TWidget, TCallback>, Grid.IHandler, ICellDataSource, IGridHandler
 		where TWidget : Grid
-		where TCallback: Grid.ICallback
+		where TCallback : Grid.ICallback
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
@@ -177,7 +177,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 
 		[GLib.ConnectBefore]
-		protected virtual void OnTreeButtonPress (object sender, Gtk.ButtonPressEventArgs e)
+		protected virtual void OnTreeButtonPress(object sender, Gtk.ButtonPressEventArgs e)
 		{
 			// If clicked mouse button is not the primary button, return.
 			if (e.Event.Button != 1 || e.Event.Type == Gdk.EventType.TwoButtonPress || e.Event.Type == Gdk.EventType.ThreeButtonPress)
@@ -291,7 +291,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		public bool AllowColumnReordering
 		{
 			get { return Widget.Properties.Get<bool>(AllowColumnReordering_Key, true); }
-			set { 
+			set
+			{
 				Widget.Properties.Set(AllowColumnReordering_Key, value, true);
 				UpdateColumns();
 			}
@@ -419,14 +420,38 @@ namespace Eto.GtkSharp.Forms.Controls
 		public void BeginEdit(int row, int column)
 		{
 			var nameColumn = Tree.Columns[column];
-			#if GTK2
-			var cellRenderer = nameColumn.CellRenderers[0];
-			#else
 			var cellRenderer = nameColumn.Cells[0];
-			#endif
 			var path = Tree.Model.GetPath(GetIterAtRow(row));
 			Tree.Model.IterNChildren();
 			Tree.SetCursorOnCell(path, nameColumn, cellRenderer, true);
+		}
+
+		public bool CommitEdit()
+		{
+			Gtk.TreePath path;
+			Gtk.TreeViewColumn column;
+			Tree.GetCursor(out path, out column);
+			if (path == null || column == null)
+				return true;
+			
+			// This is a hack, but it works to commit editing.  Is there a better way?
+			if (Tree.FocusChild?.HasFocus == true)
+				Tree.ChildFocus(Gtk.DirectionType.TabForward);
+			return true;
+		}
+
+		public bool CancelEdit()
+		{
+			Gtk.TreePath path;
+			Gtk.TreeViewColumn column;
+			Tree.GetCursor(out path, out column);
+			if (path == null || column == null)
+				return true;
+
+			// This is a hack, but it works to abort editing.  Is there a better way?
+			if (Tree.FocusChild?.HasFocus == true)
+				Tree.GrabFocus();
+			return true;
 		}
 
 		public void OnCellFormatting(GridCellFormatEventArgs args)

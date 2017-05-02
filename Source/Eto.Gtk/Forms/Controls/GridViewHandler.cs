@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Eto.GtkSharp.Forms.Cells;
 using System.Collections;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -165,6 +166,22 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			UpdateModel();
 		}
+
+		public object GetCellAt(PointF location, out int column, out int row)
+		{
+			Gtk.TreePath path;
+			Gtk.TreeViewColumn col;
+			if (Tree.GetPathAtPos((int)location.X, (int)location.Y, out path, out col))
+			{
+				column = GetColumnOfItem(col);
+				row = GetRowIndexOfPath(path);
+				return model.GetItemAtPath(path);
+			}
+			column = -1;
+			row = -1;
+			return null;
+		}
+
 	}
 }
 

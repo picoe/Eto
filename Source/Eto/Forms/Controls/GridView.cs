@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -49,6 +50,45 @@ namespace Eto.Forms
 			this.Item = item;
 		}
 	}
+
+		/// <summary>
+	/// Information of a cell in the <see cref="TreeGridView"/>
+	/// </summary>
+	public class GridCell
+	{
+		/// <summary>
+		/// Gets the item associated with the row of the cell.
+		/// </summary>
+		/// <value>The row item.</value>
+		public object Item { get; }
+
+		/// <summary>
+		/// Gets the index of the row.
+		/// </summary>
+		/// <value>The index of the row.</value>
+		public int RowIndex { get; }
+
+		/// <summary>
+		/// Gets the column of the cell, or null
+		/// </summary>
+		/// <value>The column.</value>
+		public GridColumn Column { get; }
+
+		/// <summary>
+		/// Gets the index of the column.
+		/// </summary>
+		/// <value>The index of the column.</value>
+		public int ColumnIndex { get; }
+
+		internal GridCell(object item, GridColumn column, int columnIndex, int rowIndex)
+		{
+			Item = item;
+			Column = column;
+			ColumnIndex = columnIndex;
+			RowIndex = rowIndex;
+		}
+	}
+
 
 	/// <summary>
 	/// Grid view with a data store of a specific type
@@ -219,6 +259,22 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the node at a specified location from the origin of the control
+		/// </summary>
+		/// <remarks>
+		/// Useful for determining which node is under the mouse cursor.
+		/// </remarks>
+		/// <returns>The item from the data store that is displayed at the specified location</returns>
+		/// <param name="location">Point to find the node</param>
+		public GridCell GetCellAt(PointF location)
+		{
+			int column;
+			int row;
+			var item = Handler.GetCellAt(location, out column, out row);
+			return new GridCell(item, column >= 0 ? Columns[column] : null, column, row);
+		}
+
+		/// <summary>
 		/// Gets a new selection preserver instance for the grid.
 		/// </summary>
 		/// <remarks>
@@ -323,6 +379,18 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <param name="rows">Rows to update.</param>
 			void ReloadData(IEnumerable<int> rows);
+
+			/// <summary>
+			/// Gets the node at a specified point from the origin of the control
+			/// </summary>
+			/// <remarks>
+			/// Useful for determining which node is under the mouse cursor.
+			/// </remarks>
+			/// <returns>The item from the data store that is displayed at the specified location</returns>
+			/// <param name="location">Point to find the node</param>
+			/// <param name="row">Row under the specified location</param>
+			/// <param name="column">Column under the specified location</param>
+			object GetCellAt(PointF location, out int column, out int row);
 		}
 	}
 }

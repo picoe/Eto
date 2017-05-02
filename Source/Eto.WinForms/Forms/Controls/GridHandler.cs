@@ -373,6 +373,10 @@ namespace Eto.WinForms.Forms.Controls
 			Control.BeginEdit(true);
 		}
 
+		public bool CommitEdit() => Control.EndEdit();
+
+		public bool CancelEdit() => Control.CancelEdit();
+
 		public virtual void Paint(GridColumnHandler column, System.Drawing.Graphics graphics, System.Drawing.Rectangle clipBounds, System.Drawing.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)
 		{
 		}

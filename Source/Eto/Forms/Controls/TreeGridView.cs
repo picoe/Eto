@@ -72,10 +72,17 @@ namespace Eto.Forms
 		/// <value>The column.</value>
 		public GridColumn Column { get; }
 
-		internal TreeGridCell(object item, GridColumn column)
+		/// <summary>
+		/// Gets the index of the column.
+		/// </summary>
+		/// <value>The index of the column.</value>
+		public int ColumnIndex { get; }
+
+		internal TreeGridCell(object item, GridColumn column, int columnIndex)
 		{
 			Item = item;
 			Column = column;
+			ColumnIndex = columnIndex;
 		}
 	}
 
@@ -295,18 +302,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the node at a specified point from the origin of the control
+		/// Gets the node at a specified location from the origin of the control
 		/// </summary>
 		/// <remarks>
 		/// Useful for determining which node is under the mouse cursor.
 		/// </remarks>
 		/// <returns>The item from the data store that is displayed at the specified location</returns>
-		/// <param name="point">Point to find the node</param>
-		public TreeGridCell GetCellAt(PointF point)
+		/// <param name="location">Point to find the node</param>
+		public TreeGridCell GetCellAt(PointF location)
 		{
 			int column;
-			var item = Handler.GetCellAt(point, out column);
-			return new TreeGridCell(item, column >= 0 ? Columns[column] : null);
+			var item = Handler.GetCellAt(location, out column);
+			return new TreeGridCell(item, column >= 0 ? Columns[column] : null, column);
 		}
 
 

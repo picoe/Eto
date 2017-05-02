@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Wpf.Forms.Cells;
@@ -96,38 +96,28 @@ namespace Eto.Wpf.Forms.Controls
 				case Grid.CellClickEvent:
 					Control.PreviewMouseLeftButtonDown += (sender, e) =>
 					{
-						var dep = e.OriginalSource as sw.DependencyObject;
-						while (dep != null && !(dep is swc.DataGridCell))
-							dep = swm.VisualTreeHelper.GetParent(dep);
+						swc.DataGridCell cell;
+						var row = GetRowOfElement(e.OriginalSource, out cell);
 
-						var cell = dep as swc.DataGridCell;
-						while (dep != null && !(dep is swc.DataGridRow))
-							dep = swm.VisualTreeHelper.GetParent(dep);
+						int rowIndex = row?.GetIndex() ?? -1;
+						var columnIndex = cell?.Column?.DisplayIndex ?? -1;
 
-						var row = dep as swc.DataGridRow;
-
-						int rowIndex;
-						if (row != null && (rowIndex = row.GetIndex()) >= 0)
-						{
-							var columnIndex = cell.Column == null ? -1 : cell.Column.DisplayIndex;
-
-							var item = Control.Items[rowIndex];
-							var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
-							Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-						}
+						var item = rowIndex >= 0 ? Control.Items[rowIndex] : null;
+						var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+						Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
 					};
 					break;
 				case Grid.CellDoubleClickEvent:
 					Control.MouseDoubleClick += (sender, e) =>
 					{
-						int rowIndex;
-						if ((rowIndex = Control.SelectedIndex) >= 0)
-						{
-							var columnIndex = Control.CurrentColumn == null ? -1 : Control.CurrentColumn.DisplayIndex;
-							var item = Control.SelectedItem;
-							var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
-							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-						}
+						swc.DataGridCell cell;
+						var row = GetRowOfElement(e.OriginalSource, out cell);
+
+						int rowIndex = row?.GetIndex() ?? -1;
+						var columnIndex = cell?.Column?.DisplayIndex ?? -1;
+						var item = rowIndex >= 0 ? Control.Items[rowIndex] : null;
+						var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+						Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
 					};
 					break;
 				case Grid.SelectionChangedEvent:
@@ -144,6 +134,19 @@ namespace Eto.Wpf.Forms.Controls
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		static swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell)
+		{
+			var dep = source as sw.DependencyObject;
+			while (dep != null && !(dep is swc.DataGridCell))
+				dep = swm.VisualTreeHelper.GetParent(dep);
+
+			cell = dep as swc.DataGridCell;
+			while (dep != null && !(dep is swc.DataGridRow))
+				dep = swm.VisualTreeHelper.GetParent(dep);
+
+			return dep as swc.DataGridRow;
 		}
 
 		public bool ShowHeader
@@ -314,6 +317,10 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Focus();
 			Control.BeginEdit();
 		}
+
+		public bool CommitEdit() => Control.CommitEdit();
+
+		public bool CancelEdit() => Control.CancelEdit();
 
 		public virtual sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent)
 		{

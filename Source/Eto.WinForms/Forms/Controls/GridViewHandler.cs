@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -150,6 +151,16 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			Control.RowCount += increment;
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
+		}
+
+		public object GetCellAt(PointF location, out int column, out int row)
+		{
+			var result = Control.HitTest((int)location.X, (int)location.Y);
+			column = result.ColumnIndex;
+			row = result.RowIndex;
+			if (row == -1)
+				return null;
+			return GetItemAtRow(row);
 		}
 
 		public IEnumerable<object> DataStore
