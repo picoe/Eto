@@ -56,6 +56,8 @@ namespace Eto.Mac.Forms.Controls
 		Grid.ICallback Callback { get; }
 
 		Grid Widget { get; }
+
+		bool SuppressUpdate { get; }
 	}
 
 	public interface IDataColumnHandler

@@ -50,7 +50,6 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public EtoLabelFieldCell()
 		{
-			AllowsEditingTextAttributes = true;
 		}
 
 		public EtoLabelFieldCell(IntPtr handle)

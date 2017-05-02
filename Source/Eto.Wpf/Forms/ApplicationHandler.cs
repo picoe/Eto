@@ -83,7 +83,6 @@ namespace Eto.Wpf.Forms
 
 		protected override void Initialize()
 		{
-			base.Initialize();
 			Control = sw.Application.Current;
 			if (Control == null)
 			{
@@ -94,6 +93,7 @@ namespace Eto.Wpf.Forms
 			instance = this;
 			Control.Startup += HandleStartup;
 			ApplyThemes();
+			base.Initialize();
 		}
 
 		void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

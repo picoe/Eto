@@ -150,6 +150,10 @@ namespace Eto.Mac.Forms.Controls
 		ColumnCollection columns;
 		ContextMenu contextMenu;
 
+		protected int SuppressUpdate { get; set; }
+
+		bool IDataViewHandler.SuppressUpdate => SuppressUpdate > 0;
+
 		protected int SuppressSelectionChanged { get; set; }
 
 		protected bool IsAutoSizingColumns { get; private set; }
@@ -455,6 +459,31 @@ namespace Eto.Mac.Forms.Controls
 		{
 			Control.SelectRow((nnint)row, false);
 			Control.EditColumn((nint)column, (nint)row, new NSEvent(), true);
+		}
+
+		public bool CommitEdit() => SetFocusToControl();
+
+		public bool CancelEdit()
+		{
+			SuppressUpdate++;
+			var ret = SetFocusToControl();
+			SuppressUpdate--;
+			return ret;
+		}
+
+		bool SetFocusToControl()
+		{
+			var firstResponder = Control.Window?.FirstResponder as NSView;
+			while (firstResponder != null)
+			{
+				if (firstResponder == Control)
+				{
+					Control.Window.MakeFirstResponder(Control);
+					return true;
+				}
+				firstResponder = firstResponder.Superview;
+			}
+			return true; // always true for now, no way to suppress cancelling or committing edit.
 		}
 
 		public int RowHeight

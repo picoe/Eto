@@ -55,7 +55,7 @@ namespace Eto.Mac.Forms.Cells
 
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
-			if (Widget.TextBinding != null)
+			if (Widget.TextBinding != null && !ColumnHandler.DataViewHandler.SuppressUpdate)
 			{
 				var str = value as NSString;
 				if (str != null)
