@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -25,6 +26,8 @@ namespace Eto.Mac.Forms.Controls
 		public bool RecurseToChildren { get { return true; } }
 
 		public override NSView ContainerControl { get { return Control; } }
+
+		public override IEnumerable<Control> VisualControls => Widget.Controls;
 
 		public class EtoTabView : NSTabView, IMacControl
 		{
