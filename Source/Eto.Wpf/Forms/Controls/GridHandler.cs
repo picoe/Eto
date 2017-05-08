@@ -94,31 +94,10 @@ namespace Eto.Wpf.Forms.Controls
 					// handled by each cell after value is set with the CellEdited method
 					break;
 				case Grid.CellClickEvent:
-					Control.PreviewMouseLeftButtonDown += (sender, e) =>
-					{
-						swc.DataGridCell cell;
-						var row = GetRowOfElement(e.OriginalSource, out cell);
-
-						int rowIndex = row?.GetIndex() ?? -1;
-						var columnIndex = cell?.Column?.DisplayIndex ?? -1;
-
-						var item = rowIndex >= 0 ? Control.Items[rowIndex] : null;
-						var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
-						Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-					};
+					Control.PreviewMouseLeftButtonDown += (sender, e) => Callback.OnCellClick(Widget, CreateCellArgs(e.OriginalSource));
 					break;
 				case Grid.CellDoubleClickEvent:
-					Control.MouseDoubleClick += (sender, e) =>
-					{
-						swc.DataGridCell cell;
-						var row = GetRowOfElement(e.OriginalSource, out cell);
-
-						int rowIndex = row?.GetIndex() ?? -1;
-						var columnIndex = cell?.Column?.DisplayIndex ?? -1;
-						var item = rowIndex >= 0 ? Control.Items[rowIndex] : null;
-						var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
-						Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-					};
+					Control.MouseDoubleClick += (sender, e) => Callback.OnCellDoubleClick(Widget, CreateCellArgs(e.OriginalSource));
 					break;
 				case Grid.SelectionChangedEvent:
 					Control.SelectedCellsChanged += (sender, e) =>
@@ -136,15 +115,33 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		static swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell)
+		GridViewCellEventArgs CreateCellArgs(object originalSource)
 		{
-			var dep = source as sw.DependencyObject;
+			swc.DataGridCell cell;
+			var row = GetRowOfElement(originalSource, out cell);
+
+			int rowIndex = row?.GetIndex() ?? -1;
+			var columnIndex = cell?.Column?.DisplayIndex ?? -1;
+
+			var item = row?.Item;
+			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+			return new GridViewCellEventArgs(column, rowIndex, columnIndex, item);
+		}
+
+		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell)
+		{
+			// when clicking on labels, etc this will be a content element
+			while (source is sw.FrameworkContentElement)
+				source = ((sw.FrameworkContentElement)source).Parent;
+
+			// VisualTreeHelper will throw if not a Visual, we can return null here
+			var dep = source as swm.Visual;
 			while (dep != null && !(dep is swc.DataGridCell))
-				dep = swm.VisualTreeHelper.GetParent(dep);
+				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
 
 			cell = dep as swc.DataGridCell;
 			while (dep != null && !(dep is swc.DataGridRow))
-				dep = swm.VisualTreeHelper.GetParent(dep);
+				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
 
 			return dep as swc.DataGridRow;
 		}

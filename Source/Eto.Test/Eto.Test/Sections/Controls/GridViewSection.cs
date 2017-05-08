@@ -249,7 +249,7 @@ namespace Eto.Test.Sections.Controls
 			protected override Control OnCreateCell(CellEventArgs args)
 			{
 				//Log.Write(this, "OnCreateCell: Row: {1}, CellState: {2}, Item: {0}", args.Item, args.Row, args.CellState);
-
+				//var control = new Label();
 				var control = new Button();
 				control.TextBinding.BindDataContext((MyGridItem m) => m.Text);
 				control.BindDataContext(c => c.Command, (MyGridItem m) => m.Command);
