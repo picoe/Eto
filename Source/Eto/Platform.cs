@@ -165,7 +165,6 @@ namespace Eto
 		/// <param name="e">Arguments for the event</param>
 		protected virtual void OnWidgetCreated(WidgetCreatedEventArgs e)
 		{
-			Eto.Style.OnStyleWidgetDefaults(e.Instance);
 			if (WidgetCreated != null)
 				WidgetCreated(this, e);
 		}
