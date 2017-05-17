@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Eto.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ namespace Eto.Test.Sections.Controls
 	[Section("Controls", "Kitchen Sink")]
 	public class KitchenSinkSection : Panel
 	{
-		Bitmap bitmap1 = TestIcons.TestImage;
+		Image bitmap1 = TestIcons.TestImage.WithSize(16, 16);
 		Icon icon1 = TestIcons.TestIcon.WithSize(16, 16);
 		Icon icon2 = TestIcons.TestImage.WithSize(16, 16);
 
