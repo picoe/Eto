@@ -15,21 +15,21 @@ namespace Eto.Test.Sections.Controls
 
 		protected override Control CreateOptions()
 		{
-			var foregroundPicker = new ColorPicker();
+			var foregroundPicker = new ColorPicker { AllowAlpha = true };
 			foregroundPicker.ValueChanged += (sender, e) =>
 			{
 				foreach (var update in foregroundUpdates)
 					update(foregroundPicker.Value);
 			};
 
-			var backgroundPicker = new ColorPicker();
+			var backgroundPicker = new ColorPicker { AllowAlpha = false }; // alpha not supported for all controls
 			backgroundPicker.ValueChanged += (sender, e) =>
 			{
 				foreach (var update in backgroundUpdates)
 					update(backgroundPicker.Value);
 			};
 
-			var formColorPicker = new ColorPicker { Value = BackgroundColor };
+			var formColorPicker = new ColorPicker { Value = BackgroundColor, AllowAlpha = true };
 			formColorPicker.ValueChanged += (sender, e) => BackgroundColor = formColorPicker.Value;
 
 			var fontPicker = new Button { Text = "Pick Font" };

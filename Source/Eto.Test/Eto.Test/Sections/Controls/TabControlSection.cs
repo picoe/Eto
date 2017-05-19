@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Eto.Drawing;
 using Eto.Forms;
 
@@ -96,11 +96,13 @@ namespace Eto.Test.Sections.Controls
 			control.Pages.Add(new TabPage
 			{
 				Text = "Tab 2",
-				Image = TestIcons.TestIcon,
+				Image = TestIcons.TestIcon.WithSize(16, 16),
 				Content = TabTwo()
 			});
 
 			control.Pages.Add(new TabPage { Text = "Tab 3" });
+
+			control.Pages.Add(new TabPage { Image = TestIcons.TestIcon.WithSize(16, 16) });
 
 			foreach (var page in control.Pages)
 				LogEvents(page);

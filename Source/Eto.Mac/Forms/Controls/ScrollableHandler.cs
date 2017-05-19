@@ -62,7 +62,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public EtoScrollView(ScrollableHandler handler)
 			{
-				BackgroundColor = NSColor.Control;
+				BackgroundColor = NSColor.Clear;
 				BorderType = NSBorderType.BezelBorder;
 				DrawsBackground = false;
 				HasVerticalScroller = true;

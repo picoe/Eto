@@ -114,9 +114,9 @@ namespace Eto.Wpf.Forms
 			// Desired should also not be bigger than default size if we have no constraint.
 			// Without it, controls like TextArea, GridView, etc will grow to their content.
 			if (double.IsInfinity(constraint.Width) && defaultSize.Width > 0)
-				desired.Width = defaultSize.Width;
+				desired.Width = PreventUserResize ? defaultSize.Width : Math.Max(defaultSize.Width, desired.Width);
 			if (double.IsInfinity(constraint.Height) && defaultSize.Height > 0)
-				desired.Height = defaultSize.Height;
+				desired.Height = PreventUserResize ? defaultSize.Height : Math.Max(defaultSize.Height, desired.Height);
 
 			// use the user preferred size, and ensure it's not larger than available size
 			size = size.IfNaN(desired);
@@ -198,38 +198,6 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void SetSize()
 		{
-			var defaultSize = DefaultSize.ZeroIfNan();
-			if (XScale && Control.IsLoaded)
-			{
-				ContainerControl.Width = double.NaN;
-				ContainerControl.MinWidth = 0;
-			}
-			else
-			{
-				var containerWidth = PreventUserResize && double.IsNaN(UserPreferredSize.Width)
-					? defaultSize.Width <= 0
-						? double.NaN
-						: defaultSize.Width
-					: UserPreferredSize.Width;
-				ContainerControl.Width = Math.Max(containerWidth, parentMinimumSize.Width);
-				ContainerControl.MinWidth = Math.Max(0, double.IsNaN(UserPreferredSize.Width) ? defaultSize.Width : UserPreferredSize.Width);
-			}
-
-			if (YScale && Control.IsLoaded)
-			{
-				ContainerControl.Height = double.NaN;
-				ContainerControl.MinHeight = 0;
-			}
-			else
-			{
-				var containerHeight = PreventUserResize && double.IsNaN(UserPreferredSize.Height)
-					? defaultSize.Height <= 0
-						? double.NaN
-						: defaultSize.Height
-					: UserPreferredSize.Height;
-				ContainerControl.Height = Math.Max(containerHeight, parentMinimumSize.Height);
-				ContainerControl.MinHeight = Math.Max(0, double.IsNaN(UserPreferredSize.Height) ? defaultSize.Height : UserPreferredSize.Height);
-			}
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)

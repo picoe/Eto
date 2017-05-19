@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Startup.cs" />
     <Compile Include="UnitTests\RichTextAreaHandlerTests.cs" />
+    <Compile Include="UnitTests\ScrollableTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
