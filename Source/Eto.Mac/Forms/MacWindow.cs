@@ -102,6 +102,11 @@ namespace Eto.Mac.Forms
 		}
 	}
 
+	class EtoContentView : NSView, IMacControl
+	{
+		public WeakReference WeakHandler { get; set; }
+	}
+
 	public interface IMacWindow : IMacContainer
 	{
 		Rectangle? RestoreBounds { get; set; }
@@ -422,7 +427,7 @@ namespace Eto.Mac.Forms
 			var myWindow = Control as EtoWindow;
 			if (myWindow != null)
 				myWindow.Handler = this;
-			Control.ContentView = new NSView();
+			Control.ContentView = new EtoContentView { WeakHandler = new WeakReference(this) };
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			Control.ReleasedWhenClosed = false;
