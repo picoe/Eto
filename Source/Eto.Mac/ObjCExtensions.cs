@@ -29,6 +29,11 @@ namespace Eto.Mac
 			return class_getClassMethod(cls.Handle, selector);
 		}
 
+		public static IntPtr GetMethod(IntPtr cls, IntPtr selector)
+		{
+			return class_getClassMethod(cls, selector);
+		}
+
 		[DllImport("/usr/lib/libobjc.dylib")]
 		static extern bool class_addMethod(IntPtr cls, IntPtr sel, Delegate method, string argTypes);
 

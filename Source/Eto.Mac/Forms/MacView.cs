@@ -585,10 +585,24 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		static Selector selSetCanDrawSubviewsIntoLayer = new Selector("setCanDrawSubviewsIntoLayer:");
-#if MONOMAC
-		static IntPtr selSetCanDrawSubviewsIntoLayerHandle = Selector.GetHandle("setCanDrawSubviewsIntoLayer:");
-#endif
+		static IntPtr selDrawRect = Selector.GetHandle("drawRect:");
+
+		static void DrawBackgroundRect(IntPtr sender, IntPtr sel, CGRect rect)
+		{
+			var control = Runtime.GetNSObject(sender);
+			var handler = GetHandler(control) as MacView<TControl, TWidget, TCallback>;
+			if (handler != null)
+			{
+				var col = handler.BackgroundColor;
+				if (col.A > 0)
+				{
+					var context = NSGraphicsContext.CurrentContext.GraphicsPort;
+					context.SetFillColor(col.ToCG());
+					context.FillRect(rect);
+				}
+			}
+			Messaging.void_objc_msgSendSuper_CGRect(control.SuperHandle, sel, rect);
+		}
 
 		protected virtual void SetBackgroundColor(Color? color)
 		{
@@ -596,31 +610,9 @@ namespace Eto.Mac.Forms
 			{
 				if (color.Value.A > 0)
 				{
-					ContainerControl.WantsLayer = true;
-
-					// >= 10.9
-					if (ContainerControl.RespondsToSelector(selSetCanDrawSubviewsIntoLayer))
-					{
-						// collapse child layers into the parent layer
-#if MONOMAC
-						Messaging.void_objc_msgSend_bool(ContainerControl.Handle, selSetCanDrawSubviewsIntoLayerHandle, true);
-#else
-						ContainerControl.CanDrawSubviewsIntoLayer = true;
-#endif
-					}
-					var layer = ContainerControl.Layer;
-					if (layer != null)
-					{
-						layer.BackgroundColor = color.Value.ToCG();
-						layer.NeedsDisplayOnBoundsChange = true;
-					}
+					AddMethod(selDrawRect, new Action<IntPtr, IntPtr, CGRect>(DrawBackgroundRect), EtoEnvironment.Is64BitProcess ? "v@:{CGRect dddd}" : "v@:{CGRect ffff}", ContainerControl);
 				}
-				else {
-					ContainerControl.WantsLayer = false;
-					var layer = ContainerControl.Layer;
-					if (layer != null)
-						layer.BackgroundColor = Colors.Transparent.ToCG();
-				}
+				ContainerControl.SetNeedsDisplay();
 			}
 		}
 
