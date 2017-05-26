@@ -198,6 +198,43 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void SetSize()
 		{
+			// this is needed so that the control doesn't actually grow when its content is too large.
+			// For some reason, MeasureOverride is not sufficient alone to tell WPF what size the control should be.
+			// for example, when a TextBox has a large amount of text, we do not grow the text box to fit that content in Eto's sizing model.
+			// ideally, this should be removed, but may require overriding ArrangeOverride on all controls as well.
+			// see the ControlTests.ControlsShouldHaveSaneDefaultWidths unit test for repro of the issue.
+			var defaultSize = DefaultSize.ZeroIfNan();
+			if (XScale && Control.IsLoaded)
+			{
+				ContainerControl.Width = double.NaN;
+				ContainerControl.MinWidth = 0;
+			}
+			else
+			{
+				var containerWidth = PreventUserResize && double.IsNaN(UserPreferredSize.Width)
+					? defaultSize.Width <= 0
+						? double.NaN
+						: defaultSize.Width
+					: UserPreferredSize.Width;
+				ContainerControl.Width = Math.Max(containerWidth, parentMinimumSize.Width);
+				ContainerControl.MinWidth = Math.Max(0, double.IsNaN(UserPreferredSize.Width) ? defaultSize.Width : UserPreferredSize.Width);
+			}
+
+			if (YScale && Control.IsLoaded)
+			{
+				ContainerControl.Height = double.NaN;
+				ContainerControl.MinHeight = 0;
+			}
+			else
+			{
+				var containerHeight = PreventUserResize && double.IsNaN(UserPreferredSize.Height)
+					? defaultSize.Height <= 0
+						? double.NaN
+						: defaultSize.Height
+					: UserPreferredSize.Height;
+				ContainerControl.Height = Math.Max(containerHeight, parentMinimumSize.Height);
+				ContainerControl.MinHeight = Math.Max(0, double.IsNaN(UserPreferredSize.Height) ? defaultSize.Height : UserPreferredSize.Height);
+			}
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)
