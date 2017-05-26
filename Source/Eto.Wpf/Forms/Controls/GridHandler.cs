@@ -94,10 +94,10 @@ namespace Eto.Wpf.Forms.Controls
 					// handled by each cell after value is set with the CellEdited method
 					break;
 				case Grid.CellClickEvent:
-					Control.PreviewMouseLeftButtonDown += (sender, e) => Callback.OnCellClick(Widget, CreateCellArgs(e.OriginalSource));
+					Control.PreviewMouseDown += (sender, e) => Callback.OnCellClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
 					break;
 				case Grid.CellDoubleClickEvent:
-					Control.MouseDoubleClick += (sender, e) => Callback.OnCellDoubleClick(Widget, CreateCellArgs(e.OriginalSource));
+					Control.MouseDoubleClick += (sender, e) => Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
 					break;
 				case Grid.SelectionChangedEvent:
 					Control.SelectedCellsChanged += (sender, e) =>
@@ -115,7 +115,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		GridViewCellEventArgs CreateCellArgs(object originalSource)
+		GridViewCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea)
 		{
 			swc.DataGridCell cell;
 			var row = GetRowOfElement(originalSource, out cell);
@@ -125,7 +125,11 @@ namespace Eto.Wpf.Forms.Controls
 
 			var item = row?.Item;
 			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
-			return new GridViewCellEventArgs(column, rowIndex, columnIndex, item);
+
+			var buttons = ea.GetEtoButtons();
+			var modifiers = swi.Keyboard.Modifiers.ToEto();
+			var location = ea.GetPosition(ContainerControl).ToEto();
+			return new GridViewCellMouseEventArgs(column, rowIndex, columnIndex, item, buttons, modifiers, location);
 		}
 
 		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell)

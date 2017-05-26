@@ -298,7 +298,7 @@ namespace Eto.Mac.Forms.Controls
 							var columnIndex = (int)Control.ClickedColumn;
 							var item = GetItem(rowIndex);
 							var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
-							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+							var cellArgs = MacConversions.CreateCellEventArgs(column, Control, rowIndex, columnIndex, item);
 						}
 					};
 					break;
