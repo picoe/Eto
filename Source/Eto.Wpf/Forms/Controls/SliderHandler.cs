@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
@@ -27,6 +27,16 @@ namespace Eto.Wpf.Forms.Controls
 				TickPlacement = swc.Primitives.TickPlacement.BottomRight
 			};
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
+		}
+
+		protected override sw.Size DefaultSize 
+		{
+			get {
+				if (Orientation == Orientation.Horizontal)
+					return new sw.Size(100, double.NaN);
+				else
+					return new sw.Size(double.NaN, 100);
+			}
 		}
 
 		public override bool UseMousePreview { get { return true; } }

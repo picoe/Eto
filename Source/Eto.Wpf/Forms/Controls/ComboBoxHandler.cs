@@ -40,7 +40,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (!AutoComplete)
 				{
 					// with autocomplete off, items aren't selected based on typed text but should be
-					var item = DataStore.FirstOrDefault(o => Widget.ItemTextBinding.GetValue(o) == text);
+					var item = DataStore?.FirstOrDefault(o => Widget.ItemTextBinding.GetValue(o) == text);
 					if (item != null)
 					{
 						Control.SelectedItem = item;
