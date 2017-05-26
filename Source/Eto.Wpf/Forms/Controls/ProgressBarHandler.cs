@@ -40,7 +40,7 @@ namespace Eto.Wpf.Forms.Controls
 
 	public class ProgressBarHandler : WpfControl<EtoProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
-		protected override sw.Size DefaultSize => new sw.Size(double.NaN, 22);
+		protected override sw.Size DefaultSize => new sw.Size(100, 22);
 
 		public ProgressBarHandler()
 		{
