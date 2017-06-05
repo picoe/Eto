@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
@@ -139,7 +139,7 @@ namespace Eto.Wpf
 			return new KeyEventArgs(key, keyType) { Handled = e.Handled };
 		}
 
-		public static MouseEventArgs ToEto(this swi.MouseButtonEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
+		public static MouseButtons GetEtoButtons(this swi.MouseButtonEventArgs e, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
 		{
 			var buttons = MouseButtons.None;
 			if (e.ChangedButton == swi.MouseButton.Left && e.LeftButton == buttonState)
@@ -148,6 +148,12 @@ namespace Eto.Wpf
 				buttons |= MouseButtons.Alternate;
 			if (e.ChangedButton == swi.MouseButton.Middle && e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
+			return buttons;
+		}
+
+		public static MouseEventArgs ToEto(this swi.MouseButtonEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
+		{
+			var buttons = e.GetEtoButtons(buttonState);
 			var modifiers = swi.Keyboard.Modifiers.ToEto();
 			var location = e.GetPosition(control).ToEto();
 

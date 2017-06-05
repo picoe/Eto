@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
@@ -51,7 +51,58 @@ namespace Eto.Forms
 		}
 	}
 
+	/// <summary>
+	/// Event arguments for cell-based events of a <see cref="GridView"/> triggered by the mouse.
+	/// </summary>
+	public class GridViewCellMouseEventArgs : MouseEventArgs
+	{
 		/// <summary>
+		/// Gets the grid column that triggered the event.
+		/// </summary>
+		/// <value>The grid column.</value>
+		public GridColumn GridColumn { get; private set; }
+
+		/// <summary>
+		/// Gets the row that triggered the event, or -1 if no row.
+		/// </summary>
+		/// <value>The grid row.</value>
+		public int Row { get; private set; }
+
+		/// <summary>
+		/// Gets the index of the column that triggered the event, or -1 if no column.
+		/// </summary>
+		/// <value>The column index.</value>
+		public int Column { get; private set; }
+
+		/// <summary>
+		/// Gets the item of the row that triggered the event, or null if there was no item.
+		/// </summary>
+		/// <value>The row item.</value>
+		public object Item { get; private set; }
+
+		/// <summary>
+		/// Initializes a new instance of the GridViewCellMouseEventArgs class.
+		/// </summary>
+		/// <param name="gridColumn">Grid column that triggered the event.</param>
+		/// <param name="row">The row that triggered the event, or -1 if no row.</param>
+		/// <param name="column">Column that triggered the event, or -1 if no column.</param>
+		/// <param name="item">Item of the row that triggered the event, or null if no item.</param>
+		/// <param name="buttons">Mouse buttons that are pressed during the event</param>
+		/// <param name="modifiers">Key modifiers currently pressed</param>
+		/// <param name="location">Location of the mouse cursor in the grid</param>
+		/// <param name="delta">Delta of the scroll wheel.</param>
+		/// <param name="pressure">Pressure of a stylus or touch, if applicable. 1.0f for full pressure or not supported</param>
+		public GridViewCellMouseEventArgs(GridColumn gridColumn, int row, int column, object item, MouseButtons buttons, Keys modifiers, PointF location, SizeF? delta = null, float pressure = 1.0f)
+			: base(buttons, modifiers, location, delta, pressure)
+		{
+			this.GridColumn = gridColumn;
+			this.Row = row;
+			this.Column = column;
+			this.Item = item;
+		}
+	}
+
+	/// <summary>
 	/// Information of a cell in the <see cref="TreeGridView"/>
 	/// </summary>
 	public class GridCell

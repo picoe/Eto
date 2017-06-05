@@ -184,7 +184,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Occurs when an individual cell is clicked.
 		/// </summary>
-		public event EventHandler<GridViewCellEventArgs> CellClick
+		public event EventHandler<GridViewCellMouseEventArgs> CellClick
 		{
 			add { Properties.AddHandlerEvent(CellClickEvent, value); }
 			remove { Properties.RemoveEvent(CellClickEvent, value); }
@@ -194,7 +194,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="CellClick"/> event.
 		/// </summary>
 		/// <param name="e">Grid cell event arguments.</param>
-		protected virtual void OnCellClick(GridViewCellEventArgs e)
+		protected virtual void OnCellClick(GridViewCellMouseEventArgs e)
 		{
 			Properties.TriggerEvent(CellClickEvent, this, e);
 		}
@@ -207,7 +207,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Occurs when an individual cell is double clicked.
 		/// </summary>
-		public event EventHandler<GridViewCellEventArgs> CellDoubleClick
+		public event EventHandler<GridViewCellMouseEventArgs> CellDoubleClick
 		{
 			add { Properties.AddHandlerEvent(CellDoubleClickEvent, value); }
 			remove { Properties.RemoveEvent(CellDoubleClickEvent, value); }
@@ -217,7 +217,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="CellDoubleClick"/> event.
 		/// </summary>
 		/// <param name="e">Grid cell event arguments.</param>
-		protected virtual void OnCellDoubleClick(GridViewCellEventArgs e)
+		protected virtual void OnCellDoubleClick(GridViewCellMouseEventArgs e)
 		{
 			Properties.TriggerEvent(CellDoubleClickEvent, this, e);
 		}
@@ -544,12 +544,12 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the cell click event.
 			/// </summary>
-			void OnCellClick(Grid widget, GridViewCellEventArgs e);
+			void OnCellClick(Grid widget, GridViewCellMouseEventArgs e);
 
 			/// <summary>
 			/// Raises the cell double click event.
 			/// </summary>
-			void OnCellDoubleClick(Grid widget, GridViewCellEventArgs e);
+			void OnCellDoubleClick(Grid widget, GridViewCellMouseEventArgs e);
 
 			/// <summary>
 			/// Raises the selection changed event.
@@ -591,7 +591,7 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the cell click event.
 			/// </summary>
-			public void OnCellClick(Grid widget, GridViewCellEventArgs e)
+			public void OnCellClick(Grid widget, GridViewCellMouseEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnCellClick(e));
 			}
@@ -599,7 +599,7 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the cell double click event.
 			/// </summary>
-			public void OnCellDoubleClick(Grid widget, GridViewCellEventArgs e)
+			public void OnCellDoubleClick(Grid widget, GridViewCellMouseEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnCellDoubleClick(e));
 			}

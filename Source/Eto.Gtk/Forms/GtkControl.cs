@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using Eto.Forms;
 using Eto.Drawing;
@@ -441,6 +441,7 @@ namespace Eto.GtkSharp.Forms
 			[GLib.ConnectBefore]
 			public void HandleButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
 			{
+				args.Event.ToEtoLocation();
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();

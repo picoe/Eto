@@ -165,7 +165,7 @@ namespace Eto.Mac.Forms.Cells
 					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, (int)col, item);
+					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, ee);
 				};
 				view.EditingEnded += (sender, e) =>
@@ -176,7 +176,7 @@ namespace Eto.Mac.Forms.Cells
 					var item = getItem(control.Item, r);
 					SetObjectValue(item, control.ObjectValue);
 
-					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, (int)col, item);
+					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
 					control.ObjectValue = GetObjectValue(item) ?? new NSString(string.Empty);
 				};
@@ -187,7 +187,7 @@ namespace Eto.Mac.Forms.Cells
 					var item = getItem(control.Item, r);
 					SetObjectValue(item, control.ObjectValue);
 
-					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, (int)col, item);
+					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
 				};
 				view.Bind("editable", tableColumn, "editable", null);
