@@ -129,7 +129,7 @@ namespace Eto.Mac.Forms.Cells
 					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, col, item);
+					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, ee);
 					SetObjectValue(item, control.ObjectValue);
 					control.ObjectValue = GetObjectValue(item);

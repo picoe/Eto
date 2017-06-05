@@ -1,4 +1,4 @@
-using Eto.Drawing;
+﻿using Eto.Drawing;
 using Eto.Forms;
 using swf = System.Windows.Forms;
 
@@ -16,7 +16,7 @@ namespace Eto.WinForms.Forms
 
 		public PointF Position
 		{
-			get { return swf.Control.MousePosition.ToEto(); }
+			get { return swf.Cursor.Position.ToEto(); }
 			set { swf.Cursor.Position = value.ToSDPoint(); }
 		}
 

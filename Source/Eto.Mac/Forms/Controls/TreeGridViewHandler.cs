@@ -200,7 +200,8 @@ namespace Eto.Mac.Forms.Controls
 			public override void DidClickTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn)
 			{
 				var column = Handler.GetColumn(tableColumn);
-				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(column.Widget));
+				var args = new GridColumnEventArgs(column.Widget);
+				Handler.Callback.OnColumnHeaderClick(Handler.Widget, args);
 			}
 
 			public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
@@ -311,7 +312,11 @@ namespace Eto.Mac.Forms.Controls
 						int columnIndex = (int)GetColumn(point);
 						var item = handler.GetItem(rowIndex);
 						var column = columnIndex == -1 || columnIndex > handler.Widget.Columns.Count ? null : handler.Widget.Columns[columnIndex];
-						handler.Callback.OnCellClick(handler.Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						var cellArgs = MacConversions.CreateCellMouseEventArgs(column, handler.ContainerControl, rowIndex, columnIndex, item, theEvent);
+						if (theEvent.ClickCount >= 2)
+							handler.Callback.OnCellDoubleClick(handler.Widget, cellArgs);
+						else
+							handler.Callback.OnCellClick(handler.Widget, cellArgs);
 					}
 					base.MouseDown(theEvent);
 

@@ -243,10 +243,16 @@ namespace Eto.Test.UnitTests
 
 		public static void ManualForm(string description, Func<Form, Control> init)
 		{
+			ManualForm(description, (form, Label) => init(form));
+		}
+
+		public static void ManualForm(string description, Func<Form, Label, Control> init)
+		{
 			Exception exception = null;
 			Form(form =>
 			{
-				var c = init(form);
+				var label = new Label { Text = description };
+				var c = init(form, label);
 
 				var failButton = new Button { Text = "Fail" };
 				failButton.Click += (sender, e) =>
@@ -275,7 +281,7 @@ namespace Eto.Test.UnitTests
 					Items =
 					{
 						new StackLayoutItem(c, HorizontalAlignment.Stretch, true),
-						description,
+						label,
 						new StackLayoutItem(TableLayout.Horizontal(2, failButton, passButton), HorizontalAlignment.Center)
 					}
 				};

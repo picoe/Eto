@@ -66,7 +66,28 @@ namespace Eto.Mac.Forms.Controls
 					base.DrawBackground(clipRect);
 			}
 
+			public override void RightMouseDown(NSEvent theEvent)
+			{
+				if (HandleMouseEvent(theEvent))
+					return;
+				base.RightMouseDown(theEvent);
+			}
+
+			public override void OtherMouseDown(NSEvent theEvent)
+			{
+				if (HandleMouseEvent(theEvent))
+					return;
+				base.OtherMouseDown(theEvent);
+			}
+
 			public override void MouseDown(NSEvent theEvent)
+			{
+				if (HandleMouseEvent(theEvent))
+					return;
+				base.MouseDown(theEvent);
+			}
+
+			bool HandleMouseEvent(NSEvent theEvent)
 			{
 				var handler = Handler;
 				if (handler != null)
@@ -77,7 +98,7 @@ namespace Eto.Mac.Forms.Controls
 					else
 						handler.Callback.OnMouseDown(handler.Widget, args);
 					if (args.Handled)
-						return;
+						return true;
 
 					var point = ConvertPointFromView(theEvent.LocationInWindow, null);
 
@@ -87,11 +108,14 @@ namespace Eto.Mac.Forms.Controls
 						int columnIndex = (int)GetColumn(point);
 						var item = handler.GetItem(rowIndex);
 						var column = columnIndex == -1 || columnIndex > handler.Widget.Columns.Count ? null : handler.Widget.Columns[columnIndex];
-						handler.Callback.OnCellClick(handler.Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						var cellArgs = MacConversions.CreateCellMouseEventArgs(column, handler.ContainerControl, rowIndex, columnIndex, item, theEvent);
+						if (theEvent.ClickCount >= 2)
+							handler.Callback.OnCellDoubleClick(handler.Widget, cellArgs);
+						else
+							handler.Callback.OnCellClick(handler.Widget, cellArgs);
 					}
 				}
-
-				base.MouseDown(theEvent);
+				return false;
 			}
 
 			public EtoTableView(GridViewHandler handler)
