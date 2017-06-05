@@ -115,7 +115,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		GridViewCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea)
+		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea)
 		{
 			swc.DataGridCell cell;
 			var row = GetRowOfElement(originalSource, out cell);
@@ -129,7 +129,7 @@ namespace Eto.Wpf.Forms.Controls
 			var buttons = ea.GetEtoButtons();
 			var modifiers = swi.Keyboard.Modifiers.ToEto();
 			var location = ea.GetPosition(ContainerControl).ToEto();
-			return new GridViewCellMouseEventArgs(column, rowIndex, columnIndex, item, buttons, modifiers, location);
+			return new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, buttons, modifiers, location);
 		}
 
 		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell)
