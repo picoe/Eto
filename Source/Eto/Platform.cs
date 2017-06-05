@@ -343,8 +343,6 @@ namespace Eto
 				else if (EtoEnvironment.Platform.IsWindows)
 				{
 					detected = Platform.Get(Platforms.Wpf, true);
-					if (detected == null)
-						detected = Platform.Get(Platforms.WinForms, true);
 				}
 
 				if (detected == null && EtoEnvironment.Platform.IsUnix)
@@ -353,7 +351,11 @@ namespace Eto
 					if (detected == null)
 						detected = Platform.Get(Platforms.Gtk2, true);
 				}
-				
+
+				// Fallback to Winforms - better than nothing even if it's not native look & feel
+				if (detected == null)
+					detected = Platform.Get(Platforms.WinForms, true);
+
 				if (detected == null)
 					throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Could not detect platform. Are you missing a platform assembly?"));
 					
