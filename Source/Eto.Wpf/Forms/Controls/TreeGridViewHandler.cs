@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
@@ -27,27 +27,33 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 			controller = new TreeController { Handler = this };
 			Control.Background = sw.SystemColors.WindowBrush;
-			Control.KeyDown += (sender, e) =>
-			{
-				if (e.Key == sw.Input.Key.Enter)
-				{
-					if (SelectedItem != null)
-						Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
-				}
-			};
-			Control.MouseDoubleClick += delegate
-			{
-				if (SelectedItem != null)
-				{
-					Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
-				}
-			};
 		}
 
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
+				case TreeGridView.ActivatedEvent:
+					Control.PreviewKeyDown += (sender, e) =>
+					{
+						if (e.Key == sw.Input.Key.Enter)
+						{
+							if (SelectedItem != null)
+							{
+								Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
+								e.Handled = true;
+							}
+						}
+					};
+					Control.MouseDoubleClick += (sender, e) =>
+					{
+						if (SelectedItem != null)
+						{
+							Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
+							e.Handled = true;
+						}
+					};
+					break;
 				case TreeGridView.ExpandingEvent:
 					controller.Expanding += (sender, e) => Callback.OnExpanding(Widget, e);
 					break;

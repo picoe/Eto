@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Obsolete("Since 2.4")]
 	[Section("Controls", typeof(TreeView))]
 	public class TreeViewSection : Scrollable
 	{

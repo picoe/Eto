@@ -97,15 +97,18 @@ namespace Eto.Forms
 		#region Events
 
 		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="Activated"/> event.
+		/// </summary>
+		public const string ActivatedEvent = "TreeGridView.ActivatedEvent";
+
+		/// <summary>
 		/// Occurs when the user activates an item by double clicking or pressing enter.
 		/// </summary>
 		public event EventHandler<TreeGridViewItemEventArgs> Activated
 		{
-			add { Properties.AddEvent(ActivatedKey, value); }
-			remove { Properties.RemoveEvent(ActivatedKey, value); }
+			add { Properties.AddHandlerEvent(ActivatedEvent, value); }
+			remove { Properties.RemoveEvent(ActivatedEvent, value); }
 		}
-
-		static readonly object ActivatedKey = new object();
 
 		/// <summary>
 		/// Raises the <see cref="Activated"/> event.
@@ -113,7 +116,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnActivated(TreeGridViewItemEventArgs e)
 		{
-			Properties.TriggerEvent(ActivatedKey, this, e);
+			Properties.TriggerEvent(ActivatedEvent, this, e);
 		}
 
 		/// <summary>
