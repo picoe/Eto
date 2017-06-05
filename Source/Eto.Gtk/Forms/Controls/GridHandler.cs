@@ -165,7 +165,7 @@ namespace Eto.GtkSharp.Forms.Controls
 						var columnIndex = GetColumnOfItem(e.Column);
 						var item = GetItem(e.Path);
 						var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
-						Callback.OnCellClick(Widget, new GridViewCellMouseEventArgs(column, rowIndex, columnIndex, item, Mouse.Buttons, Keyboard.Modifiers, PointFromScreen(Mouse.Position)));
+						Callback.OnCellClick(Widget, new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, Mouse.Buttons, Keyboard.Modifiers, PointFromScreen(Mouse.Position)));
 					};
 					break;
 				case Grid.SelectionChangedEvent:
@@ -197,7 +197,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
 
 			var loc = PointFromScreen(new PointF((float)e.Event.XRoot, (float)e.Event.YRoot));
-			Callback.OnCellClick(Widget, new GridViewCellMouseEventArgs(column, rowIndex, columnIndex, item, e.Event.ToEtoMouseButtons(), e.Event.State.ToEtoKey(), loc));
+			Callback.OnCellClick(Widget, new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, e.Event.ToEtoMouseButtons(), e.Event.State.ToEtoKey(), loc));
 		}
 
 		public override void OnLoadComplete(EventArgs e)
