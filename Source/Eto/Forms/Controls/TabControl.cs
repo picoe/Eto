@@ -5,6 +5,28 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
+	public class TabControlCancelEventArgs : EventArgs
+	{
+		public int TabPageIndex { get; set; }
+		public bool Cancel { get; set; }
+
+		public TabControlCancelEventArgs(int tabPageIndex, bool cancel)
+		{
+			this.TabPageIndex = tabPageIndex;
+			this.Cancel = cancel;
+		}
+	}
+
+	public class TabControlEventArgs : EventArgs
+	{
+		public int TabPageIndex { get; set; }
+
+		public TabControlEventArgs(int tabPageIndex)
+		{
+			this.TabPageIndex = tabPageIndex;
+		}
+	}
+
 	/// <summary>
 	/// Control to present multiple pages with a tab selection
 	/// </summary>
@@ -51,6 +73,36 @@ namespace Eto.Forms
 			var page = SelectedPage;
 			if (page != null)
 				page.TriggerClick(e);
+		}
+
+		/// <summary>
+		/// Occurs the tab closing event.
+		/// </summary>
+		public event EventHandler<TabControlCancelEventArgs> TabClosing;
+
+		/// <summary>
+		/// Raises the <see cref="TabClosing"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnTabClosing(TabControlCancelEventArgs e)
+		{
+			if (TabClosing != null)
+				TabClosing(this, e);
+		}
+
+		/// <summary>
+		/// Occurs the tab closed event.
+		/// </summary>
+		public event EventHandler<TabControlEventArgs> TabClosed;
+
+		/// <summary>
+		/// Raises the <see cref="TabClosed"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnTabClosed(TabControlEventArgs e)
+		{
+			if (TabClosed != null)
+				TabClosed(this, e);
 		}
 
 		/// <summary>
@@ -196,6 +248,16 @@ namespace Eto.Forms
 			/// Raises the selected index changed event.
 			/// </summary>
 			void OnSelectedIndexChanged(TabControl widget, EventArgs e);
+
+			/// <summary>
+			/// Raises the tab closing event.
+			/// </summary>
+			void OnTabClosing(TabControl widget, TabControlCancelEventArgs e);
+
+			/// <summary>
+			/// Raises the tab closed event.
+			/// </summary>
+			void OnTabClosed(TabControl widget, TabControlEventArgs e);
 		}
 
 		/// <summary>
@@ -209,6 +271,22 @@ namespace Eto.Forms
 			public void OnSelectedIndexChanged(TabControl widget, EventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnSelectedIndexChanged(e));
+			}
+
+			/// <summary>
+			/// Raises the tab closing event.
+			/// </summary>
+			public void OnTabClosing(TabControl widget, TabControlCancelEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnTabClosing(e));
+			}
+
+			/// <summary>
+			/// Raises the tab closed event.
+			/// </summary>
+			public void OnTabClosed(TabControl widget, TabControlEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnTabClosed(e));
 			}
 		}
 
