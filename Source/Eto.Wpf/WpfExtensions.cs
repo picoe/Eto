@@ -131,6 +131,8 @@ namespace Eto.Wpf
 			{
 				if (current == control)
 					return true;
+				if (current is System.Windows.Documents.Hyperlink)
+					return false;
 				current = swm.VisualTreeHelper.GetParent(current);
 			}
 			return false;
