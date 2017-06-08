@@ -26,6 +26,7 @@ namespace Eto.Wpf.Forms.Cells
 			protected override void OnRender(swm.DrawingContext dc)
 			{
 				var handler = Column.Handler;
+				RenderSize = new System.Windows.Size(this.Column.ActualWidth, RenderSize.Height);
 				var graphics = new Graphics(new GraphicsHandler(this, dc, new sw.Rect(RenderSize), new RectangleF(RenderSize.ToEto()), false));
 				var state = IsSelected ? CellStates.Selected : CellStates.None;
 #pragma warning disable 618
