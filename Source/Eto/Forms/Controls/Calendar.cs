@@ -184,7 +184,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnSelectedDateChanged(Calendar widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSelectedDateChanged(e));
+				using (widget.Platform.Context)
+					widget.OnSelectedDateChanged(e);
 			}
 
 			/// <summary>
@@ -192,7 +193,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnSelectedRangeChanged(Calendar widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSelectedRangeChanged(e));
+				using (widget.Platform.Context)
+					widget.OnSelectedRangeChanged(e);
 			}
 		}
 

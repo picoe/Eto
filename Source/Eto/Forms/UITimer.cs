@@ -104,7 +104,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnElapsed(UITimer widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnElapsed(e));
+				using (widget.Platform.Context)
+					widget.OnElapsed(e);
 			}
 		}
 

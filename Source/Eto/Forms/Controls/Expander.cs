@@ -113,7 +113,8 @@ namespace Eto.Forms
 			/// <param name="e">Event arguments.</param>
 			public void OnExpandedChanged(Expander widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnExpandedChanged(e));
+				using (widget.Platform.Context)
+					widget.OnExpandedChanged(e);
 			}
 		}
 

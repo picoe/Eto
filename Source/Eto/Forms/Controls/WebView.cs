@@ -451,7 +451,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnNavigated(WebView widget, WebViewLoadedEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnNavigated(e));
+				using (widget.Platform.Context)
+					widget.OnNavigated(e);
 			}
 
 			/// <summary>
@@ -459,7 +460,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnDocumentLoaded(WebView widget, WebViewLoadedEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnDocumentLoaded(e));
+				using (widget.Platform.Context)
+					widget.OnDocumentLoaded(e);
 			}
 
 			/// <summary>
@@ -467,7 +469,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnDocumentLoading(WebView widget, WebViewLoadingEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnDocumentLoading(e));
+				using (widget.Platform.Context)
+					widget.OnDocumentLoading(e);
 			}
 
 			/// <summary>
@@ -475,7 +478,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnOpenNewWindow(WebView widget, WebViewNewWindowEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnOpenNewWindow(e));
+				using (widget.Platform.Context)
+					widget.OnOpenNewWindow(e);
 			}
 
 			/// <summary>
@@ -483,7 +487,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnDocumentTitleChanged(WebView widget, WebViewTitleEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnDocumentTitleChanged(e));
+				using (widget.Platform.Context)
+					widget.OnDocumentTitleChanged(e);
 			}
 		}
 

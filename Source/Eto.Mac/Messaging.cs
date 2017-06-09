@@ -45,11 +45,7 @@ namespace Eto.Mac
 		public static T GetNSObject<T>(IntPtr ptr)
 			where T: NSObject
 		{
-			#if XAMMAC2
 			return Runtime.GetNSObject<T>(ptr);
-			#else
-			return Runtime.GetNSObject(ptr) as T;
-			#endif
 		}
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]

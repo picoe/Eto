@@ -423,14 +423,16 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnInitialized(Application widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnInitialized(e));
+				using (widget.Platform.Context)
+					widget.OnInitialized(e);
 			}
 			/// <summary>
 			/// Raises the terminating event.
 			/// </summary>
 			public void OnTerminating(Application widget, CancelEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnTerminating(e));
+				using (widget.Platform.Context)
+					widget.OnTerminating(e);
 			}
 
 			/// <summary>
@@ -438,7 +440,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnUnhandledException(Application widget, UnhandledExceptionEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnUnhandledException(e));
+				using (widget.Platform.Context)
+					widget.OnUnhandledException(e);
 			}
 		}
 

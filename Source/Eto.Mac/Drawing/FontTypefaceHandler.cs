@@ -78,10 +78,10 @@ namespace Eto.Mac.Drawing
 			{
 				// no attribute, find font face based on postscript name
 				var members = manager.AvailableMembersOfFontFamily(font.FamilyName);
-				var member = members.FirstOrDefault(r => (string)(NSString)Runtime.GetNSObject(r.ValueAt(0)) == PostScriptName);
+				var member = members.FirstOrDefault(r => (string)Runtime.GetNSObject<NSString>(r.ValueAt(0)) == PostScriptName);
 				if (member != null)
 				{
-					name = (string)(NSString)Runtime.GetNSObject(member.ValueAt(1));
+					name = (string)Runtime.GetNSObject<NSString>(member.ValueAt(1));
 				}
 			}
 		}

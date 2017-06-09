@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\BuildOutput\net45\Debug\</OutputPath>
-    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;SDCOMPAT</DefineConstants>
+    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;XAMMAC1;SDCOMPAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
@@ -42,7 +42,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>OSX;DESKTOP;XAMMAC;SDCOMPAT</DefineConstants>
+    <DefineConstants>OSX;DESKTOP;XAMMAC;XAMMAC1;SDCOMPAT</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>false</CreatePackage>

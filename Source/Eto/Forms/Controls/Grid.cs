@@ -628,7 +628,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCellEditing(Grid widget, GridViewCellEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCellEditing(e));
+				using (widget.Platform.Context)
+					widget.OnCellEditing(e);
 			}
 
 			/// <summary>
@@ -636,7 +637,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCellEdited(Grid widget, GridViewCellEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCellEdited(e));
+				using (widget.Platform.Context)
+					widget.OnCellEdited(e);
 			}
 
 			/// <summary>
@@ -644,7 +646,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCellClick(Grid widget, GridCellMouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCellClick(e));
+				using (widget.Platform.Context)
+					widget.OnCellClick(e);
 			}
 
 			/// <summary>
@@ -652,7 +655,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCellDoubleClick(Grid widget, GridCellMouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCellDoubleClick(e));
+				using (widget.Platform.Context)
+					widget.OnCellDoubleClick(e);
 			}
 
 			/// <summary>
@@ -660,8 +664,11 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnSelectionChanged(Grid widget, EventArgs e)
 			{
-				if (!widget.supressSelectionChanged)
-					widget.Platform.Invoke(() => widget.OnSelectionChanged(e));
+				using (widget.Platform.Context)
+				{
+					if (!widget.supressSelectionChanged)
+						widget.OnSelectionChanged(e);
+				}
 			}
 
 			/// <summary>
@@ -669,7 +676,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnColumnHeaderClick(e));
+				using (widget.Platform.Context)
+					widget.OnColumnHeaderClick(e);
 			}
 
 			/// <summary>
@@ -677,7 +685,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCellFormatting(Grid widget, GridCellFormatEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCellFormatting(e));
+				using (widget.Platform.Context)
+					widget.OnCellFormatting(e);
 			}
 		}
 

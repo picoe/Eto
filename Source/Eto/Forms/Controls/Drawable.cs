@@ -176,7 +176,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnPaint(Drawable widget, PaintEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnPaint(e));
+				using (widget.Platform.Context)
+					widget.OnPaint(e);
 			}
 		}
 

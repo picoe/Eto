@@ -205,7 +205,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnItemShown(Navigation widget, NavigationItemEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnItemShown(e));
+				using (widget.Platform.Context)
+					widget.OnItemShown(e);
 			}
 
 			/// <summary>
@@ -213,7 +214,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnItemRemoved(Navigation widget, NavigationItemEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnItemRemoved(e));
+				using (widget.Platform.Context)
+					widget.OnItemRemoved(e);
 			}
 		}
 
