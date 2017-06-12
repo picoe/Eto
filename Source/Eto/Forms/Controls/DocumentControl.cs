@@ -312,7 +312,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnPageClosed(DocumentControl widget, DocumentPageEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnPageClosed(e));
+				using (widget.Platform.Context)
+					widget.OnPageClosed(e);
 			}
 
 			/// <summary>
@@ -320,7 +321,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnSelectedIndexChanged(DocumentControl widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSelectedIndexChanged(e));
+				using (widget.Platform.Context)
+					widget.OnSelectedIndexChanged(e);
 			}
 		}
 

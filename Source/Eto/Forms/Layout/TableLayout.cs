@@ -428,12 +428,20 @@ namespace Eto.Forms
 		/// <param name="child">Child control to remove.</param>
 		public override void Remove(Control child)
 		{
-			var cell = Rows.SelectMany(r => r.Cells).FirstOrDefault(r => r.Control == child);
-			if (cell != null)
+			var rows = Rows;
+			for (int i = 0; i < rows.Count; i++)
 			{
-				cell.SetControl(null);
-				Handler.Remove(child);
-				RemoveParent(child);
+				var row = rows[i];
+				for (int c = 0; c < row.Cells.Count; c++)
+				{
+					var cell = row.Cells[c];
+					if (ReferenceEquals(cell.Control, child))
+					{
+						cell.SetControl(null);
+						Handler.Remove(child);
+						RemoveParent(child);
+					}
+				}
 			}
 		}
 

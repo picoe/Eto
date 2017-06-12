@@ -160,7 +160,8 @@ namespace Eto.Forms
             /// </summary>
             public void OnActivated(TrayIndicator widget, EventArgs e)
             {
-                widget.Platform.Invoke(() => widget.OnActivated(e));
+				using (widget.Platform.Context)
+					widget.OnActivated(e);
             }
         }
     }

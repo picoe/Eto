@@ -334,7 +334,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnSelectionChanged(TextArea widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSelectionChanged(e));
+				using (widget.Platform.Context)
+					widget.OnSelectionChanged(e);
 			}
 
 			/// <summary>
@@ -342,7 +343,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCaretIndexChanged(TextArea widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCaretIndexChanged(e));
+				using (widget.Platform.Context)
+					widget.OnCaretIndexChanged(e);
 			}
 		}
 

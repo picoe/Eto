@@ -116,14 +116,22 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void Invalidate(bool invalidateChildren)
 		{
-			if (!NeedsQueue(() => Invalidate(invalidateChildren)))
-				base.Invalidate(invalidateChildren);
+			if (NeedsQueue)
+			{
+				Queue(() => Invalidate(invalidateChildren));
+				return;
+			}
+			base.Invalidate(invalidateChildren);
 		}
 
 		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			if (!NeedsQueue(() => Invalidate(rect, invalidateChildren)))
-				base.Invalidate(rect, invalidateChildren);
+			if (NeedsQueue)
+			{
+				Queue(() => Invalidate(rect, invalidateChildren));
+				return;
+			}
+			base.Invalidate(rect, invalidateChildren);
 		}
 
 		void DrawRegion(Rectangle rect)

@@ -112,7 +112,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnTextChanged(TextControl widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnTextChanged(e));
+				using (widget.Platform.Context)
+					widget.OnTextChanged(e);
 			}
 		}
 

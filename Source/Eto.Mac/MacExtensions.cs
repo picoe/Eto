@@ -56,7 +56,7 @@ namespace Eto.Mac
 		// untilDate isn't allowed null
 		public static NSEvent NextEventEx(this NSApplication app, NSEventMask mask, NSDate untilDate, NSString mode, bool dequeue)
 		{
-			return (NSEvent)Runtime.GetNSObject(Messaging.IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (nuint)(uint)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
+			return Runtime.GetNSObject<NSEvent>(Messaging.IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (nuint)(uint)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
 		}
 
 

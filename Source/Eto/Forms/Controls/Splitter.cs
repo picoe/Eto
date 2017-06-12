@@ -244,7 +244,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnPositionChanged(Splitter widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnPositionChanged(e));
+				using (widget.Platform.Context)
+					widget.OnPositionChanged(e);
 			}
 		}
 

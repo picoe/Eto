@@ -221,7 +221,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnValueChanged(NumericStepper widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnValueChanged(e));
+				using (widget.Platform.Context)
+					widget.OnValueChanged(e);
 			}
 		}
 

@@ -1,6 +1,7 @@
 using System;
 using Eto.Drawing;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -43,7 +44,8 @@ namespace Eto.Forms
 			{
 				var content = Handler == null ? null : Handler.Content;
 				if (content != null)
-					yield return content;
+					return new[] { content };
+				return Enumerable.Empty<Control>();
 			}
 		}
 

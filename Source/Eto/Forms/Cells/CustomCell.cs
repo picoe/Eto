@@ -396,7 +396,8 @@ namespace Eto.Forms
 			/// </summary>
 			public float OnGetPreferredWidth(CustomCell widget, CellEventArgs args)
 			{
-				return widget.Platform.Invoke(() => widget.OnGetPreferredWidth(args));
+				using (widget.Platform.Context)
+					return widget.OnGetPreferredWidth(args);
 			}
 
 			/// <summary>
@@ -404,7 +405,8 @@ namespace Eto.Forms
 			/// </summary>
 			public string OnGetIdentifier(CustomCell widget, CellEventArgs args)
 			{
-				return widget.Platform.Invoke(() => widget.OnGetIdentifier(args));
+				using (widget.Platform.Context)
+					return widget.OnGetIdentifier(args);
 			}
 
 			/// <summary>
@@ -412,7 +414,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnConfigureCell(CustomCell widget, CellEventArgs args, Control control)
 			{
-				widget.Platform.Invoke(() => widget.OnConfigureCell(args, control));
+				using (widget.Platform.Context)
+					widget.OnConfigureCell(args, control);
 			}
 
 			/// <summary>
@@ -420,7 +423,8 @@ namespace Eto.Forms
 			/// </summary>
 			public Control OnCreateCell(CustomCell widget, CellEventArgs args)
 			{
-				return widget.Platform.Invoke(() => widget.OnCreateCell(args));
+				using (widget.Platform.Context)
+					return widget.OnCreateCell(args);
 			}
 
 			/// <summary>
@@ -428,7 +432,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnPaint(CustomCell widget, CellPaintEventArgs args)
 			{
-				widget.Platform.Invoke(() => widget.OnPaint(args));
+				using (widget.Platform.Context)
+					widget.OnPaint(args);
 			}
 		}
 

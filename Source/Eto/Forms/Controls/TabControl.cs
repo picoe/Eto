@@ -208,7 +208,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnSelectedIndexChanged(TabControl widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSelectedIndexChanged(e));
+				using (widget.Platform.Context)
+					widget.OnSelectedIndexChanged(e);
 			}
 		}
 
