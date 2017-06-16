@@ -388,9 +388,12 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
-						newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
-						Callback.OnSizeChanged(Widget, EventArgs.Empty);
-						newSize = null;
+						if (e.NewSize != e.PreviousSize) // WPF calls this event even if it hasn't changed
+						{
+							newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
+							Callback.OnSizeChanged(Widget, EventArgs.Empty);
+							newSize = null;
+						}
 					};
 					break;
 				case Eto.Forms.Control.KeyDownEvent:

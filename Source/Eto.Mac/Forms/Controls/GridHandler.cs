@@ -289,19 +289,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			switch (id)
 			{
-				case Grid.CellDoubleClickEvent:
-					Control.DoubleClick += (sender, e) =>
-					{
-						int rowIndex = (int)Control.ClickedRow;
-						if (rowIndex >= 0)
-						{
-							var columnIndex = (int)Control.ClickedColumn;
-							var item = GetItem(rowIndex);
-							var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
-							var cellArgs = MacConversions.CreateCellEventArgs(column, Control, rowIndex, columnIndex, item);
-						}
-					};
-					break;
 				default:
 					base.AttachEvent(id);
 					break;

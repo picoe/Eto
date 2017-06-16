@@ -359,6 +359,7 @@ namespace Eto.Mac.Forms.Controls
 				case Grid.ColumnHeaderClickEvent:
 					// handled in delegate
 					break;
+				case Grid.CellDoubleClickEvent:
 				case Grid.CellClickEvent:
 					// Handled in EtoOutlineView
 					break;
