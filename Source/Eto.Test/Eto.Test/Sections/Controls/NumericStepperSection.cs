@@ -1,5 +1,10 @@
-using Eto.Drawing;
+﻿﻿using Eto.Drawing;
 using Eto.Forms;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
+using System.Linq;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -43,6 +48,21 @@ namespace Eto.Test.Sections.Controls
 			maxDecimalBinding.Changed += (sender, e) => decimalBinding.Update(BindingUpdateMode.Destination);
 			decimalBinding.Changed += (sender, e) => maxDecimalBinding.Update(BindingUpdateMode.Destination);
 
+			var formatString = new TextBox();
+			Func<Exception, bool> valueChanged = ex => {
+				formatString.BackgroundColor = ex == null ? SystemColors.ControlBackground : Colors.Red;
+				return true; // we handle all exceptions
+			};
+			formatString.TextBinding.Bind(Binding.Property(numeric, n => n.FormatString).CatchException(valueChanged));
+			formatString.TextBinding.Convert(c => string.IsNullOrEmpty(c)).Bind(decimalPlaces, d => d.Enabled);
+			formatString.TextBinding.Convert(c => string.IsNullOrEmpty(c)).Bind(maxDecimalPlaces, d => d.Enabled);
+
+			var cultureDropDown = new DropDown();
+			cultureDropDown.ItemTextBinding = Binding.Delegate((CultureInfo c) => c == CultureInfo.InvariantCulture ? "invariant" : c.ToString());
+			var cultures = typeof(CultureInfo).GetTypeInfo().GetDeclaredMethod("GetCultures")?.Invoke(null, new object[] { 7 /* AllCultures */}) as IEnumerable<CultureInfo>;
+			cultureDropDown.DataStore = cultures.OrderBy(r => r.ToString());
+			cultureDropDown.SelectedValueBinding.Bind(numeric, c => c.CultureInfo);
+
 			var increment = new NumericStepper { MaximumDecimalPlaces = 15 };
 			increment.ValueBinding.Bind(numeric, n => n.Increment);
 
@@ -85,7 +105,13 @@ namespace Eto.Test.Sections.Controls
 			{
 				Spacing = 5,
 				HorizontalContentAlignment = HorizontalAlignment.Center,
-				Items = { options1, options2, options3, "Result:", numeric }
+				Items = {
+					options1,
+					options2,
+					options3,
+					TableLayout.Horizontal(5, "FormatString", formatString, "CultureInfo", cultureDropDown),
+					"Result:", numeric
+				}
 			};
 		}
 
