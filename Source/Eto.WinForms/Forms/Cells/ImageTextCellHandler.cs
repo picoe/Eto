@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
@@ -7,16 +7,57 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Cells
 {
-	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.EtoCell, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
+	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.EtoCell, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler, ITextCellHandler
 	{
 		public static int IconSize = 16;
 		public static int IconPadding = 2;
 
 		public class EtoCell : swf.DataGridViewTextBoxCell
 		{
+			bool wasClicked;
 			public ImageTextCellHandler Handler { get; set; }
 
+			public override Type EditType => typeof(EtoDataGridViewTextBoxEditingControl);
+
 			public sd.Drawing2D.InterpolationMode InterpolationMode { get; set; }
+
+			EtoDataGridViewTextBoxEditingControl EditingTextBox => DataGridView?.EditingControl as EtoDataGridViewTextBoxEditingControl;
+
+			public override void DetachEditingControl()
+			{
+				base.DetachEditingControl();
+				var editingControl = EditingTextBox;
+				if (editingControl != null)
+				{
+					editingControl.Handler = null;
+					editingControl.IsMouseDown = false;
+				}
+				wasClicked = false;
+			}
+
+			protected override void OnClick(swf.DataGridViewCellEventArgs e)
+			{
+				base.OnClick(e);
+				wasClicked = true;
+			}
+
+			protected override void OnMouseUp(swf.DataGridViewCellMouseEventArgs e)
+			{
+				base.OnMouseUp(e);
+				wasClicked = false;
+			}
+
+			public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, swf.DataGridViewCellStyle dataGridViewCellStyle)
+			{
+				base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
+
+				var editingControl = EditingTextBox;
+				if (editingControl != null)
+				{
+					editingControl.Handler = Handler;
+					editingControl.IsMouseDown = wasClicked;
+				}
+			}
 
 			public EtoCell()
 			{
@@ -150,6 +191,8 @@ namespace Eto.WinForms.Forms.Cells
 				SetAlignment();
 			}
 		}
+
+		public AutoSelectMode AutoSelectMode { get; set; }
 
 		void SetAlignment()
 		{

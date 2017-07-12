@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
@@ -147,7 +147,20 @@ namespace Eto.Wpf.Forms.Cells
 			protected override object PrepareCellForEdit(sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
 			{
 				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox>("control");
-				return base.PrepareCellForEdit(control, editingEventArgs);
+				var result = base.PrepareCellForEdit(control, editingEventArgs);
+
+				// AutoSelectMode.OnFocus is the default behaviour of this control
+				if (Handler.AutoSelectMode == AutoSelectMode.Always)
+				{
+					control.SelectAll();
+				}
+				else if (Handler.AutoSelectMode == AutoSelectMode.Never)
+				{
+					control.SelectionLength = 0;
+					control.SelectionStart = control.Text.Length;
+				}
+
+				return result;
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
@@ -158,6 +171,12 @@ namespace Eto.Wpf.Forms.Cells
 				element.Name = "control";
 				element.Text = Handler.GetTextValue(dataItem);
 				Handler.FormatCell(element, cell, dataItem);
+				element.GotKeyboardFocus += (sender, e) =>
+				{
+					var control = sender as swc.TextBox;
+					if (Handler.AutoSelectMode == AutoSelectMode.OnFocus)
+						control.SelectAll();
+				};
 				element.DataContextChanged += (sender, e) =>
 				{
 					var control = sender as swc.TextBox;
@@ -166,6 +185,7 @@ namespace Eto.Wpf.Forms.Cells
 				};
 				return SetupCell(element);
 			}
+
 
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
 			{
@@ -186,5 +206,7 @@ namespace Eto.Wpf.Forms.Cells
 			get { return Control.ScalingMode.ToEto(); }
 			set { Control.ScalingMode = value.ToWpf(); }
 		}
+
+		public AutoSelectMode AutoSelectMode { get; set; } = AutoSelectMode.OnFocus;
 	}
 }

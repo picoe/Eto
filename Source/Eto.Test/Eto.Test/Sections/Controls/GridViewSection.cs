@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
@@ -116,6 +116,12 @@ namespace Eto.Test.Sections.Controls
 						"VerticalAlignment", VerticalAlignmentDropDown(grid),
 						null
 					),
+					TableLayout.Horizontal(
+						5,
+						null,
+						"AutoSelectMode", AutoSelectModeDropDown(grid),
+						null
+					),
 					CreateSearchBox(filtered)
 				}
 			};
@@ -142,6 +148,18 @@ namespace Eto.Test.Sections.Controls
 
 			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
 			control.SelectedValueBinding.Bind(imageTextCell, c => c.VerticalAlignment);
+			return control;
+		}
+
+		Control AutoSelectModeDropDown(GridView grid)
+		{
+			var control = new EnumDropDown<AutoSelectMode>();
+
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().First();
+			control.SelectedValueBinding.Bind(textBoxCell, c => c.AutoSelectMode);
+
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
+			control.SelectedValueBinding.Bind(imageTextCell, c => c.AutoSelectMode);
 			return control;
 		}
 

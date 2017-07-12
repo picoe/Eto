@@ -1,34 +1,95 @@
 using System;
 using Eto.Forms;
+using Eto.GtkSharp.Forms.Controls;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
-	public class TextBoxCellHandler : SingleCellHandler<Gtk.CellRendererText, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
+	interface ITextBoxCellHandler
 	{
-		class Renderer : Gtk.CellRendererText
+		bool FormattingEnabled { get; }
+		void Format(GridCellFormatEventArgs args);
+		AutoSelectMode AutoSelectMode { get; }
+		GridColumnHandler Column { get; }
+		ICellDataSource Source { get; }
+	}
+
+	public class TextBoxCellHandler : SingleCellHandler<Gtk.CellRendererText, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler, ITextBoxCellHandler
+	{
+		internal class Renderer : Gtk.CellRendererText
 		{
+			Gdk.Rectangle cell_area;
 			WeakReference handler;
-			public TextBoxCellHandler Handler { get { return (TextBoxCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
+			public ITextBoxCellHandler Handler { get { return (ITextBoxCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			int row;
 			[GLib.Property("row")]
 			public int Row
 			{
 				get { return row; }
-				set {
+				set
+				{
 					row = value;
 					if (Handler.FormattingEnabled)
 						Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
 				}
 			}
 
-			#if GTK2
+			void HandleFocusInEventHandler(object o, Gtk.FocusInEventArgs args)
+			{
+				var entry = o as Gtk.Entry;
+				var h = Handler;
+				if (Mouse.Buttons == MouseButtons.Primary)
+				{
+					// translate mouse cursor to location in text
+					int x, y, idx, trailing;
+					entry.GetWindow().GetOrigin(out x, out y);
+					x = (int)Math.Round(Mouse.Position.X) - x - cell_area.X;
+					if (entry.Layout.XyToIndex(Pango.Units.FromPixels(x), 0, out idx, out trailing))
+					{
+						Application.Instance.AsyncInvoke(() => entry.SelectRegion(idx, idx));
+						return;
+					}
+				}
+
+				if (h.AutoSelectMode == AutoSelectMode.Never)
+					Application.Instance.AsyncInvoke(() => entry.SelectRegion(entry.Text.Length, entry.Text.Length));
+			}
+
+			void ConfigureEntry(Gtk.Entry entry)
+			{
+				if (entry != null && Handler.AutoSelectMode != AutoSelectMode.Always)
+				{
+					entry.FocusInEvent += HandleFocusInEventHandler;
+					entry.EditingDone += (sender, e) =>
+					{
+						entry.FocusInEvent -= HandleFocusInEventHandler;
+					};
+				}
+			}
+
+#if GTK2
+			public override Gtk.CellEditable StartEditing(Gdk.Event evnt, Gtk.Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
+			{
+				this.cell_area = cell_area;
+				var result = base.StartEditing(evnt ?? new Gdk.Event(IntPtr.Zero), widget, path, background_area, cell_area, flags);
+				ConfigureEntry(result as Gtk.Entry);
+				return result;
+			}
+
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				height = Math.Max(height, Handler.Source.RowHeight);
 			}
-			#else
+#else
+			protected override Gtk.ICellEditable OnStartEditing(Gdk.Event evnt, Gtk.Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
+			{
+				this.cell_area = cell_area;
+				var result = base.OnStartEditing(evnt, widget, path, background_area, cell_area, flags);
+				ConfigureEntry(result as Gtk.Entry);
+				return result;
+			}
+
 			protected override void OnGetPreferredHeight(Gtk.Widget widget, out int minimum_size, out int natural_size)
 			{
 				base.OnGetPreferredHeight(widget, out minimum_size, out natural_size);
@@ -36,7 +97,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				minimum_size = Math.Max(minimum_size, Handler.Source.RowHeight);
 				natural_size = Handler.Source.RowHeight;
 			}
-			#endif
+#endif
 		}
 
 		public TextBoxCellHandler()
@@ -75,6 +136,8 @@ namespace Eto.GtkSharp.Forms.Cells
 				Column?.Control?.TreeView?.QueueDraw();
 			}
 		}
+
+		public AutoSelectMode AutoSelectMode { get; set; }
 
 		protected override WeakConnector CreateConnector()
 		{

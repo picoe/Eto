@@ -71,6 +71,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? 0; } }
 
+		public EtoTextField(IntPtr handle)
+			: base(handle)	
+		{
+		}
+
 		public EtoTextField()
 		{
 			Bezeled = true;
@@ -85,10 +90,21 @@ namespace Eto.Mac.Forms.Controls
 		[Export("textViewDidChangeSelection:")]
 		public void TextViewDidChangeSelection(NSNotification notification)
 		{
-			if (TextHandler != null)
+			var h = TextHandler;
+			if (h != null)
 			{
 				var textView = (NSTextView)notification.Object;
-				TextHandler.SetLastSelection(textView.SelectedRange.ToEto());
+				h.SetLastSelection(textView.SelectedRange.ToEto());
+			}
+		}
+
+		public override void MouseDown(NSEvent theEvent)
+		{
+			base.MouseDown(theEvent);
+			var h = TextHandler;
+			if (h != null && h.AutoSelectMode == AutoSelectMode.Always && CurrentEditor?.SelectedRange.Length == 0)
+			{
+				CurrentEditor?.SelectAll(this);
 			}
 		}
 	}

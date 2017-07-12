@@ -34,7 +34,7 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.Cells
 {
-	public class TextBoxCellHandler : CellHandler<TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
+	public class TextBoxCellHandler : CellHandler<TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler, IMacText
 	{
 		static EtoCellTextField field = new EtoCellTextField { Cell = new EtoLabelFieldCell() };
 		static NSFont defaultFont = field.Font;
@@ -132,6 +132,8 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
+		public AutoSelectMode AutoSelectMode { get; set; }
+
 		class CellView : EtoCellTextField
 		{
 			[Export("item")]
@@ -147,19 +149,22 @@ namespace Eto.Mac.Forms.Cells
 			var view = tableView.MakeView(tableColumn.Identifier, tableView) as CellView;
 			if (view == null)
 			{
-				view = new CellView();
-				view.Cell = new EtoLabelFieldCell
+				view = new CellView
 				{
-					Wraps = false,
-					Scrollable = true,
-					UsesSingleLineMode = false // true prevents proper vertical alignment 
+					WeakHandler = new WeakReference(this),
+					Cell = new EtoLabelFieldCell
+					{
+						Wraps = false,
+						Scrollable = true,
+						UsesSingleLineMode = false // true prevents proper vertical alignment 
+					},
+					Identifier = tableColumn.Identifier,
+					Selectable = false,
+					DrawsBackground = false,
+					Bezeled = false,
+					Bordered = false,
+					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable
 				};
-				view.Identifier = tableColumn.Identifier;
-				view.Selectable = false;
-				view.DrawsBackground = false;
-				view.Bezeled = false;
-				view.Bordered = false;
-				view.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
 				view.BecameFirstResponder += (sender, e) =>
@@ -204,6 +209,11 @@ namespace Eto.Mac.Forms.Cells
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;
+		}
+
+		public void SetLastSelection(Range<int>? range)
+		{
+
 		}
 	}
 }

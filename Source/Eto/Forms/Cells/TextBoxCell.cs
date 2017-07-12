@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 
 namespace Eto.Forms
@@ -30,6 +30,16 @@ namespace Eto.Forms
 		{
 			get { return Handler.VerticalAlignment; }
 			set { Handler.VerticalAlignment = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the auto selection mode.
+		/// </summary>
+		/// <value>The auto selection mode.</value>
+		public AutoSelectMode AutoSelectMode
+		{
+			get { return Handler.AutoSelectMode; }
+			set { Handler.AutoSelectMode = value; }
 		}
 
 		/// <summary>
@@ -73,6 +83,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The vertical text alignment.</value>
 			VerticalAlignment VerticalAlignment { get; set; }
+
+			/// <summary>
+			/// Gets or sets the auto selection mode.
+			/// </summary>
+			/// <value>The auto selection mode.</value>
+			AutoSelectMode AutoSelectMode { get; set; }
 		}
 	}
 }
