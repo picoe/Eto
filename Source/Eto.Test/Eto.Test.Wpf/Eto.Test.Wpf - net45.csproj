@@ -62,6 +62,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="UnitTests\DataContextTests.cs" />
     <Compile Include="UnitTests\MenuBarTests.cs" />
+    <Compile Include="UnitTests\ScrollableTests.cs" />
     <Compile Include="UnitTests\TransformStackTest.cs" />
   </ItemGroup>
   <ItemGroup>
