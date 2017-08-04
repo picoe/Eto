@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
@@ -17,7 +17,11 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void Create(RadioButton controller)
 		{
-			Control = new swc.RadioButton();
+			Control = new swc.RadioButton
+			{
+				VerticalAlignment = sw.VerticalAlignment.Center,
+				VerticalContentAlignment = sw.VerticalAlignment.Center,
+			};
 			if (controller != null)
 			{
 				var parent = (swc.RadioButton)controller.ControlObject;
@@ -29,6 +33,18 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Loaded += Control_Loaded;
 			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+
+			Control.Style = new sw.Style(typeof(swc.RadioButton))
+			{
+				Triggers = {
+					new sw.Trigger
+					{
+						Property = sw.UIElement.IsEnabledProperty,
+						Value = false,
+						Setters = { new sw.Setter { Property = swc.Control.ForegroundProperty, Value = sw.SystemColors.GrayTextBrush } }
+					}
+				}
+			};
 			border = new EtoBorder { Handler = this, Child = Control };
 		}
 

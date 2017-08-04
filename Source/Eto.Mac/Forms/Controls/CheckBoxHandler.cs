@@ -33,6 +33,31 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.Controls
 {
+	public class EtoCenteredButton : NSButtonCell
+	{
+		nfloat defaultHeight;
+		public EtoCenteredButton(nfloat defaultHeight)
+		{
+			this.defaultHeight = defaultHeight;
+		}
+
+		public override CGRect DrawingRectForBounds(CGRect theRect)
+		{
+			var rect = base.DrawingRectForBounds(theRect);
+			var titleSize = AttributedTitle.Size;
+			rect.Y += Math.Max(0, (titleSize.Height - defaultHeight) / 2);
+			return rect;
+		}
+
+		public override CGRect TitleRectForBounds(CGRect theRect)
+		{
+			var titleSize = AttributedTitle.Size;
+			var rect = base.TitleRectForBounds(theRect);
+			rect.Y -= Math.Max(0, (titleSize.Height - defaultHeight) / 2);
+			return rect;
+		}
+	}
+
 	public class CheckBoxHandler : MacButton<NSButton, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		public class EtoCheckBoxButton : NSButton, IMacControl
@@ -45,8 +70,17 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
+			static nfloat defaultHeight;
+			static EtoCheckBoxButton()
+			{
+				var b = new EtoCheckBoxButton();
+				b.SizeToFit();
+				defaultHeight = b.Frame.Height;
+			}
+
 			public EtoCheckBoxButton()
 			{
+				Cell = new EtoCenteredButton(defaultHeight);
 				Title = string.Empty;
 				SetButtonType(NSButtonType.Switch);
 			}
