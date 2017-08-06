@@ -52,6 +52,9 @@ namespace Eto.Mac
 		public static extern IntPtr IntPtr_objc_msgSendSuper_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1);
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]
+		public static extern bool bool_objc_msgSendSuper_IntPtr_IntPtr_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1, IntPtr arg2, IntPtr arg3);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]
 		public static extern void void_objc_msgSendSuper_SizeF(IntPtr receiver, IntPtr selector, CGSize arg1);
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]

@@ -140,6 +140,8 @@ namespace Eto.Mac.Forms.Cells
 			public CellView(IntPtr handle) : base(handle) { }
 		}
 
+		static NSString editableBinding = new NSString("editable");
+
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
 			var view = tableView.MakeView(tableColumn.Identifier, tableView) as CellView;
@@ -190,7 +192,7 @@ namespace Eto.Mac.Forms.Cells
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
 				};
-				view.Bind("editable", tableColumn, "editable", null);
+				view.Bind(editableBinding, tableColumn, "editable", null);
 			}
 
 			var cell = (EtoLabelFieldCell)view.Cell;

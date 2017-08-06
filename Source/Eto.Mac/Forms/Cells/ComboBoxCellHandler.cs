@@ -256,6 +256,8 @@ namespace Eto.Mac.Forms.Cells
 			public CellView(IntPtr handle) : base(handle) { }
 		}
 
+		static NSString enabledBinding = new NSString("enabled");
+
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
 			var view = tableView.MakeView(tableColumn.Identifier, tableView) as CellView;
@@ -284,7 +286,7 @@ namespace Eto.Mac.Forms.Cells
 					control.ObjectValue = GetObjectValue(item);
 
 				};
-				view.Bind("enabled", tableColumn, "editable", null);
+				view.Bind(enabledBinding, tableColumn, "editable", null);
 				view.Menu = menu.Copy() as NSMenu;
 			}
 			else if (IsDifferent(view, menu))

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq.Expressions;
 
@@ -520,6 +520,41 @@ namespace Eto.Forms
 					};
 					AddValueChangedHandler(m, ev2);
 				},
+				removeChangeEvent: RemoveValueChangedHandler
+			);
+		}
+
+		/// <summary>
+		/// Catches any exceptions when setting the value of the binding
+		/// </summary>
+		/// <param name="exceptionHandler">Handler to call when setting the value, regardless of whether an exception occurs. Return true when the exception is handled, false to throw an exception.</param>
+		/// <returns>The binding that catches any exception.</returns>
+		public IndirectBinding<T> CatchException(Func<Exception, bool> exceptionHandler = null) => CatchException<Exception>(exceptionHandler);
+
+		/// <summary>
+		/// Catches any exceptions of the specified <typeparamref name="TException"/> when setting the value of the binding.
+		/// </summary>
+		/// <typeparam name="TException">Type of the exception to catch</typeparam>
+		/// <param name="exceptionHandler">Handler to call when setting the value, regardless of whether an exception occurs. Return true when the exception is handled, false to throw an exception.</param>
+		/// <returns>The binding that catches the specified exception.</returns>
+		public IndirectBinding<T> CatchException<TException>(Func<TException, bool> exceptionHandler = null)
+			where TException : Exception
+		{
+			return new DelegateBinding<object, T>(
+				m => GetValue(m),
+				(m, val) => {
+					try
+					{
+						SetValue(m, val);
+						exceptionHandler?.Invoke(null);
+					}
+					catch (TException ex)
+					{
+						if (exceptionHandler?.Invoke(ex) == false)
+							throw;
+					}
+				},
+				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}

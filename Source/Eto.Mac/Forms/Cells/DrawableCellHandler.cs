@@ -219,13 +219,15 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
+		static NSString enabledBinding = new NSString("enabled");
+
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
 			var view = tableView.MakeView(tableColumn.Identifier, tableView) as EtoCellView;
 			if (view == null)
 			{
 				view = new EtoCellView { Handler = this, Identifier = tableColumn.Identifier, FocusRingType = NSFocusRingType.Exterior };
-				view.Bind("enabled", tableColumn, "editable", null);
+				view.Bind(enabledBinding, tableColumn, "editable", null);
 			}
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
