@@ -610,7 +610,7 @@ namespace Eto.Mac.Forms
 			{
 				if (color.Value.A > 0)
 				{
-					AddMethod(selDrawRect, new Action<IntPtr, IntPtr, CGRect>(DrawBackgroundRect), EtoEnvironment.Is64BitProcess ? "v@:{CGRect dddd}" : "v@:{CGRect ffff}", ContainerControl);
+					AddMethod(selDrawRect, new Action<IntPtr, IntPtr, CGRect>(DrawBackgroundRect), EtoEnvironment.Is64BitProcess ? "v@:{CGRect=dddd}" : "v@:{CGRect=ffff}", ContainerControl);
 				}
 				ContainerControl.SetNeedsDisplay();
 			}
