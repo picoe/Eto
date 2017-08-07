@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
@@ -21,6 +21,8 @@ namespace Eto.Wpf.Forms.Cells
 			get { return Control.VerticalAlignment.ToEto(); }
 			set { Control.VerticalAlignment = value.ToWpf(); }
 		}
+
+		public AutoSelectMode AutoSelectMode { get; set; } = AutoSelectMode.OnFocus;
 
 		string GetValue(object dataItem)
 		{
@@ -115,7 +117,20 @@ namespace Eto.Wpf.Forms.Cells
 			protected override object PrepareCellForEdit(sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
 			{
 				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox>("control");
-				return base.PrepareCellForEdit(control, editingEventArgs);
+				var result = base.PrepareCellForEdit(control, editingEventArgs);
+
+				// AutoSelectMode.OnFocus is the default behaviour of this control
+				if (Handler.AutoSelectMode == AutoSelectMode.Always)
+				{
+					control.SelectAll();
+				}
+				else if (Handler.AutoSelectMode == AutoSelectMode.Never)
+				{
+					control.SelectionLength = 0;
+					control.SelectionStart = control.Text.Length;
+				}
+
+				return result;
 			}
 
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)

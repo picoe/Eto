@@ -72,7 +72,7 @@ namespace Eto.Mac.Forms.Cells
 		NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem);
 	}
 
-	public class EtoCellTextField : NSTextField
+	public class EtoCellTextField : EtoTextField
 	{
 		public EtoCellTextField()
 		{

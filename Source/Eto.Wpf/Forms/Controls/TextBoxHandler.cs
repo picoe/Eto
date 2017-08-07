@@ -17,11 +17,6 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
-
-		protected override void OnSelectionChanged(sw.RoutedEventArgs e)
-		{
-			base.OnSelectionChanged(e);
-		}
 	}
 
 	public class TextBoxHandler : TextBoxHandler<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
@@ -85,6 +80,17 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.Initialize();
 			TextBox.GotKeyboardFocus += Control_GotKeyboardFocus;
+			TextBox.PreviewMouseLeftButtonDown += TextBox_PreviewMouseLeftButtonDown;
+		}
+
+		void TextBox_PreviewMouseLeftButtonDown(object sender, swi.MouseButtonEventArgs e)
+		{
+			if (AutoSelectMode == AutoSelectMode.Always && !TextBox.IsKeyboardFocusWithin)
+			{
+				TextBox.SelectAll();
+				TextBox.Focus();
+				e.Handled = true;
+			}
 		}
 
 		void Control_GotKeyboardFocus(object sender, sw.Input.KeyboardFocusChangedEventArgs e)

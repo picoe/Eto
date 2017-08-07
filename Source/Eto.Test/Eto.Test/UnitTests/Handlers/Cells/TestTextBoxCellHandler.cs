@@ -34,5 +34,18 @@ namespace Eto.Test.UnitTests.Handlers.Cells
 				throw new NotImplementedException();
 			}
 		}
+
+		public AutoSelectMode AutoSelectMode
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

@@ -278,13 +278,33 @@ namespace Eto.WinForms.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Widget.GotFocus += Widget_GotFocus;
+			Control.GotFocus += Control_GotFocus;
+			Control.MouseUp += Control_MouseUp;
+			Control.LostFocus += Control_LostFocus;
 		}
 
-		void Widget_GotFocus(object sender, EventArgs e)
+		void Control_LostFocus(object sender, EventArgs e)
 		{
-			if (AutoSelectMode == AutoSelectMode.OnFocus)
+			ShouldSelect = true;
+		}
+
+		void Control_MouseUp(object sender, swf.MouseEventArgs e)
+		{
+			if (ShouldSelect && AutoSelectMode == AutoSelectMode.Always && e.Button == swf.MouseButtons.Left && SwfTextBox.SelectionLength == 0)
+			{
+				ShouldSelect = false;
 				SelectAll();
+			}
+		}
+
+		void Control_GotFocus(object sender, EventArgs e)
+		{
+			if (ShouldSelect && Mouse.Buttons == MouseButtons.None
+				&& (AutoSelectMode == AutoSelectMode.OnFocus || AutoSelectMode == AutoSelectMode.Always))
+			{
+				ShouldSelect = false;
+				SelectAll();
+			}
 		}
 
 		public override string Text
@@ -298,6 +318,18 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public AutoSelectMode AutoSelectMode { get; set; }
+		static readonly object AutoSelectMode_Key = new object();
+		public AutoSelectMode AutoSelectMode
+		{
+			get { return Widget.Properties.Get(AutoSelectMode_Key, AutoSelectMode.OnFocus); }
+			set { Widget.Properties.Set(AutoSelectMode_Key, value, AutoSelectMode.OnFocus); }
+		}
+
+		static readonly object ShouldSelect_Key = new object();
+		bool ShouldSelect
+		{
+			get { return Widget.Properties.Get(ShouldSelect_Key, true); }
+			set { Widget.Properties.Set(ShouldSelect_Key, value, true); }
+		}
 	}
 }

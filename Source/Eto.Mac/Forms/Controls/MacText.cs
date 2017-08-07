@@ -27,9 +27,9 @@ namespace Eto.Mac.Forms.Controls
 
 	public interface IMacText
 	{
-		TextControl.ICallback Callback { get; }
-
 		void SetLastSelection(Range<int>? range);
+
+		AutoSelectMode AutoSelectMode { get; }
 	}
 
 	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler, IMacText
@@ -66,11 +66,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.Bezeled; }
 			set { Control.Bezeled = value; }
-		}
-
-		TextControl.ICallback IMacText.Callback
-		{
-			get { return Callback; }
 		}
 
 		public virtual string Text
@@ -145,13 +140,28 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public AutoSelectMode AutoSelectMode { get; set; } = AutoSelectMode.OnFocus;
+		static object AutoSelectMode_Key = new object();
+		public AutoSelectMode AutoSelectMode
+		{
+			get { return Widget.Properties.Get(AutoSelectMode_Key, AutoSelectMode.OnFocus); }
+			set { Widget.Properties.Set(AutoSelectMode_Key, value, AutoSelectMode.OnFocus); }
+		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
 			Widget.GotFocus += Widget_GotFocus;
+			Widget.MouseDown += Widget_MouseDown;;
 			SetCustomFieldEditor();
+		}
+
+		void Widget_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (AutoSelectMode == AutoSelectMode.Always)
+			{
+				SelectAll();
+				e.Handled = true;
+			}
 		}
 
 		static object HasInitialFocus_Key = new object();
@@ -167,19 +177,19 @@ namespace Eto.Mac.Forms.Controls
 			var editor = Control.CurrentEditor;
 			if (editor == null)
 				return;
-			
+
 			if (InitialSelection != null)
 			{
 				editor.SelectedRange = InitialSelection.Value.ToNS();
 				InitialSelection = null;
 			}
-			if (AutoSelectMode != AutoSelectMode.OnFocus)
+			else if (AutoSelectMode == AutoSelectMode.Never)
 			{
 				if (LastSelection != null)
 				{
 					editor.SelectedRange = LastSelection.Value.ToNS();
 				}
-				else if (AutoSelectMode == AutoSelectMode.Never)
+				else
 				{
 					var len = Text?.Length ?? 0;
 					editor.SelectedRange = new NSRange(0, len);
