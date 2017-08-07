@@ -343,15 +343,22 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		void HookEvents()
 		{
-			Control.AddNotification("position", (o, args) =>
-			{
-				if (!Widget.Loaded || suppressSplitterMoved > 0)
-					return;
-				// keep track of the desired position (for removing/re-adding/resizing the control)
-				UpdateRelative();
-				EnsurePosition();
-				Callback.OnPositionChanged(Widget, EventArgs.Empty);
-			});
+			if (EtoEnvironment.Platform.IsMac)
+				Control.AddNotification("position", PositionChangedBefore); // macOS throw NRE when resizing the window without this
+			Control.AddNotification("position", PositionChanged);
+		}
+
+		[GLib.ConnectBefore]
+		void PositionChangedBefore(object o, GLib.NotifyArgs args) => PositionChanged(o, args);
+
+		void PositionChanged(object o, GLib.NotifyArgs args)
+		{
+			if (!Widget.Loaded || suppressSplitterMoved > 0)
+				return;
+			// keep track of the desired position (for removing/re-adding/resizing the control)
+			UpdateRelative();
+			EnsurePosition();
+			Callback.OnPositionChanged(Widget, EventArgs.Empty);
 		}
 
 		public override void AttachEvent(string id)

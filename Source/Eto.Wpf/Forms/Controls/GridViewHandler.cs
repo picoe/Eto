@@ -7,6 +7,7 @@ using System.Linq;
 using Eto.Drawing;
 using System;
 using swm = System.Windows.Media;
+using System.Collections;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -16,7 +17,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override object GetItemAtRow (int row)
 		{
-			return store != null ? store.ElementAt(row) : null;
+			var list = store as IList;
+			if (list != null)
+				return list[row];
+			return store?.ElementAt(row);
 		}
 
 		public override void AttachEvent(string id)

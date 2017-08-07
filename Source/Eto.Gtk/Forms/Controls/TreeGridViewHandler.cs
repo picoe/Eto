@@ -152,6 +152,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			switch (id)
 			{
+				case TreeGridView.ActivatedEvent:
+					Tree.RowActivated += Connector.HandleRowActivated;
+					break;
 				case TreeGridView.ExpandingEvent:
 					Tree.TestExpandRow += Connector.HandleTestExpandRow;
 					break;
@@ -245,6 +248,11 @@ namespace Eto.GtkSharp.Forms.Controls
 					h.Callback.OnSelectedItemChanged(h.Widget, EventArgs.Empty);
 					h.lastSelected = item;
 				}
+			}
+
+			public void HandleRowActivated(object o, Gtk.RowActivatedArgs args)
+			{
+				Handler.Callback.OnActivated(Handler.Widget, new TreeGridViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
 			}
 		}
 

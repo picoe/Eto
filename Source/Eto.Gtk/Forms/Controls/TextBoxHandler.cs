@@ -34,7 +34,11 @@ namespace Eto.GtkSharp.Forms.Controls
 
  		void SetSelection()
 		{
-			if (AutoSelectMode == AutoSelectMode.Never)
+			if (AutoSelectMode == AutoSelectMode.Always)
+			{
+				Application.Instance.AsyncInvoke(SelectAll);
+			}
+			else if (AutoSelectMode == AutoSelectMode.Never)
 			{
 				if (lastSelection == null)
 				{

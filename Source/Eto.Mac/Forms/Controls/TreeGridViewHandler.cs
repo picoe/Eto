@@ -350,6 +350,17 @@ namespace Eto.Mac.Forms.Controls
 		{
 			switch (id)
 			{
+				case TreeGridView.ActivatedEvent:
+					Widget.KeyDown += (sender, e) =>
+					{
+						if (!e.Handled && e.KeyData == Keys.Enter)
+						{
+							Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
+							e.Handled = true;
+						}
+					};
+					Control.DoubleClick += HandleDoubleClick;
+					break;
 				case TreeGridView.ExpandedEvent:
 				case TreeGridView.ExpandingEvent:
 				case TreeGridView.CollapsedEvent:
@@ -369,6 +380,15 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		static void HandleDoubleClick(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as TreeGridViewHandler;
+			if (handler != null)
+			{
+				handler.Callback.OnActivated(handler.Widget, new TreeGridViewItemEventArgs(handler.SelectedItem));
+			}
+		}
+
 		protected override NSOutlineView CreateControl()
 		{
 			return new EtoOutlineView(this);
@@ -383,7 +403,9 @@ namespace Eto.Mac.Forms.Controls
 				topitems.Clear();
 				cachedItems.Clear();
 				Control.ReloadData();
+				suppressExpandCollapseEvents++;
 				ExpandItems(null);
+				suppressExpandCollapseEvents--;
 				if (Widget.Loaded)
 					AutoSizeColumns();
 			}
