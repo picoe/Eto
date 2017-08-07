@@ -135,7 +135,7 @@ namespace Eto.Test.Sections.Controls
 							Text = "test",
 							Content = new Splitter
 							{
-								Panel1 = new TreeView { Size = new Size(100, 100) },
+								Panel1 = new TreeGridView { Size = new Size(100, 100) },
 								Panel2 = new GridView(),
 								Orientation = Orientation.Horizontal,
 								FixedPanel = SplitterFixedPanel.Panel1,
