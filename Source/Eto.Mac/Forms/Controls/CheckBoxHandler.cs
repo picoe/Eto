@@ -45,7 +45,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var rect = base.DrawingRectForBounds(theRect);
 			var titleSize = AttributedTitle.Size;
-			rect.Y += Math.Max(0, (titleSize.Height - defaultHeight) / 2);
+			rect.Y += (nfloat)Math.Max(0, (titleSize.Height - defaultHeight) / 2);
 			return rect;
 		}
 
@@ -53,7 +53,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var titleSize = AttributedTitle.Size;
 			var rect = base.TitleRectForBounds(theRect);
-			rect.Y -= Math.Max(0, (titleSize.Height - defaultHeight) / 2);
+			rect.Y -= (nfloat)Math.Max(0, (titleSize.Height - defaultHeight) / 2);
 			return rect;
 		}
 	}
