@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
@@ -17,7 +17,14 @@ namespace Eto.Wpf
 		public static T GetVisualParent<T>(this sw.DependencyObject control)
 			where T : class
 		{
-			while (control != null)
+			var ce = control as sw.ContentElement;
+			while (ce != null)
+			{
+				control = sw.ContentOperations.GetParent(ce);
+				ce = control as sw.ContentElement;
+			}
+
+			while (control is swm.Visual || control is swm.Media3D.Visual3D)
 			{
 				control = swm.VisualTreeHelper.GetParent(control);
 				var tmp = control as T;
@@ -127,10 +134,23 @@ namespace Eto.Wpf
 			if (!checkChildren)
 				return current == control;
 
-			while (current != null)
+			// check content elements
+			var ce = current as sw.ContentElement;
+			while (ce != null)
+			{
+				current = sw.ContentOperations.GetParent(ce);
+				if (current == control)
+					return true;
+
+				ce = control as sw.ContentElement;
+			}
+
+			// check visual elements
+			while (current is swm.Visual || current is swm.Media3D.Visual3D)
 			{
 				if (current == control)
 					return true;
+
 				current = swm.VisualTreeHelper.GetParent(current);
 			}
 			return false;
