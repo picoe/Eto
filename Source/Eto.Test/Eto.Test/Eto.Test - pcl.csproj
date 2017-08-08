@@ -217,6 +217,7 @@
     <Compile Include="Sections\Behaviors\TabIndexSection.cs" />
     <Compile Include="UnitTests\Forms\Controls\ControlTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\GridViewTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\TreeGridViewTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
