@@ -1,4 +1,4 @@
-using System;
+﻿﻿﻿﻿﻿using System;
 using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,176 +16,216 @@ namespace Eto.Forms
 		/// <summary>No key</summary>
 		None = 0x0000,
 
-		/// <summary>The A Key</summary>
+		/// <summary>The A key</summary>
 		A = 0x0001,
-		/// <summary>The B Key</summary>
+		/// <summary>The B key</summary>
 		B = 0x0002,
-		/// <summary>The C Key</summary>
+		/// <summary>The C key</summary>
 		C = 0x0003,
-		/// <summary>The D Key</summary>
+		/// <summary>The D key</summary>
 		D = 0x0004,
-		/// <summary>The E Key</summary>
+		/// <summary>The E key</summary>
 		E = 0x0005,
-		/// <summary>The F Key</summary>
+		/// <summary>The F key</summary>
 		F = 0x0006,
-		/// <summary>The G Key</summary>
+		/// <summary>The G key</summary>
 		G = 0x0007,
-		/// <summary>The H Key</summary>
+		/// <summary>The H key</summary>
 		H = 0x0008,
-		/// <summary>The I Key</summary>
+		/// <summary>The I key</summary>
 		I = 0x0009,
-		/// <summary>The J Key</summary>
+		/// <summary>The J key</summary>
 		J = 0x000A,
-		/// <summary>The K Key</summary>
+		/// <summary>The K key</summary>
 		K = 0x000B,
-		/// <summary>The L Key</summary>
+		/// <summary>The L key</summary>
 		L = 0x000C,
-		/// <summary>The M Key</summary>
+		/// <summary>The M key</summary>
 		M = 0x000D,
-		/// <summary>The N Key</summary>
+		/// <summary>The N key</summary>
 		N = 0x000E,
-		/// <summary>The O Key</summary>
+		/// <summary>The O key</summary>
 		O = 0x000F,
-		/// <summary>The P Key</summary>
+		/// <summary>The P key</summary>
 		P = 0x0010,
-		/// <summary>The Q Key</summary>
+		/// <summary>The Q key</summary>
 		Q = 0x0011,
-		/// <summary>The R Key</summary>
+		/// <summary>The R key</summary>
 		R = 0x0012,
-		/// <summary>The S Key</summary>
+		/// <summary>The S key</summary>
 		S = 0x0013,
-		/// <summary>The T Key</summary>
+		/// <summary>The T key</summary>
 		T = 0x0014,
-		/// <summary>The U Key</summary>
+		/// <summary>The U key</summary>
 		U = 0x0015,
-		/// <summary>The V Key</summary>
+		/// <summary>The V key</summary>
 		V = 0x0016,
-		/// <summary>The W Key</summary>
+		/// <summary>The W key</summary>
 		W = 0x0017,
-		/// <summary>The X Key</summary>
+		/// <summary>The X key</summary>
 		X = 0x0018,
-		/// <summary>The Y Key</summary>
+		/// <summary>The Y key</summary>
 		Y = 0x0019,
-		/// <summary>The Z Key</summary>
+		/// <summary>The Z key</summary>
 		Z = 0x001A,
-		/// <summary>The F1 Key</summary>
+		/// <summary>The F1 key</summary>
 		F1 = 0x001B,
-		/// <summary>The F2 Key</summary>
+		/// <summary>The F2 key</summary>
 		F2 = 0x001C,
-		/// <summary>The F3 Key</summary>
+		/// <summary>The F3 key</summary>
 		F3 = 0x001D,
-		/// <summary>The F4 Key</summary>
+		/// <summary>The F4 key</summary>
 		F4 = 0x001E,
-		/// <summary>The F5 Key</summary>
+		/// <summary>The F5 key</summary>
 		F5 = 0x001F,
-		/// <summary>The F6 Key</summary>
+		/// <summary>The F6 key</summary>
 		F6 = 0x0020,
-		/// <summary>The F7 Key</summary>
+		/// <summary>The F7 key</summary>
 		F7 = 0x0021,
-		/// <summary>The F8 Key</summary>
+		/// <summary>The F8 key</summary>
 		F8 = 0x0022,
-		/// <summary>The F9 Key</summary>
+		/// <summary>The F9 key</summary>
 		F9 = 0x0023,
-		/// <summary>The F10 Key</summary>
+		/// <summary>The F10 key</summary>
 		F10 = 0x0024,
-		/// <summary>The F11 Key</summary>
+		/// <summary>The F11 key</summary>
 		F11 = 0x0025,
-		/// <summary>The F12 Key</summary>
+		/// <summary>The F12 key</summary>
 		F12 = 0x0026,
-		/// <summary>The 0 digit Key</summary>
+		/// <summary>The 0 digit key</summary>
 		D0 = 0x0027,
-		/// <summary>The 1 digit Key</summary>
+		/// <summary>The 1 digit key</summary>
 		D1 = 0x0028,
-		/// <summary>The 2 digit Key</summary>
+		/// <summary>The 2 digit key</summary>
 		D2 = 0x0029,
-		/// <summary>The 3 digit Key</summary>
+		/// <summary>The 3 digit key</summary>
 		D3 = 0x002A,
-		/// <summary>The 4 digit Key</summary>
+		/// <summary>The 4 digit key</summary>
 		D4 = 0x002B,
-		/// <summary>The 5 digit Key</summary>
+		/// <summary>The 5 digit key</summary>
 		D5 = 0x002C,
-		/// <summary>The 6 digit Key</summary>
+		/// <summary>The 6 digit key</summary>
 		D6 = 0x002D,
-		/// <summary>The 7 digit Key</summary>
+		/// <summary>The 7 digit key</summary>
 		D7 = 0x002E,
-		/// <summary>The 8 digit Key</summary>
+		/// <summary>The 8 digit key</summary>
 		D8 = 0x002F,
-		/// <summary>The 9 digit Key</summary>
+		/// <summary>The 9 digit key</summary>
 		D9 = 0x0030,
 
-		/// <summary>The Minus '-' Key</summary>
+		/// <summary>The Minus '-' key</summary>
 		Minus = 0x0031,
-		/// <summary>The Plus '+' Key</summary>
-		Plus = 0x0032,
-		/// <summary>The Grave '`' Key</summary>
+		/// <summary>The Plus '+' Key, which usually produces an '=' when pressed without shift and is beside the backspace key.</summary>
+		[Obsolete("Since 2.4, Use Equal")]
+		Plus = Equal,
+		/// <summary>The Grave '`' key</summary>
 		Grave = 0x0033,
-		/// <summary>The Insert Key</summary>
+		/// <summary>The Insert key</summary>
 		Insert = 0x0034,
-		/// <summary>The Home Key</summary>
+		/// <summary>The Home key</summary>
 		Home = 0x0035,
-		/// <summary>The Page Up Key</summary>
+		/// <summary>The Page Up key</summary>
 		PageUp = 0x0036,
-		/// <summary>The Page Down Key</summary>
+		/// <summary>The Page Down key</summary>
 		PageDown = 0x0037,
-		/// <summary>The Delete Key</summary>
+		/// <summary>The Delete key</summary>
 		Delete = 0x0038,
-		/// <summary>The End Key</summary>
+		/// <summary>The End key</summary>
 		End = 0x0039,
-		/// <summary>The Divide '/' Key</summary>
+		/// <summary>The Divide '/' key, usually on the keypad/number pad</summary>
 		Divide = 0x003A,
-		/// <summary>The Decimal '.' Key</summary>
+		/// <summary>The Decimal '.' key, usually on the keypad/number pad</summary>
 		Decimal = 0x003B,
-		/// <summary>The Backspace Key</summary>
+		/// <summary>The Backspace key</summary>
 		Backspace = 0x003C,
-		/// <summary>The Up Key</summary>
+		/// <summary>The Up key</summary>
 		Up = 0x003D,
-		/// <summary>The Down Key</summary>
+		/// <summary>The Down key</summary>
 		Down = 0x003E,
-		/// <summary>The Left Key</summary>
+		/// <summary>The Left key</summary>
 		Left = 0x003F,
-		/// <summary>The Right Key</summary>
+		/// <summary>The Right key</summary>
 		Right = 0x0040,
-		/// <summary>The Tab Key</summary>
+		/// <summary>The Tab key</summary>
 		Tab = 0x0041,
-		/// <summary>The Space Key</summary>
+		/// <summary>The Space key</summary>
 		Space = 0x0042,
-		/// <summary>The Caps Lock Key</summary>
+		/// <summary>The Caps Lock key</summary>
 		CapsLock = 0x0043,
-		/// <summary>The Scroll Lock Key</summary>
+		/// <summary>The Scroll Lock key</summary>
 		ScrollLock = 0x0044,
-		/// <summary>The Print Screen Key</summary>
+		/// <summary>The Print Screen key</summary>
 		PrintScreen = 0x0045,
-		/// <summary>The Number Lock Key</summary>
+		/// <summary>The Number Lock key</summary>
 		NumberLock = 0x0046,
-		/// <summary>The Enter Key</summary>
+		/// <summary>The Enter key</summary>
 		Enter = 0x0047,
-		/// <summary>The Escape Key</summary>
+		/// <summary>The Escape key</summary>
 		Escape = 0x0048,
-		/// <summary>The menu key</summary>
+		/// <summary>The Multiply '*' key, usually on the keypad/number pad</summary>
+		Multiply = 0x0049,
+		/// <summary>The Add '+' key, usually on the keypad/number pad</summary>
+		Add = 0x004A,
+		/// <summary>The Subtract '-' key, usually on the keypad/number pad</summary>
+		Subtract = 0x004B,
+		/// <summary>The Help key</summary>
+		Help = 0x004C,
+		/// <summary>The Pause key</summary>
+		Pause = 0x004D,
+		/// <summary>The Clear key</summary>
+		Clear = 0x004E,
+		/// <summary>The Equal '=' key on the keypad/number pad</summary>
+		KeypadEqual = 0x004F,
+
+		/// <summary>The menu (alt) key</summary>
 		Menu = 0x0050,
-		/// <summary>The Bacslash '\' Key</summary>
+		/// <summary>The Backslash '\' key</summary>
 		Backslash = 0x0051,
-		/// <summary>The Equal '=' Key</summary>
+		/// <summary>The Equal '=' key</summary>
 		Equal = 0x0055,
-		/// <summary>The Semicolon ';' Key</summary>
+		/// <summary>The Semicolon ';' key</summary>
 		Semicolon = 0x0056,
-		/// <summary>The Quote ''' Key</summary>
+		/// <summary>The Quote ''' key</summary>
 		Quote = 0x0057,
 
-		/// <summary>The Comma ',' Key</summary>
+		/// <summary>The Comma ',' key</summary>
 		Comma = 0x0058,
-		/// <summary>The Period '.' Key</summary>
+		/// <summary>The Period '.' key</summary>
 		Period = 0x0059,
-		/// <summary>The Forward Slash '/' Key</summary>
-		ForwardSlash = 0x0060,
+		/// <summary>The Forward Slash '/' key</summary>
+		[Obsolete("Since 2.4, Use Slash instead")]
+		ForwardSlash = Slash,
+		/// <summary>The Slash '/' key</summary>
+		Slash = 0x0060,
 
-		/// <summary>The Right Bracket ']' Key</summary>
+		/// <summary>The Right Bracket ']' key</summary>
 		RightBracket = 0x0061,
-		/// <summary>The Left Bracket '['  Key</summary>
+		/// <summary>The Left Bracket '['  key</summary>
 		LeftBracket = 0x0062,
 
-		/// <summary> /// The context menu Key /// </summary>
+		/// <summary>The context menu key</summary>
 		ContextMenu = 0x0063,
+
+		/// <summary>The keypad/number pad '0' key</summary>
+		Keypad0 = 0x0070,
+		/// <summary>The keypad/number pad '1' key</summary>
+		Keypad1 = 0x0071,
+		/// <summary>The keypad/number pad '2' key</summary>
+		Keypad2 = 0x0072,
+		/// <summary>The keypad/number pad '3' key</summary>
+		Keypad3 = 0x0073,
+		/// <summary>The keypad/number pad '4' key</summary>
+		Keypad4 = 0x0074,
+		/// <summary>The keypad/number pad '5' key</summary>
+		Keypad5 = 0x0075,
+		/// <summary>The keypad/number pad '6' key</summary>
+		Keypad6 = 0x0076,
+		/// <summary>The keypad/number pad '7' key</summary>
+		Keypad7 = 0x0077,
+		/// <summary>The keypad/number pad '8' key</summary>
+		Keypad8 = 0x0078,
+		/// <summary>The keypad/number pad '9' key</summary>
+		Keypad9 = 0x0079,
 
 		/// <summary>The Shift Key Modifier</summary>
 		Shift = 0x1000,
@@ -228,22 +268,29 @@ namespace Eto.Forms
 			{ Keys.D9, "9" },
 
 			{ Keys.Minus, "-" },
-			{ Keys.Plus, "+" },
+			{ Keys.Equal, "=" },
 			{ Keys.Grave, "`" },
 			{ Keys.Divide, "/" },
 			{ Keys.Decimal, "." },
 			{ Keys.Backslash, "\\" },
-			{ Keys.Equal, "=" },
-		
+			{ Keys.KeypadEqual, "=" },
+			{ Keys.Multiply, "*" },
+			{ Keys.Add, "+" },
+			{ Keys.Subtract, "-" },
+			{ Keys.Tab, "\x21E5" },
+			{ Keys.Enter, "\x23ce" },
+			{ Keys.Delete, EtoEnvironment.Platform.IsMac ? "\x232b" : "Del" },
+			{ Keys.Escape, EtoEnvironment.Platform.IsMac ? "\x238b" : "Esc" },
+
 			{ Keys.Semicolon, ";" },
 			{ Keys.Quote, "'" },
 		
 			{ Keys.Comma, "," },
 			{ Keys.Period, "." },
-			{ Keys.ForwardSlash, "/" },
+			{ Keys.Slash, "/" },
 		
-			{ Keys.RightBracket, "(" },
-			{ Keys.LeftBracket, ")" }
+			{ Keys.RightBracket, "[" },
+			{ Keys.LeftBracket, "]" }
 		};
 
 		/// <summary>
@@ -261,11 +308,11 @@ namespace Eto.Forms
 					EtoEnvironment.Platform.IsWindows ? "Win" :
 					"App");
 			if (key.HasFlag(Keys.Control))
-				AppendSeparator(sb, separator, "Ctrl");
+				AppendSeparator(sb, separator, EtoEnvironment.Platform.IsMac ? "^" : "Ctrl");
 			if (key.HasFlag(Keys.Shift))
-				AppendSeparator(sb, separator, "Shift");
+				AppendSeparator(sb, separator, EtoEnvironment.Platform.IsMac ? "\x21e7" : "Shift");
 			if (key.HasFlag(Keys.Alt))
-				AppendSeparator(sb, separator, "Alt");
+				AppendSeparator(sb, separator, EtoEnvironment.Platform.IsMac ? "\x2325" : "Alt");
 
 			var mainKey = key & Keys.KeyMask;
 			string val;

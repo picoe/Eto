@@ -1,5 +1,6 @@
-using Eto.Forms;
+﻿using Eto.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Eto.GtkSharp
 {
@@ -14,7 +15,10 @@ namespace Eto.GtkSharp
 		public static Keys ToEto (this Gdk.Key gkey)
 		{
 			Keys key;
-			return Map.TryGetValue(gkey, out key) ? key : Keys.None;
+			if (Map.TryGetValue(gkey, out key))
+				return key;
+			Debug.WriteLine($"Unknown key '{gkey}'");
+			return Keys.None;
 		}
 		
 		public static Keys ToEtoKey (this Gdk.ModifierType modifier)
@@ -47,6 +51,7 @@ namespace Eto.GtkSharp
 		static Dictionary<Gdk.Key, Keys> GetMap()
 		{
 			var keymap = new Dictionary<Gdk.Key, Keys>();
+			// keep in same order as in Keys
 			keymap.Add(Gdk.Key.A, Keys.A);
 			keymap.Add(Gdk.Key.B, Keys.B);
 			keymap.Add(Gdk.Key.C, Keys.C);
@@ -95,31 +100,58 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.Key_7, Keys.D7);
 			keymap.Add(Gdk.Key.Key_8, Keys.D8);
 			keymap.Add(Gdk.Key.Key_9, Keys.D9);
+			keymap.Add(Gdk.Key.minus, Keys.Minus);
+			keymap.Add(Gdk.Key.grave, Keys.Grave);
+			keymap.Add(Gdk.Key.Insert, Keys.Insert);
+			keymap.Add(Gdk.Key.Home, Keys.Home);
+			keymap.Add(Gdk.Key.Page_Down, Keys.PageDown);
+			keymap.Add(Gdk.Key.Page_Up, Keys.PageUp);
+			keymap.Add(Gdk.Key.Delete, Keys.Delete);
+			keymap.Add(Gdk.Key.End, Keys.End);
+			keymap.Add(Gdk.Key.KP_Divide, Keys.Divide);
+			keymap.Add(Gdk.Key.KP_Decimal, Keys.Decimal);
+			keymap.Add(Gdk.Key.BackSpace, Keys.Backspace);
 			keymap.Add(Gdk.Key.Up, Keys.Up);
 			keymap.Add(Gdk.Key.Down, Keys.Down);
 			keymap.Add(Gdk.Key.Left, Keys.Left);
 			keymap.Add(Gdk.Key.Right, Keys.Right);
-			keymap.Add(Gdk.Key.Page_Down, Keys.PageDown);
-			keymap.Add(Gdk.Key.Page_Up, Keys.PageUp);
-			keymap.Add(Gdk.Key.Home, Keys.Home);
-			keymap.Add(Gdk.Key.End, Keys.End);
-			keymap.Add(Gdk.Key.space, Keys.Space);
-			keymap.Add(Gdk.Key.Delete, Keys.Delete);
-			keymap.Add(Gdk.Key.BackSpace, Keys.Backspace);
-			keymap.Add(Gdk.Key.Insert, Keys.Insert);
 			keymap.Add(Gdk.Key.Tab, Keys.Tab);
-			keymap.Add(Gdk.Key.Escape, Keys.Escape);
+			keymap.Add(Gdk.Key.space, Keys.Space);
+			keymap.Add(Gdk.Key.Caps_Lock, Keys.CapsLock);
+			keymap.Add(Gdk.Key.Scroll_Lock, Keys.ScrollLock);
+			keymap.Add(Gdk.Key.Key_3270_PrintScreen, Keys.PrintScreen);
+			keymap.Add(Gdk.Key.Num_Lock, Keys.NumberLock);
 			keymap.Add(Gdk.Key.Return, Keys.Enter);
-			
-			keymap.Add(Gdk.Key.period, Keys.Decimal);
-			keymap.Add(Gdk.Key.comma, Keys.Comma);
-			keymap.Add(Gdk.Key.equal, Keys.Equal);
-			keymap.Add(Gdk.Key.minus, Keys.Minus);
+			keymap.Add(Gdk.Key.Escape, Keys.Escape);
+			keymap.Add(Gdk.Key.KP_Multiply, Keys.Multiply);
+			keymap.Add(Gdk.Key.KP_Add, Keys.Add);
+			keymap.Add(Gdk.Key.KP_Subtract, Keys.Subtract);
+			keymap.Add(Gdk.Key.Help, Keys.Help);
+			keymap.Add(Gdk.Key.Pause, Keys.Pause);
+			keymap.Add(Gdk.Key.Clear, Keys.Clear);
+			keymap.Add(Gdk.Key.KP_Equal, Keys.KeypadEqual);
+			keymap.Add(Gdk.Key.Alt_R, Keys.Menu);
+			keymap.Add(Gdk.Key.Alt_L, Keys.Menu);
 			keymap.Add(Gdk.Key.backslash, Keys.Backslash);
-			keymap.Add(Gdk.Key.slash, Keys.ForwardSlash);
-			keymap.Add(Gdk.Key.division, Keys.Divide);
-			//keymap.Add(Gdk.Key.dollar, Keys.Dollar);
+			keymap.Add(Gdk.Key.equal, Keys.Equal);
+			keymap.Add(Gdk.Key.semicolon, Keys.Semicolon);
+			keymap.Add(Gdk.Key.apostrophe, Keys.Quote);
+			keymap.Add(Gdk.Key.comma, Keys.Comma);
+			keymap.Add(Gdk.Key.period, Keys.Period);
+			keymap.Add(Gdk.Key.slash, Keys.Slash);
+			keymap.Add(Gdk.Key.bracketright, Keys.RightBracket);
+			keymap.Add(Gdk.Key.bracketleft, Keys.LeftBracket);
 			keymap.Add(Gdk.Key.Menu, Keys.ContextMenu);
+			keymap.Add(Gdk.Key.KP_0, Keys.Keypad0);
+			keymap.Add(Gdk.Key.KP_1, Keys.Keypad1);
+			keymap.Add(Gdk.Key.KP_2, Keys.Keypad2);
+			keymap.Add(Gdk.Key.KP_3, Keys.Keypad3);
+			keymap.Add(Gdk.Key.KP_4, Keys.Keypad4);
+			keymap.Add(Gdk.Key.KP_5, Keys.Keypad5);
+			keymap.Add(Gdk.Key.KP_6, Keys.Keypad6);
+			keymap.Add(Gdk.Key.KP_7, Keys.Keypad7);
+			keymap.Add(Gdk.Key.KP_8, Keys.Keypad8);
+			keymap.Add(Gdk.Key.KP_9, Keys.Keypad9);
 
 			if (EtoEnvironment.Platform.IsMac)
 			{
