@@ -25,7 +25,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public TextBoxHandler()
 		{
-			Control = new EtoWatermarkTextBox { Handler = this };
+			Control = new EtoWatermarkTextBox { Handler = this, KeepWatermarkOnGotFocus = true };
 		}
 
 		public override string PlaceholderText

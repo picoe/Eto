@@ -32,6 +32,7 @@ namespace Eto.Wpf.Forms.Controls
 				Focusable = false,
 				Content = new mwc.WatermarkTextBox
 				{
+					KeepWatermarkOnGotFocus = true,
 					BorderThickness = new sw.Thickness(0),
 					BorderBrush = null,
 					Background = null,
