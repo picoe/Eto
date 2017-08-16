@@ -1,6 +1,7 @@
-using swf = System.Windows.Forms;
+﻿using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Eto.WinForms
 {
@@ -37,7 +38,10 @@ namespace Eto.WinForms
 		static Keys Find(swf.Keys key)
 		{
 			Keys mapped;
-			return Map.TryGetValue(key, out mapped) ? mapped : Keys.None;
+			if (Map.TryGetValue(key, out mapped))
+				return mapped;
+			Debug.WriteLine($"Unknown key {key}");
+			return Keys.None;
 		}
 		
 		public static swf.Keys Find(Keys key)
@@ -70,6 +74,7 @@ namespace Eto.WinForms
 		static Dictionary<swf.Keys, Keys> GetMap()
 		{
 			var keymap = new Dictionary<swf.Keys, Keys>();
+			// keep in same order as in Keys
 			keymap.Add(swf.Keys.A, Keys.A);
 			keymap.Add(swf.Keys.B, Keys.B);
 			keymap.Add(swf.Keys.C, Keys.C);
@@ -118,33 +123,57 @@ namespace Eto.WinForms
 			keymap.Add(swf.Keys.D7, Keys.D7);
 			keymap.Add(swf.Keys.D8, Keys.D8);
 			keymap.Add(swf.Keys.D9, Keys.D9);
-			keymap.Add(swf.Keys.Space, Keys.Space);
+			keymap.Add(swf.Keys.OemMinus, Keys.Minus);
+			keymap.Add(swf.Keys.Oemtilde, Keys.Grave);
+			keymap.Add(swf.Keys.Insert, Keys.Insert);
+			keymap.Add(swf.Keys.Home, Keys.Home);
+			keymap.Add(swf.Keys.PageDown, Keys.PageDown);
+			keymap.Add(swf.Keys.PageUp, Keys.PageUp);
+			keymap.Add(swf.Keys.Delete, Keys.Delete);
+			keymap.Add(swf.Keys.End, Keys.End);
+			keymap.Add(swf.Keys.Divide, Keys.Divide);
+			keymap.Add(swf.Keys.Decimal, Keys.Decimal);
+			keymap.Add(swf.Keys.Back, Keys.Backspace);
 			keymap.Add(swf.Keys.Up, Keys.Up);
 			keymap.Add(swf.Keys.Down, Keys.Down);
 			keymap.Add(swf.Keys.Left, Keys.Left);
 			keymap.Add(swf.Keys.Right, Keys.Right);
-			keymap.Add(swf.Keys.PageDown, Keys.PageDown);
-			keymap.Add(swf.Keys.PageUp, Keys.PageUp);
-			keymap.Add(swf.Keys.Home, Keys.Home);
-			keymap.Add(swf.Keys.End, Keys.End);
-			keymap.Add(swf.Keys.Alt, Keys.Alt);
-			keymap.Add(swf.Keys.Control, Keys.Control);
-			keymap.Add(swf.Keys.Shift, Keys.Shift);
-			keymap.Add(swf.Keys.Menu, Keys.Menu);
-			keymap.Add(swf.Keys.LWin, Keys.Application);
-			keymap.Add(swf.Keys.RWin, Keys.Application);
-			keymap.Add(swf.Keys.Escape, Keys.Escape);
-			keymap.Add(swf.Keys.Delete, Keys.Delete);
-			keymap.Add(swf.Keys.Back, Keys.Backspace);
-			keymap.Add(swf.Keys.Divide, Keys.Divide);
-			keymap.Add(swf.Keys.Enter, Keys.Enter);
-			keymap.Add(swf.Keys.Insert, Keys.Insert);
-			keymap.Add(swf.Keys.OemPeriod, Keys.Period);
 			keymap.Add(swf.Keys.Tab, Keys.Tab);
-			keymap.Add(swf.Keys.Apps, Keys.ContextMenu);
+			keymap.Add(swf.Keys.Space, Keys.Space);
 			keymap.Add(swf.Keys.CapsLock, Keys.CapsLock);
 			keymap.Add(swf.Keys.Scroll, Keys.ScrollLock);
+			keymap.Add(swf.Keys.PrintScreen, Keys.PrintScreen);
 			keymap.Add(swf.Keys.NumLock, Keys.NumberLock);
+			keymap.Add(swf.Keys.Enter, Keys.Enter);
+			keymap.Add(swf.Keys.Escape, Keys.Escape);
+			keymap.Add(swf.Keys.Multiply, Keys.Multiply);
+			keymap.Add(swf.Keys.Add, Keys.Add);
+			keymap.Add(swf.Keys.Subtract, Keys.Subtract);
+			keymap.Add(swf.Keys.Help, Keys.Help);
+			keymap.Add(swf.Keys.Pause, Keys.Pause);
+			keymap.Add(swf.Keys.Clear, Keys.Clear);
+			//keymap.Add(swf.Keys., Keys.KeypadEqual);
+			keymap.Add(swf.Keys.Menu, Keys.Menu);
+			keymap.Add(swf.Keys.OemPipe, Keys.Backslash);
+			keymap.Add(swf.Keys.Oemplus, Keys.Equal);
+			keymap.Add(swf.Keys.OemSemicolon, Keys.Semicolon);
+			keymap.Add(swf.Keys.OemQuotes, Keys.Quote);
+			keymap.Add(swf.Keys.Oemcomma, Keys.Comma);
+			keymap.Add(swf.Keys.OemPeriod, Keys.Period);
+			keymap.Add(swf.Keys.OemQuestion, Keys.Slash);
+			keymap.Add(swf.Keys.OemCloseBrackets, Keys.RightBracket);
+			keymap.Add(swf.Keys.OemOpenBrackets, Keys.LeftBracket);
+			keymap.Add(swf.Keys.Apps, Keys.ContextMenu);
+			keymap.Add(swf.Keys.NumPad0, Keys.Keypad0);
+			keymap.Add(swf.Keys.NumPad1, Keys.Keypad1);
+			keymap.Add(swf.Keys.NumPad2, Keys.Keypad2);
+			keymap.Add(swf.Keys.NumPad3, Keys.Keypad3);
+			keymap.Add(swf.Keys.NumPad4, Keys.Keypad4);
+			keymap.Add(swf.Keys.NumPad5, Keys.Keypad5);
+			keymap.Add(swf.Keys.NumPad6, Keys.Keypad6);
+			keymap.Add(swf.Keys.NumPad7, Keys.Keypad7);
+			keymap.Add(swf.Keys.NumPad8, Keys.Keypad8);
+			keymap.Add(swf.Keys.NumPad9, Keys.Keypad9);
 			return keymap;
 		}
 

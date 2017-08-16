@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Eto.Forms;
+using System.Diagnostics;
 
 #if XAMMAC2
 using AppKit;
@@ -43,7 +44,10 @@ namespace Eto.Mac
 		public static Keys MapKey(ushort key)
 		{
 			Keys value;
-			return Map.TryGetValue(key, out value) ? value : Keys.None;
+			if (Map.TryGetValue(key, out value))
+				return value;
+			Debug.WriteLine($"Unknown key '{key}'");
+			return Keys.None;
 		}
 
 		enum KeyCharacters
@@ -117,6 +121,7 @@ namespace Eto.Mac
 		static Dictionary<ushort, Keys> GetMap()
 		{
 			var keymap = new Dictionary<ushort, Keys>();
+			// keep in same order as in Keys
 			keymap.Add(0, Keys.A);
 			keymap.Add(11, Keys.B);
 			keymap.Add(8, Keys.C);
@@ -143,16 +148,6 @@ namespace Eto.Mac
 			keymap.Add(7, Keys.X);
 			keymap.Add(16, Keys.Y);
 			keymap.Add(6, Keys.Z);
-			keymap.Add(18, Keys.D1);
-			keymap.Add(19, Keys.D2);
-			keymap.Add(20, Keys.D3);
-			keymap.Add(21, Keys.D4);
-			keymap.Add(23, Keys.D5);
-			keymap.Add(22, Keys.D6);
-			keymap.Add(26, Keys.D7);
-			keymap.Add(28, Keys.D8);
-			keymap.Add(25, Keys.D9);
-			keymap.Add(29, Keys.D0);
 			keymap.Add(122, Keys.F1);
 			keymap.Add(120, Keys.F2);
 			keymap.Add(99, Keys.F3);
@@ -165,37 +160,68 @@ namespace Eto.Mac
 			keymap.Add(109, Keys.F10);
 			keymap.Add(103, Keys.F11);
 			keymap.Add(111, Keys.F12);
-			keymap.Add(50, Keys.Grave);
+			keymap.Add(18, Keys.D1);
+			keymap.Add(19, Keys.D2);
+			keymap.Add(20, Keys.D3);
+			keymap.Add(21, Keys.D4);
+			keymap.Add(23, Keys.D5);
+			keymap.Add(22, Keys.D6);
+			keymap.Add(26, Keys.D7);
+			keymap.Add(28, Keys.D8);
+			keymap.Add(25, Keys.D9);
+			keymap.Add(29, Keys.D0);
 			keymap.Add(27, Keys.Minus);
-			keymap.Add(24, Keys.Equal);
-			keymap.Add(42, Keys.Backslash);
-			keymap.Add(49, Keys.Space);
-			//keymap.Add(30, Keys.]);
-			//keymap.Add(33, Keys.[);
-			keymap.Add(39, Keys.Quote);
-			keymap.Add(41, Keys.Semicolon);
-			keymap.Add(44, Keys.ForwardSlash);
-			keymap.Add(47, Keys.Period);
-			keymap.Add(43, Keys.Comma);
-			keymap.Add(36, Keys.Enter);
-			keymap.Add(48, Keys.Tab);
-			//keymap.Add(76, Keys.Return);
-			keymap.Add(53, Keys.Escape);
-
+			keymap.Add(50, Keys.Grave);
 			keymap.Add(76, Keys.Insert);
-			keymap.Add(51, Keys.Backspace);
+			keymap.Add(115, Keys.Home);
+			keymap.Add(121, Keys.PageDown);
+			keymap.Add(116, Keys.PageUp);
 			keymap.Add(117, Keys.Delete);
-
-			keymap.Add(125, Keys.Down);
+			keymap.Add(119, Keys.End);
+			keymap.Add(75, Keys.Divide);
+			keymap.Add(65, Keys.Decimal);
+			keymap.Add(51, Keys.Backspace);
 			keymap.Add(126, Keys.Up);
+			keymap.Add(125, Keys.Down);
 			keymap.Add(123, Keys.Left);
 			keymap.Add(124, Keys.Right);
-
-			keymap.Add(116, Keys.PageUp);
-			keymap.Add(121, Keys.PageDown);
-			keymap.Add(119, Keys.End);
-			keymap.Add(115, Keys.Home);
+			keymap.Add(48, Keys.Tab);
+			keymap.Add(49, Keys.Space);
+			//keymap.Add(, Keys.CapsLock);
+			//keymap.Add(, Keys.ScrollLock);
+			//keymap.Add(, Keys.PrintScreen);
+			//keymap.Add(, Keys.NumberLock);
+			keymap.Add(36, Keys.Enter);
+			keymap.Add(53, Keys.Escape);
+			keymap.Add(67, Keys.Multiply);
+			keymap.Add(69, Keys.Add);
+			keymap.Add(78, Keys.Subtract);
+			keymap.Add(114, Keys.Help);
+			//keymap.Add(, Keys.Pause);
+			keymap.Add(71, Keys.Clear);
+			keymap.Add(81, Keys.KeypadEqual);
+			//keymap.Add(, Keys.Menu);
+			keymap.Add(42, Keys.Backslash);
+			keymap.Add(24, Keys.Equal);
+			keymap.Add(41, Keys.Semicolon);
+			keymap.Add(39, Keys.Quote);
+			keymap.Add(43, Keys.Comma);
+			keymap.Add(47, Keys.Period);
+			keymap.Add(44, Keys.Slash);
+			keymap.Add(30, Keys.RightBracket);
+			keymap.Add(33, Keys.LeftBracket);
 			keymap.Add(110, Keys.ContextMenu);
+			keymap.Add(82, Keys.Keypad0);
+			keymap.Add(83, Keys.Keypad1);
+			keymap.Add(84, Keys.Keypad2);
+			keymap.Add(85, Keys.Keypad3);
+			keymap.Add(86, Keys.Keypad4);
+			keymap.Add(87, Keys.Keypad5);
+			keymap.Add(88, Keys.Keypad6);
+			keymap.Add(89, Keys.Keypad7);
+			keymap.Add(91, Keys.Keypad8);
+			keymap.Add(92, Keys.Keypad9);
+
 			return keymap;
 		}
 
@@ -232,7 +258,7 @@ namespace Eto.Mac
 			inverse.Add(Keys.Comma, ",");
 			inverse.Add(Keys.Space, " ");
 			inverse.Add(Keys.Backslash, "\\");
-			inverse.Add(Keys.ForwardSlash, "/");
+			inverse.Add(Keys.Slash, "/");
 			inverse.Add(Keys.Equal, "=");
 			inverse.Add(Keys.Grave, "`");
 			inverse.Add(Keys.Minus, "-");
