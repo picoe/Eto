@@ -67,8 +67,19 @@ namespace Eto.Wpf.Forms.Controls
 			};
 			Control.ValueChanged += (sender, e) =>
 			{
-				Control.Value = Math.Max(MinValue, Math.Min(MaxValue, double.Parse((Control.Value ?? 0).ToString())));
+				var val = Math.Max(MinValue, Math.Min(MaxValue, double.Parse((Control.Value ?? 0).ToString())));
+				Control.Value = val;
 				TriggerValueChanged();
+				var textBox = Control.TextBox;
+				if (val != Control.Value && textBox != null)
+				{
+					// callback set a different value, but it still shows just whatever the user typed in.
+					// possibly due to some async call in Xceed.Wpf.Toolkit.
+					// so, we set the text specifically.
+					textBox.Text = Control.Value.Value.ToString(Control.FormatString, Control.CultureInfo);
+					textBox.SelectionStart = Control.TextBox.Text.Length;
+					textBox.SelectionLength = 0;
+				}
 			};
 			Control.Loaded += Control_Loaded;
 		}
@@ -90,8 +101,8 @@ namespace Eto.Wpf.Forms.Controls
 			var val = Value;
 			if (lastValue != val)
 			{
-				Callback.OnValueChanged(Widget, EventArgs.Empty);
 				lastValue = val;
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
 			}
 		}
 
