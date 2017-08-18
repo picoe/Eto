@@ -3,18 +3,19 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
-	public class NumericUpDownTests
+	public class NumericStepperTests : TestBase
 	{
 		[Test]
 		public void DefaultValuesShouldBeCorrect()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 				int valueChanged = 0;
@@ -31,7 +32,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void MinMaxShouldRetainValue()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 				int valueChanged = 0;
@@ -59,7 +60,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void ValueShouldBeLimitedToMinMax()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 				int valueChanged = 0;
@@ -104,7 +105,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(100, 32.767, 32.77, 2)]
 		public void FractionalMaxValueShouldSetValueCorrectly(double value, double maxValue, double newValue, int decimalPlaces)
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 				int valueChanged = 0;
@@ -126,7 +127,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(10, 32.167, 32, 0)]
 		public void FractionalMinValueShouldSetValueCorrectly(double value, double minValue, double newValue, int decimalPlaces)
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 				int valueChanged = 0;
@@ -146,7 +147,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(10.126, 10.13, 2)]
 		public void ValueShouldBeRoundedToDecimalPlaces(double value, double newValue, int decimalPlaces)
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 				int valueChanged = 0;
@@ -165,7 +166,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(10.126, 10.13, 2)]
 		public void ValueShouldBeRoundedToDecimalPlacesWhenSetAfter(double value, double newValue, int decimalPlaces)
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 				int valueChanged = 0;
@@ -195,7 +196,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(12.345678912345, 12.345678912345, 3, 15)]
 		public void MaximumDecimalPlacesShouldAllowMorePreciseNumbers(double value, double newValue, int decimalPlaces, int maxDecimalPlaces)
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 				int valueChanged = 0;
@@ -217,7 +218,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void MaximumDecimalPlacesShouldUpdateWhenDecimalPlacesIsChanged()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var numeric = new NumericStepper();
 
@@ -242,6 +243,74 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(0, numeric.DecimalPlaces, "DecimalPlaces should be updated to the new value of MaximumDecimalPlaces when its current value is greater");
 				Assert.AreEqual(0, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces wasn't updated to the new value");
 			});
+		}
+
+		[Test]
+		public void SettingValueInChangedHandlerShouldStick()
+		{
+			NumericStepper numericStepper = null;
+			Shown(form =>
+			{
+				numericStepper = new NumericStepper();
+				numericStepper.ValueChanged += (sender, e) =>
+				{
+					numericStepper.Value = 10;
+				};
+				form.Content = numericStepper;
+			},
+			() =>
+			{
+				Assert.AreEqual(0, numericStepper.Value);
+				numericStepper.Value = 2;
+				Assert.AreEqual(10, numericStepper.Value);
+			});
+		}
+		[Test, ManualTest]
+		public void SettingValueInChangedHandlerShouldStickWhenTyped()
+		{
+			Exception exception = null;
+			ManualForm("Type '2' in the numeric spinner.  It should be set to 10 and ValueChanged called exactly 2 times.",
+				form =>
+			{
+				var label = new Label();
+				var numericStepper = new NumericStepper();
+				Assert.AreEqual(0, numericStepper.Value, "#1");
+				var changedCount = 0;
+				numericStepper.ValueChanged += (sender, e) =>
+				{
+					if (exception != null)
+						return;
+					try
+					{
+						changedCount++;
+						if (changedCount == 1)
+							Assert.AreEqual(2, numericStepper.Value, "#2");
+						else if (changedCount == 2)
+							Assert.AreEqual(10, numericStepper.Value, "#3");
+						else if (changedCount > 2)
+							Assert.Fail($"#4. ValueChanged should only fire twice. New value is '{numericStepper.Value}' but should stay at 10.");
+						numericStepper.Value = 10;
+						Assert.AreEqual(10, numericStepper.Value, "#5");
+						Application.Instance.AsyncInvoke(() => label.Text = $"Value is {numericStepper.Value}. ValueChanged called {changedCount} times.");
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+						form.Close();
+					}
+				};
+				numericStepper.Focus();
+				return new StackLayout
+				{
+					Items =
+					{
+						numericStepper,
+						label
+					}
+				};
+			});
+			if (exception != null)
+				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
 	}
 }
