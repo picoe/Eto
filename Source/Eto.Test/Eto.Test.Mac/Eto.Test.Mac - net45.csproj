@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.Mac</AssemblyName>
     <SuppressXamMacUpsell>True</SuppressXamMacUpsell>
+    <BaseIntermediateOutputPath>..\..\..\BuildOutput\obj\Eto.Test.Mac - net45</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

@@ -135,7 +135,7 @@ namespace Eto.GtkSharp
 			p.Add<WebView.IHandler>(() => new WebViewHandler());
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
-			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
+			//p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
@@ -144,12 +144,12 @@ namespace Eto.GtkSharp
 			p.Add<MenuBar.IHandler>(() => new MenuBarHandler());
 			p.Add<RadioMenuItem.IHandler>(() => new RadioMenuItemHandler());
 			p.Add<SeparatorMenuItem.IHandler>(() => new SeparatorMenuItemHandler());
-			
+
 			// Forms.Printing
 			p.Add<PrintDialog.IHandler>(() => new PrintDialogHandler());
 			p.Add<PrintDocument.IHandler>(() => new PrintDocumentHandler());
 			p.Add<PrintSettings.IHandler>(() => new PrintSettingsHandler());
-			
+
 			// Forms.ToolBar
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
 			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
@@ -178,8 +178,8 @@ namespace Eto.GtkSharp
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
 			if (EtoEnvironment.Platform.IsLinux)
 				p.Add<TrayIndicator.IHandler>(() => new LinuxTrayIndicatorHandler());
-            else
-                p.Add<TrayIndicator.IHandler>(() => new OtherTrayIndicatorHandler());
+			else
+				p.Add<TrayIndicator.IHandler>(() => new OtherTrayIndicatorHandler());
 			if (EtoEnvironment.Platform.IsLinux)
 				p.Add<Notification.IHandler>(() => new LinuxNotificationHandler());
 
@@ -189,11 +189,15 @@ namespace Eto.GtkSharp
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
 
-			#if GTK3
+#if GTK3
+#if !NATIVEGTK
 			if (Gtk.Global.MinorVersion >= 4)
 				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandlerGtk34());
 			else
 				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+#else
+			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+#endif
 
 			if (Gtk.Global.MinorVersion >= 2)
 				p.Add<FontDialog.IHandler>(() => new FontDialogHandlerGtk32());
@@ -202,10 +206,10 @@ namespace Eto.GtkSharp
 				
 			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
 			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
-			#else
+#else
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());
-			#endif
+#endif
 		}
 	}
 }

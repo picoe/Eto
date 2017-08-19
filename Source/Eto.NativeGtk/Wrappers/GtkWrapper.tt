@@ -1,0 +1,62 @@
+﻿﻿<#@ template hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
+<#
+
+var library = "libgtk-3.so.0";
+var methods = File.ReadAllLines(Path.Combine(Path.GetDirectoryName(this.Host.TemplateFile), "GtkWrapperData.cs"));
+
+#>
+using System;
+using System.Runtime.InteropServices;
+
+static partial class <#= Path.GetFileNameWithoutExtension(Host.TemplateFile) #>
+{
+    public const string NativeLib = "<#= library #>";
+<#
+foreach (var line in methods)
+{
+	if (string.IsNullOrEmpty(line) || line.Contains("//"))
+		continue;
+
+	var method = line.TrimEnd(new[] { ';' });
+	var strmethod = method.StartsWith("string ");
+	var main = method.Split(new char[] { '(', ')' });
+    var meth = main[0].Trim(' ').Split(' ');
+    meth[1] = meth[meth.Length - 1];
+#>
+
+	[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl<#= strmethod ? ", EntryPoint = \"" + meth[1] + "\"" : "" #>)]
+    <#= strmethod ? "private" : "public" #> extern static <#= strmethod ? "IntPtr w" + method.Substring(7).Trim(' ') : method #>;
+<#
+	if (strmethod)
+	{
+        var ret = "";
+
+        if (main[1] != "")
+        {
+            var args = main[1].Split(',');
+
+            foreach (var arg in args)
+            {
+                var split = arg.Trim(' ').Split(' ');
+
+                if (split.Length == 2)
+                    ret += ", " + split[1];
+                else
+                    ret += ", " + split[0] + " " + split[2];
+            }
+
+            ret = ret.Substring(2);
+        }
+#>
+	
+	public static string <#= method.Substring(7).Trim(' ') #>
+	{
+		return WrapperHelper.GetString(<#= "w" + meth[1] + "(" + ret + ")" #>);
+	}
+<#
+	}
+}
+#>
+}

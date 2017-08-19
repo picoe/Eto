@@ -239,10 +239,7 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="MSBuild">
-            <inheritsSet />
-            <inheritsScope />
-          </DotNetNamingPolicy>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="MSBuild" />
         </Policies>
       </Properties>
     </MonoDevelop>

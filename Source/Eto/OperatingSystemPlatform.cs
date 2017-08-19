@@ -55,8 +55,9 @@ namespace Eto
 			var detectType = Type.GetType("Eto.PlatformDetect, Eto.XamMac2", false)
 			                 ?? Type.GetType("Eto.PlatformDetect, Eto.XamMac", false)
 			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac", false)
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk2", false)
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk3", false);
+                             ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk2", false)
+                             ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk3", false)
+                             ?? Type.GetType("Eto.PlatformDetect, Eto.NativeGtk", false);
 			if (detectType != null)
 			{
 				var getUnixTypeMethod = detectType.GetRuntimeMethod("GetUnixType", new Type[] { });
