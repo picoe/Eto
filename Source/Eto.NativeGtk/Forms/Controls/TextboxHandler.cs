@@ -23,7 +23,14 @@ namespace Eto.GtkSharp.Forms.Controls
             GtkWrapper.gtk_style_context_get_color(_context, 0, out GtkWrapper.RGBA rgba);
             _textcolor = rgba.ToColor();
 
+            Control.AddSignalHandler("focus-in-event", (Action<object, EventArgs>)HandleFocuesed);
             Control.AddSignalHandler("changed", (Action<object, EventArgs>)HandleChanged);
+        }
+
+        private void HandleFocuesed(object sender, EventArgs e)
+        {
+            if (AutoSelectMode == AutoSelectMode.OnFocus)
+                SelectAll();
         }
 
         private void HandleChanged(object sender, EventArgs e)

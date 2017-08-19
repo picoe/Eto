@@ -1,4 +1,5 @@
 ﻿using System;
+// ReSharper disable InconsistentNaming
 
 static partial class GtkWrapper
 {
@@ -43,7 +44,7 @@ static partial class GtkWrapper
 
         public double[] ToDouble()
         {
-            return new double[] { Red, Green, Blue, Alpha };
+            return new[] { Red, Green, Blue, Alpha };
         }
     }
 
