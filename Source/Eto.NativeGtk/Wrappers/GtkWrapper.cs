@@ -128,9 +128,6 @@ public extern static void gtk_about_dialog_set_wrap_license(IntPtr about, bool w
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_accel_label_new")]
 public extern static IntPtr gtk_accel_label_new(string text);
 
-[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_adjustment_new")]
-public extern static IntPtr gtk_adjustment_new(double value, double lower, double upper, double step_increment, double page_increment, double page_size);
-
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_button_get_image_position")]
 public extern static int gtk_button_get_image_position(IntPtr button);
 
@@ -319,11 +316,23 @@ public extern static void gtk_label_set_xalign(IntPtr label, float xalign);
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_label_set_yalign")]
 public extern static void gtk_label_set_yalign(IntPtr label, float yalign);
 
-[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_spin_button_new")]
-public extern static IntPtr gtk_spin_button_new(IntPtr adjustment, double climb_rate, uint digits);
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_spin_button_get_value")]
+public extern static double gtk_spin_button_get_value(IntPtr spin_button);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_spin_button_new_with_range")]
+public extern static IntPtr gtk_spin_button_new_with_range(double min, double max, double step);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_spin_button_set_numeric")]
 public extern static void gtk_spin_button_set_numeric(IntPtr spin_button, bool numeric);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_spin_button_set_update_policy")]
+public extern static void gtk_spin_button_set_update_policy(IntPtr spin_button, int policy);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_spin_button_set_range")]
+public extern static void gtk_spin_button_set_range(IntPtr spin_button, double min, double max);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_spin_button_set_value")]
+public extern static void gtk_spin_button_set_value(IntPtr spin_button, double value);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_style_context_add_class")]
 public extern static void gtk_style_context_add_class(IntPtr context, string class_name);

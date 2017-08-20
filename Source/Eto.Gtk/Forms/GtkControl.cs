@@ -688,7 +688,7 @@ namespace Eto.GtkSharp.Forms
             set => Control = (TControl)new Gtk.Widget(value);
         }
 
-        public void ConnectSignal(string signal, Delegate action, int flags = 1)
+        public void ConnectSignal(string signal, Delegate action, bool connectbefore = false)
 	    {
 	        GtkWrapper.g_signal_connect_data(
 	            Control.Handle, 
@@ -696,7 +696,7 @@ namespace Eto.GtkSharp.Forms
 	            Marshal.GetFunctionPointerForDelegate(action), 
 	            (IntPtr)GCHandle.Alloc(this), 
 	            IntPtr.Zero,
-	            flags
+                connectbefore ? 0 : 1
 	        );
 	    }
 #endif

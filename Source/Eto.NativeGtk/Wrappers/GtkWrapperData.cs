@@ -28,8 +28,6 @@ void      gtk_about_dialog_set_wrap_license (IntPtr about, bool wrap_license);
 
 IntPtr    gtk_accel_label_new (string text);
 
-IntPtr    gtk_adjustment_new (double value, double lower, double upper, double step_increment, double page_increment, double page_size);
-
 int       gtk_button_get_image_position (IntPtr button);
 string    gtk_button_get_label (IntPtr button);
 IntPtr    gtk_button_new ();
@@ -93,8 +91,12 @@ void      gtk_label_set_text (IntPtr label, string str);
 void      gtk_label_set_xalign (IntPtr label, float xalign);
 void      gtk_label_set_yalign (IntPtr label, float yalign);
 
-IntPtr    gtk_spin_button_new (IntPtr adjustment, double climb_rate, uint digits);
+double    gtk_spin_button_get_value (IntPtr spin_button);
+IntPtr    gtk_spin_button_new_with_range (double min, double max, double step);
 void      gtk_spin_button_set_numeric (IntPtr spin_button, bool numeric);
+void      gtk_spin_button_set_update_policy (IntPtr spin_button, int policy);
+void      gtk_spin_button_set_range (IntPtr spin_button, double min, double max);
+void      gtk_spin_button_set_value (IntPtr spin_button, double value);
 
 void      gtk_style_context_add_class (IntPtr context, string class_name);
 void      gtk_style_context_add_provider (IntPtr context, IntPtr provider, int priority);
