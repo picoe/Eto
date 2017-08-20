@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 // ReSharper disable InconsistentNaming
 
 static partial class GtkWrapper
@@ -56,8 +57,21 @@ static partial class GtkWrapper
         public int Height;
     }
 
+    public struct GdkRectangle
+    {
+        public int X;
+        public int Y;
+        public int Width;
+        public int Height;
+    }
+
     public static double[] ToDouble(this Eto.Drawing.Color color)
     {
         return new double[] { color.R, color.G, color.B, color.A };
+    }
+
+    public static GtkWrapper.RGBA ToNativeRGBA(this Eto.Drawing.Color color)
+    {
+        return new RGBA { Alpha = color.A, Blue = color.B, Green = color.G, Red = color.R };
     }
 }

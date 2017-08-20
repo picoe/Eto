@@ -1,10 +1,12 @@
 ﻿﻿<#@ template hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
+<#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
 <#
 
 var library = "libgtk-3.so.0";
-var methods = File.ReadAllLines(Path.Combine(Path.GetDirectoryName(this.Host.TemplateFile), "GtkWrapperData.cs"));
+var lines = File.ReadAllLines(Path.Combine(Path.GetDirectoryName(this.Host.TemplateFile), "GtkWrapperData.cs"));
 
 #>
 using System;
@@ -13,50 +15,183 @@ using System.Runtime.InteropServices;
 static partial class <#= Path.GetFileNameWithoutExtension(Host.TemplateFile) #>
 {
     public const string NativeLib = "<#= library #>";
+
 <#
-foreach (var line in methods)
+var methods = new List<Method>();
+
+foreach(var line in lines)
 {
-	if (string.IsNullOrEmpty(line) || line.Contains("//"))
-		continue;
+    if (string.IsNullOrEmpty(line) || line.Contains("//"))
+        continue;
 
-	var method = line.TrimEnd(new[] { ';' });
-	var strmethod = method.StartsWith("string ");
-	var main = method.Split(new char[] { '(', ')' });
-    var meth = main[0].Trim(' ').Split(' ');
-    meth[1] = meth[meth.Length - 1];
+    methods.Add(new Method(line));
+}
+
+foreach (var method in methods)
+{
+#><#=method #><#
+}
 #>
+}
+<#+
+public class Param
+{
+    public bool Out;
+    public string Type;
+    public string Name;
 
-	[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl<#= strmethod ? ", EntryPoint = \"" + meth[1] + "\"" : "" #>)]
-    <#= strmethod ? "private" : "public" #> extern static <#= strmethod ? "IntPtr w" + method.Substring(7).Trim(' ') : method #>;
-<#
-	if (strmethod)
-	{
-        var ret = "";
+    public Param(string linepart)
+    {
+        var split = linepart.Split(' ');
+        var pos = 0;
 
-        if (main[1] != "")
+        if (split.Length == 3)
         {
-            var args = main[1].Split(',');
+            Out = true;
+            pos += 1;
+        }
 
-            foreach (var arg in args)
+        Type = split[pos];
+        Name = split[pos + 1];
+    }
+
+    public bool IsStruct()
+    {
+        switch(Type)
+        {
+            case "int":
+            case "string":
+            case "bool":
+            case "IntPtr":
+            case "double":
+            case "float":
+            case "char":
+            case "string[]":
+            case "uint":
+                return false;
+        }
+
+        return true;
+    }
+}
+
+public class Method
+{
+    public string ReturnType;
+    public string Name;
+    public List<Param> Params;
+    public bool CustomMethod;
+
+    public Method(string line)
+    {
+        var basesplit = line.Split('(');
+
+        var nrsplit = basesplit[0].Split(' ').ToList();
+        nrsplit.RemoveAll((obj) => string.IsNullOrWhiteSpace(obj));
+        ReturnType = nrsplit[0];
+        Name = nrsplit[1];
+
+        Params = new List<Param>();
+        var psplit = basesplit[1].Split(')')[0].Split(',');
+        foreach (var ps in psplit)
+            if (!string.IsNullOrWhiteSpace(ps))
+                Params.Add(new Param(ps.Trim(' ')));
+
+        CustomMethod = ReturnType == "string";
+        if(!CustomMethod)
+        {
+            foreach(var p in Params)
             {
-                var split = arg.Trim(' ').Split(' ');
+                if (p.IsStruct() && !p.Out)
+                    CustomMethod = true;
+            }
+        }
+    }
 
-                if (split.Length == 2)
-                    ret += ", " + split[1];
+    private string GetParamsLine(int position)
+    {
+        string parms = "";
+
+        foreach (var param in Params)
+        {
+            if (param.Out)
+                parms += "out ";
+
+            if (position == 0 || position == 1)
+            {
+                if (position == 0 && !param.Out && param.IsStruct())
+                    parms += "IntPtr ";
                 else
-                    ret += ", " + split[0] + " " + split[2];
+                    parms += param.Type + " ";
             }
 
-            ret = ret.Substring(2);
+            if (position == 2 && !param.Out && param.IsStruct())
+                parms += "p";
+            parms += param.Name;
+
+            parms += ", ";
         }
-#>
-	
-	public static string <#= method.Substring(7).Trim(' ') #>
-	{
-		return WrapperHelper.GetString(<#= "w" + meth[1] + "(" + ret + ")" #>);
-	}
-<#
-	}
+
+        if (Params.Count > 0)
+            parms = parms.Remove(parms.Length - 2);
+
+        return parms;
+    }
+
+    public override string ToString()
+    {
+        string lines = "";
+
+        lines += "[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = \"" + Name + "\")]" + Environment.NewLine;
+        lines += (CustomMethod ? "private" : "public") + " extern static " + (CustomMethod ? (((ReturnType == "string") ? "IntPtr" : ReturnType) + " w") : ReturnType + " ") + Name + "(" + GetParamsLine(0) + ");" + Environment.NewLine;
+        lines += Environment.NewLine;
+
+        if (CustomMethod)
+        {
+            lines += "public static " + ReturnType + " " + Name + "(" + GetParamsLine(1) + ")" + Environment.NewLine;
+            lines += "{" + Environment.NewLine;
+
+            foreach(var parm in Params)
+            {
+                if(!parm.Out && parm.IsStruct())
+                {
+                    lines += "    IntPtr p" + parm.Name + " = Marshal.AllocHGlobal(Marshal.SizeOf(" + parm.Name + "));" + Environment.NewLine;
+                    lines += "    Marshal.StructureToPtr(" + parm.Name + ", p" + parm.Name + ", true);" + Environment.NewLine;
+                }
+            }
+
+            lines += "    ";
+
+            if (ReturnType != "void")
+                lines += "var ret = ";
+
+            if (ReturnType == "string")
+                lines += "WrapperHelper.GetString(";
+
+            lines += "w" + Name + "(" + GetParamsLine(2) + ")";
+
+            if (ReturnType == "string")
+                lines += ")";
+
+            lines += ";" + Environment.NewLine;
+
+            foreach (var parm in Params)
+            {
+                if (!parm.Out && parm.IsStruct())
+                {
+                    lines += "    Marshal.FreeHGlobal(p" + parm.Name + ");" + Environment.NewLine;
+                }
+            }
+            // Deallocate
+
+            if (ReturnType != "void")
+                lines += "    return ret;" + Environment.NewLine;
+            
+            lines += "}" + Environment.NewLine;
+            lines += Environment.NewLine;
+        }
+
+        return lines;
+    }
 }
 #>
-}

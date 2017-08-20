@@ -268,7 +268,9 @@
     <Compile Include="Forms\Dialogs\ColorDialogHandler.cs" />
     <Compile Include="Wrappers\GtkWrapperHelper.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
-    <Compile Include="Forms\Controls\TextboxHandler.cs" />
+    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
+    <Compile Include="Forms\Controls\TextStepperHandler.cs" />
+    <Compile Include="Forms\BaseHandlers\TextBoxBaseHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -301,6 +303,7 @@
     <Folder Include="Wrappers\" />
     <Folder Include="Forms\Controls\" />
     <Folder Include="Forms\Dialogs\" />
+    <Folder Include="Forms\BaseHandlers\" />
   </ItemGroup>
   <Import Project="..\Shared\Common.targets" />
 </Project>

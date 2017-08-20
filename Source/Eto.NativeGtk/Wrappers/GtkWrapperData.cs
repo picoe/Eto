@@ -1,4 +1,6 @@
 ﻿void      g_object_unref (IntPtr obj);
+uint      g_signal_connect_data(IntPtr instance, string detailed_signal, IntPtr handler, IntPtr data, IntPtr destroy_data, int connect_flags);
+void      g_signal_connect (IntPtr instance, string detailed_signal, IntPtr c_handler, IntPtr data)
 
 string[]  gtk_about_dialog_get_artists (IntPtr about);
 string[]  gtk_about_dialog_get_authors (IntPtr about);
@@ -26,6 +28,8 @@ void      gtk_about_dialog_set_wrap_license (IntPtr about, bool wrap_license);
 
 IntPtr    gtk_accel_label_new (string text);
 
+IntPtr    gtk_adjustment_new (double value, double lower, double upper, double step_increment, double page_increment, double page_size);
+
 int       gtk_button_get_image_position (IntPtr button);
 string    gtk_button_get_label (IntPtr button);
 IntPtr    gtk_button_new ();
@@ -40,7 +44,7 @@ IntPtr    gtk_color_button_new ();
 IntPtr    gtk_color_chooser_dialog_new (string title, IntPtr parent);
 void      gtk_color_chooser_get_rgba (IntPtr chooser, out RGBA color);
 bool      gtk_color_chooser_get_use_alpha (IntPtr chooser);
-void      gtk_color_chooser_set_rgba (IntPtr chooser, double[] color);
+void      gtk_color_chooser_set_rgba (IntPtr chooser, GtkWrapper.RGBA color);
 void      gtk_color_chooser_set_use_alpha (IntPtr chooser, bool use_alpha);
 
 void      gtk_container_add (IntPtr container, IntPtr widget);
@@ -88,6 +92,9 @@ void      gtk_label_set_line_wrap_mode (IntPtr label, int wrap_mode);
 void      gtk_label_set_text (IntPtr label, string str);
 void      gtk_label_set_xalign (IntPtr label, float xalign);
 void      gtk_label_set_yalign (IntPtr label, float yalign);
+
+IntPtr    gtk_spin_button_new (IntPtr adjustment, double climb_rate, uint digits);
+void      gtk_spin_button_set_numeric (IntPtr spin_button, bool numeric);
 
 void      gtk_style_context_add_class (IntPtr context, string class_name);
 void      gtk_style_context_add_provider (IntPtr context, IntPtr provider, int priority);

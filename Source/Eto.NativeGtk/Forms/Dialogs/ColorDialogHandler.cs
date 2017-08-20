@@ -25,7 +25,7 @@ namespace Eto.GtkSharp.Forms
                 GtkWrapper.gtk_color_chooser_get_rgba(Control.Handle, out GtkWrapper.RGBA rgba);
                 return rgba.ToColor();
             }
-            set => GtkWrapper.gtk_color_chooser_set_rgba(Control.Handle, value.ToDouble());
+            set => GtkWrapper.gtk_color_chooser_set_rgba(Control.Handle, value.ToNativeRGBA());
         }
 
         public bool SupportsAllowAlpha => true;

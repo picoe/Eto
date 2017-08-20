@@ -12,10 +12,10 @@ namespace Eto.GtkSharp.Forms.Controls
         public LabelHandler()
         {
             _eventbox = GtkWrapper.gtk_event_box_new();
-            Control = new Gtk.Widget(GtkWrapper.gtk_label_new(string.Empty));
-            GtkWrapper.gtk_container_add(_eventbox, Control.Handle);
+            Handle = GtkWrapper.gtk_label_new(string.Empty);
+            GtkWrapper.gtk_container_add(_eventbox, Handle);
 
-            _context = GtkWrapper.gtk_widget_get_style_context(Control.Handle);
+            _context = GtkWrapper.gtk_widget_get_style_context(Handle);
             _provider = GtkWrapper.gtk_css_provider_new();
             GtkWrapper.gtk_style_context_add_provider(_context, _provider, 1000);
 
@@ -34,9 +34,9 @@ namespace Eto.GtkSharp.Forms.Controls
         {
             get
             {
-                if (!GtkWrapper.gtk_label_get_line_wrap(Control.Handle))
+                if (!GtkWrapper.gtk_label_get_line_wrap(Handle))
                     return WrapMode.None;
-                if (GtkWrapper.gtk_label_get_line_wrap_mode(Control.Handle) == GtkWrapper.PANGO_WRAP_CHAR)
+                if (GtkWrapper.gtk_label_get_line_wrap_mode(Handle) == GtkWrapper.PANGO_WRAP_CHAR)
                     return WrapMode.Character;
                 return WrapMode.Word;
             }
@@ -45,15 +45,15 @@ namespace Eto.GtkSharp.Forms.Controls
                 switch (value)
                 {
                     case WrapMode.None:
-                        GtkWrapper.gtk_label_set_line_wrap(Control.Handle, false);
+                        GtkWrapper.gtk_label_set_line_wrap(Handle, false);
                         break;
                     case WrapMode.Word:
-                        GtkWrapper.gtk_label_set_line_wrap(Control.Handle, true);
-                        GtkWrapper.gtk_label_set_line_wrap_mode(Control.Handle, GtkWrapper.PANGO_WRAP_WORD);
+                        GtkWrapper.gtk_label_set_line_wrap(Handle, true);
+                        GtkWrapper.gtk_label_set_line_wrap_mode(Handle, GtkWrapper.PANGO_WRAP_WORD);
                         break;
                     case WrapMode.Character:
-                        GtkWrapper.gtk_label_set_line_wrap(Control.Handle, true);
-                        GtkWrapper.gtk_label_set_line_wrap_mode(Control.Handle, GtkWrapper.PANGO_WRAP_CHAR);
+                        GtkWrapper.gtk_label_set_line_wrap(Handle, true);
+                        GtkWrapper.gtk_label_set_line_wrap_mode(Handle, GtkWrapper.PANGO_WRAP_CHAR);
                         break;
                 }
             }
@@ -74,15 +74,15 @@ namespace Eto.GtkSharp.Forms.Controls
 
         public override string Text
         {
-            get => GtkWrapper.gtk_label_get_text(Control.Handle).ToEtoMnemonic();
-            set => GtkWrapper.gtk_label_set_text(Control.Handle, value.ToPlatformMnemonic());
+            get => GtkWrapper.gtk_label_get_text(Handle).ToEtoMnemonic();
+            set => GtkWrapper.gtk_label_set_text(Handle, value.ToPlatformMnemonic());
         }
 
         public TextAlignment TextAlignment
         {
             get
             {
-                var xalign = GtkWrapper.gtk_label_get_yalign(Control.Handle);
+                var xalign = GtkWrapper.gtk_label_get_yalign(Handle);
 
                 if (xalign < 0.4f)
                     return TextAlignment.Left;
@@ -95,13 +95,13 @@ namespace Eto.GtkSharp.Forms.Controls
                 switch (value)
                 {
                     case TextAlignment.Left:
-                        GtkWrapper.gtk_label_set_xalign(Control.Handle, 0f);
+                        GtkWrapper.gtk_label_set_xalign(Handle, 0f);
                         break;
                     case TextAlignment.Center:
-                        GtkWrapper.gtk_label_set_xalign(Control.Handle, 0.5f);
+                        GtkWrapper.gtk_label_set_xalign(Handle, 0.5f);
                         break;
                     case TextAlignment.Right:
-                        GtkWrapper.gtk_label_set_xalign(Control.Handle, 1f);
+                        GtkWrapper.gtk_label_set_xalign(Handle, 1f);
                         break;
                 }
             }
@@ -111,7 +111,7 @@ namespace Eto.GtkSharp.Forms.Controls
         {
             get
             {
-                var yalign = GtkWrapper.gtk_label_get_yalign(Control.Handle);
+                var yalign = GtkWrapper.gtk_label_get_yalign(Handle);
 
                 if (yalign < 0.4f)
                     return VerticalAlignment.Top;
@@ -125,13 +125,13 @@ namespace Eto.GtkSharp.Forms.Controls
                 {
                     case VerticalAlignment.Stretch:
                     case VerticalAlignment.Top:
-                        GtkWrapper.gtk_label_set_yalign(Control.Handle, 0f);
+                        GtkWrapper.gtk_label_set_yalign(Handle, 0f);
                         break;
                     case VerticalAlignment.Center:
-                        GtkWrapper.gtk_label_set_yalign(Control.Handle, 0.5f);
+                        GtkWrapper.gtk_label_set_yalign(Handle, 0.5f);
                         break;
                     case VerticalAlignment.Bottom:
-                        GtkWrapper.gtk_label_set_yalign(Control.Handle, 1f);
+                        GtkWrapper.gtk_label_set_yalign(Handle, 1f);
                         break;
                 }
             }

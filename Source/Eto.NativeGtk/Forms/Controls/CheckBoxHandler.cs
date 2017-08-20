@@ -1,6 +1,7 @@
 ﻿using System;
-using Eto.Forms;
+using System.Runtime.InteropServices;
 using Eto.Drawing;
+using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -13,14 +14,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
         public CheckBoxHandler()
         {
-            Control = new Gtk.Widget(GtkWrapper.gtk_check_button_new());
+            Handle = GtkWrapper.gtk_check_button_new();
 
             _tempstate = false;
 
             _eventbox = GtkWrapper.gtk_event_box_new();
-            GtkWrapper.gtk_container_add(_eventbox, Control.Handle);
+            GtkWrapper.gtk_container_add(_eventbox, Handle);
 
-            _context = GtkWrapper.gtk_widget_get_style_context(Control.Handle);
+            _context = GtkWrapper.gtk_widget_get_style_context(Handle);
             _provider = GtkWrapper.gtk_css_provider_new();
             GtkWrapper.gtk_style_context_add_provider(_context, _provider, 1000);
 
@@ -28,57 +29,60 @@ namespace Eto.GtkSharp.Forms.Controls
             GtkWrapper.gtk_style_context_get_color(_context, 0, out rgba);
             _textcolor = rgba.ToColor();
 
-            Control.AddSignalHandler("toggled", (Action<object, EventArgs>)HandleToggled);
+            ConnectSignal("toggled", (Action<IntPtr, IntPtr>)HandleToggled);
         }
 
-        private void HandleToggled(object sender, EventArgs e)
+        private static void HandleToggled(IntPtr togglebutton, IntPtr user_data)
         {
-            if (_ignoreevents)
+            var handler = ((GCHandle)user_data).Target as CheckBoxHandler;
+            if (handler._ignoreevents)
                 return;
 
-            if (ThreeState)
+            if (handler.ThreeState)
             {
-                _ignoreevents = true;
+                handler._ignoreevents = true;
 
-                if (!_tempstate.HasValue)
-                    Checked = true;
-                else if (_tempstate.Value)
-                    Checked = false;
+                if (!handler._tempstate.HasValue)
+                    handler.Checked = true;
+                else if (handler._tempstate.Value)
+                    handler.Checked = false;
                 else
-                    Checked = null;
+                    handler.Checked = null;
 
-                _ignoreevents = false;
+                handler._ignoreevents = false;
             }
 
-            _tempstate = Checked;
-            Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+            handler._tempstate = handler.Checked;
+            handler.Callback.OnCheckedChanged(handler.Widget, EventArgs.Empty);
         }
 
         public bool? Checked
         {
             get
             {
-                if (GtkWrapper.gtk_toggle_button_get_inconsistent(Control.Handle))
+                if (GtkWrapper.gtk_toggle_button_get_inconsistent(Handle))
                     return null;
 
-                return GtkWrapper.gtk_toggle_button_get_active(Control.Handle);
+                return GtkWrapper.gtk_toggle_button_get_active(Handle);
             }
             set
             {
+                var triggerevent = !_ignoreevents && _tempstate != value;
+
                 _ignoreevents = true;
                 if (!value.HasValue)
                 {
-                    GtkWrapper.gtk_toggle_button_set_inconsistent(Control.Handle, true);
-                    GtkWrapper.gtk_toggle_button_set_active(Control.Handle, false);
+                    GtkWrapper.gtk_toggle_button_set_inconsistent(Handle, true);
+                    GtkWrapper.gtk_toggle_button_set_active(Handle, false);
                 }
                 else
                 {
-                    GtkWrapper.gtk_toggle_button_set_inconsistent(Control.Handle, false);
-                    GtkWrapper.gtk_toggle_button_set_active(Control.Handle, value.Value);
+                    GtkWrapper.gtk_toggle_button_set_inconsistent(Handle, false);
+                    GtkWrapper.gtk_toggle_button_set_active(Handle, value.Value);
                 }
                 _ignoreevents = false;
 
-                if (_tempstate != value)
+                if (triggerevent)
                 {
                     _tempstate = value;
                     Callback.OnCheckedChanged(Widget, EventArgs.Empty);
@@ -90,26 +94,22 @@ namespace Eto.GtkSharp.Forms.Controls
 
         public override string Text
         {
-            get => GtkWrapper.gtk_button_get_label(Control.Handle).ToEtoMnemonic();
-            set => GtkWrapper.gtk_button_set_label(Control.Handle, value.ToPlatformMnemonic());
-            }
-
+            get => GtkWrapper.gtk_button_get_label(Handle).ToEtoMnemonic();
+            set => GtkWrapper.gtk_button_set_label(Handle, value.ToPlatformMnemonic());
+        }
 
         public Color TextColor
         {
             get => _textcolor;
             set
-
             {
                 _textcolor = value;
 
                 GtkWrapper.gtk_style_context_remove_class(_context, "etocoloring");
-                GtkWrapper.gtk_css_provider_load_from_data(_provider,
-                    ".etocoloring { color: #" + value.ToString().Substring(3) + "; }", -1, IntPtr.Zero);
+                GtkWrapper.gtk_css_provider_load_from_data(_provider, ".etocoloring { color: #" + value.ToString().Substring(3) + "; }", -1, IntPtr.Zero);
                 GtkWrapper.gtk_style_context_add_class(_context, "etocoloring");
             }
-            }
-
+        }
 
         public bool ThreeState { get; set; }
     }

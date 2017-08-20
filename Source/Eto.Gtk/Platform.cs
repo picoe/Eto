@@ -135,7 +135,7 @@ namespace Eto.GtkSharp
 			p.Add<WebView.IHandler>(() => new WebViewHandler());
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
-			//p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
+			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

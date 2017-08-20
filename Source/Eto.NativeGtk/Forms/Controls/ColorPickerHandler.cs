@@ -8,7 +8,7 @@ namespace Eto.GtkSharp.Forms.Controls
     {
         public ColorPickerHandler()
         {
-            Control = new Gtk.Widget(GtkWrapper.gtk_color_button_new());
+            Handle = GtkWrapper.gtk_color_button_new();
         }
 
         public bool AllowAlpha
@@ -24,7 +24,7 @@ namespace Eto.GtkSharp.Forms.Controls
                 GtkWrapper.gtk_color_chooser_get_rgba(Control.Handle, out GtkWrapper.RGBA rgba);
                 return rgba.ToColor();
             }
-            set => GtkWrapper.gtk_color_chooser_set_rgba(Control.Handle, value.ToDouble());
+            set => GtkWrapper.gtk_color_chooser_set_rgba(Control.Handle, value.ToNativeRGBA());
         }
 
         public bool SupportsAllowAlpha => true;

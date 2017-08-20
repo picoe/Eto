@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Eto.Drawing;
 using Eto.Forms;
 
@@ -13,57 +14,55 @@ namespace Eto.GtkSharp.Forms.Controls
 
         public ButtonHandler()
         {
-            Control = new Gtk.Widget(GtkWrapper.gtk_button_new());
-            GtkWrapper.gtk_button_set_always_show_image(Control.Handle, true);
-            GtkWrapper.gtk_widget_set_size_request(Control.Handle, 80, -1);
+            Handle = GtkWrapper.gtk_button_new();
+            GtkWrapper.gtk_button_set_always_show_image(Handle, true);
+            GtkWrapper.gtk_widget_set_size_request(Handle, 80, -1);
 
             _minimumSize = new Size(80, 0);
 
-            _context = GtkWrapper.gtk_widget_get_style_context(Control.Handle);
+            _context = GtkWrapper.gtk_widget_get_style_context(Handle);
             _provider = GtkWrapper.gtk_css_provider_new();
             GtkWrapper.gtk_style_context_add_provider(_context, _provider, 1000);
 
             GtkWrapper.gtk_style_context_get_color(_context, 0, out GtkWrapper.RGBA rgba);
             _textcolor = rgba.ToColor();
 
-            Control.AddSignalHandler("clicked", (Action<object, EventArgs>)HandleClicked);
-            Control.AddSignalHandler("size-allocate", (Action<object, EventArgs>)HandleSizeAllocated);
+            ConnectSignal("clicked", (Action<IntPtr, IntPtr>)HandleClicked);
+            ConnectSignal("size-allocate", (Action<IntPtr, IntPtr, IntPtr>)HandleSizeAllocate);
         }
 
-        private void HandleClicked(object sender, EventArgs e)
+        private static void HandleClicked(IntPtr button, IntPtr user_data)
         {
-            Callback.OnClick(Widget, EventArgs.Empty);
+            var handler = ((GCHandle)user_data).Target as ButtonHandler;
+            handler.Callback.OnClick(handler.Widget, EventArgs.Empty);
         }
 
-        private void HandleSizeAllocated(object o, EventArgs e)
+        private static void HandleSizeAllocate(IntPtr widget, IntPtr allocation, IntPtr user_data)
         {
-            GtkWrapper.GtkAllocation allocation;
-            GtkWrapper.gtk_widget_get_allocation(Control.Handle, out allocation);
+            var handler = ((GCHandle)user_data).Target as ButtonHandler;
+            var alloc = (GtkWrapper.GdkRectangle)Marshal.PtrToStructure(allocation, typeof(GtkWrapper.GdkRectangle));
+            var width = Math.Max(alloc.Width, handler._minimumSize.Width);
+            var height = Math.Max(alloc.Height, handler._minimumSize.Height);
 
-            var width = Math.Max(allocation.Width, _minimumSize.Width);
-            var height = Math.Max(allocation.Height, _minimumSize.Height);
-
-            if (allocation.Width != width || allocation.Height != height)
-                GtkWrapper.gtk_widget_set_size_request(Control.Handle, width, height);
+            if (alloc.Width != width || alloc.Height != height)
+                GtkWrapper.gtk_widget_set_size_request(handler.Handle, width, height);
         }
 
         public Image Image
         {
             get => _image;
             set
-
             {
                 _image = value;
-                GtkWrapper.gtk_button_set_image(Control.Handle, _image.ToGtk().Handle);
+                GtkWrapper.gtk_button_set_image(Handle, _image.ToGtk().Handle);
             }
         }
-
 
         public ButtonImagePosition ImagePosition
         {
             get
             {
-                switch (GtkWrapper.gtk_button_get_image_position(Control.Handle))
+                switch (GtkWrapper.gtk_button_get_image_position(Handle))
                 {
                     case GtkWrapper.GTK_POS_LEFT:
                         return ButtonImagePosition.Left;
@@ -82,16 +81,16 @@ namespace Eto.GtkSharp.Forms.Controls
                 switch (value)
                 {
                     case ButtonImagePosition.Left:
-                        GtkWrapper.gtk_button_set_image_position(Control.Handle, GtkWrapper.GTK_POS_LEFT);
+                        GtkWrapper.gtk_button_set_image_position(Handle, GtkWrapper.GTK_POS_LEFT);
                         break;
                     case ButtonImagePosition.Right:
-                        GtkWrapper.gtk_button_set_image_position(Control.Handle, GtkWrapper.GTK_POS_RIGHT);
+                        GtkWrapper.gtk_button_set_image_position(Handle, GtkWrapper.GTK_POS_RIGHT);
                         break;
                     case ButtonImagePosition.Below:
-                        GtkWrapper.gtk_button_set_image_position(Control.Handle, GtkWrapper.GTK_POS_BOTTOM);
+                        GtkWrapper.gtk_button_set_image_position(Handle, GtkWrapper.GTK_POS_BOTTOM);
                         break;
                     default:
-                        GtkWrapper.gtk_button_set_image_position(Control.Handle, GtkWrapper.GTK_POS_TOP);
+                        GtkWrapper.gtk_button_set_image_position(Handle, GtkWrapper.GTK_POS_TOP);
                         break;
                 }
             }
@@ -101,35 +100,30 @@ namespace Eto.GtkSharp.Forms.Controls
         {
             get => _minimumSize;
             set
-
             {
                 if (_minimumSize != value)
                 {
                     _minimumSize = value;
-                    GtkWrapper.gtk_widget_queue_resize(Control.Handle);
+                    GtkWrapper.gtk_widget_queue_resize(Handle);
                 }
             }
         }
 
-
         public override string Text
         {
-            get => GtkWrapper.gtk_button_get_label(Control.Handle).ToEtoMnemonic();
-            set => GtkWrapper.gtk_button_set_label(Control.Handle, value.ToPlatformMnemonic());
+            get => GtkWrapper.gtk_button_get_label(Handle).ToEtoMnemonic();
+            set => GtkWrapper.gtk_button_set_label(Handle, value.ToPlatformMnemonic());
         }
-
 
         public Color TextColor
         {
             get => _textcolor;
             set
-
             {
                 _textcolor = value;
 
                 GtkWrapper.gtk_style_context_remove_class(_context, "etocoloring");
-                GtkWrapper.gtk_css_provider_load_from_data(_provider,
-                    ".etocoloring { color: #" + value.ToString().Substring(3) + "; }", -1, IntPtr.Zero);
+                GtkWrapper.gtk_css_provider_load_from_data(_provider, ".etocoloring { color: #" + value.ToString().Substring(3) + "; }", -1, IntPtr.Zero);
                 GtkWrapper.gtk_style_context_add_class(_context, "etocoloring");
             }
         }
