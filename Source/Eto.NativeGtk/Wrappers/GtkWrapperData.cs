@@ -1,4 +1,5 @@
 ﻿void      g_object_unref (IntPtr obj);
+
 uint      g_signal_connect_data(IntPtr instance, string detailed_signal, IntPtr handler, IntPtr data, IntPtr destroy_data, int connect_flags);
 void      g_signal_connect (IntPtr instance, string detailed_signal, IntPtr c_handler, IntPtr data)
 
@@ -28,6 +29,11 @@ void      gtk_about_dialog_set_wrap_license (IntPtr about, bool wrap_license);
 
 IntPtr    gtk_accel_label_new (string text);
 
+IntPtr    gtk_app_chooser_get_app_info (IntPtr self);
+
+IntPtr    gtk_app_chooser_dialog_new (IntPtr parent, int flags, IntPtr file);
+void      gtk_app_chooser_dialog_set_heading (IntPtr self, string heading);
+
 int       gtk_button_get_image_position (IntPtr button);
 string    gtk_button_get_label (IntPtr button);
 IntPtr    gtk_button_new ();
@@ -40,9 +46,9 @@ IntPtr    gtk_check_button_new ();
 IntPtr    gtk_color_button_new ();
 
 IntPtr    gtk_color_chooser_dialog_new (string title, IntPtr parent);
-void      gtk_color_chooser_get_rgba (IntPtr chooser, out RGBA color);
+void      gtk_color_chooser_get_rgba (IntPtr chooser, out GdkWrapper.RGBA color);
 bool      gtk_color_chooser_get_use_alpha (IntPtr chooser);
-void      gtk_color_chooser_set_rgba (IntPtr chooser, GtkWrapper.RGBA color);
+void      gtk_color_chooser_set_rgba (IntPtr chooser, GdkWrapper.RGBA color);
 void      gtk_color_chooser_set_use_alpha (IntPtr chooser, bool use_alpha);
 
 void      gtk_container_add (IntPtr container, IntPtr widget);
@@ -50,7 +56,9 @@ void      gtk_container_add (IntPtr container, IntPtr widget);
 bool      gtk_css_provider_load_from_data (IntPtr css_provider, string data, int length, IntPtr error);
 IntPtr    gtk_css_provider_new ();
 
+IntPtr    gtk_dialog_add_button (IntPtr dialog, string button_text, int response_id);
 int       gtk_dialog_run (IntPtr dialog);
+void      gtk_dialog_set_default_response (IntPtr dialog, int response_id);
 
 bool      gtk_editable_get_editable (IntPtr entry);
 int       gtk_editable_get_position (IntPtr editable);
@@ -76,6 +84,11 @@ void      gtk_entry_set_width_chars (IntPtr entry, int n_chars);
 
 IntPtr    gtk_event_box_new ();
 
+string    gtk_file_chooser_get_current_folder (IntPtr chooser);
+bool      gtk_file_chooser_set_current_folder (IntPtr chooser, string filename);
+
+IntPtr    gtk_file_chooser_dialog_new (string title, IntPtr parent, int action);
+
 IntPtr    gtk_image_new ();
 void      gtk_image_set_from_pixbuf (IntPtr image, IntPtr pixbuf);
 
@@ -100,7 +113,7 @@ void      gtk_spin_button_set_value (IntPtr spin_button, double value);
 
 void      gtk_style_context_add_class (IntPtr context, string class_name);
 void      gtk_style_context_add_provider (IntPtr context, IntPtr provider, int priority);
-void      gtk_style_context_get_color (IntPtr context, int state, out RGBA color);
+void      gtk_style_context_get_color (IntPtr context, int state, out GdkWrapper.RGBA color);
 void      gtk_style_context_remove_class (IntPtr context, string class_name);
 
 bool      gtk_toggle_button_get_active (IntPtr toggle_button);
@@ -108,7 +121,7 @@ bool      gtk_toggle_button_get_inconsistent (IntPtr toggle_button);
 void      gtk_toggle_button_set_active (IntPtr toggle_button, bool is_active);
 void      gtk_toggle_button_set_inconsistent (IntPtr toggle_button, bool setting);
 
-void      gtk_widget_get_allocation (IntPtr widget, out GtkAllocation allocation);
+void      gtk_widget_get_allocation (IntPtr widget, out Allocation allocation);
 int       gtk_widget_get_halign (IntPtr widget);
 IntPtr    gtk_widget_get_style_context (IntPtr widget);
 void      gtk_widget_hide (IntPtr widget);

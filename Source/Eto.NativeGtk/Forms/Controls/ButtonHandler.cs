@@ -24,7 +24,7 @@ namespace Eto.GtkSharp.Forms.Controls
             _provider = GtkWrapper.gtk_css_provider_new();
             GtkWrapper.gtk_style_context_add_provider(_context, _provider, 1000);
 
-            GtkWrapper.gtk_style_context_get_color(_context, 0, out GtkWrapper.RGBA rgba);
+            GtkWrapper.gtk_style_context_get_color(_context, 0, out GdkWrapper.RGBA rgba);
             _textcolor = rgba.ToColor();
 
             ConnectSignal("clicked", (Action<IntPtr, IntPtr>)HandleClicked);
@@ -40,7 +40,7 @@ namespace Eto.GtkSharp.Forms.Controls
         private static void HandleSizeAllocate(IntPtr widget, IntPtr allocation, IntPtr user_data)
         {
             var handler = ((GCHandle)user_data).Target as ButtonHandler;
-            var alloc = (GtkWrapper.GdkRectangle)Marshal.PtrToStructure(allocation, typeof(GtkWrapper.GdkRectangle));
+            var alloc = (GdkWrapper.Rectangle)Marshal.PtrToStructure(allocation, typeof(GdkWrapper.Rectangle));
             var width = Math.Max(alloc.Width, handler._minimumSize.Width);
             var height = Math.Max(alloc.Height, handler._minimumSize.Height);
 

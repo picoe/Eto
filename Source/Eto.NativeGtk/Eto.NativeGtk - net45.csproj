@@ -168,7 +168,6 @@
     <Compile Include="..\Eto.Gtk\Forms\ToolBar\ToolBarHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="..\Eto.Gtk\Forms\SelectFolderDialogHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\UITimerHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\ClipboardHandler.cs" />
@@ -246,7 +245,6 @@
     <Compile Include="..\Eto.Gtk\Forms\Controls\FilePickerHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\FontDialogHandlerGtk32.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\FontPickerHandler.cs" />
-    <Compile Include="..\Eto.Gtk\Forms\OpenWithDialogHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\DocumentControlHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\DocumentPageHandler.cs" />
     <Compile Include="..\Eto.Gtk\NativeMethods.cs">
@@ -270,7 +268,13 @@
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
-    <Compile Include="Forms\BaseHandlers\TextBoxBaseHandler.cs" />
+    <Compile Include="Forms\BaseHandlers\TextBaseHandler.cs" />
+    <Compile Include="Wrappers\GdkWrapperHelper.cs" />
+    <Compile Include="Forms\Dialogs\SelectFolderDialogHandler.cs" />
+    <Compile Include="Forms\Dialogs\OpenWithDialogHandler.cs" />
+    <Compile Include="Wrappers\GioWrapper.cs">
+      <DependentUpon>GioWrapper.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -298,6 +302,11 @@
       <LastGenOutput>GtkWrapper.cs</LastGenOutput>
     </None>
     <None Include="Wrappers\GtkWrapperData.cs" />
+    <None Include="Wrappers\GioWrapperData.cs" />
+    <None Include="Wrappers\GioWrapper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GioWrapper.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Wrappers\" />

@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-    public class TextBoxBaseHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, TextBox.IHandler
+    public class TextBaseHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, TextBox.IHandler
         where TControl : Gtk.Widget
         where TWidget : TextBox
         where TCallback : TextBox.ICallback
@@ -25,7 +25,7 @@ namespace Eto.GtkSharp.Forms.Controls
             _provider = GtkWrapper.gtk_css_provider_new();
             GtkWrapper.gtk_style_context_add_provider(_context, _provider, 1000);
 
-            GtkWrapper.gtk_style_context_get_color(_context, 0, out GtkWrapper.RGBA rgba);
+            GtkWrapper.gtk_style_context_get_color(_context, 0, out GdkWrapper.RGBA rgba);
             _textcolor = rgba.ToColor();
 
             ConnectSignal("focus-in-event", (Action<IntPtr, IntPtr, IntPtr>)HandleFocuesInEvent);
@@ -34,19 +34,19 @@ namespace Eto.GtkSharp.Forms.Controls
 
         private static void HandleFocuesInEvent(IntPtr widget, IntPtr evnt, IntPtr user_data)
         {
-            var handler = ((GCHandle)user_data).Target as TextBoxBaseHandler<TControl, TWidget, TCallback>;
+            var handler = ((GCHandle)user_data).Target as TextBaseHandler<TControl, TWidget, TCallback>;
             if (handler.AutoSelectMode == AutoSelectMode.OnFocus)
                 handler.SelectAll();
         }
 
         private static void HandleChanged(IntPtr editable, IntPtr user_data)
         {
-            var handler = ((GCHandle)user_data).Target as TextBoxBaseHandler<TControl, TWidget, TCallback>;
+            var handler = ((GCHandle)user_data).Target as TextBaseHandler<TControl, TWidget, TCallback>;
             if (handler._skipevent)
                 return;
 
             handler._overridetext = true;
-            var args = new TextChangingEventArgs(handler.Text);
+            var args = new TextChangingEventArgs();
             handler.Callback.OnTextChanging(handler.Widget, args);
             handler._overridetext = false;
 

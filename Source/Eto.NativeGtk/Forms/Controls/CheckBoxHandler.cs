@@ -25,8 +25,7 @@ namespace Eto.GtkSharp.Forms.Controls
             _provider = GtkWrapper.gtk_css_provider_new();
             GtkWrapper.gtk_style_context_add_provider(_context, _provider, 1000);
 
-            GtkWrapper.RGBA rgba;
-            GtkWrapper.gtk_style_context_get_color(_context, 0, out rgba);
+            GtkWrapper.gtk_style_context_get_color(_context, 0, out GdkWrapper.RGBA rgba);
             _textcolor = rgba.ToColor();
 
             ConnectSignal("toggled", (Action<IntPtr, IntPtr>)HandleToggled);

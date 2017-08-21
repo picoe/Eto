@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-    public class TextStepperHandler : TextBoxBaseHandler<Gtk.Widget, TextStepper, TextStepper.ICallback>, TextStepper.IHandler
+    public class TextStepperHandler : TextBaseHandler<Gtk.Widget, TextStepper, TextStepper.ICallback>, TextStepper.IHandler
     {
         private int _ignoreevents;
         private StepperValidDirections _validDirection;

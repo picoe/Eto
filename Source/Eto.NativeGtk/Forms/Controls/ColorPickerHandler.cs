@@ -21,7 +21,7 @@ namespace Eto.GtkSharp.Forms.Controls
         {
             get
             {
-                GtkWrapper.gtk_color_chooser_get_rgba(Control.Handle, out GtkWrapper.RGBA rgba);
+                GtkWrapper.gtk_color_chooser_get_rgba(Control.Handle, out GdkWrapper.RGBA rgba);
                 return rgba.ToColor();
             }
             set => GtkWrapper.gtk_color_chooser_set_rgba(Control.Handle, value.ToNativeRGBA());

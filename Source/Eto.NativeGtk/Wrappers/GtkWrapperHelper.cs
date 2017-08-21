@@ -31,47 +31,20 @@ static partial class GtkWrapper
     public const int GTK_ALIGN_CENTER = 3;
     public const int GTK_ALIGN_BASELINE = 4;
 
-    public struct RGBA
-    {
-        public double Red;
-        public double Green;
-        public double Blue;
-        public double Alpha;
+    public const int GTK_FILE_CHOOSER_ACTION_OPEN = 0;
+    public const int GTK_FILE_CHOOSER_ACTION_SAVE = 1;
+    public const int GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER = 2;
+    public const int GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER = 3;
 
-        public Eto.Drawing.Color ToColor()
-        {
-            return new Eto.Drawing.Color((float)Red, (float)Green, (float)Blue, (float)Alpha);
-        }
+    public const int GTK_DIALOG_MODAL = 1;
+    public const int GTK_DIALOG_DESTROY_WITH_PARENT = 2;
+    public const int GTK_DIALOG_USE_HEADER_BAR = 4;
 
-        public double[] ToDouble()
-        {
-            return new[] { Red, Green, Blue, Alpha };
-        }
-    }
-
-    public struct GtkAllocation
+    public struct Allocation
     {
         public int X;
         public int Y;
         public int Width;
         public int Height;
-    }
-
-    public struct GdkRectangle
-    {
-        public int X;
-        public int Y;
-        public int Width;
-        public int Height;
-    }
-
-    public static double[] ToDouble(this Eto.Drawing.Color color)
-    {
-        return new double[] { color.R, color.G, color.B, color.A };
-    }
-
-    public static GtkWrapper.RGBA ToNativeRGBA(this Eto.Drawing.Color color)
-    {
-        return new RGBA { Alpha = color.A, Blue = color.B, Green = color.G, Red = color.R };
     }
 }

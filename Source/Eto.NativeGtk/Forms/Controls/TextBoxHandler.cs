@@ -2,7 +2,7 @@
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-    public class TextBoxHandler : TextBoxBaseHandler<Gtk.Widget, TextBox, TextBox.ICallback>
+    public class TextBoxHandler : TextBaseHandler<Gtk.Widget, TextBox, TextBox.ICallback>
     {
         public TextBoxHandler()
         {

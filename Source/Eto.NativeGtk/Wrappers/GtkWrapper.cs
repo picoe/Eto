@@ -128,6 +128,15 @@ public extern static void gtk_about_dialog_set_wrap_license(IntPtr about, bool w
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_accel_label_new")]
 public extern static IntPtr gtk_accel_label_new(string text);
 
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_app_chooser_get_app_info")]
+public extern static IntPtr gtk_app_chooser_get_app_info(IntPtr self);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_app_chooser_dialog_new")]
+public extern static IntPtr gtk_app_chooser_dialog_new(IntPtr parent, int flags, IntPtr file);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_app_chooser_dialog_set_heading")]
+public extern static void gtk_app_chooser_dialog_set_heading(IntPtr self, string heading);
+
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_button_get_image_position")]
 public extern static int gtk_button_get_image_position(IntPtr button);
 
@@ -165,7 +174,7 @@ public extern static IntPtr gtk_color_button_new();
 public extern static IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_color_chooser_get_rgba")]
-public extern static void gtk_color_chooser_get_rgba(IntPtr chooser, out RGBA color);
+public extern static void gtk_color_chooser_get_rgba(IntPtr chooser, out GdkWrapper.RGBA color);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_color_chooser_get_use_alpha")]
 public extern static bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
@@ -173,7 +182,7 @@ public extern static bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_color_chooser_set_rgba")]
 private extern static void wgtk_color_chooser_set_rgba(IntPtr chooser, IntPtr color);
 
-public static void gtk_color_chooser_set_rgba(IntPtr chooser, GtkWrapper.RGBA color)
+public static void gtk_color_chooser_set_rgba(IntPtr chooser, GdkWrapper.RGBA color)
 {
     IntPtr pcolor = Marshal.AllocHGlobal(Marshal.SizeOf(color));
     Marshal.StructureToPtr(color, pcolor, true);
@@ -193,8 +202,14 @@ public extern static bool gtk_css_provider_load_from_data(IntPtr css_provider, s
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_css_provider_new")]
 public extern static IntPtr gtk_css_provider_new();
 
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_dialog_add_button")]
+public extern static IntPtr gtk_dialog_add_button(IntPtr dialog, string button_text, int response_id);
+
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_dialog_run")]
 public extern static int gtk_dialog_run(IntPtr dialog);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_dialog_set_default_response")]
+public extern static void gtk_dialog_set_default_response(IntPtr dialog, int response_id);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_editable_get_editable")]
 public extern static bool gtk_editable_get_editable(IntPtr entry);
@@ -271,6 +286,21 @@ public extern static void gtk_entry_set_width_chars(IntPtr entry, int n_chars);
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_event_box_new")]
 public extern static IntPtr gtk_event_box_new();
 
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_get_current_folder")]
+private extern static IntPtr wgtk_file_chooser_get_current_folder(IntPtr chooser);
+
+public static string gtk_file_chooser_get_current_folder(IntPtr chooser)
+{
+    var ret = WrapperHelper.GetString(wgtk_file_chooser_get_current_folder(chooser));
+    return ret;
+}
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_set_current_folder")]
+public extern static bool gtk_file_chooser_set_current_folder(IntPtr chooser, string filename);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_dialog_new")]
+public extern static IntPtr gtk_file_chooser_dialog_new(string title, IntPtr parent, int action);
+
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_image_new")]
 public extern static IntPtr gtk_image_new();
 
@@ -341,7 +371,7 @@ public extern static void gtk_style_context_add_class(IntPtr context, string cla
 public extern static void gtk_style_context_add_provider(IntPtr context, IntPtr provider, int priority);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_style_context_get_color")]
-public extern static void gtk_style_context_get_color(IntPtr context, int state, out RGBA color);
+public extern static void gtk_style_context_get_color(IntPtr context, int state, out GdkWrapper.RGBA color);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_style_context_remove_class")]
 public extern static void gtk_style_context_remove_class(IntPtr context, string class_name);
@@ -359,7 +389,7 @@ public extern static void gtk_toggle_button_set_active(IntPtr toggle_button, boo
 public extern static void gtk_toggle_button_set_inconsistent(IntPtr toggle_button, bool setting);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_widget_get_allocation")]
-public extern static void gtk_widget_get_allocation(IntPtr widget, out GtkAllocation allocation);
+public extern static void gtk_widget_get_allocation(IntPtr widget, out Allocation allocation);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_widget_get_halign")]
 public extern static int gtk_widget_get_halign(IntPtr widget);

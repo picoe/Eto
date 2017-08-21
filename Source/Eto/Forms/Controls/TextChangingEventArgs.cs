@@ -42,10 +42,9 @@ namespace Eto.Forms
         /// <summary>
         /// Initializes a new instance of the <see cref="Eto.Forms.TextChangingEventArgs"/> class.
         /// </summary>
-        /// <param name="text">Text to be replaced in the range.</param>
-        public TextChangingEventArgs(string text)
+        public TextChangingEventArgs()
         {
-            Text = text;
+			
         }
 	}
 	
