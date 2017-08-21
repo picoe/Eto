@@ -18,6 +18,14 @@ static class WrapperHelper
 
         return Encoding.UTF8.GetString(bytes);
     }
+
+    public static T GetStruct<T>(IntPtr ptr)
+    {
+        if (ptr == IntPtr.Zero)
+            return default(T);
+
+        return (T)Marshal.PtrToStructure(ptr, typeof(T));
+    }
 }
 
 
@@ -306,6 +314,9 @@ public extern static void gtk_entry_set_width_chars(IntPtr entry, int n_chars);
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_event_box_new")]
 public extern static IntPtr gtk_event_box_new();
 
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_add_filter")]
+public extern static void gtk_file_chooser_add_filter(IntPtr chooser, IntPtr filter);
+
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_get_current_folder")]
 private extern static IntPtr wgtk_file_chooser_get_current_folder(IntPtr chooser);
 
@@ -315,17 +326,38 @@ public static string gtk_file_chooser_get_current_folder(IntPtr chooser)
     return ret;
 }
 
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_get_filename")]
+private extern static IntPtr wgtk_file_chooser_get_filename(IntPtr chooser);
+
+public static string gtk_file_chooser_get_filename(IntPtr chooser)
+{
+    var ret = WrapperHelper.GetString(wgtk_file_chooser_get_filename(chooser));
+    return ret;
+}
+
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_get_filenames")]
 private extern static IntPtr wgtk_file_chooser_get_filenames(IntPtr chooser);
 
 public static GSList gtk_file_chooser_get_filenames(IntPtr chooser)
 {
-    var ret = (GSList)Marshal.PtrToStructure(wgtk_file_chooser_get_filenames(chooser), typeof(GSList));
+    var ret = WrapperHelper.GetStruct<GSList>(wgtk_file_chooser_get_filenames(chooser));
     return ret;
 }
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_get_select_multiple")]
 public extern static bool gtk_file_chooser_get_select_multiple(IntPtr chooser);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_list_filters")]
+private extern static IntPtr wgtk_file_chooser_list_filters(IntPtr chooser);
+
+public static GSList gtk_file_chooser_list_filters(IntPtr chooser)
+{
+    var ret = WrapperHelper.GetStruct<GSList>(wgtk_file_chooser_list_filters(chooser));
+    return ret;
+}
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_remove_filter")]
+public extern static void gtk_file_chooser_remove_filter(IntPtr chooser, IntPtr filter);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_set_current_folder")]
 public extern static bool gtk_file_chooser_set_current_folder(IntPtr chooser, string filename);
@@ -333,11 +365,26 @@ public extern static bool gtk_file_chooser_set_current_folder(IntPtr chooser, st
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_set_do_overwrite_confirmation")]
 public extern static void gtk_file_chooser_set_do_overwrite_confirmation(IntPtr chooser, bool do_overwrite_confirmation);
 
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_set_filename")]
+public extern static bool gtk_file_chooser_set_filename(IntPtr chooser, string filename);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_set_filter")]
+public extern static void gtk_file_chooser_set_filter(IntPtr chooser, IntPtr filter);
+
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_set_select_multiple")]
 public extern static void gtk_file_chooser_set_select_multiple(IntPtr chooser, bool select_multiple);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_chooser_dialog_new")]
 public extern static IntPtr gtk_file_chooser_dialog_new(string title, IntPtr parent, int action);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_filter_add_pattern")]
+public extern static void gtk_file_filter_add_pattern(IntPtr filter, string pattern);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_filter_new")]
+public extern static IntPtr gtk_file_filter_new();
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_file_filter_set_name")]
+public extern static void gtk_file_filter_set_name(IntPtr filter, string name);
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gtk_image_new")]
 public extern static IntPtr gtk_image_new();

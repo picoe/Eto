@@ -30,6 +30,14 @@ static class WrapperHelper
 
         return Encoding.UTF8.GetString(bytes);
     }
+
+    public static T GetStruct<T>(IntPtr ptr)
+    {
+        if (ptr == IntPtr.Zero)
+            return default(T);
+
+        return (T)Marshal.PtrToStructure(ptr, typeof(T));
+    }
 }
 
 <#
@@ -206,14 +214,12 @@ public class Method
             if (ReturnType == "string")
                 lines += "WrapperHelper.GetString(";
             else if (!GHelper.ValidTypes.Contains(ReturnType))
-                lines += "(" + ReturnType + ")Marshal.PtrToStructure(";
+                lines += "WrapperHelper.GetStruct<" + ReturnType + ">(";
 
             lines += "w" + Name + "(" + GetParamsLine(2) + ")";
 
-            if (ReturnType == "string")
+            if (ReturnType == "string" || !GHelper.ValidTypes.Contains(ReturnType))
                 lines += ")";
-            else if (!GHelper.ValidTypes.Contains(ReturnType))
-                lines += ", typeof(" + ReturnType + "))";
 
             lines += ";" + Environment.NewLine;
 

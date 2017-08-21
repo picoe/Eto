@@ -84,14 +84,24 @@ void      gtk_entry_set_width_chars (IntPtr entry, int n_chars);
 
 IntPtr    gtk_event_box_new ();
 
+void      gtk_file_chooser_add_filter (IntPtr chooser, IntPtr filter);
 string    gtk_file_chooser_get_current_folder (IntPtr chooser);
+string    gtk_file_chooser_get_filename (IntPtr chooser);
 GSList    gtk_file_chooser_get_filenames (IntPtr chooser);
 bool      gtk_file_chooser_get_select_multiple (IntPtr chooser);
+GSList    gtk_file_chooser_list_filters (IntPtr chooser);
+void      gtk_file_chooser_remove_filter (IntPtr chooser, IntPtr filter);
 bool      gtk_file_chooser_set_current_folder (IntPtr chooser, string filename);
 void      gtk_file_chooser_set_do_overwrite_confirmation (IntPtr chooser, bool do_overwrite_confirmation);
+bool      gtk_file_chooser_set_filename (IntPtr chooser, string filename);
+void      gtk_file_chooser_set_filter (IntPtr chooser, IntPtr filter);
 void      gtk_file_chooser_set_select_multiple (IntPtr chooser, bool select_multiple);
 
 IntPtr    gtk_file_chooser_dialog_new (string title, IntPtr parent, int action);
+
+void      gtk_file_filter_add_pattern (IntPtr filter, string pattern);
+IntPtr    gtk_file_filter_new ();
+void      gtk_file_filter_set_name (IntPtr filter, string name);
 
 IntPtr    gtk_image_new ();
 void      gtk_image_set_from_pixbuf (IntPtr image, IntPtr pixbuf);

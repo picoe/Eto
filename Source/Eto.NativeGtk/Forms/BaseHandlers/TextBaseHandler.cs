@@ -46,7 +46,7 @@ namespace Eto.GtkSharp.Forms.Controls
                 return;
 
             handler._overridetext = true;
-            var args = new TextChangingEventArgs();
+            var args = new TextChangingEventArgs(handler._prevtext, GtkWrapper.gtk_entry_get_text(handler.Handle));
             handler.Callback.OnTextChanging(handler.Widget, args);
             handler._overridetext = false;
 

@@ -261,7 +261,7 @@
     <Compile Include="Forms\Dialogs\OpenWithDialogHandler.cs" />
     <Compile Include="Forms\Dialogs\OpenFileDialogHandler.cs" />
     <Compile Include="Forms\Dialogs\SaveFileDialogHandler.cs" />
-    <Compile Include="Forms\BaseHandlers\GtkFileDialog.cs" />
+    <Compile Include="Forms\BaseHandlers\FileDialogBaseHandler.cs" />
     <Compile Include="Wrappers\WrapperGenerator.cs">
       <DependentUpon>WrapperGenerator.tt</DependentUpon>
     </Compile>
