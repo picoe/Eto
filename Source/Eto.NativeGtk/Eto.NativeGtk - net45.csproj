@@ -111,19 +111,10 @@
     <Compile Include="..\Eto.Gtk\Forms\GtkContainer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="..\Eto.Gtk\Forms\GtkFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="..\Eto.Gtk\Forms\MessageBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="..\Eto.Gtk\Forms\OpenFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="..\Eto.Gtk\Forms\PixelLayoutHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="..\Eto.Gtk\Forms\SaveFileDialog.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\Eto.Gtk\Forms\TableLayoutHandler.cs">
@@ -254,10 +245,6 @@
     <Compile Include="..\Eto.Gtk\Forms\OtherTrayIndicatorHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\LinuxNotificationHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\WebKit2WebViewHandler.cs" />
-    <Compile Include="Wrappers\WrapperHelper.cs" />
-    <Compile Include="Wrappers\GtkWrapper.cs">
-      <DependentUpon>GtkWrapper.tt</DependentUpon>
-    </Compile>
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Cells\CheckBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
@@ -272,8 +259,11 @@
     <Compile Include="Wrappers\GdkWrapperHelper.cs" />
     <Compile Include="Forms\Dialogs\SelectFolderDialogHandler.cs" />
     <Compile Include="Forms\Dialogs\OpenWithDialogHandler.cs" />
-    <Compile Include="Wrappers\GioWrapper.cs">
-      <DependentUpon>GioWrapper.tt</DependentUpon>
+    <Compile Include="Forms\Dialogs\OpenFileDialogHandler.cs" />
+    <Compile Include="Forms\Dialogs\SaveFileDialogHandler.cs" />
+    <Compile Include="Forms\BaseHandlers\GtkFileDialog.cs" />
+    <Compile Include="Wrappers\WrapperGenerator.cs">
+      <DependentUpon>WrapperGenerator.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
@@ -297,15 +287,11 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>NativeMethods.cs</LastGenOutput>
     </None>
-    <None Include="Wrappers\GtkWrapper.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>GtkWrapper.cs</LastGenOutput>
-    </None>
     <None Include="Wrappers\GtkWrapperData.cs" />
     <None Include="Wrappers\GioWrapperData.cs" />
-    <None Include="Wrappers\GioWrapper.tt">
+    <None Include="Wrappers\WrapperGenerator.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>GioWrapper.cs</LastGenOutput>
+      <LastGenOutput>WrapperGenerator.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

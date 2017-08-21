@@ -85,7 +85,11 @@ void      gtk_entry_set_width_chars (IntPtr entry, int n_chars);
 IntPtr    gtk_event_box_new ();
 
 string    gtk_file_chooser_get_current_folder (IntPtr chooser);
+GSList    gtk_file_chooser_get_filenames (IntPtr chooser);
+bool      gtk_file_chooser_get_select_multiple (IntPtr chooser);
 bool      gtk_file_chooser_set_current_folder (IntPtr chooser, string filename);
+void      gtk_file_chooser_set_do_overwrite_confirmation (IntPtr chooser, bool do_overwrite_confirmation);
+void      gtk_file_chooser_set_select_multiple (IntPtr chooser, bool select_multiple);
 
 IntPtr    gtk_file_chooser_dialog_new (string title, IntPtr parent, int action);
 

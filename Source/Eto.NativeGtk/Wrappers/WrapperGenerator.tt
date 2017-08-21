@@ -5,35 +5,87 @@
 <#@ import namespace="System.Linq" #>
 <#
 
-var library = "libgtk-3.so.0";
-var lines = File.ReadAllLines(Path.Combine(Path.GetDirectoryName(this.Host.TemplateFile), "GioWrapperData.cs"));
+var wdata = new List<WrapperData>();
+wdata.Add(new WrapperData { Library = "libgtk-3.so.0", Name = "GtkWrapper", File = "GtkWrapperData.cs" });
+wdata.Add(new WrapperData { Library = "libgtk-3.so.0", Name = "GioWrapper", File = "GioWrapperData.cs" });
 
 #>
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
-static partial class <#= Path.GetFileNameWithoutExtension(Host.TemplateFile) #>
+static class WrapperHelper
 {
-    public const string NativeLib = "<#= library #>";
+    public static string GetString(IntPtr ptr)
+    {
+        if (ptr == IntPtr.Zero)
+            return "";
+
+        int len = 0;
+        while (Marshal.ReadByte(ptr, len) != 0)
+            len++;
+
+        var bytes = new byte[len];
+        Marshal.Copy(ptr, bytes, 0, bytes.Length);
+
+        return Encoding.UTF8.GetString(bytes);
+    }
+}
 
 <#
-var methods = new List<Method>();
-
-foreach(var line in lines)
+foreach (var data in wdata)
 {
-    if (string.IsNullOrEmpty(line) || line.Contains("//"))
-        continue;
+#>
 
-    methods.Add(new Method(line));
-}
-
-foreach (var method in methods)
+static partial class <#= data.Name #>
 {
-#><#=method #><#
+    public const string NativeLib = "<#= data.Library #>";
+
+<#
+    var lines = File.ReadAllLines(Path.Combine(Path.GetDirectoryName(this.Host.TemplateFile), data.File));
+	var methods = new List<Method>();
+
+	foreach(var line in lines)
+	{
+	    if (string.IsNullOrEmpty(line) || line.Contains("//"))
+	        continue;
+
+	    methods.Add(new Method(line));
+	}
+
+	foreach (var method in methods)
+	{
+	#><#=method #><#
+	}
+#>}<#
 }
 #>
-}
 <#+
+public class WrapperData
+{
+    public string Library { get; set; }
+
+    public string Name { get; set; }
+
+    public string File { get; set; }
+}
+
+public static class GHelper
+{
+    public static string[] ValidTypes = {
+        "void",
+        "int",
+        "string",
+        "bool",
+        "IntPtr",
+        "double",
+        "float",
+        "char",
+        "string[]",
+        "uint"
+    };
+}
+
 public class Param
 {
     public bool Out;
@@ -57,21 +109,7 @@ public class Param
 
     public bool IsStruct()
     {
-        switch(Type)
-        {
-            case "int":
-            case "string":
-            case "bool":
-            case "IntPtr":
-            case "double":
-            case "float":
-            case "char":
-            case "string[]":
-            case "uint":
-                return false;
-        }
-
-        return true;
+        return !GHelper.ValidTypes.Contains(Type);
     }
 }
 
@@ -97,10 +135,10 @@ public class Method
             if (!string.IsNullOrWhiteSpace(ps))
                 Params.Add(new Param(ps.Trim(' ')));
 
-        CustomMethod = ReturnType == "string";
-        if(!CustomMethod)
+        CustomMethod = ReturnType == "string" || !GHelper.ValidTypes.Contains(ReturnType);
+        if (!CustomMethod)
         {
-            foreach(var p in Params)
+            foreach (var p in Params)
             {
                 if (p.IsStruct() && !p.Out)
                     CustomMethod = true;
@@ -143,7 +181,7 @@ public class Method
         string lines = "";
 
         lines += "[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = \"" + Name + "\")]" + Environment.NewLine;
-        lines += (CustomMethod ? "private" : "public") + " extern static " + (CustomMethod ? (((ReturnType == "string") ? "IntPtr" : ReturnType) + " w") : ReturnType + " ") + Name + "(" + GetParamsLine(0) + ");" + Environment.NewLine;
+        lines += (CustomMethod ? "private" : "public") + " extern static " + (CustomMethod ? (((ReturnType == "string" || !GHelper.ValidTypes.Contains(ReturnType)) ? "IntPtr" : ReturnType) + " w") : ReturnType + " ") + Name + "(" + GetParamsLine(0) + ");" + Environment.NewLine;
         lines += Environment.NewLine;
 
         if (CustomMethod)
@@ -151,9 +189,9 @@ public class Method
             lines += "public static " + ReturnType + " " + Name + "(" + GetParamsLine(1) + ")" + Environment.NewLine;
             lines += "{" + Environment.NewLine;
 
-            foreach(var parm in Params)
+            foreach (var parm in Params)
             {
-                if(!parm.Out && parm.IsStruct())
+                if (!parm.Out && parm.IsStruct())
                 {
                     lines += "    IntPtr p" + parm.Name + " = Marshal.AllocHGlobal(Marshal.SizeOf(" + parm.Name + "));" + Environment.NewLine;
                     lines += "    Marshal.StructureToPtr(" + parm.Name + ", p" + parm.Name + ", true);" + Environment.NewLine;
@@ -167,11 +205,15 @@ public class Method
 
             if (ReturnType == "string")
                 lines += "WrapperHelper.GetString(";
+            else if (!GHelper.ValidTypes.Contains(ReturnType))
+                lines += "(" + ReturnType + ")Marshal.PtrToStructure(";
 
             lines += "w" + Name + "(" + GetParamsLine(2) + ")";
 
             if (ReturnType == "string")
                 lines += ")";
+            else if (!GHelper.ValidTypes.Contains(ReturnType))
+                lines += ", typeof(" + ReturnType + "))";
 
             lines += ";" + Environment.NewLine;
 
@@ -182,11 +224,10 @@ public class Method
                     lines += "    Marshal.FreeHGlobal(p" + parm.Name + ");" + Environment.NewLine;
                 }
             }
-            // Deallocate
 
             if (ReturnType != "void")
                 lines += "    return ret;" + Environment.NewLine;
-            
+
             lines += "}" + Environment.NewLine;
             lines += Environment.NewLine;
         }

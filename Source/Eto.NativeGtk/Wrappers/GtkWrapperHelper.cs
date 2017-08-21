@@ -47,4 +47,27 @@ static partial class GtkWrapper
         public int Width;
         public int Height;
     }
+
+    public struct GSList
+    {
+        public IntPtr Data;
+        public IntPtr Next;
+
+        public bool MoveNext(out GSList list)
+        {
+            if (Next == IntPtr.Zero)
+            {
+                list = this;
+                return false;
+            }
+
+            list = (GSList)Marshal.PtrToStructure(Next, typeof(GSList));
+            return true;
+        }
+
+        public string GetData()
+        {
+            return WrapperHelper.GetString(Data);
+        }
+    }
 }
