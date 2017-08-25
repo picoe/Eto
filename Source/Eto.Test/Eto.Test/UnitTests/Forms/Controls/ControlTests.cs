@@ -1,31 +1,113 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using NUnit.Framework;
 using System.Collections.Generic;
 using Eto.Drawing;
+using System.Threading;
+using System.Runtime.ExceptionServices;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
 	public class ControlTests : TestBase
 	{
-		public static IEnumerable<Func<Control>> Controls()
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void DefaultValuesShouldBeCorrect(Type controlType)
 		{
-			yield return () => new TextBox();
-			yield return () => new Button();
-			yield return () => new Drawable();
-			yield return () => new Label();
-		}
-
-		[TestCaseSource("Controls")]
-		public void DefaultValuesShouldBeCorrect(Func<Control> control)
-		{
-			TestProperties(f => control(),
+			TestProperties(f => (Control)Activator.CreateInstance(controlType),
 						   c => c.Enabled,
 						   c => c.ToolTip,
 						   c => c.TabIndex
 			);
+		}
 
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlShouldFireShownEvent(Type controlType)
+		{
+			int shownCount = 0;
+			Form(form =>
+			{
+				var ctl = (Control)Activator.CreateInstance(controlType);
+				ctl.Shown += (sender, e) =>
+				{
+					shownCount++;
+					Application.Instance.AsyncInvoke(() =>
+					{
+						if (form.Loaded)
+							form.Close();
+					});
+				};
+				form.Content = TableLayout.AutoSized(ctl);
+				Assert.AreEqual(0, shownCount);
+			});
+			Assert.AreEqual(1, shownCount);
+		}
+
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlShouldFireShownEventWhenAddedDynamically(Type controlType)
+		{
+			Exception exception = null;
+			int shownCount = 0;
+			Form(form =>
+			{
+				form.Shown += (sender, e) => Application.Instance.AsyncInvoke(() =>
+				{
+					try
+					{
+						var ctl = (Control)Activator.CreateInstance(controlType);
+						ctl.Shown += (sender2, e2) =>
+						{
+							shownCount++;
+							Application.Instance.AsyncInvoke(() =>
+							{
+								if (form.Loaded)
+									form.Close();
+							});
+						};
+						form.Content = TableLayout.AutoSized(ctl);
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+					}
+				});
+			});
+			if (exception != null)
+				ExceptionDispatchInfo.Capture(exception).Throw();
+
+			Assert.AreEqual(1, shownCount);
+		}
+
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlShouldFireShownEventWhenVisibleChanged(Type controlType)
+		{
+			int shownCount = 0;
+			int? initialShownCount = null;
+			Form(form =>
+			{
+				var ctl = (Control)Activator.CreateInstance(controlType);
+				ctl.Shown += (sender2, e2) =>
+				{
+					shownCount++;
+					Application.Instance.AsyncInvoke(() =>
+					{
+						if (form.Loaded)
+							form.Close();
+					});
+				};
+				ctl.Visible = false;
+				Assert.AreEqual(0, shownCount);
+				form.Content = TableLayout.AutoSized(ctl);
+				Assert.AreEqual(0, shownCount);
+				form.Shown += (sender, e) => Application.Instance.AsyncInvoke(() =>
+				{
+					initialShownCount = shownCount;
+					ctl.Visible = true;
+				});
+			});
+
+			Assert.AreEqual(0, initialShownCount, "#1"); // should not be initially called
+			Assert.AreEqual(1, shownCount, "#2");
 		}
 
 		[ManualTest, Test]

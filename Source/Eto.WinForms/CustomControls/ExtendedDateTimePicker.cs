@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using swf = System.Windows.Forms;
@@ -24,11 +24,11 @@ namespace Eto.WinForms.CustomControls
 		int selectedSegment = -1;
 
 		const swf.TextFormatFlags RenderTextFormat = swf.TextFormatFlags.SingleLine
-		                                             | swf.TextFormatFlags.NoPrefix
-		                                             | swf.TextFormatFlags.TextBoxControl
-		                                             | swf.TextFormatFlags.Right
-		                                             | swf.TextFormatFlags.VerticalCenter
-		                                             | swf.TextFormatFlags.NoPadding;
+													 | swf.TextFormatFlags.NoPrefix
+													 | swf.TextFormatFlags.TextBoxControl
+													 | swf.TextFormatFlags.Right
+													 | swf.TextFormatFlags.VerticalCenter
+													 | swf.TextFormatFlags.NoPadding;
 
 		class Segment
 		{
@@ -102,46 +102,43 @@ namespace Eto.WinForms.CustomControls
 			if (format == null)
 				return;
 
-			using (var g = CreateGraphics())
+			var pixelPos = 0;
+			var pos = 0;
+			while (pos < format.Length)
 			{
-				var pixelPos = 0;
-				var pos = 0;
-				while (pos < format.Length)
+				var ch = format[pos];
+				var def = defs.FirstOrDefault(r => r.Char == ch);
+				if (def != null)
 				{
-					var ch = format[pos];
-					var def = defs.FirstOrDefault(r => r.Char == ch);
-					if (def != null)
+					var endPos = pos;
+					while (endPos < format.Length - 1 && format[endPos + 1] == ch)
+						endPos++;
+					var str = def.MaxWidth(format.Substring(pos, (endPos - pos + 1)));
+					var strSize = swf.TextRenderer.MeasureText(str, Font, sd.Size.Empty, RenderTextFormat);
+					var segment = new Segment
 					{
-						var endPos = pos;
-						while (endPos < format.Length - 1 && format[endPos + 1] == ch)
-							endPos++;
-						var str = def.MaxWidth(format.Substring(pos, (endPos - pos + 1)));
-						var strSize = swf.TextRenderer.MeasureText(g, str, Font, sd.Size.Empty, RenderTextFormat);
-						var segment = new Segment
-						{
-							Start = pixelPos,
-							Width = strSize.Width,
-							Format = format.Substring(pos, endPos - pos + 1),
-							Def = def
-						};
-						segments.Add(segment);
-						pos = endPos;
-						pixelPos += segment.Width;
-					}
-					else
-					{
-						var strSize = swf.TextRenderer.MeasureText(g, ch.ToString(CultureInfo.InvariantCulture), Font, sd.Size.Empty, RenderTextFormat);
-						var segment = new Segment
-						{
-							Start = pixelPos,
-							Width = strSize.Width,
-							StaticText = ch.ToString(CultureInfo.InvariantCulture)
-						};
-						segments.Add(segment);
-						pixelPos += segment.Width;
-					}
-					pos++;
+						Start = pixelPos,
+						Width = strSize.Width,
+						Format = format.Substring(pos, endPos - pos + 1),
+						Def = def
+					};
+					segments.Add(segment);
+					pos = endPos;
+					pixelPos += segment.Width;
 				}
+				else
+				{
+					var strSize = swf.TextRenderer.MeasureText(ch.ToString(CultureInfo.InvariantCulture), Font, sd.Size.Empty, RenderTextFormat);
+					var segment = new Segment
+					{
+						Start = pixelPos,
+						Width = strSize.Width,
+						StaticText = ch.ToString(CultureInfo.InvariantCulture)
+					};
+					segments.Add(segment);
+					pixelPos += segment.Width;
+				}
+				pos++;
 			}
 
 		}
@@ -269,7 +266,7 @@ namespace Eto.WinForms.CustomControls
 			{
 				g.FillRectangle(bgBrush, e.ClipRectangle);
 			}
-			
+
 			// calculate text location
 			var font = Font;
 			var fontSize = swf.TextRenderer.MeasureText(g, "9/", font, new sd.Size(int.MaxValue, int.MaxValue), RenderTextFormat);
@@ -395,7 +392,7 @@ namespace Eto.WinForms.CustomControls
 		}
 
 		bool showBorder = true;
-        public bool ShowBorder
+		public bool ShowBorder
 		{
 			get { return showBorder; }
 			set

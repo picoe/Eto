@@ -396,6 +396,9 @@ namespace Eto.Forms
 				case Eto.Forms.Control.TextInputEvent:
 					KeyboardControl.TextInput += (s, e) => Callback.OnTextInput(Widget, e);
 					break;
+				case Eto.Forms.Control.ShownEvent:
+					Control.Shown += (s, e) => Callback.OnShown(Widget, e);
+					break;
 				default:
 					base.AttachEvent(id);
 					break;

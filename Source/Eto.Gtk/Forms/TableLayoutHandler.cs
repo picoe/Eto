@@ -83,6 +83,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			align = new Gtk.Alignment(0, 0, 1.0F, 1.0F);
 			box = new Gtk.EventBox { Child = align };
+			Control = new Gtk.Table(1, 1, false);
 		}
 
 		public void CreateControl(int cols, int rows)
@@ -91,7 +92,7 @@ namespace Eto.GtkSharp.Forms
 			lastColumnScale = cols - 1;
 			rowScale = new bool[rows];
 			lastRowScale = rows - 1;
-			Control = new Gtk.Table((uint)rows, (uint)cols, false);
+			Control.Resize((uint)rows, (uint)cols);
 			controls = new Control[rows, cols];
 			blank = new Gtk.Widget[rows, cols];
 			align.Add(Control);
@@ -230,6 +231,19 @@ namespace Eto.GtkSharp.Forms
 		{
 			base.OnLoadComplete(e);
 			SetFocusChain();
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Eto.Forms.Control.ShownEvent:
+					Control.Mapped += Connector.MappedEvent;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

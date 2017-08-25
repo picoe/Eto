@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
@@ -249,6 +249,8 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				SwfTextBox.SelectionStart = value;
 				SwfTextBox.SelectionLength = 0;
+				if (!Widget.Loaded)
+					ShouldSelect = false;
 			}
 		}
 
@@ -259,6 +261,8 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				SwfTextBox.SelectionStart = value.Start;
 				SwfTextBox.SelectionLength = value.Length();
+				if (!Widget.Loaded)
+					ShouldSelect = false;
 			}
 		}
 

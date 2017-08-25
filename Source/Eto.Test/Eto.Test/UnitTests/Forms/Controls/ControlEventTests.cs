@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Eto.Forms;
@@ -8,44 +8,18 @@ using System.Reflection;
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
-	public class ControlEventTests
+	public class ControlEventTests : TestBase
 	{
-		static IEnumerable<Control> GetControls()
-		{
-			var controls = new List<Control>();
-			TestBase.Invoke(() =>
-			{
-				var controlTypes = typeof(Control)
-					.GetTypeInfo().Assembly.ExportedTypes
-					.Where(r =>
-					{
-						var ti = r.GetTypeInfo();
-						return r.FullName.StartsWith("Eto.Forms", StringComparison.Ordinal)
-							&& typeof(Control).GetTypeInfo().IsAssignableFrom(ti)
-							&& !ti.IsAbstract
-							&& !ti.IsGenericType
-							&& ti.DeclaredConstructors.Any(c => c.GetParameters().Length == 0);
-					});
-				foreach (var type in controlTypes)
-				{
-					if (!Platform.Instance.Supports(type))
-						continue;
-					controls.Add((Control)Activator.CreateInstance(type));
-				}
-			});
-			return controls;
-		
-		}
-
 		/// <summary>
 		/// Test to ensure all common events can be handled
 		/// </summary>
 		[Test]
-		[TestCaseSource("GetControls")]
-		public void ControlEventsShouldBeHandled(Control control)
+		[TestCaseSource(nameof(GetAllControlTypes))]
+		public void ControlEventsShouldBeHandled(Type controlType)
 		{
 			TestBase.Invoke(() =>
 			{
+				var control = (Control)Activator.CreateInstance(controlType);
 				try
 				{
 					control.SizeChanged += Control_EventHandler;

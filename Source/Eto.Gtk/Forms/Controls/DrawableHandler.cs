@@ -69,6 +69,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleExpose(object o, Gtk.ExposeEventArgs args)
 			{
 				var h = Handler;
+				if (h == null) // can happen if expose event happens after window is closed
+					return;
 				Gdk.EventExpose ev = args.Event;
 				using (var graphics = new Graphics(new GraphicsHandler(h.Control, ev.Window)))
 				{
