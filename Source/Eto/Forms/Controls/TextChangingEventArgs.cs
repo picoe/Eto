@@ -37,7 +37,19 @@ namespace Eto.Forms
 		{
 			Text = text;
 			Range = range;
-		}
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Eto.Forms.TextChangingEventArgs"/> class.
+        /// </summary>
+		/// <param name="oldtext">The old text.</param>
+		/// <param name="newtext">The new text.</param>
+        public TextChangingEventArgs(string oldtext, string newtext)
+        {
+			// TODO: Calculate change
+			Text = "";
+			Range = new Range<int>(0);
+        }
 	}
 	
 }

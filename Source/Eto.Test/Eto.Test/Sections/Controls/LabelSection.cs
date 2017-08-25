@@ -18,8 +18,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow(null, ColorLabel(), BackgroundColorLabel(), null);
 			layout.Add(CenterLabel());
 			layout.Add(RightLabel());
-			layout.Add(MiddleLabel(), yscale: true);
-			layout.Add(BottomLabel(), yscale: true);
+			layout.Add(MiddleLabel());
+			layout.Add(BottomLabel());
 
 			Content = layout;
 		}
@@ -66,7 +66,8 @@ namespace Eto.Test.Sections.Controls
 				Text = "Middle Center Align",
 				TextAlignment = TextAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center,
-				BackgroundColor = Colors.AliceBlue
+				BackgroundColor = Colors.AliceBlue,
+				Height = 100
 			};
 		}
 
@@ -77,7 +78,8 @@ namespace Eto.Test.Sections.Controls
 				Text = "Bottom Center Align",
 				TextAlignment = TextAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Bottom,
-				BackgroundColor = Colors.AliceBlue
+				BackgroundColor = Colors.AliceBlue,
+				Height = 100
 			};
 		}
 
@@ -130,7 +132,8 @@ namespace Eto.Test.Sections.Controls
 			const string text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum";
 			var label = new Label
 			{
-				Text = text
+				Text = text,
+				Wrap = WrapMode.Word
 			};
 
 			var wrapDropDown = new EnumDropDown<WrapMode>();
