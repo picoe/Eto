@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-// ReSharper disable InconsistentNaming
 
 static partial class GtkWrapper
 {

@@ -241,8 +241,6 @@
     <Compile Include="..\Eto.Gtk\NativeMethods.cs">
       <DependentUpon>NativeMethods.tt</DependentUpon>
     </Compile>
-    <Compile Include="..\Eto.Gtk\Forms\LinuxTrayIndicatorHandler.cs" />
-    <Compile Include="..\Eto.Gtk\Forms\OtherTrayIndicatorHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\LinuxNotificationHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\WebKit2WebViewHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
@@ -265,6 +263,7 @@
     <Compile Include="Wrappers\WrapperGenerator.cs">
       <DependentUpon>WrapperGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="Forms\TrayIndicatorHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -293,6 +292,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>WrapperGenerator.cs</LastGenOutput>
     </None>
+    <None Include="Wrappers\AppIndicatorData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Wrappers\" />

@@ -542,3 +542,38 @@ public static string g_app_info_get_executable(IntPtr appinfo)
 public extern static IntPtr g_file_new_for_path(string path);
 
 }
+static partial class AppIndicator
+{
+    public const string NativeLib = "libappindicator3.so.1";
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "app_indicator_dispose")]
+public extern static void app_indicator_dispose(IntPtr gobject);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "app_indicator_get_status")]
+public extern static int app_indicator_get_status(IntPtr self);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "app_indicator_get_title")]
+private extern static IntPtr wapp_indicator_get_title(IntPtr self);
+
+public static string app_indicator_get_title(IntPtr self)
+{
+    var ret = WrapperHelper.GetString(wapp_indicator_get_title(self));
+    return ret;
+}
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "app_indicator_new")]
+public extern static IntPtr app_indicator_new(string id, string icon_name, int category);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "app_indicator_set_icon")]
+public extern static void app_indicator_set_icon(IntPtr self, string icon_name);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "app_indicator_set_menu")]
+public extern static void app_indicator_set_menu(IntPtr self, IntPtr menu);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "app_indicator_set_status")]
+public extern static void app_indicator_set_status(IntPtr self, int status);
+
+[DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "app_indicator_set_title")]
+public extern static void app_indicator_set_title(IntPtr self, string title);
+
+}
