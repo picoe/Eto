@@ -713,7 +713,7 @@ namespace Eto.Mac.Forms
 				{
 					Control.IsVisible = value;
 					if (Widget.Loaded && value)
-						Callback.OnShown(Widget, EventArgs.Empty);
+						FireOnShown();
 				}
 			}
 		}

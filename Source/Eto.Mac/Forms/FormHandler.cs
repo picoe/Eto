@@ -100,9 +100,11 @@ namespace Eto.Mac.Forms
 			{
 				Control.OrderFront(ApplicationHandler.Instance.AppDelegate);
 			}
-			
+
 			if (!visible)
-				Callback.OnShown(Widget, EventArgs.Empty);
+			{
+				FireOnShown();
+			}
 		}
 
 		public bool ShowActivated { get; set; } = true;

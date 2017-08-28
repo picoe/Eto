@@ -231,6 +231,9 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.PoppedDown += Connector.HandlePoppedDown;
 					break;
 #endif
+				case Eto.Forms.Control.ShownEvent:
+					Control.Mapped += Connector.MappedEvent;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;

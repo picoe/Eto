@@ -193,7 +193,7 @@ namespace Eto.Mac.Forms.Controls
 					h.ExpandItems(myitem);
 					h.suppressExpandCollapseEvents--;
 					h.Callback.OnExpanded(h.Widget, new TreeGridViewItemEventArgs(myitem.Item));
-					h.AutoSizeColumns();
+					h.AutoSizeColumns(true);
 				}
 			}
 
@@ -407,7 +407,7 @@ namespace Eto.Mac.Forms.Controls
 				ExpandItems(null);
 				suppressExpandCollapseEvents--;
 				if (Widget.Loaded)
-					AutoSizeColumns();
+					AutoSizeColumns(true);
 			}
 		}
 
@@ -643,7 +643,7 @@ namespace Eto.Mac.Forms.Controls
 				Control.ReloadItem(myitem, true);
 				SetItemExpansion(myitem);
 				ExpandItems(myitem);
-				AutoSizeColumns();
+				AutoSizeColumns(true);
 				var isSelectionChanged = false;
 				foreach (var sel in selection)
 				{

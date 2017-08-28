@@ -357,8 +357,7 @@ namespace Eto.GtkSharp.Forms
 					EventControl.FocusOutEvent += Connector.FocusOutEvent;
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					EventControl.AddEvents((int)Gdk.EventMask.VisibilityNotifyMask);
-					EventControl.VisibilityNotifyEvent += Connector.VisibilityNotifyEvent;
+					EventControl.Mapped += Connector.MappedEvent;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -562,16 +561,15 @@ namespace Eto.GtkSharp.Forms
 					handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
 			}
 
-			public void VisibilityNotifyEvent(object o, Gtk.VisibilityNotifyEventArgs args)
-			{
-				if (args.Event.State == Gdk.VisibilityState.FullyObscured)
-					Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
-			}
-
 			public void HandleControlRealized(object sender, EventArgs e)
 			{
 				Handler.RealizedSetup();
 				Handler.Control.Realized -= HandleControlRealized;
+			}
+
+			public virtual void MappedEvent(object sender, EventArgs e)
+			{
+				Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

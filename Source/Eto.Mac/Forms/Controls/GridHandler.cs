@@ -51,7 +51,7 @@ namespace Eto.Mac.Forms.Controls
 
 		NSTableView Table { get; }
 
-		bool AutoSizeColumns();
+		bool AutoSizeColumns(bool force);
 	}
 
 	class EtoGridScrollView : NSScrollView, IMacControl
@@ -68,7 +68,7 @@ namespace Eto.Mac.Forms.Controls
 
 			if (!autoSized)
 			{
-				autoSized = Handler.AutoSizeColumns();
+				autoSized = Handler.AutoSizeColumns(false);
 			}
 		}
 	}
@@ -282,7 +282,7 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleScrolled(ObserverActionEventArgs e)
 		{
 			var handler = (GridHandler<TControl,TWidget,TCallback>)e.Handler;
-			handler.AutoSizeColumns();
+			handler.AutoSizeColumns(false);
 		}
 
 		public override void AttachEvent(string id)
@@ -326,13 +326,13 @@ namespace Eto.Mac.Forms.Controls
 
 		NSRange autoSizeRange;
 
-		public bool AutoSizeColumns()
+		public bool AutoSizeColumns(bool force)
 		{
 			if (Widget.Loaded)
 			{
 				var rect = Table.VisibleRect();
 				var newRange = Table.RowsInRect(rect);
-				if (newRange.Length > 0 && (autoSizeRange.Location != newRange.Location || autoSizeRange.Length != newRange.Length))
+				if (newRange.Length > 0 && (force || autoSizeRange.Location != newRange.Location || autoSizeRange.Length != newRange.Length))
 				{
 					IsAutoSizingColumns = true;
 					foreach (var col in ColumnHandlers)

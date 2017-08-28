@@ -644,6 +644,8 @@ namespace Eto.Mac.Forms
 					var oldSize = GetPreferredSize(Size.MaxValue);
 					ContainerControl.Hidden = !value;
 					LayoutIfNeeded(oldSize, true);
+					if (Widget.Loaded && value)
+						FireOnShown();
 				}
 			}
 		}
@@ -704,6 +706,11 @@ namespace Eto.Mac.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			if (Widget.Parent?.Loaded != false && !(Widget is Window))
+			{
+				// adding dynamically or loading without a parent (e.g. embedding into a native app)
+				Application.Instance.AsyncInvoke(FireOnShown);
+			}
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)
@@ -894,6 +901,21 @@ namespace Eto.Mac.Forms
 				}
 			}
 		}
+
+		static void FireOnShown(Control control)
+		{
+			if (!control.Visible)
+				return;
+			control.GetMacViewHandler()?.Callback.OnShown(control, EventArgs.Empty);
+
+			foreach (var ctl in control.VisualControls)
+			{
+				if (ctl.Visible)
+					FireOnShown(ctl);
+			}
+		}
+
+		protected void FireOnShown() => FireOnShown(Widget);
 	}
 }
 
