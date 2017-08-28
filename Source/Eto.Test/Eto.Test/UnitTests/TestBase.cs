@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using NUnit.Framework;
 using System;
@@ -186,7 +186,7 @@ namespace Eto.Test.UnitTests
 		/// <param name="test">Delegate to execute on the form</param>
 		/// <param name="timeout">Timeout to wait for the operation to complete</param>
 		public static void Form<T>(Action<T> test, int timeout = DefaultTimeout)
-			where T: Form, new()
+			where T : Form, new()
 		{
 			T form = null;
 			bool shown = false;
@@ -217,7 +217,11 @@ namespace Eto.Test.UnitTests
 				{
 					var application = Application;
 					if (application != null)
-						application.Invoke(form.Close);
+						application.Invoke(() =>
+						{
+							if (form.Loaded)
+								form.Close();
+						});
 					else
 						form.Close();
 				}
@@ -421,7 +425,7 @@ namespace Eto.Test.UnitTests
 		}
 
 		public static PropertyTestInfo PropertyTest<T>(params Expression<Func<T, object>>[] param)
-			where T: new()
+			where T : new()
 		{
 			return new PropertyTestInfo
 			{
@@ -434,7 +438,8 @@ namespace Eto.Test.UnitTests
 		public static void TestProperties<T>(Func<Form, T> create, params Expression<Func<T, object>>[] properties)
 		{
 			PropertyTestInfo test = null;
-			Shown(form => {
+			Shown(form =>
+			{
 				var ctl = create(form);
 				test = PropertyTest<T>(() => ctl, properties);
 				test.Run();
@@ -465,6 +470,35 @@ namespace Eto.Test.UnitTests
 			{
 				return $"{Type}: {string.Join(",", Properties)}";
 			}
+		}
+
+		public static IEnumerable<Type> GetAllControlTypes()
+		{
+			return typeof(Control)
+				.GetTypeInfo().Assembly.ExportedTypes
+				.Where(r =>
+				{
+					var ti = r.GetTypeInfo();
+					return
+						r.FullName.StartsWith("Eto.Forms", StringComparison.Ordinal)
+						&& Platform.Instance.Supports(r)
+						&& typeof(Control).GetTypeInfo().IsAssignableFrom(ti)
+						&& !ti.IsAbstract
+						&& !ti.IsGenericType
+						&& ti.DeclaredConstructors.Any(c => c.GetParameters().Length == 0);
+				})
+				.OrderBy(r => r.FullName);
+		}
+
+		public static IEnumerable<Type> GetControlTypes()
+		{
+			return GetAllControlTypes()
+				.Where(r =>
+				{
+					var ti = r.GetTypeInfo();
+					return !typeof(Window).GetTypeInfo().IsAssignableFrom(ti)
+						&& !typeof(TabPage).GetTypeInfo().IsAssignableFrom(ti);
+				});
 		}
 	}
 }

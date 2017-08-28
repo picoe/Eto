@@ -60,18 +60,15 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				var size = new sd.Size(16, 20);
 				var font = Font;
-				using (var g = CreateGraphics())
+				foreach (object item in Items)
 				{
-					foreach (object item in Items)
-					{
-						var text = GetItemText(item);
-						var itemSize = swf.TextRenderer.MeasureText(g, text, font);
-						var image = (item as EtoComboBoxItem)?.Image;
-						if (image != null)
-							itemSize.Width += 18;
-						size.Width = Math.Max(size.Width, (int) itemSize.Width);
-						size.Height = Math.Max(size.Height, (int) itemSize.Height);
-					}
+					var text = GetItemText(item);
+					var itemSize = swf.TextRenderer.MeasureText(text, font);
+					var image = (item as EtoComboBoxItem)?.Image;
+					if (image != null)
+						itemSize.Width += 18;
+					size.Width = Math.Max(size.Width, (int) itemSize.Width);
+					size.Height = Math.Max(size.Height, (int) itemSize.Height);
 				}
 				// for drop down glyph and border
 				if (DrawMode == swf.DrawMode.OwnerDrawFixed)

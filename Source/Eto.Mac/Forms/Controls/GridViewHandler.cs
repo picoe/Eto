@@ -305,7 +305,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void AddRange(IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData();
-				Handler.AutoSizeColumns();
+				Handler.AutoSizeColumns(true);
 			}
 
 			static Selector selInsertRowsWithAnimation = new Selector("insertRowsAtIndexes:withAnimation:");
@@ -322,7 +322,7 @@ namespace Eto.Mac.Forms.Controls
 				else
 					Handler.Control.ReloadData();
 
-				Handler.AutoSizeColumns();
+				Handler.AutoSizeColumns(true);
 			}
 
 			public override void InsertItem(int index, object item)
@@ -342,7 +342,7 @@ namespace Eto.Mac.Forms.Controls
 					Handler.SuppressSelectionChanged--;
 				}
 
-				Handler.AutoSizeColumns();
+				Handler.AutoSizeColumns(true);
 			}
 
 			public override void RemoveItem(int index)
@@ -373,13 +373,13 @@ namespace Eto.Mac.Forms.Controls
 						Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 				}
 
-				Handler.AutoSizeColumns();
+				Handler.AutoSizeColumns(true);
 			}
 
 			public override void RemoveAllItems()
 			{
 				Handler.Control.ReloadData();
-				Handler.AutoSizeColumns();
+				Handler.AutoSizeColumns(true);
 			}
 		}
 
@@ -393,7 +393,7 @@ namespace Eto.Mac.Forms.Controls
 				collection = new CollectionHandler{ Handler = this };
 				collection.Register(value);
 				if (Widget.Loaded)
-					AutoSizeColumns();
+					AutoSizeColumns(true);
 			}
 		}
 
