@@ -23,12 +23,13 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 
 		public static FrameworkElement Create (FrameworkElement content, TreeController controller)
 		{
-			var panel = new StackPanel { Orientation = swc.Orientation.Horizontal };
+			var dock = new DockPanel();
 			var button = new TreeToggleButton { Controller = controller, Width = 16 };
-			panel.Children.Add (button);
-			panel.DataContextChanged += (sender, e) => button.Configure(panel.DataContext as ITreeGridItem);
-			panel.Children.Add (content);
-			return panel;
+			DockPanel.SetDock(button, Dock.Left);
+			dock.Children.Add (button);
+			dock.DataContextChanged += (sender, e) => button.Configure(dock.DataContext as ITreeGridItem);
+			dock.Children.Add (content);
+			return dock;
 		}
 
 		protected override void OnPreviewMouseLeftButtonDown (System.Windows.Input.MouseButtonEventArgs e)
