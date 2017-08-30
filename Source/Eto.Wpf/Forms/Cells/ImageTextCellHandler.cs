@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
@@ -12,6 +12,18 @@ namespace Eto.Wpf.Forms.Cells
 {
 	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.Column, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
 	{
+		static readonly object UseMouseSelectionOnly_Key = new object();
+
+		/// <summary>
+		/// This makes the mouse only select text without being able to drag/drop the text.
+		/// By default, when clicking and dragging a selection it would allow you to drag the text to other controls.
+		/// </summary>
+		public bool UseMouseSelectionOnly
+		{
+			get { return Widget.Properties.Get(UseMouseSelectionOnly_Key, false); }
+			set { Widget.Properties.Set(UseMouseSelectionOnly_Key, value); }
+		}
+
 		public TextAlignment TextAlignment
 		{
 			get { return Control.TextAlignment.ToEto(); }
@@ -177,6 +189,13 @@ namespace Eto.Wpf.Forms.Cells
 					if (Handler.AutoSelectMode == AutoSelectMode.OnFocus)
 						control.SelectAll();
 				};
+				if (Handler.UseMouseSelectionOnly)
+				{
+					element.PreviewMouseLeftButtonDown += (sender, e) =>
+					{
+						element.Select(0, 0);
+					};
+				}
 				element.DataContextChanged += (sender, e) =>
 				{
 					var control = sender as swc.TextBox;
