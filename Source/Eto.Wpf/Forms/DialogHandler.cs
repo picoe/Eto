@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
@@ -15,22 +15,24 @@ namespace Eto.Wpf.Forms
         swc.DockPanel dockMain;
         swc.Grid gridButtons;
 
-		public DialogHandler()
+		public DialogHandler() : this(new sw.Window()) { }
+
+		public DialogHandler(sw.Window window)
 		{
-			Control = new sw.Window();
+			Control = window;
 			Control.ShowInTaskbar = false;
 			Resizable = false;
 			Minimizable = false;
 			Maximizable = false;
 			Control.PreviewKeyDown += Control_PreviewKeyDown;
 
-            dockMain = new swc.DockPanel();
+			dockMain = new swc.DockPanel();
 
-            gridButtons = new swc.Grid();
-            gridButtons.RowDefinitions.Add(new swc.RowDefinition());
-            gridButtons.Visibility = System.Windows.Visibility.Hidden;
-            gridButtons.Margin = new sw.Thickness();
-        }
+			gridButtons = new swc.Grid();
+			gridButtons.RowDefinitions.Add(new swc.RowDefinition());
+			gridButtons.Visibility = System.Windows.Visibility.Hidden;
+			gridButtons.Margin = new sw.Thickness();
+		}
 
         public override void SetContainerContent(sw.FrameworkElement content)
         {
