@@ -7,7 +7,7 @@
 
 var wdata = new List<WrapperData>();
 wdata.Add(new WrapperData { Library = "libgtk-3.so.0", Name = "GtkWrapper", File = "GtkWrapperData.cs" });
-wdata.Add(new WrapperData { Library = "libgtk-3.so.0", Name = "GioWrapper", File = "GioWrapperData.cs" });
+wdata.Add(new WrapperData { Library = "libgio-2.0.so.0", Name = "GioWrapper", File = "GioWrapperData.cs" });
 wdata.Add(new WrapperData { Library = "libappindicator3.so.1", Name = "AppIndicator", File = "AppIndicatorData.cs" });
 
 #>

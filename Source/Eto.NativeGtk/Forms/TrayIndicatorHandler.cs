@@ -10,10 +10,14 @@ namespace Eto.GtkSharp.Forms
     public class TrayIndicatorHandler : WidgetHandler<IntPtr, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
     {
         private static uint s_id = 0;
+        private IntPtr _menuEmpty;
 
         public TrayIndicatorHandler()
         {
-            Control = AppIndicator.app_indicator_new(Assembly.GetExecutingAssembly().FullName + s_id, "", 0);
+            _menuEmpty = (new Gtk.Menu()).Handle;
+
+			Control = AppIndicator.app_indicator_new(Assembly.GetExecutingAssembly().FullName + s_id, "", 0);
+			AppIndicator.app_indicator_set_menu(Control, _menuEmpty);
             AppIndicator.app_indicator_set_status(Control, 0);
 
             s_id++;
@@ -46,8 +50,13 @@ namespace Eto.GtkSharp.Forms
 
         public void SetMenu(ContextMenu menu)
         {
-            AppIndicator.app_indicator_set_menu(Control, menu?.NativeHandle ?? IntPtr.Zero);
-        }
+			//app_indicator_set_menu(Control.Handle, (menu.ControlObject as Gtk.Menu).Handle);
+
+			AppIndicator.app_indicator_set_menu(Control, menu?.NativeHandle ?? _menuEmpty);
+			
+
+            //AppIndicator.app_indicator_set_menu(Control, menu.NativeHandle);
+		}
 
         public override void AttachEvent(string id)
         {

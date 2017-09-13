@@ -527,7 +527,7 @@ public extern static void gtk_window_set_transient_for(IntPtr window, IntPtr par
 }
 static partial class GioWrapper
 {
-    public const string NativeLib = "libgtk-3.so.0";
+    public const string NativeLib = "libgio-2.0.so.0";
 
 [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "g_app_info_get_executable")]
 private extern static IntPtr wg_app_info_get_executable(IntPtr appinfo);

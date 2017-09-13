@@ -13,6 +13,14 @@ namespace Eto.GtkSharp.Forms.Menu
 		where TWidget: Eto.Forms.Menu
 		where TCallback : Eto.Forms.Menu.ICallback
 	{
+		public override IntPtr NativeHandle
+		{
+			get
+			{
+				return (Control as Gtk.Widget).Handle;
+			}
+		}
+
 		protected void ValidateItems()
 		{
 			var subMenu = Widget as ISubmenu;
