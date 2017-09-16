@@ -135,7 +135,9 @@ namespace Eto.Wpf.Drawing
 			var size = fittingSize ?? Size;
 			var frame = Widget.GetFrame(scale, size);
 			var wpfBitmap = frame.ToWpf(scale);
-			if (wpfBitmap.Width == size.Width && wpfBitmap.Height == size.Height)
+			if ((wpfBitmap.Width == size.Width && wpfBitmap.Height == size.Height)
+				|| size.Height == 0
+				|| size.Width == 0)
 				return wpfBitmap;
 
 			return Resize(wpfBitmap, scale, size.Width, size.Height, swm.BitmapScalingMode.Linear);

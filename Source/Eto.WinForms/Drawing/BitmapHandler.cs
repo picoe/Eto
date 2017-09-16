@@ -189,7 +189,8 @@ namespace Eto.WinForms.Drawing
 				var imageSize = Size;
 				var minScale = Math.Min((float)sz.Width / imageSize.Width, (float)sz.Height / imageSize.Height);
 				var newsize = Size.Ceiling((SizeF)imageSize * minScale).ToSD();
-				return new sd.Bitmap(Control, newsize);
+				if (newsize.Width > 0 && newsize.Height > 0)
+					return new sd.Bitmap(Control, newsize);
 			}
 			return Control;
 		}

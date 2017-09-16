@@ -167,12 +167,14 @@ namespace Eto.Wpf.CustomControls
 				return new Size(Source.Width, Source.Height);
 		}
 
+		public Size? PreferredSize { get; set; }
+
 		Size MeasureArrangeHelper(Size inputSize)
 		{
 			if (Source == null)
 				return new Size(0, 0);
 			var first = _availableFrames.LastOrDefault();
-			var size = GetSize(first ?? Source);
+			var size = PreferredSize ?? GetSize(first ?? Source);
 
 			Size scale = ComputeScaleFactor(inputSize, size, Stretch, StretchDirection);
 			if (UseSmallestSpace)
@@ -204,7 +206,7 @@ namespace Eto.Wpf.CustomControls
 				return;
 
 			var decoder = bmFrame.Decoder;
-			if (decoder != null && decoder.Frames != null)
+			if (decoder?.Dispatcher == ApplicationHandler.Instance.Control.Dispatcher && decoder?.Frames != null)
 			{
 				var framesInSizeOrder = from frame in decoder.Frames
 										group frame by frame.PixelHeight * frame.PixelWidth into g
