@@ -10,7 +10,6 @@
     <AssemblyName>Eto.XamMac2</AssemblyName>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <BaseIntermediateOutputPath>..\..\BuildOutput\obj\Eto.XamMac2 - mobile</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>

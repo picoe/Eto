@@ -10,7 +10,6 @@
     <LastXamMacNagTime>14/12/2012 1:15:16 AM</LastXamMacNagTime>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.XamMac</AssemblyName>
-    <BaseIntermediateOutputPath>..\..\..\BuildOutput\obj\Eto.Test.XamMac - net45</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

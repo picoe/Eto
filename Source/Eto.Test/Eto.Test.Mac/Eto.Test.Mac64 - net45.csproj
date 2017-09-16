@@ -11,7 +11,6 @@
     <SuppressXamMacMigration>True</SuppressXamMacMigration>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.Mac64</AssemblyName>
-    <BaseIntermediateOutputPath>..\..\..\BuildOutput\obj\Eto.Test.Mac64 - net45</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

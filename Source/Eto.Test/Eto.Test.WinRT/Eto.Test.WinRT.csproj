@@ -19,7 +19,6 @@
     <PackagesDir Condition="$(PackagesDir) == '' Or $(PackagesDir) == '*Undefined*'">..\..</PackagesDir>
     <RestorePackages>true</RestorePackages>
     <PackageCertificateThumbprint>7507F7CF95F972FA2E7AE4508DAB38AD5554AC71</PackageCertificateThumbprint>
-    <BaseIntermediateOutputPath>..\..\..\BuildOutput\obj\Eto.Test.WinRT</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
