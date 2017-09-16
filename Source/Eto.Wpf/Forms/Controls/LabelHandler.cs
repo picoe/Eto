@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Eto.Forms;
 using Eto.Drawing;
 using swc = System.Windows.Controls;
@@ -150,7 +150,6 @@ namespace Eto.Wpf.Forms.Controls
         public override void UpdatePreferredSize()
         {
             ParentMinimumSize = WpfConversions.ZeroSize;
-            SetSize();
             base.UpdatePreferredSize();
         }
 

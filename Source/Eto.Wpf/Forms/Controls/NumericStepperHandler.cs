@@ -1,10 +1,12 @@
-using System;
+﻿using System;
 using Eto.Drawing;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
 using mwc = Xceed.Wpf.Toolkit;
 using System.Text;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -15,9 +17,35 @@ namespace Eto.Wpf.Forms.Controls
 
 		public IWpfFrameworkElement Handler { get; set; }
 
+		NumericStepperHandler StepperHandler => Handler as NumericStepperHandler;
+
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+
+		string TrimNumericString(string text) => Regex.Replace(text, $"[ ]|({Regex.Escape(StepperHandler.CultureInfo.NumberFormat.NumberGroupSeparator)})", "");
+
+		bool NumberStringsMatch(string num1, string num2) => string.Compare(TrimNumericString(num1), TrimNumericString(num2), StepperHandler.CultureInfo, CompareOptions.IgnoreCase) == 0;
+
+		protected override double? ConvertTextToValue(string text)
+		{
+			var h = StepperHandler;
+			var trimmedText = text;
+			if (h?.HasFormatString == true && trimmedText != null)
+				trimmedText = Regex.Replace(trimmedText, $@"(?!\d|{Regex.Escape(h.CultureInfo.NumberFormat.NumberDecimalSeparator)}|{Regex.Escape(h.CultureInfo.NumberFormat.NegativeSign)}).", ""); // strip any non-numeric value
+			var result = base.ConvertTextToValue(trimmedText);
+
+			// test if the text matches the negative format
+			if (h.HasFormatString && result > 0 && NumberStringsMatch((-result.Value).ToString(FormatString, CultureInfo), text))
+				result = -result;
+
+			return result;
+		}
+
+		protected override string ConvertValueToText()
+		{
+			return base.ConvertValueToText();
 		}
 	}
 
@@ -39,8 +67,19 @@ namespace Eto.Wpf.Forms.Controls
 			};
 			Control.ValueChanged += (sender, e) =>
 			{
-				Control.Value = Math.Max(MinValue, Math.Min(MaxValue, double.Parse((Control.Value ?? 0).ToString())));
+				var val = Math.Max(MinValue, Math.Min(MaxValue, double.Parse((Control.Value ?? 0).ToString())));
+				Control.Value = val;
 				TriggerValueChanged();
+				var textBox = Control.TextBox;
+				if (val != Control.Value && textBox != null)
+				{
+					// callback set a different value, but it still shows just whatever the user typed in.
+					// possibly due to some async call in Xceed.Wpf.Toolkit.
+					// so, we set the text specifically.
+					textBox.Text = Control.Value.Value.ToString(Control.FormatString, Control.CultureInfo);
+					textBox.SelectionStart = Control.TextBox.Text.Length;
+					textBox.SelectionLength = 0;
+				}
 			};
 			Control.Loaded += Control_Loaded;
 		}
@@ -62,8 +101,8 @@ namespace Eto.Wpf.Forms.Controls
 			var val = Value;
 			if (lastValue != val)
 			{
-				Callback.OnValueChanged(Widget, EventArgs.Empty);
 				lastValue = val;
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -73,13 +112,13 @@ namespace Eto.Wpf.Forms.Controls
 
 		public bool ReadOnly
 		{
-			get { return !Control.IsEnabled; }
-			set { Control.IsEnabled = !value; }
+			get { return Control.IsReadOnly; }
+			set { Control.IsReadOnly = value; }
 		}
 
 		public double Value
 		{
-			get { return Math.Round(Control.Value ?? 0, MaximumDecimalPlaces); }
+			get { return HasFormatString ? Control.Value ?? 0 : Math.Round(Control.Value ?? 0, MaximumDecimalPlaces); }
 			set { Control.Value = Math.Max(MinValue, Math.Min(MaxValue, value)); }
 		}
 
@@ -156,9 +195,30 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		internal bool HasFormatString => !string.IsNullOrEmpty(FormatString);
+
+		static readonly object FormatString_Key = new object();
+
+		public string FormatString
+		{
+			get { return Widget.Properties.Get<string>(FormatString_Key); }
+			set
+			{
+				Widget.Properties.Set(FormatString_Key, value, UpdateRequiredDigits);
+			}
+		}
+
+		public CultureInfo CultureInfo
+		{
+			get { return Control.CultureInfo; }
+			set { Control.CultureInfo = value; }
+		}
+
 		void UpdateRequiredDigits()
 		{
-			if (MaximumDecimalPlaces > 0 || DecimalPlaces > 0)
+			if (HasFormatString)
+				Control.FormatString = FormatString;
+			else if (MaximumDecimalPlaces > 0 || DecimalPlaces > 0)
 			{
 				var format = new StringBuilder();
 				format.Append("0.");

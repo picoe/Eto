@@ -46,10 +46,12 @@ namespace Eto.Mac
 		public override string ID { get { return "xammac"; } }
 		#else
 		public override string ID { get { return "mac"; } }
-		#endif
+#endif
 
-		public override PlatformFeatureFlags SupportedFeatures =>
-			PlatformFeatureFlags.DrawableWithTransparentContent;
+		public override PlatformFeatures SupportedFeatures =>
+			PlatformFeatures.DrawableWithTransparentContent
+            | PlatformFeatures.CustomCellSupportsControlView
+			| PlatformFeatures.TabIndexWithCustomContainers;
 
 		public Platform()
 		{

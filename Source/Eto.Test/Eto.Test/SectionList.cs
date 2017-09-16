@@ -188,42 +188,6 @@ namespace Eto.Test
 		}
 	}
 
-	public class SectionListTreeView : SectionList
-	{
-		TreeView treeView;
-
-		public override Control Control { get { return this.treeView; } }
-
-		public override void Focus() { Control.Focus(); }
-
-		public override ISection SelectedItem
-		{
-			get
-			{
-				var treeItem = treeView.SelectedItem as TreeItem;
-				return treeItem.Tag as ISection;
-			}
-		}
-
-		public SectionListTreeView(IEnumerable<Section> topNodes)
-		{
-			this.treeView = new TreeView();
-			treeView.Style = "sectionList";
-			var top = new TreeItem(Enumerate(topNodes)) { Text = "Top", Tag = topNodes };
-			treeView.DataStore = top;
-			treeView.SelectionChanged += OnSelectedItemChanged;
-		}
-
-		private IEnumerable<ITreeItem> Enumerate(IEnumerable<Section> topNodes)
-		{
-			foreach (var section in topNodes)
-			{
-				var item = new TreeItem(Enumerate(section)) { Text = section.Text, Tag = section };
-				yield return item;
-			}
-		}
-	}
-
 	public class SectionListGridView : SectionList
 	{
 		class MyItem

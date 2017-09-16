@@ -52,6 +52,9 @@ namespace Eto.GtkSharp
 		public override string ID { get { return "gtk2"; } }
 		#else
 		public override string ID { get { return "gtk3"; } }
+
+		public override PlatformFeatures SupportedFeatures => PlatformFeatures.DrawableWithTransparentContent;
+
 		#endif
 		public Platform()
 		{

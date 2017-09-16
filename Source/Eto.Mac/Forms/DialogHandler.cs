@@ -144,7 +144,7 @@ namespace Eto.Mac.Forms
 		public virtual void ShowModal()
 		{
 			session = null;
-			Callback.OnShown(Widget, EventArgs.Empty);
+			Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 
 			Widget.Closed += HandleClosed;
 			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Widget.Owner != null)
@@ -160,7 +160,6 @@ namespace Eto.Mac.Forms
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			session = null;
-			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;
 			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Widget.Owner != null)
@@ -172,6 +171,7 @@ namespace Eto.Mac.Forms
 				Control.MakeKeyWindow();
 				Application.Instance.AsyncInvoke(() =>
 				{
+					Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 					MacModal.Run(Widget, Control, out session);
 					tcs.SetResult(true);
 				});

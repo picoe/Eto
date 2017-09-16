@@ -78,6 +78,17 @@ namespace Eto.Mac.Forms
 			return child == null ? null : child.GetMacContainer();
 		}
 
+		public static IMacViewHandler GetMacViewHandler(this Control control)
+		{
+			if (control == null)
+				return null;
+			var container = control.Handler as IMacViewHandler;
+			if (container != null)
+				return container;
+			var child = control.ControlObject as Control;
+			return child == null ? null : child.GetMacViewHandler();
+		}
+
 		public static IMacControlHandler GetMacControl(this Control control)
 		{
 			if (control == null)

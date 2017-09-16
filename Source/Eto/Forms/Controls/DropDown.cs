@@ -134,7 +134,8 @@ namespace Eto.Forms
 			/// <param name="e">Event arguments</param>
 			public void OnDropDownOpening(DropDown widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnDropDownOpening(e));
+				using (widget.Platform.Context)
+					widget.OnDropDownOpening(e);
 			}
 
 			/// <summary>
@@ -144,7 +145,8 @@ namespace Eto.Forms
 			/// <param name="e">Event arguments</param>
 			public void OnDropDownClosed(DropDown widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnDropDownClosed(e));
+				using (widget.Platform.Context)
+					widget.OnDropDownClosed(e);
 			}
 		}
 

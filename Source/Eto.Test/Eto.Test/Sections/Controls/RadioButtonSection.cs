@@ -1,4 +1,4 @@
-using Eto.Drawing;
+﻿using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -10,11 +10,16 @@ namespace Eto.Test.Sections.Controls
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
+			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Default" }, Default(), null);
 
 			layout.AddRow(new Label { Text = "Set Initial Value" }, SetInitialValue(), null);
 
 			layout.AddRow(new Label { Text = "Disabled" }, Disabled(), null);
+			layout.EndVertical();
+
+			layout.Add(new RadioButton { Text = "With Larger Font", Font = SystemFonts.Label(40) });
+			layout.Add(new RadioButton { Text = "With Smaller Font", Font = SystemFonts.Label(6) });
 
 			layout.Add(null, null, true);
 

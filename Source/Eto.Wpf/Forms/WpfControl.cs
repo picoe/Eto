@@ -1,4 +1,4 @@
-using Eto.Forms;
+﻿using Eto.Forms;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
 using swc = System.Windows.Controls;
@@ -47,5 +47,7 @@ namespace Eto.Wpf.Forms
 			get { return Control.Foreground.ToEtoColor(); }
 			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
+
+		public override sw.FrameworkElement TabControl => Control;
 	}
 }

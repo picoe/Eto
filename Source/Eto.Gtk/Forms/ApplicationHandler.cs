@@ -159,7 +159,7 @@ namespace Eto.GtkSharp.Forms
 			MainThreadID = Thread.CurrentThread.ManagedThreadId;
 
 			if (EtoEnvironment.Platform.IsLinux)
-				LinuxNotificationHandler.notify_init(Assembly.GetExecutingAssembly().FullName);
+				LinuxNotificationHandler.Init();
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
@@ -176,7 +176,7 @@ namespace Eto.GtkSharp.Forms
 			}
 
 			if (EtoEnvironment.Platform.IsLinux)
-				LinuxNotificationHandler.notify_uninit();
+				LinuxNotificationHandler.DeInit();
 			foreach (var file in TempFiles)
 				File.Delete(file);
 		}

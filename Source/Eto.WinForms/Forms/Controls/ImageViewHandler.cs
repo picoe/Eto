@@ -3,6 +3,8 @@ using sd = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.WinForms.Drawing;
+using System;
+using System.ComponentModel;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -15,6 +17,7 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			Control = new swf.PictureBox
 			{
+				AutoSize = false,
 				BorderStyle = swf.BorderStyle.None,
 				SizeMode = swf.PictureBoxSizeMode.Zoom
 			};
@@ -35,17 +38,20 @@ namespace Eto.WinForms.Forms.Controls
 			set
 			{
 				base.Size = value;
-				sizeSet = true;
+				sizeSet = value.Width >= 0 || value.Height >= 0;
 				SetImage();
 			}
 		}
-		void SetImage(bool setSize = true)
+
+		void SetImage()
 		{
 			var handler = image?.Handler as IWindowsImageSource;
 			Control.Image = handler?.GetImageWithSize(Widget.Loaded || sizeSet ? (Size?)Size : null);
 
-			if (setSize && !sizeSet && Control.Image != null)
-				Control.Size = Control.Image.Size;
+			if (!sizeSet)
+			{
+				Control.Size = image?.Size.ToSD() ?? sd.Size.Empty;
+			}
 		}
 
 		public Image Image

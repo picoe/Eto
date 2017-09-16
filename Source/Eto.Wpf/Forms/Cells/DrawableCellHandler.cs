@@ -39,7 +39,7 @@ namespace Eto.Wpf.Forms.Cells
 		{
 			public DrawableCellHandler Handler { get; set; }
 
-			EtoCanvas Create(swc.DataGridCell cell, object dataItem)
+			EtoCanvas Create(swc.DataGridCell cell)
 			{
 				var control = cell.Content as EtoCanvas;
 				if (control == null)
@@ -63,18 +63,17 @@ namespace Eto.Wpf.Forms.Cells
 						control.InvalidateVisual();
 					};
 				}
-				control.DataContext = dataItem;
 				return control;
 			}
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell, dataItem));
+				return Handler.SetupCell(Create(cell));
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell, dataItem));
+				return Handler.SetupCell(Create(cell));
 			}
 		}
 

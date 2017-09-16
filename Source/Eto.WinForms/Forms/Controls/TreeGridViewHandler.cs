@@ -62,6 +62,21 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			switch (handler)
 			{
+				case TreeGridView.ActivatedEvent:
+					Control.KeyDown += (sender, e) =>
+					{
+						if (!e.Handled && SelectedItem != null && e.KeyData == swf.Keys.Enter)
+						{
+							Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
+							e.Handled = true;
+						}
+					};
+					Control.CellDoubleClick += (sender, e) =>
+					{
+						if (SelectedItem != null)
+							Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
+					};
+					break;
 				case TreeGridView.ExpandingEvent:
 					controller.Expanding += (sender, e) => Callback.OnExpanding(Widget, e);
 					break;

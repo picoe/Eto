@@ -168,6 +168,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the minimal size of the first panel.
+		/// </summary>
+		/// <value>The minimal size of the first panel.</value>
+		public int Panel1MinimumSize
+		{
+			get { return Handler.Panel1MinimumSize; }
+			set { Handler.Panel1MinimumSize = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the bottom or right panel of the splitter.
 		/// </summary>
 		/// <value>The second panel.</value>
@@ -178,6 +188,16 @@ namespace Eto.Forms
 			{
 				SetParent(value, () => Handler.Panel2 = value, Handler.Panel2);
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the minimal size of the second panel.
+		/// </summary>
+		/// <value>The minimal size of the second panel.</value>
+		public int Panel2MinimumSize
+		{
+			get { return Handler.Panel2MinimumSize; }
+			set { Handler.Panel2MinimumSize = value; }
 		}
 
 		/// <summary>
@@ -224,7 +244,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnPositionChanged(Splitter widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnPositionChanged(e));
+				using (widget.Platform.Context)
+					widget.OnPositionChanged(e);
 			}
 		}
 
@@ -281,6 +302,18 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The second panel.</value>
 			Control Panel2 { get; set; }
+
+			/// <summary>
+			/// Gets or sets the minimal size of the first panel.
+			/// </summary>
+			/// <value>The minimal size of the first panel.</value>
+			int Panel1MinimumSize { get; set; }
+
+			/// <summary>
+			/// Gets or sets the minimal size of the second panel.
+			/// </summary>
+			/// <value>The minimal size of the second panel.</value>
+			int Panel2MinimumSize { get; set; }
 		}
 	}
 

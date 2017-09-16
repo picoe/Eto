@@ -25,8 +25,10 @@ namespace Eto.Wpf
 
 		public override bool IsWpf { get { return true; } }
 
-		public override PlatformFeatureFlags SupportedFeatures =>
-			PlatformFeatureFlags.DrawableWithTransparentContent;
+		public override PlatformFeatures SupportedFeatures =>
+			PlatformFeatures.DrawableWithTransparentContent
+            | PlatformFeatures.CustomCellSupportsControlView
+			| PlatformFeatures.TabIndexWithCustomContainers;
 
 		static Platform()
 		{

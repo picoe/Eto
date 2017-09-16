@@ -230,7 +230,6 @@ namespace Eto.WinForms.Forms.Controls
 
 		public void SelectAll()
 		{
-			Control.Focus();
 			SwfTextBox.SelectAll();
 		}
 
@@ -250,6 +249,8 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				SwfTextBox.SelectionStart = value;
 				SwfTextBox.SelectionLength = 0;
+				if (!Widget.Loaded)
+					ShouldSelect = false;
 			}
 		}
 
@@ -260,6 +261,8 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				SwfTextBox.SelectionStart = value.Start;
 				SwfTextBox.SelectionLength = value.Length();
+				if (!Widget.Loaded)
+					ShouldSelect = false;
 			}
 		}
 
@@ -274,6 +277,63 @@ namespace Eto.WinForms.Forms.Controls
 			base.SetAutoSize();
 			if (XScale && YScale)
 				Control.AutoSize = true;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.GotFocus += Control_GotFocus;
+			Control.MouseUp += Control_MouseUp;
+			Control.LostFocus += Control_LostFocus;
+		}
+
+		void Control_LostFocus(object sender, EventArgs e)
+		{
+			ShouldSelect = true;
+		}
+
+		void Control_MouseUp(object sender, swf.MouseEventArgs e)
+		{
+			if (ShouldSelect && AutoSelectMode == AutoSelectMode.Always && e.Button == swf.MouseButtons.Left && SwfTextBox.SelectionLength == 0)
+			{
+				ShouldSelect = false;
+				SelectAll();
+			}
+		}
+
+		void Control_GotFocus(object sender, EventArgs e)
+		{
+			if (ShouldSelect && Mouse.Buttons == MouseButtons.None
+				&& (AutoSelectMode == AutoSelectMode.OnFocus || AutoSelectMode == AutoSelectMode.Always))
+			{
+				ShouldSelect = false;
+				SelectAll();
+			}
+		}
+
+		public override string Text
+		{
+			get { return base.Text; }
+			set
+			{
+				base.Text = value;
+				if (AutoSelectMode == AutoSelectMode.Never)
+					Selection = new Range<int>(value.Length, value.Length - 1);
+			}
+		}
+
+		static readonly object AutoSelectMode_Key = new object();
+		public AutoSelectMode AutoSelectMode
+		{
+			get { return Widget.Properties.Get(AutoSelectMode_Key, AutoSelectMode.OnFocus); }
+			set { Widget.Properties.Set(AutoSelectMode_Key, value, AutoSelectMode.OnFocus); }
+		}
+
+		static readonly object ShouldSelect_Key = new object();
+		bool ShouldSelect
+		{
+			get { return Widget.Properties.Get(ShouldSelect_Key, true); }
+			set { Widget.Properties.Set(ShouldSelect_Key, value, true); }
 		}
 	}
 }

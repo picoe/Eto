@@ -398,14 +398,10 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 
-		bool HasDecorations(swd.TextRange range, sw.TextDecorationCollection decorations, bool useRealPropertyValue = true)
+		bool HasDecorations(swd.TextRange range, sw.TextDecorationCollection decorations)
 		{
 			swd.TextRange realRange;
-			sw.TextDecorationCollection existingDecorations;
-			if (useRealPropertyValue)
-				existingDecorations = range.GetRealPropertyValue(swd.Inline.TextDecorationsProperty, out realRange) as sw.TextDecorationCollection;
-			else
-				existingDecorations = range.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
+			var existingDecorations = range.GetRealPropertyValue(swd.Inline.TextDecorationsProperty, out realRange) as sw.TextDecorationCollection;
 			return existingDecorations != null && decorations.All(r => existingDecorations.Contains(r));
 		}
 
@@ -462,7 +458,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				return HasDecorations(Control.Selection, sw.TextDecorations.Underline, Selection.Length() > 0);
+				return HasDecorations(Control.Selection, sw.TextDecorations.Underline);
 			}
 			set
 			{
@@ -477,7 +473,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				return HasDecorations(Control.Selection, sw.TextDecorations.Strikethrough, Selection.Length() > 0);
+				return HasDecorations(Control.Selection, sw.TextDecorations.Strikethrough);
 			}
 			set
 			{

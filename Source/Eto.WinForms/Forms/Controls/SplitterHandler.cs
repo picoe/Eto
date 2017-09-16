@@ -3,13 +3,14 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms.Controls
 {
 	public class SplitterHandler : WindowsControl<swf.SplitContainer, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
-		Control panel1;
-		Control panel2;
+		Control panel1, panel2;
+        int panel1MinimumSize, panel2MinimumSize;
 		int? position;
 		double relative = double.NaN;
 		int suppressSplitterMoved;
@@ -127,9 +128,24 @@ namespace Eto.WinForms.Forms.Controls
 				HookEvents();
 				SetFixedPanel();
 			};
-		}
+            Control.SplitterMoved += (sender, e) => CheckSplitterPos();
+        }
 
-		void HookEvents()
+        private void CheckSplitterPos()
+        {
+            var controlsize = (Orientation == Orientation.Horizontal) ? Control.Width : Control.Height;
+
+            if (controlsize <= panel1MinimumSize)
+                return;
+
+            if (Control.SplitterDistance > controlsize - panel2MinimumSize)
+                Control.SplitterDistance = controlsize - panel2MinimumSize;
+
+            if (Control.SplitterDistance < panel1MinimumSize)
+                Control.SplitterDistance = panel1MinimumSize;
+        }
+
+        void HookEvents()
 		{
 			Control.SplitterMoved += (sender, e) =>
 			{
@@ -475,7 +491,27 @@ namespace Eto.WinForms.Forms.Controls
 			get { return panel2 != null && panel2.GetWindowsHandler().InternalVisible; }
 		}
 
-		void c1_VisibleChanged(object sender, EventArgs e)
+        public int Panel1MinimumSize
+        {
+            get { return panel1MinimumSize; }
+            set
+            {
+                panel1MinimumSize = value;
+                CheckSplitterPos();
+            }
+        }
+
+        public int Panel2MinimumSize
+        {
+            get { return panel2MinimumSize; }
+            set
+            {
+                panel2MinimumSize = value;
+                CheckSplitterPos();
+            }
+        }
+
+        void c1_VisibleChanged(object sender, EventArgs e)
 		{
 			VisibleChanged(Panel1Visible);
 		}
@@ -502,5 +538,6 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		public override IEnumerable<Control> VisualControls => Widget.Controls;
 	}
 }

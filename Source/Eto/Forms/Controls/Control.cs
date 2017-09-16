@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -34,6 +35,15 @@ namespace Eto.Forms
 		/// </remarks>
 		public bool Loaded { get; private set; }
 
+		/// <summary>
+		/// Gets an enumeration of controls that are in the visual tree.
+		/// </summary>
+		/// <remarks>
+		/// This is used to specify which controls are contained by this instance that are part of the visual tree.
+		/// This should include all controls including non-logical Eto controls used for layout. 
+		/// </remarks>
+		/// <value>The visual controls.</value>
+		public virtual IEnumerable<Control> VisualControls => Handler.VisualControls;
 
 		/// <summary>
 		/// Gets or sets a user-defined object that contains data about the control
@@ -46,6 +56,49 @@ namespace Eto.Forms
 		{
 			get { return Properties.Get<object>(TagKey); }
 			set { Properties[TagKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets the logical parent control.
+		/// </summary>
+		/// <remarks>
+		/// When the control is part of the visual tree (<see cref="IsVisualControl"/> is true), this returns the logical parent that contains this control.
+		/// Otherwise this is the same as <see cref="Parent"/>.
+		/// </remarks>
+		/// <value>The logical parent.</value>
+		public Container LogicalParent
+		{
+			get
+			{
+				if (IsVisualControl)
+				{
+					var foundVisual = false;
+					foreach (var parent in Parents.OfType<Container>())
+					{
+						if (!foundVisual && parent.Properties.Get<bool>(IsVisualControl_Key))
+							foundVisual = true;
+						else
+							return parent;
+					}
+				}
+				return Parent;
+			}
+		}
+
+		static object IsVisualControl_Key = new object();
+
+		/// <summary>
+		/// Gets a value indicating this <see cref="T:Eto.Forms.Control"/> is part of the visual tree.
+		/// </summary>
+		/// <value><c>true</c> if is visual control; otherwise, <c>false</c>.</value>
+		public bool IsVisualControl
+		{
+			get {
+				if (Properties.ContainsKey(IsVisualControl_Key))
+					return Properties.Get<bool>(IsVisualControl_Key);
+				return Parent?.IsVisualControl ?? false; // traverse up logical tree
+			}
+			internal set { Properties.Set(IsVisualControl_Key, value); }
 		}
 
 		static readonly object TagKey = new object();
@@ -719,7 +772,7 @@ namespace Eto.Forms
 		/// Gets or sets the logical parent, which excludes any visual structure of custom containers.
 		/// </summary>
 		/// <value>The logical parent.</value>
-		internal Container LogicalParent
+		internal Container InternalLogicalParent
 		{
 			get { return base.Parent as Container; }
 			set { base.Parent = value; }
@@ -1076,6 +1129,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the tab index order for this control within its container.
+		/// </summary>
+		/// <remarks>
+		/// This sets the order when using the tab key to cycle through controls
+		/// 
+		/// Note that some platforms (Gtk and WinForms) may not support setting the context of the tab order to StackLayout 
+		/// or DynamicLayout containers and may not behave exactly as expected. Use the 
+		/// <see cref="PlatformFeatures.TabIndexWithCustomContainers"/> flag to determine if it is supported.
+		/// </remarks>
+		/// <value>The index of the control in the tab order.</value>
+		[DefaultValue(int.MaxValue)]
+		public virtual int TabIndex
+		{
+			get { return Handler.TabIndex; }
+			set { Handler.TabIndex = value; }
+		}
+
+		/// <summary>
 		/// Handles the disposal of this control
 		/// </summary>
 		/// <param name="disposing">True if the caller called <see cref="Widget.Dispose()"/> manually, false if being called from a finalizer</param>
@@ -1195,98 +1266,112 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnKeyDown(Control widget, KeyEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnKeyDown(e));
+				using (widget.Platform.Context)
+					widget.OnKeyDown(e);
 			}
 			/// <summary>
 			/// Raises the key up event.
 			/// </summary>
 			public void OnKeyUp(Control widget, KeyEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnKeyUp(e));
+				using (widget.Platform.Context)
+					widget.OnKeyUp(e);
 			}
 			/// <summary>
 			/// Raises the mouse down event.
 			/// </summary>
 			public void OnMouseDown(Control widget, MouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnMouseDown(e));
+				using (widget.Platform.Context)
+					widget.OnMouseDown(e);
 			}
 			/// <summary>
 			/// Raises the mouse up event.
 			/// </summary>
 			public void OnMouseUp(Control widget, MouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnMouseUp(e));
+				using (widget.Platform.Context)
+					widget.OnMouseUp(e);
 			}
 			/// <summary>
 			/// Raises the mouse move event.
 			/// </summary>
 			public void OnMouseMove(Control widget, MouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnMouseMove(e));
+				using (widget.Platform.Context)
+					widget.OnMouseMove(e);
 			}
 			/// <summary>
 			/// Raises the mouse leave event.
 			/// </summary>
 			public void OnMouseLeave(Control widget, MouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnMouseLeave(e));
+				using (widget.Platform.Context)
+					widget.OnMouseLeave(e);
 			}
 			/// <summary>
 			/// Raises the mouse enter event.
 			/// </summary>
 			public void OnMouseEnter(Control widget, MouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnMouseEnter(e));
+				using (widget.Platform.Context)
+					widget.OnMouseEnter(e);
 			}
 			/// <summary>
 			/// Raises the text input event.
 			/// </summary>
 			public void OnTextInput(Control widget, TextInputEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnTextInput(e));
+				using (widget.Platform.Context)
+					widget.OnTextInput(e);
 			}
 			/// <summary>
 			/// Raises the size changed event.
 			/// </summary>
 			public void OnSizeChanged(Control widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSizeChanged(e));
+				using (widget.Platform.Context)
+					widget.OnSizeChanged(e);
 			}
 			/// <summary>
 			/// Raises the mouse double click event.
 			/// </summary>
 			public void OnMouseDoubleClick(Control widget, MouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnMouseDoubleClick(e));
+				using (widget.Platform.Context)
+					widget.OnMouseDoubleClick(e);
 			}
 			/// <summary>
 			/// Raises the mouse wheel event.
 			/// </summary>
 			public void OnMouseWheel(Control widget, MouseEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnMouseWheel(e));
+				using (widget.Platform.Context)
+					widget.OnMouseWheel(e);
 			}
 			/// <summary>
 			/// Raises the got focus event.
 			/// </summary>
 			public void OnGotFocus(Control widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnGotFocus(e));
+				using (widget.Platform.Context)
+					widget.OnGotFocus(e);
 			}
 			/// <summary>
 			/// Raises the lost focus event.
 			/// </summary>
 			public void OnLostFocus(Control widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnLostFocus(e));
+				using (widget.Platform.Context)
+					widget.OnLostFocus(e);
 			}
 			/// <summary>
 			/// Raises the shown event.
 			/// </summary>
 			public void OnShown(Control widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnShown(e));
+				using (widget.Platform.Context)
+					widget.OnShown(e);
 			}
 		}
 
@@ -1510,6 +1595,29 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The mouse cursor</value>
 			Cursor Cursor { get; set; }
+
+			/// <summary>
+			/// Gets or sets the tab index order for this control within its container.
+			/// </summary>
+			/// <remarks>
+			/// This sets the order when using the tab key to cycle through controls
+			/// 
+			/// Note that some platforms (Gtk and WinForms) may not support setting the context of the tab order to StackLayout 
+			/// or DynamicLayout containers and may not behave exactly as expected. Use the 
+			/// <see cref="PlatformFeatures.TabIndexWithCustomContainers"/> flag to determine if it is supported.
+			/// </remarks>
+			/// <value>The index of the control in the tab order.</value>
+			int TabIndex { get; set; }
+
+			/// <summary>
+			/// Gets an enumeration of controls that are in the visual tree.
+			/// </summary>
+			/// <remarks>
+			/// This is used to specify which controls are contained by this instance that are part of the visual tree.
+			/// This should include all controls including non-logical Eto controls used for layout. 
+			/// </remarks>
+			/// <value>The visual controls.</value>
+			IEnumerable<Control> VisualControls { get; }
 		}
 		#endregion
 	}

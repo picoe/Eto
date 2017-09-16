@@ -35,7 +35,7 @@ namespace Eto.Wpf.Forms.Controls
 			gridContent = parentGrid.FindChild<swc.Grid>("gridContent");
 			if (gridContent == null)
 				return;
-			gridContent.MinWidth = originalWidth = gridContent.Width;
+			gridContent.MinWidth = originalWidth = double.IsNaN(gridContent.Width) ? 0 : gridContent.Width;
 			gridContent.Width = double.NaN;
 		}
 

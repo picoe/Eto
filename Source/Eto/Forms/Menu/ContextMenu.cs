@@ -195,7 +195,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnOpening(ContextMenu widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnOpening(e));
+				using (widget.Platform.Context)
+					widget.OnOpening(e);
 			}
 
 			/// <summary>
@@ -203,7 +204,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnClosed(ContextMenu widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnClosed(e));
+				using (widget.Platform.Context)
+					widget.OnClosed(e);
 			}
 		}
 

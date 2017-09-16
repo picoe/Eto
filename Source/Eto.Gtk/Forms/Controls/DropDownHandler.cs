@@ -19,7 +19,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.PackStart(imageCell, false);
 			Control.SetAttributes(imageCell, "pixbuf", 1);
 			text = new Gtk.CellRendererText();
-			Control.PackStart(text, false);
+			Control.PackStart(text, true);
 			Control.SetAttributes(text, "text", 0);
 			Control.Changed += Connector.HandleChanged;
 		}
@@ -231,6 +231,9 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.PoppedDown += Connector.HandlePoppedDown;
 					break;
 #endif
+				case Eto.Forms.Control.ShownEvent:
+					Control.Mapped += Connector.MappedEvent;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;

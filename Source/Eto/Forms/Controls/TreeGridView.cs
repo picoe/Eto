@@ -72,10 +72,17 @@ namespace Eto.Forms
 		/// <value>The column.</value>
 		public GridColumn Column { get; }
 
-		internal TreeGridCell(object item, GridColumn column)
+		/// <summary>
+		/// Gets the index of the column.
+		/// </summary>
+		/// <value>The index of the column.</value>
+		public int ColumnIndex { get; }
+
+		internal TreeGridCell(object item, GridColumn column, int columnIndex)
 		{
 			Item = item;
 			Column = column;
+			ColumnIndex = columnIndex;
 		}
 	}
 
@@ -90,15 +97,18 @@ namespace Eto.Forms
 		#region Events
 
 		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="Activated"/> event.
+		/// </summary>
+		public const string ActivatedEvent = "TreeGridView.ActivatedEvent";
+
+		/// <summary>
 		/// Occurs when the user activates an item by double clicking or pressing enter.
 		/// </summary>
 		public event EventHandler<TreeGridViewItemEventArgs> Activated
 		{
-			add { Properties.AddEvent(ActivatedKey, value); }
-			remove { Properties.RemoveEvent(ActivatedKey, value); }
+			add { Properties.AddHandlerEvent(ActivatedEvent, value); }
+			remove { Properties.RemoveEvent(ActivatedEvent, value); }
 		}
-
-		static readonly object ActivatedKey = new object();
 
 		/// <summary>
 		/// Raises the <see cref="Activated"/> event.
@@ -106,7 +116,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnActivated(TreeGridViewItemEventArgs e)
 		{
-			Properties.TriggerEvent(ActivatedKey, this, e);
+			Properties.TriggerEvent(ActivatedEvent, this, e);
 		}
 
 		/// <summary>
@@ -295,18 +305,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the node at a specified point from the origin of the control
+		/// Gets the node at a specified location from the origin of the control
 		/// </summary>
 		/// <remarks>
 		/// Useful for determining which node is under the mouse cursor.
 		/// </remarks>
 		/// <returns>The item from the data store that is displayed at the specified location</returns>
-		/// <param name="point">Point to find the node</param>
-		public TreeGridCell GetCellAt(PointF point)
+		/// <param name="location">Point to find the node</param>
+		public TreeGridCell GetCellAt(PointF location)
 		{
 			int column;
-			var item = Handler.GetCellAt(point, out column);
-			return new TreeGridCell(item, column >= 0 ? Columns[column] : null);
+			var item = Handler.GetCellAt(location, out column);
+			return new TreeGridCell(item, column >= 0 ? Columns[column] : null, column);
 		}
 
 
@@ -367,7 +377,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnActivated(TreeGridView widget, TreeGridViewItemEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnActivated(e));
+				using (widget.Platform.Context)
+					widget.OnActivated(e);
 			}
 
 			/// <summary>
@@ -375,7 +386,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnExpanding(TreeGridView widget, TreeGridViewItemCancelEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnExpanding(e));
+				using (widget.Platform.Context)
+					widget.OnExpanding(e);
 			}
 
 			/// <summary>
@@ -383,7 +395,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnExpanded(TreeGridView widget, TreeGridViewItemEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnExpanded(e));
+				using (widget.Platform.Context)
+					widget.OnExpanded(e);
 			}
 
 			/// <summary>
@@ -391,7 +404,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCollapsing(TreeGridView widget, TreeGridViewItemCancelEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCollapsing(e));
+				using (widget.Platform.Context)
+					widget.OnCollapsing(e);
 			}
 
 			/// <summary>
@@ -399,7 +413,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCollapsed(TreeGridView widget, TreeGridViewItemEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCollapsed(e));
+				using (widget.Platform.Context)
+					widget.OnCollapsed(e);
 			}
 
 			/// <summary>
@@ -407,7 +422,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnSelectedItemChanged(TreeGridView widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSelectedItemChanged(e));
+				using (widget.Platform.Context)
+					widget.OnSelectedItemChanged(e);
 			}
 		}
 

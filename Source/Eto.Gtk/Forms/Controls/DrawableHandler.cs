@@ -69,6 +69,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleExpose(object o, Gtk.ExposeEventArgs args)
 			{
 				var h = Handler;
+				if (h == null) // can happen if expose event happens after window is closed
+					return;
 				Gdk.EventExpose ev = args.Event;
 				using (var graphics = new Graphics(new GraphicsHandler(h.Control, ev.Window)))
 				{
@@ -77,12 +79,24 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 			}
 #else
+			[GLib.ConnectBefore]
 			public void HandleDrawn(object o, Gtk.DrawnArgs args)
 			{
 				var h = Handler;
+
+				var allocation = h.Control.Allocation.Size;
+				args.Cr.Rectangle(new Cairo.Rectangle(0, 0, allocation.Width, allocation.Height));
+				args.Cr.Clip();
+				Gdk.Rectangle rect = new Gdk.Rectangle();
+				if (!GraphicsHandler.GetClipRectangle(args.Cr, ref rect))
+					rect = new Gdk.Rectangle(Gdk.Point.Zero, allocation);
+
 				using (var graphics = new Graphics(new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false)))
 				{
-					h.Callback.OnPaint(h.Widget, new PaintEventArgs (graphics, new Rectangle(h.Size)));
+					if (h.SelectedBackgroundColor != null)
+						graphics.Clear(h.SelectedBackgroundColor.Value);
+					
+					h.Callback.OnPaint(h.Widget, new PaintEventArgs (graphics, rect.ToEto()));
 				}
 			}
 #endif
@@ -105,5 +119,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			this.content.Add(content);
 		}
+
+#if GTK3
+		protected override void SetBackgroundColor(Color? color)
+		{
+			// we handle this ourselves
+			//base.SetBackgroundColor(color);
+			Invalidate(false);
+		}
+#endif
 	}
 }

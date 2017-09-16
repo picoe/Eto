@@ -125,7 +125,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnValueChanged(Slider widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnValueChanged(e));
+				using (widget.Platform.Context)
+					widget.OnValueChanged(e);
 			}
 		}
 

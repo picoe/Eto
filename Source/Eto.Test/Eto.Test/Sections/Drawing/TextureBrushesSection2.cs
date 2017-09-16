@@ -49,7 +49,7 @@ namespace Eto.Test.Sections.Drawing
 				bitmapGraphics.Clear(Brushes.Cached(BackgroundColor));
 				bitmapGraphics.ScaleTransform(scale);
 				bitmapGraphics.TranslateTransform(-e.ClipRectangle.Location);
-				bitmapGraphics.SetClip(e.ClipRectangle * scale); // should be affected by transform
+				bitmapGraphics.SetClip(e.ClipRectangle); // should be affected by transform
 
 				var childArgs = new PaintEventArgs(bitmapGraphics, e.ClipRectangle);
 				base.OnPaint(childArgs);
@@ -57,8 +57,8 @@ namespace Eto.Test.Sections.Drawing
 				OnBufferedPaint(childArgs);
 
 				bitmapGraphics.Dispose();
-				bitmapGraphics = null;
 				e.Graphics.DrawImage(bitmap, new RectangleF(renderSize), e.ClipRectangle);
+				//Log.Write(this, $"Clip: {e.ClipRectangle}, renderSize: {renderSize}");
 			}
 			else
 			{

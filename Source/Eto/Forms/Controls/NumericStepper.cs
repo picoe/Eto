@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using Eto.Drawing;
+using System.Globalization;
 
 namespace Eto.Forms
 {
@@ -117,6 +118,8 @@ namespace Eto.Forms
 		/// The <see cref="MaximumDecimalPlaces"/> specifies the maximum number of fraction digits the control will display
 		/// if the value has a value that can be represented by more digits.
 		/// The <see cref="Value"/> property is rounded to the number of fraction digits specified by <see cref="MaximumDecimalPlaces"/>.
+		/// 
+		/// Note that this does not apply if you have specified <see cref="FormatString"/>
 		/// </remarks>
 		/// <example>
 		/// This shows the effect of the <see cref="DecimalPlaces"/> and <see cref="MaximumDecimalPlaces"/> on the display 
@@ -135,6 +138,7 @@ namespace Eto.Forms
 		/// </example>
 		/// <value>The number of decimal places to always show.</value>
 		/// <seealso cref="MaximumDecimalPlaces"/>
+		/// <seealso cref="FormatString"/>
 		public int DecimalPlaces
 		{
 			get { return Handler.DecimalPlaces; }
@@ -159,13 +163,47 @@ namespace Eto.Forms
 		/// The number of digits shown will be at least the number of digits specified by <see cref="DecimalPlaces"/>.
 		/// The <see cref="Value"/> and the display is rounded to the number of fraction digits specified by this value.
 		/// <see cref="DecimalPlaces"/> for an example of how the MaximumDecimalPlaces can be used.
+		/// 
+		/// Note that this does not apply if you have specified <see cref="FormatString"/>.
 		/// </remarks>
 		/// <value>The maximum number of decimal places that will be shown.</value>
 		/// <seealso cref="MaximumDecimalPlaces"/>
+		/// <seealso cref="FormatString"/>
 		public int MaximumDecimalPlaces
 		{
 			get { return Handler.MaximumDecimalPlaces; }
 			set { Handler.MaximumDecimalPlaces = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the format string for the display of the numeric value.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to specify standard or custom format strings used via <see cref="Double.ToString(string, IFormatProvider)"/>.
+		/// The exact output is determined using the specified <see cref="CultureInfo"/>.
+		/// 
+		/// For example "c" would show a currency value.
+		/// 
+		/// Any extra non-numeric or separator characters are stripped when parsing the string so that you can include extra (non-numeric) 
+		/// string values while still allowing the user to change the numeric string.
+		/// </remarks>
+		public string FormatString
+		{
+			get { return Handler.FormatString; }
+			set { Handler.FormatString = value; }
+		}
+
+		/// <summary>
+		/// Specifies the culture to show the numeric value in (default is <see cref="CultureInfo.CurrentCulture"/>).
+		/// </summary>
+		/// <remarks>
+		/// This is used to format the numeric value, and when using the <see cref="FormatString"/> it determines the character(s) used
+		/// for the thousands separator, decimal separator, and currency symbol.
+		/// </remarks>
+		public CultureInfo CultureInfo
+		{
+			get { return Handler.CultureInfo; }
+			set { Handler.CultureInfo = value; }
 		}
 
 		/// <summary>
@@ -221,7 +259,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnValueChanged(NumericStepper widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnValueChanged(e));
+				using (widget.Platform.Context)
+					widget.OnValueChanged(e);
 			}
 		}
 
@@ -304,6 +343,29 @@ namespace Eto.Forms
 			/// <value>The maximum number of decimal places that will be shown.</value>
 			/// <seealso cref="MaximumDecimalPlaces"/>
 			int MaximumDecimalPlaces { get; set; }
+
+			/// <summary>
+			/// Gets or sets the format string for the display of the numeric value.
+			/// </summary>
+			/// <remarks>
+			/// This can be used to specify standard or custom format strings used via <see cref="Double.ToString(string, IFormatProvider)"/>.
+			/// The exact output is determined using the specified <see cref="CultureInfo"/>.
+			/// 
+			/// For example "c" would show a currency value.
+			/// 
+			/// Any extra non-numeric or separator characters are stripped when parsing the string so that you can include extra (non-numeric) 
+			/// string values while still allowing the user to change the numeric string.
+			/// </remarks>
+			string FormatString { get; set; }
+
+			/// <summary>
+			/// Specifies the culture to show the numeric value in (default is <see cref="CultureInfo.CurrentCulture"/>).
+			/// </summary>
+			/// <remarks>
+			/// This is used to format the numeric value, and when using the <see cref="FormatString"/> it determines the character(s) used
+			/// for the thousands separator, decimal separator, and currency symbol.
+			/// </remarks>
+			CultureInfo CultureInfo { get; set; }
 		}
 	}
 }

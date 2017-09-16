@@ -136,7 +136,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				var content = (swc.Border)Control.Child;
+				//var content = (swc.Border)Control.Child;
 				scrollSize = value.ToWpf();
 				UpdateSizes();
 			}

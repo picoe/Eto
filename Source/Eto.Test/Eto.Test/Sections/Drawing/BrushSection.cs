@@ -90,7 +90,7 @@ namespace Eto.Test.Sections.Drawing
 
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
-			if (( Platform.SupportedFeatures & PlatformFeatureFlags.DrawableWithTransparentContent ) == 0)
+			if (( Platform.SupportedFeatures & PlatformFeatures.DrawableWithTransparentContent ) == 0)
 				layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), CreateModeControl(), null);
 			else
 				layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), WithContent(), CreateModeControl(), null);

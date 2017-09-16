@@ -191,7 +191,14 @@ namespace Eto.iOS.Drawing
 		public bool AntiAlias
 		{
 			get { return Widget.Properties.Get(AntiAlias_Key, true); }
-			set { Widget.Properties.Set(AntiAlias_Key, value, () => Control.SetShouldAntialias(value), true); }
+			set { Widget.Properties.Set(AntiAlias_Key, value, SetAntiAlias, true); }
+		}
+
+		void SetAntiAlias()
+		{
+			RewindAll();
+			Control.SetShouldAntialias(AntiAlias);
+			ApplyAll();
 		}
 
 		static readonly object PointsPerPixel_Key = new object();
@@ -242,6 +249,14 @@ namespace Eto.iOS.Drawing
 				rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
 			}
 			graphicsContext = NSGraphicsContext.FromBitmap(rep);
+			if (graphicsContext == null)
+			{
+				// invalid parameters for the rep
+				DrawingImage = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppRgba);
+				handler = DrawingImage.Handler as BitmapHandler;
+				rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+				graphicsContext = NSGraphicsContext.FromBitmap(rep);
+			}
 
 			graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
 			disposeContext = true;

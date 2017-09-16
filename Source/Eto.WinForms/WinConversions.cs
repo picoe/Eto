@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using Eto.Drawing;
 using Eto.Forms;
@@ -391,6 +391,11 @@ namespace Eto.WinForms
 			var modifiers = swf.Control.ModifierKeys.ToEto();
 
 			return new MouseEventArgs(buttons, modifiers, point, new SizeF(0, (float)e.Delta / WheelDelta));
+		}
+
+		public static SizeF ToEtoDelta(this swf.MouseEventArgs e)
+		{
+			return new SizeF(0, (float)e.Delta / WheelDelta);
 		}
 
 		public static MouseButtons ToEto(this swf.MouseButtons button)

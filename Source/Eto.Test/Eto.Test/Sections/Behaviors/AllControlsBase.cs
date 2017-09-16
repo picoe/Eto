@@ -26,7 +26,8 @@ namespace Eto.Test.Sections.Behaviors
 			layout.EndHorizontal();
 
 			layout.AddRow(null, CheckBoxControl(), RadioButtonControl());
-			layout.AddRow(null, DateTimeControl(), NumericStepperControl(), DropDownControl(), ComboBoxControl());
+			layout.AddRow(null, DateTimeControl(), DropDownControl(), ComboBoxControl());
+			layout.AddRow(null, NumericStepperControl(), TextStepperControl());
 
 			layout.BeginHorizontal();
 			layout.Add(null);
@@ -114,6 +115,13 @@ namespace Eto.Test.Sections.Behaviors
 		Control NumericStepperControl()
 		{
 			var control = new NumericStepper();
+			LogEvents(control);
+			return control;
+		}
+
+		Control TextStepperControl()
+		{
+			var control = new TextStepper();
 			LogEvents(control);
 			return control;
 		}

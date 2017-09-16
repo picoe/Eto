@@ -389,6 +389,18 @@ namespace Eto.WinForms.Forms
 				case Eto.Forms.Control.LostFocusEvent:
 					Control.LostFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
 					break;
+				case Eto.Forms.Control.ShownEvent:
+					bool? last = null;
+					Control.VisibleChanged += (sender, e) =>
+					{
+						var visible = Control.Visible;
+						if (last == visible || !Widget.Loaded)
+							return;
+						last = visible;
+						if (visible)
+							Callback.OnShown(Widget, EventArgs.Empty);
+					};
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -612,7 +624,29 @@ namespace Eto.WinForms.Forms
 		public virtual void OnLoad(EventArgs e)
 		{
 			SetMinimumSizeInternal(false);
+
+			if (Widget.VisualParent?.Loaded != false && !(Widget is Window))
+			{
+				// adding dynamically or loading without a parent (e.g. embedding into a native app)
+				Application.Instance.AsyncInvoke(FireOnShown);
+			}
 		}
+
+		static void FireOnShown(Control control)
+		{
+			if (!control.Visible)
+				return;
+			var handler = control.Handler as IWindowsControl;
+			handler?.Callback.OnShown(control, EventArgs.Empty);
+
+			foreach (var ctl in control.VisualControls)
+			{
+				if (ctl.Visible)
+					FireOnShown(ctl);
+			}
+		}
+
+		protected void FireOnShown() => FireOnShown(Widget);
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
@@ -766,5 +800,13 @@ namespace Eto.WinForms.Forms
 			get { return Control.ForeColor.ToEto(); }
 			set { Control.ForeColor = value.ToSD(); }
 		}
+
+		public virtual int TabIndex
+		{
+			get { return Control.TabIndex == 0 ? int.MaxValue : Control.TabIndex - 1; }
+			set { Control.TabIndex = value == int.MaxValue ? 0 : value + 1; }
+		}
+
+		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 	}
 }

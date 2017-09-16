@@ -216,10 +216,12 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		static readonly object ReadOnly_Key = new object();
+
 		public bool ReadOnly
 		{
-			get { return !Control.Editable; }
-			set { Control.Editable = !value; }
+			get { return Widget.Properties.Get<bool>(ReadOnly_Key); }
+			set { Widget.Properties.Set(ReadOnly_Key, value, () => Control.Editable = !value); }
 		}
 
 		public override bool Enabled
@@ -237,6 +239,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Control.TextColor = TextColor.ToNSUI();
 					Control.BackgroundColor = BackgroundColor.ToNSUI();
+					Control.Editable = !ReadOnly; // this gets set to false when Selectable is set to false, so we need to re-enable it.
 				}
 			}
 		}
@@ -388,7 +391,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			// get NSString object so we don't have to marshal the entire string to get its length
 			var stringValuePtr = Messaging.IntPtr_objc_msgSend(Control.Handle, selGetString);
-			var str = Runtime.GetNSObject(stringValuePtr) as NSString;
+			var str = Runtime.GetNSObject<NSString>(stringValuePtr);
 
 			var range = new NSRange(str != null ? str.Length : 0, 0);
 			Control.Replace(range, text);

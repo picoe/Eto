@@ -24,8 +24,8 @@ namespace Eto.WinForms
 
 		public override string ID { get { return "winforms"; } }
 
-		public override PlatformFeatureFlags SupportedFeatures =>
-			PlatformFeatureFlags.DrawableWithTransparentContent;
+		public override PlatformFeatures SupportedFeatures =>
+			PlatformFeatures.DrawableWithTransparentContent;
 
 		static Platform()
 		{

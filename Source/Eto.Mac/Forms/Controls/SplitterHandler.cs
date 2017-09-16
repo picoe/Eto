@@ -113,6 +113,8 @@ namespace Eto.Mac.Forms.Controls
 		int? position;
 		SplitterFixedPanel fixedPanel;
 		bool initialPositionSet;
+		int panel1MinimumSize;
+		int panel2MinimumSize;
 		static readonly object WasLoaded_Key = new object();
 
 		bool WasLoaded
@@ -173,80 +175,92 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (splitView.IsVertical)
 				{
-					panel1Rect = new CGRect(0, 0, newFrame.Width - dividerThickness, newFrame.Height);
+					panel1Rect = new CGRect(0, 0, Math.Max(0, newFrame.Width - dividerThickness), newFrame.Height);
 					panel2Rect = new CGRect(newFrame.Width, 0, 0, newFrame.Height);
 				}
 				else
 				{
-					panel1Rect = new CGRect(0, 0, newFrame.Width, newFrame.Height - dividerThickness);
+					panel1Rect = new CGRect(0, 0, newFrame.Width, Math.Max(0, newFrame.Height - dividerThickness));
 					panel2Rect = new CGRect(0, newFrame.Height, newFrame.Width, 0);
 				}
 			}
-			else if (splitView.IsVertical)
-			{
-				panel2Rect.Y = 0;
-				panel2Rect.Height = panel1Rect.Height = newFrame.Height;
-				panel1Rect = new CGRect(CGPoint.Empty, panel1Rect.Size);
-				if (position == null)
-				{
-					panel1Rect.Width = (nfloat)Math.Max(0, newFrame.Width / 2);
-					panel2Rect.Width = (nfloat)Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
-				}
-				else {
-					var pos = position.Value;
-					switch (fixedPanel)
-					{
-						case SplitterFixedPanel.Panel1:
-							panel1Rect.Width = (nfloat)Math.Max(0, Math.Min(newFrame.Width - dividerThickness, pos));
-							panel2Rect.Width = (nfloat)Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
-							break;
-						case SplitterFixedPanel.Panel2:
-							panel2Rect.Width = (nfloat)Math.Max(0, Math.Min(newFrame.Width - dividerThickness, oldSize.Width - pos - dividerThickness));
-							panel1Rect.Width = (nfloat)Math.Max(0, newFrame.Width - panel2Rect.Width - dividerThickness);
-							break;
-						case SplitterFixedPanel.None:
-							var oldscale = oldSize.Width > 0 ? newFrame.Width / oldSize.Width : 1;
-							panel1Rect.Width = (nfloat)Math.Round(Math.Max(0, Math.Min(newFrame.Width - dividerThickness, pos * oldscale)));
-							panel2Rect.Width = (nfloat)Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
-							break;
-					}
-				}
-				panel2Rect.X = (nfloat)Math.Min(panel1Rect.Width + dividerThickness, newFrame.Width);
-			}
 			else
 			{
-				panel2Rect.X = 0;
-				panel2Rect.Width = panel1Rect.Width = newFrame.Width;
+				nfloat totalSize;
+				nfloat panel1Size;
+				nfloat panel2Size;
+				nfloat old;
+				if (splitView.IsVertical)
+				{
+					panel2Rect.Y = 0;
+					panel2Rect.Height = panel1Rect.Height = newFrame.Height;
+					totalSize = newFrame.Width;
+					old = oldSize.Width;
+				}
+				else
+				{
+					panel2Rect.X = 0;
+					panel2Rect.Width = panel1Rect.Width = newFrame.Width;
+					totalSize = newFrame.Height;
+					old = oldSize.Height;
+				}
 				panel1Rect = new CGRect(CGPoint.Empty, panel1Rect.Size);
+
 				if (position == null)
 				{
-					panel1Rect.Height = (nfloat)Math.Max(0, newFrame.Height / 2);
-					panel2Rect.Height = (nfloat)Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
+					panel1Size = (nfloat)Math.Max(0, totalSize / 2);
+					panel2Size = (nfloat)Math.Max(0, totalSize - panel1Size - dividerThickness);
 				}
 				else {
 					var pos = position.Value;
 					switch (fixedPanel)
 					{
 						case SplitterFixedPanel.Panel1:
-							panel1Rect.Height = (nfloat)Math.Max(0, Math.Min(newFrame.Height - dividerThickness, pos));
-							panel2Rect.Height = (nfloat)Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
+							panel1Size = (nfloat)Math.Max(0, Math.Min(totalSize - dividerThickness, pos));
+							panel2Size = (nfloat)Math.Max(0, totalSize - panel1Size - dividerThickness);
 							break;
 						case SplitterFixedPanel.Panel2:
-							panel2Rect.Height = (nfloat)Math.Max(0, Math.Min(newFrame.Height - dividerThickness, oldSize.Height - pos - dividerThickness));
-							panel1Rect.Height = (nfloat)Math.Max(0, newFrame.Height - panel2Rect.Height - dividerThickness);
+							panel2Size = (nfloat)Math.Max(0, Math.Min(totalSize - dividerThickness, old - pos - dividerThickness));
+							panel1Size = (nfloat)Math.Max(0, totalSize - panel2Size - dividerThickness);
 							break;
+						default:
 						case SplitterFixedPanel.None:
-							var oldscale = oldSize.Height > 0 ? newFrame.Height / oldSize.Height : 1;
-							panel1Rect.Height = (nfloat)Math.Round(Math.Max(0, Math.Min(newFrame.Height - dividerThickness, pos * oldscale)));
-							panel2Rect.Height = (nfloat)Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
+							var oldscale = old > 0 ? totalSize / old : 1;
+							panel1Size = (nfloat)Math.Round(Math.Max(0, Math.Min(totalSize - dividerThickness, pos * oldscale)));
+							panel2Size = (nfloat)Math.Max(0, totalSize - panel1Size - dividerThickness);
 							break;
 					}
 				}
-				panel2Rect.Y = (nfloat)Math.Min(panel1Rect.Height + dividerThickness, newFrame.Height);
+
+				// ensure we don't shrink panels beyond minimum sizes
+				if (panel2Size < Panel2MinimumSize)
+				{
+					panel2Size = (nfloat)Math.Min(Panel2MinimumSize, totalSize);
+					panel1Size = (nfloat)Math.Max(0, totalSize - panel2Size - dividerThickness);
+				}
+				if (panel1Size < Panel1MinimumSize)
+				{
+					panel1Size = (nfloat)Math.Min(Panel1MinimumSize, totalSize);
+					panel2Size = (nfloat)Math.Max(0, totalSize - panel1Size - dividerThickness);
+				}
+
+				if (splitView.IsVertical)
+				{
+					panel2Rect.X = (nfloat)Math.Min(panel1Size + dividerThickness, totalSize);
+					panel1Rect.Width = panel1Size;
+					panel2Rect.Width = panel2Size;
+				}
+				else
+				{
+					panel2Rect.Y = (nfloat)Math.Min(panel1Size + dividerThickness, totalSize);
+					panel1Rect.Height = panel1Size;
+					panel2Rect.Height = panel2Size;
+				}
 			}
 
 			splitView.Subviews[0].Frame = panel1Rect;
 			splitView.Subviews[1].Frame = panel2Rect;
+			//Console.WriteLine($"Splitter resize: frame: {splitView.Frame.Size}, position: {position}, panel1({panel1?.Visible}): {panel1Rect}, panel2({panel2?.Visible}): {panel2Rect}");
 		}
 
 		public class EtoSplitViewDelegate : NSSplitViewDelegate
@@ -262,7 +276,29 @@ namespace Eto.Mac.Forms.Controls
 
 			public override nfloat ConstrainSplitPosition(NSSplitView splitView, nfloat proposedPosition, nint subviewDividerIndex)
 			{
-				return Handler.Enabled ? (nfloat)Math.Round(proposedPosition) : Handler.Position;
+				var h = Handler;
+				var totalSize = splitView.IsVertical ? splitView.Bounds.Width : splitView.Bounds.Height;
+
+				if (h.Panel1?.Visible != true)
+					return 0;
+				
+				if (h.Panel2?.Visible != true)
+					return (nfloat)Math.Max(0, totalSize - splitView.DividerThickness);
+
+				if (!h.Enabled)
+					return h.Position;
+
+				if ((h.Panel1MinimumSize > 0 || h.Panel2MinimumSize > 0))
+				{
+					// constrain to panel 2 minimum size
+					proposedPosition = (nfloat)Math.Min(totalSize - h.panel2MinimumSize - splitView.DividerThickness, proposedPosition);
+					// constrain to panel 1 minimum size
+					proposedPosition = (nfloat)Math.Max(proposedPosition, h.Panel1MinimumSize);
+					// constrain to size of control
+					proposedPosition = (nfloat)Math.Min(totalSize, proposedPosition);
+				}
+
+				return (nfloat)Math.Round(proposedPosition);
 			}
 			
 			public override void DidResizeSubviews(NSNotification notification)
@@ -422,6 +458,28 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public int Panel1MinimumSize
+		{
+			get { return panel1MinimumSize; }
+			set
+			{
+				panel1MinimumSize = value;
+				if (Widget.Loaded)
+					UpdatePosition();
+			}
+		}
+
+		public int Panel2MinimumSize
+		{
+			get { return panel2MinimumSize; }
+			set
+			{
+				panel2MinimumSize = value;
+				if (Widget.Loaded)
+					UpdatePosition();
+			}
+		}
+
 		void SetInitialSplitPosition()
 		{
 			if (!double.IsNaN(relative))
@@ -567,7 +625,8 @@ namespace Eto.Mac.Forms.Controls
 
 		void UpdatePosition()
 		{
-			Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+			if (!Control.InLiveResize)
+				Control.ResizeSubviewsWithOldSize(CGSize.Empty);
 		}
 	}
 }

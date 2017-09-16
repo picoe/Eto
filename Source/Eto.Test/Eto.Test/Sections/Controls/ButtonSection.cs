@@ -1,4 +1,4 @@
-using Eto.Drawing;
+﻿using Eto.Drawing;
 using Eto.Forms;
 using System.ComponentModel;
 
@@ -7,7 +7,7 @@ namespace Eto.Test.Sections.Controls
 	[Section("Controls", typeof(Button))]
 	public class ButtonSection : Scrollable, INotifyPropertyChanged
 	{
-		Bitmap smallImage = new Bitmap(TestIcons.TestImage, 16, 16);
+		Image smallImage = TestIcons.TestImage.WithSize(16, 16);
 		Bitmap largeImage = TestIcons.TestImage;
 		ButtonImagePosition imagePosition;
 		bool clearMinimumSize;

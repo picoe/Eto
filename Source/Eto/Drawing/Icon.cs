@@ -108,7 +108,7 @@ namespace Eto.Drawing
 			{
 				#if PCL
 				if (TypeHelper.GetCallingAssembly == null)
-					throw new ArgumentNullException("assembly", string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
+					throw new ArgumentNullException(nameof(assembly), "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly");
 				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 				#else
 				assembly = Assembly.GetCallingAssembly();
@@ -120,29 +120,34 @@ namespace Eto.Drawing
 				using (var stream = assembly.GetManifestResourceStream(resourceName))
 				{
 					if (stream == null)
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName));
+						throw new ArgumentException($"Resource '{resourceName}' not found in assembly '{assembly.FullName}'", nameof(resourceName));
 					return new Icon(stream);
 				}
 			}
 
-			return new Icon(GetResources(resourceName, assembly));
+			var frames = new List<IconFrame>();
+			GetResources(resourceName, assembly, frames);
+			if (frames.Count == 0)
+				throw new ArgumentException($"Resource '{resourceName}' not found in assembly '{assembly.FullName}'", nameof(resourceName));
+			
+			return new Icon(frames);
 		}
 
-		static IEnumerable<IconFrame> GetResources(string resourceName, Assembly assembly)
+		static void GetResources(string resourceName, Assembly assembly, List<IconFrame> frames)
 		{
 			var info = assembly.GetManifestResourceInfo(resourceName);
 			if (info != null)
-				yield return IconFrame.FromResource(1f, resourceName, assembly);
+				frames.Add(IconFrame.FromResource(1f, resourceName, assembly));
 
 			// no extension? don't look for others
 			var extensionIndex = resourceName.LastIndexOf('.');
 			if (extensionIndex < 0)
-				yield break;
+				return;
 
 			// .ico files already have multiple resolutions
 			var extension = resourceName.Substring(extensionIndex);
 			if (extension.Equals(".ico", StringComparison.OrdinalIgnoreCase))
-				yield break;
+				return;
 			
 			var resourceWithoutExtension = resourceName.Substring(0, extensionIndex);
 
@@ -153,7 +158,7 @@ namespace Eto.Drawing
 				.OrderByDescending(r => r))
 			{
 				// must be same extension, if one is supplied with the resourceName
-				if (extension != null && !entryName.EndsWith(extension))
+				if (extension != null && !entryName.EndsWith(extension, StringComparison.Ordinal))
 					continue;
 
 				// get the scale, if supplied
@@ -164,11 +169,11 @@ namespace Eto.Drawing
 				// parse out scale, e.g. @2x, @0.5x
 				var scaleString = entryName.Substring(nameWithAt.Length, extensionIndex - nameWithAt.Length);
 				float scale;
-				if (!scaleString.EndsWith("x")
-				    || !float.TryParse(scaleString.TrimEnd('x'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out scale))
+				if (!scaleString.EndsWith("x", StringComparison.Ordinal)
+					|| !float.TryParse(scaleString.TrimEnd('x'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out scale))
 					continue;
 
-				yield return IconFrame.FromResource(scale, entryName, assembly);
+				frames.Add(IconFrame.FromResource(scale, entryName, assembly));
 			}
 		}
 

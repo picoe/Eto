@@ -45,9 +45,31 @@ namespace Eto.Mac.Forms
 			get { return Control; }
 		}
 
+		/// <summary>
+		/// Adds the method dynamically to the specified NSObject.
+		/// This uses Objective C to dynamically add the specified method to the class.  Note that you should only pass
+		/// objects that have an eto-specific subclass.
+		/// 
+		/// Typically "v@:[args]"  v = void return, @ = sender 
+		/// Arguments:
+		/// <list type="unordered">
+		///   <item>v - Void</item>
+		///   <item>@ - NSObject</item>
+		///   <item>B - boolean</item>
+		///   <item>d - double</item>
+		///   <item>f - float</item>
+		///   <item>{CGSize=dd} - CGSize struct with double values</item>
+		///   <item>{CGSize=ff} - CGSize struct with float values</item>
+		/// </list>
+		/// </summary>
 		public new void AddMethod (IntPtr selector, Delegate action, string arguments, object control = null)
 		{
 			base.AddMethod (selector, action, arguments, control ?? EventObject);
+		}
+
+		public new bool HasMethod(IntPtr selector, object control = null)
+		{
+			return base.HasMethod(selector, control ?? EventObject);
 		}
 
 		public new NSObject AddObserver (NSString key, Action<ObserverActionEventArgs> action, NSObject control = null)

@@ -38,7 +38,7 @@ namespace Eto.Mac.Forms.Cells
 
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
-			if (Widget.Binding != null)
+			if (Widget.Binding != null && !ColumnHandler.DataViewHandler.SuppressUpdate)
 			{
 				var num = value as NSNumber;
 				if (num != null)
@@ -113,6 +113,8 @@ namespace Eto.Mac.Forms.Cells
 			public CellView(IntPtr handle) : base(handle) { }
 		}
 
+		static NSString enabledBinding = new NSString("enabled");
+
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
 			var view = tableView.MakeView(tableColumn.Identifier, tableView) as CellView;
@@ -121,7 +123,7 @@ namespace Eto.Mac.Forms.Cells
 				view = new CellView { Title = string.Empty };
 				view.Identifier = tableColumn.Identifier;
 				view.SetButtonType(NSButtonType.Switch);
-				view.Bind("enabled", tableColumn, "editable", null);
+				view.Bind(enabledBinding, tableColumn, "editable", null);
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
 				view.Activated += (sender, e) =>
@@ -129,7 +131,7 @@ namespace Eto.Mac.Forms.Cells
 					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, col, item);
+					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, ee);
 					SetObjectValue(item, control.ObjectValue);
 					control.ObjectValue = GetObjectValue(item);

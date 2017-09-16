@@ -507,5 +507,9 @@ namespace Eto.WinForms.Forms
 				throw new NotImplementedException();
 			}
 		}
+
+		public int TabIndex { get; set; }
+
+		public IEnumerable<Control> VisualControls => Widget.Controls;
 	}
 }

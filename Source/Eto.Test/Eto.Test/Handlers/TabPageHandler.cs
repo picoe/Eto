@@ -1,4 +1,4 @@
-using Eto.Drawing;
+﻿using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Handlers
@@ -36,8 +36,8 @@ namespace Eto.Test.Handlers
 
 		public Image Image
 		{
-			get;
-			set; // TODO
+			get { return Tab.Image; }
+			set { Tab.Image = value; }
 		}
     }
 }

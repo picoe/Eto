@@ -2,13 +2,15 @@ using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Forms.Controls;
+using System.Collections.Generic;
+using System;
 
 namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkContainer<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, Container.IHandler
-		where TControl: Gtk.Widget
-		where TWidget: Container
-		where TCallback: Container.ICallback
+		where TControl : Gtk.Widget
+		where TWidget : Container
+		where TCallback : Container.ICallback
 	{
 		public bool RecurseToChildren { get { return true; } }
 
@@ -18,6 +20,33 @@ namespace Eto.GtkSharp.Forms
 			set { Size = value; }
 		}
 
+		public override IEnumerable<Control> VisualControls => Widget.Controls;
+
+		protected virtual void SetFocusChain()
+		{
+			var container = Control as Gtk.Container;
+			if (container == null)
+				return;
+			var widgets = GetOrderedWidgets().Distinct().ToArray();
+			container.FocusChain = widgets;
+		}
+
+		IEnumerable<Gtk.Widget> GetOrderedWidgets()
+		{
+			var parent = Widget.IsVisualControl ? Widget.LogicalParent : Widget;
+			foreach (var ctl in parent.Controls.OrderBy(r => r.TabIndex))
+			{
+				var widget = ctl.GetContainerWidget();
+				while (widget != null && !ReferenceEquals(widget.Parent, Control))
+				{
+					widget = widget.Parent;
+				}
+				if (widget != null)
+					yield return widget;
+			}
+		}
+
+#if GTK2
 		public override void SetBackgroundColor()
 		{
 			base.SetBackgroundColor();
@@ -26,5 +55,6 @@ namespace Eto.GtkSharp.Forms
 				child.SetBackgroundColor();
 			}
 		}
+#endif
 	}
 }

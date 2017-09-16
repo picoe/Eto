@@ -578,7 +578,7 @@ namespace Eto.GtkSharp.Forms
 			}
 			set
 			{
-				if (state != value)
+				if (WindowState != value)
 				{
 					state = value;
 					var gdkWindow = Control.GetWindow();				

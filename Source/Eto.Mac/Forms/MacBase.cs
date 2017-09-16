@@ -37,9 +37,13 @@ namespace Eto.Mac.Forms
 
 		NSView EventControl { get; }
 
+		NSView FocusControl { get; }
+
 		bool AutoSize { get; }
 
 		SizeF GetPreferredSize(SizeF availableSize);
+
+		void RecalculateKeyViewLoop(ref NSView last);
 	}
 
 	[Register("ObserverHelper")]
@@ -186,10 +190,20 @@ namespace Eto.Mac.Forms
 			#if OSX
 			if (!typeof(IMacControl).IsAssignableFrom(type))
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
+			if (((IMacControl)control).WeakHandler?.Target == null)
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' has a null handler", type));
 			#endif
 			var classHandle = Class.GetHandle(type);
 			ObjCExtensions.AddMethod(classHandle, selector, action, arguments);
 		}
+
+		public bool HasMethod(IntPtr selector, object control)
+		{
+			var type = control.GetType();
+			var classHandle = Class.GetHandle(type);
+			return ObjCExtensions.GetMethod(classHandle, selector) != IntPtr.Zero;
+		}
+
 
 		public NSObject AddObserver(NSString key, Action<ObserverActionEventArgs> action, NSObject control)
 		{

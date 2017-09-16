@@ -24,9 +24,9 @@ namespace Eto.Forms.ThemedControls
 		/// </summary>
 		protected override void Initialize()
 		{
-			base.Initialize();
 			UpdateLayout();
 			splitter.MouseMove += SplitterMouseMove;
+			base.Initialize();
 		}
 
 		void SplitterMouseMove(object sender, MouseEventArgs e)
@@ -279,5 +279,39 @@ namespace Eto.Forms.ThemedControls
 		{
 			get { return splitter; }
 		}
-	}
+
+		/// <summary>
+		/// Gets or sets the minimal size of the first panel.
+		/// </summary>
+		/// <value>The minimal size of the first panel.</value>
+        public int Panel1MinimumSize
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+		/// <summary>
+		/// Gets or sets the minimal size of the second panel.
+		/// </summary>
+		/// <value>The minimal size of the second panel.</value>
+        public int Panel2MinimumSize
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
 }

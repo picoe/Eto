@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -26,7 +27,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return Control != null ? new Size((int)Control.ColumnSpacing, (int)Control.RowSpacing) : spacing ?? Size.Empty; }
 			set
-			{ 
+			{
 				if (Control == null)
 					spacing = value;
 				else
@@ -82,6 +83,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			align = new Gtk.Alignment(0, 0, 1.0F, 1.0F);
 			box = new Gtk.EventBox { Child = align };
+			Control = new Gtk.Table(1, 1, false);
 		}
 
 		public void CreateControl(int cols, int rows)
@@ -90,7 +92,7 @@ namespace Eto.GtkSharp.Forms
 			lastColumnScale = cols - 1;
 			rowScale = new bool[rows];
 			lastRowScale = rows - 1;
-			Control = new Gtk.Table((uint)rows, (uint)cols, false);
+			Control.Resize((uint)rows, (uint)cols);
 			controls = new Control[rows, cols];
 			blank = new Gtk.Widget[rows, cols];
 			align.Add(Control);
@@ -121,7 +123,7 @@ namespace Eto.GtkSharp.Forms
 
 		void AttachColumn(int column)
 		{
-			for (int y = 0; y < controls.GetLength (0); y++)
+			for (int y = 0; y < controls.GetLength(0); y++)
 			{
 				Attach(controls[y, column], column, y);
 			}
@@ -129,7 +131,7 @@ namespace Eto.GtkSharp.Forms
 
 		void AttachRow(int row)
 		{
-			for (int x = 0; x < controls.GetLength (1); x++)
+			for (int x = 0; x < controls.GetLength(1); x++)
 			{
 				Attach(controls[row, x], x, row);
 			}
@@ -159,6 +161,13 @@ namespace Eto.GtkSharp.Forms
 				var widget = child.GetContainerWidget();
 				if (widget.Parent != null)
 					((Gtk.Container)widget.Parent).Remove(widget);
+#if GTK3
+				// fix an odd problem in GTK 3.20 where a drop down would set vertical scaling of a row
+				// even though it is not set to do so (Tested on Ubuntu 16.10)
+				// TODO: we should probably create a new TableLayoutHandler using Gtk.Grid instead
+				widget.Vexpand = false;
+				widget.Hexpand = false;
+#endif
 				Control.Attach(widget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions(x), GetRowOptions(y), 0, 0);
 				widget.ShowAll();
 				return true;
@@ -178,11 +187,11 @@ namespace Eto.GtkSharp.Forms
 
 		public void Remove(Control child)
 		{
-			for (int y = 0; y<controls.GetLength(0); y++)
+			for (int y = 0; y < controls.GetLength(0); y++)
 			{
-				for (int x = 0; x<controls.GetLength(1); x++)
+				for (int x = 0; x < controls.GetLength(1); x++)
 				{
-					if (object.ReferenceEquals(controls[y, x], child))
+					if (ReferenceEquals(controls[y, x], child))
 					{
 						controls[y, x] = null;
 						var widget = child.GetContainerWidget();
@@ -216,6 +225,25 @@ namespace Eto.GtkSharp.Forms
 		public void Update()
 		{
 			Control.ResizeChildren();
+		}
+
+		public override void OnLoadComplete(System.EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			SetFocusChain();
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Eto.Forms.Control.ShownEvent:
+					Control.Mapped += Connector.MappedEvent;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

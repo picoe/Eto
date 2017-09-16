@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
@@ -51,15 +51,27 @@ namespace Eto.Test.Sections.Controls
 				Rows =
 				{
 					new TableRow(
-						"Grid", 
+						"Grid",
 						new TableLayout(
 							CreateOptions(gridView, filteredCollection),
-							gridView
+							new TableRow(gridView) { ScaleHeight = true },
+                            CreatePositionLabel(gridView)
 						)
 					) { ScaleHeight = true },
 					new TableRow("Selected Items", selectionGridView)
 				}
 			};
+		}
+
+		Label CreatePositionLabel(GridView grid)
+		{
+			var label = new Label();
+			grid.MouseMove += (sender, e) =>
+			{
+				var cell = grid.GetCellAt(e.Location);
+				label.Text = $"Row: {cell?.RowIndex}, Column: {cell?.ColumnIndex} ({cell?.Column?.HeaderText}), Item: {cell?.Item}";
+			};
+			return label;
 		}
 
 		StackLayout CreateOptions(GridView grid, SelectableFilterCollection<MyGridItem> filtered)
@@ -104,6 +116,12 @@ namespace Eto.Test.Sections.Controls
 						"VerticalAlignment", VerticalAlignmentDropDown(grid),
 						null
 					),
+					TableLayout.Horizontal(
+						5,
+						null,
+						"AutoSelectMode", AutoSelectModeDropDown(grid),
+						null
+					),
 					CreateSearchBox(filtered)
 				}
 			};
@@ -130,6 +148,18 @@ namespace Eto.Test.Sections.Controls
 
 			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
 			control.SelectedValueBinding.Bind(imageTextCell, c => c.VerticalAlignment);
+			return control;
+		}
+
+		Control AutoSelectModeDropDown(GridView grid)
+		{
+			var control = new EnumDropDown<AutoSelectMode>();
+
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().First();
+			control.SelectedValueBinding.Bind(textBoxCell, c => c.AutoSelectMode);
+
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
+			control.SelectedValueBinding.Bind(imageTextCell, c => c.AutoSelectMode);
 			return control;
 		}
 
@@ -237,7 +267,7 @@ namespace Eto.Test.Sections.Controls
 			protected override Control OnCreateCell(CellEventArgs args)
 			{
 				//Log.Write(this, "OnCreateCell: Row: {1}, CellState: {2}, Item: {0}", args.Item, args.Row, args.CellState);
-
+				//var control = new Label();
 				var control = new Button();
 				control.TextBinding.BindDataContext((MyGridItem m) => m.Text);
 				control.BindDataContext(c => c.Command, (MyGridItem m) => m.Command);
@@ -336,6 +366,23 @@ namespace Eto.Test.Sections.Controls
 		{
 			// Context menu
 			var menu = new ContextMenu();
+
+			var commitEditItem = new ButtonMenuItem { Text = "CommitEdit" };
+			commitEditItem.Click += (s, e) =>
+			{
+				var result = grid.CommitEdit();
+				Log.Write(grid, $"CommitEdit, Result: {result}");
+			};
+			menu.Items.Add(commitEditItem);
+
+			var abortEditItem = new ButtonMenuItem { Text = "CancelEdit" };
+			abortEditItem.Click += (s, e) =>
+			{
+				var result = grid.CancelEdit();
+				Log.Write(grid, $"CancelEdit, Result: {result}");
+			};
+			menu.Items.Add(abortEditItem);
+
 			var item = new ButtonMenuItem { Text = "Click Me!" };
 			item.Click += (sender, e) =>
 			{
@@ -493,19 +540,23 @@ namespace Eto.Test.Sections.Controls
 			{
 				// initialize to random values
 				this.Row = row;
-				var val = rand.Next(3);
+				var val = row % 3;
 				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
-				val = rand.Next(3);
+				val = row % 2;
 				Image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
 
 				text = string.Format("Col 1 Row {0}", row);
 
-				Color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
+				Color = Color.FromElementId(row);
 
-				dropDownKey = "Item " + Convert.ToString(rand.Next(4) + 1);
+				val = row % 5;
+				if (val < 4)
+					dropDownKey = "Item " + Convert.ToString(val + 1);
 
-				progress = rand.Next() % 10 != 0 ? (float?)rand.NextDouble() : null;
+				val = row % 12;
+				if (val <= 10)
+					progress = (float)Math.Round(val / 10f, 1);
 			}
 
 			public override string ToString()

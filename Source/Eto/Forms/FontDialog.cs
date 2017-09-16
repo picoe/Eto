@@ -83,7 +83,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnFontChanged(FontDialog widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnFontChanged(e));
+				using (widget.Platform.Context)
+					widget.OnFontChanged(e);
 			}
 		}
 

@@ -40,7 +40,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (!AutoComplete)
 				{
 					// with autocomplete off, items aren't selected based on typed text but should be
-					var item = DataStore.FirstOrDefault(o => Widget.ItemTextBinding.GetValue(o) == text);
+					var item = DataStore?.FirstOrDefault(o => Widget.ItemTextBinding.GetValue(o) == text);
 					if (item != null)
 					{
 						Control.SelectedItem = item;
@@ -104,18 +104,19 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		protected override swc.Border BorderControl => Control.FindChild<swc.Border>("Border");
+
+		protected swc.Border DropDownButton => Control.FindChild<swc.Border>("templateRoot");
+
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var contentHost = Control.ContentHost;
-				return (contentHost != null ? contentHost.Background : sw.SystemColors.WindowBrush).ToEtoColor();
-			}
+			get { return base.BackgroundColor; }
 			set
 			{
-				var contentHost = Control.ContentHost;
-				if (contentHost != null)
-					contentHost.Background = value.ToWpfBrush(contentHost.Background);
+				base.BackgroundColor = value;
+				var tb = DropDownButton;
+				if (tb != null)
+					tb.Background = value.ToWpfBrush(tb.Background);
 			}
 		}
 

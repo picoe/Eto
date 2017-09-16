@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using Eto.Forms;
 using Eto.Drawing;
@@ -357,8 +357,7 @@ namespace Eto.GtkSharp.Forms
 					EventControl.FocusOutEvent += Connector.FocusOutEvent;
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					EventControl.AddEvents((int)Gdk.EventMask.VisibilityNotifyMask);
-					EventControl.VisibilityNotifyEvent += Connector.VisibilityNotifyEvent;
+					EventControl.Mapped += Connector.MappedEvent;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -441,6 +440,7 @@ namespace Eto.GtkSharp.Forms
 			[GLib.ConnectBefore]
 			public void HandleButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
 			{
+				args.Event.ToEtoLocation();
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
@@ -545,7 +545,7 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
-			public void FocusInEvent(object o, Gtk.FocusInEventArgs args)
+			public virtual void FocusInEvent(object o, Gtk.FocusInEventArgs args)
 			{
 				var handler = Handler;
 				if (handler == null)
@@ -553,7 +553,7 @@ namespace Eto.GtkSharp.Forms
 				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
 			}
 
-			public void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
+			public virtual void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
 			{
 				// Handler can be null here after window is closed
 				var handler = Handler;
@@ -561,16 +561,15 @@ namespace Eto.GtkSharp.Forms
 					handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
 			}
 
-			public void VisibilityNotifyEvent(object o, Gtk.VisibilityNotifyEventArgs args)
-			{
-				if (args.Event.State == Gdk.VisibilityState.FullyObscured)
-					Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
-			}
-
 			public void HandleControlRealized(object sender, EventArgs e)
 			{
 				Handler.RealizedSetup();
 				Handler.Control.Realized -= HandleControlRealized;
+			}
+
+			public virtual void MappedEvent(object sender, EventArgs e)
+			{
+				Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -669,5 +668,14 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		static readonly object TabIndex_Key = new object();
+
+		public int TabIndex
+		{
+			get { return Widget.Properties.Get<int>(TabIndex_Key, int.MaxValue); }
+			set { Widget.Properties.Set(TabIndex_Key, value, int.MaxValue); }
+		}
+
+		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 	}
 }

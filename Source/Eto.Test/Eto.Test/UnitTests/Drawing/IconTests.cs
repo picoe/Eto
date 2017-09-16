@@ -67,6 +67,13 @@ namespace Eto.Test.UnitTests.Drawing
 			var fs = fittingSize != null ? (Size?)new Size(fittingSize.Value, fittingSize.Value) : null;
 			Assert.AreEqual(new Size(expectedSize, expectedSize), icon.GetFrame(scale, fs).PixelSize, "");
 		}
+
+		[TestCase("Some.File.That.Does.Not.Exist.png")]
+		[TestCase("Some.File.That.Does.Not.Exist.ico")]
+		public void InvalidResourceShouldThrowException(string resourceName)
+		{
+			Assert.Throws<ArgumentException>(() => Icon.FromResource(resourceName));
+		}
 	}
 }
 

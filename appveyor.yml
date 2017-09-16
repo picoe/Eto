@@ -1,6 +1,6 @@
 version: 2.4.0.{build}
 install:
-- curl -fsS -o gtk-sharp.msi %GTKSHARP_LOCATION%/gtk-sharp-2.12.38.msi
+- appveyor DownloadFile %GTKSHARP_LOCATION%/gtk-sharp-2.12.38.msi -FileName gtk-sharp.msi
 - msiexec /i gtk-sharp.msi /qn /norestart
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
@@ -8,7 +8,7 @@ build_script:
 - set BUILD_VERSION=2.4.0-build%BUILD_VERSION:~-4%
 - echo Downloading XamMac.dll for build..
 - mkdir %BASE%\BuildOutput\net45\Release
-- curl -fsS -o %BASE%\BuildOutput\net45\Release\XamMac.dll %XAMMAC_LOCATION%/XamMac.dll
+- appveyor DownloadFile %XAMMAC_LOCATION%/XamMac.dll -FileName "%BASE%\BuildOutput\net45\Release\XamMac.dll"
 - msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% Resources\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 test: off
 #test_script:

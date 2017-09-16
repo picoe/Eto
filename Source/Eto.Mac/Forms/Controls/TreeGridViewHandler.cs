@@ -193,14 +193,15 @@ namespace Eto.Mac.Forms.Controls
 					h.ExpandItems(myitem);
 					h.suppressExpandCollapseEvents--;
 					h.Callback.OnExpanded(h.Widget, new TreeGridViewItemEventArgs(myitem.Item));
-					h.AutoSizeColumns();
+					h.AutoSizeColumns(true);
 				}
 			}
 
 			public override void DidClickTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn)
 			{
 				var column = Handler.GetColumn(tableColumn);
-				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(column.Widget));
+				var args = new GridColumnEventArgs(column.Widget);
+				Handler.Callback.OnColumnHeaderClick(Handler.Widget, args);
 			}
 
 			public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
@@ -311,7 +312,11 @@ namespace Eto.Mac.Forms.Controls
 						int columnIndex = (int)GetColumn(point);
 						var item = handler.GetItem(rowIndex);
 						var column = columnIndex == -1 || columnIndex > handler.Widget.Columns.Count ? null : handler.Widget.Columns[columnIndex];
-						handler.Callback.OnCellClick(handler.Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						var cellArgs = MacConversions.CreateCellMouseEventArgs(column, handler.ContainerControl, rowIndex, columnIndex, item, theEvent);
+						if (theEvent.ClickCount >= 2)
+							handler.Callback.OnCellDoubleClick(handler.Widget, cellArgs);
+						else
+							handler.Callback.OnCellClick(handler.Widget, cellArgs);
 					}
 					base.MouseDown(theEvent);
 
@@ -345,6 +350,17 @@ namespace Eto.Mac.Forms.Controls
 		{
 			switch (id)
 			{
+				case TreeGridView.ActivatedEvent:
+					Widget.KeyDown += (sender, e) =>
+					{
+						if (!e.Handled && e.KeyData == Keys.Enter)
+						{
+							Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
+							e.Handled = true;
+						}
+					};
+					Control.DoubleClick += HandleDoubleClick;
+					break;
 				case TreeGridView.ExpandedEvent:
 				case TreeGridView.ExpandingEvent:
 				case TreeGridView.CollapsedEvent:
@@ -354,12 +370,22 @@ namespace Eto.Mac.Forms.Controls
 				case Grid.ColumnHeaderClickEvent:
 					// handled in delegate
 					break;
+				case Grid.CellDoubleClickEvent:
 				case Grid.CellClickEvent:
 					// Handled in EtoOutlineView
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
+			}
+		}
+
+		static void HandleDoubleClick(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as TreeGridViewHandler;
+			if (handler != null)
+			{
+				handler.Callback.OnActivated(handler.Widget, new TreeGridViewItemEventArgs(handler.SelectedItem));
 			}
 		}
 
@@ -377,9 +403,11 @@ namespace Eto.Mac.Forms.Controls
 				topitems.Clear();
 				cachedItems.Clear();
 				Control.ReloadData();
+				suppressExpandCollapseEvents++;
 				ExpandItems(null);
+				suppressExpandCollapseEvents--;
 				if (Widget.Loaded)
-					AutoSizeColumns();
+					AutoSizeColumns(true);
 			}
 		}
 
@@ -615,7 +643,7 @@ namespace Eto.Mac.Forms.Controls
 				Control.ReloadItem(myitem, true);
 				SetItemExpansion(myitem);
 				ExpandItems(myitem);
-				AutoSizeColumns();
+				AutoSizeColumns(true);
 				var isSelectionChanged = false;
 				foreach (var sel in selection)
 				{

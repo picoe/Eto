@@ -22,16 +22,39 @@ namespace Eto.Forms
 		where TCallback : Control.ICallback
 	{
 		/// <summary>
+		/// Called to initialize this widget after it has been constructed
+		/// </summary>
+		/// <remarks>
+		/// Override this to initialize any of the platform objects.  This is called
+		/// in the widget constructor, after all of the widget's constructor code has been called.
+		/// </remarks>
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.IsVisualControl = true;
+		}
+
+		/// <summary>
 		/// Gets or sets the color for the background of the control
 		/// </summary>
 		/// <remarks>Note that on some platforms (e.g. Mac), setting the background color of a control can change the performance
 		/// characteristics of the control and its children, since it must enable layers to do so.</remarks>
 		/// <value>The color of the background.</value>
-		public Color BackgroundColor
+		public virtual Color BackgroundColor
 		{
 			get { return Control.BackgroundColor; }
 			set { Control.BackgroundColor = value; }
 		}
+
+		/// <summary>
+		/// Gets an enumeration of controls that are in the visual tree.
+		/// </summary>
+		/// <remarks>
+		/// This is used to specify which controls are contained by this instance that are part of the visual tree.
+		/// This should include all controls including non-logical Eto controls used for layout. 
+		/// </remarks>
+		/// <value>The visual controls.</value>
+		public virtual IEnumerable<Control> VisualControls => new[] { Control };
 
 		/// <summary>
 		/// Gets a value indicating whether <see cref="Control.PreLoad"/>/<see cref="Control.Load"/>/<see cref="Control.LoadComplete"/>/<see cref="Control.UnLoad"/>
@@ -49,7 +72,7 @@ namespace Eto.Forms
 		/// Gets or sets the size of the control. Use -1 to specify auto sizing for either the width and/or height.
 		/// </summary>
 		/// <value>The size.</value>
-		public Size Size
+		public virtual Size Size
 		{
 			get { return Control.Size; }
 			set { Control.Size = value; }
@@ -286,6 +309,41 @@ namespace Eto.Forms
 			get { return Control; }
 		}
 
+		/// <summary>
+		/// Gets the control used to attach keyboard and text input events
+		/// </summary>
+		/// <value>The keyboard control.</value>
+		protected virtual Control KeyboardControl => Control;
+
+		/// <summary>
+		/// Gets the control used to attach mouse events
+		/// </summary>
+		/// <value>The mouse control.</value>
+		protected virtual Control MouseControl => Control;
+
+		/// <summary>
+		/// Gets the control used to attach focus events.
+		/// </summary>
+		/// <value>The focus control.</value>
+		protected virtual Control FocusControl => KeyboardControl;
+
+		/// <summary>
+		/// Gets or sets the tab index order for this control within its container.
+		/// </summary>
+		/// <remarks>
+		/// This sets the order when using the tab key to cycle through controls
+		/// 
+		/// Note that some platforms (Gtk and WinForms) may not support setting the context of the tab order to StackLayout 
+		/// or DynamicLayout containers and may not behave exactly as expected. Use the 
+		/// <see cref="PlatformFeatures.TabIndexWithCustomContainers"/> flag to determine if it is supported.
+		/// </remarks>
+		/// <value>The index of the control in the tab order.</value>
+		public int TabIndex
+		{
+			get { return FocusControl.TabIndex; }
+			set { FocusControl.TabIndex = value; }
+		}
+
 		#region Events
 
 		/// <summary>
@@ -300,43 +358,46 @@ namespace Eto.Forms
 			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
-					Control.KeyDown += (s, e) => Callback.OnKeyDown(Widget, e);
+					KeyboardControl.KeyDown += (s, e) => Callback.OnKeyDown(Widget, e);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += (s, e) => Callback.OnKeyUp(Widget, e);
+					KeyboardControl.KeyUp += (s, e) => Callback.OnKeyUp(Widget, e);
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					Control.SizeChanged += (s, e) => Callback.OnSizeChanged(Widget, e);
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
-					Control.MouseDoubleClick += (s, e) => Callback.OnMouseDoubleClick(Widget, e);
+					MouseControl.MouseDoubleClick += (s, e) => Callback.OnMouseDoubleClick(Widget, e);
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
-					Control.MouseEnter += (s, e) => Callback.OnMouseEnter(Widget, e);
+					MouseControl.MouseEnter += (s, e) => Callback.OnMouseEnter(Widget, e);
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
-					Control.MouseLeave += (s, e) => Callback.OnMouseLeave(Widget, e);
+					MouseControl.MouseLeave += (s, e) => Callback.OnMouseLeave(Widget, e);
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
-					Control.MouseDown += (s, e) => Callback.OnMouseDown(Widget, e);
+					MouseControl.MouseDown += (s, e) => Callback.OnMouseDown(Widget, e);
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
-					Control.MouseUp += (s, e) => Callback.OnMouseUp(Widget, e);
+					MouseControl.MouseUp += (s, e) => Callback.OnMouseUp(Widget, e);
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
-					Control.MouseMove += (s, e) => Callback.OnMouseMove(Widget, e);
+					MouseControl.MouseMove += (s, e) => Callback.OnMouseMove(Widget, e);
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
-					Control.MouseWheel += (s, e) => Callback.OnMouseWheel(Widget, e);
+					MouseControl.MouseWheel += (s, e) => Callback.OnMouseWheel(Widget, e);
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (s, e) => Callback.OnGotFocus(Widget, e);
+					FocusControl.GotFocus += (s, e) => Callback.OnGotFocus(Widget, e);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (s, e) => Callback.OnLostFocus(Widget, e);
+					FocusControl.LostFocus += (s, e) => Callback.OnLostFocus(Widget, e);
 					break;
 				case Eto.Forms.Control.TextInputEvent:
-					Control.TextInput += (s, e) => Callback.OnTextInput(Widget, e);
+					KeyboardControl.TextInput += (s, e) => Callback.OnTextInput(Widget, e);
+					break;
+				case Eto.Forms.Control.ShownEvent:
+					Control.Shown += (s, e) => Callback.OnShown(Widget, e);
 					break;
 				default:
 					base.AttachEvent(id);

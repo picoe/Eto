@@ -300,12 +300,21 @@ namespace Eto.Forms
 			: this()
 		{
 			if (provider == null)
-				throw new ArgumentNullException("provider");
+				throw new ArgumentNullException(nameof(provider));
 			this.provider = provider;
 			UpdateText();
 		}
 
-		internal void UpdateText()
+		/// <summary>
+		/// Updates the text to the display text from the provider.
+		/// </summary>
+		/// <remarks>
+		/// Call this in a subclass when you want to update the text based on the state of the control.
+		/// When the <see cref="IMaskedTextProvider.IsEmpty"/> is true, it will set the text to null to show the placeholder text.
+		/// 
+		/// Override this to perform other actions before or after the text of the control is updated.
+		/// </remarks>
+		protected virtual void UpdateText()
 		{
 			if (provider == null)
 				return;

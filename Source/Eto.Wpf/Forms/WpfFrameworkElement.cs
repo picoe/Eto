@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
@@ -114,9 +114,9 @@ namespace Eto.Wpf.Forms
 			// Desired should also not be bigger than default size if we have no constraint.
 			// Without it, controls like TextArea, GridView, etc will grow to their content.
 			if (double.IsInfinity(constraint.Width) && defaultSize.Width > 0)
-				desired.Width = defaultSize.Width;
+				desired.Width = PreventUserResize ? defaultSize.Width : Math.Max(defaultSize.Width, desired.Width);
 			if (double.IsInfinity(constraint.Height) && defaultSize.Height > 0)
-				desired.Height = defaultSize.Height;
+				desired.Height = PreventUserResize ? defaultSize.Height : Math.Max(defaultSize.Height, desired.Height);
 
 			// use the user preferred size, and ensure it's not larger than available size
 			size = size.IfNaN(desired);
@@ -198,6 +198,11 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void SetSize()
 		{
+			// this is needed so that the control doesn't actually grow when its content is too large.
+			// For some reason, MeasureOverride is not sufficient alone to tell WPF what size the control should be.
+			// for example, when a TextBox has a large amount of text, we do not grow the text box to fit that content in Eto's sizing model.
+			// ideally, this should be removed, but may require overriding ArrangeOverride on all controls as well.
+			// see the ControlTests.ControlsShouldHaveSaneDefaultWidths unit test for repro of the issue.
 			var defaultSize = DefaultSize.ZeroIfNan();
 			if (XScale && Control.IsLoaded)
 			{
@@ -300,7 +305,7 @@ namespace Eto.Wpf.Forms
 
 		public virtual bool HasFocus
 		{
-			get { return Control.IsKeyboardFocused; }
+			get { return Control.IsKeyboardFocusWithin; }
 		}
 
 		public bool Visible
@@ -383,9 +388,12 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
-						newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
-						Callback.OnSizeChanged(Widget, EventArgs.Empty);
-						newSize = null;
+						if (e.NewSize != e.PreviousSize) // WPF calls this event even if it hasn't changed
+						{
+							newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
+							Callback.OnSizeChanged(Widget, EventArgs.Empty);
+							newSize = null;
+						}
 					};
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
@@ -424,10 +432,16 @@ namespace Eto.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotKeyboardFocus += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
+					Control.IsKeyboardFocusWithinChanged += (sender, e) =>
+					{
+						if (HasFocus)
+							Callback.OnGotFocus(Widget, EventArgs.Empty);
+						else
+							Callback.OnLostFocus(Widget, EventArgs.Empty);
+					};
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostKeyboardFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
+					HandleEvent(Eto.Forms.Control.GotFocusEvent);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -607,18 +621,18 @@ namespace Eto.Wpf.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			if (!Control.IsLoaded)
+			if (!ContainerControl.IsLoaded)
 				return point;
 
 			point = point.LogicalToScreen();
-			return Control.PointFromScreen(point.ToWpf()).ToEto();
+			return ContainerControl.PointFromScreen(point.ToWpf()).ToEto();
 		}
 
 		public PointF PointToScreen(PointF point)
 		{
-			if (!Control.IsLoaded)
+			if (!ContainerControl.IsLoaded)
 				return point;
-			return Control.PointToScreen(point.ToWpf()).ToEtoPoint().ScreenToLogical();
+			return ContainerControl.PointToScreen(point.ToWpf()).ToEtoPoint().ScreenToLogical();
 		}
 
 		public Point Location
@@ -630,5 +644,14 @@ namespace Eto.Wpf.Forms
 				return Control.TranslatePoint(new sw.Point(0, 0), Widget.VisualParent.GetContainerControl()).ToEtoPoint();
 			}
 		}
+
+		public virtual sw.FrameworkElement TabControl => ContainerControl;
+		public virtual int TabIndex
+		{
+			get { return swi.KeyboardNavigation.GetTabIndex(TabControl); }
+			set { swi.KeyboardNavigation.SetTabIndex(TabControl, value); }
+		}
+
+		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 	}
 }

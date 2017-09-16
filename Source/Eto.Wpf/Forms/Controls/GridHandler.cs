@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Wpf.Forms.Cells;
@@ -94,41 +94,10 @@ namespace Eto.Wpf.Forms.Controls
 					// handled by each cell after value is set with the CellEdited method
 					break;
 				case Grid.CellClickEvent:
-					Control.PreviewMouseLeftButtonDown += (sender, e) =>
-					{
-						var dep = e.OriginalSource as sw.DependencyObject;
-						while (dep != null && !(dep is swc.DataGridCell))
-							dep = swm.VisualTreeHelper.GetParent(dep);
-
-						var cell = dep as swc.DataGridCell;
-						while (dep != null && !(dep is swc.DataGridRow))
-							dep = swm.VisualTreeHelper.GetParent(dep);
-
-						var row = dep as swc.DataGridRow;
-
-						int rowIndex;
-						if (row != null && (rowIndex = row.GetIndex()) >= 0)
-						{
-							var columnIndex = cell.Column == null ? -1 : cell.Column.DisplayIndex;
-
-							var item = Control.Items[rowIndex];
-							var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
-							Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-						}
-					};
+					Control.PreviewMouseDown += (sender, e) => Callback.OnCellClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
 					break;
 				case Grid.CellDoubleClickEvent:
-					Control.MouseDoubleClick += (sender, e) =>
-					{
-						int rowIndex;
-						if ((rowIndex = Control.SelectedIndex) >= 0)
-						{
-							var columnIndex = Control.CurrentColumn == null ? -1 : Control.CurrentColumn.DisplayIndex;
-							var item = Control.SelectedItem;
-							var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
-							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-						}
-					};
+					Control.MouseDoubleClick += (sender, e) => Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
 					break;
 				case Grid.SelectionChangedEvent:
 					Control.SelectedCellsChanged += (sender, e) =>
@@ -144,6 +113,41 @@ namespace Eto.Wpf.Forms.Controls
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea)
+		{
+			swc.DataGridCell cell;
+			var row = GetRowOfElement(originalSource, out cell);
+
+			int rowIndex = row?.GetIndex() ?? -1;
+			var columnIndex = cell?.Column?.DisplayIndex ?? -1;
+
+			var item = row?.Item;
+			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+
+			var buttons = ea.GetEtoButtons();
+			var modifiers = swi.Keyboard.Modifiers.ToEto();
+			var location = ea.GetPosition(ContainerControl).ToEto();
+			return new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, buttons, modifiers, location);
+		}
+
+		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell)
+		{
+			// when clicking on labels, etc this will be a content element
+			while (source is sw.FrameworkContentElement)
+				source = ((sw.FrameworkContentElement)source).Parent;
+
+			// VisualTreeHelper will throw if not a Visual, we can return null here
+			var dep = source as swm.Visual;
+			while (dep != null && !(dep is swc.DataGridCell))
+				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
+
+			cell = dep as swc.DataGridCell;
+			while (dep != null && !(dep is swc.DataGridRow))
+				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
+
+			return dep as swc.DataGridRow;
 		}
 
 		public bool ShowHeader
@@ -314,6 +318,10 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Focus();
 			Control.BeginEdit();
 		}
+
+		public bool CommitEdit() => Control.CommitEdit();
+
+		public bool CancelEdit() => Control.CancelEdit();
 
 		public virtual sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent)
 		{

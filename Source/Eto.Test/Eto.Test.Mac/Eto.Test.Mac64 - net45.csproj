@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Startup.cs" />
+    <Compile Include="UnitTests\RichTextAreaHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

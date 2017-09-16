@@ -7,6 +7,7 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using mwc = Xceed.Wpf.Toolkit;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -27,14 +28,20 @@ namespace Eto.Wpf.Forms.Controls
 			Control = new EtoButtonSpinner
 			{
 				Handler = this,
+				IsTabStop = false,
+				Focusable = false,
 				Content = new mwc.WatermarkTextBox
 				{
+					KeepWatermarkOnGotFocus = true,
 					BorderThickness = new sw.Thickness(0),
 					BorderBrush = null,
+					Background = null,
 					Padding = new sw.Thickness(0),
 				},
 			};
 		}
+
+		public override sw.FrameworkElement TabControl => WatermarkTextBox;
 
 		public override string PlaceholderText
 		{
@@ -52,6 +59,12 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Control.ShowButtonSpinner; }
 			set { Control.ShowButtonSpinner = value; }
+		}
+
+		public override Color TextColor
+		{
+			get { return TextBox.Foreground.ToEtoColor(); }
+			set { TextBox.Foreground = value.ToWpfBrush(TextBox.Foreground); }
 		}
 
 		mwc.WatermarkTextBox WatermarkTextBox => (mwc.WatermarkTextBox)Control.Content;

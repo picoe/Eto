@@ -63,7 +63,12 @@ var gtkmethods = new[]
     "void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting)"
 };
 
-var methods = giomethods.Concat(gtkmethods).Concat(webkitmethods).ToArray();
+var gdkmethods = new[]
+{
+	"bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect)"
+};
+
+var methods = giomethods.Concat(gtkmethods).Concat(webkitmethods).Concat(gdkmethods).ToArray();
 
 #>
 using System;
@@ -96,6 +101,7 @@ namespace Eto.GtkSharp
 			const string ext = "<#= ext[i] #>";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
+			const string libgdk = "libgdk-" + plat + ver + ext;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 <#
 		foreach (var method in giomethods)
@@ -123,6 +129,16 @@ namespace Eto.GtkSharp
 #>
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
+<#
+		}
+#>
+<#
+		foreach (var method in gdkmethods)
+		{
+#>
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
 <#
 		}

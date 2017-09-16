@@ -1,9 +1,12 @@
-using System;
+﻿using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using System.Linq;
-
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 #if XAMMAC2
 using AppKit;
@@ -194,6 +197,8 @@ namespace Eto.Mac.Forms.Controls
 			Widget.TextInput += (sender, e) =>
 			{
 				var formatter = (NSNumberFormatter)TextField.Formatter;
+				if (NeedsFormat)
+					return;
 				if (e.Text == ".")
 				{
 					if (MaximumDecimalPlaces == 0 && DecimalPlaces == 0)
@@ -211,17 +216,21 @@ namespace Eto.Mac.Forms.Controls
 					}
 				}
 				else
-					e.Cancel = !e.Text.All(r =>
+				{
+					foreach (var r in e.Text)
 					{
 						if (Char.IsDigit(r))
-							return true;
+							continue;
 						var str = r.ToString();
-						return 
-							(formatter.MaximumFractionDigits > 0 && str == formatter.DecimalSeparator)
-						|| (formatter.UsesGroupingSeparator && str == formatter.GroupingSeparator)
-						|| (MinValue < 0 && (str == formatter.NegativePrefix || str == formatter.NegativeSuffix))
-						|| (MaxValue > 0 && (str == formatter.PositivePrefix || str == formatter.PositiveSuffix));
-					});
+						if ((formatter.MaximumFractionDigits > 0 && str == formatter.DecimalSeparator)
+							|| (formatter.UsesGroupingSeparator && str == formatter.GroupingSeparator)
+							|| (MinValue < 0 && (str == formatter.NegativePrefix || str == formatter.NegativeSuffix))
+							|| (MaxValue > 0 && (str == formatter.PositivePrefix || str == formatter.PositiveSuffix)))
+							continue;
+						e.Cancel = true;
+						break;
+					}
+				}
 			};
 		}
 
@@ -284,6 +293,8 @@ namespace Eto.Mac.Forms.Controls
 				if (nsval == null)
 					return 0;
 				var value = nsval != null ? Math.Max(MinValue, Math.Min(MaxValue, nsval.DoubleValue)) : 0;
+				if (!string.IsNullOrEmpty(FormatString))
+					return value;
 				value = Math.Round(value, MaximumDecimalPlaces);
 				return value;
 			}
@@ -379,10 +390,67 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		protected class EtoNumberFormatter : NSNumberFormatter
+		{
+			public NumericStepperHandler Handler { get; set; }
+
+			static IntPtr sel_getObjectValue = Selector.GetHandle("getObjectValue:forString:errorDescription:");
+
+			string TrimNumericString(string text) => Regex.Replace(text, $"[ ]|({Regex.Escape(Handler.CultureInfo.NumberFormat.NumberGroupSeparator)})", "");
+
+			bool NumberStringsMatch(string num1, string num2) => string.Compare(TrimNumericString(num1), TrimNumericString(num2), Handler.CultureInfo, CompareOptions.IgnoreCase) == 0;
+
+			[Export("getObjectValue:forString:errorDescription:")]
+			public bool GetObjectValue(IntPtr obj, IntPtr strPtr, IntPtr errorDescription)
+			{
+				// monomac can't handle out params that pass a null pointer (errorDescription), so we marshal manually here
+				var h = Handler;
+				if (h.NeedsFormat)
+				{
+					double result;
+					var str = NSString.FromHandle(strPtr);
+					var text = str;
+					if (h.HasFormatString)
+						text = Regex.Replace(text, $@"(?!\d|{Regex.Escape(h.CultureInfo.NumberFormat.NumberDecimalSeparator)}|{Regex.Escape(h.CultureInfo.NumberFormat.NegativeSign)}).", ""); // strip any non-numeric value
+					if (double.TryParse(text, NumberStyles.Any, h.CultureInfo, out result))
+					{
+						// test to see if it matches the negative string format
+						if (h.HasFormatString && result > 0 && NumberStringsMatch((-result).ToString(h.ComputedFormatString, h.CultureInfo), str))
+							result = -result;
+			
+						var nsresult = new NSNumber(result);
+						Marshal.WriteIntPtr(obj, 0, nsresult.Handle);
+						return true;
+					}
+					// test to see if it matches the zero format which could be blank or some other text
+					if (h.HasFormatString && NumberStringsMatch(0.0.ToString(h.ComputedFormatString, h.CultureInfo), str))
+					{
+						var nsresult = new NSNumber(0);
+						Marshal.WriteIntPtr(obj, 0, nsresult.Handle);
+						return true;
+					}
+				}
+				return Messaging.bool_objc_msgSendSuper_IntPtr_IntPtr_IntPtr(SuperHandle, sel_getObjectValue, obj, strPtr, errorDescription);
+			}
+
+			public override string StringFor(NSObject value)
+			{
+				var h = Handler;
+				var number = value as NSNumber;
+				if (h.NeedsFormat && number != null)
+				{
+					var format = h.ComputedFormatString;
+					return number.DoubleValue.ToString(format, h.CultureInfo);
+				}
+				return base.StringFor(value);
+			}
+		}
+
 		void SetFormatter()
 		{
-			var formatter = new NSNumberFormatter
+			var formatter = new EtoNumberFormatter
 			{
+				Handler = this,
 				NumberStyle = NSNumberFormatterStyle.Decimal, 
 				Lenient = true,
 				UsesGroupingSeparator = false,
@@ -390,6 +458,7 @@ namespace Eto.Mac.Forms.Controls
 				MaximumFractionDigits = (nnint)MaximumDecimalPlaces
 			};
 
+			Stepper.Formatter = formatter;
 			TextField.Formatter = formatter;
 			if (Widget.Loaded)
 			{
@@ -397,7 +466,7 @@ namespace Eto.Mac.Forms.Controls
 				var currentEditor = TextField.CurrentEditor;
 				if (currentEditor != null)
 				{
-					currentEditor.Value = TextField.StringValue;
+					currentEditor.Value = Stepper.StringValue ?? string.Empty;
 				}
 			}
 		}
@@ -447,6 +516,66 @@ namespace Eto.Mac.Forms.Controls
 				default:
 					base.AttachEvent(id);
 					break;
+			}
+		}
+
+		static readonly object FormatString_Key = new object();
+
+		public string FormatString
+		{
+			get { return Widget.Properties.Get<string>(FormatString_Key); }
+			set
+			{
+				var old = FormatString;
+				try
+				{
+					Widget.Properties.Set(FormatString_Key, value, SetFormatter);
+				}
+				catch
+				{
+					Widget.Properties.Set(FormatString_Key, old, SetFormatter);
+					throw;
+				}
+				Widget.Properties.Remove(ComputedFormatString_Key);
+			}
+		}
+
+		static readonly object ComputedFormatString_Key = new object();
+
+		public string ComputedFormatString
+		{
+			get
+			{
+				var format = FormatString;
+				if (!string.IsNullOrEmpty(format))
+					return format;
+				format = Widget.Properties.Get<string>(ComputedFormatString_Key);
+				if (format == null)
+				{
+					format = "0.";
+					if (DecimalPlaces > 0)
+						format += new string('0', DecimalPlaces);
+					if (MaximumDecimalPlaces > DecimalPlaces)
+						format += new string('#', MaximumDecimalPlaces - DecimalPlaces);
+					Widget.Properties.Set(ComputedFormatString_Key, format);
+				}
+				return format;
+			}
+		}
+
+		bool NeedsFormat => HasFormatString || CultureInfo != CultureInfo.CurrentCulture;
+
+		bool HasFormatString => !string.IsNullOrEmpty(FormatString);
+
+		static readonly object CultureInfo_Key = new object();
+
+		public CultureInfo CultureInfo
+		{
+			get { return Widget.Properties.Get<CultureInfo>(CultureInfo_Key, CultureInfo.CurrentCulture); }
+			set
+			{
+				Widget.Properties.Remove(ComputedFormatString_Key);
+				Widget.Properties.Set(CultureInfo_Key, value, SetFormatter, CultureInfo.CurrentCulture);
 			}
 		}
 

@@ -112,6 +112,8 @@ namespace Eto.Test
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
 					Panel1 = SectionList.Control,
+					Panel1MinimumSize = 150,
+					Panel2MinimumSize = 300,
 					// for now, don't show log in mobile
 					Panel2 = Platform.IsMobile ? contentContainer : RightPane()
 				};

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using Eto.Drawing;
@@ -539,6 +539,11 @@ namespace Eto.GtkSharp
 				default:
 					return MouseButtons.None;
 			}
+		}
+
+		public static PointF ToEtoLocation(this Gdk.EventButton e)
+		{
+			return new PointF((float)e.X, (float)e.Y);
 		}
 
 		public static CellStates ToEto(this Gtk.CellRendererState value)

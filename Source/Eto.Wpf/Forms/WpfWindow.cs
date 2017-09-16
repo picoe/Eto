@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
@@ -431,7 +431,7 @@ namespace Eto.Wpf.Forms
 			get
 			{
 				var handle = WindowHandle;
-				if (handle != IntPtr.Zero)
+				if (handle != IntPtr.Zero && Widget.Loaded)
 				{
 					// WPF doesn't always report the correct size when maximized
 					Win32.RECT rect;
@@ -483,7 +483,7 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		double DpiScale => sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformFromDevice.M22 ?? Screen.PrimaryScreen.LogicalPixelSize;
+		double DpiScale => sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformFromDevice.M22 ?? 1f / Screen.PrimaryScreen.LogicalPixelSize;
 
 		public new Point Location
 		{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -218,6 +218,21 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 		}
 
 		public void ReloadData(IEnumerable<int> rows)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object GetCellAt(PointF point, out int column, out int row)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CommitEdit()
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CancelEdit()
 		{
 			throw new NotImplementedException();
 		}

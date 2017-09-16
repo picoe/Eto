@@ -246,7 +246,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnClick(MenuItem widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnClick(e));
+				using (widget.Platform.Context)
+					widget.OnClick(e);
 			}
 
 			/// <summary>
@@ -254,7 +255,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnValidate(MenuItem widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnValidate(e));
+				using (widget.Platform.Context)
+					widget.OnValidate(e);
 			}
 		}
 

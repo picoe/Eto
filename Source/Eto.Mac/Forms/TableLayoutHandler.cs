@@ -63,6 +63,8 @@ namespace Eto.Mac.Forms
 		Size spacing;
 		Padding padding;
 		SizeF oldFrameSize;
+		float[] widths;
+		float[] heights;
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -126,14 +128,19 @@ namespace Eto.Mac.Forms
 		{
 			if (views == null)
 				return SizeF.Empty;
-			float[] widths, heights;
-			return Calculate(availableSize, out widths, out heights, false);
+			return Calculate(availableSize, false);
 		}
 
-		SizeF Calculate(SizeF availableSize, out float[] widths, out float[] heights, bool final)
+		SizeF Calculate(SizeF availableSize, bool final)
 		{
-			heights = new float[yscaling.Length];
-			widths = new float[xscaling.Length];
+			if (heights == null)
+				heights = new float[yscaling.Length];
+			else
+				Array.Clear(heights, 0, heights.Length);
+			if (widths == null)
+				widths = new float[xscaling.Length];
+			else
+				Array.Clear(widths, 0, widths.Length);
 			var totalpadding = Padding.Size + Spacing * new Size(widths.Length - 1, heights.Length - 1);
 			var required = (SizeF)totalpadding;
 			var numscaled = new Size();
@@ -243,13 +250,17 @@ namespace Eto.Mac.Forms
 
 		public override void LayoutChildren()
 		{
-			if (!Widget.Loaded || views == null || NeedsQueue())
+			if (!Widget.Loaded || views == null)
 				return;
+			if (NeedsQueue)
+			{
+				Queue(LayoutChildren);
+				return;
+			}
 
 			var controlSize = ContentControl.Frame.Size.ToEto();
 
-			float[] widths, heights;
-			Calculate(controlSize, out widths, out heights, true);
+			Calculate(controlSize, true);
 
 			#if OSX
 			bool flipped = Control.IsFlipped;

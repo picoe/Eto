@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Mac.Forms.Controls;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Printing;
+using System.Linq;
 
 #if XAMMAC2
 using AppKit;
@@ -113,6 +114,8 @@ namespace Eto.Mac.Forms
 		public virtual NSView EventControl { get { return ContainerControl; } }
 
 		public virtual NSView FocusControl { get { return EventControl; } }
+
+		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 		static readonly object AutoSize_Key = new object();
 		public virtual bool AutoSize
@@ -379,9 +382,10 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				handler.ShouldHaveFocus = true;
+				var result = Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
 				handler.ShouldHaveFocus = null;
-				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
+				return result;
 			}
 			return false;
 		}
@@ -393,9 +397,10 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				handler.ShouldHaveFocus = false;
+				var result = Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 				handler.Callback.OnLostFocus(handler.Widget, EventArgs.Empty);
 				handler.ShouldHaveFocus = null;
-				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
+				return result;
 			}
 			return false;
 		}
@@ -580,10 +585,24 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		static Selector selSetCanDrawSubviewsIntoLayer = new Selector("setCanDrawSubviewsIntoLayer:");
-#if MONOMAC
-		static IntPtr selSetCanDrawSubviewsIntoLayerHandle = Selector.GetHandle("setCanDrawSubviewsIntoLayer:");
-#endif
+		static IntPtr selDrawRect = Selector.GetHandle("drawRect:");
+
+		static void DrawBackgroundRect(IntPtr sender, IntPtr sel, CGRect rect)
+		{
+			var control = Runtime.GetNSObject(sender);
+			var handler = GetHandler(control) as MacView<TControl, TWidget, TCallback>;
+			if (handler != null)
+			{
+				var col = handler.BackgroundColor;
+				if (col.A > 0)
+				{
+					var context = NSGraphicsContext.CurrentContext.GraphicsPort;
+					context.SetFillColor(col.ToCG());
+					context.FillRect(rect);
+				}
+			}
+			Messaging.void_objc_msgSendSuper_CGRect(control.SuperHandle, sel, rect);
+		}
 
 		protected virtual void SetBackgroundColor(Color? color)
 		{
@@ -591,31 +610,9 @@ namespace Eto.Mac.Forms
 			{
 				if (color.Value.A > 0)
 				{
-					ContainerControl.WantsLayer = true;
-
-					// >= 10.9
-					if (ContainerControl.RespondsToSelector(selSetCanDrawSubviewsIntoLayer))
-					{
-						// collapse child layers into the parent layer
-#if MONOMAC
-						Messaging.void_objc_msgSend_bool(ContainerControl.Handle, selSetCanDrawSubviewsIntoLayerHandle, true);
-#else
-						ContainerControl.CanDrawSubviewsIntoLayer = true;
-#endif
-					}
-					var layer = ContainerControl.Layer;
-					if (layer != null)
-					{
-						layer.BackgroundColor = color.Value.ToCG();
-						layer.NeedsDisplayOnBoundsChange = true;
-					}
+					AddMethod(selDrawRect, new Action<IntPtr, IntPtr, CGRect>(DrawBackgroundRect), EtoEnvironment.Is64BitProcess ? "v@:{CGRect=dddd}" : "v@:{CGRect=ffff}", ContainerControl);
 				}
-				else {
-					ContainerControl.WantsLayer = false;
-					var layer = ContainerControl.Layer;
-					if (layer != null)
-						layer.BackgroundColor = Colors.Transparent.ToCG();
-				}
+				ContainerControl.SetNeedsDisplay();
 			}
 		}
 
@@ -647,6 +644,8 @@ namespace Eto.Mac.Forms
 					var oldSize = GetPreferredSize(Size.MaxValue);
 					ContainerControl.Hidden = !value;
 					LayoutIfNeeded(oldSize, true);
+					if (Widget.Loaded && value)
+						FireOnShown();
 				}
 			}
 		}
@@ -707,6 +706,11 @@ namespace Eto.Mac.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			if (Widget.Parent?.Loaded != false && !(Widget is Window))
+			{
+				// adding dynamically or loading without a parent (e.g. embedding into a native app)
+				Application.Instance.AsyncInvoke(FireOnShown);
+			}
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)
@@ -741,14 +745,16 @@ namespace Eto.Mac.Forms
 				sdpoint = ContentControl.Window.ConvertScreenToBase(sdpoint);
 			}
 			sdpoint = ContentControl.ConvertPointFromView(sdpoint, null);
-			sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
+			if (!ContentControl.IsFlipped)
+				sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
 			return sdpoint.ToEto();
 		}
 
 		public virtual PointF PointToScreen(PointF point)
 		{
 			var sdpoint = point.ToNS();
-			sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
+			if (!ContentControl.IsFlipped)
+				sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
 			sdpoint = ContentControl.ConvertPointToView(sdpoint, null);
 			if (ContentControl.Window != null)
 			{
@@ -853,6 +859,14 @@ namespace Eto.Mac.Forms
 			get { return systemActionSelectors.Keys; }
 		}
 
+		static readonly object TabIndex_Key = new object();
+
+		public int TabIndex
+		{
+			get { return Widget.Properties.Get<int>(TabIndex_Key, int.MaxValue); }
+			set { Widget.Properties.Set(TabIndex_Key, value, int.MaxValue); }
+		}
+
 		public void MapPlatformCommand(string systemAction, Command command)
 		{
 			InnerMapPlatformCommand(systemAction, command, null);
@@ -872,6 +886,36 @@ namespace Eto.Mac.Forms
 				systemActions[sel] = command;
 			}
 		}
+
+		public virtual void RecalculateKeyViewLoop(ref NSView last)
+		{
+			foreach (var child in Widget.VisualControls.OrderBy(c => c.TabIndex))
+			{
+				var handler = child.GetMacControl();
+				if (handler != null)
+				{
+					handler.RecalculateKeyViewLoop(ref last);
+					if (last != null)
+						last.NextKeyView = handler.FocusControl;
+					last = handler.FocusControl;
+				}
+			}
+		}
+
+		static void FireOnShown(Control control)
+		{
+			if (!control.Visible)
+				return;
+			control.GetMacViewHandler()?.Callback.OnShown(control, EventArgs.Empty);
+
+			foreach (var ctl in control.VisualControls)
+			{
+				if (ctl.Visible)
+					FireOnShown(ctl);
+			}
+		}
+
+		protected void FireOnShown() => FireOnShown(Widget);
 	}
 }
 

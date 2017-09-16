@@ -135,7 +135,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnPaint(DrawableCell widget, DrawableCellPaintEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnPaint(e));
+				using (widget.Platform.Context)
+					widget.OnPaint(e);
 			}
 		}
 		#pragma warning restore 618

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using mwc = Xceed.Wpf.Toolkit;
@@ -25,7 +25,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public TextBoxHandler()
 		{
-			Control = new EtoWatermarkTextBox { Handler = this };
+			Control = new EtoWatermarkTextBox { Handler = this, KeepWatermarkOnGotFocus = true };
 		}
 
 		public override string PlaceholderText
@@ -33,7 +33,6 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Control.Watermark as string; }
 			set { Control.Watermark = value; }
 		}
-
 	}
 
 	public abstract class TextBoxHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextBox.IHandler
@@ -41,6 +40,8 @@ namespace Eto.Wpf.Forms.Controls
 		where TWidget : TextBox
 		where TCallback: TextBox.ICallback
 	{
+		bool initialSelection;
+
 		protected override sw.Size DefaultSize => new sw.Size(100, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }
@@ -64,7 +65,11 @@ namespace Eto.Wpf.Forms.Controls
 		public TextAlignment TextAlignment
 		{
 			get { return TextBox.TextAlignment.ToEto(); }
-			set { TextBox.TextAlignment = value.ToWpfTextAlignment(); }
+			set
+			{
+				TextBox.TextAlignment = value.ToWpfTextAlignment();
+				TextBox.HorizontalContentAlignment = value.ToWpf();
+			}
 		}
 
 		public TextBoxHandler ()
@@ -75,12 +80,28 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.Initialize();
 			TextBox.GotKeyboardFocus += Control_GotKeyboardFocus;
+			TextBox.PreviewMouseLeftButtonDown += TextBox_PreviewMouseLeftButtonDown;
+		}
+
+		void TextBox_PreviewMouseLeftButtonDown(object sender, swi.MouseButtonEventArgs e)
+		{
+			if (AutoSelectMode == AutoSelectMode.Always && !TextBox.IsKeyboardFocusWithin)
+			{
+				TextBox.SelectAll();
+				TextBox.Focus();
+				e.Handled = true;
+			}
 		}
 
 		void Control_GotKeyboardFocus(object sender, sw.Input.KeyboardFocusChangedEventArgs e)
 		{
-			TextBox.SelectAll();
-			TextBox.GotKeyboardFocus -= Control_GotKeyboardFocus;
+			if (initialSelection)
+			{
+				initialSelection = false;
+				return;
+			}
+			if (AutoSelectMode == AutoSelectMode.OnFocus)
+				TextBox.SelectAll();
 		}
 
 		public override bool UseMousePreview { get { return true; } }
@@ -212,9 +233,14 @@ namespace Eto.Wpf.Forms.Controls
 		public string Text
 		{
 			get { return TextBox.Text; }
-			set {
+			set
+			{
 				TextBox.Text = value;
-				TextBox.SelectAll();
+				if (value != null && AutoSelectMode == AutoSelectMode.Never && !HasFocus)
+				{
+					TextBox.SelectionStart = value.Length;
+					TextBox.SelectionLength = 0;
+				}
 			}
 		}
 
@@ -223,13 +249,19 @@ namespace Eto.Wpf.Forms.Controls
 		public int CaretIndex
 		{
 			get { return TextBox.CaretIndex; }
-			set { TextBox.CaretIndex = value; }
+			set
+			{
+				TextBox.CaretIndex = value;
+				if (!HasFocus)
+					initialSelection = true;
+			}
 		}
 
-		public void SelectAll ()
+		public void SelectAll()
 		{
-			TextBox.Focus ();
-			TextBox.SelectAll ();
+			TextBox.SelectAll();
+			if (!HasFocus)
+				initialSelection = true;
 		}
 
 		public Range<int> Selection
@@ -239,7 +271,11 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				TextBox.SelectionStart = value.Start;
 				TextBox.SelectionLength = value.Length();
+				if (!HasFocus)
+					initialSelection = true;
 			}
 		}
+
+		public AutoSelectMode AutoSelectMode { get; set; }
 	}
 }

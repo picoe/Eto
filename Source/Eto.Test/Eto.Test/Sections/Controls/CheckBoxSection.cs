@@ -1,4 +1,4 @@
-using Eto.Drawing;
+﻿using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -20,7 +20,11 @@ namespace Eto.Test.Sections.Controls
 
 			layout.Add(ThreeStateInitialValue());
 
+			layout.Add(new CheckBox { Text = "With Larger Font", Font = SystemFonts.Label(40) });
+			layout.Add(new CheckBox { Text = "With Smaller Font", Font = SystemFonts.Label(6) });
+
 			layout.Add(null, false, true);
+
 
 			Content = layout;
 		}

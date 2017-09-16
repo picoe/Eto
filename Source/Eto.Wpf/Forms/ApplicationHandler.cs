@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Eto.Forms;
 using System.Diagnostics;
+using System.Reflection;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using System.Threading;
@@ -76,12 +77,12 @@ namespace Eto.Wpf.Forms
 				return;
 
 			// Support (better) high DPI in the NumericUpDown control by theming the Extended WPF Toolkit's spinner.
-			Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = new Uri("pack://application:,,,/Eto.Wpf;component/themes/wpftoolkit/ButtonSpinner.xaml", UriKind.RelativeOrAbsolute) });
+			var assemblyName = typeof(ApplicationHandler).Assembly.GetName().Name;
+			Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = new Uri($"pack://application:,,,/{assemblyName};component/themes/wpftoolkit/ButtonSpinner.xaml", UriKind.RelativeOrAbsolute) });
 		}
 
 		protected override void Initialize()
 		{
-			base.Initialize();
 			Control = sw.Application.Current;
 			if (Control == null)
 			{
@@ -92,6 +93,7 @@ namespace Eto.Wpf.Forms
 			instance = this;
 			Control.Startup += HandleStartup;
 			ApplyThemes();
+			base.Initialize();
 		}
 
 		void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

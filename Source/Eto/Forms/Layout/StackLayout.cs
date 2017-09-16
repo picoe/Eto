@@ -361,7 +361,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				return Items.Where(r => r != null).Select(r => r.Control);
+				return Items.Where(r => r?.Control != null).Select(r => r.Control);
 			}
 		}
 
@@ -480,7 +480,7 @@ namespace Eto.Forms
 
 		void Create()
 		{
-			var table = new TableLayout();
+			var table = new TableLayout { IsVisualControl = true };
 			table.Spacing = new Size(Spacing, Spacing);
 
 			bool filled = false;

@@ -34,7 +34,7 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.Cells
 {
-	public class TextBoxCellHandler : CellHandler<TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
+	public class TextBoxCellHandler : CellHandler<TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler, IMacText
 	{
 		static EtoCellTextField field = new EtoCellTextField { Cell = new EtoLabelFieldCell() };
 		static NSFont defaultFont = field.Font;
@@ -48,7 +48,7 @@ namespace Eto.Mac.Forms.Cells
 
 			if (args.FontSet)
 				field.Font = args.Font.ToNS();
-			field.ObjectValue = value as NSObject;
+			field.ObjectValue = value as NSObject ?? new NSString(string.Empty);
 			return field.Cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
 		}
 
@@ -64,7 +64,7 @@ namespace Eto.Mac.Forms.Cells
 
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
-			if (Widget.Binding != null)
+			if (Widget.Binding != null && !ColumnHandler.DataViewHandler.SuppressUpdate)
 			{
 				var str = value as NSString;
 				if (str != null)
@@ -132,6 +132,8 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
+		public AutoSelectMode AutoSelectMode { get; set; }
+
 		class CellView : EtoCellTextField
 		{
 			[Export("item")]
@@ -140,24 +142,29 @@ namespace Eto.Mac.Forms.Cells
 			public CellView(IntPtr handle) : base(handle) { }
 		}
 
+		static NSString editableBinding = new NSString("editable");
+
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
 			var view = tableView.MakeView(tableColumn.Identifier, tableView) as CellView;
 			if (view == null)
 			{
-				view = new CellView();
-				view.Cell = new EtoLabelFieldCell
+				view = new CellView
 				{
-					Wraps = false,
-					Scrollable = true,
-					UsesSingleLineMode = false // true prevents proper vertical alignment 
+					WeakHandler = new WeakReference(this),
+					Cell = new EtoLabelFieldCell
+					{
+						Wraps = false,
+						Scrollable = true,
+						UsesSingleLineMode = false // true prevents proper vertical alignment 
+					},
+					Identifier = tableColumn.Identifier,
+					Selectable = false,
+					DrawsBackground = false,
+					Bezeled = false,
+					Bordered = false,
+					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable
 				};
-				view.Identifier = tableColumn.Identifier;
-				view.Selectable = false;
-				view.DrawsBackground = false;
-				view.Bezeled = false;
-				view.Bordered = false;
-				view.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
 				view.BecameFirstResponder += (sender, e) =>
@@ -165,7 +172,7 @@ namespace Eto.Mac.Forms.Cells
 					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, (int)col, item);
+					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, ee);
 				};
 				view.EditingEnded += (sender, e) =>
@@ -176,9 +183,9 @@ namespace Eto.Mac.Forms.Cells
 					var item = getItem(control.Item, r);
 					SetObjectValue(item, control.ObjectValue);
 
-					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, (int)col, item);
+					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
-					control.ObjectValue = GetObjectValue(item);
+					control.ObjectValue = GetObjectValue(item) ?? new NSString(string.Empty);
 				};
 				view.ResignedFirstResponder += (sender, e) =>
 				{
@@ -187,10 +194,10 @@ namespace Eto.Mac.Forms.Cells
 					var item = getItem(control.Item, r);
 					SetObjectValue(item, control.ObjectValue);
 
-					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, (int)col, item);
+					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
 				};
-				view.Bind("editable", tableColumn, "editable", null);
+				view.Bind(editableBinding, tableColumn, "editable", null);
 			}
 
 			var cell = (EtoLabelFieldCell)view.Cell;
@@ -202,6 +209,11 @@ namespace Eto.Mac.Forms.Cells
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;
+		}
+
+		public void SetLastSelection(Range<int>? range)
+		{
+
 		}
 	}
 }
