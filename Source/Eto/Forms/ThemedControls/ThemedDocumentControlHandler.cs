@@ -7,20 +7,36 @@ namespace Eto.Forms.ThemedControls
 	/// <summary>
 	/// A themed handler for the <see cref="DocumentControl"/> control.
 	/// </summary>
-    public class ThemedDocumentControlHandler : ThemedContainerHandler<DynamicLayout, DocumentControl, DocumentControl.ICallback>, DocumentControl.IHandler
+	public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, DocumentControl, DocumentControl.ICallback>, DocumentControl.IHandler
     {
-		List<ThemedDocumentPageHandler> tabs;
-		List<Control> cons = new List<Control>(); // Need to prevent disposing
 		List<DocumentPage> pages = new List<DocumentPage>();
 		ThemedDocumentPageHandler tabPrev, tabNext;
 
 		PointF mousePos;
 		int selectedIndex;
-		float extraspacing;
+		float nextPrevWidth;
 		float startx;
+		Size maxImageSize;
+		PointF? draggingLocation;
 
-		Drawable drawable;
-		Panel panel;
+		Drawable tabDrawable;
+		Panel contentPanel;
+		Font font;
+		static Padding TabPadding = 10;
+
+		/// <summary>
+		/// Gets or sets the font for the tab text.
+		/// </summary>
+		/// <value>The font for the tabs.</value>
+		public Font Font
+		{
+			get { return font; }
+			set
+			{
+				font = value;
+				Calculate();
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedDocumentControlHandler"/> class.
@@ -29,42 +45,51 @@ namespace Eto.Forms.ThemedControls
         {
 			mousePos = new PointF(-1, -1);
 			selectedIndex = -1;
-			extraspacing = 0;
+			nextPrevWidth = 0;
 			startx = 0;
+			font = SystemFonts.Default();
 
-			Control = new DynamicLayout();
-			Control.BeginVertical();
+			tabDrawable = new Drawable();
 
-			drawable = new Drawable();
-			drawable.Height = (int)SystemFonts.Default().MeasureString("H").Height + 16;
-			Control.Add(drawable, true, false);
-
-			panel = new Panel();
-			Control.Add(panel, true, true);
+			contentPanel = new Panel();
 
 			tabPrev = new ThemedDocumentPageHandler { Text = "<", Closable = false };
 			tabNext = new ThemedDocumentPageHandler { Text = ">", Closable = false };
 
-            tabs = new List<ThemedDocumentPageHandler>();
+			tabDrawable.MouseMove += Drawable_MouseMove;
+			tabDrawable.MouseLeave += Drawable_MouseLeave;
+			tabDrawable.MouseDown += Drawable_MouseDown;
+			tabDrawable.Paint += Drawable_Paint;
+			tabDrawable.MouseUp += Drawable_MouseUp;
 
-			drawable.MouseMove += Drawable_MouseMove;
-			drawable.MouseLeave += Drawable_MouseLeave;
-			drawable.MouseDown += Drawable_MouseDown;
-			drawable.Paint += Drawable_Paint;
+			Control = new TableLayout(tabDrawable, contentPanel);
         }
+
+		/// <summary>
+		/// Performs calculations when loaded.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			Calculate(true);
+		}
 
 		internal void Update(ThemedDocumentPageHandler handler)
 		{
-			var index = tabs.FindIndex((obj) => obj == handler);
+			Calculate();
+			var index = pages.FindIndex(obj => ReferenceEquals(obj.Handler, handler));
 
 			if (index != -1)
 			{
 				if (SelectedIndex == index)
-					SelectedIndex = index;
+					SetPageContent();
 				else
-					drawable.Invalidate();
+					tabDrawable.Invalidate();
 			}
 		}
+
+		ThemedDocumentPageHandler GetPageHandler(int index) => pages[index].Handler as ThemedDocumentPageHandler;
 
 		/// <summary>
 		/// Gets or sets the index of the selected.
@@ -78,23 +103,45 @@ namespace Eto.Forms.ThemedControls
 			}
 			set
 			{
-				if (panel.Content != null)
-					panel.Remove(panel.Content);
-				
-				if (value >= 0)
-					panel.Content = cons[value];
+				if (selectedIndex != value)
+				{
+					if (value >= pages.Count || (pages.Count == 0 && value != -1))
+						throw new ArgumentOutOfRangeException();
 
-				selectedIndex = value;
+					selectedIndex = value;
 
-				var activerec = tabs[selectedIndex].Rect;
-				if (activerec.X + activerec.Width > drawable.Width)
-					startx += drawable.Width - activerec.X - activerec.Width;
-				if (activerec.X < extraspacing)
-					startx += extraspacing - activerec.X;
-				
-				drawable.Invalidate();
-				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+					SetPageContent();
+
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				}
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to allow page reordering.
+		/// </summary>
+		/// <value><c>true</c> to allow reordering; otherwise, <c>false</c>.</value>
+		public bool AllowReordering { get; set; }
+
+		void SetPageContent()
+		{
+			contentPanel.Content = null;
+
+			if (selectedIndex >= 0)
+			{
+				var tab = GetPageHandler(selectedIndex);
+
+				contentPanel.Content = tab.Control;
+				var activerec = tab.Rect;
+				if (activerec.X + activerec.Width > tabDrawable.Width)
+					startx += tabDrawable.Width - activerec.X - activerec.Width;
+				if (activerec.X < nextPrevWidth)
+					startx += nextPrevWidth - activerec.X;
+			}
+			else
+				startx = 0;
+			CalculateTabs();
+			tabDrawable.Invalidate();
 		}
 
 		/// <summary>
@@ -124,15 +171,16 @@ namespace Eto.Forms.ThemedControls
 		public void InsertPage(int index, DocumentPage page)
 		{
 			pages.Insert(index, page);
-			cons.Insert(index, page.Content);
-			var pagehan = page.Handler as ThemedDocumentPageHandler;
-			pagehan.DocControl = this;
-			tabs.Insert(index, pagehan);
+			var pageHandler = page.Handler as ThemedDocumentPageHandler;
+			pageHandler.DocControl = this;
 
+			Calculate();
 			if (SelectedIndex == -1)
 				SelectedIndex = 0;
-
-			drawable.Invalidate();
+			else if (SelectedIndex >= index)
+				SelectedIndex++;
+			else
+				tabDrawable.Invalidate();
 		}
 
 		/// <summary>
@@ -141,25 +189,73 @@ namespace Eto.Forms.ThemedControls
 		/// <param name="index">Index.</param>
 		public void RemovePage(int index)
 		{
-			tabs[index].DocControl = null;
+			var tab = GetPageHandler(index);
+			tab.DocControl = null;
 
 			pages.RemoveAt(index);
-			cons.RemoveAt(index);
-			tabs.RemoveAt(index);
 
+			Calculate();
 			if (pages.Count == 0)
 				SelectedIndex = -1;
 			else if (SelectedIndex > index)
 				SelectedIndex--;
+			else if (SelectedIndex > pages.Count - 1)
+				SelectedIndex = pages.Count - 1;
 			else if (SelectedIndex == index)
-				SelectedIndex = SelectedIndex;
-			
-			drawable.Invalidate();
+				SetPageContent();
 		}
 
-		private void Drawable_MouseDown(object sender, MouseEventArgs e)
+		void Calculate(bool force = false)
+		{
+			nextPrevWidth = 0f;
+			CalculateImageSizes(force);
+			CalculateTabHeight(force);
+			CalculateTabs(force);
+		}
+
+		void CalculateTabHeight(bool force = false)
+		{
+			if (!force && !Widget.Loaded)
+				return;
+			var scale = Widget.ParentWindow?.Screen?.Scale ?? 1f;
+			var fontHeight = (int)Math.Ceiling(Font.Ascent * scale);
+
+			var height = Math.Max(maxImageSize.Height, fontHeight);
+			tabDrawable.Height = height + TabPadding.Vertical; // 2 px padding at top and bottom
+		}
+
+		void CalculateImageSizes(bool force = false)
+		{
+			if (!force && !Widget.Loaded)
+				return;
+			maxImageSize = Size.Empty;
+			for (int i = 0; i < pages.Count; i++)
+			{
+				var img = pages[i].Image;
+				if (img != null)
+					maxImageSize = Size.Max(maxImageSize, img.Size);
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this control is enabled
+		/// </summary>
+		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+		public override bool Enabled
+		{
+			get { return base.Enabled; }
+			set
+			{
+				base.Enabled = value;
+				tabDrawable.Invalidate();
+			}
+		}
+
+		void Drawable_MouseDown(object sender, MouseEventArgs e)
 		{
 			mousePos = e.Location;
+			if (!Enabled)
+				return;
 
 			if (tabPrev.Rect.Contains(e.Location))
 			{
@@ -168,18 +264,19 @@ namespace Eto.Forms.ThemedControls
 			}
 			else if (tabNext.Rect.Contains(e.Location))
 			{
-				if (selectedIndex < tabs.Count - 1)
+				if (selectedIndex < pages.Count - 1)
 					SelectedIndex++;
 			}
 			else
 			{
-				for (int i = 0; i < tabs.Count; i++)
+				for (int i = 0; i < pages.Count; i++)
 				{
-					if (tabs[i].Rect.Contains(mousePos))
+					var tab = GetPageHandler(i);
+					if (tab.Rect.Contains(mousePos))
 					{
-						if (tabs[i].CloseSelected)
+						if (IsCloseSelected(tab))
 						{
-							var page = pages[i];
+							var page = tab.Widget;
 							RemovePage(i);
 							Callback.OnPageClosed(Widget, new DocumentPageEventArgs(page));
 						}
@@ -192,84 +289,213 @@ namespace Eto.Forms.ThemedControls
 			}
 		}
 
-		private void Drawable_MouseMove(object sender, MouseEventArgs e)
+		void Drawable_MouseUp(object sender, Forms.MouseEventArgs e)
+		{
+			draggingLocation = null;
+			CalculateTabs();
+			tabDrawable.Invalidate();
+		}
+
+		void Drawable_MouseMove(object sender, MouseEventArgs e)
 		{
 			mousePos = e.Location;
-
-			// TODO: Implement rearanging of tabs
-
-			drawable.Invalidate();
-		}
-
-		private void Drawable_MouseLeave(object sender, MouseEventArgs e)
-		{
-			mousePos = new PointF(-1, -1);
-			drawable.Invalidate();
-		}
-
-		private void Drawable_Paint(object sender, PaintEventArgs e)
-		{
-			var g = e.Graphics;
-			var posx = 0f;
-
-			g.Clear(SystemColors.ControlBackground);
-
-			if (extraspacing == 0f)
+			if (!Enabled)
+				return;
+			if (AllowReordering && draggingLocation == null && e.Buttons == MouseButtons.Primary)
+				draggingLocation = mousePos;
+			if (draggingLocation != null && selectedIndex >= 0)
 			{
-				DrawTab(g, tabPrev, -1, ref posx);
-				DrawTab(g, tabNext, -1, ref posx);
-				extraspacing = tabPrev.Rect.Width + tabNext.Rect.Width;
+				var selectedPage = GetPageHandler(selectedIndex);
+				var point = selectedPage.Rect.Center;
+
+				int newIndex = -1;
+				if (selectedIndex < pages.Count - 1)
+				{
+					var nextPage = GetPageHandler(selectedIndex + 1);
+					var nextRect = nextPage.Rect;
+					if (nextRect.Width > selectedPage.Rect.Width)
+					{
+						nextRect.Offset(nextRect.Width - selectedPage.Rect.Width, 0);
+					}
+					if (point.X > nextRect.X)
+						newIndex = selectedIndex + 1;
+				}
+
+				if (selectedIndex > 0)
+				{
+					var prevPage = GetPageHandler(selectedIndex - 1);
+					var prevRect = prevPage.Rect;
+					if (prevRect.Width > selectedPage.Rect.Width)
+					{
+						prevRect.Width = selectedPage.Rect.Width;
+					}
+					if (point.X < prevRect.Right)
+						newIndex = selectedIndex - 1;
+				}
+
+				if (newIndex >= 0 && newIndex != selectedIndex)
+				{
+					var newPage = GetPageHandler(newIndex);
+					var loc = draggingLocation.Value;
+					loc.Offset(newIndex > selectedIndex ? newPage.Rect.Width : -newPage.Rect.Width, 0);
+					draggingLocation = loc;
+					var temp = pages[selectedIndex];
+					pages[selectedIndex] = pages[newIndex];
+					pages[newIndex] = temp;
+
+					Callback.OnPageReordered(Widget, new DocumentPageReorderEventArgs(temp, selectedIndex, newIndex));
+
+					selectedIndex = newIndex;
+				}
+				CalculateTabs();
 			}
 
-			posx = extraspacing + startx;
+			tabDrawable.Invalidate();
+		}
 
-			for (int i = 0; i < tabs.Count; i++)
+		void Drawable_MouseLeave(object sender, MouseEventArgs e)
+		{
+			mousePos = new PointF(-1, -1);
+			tabDrawable.Invalidate();
+		}
+
+		void CalculateTabs(bool force = false)
+		{
+			if (!force && !Widget.Loaded)
+				return;
+			var posx = 0f;
+			if (nextPrevWidth == 0f)
 			{
-				var tab = tabs[i];
-				DrawTab(g, tab, i, ref posx);
+				CalculateTab(tabPrev, -1, ref posx);
+				CalculateTab(tabNext, -1, ref posx);
+				nextPrevWidth = tabPrev.Rect.Width + tabNext.Rect.Width;
+			}
+
+			posx = nextPrevWidth + startx;
+
+			for (int i = 0; i < pages.Count; i++)
+			{
+				var tab = GetPageHandler(i);
+				CalculateTab(tab, i, ref posx);
+			}
+		}
+
+		void Drawable_Paint(object sender, PaintEventArgs e)
+		{
+			var g = e.Graphics;
+
+			g.Clear(SystemColors.Control);
+
+			var posx = nextPrevWidth + startx;
+
+			for (int i = 0; i < pages.Count; i++)
+			{
+				var tab = GetPageHandler(i);
+				if (i != selectedIndex)
+					DrawTab(g, tab, i);
+			}
+			if (selectedIndex >= 0)
+			{
+				DrawTab(g, GetPageHandler(selectedIndex), selectedIndex);
 			}
 
 			posx = 0;
 
-			DrawTab(g, tabPrev, -1, ref posx);
-			DrawTab(g, tabNext, -1, ref posx);
-			extraspacing = tabPrev.Rect.Width + tabNext.Rect.Width;
+			DrawTab(g, tabPrev, -1);
+			DrawTab(g, tabNext, -1);
 		}
 
-		private void DrawTab(Graphics g, ThemedDocumentPageHandler tab, int i, ref float posx)
+		void CalculateTab(ThemedDocumentPageHandler tab, int i, ref float posx)
 		{
-			var size = SystemFonts.Default().MeasureString(tab.Text);
-			var prevnextsel = mousePos.X > extraspacing || i == -1;
-			tab.Rect = new RectangleF(posx, 0, size.Width + (tab.Closable ? drawable.Height + 10 : 20), drawable.Height);
+			var textSize = Size.Ceiling(Font.MeasureString(tab.Text));
+			var size = textSize;
+			var prevnextsel = mousePos.X > nextPrevWidth || i == -1;
+			var textoffset = 0;
+			if (tab.Image != null)
+			{
+				textoffset = tab.Image.Size.Width + TabPadding.Left;
+				size.Width += textoffset;
+			}
 
-			var textcolor = SystemColors.ControlText;
-			var backcolor = SystemColors.ControlBackground;
+			var closesize = tabDrawable.Height / 2;
+			var tabRect = new RectangleF(posx, 0, size.Width + (tab.Closable ? closesize + TabPadding.Horizontal + TabPadding.Right : TabPadding.Horizontal), tabDrawable.Height);
 
-			var closesize = drawable.Height / 2;
-			var closemargin = closesize / 3;
-			var closerect = new RectangleF(posx + tab.Rect.Width - drawable.Height / 4 - closesize, drawable.Height / 4, closesize, closesize);
-			tab.CloseSelected = tab.Closable && closerect.Contains(mousePos) && prevnextsel;
+			if (i == selectedIndex && draggingLocation != null)
+			{
+				tabRect.Offset(mousePos.X - draggingLocation.Value.X, 0);
+			}
 
-			if (i == selectedIndex)
-				backcolor = drawable.BackgroundColor;
+			tab.Rect = tabRect;
 
-			if (tab.Rect.Contains(mousePos) && prevnextsel && !tab.CloseSelected)
+			tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabDrawable.Height / 4 - closesize, tabDrawable.Height / 4, closesize, closesize);
+			tab.TextRect = new RectangleF(tabRect.X + TabPadding.Left + textoffset, (tabDrawable.Height - size.Height) / 2, textSize.Width, textSize.Height);
+
+			posx += tab.Rect.Width;
+		}
+
+		bool IsCloseSelected(ThemedDocumentPageHandler tab)
+		{
+			var prevnextsel = mousePos.X > nextPrevWidth;
+			return draggingLocation == null && tab.Closable && tab.CloseRect.Contains(mousePos) && prevnextsel && Enabled;
+		}
+
+		void DrawTab(Graphics g, ThemedDocumentPageHandler tab, int i)
+		{
+			var prevnextsel = mousePos.X > nextPrevWidth || i == -1;
+			var closeSelected = IsCloseSelected(tab);
+			var tabRect = tab.Rect;
+			var textRect = tab.TextRect;
+			var closerect = tab.CloseRect;
+			var closemargin =  closerect.Height / 3;
+			var size = tabRect.Size;
+
+			var textcolor = Enabled ? SystemColors.ControlText : SystemColors.DisabledText;
+			var backcolor = SystemColors.Control;
+			if (selectedIndex >= 0 && i == selectedIndex)
+			{
+				textcolor = Enabled ? SystemColors.HighlightText : SystemColors.DisabledText;
+				backcolor = SystemColors.Highlight;
+				backcolor.A *= 0.8f;
+			}
+
+			if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && !closeSelected && Enabled)
 			{
 				textcolor = SystemColors.HighlightText;
 				backcolor = SystemColors.Highlight;
 			}
 
-			g.FillRectangle(backcolor, tab.Rect);
-			g.DrawText(SystemFonts.Default(), textcolor, posx + 10, (drawable.Height - size.Height) / 2, tab.Text);
+			g.FillRectangle(backcolor, tabRect);
+			if (tab.Image != null)
+			{
+				var imageSize = tab.Image.Size;
+				g.DrawImage(tab.Image, tabRect.X + TabPadding.Left + (maxImageSize.Width - imageSize.Width) / 2, (tabDrawable.Height - imageSize.Height) / 2);
+			}
+			g.DrawText(Font, textcolor, textRect.Location, tab.Text);
 
 			if (tab.Closable)
 			{
-				g.FillRectangle(tab.CloseSelected ? SystemColors.Highlight : SystemColors.ControlBackground, closerect);
-				g.DrawLine(tab.CloseSelected ? SystemColors.HighlightText : SystemColors.ControlText, closerect.X + closemargin, closerect.Y + closemargin, closerect.X + closesize - 1 - closemargin, closerect.Y + closesize - 1 - closemargin);
-				g.DrawLine(tab.CloseSelected ? SystemColors.HighlightText : SystemColors.ControlText, closerect.X + closemargin, closerect.Y + closesize - 1 - closemargin, closerect.X + closesize - 1 - closemargin, closerect.Y + closemargin);
+				g.FillRectangle(closeSelected ? SystemColors.Highlight : SystemColors.Control, closerect);
+				var closeForeground = Enabled ? closeSelected ? SystemColors.HighlightText : SystemColors.ControlText : SystemColors.DisabledText;
+				g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closerect.Height - 1 - closemargin);
+				g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closerect.Height - 1 - closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closemargin);
 			}
 
-			posx += tab.Rect.Width;
+		}
+
+		/// <summary>
+		/// Attaches the specified event.
+		/// </summary>
+		/// <param name="id">Event identifier</param>
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case DocumentControl.PageReorderedEvent:
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

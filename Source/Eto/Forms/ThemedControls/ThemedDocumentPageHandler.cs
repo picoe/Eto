@@ -10,8 +10,8 @@ namespace Eto.Forms.ThemedControls
     {
 		internal ThemedDocumentControlHandler DocControl;
 		bool closable;
-		Control control;
 		string text;
+		Image image;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedDocumentPageHandler"/> class.
@@ -19,6 +19,7 @@ namespace Eto.Forms.ThemedControls
         public ThemedDocumentPageHandler()
         {
 			closable = true;
+			Control = new Panel();
         }
 
 		/// <summary>
@@ -31,7 +32,7 @@ namespace Eto.Forms.ThemedControls
 			set
 			{
 				closable = value;
-				DocControl?.Update(this);
+				Update();
 			}
 		}
 
@@ -41,11 +42,11 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The content.</value>
 		public Control Content
 		{
-			get { return control; }
+			get { return Control.Content; }
 			set
 			{
-				control = value;
-				DocControl?.Update(this);
+				Control.Content = value;
+				Update();
 			}
 		}
 
@@ -53,25 +54,45 @@ namespace Eto.Forms.ThemedControls
 		/// Gets or sets the context menu.
 		/// </summary>
 		/// <value>The context menu.</value>
-		public ContextMenu ContextMenu { get; set; }
+		public ContextMenu ContextMenu
+		{
+			get { return Control.ContextMenu; }
+			set { Control.ContextMenu = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the tab image.
 		/// </summary>
 		/// <value>The tab image.</value>
-		public Image Image { get; set; }
+		public Image Image
+		{
+			get { return image; }
+			set
+			{
+				image = value;
+				Update();
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the minimum size.
 		/// </summary>
 		/// <value>The minimum size.</value>
-		public Size MinimumSize { get; set; }
+		public Size MinimumSize
+		{
+			get { return Control.MinimumSize; }
+			set { Control.MinimumSize = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the padding.
 		/// </summary>
 		/// <value>The padding.</value>
-		public Padding Padding { get; set; }
+		public Padding Padding
+		{
+			get { return Control.Padding; }
+			set { Control.Padding = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the text.
@@ -83,12 +104,22 @@ namespace Eto.Forms.ThemedControls
 			set
 			{
 				text = value;
-				DocControl?.Update(this);
+				Update();
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether <see cref="Control.PreLoad"/>/<see cref="Control.Load"/>/<see cref="Control.LoadComplete"/>/<see cref="Control.UnLoad"/>
+		/// events are propagated to the inner control
+		/// </summary>
+		public override bool PropagateLoadEvents => base.PropagateLoadEvents;
+
 		internal RectangleF Rect { get; set; }
 
-		internal bool CloseSelected { get; set; }
+		internal RectangleF CloseRect { get; set; }
+
+		internal RectangleF TextRect { get; set; }
+
+		void Update() => DocControl?.Update(this);
 	}
 }

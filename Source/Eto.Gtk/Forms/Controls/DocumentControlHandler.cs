@@ -9,6 +9,8 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class DocumentControlHandler : GtkContainer<Gtk.Notebook, DocumentControl, DocumentControl.ICallback>, DocumentControl.IHandler
 	{
 		List<DocumentPage> pages;
+		bool allowReorder;
+		bool enabled = true;
 
 		public DocumentControlHandler()
 		{
@@ -24,10 +26,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.SwitchPage += Connector.HandleSwitchPage;
 		}
 
-		protected override bool IsTransparentControl
-		{
-			get { return false; }
-		}
+		protected override bool IsTransparentControl => false;
 
 		protected override Color DefaultBackgroundColor
 		{
@@ -43,13 +42,32 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected class DocumentControlConnector : GtkControlConnector
 		{
+			int oldIndex = -1;
 			public new DocumentControlHandler Handler { get { return (DocumentControlHandler)base.Handler; } }
 
 			public void HandleSwitchPage(object o, Gtk.SwitchPageArgs args)
 			{
 				var handler = Handler;
-				if (handler != null && handler.Widget.Loaded)
+				if (handler != null && handler.Enabled)
+				{
 					handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
+					oldIndex = (int)args.PageNum;
+				}
+				else if (oldIndex >= 0)
+				{
+					handler.Control.Page = oldIndex;
+				}
+			}
+			 
+			public void HandlePageReordered(object o, Gtk.PageReorderedArgs args)
+			{
+				var handler = Handler;
+				if (handler != null && handler.Enabled)
+				{
+					var newIndex = (int)(uint)args.Args[1];
+					handler.Callback.OnPageReordered(handler.Widget, new DocumentPageReorderEventArgs(handler.GetPage(newIndex), oldIndex, newIndex));
+					oldIndex = newIndex;
+				}
 			}
 		}
 
@@ -57,6 +75,29 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Control.CurrentPage; }
 			set { Control.CurrentPage = value; }
+		}
+
+		public bool AllowReordering
+		{
+			get { return allowReorder; }
+			set
+			{
+				if (allowReorder != value)
+				{
+					allowReorder = value;
+					UpdateReorder();
+				}
+			}
+		}
+
+		void UpdateReorder()
+		{
+			foreach (var page in pages)
+			{
+				var pageHandler = (DocumentPageHandler)page.Handler;
+				Control.SetTabReorderable(pageHandler.ContainerControl, allowReorder && enabled);
+				pageHandler.LabelControl.Sensitive = enabled;
+			}
 		}
 
 		public void InsertPage(int index, DocumentPage page)
@@ -68,33 +109,40 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (Widget.Loaded)
 			{
 				pageHandler.ContainerControl.ShowAll();
-				pageHandler.LabelControl.ShowAll();
 			}
+
+			pageHandler.LabelControl.Sensitive = enabled;
 
 			if (index == -1)
 				Control.AppendPage(pageHandler.ContainerControl, pageHandler.LabelControl);
 			else
 				Control.InsertPage(pageHandler.ContainerControl, pageHandler.LabelControl, index);
 
-			pageHandler.closebutton1.Clicked += (o, args) => ClosePage(pageHandler.ContainerControl, page);
-			pageHandler.LabelControl.ButtonPressEvent += (o, args) =>
-			{
-				if (args.Event.Button == 2 && page.Closable)
-					ClosePage(pageHandler.ContainerControl, page);
-			};
 
-			Control.SetTabReorderable(pageHandler.ContainerControl, true);
+			Control.SetTabReorderable(pageHandler.ContainerControl, allowReorder && Enabled);
 			Control.ShowTabs = Control.NPages > 1;
 		}
 
-		private void ClosePage(Gtk.Widget control, DocumentPage page)
+		public override bool Enabled
+		{
+			get { return enabled; }
+			set
+			{
+				if (enabled != value)
+				{
+					enabled = value;
+					UpdateReorder();
+				}
+			}
+		}
+
+		internal void ClosePage(Gtk.Widget control, DocumentPage page)
 		{
 			Control.RemovePage(Control.PageNum(control));
 			Control.ShowTabs = Control.NPages > 1;
 
-			var handler = Connector.Handler;
-			if (handler != null && handler.Widget.Loaded)
-				handler.Callback.OnPageClosed(handler.Widget, new DocumentPageEventArgs(page));
+			if (Widget.Loaded)
+				Callback.OnPageClosed(Widget, new DocumentPageEventArgs(page));
 		}
 
 		public void RemovePage(int index)
@@ -117,6 +165,19 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int GetPageCount()
 		{
 			return Control.NPages;
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case DocumentControl.PageReorderedEvent:
+					Control.PageReordered += Connector.HandlePageReordered;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }
