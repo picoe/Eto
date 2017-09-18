@@ -59,7 +59,7 @@ namespace Eto.Test.Sections.Controls
 
 		Icon GetIcon()
 		{
-			return TestIcons.TestIcon;
+			return TestIcons.Logo;
 		}
 
 		Bitmap GetBitmap()
