@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
+	interface IThemedControlHandler
+	{
+	}
+
 	/// <summary>
 	/// Base class for implementing Eto control handlers using other Eto controls.
 	/// </summary>
@@ -16,7 +20,7 @@ namespace Eto.Forms
 	/// <typeparam name="TControl">The Eto control used to create the custom implementation, e.g. Panel</typeparam>
 	/// <typeparam name="TWidget">The control being implemented, e.g. TabControl</typeparam>
 	/// <typeparam name="TCallback">The callback inferface for the control, e.g. TabControl.ICallback</typeparam>
-	public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler
+	public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IThemedControlHandler
 		where TControl : Control
 		where TWidget : Control
 		where TCallback : Control.ICallback

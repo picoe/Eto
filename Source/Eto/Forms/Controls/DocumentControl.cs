@@ -73,10 +73,7 @@ namespace Eto.Forms
 		/// Gets an enumeration of controls that are directly contained by this container
 		/// </summary>
 		/// <value>The contained controls.</value>
-		public override IEnumerable<Control> Controls
-		{
-			get { return pages ?? Enumerable.Empty<Control>(); }
-		}
+		public override IEnumerable<Control> Controls => pages ?? Enumerable.Empty<Control>();
 
 		static readonly object PageClosedEvent = new object();
 		static readonly object SelectedIndexChangedEvent = new object();

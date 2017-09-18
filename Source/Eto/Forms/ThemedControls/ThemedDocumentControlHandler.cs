@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Eto.Drawing;
 
@@ -63,7 +63,13 @@ namespace Eto.Forms.ThemedControls
 			tabDrawable.MouseUp += Drawable_MouseUp;
 
 			Control = new TableLayout(tabDrawable, contentPanel);
+			Control.SizeChanged += Widget_SizeChanged;
         }
+
+		void Widget_SizeChanged(object sender, EventArgs e)
+		{
+			Calculate();
+		}
 
 		/// <summary>
 		/// Performs calculations when loaded.
@@ -194,7 +200,6 @@ namespace Eto.Forms.ThemedControls
 
 			pages.RemoveAt(index);
 
-			Calculate();
 			if (pages.Count == 0)
 				SelectedIndex = -1;
 			else if (SelectedIndex > index)
@@ -203,6 +208,8 @@ namespace Eto.Forms.ThemedControls
 				SelectedIndex = pages.Count - 1;
 			else if (SelectedIndex == index)
 				SetPageContent();
+
+			Calculate();
 		}
 
 		void Calculate(bool force = false)
@@ -407,7 +414,7 @@ namespace Eto.Forms.ThemedControls
 
 		void CalculateTab(ThemedDocumentPageHandler tab, int i, ref float posx)
 		{
-			var textSize = Size.Ceiling(Font.MeasureString(tab.Text));
+			var textSize = string.IsNullOrEmpty(tab.Text) ? Size.Empty : Size.Ceiling(Font.MeasureString(tab.Text));
 			var size = textSize;
 			var prevnextsel = mousePos.X > nextPrevWidth || i == -1;
 			var textoffset = 0;
