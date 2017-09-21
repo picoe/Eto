@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 using System.IO;
 using System.Collections.Generic;
@@ -44,6 +44,9 @@ namespace Eto.Forms
 		/// <summary>
 		/// Sets the content of the buffer to the specified <paramref name="rtf"/> string. Note that some platforms don't support RTF (e.g. Gtk).
 		/// </summary>
+		/// <remarks>
+		/// The CaretIndex and Selection will be set to the end of the string after set.
+		/// </remarks>
 		/// <param name="buffer">Buffer to set the content for</param>
 		/// <param name="rtf">RTF formatted string to set the buffer</param>
 		public static void SetRtf(this ITextBuffer buffer, string rtf)
@@ -125,6 +128,9 @@ namespace Eto.Forms
 		/// <summary>
 		/// Loads the specified format from the stream, replacing the content of the buffer.
 		/// </summary>
+		/// <remarks>
+		/// The CaretIndex and Selection will be set to the end of the string after set.
+		/// </remarks>
 		/// <param name="stream">Stream to load from.</param>
 		/// <param name="format">Format of the stream to load.</param>
 		void Load(Stream stream, RichTextAreaFormat format);
@@ -258,6 +264,9 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets or sets the content as a RTF (Rich Text Format) string. Note that some platforms don't support RTF (e.g. Gtk).
 		/// </summary>
+		/// <remarks>
+		/// The CaretIndex and Selection will be set to the end of the string after set.
+		/// </remarks>
 		/// <value>The RTF string.</value>
 		public string Rtf
 		{

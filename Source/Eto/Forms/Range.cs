@@ -292,5 +292,35 @@ namespace Eto.Forms
 		{
 			return range.End - range.Start + 1;
 		}
+
+		/// <summary>
+		/// Creates a new range starting at the same position as the specified <paramref name="range"/> and a new length.
+		/// </summary>
+		/// <returns>The length for the new range.</returns>
+		/// <param name="range">Range with the same start but different length of the specified range.</param>
+		/// <param name="length">Length of the new range.</param>
+		public static Range<int> WithLength(this Range<int> range, int length) => new Range<int>(range.Start, range.Start + length - 1);
+	}
+
+	/// <summary>
+	/// Helpers for the <see cref="Range{T}"/> structure.
+	/// </summary>
+	public static class Range
+	{
+		/// <summary>
+		/// Creates a new integer range with the specified start and length.
+		/// </summary>
+		/// <returns>A new range with the specified start and length.</returns>
+		/// <param name="start">Start of the range.</param>
+		/// <param name="length">Length of the range.</param>
+		public static Range<int> FromLength(int start, int length) => new Range<int>(start, start + length - 1);
+
+		/// <summary>
+		/// Creates a new long range with the specified start and length.
+		/// </summary>
+		/// <returns>A new range with the specified start and length.</returns>
+		/// <param name="start">Start of the range.</param>
+		/// <param name="length">Length of the range.</param>
+		public static Range<long> FromLength(long start, long length) => new Range<long>(start, start + length - 1);
 	}
 }

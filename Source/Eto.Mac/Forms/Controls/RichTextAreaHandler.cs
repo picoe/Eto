@@ -301,6 +301,7 @@ namespace Eto.Mac.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void Save(Stream stream, RichTextAreaFormat format)

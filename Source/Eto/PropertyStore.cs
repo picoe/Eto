@@ -342,7 +342,7 @@ namespace Eto
 			if (!IsEqual(existing, value))
 			{
 				Set<T>(key, value, defaultValue);
-				propertyChanged();
+				propertyChanged?.Invoke();
 				return true;
 			}
 			return false;

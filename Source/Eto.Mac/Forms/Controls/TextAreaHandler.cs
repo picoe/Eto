@@ -47,6 +47,8 @@ namespace Eto.Mac.Forms.Controls
 
 	public interface ITextAreaHandler
 	{
+		int SuppressSelectionChanged { get; }
+
 		TextArea.ICallback Callback { get; }
 
 		TextArea Widget { get; }
@@ -72,17 +74,18 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void DidChangeSelection(NSNotification notification)
 		{
-			var selection = Handler.Selection;
-			if (selection != Handler.lastSelection)
+			var handler = Handler;
+			var selection = handler.Selection;
+			if (handler.SuppressSelectionChanged == 0 && selection != Handler.lastSelection)
 			{
-				Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
-				Handler.lastSelection = selection;
+				handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+				handler.lastSelection = selection;
 			}
-			var caretIndex = Handler.CaretIndex;
-			if (caretIndex != Handler.lastCaretIndex)
+			var caretIndex = handler.CaretIndex;
+			if (caretIndex != handler.lastCaretIndex)
 			{
-				Handler.Callback.OnCaretIndexChanged(Handler.Widget, EventArgs.Empty);
-				Handler.lastCaretIndex = caretIndex;
+				handler.Callback.OnCaretIndexChanged(Handler.Widget, EventArgs.Empty);
+				handler.lastCaretIndex = caretIndex;
 			}
 		}
 	}
@@ -123,8 +126,10 @@ namespace Eto.Mac.Forms.Controls
 		where TControl: TextArea
 		where TCallback: TextArea.ICallback
 	{
+		int suppressSelectionChanged;
 		int? ITextAreaHandler.lastCaretIndex { get; set; }
 		Range<int> ITextAreaHandler.lastSelection { get; set; }
+		int ITextAreaHandler.SuppressSelectionChanged => suppressSelectionChanged;
 
 		public override void OnKeyDown(KeyEventArgs e)
 		{
@@ -254,6 +259,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Control.Value = value ?? string.Empty;
 				Control.NeedsDisplay = true;
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -332,13 +338,14 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				if (value != null)
-				{
-					var range = Control.SelectedRange;
-					Control.Replace(range, value);
-					range.Length = (nnint)value.Length;
-					Control.SetSelectedRange(range);
-				}
+				suppressSelectionChanged++;
+				var newText = value ?? string.Empty;
+				var range = Control.SelectedRange;
+				Control.Replace(range, newText);
+				range.Length = (nnint)newText.Length;
+				suppressSelectionChanged--;
+				Control.SetSelectedRange(range);
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
