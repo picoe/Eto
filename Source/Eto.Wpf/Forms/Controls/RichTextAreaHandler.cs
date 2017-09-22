@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -134,7 +134,13 @@ namespace Eto.Wpf.Forms.Controls
 		public override string Text
 		{
 			get { return ContentRange.Text; }
-			set { ContentRange.Text = value ?? string.Empty; }
+			set
+			{
+				SuppressSelectionChanged++;
+				ContentRange.Text = value ?? string.Empty;
+				SuppressSelectionChanged--;
+				Selection = Range.FromLength(value?.Length ?? 0, 0);
+			}
 		}
 
 		bool wrap = true;
@@ -213,6 +219,18 @@ namespace Eto.Wpf.Forms.Controls
 						}
 					};
 					break;
+				case TextArea.CaretIndexChangedEvent:
+					int? lastCaretIndex = null;
+					Control.SelectionChanged += (sender, e) =>
+					{
+						var caretIndex = CaretIndex;
+						if (lastCaretIndex != caretIndex)
+						{
+							Callback.OnCaretIndexChanged(Widget, EventArgs.Empty);
+							lastCaretIndex = caretIndex;
+						}
+					};
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -276,7 +294,11 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override int CaretIndex
 		{
-			get { return Control.CaretPosition.GetTextOffset(); }
+			get
+			{
+				// CaretPosition is at the end of selection, we should report the beginning
+				return Control.Selection.Start.GetTextOffset();
+			}
 			set { Control.CaretPosition = Control.Document.ContentStart.GetTextPositionAtOffset(value); }
 		}
 
@@ -410,7 +432,7 @@ namespace Eto.Wpf.Forms.Controls
 			using (Control.DeclareChangeBlock())
 			{
 				// set the property to each element in the range so it keeps all other decorations
-				foreach (var element in range.GetElements().OfType<swd.Inline>().Distinct())
+				foreach (var element in range.GetInlineElements())
 				{
 					var existingDecorations = element.GetValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
 
@@ -510,6 +532,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void Load(Stream stream, RichTextAreaFormat format)
 		{
+			SuppressSelectionChanged++;
+			SuppressTextChanged++;
 			var range = ContentRange;
 			switch (format)
 			{
@@ -522,6 +546,10 @@ namespace Eto.Wpf.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
+			SuppressTextChanged--;
+			SuppressSelectionChanged--;
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
+			Selection = Range.FromLength(ContentRange.GetLength(), 0);
 		}
 
 		public void Save(Stream stream, RichTextAreaFormat format)
@@ -589,19 +617,27 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 		}
+		public static int GetLength(this swd.TextRange range)
+		{
+			return range.End.GetTextOffset() - range.Start.GetTextOffset() + 1;
+		}
 
-		public static IEnumerable<swd.TextElement> GetElements(this swd.TextRange range)
+		public static IEnumerable<swd.Inline> GetInlineElements(this swd.TextRange range)
 		{
 			for (var position = range.Start;
-			  position != null && position.CompareTo(range.End) <= 0;
+			  position != null 
+			  && position.CompareTo(range.End) <= 0;
 			  position = position.GetNextContextPosition(swd.LogicalDirection.Forward))
 			{
 				var obj = position.Parent as sw.FrameworkContentElement;
 				while (obj != null)
 				{
-					var elem = obj as swd.TextElement;
+					var elem = obj as swd.Inline;
 					if (elem != null)
+					{
 						yield return elem;
+						position = elem.ElementEnd;
+					}
 					obj = obj.Parent as sw.FrameworkContentElement;
 				}
 			}

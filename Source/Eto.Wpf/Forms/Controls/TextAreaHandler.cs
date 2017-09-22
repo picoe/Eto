@@ -21,7 +21,13 @@ namespace Eto.Wpf.Forms.Controls
 		public override string Text
 		{
 			get { return Control.Text; }
-			set { Control.Text = value; }
+			set
+			{
+				SuppressSelectionChanged++;
+				Control.Text = value;
+				SuppressSelectionChanged--;
+				Control.Select(value?.Length ?? 0, 0);
+			}
 		}
 
 		public override bool Wrap
@@ -36,7 +42,7 @@ namespace Eto.Wpf.Forms.Controls
 		public override string SelectedText
 		{
 			get { return Control.SelectedText; }
-			set { Control.SelectedText = value; }
+			set { Control.SelectedText = value ?? string.Empty; }
 		}
 
 		public override Range<int> Selection
@@ -85,6 +91,8 @@ namespace Eto.Wpf.Forms.Controls
 		where TWidget : TextArea
 		where TCallback : TextArea.ICallback
 	{
+		protected int SuppressSelectionChanged { get; set; }
+		protected int SuppressTextChanged { get; set; }
 		protected override sw.Size DefaultSize => new sw.Size(100, 60);
 
 		protected override bool PreventUserResize { get { return true; } }
@@ -117,15 +125,27 @@ namespace Eto.Wpf.Forms.Controls
 			switch (id)
 			{
 				case TextControl.TextChangedEvent:
-					Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
+					Control.TextChanged += Control_TextChanged;
 					break;
 				case TextArea.SelectionChangedEvent:
-					Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					Control.SelectionChanged += Control_SelectionChanged;
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void Control_TextChanged(object sender, swc.TextChangedEventArgs e)
+		{
+			if (SuppressTextChanged == 0)
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
+		}
+
+		void Control_SelectionChanged(object sender, sw.RoutedEventArgs e)
+		{
+			if (SuppressSelectionChanged == 0)
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 		}
 
 		public bool ReadOnly
