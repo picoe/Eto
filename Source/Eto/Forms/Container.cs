@@ -251,6 +251,12 @@ namespace Eto.Forms
 		/// <param name="child">Child to remove from this container</param>
 		protected void RemoveParent(Control child)
 		{
+			if (Handler is IThemedControlHandler)
+			{
+				if (!ReferenceEquals(child, null))
+					RemoveLogicalParent(child);
+				return;
+			}
 			if (!ReferenceEquals(child, null) && !ReferenceEquals(child.VisualParent, null))
 			{
 #if DEBUG
@@ -322,6 +328,15 @@ namespace Eto.Forms
 		/// <param name="previousChild">Previous child that the new child is replacing.</param>
 		protected void SetParent(Control child, Action assign = null, Control previousChild = null)
 		{
+			if (Handler is IThemedControlHandler)
+			{
+				if (!ReferenceEquals(previousChild, null))
+					RemoveLogicalParent(previousChild);
+				assign();
+				if (!ReferenceEquals(child, null))
+					SetLogicalParent(child);
+				return;
+			}
 			if (!ReferenceEquals(previousChild, null) && !ReferenceEquals(previousChild, child))
 			{
 #if DEBUG

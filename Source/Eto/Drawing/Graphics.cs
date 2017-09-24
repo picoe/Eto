@@ -658,6 +658,8 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
+			if (string.IsNullOrEmpty(text))
+				return;
 			Handler.DrawText(font, brush, x, y, text);
 		}
 
@@ -671,6 +673,8 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
+			if (string.IsNullOrEmpty(text))
+				return;
 			using (var brush = new SolidBrush(color))
 				Handler.DrawText(font, brush, x, y, text);
 		}
@@ -684,6 +688,8 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, SolidBrush brush, PointF location, string text)
 		{
+			if (string.IsNullOrEmpty(text))
+				return;
 			Handler.DrawText(font, brush, location.X, location.Y, text);
 		}
 
@@ -696,6 +702,8 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, Color color, PointF location, string text)
 		{
+			if (string.IsNullOrEmpty(text))
+				return;
 			using (var brush = new SolidBrush(color))
 				Handler.DrawText(font, brush, location.X, location.Y, text);
 		}

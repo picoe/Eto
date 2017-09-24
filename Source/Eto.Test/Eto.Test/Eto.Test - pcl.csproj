@@ -219,6 +219,7 @@
     <Compile Include="UnitTests\Forms\Controls\ControlTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\GridViewTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\TreeGridViewTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\DocumentControlTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\TextAreaTests.cs" />
   </ItemGroup>
   <ItemGroup>

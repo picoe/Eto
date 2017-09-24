@@ -18,6 +18,11 @@ namespace Eto.Test.Sections.Controls
 		public virtual Control Create()
 		{
 			tabControl = DefaultTabs();
+			var allowReorder = new CheckBox { Text = "AllowReordering" };
+			allowReorder.CheckedBinding.Bind(tabControl, c => c.AllowReordering);
+
+			var enabled = new CheckBox { Text = "Enabled" };
+			enabled.CheckedBinding.Bind(tabControl, c => c.Enabled);
 
 			return new StackLayout
 			{
@@ -28,26 +33,50 @@ namespace Eto.Test.Sections.Controls
 					new StackLayout
 					{
 						Orientation = Orientation.Horizontal,
-						Items = { AddTab(), null }
+						Items = { AddPage(), RemovePage(), SelectPage(), allowReorder, enabled, null }
 					},
 					new StackLayoutItem(tabControl, expand: true)
 				}
 			};
 		}
 
-		Control AddTab()
+		Control AddPage()
 		{
-			var control = new Button { Text = "Add Tab" };
+			var control = new Button { Text = "Add Page" };
 			control.Click += (s, e) =>
 			{
 				var tab = new DocumentPage
 				{
 					Text = "Tab " + (tabControl.Pages.Count + 1),
-					Content = tabControl.Pages.Count % 2 == 0 ? TabOne() : TabTwo()
+					Content = tabControl.Pages.Count % 2 == 0 ? TabOne() : TabTwo(),
+					Image = tabControl.Pages.Count % 3 == 0 ? TestIcons.Logo.WithSize(32, 32) : null
 				};
 				LogEvents(tab);
 
 				tabControl.Pages.Add(tab);
+			};
+			return control;
+		}
+
+		Control RemovePage()
+		{
+			var control = new Button { Text = "Remove Page" };
+			control.Click += (s, e) =>
+			{
+				if (tabControl.SelectedIndex >= 0)
+					tabControl.Pages.RemoveAt(tabControl.SelectedIndex);
+			};
+			return control;
+		}
+
+		Control SelectPage()
+		{
+			var control = new Button { Text = "Select Page" };
+			var rnd = new Random();
+			control.Click += (s, e) =>
+			{
+				if (tabControl.Pages.Count > 0)
+					tabControl.SelectedIndex = rnd.Next(tabControl.Pages.Count);
 			};
 			return control;
 		}
@@ -62,7 +91,7 @@ namespace Eto.Test.Sections.Controls
 			control.Pages.Add(new DocumentPage
 			{
 				Text = "Tab 2",
-				Image = TestIcons.TestIcon,
+				Image = TestIcons.TestIcon.WithSize(16, 16),
 				Content = TabTwo()
 			});
 
@@ -100,28 +129,18 @@ namespace Eto.Test.Sections.Controls
 
 		void LogEvents(DocumentControl control)
 		{
-			control.SelectedIndexChanged += delegate
-			{
-				Log.Write(control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);
-			};
+			control.SelectedIndexChanged += (sender, e) => Log.Write(control, $"SelectedIndexChanged, Index: {control.SelectedIndex}");
 
-			control.PageClosed += (sender, e) =>
-			{
-				Log.Write(control, "PageClosed, Title: {0}", e.Page.Text);
-			};
+			control.PageClosed += (sender, e) => Log.Write(control, $"PageClosed, Title: {e.Page.Text}");
+
+			control.PageReordered += (sender, e) => Log.Write(control, $"PageReordered, Title: {e.Page.Text}, OldIndex: {e.OldIndex}, NewIndex: {e.NewIndex}");
 		}
 
 		void LogEvents(DocumentPage control)
 		{
-			control.Click += delegate
-			{
-				Log.Write(control, "Click, Item: {0}", control.Text);
-			};
+			control.Click += (sender, e) => Log.Write(control, $"Click, Item: {control.Text}");
 
-			control.Closed += (sender, e) =>
-			{
-				Log.Write(control, "Closed, Title: {0}", control.Text);
-			};
+			control.Closed += (sender, e) => Log.Write(control, $"Closed, Title: {control.Text}");
 		}
 	}
 }
