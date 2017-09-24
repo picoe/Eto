@@ -137,6 +137,22 @@ namespace Eto.WinForms.Forms.Controls
 			set { Control.ForeColor = value.ToSD(); }
 		}
 
+		public override string Text
+		{
+			get { return base.Text; }
+			set
+			{
+				SuppressSelectionChanged++;
+				var val = value ?? string.Empty;
+				base.Text = val;
+				if (!Control.IsHandleCreated) // correct??
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
+				Selection = Range.FromLength(val.Length, 0);
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+				SuppressSelectionChanged--;
+			}
+		}
+
 		public void Append(string text, bool scrollToCursor)
 		{
 			if (scrollToCursor)
@@ -158,9 +174,12 @@ namespace Eto.WinForms.Forms.Controls
 			set
 			{
 				var start = Control.SelectionStart;
-				Control.SelectedText = value;
-				if (value != null)
-					Control.Select(start, value.Length);
+				SuppressSelectionChanged++;
+				var val = value ?? string.Empty;
+				Control.SelectedText = val;
+				Control.Select(start, val.Length);
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+				SuppressSelectionChanged--;
 			}
 		}
 

@@ -1,4 +1,4 @@
-﻿using Eto.Forms;
+using Eto.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -253,6 +253,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public void Load(System.IO.Stream stream, RichTextAreaFormat format)
 		{
+			SuppressSelectionChanged++;
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
@@ -264,6 +265,8 @@ namespace Eto.WinForms.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
+			SuppressSelectionChanged--;
+			Selection = Range.FromLength(Control.TextLength, 0);
 		}
 
 		public void Save(System.IO.Stream stream, RichTextAreaFormat format)

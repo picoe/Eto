@@ -81,13 +81,16 @@ namespace Eto.Wpf.Forms.Cells
 					control.Args = new WpfCellEventArgs(-1, null, CellStates.None);
 					control.Unloaded += (sender, e) =>
 					{
-						var ctl = sender as EtoBorder;
-						ctl.Control?.DetachNative();
+						var ctl = (sender as EtoBorder)?.Control;
+						if (ctl != null && ctl.Loaded)
+							ctl.DetachNative();
 					};
 					control.Loaded += (sender, e) =>
 					{
-						var ctl = sender as EtoBorder;
-						ctl.Control?.AttachNative();
+						// WPF's loaded event is called more than once, e.g. when on a tab that is not initially visible.
+						var ctl = (sender as EtoBorder)?.Control;
+						if (ctl != null && !ctl.Loaded)
+							ctl.AttachNative();
 					};
 					control.DataContextChanged += (sender, e) =>
 					{

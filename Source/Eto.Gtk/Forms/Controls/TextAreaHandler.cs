@@ -14,7 +14,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		where TWidget: TextArea
 		where TCallback: TextArea.ICallback
 	{
-		bool sendSelectionChanged = true;
+		int suppressSelectionAndTextChanged;
 		readonly Gtk.ScrolledWindow scroll;
 		Gtk.TextTag tag;
 
@@ -70,14 +70,16 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleBufferChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				var handler = Handler;
+				if (handler.suppressSelectionAndTextChanged == 0)
+					handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleSelectionChanged(object o, Gtk.MarkSetArgs args)
 			{
 				var handler = Handler;
 				var selection = handler.Selection;
-				if (handler.sendSelectionChanged && selection != lastSelection)
+				if (handler.suppressSelectionAndTextChanged == 0 && selection != lastSelection)
 				{
 					handler.Callback.OnSelectionChanged(handler.Widget, EventArgs.Empty);
 					lastSelection = selection;
@@ -88,7 +90,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				var handler = Handler;
 				var caretIndex = handler.CaretIndex;
-				if (handler.sendSelectionChanged && caretIndex != lastCaretIndex)
+				if (handler.suppressSelectionAndTextChanged == 0 && caretIndex != lastCaretIndex)
 				{
 					handler.Callback.OnCaretIndexChanged(handler.Widget, EventArgs.Empty);
 					lastCaretIndex = caretIndex;
@@ -108,9 +110,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.Buffer.Text; }
 			set
 			{
+				var sel = Selection;
+				suppressSelectionAndTextChanged++;
 				Control.Buffer.Text = value;
 				if (tag != null)
 					Control.Buffer.ApplyTag(tag, Control.Buffer.StartIter, Control.Buffer.EndIter);
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
+				suppressSelectionAndTextChanged--;
+				if (sel != Selection)
+					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -173,7 +181,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			set
 			{
-				sendSelectionChanged = false;
+				suppressSelectionAndTextChanged++;
 				Gtk.TextIter start, end;
 				if (Control.Buffer.GetSelectionBounds(out start, out end))
 				{
@@ -191,8 +199,9 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.Buffer.InsertAtCursor(value);
 				if (tag != null)
 					Control.Buffer.ApplyTag(tag, Control.Buffer.StartIter, Control.Buffer.EndIter);
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-				sendSelectionChanged = true;
+				suppressSelectionAndTextChanged--;
 			}
 		}
 
@@ -202,17 +211,19 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Gtk.TextIter start, end;
 				if (Control.Buffer.GetSelectionBounds(out start, out end))
+				{
 					return new Range<int>(start.Offset, end.Offset - 1);
-				return new Range<int>(Control.Buffer.CursorPosition, 0);
+				}
+				return Range.FromLength(Control.Buffer.CursorPosition, 0);
 			}
 			set
 			{
-				sendSelectionChanged = false;
+				suppressSelectionAndTextChanged++;
 				var start = Control.Buffer.GetIterAtOffset(value.Start);
 				var end = Control.Buffer.GetIterAtOffset(value.End + 1);
 				Control.Buffer.SelectRange(start, end);
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-				sendSelectionChanged = true;
+				suppressSelectionAndTextChanged--;
 			}
 		}
 

@@ -46,6 +46,9 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets or sets the text of the control.
 		/// </summary>
+		/// <remarks>
+		/// Usually, the caret and selection will be set to the end of the string after its set.
+		/// </remarks>
 		/// <value>The text content.</value>
 		public virtual string Text
 		{
