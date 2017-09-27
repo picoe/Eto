@@ -70,8 +70,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2 - mobile", "Eto
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.NativeGtk - net45", "Eto.NativeGtk\Eto.NativeGtk - net45.csproj", "{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestureTest", "..\..\Gestures\GestureTest.csproj", "{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GesturesEto", "GesturesEto\GesturesEto.csproj", "{3F144017-9CB2-4EB6-9FC3-CB7F4206D52D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GesturesEto.Gtk3", "GesturesEto.Gtk3\GesturesEto.Gtk3.csproj", "{F71AFC3D-A67C-411E-A401-3DE9FAA3D3D6}"
@@ -291,18 +289,6 @@ Global
 		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Mac.Build.0 = Release|Any CPU
 		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Windows.ActiveCfg = Release|Any CPU
 		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Windows.Build.0 = Release|Any CPU
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Debug|Linux.ActiveCfg = Debug|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Debug|Linux.Build.0 = Debug|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Debug|Mac.ActiveCfg = Debug|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Debug|Mac.Build.0 = Debug|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Debug|Windows.ActiveCfg = Debug|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Debug|Windows.Build.0 = Debug|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Release|Linux.ActiveCfg = Release|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Release|Linux.Build.0 = Release|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Release|Mac.ActiveCfg = Release|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Release|Mac.Build.0 = Release|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Release|Windows.ActiveCfg = Release|Linux
-		{B335EDA3-9C2B-4A0F-83B3-B1B553C9AD39}.Release|Windows.Build.0 = Release|Linux
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Linux.Build.0 = Debug|Any CPU
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Mac.ActiveCfg = Debug|Any CPU
