@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">Linux</Platform>
+    <ProjectGuid>{F71AFC3D-A67C-411E-A401-3DE9FAA3D3D6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>GesturesEto.Gtk3</RootNamespace>
+    <AssemblyName>GesturesEto.Gtk3</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Linux' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Linux' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="atk-sharp">
+      <HintPath>..\packages\gtk-sharp3.3.22.8.0\lib\net40\atk-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="cairo-sharp">
+      <HintPath>..\packages\gtk-sharp3.3.22.8.0\lib\net40\cairo-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="gdk-sharp">
+      <HintPath>..\packages\gtk-sharp3.3.22.8.0\lib\net40\gdk-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="gio-sharp">
+      <HintPath>..\packages\gtk-sharp3.3.22.8.0\lib\net40\gio-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="glib-sharp">
+      <HintPath>..\packages\gtk-sharp3.3.22.8.0\lib\net40\glib-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="gtk-sharp">
+      <HintPath>..\packages\gtk-sharp3.3.22.8.0\lib\net40\gtk-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="gtk-dotnet">
+      <HintPath>..\packages\gtk-sharp3.3.22.8.0\lib\net40\gtk-dotnet.dll</HintPath>
+    </Reference>
+    <Reference Include="pango-sharp">
+      <HintPath>..\packages\gtk-sharp3.3.22.8.0\lib\net40\pango-sharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\gtk-sharp3.3.22.8.0\build\gtk-sharp3.targets" Condition="Exists('..\packages\gtk-sharp3.3.22.8.0\build\gtk-sharp3.targets')" />
+  <ItemGroup>
+    <ProjectReference Include="..\GesturesEto\GesturesEto.csproj">
+      <Project>{3F144017-9CB2-4EB6-9FC3-CB7F4206D52D}</Project>
+      <Name>GesturesEto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto\Eto - pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Gtk\Eto.Gtk3 - net45.csproj">
+      <Project>{543B2F90-CA56-11E3-9C1A-0800200C9A66}</Project>
+      <Name>Eto.Gtk3 - net45</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
