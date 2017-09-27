@@ -36,21 +36,38 @@ namespace Eto.GtkSharp.Forms
 				Control.Modal = true;
 			}
 
+			#if GTK2
 			if (Font != null)
 			{
 				var handler = Font.Handler as FontHandler;
 				Control.SetFontName(handler.Control.ToString());
 			}
-			else
+			else 				
 				Control.SetFontName(string.Empty);
+			#else
+			Pango.FontDescription OrigFontDesc = Control.GetFont();
+			if (Font != null) {
+				var handler = Font.Handler as FontHandler;
+				OrigFontDesc.Family  = handler.Control.ToString ();
+				Control.SetFont(OrigFontDesc);
+			} else {
+				OrigFontDesc.Family  = string.Empty;
+				Control.SetFont(OrigFontDesc);
+			}
+			#endif
 
 			Control.ShowAll();
 			var response = (Gtk.ResponseType)Control.Run();
 			Control.Hide();
 
 			if (response == Gtk.ResponseType.Apply || response == Gtk.ResponseType.Ok)
-			{
-				Font = new Font(new FontHandler(Control.FontName));
+			{				
+				#if GTK2
+					Font = new Font(new FontHandler(Control.FontName));		
+				#else
+					Pango.FontDescription FDesc = Control.GetFont();
+					Font = new Font(new FontHandler(FDesc.Family));
+				#endif
 				Callback.OnFontChanged(Widget, EventArgs.Empty);
 				return DialogResult.Ok;
 			}
