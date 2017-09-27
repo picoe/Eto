@@ -11,15 +11,9 @@ namespace Eto.WinForms.Forms.Controls
 	[DesignerCategory("Code")]
 	public class EtoTextBox : swf.TextBox
 	{
-		string watermarkText;
-		public string WatermarkText
+		public EtoTextBox()
 		{
-			get { return watermarkText; }
-			set
-			{
-				watermarkText = value;
-				Win32.SendMessage(Handle, Win32.WM.EM_SETCUEBANNER, IntPtr.Zero, watermarkText);
-			}
+			MaxLength = 0;
 		}
 
 		public event EventHandler<CancelEventArgs> Copying;
@@ -60,17 +54,45 @@ namespace Eto.WinForms.Forms.Controls
 		}
 	}
 
-	public class TextBoxHandler : WindowsControl<EtoTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class TextBoxHandler : TextBoxHandler<EtoTextBox, TextBox, TextBox.ICallback>
 	{
+		public override swf.TextBox SwfTextBox => Control;
+
+		public override EtoTextBox EtoTextBox => Control;
+
 		public TextBoxHandler()
 		{
 			Control = new EtoTextBox();
 		}
+	}
 
-		public bool ShowBorder
+	public abstract class TextBoxHandler<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, TextBox.IHandler
+		where TControl: swf.Control
+		where TWidget: TextBox
+		where TCallback: TextBox.ICallback
+	{
+		public abstract swf.TextBox SwfTextBox { get; }
+
+		public abstract EtoTextBox EtoTextBox { get; }
+
+		public virtual bool ShowBorder
 		{
-			get { return Control.BorderStyle != swf.BorderStyle.None; }
-			set { Control.BorderStyle = value ? swf.BorderStyle.Fixed3D : swf.BorderStyle.None; }
+			get { return SwfTextBox.BorderStyle != swf.BorderStyle.None; }
+			set
+			{
+				SwfTextBox.BorderStyle = value ? swf.BorderStyle.Fixed3D : swf.BorderStyle.None;
+				SetPlaceholderText(); // setting border clears this out for some reason
+			}
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get { return SwfTextBox.TextAlign.ToEto(); }
+			set
+			{
+				SwfTextBox.TextAlign = value.ToSWF();
+				SetPlaceholderText(); // setting text alignment clears this out for some reason
+			}
 		}
 
 		static Func<char, bool> testIsNonWord = ch => char.IsWhiteSpace(ch) || char.IsPunctuation(ch);
@@ -92,7 +114,7 @@ namespace Eto.WinForms.Forms.Controls
 								var selection = Selection;
 								if (selection.Length() == 0)
 									selection = new Range<int>(e.KeyData == Keys.Delete ? CaretIndex : CaretIndex - 1);
-								if (selection.Start >= 0 && selection.End < Control.TextLength)
+								if (selection.Start >= 0 && selection.End < SwfTextBox.TextLength)
 								{
 									var tia = new TextChangingEventArgs(string.Empty, selection);
 									Callback.OnTextChanging(Widget, tia);
@@ -144,26 +166,29 @@ namespace Eto.WinForms.Forms.Controls
 								break;
 						}
 					};
-					Control.Cutting += (sender, e) =>
-					{
-						clipboard.Clear();
-						clipboard.Text = Control.SelectedText;
-						var tia = new TextChangingEventArgs(string.Empty, Selection);
-						Callback.OnTextChanging(Widget, tia);
-						e.Cancel = tia.Cancel;
-					};
-					Control.Pasting += (sender, e) =>
-					{
-						var tia = new TextChangingEventArgs(clipboard.Text, Selection);
-						Callback.OnTextChanging(Widget, tia);
-						e.Cancel = tia.Cancel;
-					};
 					Widget.TextInput += (sender, e) =>
 					{
 						var tia = new TextChangingEventArgs(e.Text, Selection);
 						Callback.OnTextChanging(Widget, tia);
 						e.Cancel = tia.Cancel;
 					};
+					if (EtoTextBox != null)
+					{
+						EtoTextBox.Cutting += (sender, e) =>
+						{
+							clipboard.Clear();
+							clipboard.Text = SwfTextBox.SelectedText;
+							var tia = new TextChangingEventArgs(string.Empty, Selection);
+							Callback.OnTextChanging(Widget, tia);
+							e.Cancel = tia.Cancel;
+						};
+						EtoTextBox.Pasting += (sender, e) =>
+						{
+							var tia = new TextChangingEventArgs(clipboard.Text, Selection);
+							Callback.OnTextChanging(Widget, tia);
+							e.Cancel = tia.Cancel;
+						};
+					}
 					break;
 				default:
 					base.AttachEvent(id);
@@ -171,28 +196,42 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public bool ReadOnly
+		public virtual bool ReadOnly
 		{
-			get { return Control.ReadOnly; }
-			set { Control.ReadOnly = value; }
+			get { return SwfTextBox.ReadOnly; }
+			set
+			{
+				SwfTextBox.ReadOnly = value;
+				SetPlaceholderText();
+			}
 		}
 
 		public int MaxLength
 		{
-			get { return Control.MaxLength; }
-			set { Control.MaxLength = value; }
+			get { return SwfTextBox.MaxLength; }
+			set { SwfTextBox.MaxLength = value; }
 		}
+
+		static object PlaceholderText_Key = new object();
 
 		public string PlaceholderText
 		{
-			get { return Control.WatermarkText; }
-			set { Control.WatermarkText = value; }
+			get { return Widget.Properties.Get<string>(PlaceholderText_Key); }
+			set
+			{
+				Widget.Properties.Set(PlaceholderText_Key, value, SetPlaceholderText);
+			}
+		}
+		
+		void SetPlaceholderText()
+		{
+			Win32.SendMessage(SwfTextBox.Handle, Win32.WM.EM_SETCUEBANNER, IntPtr.Zero, PlaceholderText);
 		}
 
 		public void SelectAll()
 		{
 			Control.Focus();
-			Control.SelectAll();
+			SwfTextBox.SelectAll();
 		}
 
 		static readonly Win32.WM[] intrinsicEvents = {
@@ -206,21 +245,21 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int CaretIndex
 		{
-			get { return Control.SelectionStart; }
+			get { return SwfTextBox.SelectionStart; }
 			set
 			{
-				Control.SelectionStart = value;
-				Control.SelectionLength = 0;
+				SwfTextBox.SelectionStart = value;
+				SwfTextBox.SelectionLength = 0;
 			}
 		}
 
 		public Range<int> Selection
 		{
-			get { return new Range<int>(Control.SelectionStart, Control.SelectionStart + Control.SelectionLength - 1); }
+			get { return new Range<int>(SwfTextBox.SelectionStart, SwfTextBox.SelectionStart + SwfTextBox.SelectionLength - 1); }
 			set
 			{
-				Control.SelectionStart = value.Start;
-				Control.SelectionLength = value.Length();
+				SwfTextBox.SelectionStart = value.Start;
+				SwfTextBox.SelectionLength = value.Length();
 			}
 		}
 

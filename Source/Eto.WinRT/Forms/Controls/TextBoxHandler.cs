@@ -4,7 +4,7 @@ using sw = Windows.UI.Xaml;
 using wf = Windows.Foundation;
 using Eto.Forms;
 using Eto.Drawing;
-using Windows.UI.Xaml;
+using wux = Windows.UI.Xaml;
 
 namespace Eto.WinRT.Forms.Controls
 {
@@ -17,7 +17,7 @@ namespace Eto.WinRT.Forms.Controls
 	public class TextBoxHandler : WpfControl<swc.TextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		bool textChanging;
-		protected override Size DefaultSize { get { return new Size(80, -1); } }
+		protected override wf.Size DefaultSize => new wf.Size(80, double.NaN);
 
 		public TextBoxHandler ()
 		{
@@ -102,7 +102,7 @@ namespace Eto.WinRT.Forms.Controls
 
 		public void SelectAll ()
 		{
-			Control.Focus (FocusState.Programmatic);
+			Control.Focus(wux.FocusState.Programmatic);
 			Control.SelectAll ();
 		}
 
@@ -131,6 +131,12 @@ namespace Eto.WinRT.Forms.Controls
 				Control.SelectionStart = value.Start;
 				Control.SelectionLength = value.Length();
 			}
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get { return Control.TextAlignment.ToEto(); }
+			set { Control.TextAlignment = value.ToWpfTextAlignment(); }
 		}
 	}
 }

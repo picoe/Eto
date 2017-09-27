@@ -1,43 +1,38 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms
 {
-    public class ColorDialogHandler : WidgetHandler<Gtk.Dialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
+	public class ColorDialogHandler : WidgetHandler<Gtk.ColorSelectionDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
 	{
-		public ColorDialogHandler ()
+		public ColorDialogHandler()
 		{
-#if GTK3
-            if (Gtk.Global.MinorVersion >= 4)
-                Control = new Gtk.Dialog(NativeMethods.gtk_color_chooser_dialog_new("Choose Color", IntPtr.Zero));
-            else
-#endif
-                Control = new Gtk.ColorSelectionDialog(string.Empty);
-			
+			Control = new Gtk.ColorSelectionDialog(string.Empty);
 		}
 
-		public Eto.Drawing.Color Color {
+		public bool AllowAlpha
+		{
+			get { return Control.ColorSelection.HasOpacityControl; }
+			set { Control.ColorSelection.HasOpacityControl = value; }
+		}
+
+		public Color Color
+		{
 			get
-            {
-#if GTK3
-                if (Gtk.Global.MinorVersion >= 4)
-                    return NativeMethods.gtk_color_chooser_get_rgba(Control.Handle).ToEto();
-                else
-#endif 
-                    return (Control as Gtk.ColorSelectionDialog).ColorSelection.CurrentColor.ToEto ();
-            }
+			{
+				return Control.ColorSelection.CurrentColor.ToEto(Control.ColorSelection.CurrentAlpha);
+			}
 			set
-            {
-#if GTK3
-                if (Gtk.Global.MinorVersion >= 4)
-                    NativeMethods.gtk_color_chooser_set_rgba(Control.Handle, new double[] { value.R, value.G, value.B, value.A });
-                else
-#endif
-                    (Control as Gtk.ColorSelectionDialog).ColorSelection.CurrentColor = value.ToGdk ();
-            }
+			{
+				Control.ColorSelection.CurrentColor = value.ToGdk();
+				Control.ColorSelection.CurrentAlpha = (ushort)(value.A * ushort.MaxValue);
+			}
 		}
 
-		public DialogResult ShowDialog (Window parent)
+		public bool SupportsAllowAlpha => true;
+
+		public DialogResult ShowDialog(Window parent)
 		{
 			if (parent != null)
 			{
@@ -45,14 +40,14 @@ namespace Eto.GtkSharp.Forms
 				Control.Modal = true;
 			}
 
-			Control.ShowAll ();
-			var response = (Gtk.ResponseType)Control.Run ();
-			Control.Hide ();
-			
-			if (response == Gtk.ResponseType.Ok) {
+			Control.ShowAll();
+			var response = (Gtk.ResponseType)Control.Run();
+			Control.Hide();
+
+			if (response == Gtk.ResponseType.Ok)
 				Callback.OnColorChanged(Widget, EventArgs.Empty);
-			}
-			return response.ToEto ();
+			
+			return response.ToEto();
 		}
 	}
 }

@@ -45,11 +45,12 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Use this to instantiate many objects of this type
 		/// </remarks>
+		[Obsolete("Since 2.4: Use new LinearGradientBrush() instead")]
 		public static Func<Color, Color, PointF, PointF, LinearGradientBrush> Instantiator
 		{
 			get
 			{
-				var handler = Platform.Instance.CreateShared<IHandler>();
+				var handler = Platform.Instance.LinearGradientBrushHandler;
 				return (startColor, endColor, startPoint, endPoint) =>
 				{
 					var control = handler.Create(startColor, endColor, startPoint, endPoint);
@@ -73,7 +74,7 @@ namespace Eto.Drawing
 		/// <param name="endPoint">End point for the gradient</param>
 		public LinearGradientBrush(Color startColor, Color endColor, PointF startPoint, PointF endPoint)
 		{
-			handler = Platform.Instance.CreateShared<IHandler> ();
+			handler = Platform.Instance.LinearGradientBrushHandler;
 			ControlObject = handler.Create (startColor, endColor, startPoint, endPoint);
 		}
 
@@ -86,7 +87,7 @@ namespace Eto.Drawing
 		/// <param name="angle">Angle of the gradient</param>
 		public LinearGradientBrush(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			handler = Platform.Instance.CreateShared<IHandler> ();
+			handler = Platform.Instance.LinearGradientBrushHandler;
 			ControlObject = handler.Create (rectangle, startColor, endColor, angle);
 		}
 

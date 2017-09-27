@@ -100,11 +100,24 @@ namespace Eto.GtkSharp.CustomControls
 		}
 #endif
 
+#if GTK2
 		void Close ()
-		{
+		{			
 			this.RemoveGrab ();
 			Destroy();
 		}
+#else
+		/// <summary>
+		/// Close this instance. note this hides the base
+		/// ToDo verify this is kosher...
+		/// </summary>
+		new void Close ()
+		{
+		this.RemoveGrab ();
+		Destroy();
+		base.Close();
+		}
+#endif
 
 		void UpdateClock ()
 		{

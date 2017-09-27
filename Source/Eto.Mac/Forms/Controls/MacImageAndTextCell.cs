@@ -97,9 +97,7 @@ namespace Eto.Mac.Forms.Controls
 		NSColor groupColor = NSColor.FromCalibratedRgba(0x6F / (float)0xFF, 0x7E / (float)0xFF, 0x8B / (float)0xFF, 1.0F);
 		//light shade: NSColor.FromCalibratedRgba (0x82 / (float)0xFF, 0x90 / (float)0xFF, 0x9D / (float)0xFF, 1.0F);
 		
-		static readonly IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
-		
 		public MacImageListItemCell()
 		{
 		}
@@ -181,11 +179,11 @@ namespace Eto.Mac.Forms.Controls
 			var data = ObjectValue as MacImageData;
 			if (data != null && data.Image != null)
 			{
-				var ctl = ControlView as NSTableView;
 				var imageSize = data.Image.Size;
-				var newHeight = Math.Min(imageSize.Height, ctl != null ? ctl.RowHeight : bounds.Height);
+				var newHeight = Math.Min(imageSize.Height, bounds.Height);
 				var newWidth = imageSize.Width * newHeight / imageSize.Height;
 				size.Width += (nfloat)(newWidth + ImagePadding);
+				size.Height = (nfloat)Math.Max(newHeight, size.Height);
 			}
 			size.Width = (nfloat)Math.Min(size.Width, bounds.Width);
 			return size;
@@ -221,17 +219,7 @@ namespace Eto.Mac.Forms.Controls
 
 						context.ImageInterpolation = ImageInterpolation;
 
-						if (data.Image.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
-							// 10.6+
-							data.Image.Draw(imageRect, new CGRect(CGPoint.Empty, data.Image.Size), NSCompositingOperation.SourceOver, alpha, true, null);
-						else
-						{
-							// 10.5-
-							#pragma warning disable 618
-							data.Image.Flipped = ControlView.IsFlipped; 
-							#pragma warning restore 618
-							data.Image.Draw(imageRect, new CGRect(CGPoint.Empty, data.Image.Size), NSCompositingOperation.SourceOver, alpha);
-						}
+						data.Image.Draw(imageRect, new CGRect(CGPoint.Empty, data.Image.Size), NSCompositingOperation.SourceOver, alpha, true, null);
 						frame.Width -= newWidth + ImagePadding;
 						frame.X += newWidth + ImagePadding;
 					}

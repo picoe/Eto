@@ -29,7 +29,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Loaded += Control_Loaded;
 			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
-			border = new swc.Border { Child = Control };
+			border = new EtoBorder { Handler = this, Child = Control };
 		}
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)

@@ -49,7 +49,7 @@ namespace Eto.Mac
 		public static Color ToEto(this NSColor color, bool calibrated = true)
 		{
 			if (color == null)
-				return Colors.Black;
+				return Colors.Transparent;
 			var colorspace = calibrated ? NSColorSpace.CalibratedRGB : NSColorSpace.DeviceRGB;
 			var converted = color.UsingColorSpace(colorspace);
 			if (converted == null)
@@ -226,7 +226,7 @@ namespace Eto.Mac
 			if (size != null)
 			{
 				var mainScale = Screen.PrimaryScreen.RealScale;
-				var scales = new [] { 1f, 2f }; // generate both retina and non-retina representations
+				var scales = new[] { 1f, 2f }; // generate both retina and non-retina representations
 				var sz = (float)Math.Ceiling(size.Value / mainScale);
 				var rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
 				sz = size.Value;
@@ -438,12 +438,42 @@ namespace Eto.Mac
 					throw new NotSupportedException();
 			}
 		}
-		
+
 		public static NSFont ToNS(this Font font)
 		{
 			if (font == null)
 				return null;
 			return ((FontHandler)font.Handler).Control;
+		}
+
+		public static BorderType ToEto(this NSBorderType border)
+		{
+			switch (border)
+			{
+				case NSBorderType.BezelBorder:
+					return BorderType.Bezel;
+				case NSBorderType.LineBorder:
+					return BorderType.Line;
+				case NSBorderType.NoBorder:
+					return BorderType.None;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static NSBorderType ToNS(this BorderType border)
+		{
+			switch (border)
+			{
+				case BorderType.Bezel:
+					return NSBorderType.BezelBorder;
+				case BorderType.Line:
+					return NSBorderType.LineBorder;
+				case BorderType.None:
+					return NSBorderType.NoBorder;
+				default:
+					throw new NotSupportedException();
+			}
 		}
 	}
 }

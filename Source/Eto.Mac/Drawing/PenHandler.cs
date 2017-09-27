@@ -54,8 +54,8 @@ namespace Eto.iOS.Drawing
 			float thickness;
 			float cgoffset;
 
-			public CGColor Color { get; set; }
-			
+			public Brush Brush { get; set; }
+
 			public float Thickness
 			{
 				get { return thickness; }
@@ -120,7 +120,6 @@ namespace Eto.iOS.Drawing
 
 			public void Apply (GraphicsHandler graphics)
 			{
-				graphics.Control.SetStrokeColor (Color);
 				graphics.Control.SetLineCap (LineCap);
 				graphics.Control.SetLineJoin (LineJoin);
 				graphics.Control.SetLineWidth (Thickness);
@@ -128,26 +127,27 @@ namespace Eto.iOS.Drawing
 				if (cgdashes != null)
 					graphics.Control.SetLineDash (cgoffset, cgdashes);
 			}
+
+			public void Finish(GraphicsHandler graphics)
+			{
+				Brush.Draw(graphics, true, FillMode.Winding);
+			}
 		}
 
-		public object Create (Color color, float thickness)
+		public object Create(Brush brush, float thickness)
 		{
-			return new PenControl {
-				Color = color.ToCG (),
+			return new PenControl
+			{
+				Brush = brush,
 				Thickness = thickness,
 				MiterLimit = 10f,
-				LineCap = PenLineCap.Square.ToCG ()
+				LineCap = PenLineCap.Square.ToCG()
 			};
 		}
 
-		public Color GetColor (Pen widget)
+		public Brush GetBrush (Pen widget)
 		{
-			return ((PenControl)widget.ControlObject).Color.ToEto();
-		}
-
-		public void SetColor (Pen widget, Color color)
-		{
-			((PenControl)widget.ControlObject).Color = color.ToCG();
+			return ((PenControl)widget.ControlObject).Brush;
 		}
 
 		public float GetThickness (Pen widget)
@@ -195,9 +195,13 @@ namespace Eto.iOS.Drawing
 			((PenControl)widget.ControlObject).DashStyle = dashStyle;
 		}
 
-		public void Apply (Pen widget, GraphicsHandler graphics)
+		public void Apply(Pen widget, GraphicsHandler graphics)
 		{
-			((PenControl)widget.ControlObject).Apply (graphics);
+			((PenControl)widget.ControlObject).Apply(graphics);
+		}
+		public void Finish(Pen widget, GraphicsHandler graphics)
+		{
+			((PenControl)widget.ControlObject).Finish(graphics);
 		}
 	}
 }

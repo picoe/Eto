@@ -7,11 +7,21 @@ using System.ComponentModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoExpander : swc.Expander, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class ExpanderHandler : WpfPanel<swc.Expander, Expander, Expander.ICallback>, Expander.IHandler
 	{
 		public ExpanderHandler()
 		{
-			Control = new swc.Expander();
+			Control = new EtoExpander { Handler = this };
 		}
 
 		protected override void Initialize()
@@ -39,11 +49,6 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				Widget.Properties.Set(Header_Key, value, () => Control.Header = value.ToNative());
 			}
-		}
-
-		protected override bool UseContentSize
-		{
-			get { return false; }
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)

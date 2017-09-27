@@ -81,7 +81,6 @@
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
     <Compile Include="Sections\Printing\PrintDialogSection.cs" />
     <Compile Include="TestApplication.cs" />
-    <Compile Include="Dialogs\About.cs" />
     <Compile Include="Sections\Controls\ButtonSection.cs" />
     <Compile Include="Sections\Controls\CheckBoxSection.cs" />
     <Compile Include="Sections\Controls\ComboBoxSection.cs" />
@@ -91,7 +90,7 @@
     <Compile Include="Sections\Controls\GroupBoxSection.cs" />
     <Compile Include="Sections\Controls\LabelSection.cs" />
     <Compile Include="Sections\Controls\ListBoxSection.cs" />
-    <Compile Include="Sections\Controls\NumericUpDownSection.cs" />
+    <Compile Include="Sections\Controls\NumericStepperSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonSection.cs" />
     <Compile Include="Sections\Controls\ScrollableSection.cs" />
     <Compile Include="Sections\Controls\SliderSection.cs" />
@@ -111,7 +110,7 @@
     <Compile Include="Sections\Controls\ProgressBarSection.cs" />
     <Compile Include="Sections\Controls\KitchenSinkSection.cs" />
     <Compile Include="Sections\Controls\GridCellFormattingSection.cs" />
-    <Compile Include="Sections\Dialogs\CustomDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\DialogSection.cs" />
     <Compile Include="Sections\Drawing\InterpolationSection.cs" />
     <Compile Include="Sections\Serialization\Xaml\Test.cs" />
     <Compile Include="Sections\Serialization\Json\Test.cs" />
@@ -130,12 +129,15 @@
     <Compile Include="Sections\Controls\SplitterSection.cs" />
     <Compile Include="Sections\Controls\SpinnerSection.cs" />
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
+    <Compile Include="UnitTests\Drawing\BrushTests.cs" />
     <Compile Include="UnitTests\Drawing\ClipTests.cs" />
     <Compile Include="UnitTests\Drawing\DefaultValueTests.cs" />
+    <Compile Include="UnitTests\Drawing\FontTests.cs" />
     <Compile Include="UnitTests\Drawing\GraphicsTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\ComboBoxTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\NumericUpDownTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\PanelTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\SplitterTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
@@ -199,12 +201,23 @@
     <Compile Include="UnitTests\Drawing\IconTests.cs" />
     <Compile Include="UnitTests\TestBase.cs" />
     <Compile Include="UnitTests\Forms\DataContextTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\SliderTests.cs" />
+    <Compile Include="Sections\Dialogs\AboutDialogSection.cs" />
+    <Compile Include="Sections\Controls\StepperSection.cs" />
+    <Compile Include="Sections\Controls\TextStepperSection.cs" />
+    <Compile Include="UnitTests\Forms\Binding\PropertyBindingTests.cs" />
+    <Compile Include="Sections\Controls\FilePickerSection.cs" />
+    <Compile Include="Sections\Controls\FontPickerSection.cs" />
+    <Compile Include="Sections\Dialogs\OpenWithDialogSection.cs" />
+    <Compile Include="Sections\Controls\DocumentControlSection.cs" />
+    <Compile Include="Sections\Behaviors\NotificationSection.cs" />
+    <Compile Include="Sections\Behaviors\GestureEventsSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
+    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Images\TestIcon.ico" />

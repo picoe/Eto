@@ -7,15 +7,13 @@ namespace Eto.Test.Sections.Controls
 	[Section("Controls", typeof(DropDown))]
 	public class DropDownSection : Scrollable
 	{
+		bool AddWithImages { get; set; }
+
 		public DropDownSection()
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow("Default", Default(), null);
-
-			layout.AddRow("With Items", TableLayout.AutoSized(Items()));
-
-			layout.AddRow("Disabled", TableLayout.AutoSized(Disabled()));
 
 			layout.AddRow("Set Initial Value", TableLayout.AutoSized(SetInitialValue()));
 
@@ -33,20 +31,41 @@ namespace Eto.Test.Sections.Controls
 
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(TableLayout.AutoSized(control));
-			layout.BeginVertical();
-			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
-			layout.EndVertical();
+			layout.AddSeparateRow(null, AddRowsButton(control), AddWithImagesCheckBox(), RemoveRowsButton(control), ClearButton(control), null);
+			layout.AddSeparateRow(null, EnabledCheckBox(control), SetSelected(control), ClearSelected(control), null);
 
 			return layout;
 		}
 
+		Control EnabledCheckBox(DropDown list)
+		{
+			var control = new CheckBox { Text = "Enabled" };
+			control.CheckedBinding.Bind(list, l => l.Enabled);
+			return control;
+		}
+
+		Control AddWithImagesCheckBox()
+		{
+			var control = new CheckBox { Text = "Add with images" };
+			control.CheckedBinding.Bind(this, l => l.AddWithImages);
+			return control;
+		}
+
+
 		Control AddRowsButton(DropDown list)
 		{
 			var control = new Button { Text = "Add Rows" };
-			control.Click += delegate
+			control.Click += (sender, e) =>
 			{
+				var image1 = TestIcons.Logo.WithSize(32, 32);
+				var image2 = TestIcons.TestIcon.WithSize(16, 16);
 				for (int i = 0; i < 10; i++)
-					list.Items.Add(new ListItem { Text = "Item " + list.Items.Count });
+				{
+					if (AddWithImages)
+						list.Items.Add(new ImageListItem { Text = "Item " + list.Items.Count, Image = i % 2 == 0 ? image1 : image2 });
+					else
+						list.Items.Add(new ListItem { Text = "Item " + list.Items.Count });
+				}
 			};
 			return control;
 		}
@@ -129,10 +148,10 @@ namespace Eto.Test.Sections.Controls
 
 		void LogEvents(DropDown control)
 		{
-			control.SelectedIndexChanged += delegate
-			{
-				Log.Write(control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
-			};
+			control.SelectedIndexChanged += (sender, e) =>  Log.Write(control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
+
+			control.DropDownOpening += (sender, e) => Log.Write(control, "DropDownOpening");
+			control.DropDownClosed += (sender, e) => Log.Write(control, "DropDownClosed");
 		}
 	}
 }

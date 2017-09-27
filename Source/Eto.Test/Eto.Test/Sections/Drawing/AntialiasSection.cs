@@ -10,8 +10,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			Content = new DynamicLayout(
 				new DynamicRow(
-					new Label { Text = "Antialias On" }, AntialiasOn(),
-					new Label { Text = "Antialias Off" }, AntialiasOff(),
+					"Antialias", AntialiasOn(),
 					null
 				),
 				null
@@ -20,27 +19,33 @@ namespace Eto.Test.Sections.Drawing
 
 		Control AntialiasOn()
 		{
-			var control = new Drawable { Size = new Size(100, 100), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size(400, 100), BackgroundColor = Colors.Black };
 
 			var path = CreatePath();
 			control.Paint += (sender, e) =>
 			{
 				e.Graphics.AntiAlias = true;
+				e.Graphics.DrawText(SystemFonts.Default(), Brushes.White, 0, 0, "Antialias ON");
 				e.Graphics.DrawPath(Pens.White, path);
-			};
+				e.Graphics.DrawLine(Pens.White, 0, 20, 100, 100);
 
-			return control;
-		}
-
-		Control AntialiasOff()
-		{
-			var control = new Drawable { Size = new Size(100, 100), BackgroundColor = Colors.Black };
-
-			var path = CreatePath();
-			control.Paint += (sender, e) =>
-			{
 				e.Graphics.AntiAlias = false;
+				e.Graphics.TranslateTransform(100, 0);
+				e.Graphics.DrawText(SystemFonts.Default(), Brushes.White, 0, 0, "Antialias OFF");
 				e.Graphics.DrawPath(Pens.White, path);
+				e.Graphics.DrawLine(Pens.White, 0, 20, 100, 100);
+
+				e.Graphics.AntiAlias = true;
+				e.Graphics.TranslateTransform(100, 0);
+				e.Graphics.DrawText(SystemFonts.Default(), Brushes.White, 0, 0, "Antialias ON");
+				e.Graphics.DrawPath(Pens.White, path);
+				e.Graphics.DrawLine(Pens.White, 0, 20, 100, 100);
+
+				e.Graphics.AntiAlias = false;
+				e.Graphics.TranslateTransform(100, 0);
+				e.Graphics.DrawText(SystemFonts.Default(), Brushes.White, 0, 0, "Antialias OFF");
+				e.Graphics.DrawPath(Pens.White, path);
+				e.Graphics.DrawLine(Pens.White, 0, 20, 100, 100);
 			};
 
 			return control;
@@ -49,7 +54,7 @@ namespace Eto.Test.Sections.Drawing
 		GraphicsPath CreatePath()
 		{
 			var path = new GraphicsPath();
-			path.MoveTo(new Point(10, 10));
+			path.MoveTo(new Point(10, 16));
 			path.LineTo(new Point(20, 90));
 			path.LineTo(new Point(10, 60));
 			path.LineTo(new Point(90, 80));

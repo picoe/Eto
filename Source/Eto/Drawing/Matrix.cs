@@ -291,6 +291,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a delegate that can be used to create an identity matrix with little overhead
 		/// </summary>
+		[Obsolete("Since 2.4: Use Matrix.Create() instead")]
 		public static Func<IMatrix> Instantiator
 		{
 			get
@@ -309,6 +310,7 @@ namespace Eto.Drawing
 		/// Gets a delegate that can be used to create instances of a matrix with specified components with little overhead
 		/// </summary>
 		/// <returns>The with elements.</returns>
+		[Obsolete("Since 2.4: Use Matrix.Create() instead")]
 		public static Func<float, float, float, float, float, float, IMatrix> InstantiatorWithElements
 		{
 			get
@@ -328,7 +330,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public static IMatrix Create()
 		{
-			var handler = Platform.Instance.Create<IHandler>();
+			var handler = Platform.Instance.CreateMatrix();
 			handler.Create();
 			return handler;
 		}
@@ -343,7 +345,7 @@ namespace Eto.Drawing
 				throw new ArgumentNullException("elements");
 			if (elements.Length != 6)
 				throw new ArgumentOutOfRangeException("elements", elements, string.Format(CultureInfo.CurrentCulture, "Elements must be an array with a length of 6"));
-			var handler = Platform.Instance.Create<IHandler>();
+			var handler = Platform.Instance.CreateMatrix();
 			handler.Create(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 			return handler;
 		}
@@ -359,7 +361,7 @@ namespace Eto.Drawing
 		/// <param name="y0">Y0 component of the matrix</param>
 		public static IMatrix Create(float xx, float yx, float xy, float yy, float x0, float y0)
 		{
-			var handler = Platform.Instance.Create<IHandler>();
+			var handler = Platform.Instance.CreateMatrix();
 			handler.Create(xx, yx, xy, yy, x0, y0);
 			return handler;
 		}

@@ -44,7 +44,7 @@ namespace Eto.Mac.Forms.Controls
 		[Export("isPartialStringValid:proposedSelectedRange:originalString:originalSelectedRange:errorDescription:")]
 		public bool IsPartialStringValid(ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
 		{
-			if (Handler.MaxLength >= 0)
+			if (Handler.MaxLength > 0)
 			{
 				int size = (int)value.Length;
 				if (size > Handler.MaxLength)
@@ -66,13 +66,10 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public WeakReference WeakHandler { get; set; }
 
-		public TextBoxHandler Handler
-		{ 
-			get { return (TextBoxHandler)WeakHandler.Target; }
-			set { WeakHandler = new WeakReference(value); } 
-		}
+		IMacText TextHandler => WeakHandler.Target as IMacText;
+		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler.Target as ITextBoxWithMaxLength;
 
-		public int MaxLength { get { return Handler.MaxLength; } }
+		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? 0; } }
 
 		public EtoTextField()
 		{
@@ -88,16 +85,26 @@ namespace Eto.Mac.Forms.Controls
 		[Export("textViewDidChangeSelection:")]
 		public void TextViewDidChangeSelection(NSNotification notification)
 		{
-			var textView = (NSTextView)notification.Object;
-			Handler.LastSelection = textView.SelectedRange.ToEto();
+			if (TextHandler != null)
+			{
+				var textView = (NSTextView)notification.Object;
+				TextHandler.LastSelection = textView.SelectedRange.ToEto();
+			}
 		}
 	}
 
-	public class TextBoxHandler : MacText<EtoTextField, TextBox, TextBox.ICallback>, TextBox.IHandler, ITextBoxWithMaxLength
+
+	public class TextBoxHandler : TextBoxHandler<TextBox, TextBox.ICallback>
+	{
+	}
+
+	public class TextBoxHandler<TWidget, TCallback> : MacText<EtoTextField, TWidget, TCallback>, TextBox.IHandler, ITextBoxWithMaxLength
+		where TWidget: TextBox
+		where TCallback: TextBox.ICallback
 	{
 		protected override void Initialize()
 		{
-			MaxLength = -1;
+			MaxLength = 0;
 			base.Initialize();
 		}
 
@@ -134,14 +141,14 @@ namespace Eto.Mac.Forms.Controls
 
 		static void HandleTextChanged (object sender, EventArgs e)
 		{
-			var h = GetHandler(sender) as TextBoxHandler;
+			var h = GetHandler(sender) as TextBoxHandler<TWidget, TCallback>;
 			h.Callback.OnTextChanged(h.Widget, EventArgs.Empty);
 		}
 
 		static bool TriggerShouldChangeText(IntPtr sender, IntPtr sel, NSRange affectedCharRange, IntPtr replacementStringPtr)
 		{
 			var obj = Runtime.GetNSObject(sender);
-			var handler = GetHandler(obj) as TextBoxHandler;
+			var handler = GetHandler(obj) as TextBoxHandler<TWidget, TCallback>;
 
 			if (handler != null)
 			{

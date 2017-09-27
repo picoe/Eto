@@ -221,12 +221,12 @@ namespace Eto.iOS.Forms
 			}
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(bool invalidateChildren)
 		{
 			EventControl.SetNeedsDisplay();
 		}
 
-		public virtual void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			EventControl.SetNeedsDisplayInRect(rect.ToNS());
 		}

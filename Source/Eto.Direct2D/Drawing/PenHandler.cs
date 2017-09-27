@@ -13,16 +13,9 @@ namespace Eto.Direct2D.Drawing
 	/// </summary>
 	public class PenData : IDisposable
 	{
-		sd.Brush brush;
 		public sd.Brush GetBrush(sd.RenderTarget target)
 		{
-			if (brush == null || !ReferenceEquals(brush.Tag, target))
-			{
-				if (brush != null)
-					brush.Dispose();
-				brush = new sd.SolidColorBrush(target, Color.ToDx()) { Tag = target };
-			}
-			return brush;
+			return Brush.ToDx(target);
 		}
 
 		sd.StrokeStyle strokeStyle;
@@ -71,7 +64,7 @@ namespace Eto.Direct2D.Drawing
 			}
 		}
 
-		public Color Color { get; set; }
+		public Brush Brush { get; set; }
 
 		public float Width { get; set; }
 
@@ -110,10 +103,10 @@ namespace Eto.Direct2D.Drawing
 
 		public void Dispose()
 		{
-			if (brush != null)
+			if (Brush != null)
 			{
-				brush.Dispose();
-				brush = null;
+				Brush.Dispose();
+				Brush = null;
 			}
 
 			if (strokeStyle != null)
@@ -126,19 +119,9 @@ namespace Eto.Direct2D.Drawing
 
 	public class PenHandler : Pen.IHandler
 	{
-		public object Create(Color color, float thickness)
+		public object Create(Brush brush, float thickness)
 		{
-			return new PenData { Color = color, Width = thickness };
-		}
-
-		public Color GetColor(Pen widget)
-		{
-			return widget.ToPenData().Color;
-		}
-
-		public void SetColor(Pen widget, Color color)
-		{
-			widget.ToPenData().Color = color;
+			return new PenData { Brush = brush, Width = thickness };
 		}
 
 		public float GetThickness(Pen widget)
@@ -184,6 +167,11 @@ namespace Eto.Direct2D.Drawing
 		public void SetDashStyle(Pen widget, DashStyle dashStyle)
 		{
 			widget.ToPenData().DashStyle = dashStyle;
+		}
+
+		public Brush GetBrush(Pen widget)
+		{
+			return widget.ToPenData().Brush;
 		}
 	}
 }

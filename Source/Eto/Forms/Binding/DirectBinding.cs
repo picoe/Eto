@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 
 namespace Eto.Forms
 {
@@ -96,6 +97,85 @@ namespace Eto.Forms
 				val => DataValue = (T)(object)val,
 				addChangeEvent: ev => DataValueChanged += ev,
 				removeChangeEvent: ev => DataValueChanged -= ev
+			);
+		}
+
+		/// <summary>
+		/// Binds to the specified child <paramref name="property"/> expression.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to bind to properties of child objects of your view model, for example
+		/// <code>model.SomeProperty.ChildProperty</code>.
+		/// 
+		/// This will automatically look up the changed event either by a [Property]Changed event or INotifyPropertyChanged implementation
+		/// for each object in the heirarchy.
+		/// 
+		/// Note that you only really need to use this when you have an existing binding that you cannot change.
+		/// See <see cref="Binding.Property{T,TValue}(Expression{Func{T,TValue}})"/> for an example of how to bind to child property values
+		/// more directly.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { public ChildObject { get; set; } }
+		/// 
+		/// 	var model = new MyModel();
+		/// 	Binding.Property(model, (MyModel m) => m.ChildObject).Child(c => c.SomeChildProperty);
+		/// </code>
+		/// </example>
+		/// <returns>The binding to the child property accessed through the current binding.</returns>
+		/// <param name="property">Property to bind to.</param>
+		/// <typeparam name="TValue">The type of the child property value.</typeparam>
+		public DirectBinding<TValue> Child<TValue>(Expression<Func<T, TValue>> property)
+		{
+			return Child(Property(property));
+		}
+
+		/// <summary>
+		/// Binds to the specified child <paramref name="binding"/> of this binding.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to bind to child objects of your view model, for example
+		/// <code>model.SomeProperty.ChildProperty</code>.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { public ChildObject { get; set; } }
+		/// 
+		/// 	var model = new MyModel();
+		/// 	Binding.Property(model, (MyModel m) => m.ChildObject).Child(Binding.Property("SomeChildProperty"));
+		/// </code>
+		/// </example>
+		/// <returns>The binding to the child property accessed through the current binding.</returns>
+		/// <param name="binding">Binding to get the child value from this binding.</param>
+		/// <typeparam name="TValue">The type of the child property value.</typeparam>
+		public DirectBinding<TValue> Child<TValue>(IndirectBinding<TValue> binding)
+		{
+			object childBindingReference = null;
+			EventHandler<EventArgs> eventHandler = null;
+			EventHandler<EventArgs> valueChanged = (sender, e) =>
+			{
+				binding.RemoveValueChangedHandler(childBindingReference, eventHandler);
+				eventHandler?.Invoke(sender, e);
+				childBindingReference = binding.AddValueChangedHandler(DataValue, eventHandler);
+			};
+			return new DelegateBinding<TValue>(
+				() => binding.GetValue(DataValue),
+				v => binding.SetValue(DataValue, v),
+				addChangeEvent: ev =>
+				{
+					eventHandler = ev;
+					DataValueChanged += valueChanged;
+					childBindingReference = binding.AddValueChangedHandler(DataValue, ev);
+				},
+				removeChangeEvent: ev =>
+				{
+					binding.RemoveValueChangedHandler(childBindingReference, ev);
+					DataValueChanged -= valueChanged;
+				}
 			);
 		}
 

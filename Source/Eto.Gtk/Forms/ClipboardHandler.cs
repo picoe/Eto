@@ -127,7 +127,7 @@ namespace Eto.GtkSharp.Forms
 
 		public void SetData(byte[] value, string type)
 		{
-			AddEntry(type, value, (data, selection) => selection.Set(Gdk.Atom.Intern(type, false), 0, value));
+			AddEntry(type, value, (data, selection) => selection.Set(Gdk.Atom.Intern(type, false), 8, value));
 		}
 
 		public string GetString(string type)
@@ -153,11 +153,28 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				Gdk.Atom[] atoms;
-				if (NativeMethods.ClipboardWaitForTargets(Control.Handle, out atoms))
+				IntPtr atomPtrs;
+				int count;
+				var success = NativeMethods.gtk_clipboard_wait_for_targets(Control.Handle, out atomPtrs, out count);
+
+				if (!success || count <= 0)
 				{
-					return atoms.Select(r => r.Name).ToArray();
+					atoms = null;
+					return new string[0];
 				}
-				return new string[0];
+
+				atoms = new Gdk.Atom[count];
+				unsafe
+				{
+					byte* p = (byte*)atomPtrs.ToPointer();
+					for (int i = 0; i < count; i++)
+					{
+						atoms[i] = new Gdk.Atom(new IntPtr(*p));
+						p += IntPtr.Size;
+					}
+				}
+
+				return atoms.Select(r => r.Name).ToArray();
 			}
 		}
 	}

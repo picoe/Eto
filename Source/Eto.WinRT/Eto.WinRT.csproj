@@ -269,7 +269,7 @@
     <Compile Include="Forms\Controls\ListBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\NumericUpDownHandler.cs">
+    <Compile Include="Forms\Controls\NumericStepperHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\PanelHandler.cs">

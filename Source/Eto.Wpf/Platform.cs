@@ -81,6 +81,7 @@ namespace Eto.Wpf
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<Expander.IHandler>(() => new ExpanderHandler());
+			p.Add<FontPicker.IHandler>(() => new ThemedFontPickerHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
 			p.Add<GridView.IHandler>(() => new GridViewHandler());
 			p.Add<GroupBox.IHandler>(() => new GroupBoxHandler());
@@ -88,7 +89,7 @@ namespace Eto.Wpf
 			p.Add<Label.IHandler>(() => new LabelHandler());
 			p.Add<LinkButton.IHandler>(() => new LinkButtonHandler());
 			p.Add<ListBox.IHandler>(() => new ListBoxHandler());
-			p.Add<NumericUpDown.IHandler>(() => new NumericUpDownHandler());
+			p.Add<NumericStepper.IHandler>(() => new NumericStepperHandler());
 			p.Add<Panel.IHandler>(() => new PanelHandler());
 			p.Add<PasswordBox.IHandler>(() => new PasswordBoxHandler());
 			p.Add<ProgressBar.IHandler>(() => new ProgressBarHandler());
@@ -103,9 +104,14 @@ namespace Eto.Wpf
 			p.Add<TextArea.IHandler>(() => new TextAreaHandler());
 			p.Add<TextBox.IHandler>(() => new TextBoxHandler());
 			p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
+#pragma warning disable CS0618 // Type or member is obsolete
 			p.Add<TreeView.IHandler>(() => new TreeViewHandler());
+#pragma warning restore CS0618 // Type or member is obsolete
 			//p.Add<WebView.IHandler>(()  => new WebViewHandler ());
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
+			p.Add<Stepper.IHandler>(() => new StepperHandler());
+			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
+			p.Add<FilePicker.IHandler>(() => new ThemedFilePickerHandler());
 			
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
@@ -128,25 +134,31 @@ namespace Eto.Wpf
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 			
 			// Forms
+			p.Add<AboutDialog.IHandler>(() => new ThemedAboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
-			//p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
-			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandlerXceed());
+			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
 			p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
+			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
 			p.Add<SaveFileDialog.IHandler>(() => new SaveFileDialogHandler());
-			p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
+			if (Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialog.IsPlatformSupported)
+				p.Add<SelectFolderDialog.IHandler>(() => new VistaSelectFolderDialogHandler());
+			else
+				p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
 			p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
+			p.Add<TrayIndicator.IHandler>(() => new TrayIndicatorHandler());
+			p.Add<Notification.IHandler>(() => new NotificationHandler());
 			
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

@@ -1,3 +1,4 @@
+using System;
 using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Printing
@@ -61,13 +62,20 @@ namespace Eto.GtkSharp.Forms.Printing
 
 		public Range<int> SelectedPageRange
 		{
-			get {
-				int num_ranges;
-				return Control.GetPageRanges (out num_ranges).ToEto ();
+			get
+			{
+				int num_pages;
+
+				var pointer = NativeMethods.gtk_print_settings_get_page_ranges(Control.Handle, out num_pages);
+				var array = new Gtk.PageRange[num_pages];
+
+				for (int i = 0; i < num_pages; i++)
+					array[i] = Gtk.PageRange.New(pointer + i * IntPtr.Size);
+				GLib.Marshaller.Free(pointer);
+
+				return array.ToEto();
 			}
-			set {
-				Control.SetPageRanges(value.ToGtkPageRange (), 1);
-			}
+			set { Control.SetPageRanges(value.ToGtkPageRange (), 1); }
 		}
 
 		public PrintSelection PrintSelection {

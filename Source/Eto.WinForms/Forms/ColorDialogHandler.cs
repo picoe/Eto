@@ -1,43 +1,51 @@
 using System;
-using SWF = System.Windows.Forms;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.WinForms.Forms
 {
-	public class ColorDialogHandler : WidgetHandler<SWF.ColorDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
+	public class ColorDialogHandler : WidgetHandler<swf.ColorDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
 	{
 		static int[] customColors;
-		public ColorDialogHandler ()
+		public ColorDialogHandler()
 		{
-			this.Control = new SWF.ColorDialog ();
-			this.Control.AnyColor = true;
-			this.Control.AllowFullOpen = true;
-			this.Control.FullOpen = true;
+			Control = new swf.ColorDialog
+			{
+				AnyColor = true,
+				AllowFullOpen = true,
+				FullOpen = true
+			};
 		}
-		
-		public Color Color {
-			get { return Control.Color.ToEto (); }
-			set { Control.Color = value.ToSD (); }
-		}
-		
-		public DialogResult ShowDialog (Window parent)
+
+		public Color Color
 		{
-			SWF.DialogResult result;
+			get { return Control.Color.ToEto(); }
+			set { Control.Color = value.ToSD(); }
+		}
+
+		public bool AllowAlpha { get; set; }
+
+		public bool SupportsAllowAlpha => false;
+
+		public DialogResult ShowDialog(Window parent)
+		{
+			swf.DialogResult result;
 			if (customColors != null) Control.CustomColors = customColors;
-			
+
 			if (parent != null)
-                result = Control.ShowDialog(parent.GetContainerControl());
+				result = Control.ShowDialog(parent.GetContainerControl());
 			else
-				result = Control.ShowDialog ();
-			
-			if (result == System.Windows.Forms.DialogResult.OK) {
+				result = Control.ShowDialog();
+
+			if (result == swf.DialogResult.OK)
+			{
 				Callback.OnColorChanged(Widget, EventArgs.Empty);
 			}
-			
+
 			customColors = Control.CustomColors;
-			
-			return result.ToEto ();
+
+			return result.ToEto();
 		}
 	}
 }

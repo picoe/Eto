@@ -16,19 +16,26 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoDataGrid : swc.DataGrid
 	{
+		public IWpfFrameworkElement Handler { get; set; }
+
 		public new void BeginUpdateSelectedItems()
 		{
 			base.BeginUpdateSelectedItems();
 		}
+
 		public new void EndUpdateSelectedItems()
 		{
 			base.EndUpdateSelectedItems();
 		}
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
 	}
 
 
-	public abstract class GridHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, Grid.IHandler, IGridHandler
-		where TControl : EtoDataGrid
+	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
 		where TWidget : Grid
 		where TCallback : Grid.ICallback
 	{
@@ -37,10 +44,15 @@ namespace Eto.Wpf.Forms.Controls
 		protected bool SkipSelectionChanged { get; set; }
 		protected swc.DataGridColumn CurrentColumn { get; set; }
 
+		protected override sw.Size DefaultSize => new sw.Size(100, 100);
+		public override bool UseMousePreview => true;
+		public override bool UseKeyPreview => true;
+
 		protected GridHandler()
 		{
-			Control = (TControl)new EtoDataGrid
+			Control = new EtoDataGrid
 			{
+				Handler = this,
 				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
 				AutoGenerateColumns = false,
 				CanUserDeleteRows = false,
@@ -163,7 +175,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<TControl, TWidget, TCallback> Handler { get; set; }
+			public GridHandler<TWidget, TCallback> Handler { get; set; }
 
 			public override void AddItem(GridColumn item)
 			{
@@ -326,9 +338,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				get
 				{
-					if (font == null)
-						font = new Font(new FontHandler(Cell));
-					return font;
+					return font ?? (font = Cell.GetEtoFont());
 				}
 				set
 				{
@@ -341,12 +351,11 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				get
 				{
-					var brush = Cell.Background as swm.SolidColorBrush;
-					return brush != null ? brush.Color.ToEto() : Colors.White;
+					return Cell.Background.ToEtoColor();
 				}
 				set
 				{
-					Cell.Background = new swm.SolidColorBrush(value.ToWpf());
+					Cell.Background = value.ToWpfBrush(Cell.Background);
 				}
 			}
 
@@ -354,12 +363,11 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				get
 				{
-					var brush = Cell.Foreground as swm.SolidColorBrush;
-					return brush != null ? brush.Color.ToEto() : Colors.Black;
+					return Cell.Foreground.ToEtoColor();
 				}
 				set
 				{
-					Cell.Foreground = new swm.SolidColorBrush(value.ToWpf());
+					Cell.Foreground = value.ToWpfBrush(Cell.Foreground);
 				}
 			}
 		}
@@ -381,20 +389,20 @@ namespace Eto.Wpf.Forms.Controls
 			RestoreColumnFocus();
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
 			SaveColumnFocus();
 			Control.Items.Refresh();
 			RestoreColumnFocus();
-			base.Invalidate();
+			base.Invalidate(invalidateChildren);
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			SaveColumnFocus();
 			Control.Items.Refresh();
 			RestoreColumnFocus();
-			base.Invalidate(rect);
+			base.Invalidate(rect, invalidateChildren);
 		}
 
 		public virtual void FormatCell(IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
@@ -483,6 +491,14 @@ namespace Eto.Wpf.Forms.Controls
 						break;
 				}
 			}
+		}
+
+		static object Border_Key = new object();
+
+		public BorderType Border
+		{
+			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
+			set { Widget.Properties.Set(Border, value, () => Control.SetEtoBorderType(value)); }
 		}
 
 		public void ReloadData(IEnumerable<int> rows)

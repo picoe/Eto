@@ -2,16 +2,51 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
 using Eto.Drawing;
+using System;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
+	public class EtoProgressBar : swc.ProgressBar, IEtoWpfControl
 	{
-		protected override Size DefaultSize { get { return new Size(-1, 22); } }
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+
+		bool _isIndeterminate;
+		public new bool IsIndeterminate
+		{
+			get { return _isIndeterminate; }
+			set
+			{
+				if (_isIndeterminate != value)
+				{
+					if (IsLoaded)
+						base.IsIndeterminate = value;
+					_isIndeterminate = value;
+				}
+			}
+		}
+
+		public EtoProgressBar()
+		{
+			// WPF will keep posting to the message loop after a dialog is closed with IsIndeterminate = true
+			Loaded += (sender, e) => base.IsIndeterminate = IsIndeterminate;
+			Unloaded += (sender, e) => base.IsIndeterminate = false;
+		}
+	}
+
+	public class ProgressBarHandler : WpfControl<EtoProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
+	{
+		protected override sw.Size DefaultSize => new sw.Size(double.NaN, 22);
 
 		public ProgressBarHandler()
 		{
-			Control = new swc.ProgressBar {
+			Control = new EtoProgressBar
+			{
+				Handler = this,
 				Minimum = 0,
 				Maximum = 100,
 			};

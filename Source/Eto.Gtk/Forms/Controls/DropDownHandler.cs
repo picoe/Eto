@@ -4,6 +4,8 @@ using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 using System.Collections;
 using System.Collections.Generic;
+using Gtk;
+using GLib;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -11,8 +13,11 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		protected override void Create()
 		{
-			listStore = new Gtk.ListStore(typeof(string));
+			listStore = new Gtk.ListStore(typeof(string), typeof(Gdk.Pixbuf));
 			Control = new Gtk.ComboBox(listStore);
+			var imageCell = new Gtk.CellRendererPixbuf();
+			Control.PackStart(imageCell, false);
+			Control.SetAttributes(imageCell, "pixbuf", 1);
 			text = new Gtk.CellRendererText();
 			Control.PackStart(text, false);
 			Control.SetAttributes(text, "text", 0);
@@ -21,9 +26,9 @@ namespace Eto.GtkSharp.Forms.Controls
 	}
 
 	public abstract class DropDownHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, DropDown.IHandler
-		where TControl: Gtk.ComboBox
-		where TWidget: DropDown
-		where TCallback: DropDown.ICallback
+		where TControl : Gtk.ComboBox
+		where TWidget : DropDown
+		where TCallback : DropDown.ICallback
 	{
 		protected Font font;
 		protected CollectionHandler collection;
@@ -53,14 +58,49 @@ namespace Eto.GtkSharp.Forms.Controls
 			protected int lastIndex = -1;
 			public new DropDownHandler<TControl, TWidget, TCallback> Handler { get { return (DropDownHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
-			public virtual void HandleChanged(object sender, EventArgs e)
+			public virtual void HandleChanged(object sender, System.EventArgs e)
 			{
 				var newIndex = Handler.SelectedIndex;
 				if (newIndex != lastIndex)
 				{
-					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, System.EventArgs.Empty);
 					lastIndex = newIndex;
 				}
+			}
+
+#if GTK2
+			internal void HandlePopupShownChanged(object o, NotifyArgs args)
+			{
+				if (Handler.Control.PopupShown)
+					Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+				else
+					Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+			}
+#elif GTK3
+			[GLib.ConnectBefore]
+			public virtual void HandlePoppedUp(object sender, System.EventArgs e)
+			{
+				Handler.Callback.OnDropDownOpening(Handler.Widget, System.EventArgs.Empty);
+			}
+
+			public virtual void HandlePoppedDown(object o, PoppedDownArgs args)
+			{
+				Handler.Callback.OnDropDownClosed(Handler.Widget, System.EventArgs.Empty);
+			}
+#endif
+		}
+
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				if (value.Width == -1)
+					text.Ellipsize = Pango.EllipsizeMode.None;
+				else
+					text.Ellipsize = Pango.EllipsizeMode.End;
+
+				base.Size = value;
 			}
 		}
 
@@ -102,15 +142,21 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public override void AddItem(object item)
 			{
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.listStore.AppendValues(binding.GetValue(item));
+				Handler.listStore.AppendValues(GetValues(item));
 				Handler.Control.QueueResize();
+			}
+
+			object[] GetValues(object dataItem)
+			{
+				return new object[] {
+					Handler.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty,
+					Handler.Widget.ItemImageBinding?.GetValue(dataItem).ToGdk()
+				};
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.listStore.InsertWithValues(index, binding.GetValue(item));
+				Handler.listStore.InsertWithValues(index, GetValues(item));
 				Handler.Control.QueueResize();
 			}
 
@@ -163,6 +209,31 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.SetBase(value);
 				if (Widget.Loaded)
 					Control.QueueDraw();
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+#if GTK2
+				case DropDown.DropDownOpeningEvent:
+					Control.AddNotification("popup-shown", Connector.HandlePopupShownChanged);
+					break;
+				case DropDown.DropDownClosedEvent:
+					HandleEvent(DropDown.DropDownOpeningEvent);
+					break;
+#elif GTK3
+				case DropDown.DropDownOpeningEvent:
+					Control.PoppedUp += Connector.HandlePoppedUp;
+					break;
+				case DropDown.DropDownClosedEvent:
+					Control.PoppedDown += Connector.HandlePoppedDown;
+					break;
+#endif
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 	}

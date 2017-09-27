@@ -15,7 +15,7 @@ namespace Eto.Test.Sections.Behaviors
 				layout.Add(options);
 
 			layout.BeginVertical();
-			layout.AddRow(null, LabelControl(), ButtonControl(), new Panel(), null);
+			layout.AddRow(null, LabelControl(), ButtonControl(), LinkButtonControl(), new Panel(), null);
 			layout.AddRow(null, TextBoxControl(), PasswordBoxControl());
 
 			layout.BeginHorizontal();
@@ -26,18 +26,22 @@ namespace Eto.Test.Sections.Behaviors
 			layout.EndHorizontal();
 
 			layout.AddRow(null, CheckBoxControl(), RadioButtonControl());
-			layout.AddRow(null, DateTimeControl(), NumericUpDownControl());
-			layout.AddRow(null, DropDownControl(), ComboBoxControl());
+			layout.AddRow(null, DateTimeControl(), NumericStepperControl(), DropDownControl(), ComboBoxControl());
 
 			layout.BeginHorizontal();
 			layout.Add(null);
 			layout.Add(ColorPickerControl());
-			if (Platform.Supports<GroupBox>())
-				layout.Add(GroupBoxControl());
+			layout.Add(SliderControl());
 			layout.EndHorizontal();
 
-			layout.AddRow(null, LinkButtonControl(), SliderControl());
-			layout.AddRow(null, DrawableControl(), ImageViewControl());
+			layout.BeginHorizontal();
+			layout.Add(null);
+			layout.Add(DrawableControl());
+			layout.Add(ImageViewControl());
+			if (Platform.Supports<GroupBox>())
+				layout.Add(GroupBoxControl());
+			layout.Add(TableLayoutControl());
+			layout.EndHorizontal();
 			layout.EndVertical();
 			layout.Add(null);
 
@@ -107,9 +111,9 @@ namespace Eto.Test.Sections.Behaviors
 			return control;
 		}
 
-		Control NumericUpDownControl()
+		Control NumericStepperControl()
 		{
-			var control = new NumericUpDown();
+			var control = new NumericStepper();
 			LogEvents(control);
 			return control;
 		}
@@ -145,6 +149,26 @@ namespace Eto.Test.Sections.Behaviors
 			LogEvents(control);
 			return control;
 		}
+
+		Control TableLayoutControl()
+		{
+			Func<Panel> createPanel = () => new Panel { Size = new Size(50, 20), BackgroundColor = Colors.Green };
+
+			var control = new TableLayout(
+				new TableRow(createPanel(), createPanel()),
+				new TableRow(createPanel(), createPanel()),
+				new TableRow(createPanel(), createPanel()),
+				new TableRow(createPanel(), createPanel())
+			);
+
+			control.Spacing = new Size(5, 5);
+			control.Padding = 10;
+			control.BackgroundColor = Colors.Blue;
+
+			LogEvents(control);
+			return control;
+		}
+
 
 		Control DrawableControl()
 		{

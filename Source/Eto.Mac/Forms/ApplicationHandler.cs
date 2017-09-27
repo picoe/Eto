@@ -3,6 +3,7 @@ using Eto.Forms;
 using Eto.Mac.Forms.Actions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 #if XAMMAC2
 using AppKit;
@@ -47,6 +48,21 @@ namespace Eto.Mac.Forms
 		public bool AddFullScreenMenuItem { get; set; }
 
 		public bool AllowClosingMainForm { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether native macOS crash reports are generated for uncaught .NET exceptions.
+		/// </summary>
+		/// <remarks>
+		/// By default, this will be true when NOT debugging in Xamarin Studio.
+		/// 
+		/// The crash report will also include the .NET exception details, which can be extremely useful to determine 
+		/// where crashes occurred.
+		/// 
+		/// When attaching to existing applications, this is assumed to be dealt with by native code and will not be 
+		/// enabled regardless.
+		/// </remarks>
+		/// <value><c>true</c> to enable native crash reports; otherwise, <c>false</c>.</value>
+		public bool EnableNativeCrashReport { get; set; } = !System.Diagnostics.Debugger.IsAttached;
 
 		public ApplicationHandler()
 		{
@@ -125,8 +141,7 @@ namespace Eto.Mac.Forms
 
 		public void Invoke(Action action)
 		{
-			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread)
+			if (NSThread.IsMain)
 				action();
 			else
 			{
@@ -166,6 +181,9 @@ namespace Eto.Mac.Forms
 		{
 			if (!attached)
 			{
+				if (EnableNativeCrashReport)
+					CrashReporter.Attach();
+
 				EtoBundle.Init();
 
 				if (Control.Delegate == null)

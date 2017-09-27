@@ -10,8 +10,13 @@ using System.Collections.Generic;
 
 namespace Eto.Wpf.Forms
 {
+	public interface IEtoWpfControl
+	{
+		IWpfFrameworkElement Handler { get; set; }
+	}
 	public interface IWpfFrameworkElement
 	{
+		sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure);
 		sw.Size GetPreferredSize(sw.Size constraint);
 		sw.FrameworkElement ContainerControl { get; }
 		void SetScale(bool xscale, bool yscale);
@@ -76,7 +81,6 @@ namespace Eto.Wpf.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
-		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
 		Cursor cursor;
 		sw.Size parentMinimumSize;
@@ -94,9 +98,39 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		protected sw.Size PreferredSize { get { return preferredSize; } set { preferredSize = value; } }
+		public virtual sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
+		{
+			// enforce eto-style sizing to wpf controls
+			var size = UserPreferredSize;
+			var control = ContainerControl;
 
-		protected virtual Size DefaultSize { get { return Size.Empty; } }
+			// Constrain content to the preferred size of this control, if specified.
+			var desired = measure(constraint.IfInfinity(size.InfinityIfNan()));
+			// Desired size should not be smaller than default (minimum) size.
+			// ensures buttons, text box, etc have a minimum size
+			var defaultSize = DefaultSize.ZeroIfNan();
+			desired = desired.Max(defaultSize);
+
+			// Desired should also not be bigger than default size if we have no constraint.
+			// Without it, controls like TextArea, GridView, etc will grow to their content.
+			if (double.IsInfinity(constraint.Width) && defaultSize.Width > 0)
+				desired.Width = defaultSize.Width;
+			if (double.IsInfinity(constraint.Height) && defaultSize.Height > 0)
+				desired.Height = defaultSize.Height;
+
+			// use the user preferred size, and ensure it's not larger than available size
+			size = size.IfNaN(desired);
+			size = size.Min(constraint);
+
+			// restrict to the min/max sizes
+			size = size.Max(control.GetMinSize());
+			size = size.Min(control.GetMaxSize());
+			return size;
+		}
+
+		protected sw.Size UserPreferredSize { get; set; } = new sw.Size(double.NaN, double.NaN);
+
+		protected virtual sw.Size DefaultSize => new sw.Size(double.NaN, double.NaN);
 
 		/// <summary>
 		/// This property, when set to true, will prevent the control from growing/shrinking based on user input.
@@ -118,8 +152,11 @@ namespace Eto.Wpf.Forms
 			get { return parentMinimumSize; }
 			set
 			{
-				parentMinimumSize = value;
-				SetSize();
+				if (parentMinimumSize != value)
+				{
+					parentMinimumSize = value;
+					SetSize();
+				}
 			}
 		}
 
@@ -132,14 +169,15 @@ namespace Eto.Wpf.Forms
 				if (newSize != null)
 					return newSize.Value;
 				if (!Widget.Loaded)
-					return preferredSize.ToEtoSize();
+					return UserPreferredSize.ToEtoSize();
 				return Control.GetSize();
 			}
 			set
 			{
-				preferredSize = value.ToWpf();
+				UserPreferredSize = value.ToWpf();
 				SetSize();
-                UpdatePreferredSize();
+				ContainerControl.InvalidateMeasure();
+				UpdatePreferredSize();
 			}
 		}
 
@@ -160,7 +198,7 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void SetSize()
 		{
-			var defaultSize = DefaultSize;
+			var defaultSize = DefaultSize.ZeroIfNan();
 			if (XScale && Control.IsLoaded)
 			{
 				ContainerControl.Width = double.NaN;
@@ -168,13 +206,13 @@ namespace Eto.Wpf.Forms
 			}
 			else
 			{
-				var containerWidth = PreventUserResize && double.IsNaN(preferredSize.Width)
+				var containerWidth = PreventUserResize && double.IsNaN(UserPreferredSize.Width)
 					? defaultSize.Width <= 0
 						? double.NaN
 						: defaultSize.Width
-					: preferredSize.Width;
+					: UserPreferredSize.Width;
 				ContainerControl.Width = Math.Max(containerWidth, parentMinimumSize.Width);
-				ContainerControl.MinWidth = Math.Max(0, double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
+				ContainerControl.MinWidth = Math.Max(0, double.IsNaN(UserPreferredSize.Width) ? defaultSize.Width : UserPreferredSize.Width);
 			}
 
 			if (YScale && Control.IsLoaded)
@@ -184,31 +222,20 @@ namespace Eto.Wpf.Forms
 			}
 			else
 			{
-				var containerHeight = PreventUserResize && double.IsNaN(preferredSize.Height)
+				var containerHeight = PreventUserResize && double.IsNaN(UserPreferredSize.Height)
 					? defaultSize.Height <= 0
 						? double.NaN
 						: defaultSize.Height
-					: preferredSize.Height;
+					: UserPreferredSize.Height;
 				ContainerControl.Height = Math.Max(containerHeight, parentMinimumSize.Height);
-				ContainerControl.MinHeight = Math.Max(0, double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
+				ContainerControl.MinHeight = Math.Max(0, double.IsNaN(UserPreferredSize.Height) ? defaultSize.Height : UserPreferredSize.Height);
 			}
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)
 		{
-			var size = preferredSize;
-            var margin = ContainerControl.Margin.Size();
-
-            if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
-			{
-                ContainerControl.Measure(constraint);
-                var desired = ContainerControl.DesiredSize.Subtract(margin);
-                desired = desired.Max(DefaultSize.ToWpf().ZeroIfNan());
-                size = size.IfNaN(desired);
-            }
-            size = size.Max(ContainerControl.GetMinSize());
-            size = size.Add(margin);
-            return size;
+			ContainerControl.Measure(constraint);
+			return ContainerControl.DesiredSize;
 		}
 
 		public virtual bool Enabled
@@ -233,12 +260,12 @@ namespace Eto.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(bool invalidateChildren)
 		{
 			Control.InvalidateVisual();
 		}
 
-		public virtual void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			Control.InvalidateVisual();
 		}
@@ -278,10 +305,10 @@ namespace Eto.Wpf.Forms
 
 		public bool Visible
 		{
-			get { return Control.Visibility != sw.Visibility.Collapsed; }
+			get { return ContainerControl.Visibility != sw.Visibility.Collapsed; }
 			set
 			{
-				Control.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
+				ContainerControl.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
                 UpdatePreferredSize();
             }
         }
@@ -507,6 +534,8 @@ namespace Eto.Wpf.Forms
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			SetSize();
+			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
+				OnLogicalPixelSizeChanged();
 		}
 
 		public virtual void OnPreLoad(EventArgs e)
@@ -521,7 +550,6 @@ namespace Eto.Wpf.Forms
 				if (parent != null)
 				{
 					parent.LogicalPixelSizeChanged += Parent_PixelSizeChanged;
-					OnLogicalPixelSizeChanged();
 				}
 			}
 		}
@@ -579,12 +607,18 @@ namespace Eto.Wpf.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			return Control.IsLoaded ? Control.PointFromScreen(point.ToWpf()).ToEto() : point;
+			if (!Control.IsLoaded)
+				return point;
+
+			point = point.LogicalToScreen();
+			return Control.PointFromScreen(point.ToWpf()).ToEto();
 		}
 
 		public PointF PointToScreen(PointF point)
 		{
-			return Control.IsLoaded ? Control.PointToScreen(point.ToWpf()).ToEto() : point;
+			if (!Control.IsLoaded)
+				return point;
+			return Control.PointToScreen(point.ToWpf()).ToEtoPoint().ScreenToLogical();
 		}
 
 		public Point Location

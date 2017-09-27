@@ -33,11 +33,7 @@ namespace Eto.Wpf.Forms.Controls
 			get { return (SHDocVw.WebBrowser_V1)Browser.ActiveXInstance; }
 		}
 
-		public override sw.Size GetPreferredSize(sw.Size constraint)
-		{
-			var size = base.GetPreferredSize(constraint);
-			return new sw.Size(Math.Min(size.Width, 100), Math.Min(size.Height, 100));
-		}
+		protected override sw.Size DefaultSize => new sw.Size(100, 100);
 
 		public void AttachEvent(SHDocVw.WebBrowser_V1 control, string handler)
 		{

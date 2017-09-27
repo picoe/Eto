@@ -18,6 +18,8 @@ namespace Eto.GtkSharp.Forms
 
 	public class GtkShrinkableVBox : Gtk.VBox
 	{
+		public bool Resizable;
+
 		public GtkShrinkableVBox()
 		{
 		}
@@ -32,13 +34,17 @@ namespace Eto.GtkSharp.Forms
 		protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
 		{
 			base.OnGetPreferredWidth(out minimum_width, out natural_width);
-			minimum_width = 0;
+
+			if (Resizable)
+				minimum_width = 0;
 		}
 
 		protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
 		{
 			base.OnGetPreferredHeight(out minimum_height, out natural_height);
-			minimum_height = 0;
+
+			if (Resizable)
+				minimum_height = 0;
 		}
 #endif
 	}
@@ -53,7 +59,7 @@ namespace Eto.GtkSharp.Forms
 		readonly Gtk.VBox actionvbox;
 		readonly Gtk.Box topToolbarBox;
 		Gtk.Box menuBox;
-		Gtk.Box containerBox;
+		GtkShrinkableVBox containerBox;
 		readonly Gtk.Box bottomToolbarBox;
 		MenuBar menuBar;
 		Icon icon;
@@ -61,13 +67,17 @@ namespace Eto.GtkSharp.Forms
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		Point? currentLocation;
-		Size? initialSize;
+		Size minimumSize;
 		WindowState state;
 		WindowStyle style;
 		bool topmost;
+		bool resizable;
+		Size? clientSize;
 
 		protected GtkWindow()
 		{
+			resizable = true;
+
 			vbox = new Gtk.VBox();
 			actionvbox = new Gtk.VBox();
 
@@ -75,6 +85,7 @@ namespace Eto.GtkSharp.Forms
 			topToolbarBox = new Gtk.VBox();
 
 			containerBox = new GtkShrinkableVBox();
+			containerBox.Resizable = true;
 			containerBox.Visible = true;
 
 			bottomToolbarBox = new Gtk.VBox();
@@ -97,10 +108,11 @@ namespace Eto.GtkSharp.Forms
 
 		public override Size MinimumSize
 		{
-			get { return base.MinimumSize; }
+			get { return minimumSize; }
 			set
 			{
-				base.MinimumSize = value;
+				minimumSize = value;
+				SetMinMax(null);
 			}
 		}
 
@@ -121,16 +133,43 @@ namespace Eto.GtkSharp.Forms
 
 		public bool Resizable
 		{
-			get { return Control.Resizable; }
+			get { return resizable; }
 			set
 			{
-				Control.Resizable = value; 
-				#if GTK2
-				Control.AllowGrow = value;
-				#else
-				Control.HasResizeGrip = value;
-				#endif
+				containerBox.Resizable = value;
+				resizable = value;
+				SetMinMax(null);
 			}
+		}
+
+		private void SetMinMax(Size? size)
+		{
+			var geom = new Gdk.Geometry();
+			geom.MinWidth = minimumSize.Width;
+			geom.MinHeight = minimumSize.Height;
+			geom.MaxWidth = 9999999;
+			geom.MaxHeight = 9999999;
+
+			if (!resizable)
+			{
+				if (size != null)
+				{
+					geom.MinWidth = geom.MaxWidth = size.Value.Width;
+					geom.MinHeight = geom.MaxHeight = size.Value.Height;
+				}
+				else if (Control.IsRealized)
+				{
+					geom.MinWidth = geom.MaxWidth = Control.Allocation.Width;
+					geom.MinHeight = geom.MaxHeight = Control.Allocation.Height;
+				}
+				else
+				{
+					geom.MinWidth = geom.MaxWidth = Control.DefaultWidth;
+					geom.MinHeight = geom.MaxHeight = Control.DefaultHeight;
+				}
+			}
+
+			Control.SetGeometryHints(Control, geom, Gdk.WindowHints.MinSize | Gdk.WindowHints.MaxSize);
 		}
 
 		public bool Minimizable { get; set; }
@@ -185,7 +224,7 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				var window = Control.GetWindow();
-				return window != null ? window.FrameExtents.Size.ToEto() : initialSize ?? Control.DefaultSize.ToEto();
+				return window != null ? window.FrameExtents.Size.ToEto() : Control.DefaultSize.ToEto();
 			}
 			set
 			{
@@ -197,48 +236,11 @@ namespace Eto.GtkSharp.Forms
 				}
 				else
 				{
-					Control.Resize(value.Width, value.Height);
-					initialSize = value;
+					clientSize = null;
+					Control.SetDefaultSize(value.Width, value.Height);
 				}
+				SetMinMax(value);
 			}
-		}
-
-		void HandleControlRealized(object sender, EventArgs e)
-		{
-			var allocation = Control.Allocation.Size;
-			var minSize = MinimumSize;
-
-			if (initialSize != null)
-			{
-				var gdkWindow = Control.GetWindow();
-				var frameExtents = gdkWindow.FrameExtents.Size.ToEto();
-				// HACK: get twice to get 'real' size? Ubuntu 14.04 returns inflated size the first call.
-				frameExtents = gdkWindow.FrameExtents.Size.ToEto();
-
-				var diff = frameExtents - Control.Allocation.Size.ToEto();
-				allocation.Width = initialSize.Value.Width - diff.Width;
-				allocation.Height = initialSize.Value.Height - diff.Height;
-				initialSize = null;
-			}
-
-			if (Resizable)
-			{
-				Control.Resize(allocation.Width, allocation.Height);
-			}
-			else
-			{
-				// when not resizable, Control.Resize doesn't work
-				minSize.Width = Math.Max(minSize.Width, allocation.Width);
-				minSize.Height = Math.Max(minSize.Height, allocation.Height);
-			}
-
-			// set initial minimum size
-			Control.SetSizeRequest(minSize.Width, minSize.Height);
-
-			containerBox.SetSizeRequest(-1, -1);
-
-			// only do this the first time
-			Control.Realized -= HandleControlRealized;
 		}
 
 		public override Size ClientSize
@@ -253,12 +255,22 @@ namespace Eto.GtkSharp.Forms
 				{
 					var diff = vbox.Allocation.Size.ToEto() - containerBox.Allocation.Size.ToEto();
 					Control.Resize(value.Width + diff.Width, value.Height + diff.Height);
+					SetMinMax(value + diff);
 				}
 				else
 				{
-					containerBox.SetSizeRequest(value.Width, value.Height);
+					clientSize = value;
+					Control.SetDefaultSize(value.Width, value.Height);
+					SetMinMax(value);
 				}
 			}
+		}
+
+		private void Control_Realized(object sender, EventArgs e)
+		{
+			Control.Realized -= Control_Realized;
+			if (clientSize.HasValue)
+				ClientSize = clientSize.Value;
 		}
 
 		protected override void Initialize()
@@ -270,10 +282,7 @@ namespace Eto.GtkSharp.Forms
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
 			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
 			Control.SetSizeRequest(-1, -1);
-			Control.Realized += HandleControlRealized;
-			#if GTK2
-			Control.AllowShrink = false;
-			#endif
+			Control.Realized += Control_Realized;
 		}
 
 		public override void AttachEvent(string id)

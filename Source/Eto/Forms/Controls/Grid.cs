@@ -441,6 +441,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the border type
+		/// </summary>
+		/// <value>The border.</value>
+		public BorderType Border
+		{
+			get { return Handler.Border; }
+			set { Handler.Border = value; }
+		}
+
+		/// <summary>
 		/// Selects the row to the specified <paramref name="row"/>, clearing other selections
 		/// </summary>
 		/// <param name="row">Row to select</param>
@@ -652,6 +662,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The grid line style.</value>
 			GridLines GridLines { get; set; }
+
+			/// <summary>
+			/// Gets or sets the border type
+			/// </summary>
+			/// <value>The border.</value>
+			BorderType Border { get; set; }
 
 			/// <summary>
 			/// Selects the row to the specified <paramref name="row"/>, clearing other selections

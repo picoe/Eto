@@ -144,36 +144,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public BorderType Border
 		{
-			get
-			{
-				switch (Control.BorderType)
-				{
-					case NSBorderType.BezelBorder:
-						return BorderType.Bezel;
-					case NSBorderType.LineBorder:
-						return BorderType.Line;
-					case NSBorderType.NoBorder:
-						return BorderType.None;
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			get { return Control.BorderType.ToEto(); }
 			set
 			{
-				switch (value)
-				{
-					case BorderType.Bezel:
-						Control.BorderType = NSBorderType.BezelBorder;
-						break;
-					case BorderType.Line:
-						Control.BorderType = NSBorderType.LineBorder;
-						break;
-					case BorderType.None:
-						Control.BorderType = NSBorderType.NoBorder;
-						break;
-					default:
-						throw new NotSupportedException();
-				}
+				Control.BorderType = value.ToNS();
 				LayoutIfNeeded();
 			}
 		}

@@ -9,35 +9,78 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class EtoWatermarkTextBox : mwc.WatermarkTextBox, IEtoWpfControl
 	{
-		protected override Size DefaultSize { get { return new Size(100, -1); } }
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
+	public class TextBoxHandler : TextBoxHandler<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
+	{
+		protected override swc.TextBox TextBox => Control;
+
+		public TextBoxHandler()
+		{
+			Control = new EtoWatermarkTextBox { Handler = this };
+		}
+
+		public override string PlaceholderText
+		{
+			get { return Control.Watermark as string; }
+			set { Control.Watermark = value; }
+		}
+
+	}
+
+	public abstract class TextBoxHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextBox.IHandler
+		where TControl : swc.Control
+		where TWidget : TextBox
+		where TCallback: TextBox.ICallback
+	{
+		protected override sw.Size DefaultSize => new sw.Size(100, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }
 
-		static sw.Thickness DefaultBorderThickness = new mwc.DateTimePicker().BorderThickness;
+		protected abstract swc.TextBox TextBox { get; }
+
+		protected virtual swc.Control BorderControl => TextBox;
 
 		public override bool ShowBorder
 		{
-			get { return !Control.BorderThickness.ToEto().IsZero; }
-			set { Control.BorderThickness = value ? DefaultBorderThickness : new sw.Thickness(0); }
+			get { return BorderControl.ReadLocalValue(swc.Control.BorderThicknessProperty) == sw.DependencyProperty.UnsetValue; }
+			set
+			{
+				if (value)
+					BorderControl.ClearValue(swc.Control.BorderThicknessProperty);
+				else
+					BorderControl.BorderThickness = new sw.Thickness(0);
+			}
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get { return TextBox.TextAlignment.ToEto(); }
+			set { TextBox.TextAlignment = value.ToWpfTextAlignment(); }
 		}
 
 		public TextBoxHandler ()
 		{
-			Control = new mwc.WatermarkTextBox();
-			Control.GotKeyboardFocus += Control_GotKeyboardFocus;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			TextBox.GotKeyboardFocus += Control_GotKeyboardFocus;
 		}
 
 		void Control_GotKeyboardFocus(object sender, sw.Input.KeyboardFocusChangedEventArgs e)
 		{
-			Control.SelectAll();
-			Control.GotKeyboardFocus -= Control_GotKeyboardFocus;
-		}
-
-		public override sw.Size GetPreferredSize(sw.Size constraint)
-		{
-			return base.GetPreferredSize(new sw.Size(0, double.PositiveInfinity));
+			TextBox.SelectAll();
+			TextBox.GotKeyboardFocus -= Control_GotKeyboardFocus;
 		}
 
 		public override bool UseMousePreview { get { return true; } }
@@ -46,46 +89,52 @@ namespace Eto.Wpf.Forms.Controls
 
 		static Func<char, bool> testIsNonWord = ch => char.IsWhiteSpace(ch) || char.IsPunctuation(ch);
 
+		static Clipboard clipboard;
+
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
 				case TextControl.TextChangedEvent:
-					Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
+					TextBox.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
 					break;
-				case TextBox.TextChangingEvent:
-					var clipboard = new Clipboard();
-					Control.PreviewTextInput += (sender, e) =>
+				case Eto.Forms.TextBox.TextChangingEvent:
+					if (clipboard == null)
+						clipboard = new Clipboard();
+					TextBox.PreviewTextInput += (sender, e) =>
 					{
 						var tia = new TextChangingEventArgs(e.Text, Selection);
 						Callback.OnTextChanging(Widget, tia);
 						e.Handled = tia.Cancel;
 					};
-					Control.AddHandler(swi.CommandManager.PreviewExecutedEvent, new swi.ExecutedRoutedEventHandler((sender, e) =>
+					TextBox.AddHandler(swi.CommandManager.PreviewExecutedEvent, new swi.ExecutedRoutedEventHandler((sender, e) =>
 					{
-						if (e.Command == swi.ApplicationCommands.Cut || e.Command == swi.ApplicationCommands.Delete)
+						var command = e.Command as swi.RoutedUICommand;
+						if (command == null)
+							return;
+						if (command == swi.ApplicationCommands.Cut || command == swi.ApplicationCommands.Delete)
 						{
-							var text = Control.SelectedText;
+							var text = TextBox.SelectedText;
 							var tia = new TextChangingEventArgs(string.Empty, Selection);
 							Callback.OnTextChanging(Widget, tia);
 							if (tia.Cancel)
 							{
-								if (e.Command == swi.ApplicationCommands.Cut)
+								if (command == swi.ApplicationCommands.Cut)
 									clipboard.Text = text;
 								e.Handled = true;
 							}
 						}
-						else if (e.Command == swi.ApplicationCommands.Paste)
+						else if (command == swi.ApplicationCommands.Paste)
 						{
 							var text = clipboard.Text;
 							var tia = new TextChangingEventArgs(text, Selection);
 							Callback.OnTextChanging(Widget, tia);
 							e.Handled = tia.Cancel;
 						}
-						else if (e.Command == swd.EditingCommands.Delete || e.Command == swd.EditingCommands.Backspace)
+						else if (command == swd.EditingCommands.Delete || command == swd.EditingCommands.Backspace)
 						{
 							var range = Selection;
 							if (range.Length() == 0)
-								range = new Range<int>(e.Command == swd.EditingCommands.Delete ? range.Start : range.Start - 1);
+								range = new Range<int>(command == swd.EditingCommands.Delete ? range.Start : range.Start - 1);
 							if (range.Start >= 0)
 							{
 								var tia = new TextChangingEventArgs(string.Empty, range);
@@ -93,7 +142,7 @@ namespace Eto.Wpf.Forms.Controls
 								e.Handled = tia.Cancel;
 							}
 						}
-						else if (e.Command == swd.EditingCommands.DeletePreviousWord)
+						else if (command == swd.EditingCommands.DeletePreviousWord)
 						{
 							string text = Text;
 							int end = CaretIndex;
@@ -112,7 +161,7 @@ namespace Eto.Wpf.Forms.Controls
 								e.Handled = tia.Cancel;
 							}
 						}
-						else if (e.Command == swd.EditingCommands.DeleteNextWord)
+						else if (command == swd.EditingCommands.DeleteNextWord)
 						{
 							string text = Text;
 							int start = CaretIndex;
@@ -132,6 +181,14 @@ namespace Eto.Wpf.Forms.Controls
 								e.Handled = tia.Cancel;
 							}
 						}
+						else if (command.OwnerType == typeof(swd.EditingCommands) && command.Name == "Space")
+						{
+							// space doesn't trigger TextInput (which you'd expect) as it can be interpreted through IME
+							var text = " ";
+							var tia = new TextChangingEventArgs(text, Selection);
+							Callback.OnTextChanging(Widget, tia);
+							e.Handled = tia.Cancel;
+						}
 					}));
 					break;
 				default:
@@ -142,50 +199,46 @@ namespace Eto.Wpf.Forms.Controls
 
 		public bool ReadOnly
 		{
-			get { return Control.IsReadOnly; }
-			set { Control.IsReadOnly = value; }
+			get { return TextBox.IsReadOnly; }
+			set { TextBox.IsReadOnly = value; }
 		}
 
 		public int MaxLength
 		{
-			get { return Control.MaxLength; }
-			set { Control.MaxLength = value; }
+			get { return TextBox.MaxLength; }
+			set { TextBox.MaxLength = value; }
 		}
 
 		public string Text
 		{
-			get { return Control.Text; }
+			get { return TextBox.Text; }
 			set {
-				Control.Text = value;
-				Control.SelectAll();
+				TextBox.Text = value;
+				TextBox.SelectAll();
 			}
 		}
 
-		public string PlaceholderText
-		{
-			get { return Control.Watermark as string; }
-			set { Control.Watermark = value; }
-		}
+		public abstract string PlaceholderText { get; set; }
 
 		public int CaretIndex
 		{
-			get { return Control.CaretIndex; }
-			set { Control.CaretIndex = value; }
+			get { return TextBox.CaretIndex; }
+			set { TextBox.CaretIndex = value; }
 		}
 
 		public void SelectAll ()
 		{
-			Control.Focus ();
-			Control.SelectAll ();
+			TextBox.Focus ();
+			TextBox.SelectAll ();
 		}
 
 		public Range<int> Selection
 		{
-			get { return new Range<int>(Control.SelectionStart, Control.SelectionStart + Control.SelectionLength - 1); }
+			get { return new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1); }
 			set
 			{
-				Control.SelectionStart = value.Start;
-				Control.SelectionLength = value.Length();
+				TextBox.SelectionStart = value.Start;
+				TextBox.SelectionLength = value.Length();
 			}
 		}
 	}

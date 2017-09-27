@@ -224,6 +224,12 @@ namespace Eto.WinForms.Forms
 
 		class EmptyCell : swf.Control
 		{
+			protected override void CreateHandle()
+			{
+				base.CreateHandle();
+				SetStyle(System.Windows.Forms.ControlStyles.Selectable, false);
+			}
+
 		}
 
 		swf.Control CreateEmptyCell(int x, int y)

@@ -49,35 +49,33 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\Addins\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Reflection.Metadata, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\Addins\packages\System.Reflection.Metadata.1.2.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Addins\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Portable.Xaml">
-      <HintPath>..\Addins\packages\Portable.Xaml.0.14.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.Compiler.CodeDom">
       <HintPath>..\Addins\packages\FSharp.Compiler.CodeDom.1.0.0.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
     </Reference>
     <Reference Include="Eto">
-      <HintPath>..\Addins\packages\Eto.Forms.2.2.0\lib\net45\Eto.dll</HintPath>
+      <HintPath>..\Addins\packages\Eto.Forms.2.3.0\lib\net45\Eto.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Addins\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Eto.Serialization.Json">
-      <HintPath>..\Addins\packages\Eto.Serialization.Json.2.2.0\lib\net45\Eto.Serialization.Json.dll</HintPath>
+      <HintPath>..\Addins\packages\Eto.Serialization.Json.2.3.0\lib\net45\Eto.Serialization.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Xaml">
+      <HintPath>..\Addins\packages\Portable.Xaml.0.15.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="Eto.Serialization.Xaml">
-      <HintPath>..\Addins\packages\Eto.Serialization.Xaml.2.2.0\lib\net45\Eto.Serialization.Xaml.dll</HintPath>
+      <HintPath>..\Addins\packages\Eto.Serialization.Xaml.2.3.0\lib\net45\Eto.Serialization.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\Addins\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\Addins\packages\System.Reflection.Metadata.1.4.1\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -96,7 +94,6 @@
     <Compile Include="Builders\XamlInterfaceBuilder.cs" />
     <Compile Include="BuilderType.cs" />
     <Compile Include="DesignPanel.cs" />
-    <Compile Include="DesignHost.cs" />
     <Compile Include="EtoAdapter.cs" />
     <Compile Include="IDesignHost.cs" />
     <Compile Include="IInterfaceBuilder.cs" />
@@ -111,6 +108,7 @@
     <Compile Include="Completion\TypeCompletion.cs" />
     <Compile Include="Completion\XamlCompletion.cs" />
     <Compile Include="Completion\GeneralCompletion.cs" />
+    <Compile Include="DesignSurface.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -129,18 +127,18 @@
   	     This removes the ReferencePath from the search paths.
   	     -->
   	<CreateItem Include="$(AssemblySearchPaths)">
-      <Output TaskParameter="Include" ItemName="OldAssemblySearchPaths"/>
+      <Output TaskParameter="Include" ItemName="OldAssemblySearchPaths" />
     </CreateItem>
   	<CreateItem Include="$(ReferencePath)">
-      <Output TaskParameter="Include" ItemName="OldReferencePath"/>
+      <Output TaskParameter="Include" ItemName="OldReferencePath" />
     </CreateItem>
     <ItemGroup>
     	<OldAssemblySearchPaths Remove="@(OldReferencePath)" />
     </ItemGroup>
-    <CreateProperty Value='@(OldAssemblySearchPaths)'>
-      <Output PropertyName="AssemblySearchPaths" TaskParameter="Value"/>
+    <CreateProperty Value="@(OldAssemblySearchPaths)">
+      <Output PropertyName="AssemblySearchPaths" TaskParameter="Value" />
     </CreateProperty>
-	<Message Text="Clearing Reference Path '$(AssemblySearchPaths)'"/>
+	<Message Text="Clearing Reference Path '$(AssemblySearchPaths)'" />
   </Target>
   <ItemGroup>
     <Analyzer Include="..\Addins\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

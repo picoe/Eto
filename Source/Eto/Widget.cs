@@ -432,6 +432,18 @@ namespace Eto
 			System.Diagnostics.Debug.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", GetType().Name);
 			#endif
 		}
+
+		/// <summary>
+		/// Gets a string that represents the current object with its ID if specified.
+		/// </summary>
+		/// <returns>A string value indicating the type and ID (if specified) of this widget.</returns>
+		public override string ToString()
+		{
+			if (!string.IsNullOrEmpty(ID))
+				return $"{base.ToString()} ({ID})";
+			else
+				return base.ToString();
+		}
 	}
 }
 

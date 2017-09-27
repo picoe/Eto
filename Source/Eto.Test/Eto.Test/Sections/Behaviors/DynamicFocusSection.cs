@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Behaviors
 				() => new ColorPicker(),
 				() => new PasswordBox(),
 				() => new ListBox { Items = { "Item 1", "Item 2", "Item 3" } },
-				() => new NumericUpDown(),
+				() => new NumericStepper(),
 			};
 
 			var count = 0;

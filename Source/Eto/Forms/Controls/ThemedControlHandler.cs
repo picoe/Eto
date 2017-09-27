@@ -69,9 +69,10 @@ namespace Eto.Forms
 		/// Queues a repaint of the entire control on the screen
 		/// </summary>
 		/// <remarks>This is only useful when the control is visible.</remarks>
-		public virtual void Invalidate()
+		/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
+		public virtual void Invalidate(bool invalidateChildren)
 		{
-			Control.Invalidate();
+			Control.Invalidate(invalidateChildren);
 		}
 
 		/// <summary>
@@ -81,9 +82,10 @@ namespace Eto.Forms
 		/// This is only useful when the control is visible.
 		/// </remarks>
 		/// <param name="rect">Rectangle to repaint</param>
-		public virtual void Invalidate(Rectangle rect)
+		/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			Control.Invalidate(rect);
+			Control.Invalidate(rect, invalidateChildren);
 		}
 
 		/// <summary>
@@ -295,62 +297,51 @@ namespace Eto.Forms
 		/// <param name="id">Identifier of the event</param>
 		public override void AttachEvent(string id)
 		{
-			var handled = false;
-
 			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
 					Control.KeyDown += (s, e) => Callback.OnKeyDown(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					Control.KeyUp += (s, e) => Callback.OnKeyUp(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					Control.SizeChanged += (s, e) => Callback.OnSizeChanged(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
 					Control.MouseDoubleClick += (s, e) => Callback.OnMouseDoubleClick(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
 					Control.MouseEnter += (s, e) => Callback.OnMouseEnter(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
 					Control.MouseLeave += (s, e) => Callback.OnMouseLeave(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					Control.MouseDown += (s, e) => Callback.OnMouseDown(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					Control.MouseUp += (s, e) => Callback.OnMouseUp(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
 					Control.MouseMove += (s, e) => Callback.OnMouseMove(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
 					Control.MouseWheel += (s, e) => Callback.OnMouseWheel(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.GotFocus += (s, e) => Callback.OnGotFocus(Widget, e);
-					handled = true;
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					Control.LostFocus += (s, e) => Callback.OnLostFocus(Widget, e);
-					handled = true;
+					break;
+				case Eto.Forms.Control.TextInputEvent:
+					Control.TextInput += (s, e) => Callback.OnTextInput(Widget, e);
+					break;
+				default:
+					base.AttachEvent(id);
 					break;
 			}
-
-			if (!handled)
-				base.AttachEvent(id);
 		}
 
 		#endregion

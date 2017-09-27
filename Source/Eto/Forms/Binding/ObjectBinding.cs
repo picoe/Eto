@@ -130,7 +130,7 @@ namespace Eto.Forms
 		/// <param name="dataItem">object to get/set values from</param>
 		/// <param name="property">property of the dataItem to get/set values</param>
 		public ObjectBinding(T dataItem, string property)
-			: this(dataItem, new PropertyBinding<TValue>(property))
+			: this(dataItem, Property<TValue>(property))
 		{
 		}
 
@@ -293,7 +293,7 @@ namespace Eto.Forms
 		/// <param name="mode">Direction of the binding.</param>
 		public DualBinding<TValue> Bind(object objectValue, string propertyName, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			return Bind<object>(objectValue, new PropertyBinding<TValue>(propertyName), mode: mode);
+			return Bind(objectValue, Property<TValue>(propertyName), mode: mode);
 		}
 
 		/// <summary>
@@ -312,14 +312,16 @@ namespace Eto.Forms
 		/// <returns>The binding between the data context and this binding</returns>
 		public DualBinding<TValue> Bind<TObject>(TObject objectValue, Expression<Func<TObject, TValue>> propertyExpression, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			var memberInfo = propertyExpression.GetMemberInfo();
-			if (memberInfo == null)
-			{
-				var getValue = propertyExpression.Compile();
-				return Bind(() => getValue(objectValue), null, null, null, mode);
-			}
-			return Bind(objectValue, new PropertyBinding<TValue>(memberInfo.Member.Name), mode);
+			return Bind(objectValue, Property(propertyExpression), mode);
 		}
 
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:Eto.Forms.ObjectBinding`2"/>.
+		/// </summary>
+		/// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:Eto.Forms.ObjectBinding`2"/>.</returns>
+		public override string ToString()
+		{
+			return $"Object: {DataItem}, {InnerBinding}";
+		}
 	}
 }

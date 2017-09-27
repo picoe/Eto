@@ -27,8 +27,8 @@ namespace Eto.Test.Sections.Controls
 	[Section("Controls", typeof(GridView))]
 	public class GridViewSection : Panel
 	{
-		static readonly Image image1 = TestIcons.TestImage;
-		static readonly Image image2 = TestIcons.TestIcon;
+		static Icon image1 = new Icon(1, TestIcons.TestImage).WithSize(16, 16);
+		static Icon image2 = TestIcons.TestIcon.WithSize(16, 16);
 
 		public GridViewSection()
 		{
@@ -70,37 +70,67 @@ namespace Eto.Test.Sections.Controls
 				HorizontalContentAlignment = HorizontalAlignment.Stretch,
 				Items =
 				{
-					new StackLayout
-					{
-						Orientation = Orientation.Horizontal,
-						Spacing = 5,
-						Items =
-						{
-							null,
-							EnabledCheckBox(grid),
-							EditableCheckBox(grid),
-							AllowMultiSelectCheckBox(grid),
-							ShowHeaderCheckBox(grid),
-							GridLinesDropDown(grid),
-							null
-						}
-					},
-					new StackLayout 
-					{
-						Orientation = Orientation.Horizontal,
-						Spacing = 5,
-						Items =
-						{
-							null,
-							AddItemButton(filtered),
-							CreateScrollToRow(grid),
-							CreateBeginEditButton(grid),
-							null
-						}
-					},
+					TableLayout.Horizontal(
+						5,
+						null,
+						EnabledCheckBox(grid),
+						EditableCheckBox(grid),
+						AllowMultiSelectCheckBox(grid),
+						ShowHeaderCheckBox(grid),
+						GridLinesDropDown(grid),
+						null
+					),
+					TableLayout.Horizontal(
+						5,
+						null,
+						AddItemButton(filtered),
+						CreateScrollToRow(grid),
+						CreateBeginEditButton(grid),
+						"Border",
+						CreateBorderType(grid),
+						null
+					),
+					TableLayout.Horizontal(
+						5,
+						null,
+						ReloadDataButton(grid),
+						null
+					),
+					TableLayout.Horizontal(
+						5,
+						null,
+						"TextBoxCell:",
+						"TextAlignment", TextAlignmentDropDown(grid),
+						"VerticalAlignment", VerticalAlignmentDropDown(grid),
+						null
+					),
 					CreateSearchBox(filtered)
 				}
 			};
+		}
+
+		Control TextAlignmentDropDown(GridView grid)
+		{
+			var control = new EnumDropDown<TextAlignment>();
+
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().First();
+			control.SelectedValueBinding.Bind(textBoxCell, c => c.TextAlignment);
+
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
+			control.SelectedValueBinding.Bind(imageTextCell, c => c.TextAlignment);
+			return control;
+		}
+
+		Control VerticalAlignmentDropDown(GridView grid)
+		{
+			var control = new EnumDropDown<VerticalAlignment>();
+
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().First();
+			control.SelectedValueBinding.Bind(textBoxCell, c => c.VerticalAlignment);
+
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
+			control.SelectedValueBinding.Bind(imageTextCell, c => c.VerticalAlignment);
+			return control;
 		}
 
 		ComboBoxCell MyDropDown(string bindingProperty)
@@ -127,6 +157,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new CheckBox { Text = "ShowHeader" };
 			control.CheckedBinding.Bind(grid, r => r.ShowHeader);
+			return control;
+		}
+
+		Control ReloadDataButton(GridView grid)
+		{
+			var control = new Button { Text = "ReloadData" };
+			control.Click += (sender, e) => grid.ReloadData(grid.SelectedRows);
 			return control;
 		}
 
@@ -186,6 +223,13 @@ namespace Eto.Test.Sections.Controls
 				};
 			};
 			return filterText;
+		}
+
+		Control CreateBorderType(GridView grid)
+		{
+			var borderType = new EnumDropDown<BorderType>();
+			borderType.SelectedValueBinding.Bind(grid, g => g.Border);
+			return borderType;
 		}
 
 		class MyCustomCell : CustomCell

@@ -162,7 +162,8 @@ namespace Eto.Forms
 		static Application()
 		{
 			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
-		}
+			EventLookup.Register<Application>(c => c.OnUnhandledException(null), Application.UnhandledExceptionEvent);
+}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.

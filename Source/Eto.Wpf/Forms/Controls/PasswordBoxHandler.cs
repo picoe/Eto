@@ -8,13 +8,18 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class PasswordBoxHandler : WpfControl<swc.PasswordBox, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler
 	{
-		protected override Size DefaultSize { get { return new Size(80, -1); } }
+		swc.Border border;
+
+		public override sw.FrameworkElement ContainerControl => border;
+
+		protected override sw.Size DefaultSize => new sw.Size(80, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }
 
 		public PasswordBoxHandler()
 		{
 			Control = new swc.PasswordBox();
+			border = new EtoBorder { Handler = this, Child = Control };
 		}
 
 		public override bool UseMousePreview { get { return true; } }

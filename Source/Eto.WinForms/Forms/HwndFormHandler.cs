@@ -354,12 +354,12 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public void Invalidate()
+		public void Invalidate(bool invalidateChildren)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void Invalidate(Eto.Drawing.Rectangle rect)
+		public void Invalidate(Eto.Drawing.Rectangle rect, bool invalidateChildren)
 		{
 			throw new NotImplementedException();
 		}
@@ -483,6 +483,19 @@ namespace Eto.WinForms.Forms
 		}
 
 		public bool ShowActivated
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public bool CanFocus
 		{
 			get
 			{

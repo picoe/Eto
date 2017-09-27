@@ -93,7 +93,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var found = false;
 				for (int i = 0; i < items.Count; i++)
 				{
-					if (object.ReferenceEquals(items[i], item))
+					if (ReferenceEquals(items[i], item))
 					{
 						path.PrependIndex(i);
 						item = parent;
@@ -105,6 +105,32 @@ namespace Eto.GtkSharp.Forms.Controls
 					return null;
 			}
 			return path;
+		}
+
+		public Gtk.TreeIter? GetIterFromItem(TItem item, bool expandedOnly = false)
+		{
+			var indicies = new List<int>();
+			var parents = GetParents(item);
+			foreach (var parent in parents)
+			{
+				if (expandedOnly && !parent.Expanded)
+					return null;
+				var items = (TStore)(object)parent;
+				var found = false;
+				for (int i = 0; i < items.Count; i++)
+				{
+					if (ReferenceEquals(items[i], item))
+					{
+						indicies.Insert(0, i);
+						item = parent;
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					return null;
+			}
+			return GetIterFromItem(item, indicies.ToArray());
 		}
 
 		public Gtk.TreeIter GetIterFromItem(TItem item, Gtk.TreePath path)
@@ -156,7 +182,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			if (path == null)
 				throw new ArgumentNullException("path");
-			
+
 			var item = GetItemAtPath(path);
 			if (item != null)
 			{
@@ -165,6 +191,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			iter = Gtk.TreeIter.Zero;
 			return false;
+		}
+
+		public int[] GetIndices(Gtk.TreeIter iter)
+		{
+			if (iter.UserData == IntPtr.Zero)
+				return new int[0];
+			var node = GetNodeAtIter(iter);
+			return node.Indices;
 		}
 
 		public Gtk.TreePath GetPath(Gtk.TreeIter iter)
@@ -266,24 +300,24 @@ namespace Eto.GtkSharp.Forms.Controls
 		public bool IterChildren(out Gtk.TreeIter child, Gtk.TreeIter parent)
 		{
 			TStore store;
-			Gtk.TreePath path;
+			int[] indices;
 			if (parent.UserData == IntPtr.Zero)
 			{
 				var h = Handler;
 				store = h != null ? h.DataStore : null;
-				path = new Gtk.TreePath();
+				indices = new[] { 0 };
 			}
 			else
 			{
 				var node = GetNodeAtIter(parent);
-				path = new Gtk.TreePath(node.Indices);
+				indices = new int[node.Indices.Length + 1];
+				Array.Copy(node.Indices, indices, node.Indices.Length);
 				store = (TStore)(object)node.Item;
 			}
-			path.AppendIndex(0);
 
 			if (store != null && store.Count > 0)
 			{
-				child = GetIterFromItem(store[0], path);
+				child = GetIterFromItem(store[0], indices);
 				return true;
 			}
 			child = Gtk.TreeIter.Zero;
@@ -324,11 +358,22 @@ namespace Eto.GtkSharp.Forms.Controls
 			var store = GetStore(parent);
 			if (store != null)
 			{
-				var path = GetPath(parent).Copy();
-				path.AppendIndex(n);
-				var item = store[n];
-				child = GetIterFromItem(item, path);
-				return true;
+				int[] indices;
+				if (parent.UserData != IntPtr.Zero)
+				{
+					var parentIndices = GetNodeAtIter(parent).Indices;
+					indices = new int[parentIndices.Length + 1];
+					Array.Copy(parentIndices, indices, parentIndices.Length);
+					indices[indices.Length - 1] = n;
+				}
+				else
+					indices = new[] { n };
+				if (n < store.Count)
+				{
+					var item = store[n];
+					child = GetIterFromItem(item, indices);
+					return true;
+				}
 			}
 
 			child = Gtk.TreeIter.Zero;

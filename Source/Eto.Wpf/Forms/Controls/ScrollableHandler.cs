@@ -9,20 +9,41 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{
-		BorderType borderType;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 		readonly EtoScrollViewer scroller;
 
-		public sw.FrameworkElement ContentControl { get { return scroller; } }
-
-		protected override bool UseContentSize { get { return false; } }
+		public sw.FrameworkElement ContentControl => scroller;
 
 		public class EtoScrollViewer : swc.ScrollViewer
 		{
-			public swc.Primitives.IScrollInfo GetScrollInfo()
+			public ScrollableHandler Handler { get; set; }
+
+			public swc.Primitives.IScrollInfo GetScrollInfo() => ScrollInfo;
+
+			protected override sw.Size MeasureOverride(sw.Size constraint)
 			{
-				return ScrollInfo;
+				var content = (sw.FrameworkElement)Content;
+
+				// reset to preferred size to calculate scroll sizes initially based on that
+				content.Width = Handler.scrollSize.Width;
+				content.Height = Handler.scrollSize.Height;
+				return base.MeasureOverride(constraint);
+			}
+
+			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
+			{
+				var content = (sw.FrameworkElement)Content;
+
+				// expand to width or height of viewport, now that we know which scrollbars are mandatory
+				var desiredSize = content.DesiredSize;
+
+				if (Handler.ExpandContentWidth)
+					content.Width = Math.Max(desiredSize.Width, ScrollInfo.ViewportWidth);
+				if (Handler.ExpandContentHeight)
+					content.Height = Math.Max(desiredSize.Height, ScrollInfo.ViewportHeight);
+
+				return base.ArrangeOverride(arrangeSize);
 			}
 		}
 
@@ -34,13 +55,15 @@ namespace Eto.Wpf.Forms.Controls
 
 		public ScrollableHandler()
 		{
-			Control = new swc.Border
+			Control = new EtoBorder
 			{
+				Handler = this,
 				SnapsToDevicePixels = true,
 				Focusable = false,
 			};
 			scroller = new EtoScrollViewer
 			{
+				Handler = this,
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				CanContentScroll = true,
@@ -51,7 +74,7 @@ namespace Eto.Wpf.Forms.Controls
 			scroller.Loaded += HandleSizeChanged;
 
 			Control.Child = scroller;
-			this.Border = BorderType.Bezel;
+			Control.SetEtoBorderType(BorderType.Bezel);
 		}
 
 		public override void OnLoad(EventArgs e)
@@ -68,30 +91,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		void UpdateSizes()
 		{
-			var info = scroller.GetScrollInfo();
-			if (info != null)
-			{
-				var content = (swc.Border)scroller.Content;
-				var viewportSize = new sw.Size(info.ViewportWidth, info.ViewportHeight);
-				var prefSize = Content.GetPreferredSize(new sw.Size(double.MaxValue, double.MaxValue));
-
-				// hack for when a scrollable is in a group box it expands vertically indefinitely
-				// -2 since when you resize the scrollable it grows slowly
-				if (Widget.FindParent<GroupBox>() != null)
-					viewportSize.Height = Math.Max(0, viewportSize.Height - 2);
-
-				if (ExpandContentWidth)
-					content.Width = Math.Max(0, Math.Max(prefSize.Width, viewportSize.Width));
-				else
-					content.Width = prefSize.Width;
-
-				if (ExpandContentHeight)
-					content.Height = Math.Max(0, Math.Max(prefSize.Height, viewportSize.Height));
-				else
-					content.Height = prefSize.Height;
-
-				scroller.InvalidateMeasure();
-			}
+			scroller.InvalidateMeasure();
 		}
 
 		public override void UpdatePreferredSize()
@@ -104,6 +104,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control.InvalidateMeasure();
 			UpdateSizes();
+			scroller.UpdateLayout();
 		}
 
 		protected override void SetContentScale(bool xscale, bool yscale)
@@ -125,6 +126,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		sw.Size scrollSize = new sw.Size(double.NaN, double.NaN);
 		public Size ScrollSize
 		{
 			get
@@ -135,36 +137,17 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				var content = (swc.Border)Control.Child;
-				content.MinHeight = value.Height;
-				content.MinWidth = value.Width;
+				scrollSize = value.ToWpf();
 				UpdateSizes();
 			}
 		}
 
+		static object Border_Key = new object();
+
 		public BorderType Border
 		{
-			get { return borderType; }
-			set
-			{
-				borderType = value;
-				switch (value)
-				{
-					case BorderType.Bezel:
-						Control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
-						Control.BorderThickness = new sw.Thickness(1);
-						break;
-					case BorderType.Line:
-						Control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
-						Control.BorderThickness = new sw.Thickness(1);
-						break;
-					case BorderType.None:
-						Control.BorderBrush = null;
-                        Control.BorderThickness = new sw.Thickness(0);
-                        break;
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
+			set { Widget.Properties.Set(Border_Key, value, () => Control.SetEtoBorderType(value)); }
 		}
 
 		public override Size ClientSize
@@ -236,24 +219,6 @@ namespace Eto.Wpf.Forms.Controls
 					expandContentHeight = value;
 					UpdateSizes();
 				}
-			}
-		}
-
-		public override void Invalidate()
-		{
-			base.Invalidate();
-			foreach (var control in Widget.VisualChildren)
-			{
-				control.Invalidate();
-			}
-		}
-
-		public override void Invalidate(Rectangle rect)
-		{
-			base.Invalidate(rect);
-			foreach (var control in Widget.VisualChildren)
-			{
-				control.Invalidate(rect);
 			}
 		}
 

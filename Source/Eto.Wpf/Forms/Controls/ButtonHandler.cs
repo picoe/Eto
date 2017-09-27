@@ -4,6 +4,7 @@ using Eto.Drawing;
 #if WINRT
 using sw = Windows.UI.Xaml;
 using swc = Windows.UI.Xaml.Controls;
+using wf = Windows.Foundation;
 
 using WpfLabel = Windows.UI.Xaml.Controls.TextBlock;
 using EtoImage = Windows.UI.Xaml.Controls.Image;
@@ -12,6 +13,7 @@ namespace Eto.WinRT.Forms.Controls
 #else
 using sw = System.Windows;
 using swc = System.Windows.Controls;
+using wf = System.Windows;
 
 using WpfLabel = System.Windows.Controls.Label;
 
@@ -55,7 +57,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public static Size DefaultMinimumSize = new Size(80, 23);
 
-		protected override Size DefaultSize { get { return MinimumSize; } }
+		protected override wf.Size DefaultSize => MinimumSize.ToWpf();
 
 		public ButtonHandler()
 		{
@@ -137,7 +139,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		void SetImage()
 		{
-			swcimage.Source = Image.ToWpfScale(ParentScale);
+			swcimage.Source = Image.ToWpf(ParentScale);
 		}
 #endif
 

@@ -93,9 +93,9 @@ namespace Eto.Mac.Forms
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
-		where TControl: NSObject
-		where TWidget: Control
-		where TCallback: Control.ICallback
+		where TControl : NSObject
+		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		bool mouseMove;
 		NSTrackingArea tracking;
@@ -149,13 +149,14 @@ namespace Eto.Mac.Forms
 
 		public virtual Size Size
 		{
-			get { 
+			get
+			{
 				if (!Widget.Loaded)
 					return PreferredSize ?? new Size(-1, -1);
-				return ContainerControl.Frame.Size.ToEtoSize(); 
+				return ContainerControl.Frame.Size.ToEtoSize();
 			}
 			set
-			{ 
+			{
 				var oldSize = GetPreferredSize(Size.MaxValue);
 				PreferredSize = value;
 
@@ -330,7 +331,7 @@ namespace Eto.Mac.Forms
 					AddMethod(selBecomeFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerGotFocus), "B@:");
 					break;
 				case Eto.Forms.Control.ShownEvent:
-				// TODO
+					// TODO
 					break;
 				case Eto.Forms.Control.TextInputEvent:
 					AddMethod(selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@");
@@ -437,7 +438,7 @@ namespace Eto.Mac.Forms
 				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				if (theEvent.ClickCount >= 2)
 					handler.Callback.OnMouseDoubleClick(handler.Widget, args);
-			
+
 				if (!args.Handled)
 				{
 					handler.Callback.OnMouseDown(handler.Widget, args);
@@ -528,12 +529,12 @@ namespace Eto.Mac.Forms
 			CreateTracking();
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(bool invalidateChildren)
 		{
 			ContainerControl.NeedsDisplay = true;
 		}
 
-		public virtual void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			var region = rect.ToNS();
 			region.Y = EventControl.Frame.Height - region.Y - region.Height;
@@ -579,14 +580,35 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		static Selector selSetCanDrawSubviewsIntoLayer = new Selector("setCanDrawSubviewsIntoLayer:");
+#if MONOMAC
+		static IntPtr selSetCanDrawSubviewsIntoLayerHandle = Selector.GetHandle("setCanDrawSubviewsIntoLayer:");
+#endif
+
 		protected virtual void SetBackgroundColor(Color? color)
 		{
-			if (color != null) {
-				if (color.Value.A > 0) {
+			if (color != null)
+			{
+				if (color.Value.A > 0)
+				{
 					ContainerControl.WantsLayer = true;
+
+					// >= 10.9
+					if (ContainerControl.RespondsToSelector(selSetCanDrawSubviewsIntoLayer))
+					{
+						// collapse child layers into the parent layer
+#if MONOMAC
+						Messaging.void_objc_msgSend_bool(ContainerControl.Handle, selSetCanDrawSubviewsIntoLayerHandle, true);
+#else
+						ContainerControl.CanDrawSubviewsIntoLayer = true;
+#endif
+					}
 					var layer = ContainerControl.Layer;
 					if (layer != null)
+					{
 						layer.BackgroundColor = color.Value.ToCG();
+						layer.NeedsDisplayOnBoundsChange = true;
+					}
 				}
 				else {
 					ContainerControl.WantsLayer = false;

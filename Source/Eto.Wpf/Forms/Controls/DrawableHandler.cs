@@ -87,10 +87,14 @@ namespace Eto.Wpf.Forms.Controls
 				if (content != null)
 				{
 					content.Measure(constraint);
-					return content.DesiredSize;
+					return Handler.MeasureOverride(constraint, c => {
+						base.MeasureOverride(c);
+						return content.DesiredSize;
+						});
 				}
-				return base.MeasureOverride(constraint);
+				return Handler.MeasureOverride(constraint, base.MeasureOverride);
 			}
+
 			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
 			{
 				base.ArrangeOverride(arrangeSize);
@@ -146,7 +150,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override void OnLogicalPixelSizeChanged()
 		{
-			Invalidate();
+			if (Control.IsLoaded)
+				Invalidate(false);
 		}
 
 		public override void OnUnLoad(EventArgs e)
@@ -188,7 +193,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			SetMaxTiles();
 			UpdateTiles(true);
-			Invalidate();
+			Invalidate(false);
 			content.Width = e.NewSize.Width;
 			content.Height = e.NewSize.Height;
 		}
@@ -356,14 +361,8 @@ namespace Eto.Wpf.Forms.Controls
 			UpdateTiles();
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
-			if (!Control.IsLoaded)
-			{
-				if (Widget.Loaded)
-					Application.Instance.AsyncInvoke(Invalidate);
-				return;
-			}
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
@@ -379,18 +378,12 @@ namespace Eto.Wpf.Forms.Controls
 					unusedTiles.AddRange(invalidateTiles);
 					invalidateTiles.Clear();
 				}
-				base.Invalidate();
+				base.Invalidate(invalidateChildren);
 			}
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			if (!Control.IsLoaded)
-			{
-				if (Widget.Loaded)
-					Application.Instance.AsyncInvoke(() => Invalidate(rect));
-				return;
-			}
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
@@ -403,7 +396,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				if (((rect.Width * rect.Height) / (Control.ActualWidth * Control.ActualHeight)) > 0.9)
 				{
-					Invalidate();
+					Invalidate(false);
 					return;
 				}
 
@@ -453,12 +446,12 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 			else
-				base.Invalidate(rect);
+				base.Invalidate(rect, invalidateChildren);
 		}
 
 		public void Update(Rectangle rect)
 		{
-			Invalidate(rect);
+			Invalidate(rect, false);
 		}
 
 		public bool CanFocus
@@ -477,6 +470,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			this.content = content;
 			Control.Children.Add(content);
+			ContainerControl.InvalidateMeasure();
 		}
 
 		public override Color BackgroundColor

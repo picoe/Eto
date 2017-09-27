@@ -18,10 +18,9 @@ namespace Eto.GtkSharp.Forms
 		Gtk.Widget[,] blank;
 		Size? spacing;
 
-		public override Gtk.Widget ContainerControl
-		{
-			get { return box; }
-		}
+		public override Gtk.Widget ContainerControl => box;
+
+		public override Gtk.Widget EventControl => ContainerControl;
 
 		public Size Spacing
 		{

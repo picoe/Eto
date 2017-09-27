@@ -98,7 +98,7 @@ namespace Eto.WinRT.Forms
 
 		protected wf.Size PreferredSize { get { return preferredSize; } set { preferredSize = value; } }
 
-		protected virtual Size DefaultSize { get { return Size.Empty; } }
+		protected virtual wf.Size DefaultSize { get { return new wf.Size(double.NaN, double.NaN); } }
 
 		public abstract Color BackgroundColor { get; set; }
 
@@ -222,12 +222,12 @@ namespace Eto.WinRT.Forms
 #endif
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(bool invalidateChildren)
 		{
 			InvalidateControlVisual();
 		}
 
-		public virtual void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			InvalidateControlVisual();
 		}

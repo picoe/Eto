@@ -10,20 +10,26 @@ namespace Eto.Wpf.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class TextureBrushHandler : TextureBrush.IHandler
 	{
-		public IMatrix GetTransform (TextureBrush widget)
+		static swm.ImageBrush Get(TextureBrush widget) => ((FrozenBrushWrapper)widget.ControlObject).Brush as swm.ImageBrush;
+
+		static void SetFrozen(TextureBrush widget) => ((FrozenBrushWrapper)widget.ControlObject).SetFrozen();
+
+		public IMatrix GetTransform(TextureBrush widget)
 		{
-			return ((swm.ImageBrush)widget.ControlObject).Transform.ToEtoMatrix ();
+			return Get(widget).Transform.ToEtoMatrix();
 		}
 
-		public void SetTransform (TextureBrush widget, IMatrix transform)
+		public void SetTransform(TextureBrush widget, IMatrix transform)
 		{
-			((swm.ImageBrush)widget.ControlObject).Transform = transform.ToWpfTransform ();
+			Get(widget).Transform = transform.ToWpfTransform();
+			SetFrozen(widget);
 		}
 
-		public object Create (Image image, float opacity)
+		public object Create(Image image, float opacity)
 		{
-			var rect = new System.Windows.Rect (0, 0, image.Size.Width, image.Size.Height);
-			return new swm.ImageBrush (image.ToWpf ()) {
+			var rect = new System.Windows.Rect(0, 0, image.Size.Width, image.Size.Height);
+			return new FrozenBrushWrapper(new swm.ImageBrush(image.ToWpf())
+			{
 				TileMode = swm.TileMode.Tile,
 				Opacity = opacity,
 				Stretch = swm.Stretch.None,
@@ -31,13 +37,14 @@ namespace Eto.Wpf.Drawing
 				Viewbox = rect,
 				ViewportUnits = swm.BrushMappingMode.Absolute,
 				Viewport = rect
-			};
+			});
 		}
 
 
-		public void SetOpacity (TextureBrush widget, float opacity)
+		public void SetOpacity(TextureBrush widget, float opacity)
 		{
-			((swm.ImageBrush)widget.ControlObject).Opacity = opacity;
+			Get(widget).Opacity = opacity;
+			SetFrozen(widget);
 		}
 	}
 }

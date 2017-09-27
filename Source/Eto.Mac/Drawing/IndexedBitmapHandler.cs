@@ -61,7 +61,7 @@ namespace Eto.Mac.Drawing
 		int bytesPerRow;
 		int bitsPerPixel;
 		int[] colors;
-		BitmapHandler bmp;
+		Bitmap bmp;
 		IntPtr ptr;
 
 		public int RowStride
@@ -88,8 +88,7 @@ namespace Eto.Mac.Drawing
 			size = new Size(width, height);
 			ptr = Marshal.AllocHGlobal(height * bytesPerRow);
 			//Control = new byte[height * bytesPerRow];
-			bmp = new BitmapHandler();
-			bmp.Create(size.Width, size.Height, PixelFormat.Format32bppRgb);
+			bmp = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppRgb);
 		}
 
 		public void Resize(int width, int height)
@@ -131,19 +130,17 @@ namespace Eto.Mac.Drawing
 
 		public override NSImage GetImage()
 		{
-			var copy = new BitmapHandler();
-			copy.Create(size.Width, size.Height, PixelFormat.Format32bppRgb);
-			CopyTo(copy, new Rectangle(size));
-			return copy.Control;
+			CopyTo(bmp, new Rectangle(size));
+			return bmp.ToNS();
 		}
 
-		void CopyTo(BitmapHandler bmp, Rectangle source)
+		void CopyTo(Bitmap bmp, Rectangle source)
 		{
 			if (source.Top < 0 || source.Left < 0 || source.Right > size.Width || source.Bottom > size.Height)
 				throw new ArgumentOutOfRangeException(string.Format(CultureInfo.CurrentCulture, "Source rectangle exceeds image size"));
 			
 			// we have to draw to a temporary bitmap pixel by pixel
-			var bd = bmp.Lock();
+			using (var bd = bmp.Lock())
 			unsafe
 			{
 				var dest = (byte*)bd.Data;
@@ -173,13 +170,12 @@ namespace Eto.Mac.Drawing
 					src += scany;
 				}
 			}
-			bmp.Unlock(bd);
 		}
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			CopyTo(bmp, Rectangle.Truncate(source));
-			bmp.DrawImage(graphics, source, destination);
+			(bmp.Handler as BitmapHandler)?.DrawImage(graphics, source, destination);
 		}
 
 		protected override void Dispose(bool disposing)

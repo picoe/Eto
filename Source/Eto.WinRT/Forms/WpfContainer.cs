@@ -1,5 +1,6 @@
 using swc = Windows.UI.Xaml.Controls;
 using sw = Windows.UI.Xaml;
+using wf = Windows.Foundation;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -27,7 +28,7 @@ namespace Eto.WinRT.Forms
 
 		public bool RecurseToChildren { get { return true; } }
 
-		protected override Size DefaultSize { get { return minimumSize; } }
+		protected override wf.Size DefaultSize => minimumSize.ToWpf();
 
 		public abstract void Remove(sw.FrameworkElement child);
 
@@ -55,21 +56,27 @@ namespace Eto.WinRT.Forms
 				parent.UpdatePreferredSize();
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
-			base.Invalidate();
-			foreach (var control in Widget.Children)
+			base.Invalidate(invalidateChildren);
+			if (invalidateChildren)
 			{
-				control.Invalidate();
+				foreach (var control in Widget.VisualControls)
+				{
+					control.Invalidate(invalidateChildren);
+				}
 			}
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			base.Invalidate(rect);
-			foreach (var control in Widget.Children)
+			base.Invalidate(rect, invalidateChildren);
+			if (invalidateChildren)
 			{
-				control.Invalidate(rect);
+				foreach (var control in Widget.VisualControls)
+				{
+					control.Invalidate(rect, invalidateChildren);
+				}
 			}
 		}
 	}

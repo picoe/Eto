@@ -150,22 +150,28 @@ namespace Eto.Mac.Forms
 			LayoutAllChildren();
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
-			base.Invalidate();
-			foreach (var child in Widget.VisualControls)
+			base.Invalidate(invalidateChildren);
+			if (invalidateChildren)
 			{
-				child.Invalidate();
+				foreach (var child in Widget.VisualControls)
+				{
+					child.Invalidate(invalidateChildren);
+				}
 			}
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			base.Invalidate(rect);
-			var screenRect = Widget.RectangleToScreen(rect);
-			foreach (var child in Widget.VisualControls)
+			base.Invalidate(rect, invalidateChildren);
+			if (invalidateChildren)
 			{
-				child.Invalidate(Rectangle.Round(child.RectangleFromScreen(screenRect)));
+				var screenRect = Widget.RectangleToScreen(rect);
+				foreach (var child in Widget.VisualControls)
+				{
+					child.Invalidate(Rectangle.Round(child.RectangleFromScreen(screenRect)), invalidateChildren);
+				}
 			}
 		}
 	}

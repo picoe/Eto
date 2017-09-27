@@ -4,16 +4,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using swc = System.Windows.Controls;
+using System.Windows;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoCalendar : swc.Calendar, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override Size MeasureOverride(Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class CalendarHandler : WpfControl<swc.Calendar, Calendar, Calendar.ICallback>, Calendar.IHandler
 	{
 		int suppressChanged;
 		public CalendarHandler()
 		{
-			Control = new swc.Calendar
+			Control = new EtoCalendar
 			{
+				Handler = this,
 				SelectedDate = DateTime.Today
 			};
 		}

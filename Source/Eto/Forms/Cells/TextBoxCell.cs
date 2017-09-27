@@ -1,5 +1,5 @@
 using System;
-
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -9,6 +9,29 @@ namespace Eto.Forms
 	[Handler(typeof(IHandler))]
 	public class TextBoxCell : SingleValueCell<string>
 	{
+		new IHandler Handler => (IHandler)base.Handler;
+
+		/// <summary>
+		/// Gets or sets the horizontal alignment of the text within the cell.
+		/// </summary>
+		/// <value>The text alignment.</value>
+		public TextAlignment TextAlignment
+		{
+			get { return Handler.TextAlignment; }
+			set { Handler.TextAlignment = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the vertical alignment of the text within the cell.
+		/// </summary>
+		/// <value>The vertical text alignment.</value>
+		[DefaultValue(VerticalAlignment.Center)]
+		public VerticalAlignment VerticalAlignment
+		{
+			get { return Handler.VerticalAlignment; }
+			set { Handler.VerticalAlignment = value; }
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.TextBoxCell"/> class binding to the specified <paramref name="column"/>.
 		/// </summary>
@@ -24,7 +47,7 @@ namespace Eto.Forms
 		/// <param name="property">Name of the property to bind to in the data store.</param>
 		public TextBoxCell(string property)
 		{
-			Binding = new PropertyBinding<string>(property);
+			Binding = Eto.Forms.Binding.Property<string>(property);
 		}
 
 		/// <summary>
@@ -39,6 +62,17 @@ namespace Eto.Forms
 		/// </summary>
 		public new interface IHandler : SingleValueCell<string>.IHandler
 		{
+			/// <summary>
+			/// Gets or sets the horizontal alignment of the text within the cell.
+			/// </summary>
+			/// <value>The text alignment.</value>
+			TextAlignment TextAlignment { get; set; }
+
+			/// <summary>
+			/// Gets or sets the vertical alignment of the text within the cell.
+			/// </summary>
+			/// <value>The vertical text alignment.</value>
+			VerticalAlignment VerticalAlignment { get; set; }
 		}
 	}
 }

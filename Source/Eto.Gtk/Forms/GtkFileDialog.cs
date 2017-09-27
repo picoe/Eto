@@ -95,7 +95,7 @@ namespace Eto.GtkSharp.Forms
 			return response;
 		}
 
-		public void InsertFilter(int index, FileDialogFilter filter)
+		public void InsertFilter(int index, FileFilter filter)
 		{
 			var gtkFilter = new Gtk.FileFilter();
 			gtkFilter.Name = filter.Name;

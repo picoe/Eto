@@ -7,11 +7,19 @@ using Eto.GtkSharp.Drawing;
 using Eto.Drawing;
 using System.Collections.Generic;
 using Eto.GtkSharp.Forms;
+using System.IO;
+using System.Reflection;
 
 namespace Eto.GtkSharp.Forms
 {
+#if GTK3
+	public class ApplicationHandler : WidgetHandler<Gtk.Application, Application, Application.ICallback>, Application.IHandler
+#else
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
+#endif
 	{
+		internal static List<string> TempFiles = new List<string>(); 
+
 		bool attached;
 		Gtk.StatusIcon statusIcon;
 		readonly List<ManualResetEvent> invokeResetEvents = new List<ManualResetEvent>();
@@ -23,6 +31,14 @@ namespace Eto.GtkSharp.Forms
 
 			if (SynchronizationContext.Current == null)
 				SynchronizationContext.SetSynchronizationContext(new GtkSynchronizationContext());
+
+#if GTK3
+			Control = new Gtk.Application(null, GLib.ApplicationFlags.None);
+			Control.Register(GLib.Cancellable.Current);
+			Helper.UseHeaderBar = Gtk.Global.MinorVersion >= 10 && NativeMethods.gtk_application_prefers_app_menu(Control.Handle);
+#else
+			Helper.UseHeaderBar = false;
+#endif
 		}
 
 		void OnUnhandledException(GLib.UnhandledExceptionArgs e)
@@ -142,6 +158,8 @@ namespace Eto.GtkSharp.Forms
 			//if (!Platform.IsWindows) Gdk.Threads.Init(); // do this in windows, and it stalls!  ugh
 			MainThreadID = Thread.CurrentThread.ManagedThreadId;
 
+			if (EtoEnvironment.Platform.IsLinux)
+				LinuxNotificationHandler.notify_init(Assembly.GetExecutingAssembly().FullName);
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
@@ -156,6 +174,11 @@ namespace Eto.GtkSharp.Forms
 
 				Gdk.Threads.Leave();
 			}
+
+			if (EtoEnvironment.Platform.IsLinux)
+				LinuxNotificationHandler.notify_uninit();
+			foreach (var file in TempFiles)
+				File.Delete(file);
 		}
 
 		public override void AttachEvent(string id)

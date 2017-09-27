@@ -108,10 +108,9 @@ namespace Eto.GtkSharp.Forms.Controls
 				Handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
 			}
 
-			public void HandleScrollableScrollEvent(object o, Gtk.ScrollEventArgs args)
+			public void HandleScrollableScrollEvent(object sender, EventArgs e)
 			{
-				var pos = new Point((int)args.Event.X, (int)args.Event.Y);
-				Handler.Callback.OnScroll(Handler.Widget, new ScrollEventArgs(pos));
+				Handler.Callback.OnScroll(Handler.Widget, new ScrollEventArgs(Handler.ScrollPosition));
 			}
 		}
 
@@ -121,7 +120,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				case Scrollable.ScrollEvent:
 					Control.Events |= Gdk.EventMask.ScrollMask;
-					Control.ScrollEvent += Connector.HandleScrollableScrollEvent;
+					Control.Vadjustment.ValueChanged += Connector.HandleScrollableScrollEvent;
+					Control.Hadjustment.ValueChanged += Connector.HandleScrollableScrollEvent;
 					break;
 				default:
 					base.AttachEvent(id);

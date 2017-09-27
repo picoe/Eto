@@ -17,16 +17,24 @@ namespace Eto.Wpf.Forms.Cells
 		swc.DataGridColumn Control { get; }
 	}
 
+	static class CellProperties
+	{
+		public static sw.DependencyProperty ControlInitializedProperty = sw.DependencyProperty.Register("EtoControlInitialized", typeof(bool), typeof(sw.FrameworkElement), new sw.PropertyMetadata(false));
+		public static sw.DependencyProperty ControlEditInitializedProperty = sw.DependencyProperty.Register("EtoControlEditInitialized", typeof(bool), typeof(sw.FrameworkElement), new sw.PropertyMetadata(false));
+	}
+
 	public abstract class CellHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, ICellHandler
 		where TControl : swc.DataGridColumn
 		where TWidget : Cell
 	{
 		public ICellContainerHandler ContainerHandler { get; set; }
 
-		swc.DataGridColumn ICellHandler.Control
-		{
-			get { return Control; }
-		}
+		public static bool IsControlInitialized(sw.DependencyObject obj) => (bool)obj.GetValue(CellProperties.ControlInitializedProperty);
+		public static void SetControlInitialized(sw.DependencyObject obj, bool value) => obj.SetValue(CellProperties.ControlInitializedProperty, value);
+		public static bool IsControlEditInitialized(sw.DependencyObject obj) => (bool)obj.GetValue(CellProperties.ControlEditInitializedProperty);
+		public static void SetControlEditInitialized(sw.DependencyObject obj, bool value) => obj.SetValue(CellProperties.ControlEditInitializedProperty, value);
+
+		swc.DataGridColumn ICellHandler.Control => Control;
 
 		public void FormatCell(sw.FrameworkElement element, swc.DataGridCell cell, object dataItem)
 		{

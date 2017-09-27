@@ -29,11 +29,18 @@ namespace Eto.iOS.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
-		public override void Draw(object control, GraphicsHandler graphics, RectangleF rect)
+		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode)
 		{
-			graphics.Control.SetFillColor((CGColor)control);
-
-			graphics.Control.FillRect(rect.ToNS());
+			if (stroke)
+			{
+				graphics.Control.SetStrokeColor((CGColor)control);
+				graphics.Control.StrokePath();
+			}
+			else
+			{
+				graphics.Control.SetFillColor((CGColor)control);
+				graphics.Fill(fillMode);
+			}
 		}
 
 		public Color GetColor(SolidBrush widget)

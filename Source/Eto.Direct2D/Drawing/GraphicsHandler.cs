@@ -149,7 +149,7 @@ namespace Eto.Direct2D.Drawing
 			try
 			{
 				target.Resize(drawable.ClientSize.ToDx());
-				drawable.Invalidate();
+				drawable.Invalidate(false);
 			}
 			catch (Exception ex)
 			{
@@ -701,6 +701,25 @@ namespace Eto.Direct2D.Drawing
 				}
 			}
 			base.Dispose(disposing);
+		}
+
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			using (var path = new GraphicsPath())
+			{
+				path.AddLines(points);
+				DrawPath(pen, path);
+			}
+		}
+
+		public void DrawPolygon(Pen pen, IEnumerable<PointF> points)
+		{
+			using (var path = new GraphicsPath())
+			{
+				path.AddLines(points);
+				path.CloseFigure();
+				DrawPath(pen, path);
+			}
 		}
 	}
 }

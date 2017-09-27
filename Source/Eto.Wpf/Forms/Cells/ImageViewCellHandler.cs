@@ -10,14 +10,12 @@ namespace Eto.Wpf.Forms.Cells
 {
 	public class ImageViewCellHandler : CellHandler<ImageViewCellHandler.Column, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
 	{
-		public static int ImageSize = 16;
-
 		object GetValue (object dataItem)
 		{
 			if (Widget.Binding != null) {
 				var image = Widget.Binding.GetValue (dataItem) as Image;
 				if (image != null)
-					return ((IWpfImage)image.Handler).GetImageClosestToSize (ImageSize);
+					return image.ToWpf();
 			}
 			return null;
 		}
@@ -48,7 +46,7 @@ namespace Eto.Wpf.Forms.Cells
 
 			swc.Image Image (swc.DataGridCell cell)
 			{
-				var image = new swc.Image { MaxWidth = 16, MaxHeight = 16, StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
+				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
 				swm.RenderOptions.SetBitmapScalingMode(image, ScalingMode);
 				image.DataContextChanged += (sender, e) =>
 				{

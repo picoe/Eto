@@ -21,6 +21,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control = new CustomControls.MultiSizeImage
 			{
+				Handler = this,
 				UseSmallestSpace = true,
 				Stretch = swm.Stretch.Uniform,
 				StretchDirection = swc.StretchDirection.Both
@@ -36,7 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		void SetSource()
 		{
-			Control.Source = image.ToWpfScale(ParentScale, PreferredSize.ToEtoSize());
+			Control.Source = image.ToWpf(ParentScale, UserPreferredSize.ToEtoSize());
 		}
 
 		public Image Image
@@ -46,12 +47,12 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				image = value;
 				var size = image != null ? image.Size : Eto.Drawing.Size.Empty;
-				var ps = PreferredSize;
+				var ps = UserPreferredSize;
 				if (double.IsNaN(ps.Width))
 					ps.Width = size.Width;
 				if (double.IsNaN(ps.Height))
 					ps.Height = size.Height;
-				PreferredSize = ps;
+				UserPreferredSize = ps;
 				SetSource();
 			}
 		}

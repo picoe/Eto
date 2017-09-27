@@ -127,38 +127,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public BorderType Border
 		{
-			get
-			{
-				switch (Control.BorderStyle)
-				{
-					case swf.BorderStyle.FixedSingle:
-						return BorderType.Line;
-					case swf.BorderStyle.None:
-						return BorderType.None;
-					case swf.BorderStyle.Fixed3D:
-						return BorderType.Bezel;
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			get { return Control.BorderStyle.ToEto(); }
 			set
 			{
-				switch (value)
-				{
-					case BorderType.Bezel:
-						Control.BorderStyle = swf.BorderStyle.Fixed3D;
-						break;
-					case BorderType.Line:
-						Control.BorderStyle = swf.BorderStyle.FixedSingle;
-						break;
-					case BorderType.None:
-						Control.BorderStyle = swf.BorderStyle.None;
-						break;
-					default:
-						throw new NotSupportedException();
-				}
+				Control.BorderStyle = value.ToSWF();
                 UpdateScrollSizes();
-
             }
 		}
 

@@ -21,9 +21,9 @@ namespace Eto.Wpf.Drawing
 			control.FontStyle = WpfFontStyle;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = PixelSize;
-			if (setDecorations != null && WpfTextDecorations != null)
+			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
-				setDecorations(WpfTextDecorations);
+				setDecorations(WpfTextDecorationsFrozen);
 			}
 		}
 
@@ -33,9 +33,9 @@ namespace Eto.Wpf.Drawing
 			control.FontStyle = WpfFontStyle;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = PixelSize;
-			if (setDecorations != null && WpfTextDecorations != null)
+			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
-				setDecorations(WpfTextDecorations);
+				setDecorations(WpfTextDecorationsFrozen);
 			}
 		}
 
@@ -45,9 +45,9 @@ namespace Eto.Wpf.Drawing
 			control.FontStyle = WpfFontStyle;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = PixelSize;
-			if (setDecorations != null && WpfTextDecorations != null)
+			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
-				setDecorations(WpfTextDecorations);
+				setDecorations(WpfTextDecorationsFrozen);
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace Eto.Wpf.Drawing
 			control.ApplyPropertyValue(swd.TextElement.FontStyleProperty, WpfFontStyle);
 			control.ApplyPropertyValue(swd.TextElement.FontWeightProperty, WpfFontWeight);
 			control.ApplyPropertyValue(swd.TextElement.FontSizeProperty, PixelSize);
-			control.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, WpfTextDecorations);
+			control.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, WpfTextDecorationsFrozen);
 		}
 
 		sd.Font SDFont
@@ -114,13 +114,17 @@ namespace Eto.Wpf.Drawing
 			return points * (72.0 / 96.0);
 		}
 
-		public sw.FontStyle WpfFontStyle { get; set; }
+		public sw.FontStyle WpfFontStyle { get; private set; }
 
-		public sw.TextDecorationCollection WpfTextDecorations { get; set; }
+		sw.TextDecorationCollection WpfTextDecorations { get; set; }
 
-		public sw.FontWeight WpfFontWeight { get; set; }
+		public sw.TextDecorationCollection WpfTextDecorationsFrozen { get; private set; }
 
-		public double Size { get; set; }
+		void SetFrozenDecorations() => WpfTextDecorationsFrozen = (sw.TextDecorationCollection)WpfTextDecorations?.GetAsFrozen();
+
+		public sw.FontWeight WpfFontWeight { get; private set; }
+
+		public double Size { get; private set; }
 
 		public FontHandler()
 		{
@@ -142,19 +146,25 @@ namespace Eto.Wpf.Drawing
 			this.WpfFontWeight = control.FontWeight;
 			var decorations = control.TextDecorations;
 			if (decorations != null)
+			{
 				this.WpfTextDecorations = new sw.TextDecorationCollection(decorations);
+				SetFrozenDecorations();
+			}
 		}
 
 		public FontHandler(swd.TextSelection range, sw.FrameworkElement control)
 		{
 			var wpfFamily = range.GetPropertyValue(swd.TextElement.FontFamilyProperty) as swm.FontFamily ?? swd.TextElement.GetFontFamily(control);
 			this.Family = new FontFamily(new FontFamilyHandler(wpfFamily));
-			this.Size = PixelsToPoints(range.GetPropertyValue(swd.TextElement.FontSizeProperty) as double? ?? swd.TextElement.GetFontSize(control), control);
+			Size = PixelsToPoints(range.GetPropertyValue(swd.TextElement.FontSizeProperty) as double? ?? swd.TextElement.GetFontSize(control));
 			this.WpfFontStyle = range.GetPropertyValue(swd.TextElement.FontStyleProperty) as sw.FontStyle? ?? swd.TextElement.GetFontStyle(control);
 			this.WpfFontWeight = range.GetPropertyValue(swd.TextElement.FontWeightProperty) as sw.FontWeight? ?? swd.TextElement.GetFontWeight(control);
 			var decorations = range.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
 			if (decorations != null)
+			{
 				this.WpfTextDecorations = new sw.TextDecorationCollection(decorations);
+				SetFrozenDecorations();
+			}
 		}
 
 		public FontHandler(swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
@@ -197,6 +207,7 @@ namespace Eto.Wpf.Drawing
 				WpfTextDecorations.Add(sw.TextDecorations.Underline);
 			if (decoration.HasFlag(FontDecoration.Strikethrough))
 				WpfTextDecorations.Add(sw.TextDecorations.Strikethrough);
+			SetFrozenDecorations();
 			this.decoration = decoration;
 		}
 

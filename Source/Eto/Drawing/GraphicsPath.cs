@@ -342,6 +342,7 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// This is useful when creating a very large number of graphics path objects
 		/// </remarks>
+		[Obsolete("Since 2.4: Use Create() instead")]
 		public static Func<IGraphicsPath> Instantiator
 		{
 			get { return Platform.Instance.Find<IHandler>(); }
@@ -352,7 +353,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public static IGraphicsPath Create()
 		{
-			return Platform.Instance.Create<IHandler> ();
+			return Platform.Instance.CreateGraphicsPath();
 		}
 
 		/// <summary>

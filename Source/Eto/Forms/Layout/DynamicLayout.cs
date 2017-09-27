@@ -83,7 +83,7 @@ namespace Eto.Forms
 	{
 		readonly DynamicTable topTable;
 		DynamicTable currentItem;
-		bool? yscale;
+		Stack<bool?> yscales = new Stack<bool?>();
 
 		/// <summary>
 		/// Gets or sets the top level rows in the layout
@@ -284,7 +284,7 @@ namespace Eto.Forms
 		public DynamicRow BeginHorizontal(bool? yscale = null)
 		{
 			currentItem.AddRow(currentItem.CurrentRow = new DynamicRow());
-			this.yscale = yscale;
+			yscales.Push(yscale);
 			return currentItem.CurrentRow;
 		}
 
@@ -298,7 +298,7 @@ namespace Eto.Forms
 		/// </remarks>
 		public void EndHorizontal()
 		{
-			yscale = null;
+			yscales.Pop();
 			if (currentItem.CurrentRow == null)
 				EndVertical();
 			else
@@ -320,6 +320,45 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Creates a new section where all controls will be centered together.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you want to create a section that groups controls which align themselves together but are centered in the parent.
+		/// When finished adding controls to the centered section, call <see cref="EndCentered"/>.
+		/// To center vertically, set <paramref name="yscale"/> to <c>true</c>.
+		/// </remarks>
+		/// <param name="padding">Padding to apply around the controls, or null to use the <see cref="DefaultPadding"/></param>
+		/// <param name="spacing">Spacing to apply to cells in the section, or null to use the <see cref="DefaultSpacing"/></param>
+		/// <param name="xscale">Xscale of the vertical section</param>
+		/// <param name="yscale">Yscale of the vertical section</param>
+		public void BeginCentered(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		{
+			BeginVertical(Drawing.Padding.Empty, Size.Empty, xscale, yscale);
+			if (yscale == true)
+				Add(null);
+			yscales.Push(yscale);
+			BeginHorizontal();
+			Add(null);
+			BeginVertical(padding, spacing);
+		}
+
+		/// <summary>
+		/// Ends the current centered section.
+		/// </summary>
+		/// <remarks>
+		/// This should be balanced with every call to <see cref="BeginCentered"/>.
+		/// </remarks>
+		public void EndCentered()
+		{
+			EndVertical();
+			Add(null);
+			EndHorizontal();
+			if (yscales.Pop() == true)
+				Add(null);
+			EndVertical();
+		}
+
+		/// <summary>
 		/// Add the control with the optional scaling
 		/// </summary>
 		/// <remarks>
@@ -336,7 +375,7 @@ namespace Eto.Forms
 		{
 			if (xscale == null && currentItem.CurrentRow != null && control == null)
 				xscale = true;
-			yscale = yscale ?? this.yscale;
+			yscale = yscale ?? (yscales.Count > 0 ? yscales.Peek() : null);
 			if (yscale == null && currentItem.CurrentRow == null && control == null)
 				yscale = true;
 			var dynamicControl = new DynamicControl { Control = control, XScale = xscale, YScale = yscale };
@@ -363,9 +402,7 @@ namespace Eto.Forms
 		/// <param name="controls">Controls.</param>
 		public DynamicRow AddSeparateRow(params Control[] controls)
 		{
-			var row = AddSeparateRow(padding: null);
-			row.Add(controls);
-			return row;
+			return AddSeparateRow(padding: null, controls: controls);
 		}
 
 		/// <summary>
@@ -397,6 +434,58 @@ namespace Eto.Forms
 				row.Add(controls);
 			EndVertical();
 			return row;
+		}
+
+		/// <summary>
+		/// Adds a separate vertical column of items in a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// This performs the same as the following, but in a single line:
+		/// <code>
+		/// 	layout.BeginVertical();
+		/// 	layout.Add(control1);
+		/// 	layout.Add(control2);
+		/// 	...
+		/// 	layout.EndVertical();
+		/// </code>
+		/// </remarks>
+		/// <returns>The table added to contain the items</returns>
+		/// <param name="controls">Controls to add initially</param>
+		public DynamicTable AddSeparateColumn(params Control[] controls)
+		{
+			return AddSeparateColumn(padding: null, controls: controls);
+		}
+
+		/// <summary>
+		/// Adds a separate vertical column of items in a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// This performs the same as the following, but in a single line:
+		/// <code>
+		/// 	layout.BeginVertical(padding, spacing, xscale, yscale);
+		/// 	layout.Add(control1);
+		/// 	layout.Add(control2);
+		/// 	...
+		/// 	layout.EndVertical();
+		/// </code>
+		/// </remarks>
+		/// <returns>The table added to contain the items</returns>
+		/// <param name="padding">Padding for the vertical section</param>
+		/// <param name="spacing">Spacing between each cell in the column</param>
+		/// <param name="xscale">Xscale for the vertical section</param>
+		/// <param name="yscale">Yscale for the vertical section</param>
+		/// <param name="controls">Controls to add initially</param>
+		public DynamicTable AddSeparateColumn(Padding? padding = null, int? spacing = null, bool? xscale = null, bool? yscale = null, IEnumerable<Control> controls = null)
+		{
+			var spacingSize = spacing != null ? (Size?)new Size(0, spacing.Value) : null;
+			var table = BeginVertical(padding, spacingSize, xscale, yscale);
+			if (controls != null)
+			{
+				foreach (var control in controls)
+					Add(control);
+			}
+			EndVertical();
+			return table;
 		}
 
 		/// <summary>

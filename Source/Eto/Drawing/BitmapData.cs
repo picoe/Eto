@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 
 namespace Eto.Drawing
 {
@@ -25,6 +27,19 @@ namespace Eto.Drawing
 		readonly int bitsPerPixel;
 		readonly int bytesPerPixel;
 
+		static object IsLocked_Key = new object();
+
+		internal static bool IsImageLocked(Image image)
+		{
+			return image.Properties.Get<bool>(IsLocked_Key);
+		}
+
+		bool IsLocked
+		{
+			get { return Image.Properties.Get<bool>(IsLocked_Key); }
+			set { Image.Properties.Set(IsLocked_Key, value); }
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the BitmapData class
 		/// </summary>
@@ -36,6 +51,11 @@ namespace Eto.Drawing
 		protected BitmapData(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 		{
 			this.image = image;
+
+			if (IsLocked)
+				throw new InvalidOperationException("Image is already locked. Ensure you dispose the BitmapData object explicitly or with a using() block.");
+
+			IsLocked = true;
 			this.data = data;
 			this.scanWidth = scanWidth;
 			this.bitsPerPixel = bitsPerPixel;
@@ -212,10 +232,61 @@ namespace Eto.Drawing
 			{
 				var handler = (ILockableImage)image.Handler;
 				handler.Unlock(this);
+				IsLocked = false;
 			}
 			else
 			{
 				Debug.WriteLine("Caller is missing a call to BitmapData.Dispose()");
+			}
+		}
+
+		/// <summary>
+		/// Gets an enumerable of pixels for each scan line from top to bottom.
+		/// </summary>
+		/// <remarks>
+		/// You can use this to translate the pixel data into an array, e.g. 
+		/// <code>
+		/// int[] argbData = bitmapData.GetPixels().Select(p => p.ToArgb()).ToArray();
+		/// </code>
+		/// </remarks>
+		/// <returns></returns>
+		public IEnumerable<Color> GetPixels()
+		{
+			for (int y = 0; y < Image.Height; y++)
+			{
+				for (int x = 0; x < Image.Width; x++)
+				{
+					yield return GetPixel(x, y);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Use this to set the pixels of the bitmap from an array or other source.
+		/// </summary>
+		/// <remarks>
+		/// For example, you can use this to set the pixel data from an int array like so:
+		/// <code>
+		/// int[] myData;
+		/// bitmapData.SetPixels(myData.Select(Color.FromArgb));
+		/// </code>
+		/// This will set all the pixels up till the end of the enumeration.  
+		/// If there isn't enough data to fill the bitmap entirely, it will not set any additional pixels.
+		/// </remarks>
+		/// <param name="pixels">Enumerator that returns each pixel of the bitmap from top to bottom</param>
+		public void SetPixels(IEnumerable<Color> pixels)
+		{
+			if (pixels == null)
+				throw new ArgumentNullException(nameof(pixels));
+			var e = pixels.GetEnumerator();
+			for (int y = 0; y < Image.Height; y++)
+			{
+				for (int x = 0; x < Image.Width; x++)
+				{
+					if (!e.MoveNext())
+						return;
+					SetPixel(x, y, e.Current);
+				}
 			}
 		}
 	}

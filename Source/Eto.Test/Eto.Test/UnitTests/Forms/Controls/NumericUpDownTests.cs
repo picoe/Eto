@@ -16,7 +16,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 				int valueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
@@ -33,7 +33,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 				int valueChanged = 0;
 				int currentValueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
@@ -61,7 +61,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 				int valueChanged = 0;
 				int currentValueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
@@ -106,7 +106,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 				int valueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
@@ -128,7 +128,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 				int valueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
@@ -148,7 +148,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 				int valueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
@@ -167,7 +167,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 				int valueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
@@ -197,7 +197,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 				int valueChanged = 0;
 				//numeric.MinimumDecimalPlaces = maxDecimalPlaces;
 				numeric.MaximumDecimalPlaces = maxDecimalPlaces;
@@ -219,7 +219,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			TestBase.Invoke(() =>
 			{
-				var numeric = new NumericUpDown();
+				var numeric = new NumericStepper();
 
 				numeric.DecimalPlaces = 3;
 				Assert.AreEqual(3, numeric.DecimalPlaces, "DecimalPlaces isn't roundtripping set values");

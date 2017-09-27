@@ -31,6 +31,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the native WinForms window of the specified Eto window
+		/// </summary>
+		/// <param name="window">Eto window to get the native control for</param>
+		/// <returns>The native WinForms window object.</returns>
+		public static swf.Form ToNative(this Window window)
+		{
+			return window.ToSWF();
+		}
+
+		/// <summary>
 		/// Wraps the specified <paramref name="nativeControl"/> to an Eto control that can be used directly in Eto.Forms code.
 		/// </summary>
 		/// <returns>The eto control wrapper around the native control.</returns>

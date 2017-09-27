@@ -279,7 +279,7 @@ namespace Eto.Mac.Drawing
 			if (bmprep == null)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep?.GetType()));
 
-			return bmprep.ColorAt(x, y).ToEto();
+			return bmprep.ColorAt(x, y).ToEto(false);
 		}
 
 		protected override void Dispose(bool disposing)

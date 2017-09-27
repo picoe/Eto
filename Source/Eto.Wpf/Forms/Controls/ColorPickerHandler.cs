@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using xwt = Xceed.Wpf.Toolkit;
+using sw = System.Windows;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using Eto.Forms;
@@ -11,17 +12,28 @@ using System.ComponentModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoColorPicker : xwt.ColorPicker, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class ColorPickerHandler : WpfControl<xwt.ColorPicker, ColorPicker, ColorPicker.ICallback>, ColorPicker.IHandler
 	{
 		static DependencyPropertyDescriptor dpdIsOpen = DependencyPropertyDescriptor.FromProperty(xwt.ColorPicker.IsOpenProperty, typeof(xwt.ColorPicker));
-		protected override Size DefaultSize { get { return new Size(60, -1); } }
+		protected override sw.Size DefaultSize => new sw.Size(60, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }
 
 		public ColorPickerHandler()
 		{
-			Control = new xwt.ColorPicker
+			Control = new EtoColorPicker
 			{
+				Handler = this,
 				Focusable = true,
 				IsTabStop = true,
 				UsingAlphaChannel = false,
@@ -55,5 +67,13 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set { Control.SelectedColor = value.ToWpf(); }
 		}
+
+		public bool AllowAlpha
+		{
+			get { return Control.UsingAlphaChannel; }
+			set { Control.UsingAlphaChannel = value; }
+		}
+
+		public bool SupportsAllowAlpha => true;
 	}
 }

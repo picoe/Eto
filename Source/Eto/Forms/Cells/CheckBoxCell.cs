@@ -26,7 +26,7 @@ namespace Eto.Forms
 		public CheckBoxCell(string property)
 			: this()
 		{
-			Binding = new PropertyBinding<bool?>(property);
+			Binding = Eto.Forms.Binding.Property<bool?>(property);
 		}
 
 		/// <summary>

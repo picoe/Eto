@@ -80,6 +80,8 @@ namespace Eto.iOS.Forms
 		}
 
 		public bool ShowActivated { get; set; }
+
+		public bool CanFocus { get; set; }
 	}
 }
 

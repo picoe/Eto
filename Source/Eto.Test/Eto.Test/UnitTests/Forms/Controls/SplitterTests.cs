@@ -299,9 +299,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					Panel2 = new Panel { BackgroundColor = SystemColors.ControlBackground }
 				};
 				int? startingPosition = null;
+				double? startingRelativePosition = null;
 				form.Shown += (sender, e) =>
 				{
 					startingPosition = splitter.Position;
+					startingRelativePosition = splitter.RelativePosition;
 					posLabel.Text = startingPosition?.ToString();
 					if (startingPosition == 0)
 					{
@@ -320,6 +322,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						case 0:
 							if (splitter.Position > startingPosition.Value)
 							{
+								if (splitter.RelativePosition <= startingRelativePosition.Value)
+								{
+									success = false;
+									message = "Relative position was not updated, it should be greater than the starting position";
+									form.Close();
+									return;
+								}
 								label.Text = "Now, slide to the left";
 								startingPosition = splitter.Position;
 								stage++;
@@ -328,7 +337,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						case 1:
 							if (splitter.Position < startingPosition.Value)
 							{
-								success = true;
+								if (splitter.RelativePosition >= startingRelativePosition.Value)
+								{
+									success = false;
+									message = "Relative position was not updated, it should be less than the starting position";
+								}
+								else
+									success = true;
 								form.Close();
 							}
 							break;

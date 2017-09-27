@@ -15,7 +15,8 @@ using System.Threading.Tasks;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TreeViewHandler : WpfControl<SelectableTreeView, TreeView, TreeView.ICallback>, TreeView.IHandler
+	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
+	public class TreeViewHandler : WpfControl<TreeViewHandler.EtoTreeView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
 		ContextMenu contextMenu;
 		ITreeStore topNode;
@@ -26,6 +27,8 @@ namespace Eto.Wpf.Forms.Controls
 		// use two templates to refresh individual items by changing its template (hack? yes, fast? yes)
 		sw.HierarchicalDataTemplate template1;
 		sw.HierarchicalDataTemplate template2;
+
+		protected override sw.Size DefaultSize => new sw.Size(100, 100);
 
 		public class EtoTreeViewItem : swc.TreeViewItem, INotifyPropertyChanged
 		{
@@ -215,6 +218,13 @@ namespace Eto.Wpf.Forms.Controls
 			protected override bool IsItemItsOwnContainerOverride(object item)
 			{
 				return item is EtoTreeViewItem;
+			}
+
+			protected override sw.Size MeasureOverride(sw.Size availableSize)
+			{
+				if (IsLoaded)
+					availableSize = availableSize.IfInfinity(Handler.UserPreferredSize.IfNaN(Handler.DefaultSize));
+				return Handler?.MeasureOverride(availableSize, base.MeasureOverride) ?? base.MeasureOverride(availableSize);
 			}
 		}
 

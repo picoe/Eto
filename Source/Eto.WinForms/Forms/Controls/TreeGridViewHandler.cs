@@ -27,13 +27,15 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected override object GetItemAtRow(int row)
 		{
+			if (row >= controller.Count)
+				return null;
 			return controller[row];
 		}
 
 		public TreeGridViewHandler()
 		{
 			controller = new TreeController { Handler = this };
-			controller.CollectionChanged += HandleCollectionChanged;
+			controller.CollectionChanged += (sender, e) => UpdateCollection();
 		}
 
 		public override void OnLoad(EventArgs e)
@@ -98,9 +100,9 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
-			base.Invalidate();
+			base.Invalidate(invalidateChildren);
 			if (this.Widget.Loaded)
 			{
 				Control.Refresh();
@@ -108,10 +110,10 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		void HandleCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void UpdateCollection()
 		{
 			Control.RowCount = controller.Count;
-			if (this.Widget.Loaded)
+			if (Widget.Loaded)
 			{
 				Control.Refresh();
 				AutoSizeColumns();
@@ -122,6 +124,8 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			get
 			{
+				if (Control.SelectedRows.Count == 0)
+					return null;
 				var index = Control.SelectedRows.OfType<swf.DataGridViewRow>().Select(r => r.Index).FirstOrDefault();
 				return controller[index];
 			}
@@ -136,6 +140,17 @@ namespace Eto.WinForms.Forms.Controls
 				}
 				else
 					Control.ClearSelection();
+			}
+		}
+
+		public IEnumerable<object> SelectedItems
+		{
+			get
+			{
+				foreach (swf.DataGridViewRow row in Control.SelectedRows)
+				{
+					yield return GetItemAtRow(row.Index);
+				}
 			}
 		}
 
@@ -331,6 +346,40 @@ namespace Eto.WinForms.Forms.Controls
 
 		void ITreeHandler.PostResetTree()
 		{
+		}
+
+		public void ReloadData()
+		{
+			var selectedItems = SelectedItems.OfType<ITreeGridItem>().ToList();
+			SupressSelectionChanged++;
+			controller.ReloadData();
+			Control.ClearSelection();
+			bool selectionChanged = false;
+			foreach (var selectedItem in selectedItems)
+			{
+				var row = controller.IndexOf(selectedItem);
+				if (row >= 0)
+					Control.Rows[row].Selected = true;
+				else
+					selectionChanged = true;
+			}
+			if (selectionChanged)
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			SupressSelectionChanged--;
+		}
+
+		public void ReloadItem(ITreeGridItem item)
+		{
+			ReloadData();
+		}
+
+		public ITreeGridItem GetCellAt(PointF location, out int column)
+		{
+			var result = Control.HitTest((int)location.X, (int)location.Y);
+			column = result.ColumnIndex;
+			if (result.RowIndex == -1)
+				return null;
+			return GetItemAtRow(result.RowIndex) as ITreeGridItem;
 		}
 	}
 }

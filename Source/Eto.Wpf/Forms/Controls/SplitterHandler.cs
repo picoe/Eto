@@ -9,6 +9,16 @@ using System.ComponentModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoGrid : swc.Grid, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class SplitterHandler : WpfContainer<swc.Grid, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
 		readonly swc.GridSplitter splitter;
@@ -27,7 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public SplitterHandler()
 		{
-			Control = new swc.Grid();
+			Control = new EtoGrid { Handler = this };
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
@@ -87,6 +97,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		void SetInitialPosition()
 		{
+			panel1Visible = panel1?.Visible ?? false;
+			panel2Visible = panel2?.Visible ?? false;
+
 			// controls should be stretched to fit panels
 			SetStretch(panel1);
 			SetStretch(panel2);
@@ -371,7 +384,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (desired)
 			{
-				var size = PreferredSize;
+				var size = UserPreferredSize;
 				var pick = Orientation == Orientation.Horizontal ? size.Width : size.Height;
 				if (pick >= 0)
 					return pick - splitterWidth;
@@ -554,9 +567,10 @@ namespace Eto.Wpf.Forms.Controls
 					SetStretch(panel1);
 					if (Widget.Loaded)
 						control.SetScale(true, true);
+
 					pane1.Children.Add(control.ContainerControl);
-					panel1Visible = panel1.Visible;
 					dpdVisibility.AddValueChanged(control.ContainerControl, HandlePanel1IsVisibleChanged);
+					HandlePanelVisibleChanged(ref panel1Visible, panel1);
 				}
 			}
 		}
@@ -581,9 +595,9 @@ namespace Eto.Wpf.Forms.Controls
 					if (Widget.Loaded)
 						control.SetScale(true, true);
 					pane2.Children.Add(control.ContainerControl);
-					panel2Visible = panel2.Visible;
 
 					dpdVisibility.AddValueChanged(control.ContainerControl, HandlePanel2IsVisibleChanged);
+					HandlePanelVisibleChanged(ref panel2Visible, panel2);
 				}
 			}
 		}
@@ -599,7 +613,7 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 		void HandlePanelVisibleChanged(ref bool isVisible, Control panel)
-		{ 
+		{
 			if ((Control.IsLoaded || WasLoaded) && isVisible != panel.Visible)
 			{
 				isVisible = panel.Visible;

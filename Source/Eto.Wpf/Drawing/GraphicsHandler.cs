@@ -5,6 +5,8 @@ using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
 using System.Globalization;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Wpf.Drawing
 {
@@ -79,10 +81,9 @@ namespace Eto.Wpf.Drawing
 			this.image = image;
 			initialClip = new RectangleF(0, 0, image.Width, image.Height);
 			bounds = initialClip.ToWpf();
-			drawingVisual = new swm.DrawingVisual();
-			visual = drawingVisual;
+			visual = drawingVisual = new swm.DrawingVisual();
 			Control = drawingVisual.RenderOpen();
-			Control.DrawImage(image.ControlObject as swm.ImageSource, bounds);
+			Control.DrawImage(image.ToWpf(1), bounds);
         }
 
 		protected override void Initialize()
@@ -131,10 +132,29 @@ namespace Eto.Wpf.Drawing
 			Control.DrawLine(wpfPen, new sw.Point(startx, starty), new sw.Point(endx, endy));
 		}
 
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			using (var path = new GraphicsPath())
+			{
+				path.AddLines(points);
+				DrawPath(pen, path);
+			}
+		}
+
+		public void DrawPolygon(Pen pen, IEnumerable<PointF> points)
+		{
+			using (var path = new GraphicsPath())
+			{
+				path.AddLines(points);
+				path.CloseFigure();
+				DrawPath(pen, path);
+			}
+		}
+
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
 			SetOffset(true);
-			var wpfBrush = brush.ToWpf(true);
+			var wpfBrush = brush.ToWpf();
 			Control.DrawRectangle(wpfBrush, null, WpfExtensions.NormalizedRect(x, y, width, height));
 		}
 
@@ -147,7 +167,7 @@ namespace Eto.Wpf.Drawing
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
 			SetOffset(true);
-			Control.DrawEllipse(brush.ToWpf(true), null, new sw.Point(x + width / 2.0, y + height / 2.0), width / 2.0, height / 2.0);
+			Control.DrawEllipse(brush.ToWpf(), null, new sw.Point(x + width / 2.0, y + height / 2.0), width / 2.0, height / 2.0);
 		}
 
 		public static swm.Geometry CreateArcDrawing(sw.Rect rect, double startDegrees, double sweepDegrees, bool closed)
@@ -211,14 +231,14 @@ namespace Eto.Wpf.Drawing
 			else
 			{
 				var arc = CreateArcDrawing(WpfExtensions.NormalizedRect(x, y, width, height), startAngle, sweepAngle, true);
-				Control.DrawGeometry(brush.ToWpf(true), null, arc);
+				Control.DrawGeometry(brush.ToWpf(), null, arc);
 			}
 		}
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
 			SetOffset(true);
-			Control.DrawGeometry(brush.ToWpf(true), null, path.ToWpf());
+			Control.DrawGeometry(brush.ToWpf(), null, path.ToWpf());
 		}
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
@@ -236,7 +256,7 @@ namespace Eto.Wpf.Drawing
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
 			SetOffset(true);
-			var src = image.ToWpfScale((float)DPI, new Size((int)width, (int)height));
+			var src = image.ToWpf((float)DPI, new Size((int)width, (int)height));
 			var size = new SizeF((float)src.PixelWidth, (float)src.PixelHeight) / (float)DPI;
 
 			if ((ImageInterpolation == ImageInterpolation.High || ImageInterpolation == ImageInterpolation.Default)
@@ -254,7 +274,7 @@ namespace Eto.Wpf.Drawing
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
 			SetOffset(true);
-			var src = image.ToWpfScale((float)DPI);
+			var src = image.ToWpf((float)DPI);
             Control.PushClip(new swm.RectangleGeometry(destination.ToWpf()));
             bool scale = source.Size != destination.Size;
             bool translate = source.X > 0 || source.Y > 0;
@@ -288,8 +308,8 @@ namespace Eto.Wpf.Drawing
 			{
 				var brush = b.ToWpf();
 				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
-				if (fontHandler.WpfTextDecorations != null)
-					formattedText.SetTextDecorations(fontHandler.WpfTextDecorations, 0, text.Length);
+				if (fontHandler.WpfTextDecorationsFrozen != null)
+					formattedText.SetTextDecorations(fontHandler.WpfTextDecorationsFrozen, 0, text.Length);
 				Control.DrawText(formattedText, new sw.Point(x, y));
 			}
 		}
@@ -319,18 +339,15 @@ namespace Eto.Wpf.Drawing
 
 		bool Close()
 		{
+			CloseGroup();
 			if (image != null)
 			{
 				Control.Close();
 				var handler = (BitmapHandler)image.Handler;
-				var bmp = handler.Control;
-				var newbmp = bmp as swmi.RenderTargetBitmap;
-				if (newbmp == null)
-				{
-					newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
-					handler.SetBitmap(newbmp);
-				}
+				var bmp = image.ToWpf();
+				var newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
 				newbmp.RenderWithCollect(visual);
+				handler.SetBitmap(newbmp);
 				return true;
 			}
 			return false;
@@ -354,8 +371,12 @@ namespace Eto.Wpf.Drawing
 			{
 				if (value != AntiAlias)
 				{
-					CreateGroup();
-					swm.RenderOptions.SetEdgeMode(group, value ? swm.EdgeMode.Unspecified : swm.EdgeMode.Aliased);
+					CloseGroup();
+					if (value != AntiAlias)
+					{
+						CreateGroup();
+						swm.RenderOptions.SetEdgeMode(group, value ? swm.EdgeMode.Unspecified : swm.EdgeMode.Aliased);
+					}
 				}
 			}
 		}
@@ -377,7 +398,6 @@ namespace Eto.Wpf.Drawing
 		{
 			if (disposing)
 			{
-				CloseGroup();
 				Close();
 			}
 			base.Dispose(disposing);
@@ -385,12 +405,11 @@ namespace Eto.Wpf.Drawing
 
 		void CreateGroup()
 		{
-			CloseGroup();
 			if (baseContext == null)
 				baseContext = Control;
+			RewindAll();
 			group = new swm.DrawingGroup();
 			Control = group.Open();
-
 			ApplyAll();
 		}
 
@@ -403,6 +422,7 @@ namespace Eto.Wpf.Drawing
 				baseContext.DrawDrawing(group);
 				Control = baseContext;
 				group = null;
+				baseContext = null;
 				ApplyAll();
 			}
 		}
@@ -571,6 +591,7 @@ namespace Eto.Wpf.Drawing
 			var rect = clipBounds ?? initialClip;
 			if (drawingVisual != null)
 			{
+				CloseGroup();
 				// bitmap
 				Control.Close();
 				var newbmp = new swmi.RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, 96, 96, swm.PixelFormats.Pbgra32);
@@ -589,10 +610,9 @@ namespace Eto.Wpf.Drawing
 				maskgeometry = swm.Geometry.Combine(boundsgeometry, maskgeometry, swm.GeometryCombineMode.Exclude, null);
 				var dr = new swm.GeometryDrawing(swm.Brushes.Black, null, maskgeometry);
 				var db = new swm.DrawingBrush(dr);
-				//db.Transform = new swm.TranslateTransform (0.5, 0.5);
 
+				visual = drawingVisual = new swm.DrawingVisual();
 				Control = drawingVisual.RenderOpen();
-				Control.PushGuidelineSet(new swm.GuidelineSet(new [] { bounds.Left, bounds.Right }, new [] { bounds.Top, bounds.Bottom }));
 				Control.PushOpacityMask(db);
 				Control.DrawImage(newbmp, bounds);
 				Control.Pop();

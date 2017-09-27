@@ -9,7 +9,8 @@ namespace Eto.Test.Sections.Controls
 	public class KitchenSinkSection : Panel
 	{
 		Bitmap bitmap1 = TestIcons.TestImage;
-		Icon icon1 = TestIcons.TestIcon;
+		Icon icon1 = TestIcons.TestIcon.WithSize(16, 16);
+		Icon icon2 = TestIcons.TestImage.WithSize(16, 16);
 
 		public KitchenSinkSection()
 		{
@@ -33,10 +34,20 @@ namespace Eto.Test.Sections.Controls
 			return container;
 		}
 
-		Control ComboBox()
+		Control DropDown()
 		{
 			var control = new DropDown();
-			control.Items.Add(new ListItem { Text = "Combo Box" });
+			control.Items.Add(new ListItem { Text = "DropDown" });
+			control.Items.Add(new ListItem { Text = "Item 2" });
+			control.Items.Add(new ListItem { Text = "Item 3" });
+			control.SelectedIndex = 0;
+			return control;
+		}
+
+		Control ComboBox()
+		{
+			var control = new ComboBox();
+			control.Items.Add(new ListItem { Text = "ComboBox" });
 			control.Items.Add(new ListItem { Text = "Item 2" });
 			control.Items.Add(new ListItem { Text = "Item 3" });
 			control.SelectedIndex = 0;
@@ -54,9 +65,9 @@ namespace Eto.Test.Sections.Controls
 		Control ListBox()
 		{
 			var control = new ListBox { Size = new Size(150, 50) };
-			control.Items.Add(new ImageListItem { Text = "Simple List Box 1", Image = bitmap1 });
-			control.Items.Add(new ImageListItem { Text = "Simple List Box 2", Image = icon1 });
-			control.Items.Add(new ImageListItem { Text = "Simple List Box 3", Image = bitmap1 });
+			control.Items.Add(new ImageListItem { Text = "ListBox", Image = icon1 });
+			control.Items.Add(new ImageListItem { Text = "ListBox 2", Image = icon2 });
+			control.Items.Add(new ImageListItem { Text = "ListBox 3", Image = icon1 });
 			return control;
 		}
 
@@ -66,34 +77,52 @@ namespace Eto.Test.Sections.Controls
 			layout.BeginVertical();
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Label", VerticalAlignment = VerticalAlignment.Center });
-			layout.AddAutoSized(new Button { Text = "Button Control" }, centered: true);
+			layout.AddCentered(new Button { Text = "Button" });
+			layout.AddCentered(new LinkButton { Text = "LinkButton" });
+			layout.Add(new Label { Text = "ImageView", VerticalAlignment = VerticalAlignment.Center });
 			layout.Add(new ImageView { Image = icon1, Size = new Size(64, 64) });
 			layout.Add(null);
 			layout.EndHorizontal();
-			layout.EndBeginVertical();
-			layout.AddRow(new CheckBox { Text = "Check Box (/w three state)", ThreeState = true, Checked = null }, RadioButtons(), null);
-			layout.EndBeginVertical();
-			layout.AddRow(new TextBox { Text = "Text Box", Size = new Size(150, -1) }, new PasswordBox { Text = "Password Box", Size = new Size(150, -1) }, null);
-			layout.EndBeginVertical();
-			layout.AddRow(ComboBox(), new DateTimePicker { Value = DateTime.Now }, null);
-			layout.EndBeginVertical();
-			layout.AddRow(new NumericUpDown { Value = 50 }, null);
-			layout.EndBeginVertical();
-			layout.AddRow(ListBox(), new TextArea { Text = "Text Area", Size = new Size(150, 50) }, null);
-			layout.EndBeginVertical();
-			layout.AddRow(new Slider { Value = 50, TickFrequency = 10 });
-			layout.EndBeginVertical();
-			layout.AddRow(new ProgressBar { Value = 25 });
-			layout.EndBeginVertical();
-			layout.AddRow(new GroupBox { Text = "Group Box", Content = new Label { Text = "I'm in a group box" } });
 
 			layout.EndBeginVertical();
 
+			layout.AddSeparateRow(new CheckBox { Text = "CheckBox", ThreeState = true }, RadioButtons(), null);
+			layout.AddSeparateRow(new TextBox { Text = "TextBox", Size = new Size(150, -1) }, "PasswordBox", new PasswordBox { Text = "PasswordBox", Size = new Size(150, -1) }, null);
+			layout.AddSeparateRow(DropDown(), ComboBox(), null);
+			layout.AddSeparateRow("Stepper", new Stepper(), "NumericStepper", new NumericStepper { Value = 50, DecimalPlaces = 1 }, new TextStepper { Text = "TextStepper" }, null);
+
+			layout.BeginVertical();
+			layout.BeginHorizontal();
+			layout.BeginVertical();
+			layout.AddSeparateRow("DateTimePicker", new DateTimePicker { Value = DateTime.Now }, null);
+			layout.AddSeparateRow(new TextArea { Text = "TextArea", Size = new Size(150, 50) }, CreateRichTextArea(), null);
+			layout.AddSeparateRow(ListBox(), new GroupBox { Text = "GroupBox", Content = new Label { Text = "I'm in a group box" } }, null);
+			layout.EndVertical();
+			layout.AddSeparateColumn("Calendar", new Calendar(), null);
+			layout.EndHorizontal();
+			layout.EndVertical();
+
+			layout.AddSeparateRow("Slider", new Slider { Value = 50, TickFrequency = 10 });
+			layout.AddSeparateRow("ProgressBar", new ProgressBar { Value = 25, Width = 100 }, "Spinner", new Spinner { Enabled = true }, null);
+			layout.EndVertical();
 
 			layout.EndVertical();
 			layout.Add(null);
 
 			return layout;
+		}
+
+		RichTextArea CreateRichTextArea()
+		{
+			var richTextArea = new RichTextArea { Text = "RichTextArea", Size = new Size(150, 50) };
+			richTextArea.Buffer.SetBold(new Range<int>(0, 3), true);
+			richTextArea.Buffer.SetForeground(new Range<int>(0, 3), Colors.Blue);
+			richTextArea.Buffer.SetItalic(new Range<int>(4, 7), true);
+			richTextArea.Buffer.SetStrikethrough(new Range<int>(4, 7), true);
+			richTextArea.Buffer.SetForeground(new Range<int>(4, 7), Colors.Green);
+			richTextArea.Buffer.SetUnderline(new Range<int>(8, 11), true);
+			richTextArea.Buffer.SetForeground(new Range<int>(8, 11), Colors.Red);
+			return richTextArea;
 		}
 
 		IEnumerable<object> ComboCellItems()
@@ -109,15 +138,15 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new GridView { Size = new Size(-1, 150) };
 
-			control.Columns.Add(new GridColumn { DataCell = new ImageViewCell(0), HeaderText = "Image" });
-			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell(1), HeaderText = "Check", Editable = true });
-			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(2), HeaderText = "Text", Editable = true });
-			control.Columns.Add(new GridColumn { DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
+			control.Columns.Add(new GridColumn { DataCell = new ImageViewCell(0), HeaderText = "ImageViewCell" });
+			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell(1), HeaderText = "CheckBoxCell", Editable = true });
+			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(2), HeaderText = "TextBoxCell", Editable = true });
+			control.Columns.Add(new GridColumn { DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "ComboBoxCell", Editable = true });
 
 			var items = new List<GridItem>();
-			items.Add(new GridItem(bitmap1, true, "Text in Grid 1", "1"));
-			items.Add(new GridItem(icon1, false, "Text in Grid 2", "2"));
-			items.Add(new GridItem(bitmap1, null, "Text in Grid 3", "3"));
+			items.Add(new GridItem(bitmap1, true, "GridView 1", "1"));
+			items.Add(new GridItem(icon1, false, "GridView 2", "2"));
+			items.Add(new GridItem(bitmap1, null, "GridView 3", "3"));
 
 			control.DataStore = items;
 
@@ -128,18 +157,18 @@ namespace Eto.Test.Sections.Controls
 		{
 			if (level > 4)
 				yield break;
-			yield return new TreeGridItem(TreeChildren(level + 1), bitmap1, "Text in Tree 1", true, "1") { Expanded = level < 2 };
-			yield return new TreeGridItem(icon1, "Text in Tree 2", false, "2");
-			yield return new TreeGridItem(TreeChildren(level + 1), bitmap1, "Text in Tree 3", null, "3");
+			yield return new TreeGridItem(TreeChildren(level + 1), bitmap1, "TreeGridView 1", true, "1") { Expanded = level < 2 };
+			yield return new TreeGridItem(icon1, "TreeGridView 2", false, "2");
+			yield return new TreeGridItem(TreeChildren(level + 1), bitmap1, "TreeGridView 3", null, "3");
 		}
 
 		Control TreeView()
 		{
 			var control = new TreeGridView { Size = new Size(-1, 150) };
 
-			control.Columns.Add(new GridColumn { DataCell = new ImageTextCell(0, 1), HeaderText = "Image and Text" });
-			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell(2), HeaderText = "Check", Editable = true, AutoSize = true });
-			control.Columns.Add(new GridColumn { DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
+			control.Columns.Add(new GridColumn { DataCell = new ImageTextCell(0, 1), HeaderText = "ImageTextCell" });
+			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell(2), HeaderText = "CheckBoxCell", Editable = true, AutoSize = true });
+			control.Columns.Add(new GridColumn { DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "ComboBoxCell", Editable = true });
 
 			control.DataStore = new TreeGridItemCollection(TreeChildren());
 
@@ -151,7 +180,7 @@ namespace Eto.Test.Sections.Controls
 			try
 			{
 				var control = new WebView { Size = new Size(-1, 100) };
-				control.LoadHtml("<html><head><title>Hello</title></head><body><h1>Web View</h1><p>This is a web view loaded with a html string</p></body>");
+				control.LoadHtml("<html><head><title>Hello</title></head><body><h1>WebView</h1><p>This is a web view loaded with a html string</p></body>");
 				return control;
 			}
 			catch (Exception)

@@ -39,6 +39,32 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class DropDownHandler : MacControl<NSPopUpButton, DropDown, DropDown.ICallback>, DropDown.IHandler
 	{
+		class MenuDelegate : NSMenuDelegate
+		{
+			WeakReference handler;
+
+			public DropDownHandler Handler
+			{
+				get { return handler?.Target as DropDownHandler; }
+				set { handler = new WeakReference(value); }
+			}
+
+			public override void MenuWillHighlightItem(NSMenu menu, NSMenuItem item)
+			{
+			}
+
+			public override void MenuWillOpen(NSMenu menu)
+			{
+				Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+			}
+
+			public override void MenuDidClose(NSMenu menu)
+			{
+				Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+			}
+		}
+
+
 		CollectionHandler collection;
 
 		public class EtoPopUpButtonCell : NSPopUpButtonCell
@@ -127,13 +153,19 @@ namespace Eto.Mac.Forms.Controls
 				return (int)Handler.Control.Menu.IndexOf(binding.GetValue(item));
 			}
 
+			NSMenuItem CreateItem(object dataItem)
+			{
+				var item = new NSMenuItem(Handler.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty);
+				item.Image = Handler.Widget.ItemImageBinding?.GetValue(dataItem).ToNS();
+				return item;
+			}
+
 			public override void AddRange(IEnumerable<object> items)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				var binding = Handler.Widget.ItemTextBinding;
-				foreach (var item in items.Select(r => binding.GetValue(r)))
+				foreach (var item in items)
 				{
-					Handler.Control.Menu.AddItem(new NSMenuItem(item));
+					Handler.Control.Menu.AddItem(CreateItem(item));
 				}
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
@@ -143,8 +175,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void AddItem(object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.Control.Menu.AddItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))));
+				Handler.Control.Menu.AddItem(CreateItem(item));
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
@@ -153,8 +184,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void InsertItem(int index, object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.Control.Menu.InsertItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))), index);
+				Handler.Control.Menu.InsertItem(CreateItem(item), index);
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
@@ -240,6 +270,26 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.Bordered; }
 			set { Control.Bordered = value; }
+		}
+
+		void EnsureDelegate()
+		{
+			if (Control.Menu.Delegate == null)
+				Control.Menu.Delegate = new MenuDelegate { Handler = this };
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case DropDown.DropDownOpeningEvent:
+				case DropDown.DropDownClosedEvent:
+					EnsureDelegate();
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

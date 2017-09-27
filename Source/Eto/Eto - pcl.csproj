@@ -22,7 +22,6 @@
     <DefineConstants>TRACE;DEBUG;DESKTOP;MOBILE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>..\..\BuildOutput\pcl\Debug\Eto.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -31,6 +30,7 @@
     <DefineConstants>TRACE;DESKTOP;MOBILE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>..\..\BuildOutput\pcl\Release\Eto.xml</DocumentationFile>
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -119,7 +119,7 @@
     <Compile Include="Forms\Controls\MouseEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\NumericUpDown.cs" />
+    <Compile Include="Forms\Controls\NumericStepper.cs" />
     <Compile Include="Forms\Controls\Panel.cs" />
     <Compile Include="Forms\Controls\RadioButton.cs" />
     <Compile Include="Forms\Controls\Scrollable.cs" />
@@ -144,7 +144,6 @@
     <Compile Include="Forms\Controls\WebView.cs" />
     <Compile Include="Forms\Clipboard.cs" />
     <Compile Include="Forms\CommonDialog.cs" />
-    <Compile Include="Forms\ColorDialog.cs" />
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
@@ -251,6 +250,7 @@
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
     <Compile Include="Forms\Controls\Spinner.cs" />
     <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
+    <Compile Include="Forms\ColorDialog.cs" />
     <Compile Include="Forms\Command.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -330,11 +330,31 @@
     <Compile Include="Drawing\FontConverter.cs" />
     <Compile Include="UnhandledExceptionEventHandler.cs" />
     <Compile Include="Drawing\IconFrame.cs" />
+    <Compile Include="Forms\AboutDialog.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedAboutHandler.cs" />
+    <Compile Include="Forms\Controls\Stepper.cs" />
+    <Compile Include="Forms\Controls\TextStepper.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedStepperHandler.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedTextStepperHandler.cs" />
+    <Compile Include="Forms\Binding\IValueConverter.cs" />
+    <Compile Include="Forms\Controls\FilePicker.cs" />
+    <Compile Include="FileAction.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedFilePickerHandler.cs" />
+    <Compile Include="Forms\FileFilter.cs" />
+    <Compile Include="Forms\Controls\FontPicker.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedFontPickerHandler.cs" />
+    <Compile Include="Forms\OpenWithDialog.cs" />
+    <Compile Include="Forms\Controls\DocumentControl.cs" />
+    <Compile Include="Forms\Controls\DocumentPage.cs" />
+    <Compile Include="Forms\TrayIndicator.cs" />
+    <Compile Include="Forms\Notification.cs" />
+    <Compile Include="Forms\Controls\GestureEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\LICENSE">
+    <Content Include="..\..\LICENSE">
       <Link>LICENSE</Link>
-    </None>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\Shared\Common.targets" />
   <ProjectExtensions>
@@ -342,8 +362,8 @@
       <Properties>
         <Policies>
           <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentBlock="True" IndentBraces="False" IndentSwitchCaseSection="True" LabelPositioning="OneLess" NewLinesForBracesInTypes="True" NewLinesForBracesInMethods="True" SpaceWithinMethodDeclarationParenthesis="False" SpaceBetweenEmptyMethodDeclarationParentheses="False" SpaceWithinMethodCallParentheses="False" SpaceBetweenEmptyMethodCallParentheses="False" SpaceAfterControlFlowStatementKeyword="True" SpaceWithinExpressionParentheses="False" SpaceWithinCastParentheses="False" SpaceWithinOtherParentheses="False" SpaceAfterCast="False" SpacesIgnoreAroundVariableDeclaration="False" SpaceBetweenEmptySquareBrackets="False" SpaceWithinSquareBrackets="False" SpaceAfterColonInBaseTypeDeclaration="True" SpaceAfterComma="True" SpaceAfterDot="False" SpaceAfterSemicolonsInForStatement="True" SpaceBeforeColonInBaseTypeDeclaration="True" SpaceBeforeComma="False" SpaceBeforeDot="False" SpaceBeforeSemicolonsInForStatement="False" SpacingAroundBinaryOperator="Single" WrappingPreserveSingleLine="True" WrappingKeepStatementsOnSingleLine="True" PlaceSystemDirectiveFirst="True" IndentSwitchSection="True" NewLinesForBracesInProperties="True" NewLinesForBracesInAccessors="True" NewLinesForBracesInAnonymousMethods="True" NewLinesForBracesInControlBlocks="True" NewLinesForBracesInAnonymousTypes="True" NewLinesForBracesInObjectCollectionArrayInitializers="True" NewLinesForBracesInLambdaExpressionBody="True" NewLineForElse="True" NewLineForCatch="True" NewLineForFinally="True" NewLineForMembersInObjectInit="True" NewLineForMembersInAnonymousTypes="True" NewLineForClausesInQuery="True" SpacingAfterMethodDeclarationName="False" SpaceAfterMethodCallName="False" SpaceBeforeOpenSquareBracket="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
-          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+          <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>
     </MonoDevelop>

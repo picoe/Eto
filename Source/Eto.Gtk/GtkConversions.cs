@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
@@ -90,6 +91,11 @@ namespace Eto.GtkSharp
 		public static Color ToEto(this Gdk.Color color)
 		{
 			return new Color((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue);
+		}
+
+		public static Color ToEto(this Gdk.Color color, ushort alpha)
+		{
+			return new Color((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue, (float)alpha / ushort.MaxValue);
 		}
 
 		public static Gdk.Size ToGdk(this Size size)
@@ -205,7 +211,7 @@ namespace Eto.GtkSharp
 				case MessageBoxButtons.YesNo:
 					return Gtk.ButtonsType.YesNo;
 				case MessageBoxButtons.YesNoCancel:
-					return Gtk.ButtonsType.YesNo;
+					return Gtk.ButtonsType.None;
 			}
 		}
 
@@ -285,9 +291,11 @@ namespace Eto.GtkSharp
 			return new Gtk.PageRange { Start = range.Start - 1, End = range.End - 1 };
 		}
 
-		public static Range<int> ToEto(this Gtk.PageRange range)
+		public static Range<int> ToEto(this Gtk.PageRange[] ranges)
 		{
-			return new Range<int>(range.Start + 1, range.End);
+			if (ranges == null || ranges.Length == 0)
+				return new Range<int>(1, 0);
+			return new Range<int>(ranges.Min(r => r.Start) + 1, ranges.Max(r => r.End));
 		}
 
 		public static Gtk.PrintPages ToGtk(this PrintSelection value)
@@ -413,13 +421,17 @@ namespace Eto.GtkSharp
 
 		public static IMatrix ToEto(this Cairo.Matrix matrix)
 		{
-			return new MatrixHandler(matrix);
+			return new MatrixHandler(matrix ?? new Cairo.Matrix());
 		}
 
 		public static Gdk.Pixbuf ToGdk(this Image image)
 		{
-			var handler = image.Handler as IGtkPixbuf;
-			return handler != null ? handler.Pixbuf : null;
+			return (image?.Handler as IGtkPixbuf)?.Pixbuf;
+		}
+
+		public static Gdk.Pixbuf ToGdk(this Image image, Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear, bool shrink = false)
+		{
+			return (image?.Handler as IGtkPixbuf)?.GetPixbuf(maxSize, interpolation, shrink);
 		}
 
 		public static void SetCairoSurface(this Image image, Cairo.Context context, float x, float y)
@@ -626,5 +638,83 @@ namespace Eto.GtkSharp
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Gtk.ShadowType ToGtk(this BorderType border)
+		{
+			switch (border)
+			{
+				case BorderType.Bezel:
+					return Gtk.ShadowType.In;
+				case BorderType.Line:
+					return Gtk.ShadowType.In;
+				case BorderType.None:
+					return Gtk.ShadowType.None;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static Pango.Alignment ToPango(this TextAlignment alignment)
+		{
+			switch (alignment)
+			{
+				case TextAlignment.Left:
+					return Pango.Alignment.Left;
+				case TextAlignment.Center:
+					return Pango.Alignment.Center;
+				case TextAlignment.Right:
+					return Pango.Alignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static float ToAlignment(this TextAlignment alignment)
+		{
+			switch (alignment)
+			{
+				case TextAlignment.Left:
+					return 0;
+				case TextAlignment.Center:
+					return 0.5f;
+				case TextAlignment.Right:
+					return 1f;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static TextAlignment ToEto(this Pango.Alignment alignment)
+		{
+			switch (alignment)
+			{
+				case Pango.Alignment.Left:
+					return TextAlignment.Left;
+				case Pango.Alignment.Center:
+					return TextAlignment.Center;
+				case Pango.Alignment.Right:
+					return TextAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static float ToAlignment(this VerticalAlignment alignment)
+		{
+			switch (alignment)
+			{
+				case VerticalAlignment.Stretch:
+				case VerticalAlignment.Top:
+					return 0;
+				case VerticalAlignment.Center:
+					return 0.5f;
+				case VerticalAlignment.Bottom:
+					return 1f;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+
 	}
 }

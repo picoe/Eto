@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -9,63 +10,199 @@ namespace Eto.Test.Sections.Controls
 	public class TreeGridViewSection : Scrollable
 	{
 		int expanded;
-		CheckBox allowCollapsing;
-		CheckBox allowExpanding;
-		static Image Image = TestIcons.TestIcon;
+		readonly CheckBox allowCollapsing;
+		readonly CheckBox allowExpanding;
+		readonly TreeGridView grid;
+		int newItemCount;
+		static readonly Image Image = TestIcons.TestIcon;
+		Label hoverNodeLabel;
+		bool cancelLabelEdit;
 
 		public TreeGridViewSection()
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+			grid = ImagesAndMenu();
 
-			layout.BeginHorizontal();
-			layout.Add(new Label());
-			layout.BeginVertical();
-			layout.BeginHorizontal();
-			layout.Add(null);
-			layout.Add(allowExpanding = new CheckBox { Text = "Allow Expanding", Checked = true });
-			layout.Add(allowCollapsing = new CheckBox { Text = "Allow Collapsing", Checked = true });
-			layout.Add(null);
-			layout.EndHorizontal();
-			layout.EndVertical();
-			layout.EndHorizontal();
+			layout.AddSeparateRow(
+				null,
+				allowExpanding = new CheckBox { Text = "Allow Expanding", Checked = true },
+				allowCollapsing = new CheckBox { Text = "Allow Collapsing", Checked = true },
+				ShowHeaderCheckBox(grid),
+				null
+			);
+			layout.AddSeparateRow(null, InsertButton(), AddChildButton(), RemoveButton(), ExpandButton(), CollapseButton(), null);
+			layout.AddSeparateRow(null, EnabledCheck(), AllowMultipleSelect(), "Border", CreateBorderType(grid), null);
+			layout.AddSeparateRow(null, ReloadDataButton(grid), null);
 
-			layout.AddRow(new Label { Text = "Simple" }, Default());
-
-			layout.AddRow(new Label { Text = "With Images\n&& Context Menu" }, ImagesAndMenu());
-			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
-
-			layout.Add(null, false, true);
+			layout.Add(grid, yscale: true);
+			layout.Add(HoverNodeLabel());
 
 			Content = layout;
 		}
 
-		TreeGridItem CreateSimpleTreeItem(int level, string name)
+		Control ShowHeaderCheckBox(TreeGridView grid)
 		{
-			var item = new TreeGridItem
-			{
-				Expanded = expanded++ % 2 == 0
-			};
-			item.Values = new object[] { "col 0 - " + name };
-			if (level < 4)
-			{
-				for (int i = 0; i < 4; i++)
-				{
-					item.Children.Add(CreateSimpleTreeItem(level + 1, name + " " + i));
-				}
-			}
-			return item;
+			var control = new CheckBox { Text = "ShowHeader" };
+			control.CheckedBinding.Bind(grid, g => g.ShowHeader);
+			return control;
 		}
 
-		Control Default()
+		Control ReloadDataButton(TreeGridView grid)
 		{
-			var control = new TreeGridView
+			var control = new Button { Text = "ReloadData" };
+			control.Click += (sender, e) => grid.ReloadData();
+			return control;
+		}
+
+		Control CreateBorderType(TreeGridView grid)
+		{
+			var borderType = new EnumDropDown<BorderType>();
+			borderType.SelectedValueBinding.Bind(grid, g => g.Border);
+			return borderType;
+		}
+
+		Control HoverNodeLabel()
+		{
+			hoverNodeLabel = new Label();
+
+			grid.MouseMove += (sender, e) =>
 			{
-				Size = new Size(100, 150),
-				ShowHeader = false
+				var cell = grid.GetCellAt(e.Location);
+				if (cell != null)
+					hoverNodeLabel.Text = $"Item under mouse: {((TreeGridItem)cell.Item)?.Values[1] ?? "(no item)"}, Column: {cell.Column?.HeaderText ?? "(no column)"}";
 			};
-			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0) });
-			control.DataStore = CreateSimpleTreeItem(0, "");
-			LogEvents(control);
+
+			return hoverNodeLabel;
+		}
+
+		Control InsertButton()
+		{
+			var control = new Button { Text = "Insert" };
+			control.Click += (sender, e) =>
+			{
+				var item = grid.SelectedItem as TreeGridItem;
+				var parent = (item?.Parent ?? (ITreeGridItem)grid.DataStore) as TreeGridItem;
+				if (parent != null)
+				{
+					var index = item != null ? parent.Children.IndexOf(item) : 0;
+					parent.Children.Insert(index, CreateComplexTreeItem(0, "New Item " + newItemCount++, null));
+					if (item != null)
+						grid.ReloadItem(parent);
+					else
+						grid.ReloadData();
+				}
+			};
+			return control;
+		}
+
+		Control AddChildButton()
+		{
+			var control = new Button { Text = "Add Child" };
+			control.Click += (sender, e) =>
+			{
+				var item = grid.SelectedItem as TreeGridItem;
+				if (item != null)
+				{
+					item.Children.Add(CreateComplexTreeItem(0, "New Item " + newItemCount++, null));
+					grid.ReloadItem(item);
+				}
+			};
+			return control;
+		}
+
+		Control RemoveButton()
+		{
+			var control = new Button { Text = "Remove" };
+			control.Click += (sender, e) =>
+			{
+				if (grid.AllowMultipleSelection)
+				{
+					var parents = new List<ITreeGridItem>();
+					bool reloadData = false;
+					foreach (var item in grid.SelectedItems.OfType<ITreeGridItem>().ToList())
+					{
+						var parent = item.Parent as TreeGridItem;
+						parent.Children.Remove(item);
+						if (parent.Parent == null)
+							reloadData = true;
+						if (!parents.Contains(parent))
+							parents.Add(parent);
+					}
+					if (reloadData)
+						grid.ReloadData();
+					else
+					{
+						foreach (var parent in parents)
+						{
+							grid.ReloadItem(parent);
+						}
+					}
+				}
+				else
+				{
+					var item = grid.SelectedItem as TreeGridItem;
+					if (item != null)
+					{
+						var parent = item.Parent as TreeGridItem;
+						parent.Children.Remove(item);
+						if (parent.Parent == null)
+							grid.ReloadData();
+						else
+							grid.ReloadItem(parent);
+					}
+				}
+			};
+			return control;
+		}
+
+		Control ExpandButton()
+		{
+			var control = new Button { Text = "Expand" };
+			control.Click += (sender, e) =>
+			{
+				var item = grid.SelectedItem;
+				if (item != null)
+				{
+					item.Expanded = true;
+					grid.ReloadItem(item);
+				}
+			};
+			return control;
+		}
+
+		Control CollapseButton()
+		{
+			var control = new Button { Text = "Collapse" };
+			control.Click += (sender, e) =>
+			{
+				var item = grid.SelectedItem;
+				if (item != null)
+				{
+					item.Expanded = false;
+					grid.ReloadItem(item);
+				}
+			};
+			return control;
+		}
+
+		Control CancelLabelEdit()
+		{
+			var control = new CheckBox { Text = "Cancel Edit" };
+			control.CheckedChanged += (sender, e) => cancelLabelEdit = control.Checked ?? false;
+			return control;
+		}
+
+		Control EnabledCheck()
+		{
+			var control = new CheckBox { Text = "Enabled", Checked = grid.Enabled };
+			control.CheckedChanged += (sender, e) => grid.Enabled = control.Checked ?? false;
+			return control;
+		}
+
+		Control AllowMultipleSelect()
+		{
+			var control = new CheckBox { Text = "AllowMultipleSelection" };
+			control.CheckedBinding.Bind(grid, t => t.AllowMultipleSelection);
 			return control;
 		}
 
@@ -86,7 +223,7 @@ namespace Eto.Test.Sections.Controls
 			return item;
 		}
 
-		Control ImagesAndMenu()
+		TreeGridView ImagesAndMenu()
 		{
 			var control = new TreeGridView
 			{
@@ -117,18 +254,12 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control Disabled()
-		{
-			var control = ImagesAndMenu();
-			control.Enabled = false;
-			return control;
-		}
-
 		string GetDescription(ITreeGridItem item)
 		{
 			var treeItem = item as TreeGridItem;
 			if (treeItem != null)
-				return Convert.ToString(string.Join(", ", treeItem.Values.Select(r => Convert.ToString(r))));
+				return Convert.ToString(treeItem.Values[1]);
+				//return Convert.ToString(string.Join(", ", treeItem.Values.Select(r => Convert.ToString(r))));
 			return Convert.ToString(item);
 		}
 
@@ -141,6 +272,7 @@ namespace Eto.Test.Sections.Controls
 			control.SelectionChanged += delegate
 			{
 				Log.Write(control, "SelectionChanged, Rows: {0}", string.Join(", ", control.SelectedRows.Select(r => r.ToString())));
+				Log.Write(control, "\t Items: {0}", string.Join(", ", control.SelectedItems.OfType<TreeGridItem>().Select(r => GetDescription(r))));
 			};
 			control.SelectedItemChanged += delegate
 			{
@@ -165,19 +297,37 @@ namespace Eto.Test.Sections.Controls
 			{
 				Log.Write(control, "Collapsed, Item: {0}", GetDescription(e.Item));
 			};
-			control.ColumnHeaderClick += delegate(object sender, GridColumnEventArgs e)
+			control.ColumnHeaderClick += delegate (object sender, GridColumnEventArgs e)
 			{
-				Log.Write(control, "Column Header Clicked: {0}", e.Column);
+				Log.Write(control, "ColumnHeaderClick: {0}", e.Column);
 			};
 
 			control.CellClick += (sender, e) =>
 			{
-				Log.Write(control, "Cell Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+				Log.Write(control, "CellClick, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
 
 			control.CellDoubleClick += (sender, e) =>
 			{
-				Log.Write(control, "Cell Double Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+				Log.Write(control, "CellDoubleClick, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			};
+
+			control.MouseDown += (sender, e) =>
+			{
+				var cell = control.GetCellAt(e.Location);
+				Log.Write(control, $"MouseDown, Cell Column: {cell.Column?.HeaderText}, Item: {GetDescription(cell.Item as ITreeGridItem)}");
+			};
+
+			control.MouseUp += (sender, e) =>
+			{
+				var cell = control.GetCellAt(e.Location);
+				Log.Write(control, $"MouseUp, Cell Column: {cell.Column?.HeaderText}, Item: {GetDescription(cell.Item as ITreeGridItem)}");
+			};
+
+			control.MouseDoubleClick += (sender, e) =>
+			{
+				var cell = control.GetCellAt(e.Location);
+				Log.Write(control, $"MouseDoubleClick, Cell Column: {cell.Column?.HeaderText}, Item: {GetDescription(cell.Item as ITreeGridItem)}");
 			};
 		}
 	}

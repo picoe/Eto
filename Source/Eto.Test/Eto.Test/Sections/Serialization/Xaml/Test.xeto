@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel 
+x:Class="Eto.Test.Sections.Serialization.Xaml.Test" 
+xmlns="http://schema.picoe.ca/eto.forms" 
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test" 
+xmlns:l="clr-namespace:Eto.Test.Sections.Serialization.Xaml;assembly=Eto.Test" 
+>
+	<Panel.Properties>
+		<l:MyConverter x:Key="myConverter"/>
+	</Panel.Properties>
+	<TabControl>
+		<TabPage Text="Table Layout">
+			<TableLayout Padding="10" Spacing="5,5">
+				<TableRow>
+					<Label Text="Text Box with converter" />
+					<TextBox TextChanged="HandleTextChanged" Text="{Binding SomeText, Converter={StaticResource myConverter}}" />
+				</TableRow>
+				<TableRow>
+					<Label>Text Area</Label>
+					<TextArea ID="MyTextArea" />
+				</TableRow>
+				<TableRow>
+					<TableCell />
+					<CheckBox x:Name="MyCheckBox" Text="Check Box" />
+				</TableRow>
+				<TableRow>
+					<Label Text="Drop Down" />
+					<DropDown>
+						<ListItem Text="Item 1" />
+						<ListItem Text="Item 2" />
+						<ListItem Text="Item 3" />
+						<ListItem Text="Item 4" />
+					</DropDown>
+				</TableRow>
+				<TableRow>
+					<Label>Drop down with converter</Label>
+					<DropDown x:Name="MyDropDown" ItemTextBinding="{Binding Path=MyText, Converter={StaticResource myConverter} }">
+					</DropDown>
+				</TableRow>
+				<TableRow>
+					<Label Text="Image" VerticalAlignment="Center" />
+					<TableLayout>
+						<TableRow>
+							<TableCell ScaleWidth="True">
+								<ImageView Image="{Resource Eto.Test.Images.TestImage.png}" />
+							</TableCell>
+							<TableCell ScaleWidth="True">
+								<ImageView Image="{Resource Eto.Test.Images.TestIcon.ico, Eto.Test}" />
+							</TableCell>
+						</TableRow>
+					</TableLayout>
+				</TableRow>
+				<TableRow>
+					<Label Text="Button" />
+					<TableLayout>
+						<TableRow>
+							<Button Text="Bind to Click event in code behind" Click="HandleButtonClick" />
+							<TableCell ScaleWidth="true" />
+						</TableRow>
+					</TableLayout>
+				</TableRow>
+				<TableRow />
+			</TableLayout>
+		</TabPage>
+		<TabPage Text="Stack Layout">
+			<StackLayout>
+				<Label>Button that executes command from model:</Label>
+				<Button Command="{Binding ClickMe}">Click Me!</Button>
+				<StackLayoutItem Expand="true" HorizontalAlignment="Stretch">
+					<TextArea />
+				</StackLayoutItem>
+				<StackLayoutItem HorizontalAlignment="Right">
+					<StackLayout Orientation="Horizontal">
+						<Button Text="OK" />
+						<Button Text="C&amp;ancel" />
+					</StackLayout>
+				</StackLayoutItem>
+			</StackLayout>
+		</TabPage>
+		<TabPage Text="External Control">
+			<e:LabelSection />
+		</TabPage>
+	</TabControl>
+</Panel>

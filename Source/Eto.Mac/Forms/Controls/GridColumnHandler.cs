@@ -103,7 +103,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void Initialize()
 		{
-			Control.ResizingMask = NSTableColumnResizing.None;
+			Control.ResizingMask = NSTableColumnResizing.UserResizingMask;
 			Sortable = false;
 			HeaderText = string.Empty;
 			Editable = false;

@@ -12,7 +12,7 @@ namespace Eto.Wpf.Forms.Menu
 	{
 		protected void RemoveKeyBindings(sw.FrameworkElement element)
 		{
-			if (element == null || element.InputBindings.Count == 0)
+			if (element == null)
 				return;
 			var parentHost = Widget.Parents.Select(r => r.Handler).OfType<IInputBindingHost>().LastOrDefault();
 			if (parentHost == null)
@@ -22,7 +22,7 @@ namespace Eto.Wpf.Forms.Menu
 
 		protected void AddKeyBindings(sw.FrameworkElement element)
 		{
-			if (element == null || element.InputBindings.Count == 0)
+			if (element == null)
 				return;
 			var parentHost = Widget.Parents.Select(r => r.Handler).OfType<IInputBindingHost>().LastOrDefault();
 			if (parentHost == null)

@@ -15,7 +15,7 @@ namespace Eto.WinRT.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PasswordBoxHandler : WpfControl<swc.PasswordBox, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler
 	{
-		protected override Size DefaultSize { get { return new Size(80, -1); } }
+		protected override wf.Size DefaultSize => new wf.Size(80, double.NaN);
 
 		public PasswordBoxHandler()
 		{

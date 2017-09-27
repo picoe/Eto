@@ -135,10 +135,9 @@ namespace Eto.Mac.Forms
 			app.EndModalSession(session);
 		}
 
-		public static void RunSheet(Window window, NSWindow theWindow, out ModalEventArgs helper)
+		public static void RunSheet(Window window, NSWindow theWindow, NSWindow parent, out ModalEventArgs helper)
 		{
 			var app = NSApplication.SharedApplication;
-			var parent = theWindow.ParentWindow;
 			app.BeginSheet(theWindow, parent, delegate
 			{
 				NSApplication.SharedApplication.StopModal();				
@@ -168,10 +167,9 @@ namespace Eto.Mac.Forms
 			/**/
 		}
 
-		public static void BeginSheet(Window window, NSWindow theWindow, out ModalEventArgs helper, Action completed)
+		public static void BeginSheet(Window window, NSWindow theWindow, NSWindow parent, out ModalEventArgs helper, Action completed)
 		{
 			var app = NSApplication.SharedApplication;
-			var parent = theWindow.ParentWindow;
 			app.BeginSheet(theWindow, parent, delegate
 			{
 				NSApplication.SharedApplication.StopModal();

@@ -8,8 +8,8 @@ namespace Eto.Test.Sections.Printing
 	public class PrintDialogSection : Panel
 	{
 		PrintSettings settings = new PrintSettings();
-		NumericUpDown selectedEnd;
-		NumericUpDown maximumEnd;
+		NumericStepper selectedEnd;
+		NumericStepper maximumEnd;
 		CheckBox allowPageRange;
 		CheckBox allowSelection;
 
@@ -207,7 +207,7 @@ namespace Eto.Test.Sections.Printing
 
 		static Control Copies()
 		{
-			var control = new NumericUpDown { MinValue = 1 };
+			var control = new NumericStepper { MinValue = 1 };
 			control.ValueBinding.BindDataContext<PrintSettings>(r => r.Copies, (r, v) => r.Copies = (int)v, defaultGetValue: 1);
 			return control;
 		}
@@ -228,7 +228,7 @@ namespace Eto.Test.Sections.Printing
 
 		Control MaximumStart()
 		{
-			var control = new NumericUpDown { MinValue = 1 };
+			var control = new NumericStepper { MinValue = 1 };
 			control.DataContextChanged += delegate
 			{
 				control.Value = settings.MaximumPageRange.Start;
@@ -247,7 +247,7 @@ namespace Eto.Test.Sections.Printing
 
 		Control MaximumEnd()
 		{
-			var control = maximumEnd = new NumericUpDown { MinValue = 1 };
+			var control = maximumEnd = new NumericStepper { MinValue = 1 };
 			control.DataContextChanged += delegate
 			{
 				control.Value = settings.MaximumPageRange.End;
@@ -262,7 +262,7 @@ namespace Eto.Test.Sections.Printing
 
 		Control SelectedStart()
 		{
-			var control = new NumericUpDown { MinValue = 1 };
+			var control = new NumericStepper { MinValue = 1 };
 			control.DataContextChanged += delegate
 			{
 				control.Value = settings.SelectedPageRange.Start;
@@ -281,7 +281,7 @@ namespace Eto.Test.Sections.Printing
 
 		Control SelectedEnd()
 		{
-			var control = selectedEnd = new NumericUpDown { MinValue = 1 };
+			var control = selectedEnd = new NumericStepper { MinValue = 1 };
 			control.DataContextChanged += delegate
 			{
 				control.Value = settings.SelectedPageRange.End;

@@ -12,7 +12,7 @@ namespace Eto.Forms
 	/// Any bindings created using this will also add to the <see cref="BindableWidget.Bindings"/> collection to keep its
 	/// reference.
 	/// </remarks>
-	[Obsolete("Use Eto.Forms.BindableBinding<T, TValue> instead")]
+	[Obsolete("Since 2.1: Use Eto.Forms.BindableBinding<T, TValue> instead")]
 	public class ControlBinding<T, TValue> : BindableBinding<T, TValue>
 		where T: Control
 	{

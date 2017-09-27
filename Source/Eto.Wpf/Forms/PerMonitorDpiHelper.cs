@@ -131,7 +131,7 @@ namespace Eto.Wpf.Forms
 			}
 			HwndSource.AddHook(HwndHook);
 			hwnd = new WindowInteropHelper(window).Handle;
-			if (hwnd != IntPtr.Zero)
+			if (!BuiltInPerMonitorSupported && hwnd != IntPtr.Zero)
 				SetScale(Win32.GetWindowDpi(hwnd));
 		}
 
@@ -143,7 +143,12 @@ namespace Eto.Wpf.Forms
 
 		IntPtr HwndHook(IntPtr hwnd, int message, IntPtr wparam, IntPtr lparam, ref bool handled)
 		{
-			if (message == (int)Win32.WM.DPICHANGED)
+			/* Doesn't work
+			if (message == (int)Win32.WM.NCCREATE)
+			{
+				Win32.EnableNonClientDpiScaling(hwnd);
+			}*/
+			if (!BuiltInPerMonitorSupported && message == (int)Win32.WM.DPICHANGED)
 			{
 				var rect = (Win32.RECT)Marshal.PtrToStructure(lparam, typeof(Win32.RECT));
 				SetScale(Win32.HIWORD(wparam));

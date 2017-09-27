@@ -9,7 +9,7 @@ namespace Eto.Wpf.Forms
 	{
 		public Widget Widget { get; set; }
 
-		public void Initialize ()
+		public void Initialize()
 		{
 		}
 
@@ -17,12 +17,14 @@ namespace Eto.Wpf.Forms
 
 		public PointF Position
 		{
-			get { return swf.Control.MousePosition.ToEto (); }
+			get { return swf.Control.MousePosition.ScreenToLogical(); }
+			set { swf.Cursor.Position = Point.Round(value.LogicalToScreen()).ToSD(); }
 		}
 
 		public MouseButtons Buttons
 		{
-			get {
+			get
+			{
 				MouseButtons buttons = MouseButtons.None;
 				if (swi.Mouse.LeftButton == swi.MouseButtonState.Pressed)
 					buttons |= MouseButtons.Primary;

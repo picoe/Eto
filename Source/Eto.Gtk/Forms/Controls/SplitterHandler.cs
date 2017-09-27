@@ -13,6 +13,32 @@ namespace Eto.GtkSharp.Forms.Controls
 		int? position;
 		double relative = double.NaN;
 		int suppressSplitterMoved;
+		bool shrinkContentsToFit = true;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the size of the splitter will be restricted to the content size
+		/// of each panel.  This may follow standard behaviour in GTK (when false), but is not compatible behaviour with Eto's sizing model.
+		/// 
+		/// In some cases, this may cause Gtk2 to crash if there isn't enough space available for the panel content.
+		/// 
+		/// Set this to true to enable this feature, usually via a style:
+		/// <code>
+		/// Eto.Style.Add<Eto.GtkSharp.Forms.Controls.SplitterHandler>(h => h.ShrinkContentsToFit = false);
+		/// </code>
+		/// </summary>
+		/// <value><c>true</c> to shrink content to fit the size of the split pane (Eto behaviour); otherwise, <c>false</c> (GTK behaviour).</value>
+		public bool ShrinkContentsToFit
+		{
+			get { return shrinkContentsToFit; }
+			set
+			{
+				if (shrinkContentsToFit != value)
+				{
+					shrinkContentsToFit = value;
+					Create();
+				}
+			}
+		}
 
 		int GetPreferredPanelSize(int width1, int width2)
 		{
@@ -87,7 +113,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				it.suppressSplitterMoved++;
 				base.OnSizeAllocated(allocation);
-				it.SetRelative(it.relative);
 				it.suppressSplitterMoved--;
 			}
 		}
@@ -139,7 +164,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				it.suppressSplitterMoved++;
 				base.OnSizeAllocated(allocation);
-				it.SetRelative(it.relative);
 				it.suppressSplitterMoved--;
 			}
 		}
@@ -299,38 +323,42 @@ namespace Eto.GtkSharp.Forms.Controls
 		void Create()
 		{
 			Gtk.Paned old = Control;
+
 			if (orientation == Orientation.Horizontal)
 				Control = new EtoHPaned() { Handler = this };
 			else
 				Control = new EtoVPaned() { Handler = this };
 
 			Control.ShowAll();
-			Control.Realized += (sender, e) =>
-			{
-				SetInitialPosition();
-				HookEvents();
-			};
+			Control.Realized += Control_Realized;
 
 			if (container.Child != null)
 				container.Remove(container.Child);
 
 			if (old != null)
 			{
+				old.Realized -= Control_Realized;
 				var child1 = old.Child1;
 				var child2 = old.Child2;
 				old.Remove(child2);
 				old.Remove(child1);
-				Control.Pack1(child1 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
-				Control.Pack2(child2 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
+				Control.Pack1(child1 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, ShrinkContentsToFit);
+				Control.Pack2(child2 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, ShrinkContentsToFit);
 				old.Destroy();
 			}
 			else
 			{
-				Control.Pack1(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
-				Control.Pack2(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
+				Control.Pack1(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, ShrinkContentsToFit);
+				Control.Pack2(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, ShrinkContentsToFit);
 			}
 
 			container.Child = Control;
+		}
+
+		void Control_Realized(object sender, EventArgs e)
+		{
+			SetInitialPosition();
+			HookEvents();
 		}
 
 		void HookEvents()
@@ -460,7 +488,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (Control.Child1 != null)
 					Control.Remove(Control.Child1);
 				var widget = panel1 != null ? panel1.GetContainerWidget() : EmptyContainer();
-				Control.Pack1(widget, fixedPanel != SplitterFixedPanel.Panel1, true);
+				Control.Pack1(widget, fixedPanel != SplitterFixedPanel.Panel1, ShrinkContentsToFit);
 				if (setposition)
 					Control.Position = position.Value;
 				widget.ShowAll();
@@ -477,7 +505,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (Control.Child2 != null)
 					Control.Remove(Control.Child2);
 				var widget = panel2 != null ? panel2.GetContainerWidget() : EmptyContainer();
-				Control.Pack2(widget, fixedPanel != SplitterFixedPanel.Panel2, true);
+				Control.Pack2(widget, fixedPanel != SplitterFixedPanel.Panel2, ShrinkContentsToFit);
 				if (setposition)
 					Control.Position = position.Value;
 				widget.ShowAll();

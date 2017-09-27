@@ -9,6 +9,7 @@ using sp = System.Printing;
 using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
 using swd = System.Windows.Documents;
+using xwt = Xceed.Wpf.Toolkit;
 using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf
@@ -19,10 +20,10 @@ namespace Eto.Wpf
 
 		public static readonly sw.Size PositiveInfinitySize = new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
 		public static readonly sw.Size ZeroSize = new sw.Size(0, 0);
-		
+		public static readonly sw.Size NaNSize = new sw.Size(double.NaN, double.NaN);
+
 		public static swm.Color ToWpf(this Color value)
 		{
-
 			return swm.Color.FromArgb((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
 		}
 
@@ -76,20 +77,20 @@ namespace Eto.Wpf
 
 		public static sw.Rect ToWpf(this Rectangle value)
 		{
-            value.Normalize();
+			value.Normalize();
 			return new sw.Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static sw.Int32Rect ToWpfInt32(this Rectangle value)
 		{
-            value.Normalize();
-            return new sw.Int32Rect(value.X, value.Y, value.Width, value.Height);
+			value.Normalize();
+			return new sw.Int32Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static sw.Rect ToWpf(this RectangleF value)
 		{
-            value.Normalize();
-            return new sw.Rect(value.X, value.Y, value.Width, value.Height);
+			value.Normalize();
+			return new sw.Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static SizeF ToEto(this sw.Size value)
@@ -284,19 +285,19 @@ namespace Eto.Wpf
 			}
 		}
 
-        public static Size GetSize(this sw.FrameworkElement element)
-        {
-            if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
-                return new Size((int)element.ActualWidth, (int)element.ActualHeight);
-            return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
-        }
+		public static Size GetSize(this sw.FrameworkElement element)
+		{
+			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
+				return new Size((int)element.ActualWidth, (int)element.ActualHeight);
+			return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
+		}
 
-        public static sw.Size GetMinSize(this sw.FrameworkElement element)
-        {
-            return new sw.Size(element.MinWidth, element.MinHeight);
-        }
+		public static sw.Size GetMinSize(this sw.FrameworkElement element)
+		{
+			return new sw.Size(element.MinWidth, element.MinHeight);
+		}
 
-        public static void SetSize(this sw.FrameworkElement element, Size size)
+		public static void SetSize(this sw.FrameworkElement element, Size size)
 		{
 			element.Width = size.Width == -1 ? double.NaN : size.Width;
 			element.Height = size.Height == -1 ? double.NaN : size.Height;
@@ -308,9 +309,9 @@ namespace Eto.Wpf
 			element.MaxHeight = size.Height == -1 ? double.NaN : size.Height;
 		}
 
-		public static Size GetMaxSize(this sw.FrameworkElement element)
+		public static sw.Size GetMaxSize(this sw.FrameworkElement element)
 		{
-			return new Size((int)(double.IsNaN(element.MaxWidth) ? 0 : element.MaxWidth), (int)(double.IsNaN(element.MaxHeight) ? 0 : element.MaxHeight));
+			return new sw.Size(element.MaxWidth, element.MaxHeight);
 		}
 
 		public static void SetSize(this sw.FrameworkElement element, sw.Size size)
@@ -349,53 +350,30 @@ namespace Eto.Wpf
 			return new Bitmap(new BitmapHandler(bitmap));
 		}
 
-		public static swmi.BitmapSource ToWpf(this Image image, int? size = null)
+		public static swmi.BitmapSource ToWpf(this Image image, float? scale = null, Size? fittingSize = null)
 		{
 			if (image == null)
 				return null;
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
-				return imageHandler.GetImageClosestToSize(size);
+				return imageHandler.GetImageClosestToSize(scale ?? Screen.PrimaryScreen.LogicalPixelSize, fittingSize);
 			return image.ControlObject as swmi.BitmapSource;
 		}
 
-		public static swmi.BitmapSource ToWpf(this IconFrame image, int? size = null)
+		public static swmi.BitmapSource ToWpf(this IconFrame image, float? scale = null, Size? fittingSize = null)
 		{
-			return ((Bitmap)image?.ControlObject).ToWpf();
+			return ((Bitmap)image?.ControlObject).ToWpf(scale, fittingSize);
 		}
 
-		public static swmi.BitmapSource ToWpfScale(this Image image, float scale, Size? fittingSize = null)
+		public static swc.Image ToWpfImage(this Image image, float? scale = null, Size? fittingSize = null)
 		{
-			var icon = image as Icon;
-			if (icon != null)
-				return icon.GetFrame(scale, fittingSize).ToWpf();
-			else
-				return image.ToWpf();
-		}
-
-		public static swc.Image ToWpfImage(this Image image, float scale, Size? fittingSize = null)
-		{
-			var source = image.ToWpfScale(scale, fittingSize);
+			var source = image.ToWpf(scale, fittingSize);
 			if (source == null)
 				return null;
 			var swcImage = new swc.Image { Source = source };
 			if (fittingSize != null)
 			{
 				swcImage.SetMaxSize(fittingSize.Value);
-			}
-			return swcImage;
-		}
-
-		public static swc.Image ToWpfImage(this Image image, int? size = null)
-		{
-			var source = image.ToWpf(size);
-			if (source == null)
-				return null;
-			var swcImage = new swc.Image { Source = source };
-			if (size != null)
-			{
-				swcImage.MaxWidth = size.Value;
-				swcImage.MaxHeight = size.Value;
 			}
 			return swcImage;
 		}
@@ -468,12 +446,9 @@ namespace Eto.Wpf
 			}
 		}
 
-		public static swm.Brush ToWpf(this Brush brush, bool clone = false)
+		public static swm.Brush ToWpf(this Brush brush)
 		{
-			var b = (swm.Brush)brush.ControlObject;
-			if (clone)
-				b = b.Clone();
-			return b;
+			return ((FrozenBrushWrapper)brush.ControlObject).FrozenBrush;
 		}
 
 		public static swm.Matrix ToWpf(this IMatrix matrix)
@@ -610,6 +585,23 @@ namespace Eto.Wpf
 			}
 		}
 
+		public static TextAlignment ToEto(this sw.TextAlignment align)
+		{
+			switch (align)
+			{
+				case sw.TextAlignment.Left:
+					return TextAlignment.Left;
+				case sw.TextAlignment.Right:
+					return TextAlignment.Right;
+				case sw.TextAlignment.Center:
+					return TextAlignment.Center;
+				case sw.TextAlignment.Justify:
+					return TextAlignment.Left;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
 		public static sw.TextAlignment ToWpfTextAlignment(this TextAlignment align)
 		{
 			switch (align)
@@ -657,6 +649,11 @@ namespace Eto.Wpf
 				default:
 					throw new NotSupportedException();
 			}
+		}
+
+		public static Font GetEtoFont(this swc.Control control)
+		{
+			return new Font(new FontHandler(control));
 		}
 
 		public static Font SetEtoFont(this swc.Control control, Font font, Action<sw.TextDecorationCollection> setDecorations = null)
@@ -756,6 +753,70 @@ namespace Eto.Wpf
 					return DockPosition.Bottom;
 				default:
 					throw new NotSupportedException();
+			}
+		}
+
+		public static StepperValidDirections ToEto(this xwt.ValidSpinDirections direction)
+		{
+			var dir = StepperValidDirections.None;
+			if (direction.HasFlag(xwt.ValidSpinDirections.Increase))
+				dir |= StepperValidDirections.Up;
+			if (direction.HasFlag(xwt.ValidSpinDirections.Decrease))
+				dir |= StepperValidDirections.Down;
+			return dir;
+		}
+
+		public static xwt.ValidSpinDirections ToWpf(this StepperValidDirections direction)
+		{
+			var dir = xwt.ValidSpinDirections.None;
+			if (direction.HasFlag(StepperValidDirections.Up))
+				dir |= xwt.ValidSpinDirections.Increase;
+			if (direction.HasFlag(StepperValidDirections.Down))
+				dir |= xwt.ValidSpinDirections.Decrease;
+			return dir;
+		}
+
+		public static void SetEtoBorderType(this swc.Border control, BorderType value, Func<swm.Brush> getBezelBrush = null)
+		{
+			switch (value)
+			{
+				case BorderType.Bezel:
+					control.BorderBrush = getBezelBrush?.Invoke() ?? sw.SystemColors.ControlDarkBrush;
+					control.BorderThickness = new sw.Thickness(1);
+					break;
+				case BorderType.Line:
+					control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
+					control.BorderThickness = new sw.Thickness(1);
+					break;
+				case BorderType.None:
+					control.BorderBrush = null;
+					control.BorderThickness = new sw.Thickness(0);
+					break;
+				default:
+					throw new NotSupportedException();
+
+			}
+		}
+
+		public static void SetEtoBorderType(this swc.Control control, BorderType value, Func<swm.Brush> getBezelBrush = null)
+		{
+			switch (value)
+			{
+				case BorderType.Bezel:
+					control.BorderBrush = getBezelBrush?.Invoke() ?? sw.SystemColors.ControlDarkBrush;
+					control.BorderThickness = new sw.Thickness(1);
+					break;
+				case BorderType.Line:
+					control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
+					control.BorderThickness = new sw.Thickness(1);
+					break;
+				case BorderType.None:
+					control.BorderBrush = null;
+					control.BorderThickness = new sw.Thickness(0);
+					break;
+				default:
+					throw new NotSupportedException();
+
 			}
 		}
 	}

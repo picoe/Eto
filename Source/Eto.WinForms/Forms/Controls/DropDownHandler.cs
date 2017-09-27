@@ -12,6 +12,20 @@ namespace Eto.WinForms.Forms.Controls
 	{
 
 	}
+	class EtoComboBoxItem
+	{
+		DropDown DropDown { get; set; }
+		public object Value { get; set; }
+		public Image Image => DropDown.ItemImageBinding?.GetValue(Value);
+
+		public override string ToString() => DropDown.ItemTextBinding?.GetValue(Value) ?? string.Empty;
+
+		public EtoComboBoxItem(DropDown dropDown, object value)
+		{
+			DropDown = dropDown;
+			Value = value;
+		}
+	}
 
 	public class EtoComboBox : swf.ComboBox
 	{
@@ -22,6 +36,23 @@ namespace Eto.WinForms.Forms.Controls
 		}
 
 		public sd.Size MinSize { get; set; }
+
+		/*
+		protected override void OnMeasureItem(swf.MeasureItemEventArgs e)
+		{
+			base.OnMeasureItem(e);
+			using (var g = CreateGraphics())
+			{
+				//foreach (object item in Items)
+				{
+					var font = Font;
+					var text = GetItemText(e.Index);
+					var itemSize = swf.TextRenderer.MeasureText(g, text, font);
+					e.ItemWidth = (int)itemSize.Width;
+					e.ItemHeight = (int)itemSize.Height;
+				}
+			}
+		}*/
 
 		public override sd.Size GetPreferredSize(sd.Size proposedSize)
 		{
@@ -35,6 +66,9 @@ namespace Eto.WinForms.Forms.Controls
 					{
 						var text = GetItemText(item);
 						var itemSize = swf.TextRenderer.MeasureText(g, text, font);
+						var image = (item as EtoComboBoxItem)?.Image;
+						if (image != null)
+							itemSize.Width += 18;
 						size.Width = Math.Max(size.Width, (int) itemSize.Width);
 						size.Height = Math.Max(size.Height, (int) itemSize.Height);
 					}
@@ -79,10 +113,21 @@ namespace Eto.WinForms.Forms.Controls
 
 			if (e.Index >= 0)
 			{
-				string text = Items[e.Index].ToString();
+				var item = Items[e.Index];
+				var bounds = e.Bounds;
+				var image = (item as EtoComboBoxItem)?.Image;
+
+				if (image != null)
+				{
+					e.Graphics.DrawImage(image.ToSD(new Size(16, 16)), bounds.X, bounds.Y, 16, 16);
+					bounds.X += 18;
+					bounds.Width -= 18;
+				}
+
+				string text = item?.ToString();
 
 				// Determine the forecolor based on whether or not the item is selected    
-				swf.TextRenderer.DrawText(e.Graphics, text, Font, e.Bounds, ForeColor, swf.TextFormatFlags.Left);
+				swf.TextRenderer.DrawText(e.Graphics, text, Font, bounds, ForeColor, swf.TextFormatFlags.Left);
 			}
 
 			e.DrawFocusRectangle();
@@ -144,6 +189,7 @@ namespace Eto.WinForms.Forms.Controls
 			Control = (TControl)new EtoComboBox
 			{
 				DropDownStyle = swf.ComboBoxStyle.DropDownList,
+				DrawMode = swf.DrawMode.OwnerDrawFixed,
 				AutoSize = true,
 				Size = new sd.Size(20, 0)
 			};
@@ -171,43 +217,26 @@ namespace Eto.WinForms.Forms.Controls
 			set { Control.SelectedIndex = value; }
 		}
 
-		class Item
-		{
-			public IIndirectBinding<string> Binding { get; set; }
-			public object Value { get; set; }
-			public override string ToString()
-			{
-				return Binding.GetValue(Value);
-			}
-			public Item(IIndirectBinding<string> binding, object value)
-			{
-				Binding = binding;
-				Value = value;
-			}
-		}
-
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public DropDownHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
 			public override void AddRange(IEnumerable<object> items)
 			{
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.Control.Items.AddRange(items.Select(r => (object)new Item(binding, r)).ToArray());
+				var widget = Handler.Widget;
+				Handler.Control.Items.AddRange(items.Select(r => (object)new EtoComboBoxItem(widget, r)).ToArray());
 				Handler.UpdateSizes();
 			}
 
 			public override void AddItem(object item)
 			{
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.Control.Items.Add(new Item(binding, item));
+				Handler.Control.Items.Add(new EtoComboBoxItem(Handler.Widget, item));
 				Handler.UpdateSizes();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.Control.Items.Insert(index, new Item(binding, item));
+				Handler.Control.Items.Insert(index, new EtoComboBoxItem(Handler.Widget, item));
 				Handler.UpdateSizes();
 			}
 
@@ -247,6 +276,22 @@ namespace Eto.WinForms.Forms.Controls
 		public override bool ShouldBubbleEvent(swf.Message msg)
 		{
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case DropDown.DropDownClosedEvent:
+					Control.DropDownClosed += (sender, e) => Callback.OnDropDownClosed(Widget, EventArgs.Empty);
+					break;
+				case DropDown.DropDownOpeningEvent:
+					Control.DropDown += (sender, e) => Callback.OnDropDownOpening(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

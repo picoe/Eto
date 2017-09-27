@@ -8,6 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
+	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
 	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
 		ITreeStore top;

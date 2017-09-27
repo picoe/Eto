@@ -115,11 +115,12 @@ namespace Eto.Test.Sections.Dialogs
 				{
 					Filters =
 					{
-						new FileDialogFilter("All Formats", "png", "jpg", "jpeg", "gif", "tiff"),
+						new FileFilter("All Formats", "png", "jpg", "jpeg", "gif", "tiff"),
+						new FileFilter("All Files", "*"),
 						"PNG Files|png",
-						new FileDialogFilter("JPeg Files", "jpg", "jpeg"),
-						new FileDialogFilter("GIF Files", "gif"),
-						new FileDialogFilter("TIFF Files", "tiff"),
+						new FileFilter("JPeg Files", "jpg", "jpeg"),
+						new FileFilter("GIF Files", "gif"),
+						new FileFilter("TIFF Files", "tiff"),
 					}
 				};
 				SetAttributes(dialog);
@@ -144,11 +145,12 @@ namespace Eto.Test.Sections.Dialogs
 				{
 					Filters =
 					{
-						new FileDialogFilter("Auto Detect", ".png", ".jpg", ".jpeg", ".gif", ".tiff"),
+						new FileFilter("Auto Detect", ".png", ".jpg", ".jpeg", ".gif", ".tiff"),
+						new FileFilter("All Files", "*"),
 						"PNG Files|.png",
-						new FileDialogFilter("JPeg Files", ".jpg", ".jpeg"),
-						new FileDialogFilter("GIF Files", ".gif"),
-						new FileDialogFilter("TIFF Files", ".tiff"),
+						new FileFilter("JPeg Files", ".jpg", ".jpeg"),
+						new FileFilter("GIF Files", ".gif"),
+						new FileFilter("TIFF Files", ".tiff"),
 					}
 				};
 				SetAttributes(dialog);
