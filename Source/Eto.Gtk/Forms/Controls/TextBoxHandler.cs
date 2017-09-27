@@ -58,9 +58,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			public new TextBoxHandler<TControl, TWidget, TCallback> Handler { get { return (TextBoxHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
-			public void HandleTextChanged(object sender, EventArgs e)
+			public void HandleTextChanged(object sender, System.EventArgs e)
 			{
-				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				Handler.Callback.OnTextChanged(Handler.Widget, System.EventArgs.Empty);
 			}
 
 			static Clipboard clipboard;
@@ -81,7 +81,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 
 			[GLib.ConnectBefore]
-			public void HandleClipboardPasted(object sender, EventArgs e)
+			public void HandleClipboardPasted(object sender, System.EventArgs e)
 			{
 				var tia = new TextChangingEventArgs(Clipboard.Text, Handler.Selection);
 				Handler.Callback.OnTextChanging(Handler.Widget, tia);
