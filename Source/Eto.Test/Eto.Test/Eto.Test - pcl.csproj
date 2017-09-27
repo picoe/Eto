@@ -211,6 +211,7 @@
     <Compile Include="Sections\Dialogs\OpenWithDialogSection.cs" />
     <Compile Include="Sections\Controls\DocumentControlSection.cs" />
     <Compile Include="Sections\Behaviors\NotificationSection.cs" />
+    <Compile Include="Sections\Behaviors\GestureEventsSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">

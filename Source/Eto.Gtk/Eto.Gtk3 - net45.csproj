@@ -28,7 +28,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
@@ -38,33 +37,29 @@
       <Name>System</Name>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="atk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <HintPath>..\..\Libraries\GtkSharp3\atk-sharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="atk-sharp">
+      <HintPath>..\..\..\gtk-sharp\gtk-sharp3-nuget\gtk-sharp\gesturetest\bin\Debug\atk-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="cairo-sharp, Version=1.10.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <HintPath>..\..\Libraries\GtkSharp3\cairo-sharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="cairo-sharp">
+      <HintPath>..\..\..\gtk-sharp\gtk-sharp3-nuget\gtk-sharp\gesturetest\bin\Debug\cairo-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="gdk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <HintPath>..\..\Libraries\GtkSharp3\gdk-sharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="gdk-sharp">
+      <HintPath>..\..\..\gtk-sharp\gtk-sharp3-nuget\gtk-sharp\gesturetest\bin\Debug\gdk-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="gio-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <HintPath>..\..\Libraries\GtkSharp3\gio-sharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="gesturetest">
+      <HintPath>..\..\..\gtk-sharp\gtk-sharp3-nuget\gtk-sharp\gesturetest\bin\Debug\gesturetest.exe</HintPath>
     </Reference>
-    <Reference Include="glib-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <HintPath>..\..\Libraries\GtkSharp3\glib-sharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="gio-sharp">
+      <HintPath>..\..\..\gtk-sharp\gtk-sharp3-nuget\gtk-sharp\gesturetest\bin\Debug\gio-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="gtk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <HintPath>..\..\Libraries\GtkSharp3\gtk-sharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="glib-sharp">
+      <HintPath>..\..\..\gtk-sharp\gtk-sharp3-nuget\gtk-sharp\gesturetest\bin\Debug\glib-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="pango-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <HintPath>..\..\Libraries\GtkSharp3\pango-sharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="gtk-sharp">
+      <HintPath>..\..\..\gtk-sharp\gtk-sharp3-nuget\gtk-sharp\gesturetest\bin\Debug\gtk-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="pango-sharp">
+      <HintPath>..\..\..\gtk-sharp\gtk-sharp3-nuget\gtk-sharp\gesturetest\bin\Debug\pango-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -306,8 +301,8 @@
       <Properties>
         <Policies>
           <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentBlock="True" IndentBraces="False" IndentSwitchCaseSection="True" LabelPositioning="OneLess" NewLinesForBracesInTypes="True" NewLinesForBracesInMethods="True" SpaceWithinMethodDeclarationParenthesis="False" SpaceBetweenEmptyMethodDeclarationParentheses="False" SpaceWithinMethodCallParentheses="False" SpaceBetweenEmptyMethodCallParentheses="False" SpaceAfterControlFlowStatementKeyword="True" SpaceWithinExpressionParentheses="False" SpaceWithinCastParentheses="False" SpaceWithinOtherParentheses="False" SpaceAfterCast="False" SpacesIgnoreAroundVariableDeclaration="False" SpaceBetweenEmptySquareBrackets="False" SpaceWithinSquareBrackets="False" SpaceAfterColonInBaseTypeDeclaration="True" SpaceAfterComma="True" SpaceAfterDot="False" SpaceAfterSemicolonsInForStatement="True" SpaceBeforeColonInBaseTypeDeclaration="True" SpaceBeforeComma="False" SpaceBeforeDot="False" SpaceBeforeSemicolonsInForStatement="False" SpacingAroundBinaryOperator="Single" WrappingPreserveSingleLine="True" WrappingKeepStatementsOnSingleLine="True" PlaceSystemDirectiveFirst="True" IndentSwitchSection="True" NewLinesForBracesInProperties="True" NewLinesForBracesInAccessors="True" NewLinesForBracesInAnonymousMethods="True" NewLinesForBracesInControlBlocks="True" NewLinesForBracesInAnonymousTypes="True" NewLinesForBracesInObjectCollectionArrayInitializers="True" NewLinesForBracesInLambdaExpressionBody="True" NewLineForElse="True" NewLineForCatch="True" NewLineForFinally="True" NewLineForMembersInObjectInit="True" NewLineForMembersInAnonymousTypes="True" NewLineForClausesInQuery="True" SpacingAfterMethodDeclarationName="False" SpaceAfterMethodCallName="False" SpaceBeforeOpenSquareBracket="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
-          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+          <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>
     </MonoDevelop>
