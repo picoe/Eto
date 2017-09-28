@@ -389,6 +389,142 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.Swipe"/> event
+		/// </summary>
+		public const string SwipeGestureEvent = "Control.Swipe";
+
+		/// <summary>
+		/// Occurs when we get a swipe gesture
+		/// </summary>
+		public event EventHandler<SwipeGestureEventArgs> Swipe
+		{
+			add { Properties.AddHandlerEvent(SwipeGestureEvent, value); }
+			remove { Properties.RemoveEvent(SwipeGestureEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Swipe"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnSwipe(SwipeGestureEventArgs e)
+		{
+			Properties.TriggerEvent(SwipeGestureEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.Rotate"/> event
+		/// </summary>
+		public const string RotateGestureEvent = "Control.Rotate";
+
+		/// <summary>
+		/// Occurs when we get a rotate gesture
+		/// </summary>
+		public event EventHandler<RotateGestureEventArgs> Rotate
+		{
+			add { Properties.AddHandlerEvent(RotateGestureEvent, value); }
+			remove { Properties.RemoveEvent(RotateGestureEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Rotate"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnRotate(RotateGestureEventArgs e)
+		{
+			Properties.TriggerEvent(RotateGestureEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.PanH"/> event
+		/// </summary>
+		public const string PanHGestureEvent = "Control.PanH";
+
+		/// <summary>
+		/// Occurs when we get a pan gesture
+		/// </summary>
+		public event EventHandler<PanGestureEventArgs> PanH
+		{
+			add { Properties.AddHandlerEvent(PanHGestureEvent, value); }
+			remove { Properties.RemoveEvent(PanHGestureEvent, value); }
+		}
+		/// <summary>
+		/// Raises the <see cref="PanH"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnPanH(PanGestureEventArgs e)
+		{
+			Properties.TriggerEvent(PanHGestureEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.PanV"/> event
+		/// </summary>
+		public const string PanVGestureEvent = "Control.PanV";
+
+		/// <summary>
+		/// Occurs when we get a pan gesture
+		/// </summary>
+		public event EventHandler<PanGestureEventArgs> PanV
+		{
+			add { Properties.AddHandlerEvent(PanVGestureEvent, value); }
+			remove { Properties.RemoveEvent(PanVGestureEvent, value); }
+		}
+		/// <summary>
+		/// Raises the <see cref="PanV"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnPanV(PanGestureEventArgs e)
+		{
+			Properties.TriggerEvent(PanVGestureEvent, this, e);
+		}
+
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.LongPressGestureEvent"/> event
+		/// </summary>
+		public const string LongPressGestureEvent = "Control.LongPress";
+
+		/// <summary>
+		/// Occurs when we get a longpress gesture
+		/// </summary>
+		public event EventHandler<LongPressGestureEventArgs> Longpress
+		{
+			add { Properties.AddHandlerEvent(LongPressGestureEvent, value); }
+			remove { Properties.RemoveEvent(LongPressGestureEvent, value); }
+		}
+		/// <summary>
+		/// Raises the <see cref="Longpress"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnLongpress(LongPressGestureEventArgs e)
+		{
+			Properties.TriggerEvent(LongPressGestureEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.ZoomGestureEvent"/> event
+		/// </summary>
+		public const string ZoomGestureEvent = "Control.ZoomExpand";
+
+		/// <summary>
+		/// Occurs when we get a zoom gesture
+		/// </summary>
+		public event EventHandler<ZoomGestureEventArgs> ZoomExpand
+		{
+			add { Properties.AddHandlerEvent(ZoomGestureEvent, value); }
+			remove { Properties.RemoveEvent(ZoomGestureEvent, value); }
+		}
+		/// <summary>
+		/// Raises the <see cref="ZoomExpand"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnZoomExpand(ZoomGestureEventArgs e)
+		{
+			Properties.TriggerEvent(ZoomGestureEvent, this, e);
+		}
+
+
+		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="Control.GotFocus"/> event
 		/// </summary>
 		public const string GotFocusEvent = "Control.GotFocus";
