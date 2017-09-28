@@ -62,6 +62,16 @@ namespace Eto.GtkSharp.Forms
 		Color? backgroundColor;
 		public static float ScrollAmount = 2f;
 
+
+#if GTK3
+		// In GTK the gesture types are handled by external classes for each type of gesture
+		private static Gtk.GestureSwipe swipe;
+		private static Gtk.GestureRotate rotate;
+		private static Gtk.GestureZoom zoom;
+		private static Gtk.GesturePan pan;
+		private static Gtk.GestureLongPress longpress;
+#endif
+
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
 		protected GtkControl()
@@ -236,7 +246,7 @@ namespace Eto.GtkSharp.Forms
 			Control.GrabFocus();
 		}
 
-		void Widget_SetFocus(object sender, EventArgs e)
+		void Widget_SetFocus(object sender, System.EventArgs e)
 		{
 			Widget.LoadComplete -= Widget_SetFocus;
 			Eto.Forms.Application.Instance.AsyncInvoke(GrabFocus);
@@ -270,15 +280,15 @@ namespace Eto.GtkSharp.Forms
 			}*/
 		}
 
-		public virtual void OnPreLoad(EventArgs e)
+		public virtual void OnPreLoad(System.EventArgs e)
 		{
 		}
 
-		public virtual void OnLoad(EventArgs e)
+		public virtual void OnLoad(System.EventArgs e)
 		{
 		}
 
-		public virtual void OnLoadComplete(EventArgs e)
+		public virtual void OnLoadComplete(System.EventArgs e)
 		{
 			if (!Control.IsRealized)
 				Control.Realized += Connector.HandleControlRealized;
@@ -286,7 +296,7 @@ namespace Eto.GtkSharp.Forms
 				RealizedSetup();
 		}
 
-		public virtual void OnUnLoad(EventArgs e)
+		public virtual void OnUnLoad(System.EventArgs e)
 		{
 		}
 
@@ -348,6 +358,45 @@ namespace Eto.GtkSharp.Forms
 					EventControl.AddEvents((int)Gdk.EventMask.ScrollMask);
 					EventControl.ScrollEvent += Connector.HandleScrollEvent;
 					break;
+#if GTK3
+				case Eto.Forms.Control.SwipeGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					swipe = new Gtk.GestureSwipe(Control);
+					swipe.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					swipe.Swipe += Connector.HandleSwipeGestureEvent;
+					break;
+				case Eto.Forms.Control.RotateGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					rotate = new Gtk.GestureRotate(Control);
+					rotate.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					rotate.AngleChanged += Connector.HandleRotateGestureEvent;
+					break;
+				case Eto.Forms.Control.PanHGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					pan = new Gtk.GesturePan(Control,Gtk.Orientation.Horizontal);
+					pan.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					pan.Pan += Connector.HandlePanGestureEvent;
+					break;
+				case Eto.Forms.Control.PanVGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					pan = new Gtk.GesturePan(Control,Gtk.Orientation.Vertical);
+					pan.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					pan.Pan += Connector.HandlePanGestureEvent;
+					break;
+				case Eto.Forms.Control.LongPressGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					longpress = new Gtk.GestureLongPress(Control);
+					longpress.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					longpress.Pressed += Connector.HandleLongPressGestureEvent;
+					longpress.End += Connector.HandleLongPressDoneGestureEvent;
+					break;
+				case Eto.Forms.Control.ZoomGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					zoom = new Gtk.GestureZoom(Control);
+					zoom.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					zoom.ScaleChanged += Connector.HandleZoomGestureEvent;					
+					break;
+#endif
 				case Eto.Forms.Control.GotFocusEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.FocusChangeMask);
 					EventControl.FocusInEvent += Connector.FocusInEvent;
@@ -478,7 +527,7 @@ namespace Eto.GtkSharp.Forms
 				{
 					// only call when the size has actually changed, gtk likes to call anyway!!  grr.
 					Handler.asize = args.Allocation.Size.ToEto();
-					Handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
+					Handler.Callback.OnSizeChanged(Handler.Widget, System.EventArgs.Empty);
 				}
 			}
 
@@ -545,12 +594,139 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
+#if GTK3
+			[ConnectBefore]
+			public void HandleSwipeGestureEvent(object o, Gtk.SwipeArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				var e = new SwipeGestureEventArgs(args.VelocityX, args.VelocityY);
+				if (e != null)
+				{
+					handler.Callback.OnSwipe(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[ConnectBefore]
+			public void HandleRotateGestureEvent(object o, Gtk.AngleChangedArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				// could be rotate.AngleDelta if event args is not right
+				//var e = new RotateGestureEventArgs(rotate.AngleDelta);
+				var e = new RotateGestureEventArgs(args.Angle);
+				if (e != null)
+				{
+					handler.Callback.OnRotate(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[ConnectBefore]
+			public void HandlePanGestureEvent(object o, Gtk.PanArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				bool vpan = false;
+
+
+				PanDirection Dir = PanDirection.Left;
+
+				switch (args.Direction) {
+				case Gtk.PanDirection.Up:
+					Dir = PanDirection.Up;
+					vpan = true;
+					break;
+				case Gtk.PanDirection.Down:
+					Dir = PanDirection.Down;
+					vpan = true;
+					break;
+				case Gtk.PanDirection.Left:
+					Dir = PanDirection.Left;
+					vpan = false;
+					break;
+				case Gtk.PanDirection.Right:
+					Dir = PanDirection.Right;
+					vpan = false;
+					break;
+				default:
+					break;
+				}
+				// could be rotate.AngleDelta if event args is not right
+				var e = new PanGestureEventArgs(Dir, args.Offset);
+				if (e != null)
+				{
+					if (vpan) 
+						handler.Callback.OnPanV(Handler.Widget, e);
+					else
+						handler.Callback.OnPanH(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[ConnectBefore]
+			public void HandleLongPressGestureEvent(object o, Gtk.PressedArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				double X, Y;
+				longpress.GetBoundingBoxCenter (out X, out Y);
+
+				var e = new LongPressGestureEventArgs (true, (int)longpress.NPoints, X, Y);
+				if (e != null)
+				{
+					handler.Callback.OnLongPress(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[ConnectBefore]
+			public void HandleLongPressDoneGestureEvent(object o, Gtk.EndArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				var e = new LongPressGestureEventArgs(false, 0,0,0);
+				if (e != null)
+				{
+					handler.Callback.OnLongPress(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[ConnectBefore]
+			public void HandleZoomGestureEvent(object o, Gtk.ScaleChangedArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				// could be rotate.AngleDelta if event args is not right
+				var e = new ZoomGestureEventArgs(args.Scale);
+				if (e != null)
+				{
+					handler.Callback.OnZoomExpand(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+#endif
+
 			public virtual void FocusInEvent(object o, Gtk.FocusInEventArgs args)
 			{
 				var handler = Handler;
 				if (handler == null)
 					return;
-				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
+				handler.Callback.OnGotFocus(handler.Widget, System.EventArgs.Empty);
 			}
 
 			public virtual void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
@@ -558,18 +734,18 @@ namespace Eto.GtkSharp.Forms
 				// Handler can be null here after window is closed
 				var handler = Handler;
 				if (handler != null)
-					handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
+					handler.Callback.OnLostFocus(Handler.Widget, System.EventArgs.Empty);
 			}
 
-			public void HandleControlRealized(object sender, EventArgs e)
+			public void HandleControlRealized(object sender, System.EventArgs e)
 			{
 				Handler.RealizedSetup();
 				Handler.Control.Realized -= HandleControlRealized;
 			}
 
-			public virtual void MappedEvent(object sender, EventArgs e)
+			public virtual void MappedEvent(object sender, System.EventArgs e)
 			{
-				Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
+				Handler.Callback.OnShown(Handler.Widget, System.EventArgs.Empty);
 			}
 		}
 
