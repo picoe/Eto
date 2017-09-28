@@ -99,11 +99,14 @@ namespace Eto.GtkSharp.CustomControls
 			return true;
 		}
 #endif
-
-		void Close ()
+		// ToDo - the new is for GTK 3.22 where Window has a close also --
+		// need to verify the correct thing here
+		new void Close ()
 		{
 			this.RemoveGrab ();
 			Destroy();
+			// should we be doing this?
+			base.Close ();
 		}
 
 		void UpdateClock ()
