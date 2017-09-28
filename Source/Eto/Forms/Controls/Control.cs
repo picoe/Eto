@@ -731,9 +731,17 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnMouseMove(null), Control.MouseMoveEvent);
 			EventLookup.Register<Control>(c => c.OnMouseUp(null), Control.MouseUpEvent);
 			EventLookup.Register<Control>(c => c.OnMouseWheel(null), Control.MouseWheelEvent);
+			EventLookup.Register<Control>(c => c.OnSwipe(null), Control.SwipeGestureEvent);
+			EventLookup.Register<Control>(c => c.OnRotate(null), Control.RotateGestureEvent);
+			EventLookup.Register<Control>(c => c.OnPanH(null), Control.PanHGestureEvent);
+			EventLookup.Register<Control>(c => c.OnPanV(null), Control.PanVGestureEvent);
+			EventLookup.Register<Control>(c => c.OnLongpress(null), Control.LongPressGestureEvent);
+			EventLookup.Register<Control>(c => c.OnZoomExpand(null), Control.ZoomGestureEvent);
 			EventLookup.Register<Control>(c => c.OnShown(null), Control.ShownEvent);
 			EventLookup.Register<Control>(c => c.OnSizeChanged(null), Control.SizeChangedEvent);
 			EventLookup.Register<Control>(c => c.OnTextInput(null), Control.TextInputEvent);
+
+
 		}
 
 		/// <summary>
@@ -1379,6 +1387,30 @@ namespace Eto.Forms
 			/// </summary>
 			void OnMouseWheel(Control widget, MouseEventArgs e);
 			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnSwipe(Control widget, SwipeGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnRotate(Control widget, RotateGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnPanH(Control widget, PanGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnPanV(Control widget, PanGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnLongPress(Control widget, LongPressGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnZoomExpand(Control widget, ZoomGestureEventArgs e);
+			/// <summary>
 			/// Raises the got focus event.
 			/// </summary>
 			void OnGotFocus(Control widget, EventArgs e);
@@ -1484,6 +1516,50 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnMouseWheel(e);
+			}
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			public void OnSwipe(Control widget, SwipeGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnSwipe(e));
+			}
+			/// <summary>
+			/// Raises the rotate gesture event.
+			/// </summary>
+			public void OnRotate(Control widget, RotateGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnRotate(e));
+			}
+			/// <summary>
+			/// Raises the horizontal pan gesture event.
+			/// </summary>
+			public void OnPanH(Control widget, PanGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnPanH(e));
+			}
+			/// <summary>
+			/// Raises the vertical pan gesture event.
+			/// </summary>
+			public void OnPanV(Control widget, PanGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnPanV(e));
+			}
+
+			/// <summary>
+			/// Raises the longpress gesture event.
+			/// </summary>
+			public void OnLongPress(Control widget, LongPressGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnLongpress(e));
+			}
+
+			/// <summary>
+			/// Raises the longpress gesture event.
+			/// </summary>
+			public void OnZoomExpand(Control widget, ZoomGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnZoomExpand(e));
 			}
 			/// <summary>
 			/// Raises the got focus event.
