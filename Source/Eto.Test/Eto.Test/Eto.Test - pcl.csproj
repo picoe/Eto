@@ -135,6 +135,7 @@
     <Compile Include="UnitTests\Drawing\FontTests.cs" />
     <Compile Include="UnitTests\Drawing\GraphicsTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
+    <Compile Include="UnitTests\Forms\ClipboardTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\ComboBoxTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\CustomCellTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\NumericStepperTests.cs" />
