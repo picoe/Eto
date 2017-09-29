@@ -4,6 +4,7 @@ using Eto.Drawing;
 using System.Linq;
 using Eto.GtkSharp.Drawing;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -13,7 +14,7 @@ namespace Eto.GtkSharp.Forms
 
 		class ClipboardData
 		{
-			public Gtk.TargetEntry Target { get; set; }
+			public string Type { get; set; }
 
 			public object Data { get; set; }
 
@@ -21,10 +22,11 @@ namespace Eto.GtkSharp.Forms
 
 			public void GetData(Gtk.SelectionData selectionData)
 			{
-				if (GetClipboardData != null)
-					GetClipboardData(this, selectionData);
+				GetClipboardData?.Invoke(this, selectionData);
 			}
 		}
+
+		Gtk.TargetList targets = new Gtk.TargetList();
 
 		readonly List<ClipboardData> clipboard = new List<ClipboardData>();
 
@@ -35,8 +37,7 @@ namespace Eto.GtkSharp.Forms
 
 		void Update()
 		{
-			var targets = clipboard.Select(r => r.Target);
-			Control.SetWithData(targets.ToArray(), (clip, selectionData, info) =>
+			Control.SetWithData((Gtk.TargetEntry[])targets, (clip, selectionData, info) =>
 			{
 				if (info < clipboard.Count)
 				{
@@ -45,15 +46,38 @@ namespace Eto.GtkSharp.Forms
 				}
 			}, clip =>
 			{
-				
+
 			});
 		}
 
 		void AddEntry(string type, object data, GetClipboardData getData)
 		{
+			targets.Add(type, 0, (uint)clipboard.Count);
 			clipboard.Add(new ClipboardData
 			{
-				Target = new Gtk.TargetEntry(type, 0, (uint)clipboard.Count),
+				Type = type,
+				Data = data,
+				GetClipboardData = getData
+			});
+			Update();
+		}
+
+		void AddTextEntry(string data, GetClipboardData getData)
+		{
+			targets.AddTextTargets((uint)clipboard.Count);
+			clipboard.Add(new ClipboardData
+			{
+				Data = data,
+				GetClipboardData = getData
+			});
+			Update();
+		}
+
+		void AddImageEntry(object data, GetClipboardData getData)
+		{
+			targets.AddImageTargets((uint)clipboard.Count, false);
+			clipboard.Add(new ClipboardData
+			{
 				Data = data,
 				GetClipboardData = getData
 			});
@@ -74,44 +98,29 @@ namespace Eto.GtkSharp.Forms
 
 		public void SetString(string value, string type)
 		{
-			AddEntry(type, value, (data, selection) => selection.Text = data.Data as string);
+			AddEntry(type, value, (data, selection) => selection.Set(Gdk.Atom.Intern(data.Type, false), 8, Encoding.UTF8.GetBytes(data.Data as string)));
 		}
 
 		public string Html
 		{
-			set
-			{ 
-				AddEntry("text/html", value, (data, selection) => selection.Text = data.Data as string);
-			}
-			get
-			{
-				var selection = GetSelectionData("text/html");
-				return selection != null ? selection.Text : null;
-			}
+			set { SetString(value, "text/html"); }
+			get { return GetString("text/html"); }
 		}
 
 		public string Text
 		{
-			set
-			{ 
-				AddEntry("UTF8_STRING", value, (data, selection) => selection.Text = data.Data as string);
-			}
+			set { AddTextEntry(value, (data, selection) => selection.Text = data.Data as string); }
 			get { return Control.WaitForText(); }
-			
 		}
 
 		public Image Image
 		{
 			set
 			{
-				var pixbuf = value.ControlObject as Gdk.Pixbuf;
-				/* TODO: AddEntry(type, value, delegate(ClipboardData data, Gtk.SelectionData selection) {
-					selection = value;	
-				});*/
-				if (pixbuf != null)
-					Control.Image = pixbuf;
-				else
+				var pixbuf = value.ToGdk();
+				if (pixbuf == null)
 					throw new NotSupportedException();
+				AddImageEntry(pixbuf, (data, selection) => selection.SetPixbuf(data.Data as Gdk.Pixbuf));
 			}
 			get
 			{
@@ -132,8 +141,12 @@ namespace Eto.GtkSharp.Forms
 
 		public string GetString(string type)
 		{
-			var selection = GetSelectionData(type);
-			return selection != null ? selection.Text : null;
+			var data = GetSelectionData(type)?.Data;
+			if (data != null)
+			{
+				return Encoding.UTF8.GetString(data);
+			}
+			return null;
 		}
 
 		public byte[] GetData(string type)
@@ -145,7 +158,9 @@ namespace Eto.GtkSharp.Forms
 		public void Clear()
 		{
 			Control.Clear();
+			targets = new Gtk.TargetList();
 			clipboard.Clear();
+			Update();
 		}
 
 		public string[] Types

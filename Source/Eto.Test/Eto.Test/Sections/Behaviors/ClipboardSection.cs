@@ -19,6 +19,12 @@ namespace Eto.Test.Sections.Behaviors
 				clipboard.Text = "Some text";
 				Update();
 			};
+			var copyHtmlButton = new Button { Text = "Copy Html" };
+			copyHtmlButton.Click += (sender, e) =>
+			{
+				clipboard.Html = "Some <strong style='color:blue'>HTML</strong>";
+				Update();
+			};
 			var copyImageButton = new Button { Text = "Copy Image" };
 			copyImageButton.Click += (sender, e) =>
 			{
@@ -47,7 +53,7 @@ namespace Eto.Test.Sections.Behaviors
 						Orientation = Orientation.Horizontal, 
 						Spacing = 5,
 						Padding = new Padding(10),
-						Items = { copyTextButton, copyImageButton, pasteTextButton, clearButton }
+						Items = { copyTextButton, copyHtmlButton, copyImageButton, pasteTextButton, clearButton }
 					},
 					new StackLayoutItem(pasteData, expand: true)
 				}
