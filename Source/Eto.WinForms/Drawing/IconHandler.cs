@@ -184,8 +184,9 @@ namespace Eto.WinForms.Drawing
 
 		public void DrawImage(GraphicsHandler graphics, float x, float y)
 		{
-			var image = GetIdealIcon().Bitmap;
-			graphics.DrawImage(image, x, y);
+			var size = Size;
+			var image = Widget.GetFrame(1, size);
+			graphics.Control.DrawImage(image.Bitmap.ToSD(), x, y, size.Width, size.Height);
 		}
 
 		public void DrawImage(GraphicsHandler graphics, float x, float y, float width, float height)

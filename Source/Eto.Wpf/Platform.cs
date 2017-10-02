@@ -114,6 +114,8 @@ namespace Eto.Wpf
 			p.Add<Stepper.IHandler>(() => new StepperHandler());
 			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
 			p.Add<FilePicker.IHandler>(() => new ThemedFilePickerHandler());
+			p.Add<DocumentControl.IHandler>(() => new ThemedDocumentControlHandler());
+			p.Add<DocumentPage.IHandler>(() => new ThemedDocumentPageHandler());
 			
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

@@ -31,9 +31,9 @@ namespace Eto.Forms
 		{
 		}
 
-		const string CloseEvent = "DocumentPage.CloseEvent";
+		static object CloseEvent = new object();
 
-		const string ClickEvent = "DocumentPage.Click";
+		static object ClickEvent = new object();
 
 		/// <summary>
 		/// Occurs when the tab is closed.

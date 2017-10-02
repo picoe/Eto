@@ -40,12 +40,12 @@ namespace Eto.WinForms.Forms
 		{
 			set
 			{
-				Control.SetText(value ?? string.Empty, System.Windows.Forms.TextDataFormat.Html);
+				Control.SetText(value ?? string.Empty, swf.TextDataFormat.Html);
 				Update();
 			}
 			get
 			{
-				return swf.Clipboard.ContainsText(swf.TextDataFormat.Html) ? swf.Clipboard.GetText(swf.TextDataFormat.Html) : null;
+				return swf.Clipboard.ContainsText(swf.TextDataFormat.Html) ? swf.Clipboard.GetText(swf.TextDataFormat.Html)?.TrimEnd('\0') : null;
 			}
 		}
 
@@ -76,22 +76,22 @@ namespace Eto.WinForms.Forms
 			get
 			{
 				Image result = null;
-				
+
 				try
 				{
 					var sdimage = GetImageFromClipboard() as sd.Bitmap;
-					
+
 					if (sdimage != null)
 					{
 						var handler = new BitmapHandler(sdimage);
-						
+
 						result = new Bitmap(handler);
 					}
 				}
 				catch
 				{
 				}
-				
+
 				return result;
 			}
 		}
@@ -203,14 +203,7 @@ namespace Eto.WinForms.Forms
 			return null;
 		}
 
-		public string[] Types
-		{
-			get
-			{
-				var data = swf.Clipboard.GetDataObject();
-				return data != null ? data.GetFormats() : null;
-			}
-		}
+		public string[] Types => swf.Clipboard.GetDataObject()?.GetFormats();
 
 		public void Clear()
 		{
