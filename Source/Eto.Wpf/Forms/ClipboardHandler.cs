@@ -127,11 +127,12 @@ namespace Eto.Wpf.Forms
 			get { return Retry(() => sw.Clipboard.ContainsImage() ? new Bitmap(new BitmapHandler(sw.Clipboard.GetImage())) : null); }
 			set
 			{
-				var dib = (value as Bitmap).ToDIB();
+				var dib = (value as Bitmap)?.ToDIB();
 				if (dib != null)
 				{
 					// write a DIB here, so we can preserve transparency of the image
 					Control.SetData(sw.DataFormats.Dib, dib);
+					Update();
 					return;
 				}
 
