@@ -5,6 +5,7 @@ using System.Linq;
 using Eto.GtkSharp.Drawing;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -117,6 +118,12 @@ namespace Eto.GtkSharp.Forms
 		{
 			set
 			{
+				var icon = value as Icon;
+				if (icon != null)
+				{
+					// todo: save as icon
+					//SetData(data, "eto-icon");
+				}
 				var pixbuf = value.ToGdk();
 				if (pixbuf == null)
 					throw new NotSupportedException();
@@ -124,11 +131,15 @@ namespace Eto.GtkSharp.Forms
 			}
 			get
 			{
+				var iconData = GetData("eto-icon");
+				if (iconData != null)
+				{
+					return new Icon(new MemoryStream(iconData, false));
+				}
 				var image = Control.WaitForImage();
 				if (image != null)
 				{
-					var handler = new BitmapHandler(image);
-					return new Bitmap(handler);
+					return new Bitmap(new BitmapHandler(image));
 				}
 				return null;
 			}
