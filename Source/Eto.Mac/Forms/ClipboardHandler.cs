@@ -88,10 +88,10 @@ namespace Eto.Mac.Forms
 			set
 			{
 				ClearIfNeeded();
-				var handler = value.Handler as BitmapHandler;
-				if (handler != null)
+				var nsimage = value.ToNS();
+				if (nsimage != null)
 				{
-					var data = handler.Control.AsTiff();
+					var data = nsimage.AsTiff();
 					Control.SetDataForType(data, NSPasteboard.NSTiffType);
 				}
 			}
@@ -103,7 +103,10 @@ namespace Eto.Mac.Forms
 				Class.ThrowOnInitFailure = oldFail;
 				if (image.Handle == IntPtr.Zero)
 					return null;
-				return new Bitmap(new BitmapHandler(image));
+				if (image.Representations().Length > 1)
+					return new Icon(new IconHandler(image));
+				else
+					return new Bitmap(new BitmapHandler(image));
 			}
 		}
 
