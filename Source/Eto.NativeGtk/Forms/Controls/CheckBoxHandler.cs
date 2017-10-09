@@ -8,15 +8,12 @@ namespace Eto.GtkSharp.Forms.Controls
     public class CheckBoxHandler : GtkControl<Gtk.Widget, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
     {
         private readonly IntPtr _eventbox, _context, _provider;
-        private bool? _tempstate;
         private bool _ignoreevents;
         private Color _textcolor;
 
         public CheckBoxHandler()
         {
             Handle = GtkWrapper.gtk_check_button_new();
-
-            _tempstate = false;
 
             _eventbox = GtkWrapper.gtk_event_box_new();
             GtkWrapper.gtk_container_add(_eventbox, Handle);
@@ -28,7 +25,31 @@ namespace Eto.GtkSharp.Forms.Controls
             GtkWrapper.gtk_style_context_get_color(_context, 0, out GdkWrapper.RGBA rgba);
             _textcolor = rgba.ToColor();
 
+            ConnectSignal("button-press-event", (Func<IntPtr, IntPtr, IntPtr, bool>)HandleButtonPressEvent, true);
             ConnectSignal("toggled", (Action<IntPtr, IntPtr>)HandleToggled);
+        }
+
+        private static bool HandleButtonPressEvent(IntPtr togglebutton, IntPtr e, IntPtr user_data)
+        {
+            var handler = ((GCHandle)user_data).Target as CheckBoxHandler;
+            var ev = WrapperHelper.GetStruct<GdkWrapper.EventButton>(e);
+
+            if (ev.type != GdkWrapper.GDK_BUTTON_PRESS)
+                return false;
+
+            if (handler.ThreeState)
+            {
+                if (!handler.Checked.HasValue)
+                    handler.Checked = true;
+                else if (handler.Checked.Value)
+                    handler.Checked = false;
+                else
+                    handler.Checked = null;
+                
+                return true;
+            }
+
+            return false;
         }
 
         private static void HandleToggled(IntPtr togglebutton, IntPtr user_data)
@@ -36,22 +57,7 @@ namespace Eto.GtkSharp.Forms.Controls
             var handler = ((GCHandle)user_data).Target as CheckBoxHandler;
             if (handler._ignoreevents)
                 return;
-
-            if (handler.ThreeState)
-            {
-                handler._ignoreevents = true;
-
-                if (!handler._tempstate.HasValue)
-                    handler.Checked = true;
-                else if (handler._tempstate.Value)
-                    handler.Checked = false;
-                else
-                    handler.Checked = null;
-
-                handler._ignoreevents = false;
-            }
-
-            handler._tempstate = handler.Checked;
+            
             handler.Callback.OnCheckedChanged(handler.Widget, EventArgs.Empty);
         }
 
@@ -66,8 +72,6 @@ namespace Eto.GtkSharp.Forms.Controls
             }
             set
             {
-                var triggerevent = !_ignoreevents && _tempstate != value;
-
                 _ignoreevents = true;
                 if (!value.HasValue)
                 {
@@ -81,11 +85,7 @@ namespace Eto.GtkSharp.Forms.Controls
                 }
                 _ignoreevents = false;
 
-                if (triggerevent)
-                {
-                    _tempstate = value;
-                    Callback.OnCheckedChanged(Widget, EventArgs.Empty);
-                }
+                Callback.OnCheckedChanged(Widget, EventArgs.Empty);
             }
         }
 

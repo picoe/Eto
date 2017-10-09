@@ -10,7 +10,7 @@ namespace Eto.GtkSharp.Forms
     public class TrayIndicatorHandler : WidgetHandler<IntPtr, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
     {
         private static uint s_id = 0;
-        private IntPtr _menuEmpty;
+        private readonly IntPtr _menuEmpty;
 
         public TrayIndicatorHandler()
         {
@@ -50,12 +50,7 @@ namespace Eto.GtkSharp.Forms
 
         public void SetMenu(ContextMenu menu)
         {
-			//app_indicator_set_menu(Control.Handle, (menu.ControlObject as Gtk.Menu).Handle);
-
 			AppIndicator.app_indicator_set_menu(Control, menu?.NativeHandle ?? _menuEmpty);
-			
-
-            //AppIndicator.app_indicator_set_menu(Control, menu.NativeHandle);
 		}
 
         public override void AttachEvent(string id)
