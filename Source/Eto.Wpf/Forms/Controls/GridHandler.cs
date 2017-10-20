@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Wpf.Forms.Cells;
@@ -32,6 +32,18 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
+
+		protected override void OnPreviewKeyDown(swi.KeyEventArgs e)
+		{
+			base.OnPreviewKeyDown(e);
+			if (!e.Handled && e.Key == swi.Key.Enter && swi.Keyboard.Modifiers == swi.ModifierKeys.None)
+			{
+				CommitEdit(); // if needed, commit the editing
+				// don't go to next row!
+				e.Handled = true;
+			}
+		}
+
 	}
 
 
