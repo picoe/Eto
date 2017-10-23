@@ -434,7 +434,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Tree.GetCursor(out path, out column);
 			if (path == null || column == null)
 				return true;
-			
+
 			// This is a hack, but it works to commit editing.  Is there a better way?
 			if (Tree.FocusChild?.HasFocus == true)
 				Tree.ChildFocus(Gtk.DirectionType.TabForward);
@@ -512,6 +512,23 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
 			set { Widget.Properties.Set(Border_Key, value, () => Control.ShadowType = value.ToGtk(), BorderType.Bezel); }
+		}
+
+		public bool IsEditing
+		{
+			get
+			{
+				Gtk.TreePath path;
+				Gtk.TreeViewColumn focus_column;
+				Tree.GetCursor(out path, out focus_column);
+
+#if GTK2
+				var cells = focus_column?.CellRenderers;
+#elif GTK3
+				var cells = focus_column?.Cells;
+#endif
+				return cells?.OfType<IEtoCellRenderer>().Any(r => r.Editing) ?? false;
+			}
 		}
 	}
 }

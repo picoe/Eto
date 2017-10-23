@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
@@ -371,7 +371,7 @@ namespace Eto.Test.Sections.Controls
 			commitEditItem.Click += (s, e) =>
 			{
 				var result = grid.CommitEdit();
-				Log.Write(grid, $"CommitEdit, Result: {result}");
+				Log.Write(grid, $"CommitEdit, Result: {result}, IsEditing: {grid.IsEditing}");
 			};
 			menu.Items.Add(commitEditItem);
 
@@ -379,9 +379,15 @@ namespace Eto.Test.Sections.Controls
 			abortEditItem.Click += (s, e) =>
 			{
 				var result = grid.CancelEdit();
-				Log.Write(grid, $"CancelEdit, Result: {result}");
+				Log.Write(grid, $"CancelEdit, Result: {result}, IsEditing: {grid.IsEditing}");
 			};
 			menu.Items.Add(abortEditItem);
+
+			menu.Opening += (sender, e) =>
+			{
+				commitEditItem.Enabled = grid.IsEditing;
+				abortEditItem.Enabled = grid.IsEditing;
+			};
 
 			var item = new ButtonMenuItem { Text = "Click Me!" };
 			item.Click += (sender, e) =>
@@ -426,12 +432,12 @@ namespace Eto.Test.Sections.Controls
 
 		protected virtual void LogEvents(GridView control)
 		{
-			control.CellEditing += (sender, e) => Log.Write(control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
-			control.CellEdited += (sender, e) => Log.Write(control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
-			control.SelectionChanged += (sender, e) => Log.Write(control, "Selection Changed, Rows: {0}", SelectedRowsString(control));
-			control.ColumnHeaderClick += (sender, e) => Log.Write(control, "Column Header Clicked: {0}", e.Column.HeaderText);
-			control.CellClick += (sender, e) => Log.Write(control, "Cell Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
-			control.CellDoubleClick += (sender, e) => Log.Write(control, "Cell Double Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			control.CellEditing += (sender, e) => Log.Write(control, $"BeginCellEdit, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
+			control.CellEdited += (sender, e) => Log.Write(control, $"EndCellEdit, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
+			control.SelectionChanged += (sender, e) => Log.Write(control, $"Selection Changed, Rows: {SelectedRowsString(control)}");
+			control.ColumnHeaderClick += (sender, e) => Log.Write(control, $"Column Header Clicked: {e.Column.HeaderText}");
+			control.CellClick += (sender, e) => Log.Write(control, $"Cell Clicked, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
+			control.CellDoubleClick += (sender, e) => Log.Write(control, $"Cell Double Clicked, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
 		}
 
 		static string SelectedRowsString(GridView grid)

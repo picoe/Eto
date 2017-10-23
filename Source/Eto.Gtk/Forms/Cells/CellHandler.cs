@@ -24,6 +24,11 @@ namespace Eto.GtkSharp.Forms.Cells
 		int RowDataColumn { get; }
 	}
 
+	public interface IEtoCellRenderer
+	{
+		bool Editing { get; }
+	}
+
 	public interface ICellHandler
 	{
 		void BindCell(ICellDataSource source, GridColumnHandler column, int columnIndex, ref int dataIndex);

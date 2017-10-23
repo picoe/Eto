@@ -44,7 +44,7 @@ namespace Eto.Mac.Forms.Cells
 			field.Font = defaultFont;
 
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, dataItem, row, field);
-			ColumnHandler.DataViewHandler.Callback.OnCellFormatting(ColumnHandler.DataViewHandler.Widget, args);
+			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 
 			if (args.FontSet)
 				field.Font = args.Font.ToNS();
@@ -173,7 +173,7 @@ namespace Eto.Mac.Forms.Cells
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, ee);
+					ColumnHandler.DataViewHandler.OnCellEditing(ee);
 				};
 				view.EditingEnded += (sender, e) =>
 				{
@@ -184,7 +184,7 @@ namespace Eto.Mac.Forms.Cells
 					SetObjectValue(item, control.ObjectValue);
 
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
+					ColumnHandler.DataViewHandler.OnCellEdited(ee);
 					control.ObjectValue = GetObjectValue(item) ?? new NSString(string.Empty);
 				};
 				view.ResignedFirstResponder += (sender, e) =>
@@ -195,7 +195,7 @@ namespace Eto.Mac.Forms.Cells
 					SetObjectValue(item, control.ObjectValue);
 
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
+					ColumnHandler.DataViewHandler.OnCellEdited(ee);
 				};
 				view.Bind(editableBinding, tableColumn, "editable", null);
 			}

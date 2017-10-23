@@ -5,10 +5,14 @@ namespace Eto.GtkSharp.Forms.Cells
 {
 	public class CheckBoxCellHandler : SingleCellHandler<Gtk.CellRendererToggle, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
 	{
-		class Renderer : Gtk.CellRendererToggle
+		class Renderer : Gtk.CellRendererToggle, IEtoCellRenderer
 		{
 			WeakReference handler;
 			public CheckBoxCellHandler Handler { get { return (CheckBoxCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
+#if GTK2
+			public bool Editing => (bool)GetProperty("editing").Val;
+#endif
 
 			int row;
 			[GLib.Property("row")]
@@ -22,13 +26,13 @@ namespace Eto.GtkSharp.Forms.Cells
 				}
 			}
 
-			#if GTK2
+#if GTK2
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				height = Math.Max(height, Handler.Source.RowHeight);
 			}
-			#else
+#else
 			protected override void OnGetPreferredHeight(Gtk.Widget widget, out int minimum_size, out int natural_size)
 			{
 				base.OnGetPreferredHeight(widget, out minimum_size, out natural_size);
@@ -36,7 +40,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				minimum_size = Math.Max(minimum_size, Handler.Source.RowHeight);
 				natural_size = Handler.Source.RowHeight;
 			}
-			#endif
+#endif
 		}
 
 		public CheckBoxCellHandler()
