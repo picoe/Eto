@@ -64,7 +64,7 @@ namespace Eto.Mac.Forms.Cells
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, dataItem, row, field);
-			ColumnHandler.DataViewHandler.Callback.OnCellFormatting(ColumnHandler.DataViewHandler.Widget, args);
+			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 
 			field.Font = args.Font.ToNS() ?? NSFont.BoldSystemFontOfSize(NSFont.SystemFontSize);
 			field.ObjectValue = value as NSObject;

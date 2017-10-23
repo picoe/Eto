@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Wpf.Forms.Cells;
@@ -32,6 +32,18 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
+
+		protected override void OnPreviewKeyDown(swi.KeyEventArgs e)
+		{
+			base.OnPreviewKeyDown(e);
+			if (!e.Handled && e.Key == swi.Key.Enter && swi.Keyboard.Modifiers == swi.ModifierKeys.None)
+			{
+				CommitEdit(); // if needed, commit the editing
+				// don't go to next row!
+				e.Handled = true;
+			}
+		}
+
 	}
 
 
@@ -453,7 +465,9 @@ namespace Eto.Wpf.Forms.Controls
 		public void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem)
 		{
 			var gridColumn = Widget.Columns[dataGridColumn.DisplayIndex];
+			SetIsEditing(false);
 			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, dataGridColumn.DisplayIndex, dataItem));
+			SetIsEditing(null);
 		}
 
 		public void ScrollToRow(int row)
@@ -513,5 +527,21 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control.Items.Refresh();
 		}
+
+		swc.DataGridRow GetCurrentRow()
+		{
+			var selectedIndex = Control.SelectedIndex;
+			if (selectedIndex >= 0)
+			{
+				return Control.ItemContainerGenerator.ContainerFromIndex(selectedIndex) as swc.DataGridRow;
+			}
+			return null;
+		}
+
+		static readonly object IsEditing_Key = new object();
+
+		public bool IsEditing => Widget.Properties.Get<bool?>(IsEditing_Key) ?? GetCurrentRow()?.IsEditing == true;
+
+		void SetIsEditing(bool? value) => Widget.Properties.Set(IsEditing_Key, value);
 	}
 }

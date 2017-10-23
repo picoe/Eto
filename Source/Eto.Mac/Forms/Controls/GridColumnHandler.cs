@@ -53,7 +53,9 @@ namespace Eto.Mac.Forms.Controls
 
 		void OnCellFormatting(GridCellFormatEventArgs args);
 
-		Grid.ICallback Callback { get; }
+		void OnCellEditing(GridViewCellEventArgs e);
+
+		void OnCellEdited(GridViewCellEventArgs e);
 
 		Grid Widget { get; }
 

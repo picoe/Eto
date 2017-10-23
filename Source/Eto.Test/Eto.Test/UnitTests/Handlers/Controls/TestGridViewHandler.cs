@@ -217,6 +217,8 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			}
 		}
 
+		public bool IsEditing { get { throw new NotImplementedException(); } }
+
 		public void ReloadData(IEnumerable<int> rows)
 		{
 			throw new NotImplementedException();

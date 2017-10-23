@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Linq;
@@ -53,6 +53,26 @@ namespace Eto.WinForms.Forms.Controls
 				else
 					size.Height = Math.Min(size.Height, 100);
 				return size;
+			}
+
+			protected override bool ProcessDialogKey(swf.Keys keyData)
+			{
+				if (IsCurrentCellInEditMode && keyData == swf.Keys.Enter && EndEdit())
+				{
+					// prevent going to next row after committing with enter key
+					return true;
+				}
+				return base.ProcessDialogKey(keyData);
+			}
+
+			protected override void OnKeyDown(swf.KeyEventArgs e)
+			{
+				if (e.KeyData == swf.Keys.Enter)
+				{
+					// don't go to next row when pressing enter
+					e.SuppressKeyPress = true;
+				}
+				base.OnKeyDown(e);
 			}
 		}
 
@@ -464,6 +484,8 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			Control.Refresh();
 		}
+
+		public bool IsEditing => Control.IsCurrentCellInEditMode;
 	}
 }
 

@@ -15,11 +15,15 @@ namespace Eto.GtkSharp.Forms.Cells
 
 	public class TextBoxCellHandler : SingleCellHandler<Gtk.CellRendererText, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler, ITextBoxCellHandler
 	{
-		internal class Renderer : Gtk.CellRendererText
+		internal class Renderer : Gtk.CellRendererText, IEtoCellRenderer
 		{
 			Gdk.Rectangle cell_area;
 			WeakReference handler;
 			public ITextBoxCellHandler Handler { get { return (ITextBoxCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
+#if GTK2
+			public bool Editing => (bool)GetProperty("editing").Val;
+#endif
 
 			int row;
 			[GLib.Property("row")]

@@ -558,6 +558,12 @@ namespace Eto.Forms
 		public bool CancelEdit() => Handler.CancelEdit();
 
 		/// <summary>
+		/// Gets a value indicating that the current cell is in edit mode. 
+		/// </summary>
+		/// <value><c>true</c> if the current cell is in edit mode; otherwise, <c>false</c>.</value>
+		public bool IsEditing => Handler.IsEditing;
+
+		/// <summary>
 		/// Scrolls to show the specified row in the view
 		/// </summary>
 		/// <param name="row">Row to scroll to.</param>
@@ -781,6 +787,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <returns><c>true</c>, if edit was canceled or there was no current edit operation, <c>false</c> if the cancel was aborted.</returns>
 			bool CancelEdit();
+
+			/// <summary>
+			/// Gets a value indicating that the current cell is in edit mode. 
+			/// </summary>
+			/// <value><c>true</c> if the current cell is in edit mode; otherwise, <c>false</c>.</value>
+			bool IsEditing { get; }
 
 			/// <summary>
 			/// Scrolls to show the specified row in the view

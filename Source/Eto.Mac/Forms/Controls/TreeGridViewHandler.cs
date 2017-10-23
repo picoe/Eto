@@ -107,6 +107,18 @@ namespace Eto.Mac.Forms.Controls
 			bool? collapsedItemIsSelected;
 			ITreeGridItem lastSelected;
 
+			public override bool ShouldEditTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
+			{
+				var colHandler = Handler.GetColumn(tableColumn);
+				var etoItem = (item as EtoTreeItem)?.Item;
+				var row = Handler.Control.RowForItem(item);
+
+				var args = new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item);
+				Handler.Callback.OnCellEditing(Handler.Widget, args);
+				Handler.SetIsEditing(true);
+				return true;
+			}
+
 			public override void SelectionDidChange(NSNotification notification)
 			{
 				var h = Handler;
@@ -242,6 +254,10 @@ namespace Eto.Mac.Forms.Controls
 				{
 					var myitem = (EtoTreeItem)item;
 					colHandler.SetObjectValue(myitem.Item, theObject);
+
+					Handler.SetIsEditing(false);
+					var row = outlineView.RowForItem(item);
+					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, myitem.Item));
 				}
 			}
 
