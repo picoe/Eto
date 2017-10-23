@@ -153,6 +153,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					colHandler.SetObjectValue(item, theObject);
 
+					Handler.SetIsEditing(false);
 					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item));
 				}
 			}
@@ -170,6 +171,7 @@ namespace Eto.Mac.Forms.Controls
 				var item = Handler.collection.ElementAt((int)row);
 				var args = new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item);
 				Handler.Callback.OnCellEditing(Handler.Widget, args);
+				Handler.SetIsEditing(true);
 				return true;
 			}
 

@@ -484,6 +484,8 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			Control.Refresh();
 		}
+
+		public bool IsEditing => Control.IsCurrentCellInEditMode;
 	}
 }
 

@@ -188,7 +188,7 @@ namespace Eto.Mac.Forms.Cells
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, dataItem, row, field);
-			ColumnHandler.DataViewHandler.Callback.OnCellFormatting(ColumnHandler.DataViewHandler.Widget, args);
+			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 
 			field.Font = defaultFont;
 			if (args.FontSet)
@@ -279,10 +279,10 @@ namespace Eto.Mac.Forms.Cells
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
 					var cellArgs = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, cellArgs);
+					ColumnHandler.DataViewHandler.OnCellEditing(cellArgs);
 					SetObjectValue(item, control.ObjectValue);
 
-					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, cellArgs);
+					ColumnHandler.DataViewHandler.OnCellEdited(cellArgs);
 					control.ObjectValue = GetObjectValue(item);
 
 				};

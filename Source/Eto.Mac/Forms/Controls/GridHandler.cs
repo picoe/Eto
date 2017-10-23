@@ -561,15 +561,28 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		Grid.ICallback IDataViewHandler.Callback
+		void IDataViewHandler.OnCellEditing(GridViewCellEventArgs e)
 		{
-			get { return Callback; }
+			Callback.OnCellEditing(Widget, e);
+			SetIsEditing(true);
+		}
+
+		void IDataViewHandler.OnCellEdited(GridViewCellEventArgs e)
+		{
+			SetIsEditing(false);
+			Callback.OnCellEditing(Widget, e);
 		}
 
 		Grid IDataViewHandler.Widget
 		{
 			get { return Widget; }
 		}
+
+		static readonly object IsEditing_Key = new object();
+
+		protected void SetIsEditing(bool value) => Widget.Properties.Set(IsEditing_Key, value, false);
+
+		public bool IsEditing => Widget.Properties.Get(IsEditing_Key, Control.EditedRow != -1 && Control.EditedColumn != -1);
 	}
 }
 

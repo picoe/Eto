@@ -132,11 +132,11 @@ namespace Eto.Mac.Forms.Cells
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, ee);
+					ColumnHandler.DataViewHandler.OnCellEditing(ee);
 					SetObjectValue(item, control.ObjectValue);
 					control.ObjectValue = GetObjectValue(item);
 
-					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
+					ColumnHandler.DataViewHandler.OnCellEdited(ee);
 				};
 			}
 			view.Tag = row;
