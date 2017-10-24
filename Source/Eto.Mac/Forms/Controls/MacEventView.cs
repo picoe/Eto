@@ -78,6 +78,7 @@ namespace Eto.Mac.Forms.Controls
 			filter3.RVector = new CIVector(0, color.R, 0);
 			filter3.GVector = new CIVector(color.G, 0, 0);
 			filter3.BVector = new CIVector(0, 0, color.B);
+			filter3.AVector = new CIVector(0, 0, 0, color.A);
 			ciImage = (CIImage)filter3.ValueForKey(CIOutputImage);
 
 			// create separate context so we can force using the software renderer, which is more than fast enough for this
