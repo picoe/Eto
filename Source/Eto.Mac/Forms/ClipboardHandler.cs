@@ -36,7 +36,7 @@ namespace Eto.Mac.Forms
 {
 	public class ClipboardHandler : WidgetHandler<NSPasteboard, Clipboard>, Clipboard.IHandler
 	{
-		nint changeCount;
+		nint? changeCount;
 
 		protected override NSPasteboard CreateControl()
 		{
