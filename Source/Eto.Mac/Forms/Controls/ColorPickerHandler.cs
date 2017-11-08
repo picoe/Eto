@@ -26,10 +26,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public WeakReference WeakHandler { get; set; }
 
+			ColorPickerHandler Handler => GetHandler(this) as ColorPickerHandler;
+
 			public override void Activate(bool exclusive)
 			{
 				base.Activate(exclusive);
-				var handler = GetHandler(this) as ColorPickerHandler;
+				var handler = Handler;
 				if (handler != null)
 				{
 					NSColorPanel.SharedColorPanel.ShowsAlpha = handler.AllowAlpha;
@@ -40,10 +42,24 @@ namespace Eto.Mac.Forms.Controls
 			public override void Deactivate()
 			{
 				base.Deactivate();
-				var handler = GetHandler(this) as ColorPickerHandler;
+				var handler = Handler;
 				if (handler != null)
 				{
 					handler.TriggerMouseCallback();
+				}
+			}
+
+			public override NSColor Color
+			{
+				get
+				{
+					return base.Color;
+				}
+				set
+				{
+					base.Color = value;
+					var handler = Handler;
+					handler?.Callback.OnColorChanged(handler.Widget, EventArgs.Empty);
 				}
 			}
 		}
@@ -58,18 +74,12 @@ namespace Eto.Mac.Forms.Controls
 			return new SizeF(44, 23);
 		}
 
-		static NSString keyColor = new NSString("color");
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case ColorPicker.ColorChangedEvent:
-					AddControlObserver(keyColor, args =>
-					{
-						var handler = (ColorPickerHandler)args.Handler;
-						handler.Callback.OnColorChanged(handler.Widget, EventArgs.Empty);
-					});
+					// handled in EtoColorWell
 					break;
 				default:
 					base.AttachEvent(id);
