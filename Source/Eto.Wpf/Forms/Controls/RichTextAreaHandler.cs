@@ -117,6 +117,51 @@ namespace Eto.Wpf.Forms.Controls
 				_languageChangedListener?.Dispose();
 				_languageChangedListener = null;
 			};
+			// Bug in WPF: When using composition (IME), it doesn't use the selection attributes when inserting the text
+			// so, we apply selection attributes to the composition range after inserted as there doesn't appear to be
+			// a way to override the attributes it uses beforehand.
+			swi.TextCompositionManager.AddPreviewTextInputStartHandler(Control, OnPreviewTextInputStart);
+			swi.TextCompositionManager.AddPreviewTextInputHandler(Control, OnPreviewTextInput);
+		}
+
+		static readonly object CompositionAttributes_Key = new object();
+
+		Dictionary<sw.DependencyProperty, object> CompositionAttributes
+		{
+			get { return Widget.Properties.Get<Dictionary<sw.DependencyProperty, object>>(CompositionAttributes_Key); }
+			set { Widget.Properties.Set(CompositionAttributes_Key, value); }
+		}
+
+		void OnPreviewTextInput(object sender, swi.TextCompositionEventArgs e)
+		{
+			var rtcomp = e.TextComposition as swd.FrameworkRichTextComposition;
+			var attributes = CompositionAttributes;
+			if (rtcomp != null && attributes != null && rtcomp.ResultStart != null && rtcomp.ResultEnd != null)
+			{
+				var range = new swd.TextRange(rtcomp.ResultStart, rtcomp.ResultEnd);
+				// need to async this as the styles still don't get applied properly at this stage. Yuck!
+				Application.Instance.AsyncInvoke(() => ApplySelectionAttributes(range, attributes));
+			}
+			CompositionAttributes = null;
+		}
+
+		void OnPreviewTextInputStart(object sender, swi.TextCompositionEventArgs e)
+		{
+			if (e.TextComposition is swd.FrameworkRichTextComposition)
+			{
+				// remember the saved attributes for the selection, they get cleared out while the user types the composition
+				CompositionAttributes = selectionAttributes;
+			}
+		}
+
+		void ApplySelectionAttributes(swd.TextRange range, Dictionary<sw.DependencyProperty, object> attributes)
+		{
+			if (attributes == null)
+				return;
+			foreach (var attribute in attributes)
+			{
+				range.ApplyPropertyValue(attribute.Key, attribute.Value);
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -212,10 +257,7 @@ namespace Eto.Wpf.Forms.Controls
 							// e.g. if the control already has focus and the user clicks on it but it
 							// doesn't change the selection, all selected attributes are lost which is unexpected
 							// as the state of the control has not actually changed at all.
-							foreach (var item in selectionAttributes)
-							{
-								Control.Selection.ApplyPropertyValue(item.Key, item.Value);
-							}
+							ApplySelectionAttributes(Control.Selection, selectionAttributes);
 						}
 					};
 					break;
