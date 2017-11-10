@@ -9,10 +9,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\pcl\Debug</OutputPath>
+    <DocumentationFile>..\..\BuildOutput\pcl\Debug\Eto.xml</DocumentationFile>
     <DefineConstants>TRACE;DEBUG;DESKTOP;MOBILE;PCL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\pcl\Release</OutputPath>
+    <DocumentationFile>..\..\BuildOutput\pcl\Release\Eto.xml</DocumentationFile>
     <DefineConstants>TRACE;DESKTOP;MOBILE;PCL</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
