@@ -152,7 +152,7 @@ namespace Eto.Serialization.Json
 				serializer.Converters.Add(new ListItemConverter());
 				serializer.Converters.Add(new TypeConverterConverter());
 			}
-			serializer.Binder = new EtoBinder
+			serializer.SerializationBinder = new EtoBinder
 			{
 				NamespaceManager = namespaceManager ?? new DefaultNamespaceManager(),
 				Instance = instance

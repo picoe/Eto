@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Collections.Generic;
@@ -35,7 +35,7 @@ namespace Eto.Serialization.Json.Converters
 						assemblyName = typeName.Substring(assemblyIndex + 1).Trim();
 						typeName = typeName.Substring(0, assemblyIndex);
 					}
-					type = serializer.Binder.BindToType(assemblyName, typeName);
+					type = serializer.SerializationBinder.BindToType(assemblyName, typeName);
 				}
 				else
 					type = objectType;

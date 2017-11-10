@@ -9,7 +9,12 @@ using Eto.Forms;
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Schema;
+#if NETSTANDARD1_3
+using cm = System.ComponentModel;
+#else
 using cm = Portable.Xaml.ComponentModel;
+#endif
+
 #if NET40
 using EtoTypeConverter = System.ComponentModel.TypeConverter;
 using EtoTypeConverterAttribute = System.ComponentModel.TypeConverterAttribute;

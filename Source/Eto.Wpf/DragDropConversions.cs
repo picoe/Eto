@@ -13,7 +13,7 @@ namespace Eto.Wpf
 		public static sw.DragDropEffects ToWpf(this DragEffects action)
 		{
 			var resultAction = sw.DragDropEffects.None;
-
+			
 			if (action.HasFlag(DragEffects.Copy))
 				resultAction |= sw.DragDropEffects.Copy;
 			

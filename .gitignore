@@ -13,3 +13,4 @@ AppPackages
 packages/
 .vs/
 [Tt]humbs.db
+artifacts

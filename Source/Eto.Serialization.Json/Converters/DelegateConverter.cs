@@ -16,7 +16,7 @@ namespace Eto.Serialization.Json.Converters
 
 		public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
-			var binder = serializer.Binder as EtoBinder;
+			var binder = serializer.SerializationBinder as EtoBinder;
 			if (binder != null)
 			{
 				var instance = binder.Instance;

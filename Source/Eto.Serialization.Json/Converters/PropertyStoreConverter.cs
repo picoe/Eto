@@ -25,7 +25,7 @@ namespace Eto.Serialization.Json.Converters
 				var typeName = (string)item["$type"];
 				if (typeName != null) {
 
-					var type = ((EtoBinder)serializer.Binder).BindToType (typeName);
+					var type = ((EtoBinder)serializer.SerializationBinder).BindToType (typeName);
 					if (type != null) {
 						foreach (var prop in (IDictionary<string, JToken>)item) {
 							if (prop.Key == "$type") continue;

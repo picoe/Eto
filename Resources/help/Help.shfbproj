@@ -21,7 +21,7 @@
     <Language>en-US</Language>
     <HelpFileFormat>Website</HelpFileFormat>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\..\Source\Eto\Eto - pcl.csproj" />
+      <DocumentationSource sourceFile="..\..\Source\Eto\Eto.csproj" />
     </DocumentationSources>
     <HelpTitle>Eto.Forms documentation</HelpTitle>
     <PresentationStyle>VS2013</PresentationStyle>

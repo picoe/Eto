@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if blah
+using System;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
 using Eto.Forms;
@@ -50,3 +51,4 @@ namespace Eto.Test.Mac.UnitTests
 		}
 	}
 }
+#endif

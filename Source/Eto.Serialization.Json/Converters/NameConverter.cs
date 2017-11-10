@@ -50,7 +50,7 @@ namespace Eto.Serialization.Json.Converters
 		{
 			var obj = JToken.ReadFrom(reader);
 			var id = (string)obj;
-			var binder = serializer.Binder as EtoBinder;
+			var binder = serializer.SerializationBinder as EtoBinder;
 			if (binder != null)
 			{
 				var instance = binder.Instance;

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+	<PropertyGroup>
+		<BuildDependsOn>
+            _SetAssemblySearchPaths;
+            $(BuildDependsOn);
+        </BuildDependsOn>
+	</PropertyGroup>
+	<Target Name="_SetAssemblySearchPaths" Condition="$(CustomAssemblySearchPaths) != ''">
+		<CreateProperty Value="$(CustomAssemblySearchPaths);$(AssemblySearchPaths)">
+			<Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
+		</CreateProperty>
+	</Target>
+	<UsingTask TaskName="_GetCommonFiles" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+		<ParameterGroup>
+			<Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+			<Names ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+			<Result ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+		</ParameterGroup>
+		<Task>
+			<Code Type="Fragment" Language="cs"><![CDATA[  
+        var result = new List<ITaskItem>();
+        foreach (var fileItem in Files)
+        {  
+          string name = fileItem.GetMetadata("Filename");
+          //Log.LogMessage(MessageImportance.High, "This one: " + name);
+          foreach (var nameItem in Names)
+          {
+            if (string.Equals(name, nameItem.ItemSpec, StringComparison.OrdinalIgnoreCase))
+            {
+              result.Add(new TaskItem(fileItem.ItemSpec));
+              break;
+            }
+          }
+        }  
+        Result = result.ToArray();
+]]></Code>
+		</Task>
+	</UsingTask>
+	<Target Name="_EmbedReferencedAssemblies" Condition="$(EmbedReferences) != ''" AfterTargets="ResolveAssemblyReferences">
+		<PropertyGroup>
+			<EmbedDebugSymbols Condition="$(EmbedDebugSymbols) == ''">false</EmbedDebugSymbols>
+			<EmbedPrefix Condition="$(EmbedPrefix) == ''">References</EmbedPrefix>
+			<EmbedPrefix>$(EmbedPrefix).</EmbedPrefix>
+		</PropertyGroup>
+		<!-- Embed only specified references -->
+		<_GetCommonFiles Files="@(ReferencePath)" Names="$(EmbedReferences)" Condition="$(EmbedReferences) != 'True'">
+			<Output ItemName="EmbedReferences" TaskParameter="Result" />
+		</_GetCommonFiles>
+		<ItemGroup>
+			<!-- Embed all copy local references -->
+			<EmbedReferences Include="@(ReferenceCopyLocalPaths)" Condition="$(EmbedReferences) == 'True'" />
+			<!-- Find files to embed and exclude -->
+			<FilesToEmbed Include="@(EmbedReferences)" Condition="'%(EmbedReferences.Extension)' == '.dll'" />
+			<FilesToEmbed Include="@(EmbedReferences)" Condition="$(EmbedDebugSymbols) == 'True' AND '%(EmbedReferences.Extension)' == '.pdb'" />
+			<FilesToExclude Include="@(EmbedReferences)" Condition="$(EmbedDebugSymbols) != 'True' AND '%(EmbedReferences.Extension)' == '.pdb'" />
+			<FilesToExclude Include="@(EmbedReferences)" Condition="'%(EmbedReferences.Extension)' == '.xml'" />
+			<EmbeddedResource Include="@(FilesToEmbed)">
+				<LogicalName>$(EmbedPrefix)%(FilesToEmbed.DestinationSubDirectory)%(FilesToEmbed.Filename)%(FilesToEmbed.Extension)</LogicalName>
+			</EmbeddedResource>
+			<!-- no need to copy the assemblies locally anymore -->
+			<ReferenceCopyLocalPaths Remove="@(FilesToEmbed)" />
+			<ReferenceCopyLocalPaths Remove="@(FilesToExclude)" />
+		</ItemGroup>
+		<Message Importance="high" Text="Embedding: @(FilesToEmbed->'%(Filename)%(Extension)', ', ')" />
+	</Target>
+	<Import Condition="Exists('$(BasePath)..\Eto.Common.targets')" Project="$(BasePath)..\Eto.Common.targets" />
+</Project>

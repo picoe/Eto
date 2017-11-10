@@ -294,6 +294,12 @@ namespace Eto.Test.Sections
 
 			public ITest Test { get { return Results.Select(r => r.Test).FirstOrDefault(); } }
 
+			public int WarningCount => Results.Sum(r => r.WarningCount);
+
+			public IList<AssertionResult> AssertionResults => Results.SelectMany(r => r.AssertionResults).ToList();
+
+			public ICollection<TestAttachment> TestAttachments => Results.SelectMany(r => r.TestAttachments).ToList();
+
 			public TNode AddToXml(TNode parentNode, bool recursive)
 			{
 				throw new NotImplementedException();
