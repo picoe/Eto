@@ -51,6 +51,31 @@ namespace Eto.Mac.Forms.Controls
 		public WeakReference WeakHandler { get; set; }
 
 		public object Handler { get { return WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
+
+		NSBorderType? _borderType;
+
+		public override NSBorderType BorderType
+		{
+			get { return _borderType ?? base.BorderType; }
+			set
+			{
+				base.BorderType = value;
+				_borderType = value;
+			}
+		}
+
+		public override void SetFrameSize(CGSize newSize)
+		{
+			if (_borderType != null)
+			{
+				// when we're below 2,2, turn off the border so we don't get constraint warnings
+				if (newSize.Width < 2 || newSize.Height < 2)
+					base.BorderType = NSBorderType.NoBorder;
+				else
+					base.BorderType = _borderType.Value;
+			}
+			base.SetFrameSize(newSize);
+		}
 	}
 
 	public class ListBoxHandler : MacControl<NSTableView, ListBox, ListBox.ICallback>, ListBox.IHandler
