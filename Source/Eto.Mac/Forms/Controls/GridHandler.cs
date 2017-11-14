@@ -570,7 +570,7 @@ namespace Eto.Mac.Forms.Controls
 		void IDataViewHandler.OnCellEdited(GridViewCellEventArgs e)
 		{
 			SetIsEditing(false);
-			Callback.OnCellEditing(Widget, e);
+			Callback.OnCellEdited(Widget, e);
 		}
 
 		Grid IDataViewHandler.Widget
