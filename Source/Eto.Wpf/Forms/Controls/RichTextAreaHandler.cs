@@ -118,9 +118,9 @@ namespace Eto.Wpf.Forms.Controls
 				_languageChangedListener = null;
 			};
 			// Bug in WPF: When using composition (IME), it doesn't use the selection attributes when inserting the text
-			// so, we apply selection attributes to the composition range after inserted as there doesn't appear to be
-			// a way to override the attributes it uses beforehand.
+			// so, we apply selection attributes to the composition range while composing.
 			swi.TextCompositionManager.AddPreviewTextInputStartHandler(Control, OnPreviewTextInputStart);
+			swi.TextCompositionManager.AddPreviewTextInputUpdateHandler(Control, OnPreviewTextInputUpdate);
 			swi.TextCompositionManager.AddPreviewTextInputHandler(Control, OnPreviewTextInput);
 		}
 
@@ -134,22 +134,36 @@ namespace Eto.Wpf.Forms.Controls
 
 		void OnPreviewTextInput(object sender, swi.TextCompositionEventArgs e)
 		{
+			ApplyCompositionAttributes(e);
+			// clear out composition attributes as we're now done
+			CompositionAttributes = null;
+		}
+
+		void OnPreviewTextInputUpdate(object sender, swi.TextCompositionEventArgs e)
+		{
+			// need to update the composition attributes here so it shows the correct attributes while typing
+			// and so each "part" of the composition gets the attributes applied.
+			ApplyCompositionAttributes(e);
+		}
+
+		void ApplyCompositionAttributes(swi.TextCompositionEventArgs e)
+		{
+			// update the composition with the selection attributes, if any
 			var rtcomp = e.TextComposition as swd.FrameworkRichTextComposition;
 			var attributes = CompositionAttributes;
-			if (rtcomp != null && attributes != null && rtcomp.ResultStart != null && rtcomp.ResultEnd != null)
+			if (rtcomp != null && attributes != null && rtcomp.CompositionStart != null && rtcomp.CompositionEnd != null)
 			{
-				var range = new swd.TextRange(rtcomp.ResultStart, rtcomp.ResultEnd);
+				var range = new swd.TextRange(rtcomp.CompositionStart, rtcomp.CompositionEnd);
 				// need to async this as the styles still don't get applied properly at this stage. Yuck!
 				Application.Instance.AsyncInvoke(() => ApplySelectionAttributes(range, attributes));
 			}
-			CompositionAttributes = null;
 		}
 
 		void OnPreviewTextInputStart(object sender, swi.TextCompositionEventArgs e)
 		{
 			if (e.TextComposition is swd.FrameworkRichTextComposition)
 			{
-				// remember the saved attributes for the selection, they get cleared out while the user types the composition
+				// save the selection attributes, they get cleared out while the user types the composition
 				CompositionAttributes = selectionAttributes;
 			}
 		}
