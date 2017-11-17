@@ -29,6 +29,17 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		LanguageChangedListener _languageChangedListener;
 
+		static readonly object AllowImages_Key = new object();
+
+		/// <summary>
+		/// Gets or sets a value indicating that the user can paste images into the editor
+		/// </summary>
+		public bool AllowImages
+		{
+			get { return Widget.Properties.Get<bool>(AllowImages_Key); }
+			set { Widget.Properties.Set(AllowImages_Key, value); }
+		}
+
 		public RichTextAreaHandler()
 		{
 			// set default margin between paragraphs to match other platforms
@@ -39,6 +50,17 @@ namespace Eto.Wpf.Forms.Controls
 			// toggle underline command doesn't actually work properly in the default implementation
 			// e.g. if you select only a portion of underlined text, you will have to toggle underline twice to remove the underline.
 			Control.CommandBindings.Add(new swi.CommandBinding(swd.EditingCommands.ToggleUnderline, (sender, e) => SelectionUnderline = !SelectionUnderline));
+
+			sw.DataObject.AddPastingHandler(Control, HandlePasting);
+		}
+
+		void HandlePasting(object sender, sw.DataObjectPastingEventArgs e)
+		{
+			if (e.FormatToApply == sw.DataFormats.Bitmap && !AllowImages)
+			{
+				// don't allow images by default
+				e.CancelCommand();
+			}
 		}
 
 		protected override void Initialize()
