@@ -156,6 +156,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		void OnPreviewTextInput(object sender, swi.TextCompositionEventArgs e)
 		{
+			// Apply to the final composition, needed for example if you type only one character.
 			ApplyCompositionAttributes(e);
 			// clear out composition attributes as we're now done
 			CompositionAttributes = null;
@@ -165,6 +166,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			// need to update the composition attributes here so it shows the correct attributes while typing
 			// and so each "part" of the composition gets the attributes applied.
+			// TODO: still can't figure out how to apply it to the first character entered in the composition
 			ApplyCompositionAttributes(e);
 		}
 
@@ -173,11 +175,17 @@ namespace Eto.Wpf.Forms.Controls
 			// update the composition with the selection attributes, if any
 			var rtcomp = e.TextComposition as swd.FrameworkRichTextComposition;
 			var attributes = CompositionAttributes;
-			if (rtcomp != null && attributes != null && rtcomp.CompositionStart != null && rtcomp.CompositionEnd != null)
+			if (rtcomp != null && attributes != null)
 			{
-				var range = new swd.TextRange(rtcomp.CompositionStart, rtcomp.CompositionEnd);
+				swd.TextRange range = null;
+				if (rtcomp.CompositionStart != null && rtcomp.CompositionEnd != null)
+					range = new swd.TextRange(rtcomp.CompositionStart, rtcomp.CompositionEnd);
+				else if (rtcomp.ResultStart != null && rtcomp.ResultEnd != null)
+					range = new swd.TextRange(rtcomp.ResultStart, rtcomp.ResultEnd);
+
 				// need to async this as the styles still don't get applied properly at this stage. Yuck!
-				Application.Instance.AsyncInvoke(() => ApplySelectionAttributes(range, attributes));
+				if (range != null)
+					Application.Instance.AsyncInvoke(() => ApplySelectionAttributes(range, attributes));
 			}
 		}
 
