@@ -10,6 +10,7 @@ namespace Eto.Forms
     public class TrayIndicator : Widget
     {
         private Icon icon;
+        private Menu menu;
 
         new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -75,6 +76,7 @@ namespace Eto.Forms
         /// <param name="menu">The indicator menu.</param>
         public void SetMenu(ContextMenu menu)
         {
+            this.menu = menu;
             Handler.SetMenu(menu);
         }
 
