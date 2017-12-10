@@ -74,7 +74,14 @@ namespace Eto.GtkSharp.Forms
 				{
 					if (statusIcon == null)
 					{
-						statusIcon = new Gtk.StatusIcon();
+						var bmp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
+						using (var graphics = new Graphics(new Bitmap(new BitmapHandler(bmp))))
+						{
+							graphics.Clear();
+							DrawBadgeLabel(graphics, new Size(bmp.Width, bmp.Height), badgeLabel);
+						}
+
+						statusIcon = new Gtk.StatusIcon(bmp);
 						statusIcon.Activate += delegate
 						{
 							var form = Application.Instance.MainForm;
@@ -82,17 +89,13 @@ namespace Eto.GtkSharp.Forms
 								form.BringToFront();
 						};
 					}
-					var bmp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
-					using (var graphics = new Graphics(new Bitmap(new BitmapHandler(bmp))))
-					{
-						graphics.Clear();
-						DrawBadgeLabel(graphics, new Size(bmp.Width, bmp.Height), badgeLabel);
-					}
-					statusIcon.Pixbuf = bmp;
+
+					//statusIcon.Pixbuf = bmp;
 					statusIcon.Visible = true;
+
 				}
 				else if (statusIcon != null)
-					statusIcon.Visible = false;
+					statusIcon.Visible = false;			
 			}
 		}
 

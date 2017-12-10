@@ -58,12 +58,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			protected int lastIndex = -1;
 			public new DropDownHandler<TControl, TWidget, TCallback> Handler { get { return (DropDownHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
-			public virtual void HandleChanged(object sender, EventArgs e)
+			public virtual void HandleChanged(object sender, System.EventArgs e)
 			{
 				var newIndex = Handler.SelectedIndex;
 				if (newIndex != lastIndex)
 				{
-					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, System.EventArgs.Empty);
 					lastIndex = newIndex;
 				}
 			}
@@ -78,14 +78,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 #elif GTK3
 			[GLib.ConnectBefore]
-			public virtual void HandlePoppedUp(object sender, EventArgs e)
+			public virtual void HandlePoppedUp(object sender, System.EventArgs e)
 			{
-				Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+				Handler.Callback.OnDropDownOpening(Handler.Widget, System.EventArgs.Empty);
 			}
 
 			public virtual void HandlePoppedDown(object o, PoppedDownArgs args)
 			{
-				Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+				Handler.Callback.OnDropDownClosed(Handler.Widget, System.EventArgs.Empty);
 			}
 #endif
 		}

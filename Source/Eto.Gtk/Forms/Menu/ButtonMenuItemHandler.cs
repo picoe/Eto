@@ -97,7 +97,8 @@ namespace Eto.GtkSharp.Forms.Menu
 			set
 			{
 				image = value;
-				Control.Image = image.ToGtk(Gtk.IconSize.Menu);
+				// obsolete Control.Image = image.ToGtk(Gtk.IconSize.Menu);
+				image.SetGtkImage (image.ToGtk (Gtk.IconSize.Menu), null);
 			}
 		}
 
