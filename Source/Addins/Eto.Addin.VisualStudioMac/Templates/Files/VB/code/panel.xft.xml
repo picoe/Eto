@@ -1,0 +1,18 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Panel (with form preview)</_Name>
+		<Icon>md-text-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>VBNet</LanguageName>
+		<_Description>
+			<![CDATA[Creates a new cross platform Panel class using Eto.Forms in VB.NET.]]>
+		</_Description>
+		<DefaultFilename>MyPanel</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+        <File name="${Name}.vb" AddStandardHeader="true" src="panel.vb"/>
+        <File name="${Name}.eto.vb" AddStandardHeader="true" src="panel.eto.vb" DependsOn="${Name}.vb" />
+	</TemplateFiles>
+</Template>
