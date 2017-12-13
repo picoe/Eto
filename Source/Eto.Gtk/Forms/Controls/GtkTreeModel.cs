@@ -73,13 +73,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			return GetItemAtPath(new Gtk.TreePath(path));
 		}
 
-		static IEnumerable<TItem> GetParents(TItem item)
+		IEnumerable<TStore> GetParents(TItem item)
 		{
-			TItem parent = item.Parent;
+			var parent = item.Parent;
 			while (parent != null)
 			{
-				yield return parent;
+				yield return parent as TStore;
 				parent = parent.Parent;
+			}
+			if (!ReferenceEquals(parent, Handler.DataStore))
+			{
+				yield return Handler.DataStore;
 			}
 		}
 
@@ -87,16 +91,17 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var path = new Gtk.TreePath();
 			var parents = GetParents(item);
+			object cur = item;
 			foreach (var parent in parents)
 			{
 				var items = (TStore)(object)parent;
 				var found = false;
 				for (int i = 0; i < items.Count; i++)
 				{
-					if (ReferenceEquals(items[i], item))
+					if (ReferenceEquals(items[i], cur))
 					{
 						path.PrependIndex(i);
-						item = parent;
+						cur = parent;
 						found = true;
 						break;
 					}
@@ -109,20 +114,23 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Gtk.TreeIter? GetIterFromItem(TItem item, bool expandedOnly = false)
 		{
+			if (ReferenceEquals(item, null))
+				return null;
 			var indicies = new List<int>();
 			var parents = GetParents(item);
+			object cur = item;
 			foreach (var parent in parents)
 			{
-				if (expandedOnly && !parent.Expanded)
+				if (expandedOnly && (parent as TItem)?.Expanded == false)
 					return null;
 				var items = (TStore)(object)parent;
 				var found = false;
 				for (int i = 0; i < items.Count; i++)
 				{
-					if (ReferenceEquals(items[i], item))
+					if (ReferenceEquals(items[i], cur))
 					{
 						indicies.Insert(0, i);
-						item = parent;
+						cur = parent;
 						found = true;
 						break;
 					}
@@ -348,7 +356,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var node = GetNodeAtIter(iter);
 			var store = GetStore(iter);
-			if (store != null && node != null && node.Item.Expandable)
+			if (store != null && node?.Item.Expandable != false)
 				return store.Count;
 			return 0;
 		}

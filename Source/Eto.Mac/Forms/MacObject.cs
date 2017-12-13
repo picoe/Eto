@@ -58,6 +58,7 @@ namespace Eto.Mac.Forms
 		///   <item>B - boolean</item>
 		///   <item>d - double</item>
 		///   <item>f - float</item>
+		///   <item>i - int</item>
 		///   <item>{CGSize=dd} - CGSize struct with double values</item>
 		///   <item>{CGSize=ff} - CGSize struct with float values</item>
 		/// </list>

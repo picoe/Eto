@@ -184,6 +184,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			public new TreeGridViewHandler Handler { get { return (TreeGridViewHandler)base.Handler; } }
 
+			TreeGridViewDragInfo _dragInfo;
+
 			public void HandleTestExpandRow(object o, Gtk.TestExpandRowArgs args)
 			{
 				var h = Handler;
@@ -253,6 +255,95 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleRowActivated(object o, Gtk.RowActivatedArgs args)
 			{
 				Handler.Callback.OnActivated(Handler.Widget, new TreeGridViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
+			}
+
+			protected override DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null)
+			{
+				var h = Handler;
+				var t = h?.Tree;
+				TreeGridViewDragInfo dragInfo = _dragInfo;
+				if (dragInfo == null && location != null)
+				{
+					if (t.GetDestRowAtPos((int)location.Value.X, (int)location.Value.Y, out var path, out var pos))
+					{
+						var item = h.model.GetItemAtPath(path);
+						var indices = path.Indices;
+						var childIndex = indices[indices.Length - 1];
+						object parent;
+						if (pos == Gtk.TreeViewDropPosition.After && t.GetRowExpanded(path))
+						{
+							parent = item;
+							item = null;
+							childIndex = -1;
+						}
+						else
+						{
+							parent = path.Up() ? h.model.GetItemAtPath(path) : null;
+						}
+						dragInfo = new TreeGridViewDragInfo(h.Widget, parent, item, childIndex, pos.ToEto());
+					}
+				}
+
+				return base.GetDragEventArgs(context, location, time, dragInfo);
+			}
+
+			public override void HandleDragMotion(object o, Gtk.DragMotionArgs args)
+			{
+				base.HandleDragMotion(o, args);
+
+				var h = Handler;
+				if (h == null)
+					return;
+				var info = h.GetDragInfo(DragArgs);
+				if (info == null)
+					return;
+				var item = info.Item;
+				var insertIndex = info.InsertIndex;
+				if (!ReferenceEquals(item, null))
+				{
+					var path = h.model.GetPathFromItem(item as ITreeGridItem);
+					if (path == null)
+						return;
+					var pos = info.Position.ToGtk();
+
+					// make sure we are in range of child indecies
+					var iter = h.model.GetIterFromItem(info.Parent as ITreeGridItem);
+					if (iter != null && insertIndex != -1)
+					{
+						var i = iter.Value;
+						var numChildren = h.model.IterNChildren(i);
+						if (insertIndex >= numChildren)
+						{
+							insertIndex = numChildren - 1;
+							pos = Gtk.TreeViewDropPosition.After;
+							h.model.IterNthChild(out i, i, insertIndex);
+							path = h.model.GetPath(i);
+						}
+					}
+
+					if (path.Depth > 0)
+						h.Tree.SetDragDestRow(path, pos);
+				}
+				else if (insertIndex != -1 && !ReferenceEquals(info.Parent, null) && info.Position == GridDragPosition.After)
+				{
+					var path = h.model.GetPathFromItem(info.Parent as ITreeGridItem);
+					if (path == null)
+						return;
+
+					path.AppendIndex(0);
+					h.Tree.SetDragDestRow(path, Gtk.TreeViewDropPosition.Before);
+				}
+
+			}
+
+			public override void HandleDragDrop(object o, Gtk.DragDropArgs args)
+			{
+				// use the info from last drag if it was set
+				var info = Handler?.GetDragInfo(DragArgs);
+				if (info?.IsChanged == true)
+					_dragInfo = info;
+				base.HandleDragDrop(o, args);
+				_dragInfo = null;
 			}
 		}
 
@@ -544,6 +635,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			column = -1;
 			return null;
 		}
+
+		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;
 
 		public override IEnumerable<int> SelectedRows => Tree.Selection.GetSelectedRows().Select(GetRowIndexOfPath);
 

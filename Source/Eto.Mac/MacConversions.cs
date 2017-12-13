@@ -1,6 +1,7 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
+using Eto.Mac.Forms;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Printing;
 using System.Linq;
@@ -490,6 +491,33 @@ namespace Eto.Mac
 				default:
 					throw new NotSupportedException();
 			}
+		}
+
+		public static DataObject ToEto(this NSPasteboard pasteboard) => new DataObject(new DataObjectHandler(pasteboard));
+
+		public static NSPasteboard ToNS(this DataObject data) => DataObjectHandler.GetControl(data);
+
+		public static NSDragOperation ToNS(this DragEffects effects)
+		{
+			var op = NSDragOperation.None;
+			if (effects.HasFlag(DragEffects.Copy))
+				op |= NSDragOperation.Copy;
+			if (effects.HasFlag(DragEffects.Link))
+				op |= NSDragOperation.Link;
+			if (effects.HasFlag(DragEffects.Move))
+				op |= NSDragOperation.Move;
+			return op;
+		}
+		public static DragEffects ToEto(this NSDragOperation operation)
+		{
+			var effects = DragEffects.None;
+			if (operation.HasFlag(NSDragOperation.Copy))
+				effects |= DragEffects.Copy;
+			if (operation.HasFlag(NSDragOperation.Link))
+				effects |= DragEffects.Link;
+			if (operation.HasFlag(NSDragOperation.Move))
+				effects |= DragEffects.Move;
+			return effects;
 		}
 	}
 }

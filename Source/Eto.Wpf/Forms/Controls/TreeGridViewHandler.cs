@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
@@ -76,6 +76,19 @@ namespace Eto.Wpf.Forms.Controls
 							lastSelected = item;
 						}
 					};
+					break;
+				case Eto.Forms.Control.DragOverEvent:
+					base.AttachEvent(id);
+					HandleEvent(Eto.Forms.Control.DragLeaveEvent);
+					break;
+				case Eto.Forms.Control.DragLeaveEvent:
+					base.AttachEvent(id);
+					HandleEvent(Eto.Forms.Control.DragOverEvent);
+					break;
+				case Eto.Forms.Control.DragDropEvent:
+					base.AttachEvent(id);
+					HandleEvent(Eto.Forms.Control.DragOverEvent);
+					HandleEvent(Eto.Forms.Control.DragLeaveEvent);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -159,5 +172,170 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			return null;
 		}
+
+		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;
+
+		protected override DragEventArgs GetDragEventArgs(sw.DragEventArgs data, object controlObject)
+		{
+			var location = data.GetPosition(Control).ToEto();
+			var cell = Widget.GetCellAt(location);
+			var item = cell.Item;
+			int? childIndex;
+			var row = GetDataGridRow(cell.Item);
+			GridDragPosition position;
+			object parent;
+			if (row != null)
+			{
+				var rowLocation = row.TransformToAncestor(Control).Transform(new sw.Point(0, 0));
+				if (location.Y + 4 > rowLocation.Y + row.ActualHeight - row.BorderThickness.Vertical())
+				{
+					position = GridDragPosition.After;
+					var treeGridItem = item as ITreeGridItem;
+					if (treeGridItem?.Expanded == true)
+					{
+						// insert as a child of the parent
+						parent = item;
+						item = null;
+						childIndex = -1;
+					}
+					else
+					{
+						parent = treeGridItem?.Parent;
+						var node = controller.GetNodeAtRow(row.GetIndex());
+						childIndex = node.Index;
+					}
+				}
+				else if (location.Y < rowLocation.Y + 4 + row.BorderThickness.Top)
+				{
+					position = GridDragPosition.Before;
+					parent = (cell.Item as ITreeGridItem)?.Parent;
+					var node = controller.GetNodeAtRow(row.GetIndex());
+					childIndex = node.Index;
+				}
+				else
+				{
+					position = GridDragPosition.Over;
+					parent = (cell.Item as ITreeGridItem)?.Parent;
+					var node = controller.GetNodeAtRow(row.GetIndex());
+					childIndex = node.Index;
+				}
+			}
+			else
+			{
+				parent = null;
+				item = null;
+				position = GridDragPosition.Over;
+				childIndex = null;
+			}
+
+			controlObject = new TreeGridViewDragInfo(Widget, parent, item, childIndex, position);
+
+			return base.GetDragEventArgs(data, controlObject);
+		}
+
+		void ResetDrag()
+		{
+			LastDragInfo = null;
+			LastDragRow?.Revert();
+			LastDragRow = null;
+		}
+
+		protected override void HandleDragEnter(sw.DragEventArgs e, DragEventArgs args)
+		{
+			ResetDrag();
+			base.HandleDragEnter(e, args);
+		}
+
+		protected override void HandleDragLeave(sw.DragEventArgs e, DragEventArgs args)
+		{
+			ResetDrag();
+			base.HandleDragLeave(e, args);
+		}
+
+		protected override void HandleDrop(sw.DragEventArgs e, DragEventArgs args)
+		{
+			var dragInfo = LastDragInfo;
+			if (dragInfo != null && dragInfo.IsChanged)
+			{
+				// use modified drag info from DragOver
+				var info = GetDragInfo(args);
+				info.Item = dragInfo.Item;
+				info.Parent = dragInfo.Parent;
+				info.Position = dragInfo.Position;
+			}
+			base.HandleDrop(e, args);
+			ResetDrag();
+		}
+
+		static readonly object LastDragInfo_Key = new object();
+		TreeGridViewDragInfo LastDragInfo
+		{
+			get { return Widget.Properties.Get<TreeGridViewDragInfo>(LastDragInfo_Key); }
+			set { Widget.Properties.Set(LastDragInfo_Key, value); }
+		}
+
+		protected override void HandleDragOver(sw.DragEventArgs e, DragEventArgs args)
+		{
+			var lastRow = LastDragRow;
+ 			base.HandleDragOver(e, args);
+			var info = LastDragInfo = GetDragInfo(args);
+
+			if (args.Effects != DragEffects.None)
+			{
+				// show drag indicator!
+				var row = GetDataGridRow(info.Item ?? info.Parent);
+				if (row != null)
+				{
+					// same position, just return
+					if (lastRow != null && lastRow.IsEqual(row, info.InsertIndex))
+						return;
+
+					lastRow?.Revert();
+					LastDragRow = new GridDragRowState(row, info.InsertIndex);
+
+					if (info.InsertIndex == -1)
+					{
+						row.Background = sw.SystemColors.HighlightBrush;
+						row.Foreground = sw.SystemColors.HighlightTextBrush;
+					}
+					else
+					{
+						var node = controller.GetNodeAtRow(row.GetIndex());
+
+						var level = node.Level + 1; // indicator to the right of the expanders to align with text
+						var i = info.Parent as ITreeGridItem;
+						if (info.Position == GridDragPosition.After && ReferenceEquals(info.Item, null))
+							level++;
+
+						level *= 16;
+						var d = new swm.GeometryDrawing();
+						var gg = new swm.GeometryGroup();
+						gg.Children.Add(new swm.EllipseGeometry(new sw.Point(0, 0), 2, 2));
+						gg.Children.Add(new swm.LineGeometry(new sw.Point(2, 0), new sw.Point(row.ActualWidth - level - 16, 0)));
+						d.Geometry = gg;
+						d.Brush = sw.SystemColors.HighlightBrush;
+						d.Pen = new swm.Pen(sw.SystemColors.HighlightBrush, 1);
+						var b = new swm.DrawingBrush { Drawing = d, TileMode = swm.TileMode.None, Stretch = swm.Stretch.None, AlignmentX = swm.AlignmentX.Left };
+						if (info.InsertIndex == node.Index)
+						{
+							b.AlignmentY = swm.AlignmentY.Top;
+							row.BorderThickness = new sw.Thickness(0, 5, 0, 0);
+						}
+						else
+						{
+							b.AlignmentY = swm.AlignmentY.Bottom;
+							row.BorderThickness = new sw.Thickness(0, 0, 0, 5);
+						}
+
+						b.Transform = new swm.TranslateTransform(level, 0);
+						row.BorderBrush = b;
+					}
+					return;
+				}
+			}
+
+			ResetDrag();
+		}
+
 	}
 }

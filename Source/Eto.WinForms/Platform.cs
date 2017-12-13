@@ -157,6 +157,7 @@ namespace Eto.WinForms
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
 			p.Add<TrayIndicator.IHandler>(() => new TrayIndicatorHandler());
 			p.Add<Notification.IHandler>(() => new NotificationHandler());
+			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

@@ -466,8 +466,8 @@ namespace Eto.GtkSharp.Forms
 					closing(args);
 				else
 				{
-					var windows = Gdk.Screen.Default.ToplevelWindows;
-					if (windows.Count(r => r.IsViewable) == 1 && ReferenceEquals(windows.First(r => r.IsViewable), Control.GetWindow()))
+					var windows = Gdk.Screen.Default.ToplevelWindows.Where(r => r.IsVisible && r.WindowType != Gdk.WindowType.Temp).ToList();
+					if (windows.Count == 1 && ReferenceEquals(windows[0], Control.GetWindow()))
 					{
 						var app = ((ApplicationHandler)Application.Instance.Handler);
 						app.Callback.OnTerminating(app.Widget, args);

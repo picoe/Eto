@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Eto.Drawing;
 
@@ -57,6 +57,8 @@ namespace Eto
 
 		public static MemoryStream ToDIB(this Bitmap bitmap, int dpi = 96)
 		{
+			if (bitmap == null)
+				return null;
 			using (var bd = bitmap.Lock())
 			{
 				if (bd.BytesPerPixel == 4 || bd.BytesPerPixel == 3) // only 32bpp or 24bpp supported

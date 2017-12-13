@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using Eto.Forms;
 using Eto.Drawing;
@@ -7,6 +7,8 @@ using GLib;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -48,6 +50,17 @@ namespace Eto.GtkSharp.Forms
 		}
 	}
 
+	static class GtkControl
+	{
+		public static readonly object DragInfo_Key = new object();
+		public static readonly object DropSource_Key = new object();
+		public static readonly object Font_Key = new object();
+		public static readonly object TabIndex_Key = new object();
+		public static readonly object Cursor_Key = new object();
+		public static readonly object AllowDrop_Key = new object();
+		public static uint? DefaultBorderWidth;
+	}
+
 	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IGtkControl
 		where TControl: Gtk.Widget
 		where TWidget: Control
@@ -73,25 +86,15 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual Size DefaultSize { get { return new Size(-1, -1); } }
 
-		public virtual Gtk.Widget ContainerControl
-		{
-			get { return Control; }
-		}
+		public virtual Gtk.Widget ContainerControl => Control;
 
-		public virtual Gtk.Widget EventControl
-		{
-			get { return Control; }
-		}
+		public virtual Gtk.Widget EventControl => Control;
 
-		public virtual Gtk.Widget ContainerContentControl
-		{
-			get { return ContainerControl; }
-		}
+		public virtual Gtk.Widget ContainerContentControl => ContainerControl;
 
-		public virtual Gtk.Widget BackgroundControl
-		{
-			get { return ContainerContentControl; }
-		}
+		public virtual Gtk.Widget BackgroundControl => ContainerContentControl;
+
+		public virtual Gtk.Widget DragControl => EventControl;
 
 		public virtual Point CurrentLocation { get; set; }
 
@@ -270,6 +273,13 @@ namespace Eto.GtkSharp.Forms
 			}*/
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			DragControl.DragDataReceived += Connector.HandleDragDataReceived;
+			DragControl.DragDataGet += Connector.HandleDragDataGet;
+		}
+
 		public virtual void OnPreLoad(EventArgs e)
 		{
 		}
@@ -359,6 +369,21 @@ namespace Eto.GtkSharp.Forms
 				case Eto.Forms.Control.ShownEvent:
 					EventControl.Mapped += Connector.MappedEvent;
 					break;
+				case Eto.Forms.Control.DragDropEvent:
+					DragControl.DragDrop += Connector.HandleDragDrop;
+					break;
+				case Eto.Forms.Control.DragOverEvent:
+					DragControl.DragMotion += Connector.HandleDragMotion;
+					HandleEvent(Eto.Forms.Control.DragLeaveEvent);
+					break;
+
+				case Eto.Forms.Control.DragEnterEvent:
+					// no enter event in gtk, so we fire it on the first DragMotion event and reset after it leaves
+					HandleEvent(Eto.Forms.Control.DragOverEvent);
+					break;
+				case Eto.Forms.Control.DragLeaveEvent:
+					DragControl.DragLeave += Connector.HandleDragLeave;
+					break;
 				default:
 					base.AttachEvent(id);
 					return;
@@ -377,6 +402,9 @@ namespace Eto.GtkSharp.Forms
 		/// </summary>
 		protected class GtkControlConnector : WeakConnector
 		{
+			bool isDragOver;
+			protected DragEventArgs DragArgs { get; private set; }
+
 			new GtkControl<TControl, TWidget, TCallback> Handler { get { return (GtkControl<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
@@ -571,6 +599,72 @@ namespace Eto.GtkSharp.Forms
 			{
 				Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
+
+			protected virtual DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null)
+			{
+				var widget = Gtk.Drag.GetSourceWidget(context);
+				var source = widget?.Data[GtkControl.DropSource_Key] as Eto.Forms.Control;
+
+#if GTK2
+				var action = context.Action;
+#else
+				var action = context.SelectedAction;
+#endif
+
+				var data = new DataObject(new DataObjectHandler(Handler.DragControl, context, time));
+				if (location == null)
+					location = Handler.PointFromScreen(Mouse.Position);
+
+				return new DragEventArgs(source, data, action.ToEto(), location.Value, Keyboard.Modifiers, Mouse.Buttons, controlObject);
+			}
+
+			[GLib.ConnectBefore]
+			public virtual void HandleDragDataReceived(object o, Gtk.DragDataReceivedArgs args)
+			{
+				var h = DragArgs?.Data.Handler as DataObjectHandler;
+				h?.SetDataReceived(args);
+
+			}
+
+			[GLib.ConnectBefore]
+			public virtual void HandleDragDataGet(object o, Gtk.DragDataGetArgs args)
+			{
+				var data = Handler?.DragInfo.Data.Handler as DataObjectHandler;
+				data?.Apply(args.SelectionData);
+				args.RetVal = true;
+			}
+
+			[GLib.ConnectBefore]
+			public virtual void HandleDragDrop(object o, Gtk.DragDropArgs args)
+			{
+				DragArgs = GetDragEventArgs(args.Context, new PointF(args.X, args.Y), args.Time);
+				Handler.Callback.OnDragDrop(Handler.Widget, DragArgs);
+				Gtk.Drag.Finish(args.Context, true, DragArgs.Effects.HasFlag(DragEffects.Move), args.Time);
+				args.RetVal = true;
+			}
+
+			[GLib.ConnectBefore]
+			public virtual void HandleDragMotion(object o, Gtk.DragMotionArgs args)
+			{
+				DragArgs = GetDragEventArgs(args.Context, new PointF(args.X, args.Y), args.Time);
+
+				if (!isDragOver)
+					Handler.Callback.OnDragEnter(Handler.Widget, DragArgs);
+				else
+					Handler.Callback.OnDragOver(Handler.Widget, DragArgs);
+
+				Gdk.Drag.Status(args.Context, DragArgs.Effects.ToGdk(), args.Time);
+
+				isDragOver = true;
+				args.RetVal = true;
+			}
+
+			public virtual void HandleDragLeave(object o, Gtk.DragLeaveArgs args)
+			{
+				DragArgs = GetDragEventArgs(args.Context, null, args.Time);
+				Handler.Callback.OnDragLeave(Handler.Widget, DragArgs);
+				isDragOver = false;
+			}
 		}
 
 		protected virtual Gtk.Widget FontControl
@@ -578,22 +672,18 @@ namespace Eto.GtkSharp.Forms
 			get { return Control; }
 		}
 
-		static readonly object Font_Key = new object();
-
 		public virtual Font Font
 		{
-			get { return Widget.Properties.Get<Font>(Font_Key, () => new Font(new FontHandler(FontControl))); }
-			set { Widget.Properties.Set(Font_Key, value, () => FontControl.SetFont(value.ToPango())); }
+			get { return Widget.Properties.Get<Font>(GtkControl.Font_Key, () => new Font(new FontHandler(FontControl))); }
+			set { Widget.Properties.Set(GtkControl.Font_Key, value, () => FontControl.SetFont(value.ToPango())); }
 		}
-
-		static readonly object Cursor_Key = new object();
 
 		public Cursor Cursor
 		{
-			get { return Widget.Properties.Get<Cursor>(Cursor_Key); }
+			get { return Widget.Properties.Get<Cursor>(GtkControl.Cursor_Key); }
 			set
 			{
-				Widget.Properties.Set(Cursor_Key, value, () =>
+				Widget.Properties.Set(GtkControl.Cursor_Key, value, () =>
 				{
 					var gdkWindow = Control.GetWindow();
 					if (gdkWindow != null)
@@ -621,7 +711,7 @@ namespace Eto.GtkSharp.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			var gdkWindow = Control.GetWindow();
+			var gdkWindow = EventControl.GetWindow();
 			if (gdkWindow != null)
 			{
 				int x, y;
@@ -633,7 +723,7 @@ namespace Eto.GtkSharp.Forms
 
 		public PointF PointToScreen(PointF point)
 		{
-			var gdkWindow = Control.GetWindow();
+			var gdkWindow = EventControl.GetWindow();
 			if (gdkWindow != null)
 			{
 				int x, y;
@@ -648,8 +738,6 @@ namespace Eto.GtkSharp.Forms
 			get { return Control.Allocation.Location.ToEto(); }
 		}
 
-		static uint? DefaultBorderWidth;
-
 		public virtual bool ShowBorder
 		{
 			get
@@ -662,20 +750,59 @@ namespace Eto.GtkSharp.Forms
 				var container = Control as Gtk.Container;
 				if (container == null)
 					return;
-				if (DefaultBorderWidth == null)
-					DefaultBorderWidth = container.BorderWidth;
-				container.BorderWidth = value ? DefaultBorderWidth.Value : 0;
+				if (GtkControl.DefaultBorderWidth == null)
+					GtkControl.DefaultBorderWidth = container.BorderWidth;
+				container.BorderWidth = value ? GtkControl.DefaultBorderWidth.Value : 0;
 			}
 		}
 
-		static readonly object TabIndex_Key = new object();
-
 		public int TabIndex
 		{
-			get { return Widget.Properties.Get<int>(TabIndex_Key, int.MaxValue); }
-			set { Widget.Properties.Set(TabIndex_Key, value, int.MaxValue); }
+			get { return Widget.Properties.Get<int>(GtkControl.TabIndex_Key, int.MaxValue); }
+			set { Widget.Properties.Set(GtkControl.TabIndex_Key, value, int.MaxValue); }
 		}
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
+
+
+		public bool AllowDrop
+		{
+			get { return Widget.Properties.Get(GtkControl.AllowDrop_Key, false); }
+			set
+			{
+				if (value != AllowDrop)
+				{
+					if (value)
+						Gtk.Drag.DestSet(DragControl, 0, null, 0); // accept all types?  can't find docs about this..
+					else
+						Gtk.Drag.DestUnset(DragControl);
+					Widget.Properties.Set(GtkControl.AllowDrop_Key, value);
+				}
+			}
+		}
+
+		public void DoDragDrop(DataObject data, DragEffects allowedEffects)
+		{
+			var targets = (data.Handler as DataObjectHandler)?.GetTargets();
+
+			DragInfo = new DragInfoObject { Data = data, AllowedEffects = allowedEffects };
+
+			DragControl.Data[GtkControl.DropSource_Key] = Widget;
+			var context = Gtk.Drag.Begin(DragControl, targets, allowedEffects.ToGdk(), 1, Gtk.Application.CurrentEvent);
+
+			//Gtk.Drag.SetIconPixbuf(context, bmp.ToGdk(), 0, 0);
+		}
+
+		class DragInfoObject
+		{
+			public DataObject Data { get; set; }
+			public DragEffects AllowedEffects { get; set; }
+		}
+
+		DragInfoObject DragInfo
+		{
+			get { return Widget.Properties.Get<DragInfoObject>(GtkControl.DragInfo_Key); }
+			set { Widget.Properties.Set(GtkControl.DragInfo_Key, value); }
+		}
 	}
 }

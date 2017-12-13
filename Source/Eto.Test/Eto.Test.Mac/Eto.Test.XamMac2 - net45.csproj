@@ -34,6 +34,7 @@
     <XamMacArch>x86_64</XamMacArch>
     <UseRefCounting>false</UseRefCounting>
     <Profiling>false</Profiling>
+    <EnableSGenConc>true</EnableSGenConc>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\net45\Release\test</OutputPath>

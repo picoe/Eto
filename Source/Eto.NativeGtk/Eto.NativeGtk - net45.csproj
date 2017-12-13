@@ -307,8 +307,11 @@
     <Compile Include="..\Eto.Gtk\Forms\Controls\WebKit2WebViewHandler.cs">
       <Link>WebKit2WebViewHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\DataObjectHandler.cs">
+      <Link>Forms\DataObjectHandler.cs</Link>
+    </Compile>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

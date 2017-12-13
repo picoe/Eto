@@ -13,6 +13,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
+using MobileCoreServices;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -20,6 +21,7 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
+using MonoMac.MobileCoreServices;
 #if Mac64
 using nfloat = System.Double;
 using nint = System.Int64;
@@ -91,6 +93,71 @@ namespace Eto.Mac.Forms
 		NSObject CustomFieldEditor { get; }
 
 		bool? ShouldHaveFocus { get; set; }
+
+		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
+	}
+
+	static class MacView
+	{
+		public static readonly object AutoSize_Key = new object();
+		public static readonly object MinimumSize_Key = new object();
+		public static readonly object MaximumSize_Key = new object();
+		public static readonly object PreferredSize_Key = new object();
+		public static readonly object NaturalSize_Key = new object();
+		public static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
+		public static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
+		public static readonly IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
+		public static readonly IntPtr selRightMouseDown = Selector.GetHandle("rightMouseDown:");
+		public static readonly IntPtr selRightMouseUp = Selector.GetHandle("rightMouseUp:");
+		public static readonly IntPtr selRightMouseDragged = Selector.GetHandle("rightMouseDragged:");
+		public static readonly IntPtr selScrollWheel = Selector.GetHandle("scrollWheel:");
+		public static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
+		public static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
+		public static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
+		public static readonly IntPtr selSetFrameSize = Selector.GetHandle("setFrameSize:");
+		public static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
+		public static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
+		public static readonly IntPtr selDraggingEntered = Selector.GetHandle("draggingEntered:");
+		public static readonly IntPtr selDraggingExited = Selector.GetHandle("draggingExited:");
+		public static readonly IntPtr selDraggingUpdated = Selector.GetHandle("draggingUpdated:");
+		public static readonly IntPtr selPerformDragOperation = Selector.GetHandle("performDragOperation:");
+		public static readonly object InitialFocusKey = new object();
+		public static readonly object BackgroundColorKey = new object();
+		public static IntPtr selDrawRect = Selector.GetHandle("drawRect:");
+		public static readonly object ShouldHaveFocusKey = new object();
+		public static readonly IntPtr selResetCursorRects = Selector.GetHandle("resetCursorRects");
+		public static readonly object Cursor_Key = new object();
+		public static readonly IntPtr selGetAction = Selector.GetHandle("action");
+		public static readonly IntPtr selValidateUserInterfaceItem = Selector.GetHandle("validateUserInterfaceItem:");
+		public static readonly IntPtr selCut = Selector.GetHandle("cut:");
+		public static readonly IntPtr selCopy = Selector.GetHandle("copy:");
+		public static readonly IntPtr selPaste = Selector.GetHandle("paste:");
+		public static readonly IntPtr selSelectAll = Selector.GetHandle("selectAll:");
+		public static readonly IntPtr selDelete = Selector.GetHandle("delete:");
+		public static readonly IntPtr selUndo = Selector.GetHandle("undo:");
+		public static readonly IntPtr selRedo = Selector.GetHandle("redo:");
+		public static readonly IntPtr selPasteAsPlainText = Selector.GetHandle("pasteAsPlainText:");
+		public static readonly IntPtr selPerformClose = Selector.GetHandle("performClose:");
+		public static readonly IntPtr selPerformZoom = Selector.GetHandle("performZoom:");
+		public static readonly IntPtr selArrangeInFront = Selector.GetHandle("arrangeInFront:");
+		public static readonly IntPtr selPerformMiniaturize = Selector.GetHandle("performMiniaturize:");
+		public static readonly Dictionary<string, IntPtr> systemActionSelectors = new Dictionary<string, IntPtr>
+		{
+			{ "cut", selCut },
+			{ "copy", selCopy },
+			{ "paste", selPaste },
+			{ "selectAll", selSelectAll },
+			{ "delete", selDelete },
+			{ "undo", selUndo },
+			{ "redo", selRedo },
+			{ "pasteAsPlainText", selPasteAsPlainText },
+			{ "performClose", selPerformClose },
+			{ "performZoom", selPerformZoom },
+			{ "arrangeInFront", selArrangeInFront },
+			{ "performMiniaturize", selPerformMiniaturize }
+		};
+		public static readonly object TabIndex_Key = new object();
+		public static readonly object AllowDrop_Key = new object();
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -111,17 +178,18 @@ namespace Eto.Mac.Forms
 
 		public virtual NSView ContentControl { get { return ContainerControl; } }
 
+		public virtual NSView DragControl => ContainerControl;
+
 		public virtual NSView EventControl { get { return ContainerControl; } }
 
 		public virtual NSView FocusControl { get { return EventControl; } }
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
-		static readonly object AutoSize_Key = new object();
 		public virtual bool AutoSize
 		{
-			get { return Widget.Properties.Get<bool>(AutoSize_Key, true); }
-			protected set { Widget.Properties.Set(AutoSize_Key, value, true); }
+			get { return Widget.Properties.Get<bool>(MacView.AutoSize_Key, true); }
+			protected set { Widget.Properties.Set(MacView.AutoSize_Key, value, true); }
 		}
 
 		protected virtual Size DefaultMinimumSize
@@ -129,25 +197,22 @@ namespace Eto.Mac.Forms
 			get { return Size.Empty; }
 		}
 
-		static readonly object MinimumSize_Key = new object();
 		public virtual Size MinimumSize
 		{
-			get { return Widget.Properties.Get<Size?>(MinimumSize_Key) ?? DefaultMinimumSize; }
-			set { Widget.Properties[MinimumSize_Key] = value; NaturalSize = null; }
+			get { return Widget.Properties.Get<Size?>(MacView.MinimumSize_Key) ?? DefaultMinimumSize; }
+			set { Widget.Properties[MacView.MinimumSize_Key] = value; NaturalSize = null; }
 		}
 
-		static readonly object MaximumSize_Key = new object();
 		public virtual SizeF MaximumSize
 		{
-			get { return Widget.Properties.Get<SizeF?>(MaximumSize_Key) ?? SizeF.MaxValue; }
-			set { Widget.Properties[MaximumSize_Key] = value; }
+			get { return Widget.Properties.Get<SizeF?>(MacView.MaximumSize_Key) ?? SizeF.MaxValue; }
+			set { Widget.Properties[MacView.MaximumSize_Key] = value; }
 		}
 
-		static readonly object PreferredSize_Key = new object();
 		public Size? PreferredSize
 		{
-			get { return Widget.Properties.Get<Size?>(PreferredSize_Key); }
-			set { Widget.Properties[PreferredSize_Key] = value; }
+			get { return Widget.Properties.Get<Size?>(MacView.PreferredSize_Key); }
+			set { Widget.Properties[MacView.PreferredSize_Key] = value; }
 		}
 
 		public virtual Size Size
@@ -186,11 +251,10 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		static readonly object NaturalSize_Key = new object();
 		protected SizeF? NaturalSize
 		{
-			get { return Widget.Properties.Get<SizeF?>(NaturalSize_Key); }
-			set { Widget.Properties[NaturalSize_Key] = value; }
+			get { return Widget.Properties.Get<SizeF?>(MacView.NaturalSize_Key); }
+			set { Widget.Properties[MacView.NaturalSize_Key] = value; }
 		}
 
 		public virtual NSObject CustomFieldEditor { get { return null; } }
@@ -280,20 +344,6 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
-		static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
-		static readonly IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
-		static readonly IntPtr selRightMouseDown = Selector.GetHandle("rightMouseDown:");
-		static readonly IntPtr selRightMouseUp = Selector.GetHandle("rightMouseUp:");
-		static readonly IntPtr selRightMouseDragged = Selector.GetHandle("rightMouseDragged:");
-		static readonly IntPtr selScrollWheel = Selector.GetHandle("scrollWheel:");
-		static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
-		static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
-		static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
-		static readonly IntPtr selSetFrameSize = Selector.GetHandle("setFrameSize:");
-		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
-		static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -312,49 +362,132 @@ namespace Eto.Mac.Forms
 					mouseMove = true;
 					HandleEvent(Eto.Forms.Control.SizeChangedEvent);
 					CreateTracking();
-					AddMethod(selMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
-					AddMethod(selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
+					AddMethod(MacView.selMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
+					AddMethod(MacView.selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), EtoEnvironment.Is64BitProcess ? "v@:{CGSize=dd}" : "v@:{CGSize=ff}", ContainerControl);
+					AddMethod(MacView.selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), EtoEnvironment.Is64BitProcess ? "v@:{CGSize=dd}" : "v@:{CGSize=ff}", ContainerControl);
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
-					AddMethod(selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
-					AddMethod(selRightMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
+					AddMethod(MacView.selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
+					AddMethod(MacView.selRightMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
-					AddMethod(selMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
-					AddMethod(selRightMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
+					AddMethod(MacView.selMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
+					AddMethod(MacView.selRightMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
 					HandleEvent(Eto.Forms.Control.MouseDownEvent);
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
-					AddMethod(selScrollWheel, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseWheel), "v@:@");
+					AddMethod(MacView.selScrollWheel, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseWheel), "v@:@");
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
-					AddMethod(selKeyDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyDown), "v@:@");
+					AddMethod(MacView.selKeyDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyDown), "v@:@");
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					AddMethod(selKeyUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyUp), "v@:@");
+					AddMethod(MacView.selKeyUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyUp), "v@:@");
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					AddMethod(selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:");
+					AddMethod(MacView.selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:");
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					AddMethod(selBecomeFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerGotFocus), "B@:");
+					AddMethod(MacView.selBecomeFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerGotFocus), "B@:");
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					// TODO
 					break;
 				case Eto.Forms.Control.TextInputEvent:
-					AddMethod(selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@");
+					AddMethod(MacView.selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@");
+					break;
+
+				case Eto.Forms.Control.DragDropEvent:
+					AddMethod(MacView.selPerformDragOperation, new Func<IntPtr, IntPtr, IntPtr, bool>(TriggerPerformDragOperation), "b@:@", DragControl);
+					break;
+				case Eto.Forms.Control.DragOverEvent:
+					AddMethod(MacView.selDraggingUpdated, new Func<IntPtr, IntPtr, IntPtr, NSDragOperation>(TriggerDraggingUpdated), "i@:@", DragControl);
+					break;
+				case Eto.Forms.Control.DragEnterEvent:
+					AddMethod(MacView.selDraggingEntered, new Func<IntPtr, IntPtr, IntPtr, NSDragOperation>(TriggerDraggingEntered), "i@:@", DragControl);
+					break;
+				case Eto.Forms.Control.DragLeaveEvent:
+					AddMethod(MacView.selDraggingExited, new Action<IntPtr, IntPtr, IntPtr>(TriggerDraggingExited), "v@:@", DragControl);
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 
 			}
+		}
+
+		public DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl)
+		{
+			var source = info.DraggingSource as EtoDragSource;
+			var sourceView = source?.SourceView ?? info.DraggingSource as NSView;
+			var sourceHandler = GetHandler(sourceView) as IMacViewHandler;
+			var data = info.DraggingPasteboard.ToEto();
+			var location = ContainerControl.ConvertPointFromView(info.DraggingLocation, null);
+			if (!ContentControl.IsFlipped)
+				location.Y = ContentControl.Frame.Height - location.Y;
+			return new DragEventArgs(sourceHandler?.Widget, data, info.DraggingSourceOperationMask.ToEto(), location.ToEto(), Keyboard.Modifiers, Mouse.Buttons, customControl);
+		}
+
+		protected static bool TriggerPerformDragOperation(IntPtr sender, IntPtr sel, IntPtr draggingInfoPtr)
+		{
+			var handler = GetHandler(Runtime.GetNSObject(sender)) as IMacViewHandler;
+			var e = handler?.GetDragEventArgs(Runtime.GetNSObject<NSDraggingInfo>(draggingInfoPtr), null);
+			if (e != null)
+			{
+				handler.Callback.OnDragLeave(handler.Widget, e);
+				handler.Callback.OnDragDrop(handler.Widget, e);
+				return true;
+			}
+			return false;
+		}
+
+		protected static NSDragOperation TriggerDraggingUpdated(IntPtr sender, IntPtr sel, IntPtr draggingInfoPtr)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var effect = (NSDragOperation)Messaging.IntPtr_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, draggingInfoPtr);
+			var handler = GetHandler(Runtime.GetNSObject(sender)) as IMacViewHandler;
+			var e = handler?.GetDragEventArgs(Runtime.GetNSObject<NSDraggingInfo>(draggingInfoPtr), null);
+			if (e != null)
+			{
+				e.Effects = effect.ToEto();
+				handler.Callback.OnDragOver(handler.Widget, e);
+				if (e.AllowedEffects.HasFlag(e.Effects))
+					effect = e.Effects.ToNS();
+			}
+			return effect;
+		}
+
+
+		protected static NSDragOperation TriggerDraggingEntered(IntPtr sender, IntPtr sel, IntPtr draggingInfoPtr)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var effect = (NSDragOperation)Messaging.IntPtr_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, draggingInfoPtr);
+			var handler = GetHandler(Runtime.GetNSObject(sender)) as IMacViewHandler;
+			var e = handler?.GetDragEventArgs(Runtime.GetNSObject<NSDraggingInfo>(draggingInfoPtr), null);
+			if (e != null)
+			{
+				e.Effects = effect.ToEto();
+				handler.Callback.OnDragEnter(handler.Widget, e);
+				if (e.AllowedEffects.HasFlag(e.Effects))
+					effect = e.Effects.ToNS();
+			}
+			return effect;
+		}
+
+		protected static void TriggerDraggingExited(IntPtr sender, IntPtr sel, IntPtr draggingInfoPtr)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var handler = GetHandler(Runtime.GetNSObject(sender)) as IMacViewHandler;
+			var e = handler?.GetDragEventArgs(Runtime.GetNSObject<NSDraggingInfo>(draggingInfoPtr), null);
+			if (e != null)
+			{
+				handler.Callback.OnDragLeave(handler.Widget, e);
+			}
+			Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, draggingInfoPtr);
 		}
 
 		protected static void TriggerTextInput(IntPtr sender, IntPtr sel, IntPtr textPtr)
@@ -568,12 +701,10 @@ namespace Eto.Mac.Forms
 		}
 
 
-		static readonly object InitialFocusKey = new object();
-
 		bool InitialFocus
 		{
-			get { return Widget.Properties.Get<bool?>(InitialFocusKey) ?? false; }
-			set { Widget.Properties[InitialFocusKey] = value ? (object)true : null; }
+			get { return Widget.Properties.Get<bool?>(MacView.InitialFocusKey) ?? false; }
+			set { Widget.Properties[MacView.InitialFocusKey] = value ? (object)true : null; }
 		}
 
 		public virtual void Focus()
@@ -584,19 +715,16 @@ namespace Eto.Mac.Forms
 				InitialFocus = true;
 		}
 
-		static readonly object BackgroundColorKey = new object();
 		public virtual Color BackgroundColor
 		{
-			get { return Widget.Properties.Get<Color?>(BackgroundColorKey) ?? Colors.Transparent; }
+			get { return Widget.Properties.Get<Color?>(MacView.BackgroundColorKey) ?? Colors.Transparent; }
 			set
 			{
-				Widget.Properties[BackgroundColorKey] = value;
+				Widget.Properties[MacView.BackgroundColorKey] = value;
 				if (Widget.Loaded)
 					SetBackgroundColor(value);
 			}
 		}
-
-		static IntPtr selDrawRect = Selector.GetHandle("drawRect:");
 
 		static void DrawBackgroundRect(IntPtr sender, IntPtr sel, CGRect rect)
 		{
@@ -621,7 +749,7 @@ namespace Eto.Mac.Forms
 			{
 				if (color.Value.A > 0)
 				{
-					AddMethod(selDrawRect, new Action<IntPtr, IntPtr, CGRect>(DrawBackgroundRect), EtoEnvironment.Is64BitProcess ? "v@:{CGRect=dddd}" : "v@:{CGRect=ffff}", ContainerControl);
+					AddMethod(MacView.selDrawRect, new Action<IntPtr, IntPtr, CGRect>(DrawBackgroundRect), EtoEnvironment.Is64BitProcess ? "v@:{CGRect=dddd}" : "v@:{CGRect=ffff}", ContainerControl);
 				}
 				ContainerControl.SetNeedsDisplay();
 			}
@@ -629,12 +757,10 @@ namespace Eto.Mac.Forms
 
 		public abstract bool Enabled { get; set; }
 
-		static readonly object ShouldHaveFocusKey = new object();
-
 		public bool? ShouldHaveFocus
 		{
-			get { return Widget.Properties.Get<bool?>(ShouldHaveFocusKey); }
-			set { Widget.Properties[ShouldHaveFocusKey] = value; }
+			get { return Widget.Properties.Get<bool?>(MacView.ShouldHaveFocusKey); }
+			set { Widget.Properties[MacView.ShouldHaveFocusKey] = value; }
 		}
 
 		public virtual bool HasFocus
@@ -649,7 +775,7 @@ namespace Eto.Mac.Forms
 		{
 			get { return !ContainerControl.Hidden; }
 			set
-			{ 
+			{
 				if (ContainerControl.Hidden == value)
 				{
 					var oldSize = GetPreferredSize(Size.MaxValue);
@@ -660,8 +786,6 @@ namespace Eto.Mac.Forms
 				}
 			}
 		}
-
-		static readonly IntPtr selResetCursorRects = Selector.GetHandle("resetCursorRects");
 
 		static void TriggerResetCursorRects(IntPtr sender, IntPtr sel)
 		{
@@ -682,16 +806,15 @@ namespace Eto.Mac.Forms
 			get { return Cursor; }
 		}
 
-		static readonly object Cursor_Key = new object();
-
 		public virtual Cursor Cursor
 		{
-			get { return Widget.Properties.Get<Cursor>(Cursor_Key); }
-			set {
+			get { return Widget.Properties.Get<Cursor>(MacView.Cursor_Key); }
+			set
+			{
 				if (Cursor != value)
 				{
-					Widget.Properties[Cursor_Key] = value;
-					AddMethod(selResetCursorRects, new Action<IntPtr, IntPtr>(TriggerResetCursorRects), "v@:");
+					Widget.Properties[MacView.Cursor_Key] = value;
+					AddMethod(MacView.selResetCursorRects, new Action<IntPtr, IntPtr>(TriggerResetCursorRects), "v@:");
 				}
 			}
 		}
@@ -731,7 +854,7 @@ namespace Eto.Mac.Forms
 				FocusControl.Window.MakeFirstResponder(FocusControl);
 				InitialFocus = false;
 			}
-			var bg = Widget.Properties.Get<Color?>(BackgroundColorKey);
+			var bg = Widget.Properties.Get<Color?>(MacView.BackgroundColorKey);
 			if (bg != null)
 				SetBackgroundColor(bg);
 		}
@@ -778,7 +901,7 @@ namespace Eto.Mac.Forms
 		Point Control.IHandler.Location
 		{
 			get
-			{ 
+			{
 				var frame = ContentControl.Frame;
 				var location = frame.Location;
 				var super = ContentControl.Superview;
@@ -791,7 +914,7 @@ namespace Eto.Mac.Forms
 		static void TriggerSystemAction(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
+			var handler = GetHandler(control) as MacView<TControl, TWidget, TCallback>;
 			if (handler != null)
 			{
 				Command command;
@@ -809,10 +932,10 @@ namespace Eto.Mac.Forms
 
 		static bool ValidateSystemUserInterfaceItem(IntPtr sender, IntPtr sel, IntPtr item)
 		{
-			var actionHandle = Messaging.IntPtr_objc_msgSend(item, selGetAction);
+			var actionHandle = Messaging.IntPtr_objc_msgSend(item, MacView.selGetAction);
 
 			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
+			var handler = GetHandler(control) as MacView<TControl, TWidget, TCallback>;
 			if (handler != null)
 			{
 				Command command;
@@ -835,47 +958,16 @@ namespace Eto.Mac.Forms
 		}
 
 		Dictionary<IntPtr, Command> systemActions;
-		static readonly IntPtr selGetAction = Selector.GetHandle("action");
-		static readonly IntPtr selValidateUserInterfaceItem = Selector.GetHandle("validateUserInterfaceItem:");
-		static readonly IntPtr selCut = Selector.GetHandle("cut:");
-		static readonly IntPtr selCopy = Selector.GetHandle("copy:");
-		static readonly IntPtr selPaste = Selector.GetHandle("paste:");
-		static readonly IntPtr selSelectAll = Selector.GetHandle("selectAll:");
-		static readonly IntPtr selDelete = Selector.GetHandle("delete:");
-		static readonly IntPtr selUndo = Selector.GetHandle("undo:");
-		static readonly IntPtr selRedo = Selector.GetHandle("redo:");
-		static readonly IntPtr selPasteAsPlainText = Selector.GetHandle("pasteAsPlainText:");
-		static readonly IntPtr selPerformClose = Selector.GetHandle("performClose:");
-		static readonly IntPtr selPerformZoom = Selector.GetHandle("performZoom:");
-		static readonly IntPtr selArrangeInFront = Selector.GetHandle("arrangeInFront:");
-		static readonly IntPtr selPerformMiniaturize = Selector.GetHandle("performMiniaturize:");
-		static readonly Dictionary<string, IntPtr> systemActionSelectors = new Dictionary<string, IntPtr>
-		{
-			{ "cut", selCut },
-			{ "copy", selCopy },
-			{ "paste", selPaste },
-			{ "selectAll", selSelectAll },
-			{ "delete", selDelete },
-			{ "undo", selUndo },
-			{ "redo", selRedo },
-			{ "pasteAsPlainText", selPasteAsPlainText },
-			{ "performClose", selPerformClose },
-			{ "performZoom", selPerformZoom },
-			{ "arrangeInFront", selArrangeInFront },
-			{ "performMiniaturize", selPerformMiniaturize }
-		};
 
 		public virtual IEnumerable<string> SupportedPlatformCommands
 		{
-			get { return systemActionSelectors.Keys; }
+			get { return MacView.systemActionSelectors.Keys; }
 		}
-
-		static readonly object TabIndex_Key = new object();
 
 		public int TabIndex
 		{
-			get { return Widget.Properties.Get<int>(TabIndex_Key, int.MaxValue); }
-			set { Widget.Properties.Set(TabIndex_Key, value, int.MaxValue); }
+			get { return Widget.Properties.Get<int>(MacView.TabIndex_Key, int.MaxValue); }
+			set { Widget.Properties.Set(MacView.TabIndex_Key, value, int.MaxValue); }
 		}
 
 		public void MapPlatformCommand(string systemAction, Command command)
@@ -886,12 +978,12 @@ namespace Eto.Mac.Forms
 		protected virtual void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
 		{
 			IntPtr sel;
-			if (systemActionSelectors.TryGetValue(systemAction, out sel))
+			if (MacView.systemActionSelectors.TryGetValue(systemAction, out sel))
 			{
 				if (systemActions == null)
 				{
 					systemActions = new Dictionary<IntPtr, Command>();
-					AddMethod(selValidateUserInterfaceItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemUserInterfaceItem), "B@:@", control);
+					AddMethod(MacView.selValidateUserInterfaceItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemUserInterfaceItem), "B@:@", control);
 				}
 				AddMethod(sel, new Action<IntPtr, IntPtr, IntPtr>(TriggerSystemAction), "v@:@", control);
 				systemActions[sel] = command;
@@ -927,6 +1019,31 @@ namespace Eto.Mac.Forms
 		}
 
 		protected void FireOnShown() => FireOnShown(Widget);
+
+		public bool AllowDrop
+		{
+			get { return Widget.Properties.Get<bool>(MacView.AllowDrop_Key); }
+			set
+			{
+				Widget.Properties.Set(MacView.AllowDrop_Key, value);
+				if (value)
+					DragControl.RegisterForDraggedTypes(new string[] { UTType.Item });
+				else
+					DragControl.UnregisterDraggedTypes();
+			}
+		}
+
+		public virtual void DoDragDrop(DataObject data, DragEffects allowedAction)
+		{
+			var handler = data.Handler as IDataObjectHandler;
+
+			var source = new EtoDragSource { AllowedOperation = allowedAction.ToNS(), SourceView = ContainerControl };
+
+			var session = ContainerControl.BeginDraggingSession(new NSDraggingItem[0], NSApplication.SharedApplication.CurrentEvent, source);
+			handler.Apply(session.DraggingPasteboard);
+
+			// TODO: block until drag is complete?
+		}
 	}
 }
 

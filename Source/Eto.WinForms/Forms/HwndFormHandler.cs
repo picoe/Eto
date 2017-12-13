@@ -1,4 +1,4 @@
-﻿using Eto.Forms;
+using Eto.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -511,5 +511,22 @@ namespace Eto.WinForms.Forms
 		public int TabIndex { get; set; }
 
 		public IEnumerable<Control> VisualControls => Widget.Controls;
+
+		public bool AllowDrop
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
