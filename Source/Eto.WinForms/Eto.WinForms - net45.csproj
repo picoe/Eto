@@ -9,7 +9,6 @@
     <RootNamespace>Eto.WinForms</RootNamespace>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.WinForms</AssemblyName>
   </PropertyGroup>
@@ -45,15 +44,9 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System">
-      <Name>System</Name>
-    </Reference>
-    <Reference Include="System.Drawing">
-      <Name>System.Drawing</Name>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-      <Name>System.Windows.Forms</Name>
-    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\packages\Windows7APICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -89,6 +82,7 @@
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
+    <Compile Include="Forms\DataObjectHandler.cs" />
     <Compile Include="Forms\NotificationHandler.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="Win32.dpi.cs" />
@@ -298,7 +292,9 @@
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\Cells\CellHandler.cs" />
-    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
     <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
     <Compile Include="Win32.cs" />
@@ -333,7 +329,6 @@
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Forms\OpenWithDialogHandler.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
@@ -376,5 +371,6 @@
   <ItemGroup>
     <EmbeddedResource Include="CustomControls\CalendarPicker.png" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\Shared\Common.targets" />
 </Project>

@@ -73,6 +73,13 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
+	static class GridHandler
+	{
+		public static readonly object ScrolledToRow_Key = new object();
+		public static readonly object IsEditing_Key = new object();
+		public static readonly object IsMouseDragging_Key = new object();
+	}
+
 	class EtoTableHeaderView : NSTableHeaderView
 	{
 		WeakReference handler;
@@ -149,6 +156,8 @@ namespace Eto.Mac.Forms.Controls
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
+
+		public override NSView DragControl => Control;
 
 		protected int SuppressUpdate { get; set; }
 
@@ -310,11 +319,11 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.OnLoadComplete(e);
 
-			if (!Widget.Properties.Get<bool>(ScrolledToRowKey))
+			if (!Widget.Properties.Get<bool>(GridHandler.ScrolledToRow_Key))
 				// Yosemite bug: hides first row when DataStore is set before control is visible
 				Control.ScrollRowToVisible(0);
 			else
-				Widget.Properties.Remove(ScrolledToRowKey);
+				Widget.Properties.Remove(GridHandler.ScrolledToRow_Key);
 
 			IsAutoSizingColumns = true;
 			foreach (var col in ColumnHandlers)
@@ -388,7 +397,7 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.AllowsMultipleSelection = value; }
 		}
 
-		public IEnumerable<int> SelectedRows
+		public virtual IEnumerable<int> SelectedRows
 		{
 			get
 			{ 
@@ -525,13 +534,11 @@ namespace Eto.Mac.Forms.Controls
 			Callback.OnCellFormatting(Widget, args);
 		}
 
-		static readonly object ScrolledToRowKey = new object();
-
 		public void ScrollToRow(int row)
 		{
 			Control.ScrollRowToVisible(row);
 			if (!Widget.Loaded)
-				Widget.Properties[ScrolledToRowKey] = true;
+				Widget.Properties[GridHandler.ScrolledToRow_Key] = true;
 		}
 
 		public bool Loaded
@@ -578,11 +585,15 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		static readonly object IsEditing_Key = new object();
+		protected void SetIsEditing(bool value) => Widget.Properties.Set(GridHandler.IsEditing_Key, value, false);
 
-		protected void SetIsEditing(bool value) => Widget.Properties.Set(IsEditing_Key, value, false);
+		public bool IsEditing => Widget.Properties.Get(GridHandler.IsEditing_Key, Control.EditedRow != -1 && Control.EditedColumn != -1);
 
-		public bool IsEditing => Widget.Properties.Get(IsEditing_Key, Control.EditedRow != -1 && Control.EditedColumn != -1);
+		protected bool IsMouseDragging
+		{
+			get { return Widget.Properties.Get(GridHandler.IsMouseDragging_Key, false); }
+			set { Widget.Properties.Set(GridHandler.IsMouseDragging_Key, value, false); }
+		}
 	}
 }
 

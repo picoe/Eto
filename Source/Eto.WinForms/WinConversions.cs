@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using Eto.Drawing;
 using Eto.Forms;
@@ -913,5 +913,72 @@ namespace Eto.WinForms
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Bitmap ToEto(this sd.Bitmap sdbitmap)
+		{
+			if (sdbitmap == null)
+				return null;
+			return new Bitmap(new BitmapHandler(sdbitmap));
+		}
+
+		public static swf.DragDropEffects ToSwf(this DragEffects action)
+		{
+			var resultAction = swf.DragDropEffects.None;
+
+			if (action.HasFlag(DragEffects.Copy))
+				resultAction |= swf.DragDropEffects.Copy;
+
+			if (action.HasFlag(DragEffects.Move))
+				resultAction |= swf.DragDropEffects.Move;
+
+			if (action.HasFlag(DragEffects.Link))
+				resultAction |= swf.DragDropEffects.Link;
+
+			return resultAction;
+		}
+
+		public static DragEffects ToEto(this swf.DragDropEffects effects)
+		{
+			var action = DragEffects.None;
+
+			if (effects.HasFlag(swf.DragDropEffects.Copy))
+				action |= DragEffects.Copy;
+
+			if (effects.HasFlag(swf.DragDropEffects.Move))
+				action |= DragEffects.Move;
+
+			if (effects.HasFlag(swf.DragDropEffects.Link))
+				action |= DragEffects.Link;
+
+			return action;
+		}
+		public static swf.DataObject ToSwf(this DataObject data) => DataObjectHandler.GetControl(data);
+
+		public static DataObject ToEto(this swf.IDataObject data) => new DataObject(new DataObjectHandler(new swf.DataObject(data)));
+
+		public static Keys GetEtoModifiers(this swf.DragEventArgs e)
+		{
+			var modifiers = Keys.None;
+			if ((e.KeyState & 4) == 4)
+				modifiers |= Keys.Shift;
+			if ((e.KeyState & 8) == 8)
+				modifiers |= Keys.Control;
+			if ((e.KeyState & 32) == 32)
+				modifiers |= Keys.Alt;
+			return modifiers;
+		}
+
+		public static MouseButtons GetEtoButtons(this swf.DragEventArgs e)
+		{
+			var buttons = MouseButtons.None;
+			if ((e.KeyState & 1) == 1)
+				buttons |= MouseButtons.Primary;
+			if ((e.KeyState & 2) == 2)
+				buttons |= MouseButtons.Primary;
+			if ((e.KeyState & 16) == 16)
+				buttons |= MouseButtons.Middle;
+			return buttons;
+		}
+
 	}
 }

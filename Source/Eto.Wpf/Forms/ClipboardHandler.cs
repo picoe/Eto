@@ -6,10 +6,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Linq;
 using System.Threading;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swmi = System.Windows.Media.Imaging;
+using System.Collections.Specialized;
 
 namespace Eto.Wpf.Forms
 {
@@ -139,6 +141,33 @@ namespace Eto.Wpf.Forms
 				Control.SetImage(value.ToWpf());
 				Update();
 			}
+		}
+
+		public Uri[] Uris
+		{
+			get
+			{
+				return sw.Clipboard.ContainsFileDropList() ? sw.Clipboard.GetFileDropList().OfType<string>().Select(s => new Uri(s)).ToArray() : null;
+			}
+			set
+			{
+				if (value != null)
+				{
+					var files = new StringCollection();
+					files.AddRange(value.Select(r => r.AbsolutePath).ToArray());
+					sw.Clipboard.SetFileDropList(files);
+				}
+				else
+				{
+					sw.Clipboard.SetFileDropList(null);
+				}
+			}
+		}
+
+		public DataObject DataObject
+		{
+			get { return sw.Clipboard.GetDataObject().ToEto(); }
+			set { sw.Clipboard.SetDataObject(value.ToWpf()); }
 		}
 
 		public void Clear()

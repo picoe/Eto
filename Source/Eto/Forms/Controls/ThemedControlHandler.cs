@@ -348,6 +348,25 @@ namespace Eto.Forms
 			set { FocusControl.TabIndex = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this control can serve as drop target.
+		/// </summary>
+		public virtual bool AllowDrop
+		{
+			get { return Control.AllowDrop; }
+			set { Control.AllowDrop = value; }
+		}
+
+		/// <summary>
+		/// Starts drag operation using this control as drag source.
+		/// </summary>
+		/// <param name="data">Drag data.</param>
+		/// <param name="allowedAction">Allowed action.</param>
+		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		{
+			Control.DoDragDrop(data, allowedAction);
+		}
+
 		#region Events
 
 		/// <summary>

@@ -450,4 +450,47 @@ namespace Eto.Forms
 			this.layout = layout;
 		}
 	}
+
+	/// <summary>
+	/// Used to easily insert a <see cref="GroupBox"/> into a dynamic layout
+	/// </summary>
+	public class DynamicGroup : DynamicTable
+	{
+		string _title;
+
+		/// <summary>
+		/// Gets or sets the title of the group box.
+		/// </summary>
+		/// <value>The title of the groupbox.</value>
+		public string Title
+		{
+			get { return _title; }
+			set
+			{
+				_title = value;
+				if (GroupBox != null)
+					GroupBox.Text = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets the group box instance when the layout has been generated.
+		/// </summary>
+		/// <value>The group box instance.</value>
+		public GroupBox GroupBox { get; private set; }
+
+		/// <summary>
+		/// Creates the group box layout.
+		/// </summary>
+		/// <returns>The control created for this item.</returns>
+		/// <param name="layout">Layout we are creating this item for.</param>
+		public override Control Create(DynamicLayout layout)
+		{
+			return GroupBox = new GroupBox
+			{
+				Text = Title,
+				Content = base.Create(layout)
+			};
+		}
+	}
 }

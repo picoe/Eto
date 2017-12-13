@@ -359,6 +359,41 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Begins a the group section in the dynamic layout with a title.
+		/// </summary>
+		/// <remarks>
+		/// Should be balanced with a call to <see cref="EndGroup"/>.
+		/// </remarks>
+		/// <returns>The group instance.</returns>
+		/// <param name="title">Title for the group, or null to have no title.</param>
+		/// <param name="padding">Padding around the children of the group.</param>
+		/// <param name="spacing">Spacing between the children of the group.</param>
+		/// <param name="xscale">Xscale of the group itself.</param>
+		/// <param name="yscale">Yscale of the group itself.</param>
+		public DynamicGroup BeginGroup(string title, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		{
+			var newItem = new DynamicGroup
+			{
+				Title = title,
+				Padding = padding,
+				Spacing = spacing,
+				XScale = xscale,
+				YScale = yscale
+			};
+			currentItem.Add(newItem);
+			currentItem = newItem;
+			return newItem;
+		}
+
+		/// <summary>
+		/// Ends a group.
+		/// </summary>
+		/// <remarks>
+		/// Should be balanced with a previous call to <see cref="BeginGroup"/>.
+		/// </remarks>
+		public void EndGroup() => EndVertical();
+
+		/// <summary>
 		/// Add the control with the optional scaling
 		/// </summary>
 		/// <remarks>
@@ -381,6 +416,32 @@ namespace Eto.Forms
 			var dynamicControl = new DynamicControl { Control = control, XScale = xscale, YScale = yscale };
 			currentItem.Add(dynamicControl);
 			return dynamicControl;
+		}
+
+		/// <summary>
+		/// Adds a list of controls
+		/// </summary>
+		/// <remarks>
+		/// This enumerates the collection and calls <see cref="Add"/> for each control.
+		/// </remarks>
+		/// <param name="controls">Controls to add.</param>
+		public void AddRange(IEnumerable<Control> controls)
+		{
+			foreach (var control in controls)
+				Add(control);
+		}
+
+		/// <summary>
+		/// Adds a list of controls
+		/// </summary>
+		/// <remarks>
+		/// This enumerates the collection and calls <see cref="Add"/> for each control.
+		/// </remarks>
+		/// <param name="controls">Controls to add.</param>
+		public void AddRange(params Control[] controls)
+		{
+			foreach (var control in controls)
+				Add(control);
 		}
 
 		/// <summary>
@@ -604,6 +665,17 @@ namespace Eto.Forms
 			foreach (var control in controls)
 				Add(control);
 			EndVertical();
+		}
+
+		/// <summary>
+		/// Adds an empty space.  Equivalent to calling Add(null);
+		/// </summary>
+		/// <returns>The item representing the space.</returns>
+		/// <param name="xscale">Xscale for this control and any in the same column</param>
+		/// <param name="yscale">Yscale for this control and any in the same row</param>
+		public DynamicControl AddSpace(bool? xscale = null, bool? yscale = null)
+		{
+			return Add(null, xscale, yscale);
 		}
 
 		/// <summary>

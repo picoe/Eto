@@ -203,6 +203,20 @@ namespace Eto.GtkSharp.Forms
 				return atoms.Select(r => r.Name).ToArray();
 			}
 		}
+
+		public Uri[] Uris
+		{
+			set
+			{
+				var uris = value?.Select(r => r.AbsolutePath).ToArray();
+				AddEntry("text/uri-list", value, (data, selection) => selection.SetSelectedUris2(uris));
+			}
+			get
+			{
+				var selection = GetSelectionData("text/uri-list");
+				return selection?.GetSelectedUris()?.Select(r => new Uri(r)).ToArray();
+			}
+		}
 	}
 }
 

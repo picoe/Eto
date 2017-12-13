@@ -1,4 +1,5 @@
 version: 2.4.0.{build}
+image: Visual Studio 2017
 install:
 - appveyor DownloadFile %GTKSHARP_LOCATION%/gtk-sharp-2.12.38.msi -FileName gtk-sharp.msi
 - msiexec /i gtk-sharp.msi /qn /norestart

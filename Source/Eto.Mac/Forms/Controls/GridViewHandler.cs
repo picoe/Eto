@@ -36,7 +36,7 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<NSTableView, GridView, GridView.ICallback>, GridView.IHandler
+	public class GridViewHandler : GridHandler<GridViewHandler.EtoTableView, GridView, GridView.ICallback>, GridView.IHandler
 	{
 		CollectionHandler collection;
 
@@ -84,7 +84,10 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (HandleMouseEvent(theEvent))
 					return;
+				
+				Handler.IsMouseDragging = true;
 				base.MouseDown(theEvent);
+				Handler.IsMouseDragging = true;
 			}
 
 			bool HandleMouseEvent(NSEvent theEvent)
@@ -124,7 +127,18 @@ namespace Eto.Mac.Forms.Controls
 				DataSource = new EtoTableViewDataSource { Handler = handler };
 				Delegate = new EtoTableDelegate { Handler = handler };
 				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
+				SetDraggingSourceOperationMask(NSDragOperation.All, true);
+				SetDraggingSourceOperationMask(NSDragOperation.All, false);
 			}
+
+			public NSDragOperation? AllowedOperation { get; set; }
+
+			[Export("draggingSession:sourceOperationMaskForDraggingContext:")]
+			public NSDragOperation DraggingSessionSourceOperationMask(NSDraggingSession session, IntPtr context)
+			{
+				return AllowedOperation ?? NSDragOperation.None;
+			}
+
 		}
 
 		public class EtoTableViewDataSource : NSTableViewDataSource
@@ -156,6 +170,91 @@ namespace Eto.Mac.Forms.Controls
 					Handler.SetIsEditing(false);
 					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item));
 				}
+			}
+
+			public override NSDragOperation ValidateDrop(NSTableView tableView, NSDraggingInfo info, nint row, NSTableViewDropOperation dropOperation)
+			{
+				var h = Handler;
+				if (h == null)
+					return NSDragOperation.None;
+				var etoInfo = GetDragInfo(info, row, dropOperation);
+				var e = h.GetDragEventArgs(info, etoInfo);
+				h.Callback.OnDragOver(h.Widget, e);
+				if (e.AllowedEffects.HasFlag(e.Effects))
+				{
+					var idx = etoInfo.Index;
+					var pos = etoInfo.Position;
+					if (pos == GridDragPosition.After)
+					{
+						pos = GridDragPosition.Before;
+						idx++;
+					}
+					tableView.SetDropRowDropOperation((nint)idx, pos == GridDragPosition.Over ? NSTableViewDropOperation.On : NSTableViewDropOperation.Above);
+
+					return e.Effects.ToNS();
+				}
+				else
+					return NSDragOperation.None;
+			}
+
+			GridViewDragInfo GetDragInfo(NSDraggingInfo info, nint row, NSTableViewDropOperation dropOperation)
+			{
+				var h = Handler;
+				var tableView = h.Control;
+				var position = GridDragPosition.Over;
+				if (dropOperation == NSTableViewDropOperation.On)
+					position = GridDragPosition.Over;
+				else 
+				{
+					// need to check if it's actually above or below the item under the cursor
+					var rowUnderMouse = tableView.GetRow(tableView.ConvertPointFromView(info.DraggingLocation, null));
+					if (row == rowUnderMouse)
+					{
+						position = GridDragPosition.Before;
+					}
+					else
+					{
+						position = GridDragPosition.After;
+						if (row > 0)
+							row--;
+					}
+				}
+				var item = h.GetItem((int)row);
+
+				return new GridViewDragInfo(h.Widget, item, (int)row, position);
+			}
+
+			public override bool AcceptDrop(NSTableView tableView, NSDraggingInfo info, nint row, NSTableViewDropOperation dropOperation)
+			{
+				var h = Handler;
+				if (h == null)
+					return false;
+				var e = h.GetDragEventArgs(info, GetDragInfo(info, row, dropOperation));
+				h.Callback.OnDragLeave(h.Widget, e);
+				h.Callback.OnDragDrop(h.Widget, e);
+				return true;
+			}
+
+			public override bool WriteRows(NSTableView tableView, NSIndexSet rowIndexes, NSPasteboard pboard)
+			{
+				var h = Handler;
+				if (h == null)
+					return false;
+
+				if (h.IsMouseDragging)
+				{
+					h.Control.AllowedOperation = null;
+					// give MouseMove event a chance to start the drag
+					h.DragPasteboard = pboard;
+					h.CustomSelectedRows = rowIndexes.Select(r => (int)r).ToList();
+					var args = MacConversions.GetMouseEvent(h.ContainerControl, NSApplication.SharedApplication.CurrentEvent, false);
+					h.Callback.OnMouseMove(h.Widget, args);
+					h.DragPasteboard = null;
+					h.CustomSelectedRows = null;
+					return h.Control.AllowedOperation != null;
+				}
+
+				return false;
 			}
 		}
 
@@ -277,13 +376,17 @@ namespace Eto.Mac.Forms.Controls
 					break;
 				case Grid.CellFormattingEvent:
 					break;
+				case Eto.Forms.Control.DragOverEvent:
+				case Eto.Forms.Control.DragDropEvent:
+					// handled in EtoTableViewDataSource
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
 
-		protected override NSTableView CreateControl()
+		protected override EtoTableView CreateControl()
 		{
 			return new EtoTableView(this);
 		}
@@ -298,6 +401,21 @@ namespace Eto.Mac.Forms.Controls
 						yield return collection.ElementAt(row);
 				}
 			}
+		}
+
+		static readonly object CustomSelectedRows_Key = new object();
+
+		protected IEnumerable<int> CustomSelectedRows
+		{
+			get { return Widget.Properties.Get<IEnumerable<int>>(CustomSelectedRows_Key); }
+			set { Widget.Properties.Set(CustomSelectedRows_Key, value); }
+		}
+
+
+		public override IEnumerable<int> SelectedRows
+		{
+			get { return CustomSelectedRows ?? base.SelectedRows; }
+			set { base.SelectedRows = value; }
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<object>
@@ -401,7 +519,9 @@ namespace Eto.Mac.Forms.Controls
 
 		public override object GetItem(int row)
 		{
-			return collection.ElementAt((int)row);
+			if (collection == null || row >= collection.Count)
+				return null;
+			return collection.ElementAt(row);
 		}
 
 		public void ReloadData(IEnumerable<int> rows)
@@ -418,6 +538,29 @@ namespace Eto.Mac.Forms.Controls
 			return row >= 0 ? GetItem(row) : null;
 		}
 
+		static readonly object DragPasteboard_Key = new object();
+
+		NSPasteboard DragPasteboard
+		{
+			get { return Widget.Properties.Get<NSPasteboard>(DragPasteboard_Key); }
+			set { Widget.Properties.Set(DragPasteboard_Key, value); }
+		}
+
+		public override void DoDragDrop(DataObject data, DragEffects allowedAction)
+		{
+			if (DragPasteboard != null)
+			{
+				var handler = data.Handler as IDataObjectHandler;
+				handler?.Apply(DragPasteboard);
+				Control.AllowedOperation = allowedAction.ToNS();
+			}
+			else
+			{
+				base.DoDragDrop(data, allowedAction);
+			}
+		}
+
+		public GridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as GridViewDragInfo;
 	}
 }
 

@@ -151,6 +151,12 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_selection_data_get_uris(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
@@ -291,6 +297,12 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_selection_data_get_uris(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
@@ -430,6 +442,12 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_selection_data_get_uris(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
@@ -647,6 +665,26 @@ namespace Eto.GtkSharp
 				NMMac.gtk_header_bar_set_show_close_button(bar, setting);
 			else
 				NMWindows.gtk_header_bar_set_show_close_button(bar, setting);
+		}
+
+		public static IntPtr gtk_selection_data_get_uris(IntPtr raw)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_selection_data_get_uris(raw);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_selection_data_get_uris(raw);
+			else
+				return NMWindows.gtk_selection_data_get_uris(raw);
+		}
+
+		public static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_selection_data_set_uris(raw, uris);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_selection_data_set_uris(raw, uris);
+			else
+				return NMWindows.gtk_selection_data_set_uris(raw, uris);
 		}
 
 		public static IntPtr webkit_web_view_new()

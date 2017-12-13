@@ -54,6 +54,7 @@
     <Compile Include="Log.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
+    <Compile Include="Sections\Behaviors\DragDropSection.cs" />
     <Compile Include="Sections\Behaviors\DynamicFocusSection.cs" />
     <Compile Include="Sections\Behaviors\WindowsSection.cs" />
     <Compile Include="Sections\Controls\ExpanderSection.cs" />

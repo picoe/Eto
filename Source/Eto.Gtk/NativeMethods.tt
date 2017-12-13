@@ -60,7 +60,9 @@ var gtkmethods = new[]
     "void gtk_window_set_titlebar(IntPtr window, IntPtr widget)",
     "void gtk_header_bar_pack_start(IntPtr bar, IntPtr child)",
     "void gtk_header_bar_pack_end(IntPtr bar, IntPtr child)",
-    "void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting)"
+    "void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting)",
+    "IntPtr gtk_selection_data_get_uris(IntPtr raw)",
+    "bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris)"
 };
 
 var gdkmethods = new[]

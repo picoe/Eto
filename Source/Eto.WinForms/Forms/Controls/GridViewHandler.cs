@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
@@ -162,6 +162,8 @@ namespace Eto.WinForms.Forms.Controls
 				return null;
 			return GetItemAtRow(row);
 		}
+
+		public GridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as GridViewDragInfo;
 
 		public IEnumerable<object> DataStore
 		{

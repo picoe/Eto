@@ -24,6 +24,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Gtk.Widget EventControl => Tree;
 
+		public override Gtk.Widget DragControl => Tree;
+
 		protected GridHandler()
 		{
 			Control = new Gtk.ScrolledWindow
@@ -45,7 +47,6 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected override void Initialize()
 		{
-			base.Initialize();
 			Tree = new Gtk.TreeView();
 			UpdateModel();
 			Tree.HeadersVisible = true;
@@ -56,6 +57,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
+			base.Initialize();
 		}
 
 		protected new GridConnector Connector { get { return (GridConnector)base.Connector; } }

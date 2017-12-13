@@ -97,6 +97,7 @@
     <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DragDropConversions.cs" />
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="Drawing\SystemColorsHandler.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
+    <Compile Include="Forms\DataObjectHandler.cs" />
     <Compile Include="Forms\EtoBorder.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="Forms\NotificationHandler.cs" />
