@@ -480,24 +480,34 @@ namespace Eto.Wpf.Forms
 		private void Control_DragEnter(object sender, sw.DragEventArgs e)
 		{
 			IsDragLeaving = false;
+			var args = GetDragEventArgs(e, null);
 			if (!IsDragEntered)
 			{
 				IsDragEntered = true;
-				HandleDragEnter(e, GetDragEventArgs(e, null));
+				HandleDragEnter(e, args);
+			}
+			else
+			{
+				// we re-entered, treat as another drag over so we can set the proper drag effect again
+				HandleDragOver(e, args);
 			}
 		}
 
 		void Control_DragLeave(object sender, sw.DragEventArgs e)
 		{
-			IsDragLeaving = true;
-			Control.Dispatcher.BeginInvoke(new Action(() =>
+			if (IsDragEntered)
 			{
-				if (IsDragLeaving)
+				IsDragLeaving = true;
+				Control.Dispatcher.BeginInvoke(new Action(() =>
 				{
-					IsDragEntered = false;
-					HandleDragLeave(e, GetDragEventArgs(e, null));
-				}
-			}));
+					if (IsDragLeaving)
+					{
+						IsDragEntered = false;
+						HandleDragLeave(e, GetDragEventArgs(e, null));
+					}
+				}));
+				e.Handled = true;
+			}
 		}
 
 		static readonly object IsDragEntered_Key = new object();
@@ -522,15 +532,15 @@ namespace Eto.Wpf.Forms
 			IsDragEntered = false;
 			Callback.OnDragLeave(Widget, args);
 			Callback.OnDragDrop(Widget, args);
-			e.Handled = args.Effects != DragEffects.None;
 			e.Effects = args.Effects.ToWpf();
+			e.Handled = true;
 		}
 
 		protected virtual void HandleDragEnter(sw.DragEventArgs e, DragEventArgs args)
 		{
 			Callback.OnDragEnter(Widget, args);
-			e.Handled = args.Effects != DragEffects.None;
 			e.Effects = args.Effects.ToWpf();
+			e.Handled = true;
 		}
 
 		protected virtual void HandleDragLeave(sw.DragEventArgs e, DragEventArgs args)
@@ -541,8 +551,8 @@ namespace Eto.Wpf.Forms
 		protected virtual void HandleDragOver(sw.DragEventArgs e, DragEventArgs args)
 		{
 			Callback.OnDragOver(Widget, args);
-			e.Handled = args.Effects != DragEffects.None;
 			e.Effects = args.Effects.ToWpf();
+			e.Handled = true;
 		}
 
 

@@ -382,6 +382,7 @@ namespace Eto.GtkSharp.Forms
 					HandleEvent(Eto.Forms.Control.DragOverEvent);
 					break;
 				case Eto.Forms.Control.DragLeaveEvent:
+					HandleEvent(Eto.Forms.Control.DragOverEvent);
 					DragControl.DragLeave += Connector.HandleDragLeave;
 					break;
 				default:
@@ -623,7 +624,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				var h = DragArgs?.Data.Handler as DataObjectHandler;
 				h?.SetDataReceived(args);
-
+				NativeMethods.g_signal_stop_emission_by_name(Handler.DragControl.Handle, "drag-data-received");
 			}
 
 			[GLib.ConnectBefore]
@@ -640,6 +641,7 @@ namespace Eto.GtkSharp.Forms
 				DragArgs = GetDragEventArgs(args.Context, new PointF(args.X, args.Y), args.Time);
 				Handler.Callback.OnDragDrop(Handler.Widget, DragArgs);
 				Gtk.Drag.Finish(args.Context, true, DragArgs.Effects.HasFlag(DragEffects.Move), args.Time);
+				DragArgs = null;
 				args.RetVal = true;
 			}
 
@@ -661,9 +663,11 @@ namespace Eto.GtkSharp.Forms
 
 			public virtual void HandleDragLeave(object o, Gtk.DragLeaveArgs args)
 			{
-				DragArgs = GetDragEventArgs(args.Context, null, args.Time);
+				// use old args in case of a drop so we use the last motion args to determine position of drop for TreeGridView/GridView.
+				DragArgs = DragArgs ?? GetDragEventArgs(args.Context, Handler.PointFromScreen(Mouse.Position), args.Time);
 				Handler.Callback.OnDragLeave(Handler.Widget, DragArgs);
 				isDragOver = false;
+				Eto.Forms.Application.Instance.AsyncInvoke(() => DragArgs = null);
 			}
 		}
 
