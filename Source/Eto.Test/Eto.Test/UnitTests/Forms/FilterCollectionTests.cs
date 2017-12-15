@@ -104,6 +104,11 @@ namespace Eto.Test.UnitTests.Forms
 			model.Remove(model.First(r => r.Id == 20));
 			Assert.IsFalse(filtered.Any(r => r.Id == 20), "Removing Item #20 should no longer show up in the filtered collection");
 			Assert.IsFalse(model.Any(r => r.Id == 20), "Removing Item #20 should no longer be in the model");
+
+			// ensure they are not in the filter collection after removing the sort
+			filtered.Sort = null;
+			Assert.IsFalse(filtered.Any(r => r.Id == 19), "Item #19 should not be in the list");
+			Assert.IsFalse(filtered.Any(r => r.Id == 20), "Item #20 should not be in the list");
 		}
 
 		[Test]
@@ -134,6 +139,12 @@ namespace Eto.Test.UnitTests.Forms
 			model.Remove(model.First(r => r.Id == 60));
 			Assert.IsFalse(filtered.Any(r => r.Id == 60), "Removing Item #60 should no longer show up in the filtered collection");
 			Assert.IsFalse(model.Any(r => r.Id == 60), "Removing Item #60 should no longer be in the model");
+
+			// ensure they are not in the filter collection after removing the filter
+			filtered.Filter = null;
+			Assert.IsFalse(filtered.Any(r => r.Id == 20), "Item #20 should not be in the list");
+			Assert.IsFalse(filtered.Any(r => r.Id == 30), "Item #30 should not be in the list");
+			Assert.IsFalse(filtered.Any(r => r.Id == 60), "Item #60 should not be in the list");
 		}
 
 		[Test]
@@ -210,6 +221,130 @@ namespace Eto.Test.UnitTests.Forms
 			Assert.AreEqual(filtered[filterInsertIndex].Id, 1001, "#7 Item with odd number should be inserted at the specified index");
 			Assert.AreEqual(filtered.IndexOf(item), filterInsertIndex, "#8 Item should be in the filtered list at the insert location");
 			Assert.AreEqual(model.IndexOf(filtered[filterInsertIndex + 1]) - 1, model.IndexOf(item), "#9 Item should be inserted right before item at filter location");
+
+			// ensure they are in the filter collection after the filter changes.
+			filtered.Filter = null;
+			Assert.IsTrue(filtered.Any(r => r.Id == 1000), "Item #1000 should be in the list");
+			Assert.IsTrue(filtered.Any(r => r.Id == 1001), "Item #1001 should be in the list");
+		}
+
+		[Test]
+		public void InsertIntoParentWhileFilteredShouldKeepSameIndecies()
+		{
+			var model = GridViewUtils.CreateModel();
+			var filtered = new FilterCollection<DataItem>(model);
+			filtered.Filter = GridViewUtils.KeepOddItemsFilter;
+			filtered.Sort = GridViewUtils.SortItemsDescending;
+
+			NotifyCollectionChangedEventArgs changeArgs = null;
+			filtered.CollectionChanged += (sender, e) => changeArgs = e;
+
+			var item = new DataItem(1000);
+			changeArgs = null;
+			model.Insert(10, item);
+			// should not exist in filtered
+			Assert.AreEqual(-1, filtered.IndexOf(item), "#1-1 Item should NOT be in the filtered collection");
+			Assert.IsNull(changeArgs, "#1-2 Inserting an item that doesn't match the filter shouldn't raise a change notification");
+
+			item = new DataItem(1001);
+			changeArgs = null;
+			model.Insert(11, item);
+			Assert.AreEqual(0, filtered.IndexOf(item), "#2-1 Item should be in the filtered collection");
+
+			Assert.IsNotNull(changeArgs, "#3-1 Change should have been triggered");
+			Assert.AreEqual(NotifyCollectionChangedAction.Add, changeArgs.Action, "#3-2 Item should have triggered an add notification");
+			Assert.AreEqual(0, changeArgs.NewStartingIndex, "#3-3 Index of add notification is incorrect");
+			Assert.IsNotEmpty(changeArgs.NewItems, "#3-4 New items of change event should not be empty");
+			Assert.AreEqual(1001, ((DataItem)changeArgs.NewItems[0]).Id, "#3-5 New item of notification is not correct");
+
+			filtered.Filter = null;
+			filtered.Sort = null;
+
+			// should be in the same inserted position in the source model
+			Assert.AreEqual(1000, filtered[10].Id, "#4-1 Item 1000 was not inserted in the correct location");
+			Assert.AreEqual(1001, filtered[11].Id, "#4-2 Item 1001 was not inserted in the correct location");
+			Assert.AreEqual(model.Count, filtered.Count, "#4-3 Count in filtered does not match model");
+		}
+
+		[Test]
+		public void RemoveFromParentWhileFilteredShouldBeRemoved()
+		{
+			var model = GridViewUtils.CreateModel();
+
+			var filtered = new FilterCollection<DataItem>(model);
+			filtered.Filter = GridViewUtils.KeepOddItemsFilter;
+			filtered.Sort = GridViewUtils.SortItemsDescending;
+
+			NotifyCollectionChangedEventArgs changeArgs = null;
+			filtered.CollectionChanged += (sender, e) => changeArgs = e;
+
+			var itemToRemove1 = model[10];
+			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove1), "#1-1 Item should NOT be in the filtered collection");
+			changeArgs = null;
+			model.RemoveAt(10);
+			Assert.IsNull(changeArgs, "#1-2 Change should not have been triggered");
+			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove1), "#1-3 Item should NOT be in the filtered collection");
+
+			var itemToRemove2 = model[10];
+			Assert.AreEqual(44, filtered.IndexOf(itemToRemove2), "#2-1 Item should be in the filtered collection");
+			changeArgs = null;
+			model.Remove(itemToRemove2);
+			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove2), "#2-2 Item should NOT be in the filtered collection");
+
+			// verify change notification
+			Assert.IsNotNull(changeArgs, "#3-1 Change should have been triggered");
+			Assert.AreEqual(NotifyCollectionChangedAction.Remove, changeArgs.Action, "#3-2 Item should have triggered a remove notification");
+			Assert.AreEqual(44, changeArgs.OldStartingIndex, "#3-3 Index of remove notification is incorrect");
+			Assert.IsNotEmpty(changeArgs.OldItems, "#3-4 Old items of change event should not be empty");
+			Assert.AreEqual(11, ((DataItem)changeArgs.OldItems[0]).Id, "#3-5 Old item of notification is not correct");
+
+
+			filtered.Filter = null;
+			Assert.AreEqual(NotifyCollectionChangedAction.Reset, changeArgs.Action, "#4 Changing filter should send a reset notification");
+			filtered.Sort = null;
+
+			// should be in the same inserted position in the source model
+			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove1), "#5-1 Item should NOT be in the filtered collection");
+			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove2), "#5-2 Item should NOT be in the filtered collection");
+			Assert.AreEqual(model.Count, filtered.Count, "#5-3 Count in filtered does not match model");
+		}
+
+		[Test]
+		public void AddFromSourceWhileFilteredShouldAddCorrectly()
+		{
+			var model = GridViewUtils.CreateModel();
+			var filtered = new FilterCollection<DataItem>(model);
+			filtered.Filter = GridViewUtils.KeepOddItemsFilter;
+			filtered.Sort = GridViewUtils.SortItemsDescending;
+
+			NotifyCollectionChangedEventArgs changeArgs = null;
+			filtered.CollectionChanged += (sender, e) => changeArgs = e;
+
+			var item = new DataItem(1000);
+			changeArgs = null;
+			model.Add(item);
+			// should not exist in filtered
+			Assert.AreEqual(-1, filtered.IndexOf(item), "#1-1 Item should NOT be in the filtered collection");
+			Assert.IsNull(changeArgs, "#1-2 Inserting an item that doesn't match the filter shouldn't raise a change notification");
+
+			item = new DataItem(1001);
+			changeArgs = null;
+			model.Add(item);
+			Assert.AreEqual(0, filtered.IndexOf(item), "#2-1 Item should be in the filtered collection");
+
+			Assert.IsNotNull(changeArgs, "#3-1 Change should have been triggered");
+			Assert.AreEqual(NotifyCollectionChangedAction.Add, changeArgs.Action, "#3-2 Item should have triggered an add notification");
+			Assert.AreEqual(0, changeArgs.NewStartingIndex, "#3-3 Index of add notification is incorrect");
+			Assert.IsNotEmpty(changeArgs.NewItems, "#3-4 New items of change event should not be empty");
+			Assert.AreEqual(1001, ((DataItem)changeArgs.NewItems[0]).Id, "#3-5 New item of notification is not correct");
+
+			filtered.Filter = null;
+			filtered.Sort = null;
+
+			// should be in the same inserted position in the source model
+			Assert.AreEqual(model.Count, filtered.Count, "#4-3 Count in filtered does not match model");
+			Assert.AreEqual(1000, filtered[filtered.Count - 2].Id, "#4-1 Item 1000 was not added in the correct location");
+			Assert.AreEqual(1001, filtered[filtered.Count - 1].Id, "#4-2 Item 1001 was not added in the correct location");
 		}
 	}
 }
