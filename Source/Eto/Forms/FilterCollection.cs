@@ -396,6 +396,7 @@ namespace Eto.Forms
 		EnumerableChangedHandler<T> changedHandler;
 		IList<T> externalList;
 		bool updating;
+		UpdateObject updateObject;
 
 		/// <summary>
 		/// Gets the underlying list of items that the filtered collection is based off.
@@ -558,35 +559,35 @@ namespace Eto.Forms
 			}
 		}
 
-		void ExternalUpdate(Action action)
+		class UpdateObject : IDisposable
 		{
-			// don't update the list as we're responding to its changes
-			var oldList = externalList;
-			externalList = null;
-			action();
-			externalList = oldList;
-		}
-
-		void Update(Action action)
-		{
-			using (CreateChange())
+			FilterCollection<T> parent;
+			IDisposable change;
+			public void Dispose()
 			{
-				// don't respond to external list updates, if any
-				updating = true;
-				action();
-				updating = false;
+				parent.updating = false;
+				change?.Dispose();
+				change = null;
+			}
+
+			public UpdateObject(FilterCollection<T> parent)
+			{
+				this.parent = parent;
+			}
+
+			public void Start()
+			{
+				parent.updating = true;
+				change = parent.CreateChange();
 			}
 		}
 
-		TResult Update<TResult>(Func<TResult> action)
+		IDisposable Update()
 		{
-			using (CreateChange())
-			{
-				updating = true;
-				var result = action();
-				updating = false;
-				return result;
-			}
+			if (updateObject == null)
+				updateObject = new UpdateObject(this);
+			updateObject.Start();
+			return updateObject;
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<T>
@@ -626,12 +627,14 @@ namespace Eto.Forms
 				using (List.CreateChange())
 				{
 					List.items.Add(item);
-
-					List.Rebuild();
-					var filtered = List.filtered;
-					var index = filtered != null ? filtered.IndexOf(item) : List.items.Count - 1;
-					if (index >= 0)
-						List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+					var matches = List.filter?.Invoke(item) != false;
+					if (matches)
+					{
+						List.Rebuild();
+						var filteredIndex = List.filtered?.IndexOf(item) ?? List.items.Count - 1;
+						if (filteredIndex >= 0)
+							List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, filteredIndex));
+					}
 				}
 			}
 
@@ -639,34 +642,49 @@ namespace Eto.Forms
 			{
 				if (List.updating)
 					return;
-				if (index == List.items.Count)
+				using (List.CreateChange())
 				{
-					AddItem(item);
-					return;
+					List.items.Insert(index, item);
+					var matches = List.filter?.Invoke(item) != false;
+					if (matches)
+					{
+						List.Rebuild();
+
+						var filteredIndex = List.filtered?.IndexOf(item) ?? index;
+						if (filteredIndex >= 0)
+							List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, filteredIndex));
+					}
 				}
-				var filtered = List.filtered;
-				if (filtered != null)
-					index = filtered.IndexOf(List.items[index]);
-				if (index >= 0)
-					List.ExternalUpdate(() => List.Insert(index, item));
 			}
 
 			public override void RemoveItem(int index)
 			{
 				if (List.updating)
 					return;
-				var filtered = List.filtered;
-				if (filtered != null)
-					index = filtered.IndexOf(List.items[index]);
-				if (index >= 0)
-					List.ExternalUpdate(() => List.RemoveAt(index));
+				using (List.CreateChange())
+				{
+					var item = List.items[index];
+					var filteredIndex = List.filtered?.IndexOf(item) ?? index;
+
+					List.items.RemoveAt(index);
+					if (filteredIndex >= 0)
+					{
+						List.Rebuild();
+						List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, filteredIndex));
+					}
+				}
 			}
 
 			public override void RemoveAllItems()
 			{
 				if (List.updating)
 					return;
-				List.ExternalUpdate(List.Clear);
+				using (List.CreateChange())
+				{
+					List.items.Clear();
+					List.filtered?.Clear();
+					List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				}
 			}
 		}
 
@@ -692,7 +710,7 @@ namespace Eto.Forms
 				InsertRange(Count, items);
 			else
 			{
-				Update(() =>
+				using (Update())
 				{
 					var itemList = items.ToList();
 					this.items.AddRange(itemList);
@@ -704,7 +722,7 @@ namespace Eto.Forms
 						}
 					}
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-				});
+				}
 			}
 		}
 
@@ -719,7 +737,7 @@ namespace Eto.Forms
 		/// <param name="items">Items to add to the collection.</param>
 		public void InsertRange(int index, IEnumerable<T> items)
 		{
-			Update(() =>
+			using (Update())
 			{
 				if (filtered != null)
 				{
@@ -771,7 +789,7 @@ namespace Eto.Forms
 					InsertItemRange(index, items);
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 				}
-			});
+			}
 		}
 
 		#region IList<T> implementation
@@ -793,7 +811,7 @@ namespace Eto.Forms
 		/// <param name="item">Item to insert.</param>
 		public virtual void Insert(int index, T item)
 		{
-			Update(() =>
+			using (Update())
 			{
 				if (filtered != null)
 				{
@@ -825,7 +843,7 @@ namespace Eto.Forms
 						externalList.Insert(index, item);
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 				}
-			});
+			}
 		}
 
 		/// <summary>
@@ -834,7 +852,7 @@ namespace Eto.Forms
 		/// <param name="index">Index of the item to remove.</param>
 		public virtual void RemoveAt(int index)
 		{
-			Update(() =>
+			using (Update())
 			{
 				if (filtered != null)
 				{
@@ -853,7 +871,7 @@ namespace Eto.Forms
 						externalList.RemoveAt(index);
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
 				}
-			});
+			}
 		}
 
 		/// <summary>
@@ -865,7 +883,7 @@ namespace Eto.Forms
 			get { return filtered != null ? filtered[index] : items[index]; }
 			set
 			{
-				Update(() =>
+				using (Update())
 				{
 					var oldIndex = index;
 					var oldItem = this[index];
@@ -891,7 +909,7 @@ namespace Eto.Forms
 						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem, oldIndex));
 						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, index));
 					}
-				});
+				}
 			}
 		}
 
@@ -905,7 +923,7 @@ namespace Eto.Forms
 		/// <param name="item">Item to add.</param>
 		public virtual void Add(T item)
 		{
-			Update(() =>
+			using (Update())
 			{
 				items.Add(item);
 				if (externalList != null)
@@ -915,7 +933,7 @@ namespace Eto.Forms
 				var index = filtered != null ? filtered.IndexOf(item) : items.Count - 1;
 				if (index >= 0)
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
-			});
+			}
 		}
 
 		/// <summary>
@@ -923,7 +941,7 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void Clear()
 		{
-			Update(() =>
+			using (Update())
 			{
 				items.Clear();
 				if (externalList != null)
@@ -931,7 +949,7 @@ namespace Eto.Forms
 				if (filtered != null)
 					filtered.Clear();
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-			});
+			}
 		}
 
 		/// <summary>
@@ -952,6 +970,8 @@ namespace Eto.Forms
 		{
 			if (filtered != null)
 				filtered.CopyTo(array, arrayIndex);
+			else
+				items.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>
@@ -960,7 +980,7 @@ namespace Eto.Forms
 		/// <param name="item">Item to remove.</param>
 		public virtual bool Remove(T item)
 		{
-			return Update(() =>
+			using (Update())
 			{
 				var index = IndexOf(item);
 				if (items.Remove(item))
@@ -974,7 +994,7 @@ namespace Eto.Forms
 					return true;
 				}
 				return false;
-			});
+			}
 		}
 
 		/// <summary>
@@ -1064,7 +1084,8 @@ namespace Eto.Forms
 
 		void ICollection.CopyTo(Array array, int index)
 		{
-			throw new NotImplementedException();
+			var collection = filtered ?? items;
+			((ICollection)collection).CopyTo(array, index);
 		}
 
 		bool ICollection.IsSynchronized
