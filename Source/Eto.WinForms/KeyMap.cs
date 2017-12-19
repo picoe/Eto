@@ -3,9 +3,17 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+#if WPF
+namespace Eto.Wpf
+#else
 namespace Eto.WinForms
+#endif
 {
+#if WPF
+	public static class KeyMapWinForms
+#else
 	public static class KeyMap
+#endif
 	{
 		static Dictionary<swf.Keys, Keys> _map;
 		static Dictionary<Keys, swf.Keys> _inverseMap;

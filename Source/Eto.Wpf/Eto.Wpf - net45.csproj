@@ -82,11 +82,17 @@
     <Compile Include="..\Eto.WinForms\CustomControls\TreeController.cs">
       <Link>CustomControls\TreeGridView\TreeController.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.WinForms\KeyMap.cs">
+      <Link>WinForms\KeyMap.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.WinForms\Win32.cs">
       <Link>Win32.cs</Link>
     </Compile>
     <Compile Include="..\Eto.WinForms\Win32.dpi.cs">
       <Link>Win32.dpi.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.WinForms\WinConversions.shared.cs">
+      <Link>WinConversions.shared.cs</Link>
     </Compile>
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
@@ -112,6 +118,7 @@
     <Compile Include="Forms\PerMonitorDpiHelper.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="Forms\VistaSelectFolderDialogHandler.cs" />
+    <Compile Include="Forms\WindowsFormsHostHandler.cs" />
     <Compile Include="Win32.dib.cs" />
     <Compile Include="WpfConversions.cs" />
     <Compile Include="CustomControls\EditableTextBlock.cs" />
