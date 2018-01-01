@@ -40,6 +40,7 @@ namespace Eto.Mac.Forms
 	{
 		Button defaultButton;
 		ModalEventArgs session;
+		const int BUTTON_PADDING = 2; 
 
 		protected override bool DisposeControl { get { return false; } }
 
@@ -83,6 +84,7 @@ namespace Eto.Mac.Forms
 					buttonSize.Width += preferredSize.Width;
 					buttonSize.Height = Math.Max(buttonSize.Height, preferredSize.Height);
 				}
+				buttonSize.Height += BUTTON_PADDING;
 			}
 			return buttonSize;
 		}
@@ -93,7 +95,7 @@ namespace Eto.Mac.Forms
 
 			var buttonSize = GetButtonSize(availableSize);
 			size.Width = Math.Max(size.Width, buttonSize.Width);
-			size.Height += buttonSize.Height + 2;
+			size.Height += buttonSize.Height;
 
 			return size;
 		}
