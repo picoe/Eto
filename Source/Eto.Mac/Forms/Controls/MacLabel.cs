@@ -75,12 +75,7 @@ namespace Eto.Mac.Forms.Controls
 			nfloat offset = 0;
 			if (VerticalAlignment == VerticalAlignment.Center)
 			{
-				//var lineHeight = (nfloat)Font.LineHeight();
-				var lineHeight = AttributedStringValue.BoundingRect(theRect.Size, NSStringDrawingOptions.UsesLineFragmentOrigin).Size.Height;
-				//var lineHeight = CellSizeForBounds(theRect).Height;
-				//lineHeight += Font.Descender;
-				//var lineHeight = Math.Ceiling(Font.Ascender + Font.Leading + 1);
-				//var lineHeight = Font.PointSize;
+				var lineHeight = CellSizeForBounds(theRect).Height;
 				offset = (nfloat)Math.Round((theRect.Height - lineHeight) / 2.0F);
 			}
 			else if (VerticalAlignment == VerticalAlignment.Bottom)
@@ -136,6 +131,7 @@ namespace Eto.Mac.Forms.Controls
 		readonly NSMutableParagraphStyle paragraphStyle;
 		int underlineIndex;
 		SizeF availableSizeCached;
+		SizeF lastSize;
 		const NSStringDrawingOptions DrawingOptions = NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin;
 
 		static MacLabel()
@@ -147,6 +143,10 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
+			if (Widget.Loaded && Wrap != WrapMode.None && Size.Width > 0 && availableSize.Width < int.MaxValue)
+				availableSize.Width = Math.Max(Size.Width, availableSize.Width);
+
+			availableSize = new SizeF((float)Math.Truncate(availableSize.Width), (float)Math.Truncate(availableSize.Height));
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
 				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSize.ToNS())).ToEto();
@@ -155,6 +155,20 @@ namespace Eto.Mac.Forms.Controls
 			}
 
 			return NaturalSize.Value;
+		}
+
+		public override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+			var size = Size;
+			if (Wrap != WrapMode.None && lastSize != size)
+			{
+				// when wrapping we use the current size, if it changes we check if we need another layout pass
+				// this is needed when resizing a form/label so it can wrap correctly as GetNaturalSize()
+				// will use the old size first, and won't necessarily know the final size of the label.
+				lastSize = size;
+				LayoutIfNeeded();
+			}
 		}
 
 		protected MacLabel()
@@ -173,6 +187,7 @@ namespace Eto.Mac.Forms.Controls
 				Control.Cell.UsesSingleLineMode = false;
 
 			base.Initialize();
+			HandleEvent(Eto.Forms.Control.SizeChangedEvent);
 		}
 
 		protected override TControl CreateControl()
@@ -287,6 +302,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				paragraphStyle.Alignment = value.ToNS();
 				SetAttributes();
+				LayoutIfNeeded();
 			}
 		}
 
@@ -334,7 +350,8 @@ namespace Eto.Mac.Forms.Controls
 					var range = new NSRange(0, (int)str.Length);
 					var attr = new NSMutableDictionary();
 					Widget.Properties.Get<Font>(FontKey).Apply(attr);
-					attr.Add(NSStringAttributeKey.ParagraphStyle, paragraphStyle);
+					// need a copy of the paragraph style otherwise they don't get applied correctly when changed
+					attr.Add(NSStringAttributeKey.ParagraphStyle, (NSParagraphStyle)paragraphStyle.Copy());
 					var col = CurrentColor;	
 					if (col != null)
 						attr.Add(NSStringAttributeKey.ForegroundColor, col);
