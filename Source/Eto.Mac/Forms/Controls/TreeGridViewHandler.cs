@@ -36,20 +36,27 @@ using CGPoint = System.Drawing.PointF;
 #if XAMMAC
 using nnint = System.Int32;
 using nnint2 = System.Int32;
+#if XAMMAC2
+using nnuint = System.UInt32;
+#else
+using nnuint = System.Int32;
+#endif
 #elif Mac64
 using nnint = System.UInt64;
 using nnint2 = System.Int64;
+using nnuint = System.UInt64;
 #else
 using nnint = System.UInt32;
 using nnint2 = System.Int32;
+using nnuint = System.UInt32;
 #endif
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<NSOutlineView, TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, IDataViewHandler
+	public class TreeGridViewHandler : GridHandler<TreeGridViewHandler.EtoOutlineView, TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, IDataViewHandler
 	{
 		ITreeGridStore<ITreeGridItem> store;
-		readonly Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem>();
+		readonly Dictionary<object, EtoTreeItem> cachedItems = new Dictionary<object, EtoTreeItem>();
 		readonly Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem>();
 		int suppressExpandCollapseEvents;
 		int skipSelectionChanged;
@@ -109,14 +116,28 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool ShouldEditTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
-				var colHandler = Handler.GetColumn(tableColumn);
-				var etoItem = (item as EtoTreeItem)?.Item;
-				var row = Handler.Control.RowForItem(item);
+				var h = Handler;
+				if (h == null)
+					return false;
+				var colHandler = h.GetColumn(tableColumn);
+				var etoItem = h.GetEtoItem(item);
+				var row = h.Control.RowForItem(item);
 
 				var args = new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item);
-				Handler.Callback.OnCellEditing(Handler.Widget, args);
-				Handler.SetIsEditing(true);
+				h.Callback.OnCellEditing(h.Widget, args);
+				h.SetIsEditing(true);
 				return true;
+			}
+
+			public override void SelectionIsChanging(NSNotification notification)
+			{
+				var theEvent = NSApplication.SharedApplication.CurrentEvent;
+				if (theEvent.ButtonMask != 0)
+				{
+					// user is dragging the mouse, fire mouse move notifications
+					var args = MacConversions.GetMouseEvent(Handler.ContainerControl, theEvent, false);
+
+				}
 			}
 
 			public override void SelectionDidChange(NSNotification notification)
@@ -139,14 +160,14 @@ namespace Eto.Mac.Forms.Controls
 				var h = Handler;
 				if (h.suppressExpandCollapseEvents > 0)
 					return;
-				var myitem = notification.UserInfo[(NSString)"NSObject"] as EtoTreeItem;
+				var myitem = h.GetEtoItem(notification.UserInfo[(NSString)"NSObject"]);
 				if (myitem != null)
 				{
-					myitem.Item.Expanded = false;
-					h.Callback.OnCollapsed(h.Widget, new TreeGridViewItemEventArgs(myitem.Item));
+					myitem.Expanded = false;
+					h.Callback.OnCollapsed(h.Widget, new TreeGridViewItemEventArgs(myitem));
 					if (collapsedItemIsSelected == true)
 					{
-						h.SelectedItem = myitem.Item;
+						h.SelectedItem = myitem;
 						collapsedItemIsSelected = null;
 						h.skipSelectionChanged = 0;
 					}
@@ -158,10 +179,10 @@ namespace Eto.Mac.Forms.Controls
 				var h = Handler;
 				if (h.suppressExpandCollapseEvents > 0)
 					return true;
-				var myitem = item as EtoTreeItem;
+				var myitem = h.GetEtoItem(item);
 				if (myitem != null)
 				{
-					var args = new TreeGridViewItemCancelEventArgs(myitem.Item);
+					var args = new TreeGridViewItemCancelEventArgs(myitem);
 					h.Callback.OnExpanding(h.Widget, args);
 					return !args.Cancel;
 				}
@@ -173,14 +194,14 @@ namespace Eto.Mac.Forms.Controls
 				var h = Handler;
 				if (h.suppressExpandCollapseEvents > 0)
 					return true;
-				var myitem = item as EtoTreeItem;
+				var myitem = h.GetEtoItem(item);
 				if (myitem != null)
 				{
-					var args = new TreeGridViewItemCancelEventArgs(myitem.Item);
+					var args = new TreeGridViewItemCancelEventArgs(myitem);
 					h.Callback.OnCollapsing(h.Widget, args);
 					if (!args.Cancel && !h.AllowMultipleSelection)
 					{
-						collapsedItemIsSelected = h.ChildIsSelected(myitem.Item);
+						collapsedItemIsSelected = h.ChildIsSelected(myitem);
 						if (collapsedItemIsSelected == true)
 							h.skipSelectionChanged = 1;
 					}
@@ -197,15 +218,16 @@ namespace Eto.Mac.Forms.Controls
 				var h = Handler;
 				if (h.suppressExpandCollapseEvents > 0)
 					return;
-				var myitem = notification.UserInfo[(NSString)"NSObject"] as EtoTreeItem;
+				var item = notification.UserInfo[(NSString)"NSObject"];
+				var myitem = h.GetEtoItem(item);
 				if (myitem != null)
 				{
-					myitem.Item.Expanded = true;
+					myitem.Expanded = true;
 					h.suppressExpandCollapseEvents++;
-					h.ExpandItems(myitem);
+					h.ExpandItems(item);
 					h.suppressExpandCollapseEvents--;
-					h.Callback.OnExpanded(h.Widget, new TreeGridViewItemEventArgs(myitem.Item));
-					h.AutoSizeColumns(true);
+					h.Callback.OnExpanded(h.Widget, new TreeGridViewItemEventArgs(myitem));
+					Application.Instance.AsyncInvoke(() => h.AutoSizeColumns(true));
 				}
 			}
 
@@ -263,8 +285,8 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool ItemExpandable(NSOutlineView outlineView, NSObject item)
 			{
-				var myitem = item as EtoTreeItem;
-				return myitem != null && myitem.Item.Expandable;
+				var myitem = Handler.GetEtoItem(item);
+				return myitem != null && myitem.Expandable;
 			}
 
 			public override NSObject GetChild(NSOutlineView outlineView, nint childIndex, NSObject item)
@@ -287,14 +309,143 @@ namespace Eto.Mac.Forms.Controls
 
 			public override nint GetChildrenCount(NSOutlineView outlineView, NSObject item)
 			{
-				if (Handler.store == null)
+				var h = Handler;
+				if (h.store == null)
 					return 0;
 
 				if (item == null)
-					return Handler.store.Count;
+					return h.store.Count;
 
-				var myitem = item as EtoTreeItem;
-				return ((ITreeGridStore<ITreeGridItem>)myitem.Item).Count;
+				var myitem = h.GetEtoItem(item) as ITreeGridStore<ITreeGridItem>;
+				return myitem?.Count ?? 0;
+			}
+
+			public override NSDragOperation ValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, NSObject item, nint index)
+			{
+				var h = Handler;
+				if (h == null)
+					return NSDragOperation.None;
+				var etoInfo = GetDragInfo(info, item, index);
+				var e = h.GetDragEventArgs(info, etoInfo);
+				h.Callback.OnDragOver(h.Widget, e);
+				if (e.AllowedEffects.HasFlag(e.Effects))
+				{
+					if (etoInfo.Position == GridDragPosition.Over)
+						outlineView.SetDropItem(h.GetCachedItem(etoInfo.Item), -1);
+					else
+						outlineView.SetDropItem(h.GetCachedItem(etoInfo.Parent), etoInfo.InsertIndex);
+
+					return e.Effects.ToNS();
+				}
+				else 
+					return NSDragOperation.None;
+			}
+
+			static Selector selGetChildIndex = new Selector("childIndexForItem:");
+
+			TreeGridViewDragInfo GetDragInfo(NSDraggingInfo info, NSObject item, nint index)
+			{
+				var h = Handler;
+				var outlineView = h.Control;
+				var position = GridDragPosition.Over;
+				int? childIndex;
+				object etoitem;
+				object parent;
+
+				if (index != -1)
+				{
+					childIndex = (int)index;
+					var row = outlineView.GetRow(outlineView.ConvertPointFromView(info.DraggingLocation, null));
+
+					var nchildren = outlineView.DataSource.GetChildrenCount(outlineView, item);
+					if (nchildren > 0)
+					{
+						if (index == nchildren)
+						{
+							position = GridDragPosition.After;
+							var childItem = outlineView.DataSource.GetChild(outlineView, nchildren - 1, item);
+							etoitem = h.GetEtoItem(childItem);
+							childIndex = (int)nchildren - 1;
+						}
+						else
+						{
+							var childItem = outlineView.DataSource.GetChild(outlineView, index, item);
+							var itemRow = outlineView.RowForItem(childItem);
+							if (itemRow > row)
+							{
+								if (index > 0)
+								{
+									childItem = outlineView.DataSource.GetChild(outlineView, index - 1, item);
+									if (outlineView.RespondsToSelector(selGetChildIndex)) // 10.11+
+										childIndex = (int?)outlineView.GetChildIndex(childItem);
+									else
+										childIndex = null;
+								}
+								else
+								{
+									childItem = null;
+									childIndex = -1;
+								}
+								position = GridDragPosition.After;
+							}
+							else
+							{
+								position = GridDragPosition.Before;
+							}
+
+							etoitem = h.GetEtoItem(childItem);
+						}
+					}
+					else
+						etoitem = null;
+					parent = h.GetEtoItem(item);
+				}
+				else
+				{
+					if (item == null)
+						childIndex = -1;
+					else if (outlineView.RespondsToSelector(selGetChildIndex)) // 10.11+
+						childIndex = (int?)outlineView.GetChildIndex(item);
+					else
+						childIndex = null;
+					
+					etoitem = h.GetEtoItem(item);
+					parent = (etoitem as ITreeGridItem)?.Parent;
+				}
+				return new TreeGridViewDragInfo(h.Widget, parent, etoitem, childIndex, position);
+			}
+
+			public override bool AcceptDrop(NSOutlineView outlineView, NSDraggingInfo info, NSObject item, nint index)
+			{
+				var h = Handler;
+				if (h == null)
+					return false;
+				var e = h.GetDragEventArgs(info, GetDragInfo(info, item, index));
+				h.Callback.OnDragLeave(h.Widget, e);
+				h.Callback.OnDragDrop(h.Widget, e);
+				return true;
+			}
+
+			public override bool OutlineViewwriteItemstoPasteboard(NSOutlineView outlineView, NSArray items, NSPasteboard pboard)
+			{
+				var h = Handler;
+				if (h == null)
+					return false;
+
+				if (h.IsMouseDragging)
+				{
+					h.Control.AllowedOperation = null;
+					// give MouseMove event a chance to start the drag
+					h.DragPasteboard = pboard;
+					h.CustomSelectedItems = GetItems(items).ToList();
+					var args = MacConversions.GetMouseEvent(h.ContainerControl, NSApplication.SharedApplication.CurrentEvent, false);
+					h.Callback.OnMouseMove(h.Widget, args);
+					h.DragPasteboard = null;
+					h.CustomSelectedItems = null;
+					return h.Control.AllowedOperation != null;
+				}
+
+				return false;
 			}
 		}
 
@@ -306,6 +457,14 @@ namespace Eto.Mac.Forms.Controls
 			{
 				get { return WeakHandler.Target as TreeGridViewHandler; }
 				set { WeakHandler = new WeakReference(value); }
+			}
+
+			public NSDragOperation? AllowedOperation { get; set; }
+
+			[Export("draggingSession:sourceOperationMaskForDraggingContext:")]
+			public NSDragOperation DraggingSessionSourceOperationMask(NSDraggingSession session, IntPtr context)
+			{
+				return AllowedOperation ?? NSDragOperation.None;
 			}
 
 			public override void MouseDown(NSEvent theEvent)
@@ -334,7 +493,9 @@ namespace Eto.Mac.Forms.Controls
 						else
 							handler.Callback.OnCellClick(handler.Widget, cellArgs);
 					}
+					handler.IsMouseDragging = true;
 					base.MouseDown(theEvent);
+					handler.IsMouseDragging = false;
 
 					// NSOutlineView uses an event loop and MouseUp() does not get called
 					handler.Callback.OnMouseUp(handler.Widget, args);
@@ -354,6 +515,8 @@ namespace Eto.Mac.Forms.Controls
 				AllowsColumnReordering = false;
 				FocusRingType = NSFocusRingType.None;
 				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
+				SetDraggingSourceOperationMask(NSDragOperation.All, true);
+				SetDraggingSourceOperationMask(NSDragOperation.All, false);
 			}
 		}
 
@@ -390,6 +553,10 @@ namespace Eto.Mac.Forms.Controls
 				case Grid.CellClickEvent:
 					// Handled in EtoOutlineView
 					break;
+				case Eto.Forms.Control.DragOverEvent:
+				case Eto.Forms.Control.DragDropEvent:
+					// handled in EtoDataSource
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -405,7 +572,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override NSOutlineView CreateControl()
+		protected override EtoOutlineView CreateControl()
 		{
 			return new EtoOutlineView(this);
 		}
@@ -437,8 +604,10 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		EtoTreeItem GetCachedItem(ITreeGridItem item)
+		EtoTreeItem GetCachedItem(object item)
 		{
+			if (ReferenceEquals(item, null))
+				return null;
 			EtoTreeItem myitem;
 			return cachedItems.TryGetValue(item, out myitem) ? myitem : null;
 		}
@@ -629,17 +798,33 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public IEnumerable<object> SelectedItems
+		public IEnumerable<object> SelectedItems => CustomSelectedItems ?? SelectedItemsFromRows();
+
+		public override IEnumerable<int> SelectedRows
 		{
 			get
 			{
-				foreach (var row in Control.SelectedRows)
+				var items = CustomSelectedItems;
+				if (items != null)
+				{
+					return CustomSelectedItems.Select(r => (int)Control.RowForItem(GetCachedItem(r)));
+				}
+				return base.SelectedRows;
+			}
+			set
+			{
+				base.SelectedRows = value;
+			}
+		}
+
+		IEnumerable<object> SelectedItemsFromRows()
+		{
+			foreach (var row in Control.SelectedRows)
 				{
 					var item = Control.ItemAtRow((nnint2)row) as EtoTreeItem;
 					if (item != null)
 						yield return item.Item;
 				}
-			}
 		}
 
 		public void ReloadItem(ITreeGridItem item)
@@ -709,6 +894,52 @@ namespace Eto.Mac.Forms.Controls
 			}
 			return null;
 		}
+
+		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;
+
+
+		static readonly object DragPasteboard_Key = new object();
+
+		NSPasteboard DragPasteboard
+		{
+			get { return Widget.Properties.Get<NSPasteboard>(DragPasteboard_Key); }
+			set { Widget.Properties.Set(DragPasteboard_Key, value); }
+		}
+
+		static readonly object CustomSelectedItems_Key = new object();
+
+		IList<object> CustomSelectedItems
+		{
+			get { return Widget.Properties.Get<IList<object>>(CustomSelectedItems_Key); }
+			set { Widget.Properties.Set(CustomSelectedItems_Key, value); }
+		}
+
+		public override void DoDragDrop(DataObject data, DragEffects allowedAction)
+		{
+			if (DragPasteboard != null)
+			{
+				var handler = data.Handler as IDataObjectHandler;
+				handler?.Apply(DragPasteboard);
+				Control.AllowedOperation = allowedAction.ToNS();
+			}
+			else
+			{
+				base.DoDragDrop(data, allowedAction);
+			}
+		}
+
+		static IEnumerable<object> GetItems(NSArray items)
+		{
+			for (nnuint i = 0; i < items.Count; i++)
+			{
+				var item = items.GetItem<EtoTreeItem>(i);
+				if (item != null)
+					yield return item.Item;
+			}
+		}
+
+		ITreeGridItem GetEtoItem(NSObject item) => (item as EtoTreeItem)?.Item;
+
 	}
 }
 

@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.ComponentModel;
 using System.Text;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace Eto.WinForms.Forms
 {
@@ -204,6 +206,37 @@ namespace Eto.WinForms.Forms
 		}
 
 		public string[] Types => swf.Clipboard.GetDataObject()?.GetFormats();
+
+		public Uri[] Uris
+		{
+			get
+			{
+				return Control.ContainsFileDropList() ? Control.GetFileDropList().OfType<string>().Select(s => new Uri(s)).ToArray() : null;
+			}
+			set
+			{
+				if (value != null)
+				{
+					var files = new StringCollection();
+					files.AddRange(value.Select(r => r.AbsolutePath).ToArray());
+					Control.SetFileDropList(files);
+				}
+				else
+				{
+					Control.SetFileDropList(null);
+				}
+			}
+		}
+
+		public DataObject DataObject
+		{
+			get => swf.Clipboard.GetDataObject().ToEto();
+			set
+			{
+				Control = value.ToSwf();
+				Update();
+			}
+		}
 
 		public void Clear()
 		{

@@ -182,6 +182,68 @@ namespace Eto.GtkSharp.Forms.Controls
 			return null;
 		}
 
+
+
+		protected class GridViewConnector : GridConnector
+		{
+			GridViewDragInfo _dragInfo;
+
+			public new GridViewHandler Handler { get { return (GridViewHandler)base.Handler; } }
+
+			protected override DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null)
+			{
+				var t = Handler?.Tree;
+				GridViewDragInfo dragInfo = _dragInfo;
+				if (dragInfo == null && location != null)
+				{
+					if (t.GetDestRowAtPos((int)location.Value.X, (int)location.Value.Y, out var path, out var pos))
+					{
+						var item = Handler.model.GetItemAtPath(path);
+						var indecies = path.Indices;
+						var index = indecies[indecies.Length - 1];
+						dragInfo = new GridViewDragInfo(Handler.Widget, item, index, pos.ToEto());
+					}
+				}
+
+				return base.GetDragEventArgs(context, location, time, dragInfo);
+			}
+
+			public override void HandleDragMotion(object o, Gtk.DragMotionArgs args)
+			{
+				base.HandleDragMotion(o, args);
+
+				var h = Handler;
+				if (h == null)
+					return;
+				var info = h.GetDragInfo(DragArgs);
+				if (info == null)
+					return;
+
+				if (info.Index >= 0)
+				{
+					var path = new Gtk.TreePath(new[] { info.Index });
+					var pos = info.Position.ToGtk();
+					h.Tree.SetDragDestRow(path, pos);
+				}
+			}
+
+			public override void HandleDragDrop(object o, Gtk.DragDropArgs args)
+			{
+				// use the info from last drag if it was set
+				var info = Handler?.GetDragInfo(DragArgs);
+				if (info?.IsChanged == true)
+					_dragInfo = info;
+				base.HandleDragDrop(o, args);
+				_dragInfo = null;
+			}
+		}
+
+		protected new GridViewConnector Connector => (GridViewConnector)base.Connector;
+
+		protected override WeakConnector CreateConnector() => new GridViewConnector();
+
+		public GridViewDragInfo GetDragInfo(DragEventArgs e) => e.ControlObject as GridViewDragInfo;
+
 	}
 }
 

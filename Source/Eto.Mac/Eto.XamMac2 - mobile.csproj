@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -67,6 +67,7 @@
     <Compile Include="Forms\ApplicationHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\EtoDragSource.cs" />
     <Compile Include="Forms\FormHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -236,6 +237,7 @@
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="CrashReporter.cs" />
     <Compile Include="Forms\OpenWithDialogHandler.cs" />
+    <Compile Include="Forms\DataObjectHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

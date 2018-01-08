@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
@@ -7,6 +7,7 @@ using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using System.Linq;
 using System.Collections.Generic;
+using System.Windows.Interop;
 
 namespace Eto.Wpf.Forms
 {
@@ -265,6 +266,19 @@ namespace Eto.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
+		public bool AllowDrop
+		{
+			get
+			{
+				return Control.AllowDrop;
+			}
+
+			set
+			{
+				Control.AllowDrop = value;
+			}
+		}
+
 		public virtual void Invalidate(bool invalidateChildren)
 		{
 			Control.InvalidateVisual();
@@ -443,13 +457,129 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.LostFocusEvent:
 					HandleEvent(Eto.Forms.Control.GotFocusEvent);
 					break;
+				case Eto.Forms.Control.DragDropEvent:
+					Control.Drop += (sender, e) => HandleDrop(e, GetDragEventArgs(e, null));
+					break;
+				case Eto.Forms.Control.DragOverEvent:
+					Control.DragOver += (sender, e) => HandleDragOver(e, GetDragEventArgs(e, null));
+					break;
+				case Eto.Forms.Control.DragEnterEvent:
+					Control.DragEnter += Control_DragEnter;
+					break;
+				case Eto.Forms.Control.DragLeaveEvent:
+					Control.DragLeave += Control_DragLeave;
+					HandleEvent(Eto.Forms.Control.DragEnterEvent); // need DragEnter so it doesn't get called when going over children
+					break;
+
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
 
-		void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
+		private void Control_DragEnter(object sender, sw.DragEventArgs e)
+		{
+			IsDragLeaving = false;
+			var args = GetDragEventArgs(e, null);
+			if (!IsDragEntered)
+			{
+				IsDragEntered = true;
+				HandleDragEnter(e, args);
+			}
+			else
+			{
+				// we re-entered, treat as another drag over so we can set the proper drag effect again
+				HandleDragOver(e, args);
+			}
+		}
+
+		void Control_DragLeave(object sender, sw.DragEventArgs e)
+		{
+			if (IsDragEntered)
+			{
+				IsDragLeaving = true;
+				Control.Dispatcher.BeginInvoke(new Action(() =>
+				{
+					if (IsDragLeaving)
+					{
+						IsDragEntered = false;
+						HandleDragLeave(e, GetDragEventArgs(e, null));
+					}
+				}));
+				e.Handled = true;
+			}
+		}
+
+		static readonly object IsDragEntered_Key = new object();
+
+		bool IsDragEntered
+		{
+			get { return Widget.Properties.Get<bool>(IsDragEntered_Key); }
+			set { Widget.Properties.Set(IsDragEntered_Key, value); }
+		}
+
+		static readonly object IsDragLeaving_Key = new object();
+
+		bool IsDragLeaving
+		{
+			get { return Widget.Properties.Get<bool>(IsDragLeaving_Key); }
+			set { Widget.Properties.Set(IsDragLeaving_Key, value); }
+		}
+
+
+		protected virtual void HandleDrop(sw.DragEventArgs e, DragEventArgs args)
+		{
+			IsDragEntered = false;
+			Callback.OnDragLeave(Widget, args);
+			Callback.OnDragDrop(Widget, args);
+			e.Effects = args.Effects.ToWpf();
+			e.Handled = true;
+		}
+
+		protected virtual void HandleDragEnter(sw.DragEventArgs e, DragEventArgs args)
+		{
+			Callback.OnDragEnter(Widget, args);
+			e.Effects = args.Effects.ToWpf();
+			e.Handled = true;
+		}
+
+		protected virtual void HandleDragLeave(sw.DragEventArgs e, DragEventArgs args)
+		{
+			Callback.OnDragLeave(Widget, args);
+		}
+
+		protected virtual void HandleDragOver(sw.DragEventArgs e, DragEventArgs args)
+		{
+			Callback.OnDragOver(Widget, args);
+			e.Effects = args.Effects.ToWpf();
+			e.Handled = true;
+		}
+
+
+		protected virtual DragEventArgs GetDragEventArgs(sw.DragEventArgs data, object controlObject)
+        {
+            var dragData = (data.Data as sw.DataObject).ToEto();
+            var sourceWidget = data.Data.GetData("source");
+            var source = sourceWidget == null ? null : (Control)sourceWidget;
+			var location = data.GetPosition(Control).ToEto();
+			var modifiers = Keys.None;
+			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.AltKey))
+				modifiers |= Keys.Alt;
+			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.ControlKey))
+				modifiers |= Keys.Control;
+			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.ShiftKey))
+				modifiers |= Keys.Shift;
+			var buttons = MouseButtons.None;
+			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.LeftMouseButton))
+				buttons |= MouseButtons.Primary;
+			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.RightMouseButton))
+				buttons |= MouseButtons.Alternate;
+			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.MiddleMouseButton))
+				buttons |= MouseButtons.Middle;
+			return new DragEventArgs(source, dragData, data.AllowedEffects.ToEto(), location, modifiers, buttons, controlObject);
+        }
+
+        void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
 		{
 			var tiargs = new TextInputEventArgs(e.Text);
 			Callback.OnTextInput(Widget, tiargs);
@@ -532,7 +662,7 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		protected override void Initialize()
+        protected override void Initialize()
 		{
 			base.Initialize();
 			Control.Tag = this;
@@ -653,5 +783,13 @@ namespace Eto.Wpf.Forms
 		}
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
+
+        public void DoDragDrop(DataObject data, DragEffects allowedAction)
+        {
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+			var dataObject = data.ToWpf();
+            dataObject.SetData("source", Widget);
+            sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
+        }
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Eto.Drawing;
@@ -83,6 +84,263 @@ namespace Eto.Forms
 			Item = item;
 			Column = column;
 			ColumnIndex = columnIndex;
+		}
+	}
+
+	/// <summary>
+	/// Enumeration of the drag position relative to a node or item in a Grid.
+	/// </summary>
+	public enum GridDragPosition
+	{
+		/// <summary>
+		/// The user is dragging overtop an existing node or item.
+		/// </summary>
+		Over,
+		/// <summary>
+		/// The user is dragging to insert before a node or item.
+		/// </summary>
+		Before,
+		/// <summary>
+		/// The user is dragging to insert after a node or item.
+		/// </summary>
+		After
+	}
+
+	/// <summary>
+	/// Extra drag information when dragging to a <see cref="TreeGridView"/>.
+	/// </summary>
+	/// <remarks>
+	/// Use this information to determine where the user is dragging to, and also to change where the drag indicator will
+	/// be shown by modifying the Item and ChildIndex properties.
+	/// </remarks>
+	public class TreeGridViewDragInfo
+	{
+		object _item;
+		GridDragPosition _position;
+		int? _childIndex;
+		object _parent;
+
+		/// <summary>
+		/// Gets or sets the parent node of the <see cref="Item"/> to drag to.
+		/// </summary>
+		/// <remarks>
+		/// Normally you would only need to set <see cref="Item"/> to specify which node to drag to.
+		/// 
+		/// However, in the case of dragging to below the Parent as inserting a first child you would set Parent to the node, 
+		/// <see cref="Item"/> to null, and <see cref="Position"/> to <see cref="GridDragPosition.After"/>.
+		/// </remarks>
+		public object Parent
+		{
+			get { return _parent; }
+			set
+			{
+				if (!ReferenceEquals(_parent, value))
+				{
+					_parent = value;
+					_childIndex = null;
+					IsChanged = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the index of the <see cref="Item"/> relative to the <see cref="Parent"/>.
+		/// </summary>
+		public int ChildIndex
+		{
+			get
+			{
+				if (_childIndex == null)
+				{
+					object list = Parent ?? Control.DataStore;
+
+					var parentList = list as IList;
+					if (parentList != null)
+					{
+						_childIndex = parentList.IndexOf(_item);
+					}
+					else
+					{
+						var parentStore = list as ITreeGridStore<ITreeGridItem>;
+						if (parentStore != null)
+						{
+							for (int i = 0; i < parentStore.Count; i++)
+							{
+								if (ReferenceEquals(parentStore[i], _item))
+								{
+									_childIndex = i;
+									break;
+								}
+							}
+						}
+						else
+							_childIndex = -1;
+					}
+				}
+				return _childIndex.Value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the insertion index where the user is dragging to as a child of Item, or -1 if dragging over the Item.
+		/// </summary>
+		/// <remarks>
+		/// This is useful if the user is dragging between existing items, or the beginning or end of a child list.
+		/// </remarks>
+		/// <value>The insertion index where the user is dragging to, otherwise -1 if dragging over an item.</value>
+		public int InsertIndex
+		{
+			get
+			{
+				if (Position == GridDragPosition.Before)
+					return ChildIndex;
+				if (Position == GridDragPosition.After)
+				{
+					if (ReferenceEquals(Item, null))
+					{
+						if (ReferenceEquals(Parent, null))
+							return -1;
+						if (ChildIndex == -1)
+							return 0;
+						return ChildIndex;
+					}
+					return ChildIndex + 1;
+				}
+				return -1;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the drop should insert before, after, or over the <see cref="Item"/>.
+		/// </summary>
+		/// <remarks>
+		/// When this is Before or After, you can use the <see cref="InsertIndex"/> to determine what index to insert the 
+		/// item as a child of the <see cref="Parent"/> node.
+		/// </remarks>
+		/// <value>The position to insert the dropped item, or over.</value>
+		public GridDragPosition Position
+		{
+			get { return _position; }
+			set
+			{
+				if (_position != value)
+				{
+					_position = value;
+					IsChanged = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the parent tree control this info is for.
+		/// </summary>
+		/// <value>The parent tree for the drag info.</value>
+		public TreeGridView Control { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.TreeGridDragInfo"/> is changed.
+		/// </summary>
+		/// <remarks>
+		/// This will return true if the <see cref="InsertIndex"/> or <see cref="Parent"/> have been set.
+		/// This is useful for platform implementations to determine if the drop target has been modified.
+		/// </remarks>
+		/// <value><c>true</c> if is changed; otherwise, <c>false</c>.</value>
+		public bool IsChanged { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the item to drag to, or null if dragging below the <see cref="Parent"/> node.
+		/// </summary>
+		/// <remarks>
+		/// This specifies the target item to drag to.  Note that if <see cref="Position"/> is Before or After,
+		/// then you should use <see cref="InsertIndex"/> to insert the nodes at that specified location.
+		/// 
+		/// If you do not want to allow inserting, use <see cref="RestrictToOver"/> in the <see cref="Control.DragOver"/> event,
+		/// or you can also use <see cref="RestrictToInsert"/> to only allow inserting items.
+		/// </remarks>
+		public object Item
+		{
+			get { return _item; }
+			set
+			{
+				if (!ReferenceEquals(_item, value))
+				{
+					_item = value;
+					_parent = (_item as ITreeGridItem)?.Parent;
+					_childIndex = null;
+
+					IsChanged = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Helper to restrict to drop on top an existing item without allowing any insertion.
+		/// </summary>
+		public void RestrictToOver()
+		{
+			Item = Item ?? Parent;
+			Position = GridDragPosition.Over;
+		}
+
+		/// <summary>
+		/// Helper to restrict the drop to insert items only without allowing draging over existing items.
+		/// </summary>
+		public void RestrictToInsert()
+		{
+			if (Position == GridDragPosition.Over)
+				Position = GridDragPosition.Before;
+		}
+
+		/// <summary>
+		/// Restricts the drop to an item or a child within the specified number of levels.
+		/// </summary>
+		/// <param name="item">Item to restrict the drop to, or any of its children</param>
+		/// <param name="childLevels">Number of child levels to allow, or -1 to allow any number of levels</param>
+		/// <returns>True if the drag was restricted, or false if the user is already dragging over the specified item or its children.</returns>
+		public bool RestrictToNode(object item, int childLevels = -1)
+		{
+			var child = (Item ?? Parent) as ITreeGridItem;
+			if (ReferenceEquals(item, child) && Position != GridDragPosition.Over)
+			{
+				// already over the specified item node, force position to over
+				Position = GridDragPosition.Over;
+				return true;
+			}
+
+			// go up parent chain to ensure we're a descendent of the item node
+			while (child != null && !ReferenceEquals(item, child))
+			{
+				if (childLevels == 0)
+					break;
+				if (childLevels > 0)
+					childLevels--;
+				child = child.Parent;
+			}
+
+			// was a child of (or equal to) the item, so allow it.
+			if (ReferenceEquals(item, child))
+				return false;
+			// not a child of the specified item, so the drag will drop on the item directly
+			Item = item;
+			Position = GridDragPosition.Over;
+			return true;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Eto.Forms.TreeGridDragInfo"/> class.
+		/// </summary>
+		/// <param name="control">The parent widget that this info belongs to</param>
+		/// <param name="parent">Parent of the item dragging to.</param>
+		/// <param name="item">Item user is dragging to, or null if dragging as a child of the parent node.</param>
+		/// <param name="childIndex">Index of the item relative to the parent if known, otherwise null to determine the index when requsted.</param>
+		/// <param name="position">The position of the cursor relative to the item or parent if item is null.</param>
+		public TreeGridViewDragInfo(TreeGridView control, object parent, object item, int? childIndex, GridDragPosition position)
+		{
+			Control = control;
+			_parent = parent;
+			_childIndex = childIndex;
+			_position = position;
+			_item = item;
 		}
 	}
 
@@ -319,6 +577,15 @@ namespace Eto.Forms
 			return new TreeGridCell(item, column >= 0 ? Columns[column] : null, column);
 		}
 
+		/// <summary>
+		/// Gets the tree grid drag info for the specified DragEventArgs.
+		/// </summary>
+		/// <remarks>
+		/// Use this to get or set information about where the drop will occur.
+		/// </remarks>
+		/// <returns>The drag information.</returns>
+		/// <param name="args">Arguments to get the drag info for.</param>
+		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => Handler.GetDragInfo(args);
 
 		static readonly object callback = new Callback();
 
@@ -471,6 +738,16 @@ namespace Eto.Forms
 			/// <param name="location">Point to find the node</param>
 			/// <param name="column">Column at the location, or -1 if no column (e.g. at the end of the row)</param>
 			ITreeGridItem GetCellAt(PointF location, out int column);
+
+			/// <summary>
+			/// Gets the tree grid drag info for the specified DragEventArgs.
+			/// </summary>
+			/// <remarks>
+			/// Use this to get or set information about where the drop will occur.
+			/// </remarks>
+			/// <returns>The drag information.</returns>
+			/// <param name="args">Arguments to get the drag info for.</param>
+			TreeGridViewDragInfo GetDragInfo(DragEventArgs args);
 		}
 	}
 }

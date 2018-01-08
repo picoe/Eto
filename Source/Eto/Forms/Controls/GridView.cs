@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
@@ -86,6 +86,136 @@ namespace Eto.Forms
 			Column = column;
 			ColumnIndex = columnIndex;
 			RowIndex = rowIndex;
+		}
+	}
+
+	/// <summary>
+	/// Extra drag information when dragging to a <see cref="TreeGridView"/>.
+	/// </summary>
+	/// <remarks>
+	/// Use this information to determine where the user is dragging to, and also to change where the drag indicator will
+	/// be shown by modifying the Item and ChildIndex properties.
+	/// </remarks>
+	public class GridViewDragInfo
+	{
+		int _index;
+		object _item;
+		GridDragPosition _position;
+
+		/// <summary>
+		/// Gets or sets the item the user is dragging to.
+		/// </summary>
+		/// <value>The item.</value>
+		public object Item => _item;
+
+		/// <summary>
+		/// Gets or sets the insertion index where the user is dragging to as a child of Item, or -1 if dragging ontop of the Item.
+		/// </summary>
+		/// <remarks>
+		/// This is useful if the user is dragging inbetween existing items, or the beginning or end of a child list.
+		/// 
+		/// Only some platforms may support this property, otherwise it will always return -1.
+		/// </remarks>
+		/// <value>The insertion index where the user is dragging to, otherwise -1.</value>
+		public int Index
+		{
+			get { return _index; }
+			set
+			{
+				if (_index != value)
+				{
+					_index = value;
+					_item = null;
+					IsChanged = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the position of the ChildIndex relative to the item under the mouse cursor.
+		/// </summary>
+		/// <remarks>
+		/// When dragging between items, this will tell you if the ChildIndex specified is after or before the item under the mouse cursor.
+		/// This allows you to adjust the Item and ChildIndex.
+		/// </remarks>
+		/// <value>The position.</value>
+		public GridDragPosition Position
+		{
+			get { return _position; }
+			set
+			{
+				if (_position != value)
+				{
+					_position = value;
+					IsChanged = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the parent tree control this info is for.
+		/// </summary>
+		/// <value>The parent tree for the drag info.</value>
+		public GridView Control { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.GridDragInfo"/> is changed.
+		/// </summary>
+		/// <remarks>
+		/// This will return true if the <see cref="Index"/> or <see cref="Item"/> have been set.
+		/// This is useful for platform implementations to determine if the drop target has been modified.
+		/// </remarks>
+		/// <value><c>true</c> if is changed; otherwise, <c>false</c>.</value>
+		public bool IsChanged { get; private set; }
+
+		/// <summary>
+		/// Helper to restrict to drop on top an existing item without allowing any insertion.
+		/// </summary>
+		public void RestrictToOver()
+		{
+			Position = GridDragPosition.Over;
+		}
+
+		/// <summary>
+		/// Helper to restrict the drop to insert items only without allowing draging over existing items.
+		/// </summary>
+		public void RestrictToInsert()
+		{
+			if (Position == GridDragPosition.Over)
+				Position = GridDragPosition.Before;
+		}
+
+		/// <summary>
+		/// Gets the insertion index of drop operation, or -1 if not an insert (dragging over)
+		/// </summary>
+		/// <value>The index to insert the item.</value>
+		public int InsertIndex
+		{
+			get
+			{
+				if (Index == -1)
+					return -1;
+				if (Position == GridDragPosition.After)
+					return Index + 1;
+				if (Position == GridDragPosition.Before)
+					return Index;
+				return -1;
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Eto.Forms.GridDragInfo"/> class.
+		/// </summary>
+		/// <param name="control">The parent widget that this info belongs to</param>
+		/// <param name="item">Item user is dragging to.</param>
+		/// <param name="index">Index where the item should be inserted, or -1 if dragging ontop of item.</param>
+		/// <param name="position">The position of the cursor relative to the item under the cursor.</param>
+		public GridViewDragInfo(GridView control, object item, int index, GridDragPosition position)
+		{
+			Control = control;
+			_item = item;
+			_index = index;
+			_position = position;
 		}
 	}
 
@@ -212,6 +342,16 @@ namespace Eto.Forms
 			get { return GridLines != GridLines.None; }
 			set { GridLines = value ? GridLines.Both : GridLines.None; }
 		}
+
+		/// <summary>
+		/// Gets the grid drag info for the specified DragEventArgs.
+		/// </summary>
+		/// <remarks>
+		/// Use this to get or set information about where the drop will occur.
+		/// </remarks>
+		/// <returns>The drag information.</returns>
+		/// <param name="args">Arguments to get the drag info for.</param>
+		public GridViewDragInfo GetDragInfo(DragEventArgs args) => Handler.GetDragInfo(args);
 
 		class SelectionPreserverHelper : ISelectionPreserver
 		{
@@ -391,6 +531,16 @@ namespace Eto.Forms
 			/// <param name="row">Row under the specified location</param>
 			/// <param name="column">Column under the specified location</param>
 			object GetCellAt(PointF location, out int column, out int row);
+
+			/// <summary>
+			/// Gets the grid drag info for the specified DragEventArgs.
+			/// </summary>
+			/// <remarks>
+			/// Use this to get or set information about where the drop will occur.
+			/// </remarks>
+			/// <returns>The drag information.</returns>
+			/// <param name="args">Arguments to get the drag info for.</param>
+			GridViewDragInfo GetDragInfo(DragEventArgs args);
 		}
 	}
 }

@@ -580,6 +580,97 @@ namespace Eto.Forms
 			Handler.OnUnLoad(e);
 		}
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="DragDrop"/> event
+		/// </summary>
+		public const string DragDropEvent = "Control.DragDrop";
+
+		/// <summary>
+		/// Occurs when a drag operation is dropped onto the control.
+		/// </summary>
+		/// <remarks>
+		/// This should perform any of the actual drop logic and update the control state to reflect the dropped data.
+		/// Any cleanup should be performed in the <see cref="DragLeave"/> event, which is called immediately before this event.
+		/// </remarks>
+		public event EventHandler<DragEventArgs> DragDrop
+		{
+			add { Properties.AddHandlerEvent(DragDropEvent, value); }
+			remove { Properties.RemoveEvent(DragDropEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragDrop"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragDrop(DragEventArgs e)
+		{
+			Properties.TriggerEvent(DragDropEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="DragOver"/> event
+		/// </summary>
+		public const string DragOverEvent = "Control.DragOver";
+
+		/// <summary>
+		/// Occurs when a drag operation is over the control and needs updating based on position or keyboard state changes.
+		/// </summary>
+		public event EventHandler<DragEventArgs> DragOver
+		{
+			add { Properties.AddHandlerEvent(DragOverEvent, value); }
+			remove { Properties.RemoveEvent(DragOverEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragOver"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragOver(DragEventArgs e) => Properties.TriggerEvent(DragOverEvent, this, e);
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="DragEnter"/> event
+		/// </summary>
+		public const string DragEnterEvent = "Control.DragEnter";
+
+		/// <summary>
+		/// Occurs when a drag operation enters the bounds of the control.
+		/// </summary>
+		public event EventHandler<DragEventArgs> DragEnter
+		{
+			add { Properties.AddHandlerEvent(DragEnterEvent, value); }
+			remove { Properties.RemoveEvent(DragEnterEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragEnter"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragEnter(DragEventArgs e) => Properties.TriggerEvent(DragEnterEvent, this, e);
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="DragLeave"/> event
+		/// </summary>
+		public const string DragLeaveEvent = "Control.DragLeave";
+
+		/// <summary>
+		/// Occurs when a drag operation leaves the bounds of the control or the drag operation was completed inside the control.
+		/// </summary>
+		/// <remarks>
+		/// Use this event to 'clean up' any state of the control for the current drag operation.
+		/// This will be called before the <see cref="DragDrop"/> event.
+		/// </remarks>
+		public event EventHandler<DragEventArgs> DragLeave
+		{
+			add { Properties.AddHandlerEvent(DragLeaveEvent, value); }
+			remove { Properties.RemoveEvent(DragLeaveEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragLeave"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragLeave(DragEventArgs e) => Properties.TriggerEvent(DragLeaveEvent, this, e);
+
 		#endregion
 
 		static Control()
@@ -598,6 +689,10 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnShown(null), Control.ShownEvent);
 			EventLookup.Register<Control>(c => c.OnSizeChanged(null), Control.SizeChangedEvent);
 			EventLookup.Register<Control>(c => c.OnTextInput(null), Control.TextInputEvent);
+			EventLookup.Register<Control>(c => c.OnDragDrop(null), Control.DragDropEvent);
+			EventLookup.Register<Control>(c => c.OnDragOver(null), Control.DragOverEvent);
+			EventLookup.Register<Control>(c => c.OnDragEnter(null), Control.DragEnterEvent);
+			EventLookup.Register<Control>(c => c.OnDragLeave(null), Control.DragLeaveEvent);
 		}
 
 		/// <summary>
@@ -1147,6 +1242,25 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this control can serve as drop target.
+		/// </summary>
+		public virtual bool AllowDrop
+		{
+			get { return Handler.AllowDrop; }
+			set { Handler.AllowDrop = value; }
+		}
+
+		/// <summary>
+		/// Starts drag operation using this control as drag source.
+		/// </summary>
+		/// <param name="data">Drag data.</param>
+		/// <param name="allowedEffects">Allowed action.</param>
+		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects)
+		{
+			Handler.DoDragDrop(data, allowedEffects);
+		}
+
+		/// <summary>
 		/// Handles the disposal of this control
 		/// </summary>
 		/// <param name="disposing">True if the caller called <see cref="Widget.Dispose()"/> manually, false if being called from a finalizer</param>
@@ -1254,6 +1368,22 @@ namespace Eto.Forms
 			/// Raises the shown event.
 			/// </summary>
 			void OnShown(Control widget, EventArgs e);
+			/// <summary>
+			/// Raises the DragDrop event.
+			/// </summary>
+			void OnDragDrop(Control widget, DragEventArgs e);
+			/// <summary>
+			/// Raises the DragOver event.
+			/// </summary>
+			void OnDragOver(Control widget, DragEventArgs e);
+			/// <summary>
+			/// Raises the DragEnter event.
+			/// </summary>
+			void OnDragEnter(Control widget, DragEventArgs e);
+			/// <summary>
+			/// Raises the DragLeave event.
+			/// </summary>
+			void OnDragLeave(Control widget, DragEventArgs e);
 		}
 
 		/// <summary>
@@ -1372,6 +1502,42 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnShown(e);
+			}
+
+			/// <summary>
+			/// Raises the DragDrop event.
+			/// </summary>
+			public void OnDragDrop(Control widget, DragEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnDragDrop(e);
+			}
+
+			/// <summary>
+			/// Raises the DragOver event.
+			/// </summary>
+			public void OnDragOver(Control widget, DragEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnDragOver(e);
+			}
+
+			/// <summary>
+			/// Raises the DragEnter event.
+			/// </summary>
+			public void OnDragEnter(Control widget, DragEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnDragEnter(e);
+			}
+
+			/// <summary>
+			/// Raises the DragLeave event.
+			/// </summary>
+			public void OnDragLeave(Control widget, DragEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnDragLeave(e);
 			}
 		}
 
@@ -1618,6 +1784,18 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The visual controls.</value>
 			IEnumerable<Control> VisualControls { get; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this control can serve as drop target.
+			/// </summary>
+			bool AllowDrop { get; set; }
+
+			/// <summary>
+			/// Starts drag operation using this control as drag source.
+			/// </summary>
+			/// <param name="data">Drag data.</param>
+			/// <param name="allowedEffects">Allowed effects.</param>
+			void DoDragDrop(DataObject data, DragEffects allowedEffects);
 		}
 		#endregion
 	}

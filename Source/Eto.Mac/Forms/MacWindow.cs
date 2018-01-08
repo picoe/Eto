@@ -450,7 +450,7 @@ namespace Eto.Mac.Forms
 			var control = client as IMacControl;
 			if (control != null)
 			{
-				var childHandler = control.WeakHandler.Target as IMacViewHandler;
+				var childHandler = control.WeakHandler?.Target as IMacViewHandler;
 				if (childHandler != null)
 				{
 					var fieldEditor = childHandler.CustomFieldEditor;

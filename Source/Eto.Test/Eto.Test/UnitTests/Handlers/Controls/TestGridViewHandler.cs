@@ -238,5 +238,10 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 		{
 			throw new NotImplementedException();
 		}
+
+		public GridViewDragInfo GetDragInfo(DragEventArgs args)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

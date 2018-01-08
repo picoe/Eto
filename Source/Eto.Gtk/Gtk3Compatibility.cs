@@ -106,6 +106,10 @@ namespace Eto.GtkSharp
 		{
 			widget.ModifyFg(state.ToGtk(), color.ToGdk());
 		}
+
+		public static Gdk.Atom[] ListTargets(this Gtk.SelectionData data) => data.Targets;
+
+		public static Gdk.Atom[] ListTargets(this Gdk.DragContext context) => context.Targets;
 #else
 		public static Gtk.StateFlags ToGtk(this GtkStateFlags flags)
 		{

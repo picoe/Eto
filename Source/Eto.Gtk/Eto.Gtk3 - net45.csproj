@@ -277,8 +277,9 @@
     <Compile Include="Forms\OtherTrayIndicatorHandler.cs" />
     <Compile Include="Forms\LinuxNotificationHandler.cs" />
     <Compile Include="Forms\Controls\WebKit2WebViewHandler.cs" />
+    <Compile Include="Forms\DataObjectHandler.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
