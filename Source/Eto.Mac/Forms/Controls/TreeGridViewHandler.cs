@@ -376,10 +376,15 @@ namespace Eto.Mac.Forms.Controls
 								if (index > 0)
 								{
 									childItem = outlineView.DataSource.GetChild(outlineView, index - 1, item);
+									if (outlineView.RespondsToSelector(selGetChildIndex)) // 10.11+
+										childIndex = (int?)outlineView.GetChildIndex(childItem);
+									else
+										childIndex = null;
 								}
 								else
 								{
 									childItem = null;
+									childIndex = -1;
 								}
 								position = GridDragPosition.After;
 							}
@@ -389,12 +394,6 @@ namespace Eto.Mac.Forms.Controls
 							}
 
 							etoitem = h.GetEtoItem(childItem);
-							if (childItem == null)
-								childIndex = -1;
-							else if (outlineView.RespondsToSelector(selGetChildIndex)) // 10.11+
-								childIndex = (int?)outlineView.GetChildIndex(childItem);
-							else
-								childIndex = null;
 						}
 					}
 					else

@@ -22,7 +22,7 @@ namespace Eto.Test.Sections.Behaviors
 			var includeImageCheck = new CheckBox { Text = "Include Image" };
 			var textBox = new TextBox { Text = "Some text" };
 			var allowedEffectDropDown = new EnumDropDown<DragEffects> { SelectedValue = DragEffects.All };
-			dragOverEffect = new EnumDropDown<DragEffects> { SelectedValue = DragEffects.Link };
+			dragOverEffect = new EnumDropDown<DragEffects> { SelectedValue = DragEffects.Copy };
 
 			var htmlTextArea = new TextArea();
 			var selectFilesButton = new Button { Text = "Select Files" };

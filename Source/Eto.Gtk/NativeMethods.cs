@@ -23,7 +23,7 @@ namespace Eto.GtkSharp
 			const string plat = "";
 #endif
 			const string ext = "-0.dll";
-			const string libgobject = "libgobject-" + ver + ext;
+			const string libgobject = "libgobject-2.0" + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 			const string libgdk = "libgdk-" + plat + ver + ext;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
@@ -169,7 +169,7 @@ namespace Eto.GtkSharp
 			const string plat = "";
 #endif
 			const string ext = ".so.0";
-			const string libgobject = "libgobject-" + ver + ext;
+			const string libgobject = "libgobject-2.0" + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 			const string libgdk = "libgdk-" + plat + ver + ext;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
@@ -315,7 +315,7 @@ namespace Eto.GtkSharp
 			const string plat = "";
 #endif
 			const string ext = ".dylib";
-			const string libgobject = "libgobject-" + ver + ext;
+			const string libgobject = "libgobject-2.0" + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 			const string libgdk = "libgdk-" + plat + ver + ext;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";

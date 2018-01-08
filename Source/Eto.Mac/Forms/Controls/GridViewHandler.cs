@@ -183,13 +183,20 @@ namespace Eto.Mac.Forms.Controls
 				if (e.AllowedEffects.HasFlag(e.Effects))
 				{
 					var idx = etoInfo.Index;
-					var pos = etoInfo.Position;
-					if (pos == GridDragPosition.After)
+					if (idx >= 0)
 					{
-						pos = GridDragPosition.Before;
-						idx++;
+						var pos = etoInfo.Position;
+						if (pos == GridDragPosition.After)
+						{
+							pos = GridDragPosition.Before;
+							idx++;
+						}
+						tableView.SetDropRowDropOperation((nint)idx, pos == GridDragPosition.Over ? NSTableViewDropOperation.On : NSTableViewDropOperation.Above);
 					}
-					tableView.SetDropRowDropOperation((nint)idx, pos == GridDragPosition.Over ? NSTableViewDropOperation.On : NSTableViewDropOperation.Above);
+					else
+					{
+						tableView.SetDropRowDropOperation(-1, NSTableViewDropOperation.On);
+					}
 
 					return e.Effects.ToNS();
 				}
@@ -219,7 +226,7 @@ namespace Eto.Mac.Forms.Controls
 							row--;
 					}
 				}
-				var item = h.GetItem((int)row);
+				var item = row >= 0 ? h.GetItem((int)row) : null;
 
 				return new GridViewDragInfo(h.Widget, item, (int)row, position);
 			}
