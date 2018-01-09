@@ -13,7 +13,10 @@ namespace Eto.Test
 			sb.AppendFormat("[{0:HH:mm:ss}] ", DateTime.Now);
 			if (sender != null)
 				sb.AppendFormat("Sender: {0}, ", sender);
-			sb.AppendFormat(message, args);
+			if (args?.Length > 0)
+				sb.AppendFormat(message, args);
+			else
+				sb.Append(message);
 			sb.Append("\n");
 
 			if (Platform.Instance.IsDesktop)

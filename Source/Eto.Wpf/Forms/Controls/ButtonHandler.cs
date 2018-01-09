@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 #if WINRT
@@ -51,6 +51,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 			label = new WpfLabel
 			{
+				IsHitTestVisible = false,
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				HorizontalAlignment = sw.HorizontalAlignment.Center,
 				Padding = new sw.Thickness(3, 0, 3, 0),

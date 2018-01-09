@@ -245,6 +245,8 @@
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="CrashReporter.cs" />
     <Compile Include="Forms\OpenWithDialogHandler.cs" />
+    <Compile Include="Forms\DataObjectHandler.cs" />
+    <Compile Include="Forms\EtoDragSource.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

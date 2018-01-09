@@ -434,6 +434,11 @@ namespace Eto.GtkSharp
 			return (image?.Handler as IGtkPixbuf)?.GetPixbuf(maxSize, interpolation, shrink);
 		}
 
+		public static Image ToEto(this Gdk.Pixbuf pixbuf)
+		{
+			return new Bitmap(new BitmapHandler(pixbuf));
+		}
+
 		public static void SetCairoSurface(this Image image, Cairo.Context context, float x, float y)
 		{
 			Gdk.CairoHelper.SetSourcePixbuf(context, image.ToGdk(), x, y);
@@ -720,6 +725,93 @@ namespace Eto.GtkSharp
 			}
 		}
 
+		public static Gdk.DragAction ToGdk(this DragEffects dragAction)
+		{
+			var action = (Gdk.DragAction)0;
 
+			if (dragAction.HasFlag(DragEffects.Copy))
+				action |= Gdk.DragAction.Copy;
+
+			if (dragAction.HasFlag(DragEffects.Move))
+				action |= Gdk.DragAction.Move;
+
+			if (dragAction.HasFlag(DragEffects.Link))
+				action |= Gdk.DragAction.Link;
+
+			return action;
+		}
+
+		public static DragEffects ToEto(this Gdk.DragAction dragAction)
+		{
+			var action = DragEffects.None;
+
+			if (dragAction.HasFlag(Gdk.DragAction.Copy))
+				action |= DragEffects.Copy;
+
+			if (dragAction.HasFlag(Gdk.DragAction.Move))
+				action |= DragEffects.Move;
+
+			if (dragAction.HasFlag(Gdk.DragAction.Link))
+				action |= DragEffects.Link;
+
+			return action;
+		}
+
+		public static GridDragPosition ToEto(this Gtk.TreeViewDropPosition position)
+		{
+			switch (position)
+			{
+				case Gtk.TreeViewDropPosition.Before:
+					return GridDragPosition.Before;
+				case Gtk.TreeViewDropPosition.After:
+					return GridDragPosition.After;
+				case Gtk.TreeViewDropPosition.IntoOrBefore:
+				case Gtk.TreeViewDropPosition.IntoOrAfter:
+					return GridDragPosition.Over;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static Gtk.TreeViewDropPosition ToGtk(this GridDragPosition position)
+		{
+			switch (position)
+			{
+				case GridDragPosition.Before:
+					return Gtk.TreeViewDropPosition.Before;
+				case GridDragPosition.After:
+					return Gtk.TreeViewDropPosition.After;
+				case GridDragPosition.Over:
+					return Gtk.TreeViewDropPosition.IntoOrBefore;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Set selected uris.  Exists in newer versions of Gtk2, but not older versions so we do our own thing
+		/// </summary>
+		public static bool SetSelectedUris2(this Gtk.SelectionData data, string[] uris)
+		{
+			int length = uris?.Length ?? 0;
+			IntPtr[] array = new IntPtr[length + 1];
+			for (int i = 0; i < length; i++)
+			{
+				array[i] = GLib.Marshaller.StringToPtrGStrdup(uris[i]);
+			}
+			array[length] = IntPtr.Zero;
+			var result = NativeMethods.gtk_selection_data_set_uris(data.Handle, array);
+			for (int i = 0; i < length; i++)
+			{
+				GLib.Marshaller.Free(array[i]);
+			}
+			return result;
+		}
+
+		public static string[] GetSelectedUris(this Gtk.SelectionData data)
+		{
+			IntPtr ptr = NativeMethods.gtk_selection_data_get_uris(data.Handle);
+			return GLib.Marshaller.NullTermPtrToStringArray(ptr, true);
+		}
 	}
 }

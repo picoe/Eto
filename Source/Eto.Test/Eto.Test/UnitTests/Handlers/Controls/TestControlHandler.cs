@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.Generic;
@@ -181,7 +181,6 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			{
 				throw new NotImplementedException();
 			}
-
 			set
 			{
 				throw new NotImplementedException();
@@ -194,6 +193,27 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			{
 				throw new NotImplementedException();
 			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool AllowDrop
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		{
+			throw new NotImplementedException();
 		}
 
 		public virtual void OnShown()

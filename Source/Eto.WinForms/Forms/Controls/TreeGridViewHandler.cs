@@ -396,6 +396,8 @@ namespace Eto.WinForms.Forms.Controls
 				return null;
 			return GetItemAtRow(result.RowIndex) as ITreeGridItem;
 		}
+
+		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;
 	}
 }
 

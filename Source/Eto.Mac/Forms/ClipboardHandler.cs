@@ -34,114 +34,27 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms
 {
-	public class ClipboardHandler : WidgetHandler<NSPasteboard, Clipboard>, Clipboard.IHandler
+	public class ClipboardHandler : DataObjectHandler<Clipboard, Clipboard.ICallback>, Clipboard.IHandler
 	{
-		nint? changeCount;
+		protected override NSPasteboard CreateControl() => NSPasteboard.GeneralPasteboard;
 
-		protected override NSPasteboard CreateControl()
+		protected override bool DisposeControl => false;
+
+		public DataObject DataObject
 		{
-			return NSPasteboard.GeneralPasteboard;
-		}
-
-		protected override bool DisposeControl { get { return false; } }
-
-		void ClearIfNeeded()
-		{
-			if (Control.ChangeCount != changeCount)
-				changeCount = Control.ClearContents();
-		}
-
-		public void SetData(byte[] value, string type)
-		{
-			ClearIfNeeded();
-			Control.SetDataForType(NSData.FromArray(value), type);
-		}
-
-		public string Html
-		{
-			set
-			{ 
-				ClearIfNeeded();
-				Control.SetStringForType(value, NSPasteboard.NSHtmlType);
-			}
-			get { return Control.GetStringForType(NSPasteboard.NSHtmlType); }
-		}
-
-		public void SetString(string value, string type)
-		{
-			ClearIfNeeded();
-			Control.SetStringForType(value, type);
-		}
-
-		public string Text
-		{
-			set
-			{
-				ClearIfNeeded();
-				NSPasteboard.GeneralPasteboard.SetStringForType(value, NSPasteboard.NSStringType); 
-			}
-			get { return Control.GetStringForType(NSPasteboard.NSStringType); }
-		}
-
-		public Image Image
-		{
-			set
-			{
-				ClearIfNeeded();
-				var nsimage = value.ToNS();
-				if (nsimage != null)
-				{
-					var data = nsimage.AsTiff();
-					Control.SetDataForType(data, NSPasteboard.NSTiffType);
-				}
-			}
 			get
 			{
-				var oldFail = Class.ThrowOnInitFailure;
-				Class.ThrowOnInitFailure = false;
-				var image = new NSImage(Control);
-				Class.ThrowOnInitFailure = oldFail;
-				if (image.Handle == IntPtr.Zero)
-					return null;
-				if (image.Representations().Length > 1)
-					return new Icon(new IconHandler(image));
-				else
-					return new Bitmap(new BitmapHandler(image));
+				return new DataObject(new DataObjectHandler(Control.MutableCopy() as NSPasteboard));
 			}
-		}
-
-		public unsafe byte[] GetData(string type)
-		{
-			var availableType = Control.GetAvailableTypeFromArray(new string[] { type });
-		
-			if (availableType != null)
+			set
 			{
-				var data = Control.GetDataForType(availableType);
-				if (data == null)
-					return null;
-				var bytes = new byte[data.Length];
-				var stream = new UnmanagedMemoryStream((byte*)data.Bytes, (long)data.Length);
-				stream.Read(bytes, 0, (int)data.Length);
-				return bytes;
+				Control.ClearContents();
+				var handler = value?.Handler as IDataObjectHandler;
+				handler?.Apply(Control);
 			}
-			return null;
 		}
 
-		public string GetString(string type)
-		{
-			return Control.GetStringForType(type);
-		}
 
-		public string[] Types
-		{
-			get { return Control.Types; }
-		}
-
-		public void Clear()
-		{
-			changeCount = Control.ClearContents();
-		}
-		
 	}
 }
 

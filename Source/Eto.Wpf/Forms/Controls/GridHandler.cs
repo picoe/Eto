@@ -46,6 +46,50 @@ namespace Eto.Wpf.Forms.Controls
 
 	}
 
+	class GridDragRowState
+	{
+		public swc.DataGridRow Row;
+		public sw.Thickness BorderThickness;
+		public swm.Brush BorderBrush;
+		public swm.Brush Background;
+		public swm.Brush Foreground;
+		public int ChildIndex;
+
+		public GridDragRowState(swc.DataGridRow row, int childIndex)
+		{
+			Row = row;
+			//Item = row.Item;
+			BorderThickness = row.BorderThickness;
+			BorderBrush = row.BorderBrush;
+			Background = row.Background;
+			Foreground = row.Foreground;
+			ChildIndex = childIndex;
+		}
+
+		public bool IsEqual(swc.DataGridRow row, int childIndex)
+		{
+			if (!ReferenceEquals(row, Row))
+				return false;
+			if (childIndex != ChildIndex)
+				return false;
+			return true;
+		}
+
+		public void Revert()
+		{
+			Row.BorderThickness = BorderThickness;
+			Row.BorderBrush = BorderBrush;
+			Row.Background = Background;
+			Row.Foreground = Foreground;
+		}
+	}
+
+	static class GridHandler
+	{
+		public static readonly object IsEditing_Key = new object();
+		public static readonly object LastDragRow_Key = new object();
+		public static readonly object Border_Key = new object();
+	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
 		where TWidget : Grid
@@ -515,12 +559,10 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		static object Border_Key = new object();
-
 		public BorderType Border
 		{
-			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
-			set { Widget.Properties.Set(Border, value, () => Control.SetEtoBorderType(value)); }
+			get { return Widget.Properties.Get(GridHandler.Border_Key, BorderType.Bezel); }
+			set { Widget.Properties.Set(GridHandler.Border_Key, value, () => Control.SetEtoBorderType(value)); }
 		}
 
 		public void ReloadData(IEnumerable<int> rows)
@@ -538,10 +580,16 @@ namespace Eto.Wpf.Forms.Controls
 			return null;
 		}
 
-		static readonly object IsEditing_Key = new object();
+		public bool IsEditing => Widget.Properties.Get<bool?>(GridHandler.IsEditing_Key) ?? GetCurrentRow()?.IsEditing == true;
 
-		public bool IsEditing => Widget.Properties.Get<bool?>(IsEditing_Key) ?? GetCurrentRow()?.IsEditing == true;
+		void SetIsEditing(bool? value) => Widget.Properties.Set(GridHandler.IsEditing_Key, value);
 
-		void SetIsEditing(bool? value) => Widget.Properties.Set(IsEditing_Key, value);
+		protected swc.DataGridRow GetDataGridRow(object item) => Control.ItemContainerGenerator.ContainerFromItem(item) as swc.DataGridRow;
+
+		internal GridDragRowState LastDragRow
+		{
+			get { return Widget.Properties.Get<GridDragRowState>(GridHandler.LastDragRow_Key); }
+			set { Widget.Properties.Set(GridHandler.LastDragRow_Key, value); }
+		}
 	}
 }
