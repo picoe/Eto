@@ -266,17 +266,10 @@ namespace Eto.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public bool AllowDrop
+		public virtual bool AllowDrop
 		{
-			get
-			{
-				return Control.AllowDrop;
-			}
-
-			set
-			{
-				Control.AllowDrop = value;
-			}
+			get { return Control.AllowDrop; }
+			set { Control.AllowDrop = value; }
 		}
 
 		public virtual void Invalidate(bool invalidateChildren)

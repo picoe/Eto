@@ -187,5 +187,54 @@ namespace Eto.Wpf.Forms
 
 		void WinFormsControl_GotFocus(object sender, EventArgs e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 
+		public override void Focus()
+		{
+			if (Widget.Loaded && WinFormsControl.IsHandleCreated)
+				WinFormsControl.Focus();
+			else
+				Widget.LoadComplete += Widget_LoadComplete;
+		}
+
+		void Widget_LoadComplete(object sender, EventArgs e)
+		{
+			Widget.LoadComplete -= Widget_LoadComplete;
+			WinFormsControl.Focus();
+		}
+
+		public override bool HasFocus => WinFormsControl.Focused;
+
+		public override bool AllowDrop
+		{
+			get { return WinFormsControl.AllowDrop; }
+			set { WinFormsControl.AllowDrop = value; }
+		}
+
+		public override void SuspendLayout()
+		{
+			base.SuspendLayout();
+			WinFormsControl.SuspendLayout();
+		}
+
+		public override void ResumeLayout()
+		{
+			base.ResumeLayout();
+			WinFormsControl.ResumeLayout();
+		}
+
+		public override void Invalidate(bool invalidateChildren)
+		{
+			WinFormsControl.Invalidate(invalidateChildren);
+		}
+
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
+		{
+			WinFormsControl.Invalidate(rect.ToSD(), invalidateChildren);
+		}
+
+		public override bool Enabled
+		{
+			get { return WinFormsControl.Enabled; }
+			set { WinFormsControl.Enabled = value; }
+		}
 	}
 }
