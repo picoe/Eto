@@ -303,7 +303,7 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto - pcl.csproj">
+    <ProjectReference Include="..\Eto\Eto.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto</Name>
     </ProjectReference>

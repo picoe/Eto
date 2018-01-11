@@ -4,9 +4,6 @@ using Eto.Drawing;
 
 namespace $rootnamespace$
 {
-	/// <summary>
-	/// Your application's main form
-	/// </summary>
 	public class MainForm : Form
 	{
 		public MainForm()
@@ -14,16 +11,15 @@ namespace $rootnamespace$
 			Title = "My Eto Form";
 			ClientSize = new Size(400, 350);
 
-			// scrollable region as the main content
-			Content = new Scrollable
+			Content = new TableLayout
 			{
-				// table with three rows
-				Content = new TableLayout(
+				Padding = 10,
+				Rows = {
 					null,
 					// row with three columns
 					new TableRow(null, new Label { Text = "Hello World!" }, null),
 					null
-				)
+				}
 			};
 
 			// create a few commands that can be used for the menu and toolbar

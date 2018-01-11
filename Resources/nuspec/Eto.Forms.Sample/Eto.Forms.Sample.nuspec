@@ -24,11 +24,10 @@ In Xamarin Studio, set the compile target to 'Executable with GUI' and uncheck '
     <dependencies>
       <group>
         <dependency id="Eto.Forms" version="[$version$]" />
-        <dependency id="Eto.Platform.Mac" version="[$version$]" />
+        <dependency id="Eto.Platform.Mac64" version="[$version$]" />
         <dependency id="Eto.Platform.Mac.Template" version="[$version$]" />
         <dependency id="Eto.Platform.Wpf" version="[$version$]" />
-        <dependency id="Eto.Platform.Windows" version="[$version$]" />
-        <dependency id="Eto.Platform.Gtk" version="[$version$]" />
+        <dependency id="Eto.Platform.Gtk3" version="[$version$]" />
       </group>
     </dependencies>
   </metadata>

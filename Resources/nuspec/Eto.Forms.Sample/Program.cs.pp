@@ -9,7 +9,6 @@ namespace $rootnamespace$
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			// run application with our main form
 			new Application().Run(new MainForm());
 		}
 	}

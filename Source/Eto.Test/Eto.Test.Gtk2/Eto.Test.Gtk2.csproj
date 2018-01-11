@@ -68,7 +68,7 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk2.csproj">
+    <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk2-net45.csproj">
       <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
       <Name>Eto.Gtk2-net45</Name>
     </ProjectReference>

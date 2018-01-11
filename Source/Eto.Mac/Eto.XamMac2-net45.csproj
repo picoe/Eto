@@ -9,7 +9,6 @@
     <RootNamespace>Eto.Mac</RootNamespace>
     <AssemblyName>Eto.XamMac2</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseXamMacFullFramework>true</UseXamMacFullFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -29,6 +28,7 @@
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
     <Profiling>false</Profiling>
+    <AOTMode>None</AOTMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,6 +48,7 @@
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
     <Profiling>false</Profiling>
+    <AOTMode>None</AOTMode>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

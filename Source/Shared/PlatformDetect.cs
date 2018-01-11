@@ -21,7 +21,7 @@ namespace Eto
 			{
 				buf = Marshal.AllocHGlobal(8192);
 				if (uname(buf) == 0)
-					osName = Marshal.PtrToStringAnsi(buf);
+					osName = Marshal.PtrToStringAuto(buf);
 			}
 			// Analysis disable once EmptyGeneralCatchClause
 			catch

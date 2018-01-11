@@ -10,12 +10,12 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<Deterministic>False</Deterministic>
 		<!-- RestoreProjectStyle will be supported in VS for Mac 7.4 -->
-		<RestoreProjectStyle Condition="$(UsePackagesConfig) != 'True'">PackageReference</RestoreProjectStyle>
+		<RestoreProjectStyle Condition="'$(RestoreProjectStyle)' == ''">PackageReference</RestoreProjectStyle>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)' == 'portable45-net45+win8+wpa81+wp8'">
-		<TargetFrameworkIdentifier Condition="$(TargetFrameworkIdentifier) == ''">.NETPortable</TargetFrameworkIdentifier>
-		<TargetFrameworkVersion Condition="$(TargetFrameworkVersion) == ''">v4.5</TargetFrameworkVersion>
-		<TargetFrameworkProfile Condition="$(TargetFrameworkProfile) == ''">Profile259</TargetFrameworkProfile>
+		<TargetFrameworkIdentifier Condition="'$(TargetFrameworkIdentifier)' == ''">.NETPortable</TargetFrameworkIdentifier>
+		<TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
+		<TargetFrameworkProfile Condition="'$(TargetFrameworkProfile)' == ''">Profile259</TargetFrameworkProfile>
 		<OutputPath>$(OutputPath)\portable259</OutputPath>
 	</PropertyGroup>
 	<Import Condition="Exists('$(BasePath)..\Eto.Common.props')" Project="$(BasePath)..\Eto.Common.props" />

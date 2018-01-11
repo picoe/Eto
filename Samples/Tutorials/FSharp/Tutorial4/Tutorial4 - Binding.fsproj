@@ -55,6 +55,18 @@
       <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Source\Eto.Mac\Eto.Mac64 - net45.csproj">
+      <Project>{55DAB390-1CFC-11E4-8C21-0800200C9A66}</Project>
+      <Name>Eto.Mac64 - net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Source\Eto.Gtk\Eto.Gtk2 - net45.csproj">
+      <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
+      <Name>Eto.Gtk2 - net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Source\Eto.WinForms\Eto.WinForms - net45.csproj">
+      <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
+      <Name>Eto.WinForms - net45</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -72,6 +84,7 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
+  <Import Project="..\..\Tutorial.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -79,10 +92,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <EtoPlatformLibraries Include="..\..\..\..\BuildOutput\net45\$(Configuration)\Eto.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(EtoPlatformLibraries)" DestinationFolder="$(OutputPath)" />
-  </Target>
+
 </Project>

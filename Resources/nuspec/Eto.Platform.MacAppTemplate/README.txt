@@ -1,15 +1,18 @@
 
-This contains a template for creating an application that runs on OS X using Eto.Forms.
+This package will create a macOS application that runs on OS X using Eto.Forms.
 
-If you are using Xamarin Studio on OS X, it is recommended to create a MonoMac or XamMac 
-project directly, as it will allow you to debug and deploy the app directly.
+If you are using Xamarin Studio on OS X, you can use a Xamarin.Mac project to embed
+the mono runtime with your app.  This template creates an app that will require the user
+to install the mono runtime.
 
-The nuget package automatically adds a targets include, which will
+The nuget package automatically adds a targets file to your project, which will
 package up your application into $(TargetName).app in the output directory.
 
 Next Steps:
 
-Modify MyApp.app/Contents/Info.plist and update these properties:
+Add Mac/Icon.icns to an icon for your app
+
+Add Mac/Info.plist and set these properties:
 	
   - MonoBundleExecutable:       Name of your exe to launch (set automatically to your .exe)
   - CFBundleName:               Short name of your application to display on the menu bar (set automatically to the project name)
@@ -24,5 +27,5 @@ Modify MyApp.app/Contents/Info.plist and update these properties:
 
 Notes:
 
-  - The MacOS/Launcher must have the executable bit set.  Simply zipping the .app folder
+  - The MacOS/MyProject must have the executable bit set.  Simply zipping the .app folder
     and unzipping on OS X will set things up properly.
