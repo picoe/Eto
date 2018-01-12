@@ -21,7 +21,7 @@
   <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
  </ProjectOptions>
  <Targets>
-  <Target Name="$(ProjectDir)/../artifacts/Debug/netstandard1.0/Eto.dll" Analyze="True" AnalyzeAllChildren="True" />
+  <Target Name="$(ProjectDir)/../artifacts/core/Debug/netstandard1.0/Eto.dll" Analyze="True" AnalyzeAllChildren="True" />
  </Targets>
  <Rules>
   <RuleFiles>
@@ -145,7 +145,7 @@
    </Namespace>
   </Namespaces>
   <Targets>
-   <Target Name="$(ProjectDir)/../artifacts/Debug/netstandard1.0/Eto.dll">
+   <Target Name="$(ProjectDir)/../artifacts/core/Debug/netstandard1.0/Eto.dll">
     <Modules>
      <Module Name="eto.dll">
       <Messages>

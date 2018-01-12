@@ -19,14 +19,14 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\artifacts\Debug\net45\</OutputPath>
+    <OutputPath>..\..\artifacts\core\Debug\net45\</OutputPath>
     <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\artifacts\Release\net45\</OutputPath>
+    <OutputPath>..\..\artifacts\core\Release\net45\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>

@@ -4,11 +4,11 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>TRACE;DEBUG;PCL;PORTABLE</DefineConstants>
-    <OutputPath>..\..\artifacts\Debug\</OutputPath>
+    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DefineConstants>TRACE;PCL;PORTABLE</DefineConstants>
-    <OutputPath>..\..\artifacts\Release\</OutputPath>
+    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'portable45-net45+win8+wpa81+wp8'">
      <OutputPath>$(OutputPath)\portable259</OutputPath>

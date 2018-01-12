@@ -34,6 +34,7 @@
     <XamMacArch>x86_64</XamMacArch>
     <UseRefCounting>false</UseRefCounting>
     <Profiling>false</Profiling>
+    <AOTMode>None</AOTMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\artifacts\test\Release\modern\</OutputPath>
@@ -51,6 +52,7 @@
     <UseRefCounting>false</UseRefCounting>
     <LinkMode>SdkOnly</LinkMode>
     <Profiling>false</Profiling>
+    <AOTMode>None</AOTMode>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
   <ItemGroup>
@@ -64,9 +66,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.XamMac2-modern.csproj">
@@ -90,5 +89,8 @@
     <PackageReference Include="NUnit">
       <Version>3.10.0-dev-05152</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestIcon.icns" />
   </ItemGroup>
 </Project>

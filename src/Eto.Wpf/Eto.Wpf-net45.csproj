@@ -22,7 +22,7 @@
     <DefineConstants>TRACE;WPF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\artifacts\Debug\net45\</OutputPath>
+    <OutputPath>..\..\artifacts\core\Debug\net45\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
@@ -30,7 +30,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\artifacts\Release\net45\</OutputPath>
+    <OutputPath>..\..\artifacts\core\Release\net45\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>

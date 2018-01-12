@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="_TouchApp">
+	<PropertyGroup>
+		<BuildDependsOn>
+			$(BuildDependsOn);
+			_BuildAppBundle
+		</BuildDependsOn>
+		<CleanDependsOn>
+			_CleanAppBundle;
+			$(CleanDependsOn);
+		</CleanDependsOn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<AvailableItemName Include="BundleResource" /> 
+	</ItemGroup>
+
+	<PropertyGroup>
+		<IsMac Condition="'$(OS)' == 'Unix' and $([System.IO.File]::Exists('/usr/lib/libc.dylib'))">True</IsMac>
+		<AppBundleName Condition="'$(AppBundleName)'==''">$(MSBuildProjectName)</AppBundleName>
+		<InputAppPath Condition="'$(InputAppPath)'==''">$(MSBuildProjectDirectory)\Mac\</InputAppPath>
+		<OutputAppPath Condition="'$(OutputAppPath)'==''">$(TargetDir)\$(AppBundleName).app</OutputAppPath>
+		<MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultTarget)' == ''">True</MacSetDefaultRunConfiguration>
+	</PropertyGroup>
+
+	<Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True' AND $(IsMac) == 'True'" />
+	<Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True' AND $(IsMac) == 'True'" />
+
+	<Target Name="_TouchApp">
+		<!-- This makes it so we can debug in VS for Mac right away without building first -->
+		<MakeDir Directories="$(OutputAppPath)" Condition="'$(IsMac)' == 'True'" />
+	</Target>
+
+	<Target Name="_CleanAppBundle">
+		<RemoveDir Directories="$(OutputAppPath)"/>
+	</Target>
+	<Target Name="_BuildAppBundle">
+		<PropertyGroup>
+			<OutputContents>$(OutputAppPath)\Contents</OutputContents>
+			<OutputMonoBundlePath>$(OutputContents)\MonoBundle</OutputMonoBundlePath>
+			<OutputResourcesPath>$(OutputContents)\Resources</OutputResourcesPath>
+			<LauncherFile>$([System.IO.Path]::GetFileNameWithoutExtension('$(TargetFileName)'))</LauncherFile>
+			<LauncherFileWithPath>$(OutputContents)\MacOS\$(LauncherFile)</LauncherFileWithPath>
+
+			<MacIncludeDebugFiles Condition="'$(MacIncludeDebugFiles)' == '' AND $(Configuration) != 'Release'">True</MacIncludeDebugFiles>
+			<MacIncludeDebugFiles Condition="'$(MacIncludeDebugFiles)' == '' AND $(Configuration) == 'Release'">False</MacIncludeDebugFiles>
+			<MacArch Condition="'$(MacArch)'=='' AND !Exists('$(TargetDir)\Eto.Mac64.dll')">i386</MacArch>
+			<MacArch Condition="'$(MacArch)'==''">x86_64</MacArch>
+
+			<ReferenceFiles>$(MSBuildThisFileDirectory)</ReferenceFiles>
+			<OutputPListFile>$(OutputContents)\Info.plist</OutputPListFile>
+			<InputPListFile Condition="'@(None->WithMetadataValue('Identity', 'Info.plist')->Distinct())' != ''">$(MSBuildProjectDirectory)\@(None->WithMetadataValue('Identity', 'Info.plist')->Distinct())</InputPListFile>
+			<InputPListFile Condition="'$(InputPListFile)' == ''">$(ReferenceFiles)\Info.plist</InputPListFile>
+			
+			<LauncherExecutable Condition="'$(LauncherExecutable)' == '' AND $(MacArch)=='x86_64'">$(ReferenceFiles)\Launcher64</LauncherExecutable>
+			<LauncherExecutable Condition="'$(LauncherExecutable)' == '' AND $(MacArch)=='i386'">$(ReferenceFiles)\Launcher32</LauncherExecutable>
+		</PropertyGroup>
+
+		<Message Text="Creating $(AppBundleName).app in target directory" Importance="high" />
+
+		<!-- Delete existing stuff, we're going to rebuild them -->
+		<RemoveDir Directories="$(OutputMonoBundlePath)" />
+		<Delete Files="$(OutputPListFile)" />
+
+		<!-- Copy icon/launcher/etc -->
+		<Copy SourceFiles="$(InputAppPath)\**\*.*" DestinationFolder="$(OutputContents)" SkipUnchangedFiles="true" Condition="Exists('$(InputAppPath)')" />
+		<Copy SourceFiles="$(LauncherExecutable)" DestinationFiles="$(LauncherFileWithPath)" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="$(InputPListFile)" DestinationFiles="$(OutputPListFile)" Condition="!Exists('$(OutputPListFile)')" />
+
+		<FindUnderPath  
+            Files="@(FileWrites)"  
+            Path="$(TargetDir)">  
+            <Output TaskParameter="InPath" ItemName="ExecutableFiles" />
+		</FindUnderPath>
+		
+		<!-- Copy ouput files, except for non-mac Eto platforms -->
+		<ItemGroup>
+			<!--ExecutableFiles Include="$(TargetDir)\**" Exclude="$(OutputAppPath)\**\*" /-->
+			<ExecutableFiles Include="@(MacExecutableFiles->'$(TargetDir)%(Identity)')" />
+			<ExecutableFiles Include="@(None)" Condition="%(None.CopyToOutputDirectory) != ''" />
+			<ExecutableFiles Include="@(ReferenceCopyLocalPaths)" />
+			<ExecutableFiles Remove="$(TargetDir)\*.vshost.*" />
+
+			<ExecutableFiles Remove="$(TargetDir)\**\*.pdb" Condition="$(MacIncludeDebugFiles) != 'True'" />
+			<ExecutableFiles Remove="$(TargetDir)\**\*.mdb" Condition="$(MacIncludeDebugFiles) != 'True'" />
+			
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Direct2D.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk2.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk3.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Wpf.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.WinForms.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.iOS.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.WinRT.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Android.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.XamMac.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.XamMac2.*" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Mac.*" Condition="$(MacArch) != 'i386'" />
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Mac64.*" Condition="$(MacArch) != 'x86_64'" />
+
+			<ResourceFiles Include="@(BundleResource)" />
+			<ResourceFiles Include="@(Content)" />
+		</ItemGroup>
+
+		<!-- copy executable files -->
+		<Copy SourceFiles="@(ExecutableFiles)" DestinationFolder="$(OutputMonoBundlePath)\%(RecursiveDir)" />
+		<Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)\%(RecursiveDir)" SkipUnchangedFiles="true" />
+
+		<!--
+			Add any missing keys to the PListFile
+		-->
+		<_UpdatePList 
+			PListFile="$(OutputPListFile)"
+			TargetFileName="$(TargetFileName)"
+			AppBundleName="$(AppBundleName)"
+			LauncherFile="$(LauncherFile)">
+			<Output PropertyName="IconFile" TaskParameter="IconFile" />
+		</_UpdatePList>
+
+		<Message Text="  MacArch: $(MacArch)" Importance="low" /> 
+		<Message Text="  Icon: $(IconFile)" Importance="low" /> 
+		<Message Text="  Info: $(InputPListFile)" Importance="low" /> 
+
+		<!-- Copy default icon if it doesn't exist -->
+		<Copy SourceFiles="$(ReferenceFiles)\Icon.icns" DestinationFiles="$(OutputResourcesPath)\$(IconFile)" Condition="!Exists('$(OutputResourcesPath)\$(IconFile)')" />
+
+		<!-- Set executable bit on launcher if on *nix -->
+		<Exec Command="chmod +x &quot;$(LauncherFileWithPath)&quot;" Condition="'$(OS)'=='Unix'" />
+	</Target>
+	<UsingTask TaskName="_UpdatePList" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+		<ParameterGroup>
+			<PListFile ParameterType="System.String" Required="true" />
+			<TargetFileName ParameterType="System.String" Required="true" />
+			<AppBundleName ParameterType="System.String" Required="true" />
+			<LauncherFile ParameterType="System.String" Required="true" />
+			<IconFile ParameterType="System.String" Output="true" />
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.Xml" />
+			<Using Namespace="System" />
+			<Using Namespace="System.IO" />
+			<Using Namespace="System.Xml" />
+			<Code Type="Class" Language="cs"><![CDATA[
+            using System;
+			using System.IO;
+			using System.Xml;
+			using System.Text;
+            using Microsoft.Build.Framework;
+            using Microsoft.Build.Utilities;
+
+            public class _UpdatePList : Task
+            {  
+				[Required]
+                public string PListFile { get; set; }
+				[Required]
+                public string TargetFileName { get; set; }
+				[Required]
+                public string AppBundleName { get; set; }
+				[Required]
+                public string LauncherFile { get; set; }
+
+				public string IconFile { get; set; }
+
+                XmlDocument xml;
+				XmlNode dict;
+
+				class NullSubsetXmlTextWriter : XmlTextWriter
+				{
+					XmlWriterSettings _settings;
+					public NullSubsetXmlTextWriter(string inputFileName, Encoding encoding)
+						: base(inputFileName, encoding)
+					{
+						Formatting = Formatting.Indented;
+						IndentChar = ' ';
+						Indentation = 2;
+						_settings = new XmlWriterSettings();
+						_settings.Encoding = Encoding.UTF8;
+						_settings.Indent = true;
+						_settings.IndentChars = "  ";
+						_settings.NewLineChars = "\n";
+						_settings.NewLineHandling = NewLineHandling.Entitize;
+					}
+
+					public override XmlWriterSettings Settings { get { return _settings; } }
+
+					public override void WriteDocType(string name, string pubid, string sysid, string subset)
+					{
+						// fix issue writing doctype
+						if (subset == string.Empty)
+							subset = null;
+						base.WriteDocType(name, pubid, sysid, subset);
+					}
+				}
+
+				string GetStringProperty(string name)
+				{
+					var location = dict.SelectSingleNode("key[.='" + name + "']/following-sibling::string[1]");
+					return location.InnerText;
+				}
+
+				void AddStringProperty(string name, string value, bool force = false)
+				{
+					XmlNode node;
+				
+					var exists = dict.SelectSingleNode("key[text()='" + name + "']") != null;
+					if (exists && !force)
+						return;
+				
+					dict.AppendChild(node = xml.CreateNode(XmlNodeType.Element, "key", null));
+					node.InnerText = name;
+					dict.AppendChild(node = xml.CreateNode(XmlNodeType.Element, "string", null));
+					node.InnerText = value;
+				}
+				
+                public override bool Execute()
+                {
+					xml = new XmlDocument();
+					xml.Load(PListFile);
+
+					dict = xml.SelectSingleNode("plist/dict") as XmlElement;
+
+					AddStringProperty("CFBundleIconFile", "Icon.icns");
+					IconFile = GetStringProperty("CFBundleIconFile");
+
+					AddStringProperty("CFBundleInfoDictionaryVersion", "6.0");
+					AddStringProperty("CFBundlePackageType", "APPL");
+					AddStringProperty("CFBundleSignature", "????");
+					AddStringProperty("NSPrincipalClass", "NSApplication");
+					AddStringProperty("CFBundleName", AppBundleName);
+					AddStringProperty("CFBundleExecutable", LauncherFile, true);
+					AddStringProperty("LSMinimumSystemVersion", "10.7");
+
+					using (var sw = new NullSubsetXmlTextWriter(PListFile, Encoding.UTF8))
+						xml.Save(sw);
+                    return true;
+                }
+            }
+        ]]></Code>
+		</Task>
+	</UsingTask>
+</Project>

@@ -20,7 +20,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
-    <OutputPath>..\..\artifacts\Debug\iOS\iPhoneSimulator</OutputPath>
+    <OutputPath>..\..\artifacts\test\Debug\iOS\iPhoneSimulator</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
@@ -34,7 +34,7 @@
     <MtouchLink>None</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
-    <OutputPath>..\..\artifacts\Release\iOS\iPhoneSimulator</OutputPath>
+    <OutputPath>..\..\artifacts\test\Release\iOS\iPhoneSimulator</OutputPath>
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
@@ -44,7 +44,7 @@
     <MtouchArch>i386</MtouchArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
-    <OutputPath>..\..\artifacts\Debug\iOS\iPhone</OutputPath>
+    <OutputPath>..\..\artifacts\test\Debug\iOS\iPhone</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
@@ -63,7 +63,7 @@
     <MtouchProfiling>true</MtouchProfiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
-    <OutputPath>..\..\artifacts\Release\iOS\iPhone</OutputPath>
+    <OutputPath>..\..\artifacts\test\Release\iOS\iPhone</OutputPath>
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
@@ -73,7 +73,7 @@
     </MtouchI18n>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
-    <OutputPath>..\..\artifacts\Ad-Hoc\iOS\iPhone</OutputPath>
+    <OutputPath>..\..\artifacts\test\Ad-Hoc\iOS\iPhone</OutputPath>
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
@@ -84,7 +84,7 @@
     </MtouchI18n>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
-    <OutputPath>..\..\artifacts\AppStore\iOS\iPhone</OutputPath>
+    <OutputPath>..\..\artifacts\test\AppStore\iOS\iPhone</OutputPath>
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>

@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\artifacts\Debug\addins\XamarinStudio</OutputPath>
+    <OutputPath>..\..\..\artifacts\addin\Debug\XamarinStudio</OutputPath>
     <DefineConstants>DEBUG;XS6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\artifacts\Release\addins\XamarinStudio</OutputPath>
+    <OutputPath>..\..\..\artifacts\addin\Release\XamarinStudio</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -40,7 +40,7 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Xamarin.Mac">
-      <HintPath>..\..\..\..\..\..\..\..\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\bin\Xamarin.Mac.dll</HintPath>
+      <HintPath>\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\bin\Xamarin.Mac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

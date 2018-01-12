@@ -3,8 +3,6 @@
     <TargetFramework>net461</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseMacTemplate>True</UseMacTemplate>
-    <MonoMacArch>x86_64</MonoMacArch>
-	<MonoMacDefaultTarget>True</MonoMacDefaultTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\artifacts\test\Debug\</OutputPath>

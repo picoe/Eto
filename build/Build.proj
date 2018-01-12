@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<Configuration Condition="$(Configuration) == ''">Release</Configuration>
         <BaseDir Condition="$(BaseDir) == ''">..</BaseDir>
         <SourceDir Condition="$(SourceDir) == ''">$(BaseDir)\src</SourceDir>
         <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
         <ArtifactsDir Condition="$(BuildOutoutDir) == ''">$(BaseDir)\artifacts</ArtifactsDir>
-		<ArtifactsNet45Dir Condition="$(ArtifactsNet45Dir) == ''">$(ArtifactsDir)\$(Configuration)\net45</ArtifactsNet45Dir>
-		<ArtifactsNetStandard13Dir Condition="$(ArtifactsNetStandard13Dir) == ''">$(ArtifactsDir)\$(Configuration)\netstandard1.3</ArtifactsNetStandard13Dir>
-		<ArtifactsModernDir Condition="$(ArtifactsModernDir) == ''">$(ArtifactsDir)\$(Configuration)\modern</ArtifactsModernDir>
+		<ArtifactsNet45Dir Condition="$(ArtifactsNet45Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\net45</ArtifactsNet45Dir>
+		<ArtifactsNetStandard13Dir Condition="$(ArtifactsNetStandard13Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\netstandard1.3</ArtifactsNetStandard13Dir>
+		<ArtifactsModernDir Condition="$(ArtifactsModernDir) == ''">$(ArtifactsDir)\core\$(Configuration)\modern</ArtifactsModernDir>
 		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
         <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(ArtifactsDir)\nuget\$(Configuration.Trim('\\'))</PackageOutputDir>
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</Platform>
@@ -20,8 +20,8 @@
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Linux'">"mdtool"</mdtool>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
-		<IncludeXamMac Condition="$(IncludeXamMac) == '' and (Exists('/Library/Frameworks/Xamarin.Mac.framework') or Exists('$(ArtifactsNet45Dir)/XamMac.dll'))">true</IncludeXamMac>
-		<IncludeXamiOS Condition="$(IncludeXamiOS) == '' and $(Platform) == 'Mac' and Exists('/Library/Frameworks/Xamarin.iOS.framework')">true</IncludeXamiOS>
+		<XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current</XamarinMacPath>
+		<ReferencePath Condition="$(ReferencePath) == '' and Exists('$(XamarinMacPath)')">$(XamarinMacPath)\lib\mono</ReferencePath>
 		<UtilitiesBasePath>$(ArtifactsDir)\obj</UtilitiesBasePath>
 	</PropertyGroup>
 	<Import Project="Utilities.targets" Condition="$(UtilitiesImported) == ''" />
@@ -116,7 +116,8 @@
 	</Target>
 	
 	<Target Name="Build" DependsOnTargets="UpdateVersion">
-    	<MSBuild Projects="$(SourceDir)\Eto.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
+    	<Exec Command="nuget restore $(SourceDir)\Eto.sln" /> <!-- msbuild restore target doesn't use package.config (needed only for XamMac currently) -->
+    	<MSBuild Projects="$(SourceDir)\Eto.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform);ReferencePath=$(ReferencePath)"/>
 	</Target>
 	
 	

@@ -7,8 +7,8 @@ namespace Eto
 {
 	static partial class Win32
 	{
+		#pragma warning disable 0649
 		// Analysis disable InconsistentNaming
-
 		public struct RECT
 		{
 			public int left;
@@ -18,6 +18,7 @@ namespace Eto
 			public int width => right - left;
 			public int height => bottom - top;
 		}
+		#pragma warning restore 0649
 
 		[Flags]
 		public enum SWP : uint

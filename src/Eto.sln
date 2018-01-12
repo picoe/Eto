@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto", "Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json", "Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Json", "Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Direct2D-net45", "Eto.Direct2D\Eto.Direct2D-net45.csproj", "{330EF9FD-5947-4AC9-9796-950C7633695F}"
 EndProject
@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac-net45", "Eto.Mac
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test", "..\test\Eto.Test\Eto.Test.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test", "..\test\Eto.Test\Eto.Test.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk2", "..\test\Eto.Test.Gtk2\Eto.Test.Gtk2.csproj", "{CC33FE70-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinForms", "..\tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Wpf", "..\test\Eto.Test.Wpf\Eto.Test.Wpf.csproj", "{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac", "..\test\Eto.Test.Mac\Eto.Test.Mac.csproj", "{A4267C50-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Mac", "..\test\Eto.Test.Mac\Eto.Test.Mac.csproj", "{A4267C50-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac", "..\test\Eto.Test.Mac\Eto.Test.XamMac.csproj", "{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Direct2D", "..\tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2-net461", "..\test\Eto.Test.Mac\Eto.Test.XamMac2-net461.csproj", "{689E4C20-2702-11E4-8C21-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac64", "..\test\Eto.Test.Mac\Eto.Test.Mac64.csproj", "{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Mac64", "..\test\Eto.Test.Mac\Eto.Test.Mac64.csproj", "{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2-modern", "..\test\Eto.Test.Mac\Eto.Test.XamMac2-modern.csproj", "{A2DD2180-297D-11E5-A2CB-0800200C9A66}"
 EndProject
@@ -51,12 +51,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2-net45", "Eto.Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2-modern", "Eto.Mac\Eto.XamMac2-modern.csproj", "{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{E381E8CA-0DE1-4792-88F9-AC1529E911DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{E381E8CA-0DE1-4792-88F9-AC1529E911DF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{95227DFB-FD41-4709-BB54-3EA94C89C9C1}"
 	ProjectSection(SolutionItems) = preProject
-		Directory.Build.targets = Directory.Build.targets
-		Directory.Build.props = Directory.Build.props
+		..\Directory.Build.props = ..\Directory.Build.props
+		..\Directory.Build.targets = ..\Directory.Build.targets
+		..\NuGet.Config = ..\NuGet.Config
 	EndProjectSection
 EndProject
 Global
@@ -94,10 +95,13 @@ Global
 		{3F8178EF-0710-43F7-92E2-130B9BE2212D}.Release|Windows.ActiveCfg = Release|Any CPU
 		{3F8178EF-0710-43F7-92E2-130B9BE2212D}.Release|Windows.Build.0 = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Linux.Build.0 = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Mac.Build.0 = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Windows.ActiveCfg = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Windows.Build.0 = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Linux.ActiveCfg = Release|Any CPU
+		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Linux.Build.0 = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Mac.ActiveCfg = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Mac.Build.0 = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Windows.ActiveCfg = Release|Any CPU
@@ -223,13 +227,17 @@ Global
 		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
 		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Linux.Build.0 = Debug|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
+		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Linux.Build.0 = Release|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
+		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
 		{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
@@ -239,11 +247,15 @@ Global
 		{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
 		{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Debug|Linux.Build.0 = Debug|Any CPU
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Debug|Mac.Build.0 = Debug|Any CPU
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Debug|Windows.ActiveCfg = Debug|Any CPU
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Debug|Windows.Build.0 = Debug|Any CPU
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Release|Linux.ActiveCfg = Release|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Release|Linux.Build.0 = Release|Any CPU
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Release|Mac.ActiveCfg = Release|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Release|Mac.Build.0 = Release|Any CPU
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Release|Windows.ActiveCfg = Release|Any CPU
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Release|Windows.Build.0 = Release|Any CPU
 		{689E4C20-2702-11E4-8C21-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU

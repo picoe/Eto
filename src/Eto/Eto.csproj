@@ -1,16 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.0</TargetFramework>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>TRACE;DEBUG;PCL</DefineConstants>
-    <OutputPath>..\..\artifacts\Debug\</OutputPath>
-    <DocumentationFile>..\..\artifacts\Debug\Eto.xml</DocumentationFile>
+    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DefineConstants>TRACE;PCL</DefineConstants>
-    <OutputPath>..\..\artifacts\Release\</OutputPath>
-    <DocumentationFile>..\..\artifacts\Release\Eto.xml</DocumentationFile>
+    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Shared\EnumerableExtensions.cs" />
