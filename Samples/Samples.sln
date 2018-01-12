@@ -14,15 +14,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedMonoMacInEto", "MonoMa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Eto", "Eto", "{19A4EA01-CA9E-4390-B448-974152AB5706}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - pcl", "..\Source\Eto\Eto - pcl.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\src\Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac - net45", "..\Source\Eto.Mac\Eto.Mac - net45.csproj", "{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac-net45", "..\src\Eto.Mac\Eto.Mac-net45.csproj", "{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinForms - net45", "..\Source\Eto.WinForms\Eto.WinForms - net45.csproj", "{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinForms-net45", "..\src\Eto.WinForms\Eto.WinForms-net45.csproj", "{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf - net45", "..\Source\Eto.Wpf\Eto.Wpf - net45.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf-net45", "..\src\Eto.Wpf\Eto.Wpf-net45.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2 - net45", "..\Source\Eto.Gtk\Eto.Gtk2 - net45.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2-net45", "..\src\Eto.Gtk\Eto.Gtk2-net45.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinForms", "WinForms", "{1A922E1B-12D1-4CAA-929C-A400BC875EAB}"
 EndProject
@@ -57,7 +57,7 @@ Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Tutorial3 - Table Layout", 
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Tutorial4 - Binding", "Tutorials\FSharp\Tutorial4\Tutorial4 - Binding.fsproj", "{B7ED284C-EDAF-4F91-829A-04C297FA92B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64 - net45", "..\Source\Eto.Mac\Eto.Mac64 - net45.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64-net45", "..\src\Eto.Mac\Eto.Mac64-net45.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{C1F05813-B09E-4946-808C-42D46BF999A3}"
 EndProject

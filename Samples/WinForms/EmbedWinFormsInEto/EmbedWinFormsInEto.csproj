@@ -47,13 +47,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\Eto.WinForms\Eto.WinForms - net45.csproj">
+    <ProjectReference Include="..\..\..\src\Eto.WinForms\Eto.WinForms-net45.csproj">
       <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
-      <Name>Eto.WinForms - net45</Name>
+      <Name>Eto.WinForms-net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Source\Eto\Eto - pcl.csproj">
+    <ProjectReference Include="..\..\..\src\Eto\Eto.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto - pcl</Name>
+      <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

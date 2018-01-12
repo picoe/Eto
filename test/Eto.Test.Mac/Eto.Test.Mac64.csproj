@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <UseMacTemplate>True</UseMacTemplate>
+    <MonoMacArch>x86_64</MonoMacArch>
+	<MonoMacDefaultTarget>True</MonoMacDefaultTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\artifacts\test\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\artifacts\test\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="MonoMac">
+      <HintPath>..\..\lib\MonoMac64\MonoMac.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestIcon.icns" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.plist" />
+    <None Remove="TestIcon.icns" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
+    <ProjectReference Include="..\..\src\Eto.Mac\Eto.Mac64-net45.csproj" />
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.9.0" />
+  </ItemGroup>
+</Project>

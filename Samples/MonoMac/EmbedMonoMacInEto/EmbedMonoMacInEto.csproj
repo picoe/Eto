@@ -75,13 +75,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\Eto.Mac\Eto.Mac - net45.csproj">
+    <ProjectReference Include="..\..\..\src\Eto.Mac\Eto.Mac-net45.csproj">
       <Project>{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Mac - net45</Name>
+      <Name>Eto.Mac-net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Source\Eto\Eto - pcl.csproj">
+    <ProjectReference Include="..\..\..\src\Eto\Eto.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto - pcl</Name>
+      <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

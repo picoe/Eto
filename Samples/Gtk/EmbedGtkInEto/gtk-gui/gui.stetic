@@ -5,7 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../BuildOutput/Pcl/Debug/Eto.Gtk2.dll" />
+    <widget-library name="../../../../artifacts/Debug/net45/Eto.Gtk2.dll" />
     <widget-library name="../bin/Debug/EmbedGtkInEto.exe" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="EmbedGtkInEto.MyNativeWidget" design-size="422 183">

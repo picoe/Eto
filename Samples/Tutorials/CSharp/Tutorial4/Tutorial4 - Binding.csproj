@@ -38,21 +38,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Source\Eto\Eto - pcl.csproj">
+    <ProjectReference Include="..\..\..\..\src\Eto\Eto.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto - pcl</Name>
+      <Name>Eto</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Source\Eto.Gtk\Eto.Gtk2 - net45.csproj">
+    <ProjectReference Include="..\..\..\..\src\Eto.Gtk\Eto.Gtk2-net45.csproj">
       <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Gtk2 - net45</Name>
+      <Name>Eto.Gtk2-net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Source\Eto.Mac\Eto.Mac64 - net45.csproj">
+    <ProjectReference Include="..\..\..\..\src\Eto.Mac\Eto.Mac64-net45.csproj">
       <Project>{55DAB390-1CFC-11E4-8C21-0800200C9A66}</Project>
-      <Name>Eto.Mac64 - net45</Name>
+      <Name>Eto.Mac64-net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Source\Eto.WinForms\Eto.WinForms - net45.csproj">
+    <ProjectReference Include="..\..\..\..\src\Eto.WinForms\Eto.WinForms-net45.csproj">
       <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
-      <Name>Eto.WinForms - net45</Name>
+      <Name>Eto.WinForms-net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
