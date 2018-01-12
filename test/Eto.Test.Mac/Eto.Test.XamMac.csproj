@@ -146,6 +146,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\src\Shared\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="UnitTests\RichTextAreaHandlerTests.cs" />
   </ItemGroup>
@@ -159,9 +162,9 @@
     <Content Include="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Eto.Mac\Eto.XamMac-net45.csproj">
+    <ProjectReference Include="..\..\src\Eto.Mac\Eto.XamMac.csproj">
       <Project>{BF405A10-C9EB-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.XamMac-net45</Name>
+      <Name>Eto.XamMac</Name>
     </ProjectReference>
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
       <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>

@@ -6,7 +6,7 @@
 		<title>$title$</title>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
-		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
@@ -22,12 +22,12 @@ https://github.com/picoe/Eto/wiki
 		<dependencies>
 			<group>
 				<dependency id="Eto.Forms" version="[$version$]" />
-				<dependency id="Portable.Xaml" version="0.14.0" />
+				<dependency id="Portable.Xaml" version="0.17.0" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="artifacts/$configuration$/netstandard1.3/Eto.Serialization.Xaml.dll" target="lib\netstandard1.3" />
-		<file src="artifacts/$configuration$/netstandard1.3/LICENSE.txt" target="LICENSE.txt" />
+		<file src="artifacts/core/$configuration$/netstandard1.3/Eto.Serialization.Xaml.dll" target="lib\netstandard1.3" />
+		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

@@ -6,7 +6,7 @@
 		<title>$title$</title>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
-		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
@@ -27,6 +27,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
 	</metadata>
 	<files>
 		<file src="artifacts/$configuration$/netstandard1.3/Eto.iOS.dll" target="lib\monotouch" />
-		<file src="artifacts/$configuration$/net45/LICENSE.txt" target="LICENSE.txt" />
+		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

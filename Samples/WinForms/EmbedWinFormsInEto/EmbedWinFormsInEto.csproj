@@ -7,13 +7,13 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>EmbedWinFormsInEto</RootNamespace>
     <AssemblyName>EmbedWinFormsInEto</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\..\..\artifacts\samples\Debug\net461</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -22,7 +22,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\..\..\artifacts\samples\Release\net461</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
@@ -47,9 +47,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Eto.WinForms\Eto.WinForms-net45.csproj">
+    <ProjectReference Include="..\..\..\src\Eto.WinForms\Eto.WinForms.csproj">
       <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
-      <Name>Eto.WinForms-net45</Name>
+      <Name>Eto.WinForms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\Eto\Eto.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>

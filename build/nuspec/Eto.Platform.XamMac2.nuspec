@@ -6,7 +6,7 @@
 		<title>$title$</title>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
-		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
@@ -30,8 +30,8 @@ Using Eto.Platform.Mac instead uses the open source MonoMac, which allows you to
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="artifacts/$configuration$/modern/Eto.XamMac2.dll" target="lib\xamarin.mac2" />
-		<file src="artifacts/$configuration$/net45/Eto.XamMac2.dll" target="lib\net45" />
-		<file src="artifacts/$configuration$/net45/LICENSE.txt" target="LICENSE.txt" />
+		<file src="artifacts/core/$configuration$/modern/Eto.XamMac2.dll" target="lib\xamarin.mac2" />
+		<file src="artifacts/core/$configuration$/net45/Eto.XamMac2.dll" target="lib\net45" />
+		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

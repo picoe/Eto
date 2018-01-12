@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.XamarinStudio", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2-net45", "..\Eto.Gtk\Eto.Gtk2-net45.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2", "..\Eto.Gtk\Eto.Gtk2.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared", "Shared\Eto.Addin.Shared.csproj", "{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}"
 EndProject
@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared - nuget", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2-net45", "..\Eto.Mac\Eto.XamMac2-net45.csproj", "{856E8C70-2702-11E4-8C21-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac-net45", "..\Eto.Mac\Eto.XamMac-net45.csproj", "{BF405A10-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac", "..\Eto.Mac\Eto.XamMac.csproj", "{BF405A10-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2-modern", "..\Eto.Mac\Eto.XamMac2-modern.csproj", "{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}"
 EndProject

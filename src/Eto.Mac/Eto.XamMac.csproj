@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BF405A10-C9EB-11E3-9C1A-0800200C9A66}</ProjectGuid>
-    <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Mac</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -56,14 +55,11 @@
     <LinkMode>None</LinkMode>
     <AOTMode>None</AOTMode>
   </PropertyGroup>
-  <PropertyGroup>
-    <CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Core" />
-    <Reference Include="XamMac, Version=0.0.0.0, Culture=neutral, PublicKeyToken=84e04ff9cfb79065" />
+    <Reference Include="XamMac" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Drawing\BrushHandler.cs" />

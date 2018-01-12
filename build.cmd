@@ -1,6 +1,6 @@
-echo off
+@echo off
 
-WHERE msbuild
+WHERE msbuild > nul
 IF %ERRORLEVEL% NEQ 0 ECHO msbuild not found.  Run in the Developer Command Prompt for VS 2017
 
 set BUILD_DIR=%~dp0\build

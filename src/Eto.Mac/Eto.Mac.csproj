@@ -231,6 +231,7 @@
     <Content Include="..\..\lib\MonoMac\MonoMac-License.txt">
       <Link>MonoMac-License.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInPackage>false</IncludeInPackage>
     </Content>
   </ItemGroup>
   <ItemGroup />

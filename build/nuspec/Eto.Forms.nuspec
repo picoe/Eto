@@ -6,7 +6,7 @@
 		<title>$title$</title>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
-		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>Eto.Forms UI Framework</summary>
@@ -30,8 +30,8 @@ In order to run your Eto.Forms based application, you must also install one (or 
 - Eto.Platform.Gtk3
 - Eto.Platform.Mac
 - Eto.Platform.Mac64
-- Eto.Platform.XamMac  * requires Xamarin Studio on OS X.
-- Eto.Platform.XamMac2  * requires Xamarin Studio on OS X.
+- Eto.Platform.XamMac  * requires Visual Studio for Mac
+- Eto.Platform.XamMac2  * requires Visual Studio for Mac
 
 To get more information about how to get started, read the wiki:
 
@@ -41,8 +41,8 @@ https://github.com/picoe/Eto/wiki
 		<tags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</tags>
 	</metadata>
 	<files>
-		<file src="artifacts/$configuration$/netstandard1.0/Eto.dll" target="lib\netstandard1.0" />
-		<file src="artifacts/$configuration$/netstandard1.0/Eto.xml" target="lib\netstandard1.0" />
-		<file src="artifacts/$configuration$/netstandard1.0/LICENSE.txt" target="LICENSE.txt" />
+		<file src="artifacts/core/$configuration$/netstandard1.0/Eto.dll" target="lib\netstandard1.0" />
+		<file src="artifacts/core/$configuration$/netstandard1.0/Eto.xml" target="lib\netstandard1.0" />
+		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

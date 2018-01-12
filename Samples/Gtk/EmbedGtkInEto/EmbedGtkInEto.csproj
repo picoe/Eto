@@ -7,13 +7,13 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>EmbedGtkInEto</RootNamespace>
     <AssemblyName>EmbedGtkInEto</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\..\..\artifacts\samples\Debug\net461</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -22,7 +22,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\..\..\artifacts\samples\Release\net461</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
@@ -50,9 +50,9 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Eto.Gtk\Eto.Gtk2-net45.csproj">
+    <ProjectReference Include="..\..\..\src\Eto.Gtk\Eto.Gtk2.csproj">
       <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Gtk2-net45</Name>
+      <Name>Eto.Gtk2</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

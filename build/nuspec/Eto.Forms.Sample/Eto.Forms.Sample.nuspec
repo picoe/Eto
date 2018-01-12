@@ -6,7 +6,7 @@
     <title>Eto.Forms - Sample Application</title>
     <authors>Curtis Wensley</authors>
     <owners>Curtis Wensley</owners>
-    <licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+    <licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/picoe/Eto</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Eto.Forms - Sample Cross Platform Application</summary>
@@ -25,7 +25,6 @@ In Xamarin Studio, set the compile target to 'Executable with GUI' and uncheck '
       <group>
         <dependency id="Eto.Forms" version="[$version$]" />
         <dependency id="Eto.Platform.Mac64" version="[$version$]" />
-        <dependency id="Eto.Platform.Mac.Template" version="[$version$]" />
         <dependency id="Eto.Platform.Wpf" version="[$version$]" />
         <dependency id="Eto.Platform.Gtk3" version="[$version$]" />
       </group>

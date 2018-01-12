@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="BuildUtilities" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<PropertyGroup>
-		<UtilitiesImported>true</UtilitiesImported>
-		<UtilitiesBasePath Condition="$(UtilitiesBasePath) == ''">packages</UtilitiesBasePath>
-		<UtilitiesAssemblyPath Condition="$(UtilitiesAssemblyPath) == ''">$(UtilitiesBasePath)\UtilitiesTasks</UtilitiesAssemblyPath>
-	</PropertyGroup>
-	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="GetAssemblyInfo" />
-	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="FileUpdate" />
-	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="FileExtract" />
-	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="IncrementVersion" />
-	<Target Name="BuildUtilities" Condition="!Exists('$(UtilitiesAssemblyPath)\Utilities.dll')" >
-		<MakeDir Directories="$(UtilitiesAssemblyPath)" />
-		
-		<!-- UsingTask is not implemented in mono -->
-		<ItemGroup>
-			<Utilities Include="GetAssemblyInfo"><Text><![CDATA[
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<UsingTask TaskName="GetAssemblyInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+		<ParameterGroup>
+			<AssemblyFileName ParameterType="System.String" Required="true" />
+			<AssemblyInformationalVersion ParameterType="System.String" Output="true" />
+			<AssemblyTitle ParameterType="System.String" Output="true" />
+			<AssemblyDescription ParameterType="System.String" Output="true" />
+			<AssemblyCopyright ParameterType="System.String" Output="true" />
+			<AssemblyCompany ParameterType="System.String" Output="true" />
+			<AssemblyName ParameterType="System.String" Output="true" />
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.Xml" />
+			<Using Namespace="System" />
+			<Using Namespace="System.IO" />
+			<Using Namespace="System.Xml" />
+			<Code Type="Class" Language="cs"><![CDATA[
 using System;
 using System.IO;
 using System.Text;
@@ -24,7 +25,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-
 
 public static class Extensions
 {
@@ -48,8 +48,8 @@ public static class Extensions
 		else
 			return value.Replace(@"\\", @"\");
 	}
-}]]></Text></Utilities>
-			<Utilities Include="GetAssemblyInfo"><Text><![CDATA[
+}
+
 public class GetAssemblyInfo : Task
 {
 	public string AssemblyFileName { get; set; }
@@ -107,7 +107,11 @@ public class GetAssemblyInfo : Task
 			return false;
 		}
 	}
-}]]></Text></Utilities>
+}
+]]></Code>
+		</Task>
+	</UsingTask>
+	<!--
 			<Utilities Include="FileUpdate"><Text><![CDATA[
 public class FileUpdate : Task
 {
@@ -305,4 +309,5 @@ public class FileExtract : Task
 			TargetType="library"
 			/>
 	</Target>
+	-->
 </Project>

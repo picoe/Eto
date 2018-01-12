@@ -9,7 +9,7 @@ type MyObject() =
       with get () = textProperty
       and set value = 
         textProperty <- value
-        Debug.WriteLine(sprintf "Set TextProperty to %s" value)
+        Console.WriteLine(sprintf "Set TextProperty to %s" value)
 
 type MyForm() as this =
     inherit Form()
@@ -68,7 +68,7 @@ type MyForm() as this =
         let textBox = new TextBox()
 
         // bind to the text property using delegates
-        textBox.TextBinding.Bind(Func<_>(fun () -> "some value"), Action<_>(fun value -> Debug.WriteLine(sprintf "Set value to %s directly" value))) |> ignore
+        textBox.TextBinding.Bind(Func<_>(fun () -> "some value"), Action<_>(fun value -> Console.WriteLine(sprintf "Set value to %s directly" value))) |> ignore
         textBox
 
 [<EntryPoint;STAThread>]

@@ -17,9 +17,9 @@
 
 	<PropertyGroup>
 		<IsMac Condition="'$(OS)' == 'Unix' and $([System.IO.File]::Exists('/usr/lib/libc.dylib'))">True</IsMac>
-		<AppBundleName Condition="'$(AppBundleName)'==''">$(MSBuildProjectName)</AppBundleName>
+		<MacBundleName Condition="'$(MacBundleName)'==''">$(MSBuildProjectName)</MacBundleName>
 		<InputAppPath Condition="'$(InputAppPath)'==''">$(MSBuildProjectDirectory)\Mac\</InputAppPath>
-		<OutputAppPath Condition="'$(OutputAppPath)'==''">$(TargetDir)\$(AppBundleName).app</OutputAppPath>
+		<OutputAppPath Condition="'$(OutputAppPath)'==''">$(TargetDir)\$(MacBundleName).app</OutputAppPath>
 		<MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultTarget)' == ''">True</MacSetDefaultRunConfiguration>
 	</PropertyGroup>
 
@@ -28,7 +28,7 @@
 
 	<Target Name="_TouchApp">
 		<!-- This makes it so we can debug in VS for Mac right away without building first -->
-		<MakeDir Directories="$(OutputAppPath)" Condition="'$(IsMac)' == 'True'" />
+		<MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != ''" />
 	</Target>
 
 	<Target Name="_CleanAppBundle">
@@ -42,8 +42,8 @@
 			<LauncherFile>$([System.IO.Path]::GetFileNameWithoutExtension('$(TargetFileName)'))</LauncherFile>
 			<LauncherFileWithPath>$(OutputContents)\MacOS\$(LauncherFile)</LauncherFileWithPath>
 
-			<MacIncludeDebugFiles Condition="'$(MacIncludeDebugFiles)' == '' AND $(Configuration) != 'Release'">True</MacIncludeDebugFiles>
-			<MacIncludeDebugFiles Condition="'$(MacIncludeDebugFiles)' == '' AND $(Configuration) == 'Release'">False</MacIncludeDebugFiles>
+			<MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == '' AND $(Configuration) != 'Release'">True</MacIncludeSymbols>
+			<MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == '' AND $(Configuration) == 'Release'">False</MacIncludeSymbols>
 			<MacArch Condition="'$(MacArch)'=='' AND !Exists('$(TargetDir)\Eto.Mac64.dll')">i386</MacArch>
 			<MacArch Condition="'$(MacArch)'==''">x86_64</MacArch>
 
@@ -56,7 +56,7 @@
 			<LauncherExecutable Condition="'$(LauncherExecutable)' == '' AND $(MacArch)=='i386'">$(ReferenceFiles)\Launcher32</LauncherExecutable>
 		</PropertyGroup>
 
-		<Message Text="Creating $(AppBundleName).app in target directory" Importance="high" />
+		<Message Text="Creating $(MacBundleName).app in target directory" Importance="high" />
 
 		<!-- Delete existing stuff, we're going to rebuild them -->
 		<RemoveDir Directories="$(OutputMonoBundlePath)" />
@@ -81,8 +81,8 @@
 			<ExecutableFiles Include="@(ReferenceCopyLocalPaths)" />
 			<ExecutableFiles Remove="$(TargetDir)\*.vshost.*" />
 
-			<ExecutableFiles Remove="$(TargetDir)\**\*.pdb" Condition="$(MacIncludeDebugFiles) != 'True'" />
-			<ExecutableFiles Remove="$(TargetDir)\**\*.mdb" Condition="$(MacIncludeDebugFiles) != 'True'" />
+			<ExecutableFiles Remove="$(TargetDir)\**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
+			<ExecutableFiles Remove="$(TargetDir)\**\*.mdb" Condition="$(MacIncludeSymbols) != 'True'" />
 			
 			<ExecutableFiles Remove="$(TargetDir)\Eto.Direct2D.*" />
 			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk2.*" />
@@ -111,7 +111,7 @@
 		<_UpdatePList 
 			PListFile="$(OutputPListFile)"
 			TargetFileName="$(TargetFileName)"
-			AppBundleName="$(AppBundleName)"
+			MacBundleName="$(MacBundleName)"
 			LauncherFile="$(LauncherFile)">
 			<Output PropertyName="IconFile" TaskParameter="IconFile" />
 		</_UpdatePList>
@@ -130,7 +130,7 @@
 		<ParameterGroup>
 			<PListFile ParameterType="System.String" Required="true" />
 			<TargetFileName ParameterType="System.String" Required="true" />
-			<AppBundleName ParameterType="System.String" Required="true" />
+			<MacBundleName ParameterType="System.String" Required="true" />
 			<LauncherFile ParameterType="System.String" Required="true" />
 			<IconFile ParameterType="System.String" Output="true" />
 		</ParameterGroup>
@@ -154,7 +154,7 @@
 				[Required]
                 public string TargetFileName { get; set; }
 				[Required]
-                public string AppBundleName { get; set; }
+                public string MacBundleName { get; set; }
 				[Required]
                 public string LauncherFile { get; set; }
 
@@ -225,7 +225,7 @@
 					AddStringProperty("CFBundlePackageType", "APPL");
 					AddStringProperty("CFBundleSignature", "????");
 					AddStringProperty("NSPrincipalClass", "NSApplication");
-					AddStringProperty("CFBundleName", AppBundleName);
+					AddStringProperty("CFBundleName", MacBundleName);
 					AddStringProperty("CFBundleExecutable", LauncherFile, true);
 					AddStringProperty("LSMinimumSystemVersion", "10.7");
 

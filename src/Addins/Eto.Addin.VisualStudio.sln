@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer", "..\Eto.Desi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf - net45", "..\Eto.Wpf\Eto.Wpf-net45.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf - net45", "..\Eto.Wpf\Eto.Wpf.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json", "..\Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
 EndProject

@@ -144,7 +144,7 @@
       <Project>{12603b32-65b9-4db7-82fc-c52e18537d6c}</Project>
       <Name>Eto.Serialization.Xaml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Eto.Wpf\Eto.Wpf-net45.csproj">
+    <ProjectReference Include="..\..\..\Eto.Wpf\Eto.Wpf.csproj">
       <Project>{63137fa0-ca55-11e3-9c1a-0800200c9a66}</Project>
       <Name>Eto.Wpf</Name>
     </ProjectReference>

@@ -7,19 +7,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto", "Eto\Eto.csproj", "{3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Json", "Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Direct2D-net45", "Eto.Direct2D\Eto.Direct2D-net45.csproj", "{330EF9FD-5947-4AC9-9796-950C7633695F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Direct2D", "Eto.Direct2D\Eto.Direct2D.csproj", "{330EF9FD-5947-4AC9-9796-950C7633695F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinForms-net45", "Eto.WinForms\Eto.WinForms-net45.csproj", "{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinForms", "Eto.WinForms\Eto.WinForms.csproj", "{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac-net45", "Eto.Mac\Eto.Mac-net45.csproj", "{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac", "Eto.Mac\Eto.Mac.csproj", "{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2-net45", "Eto.Gtk\Eto.Gtk2-net45.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2", "Eto.Gtk\Eto.Gtk2.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf-net45", "Eto.Wpf\Eto.Wpf-net45.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf", "Eto.Wpf\Eto.Wpf.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk3-net45", "Eto.Gtk\Eto.Gtk3-net45.csproj", "{543B2F90-CA56-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk3", "Eto.Gtk\Eto.Gtk3.csproj", "{543B2F90-CA56-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac-net45", "Eto.Mac\Eto.XamMac-net45.csproj", "{BF405A10-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac", "Eto.Mac\Eto.XamMac.csproj", "{BF405A10-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}"
 EndProject
@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Mac64", "..\test\E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2-modern", "..\test\Eto.Test.Mac\Eto.Test.XamMac2-modern.csproj", "{A2DD2180-297D-11E5-A2CB-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64-net45", "Eto.Mac\Eto.Mac64-net45.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64", "Eto.Mac\Eto.Mac64.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2-net45", "Eto.Mac\Eto.XamMac2-net45.csproj", "{856E8C70-2702-11E4-8C21-0800200C9A66}"
 EndProject

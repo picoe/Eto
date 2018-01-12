@@ -65,6 +65,6 @@
     </ItemGroup>
     <Message Importance="high" Text="Embedding: @(FilesToEmbed->'%(Filename)%(Extension)', ', ')" />
   </Target>
-  <Import Project="$(BasePath)build\nuspec\MacTemplate\MacTemplate.targets" Condition="$(UseMacTemplate) == 'True'" />
+  <Import Project="$(BasePath)build\MacTemplate\MacTemplate.targets" Condition="$(UseMacTemplate) == 'True'" />
   <Import Condition="Exists('$(BasePath)..\Eto.Common.targets')" Project="$(BasePath)..\Eto.Common.targets" />
 </Project>
