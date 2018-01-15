@@ -73,7 +73,7 @@
             Replacement='version=&quot;$(AssemblyInformationalVersion)&quot;' />
 	</Target>
 	
-	<Target Name="UpdateReference" DependsOnTargets="BuildUtilities">
+	<Target Name="UpdateReference">
 
 		<Error Condition="$(ReferenceName) == '' or $(ReferenceVersion) == ''" Text="Must Specify ReferenceName and ReferenceVersion properties" />
 	
@@ -165,8 +165,16 @@
     	<Exec Command="nuget restore $(SourceDir)\Eto.sln" />
     	
     	<MSBuild Projects="$(SourceDir)\Eto.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
+    	
+    	<!-- When building windows, assume xamarin.mac is installed and build XamMac2 platform 
+    	Note: works when compiling through VS 2017 but not msbuild command line.. why?
+    	<MSBuild Projects="$(SourceDir)\Eto.sln" Targets="Eto_XamMac2_modern:$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Mac" Condition="$(Platform) == 'Windows'"/>
+    	<MSBuild Projects="$(SourceDir)\Eto.sln" Targets="Eto_XamMac2_net45:$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Mac" Condition="$(Platform) == 'Windows'"/>
+    	-->
 
-		<!-- publish Eto.Serialization.Xaml so we get a copy of Portable.Xaml -->
+		<MSBuild Projects="$(BaseDir)\samples\Samples.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
+
+		<!-- hack: publish Eto.Serialization.Xaml to get a copy of Portable.Xaml, so we can get version info -->
     	<MSBuild Projects="$(SourceDir)\Eto.sln" Targets="Eto_Serialization_Xaml:Publish" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
 	</Target>
 	
@@ -175,6 +183,7 @@
 		
 		<ItemGroup>
 			<StandalonePackage Include="Eto.Forms.Sample\Eto.Forms.Sample"/>
+			<StandalonePackage Include="Eto.Platform.Mac.Template"/>
 		</ItemGroup>
 		
     	<MSBuild Targets="BuildPackage" Properties="Configuration=$(Configuration);AssemblyPath=;NuspecPath=nuspec\%(StandalonePackage.Identity).nuspec;NupkgOutputDir=$(NugetOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="nuget.targets" />
@@ -209,7 +218,7 @@
 	</Target>
 	
 
-	<Target Name="_GetVersion" DependsOnTargets="BuildUtilities">
+	<Target Name="_GetVersion">
 		<FileExtract File="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
 			Pattern='(?&lt;=AssemblyInformationalVersion(\\s*)[(]&quot;).*(?=&quot;[)])'
 			Condition="$(BuildVersion) == ''">
@@ -217,7 +226,7 @@
 		</FileExtract>
 	</Target>
 	
-	<Target Name="MakeRelease" DependsOnTargets="Clean;BuildUtilities;_GetVersion">
+	<Target Name="MakeRelease" DependsOnTargets="Clean;_GetVersion">
 		<Exec Command='git diff --quiet HEAD' IgnoreExitCode="true">
 			<Output TaskParameter="ExitCode" PropertyName="HasChanges" />
 		</Exec>

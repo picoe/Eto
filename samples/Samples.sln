@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoMac", "MonoMac", "{F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}"
 	ProjectSection(MonoDevelopProperties) = preProject
@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedMonoMacInEto", "MonoMa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Eto", "Eto", "{19A4EA01-CA9E-4390-B448-974152AB5706}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\src\Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto", "..\src\Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac", "..\src\Eto.Mac\Eto.Mac.csproj", "{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
@@ -49,13 +49,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tutorials", "Tutorials", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharp", "FSharp", "{7F02CD51-CD4B-4927-AAF3-3B056D5413B3}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "FS.Tutorial1.HelloWorld", "Tutorials\FSharp\Tutorial1\FS.Tutorial1.HelloWorld.fsproj", "{1364E3AE-8EA7-4A0C-88DD-5131A31F2B3F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FS.Tutorial1.HelloWorld", "Tutorials\FSharp\Tutorial1\FS.Tutorial1.HelloWorld.fsproj", "{1364E3AE-8EA7-4A0C-88DD-5131A31F2B3F}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "FS.Tutorial2.MenusAndToolbars", "Tutorials\FSharp\Tutorial2\FS.Tutorial2.MenusAndToolbars.fsproj", "{4A9DEB43-39B2-4AE6-98B2-7F0F73E449C4}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FS.Tutorial2.MenusAndToolbars", "Tutorials\FSharp\Tutorial2\FS.Tutorial2.MenusAndToolbars.fsproj", "{4A9DEB43-39B2-4AE6-98B2-7F0F73E449C4}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "FS.Tutorial3.TableLayout", "Tutorials\FSharp\Tutorial3\FS.Tutorial3.TableLayout.fsproj", "{4A9DEB43-39B3-4AE6-98B2-7F0F73E449C4}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FS.Tutorial3.TableLayout", "Tutorials\FSharp\Tutorial3\FS.Tutorial3.TableLayout.fsproj", "{4A9DEB43-39B3-4AE6-98B2-7F0F73E449C4}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "FS.Tutorial4.Binding", "Tutorials\FSharp\Tutorial4\FS.Tutorial4.Binding.fsproj", "{B7ED284C-EDAF-4F91-829A-04C297FA92B6}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FS.Tutorial4.Binding", "Tutorials\FSharp\Tutorial4\FS.Tutorial4.Binding.fsproj", "{B7ED284C-EDAF-4F91-829A-04C297FA92B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64", "..\src\Eto.Mac\Eto.Mac64.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
 EndProject
@@ -71,16 +71,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.Tutorial4.Binding", "Tut
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|Linux = Debug|Linux
 		Debug|Mac = Debug|Mac
 		Debug|Windows = Debug|Windows
-		Release|Any CPU = Release|Any CPU
 		Release|Linux = Release|Linux
 		Release|Mac = Release|Mac
 		Release|Windows = Release|Windows
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Debug|Linux.ActiveCfg = Debug|Any CPU
@@ -188,15 +184,11 @@ Global
 		{05323072-56A7-4CFE-9C64-2E7762D592EB}.Release|Windows.ActiveCfg = Release|Any CPU
 		{05323072-56A7-4CFE-9C64-2E7762D592EB}.Release|Windows.Build.0 = Release|Any CPU
 		{D528D241-8063-4732-B19D-6939838E516F}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{D528D241-8063-4732-B19D-6939838E516F}.Debug|Linux.Build.0 = Debug|Any CPU
 		{D528D241-8063-4732-B19D-6939838E516F}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{D528D241-8063-4732-B19D-6939838E516F}.Debug|Mac.Build.0 = Debug|Any CPU
 		{D528D241-8063-4732-B19D-6939838E516F}.Debug|Windows.ActiveCfg = Debug|Any CPU
 		{D528D241-8063-4732-B19D-6939838E516F}.Debug|Windows.Build.0 = Debug|Any CPU
 		{D528D241-8063-4732-B19D-6939838E516F}.Release|Linux.ActiveCfg = Release|Any CPU
-		{D528D241-8063-4732-B19D-6939838E516F}.Release|Linux.Build.0 = Release|Any CPU
 		{D528D241-8063-4732-B19D-6939838E516F}.Release|Mac.ActiveCfg = Release|Any CPU
-		{D528D241-8063-4732-B19D-6939838E516F}.Release|Mac.Build.0 = Release|Any CPU
 		{D528D241-8063-4732-B19D-6939838E516F}.Release|Windows.ActiveCfg = Release|Any CPU
 		{D528D241-8063-4732-B19D-6939838E516F}.Release|Windows.Build.0 = Release|Any CPU
 		{B19797BA-419B-4FD8-B306-A3C241C665EB}.Debug|Linux.ActiveCfg = Debug|Any CPU
@@ -368,6 +360,9 @@ Global
 		{0844A0AD-778A-4DB3-8332-03AC50A17D05} = {C1F05813-B09E-4946-808C-42D46BF999A3}
 		{D51732E0-1E93-11E3-8224-0800200C9A66} = {C1F05813-B09E-4946-808C-42D46BF999A3}
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66} = {C1F05813-B09E-4946-808C-42D46BF999A3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C5EE3ED5-BFCC-4709-9FC2-0053C18D5883}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Tutorials\Tutorial1\Tutorial1 - Hello World.csproj

@@ -12,9 +12,6 @@
 		</ParameterGroup>
 		<Task>
 			<Reference Include="System.Xml" />
-			<Using Namespace="System" />
-			<Using Namespace="System.IO" />
-			<Using Namespace="System.Xml" />
 			<Code Type="Class" Language="cs"><![CDATA[
 using System;
 using System.IO;
@@ -111,8 +108,43 @@ public class GetAssemblyInfo : Task
 ]]></Code>
 		</Task>
 	</UsingTask>
-	<!--
-			<Utilities Include="FileUpdate"><Text><![CDATA[
+	<UsingTask TaskName="FileUpdate" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+		<ParameterGroup>
+			<Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+			<Pattern ParameterType="System.String" Required="true" />
+			<Replacement ParameterType="System.String" Required="true" />
+			<WarnOnNoUpdate ParameterType="System.Boolean" />
+			<IgnoreCase ParameterType="System.Boolean" />
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.Xml" />
+			<Code Type="Class" Language="cs"><![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public static class Extensions
+{
+	public static bool IsMono
+	{
+		get { return Type.GetType("Mono.Runtime", false) != null; }
+	}
+	
+	public static string FixParameter(string value)
+	{
+		if (IsMono)
+			return value.Replace("//", @"\");
+		else
+			return value.Replace(@"\\", @"\");
+	}
+}
+
 public class FileUpdate : Task
 {
 	public ITaskItem[] Files { get; set; }
@@ -184,8 +216,47 @@ public class FileUpdate : Task
 		}
 		return true;		
 	}
-}]]></Text></Utilities>
-			<Utilities Include="IncrementVersion"><Text><![CDATA[
+}
+]]></Code>
+		</Task>
+	</UsingTask>
+	<UsingTask TaskName="IncrementVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+		<ParameterGroup>
+			<Version ParameterType="System.String" Required="true" />
+			<Increment ParameterType="System.String" />
+			<RemovePrerelease ParameterType="System.Boolean" />
+			<AssemblyVersion ParameterType="System.String" Output="true" />
+			<AssemblyInformationalVersion ParameterType="System.String" Output="true" />
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.Xml" />
+			<Code Type="Class" Language="cs"><![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public static class Extensions
+{
+	public static bool IsMono
+	{
+		get { return Type.GetType("Mono.Runtime", false) != null; }
+	}
+	
+	public static string FixParameter(string value)
+	{
+		if (IsMono)
+			return value.Replace("//", @"\");
+		else
+			return value.Replace(@"\\", @"\");
+	}
+}
+
 public class IncrementVersion : Task
 {
 	public string Version { get; set; }
@@ -261,8 +332,44 @@ public class IncrementVersion : Task
 		return true;
 	}
 }
-]]></Text></Utilities>
-			<Utilities Include="FileExtract"><Text><![CDATA[
+]]></Code>
+		</Task>
+	</UsingTask>
+	<UsingTask TaskName="FileExtract" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+		<ParameterGroup>
+			<File ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+			<Pattern ParameterType="System.String" Required="true" />
+			<Output ParameterType="System.String" Output="true" />
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.Xml" />
+			<Code Type="Class" Language="cs"><![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public static class Extensions
+{
+	public static bool IsMono
+	{
+		get { return Type.GetType("Mono.Runtime", false) != null; }
+	}
+	
+	public static string FixParameter(string value)
+	{
+		if (IsMono)
+			return value.Replace("//", @"\");
+		else
+			return value.Replace(@"\\", @"\");
+	}
+}
+
 public class FileExtract : Task
 {
 	public ITaskItem File { get; set; }
@@ -297,17 +404,9 @@ public class FileExtract : Task
 		}
 		return false;
 	}
-}]]></Text></Utilities>
-		</ItemGroup>
+}
+]]></Code>
+		</Task>
+	</UsingTask>
 		
-		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\Utilities.cs" Lines="@(Utilities->'%(Text)')" Overwrite="true" />
-
-		<Csc
-			Sources="$(UtilitiesAssemblyPath)\Utilities.cs"
-			OutputAssembly="$(UtilitiesAssemblyPath)\Utilities.dll"
-			References="Microsoft.Build.Framework.dll;Microsoft.Build.Utilities.v4.0.dll;" 
-			TargetType="library"
-			/>
-	</Target>
-	-->
 </Project>

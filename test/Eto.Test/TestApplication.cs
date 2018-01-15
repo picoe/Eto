@@ -20,8 +20,6 @@ namespace Eto.Test
 #endif
 		}
 
-		static Stopwatch startupStopwatch = Stopwatch.StartNew();
-
 		public List<Assembly> TestAssemblies { get; private set; }
 
 		public TestApplication(Platform platform)
@@ -53,8 +51,8 @@ namespace Eto.Test
 
 			// show the main form
 			MainForm.Show();
-			startupStopwatch.Stop();
-			Log.Write(this, $"Startup time: {startupStopwatch.Elapsed}");
+			var elapsedTime = DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime();
+			Log.Write(this, $"Startup time: {elapsedTime}");
 		}
 
 		/*

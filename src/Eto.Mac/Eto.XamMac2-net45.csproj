@@ -11,6 +11,15 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseXamMacFullFramework>true</UseXamMacFullFramework>
   </PropertyGroup>
+  <PropertyGroup Condition="$(OS) == 'Windows_NT'">
+    <!--
+    	Xamarin.Mac on windows can only build modern project, not full
+    	So, we reference modern assemblies but build for .NET Framework 4.5 which gives us a compatible assembly.
+     -->
+    <VSINSTALLDIR Condition="$(VSINSTALLDIR) == ''">$(MSBuildProgramFiles32)Microsoft Visual Studio\2017\Professional\</VSINSTALLDIR>
+    <XamarinMacReferenceAssemblies>$(VSINSTALLDIR)Common7\IDE\ReferenceAssemblies\Microsoft\Framework\Xamarin.Mac\v2.0\</XamarinMacReferenceAssemblies>
+    <FrameworkPathOverride>$(XamarinMacReferenceAssemblies)</FrameworkPathOverride>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -252,6 +261,10 @@
     </MonoDevelop>
   </ProjectExtensions>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
+  <PropertyGroup Condition="$(OS) == 'Windows_NT'">
+  	<!-- Xamarin.Mac targets overrides this override, so let's set it back! -->
+    <FrameworkPathOverride>$(XamarinMacReferenceAssemblies)</FrameworkPathOverride>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>

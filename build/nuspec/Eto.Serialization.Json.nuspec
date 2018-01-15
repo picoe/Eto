@@ -22,12 +22,13 @@ https://github.com/picoe/Eto/wiki
 		<dependencies>
 			<group>
 				<dependency id="Eto.Forms" version="[$version$]" />
-				<dependency id="Newtonsoft.Json" version="7.0.1" />
+				<dependency id="Newtonsoft.Json" version="10.0.3" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
 		<file src="artifacts/core/$configuration$/netstandard1.3/Eto.Serialization.Json.dll" target="lib\netstandard1.3" />
+		<file src="artifacts/core/$configuration$/portable45-net45+win8+wpa81+wp8/Eto.Serialization.Json.dll" target="lib\portable-net45+win8+wpa81+wp8" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>
