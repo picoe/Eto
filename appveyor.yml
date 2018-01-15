@@ -9,7 +9,7 @@ build_script:
 - echo Downloading XamMac.dll for build..
 - mkdir %BASE%\artifacts\core\Release\net45
 - appveyor DownloadFile %XAMMAC_LOCATION%/XamMac.dll -FileName "%BASE%\artifacts\core\Release\net45\XamMac.dll"
-- msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% Resources\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
+- msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% build\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 test: off
 #test_script:
 #- nunit-console --framework=4.5 --include=TestPlatform artifacts/Release/net45/test/Eto.Test.dll
