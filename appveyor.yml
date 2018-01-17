@@ -16,6 +16,12 @@ test: off
 artifacts:
 - path: artifacts/nuget/Release/*.nupkg
   name: nuget
+- path: artifacts/samples
+  name: samples
+  type: zip
+- path: artifacts/test
+  name: test
+  type: zip
 branches:
   only:
   - develop

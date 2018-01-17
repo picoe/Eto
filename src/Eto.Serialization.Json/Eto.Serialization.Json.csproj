@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework Condition="$(TargetFramework)==''">netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard1.3</TargetFramework>
     <!-- Use this when multi-targeting works in VS for Mac (it works with msbuild though!)
     <TargetFrameworks>netstandard1.3;portable-net45+win8+wpa81+wp8</TargetFrameworks>
     -->

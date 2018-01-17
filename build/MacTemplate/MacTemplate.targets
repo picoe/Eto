@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="_TouchApp">
-	<PropertyGroup>
-		<BuildDependsOn>
-			$(BuildDependsOn);
-			_BuildAppBundle
-		</BuildDependsOn>
-		<CleanDependsOn>
-			_CleanAppBundle;
-			$(CleanDependsOn);
-		</CleanDependsOn>
-	</PropertyGroup>
 
 	<ItemGroup>
 		<AvailableItemName Include="BundleResource" /> 
@@ -31,10 +21,11 @@
 		<MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != ''" />
 	</Target>
 
-	<Target Name="_CleanAppBundle">
+	<Target Name="_CleanAppBundle" AfterTargets="BeforeClean">
 		<RemoveDir Directories="$(OutputAppPath)"/>
 	</Target>
-	<Target Name="_BuildAppBundle">
+	
+	<Target Name="_BuildAppBundle" AfterTargets="AfterBuild">
 		<PropertyGroup>
 			<OutputContents>$(OutputAppPath)\Contents</OutputContents>
 			<OutputMonoBundlePath>$(OutputContents)\MonoBundle</OutputMonoBundlePath>
@@ -42,10 +33,11 @@
 			<LauncherFile>$([System.IO.Path]::GetFileNameWithoutExtension('$(TargetFileName)'))</LauncherFile>
 			<LauncherFileWithPath>$(OutputContents)\MacOS\$(LauncherFile)</LauncherFileWithPath>
 
-			<MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == '' AND $(Configuration) != 'Release'">True</MacIncludeSymbols>
-			<MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == '' AND $(Configuration) == 'Release'">False</MacIncludeSymbols>
-			<MacArch Condition="'$(MacArch)'=='' AND !Exists('$(TargetDir)\Eto.Mac64.dll')">i386</MacArch>
-			<MacArch Condition="'$(MacArch)'==''">x86_64</MacArch>
+			<Has32Bit>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.Mac'))</Has32Bit>
+			<Has64Bit>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.Mac64'))</Has64Bit>
+			<MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == ''">true</MacIncludeSymbols>
+			<MacArch Condition="'$(MacArch)'=='' AND $(Has64Bit)=='true'">x86_64</MacArch>
+			<MacArch Condition="'$(MacArch)'==''">i386</MacArch>
 
 			<ReferenceFiles>$(MSBuildThisFileDirectory)</ReferenceFiles>
 			<OutputPListFile>$(OutputContents)\Info.plist</OutputPListFile>
@@ -57,6 +49,7 @@
 		</PropertyGroup>
 
 		<Message Text="Creating $(MacBundleName).app in target directory" Importance="high" />
+		<Warning Text=" Warning: Both Eto.Mac and Eto.Mac64 platforms references detected.  Building 64-bit only. " Condition="$(Has32Bit)=='true' and $(Has64Bit)=='true'" />
 
 		<!-- Delete existing stuff, we're going to rebuild them -->
 		<RemoveDir Directories="$(OutputMonoBundlePath)" />
@@ -78,24 +71,28 @@
 			<!--ExecutableFiles Include="$(TargetDir)\**" Exclude="$(OutputAppPath)\**\*" /-->
 			<ExecutableFiles Include="@(MacExecutableFiles->'$(TargetDir)%(Identity)')" />
 			<ExecutableFiles Include="@(None)" Condition="%(None.CopyToOutputDirectory) != ''" />
-			<ExecutableFiles Include="@(ReferenceCopyLocalPaths)" />
-			<ExecutableFiles Remove="$(TargetDir)\*.vshost.*" />
-
-			<ExecutableFiles Remove="$(TargetDir)\**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
-			<ExecutableFiles Remove="$(TargetDir)\**\*.mdb" Condition="$(MacIncludeSymbols) != 'True'" />
-			
-			<ExecutableFiles Remove="$(TargetDir)\Eto.Direct2D.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk2.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk3.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.Wpf.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.WinForms.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.iOS.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.WinRT.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.Android.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.XamMac.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.XamMac2.*" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.Mac.*" Condition="$(MacArch) != 'i386'" />
-			<ExecutableFiles Remove="$(TargetDir)\Eto.Mac64.*" Condition="$(MacArch) != 'x86_64'" />
+			<ExecutableFiles Include="@(ReferenceCopyLocalPaths)" Condition="
+				!(%(Filename) == 'Eto' and %(Extension) == '.xml')
+				and %(Filename) != 'Eto.Direct2D'
+				and %(Filename) != 'Eto.Gtk2'
+				and %(Filename) != 'Eto.Gtk3'
+				and %(Filename) != 'Eto.Wpf'
+				and %(Filename) != 'Eto.WinForms'
+				and %(Filename) != 'Eto.iOS'
+				and %(Filename) != 'Eto.WinRT'
+				and %(Filename) != 'Eto.Android'
+				and %(Filename) != 'Eto.XamMac'
+				and %(Filename) != 'Eto.XamMac2'
+				and (
+					$(MacIncludeSymbols) == 'True'
+					or (
+						%(Extension) != '.pdb'
+						and %(Extension) != '.mdb'
+					)
+				)
+				and ($(MacArch) == 'i386' or %(Filename) != 'Eto.Mac')
+				and ($(MacArch) == 'x86_64' or %(Filename) != 'Eto.Mac64')
+				" />
 
 			<ResourceFiles Include="@(BundleResource)" />
 			<ResourceFiles Include="@(Content)" />

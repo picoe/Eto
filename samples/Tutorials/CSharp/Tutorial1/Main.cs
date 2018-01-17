@@ -15,7 +15,7 @@ namespace Tutorial1
 			Title = "Hello, Eto.Forms";
 
 			// Content of the form
-			Content = new Label { Text = "Some content", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
+			Content = new Label { Text = "Some content", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center };
 		}
 	}
 

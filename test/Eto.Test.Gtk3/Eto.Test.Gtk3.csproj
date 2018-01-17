@@ -9,8 +9,8 @@
     <RootNamespace>Eto.Test.Gtk3</RootNamespace>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.Gtk3</AssemblyName>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <FixGtkReferences Condition="$(FixGtkReferences)==''">true</FixGtkReferences>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -70,4 +70,9 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <PackageReference Include="NUnit">
+      <Version>3.9.0</Version>
+    </PackageReference>
+  </ItemGroup>
 </Project>

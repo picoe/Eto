@@ -9,6 +9,7 @@
     <RootNamespace>Eto.Gtk3</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Gtk3</AssemblyName>
+    <FixGtkReferences Condition="$(FixGtkReferences)==''">true</FixGtkReferences>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -31,35 +32,47 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
-      <Name>System</Name>
-    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="atk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>atk-sharp</Name>
+      <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\atk-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="cairo-sharp, Version=1.10.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Name>cairo-sharp</Name>
+      <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\cairo-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="gdk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>gdk-sharp</Name>
+      <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\gdk-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="gio-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>gio-sharp</Name>
+      <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\gio-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="glib-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>glib-sharp</Name>
+      <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\glib-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="gtk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>gtk-sharp</Name>
+      <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\gtk-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="pango-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>pango-sharp</Name>
+      <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\pango-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -277,15 +290,6 @@
     <Compile Include="Forms\DataObjectHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <ItemGroup />
-  <ItemGroup />
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>

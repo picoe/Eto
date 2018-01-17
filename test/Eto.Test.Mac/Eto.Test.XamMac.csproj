@@ -11,6 +11,7 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.XamMac</AssemblyName>
     <UsePackagesConfig>True</UsePackagesConfig>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

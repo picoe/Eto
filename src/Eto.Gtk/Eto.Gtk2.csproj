@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,6 +8,7 @@
     <RootNamespace>Eto.GtkSharp</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Gtk2</AssemblyName>
+    <FixGtkReferences Condition="$(FixGtkReferences)==''">true</FixGtkReferences>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -42,18 +42,28 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>gdk-sharp</Name>
+      <PackageVersion>2.0</PackageVersion>
       <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>gtk-sharp</Name>
+      <PackageVersion>2.0</PackageVersion>
       <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>glib-sharp</Name>
+      <PackageVersion>2.0</PackageVersion>
       <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>pango-sharp</Name>
+      <PackageVersion>2.0</PackageVersion>
       <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Name>atk-sharp</Name>
+      <PackageVersion>2.0</PackageVersion>
       <Package>gtk-sharp-2.0</Package>
     </Reference>
   </ItemGroup>
@@ -283,12 +293,6 @@
     <Compile Include="Forms\DataObjectHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
