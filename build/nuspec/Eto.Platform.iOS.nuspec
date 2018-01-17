@@ -26,7 +26,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="artifacts/$configuration$/netstandard1.3/Eto.iOS.dll" target="lib\monotouch" />
+		<file src="artifacts\$configuration$\netstandard1.3\Eto.iOS.dll" target="lib\monotouch" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

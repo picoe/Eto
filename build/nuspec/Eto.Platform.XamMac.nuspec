@@ -30,7 +30,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="artifacts/core/$configuration$/net45/Eto.XamMac.dll" target="lib\net45" />
+		<file src="artifacts\core\$configuration$\net45\Eto.XamMac.dll" target="lib\net45" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

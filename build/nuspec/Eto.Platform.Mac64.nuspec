@@ -34,11 +34,11 @@ You do not need to use any of the classes of this assembly (unless customizing t
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="lib/MonoMac64/MonoMac.dll" target="lib\net45" />
-		<file src="lib/MonoMac64/MonoMac-License.txt" target="MonoMac-License.txt" />
-		<file src="artifacts/core/$configuration$/net45/Eto.Mac64.dll" target="lib\net45" />
+		<file src="lib\MonoMac64\MonoMac.dll" target="lib\net45" />
+		<file src="lib\MonoMac64\MonoMac-License.txt" target="MonoMac-License.txt" />
+		<file src="artifacts\core\$configuration$\net45\Eto.Mac64.dll" target="lib\net45" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
-		<file src="build/MacTemplate/*" target="build/" />
-		<file src="build/nuspec/Mac.targets" target="build/Eto.Platform.Mac64.targets" />
+		<file src="build\MacTemplate\*.*" target="build" />
+		<file src="build\nuspec\Mac.targets" target="build\Eto.Platform.Mac64.targets" />
 	</files>
 </package>
