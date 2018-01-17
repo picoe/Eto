@@ -31,7 +31,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="artifacts/$configuration$/portable259/Eto.WinRT.dll" target="lib\netcore45" />
+		<file src="artifacts\$configuration$\portable259\Eto.WinRT.dll" target="lib\netcore45" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

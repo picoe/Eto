@@ -30,8 +30,8 @@ Using Eto.Platform.Mac instead uses the open source MonoMac, which allows you to
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="artifacts/core/$configuration$/modern/Eto.XamMac2.dll" target="lib\xamarin.mac2" />
-		<file src="artifacts/core/$configuration$/net45/Eto.XamMac2.dll" target="lib\net45" />
+		<file src="artifacts\core\$configuration$\modern\Eto.XamMac2.dll" target="lib\xamarin.mac2" />
+		<file src="artifacts\core\$configuration$\net45\Eto.XamMac2.dll" target="lib\net45" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>
