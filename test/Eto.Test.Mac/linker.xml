@@ -1,0 +1,13 @@
+<linker>
+    <assembly fullname="System.Runtime.Caching">
+        <type fullname="System.Runtime.Caching.Configuration.CachingSectionGroup" preserve="fields,members">
+        </type>
+        <type fullname="System.Runtime.Caching.Configuration.MemoryCacheSection" preserve="fields,members">
+        </type>
+        <type fullname="System.Runtime.Caching.Configuration.MemoryCacheSettingsCollection" preserve="fields,members">
+        </type>
+    </assembly>
+    <assembly fullname="System">
+        <type fullname="System.ComponentModel.ReferenceConverter" preserve="type,fields,members"></type>
+    </assembly>
+</linker>

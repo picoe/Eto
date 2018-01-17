@@ -1,6 +1,0 @@
-<Namespace Name="Eto.IO">
-  <Docs>
-    <summary>Abstracted I/O</summary>
-    <remarks>Abstracted input/output interfaces</remarks>
-  </Docs>
-</Namespace>

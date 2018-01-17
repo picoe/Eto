@@ -1,0 +1,64 @@
+{
+	/* $type can be specified if loading json directly (without existing instance), but when loading from a specific instance (like this example) you omit it */
+	Content: {
+		$type: "TabControl",
+		Pages: [
+			{
+				Text: "Table Layout",
+				Content: {
+					$type: "TableLayout",
+					Padding: "10",
+					Spacing: "5, 5",
+					Rows: [
+						[ "Text Box", { $type: "TextBox", TextChanged: "HandleTextChanged", KeyDown: "HandleKeyDown" } ],
+						[ "Text Area", { $type: "TextArea", $name: "MyTextArea" } ],
+						[ { }, { $type: "CheckBox", $name: "MyCheckBox", Text: "Check Box" } ],
+						[ "Drop Down", { $type: "DropDown", Items: [ "Item 1", "Item 2", "Item 3", "Item 4" ] } ],
+						[ { $type: "Label", Text: "Image", VerticalAlignment: "Center" }, 
+							[ /* TableLayout */
+								[ /* TableRow */
+									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.Images.TestImage.png, Eto.Test" } },
+									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.Images.TestIcon.ico, Eto.Test" } }
+								]
+							]
+						],
+						[ "Button",
+							[ [ { $type: "Button", Text: "Bind to Click event in code behind", Click: "HandleButtonClick" }, null ] ]
+						],
+						null
+					]
+				}
+			},
+			{
+				Text: "Stack Layout",
+				Content: {
+					$type: "StackLayout",
+					Items: [
+						"Some Text",
+						{ $type: "Button", Text: "Click Me!" },
+						{
+							HorizontalAlignment: "Stretch",
+							Expand: true,
+							Control: { $type: "TextArea" }
+						},
+						{
+							HorizontalAlignment: "Right",
+							Control: {
+								$type: "StackLayout",
+								Orientation: "Horizontal",
+								Items: [
+									{ $type: "Button", Text: "OK" },
+									{ $type: "Button", Text: "C&ancel" }
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				Text: "External Control",
+				Content: { $type: "Eto.Test.Sections.Controls.LabelSection, Eto.Test" }
+			}
+		]
+	}
+}
