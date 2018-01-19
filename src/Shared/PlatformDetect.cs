@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Eto
@@ -34,5 +36,12 @@ namespace Eto
 			}
 			return osName;
 		}
+
+#if GTK3
+		public static Assembly GetCallingAssembly()
+		{
+			return (new StackTrace()).GetFrame(5).GetMethod().DeclaringType.Assembly;
+		}
+#endif
 	}
 }

@@ -56,6 +56,7 @@ namespace Eto
 			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac64", false)
 			                 ?? Type.GetType("Eto.PlatformDetect, Eto.XamMac", false)
 			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk", false)
 			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk2", false)
 			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk3", false);
 			if (detectType != null)
@@ -87,58 +88,16 @@ namespace Eto
 			var winRtType = Type.GetType("Windows.ApplicationModel.DesignMode, Windows, ContentType=WindowsRuntime");
 			IsWinRT = winRtType != null;
 
-			#if PCL
-
-			var windowsType = Type.GetType("System.ComponentModel.DesignerProperties, PresentationFramework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
-			IsWindows = windowsType != null || IsWinRT;
-
-			// get Environment.OSVersion.Platform using reflection
-			int platform = -1;
-			var envType = typeof(Environment);
-			var osVersionProp = envType.GetRuntimeProperty("OSVersion");
-			if (osVersionProp != null)
+			if (Environment.NewLine == "\r\n")
+				IsWindows = true;
+			else
 			{
-				var osVal = osVersionProp.GetValue(null);
-				if (osVal != null)
-				{
-					var platProp = osVal.GetType().GetRuntimeProperty("Platform");
-					platform = (int)platProp.GetValue(osVal);
-				}
-			}
+				IsUnix = true;
 
-			#else
-			var platform = (int)Environment.OSVersion.Platform;
-			#endif
-
-			switch (platform)
-			{
-				case 6: // PlatformID.MacOSX:
-					IsMac = true;
-					IsUnix = true;
-					break;
-				case 4: // PlatformID.Unix:
-					IsUnix = true;
-					switch (GetUnixType().ToUpperInvariant())
-					{
-						case "DARWIN":
-							IsMac = true;
-							break;
-						case "LINUX":
-							IsLinux = true;
-							break;
-					}
-					break;
-				case 0: // PlatformID.Win32S:
-				case 1: // PlatformID.Win32Windows:
-				case 2: // PlatformID.Win32NT:
-				case 3: // PlatformID.WinCE:
-				case 5: // PlatformID.Xbox:
-					IsWindows = true;
-					break;
-				default:
-					// treat everything else as windows
-					IsWindows = true;
-					break;
+				if (GetUnixType().ToUpperInvariant() == "DARWIN")
+ 					IsMac = true;
+				else
+					IsLinux = true;
 			}
 		}
 	}

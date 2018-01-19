@@ -5,7 +5,6 @@ using Eto.GtkSharp.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 using Gtk;
-using GLib;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -69,7 +68,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 
 #if GTK2
-			internal void HandlePopupShownChanged(object o, NotifyArgs args)
+			internal void HandlePopupShownChanged(object o, GLib.NotifyArgs args)
 			{
 				if (Handler.Control.PopupShown)
 					Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);

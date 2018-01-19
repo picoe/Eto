@@ -15,6 +15,13 @@ namespace Eto
 	{
 		#if PCL
 		static MethodInfo getCallingAssembly = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
+		
+		static TypeHelper()
+		{
+			var detectType = Type.GetType("Eto.PlatformDetect, Eto.Gtk", false);
+			if (detectType != null)
+				getCallingAssembly = detectType.GetRuntimeMethod("GetCallingAssembly", new Type[] { });
+		}
 
 		public static MethodInfo GetCallingAssembly { get { return getCallingAssembly; } }
 		#endif

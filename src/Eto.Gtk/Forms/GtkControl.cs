@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using GLib;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
@@ -537,7 +536,7 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
-			[ConnectBefore]
+			[GLib.ConnectBefore]
 			public void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
 			{
 				var handler = Handler;
