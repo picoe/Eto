@@ -16,6 +16,10 @@ namespace Eto
 		/// </summary>
 		public static readonly string Ios = "Eto.iOS.Platform, Eto.iOS";
 		/// <summary>
+		/// Type of the GTK platform
+		/// </summary>
+		public static readonly string Gtk = "Eto.GtkSharp.Platform, Eto.Gtk";
+		/// <summary>
 		/// Type of the GTK 2 platform
 		/// </summary>
 		public static readonly string Gtk2 = "Eto.GtkSharp.Platform, Eto.Gtk2";
