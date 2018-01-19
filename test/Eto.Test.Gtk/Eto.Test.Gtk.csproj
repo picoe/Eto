@@ -6,12 +6,12 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
+    <OutputPath>..\..\artifacts\test\Debug\</OutputPath>
     <DefineConstants>CAIRO;DEBUG;TRACE;GTK3</DefineConstants>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
+    <OutputPath>..\..\artifacts\test\Release\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>true</Optimize>
   </PropertyGroup>
