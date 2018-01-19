@@ -67,9 +67,9 @@ namespace Eto.Serialization.Xaml
 			return base.GetXamlType(type);
 		}
 		bool isInResourceMember;
-		XamlMember resourceMember;
+		PropertyInfo resourceMember;
 
-		internal bool IsResourceMember(XamlMember member)
+		internal bool IsResourceMember(PropertyInfo member)
 		{
 			if (member == null)
 				return false;
@@ -80,7 +80,7 @@ namespace Eto.Serialization.Xaml
 				isInResourceMember = true;
 				try
 				{
-					resourceMember = GetXamlType(typeof(Control)).GetMember("Properties");
+					resourceMember = typeof(Widget).GetRuntimeProperty("Properties");
 				}
 				finally
 				{
@@ -88,7 +88,28 @@ namespace Eto.Serialization.Xaml
 				}
 			}
 
-			return member == resourceMember;
+			return member.DeclaringType == resourceMember.DeclaringType
+				   && member.Name == resourceMember.Name;
+		}
+
+		class PropertiesXamlMember : XamlMember
+		{
+			public PropertiesXamlMember(PropertyInfo propertyInfo, XamlSchemaContext context)
+				: base(propertyInfo, context)
+			{
+			}
+
+			protected override bool LookupIsAmbient() => true;
+		}
+
+		protected override XamlMember GetProperty(PropertyInfo propertyInfo)
+		{
+			if (IsResourceMember(propertyInfo))
+			{
+				return new PropertiesXamlMember(propertyInfo, this);
+			}
+
+			return base.GetProperty(propertyInfo);
 		}
 	}
 }

@@ -217,20 +217,6 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
-		class PropertiesXamlMember : XamlMember
-		{
-			public PropertiesXamlMember(PropertyInfo propertyInfo, XamlSchemaContext context)
-				: base(propertyInfo, context)
-			{
-			}
-
-			protected override bool LookupIsAmbient()
-			{
-				return true;
-			}
-		}
-
-
 
 		protected override XamlMember LookupMember(string name, bool skipReadOnlyCheck)
 		{
@@ -243,10 +229,6 @@ namespace Eto.Serialization.Xaml
 					// in design mode, ignore wiring up events
 					return new EmptyXamlMember(member.UnderlyingMember as EventInfo, context);
 				}
-			}
-			if (context != null && context.IsResourceMember(member))
-			{
-				return new PropertiesXamlMember(member.UnderlyingMember as PropertyInfo, SchemaContext);
 			}
 			return member;
 		}
