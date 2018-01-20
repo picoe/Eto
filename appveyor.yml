@@ -6,9 +6,6 @@ build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
 - set BUILD_VERSION=000%APPVEYOR_BUILD_NUMBER%
 - set BUILD_VERSION=2.4.0-build%BUILD_VERSION:~-4%
-- echo Downloading XamMac.dll for build..
-- mkdir %BASE%\artifacts\core\Release\net45
-- appveyor DownloadFile %XAMMAC_LOCATION%/XamMac.dll -FileName "%BASE%\artifacts\core\Release\net45\XamMac.dll"
 - msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% build\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 test: off
 #test_script:
