@@ -1,17 +1,20 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.IO;
-using Sd = System.Drawing;
-using Swf = System.Windows.Forms;
-using Swmi = System.Windows.Media.Imaging;
-using Swc = System.Windows.Controls;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
+using swmi = System.Windows.Media.Imaging;
+using swc = System.Windows.Controls;
+using Eto.Wpf.Forms.Menu;
 
 namespace Eto.Wpf.Forms
 {
-    public class TrayIndicatorHandler : WidgetHandler<Swf.NotifyIcon, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
+    public class TrayIndicatorHandler : WidgetHandler<swf.NotifyIcon, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
     {
-        public string Title
+		Image _image;
+
+		public string Title
         {
             get { return Control.Text; }
             set { Control.Text = value; }
@@ -23,48 +26,35 @@ namespace Eto.Wpf.Forms
             set { Control.Visible = value; }
         }
 
-        private Swc.ContextMenu menu;
 
         public TrayIndicatorHandler()
         {
-            Control = new Swf.NotifyIcon();
+            Control = new swf.NotifyIcon();
             Control.MouseClick += Control_MouseClick;
         }
 
-        public void SetIcon(Icon icon)
+        public Image Image
+		{
+			get { return _image; }
+			set
+			{
+				_image = value;
+				Control.Icon = _image.ToSDIcon();
+			}
+		}
+
+        public ContextMenu Menu { get; set; }
+
+        private void Control_MouseClick(object sender, swf.MouseEventArgs e)
         {
-            if (icon == null)
-                Control.Icon = null;
-            else
+			var menu = ContextMenuHandler.GetControl(Menu);
+
+			if (menu != null && e.Button.HasFlag(swf.MouseButtons.Right))
             {
-                using (var stream = new MemoryStream())
-                {
-                    var enc = new Swmi.BmpBitmapEncoder();
-                    enc.Frames.Add(Swmi.BitmapFrame.Create(icon.ToWpf()));
-                    enc.Save(stream);
-                    stream.Position = 0;
-
-                    var bitmap = new Sd.Bitmap(stream);
-                    bitmap.MakeTransparent();
-                    Control.Icon = Sd.Icon.FromHandle(bitmap.GetHicon());
-                }
-            }
-        }
-
-        public void SetMenu(ContextMenu menu)
-        {
-            this.menu = menu?.ControlObject as Swc.ContextMenu;
-        }
-
-        private void Control_MouseClick(object sender, Swf.MouseEventArgs e)
-        {
-            if (menu != null && e.Button.HasFlag(Swf.MouseButtons.Right))
-            {
-                // TODO: Close tray menu when clicked outside
-                // https://weblogs.asp.net/marianor/a-wpf-wrapper-around-windows-form-notifyicon
-
-                menu.IsOpen = true;
-            }
+				// TODO: Close tray menu when clicked outside
+				// https://weblogs.asp.net/marianor/a-wpf-wrapper-around-windows-form-notifyicon
+				menu.IsOpen = true;
+			}
         }
 
         public override void AttachEvent(string id)
@@ -74,7 +64,7 @@ namespace Eto.Wpf.Forms
                 case TrayIndicator.ActivatedEvent:
                     Control.MouseClick += (sender, e) =>
                     {
-                        if (e.Button.HasFlag(Swf.MouseButtons.Left))
+                        if (e.Button.HasFlag(swf.MouseButtons.Left))
                             Callback.OnActivated(Widget, EventArgs.Empty);
                     };
                     break;

@@ -237,6 +237,8 @@
     <Compile Include="Forms\OpenWithDialogHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />
     <Compile Include="Platform.cs" />
+    <Compile Include="Forms\NotificationHandler.cs" />
+    <Compile Include="Forms\TrayIndicatorHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

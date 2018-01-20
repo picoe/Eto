@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -6,36 +6,46 @@ namespace Eto.Forms
 	/// <summary>
 	/// System toast notification.
 	/// </summary>
+	/// <remarks>
+	/// Create a new instance of this class for each notification sent as they are not reusable. 
+	/// The ID and <see cref="Notification.UserData"/> should be used to specify what action would happen when the user
+	/// clicks the notification (if applicable).
+	/// 
+	/// All notifications should be handled by the <see cref="Application.NotificationActivated"/> event.
+	/// 
+	/// Note that in some platforms (e.g. macOS), the application may have a notification clicked when
+	/// the application isn't even started.  In this case, the application is started an then sent the notification
+	/// to the <see cref="Application.NotificationActivated"/> immediately.
+	/// </remarks>
 	[Handler(typeof(Notification.IHandler))]
 	public class Notification : Widget
 	{
-		private Icon icon;
-
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
-
-		static readonly object callback = new Callback();
-
-		/// <summary>
-		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations.
-		/// </summary>
-		/// <returns>The callback instance to use for this widget.</returns>
-		protected override object GetCallback() { return callback; }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets or sets the icon for the <see cref="Notification"/>.
 		/// </summary>
 		/// <remarks>
-		/// Does nothing on WPF and WinForms.
+		/// Currently does nothing on WPF and WinForms.
 		/// </remarks>
 		/// <value>The icon of the <see cref="Notification"/>.</value>
+		[Obsolete("Since 2.4, use ContentImage instead")]
 		public Icon Icon
 		{
-			get { return icon; }
-			set
-			{
-				icon = value;
-				Handler.SetIcon(value);
-			}
+			get { return ContentImage as Icon; }
+			set { ContentImage = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the content image of the notification
+		/// </summary>
+		/// <remarks>
+		/// This is used to provide context to the user for what the notification is for.
+		/// </remarks>
+		public Image ContentImage
+		{
+			get { return Handler.ContentImage; }
+			set { Handler.ContentImage = value; }
 		}
 
 		/// <summary>
@@ -52,11 +62,12 @@ namespace Eto.Forms
 		/// Gets a value indicating whether this <see cref="Notification"/>
 		/// requires a <see cref="TrayIndicator"/> to be displayed.
 		/// </summary>
+		/// <remarks>
+		/// Usually if a tray is required but not provided, one will be created for the purposes of
+		/// showing the notification with the same icon as the <see cref="Application.MainForm"/>.
+		/// </remarks>
 		/// <value><c>true</c> if <see cref="TrayIndicator"/> is required; otherwise, <c>false</c>.</value>
-		public bool RequiresTrayIndicator
-		{
-			get { return false; }
-		}
+		public bool RequiresTrayIndicator => Handler.RequiresTrayIndicator;
 
 		/// <summary>
 		/// Gets or sets the title for the <see cref="Notification"/>.
@@ -66,6 +77,22 @@ namespace Eto.Forms
 		{
 			get { return Handler.Title; }
 			set { Handler.Title = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets user data for the notification.
+		/// </summary>
+		/// <remarks>
+		/// Use this to store application-specific data that would be useful for knowing what caused the notification.
+		/// 
+		/// The data you store would usually determine what action to perform in the application.
+		/// 
+		/// This is returned via <see cref="Application.NotificationActivated"/> via the <see cref="NotificationEventArgs"/>.
+		/// </remarks>
+		public string UserData
+		{
+			get { return Handler.UserData; }
+			set { Handler.UserData = value; }
 		}
 
 		/// <summary>
@@ -79,10 +106,7 @@ namespace Eto.Forms
 		/// looking at <see cref="RequiresTrayIndicator"/> property.
 		/// </remarks>
 		/// <param name="indicator">Indicator to use to show the notification.</param>
-		public void Show(TrayIndicator indicator = null)
-		{
-			Handler.Show(indicator);
-		}
+		public void Show(TrayIndicator indicator = null) => Handler.Show(indicator);
 
 		/// <summary>
 		/// Handler interface for the <see cref="Notification"/> control
@@ -94,6 +118,18 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The title for the <see cref="Notification"/>.</value>
 			string Title { get; set; }
+
+			/// <summary>
+			/// Gets or sets user data for the notification.
+			/// </summary>
+			/// <remarks>
+			/// Use this to store application-specific data that would be useful for knowing what caused the notification.
+			/// 
+			/// The data you store would usually determine what action to perform in the application.
+			/// 
+			/// This is returned via <see cref="Application.NotificationActivated"/> via the <see cref="NotificationEventArgs"/>.
+			/// </remarks>
+			string UserData { get; set; }
 
 			/// <summary>
 			/// Gets or sets the message of the <see cref="Notification"/>.
@@ -109,10 +145,12 @@ namespace Eto.Forms
 			bool RequiresTrayIndicator { get; }
 
 			/// <summary>
-			/// Sets the icon for the <see cref="Notification"/>.
+			/// Gets or sets the content image of the notification
 			/// </summary>
-			/// <param name="icon">The icon of the <see cref="Notification"/>.</param>
-			void SetIcon(Icon icon);
+			/// <remarks>
+			/// This is used to provide context to the user for what the notification is for.
+			/// </remarks>
+			Image ContentImage { get; set; }
 
 			/// <summary>
 			/// Shows the current notification.
@@ -124,11 +162,13 @@ namespace Eto.Forms
 		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="Activated"/> event.
 		/// </summary>
+		[Obsolete("Since 2.4, Use Application.NotificationActivatedEvent instead.")]
 		public const string ActivatedEvent = "Notification.Activated";
 
 		/// <summary>
 		/// Event to handle when the user left click the <see cref="Notification"/>.
 		/// </summary>
+		[Obsolete("Since 2.4, Use Application.NotificationActivated instead.")]
 		public event EventHandler<EventArgs> Activated
 		{
 			add { Properties.AddHandlerEvent(ActivatedEvent, value); }
@@ -139,35 +179,10 @@ namespace Eto.Forms
 		/// Raises the <see cref="Activated"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments.</param>
+		[Obsolete("Since 2.4, Use Application.OnNotificationActivated instead.")]
 		protected virtual void OnActivated(EventArgs e)
 		{
 			Properties.TriggerEvent(ActivatedEvent, this, e);
-		}
-
-		/// <summary>
-		/// Callback interface for <see cref="Notification"/>
-		/// </summary>
-		public new interface ICallback : Widget.ICallback
-		{
-			/// <summary>
-			/// Raises activated event.
-			/// </summary>
-			void OnActivated(Notification widget, EventArgs e);
-		}
-
-		/// <summary>
-		/// Callback implementation for handlers of <see cref="Notification"/>
-		/// </summary>
-		protected class Callback : ICallback
-		{
-			/// <summary>
-			/// Raises activated event.
-			/// </summary>
-			public void OnActivated(Notification widget, EventArgs e)
-			{
-				using (widget.Platform.Context)
-					widget.OnActivated(e);
-			}
 		}
 	}
 }

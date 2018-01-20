@@ -5,6 +5,7 @@ using Eto.Mac.Forms;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Printing;
 using System.Linq;
+using Eto.Mac.Forms.Menu;
 
 #if XAMMAC2
 using AppKit;
@@ -519,5 +520,7 @@ namespace Eto.Mac
 				effects |= DragEffects.Move;
 			return effects;
 		}
+
+		public static NSMenu ToNS(this ContextMenu menu) => ContextMenuHandler.GetControl(menu);
 	}
 }

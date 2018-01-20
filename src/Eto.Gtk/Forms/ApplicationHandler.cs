@@ -24,6 +24,8 @@ namespace Eto.GtkSharp.Forms
 		Gtk.StatusIcon statusIcon;
 		readonly List<ManualResetEvent> invokeResetEvents = new List<ManualResetEvent>();
 
+		public static ApplicationHandler Instance => Application.Instance?.Handler as ApplicationHandler;
+
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -190,6 +192,9 @@ namespace Eto.GtkSharp.Forms
 					break;
 				case Application.UnhandledExceptionEvent:
 					GLib.ExceptionManager.UnhandledException += OnUnhandledException;
+					break;
+				case Application.NotificationActivatedEvent:
+					// handled by NotificationHandler
 					break;
 				default:
 					base.AttachEvent(id);

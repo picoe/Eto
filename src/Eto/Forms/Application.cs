@@ -106,6 +106,36 @@ namespace Eto.Forms
 			Properties.TriggerEvent(UnhandledExceptionEvent, this, e);
 		}
 
+		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="NotificationActivated"/> event
+		/// </summary>
+		public const string NotificationActivatedEvent = "Application.NotificationActivated";
+
+		/// <summary>
+		/// Occurs when a notification is clicked by the user that was previously displayed.
+		/// </summary>
+		/// <remarks>
+		/// To send a notification, use <see cref="Notification"/>.
+		/// 
+		/// The <see cref="NotificationEventArgs.ID"/> and <see cref="NotificationEventArgs.UserData"/>
+		/// should be used to determine what action to perform when the user clicks on the notification.
+		/// These parameters are set when creating the <see cref="Notification"/>
+		/// </remarks>
+		public event EventHandler<NotificationEventArgs> NotificationActivated
+		{
+			add { Properties.AddHandlerEvent(NotificationActivatedEvent, value); }
+			remove { Properties.RemoveEvent(NotificationActivatedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="NotificationActivated"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnNotificationActivated(NotificationEventArgs e)
+		{
+			Properties.TriggerEvent(NotificationActivatedEvent, this, e);
+		}
+
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		Form mainForm;
@@ -163,7 +193,8 @@ namespace Eto.Forms
 		{
 			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
 			EventLookup.Register<Application>(c => c.OnUnhandledException(null), Application.UnhandledExceptionEvent);
-}
+			EventLookup.Register<Application>(c => c.OnNotificationActivated(null), Application.NotificationActivatedEvent);
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
@@ -411,6 +442,11 @@ namespace Eto.Forms
 			/// Raises the unhandled exception event.
 			/// </summary>
 			void OnUnhandledException(Application widget, UnhandledExceptionEventArgs e);
+
+			/// <summary>
+			/// Raises the notification activated event.
+			/// </summary>
+			void OnNotificationActivated(Application wiget, NotificationEventArgs e);
 		}
 
 		/// <summary>
@@ -442,6 +478,15 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnUnhandledException(e);
+			}
+
+			/// <summary>
+			/// Raises the notification activated event.
+			/// </summary>
+			public void OnNotificationActivated(Application widget, NotificationEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnNotificationActivated(e);
 			}
 		}
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
@@ -11,6 +11,8 @@ using swmi = System.Windows.Media.Imaging;
 using swd = System.Windows.Documents;
 using xwt = Xceed.Wpf.Toolkit;
 using Eto.Wpf.Drawing;
+using System.Windows.Interop;
+using System.IO;
 
 namespace Eto.Wpf
 {
@@ -824,6 +826,56 @@ namespace Eto.Wpf
 					throw new NotSupportedException();
 
 			}
+		}
+
+		public static Image ToEto(this System.Drawing.Icon icon)
+		{
+			var imageSource = Imaging.CreateBitmapSourceFromHIcon(
+						icon.Handle,
+						sw.Int32Rect.Empty,
+						swmi.BitmapSizeOptions.FromEmptyOptions());
+			return imageSource.ToEto();
+		}
+
+		public static Icon ToEtoIcon(this swm.ImageSource bitmap)
+		{
+			if (bitmap == null)
+				return null;
+
+			return null;
+		}
+		public static System.Drawing.Bitmap ToSD(this Image image)
+		{
+			if (image == null)
+				return null;
+			var icon = image as Icon;
+			if (icon != null)
+			{
+				image = icon.GetFrame(1)?.Bitmap;
+			}
+
+			var bmp = image as Bitmap;
+			if (bmp != null)
+			{
+				using (var ms = new MemoryStream())
+				{
+					bmp.Save(ms, ImageFormat.Png);
+					ms.Position = 0;
+					return new System.Drawing.Bitmap(ms);
+				}
+			}
+
+			return null;
+		}
+
+		public static System.Drawing.Icon ToSDIcon(this Image image)
+		{
+			if (image == null)
+				return null;
+
+			// TODO: Test if image is an icon and convert with all frames intact
+
+			return System.Drawing.Icon.FromHandle(image.ToSD().GetHicon());
 		}
 	}
 }

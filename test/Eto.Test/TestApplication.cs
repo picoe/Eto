@@ -28,6 +28,11 @@ namespace Eto.Test
 			TestAssemblies = DefaultTestAssemblies().ToList();
 			this.Name = "Test Application";
 			this.Style = "application";
+
+			if (Platform.Supports<Notification>())
+			{
+				NotificationActivated += (sender, e) => Log.Write(this, $"Notification: {e.ID}, userData: {e.UserData}");
+			}
 		}
 
 		protected override void OnInitialized(EventArgs e)

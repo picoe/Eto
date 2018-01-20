@@ -225,6 +225,8 @@
     <Compile Include="Forms\OpenWithDialogHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />
     <Compile Include="Forms\EtoDragSource.cs" />
+    <Compile Include="Forms\NotificationHandler.cs" />
+    <Compile Include="Forms\TrayIndicatorHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

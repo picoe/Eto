@@ -20,6 +20,8 @@ namespace Eto.WinForms.Forms
 		public static bool BubbleMouseEvents = true;
 		public static bool BubbleKeyEvents = true;
 
+		public static ApplicationHandler Instance => Application.Instance?.Handler as ApplicationHandler;
+
 		public ApplicationHandler()
 		{
 			mainThread = Thread.CurrentThread;
@@ -228,6 +230,9 @@ namespace Eto.WinForms.Forms
 				case Application.UnhandledExceptionEvent:
 					swf.Application.ThreadException += OnUnhandledThreadException;
 					AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
+					break;
+				case Application.NotificationActivatedEvent:
+					// handled by NotificationHandler
 					break;
 				default:
 					base.AttachEvent(id);
