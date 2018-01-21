@@ -18,7 +18,7 @@
     <Compile Include="..\Eto\TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Portable.Xaml" Version="0.17.0" />
+    <PackageReference Include="Portable.Xaml" Version="0.20.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />

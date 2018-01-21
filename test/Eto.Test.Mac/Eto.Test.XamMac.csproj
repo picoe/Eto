@@ -137,7 +137,7 @@
       <HintPath>..\..\artifacts\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
     </Reference>
     <Reference Include="Portable.Xaml">
-      <HintPath>..\..\artifacts\packages\Portable.Xaml.0.17.0\lib\netstandard1.3\Portable.Xaml.dll</HintPath>
+      <HintPath>..\..\artifacts\packages\Portable.Xaml.0.19.0\lib\netstandard1.3\Portable.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\artifacts\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>

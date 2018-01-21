@@ -44,4 +44,8 @@
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.9.0" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Sections\Serialization\Xaml\Test.xeto" />
+    <None Remove="Sections\Serialization\Json\Test.json" />
+  </ItemGroup>
 </Project>
