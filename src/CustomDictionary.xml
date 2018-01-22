@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Dictionary>
+	<Words>
+		<Recognized>
+			<Word>Eto</Word>
+			<Word>Ega</Word>
+			<Word>Rgb</Word>
+			<Word>Argb</Word>
+			<Word>Instantiator</Word>
+			<Word>Drawable</Word>
+			<Word>xscale</Word>
+			<Word>yscale</Word>
+			<Word>x</Word>
+			<Word>y</Word>
+			<Word>Monospace</Word>
+			<Word>Gtk</Word>
+			<Word>Xam</Word>
+			<Word>ios</Word>
+		</Recognized>
+	</Words>
+</Dictionary>

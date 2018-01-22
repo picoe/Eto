@@ -1,0 +1,9 @@
+﻿{
+	"$type": "Panel",
+	"Content": {
+		"$type": "StackLayout",
+		"Items": [
+			{ "$type": "Label", "Text": "Some Content" }
+		]
+	}
+}

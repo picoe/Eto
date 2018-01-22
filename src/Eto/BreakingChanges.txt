@@ -1,0 +1,31 @@
+﻿This file lists the breaking changes made to Eto, most recent first.
+
+2.0.0
+-----
+- All obsolete code in 1.3 has been removed
+- Renamed Generator to Platform
+- Renamed platform assemblies from Eto.Platform.[Gtk|Mac|Windows|etc] to Eto.[Gtk|Mac|WinForms|etc]
+	- "Windows" platform is renamed to "WinForms"
+	- Platform generators were renamed as well. E.g. Eto.Platform.Mac.Generator is now Eto.Mac.Platform
+- BREAKING: All static methods with a Generator as its single parameter are now static properties.
+	E.g. Pens.White() now becomes Pens.White
+	Changes:
+		- x.IsSupported() -> x.IsSupported
+		- Pens.<Color>() -> Pens.<Color>
+		- Brushes.<Color>() -> Brushes.<Color>
+		- Mouse.GetPosition()/GetButtons() -> Mouse.Position/Buttons
+- All constructors with Generator are now obsolete
+	- To specify the handler type to use, add the HandlerAttribute() to your widget class
+- Removed Eto.IO virtual directory abstractions
+
+1.3.0
+-----
+- Mac: Window.Closed/Closing events no longer gets called when hiding the main form, only when the form cannot be re-opened
+- PrintDocument.BeforePrint/EndPrint now named Printing/Printed
+- Grid.BeforeCellEdit/AfterCellEdit now named CellEditing/CellEdited
+- TreeView.BeforeLabelEdit/AfterLabelEdit now named LabelEditing/LabelEdited
+- Control.Loaded flag is set after the Load event, Handler's OnLoad, and all children's OnLoad (was set beforehand)
+- Moved Eto.InstanceWidget.DataContext/DataContextChanged to Eto.Forms.Control
+- Eto.Widget.Bindings was moved to Eto.Forms.Control
+- Eto.Widget.Properties was moved to Eto.Forms.Control
+- Empty interface Eto.Forms.IGridItem was removed
