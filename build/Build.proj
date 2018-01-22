@@ -8,6 +8,7 @@
         <ArtifactsDir Condition="$(BuildOutoutDir) == ''">$(BaseDir)\artifacts</ArtifactsDir>
 		<ArtifactsNet45Dir Condition="$(ArtifactsNet45Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\net45</ArtifactsNet45Dir>
 		<ArtifactsNetStandard13Dir Condition="$(ArtifactsNetStandard13Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\netstandard1.3</ArtifactsNetStandard13Dir>
+		<ArtifactsNetStandard20Dir Condition="$(ArtifactsNetStandard20Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\netstandard2.0</ArtifactsNetStandard20Dir>
 		<ArtifactsModernDir Condition="$(ArtifactsModernDir) == ''">$(ArtifactsDir)\core\$(Configuration)\modern</ArtifactsModernDir>
 		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
         <NugetOutputDir Condition="$(NugetOutputDir) == ''">$(ArtifactsDir)\nuget\$(Configuration.Trim('\\'))</NugetOutputDir>
@@ -130,6 +131,9 @@
 			<Assembly>$(ArtifactsNet45Dir)\Eto.dll</Assembly>
 		</Package>
 		<Package Include="Eto.Platform.Gtk">
+			<Assembly>$(ArtifactsNetStandard20Dir)\Eto.Gtk.dll</Assembly>
+		</Package>
+		<Package Include="Eto.Platform.Gtk2">
 			<Assembly>$(ArtifactsNet45Dir)\Eto.Gtk2.dll</Assembly>
 		</Package>
 		<Package Include="Eto.Platform.Gtk3">
