@@ -11,6 +11,8 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
 		<description>
+This package is deprecated and should not be used in new projects, please use Eto.Platform.Gtk instead.
+
 This is the GTK3 platform for Eto.Forms UI Framework.
     	
 Include this along with your Eto.Forms application to provide a GTK3 interface, typically for Linux users.
