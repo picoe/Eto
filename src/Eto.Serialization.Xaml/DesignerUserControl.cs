@@ -69,7 +69,7 @@ namespace Eto.Serialization.Xaml
 				if (coltype != null)
 				{
 					var ct = sc.GetXamlType(typeof(Control));
-					if (ct.CanAssignTo(coltype.ItemType) || coltype.ItemType.TypeConverter?.ConverterInstance.CanConvertFrom(ct.UnderlyingType) == true)
+					if (ct.CanConvertTo(coltype.ItemType))
 					{
 						return new DesignerUserControl { Text = Text, ToolTip = ToolTip };
 					}

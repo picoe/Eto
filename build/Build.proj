@@ -99,8 +99,13 @@
         
 		<FileUpdate Files="@(ProjFiles)"
 			WarnOnNoUpdate="false"
-            Pattern="(?&lt;=$(ReferenceName))(\\.\\d+)+"
-            Replacement='.$(ReferenceVersion)' />
+            Pattern="(?&lt;=&lt;PackageReference.+?Include\\s*[=]\\s*&quot;$(ReferenceName)&quot;.+?Version\\s*[=]\\s*&quot;)([\\.\\d]+)"
+            Replacement='$(ReferenceVersion)' />
+
+		<FileUpdate Files="@(ProjFiles)"
+			WarnOnNoUpdate="false"
+            Pattern="(?&lt;=&lt;PackageReference.+?Include\\s*[=]\\s*&quot;$(ReferenceName)&quot;.*&gt;\\s*&lt;Version&gt;)([\\.\\d]+)"
+            Replacement='$(ReferenceVersion)' />
             
 		<FileUpdate Files="@(TemplateFiles)"
 			WarnOnNoUpdate="false"
