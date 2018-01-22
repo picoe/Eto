@@ -222,6 +222,8 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// You can also override the <see cref="OnCreateCell"/> method in subclasses.
+		/// Note that you need to handle <see cref="ConfigureCell"/> to set up the cell for a particular row of data
+		/// as the control may be reused when scrolling the view.
 		/// </remarks>
 		/// <value>The delegate to create the cell content.</value>
 		public Func<CellEventArgs, Control> CreateCell { get; set; }
@@ -264,6 +266,9 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This is called multiple times usually for the number of visible and/or cached cells that are displayed.
 		/// 
+		/// Note that you need to handle <see cref="OnConfigureCell"/> to set up the cell for a particular row of data
+		/// as the control may be reused when scrolling the view.
+		///
 		/// If you intend on creating a different type of cell control based on the item, you should also override
 		/// <see cref="GetIdentifier"/>
 		/// </remarks>
