@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7A02E771-D30B-41A1-8A35-C78D3940FC33}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Eto.Android</RootNamespace>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <AssemblyName>Eto.Android</AssemblyName>
+    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\artifacts\core\Debug\Android</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\artifacts\core\Release\Android</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+  </PropertyGroup>
+  <Import Project="..\Shared\Common.props" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Drawing\BitmapHandler.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
+    <Compile Include="Drawing\FontHandler.cs" />
+    <Compile Include="Drawing\FontsHandler.cs" />
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Drawing\GraphicsHandler.cs" />
+    <Compile Include="Drawing\GraphicsPathHandler.cs" />
+    <Compile Include="Drawing\IconHandler.cs" />
+    <Compile Include="Drawing\IndexedBitmapHandler.cs" />
+    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
+    <Compile Include="Drawing\MatrixHandler.cs" />
+    <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="Drawing\TextureBrushHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Controls\ButtonHandler.cs" />
+    <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
+    <Compile Include="Forms\Controls\GridViewHandler.cs" />
+    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
+    <Compile Include="Forms\Controls\DrawableHandler.cs" />
+    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
+    <Compile Include="Forms\Controls\GridHandler.cs" />
+    <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ImageViewHandler.cs" />
+    <Compile Include="Forms\Controls\ListBoxHandler.cs" />
+    <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
+    <Compile Include="Forms\Controls\PanelHandler.cs" />
+    <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
+    <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
+    <Compile Include="Forms\Controls\ScrollableHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
+    <Compile Include="Forms\Controls\SliderHandler.cs" />
+    <Compile Include="Forms\Controls\SplitterHandler.cs" />
+    <Compile Include="Forms\Controls\TabControlHandler.cs" />
+    <Compile Include="Forms\Controls\TabPageHandler.cs" />
+    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
+    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
+    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
+    <Compile Include="Forms\Controls\TreeViewHandler.cs" />
+    <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="KeyMap.cs" />
+    <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="Forms\AndroidWindow.cs" />
+    <Compile Include="Conversions.cs" />
+    <Compile Include="Forms\AndroidContainer.cs" />
+    <Compile Include="Forms\AndroidControl.cs" />
+    <Compile Include="Forms\AndroidExtensions.cs" />
+    <Compile Include="Forms\FormHandler.cs" />
+    <Compile Include="Forms\Controls\LabelHandler.cs" />
+    <Compile Include="Forms\Controls\AndroidCommonControl.cs" />
+    <Compile Include="Forms\ApplicationHandler.cs" />
+    <Compile Include="Forms\TableLayoutHandler.cs" />
+    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="Forms\AndroidPanel.cs" />
+    <Compile Include="Platform.cs" />
+    <Compile Include="Forms\Controls\NavigationHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AboutResources.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\Shared\Common.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchSection="True" NewLinesForBracesInProperties="True" NewLinesForBracesInAccessors="True" NewLinesForBracesInAnonymousMethods="True" NewLinesForBracesInControlBlocks="True" NewLinesForBracesInAnonymousTypes="True" NewLinesForBracesInObjectCollectionArrayInitializers="True" NewLinesForBracesInLambdaExpressionBody="True" NewLineForElse="True" NewLineForCatch="True" NewLineForFinally="True" NewLineForMembersInObjectInit="True" NewLineForMembersInAnonymousTypes="True" NewLineForClausesInQuery="True" SpacingAfterMethodDeclarationName="False" SpaceAfterMethodCallName="False" SpaceBeforeOpenSquareBracket="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy inheritsSet="null" scope="application/xml" />
+          <XmlFormattingPolicy inheritsSet="Mono" inheritsScope="application/xml" scope="application/xml" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>
