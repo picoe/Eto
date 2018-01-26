@@ -19,7 +19,7 @@ The goal of this framework is to expose a common API that can be used to build f
 
 For advanced scenarios, you can take advantage of each platform's capabilities by wrapping your common UI in a larger application, or even create your own high-level controls with a custom implementations per platform.
 
-This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac/Xamarin.Mac, and GTK#.
+This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac, Xamarin.Mac, and GTK#.
 
 In order to run your Eto.Forms based application, you must also install one (or more) of the following packages:
 
@@ -27,11 +27,12 @@ In order to run your Eto.Forms based application, you must also install one (or 
 - Eto.Platform.Windows
 - Eto.Platform.Direct2D
 - Eto.Platform.Gtk
+- Eto.Platform.Gtk2
 - Eto.Platform.Gtk3
 - Eto.Platform.Mac
 - Eto.Platform.Mac64
 - Eto.Platform.XamMac  * requires Visual Studio for Mac
-- Eto.Platform.XamMac2  * requires Visual Studio for Mac
+- Eto.Platform.XamMac2
 
 To get more information about how to get started, read the wiki:
 

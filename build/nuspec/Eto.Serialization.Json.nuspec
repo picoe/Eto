@@ -28,7 +28,7 @@ https://github.com/picoe/Eto/wiki
 	</metadata>
 	<files>
 		<file src="artifacts\core\$configuration$\netstandard1.0\Eto.Serialization.Json.dll" target="lib\netstandard1.0" />
-		<file src="build\nuspec\Eto.Serialization.Xaml.targets" target="build\" />
+		<file src="build\nuspec\Eto.Serialization.Json.targets" target="build\" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

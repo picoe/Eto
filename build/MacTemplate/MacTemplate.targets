@@ -34,8 +34,10 @@
 			<LauncherFile>$([System.IO.Path]::GetFileNameWithoutExtension('$(TargetFileName)'))</LauncherFile>
 			<LauncherFileWithPath>$(OutputContents)\MacOS\$(LauncherFile)</LauncherFileWithPath>
 
+			<HasXamMac>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.XamMac2'))</HasXamMac>
 			<Has32Bit>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.Mac'))</Has32Bit>
 			<Has64Bit>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.Mac64'))</Has64Bit>
+			<Has64Bit Condition="$(Has64Bit) != 'True'">$(HasXamMac)</Has64Bit>
 			<MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == ''">true</MacIncludeSymbols>
 			<MacArch Condition="'$(MacArch)'=='' AND $(Has64Bit)=='true'">x86_64</MacArch>
 			<MacArch Condition="'$(MacArch)'==''">i386</MacArch>
@@ -60,6 +62,7 @@
 		<Copy SourceFiles="$(InputAppPath)\**\*.*" DestinationFolder="$(OutputContents)" SkipUnchangedFiles="true" Condition="Exists('$(InputAppPath)')" />
 		<Copy SourceFiles="$(LauncherExecutable)" DestinationFiles="$(LauncherFileWithPath)" SkipUnchangedFiles="true" />
 		<Copy SourceFiles="$(InputPListFile)" DestinationFiles="$(OutputPListFile)" Condition="!Exists('$(OutputPListFile)')" />
+		<Copy SourceFiles="$(ReferenceFiles)\Xamarin.Mac.dll" DestinationFolder="$(OutputMonoBundlePath)" SkipUnchangedFiles="true" Condition="$(HasXamMac) == 'True'" />
 
 		<FindUnderPath  
             Files="@(FileWrites)"  
@@ -83,7 +86,6 @@
 				and %(Filename) != 'Eto.WinRT'
 				and %(Filename) != 'Eto.Android'
 				and %(Filename) != 'Eto.XamMac'
-				and %(Filename) != 'Eto.XamMac2'
 				and (
 					$(MacIncludeSymbols) == 'True'
 					or (
@@ -91,8 +93,9 @@
 						and %(Extension) != '.mdb'
 					)
 				)
-				and ($(MacArch) == 'i386' or %(Filename) != 'Eto.Mac')
-				and ($(MacArch) == 'x86_64' or %(Filename) != 'Eto.Mac64')
+				and (($(HasXamMac) != 'True' and $(Has32Bit) == 'True') or %(Filename) != 'Eto.Mac')
+				and (($(HasXamMac) != 'True' and $(Has64Bit) == 'True') or %(Filename) != 'Eto.Mac64')
+				and ($(HasXamMac) == 'True' or %(Filename) != 'Eto.XamMac2')
 				" />
 
 			<ResourceFiles Include="@(BundleResource)" />
