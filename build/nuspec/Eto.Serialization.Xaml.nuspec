@@ -22,13 +22,13 @@ https://github.com/picoe/Eto/wiki
 		<dependencies>
 			<group>
 				<dependency id="Eto.Forms" version="[$version$]" />
-				<dependency id="Portable.Xaml" version="0.20.0" />
+				<dependency id="Portable.Xaml" version="0.21.0" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="artifacts\core\$configuration$\netstandard1.3\Eto.Serialization.Xaml.dll" target="lib\netstandard1.3" />
-		<file src="artifacts\core\$configuration$\portable-net45+win8+wpa81+wp8\Eto.Serialization.Xaml.dll" target="lib\portable-net45+win8+wpa81+wp8" />
+		<file src="artifacts\core\$configuration$\netstandard1.0\Eto.Serialization.Xaml.dll" target="lib\netstandard1.0" />
+		<file src="build\nuspec\Eto.Serialization.Xaml.targets" target="build\" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

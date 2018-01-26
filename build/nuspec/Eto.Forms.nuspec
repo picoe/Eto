@@ -41,8 +41,9 @@ https://github.com/picoe/Eto/wiki
 		<tags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</tags>
 	</metadata>
 	<files>
-		<file src="artifacts/core/$configuration$/netstandard1.0/Eto.dll" target="lib\netstandard1.0" />
-		<file src="artifacts/core/$configuration$/netstandard1.0/Eto.xml" target="lib\netstandard1.0" />
+		<file src="artifacts\core\$configuration$\netstandard1.0\Eto.dll" target="lib\netstandard1.0" />
+		<file src="artifacts\core\$configuration$\netstandard1.0\Eto.xml" target="lib\netstandard1.0" />
+		<file src="build\nuspec\Eto.Forms.targets" target="build\" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

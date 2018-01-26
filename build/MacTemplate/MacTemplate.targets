@@ -11,12 +11,13 @@
 		<InputAppPath Condition="'$(InputAppPath)'==''">$(MSBuildProjectDirectory)\Mac\</InputAppPath>
 		<OutputAppPath Condition="'$(OutputAppPath)'==''">$(TargetDir)\$(MacBundleName).app</OutputAppPath>
 		<MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultTarget)' == ''">True</MacSetDefaultRunConfiguration>
+		<MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == ''">True</MacBuildBundle>
 	</PropertyGroup>
 
-	<Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True' AND $(IsMac) == 'True'" />
-	<Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True' AND $(IsMac) == 'True'" />
+	<Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
+	<Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
 
-	<Target Name="_TouchApp">
+	<Target Name="_TouchApp" Condition="$(MacBuildBundle) == 'True'">
 		<!-- This makes it so we can debug in VS for Mac right away without building first -->
 		<MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != ''" />
 	</Target>
@@ -25,7 +26,7 @@
 		<RemoveDir Directories="$(OutputAppPath)"/>
 	</Target>
 	
-	<Target Name="_BuildAppBundle" AfterTargets="AfterBuild">
+	<Target Name="_BuildAppBundle" AfterTargets="AfterBuild" Condition="$(MacBuildBundle) == 'True'">
 		<PropertyGroup>
 			<OutputContents>$(OutputAppPath)\Contents</OutputContents>
 			<OutputMonoBundlePath>$(OutputContents)\MonoBundle</OutputMonoBundlePath>

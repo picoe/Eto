@@ -7,7 +7,7 @@
         <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
         <ArtifactsDir Condition="$(BuildOutoutDir) == ''">$(BaseDir)\artifacts</ArtifactsDir>
 		<ArtifactsNet45Dir Condition="$(ArtifactsNet45Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\net45</ArtifactsNet45Dir>
-		<ArtifactsNetStandard13Dir Condition="$(ArtifactsNetStandard13Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\netstandard1.3</ArtifactsNetStandard13Dir>
+		<ArtifactsNetStandard10Dir Condition="$(ArtifactsNetStandard10Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\netstandard1.0</ArtifactsNetStandard10Dir>
 		<ArtifactsNetStandard20Dir Condition="$(ArtifactsNetStandard20Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\netstandard2.0</ArtifactsNetStandard20Dir>
 		<ArtifactsModernDir Condition="$(ArtifactsModernDir) == ''">$(ArtifactsDir)\core\$(Configuration)\modern</ArtifactsModernDir>
 		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
@@ -169,10 +169,10 @@
 		</Package>
 		-->
 		<Package Include="Eto.Serialization.Json">
-			<Assembly>$(ArtifactsNetStandard13Dir)\Eto.Serialization.Json.dll</Assembly>
+			<Assembly>$(ArtifactsNetStandard10Dir)\Eto.Serialization.Json.dll</Assembly>
 		</Package>
 		<Package Include="Eto.Serialization.Xaml">
-			<Assembly>$(ArtifactsNetStandard13Dir)\publish\Eto.Serialization.Xaml.dll</Assembly>
+			<Assembly>$(ArtifactsNetStandard10Dir)\publish\Eto.Serialization.Xaml.dll</Assembly>
 		</Package>
 	</ItemGroup>
 	
