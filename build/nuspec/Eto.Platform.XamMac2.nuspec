@@ -13,13 +13,13 @@
 		<description>
 This is the Xamarin.Mac2 (unified) platform for Eto.Forms UI Framework.
     	
-Include this along with your Eto.Forms application to provide an OS X interface for Mac users using the 64-bit compatible Xamarin.Mac.
-    	
-* Note: You should only use this package from an Xamarin.Mac project created with Xamarin Studio on OS X. Xamarin.Mac allows you to bundle mono inside your .app, however it requires purchasing Xamarin.Mac.
+Include this along with your Eto.Forms application to provide an macOS interface for Mac users.
 
-Using Eto.Platform.Mac instead uses the open source MonoMac, which allows you to create OS X Applications with no cost.  However, it does require mono to be installed for the app to run.
+When used in a desktop project, this package will automatically create a macOS application bundle to run on a Mac.  However, it will require mono to be installed when running on macOS.
     	
-    	You do not need to use any of the classes of this assembly (unless customizing the Xamarin.Mac functionality of the platform), and should just use the UI controls from the Eto assembly.
+In order to bundle mono with your application, you must create a Xamarin.Mac project using Visual Studio on Mac.
+
+You do not need to use any of the classes of this assembly (unless customizing the Xamarin.Mac functionality of the platform), and should just use the UI controls from the Eto assembly.
 		</description>
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop osx xamarin.mac mac eto.forms</tags>
@@ -33,5 +33,8 @@ Using Eto.Platform.Mac instead uses the open source MonoMac, which allows you to
 		<file src="artifacts\core\$configuration$\modern\Eto.XamMac2.dll" target="lib\xamarin.mac2" />
 		<file src="artifacts\core\$configuration$\net45\Eto.XamMac2.dll" target="lib\net45" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
+		<file src="/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/x86_64/full/Xamarin.Mac.dll" target="build" />
+		<file src="build\MacTemplate\*" target="build" />
+		<file src="build\nuspec\Mac.targets" target="build\Eto.Platform.XamMac2.targets" />
 	</files>
 </package>
