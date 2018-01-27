@@ -88,6 +88,8 @@ namespace Eto.Wpf.Forms.Controls
 			foreach (var item in Items)
 			{
 				var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
+				if (comboBoxItem == null)
+					continue;
 				comboBoxItem.Measure(WpfConversions.PositiveInfinitySize);
 				maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
 			}
