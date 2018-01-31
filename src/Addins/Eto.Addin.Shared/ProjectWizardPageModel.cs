@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace Eto.Addin.Shared
 {
-	public class ProjectWizardPageModel : OptionsPageModel,  INotifyPropertyChanged
+	public class ProjectWizardPageModel : OptionsPageModel, INotifyPropertyChanged
 	{
 		public IParameterSource Source { get; private set; }
 
@@ -20,7 +20,7 @@ namespace Eto.Addin.Shared
 			UsePCL = SupportsPCL;
 			UseNET = !SupportsPCL;
 			UseSAL = false;
-			Separated = false;
+			Separate = false;
 			Mode = "code";
 			IncludeSolution = false;
 		}
@@ -47,21 +47,33 @@ namespace Eto.Addin.Shared
 
 		public bool SupportsSeparated => Source.IsSupportedParameter("Separated");
 
+		public bool SupportsXamMac => Source.IsSupportedParameter("XamMac");
 
 		public bool SupportsXeto => Source.IsSupportedParameter("Xeto");
 
 		public bool SupportsJeto => Source.IsSupportedParameter("Jeto");
 
-		public bool SupportsCodePreview => Source.IsSupportedParameter("CodePreview");
+		public bool SupportsCodePreview => Source.IsSupportedParameter("Preview");
 
 		public bool SupportsPanelType => SupportsXeto || SupportsJeto || SupportsCodePreview;
 
-		public bool Separated
+		public bool Separate
 		{
-			get { return Source.GetParameter("Separated").ToBool(); }
+			get { return Source.GetParameter("Separate").ToBool(); }
 			set
 			{
-				Source.SetParameter("Separated", value.ToString());
+				Source.SetParameter("Separate", value.ToString());
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(Information));
+			}
+		}
+
+		public bool IncludeXamMac
+		{
+			get { return Source.GetParameter("IncludeXamMac").ToBool(); }
+			set
+			{
+				Source.SetParameter("IncludeXamMac", value.ToString());
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
 			}
@@ -158,14 +170,14 @@ namespace Eto.Addin.Shared
 		struct CombinedInfo
 		{
 			public string Text;
-			public bool Separated;
-			public bool? SeparateMac;
+			public bool Separate;
+			public bool? IncludeXamMac;
 		}
 
 		static CombinedInfo[] combinedInformation = {
-			new CombinedInfo { Separated = false, SeparateMac = true, Text = "A single combined project that can build for Windows, Linux and Mac, and a separate Xamarin.Mac project to bundle mono with VS for Mac." },
-			new CombinedInfo { Separated = false, SeparateMac = false, Text = "A single combined project that can build for Windows, Linux, and Mac." },
-			new CombinedInfo { Separated = true, Text = "A separate project for each platform." },
+			new CombinedInfo { Separate = false, IncludeXamMac = true, Text = "A single combined project that can build for Windows, Linux and Mac, and a separate Xamarin.Mac project to bundle mono with VS for Mac." },
+			new CombinedInfo { Separate = false, IncludeXamMac = false, Text = "A single combined project that can build for Windows, Linux, and Mac." },
+			new CombinedInfo { Separate = true, Text = "A separate project for each platform." },
 		};
 
 		struct FormatInfo
@@ -187,8 +199,8 @@ namespace Eto.Addin.Shared
 			{
 				var text = new List<string>();
 				var combinedInfo = from i in combinedInformation
-								   where i.Separated == Separated
-								   && (i.SeparateMac == null || i.SeparateMac == Source.SeparateMac)
+								   where i.Separate == Separate
+				                          && (i.IncludeXamMac == null || i.IncludeXamMac == IncludeXamMac)
 								   select i.Text;
 				text.Add(combinedInfo.FirstOrDefault());
 
@@ -203,8 +215,8 @@ namespace Eto.Addin.Shared
 				}
 
 				var formatInfo = from i in formatInformation
-						where i.Mode == Mode
-					select i.Text;
+								 where i.Mode == Mode
+								 select i.Text;
 				text.Add(formatInfo.FirstOrDefault());
 
 				return string.Join("\n\n", text);

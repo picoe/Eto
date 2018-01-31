@@ -20,7 +20,7 @@ using MonoDevelop.Core.Text;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Eto.Addin.XamarinStudio.Editor
+namespace Eto.Addin.MonoDevelop.Editor
 {
 	public class MacEditorView : EditorView
 	{

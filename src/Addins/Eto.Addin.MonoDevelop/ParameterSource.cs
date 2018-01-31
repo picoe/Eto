@@ -2,7 +2,7 @@
 using Eto.Addin.Shared;
 using MonoDevelop.Ide.Templates;
 
-namespace Eto.Addin.XamarinStudio
+namespace Eto.Addin.MonoDevelop
 {
 	public class ParameterSource : IParameterSource
 	{

@@ -1,0 +1,9 @@
+﻿{
+	"$type": "Form",
+	"Content": {
+		"$type": "StackLayout",
+		"Items": [
+			{ "$type": "Label", "Text": "Some Content" }
+		]
+	}
+}

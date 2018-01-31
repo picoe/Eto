@@ -26,64 +26,70 @@
     <PackageReference Include="MonoDevelop.Addins" Version="0.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Templates\**\*" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Templates\**\*" />
-    <None Remove="Images\project%402x.png" />
-    <None Remove="Images\project.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AddinReference Include="MonoDevelop.Xml" />
     <AddinReference Include="MonoDevelop.DesignerSupport" />
     <AddinReference Include="MonoDevelop.PackageManagement" />
   </ItemGroup>
   <ItemGroup>
-    <AddinFile Include="..\..\..\artifacts\nuget\$(Configuration)\*.nupkg">
+	<None Remove="Templates\**\*" />
+    <None Remove="Images\project%402x.png" />
+    <None Remove="Images\project.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<Compile Remove="Templates\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinFile Include="..\..\..\artifacts\nuget\Release\*.nupkg">
       <Link>Packages\%(Filename)%(Extension)</Link>
     </AddinFile>
-    <AddinFile Include="Templates\Files\CS\code\dialog.cs" />
-    <AddinFile Include="Templates\Files\CS\code\dialog.xft.xml" />
-    <AddinFile Include="Templates\Files\CS\code\form.cs" />
-    <AddinFile Include="Templates\Files\CS\code\form.xft.xml" />
-    <AddinFile Include="Templates\Files\CS\code\panel.code.cs" />
-    <AddinFile Include="Templates\Files\CS\code\panel.code.xft.xml" />
-    <AddinFile Include="Templates\Files\CS\code\panel.preview.cs" />
-    <AddinFile Include="Templates\Files\CS\code\panel.preview.eto.cs" />
-    <AddinFile Include="Templates\Files\CS\code\panel.preview.xft.xml" />
-    <AddinFile Include="Templates\Files\CS\jeto\panel.jeto" />
-    <AddinFile Include="Templates\Files\CS\jeto\panel.jeto.cs" />
-    <AddinFile Include="Templates\Files\CS\jeto\panel.xft.xml" />
-    <AddinFile Include="Templates\Files\CS\xeto\panel.xeto" />
-    <AddinFile Include="Templates\Files\CS\xeto\panel.xeto.cs" />
-    <AddinFile Include="Templates\Files\CS\xeto\panel.xft.xml" />
-    <AddinFile Include="Templates\Files\FS\code\panel.code.fs" />
-    <AddinFile Include="Templates\Files\FS\code\panel.code.xft.xml" />
-    <AddinFile Include="Templates\Files\FS\code\panel.preview.eto.fs" />
-    <AddinFile Include="Templates\Files\FS\code\panel.preview.fs" />
-    <AddinFile Include="Templates\Files\FS\code\panel.preview.xft.xml" />
-    <AddinFile Include="Templates\Files\FS\jeto\panel.jeto" />
-    <AddinFile Include="Templates\Files\FS\jeto\panel.jeto.fs" />
-    <AddinFile Include="Templates\Files\FS\jeto\panel.xft.xml" />
-    <AddinFile Include="Templates\Files\FS\xeto\panel.xeto" />
-    <AddinFile Include="Templates\Files\FS\xeto\panel.xeto.fs" />
-    <AddinFile Include="Templates\Files\FS\xeto\panel.xft.xml" />
-    <AddinFile Include="Templates\Files\VB\code\dialog.vb" />
-    <AddinFile Include="Templates\Files\VB\code\dialog.xft.xml" />
-    <AddinFile Include="Templates\Files\VB\code\form.vb" />
-    <AddinFile Include="Templates\Files\VB\code\form.xft.xml" />
-    <AddinFile Include="Templates\Files\VB\code\panel.eto.vb" />
-    <AddinFile Include="Templates\Files\VB\code\panel.vb" />
-    <AddinFile Include="Templates\Files\VB\code\panel.xft.xml" />
-    <AddinFile Include="Templates\Files\VB\jeto\panel.jeto" />
-    <AddinFile Include="Templates\Files\VB\jeto\panel.jeto.vb" />
-    <AddinFile Include="Templates\Files\VB\jeto\panel.xft.xml" />
-    <AddinFile Include="Templates\Files\VB\xeto\panel.xeto" />
-    <AddinFile Include="Templates\Files\VB\xeto\panel.xeto.vb" />
-    <AddinFile Include="Templates\Files\VB\xeto\panel.xft.xml" />
+    <AddinFile Include="Templates\Files\**\*" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\project%402x.png" />
     <EmbeddedResource Include="Images\project.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Forms.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Forms.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Forms.Templates.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Forms.Templates.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Direct2D.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Direct2D.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Gtk.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk2.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Gtk2.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk3.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Gtk3.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Mac.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Mac.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Mac64.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Mac64.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Windows.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Windows.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Wpf.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Wpf.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.XamMac.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.XamMac.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.XamMac2.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.XamMac2.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Serialization.Json.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Serialization.Json.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Serialization.Xaml.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Serialization.Xaml.2.4.0-local011.nupkg</Link>
+    </AddinFile>
   </ItemGroup>
 </Project>

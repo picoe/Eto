@@ -17,7 +17,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace Eto.Addin.XamarinStudio.Editor
+namespace Eto.Addin.MonoDevelop.Editor
 {
 	public class XetoTextEditorExtension : BaseXmlEditorExtension 
 	{

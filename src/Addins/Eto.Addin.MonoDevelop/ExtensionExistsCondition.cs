@@ -1,7 +1,7 @@
 ﻿using System;
 using Mono.Addins;
 
-namespace Eto.Addin.XamarinStudio
+namespace Eto.Addin.MonoDevelop
 {
 	/// <summary>
 	/// Condition for the addin to ensure we don't add multiplat, multiplat/app or multiplat/library categories if they

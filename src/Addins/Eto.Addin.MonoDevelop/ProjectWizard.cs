@@ -11,7 +11,7 @@ using System.IO;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 
-namespace Eto.Addin.XamarinStudio
+namespace Eto.Addin.MonoDevelop
 {
 	public class ProjectWizard : TemplateWizard
 	{
@@ -27,7 +27,7 @@ namespace Eto.Addin.XamarinStudio
 			base.ConfigureWizard();
 		}
 
-		public override string Id => "Eto.Addin.XamarinStudio.ProjectWizard";
+		public override string Id => "Eto.Addin.MonoDevelop.ProjectWizard";
 
 		public override int TotalPages => Model.RequiresInput ? 1 : 0;
 

@@ -2,7 +2,7 @@
 using System.Linq;
 using Eto.Forms;
 
-namespace Eto.Addin.XamarinStudio
+namespace Eto.Addin.MonoDevelop
 {
 	public static class EtoInitializer
 	{

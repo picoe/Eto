@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using MonoDevelop.Ide.Templates;
 using Eto.Forms;
 using Eto.Addin.Shared;
 
-namespace Eto.Addin.XamarinStudio
+namespace Eto.Addin.MonoDevelop
 {
 	public class ProjectWizardPage : WizardPage
 	{

@@ -8,7 +8,7 @@ using Foundation;
 using Gdk;
 using System.Collections.Generic;
 
-namespace Eto.Addin.XamarinStudio.Editor
+namespace Eto.Addin.MonoDevelop.Editor
 {
 	public class NSViewContainer2 : Container
 	{

@@ -3,7 +3,7 @@ using MonoDevelop.Projects;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace Eto.Addin.XamarinStudio
+namespace Eto.Addin.MonoDevelop
 {
 	public class VBDotNetProjectExtension : DotNetProjectExtension
 	{

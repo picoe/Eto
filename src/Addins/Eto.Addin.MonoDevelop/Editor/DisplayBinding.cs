@@ -10,7 +10,7 @@ using Eto.Designer;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
-namespace Eto.Addin.XamarinStudio.Editor
+namespace Eto.Addin.MonoDevelop.Editor
 {
 	public class DisplayBinding : IViewDisplayBinding, IDisplayBinding
 	{
@@ -28,7 +28,7 @@ namespace Eto.Addin.XamarinStudio.Editor
 
 		public string Name => "Eto.Forms designer";
 
-		public bool CanHandle(MonoDevelop.Core.FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
+		public bool CanHandle(FilePath fileName, string mimeType, Project ownerProject)
 		{
 			if (exclude)
 				return false;

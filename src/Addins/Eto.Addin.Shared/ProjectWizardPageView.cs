@@ -39,8 +39,21 @@ namespace Eto.Addin.Shared
 						new ListItem { Text = "Separate projects for each platform", Key = "separate" }
 					}
 				};
-				platformTypeList.SelectedKeyBinding.Convert(v => v == "separate", v => v ? "combined" : "separate").BindDataContext((ProjectWizardPageModel m) => m.Separated);
+				platformTypeList.SelectedKeyBinding
+				                .Convert(v => v == "separate", v => v ? "separate" : "combined")
+				                .BindDataContext((ProjectWizardPageModel m) => m.Separate);
 				content.Rows.Add(new TableRow(new Label { Text = "Launcher:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, platformTypeList));
+			}
+
+			if (model.SupportsXamMac)
+			{
+				var cb = new CheckBox
+				{
+					Text = "Include Xamarin.Mac project",
+					ToolTip = "This enables you to bundle mono with your app so your users don't have to install it separately.  You can only compile this on a Mac"
+				};
+				cb.CheckedBinding.BindDataContext((ProjectWizardPageModel m) => m.IncludeXamMac);
+				content.Rows.Add(new TableRow(new TableCell(), cb));
 			}
 
 			/*
@@ -113,7 +126,7 @@ namespace Eto.Addin.Shared
 				}
 				if (model.SupportsCodePreview)
 				{
-					panelTypeList.Items.Add(new ListItem { Text = "Code Preview", Key = "codePreview" });
+					panelTypeList.Items.Add(new ListItem { Text = "Code Preview", Key = "preview" });
 				}
 
 				content.Rows.Add(new TableRow(new Label { Text = "Form:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, panelTypeList));

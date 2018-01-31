@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MonoDevelop.Ide.Gui;
 using Eto.Forms;
 using MonoDevelop.Ide;
@@ -18,14 +18,20 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
+using md = MonoDevelop;
 
-namespace Eto.Addin.XamarinStudio.Editor
+namespace Eto.Addin.MonoDevelop.Editor
 {
 
 	public class EditorView : ViewContent, ICommandRouter
 	{
+		static EditorView()
+		{
+			EtoInitializer.Initialize();
+		}
+
 		ViewContent content;
-		MonoDevelop.Components.Control control;
+		md.Components.Control control;
 		PreviewEditorView _preview;
 		protected PreviewEditorView Preview => _preview ?? (_preview = GetPreview());
 
@@ -53,12 +59,12 @@ namespace Eto.Addin.XamarinStudio.Editor
 			return new PreviewEditorView(editorWidget.ToEto(), null, null, GetEditorText);
 		}
 
-		protected virtual MonoDevelop.Components.Control GetNativeControl()
+		protected virtual global::MonoDevelop.Components.Control GetNativeControl()
 		{
 			return Gtk2Helpers.ToNative(Preview, true);
 		}
 
-		protected virtual MonoDevelop.Components.Control GetControl()
+		protected virtual md.Components.Control GetControl()
 		{
 			if (control != null)
 				return control;
@@ -92,7 +98,7 @@ namespace Eto.Addin.XamarinStudio.Editor
 
 		public override string TabPageLabel => content.TabPageLabel;
 
-		public override MonoDevelop.Components.Control Control => GetControl();
+		public override global::MonoDevelop.Components.Control Control => GetControl();
 
 		public override bool CanReuseView(string fileName) => content.CanReuseView(fileName);
 
@@ -127,7 +133,7 @@ namespace Eto.Addin.XamarinStudio.Editor
 			IsDirty = false;
 		}
 
-		protected override void OnSetProject(MonoDevelop.Projects.Project project)
+		protected override void OnSetProject(md.Projects.Project project)
 		{
 			base.OnSetProject(project);
 			if (content.Project != project)
@@ -190,7 +196,7 @@ namespace Eto.Addin.XamarinStudio.Editor
 			}
 		}
 
-		void Editor_TextChanged(object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
+		void Editor_TextChanged(object sender, md.Core.Text.TextChangeEventArgs e)
 		{
 			Preview.Update();
 		}

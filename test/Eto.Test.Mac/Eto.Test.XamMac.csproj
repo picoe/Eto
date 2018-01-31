@@ -57,7 +57,7 @@
     <TlsProvider>Default</TlsProvider>
     <AOTMode>None</AOTMode>
   </PropertyGroup>
-  <Import Project="..\..\Directory.Build.props" />
+  <Import Project="..\Directory.Build.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -178,5 +178,5 @@
     </ProjectReference>
   </ItemGroup>
 
-  <Import Project="..\..\Directory.Build.targets" />
+  <Import Project="..\Directory.Build.targets" />
 </Project>

@@ -3,7 +3,7 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Projects.Extensions;
 
-namespace Eto.Addin.XamarinStudio
+namespace Eto.Addin.MonoDevelop
 {
 	#if false
 	public class FSharpProjectBinding : DotNetProjectExtension
