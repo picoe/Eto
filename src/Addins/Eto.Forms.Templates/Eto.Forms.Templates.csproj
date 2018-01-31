@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Description>Project templates for Eto.Forms</Description>
+		<PackageId>Eto.Forms.Templates</PackageId>
+		<PackageVersion>2.4.0-alpha</PackageVersion>
+		<Authors>Curtis Wensley</Authors>
+		<TargetFramework>net461</TargetFramework>
+		<EnableDefaultItems>False</EnableDefaultItems>
+		<PackOnBuild>true</PackOnBuild>
+		<PackageTargetPath>..\..\..\artifacts\nuget\$(Configuration)\$(PackageId).$(PackageVersion).nupkg</PackageTargetPath>
+		<IncludeOutputsInPackage>false</IncludeOutputsInPackage>
+		<OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageFile Include="content\**\*" Exclude="**\bin\**\*;**\obj\**\*;**\.DS_Store;**\.vs\**\*;**\*.userprefs;**\packages\**;**\*.user;content\NuGet.Config;content\Directory.*" PackagePath="%(RelativeDir)%(Filename)%(Extension)" />
+		<PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
+	</ItemGroup>
+	<Target Name="CreateTargetPath" AfterTargets="BeforeBuild">
+		<MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(PackageTargetPath)))" />
+	</Target>
+</Project>

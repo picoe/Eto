@@ -306,7 +306,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Project>{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}</Project>
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>

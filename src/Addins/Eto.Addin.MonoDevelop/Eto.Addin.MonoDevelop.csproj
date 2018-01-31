@@ -1,0 +1,89 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+	<!-- can't find gtk-sharp with sdk-style projects for some reason -->
+    <AssemblySearchPaths Condition="Exists('/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0')">$(AssemblySearchPaths);/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/gtk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/gtk-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/gdk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/gdk-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/glib-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/glib-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/atk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/atk-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/pango-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/pango-sharp-2.0</AssemblySearchPaths>
+	<MDBinDir Condition="Exists('/opt/MonoDevelop/bin')">/opt/MonoDevelop/bin</MDBinDir>
+	<MDAddinsDir Condition="Exists('/opt/MonoDevelop/AddIns')">/opt/MonoDevelop/AddIns</MDAddinsDir>
+    <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto\Eto.csproj" />
+    <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk2.csproj" />
+    <ProjectReference Include="..\Eto.Designer\Eto.Designer.csproj" />
+    <ProjectReference Include="..\Eto.Addin.Shared\Eto.Addin.Shared.csproj" />
+    <ProjectReference Include="..\Eto.Forms.Templates\Eto.Forms.Templates.csproj">
+    	<ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    	<Private>False</Private>
+	</ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoDevelop.Addins" Version="0.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Templates\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Templates\**\*" />
+    <None Remove="Images\project%402x.png" />
+    <None Remove="Images\project.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinReference Include="MonoDevelop.Xml" />
+    <AddinReference Include="MonoDevelop.DesignerSupport" />
+    <AddinReference Include="MonoDevelop.PackageManagement" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinFile Include="..\..\..\artifacts\nuget\$(Configuration)\*.nupkg">
+      <Link>Packages\%(Filename)%(Extension)</Link>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\code\dialog.cs" />
+    <AddinFile Include="Templates\Files\CS\code\dialog.xft.xml" />
+    <AddinFile Include="Templates\Files\CS\code\form.cs" />
+    <AddinFile Include="Templates\Files\CS\code\form.xft.xml" />
+    <AddinFile Include="Templates\Files\CS\code\panel.code.cs" />
+    <AddinFile Include="Templates\Files\CS\code\panel.code.xft.xml" />
+    <AddinFile Include="Templates\Files\CS\code\panel.preview.cs" />
+    <AddinFile Include="Templates\Files\CS\code\panel.preview.eto.cs" />
+    <AddinFile Include="Templates\Files\CS\code\panel.preview.xft.xml" />
+    <AddinFile Include="Templates\Files\CS\jeto\panel.jeto" />
+    <AddinFile Include="Templates\Files\CS\jeto\panel.jeto.cs" />
+    <AddinFile Include="Templates\Files\CS\jeto\panel.xft.xml" />
+    <AddinFile Include="Templates\Files\CS\xeto\panel.xeto" />
+    <AddinFile Include="Templates\Files\CS\xeto\panel.xeto.cs" />
+    <AddinFile Include="Templates\Files\CS\xeto\panel.xft.xml" />
+    <AddinFile Include="Templates\Files\FS\code\panel.code.fs" />
+    <AddinFile Include="Templates\Files\FS\code\panel.code.xft.xml" />
+    <AddinFile Include="Templates\Files\FS\code\panel.preview.eto.fs" />
+    <AddinFile Include="Templates\Files\FS\code\panel.preview.fs" />
+    <AddinFile Include="Templates\Files\FS\code\panel.preview.xft.xml" />
+    <AddinFile Include="Templates\Files\FS\jeto\panel.jeto" />
+    <AddinFile Include="Templates\Files\FS\jeto\panel.jeto.fs" />
+    <AddinFile Include="Templates\Files\FS\jeto\panel.xft.xml" />
+    <AddinFile Include="Templates\Files\FS\xeto\panel.xeto" />
+    <AddinFile Include="Templates\Files\FS\xeto\panel.xeto.fs" />
+    <AddinFile Include="Templates\Files\FS\xeto\panel.xft.xml" />
+    <AddinFile Include="Templates\Files\VB\code\dialog.vb" />
+    <AddinFile Include="Templates\Files\VB\code\dialog.xft.xml" />
+    <AddinFile Include="Templates\Files\VB\code\form.vb" />
+    <AddinFile Include="Templates\Files\VB\code\form.xft.xml" />
+    <AddinFile Include="Templates\Files\VB\code\panel.eto.vb" />
+    <AddinFile Include="Templates\Files\VB\code\panel.vb" />
+    <AddinFile Include="Templates\Files\VB\code\panel.xft.xml" />
+    <AddinFile Include="Templates\Files\VB\jeto\panel.jeto" />
+    <AddinFile Include="Templates\Files\VB\jeto\panel.jeto.vb" />
+    <AddinFile Include="Templates\Files\VB\jeto\panel.xft.xml" />
+    <AddinFile Include="Templates\Files\VB\xeto\panel.xeto" />
+    <AddinFile Include="Templates\Files\VB\xeto\panel.xeto.vb" />
+    <AddinFile Include="Templates\Files\VB\xeto\panel.xft.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\project%402x.png" />
+    <EmbeddedResource Include="Images\project.png" />
+  </ItemGroup>
+</Project>

@@ -40,6 +40,12 @@ https://github.com/picoe/Eto/wiki
 		</description>
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</tags>
+		<dependencies>
+			<group>
+				<dependency id="System.ComponentModel" version="4.3.0" />
+				<dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+			</group>
+		</dependencies>
 	</metadata>
 	<files>
 		<file src="artifacts\core\$configuration$\netstandard1.0\Eto.dll" target="lib\netstandard1.0" />

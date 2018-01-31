@@ -1,0 +1,34 @@
+<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <DefineConstants>UseCode</DefineConstants>
+    <PackageVersion>1.0</PackageVersion>
+    <Title>My Fun App</Title>
+    <Summary>An awesome Eto.Forms app.</Summary>
+    <Copyright>Copyright (c) 2018</Copyright>
+    <Description>Description of your app</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="MainForm.fs" />
+    <Compile Include="MainForm.eto.fs" Condition="$(UseCodePreview) == 'True'" />
+    <Compile Include="MainForm.xeto" Condition="$(UseXeto) == 'True'" />
+    <Compile Include="MainForm.xeto.cs" Condition="$(UseXeto) == 'True'">
+      <DependentUpon>MainForm.xeto</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.jeto" Condition="$(UseJeto) == 'True'" />
+    <Compile Include="MainForm.jeto.cs" Condition="$(UseJeto) == 'True'">
+      <DependentUpon>MainForm.jeto</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
+    <PackageReference Include="FSharp.Core" Version="4.3.2" />
+    <PackageReference Include="Eto.Forms" Version="2.4.0-alpha" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.4.0-alpha" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.4.0-alpha" Condition="$(UseXeto) == 'True'" />
+  </ItemGroup>
+  
+</Project>
