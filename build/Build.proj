@@ -63,7 +63,7 @@
             Pattern='AssemblyVersion(\\s*)[(]&quot;.*?&quot;[)]'
             Replacement='AssemblyVersion$1(&quot;$(AssemblyVersion)&quot;)' />
         
-		<MSBuild Targets="UpdateReference" Properties="ReferenceName=(Eto.[\\w\\.]+?);ReferenceVersion=$(AssemblyInformationalVersion)" Projects="$(MSBuildProjectFile)"/>
+		<MSBuild Targets="UpdateReference" Properties="ReferenceName=(Eto([\\.][\\w]+)+);ReferenceVersion=$(AssemblyInformationalVersion)" Projects="$(MSBuildProjectFile)"/>
 
 	</Target>
 	
@@ -73,12 +73,13 @@
 	
 		<PropertyGroup>
 			<ReferenceName>$(ReferenceName.Replace('.', '\\.'))</ReferenceName>
-			<ReplaceVersionPattern>([\\.\\d\\-\\w]+)</ReplaceVersionPattern>
+			<ReplaceVersionPattern>([\\d][\\.\\d\\-\\w]+)</ReplaceVersionPattern>
 		</PropertyGroup>
 	
         <ItemGroup>
         	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
         	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.MonoDevelop\**\*.xpt.xml" />
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.MonoDevelop\Properties\Manifest.addin.xml" />
         	<TemplateFiles Include="$(SourceDir)\**\packages.config" />
         	<TemplateFiles Include="$(MSBuildThisFileDirectory)\nuspec\**\*.nuspec" />
 
@@ -108,6 +109,11 @@
 		<FileUpdate Files="@(TemplateFiles)"
 			WarnOnNoUpdate="false"
             Pattern="(?&lt;=id\\s*[=]\\s*&quot;$(ReferenceName)&quot;\\s+version\\s*=\\s*&quot;)$(ReplaceVersionPattern)(?=&quot;)"
+            Replacement='$(ReferenceVersion)' />
+            
+		<FileUpdate Files="@(TemplateFiles)"
+			WarnOnNoUpdate="false"
+            Pattern="(?&lt;=$(ReferenceName)[\\.])$(ReplaceVersionPattern)(?=\\.nupkg)"
             Replacement='$(ReferenceVersion)' />
 	</Target>
 
