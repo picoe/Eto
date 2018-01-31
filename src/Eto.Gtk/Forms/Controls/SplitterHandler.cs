@@ -13,6 +13,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		int? position;
 		double relative = double.NaN;
 		int suppressSplitterMoved;
+		bool initialPositionSet;
 		int _panel1MinimumSize, _panel2MinimumSize;
 
 		int GetPreferredPanelSize(int width1, int width2)
@@ -90,7 +91,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				base.OnSizeAllocated(allocation);
 				it.suppressSplitterMoved--;
 
-				Handler.EnsurePosition();
+				it.EnsurePosition();
 			}
 		}
 
@@ -143,7 +144,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				base.OnSizeAllocated(allocation);
 				it.suppressSplitterMoved--;
 
-				Handler.EnsurePosition();
+				it.EnsurePosition();
 			}
 		}
 
@@ -337,7 +338,6 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		void Control_Realized(object sender, EventArgs e)
 		{
-			SetInitialPosition();
 			HookEvents();
 		}
 
@@ -465,6 +465,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			var size = Orientation == Orientation.Horizontal ? Widget.Width : Widget.Height;
 			if (size <= 0)
 				return;
+
+			if (!initialPositionSet && Control.IsRealized)
+			{
+				initialPositionSet = true;
+				SetInitialPosition();
+			}
+
 
 			if (_panel1MinimumSize + _panel2MinimumSize > size || Control.Position < _panel1MinimumSize)
 				Control.Position = _panel1MinimumSize;
