@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using Eto.Forms;
 using Eto.Drawing;
@@ -178,7 +179,10 @@ namespace Eto.Test
 			{
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
-				Log.Write(null, "Memory: {0}", GC.GetTotalMemory(true));
+				Log.Write(null, $"GC Memory: {GC.GetTotalMemory(true)}");
+				using (var process = Process.GetCurrentProcess())
+					Log.Write (null, $"Process Total {process.PrivateMemorySize64}", );
+				}
 			};
 			return control;
 		}
