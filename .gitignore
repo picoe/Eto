@@ -12,4 +12,4 @@ AppPackages
 .vs/
 [Tt]humbs.db
 /artifacts
-
+packages/
