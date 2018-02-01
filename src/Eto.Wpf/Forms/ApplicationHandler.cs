@@ -232,6 +232,7 @@ namespace Eto.Wpf.Forms
 
 		public void OnMainFormChanged()
 		{
+			System.Windows.Application.Current.MainWindow = Widget.MainForm.ToNative();
 		}
 
 		public void Restart()
