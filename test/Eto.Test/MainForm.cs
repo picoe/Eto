@@ -182,7 +182,6 @@ namespace Eto.Test
 				Log.Write(null, $"GC Memory: {GC.GetTotalMemory(true)}");
 				using (var process = Process.GetCurrentProcess())
 					Log.Write (null, $"Process Total {process.PrivateMemorySize64}", );
-				}
 			};
 			return control;
 		}
