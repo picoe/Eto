@@ -23,7 +23,7 @@ namespace Eto
 			{
 				buf = Marshal.AllocHGlobal(8192);
 				if (uname(buf) == 0)
-					osName = Marshal.PtrToStringAuto(buf);
+					osName = Marshal.PtrToStringAnsi(buf);
 			}
 			// Analysis disable once EmptyGeneralCatchClause
 			catch
@@ -40,7 +40,7 @@ namespace Eto
 #if GTK3
 		public static Assembly GetCallingAssembly()
 		{
-			return (new StackTrace()).GetFrame(5).GetMethod().DeclaringType.Assembly;
+			return (new StackTrace()).GetFrame(4).GetMethod().DeclaringType.Assembly;
 		}
 #endif
 	}
