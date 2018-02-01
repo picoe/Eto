@@ -91,12 +91,12 @@
         	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
         	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.MonoDevelop\**\*.xpt.xml" />
         	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.MonoDevelop\Properties\Manifest.addin.xml" />
-        	<TemplateFiles Include="$(SourceDir)\**\packages.config" />
+        	<TemplateFiles Include="$(BaseDir)\**\packages.config" />
         	<TemplateFiles Include="$(MSBuildThisFileDirectory)\nuspec\**\*.nuspec" />
 
 			<ProjFiles Include="$(ProjFiles)" Condition="$(ProjFiles) != ''" />
-        	<ProjFiles Include="$(SourceDir)\**\*.csproj" />
-        	<ProjFiles Include="$(SourceDir)\**\*.fsproj" />
+        	<ProjFiles Include="$(BaseDir)\**\*.csproj" />
+        	<ProjFiles Include="$(BaseDir)\**\*.fsproj" />
 
 			<PackageFiles Include="$(PackageFiles)" Condition="$(PackageFiles) != ''" />
         </ItemGroup>
