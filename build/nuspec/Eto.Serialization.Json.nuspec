@@ -27,8 +27,8 @@ https://github.com/picoe/Eto/wiki
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="artifacts\core\$configuration$\netstandard1.3\Eto.Serialization.Json.dll" target="lib\netstandard1.3" />
-		<file src="artifacts\core\$configuration$\portable-net45+win8+wpa81+wp8\Eto.Serialization.Json.dll" target="lib\portable-net45+win8+wpa81+wp8" />
+		<file src="artifacts\core\$configuration$\netstandard1.0\Eto.Serialization.Json.dll" target="lib\netstandard1.0" />
+		<file src="build\nuspec\Eto.Serialization.Json.targets" target="build\" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

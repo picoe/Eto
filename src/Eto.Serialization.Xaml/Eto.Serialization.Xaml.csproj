@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard1.0</TargetFramework>
     <!-- Use this when multi-targeting works in VS for Mac (it works with msbuild though!)
-    <TargetFrameworks>netstandard1.3;portable-net45+win8+wpa81+wp8</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;netstandard1.3</TargetFrameworks>
     -->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -18,9 +18,10 @@
     <Compile Include="..\Eto\TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Portable.Xaml" Version="0.20.0" />
+    <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.csproj" />
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
+    <PackageReference Include="Portable.Xaml" Version="0.21.0" />
   </ItemGroup>
 </Project>

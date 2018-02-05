@@ -22,10 +22,12 @@ namespace Eto
 		/// <summary>
 		/// Type of the GTK 2 platform
 		/// </summary>
+		[Obsolete("Gtk2 platform is obsolete, please use Platforms.Gtk instead.")]
 		public static readonly string Gtk2 = "Eto.GtkSharp.Platform, Eto.Gtk2";
 		/// <summary>
 		/// Type of the GTK 3 platform
 		/// </summary>
+		[Obsolete("Gtk3 platform is obsolete, please use Platforms.Gtk instead.")]
 		public static readonly string Gtk3 = "Eto.GtkSharp.Platform, Eto.Gtk3";
 		/// <summary>
 		/// Type of the Mac OS X platform

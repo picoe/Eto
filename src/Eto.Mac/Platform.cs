@@ -42,32 +42,41 @@ namespace Eto.Mac
 
 		public override bool IsMac { get { return true; } }
 
-		#if XAMMAC
+#if XAMMAC
 		public override string ID { get { return "xammac"; } }
-		#else
+#else
 		public override string ID { get { return "mac"; } }
 #endif
 
 		public override PlatformFeatures SupportedFeatures =>
 			PlatformFeatures.DrawableWithTransparentContent
-            | PlatformFeatures.CustomCellSupportsControlView
+			| PlatformFeatures.CustomCellSupportsControlView
 			| PlatformFeatures.TabIndexWithCustomContainers;
 
 		public Platform()
 		{
-			#if Mac64
+#if Mac64
 			unsafe
 			{
 				if (sizeof(IntPtr) != 8)
 					throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "You can only run this platform in 64-bit mode. Use the 32-bit Eto.Mac platform instead."));
 			}
-			#endif
+#endif
 			if (!initialized)
 			{
 				var appType = typeof(NSApplication);
 				var initField = appType.GetField("initialized", BindingFlags.Static | BindingFlags.NonPublic);
 				if (initField == null || Equals(initField.GetValue(null), false))
+				{
+#if XAMMAC
+					// with out this, Xamarin.Mac borks on netstandard.dll due to System.IO.Compression.FileSystem.dll
+					// at least when run with system mono
+					// let's be forgiving until that is fixed so we can actually use .net standard!
+					NSApplication.IgnoreMissingAssembliesDuringRegistration = true;
+#endif
+
 					NSApplication.Init();
+				}
 				// until everything is marked as thread safe correctly in monomac
 				// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
 				NSApplication.CheckForIllegalCrossThreadCalls = false;

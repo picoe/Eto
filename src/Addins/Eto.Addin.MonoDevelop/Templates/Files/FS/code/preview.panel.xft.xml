@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Panel (with form preview)</_Name>
+		<Icon>md-text-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description><![CDATA[Creates a new Eto.Forms cross platform Panel class using F#.
+
+This template provides a partial *.eto.fs file for form preview.]]>
+		</_Description>
+		<DefaultFilename>MyPanel</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+        <File name="${Name}.eto.fs" AddStandardHeader="true" src="preview.panel.eto.fs"/>
+        <File name="${Name}.fs" AddStandardHeader="true" src="panel.panel.fs"/>
+	</TemplateFiles>
+</Template>
