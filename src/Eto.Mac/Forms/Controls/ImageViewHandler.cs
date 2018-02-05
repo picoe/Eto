@@ -62,7 +62,8 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return image == null ? Size.Empty : image.Size;
+			// handler will be null if it was disposed while still in use.
+			return image == null || image.Handler == null ? Size.Empty : image.Size;
 		}
 
 		public Image Image
