@@ -61,10 +61,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{95227DFB
 		..\NuGet.Config = ..\NuGet.Config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json-pcl", "Eto.Serialization.Json\Eto.Serialization.Json-pcl.csproj", "{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml-pcl", "Eto.Serialization.Xaml\Eto.Serialization.Xaml-pcl.csproj", "{3D896993-E11E-4F9A-8040-56D0BD03E6B4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk", "Eto.Gtk\Eto.Gtk.csproj", "{659873CA-9949-4353-B0AA-E0589D045584}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk", "..\test\Eto.Test.Gtk\Eto.Test.Gtk.csproj", "{063AF7E7-18BD-488F-85BF-53B6E3D75685}"
@@ -335,30 +331,6 @@ Global
 		{E381E8CA-0DE1-4792-88F9-AC1529E911DF}.Release|Mac.Build.0 = Release|Any CPU
 		{E381E8CA-0DE1-4792-88F9-AC1529E911DF}.Release|Windows.ActiveCfg = Release|Any CPU
 		{E381E8CA-0DE1-4792-88F9-AC1529E911DF}.Release|Windows.Build.0 = Release|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Debug|Linux.Build.0 = Debug|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Debug|Mac.Build.0 = Debug|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Debug|Windows.Build.0 = Debug|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Release|Linux.ActiveCfg = Release|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Release|Linux.Build.0 = Release|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Release|Mac.ActiveCfg = Release|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Release|Mac.Build.0 = Release|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Release|Windows.ActiveCfg = Release|Any CPU
-		{CC6339A8-E217-4D5F-89F1-A2506CBBFC47}.Release|Windows.Build.0 = Release|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Debug|Linux.Build.0 = Debug|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Debug|Mac.Build.0 = Debug|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Debug|Windows.Build.0 = Debug|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Release|Linux.ActiveCfg = Release|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Release|Linux.Build.0 = Release|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Release|Mac.ActiveCfg = Release|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Release|Mac.Build.0 = Release|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Release|Windows.ActiveCfg = Release|Any CPU
-		{3D896993-E11E-4F9A-8040-56D0BD03E6B4}.Release|Windows.Build.0 = Release|Any CPU
 		{659873CA-9949-4353-B0AA-E0589D045584}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{659873CA-9949-4353-B0AA-E0589D045584}.Debug|Linux.Build.0 = Debug|Any CPU
 		{659873CA-9949-4353-B0AA-E0589D045584}.Debug|Mac.ActiveCfg = Debug|Any CPU

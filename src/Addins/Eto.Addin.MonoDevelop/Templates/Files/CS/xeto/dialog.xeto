@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Dialog
+	xmlns="http://schema.picoe.ca/eto.forms" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	>
+	<StackLayout>
+		<Label>Some Content</Label>
+	</StackLayout>
+	<Dialog.PositiveButtons>
+		<Button Text="Ok" />
+	</Dialog.PositiveButtons>
+	<Dialog.NegativeButtons>
+		<Button Text="Cancel" />
+	</Dialog.NegativeButtons>
+</Dialog>

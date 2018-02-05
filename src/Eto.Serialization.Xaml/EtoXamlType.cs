@@ -9,11 +9,7 @@ using Eto.Forms;
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Schema;
-#if NETSTANDARD1_3
 using cm = System.ComponentModel;
-#else
-using cm = Portable.Xaml.ComponentModel;
-#endif
 
 #if NET40
 using EtoTypeConverter = System.ComponentModel.TypeConverter;
@@ -21,7 +17,6 @@ using EtoTypeConverterAttribute = System.ComponentModel.TypeConverterAttribute;
 #else
 using EtoTypeConverter = Eto.TypeConverter;
 using EtoTypeConverterAttribute = Eto.TypeConverterAttribute;
-using Portable.Xaml.ComponentModel;
 #endif
 #else
 using System.Xaml;
@@ -49,7 +44,7 @@ namespace Eto.Serialization.Xaml
 	#endif
 
 	#if PORTABLE || NET45
-	class TypeConverterConverter : IXamlTypeConverter
+	class TypeConverterConverter : cm.TypeConverter
 	{
 		readonly EtoTypeConverter etoConverter;
 
@@ -58,35 +53,35 @@ namespace Eto.Serialization.Xaml
 			this.etoConverter = etoConverter;
 		}
 
-		public bool CanConvertFrom(object context, Type sourceType)
+		public override bool CanConvertFrom(cm.ITypeDescriptorContext context, Type sourceType)
 		{
 			return etoConverter.CanConvertFrom(sourceType);
 		}
 
-		public bool CanConvertTo(object context, Type destinationType)
+		public override bool CanConvertTo(cm.ITypeDescriptorContext context, Type destinationType)
 		{
 			return etoConverter.CanConvertTo(destinationType);
 		}
 
-		public object ConvertFrom(object context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(cm.ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			return etoConverter.ConvertFrom(null, culture, value);
 		}
 
-		public object ConvertTo(object context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(cm.ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			return etoConverter.ConvertTo(null, culture, value, destinationType);
 		}
 	}
 
-	class EtoValueConverter : XamlValueConverter<IXamlTypeConverter>
+	class EtoValueConverter : XamlValueConverter<cm.TypeConverter>
 	{
 		public EtoValueConverter(Type converterType, XamlType targetType)
 			: base(converterType, targetType)
 		{
 		}
 
-		protected override IXamlTypeConverter CreateInstance()
+		protected override cm.TypeConverter CreateInstance()
 		{
 			var etoConverter = Activator.CreateInstance(ConverterType) as EtoTypeConverter;
 			return new TypeConverterConverter(etoConverter);
@@ -149,10 +144,10 @@ namespace Eto.Serialization.Xaml
 		}
 
 		#if PORTABLE || NET45
-		XamlValueConverter<IXamlTypeConverter> typeConverter;
+		XamlValueConverter<cm.TypeConverter> typeConverter;
 		bool gotTypeConverter;
 
-		protected override XamlValueConverter<IXamlTypeConverter> LookupXamlTypeConverter()
+		protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
 		{
 			if (gotTypeConverter)
 				return typeConverter;
@@ -185,7 +180,7 @@ namespace Eto.Serialization.Xaml
 			}
 
 			if (typeConverter == null)
-				typeConverter = base.LookupXamlTypeConverter();
+				typeConverter = base.LookupTypeConverter();
 			return typeConverter;
 		}
 
@@ -199,7 +194,7 @@ namespace Eto.Serialization.Xaml
 
 			}
 
-			class EmptyConverter : IXamlTypeConverter
+			class EmptyConverter : cm.TypeConverter
 			{
 				public bool CanConvertFrom(object context, Type sourceType) => true;
 
@@ -210,9 +205,9 @@ namespace Eto.Serialization.Xaml
 				public object ConvertTo(object context, CultureInfo culture, object value, Type destinationType) => null;
 			}
 
-			protected override XamlValueConverter<IXamlTypeConverter> LookupXamlTypeConverter()
+			protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
 			{
-				return new XamlValueConverter<IXamlTypeConverter>(typeof(EmptyConverter), Type);
+				return new XamlValueConverter<cm.TypeConverter>(typeof(EmptyConverter), Type);
 			}
 		}
 

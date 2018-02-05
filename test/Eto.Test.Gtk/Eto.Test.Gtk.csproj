@@ -16,6 +16,13 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Project</StartAction>
+    <ExternalConsole>false</ExternalConsole>
+    <EnvironmentVariables>
+      <Variable name="DYLD_FALLBACK_LIBRARY_PATH" value="/usr/local/lib" />
+    </EnvironmentVariables>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto.Gtk\Eto.Gtk.csproj" />
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />

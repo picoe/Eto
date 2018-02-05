@@ -57,7 +57,7 @@
     <TlsProvider>Default</TlsProvider>
     <AOTMode>None</AOTMode>
   </PropertyGroup>
-  <Import Project="..\..\Directory.Build.props" />
+  <Import Project="..\Directory.Build.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -109,9 +109,6 @@
       <HintPath>..\..\artifacts\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Serialization.Primitives">
-      <HintPath>..\..\artifacts\packages\System.Runtime.Serialization.Primitives.4.3.0\lib\net46\System.Runtime.Serialization.Primitives.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security.Cryptography.Encoding">
       <HintPath>..\..\artifacts\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
@@ -128,19 +125,16 @@
     <Reference Include="System.Net.Http">
       <HintPath>..\..\artifacts\packages\System.Net.Http.4.3.0\lib\net46\System.Net.Http.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml.ReaderWriter">
-      <HintPath>..\..\artifacts\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml.XmlDocument">
       <HintPath>..\..\artifacts\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
     </Reference>
-    <Reference Include="Portable.Xaml">
-      <HintPath>..\..\artifacts\packages\Portable.Xaml.0.19.0\lib\netstandard1.3\Portable.Xaml.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\artifacts\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Xaml">
+      <HintPath>..\..\artifacts\packages\Portable.Xaml.0.21.0\lib\netstandard1.3\Portable.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -178,5 +172,5 @@
     </ProjectReference>
   </ItemGroup>
 
-  <Import Project="..\..\Directory.Build.targets" />
+  <Import Project="..\Directory.Build.targets" />
 </Project>

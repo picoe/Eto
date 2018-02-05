@@ -1,8 +1,12 @@
-echo off
+@echo off
 
-rem set MSBUILD=c:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe
-set MSBUILD="%ProgramFiles(x86)%\MSBuild\14.0\bin\MSBuild.exe"
+WHERE msbuild > nul
+IF %ERRORLEVEL% NEQ 0 (
+ECHO msbuild not found.  Run in the Developer Command Prompt for VS 2017
+pause
+)
 
-%MSBUILD% -t:BuildAddins Build.proj
+set BUILD_DIR=%~dp0build
+msbuild -t:BuildAddins "%BUILD_DIR%\Build.proj"
 
 pause

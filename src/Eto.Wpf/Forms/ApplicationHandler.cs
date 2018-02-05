@@ -182,12 +182,12 @@ namespace Eto.Wpf.Forms
 
 		public void Invoke(Action action)
 		{
-			Control.Dispatcher.Invoke(action, sw.Threading.DispatcherPriority.ApplicationIdle);
+			ApplicationHandler.InvokeIfNecessary(action);
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-			Control.Dispatcher.BeginInvoke(action, sw.Threading.DispatcherPriority.ApplicationIdle);
+			Control.Dispatcher.BeginInvoke(action, sw.Threading.DispatcherPriority.Normal);
 		}
 
 		public Keys CommonModifier
@@ -232,6 +232,7 @@ namespace Eto.Wpf.Forms
 
 		public void OnMainFormChanged()
 		{
+			System.Windows.Application.Current.MainWindow = Widget.MainForm.ToNative();
 		}
 
 		public void Restart()

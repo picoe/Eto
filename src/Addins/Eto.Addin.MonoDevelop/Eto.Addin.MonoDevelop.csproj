@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+	<!-- can't find gtk-sharp with sdk-style projects for some reason -->
+    <AssemblySearchPaths Condition="Exists('/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0')">$(AssemblySearchPaths);/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/gtk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/gtk-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/gdk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/gdk-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/glib-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/glib-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/atk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/atk-sharp-2.0</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/pango-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/pango-sharp-2.0</AssemblySearchPaths>
+	<MDBinDir Condition="Exists('/opt/MonoDevelop/bin')">/opt/MonoDevelop/bin</MDBinDir>
+	<MDAddinsDir Condition="Exists('/opt/MonoDevelop/AddIns')">/opt/MonoDevelop/AddIns</MDAddinsDir>
+    <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto\Eto.csproj" />
+    <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk2.csproj" />
+    <ProjectReference Include="..\Eto.Designer\Eto.Designer.csproj" />
+    <ProjectReference Include="..\Eto.Addin.Shared\Eto.Addin.Shared.csproj" />
+    <ProjectReference Include="..\Eto.Forms.Templates\Eto.Forms.Templates.csproj">
+    	<ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    	<Private>False</Private>
+	</ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoDevelop.Addins" Version="0.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinReference Include="MonoDevelop.Xml" />
+    <AddinReference Include="MonoDevelop.DesignerSupport" />
+    <AddinReference Include="MonoDevelop.PackageManagement" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Remove="Templates\**\*" />
+    <None Remove="Images\project%402x.png" />
+    <None Remove="Images\project.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<Compile Remove="Templates\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinFile Include="..\..\..\artifacts\nuget\Release\*.nupkg">
+      <Link>Packages\%(Filename)%(Extension)</Link>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\project%402x.png" />
+    <EmbeddedResource Include="Images\project.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Forms.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Forms.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Forms.Templates.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Forms.Templates.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Direct2D.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Direct2D.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Gtk.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk2.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Gtk2.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk3.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Gtk3.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Mac.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Mac.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Mac64.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Mac64.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Windows.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Windows.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Wpf.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.Wpf.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.XamMac.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.XamMac.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.XamMac2.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Platform.XamMac2.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Serialization.Json.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Serialization.Json.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Serialization.Xaml.2.4.0-local011.nupkg">
+      <Link>Packages\Eto.Serialization.Xaml.2.4.0-local011.nupkg</Link>
+    </AddinFile>
+  </ItemGroup>
+</Project>
