@@ -48,48 +48,4 @@
     <EmbeddedResource Include="Images\project%402x.png" />
     <EmbeddedResource Include="Images\project.png" />
   </ItemGroup>
-  <ItemGroup>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Forms.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Forms.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Forms.Templates.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Forms.Templates.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Direct2D.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.Direct2D.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.Gtk.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk2.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.Gtk2.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Gtk3.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.Gtk3.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Mac.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.Mac.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Mac64.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.Mac64.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Windows.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.Windows.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.Wpf.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.Wpf.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.XamMac.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.XamMac.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Platform.XamMac2.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Platform.XamMac2.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Serialization.Json.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Serialization.Json.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-    <AddinFile Update="..\..\..\artifacts\nuget\Release\Eto.Serialization.Xaml.2.4.0-local011.nupkg">
-      <Link>Packages\Eto.Serialization.Xaml.2.4.0-local011.nupkg</Link>
-    </AddinFile>
-  </ItemGroup>
 </Project>
