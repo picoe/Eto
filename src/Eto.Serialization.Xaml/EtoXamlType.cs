@@ -130,6 +130,27 @@ namespace Eto.Serialization.Xaml
 		}
 	}
 
+	class EmptyXamlMember : XamlMember
+	{
+		public EmptyXamlMember(EventInfo eventInfo, XamlSchemaContext context)
+			: base(eventInfo, context)
+		{
+
+		}
+
+		class EmptyConverter : cm.TypeConverter
+		{
+			public override bool CanConvertFrom(cm.ITypeDescriptorContext context, Type sourceType) => true;
+
+			public override object ConvertFrom(cm.ITypeDescriptorContext context, CultureInfo culture, object value) => null;
+		}
+
+		protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
+		{
+			return new XamlValueConverter<cm.TypeConverter>(typeof(EmptyConverter), Type);
+		}
+	}
+
 	class EtoXamlType : XamlType
 	{
 		public EtoXamlType(Type underlyingType, XamlSchemaContext schemaContext)
@@ -185,47 +206,6 @@ namespace Eto.Serialization.Xaml
 		}
 
 		#endif
-
-		class EmptyXamlMember : XamlMember
-		{
-			public EmptyXamlMember(EventInfo eventInfo, XamlSchemaContext context)
-				: base(eventInfo, context)
-			{
-
-			}
-
-			class EmptyConverter : cm.TypeConverter
-			{
-				public bool CanConvertFrom(object context, Type sourceType) => true;
-
-				public bool CanConvertTo(object context, Type destinationType) => false;
-
-				public object ConvertFrom(object context, CultureInfo culture, object value) => null;
-
-				public object ConvertTo(object context, CultureInfo culture, object value, Type destinationType) => null;
-			}
-
-			protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
-			{
-				return new XamlValueConverter<cm.TypeConverter>(typeof(EmptyConverter), Type);
-			}
-		}
-
-
-		protected override XamlMember LookupMember(string name, bool skipReadOnlyCheck)
-		{
-			var member = base.LookupMember(name, skipReadOnlyCheck);
-			var context = SchemaContext as EtoXamlSchemaContext;
-			if (member != null && member.IsEvent)
-			{
-				if (context != null && context.DesignMode)
-				{
-					// in design mode, ignore wiring up events
-					return new EmptyXamlMember(member.UnderlyingMember as EventInfo, context);
-				}
-			}
-			return member;
-		}
 
 		protected override bool LookupIsAmbient()
 		{

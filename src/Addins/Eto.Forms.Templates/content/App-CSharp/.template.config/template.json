@@ -72,7 +72,7 @@
 			"type": "parameter",
 			"description": "Include a .sln file",
 			"dataType": "bool",
-			"defaultValue": "true"
+			"defaultValue": "false"
 		},
 		"IncludeXamMac": {
 			"type": "parameter",
@@ -170,47 +170,47 @@
 		}
 	],
 	"primaryOutputs": [
-		{ "path": "EtoApp/EtoApp.csproj" },
-		{
-			"path": "EtoApp.Desktop/EtoApp.Desktop.csproj",
-			"condition": "(!Separate)"
-		},
-		{
-			"path": "EtoApp.Gtk/EtoApp.Gtk.csproj",
-			"condition": "(Separate)"
-		},
-		{
-			"path": "EtoApp.Mac/EtoApp.Mac.csproj",
-			"condition": "(Separate)"
-		},
-		{
-			"path": "EtoApp.WinForms/EtoApp.WinForms.csproj",
-			"condition": "(Separate)"
-		},
-		{
-			"path": "EtoApp.Wpf/EtoApp.Wpf.csproj",
-			"condition": "(Separate)"
-		},
-		{
-			"path": "EtoApp.XamMac/EtoApp.XamMac.csproj",
-			"condition": "(IncludeXamMac)"
-		},
-		{
-			"path": "EtoApp/MainForm.cs",
-			"condition": "UseCode"
-		},
-		{
-			"path": "EtoApp/MainForm.eto.cs",
-			"condition": "UseCodePreview"
-		},
-		{
-			"path": "EtoApp/MainForm.xeto",
-			"condition": "UseXeto"
-		},
-		{
-			"path": "EtoApp/MainForm.jeto",
-			"condition": "UseJeto"
-		},
+    { "path": "EtoApp\\EtoApp.csproj" },
+    {
+      "path": "EtoApp.Desktop\\EtoApp.Desktop.csproj",
+      "condition": "(!Separate)"
+    },
+    {
+      "path": "EtoApp.Gtk\\EtoApp.Gtk.csproj",
+      "condition": "(Separate)"
+    },
+    {
+      "path": "EtoApp.Mac\\EtoApp.Mac.csproj",
+      "condition": "(Separate)"
+    },
+    {
+      "path": "EtoApp.WinForms\\EtoApp.WinForms.csproj",
+      "condition": "(Separate && IncludeWinForms)"
+    },
+    {
+      "path": "EtoApp.Wpf\\EtoApp.Wpf.csproj",
+      "condition": "(Separate)"
+    },
+    {
+      "path": "EtoApp.XamMac\\EtoApp.XamMac.csproj",
+      "condition": "(IncludeXamMac)"
+    },
+    {
+      "path": "EtoApp\\MainForm.cs",
+      "condition": "UseCode"
+    },
+    {
+      "path": "EtoApp\\MainForm.eto.cs",
+      "condition": "UseCodePreview"
+    },
+    {
+      "path": "EtoApp\\MainForm.xeto",
+      "condition": "UseXeto"
+    },
+    {
+      "path": "EtoApp\\MainForm.jeto",
+      "condition": "UseJeto"
+    },
 	],
 	"guids": [
 		"4A7EEA91-18CE-4C33-8501-76049670866D",

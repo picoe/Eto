@@ -1,0 +1,329 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    1. Find templatepack proj files
+    2. Foreach templatepack proj file
+       2.1 Call msbuild.exe /t:Pack /p:OutputPath=$(OutputPath)waffles/
+       2.2 Find .nupkg files from output path
+       2.3 Add .nupkg files to vsix being created
+    3. Find .vstemplate files under .template.config folders
+    4. Foreach .vstemplate file found
+       4.1 Find vs NPD node from new element in .vstemplate file. If not found use default value
+       <may not be needed> 4.2 copy the .template.config file to obj/templates/<.vstemplate filename> </may not be needed>
+       4.3 create .zip file from items and add to vsix at /output/ProjectTemplates/CSharp/<NPD node path from .vstemplate>/foo.zip
+    -->
+  <PropertyGroup>
+    <WaffleBuilderPropsFilepath Condition=" '$(WaffleBuilderPropsFilepath)'=='' ">$(MSBuildThisFileFullPath).props</WaffleBuilderPropsFilepath>
+  </PropertyGroup>
+
+  <Import Project="$(WaffleBuilderPropsFilepath)"
+          Condition=" '$(WaffleBuilderPropsFilepath)' != '' and Exists('$(WaffleBuilderPropsFilepath)') " />
+  
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)'=='' ">Debug</Configuration>
+    <TemplateSourceRoot Condition=" '$(TemplateSourceRoot)'=='' ">$(MSBuildProjectDirectory)\..\</TemplateSourceRoot>
+    <TemplateOutputPath Condition=" '$(TemplateOutputPath)'=='' ">$(OutputPath)\Templates\</TemplateOutputPath>
+    <DefaultNewProjectNode Condition=" '$(DefaultNewProjectNode)'=='' ">CSharp\Web\SideWaffle</DefaultNewProjectNode>
+  </PropertyGroup>
+
+  <!--
+        templatepack.proj files go into the TemplatePackNuGetProj item list
+  -->
+  <PropertyGroup>
+    <WaffleDefaultNuGetPkgFilesDir Condition=" '$(WaffleDefaultNuGetPkgFilesDir)'=='' ">$(MSBuildThisFileDirectory)</WaffleDefaultNuGetPkgFilesDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <VsTemplateZipDefaultFiles Include="$(WaffleDefaultNuGetPkgFilesDir)project-icon.png" Condition="Exists('$(WaffleDefaultNuGetPkgFilesDir)project-icon.png')"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ProcessTemplatesDependsOn>
+      $(ProcessTemplatesDependsOn);
+      BuildTemplateNuGetPackages;
+      BuildVsTemplateFiles;
+    </ProcessTemplatesDependsOn>
+  </PropertyGroup>
+
+  <Target Name="ProcessTemplates"
+          DependsOnTargets="$(ProcessTemplatesDependsOn)"
+          BeforeTargets="GetVsixSourceItems"/>
+
+  <!--=====================================================
+    Targets related to building/handling the template .nupkg files
+    =========================================================-->
+  <PropertyGroup>
+    <BuildTemplateNuGetPackagesDependsOn>
+      $(BuildTemplateNuGetPackagesDependsOn);
+      FindTemplatePackProjFiles;
+      BuildTemplatePackNuGetProjFiles;
+      AddTemplateNuGetPackagesToVsix;
+    </BuildTemplateNuGetPackagesDependsOn>
+  </PropertyGroup>
+
+  <Target Name="BuildTemplateNuGetPackages" DependsOnTargets="$(BuildTemplateNuGetPackagesDependsOn)" />
+
+  <Target Name="FindTemplatePackProjFiles">
+    <!-- Finds files in the project matching templatepack*.proj -->
+    <ItemGroup>
+      <TemplatePackNuGetProj Include="$(MSBuildProjectDirectory)/**/templatepack*.proj" />
+    </ItemGroup>
+    <Message Text="Templates in [$(MSBuildProjectDirectory)] found: @(TemplatePackNuGetProj)" Importance="low" />
+  </Target>
+
+  <Target Name="BuildTemplatePackNuGetProjFiles"
+          Condition="@(TemplatePackNuGetProj) != ''"
+          Outputs="%(TemplatePackNuGetProj.Identity)">
+
+    <PropertyGroup>
+      <_cTemplateProj Condition=" '%(TemplatePackNuGetProj.Identity)' != '' ">%(TemplatePackNuGetProj.Identity)</_cTemplateProj>
+      <_cTemplateProj Condition=" '$(_cTemplateProj)' != '' ">$([System.IO.Path]::GetFullPath('$(_cTemplateProj)'))</_cTemplateProj>
+      <_templateOutputPathFull>$([System.IO.Path]::GetFullPath('$(TemplateOutputPath)'))</_templateOutputPathFull>
+    </PropertyGroup>
+    <Message Text="_templateOutputPathFull: $(_templateOutputPathFull)" />
+    <Message Text="building template proj: [$(_cTemplateProj)]" Importance="low"/>
+
+    <MSBuild Projects="$(_cTemplateProj)" Targets="Restore" />
+    <Message Text="Outer2:TemplateSourceRoot: [$(TemplateSourceRoot)]" Importance="high"/>
+    <MSBuild Projects="$(_cTemplateProj)"
+             Targets="Pack;GetNuGetPath;DebugInfo"
+             Properties="Configuration=$(Configuration);TemplateSourceRoot=$(TemplateSourceRoot);PackageOutputPath=$(_templateOutputPathFull)"
+             Condition=" '$(_cTemplateProj)' != '' ">
+      <Output
+          TaskParameter="TargetOutputs"
+          ItemName="templateOutput" />
+    </MSBuild>
+
+    <Message Text="templateOutput: [@(templateOutput)]" Importance="high" />
+  </Target>
+
+  <Target Name="AddTemplateNuGetPackagesToVsix"
+          Condition="@(TemplatePackNuGetProj) != ''">
+    <!-- Add the produced .zip files to Content so that they are included in the package -->
+    <PropertyGroup>
+      <_templateOutputFullpath>$([System.IO.Path]::GetFullPath('$(TemplateOutputPath)'))</_templateOutputFullpath>
+    </PropertyGroup>
+    <Message Text="_templateOutputFullpath: [$(_templateOutputFullpath)]" />
+    <ItemGroup>
+      <_templateNuGetPkgs Include="$(_templateOutputFullpath)**/*.nupkg"
+                          Exclude="$(TemplateNuGetPackagesToExcludeFromVsix)" />
+    </ItemGroup>
+    <Message Text="_templateNuGetPkgs: @(_templateNuGetPkgs)" />
+    <ItemGroup>
+      <VSIXSourceItem Include="%(_templateNuGetPkgs.Identity)">
+        <!-- <VSIXSubPath>%(_ls-ItemTemplatesOutputs.OutputPathFolder)</VSIXSubPath> -->
+      </VSIXSourceItem>
+    </ItemGroup>
+  </Target>
+
+  <!--=====================================================
+    Targets relating to converting .vstemplate to a template .zip
+    =========================================================-->
+  <PropertyGroup>
+    <BuildVsTemplateFilesDependsOn>
+      $(BuildVsTemplateFilesDependsOn);
+      FindVstemplateFiles;
+      BuildZipForVstemplateFiles;
+    </BuildVsTemplateFilesDependsOn>
+    <VsTemplateFilesExclude>
+      $(VsTemplateFilesExclude);
+      $(TemplateSourceRoot)**\bin\**\*;
+      $(TemplateSourceRoot)**\obj\**\*;
+    </VsTemplateFilesExclude>
+  </PropertyGroup>
+  <Target Name="BuildVsTemplateFiles" DependsOnTargets="$(BuildVsTemplateFilesDependsOn)" />
+
+  <Target Name="FindVstemplateFiles">
+    <Message Text="Looking for .vstemplate files in [$(TemplateSourceRoot)]
+VsTemplateFilesExclude:[$(VsTemplateFilesExclude)]" Importance="low" />
+    <ItemGroup>
+      <_vsTemplateExcludeFiles Include="$(VsTemplateFilesExclude)"/>
+      <_vstemplateTemp Include="$(TemplateSourceRoot)**/*.vstemplate" Exclude="@(_vsTemplateExcludeFiles)" />
+
+      <VsTemplateFiles Include="$([System.IO.Path]::GetFullPath(' %(_vstemplateTemp.Identity) '))" />
+    </ItemGroup>
+    <Message Text="_vstemplateTemp: [@(_vstemplateTemp)]" Importance="low" />
+    <Message Text="_vsTemplateExcludeFiles: @(_vsTemplateExcludeFiles)" Importance="low"/>
+    <Message Text=".vstemplate files found: [@(VsTemplateFiles)]" Importance="low" />
+  </Target>
+
+  <PropertyGroup>
+    <_templateGetNewProjectNodeXpath Condition=" '$(_templateGetNewProjectNodeXpath)'=='' ">dft:VSTemplate/dft:TemplateContent/dft:CustomParameters/dft:CustomParameter[@Name='SideWaffleNewProjNode']/@Value</_templateGetNewProjectNodeXpath>
+  </PropertyGroup>
+
+  <Target Name="DebugInfo"
+          Outputs="%(VsTemplateFiles.Identity)" DependsOnTargets="FindVstemplateFiles">
+    <Message Text="BuildZipForVstemplateFiles:VsTemplateFiles: [@(VsTemplateFiles)] " Importance="high" />
+    <PropertyGroup>
+      <_filename>%(VsTemplateFiles.Filename)</_filename>
+      <_zipoutfile>$(TemplateOutputPath)$(_filename).zip</_zipoutfile>
+      <_ziprootdir>%(VsTemplateZipDefaultFiles.RootDir)%(VsTemplateZipDefaultFiles.Directory)</_ziprootdir>
+      <_vstemplatedir>$([System.IO.Path]::GetFullPath('%(VsTemplateFiles.RootDir)%(VsTemplateFiles.Directory)'))</_vstemplatedir>
+      <_vstemplatefullpath>$([System.IO.Path]::GetFullPath('%(VsTemplateFiles.Fullpath)'))</_vstemplatefullpath>
+    </PropertyGroup>
+    <Message Text="
+_filename: $(_filename)
+_zipoutfile : $(_zipoutfile)
+_ziprootdir :$(_ziprootdir)
+_vstemplatedir: $(_vstemplatedir)
+_vstemplatefullpath: $(_vstemplatefullpath)
+" Importance="high"/>
+  </Target>
+  
+  <Target Name="BuildZipForVstemplateFiles"
+          Outputs="%(VsTemplateFiles.Identity)" DependsOnTargets="FindVstemplateFiles">
+
+    <PropertyGroup>
+      <_vstemplatefullpath>$([System.IO.Path]::GetFullPath('%(VsTemplateFiles.Fullpath)'))</_vstemplatefullpath>
+
+      <_npdNodeXpath>dft:VSTemplate/dft:TemplateContent/dft:CustomParameters/dft:CustomParameter[@Name='SideWaffleNewProjNode']/@Value</_npdNodeXpath>
+      <_ls-templateFilePath>%(ls-VsNewProjTemplateFiles.FullPath)</_ls-templateFilePath>
+      <ls-VsTemplateXmlSchema Condition=" '$(ls-VsTemplateXmlSchema)'=='' ">http://schemas.microsoft.com/developer/vstemplate/2005</ls-VsTemplateXmlSchema>
+    </PropertyGroup>
+    <XmlPeek Namespaces="&lt;Namespace Prefix='dft' Uri='$(ls-VsTemplateXmlSchema)'/&gt;"
+             XmlInputPath="$(_vstemplatefullpath)"
+             Query="$(_templateGetNewProjectNodeXpath)">
+      <Output TaskParameter="Result" PropertyName="_npdNode"/>
+    </XmlPeek>
+
+    
+    <Message Text="BuildZipForVstemplateFiles:VsTemplateFiles: [@(VsTemplateFiles)] " Importance="high" />
+    <!--
+        1. Add standard icon files to new zip created
+        2. Add all files in same dir as .vstemplate to the zip
+    -->
+    <PropertyGroup>
+      <_filename>%(VsTemplateFiles.Filename)</_filename>
+      <_zipoutfile>$([System.IO.Path]::GetFullPath('$(TemplateOutputPath)\$(_npdNode)\$(_filename).zip'))</_zipoutfile>
+      <!--_ziprootdir>$([System.IO.Path]::GetFullPath('%(VsTemplateZipDefaultFiles.RootDir)%(VsTemplateZipDefaultFiles.Directory)'))</_ziprootdir-->
+      <_vstemplatedir>$([System.IO.Path]::GetFullPath('%(VsTemplateFiles.RootDir)%(VsTemplateFiles.Directory)'))</_vstemplatedir>
+    </PropertyGroup>
+
+    <!--<Delete Files="$(_zipoutfile)" Condition="Exists('$(_zipoutfile)')" />-->
+    <Message Text="Making vstemplate zip file at [$(_zipoutfile)]" Importance="high"/>
+    <!--
+    <AddToZipTask
+      ZipFilePath="$(_zipoutfile)"
+      FilesToAdd="@(VsTemplateZipDefaultFiles)"
+      RootFolder="$(_ziprootdir)" />
+      -->
+
+    <ItemGroup>
+      <_templatefilestoadd Remove="@(_templatefilestoadd)"/>
+      <_templatefilestoadd Include="$(_vstemplatedir)**/*"/>
+    </ItemGroup>
+    <AddToZipTask
+      ZipFilePath="$(_zipoutfile)"
+      FilesToAdd="@(_templatefilestoadd)"
+      RootFolder="$(_vstemplatedir)"
+      Condition=" '@(_templatefilestoadd)' != ' ' "/>
+
+
+    <PropertyGroup>
+      <_npdNode Condition=" '$(_npdNode)'=='' ">$(DefaultNewProjectNode)</_npdNode>
+      <_npdNode Condition="!HasTrailingSlash('$_npdNode')">$(_npdNode)\</_npdNode>
+      <_fullNpdNode>Templates\$(_npdNode)</_fullNpdNode>
+    </PropertyGroup>
+
+    <!-- Add the zip to the vsix being created -->
+    <ItemGroup>
+      <VSIXSourceItem Include="$(_zipoutfile)">
+        <VSIXSubPath>$(_fullNpdNode)</VSIXSubPath>
+      </VSIXSourceItem>
+    </ItemGroup>
+  </Target>
+
+  <!--=====================================================
+    Inline Tasks
+    =========================================================-->
+  <PropertyGroup Condition="'$(ls-msbuildtasks-path)'=='' ">
+    <ls-msbuildtasks-path Condition=" '$(ls-msbuildtasks-path)'=='' or !Exists('$(ls-msbuildtasks-path)') ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</ls-msbuildtasks-path>
+    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll</ls-msbuildtasks-path>
+    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
+    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(MSBuildFrameworkToolsPath)\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
+    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(windir)\Microsoft.NET\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
+  </PropertyGroup>
+  <UsingTask Condition="false" TaskName="AddToZipTask" AssemblyFile="C:\data\mycode\sidewafflev2.1\SideWaffleTasks\bin\Debug\SideWaffleTasks.dll"/>
+  <UsingTask TaskName="AddToZipTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(ls-msbuildtasks-path)">
+    <ParameterGroup>
+      <ZipFilePath ParameterType="System.String" Required="true" />
+      <FilesToAdd ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <RootFolder ParameterType="System.String" Required="true" />
+      <Compression ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Reference Include="System.IO.Compression" />
+      <Reference Include="System.Linq" />
+      <Using Namespace="System.IO.Compression" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            Log.LogMessage(MessageImportance.High, "AddToZipTask-il called", null);
+
+            CompressionLevel level = CompressionLevel.Optimal;
+            if (!string.IsNullOrWhiteSpace(Compression)) {
+                try {
+                    CompressionLevel result = (CompressionLevel)Enum.Parse(typeof(CompressionLevel), Compression);
+                    level = result;
+                }
+                catch (Exception ex) {
+                    Log.LogWarning("Unable to parse compression level [{0}]. Error [{1}]", Compression, ex.ToString());
+                }
+            }
+
+            string parentDir = Path.GetDirectoryName(ZipFilePath);
+            if (!Directory.Exists(parentDir)) {
+                Directory.CreateDirectory(parentDir);
+            }
+            // System.Diagnostics.Debugger.Launch();
+            try{
+                using (ZipArchive zip = ZipFile.Open(ZipFilePath, System.IO.Compression.ZipArchiveMode.Update)) {
+                    Uri rootFolderUri = new Uri(RootFolder);
+                    // add each input file to the zip
+                    foreach (var file in FilesToAdd) {
+                        // get the relative path of the file to to add
+                        string filePath = file.GetMetadata("FullPath");
+                        Uri fileUri = new Uri(filePath);
+                        string relpath = Uri.UnescapeDataString(
+                                                rootFolderUri.MakeRelativeUri(fileUri)
+                                                    .ToString()
+                                                    .Replace('/', Path.DirectorySeparatorChar)
+                                                );
+
+                        Log.LogMessage("Update zip: [{0}], add file: [{1}], relpath: [{2}]", ZipFilePath, filePath, relpath);
+
+                        // var entriesToDelete = new List<ZipArchiveEntry>();
+                        // if the file is already in the zip remove it and add again                        
+                        if (zip.Entries != null && zip.Entries.Count > 0) {
+                            List<ZipArchiveEntry> entries = zip.Entries.ToList();
+                            foreach (var entry in entries) {
+                                if (entry.FullName.Equals(relpath, StringComparison.OrdinalIgnoreCase)) {
+                                    // entriesToDelete.Add(entry);
+                                    Log.LogMessage(MessageImportance.Low, "deleting zip entry for [{0}]", relpath);
+                                    entry.Delete();
+                                }
+                            }
+                        }
+                        //if(entriesToDelete != null && entriesToDelete.Count > 0){
+                        //    foreach(var entry in entriesToDelete) {
+                        //        try {
+                        //            entry.Delete();
+                        //        }
+                        //        catch(Exception ex){
+                        //            Log.LogMessage(MessageImportance.Low, "Unable to delete entry from zip. {0}", ex.ToString());
+                        //        }
+                        //    }
+                        //}
+                        ZipFileExtensions.CreateEntryFromFile(zip, filePath, relpath, level);
+                    }
+                }
+            }
+            catch(Exception ex){
+                Log.LogError(ex.ToString());
+                return false;
+            }
+
+            return true;
+    ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>

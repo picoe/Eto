@@ -31,7 +31,7 @@ namespace Eto.Addin.Shared
 			set { Source.SetParameter("AppName", value); }
 		}
 
-		public bool ShowAppName => Source.IsSupportedParameter("AppName");
+		public bool SupportsAppName => Source.IsSupportedParameter("AppName");
 
 		public bool IsLibrary => Source.IsSupportedParameter("IsLibrary");
 
@@ -56,6 +56,8 @@ namespace Eto.Addin.Shared
 		public bool SupportsCodePreview => Source.IsSupportedParameter("Preview");
 
 		public bool SupportsPanelType => SupportsXeto || SupportsJeto || SupportsCodePreview;
+
+		public bool SupportsBase => Source.IsSupportedParameter("Base");
 
 		public bool Separate
 		{
@@ -145,13 +147,24 @@ namespace Eto.Addin.Shared
 			}
 		}
 
+		public string Base
+		{
+			get { return Source.GetParameter("Base"); }
+			set
+			{
+				Source.SetParameter("Base", value);
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(Information));
+			}
+		}
+
 		public override string Title
 		{
 			get { return string.Format("Eto.Forms {0} Properties", IsLibrary ? "Library" : "Application"); }
 			set { base.Title = value; }
 		}
 
-		public bool RequiresInput => SupportsSeparated || SupportsProjectType;
+		public bool RequiresInput => SupportsSeparated || SupportsProjectType || SupportsPanelType;
 
 		struct TypeInfo
 		{
@@ -193,16 +206,32 @@ namespace Eto.Addin.Shared
 			new FormatInfo { Mode = "preview", Text = "Define your view layout in a partial class with form preview, with logic and event handlers in a separate file." },
 		};
 
+		struct BaseInfo
+		{
+			public string Text;
+			public string Base;
+		}
+
+		static BaseInfo[] baseInformation = {
+			new BaseInfo { Base = "Panel", Text = "A panel that can be put onto an existing window" },
+			new BaseInfo { Base = "Dialog", Text = "A modal dialog that waits for input" },
+			new BaseInfo { Base = "Form", Text = "A modesless form" },
+		};
+
 		public string Information
 		{
 			get
 			{
 				var text = new List<string>();
-				var combinedInfo = from i in combinedInformation
-								   where i.Separate == Separate
-				                          && (i.IncludeXamMac == null || i.IncludeXamMac == IncludeXamMac)
-								   select i.Text;
-				text.Add(combinedInfo.FirstOrDefault());
+
+				if (SupportsSeparated)
+				{
+					var combinedInfo = from i in combinedInformation
+									   where i.Separate == Separate
+											  && (i.IncludeXamMac == null || i.IncludeXamMac == IncludeXamMac)
+									   select i.Text;
+					text.Add(combinedInfo.FirstOrDefault());
+				}
 
 				if (SupportsProjectType)
 				{
@@ -218,6 +247,11 @@ namespace Eto.Addin.Shared
 								 where i.Mode == Mode
 								 select i.Text;
 				text.Add(formatInfo.FirstOrDefault());
+
+				if (SupportsBase)
+				{
+
+				}
 
 				return string.Join("\n\n", text);
 			}

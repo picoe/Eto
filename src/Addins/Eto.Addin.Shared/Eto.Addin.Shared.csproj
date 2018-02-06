@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net46</TargetFramework>
     <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>

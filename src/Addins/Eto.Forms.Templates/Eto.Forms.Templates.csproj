@@ -11,14 +11,32 @@
 		<TargetFramework>netstandard1.0</TargetFramework>
 		<OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
 		<PackageOutputPath>..\..\..\artifacts\nuget\$(Configuration)\</PackageOutputPath>
-		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<EnableDefaultItems>false</EnableDefaultItems>
-		<ContentTargetFolders>content</ContentTargetFolders>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	</PropertyGroup>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <NoBuild>True</NoBuild>
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ExcludeFromPackage Include="**\bin\**\*" />
+    <ExcludeFromPackage Include="**\obj\**\*" />
+    <ExcludeFromPackage Include="**\.DS_Store" />
+    <ExcludeFromPackage Include="**\.vs\**\*" />
+    <ExcludeFromPackage Include="**\*.userprefs" />
+    <ExcludeFromPackage Include="**\packages\**\*" />
+    <ExcludeFromPackage Include="**\*.user" />
+    <ExcludeFromPackage Include="content\NuGet.Config" />
+    <ExcludeFromPackage Include="content\NuGet.Config;content\Directory.*" />
+  </ItemGroup>
+  
 	<ItemGroup>
-		<None Include="content\NuGet.Config;content\Directory.*" />
-		<Content Include="content\**\*" Exclude="**\bin\**\*;**\obj\**\*;**\.DS_Store;**\.vs\**\*;**\*.userprefs;**\packages\**;**\*.user;content\NuGet.Config;content\Directory.*">
+    <None Include="content\NuGet.Config" />
+		<None Include="content\Directory.*" />
+    <Content Include="content\**\*" Exclude="@(ExcludeFromPackage)">
 			<PackagePath>%(RelativeDir)%(Filename)%(Extension)</PackagePath>
 		</Content>
 	</ItemGroup>

@@ -13,7 +13,7 @@ namespace Eto.Addin.Shared
 			{
 				Spacing = new Size(10, 10)
 			};
-			if (model.ShowAppName)
+			if (model.SupportsAppName)
 			{
 				var nameBox = new TextBox();
 				nameBox.TextBinding.BindDataContext((ProjectWizardPageModel m) => m.AppName);
@@ -132,7 +132,21 @@ namespace Eto.Addin.Shared
 				content.Rows.Add(new TableRow(new Label { Text = "Form:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, panelTypeList));
 			}
 
+			if (model.SupportsBase)
+			{
+				var baseTypeList = new RadioButtonList
+				{
+					Orientation = Orientation.Horizontal,
+					Spacing = new Size(0, 0),
+				};
 
+				baseTypeList.Items.Add(new ListItem { Text = "Panel", Key = "Panel" });
+				baseTypeList.Items.Add(new ListItem { Text = "Dialog", Key = "Dialog" });
+				baseTypeList.Items.Add(new ListItem { Text = "Form", Key = "Form" });
+				baseTypeList.SelectedKeyBinding.BindDataContext((ProjectWizardPageModel m) => m.Base);
+
+				content.Rows.Add(new TableRow(new Label { Text = "Base:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, baseTypeList));
+			}
 
 			var informationLabel = new Label();
 			informationLabel.TextBinding.BindDataContext((ProjectWizardPageModel m) => m.Information);
