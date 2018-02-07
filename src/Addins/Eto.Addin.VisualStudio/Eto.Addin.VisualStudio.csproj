@@ -85,10 +85,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\..\artifacts\nuget\Release\*.nupkg" Exclude="..\..\..\artifacts\nuget\Release\Eto.Forms.Templates*.*">
-      <Link>Packages\%(Filename)%(Extension)</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="..\..\..\LICENSE.txt">
       <Link>LICENSE.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

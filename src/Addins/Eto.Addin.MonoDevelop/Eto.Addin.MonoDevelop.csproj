@@ -39,9 +39,6 @@
 	<Compile Remove="Templates\**\*" />
   </ItemGroup>
   <ItemGroup>
-    <AddinFile Include="..\..\..\artifacts\nuget\Release\*.nupkg">
-      <Link>Packages\%(Filename)%(Extension)</Link>
-    </AddinFile>
     <AddinFile Include="Templates\Files\**\*" />
   </ItemGroup>
   <ItemGroup>
