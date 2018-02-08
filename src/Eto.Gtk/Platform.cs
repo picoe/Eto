@@ -48,14 +48,18 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		#if GTK2
-		public override string ID { get { return "gtk2"; } }
-		#else
-		public override string ID { get { return "gtk3"; } }
+#if GTK2
+		public override string ID => "Gtk2";
+#else
+#if GTKCORE
+		public override string ID => "Gtk";
+#else
+		public override string ID => "Gtk3";
+#endif
 
 		public override PlatformFeatures SupportedFeatures => PlatformFeatures.DrawableWithTransparentContent;
 
-		#endif
+#endif
 		public Platform()
 		{
 			if (EtoEnvironment.Platform.IsWindows && Environment.Is64BitProcess)

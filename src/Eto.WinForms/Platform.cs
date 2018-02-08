@@ -22,7 +22,7 @@ namespace Eto.WinForms
 
 		public override bool IsWinForms { get { return true; } }
 
-		public override string ID { get { return "winforms"; } }
+		public override string ID => "WinForms";
 
 		public override PlatformFeatures SupportedFeatures =>
 			PlatformFeatures.DrawableWithTransparentContent;
