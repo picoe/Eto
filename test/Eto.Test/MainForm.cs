@@ -318,6 +318,12 @@ namespace Eto.Test
 			base.OnClosed(e);
 			Log.Write(this, "Closed");
 		}
+
+		protected override void OnLogicalPixelSizeChanged(EventArgs e)
+		{
+			base.OnLogicalPixelSizeChanged(e);
+			Log.Write(this, $"LogicalPixelSizeChanged: {LogicalPixelSize}");
+		}
 	}
 }
 
