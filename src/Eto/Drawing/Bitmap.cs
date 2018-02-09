@@ -86,7 +86,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Loads a bitmap from the resource in the specified or caller's assembly
 		/// </summary>
-		/// <param name="resourceName">Name of the resource in the caller's assembly to load</param>
+		/// <param name="resourceName">Name of the resource in the caller's assembly to load. E.g. "MyProject.SomeFolder.YourFile.extension"</param>
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
 		public static Bitmap FromResource(string resourceName, Assembly assembly = null)
@@ -115,7 +115,7 @@ namespace Eto.Drawing
 		/// Loads a bitmap from a resource in the same assembly as the specified <paramref name="type"/>
 		/// </summary>
 		/// <returns>The bitmap instance.</returns>
-		/// <param name="resourceName">Full name of the resource in the type's assembly.</param>
+		/// <param name="resourceName">Full name of the resource in the type's assembly. E.g. "MyProject.SomeFolder.YourFile.extension"</param>
 		/// <param name="type">Type of the assembly to get the resource.</param>
 		public static Bitmap FromResource(string resourceName, Type type)
 		{
