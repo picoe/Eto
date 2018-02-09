@@ -17,8 +17,6 @@
         <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
 		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
 		<AddinDir>$(SourceDir)\Addins\</AddinDir>
-		<XamarinStudioAddinProject>$(AddinDir)Eto.Addin.MonoDevelop.sln</XamarinStudioAddinProject>
-		<VisualStudioAddinProject>$(AddinDir)Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Linux'">"mdtool"</mdtool>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
@@ -105,6 +103,12 @@
 		<FileUpdate Files="@(ProjFiles)"
 			WarnOnNoUpdate="false"
             Pattern="(?&lt;=[\\\\]packages[\\\\]$(ReferenceName)\\.)$(ReplaceVersionPattern)(?=[\\\\])"
+            Replacement='$(ReferenceVersion)' />
+
+        <!-- references to nuget template package -->
+		<FileUpdate Files="@(ProjFiles)"
+			WarnOnNoUpdate="false"
+            Pattern="(?&lt;=$(ReferenceName)[\\.])$(ReplaceVersionPattern)(?=\\.nupkg)"
             Replacement='$(ReferenceVersion)' />
 
         <!-- single line PackageReference -->
@@ -255,10 +259,11 @@
     <!-- build the MD/VS for Mac and/or the VS addin, depending on your platform -->
     <Target Name="BuildAddins">
     	<!-- monodevelop/VS for Mac -->
-    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Restore;Build;PackageAddin" Properties="Configuration=$(Configuration)" Condition="$(Platform) != 'Windows'" />
+    	<MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop.sln" Targets="Restore;Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) != 'Windows'" />
+    	<MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop\Eto.Addin.MonoDevelop.csproj" Targets="PackageAddin" Properties="Configuration=$(Configuration)" Condition="$(Platform) != 'Windows'" />
 
 		<!-- Visual Studio Addin -->
-    	<MSBuild Projects="$(VisualStudioAddinProject)" Targets="Restore;Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    	<MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.sln" Targets="Restore;Build" Properties="Configuration=$(Configuration);DeployExtension=false" Condition="$(Platform) == 'Windows'" />
     </Target>
     
     <!-- publish nuget packages to nuget.org -->

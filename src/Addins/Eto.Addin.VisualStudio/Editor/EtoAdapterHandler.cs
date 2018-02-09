@@ -10,8 +10,10 @@ using Eto.Wpf.Forms.Controls;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using System.Windows.Threading;
+using Eto;
+using Eto.Addin.VisualStudio.Editor;
 
-[assembly: PlatformInitializerAttribute(typeof(Eto.Addin.VisualStudio.Editor.PlatformInitializer))]
+[assembly: ExportHandler(typeof(IEtoAdapterHandler), typeof(EtoAdapterHandler))]
 
 namespace Eto.Addin.VisualStudio.Editor
 {
@@ -33,14 +35,6 @@ namespace Eto.Addin.VisualStudio.Editor
 			set
 			{
 			}
-		}
-	}
-
-	public class PlatformInitializer : IPlatformInitializer
-	{
-		public void Initialize(Platform platform)
-		{
-			platform.Add<IEtoAdapterHandler>(() => new EtoAdapterHandler());
 		}
 	}
 

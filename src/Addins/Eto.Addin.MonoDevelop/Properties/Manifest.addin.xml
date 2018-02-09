@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
 	<ConditionType id="ExtensionExists" type="Eto.Addin.MonoDevelop.ExtensionExistsCondition" />
-	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
+	<!-- Not supported with dotnet template engine, so let's not bloat things
+	Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
 		<PackageRepository path="Packages" />
-	</Extension>
+	</Extension-->
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
 		<Class id="Eto.Addin.MonoDevelop.ProjectWizard" class="Eto.Addin.MonoDevelop.ProjectWizard" />

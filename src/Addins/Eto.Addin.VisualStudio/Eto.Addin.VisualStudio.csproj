@@ -24,6 +24,11 @@
     <DefaultNewProjectNode>CSharp\Eto.Forms</DefaultNewProjectNode>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files %28x86%29\Microsoft Visual Studio\2017\Professional\Common7\IDE\devenv.exe</StartProgram>
+    <StartArguments>/RootSuffix Exp</StartArguments>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\artifacts\addin\Debug\VisualStudio\</OutputPath>
@@ -80,14 +85,10 @@
     <Compile Include="Wizards\ProjectWizard.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\artifacts\core\Release\netstandard1.0\Eto.xml">
+    <Content Include="..\..\..\artifacts\core\$(Configuration)\netstandard1.0\Eto.xml">
       <Link>Eto.xml</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\..\artifacts\nuget\Release\*.nupkg" Exclude="..\..\..\artifacts\nuget\Release\Eto.Forms.Templates*.*">
-      <Link>Packages\%(Filename)%(Extension)</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="..\..\..\LICENSE.txt">
       <Link>LICENSE.txt</Link>
