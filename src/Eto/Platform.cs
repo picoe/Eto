@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using System.Threading;
 using Eto.Drawing;
 
@@ -112,6 +113,7 @@ namespace Eto
 		readonly Dictionary<Type, HandlerInfo> handlerMap = new Dictionary<Type, HandlerInfo>();
 		readonly Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
 		readonly Dictionary<object, object> properties = new Dictionary<object, object>();
+		readonly HashSet<Assembly> loadedAssemblies = new HashSet<Assembly>();
 		static Platform globalInstance;
 		static readonly ThreadLocal<Platform> instance = new ThreadLocal<Platform>(() => globalInstance);
 
@@ -277,6 +279,65 @@ namespace Eto
 		public virtual bool Supports(Type type)
 		{
 			return Find(type) != null;
+		}
+
+		/// <summary>
+		/// Loads the extensions specified by the assembly attribute <see cref="PlatformExtensionAttribute"/>.
+		/// </summary>
+		/// <seealso cref="LoadAssembly(Assembly)"/>
+		/// <param name="assemblyName">Name of the assembly to load the extensions for.</param>
+		public void LoadAssembly(string assemblyName)
+		{
+			LoadAssembly(Assembly.Load(new AssemblyName(assemblyName)));
+		}
+
+		/// <summary>
+		/// Loads the extensions specified by the assembly attribute <see cref="PlatformExtensionAttribute"/>.
+		/// </summary>
+		/// <remarks>
+		/// This is useful for 3rd party libraries and when defining your own custom controls.
+		/// 
+		/// This method is called automatically on the same assembly of a custom control when its handler cannot be found.
+		/// It will also be called for the same assembly with the prefix of the platform ID.
+		/// 
+		/// For example, if <c>MyControl</c> was declared in <c>MyControls.dll</c>, then Eto will automatically also
+		/// load <c>MyControls.Wpf.dll</c> for the Wpf platform, and <c>MyControls.XamMac2.dll</c> for the XamMac2 platform, etc.
+		/// 
+		/// Use <see cref="ExportHandlerAttribute"/> and <see cref="ExportInitializerAttribute"/> to register
+		/// handlers with the platform when the assembly is loaded or perform other logic.
+		/// </remarks>
+		/// <param name="assembly">Assembly to load the extensions for.</param>
+		public void LoadAssembly(Assembly assembly)
+		{
+			RegisterAssembly(assembly);
+			loadedAssemblies.Add(assembly);
+
+			// also load associated platform assembly if one is available
+			var an = new AssemblyName(assembly.FullName);
+			an.Name += $".{ID}";
+
+			try
+			{
+				var platformAssembly = Assembly.Load(an);
+				if (platformAssembly != null)
+				{
+					RegisterAssembly(platformAssembly);
+					loadedAssemblies.Add(platformAssembly);
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Error loading assembly {an}\n{ex}");
+			}
+		}
+
+		void RegisterAssembly(Assembly assembly)
+		{
+			foreach (var extensionInfo in assembly.GetCustomAttributes<PlatformExtensionAttribute>())
+			{
+				if (extensionInfo.Supports(this))
+					extensionInfo.Register(this);
+			}
 		}
 
 		/// <summary>
@@ -467,6 +528,13 @@ namespace Eto
 				instantiatorMap.Add(type, activator);
 				return activator;
 			}
+
+			if (!loadedAssemblies.Contains(type.GetAssembly()))
+			{
+				LoadAssembly(type.GetAssembly());
+				return Find(type);
+			}
+
 			return null;
 		}
 
@@ -495,6 +563,11 @@ namespace Eto
 				info = new HandlerInfo(autoInit == null || autoInit.Initialize, activator);
 				handlerMap.Add(type, info);
 				return info;
+			}
+			if (!loadedAssemblies.Contains(type.GetAssembly()))
+			{
+				LoadAssembly(type.GetAssembly());
+				return FindHandler(type);
 			}
 			return null;
 		}
