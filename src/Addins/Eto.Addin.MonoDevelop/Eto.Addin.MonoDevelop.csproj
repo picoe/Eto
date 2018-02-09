@@ -40,6 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <AddinFile Include="Templates\Files\**\*" />
+    <AddinFile Include="..\..\..\artifacts\nuget\$(Configuration)\Eto.Forms.Templates.2.4.0-alpha.nupkg">
+      <Link>Packages\Eto.Forms.Templates.2.4.0-alpha.nupkg</Link>
+    </AddinFile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\project%402x.png" />
