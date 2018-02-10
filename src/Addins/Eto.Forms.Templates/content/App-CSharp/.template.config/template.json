@@ -1,4 +1,4 @@
-{
+﻿{
 	"$schema": "http://json.schemastore.org/template",
 	"author": "Curtis Wensley",
 	"classifications": [ "Cross Platform", "Eto" ],
@@ -10,7 +10,7 @@
 		"language": "C#",
 		"type": "project"
 	},
-	"sourceName": "EtoApp",
+	"sourceName": "EtoApp.1",
 	"preferNameDirectory": true,
 	"symbols": {
 		"Mode": {
@@ -117,6 +117,23 @@
 			"parameters": {
 				"format": "yyyy"
 			}
+		},
+		"CopyrightYear": {
+			"type": "generated",
+			"generator": "now",
+			"replaces": "2018",
+			"parameters": {
+				"format": "yyyy"
+			}
+		},
+		"namespace-for-old-sdk": {
+			"type": "generated",
+			"generator": "coalesce",
+			"parameters": {
+				"sourceVariableName": "safe_namespace",
+				"fallbackVariableName": "safe_name"
+			},
+			"replaces": "EtoApp._1"
 		}
 	},
 	"sources": [
@@ -144,73 +161,73 @@
 				},
 				{
 					"condition": "(Separate)",
-					"exclude": [ "**/EtoApp.Desktop/**/*" ]
+					"exclude": [ "**/EtoApp.1.Desktop/**/*" ]
 				},
 				{
 					"condition": "(!Separate)",
 					"exclude": [
-						"**/EtoApp.Gtk/**/*",
-						"**/EtoApp.Mac/**/*",
-						"**/EtoApp.Wpf/**/*",
+						"**/EtoApp.1.Gtk/**/*",
+						"**/EtoApp.1.Mac/**/*",
+						"**/EtoApp.1.Wpf/**/*",
 					]
 				},
 				{
 					"condition": "(!IncludeWinForms || !Separate)",
 					"exclude": [
-						"**/EtoApp.WinForms/**/*",
+						"**/EtoApp.1.WinForms/**/*",
 					]
 				},
 				{
 					"condition": "(!IncludeXamMac)",
 					"exclude": [
-						"**/EtoApp.XamMac/**/*"
+						"**/EtoApp.1.XamMac/**/*"
 					]
 				},
 			]
 		}
 	],
 	"primaryOutputs": [
-    { "path": "EtoApp\\EtoApp.csproj" },
-    {
-      "path": "EtoApp.Desktop\\EtoApp.Desktop.csproj",
-      "condition": "(!Separate)"
-    },
-    {
-      "path": "EtoApp.Gtk\\EtoApp.Gtk.csproj",
-      "condition": "(Separate)"
-    },
-    {
-      "path": "EtoApp.Mac\\EtoApp.Mac.csproj",
-      "condition": "(Separate)"
-    },
-    {
-      "path": "EtoApp.WinForms\\EtoApp.WinForms.csproj",
-      "condition": "(Separate && IncludeWinForms)"
-    },
-    {
-      "path": "EtoApp.Wpf\\EtoApp.Wpf.csproj",
-      "condition": "(Separate)"
-    },
-    {
-      "path": "EtoApp.XamMac\\EtoApp.XamMac.csproj",
-      "condition": "(IncludeXamMac)"
-    },
-    {
-      "path": "EtoApp\\MainForm.cs",
-      "condition": "UseCode"
-    },
-    {
-      "path": "EtoApp\\MainForm.eto.cs",
-      "condition": "UseCodePreview"
-    },
-    {
-      "path": "EtoApp\\MainForm.xeto",
-      "condition": "UseXeto"
-    },
-    {
-      "path": "EtoApp\\MainForm.jeto",
-      "condition": "UseJeto"
-    },
+		{ "path": "EtoApp.1\\EtoApp.1.csproj" },
+		{
+			"path": "EtoApp.1.Desktop\\EtoApp.1.Desktop.csproj",
+			"condition": "(!Separate)"
+		},
+		{
+			"path": "EtoApp.1.Gtk\\EtoApp.1.Gtk.csproj",
+			"condition": "(Separate)"
+		},
+		{
+			"path": "EtoApp.1.Mac\\EtoApp.1.Mac.csproj",
+			"condition": "(Separate)"
+		},
+		{
+			"path": "EtoApp.1.WinForms\\EtoApp.1.WinForms.csproj",
+			"condition": "(Separate && IncludeWinForms)"
+		},
+		{
+			"path": "EtoApp.1.Wpf\\EtoApp.1.Wpf.csproj",
+			"condition": "(Separate)"
+		},
+		{
+			"path": "EtoApp.1.XamMac\\EtoApp.1.XamMac.csproj",
+			"condition": "(IncludeXamMac)"
+		},
+		{
+			"path": "EtoApp.1\\MainForm.cs",
+			"condition": "UseCode"
+		},
+		{
+			"path": "EtoApp.1\\MainForm.eto.cs",
+			"condition": "UseCodePreview"
+		},
+		{
+			"path": "EtoApp.1\\MainForm.xeto",
+			"condition": "UseXeto"
+		},
+		{
+			"path": "EtoApp.1\\MainForm.jeto",
+			"condition": "UseJeto"
+		},
 	],
 	"guids": [
 		"4A7EEA91-18CE-4C33-8501-76049670866D",

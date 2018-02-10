@@ -239,7 +239,7 @@
     		<CombinedProject Include="@(CombinedProject3)" OtherId="%(OtherOptions.Identity)" Other="%(OtherOptions.Value)" />
     	</ItemGroup>
 
-    	<Exec Command="dotnet new etoapp -m %(CombinedProject.Mode) -lang %(Language) %(Other) %(Separate) -o $(ArtifactsDir)\templates\App_%(LanguageId)_%(SeparateId)_%(OtherId)_%(ModeId)" />
+    	<Exec Command="dotnet new etoapp -m %(CombinedProject.Mode) -sln -lang %(Language) %(Other) %(Separate) -o $(ArtifactsDir)\templates\App.%(LanguageId)-%(SeparateId)-%(OtherId)-%(ModeId)" />
 
 		<!-- generate file templates -->
     	<ItemGroup>
@@ -252,7 +252,7 @@
     		<CombinedFile Include="@(CombinedFile2)" BaseId="%(Base.Identity)" Base="%(Base.Value)" />
     	</ItemGroup>
 
-    	<Exec Command="dotnet new etofile -m %(CombinedFile.Mode) -b %(Base) -o $(ArtifactsDir)\templates\File_%(LanguageId)_%(ModeId)_%(Base)" />
+    	<Exec Command="dotnet new etofile -m %(CombinedFile.Mode) -b %(Base) -o $(ArtifactsDir)\templates\File_%(LanguageId)-%(ModeId)-%(Base)" />
     
     </Target>
     
