@@ -180,6 +180,8 @@ namespace Eto.Forms
 			{
 				if(value != null)
 					SelectedIndex = pages.IndexOf(value);
+				else
+					SelectedIndex = -1;
 			}
 		}
 
