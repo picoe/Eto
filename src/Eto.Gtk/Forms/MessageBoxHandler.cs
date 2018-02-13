@@ -23,7 +23,8 @@ namespace Eto.GtkSharp.Forms
 			if (parent != null && parent.ParentWindow != null)
 				parentWindow = parent.ParentWindow.ControlObject as Gtk.Window;
 
-			control = new Gtk.MessageDialog(parentWindow, Gtk.DialogFlags.Modal, Type.ToGtk(), Buttons.ToGtk(), false, Text);
+			control = new Gtk.MessageDialog(parentWindow, Gtk.DialogFlags.Modal, Type.ToGtk(), Buttons.ToGtk(), false, string.Empty);
+			control.Text = Text;
 			control.TypeHint = Gdk.WindowTypeHint.Dialog;
 			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
 			if (!string.IsNullOrEmpty(caption))
