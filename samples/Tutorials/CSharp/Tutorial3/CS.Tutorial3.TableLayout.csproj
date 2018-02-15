@@ -6,7 +6,7 @@
     <ProjectGuid>{D51732E0-1E93-11E3-8224-0800200C9A66}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Tutorial3</RootNamespace>
-    <AssemblyName>Tutorial3</AssemblyName>
+    <AssemblyName>CS.Tutorial3.TableLayout</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseMacTemplate>True</UseMacTemplate>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

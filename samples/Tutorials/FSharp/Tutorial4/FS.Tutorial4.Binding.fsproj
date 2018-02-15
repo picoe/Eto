@@ -6,7 +6,7 @@
     <ProjectGuid>{b7ed284c-edaf-4f91-829a-04c297fa92b6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Tutorial4</RootNamespace>
-    <AssemblyName>Tutorial4</AssemblyName>
+    <AssemblyName>FS.Tutorial4.Binding</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <Name>Tutorial2 - Menus and Toolbars</Name>
