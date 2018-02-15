@@ -1,0 +1,181 @@
+{
+	"$schema": "http://json.schemastore.org/template",
+	"author": "Curtis Wensley",
+	"classifications": [ "Cross Platform", "Eto" ],
+	"name": "Eto Panel, Dialog or Form",
+	"identity": "Eto.File.FSharp",
+	"groupIdentity": "Eto.File",
+	"shortName": "etofile",
+	"tags": {
+		"language": "F#",
+		"type": "item"
+	},
+	"sourceName": "MainForm",
+	"symbols": {
+		"Mode": {
+			"type": "parameter",
+			"description": "How your UI is defined",
+			"datatype": "choice",
+			"defaultValue": "code",
+			"choices": [
+				{
+					"choice": "code",
+					"description": "Code only UI"
+				},
+				{
+					"choice": "preview",
+					"description": "Partial class with preview"
+				},
+				{
+					"choice": "xaml",
+					"description": "Xaml definition with code behind"
+				},
+				{
+					"choice": "json",
+					"description": "Json definition with code behind"
+				}
+			]
+		},
+		"Base": {
+			"type": "parameter",
+			"description": "Base class of the UI",
+			"datatype": "choice",
+			"defaultValue": "Panel",
+			"replaces": "Form",
+			"onlyIf": [
+				{ "after": " " },
+				{ "after": "\"" },
+				{ "after": "<" },
+				{ "after": "/" }
+			],
+			"choices": [
+				{
+					"choice": "Panel",
+					"description": "A panel to put onto an existing window or control"
+				},
+				{
+					"choice": "Dialog",
+					"description": "A modal dialog that waits for input"
+				},
+				{
+					"choice": "Form",
+					"description": "A modeless form"
+				}
+			]
+		},
+		"Namespace": {
+			"description": "Namespace for the generated files",
+			"replaces": "EtoApp._1",
+			"defaultValue": "EtoApp",
+			"type": "parameter"
+		},
+		"UseCode": {
+			"type": "computed",
+			"value": "(Mode == \"code\")"
+		},
+		"UseCodePreview": {
+			"type": "computed",
+			"value": "(Mode == \"preview\")"
+		},
+		"UseXeto": {
+			"type": "computed",
+			"value": "(Mode == \"xaml\")"
+		},
+		"UseJeto": {
+			"type": "computed",
+			"value": "(Mode == \"json\")"
+		},
+		"IsWindow": {
+			"type": "computed",
+			"value": "(Base == \"dialog\" || Base == \"form\")"
+		},
+		"IsForm": {
+			"type": "computed",
+			"value": "(Base == \"form\")"
+		},
+		"IsDialog": {
+			"type": "computed",
+			"value": "(Base == \"dialog\")"
+		}
+	},
+	"sources": [
+		{
+			"modifiers": [
+				{
+					"condition": "(!UseCode && !UseCodePreview)",
+					"exclude": [ "MainForm.fs" ]
+				},
+				{
+					"condition": "(!UseCodePreview)",
+					"exclude": [ "**/*.eto.*" ]
+				},
+				{
+					"condition": "(!UseXeto)",
+					"exclude": [ "**/*.xeto", "**/*.xeto.*" ]
+				},
+				{
+					"condition": "(!UseJeto)",
+					"exclude": [ "**/*.jeto", "**/*.jeto.*" ]
+				},
+			]
+		}
+	],
+	"primaryOutputs": [
+		{
+			"path": "MainForm.fs",
+			"condition": "(UseCode || UseCodePreview)"
+		},
+		{
+			"path": "MainForm.eto.fs",
+			"condition": "UseCodePreview"
+		},
+		{
+			"path": "MainForm.xeto",
+			"condition": "UseXeto"
+		},
+		{
+			"path": "MainForm.xeto.fs",
+			"condition": "UseXeto"
+		},
+		{
+			"path": "MainForm.jeto",
+			"condition": "UseJeto"
+		},
+		{
+			"path": "MainForm.jeto.fs",
+			"condition": "UseJeto"
+		},
+	],
+	"SpecialCustomOperations": {
+		"**/*.xeto": {
+			"operations": [
+				{
+					"type": "conditional",
+					"configuration": {
+						"actionableIf": [ "<!--#if" ],
+						"actionableElse": [ "#else", "<!--#else" ],
+						"actionableElseif": [ "#elseif", "<!--#elseif" ],
+						"endif": [ "#endif", "<!--#endif" ],
+						"trim": "true",
+						"wholeLine": "true",
+					}
+				}
+			]
+		},
+		"**/*.jeto": {
+			"operations": [
+				{
+					"type": "conditional",
+					"configuration": {
+						"actionableIf": [ "/*#if" ],
+						"actionableElse": [ "#else", "/*#else" ],
+						"actionableElseif": [ "#elseif", "/*#elseif" ],
+						"endif": [ "#endif", "/*#endif" ],
+						"trim": "true",
+						"wholeLine": "true",
+					}
+				}
+			]
+		}
+	}
+}

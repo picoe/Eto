@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Form</_Name>
+		<Icon>md-text-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<_Description>
+			<![CDATA[Creates a new Eto.Forms cross platform non-modal Form class using C#.]]>
+		</_Description>
+		<DefaultFilename>MyForm</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+        <File name="${Name}.cs" AddStandardHeader="true" src="form.cs"/>
+	</TemplateFiles>
+</Template>

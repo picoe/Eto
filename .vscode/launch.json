@@ -1,0 +1,16 @@
+{
+   "version": "0.2.0",
+   "configurations": [
+        {
+            "name": "Eto.Test.Gtk",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_gtk",
+            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp2.0/Eto.Test.Gtk.dll",
+            "args": [],
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
+        }
+    ]
+}

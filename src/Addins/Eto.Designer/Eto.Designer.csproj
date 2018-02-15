@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto\Eto.csproj" />
+    <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Compiler.CodeDom" Version="1.0.0.1" />
+  </ItemGroup>
+</Project>

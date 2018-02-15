@@ -5,10 +5,11 @@
 *.suo
 bin/
 obj/
-/BuildOutput
 *.shfbproj_*
 UpgradeLog*.htm
-Source/Components
+/src/Components
 AppPackages
-packages/
 .vs/
+[Tt]humbs.db
+/artifacts
+packages/
