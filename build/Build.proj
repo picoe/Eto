@@ -185,6 +185,7 @@
     	<MSBuild Projects="$(SourceDir)\Eto.sln" Targets="Eto_XamMac2_net45:$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Mac" Condition="$(Platform) == 'Windows'"/>
     	-->
 
+    	<MSBuild Targets="RestorePackages" Properties="PackageSource=$(BaseDir)\samples\Samples.sln" Projects="NuGet.targets" />
 		<MSBuild Projects="$(BaseDir)\samples\Samples.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
 
 		<!-- hack: publish Eto.Serialization.Xaml to get a copy of Portable.Xaml, so we can get version info -->
