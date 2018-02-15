@@ -47,8 +47,6 @@ namespace Eto.GtkSharp.Forms.Cells
 			protected override void OnGetPreferredHeight(Gtk.Widget widget, out int minimum_size, out int natural_size)
 			{
 				base.OnGetPreferredHeight(widget, out minimum_size, out natural_size);
-
-				minimum_size = Math.Max(minimum_size, Handler.Source.RowHeight);
 				natural_size = Handler.Source.RowHeight;
 			}
 			
