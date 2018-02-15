@@ -201,7 +201,7 @@
 			<StandalonePackage Include="Eto.Platform.Mac.Template"/>
 		</ItemGroup>
 		
-    	<MSBuild Targets="BuildPackage" Properties="Configuration=$(Configuration);AssemblyPath=%(Package.Assembly);NuspecPath=nuspec\%(Package.Identity).nuspec;BasePath=$(BaseDir);NupkgOutputDir=$(NugetOutputDir)" Projects="nuget.targets" Condition="Exists('%(Package.Assembly)')" />
+    	<MSBuild Targets="BuildPackage" Properties="Configuration=$(Configuration);AssemblyPath=;NuspecPath=nuspec\%(StandalonePackage.Identity).nuspec;NupkgOutputDir=$(NugetOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="nuget.targets" />
 
 		<!-- build dotnet template -->
     	<MSBuild Targets="RestorePackages" Properties="PackageSource=$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" Projects="NuGet.targets" />
