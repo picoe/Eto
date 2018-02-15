@@ -6,7 +6,7 @@
     <ProjectGuid>{DDC8A290-2F20-11E4-8C21-0800200C9A66}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Tutorial4</RootNamespace>
-    <AssemblyName>Tutorial4</AssemblyName>
+    <AssemblyName>CS.Tutorial4.Binding</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseMacTemplate>True</UseMacTemplate>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

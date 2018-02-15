@@ -6,7 +6,7 @@
     <ProjectGuid>1364e3ae-8ea7-4a0c-88dd-5131a31f2b3f</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Tutorial1</RootNamespace>
-    <AssemblyName>Tutorial1</AssemblyName>
+    <AssemblyName>FS.Tutorial1.HelloWorld</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <Name>Tutorial1 - Hello World</Name>

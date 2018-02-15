@@ -6,7 +6,7 @@
     <ProjectGuid>{7BE9E187-3FC4-49D2-A322-F4651C3AE256}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Tutorial1</RootNamespace>
-    <AssemblyName>Tutorial1</AssemblyName>
+    <AssemblyName>CS.Tutorial1.HelloWorld</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseMacTemplate>True</UseMacTemplate>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
