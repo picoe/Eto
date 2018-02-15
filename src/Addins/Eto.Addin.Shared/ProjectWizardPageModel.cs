@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace Eto.Addin.Shared
 {
@@ -25,10 +26,54 @@ namespace Eto.Addin.Shared
 			IncludeSolution = false;
 		}
 
+		public bool IsValid
+		{
+			get
+			{
+				if (SupportsAppName)
+				{
+					
+					if (string.IsNullOrWhiteSpace(AppName) || AppNameInvalid)
+						return false;
+				}
+				return true;
+			}
+		}
+
+		public bool AppNameInvalid
+		{
+			get
+			{
+				if (string.IsNullOrWhiteSpace(AppName)) // not invalid, but can't continue
+					return false;
+				if (NoDash && AppName.Contains("-"))
+					return true;
+				if (!Regex.IsMatch(AppName, @"^[a-zA-Z_-][\w\.-_]*$"))
+					return true;
+				return false;
+			}
+		}
+
+		public string AppNameValidationText
+		{
+			get
+			{
+				if (NoDash)
+					return "App name must only be a combination of letters, digits, or one of '_', '.'";
+				else
+					return "App name must only be a combination of letters, digits, or one of '_', '-', '.'";
+			}
+		}
+
 		public string AppName
 		{
 			get { return Source.GetParameter("AppName"); }
-			set { Source.SetParameter("AppName", value); }
+			set
+			{
+				Source.SetParameter("AppName", value);
+				OnPropertyChanged(nameof(IsValid));
+				OnPropertyChanged(nameof(AppNameInvalid));
+			}
 		}
 
 		public bool SupportsAppName => Source.IsSupportedParameter("AppName");
@@ -58,6 +103,8 @@ namespace Eto.Addin.Shared
 		public bool SupportsPanelType => SupportsXeto || SupportsJeto || SupportsCodePreview;
 
 		public bool SupportsBase => Source.IsSupportedParameter("Base");
+
+		public bool NoDash => Source.IsSupportedParameter("NoDash");
 
 		public bool Separate
 		{

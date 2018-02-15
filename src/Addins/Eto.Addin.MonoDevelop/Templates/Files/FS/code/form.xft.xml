@@ -9,6 +9,7 @@
 			<![CDATA[Creates a new Eto.Forms cross platform non-modal Form class using F#.]]>
 		</_Description>
 		<DefaultFilename>MyForm</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
 	</TemplateConfiguration>
 	<TemplateFiles>
         <File name="${Name}.fs" AddStandardHeader="true" src="form.fs"/>
