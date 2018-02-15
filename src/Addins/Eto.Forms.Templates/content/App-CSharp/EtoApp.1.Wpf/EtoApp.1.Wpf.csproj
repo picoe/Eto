@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Eto.Platform.Wpf">
-      <Version>2.4.0-alpha</Version>
+      <Version>2.4.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
