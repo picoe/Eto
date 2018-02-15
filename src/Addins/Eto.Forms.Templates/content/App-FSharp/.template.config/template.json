@@ -118,6 +118,7 @@
 				"format": "yyyy"
 			}
 		},
+		/* Support SDK 2.0.0 */
 		"namespace-for-old-sdk": {
 			"type": "generated",
 			"generator": "coalesce",

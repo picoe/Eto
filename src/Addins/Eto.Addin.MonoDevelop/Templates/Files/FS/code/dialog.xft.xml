@@ -9,6 +9,7 @@
 			<![CDATA[Creates a new Eto.Forms cross platform modal Dialog class using F#.]]>
 		</_Description>
 		<DefaultFilename>MyDialog</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
 	</TemplateConfiguration>
 	<TemplateFiles>
         <File name="${Name}.fs" AddStandardHeader="true" src="dialog.fs"/>

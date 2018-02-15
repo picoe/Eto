@@ -126,15 +126,10 @@
 				"format": "yyyy"
 			}
 		},
-		/* Support SDK 2.0.0 */
+		/* Support VS for Mac 7.3 */
 		"namespace-for-old-sdk": {
-			"type": "generated",
-			"generator": "coalesce",
+			"type": "parameter",
 			"replaces": "EtoApp._1",
-			"parameters": {
-				"sourceVariableName": "safe_namespace",
-				"fallbackVariableName": "safe_name"
-			}
 		}
 	},
 	"sources": [

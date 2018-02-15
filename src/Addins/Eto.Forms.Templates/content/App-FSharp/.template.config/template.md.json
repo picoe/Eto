@@ -3,11 +3,11 @@
 	"author": "Curtis Wensley",
 	"classifications": [ "Cross Platform", "Eto" ],
 	"name": "Eto App",
-	"identity": "Eto.App.CSharp",
+	"identity": "Eto.App.FSharp",
 	"groupIdentity": "Eto.App",
 	"shortName": "etoapp",
 	"tags": {
-		"language": "C#",
+		"language": "F#",
 		"type": "project"
 	},
 	"sourceName": "EtoApp.1",
@@ -72,7 +72,7 @@
 			"type": "parameter",
 			"description": "Include a .sln file",
 			"dataType": "bool",
-			"defaultValue": "false"
+			"defaultValue": "true"
 		},
 		"IncludeXamMac": {
 			"type": "parameter",
@@ -118,23 +118,10 @@
 				"format": "yyyy"
 			}
 		},
-		"CopyrightYear": {
-			"type": "generated",
-			"generator": "now",
-			"replaces": "2018",
-			"parameters": {
-				"format": "yyyy"
-			}
-		},
-		/* Support SDK 2.0.0 */
+		/* Support VS for Mac 7.3 */
 		"namespace-for-old-sdk": {
-			"type": "generated",
-			"generator": "coalesce",
-			"replaces": "EtoApp._1",
-			"parameters": {
-				"sourceVariableName": "safe_namespace",
-				"fallbackVariableName": "safe_name"
-			}
+			"type": "parameter",
+			"replaces": "EtoApp._1"
 		}
 	},
 	"sources": [
@@ -146,11 +133,11 @@
 				},
 				{
 					"condition": "(!UseCode && !UseCodePreview)",
-					"exclude": [ "**/MainForm.cs" ]
+					"exclude": [ "**/MainForm.fs" ]
 				},
 				{
 					"condition": "(!UseCodePreview)",
-					"exclude": [ "**/*.eto.*" ]
+					"exclude": [ "**/*.eto.fs" ]
 				},
 				{
 					"condition": "(!UseXeto)",
@@ -188,37 +175,37 @@
 		}
 	],
 	"primaryOutputs": [
-		{ "path": "EtoApp.1\\EtoApp.1.csproj" },
+		{ "path": "EtoApp.1\\EtoApp.1.fsproj" },
 		{
-			"path": "EtoApp.1.Desktop\\EtoApp.1.Desktop.csproj",
+			"path": "EtoApp.1.Desktop\\EtoApp.1.Desktop.fsproj",
 			"condition": "(!Separate)"
 		},
 		{
-			"path": "EtoApp.1.Gtk\\EtoApp.1.Gtk.csproj",
+			"path": "EtoApp.1.Gtk\\EtoApp.1.Gtk.fsproj",
 			"condition": "(Separate)"
 		},
 		{
-			"path": "EtoApp.1.Mac\\EtoApp.1.Mac.csproj",
+			"path": "EtoApp.1.Mac\\EtoApp.1.Mac.fsproj",
 			"condition": "(Separate)"
 		},
 		{
-			"path": "EtoApp.1.WinForms\\EtoApp.1.WinForms.csproj",
+			"path": "EtoApp.1.WinForms\\EtoApp.1.WinForms.fsproj",
 			"condition": "(Separate && IncludeWinForms)"
 		},
 		{
-			"path": "EtoApp.1.Wpf\\EtoApp.1.Wpf.csproj",
+			"path": "EtoApp.1.Wpf\\EtoApp.1.Wpf.fsproj",
 			"condition": "(Separate)"
 		},
 		{
-			"path": "EtoApp.1.XamMac\\EtoApp.1.XamMac.csproj",
+			"path": "EtoApp.1.XamMac\\EtoApp.1.XamMac.fsproj",
 			"condition": "(IncludeXamMac)"
 		},
 		{
-			"path": "EtoApp.1\\MainForm.cs",
+			"path": "EtoApp.1\\MainForm.fs",
 			"condition": "UseCode"
 		},
 		{
-			"path": "EtoApp.1\\MainForm.eto.cs",
+			"path": "EtoApp.1\\MainForm.eto.fs",
 			"condition": "UseCodePreview"
 		},
 		{

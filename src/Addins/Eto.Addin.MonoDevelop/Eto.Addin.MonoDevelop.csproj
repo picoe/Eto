@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <AddinFile Include="Templates\Files\**\*" />
-    <AddinFile Include="..\..\..\artifacts\nuget\$(Configuration)\Eto.Forms.Templates.2.4.0-alpha.nupkg">
+    <AddinFile Include="..\..\..\artifacts\nuget\MD$(Configuration)\Eto.Forms.Templates.2.4.0-alpha.nupkg">
       <Link>Packages\Eto.Forms.Templates.2.4.0-alpha.nupkg</Link>
     </AddinFile>
   </ItemGroup>
