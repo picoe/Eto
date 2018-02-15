@@ -10,7 +10,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Mac64" Version="2.4.0-alpha" />
+    <PackageReference Include="Eto.Platform.Mac64" Version="2.4.0" />
   </ItemGroup>
 	
 </Project>
