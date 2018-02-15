@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build_gtk",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

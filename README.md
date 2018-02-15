@@ -74,6 +74,7 @@ To compile or contribute to Eto.Forms, read the [Contributing Guide](https://git
 
 Applications
 ------------
+* [MonoGame Pipeline Tool](https://github.com/MonoGame/MonoGame) - Content manager for MonoGame
 * [Manager](http://www.manager.io) - Accounting Software
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
 * [JabbR.Desktop](https://github.com/JabbR/JabbR.Desktop) - JabbR client

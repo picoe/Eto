@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Panel (Json)</_Name>
+		<Icon>md-xml-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description><![CDATA[Creates a new Eto.Forms cross platform Panel class using Json.
+
+You must add the Eto.Serialization.Json nuget package to your project to use this template.]]></_Description>
+		<DefaultFilename>MyPanel</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+		<!-- using DependsOn causes compile order to be incorrect: DependsOn="${Name}.jeto" -->
+		<File name="${Name}.jeto.fs" AddStandardHeader="true" src="panel.jeto.fs" /> 
+		<EnhancedFile name="${Name}.jeto" AddStandardHeader="true" src="panel.jeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.${Name}.jeto" />
+	</TemplateFiles>
+</Template>

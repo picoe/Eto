@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form
+	xmlns="http://schema.picoe.ca/eto.forms" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	>
+	<StackLayout>
+		<Label>Some Content</Label>
+	</StackLayout>
+</Form>
