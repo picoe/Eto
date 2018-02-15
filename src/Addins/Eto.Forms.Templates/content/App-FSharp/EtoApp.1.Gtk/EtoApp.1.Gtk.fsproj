@@ -67,10 +67,10 @@
       <HintPath>..\packages\CairoSharp.3.22.24.29\lib\netstandard2.0\CairoSharp.dll</HintPath>
     </Reference>
     <Reference Include="Eto">
-      <HintPath>..\packages\Eto.Forms.2.4.0\lib\netstandard1.0\Eto.dll</HintPath>
+      <HintPath>..\packages\Eto.Forms.2.5.0-alpha\lib\netstandard1.0\Eto.dll</HintPath>
     </Reference>
     <Reference Include="Eto.Gtk">
-      <HintPath>..\packages\Eto.Platform.Gtk.2.4.0\lib\netstandard2.0\Eto.Gtk.dll</HintPath>
+      <HintPath>..\packages\Eto.Platform.Gtk.2.5.0-alpha\lib\netstandard2.0\Eto.Gtk.dll</HintPath>
     </Reference>
     <Reference Include="GdkSharp">
       <HintPath>..\packages\GdkSharp.3.22.24.29\lib\netstandard2.0\GdkSharp.dll</HintPath>
@@ -107,12 +107,12 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <Import Project="..\packages\Eto.Forms.2.4.0\build\Eto.Forms.targets" Condition="Exists('..\packages\Eto.Forms.2.4.0\build\Eto.Forms.targets')" />
+  <Import Project="..\packages\Eto.Forms.2.5.0-alpha\build\Eto.Forms.targets" Condition="Exists('..\packages\Eto.Forms.2.5.0-alpha\build\Eto.Forms.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Eto.Forms.2.4.0\build\Eto.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Eto.Forms.2.4.0\build\Eto.Forms.targets'))" />
+    <Error Condition="!Exists('..\packages\Eto.Forms.2.5.0-alpha\build\Eto.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Eto.Forms.2.5.0-alpha\build\Eto.Forms.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
