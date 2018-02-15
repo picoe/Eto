@@ -93,11 +93,9 @@ namespace Eto.Mac.Forms
 #if OSX
 		public bool NeedsQueue => ApplicationHandler.QueueResizing;
 
-		public void Queue(Action update = null) => ApplicationHandler.Instance.AsyncInvoke(update ?? Update);
 		#else
 		public bool NeedsQueue => false;
 
-		public void Queue(Action update = null) { }
 		#endif
 		public virtual void SetContentSize(CGSize contentSize)
 		{
@@ -136,7 +134,7 @@ namespace Eto.Mac.Forms
 				return;
 			if (NeedsQueue)
 			{
-				Queue(() => LayoutParent(updateSize));
+				AsyncQueue.Add(() => LayoutParent(updateSize));
 				return;
 			}
 			var container = Widget.VisualParent.GetMacContainer();
