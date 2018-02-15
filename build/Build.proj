@@ -170,6 +170,9 @@
 		-->
 		<Package Include="Eto.Serialization.Json" Assembly="$(ArtifactsNetStandard10Dir)\Eto.Serialization.Json.dll" />
 		<Package Include="Eto.Serialization.Xaml" Assembly="$(ArtifactsNetStandard10Dir)\publish\Eto.Serialization.Xaml.dll" />
+		
+		<StandalonePackage Include="Eto.Forms.Sample" Folder="Eto.Forms.Sample\"/>
+		<StandalonePackage Include="Eto.Platform.Mac.Template"/>
 	</ItemGroup>
 	
     <!-- Build all source code -->
@@ -196,12 +199,7 @@
     <Target Name="Package" DependsOnTargets="Build;GetMainAssemblyVersion">
     	<MSBuild Targets="BuildPackage" Properties="Configuration=$(Configuration);AssemblyPath=%(Package.Assembly);NuspecPath=nuspec\%(Package.Identity).nuspec;BasePath=$(BaseDir);NupkgOutputDir=$(NugetOutputDir)" Projects="nuget.targets" Condition="Exists('%(Package.Assembly)')" />
 		
-		<ItemGroup>
-			<StandalonePackage Include="Eto.Forms.Sample\Eto.Forms.Sample"/>
-			<StandalonePackage Include="Eto.Platform.Mac.Template"/>
-		</ItemGroup>
-		
-    	<MSBuild Targets="BuildPackage" Properties="Configuration=$(Configuration);AssemblyPath=;NuspecPath=nuspec\%(StandalonePackage.Identity).nuspec;NupkgOutputDir=$(NugetOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="nuget.targets" />
+    	<MSBuild Targets="BuildPackage" Properties="Configuration=$(Configuration);AssemblyPath=;NuspecPath=nuspec\%(StandalonePackage.Folder)%(StandalonePackage.Identity).nuspec;NupkgOutputDir=$(NugetOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="nuget.targets" />
 
 		<!-- build dotnet template -->
     	<MSBuild Targets="RestorePackages" Properties="PackageSource=$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" Projects="NuGet.targets" />
@@ -260,6 +258,7 @@
     <!-- build the MD/VS for Mac and/or the VS addin, depending on your platform -->
     <Target Name="BuildAddins">
     	<!-- monodevelop/VS for Mac -->
+    	<MSBuild Targets="RestorePackages" Properties="PackageSource=$(AddinDir)Eto.Addin.MonoDevelop.sln" Projects="NuGet.targets" Condition="$(Platform) != 'Windows'" />
     	<MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop.sln" Targets="Restore;Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) != 'Windows'" />
     	<MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop\Eto.Addin.MonoDevelop.csproj" Targets="PackageAddin" Properties="Configuration=$(Configuration)" Condition="$(Platform) != 'Windows'" />
 
@@ -270,6 +269,8 @@
     <!-- publish nuget packages to nuget.org -->
     <Target Name="Publish" DependsOnTargets="GetMainAssemblyVersion">
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=%(Package.Identity).$(AssemblyVersion).nupkg;TargetDir=$(NugetOutputDir)" Projects="$(MSBuildProjectFile)"/>
+
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=%(StandalonePackage.Identity).$(AssemblyVersion).nupkg;PackageOutputDir=$(NugetOutputDir)" Projects="NuGet.targets"/>
     </Target>
     
 	<Target Name="Clean">
@@ -279,7 +280,7 @@
 		<RemoveDir Directories="$(SourceDir)\Addins\packages"/>
 	</Target>
 	
-	<Target Name="GetMainAssemblyVersion" DependsOnTargets="Build">
+	<Target Name="GetMainAssemblyVersion">
 		<GetAssemblyInfo AssemblyFileName="$(ArtifactsNet45Dir)\Eto.dll">
 			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
 		</GetAssemblyInfo>
