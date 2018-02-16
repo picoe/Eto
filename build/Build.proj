@@ -142,12 +142,12 @@
 
 	<Target Name="BuildHelpShfb" DependsOnTargets="Build">
 		<PropertyGroup>
-        	<SHFBVersion>2014.11.22</SHFBVersion>
-			<SHFBPath>$(MSBuildThisFileDirectory)\packages\EWSoftware.SHFB.$(SHFBVersion)\tools</SHFBPath>
+        	<SHFBVersion>2017.12.30.2</SHFBVersion>
+			<SHFBPath>$(MSBuildThisFileDirectory)\..\artifacts\packages\EWSoftware.SHFB.$(SHFBVersion)\tools</SHFBPath>
 		    <SHFBLib>$([MSBUILD]::Unescape($(SHFBPath)\MSBuild.Community.Tasks.dll))</SHFBLib>
 			<SHFBROOT Condition=" '$(SHFBROOT)' == '' ">$(SHFBPath)</SHFBROOT>
 		</PropertyGroup>
-  		<Exec Command="nuget install EWSoftware.SHFB -OutputDirectory packages" Condition="! Exists('$(SHFBPath)')" />
+  		<Exec Command='nuget install EWSoftware.SHFB -OutputDirectory "$(MSBuildThisFileDirectory)\..\artifacts\packages"' Condition="! Exists('$(SHFBPath)')" />
 
     	<MSBuild Projects="$(MSBuildThisFileDirectory)\help\Help.shfbproj" Properties="Configuration=$(Configuration)" />
 	</Target>
