@@ -11,6 +11,7 @@
 	<MDBinDir Condition="Exists('/opt/MonoDevelop/bin')">/opt/MonoDevelop/bin</MDBinDir>
 	<MDAddinsDir Condition="Exists('/opt/MonoDevelop/AddIns')">/opt/MonoDevelop/AddIns</MDAddinsDir>
     <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
+	<MonoDevelopVersion>7.3</MonoDevelopVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj" />
@@ -26,9 +27,9 @@
     <PackageReference Include="MonoDevelop.Addins" Version="0.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <AddinReference Include="MonoDevelop.Xml" />
-    <AddinReference Include="MonoDevelop.DesignerSupport" />
-    <AddinReference Include="MonoDevelop.PackageManagement" />
+    <AddinReference Include="MonoDevelop.Xml" Version="$(MonoDevelopVersion)" />
+    <AddinReference Include="MonoDevelop.DesignerSupport" Version="$(MonoDevelopVersion)" />
+    <AddinReference Include="MonoDevelop.PackageManagement" Version="$(MonoDevelopVersion)" />
   </ItemGroup>
   <ItemGroup>
 	<None Remove="Templates\**\*" />
@@ -48,4 +49,10 @@
     <EmbeddedResource Include="Images\project%402x.png" />
     <EmbeddedResource Include="Images\project.png" />
   </ItemGroup>
+  <Target Name="UpdateCoreReferences" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <AddinReference Update="MonoDevelop.Core" Version="$(MonoDevelopVersion)" />
+      <AddinReference Update="MonoDevelop.Ide" Version="$(MonoDevelopVersion)" />
+    </ItemGroup>
+  </Target>
 </Project>
