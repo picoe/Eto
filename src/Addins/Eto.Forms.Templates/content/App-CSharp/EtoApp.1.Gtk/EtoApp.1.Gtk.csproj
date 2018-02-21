@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Gtk" Version="2.4.0" />
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.4.1" />
   </ItemGroup>
 	
 </Project>
