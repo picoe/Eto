@@ -38,9 +38,19 @@ namespace Eto
 		}
 
 #if GTK3
+		private static Assembly _etoassembly = typeof(Eto.Forms.Button).Assembly;
+
 		public static Assembly GetCallingAssembly()
 		{
-			return (new StackTrace()).GetFrame(4).GetMethod().DeclaringType.Assembly;
+			var s = new StackTrace();
+
+			for (int i = 0; i < s.FrameCount; i++)
+			{
+				if (_etoassembly.Equals(s.GetFrame(i).GetMethod().DeclaringType.Assembly))
+					return s.GetFrame(i + 1).GetMethod().DeclaringType.Assembly;
+			}
+
+			throw new Exception("Failed to get executing assembly.");
 		}
 #endif
 	}
