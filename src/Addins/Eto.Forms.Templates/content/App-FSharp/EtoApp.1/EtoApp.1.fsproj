@@ -4,6 +4,7 @@
     <TargetFramework>net45</TargetFramework>
     <RootNamespace>EtoApp._1</RootNamespace>
     <DefineConstants Condition="$(Mode)==''">UseCode;IsWindow;IsForm</DefineConstants>
+    <UseCode Condition="$(Mode)==''">True</UseCode>
     <PackageVersion>1.0</PackageVersion>
     <Title>EtoApp.1</Title>
     <Copyright>Copyright © 2018</Copyright>
