@@ -11,9 +11,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Eto.Forms" Version="2.4.0" />
-    <PackageReference Include="Eto.Serialization.Json" Version="2.4.0" Condition="$(UseJeto) == 'True'" />
-    <PackageReference Include="Eto.Serialization.Xaml" Version="2.4.0" Condition="$(UseXeto) == 'True'" />
+    <PackageReference Include="Eto.Forms" Version="2.4.1" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.4.1" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.4.1" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
   
 </Project>
