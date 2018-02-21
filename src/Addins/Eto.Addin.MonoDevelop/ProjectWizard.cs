@@ -10,6 +10,7 @@ using MonoDevelop.Core;
 using System.IO;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Eto.Addin.MonoDevelop
 {
@@ -23,8 +24,14 @@ namespace Eto.Addin.MonoDevelop
 		public override void ConfigureWizard()
 		{
 			//Parameters["BaseProjectName"] = Parameters["ProjectName"].Trim();
-
 			base.ConfigureWizard();
+
+			// XS for Mac 7.3 is still using dotnet template engine 1.0.0.. ugh.
+			var projectName = Parameters["ProjectName"].Trim();
+			string workingValue = Regex.Replace(projectName, @"(^\s+|\s+$)", "");
+			workingValue = Regex.Replace(workingValue, @"(((?<=\.)|^)(?=\d)|[^\w\.])", "_");
+
+			Parameters["namespace-for-old-sdk"] = workingValue;
 		}
 
 		public override string Id => "Eto.Addin.MonoDevelop.ProjectWizard";

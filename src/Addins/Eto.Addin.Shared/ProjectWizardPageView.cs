@@ -9,22 +9,30 @@ namespace Eto.Addin.Shared
 	{
 		public ProjectWizardPageView(ProjectWizardPageModel model)
 		{
-			var content = new TableLayout
+			var content = new DynamicLayout
 			{
 				Spacing = new Size(10, 10)
 			};
-			if (model.ShowAppName)
+			if (model.SupportsAppName)
 			{
 				var nameBox = new TextBox();
 				nameBox.TextBinding.BindDataContext((ProjectWizardPageModel m) => m.AppName);
 				Application.Instance.AsyncInvoke(nameBox.Focus);
 
-				content.Rows.Add(new TableRow(new Label { Text = (model.IsLibrary ? "Library" : "App") + " Name:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, nameBox));
+				var nameValid = new Label { TextColor = Colors.Red };
+				nameValid.BindDataContext(c => c.Visible, (ProjectWizardPageModel m) => m.AppNameInvalid);
+				nameValid.BindDataContext(c => c.Text, (ProjectWizardPageModel m) => m.AppNameValidationText);
+
+
+				content.BeginHorizontal();
+				content.Add(new Label { Text = (model.IsLibrary ? "Library" : "App") + " Name:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center });
+				content.AddColumn(nameBox, nameValid);
+				content.EndHorizontal();
 			}
 			else if (!string.IsNullOrEmpty(model.AppName))
 			{
 				var label = new Label { Text = model.AppName, VerticalAlignment = VerticalAlignment.Center };
-				content.Rows.Add(new TableRow(new Label { Text = (model.IsLibrary ? "Library" : "App") + " Name:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, label));
+				content.AddRow(new Label { Text = (model.IsLibrary ? "Library" : "App") + " Name:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, label);
 			}
 
 			if (model.SupportsSeparated)
@@ -42,7 +50,7 @@ namespace Eto.Addin.Shared
 				platformTypeList.SelectedKeyBinding
 				                .Convert(v => v == "separate", v => v ? "separate" : "combined")
 				                .BindDataContext((ProjectWizardPageModel m) => m.Separate);
-				content.Rows.Add(new TableRow(new Label { Text = "Launcher:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, platformTypeList));
+				content.AddRow(new Label { Text = "Launcher:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, platformTypeList);
 			}
 
 			if (model.SupportsXamMac)
@@ -53,7 +61,7 @@ namespace Eto.Addin.Shared
 					ToolTip = "This enables you to bundle mono with your app so your users don't have to install it separately.  You can only compile this on a Mac"
 				};
 				cb.CheckedBinding.BindDataContext((ProjectWizardPageModel m) => m.IncludeXamMac);
-				content.Rows.Add(new TableRow(new TableCell(), cb));
+				content.AddRow(new Panel(), cb);
 			}
 
 			/*
@@ -102,7 +110,7 @@ namespace Eto.Addin.Shared
 				sharedCodeList.Items.Add(new ListItem { Text = "Full .NET", Key = "net" });
 				sharedCodeList.SelectedKeyBinding.Convert(v => v == "net", v => v ? "net" : sharedCodeList.SelectedKey).BindDataContext((ProjectWizardPageModel m) => m.UseNET);
 
-				content.Rows.Add(new TableRow(new Label { Text = model.IsLibrary ? "Type:" : "Shared Code:", TextAlignment = TextAlignment.Right }, sharedCodeList));
+				content.AddRow(new Label { Text = model.IsLibrary ? "Type:" : "Shared Code:", TextAlignment = TextAlignment.Right }, sharedCodeList);
 			}
 
 			if (model.SupportsPanelType)
@@ -129,10 +137,24 @@ namespace Eto.Addin.Shared
 					panelTypeList.Items.Add(new ListItem { Text = "Code Preview", Key = "preview" });
 				}
 
-				content.Rows.Add(new TableRow(new Label { Text = "Form:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, panelTypeList));
+				content.AddRow(new Label { Text = "Form:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, panelTypeList);
 			}
 
+			if (model.SupportsBase)
+			{
+				var baseTypeList = new RadioButtonList
+				{
+					Orientation = Orientation.Horizontal,
+					Spacing = new Size(0, 0),
+				};
 
+				baseTypeList.Items.Add(new ListItem { Text = "Panel", Key = "Panel" });
+				baseTypeList.Items.Add(new ListItem { Text = "Dialog", Key = "Dialog" });
+				baseTypeList.Items.Add(new ListItem { Text = "Form", Key = "Form" });
+				baseTypeList.SelectedKeyBinding.BindDataContext((ProjectWizardPageModel m) => m.Base);
+
+				content.AddRow(new Label { Text = "Base:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, baseTypeList);
+			}
 
 			var informationLabel = new Label();
 			informationLabel.TextBinding.BindDataContext((ProjectWizardPageModel m) => m.Information);

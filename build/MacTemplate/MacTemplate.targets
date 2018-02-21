@@ -49,6 +49,9 @@
 			
 			<LauncherExecutable Condition="'$(LauncherExecutable)' == '' AND $(MacArch)=='x86_64'">$(ReferenceFiles)\Launcher64</LauncherExecutable>
 			<LauncherExecutable Condition="'$(LauncherExecutable)' == '' AND $(MacArch)=='i386'">$(ReferenceFiles)\Launcher32</LauncherExecutable>
+
+			<XamarinMacAssembly Condition="$(XamarinMacAssembly) == '' AND Exists('$(ReferenceFiles)\Xamarin.Mac.dll')">$(ReferenceFiles)\Xamarin.Mac.dll</XamarinMacAssembly>
+			<XamarinMacAssembly Condition="$(XamarinMacAssembly) == '' AND Exists('\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll')">\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll</XamarinMacAssembly>
 		</PropertyGroup>
 
 		<Message Text="Creating $(MacBundleName).app in target directory" Importance="high" />
@@ -62,7 +65,7 @@
 		<Copy SourceFiles="$(InputAppPath)\**\*.*" DestinationFolder="$(OutputContents)" SkipUnchangedFiles="true" Condition="Exists('$(InputAppPath)')" />
 		<Copy SourceFiles="$(LauncherExecutable)" DestinationFiles="$(LauncherFileWithPath)" SkipUnchangedFiles="true" />
 		<Copy SourceFiles="$(InputPListFile)" DestinationFiles="$(OutputPListFile)" Condition="!Exists('$(OutputPListFile)')" />
-		<Copy SourceFiles="$(ReferenceFiles)\Xamarin.Mac.dll" DestinationFolder="$(OutputMonoBundlePath)" SkipUnchangedFiles="true" Condition="$(HasXamMac) == 'True'" />
+		<Copy SourceFiles="$(XamarinMacAssembly)" DestinationFolder="$(OutputMonoBundlePath)" SkipUnchangedFiles="true" Condition="$(HasXamMac) == 'True'" />
 
 		<FindUnderPath  
             Files="@(FileWrites)"  

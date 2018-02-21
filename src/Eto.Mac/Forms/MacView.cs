@@ -843,7 +843,7 @@ namespace Eto.Mac.Forms
 			if (Widget.Parent?.Loaded != false && !(Widget is Window))
 			{
 				// adding dynamically or loading without a parent (e.g. embedding into a native app)
-				Application.Instance.AsyncInvoke(FireOnShown);
+				AsyncQueue.Add(FireOnShown);
 			}
 		}
 

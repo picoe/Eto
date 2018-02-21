@@ -4,7 +4,7 @@
 	"Title": "My Eto Form",
 	"ClientSize": "400,350",
 /*#endif */
-    "Padding": "10",
+	"Padding": "10",
 	"Content": {
 		"$type": "StackLayout",
 		"Items": [

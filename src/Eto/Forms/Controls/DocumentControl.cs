@@ -176,7 +176,13 @@ namespace Eto.Forms
 		public DocumentPage SelectedPage
 		{
 			get { return SelectedIndex < 0 ? null : Pages[SelectedIndex]; }
-			set { SelectedIndex = pages.IndexOf(value); }
+			set 
+			{
+				if(value != null)
+					SelectedIndex = pages.IndexOf(value);
+				else
+					SelectedIndex = -1;
+			}
 		}
 
 		/// <summary>

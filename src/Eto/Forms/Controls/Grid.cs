@@ -472,6 +472,31 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the selected row, or -1 for none.
+		/// </summary>
+		/// <remarks>
+		/// When <see cref="AllowMultipleSelection"/> is true and you want all selected rows, use <see cref="SelectedRow"/>.
+		/// </remarks>
+		/// <value>The selected row.</value>
+		public int SelectedRow
+		{
+			get
+			{
+				var selected = SelectedRows;
+				if (!selected.Any())
+					return -1;
+				return selected.First();
+			}
+			set
+			{
+				if (value < 0)
+					SelectedRows = Enumerable.Empty<int>();
+				else
+					SelectedRows = new[] { value };
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the height for each row in the grid
 		/// </summary>
 		/// <value>The height of the row.</value>

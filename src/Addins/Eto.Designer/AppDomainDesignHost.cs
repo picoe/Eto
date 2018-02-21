@@ -1,4 +1,4 @@
-﻿using Eto.Forms;
+using Eto.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,12 +6,18 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Eto.Designer
 {
+	public class DesignError : MarshalByRefObject
+	{
+		public string Message { get; set; }
+		public string Details { get; set; }
+	}
 	class AppDomainProxy : MarshalByRefObject
 	{
 		IDesignHost designPanel;
@@ -25,7 +31,7 @@ namespace Eto.Designer
 			set { designPanel.ControlCreated = value; }
 		}
 
-		public Action<Exception> Error
+		public Action<DesignError> Error
 		{
 			get { return designPanel.Error; }
 			set { designPanel.Error = value; }
@@ -70,7 +76,7 @@ namespace Eto.Designer
 
 		void CurrentDomain_DomainUnload(object sender, EventArgs e)
 		{
-			EtoAdapter.Unload();
+			//EtoAdapter.Unload();
 		}
 
 		Control container;
@@ -103,6 +109,7 @@ namespace Eto.Designer
 
 		public void Dispose()
 		{
+			EtoAdapter.Unload();
 			designPanel.Dispose();
 		}
 
@@ -121,7 +128,7 @@ namespace Eto.Designer
 			Host.ControlCreated?.Invoke();
 		}
 
-		public void Error(Exception ex)
+		public void Error(DesignError ex)
 		{
 			Host.Error?.Invoke(ex);
 		}
@@ -164,10 +171,10 @@ namespace Eto.Designer
 			{
 				var oldDomain = domain;
 				requiresNewDomain = true;
-				SetupAppDomain(true);
+				var newDomain = SetupAppDomain(true);
 				ContainerChanged?.Invoke();
-				if (!ReferenceEquals(oldDomain, domain))
-					Application.Instance.AsyncInvoke(() => UnloadDomain(oldDomain));
+				if (newDomain && !ReferenceEquals(oldDomain, domain))
+					Task.Run(() => UnloadDomain(oldDomain));
 			}
 		}
 
@@ -234,7 +241,6 @@ namespace Eto.Designer
 						throw new InvalidOperationException($"Could not create proxy for domain\nApplicationBase: {AppDomain.CurrentDomain.BaseDirectory}\nBaseDir: {baseDir}\nShadowCopyDirs: {shadowCopyDirs}");
 				}
 				proxy.Init(Platform.Instance.GetType().AssemblyQualifiedName, initializeAssembly, MainAssembly, references);
-				domain.DomainUnload += Domain_DomainUnload;
 
 				proxy.ControlCreated = eventSink.ControlCreated;
 				proxy.Error = eventSink.Error;
@@ -262,16 +268,11 @@ namespace Eto.Designer
 			return true;
 		}
 
-		static void Domain_DomainUnload(object sender, EventArgs e)
-		{
-			Debug.WriteLine("Unloaded");
-		}
-
 		public Action ContainerChanged { get; set; }
 
 		public Action ControlCreated { get; set; }
 
-		public Action<Exception> Error { get; set; }
+		public Action<DesignError> Error { get; set; }
 
 		public Control GetContainer()
 		{
@@ -308,9 +309,17 @@ namespace Eto.Designer
 
 		void UnloadDomain(AppDomain domain)
 		{
-			if (domain != null && !domain.IsFinalizingForUnload())
+			try
 			{
-				AppDomain.Unload(domain);
+				if (domain != null && !domain.IsFinalizingForUnload())
+				{
+					AppDomain.Unload(domain);
+				}
+			}
+			catch
+			{
+				Debug.WriteLine("Could not unload domain");
+				// ignore
 			}
 		}
 
@@ -324,6 +333,7 @@ namespace Eto.Designer
 			if (disposing)
 			{
 				proxy?.Dispose();
+				
 				UnloadDomain(domain);
 				domain = null;
 				proxy = null;

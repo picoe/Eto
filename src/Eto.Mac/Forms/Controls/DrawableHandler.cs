@@ -118,7 +118,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (NeedsQueue)
 			{
-				Queue(() => Invalidate(invalidateChildren));
+				AsyncQueue.Add(() => Invalidate(invalidateChildren));
 				return;
 			}
 			base.Invalidate(invalidateChildren);
@@ -128,7 +128,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (NeedsQueue)
 			{
-				Queue(() => Invalidate(rect, invalidateChildren));
+				AsyncQueue.Add(() => Invalidate(rect, invalidateChildren));
 				return;
 			}
 			base.Invalidate(rect, invalidateChildren);

@@ -48,7 +48,7 @@ namespace Eto.Addin.MonoDevelop
 
 		public void Validate()
 		{
-			CanMoveToNextPage = !string.IsNullOrWhiteSpace(model.AppName);
+			CanMoveToNextPage = model.IsValid;
 		}
 	}
 }

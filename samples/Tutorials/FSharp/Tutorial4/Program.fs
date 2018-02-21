@@ -40,8 +40,15 @@ type MyForm() as this =
         ] |> List.iter layout.Rows.Add
 
         this.Content <- layout
-      
-        this.Menu <- new MenuBar(QuitItem = (new Command((fun sender e -> Application.Instance.Quit()), MenuText = "Quit", Shortcut = (Application.Instance.CommonModifier ||| Keys.Q))).CreateMenuItem())
+        
+        // Set data context so it propegates to all child controls
+        this.DataContext <- MyObject(TextProperty = "Initial Value 1")
+
+        this.Menu <- new MenuBar(
+            QuitItem = (new Command((fun sender e -> Application.Instance.Quit()), 
+            MenuText = "Quit", 
+            Shortcut = (Application.Instance.CommonModifier ||| Keys.Q))).CreateMenuItem()
+        )
 
     member this.DataContextBinding () =
         let textBox = new TextBox()
