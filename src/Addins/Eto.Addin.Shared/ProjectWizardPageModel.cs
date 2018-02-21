@@ -24,6 +24,8 @@ namespace Eto.Addin.Shared
 			Separate = false;
 			Mode = "code";
 			IncludeSolution = false;
+			if (SupportsBase)
+				Base = "Panel";
 		}
 
 		public bool IsValid
