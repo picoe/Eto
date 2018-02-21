@@ -300,7 +300,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Widget.Properties.Set(Font_Key, value, () =>
 				{
-					Control.Font = value.ToNS();
+					Control.Font = value.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					LayoutIfNeeded();
 				});
 			}

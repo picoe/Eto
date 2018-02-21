@@ -249,6 +249,7 @@
     <Compile Include="Forms\EtoDragSource.cs" />
     <Compile Include="Forms\NotificationHandler.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
+    <Compile Include="AsyncQueue.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>
