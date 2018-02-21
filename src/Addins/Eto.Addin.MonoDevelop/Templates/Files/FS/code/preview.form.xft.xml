@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Dialog</_Name>
+		<_Name>Form (with form preview)</_Name>
 		<Icon>md-xml-file-icon</Icon>
 		<_Category>Eto.Forms</_Category>
 		<LanguageName>F#</LanguageName>
@@ -10,6 +10,7 @@
 This template provides a partial *.eto.fs file for form preview.]]>
 		</_Description>
 		<DefaultFilename>MyForm</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
 	</TemplateConfiguration>
 	<TemplateFiles>
         <File name="${Name}.fs" AddStandardHeader="true" src="preview.panel.fs"/>

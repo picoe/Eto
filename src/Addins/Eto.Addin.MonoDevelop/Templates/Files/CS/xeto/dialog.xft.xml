@@ -9,6 +9,7 @@
 
 You must add the Eto.Serialization.Xaml nuget package to your project to use this template.]]></_Description>
 		<DefaultFilename>MyDialog</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
 	</TemplateConfiguration>
 	<TemplateFiles>
 		<File name="${Name}.xeto.cs" AddStandardHeader="true" src="dialog.xeto.cs" DependsOn="${Name}.xeto" />

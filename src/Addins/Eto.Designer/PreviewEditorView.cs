@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace Eto.Designer
 {
@@ -112,12 +113,11 @@ namespace Eto.Designer
 			designPanel?.Invalidate();
 		}
 
-		void FinishProcessing(Exception error)
+		void FinishProcessing(DesignError error)
 		{
 			if (error != null)
 			{
-				error = error.GetBaseException();
-				var errorLabel = new Label { Text = error.Message, ToolTip = error.ToString() };
+				var errorLabel = new Label { Text = error.Message, ToolTip = error.Details.ToString() };
 				if (errorPanel.Visible)
 				{
 					errorPanel.Content = errorLabel;

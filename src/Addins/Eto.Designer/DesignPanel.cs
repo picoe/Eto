@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace Eto.Designer
 
 		public Action ContainerChanged { get; set; }
 		public Action ControlCreated { get; set; }
-		public Action<Exception> Error { get; set; }
+		public Action<DesignError> Error { get; set; }
 
 		public BuilderInfo Builder { get; private set; }
 
@@ -100,7 +100,8 @@ namespace Eto.Designer
 		{
 			// don't wipe clean, keep old state alive
 			//designSurface.Content = null; 
-			Error?.Invoke(ex);
+			ex = ex.GetBaseException();
+			Error?.Invoke(new DesignError { Message = ex.Message, Details = ex.ToString() });
 		}
 
 		public bool SetBuilder(string fileName)

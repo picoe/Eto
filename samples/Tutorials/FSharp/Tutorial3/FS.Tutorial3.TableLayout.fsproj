@@ -1,74 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>4a9deb43-39b3-4ae6-98b2-7f0f73e449c4</ProjectGuid>
     <OutputType>WinExe</OutputType>
+    <TargetFramework>net461</TargetFramework>
+    <OutputPath>..\..\..\..\artifacts\samples\$(Configuration)\</OutputPath>
     <RootNamespace>Tutorial3</RootNamespace>
-    <AssemblyName>Tutorial3</AssemblyName>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <Name>Tutorial2 - Menus and Toolbars</Name>
+    <Name>Tutorial3 - Table Layout</Name>
     <UseMacTemplate>True</UseMacTemplate>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\artifacts\samples\Debug\net461</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <ExternalConsole>true</ExternalConsole>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\artifacts\samples\Release\net461</OutputPath>
-    <DefineConstants></DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <ExternalConsole>true</ExternalConsole>
-    <GenerateTailCalls>true</GenerateTailCalls>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup>
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-  </ItemGroup>
+
   <ItemGroup>
     <Compile Include="Program.fs" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Eto\Eto.csproj">
-      <Name>Eto</Name>
-      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\src\Eto.Gtk\Eto.Gtk2.csproj">
-      <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Gtk2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\src\Eto.Mac\Eto.Mac64.csproj">
-      <Project>{55DAB390-1CFC-11E4-8C21-0800200C9A66}</Project>
-      <Name>Eto.Mac64</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\src\Eto.WinForms\Eto.WinForms.csproj">
-      <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
-      <Name>Eto.WinForms</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\src\Eto.Gtk\Eto.Gtk2.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Eto.Mac\Eto.Mac64.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Eto.WinForms\Eto.WinForms.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FSharp.Core">
-      <Version>4.1.0.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(FSharpTargetsPath)" />
+
 </Project>

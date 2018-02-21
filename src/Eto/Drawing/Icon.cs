@@ -100,7 +100,7 @@ namespace Eto.Drawing
 		/// Loads an icon from an embedded resource of the specified assembly
 		/// </summary>
 		/// <param name="assembly">Assembly to load the resource from</param>
-		/// <param name="resourceName">Fully qualified name of the resource to load</param>
+		/// <param name="resourceName">Fully qualified name of the resource to load. E.g. "MyProject.SomeFolder.YourFile.extension"</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
 		public static Icon FromResource(string resourceName, Assembly assembly = null)
 		{
@@ -180,7 +180,7 @@ namespace Eto.Drawing
 		/// Loads an icon from a resource in the same assembly as the specified <paramref name="type"/>
 		/// </summary>
 		/// <returns>The icon instance.</returns>
-		/// <param name="resourceName">Full name of the resource in the type's assembly.</param>
+		/// <param name="resourceName">Full name of the resource in the type's assembly E.g. "MyProject.SomeFolder.YourFile.extension"</param>
 		/// <param name="type">Type of the assembly to get the resource.</param>
 		public static Icon FromResource(string resourceName, Type type)
 		{

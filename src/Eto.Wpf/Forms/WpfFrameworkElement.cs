@@ -441,6 +441,9 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.IsKeyboardFocusWithinChanged += (sender, e) =>
 					{
+						// sometimes this gets called after disposed? Happens with designer in VS 2017
+						if (Control == null)
+							return;
 						if (HasFocus)
 							Callback.OnGotFocus(Widget, EventArgs.Empty);
 						else

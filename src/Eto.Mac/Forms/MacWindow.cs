@@ -149,6 +149,14 @@ namespace Eto.Mac.Forms
 		}
 	}
 
+	static class MacWindow
+	{
+		public static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
+		public static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
+		public static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
+
+	}
+
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacContainer, IMacWindow
 		where TControl: NSWindow
 		where TWidget: Window
@@ -170,8 +178,6 @@ namespace Eto.Mac.Forms
 		public override NSView ContainerControl { get { return Control.ContentView; } }
 
 		public override object EventObject { get { return Control; } }
-
-		static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
 
 		public NSObject FieldEditorObject { get; set; }
 
@@ -225,9 +231,6 @@ namespace Eto.Mac.Forms
 		}
 
 		IntPtr oldMenu;
-
-		static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
-		static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
 
 		static void HandleDidBecomeKey(object sender, EventArgs e)
 		{
@@ -371,6 +374,18 @@ namespace Eto.Mac.Forms
 						Control.WillMove += HandleWillMove;
 					}
 					break;
+				case Window.LogicalPixelSizeChangedEvent:
+					AddObserver(NSWindow.DidChangeBackingPropertiesNotification, e =>
+					{
+						var handler = e.Handler as MacWindow<TControl, TWidget, TCallback>;
+						if (handler != null)
+						{
+							var args = new NSWindowBackingPropertiesEventArgs(e.Notification);
+							if (args.OldScaleFactor != handler.Control.BackingScaleFactor)
+								handler.Callback.OnLogicalPixelSizeChanged(handler.Widget, EventArgs.Empty);
+						}
+					});
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -477,7 +492,7 @@ namespace Eto.Mac.Forms
 			get { return Control.StyleMask.HasFlag(NSWindowStyle.Resizable); }
 			set
 			{
-				if (Control.RespondsToSelector(selSetStyleMask))
+				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
 				{
 					if (value)
 						Control.StyleMask |= NSWindowStyle.Resizable;
@@ -493,7 +508,7 @@ namespace Eto.Mac.Forms
 			get { return Control.StyleMask.HasFlag(NSWindowStyle.Miniaturizable); }
 			set
 			{
-				if (Control.RespondsToSelector(selSetStyleMask))
+				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
 				{
 					if (value)
 						Control.StyleMask |= NSWindowStyle.Miniaturizable;
@@ -585,7 +600,7 @@ namespace Eto.Mac.Forms
 				// if not zero, it's already saved
 				if (oldMenu == IntPtr.Zero)
 				{
-					oldMenu = Messaging.IntPtr_objc_msgSend(NSApplication.SharedApplication.Handle, selMainMenu);
+					oldMenu = Messaging.IntPtr_objc_msgSend(NSApplication.SharedApplication.Handle, MacWindow.selMainMenu);
 					if (oldMenu != IntPtr.Zero)
 					{
 						// remember old native menu so we can restore it later
@@ -608,7 +623,7 @@ namespace Eto.Mac.Forms
 			if (oldMenu != IntPtr.Zero)
 			{
 				// restore old native menu
-				Messaging.void_objc_msgSend_IntPtr(NSApplication.SharedApplication.Handle, selSetMainMenu, oldMenu);
+				Messaging.void_objc_msgSend_IntPtr(NSApplication.SharedApplication.Handle, MacWindow.selSetMainMenu, oldMenu);
 				MacExtensions.Release(oldMenu);
 				oldMenu = IntPtr.Zero;
 			}
@@ -948,7 +963,7 @@ namespace Eto.Mac.Forms
 			get { return Control.StyleMask.ToEtoWindowStyle(); }
 			set
 			{
-				if (Control.RespondsToSelector(selSetStyleMask))
+				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
 				{
 					Control.StyleMask = value.ToNS(Control.StyleMask);
 				}

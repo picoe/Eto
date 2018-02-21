@@ -80,8 +80,11 @@ namespace Eto.Forms
 		{ 
 			var args = new BindingChangingEventArgs(value);
 			OnChanging(args);
-			InternalSetValue(dataItem, (T)args.Value);
-			OnChanged(new BindingChangedEventArgs(args.Value));
+			if (!args.Cancel)
+			{
+				InternalSetValue(dataItem, (T)args.Value);
+				OnChanged(new BindingChangedEventArgs(args.Value));
+			}
 		}
 
 		/// <summary>

@@ -111,12 +111,8 @@ namespace Eto
 		/// <param name="id">Identifier of the event</param>
 		public virtual void AttachEvent(string id)
 		{
-			#if DEBUG
-			// only throw for platforms that should be fully implemented, and only in debug
-			if (Widget.Platform.IsGtk || Widget.Platform.IsMac || Widget.Platform.IsWinForms || Widget.Platform.IsWpf)
-	
-				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
-			#endif
+			// if we got here, the specified event was not implemented by this platform
+			Debug.WriteLine($"WARNING: Event '{id}' not supported by type {GetType()}");
 		}
 
 		/// <summary>

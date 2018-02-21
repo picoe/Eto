@@ -41,10 +41,17 @@
 			"description": "Base class of the UI",
 			"datatype": "choice",
 			"defaultValue": "Panel",
+			"replaces": "Form",
+			"onlyIf": [
+				{ "after": " " },
+				{ "after": "\"" },
+				{ "after": "<" },
+				{ "after": "/" }
+			],
 			"choices": [
 				{
 					"choice": "Panel",
-					"description": "A panel that can be put onto an existing window"
+					"description": "A panel to put onto an existing window or control"
 				},
 				{
 					"choice": "Dialog",
@@ -52,14 +59,14 @@
 				},
 				{
 					"choice": "Form",
-					"description": "A modless form"
+					"description": "A modeless form"
 				}
-			],
-			"replaces": "Form"
+			]
 		},
 		"Namespace": {
 			"description": "Namespace for the generated files",
-			"replaces": "EtoApp",
+			"replaces": "EtoApp._1",
+			"defaultValue": "EtoApp",
 			"type": "parameter"
 		},
 		"UseCode": {

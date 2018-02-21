@@ -6,7 +6,7 @@ ECHO msbuild not found.  Run in the Developer Command Prompt for VS 2017
 pause
 )
 
-set BUILD_DIR=%~dp0build
+set BUILD_DIR=%~dp0
 msbuild -t:BuildAddins "%BUILD_DIR%\Build.proj"
 
 pause

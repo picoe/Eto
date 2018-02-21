@@ -339,6 +339,10 @@ namespace Eto.GtkSharp.Forms.Controls
 		void Control_Realized(object sender, EventArgs e)
 		{
 			HookEvents();
+
+#if !GTK2
+			EnsurePosition();
+#endif
 		}
 
 		void HookEvents()

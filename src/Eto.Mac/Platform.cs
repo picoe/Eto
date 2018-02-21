@@ -42,10 +42,14 @@ namespace Eto.Mac
 
 		public override bool IsMac { get { return true; } }
 
-#if XAMMAC
-		public override string ID { get { return "xammac"; } }
+#if XAMMAC2
+		public override string ID { get { return "XamMac2"; } }
+#elif XAMMAC1
+		public override string ID { get { return "XamMac"; } }
+#elif Mac64
+		public override string ID { get { return "Mac64"; } }
 #else
-		public override string ID { get { return "mac"; } }
+		public override string ID { get { return "Mac"; } }
 #endif
 
 		public override PlatformFeatures SupportedFeatures =>
