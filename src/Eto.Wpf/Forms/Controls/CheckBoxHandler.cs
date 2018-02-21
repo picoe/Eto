@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
@@ -24,18 +24,6 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Indeterminate += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
-
-			Control.Style = new sw.Style(typeof(swc.CheckBox))
-			{
-				Triggers = {
-					new sw.Trigger
-					{
-						Property = sw.UIElement.IsEnabledProperty,
-						Value = false,
-						Setters = { new sw.Setter { Property = swc.Control.ForegroundProperty, Value = sw.SystemColors.GrayTextBrush } }
-					}
-				}
-			};
 
 			border = new EtoBorder { Handler = this, Child = Control };
 		}

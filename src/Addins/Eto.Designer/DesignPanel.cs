@@ -23,7 +23,7 @@ namespace Eto.Designer
 		{
 			designSurface = new DesignSurface();
 			Border = BorderType.None;
-			BackgroundColor = Colors.White; // TODO: get themed color here?
+			BackgroundColor = Global.Theme.DesignerBackground;
 			Content = designSurface;
 		}
 
@@ -67,7 +67,7 @@ namespace Eto.Designer
 				// swap out window for a panel so we can add it as a child
 				content = new Panel
 				{
-					BackgroundColor = SystemColors.Control,
+					BackgroundColor = Global.Theme.DesignerPanel,
 					Padding = window.Padding,
 					Size = size,
 					Content = window.Content
@@ -77,7 +77,7 @@ namespace Eto.Designer
 			{
 				content = new Panel
 				{
-					BackgroundColor = SystemColors.Control,
+					BackgroundColor = Global.Theme.DesignerPanel,
 					Content = content
 				};
 			}

@@ -1,4 +1,5 @@
-﻿using Eto.Drawing;
+using Eto.Designer;
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Addin.Shared
@@ -16,6 +17,7 @@ namespace Eto.Addin.Shared
 		{
 			//ClientSize = new Size(800, 400);
 			Resizable = true;
+			BackgroundColor = Global.Theme.ProjectDialogBackground;
 
 			content = new Panel();
 

@@ -1,10 +1,11 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Eto.Designer;
 
 namespace Eto.Addin.Shared
 {
@@ -27,7 +28,7 @@ namespace Eto.Addin.Shared
 
 		public BasePageView()
 		{
-			BackgroundColor = Color.FromArgb(225, 228, 232);
+			BackgroundColor = Global.Theme.ProjectBackground;
 
 			content.Padding = new Padding(50, 10, 20, 10);
 
@@ -38,7 +39,7 @@ namespace Eto.Addin.Shared
 				Items =
 				{
 					new StackLayoutItem(content, VerticalAlignment.Center, expand: true),
-					new Panel { BackgroundColor = Colors.White, Size = new Size(280, 200), Content = information, Padding = new Padding(20) }
+					new Panel { BackgroundColor = Global.Theme.SummaryBackground, Size = new Size(280, 200), Content = information, Padding = new Padding(20) }
 				}
 			};
 		}

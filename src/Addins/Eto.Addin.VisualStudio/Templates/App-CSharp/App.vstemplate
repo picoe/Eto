@@ -20,7 +20,7 @@
   <TemplateContent>
     <ProjectCollection/>
     <CustomParameters>
-      <CustomParameter Name = "$language$" Value="CSharp" />
+      <CustomParameter Name = "$language$" Value="C#" />
       <CustomParameter Name = "$uistyle$" Value="none"/>
       <CustomParameter Name = "$groupid$" Value="Eto.App" />
       <CustomParameter Name="SideWaffleNewProjNode" Value="Project\CSharp\Eto.Forms"/>

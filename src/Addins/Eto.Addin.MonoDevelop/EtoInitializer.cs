@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Linq;
 using Eto.Forms;
+using Eto.Designer;
 
 namespace Eto.Addin.MonoDevelop
 {
 	public static class EtoInitializer
 	{
-		static readonly string AddinPlatform = Eto.Platforms.Gtk2;
-
 		public static void Initialize()
 		{
 			if (Platform.Instance == null)
 			{
 				try
 				{
-					new Eto.Forms.Application(AddinPlatform).Attach();
+					var platform = new Eto.GtkSharp.Platform();
+
+					platform.LoadAssembly(typeof(EtoInitializer).Assembly);
+
+					new Eto.Forms.Application(platform).Attach();
 				}
 				catch (Exception ex)
 				{
