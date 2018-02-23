@@ -26,15 +26,22 @@ namespace Eto.Mac.Forms.Menu
 	}
 
 	public abstract class MenuHandler<TControl, TWidget, TCallback> : MacBase<TControl, TWidget, TCallback>, Eto.Forms.Menu.IHandler, IMenuHandler
-		where TControl: NSMenuItem
-		where TWidget: Eto.Forms.Menu
-		where TCallback: Eto.Forms.Menu.ICallback
+		where TControl : NSMenuItem
+		where TWidget : Eto.Forms.Menu
+		where TCallback : Eto.Forms.Menu.ICallback
 	{
 
 		public void EnsureSubMenu()
 		{
 			if (!Control.HasSubmenu)
-				Control.Submenu = new NSMenu { AutoEnablesItems = true, ShowsStateColumn = true, Title = Control.Title };
+			{
+				Control.Submenu = new NSMenu
+				{
+					AutoEnablesItems = true,
+					ShowsStateColumn = true,
+					Title = Control.Title
+				};
+			}
 		}
 
 		public void SetTopLevel()
@@ -73,6 +80,18 @@ namespace Eto.Mac.Forms.Menu
 			{
 				Control.Target = null;
 				Control.Action = m.Selector;
+			}
+		}
+
+		static readonly object Enabled_Key = new object();
+
+		public bool Enabled
+		{
+			get { return Widget.Properties.Get<bool?>(Enabled_Key) ?? Control.Enabled; }
+			set
+			{
+				Widget.Properties.Set(Enabled_Key, (bool?)value);
+				Control.Enabled = value;
 			}
 		}
 	}
