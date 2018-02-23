@@ -505,6 +505,21 @@ namespace Eto.Mac.Forms.Controls
 				base.MouseDown(theEvent);
 			}
 
+			public override void WillOpenMenu(NSMenu menu, NSEvent theEvent)
+			{
+				var item = Handler.GetItem((int)ClickedRow);
+				if (!Handler.SelectedRows.Contains((int)ClickedRow))
+					Handler.CustomSelectedItems = new[] { item };
+				base.WillOpenMenu(menu, theEvent);
+			}
+
+			public override void DidCloseMenu(NSMenu menu, NSEvent theEvent)
+			{
+				base.DidCloseMenu(menu, theEvent);
+				// action is called after this, so we can't set selected rows direclty
+				Application.Instance.AsyncInvoke(() => Handler.CustomSelectedItems = null);
+			}
+
 			public EtoOutlineView(TreeGridViewHandler handler)
 			{
 				Delegate = new EtoOutlineDelegate { Handler = handler };
