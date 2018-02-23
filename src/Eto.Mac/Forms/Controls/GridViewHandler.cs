@@ -138,20 +138,6 @@ namespace Eto.Mac.Forms.Controls
 			{
 				return AllowedOperation ?? NSDragOperation.None;
 			}
-
-			public override void WillOpenMenu(NSMenu menu, NSEvent theEvent)
-			{
-				if (!Handler.SelectedRows.Contains((int)ClickedRow))
-					Handler.CustomSelectedRows = new[] { (int)ClickedRow };
-				base.WillOpenMenu(menu, theEvent);
-			}
-
-			public override void DidCloseMenu(NSMenu menu, NSEvent theEvent)
-			{
-				base.DidCloseMenu(menu, theEvent);
-				// action is called after this, so we can't set selected rows direclty
-				Application.Instance.AsyncInvoke(() => Handler.CustomSelectedRows = null);
-			}
 		}
 
 		public class EtoTableViewDataSource : NSTableViewDataSource
@@ -581,6 +567,39 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public GridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as GridViewDragInfo;
+
+		public override ContextMenu ContextMenu
+		{
+			get => base.ContextMenu;
+			set
+			{
+				var old = ContextMenu;
+				if (old != null)
+				{
+					old.Opening -= ContextMenu_Opening;
+					old.Closed -= ContextMenu_Closed;
+				}
+				base.ContextMenu = value;
+				if (value != null)
+				{
+					value.Opening += ContextMenu_Opening;
+					value.Closed += ContextMenu_Closed;
+				}
+			}
+		}
+
+		void ContextMenu_Closed(object sender, EventArgs e)
+		{
+			// action is called after this, so we can't clear selected rows immediately
+			Application.Instance.AsyncInvoke(() => CustomSelectedRows = null);
+		}
+
+		void ContextMenu_Opening(object sender, EventArgs e)
+		{
+			var row = (int)Control.ClickedRow;
+			if (!SelectedRows.Contains(row))
+				CustomSelectedRows = new[] { row };
+		}
 	}
 }
 

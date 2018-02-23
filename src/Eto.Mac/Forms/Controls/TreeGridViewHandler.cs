@@ -337,7 +337,7 @@ namespace Eto.Mac.Forms.Controls
 
 					return e.Effects.ToNS();
 				}
-				else 
+				else
 					return NSDragOperation.None;
 			}
 
@@ -408,7 +408,7 @@ namespace Eto.Mac.Forms.Controls
 						childIndex = (int?)outlineView.GetChildIndex(item);
 					else
 						childIndex = null;
-					
+
 					etoitem = h.GetEtoItem(item);
 					parent = (etoitem as ITreeGridItem)?.Parent;
 				}
@@ -503,21 +503,6 @@ namespace Eto.Mac.Forms.Controls
 					return;
 				}
 				base.MouseDown(theEvent);
-			}
-
-			public override void WillOpenMenu(NSMenu menu, NSEvent theEvent)
-			{
-				var item = Handler.GetItem((int)ClickedRow);
-				if (!Handler.SelectedRows.Contains((int)ClickedRow))
-					Handler.CustomSelectedItems = new[] { item };
-				base.WillOpenMenu(menu, theEvent);
-			}
-
-			public override void DidCloseMenu(NSMenu menu, NSEvent theEvent)
-			{
-				base.DidCloseMenu(menu, theEvent);
-				// action is called after this, so we can't set selected rows direclty
-				Application.Instance.AsyncInvoke(() => Handler.CustomSelectedItems = null);
 			}
 
 			public EtoOutlineView(TreeGridViewHandler handler)
@@ -708,7 +693,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (value == null)
 					Control.DeselectAll(Control);
-				else {
+				else
+				{
 
 					EtoTreeItem myitem;
 					if (cachedItems.TryGetValue(value, out myitem))
@@ -835,11 +821,11 @@ namespace Eto.Mac.Forms.Controls
 		IEnumerable<object> SelectedItemsFromRows()
 		{
 			foreach (var row in Control.SelectedRows)
-				{
-					var item = Control.ItemAtRow((nnint2)row) as EtoTreeItem;
-					if (item != null)
-						yield return item.Item;
-				}
+			{
+				var item = Control.ItemAtRow((nnint2)row) as EtoTreeItem;
+				if (item != null)
+					yield return item.Item;
+			}
 		}
 
 		public void ReloadItem(ITreeGridItem item)
@@ -874,7 +860,7 @@ namespace Eto.Mac.Forms.Controls
 				if (isSelectionChanged)
 				{
 					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-					if (!ReferenceEquals(selectedItem , SelectedItem))
+					if (!ReferenceEquals(selectedItem, SelectedItem))
 						Callback.OnSelectedItemChanged(Widget, EventArgs.Empty);
 				}
 			}
@@ -895,7 +881,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			suppressExpandCollapseEvents--;
 		}
-	
+
 		public ITreeGridItem GetCellAt(PointF location, out int column)
 		{
 			location += ScrollView.ContentView.Bounds.Location.ToEto();
@@ -955,6 +941,38 @@ namespace Eto.Mac.Forms.Controls
 
 		ITreeGridItem GetEtoItem(NSObject item) => (item as EtoTreeItem)?.Item;
 
+		public override ContextMenu ContextMenu
+		{
+			get => base.ContextMenu;
+			set
+			{
+				var old = ContextMenu;
+				if (old != null)
+				{
+					old.Opening -= ContextMenu_Opening;
+					old.Closed -= ContextMenu_Closed;
+				}
+				base.ContextMenu = value;
+				if (value != null)
+				{
+					value.Opening += ContextMenu_Opening;
+					value.Closed += ContextMenu_Closed;
+				}
+			}
+		}
+
+		void ContextMenu_Closed(object sender, EventArgs e)
+		{
+			// action is called after this, so we can't clear selected items immediately
+			Application.Instance.AsyncInvoke(() => CustomSelectedItems = null);
+		}
+
+		void ContextMenu_Opening(object sender, EventArgs e)
+		{
+			var row = (int)Control.ClickedRow;
+			if (!SelectedRows.Contains(row))
+				CustomSelectedItems = new[] { GetItem(row) };
+		}
 	}
 }
 

@@ -381,7 +381,7 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.AllowsColumnReordering = value; }
 		}
 
-		public ContextMenu ContextMenu
+		public virtual ContextMenu ContextMenu
 		{
 			get { return Widget.Properties.Get<ContextMenu>(GridHandler.ContextMenu_Key); }
 			set
