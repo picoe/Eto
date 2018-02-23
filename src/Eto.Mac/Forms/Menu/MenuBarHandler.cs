@@ -35,7 +35,7 @@ namespace Eto.Mac.Forms.Menu
 
 		protected override void Initialize()
 		{
-			Control.AutoEnablesItems = false;
+			Control.AutoEnablesItems = true;
 			Control.ShowsStateColumn = true;
 
 			base.Initialize();
