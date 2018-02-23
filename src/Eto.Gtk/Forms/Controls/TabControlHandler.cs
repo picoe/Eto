@@ -70,6 +70,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void ClearTabs()
 		{
+			Control.CurrentPage = -1;
 			while (Control.NPages > 0)
 				Control.RemovePage(0);
 		}
