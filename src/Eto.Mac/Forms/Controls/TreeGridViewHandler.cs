@@ -964,14 +964,24 @@ namespace Eto.Mac.Forms.Controls
 		void ContextMenu_Closed(object sender, EventArgs e)
 		{
 			// action is called after this, so we can't clear selected items immediately
-			Application.Instance.AsyncInvoke(() => CustomSelectedItems = null);
+			if (CustomSelectedItems != null)
+			{
+				Application.Instance.AsyncInvoke(() =>
+				{
+					CustomSelectedItems = null;
+					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+				});
+			}
 		}
 
 		void ContextMenu_Opening(object sender, EventArgs e)
 		{
 			var row = (int)Control.ClickedRow;
 			if (!SelectedRows.Contains(row))
+			{
 				CustomSelectedItems = new[] { GetItem(row) };
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			}
 		}
 	}
 }
