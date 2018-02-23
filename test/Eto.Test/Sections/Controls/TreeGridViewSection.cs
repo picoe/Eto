@@ -239,8 +239,8 @@ namespace Eto.Test.Sections.Controls
 				var item = new ButtonMenuItem { Text = "Click Me!" };
 				item.Click += delegate
 				{
-					if (control.SelectedItem != null)
-						Log.Write(item, "Click, Rows: {0}", control.SelectedItem);
+					if (grid.SelectedItems.Any())
+						Log.Write(item, "Click, Items: {0}, Rows: {1}", SelectedItemsString(grid), SelectedRowsString(grid));
 					else
 						Log.Write(item, "Click, no item selected");
 				};
@@ -254,7 +254,17 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		string GetDescription(ITreeGridItem item)
+		static string SelectedRowsString(TreeGridView grid)
+		{
+			return string.Join(",", grid.SelectedRows.Select(r => r.ToString()).OrderBy(r => r));
+		}
+
+		static string SelectedItemsString(TreeGridView grid)
+		{
+			return string.Join(",", grid.SelectedItems.Cast<ITreeGridItem>().Select(GetDescription).OrderBy(r => r));
+		}
+
+		static string GetDescription(ITreeGridItem item)
 		{
 			var treeItem = item as TreeGridItem;
 			if (treeItem != null)

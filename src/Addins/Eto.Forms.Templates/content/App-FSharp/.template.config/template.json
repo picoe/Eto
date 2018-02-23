@@ -2,7 +2,7 @@
 	"$schema": "http://json.schemastore.org/template",
 	"author": "Curtis Wensley",
 	"classifications": [ "Cross Platform", "Eto" ],
-	"name": "Eto App",
+	"name": "Eto Application",
 	"identity": "Eto.App.FSharp",
 	"groupIdentity": "Eto.App",
 	"shortName": "etoapp",
@@ -13,30 +13,31 @@
 	"sourceName": "EtoApp.1",
 	"preferNameDirectory": true,
 	"symbols": {
-		"Mode": {
-			"type": "parameter",
-			"description": "How your UI is defined",
-			"datatype": "choice",
-			"defaultValue": "code",
-			"choices": [
-				{
-					"choice": "code",
-					"description": "Code only UI"
-				},
-				{
-					"choice": "preview",
-					"description": "Partial class with preview"
-				},
-				{
-					"choice": "xaml",
-					"description": "Xaml definition with code behind"
-				},
-				{
-					"choice": "json",
-					"description": "Json definition with code behind"
-				}
-			]
-		},
+    "Mode": {
+      "type": "parameter",
+      "description": "How your UI is defined",
+      "datatype": "choice",
+      "defaultValue": "code",
+      "choices": [
+        {
+          "choice": "code",
+          "description": "Code only UI"
+        },
+        {
+          "choice": "preview",
+          "description": "Partial class with preview"
+        },
+        {
+          "choice": "xaml",
+          "description": "Xaml definition with code behind"
+        },
+        {
+          "choice": "json",
+          "description": "Json definition with code behind"
+        }
+      ]
+    },
+    /* Re-enable when sdk-style projects for net461 support netstandard 2.0 references
 		"GtkVersion": {
 			"type": "parameter",
 			"description": "The Gtk# version to target",
@@ -61,7 +62,7 @@
 				}
 			],
 			"replaces": "Gtk"
-		},
+		},*/
 		"Separate": {
 			"type": "parameter",
 			"description": "Use separate projects for each platform.\nDefault is to create a single destkop project that\nbuilds for all platforms",
@@ -72,7 +73,7 @@
 			"type": "parameter",
 			"description": "Include a .sln file",
 			"dataType": "bool",
-			"defaultValue": "true"
+			"defaultValue": "false"
 		},
 		"IncludeXamMac": {
 			"type": "parameter",

@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.Collections.Generic;
@@ -44,13 +44,18 @@ namespace Eto.Designer
 				_content = value;
 				base.Content = TableLayout.AutoSized(value, centered: true);
 
-				Application.Instance.AsyncInvoke(() => {
-					_originalContentSize = _content?.Size;
-					if (_sizeBounds != null)
-						_content.Size = Size.Round(_sizeBounds.Value);
-					Invalidate();
-				});
+				_content.SizeChanged += content_SizeChanged;
 			}
+		}
+
+		private void content_SizeChanged(object sender, EventArgs e)
+		{
+			if (_content.Size == Size.Empty)
+				return;
+			_originalContentSize = _content?.Size;
+			if (_sizeBounds != null)
+				_content.Size = Size.Round(_sizeBounds.Value);
+			_content.SizeChanged -= content_SizeChanged;
 		}
 
 		SizeF? _sizeBounds;

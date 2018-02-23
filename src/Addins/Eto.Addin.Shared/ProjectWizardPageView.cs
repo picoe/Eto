@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Designer;
 
 namespace Eto.Addin.Shared
 {
@@ -9,17 +10,20 @@ namespace Eto.Addin.Shared
 	{
 		public ProjectWizardPageView(ProjectWizardPageModel model)
 		{
+			var radioSpacing = Platform.IsGtk ? Size.Empty : new Size(2, 2);
+
 			var content = new DynamicLayout
 			{
 				Spacing = new Size(10, 10)
 			};
+
 			if (model.SupportsAppName)
 			{
 				var nameBox = new TextBox();
 				nameBox.TextBinding.BindDataContext((ProjectWizardPageModel m) => m.AppName);
 				Application.Instance.AsyncInvoke(nameBox.Focus);
 
-				var nameValid = new Label { TextColor = Colors.Red };
+				var nameValid = new Label { TextColor = Global.Theme.ErrorForeground };
 				nameValid.BindDataContext(c => c.Visible, (ProjectWizardPageModel m) => m.AppNameInvalid);
 				nameValid.BindDataContext(c => c.Text, (ProjectWizardPageModel m) => m.AppNameValidationText);
 
@@ -40,7 +44,7 @@ namespace Eto.Addin.Shared
 				var platformTypeList = new RadioButtonList
 				{
 					Orientation = Orientation.Vertical,
-					Spacing = new Size(0, 0),
+					Spacing = radioSpacing,
 					Items =
 					{
 						new ListItem { Text = "Single Windows, Linux, and Mac desktop project", Key = "combined" },
@@ -89,7 +93,7 @@ namespace Eto.Addin.Shared
 				var sharedCodeList = new RadioButtonList
 				{
 					Orientation = Orientation.Vertical,
-					Spacing = new Size(0, 0),
+					Spacing = radioSpacing,
 				};
 				if (model.SupportsPCL)
 				{
@@ -118,7 +122,7 @@ namespace Eto.Addin.Shared
 				var panelTypeList = new RadioButtonList
 				{
 					Orientation = Orientation.Horizontal,
-					Spacing = new Size(0, 0),
+					Spacing = radioSpacing,
 				};
 
 				panelTypeList.Items.Add(new ListItem { Text = "Code", Key = "code" });
@@ -145,7 +149,7 @@ namespace Eto.Addin.Shared
 				var baseTypeList = new RadioButtonList
 				{
 					Orientation = Orientation.Horizontal,
-					Spacing = new Size(0, 0),
+					Spacing = radioSpacing,
 				};
 
 				baseTypeList.Items.Add(new ListItem { Text = "Panel", Key = "Panel" });
@@ -155,6 +159,12 @@ namespace Eto.Addin.Shared
 
 				content.AddRow(new Label { Text = "Base:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, baseTypeList);
 			}
+
+#if DEBUG
+			var showColorsButton = new Button { Text = "Show all themed colors" };
+			showColorsButton.Click += (sender, e) => new ThemedColorsDialog().ShowModal(this);
+			content.AddRow(new Panel(), showColorsButton);
+#endif
 
 			var informationLabel = new Label();
 			informationLabel.TextBinding.BindDataContext((ProjectWizardPageModel m) => m.Information);

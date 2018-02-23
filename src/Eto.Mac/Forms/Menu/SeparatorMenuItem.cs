@@ -25,11 +25,6 @@ namespace Eto.Mac.Forms.Menu
 
 		protected override bool DisposeControl { get { return false; } }
 
-		public bool Enabled {
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-		
 		public string Text {
 			get { return string.Empty; }
 			set { throw new NotSupportedException (); }

@@ -11,7 +11,7 @@
     <Icon>App.ico</Icon>
     <DefaultName>EtoApp</DefaultName>
     <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
-
+    
     <CreateNewFolder>false</CreateNewFolder>
     <ProvideDefaultName>true</ProvideDefaultName>
     <LocationField>Enabled</LocationField>
@@ -20,7 +20,7 @@
   <TemplateContent>
     <ProjectCollection/>
     <CustomParameters>
-      <CustomParameter Name = "$language$" Value="FSharp" />
+      <CustomParameter Name = "$language$" Value="F#" />
       <CustomParameter Name = "$uistyle$" Value="none"/>
       <CustomParameter Name = "$groupid$" Value="Eto.App" />
       <CustomParameter Name="SideWaffleNewProjNode" Value="Project\FSharp\Eto.Forms"/>

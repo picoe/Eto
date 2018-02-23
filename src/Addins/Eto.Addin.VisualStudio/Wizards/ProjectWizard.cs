@@ -71,7 +71,7 @@ namespace Eto.Addin.VisualStudio.Wizards
 			if (model.RequiresInput)
 			{
 				var panel = new ProjectWizardPageView(model);
-				var dialog = new BaseDialog { Content = panel, Title = model.Title, ClientSize = new Size(-1, 400) };
+				var dialog = new BaseDialog { Content = panel, Title = model.Title, ClientSize = new Size(-1, 400), Style="themed" };
 				if (!dialog.ShowModal(Helpers.MainWindow))
 					throw new WizardBackoutException();
 			}
