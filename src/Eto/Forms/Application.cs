@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Eto.Forms
 {
@@ -329,6 +330,54 @@ namespace Eto.Forms
 		public virtual void AsyncInvoke(Action action)
 		{
 			Handler.AsyncInvoke(action);
+		}
+
+
+		/// <summary>
+		/// Invokes the specified function on the UI thread asynchronously and return the result in a Task.
+		/// </summary>
+		/// <returns>The task that returns the result of the function.</returns>
+		/// <param name="func">Function to execute and return the value.</param>
+		/// <typeparam name="T">The type of the result.</typeparam>
+		public Task<T> InvokeAsync<T>(Func<T> func)
+		{
+			var tcs = new TaskCompletionSource<T>();
+			InvokeAsync(() =>
+			{
+				try
+				{
+					var result = func();
+					tcs.SetResult(result);
+				}
+				catch (Exception ex)
+				{
+					tcs.SetException(ex);
+				}
+			});
+			return tcs.Task;
+		}
+
+		/// <summary>
+		/// Invokes the specified action on the UI thread asynchronously with a Task.
+		/// </summary>
+		/// <returns>The task that is used to await when the action is completed.</returns>
+		/// <param name="action">Action to execute.</param>
+		public Task InvokeAsync(Action action)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			AsyncInvoke(() =>
+			{
+				try
+				{
+					action();
+					tcs.SetResult(true);
+				}
+				catch (Exception ex)
+				{
+					tcs.SetException(ex);
+				}
+			});
+			return tcs.Task;
 		}
 
 		/// <summary>
