@@ -219,7 +219,11 @@ namespace Eto.WinForms.Forms.Controls
 			switch (id)
 			{
 				case Grid.ColumnHeaderClickEvent:
-					Control.ColumnHeaderMouseClick += (sender, e) => Callback.OnColumnHeaderClick(Widget, new GridColumnEventArgs(Widget.Columns[e.ColumnIndex]));
+					Control.ColumnHeaderMouseClick += (sender, e) =>
+					{
+						if (e.ColumnIndex >= 0 && columns.Collection[e.ColumnIndex].Sortable)
+							Callback.OnColumnHeaderClick(Widget, new GridColumnEventArgs(Widget.Columns[e.ColumnIndex]));
+					};
 					break;
 				case Grid.CellEditingEvent:
 					Control.CellBeginEdit += (sender, e) =>

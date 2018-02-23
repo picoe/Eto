@@ -160,12 +160,7 @@ namespace Eto.Forms
 
 			protected override void ClearItems()
 			{
-				var pages = this.ToArray();
-				for (int i = 0; i < pages.Length; i++)
-				{
-					control.Handler.RemoveTab(i, pages[i]);
-					control.RemoveParent(pages[i]);
-				}
+				control.Handler.ClearTabs();
 				base.ClearItems();
 			}
 

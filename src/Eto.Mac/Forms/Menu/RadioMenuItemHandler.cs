@@ -68,12 +68,6 @@ namespace Eto.Mac.Forms.Menu
 			}
 		}
 
-		public bool Enabled
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-
 		public string Text
 		{
 			get	{ return Control.Title; }

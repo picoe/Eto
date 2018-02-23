@@ -1,4 +1,4 @@
-﻿namespace EtoApp.1.Gtk2.AssemblyInfo
+﻿namespace EtoApp._1.Gtk
 
 open System.Reflection
 open System.Runtime.CompilerServices

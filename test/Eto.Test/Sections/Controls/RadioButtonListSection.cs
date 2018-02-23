@@ -35,7 +35,7 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(TableLayout.AutoSized(control));
 			layout.BeginVertical();
-			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), OrientationDropDown(control), null);
+			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), OrientationDropDown(control), TextColorControl(control), null);
 			layout.EndVertical();
 
 			return layout;
@@ -82,6 +82,17 @@ namespace Eto.Test.Sections.Controls
 				list.Orientation = control.SelectedValue;
 			};
 			return TableLayout.AutoSized(control, centered: true);
+		}
+
+		Control TextColorControl(RadioButtonList list)
+		{
+			var control = new ColorPicker();
+			control.Value = list.TextColor;
+			control.ValueChanged += (sender, e) =>
+			{
+				list.TextColor = control.Value;
+			};
+			return control;
 		}
 
 		RadioButtonList Items(Orientation? orientation = null)

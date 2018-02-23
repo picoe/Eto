@@ -2,7 +2,7 @@
 	"$schema": "http://json.schemastore.org/template",
 	"author": "Curtis Wensley",
 	"classifications": [ "Cross Platform", "Eto" ],
-	"name": "Eto App",
+	"name": "Eto Application",
 	"identity": "Eto.App.CSharp",
 	"groupIdentity": "Eto.App",
 	"shortName": "etoapp",
@@ -109,14 +109,6 @@
 		"IsForm": {
 			"type": "computed",
 			"value": "true"
-		},
-		"CopyrightYear": {
-			"type": "generated",
-			"generator": "now",
-			"replaces": "2018",
-			"parameters": {
-				"format": "yyyy"
-			}
 		},
 		"CopyrightYear": {
 			"type": "generated",

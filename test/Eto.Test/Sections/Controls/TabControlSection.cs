@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Controls
 					new StackLayout
 					{
 						Orientation = Orientation.Horizontal,
-						Items = { null, AddTab(), RemoveTab(), SelectTab(), TabPositionControl(), null }
+						Items = { null, AddTab(), RemoveTab(), ClearTabs(), SelectTab(), TabPositionControl(), null }
 					},
 					new StackLayoutItem(tabControl, expand: true)
 				}
@@ -61,6 +61,16 @@ namespace Eto.Test.Sections.Controls
 				{
 					tabControl.Pages.RemoveAt(tabControl.SelectedIndex);
 				}
+			};
+			return control;
+		}
+
+		Control ClearTabs()
+		{
+			var control = new Button { Text = "Clear" };
+			control.Click += (s, e) =>
+			{
+				tabControl.Pages.Clear();
 			};
 			return control;
 		}
