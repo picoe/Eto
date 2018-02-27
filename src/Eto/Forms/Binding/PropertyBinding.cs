@@ -67,9 +67,18 @@ namespace Eto.Forms
 #if PCL
 			if (dataItem != null && (descriptor == null || !descriptor.DeclaringType.IsInstanceOfType(dataItem)))
 			{
-				descriptor = (from p in dataItem.GetType().GetRuntimeProperties()
-							  where p.Name == Property
-							 select p).FirstOrDefault();
+				descriptor = dataItem.GetType().GetRuntimeProperty(Property);
+				if (descriptor == null && IgnoreCase)
+				{
+					foreach (var prop in dataItem.GetType().GetRuntimeProperties())
+					{
+						if (string.Equals(prop.Name, Property, StringComparison.OrdinalIgnoreCase))
+						{
+							descriptor = prop;
+							break;
+						}
+					}
+				}
 			}
 #else
 			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsInstanceOfType(dataItem)))
