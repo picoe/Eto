@@ -8,7 +8,28 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {
-    public class LinuxNotificationHandler : WidgetHandler<GLib.Object, Notification, Notification.ICallback>, Notification.IHandler
+	class NotificationWrapper : GLib.Object
+	{
+		public delegate void ClosedHandler(object o, EventArgs args);
+        public event ClosedHandler Closed
+        {
+            add
+            {
+                this.AddSignalHandler("closed", value, typeof(EventArgs));
+            }
+            remove
+            {
+                this.RemoveSignalHandler("closed", value);
+            }
+        }
+
+		public NotificationWrapper(IntPtr handle) : base(handle)
+		{
+
+		}
+	}
+
+    public class LinuxNotificationHandler : WidgetHandler<IntPtr, Notification, Notification.ICallback>, Notification.IHandler
     {
 		private const string libnotify = "libnotify.so.4";
 
@@ -38,6 +59,7 @@ namespace Eto.GtkSharp.Forms
 
 		private static bool init;
 		private static bool allowactions;
+		private static MethodInfo activatedmethod;
 
 		public static void Init()
 		{
@@ -51,6 +73,16 @@ namespace Eto.GtkSharp.Forms
 					if (item.ToString() == "actions")
 					{
 						allowactions = true;
+						break;
+					}
+				}
+
+				var methods = typeof(LinuxNotificationHandler).GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic);
+				foreach(var m in methods)
+				{
+					if (m.Name == "Activated")
+					{
+						activatedmethod = m;
 						break;
 					}
 				}
@@ -71,6 +103,7 @@ namespace Eto.GtkSharp.Forms
 		}
 
 		Image _contentImage;
+		string iconPath;
 
 		public string Title { get; set; }
 
@@ -82,35 +115,6 @@ namespace Eto.GtkSharp.Forms
 		public string Message { get; set; }
 
 		public string UserData { get; set; }
-
-		string iconPath;
-		GCHandle handle;
-
-        public LinuxNotificationHandler()
-        {
-			if (!init)
-				return;
-				
-			Control = GLib.Object.GetObject(notify_notification_new("", "", ""));
-
-			if (allowactions)
-			{
-				handle = GCHandle.Alloc(this);
-				// Undocumented AFAIK: If action is "default" it will not create a button.
-				notify_notification_add_action(Control.Handle, "default", "default", (Action<IntPtr, string, IntPtr>)Activated, GCHandle.ToIntPtr(handle), IntPtr.Zero);
-			}
-
-        }
-
-		private static void Activated(IntPtr notification, string action, IntPtr user_data)
-		{
-			var handler = GCHandle.FromIntPtr(user_data).Target as LinuxNotificationHandler;
-			if (handler != null)
-			{
-				var app = ApplicationHandler.Instance;
-				app?.Callback.OnNotificationActivated(app.Widget, new NotificationEventArgs(handler.ID, handler.UserData));
-			}
-		}
 
 		public Image ContentImage
 		{
@@ -142,10 +146,40 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (!init)
 				return;
-			
-			// Empty string will show the default icon, while an incorrect one will show no icon
-			notify_notification_update(Control.Handle, Title, Message, iconPath ?? "???");
-			notify_notification_show(Control.Handle, IntPtr.Zero);
+
+			// Empty string will show the default icon, while an incorrect one will show no icon			
+			var notification = new NotificationWrapper(notify_notification_new(Title, Message, iconPath ?? "???"));
+			var data = Marshal.StringToHGlobalUni(ID + (char)1 + UserData);
+			notification.Closed += (sender, e) =>
+			{
+				Marshal.FreeHGlobal(data);
+				notification.Dispose();
+			};
+
+			if (allowactions)
+			{
+				// Undocumented AFAIK: If action is "default" it will not create a button.
+				notify_notification_add_action(
+					notification.Handle,
+					"default",
+					"default",
+					Delegate.CreateDelegate(typeof(ActivatedDelegate), activatedmethod),
+					data,
+					IntPtr.Zero
+				);
+			}
+
+			notify_notification_show(notification.Handle, IntPtr.Zero);
+		}
+		
+		private delegate void ActivatedDelegate(IntPtr notification, IntPtr action, IntPtr user_data);
+
+		private static void Activated(IntPtr notification, IntPtr action, IntPtr user_data)
+		{
+			var data = Marshal.PtrToStringUni(user_data).Split((char)1);
+			var app = ApplicationHandler.Instance;
+
+			app?.Callback.OnNotificationActivated(app.Widget, new NotificationEventArgs(data[0], data[1]));
 		}
 	}
 }
