@@ -10,6 +10,7 @@ namespace Eto.GtkSharp.Forms
 {
 	class NotificationWrapper : GLib.Object
 	{
+#if !GTK2
 		public delegate void ClosedHandler(object o, EventArgs args);
         public event ClosedHandler Closed
         {
@@ -22,11 +23,14 @@ namespace Eto.GtkSharp.Forms
                 this.RemoveSignalHandler("closed", value);
             }
         }
+#endif
 
 		public NotificationWrapper(IntPtr handle) : base(handle)
 		{
-
+			
 		}
+
+
 	}
 
     public class LinuxNotificationHandler : WidgetHandler<IntPtr, Notification, Notification.ICallback>, Notification.IHandler
@@ -150,11 +154,13 @@ namespace Eto.GtkSharp.Forms
 			// Empty string will show the default icon, while an incorrect one will show no icon			
 			var notification = new NotificationWrapper(notify_notification_new(Title, Message, iconPath ?? "???"));
 			var data = Marshal.StringToHGlobalUni(ID + (char)1 + UserData);
+#if !GTK2
 			notification.Closed += (sender, e) =>
 			{
 				Marshal.FreeHGlobal(data);
 				notification.Dispose();
 			};
+#endif
 
 			if (allowactions)
 			{
