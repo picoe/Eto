@@ -67,7 +67,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (Widget.ParentWindow == null)
 					return false;
-				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorObject == Control;
+				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorClient == Control;
 			}
 		}
 

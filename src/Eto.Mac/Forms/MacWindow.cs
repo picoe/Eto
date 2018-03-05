@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Mac.Forms.Controls;
 using System.Threading;
 
 #if XAMMAC2
@@ -115,7 +114,9 @@ namespace Eto.Mac.Forms
 
 		NSMenu MenuBar { get; }
 
-		NSObject FieldEditorObject { get; set; }
+		NSObject FieldEditorClient { get; set; }
+
+		MacFieldEditor FieldEditor { get; }
 
 		bool CloseWindow(Action<CancelEventArgs> closing = null);
 
@@ -124,37 +125,11 @@ namespace Eto.Mac.Forms
 		Window.ICallback Callback { get; }
 	}
 
-	public class CustomFieldEditor : NSTextView
-	{
-		public CustomFieldEditor()
-		{
-			FieldEditor = true;
-		}
-
-		public CustomFieldEditor(IntPtr handle)
-			: base(handle)
-		{
-		}
-
-		public override void KeyDown(NSEvent theEvent)
-		{
-			var macControl = WeakDelegate as IMacControl;
-			if (macControl != null)
-			{
-				var macViewHandler = macControl.WeakHandler.Target as IMacViewHandler;
-				if (macViewHandler != null && MacEventView.KeyDown(macViewHandler.Widget, theEvent))
-					return;
-			}
-			base.KeyDown(theEvent);
-		}
-	}
-
 	static class MacWindow
 	{
 		public static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
 		public static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
 		public static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
-
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacContainer, IMacWindow
@@ -162,7 +137,7 @@ namespace Eto.Mac.Forms
 		where TWidget: Window
 		where TCallback: Window.ICallback
 	{
-		CustomFieldEditor fieldEditor;
+		MacFieldEditor fieldEditor;
 		MenuBar menuBar;
 		Icon icon;
 		Eto.Forms.ToolBar toolBar;
@@ -179,7 +154,9 @@ namespace Eto.Mac.Forms
 
 		public override object EventObject { get { return Control; } }
 
-		public NSObject FieldEditorObject { get; set; }
+		public NSObject FieldEditorClient { get; set; }
+
+		public MacFieldEditor FieldEditor => fieldEditor;
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -461,19 +438,8 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
 			if (handler == null)
 				return null;
-			handler.FieldEditorObject = client;
-			var control = client as IMacControl;
-			if (control != null)
-			{
-				var childHandler = control.WeakHandler?.Target as IMacViewHandler;
-				if (childHandler != null)
-				{
-					var fieldEditor = childHandler.CustomFieldEditor;
-					if (fieldEditor != null)
-						return fieldEditor;
-				}
-			}
-			return handler.fieldEditor ?? (handler.fieldEditor = new CustomFieldEditor());;
+			handler.FieldEditorClient = client;
+			return handler.fieldEditor ?? (handler.fieldEditor = new MacFieldEditor());
 		}
 
 		public override NSView ContentControl { get { return Control.ContentView; } }

@@ -2,6 +2,7 @@
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using System;
+using System.Diagnostics;
 
 #if XAMMAC2
 using AppKit;
@@ -20,16 +21,17 @@ using MonoMac.CoreAnimation;
 namespace Eto.Mac.Forms.Controls
 {
 
-	public class CustomTextFieldEditor : CustomFieldEditor, IMacControl
-	{
-		public WeakReference WeakHandler { get; set; }
-	}
-
 	public interface IMacText
 	{
 		void SetLastSelection(Range<int>? range);
 
 		AutoSelectMode AutoSelectMode { get; }
+	}
+
+	static class MacText
+	{
+		public static object AutoSelectMode_Key = new object();
+		public static object HasInitialFocus_Key = new object();
 	}
 
 	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler, IMacText
@@ -73,9 +75,15 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control.AttributedStringValue.Value; }
 			set
 			{
-				if (value != Text)
+				var oldValue = Control.AttributedStringValue;
+				var val = value ?? string.Empty;
+				if (val != oldValue.Value)
 				{
-					Control.AttributedStringValue = Font.AttributedString(value ?? string.Empty, Control.AttributedStringValue);
+					if (HasFont)
+						Control.AttributedStringValue = Font.AttributedString(val, oldValue);
+					else
+						Control.AttributedStringValue = oldValue.ToMutable(val);
+					
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
 			}
@@ -140,19 +148,17 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static object AutoSelectMode_Key = new object();
 		public AutoSelectMode AutoSelectMode
 		{
-			get { return Widget.Properties.Get(AutoSelectMode_Key, AutoSelectMode.OnFocus); }
-			set { Widget.Properties.Set(AutoSelectMode_Key, value, AutoSelectMode.OnFocus); }
+			get { return Widget.Properties.Get(MacText.AutoSelectMode_Key, AutoSelectMode.OnFocus); }
+			set { Widget.Properties.Set(MacText.AutoSelectMode_Key, value, AutoSelectMode.OnFocus); }
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
 			Widget.GotFocus += Widget_GotFocus;
-			Widget.MouseDown += Widget_MouseDown;;
-			SetCustomFieldEditor();
+			Widget.MouseDown += Widget_MouseDown;
 		}
 
 		void Widget_MouseDown(object sender, MouseEventArgs e)
@@ -164,12 +170,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static object HasInitialFocus_Key = new object();
 
 		bool HasInitialFocus
 		{
-			get { return Widget.Properties.Get(HasInitialFocus_Key, false); }
-			set { Widget.Properties.Set(HasInitialFocus_Key, value, false); }
+			get { return Widget.Properties.Get(MacText.HasInitialFocus_Key, false); }
+			set { Widget.Properties.Set(MacText.HasInitialFocus_Key, value, false); }
 		}
 
 		void Widget_GotFocus(object sender, EventArgs e)
@@ -203,21 +208,14 @@ namespace Eto.Mac.Forms.Controls
 			Selection = new Range<int>(0, (Text?.Length ?? 0) - 1);
 		}
 
-		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
-		static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
 
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case Eto.Forms.Control.TextInputEvent:
-					SetCustomFieldEditor();
-					AddMethod(selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@", CustomFieldEditor);
-					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					SetCustomFieldEditor();
-					// lost focus is on the custom field editor, not on the control itself (it loses focus immediately due to the field editor)
-					AddMethod(selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:", CustomFieldEditor);
+					// Handled by MacFieldEditor
 					break;
 				default:
 					base.AttachEvent(id);
@@ -225,35 +223,34 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static readonly object CustomFieldEditorKey = new object();
-
-		public override NSObject CustomFieldEditor { get { return Widget.Properties.Get<NSObject>(CustomFieldEditorKey); } }
-
-		public void SetCustomFieldEditor()
-		{
-			if (CustomFieldEditor != null)
-				return;
-			Widget.Properties[CustomFieldEditorKey] = new CustomTextFieldEditor
-			{
-				WeakHandler = new WeakReference(this)
-			};
-		}
-
 		public override bool HasFocus
 		{
 			get
 			{
-				return (
-					base.HasFocus
-					|| (ShouldHaveFocus ?? (CustomFieldEditor != null && Control.Window != null && Control.Window.FirstResponder == CustomFieldEditor))
-				);
+				if (base.HasFocus)
+					return true;
+				if (ShouldHaveFocus != null)
+					return ShouldHaveFocus.Value;
+				var fieldEditor = Control.Window?.FirstResponder as MacFieldEditor;
+				if (fieldEditor != null)
+				{
+					return ReferenceEquals(fieldEditor.WeakDelegate, Control)
+						|| ReferenceEquals(fieldEditor.Handler, this);
+				}
+				return false;
 			}
 		}
 
 		protected override void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
 		{
-			SetCustomFieldEditor();
-			base.InnerMapPlatformCommand(systemAction, command, CustomFieldEditor);
+			var window = Widget.ParentWindow?.Handler as IMacWindow;
+			if (window == null)
+			{
+				Debug.WriteLine("Warning: Cannot map commands to text fields before they have been added to their window");
+				return;
+			}
+
+			base.InnerMapPlatformCommand(systemAction, command, window.FieldEditor);
 		}
 
 		public virtual void SetLastSelection(Range<int>? range)

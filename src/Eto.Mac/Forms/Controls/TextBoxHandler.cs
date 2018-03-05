@@ -23,6 +23,13 @@ namespace Eto.Mac.Forms.Controls
 		int MaxLength { get; }
 	}
 
+	interface IMacTextBoxHandler
+	{
+		TextBox.ICallback Callback { get; }
+
+		TextBox Widget { get; }
+	}
+
 	public class EtoFormatter : NSFormatter
 	{
 		WeakReference handler;
@@ -114,7 +121,7 @@ namespace Eto.Mac.Forms.Controls
 	{
 	}
 
-	public class TextBoxHandler<TWidget, TCallback> : MacText<EtoTextField, TWidget, TCallback>, TextBox.IHandler, ITextBoxWithMaxLength
+	public class TextBoxHandler<TWidget, TCallback> : MacText<EtoTextField, TWidget, TCallback>, TextBox.IHandler, ITextBoxWithMaxLength, IMacTextBoxHandler
 		where TWidget: TextBox
 		where TCallback: TextBox.ICallback
 	{
@@ -146,8 +153,7 @@ namespace Eto.Mac.Forms.Controls
 					Control.Changed += HandleTextChanged;
 					break;
 				case TextBox.TextChangingEvent:
-					SetCustomFieldEditor();
-					AddMethod(selShouldChangeText, new Func<IntPtr, IntPtr, NSRange, IntPtr, bool>(TriggerShouldChangeText), "B@:{NSRange=QQ}@", CustomFieldEditor);
+					// handled by custom field editor
 					break;
 				default:
 					base.AttachEvent(id);
@@ -159,22 +165,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var h = GetHandler(sender) as TextBoxHandler<TWidget, TCallback>;
 			h.Callback.OnTextChanged(h.Widget, EventArgs.Empty);
-		}
-
-		static bool TriggerShouldChangeText(IntPtr sender, IntPtr sel, NSRange affectedCharRange, IntPtr replacementStringPtr)
-		{
-			var obj = Runtime.GetNSObject(sender);
-			var handler = GetHandler(obj) as TextBoxHandler<TWidget, TCallback>;
-
-			if (handler != null)
-			{
-				var replacementString = Messaging.GetNSObject<NSString>(replacementStringPtr);
-				var args = new TextChangingEventArgs(replacementString, affectedCharRange.ToEto());
-				handler.Callback.OnTextChanging(handler.Widget, args);
-				if (args.Cancel)
-					return false;
-			}
-			return Messaging.bool_objc_msgSendSuper_NSRange_IntPtr(obj.SuperHandle, sel, affectedCharRange, replacementStringPtr);
 		}
 
 		public bool ReadOnly
@@ -194,5 +184,9 @@ namespace Eto.Mac.Forms.Controls
 			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
 			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
 		}
+
+		TextBox.ICallback IMacTextBoxHandler.Callback => Callback;
+
+		TextBox IMacTextBoxHandler.Widget => Widget;
 	}
 }
