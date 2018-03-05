@@ -90,8 +90,6 @@ namespace Eto.Mac.Forms
 
 		void OnSizeChanged(EventArgs e);
 
-		NSObject CustomFieldEditor { get; }
-
 		bool? ShouldHaveFocus { get; set; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
@@ -256,8 +254,6 @@ namespace Eto.Mac.Forms
 			get { return Widget.Properties.Get<SizeF?>(MacView.NaturalSize_Key); }
 			set { Widget.Properties[MacView.NaturalSize_Key] = value; }
 		}
-
-		public virtual NSObject CustomFieldEditor { get { return null; } }
 
 		protected virtual bool LayoutIfNeeded(SizeF? oldPreferredSize = null, bool force = false)
 		{

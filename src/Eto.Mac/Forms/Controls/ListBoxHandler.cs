@@ -229,7 +229,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return base.Font; }
 			set
 			{
-				Widget.Properties.Set(Font_Key, value, () =>
+				Widget.Properties.Set(MacControl.Font_Key, value, () =>
 				{
 					if (value != null)
 					{

@@ -33,7 +33,7 @@ using CGPoint = System.Drawing.PointF;
 namespace Eto.Mac
 {
 	/// <summary>
-	/// These are extensions for missing methods in monomac/xamarin.mac, or incorrectly bound.
+	/// These are extensions for missing methods in monomac/xamarin.mac, incorrectly bound, or bad performance.
 	/// </summary>
 	/// <remarks>
 	/// Once monomac/xam.mac supports these methods or are implemented properly, then remove from here.
@@ -92,6 +92,14 @@ namespace Eto.Mac
 			if (intPtr != IntPtr.Zero)
 				NSString.ReleaseNative(intPtr);
 			return result;
+		}
+
+		static readonly IntPtr selColorUsingColorSpaceName_Handle = Selector.GetHandle("colorUsingColorSpaceName:");
+
+		public static NSColor UsingColorSpaceFast(this NSColor color, NSString colorSpace)
+		{
+			var intPtr = Messaging.IntPtr_objc_msgSend_IntPtr(color.Handle, selColorUsingColorSpaceName_Handle, colorSpace.Handle);
+			return Runtime.GetNSObject<NSColor>(intPtr);
 		}
 
 		#if !XAMMAC
