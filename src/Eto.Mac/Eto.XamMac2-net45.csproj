@@ -250,6 +250,7 @@
     <Compile Include="Forms\NotificationHandler.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="AsyncQueue.cs" />
+    <Compile Include="Forms\MacFieldEditor.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>
@@ -270,7 +271,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}</Project>
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
