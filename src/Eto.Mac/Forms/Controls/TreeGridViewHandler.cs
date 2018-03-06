@@ -950,19 +950,20 @@ namespace Eto.Mac.Forms.Controls
 				if (old != null)
 				{
 					old.Opening -= ContextMenu_Opening;
-					old.Closed -= ContextMenu_Closed;
 				}
 				base.ContextMenu = value;
 				if (value != null)
 				{
 					value.Opening += ContextMenu_Opening;
-					value.Closed += ContextMenu_Closed;
 				}
 			}
 		}
 
 		void ContextMenu_Closed(object sender, EventArgs e)
 		{
+			var menu = (ContextMenu)sender;
+			menu.Closed -= ContextMenu_Closed;
+
 			// action is called after this, so we can't clear selected items immediately
 			if (CustomSelectedItems != null)
 			{
@@ -979,6 +980,8 @@ namespace Eto.Mac.Forms.Controls
 			var row = (int)Control.ClickedRow;
 			if (!SelectedRows.Contains(row))
 			{
+				var menu = (ContextMenu)sender;
+				menu.Closed += ContextMenu_Closed;
 				CustomSelectedItems = new[] { GetItem(row) };
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 			}
