@@ -103,11 +103,18 @@ namespace Eto.Mac.Forms.Controls
 			public override void SetFrameSize(CGSize newSize)
 			{
 				base.SetFrameSize(newSize);
+				var h = Handler;
+				if (h == null)
+					return;
+				
 				if (setBezel)
 				{
 					setBezel = false;
-					Handler.SetBezel();
+					h.SetBezel();
 				}
+
+				h.OnSizeChanged(EventArgs.Empty);
+				h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 			}
 
 			public EtoButton()
