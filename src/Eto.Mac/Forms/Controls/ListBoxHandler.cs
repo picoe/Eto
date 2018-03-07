@@ -75,6 +75,14 @@ namespace Eto.Mac.Forms.Controls
 					base.BorderType = _borderType.Value;
 			}
 			base.SetFrameSize(newSize);
+
+
+			var h = Handler as IMacViewHandler;
+			if (h == null)
+				return;
+
+			h.OnSizeChanged(EventArgs.Empty);
+			h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 		}
 	}
 

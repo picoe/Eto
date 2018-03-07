@@ -45,9 +45,9 @@ using nnint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public interface IGridHandler
+	public interface IGridHandler : IMacViewHandler
 	{
-		Grid Widget { get; }
+		new Grid Widget { get; }
 
 		NSTableView Table { get; }
 
@@ -65,11 +65,16 @@ namespace Eto.Mac.Forms.Controls
 		public override void SetFrameSize(CGSize newSize)
 		{
 			base.SetFrameSize(newSize);
+			var h = Handler;
+			if (h == null)
+				return;
 
 			if (!autoSized)
 			{
-				autoSized = Handler.AutoSizeColumns(false);
+				autoSized = h.AutoSizeColumns(false);
 			}
+			h.OnSizeChanged(EventArgs.Empty);
+			h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 		}
 	}
 
@@ -508,10 +513,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		Grid IGridHandler.Widget
-		{
-			get { return Widget; }
-		}
+		Grid IGridHandler.Widget => Widget;
 
 		public CGRect GetVisibleRect()
 		{
