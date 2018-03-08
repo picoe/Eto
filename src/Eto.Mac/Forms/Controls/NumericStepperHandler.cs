@@ -81,6 +81,13 @@ namespace Eto.Mac.Forms.Controls
 				text.SetFrameSize(new CGSize((float)(newSize.Width - splitter.Frame.Width), (float)text.Frame.Height));
 				offset = (newSize.Height - splitter.Frame.Height) / 2;
 				splitter.SetFrameOrigin(new CGPoint(newSize.Width - splitter.Frame.Width, offset));
+
+				var h = WeakHandler?.Target as IMacViewHandler;
+				if (h == null)
+					return;
+				
+				h.OnSizeChanged(EventArgs.Empty);
+				h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 			}
 
 			public EtoNumericStepperView(NumericStepperHandler handler)
