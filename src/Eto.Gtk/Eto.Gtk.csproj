@@ -23,6 +23,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="EtoWebView.cs" />
+    <Compile Remove="Forms\FontDialogHandlerOld.cs" />
+    <Compile Remove="Forms\ColorDialogHandlerOld.cs" />
     <Compile Remove="Forms\Controls\WebViewHandler.cs" />
   </ItemGroup>
   <ItemGroup>
