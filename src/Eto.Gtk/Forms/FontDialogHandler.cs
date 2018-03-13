@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
@@ -6,11 +6,11 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class FontDialogHandler : WidgetHandler<Gtk.FontSelectionDialog, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
+	public class FontDialogHandler : WidgetHandler<Gtk.FontChooserDialog, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
 	{
 		public FontDialogHandler()
 		{
-			Control = new Gtk.FontSelectionDialog(null);
+			Control = new Gtk.FontChooserDialog("Choose Font", null); 
 		}
 
 		public Font Font { get; set; }
@@ -39,22 +39,22 @@ namespace Eto.GtkSharp.Forms
 			if (Font != null)
 			{
 				var handler = Font.Handler as FontHandler;
-				Control.SetFontName(handler.Control.ToString());
+				Control.Font = handler.Control.ToString();
 			}
 			else
-				Control.SetFontName(string.Empty);
+				Control.Font = string.Empty;
 
 			Control.ShowAll();
 			var response = (Gtk.ResponseType)Control.Run();
 			Control.Hide();
 
-			if (response == Gtk.ResponseType.Apply || response == Gtk.ResponseType.Ok)
+			if (response == Gtk.ResponseType.Ok)
 			{
-				Font = new Font(new FontHandler(Control.FontName));
+				Font = new Font(new FontHandler(Control.Font));
 				Callback.OnFontChanged(Widget, EventArgs.Empty);
-				return DialogResult.Ok;
 			}
-			return DialogResult.Cancel;
+
+			return response.ToEto();
 		}
 	}
 }

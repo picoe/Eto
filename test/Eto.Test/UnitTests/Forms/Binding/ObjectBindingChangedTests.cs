@@ -90,6 +90,17 @@ namespace Eto.Test.UnitTests.Forms.Binding
 			}
 		}
 
+		string internalStringProperty;
+		internal string InternalStringProperty
+		{
+			get { return internalStringProperty; }
+			set
+			{
+				internalStringProperty = value;
+				OnPropertyChanged(nameof(InternalStringProperty));
+			}
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		protected void OnPropertyChanged(string propertyName)
