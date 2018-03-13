@@ -173,9 +173,11 @@ namespace Eto.GtkSharp
 			p.Add<Form.IHandler>(() => new FormHandler());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
+			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
 			p.Add<SaveFileDialog.IHandler>(() => new SaveFileDialogHandler());
 			p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
+			p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
 			p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
@@ -197,15 +199,6 @@ namespace Eto.GtkSharp
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
 
 			#if GTK3
-			if (Gtk.Global.MinorVersion >= 4)
-				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandlerGtk34());
-			else
-				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
-
-			if (Gtk.Global.MinorVersion >= 2)
-				p.Add<FontDialog.IHandler>(() => new FontDialogHandlerGtk32());
-			else
-				p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
 				
 			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
 			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());

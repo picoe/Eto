@@ -79,7 +79,7 @@
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
-    <Compile Include="Forms\FontDialogHandler.cs" />
+    <Compile Include="Forms\FontDialogHandlerOld.cs" />
     <Compile Include="Drawing\BitmapHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -192,7 +192,7 @@
     </Compile>
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandler.cs" />
+    <Compile Include="Forms\ColorDialogHandlerOld.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="CustomControls\BaseComboBox.cs" />
