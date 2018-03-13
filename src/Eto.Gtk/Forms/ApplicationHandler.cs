@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace Eto.GtkSharp.Forms
 {
-#if GTK3
+#if GTKCORE
 	public class ApplicationHandler : WidgetHandler<Gtk.Application, Application, Application.ICallback>, Application.IHandler
 #else
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
@@ -34,10 +34,10 @@ namespace Eto.GtkSharp.Forms
 			if (SynchronizationContext.Current == null)
 				SynchronizationContext.SetSynchronizationContext(new GtkSynchronizationContext());
 
-#if GTK3
+#if GTKCORE
 			Control = new Gtk.Application(null, GLib.ApplicationFlags.None);
 			Control.Register(GLib.Cancellable.Current);
-			Helper.UseHeaderBar = Gtk.Global.MinorVersion >= 10 && NativeMethods.gtk_application_prefers_app_menu(Control.Handle);
+			Helper.UseHeaderBar = Control.PrefersAppMenu();
 #else
 			Helper.UseHeaderBar = false;
 #endif

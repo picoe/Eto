@@ -86,7 +86,7 @@
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
-    <Compile Include="Forms\FontDialogHandler.cs" />
+    <Compile Include="Forms\FontDialogHandlerOld.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
     <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
     <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
@@ -190,7 +190,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Forms\ClipboardHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandler.cs" />
+    <Compile Include="Forms\ColorDialogHandlerOld.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="CustomControls\BaseComboBox.cs" />
@@ -270,12 +270,10 @@
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
     <Compile Include="Drawing\IconFrameHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandlerGtk34.cs" />
     <Compile Include="Forms\AboutDialogHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
     <Compile Include="Forms\Controls\FilePickerHandler.cs" />
-    <Compile Include="Forms\FontDialogHandlerGtk32.cs" />
     <Compile Include="Forms\Controls\FontPickerHandler.cs" />
     <Compile Include="Forms\OpenWithDialogHandler.cs" />
     <Compile Include="Forms\Controls\DocumentControlHandler.cs" />
