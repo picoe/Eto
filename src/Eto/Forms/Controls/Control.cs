@@ -955,8 +955,15 @@ namespace Eto.Forms
 			{
 				OnPreLoad(EventArgs.Empty);
 				OnLoad(EventArgs.Empty);
-				Application.Instance.AsyncInvoke(() => OnLoadComplete(EventArgs.Empty));
+				Application.Instance.AsyncInvoke(PostAttach);
 			}
+		}
+
+		void PostAttach()
+		{
+			// if the control is disposed before we get here Handler will be null, so omit calling OnLoadComplete
+			if (Handler != null)
+				OnLoadComplete(EventArgs.Empty);
 		}
 
 		/// <summary>
