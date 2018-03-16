@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.Collections.Generic;
@@ -18,31 +19,53 @@ namespace Eto.Designer
 		public string Message { get; set; }
 		public string Details { get; set; }
 	}
+
+	class DomainPlatformThemeHandler : IPlatformTheme
+	{
+		AppDomainProxy proxy;
+		Dictionary<string, Color> colors = new Dictionary<string, Color>();
+		public DomainPlatformThemeHandler(AppDomainProxy proxy)
+		{
+			this.proxy = proxy;
+		}
+		Color GetColor(string name)
+		{
+			if (colors.TryGetValue(name, out var value))
+				return value;
+
+			return colors[name] = Color.FromArgb(proxy.GetThemeColor(name));
+		}
+
+		public Color ProjectBackground => GetColor("ProjectBackground");
+		public Color ProjectForeground => GetColor("ProjectForeground");
+		public Color ProjectDialogBackground => GetColor("ProjectDialogBackground");
+		public Color ErrorForeground => GetColor("ErrorForeground");
+		public Color SummaryBackground => GetColor("SummaryBackground");
+		public Color SummaryForeground => GetColor("SummaryForeground");
+		public Color DesignerBackground => GetColor("DesignerBackground");
+		public Color DesignerPanel => GetColor("DesignerPanel");
+		public IEnumerable<PlatformColor> AllColors { get; } = Enumerable.Empty<PlatformColor>();
+	}
+
 	class AppDomainProxy : MarshalByRefObject
 	{
+		string mainAssembly;
+		List<string> references;
 		IDesignHost designPanel;
 		#pragma warning disable 414
 		IDisposable resolver;
 		#pragma warning restore 414
 
-		public Action ControlCreated
-		{
-			get { return designPanel.ControlCreated; }
-			set { designPanel.ControlCreated = value; }
-		}
-
-		public Action<DesignError> Error
-		{
-			get { return designPanel.Error; }
-			set { designPanel.Error = value; }
-		}
+		public Func<string,int> GetThemeColor { get; set; }
 
 		public void Init(string platformType, string initializeAssembly, string mainAssembly, IEnumerable<string> references)
 		{
+			this.mainAssembly = mainAssembly;
+			this.references = references.ToList();
 			if (Platform.Instance == null)
 			{
 				var refs = new[] { Path.GetDirectoryName(typeof(AppDomainProxy).Assembly.Location), mainAssembly };
-				resolver = AssemblyResolver.Register(refs.Union(references));
+				resolver = AssemblyResolver.Register(refs.Union(this.references));
 
 				var plat = Activator.CreateInstance(Type.GetType(platformType)) as Platform;
 				Platform.Initialize(plat);
@@ -50,6 +73,7 @@ namespace Eto.Designer
 				{
 					plat.LoadAssembly(initializeAssembly);
 				}
+				plat.Add(typeof(IPlatformTheme), () => new DomainPlatformThemeHandler(this));
 				var app = new Application();
 				app.Attach();
 				app.Terminating += App_Terminating;
@@ -58,10 +82,17 @@ namespace Eto.Designer
 
 				AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 			}
+		}
+		public void HookupEvents(AppDomainEventSink eventSink)
+		{
+			GetThemeColor = eventSink.GetThemeColor;
 
 			designPanel = new DesignPanel();
 			designPanel.MainAssembly = mainAssembly;
-			designPanel.References = references.ToList();
+			designPanel.References = references;
+
+			designPanel.Error = eventSink.Error;
+			designPanel.ControlCreated = eventSink.ControlCreated;
 		}
 
 		void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -136,6 +167,23 @@ namespace Eto.Designer
 		public override object InitializeLifetimeService()
 		{
 			return null;
+		}
+
+		public int GetThemeColor(string name)
+		{
+			switch (name)
+			{
+				case "DesignerPanel": return Global.Theme.DesignerPanel.ToArgb();
+				case "DesignerBackground": return Global.Theme.DesignerBackground.ToArgb();
+				case "ErrorForeground": return Global.Theme.ErrorForeground.ToArgb();
+				case "ProjectBackground": return Global.Theme.ProjectBackground.ToArgb();
+				case "ProjectDialogBackground": return Global.Theme.ProjectDialogBackground.ToArgb();
+				case "ProjectForeground": return Global.Theme.ProjectForeground.ToArgb();
+				case "SummaryBackground": return Global.Theme.SummaryBackground.ToArgb();
+				case "SummaryForeground": return Global.Theme.SummaryForeground.ToArgb();
+				default:
+					return Colors.White.ToArgb();
+			}
 		}
 	}
 
@@ -242,8 +290,8 @@ namespace Eto.Designer
 				}
 				proxy.Init(Platform.Instance.GetType().AssemblyQualifiedName, initializeAssembly, MainAssembly, references);
 
-				proxy.ControlCreated = eventSink.ControlCreated;
-				proxy.Error = eventSink.Error;
+				proxy.HookupEvents(eventSink);
+
 				if (setBuilder)
 					proxy.SetBuilder(fileName);
 				if (!string.IsNullOrEmpty(code))
