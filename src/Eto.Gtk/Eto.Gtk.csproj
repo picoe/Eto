@@ -16,13 +16,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GtkSharp" Version="3.22.24.29" />
+    <PackageReference Include="GtkSharp" Version="3.22.24.30" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="EtoWebView.cs" />
+    <Compile Remove="Forms\FontDialogHandlerOld.cs" />
+    <Compile Remove="Forms\ColorDialogHandlerOld.cs" />
     <Compile Remove="Forms\Controls\WebViewHandler.cs" />
   </ItemGroup>
   <ItemGroup>

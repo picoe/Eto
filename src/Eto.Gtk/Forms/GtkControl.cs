@@ -623,7 +623,8 @@ namespace Eto.GtkSharp.Forms
 			{
 				var h = DragArgs?.Data.Handler as DataObjectHandler;
 				h?.SetDataReceived(args);
-				NativeMethods.g_signal_stop_emission_by_name(Handler.DragControl.Handle, "drag-data-received");
+				
+				args.RetVal = true;
 			}
 
 			[GLib.ConnectBefore]

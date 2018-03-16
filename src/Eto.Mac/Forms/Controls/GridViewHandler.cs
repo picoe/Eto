@@ -45,9 +45,9 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 
 			public GridViewHandler Handler
-			{ 
+			{
 				get { return (GridViewHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 
 			/// <summary>
@@ -84,7 +84,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (HandleMouseEvent(theEvent))
 					return;
-				
+
 				Handler.IsMouseDragging = true;
 				base.MouseDown(theEvent);
 				Handler.IsMouseDragging = true;
@@ -138,7 +138,6 @@ namespace Eto.Mac.Forms.Controls
 			{
 				return AllowedOperation ?? NSDragOperation.None;
 			}
-
 		}
 
 		public class EtoTableViewDataSource : NSTableViewDataSource
@@ -211,7 +210,7 @@ namespace Eto.Mac.Forms.Controls
 				var position = GridDragPosition.Over;
 				if (dropOperation == NSTableViewDropOperation.On)
 					position = GridDragPosition.Over;
-				else 
+				else
 				{
 					// need to check if it's actually above or below the item under the cursor
 					var rowUnderMouse = tableView.GetRow(tableView.ConvertPointFromView(info.DraggingLocation, null));
@@ -350,32 +349,32 @@ namespace Eto.Mac.Forms.Controls
 			switch (id)
 			{
 				case Grid.CellEditingEvent:
-				// handled by delegate
-				/* following should work, but internal delegate to trigger event does not work
-				table.ShouldEditTableColumn = (tableView, tableColumn, row) => {
-					var id = tableColumn.Identifier as EtoGridColumnIdentifier;
-					var item = store.GetItem (row);
-					var args = new GridViewCellArgs(id.Handler.Widget, row, id.Handler.Column, item);
-					this.Widget.OnBeginCellEdit (args);
-					return true;
-				};*/
+					// handled by delegate
+					/* following should work, but internal delegate to trigger event does not work
+					table.ShouldEditTableColumn = (tableView, tableColumn, row) => {
+						var id = tableColumn.Identifier as EtoGridColumnIdentifier;
+						var item = store.GetItem (row);
+						var args = new GridViewCellArgs(id.Handler.Widget, row, id.Handler.Column, item);
+						this.Widget.OnBeginCellEdit (args);
+						return true;
+					};*/
 					break;
 				case Grid.CellEditedEvent:
-				// handled after object value is set
+					// handled after object value is set
 					break;
 				case Grid.SelectionChangedEvent:
-				/* handled by delegate, for now
-				table.SelectionDidChange += delegate {
-					Widget.OnSelectionChanged (EventArgs.Empty);
-				};*/
+					/* handled by delegate, for now
+					table.SelectionDidChange += delegate {
+						Widget.OnSelectionChanged (EventArgs.Empty);
+					};*/
 					break;
 				case Grid.ColumnHeaderClickEvent:
-				/*
-				table.DidClickTableColumn += delegate(object sender, NSTableViewTableEventArgs e) {
-					var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
-					Handler.Widget.OnHeaderClick (new GridColumnEventArgs (column));
-				};
-				*/
+					/*
+					table.DidClickTableColumn += delegate(object sender, NSTableViewTableEventArgs e) {
+						var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
+						Handler.Widget.OnHeaderClick (new GridColumnEventArgs (column));
+					};
+					*/
 					break;
 				case Grid.CellDoubleClickEvent:
 				case Grid.CellClickEvent:
@@ -401,7 +400,7 @@ namespace Eto.Mac.Forms.Controls
 		public IEnumerable<object> SelectedItems
 		{
 			get
-			{ 
+			{
 				if (collection != null)
 				{
 					foreach (var row in SelectedRows)
@@ -517,7 +516,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (collection != null)
 					collection.Unregister();
-				collection = new CollectionHandler{ Handler = this };
+				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
 				if (Widget.Loaded)
 					AutoSizeColumns(true);
@@ -568,6 +567,52 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public GridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as GridViewDragInfo;
+
+		public override ContextMenu ContextMenu
+		{
+			get => base.ContextMenu;
+			set
+			{
+				var old = ContextMenu;
+				if (old != null)
+				{
+					old.Opening -= ContextMenu_Opening;
+				}
+				base.ContextMenu = value;
+				if (value != null)
+				{
+					value.Opening += ContextMenu_Opening;
+				}
+			}
+		}
+
+		void ContextMenu_Closed(object sender, EventArgs e)
+		{
+			var menu = (ContextMenu)sender;
+			menu.Closed -= ContextMenu_Closed;
+
+			// action is called after this, so we can't clear selected rows immediately
+			if (CustomSelectedRows != null)
+			{
+				Application.Instance.AsyncInvoke(() =>
+				{
+					CustomSelectedRows = null;
+					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+				});
+			}
+		}
+
+		void ContextMenu_Opening(object sender, EventArgs e)
+		{
+			var row = (int)Control.ClickedRow;
+			if (!SelectedRows.Contains(row))
+			{
+				var menu = (ContextMenu)sender;
+				menu.Closed += ContextMenu_Closed;
+				CustomSelectedRows = new[] { row };
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			}
+		}
 	}
 }
 

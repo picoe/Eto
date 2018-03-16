@@ -66,7 +66,7 @@
       </Filter>
     </ApiFilter>
     <WorkingPath>%temp%\shfbworking\</WorkingPath>
-    <HelpFileVersion>2.4.1.0</HelpFileVersion>
+    <HelpFileVersion>2.4.0.0</HelpFileVersion>
     <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in

@@ -18,15 +18,15 @@ using MonoMac.ObjCRuntime;
 namespace Eto.Forms
 {
 	public static class
-	#if XAMMAC2
+#if XAMMAC2
 	XamMac2Helpers
-	#elif XAMMAC
+#elif XAMMAC
 	XamMacHelpers
-	#elif Mac64
+#elif Mac64
 	MonoMac64Helpers
-	#elif MONOMAC
+#elif MONOMAC
 	MonoMacHelpers
-	#endif
+#endif
 	{
 		/// <summary>
 		/// Gets the native Mac NSView that contains the Eto.Forms control.
@@ -104,6 +104,29 @@ namespace Eto.Forms
 			return window.ControlObject as NSWindow;
 		}
 
+
+		/// <summary>
+		/// Gets a value indicating that a field editor is required for the specified client
+		/// </summary>
+		/// <remarks>
+		/// When you are embedding an Eto control inside a native NSWindow, certain events for the TextBox and similar controls
+		/// may not fire as they are handled through a custom field editor.
+		/// 
+		/// You must wire up your native NSWindowDelegate to handle windowWillReturnFieldEditor:toObject: and call this method
+		/// with the handle of the client object.
+		/// 
+		/// If this is true, you should call <see cref="GetFieldEditor"/> to return an instance of a field editor that can be used.
+		/// </remarks>
+		/// <returns><c>true</c>, if field editor is needed, <c>false</c> otherwise.</returns>
+		/// <param name="clientHandle">Handle to the client object from the 2nd parameter of windowWillReturnFieldEditor:toObject:</param>
+		public static bool NeedsFieldEditor(IntPtr clientHandle)
+		{
+			var obj = Runtime.TryGetNSObject(clientHandle) as IMacControl;
+			return obj != null;
+		}
+
+		static readonly object FieldEditor_Key = new object();
+
 		/// <summary>
 		/// Gets the field editor required for the specified control.
 		/// </summary>
@@ -125,9 +148,13 @@ namespace Eto.Forms
 				var childHandler = control.WeakHandler.Target as IMacViewHandler;
 				if (childHandler != null)
 				{
-					var fieldEditor = childHandler.CustomFieldEditor;
-					if (fieldEditor != null)
-						return fieldEditor;
+					var fieldEditor = childHandler.Widget.Properties.Get<NSObject>(FieldEditor_Key);
+					if (fieldEditor == null)
+					{
+						fieldEditor = new MacFieldEditor();
+						childHandler.Widget.Properties.Set(FieldEditor_Key, fieldEditor);
+					}
+					return fieldEditor;
 				}
 			}
 			return null;

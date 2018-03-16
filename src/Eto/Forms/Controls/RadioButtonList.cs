@@ -200,6 +200,28 @@ namespace Eto.Forms
 			}
 		}
 
+		static readonly object TextColor_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the color of the radio button text.
+		/// </summary>
+		/// <value>The color of the radio button text.</value>
+		public Color TextColor
+		{
+			get { return Properties.Get(TextColor_Key, SystemColors.ControlText); }
+			set
+			{
+				if (value != TextColor)
+				{
+					Properties.Set(TextColor_Key, value);
+					foreach (var button in buttons)
+					{
+						button.TextColor = value;
+					}
+				}
+			}
+		}
+
 		class ItemDataStore : EnumerableChangedHandler<object>
 		{
 			public RadioButtonList Handler { get; set; }
@@ -417,6 +439,8 @@ namespace Eto.Forms
 		RadioButton CreateButton(object item)
 		{
 			var button = new RadioButton(controller);
+			if (Properties.ContainsKey(TextColor_Key))
+				button.TextColor = TextColor;
 			button.CheckedChanged += HandleCheckedChanged;
 			button.Text = ItemTextBinding.GetValue(item);
 			button.Tag = item;

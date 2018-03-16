@@ -127,5 +127,23 @@ namespace Eto.Test.UnitTests.Forms.Binding
 			Assert.DoesNotThrow(() => binding.SetValue(item, 123));
 			binding.RemoveValueChangedHandler(changeReference, valueChanged);
 		}
+
+		[Test]
+		public void InternalPropertyShouldBeAccessible()
+		{
+			var item = new BindObject { InternalStringProperty = "some value" };
+			var binding = Eto.Forms.Binding.Property<string>("InternalStringProperty");
+
+			int changed = 0;
+			EventHandler<EventArgs> valueChanged = (sender, e) => changed++;
+			var changeReference = binding.AddValueChangedHandler(item, valueChanged);
+
+			Assert.AreEqual(0, changed);
+			Assert.AreEqual("some value", binding.GetValue(item));
+			Assert.DoesNotThrow(() => binding.SetValue(item, "some other value"));
+			Assert.AreEqual(1, changed);
+			Assert.AreEqual("some other value", binding.GetValue(item));
+			binding.RemoveValueChangedHandler(changeReference, valueChanged);
+		}
 	}
 }

@@ -81,6 +81,13 @@ namespace Eto.Mac.Forms.Controls
 				text.SetFrameSize(new CGSize((float)(newSize.Width - splitter.Frame.Width), (float)text.Frame.Height));
 				offset = (newSize.Height - splitter.Frame.Height) / 2;
 				splitter.SetFrameOrigin(new CGPoint(newSize.Width - splitter.Frame.Width, offset));
+
+				var h = WeakHandler?.Target as IMacViewHandler;
+				if (h == null)
+					return;
+				
+				h.OnSizeChanged(EventArgs.Empty);
+				h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 			}
 
 			public EtoNumericStepperView(NumericStepperHandler handler)
@@ -483,35 +490,13 @@ namespace Eto.Mac.Forms.Controls
 				TextField.BackgroundColor = color.Value.ToNSUI();
 		}
 
-		static readonly object CustomFieldEditorKey = new object();
-
-		public override NSObject CustomFieldEditor { get { return Widget.Properties.Get<NSObject>(CustomFieldEditorKey); } }
-
-		public void SetCustomFieldEditor()
-		{
-			if (CustomFieldEditor != null)
-				return;
-			Widget.Properties[CustomFieldEditorKey] = new CustomTextFieldEditor
-			{
-				WeakHandler = new WeakReference(this)
-			};
-		}
-
-		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
-		static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case Eto.Forms.Control.TextInputEvent:
-					SetCustomFieldEditor();
-					AddMethod(selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@", CustomFieldEditor);
-					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					SetCustomFieldEditor();
-					// lost focus is on the custom field editor, not on the control itself (it loses focus immediately due to the field editor)
-					AddMethod(selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:", CustomFieldEditor);
+					// Handled by MacFieldEditor
 					break;
 				default:
 					base.AttachEvent(id);

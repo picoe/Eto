@@ -75,6 +75,14 @@ namespace Eto.Mac.Forms.Controls
 					base.BorderType = _borderType.Value;
 			}
 			base.SetFrameSize(newSize);
+
+
+			var h = Handler as IMacViewHandler;
+			if (h == null)
+				return;
+
+			h.OnSizeChanged(EventArgs.Empty);
+			h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 		}
 	}
 
@@ -229,7 +237,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return base.Font; }
 			set
 			{
-				Widget.Properties.Set(Font_Key, value, () =>
+				Widget.Properties.Set(MacControl.Font_Key, value, () =>
 				{
 					if (value != null)
 					{

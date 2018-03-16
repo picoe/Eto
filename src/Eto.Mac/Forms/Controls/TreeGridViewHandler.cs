@@ -337,7 +337,7 @@ namespace Eto.Mac.Forms.Controls
 
 					return e.Effects.ToNS();
 				}
-				else 
+				else
 					return NSDragOperation.None;
 			}
 
@@ -408,7 +408,7 @@ namespace Eto.Mac.Forms.Controls
 						childIndex = (int?)outlineView.GetChildIndex(item);
 					else
 						childIndex = null;
-					
+
 					etoitem = h.GetEtoItem(item);
 					parent = (etoitem as ITreeGridItem)?.Parent;
 				}
@@ -693,7 +693,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (value == null)
 					Control.DeselectAll(Control);
-				else {
+				else
+				{
 
 					EtoTreeItem myitem;
 					if (cachedItems.TryGetValue(value, out myitem))
@@ -820,11 +821,11 @@ namespace Eto.Mac.Forms.Controls
 		IEnumerable<object> SelectedItemsFromRows()
 		{
 			foreach (var row in Control.SelectedRows)
-				{
-					var item = Control.ItemAtRow((nnint2)row) as EtoTreeItem;
-					if (item != null)
-						yield return item.Item;
-				}
+			{
+				var item = Control.ItemAtRow((nnint2)row) as EtoTreeItem;
+				if (item != null)
+					yield return item.Item;
+			}
 		}
 
 		public void ReloadItem(ITreeGridItem item)
@@ -859,7 +860,7 @@ namespace Eto.Mac.Forms.Controls
 				if (isSelectionChanged)
 				{
 					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-					if (!ReferenceEquals(selectedItem , SelectedItem))
+					if (!ReferenceEquals(selectedItem, SelectedItem))
 						Callback.OnSelectedItemChanged(Widget, EventArgs.Empty);
 				}
 			}
@@ -880,7 +881,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			suppressExpandCollapseEvents--;
 		}
-	
+
 		public ITreeGridItem GetCellAt(PointF location, out int column)
 		{
 			location += ScrollView.ContentView.Bounds.Location.ToEto();
@@ -940,6 +941,51 @@ namespace Eto.Mac.Forms.Controls
 
 		ITreeGridItem GetEtoItem(NSObject item) => (item as EtoTreeItem)?.Item;
 
+		public override ContextMenu ContextMenu
+		{
+			get => base.ContextMenu;
+			set
+			{
+				var old = ContextMenu;
+				if (old != null)
+				{
+					old.Opening -= ContextMenu_Opening;
+				}
+				base.ContextMenu = value;
+				if (value != null)
+				{
+					value.Opening += ContextMenu_Opening;
+				}
+			}
+		}
+
+		void ContextMenu_Closed(object sender, EventArgs e)
+		{
+			var menu = (ContextMenu)sender;
+			menu.Closed -= ContextMenu_Closed;
+
+			// action is called after this, so we can't clear selected items immediately
+			if (CustomSelectedItems != null)
+			{
+				Application.Instance.AsyncInvoke(() =>
+				{
+					CustomSelectedItems = null;
+					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+				});
+			}
+		}
+
+		void ContextMenu_Opening(object sender, EventArgs e)
+		{
+			var row = (int)Control.ClickedRow;
+			if (!SelectedRows.Contains(row))
+			{
+				var menu = (ContextMenu)sender;
+				menu.Closed += ContextMenu_Closed;
+				CustomSelectedItems = new[] { GetItem(row) };
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			}
+		}
 	}
 }
 

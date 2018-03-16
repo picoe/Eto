@@ -79,7 +79,7 @@
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
-    <Compile Include="Forms\FontDialogHandler.cs" />
+    <Compile Include="Forms\FontDialogHandlerOld.cs" />
     <Compile Include="Drawing\BitmapHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -192,7 +192,7 @@
     </Compile>
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandler.cs" />
+    <Compile Include="Forms\ColorDialogHandlerOld.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="CustomControls\BaseComboBox.cs" />
@@ -306,7 +306,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}</Project>
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>

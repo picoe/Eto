@@ -53,11 +53,11 @@ namespace Eto.Mac
 			if (color == null)
 				return Colors.Transparent;
 			var colorspace = calibrated ? NSColorSpace.CalibratedRGB : NSColorSpace.DeviceRGB;
-			var converted = color.UsingColorSpace(colorspace);
+			var converted = color.UsingColorSpaceFast(colorspace);
 			if (converted == null)
 			{
 				// Convert named (e.g. system) colors to RGB using its CGColor
-				converted = color.CGColor.ToNS().UsingColorSpace(colorspace);
+				converted = color.CGColor.ToNS().UsingColorSpaceFast(colorspace);
 				if (converted == null)
 					throw new ArgumentOutOfRangeException("color", "Color cannot be converted to an RGB colorspace");
 			}

@@ -160,15 +160,29 @@ namespace Eto.Mac.Forms.Controls
 				return item;
 			}
 
+			static IntPtr selAddItem_Handle = Selector.GetHandle("addItem:");
+
 			public override void AddRange(IEnumerable<object> items)
 			{
-				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				foreach (var item in items)
+				var control = Handler.Control;
+				var oldIndex = control.IndexOfSelectedItem;
+				NSMenu menu = control.Menu;
+
+				// xamarin.mac 2 goes really slow when adding directly.  See https://github.com/xamarin/xamarin-macios/issues/3488
+				// also, this does improve performance normally, so let's keep the hack
+				// until Xamarin.Mac supports an NSMenu.AddRange() of some sort
+				var itemList = items.ToList();
+				for (int i = 0; i < itemList.Count; i++)
 				{
-					Handler.Control.Menu.AddItem(CreateItem(item));
+					var menuItem = CreateItem(itemList[i]);
+					if (i < itemList.Count - 1)
+						Messaging.void_objc_msgSend_IntPtr(menu.Handle, selAddItem_Handle, menuItem.Handle);
+					else
+						menu.AddItem(menuItem); // use this for the last item so the item array gets referenced internally by XM.
 				}
+
 				if (oldIndex == -1)
-					Handler.Control.SelectItem(-1);
+					control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
 			}
 
