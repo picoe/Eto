@@ -44,7 +44,18 @@ namespace Eto.Mac.Forms.Menu
 		public string Text
 		{
 			get	{ return Control.Title; }
-			set { Control.SetTitleWithMnemonic(value ?? string.Empty); }
+			set
+			{
+				string title = value ?? string.Empty;
+				if (title.Length > 0)
+				{
+					title = title.Replace("&&", "\x01");
+					title = title.Replace("&", "");
+					title = title.Replace("\x01", "&");
+				}
+
+				Control.Title = title;
+			}
 		}
 
 		public string ToolTip
