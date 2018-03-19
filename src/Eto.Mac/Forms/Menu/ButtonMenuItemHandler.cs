@@ -72,7 +72,8 @@ namespace Eto.Mac.Forms.Menu
 			set
 			{ 
 				text = value;
-				Control.SetTitleWithMnemonic(value ?? string.Empty);
+
+				Control.Title = MacConversions.StripAmpersands(value ?? string.Empty);
 				if (Control.HasSubmenu)
 					Control.Submenu.Title = Control.Title;
 			}
