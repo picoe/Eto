@@ -73,15 +73,7 @@ namespace Eto.Mac.Forms.Menu
 			{ 
 				text = value;
 
-				string title = value ?? string.Empty;
-				if (title.Length > 0)
-				{
-					title = title.Replace("&&", "\x01");
-					title = title.Replace("&", "");
-					title = title.Replace("\x01", "&");
-				}
-
-				Control.Title = title;
+				Control.Title = MacConversions.StripAmpersands(value ?? string.Empty);
 				if (Control.HasSubmenu)
 					Control.Submenu.Title = Control.Title;
 			}
