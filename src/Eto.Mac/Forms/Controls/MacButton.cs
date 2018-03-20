@@ -55,7 +55,7 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetText(string text)
 		{
-			Control.SetTitleWithMnemonic(text ?? string.Empty);
+			Control.Title = MacConversions.StripAmpersands(text ?? string.Empty);
 			var color = Widget.Properties.Get<Color?>(textColorKey);
 			if (color != null)
 			{
