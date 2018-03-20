@@ -388,9 +388,13 @@ namespace Eto.Wpf.Drawing
 			get { return Widget.Properties.Get<ImageInterpolation>(ImageInterpolation_Key); }
 			set
 			{
-				Widget.Properties.Set(ImageInterpolation_Key, value, () => {
-					swm.RenderOptions.SetBitmapScalingMode(visual, value.ToWpf());
-				});
+				if (value != ImageInterpolation)
+				{
+					CloseGroup();
+					CreateGroup();
+					Widget.Properties.Set(ImageInterpolation_Key, value);
+					swm.RenderOptions.SetBitmapScalingMode(group, value.ToWpf());
+				}
 			}
 		}
 

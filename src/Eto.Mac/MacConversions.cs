@@ -522,5 +522,15 @@ namespace Eto.Mac
 		}
 
 		public static NSMenu ToNS(this ContextMenu menu) => ContextMenuHandler.GetControl(menu);
+
+		internal static string StripAmpersands(string text)
+		{
+			if (string.IsNullOrEmpty(text)) return text;
+
+			text = text.Replace("&&", "\x01");
+			text = text.Replace("&", "");
+			text = text.Replace("\x01", "&");
+			return text;
+		}
 	}
 }
