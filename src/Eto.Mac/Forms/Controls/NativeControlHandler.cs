@@ -51,7 +51,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			return Control.Frame.Size.ToEto();
+			return Control.FittingSize.ToEto();
 		}
 
 		public NativeControlHandler(NSViewController nativeControl)
