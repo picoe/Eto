@@ -145,8 +145,8 @@ namespace Eto.Forms
 			var control = client as IMacControl;
 			if (control != null)
 			{
-				var childHandler = control.WeakHandler.Target as IMacViewHandler;
-				if (childHandler != null)
+				var childHandler = control.WeakHandler?.Target as IMacViewHandler;
+				if (childHandler?.Widget != null)
 				{
 					var fieldEditor = childHandler.Widget.Properties.Get<NSObject>(FieldEditor_Key);
 					if (fieldEditor == null)
