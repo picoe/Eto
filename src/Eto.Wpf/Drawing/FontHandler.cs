@@ -15,10 +15,13 @@ namespace Eto.Wpf.Drawing
 		FontDecoration decoration;
 		sd.Font sdfont;
 
+		public static bool ShowSimulatedFonts = false;
+
 		public void Apply(swc.Control control, Action<sw.TextDecorationCollection> setDecorations)
 		{
 			control.FontFamily = WpfFamily;
 			control.FontStyle = WpfFontStyle;
+			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = PixelSize;
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
@@ -31,6 +34,7 @@ namespace Eto.Wpf.Drawing
 		{
 			control.FontFamily = WpfFamily;
 			control.FontStyle = WpfFontStyle;
+			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = PixelSize;
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
@@ -43,6 +47,7 @@ namespace Eto.Wpf.Drawing
 		{
 			control.FontFamily = WpfFamily;
 			control.FontStyle = WpfFontStyle;
+			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = PixelSize;
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
@@ -55,6 +60,7 @@ namespace Eto.Wpf.Drawing
 		{
 			control.ApplyPropertyValue(swd.TextElement.FontFamilyProperty, WpfFamily);
 			control.ApplyPropertyValue(swd.TextElement.FontStyleProperty, WpfFontStyle);
+			control.ApplyPropertyValue(swd.TextElement.FontStretchProperty, WpfFontStretch);
 			control.ApplyPropertyValue(swd.TextElement.FontWeightProperty, WpfFontWeight);
 			control.ApplyPropertyValue(swd.TextElement.FontSizeProperty, PixelSize);
 			control.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, WpfTextDecorationsFrozen);
@@ -116,6 +122,8 @@ namespace Eto.Wpf.Drawing
 
 		public sw.FontStyle WpfFontStyle { get; private set; }
 
+		public sw.FontStretch WpfFontStretch { get; private set; }
+
 		sw.TextDecorationCollection WpfTextDecorations { get; set; }
 
 		public sw.TextDecorationCollection WpfTextDecorationsFrozen { get; private set; }
@@ -135,6 +143,7 @@ namespace Eto.Wpf.Drawing
 			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
 			this.Size = PixelsToPoints(control.FontSize, control);
 			this.WpfFontStyle = control.FontStyle;
+			this.WpfFontStretch = control.FontStretch;
 			this.WpfFontWeight = control.FontWeight;
 		}
 
@@ -143,6 +152,7 @@ namespace Eto.Wpf.Drawing
 			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
 			this.Size = PixelsToPoints(control.FontSize, control);
 			this.WpfFontStyle = control.FontStyle;
+			this.WpfFontStretch = control.FontStretch;
 			this.WpfFontWeight = control.FontWeight;
 			var decorations = control.TextDecorations;
 			if (decorations != null)
@@ -158,6 +168,7 @@ namespace Eto.Wpf.Drawing
 			this.Family = new FontFamily(new FontFamilyHandler(wpfFamily));
 			Size = PixelsToPoints(range.GetPropertyValue(swd.TextElement.FontSizeProperty) as double? ?? swd.TextElement.GetFontSize(control));
 			this.WpfFontStyle = range.GetPropertyValue(swd.TextElement.FontStyleProperty) as sw.FontStyle? ?? swd.TextElement.GetFontStyle(control);
+			this.WpfFontStretch = range.GetPropertyValue(swd.TextElement.FontStretchProperty) as sw.FontStretch? ?? swd.TextElement.GetFontStretch(control);
 			this.WpfFontWeight = range.GetPropertyValue(swd.TextElement.FontWeightProperty) as sw.FontWeight? ?? swd.TextElement.GetFontWeight(control);
 			var decorations = range.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
 			if (decorations != null)
@@ -167,11 +178,12 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
-		public FontHandler(swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
+		public FontHandler(swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight, sw.FontStretch stretch)
 		{
 			Family = new FontFamily(new FontFamilyHandler(family));
 			Size = size;
 			WpfFontStyle = style;
+			WpfFontStretch = stretch;
 			WpfFontWeight = weight;
 		}
 
@@ -189,6 +201,7 @@ namespace Eto.Wpf.Drawing
 			Family = typeface.Family;
 			Size = size;
 			WpfFontWeight = WpfTypeface.Weight;
+			WpfFontStretch = WpfTypeface.Stretch;
 			WpfFontStyle = WpfTypeface.Style;
 			SetDecorations(decoration);
 		}
@@ -198,6 +211,8 @@ namespace Eto.Wpf.Drawing
 			WpfFontWeight = style.HasFlag(FontStyle.Bold) ? sw.FontWeights.Bold : sw.FontWeights.Normal;
 
 			WpfFontStyle = style.HasFlag(FontStyle.Italic) ? sw.FontStyles.Italic : sw.FontStyles.Normal;
+
+			WpfFontStretch = sw.FontStretches.Normal;
 		}
 
 		void SetDecorations(FontDecoration decoration)
@@ -213,6 +228,7 @@ namespace Eto.Wpf.Drawing
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
+			WpfFontStretch = sw.FontStretches.Normal;
 			switch (systemFont)
 			{
 				case SystemFont.Label:
@@ -266,7 +282,7 @@ namespace Eto.Wpf.Drawing
 			{
 				if (typeface == null)
 				{
-					typeface = new FontTypeface(Family, new FontTypefaceHandler(new swm.Typeface(WpfFamily, WpfFontStyle, WpfFontWeight, sw.FontStretches.Normal)));
+					typeface = new FontTypeface(Family, new FontTypefaceHandler(new swm.Typeface(WpfFamily, WpfFontStyle, WpfFontWeight, WpfFontStretch)));
 				}
 				return typeface;
 			}

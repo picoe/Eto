@@ -10,10 +10,13 @@ using System.Windows.Threading;
 
 namespace Eto.Wpf.CustomControls.FontDialog
 {
-    /// <summary>
-    /// Interaction logic for FontChooser.xaml
-    /// </summary>
-    public partial class FontChooser : Window
+	/// <summary>
+	/// Interaction logic for FontChooser.xaml
+	/// </summary>
+	/// <remarks>
+	/// Initially from https://github.com/Microsoft/WPF-Samples, MIT license.
+	/// </remarks>
+	public partial class FontChooser : Window
     {
         #region Private fields and types
 
@@ -1254,16 +1257,16 @@ namespace Eto.Wpf.CustomControls.FontDialog
             {
                 ICollection<Typeface> faceCollection = family.GetTypefaces();
 
-                var items = new TypefaceListItem[faceCollection.Count];
-
-                int i = 0;
+				var items = new List<TypefaceListItem>(faceCollection.Count);
 
                 foreach (Typeface face in faceCollection)
                 {
-                    items[i++] = new TypefaceListItem(face);
+					if (!Drawing.FontHandler.ShowSimulatedFonts && (face.IsBoldSimulated || face.IsObliqueSimulated))
+						continue;
+                    items.Add(new TypefaceListItem(face));
                 }
 
-                Array.Sort<TypefaceListItem>(items);
+				items.Sort();
 
                 foreach (TypefaceListItem item in items)
                 {

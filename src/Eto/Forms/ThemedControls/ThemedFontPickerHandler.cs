@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Eto.Drawing;
 
 namespace Eto.Forms.ThemedControls
@@ -38,7 +40,27 @@ namespace Eto.Forms.ThemedControls
 
 		private void Refresh()
 		{
-			Control.Text = font == null ? "None" : font.FamilyName + " " + font.Size;
+			Control.Text = GetText();
+		}
+
+		static List<string> defaultNames = new List<string> { "Normal", "Regular", "None" };
+
+		private string GetText()
+		{
+			if (font == null)
+				return "None";
+
+			var sb = new StringBuilder();
+			sb.Append(font.Family.LocalizedName);
+			var typeface = font.Typeface;
+			if (!defaultNames.Contains(typeface.Name))
+			{
+				sb.Append(" ");
+				sb.Append(typeface.Name);
+			}
+			sb.Append(" ");
+			sb.Append(font.Size);
+			return sb.ToString();
 		}
 
 		private void Control_Click(object sender, EventArgs e)

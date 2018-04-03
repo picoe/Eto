@@ -395,6 +395,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				var handler = ((FontHandler)value?.Handler);
 				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, handler?.WpfFamily);
+				SetSelectionAttribute(swd.TextElement.FontStretchProperty, handler?.WpfFontStretch);
 				SetSelectionAttribute(swd.TextElement.FontStyleProperty, handler?.WpfFontStyle);
 				SetSelectionAttribute(swd.TextElement.FontWeightProperty, handler?.WpfFontWeight);
 				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.PixelSize);
@@ -408,6 +409,19 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, ((FontFamilyHandler)value?.Handler)?.Control);
+			}
+		}
+
+		public FontTypeface SelectionTypeface
+		{
+			get { return new FontTypeface(SelectionFamily, new FontTypefaceHandler(Control.Selection, Control)); }
+			set
+			{
+				var typeface = (value?.Handler as FontTypefaceHandler)?.Control;
+				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, typeface?.FontFamily ?? Control.FontFamily);
+				SetSelectionAttribute(swd.TextElement.FontStyleProperty, typeface?.Style);
+				SetSelectionAttribute(swd.TextElement.FontStretchProperty, typeface?.Stretch);
+				SetSelectionAttribute(swd.TextElement.FontWeightProperty, typeface?.Weight);
 			}
 		}
 

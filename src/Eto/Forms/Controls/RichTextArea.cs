@@ -250,6 +250,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the font typeface of the selected text or insertion point.
+		/// </summary>
+		/// <value>The font typeface of the selected text.</value>
+		public FontTypeface SelectionTypeface
+		{
+			get { return Handler.SelectionTypeface; }
+			set { Handler.SelectionTypeface = value; }
+		}
+
+		/// <summary>
 		/// Gets the formatted text buffer to set formatting and load/save to file.
 		/// </summary>
 		/// <remarks>
@@ -335,6 +345,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The font family of the selected text.</value>
 			FontFamily SelectionFamily { get; set; }
+
+			/// <summary>
+			/// Gets or sets the font typeface of the selected text or insertion point.
+			/// </summary>
+			/// <value>The font typeface of the selected text.</value>
+			FontTypeface SelectionTypeface { get; set; }
 		}
 	}
 }

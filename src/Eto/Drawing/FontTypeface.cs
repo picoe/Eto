@@ -14,7 +14,7 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class FontTypeface : Widget
 	{
-		new IHandler Handler  { get { return (IHandler)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets the family of this typeface
@@ -42,7 +42,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public bool Bold
 		{
-			get { return FontStyle.HasFlag (FontStyle.Bold); }
+			get { return FontStyle.HasFlag(FontStyle.Bold); }
 		}
 
 		/// <summary>
@@ -50,7 +50,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public bool Italic
 		{
-			get { return FontStyle.HasFlag (FontStyle.Italic); }
+			get { return FontStyle.HasFlag(FontStyle.Italic); }
 		}
 
 		/// <summary>
@@ -72,9 +72,73 @@ namespace Eto.Drawing
 		/// Gets a string representation of this typeface
 		/// </summary>
 		/// <returns>A string representation of this typeface</returns>
-		public override string ToString ()
+		public override string ToString()
 		{
 			return Name;
+		}
+
+		/// <summary>
+		/// Tests this instance for equality with another font typeface
+		/// </summary>
+		/// <remarks>
+		/// Font typefaces are considered equal if the names are the same
+		/// </remarks>
+		/// <param name="other">Other font typeface to test</param>
+		/// <returns>True if the typefaces are equal, false otherwise</returns>
+		public bool Equals(FontTypeface other)
+		{
+			return other == this;
+		}
+
+		/// <summary>
+		/// Tests two FontTypeface objects for equality
+		/// </summary>
+		/// <remarks>
+		/// Font typefaces are considered equal if the names and font typefaces are the same
+		/// </remarks>
+		/// <param name="value1">First font typeface to test</param>
+		/// <param name="value2">Second font typeface to test</param>
+		/// <returns>True if the font families are equal, false otherwise</returns>
+		public static bool operator ==(FontTypeface value1, FontTypeface value2)
+		{
+			if (ReferenceEquals(value1, value2))
+				return true;
+			if (ReferenceEquals(value1, null) || ReferenceEquals(value2, null))
+				return false;
+			return value1.Name == value2.Name;
+		}
+
+		/// <summary>
+		/// Tests two FontTypeface objects for inequality
+		/// </summary>
+		/// <param name="value1">First font typeface to test</param>
+		/// <param name="value2">Second font typeface to test</param>
+		/// <returns>True if the font typefaces are not equal, false otherwise</returns>
+		public static bool operator !=(FontTypeface value1, FontTypeface value2)
+		{
+			return !(value1 == value2);
+		}
+
+		/// <summary>
+		/// Gets the hash code for this instance
+		/// </summary>
+		/// <returns>Hash code for this instance</returns>
+		public override int GetHashCode()
+		{
+			var hash = 23;
+			hash = hash * 31 + Family.GetHashCode();
+			hash = hash * 31 & Name.GetHashCode();
+			return hash;
+		}
+
+		/// <summary>
+		/// Tests if this instance is equal to the specified object
+		/// </summary>
+		/// <param name="obj">Object to test with</param>
+		/// <returns>True if the specified object is a FontTypeface and is equal to this instance</returns>
+		public override bool Equals(object obj)
+		{
+			return this == obj as FontTypeface;
 		}
 
 		/// <summary>

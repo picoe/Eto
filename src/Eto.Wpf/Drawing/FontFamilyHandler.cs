@@ -55,15 +55,19 @@ namespace Eto.Wpf.Drawing
 
 		public string Name { get; set; }
 
+
+		static readonly object LocalizedName_Key = new object();
+
 		public string LocalizedName
 		{
 			get
 			{
-				var lang = sw.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.Name);
-				string name;
-				if (!Control.FamilyNames.TryGetValue(lang, out name))
-					name = Name;
-				return name;
+				if (Widget.Properties.ContainsKey(LocalizedName_Key))
+					return Widget.Properties.Get<string>(LocalizedName_Key);
+
+				var localizedName = CustomControls.FontDialog.NameDictionaryHelper.GetDisplayName(Control.FamilyNames);
+				Widget.Properties.Set(LocalizedName_Key, localizedName);
+				return localizedName;
 			}
 		}
 
@@ -71,19 +75,11 @@ namespace Eto.Wpf.Drawing
 		{
 			get {
 				foreach (var type in Control.GetTypefaces ()) {
+					if (!FontHandler.ShowSimulatedFonts && (type.IsBoldSimulated || type.IsObliqueSimulated))
+						continue;
 					yield return new FontTypeface(Widget, new FontTypefaceHandler (type));
 				}
 			}
-		}
-
-		public FontTypeface GetFamilyTypeface (sw.FontStyle fontStyle, sw.FontWeight fontWeight)
-		{
-			var typefaces = Control.GetTypefaces ();
-			foreach (var type in typefaces) {
-				if (type.Style == fontStyle && type.Weight == fontWeight)
-					return new FontTypeface(Widget, new FontTypefaceHandler (type));
-			}
-			return new FontTypeface(Widget, new FontTypefaceHandler (typefaces.First ()));
 		}
 
 		public void Apply(sw.Documents.TextRange control)

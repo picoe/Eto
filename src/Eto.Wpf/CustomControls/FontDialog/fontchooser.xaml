@@ -176,7 +176,7 @@
         <!-- Row 3: OK and Cancel buttons -->
         <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0" Width="196">
             <Button Content="OK" Width="86" IsDefault="True" Click="OnOKButtonClicked" Margin="6,0"/>
-            <Button Content="Cancel" Width="86" Click="OnCancelButtonClicked" Margin="6,0"/>
+            <Button Content="Cancel" Width="86" Click="OnCancelButtonClicked" Margin="6,0" IsCancel="True"/>
         </StackPanel>
 
     </Grid>
