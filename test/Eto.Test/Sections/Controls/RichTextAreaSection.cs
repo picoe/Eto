@@ -77,32 +77,34 @@ namespace Eto.Test.Sections.Controls
 			foregroundButton.ValueBinding.Bind(richText, r => r.SelectionForeground);
 			foregroundButton.ValueChanged += (sender, e) => richText.Focus();
 
-			var fontButton = new Button();
-			fontButton.Bind(c => c.Text, new DelegateBinding<string>(() =>
+			var fontButton = new FontPicker();
+			fontButton.ValueBinding.Bind(richText, r => r.SelectionFont);
+			fontButton.ValueChanged += (sender, e) =>
 			{
-				var font = richText.SelectionFont;
-				if (font == null)
-					return "<No Font>";
-				return string.Format("{0}, {1}, {2:0.00}pt", font.FamilyName, font.Typeface.Name, font.Size);
-			}));
-			var fd = new FontDialog();
-			fontButton.Click += (sender, e) =>
+				richText.Focus();
+				UpdateBindings(BindingUpdateMode.Destination);
+			};
+
+			var typefaceDropDown = new DropDown();
+			typefaceDropDown.ItemKeyBinding = Binding.Property((FontTypeface f) => f.Name);
+			typefaceDropDown.DataStore = richText.SelectionFamily.Typefaces;
+			var tyepfaceBinding = typefaceDropDown.SelectedValueBinding.Bind(richText, r => r.SelectionTypeface);
+			typefaceDropDown.SelectedValueChanged += (sender, e) =>
 			{
-				fd.Font = richText.SelectionFont;
-				fd.FontChanged += (s, ee) =>
-				{
-					richText.SelectionFont = fd.Font;
-					UpdateBindings(BindingUpdateMode.Destination);
-				};
-				if (fd.ShowDialog(this) == DialogResult.Ok)
-					richText.Focus();
+				richText.Focus();
+				UpdateBindings(BindingUpdateMode.Destination);
 			};
 
 			var familyDropDown = new DropDown();
-			familyDropDown.DataStore = Fonts.AvailableFontFamilies.OrderBy(r => r.Name);
+			familyDropDown.ItemTextBinding = Binding.Property((FontFamily f) => f.LocalizedName);
+			familyDropDown.DataStore = Fonts.AvailableFontFamilies.OrderBy(r => r.LocalizedName);
 			familyDropDown.SelectedValueBinding.Bind(richText, r => r.SelectionFamily);
 			familyDropDown.SelectedValueChanged += (sender, e) =>
 			{
+				var family = familyDropDown.SelectedValue as FontFamily;
+				//tyepfaceBinding.Mode = DualBindingMode.Manual;
+				typefaceDropDown.DataStore = family?.Typefaces;
+				//tyepfaceBinding.Mode = DualBindingMode.TwoWay;
 				richText.Focus();
 				UpdateBindings(BindingUpdateMode.Destination);
 			};
@@ -167,6 +169,7 @@ namespace Eto.Test.Sections.Controls
 				    null,
 				    fontButton,
 				    familyDropDown,
+					typefaceDropDown,
 				    null
 				}
 			};
