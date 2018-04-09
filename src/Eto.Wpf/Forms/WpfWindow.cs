@@ -179,7 +179,7 @@ namespace Eto.Wpf.Forms
 					}
 					SetupPerMonitorDpi();
 					if (dpiHelper != null)
-						dpiHelper.ScaleChanged += (sender, e) => Callback.OnLogicalPixelSizeChanged(Widget, EventArgs.Empty);
+						dpiHelper.ScaleChanged += HandleLogicalPixelSizeChanged;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -187,9 +187,21 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		static readonly object LastPixelSize_Key = new object();
+
+		float LastPixelSize
+		{
+			get => Widget.Properties.Get<float>(LastPixelSize_Key);
+			set => Widget.Properties.Set(LastPixelSize_Key, value);
+		}
+
 		void HandleLogicalPixelSizeChanged(object sender, EventArgs e)
 		{
-			Callback.OnLogicalPixelSizeChanged(Widget, EventArgs.Empty);
+			if (LastPixelSize != LogicalPixelSize)
+			{
+				Callback.OnLogicalPixelSizeChanged(Widget, EventArgs.Empty);
+				LastPixelSize = LogicalPixelSize;
+			}
 		}
 
 		static bool IsApplicationClosing { get; set; }

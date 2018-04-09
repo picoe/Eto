@@ -10,7 +10,7 @@ namespace Eto.GtkSharp.Drawing
 	{
 		public string Name { get; set; }
 
-		public string LocalizedName { get { return Control?.Name ?? Name; } }
+		public string LocalizedName => Control?.Name ?? Name;
 
 		public IEnumerable<FontTypeface> Typefaces
 		{
@@ -32,6 +32,15 @@ namespace Eto.GtkSharp.Drawing
 			var family = GetFontFamily(familyName);
 			if (family == null)
 			{
+				if (EtoEnvironment.Platform.IsMac && familyName == ".AppleSystemUIFont")
+				{
+					// Hack to map to .SF NS Text on macOS.
+					// currently only works in Gtk2 as the system font isn't mapped.
+					family = GetFontFamily(".SF NS Text");
+					if (family != null)
+						return family;
+				}
+
 				// HACK: Sometimes font description is not actually valid?
 				familyName = familyName.TrimStart('.');
 				family = GetFontFamily(familyName);
@@ -74,7 +83,7 @@ namespace Eto.GtkSharp.Drawing
 				default:
 					Control = FindCorrectedFamily(familyName);
 					if (Control == null)
-						throw new ArgumentOutOfRangeException("familyName", familyName, string.Format(CultureInfo.CurrentCulture, "Font Family specified is not supported by this system"));
+						throw new ArgumentOutOfRangeException(nameof(familyName), familyName, "Font Family specified is not supported by this system");
 					Name = Control.Name;
 					break;
 			}
@@ -93,6 +102,8 @@ namespace Eto.GtkSharp.Drawing
 
 		public static Pango.FontFamily GetFontFamily(string familyName)
 		{
+			if (string.IsNullOrEmpty(familyName))
+				return null;
 			return FontsHandler.Context.Families.FirstOrDefault(r => string.Equals(r.Name, familyName, StringComparison.InvariantCultureIgnoreCase));
 		}
 	}

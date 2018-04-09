@@ -125,15 +125,21 @@ namespace Eto.WinForms.Forms.Controls
 
 		public FontFamily SelectionFamily
 		{
-			get
-			{
-				var font = Control.SelectionFont;
-				return font != null ? font.FontFamily.ToEto() : null;
-			}
+			get => Control.SelectionFont?.FontFamily.ToEto();
 			set
 			{
 				var family = value.ToSD();
 				SetSelectionFontStyle(font => new sd.Font(family, font.Size, font.Style));
+			}
+		}
+
+		public FontTypeface SelectionTypeface
+		{
+			get => SelectionFont.Typeface;
+			set
+			{
+				var fontStyle = value.ToSD();
+				SetSelectionFontStyle(font => new sd.Font(font.FontFamily, font.Size, fontStyle));
 			}
 		}
 
