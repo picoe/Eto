@@ -14,14 +14,15 @@ namespace Eto.GtkSharp.Forms.Controls
 		List<Gtk.TextTag> insertTags = new List<Gtk.TextTag>();
 		List<Gtk.TextTag> removeTags = new List<Gtk.TextTag>();
 
-		const string WeightTagName = "w";
-		const string StyleTagName = "s";
-		const string UnderlineTagName = "u";
-		const string StrikethroughTagName = "t";
-		const string FontTagName = "f";
-		const string ForegroundTagName = "fg";
-		const string BackgroundTagName = "bg";
-		const string FamilyTagName = "fm";
+		const string WeightTagPrefix = "w-";
+		const string StyleTagPrefix = "s-";
+		const string StretchTagPrefix = "h-";
+		const string UnderlineTagPrefix = "u-";
+		const string StrikethroughTagPrefix = "t-";
+		const string FontSizePrefix = "f-";
+		const string ForegroundTagPrefix = "fg-";
+		const string BackgroundTagPrefix = "bg-";
+		const string FamilyTagPrefix = "fm-";
 
 		bool keepTags;
 
@@ -64,9 +65,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			keepTags = true;
 		}
 
-		void ApplySelectionTag(string name, string variation, Action<Gtk.TextTag> apply)
+		void ApplySelectionTag(string prefix, string variation, Action<Gtk.TextTag> apply)
 		{
-			var prefix = name + "-";
 			var tagName = prefix + variation;
 
 			Gtk.TextIter start, end;
@@ -74,7 +74,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (buffer.GetSelectionBounds(out start, out end))
 			{
 				// apply formatting to the selection
-				ApplyTag(name, variation, start, end, apply);
+				ApplyTag(prefix, variation, start, end, apply);
 			}
 			else
 			{
@@ -98,10 +98,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		void ApplyTag(string name, string variation, Gtk.TextIter start, Gtk.TextIter end, Action<Gtk.TextTag> apply)
+		void ApplyTag(string prefix, string variation, Gtk.TextIter start, Gtk.TextIter end, Action<Gtk.TextTag> apply)
 		{
 			var buffer = Control.Buffer;
-			var prefix = name + "-";
 			var tagName = prefix + variation;
 			var tagsToRemove = new List<Gtk.TextTag>();
 			buffer.TagTable.Foreach(t =>
@@ -124,43 +123,23 @@ namespace Eto.GtkSharp.Forms.Controls
 			buffer.ApplyTag(tag, start, end);
 		}
 
-		void ApplyTag(string name, string variation, Range<int> range, Action<Gtk.TextTag> apply)
+		void ApplyTag(string prefix, string variation, Range<int> range, Action<Gtk.TextTag> apply)
 		{
 			var buffer = Control.Buffer;
 			var start = buffer.GetIterAtOffset(range.Start);
 			var end = buffer.GetIterAtOffset(range.End + 1);
-			ApplyTag(name, variation, start, end, apply);
+			ApplyTag(prefix, variation, start, end, apply);
 		}
 
-		bool HasFontAttribute(Func<Pango.FontDescription, bool> hasAttribute)
+		bool SelectionHasTag(string prefix, string variation)
 		{
-			var selection = SelectionIter;
-			const string prefix = FontTagName + "-";
-			var fontTag = selection.Tags.LastOrDefault(r => r.Name != null && r.Name.StartsWith(prefix, StringComparison.Ordinal));
-			if (fontTag == null)
-				fontTag = insertTags.LastOrDefault(r => r.Name != null && r.Name.StartsWith(prefix, StringComparison.Ordinal));
-			return fontTag != null && hasAttribute(fontTag.FontDesc);
-		}
-
-		Gtk.TextTag GetSelectionTag(string name)
-		{
-			var prefix = name + "-";
-			var selection = SelectionIter;
-			return selection.Tags.FirstOrDefault(r => r.Name != null && r.Name.StartsWith(prefix, StringComparison.Ordinal)) 
-				?? insertTags.FirstOrDefault(r => r.Name != null && r.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
-		}
-
-		bool SelectionHasTag(string name, string variation)
-		{
-			var prefix = name + "-";
 			var tagName = prefix + variation;
 			var selection = SelectionIter;
 			return selection.Tags.Any(r => r.Name == tagName) || insertTags.Any(r => r.Name == tagName);
 		}
 
-		bool SelectionHasTag(string name, IEnumerable<string> variations)
+		bool SelectionHasTag(string prefix, IEnumerable<string> variations)
 		{
-			var prefix = name + "-";
 			var tags = variations.Select(r => prefix + r).ToList();
 			var selection = SelectionIter;
 			return selection.Tags.Any(r => tags.Contains(r.Name)) || insertTags.Any(r => tags.Contains(r.Name));
@@ -170,25 +149,27 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var pangoFont = font.ToPango();
 			var variation = pangoFont != null ? pangoFont.Handle.ToString() : string.Empty;
-			ApplyTag(FamilyTagName, pangoFont.Family, range, tag =>
+			ApplyTag(FamilyTagPrefix, pangoFont.Family, range, tag =>
 			{
 				tag.Family = pangoFont.Family;
 				tag.FamilySet = true;
 			});
-			ApplyTag(FontTagName, variation, range, tag =>
+			ApplyTag(FontSizePrefix, pangoFont.Size.ToString(), range, tag =>
 			{
 				tag.Size = pangoFont.Size;
 				tag.SizeSet = true;
+			});
+			ApplyTag(StretchTagPrefix, variation, range, tag =>
+			{
 				tag.Stretch = pangoFont.Stretch;
 				tag.StretchSet = true;
-
 			});
-			ApplyTag(StyleTagName, pangoFont.Style.ToString(), range, tag =>
+			ApplyTag(StyleTagPrefix, pangoFont.Style.ToString(), range, tag =>
 			{
 				tag.Style = pangoFont.Style;
 				tag.StyleSet = true;
 			});
-			ApplyTag(WeightTagName, pangoFont.Weight.ToString(), range, tag =>
+			ApplyTag(WeightTagPrefix, pangoFont.Weight.ToString(), range, tag =>
 			{
 				tag.Weight = pangoFont.Weight;
 				tag.WeightSet = true;
@@ -200,17 +181,26 @@ namespace Eto.GtkSharp.Forms.Controls
 		public void SetFamily(Range<int> range, FontFamily family)
 		{
 			var pangoFamily = family.ToPango().Name;
-			ApplyTag(FamilyTagName, pangoFamily, range, tag =>
+			ApplyTag(FamilyTagPrefix, pangoFamily, range, tag =>
 			{
 				tag.Family = pangoFamily;
 				tag.FamilySet = true;
 			});
 		}
 
+		public void SetTypeface(Range<int> range, FontTypeface typeface)
+		{
+			var pangoFace = typeface.ToPango();
+			ApplyTag(FamilyTagPrefix, pangoFace.FaceName, range, tag =>
+			{
+				tag.Family = pangoFace.FaceName;
+				tag.FamilySet = true;
+			});
+		}
 
 		public void SetForeground(Range<int> range, Color color)
 		{
-			ApplyTag(ForegroundTagName, color.ToArgb().ToString(), range, tag =>
+			ApplyTag(ForegroundTagPrefix, color.ToArgb().ToString(), range, tag =>
 			{
 				tag.ForegroundGdk = color.ToGdk();
 				tag.ForegroundSet = true;
@@ -219,7 +209,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void SetBackground(Range<int> range, Color color)
 		{
-			ApplyTag(BackgroundTagName, color.ToArgb().ToString(), range, tag =>
+			ApplyTag(BackgroundTagPrefix, color.ToArgb().ToString(), range, tag =>
 			{
 				tag.BackgroundGdk = color.ToGdk();
 				tag.BackgroundSet = true;
@@ -229,7 +219,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public void SetBold(Range<int> range, bool bold)
 		{
 			var weight = bold ? Pango.Weight.Bold : Pango.Weight.Normal;
-			ApplyTag(WeightTagName, weight.ToString(), range, tag =>
+			ApplyTag(WeightTagPrefix, weight.ToString(), range, tag =>
 			{
 				tag.Weight = weight;
 				tag.WeightSet = true;
@@ -239,7 +229,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public void SetItalic(Range<int> range, bool italic)
 		{
 			var style = italic ? Pango.Style.Italic : Pango.Style.Normal;
-			ApplyTag(StyleTagName, style.ToString(), range, tag =>
+			ApplyTag(StyleTagPrefix, style.ToString(), range, tag =>
 			{
 				tag.Style = style;
 				tag.StyleSet = true;
@@ -248,7 +238,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void SetUnderline(Range<int> range, bool underline)
 		{
-			ApplyTag(UnderlineTagName, underline.ToString(), range, tag =>
+			ApplyTag(UnderlineTagPrefix, underline.ToString(), range, tag =>
 			{
 				tag.Underline = underline ? Pango.Underline.Single : Pango.Underline.None;
 				tag.UnderlineSet = true;
@@ -257,7 +247,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void SetStrikethrough(Range<int> range, bool strikethrough)
 		{
-			ApplyTag(StrikethroughTagName, strikethrough.ToString(), range, tag =>
+			ApplyTag(StrikethroughTagPrefix, strikethrough.ToString(), range, tag =>
 			{
 				tag.Strikethrough = strikethrough;
 				tag.StrikethroughSet = true;
@@ -283,15 +273,20 @@ namespace Eto.GtkSharp.Forms.Controls
 			Pango.Weight.Ultrabold
 		};
 
+		Gtk.TextTag GetTag(string prefix) => SelectionIter.Tags.LastOrDefault(r => r.Name != null && r.Name.StartsWith(prefix, StringComparison.Ordinal))
+					?? insertTags.LastOrDefault(r => r.Name != null && r.Name.StartsWith(prefix, StringComparison.Ordinal));
+
 		public Font SelectionFont
 		{
 			get
 			{
-				const string prefix = FontTagName + "-";
-				var weightTag = GetSelectionTag(WeightTagName);
-				var weight = weightTag != null ? weightTag.Weight : Pango.Weight.Normal;
-				var styleTag = GetSelectionTag(StyleTagName);
-				var style = styleTag != null ? styleTag.Style : Pango.Style.Normal;
+				var weightTag = GetTag(WeightTagPrefix);
+				var weight = weightTag?.WeightSet == true ? weightTag.Weight : Pango.Weight.Normal;
+				var styleTag = GetTag(StyleTagPrefix);
+				var style = styleTag?.StyleSet == true ? styleTag.Style : Pango.Style.Normal;
+				var stretchTag = GetTag(StretchTagPrefix);
+				var stretch = stretchTag?.StretchSet == true ? stretchTag.Stretch : Pango.Stretch.Normal;
+
 				var decoration = FontDecoration.None;
 				if (SelectionUnderline)
 					decoration |= FontDecoration.Underline;
@@ -300,24 +295,13 @@ namespace Eto.GtkSharp.Forms.Controls
 				Pango.FontDescription fontDesc = null;
 
 				Pango.FontFamily family = null;
-				Pango.Stretch stretch = Pango.Stretch.Normal;
 
-				const string familyPrefix = FamilyTagName + "-";
-				var familyTag = SelectionIter.Tags.LastOrDefault(r => r.Name.StartsWith(familyPrefix, StringComparison.Ordinal))
-					?? insertTags.LastOrDefault(r => r.Name.StartsWith(familyPrefix, StringComparison.Ordinal));
-				if (familyTag != null)
+				var familyTag = GetTag(FamilyTagPrefix);
+				if (familyTag?.FamilySet == true)
 					family = FontFamilyHandler.GetFontFamily(familyTag.Family);
-
-				var tag = SelectionIter.Tags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal))
-					?? insertTags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal));
-				if (family == null && tag != null && tag.FamilySet)
-				{
-					family = FontFamilyHandler.GetFontFamily(tag.Family);
-					if (tag.StretchSet)
-						stretch = tag.Stretch;
-				}
 				if (family == null)
 					family = Font.Family.ToPango();
+
 
 				foreach (var face in family.Faces)
 				{
@@ -329,24 +313,41 @@ namespace Eto.GtkSharp.Forms.Controls
 					}
 				}
 				if (fontDesc == null)
-					fontDesc = family.Faces[0].Describe();
-				fontDesc.Size = tag != null ? tag.Size : (int)(Font.Size * Pango.Scale.PangoScale);
+					fontDesc = family.Faces[0]?.Describe();
+				var fontSizeTag = GetTag(FontSizePrefix);
+				fontDesc.Size = fontSizeTag != null ? fontSizeTag.Size : (int)(Font.Size * Pango.Scale.PangoScale);
 				return new Font(new FontHandler(fontDesc, decorations: decoration));
 			}
 			set
 			{
 				var pangoFont = value.ToPango();
 				var variation = pangoFont != null ? pangoFont.Handle.ToString() : string.Empty;
-				ApplySelectionTag(FontTagName, variation, tag => {
+				ApplySelectionTag(FamilyTagPrefix, pangoFont.Family, tag =>
+				{
 					tag.Family = pangoFont.Family;
 					tag.FamilySet = true;
+				});
+				ApplySelectionTag(FontSizePrefix, variation, tag =>
+				{
 					tag.Size = pangoFont.Size;
 					tag.SizeSet = true;
+				});
+				ApplySelectionTag(StretchTagPrefix, pangoFont.Stretch.ToString(), tag =>
+				{
 					tag.Stretch = pangoFont.Stretch;
 					tag.StretchSet = true;
 				});
-				SelectionBold = value.Bold;
-				SelectionItalic = value.Italic;
+				ApplySelectionTag(WeightTagPrefix, pangoFont.Weight.ToString(), tag =>
+				{
+					tag.Weight = pangoFont.Weight;
+					tag.WeightSet = true;
+				});
+				ApplySelectionTag(StyleTagPrefix, pangoFont.Style.ToString(), tag =>
+				{
+					tag.Style = pangoFont.Style;
+					tag.StyleSet = true;
+				});
+
 				SelectionUnderline = value.FontDecoration.HasFlag(FontDecoration.Underline);
 				SelectionStrikethrough = value.FontDecoration.HasFlag(FontDecoration.Strikethrough);
 			}
@@ -365,7 +366,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			set
 			{
-				ApplySelectionTag(ForegroundTagName, value.ToArgb().ToString(), tag =>
+				ApplySelectionTag(ForegroundTagPrefix, value.ToArgb().ToString(), tag =>
 				{
 					tag.ForegroundGdk = value.ToGdk();
 					tag.ForegroundSet = true;
@@ -386,7 +387,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			set
 			{
-				ApplySelectionTag(BackgroundTagName, value.ToArgb().ToString(), tag =>
+				ApplySelectionTag(BackgroundTagPrefix, value.ToArgb().ToString(), tag =>
 				{
 					tag.BackgroundGdk = value.ToGdk();
 					tag.BackgroundSet = true;
@@ -398,12 +399,12 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				return SelectionHasTag(WeightTagName, boldWeights.Select(r => r.ToString()));
+				return SelectionHasTag(WeightTagPrefix, boldWeights.Select(r => r.ToString()));
 			}
 			set
 			{
 				var weight = value ? Pango.Weight.Bold : Pango.Weight.Normal;
-				ApplySelectionTag(WeightTagName, weight.ToString(), tag =>
+				ApplySelectionTag(WeightTagPrefix, weight.ToString(), tag =>
 				{
 					tag.Weight = weight;
 					tag.WeightSet = true;
@@ -415,12 +416,12 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				return SelectionHasTag(StyleTagName, new [] { Pango.Style.Italic.ToString(), Pango.Style.Oblique.ToString() });
+				return SelectionHasTag(StyleTagPrefix, new[] { Pango.Style.Italic.ToString(), Pango.Style.Oblique.ToString() });
 			}
 			set
 			{
 				var style = value ? Pango.Style.Italic : Pango.Style.Normal;
-				ApplySelectionTag(StyleTagName, style.ToString(), tag =>
+				ApplySelectionTag(StyleTagPrefix, style.ToString(), tag =>
 				{
 					tag.Style = style;
 					tag.StyleSet = true;
@@ -430,10 +431,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public bool SelectionUnderline
 		{
-			get { return SelectionHasTag(UnderlineTagName, true.ToString()); }
+			get { return SelectionHasTag(UnderlineTagPrefix, true.ToString()); }
 			set
 			{
-				ApplySelectionTag(UnderlineTagName, value.ToString(), tag =>
+				ApplySelectionTag(UnderlineTagPrefix, value.ToString(), tag =>
 				{
 					tag.Underline = value ? Pango.Underline.Single : Pango.Underline.None;
 					tag.UnderlineSet = true;
@@ -443,10 +444,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public bool SelectionStrikethrough
 		{
-			get { return SelectionHasTag(StrikethroughTagName, true.ToString()); }
+			get { return SelectionHasTag(StrikethroughTagPrefix, true.ToString()); }
 			set
 			{
-				ApplySelectionTag(StrikethroughTagName, value.ToString(), tag =>
+				ApplySelectionTag(StrikethroughTagPrefix, value.ToString(), tag =>
 				{
 					tag.Strikethrough = value;
 					tag.StrikethroughSet = true;
@@ -458,9 +459,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				const string prefix = FamilyTagName + "-";
-				var tag = SelectionIter.Tags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal))
-					?? insertTags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal));
+				var tag = GetTag(FamilyTagPrefix);
 				if (tag != null)
 				{
 					var family = FontFamilyHandler.GetFontFamily(tag.Family);
@@ -471,10 +470,41 @@ namespace Eto.GtkSharp.Forms.Controls
 			set
 			{
 				var pangoFamily = value.ToPango().Name;
-				ApplySelectionTag(FamilyTagName, pangoFamily, tag =>
+				ApplySelectionTag(FamilyTagPrefix, pangoFamily, tag =>
 				{
 					tag.Family = pangoFamily;
 					tag.FamilySet = true;
+				});
+			}
+		}
+
+		public FontTypeface SelectionTypeface
+		{
+			get => SelectionFont.Typeface;
+			set
+			{
+				if (value == null)
+					return;
+				var pangoDesc = value.ToPango().Describe();
+				ApplySelectionTag(FamilyTagPrefix, pangoDesc.Family, tag =>
+				{
+					tag.Family = pangoDesc.Family;
+					tag.FamilySet = true;
+				});
+				ApplySelectionTag(StyleTagPrefix, pangoDesc.Style.ToString(), tag =>
+				{
+					tag.Style = pangoDesc.Style;
+					tag.StyleSet = true;
+				});
+				ApplySelectionTag(WeightTagPrefix, pangoDesc.Weight.ToString(), tag =>
+				{
+					tag.Weight = pangoDesc.Weight;
+					tag.WeightSet = true;
+				});
+				ApplySelectionTag(StretchTagPrefix, pangoDesc.Stretch.ToString(), tag =>
+				{
+					tag.Stretch = pangoDesc.Stretch;
+					tag.StretchSet = true;
 				});
 			}
 		}

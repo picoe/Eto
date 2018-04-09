@@ -15,8 +15,8 @@ namespace Eto.GtkSharp.Drawing
 			get
 			{
 				if (context == null) {
-					var window = new Gtk.Window (string.Empty);
-					context = window.PangoContext;
+					var label = new Gtk.Label();
+					context = label.PangoContext;
 				}
 				return context;
 			}

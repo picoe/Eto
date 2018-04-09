@@ -41,24 +41,26 @@ namespace Eto.Wpf.Forms
 				Control.Owner = owner;
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			}
-			if (Font != null)
+
+			if (Font?.Handler is FontHandler fontHandler)
 			{
-				var fontHandler = (FontHandler)Font.Handler;
 				Control.SelectedFontFamily = fontHandler.WpfFamily;
 				Control.SelectedFontPointSize = fontHandler.Size;
 				Control.SelectedFontStyle = fontHandler.WpfFontStyle;
 				Control.SelectedFontWeight = fontHandler.WpfFontWeight;
+				Control.SelectedFontStretch = fontHandler.WpfFontStretch;
 			}
 			var result = Control.ShowDialog();
 
 			if (result == true)
 			{
-				var fontHandler = new FontHandler(Control.SelectedFontFamily, Control.SelectedFontPointSize, Control.SelectedFontStyle, Control.SelectedFontWeight);
+				fontHandler = new FontHandler(Control.SelectedFontFamily, Control.SelectedFontPointSize, Control.SelectedFontStyle, Control.SelectedFontWeight, Control.SelectedFontStretch);
 				Font = new Font(fontHandler);
 				Callback.OnFontChanged(Widget, EventArgs.Empty);
+				return DialogResult.Ok;
 			}
 
-			return result != null && result.Value ? DialogResult.Ok : DialogResult.Cancel;
+			return DialogResult.Cancel;
 		}
 	}
 }

@@ -75,19 +75,14 @@ namespace Eto.Forms
 				)
 			{
 				var dataItemType = dataItem.GetType();
-				// find public property
-				descriptor = dataItemType.GetRuntimeProperty(Property);
-				if (descriptor == null)
+				// iterate to find non-public properties or with different case
+				var comparison = IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+				foreach (var prop in dataItemType.GetRuntimeProperties())
 				{
-					// iterate to find non-public properties or with different case
-					var comparison = IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-					foreach (var prop in dataItemType.GetRuntimeProperties())
+					if (string.Equals(prop.Name, Property, comparison))
 					{
-						if (string.Equals(prop.Name, Property, comparison))
-						{
-							descriptor = prop;
-							break;
-						}
+						descriptor = prop;
+						break;
 					}
 				}
 				declaringType = descriptor?.DeclaringType ?? dataItemType;

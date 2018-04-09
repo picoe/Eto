@@ -209,6 +209,11 @@ namespace Eto.WinForms
 			return ((FontFamilyHandler)family.Handler).Control;
 		}
 
+		public static sd.FontStyle ToSD(this FontTypeface typeface)
+		{
+			return FontTypefaceHandler.GetControl(typeface);
+		}
+
 		public static sd.Font ToSD(this SystemFont systemFont)
 		{
 			switch (systemFont)

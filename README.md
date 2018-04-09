@@ -79,7 +79,7 @@ Applications
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
 * [JabbR.Desktop](https://github.com/JabbR/JabbR.Desktop) - JabbR client
 * [Notedown](https://github.com/cwensley/Notedown) - Note taking application
-* [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
+* [Eto.Test](https://github.com/picoe/Eto/tree/master/test/Eto.Test) - Application to test the functionality of each widget
 * [DotImaging.UI](https://github.com/dajuric/dot-imaging) - Portable UI elements for DotImaging
 
 Assemblies
