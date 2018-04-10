@@ -178,6 +178,7 @@ namespace Eto.Mac.Forms
 
 			// now, calculate any scaled control(s) now that we have the remaining space available
 			var availableControlSize = new SizeF();
+			var maxScaledSize = new SizeF();
 			for (int y = 0; y < heights.Length; y++)
 			{
 				var yscaled = y == lastyscale || yscaling[y];
@@ -197,21 +198,32 @@ namespace Eto.Mac.Forms
 					if (view != null && view.Visible)
 					{
 						var size = view.GetPreferredSize(availableControlSize);
+						if (xscaled)
+						{
+							maxScaledSize.Width = Math.Max(maxScaledSize.Width, size.Width);
+						}
 						if (size.Width > widths[x])
 						{
-							if (!final || !xscaled)
+							if (!xscaled)
 								required.Width += size.Width - widths[x];
 							widths[x] = size.Width;
 						}
+						if (yscaled)
+						{
+							maxScaledSize.Height = Math.Max(maxScaledSize.Height, size.Height);
+						}
 						if (size.Height > heights[y])
 						{
-							if (!final || !yscaled)
+							if (!yscaled)
 								required.Height += size.Height - heights[y];
 							heights[y] = size.Height;
 						}
 					}
 				}
 			}
+
+			if (!final)
+				required += maxScaledSize * numscaled;
 
 
 			if (final)
