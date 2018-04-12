@@ -49,6 +49,10 @@ namespace Eto.GtkSharp.Forms
 			{
 
 			});
+			
+#if GTKCORE
+			Control.CanStore = (Gtk.TargetEntry[])targets;
+#endif
 		}
 
 		void AddEntry(string type, object data, GetClipboardData getData)
