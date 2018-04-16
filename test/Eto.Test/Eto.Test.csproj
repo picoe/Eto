@@ -49,4 +49,7 @@
     <None Remove="Sections\Serialization\Xaml\Test.xeto" />
     <None Remove="Sections\Serialization\Json\Test.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
 </Project>
