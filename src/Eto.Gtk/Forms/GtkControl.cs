@@ -251,14 +251,14 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual bool Visible
 		{
-			get { return Control.Visible; }
+			get { return ContainerControl.Visible; }
 			set
 			{ 
-				Control.Visible = value;
-				Control.NoShowAll = !value;
+				ContainerControl.Visible = value;
+				ContainerControl.NoShowAll = !value;
 				if (value && Widget.Loaded)
 				{
-					Control.ShowAll();
+					ContainerControl.ShowAll();
 				}
 			}
 		}

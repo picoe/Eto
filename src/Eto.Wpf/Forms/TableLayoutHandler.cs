@@ -9,7 +9,82 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
 {
-	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
+	public class EtoGrid : swc.Grid
+	{
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			var size = base.MeasureOverride(constraint);
+
+			// WPF has problems with multiple rows or columns with GridUnitType.Star
+			// 1) it doesn't autosize correctly to the largest row/column
+			// 2) it doesn't position elements correctly until next layout pass
+			if (double.IsInfinity(constraint.Height) || !IsLoaded)
+			{
+				double maxHeight = 0;
+				double totalHeight = 0;
+				int totalRows = 0;
+				for (int i = 0; i < RowDefinitions.Count; i++)
+				{
+					var rd = RowDefinitions[i];
+					if (rd.Height.IsStar)
+					{
+						double rowHeight = 0;
+						for (int childIndex = 0; childIndex < Children.Count; childIndex++)
+						{
+							var child = Children[childIndex];
+							var row = GetRow(child);
+							if (row != i)
+								continue;
+							//child.Measure(constraint);
+							var desired = child.DesiredSize.Height;
+							if (!double.IsInfinity(desired))
+								rowHeight = Math.Max(rowHeight, desired);
+						}
+						maxHeight = Math.Max(rowHeight, maxHeight);
+						totalHeight += rowHeight;
+						totalRows++;
+					}
+				}
+				if (totalRows > 1)
+					size.Height = Math.Max(0, size.Height - totalHeight + maxHeight * totalRows);
+			}
+
+			if (double.IsInfinity(constraint.Width) || !IsLoaded)
+			{
+				double maxWidth = 0;
+				double totalWidth = 0;
+				int totalColumns = 0;
+				for (int i = 0; i < ColumnDefinitions.Count; i++)
+				{
+					var cd = ColumnDefinitions[i];
+					if (cd.Width.IsStar)
+					{
+						double columnWidth = 0;
+						for (int childIndex = 0; childIndex < Children.Count; childIndex++)
+						{
+							var child = Children[childIndex];
+							var row = GetColumn(child);
+							if (row != i)
+								continue;
+							//child.Measure(constraint);
+							var desired = child.DesiredSize.Width;
+							if (!double.IsInfinity(desired))
+								columnWidth = Math.Max(columnWidth, desired);
+						}
+						maxWidth = Math.Max(columnWidth, maxWidth);
+						totalWidth += columnWidth;
+						totalColumns++;
+					}
+				}
+				if (totalColumns > 1)
+					size.Width = Math.Max(0, size.Width - totalWidth + maxWidth * totalColumns);
+			}
+			return size;
+		}
+
+	}
+
+	public class TableLayoutHandler : WpfLayout<EtoGrid, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
 		readonly swc.Border border;
 		Size spacing;
@@ -22,7 +97,7 @@ namespace Eto.Wpf.Forms
 
 		public TableLayoutHandler()
 		{
-			Control = new swc.Grid { SnapsToDevicePixels = true };
+			Control = new EtoGrid { SnapsToDevicePixels = true };
 			border = new EtoBorder { Handler = this };
 			border.Padding = Padding.Empty.ToWpf();
 		}
@@ -40,15 +115,9 @@ namespace Eto.Wpf.Forms
 			set { border.Background = value.ToWpfBrush(Control.Background); }
 		}
 
-        bool IsColumnScaled(int column)
-        {
-            return columnScale[column] || column == lastColumnScale;
-        }
+        bool IsColumnScaled(int column) => columnScale[column] || column == lastColumnScale;
 
-        bool IsRowScaled(int row)
-        {
-            return rowScale[row] || row == lastRowScale;
-        }
+        bool IsRowScaled(int row) => rowScale[row] || row == lastRowScale;
 
 		public void CreateControl(int cols, int rows)
 		{
@@ -57,8 +126,6 @@ namespace Eto.Wpf.Forms
 			rowScale = new bool[rows];
 			lastColumnScale = cols - 1;
 			lastRowScale = rows - 1;
-			for (int i = 0; i < cols; i++) Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = GetColumnWidth(i) });
-			for (int i = 0; i < rows; i++) Control.RowDefinitions.Add(new swc.RowDefinition { Height = GetRowHeight(i) });
 
 			for (int y = 0; y < rows; y++)
 				for (int x = 0; x < cols; x++)
@@ -66,29 +133,34 @@ namespace Eto.Wpf.Forms
 
 			border.Child = Control;
 
-			Control.LayoutUpdated += (sender, args) => SetChildrenSizes();
+			Control.LayoutUpdated += Control_LayoutUpdated;
 		}
+
+		void Control_LayoutUpdated(object sender, EventArgs e) => SetChildrenSizes();
 
 		sw.FrameworkElement EmptyCell(int x, int y)
 		{
 			var empty = new sw.FrameworkElement();
 			swc.Grid.SetColumn(empty, x);
 			swc.Grid.SetRow(empty, y);
-			SetMargins(empty, x, y);
 			return empty;
-		}
-
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			inGroupBox = Widget.FindParent<GroupBox>() != null;
-			SetMargins();
 		}
 
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			SetChildrenSizes();
+
+			if (Control.RowDefinitions.Count == 0)
+			{
+				lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
+				lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
+
+				for (int i = 0; i < columnScale.Length; i++) Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = GetColumnWidth(i) });
+				for (int i = 0; i < rowScale.Length; i++) Control.RowDefinitions.Add(new swc.RowDefinition { Height = GetRowHeight(i) });
+			}
+			inGroupBox = Widget.FindParent<GroupBox>() != null;
+			SetScale(true);
+			SetMargins(true);
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
@@ -97,13 +169,13 @@ namespace Eto.Wpf.Forms
 			SetScale();
 		}
 
-		void SetScale()
+		void SetScale(bool force = false)
 		{
-			if (Control == null || !Widget.Loaded)
+			if (Control == null || (!Widget.Loaded && !force))
 				return;
-			for (int y = 0; y < Control.RowDefinitions.Count; y++)
+			for (int y = 0; y < controls.GetLength(1); y++)
 			{
-				for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
+				for (int x = 0; x < controls.GetLength(0); x++)
 				{
 					var handler = controls[x, y].GetWpfFrameworkElement();
 					if (handler != null)
@@ -115,6 +187,8 @@ namespace Eto.Wpf.Forms
 		public override void UpdatePreferredSize()
 		{
 			base.UpdatePreferredSize();
+			if (!Widget.Loaded)
+				return;
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{
 				for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
@@ -127,9 +201,7 @@ namespace Eto.Wpf.Forms
 					}
 				}
 			}
-			if (Widget.Loaded)
-				Control.UpdateLayout();
-			SetChildrenSizes();
+			Control.UpdateLayout();
 		}
 
 		void SetChildrenSizes()
@@ -164,9 +236,9 @@ namespace Eto.Wpf.Forms
 			handler.SetScale(XScale && (columnScale[x] || lastColumnScale == x), YScale && (rowScale[y] || lastRowScale == y));
 		}
 
-		void SetMargins()
+		void SetMargins(bool force = false)
 		{
-			if (Widget.Loaded)
+			if (Widget.Loaded || force)
 			{
 				foreach (var child in Control.Children.OfType<sw.FrameworkElement>())
 				{
@@ -180,26 +252,29 @@ namespace Eto.Wpf.Forms
 		sw.GridLength GetColumnWidth(int column)
 		{
 			var scale = columnScale[column] || column == lastColumnScale;
-			return new System.Windows.GridLength(1, scale ? sw.GridUnitType.Star : sw.GridUnitType.Auto);
+			return scale ? new sw.GridLength(1, sw.GridUnitType.Star) : sw.GridLength.Auto;
 		}
 
 		sw.GridLength GetRowHeight(int row)
 		{
 			var scale = rowScale[row] || lastRowScale == row;
-			return new System.Windows.GridLength(1, scale ? sw.GridUnitType.Star : sw.GridUnitType.Auto);
+			return scale ? new sw.GridLength(1, sw.GridUnitType.Star) : sw.GridLength.Auto;
 		}
 
 		public void SetColumnScale(int column, bool scale)
 		{
 			columnScale[column] = scale;
-			var lastScale = lastColumnScale;
-			lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
-			Control.ColumnDefinitions[column].Width = GetColumnWidth(column);
-			if (lastScale != lastColumnScale)
+			if (Widget.Loaded)
 			{
-				Control.ColumnDefinitions[columnScale.Length - 1].Width = GetColumnWidth(columnScale.Length - 1);
+				var lastScale = lastColumnScale;
+				lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
+				Control.ColumnDefinitions[column].Width = GetColumnWidth(column);
+				if (lastScale != lastColumnScale)
+				{
+					Control.ColumnDefinitions[columnScale.Length - 1].Width = GetColumnWidth(columnScale.Length - 1);
+				}
+				SetScale();
 			}
-			SetScale();
 		}
 
 		public bool GetColumnScale(int column)
@@ -210,14 +285,17 @@ namespace Eto.Wpf.Forms
 		public void SetRowScale(int row, bool scale)
 		{
 			rowScale[row] = scale;
-			var lastScale = lastRowScale;
-			lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
-			Control.RowDefinitions[row].Height = GetRowHeight(row);
-			if (lastScale != lastRowScale)
+			if (Widget.Loaded)
 			{
-				Control.RowDefinitions[rowScale.Length - 1].Height = GetRowHeight(rowScale.Length - 1);
+				var lastScale = lastRowScale;
+				lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
+				Control.RowDefinitions[row].Height = GetRowHeight(row);
+				if (lastScale != lastRowScale)
+				{
+					Control.RowDefinitions[rowScale.Length - 1].Height = GetRowHeight(rowScale.Length - 1);
+				}
+				SetScale();
 			}
-			SetScale();
 		}
 
 		public bool GetRowScale(int row)
@@ -235,21 +313,16 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-        sw.Thickness GetMargins(int x, int y)
-        {
-            var margin = new sw.Thickness();
-            if (x > 0) margin.Left = Math.Floor(spacing.Width / 2.0);
-            if (x < Control.ColumnDefinitions.Count - 1) margin.Right = Math.Ceiling(spacing.Width / 2.0);
-            if (y > 0) margin.Top = Math.Floor(spacing.Height / 2.0);
-            if (y < Control.RowDefinitions.Count - 1) margin.Bottom = Math.Ceiling(spacing.Height / 2.0);
-            return margin;
-        }
-
         void SetMargins(sw.FrameworkElement c, int x, int y)
 		{
 			c.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
 			c.VerticalAlignment = sw.VerticalAlignment.Stretch;
-			c.Margin = GetMargins(x, y);
+			var margin = new sw.Thickness();
+			if (x > 0) margin.Left = Math.Floor(spacing.Width / 2.0);
+			if (x < Control.ColumnDefinitions.Count - 1) margin.Right = Math.Ceiling(spacing.Width / 2.0);
+			if (y > 0) margin.Top = Math.Floor(spacing.Height / 2.0);
+			if (y < Control.RowDefinitions.Count - 1) margin.Bottom = Math.Ceiling(spacing.Height / 2.0);
+			c.Margin = margin;
 		}
 
 		public Padding Padding
@@ -261,28 +334,28 @@ namespace Eto.Wpf.Forms
 		void Remove(int x, int y)
 		{
 			var control = controls[x, y];
-			controls[x, y] = null;
 			if (control != null)
+			{
+				controls[x, y] = null;
 				Control.Children.Remove(control.GetContainerControl());
+			}
 		}
 
 		public void Add(Control child, int x, int y)
 		{
 			Remove(x, y);
-			if (child == null)
-			{
-				Control.Children.Add(EmptyCell(x, y));
-			}
-			else
+			if (child != null)
 			{
 				var handler = child.GetWpfFrameworkElement();
 				var control = handler.ContainerControl;
 				controls[x, y] = child;
 				control.SetValue(swc.Grid.ColumnProperty, x);
 				control.SetValue(swc.Grid.RowProperty, y);
-				SetMargins(control, x, y);
 				if (Widget.Loaded)
+				{
+					SetMargins(control, x, y);
 					SetScale(handler, x, y);
+				}
 				Control.Children.Add(control);
 			}
 			UpdatePreferredSize();
@@ -295,13 +368,20 @@ namespace Eto.Wpf.Forms
 			var oldx = swc.Grid.GetColumn(control);
 			var oldy = swc.Grid.GetRow(control);
 
+			if (x == oldx && y == oldy)
+				return;
+
+			controls[oldx, oldy] = null;
+
 			Remove(x, y);
 
 			control.SetValue(swc.Grid.ColumnProperty, x);
 			control.SetValue(swc.Grid.RowProperty, y);
-			SetMargins(control, x, y);
-			SetScale(handler, x, y);
-			Control.Children.Add(EmptyCell(oldx, oldy));
+			if (Widget.Loaded)
+			{
+				SetMargins(control, x, y);
+				SetScale(handler, x, y);
+			}
 			controls[x, y] = child;
 			UpdatePreferredSize();
 		}
@@ -317,7 +397,6 @@ namespace Eto.Wpf.Forms
 			var y = swc.Grid.GetRow(child);
 			Control.Children.Remove(child);
 			controls[x, y] = null;
-			Control.Children.Add(EmptyCell(x, y));
 			UpdatePreferredSize();
 		}
 	}

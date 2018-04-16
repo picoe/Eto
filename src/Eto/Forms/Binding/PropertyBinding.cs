@@ -75,6 +75,7 @@ namespace Eto.Forms
 				)
 			{
 				var dataItemType = dataItem.GetType();
+				descriptor = null;
 				// iterate to find non-public properties or with different case
 				var comparison = IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 				foreach (var prop in dataItemType.GetRuntimeProperties())
