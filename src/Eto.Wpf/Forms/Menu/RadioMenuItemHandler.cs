@@ -64,19 +64,22 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
-		static DependencyPropertyDescriptor dpdIsChecked = DependencyPropertyDescriptor.FromProperty(swc.MenuItem.IsCheckedProperty, typeof(swc.MenuItem));
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case RadioMenuItem.CheckedChangedEvent:
-					dpdIsChecked.AddValueChanged(Control, (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty));
+					PropertyChangeNotifier.Register(swc.MenuItem.IsCheckedProperty, HandleIsCheckedChanged, Control);
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void HandleIsCheckedChanged(object sender, EventArgs e)
+		{
+			Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
 	}
 }

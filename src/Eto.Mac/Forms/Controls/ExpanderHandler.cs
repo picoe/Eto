@@ -72,7 +72,7 @@ namespace Eto.Mac.Forms.Controls
 				Title = string.Empty,
 				BezelStyle = NSBezelStyle.Disclosure
 			};
-			disclosureButton.Activated += (sender, e) => UpdateExpandedState();
+			disclosureButton.Activated += DisclosureButton_Activated;
 			disclosureButton.SetButtonType(NSButtonType.PushOnPushOff);
 			disclosureButton.SizeToFit();
 
@@ -88,6 +88,12 @@ namespace Eto.Mac.Forms.Controls
 			Control.AddSubview(content);
 
 			base.Initialize();
+		}
+
+		static void DisclosureButton_Activated(object sender, EventArgs e)
+		{
+			var handler = GetHandler((sender as NSView)?.Superview) as ExpanderHandler;
+			handler?.UpdateExpandedState();
 		}
 
 		void UpdateExpandedState()

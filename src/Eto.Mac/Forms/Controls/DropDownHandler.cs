@@ -140,7 +140,7 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleActivated(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as DropDownHandler;
-			handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
+			handler?.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<object>

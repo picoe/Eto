@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +24,6 @@ namespace Eto.Wpf.Forms.Controls
 
 	public class ColorPickerHandler : WpfControl<xwt.ColorPicker, ColorPicker, ColorPicker.ICallback>, ColorPicker.IHandler
 	{
-		static DependencyPropertyDescriptor dpdIsOpen = DependencyPropertyDescriptor.FromProperty(xwt.ColorPicker.IsOpenProperty, typeof(xwt.ColorPicker));
 		protected override sw.Size DefaultSize => new sw.Size(60, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }

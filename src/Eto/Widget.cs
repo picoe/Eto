@@ -5,6 +5,8 @@
 using System;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto
 {
@@ -210,6 +212,80 @@ namespace Eto
 		{
 			Dispose(false);
 		}
+
+		static System.Collections.Generic.Dictionary<Type, int> refcounts = new Dictionary<Type, int>();
+		static System.Collections.Generic.Dictionary<Type, int> lastrefcounts;
+
+		int GetCount()
+		{
+			lock (refcounts)
+			{
+				return refcounts[GetType()];
+			}
+		}
+
+		void IncRef(string message)
+		{
+			lock (refcounts)
+			{
+				var type = GetType();
+				int count = refcounts.ContainsKey(type) ? refcounts[type] : 0;
+				count++;
+				refcounts[type] = count;
+			}
+			Write(message);
+		}
+
+		void DecRef(string message)
+		{
+			lock (refcounts)
+			{
+				var refcount = refcounts[GetType()];
+				refcounts[GetType()] = refcount - 1;
+			}
+			Write(message);
+		}
+
+		void Write(string message) => System.Diagnostics.Debug.WriteLine($"{GetType().FullName} ({GetCount()}): {message}");
+
+		public static IEnumerable<KeyValuePair<Type, int>> ReferenceCounts => refcounts.Where(r => r.Value > 0);
+
+		public static IEnumerable<KeyValuePair<Type, int>> ReferenceCountDeltas
+		{
+			get
+			{
+				if (lastrefcounts == null)
+				{
+					lastrefcounts = new Dictionary<Type, int>(refcounts);
+					foreach (var item in refcounts)
+						yield return item;
+
+					yield break;
+				}
+
+				var lastrefcountstemp = lastrefcounts;
+				lastrefcounts = new Dictionary<Type, int>(refcounts);
+
+				foreach (var key in lastrefcountstemp.Keys.Union(refcounts.Keys))
+				{
+					int delta = 0;
+					var hasCurrent = refcounts.TryGetValue(key, out var current);
+					var hasLast = lastrefcountstemp.TryGetValue(key, out var last);
+					if (hasCurrent && hasLast)
+						delta = current - last;
+					else if (hasLast)
+						delta = -last;
+					else if (hasCurrent)
+						delta = current;
+
+					if (delta != 0)
+						yield return new KeyValuePair<Type, int>(key, delta);
+				}
+
+			}
+		}
+
+
 		#endif
 
 		/// <summary>
@@ -217,6 +293,10 @@ namespace Eto
 		/// </summary>
 		protected Widget()
 		{
+			#if TRACK_GC
+			IncRef("Created");
+			#endif
+
 			var platform = Platform.Instance;
 			if (platform == null)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Platform instance is null. Have you created your application?"));
@@ -240,6 +320,9 @@ namespace Eto
 		/// <param name="handler">Handler to assign to this widget for its implementation</param>
 		protected Widget(IHandler handler)
 		{
+			#if TRACK_GC
+			IncRef("Created from IHandler");
+			#endif
 			Handler = handler;
 			Platform = Platform.Instance;
 			if (handler != null)
@@ -428,8 +511,8 @@ namespace Eto
 					handler.Dispose();
 				Handler = null;
 			}
-			#if TRACK_GC
-			System.Diagnostics.Debug.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", GetType().Name);
+#if TRACK_GC
+			DecRef(disposing ? "Dispose" : "GC");
 			#endif
 		}
 

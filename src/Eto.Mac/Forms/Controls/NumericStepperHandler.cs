@@ -399,7 +399,12 @@ namespace Eto.Mac.Forms.Controls
 
 		protected class EtoNumberFormatter : NSNumberFormatter
 		{
-			public NumericStepperHandler Handler { get; set; }
+			WeakReference handler;
+			public NumericStepperHandler Handler
+			{
+				get => handler?.Target as NumericStepperHandler;
+				set => handler = new WeakReference(value);
+			}
 
 			static IntPtr sel_getObjectValue = Selector.GetHandle("getObjectValue:forString:errorDescription:");
 
