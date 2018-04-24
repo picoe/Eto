@@ -26,6 +26,12 @@ namespace Eto.Mac.Forms
 		{
 		}
 
+		public override void AttachEvent(string id)
+		{
+			// can't attach any events, this is a native window!
+			return;
+		}
+
 		protected override void ConfigureWindow()
 		{
 		}

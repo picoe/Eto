@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Eto.Drawing;
 using System.Threading;
 using System.Runtime.ExceptionServices;
+using System.Reflection;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -122,7 +123,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					{
 						Content = new StackLayout
 						{
-							Items = {
+							Items =
+							{
 								new Button { Text = "Button" },
 								new Calendar(),
 								new CheckBox { Text = "CheckBox" },
@@ -148,11 +150,99 @@ namespace Eto.Test.UnitTests.Forms.Controls
 								new TextArea { Text = longText },
 								new TextBox { Text = longText },
 								new TextStepper { Text = longText },
-								//new WebView()
-							}
+						  		//new WebView()
+					  		}
 						}
 					};
 				});
+		}
+
+		public class ControlGCTest
+		{
+			public string Description { get; set; }
+			public Type ControlType { get; set; }
+			public Action<object> Test { get; set; }
+			public override string ToString()
+			{
+				if (!string.IsNullOrEmpty(Description))
+					return $"{ControlType}: {Description}";
+				return ControlType.ToString();
+			}
+
+		}
+
+		public static ControlGCTest GCTest<T>(Action<T> action) => new ControlGCTest { ControlType = typeof(T), Test = c => action((T)c) };
+
+		public static ControlGCTest GCTest<T>(string description, Action<T> action)
+		{
+			var test = GCTest<T>(action);
+			test.Description = description;
+			return test;
+		}
+
+		public static IEnumerable<ControlGCTest> GetControlGCItems()
+		{
+			// simply create all control types and ensure they can be GC'd without hooking up anything.
+			foreach (var type in GetAllControlTypes())
+			{
+				if (Platform.Instance.IsWpf)
+				{
+					// wpf has (known) problems GC'ing a Window right away, so let's not test it.
+					if (typeof(Window).GetTypeInfo().IsAssignableFrom(type))
+						continue;
+				}
+
+				if (Platform.Instance.IsWpf || Platform.Instance.IsWinForms)
+				{ 
+					// SWF.WebBrowser can't be GC'd for some reason either.  Not an Eto problem.
+					if (typeof(WebView).GetTypeInfo().IsAssignableFrom(type))
+						continue;
+				}
+
+				yield return new ControlGCTest { ControlType = type };
+			}
+
+			// extra tests for things that have known to cause a control not to be GC'd
+
+			yield return GCTest("With Step", (Stepper c) =>
+			{
+				c.Step += (sender, e) => { /* do something */ };
+			});
+
+			yield return GCTest("With ValueChanged", (NumericStepper c) =>
+			{
+				c.ValueChanged += (sender, e) => { /* do something */ };
+			});
+
+			yield return GCTest("With Step", (TextStepper c) =>
+			{
+				c.Step += (sender, e) => { /* do something */ };
+			});
+
+			yield return GCTest("With Panels", (Splitter c) =>
+			{
+				c.Panel1 = new Panel();
+				c.Panel2 = new Panel();
+			});
+		}
+
+		[TestCaseSource(nameof(GetControlGCItems))]
+		public void ControlsShouldCollectWhenNotReferenced(ControlGCTest test)
+		{
+			WeakReference reference = null;
+			Invoke(() =>
+			{
+				var obj = Activator.CreateInstance(test.ControlType);
+				test.Test?.Invoke(obj);
+				reference = new WeakReference(obj);
+				obj = null;
+			});
+			Thread.Sleep(100);
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+			Assert.IsNotNull(reference);
+			Assert.IsNull(reference.Target);
+			Assert.IsFalse(reference.IsAlive);
 		}
 	}
 }

@@ -22,7 +22,13 @@ namespace Eto.Mac.Forms
 	{
 		public static FontDialogHelper Instance { get; set; }
 
-		public FontDialogHandler Handler { get; set; }
+		WeakReference handler;
+		public FontDialogHandler Handler
+		{
+			get => handler?.Target as FontDialogHandler;
+			set => handler = new WeakReference(value);
+		}
+
 
 		[Export("changeFont:")]
 		public void ChangeFont(NSFontManager sender)

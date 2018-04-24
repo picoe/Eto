@@ -53,7 +53,13 @@ namespace Eto.Mac.Forms.Printing
 			{
 			}
 
-			public PrintDocumentHandler Handler { get; set; }
+			WeakReference handler;
+
+			public PrintDocumentHandler Handler
+			{
+				get => handler?.Target as PrintDocumentHandler;
+				set => handler = new WeakReference(value);
+			}
 
 			public override string PrintJobTitle
 			{
