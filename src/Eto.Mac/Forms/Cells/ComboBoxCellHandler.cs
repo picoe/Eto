@@ -204,7 +204,12 @@ namespace Eto.Mac.Forms.Cells
 
 		public class EtoPopUpButton : NSPopUpButton
 		{
-			public ComboBoxCellHandler Handler { get; set; }
+			WeakReference handler;
+			public ComboBoxCellHandler Handler
+			{
+				get => handler?.Target as ComboBoxCellHandler;
+				set => handler = new WeakReference(value);
+			}
 
 			public EtoPopUpButton() { }
 

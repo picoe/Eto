@@ -25,8 +25,6 @@ namespace Eto.Wpf.Forms.Menu
 			get { return Control.InputBindings; }
 		}
 
-		DependencyPropertyDescriptor dpdIsOpen = DependencyPropertyDescriptor.FromProperty(swc.ContextMenu.IsOpenProperty, typeof(swc.ContextMenu));
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -38,17 +36,19 @@ namespace Eto.Wpf.Forms.Menu
 				case ContextMenu.ClosedEvent:
 					// eto's Closed event should happen before click of menu item to be consistent with other platforms.
 					// wpf's Closed event fires after, so look at IsOpen property changes instead
-					dpdIsOpen.AddValueChanged(Control, (sender, e) =>
-					{
-						if (!Control.IsOpen)
-							Callback.OnClosed(Widget, EventArgs.Empty);
-					});
+					PropertyChangeNotifier.Register(swc.ContextMenu.IsOpenProperty, HandleIsOpenChanged, Control);
 					break;
 
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void HandleIsOpenChanged(object sender, EventArgs e)
+		{
+			if (!Control.IsOpen)
+				Callback.OnClosed(Widget, EventArgs.Empty);
 		}
 
 		public void AddMenu(int index, MenuItem item)

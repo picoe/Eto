@@ -101,7 +101,7 @@ namespace Eto.Forms
 		/// <param name="window">Eto window object to get the native window handle from.</param>
 		public static NSWindow ToNative(this Window window)
 		{
-			return window.ControlObject as NSWindow;
+			return window?.ControlObject as NSWindow;
 		}
 
 

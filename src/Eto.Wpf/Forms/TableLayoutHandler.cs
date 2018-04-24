@@ -100,6 +100,7 @@ namespace Eto.Wpf.Forms
 			Control = new EtoGrid { SnapsToDevicePixels = true };
 			border = new EtoBorder { Handler = this };
 			border.Padding = Padding.Empty.ToWpf();
+			border.Child = Control;
 		}
 
 		public Size Adjust { get; set; }
@@ -119,6 +120,8 @@ namespace Eto.Wpf.Forms
 
         bool IsRowScaled(int row) => rowScale[row] || row == lastRowScale;
 
+		bool IsCreated => columnScale != null && rowScale != null;
+
 		public void CreateControl(int cols, int rows)
 		{
 			controls = new Control[cols, rows];
@@ -131,12 +134,19 @@ namespace Eto.Wpf.Forms
 				for (int x = 0; x < cols; x++)
 					Control.Children.Add(EmptyCell(x, y));
 
-			border.Child = Control;
+			if (Widget.Loaded)
+			{
+				// happens with a blank TableLayout, or if populated during Load event.
+				InitializeSizes();
+				SetScale(true);
+				SetMargins(true);
+				SetChildrenSizes(true);
+			}
 
 			Control.LayoutUpdated += Control_LayoutUpdated;
 		}
 
-		void Control_LayoutUpdated(object sender, EventArgs e) => SetChildrenSizes();
+		void Control_LayoutUpdated(object sender, EventArgs e) => SetChildrenSizes(false);
 
 		sw.FrameworkElement EmptyCell(int x, int y)
 		{
@@ -146,21 +156,32 @@ namespace Eto.Wpf.Forms
 			return empty;
 		}
 
+		void InitializeSizes()
+		{
+			lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
+			lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
+
+			for (int i = 0; i < columnScale.Length; i++) Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = GetColumnWidth(i) });
+			for (int i = 0; i < rowScale.Length; i++) Control.RowDefinitions.Add(new swc.RowDefinition { Height = GetRowHeight(i) });
+		}
+
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
 
-			if (Control.RowDefinitions.Count == 0)
-			{
-				lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
-				lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
-
-				for (int i = 0; i < columnScale.Length; i++) Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = GetColumnWidth(i) });
-				for (int i = 0; i < rowScale.Length; i++) Control.RowDefinitions.Add(new swc.RowDefinition { Height = GetRowHeight(i) });
-			}
 			inGroupBox = Widget.FindParent<GroupBox>() != null;
-			SetScale(true);
-			SetMargins(true);
+			if (IsCreated)
+			{
+				// won't be created yet if populated on Load event or if empty.
+
+				if (Control.RowDefinitions.Count == 0)
+				{
+					InitializeSizes();
+				}
+				SetScale(true);
+				SetMargins(true);
+				SetChildrenSizes(true);
+			}
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
@@ -204,8 +225,10 @@ namespace Eto.Wpf.Forms
 			Control.UpdateLayout();
 		}
 
-		void SetChildrenSizes()
+		void SetChildrenSizes(bool force)
 		{
+			if (!Widget.Loaded && !force)
+				return;
 			var inGroupBoxCurrent = inGroupBox;
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{

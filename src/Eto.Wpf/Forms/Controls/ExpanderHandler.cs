@@ -29,10 +29,10 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 
 			// update scrollables, etc with new size
-			Widget.ExpandedChanged += (sender, e) => Application.Instance.AsyncInvoke(UpdatePreferredSize);
+			Widget.ExpandedChanged += Widget_ExpandedChanged;
 		}
 
-		static DependencyPropertyDescriptor dpdIsExpanded = DependencyPropertyDescriptor.FromProperty(swc.Expander.IsExpandedProperty, typeof(swc.Expander));
+		void Widget_ExpandedChanged(object sender, EventArgs e) => Application.Instance.AsyncInvoke(UpdatePreferredSize);
 
 		public bool Expanded
 		{
@@ -67,7 +67,7 @@ namespace Eto.Wpf.Forms.Controls
 			switch (id)
 			{
 				case Expander.ExpandedChangedEvent:
-					dpdIsExpanded.AddValueChanged(Control, (sender, e) => Callback.OnExpandedChanged(Widget, EventArgs.Empty));
+					PropertyChangeNotifier.Register(swc.Expander.IsExpandedProperty, HandleIsExpandedChanged, Control);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -75,5 +75,9 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		void HandleIsExpandedChanged(object sender, EventArgs e)
+		{
+			Callback.OnExpandedChanged(Widget, EventArgs.Empty);
+		}
 	}
 }
