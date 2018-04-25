@@ -128,17 +128,22 @@ namespace Eto.Mac.Forms.Controls
 			switch (id)
 			{
 				case Stepper.StepEvent:
-					Control.Activated += (sender, e) =>
-					{
-						var dir = GetDirection();
-						if (dir != null)
-							Callback.OnStep(Widget, new StepperEventArgs(dir.Value));
-					};
+					Control.Activated += Control_Activated;
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		static void Control_Activated(object sender, EventArgs e)
+		{
+			var h = GetHandler(sender) as StepperHandler;
+			if (h == null)
+				return;
+			var dir = h.GetDirection();
+			if (dir != null)
+				h.Callback.OnStep(h.Widget, new StepperEventArgs(dir.Value));
 		}
 	}
 }

@@ -219,7 +219,7 @@ namespace Eto.Test.UnitTests
 					if (application != null)
 						application.Invoke(() =>
 						{
-							if (form.Loaded)
+							if (form != null && form.Loaded)
 								form.Close();
 						});
 					else
