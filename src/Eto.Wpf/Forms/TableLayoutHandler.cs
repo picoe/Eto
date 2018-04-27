@@ -18,7 +18,7 @@ namespace Eto.Wpf.Forms
 			// WPF has problems with multiple rows or columns with GridUnitType.Star
 			// 1) it doesn't autosize correctly to the largest row/column
 			// 2) it doesn't position elements correctly until next layout pass
-			if (double.IsInfinity(constraint.Height) || !IsLoaded)
+			if (RowDefinitions.Count > 1 && (double.IsInfinity(constraint.Height) || !IsLoaded))
 			{
 				double maxHeight = 0;
 				double totalHeight = 0;
@@ -49,7 +49,7 @@ namespace Eto.Wpf.Forms
 					size.Height = Math.Max(0, size.Height - totalHeight + maxHeight * totalRows);
 			}
 
-			if (double.IsInfinity(constraint.Width) || !IsLoaded)
+			if (ColumnDefinitions.Count > 1 && (double.IsInfinity(constraint.Width) || !IsLoaded))
 			{
 				double maxWidth = 0;
 				double totalWidth = 0;
@@ -100,7 +100,6 @@ namespace Eto.Wpf.Forms
 			Control = new EtoGrid { SnapsToDevicePixels = true };
 			border = new EtoBorder { Handler = this };
 			border.Padding = Padding.Empty.ToWpf();
-			border.Child = Control;
 		}
 
 		public Size Adjust { get; set; }
@@ -129,6 +128,12 @@ namespace Eto.Wpf.Forms
 			rowScale = new bool[rows];
 			lastColumnScale = cols - 1;
 			lastRowScale = rows - 1;
+
+			// set child here as we get a NRE when using in this in a custom cell if used before created.
+			border.Child = Control;
+
+			for (int i = 0; i < cols; i++) Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
+			for (int i = 0; i < rows; i++) Control.RowDefinitions.Add(new swc.RowDefinition());
 
 			for (int y = 0; y < rows; y++)
 				for (int x = 0; x < cols; x++)
@@ -161,8 +166,10 @@ namespace Eto.Wpf.Forms
 			lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
 			lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
 
-			for (int i = 0; i < columnScale.Length; i++) Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = GetColumnWidth(i) });
-			for (int i = 0; i < rowScale.Length; i++) Control.RowDefinitions.Add(new swc.RowDefinition { Height = GetRowHeight(i) });
+			for (int i = 0; i < Control.ColumnDefinitions.Count; i++)
+				Control.ColumnDefinitions[i].Width = GetColumnWidth(i);
+			for (int i = 0; i < Control.RowDefinitions.Count; i++)
+				Control.RowDefinitions[i].Height = GetRowHeight(i);
 		}
 
 		public override void OnLoad(EventArgs e)
@@ -174,10 +181,7 @@ namespace Eto.Wpf.Forms
 			{
 				// won't be created yet if populated on Load event or if empty.
 
-				if (Control.RowDefinitions.Count == 0)
-				{
-					InitializeSizes();
-				}
+				InitializeSizes();
 				SetScale(true);
 				SetMargins(true);
 				SetChildrenSizes(true);
