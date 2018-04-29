@@ -55,7 +55,8 @@ namespace Eto.GtkSharp.Forms.Printing
 			if (AllowSelection)
 				Control.AddCustomTab(customOptions, new Gtk.Label { Text = "Other Options" });
 
-            Control.setEmbedPage(true);
+
+			NativeMethods.gtk_print_unix_dialog_set_embed_page_setup(Control.Handle, true);
 
 			Control.ManualCapabilities = caps;
 			Control.ShowAll ();
