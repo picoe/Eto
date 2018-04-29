@@ -157,14 +157,14 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
 		}
 
 		static class NMLinux
@@ -309,14 +309,14 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
 		}
 
 		static class NMMac
@@ -461,14 +461,14 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
 		}
 
 		public static string GetString(IntPtr handle)
@@ -705,6 +705,26 @@ namespace Eto.GtkSharp
 				return NMWindows.gtk_selection_data_set_uris(raw, uris);
 		}
 
+		public static bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_print_unix_dialog_get_embed_page_setup(raw);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_print_unix_dialog_get_embed_page_setup(raw);
+			else
+				return NMWindows.gtk_print_unix_dialog_get_embed_page_setup(raw);
+		}
+
+		public static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_print_unix_dialog_set_embed_page_setup(raw, embed);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_print_unix_dialog_set_embed_page_setup(raw, embed);
+			else
+				NMWindows.gtk_print_unix_dialog_set_embed_page_setup(raw, embed);
+		}
+
 		public static IntPtr webkit_web_view_new()
 		{
 			if (EtoEnvironment.Platform.IsLinux)
@@ -924,25 +944,5 @@ namespace Eto.GtkSharp
 			else
 				return NMWindows.gdk_cairo_get_clip_rectangle(context, rect);
 		}
-
-        public static bool getEmbedPage(this Gtk.PrintUnixDialog control)
-        {
-            if (EtoEnvironment.Platform.IsLinux)
-                return NMLinux.gtk_print_unix_dialog_get_embed_page_setup(control.Handle);
-            else if (EtoEnvironment.Platform.IsMac)
-                return NMMac.gtk_print_unix_dialog_get_embed_page_setup(control.Handle);
-            else
-                return NMWindows.gtk_print_unix_dialog_get_embed_page_setup(control.Handle);
-        }
-
-        public static void setEmbedPage(this Gtk.PrintUnixDialog control, bool embed)
-        {
-            if (EtoEnvironment.Platform.IsLinux)
-                NMLinux.gtk_print_unix_dialog_set_embed_page_setup(control.Handle, embed);
-            else if (EtoEnvironment.Platform.IsMac)
-                NMMac.gtk_print_unix_dialog_set_embed_page_setup(control.Handle, embed);
-            else
-                NMWindows.gtk_print_unix_dialog_set_embed_page_setup(control.Handle, embed);
-        }
 	}
 }
