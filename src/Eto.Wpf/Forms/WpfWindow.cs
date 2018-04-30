@@ -723,7 +723,13 @@ namespace Eto.Wpf.Forms
 
 		public float LogicalPixelSize
 		{
-			get { return (float)(dpiHelper?.Scale ?? (sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformToDevice.M11 ?? 1.0)); }
+			get {
+				var scale = (float)(dpiHelper?.Scale ?? sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformToDevice.M11 ?? 1.0);
+				// will be zero after the window is closed, but should always be a positive number
+				if (scale <= 0)
+					return 1f;
+				return scale;
+			}
 		}
 	}
 }
