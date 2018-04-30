@@ -116,14 +116,16 @@ namespace Eto.Wpf.Drawing
 
 		static swmi.BitmapFrame Resize(swmi.BitmapSource image, float scale, int width, int height, swm.BitmapScalingMode scalingMode)
 		{
+			width = (int)Math.Round(width * scale);
+			height = (int)Math.Round(height * scale);
+			if (width <= 0 || height <= 0)
+				return null;
 			var group = new swm.DrawingGroup();
 			swm.RenderOptions.SetBitmapScalingMode(group, scalingMode);
 			group.Children.Add(new swm.ImageDrawing(image, new sw.Rect(0, 0, width, height)));
 			var targetVisual = new swm.DrawingVisual();
 			var targetContext = targetVisual.RenderOpen();
 			targetContext.DrawDrawing(group);
-			width = (int)Math.Round(width * scale);
-			height = (int)Math.Round(height * scale);
 			var target = new swmi.RenderTargetBitmap(width, height, 96 * scale, 96 * scale, swm.PixelFormats.Default);
 			targetContext.Close();
 			target.Render(targetVisual);
@@ -137,10 +139,15 @@ namespace Eto.Wpf.Drawing
 			var wpfBitmap = frame.ToWpf(scale);
 			if ((wpfBitmap.Width == size.Width && wpfBitmap.Height == size.Height)
 				|| size.Height == 0
-				|| size.Width == 0)
+				|| size.Width == 0
+				|| scale <= 0)
 				return wpfBitmap;
 
-			return Resize(wpfBitmap, scale, size.Width, size.Height, swm.BitmapScalingMode.Linear);
+			var resizedBitmap = Resize(wpfBitmap, scale, size.Width, size.Height, swm.BitmapScalingMode.Linear);
+			// will be null if size * scale is too small
+			if (resizedBitmap != null)
+				return resizedBitmap;
+			return wpfBitmap;
 			/*
 			if (width == null)
 				return GetLargestIcon().ToWpf();

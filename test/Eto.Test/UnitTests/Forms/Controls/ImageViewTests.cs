@@ -40,6 +40,34 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 		}
 
+		[Test]
+		public void IconShouldNotCrashInEventsOrAfterClosed()
+		{
+			Form(form =>
+			{
+				// shouldn't really be setting ImageView.Image after the form is closed (as you can't re-open the form),
+				// but with complex code this may happen so we should protect from crashing.
+				var imageView = new ImageView { Width = 64, Height = 64 };
+				form.Content = new StackLayout { Items = { imageView } };
+				imageView.Image = TestIcons.Logo;
+				form.Load += (sender, e) => imageView.Image = TestIcons.TestIcon;
+				form.LoadComplete += (sender, e) => imageView.Image = TestIcons.TestIcon;
+				form.Closing += (sender, e) =>
+				{
+					imageView.Image = TestIcons.Logo;
+				};
+				form.Closed += (sender, e) =>
+				{
+					imageView.Image = TestIcons.Logo;
+				};
+				form.Shown += (sender, e) => Application.Instance.AsyncInvoke(() =>
+				{
+					form.Close();
+					imageView.Image = TestIcons.Logo;
+				});
+			});
+		}
+
 		static IEnumerable<object[]> GetImageSizeTests()
 		{
 			var logo = TestIcons.Logo;
