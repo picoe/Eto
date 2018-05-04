@@ -116,9 +116,11 @@ namespace Eto.Wpf.Drawing
 
 		static swmi.BitmapFrame Resize(swmi.BitmapSource image, float scale, int width, int height, swm.BitmapScalingMode scalingMode)
 		{
-			width = (int)Math.Round(width * scale);
-			height = (int)Math.Round(height * scale);
-			if (width <= 0 || height <= 0)
+			if (width <= 0 || height <= 0 || scale <= 0)
+				return null;
+			var scaledwidth = (int)Math.Round(width * scale);
+			var scaledheight = (int)Math.Round(height * scale);
+			if (scaledwidth <= 0 || scaledheight <= 0)
 				return null;
 			var group = new swm.DrawingGroup();
 			swm.RenderOptions.SetBitmapScalingMode(group, scalingMode);
@@ -126,7 +128,7 @@ namespace Eto.Wpf.Drawing
 			var targetVisual = new swm.DrawingVisual();
 			var targetContext = targetVisual.RenderOpen();
 			targetContext.DrawDrawing(group);
-			var target = new swmi.RenderTargetBitmap(width, height, 96 * scale, 96 * scale, swm.PixelFormats.Default);
+			var target = new swmi.RenderTargetBitmap(scaledwidth, scaledheight, 96 * scale, 96 * scale, swm.PixelFormats.Default);
 			targetContext.Close();
 			target.Render(targetVisual);
 			return swmi.BitmapFrame.Create(target);
