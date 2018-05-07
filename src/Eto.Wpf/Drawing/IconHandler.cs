@@ -20,6 +20,7 @@ namespace Eto.Wpf.Drawing
 	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, Icon.IHandler, IWpfImage
 	{
 		List<IconFrame> frames;
+		CachedBitmapFrame _cached;
 
 		public IconHandler()
 		{
@@ -114,25 +115,6 @@ namespace Eto.Wpf.Drawing
 			return curicon;
 		}
 
-		static swmi.BitmapFrame Resize(swmi.BitmapSource image, float scale, int width, int height, swm.BitmapScalingMode scalingMode)
-		{
-			if (width <= 0 || height <= 0 || scale <= 0)
-				return null;
-			var scaledwidth = (int)Math.Round(width * scale);
-			var scaledheight = (int)Math.Round(height * scale);
-			if (scaledwidth <= 0 || scaledheight <= 0)
-				return null;
-			var group = new swm.DrawingGroup();
-			swm.RenderOptions.SetBitmapScalingMode(group, scalingMode);
-			group.Children.Add(new swm.ImageDrawing(image, new sw.Rect(0, 0, width, height)));
-			var targetVisual = new swm.DrawingVisual();
-			var targetContext = targetVisual.RenderOpen();
-			targetContext.DrawDrawing(group);
-			var target = new swmi.RenderTargetBitmap(scaledwidth, scaledheight, 96 * scale, 96 * scale, swm.PixelFormats.Default);
-			targetContext.Close();
-			target.Render(targetVisual);
-			return swmi.BitmapFrame.Create(target);
-		}
 
 		public swmi.BitmapSource GetImageClosestToSize(float scale, Size? fittingSize)
 		{
@@ -145,23 +127,9 @@ namespace Eto.Wpf.Drawing
 				|| scale <= 0)
 				return wpfBitmap;
 
-			var resizedBitmap = Resize(wpfBitmap, scale, size.Width, size.Height, swm.BitmapScalingMode.Linear);
-			// will be null if size * scale is too small
-			if (resizedBitmap != null)
-				return resizedBitmap;
-			return wpfBitmap;
-			/*
-			if (width == null)
-				return GetLargestIcon().ToWpf();
-			var curicon = frames[0];
-			if ((int)curicon.PixelSize.Width == width.Value)
-				return curicon.ToWpf();
-			foreach (var icon in frames)
-			{
-				if (icon.PixelSize.Width > width && icon.PixelSize.Width - width.Value < curicon.PixelSize.Width - width.Value)
-					curicon = icon;
-			}
-			return GetLargestIcon().ToWpf();*/
+			if (_cached == null)
+				_cached = new CachedBitmapFrame();
+			return _cached.Get(wpfBitmap, scale, size.Width, size.Height, swm.BitmapScalingMode.Linear) ?? wpfBitmap;
 		}
 
 		const int sICONDIR = 6;            // sizeof(ICONDIR) 

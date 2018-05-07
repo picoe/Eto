@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Eto.Drawing;
 using System.Linq;
@@ -73,6 +73,22 @@ namespace Eto.Test.UnitTests.Drawing
 		public void InvalidResourceShouldThrowException(string resourceName)
 		{
 			Assert.Throws<ArgumentException>(() => Icon.FromResource(resourceName));
+		}
+
+		[Test]
+		public void DrawingManyIconsShouldNotCrash()
+		{
+			// on WPF, some resources like RenderTargetBitmap use up GDI handles (that are limited)
+			// when drawing an icon with a different size.
+			// without a GC, it would cause a crash.  
+			// When drawing the same size icon, we now cache the result so it doesn't get out of control
+			using (var icon = TestIcons.Logo)
+			using (var bmp = new Bitmap(100, 100, PixelFormat.Format32bppRgba))
+			using (var g = new Graphics(bmp))
+				for (int i = 0; i < 10000; i++)
+				{
+					g.DrawImage(icon, 0, 0, 50, 50);
+				}
 		}
 	}
 }
