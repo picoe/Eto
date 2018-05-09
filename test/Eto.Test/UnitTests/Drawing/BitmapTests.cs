@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using NUnit.Framework;
 using System;
@@ -392,6 +392,17 @@ namespace Eto.Test.UnitTests.Drawing
 						}
 					}
 				}
+			});
+		}
+
+		[Test]
+		public void SizeShouldBeInPixels()
+		{
+			Invoke(() =>
+			{
+				Assert.AreEqual(new Size(128, 128), TestIcons.Logo288Bitmap.Size);
+
+				Assert.AreEqual(new Size(128, 128), TestIcons.LogoBitmap.Size);
 			});
 		}
 	}
