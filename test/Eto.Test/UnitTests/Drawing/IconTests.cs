@@ -16,7 +16,7 @@ namespace Eto.Test.UnitTests.Drawing
 		[TestCase(4f, 3f)]
 		public void IconShouldSupportMultipleResolutions(float scale, float expectedResult)
 		{
-			var icon = Icon.FromResource("Eto.Test.Images.Logo.png");
+			var icon = TestIcons.Logo;
 
 			Assert.IsNotNull(icon, "#1");
 			var expectedScales = new [] { 0.5f, 1f, 1.5f, 2f, 3f };
@@ -31,7 +31,7 @@ namespace Eto.Test.UnitTests.Drawing
 		[Test]
 		public void IconFromIcoShouldSetFrames()
 		{
-			var icon = Icon.FromResource("Eto.Test.Images.TestIcon.ico");
+			var icon = TestIcons.TestIcon;
 
 			Assert.IsNotNull(icon, "#1");
 
@@ -57,7 +57,7 @@ namespace Eto.Test.UnitTests.Drawing
 		[TestCase(2, 128, null)]
 		public void GetFrameWithScaleShouldWorkWithIco(float scale, int expectedSize, int? fittingSize)
 		{
-			var icon = Icon.FromResource("Eto.Test.Images.TestIcon.ico");
+			var icon = TestIcons.TestIcon;
 
 			// sanity check
 			Assert.IsNotNull(icon, "#1");
@@ -89,6 +89,23 @@ namespace Eto.Test.UnitTests.Drawing
 				{
 					g.DrawImage(icon, 0, 0, 50, 50);
 				}
+		}
+
+		[TestCase("Eto.Test.Images.LogoWith288DPI.png", 128, 128)]
+		[TestCase("Eto.Test.Images.Logo.png", 128, 128)]
+		public void BitmapDpiShouldNotAffectIconSize(string resourceName, int width, int height)
+		{
+			var icon = Icon.FromResource(resourceName);
+			Assert.AreEqual(width, icon.Size.Width, "Icon width is incorrect");
+			Assert.AreEqual(height, icon.Size.Height, "Icon width is incorrect");
+
+			int i = 0;
+			foreach (var frame in icon.Frames)
+			{
+				i++;
+				Assert.AreEqual(width, frame.Size.Width, $"Frame #{i} with scale {frame.Scale} does not match icon width");
+				Assert.AreEqual(height, frame.Size.Height, $"Frame #{i} with scale {frame.Scale} does not match icon height");
+			}
 		}
 	}
 }
