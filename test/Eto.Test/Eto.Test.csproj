@@ -26,15 +26,7 @@
     <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Images\TestIcon.ico" />
-    <EmbeddedResource Include="Images\TestImage.png" />
-    <EmbeddedResource Include="Images\Textures.gif" />
-    <EmbeddedResource Include="Images\Textures.png" />
-    <EmbeddedResource Include="Images\Logo.png" />
-    <EmbeddedResource Include="Images\Logo%402x.png" />
-    <EmbeddedResource Include="Images\Logo%403x.png" />
-    <EmbeddedResource Include="Images\Logo%400.5x.png" />
-    <EmbeddedResource Include="Images\Logo%401.5x.png" />
+    <EmbeddedResource Include="Images\*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
@@ -48,6 +40,7 @@
   <ItemGroup>
     <None Remove="Sections\Serialization\Xaml\Test.xeto" />
     <None Remove="Sections\Serialization\Json\Test.json" />
+    <None Remove="Images\*" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
