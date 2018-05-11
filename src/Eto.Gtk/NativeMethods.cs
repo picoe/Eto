@@ -157,6 +157,12 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
@@ -303,6 +309,12 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
@@ -448,6 +460,12 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
@@ -685,6 +703,26 @@ namespace Eto.GtkSharp
 				return NMMac.gtk_selection_data_set_uris(raw, uris);
 			else
 				return NMWindows.gtk_selection_data_set_uris(raw, uris);
+		}
+
+		public static bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_print_unix_dialog_get_embed_page_setup(raw);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_print_unix_dialog_get_embed_page_setup(raw);
+			else
+				return NMWindows.gtk_print_unix_dialog_get_embed_page_setup(raw);
+		}
+
+		public static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_print_unix_dialog_set_embed_page_setup(raw, embed);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_print_unix_dialog_set_embed_page_setup(raw, embed);
+			else
+				NMWindows.gtk_print_unix_dialog_set_embed_page_setup(raw, embed);
 		}
 
 		public static IntPtr webkit_web_view_new()

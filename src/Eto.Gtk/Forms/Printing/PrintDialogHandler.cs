@@ -6,25 +6,26 @@ namespace Eto.GtkSharp.Forms.Printing
 	{
 		PrintSettings settings;
 
-		public PrintDialogHandler ()
+		public PrintDialogHandler()
 		{
-			AllowPageRange =true;
+			AllowPageRange = true;
 		}
 
 		public PrintDocument Document { get; set; }
 
-		public class CustomOptions : Gtk.VBox {
+		public class CustomOptions : Gtk.VBox
+		{
 			public Gtk.CheckButton SelectionOnly { get; private set; }
 
-			public CustomOptions ()
+			public CustomOptions()
 			{
 				this.Spacing = 10;
 				SelectionOnly = new Gtk.CheckButton { Label = "Selection Only" };
-				this.PackStart (SelectionOnly, false, false, 10);
+				this.PackStart(SelectionOnly, false, false, 10);
 			}
 		}
 
-		public DialogResult ShowDialog (Window parent)
+		public DialogResult ShowDialog(Window parent)
 		{
 			var parentWindow = parent != null ? (Gtk.Window)parent.ControlObject : null;
 			Control = new Gtk.PrintUnixDialog(string.Empty, parentWindow);
@@ -46,13 +47,16 @@ namespace Eto.GtkSharp.Forms.Printing
 					| Gtk.PrintCapabilities.Reverse;
 			var printSettingsHandler = (PrintSettingsHandler)PrintSettings.Handler;
 
-			Control.PageSetup = PrintSettings.ToGtkPageSetup ();
-			Control.PrintSettings = PrintSettings.ToGtkPrintSettings ();
+			Control.PageSetup = PrintSettings.ToGtkPageSetup();
+			Control.PrintSettings = PrintSettings.ToGtkPrintSettings();
 			var customOptions = new CustomOptions();
 			customOptions.SelectionOnly.Active = printSettingsHandler.SelectionOnly;
 
 			if (AllowSelection)
-				Control.AddCustomTab (customOptions, new Gtk.Label { Text = "Other Options" });
+				Control.AddCustomTab(customOptions, new Gtk.Label { Text = "Other Options" });
+
+
+			NativeMethods.gtk_print_unix_dialog_set_embed_page_setup(Control.Handle, true);
 
 			Control.ManualCapabilities = caps;
 			Control.ShowAll ();
