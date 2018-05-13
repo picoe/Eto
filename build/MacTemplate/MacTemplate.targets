@@ -112,6 +112,9 @@
 		<!--
 			Add any missing keys to the PListFile
 		-->
+		<Warning Text="A reference to the NuGet package RoslynCodeTaskFactory is required in this project" 
+				 Condition=" '$(RoslynCodeTaskFactory)' == '' " /> 
+		
 		<_UpdatePList 
 			PListFile="$(OutputPListFile)"
 			TargetFileName="$(TargetFileName)"
@@ -130,14 +133,8 @@
 		<!-- Set executable bit on launcher if on *nix -->
 		<Exec Command="chmod +x &quot;$(LauncherFileWithPath)&quot;" Condition="'$(OS)'=='Unix'" />
 	</Target>
-	<UsingTask TaskName="_UpdatePList" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-		<ParameterGroup>
-			<PListFile ParameterType="System.String" Required="true" />
-			<TargetFileName ParameterType="System.String" Required="true" />
-			<MacBundleName ParameterType="System.String" Required="true" />
-			<LauncherFile ParameterType="System.String" Required="true" />
-			<IconFile ParameterType="System.String" Output="true" />
-		</ParameterGroup>
+	<UsingTask TaskName="_UpdatePList" TaskFactory="CodeTaskFactory"  AssemblyFile="$(RoslynCodeTaskFactory)"
+               Condition=" '$(RoslynCodeTaskFactory)' != '' ">
 		<Task>
 			<Reference Include="System.Xml" />
 			<Using Namespace="System" />
@@ -161,7 +158,7 @@
                 public string MacBundleName { get; set; }
 				[Required]
                 public string LauncherFile { get; set; }
-
+                [Output]
 				public string IconFile { get; set; }
 
                 XmlDocument xml;
