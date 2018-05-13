@@ -36,5 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
   </ItemGroup>
 </Project>
