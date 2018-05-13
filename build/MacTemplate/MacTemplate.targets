@@ -12,10 +12,12 @@
 		<OutputAppPath Condition="'$(OutputAppPath)'==''">$(TargetDir)\$(MacBundleName).app</OutputAppPath>
 		<MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultTarget)' == ''">True</MacSetDefaultRunConfiguration>
 		<MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == ''">True</MacBuildBundle>
+		<RoslynCodeTaskProps>$(MSBuildThisFileDirectory)..\..\..\roslyncodetaskfactory\2.0.7\Sdk\Sdk.props</RoslynCodeTaskProps>
 	</PropertyGroup>
 
 	<Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
 	<Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
+    <Import Project="$(RoslynCodeTaskProps)" Condition=" '$(RoslynCodeTaskFactory)' == '' AND Exists($(RoslynCodeTaskProps))" />
 
 	<Target Name="_TouchApp" Condition="$(MacBuildBundle) == 'True'">
 		<!-- This makes it so we can debug in VS for Mac right away without building first -->
