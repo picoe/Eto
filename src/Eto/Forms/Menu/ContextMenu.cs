@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -78,16 +79,40 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Show the context menu relative to the specified control
+		/// Show the context menu at the current mouse position.
+		/// </summary>
+		public void Show() => Show(null, null);
+
+		/// <summary>
+		/// Show the context menu for the specified control, usually at the current mouse position.
 		/// </summary>
 		/// <param name="relativeTo">Control to show the menu relative to</param>
-		public void Show(Control relativeTo)
+		public void Show(Control relativeTo) => Show(relativeTo, null);
+
+		/// <summary>
+		/// Shows the context menu at the specified screen co-ordinates
+		/// </summary>
+		/// <remarks>
+		/// Note that the operating system may move the location of the menu to make it fully visible.
+		/// </remarks>
+		/// <param name="location">Location in screen co-ordinates to place the context menu</param>
+		public void Show(PointF location) => Show(null, location);
+
+		/// <summary>
+		/// Shows the context menu at the specified location relative to a control.
+		/// </summary>
+		/// <remarks>
+		/// Note that the operating system may move the context menu to make it fully visible.
+		/// </remarks>
+		/// <param name="relativeTo">Control to show the menu relative to, or null to use screen co-ordinates for <paramref name="location"/></param>
+		/// <param name="location">Location to place the upper left of the context menu, or null to use the mouse position</param>
+		public void Show(Control relativeTo, PointF? location)
 		{
 			if (Trim)
 				Items.Trim();
 			OnPreLoad(EventArgs.Empty);
 			OnLoad(EventArgs.Empty);
-			Handler.Show(relativeTo);
+			Handler.Show(relativeTo, location);
 		}
 
 		/// <summary>
@@ -109,7 +134,7 @@ namespace Eto.Forms
 		{
 			base.OnUnLoad(e);
 			foreach (var item in Items)
-				item.OnLoad(e);
+				item.OnUnLoad(e);
 		}
 
 		/// <summary>
@@ -141,7 +166,8 @@ namespace Eto.Forms
 		public const string ClosedEvent = "ContextMenu.Closed";
 
 		/// <summary>
-		/// Occurs when the context menu is closed/dismissed.
+		/// Occurs when the context menu is closed/dismissed, after the menu item has been selected and its click 
+		/// event is triggered.
 		/// </summary>
 		public event EventHandler<EventArgs> Closed
 		{
@@ -156,6 +182,30 @@ namespace Eto.Forms
 		protected virtual void OnClosed(EventArgs e)
 		{
 			Properties.TriggerEvent(ClosedEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Closing"/> event.
+		/// </summary>
+		public const string ClosingEvent = "ContextMenu.Closing";
+
+		/// <summary>
+		/// Occurs before the context menu is closed/dismissed when the user clicks an item, but before the menu item's
+		/// click event is triggered.
+		/// </summary>
+		public event EventHandler<EventArgs> Closing
+		{
+			add { Properties.AddHandlerEvent(ClosingEvent, value); }
+			remove { Properties.RemoveEvent(ClosingEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Closing"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnClosing(EventArgs e)
+		{
+			Properties.TriggerEvent(ClosingEvent, this, e);
 		}
 
 		static readonly object callback = new Callback();
@@ -183,6 +233,11 @@ namespace Eto.Forms
 			/// Raises the <see cref="Closed"/> event.
 			/// </summary>
 			void OnClosed(ContextMenu widget, EventArgs e);
+
+			/// <summary>
+			/// Raises the <see cref="Closing"/> event.
+			/// </summary>
+			void OnClosing(ContextMenu widget, EventArgs e);
 		}
 
 		/// <summary>
@@ -207,6 +262,15 @@ namespace Eto.Forms
 				using (widget.Platform.Context)
 					widget.OnClosed(e);
 			}
+
+			/// <summary>
+			/// Raises the <see cref="Closing"/> event.
+			/// </summary>
+			public void OnClosing(ContextMenu widget, EventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnClosing(e);
+			}
 		}
 
 		/// <summary>
@@ -217,8 +281,9 @@ namespace Eto.Forms
 			/// <summary>
 			/// Show the context menu relative to the specified control
 			/// </summary>
-			/// <param name="relativeTo">Control to show the menu relative to</param>
-			void Show(Control relativeTo);
+			/// <param name="relativeTo">Control to show the menu relative to, or null to use screen co-ordinates for <paramref name="location"/></param>
+			/// <param name="location">Location to place the upper left of the context menu, or null to use the mouse position</param>
+			void Show(Control relativeTo, PointF? location);
 		}
 	}
 }

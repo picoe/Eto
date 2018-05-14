@@ -67,7 +67,7 @@ namespace Eto.Wpf.Forms.Controls
 			switch (id)
 			{
 				case Expander.ExpandedChangedEvent:
-					PropertyChangeNotifier.Register(swc.Expander.IsExpandedProperty, HandleIsExpandedChanged, Control);
+					Widget.Properties.Set(swc.Expander.IsExpandedProperty, PropertyChangeNotifier.Register(swc.Expander.IsExpandedProperty, HandleIsExpandedChanged, Control));
 					break;
 				default:
 					base.AttachEvent(id);

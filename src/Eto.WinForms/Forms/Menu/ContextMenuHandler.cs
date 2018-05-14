@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using swf = System.Windows.Forms;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.WinForms.Forms.Menu
 {
@@ -35,6 +36,8 @@ namespace Eto.WinForms.Forms.Menu
 				if (callback != null)
 					callback.OnValidate(item, e);
 			}
+
+			Callback.OnOpening(Widget, EventArgs.Empty);
 		}
 
 		public override void AttachEvent(string id)
@@ -42,10 +45,18 @@ namespace Eto.WinForms.Forms.Menu
 			switch (id)
 			{
 				case ContextMenu.OpeningEvent:
-					Control.Opening += (sender, e) => Callback.OnOpening(Widget, EventArgs.Empty);
+					// handled intrinsically
+					break;
+				case ContextMenu.ClosingEvent:
+					HandleEvent(ContextMenu.ClosedEvent);
 					break;
 				case ContextMenu.ClosedEvent:
-					Control.Closed += (sender, e) => Callback.OnClosed(Widget, EventArgs.Empty);
+					Control.Closed += (sender, e) =>
+					{
+						// actually happens before the item is clicked
+						Callback.OnClosing(Widget, EventArgs.Empty);
+						Application.Instance.AsyncInvoke(() => Callback.OnClosed(Widget, EventArgs.Empty));
+					};
 					break;
 				default:
 					base.AttachEvent(id);
@@ -68,17 +79,19 @@ namespace Eto.WinForms.Forms.Menu
 			Control.Items.Clear();
 		}
 
-		public void Show(Control relativeTo)
+		public void Show(Control relativeTo, PointF? location)
 		{
-			var position = swf.Control.MousePosition;
 			if (relativeTo != null)
 			{
 				var control = relativeTo.GetContainerControl();
-				position = control.PointToClient(position);
+				var position = location?.ToSDPoint() ?? control.PointToClient(swf.Control.MousePosition);
 				Control.Show(control, position.X, position.Y);
 			}
 			else
+			{
+				var position = location?.ToSDPoint() ?? swf.Control.MousePosition;
 				Control.Show(position);
+			}
 		}
 	}
 }
