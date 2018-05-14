@@ -31,11 +31,6 @@ namespace Eto.Wpf
 		{
 		}
 
-		~PropertyChangeNotifier()
-		{
-			Console.WriteLine($"WAGABAGABOO! {_property?.PathParameters[0]}");
-		}
-
 		public PropertyChangeNotifier(sw.PropertyPath property)
 		{
 			_property = property ?? throw new ArgumentNullException(nameof(property));
