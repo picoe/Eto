@@ -183,7 +183,7 @@ namespace Eto.Mac.Forms.Controls
 
 				if (oldIndex == -1)
 					control.SelectItem(-1);
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void AddItem(object item)
@@ -192,7 +192,7 @@ namespace Eto.Mac.Forms.Controls
 				Handler.Control.Menu.AddItem(CreateItem(item));
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void InsertItem(int index, object item)
@@ -201,14 +201,14 @@ namespace Eto.Mac.Forms.Controls
 				Handler.Control.Menu.InsertItem(CreateItem(item), index);
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var selected = Handler.SelectedIndex;
 				Handler.Control.RemoveItem(index);
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 				if (Handler.Widget.Loaded && selected == index)
 				{
 					Handler.Control.SelectItem(-1);
@@ -220,7 +220,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var change = Handler.SelectedIndex != -1;
 				Handler.Control.RemoveAllItems();
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 				if (Handler.Widget.Loaded && change)
 				{
 					Handler.Control.SelectItem(-1);

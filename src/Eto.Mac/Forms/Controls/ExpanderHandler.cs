@@ -42,6 +42,18 @@ namespace Eto.Mac.Forms.Controls
 		NSView content;
 		int suspendContentSizing;
 
+
+		public class NSExpanderView : MacEventView
+		{
+			new ExpanderHandler Handler => base.Handler as ExpanderHandler;
+
+			public override void Layout()
+			{
+				base.Layout();
+				Handler?.PerformLayout();
+			}
+		}
+
 		static readonly object EnableAnimation_Key = new object();
 
 		public bool EnableAnimation
@@ -58,10 +70,7 @@ namespace Eto.Mac.Forms.Controls
 			set { Widget.Properties.Set(AnimationDuration_Key, value); }
 		}
 
-		protected override NSView CreateControl()
-		{
-			return new MacEventView();
-		}
+		protected override NSView CreateControl() => new NSExpanderView();
 
 		protected override void Initialize()
 		{
@@ -78,8 +87,9 @@ namespace Eto.Mac.Forms.Controls
 
 			header = new NSView();
 
-			content = new NSView
+			content = new EtoPaddedPanel
 			{
+				Handler = this,
 				Hidden = true
 			};
 
@@ -110,14 +120,14 @@ namespace Eto.Mac.Forms.Controls
 
 				if (Expanded)
 				{
-					content.Frame = frame;
-
 					frame.Y = 0;
 					suspendContentSizing++;
-					var newSize = GetPreferredSize(SizeF.MaxValue);
+					var newSize = GetPreferredSize(SizeF.PositiveInfinity);
+
 					controlFrame.Height = newSize.Height;
 					Control.Frame = controlFrame;
-					LayoutIfNeeded(force: true);
+					InvalidateMeasure();
+					Control.Window?.LayoutIfNeeded();
 					content.Frame = new CGRect(0, controlFrame.Height - header.Frame.Height, controlFrame.Width, 0);
 					suspendContentSizing--;
 					frame.Height = newSize.Height - header.Frame.Height;
@@ -137,31 +147,19 @@ namespace Eto.Mac.Forms.Controls
 				{
 					content.Hidden = !Expanded;
 					Callback.OnExpandedChanged(Widget, EventArgs.Empty);
-					LayoutIfNeeded();
+					InvalidateMeasure();
 				}
 				);
 			}
 			else
 			{
 				content.Hidden = !Expanded;
-				LayoutIfNeeded(force: true);
+				InvalidateMeasure();
 				Callback.OnExpandedChanged(Widget, EventArgs.Empty);
 			}
 		}
 
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			PositionControls();
-		}
-
-		public override void OnSizeChanged(EventArgs e)
-		{
-			base.OnSizeChanged(e);
-			PositionControls();
-		}
-
-		void PositionControls()
+		void PerformLayout()
 		{
 			var size = Control.Frame.Size;
 			var disclosureSize = disclosureButton.Frame.Size;
@@ -223,7 +221,6 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<Control>(Header_Key); }
 			set
 			{
-				var size = GetPreferredSize(SizeF.MaxValue);
 				Widget.Properties.Set(Header_Key, value, () =>
 				{
 					var subview = header.Subviews.FirstOrDefault();
@@ -234,7 +231,7 @@ namespace Eto.Mac.Forms.Controls
 					subview.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 					subview.Frame = header.Bounds;
 					header.AddSubview(subview);
-					LayoutIfNeeded(size);
+					InvalidateMeasure();
 				});
 			}
 		}
@@ -247,12 +244,6 @@ namespace Eto.Mac.Forms.Controls
 		public override NSView ContentControl
 		{
 			get { return content; }
-		}
-
-		public override void LayoutChildren()
-		{
-			base.LayoutChildren();
-			PositionControls();
 		}
 	}
 }

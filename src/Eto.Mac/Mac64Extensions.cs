@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
 #if IOS
@@ -168,6 +168,29 @@ namespace Eto.Mac
 		{
 			frame.Size = size.ToNS();
 			return frame;
+		}
+
+		public static CGRect WithPadding(this CGRect frame, Padding padding)
+		{
+			frame.X += padding.Left;
+			frame.Width -= padding.Horizontal;
+			frame.Y += padding.Bottom;
+			frame.Height -= padding.Vertical;
+			return frame;
+		}
+
+		public static Size TruncateInfinity(this SizeF size)
+		{
+			var result = new Size();
+			if (float.IsPositiveInfinity(size.Width))
+				result.Width = int.MaxValue;
+			else
+				result.Width = (int)Math.Truncate(size.Width);
+			if (float.IsPositiveInfinity(size.Height))
+				result.Height = int.MaxValue;
+			else
+				result.Height = (int)Math.Truncate(size.Height);
+			return result;
 		}
 	}
 }

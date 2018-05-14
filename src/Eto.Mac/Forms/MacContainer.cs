@@ -49,22 +49,9 @@ using Eto.iOS.Forms;
 
 namespace Eto.Mac.Forms
 {
-	public interface IMacContainer : IMacControlHandler
-	{
-		void SetContentSize(CGSize contentSize);
-
-		void LayoutParent(bool updateSize = true);
-
-		void LayoutChildren();
-
-		void LayoutAllChildren();
-
-		bool InitialLayout { get; }
-	}
-
 	public abstract class MacContainer<TControl, TWidget, TCallback> : 
 		MacView<TControl, TWidget, TCallback>,
-		Container.IHandler, IMacContainer
+		Container.IHandler
 		where TControl: NSObject
 		where TWidget: Container
 		where TCallback: Container.ICallback
@@ -74,8 +61,6 @@ namespace Eto.Mac.Forms
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
 		public override bool Enabled { get; set; }
-
-		public bool InitialLayout { get; private set; }
 
 		public override IEnumerable<Control> VisualControls => Widget.Controls;
 
@@ -87,7 +72,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void Update()
 		{
-			LayoutChildren();	
+			InvalidateMeasure();
 		}
 
 #if OSX
@@ -97,61 +82,11 @@ namespace Eto.Mac.Forms
 		public bool NeedsQueue => false;
 
 		#endif
-		public virtual void SetContentSize(CGSize contentSize)
-		{
-		}
-
-		public virtual void LayoutChildren()
-		{
-		}
-
-		public void LayoutAllChildren()
-		{
-			if (Widget.IsSuspended)
-				return;
-			//Console.WriteLine("Layout all children: {0}\n {1}", this.GetType().Name, new StackTrace());
-			LayoutChildren();
-			foreach (var child in Widget.VisualControls.Select (r => r.GetMacContainer()).Where(r => r != null))
-			{
-				child.LayoutAllChildren();
-			}
-		}
 
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			var parent = Widget.VisualParent.GetMacContainer();
-			if (parent == null || parent.InitialLayout)
-			{
-				InitialLayout = true;
-				LayoutAllChildren();
-			}
-		}
-
-		public virtual void LayoutParent(bool updateSize = true)
-		{
-			if (Widget.IsSuspended)
-				return;
-			if (NeedsQueue)
-			{
-				AsyncQueue.Add(() => LayoutParent(updateSize));
-				return;
-			}
-			var container = Widget.VisualParent.GetMacContainer();
-			if (container != null)
-			{
-				// traverse up the tree to update everything we own
-				container.LayoutParent(updateSize);
-				return;
-			} 
-			if (updateSize && !Widget.Loaded && AutoSize)
-			{
-				var size = GetPreferredSize(Size.MaxValue);
-				SetContentSize(size.ToNS());
-			}
-
-			// layout everything!
-			LayoutAllChildren();
+			InvalidateMeasure();
 		}
 
 		public override void Invalidate(bool invalidateChildren)

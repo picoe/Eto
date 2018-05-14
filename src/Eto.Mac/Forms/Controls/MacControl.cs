@@ -46,7 +46,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Control.Font = value.ToNS();
 					Control.AttributedStringValue = value.AttributedString(Control.AttributedStringValue);
-					LayoutIfNeeded();
+					InvalidateMeasure();
 				});
 			}
 		}

@@ -44,6 +44,11 @@ using Eto.Mac.Forms.Menu;
 namespace Eto.Mac.Forms
 {
 
+	static class MacPanel
+	{
+		public static readonly object ContextMenu_Key = new object();
+	}
+
 	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, Panel.IHandler
 		where TControl: NSObject
 		where TWidget: Panel
@@ -58,15 +63,16 @@ namespace Eto.Mac.Forms
 			set
 			{
 				padding = value;
-				LayoutParent();
+				InvalidateMeasure();
 			}
 		}
 
 		#if OSX
-		protected virtual NSViewResizingMask ContentResizingMask()
-		{
-			return NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-		}
+		protected virtual NSViewResizingMask ContentResizingMask() =>
+						NSViewResizingMask.MaxYMargin
+						| NSViewResizingMask.MaxXMargin
+						| NSViewResizingMask.WidthSizable
+						| NSViewResizingMask.HeightSizable;
 		#endif
 
 		public Control Content
@@ -84,11 +90,9 @@ namespace Eto.Mac.Forms
 				var control = value.GetContainerView();
 				if (control != null)
 				{
-					var container = ContentControl;
 #if OSX
 					control.AutoresizingMask = ContentResizingMask();
-					control.Frame = new CGRect(ContentControl.Bounds.X, ContentControl.Bounds.Y, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
-					container.AddSubview(control); // default
+					ContentControl.AddSubview(control); // default
 #elif IOS
 					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 					control.Frame = new CGRect(0, 0, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
@@ -96,22 +100,19 @@ namespace Eto.Mac.Forms
 #endif
 				}
 
-				if (Widget.Loaded)
-				{
-					LayoutParent();
-				}
+				InvalidateMeasure();
 			}
 		}
 
 #if OSX
-		ContextMenu contextMenu;
+
 		public ContextMenu ContextMenu
 		{
-			get { return contextMenu; }
+			get => Widget.Properties.Get<ContextMenu>(MacPanel.ContextMenu_Key);
 			set
 			{
-				contextMenu = value;
-				EventControl.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+				Widget.Properties.Set(MacPanel.ContextMenu_Key, value);
+				EventControl.Menu = (value?.Handler as ContextMenuHandler)?.Control;
 			}
 		}
 #else
@@ -134,87 +135,6 @@ namespace Eto.Mac.Forms
 				return contentControl.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
 			
 			return Padding.Size;
-		}
-
-		protected virtual CGRect GetContentBounds()
-		{
-			return ContentControl.Bounds;
-		}
-
-		protected virtual CGRect AdjustContent(CGRect rect)
-		{
-			return rect;
-		}
-
-		public override void LayoutChildren()
-		{
-			base.LayoutChildren();
-
-			if (content == null)
-				return;
-
-			NSView childControl = content.GetContainerView();
-			var frame = GetContentBounds();
-
-			if (frame.Width > padding.Horizontal && frame.Height > padding.Vertical)
-			{
-				frame.X += padding.Left;
-				frame.Width -= padding.Horizontal;
-				frame.Y += padding.Bottom;
-				frame.Height -= padding.Vertical;
-			}
-			else
-			{
-				frame.X = 0;
-				frame.Y = 0;
-			}
-			frame = AdjustContent(frame);
-
-			if (childControl.Frame != frame)
-				childControl.Frame = frame;
-		}
-
-		public override void SetContentSize(CGSize contentSize)
-		{
-			base.SetContentSize(contentSize);
-			if (MinimumSize != Size.Empty)
-			{
-				contentSize.Width = (nfloat)Math.Max(contentSize.Width, MinimumSize.Width);
-				contentSize.Height = (nfloat)Math.Max(contentSize.Height, MinimumSize.Height);
-			}
-			if (Widget.Content != null)
-			{
-				var child = Widget.Content.Handler as IMacContainer;
-				if (child != null)
-				{
-					child.SetContentSize(contentSize);
-				}
-			}
-		}
-
-		bool isResizing;
-
-		void HandleSizeChanged(object sender, EventArgs e)
-		{
-			if (!isResizing)
-			{
-				isResizing = true;
-				LayoutChildren();
-				isResizing = false;
-			}
-		}
-
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			LayoutChildren();
-			Widget.SizeChanged += HandleSizeChanged;
-		}
-
-		public override void OnUnLoad(EventArgs e)
-		{
-			base.OnUnLoad(e);
-			Widget.SizeChanged -= HandleSizeChanged;
 		}
 	}
 }
