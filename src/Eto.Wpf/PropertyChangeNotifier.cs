@@ -20,7 +20,7 @@ namespace Eto.Wpf
 		public static PropertyChangeNotifier Register(sw.DependencyProperty property, EventHandler handler, sw.DependencyObject propertySource = null)
 		{
 			var notifier = new PropertyChangeNotifier(property);
-			notifier.ValueChanged += handler; // creates a reference to where we bind to
+			notifier.ValueChanged += handler;
 			if (propertySource != null)
 				notifier.PropertySource = propertySource;
 			return notifier;
@@ -29,6 +29,11 @@ namespace Eto.Wpf
 		public PropertyChangeNotifier(sw.DependencyProperty property)
 		: this(new sw.PropertyPath(property))
 		{
+		}
+
+		~PropertyChangeNotifier()
+		{
+			Console.WriteLine($"WAGABAGABOO! {_property?.PathParameters[0]}");
 		}
 
 		public PropertyChangeNotifier(sw.PropertyPath property)

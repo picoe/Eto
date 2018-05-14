@@ -29,7 +29,7 @@ namespace Eto.Wpf.Forms.Menu
 			switch (id)
 			{
 				case CheckMenuItem.CheckedChangedEvent:
-					PropertyChangeNotifier.Register(swc.MenuItem.IsCheckedProperty, HandleIsCheckedChanged, Control);
+					Widget.Properties.Set(swc.MenuItem.IsCheckedProperty, PropertyChangeNotifier.Register(swc.MenuItem.IsCheckedProperty, HandleIsCheckedChanged, Control));
                     break;
 				default:
 					base.AttachEvent(id);

@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
+using Eto.Drawing;
 
 namespace Eto.GtkSharp.Forms.Menu
 {
@@ -31,6 +32,9 @@ namespace Eto.GtkSharp.Forms.Menu
 					Control.Shown += Connector.HandleMenuOpening;
 					break;
 				case ContextMenu.ClosedEvent:
+					HandleEvent(ContextMenu.ClosingEvent);
+					break;
+				case ContextMenu.ClosingEvent:
 					Control.Hidden += Connector.HandleMenuClosed;
 					break;
 
@@ -64,11 +68,15 @@ namespace Eto.GtkSharp.Forms.Menu
 
 			public void HandleMenuClosed(object sender, EventArgs e)
 			{
-				Handler.Callback.OnClosed(Handler.Widget, EventArgs.Empty);
+				var h = Handler;
+				// before menuitem click is processed
+				h.Callback.OnClosing(h.Widget, EventArgs.Empty);
+				// call OnClosed after menuitem click is processed
+				Application.Instance.AsyncInvoke(() => h.Callback.OnClosed(h.Widget, EventArgs.Empty));
 			}
 
 			[GLib.ConnectBefore]
-			public void HandleKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+			public void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
 			{
 				// Handle pressing shortcut keys when the context menu is open
 				var shortcut = args.Event.Key.ToEto() | args.Event.State.ToEtoKey();
@@ -112,7 +120,7 @@ namespace Eto.GtkSharp.Forms.Menu
 
 		List<Gtk.Menu> attachedSubmenus;
 
-		public void Show(Control relativeTo)
+		void Prepare()
 		{
 			// trap key events to handle shortcut keys
 			attachedSubmenus = Widget.GetChildren()
@@ -125,8 +133,33 @@ namespace Eto.GtkSharp.Forms.Menu
 			Widget.Closed += HandleMenuClosed;
 
 			ValidateItems();
+
 			Control.ShowAll();
-			Control.Popup();
+		}
+
+		PointF? showLocation;
+
+		public void Show(Control relativeTo, PointF? location)
+		{
+			Prepare();
+			if (location != null)
+			{
+				showLocation = relativeTo?.PointToScreen(location.Value) ?? location;
+				Control.Popup(null, null, PopupMenuPosition, 3u, Gtk.Global.CurrentEventTime);
+			}
+			else
+			{
+				showLocation = null;
+				Control.Popup();
+			}
+		}
+
+		void PopupMenuPosition(Gtk.Menu menu, out int x, out int y, out bool push_in)
+		{
+			var location = showLocation ?? Mouse.Position;
+			x = (int)location.X;
+			y = (int)location.Y;
+			push_in = false;
 		}
 
 		void HandleMenuClosed (object sender, EventArgs e)
