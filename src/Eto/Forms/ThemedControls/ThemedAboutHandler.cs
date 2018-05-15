@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 
 namespace Eto.Forms.ThemedControls
@@ -199,6 +199,12 @@ namespace Eto.Forms.ThemedControls
 		}
 
 		/// <summary>
+		/// Gets or sets the text localization.
+		/// </summary>
+		/// <value>The transformation from placeholder string to localized.</value>
+		public Func<string, string> Localize { get; set; } = (x => x);
+
+		/// <summary>
 		/// Shows the dialog.
 		/// </summary>
 		/// <returns>The dialog result.</returns>
@@ -212,11 +218,11 @@ namespace Eto.Forms.ThemedControls
 			textArea2.ReadOnly = true;
 
 			if (developers != null && developers.Length != 0)
-				textArea1.Text += "Developers:" + Environment.NewLine + string.Join(Environment.NewLine, developers) + Environment.NewLine + Environment.NewLine;
+				textArea1.Text += Localize("Developers:") + Environment.NewLine + string.Join(Environment.NewLine, developers) + Environment.NewLine + Environment.NewLine;
 			if (designers != null && designers.Length != 0)
-				textArea1.Text += "Designers:" + Environment.NewLine + string.Join(Environment.NewLine, designers) + Environment.NewLine + Environment.NewLine;
+				textArea1.Text += Localize("Designers:") + Environment.NewLine + string.Join(Environment.NewLine, designers) + Environment.NewLine + Environment.NewLine;
 			if (documenters != null && documenters.Length != 0)
-				textArea1.Text += "Documenters:" + Environment.NewLine + string.Join(Environment.NewLine, documenters) + Environment.NewLine + Environment.NewLine;
+				textArea1.Text += Localize("Documenters:") + Environment.NewLine + string.Join(Environment.NewLine, documenters) + Environment.NewLine + Environment.NewLine;
 			textArea1.Text = textArea1.Text.TrimEnd(Environment.NewLine.ToCharArray());
 
 			if (!string.IsNullOrEmpty(license))
@@ -230,13 +236,13 @@ namespace Eto.Forms.ThemedControls
 			{
 				var tabControl = new TabControl();
 
-				tabControl.Pages.Add(new TabPage(layout) { Text = "About" });
+				tabControl.Pages.Add(new TabPage(layout) { Text = Localize("About") });
 
 				if (!string.IsNullOrEmpty(textArea1.Text))
-					tabControl.Pages.Add(new TabPage(textArea1) { Text = "Credits" });
+					tabControl.Pages.Add(new TabPage(textArea1) { Text = Localize("Credits") });
 
 				if (!string.IsNullOrEmpty(textArea2.Text))
-					tabControl.Pages.Add(new TabPage(textArea2) { Text = "License" });
+					tabControl.Pages.Add(new TabPage(textArea2) { Text = Localize("License") });
 
 				Control.Content = tabControl;
 			}

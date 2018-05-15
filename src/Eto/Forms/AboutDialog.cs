@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using Eto.Drawing;
 
@@ -166,6 +166,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the text localization.
+		/// </summary>
+		/// <value>The transformation from placeholder string to localized.</value>
+		Func<string, string> Localize
+		{
+			get { return Handler.Localize; }
+			set { Handler.Localize = value; }
+		}
+
+		/// <summary>
 		/// Handler interface for the <see cref="AboutDialog"/>
 		/// </summary>
 		public new interface IHandler : CommonDialog.IHandler
@@ -247,6 +257,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The application website label.</value>
 			string WebsiteLabel { get; set; }
+
+			/// <summary>
+			/// Gets or sets the text localization.
+			/// </summary>
+			/// <value>The transformation from placeholder string to localized.</value>
+			Func<string, string> Localize { get; set; }
 		}
 	}
 }
