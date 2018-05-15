@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 using Eto.Forms;
 
@@ -89,6 +89,12 @@ namespace Eto.GtkSharp.Forms
 			get { return Control.WebsiteLabel; }
 			set { Control.WebsiteLabel = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets the text localization.
+		/// </summary>
+		/// <value>The transformation from placeholder string to localized.</value>
+		public Func<string, string> Localize { get; set; } = (x => x);
 
 		public DialogResult ShowDialog(Window parent)
 		{
