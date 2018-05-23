@@ -432,7 +432,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				ScrollView.BorderType = value.ToNS();
-				LayoutIfNeeded();
+				InvalidateMeasure();
 			}
 		}
 
@@ -579,7 +579,8 @@ namespace Eto.Mac.Forms.Controls
 		void IDataViewHandler.OnCellEdited(GridViewCellEventArgs e)
 		{
 			SetIsEditing(false);
-			Callback.OnCellEdited(Widget, e);
+			if (e.Item != null)
+				Callback.OnCellEdited(Widget, e);
 		}
 
 		Grid IDataViewHandler.Widget

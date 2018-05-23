@@ -37,8 +37,6 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class GroupBoxHandler : MacPanel<NSBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
-		Font font;
-
 		public class EtoBox : NSBox, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -49,17 +47,14 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
-			public EtoBox()
+			public EtoBox(GroupBoxHandler handler)
 			{
 				Title = string.Empty;
-				ContentView = new NSView();
+				ContentView = new EtoPaddedPanel { Handler = handler };
 			}
 		}
 
-		protected override NSBox CreateControl()
-		{
-			return new EtoBox();
-		}
+		protected override NSBox CreateControl() => new EtoBox(this);
 
 		protected override void Initialize()
 		{
@@ -67,15 +62,9 @@ namespace Eto.Mac.Forms.Controls
 			base.Initialize();
 		}
 
-		public override NSView ContainerControl
-		{
-			get { return Control; }
-		}
+		public override NSView ContainerControl => Control;
 
-		public override NSView ContentControl
-		{
-			get { return (NSView)Control.ContentView; }
-		}
+		public override NSView ContentControl => (NSView)Control.ContentView;
 
 		public override bool Enabled { get; set; }
 
@@ -92,17 +81,25 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		static readonly object Font_Key = new object();
+
 		public Font Font
 		{
 			get
 			{
-				return font ?? (font = new Font(new FontHandler(Control.TitleFont)));
+				var font = Widget.Properties.Get<Font>(Font_Key);
+				if (font == null)
+				{
+					font = new Font(new FontHandler(Control.TitleFont));
+					Widget.Properties.Set(Font_Key, font);
+				}
+				return font;
 			}
 			set
 			{
-				font = value;
-				Control.TitleFont = font == null ? null : ((FontHandler)font.Handler).Control;
-				LayoutIfNeeded();
+				Widget.Properties.Set(Font_Key, value);
+				Control.TitleFont = (value?.Handler as FontHandler)?.Control;
+				InvalidateMeasure();
 			}
 		}
 
@@ -118,11 +115,6 @@ namespace Eto.Mac.Forms.Controls
 			availableSize -= boundsSize;
 
 			return base.GetPreferredSize(availableSize) + boundsSize;
-		}
-
-		public override void SetContentSize(CGSize contentSize)
-		{
-			Control.SetFrameFromContentFrame(new CGRect(0, 0, contentSize.Width, contentSize.Height));
 		}
 
 		NSTextFieldCell TitleCell { get { return (NSTextFieldCell)Control.TitleCell; } }

@@ -56,12 +56,12 @@ namespace Eto.Mac.Forms.Controls
 						nsimage.Draw(new CGRect(labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect(CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
 					else
 					{
-						#pragma warning disable 618
+#pragma warning disable 618
 						nsimage.Flipped = View.IsFlipped;
-						#pragma warning restore 618
+#pragma warning restore 618
 						nsimage.Draw(new CGRect(labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect(CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1);
 					}
-					
+
 					labelRect.X += labelRect.Height + ICON_PADDING;
 					labelRect.Width -= labelRect.Height + ICON_PADDING;
 					base.DrawLabel(shouldTruncateLabel, labelRect);
@@ -69,10 +69,11 @@ namespace Eto.Mac.Forms.Controls
 				base.DrawLabel(shouldTruncateLabel, labelRect);
 			}
 
-			public override CGSize SizeOfLabel (bool computeMin)
+			public override CGSize SizeOfLabel(bool computeMin)
 			{
-				var size = base.SizeOfLabel (computeMin);
-				if (Handler.image != null) {
+				var size = base.SizeOfLabel(computeMin);
+				if (Handler.image != null)
+				{
 					size.Width += size.Height + ICON_PADDING;
 				}
 				return size;
@@ -81,19 +82,14 @@ namespace Eto.Mac.Forms.Controls
 			public EtoTabViewItem(IMacViewHandler handler)
 			{
 				Identifier = new NSString(Guid.NewGuid().ToString());
-				View = new MacEventView { Handler = handler };
+				View = new EtoPaddedPanel { Handler = handler };
 			}
 		}
+
 
 		protected override NSTabViewItem CreateControl()
 		{
 			return new EtoTabViewItem(this);
-		}
-
-		protected override void Initialize()
-		{
-			Enabled = true;
-			base.Initialize();
 		}
 
 		public string Text
@@ -114,11 +110,8 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override NSView ContentControl
-		{
-			get { return Control.View; }
-		}
+		public override NSView ContentControl => Control.View;
 
-		public override bool Enabled { get; set; }
+		public override bool Enabled { get; set; } = true;
 	}
 }

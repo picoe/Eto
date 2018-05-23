@@ -1,6 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Eto.Forms;
+using Eto.Mac.Forms;
+#if XAMMAC2
+using AppKit;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+#endif
 
 namespace Eto.Mac
 {
@@ -57,7 +64,11 @@ namespace Eto.Mac
 			if (_actionQueue.Count == 1)
 			{
 				// first one added, schedule a layout!
-				Application.Instance.AsyncInvoke(FlushQueue);
+#if XAMMAC1
+				NSApplication.SharedApplication.BeginInvokeOnMainThread(new NSAction(FlushQueue));
+#else
+				NSApplication.SharedApplication.BeginInvokeOnMainThread(FlushQueue);
+#endif
 			}
 		}
 

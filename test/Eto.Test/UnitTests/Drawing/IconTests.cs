@@ -13,13 +13,14 @@ namespace Eto.Test.UnitTests.Drawing
 		[TestCase(1.5f, 1.5f)]
 		[TestCase(1.75f, 2f)]
 		[TestCase(2f, 2f)]
-		[TestCase(4f, 3f)]
+		[TestCase(4f, 4f)]
+		[TestCase(5f, 4f)]
 		public void IconShouldSupportMultipleResolutions(float scale, float expectedResult)
 		{
 			var icon = TestIcons.Logo;
 
 			Assert.IsNotNull(icon, "#1");
-			var expectedScales = new [] { 0.5f, 1f, 1.5f, 2f, 3f };
+			var expectedScales = new [] { 0.5f, 1f, 1.5f, 2f, 4f };
 
 			Assert.AreEqual(expectedScales.Length, icon.Frames.Count(), "#2 - Should be a representation for each image with @<scale>");
 

@@ -95,10 +95,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public void InsertTab(int index, TabPage page)
 		{
+			var tabViewItem = ((TabPageHandler)page.Handler).Control;
 			if (index == -1)
-				Control.Add(((TabPageHandler)page.Handler).Control);
+				Control.Add(tabViewItem);
 			else
-				Control.Insert(((TabPageHandler)page.Handler).Control, index);
+				Control.Insert(tabViewItem, index);
 		}
 
 		public void ClearTabs()
@@ -127,6 +128,10 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
+			var naturalSize = NaturalSize;
+			if (naturalSize != null)
+				return naturalSize.Value;
+			
 			var size = base.GetNaturalSize(availableSize);
 			var borderSize = Control.Frame.Size.ToEto() - Control.ContentRect.Size.ToEto();
 
@@ -134,7 +139,9 @@ namespace Eto.Mac.Forms.Controls
 			{
 				size = SizeF.Max(size, tab.GetPreferredSize(availableSize));
 			}
-			return size + borderSize;
+			naturalSize = size + borderSize;
+			NaturalSize = naturalSize;
+			return naturalSize.Value;
 		}
 
 		public DockPosition TabPosition
