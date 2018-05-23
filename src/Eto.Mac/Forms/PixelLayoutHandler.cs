@@ -41,40 +41,44 @@ namespace Eto.Mac.Forms
 	{
 		public override NSView ContainerControl { get { return Control; } }
 
-		public class FlippedMacEventView : MacEventView 
+		public class PixelLayoutView : MacEventView 
 		{
-			public override bool IsFlipped
+			new PixelLayoutHandler Handler => base.Handler as PixelLayoutHandler;
+
+			public override bool IsFlipped => true;
+
+			public override void Layout()
 			{
-				get { return true; }
+				base.Layout();
+				Handler?.PerformLayout();
 			}
 		}
 
-		protected override NSView CreateControl()
-		{
-			return new FlippedMacEventView();
-		}
+		protected override NSView CreateControl() => new PixelLayoutView();
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			base.GetNaturalSize(availableSize);
-			SizeF size = SizeF.Empty;
+			var naturalSize = NaturalSize;
+			if (naturalSize != null)
+				return naturalSize.Value;
+			var size = SizeF.Empty;
 			foreach (var item in Widget.Controls)
 			{
 				var frameSize = item.GetPreferredSize(availableSize);
 				size = SizeF.Max(size, frameSize + new SizeF(item.Location));
 			}
+			NaturalSize = size;
 			return size;
 		}
 
 		void SetPosition(Control control, PointF point)
 		{
 			var macControl = control.GetMacControl();
-			var offset = macControl.PositionOffset;
 			var childView = macControl.ContainerControl;
 			var availableSize = Widget.Loaded ? Size.MaxValue : Control.Frame.Size.ToEtoSize();
 			var preferredSize = macControl.GetPreferredSize(availableSize);
 
-			var origin = new CGPoint(point.X + offset.Width, point.Y + offset.Height);
+			var origin = point.ToNS();
 			if (!Control.IsFlipped)
 			{
 				origin.Y = Control.Frame.Height - origin.Y - preferredSize.Height;
@@ -83,39 +87,24 @@ namespace Eto.Mac.Forms
 			childView.Frame = new CGRect(origin, preferredSize.ToNS());;
 		}
 
-		public override void LayoutChildren()
+		public override void InvalidateMeasure()
 		{
-			base.LayoutChildren();
+			base.InvalidateMeasure();
+			Control.NeedsLayout = true;
+		}
 
+		void PerformLayout()
+		{
 			// set sizes of controls when resizing since available size changes, 
 			// it may change the preferred size of the children.
-			var availableSize = Widget.Loaded ? Size.MaxValue : Control.Frame.Size.ToEtoSize();
 			foreach (var control in Widget.Controls.Select(r => r.GetMacControl()))
 			{
 				if (control == null)
 					continue;
 
-				var preferredSize = control.GetPreferredSize(availableSize);
+				var preferredSize = control.GetPreferredSize(SizeF.PositiveInfinity);
 				control.ContainerControl.SetFrameSize(preferredSize.ToNS());
 			}
-		}
-
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			LayoutChildren();
-			Widget.SizeChanged += Widget_SizeChanged;;
-		}
-
-		public override void OnUnLoad(EventArgs e)
-		{
-			base.OnUnLoad(e);
-			Widget.SizeChanged -= Widget_SizeChanged;;
-		}
-
-		void Widget_SizeChanged (object sender, EventArgs e)
-		{
-			LayoutChildren();
 		}
 
 		public void Add(Control child, int x, int y)
@@ -125,24 +114,21 @@ namespace Eto.Mac.Forms
 			childView.AutoresizingMask = NSViewResizingMask.NotSizable;
 			SetPosition(child, location);
 			Control.AddSubview(childView);
-			if (Widget.Loaded)
-				LayoutParent();
+			InvalidateMeasure();
 		}
 
 		public void Move(Control child, int x, int y)
 		{
 			var location = new Point(x, y);
 			SetPosition(child, location);
-			if (Widget.Loaded)
-				LayoutParent();
+			InvalidateMeasure();
 		}
 
 		public void Remove(Control child)
 		{
 			var childView = child.GetContainerView();
 			childView.RemoveFromSuperview();
-			if (Widget.Loaded)
-				LayoutParent();
+			InvalidateMeasure();
 		}
 	}
 }

@@ -27,8 +27,6 @@ namespace Eto.Mac.Forms
 	{
 		NSView ContainerControl { get; }
 
-		Size PositionOffset { get; }
-
 		Size MinimumSize { get; set; }
 
 		bool IsEventHandled(string eventName);
@@ -44,6 +42,8 @@ namespace Eto.Mac.Forms
 		SizeF GetPreferredSize(SizeF availableSize);
 
 		void RecalculateKeyViewLoop(ref NSView last);
+
+		void InvalidateMeasure();
 	}
 
 	[Register("ObserverHelper")]

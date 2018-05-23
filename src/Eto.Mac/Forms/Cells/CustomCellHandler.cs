@@ -65,7 +65,7 @@ namespace Eto.Mac.Forms.Cells
 			}
 			Callback.OnConfigureCell(Widget, args, widthCell);
 
-			var result = widthCell.GetPreferredSize(SizeF.MaxValue).Width;
+			var result = widthCell.GetPreferredSize(SizeF.PositiveInfinity).Width;
 
 			widthCell.DataContext = null;
 			return result;

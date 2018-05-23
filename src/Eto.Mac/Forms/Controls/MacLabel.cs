@@ -140,23 +140,40 @@ namespace Eto.Mac.Forms.Controls
 		readonly NSMutableAttributedString str;
 		readonly NSMutableParagraphStyle paragraphStyle;
 		int underlineIndex;
-		SizeF availableSizeCached;
+		Size availableSizeCached;
+		SizeF? naturalSizeInfinity;
 		SizeF lastSize;
 		bool isSizing;
 
-		public override NSView ContainerControl { get { return Control; } }
+		public override NSView ContainerControl => Control;
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			if (Widget.Loaded && Wrap != WrapMode.None && Size.Width > 0 && availableSize.Width < int.MaxValue)
-				availableSize.Width = Math.Max(Size.Width, availableSize.Width);
-
-			availableSize = new SizeF((float)Math.Truncate(availableSize.Width), (float)Math.Truncate(availableSize.Height));
-			if (NaturalSize == null || availableSizeCached != availableSize)
+			if (float.IsPositiveInfinity(availableSize.Width))
 			{
-				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSize.ToNS())).ToEto();
+				if (naturalSizeInfinity != null)
+					return naturalSizeInfinity.Value;
+
+				var size = Control.Cell.CellSizeForBounds(new CGRect(0, 0, int.MaxValue, int.MaxValue)).ToEto();
+				naturalSizeInfinity = Size.Ceiling(size);
+				return naturalSizeInfinity.Value;
+			}
+
+			if (Widget.Loaded && Wrap != WrapMode.None && Size.Width > 0)
+			{
+				/*if (!float.IsPositiveInfinity(availableSize.Width))
+					availableSize.Width = Math.Max(Size.Width, availableSize.Width);
+				else*/
+					availableSize.Width = Size.Width;
+				availableSize.Height = float.PositiveInfinity;
+			}
+
+			var availableSizeTruncated = availableSize.TruncateInfinity();
+			if (NaturalSize == null || availableSizeCached != availableSizeTruncated)
+			{
+				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSizeTruncated.ToNS())).ToEto();
 				NaturalSize = Size.Ceiling(size);
-				availableSizeCached = availableSize;
+				availableSizeCached = availableSizeTruncated;
 			}
 
 			return NaturalSize.Value;
@@ -169,13 +186,13 @@ namespace Eto.Mac.Forms.Controls
 				return;
 			isSizing = true;
 			var size = Size;
-			if (Wrap != WrapMode.None && lastSize != size)
+			if (Wrap != WrapMode.None && lastSize.Width != size.Width)
 			{
 				// when wrapping we use the current size, if it changes we check if we need another layout pass
 				// this is needed when resizing a form/label so it can wrap correctly as GetNaturalSize()
 				// will use the old size first, and won't necessarily know the final size of the label.
 				lastSize = size;
-				LayoutIfNeeded();
+				InvalidateMeasure();
 			}
 			isSizing = false;
 		}
@@ -261,7 +278,7 @@ namespace Eto.Mac.Forms.Controls
 						throw new NotSupportedException();
 				}
 				SetAttributes();
-				LayoutIfNeeded();
+				InvalidateMeasure();
 			}
 		}
 
@@ -272,7 +289,6 @@ namespace Eto.Mac.Forms.Controls
 			get { return str.Value; }
 			set
 			{
-				var oldSize = GetPreferredSize(Size.MaxValue);
 				if (string.IsNullOrEmpty(value))
 				{
 					str.SetString(new NSMutableAttributedString());
@@ -297,7 +313,7 @@ namespace Eto.Mac.Forms.Controls
 					}
 				}
 				SetAttributes();
-				LayoutIfNeeded(oldSize);
+				InvalidateMeasure();
 			}
 		}
 
@@ -308,7 +324,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				paragraphStyle.Alignment = value.ToNS();
 				SetAttributes();
-				LayoutIfNeeded();
+				InvalidateMeasure();
 			}
 		}
 
@@ -322,10 +338,9 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (Widget.Properties.Get<Font>(MacLabel.FontKey) != value)
 				{
-					var oldSize = GetPreferredSize(Size.MaxValue);
 					Widget.Properties[MacLabel.FontKey] = value;
 					SetAttributes();
-					LayoutIfNeeded(oldSize);
+					InvalidateMeasure();
 				}
 			}
 		}
@@ -379,6 +394,12 @@ namespace Eto.Mac.Forms.Controls
 					return col.Value.ToNSUI();
 				return null; 
 			}
+		}
+
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+			naturalSizeInfinity = null;
 		}
 
 		public override void OnLoad(EventArgs e)

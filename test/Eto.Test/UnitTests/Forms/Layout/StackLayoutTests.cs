@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using NUnit.Framework;
+using Eto.Drawing;
 
 namespace Eto.Test.UnitTests.Forms.Layout
 {
@@ -174,4 +175,3 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		}
 	}
 }
-

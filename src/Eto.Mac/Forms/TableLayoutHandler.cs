@@ -87,8 +87,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				spacing = value;
-				if (Widget.Loaded)
-					LayoutParent();
+				InvalidateMeasure();
 			}
 		}
 
@@ -98,8 +97,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				padding = value;
-				if (Widget.Loaded)
-					LayoutParent();
+				InvalidateMeasure();
 			}
 		}
 
@@ -115,12 +113,14 @@ namespace Eto.Mac.Forms
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			Control.NeedsLayout = true;
+			InvalidateMeasure();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return Calculate(availableSize, false, ref pref_widths, ref pref_heights);
+			if (NaturalSize == null)
+	              NaturalSize = Calculate(availableSize, false, ref pref_widths, ref pref_heights);
+			return NaturalSize.Value;
 		}
 
 		SizeF Calculate(SizeF availableSize, bool final, ref float[] widths, ref float[] heights)
@@ -138,6 +138,7 @@ namespace Eto.Mac.Forms
 			var totalpadding = Padding.Size + Spacing * new Size(widths.Length - 1, heights.Length - 1);
 			var required = (SizeF)totalpadding;
 			var numscaled = new Size();
+			var available = availableSize;// final ? availableSize : SizeF.PositiveInfinity;
 
 			// calculate all non-scaled controls
 			for (int y = 0; y < heights.Length; y++)
@@ -158,7 +159,7 @@ namespace Eto.Mac.Forms
 					var view = views[y, x];
 					if (view != null && view.Visible)
 					{
-						var size = view.GetPreferredSize(Size.MaxValue);
+						var size = view.GetPreferredSize(available);
 						if (!xscaled && size.Width > widths[x])
 						{
 							required.Width += size.Width - widths[x];
@@ -259,6 +260,7 @@ namespace Eto.Mac.Forms
 			if (views == null)
 				return;
 
+			//Console.WriteLine($"TableLayout {xscaling.Length}x{yscaling.Length} PerformLayout");
 			var controlSize = ContentControl.Frame.Size.ToEto();
 
 			Calculate(controlSize, true, ref final_widths, ref final_heights);
@@ -299,13 +301,6 @@ namespace Eto.Mac.Forms
 			oldFrameSize = controlSize;
 		}
 
-		public override void LayoutChildren()
-		{
-			if (views == null || !Widget.Loaded)
-				return;
-			Control.NeedsLayout = true;
-		}
-
 		public void Add(Control child, int x, int y)
 		{
 			var current = views[y, x];
@@ -319,12 +314,11 @@ namespace Eto.Mac.Forms
 			if (child != null)
 			{
 				var view = child.GetContainerView();
-				if (Widget.Loaded)
-					LayoutParent();
+				InvalidateMeasure();
 				Control.AddSubview(view);
 			}
-			else if (Widget.Loaded)
-				LayoutParent();
+			else 
+				InvalidateMeasure();
 		}
 
 		public void Move(Control child, int x, int y)
@@ -344,8 +338,7 @@ namespace Eto.Mac.Forms
 				}
 
 			views[y, x] = child;
-			if (Widget.Loaded)
-				LayoutParent();
+			InvalidateMeasure();
 		}
 
 		public void Remove(Control child)
@@ -358,8 +351,7 @@ namespace Eto.Mac.Forms
 						var view = child.GetContainerView();
 						view.RemoveFromSuperview();
 						views[y, x] = null;
-						if (Widget.Loaded)
-							LayoutParent();
+						InvalidateMeasure();
 						return;
 					}
 				}
@@ -378,8 +370,7 @@ namespace Eto.Mac.Forms
 		{
 			xscaling[column] = scale;
 			lastxscale = xscaling.Any(r => r) ? -1 : xscaling.Length - 1;
-			if (Widget.Loaded)
-				LayoutParent();
+			InvalidateMeasure();
 		}
 
 		public bool GetColumnScale(int column)
@@ -391,8 +382,13 @@ namespace Eto.Mac.Forms
 		{
 			yscaling[row] = scale;
 			lastyscale = yscaling.Any(r => r) ? -1 : yscaling.Length - 1;
-			if (Widget.Loaded)
-				LayoutParent();
+			InvalidateMeasure();
+		}
+
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+			Control.NeedsLayout = true;
 		}
 
 		public bool GetRowScale(int row)
