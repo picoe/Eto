@@ -160,6 +160,8 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void SetObjectValue(NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, nint row)
 			{
+				if (row >= Handler.collection.Count)
+					return;
 				var item = Handler.collection.ElementAt((int)row);
 				var colHandler = Handler.GetColumn(tableColumn);
 				if (colHandler != null && Handler.SuppressUpdate == 0)

@@ -41,6 +41,7 @@ namespace Eto.Mac.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ButtonHandler : MacButton<NSButton, Button, Button.ICallback>, Button.IHandler
 	{
+		int disableSetBezel;
 		static readonly Size originalSize;
 
 		public static int MinimumWidth = 80;
@@ -75,8 +76,6 @@ namespace Eto.Mac.Forms.Controls
 
 		public class EtoButton : NSButton, IMacControl
 		{
-			bool setBezel = true;
-
 			public WeakReference WeakHandler { get; set; }
 
 			public ButtonHandler Handler
@@ -87,17 +86,20 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void SizeToFit()
 			{
-				setBezel = false;
+				var h = Handler;
+				if (h == null)
+					return;
+				h.disableSetBezel++;
 				base.SizeToFit();
-				if (Handler.AutoSize)
+				if (h.AutoSize)
 				{
 					var size = Frame.Size;
-					var minSize = Handler.MinimumSize;
+					var minSize = h.MinimumSize;
 					size.Height = (nfloat)Math.Max(size.Height, minSize.Height);
 					size.Width = (nfloat)Math.Max(size.Width, minSize.Width);
 					SetFrameSize(size);
 				}
-				setBezel = true;
+				h.disableSetBezel--;
 			}
 
 			public override void SetFrameSize(CGSize newSize)
@@ -107,11 +109,7 @@ namespace Eto.Mac.Forms.Controls
 				if (h == null)
 					return;
 				
-				if (setBezel)
-				{
-					setBezel = false;
-					h.SetBezel();
-				}
+				h.SetBezel();
 
 				h.OnSizeChanged(EventArgs.Empty);
 				h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
@@ -201,24 +199,9 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Control.Image = value.ToNS();
 					SetImagePosition();
-					LayoutIfNeeded();
+					InvalidateMeasure();
 				});
 			}
-		}
-
-		public override Size Size
-		{
-			get { return base.Size; }
-			set
-			{
-				base.Size = value;
-				SetBezel();
-			}
-		}
-
-		protected override SizeF GetNaturalSize(SizeF availableSize)
-		{
-			return base.GetNaturalSize(availableSize);
 		}
 
 		/// <summary>
@@ -249,19 +232,19 @@ namespace Eto.Mac.Forms.Controls
 			return NSBezelStyle.Rounded;
 		}
 
-		bool blah;
 		void SetBezel()
 		{
+			if (disableSetBezel > 0)
+				return;
 			var bezel = Control.BezelStyle;
 			var requiredBezel = GetBezelStyle();
 			if (bezel != requiredBezel)
 			{
-				if (blah)
-					return;
-				blah = true;
+				disableSetBezel++;
+				// setting the bezel style can fire a size changed?
 				Control.BezelStyle = requiredBezel;
-				LayoutIfNeeded();
-				blah = false;
+				InvalidateMeasure();
+				disableSetBezel--;
 			}
 		}
 
@@ -296,11 +279,10 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<ButtonImagePosition>(ImagePosition_Key); }
 			set
 			{
-				var oldSize = GetPreferredSize(Size.MaxValue);
 				Widget.Properties.Set(ImagePosition_Key, value, () =>
 				{
 					SetImagePosition();
-					LayoutIfNeeded(oldSize);
+					InvalidateMeasure();
 				});
 			}
 		}
@@ -310,10 +292,9 @@ namespace Eto.Mac.Forms.Controls
 			get { return base.MinimumSize; }
 			set
 			{
-				var oldSize = GetPreferredSize(Size.MaxValue);
 				base.MinimumSize = value;
 				SetImagePosition();
-				LayoutIfNeeded(oldSize);
+				InvalidateMeasure();
 			}
 		}
 	}

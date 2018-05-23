@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Controls
 			var page = new TabPage { Text = "Fixed Size" };
 			page.Content = new Scrollable
 			{
-				Border = BorderType.None,
+				Border = BorderType.Bezel,
 				ExpandContentWidth = false,
 				ExpandContentHeight = false,
 				Content = layout

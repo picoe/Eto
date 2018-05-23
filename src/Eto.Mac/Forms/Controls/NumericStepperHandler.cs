@@ -188,7 +188,7 @@ namespace Eto.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			var size = GetNaturalSize(Size.MaxValue);
+			var size = GetNaturalSize(SizeF.PositiveInfinity);
 			Control.Frame = new CGRect(0, 0, size.Width, size.Height);
 			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 			Widget.LostFocus += (sender, e) =>
@@ -371,7 +371,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					TextField.Font = value.ToNS();
 					TextField.SizeToFit();
-					LayoutIfNeeded();
+					InvalidateMeasure();
 				});
 			}
 		}

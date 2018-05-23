@@ -106,7 +106,7 @@ namespace Eto.Mac.Forms
 		public WeakReference WeakHandler { get; set; }
 	}
 
-	public interface IMacWindow : IMacContainer
+	public interface IMacWindow : IMacControlHandler
 	{
 		Rectangle? RestoreBounds { get; set; }
 
@@ -132,7 +132,7 @@ namespace Eto.Mac.Forms
 		public static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
 	}
 
-	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacContainer, IMacWindow
+	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
 		where TControl: NSWindow
 		where TWidget: Window
 		where TCallback: Window.ICallback
@@ -847,7 +847,7 @@ namespace Eto.Mac.Forms
 
 		#region IMacContainer implementation
 
-		public override void SetContentSize(CGSize contentSize)
+		void SetContentSize(CGSize contentSize)
 		{
 			if (MinimumSize != Size.Empty)
 			{
@@ -891,22 +891,13 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		Window IMacWindow.Widget
-		{
-			get { return Widget; }
-		}
+		Window IMacWindow.Widget => Widget;
 
-		NSWindow IMacWindow.Control
-		{
-			get { return Control; }
-		}
+		NSWindow IMacWindow.Control => Control;
 
 		#endregion
 
-		public Screen Screen
-		{
-			get { return new Screen(new ScreenHandler(Control.Screen)); }
-		}
+		public Screen Screen => new Screen(new ScreenHandler(Control.Screen));
 
 		public override PointF PointFromScreen(PointF point)
 		{
@@ -955,9 +946,6 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public float LogicalPixelSize
-		{
-			get { return Screen?.LogicalPixelSize ?? 1f; }
-		}
+		public float LogicalPixelSize => Screen?.LogicalPixelSize ?? 1f;
 	}
 }

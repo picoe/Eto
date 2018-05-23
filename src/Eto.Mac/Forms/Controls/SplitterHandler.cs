@@ -34,13 +34,6 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class SplitterHandler : MacContainer<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
-
-		public override void LayoutParent(bool updateSize = true)
-		{
-			UpdatePosition();
-			base.LayoutParent(updateSize);
-		}
-
 		double relative = double.NaN;
 
 		double GetRelativePosition()
@@ -365,13 +358,16 @@ namespace Eto.Mac.Forms.Controls
 				    || cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
 					base.MouseUp(theEvent);
 			}
+
+			public override void Layout()
+			{
+				base.Layout();
+				Handler?.UpdatePosition();
+			}
 		}
 
 
-		protected override NSSplitView CreateControl()
-		{
-			return new EtoSplitView(this);
-		}
+		protected override NSSplitView CreateControl() => new EtoSplitView(this);
 
 		protected override void Initialize()
 		{
@@ -490,11 +486,11 @@ namespace Eto.Mac.Forms.Controls
 				{
 					case SplitterFixedPanel.None:
 					case SplitterFixedPanel.Panel1:
-						var size1 = panel1.GetPreferredSize(SizeF.MaxValue);
+						var size1 = panel1.GetPreferredSize(SizeF.PositiveInfinity);
 						position = (int)(Orientation == Orientation.Horizontal ? size1.Width : size1.Height);
 						break;
 					case SplitterFixedPanel.Panel2:
-						var size2 = panel2.GetPreferredSize(SizeF.MaxValue);
+						var size2 = panel2.GetPreferredSize(SizeF.PositiveInfinity);
 						if (Orientation == Orientation.Horizontal)
 							position = (int)(Control.Frame.Width - size2.Width - Control.DividerThickness);
 						else
@@ -621,6 +617,12 @@ namespace Eto.Mac.Forms.Controls
 				size.Width = Math.Max(size1.Width, size2.Width);
 			}
 			return size;
+		}
+
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+			Control.NeedsLayout = true;
 		}
 
 		void UpdatePosition()

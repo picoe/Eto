@@ -280,7 +280,6 @@ namespace Eto.Test.UnitTests
 
 				form.Content = new StackLayout
 				{
-					Padding = 10,
 					Spacing = 10,
 					Items =
 					{
@@ -490,6 +489,7 @@ namespace Eto.Test.UnitTests
 				.OrderBy(r => r.FullName);
 		}
 
+
 		public static IEnumerable<Type> GetControlTypes()
 		{
 			return GetAllControlTypes()
@@ -499,6 +499,44 @@ namespace Eto.Test.UnitTests
 					return !typeof(Window).GetTypeInfo().IsAssignableFrom(ti)
 						&& !typeof(TabPage).GetTypeInfo().IsAssignableFrom(ti);
 				});
+		}
+
+		public static IEnumerable<Type> GetPanelTypes()
+		{
+			yield return typeof(Panel);
+			yield return typeof(Expander);
+			yield return typeof(GroupBox);
+			yield return typeof(TabPage);
+			yield return typeof(DocumentPage);
+			yield return typeof(Scrollable);
+			yield return typeof(Drawable);
+		}
+
+		public static Panel CreatePanelType(Type panelType, out Control container)
+		{
+			var panel = Activator.CreateInstance(panelType) as Panel;
+			container = panel;
+			if (panel is TabPage tabPage)
+			{
+				tabPage.Text = "TabPage";
+				container = new TabControl { Pages = { tabPage } };
+			}
+			else if (panel is DocumentPage documentPage)
+			{
+				documentPage.Text = "DocumentPage";
+				container = new DocumentControl { Pages = { documentPage } };
+			}
+			else if (panel is GroupBox groupBox)
+			{
+				groupBox.Text = "GroupBox";
+			}
+			else if (panel is Expander expander)
+			{
+				expander.Header = "Expander";
+				expander.Expanded = true;
+			}
+
+			return panel;
 		}
 	}
 }

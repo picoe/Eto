@@ -18,6 +18,7 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
+using NSRectEdge = MonoMac.AppKit.NSRectEdge;
 #if Mac64
 using nfloat = System.Double;
 using nint = System.Int64;
@@ -40,7 +41,22 @@ namespace Eto.Mac.Forms
 	{
 		Button defaultButton;
 		ModalEventArgs session;
-		const int BUTTON_PADDING = 2; 
+		const int BUTTON_PADDING = 2;
+
+		static readonly object UseContentBorder_Key = new object();
+
+		public bool UseContentBorder
+		{
+			get => Widget.Properties.Get(UseContentBorder_Key, true);
+			set
+			{
+				if (UseContentBorder != value)
+				{
+					Widget.Properties.Set(UseContentBorder_Key, value, true);
+					PositionButtons();
+				}
+			}
+		}
 
 		protected override bool DisposeControl { get { return false; } }
 
@@ -96,18 +112,7 @@ namespace Eto.Mac.Forms
 			var buttonSize = GetButtonSize(availableSize);
 			size.Width = Math.Max(size.Width, buttonSize.Width);
 			size.Height += buttonSize.Height;
-
 			return size;
-		}
-
-		protected override CGRect AdjustContent(CGRect rect)
-		{
-			rect = base.AdjustContent(rect);
-
-			var buttonSize = GetButtonSize(Control.ContentView.Frame.Size.ToEto());
-			rect.Height -= buttonSize.Height;
-			rect.Y += buttonSize.Height;
-			return rect;
 		}
 
 		public DialogDisplayMode DisplayMode { get; set; }
@@ -206,19 +211,13 @@ namespace Eto.Mac.Forms
 		public void InsertDialogButton(bool positive, int index, Button item)
 		{
 			Control.ContentView.AddSubview(item.ToNative());
-			PositionButtons();
+			if (Widget.Loaded)
+				PositionButtons();
 		}
 
 		public void RemoveDialogButton(bool positive, int index, Button item)
 		{
 			item.ToNative().RemoveFromSuperview();
-			if (Widget.Loaded)
-				PositionButtons();
-		}
-
-		public override void LayoutParent(bool updateSize = true)
-		{
-			base.LayoutParent(updateSize);
 			if (Widget.Loaded)
 				PositionButtons();
 		}
@@ -233,6 +232,20 @@ namespace Eto.Mac.Forms
 		{
 			var availableSize = Control.ContentView.Frame.Size.ToEto();
 			var point = new PointF(availableSize.Width, 0);
+
+			var buttonSize = GetButtonSize(availableSize);
+
+			Control.SetContentBorderThickness(UseContentBorder ? buttonSize.Height : 0, NSRectEdge.MinYEdge);
+
+			// adjust content
+			NSView contentContainer = Content.GetContainerView();
+			if (contentContainer != null)
+			{
+				var frame = contentContainer.Frame;
+				frame.Y += buttonSize.Height;
+				frame.Height -= buttonSize.Height;
+				contentContainer.Frame = frame;
+			}
 
 			foreach (var button in Widget.PositiveButtons.Reverse().Concat(Widget.NegativeButtons))
 			{

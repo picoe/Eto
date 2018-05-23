@@ -127,7 +127,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control WrapLabel()
 		{
-			const string text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum";
+			const string text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 			var label = new Label
 			{
 				Text = text
@@ -143,7 +143,7 @@ namespace Eto.Test.Sections.Controls
 			verticalAlignmentDropDown.SelectedValueBinding.Bind(label, l => l.VerticalAlignment);
 
 			var testVerticalAlignment = new CheckBox { Text = "Test VerticalAlignment" };
-			testVerticalAlignment.CheckedChanged += (sender, e) => label.Height = testVerticalAlignment.Checked == true ? 200 : -1;
+			testVerticalAlignment.CheckedChanged += (sender, e) => label.Size = new Size(-1, testVerticalAlignment.Checked == true ? 200 : -1);
 			testVerticalAlignment.CheckedBinding.Bind(verticalAlignmentDropDown, c => c.Enabled, DualBindingMode.OneWayToSource);
 
 			var fontSelector = new FontPicker();

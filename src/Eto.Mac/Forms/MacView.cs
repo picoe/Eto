@@ -198,13 +198,13 @@ namespace Eto.Mac.Forms
 		public virtual Size MinimumSize
 		{
 			get { return Widget.Properties.Get<Size?>(MacView.MinimumSize_Key) ?? DefaultMinimumSize; }
-			set { Widget.Properties[MacView.MinimumSize_Key] = value; NaturalSize = null; }
+			set { Widget.Properties[MacView.MinimumSize_Key] = value; InvalidateMeasure(); }
 		}
 
 		public virtual SizeF MaximumSize
 		{
 			get { return Widget.Properties.Get<SizeF?>(MacView.MaximumSize_Key) ?? SizeF.MaxValue; }
-			set { Widget.Properties[MacView.MaximumSize_Key] = value; }
+			set { Widget.Properties[MacView.MaximumSize_Key] = value; InvalidateMeasure(); }
 		}
 
 		public Size? PreferredSize
@@ -223,29 +223,32 @@ namespace Eto.Mac.Forms
 			}
 			set
 			{
-				var oldSize = GetPreferredSize(Size.MaxValue);
+				AutoSize = value.Width == -1 || value.Height == -1;
+				if (!Widget.Loaded)
+				{
+					if (PreferredSize != value)
+					{
+						PreferredSize = value;
+						Callback.OnSizeChanged(Widget, EventArgs.Empty);
+					}
+					return;
+				}
 				PreferredSize = value;
 
 				var oldFrameSize = ContainerControl.Frame.Size;
 				var newSize = oldFrameSize;
 				if (value.Width >= 0)
 					newSize.Width = value.Width;
-				else if (!Widget.Loaded)
-					newSize.Width = oldSize.Width;
-				
 				if (value.Height >= 0)
 					newSize.Height = value.Height;
-				else if (!Widget.Loaded)
-					newSize.Height = oldSize.Height;
 
 				// this doesn't get to our overridden method to handle the event (since it calls [super setFrameSize:]) so trigger event manually.
 				ContainerControl.SetFrameSize(newSize);
 				if (oldFrameSize != newSize)
 					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 
-				AutoSize = value.Width == -1 || value.Height == -1;
 				CreateTracking();
-				LayoutIfNeeded(oldSize);
+				InvalidateMeasure();
 			}
 		}
 
@@ -255,22 +258,15 @@ namespace Eto.Mac.Forms
 			set { Widget.Properties[MacView.NaturalSize_Key] = value; }
 		}
 
-		protected virtual bool LayoutIfNeeded(SizeF? oldPreferredSize = null, bool force = false)
+
+		public virtual void InvalidateMeasure()
 		{
 			NaturalSize = null;
-			if (Widget.Loaded)
-			{
-				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize();
-				var newSize = GetPreferredSize(Size.MaxValue);
-				if (newSize != oldSize || force)
-				{
-					var container = Widget.VisualParent.GetMacContainer();
-					if (container != null)
-						container.LayoutParent();
-					return true;
-				}
-			}
-			return false;
+
+			if (!Widget.Loaded)
+				return;
+
+			Widget.VisualParent.GetMacControl()?.InvalidateMeasure();
 		}
 
 		protected virtual SizeF GetNaturalSize(SizeF availableSize)
@@ -278,14 +274,10 @@ namespace Eto.Mac.Forms
 			var naturalSize = NaturalSize;
 			if (naturalSize != null)
 				return naturalSize.Value;
-			var control = Control as NSControl;
+			var control = ContainerControl as NSView;
 			if (control != null)
 			{
-				var size = (Widget.Loaded) ? (CGSize?)control.Frame.Size : null;
-				control.SizeToFit();
-				naturalSize = control.Frame.Size.ToEto();
-				if (size != null)
-					control.SetFrameSize(size.Value);
+				naturalSize = control.FittingSize.ToEto();
 				NaturalSize = naturalSize;
 				return naturalSize.Value;
 			}
@@ -317,10 +309,10 @@ namespace Eto.Mac.Forms
 			}
 			else
 				size = GetNaturalSize(availableSize);
-			return SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
-		}
+			size =  SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
 
-		public virtual Size PositionOffset { get { return Size.Empty; } }
+			return size;
+		}
 
 		void CreateTracking()
 		{
@@ -661,12 +653,14 @@ namespace Eto.Mac.Forms
 				if (!args.Delta.IsZero)
 				{
 					handler.Callback.OnMouseWheel(handler.Widget, args);
-					if (!args.Handled)
-					{
-						Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
-					}
+				}
+				if (!args.Handled)
+				{
+					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
 				}
 			}
+			else
+				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
 		}
 
 		public virtual void OnSizeChanged(EventArgs e)
@@ -692,8 +686,6 @@ namespace Eto.Mac.Forms
 
 		public virtual void ResumeLayout()
 		{
-			if (!Widget.IsSuspended && Widget.Loaded)
-				LayoutIfNeeded();
 		}
 
 
@@ -716,9 +708,12 @@ namespace Eto.Mac.Forms
 			get { return Widget.Properties.Get<Color?>(MacView.BackgroundColorKey) ?? Colors.Transparent; }
 			set
 			{
-				Widget.Properties[MacView.BackgroundColorKey] = value;
-				if (Widget.Loaded)
-					SetBackgroundColor(value);
+				if (value != BackgroundColor)
+				{
+					Widget.Properties[MacView.BackgroundColorKey] = value;
+					if (Widget.Loaded)
+						SetBackgroundColor(value);
+				}
 			}
 		}
 
@@ -739,13 +734,16 @@ namespace Eto.Mac.Forms
 			Messaging.void_objc_msgSendSuper_CGRect(control.SuperHandle, sel, rect);
 		}
 
+		bool drawRectAdded;
+
 		protected virtual void SetBackgroundColor(Color? color)
 		{
 			if (color != null)
 			{
-				if (color.Value.A > 0)
+				if (color.Value.A > 0 && !drawRectAdded)
 				{
 					AddMethod(MacView.selDrawRect, new Action<IntPtr, IntPtr, CGRect>(DrawBackgroundRect), EtoEnvironment.Is64BitProcess ? "v@:{CGRect=dddd}" : "v@:{CGRect=ffff}", ContainerControl);
+					drawRectAdded = true;
 				}
 				ContainerControl.SetNeedsDisplay();
 			}
@@ -774,9 +772,8 @@ namespace Eto.Mac.Forms
 			{
 				if (ContainerControl.Hidden == value)
 				{
-					var oldSize = GetPreferredSize(Size.MaxValue);
 					ContainerControl.Hidden = !value;
-					LayoutIfNeeded(oldSize, true);
+					InvalidateMeasure();
 					if (Widget.Loaded && value)
 						FireOnShown();
 				}
