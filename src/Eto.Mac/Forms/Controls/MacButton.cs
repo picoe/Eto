@@ -33,7 +33,6 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				Widget.Properties[textKey] = value;
-				var oldSize = GetPreferredSize(SizeF.PositiveInfinity);
 				SetText(value);
 				InvalidateMeasure();
 			}

@@ -338,7 +338,6 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (Widget.Properties.Get<Font>(MacLabel.FontKey) != value)
 				{
-					var oldSize = GetPreferredSize(SizeF.PositiveInfinity);
 					Widget.Properties[MacLabel.FontKey] = value;
 					SetAttributes();
 					InvalidateMeasure();
