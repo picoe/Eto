@@ -173,11 +173,11 @@ namespace Eto.Mac
 		public static CGRect WithPadding(this CGRect frame, Padding padding)
 		{
 			frame.X += padding.Left;
-			frame.Width = Math.Max(0, frame.Width - padding.Horizontal);
+			frame.Width = (nfloat)Math.Max(0, frame.Width - padding.Horizontal);
 
 			// assumes view is not flipped.
 			frame.Y += padding.Bottom;
-			frame.Height = Math.Max(0, frame.Height - padding.Vertical);
+			frame.Height = (nfloat)Math.Max(0, frame.Height - padding.Vertical);
 			return frame;
 		}
 
