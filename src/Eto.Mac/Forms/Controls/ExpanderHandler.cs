@@ -87,7 +87,7 @@ namespace Eto.Mac.Forms.Controls
 
 			header = new NSView();
 
-			content = new EtoPaddedPanel
+			content = new MacPanelView
 			{
 				Handler = this,
 				Hidden = true

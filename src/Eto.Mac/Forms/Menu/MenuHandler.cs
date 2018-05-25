@@ -25,6 +25,17 @@ namespace Eto.Mac.Forms.Menu
 		void Activate();
 	}
 
+	public class EtoMenu : NSMenu
+	{
+		public bool WorksWhenModal { get; set; }
+	}
+
+	static class MenuHandler
+	{
+		public static readonly object Enabled_Key = new object();
+		public static readonly object WorksWhenModal_Key = new object();
+	}
+
 	public abstract class MenuHandler<TControl, TWidget, TCallback> : MacBase<TControl, TWidget, TCallback>, Eto.Forms.Menu.IHandler, IMenuHandler
 		where TControl : NSMenuItem
 		where TWidget : Eto.Forms.Menu
@@ -83,16 +94,34 @@ namespace Eto.Mac.Forms.Menu
 			}
 		}
 
-		static readonly object Enabled_Key = new object();
-
 		public bool Enabled
 		{
-			get { return Widget.Properties.Get<bool?>(Enabled_Key) ?? Control.Enabled; }
+			get { return Widget.Properties.Get<bool?>(MenuHandler.Enabled_Key) ?? Control.Enabled; }
 			set
 			{
-				Widget.Properties.Set(Enabled_Key, (bool?)value);
+				Widget.Properties.Set(MenuHandler.Enabled_Key, (bool?)value);
 				Control.Enabled = value;
 			}
+		}
+
+		public bool WorksWhenModal
+		{
+			get
+			{
+				var worksWhenModal = Widget.Properties.Get<bool?>(MenuHandler.WorksWhenModal_Key);
+				if (worksWhenModal == null)
+				{
+					// find top level menu
+					var menu = Control.Menu;
+					while (menu.Supermenu != null)
+						menu = menu.Supermenu;
+
+					worksWhenModal = (menu as EtoMenu)?.WorksWhenModal ?? false;
+					Widget.Properties.Set(MenuHandler.WorksWhenModal_Key, worksWhenModal);
+				}
+				return worksWhenModal.Value;
+			}
+			set => Widget.Properties.Set(MenuHandler.WorksWhenModal_Key, value);
 		}
 	}
 }

@@ -65,15 +65,13 @@ namespace Eto.Mac.Forms.Menu
 		}
 	}
 
-	public class ContextMenuHandler : WidgetHandler<NSMenu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
+	public class ContextMenuHandler : WidgetHandler<EtoMenu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
 	{
-		protected override NSMenu CreateControl()
-		{
-			return new NSMenu();
-		}
+		protected override EtoMenu CreateControl() => new EtoMenu();
 
 		protected override void Initialize()
 		{
+			Control.WorksWhenModal = true;
 			Control.AutoEnablesItems = false;
 			Control.ShowsStateColumn = true;
 			Control.Delegate = new ContextHandler() { Handler = this };
@@ -114,7 +112,7 @@ namespace Eto.Mac.Forms.Menu
 
 		public void Show(Control relativeTo, PointF? location)
 		{
-			var view = relativeTo?.ControlObject as NSView;
+			var view = relativeTo?.GetContainerView();
 
 			if (location != null || view == null)
 			{

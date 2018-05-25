@@ -12,6 +12,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
+using Eto.Mac.Forms.Controls;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -101,9 +102,8 @@ namespace Eto.Mac.Forms
 		}
 	}
 
-	class EtoContentView : NSView, IMacControl
+	class EtoContentView : MacPanelView
 	{
-		public WeakReference WeakHandler { get; set; }
 	}
 
 	public interface IMacWindow : IMacControlHandler
@@ -442,7 +442,7 @@ namespace Eto.Mac.Forms
 			return handler.fieldEditor ?? (handler.fieldEditor = new MacFieldEditor());
 		}
 
-		public override NSView ContentControl { get { return Control.ContentView; } }
+		public override NSView ContentControl => Control.ContentView;
 
 		public virtual string Title { get { return Control.Title; } set { Control.Title = value ?? ""; } }
 		// Control.Title throws an exception if value is null
