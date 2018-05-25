@@ -39,17 +39,42 @@ using Foundation;
 using CoreGraphics;
 #elif OSX
 using Eto.Mac.Forms.Menu;
+using Eto.Mac.Forms.Controls;
 #endif
 
 namespace Eto.Mac.Forms
 {
+	public interface IMacPanel
+	{
+		void PerformContentLayout();
+	}
+
+	public class MacPanelView : MacEventView
+	{
+		new IMacPanel Handler => base.Handler as IMacPanel;
+
+		public MacPanelView(IntPtr handle) : base(handle)
+		{
+		}
+
+		public MacPanelView()
+		{
+			AutoresizesSubviews = false;
+		}
+
+		public override void Layout()
+		{
+			base.Layout();
+			Handler?.PerformContentLayout();
+		}
+	}
 
 	static class MacPanel
 	{
 		public static readonly object ContextMenu_Key = new object();
 	}
 
-	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, Panel.IHandler
+	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, Panel.IHandler, IMacPanel
 		where TControl: NSObject
 		where TWidget: Panel
 		where TCallback: Panel.ICallback
@@ -135,6 +160,30 @@ namespace Eto.Mac.Forms
 				return contentControl.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
 			
 			return Padding.Size;
+		}
+
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+			ContentControl.NeedsLayout = true;
+		}
+
+		/// <summary>
+		/// Gets the frame where the content should be placed in the ContentControl.
+		/// </summary>
+		/// <value>The content frame.</value>
+		protected virtual CGRect ContentFrame => ContentControl.Bounds.WithPadding(Padding);
+
+		/// <summary>
+		/// Performs the content layout, should be called from NSView.Layout() only, such as with the MacPanelView.
+		/// </summary>
+		public virtual void PerformContentLayout()
+		{
+			var view = Content.GetContainerView();
+			if (view != null)
+			{
+				view.Frame = ContentFrame;
+			}
 		}
 	}
 }
