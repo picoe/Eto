@@ -110,12 +110,6 @@ namespace Eto.Mac.Forms
 			#endif
 		}
 
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			InvalidateMeasure();
-		}
-
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (NaturalSize == null)

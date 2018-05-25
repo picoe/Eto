@@ -40,7 +40,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		public class EtoDrawableView : EtoPaddedPanel
+		public class EtoDrawableView : MacPanelView
 		{
 			DrawableHandler Drawable => Handler as DrawableHandler;
 

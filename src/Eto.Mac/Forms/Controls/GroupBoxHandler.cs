@@ -50,7 +50,7 @@ namespace Eto.Mac.Forms.Controls
 			public EtoBox(GroupBoxHandler handler)
 			{
 				Title = string.Empty;
-				ContentView = new EtoPaddedPanel { Handler = handler };
+				ContentView = new MacPanelView { Handler = handler };
 			}
 		}
 

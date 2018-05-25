@@ -77,21 +77,15 @@ namespace Eto.Mac.Forms.Controls
 			public override void Layout()
 			{
 				base.Layout();
-				Handler?.PerformLayout();
+				Handler?.PerformScrollLayout();
 			}
 		}
 
-		public class EtoDocumentView : EtoPaddedPanel
+		public class EtoDocumentView : MacPanelView
 		{
-			new ScrollableHandler Handler => base.Handler as ScrollableHandler;
-
-			public override void Layout() => Handler?.PerformDocumentLayout();
 		}
 
-		protected override NSScrollView CreateControl()
-		{
-			return new EtoScrollView(this);
-		}
+		protected override NSScrollView CreateControl() => new EtoScrollView(this);
 
 		protected override void Initialize()
 		{
@@ -145,7 +139,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.InvalidateMeasure();
 			Control.NeedsLayout = true;
-			ContentControl.NeedsLayout = true;
 		}
 
 
@@ -168,7 +161,7 @@ namespace Eto.Mac.Forms.Controls
 			InvalidateMeasure();
 		}
 
-		void PerformLayout()
+		void PerformScrollLayout()
 		{
 			var clientSize = ClientSize;
 			var size = SizeF.Empty;
@@ -201,7 +194,7 @@ namespace Eto.Mac.Forms.Controls
 			SetPosition(scrollPosition, true);
 		}
 
-		void PerformDocumentLayout()
+		public override void PerformContentLayout()
 		{
 			var ctl = Content.GetContainerView();
 			if (ctl == null)

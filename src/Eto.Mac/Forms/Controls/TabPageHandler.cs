@@ -82,7 +82,7 @@ namespace Eto.Mac.Forms.Controls
 			public EtoTabViewItem(IMacViewHandler handler)
 			{
 				Identifier = new NSString(Guid.NewGuid().ToString());
-				View = new EtoPaddedPanel { Handler = handler };
+				View = new MacPanelView { Handler = handler };
 			}
 		}
 
