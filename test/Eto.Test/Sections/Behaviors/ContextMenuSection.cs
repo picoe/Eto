@@ -13,7 +13,11 @@ namespace Eto.Test.Sections.Behaviors
 
 		PointF location = new PointF(100, 100);
 
-		public ContextMenuSection()
+		public ContextMenuSection() : this(false)
+		{
+		}
+
+		ContextMenuSection(bool inDialog)
 		{
 			var relativeToLabelCheckBox = new CheckBox { Text = "Relative to label" };
 			relativeToLabelCheckBox.CheckedBinding.Bind(this, c => c.RelativeToLabel);
@@ -25,13 +29,22 @@ namespace Eto.Test.Sections.Behaviors
 
 			var contextMenuLabel = CreateContextMenuLabel();
 
+			var showInDialog = new Button { Text = "Show in Dialog" };
+			showInDialog.Click += (sender, e) =>
+			{
+				var dlg = new Dialog { Content = new ContextMenuSection(true) };
+				dlg.ShowModal(this);
+			};
+
 			// layout
 
 			var layout = new DynamicLayout();
 
 			layout.BeginCentered();
-			layout.Add(relativeToLabelCheckBox);
+			layout.AddAutoSized(relativeToLabelCheckBox);
 			layout.AddSeparateRow(useLocationCheckBox, locationInput);
+			if (!inDialog)
+				layout.AddAutoSized(showInDialog);
 			layout.EndCentered();
 
 			layout.AddCentered(contextMenuLabel, yscale: true);
@@ -82,10 +95,12 @@ namespace Eto.Test.Sections.Behaviors
 			_menu.Items.Add(new ButtonMenuItem { Text = "Item 2", Shortcut = Keys.Control | Keys.I });
 			_menu.Items.Add(new ButtonMenuItem { Text = "Item 3", Shortcut = Keys.Shift | Keys.I });
 			_menu.Items.Add(new ButtonMenuItem { Text = "Item 4", Shortcut = Keys.Alt | Keys.I });
+			_menu.Items.Add(new ButtonMenuItem { Text = "Disabled Item", Enabled = false });
 
 			var subMenu = _menu.Items.GetSubmenu("Sub Menu");
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 5", Shortcut = Keys.Application | Keys.I });
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 6", Shortcut = Keys.I });
+			subMenu.Items.Add(new ButtonMenuItem { Text = "Disabled Item 2", Enabled = false });
 
 			_menu.Items.AddSeparator();
 			RadioMenuItem radioController;
@@ -93,6 +108,7 @@ namespace Eto.Test.Sections.Behaviors
 			_menu.Items.Add(new RadioMenuItem(radioController) { Text = "Radio 2", Checked = true });
 			_menu.Items.Add(new RadioMenuItem(radioController) { Text = "Radio 3", Shortcut = Keys.R });
 			_menu.Items.Add(new RadioMenuItem(radioController) { Text = "Radio 4" });
+			_menu.Items.Add(new RadioMenuItem(radioController) { Text = "Radio 5 Disabled", Enabled = false });
 
 			_menu.Items.AddSeparator();
 			_menu.Items.Add(new CheckMenuItem { Text = "Check 1" });
@@ -102,6 +118,7 @@ namespace Eto.Test.Sections.Behaviors
 			_menu.Items.Add(new CheckMenuItem { Text = "Check 5", Shortcut = Keys.Shift | Keys.Alt | Keys.G });
 			_menu.Items.Add(new CheckMenuItem { Text = "Check 6", Shortcut = Keys.Shift | Keys.Application | Keys.G });
 			_menu.Items.Add(new CheckMenuItem { Text = "Check 7", Shortcut = Keys.Alt | Keys.Application | Keys.G });
+			_menu.Items.Add(new CheckMenuItem { Text = "Disabled Check", Checked = true, Enabled = false });
 
 			LogEvents(_menu);
 			return _menu;

@@ -53,12 +53,13 @@ namespace Eto.Mac.Forms
 				if (UseContentBorder != value)
 				{
 					Widget.Properties.Set(UseContentBorder_Key, value, true);
-					PositionButtons();
+					if (Widget.Loaded)
+						PositionButtons();
 				}
 			}
 		}
 
-		protected override bool DisposeControl { get { return false; } }
+		protected override bool DisposeControl => false;
 
 		class EtoDialogWindow : EtoWindow
 		{
@@ -136,10 +137,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		protected override EtoWindow CreateControl()
-		{
-			return new EtoDialogWindow();
-		}
+		protected override EtoWindow CreateControl() => new EtoDialogWindow();
 
 		protected override void Initialize()
 		{
@@ -228,6 +226,20 @@ namespace Eto.Mac.Forms
 			PositionButtons();
 		}
 
+		protected override CGRect ContentFrame
+		{
+			get
+			{
+				var availableSize = Control.ContentView.Frame.Size.ToEto();
+				var buttonSize = GetButtonSize(availableSize);
+
+				var frame = base.ContentFrame;
+				frame.Y += buttonSize.Height;
+				frame.Height -= buttonSize.Height;
+				return frame;
+			}
+		}
+
 		void PositionButtons()
 		{
 			var availableSize = Control.ContentView.Frame.Size.ToEto();
@@ -236,16 +248,6 @@ namespace Eto.Mac.Forms
 			var buttonSize = GetButtonSize(availableSize);
 
 			Control.SetContentBorderThickness(UseContentBorder ? buttonSize.Height : 0, NSRectEdge.MinYEdge);
-
-			// adjust content
-			NSView contentContainer = Content.GetContainerView();
-			if (contentContainer != null)
-			{
-				var frame = contentContainer.Frame;
-				frame.Y += buttonSize.Height;
-				frame.Height -= buttonSize.Height;
-				contentContainer.Frame = frame;
-			}
 
 			foreach (var button in Widget.PositiveButtons.Reverse().Concat(Widget.NegativeButtons))
 			{
