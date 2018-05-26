@@ -12,7 +12,8 @@
 		<OutputAppPath Condition="'$(OutputAppPath)'==''">$(TargetDir)\$(MacBundleName).app</OutputAppPath>
 		<MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultTarget)' == ''">True</MacSetDefaultRunConfiguration>
 		<MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == ''">True</MacBuildBundle>
-		<RoslynCodeTaskProps>$(MSBuildThisFileDirectory)..\..\..\roslyncodetaskfactory\2.0.7\Sdk\Sdk.props</RoslynCodeTaskProps>
+		<RoslynCodeTaskFactoryVersion Condition="'$(RoslynCodeTaskFactoryVersion)' ==''">2.0.7</RoslynCodeTaskFactoryVersion>		
+		<RoslynCodeTaskProps>$(MSBuildThisFileDirectory)../../../roslyncodetaskfactory\$(RoslynCodeTaskFactoryVersion)/Sdk/Sdk.props</RoslynCodeTaskProps>
 	</PropertyGroup>
 
 	<Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
