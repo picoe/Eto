@@ -351,7 +351,12 @@ namespace Eto.Wpf.Forms.Controls
 					decorations = new sw.TextDecorationCollection(decorations);
 				selectionAttributes[swd.Inline.TextDecorationsProperty] = decorations;
 			}
-			else decorations = (sw.TextDecorationCollection)decorationsObj;
+			else
+			{
+				decorations = (sw.TextDecorationCollection)decorationsObj;
+				if (decorations.IsFrozen)
+					decorations = new sw.TextDecorationCollection(decorations);
+			}
 
 			foreach (var decoration in setDecorations)
 			{
