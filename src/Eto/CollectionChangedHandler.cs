@@ -242,6 +242,21 @@ namespace Eto
 				RemoveItem(item);
 		}
 
+		/// <summary>
+		/// Resets the collection when it is dramatically changed
+		/// </summary>
+		/// <remarks>
+		/// By default this removes all items and adds all items back (if Collection is an IEnumerable{T})
+		/// Platform implementations can override this to do something more efficient if needed.
+		/// </remarks>
+		public virtual void Reset()
+		{
+			RemoveAllItems();
+			var items = Collection as IEnumerable<TItem>;
+			if (items != null)
+				AddRange(items);
+		}
+
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
@@ -292,7 +307,7 @@ namespace Eto
 					}
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					RemoveAllItems();
+					Reset();
 					break;
 			}
 		}
