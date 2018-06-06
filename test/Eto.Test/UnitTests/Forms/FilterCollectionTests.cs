@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Eto.Forms;
 using System.Collections.Generic;
@@ -345,6 +345,32 @@ namespace Eto.Test.UnitTests.Forms
 			Assert.AreEqual(model.Count, filtered.Count, "#4-3 Count in filtered does not match model");
 			Assert.AreEqual(1000, filtered[filtered.Count - 2].Id, "#4-1 Item 1000 was not added in the correct location");
 			Assert.AreEqual(1001, filtered[filtered.Count - 1].Id, "#4-2 Item 1001 was not added in the correct location");
+		}
+
+		class MyCollection : ObservableCollection<DataItem>
+		{
+			public void AddRange(IEnumerable<DataItem> items)
+			{
+				foreach (var item in items)
+					Items.Add(item);
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			}
+		}
+
+
+		[Test]
+		public void ResetShouldAddCurrentItemsToFilteredList()
+		{
+			var collection = new MyCollection();
+			var filterCollection = new FilterCollection<DataItem>(collection);
+
+			collection.AddRange(Enumerable.Range(1, 10).Select(r => new DataItem(r)));
+
+			Assert.AreEqual(10, filterCollection.Count, "FilterCollection.Count should be equal to 10 after adding items in bulk");
+
+			collection.AddRange(Enumerable.Range(1, 10).Select(r => new DataItem(r)));
+
+			Assert.AreEqual(20, filterCollection.Count, "FilterCollection.Count should be equal to 20 after adding more items in bulk");
 		}
 	}
 }
