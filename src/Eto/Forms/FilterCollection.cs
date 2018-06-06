@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -684,6 +684,19 @@ namespace Eto.Forms
 					List.items.Clear();
 					List.filtered?.Clear();
 					List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				}
+			}
+
+			public override void Reset()
+			{
+				if (List.updating)
+					return;
+				using (List.CreateChange())
+				{
+					List.items.Clear();
+					if (Collection != null)
+				    	List.items.AddRange(Collection);
+					List.Refresh();
 				}
 			}
 		}

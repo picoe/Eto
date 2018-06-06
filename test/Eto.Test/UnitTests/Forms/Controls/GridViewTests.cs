@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using Eto.Drawing;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -104,6 +107,42 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			}, -1);
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
+		}
+
+		class MyCollection : ObservableCollection<DataItem>
+		{
+			public void AddRange(IEnumerable<DataItem> items)
+			{
+				foreach (var item in items)
+					Items.Add(item);
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			}
+		}
+
+		[Test, ManualTest]
+		public void CollectionChangedWithResetShouldShowItems()
+		{
+			var count = 10;
+			ManualForm($"GridView should show {count} items", form =>
+			{
+				var collection = new MyCollection();
+				var filterCollection = new FilterCollection<DataItem>(collection);
+				var myGridView = new GridView
+				{
+					Size = new Size(200, 260),
+					DataStore = filterCollection,
+					Columns = {
+						new GridColumn {
+							DataCell = new TextBoxCell { Binding = Eto.Forms.Binding.Property((DataItem m) => m.Id.ToString()) }
+						}
+					}
+				};
+				collection.Clear();
+				collection.AddRange(Enumerable.Range(1, count).Select(r => new DataItem(r)));
+
+				return myGridView;
+			});
+
 		}
 	}
 }
