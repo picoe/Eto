@@ -61,7 +61,16 @@ namespace Eto.GtkSharp.Forms
 			GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 			Gtk.Application.Quit();
 
-			Process.Start(Assembly.GetEntryAssembly().Location);			
+			var cmdLine = string.Empty;
+			var oldArgs = Environment.GetCommandLineArgs();
+			if (oldArgs.Length > 1)
+			{
+				var args = new String[oldArgs.Length - 1];
+				Array.Copy(oldArgs, 1, args, 0, args.Length);
+				cmdLine = String.Join(" ", oldArgs);
+			}
+
+			Process.Start(Assembly.GetEntryAssembly().Location, cmdLine);			
 		}
 
 		string badgeLabel;
