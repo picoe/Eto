@@ -61,7 +61,7 @@ namespace Eto.GtkSharp.Forms
 			GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 			Gtk.Application.Quit();
 
-			// TODO: restart!
+			Process.Start(Assembly.GetEntryAssembly().Location);			
 		}
 
 		string badgeLabel;
