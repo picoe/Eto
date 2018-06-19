@@ -245,7 +245,6 @@ namespace Eto.GtkSharp.Forms
 				var exeExtension = Environment.OSVersion.Platform == PlatformID.Win32NT ? ".exe" : null;
 				var loader = Path.ChangeExtension(entry, exeExtension);
 
-				Console.WriteLine(loader);
 				if (File.Exists(loader))
 				{
 					// self contained deployment
