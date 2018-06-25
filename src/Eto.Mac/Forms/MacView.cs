@@ -1011,7 +1011,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		protected void FireOnShown() => FireOnShown(Widget);
+		protected virtual void FireOnShown() => FireOnShown(Widget);
 
 		public bool AllowDrop
 		{

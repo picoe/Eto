@@ -178,7 +178,7 @@ namespace Eto.Mac.Forms
 			{
 				var yscaled = y == lastyscale || yscaling[y];
 
-				availableControlSize.Height = yscaled ? remaining.Height : int.MaxValue;
+				availableControlSize.Height = yscaled ? remaining.Height : float.PositiveInfinity;
 
 				for (int x = 0; x < widths.Length; x++)
 				{	
@@ -187,7 +187,7 @@ namespace Eto.Mac.Forms
 					if (!xscaled && !yscaled)
 						continue;
 
-					availableControlSize.Width = xscaled ? remaining.Width : int.MaxValue;
+					availableControlSize.Width = xscaled ? remaining.Width : float.PositiveInfinity;
 
 					var view = views[y, x];
 					if (view != null && view.Visible)
