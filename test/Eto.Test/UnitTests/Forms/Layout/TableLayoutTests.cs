@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Eto.Forms;
 using Eto.Drawing;
@@ -166,6 +166,32 @@ namespace Eto.Test.UnitTests.Forms.Layout
 						}
 					}
 				};
+			});
+		}
+
+		/// <summary>
+		/// Bug in macOS when sizing labels when parent size is fixed
+		/// </summary>
+		[Test]
+		public void LabelInAutoSizedColumnShouldHaveCorrectWidth()
+		{
+			Shown(form =>
+			{
+				var label = new Label { Text = "Hello Then" };
+
+				form.ClientSize = new Size(400, 200);
+				form.Content = new TableLayout
+				{
+					Rows = {
+						new TableRow(new TextBox(), label, null),
+						null
+					}
+				};
+				return label;
+			}, label =>
+			{
+				Assert.Greater(label.Width, 0, "Label didn't get correct width!");
+				Assert.Greater(label.Height, 0, "Label didn't get correct height!");
 			});
 		}
 	}
