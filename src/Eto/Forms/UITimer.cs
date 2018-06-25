@@ -20,6 +20,22 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.UITimer"/> class.
+		/// </summary>
+		public UITimer()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.UITimer"/> class with the specified <paramref name="elapsedHandler"/>.
+		/// </summary>
+		/// <param name="elapsedHandler">Delegate for handling the <see cref="Elapsed"/> event.</param>
+		public UITimer(EventHandler<EventArgs> elapsedHandler)
+		{
+			Elapsed += elapsedHandler;
+		}
+
+		/// <summary>
 		/// Occurs each time the <see cref="Interval"/> has elapsed
 		/// </summary>
 		public event EventHandler<EventArgs> Elapsed;
