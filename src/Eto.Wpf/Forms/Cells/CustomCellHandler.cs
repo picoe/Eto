@@ -122,7 +122,7 @@ namespace Eto.Wpf.Forms.Cells
 			static void HandleControlDataContextChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 			{
 				var ctl = sender as EtoBorder;
-				var cell = ctl?.Parent as swc.DataGridCell;
+				var cell = ctl?.GetParent<swc.DataGridCell>();
 				var col = cell?.Column as Column;
 				var handler = col?.Handler;
 				if (handler == null)
