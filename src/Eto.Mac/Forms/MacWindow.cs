@@ -803,7 +803,7 @@ namespace Eto.Mac.Forms
 			if (AutoSize)
 			{
 				AutoSize = false;
-				var availableSize = Size.MaxValue;
+				var availableSize = SizeF.PositiveInfinity;
 				if (PreferredSize != null)
 				{
 					var borderSize = GetBorderSize();
@@ -826,6 +826,11 @@ namespace Eto.Mac.Forms
 			return Control.FrameRectFor(CGRect.Empty).Size.ToEtoSize();
 		}
 
+		protected override void FireOnShown()
+		{
+			Control.ContentView.LayoutSubtreeIfNeeded();
+			base.FireOnShown();
+		}
 
 		public override void OnLoadComplete(EventArgs e)
 		{

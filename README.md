@@ -81,6 +81,7 @@ Applications
 * [Notedown](https://github.com/cwensley/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/test/Eto.Test) - Application to test the functionality of each widget
 * [DotImaging.UI](https://github.com/dajuric/dot-imaging) - Portable UI elements for DotImaging
+* [DWSIM](https://github.com/DanWBR/dwsim5) - Chemical Process Simulator
 
 Assemblies
 ----------
