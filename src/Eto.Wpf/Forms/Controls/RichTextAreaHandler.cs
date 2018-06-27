@@ -393,16 +393,34 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.CaretPosition = Control.Document.ContentStart.GetTextPositionAtOffset(value); }
 		}
 
+		void ApplyFamilyAndWeight(swm.FontFamily family, swm.Typeface typeface, sw.FontWeight? weight)
+		{
+			if (typeface != null
+				&& weight != sw.FontWeights.Bold
+				&& weight != sw.FontWeights.Normal
+				&& weight != sw.FontWeights.Regular)
+			{
+				// RTF can only save bold or not, others weights we need to specify the face name as part of the family
+				// very odd, considering WPF's available font families only lists "Arial", you'd think this would be handled
+				// by the rtf processor.
+				var faceName = CustomControls.FontDialog.NameDictionaryHelper.GetEnglishName(typeface.FaceNames);
+				family = new swm.FontFamily(family.Source + " " + faceName);
+				weight = sw.FontWeights.Normal;
+			}
+
+			SetSelectionAttribute(swd.TextElement.FontFamilyProperty, family);
+			SetSelectionAttribute(swd.TextElement.FontWeightProperty, weight ?? sw.FontWeights.Normal);
+		}
+
 		public Font SelectionFont
 		{
 			get { return new Font(new FontHandler(Control.Selection, Control)); }
 			set
 			{
 				var handler = ((FontHandler)value?.Handler);
-				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, handler?.WpfFamily);
-				SetSelectionAttribute(swd.TextElement.FontStretchProperty, handler?.WpfFontStretch);
-				SetSelectionAttribute(swd.TextElement.FontStyleProperty, handler?.WpfFontStyle);
-				SetSelectionAttribute(swd.TextElement.FontWeightProperty, handler?.WpfFontWeight);
+				ApplyFamilyAndWeight(handler?.WpfFamily, handler?.WpfTypeface, handler?.WpfFontWeight);
+				SetSelectionAttribute(swd.TextElement.FontStretchProperty, handler?.WpfFontStretch ?? sw.FontStretches.Normal);
+				SetSelectionAttribute(swd.TextElement.FontStyleProperty, handler?.WpfFontStyle ?? sw.FontStyles.Normal);
 				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.PixelSize);
 				SetSelectionAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorationsFrozen);
 			}
@@ -423,10 +441,9 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				var typeface = (value?.Handler as FontTypefaceHandler)?.Control;
-				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, typeface?.FontFamily ?? Control.FontFamily);
-				SetSelectionAttribute(swd.TextElement.FontStyleProperty, typeface?.Style);
-				SetSelectionAttribute(swd.TextElement.FontStretchProperty, typeface?.Stretch);
-				SetSelectionAttribute(swd.TextElement.FontWeightProperty, typeface?.Weight);
+				ApplyFamilyAndWeight(typeface?.FontFamily ?? Control.FontFamily, typeface, typeface?.Weight);
+				SetSelectionAttribute(swd.TextElement.FontStyleProperty, typeface?.Style ?? sw.FontStyles.Normal);
+				SetSelectionAttribute(swd.TextElement.FontStretchProperty, typeface?.Stretch ?? sw.FontStretches.Normal);
 			}
 		}
 
