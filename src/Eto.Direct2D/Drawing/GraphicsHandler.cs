@@ -202,11 +202,11 @@ namespace Eto.Direct2D.Drawing
 				if (Control != null)
 				{
 					// not very efficient, but works
-					s.Matrix3x2 transform = Control.Transform;
+					s.Matrix3x2 transform = currentTransform;
 					transform.Invert();
-					var start = s.Matrix3x2.TransformPoint(transform, clipBounds.Location.ToDx()).ToEto();
-					var end = s.Matrix3x2.TransformPoint(transform, clipBounds.EndLocation.ToDx()).ToEto();
-					return new RectangleF(start, end);
+					var topleft = s.Matrix3x2.TransformPoint(transform, clipBounds.TopLeft.ToDx()).ToEto();
+					var bottomright = s.Matrix3x2.TransformPoint(transform, clipBounds.BottomRight.ToDx()).ToEto();
+					return RectangleF.FromSides(topleft.X, topleft.Y, bottomright.X, bottomright.Y);
 				}
 				else
 					return new RectangleF();
