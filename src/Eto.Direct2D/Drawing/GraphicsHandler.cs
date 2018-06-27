@@ -130,8 +130,10 @@ namespace Eto.Direct2D.Drawing
 		{
 			var renderProp = new sd.RenderTargetProperties
 			{
-				DpiX = 0,
-				DpiY = 0,
+				/* Direct2D rendering engine does not perform DPI virtualization like WPF and Logical pixel size is always 1
+				   In order to prevent SharpDX from using real screen DPI, we fix the scale ratio to 1 */
+				DpiX = 96,
+				DpiY = 96,
 				MinLevel = sd.FeatureLevel.Level_DEFAULT,
 				Type = sd.RenderTargetType.Default,
 				Usage = sd.RenderTargetUsage.None
