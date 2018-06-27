@@ -8,11 +8,21 @@ namespace Eto.Wpf.CustomControls.FontDialog
 {
     static class NameDictionaryHelper
     {
-        public static string GetDisplayName(LanguageSpecificStringDictionary nameDictionary)
+		public static string GetEnglishName(LanguageSpecificStringDictionary nameDictionary)
+		{
+			return GetName(nameDictionary, "en-us");
+		}
+
+		public static string GetDisplayName(LanguageSpecificStringDictionary nameDictionary)
+		{
+			return GetName(nameDictionary, CultureInfo.CurrentUICulture.IetfLanguageTag);
+		}
+
+		public static string GetName(LanguageSpecificStringDictionary nameDictionary, string ietfLanguageTag)
         {
             // Look up the display name based on the UI culture, which is the same culture
             // used for resource loading.
-            var userLanguage = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
+            var userLanguage = XmlLanguage.GetLanguage(ietfLanguageTag);
 
             // Look for an exact match.
             string name;
