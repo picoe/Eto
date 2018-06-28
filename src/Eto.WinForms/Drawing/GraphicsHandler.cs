@@ -427,8 +427,11 @@ namespace Eto.WinForms.Drawing
 		{
 			get
 			{
+				var oldValue = this.Control.PixelOffsetMode;
 				this.Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
-				return this.Control.ClipBounds.ToEto();
+				var result = this.Control.ClipBounds.ToEto();
+				this.Control.PixelOffsetMode = oldValue;
+				return result;
 			}
 		}
 
