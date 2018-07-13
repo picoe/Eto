@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Mac;
 using Eto.Mac.Forms;
@@ -101,7 +101,9 @@ namespace Eto.Forms
 		/// <param name="window">Eto window object to get the native window handle from.</param>
 		public static NSWindow ToNative(this Window window)
 		{
-			return window?.ControlObject as NSWindow;
+			if (window == null)
+				return null;
+			return window.ControlObject as NSWindow;
 		}
 
 
@@ -145,16 +147,21 @@ namespace Eto.Forms
 			var control = client as IMacControl;
 			if (control != null)
 			{
-				var childHandler = control.WeakHandler?.Target as IMacViewHandler;
-				if (childHandler?.Widget != null)
+				var weakHandler = control.WeakHandler;
+				if (weakHandler != null)
 				{
-					var fieldEditor = childHandler.Widget.Properties.Get<NSObject>(FieldEditor_Key);
-					if (fieldEditor == null)
+
+					var childHandler = weakHandler.Target as IMacViewHandler;
+					if (childHandler != null && childHandler.Widget != null)
 					{
-						fieldEditor = new MacFieldEditor();
-						childHandler.Widget.Properties.Set(FieldEditor_Key, fieldEditor);
+						var fieldEditor = childHandler.Widget.Properties.Get<NSObject>(FieldEditor_Key);
+						if (fieldEditor == null)
+						{
+							fieldEditor = new MacFieldEditor();
+							childHandler.Widget.Properties.Set(FieldEditor_Key, fieldEditor);
+						}
+						return fieldEditor;
 					}
-					return fieldEditor;
 				}
 			}
 			return null;
