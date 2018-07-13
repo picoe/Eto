@@ -58,6 +58,7 @@ namespace Eto.Direct2D.Drawing
 
         public void Unlock(BitmapData bitmapData)
         {
+			Reset();
         }
 	}
 }

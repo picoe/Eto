@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -59,14 +59,12 @@ namespace Eto.Wpf.Forms
 			{
 				if (_scale != null)
 					return _scale.Value;
-				if (BuiltInPerMonitorSupported)
-				{
-					if (hwnd == IntPtr.Zero)
-						hwnd = new WindowInteropHelper(window).Handle;
+				if (hwnd == IntPtr.Zero)
+					hwnd = new WindowInteropHelper(window).Handle;
 
-					if (hwnd != IntPtr.Zero)
-						return Win32.GetWindowDpi(hwnd) / 96.0;
-				}
+				if (hwnd != IntPtr.Zero)
+					return Win32.GetWindowDpi(hwnd) / 96.0;
+
 				return 1;
 			}
 			set { _scale = value; }

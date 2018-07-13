@@ -130,8 +130,10 @@ namespace Eto.Direct2D.Drawing
 		{
 			var renderProp = new sd.RenderTargetProperties
 			{
-				DpiX = 0,
-				DpiY = 0,
+				/* Direct2D rendering engine does not perform DPI virtualization like WPF and Logical pixel size is always 1
+				   In order to prevent SharpDX from using real screen DPI, we fix the scale ratio to 1 */
+				DpiX = 96,
+				DpiY = 96,
 				MinLevel = sd.FeatureLevel.Level_DEFAULT,
 				Type = sd.RenderTargetType.Default,
 				Usage = sd.RenderTargetUsage.None
@@ -202,11 +204,11 @@ namespace Eto.Direct2D.Drawing
 				if (Control != null)
 				{
 					// not very efficient, but works
-					s.Matrix3x2 transform = Control.Transform;
+					s.Matrix3x2 transform = currentTransform;
 					transform.Invert();
-					var start = s.Matrix3x2.TransformPoint(transform, clipBounds.Location.ToDx()).ToEto();
-					var end = s.Matrix3x2.TransformPoint(transform, clipBounds.EndLocation.ToDx()).ToEto();
-					return new RectangleF(start, end);
+					var topleft = s.Matrix3x2.TransformPoint(transform, clipBounds.TopLeft.ToDx()).ToEto();
+					var bottomright = s.Matrix3x2.TransformPoint(transform, clipBounds.BottomRight.ToDx()).ToEto();
+					return RectangleF.FromSides(topleft.X, topleft.Y, bottomright.X, bottomright.Y);
 				}
 				else
 					return new RectangleF();

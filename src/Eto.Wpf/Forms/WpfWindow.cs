@@ -78,6 +78,7 @@ namespace Eto.Wpf.Forms
 			Control.Loaded += delegate
 			{
 				SetResizeMode();
+				SetMinimumSize();
 				if (initialClientSize != null)
 				{
 					initialClientSize = null;
@@ -232,6 +233,9 @@ namespace Eto.Wpf.Forms
 
 		void SetMinimumSize()
 		{
+			// can't use WpfScale reliably until it is loaded
+			if (!Control.IsLoaded)
+				return;
 			ContainerControl.MinWidth = MinimumSize.Width * WpfScale;
 			ContainerControl.MinHeight = MinimumSize.Height * WpfScale;
 		}
