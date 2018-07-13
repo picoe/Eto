@@ -26,6 +26,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
 		<dependencies>
 			<group>
 				<dependency id="Eto.Forms" version="[$version$]" />
+				<dependency id="RoslynCodeTaskFactory" version="2.0.7" />
 			</group>
 		</dependencies>
 	</metadata>

@@ -425,7 +425,14 @@ namespace Eto.WinForms.Drawing
 
 		public RectangleF ClipBounds
 		{
-			get { return this.Control.ClipBounds.ToEto(); }
+			get
+			{
+				var oldValue = this.Control.PixelOffsetMode;
+				this.Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
+				var result = this.Control.ClipBounds.ToEto();
+				this.Control.PixelOffsetMode = oldValue;
+				return result;
+			}
 		}
 
 		public void SetClip(RectangleF rectangle)

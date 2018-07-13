@@ -47,7 +47,10 @@ namespace Eto.Direct2D.Drawing
 		{
 			if (Control.PixelFormat == PixelFormat.Format24bppRgb.ToWic())
 			{
-				return sd.Bitmap.FromWicBitmap(target, Control.ToBitmap(PixelFormat.Format32bppRgb.ToWic()));
+				using (var wicBitmap = Control.ToBitmap(PixelFormat.Format32bppRgb.ToWic()))
+				{
+					return sd.Bitmap.FromWicBitmap(target, wicBitmap);
+				}
 			}
             return sd.Bitmap.FromWicBitmap(target, Control);
 		}

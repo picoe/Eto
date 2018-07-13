@@ -148,6 +148,14 @@ namespace Eto.Mac.Forms
 		bool topmost;
 		Point? oldLocation;
 
+		static readonly object InitialLocation_Key = new object();
+
+		Point? InitialLocation
+		{
+			get => Widget.Properties.Get<Point?>(InitialLocation_Key);
+			set => Widget.Properties.Set(InitialLocation_Key, value);
+		}
+
 		Window.ICallback IMacWindow.Callback { get { return Callback; } }
 
 		public override NSView ContainerControl { get { return Control.ContentView; } }
@@ -722,22 +730,30 @@ namespace Eto.Mac.Forms
 			}
 			set
 			{
-				// location is relative to the main screen, translate to bottom left, inversed
-				var mainFrame = NSScreen.Screens[0].Frame;
-				var frame = Control.Frame;
-				var point = new CGPoint((nfloat)value.X, (nfloat)(mainFrame.Height - value.Y - frame.Height));
-				Control.SetFrameOrigin(point);
-				if (Control.Screen == null)
-				{
-					// ensure that the control lands on a screen
-					point.X = (nfloat)Math.Min(Math.Max(mainFrame.X, point.X), mainFrame.Right - frame.Width);
-					point.Y = (nfloat)Math.Min(Math.Max(mainFrame.Y, point.Y), mainFrame.Bottom - frame.Height);
-
-					Control.SetFrameOrigin(point);
-				}
+				if (Widget.Loaded)
+					SetLocation(value);
+				else
+					InitialLocation = value;
 				var etoWindow = Control as EtoWindow;
 				if (etoWindow != null)
 					etoWindow.DisableCenterParent = true;
+			}
+		}
+
+		void SetLocation(Point value)
+		{
+			// location is relative to the main screen, translate to bottom left, inversed
+			var mainFrame = NSScreen.Screens[0].Frame;
+			var frame = Control.Frame;
+			var point = new CGPoint((nfloat)value.X, (nfloat)(mainFrame.Height - value.Y - frame.Height));
+			Control.SetFrameOrigin(point);
+			if (Control.Screen == null)
+			{
+				// ensure that the control lands on a screen
+				point.X = (nfloat)Math.Min(Math.Max(mainFrame.X, point.X), mainFrame.Right - frame.Width);
+				point.Y = (nfloat)Math.Min(Math.Max(mainFrame.Y, point.Y), mainFrame.Bottom - frame.Height);
+
+				Control.SetFrameOrigin(point);
 			}
 		}
 
@@ -847,6 +863,11 @@ namespace Eto.Mac.Forms
 
 		protected virtual void PositionWindow()
 		{
+			if (InitialLocation != null)
+			{
+				SetLocation(InitialLocation.Value);
+				InitialLocation = null;
+			}
 			Control.Center();
 		}
 
