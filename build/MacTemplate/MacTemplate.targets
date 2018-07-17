@@ -22,11 +22,14 @@
 		<MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != ''" />
 	</Target>
 
-	<Target Name="_CleanAppBundle" AfterTargets="BeforeClean">
+	<Target Name="_CleanAppBundle" AfterTargets="BeforeClean" Condition="$(MacBuildBundle) == 'True'">
 		<RemoveDir Directories="$(OutputAppPath)"/>
 	</Target>
 	
 	<Target Name="_BuildAppBundle" AfterTargets="AfterBuild" Condition="$(MacBuildBundle) == 'True'">
+    	<Error Text="A reference to the NuGet package RoslynCodeTaskFactory is required to build the macOS .app bundle, or add &lt;MacBuildBundle&gt;False&lt;/MacBuildBundle&gt; to your project"
+    	       Condition=" '$(RoslynCodeTaskFactory)' == '' " /> 
+		
 		<PropertyGroup>
 			<OutputContents>$(OutputAppPath)\Contents</OutputContents>
 			<OutputMonoBundlePath>$(OutputContents)\MonoBundle</OutputMonoBundlePath>
@@ -112,9 +115,7 @@
 		<!--
 			Add any missing keys to the PListFile
 		-->
-		<Warning Text="A reference to the NuGet package RoslynCodeTaskFactory is required in this project" 
-				 Condition=" '$(RoslynCodeTaskFactory)' == '' " /> 
-		
+
 		<_UpdatePList 
 			PListFile="$(OutputPListFile)"
 			TargetFileName="$(TargetFileName)"
