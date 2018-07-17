@@ -63,13 +63,14 @@ namespace Eto
 			{
 				if (bd.BytesPerPixel == 4 || bd.BytesPerPixel == 3) // only 32bpp or 24bpp supported
 				{
-					var ms = new MemoryStream(bitmap.Width * bitmap.Height * bd.BytesPerPixel + 40);
+					var size = bitmap.Size;
+					var ms = new MemoryStream(size.Width * size.Height * bd.BytesPerPixel + 40);
 					// write BITMAPINFOHEADER
 					const float InchesPerMeter = 39.37f;
 					var pelsPerMeter = Math.Round(dpi * InchesPerMeter); // convert dpi to ppm
 					Write(ms, BitConverter.GetBytes((uint)40));  // biSize
-					Write(ms, BitConverter.GetBytes((uint)bitmap.Width)); // biWidth
-					Write(ms, BitConverter.GetBytes((uint)bitmap.Height));// biHeight
+					Write(ms, BitConverter.GetBytes((uint)size.Width)); // biWidth
+					Write(ms, BitConverter.GetBytes((uint)size.Height));// biHeight
 					Write(ms, BitConverter.GetBytes((ushort)1));  // biPlanes
 					Write(ms, BitConverter.GetBytes((ushort)bd.BitsPerPixel)); // biBitCount
 					Write(ms, BitConverter.GetBytes((uint)0));    //  biCompression (BI_RGB, uncompressed)
@@ -81,9 +82,9 @@ namespace Eto
 
 					var hasAlpha = bd.BytesPerPixel == 4;
 					// write RGB data, dibs are flipped vertically
-					for (int y = bitmap.Height - 1; y >= 0; y--)
+					for (int y = size.Height - 1; y >= 0; y--)
 					{
-						for (int x = 0; x < bitmap.Width; x++)
+						for (int x = 0; x < size.Width; x++)
 						{
 							var p = bd.GetPixel(x, y);
 							// need to write RGB premultiplied by alpha (and round up)
