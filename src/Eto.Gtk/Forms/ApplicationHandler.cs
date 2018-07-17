@@ -61,7 +61,7 @@ namespace Eto.GtkSharp.Forms
 			GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 			Gtk.Application.Quit();
 
-			// TODO: restart!
+			RestartInternal();			
 		}
 
 		string badgeLabel;
@@ -229,5 +229,52 @@ namespace Eto.GtkSharp.Forms
 		public Keys CommonModifier { get { return Keys.Control; } }
 
 		public Keys AlternateModifier { get { return Keys.Alt; } }
+
+		private void RestartInternal()
+		{
+			var cmdLine = GetCommandLineArgs();
+			var entry = Assembly.GetEntryAssembly().Location;
+			if (entry.EndsWith(".exe", StringComparison.InvariantCulture))
+			{
+				// mono or windows, use Process.Start()
+				Process.Start(entry, cmdLine);
+			}
+			else if (entry.EndsWith(".dll", StringComparison.InvariantCulture))
+			{
+				// .net core, look for self-contained deployment
+				var exeExtension = Environment.OSVersion.Platform == PlatformID.Win32NT ? ".exe" : null;
+				var loader = Path.ChangeExtension(entry, exeExtension);
+
+				if (File.Exists(loader))
+				{
+					// self contained deployment
+					Process.Start(loader, cmdLine);
+				}
+				else
+				{
+					// use dotnet to run entry dll
+					Process.Start("dotnet", $"{entry} {cmdLine}");
+				}
+			}
+			else
+			{
+				// don't know how to handle this
+				throw new NotImplementedException("Entry assembly has unknown extension " + entry);
+			}
+		}
+
+		private string GetCommandLineArgs()
+		{
+			var cmdLine = string.Empty;
+			var oldArgs = Environment.GetCommandLineArgs();
+			if (oldArgs.Length > 1)
+			{
+				var args = new String[oldArgs.Length - 1];
+				Array.Copy(oldArgs, 1, args, 0, args.Length);
+				cmdLine = String.Join(" ", args);
+			}
+
+			return cmdLine;
+		}
 	}
 }
