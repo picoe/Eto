@@ -42,7 +42,7 @@ namespace Eto.Wpf.Forms
 
 			if (realScale == null)
 			{
-				realScale = Control.GetDpi() / 96f;
+				realScale = Control.GetLogicalPixelSize();
 			}
 			return realScale ?? 1f;
 		}

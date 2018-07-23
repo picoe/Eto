@@ -26,13 +26,13 @@ namespace Eto.Test.Sections
 			if (!result.HasChildren)
 			{
 				if (!string.IsNullOrEmpty(result.Output))
-					Application.Instance.AsyncInvoke(() => Log.Write(null, result.Output));
+					Application.Instance.Invoke(() => Log.Write(null, result.Output));
 				if (result.FailCount > 0)
 				{
-					Application.AsyncInvoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
+					Application.Invoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
 				}
 				if (result.InconclusiveCount > 0)
-					Application.AsyncInvoke(() => Log.Write(null, "Inconclusive: {0}\n{1}", result.Message, result.StackTrace));
+					Application.Invoke(() => Log.Write(null, "Inconclusive: {0}\n{1}", result.Message, result.StackTrace));
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace Eto.Test.Sections
 		public void TestStarted(ITest test)
 		{
 			if (!test.HasChildren)
-				Application.AsyncInvoke(() => Log.Write(null, test.FullName));
+				Application.Invoke(() => Log.Write(null, test.FullName));
 		}
 	}
 
