@@ -12,6 +12,7 @@ namespace Eto.Test.Sections.Behaviors
 		readonly Screen[] screens;
 		Window parentWindow;
 		Label windowPositionLabel;
+		Label mousePositionLabel;
 
 		public ScreenSection()
 		{
@@ -34,6 +35,7 @@ namespace Eto.Test.Sections.Behaviors
 			}
 			layout.EndVertical();
 			layout.Add(windowPositionLabel = new Label());
+			layout.Add(mousePositionLabel = new Label());
 			layout.EndCentered();
 
 			layout.Add(ScreenLayout());
@@ -63,6 +65,7 @@ namespace Eto.Test.Sections.Behaviors
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
+			mousePositionLabel.Text = $"Mouse Position: {Mouse.Position}";
 			Invalidate();
 		}
 
