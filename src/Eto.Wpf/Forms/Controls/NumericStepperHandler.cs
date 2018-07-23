@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
@@ -34,13 +34,20 @@ namespace Eto.Wpf.Forms.Controls
 			var trimmedText = text;
 			if (h?.HasFormatString == true && trimmedText != null)
 				trimmedText = Regex.Replace(trimmedText, $@"(?!\d|{Regex.Escape(h.CultureInfo.NumberFormat.NumberDecimalSeparator)}|{Regex.Escape(h.CultureInfo.NumberFormat.NegativeSign)}).", ""); // strip any non-numeric value
-			var result = base.ConvertTextToValue(trimmedText);
+			try
+			{
+				var result = base.ConvertTextToValue(trimmedText);
 
-			// test if the text matches the negative format
-			if (h.HasFormatString && result > 0 && NumberStringsMatch((-result.Value).ToString(FormatString, CultureInfo), text))
-				result = -result;
+				// test if the text matches the negative format
+				if (h.HasFormatString && result > 0 && NumberStringsMatch((-result.Value).ToString(FormatString, CultureInfo), text))
+					result = -result;
 
-			return result;
+				return result;
+			}
+			catch
+			{
+				return null;
+			}
 		}
 
 		protected override string ConvertValueToText()

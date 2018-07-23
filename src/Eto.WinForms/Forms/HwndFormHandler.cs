@@ -91,7 +91,7 @@ namespace Eto.WinForms.Forms
 				var screen = swf.Screen.FromHandle(Control);
 				if (screen == null)
 					return 1;
-				return screen.GetDpi() / 96f;
+				return screen.GetLogicalPixelSize();
 			}
 		}
 
