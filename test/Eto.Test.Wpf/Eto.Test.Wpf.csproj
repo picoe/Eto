@@ -38,6 +38,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,6 +57,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="UnitTests\DataContextTests.cs" />
     <Compile Include="UnitTests\MenuBarTests.cs" />
+    <Compile Include="UnitTests\ScreenTests.cs" />
     <Compile Include="UnitTests\ScrollableTests.cs" />
     <Compile Include="UnitTests\TransformStackTest.cs" />
   </ItemGroup>
