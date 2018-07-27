@@ -207,8 +207,10 @@ namespace Eto.Mac.Forms.Controls
 		/// <summary>
 		/// Gets the bezel style of the button based on its size and image position
 		/// </summary>
-		NSBezelStyle GetBezelStyle()
+		protected virtual NSBezelStyle GetBezelStyle()
 		{
+			if (BezelStyle != null)
+				return BezelStyle.Value;
 			var size = Control.Frame.Size.ToEtoSize();
 			if (size.Width == 0 || size.Height == 0)
 				return Control.BezelStyle;
@@ -232,7 +234,7 @@ namespace Eto.Mac.Forms.Controls
 			return NSBezelStyle.Rounded;
 		}
 
-		void SetBezel()
+		protected virtual void SetBezel()
 		{
 			if (disableSetBezel > 0)
 				return;
@@ -258,7 +260,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		void SetImagePosition()
+		protected virtual void SetImagePosition()
 		{
 			var position = ImagePosition.ToNS();
 			if (string.IsNullOrEmpty(Text) &&
@@ -284,6 +286,18 @@ namespace Eto.Mac.Forms.Controls
 					SetImagePosition();
 					InvalidateMeasure();
 				});
+			}
+		}
+
+		static readonly object CustomBezelStyle_Key = new object();
+
+		public NSBezelStyle? BezelStyle
+		{
+			get { return Widget.Properties.Get<NSBezelStyle?>(CustomBezelStyle_Key); }
+			set
+			{
+				Widget.Properties.Set(CustomBezelStyle_Key, value);
+				SetBezel();
 			}
 		}
 
