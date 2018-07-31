@@ -109,6 +109,7 @@
     <Compile Include="Forms\VistaSelectFolderDialogHandler.cs" />
     <Compile Include="Forms\WindowsFormsHostHandler.cs" />
     <Compile Include="Win32.dib.cs" />
+    <Compile Include="WinFormsHelpers.cs" />
     <Compile Include="WpfConversions.cs" />
     <Compile Include="CustomControls\EditableTextBlock.cs" />
     <Compile Include="CustomControls\FontDialog\fontchooser.xaml.cs">

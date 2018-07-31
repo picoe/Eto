@@ -10,7 +10,7 @@ using Eto.Forms;
 
 namespace Eto.Wpf.Forms
 {
-	public abstract class WindowsFormsHostHandler<TControl, TWidget, TCallback> : WpfFrameworkElement<WindowsFormsHost, TWidget, TCallback>
+	public class WindowsFormsHostHandler<TControl, TWidget, TCallback> : WpfFrameworkElement<WindowsFormsHost, TWidget, TCallback>
 		where TControl : swf.Control
 		where TWidget : Control
 		where TCallback : Control.ICallback
