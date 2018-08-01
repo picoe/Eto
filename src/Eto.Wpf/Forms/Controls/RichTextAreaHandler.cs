@@ -404,8 +404,13 @@ namespace Eto.Wpf.Forms.Controls
 				// very odd, considering WPF's available font families only lists "Arial", you'd think this would be handled
 				// by the rtf processor.
 				var faceName = CustomControls.FontDialog.NameDictionaryHelper.GetEnglishName(typeface.FaceNames);
-				family = new swm.FontFamily(family.Source + " " + faceName);
-				weight = sw.FontWeights.Normal;
+				// special case, sometimes the weight of the "Regular" or "Normal" font is not exact
+				if (!string.Equals(faceName, "Regular", StringComparison.Ordinal)
+					&& !string.Equals(faceName, "Normal", StringComparison.Ordinal))
+				{
+					family = new swm.FontFamily(family.Source + " " + faceName);
+					weight = sw.FontWeights.Normal;
+				}
 			}
 
 			SetSelectionAttribute(swd.TextElement.FontFamilyProperty, family);
