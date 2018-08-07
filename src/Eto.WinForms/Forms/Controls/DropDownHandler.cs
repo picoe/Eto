@@ -262,10 +262,17 @@ namespace Eto.WinForms.Forms.Controls
 			get { return collection != null ? collection.Collection : null; }
 			set
 			{
-				if (collection != null)
-					collection.Unregister();
+				var selected = Widget.SelectedValue;
+				collection?.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				if (!ReferenceEquals(selected, null))
+				{
+					var newSelectedIndex = collection.IndexOf(selected);
+					SelectedIndex = newSelectedIndex;
+					if (newSelectedIndex == -1)
+						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				}
 			}
 		}
 

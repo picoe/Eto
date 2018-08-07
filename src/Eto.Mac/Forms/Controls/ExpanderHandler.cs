@@ -100,6 +100,16 @@ namespace Eto.Mac.Forms.Controls
 			base.Initialize();
 		}
 
+		public override bool Enabled
+		{
+			get => base.Enabled;
+			set
+			{
+				base.Enabled = value;
+				disclosureButton.Enabled = value;
+			}
+		}
+
 		static void DisclosureButton_Activated(object sender, EventArgs e)
 		{
 			var handler = GetHandler((sender as NSView)?.Superview) as ExpanderHandler;
