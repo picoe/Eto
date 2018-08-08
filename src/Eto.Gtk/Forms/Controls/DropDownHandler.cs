@@ -43,6 +43,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			base.Initialize();
 		}
 
+		static readonly object SuppressIndexChanged_Key = new object();
+
+		int SuppressIndexChanged
+		{
+			get => Widget.Properties.Get<int>(SuppressIndexChanged_Key);
+			set => Widget.Properties.Set(SuppressIndexChanged_Key, value);
+		}
+
 		protected abstract void Create();
 
 		protected new DropDownConnector Connector { get { return (DropDownConnector)base.Connector; } }
@@ -59,6 +67,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public virtual void HandleChanged(object sender, EventArgs e)
 			{
+				if (Handler.SuppressIndexChanged > 0)
+					return;
 				var newIndex = Handler.SelectedIndex;
 				if (newIndex != lastIndex)
 				{
@@ -179,10 +189,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return collection != null ? collection.Collection : null; }
 			set
 			{
-				if (collection != null)
-					collection.Unregister();
+				SuppressIndexChanged++;
+				var selected = Widget.SelectedValue;
+				collection?.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				if (!ReferenceEquals(selected, null))
+				{
+					SelectedIndex = collection.IndexOf(selected);
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				}
+				SuppressIndexChanged--;
 			}
 		}
 

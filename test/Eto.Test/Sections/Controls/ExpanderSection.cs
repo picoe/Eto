@@ -10,6 +10,7 @@ namespace Eto.Test.Sections.Controls
 		public ExpanderSection()
 		{
 			var expandedCheckBox = new CheckBox { Text = "Expanded" };
+			var enabledCheckBox = new CheckBox { Text = "Enabled" };
 
 			var expander = new Expander
 			{
@@ -18,6 +19,7 @@ namespace Eto.Test.Sections.Controls
 			};
 
 			expandedCheckBox.CheckedBinding.Bind(expander, e => e.Expanded);
+			enabledCheckBox.CheckedBinding.Bind(expander, e => e.Enabled);
 
 			LogEvents(expander);
 
@@ -39,7 +41,13 @@ namespace Eto.Test.Sections.Controls
 				Padding = new Padding(10),
 				Items =
 				{
-					expandedCheckBox,
+					new StackLayout {
+						Orientation = Orientation.Horizontal,
+						Items = {
+							expandedCheckBox,
+							enabledCheckBox
+						}
+					},
 					expander,
 					expander2
 				}
