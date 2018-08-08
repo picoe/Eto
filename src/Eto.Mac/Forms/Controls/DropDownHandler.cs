@@ -147,12 +147,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public DropDownHandler Handler { get; set; }
 
-			public override int IndexOf(object item)
-			{
-				var binding = Handler.Widget.ItemTextBinding;
-				return (int)Handler.Control.Menu.IndexOf(binding.GetValue(item));
-			}
-
 			NSMenuItem CreateItem(object dataItem)
 			{
 				var item = new NSMenuItem(Handler.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty);
@@ -209,7 +203,7 @@ namespace Eto.Mac.Forms.Controls
 				var selected = Handler.SelectedIndex;
 				Handler.Control.RemoveItem(index);
 				Handler.InvalidateMeasure();
-				if (Handler.Widget.Loaded && selected == index)
+				if (selected == index)
 				{
 					Handler.Control.SelectItem(-1);
 					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
@@ -221,7 +215,7 @@ namespace Eto.Mac.Forms.Controls
 				var change = Handler.SelectedIndex != -1;
 				Handler.Control.RemoveAllItems();
 				Handler.InvalidateMeasure();
-				if (Handler.Widget.Loaded && change)
+				if (change)
 				{
 					Handler.Control.SelectItem(-1);
 					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
@@ -234,10 +228,16 @@ namespace Eto.Mac.Forms.Controls
 			get { return collection == null ? null : collection.Collection; }
 			set
 			{
-				if (collection != null)
-					collection.Unregister();
+				var selected = Widget.SelectedValue;
+				Control.SelectItem(-1);
+				collection?.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				if (!ReferenceEquals(selected, null))
+				{
+					Control.SelectItem(collection.IndexOf(selected));
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				}
 			}
 		}
 

@@ -166,6 +166,8 @@ namespace Eto.Forms
 			add { Properties.AddEvent(SelectedIndexChangedKey, value); }
 			remove { Properties.RemoveEvent(SelectedIndexChangedKey, value); }
 		}
+		object lastSelectedValue;
+		string lastSelectedKey;
 
 		/// <summary>
 		/// Raises the <see cref="SelectedIndexChanged"/> event.
@@ -174,8 +176,20 @@ namespace Eto.Forms
 		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectedIndexChangedKey, this, e);
-			OnSelectedValueChanged(e);
-			OnSelectedKeyChanged(e);
+			var newSelectedValue = SelectedValue;
+			if (lastSelectedValue != newSelectedValue)
+			{
+				lastSelectedValue = newSelectedValue;
+				OnSelectedValueChanged(e);
+			}
+
+			var newSelectedKey = SelectedKey;
+			if (lastSelectedKey != newSelectedKey)
+			{
+				lastSelectedKey = newSelectedKey;
+				OnSelectedKeyChanged(e);
+			}
+
 		}
 
 		static readonly object SelectedValueChangedKey = new object();
