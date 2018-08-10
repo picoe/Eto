@@ -877,5 +877,20 @@ namespace Eto.Wpf
 
 			return System.Drawing.Icon.FromHandle(image.ToSD().GetHicon());
 		}
+
+		public static string GetEnglishName(this swm.LanguageSpecificStringDictionary nameDictionary)
+		{
+			return CustomControls.FontDialog.NameDictionaryHelper.GetEnglishName(nameDictionary);
+		}
+
+		public static string GetDisplayName(this swm.LanguageSpecificStringDictionary nameDictionary)
+		{
+			return CustomControls.FontDialog.NameDictionaryHelper.GetDisplayName(nameDictionary);
+		}
+
+		public static string GetName(this swm.LanguageSpecificStringDictionary nameDictionary, string ietfLanguageTag)
+		{
+			return CustomControls.FontDialog.NameDictionaryHelper.GetName(nameDictionary, ietfLanguageTag);
+		}
 	}
 }
