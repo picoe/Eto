@@ -388,7 +388,7 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return Win32.IsWindowVisible(Control);
 			}
 			set
 			{
