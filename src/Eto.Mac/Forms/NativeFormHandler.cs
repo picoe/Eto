@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using Eto.Drawing;
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -34,6 +35,12 @@ namespace Eto.Mac.Forms
 
 		protected override void ConfigureWindow()
 		{
+		}
+
+		public override Size Size
+		{
+			get => Control.Frame.Size.ToEtoSize();
+			set => base.Size = value;
 		}
 	}
 }
