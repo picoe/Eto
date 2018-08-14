@@ -67,7 +67,7 @@ namespace Eto.Wpf
 		{
 			if (value.IsEmpty)
 				return Rectangle.Empty;
-			return new Rectangle((int)value.X, (int)value.Y, (int)value.Width, (int)value.Height);
+			return new Rectangle((int)value.X, (int)value.Y, (int)Math.Ceiling(value.Width), (int)Math.Ceiling(value.Height));
 		}
 
 		public static RectangleF ToEtoF(this sw.Rect value)
@@ -102,7 +102,7 @@ namespace Eto.Wpf
 
 		public static Size ToEtoSize(this sw.Size value)
 		{
-			return new Size((int)(double.IsNaN(value.Width) ? -1 : value.Width), (int)(double.IsNaN(value.Height) ? -1 : value.Height));
+			return new Size((int)(double.IsNaN(value.Width) ? -1 : Math.Ceiling(value.Width)), (int)(double.IsNaN(value.Height) ? -1 : Math.Ceiling(value.Height)));
 		}
 
 		public static sw.Size ToWpf(this Size value)
@@ -296,8 +296,8 @@ namespace Eto.Wpf
 		public static Size GetSize(this sw.FrameworkElement element)
 		{
 			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
-				return new Size((int)Math.Round(element.ActualWidth), (int)Math.Round(element.ActualHeight));
-			return new Size((int)(double.IsNaN(element.Width) ? -1 : Math.Round(element.Width)), (int)(double.IsNaN(element.Height) ? -1 : Math.Round(element.Height)));
+				return new Size((int)Math.Ceiling(element.ActualWidth), (int)Math.Ceiling(element.ActualHeight));
+			return new Size((int)(double.IsNaN(element.Width) ? -1 : Math.Ceiling(element.Width)), (int)(double.IsNaN(element.Height) ? -1 : Math.Ceiling(element.Height)));
 		}
 
 		public static sw.Size GetMinSize(this sw.FrameworkElement element)
