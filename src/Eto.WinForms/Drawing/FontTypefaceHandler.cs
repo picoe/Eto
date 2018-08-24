@@ -13,6 +13,8 @@ namespace Eto.WinForms.Drawing
 
 		public string Name { get; set; }
 
+		public string LocalizedName => Name;
+
 		public FontStyle FontStyle
 		{
 			get { return Control.ToEtoStyle (); }

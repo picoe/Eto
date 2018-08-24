@@ -44,6 +44,8 @@ namespace Eto.Mac
 	{
 		public static readonly IntPtr AppKitHandle = Dlfcn.dlopen("/System/Library/Frameworks/AppKit.framework/AppKit", 0);
 
+		public static readonly IntPtr CoreTextHandle = Dlfcn.dlopen("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText", 0);
+
 		public static T GetNSObject<T>(IntPtr ptr)
 			where T: NSObject
 		{
