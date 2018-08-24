@@ -4,12 +4,14 @@ using System.Linq;
 using swm = System.Windows.Media;
 using sw = System.Windows;
 using swd = System.Windows.Documents;
+using Eto.Wpf.CustomControls.FontDialog;
 
 namespace Eto.Wpf.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<swm.Typeface, FontTypeface>, FontTypeface.IHandler
 	{
 		string name;
+		string localizedName;
 
 		public FontTypefaceHandler (swm.Typeface type)
 		{
@@ -33,23 +35,10 @@ namespace Eto.Wpf.Drawing
 			range.ApplyPropertyValue(swd.TextElement.FontWeightProperty, Control.Weight);
 		}
 
-		public string Name
-		{
-			get
-			{
-				if (name == null) {
-					name = CustomControls.FontDialog.NameDictionaryHelper.GetDisplayName(Control.FaceNames);
-				}
-				return name;
-			}
-		}
+		public string Name => name ?? (name = NameDictionaryHelper.GetEnglishName(Control.FaceNames));
 
-		public FontStyle FontStyle
-		{
-			get
-			{
-				return WpfConversions.Convert (Control.Style, Control.Weight);
-			}
-		}
+		public string LocalizedName => localizedName ?? (localizedName = NameDictionaryHelper.GetDisplayName(Control.FaceNames));
+
+		public FontStyle FontStyle => WpfConversions.Convert (Control.Style, Control.Weight);
 	}
 }

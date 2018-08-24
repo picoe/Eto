@@ -9,10 +9,9 @@ namespace Eto.GtkSharp.Drawing
 			this.Control = pangoFace;
 		}
 
-		public string Name
-		{
-			get { return Control.FaceName; }
-		}
+		public string Name => Control.FaceName;
+
+		public string LocalizedName => Name;
 
 		public FontStyle FontStyle
 		{

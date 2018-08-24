@@ -190,6 +190,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control FontStyles()
 		{
 			fontStyles = new ListBox { Size = new Size(150, 100) };
+
 			fontStyles.SelectedIndexChanged += (sender, e) =>
 			{
 				if (updating)
@@ -278,7 +279,15 @@ namespace Eto.Test.Sections.Dialogs
 			if (newFamily)
 			{
 				fontStyles.Items.Clear();
-				fontStyles.Items.AddRange(family.Typefaces.Select(r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
+				Func<FontTypeface, string> getFaceName = (FontTypeface ft) =>
+				{
+					var name = ft.Name;
+					if (ft.LocalizedName != name)
+						name += $" ({ft.LocalizedName})";
+					return name;
+				};
+
+				fontStyles.Items.AddRange(family.Typefaces.Select(r => new ListItem { Text = getFaceName(r), Key = r.Name }).OfType<IListItem>());
 			}
 			fontStyles.SelectedKey = selectedFont.Typeface.Name;
 			fontList.SelectedKey = family.Name;
