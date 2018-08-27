@@ -177,7 +177,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					return Control.Buffer.GetText(start, end, false);
 				}
-				return null;
+				return string.Empty;
 			}
 			set
 			{

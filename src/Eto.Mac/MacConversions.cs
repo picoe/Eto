@@ -43,9 +43,13 @@ namespace Eto.Mac
 {
 	public static partial class MacConversions
 	{
-		public static NSColor ToNSUI(this Color color)
+		public static NSColor ToNSUI(this Color color) => NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
+
+		public static NSColor ToNSUI(this Color color, bool calibrated)
 		{
-			return NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
+			return calibrated
+				? NSColor.FromCalibratedRgba(color.R, color.G, color.B, color.A)
+				: NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
 		}
 
 		public static Color ToEto(this NSColor color, bool calibrated = true)

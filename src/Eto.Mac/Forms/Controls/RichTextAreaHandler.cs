@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
@@ -148,7 +148,10 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var range = Control.SelectedRange;
 			if (range.Length > 0)
+			{
 				Control.TextStorage.AddAttribute(attribute, value, range);
+				Control.DidChangeText();
+			}
 			else
 			{
 				var mutableAttributes = new NSMutableDictionary(Control.TypingAttributes);
@@ -217,13 +220,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color SelectionForeground
 		{
-			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.ForegroundColor).ToEto(); }
+			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.ForegroundColor).ToEto(false); }
 			set { SetSelectedAttribute(NSStringAttributeKey.ForegroundColor, value.ToNSUI()); }
 		}
 
 		public Color SelectionBackground
 		{
-			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.BackgroundColor).ToEto(); }
+			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.BackgroundColor).ToEto(false); }
 			set { SetSelectedAttribute(NSStringAttributeKey.BackgroundColor, value.ToNSUI()); }
 		}
 
