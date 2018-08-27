@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using NUnit.Framework;
 
@@ -103,6 +103,18 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(5, selectionChangedCount, "#7-2");
 				Assert.AreEqual("Hello friend", textArea.Text.TrimEnd(), "#7-3");
 				Assert.AreEqual(Range.FromLength(6, 0), textArea.Selection, "#7-4");
+			});
+		}
+
+		[Test]
+		public void InitialValueOfSelectedTextShouldBeEmptyInsteadOfNull()
+		{
+			Invoke(() =>
+			{
+				var textArea = new T();
+				Assert.AreEqual(string.Empty, textArea.SelectedText, "SelectedText should be empty not null before setting any text");
+				textArea.Text = "Hello!";
+				Assert.AreEqual(string.Empty, textArea.SelectedText, "SelectedText should *still* be empty not null after setting text");
 			});
 		}
 	}
