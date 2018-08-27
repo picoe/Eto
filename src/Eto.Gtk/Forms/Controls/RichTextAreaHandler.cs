@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
@@ -176,6 +176,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			});
 			SetUnderline(range, font.FontDecoration.HasFlag(FontDecoration.Underline));
 			SetStrikethrough(range, font.FontDecoration.HasFlag(FontDecoration.Strikethrough));
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetFamily(Range<int> range, FontFamily family)
@@ -186,6 +187,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				tag.Family = pangoFamily;
 				tag.FamilySet = true;
 			});
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetTypeface(Range<int> range, FontTypeface typeface)
@@ -196,6 +198,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				tag.Family = pangoFace.FaceName;
 				tag.FamilySet = true;
 			});
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetForeground(Range<int> range, Color color)
@@ -205,6 +208,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				tag.ForegroundGdk = color.ToGdk();
 				tag.ForegroundSet = true;
 			});
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetBackground(Range<int> range, Color color)
@@ -214,6 +218,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				tag.BackgroundGdk = color.ToGdk();
 				tag.BackgroundSet = true;
 			});
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetBold(Range<int> range, bool bold)
@@ -224,6 +229,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				tag.Weight = weight;
 				tag.WeightSet = true;
 			});
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetItalic(Range<int> range, bool italic)
@@ -234,6 +240,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				tag.Style = style;
 				tag.StyleSet = true;
 			});
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetUnderline(Range<int> range, bool underline)
@@ -243,6 +250,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				tag.Underline = underline ? Pango.Underline.Single : Pango.Underline.None;
 				tag.UnderlineSet = true;
 			});
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetStrikethrough(Range<int> range, bool strikethrough)
@@ -252,6 +260,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				tag.Strikethrough = strikethrough;
 				tag.StrikethroughSet = true;
 			});
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		Gtk.TextIter SelectionIter
@@ -348,8 +357,20 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.StyleSet = true;
 				});
 
-				SelectionUnderline = value.FontDecoration.HasFlag(FontDecoration.Underline);
-				SelectionStrikethrough = value.FontDecoration.HasFlag(FontDecoration.Strikethrough);
+				var underline = value.FontDecoration.HasFlag(FontDecoration.Underline);
+				ApplySelectionTag(UnderlineTagPrefix, value.ToString(), tag =>
+				{
+					tag.Underline = underline ? Pango.Underline.Single : Pango.Underline.None;
+					tag.UnderlineSet = true;
+				});
+				var strikethrough = value.FontDecoration.HasFlag(FontDecoration.Strikethrough);
+				ApplySelectionTag(StrikethroughTagPrefix, value.ToString(), tag =>
+				{
+					tag.Strikethrough = strikethrough;
+					tag.StrikethroughSet = true;
+				});
+
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -371,6 +392,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.ForegroundGdk = value.ToGdk();
 					tag.ForegroundSet = true;
 				});
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -392,6 +414,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.BackgroundGdk = value.ToGdk();
 					tag.BackgroundSet = true;
 				});
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -409,6 +432,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.Weight = weight;
 					tag.WeightSet = true;
 				});
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -426,6 +450,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.Style = style;
 					tag.StyleSet = true;
 				});
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -439,6 +464,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.Underline = value ? Pango.Underline.Single : Pango.Underline.None;
 					tag.UnderlineSet = true;
 				});
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -452,6 +478,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.Strikethrough = value;
 					tag.StrikethroughSet = true;
 				});
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -475,6 +502,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.Family = pangoFamily;
 					tag.FamilySet = true;
 				});
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -506,6 +534,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.Stretch = pangoDesc.Stretch;
 					tag.StretchSet = true;
 				});
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 

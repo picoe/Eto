@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using NUnit.Framework;
+using Eto.Drawing;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -103,6 +104,66 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				richText.Text = val = $"This is{nl}some text{nl}";
 				Assert.AreEqual(val, richText.Text, "#2");
+			});
+		}
+
+		[Test]
+		public void SelectionBoldItalicUnderlineShouldTriggerTextChanged()
+		{
+			Invoke(() =>
+			{
+				int textChangedCount = 0;
+				var richText = new RichTextArea();
+				richText.TextChanged += (sender, e) => textChangedCount++;
+
+				string text = "This is some underline, strikethrough, bold, and italic text. This is green, background blue text.";
+
+				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+
+				richText.Text = text;
+				Assert.AreEqual(1, textChangedCount);
+
+				richText.Selection = GetRange("underline");
+				richText.SelectionUnderline = true;
+				Assert.AreEqual(2, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionUnderline");
+				Assert.AreEqual(true, richText.SelectionUnderline);
+				Assert.AreEqual(false, richText.SelectionStrikethrough);
+				Assert.AreEqual(false, richText.SelectionBold);
+				Assert.AreEqual(false, richText.SelectionItalic);
+
+				richText.Selection = GetRange("strikethrough");
+				richText.SelectionStrikethrough = true;
+				Assert.AreEqual(3, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionStrikethrough");
+				Assert.AreEqual(false, richText.SelectionUnderline);
+				Assert.AreEqual(true, richText.SelectionStrikethrough);
+				Assert.AreEqual(false, richText.SelectionBold);
+				Assert.AreEqual(false, richText.SelectionItalic);
+
+				richText.Selection = GetRange("bold");
+				richText.SelectionBold = true;
+				Assert.AreEqual(4, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBold");
+				Assert.AreEqual(false, richText.SelectionUnderline);
+				Assert.AreEqual(false, richText.SelectionStrikethrough);
+				Assert.AreEqual(true, richText.SelectionBold);
+				Assert.AreEqual(false, richText.SelectionItalic);
+
+				richText.Selection = GetRange("italic");
+				richText.SelectionItalic = true;
+				Assert.AreEqual(5, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionItalic");
+				Assert.AreEqual(false, richText.SelectionUnderline);
+				Assert.AreEqual(false, richText.SelectionStrikethrough);
+				Assert.AreEqual(false, richText.SelectionBold);
+				Assert.AreEqual(true, richText.SelectionItalic);
+
+				richText.Selection = GetRange("green");
+				richText.SelectionForeground = Colors.Green;
+				Assert.AreEqual(6, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionForeground");
+				Assert.AreEqual(Colors.Green, richText.SelectionForeground);
+
+				richText.Selection = GetRange("green");
+				richText.SelectionBackground = Colors.Blue;
+				Assert.AreEqual(7, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBackground");
+				Assert.AreEqual(Colors.Blue, richText.SelectionBackground);
 			});
 		}
 	}
