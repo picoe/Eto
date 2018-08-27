@@ -334,7 +334,7 @@ namespace Eto.Mac.Forms.Controls
 				var range = Control.SelectedRange;
 				if (range.Location >= 0 && range.Length > 0)
 					return Control.Value.Substring((int)range.Location, (int)range.Length);
-				return null;
+				return string.Empty;
 			}
 			set
 			{
