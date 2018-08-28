@@ -46,6 +46,7 @@
     <OutputPath>..\..\artifacts\core\Release\net45\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
