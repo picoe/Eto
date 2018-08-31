@@ -20,6 +20,8 @@ namespace Eto.Mac.Forms
 {
 	class FontDialogHelper : NSWindowDelegate
 	{
+		NSFont font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+
 		public static FontDialogHelper Instance { get; set; }
 
 		WeakReference handler;
@@ -29,25 +31,37 @@ namespace Eto.Mac.Forms
 			set => handler = new WeakReference(value);
 		}
 
+		public NSFont Font
+		{
+			get => font;
+			set => font = value;
+		}
+
 
 		[Export("changeFont:")]
 		public void ChangeFont(NSFontManager sender)
 		{
-			var font = sender.ConvertFont(NSFont.SystemFontOfSize(NSFont.SystemFontSize));
-			Handler.Font = font != null ? new Font(new FontHandler(font)) : null;
-			Handler.Callback.OnFontChanged(Handler.Widget, EventArgs.Empty);
+			var h = Handler;
+			if (h == null)
+				return;
+			font = sender.ConvertFont(font);
+			h.Font = font != null ? new Font(new FontHandler(font)) : null;
+			h.Callback.OnFontChanged(h.Widget, EventArgs.Empty);
 		}
 
 		public override void WillClose(NSNotification notification)
 		{
-			Handler.Manager.Target = null;
-			Handler.Manager.Action = null;
+			var h = Handler;
+			if (h == null)
+				return;
+			h.Manager.Target = null;
+			h.Manager.Action = null;
 			FontDialogHelper.Instance = null;
 		}
 
 		public override void DidResignKey(NSNotification notification)
 		{
-			Handler.Control.PerformClose(this);
+			Handler?.Control.PerformClose(this);
 		}
 
 		[Export("changeAttributes:")]
@@ -64,7 +78,7 @@ namespace Eto.Mac.Forms
 		[Export("modalClosed:")]
 		public void ModalClosed(NSNotification notification)
 		{
-			Handler.Control.PerformClose(this);
+			Handler?.Control.PerformClose(this);
 			NSNotificationCenter.DefaultCenter.RemoveObserver(this);
 		}
 	}
@@ -108,17 +122,13 @@ namespace Eto.Mac.Forms
 			else
 				parentWindow = NSApplication.SharedApplication.KeyWindow;
 
-			FontDialogHelper.Instance = new FontDialogHelper { Handler = this };
+			NSFont selectedFont = Font.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+
+			FontDialogHelper.Instance = new FontDialogHelper { Handler = this, Font = selectedFont };
 
 			Manager.Target = null;
 			Manager.Action = null;
-			if (Font != null)
-			{
-				var fontHandler = (FontHandler)Font.Handler;
-				Manager.SetSelectedFont(fontHandler.Control, false);
-			}
-			else
-				Manager.SetSelectedFont(NSFont.SystemFontOfSize(NSFont.SystemFontSize), false);
+			Manager.SetSelectedFont(selectedFont, false);
 
 			Control.Delegate = FontDialogHelper.Instance;
 			Manager.Target = FontDialogHelper.Instance;

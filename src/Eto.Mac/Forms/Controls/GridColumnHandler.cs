@@ -74,9 +74,7 @@ namespace Eto.Mac.Forms.Controls
 
 		IDataViewHandler DataViewHandler { get; }
 
-		void Resize(bool force = false);
-
-		void AutoSizeColumn(NSRange rowRange);
+		void AutoSizeColumn(NSRange rowRange, bool force = false);
 
 		void EnabledChanged(bool value);
 
@@ -116,24 +114,13 @@ namespace Eto.Mac.Forms.Controls
 			base.Initialize();
 		}
 
-		public void Resize(bool force = false)
-		{
-			var handler = DataViewHandler;
-			if (AutoSize && handler != null)
-			{
-				var width = GetPreferredWidth();
-				if (force || width > Control.Width)
-					Control.Width = width;
-			}
-		}
-
-		public void AutoSizeColumn(NSRange rowRange)
+		public void AutoSizeColumn(NSRange rowRange, bool force = false)
 		{
 			var handler = DataViewHandler;
 			if (AutoSize && handler != null)
 			{
 				var width = GetPreferredWidth(rowRange);
-				if (width > Control.Width)
+				if (force || width > Control.Width)
 					Control.Width = width;
 			}
 		}

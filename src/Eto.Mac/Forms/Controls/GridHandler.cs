@@ -186,10 +186,6 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return ScrollView; } }
 
-		protected virtual void PreUpdateColumn(int index)
-		{
-		}
-
 		protected virtual void UpdateColumns()
 		{
 		}
@@ -223,15 +219,15 @@ namespace Eto.Mac.Forms.Controls
 				var colhandler = (GridColumnHandler)item.Handler;
 				Handler.Control.AddColumn(colhandler.Control);
 				colhandler.Setup(Handler, (int)(Handler.Control.ColumnCount - 1));
-				
-				Handler.UpdateColumns();
+
+				if (Handler.Loaded)
+					Handler.UpdateColumns();
 			}
 
 			public override void InsertItem(int index, GridColumn item)
 			{
 				var outline = Handler.Control;
 				var columns = new List<NSTableColumn>(outline.TableColumns());
-				Handler.PreUpdateColumn(index);
 				for (int i = index; i < columns.Count; i++)
 				{
 					outline.RemoveColumn(columns[i]);
@@ -247,14 +243,14 @@ namespace Eto.Mac.Forms.Controls
 					colHandler.Setup(Handler, i);
 					outline.AddColumn(col);
 				}
-				Handler.UpdateColumns();
+				if (Handler.Loaded)
+					Handler.UpdateColumns();
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var outline = Handler.Control;
 				var columns = new List<NSTableColumn>(outline.TableColumns());
-				Handler.PreUpdateColumn(index);
 				for (int i = index; i < columns.Count; i++)
 				{
 					outline.RemoveColumn(columns[i]);
@@ -267,15 +263,16 @@ namespace Eto.Mac.Forms.Controls
 					colHandler.Setup(Handler, i);
 					outline.AddColumn(col);
 				}
-				Handler.UpdateColumns();
+				if (Handler.Loaded)
+					Handler.UpdateColumns();
 			}
 
 			public override void RemoveAllItems()
 			{
-				Handler.PreUpdateColumn(0);
 				foreach (var col in Handler.Control.TableColumns ())
 					Handler.Control.RemoveColumn(col);
-				Handler.UpdateColumns();
+				if (Handler.Loaded)
+					Handler.UpdateColumns();
 			}
 		}
 
@@ -323,6 +320,7 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
+			UpdateColumns();
 
 			if (!Widget.Properties.Get<bool>(GridHandler.ScrolledToRow_Key))
 				// Yosemite bug: hides first row when DataStore is set before control is visible
@@ -330,12 +328,7 @@ namespace Eto.Mac.Forms.Controls
 			else
 				Widget.Properties.Remove(GridHandler.ScrolledToRow_Key);
 
-			IsAutoSizingColumns = true;
-			foreach (var col in ColumnHandlers)
-			{
-				col.Resize(true);
-			}
-			IsAutoSizingColumns = false;
+			AutoSizeColumns(true);
 		}
 
 		NSRange autoSizeRange;
@@ -351,7 +344,7 @@ namespace Eto.Mac.Forms.Controls
 					IsAutoSizingColumns = true;
 					foreach (var col in ColumnHandlers)
 					{
-						col.AutoSizeColumn(newRange);
+						col.AutoSizeColumn(newRange, force);
 					}
 					autoSizeRange = newRange;
 					IsAutoSizingColumns = false;

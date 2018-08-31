@@ -169,20 +169,25 @@ namespace Eto.Mac.Forms
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			SizeF naturalSize = new SizeF(200, 200);
+			var preferredClientSize = PreferredClientSize;
 			if (Content != null && Content.Visible)
 			{
 				var contentControl = Content.GetMacControl();
 				if (contentControl != null)
 				{
+					if (preferredClientSize?.Width > 0)
+						availableSize.Width = preferredClientSize.Value.Width;
+					if (preferredClientSize?.Height > 0)
+						availableSize.Height = preferredClientSize.Value.Height;
 					naturalSize = contentControl.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
 				}
 			}
-			if (PreferredClientSize != null)
+			if (preferredClientSize != null)
 			{
-				if (PreferredClientSize.Value.Width >= 0)
-					naturalSize.Width = PreferredClientSize.Value.Width;
-				if (PreferredClientSize.Value.Height >= 0)
-					naturalSize.Height = PreferredClientSize.Value.Height;
+				if (preferredClientSize.Value.Width >= 0)
+					naturalSize.Width = preferredClientSize.Value.Width;
+				if (preferredClientSize.Value.Height >= 0)
+					naturalSize.Height = preferredClientSize.Value.Height;
 			}
 
 			return naturalSize;

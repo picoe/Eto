@@ -141,19 +141,79 @@ namespace Eto.Mac.Forms.Controls
 			Control.NeedsLayout = true;
 		}
 
+		static readonly IntPtr selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+		static readonly IntPtr selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("contentSizeForFrameSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+		static readonly IntPtr classScroller_Handle = Class.GetHandle(typeof(NSScroller));
 
-		Size GetBorderSize() => Border == BorderType.None ? Size.Empty : new Size(2, 2);
+		CGSize FrameSizeForContentSize(CGSize size, bool hbar, bool vbar)
+		{
+			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
+			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
+			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
+			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(Control.ClassHandle, selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)Control.BorderType, (ulong)Control.VerticalScroller.ControlSize, (long)Control.VerticalScroller.ScrollerStyle);
+		}
+
+		CGSize ContentSizeForFrame(CGSize size, bool hbar, bool vbar)
+		{
+			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
+			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
+			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
+			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(Control.ClassHandle, selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)Control.BorderType, (ulong)Control.VerticalScroller.ControlSize, (long)Control.VerticalScroller.ScrollerStyle);
+		}
+
+		Size GetBorderSize() => FrameSizeForContentSize(new CGSize(0, 0), false, false).ToEtoSize();
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var naturalSize = NaturalSize;
-			if (naturalSize != null)
-				return naturalSize.Value;
-			
-			var border = Padding.Size + GetBorderSize();
-			naturalSize = SizeF.Min(availableSize, base.GetNaturalSize(availableSize - border) + border);
-			NaturalSize = naturalSize;
-			return naturalSize.Value;
+			bool isInfinity = float.IsPositiveInfinity(availableSize.Width) && float.IsPositiveInfinity(availableSize.Height);
+
+			if (isInfinity)
+			{
+				var naturalSizeInfinity = NaturalSizeInfinity;
+				if (naturalSizeInfinity != null)
+					return naturalSizeInfinity.Value;
+			}
+			else
+			{
+				var naturalAvailableSize = availableSize.TruncateInfinity();
+				var naturalSize = NaturalSize;
+				if (naturalSize != null && NaturalAvailableSize == naturalAvailableSize)
+					return naturalSize.Value;
+				NaturalAvailableSize = naturalAvailableSize;
+			}
+
+			var size = Content.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
+
+			// include the space needed for scroll bars
+
+			// first, get frame for the content size with no scroll bars
+			var frameSize = FrameSizeForContentSize(size.ToNS(), false, false);
+
+
+			// constrain the frame size to our available size
+			if (!float.IsPositiveInfinity(availableSize.Width))
+				frameSize.Width = (nfloat)Math.Min(availableSize.Width, frameSize.Width);
+			if (!float.IsPositiveInfinity(availableSize.Height))
+				frameSize.Height = (nfloat)Math.Min(availableSize.Height, frameSize.Height);
+
+			// get the client size for the new frame size
+			var clientSize = ContentSizeForFrame(frameSize, false, false);
+
+			// if our new client size is smaller than the width/height, we need scrollbars
+			var vbar = size.Height > clientSize.Height;
+			var hbar = size.Width > clientSize.Width;
+			if (hbar || vbar)
+			{
+				// given the enabled scroll bars, what size do we need?
+				frameSize = FrameSizeForContentSize(size.ToNS(), hbar, vbar);
+			}
+			var etoFrameSize = frameSize.ToEto();
+			if (isInfinity)
+				NaturalSizeInfinity = etoFrameSize;
+			else
+				NaturalSize = etoFrameSize;
+
+			return etoFrameSize;
 		}
 
 		public void UpdateScrollSizes()
@@ -163,7 +223,8 @@ namespace Eto.Mac.Forms.Controls
 
 		void PerformScrollLayout()
 		{
-			var clientSize = ClientSize;
+			var clientSize = ContentSizeForFrame(Control.Frame.Size, false, false).ToEto();
+
 			var size = SizeF.Empty;
 			if (DesiredScrollSize != null)
 			{
@@ -188,8 +249,14 @@ namespace Eto.Mac.Forms.Controls
 			else
 			{
 				var preferred = Content.GetPreferredSize(SizeF.PositiveInfinity);
+				var vbar = preferred.Height > clientSize.Height;
+				var hbar = preferred.Width > clientSize.Width;
+				if (hbar || vbar)
+					clientSize = ContentSizeForFrame(Control.Frame.Size, hbar, vbar).ToEto();
+
 				size = SizeF.Max(clientSize, preferred);
 			}
+
 			ContentControl.SetFrameSize(size.ToNS());
 			SetPosition(scrollPosition, true);
 		}
@@ -202,7 +269,7 @@ namespace Eto.Mac.Forms.Controls
 			
 			var size = Content.GetPreferredSize(SizeF.PositiveInfinity).ToNS();
 
-			var clientSize = Control.DocumentVisibleRect.Size;
+			var clientSize = ContentControl.Frame.Size;
 
 			if (ExpandContentWidth)
 				size.Width = (nfloat)Math.Max(clientSize.Width, size.Width);
