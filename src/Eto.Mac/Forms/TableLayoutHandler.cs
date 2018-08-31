@@ -112,9 +112,22 @@ namespace Eto.Mac.Forms
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			if (NaturalSize == null)
-	              NaturalSize = Calculate(availableSize, false, ref pref_widths, ref pref_heights);
-			return NaturalSize.Value;
+			if (float.IsPositiveInfinity(availableSize.Width) && float.IsPositiveInfinity(availableSize.Height))
+			{
+				var naturalSizeInfinity = NaturalSizeInfinity;
+				if (naturalSizeInfinity != null)
+					return naturalSizeInfinity.Value;
+				naturalSizeInfinity = NaturalSizeInfinity = Calculate(availableSize, false, ref pref_widths, ref pref_heights);
+				return naturalSizeInfinity.Value;
+			}
+
+			var naturalSize = NaturalSize;
+			var naturalAvailableSize = availableSize.TruncateInfinity();
+			if (naturalSize != null && NaturalAvailableSize == naturalAvailableSize)
+				return naturalSize.Value;
+			NaturalAvailableSize = naturalAvailableSize;
+	        naturalSize = NaturalSize = Calculate(availableSize, false, ref pref_widths, ref pref_heights);
+			return naturalSize.Value;
 		}
 
 		SizeF Calculate(SizeF availableSize, bool final, ref float[] widths, ref float[] heights)

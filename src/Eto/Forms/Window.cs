@@ -422,7 +422,9 @@ namespace Eto.Forms
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Window"/> will show in the taskbar.
 		/// </summary>
 		/// <remarks>
-		/// Some platforms, e.g. OS X do not show a separate icon for each running window.
+		/// Some platforms, e.g. macOS do not show a separate icon for each running window.  You may also have to add 
+		/// the LSUIElement key to your app's Info.plist to make your app hidden in the dock.  
+		/// See https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-108256-TPXREF136
 		/// </remarks>
 		/// <value><c>true</c> if the window will show in taskbar; otherwise, <c>false</c>.</value>
 		public bool ShowInTaskbar

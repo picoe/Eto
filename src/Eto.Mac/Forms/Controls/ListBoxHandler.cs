@@ -243,10 +243,10 @@ namespace Eto.Mac.Forms.Controls
 					{
 						var fontHandler = (FontHandler)value.Handler;
 						cell.Font = fontHandler.Control;
-						Control.RowHeight = fontHandler.LineHeight;
 					}
 					else
 						cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+					Control.ReloadData();
 				});
 			}
 		}

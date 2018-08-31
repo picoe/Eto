@@ -101,7 +101,9 @@ namespace Eto.Mac.Forms
 		public static readonly object MinimumSize_Key = new object();
 		public static readonly object MaximumSize_Key = new object();
 		public static readonly object PreferredSize_Key = new object();
+		public static readonly object NaturalAvailableSize_Key = new object();
 		public static readonly object NaturalSize_Key = new object();
+		public static readonly object NaturalSizeInfinity_Key = new object();
 		public static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
 		public static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
 		public static readonly IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
@@ -252,16 +254,28 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		protected Size? NaturalAvailableSize
+		{
+			get { return Widget.Properties.Get<Size?>(MacView.NaturalAvailableSize_Key); }
+			set { Widget.Properties[MacView.NaturalAvailableSize_Key] = value; }
+		}
+
 		protected SizeF? NaturalSize
 		{
 			get { return Widget.Properties.Get<SizeF?>(MacView.NaturalSize_Key); }
 			set { Widget.Properties[MacView.NaturalSize_Key] = value; }
 		}
 
+		protected SizeF? NaturalSizeInfinity
+		{
+			get { return Widget.Properties.Get<SizeF?>(MacView.NaturalSizeInfinity_Key); }
+			set { Widget.Properties[MacView.NaturalSizeInfinity_Key] = value; }
+		}
 
 		public virtual void InvalidateMeasure()
 		{
 			NaturalSize = null;
+			NaturalSizeInfinity = null;
 
 			if (!Widget.Loaded)
 				return;

@@ -154,7 +154,9 @@ namespace Eto.Mac.Forms.Controls
 				if (naturalSizeInfinity != null)
 					return naturalSizeInfinity.Value;
 
-				var size = Control.Cell.CellSizeForBounds(new CGRect(0, 0, int.MaxValue, int.MaxValue)).ToEto();
+			    var width = PreferredSize?.Width ?? int.MaxValue;
+				if (width < 0) width = int.MaxValue;
+				var size = Control.Cell.CellSizeForBounds(new CGRect(0, 0, width, int.MaxValue)).ToEto();
 				naturalSizeInfinity = Size.Ceiling(size);
 				return naturalSizeInfinity.Value;
 			}

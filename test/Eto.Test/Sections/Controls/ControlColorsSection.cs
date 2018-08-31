@@ -32,17 +32,12 @@ namespace Eto.Test.Sections.Controls
 			var formColorPicker = new ColorPicker { Value = BackgroundColor, AllowAlpha = true };
 			formColorPicker.ValueChanged += (sender, e) => BackgroundColor = formColorPicker.Value;
 
-			var fontPicker = new Button { Text = "Pick Font" };
-			fontPicker.Click += (sender, e) =>
+			var fontPicker = new FontPicker { Value = SystemFonts.Default() };
+			fontPicker.ValueChanged += (sender, e) =>
 			{
-				var dlg = new FontDialog();
-				dlg.FontChanged += (sender2, e2) =>
-				{
-					var font = dlg.Font;
-					foreach (var update in fontUpdates)
-						update(font);
-				};
-				dlg.ShowDialog(this);
+				var font = fontPicker.Value;
+				foreach (var update in fontUpdates)
+					update(font);
 			};
 
 			return new StackLayout

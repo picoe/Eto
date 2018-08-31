@@ -508,7 +508,6 @@ namespace Eto.Mac.Forms.Controls
 			public EtoOutlineView(TreeGridViewHandler handler)
 			{
 				Delegate = new EtoOutlineDelegate { Handler = handler };
-				DataSource = new EtoDataSource { Handler = handler };
 				//HeaderView = null,
 				//AutoresizesOutlineColumn = true,
 				//AllowsColumnResizing = false,
@@ -585,7 +584,10 @@ namespace Eto.Mac.Forms.Controls
 				store = value;
 				topitems.Clear();
 				cachedItems.Clear();
-				Control.ReloadData();
+				if (Control.DataSource == null)
+					Control.DataSource = new EtoDataSource { Handler = this };
+				else
+					Control.ReloadData();
 				suppressExpandCollapseEvents++;
 				ExpandItems(null);
 				suppressExpandCollapseEvents--;
@@ -733,21 +735,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override void PreUpdateColumn(int index)
-		{
-			base.PreUpdateColumn(index);
-			if (index == 0)
-				Control.OutlineTableColumn = null;
-		}
-
 		protected override void UpdateColumns()
 		{
 			base.UpdateColumns();
-			if (Control.OutlineTableColumn == null)
-			{
-				if (Widget.Columns.Count > 0)
-					Control.OutlineTableColumn = ((GridColumnHandler)Widget.Columns[0].Handler).Control;
-			}
+			if (Widget.Columns.Count > 0)
+				Control.OutlineTableColumn = ((GridColumnHandler)Widget.Columns[0].Handler).Control;
 			else if (Widget.Columns.Count == 0)
 				Control.OutlineTableColumn = null;
 		}
