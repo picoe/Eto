@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Eto.Test.UnitTests.Forms.Layout
 {
-	[TestFixture, Category(TestBase.TestPlatformCategory)]
+	[TestFixture]
 	public class TableLayoutTests : TestBase
 	{
 		[Test]

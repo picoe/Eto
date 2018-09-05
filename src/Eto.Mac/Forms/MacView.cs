@@ -1051,6 +1051,8 @@ namespace Eto.Mac.Forms
 
 			// TODO: block until drag is complete?
 		}
+
+		public Window GetNativeParentWindow() => ContainerControl.Window.ToEtoWindow();
 	}
 }
 

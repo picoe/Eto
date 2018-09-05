@@ -65,6 +65,8 @@ namespace Eto.WinForms.Forms
 			throw new NotImplementedException();
 		}
 
+		public override IntPtr NativeHandle => Control;
+
 		public Eto.Forms.ToolBar ToolBar
 		{
 			get
@@ -525,6 +527,11 @@ namespace Eto.WinForms.Forms
 		}
 
 		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Window GetNativeParentWindow()
 		{
 			throw new NotImplementedException();
 		}

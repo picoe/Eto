@@ -291,6 +291,9 @@ namespace Eto
 		[DllImport("kernel32.dll", CharSet = CharSet.Ansi, BestFitMapping = false, SetLastError = true, ExactSpelling = true)]
 		static extern IntPtr GetProcAddress(IntPtr moduleHandle, string method);
 
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetParent(IntPtr hwnd);
+
 		public static bool MethodExists(string module, string method)
 		{
 			var moduleHandle = LoadLibrary(module);

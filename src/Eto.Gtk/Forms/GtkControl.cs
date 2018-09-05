@@ -797,6 +797,8 @@ namespace Eto.GtkSharp.Forms
 			//Gtk.Drag.SetIconPixbuf(context, bmp.ToGdk(), 0, 0);
 		}
 
+		public Window GetNativeParentWindow() => (Control.Toplevel as Gtk.Window).ToEtoWindow();
+
 		class DragInfoObject
 		{
 			public DataObject Data { get; set; }
