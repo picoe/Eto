@@ -1100,7 +1100,7 @@ namespace Eto.Forms
 						return window;
 					c = c.Parent;
 				}
-				return null;
+				return Handler.GetNativeParentWindow();
 			}
 		}
 
@@ -1803,6 +1803,12 @@ namespace Eto.Forms
 			/// <param name="data">Drag data.</param>
 			/// <param name="allowedEffects">Allowed effects.</param>
 			void DoDragDrop(DataObject data, DragEffects allowedEffects);
+
+			/// <summary>
+			/// Gets a parent window wrapper around the native window
+			/// </summary>
+			/// <returns>The parent window.</returns>
+			Window GetNativeParentWindow();
 		}
 		#endregion
 	}

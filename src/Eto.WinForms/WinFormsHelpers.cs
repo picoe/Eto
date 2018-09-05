@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.WinForms;
 using swf = System.Windows.Forms;
@@ -25,6 +25,8 @@ namespace Eto.Forms
 		/// <param name="attach">If set to <c>true</c> the control is to be attached to an existing application, or <c>false</c> to get the native control directly.</param>
 		public static swf.Control ToNative(this Control control, bool attach = false)
 		{
+			if (control == null)
+				return null;
 			if (attach && !control.Loaded)
 				control.AttachNative();
 			return control.GetContainerControl();
@@ -47,6 +49,8 @@ namespace Eto.Forms
 		/// <param name="nativeControl">Native control to wrap.</param>
 		public static Control ToEto(this swf.Control nativeControl)
 		{
+			if (nativeControl == null)
+				return null;
 			return new Control(new NativeControlHandler(nativeControl));
 		}
 
@@ -57,6 +61,8 @@ namespace Eto.Forms
 		/// <param name="window">WinForms Window to wrap.</param>
 		public static Window ToEtoWindow(this swf.Form window)
 		{
+			if (window == null)
+				return null;
 			return new Form(new FormHandler(window));
 		}
 
@@ -70,6 +76,8 @@ namespace Eto.Forms
 		/// <param name="windowHandle">Handle of the win32 window.</param>
 		public static Window ToEtoWindow(IntPtr windowHandle)
 		{
+			if (windowHandle == IntPtr.Zero)
+				return null;
 			return new Form(new HwndFormHandler(windowHandle));
 		}
 	}

@@ -28,4 +28,7 @@
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UnitTests\" />
+  </ItemGroup>
 </Project>

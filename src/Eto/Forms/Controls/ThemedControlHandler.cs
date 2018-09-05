@@ -428,6 +428,12 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets the window this control is contained in
+		/// </summary>
+		/// <returns>The parent window, or null if it is not currently on a window</returns>
+		public Window GetNativeParentWindow() => Control.ParentWindow;
+
 		#endregion
 
 	}

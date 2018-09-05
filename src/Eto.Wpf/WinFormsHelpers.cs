@@ -18,6 +18,8 @@ namespace Eto.Wpf
 		/// <returns>An Eto control wrapper</returns>
 		public static Control ToEto(this swf.Control control)
 		{
+			if (control == null)
+				return null;
 			return new Control(new WindowsFormsHostHandler<swf.Control, Control, Control.ICallback>(control));
 		}
 
@@ -31,6 +33,8 @@ namespace Eto.Wpf
 		/// <param name="windowHandle">Handle of the win32 window.</param>
 		public static Window ToEtoWindow(IntPtr windowHandle)
 		{
+			if (windowHandle == IntPtr.Zero)
+				return null;
 			return new Form(new HwndFormHandler(windowHandle));
 		}
 
@@ -43,6 +47,8 @@ namespace Eto.Wpf
 		/// <returns>Wrapped Eto window</returns>
 		public static Window ToEto(swf.Form form)
 		{
+			if (form == null)
+				return null;
 			var etoForm = new Form(new HwndFormHandler(form.Handle));
 			etoForm.Properties[Form_Key] = form;
 			return etoForm;

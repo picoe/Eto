@@ -5,9 +5,11 @@ using sw = System.Windows;
 using swi = System.Windows.Input;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
+using swf = System.Windows.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Interop;
+using System.Runtime.InteropServices;
 
 namespace Eto.Wpf.Forms
 {
@@ -787,5 +789,46 @@ namespace Eto.Wpf.Forms
             dataObject.SetData("source", Widget);
             sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
         }
+
+
+
+		public virtual Window GetNativeParentWindow()
+		{
+			if (!Widget.Loaded)
+				return null;
+			// hosted in a WPF window
+			var window = Control.GetParent<sw.Window>().ToEtoWindow();
+			if (window != null)
+				return window;
+
+			// possibly hosted in win32/winforms/mfc using an ElementHost, find it and get the parent hwnd
+			var last = Control.GetParents().Last() as swm.Visual;
+			if (last == null)
+				return null;
+
+			// get the hwndsource, if it's null it hasn't been shown/realized yet.
+			var presentationSource = sw.PresentationSource.FromVisual(last) as HwndSource;
+			if (presentationSource == null)
+				return null;
+
+			IntPtr parentHandle = presentationSource.Handle;
+			IntPtr handle = parentHandle;
+
+			// traverse the hwnds until we get the top level
+			while (parentHandle != IntPtr.Zero)
+			{
+				handle = parentHandle;
+				parentHandle = Win32.GetParent(parentHandle);
+			}
+
+			// if it's a windows forms control, use that
+			var winform = swf.Control.FromHandle(handle) as swf.Form;
+			if (winform != null)
+				return WinFormsHelpers.ToEto(winform);
+
+			// otherwise, we're hosted it something native like win32 or mfc.
+			// TODO: check if handle is a window?
+			return WinFormsHelpers.ToEtoWindow(handle);
+		}
 	}
 }

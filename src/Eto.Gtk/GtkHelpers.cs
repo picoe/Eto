@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.GtkSharp;
 using Eto.GtkSharp.Forms.Controls;
@@ -29,6 +29,8 @@ namespace Eto.Forms
 		/// <param name="attach">If set to <c>true</c> the control is to be attached to an existing application, or <c>false</c> to get the native control directly.</param>
 		public static Gtk.Widget ToNative(this Control control, bool attach = false)
 		{
+			if (control == null)
+				return null;
 			if (attach && !control.Loaded)
 			{
 				control.AttachNative();
@@ -44,6 +46,8 @@ namespace Eto.Forms
 		/// <param name="nativeWidget">Native control to wrap.</param>
 		public static Control ToEto(this Gtk.Widget nativeWidget)
 		{
+			if (nativeWidget == null)
+				return null;
 			return new Control(new NativeControlHandler(nativeWidget));
 		}
 
@@ -54,6 +58,8 @@ namespace Eto.Forms
 		/// <param name="window">Gtk Window to wrap.</param>
 		public static Window ToEtoWindow(this Gtk.Window window)
 		{
+			if (window == null)
+				return null;
 			return new Form(new FormHandler(window));
 		}
 
