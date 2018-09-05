@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Drawing
 {
-	[TestFixture, Category(TestBase.TestPlatformCategory)]
+	[TestFixture]
 	public class ClipTests
 	{
 		[Test, Category("ui")]

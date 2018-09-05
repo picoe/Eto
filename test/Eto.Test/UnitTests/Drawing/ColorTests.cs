@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Drawing
 {
-	[TestFixture, Category(TestBase.TestPlatformCategory)]
+	[TestFixture]
 	public class ColorTests
 	{
 		[TestCase(unchecked((int)0xFFAABBCC))]
