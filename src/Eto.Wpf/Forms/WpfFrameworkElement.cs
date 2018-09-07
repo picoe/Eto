@@ -812,14 +812,13 @@ namespace Eto.Wpf.Forms
 				return null;
 
 			IntPtr parentHandle = presentationSource.Handle;
-			IntPtr handle = parentHandle;
+			if (parentHandle == IntPtr.Zero)
+				return null;
 
-			// traverse the hwnds until we get the top level
-			while (parentHandle != IntPtr.Zero)
-			{
-				handle = parentHandle;
-				parentHandle = Win32.GetParent(parentHandle);
-			}
+			// get the root window (without traversing owners)
+			IntPtr handle = Win32.GetAncestor(parentHandle, Win32.GA.GA_ROOT);
+			if (handle == IntPtr.Zero)
+				return null;
 
 			// if it's a windows forms control, use that
 			var winform = swf.Control.FromHandle(handle) as swf.Form;
