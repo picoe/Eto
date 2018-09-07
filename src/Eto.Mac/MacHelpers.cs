@@ -44,6 +44,8 @@ namespace Eto.Forms
 		/// <param name="attach">If set to <c>true</c> the control is to be attached to an existing application, or <c>false</c> to get the native control directly.</param>
 		public static NSView ToNative(this Control control, bool attach = false)
 		{
+			if (control == null)
+				return null;
 			if (attach && !control.Loaded)
 			{
 				control.AttachNative();
@@ -61,6 +63,8 @@ namespace Eto.Forms
 		/// <param name="view">Native control to wrap.</param>
 		public static Control ToEto(this NSView view)
 		{
+			if (view == null)
+				return null;
 			return new Control(new NativeControlHandler(view));
 		}
 
@@ -71,6 +75,8 @@ namespace Eto.Forms
 		/// <param name="viewController">Native control to wrap.</param>
 		public static Control ToEto(this NSViewController viewController)
 		{
+			if (viewController == null)
+				return null;
 			return new Control(new NativeControlHandler(viewController));
 		}
 
@@ -81,6 +87,8 @@ namespace Eto.Forms
 		/// <param name="window">Cocoa Window to wrap.</param>
 		public static Window ToEtoWindow(this NSWindow window)
 		{
+			if (window == null)
+				return null;
 			return new Form(new NativeFormHandler(window));
 		}
 
@@ -91,6 +99,8 @@ namespace Eto.Forms
 		/// <param name="windowController">Cocoa Window to wrap.</param>
 		public static Window ToEtoWindow(this NSWindowController windowController)
 		{
+			if (windowController == null)
+				return null;
 			return new Form(new NativeFormHandler(windowController));
 		}
 

@@ -291,6 +291,16 @@ namespace Eto
 		[DllImport("kernel32.dll", CharSet = CharSet.Ansi, BestFitMapping = false, SetLastError = true, ExactSpelling = true)]
 		static extern IntPtr GetProcAddress(IntPtr moduleHandle, string method);
 
+		public enum GA : uint
+		{
+			GA_PARENT = 1,
+			GA_ROOT = 2,
+			GA_ROOTOWNER = 3
+		}
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetAncestor(IntPtr hwnd, GA gaFlags);
+
 		public static bool MethodExists(string module, string method)
 		{
 			var moduleHandle = LoadLibrary(module);

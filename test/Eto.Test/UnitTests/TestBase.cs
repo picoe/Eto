@@ -36,11 +36,6 @@ namespace Eto.Test.UnitTests
 	public class TestBase
 	{
 		/// <summary>
-		/// Category to exclude when using the Test platform, and only run when on a "real" platform.
-		/// </summary>
-		public const string TestPlatformCategory = "TestPlatform";
-
-		/// <summary>
 		/// Category for tests that require user input to perform the test
 		/// </summary>
 		/// <remarks>
@@ -83,8 +78,6 @@ namespace Eto.Test.UnitTests
 				catch (FileNotFoundException)
 				{
 				}
-				if (platform == null)
-					platform = new Handlers.TestPlatform();
 				Platform.Initialize(platform);
 			}
 

@@ -146,14 +146,30 @@ namespace Eto.Mac.Forms
 			base.Initialize();
 		}
 
+		bool ShowAttached
+		{
+			get
+			{
+				var owner = Control.OwnerWindow;
+				if (owner != null && DisplayMode.HasFlag(DialogDisplayMode.Attached))
+					return true;
+
+				if (DisplayMode != DialogDisplayMode.Default)
+					return false;
+
+				// if the owner can't become main (e.g. NSPanel), show as attached
+				return !owner.CanBecomeMainWindow;
+			}
+		}
+
 		public virtual void ShowModal()
 		{
 			session = null;
 			Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 
 			Widget.Closed += HandleClosed;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Widget.Owner != null)
-				MacModal.RunSheet(Widget, Control, Widget.Owner.ToNative(), out session);
+			if (ShowAttached)
+				MacModal.RunSheet(Widget, Control, Control.OwnerWindow, out session);
 			else
 			{
 				Control.MakeKeyWindow();
@@ -167,9 +183,9 @@ namespace Eto.Mac.Forms
 			session = null;
 
 			Widget.Closed += HandleClosed;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Widget.Owner != null)
+			if (ShowAttached)
 			{
-				MacModal.BeginSheet(Widget, Control, Widget.Owner.ToNative(), out session, () => tcs.SetResult(true));
+				MacModal.BeginSheet(Widget, Control, Control.OwnerWindow, out session, () => tcs.SetResult(true));
 			}
 			else
 			{
@@ -178,8 +194,10 @@ namespace Eto.Mac.Forms
 				{
 					Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 					MacModal.Run(Widget, Control, out session);
+
 					tcs.SetResult(true);
 				});
+
 
 			}
 			return tcs.Task;

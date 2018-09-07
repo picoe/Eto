@@ -46,6 +46,8 @@ namespace Eto.Wpf.Forms
 		PerMonitorDpiHelper dpiHelper;
 		Point? initialLocation;
 
+		protected virtual bool IsAttached => false;
+
 		public override IntPtr NativeHandle
 		{
 			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
@@ -59,6 +61,8 @@ namespace Eto.Wpf.Forms
 
 		protected override void Initialize()
 		{
+			if (IsAttached)
+				return;
 			content = new swc.DockPanel();
 
 			base.Initialize();
@@ -216,6 +220,9 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void UpdateClientSize(Size size)
 		{
+			if (IsAttached)
+				return;
+
 			var xdiff = Control.ActualWidth - content.ActualWidth;
 			var ydiff = Control.ActualHeight - content.ActualHeight;
 			Control.Width = size.Width + xdiff;
@@ -225,6 +232,9 @@ namespace Eto.Wpf.Forms
 
 		protected override void SetSize()
 		{
+			if (IsAttached)
+				return;
+
 			// don't set the minimum size of a window, just the preferred size
 			ContainerControl.Width = UserPreferredSize.Width;
 			ContainerControl.Height = UserPreferredSize.Height;
@@ -233,6 +243,9 @@ namespace Eto.Wpf.Forms
 
 		void SetMinimumSize()
 		{
+			if (IsAttached)
+				return;
+
 			// can't use WpfScale reliably until it is loaded
 			if (!Control.IsLoaded)
 				return;
@@ -245,6 +258,9 @@ namespace Eto.Wpf.Forms
 			get { return toolBar; }
 			set
 			{
+				if (IsAttached)
+					throw new NotSupportedException();
+
 				toolBar = value;
 				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
 			}
@@ -274,6 +290,8 @@ namespace Eto.Wpf.Forms
 			get { return menu; }
 			set
 			{
+				if (IsAttached)
+					throw new NotSupportedException();
 				menu = value;
 				if (menu != null)
 				{
@@ -416,6 +434,8 @@ namespace Eto.Wpf.Forms
 			}
 			set
 			{
+				if (IsAttached)
+					throw new NotSupportedException();
 				if (Control.IsLoaded)
 					UpdateClientSize(value);
 				else
@@ -428,6 +448,9 @@ namespace Eto.Wpf.Forms
 
 		void SetContentSize()
 		{
+			if (IsAttached)
+				return;
+
 			if (initialClientSize != null)
 			{
 				var value = initialClientSize.Value;
@@ -448,7 +471,7 @@ namespace Eto.Wpf.Forms
 			get
 			{
 				var handle = WindowHandle;
-				if (handle != IntPtr.Zero && Widget.Loaded)
+				if (handle != IntPtr.Zero && Control.IsLoaded)
 				{
 					// WPF doesn't always report the correct size when maximized
 					Win32.RECT rect;
@@ -465,6 +488,9 @@ namespace Eto.Wpf.Forms
 			}
 			set
 			{
+				if (IsAttached)
+					throw new NotSupportedException();
+
 				Control.SizeToContent = sw.SizeToContent.Manual;
 				base.Size = value;
 				if (!Control.IsLoaded)
@@ -529,6 +555,9 @@ namespace Eto.Wpf.Forms
 			}
 			set
 			{
+				if (IsAttached)
+					throw new NotSupportedException();
+
 				if (WindowHandle == IntPtr.Zero)
 				{
 					// set location when the source is initialized and we have a Win32 handle to move about

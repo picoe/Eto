@@ -862,5 +862,7 @@ namespace Eto.WinForms.Forms
 			dataObject.SetData(SourceDataFormat, Widget);
 			Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
 		}
+
+		public Window GetNativeParentWindow() => ContainerControl.FindForm().ToEtoWindow();
 	}
 }

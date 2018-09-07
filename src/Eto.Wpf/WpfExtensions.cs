@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
@@ -110,7 +110,7 @@ namespace Eto.Wpf
 
 		public static sw.Window GetParentWindow(this sw.FrameworkElement element)
 		{
-			var window = element.GetVisualParent<sw.Window>();
+			var window = element.GetParent<sw.Window>();
 			if (window == null)
 			{
 				var app = sw.Application.Current;
