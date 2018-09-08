@@ -151,7 +151,10 @@ namespace Eto.Mac.Forms
 			get
 			{
 				var owner = Control.OwnerWindow;
-				if (owner != null && DisplayMode.HasFlag(DialogDisplayMode.Attached))
+				if (owner == null)
+					return false;
+
+				if (DisplayMode.HasFlag(DialogDisplayMode.Attached))
 					return true;
 
 				if (DisplayMode != DialogDisplayMode.Default)
