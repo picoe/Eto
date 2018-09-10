@@ -440,8 +440,9 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				if (Widget.ParentWindow != null)
-					return Control.HasFocus((sw.DependencyObject)Widget.ParentWindow.ControlObject);
+				var parent = Control.GetParent<sw.Window>();
+				if (parent != null)
+					return Control.HasFocus(parent);
 				return base.HasFocus;
 			}
 		}

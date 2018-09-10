@@ -126,10 +126,7 @@ namespace Eto.WinForms.Forms
 
 		public string Title
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get => Win32.GetWindowText(Control);
 			set
 			{
 				throw new NotImplementedException();
@@ -138,7 +135,13 @@ namespace Eto.WinForms.Forms
 
 		public Screen Screen
 		{
-			get { throw new NotImplementedException(); }
+			get
+			{
+				var swfscreen = swf.Screen.FromHandle(Control);
+				if (swfscreen == null)
+					return null;
+				return new Screen(new ScreenHandler(swfscreen));
+			}
 		}
 
 		public MenuBar Menu
@@ -400,22 +403,18 @@ namespace Eto.WinForms.Forms
 
 		public void OnPreLoad(EventArgs e)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void OnLoad(EventArgs e)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void OnLoadComplete(EventArgs e)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void OnUnLoad(EventArgs e)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void SetParent(Container parent)
