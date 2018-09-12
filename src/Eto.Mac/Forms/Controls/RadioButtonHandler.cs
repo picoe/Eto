@@ -37,53 +37,46 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class RadioButtonHandler : MacButton<NSButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
-		static readonly object ControllerHelperKey = new object();
+		static readonly object RadioGroup_Key = new object();
 
 		RadioGroup Group
 		{
-			get { return Widget.Properties.Get<RadioGroup>(ControllerHelperKey); }
-			set { Widget.Properties[ControllerHelperKey] = value; }
+			get { return Widget.Properties.Get<RadioGroup>(RadioGroup_Key); }
+			set { Widget.Properties[RadioGroup_Key] = value; }
 		}
 
-		class RadioGroup
+		class RadioGroup : List<RadioButtonHandler>
 		{
 			object lastChecked;
-			readonly RadioButtonHandler controller;
-			readonly List<RadioButtonHandler> buttons = new List<RadioButtonHandler>();
 
-			public RadioGroup(RadioButtonHandler controller)
+			public void SetButtonStates(object newButton)
 			{
-				this.controller = controller;
-				this.controller.Activated += RadioActivated;
-			}
-
-			public void AddButton(RadioButtonHandler button)
-			{
-				buttons.Add(button);
-				button.Activated += RadioActivated;
-			}
-
-			void RadioActivated(object sender, EventArgs e)
-			{
-				var item = buttons.FirstOrDefault(r => r == lastChecked);
-				if (item != null)
+				foreach (var button in this)
 				{
-					item.Callback.OnCheckedChanged(item.Widget, EventArgs.Empty);
+					if (ReferenceEquals(button, newButton))
+						continue;
+					if (button.Checked)
+					{
+						button.Control.State = NSCellStateValue.Off;
+						button.Callback.OnCheckedChanged(button.Widget, EventArgs.Empty);
+					}
+					else if (ReferenceEquals(lastChecked, button))
+					{
+						button.Callback.OnCheckedChanged(button.Widget, EventArgs.Empty);
+					}
 				}
-				lastChecked = sender;
+				lastChecked = newButton;
 			}
 		}
-
-		public event EventHandler<EventArgs> Activated;
 
 		public class EtoRadioButton : NSButton, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
-			public object Handler
-			{ 
-				get { return WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+			public RadioButtonHandler Handler
+			{
+				get { return WeakHandler?.Target as RadioButtonHandler; }
+				set { WeakHandler = new WeakReference(value); }
 			}
 
 			static nfloat defaultHeight;
@@ -94,70 +87,59 @@ namespace Eto.Mac.Forms.Controls
 				defaultHeight = b.Frame.Height;
 			}
 
+			static readonly Selector s_selClicked = new Selector("clicked");
+
 			public EtoRadioButton()
 			{
 				Cell = new EtoCenteredButton(defaultHeight);
 				Title = string.Empty;
 				SetButtonType(NSButtonType.Radio);
 			}
-		}
 
-		protected override NSButton CreateControl()
-		{
-			return new EtoRadioButton();
-		}
-
-		protected override void Initialize()
-		{
-			Control.Activated += HandleActivated;
-			base.Initialize();
-		}
-
-		static void HandleActivated(object sender, EventArgs e)
-		{
-			var handler = GetHandler(sender) as RadioButtonHandler;
-			if (handler != null)
+			public override bool SendAction(Selector theAction, NSObject theTarget)
 			{
-				handler.TriggerMouseCallback();
-
-				if (handler.Activated != null)
-					handler.Activated(handler, e);
-				handler.Callback.OnClick(handler.Widget, EventArgs.Empty);
-				handler.Callback.OnCheckedChanged(handler.Widget, EventArgs.Empty);
-
-				if (handler.Control.AcceptsFirstResponder() && handler.Control.Window != null)
-					handler.Control.Window.MakeFirstResponder(handler.Control);
+				// prevent appkit from deselecting other radio buttons with the same superview/action that may not be in this group.
+				// radio buttons may be in different containers!
+				Handler?.TriggerClick();
+				return true;
 			}
+		}
+
+		protected override NSButton CreateControl() => new EtoRadioButton();
+
+		void TriggerClick()
+		{
+			TriggerMouseCallback();
+
+			Group.SetButtonStates(this);
+
+			Callback.OnClick(Widget, EventArgs.Empty);
+			Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+
+			if (Control.AcceptsFirstResponder())
+				Control.Window?.MakeFirstResponder(Control);
 		}
 
 		public void Create(RadioButton controller)
 		{
-			if (controller != null)
-			{
-				var controllerHandler = controller.Handler as RadioButtonHandler;
-				if (controllerHandler != null)
-				{
-					var group = controllerHandler.Group;
-					if (group == null)
-					{
-						group = controllerHandler.Group = new RadioGroup(controllerHandler);
-					}
-					group.AddButton(this);
-				}
-			}
+			var controllerHandler = controller?.Handler as RadioButtonHandler;
+			Group = controllerHandler?.Group ?? new RadioGroup();
+
+			Group.Add(this);
 		}
 
 		public bool Checked
 		{
 			get { return Control.State == NSCellStateValue.On; }
 			set
-			{ 
+			{
 				if (value != Checked)
 				{
 					Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off;
+					if (value)
+						Group.SetButtonStates(this);
+
 					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
-					if (Activated != null)
-						Activated(this, EventArgs.Empty);
 				}
 			}
 		}

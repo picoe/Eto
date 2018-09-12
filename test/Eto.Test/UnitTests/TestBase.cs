@@ -14,6 +14,9 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal.Commands;
+using NUnit.Framework.Internal;
 
 namespace Eto.Test.UnitTests
 {
@@ -27,6 +30,26 @@ namespace Eto.Test.UnitTests
 		{
 		}
 	}
+
+	[System.AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+	sealed class RunOnUIAttribute : Attribute, IWrapSetUpTearDown, IWrapTestMethod
+	{
+		public TestCommand Wrap(TestCommand command) => new RunOnUICommand(command);
+
+		class RunOnUICommand : DelegatingTestCommand
+		{
+			public RunOnUICommand(TestCommand innerCommand)
+				: base(innerCommand)
+			{
+
+			}
+			public override TestResult Execute(TestExecutionContext context)
+			{
+				return Application.Instance.Invoke(() => innerCommand.Execute(context));
+			}
+		}
+	}
+
 
 	/// <summary>
 	/// Unit test utilities

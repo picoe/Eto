@@ -374,9 +374,7 @@ namespace Eto.Test.Sections
 				}
 				try
 				{
-					new TestExecutionContext().EstablishExecutionEnvironment();
-					var builder = new DefaultTestAssemblyBuilder();
-					runner = new NUnitTestAssemblyRunner(builder);
+					runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
 					var settings = new Dictionary<string, object>();
 					runner.Load(nextAssembly, settings);
 					runner.RunAsync(this, testFilter);
@@ -423,14 +421,21 @@ namespace Eto.Test.Sections
 			{
 				progressArgs.AddResult(result);
 				Progress?.Invoke(this, progressArgs);
-				if (!string.IsNullOrEmpty(result.Output))
-					WriteLog(result.Output);
-				if (result.FailCount > 0)
-					WriteLog($"Failed: {result.Message}\n{result.StackTrace}");
-				if (result.InconclusiveCount > 0)
-					WriteLog($"Inconclusive: {result.Message}\n{result.StackTrace}");
-				if (result.WarningCount > 0)
-					WriteLog($"Warning: {result.Message}\n{result.StackTrace}");
+
+				if (result.AssertionResults.Count > 0)
+				{
+					foreach (var assertion in result.AssertionResults)
+					{
+						if (assertion.Status == AssertionStatus.Passed)
+							continue;
+						WriteLog($"{assertion.Status}: {result.Message}\n{result.StackTrace}");
+					}
+				}
+				else
+				{
+					if (result.ResultState.Status != TestStatus.Passed && result.ResultState.Status != TestStatus.Skipped)
+						WriteLog($"{result.ResultState.Status}: {result.Message}");
+				}
 			}
 			else if (result.Test is TestAssembly)
 			{
@@ -440,6 +445,8 @@ namespace Eto.Test.Sections
 
 		void ITestListener.TestOutput(TestOutput output)
 		{
+			if (!string.IsNullOrEmpty(output.Text))
+				WriteLog(output.Text);
 		}
 	}
 
@@ -506,7 +513,6 @@ namespace Eto.Test.Sections
 		Button startButton;
 		Button stopButton;
 		SearchBox search;
-		UnitTestRunner runner;
 		TextArea log;
 		UnitTestProgressBar progress;
 		bool hasLogged;
@@ -521,7 +527,7 @@ namespace Eto.Test.Sections
 			set => customContent.Content = value;
 		}
 
-		public UnitTestRunner Runner => runner;
+		public UnitTestRunner Runner { get; }
 
 		public UnitTestPanel(bool showLog = true)
 			: this(new UnitTestRunner(), showLog)
@@ -530,7 +536,7 @@ namespace Eto.Test.Sections
 
 		public UnitTestPanel(UnitTestRunner runner, bool showLog = true)
 		{
-			this.runner = runner;
+			this.Runner = runner;
 			runner.Log += (sender, e) => Application.Instance.Invoke(() =>
 			{
 				if (hasLogged)
@@ -670,7 +676,7 @@ namespace Eto.Test.Sections
 			hasLogged = false;
 
 			// run asynchronously so UI is responsive
-			runner.RunTestsAsync(CreateFilter(filter));
+			Runner.RunTestsAsync(CreateFilter(filter));
 		}
 
 		ITestFilter CreateFilter(ITestFilter filter = null)
@@ -711,7 +717,7 @@ namespace Eto.Test.Sections
 			var filter = CreateFilter();
 			Task.Factory.StartNew(() =>
 			{
-				var testSuites = runner.GetTestSuites().Select(suite => ToTree(suite.Assembly, suite, filter)).Where(r => r != null).ToList();
+				var testSuites = Runner.GetTestSuites().Select(suite => ToTree(suite.Assembly, suite, filter)).Where(r => r != null).ToList();
 
 				var treeData = new TreeGridItem(testSuites);
 				Application.Instance.AsyncInvoke(() => tree.DataStore = treeData);
