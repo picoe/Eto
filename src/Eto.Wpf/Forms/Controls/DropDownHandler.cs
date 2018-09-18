@@ -134,8 +134,12 @@ namespace Eto.Wpf.Forms.Controls
 			get { return store; }
 			set
 			{
+				var oldSelectedIndex = SelectedIndex;
 				store = value;
 				Control.ItemsSource = store;
+				// WPF only triggers a slection change when the item instance has changed
+				if (oldSelectedIndex != SelectedIndex && SelectedIndex >= 0)
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			}
 		}
 

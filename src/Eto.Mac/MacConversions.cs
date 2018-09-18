@@ -43,9 +43,13 @@ namespace Eto.Mac
 {
 	public static partial class MacConversions
 	{
-		public static NSColor ToNSUI(this Color color)
+		public static NSColor ToNSUI(this Color color) => NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
+
+		public static NSColor ToNSUI(this Color color, bool calibrated)
 		{
-			return NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
+			return calibrated
+				? NSColor.FromCalibratedRgba(color.R, color.G, color.B, color.A)
+				: NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
 		}
 
 		public static Color ToEto(this NSColor color, bool calibrated = true)
@@ -53,11 +57,11 @@ namespace Eto.Mac
 			if (color == null)
 				return Colors.Transparent;
 			var colorspace = calibrated ? NSColorSpace.CalibratedRGB : NSColorSpace.DeviceRGB;
-			var converted = color.UsingColorSpace(colorspace);
+			var converted = color.UsingColorSpaceFast(colorspace);
 			if (converted == null)
 			{
 				// Convert named (e.g. system) colors to RGB using its CGColor
-				converted = color.CGColor.ToNS().UsingColorSpace(colorspace);
+				converted = color.CGColor.ToNS().UsingColorSpaceFast(colorspace);
 				if (converted == null)
 					throw new ArgumentOutOfRangeException("color", "Color cannot be converted to an RGB colorspace");
 			}
@@ -522,5 +526,15 @@ namespace Eto.Mac
 		}
 
 		public static NSMenu ToNS(this ContextMenu menu) => ContextMenuHandler.GetControl(menu);
+
+		internal static string StripAmpersands(string text)
+		{
+			if (string.IsNullOrEmpty(text)) return text;
+
+			text = text.Replace("&&", "\x01");
+			text = text.Replace("&", "");
+			text = text.Replace("\x01", "&");
+			return text;
+		}
 	}
 }

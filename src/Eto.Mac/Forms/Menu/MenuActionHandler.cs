@@ -22,6 +22,8 @@ namespace Eto.Mac.Forms.Menu
 
 		bool Enabled { get; }
 
+		bool WorksWhenModal { get; }
+
 		MenuItem Widget { get; }
 
 		MenuItem.ICallback Callback { get; }
@@ -54,6 +56,9 @@ namespace Eto.Mac.Forms.Menu
 			}
 			return false;
 		}
+
+		[Export("worksWhenModal")]
+		public bool WorksWhenModal => Handler?.WorksWhenModal == true;
 	}
 }
 

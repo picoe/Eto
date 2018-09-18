@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Eto.Drawing;
-using Eto.Test.UnitTests.Handlers;
 
 namespace Eto.Test.UnitTests.Drawing
 {
@@ -17,7 +16,7 @@ namespace Eto.Test.UnitTests.Drawing
 	/// </summary>	
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TestFixture, Category(TestBase.TestPlatformCategory)]
+	[TestFixture]
 	public class MatrixTests
 	{
 		public MatrixTests()

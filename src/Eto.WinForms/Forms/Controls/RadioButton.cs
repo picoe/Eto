@@ -9,7 +9,7 @@ namespace Eto.WinForms.Forms.Controls
 {
 	public class RadioButtonHandler : WindowsControl<swf.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
-		List<RadioButton> group;
+		List<RadioButtonHandler> group;
 
 		public class EtoRadioButton : swf.RadioButton
 		{
@@ -21,43 +21,59 @@ namespace Eto.WinForms.Forms.Controls
 
 		public RadioButtonHandler()
 		{
-			Control = new EtoRadioButton { TabStop = true };
-			Control.AutoSize = true;
-			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
-			Control.CheckedChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+			Control = new EtoRadioButton
+			{
+				TabStop = true,
+				AutoSize = true,
+				AutoCheck = false,
+				Checked = false
+			};
+
+			Control.Click += Control_Click;
+			Control.CheckedChanged += Control_CheckedChanged;
+		}
+
+		void Control_CheckedChanged(object sender, EventArgs e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+
+		void Control_Click(object sender, EventArgs e)
+		{
+			if (Enabled)
+				SetChecked(true);
 		}
 
 		public void Create(RadioButton controller)
 		{
-			if (controller != null)
+			var controllerHandler = controller?.Handler as RadioButtonHandler;
+			if (controllerHandler != null)
 			{
-				var controllerInner = (RadioButtonHandler)controller.Handler;
-				if (controllerInner.group == null)
+				if (controllerHandler.group == null)
 				{
-					controllerInner.group = new List<RadioButton>();
-					controllerInner.group.Add(controller);
-					controllerInner.Control.Click += controllerInner.control_RadioSwitch;
+					controllerHandler.group = new List<RadioButtonHandler>();
+					controllerHandler.group.Add(controllerHandler);
 				}
-				controllerInner.group.Add(Widget);
-				Control.Click += controllerInner.control_RadioSwitch;
+				group = controllerHandler.group;
+				group.Add(this);
 			}
 		}
 
-		void control_RadioSwitch(object sender, EventArgs e)
+		void SetChecked(bool value)
 		{
-			if (group != null)
+			if (group != null && value)
 			{
-				foreach (RadioButton item in group)
+				foreach (RadioButtonHandler item in group)
 				{
-					item.Checked = (item.ControlObject == sender);
+					if (ReferenceEquals(item, this))
+						continue;
+					item.Checked = false;
 				}
 			}
+			Control.Checked = value;
 		}
 
 		public bool Checked
 		{
 			get { return Control.Checked; }
-			set { Control.Checked = value; }
+			set { SetChecked(value); }
 		}
 
 		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };

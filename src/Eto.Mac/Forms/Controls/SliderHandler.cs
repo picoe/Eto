@@ -42,11 +42,11 @@ namespace Eto.Mac.Forms.Controls
 
 			public SliderHandler Handler
 			{ 
-				get { return (SliderHandler)WeakHandler.Target; }
+				get { return (SliderHandler)WeakHandler?.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
-			public override nint IsVertical => Handler.Orientation == Orientation.Vertical ? 1 : 0;
+			public override nint IsVertical => Handler?.Orientation == Orientation.Vertical ? 1 : 0;
 		}
 
 		protected override NSSlider CreateControl()

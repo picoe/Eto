@@ -5,6 +5,8 @@ using Eto.Forms;
 using System;
 using System.Linq;
 using System.ComponentModel;
+using Eto.Drawing;
+using System.Windows.Controls.Primitives;
 
 namespace Eto.Wpf.Forms.Menu
 {
@@ -25,8 +27,6 @@ namespace Eto.Wpf.Forms.Menu
 			get { return Control.InputBindings; }
 		}
 
-		DependencyPropertyDescriptor dpdIsOpen = DependencyPropertyDescriptor.FromProperty(swc.ContextMenu.IsOpenProperty, typeof(swc.ContextMenu));
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -36,19 +36,24 @@ namespace Eto.Wpf.Forms.Menu
 					break;
 
 				case ContextMenu.ClosedEvent:
-					// eto's Closed event should happen before click of menu item to be consistent with other platforms.
+					Control.Closed += (sender, e) => Callback.OnClosed(Widget, EventArgs.Empty);
+					break;
+
+				case ContextMenu.ClosingEvent:
 					// wpf's Closed event fires after, so look at IsOpen property changes instead
-					dpdIsOpen.AddValueChanged(Control, (sender, e) =>
-					{
-						if (!Control.IsOpen)
-							Callback.OnClosed(Widget, EventArgs.Empty);
-					});
+					Widget.Properties.Set(swc.ContextMenu.IsOpenProperty, PropertyChangeNotifier.Register(swc.ContextMenu.IsOpenProperty, HandleIsOpenChanged, Control));
 					break;
 
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void HandleIsOpenChanged(object sender, EventArgs e)
+		{
+			if (!Control.IsOpen)
+				Callback.OnClosing(Widget, EventArgs.Empty);
 		}
 
 		public void AddMenu(int index, MenuItem item)
@@ -69,12 +74,34 @@ namespace Eto.Wpf.Forms.Menu
 			Control.Items.Clear();
 		}
 
-		public void Show(Control relativeTo)
+		public void Show(Control relativeTo, PointF? location)
 		{
 			Control.Placement = swc.Primitives.PlacementMode.MousePoint;
 			if (relativeTo != null)
 			{
 				Control.PlacementTarget = relativeTo.ControlObject as sw.UIElement;
+				if (location != null)
+				{
+					Control.Placement = PlacementMode.RelativePoint;
+					Control.HorizontalOffset = location.Value.X;
+					Control.VerticalOffset = location.Value.Y;
+				}
+				else
+				{
+					Control.HorizontalOffset = 0;
+					Control.VerticalOffset = 0;
+				}
+			}
+			else if (location != null)
+			{
+				Control.Placement = PlacementMode.Absolute;
+				Control.HorizontalOffset = location.Value.X;
+				Control.VerticalOffset = location.Value.Y;
+			}
+			else
+			{
+				Control.HorizontalOffset = 0;
+				Control.VerticalOffset = 0;
 			}
 			Control.IsOpen = true;
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;

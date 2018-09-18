@@ -66,19 +66,14 @@ namespace Eto.Mac.Forms.Menu
 			}
 		}
 
-		public bool Enabled
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-
 		public string Text
 		{
 			get	{ return text; }
 			set
 			{ 
 				text = value;
-				Control.SetTitleWithMnemonic(value ?? string.Empty);
+
+				Control.Title = MacConversions.StripAmpersands(value ?? string.Empty);
 				if (Control.HasSubmenu)
 					Control.Submenu.Title = Control.Title;
 			}

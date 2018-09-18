@@ -36,7 +36,7 @@
 		<Content Remove="**\template.md.json" />
 		<Content Remove="**\bin\**\*" />
 		<Content Remove="**\obj\**\*" />
-		<Content Remove="**\.DS_Store" />
+		<Content Remove="**\.*DS_Store" />
 		<Content Remove="**\.vs\**\*" />
 		<Content Remove="**\*.userprefs" />
 		<Content Remove="**\packages\**\*" />

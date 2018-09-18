@@ -462,7 +462,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the selected rows indexes
+		/// Gets or sets the selected rows indexes
 		/// </summary>
 		/// <value>The selected rows.</value>
 		public virtual IEnumerable<int> SelectedRows

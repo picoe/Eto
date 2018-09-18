@@ -251,14 +251,14 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual bool Visible
 		{
-			get { return Control.Visible; }
+			get { return ContainerControl.Visible; }
 			set
 			{ 
-				Control.Visible = value;
-				Control.NoShowAll = !value;
+				ContainerControl.Visible = value;
+				ContainerControl.NoShowAll = !value;
 				if (value && Widget.Loaded)
 				{
-					Control.ShowAll();
+					ContainerControl.ShowAll();
 				}
 			}
 		}
@@ -623,7 +623,8 @@ namespace Eto.GtkSharp.Forms
 			{
 				var h = DragArgs?.Data.Handler as DataObjectHandler;
 				h?.SetDataReceived(args);
-				NativeMethods.g_signal_stop_emission_by_name(Handler.DragControl.Handle, "drag-data-received");
+				
+				args.RetVal = true;
 			}
 
 			[GLib.ConnectBefore]
@@ -795,6 +796,8 @@ namespace Eto.GtkSharp.Forms
 
 			//Gtk.Drag.SetIconPixbuf(context, bmp.ToGdk(), 0, 0);
 		}
+
+		public Window GetNativeParentWindow() => (Control.Toplevel as Gtk.Window).ToEtoWindow();
 
 		class DragInfoObject
 		{

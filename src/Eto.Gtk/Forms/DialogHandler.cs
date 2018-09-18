@@ -32,16 +32,17 @@ namespace Eto.GtkSharp.Forms
 			Control.ActionArea.NoShowAll = true;
 			Control.ActionArea.Hide();
 
+#if GTKCORE
 			if (Helper.UseHeaderBar)
 			{
-				var headerbar = NativeMethods.gtk_header_bar_new();
-				btcontainer = new Gtk.Container(headerbar);
+				btcontainer = new Gtk.HeaderBar();
 
 				var title = Control.Title;
-				NativeMethods.gtk_window_set_titlebar(Control.Handle, headerbar);
+				Control.Titlebar = btcontainer;
 				Control.Title = title;
 			}
 			else
+#endif
 				btcontainer = Control.ActionArea;
 #endif
 		}
@@ -125,17 +126,17 @@ namespace Eto.GtkSharp.Forms
 					foreach (var button in positiveButtons)
 						Control.ActionArea.PackStart(button.ToNative(), false, true, 1);
 				}
-#if GTK3
+#if GTKCORE
 				else
 				{
 					for (int i = positiveButtons.Count - 1; i >= 0; i--)
-						NativeMethods.gtk_header_bar_pack_end(btcontainer.Handle, positiveButtons[i].ToNative().Handle);
+						(btcontainer as Gtk.HeaderBar).PackEnd(positiveButtons[i].ToNative());
 
 					for (int i = negativeButtons.Count - 1; i >= 0; i--)
-						NativeMethods.gtk_header_bar_pack_start(btcontainer.Handle, negativeButtons[i].ToNative().Handle);
+						(btcontainer as Gtk.HeaderBar).PackStart(negativeButtons[i].ToNative());
 				}
 
-				NativeMethods.gtk_header_bar_set_show_close_button(btcontainer.Handle, false);
+				(btcontainer as Gtk.HeaderBar).ShowCloseButton = false;
 #endif
 
 				btcontainer.ShowAll();
@@ -145,9 +146,9 @@ namespace Eto.GtkSharp.Forms
 				Control.ActionArea.NoShowAll = true;
 				if (!Helper.UseHeaderBar)
 					btcontainer.Hide();
-#if GTK3
+#if GTKCORE
 				else
-					NativeMethods.gtk_header_bar_set_show_close_button(btcontainer.Handle, true);
+					(btcontainer as Gtk.HeaderBar).ShowCloseButton = true;
 #endif
 			}
 		}

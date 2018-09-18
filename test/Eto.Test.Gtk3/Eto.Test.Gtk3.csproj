@@ -72,7 +72,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <PackageReference Include="NUnit">
-      <Version>3.9.0</Version>
+      <Version>3.10.1</Version>
     </PackageReference>
   </ItemGroup>
 </Project>

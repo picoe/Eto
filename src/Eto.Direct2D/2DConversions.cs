@@ -86,9 +86,9 @@ namespace Eto.Direct2D
 			return new s.Size2F(value.Width, value.Height);
 		}
 
-		public static Point ToEto(this s.Vector2 value)
+		public static PointF ToEto(this s.Vector2 value)
 		{
-			return new Point((int)value.X, (int)value.Y);
+			return new PointF(value.X, value.Y);
 		}
 
 		public static s.Vector2 ToDx(this PointF value)

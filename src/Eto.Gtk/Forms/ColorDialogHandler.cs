@@ -4,30 +4,24 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class ColorDialogHandler : WidgetHandler<Gtk.ColorSelectionDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
+	public class ColorDialogHandler : WidgetHandler<Gtk.ColorChooserDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
 	{
 		public ColorDialogHandler()
 		{
-			Control = new Gtk.ColorSelectionDialog(string.Empty);
+			Control = new Gtk.ColorChooserDialog("Choose Color", null);
+			AllowAlpha = false;
 		}
 
 		public bool AllowAlpha
 		{
-			get { return Control.ColorSelection.HasOpacityControl; }
-			set { Control.ColorSelection.HasOpacityControl = value; }
+			get => Control.UseAlpha;
+			set => Control.UseAlpha = value;
 		}
 
 		public Color Color
 		{
-			get
-			{
-				return Control.ColorSelection.CurrentColor.ToEto(Control.ColorSelection.CurrentAlpha);
-			}
-			set
-			{
-				Control.ColorSelection.CurrentColor = value.ToGdk();
-				Control.ColorSelection.CurrentAlpha = (ushort)(value.A * ushort.MaxValue);
-			}
+			get => Control.Rgba.ToEto();
+			set => Control.Rgba = value.ToRGBA();
 		}
 
 		public bool SupportsAllowAlpha => true;
@@ -51,4 +45,3 @@ namespace Eto.GtkSharp.Forms
 		}
 	}
 }
-

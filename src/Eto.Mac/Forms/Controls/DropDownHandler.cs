@@ -140,18 +140,12 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleActivated(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as DropDownHandler;
-			handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
+			handler?.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public DropDownHandler Handler { get; set; }
-
-			public override int IndexOf(object item)
-			{
-				var binding = Handler.Widget.ItemTextBinding;
-				return (int)Handler.Control.Menu.IndexOf(binding.GetValue(item));
-			}
 
 			NSMenuItem CreateItem(object dataItem)
 			{
@@ -160,16 +154,30 @@ namespace Eto.Mac.Forms.Controls
 				return item;
 			}
 
+			static IntPtr selAddItem_Handle = Selector.GetHandle("addItem:");
+
 			public override void AddRange(IEnumerable<object> items)
 			{
-				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				foreach (var item in items)
+				var control = Handler.Control;
+				var oldIndex = control.IndexOfSelectedItem;
+				NSMenu menu = control.Menu;
+
+				// xamarin.mac 2 goes really slow when adding directly.  See https://github.com/xamarin/xamarin-macios/issues/3488
+				// also, this does improve performance normally, so let's keep the hack
+				// until Xamarin.Mac supports an NSMenu.AddRange() of some sort
+				var itemList = items.ToList();
+				for (int i = 0; i < itemList.Count; i++)
 				{
-					Handler.Control.Menu.AddItem(CreateItem(item));
+					var menuItem = CreateItem(itemList[i]);
+					if (i < itemList.Count - 1)
+						Messaging.void_objc_msgSend_IntPtr(menu.Handle, selAddItem_Handle, menuItem.Handle);
+					else
+						menu.AddItem(menuItem); // use this for the last item so the item array gets referenced internally by XM.
 				}
+
 				if (oldIndex == -1)
-					Handler.Control.SelectItem(-1);
-				Handler.LayoutIfNeeded();
+					control.SelectItem(-1);
+				Handler.InvalidateMeasure();
 			}
 
 			public override void AddItem(object item)
@@ -178,7 +186,7 @@ namespace Eto.Mac.Forms.Controls
 				Handler.Control.Menu.AddItem(CreateItem(item));
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void InsertItem(int index, object item)
@@ -187,15 +195,15 @@ namespace Eto.Mac.Forms.Controls
 				Handler.Control.Menu.InsertItem(CreateItem(item), index);
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var selected = Handler.SelectedIndex;
 				Handler.Control.RemoveItem(index);
-				Handler.LayoutIfNeeded();
-				if (Handler.Widget.Loaded && selected == index)
+				Handler.InvalidateMeasure();
+				if (selected == index)
 				{
 					Handler.Control.SelectItem(-1);
 					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
@@ -206,8 +214,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var change = Handler.SelectedIndex != -1;
 				Handler.Control.RemoveAllItems();
-				Handler.LayoutIfNeeded();
-				if (Handler.Widget.Loaded && change)
+				Handler.InvalidateMeasure();
+				if (change)
 				{
 					Handler.Control.SelectItem(-1);
 					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
@@ -220,10 +228,16 @@ namespace Eto.Mac.Forms.Controls
 			get { return collection == null ? null : collection.Collection; }
 			set
 			{
-				if (collection != null)
-					collection.Unregister();
+				var selected = Widget.SelectedValue;
+				Control.SelectItem(-1);
+				collection?.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				if (!ReferenceEquals(selected, null))
+				{
+					Control.SelectItem(collection.IndexOf(selected));
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				}
 			}
 		}
 

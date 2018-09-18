@@ -270,6 +270,7 @@ namespace Eto.Test.Sections.Controls
 				//var control = new Label();
 				var control = new Button();
 				control.TextBinding.BindDataContext((MyGridItem m) => m.Text);
+				control.Bind(c => c.TextColor, args, a => a.CellTextColor);
 				control.BindDataContext(c => c.Command, (MyGridItem m) => m.Command);
 				//control.Click += (sender, e) => Log.Write(sender, "Clicked row button {0}", ((Button)sender).Text);
 				return control;

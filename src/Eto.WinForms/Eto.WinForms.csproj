@@ -60,6 +60,9 @@
     <Compile Include="..\Eto.Wpf\Forms\VistaSelectFolderDialogHandler.cs">
       <Link>Forms\VistaSelectFolderDialogHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\LogicalScreenHelper.cs">
+      <Link>LogicalScreenHelper.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.Wpf\Win32.dib.cs">
       <Link>Win32.dib.cs</Link>
     </Compile>
@@ -349,7 +352,7 @@
     <EmbeddedResource Include="CustomControls\CalendarPicker.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAPICodePack-Shell">
+    <PackageReference Include="Windows7APICodePack-Shell">
       <Version>1.1.0</Version>
       <IncludeAssets>compile</IncludeAssets>
       <ExcludeAssets>none</ExcludeAssets>

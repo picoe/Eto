@@ -128,7 +128,8 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Blends the <paramref name="blendColor"/> onto the specified <paramref name="baseColor"/>
+		/// Blends the <paramref name="blendColor"/> onto the specified <paramref name="baseColor"/>. Uses alpha component of <paramref name="blendColor"/>
+		/// to detemine the blending factor.
 		/// </summary>
 		/// <remarks>
 		/// This computes the blended value of two colors.
@@ -137,12 +138,31 @@ namespace Eto.Drawing
 		/// <param name="blendColor">Color to blend onto the base color</param>
 		public static Color Blend(Color baseColor, Color blendColor)
 		{
-			if (Math.Abs(blendColor.A - 1.0f) < Epsilon)
+			return Blend(baseColor, blendColor, blendColor.A);
+		}
+
+		/// <summary>
+		/// Blends the <paramref name="blendColor"/> onto the specified <paramref name="baseColor"/>. Ignores the alpha component and uses
+		/// the provided blend factor.
+		/// </summary>
+		/// <remarks>
+		/// This computes the blended value of two colors.
+		/// </remarks>
+		/// <param name="baseColor">Base color</param>
+		/// <param name="blendColor">Color to blend onto the base color</param>
+		/// <param name="blendFactor">Blend amount from 0 (<paramref name="baseColor"/>) to 1 (<paramref name="blendColor"/>).</param>
+		public static Color Blend(Color baseColor, Color blendColor, float blendFactor)
+		{
+			if (blendFactor < Epsilon)
+				return baseColor;
+
+			if (Math.Abs(blendFactor - 1.0f) < Epsilon)
 				return blendColor;
-			var inv = 1.0f - blendColor.A;
-			baseColor.R = baseColor.R * inv + blendColor.R * blendColor.A;
-			baseColor.G = baseColor.G * inv + blendColor.G * blendColor.A;
-			baseColor.B = baseColor.B * inv + blendColor.B * blendColor.A;
+
+			var inv = 1.0f - blendFactor;
+			baseColor.R = baseColor.R * inv + blendColor.R * blendFactor;
+			baseColor.G = baseColor.G * inv + blendColor.G * blendFactor;
+			baseColor.B = baseColor.B * inv + blendColor.B * blendFactor;
 			return baseColor;
 		}
 

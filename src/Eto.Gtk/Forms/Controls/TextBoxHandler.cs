@@ -137,7 +137,7 @@ namespace Eto.GtkSharp.Forms.Controls
 						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, Handler.Control.Text.Length - 1)));
 						Handler.Callback.OnTextChanging(Handler.Widget, tia);
 						if (tia.Cancel)
-							NativeMethods.g_signal_stop_emission_by_name(Handler.Control.Handle, "delete-text");
+							args.RetVal = true;
 					}
 					deleting = false;
 				}
@@ -257,6 +257,9 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.ExposeEvent += Connector.HandleExposeEvent;
 				if (Widget.Loaded)
 					Invalidate(false);
+#elif GTKCORE
+				placeholderText = value;
+				Control.PlaceholderText = value;
 #else
 				placeholderText = value;
 

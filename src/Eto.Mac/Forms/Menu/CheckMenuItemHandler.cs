@@ -41,16 +41,10 @@ namespace Eto.Mac.Forms.Menu
 
 		#region IMenuItem Members
 
-		public bool Enabled
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-
 		public string Text
 		{
 			get	{ return Control.Title; }
-			set { Control.SetTitleWithMnemonic(value ?? string.Empty); }
+			set { Control.Title = MacConversions.StripAmpersands(value ?? string.Empty); }
 		}
 
 		public string ToolTip

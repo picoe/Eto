@@ -40,12 +40,9 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		public class EtoDrawableView : MacEventView
+		public class EtoDrawableView : MacPanelView
 		{
-			DrawableHandler Drawable
-			{
-				get { return Handler as DrawableHandler; }
-			}
+			DrawableHandler Drawable => Handler as DrawableHandler;
 
 			public override void DrawRect(CGRect dirtyRect)
 			{
@@ -118,7 +115,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (NeedsQueue)
 			{
-				Queue(() => Invalidate(invalidateChildren));
+				AsyncQueue.Add(() => Invalidate(invalidateChildren));
 				return;
 			}
 			base.Invalidate(invalidateChildren);
@@ -128,7 +125,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (NeedsQueue)
 			{
-				Queue(() => Invalidate(rect, invalidateChildren));
+				AsyncQueue.Add(() => Invalidate(rect, invalidateChildren));
 				return;
 			}
 			base.Invalidate(rect, invalidateChildren);

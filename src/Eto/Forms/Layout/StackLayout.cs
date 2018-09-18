@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -383,11 +383,24 @@ namespace Eto.Forms
 		int suspended;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.StackLayout"/> class.
+		/// Initializes a new instance of the <see cref="T:Eto.Forms.StackLayout"/> class.
 		/// </summary>
 		public StackLayout()
 		{
 			items = new StackLayoutItemCollection { Parent = this };
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Eto.Forms.StackLayout"/> class with the specified items.
+		/// </summary>
+		/// <param name="items">Initial items to add to the StackLayout.</param>
+		public StackLayout(params StackLayoutItem[] items)
+		{
+			this.items = new StackLayoutItemCollection { Parent = this };
+			foreach (var item in items)
+			{
+				this.items.Add(item);
+			}
 		}
 
 		VerticalAlignment GetVerticalAlign(StackLayoutItem item)

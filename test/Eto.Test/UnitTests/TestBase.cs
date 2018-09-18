@@ -14,6 +14,9 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal.Commands;
+using NUnit.Framework.Internal;
 
 namespace Eto.Test.UnitTests
 {
@@ -28,6 +31,26 @@ namespace Eto.Test.UnitTests
 		}
 	}
 
+	[System.AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+	sealed class RunOnUIAttribute : Attribute, IWrapSetUpTearDown, IWrapTestMethod
+	{
+		public TestCommand Wrap(TestCommand command) => new RunOnUICommand(command);
+
+		class RunOnUICommand : DelegatingTestCommand
+		{
+			public RunOnUICommand(TestCommand innerCommand)
+				: base(innerCommand)
+			{
+
+			}
+			public override TestResult Execute(TestExecutionContext context)
+			{
+				return Application.Instance.Invoke(() => innerCommand.Execute(context));
+			}
+		}
+	}
+
+
 	/// <summary>
 	/// Unit test utilities
 	/// </summary>
@@ -35,11 +58,6 @@ namespace Eto.Test.UnitTests
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class TestBase
 	{
-		/// <summary>
-		/// Category to exclude when using the Test platform, and only run when on a "real" platform.
-		/// </summary>
-		public const string TestPlatformCategory = "TestPlatform";
-
 		/// <summary>
 		/// Category for tests that require user input to perform the test
 		/// </summary>
@@ -83,8 +101,6 @@ namespace Eto.Test.UnitTests
 				catch (FileNotFoundException)
 				{
 				}
-				if (platform == null)
-					platform = new Handlers.TestPlatform();
 				Platform.Initialize(platform);
 			}
 
@@ -219,7 +235,7 @@ namespace Eto.Test.UnitTests
 					if (application != null)
 						application.Invoke(() =>
 						{
-							if (form.Loaded)
+							if (form != null && form.Loaded)
 								form.Close();
 						});
 					else
@@ -280,7 +296,6 @@ namespace Eto.Test.UnitTests
 
 				form.Content = new StackLayout
 				{
-					Padding = 10,
 					Spacing = 10,
 					Items =
 					{
@@ -490,6 +505,7 @@ namespace Eto.Test.UnitTests
 				.OrderBy(r => r.FullName);
 		}
 
+
 		public static IEnumerable<Type> GetControlTypes()
 		{
 			return GetAllControlTypes()
@@ -499,6 +515,44 @@ namespace Eto.Test.UnitTests
 					return !typeof(Window).GetTypeInfo().IsAssignableFrom(ti)
 						&& !typeof(TabPage).GetTypeInfo().IsAssignableFrom(ti);
 				});
+		}
+
+		public static IEnumerable<Type> GetPanelTypes()
+		{
+			yield return typeof(Panel);
+			yield return typeof(Expander);
+			yield return typeof(GroupBox);
+			yield return typeof(TabPage);
+			yield return typeof(DocumentPage);
+			yield return typeof(Scrollable);
+			yield return typeof(Drawable);
+		}
+
+		public static Panel CreatePanelType(Type panelType, out Control container)
+		{
+			var panel = Activator.CreateInstance(panelType) as Panel;
+			container = panel;
+			if (panel is TabPage tabPage)
+			{
+				tabPage.Text = "TabPage";
+				container = new TabControl { Pages = { tabPage } };
+			}
+			else if (panel is DocumentPage documentPage)
+			{
+				documentPage.Text = "DocumentPage";
+				container = new DocumentControl { Pages = { documentPage } };
+			}
+			else if (panel is GroupBox groupBox)
+			{
+				groupBox.Text = "GroupBox";
+			}
+			else if (panel is Expander expander)
+			{
+				expander.Header = "Expander";
+				expander.Expanded = true;
+			}
+
+			return panel;
 		}
 	}
 }

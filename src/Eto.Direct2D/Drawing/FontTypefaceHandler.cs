@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
@@ -19,14 +20,20 @@ namespace Eto.Direct2D.Drawing
 			Control = new sw.FontFace(font);
 		}
 
-		public FontStyle FontStyle
+		public FontStyle FontStyle => Font.ToEtoStyle();
+
+		public string Name => Font.FaceNames.GetString(0);
+
+		public string LocalizedName
 		{
-			get { return Font.ToEtoStyle(); }
+			get
+			{
+				int index;
+				if (!Font.FaceNames.FindLocaleName(CultureInfo.CurrentUICulture.Name, out index))
+					Font.FaceNames.FindLocaleName("en-us", out index);
+				return Font.FaceNames.GetString(index);
+			}
 		}
 
-		public string Name
-		{
-			get { return Font.FaceNames.GetString(0); }
-		}
-    }
+	}
 }

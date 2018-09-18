@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Text;
 
 namespace Eto
 {
@@ -234,6 +235,10 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsWindowVisible(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool ShowWindow(IntPtr hWnd, SW nCmdShow);
 
 		[DllImport("user32.dll")]
@@ -287,6 +292,16 @@ namespace Eto
 		[DllImport("kernel32.dll", CharSet = CharSet.Ansi, BestFitMapping = false, SetLastError = true, ExactSpelling = true)]
 		static extern IntPtr GetProcAddress(IntPtr moduleHandle, string method);
 
+		public enum GA : uint
+		{
+			GA_PARENT = 1,
+			GA_ROOT = 2,
+			GA_ROOTOWNER = 3
+		}
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetAncestor(IntPtr hwnd, GA gaFlags);
+
 		public static bool MethodExists(string module, string method)
 		{
 			var moduleHandle = LoadLibrary(module);
@@ -299,6 +314,27 @@ namespace Eto
 			finally
 			{
 				FreeLibrary(moduleHandle);
+			}
+		}
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		static extern int GetWindowTextLength(IntPtr hWnd);
+
+		public static string GetWindowText(IntPtr hwnd)
+		{
+			try
+			{
+				var len = GetWindowTextLength(hwnd);
+				var sb = new StringBuilder(len + 1);
+				GetWindowText(hwnd, sb, sb.Capacity);
+				return sb.ToString();
+			}
+			catch
+			{
+				return null;
 			}
 		}
 	}

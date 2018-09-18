@@ -404,6 +404,7 @@ namespace Eto.Test.Sections.Behaviors
 			}
 
 			layout.Add(null);
+			child.Padding = 20;
 			child.Content = layout;
 
 			child.OwnerChanged += child_OwnerChanged;

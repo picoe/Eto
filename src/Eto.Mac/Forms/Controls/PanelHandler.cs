@@ -1,4 +1,6 @@
+using System;
 using Eto.Forms;
+using Eto.Drawing;
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -17,15 +19,8 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class PanelHandler : MacPanel<NSView, Panel, Panel.ICallback>, Panel.IHandler
 	{
-		class EtoPanel : MacEventView
-		{
-		}
-
-		protected override NSView CreateControl()
-		{
-			return new EtoPanel { Handler = this };
-		}
+		protected override NSView CreateControl() => new MacPanelView();
 		
-		public override NSView ContainerControl { get { return Control; } }
+		public override NSView ContainerControl => Control;
 	}
 }

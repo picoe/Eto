@@ -245,6 +245,8 @@
     <Compile Include="Forms\EtoDragSource.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="Forms\NotificationHandler.cs" />
+    <Compile Include="AsyncQueue.cs" />
+    <Compile Include="Forms\MacFieldEditor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

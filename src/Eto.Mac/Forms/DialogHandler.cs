@@ -18,6 +18,7 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
+using NSRectEdge = MonoMac.AppKit.NSRectEdge;
 #if Mac64
 using nfloat = System.Double;
 using nint = System.Int64;
@@ -40,9 +41,25 @@ namespace Eto.Mac.Forms
 	{
 		Button defaultButton;
 		ModalEventArgs session;
-		const int BUTTON_PADDING = 2; 
+		const int BUTTON_PADDING = 2;
 
-		protected override bool DisposeControl { get { return false; } }
+		static readonly object UseContentBorder_Key = new object();
+
+		public bool UseContentBorder
+		{
+			get => Widget.Properties.Get(UseContentBorder_Key, true);
+			set
+			{
+				if (UseContentBorder != value)
+				{
+					Widget.Properties.Set(UseContentBorder_Key, value, true);
+					if (Widget.Loaded)
+						PositionButtons();
+				}
+			}
+		}
+
+		protected override bool DisposeControl => false;
 
 		class EtoDialogWindow : EtoWindow
 		{
@@ -96,18 +113,7 @@ namespace Eto.Mac.Forms
 			var buttonSize = GetButtonSize(availableSize);
 			size.Width = Math.Max(size.Width, buttonSize.Width);
 			size.Height += buttonSize.Height;
-
 			return size;
-		}
-
-		protected override CGRect AdjustContent(CGRect rect)
-		{
-			rect = base.AdjustContent(rect);
-
-			var buttonSize = GetButtonSize(Control.ContentView.Frame.Size.ToEto());
-			rect.Height -= buttonSize.Height;
-			rect.Y += buttonSize.Height;
-			return rect;
 		}
 
 		public DialogDisplayMode DisplayMode { get; set; }
@@ -131,10 +137,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		protected override EtoWindow CreateControl()
-		{
-			return new EtoDialogWindow();
-		}
+		protected override EtoWindow CreateControl() => new EtoDialogWindow();
 
 		protected override void Initialize()
 		{
@@ -143,14 +146,33 @@ namespace Eto.Mac.Forms
 			base.Initialize();
 		}
 
+		bool ShowAttached
+		{
+			get
+			{
+				var owner = Control.OwnerWindow;
+				if (owner == null)
+					return false;
+
+				if (DisplayMode.HasFlag(DialogDisplayMode.Attached))
+					return true;
+
+				if (DisplayMode != DialogDisplayMode.Default)
+					return false;
+
+				// if the owner can't become main (e.g. NSPanel), show as attached
+				return !owner.CanBecomeMainWindow;
+			}
+		}
+
 		public virtual void ShowModal()
 		{
 			session = null;
 			Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 
 			Widget.Closed += HandleClosed;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Widget.Owner != null)
-				MacModal.RunSheet(Widget, Control, Widget.Owner.ToNative(), out session);
+			if (ShowAttached)
+				MacModal.RunSheet(Widget, Control, Control.OwnerWindow, out session);
 			else
 			{
 				Control.MakeKeyWindow();
@@ -164,9 +186,9 @@ namespace Eto.Mac.Forms
 			session = null;
 
 			Widget.Closed += HandleClosed;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Widget.Owner != null)
+			if (ShowAttached)
 			{
-				MacModal.BeginSheet(Widget, Control, Widget.Owner.ToNative(), out session, () => tcs.SetResult(true));
+				MacModal.BeginSheet(Widget, Control, Control.OwnerWindow, out session, () => tcs.SetResult(true));
 			}
 			else
 			{
@@ -175,8 +197,10 @@ namespace Eto.Mac.Forms
 				{
 					Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 					MacModal.Run(Widget, Control, out session);
+
 					tcs.SetResult(true);
 				});
+
 
 			}
 			return tcs.Task;
@@ -206,19 +230,13 @@ namespace Eto.Mac.Forms
 		public void InsertDialogButton(bool positive, int index, Button item)
 		{
 			Control.ContentView.AddSubview(item.ToNative());
-			PositionButtons();
+			if (Widget.Loaded)
+				PositionButtons();
 		}
 
 		public void RemoveDialogButton(bool positive, int index, Button item)
 		{
 			item.ToNative().RemoveFromSuperview();
-			if (Widget.Loaded)
-				PositionButtons();
-		}
-
-		public override void LayoutParent(bool updateSize = true)
-		{
-			base.LayoutParent(updateSize);
 			if (Widget.Loaded)
 				PositionButtons();
 		}
@@ -229,10 +247,28 @@ namespace Eto.Mac.Forms
 			PositionButtons();
 		}
 
+		protected override CGRect ContentFrame
+		{
+			get
+			{
+				var availableSize = Control.ContentView.Frame.Size.ToEto();
+				var buttonSize = GetButtonSize(availableSize);
+
+				var frame = base.ContentFrame;
+				frame.Y += buttonSize.Height;
+				frame.Height -= buttonSize.Height;
+				return frame;
+			}
+		}
+
 		void PositionButtons()
 		{
 			var availableSize = Control.ContentView.Frame.Size.ToEto();
 			var point = new PointF(availableSize.Width, 0);
+
+			var buttonSize = GetButtonSize(availableSize);
+
+			Control.SetContentBorderThickness(UseContentBorder ? buttonSize.Height : 0, NSRectEdge.MinYEdge);
 
 			foreach (var button in Widget.PositiveButtons.Reverse().Concat(Widget.NegativeButtons))
 			{

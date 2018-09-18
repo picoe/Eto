@@ -186,21 +186,21 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Handler.Control.Add(NSObject.FromObject(item));
 				}
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void AddItem(object item)
 			{
 				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Add(NSObject.FromObject(binding.GetValue(item)));
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
 				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Insert(NSObject.FromObject(binding.GetValue(item)), index);
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void RemoveItem(int index)
@@ -215,7 +215,7 @@ namespace Eto.Mac.Forms.Controls
 					if (index == Count)
 						Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 				}
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void RemoveAllItems()
@@ -227,7 +227,7 @@ namespace Eto.Mac.Forms.Controls
 					Handler.Control.StringValue = string.Empty;
 					Handler.SelectedIndex = -1;
 				}
-				Handler.LayoutIfNeeded();
+				Handler.InvalidateMeasure();
 			}
 		}
 

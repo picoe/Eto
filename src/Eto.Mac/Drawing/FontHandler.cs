@@ -62,6 +62,12 @@ namespace Eto.Mac.Drawing
 			Control = font;
 		}
 
+		public FontHandler(NSFont font, FontDecoration decoration)
+		{
+			Control = font;
+			this.decoration = decoration;
+		}
+
 		public FontHandler(NSFont font, FontStyle style)
 		{
 			Control = font;

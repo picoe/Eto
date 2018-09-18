@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.ComponentModel;
 
@@ -340,7 +340,7 @@ namespace Eto.Forms
 		protected override void OnTextChanging(TextChangingEventArgs e)
 		{
 			base.OnTextChanging(e);
-			if (e.Cancel)
+			if (e.Cancel || ReadOnly || !Enabled)
 				return;
 			var sel = e.Range;
 			var pos = sel.Start;
@@ -396,7 +396,7 @@ namespace Eto.Forms
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			if (e.Handled)
+			if (e.Handled || ReadOnly || !Enabled)
 				return;
 			switch (e.KeyData)
 			{

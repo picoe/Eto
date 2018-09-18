@@ -65,6 +65,8 @@ namespace Eto.WinForms.Forms
 			throw new NotImplementedException();
 		}
 
+		public override IntPtr NativeHandle => Control;
+
 		public Eto.Forms.ToolBar ToolBar
 		{
 			get
@@ -91,7 +93,7 @@ namespace Eto.WinForms.Forms
 				var screen = swf.Screen.FromHandle(Control);
 				if (screen == null)
 					return 1;
-				return screen.GetDpi() / 96f;
+				return screen.GetLogicalPixelSize();
 			}
 		}
 
@@ -124,10 +126,7 @@ namespace Eto.WinForms.Forms
 
 		public string Title
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get => Win32.GetWindowText(Control);
 			set
 			{
 				throw new NotImplementedException();
@@ -136,7 +135,13 @@ namespace Eto.WinForms.Forms
 
 		public Screen Screen
 		{
-			get { throw new NotImplementedException(); }
+			get
+			{
+				var swfscreen = swf.Screen.FromHandle(Control);
+				if (swfscreen == null)
+					return null;
+				return new Screen(new ScreenHandler(swfscreen));
+			}
 		}
 
 		public MenuBar Menu
@@ -388,7 +393,7 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return Win32.IsWindowVisible(Control);
 			}
 			set
 			{
@@ -398,22 +403,18 @@ namespace Eto.WinForms.Forms
 
 		public void OnPreLoad(EventArgs e)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void OnLoad(EventArgs e)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void OnLoadComplete(EventArgs e)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void OnUnLoad(EventArgs e)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void SetParent(Container parent)
@@ -525,6 +526,11 @@ namespace Eto.WinForms.Forms
 		}
 
 		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Window GetNativeParentWindow()
 		{
 			throw new NotImplementedException();
 		}

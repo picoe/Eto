@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Mac.Forms.Controls;
 using System.Threading;
 
 #if XAMMAC2
@@ -13,6 +12,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
+using Eto.Mac.Forms.Controls;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -102,12 +102,11 @@ namespace Eto.Mac.Forms
 		}
 	}
 
-	class EtoContentView : NSView, IMacControl
+	class EtoContentView : MacPanelView
 	{
-		public WeakReference WeakHandler { get; set; }
 	}
 
-	public interface IMacWindow : IMacContainer
+	public interface IMacWindow : IMacControlHandler
 	{
 		Rectangle? RestoreBounds { get; set; }
 
@@ -115,7 +114,9 @@ namespace Eto.Mac.Forms
 
 		NSMenu MenuBar { get; }
 
-		NSObject FieldEditorObject { get; set; }
+		NSObject FieldEditorClient { get; set; }
+
+		MacFieldEditor FieldEditor { get; }
 
 		bool CloseWindow(Action<CancelEventArgs> closing = null);
 
@@ -124,45 +125,19 @@ namespace Eto.Mac.Forms
 		Window.ICallback Callback { get; }
 	}
 
-	public class CustomFieldEditor : NSTextView
-	{
-		public CustomFieldEditor()
-		{
-			FieldEditor = true;
-		}
-
-		public CustomFieldEditor(IntPtr handle)
-			: base(handle)
-		{
-		}
-
-		public override void KeyDown(NSEvent theEvent)
-		{
-			var macControl = WeakDelegate as IMacControl;
-			if (macControl != null)
-			{
-				var macViewHandler = macControl.WeakHandler.Target as IMacViewHandler;
-				if (macViewHandler != null && MacEventView.KeyDown(macViewHandler.Widget, theEvent))
-					return;
-			}
-			base.KeyDown(theEvent);
-		}
-	}
-
 	static class MacWindow
 	{
 		public static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
 		public static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
 		public static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
-
 	}
 
-	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacContainer, IMacWindow
+	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
 		where TControl: NSWindow
 		where TWidget: Window
 		where TCallback: Window.ICallback
 	{
-		CustomFieldEditor fieldEditor;
+		MacFieldEditor fieldEditor;
 		MenuBar menuBar;
 		Icon icon;
 		Eto.Forms.ToolBar toolBar;
@@ -173,31 +148,46 @@ namespace Eto.Mac.Forms
 		bool topmost;
 		Point? oldLocation;
 
+		static readonly object InitialLocation_Key = new object();
+
+		Point? InitialLocation
+		{
+			get => Widget.Properties.Get<Point?>(InitialLocation_Key);
+			set => Widget.Properties.Set(InitialLocation_Key, value);
+		}
+
 		Window.ICallback IMacWindow.Callback { get { return Callback; } }
 
 		public override NSView ContainerControl { get { return Control.ContentView; } }
 
 		public override object EventObject { get { return Control; } }
 
-		public NSObject FieldEditorObject { get; set; }
+		public NSObject FieldEditorClient { get; set; }
+
+		public MacFieldEditor FieldEditor => fieldEditor;
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			SizeF naturalSize = new SizeF(200, 200);
+			var preferredClientSize = PreferredClientSize;
 			if (Content != null && Content.Visible)
 			{
 				var contentControl = Content.GetMacControl();
 				if (contentControl != null)
 				{
+					if (preferredClientSize?.Width > 0)
+						availableSize.Width = preferredClientSize.Value.Width;
+					if (preferredClientSize?.Height > 0)
+						availableSize.Height = preferredClientSize.Value.Height;
 					naturalSize = contentControl.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
 				}
 			}
-			if (PreferredClientSize != null)
+			if (preferredClientSize != null)
 			{
-				if (PreferredClientSize.Value.Width >= 0)
-					naturalSize.Width = PreferredClientSize.Value.Width;
-				if (PreferredClientSize.Value.Height >= 0)
-					naturalSize.Height = PreferredClientSize.Value.Height;
+				if (preferredClientSize.Value.Width >= 0)
+					naturalSize.Width = preferredClientSize.Value.Width;
+				if (preferredClientSize.Value.Height >= 0)
+					naturalSize.Height = preferredClientSize.Value.Height;
 			}
 
 			return naturalSize;
@@ -461,22 +451,11 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
 			if (handler == null)
 				return null;
-			handler.FieldEditorObject = client;
-			var control = client as IMacControl;
-			if (control != null)
-			{
-				var childHandler = control.WeakHandler?.Target as IMacViewHandler;
-				if (childHandler != null)
-				{
-					var fieldEditor = childHandler.CustomFieldEditor;
-					if (fieldEditor != null)
-						return fieldEditor;
-				}
-			}
-			return handler.fieldEditor ?? (handler.fieldEditor = new CustomFieldEditor());;
+			handler.FieldEditorClient = client;
+			return handler.fieldEditor ?? (handler.fieldEditor = new MacFieldEditor());
 		}
 
-		public override NSView ContentControl { get { return Control.ContentView; } }
+		public override NSView ContentControl => Control.ContentView;
 
 		public virtual string Title { get { return Control.Title; } set { Control.Title = value ?? ""; } }
 		// Control.Title throws an exception if value is null
@@ -756,22 +735,30 @@ namespace Eto.Mac.Forms
 			}
 			set
 			{
-				// location is relative to the main screen, translate to bottom left, inversed
-				var mainFrame = NSScreen.Screens[0].Frame;
-				var frame = Control.Frame;
-				var point = new CGPoint((nfloat)value.X, (nfloat)(mainFrame.Height - value.Y - frame.Height));
-				Control.SetFrameOrigin(point);
-				if (Control.Screen == null)
-				{
-					// ensure that the control lands on a screen
-					point.X = (nfloat)Math.Min(Math.Max(mainFrame.X, point.X), mainFrame.Right - frame.Width);
-					point.Y = (nfloat)Math.Min(Math.Max(mainFrame.Y, point.Y), mainFrame.Bottom - frame.Height);
-
-					Control.SetFrameOrigin(point);
-				}
+				if (Widget.Loaded)
+					SetLocation(value);
+				else
+					InitialLocation = value;
 				var etoWindow = Control as EtoWindow;
 				if (etoWindow != null)
 					etoWindow.DisableCenterParent = true;
+			}
+		}
+
+		void SetLocation(Point value)
+		{
+			// location is relative to the main screen, translate to bottom left, inversed
+			var mainFrame = NSScreen.Screens[0].Frame;
+			var frame = Control.Frame;
+			var point = new CGPoint((nfloat)value.X, (nfloat)(mainFrame.Height - value.Y - frame.Height));
+			Control.SetFrameOrigin(point);
+			if (Control.Screen == null)
+			{
+				// ensure that the control lands on a screen
+				point.X = (nfloat)Math.Min(Math.Max(mainFrame.X, point.X), mainFrame.Right - frame.Width);
+				point.Y = (nfloat)Math.Min(Math.Max(mainFrame.Y, point.Y), mainFrame.Bottom - frame.Height);
+
+				Control.SetFrameOrigin(point);
 			}
 		}
 
@@ -837,7 +824,7 @@ namespace Eto.Mac.Forms
 			if (AutoSize)
 			{
 				AutoSize = false;
-				var availableSize = Size.MaxValue;
+				var availableSize = SizeF.PositiveInfinity;
 				if (PreferredSize != null)
 				{
 					var borderSize = GetBorderSize();
@@ -860,6 +847,11 @@ namespace Eto.Mac.Forms
 			return Control.FrameRectFor(CGRect.Empty).Size.ToEtoSize();
 		}
 
+		protected override void FireOnShown()
+		{
+			Control.ContentView.LayoutSubtreeIfNeeded();
+			base.FireOnShown();
+		}
 
 		public override void OnLoadComplete(EventArgs e)
 		{
@@ -876,12 +868,17 @@ namespace Eto.Mac.Forms
 
 		protected virtual void PositionWindow()
 		{
+			if (InitialLocation != null)
+			{
+				SetLocation(InitialLocation.Value);
+				InitialLocation = null;
+			}
 			Control.Center();
 		}
 
 		#region IMacContainer implementation
 
-		public override void SetContentSize(CGSize contentSize)
+		void SetContentSize(CGSize contentSize)
 		{
 			if (MinimumSize != Size.Empty)
 			{
@@ -925,22 +922,13 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		Window IMacWindow.Widget
-		{
-			get { return Widget; }
-		}
+		Window IMacWindow.Widget => Widget;
 
-		NSWindow IMacWindow.Control
-		{
-			get { return Control; }
-		}
+		NSWindow IMacWindow.Control => Control;
 
 		#endregion
 
-		public Screen Screen
-		{
-			get { return new Screen(new ScreenHandler(Control.Screen)); }
-		}
+		public Screen Screen => new Screen(new ScreenHandler(Control.Screen));
 
 		public override PointF PointFromScreen(PointF point)
 		{
@@ -989,9 +977,6 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public float LogicalPixelSize
-		{
-			get { return Screen?.LogicalPixelSize ?? 1f; }
-		}
+		public float LogicalPixelSize => Screen?.LogicalPixelSize ?? 1f;
 	}
 }

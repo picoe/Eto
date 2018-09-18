@@ -300,8 +300,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Widget.Properties.Set(Font_Key, value, () =>
 				{
-					Control.Font = value.ToNS();
-					LayoutIfNeeded();
+					Control.Font = value.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+					InvalidateMeasure();
 				});
 			}
 		}
@@ -334,7 +334,7 @@ namespace Eto.Mac.Forms.Controls
 				var range = Control.SelectedRange;
 				if (range.Location >= 0 && range.Length > 0)
 					return Control.Value.Substring((int)range.Location, (int)range.Length);
-				return null;
+				return string.Empty;
 			}
 			set
 			{

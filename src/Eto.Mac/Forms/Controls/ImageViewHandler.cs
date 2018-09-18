@@ -73,10 +73,9 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (image != value)
 				{
-					var oldSize = GetPreferredSize(Size.MaxValue);
 					image = value;
 					Control.Image = image.ToNS();
-					LayoutIfNeeded(oldSize);
+					InvalidateMeasure();
 				}
 			}
 		}

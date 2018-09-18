@@ -83,7 +83,23 @@ namespace Eto.Forms
 			Properties.TriggerEvent(ValueChangedEvent, this, e);
 		}
 
-		// Events
+		/// <summary>
+		/// Gets a new binding for the <see cref="Value"/> property.
+		/// </summary>
+		/// <value>A new value binding.</value>
+		public BindableBinding<FontPicker, Font> ValueBinding
+		{
+			get
+			{
+				return new BindableBinding<FontPicker, Font>(
+					this,
+					c => c.Value,
+					(c, v) => c.Value = v,
+					(c, h) => c.ValueChanged += h,
+					(c, h) => c.ValueChanged -= h
+				);
+			}
+		}
 
 		/// <summary>
 		/// Callback interface for handlers of the <see cref="FontPicker"/>.

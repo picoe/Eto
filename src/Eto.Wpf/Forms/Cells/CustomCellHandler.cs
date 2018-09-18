@@ -26,10 +26,13 @@ namespace Eto.Wpf.Forms.Cells
 			{
 			}
 
-			public void SetSelected(bool selected)
-			{ 
+			public void SetSelected(swc.DataGridCell cell)
+			{
+				var row = cell.GetVisualParent<swc.DataGrid>();
+				var selected = cell.IsSelected;
 				IsSelected = selected;
-				CellTextColor = selected ? SystemColors.HighlightText : SystemColors.ControlText;
+				var focused = row?.IsKeyboardFocusWithin == true;
+				CellTextColor = selected && focused ? SystemColors.HighlightText : SystemColors.ControlText;
 			}
 
 			public void SetDataContext(object dataContext)
@@ -40,8 +43,6 @@ namespace Eto.Wpf.Forms.Cells
 
 		public class EtoBorder : swc.Border
 		{
-			public WpfCellEventArgs Args { get; set; }
-
 			public Control Control { get; set; }
 
 			public Column Column { get; set; }
@@ -72,71 +73,144 @@ namespace Eto.Wpf.Forms.Cells
 				return cachedList;
 			}
 
+			static sw.DependencyProperty dpSelectedHookedUp = sw.DependencyProperty.Register("SelectedHandled", typeof(bool), typeof(sw.FrameworkElement));
+
 			EtoBorder Create(swc.DataGridCell cell)
 			{
 				var control = cell.Content as EtoBorder;
 				if (control == null)
 				{
 					control = new EtoBorder { Column = this };
-					control.Args = new WpfCellEventArgs(-1, null, CellStates.None);
-					control.Unloaded += (sender, e) =>
+					control.Unloaded += HandleControlUnloaded;
+					control.Loaded += HandleControlLoaded;
+					control.DataContextChanged += HandleControlDataContextChanged;
+					if (!Equals(cell.GetValue(dpSelectedHookedUp), true))
 					{
-						var ctl = (sender as EtoBorder)?.Control;
-						if (ctl != null && ctl.Loaded)
-							ctl.DetachNative();
-					};
-					control.Loaded += (sender, e) =>
+						cell.SetValue(dpSelectedHookedUp, true);
+						cell.Selected += HandleCellSelectedChanged;
+						cell.Unselected += HandleCellSelectedChanged;
+					}
+					var grid = cell.GetVisualParent<swc.DataGrid>();
+					if (grid != null && !Equals(grid.GetValue(dpSelectedHookedUp), true))
 					{
-						// WPF's loaded event is called more than once, e.g. when on a tab that is not initially visible.
-						var ctl = (sender as EtoBorder)?.Control;
-						if (ctl != null && !ctl.Loaded)
-							ctl.AttachNative();
-					};
-					control.DataContextChanged += (sender, e) =>
-					{
-						var ctl = sender as EtoBorder;
-						ctl.Args.SetSelected(cell.IsSelected);
-						ctl.Args.SetDataContext(ctl.DataContext);
-						var id = Handler.Callback.OnGetIdentifier(Handler.Widget, ctl.Args);
-						var child = ctl.Control;
-						if (id != ctl.Identifier || child == null)
-						{
-							Stack<Control> cache;
-							if (child != null)
-							{
-								// store old child into cache
-								cache = GetCached(ctl.Identifier);
-								cache.Push(child);
-							}
-							// get new from cache or create if none created yet
-							cache = GetCached(id);
-							if (cache.Count > 0)
-								child = cache.Pop();
-							else
-								child = Handler.Callback.OnCreateCell(Handler.Widget, ctl.Args);
-							ctl.Control = child;
-							var handler = child.GetWpfFrameworkElement();
-							if (handler != null)
-								handler.SetScale(true, true);
-							ctl.Child = child.ToNative(ctl.IsLoaded);
-						}
-						Handler.Callback.OnConfigureCell(Handler.Widget, ctl.Args, child);
-
-						Handler.FormatCell(ctl, cell, ctl.DataContext);
-						ctl.InvalidateVisual();
-					};
-					cell.Selected += (sender, e) =>
-					{
-						control.Args.SetSelected(cell.IsSelected);
-						Handler.Callback.OnConfigureCell(Handler.Widget, control.Args, control.Control);
-					};
-					cell.Unselected += (sender, e) =>
-					{
-						control.Args.SetSelected(cell.IsSelected);
-						Handler.Callback.OnConfigureCell(Handler.Widget, control.Args, control.Control);
-					};
+						grid.SetValue(dpSelectedHookedUp, true);
+						grid.IsKeyboardFocusWithinChanged += HandleRowFocusChanged;
+					}
 				}
 				return control;
+			}
+
+			static void HandleRowFocusChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+			{
+				var grid = sender as swc.DataGrid;
+				if (grid == null)
+					return;
+				foreach (var item in grid.SelectedItems)
+				{
+					var row = grid.ItemContainerGenerator.ContainerFromItem(item) as swc.DataGridRow;
+					if (row == null)
+						continue;
+					foreach (var ctl in row.FindVisualChildren<swc.DataGridCell>())
+					{
+						HandleCellSelectedChanged(ctl, null);
+					}
+				}
+			}
+
+			static readonly object CellEventArgs_Key = new object();
+
+			static void HandleControlDataContextChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+			{
+				var ctl = sender as EtoBorder;
+				var cell = ctl?.GetParent<swc.DataGridCell>();
+				var col = cell?.Column as Column;
+				var handler = col?.Handler;
+				if (handler == null)
+					return;
+				var args = new WpfCellEventArgs(-1, ctl.DataContext, CellStates.None);
+				args.SetSelected(cell);
+				var id = handler.Callback.OnGetIdentifier(handler.Widget, args);
+				var child = ctl.Control;
+				if (id != ctl.Identifier || child == null)
+				{
+					Stack<Control> cache;
+					if (child != null)
+					{
+						// store old child into cache
+						cache = col.GetCached(ctl.Identifier);
+						cache.Push(child);
+					}
+					// get new from cache or create if none created yet
+					cache = col.GetCached(id);
+					if (cache.Count > 0)
+					{
+						child = cache.Pop();
+						if (child.Properties.ContainsKey(CellEventArgs_Key))
+						{
+							args = child.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
+							args.SetSelected(cell);
+							args.SetDataContext(ctl.DataContext);
+						}
+						else
+							child.Properties.Set(CellEventArgs_Key, args);
+					}
+					else
+					{
+						child = handler.Callback.OnCreateCell(handler.Widget, args);
+						child.GetWpfFrameworkElement()?.SetScale(true, true);
+						child.Properties.Set(CellEventArgs_Key, args);
+					}
+					ctl.Control = child;
+					ctl.Identifier = id;
+					ctl.Child = child.ToNative(ctl.IsLoaded);
+				}
+				else
+				{
+					if (child.Properties.ContainsKey(CellEventArgs_Key))
+					{
+						args = child.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
+						args.SetSelected(cell);
+						args.SetDataContext(ctl.DataContext);
+					}
+					else
+						child.Properties.Set(CellEventArgs_Key, args);
+				}
+				handler.Callback.OnConfigureCell(handler.Widget, args, child);
+
+				handler.FormatCell(ctl, cell, ctl.DataContext);
+				ctl.InvalidateVisual();
+			}
+
+			static void HandleControlLoaded(object sender, sw.RoutedEventArgs e)
+			{
+				// WPF's loaded event is called more than once, e.g. when on a tab that is not initially visible.
+				var wpfctl = sender as EtoBorder;
+				var ctl = wpfctl.Control;
+				if (ctl != null && !ctl.Loaded)
+					ctl.AttachNative();
+			}
+
+			static void HandleControlUnloaded(object sender, sw.RoutedEventArgs e)
+			{
+				var wpfctl = sender as EtoBorder;
+				var ctl = wpfctl.Control;
+				if (ctl != null && ctl.Loaded)
+					ctl.DetachNative();
+			}
+
+			static void HandleCellSelectedChanged(object sender, sw.RoutedEventArgs e)
+			{
+				var cell = sender as swc.DataGridCell;
+				var col = cell?.Column as Column;
+				if (cell?.Content is EtoBorder ctl)
+				{
+					var args = ctl.Control?.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
+					if (args != null)
+					{
+						args.SetSelected(cell);
+						col.Handler.Callback.OnConfigureCell(col.Handler.Widget, args, ctl.Control);
+					}
+				}
 			}
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)

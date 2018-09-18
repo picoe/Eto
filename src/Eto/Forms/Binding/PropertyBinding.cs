@@ -21,6 +21,7 @@ namespace Eto.Forms
 	{
 #if PCL
 		PropertyInfo descriptor;
+		Type declaringType;
 #else
 		PropertyDescriptor descriptor;
 #endif
@@ -65,11 +66,27 @@ namespace Eto.Forms
 		void EnsureProperty(object dataItem)
 		{
 #if PCL
-			if (dataItem != null && (descriptor == null || !descriptor.DeclaringType.IsInstanceOfType(dataItem)))
+			if (dataItem != null 
+				&& (
+					// if not found previously, don't always try to find it if the declaring type is the same
+					(descriptor == null && declaringType == null)
+				    // found previously but incompatible type
+					|| !declaringType.IsInstanceOfType(dataItem))
+				)
 			{
-				descriptor = (from p in dataItem.GetType().GetRuntimeProperties()
-							  where p.Name == Property
-							 select p).FirstOrDefault();
+				var dataItemType = dataItem.GetType();
+				descriptor = null;
+				// iterate to find non-public properties or with different case
+				var comparison = IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+				foreach (var prop in dataItemType.GetRuntimeProperties())
+				{
+					if (string.Equals(prop.Name, Property, comparison))
+					{
+						descriptor = prop;
+						break;
+					}
+				}
+				declaringType = descriptor?.DeclaringType ?? dataItemType;
 			}
 #else
 			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsInstanceOfType(dataItem)))

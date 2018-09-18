@@ -48,7 +48,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				// use actual size of the control to get the correct image
 				var size = Size;
-				if (!size.IsEmpty)
+				if (size.Width > 0 && size.Height > 0)
 					fittingSize = size;
 			}
 			Control.Source = image.ToWpf(ParentScale, fittingSize);

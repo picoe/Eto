@@ -1,6 +1,7 @@
 using System;
 using Eto.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 
 #if XAMMAC2
@@ -9,75 +10,46 @@ using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+using CoreText;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
+using MonoMac.CoreText;
 #endif
 
 namespace Eto.Mac.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<FontTypeface>, FontTypeface.IHandler
 	{
-		readonly string name;
+		NSFont font;
+		string name;
+		static readonly object LocalizedName_Key = new object();
 
 		public string PostScriptName { get; private set; }
 
 		public int Weight { get; private set; }
 
 		public NSFontTraitMask Traits { get; private set; }
-		// remove when implemented in monomac
-		static NSString _NSFontFamilyAttribute;
-		static NSString _NSFontFaceAttribute;
-
-		public static NSString NSFontFamilyAttribute
-		{
-			get
-			{
-				if (_NSFontFamilyAttribute == null)
-					_NSFontFamilyAttribute = Dlfcn.GetStringConstant(Messaging.AppKitHandle, "NSFontFamilyAttribute");
-				return _NSFontFamilyAttribute;
-			}
-		}
-
-		public static NSString NSFontFaceAttribute
-		{
-			get
-			{
-				if (_NSFontFaceAttribute == null)
-					_NSFontFaceAttribute = Dlfcn.GetStringConstant(Messaging.AppKitHandle, "NSFontFaceAttribute");
-				return _NSFontFaceAttribute;
-			}
-		}
 
 		public FontTypefaceHandler(NSArray descriptor)
 		{
 			PostScriptName = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(0));
 			name = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(1));
-			Weight = Messaging.GetNSObject<NSNumber>(descriptor.ValueAt(2)).Int32Value;
-			Traits = (NSFontTraitMask)Messaging.GetNSObject<NSNumber>(descriptor.ValueAt(3)).Int32Value;
+			Weight = Messaging.GetNSObject<NSNumber>(descriptor.ValueAt(2))?.Int32Value ?? 1;
+			Traits = (NSFontTraitMask)(Messaging.GetNSObject<NSNumber>(descriptor.ValueAt(3))?.Int32Value ?? 0);
 		}
 
 		public FontTypefaceHandler(NSFont font, NSFontTraitMask? traits = null)
 		{
+			this.font = font;
 			var descriptor = font.FontDescriptor;
 			PostScriptName = descriptor.PostscriptName;
 			var manager = NSFontManager.SharedFontManager;
 			Weight = (int)manager.WeightOfFont(font);
 			Traits = traits ?? manager.TraitsOfFont(font);
-			name = (NSString)descriptor.FontAttributes[NSFontFaceAttribute];
-			if (name == null)
-			{
-				// no attribute, find font face based on postscript name
-				var members = manager.AvailableMembersOfFontFamily(font.FamilyName);
-				var member = members.FirstOrDefault(r => (string)Runtime.GetNSObject<NSString>(r.ValueAt(0)) == PostScriptName);
-				if (member != null)
-				{
-					name = (string)Runtime.GetNSObject<NSString>(member.ValueAt(1));
-				}
-			}
 		}
 
 		public FontTypefaceHandler(string postScriptName, string name, NSFontTraitMask traits, int weight)
@@ -90,13 +62,54 @@ namespace Eto.Mac.Drawing
 
 		public string Name
 		{
-			get { return name; }
+			get
+			{
+				if (name == null)
+				{
+					if (font == null)
+						font = CreateFont(10);
+					var namePtr = CTFontCopyName(font.Handle, CTFontNameKeySubFamily.Handle);
+					name = Runtime.GetNSObject<NSString>(namePtr);
+
+					/*
+					var manager = NSFontManager.SharedFontManager;
+					// no attribute, find font face based on postscript name
+					var members = manager.AvailableMembersOfFontFamily(PostScriptName);
+					var member = members.FirstOrDefault(r => (string)Runtime.GetNSObject<NSString>(r.ValueAt(0)) == PostScriptName);
+					if (member != null)
+					{
+						name = (string)Runtime.GetNSObject<NSString>(member.ValueAt(1));
+					}*/
+				}
+				return name;
+			}
 		}
 
-		public FontStyle FontStyle
+		[DllImport("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText")]
+		static extern IntPtr CTFontCopyName(IntPtr font, IntPtr nameKey);
+
+		[DllImport("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText")]
+		static extern IntPtr CTFontCopyLocalizedName(IntPtr font, IntPtr nameKey, out IntPtr actualLanguage);
+
+		static NSString CTFontNameKeySubFamily = Dlfcn.GetStringConstant(Messaging.CoreTextHandle, "kCTFontSubFamilyNameKey");
+
+
+		public string LocalizedName => Widget.Properties.Create<string>(LocalizedName_Key, GetLocalizedName);
+
+		string GetLocalizedName()
 		{
-			get { return Traits.ToEto(); }
+			if (font == null)
+				font = CreateFont(10);
+
+			// no (easy) way to get a CTFont from an NSFont
+			var localizedNamePtr = CTFontCopyLocalizedName(font.Handle, CTFontNameKeySubFamily.Handle, out var actualLanguagePtr);
+			var actualLanguage = Runtime.GetNSObject<NSString>(actualLanguagePtr);
+			var localizedName = Runtime.GetNSObject<NSString>(localizedNamePtr);
+
+			return localizedName;
 		}
+
+		public FontStyle FontStyle => Traits.ToEto();
 
 		public NSFont CreateFont(float size)
 		{

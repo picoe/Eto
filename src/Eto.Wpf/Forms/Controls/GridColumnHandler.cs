@@ -29,6 +29,7 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 			DataCell = new TextBoxCell();
 			Editable = false;
+			Sortable = false;
 		}
 
 		public string HeaderText

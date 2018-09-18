@@ -37,8 +37,9 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class ScrollableHandler : MacPanel<NSScrollView, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{
-		bool expandContentWidth = true;
-		bool expandContentHeight = true;
+		static readonly object ExpandContentWidth_Key = new object();
+		static readonly object ExpandContentHeight_Key = new object();
+		static readonly object Enabled_Key = new object();
 		Point scrollPosition;
 
 		public override NSView ContainerControl { get { return Control; } }
@@ -48,9 +49,9 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 
 			public ScrollableHandler Handler
-			{ 
+			{
 				get { return (ScrollableHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 
 			public override void ResetCursorRects()
@@ -72,42 +73,22 @@ namespace Eto.Mac.Forms.Controls
 				ContentView.CopiesOnScroll = true;
 				DocumentView = new EtoDocumentView { Handler = handler };
 			}
-		}
 
-		public class EtoDocumentView : NSView
-		{
-			public WeakReference WeakHandler { get; set; }
-
-			public ScrollableHandler Handler
-			{ 
-				get { return (ScrollableHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
-			}
-			#if USE_FLIPPED
-			public override bool IsFlipped
+			public override void Layout()
 			{
-				get { return true; }
+				base.Layout();
+				Handler?.PerformScrollLayout();
 			}
-			#endif
-			#if !USE_FLIPPED
-			public override void SetFrameSize(CGSize newSize)
-			{
-				base.SetFrameSize(newSize);
-				Handler.SetPosition(Handler.scrollPosition, true);
-			}
-			#endif
-
 		}
 
-		protected override NSScrollView CreateControl()
+		public class EtoDocumentView : MacPanelView
 		{
-			return new EtoScrollView(this);
 		}
+
+		protected override NSScrollView CreateControl() => new EtoScrollView(this);
 
 		protected override void Initialize()
 		{
-			Enabled = true;
-
 			base.Initialize();
 			if (!ContentControl.IsFlipped)
 				// need to keep the scroll position as it scrolls instead of calculating
@@ -126,12 +107,9 @@ namespace Eto.Mac.Forms.Controls
 						if (handler != null)
 						{
 							var view = handler.ContentControl;
-							if (!view.IsFlipped)
-							{
-								var contentBounds = handler.Control.ContentView.Bounds;
-								if (contentBounds.Height > 0)
-									handler.scrollPosition = new Point((int)contentBounds.X, (int)Math.Max(0, (view.Frame.Height - contentBounds.Height - contentBounds.Y)));
-							}
+							var contentBounds = handler.Control.ContentView.Bounds;
+							if (contentBounds.Height > 0)
+								handler.scrollPosition = new Point((int)contentBounds.X, (int)Math.Max(0, (view.Frame.Height - contentBounds.Height - contentBounds.Y)));
 							handler.Callback.OnScroll(handler.Widget, new ScrollEventArgs(handler.ScrollPosition));
 						}
 					}, Control.ContentView);
@@ -147,77 +125,162 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control.BorderType.ToEto(); }
 			set
 			{
-				Control.BorderType = value.ToNS();
-				LayoutIfNeeded();
+				if (value != Border)
+				{
+					Control.BorderType = value.ToNS();
+					InvalidateMeasure();
+				}
 			}
 		}
 
-		public override NSView ContentControl
+		public override NSView ContentControl => (NSView)Control.DocumentView;
+
+		public override void InvalidateMeasure()
 		{
-			get { return (NSView)Control.DocumentView; }
+			base.InvalidateMeasure();
+			Control.NeedsLayout = true;
 		}
 
-		public override void LayoutChildren()
+		static readonly IntPtr selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+		static readonly IntPtr selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("contentSizeForFrameSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+		static readonly IntPtr classScroller_Handle = Class.GetHandle(typeof(NSScroller));
+
+		CGSize FrameSizeForContentSize(CGSize size, bool hbar, bool vbar)
 		{
-			base.LayoutChildren();
-			UpdateScrollSizes();
+			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
+			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
+			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
+			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(Control.ClassHandle, selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)Control.BorderType, (ulong)Control.VerticalScroller.ControlSize, (long)Control.VerticalScroller.ScrollerStyle);
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		CGSize ContentSizeForFrame(CGSize size, bool hbar, bool vbar)
 		{
-			base.OnLoadComplete(e);
-			UpdateScrollSizes();
+			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
+			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
+			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
+			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(Control.ClassHandle, selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)Control.BorderType, (ulong)Control.VerticalScroller.ControlSize, (long)Control.VerticalScroller.ScrollerStyle);
 		}
 
-		Size GetBorderSize()
-		{
-			return Border == BorderType.None ? Size.Empty : new Size(2, 2);
-		}
+		Size GetBorderSize() => FrameSizeForContentSize(new CGSize(0, 0), false, false).ToEtoSize();
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var border = Padding.Size + GetBorderSize();
-			return SizeF.Min(availableSize, base.GetNaturalSize(availableSize - border) + border);
-		}
+			bool isInfinity = float.IsPositiveInfinity(availableSize.Width) && float.IsPositiveInfinity(availableSize.Height);
 
-		protected override CGRect GetContentBounds()
-		{
-			var contentSize = Content.GetPreferredSize(SizeF.MaxValue);
-
-			if (ExpandContentWidth)
-				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
-			if (ExpandContentHeight)
-				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
-			return new RectangleF(contentSize).ToNS();
-		}
-
-		protected override NSViewResizingMask ContentResizingMask()
-		{
-			return ContentControl.IsFlipped ? base.ContentResizingMask() : (NSViewResizingMask)0;
-		}
-
-		void InternalSetFrameSize(CGSize size)
-		{
-			var view = ContentControl;
-			if (!view.IsFlipped)
+			if (isInfinity)
 			{
-				var ctl = Content.GetContainerView();
-				if (ctl != null)
-				{
-					var clientHeight = Control.DocumentVisibleRect.Size.Height;
-					ctl.Frame = new CGRect(new CGPoint(0, (nfloat)Math.Max(0, clientHeight - size.Height)), size);
-					size.Height = (nfloat)Math.Max(clientHeight, size.Height);
-				}
+				var naturalSizeInfinity = NaturalSizeInfinity;
+				if (naturalSizeInfinity != null)
+					return naturalSizeInfinity.Value;
 			}
-			if (size != view.Frame.Size)
+			else
 			{
-				view.SetFrameSize(size);
+				var naturalAvailableSize = availableSize.TruncateInfinity();
+				var naturalSize = NaturalSize;
+				if (naturalSize != null && NaturalAvailableSize == naturalAvailableSize)
+					return naturalSize.Value;
+				NaturalAvailableSize = naturalAvailableSize;
 			}
+
+			var size = Content.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
+
+			// include the space needed for scroll bars
+
+			// first, get frame for the content size with no scroll bars
+			var frameSize = FrameSizeForContentSize(size.ToNS(), false, false);
+
+
+			// constrain the frame size to our available size
+			if (!float.IsPositiveInfinity(availableSize.Width))
+				frameSize.Width = (nfloat)Math.Min(availableSize.Width, frameSize.Width);
+			if (!float.IsPositiveInfinity(availableSize.Height))
+				frameSize.Height = (nfloat)Math.Min(availableSize.Height, frameSize.Height);
+
+			// get the client size for the new frame size
+			var clientSize = ContentSizeForFrame(frameSize, false, false);
+
+			// if our new client size is smaller than the width/height, we need scrollbars
+			var vbar = size.Height > clientSize.Height;
+			var hbar = size.Width > clientSize.Width;
+			if (hbar || vbar)
+			{
+				// given the enabled scroll bars, what size do we need?
+				frameSize = FrameSizeForContentSize(size.ToNS(), hbar, vbar);
+			}
+			var etoFrameSize = frameSize.ToEto();
+			if (isInfinity)
+				NaturalSizeInfinity = etoFrameSize;
+			else
+				NaturalSize = etoFrameSize;
+
+			return etoFrameSize;
 		}
 
 		public void UpdateScrollSizes()
 		{
-			InternalSetFrameSize(GetContentBounds().Size);
+			InvalidateMeasure();
+		}
+
+		void PerformScrollLayout()
+		{
+			var clientSize = ContentSizeForFrame(Control.Frame.Size, false, false).ToEto();
+
+			var size = SizeF.Empty;
+			if (DesiredScrollSize != null)
+			{
+				// user set desired scroll size
+				SizeF availableSize = DesiredScrollSize.Value;
+				if (ExpandContentWidth && availableSize.Width >= 0)
+					availableSize.Width = size.Width = Math.Max(clientSize.Width, availableSize.Width);
+				else if (availableSize.Width < 0)
+					availableSize.Width = float.PositiveInfinity;
+				if (ExpandContentHeight && availableSize.Height >= 0)
+					availableSize.Height = size.Height = Math.Max(clientSize.Height, availableSize.Height);
+				else if (availableSize.Height < 0)
+					availableSize.Height = float.PositiveInfinity;
+
+				var preferred = Content.GetPreferredSize(availableSize);
+
+				if (availableSize.Width < 0)
+					size.Width = preferred.Width;
+				if (availableSize.Height < 0)
+					size.Height = preferred.Height;
+			}
+			else
+			{
+				var preferred = Content.GetPreferredSize(SizeF.PositiveInfinity);
+				var vbar = preferred.Height > clientSize.Height;
+				var hbar = preferred.Width > clientSize.Width;
+				if (hbar || vbar)
+					clientSize = ContentSizeForFrame(Control.Frame.Size, hbar, vbar).ToEto();
+
+				size = SizeF.Max(clientSize, preferred);
+			}
+
+			ContentControl.SetFrameSize(size.ToNS());
+			SetPosition(scrollPosition, true);
+		}
+
+		public override void PerformContentLayout()
+		{
+			var ctl = Content.GetContainerView();
+			if (ctl == null)
+				return;
+			
+			var size = Content.GetPreferredSize(SizeF.PositiveInfinity).ToNS();
+
+			var clientSize = ContentControl.Frame.Size;
+
+			if (ExpandContentWidth)
+				size.Width = (nfloat)Math.Max(clientSize.Width, size.Width);
+			if (ExpandContentHeight)
+				size.Height = (nfloat)Math.Max(clientSize.Height, size.Height);
+
+			var clientFrame = new CGRect(new CGPoint(0, (nfloat)Math.Max(0, clientSize.Height - size.Height)), size);
+
+			var padding = Padding;
+			padding.Bottom = (int)Math.Max(0, Math.Min(clientSize.Height - size.Height, padding.Bottom));
+			ctl.Frame = clientFrame.WithPadding(padding);
 		}
 
 		public override Color BackgroundColor
@@ -236,7 +299,7 @@ namespace Eto.Mac.Forms.Controls
 		public Point ScrollPosition
 		{
 			get
-			{ 
+			{
 				var view = ContentControl;
 				if (Widget.Loaded && view.IsFlipped)
 				{
@@ -245,7 +308,7 @@ namespace Eto.Mac.Forms.Controls
 				return scrollPosition;
 			}
 			set
-			{ 
+			{
 				SetPosition(value, false);
 			}
 		}
@@ -264,79 +327,69 @@ namespace Eto.Mac.Forms.Controls
 			scrollPosition = value;
 		}
 
+		static readonly object DesiredScrollSize_Key = new object();
+
+		Size? DesiredScrollSize
+		{
+			get => Widget.Properties.Get<Size?>(DesiredScrollSize_Key);
+			set => Widget.Properties.Set(DesiredScrollSize_Key, value);
+		}
+
 		public Size ScrollSize
-		{			
-			get { return ContentControl.Frame.Size.ToEtoSize(); }
+		{
+			get => ContentControl.Frame.Size.ToEtoSize();
 			set
-			{ 
-				InternalSetFrameSize(value.ToNS());
+			{
+				DesiredScrollSize = value.Width >= 0 || value.Height >= 0 ? (Size?)value : null;
+				InvalidateMeasure();
 			}
 		}
 
 		public override Size ClientSize
 		{
-			get
-			{
-				return Control.DocumentVisibleRect.Size.ToEtoSize();
-			}
+			get => Control.DocumentVisibleRect.Size.ToEtoSize();
 			set
 			{
-				
+				var size = value;
+				var borderSize = GetBorderSize();
+				if (size.Width >= 0)
+					size.Width += borderSize.Width;
+				if (size.Height >= 0)
+					size.Height += borderSize.Height;
+				base.ClientSize = size;
 			}
 		}
 
-		public override bool Enabled { get; set; }
-
-		public override void SetContentSize(CGSize contentSize)
+		public override bool Enabled
 		{
-			if (MinimumSize != Size.Empty)
-			{
-				contentSize.Width = (nfloat)Math.Max(contentSize.Width, MinimumSize.Width);
-				contentSize.Height = (nfloat)Math.Max(contentSize.Height, MinimumSize.Height);
-			}
-			if (ExpandContentWidth)
-				contentSize.Width = (nfloat)Math.Max(ClientSize.Width, contentSize.Width);
-			if (ExpandContentHeight)
-				contentSize.Height = (nfloat)Math.Max(ClientSize.Height, contentSize.Height);
-			InternalSetFrameSize(contentSize);
+			get => Widget.Properties.Get<bool>(Enabled_Key, true);
+			set => Widget.Properties.Set(Enabled_Key, value, true);
 		}
 
-		#if !USE_FLIPPED
-		public override void OnSizeChanged(EventArgs e)
-		{
-			base.OnSizeChanged(e);
-			UpdateScrollSizes();
-			SetPosition(scrollPosition, true);
-		}
-		#endif
-
-		public Rectangle VisibleRect
-		{
-			get { return new Rectangle(ScrollPosition, Size.Min(ScrollSize, ClientSize)); }
-		}
+		public Rectangle VisibleRect => new Rectangle(ScrollPosition, Size.Min(ScrollSize, ClientSize));
 
 		public bool ExpandContentWidth
 		{
-			get { return expandContentWidth; }
+			get => Widget.Properties.Get<bool>(ExpandContentWidth_Key, true);
 			set
 			{
-				if (expandContentWidth != value)
+				if (ExpandContentWidth != value)
 				{
-					expandContentWidth = value;
-					UpdateScrollSizes();
+					Widget.Properties.Set(ExpandContentWidth_Key, value, true);
+					InvalidateMeasure();
 				}
 			}
 		}
 
 		public bool ExpandContentHeight
 		{
-			get { return expandContentHeight; }
+			get => Widget.Properties.Get<bool>(ExpandContentHeight_Key, true);
 			set
 			{
-				if (expandContentHeight != value)
+				if (ExpandContentHeight != value)
 				{
-					expandContentHeight = value;
-					UpdateScrollSizes();
+					Widget.Properties.Set(ExpandContentHeight_Key, value, true);
+					InvalidateMeasure();
 				}
 			}
 		}

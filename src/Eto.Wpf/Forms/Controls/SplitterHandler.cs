@@ -30,22 +30,24 @@ namespace Eto.Wpf.Forms.Controls
 		int splitterWidth = 5;
 		double relative = double.NaN;
 		readonly sw.Style style;
-        swc.ColumnDefinition xcolumn;
-        swc.RowDefinition ycolumn;
+		swc.ColumnDefinition xcolumn;
+		swc.RowDefinition ycolumn;
 		bool panel1Visible, panel2Visible;
-        int panel1MinimumSize, panel2MinimumSize;
-        Control panel1, panel2;
+		int panel1MinimumSize, panel2MinimumSize;
+		Control panel1, panel2;
+		PropertyChangeNotifier panel1VisibilityNotifier;
+		PropertyChangeNotifier panel2VisibilityNotifier;
 
 		public SplitterHandler()
 		{
 			Control = new EtoGrid { Handler = this };
 
-            xcolumn = new swc.ColumnDefinition();
-            Control.ColumnDefinitions.Add(xcolumn);
+			xcolumn = new swc.ColumnDefinition();
+			Control.ColumnDefinitions.Add(xcolumn);
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition() { Width = sw.GridLength.Auto });
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
 
-            ycolumn = new swc.RowDefinition();
+			ycolumn = new swc.RowDefinition();
 			Control.RowDefinitions.Add(ycolumn);
 			Control.RowDefinitions.Add(new swc.RowDefinition { Height = sw.GridLength.Auto });
 			Control.RowDefinitions.Add(new swc.RowDefinition());
@@ -69,7 +71,13 @@ namespace Eto.Wpf.Forms.Controls
 
 			UpdateOrientation();
 			Control.Loaded += (sender, e) => SetInitialPosition();
-            Control.SizeChanged += (sender, e) => ResetMinMax();
+			Control.SizeChanged += (sender, e) => ResetMinMax();
+
+			panel1VisibilityNotifier = new PropertyChangeNotifier(sw.UIElement.VisibilityProperty);
+			panel1VisibilityNotifier.ValueChanged += HandlePanel1IsVisibleChanged;
+
+			panel2VisibilityNotifier = new PropertyChangeNotifier(sw.UIElement.VisibilityProperty);
+			panel2VisibilityNotifier.ValueChanged += HandlePanel2IsVisibleChanged;
 		}
 
 		public override void AttachEvent(string id)
@@ -77,15 +85,18 @@ namespace Eto.Wpf.Forms.Controls
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
-					var heightDescriptor = DependencyPropertyDescriptor.FromProperty(swc.RowDefinition.HeightProperty, typeof(swc.ItemsControl));
-					heightDescriptor.AddValueChanged(Control.RowDefinitions[0], (sender, e) => OnPositionChanged());
-					var widthDescriptor = DependencyPropertyDescriptor.FromProperty(swc.ColumnDefinition.WidthProperty, typeof(swc.ItemsControl));
-					widthDescriptor.AddValueChanged(Control.ColumnDefinitions[0], (sender, e) => OnPositionChanged());
+					Widget.Properties.Set(swc.RowDefinition.HeightProperty, PropertyChangeNotifier.Register(swc.RowDefinition.HeightProperty, HandlePositionChanged, Control.RowDefinitions[0]));
+					Widget.Properties.Set(swc.ColumnDefinition.WidthProperty, PropertyChangeNotifier.Register(swc.ColumnDefinition.WidthProperty, HandlePositionChanged, Control.ColumnDefinitions[0]));
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void HandlePositionChanged(object sender, EventArgs e)
+		{
+			OnPositionChanged();
 		}
 
 		static object PositionChangedEnabled_Key = new object();
@@ -461,7 +472,7 @@ namespace Eto.Wpf.Forms.Controls
 		bool HasHiddenPanels
 		{
 			get { return panel1 == null || !panel1.Visible || panel2 == null || !panel2.Visible; }
-        }
+		}
 
 		bool SetHiddenPanels()
 		{
@@ -562,8 +573,8 @@ namespace Eto.Wpf.Forms.Controls
 			get { return panel1; }
 			set
 			{
-				if (panel1 != null)
-					dpdVisibility.RemoveValueChanged(panel1.GetContainerControl(), HandlePanel1IsVisibleChanged);
+				panel1VisibilityNotifier.PropertySource = null;
+
 				panel1 = value;
 				pane1.Children.Clear();
 				if (panel1 != null)
@@ -575,22 +586,23 @@ namespace Eto.Wpf.Forms.Controls
 						control.SetScale(true, true);
 
 					pane1.Children.Add(control.ContainerControl);
-					dpdVisibility.AddValueChanged(control.ContainerControl, HandlePanel1IsVisibleChanged);
+					panel1VisibilityNotifier.PropertySource = control.ContainerControl;
 					HandlePanelVisibleChanged(ref panel1Visible, panel1);
+				}
+				else
+				{
+					SetHiddenPanels();
 				}
 			}
 		}
-
-		static DependencyPropertyDescriptor dpdVisibility = DependencyPropertyDescriptor.FromProperty(sw.FrameworkElement.VisibilityProperty, typeof(sw.FrameworkElement));
-
 
 		public Control Panel2
 		{
 			get { return panel2; }
 			set
 			{
-				if (panel2 != null)
-					dpdVisibility.RemoveValueChanged(panel2.GetContainerControl(), HandlePanel2IsVisibleChanged);
+				panel2VisibilityNotifier.PropertySource = null;
+
 				panel2 = value;
 				pane2.Children.Clear();
 				if (panel2 != null)
@@ -602,8 +614,12 @@ namespace Eto.Wpf.Forms.Controls
 						control.SetScale(true, true);
 					pane2.Children.Add(control.ContainerControl);
 
-					dpdVisibility.AddValueChanged(control.ContainerControl, HandlePanel2IsVisibleChanged);
+					panel2VisibilityNotifier.PropertySource = control.ContainerControl;
 					HandlePanelVisibleChanged(ref panel2Visible, panel2);
+				}
+				else
+				{
+					SetHiddenPanels();
 				}
 			}
 		}
@@ -641,13 +657,13 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (pane1.Children.Contains(child))
 			{
-				dpdVisibility.RemoveValueChanged(panel1.GetContainerControl(), HandlePanel1IsVisibleChanged);
+				panel1VisibilityNotifier.PropertySource = null;
 				panel1 = null;
 				pane1.Children.Remove(child);
 			}
 			else if (pane2.Children.Contains(child))
 			{
-				dpdVisibility.RemoveValueChanged(panel2.GetContainerControl(), HandlePanel2IsVisibleChanged);
+				panel2VisibilityNotifier.PropertySource = null;
 				panel2 = null;
 				pane2.Children.Remove(child);
 			}
@@ -661,42 +677,42 @@ namespace Eto.Wpf.Forms.Controls
 			set { Widget.Properties.Set(WasLoaded_Key, value); }
 		}
 
-        private void ResetMinMax()
-        {
-            xcolumn.MinWidth = panel1MinimumSize;
-            if (Widget.Width > 0)
-                xcolumn.MaxWidth = Math.Max(Widget.Width - panel2MinimumSize, 0);
+		private void ResetMinMax()
+		{
+			xcolumn.MinWidth = panel1MinimumSize;
+			if (Widget.Width > 0)
+				xcolumn.MaxWidth = Math.Max(Widget.Width - panel2MinimumSize, 0);
 
-            ycolumn.MinHeight = Panel1MinimumSize;
-            if (Widget.Height > 0)
-                ycolumn.MaxHeight = Math.Max(Widget.Height - panel2MinimumSize, 0);
-        }
+			ycolumn.MinHeight = Panel1MinimumSize;
+			if (Widget.Height > 0)
+				ycolumn.MaxHeight = Math.Max(Widget.Height - panel2MinimumSize, 0);
+		}
 
-        public int Panel1MinimumSize
-        {
-            get { return panel1MinimumSize; }
-            set
-            {
-                panel1MinimumSize = value;
-                ResetMinMax();
-            }
-        }
+		public int Panel1MinimumSize
+		{
+			get { return panel1MinimumSize; }
+			set
+			{
+				panel1MinimumSize = value;
+				ResetMinMax();
+			}
+		}
 
-        public int Panel2MinimumSize
-        {
-            get { return panel2MinimumSize; }
-            set
-            {
-                panel2MinimumSize = value;
-                ResetMinMax();
-            }
-        }
+		public int Panel2MinimumSize
+		{
+			get { return panel2MinimumSize; }
+			set
+			{
+				panel2MinimumSize = value;
+				ResetMinMax();
+			}
+		}
 
-        public override void OnLoad(EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
 			WasLoaded = false;
-        }
+		}
 
 		public override void OnUnLoad(EventArgs e)
 		{
@@ -708,4 +724,3 @@ namespace Eto.Wpf.Forms.Controls
 		}
 	}
 }
-

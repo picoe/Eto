@@ -60,6 +60,7 @@ namespace Eto.Mac.Drawing
 					if (rep != null)
 						return rep;
 					rep = new NSBitmapImageRep(NSData.FromStream(Load()));
+					rep.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh); // ignore dpi from image
 					return rep;
 				}
 			}

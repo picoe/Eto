@@ -45,9 +45,9 @@ using nnint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public interface IGridHandler
+	public interface IGridHandler : IMacViewHandler
 	{
-		Grid Widget { get; }
+		new Grid Widget { get; }
 
 		NSTableView Table { get; }
 
@@ -65,11 +65,16 @@ namespace Eto.Mac.Forms.Controls
 		public override void SetFrameSize(CGSize newSize)
 		{
 			base.SetFrameSize(newSize);
+			var h = Handler;
+			if (h == null)
+				return;
 
 			if (!autoSized)
 			{
-				autoSized = Handler.AutoSizeColumns(false);
+				autoSized = h.AutoSizeColumns(false);
 			}
+			h.OnSizeChanged(EventArgs.Empty);
+			h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 		}
 	}
 
@@ -78,6 +83,7 @@ namespace Eto.Mac.Forms.Controls
 		public static readonly object ScrolledToRow_Key = new object();
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object IsMouseDragging_Key = new object();
+		public static readonly object ContextMenu_Key = new object();
 	}
 
 	class EtoTableHeaderView : NSTableHeaderView
@@ -155,7 +161,6 @@ namespace Eto.Mac.Forms.Controls
 		where TCallback: Grid.ICallback
 	{
 		ColumnCollection columns;
-		ContextMenu contextMenu;
 
 		public override NSView DragControl => Control;
 
@@ -180,10 +185,6 @@ namespace Eto.Mac.Forms.Controls
 		public NSScrollView ScrollView { get; private set; }
 
 		public override NSView ContainerControl { get { return ScrollView; } }
-
-		protected virtual void PreUpdateColumn(int index)
-		{
-		}
 
 		protected virtual void UpdateColumns()
 		{
@@ -218,15 +219,15 @@ namespace Eto.Mac.Forms.Controls
 				var colhandler = (GridColumnHandler)item.Handler;
 				Handler.Control.AddColumn(colhandler.Control);
 				colhandler.Setup(Handler, (int)(Handler.Control.ColumnCount - 1));
-				
-				Handler.UpdateColumns();
+
+				if (Handler.Loaded)
+					Handler.UpdateColumns();
 			}
 
 			public override void InsertItem(int index, GridColumn item)
 			{
 				var outline = Handler.Control;
 				var columns = new List<NSTableColumn>(outline.TableColumns());
-				Handler.PreUpdateColumn(index);
 				for (int i = index; i < columns.Count; i++)
 				{
 					outline.RemoveColumn(columns[i]);
@@ -242,14 +243,14 @@ namespace Eto.Mac.Forms.Controls
 					colHandler.Setup(Handler, i);
 					outline.AddColumn(col);
 				}
-				Handler.UpdateColumns();
+				if (Handler.Loaded)
+					Handler.UpdateColumns();
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var outline = Handler.Control;
 				var columns = new List<NSTableColumn>(outline.TableColumns());
-				Handler.PreUpdateColumn(index);
 				for (int i = index; i < columns.Count; i++)
 				{
 					outline.RemoveColumn(columns[i]);
@@ -262,15 +263,16 @@ namespace Eto.Mac.Forms.Controls
 					colHandler.Setup(Handler, i);
 					outline.AddColumn(col);
 				}
-				Handler.UpdateColumns();
+				if (Handler.Loaded)
+					Handler.UpdateColumns();
 			}
 
 			public override void RemoveAllItems()
 			{
-				Handler.PreUpdateColumn(0);
 				foreach (var col in Handler.Control.TableColumns ())
 					Handler.Control.RemoveColumn(col);
-				Handler.UpdateColumns();
+				if (Handler.Loaded)
+					Handler.UpdateColumns();
 			}
 		}
 
@@ -318,6 +320,7 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
+			UpdateColumns();
 
 			if (!Widget.Properties.Get<bool>(GridHandler.ScrolledToRow_Key))
 				// Yosemite bug: hides first row when DataStore is set before control is visible
@@ -325,12 +328,7 @@ namespace Eto.Mac.Forms.Controls
 			else
 				Widget.Properties.Remove(GridHandler.ScrolledToRow_Key);
 
-			IsAutoSizingColumns = true;
-			foreach (var col in ColumnHandlers)
-			{
-				col.Resize(true);
-			}
-			IsAutoSizingColumns = false;
+			AutoSizeColumns(true);
 		}
 
 		NSRange autoSizeRange;
@@ -346,7 +344,7 @@ namespace Eto.Mac.Forms.Controls
 					IsAutoSizingColumns = true;
 					foreach (var col in ColumnHandlers)
 					{
-						col.AutoSizeColumn(newRange);
+						col.AutoSizeColumn(newRange, force);
 					}
 					autoSizeRange = newRange;
 					IsAutoSizingColumns = false;
@@ -381,13 +379,13 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.AllowsColumnReordering = value; }
 		}
 
-		public ContextMenu ContextMenu
+		public virtual ContextMenu ContextMenu
 		{
-			get { return contextMenu; }
+			get { return Widget.Properties.Get<ContextMenu>(GridHandler.ContextMenu_Key); }
 			set
 			{
-				contextMenu = value;
-				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+				Widget.Properties.Set(GridHandler.ContextMenu_Key, value);
+				Control.Menu = value.ToNS();
 			}
 		}
 
@@ -427,7 +425,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				ScrollView.BorderType = value.ToNS();
-				LayoutIfNeeded();
+				InvalidateMeasure();
 			}
 		}
 
@@ -508,10 +506,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		Grid IGridHandler.Widget
-		{
-			get { return Widget; }
-		}
+		Grid IGridHandler.Widget => Widget;
 
 		public CGRect GetVisibleRect()
 		{
@@ -577,7 +572,8 @@ namespace Eto.Mac.Forms.Controls
 		void IDataViewHandler.OnCellEdited(GridViewCellEventArgs e)
 		{
 			SetIsEditing(false);
-			Callback.OnCellEdited(Widget, e);
+			if (e.Item != null)
+				Callback.OnCellEdited(Widget, e);
 		}
 
 		Grid IDataViewHandler.Widget

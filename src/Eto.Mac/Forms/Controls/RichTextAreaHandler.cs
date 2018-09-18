@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
@@ -77,6 +77,12 @@ namespace Eto.Mac.Forms.Controls
 			SetFontAttribute(range.ToNS(), true, font => NSFontManager.SharedFontManager.ConvertFontToFamily(font, familyName));
 		}
 
+		public void SetTypeface(Range<int> range, FontTypeface typeface)
+		{
+			var typefaceName = ((FontTypefaceHandler)typeface.Handler).Name;
+			SetFontAttribute(range.ToNS(), true, font => NSFontManager.SharedFontManager.ConvertFont(font, typefaceName));
+		}
+
 		public void SetForeground(Range<int> range, Color color)
 		{
 			Control.TextStorage.AddAttribute(NSStringAttributeKey.ForegroundColor, color.ToNSUI(), range.ToNS());
@@ -142,7 +148,10 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var range = Control.SelectedRange;
 			if (range.Length > 0)
+			{
 				Control.TextStorage.AddAttribute(attribute, value, range);
+				Control.DidChangeText();
+			}
 			else
 			{
 				var mutableAttributes = new NSMutableDictionary(Control.TypingAttributes);
@@ -211,13 +220,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color SelectionForeground
 		{
-			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.ForegroundColor).ToEto(); }
+			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.ForegroundColor).ToEto(false); }
 			set { SetSelectedAttribute(NSStringAttributeKey.ForegroundColor, value.ToNSUI()); }
 		}
 
 		public Color SelectionBackground
 		{
-			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.BackgroundColor).ToEto(); }
+			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.BackgroundColor).ToEto(false); }
 			set { SetSelectedAttribute(NSStringAttributeKey.BackgroundColor, value.ToNSUI()); }
 		}
 
@@ -258,8 +267,22 @@ namespace Eto.Mac.Forms.Controls
 			get { return GetSelectedTextAttribute<NSFont>(NSStringAttributeKey.Font).ToEto().Family; }
 			set
 			{
+				if (value == null)
+					return;
 				var familyName = ((FontFamilyHandler)value.Handler).MacName;
 				SetSelectedFontAttribute(true, f => NSFontManager.SharedFontManager.ConvertFontToFamily(f, familyName));
+			}
+		}
+
+		public FontTypeface SelectionTypeface
+		{
+			get { return GetSelectedTextAttribute<NSFont>(NSStringAttributeKey.Font).ToEto().Typeface; }
+			set
+			{
+				if (value == null)
+					return;
+				var typefaceName = ((FontTypefaceHandler)value?.Handler)?.PostScriptName;
+				SetSelectedFontAttribute(true, f => NSFontManager.SharedFontManager.ConvertFont(f, typefaceName));
 			}
 		}
 

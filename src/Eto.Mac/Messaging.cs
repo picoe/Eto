@@ -44,6 +44,8 @@ namespace Eto.Mac
 	{
 		public static readonly IntPtr AppKitHandle = Dlfcn.dlopen("/System/Library/Frameworks/AppKit.framework/AppKit", 0);
 
+		public static readonly IntPtr CoreTextHandle = Dlfcn.dlopen("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText", 0);
+
 		public static T GetNSObject<T>(IntPtr ptr)
 			where T: NSObject
 		{
@@ -115,6 +117,9 @@ namespace Eto.Mac
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public static extern IntPtr IntPtr_objc_msgSend_IntPtr_IntPtr_IntPtr(IntPtr reciever, IntPtr selector, IntPtr arg1, IntPtr arg2, IntPtr arg3);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		public static extern CGSize CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(IntPtr receiver, IntPtr selector, CGSize arg1, IntPtr arg2, IntPtr arg3, ulong arg4, ulong arg5, long arg6);
 	}
 }
 

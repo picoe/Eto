@@ -90,10 +90,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit">
-      <Version>3.10.0-dev-05152</Version>
+      <Version>3.10.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestIcon.icns" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
 </Project>

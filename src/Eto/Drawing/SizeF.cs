@@ -70,6 +70,16 @@ namespace Eto.Drawing
 		public static readonly SizeF MinValue = new SizeF (float.MinValue, float.MinValue);
 
 		/// <summary>
+		/// A SizeF with the width and height set to float.PositiveInfinity
+		/// </summary>
+		public static readonly SizeF PositiveInfinity = new SizeF (float.PositiveInfinity, float.PositiveInfinity);
+
+		/// <summary>
+		/// A SizeF with the width and height set to float.NegativeInfinity
+		/// </summary>
+		public static readonly SizeF NegativeInfinity = new SizeF (float.NegativeInfinity, float.NegativeInfinity);
+
+		/// <summary>
 		/// Initializes a new SizeF class with the specified width and height
 		/// </summary>
 		/// <param name="width">Initial width of the size</param>
