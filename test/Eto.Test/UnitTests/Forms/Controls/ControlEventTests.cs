@@ -15,11 +15,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		/// </summary>
 		[Test]
 		[TestCaseSource(nameof(GetAllControlTypes))]
-		public void ControlEventsShouldBeHandled(Type controlType)
+		public void ControlEventsShouldBeHandled(IControlTypeInfo<Control> controlType)
 		{
 			TestBase.Invoke(() =>
 			{
-				var control = (Control)Activator.CreateInstance(controlType);
+				var control = controlType.CreateControl();
 				try
 				{
 					control.SizeChanged += Control_EventHandler;

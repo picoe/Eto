@@ -6,7 +6,7 @@ using System.Collections;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
-	[TestFixture, Category("ui")]
+	[TestFixture]
 	public class SplitterTests : TestBase
 	{
 		// currently not working on Gtk due to deferred size allocation

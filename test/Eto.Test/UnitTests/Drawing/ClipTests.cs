@@ -6,7 +6,7 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class ClipTests
 	{
-		[Test, Category("ui")]
+		[Test]
 		public void ClipBoundsShouldMatchClientSize()
 		{
 			var size = new Size(300, 300);
@@ -18,7 +18,7 @@ namespace Eto.Test.UnitTests.Drawing
 			}, size);
 		}
 
-		[Test, Category("ui")]
+		[Test]
 		public void ClipRectangleShouldTranslate()
 		{
 			TestBase.Paint((drawable, e) =>
