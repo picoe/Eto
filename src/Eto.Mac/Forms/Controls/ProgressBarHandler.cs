@@ -72,11 +72,6 @@ namespace Eto.Mac.Forms.Controls
 			return new Size (80, 30);
 		}
 
-		public override bool Enabled {
-			get { return true; }
-			set {  }
-		}
-
 		public bool Indeterminate {
 			get { return Control.Indeterminate; }
 			set { 

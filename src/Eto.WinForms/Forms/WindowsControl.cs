@@ -88,6 +88,17 @@ namespace Eto.WinForms.Forms
 		}
 	}
 
+	static class WindowsControl
+	{
+		public static readonly object DesiredSizeKey = new object();
+		public static readonly object DesiredClientSizeKey = new object();
+		public static readonly object CursorKey = new object();
+		public static readonly object ToolTipKey = new object();
+		public static readonly object InternalVisibleKey = new object();
+		public static readonly object FontKey = new object();
+		public static readonly object Enabled_Key = new object();
+	}
+
 	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWindowsControl
 		where TControl : swf.Control
 		where TWidget : Control
@@ -202,20 +213,16 @@ namespace Eto.WinForms.Forms
 			return Size.Max(parentMinimumSize, size);
 		}
 
-		static readonly object DesiredSizeKey = new object();
-
 		public Size UserDesiredSize
 		{
-			get { return Widget.Properties.Get<Size?>(DesiredSizeKey) ?? new Size(-1, -1); }
-			set { Widget.Properties.Set(DesiredSizeKey, value); }
+			get { return Widget.Properties.Get<Size?>(WindowsControl.DesiredSizeKey) ?? new Size(-1, -1); }
+			set { Widget.Properties.Set(WindowsControl.DesiredSizeKey, value); }
 		}
-
-		static readonly object DesiredClientSizeKey = new object();
 
 		public Size UserDesiredClientSize
 		{
-			get { return Widget.Properties.Get<Size?>(DesiredClientSizeKey) ?? new Size(-1, -1); }
-			set { Widget.Properties.Set(DesiredClientSizeKey, value); }
+			get { return Widget.Properties.Get<Size?>(WindowsControl.DesiredClientSizeKey) ?? new Size(-1, -1); }
+			set { Widget.Properties.Set(WindowsControl.DesiredClientSizeKey, value); }
 		}
 
 		public virtual Size ParentMinimumSize
@@ -429,10 +436,18 @@ namespace Eto.WinForms.Forms
 						Callback.OnDragLeave(Widget, new DragEventArgs(null, new DataObject(), DragEffects.None, PointF.Empty, Keys.None, MouseButtons.None));
 					};
 					break;
+				case Eto.Forms.Control.EnabledChangedEvent:
+					Control.EnabledChanged += Control_EnabledChanged;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		private void Control_EnabledChanged(object sender, EventArgs e)
+		{
+			Callback.OnEnabledChanged(Widget, EventArgs.Empty);
 		}
 
 		const string SourceDataFormat = "eto.source.control";
@@ -546,29 +561,32 @@ namespace Eto.WinForms.Forms
 		public bool Enabled
 		{
 			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
+			set
+			{
+				if (value != Widget.Properties.Get<bool?>(WindowsControl.Enabled_Key))
+				{
+					Widget.Properties.Set<bool?>(WindowsControl.Enabled_Key, value);
+					Control.Enabled = value;
+				}
+			}
 		}
-
-		static readonly object CursorKey = new object();
 
 		public Cursor Cursor
 		{
-			get { return Widget.Properties.Get<Cursor>(CursorKey); }
+			get { return Widget.Properties.Get<Cursor>(WindowsControl.CursorKey); }
 			set
 			{
-				Widget.Properties[CursorKey] = value;
+				Widget.Properties[WindowsControl.CursorKey] = value;
 				Control.Cursor = value != null ? value.ControlObject as swf.Cursor : null;
 			}
 		}
 
-		static readonly object ToolTipKey = new object();
-
 		public string ToolTip
 		{
-			get { return Widget.Properties.Get<string>(ToolTipKey); }
+			get { return Widget.Properties.Get<string>(WindowsControl.ToolTipKey); }
 			set
 			{
-				Widget.Properties[ToolTipKey] = value;
+				Widget.Properties[WindowsControl.ToolTipKey] = value;
 				SetToolTip();
 			}
 		}
@@ -627,28 +645,26 @@ namespace Eto.WinForms.Forms
 			get { return Control.Focused; }
 		}
 
-		static readonly object InternalVisibleKey = new object();
-
 		bool IWindowsControl.InternalVisible
 		{
-			get { return Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
+			get { return Widget.Properties.Get<bool?>(WindowsControl.InternalVisibleKey) ?? true; }
 		}
 
 		public virtual bool Visible
 		{
-			get { return ContainerControl.IsHandleCreated ? ContainerControl.Visible : Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
+			get { return ContainerControl.IsHandleCreated ? ContainerControl.Visible : Widget.Properties.Get<bool?>(WindowsControl.InternalVisibleKey) ?? true; }
 			set
 			{
 				if (Visible != value)
 				{
-					Widget.Properties[InternalVisibleKey] = value;
+					Widget.Properties[WindowsControl.InternalVisibleKey] = value;
 					ContainerControl.Visible = value;
 					SetMinimumSize(updateParent: true);
 				}
 			}
 		}
 
-		public virtual void SetParent(Container parent)
+		public virtual void SetParent(Container oldParent, Container newParent)
 		{
 		}
 
@@ -791,17 +807,15 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		static readonly object FontKey = new object();
-
 		public Font Font
 		{
 			get
 			{
-				return Widget.Properties.Create<Font>(FontKey, () => new Font(new FontHandler(Control.Font)));
+				return Widget.Properties.Create<Font>(WindowsControl.FontKey, () => new Font(new FontHandler(Control.Font)));
 			}
 			set
 			{
-				Widget.Properties[FontKey] = value;
+				Widget.Properties[WindowsControl.FontKey] = value;
 				Control.Font = value.ToSD();
 			}
 		}

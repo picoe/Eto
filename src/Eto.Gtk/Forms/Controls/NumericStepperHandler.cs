@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Globalization;
@@ -10,21 +10,11 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class NumericStepperHandler : GtkControl<Gtk.SpinButton, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 	{
-		class EtoSpinButton : Gtk.SpinButton
-		{
-			public EtoSpinButton()
-				: base(double.MinValue, double.MaxValue, 0)
-			{
-			}
-		}
-
 		public NumericStepperHandler()
 		{
-			Control = new EtoSpinButton();
+			Control = new Gtk.SpinButton(double.MinValue, double.MaxValue, 1);
 			Control.WidthRequest = 120;
 			Control.Wrap = true;
-			Control.Adjustment.StepIncrement = 1;
-			Control.Adjustment.PageIncrement = 1;
 			Value = 0;
 		}
 

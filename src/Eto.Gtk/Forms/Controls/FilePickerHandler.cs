@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Eto.Forms;
 
@@ -6,8 +6,6 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class FilePickerHandler : GtkControl<Gtk.EventBox, FilePicker, FilePicker.ICallback>, FilePicker.IHandler
 	{
-		private EventHandler filePathChanged;
-
 		FileAction action;
 		Gtk.FileChooserButton filebutton;
 		Gtk.HBox savebox;
@@ -20,7 +18,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			action = FileAction.OpenFile;
 
 			filebutton = new Gtk.FileChooserButton("", Gtk.FileChooserAction.Open);
-			filebutton.SelectionChanged += Filebutton_SelectionChanged;
 
 			// Save is not a valid option for FileChooserButton, therefore
 			// we need to create our own, or use the ThemedFilePickerHandler
@@ -30,10 +27,16 @@ namespace Eto.GtkSharp.Forms.Controls
 			savebutton = new Gtk.Button();
 			savebutton.Label = "Browse";
 			savebox.PackStart(savebutton, false, true, 1);
-			saveentry.Changed += Saveentry_Changed;
-			savebutton.Clicked += Savebutton_Clicked;
 
 			Control.Child = filebutton;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			filebutton.SelectionChanged += Connector.HandleSelectionChanged;
+			saveentry.Changed += Connector.HandleSaveEntryChanged;
+			savebutton.Clicked += Connector.HandleSaveButtonClicked;
 		}
 
 		private void Saveentry_Changed(object sender, EventArgs e)
@@ -41,7 +44,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (action == FileAction.SaveFile)
 			{
 				filebutton.SetFilename(saveentry.Text);
-				filePathChanged?.Invoke(this, EventArgs.Empty);
+				Callback.OnFilePathChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -50,7 +53,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (action != FileAction.SaveFile)
 			{
 				saveentry.Text = filebutton.Filename;
-				filePathChanged?.Invoke(this, EventArgs.Empty);
+				Callback.OnFilePathChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -170,12 +173,26 @@ namespace Eto.GtkSharp.Forms.Controls
 			switch (id)
 			{
 				case FilePicker.FilePathChangedEvent:
-					filePathChanged += (sender, e) => Callback.OnFilePathChanged(Widget, EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		protected new FilePickerConnector Connector => (FilePickerConnector)base.Connector;
+
+		protected override WeakConnector CreateConnector() => new FilePickerConnector();
+
+		protected class FilePickerConnector : GtkControlConnector
+		{
+			public new FilePickerHandler Handler => (FilePickerHandler)base.Handler;
+
+			public virtual void HandleSelectionChanged(object sender, EventArgs e) => Handler?.Filebutton_SelectionChanged(sender, e);
+
+			public virtual void HandleSaveButtonClicked(object sender, EventArgs e) => Handler?.Savebutton_Clicked(sender, e);
+
+			public virtual void HandleSaveEntryChanged(object sender, EventArgs e) => Handler?.Saveentry_Changed(sender, e);
 		}
 	}
 }

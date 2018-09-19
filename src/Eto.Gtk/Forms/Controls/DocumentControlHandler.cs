@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Forms;
@@ -10,7 +10,6 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		List<DocumentPage> pages;
 		bool allowReorder;
-		bool enabled = true;
 
 		public DocumentControlHandler()
 		{
@@ -92,6 +91,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		void UpdateReorder()
 		{
+			var enabled = Enabled;
 			foreach (var page in pages)
 			{
 				var pageHandler = (DocumentPageHandler)page.Handler;
@@ -111,7 +111,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				pageHandler.ContainerControl.ShowAll();
 			}
 
-			pageHandler.LabelControl.Sensitive = enabled;
+			pageHandler.LabelControl.Sensitive = Enabled;
 
 			if (index == -1)
 				Control.AppendPage(pageHandler.ContainerControl, pageHandler.LabelControl);
@@ -125,12 +125,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override bool Enabled
 		{
-			get { return enabled; }
+			get { return base.Enabled; }
 			set
 			{
-				if (enabled != value)
+				if (Enabled != value)
 				{
-					enabled = value;
+					base.Enabled = value;
 					UpdateReorder();
 				}
 			}

@@ -124,20 +124,6 @@ namespace Eto.Forms.ThemedControls
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.ThemedControls.ThemedTextStepperHandler"/> is enabled.
-		/// </summary>
-		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		public override bool Enabled
-		{
-			get { return textBox.Enabled; }
-			set
-			{
-				textBox.Enabled = value;
-				stepper.Enabled = value;
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to show the control's border.
 		/// </summary>
 		/// <remarks>

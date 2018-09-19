@@ -417,7 +417,7 @@ namespace Eto.WinForms.Forms
 		{
 		}
 
-		public void SetParent(Container parent)
+		public void SetParent(Container oldParent, Container newParent)
 		{
 			throw new NotImplementedException();
 		}

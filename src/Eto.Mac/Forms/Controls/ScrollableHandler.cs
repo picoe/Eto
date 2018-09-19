@@ -39,7 +39,6 @@ namespace Eto.Mac.Forms.Controls
 	{
 		static readonly object ExpandContentWidth_Key = new object();
 		static readonly object ExpandContentHeight_Key = new object();
-		static readonly object Enabled_Key = new object();
 		Point scrollPosition;
 
 		public override NSView ContainerControl { get { return Control; } }
@@ -358,12 +357,6 @@ namespace Eto.Mac.Forms.Controls
 					size.Height += borderSize.Height;
 				base.ClientSize = size;
 			}
-		}
-
-		public override bool Enabled
-		{
-			get => Widget.Properties.Get<bool>(Enabled_Key, true);
-			set => Widget.Properties.Set(Enabled_Key, value, true);
 		}
 
 		public Rectangle VisibleRect => new Rectangle(ScrollPosition, Size.Min(ScrollSize, ClientSize));

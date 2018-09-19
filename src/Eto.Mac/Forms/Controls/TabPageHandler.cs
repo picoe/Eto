@@ -111,7 +111,5 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public override NSView ContentControl => Control.View;
-
-		public override bool Enabled { get; set; } = true;
 	}
 }

@@ -66,8 +66,6 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContentControl => (NSView)Control.ContentView;
 
-		public override bool Enabled { get; set; }
-
 		public override Size ClientSize
 		{
 			get

@@ -78,8 +78,6 @@ namespace Eto.Mac.Forms.Controls
 			return new Graphics(new GraphicsHandler(Control));
 		}
 
-		public override bool Enabled { get; set; }
-
 		public override Color BackgroundColor
 		{
 			get { return backgroundColor; }

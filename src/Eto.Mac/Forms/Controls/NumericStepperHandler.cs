@@ -85,7 +85,7 @@ namespace Eto.Mac.Forms.Controls
 				var h = WeakHandler?.Target as IMacViewHandler;
 				if (h == null)
 					return;
-				
+
 				h.OnSizeChanged(EventArgs.Empty);
 				h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 			}
@@ -127,8 +127,8 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public static NSNumberFormatter DefaultFormatter = new NSNumberFormatter
-		{ 
-			NumberStyle = NSNumberFormatterStyle.Decimal, 
+		{
+			NumberStyle = NSNumberFormatterStyle.Decimal,
 			Lenient = true,
 			UsesGroupingSeparator = false,
 			MinimumFractionDigits = 0,
@@ -246,7 +246,7 @@ namespace Eto.Mac.Forms.Controls
 			base.OnKeyDown(e);
 			if (e.Handled || ReadOnly)
 				return;
-			
+
 			if (e.KeyData == Keys.Down)
 			{
 				var val = Value;
@@ -285,7 +285,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return !TextField.Editable; }
 			set
-			{ 
+			{
 				TextField.Editable = !value;
 				Stepper.Enabled = TextField.Editable && TextField.Enabled;
 			}
@@ -294,7 +294,7 @@ namespace Eto.Mac.Forms.Controls
 		public double Value
 		{
 			get
-			{ 
+			{
 				var str = GetStringValue();
 				var nsval = ((NSNumberFormatter)TextField.Formatter).NumberFromString(str);
 				if (nsval == null)
@@ -350,9 +350,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return TextField.Enabled; }
+			get => TextField.Enabled;
 			set
 			{
 				TextField.Enabled = value;
@@ -389,7 +389,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<int>(DecimalPlaces_Key); }
 			set
 			{
-				Widget.Properties.Set(DecimalPlaces_Key, value, () => 
+				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
 				{
 					MaximumDecimalPlaces = Math.Max(MaximumDecimalPlaces, DecimalPlaces);
 					SetFormatter();
@@ -429,7 +429,7 @@ namespace Eto.Mac.Forms.Controls
 						// test to see if it matches the negative string format
 						if (h.HasFormatString && result > 0 && NumberStringsMatch((-result).ToString(h.ComputedFormatString, h.CultureInfo), str))
 							result = -result;
-			
+
 						var nsresult = new NSNumber(result);
 						Marshal.WriteIntPtr(obj, 0, nsresult.Handle);
 						return true;
@@ -463,7 +463,7 @@ namespace Eto.Mac.Forms.Controls
 			var formatter = new EtoNumberFormatter
 			{
 				Handler = this,
-				NumberStyle = NSNumberFormatterStyle.Decimal, 
+				NumberStyle = NSNumberFormatterStyle.Decimal,
 				Lenient = true,
 				UsesGroupingSeparator = false,
 				MinimumFractionDigits = (nnint)DecimalPlaces,
