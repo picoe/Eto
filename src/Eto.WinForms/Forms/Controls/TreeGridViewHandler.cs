@@ -35,7 +35,7 @@ namespace Eto.WinForms.Forms.Controls
 		public TreeGridViewHandler()
 		{
 			controller = new TreeController { Handler = this };
-			controller.CollectionChanged += (sender, e) => UpdateCollection();
+			controller.CollectionChanged += UpdateCollection;
 		}
 
 		public override void OnLoad(EventArgs e)
@@ -120,18 +120,21 @@ namespace Eto.WinForms.Forms.Controls
 			base.Invalidate(invalidateChildren);
 			if (this.Widget.Loaded)
 			{
-				Control.Refresh();
-				AutoSizeColumns();
+				Control.Invalidate();
+				AutoSizeColumns(false);
 			}
 		}
 
-		void UpdateCollection()
+		void UpdateCollection(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			Control.RowCount = controller.Count;
 			if (Widget.Loaded)
 			{
-				Control.Refresh();
-				AutoSizeColumns();
+				Control.Invalidate();
+				if (e.Action == NotifyCollectionChangedAction.Add
+					|| e.Action == NotifyCollectionChangedAction.Reset
+					|| e.Action == NotifyCollectionChangedAction.Replace)
+					AutoSizeColumns(e.Action != NotifyCollectionChangedAction.Reset);
 			}
 		}
 
@@ -341,14 +344,15 @@ namespace Eto.WinForms.Forms.Controls
 			return false;
 		}
 
-		void AutoSizeColumns()
+		void AutoSizeColumns(bool displayedOnly)
 		{
-			foreach (var colHandler in Widget.Columns.Where (r => r.AutoSize).Select (r => r.Handler).OfType<GridColumnHandler> ())
+			foreach (var colHandler in Widget.Columns.Where(r => r.AutoSize).Select(r => r.Handler).OfType<GridColumnHandler>())
 			{
 				if (colHandler.AutoSize)
 				{
 					// expand this column to fit content width
-					var width = colHandler.Control.GetPreferredWidth(swf.DataGridViewAutoSizeColumnMode.AllCells, false);
+					var mode = displayedOnly ? swf.DataGridViewAutoSizeColumnMode.DisplayedCells : swf.DataGridViewAutoSizeColumnMode.AllCells;
+					var width = colHandler.Control.GetPreferredWidth(mode, false);
 					if (width > colHandler.Control.Width)
 						colHandler.Control.Width = width;
 				}
@@ -383,9 +387,12 @@ namespace Eto.WinForms.Forms.Controls
 			SupressSelectionChanged--;
 		}
 
-		public void ReloadItem(ITreeGridItem item)
+		public void ReloadItem(ITreeGridItem item, bool reloadChildren)
 		{
-			ReloadData();
+			if (reloadChildren)
+				ReloadData();
+			else
+				controller.ReloadItem(item);
 		}
 
 		public ITreeGridItem GetCellAt(PointF location, out int column)

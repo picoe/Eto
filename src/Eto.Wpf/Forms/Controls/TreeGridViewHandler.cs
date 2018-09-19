@@ -148,9 +148,12 @@ namespace Eto.Wpf.Forms.Controls
 			controller.ReloadData();
 		}
 
-		public void ReloadItem(ITreeGridItem item)
+		public void ReloadItem(ITreeGridItem item, bool reloadChildren)
 		{
-			controller.ReloadData();
+			if (!reloadChildren)
+				controller.ReloadItem(item);
+			else
+				controller.ReloadData();
 		}
 
 		public ITreeGridItem GetCellAt(PointF location, out int column)
