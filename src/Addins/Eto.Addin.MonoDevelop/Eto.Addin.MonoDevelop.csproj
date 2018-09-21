@@ -41,8 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <AddinFile Include="Templates\Files\**\*" />
-    <AddinFile Include="..\..\..\artifacts\nuget\MD$(Configuration)\Eto.Forms.Templates.2.5.0-alpha.nupkg">
-      <Link>Packages\Eto.Forms.Templates.2.5.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\artifacts\nuget\MD$(Configuration)\Eto.Forms.Templates.2.5.0-dev.nupkg">
+      <Link>Packages\Eto.Forms.Templates.2.5.0-dev.nupkg</Link>
     </AddinFile>
   </ItemGroup>
   <ItemGroup>

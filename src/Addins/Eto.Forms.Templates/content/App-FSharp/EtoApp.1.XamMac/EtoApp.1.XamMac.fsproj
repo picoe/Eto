@@ -58,10 +58,10 @@
     <Reference Include="FSharp.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="Eto">
-      <HintPath>..\packages\Eto.Forms.2.5.0-alpha\lib\netstandard1.0\Eto.dll</HintPath>
+      <HintPath>..\packages\Eto.Forms.2.5.0-dev\lib\netstandard1.0\Eto.dll</HintPath>
     </Reference>
     <Reference Include="Eto.XamMac2">
-      <HintPath>..\packages\Eto.Platform.XamMac2.2.5.0-alpha\lib\net45\Eto.XamMac2.dll</HintPath>
+      <HintPath>..\packages\Eto.Platform.XamMac2.2.5.0-dev\lib\net45\Eto.XamMac2.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +91,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets" />
-  <Import Project="..\packages\Eto.Forms.2.5.0-alpha\build\Eto.Forms.targets" Condition="Exists('..\packages\Eto.Forms.2.5.0-alpha\build\Eto.Forms.targets')" />
-  <Import Project="..\packages\Eto.Platform.XamMac2.2.5.0-alpha\build\Eto.Platform.XamMac2.targets" Condition="Exists('..\packages\Eto.Platform.XamMac2.2.5.0-alpha\build\Eto.Platform.XamMac2.targets')" />
+  <Import Project="..\packages\Eto.Forms.2.5.0-dev\build\Eto.Forms.targets" Condition="Exists('..\packages\Eto.Forms.2.5.0-dev\build\Eto.Forms.targets')" />
+  <Import Project="..\packages\Eto.Platform.XamMac2.2.5.0-dev\build\Eto.Platform.XamMac2.targets" Condition="Exists('..\packages\Eto.Platform.XamMac2.2.5.0-dev\build\Eto.Platform.XamMac2.targets')" />
 </Project>

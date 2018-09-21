@@ -14,3 +14,8 @@ charset=utf-8
 [**\packages.config]
 indent_style = space
 indent_size = 2
+
+[*.{csproj,vbproj,proj,targets,props}]
+indent_style = space
+indent_size = 2
+tab_size = 2

@@ -21,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
     <PackageReference Include="FSharp.Core" Version="4.3.2" />
-    <PackageReference Include="Eto.Platform.Windows" Version="2.5.0-alpha" />
+    <PackageReference Include="Eto.Platform.Windows" Version="2.5.0-dev" />
   </ItemGroup>
 
 </Project>

@@ -32,7 +32,7 @@
 	<Extension path="/MonoDevelop/Ide/Templates">
 		<Template
 			id="Eto.App.CSharp"
-			path="Packages/Eto.Forms.Templates.2.5.0-alpha.nupkg"
+			path="Packages/Eto.Forms.Templates.2.5.0-dev.nupkg"
 			imageId="eto-project"
 			wizard="Eto.Addin.MonoDevelop.ProjectWizard"
 			category="multiplat/app/eto"
@@ -40,7 +40,7 @@
 			/>
 		<Template
 			id="Eto.App.FSharp"
-			path="Packages/Eto.Forms.Templates.2.5.0-alpha.nupkg"
+			path="Packages/Eto.Forms.Templates.2.5.0-dev.nupkg"
 			imageId="eto-project"
 			wizard="Eto.Addin.MonoDevelop.ProjectWizard"
 			category="multiplat/app/eto"
