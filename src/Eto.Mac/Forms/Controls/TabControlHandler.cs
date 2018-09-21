@@ -34,9 +34,9 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 
 			public object Handler
-			{ 
+			{
 				get { return WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 		}
 
@@ -91,7 +91,18 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.SelectAt(value); }
 		}
 
-		public override bool Enabled { get; set; }
+		protected override bool ControlEnabled
+		{
+			get => base.ControlEnabled;
+			set
+			{
+				base.ControlEnabled = value;
+				foreach (var child in Widget.Controls)
+				{
+					child.GetMacViewHandler()?.SetEnabled(value);
+				}
+			}
+		}
 
 		public void InsertTab(int index, TabPage page)
 		{
@@ -131,7 +142,7 @@ namespace Eto.Mac.Forms.Controls
 			var naturalSize = NaturalSize;
 			if (naturalSize != null)
 				return naturalSize.Value;
-			
+
 			var size = base.GetNaturalSize(availableSize);
 			var borderSize = Control.Frame.Size.ToEto() - Control.ContentRect.Size.ToEto();
 

@@ -13,9 +13,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	public class ControlTests : TestBase
 	{
 		[TestCaseSource(nameof(GetControlTypes))]
-		public void DefaultValuesShouldBeCorrect(Type controlType)
+		public void DefaultValuesShouldBeCorrect(IControlTypeInfo<Control> controlType)
 		{
-			TestProperties(f => (Control)Activator.CreateInstance(controlType),
+			TestProperties(f => controlType.CreateControl(),
 						   c => c.Enabled,
 						   c => c.ToolTip,
 						   c => c.TabIndex
@@ -23,12 +23,24 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
-		public void ControlShouldFireShownEvent(Type controlType)
+		public void ControlShouldFireShownEvent(IControlTypeInfo<Control> controlType)
 		{
 			int shownCount = 0;
+			int visualControlShownCount = 0;
+			int expectedVisualShown = 0;
 			Form(form =>
 			{
-				var ctl = (Control)Activator.CreateInstance(controlType);
+				var ctl = controlType.CreateControl();
+
+				// themed controls have visual controls!
+				foreach (var visualControl in ctl.VisualControls)
+				{
+					expectedVisualShown++;
+					visualControl.Shown += (sender, e) =>
+					{
+						visualControlShownCount++;
+					};
+				}
 				ctl.Shown += (sender, e) =>
 				{
 					shownCount++;
@@ -42,10 +54,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(0, shownCount);
 			});
 			Assert.AreEqual(1, shownCount);
+			Assert.AreEqual(expectedVisualShown, visualControlShownCount, "Visual controls didn't get Shown event triggered");
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
-		public void ControlShouldFireShownEventWhenAddedDynamically(Type controlType)
+		public void ControlShouldFireShownEventWhenAddedDynamically(IControlTypeInfo<Control> controlType)
 		{
 			Exception exception = null;
 			int shownCount = 0;
@@ -55,7 +68,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				{
 					try
 					{
-						var ctl = (Control)Activator.CreateInstance(controlType);
+						var ctl = controlType.CreateControl();
 						ctl.Shown += (sender2, e2) =>
 						{
 							shownCount++;
@@ -80,13 +93,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
-		public void ControlShouldFireShownEventWhenVisibleChanged(Type controlType)
+		public void ControlShouldFireShownEventWhenVisibleChanged(IControlTypeInfo<Control> controlType)
 		{
 			int shownCount = 0;
 			int? initialShownCount = null;
 			Form(form =>
 			{
-				var ctl = (Control)Activator.CreateInstance(controlType);
+				var ctl = controlType.CreateControl();
 				ctl.Shown += (sender2, e2) =>
 				{
 					shownCount++;
@@ -188,18 +201,18 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				if (Platform.Instance.IsWpf)
 				{
 					// wpf has (known) problems GC'ing a Window right away, so let's not test it.
-					if (typeof(Window).GetTypeInfo().IsAssignableFrom(type))
+					if (typeof(Window).GetTypeInfo().IsAssignableFrom(type.Type))
 						continue;
 				}
 
 				if (Platform.Instance.IsWpf || Platform.Instance.IsWinForms)
 				{ 
 					// SWF.WebBrowser can't be GC'd for some reason either.  Not an Eto problem.
-					if (typeof(WebView).GetTypeInfo().IsAssignableFrom(type))
+					if (typeof(WebView).GetTypeInfo().IsAssignableFrom(type.Type))
 						continue;
 				}
 
-				yield return new ControlGCTest { ControlType = type };
+				yield return new ControlGCTest { ControlType = type.Type };
 			}
 
 			// extra tests for things that have known to cause a control not to be GC'd

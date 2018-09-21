@@ -54,10 +54,10 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public override void SetParent(Container parent)
+		public override void SetParent(Container oldParent, Container newParent)
 		{
-			base.SetParent(parent);
-			tabcontrol = parent != null ? parent.ControlObject as swf.TabControl : null;
+			base.SetParent(oldParent, newParent);
+			tabcontrol = newParent?.ControlObject as swf.TabControl;
 			SetImage ();
 		}
 	}

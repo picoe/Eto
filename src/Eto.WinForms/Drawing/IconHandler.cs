@@ -15,6 +15,7 @@ namespace Eto.WinForms.Drawing
 
 	public class IconHandler : WidgetHandler<sd.Icon, Icon>, Icon.IHandler, IWindowsImage, IWindowsIconSource
 	{
+		Dictionary<int, sd.Image> cachedImages;
 		List<IconFrame> frames;
 		IconFrame idealFrame;
 
@@ -157,8 +158,16 @@ namespace Eto.WinForms.Drawing
 		{
 			if (size != null)
 			{
+				if (cachedImages == null)
+					cachedImages = new Dictionary<int, sd.Image>();
+
+				if (cachedImages.TryGetValue(size.Value, out var bmp))
+					return bmp;
+
 				var icon = GetIconClosestToSize(size.Value);
-				return icon.ToBitmap();
+				bmp = icon.ToBitmap();
+				cachedImages[size.Value] = bmp;
+				return bmp;
 			}
 			return GetIdealIcon().Bitmap.ToSD();
 		}

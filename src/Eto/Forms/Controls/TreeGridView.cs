@@ -557,10 +557,14 @@ namespace Eto.Forms
 		/// Refreshes the specified item and all its children, keeping the selection if not part of the refreshed nodes
 		/// </summary>
 		/// <param name="item">Item to refresh</param>
-		public void ReloadItem(ITreeGridItem item)
-		{
-			Handler.ReloadItem(item);
-		}
+		public void ReloadItem(ITreeGridItem item) => ReloadItem(item, false);
+
+		/// <summary>
+		/// Refreshes the specified item and optionally all of its children, keeping the selection if not part of the refreshed nodes
+		/// </summary>
+		/// <param name="item">Item to refresh</param>
+		/// <param name="reloadChildren">Reload children of the specified item</param>
+		public void ReloadItem(ITreeGridItem item, bool reloadChildren) => Handler.ReloadItem(item, reloadChildren);
 
 		/// <summary>
 		/// Gets the node at a specified location from the origin of the control
@@ -726,10 +730,11 @@ namespace Eto.Forms
 			void ReloadData();
 
 			/// <summary>
-			/// Refreshes the specified item and all its children, keeping the selection if not part of the refreshed nodes
+			/// Refreshes the specified item and optionally all of its children, keeping the selection if not part of the refreshed nodes
 			/// </summary>
 			/// <param name="item">Item to refresh</param>
-			void ReloadItem(ITreeGridItem item);
+			/// <param name="reloadChildren">Reload children of the specified item</param>
+			void ReloadItem(ITreeGridItem item, bool reloadChildren);
 
 			/// <summary>
 			/// Gets the item and column of a location in the control.

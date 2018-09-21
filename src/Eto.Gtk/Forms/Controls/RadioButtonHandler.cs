@@ -32,7 +32,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			label = new Gtk.AccelLabel("");
 			Control.Add(label);
-			Control.Realized += Control_Realized;
+			Control.Realized += Connector.Control_Realized;
 
 			Control.Toggled += Connector.HandleCheckedChanged;
 			box = new Gtk.EventBox();
@@ -69,6 +69,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Handler.Callback.OnCheckedChanged(Handler.Widget, EventArgs.Empty);
 			}
+
+			internal void Control_Realized(object sender, EventArgs e) => Handler?.Control_Realized(sender, e);
 		}
 
 		public override string Text

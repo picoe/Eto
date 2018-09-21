@@ -284,8 +284,6 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override bool Enabled { get; set; } = true;
-
 		public string Text
 		{
 			get { return str.Value; }

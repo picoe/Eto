@@ -23,16 +23,16 @@ namespace Eto.Mac.Forms.Controls
 	}
 
 	public abstract class MacControl<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
-		where TControl: NSControl
-		where TWidget: Control
-		where TCallback: Control.ICallback
+		where TControl : NSControl
+		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		public override NSView ContainerControl { get { return Control; } }
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
+			get => Control.Enabled; 
+			set => Control.Enabled = value;
 		}
 
 		protected bool HasFont => Widget.Properties.ContainsKey(MacControl.Font_Key);

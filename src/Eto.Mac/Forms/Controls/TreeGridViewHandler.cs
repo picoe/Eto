@@ -727,7 +727,7 @@ namespace Eto.Mac.Forms.Controls
 			for (int i = 0; i < count; i++)
 			{
 				var item = ds.GetChild(Control, i, parent) as EtoTreeItem;
-				if (item != null && item.Item.Expanded)
+				if (item != null && item.Item.Expanded && !Control.IsItemExpanded(item))
 				{
 					Control.ExpandItem(item);
 					ExpandItems(item);
@@ -820,43 +820,50 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public void ReloadItem(ITreeGridItem item)
+		public void ReloadItem(ITreeGridItem item, bool reloadChildren)
 		{
 			EtoTreeItem myitem;
 			if (cachedItems.TryGetValue(item, out myitem))
 			{
-				skipSelectionChanged++;
-				suppressExpandCollapseEvents++;
-				var selectedItem = SelectedItem;
-				var selection = SelectedItems.ToList();
-				var row = Control.RowForItem(myitem);
-				if (row >= 0)
-					topitems.Remove((int)row);
-				myitem.Items.Clear();
-
-				Control.ReloadItem(myitem, true);
-				SetItemExpansion(myitem);
-				ExpandItems(myitem);
-				AutoSizeColumns(true);
-				var isSelectionChanged = false;
-				foreach (var sel in selection)
+				if (reloadChildren)
 				{
-					row = Control.RowForItem(GetCachedItem(sel as ITreeGridItem));
+					skipSelectionChanged++;
+					suppressExpandCollapseEvents++;
+					var selectedItem = SelectedItem;
+					var selection = SelectedItems.ToList();
+					var row = Control.RowForItem(myitem);
 					if (row >= 0)
-						Control.SelectRow((nnint)row, true);
-					else
-						isSelectionChanged = true;
+						topitems.Remove((int)row);
+					myitem.Items.Clear();
+
+					Control.ReloadItem(myitem, true);
+					SetItemExpansion(myitem);
+					ExpandItems(myitem);
+					AutoSizeColumns(true);
+					var isSelectionChanged = false;
+					foreach (var sel in selection)
+					{
+						row = Control.RowForItem(GetCachedItem(sel as ITreeGridItem));
+						if (row >= 0)
+							Control.SelectRow((nnint)row, true);
+						else
+							isSelectionChanged = true;
+					}
+					skipSelectionChanged--;
+					suppressExpandCollapseEvents--;
+					if (isSelectionChanged)
+					{
+						Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+						if (!ReferenceEquals(selectedItem, SelectedItem))
+							Callback.OnSelectedItemChanged(Widget, EventArgs.Empty);
+					}
 				}
-				skipSelectionChanged--;
-				suppressExpandCollapseEvents--;
-				if (isSelectionChanged)
+				else
 				{
-					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-					if (!ReferenceEquals(selectedItem, SelectedItem))
-						Callback.OnSelectedItemChanged(Widget, EventArgs.Empty);
+					Control.ReloadItem(myitem, false);
 				}
 			}
-			else
+			else if (reloadChildren)
 				ReloadData();
 		}
 

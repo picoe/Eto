@@ -44,7 +44,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		class EtoHPaned : Gtk.HPaned
 		{
-			public SplitterHandler Handler { get; set; }
+			WeakReference handler;
+
+			public SplitterHandler Handler
+			{
+				get => handler?.Target as SplitterHandler;
+				set => handler = new WeakReference(value);
+			}
 
 			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
@@ -97,7 +103,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		class EtoVPaned : Gtk.VPaned
 		{
-			public SplitterHandler Handler { get; set; }
+			WeakReference handler;
+
+			public SplitterHandler Handler
+			{
+				get => handler?.Target as SplitterHandler;
+				set => handler = new WeakReference(value);
+			}
 
 			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
@@ -301,6 +313,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		protected override void RealizedSetup()
+		{
+			base.RealizedSetup();
+			HookEvents();
+
+			if (Control.Handle != IntPtr.Zero) // happens in VS for Mac..
+				EnsurePosition();
+		}
+
 		void Create()
 		{
 			Gtk.Paned old = Control;
@@ -311,14 +332,14 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control = new EtoVPaned() { Handler = this };
 
 			Control.ShowAll();
-			Control.Realized += Control_Realized;
 
 			if (container.Child != null)
 				container.Remove(container.Child);
 
 			if (old != null)
 			{
-				old.Realized -= Control_Realized;
+				Control.Realized += Connector.HandleControlRealized;
+				old.Realized -= Connector.HandleControlRealized;
 				var child1 = old.Child1;
 				var child2 = old.Child2;
 				old.Remove(child2);
@@ -334,15 +355,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 
 			container.Child = Control;
-		}
-
-		void Control_Realized(object sender, EventArgs e)
-		{
-			HookEvents();
-
-#if !GTK2
-			EnsurePosition();
-#endif
 		}
 
 		void HookEvents()

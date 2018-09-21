@@ -329,8 +329,6 @@ namespace Eto.Mac.Forms.Controls
 			Control.GoForward();
 		}
 
-		public override bool Enabled { get; set; }
-
 		public bool CanGoBack
 		{
 			get { return Control.CanGoBack(); }

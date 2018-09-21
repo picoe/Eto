@@ -228,10 +228,11 @@ namespace Eto.Forms
 		/// <summary>
 		/// Called when the parent of the control has been set
 		/// </summary>
-		/// <param name="parent">New parent for the control, or null if the parent was removed</param>
-		public virtual void SetParent(Container parent)
+		/// <param name="oldParent">Old parent for the control, or null if the control is added</param>
+		/// <param name="newParent">New parent for the control, or null if the parent was removed</param>
+		public virtual void SetParent(Container oldParent, Container newParent)
 		{
-			Control.VisualParent = parent;
+			Control.VisualParent = newParent;
 		}
 
 		/// <summary>
@@ -421,6 +422,9 @@ namespace Eto.Forms
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					Control.Shown += (s, e) => Callback.OnShown(Widget, e);
+					break;
+				case Eto.Forms.Control.EnabledChangedEvent:
+					Control.EnabledChanged += (s, e) => Callback.OnEnabledChanged(Widget, e);
 					break;
 				default:
 					base.AttachEvent(id);

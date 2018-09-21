@@ -61,18 +61,6 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public override NSView ContainerControl { get { return Control; } }
-
-		public override bool Enabled
-		{
-			get
-			{
-				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "You cannot get the enabled state of a native control"));
-			}
-			set
-			{
-				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "You cannot set the enabled state of a native control"));
-			}
-		}
 	}
 }
 

@@ -92,7 +92,7 @@ namespace Eto.GtkSharp.Forms
 			lastColumnScale = cols - 1;
 			rowScale = new bool[rows];
 			lastRowScale = rows - 1;
-			Control.Resize((uint)rows, (uint)cols);
+			Control.Resize((uint)Math.Max(1, rows), (uint)Math.Max(1, cols));
 			controls = new Control[rows, cols];
 			blank = new Gtk.Widget[rows, cols];
 			align.Add(Control);

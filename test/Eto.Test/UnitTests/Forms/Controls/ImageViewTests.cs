@@ -68,27 +68,52 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 		}
 
-		static IEnumerable<object[]> GetImageSizeTests()
+		public class ImageSizeTestCase
 		{
-			var logo = TestIcons.Logo;
-			var image = TestIcons.TestImage;
+			public Func<Image> StartImage { get; set; }
+			public Func<Image> UpdateImage { get; set; }
+			public Func<Size> StartSize { get; set; }
+			public Func<Size> UpdateSize { get; set; }
+			public ImageSizeTestCase(Func<Image> start, Size startSize, Func<Image> update, Size updateSize)
+			{
+				StartImage = start;
+				UpdateImage = update;
+				StartSize = () => startSize;
+				UpdateSize = () => updateSize;
+			}
+			public ImageSizeTestCase(Func<Image> start, Func<Size> startSize, Func<Image> update, Func<Size> updateSize)
+			{
+				StartImage = start;
+				UpdateImage = update;
+				StartSize = startSize;
+				UpdateSize = updateSize;
+			}
+			public override string ToString() => $"{StartSize()},{UpdateSize()}";
+		}
+
+		static IEnumerable<ImageSizeTestCase> GetImageSizeTests()
+		{
+			Icon logoInstance = null;
+			Icon logo() => logoInstance ?? (logoInstance = TestIcons.Logo);
+			Bitmap imageInstance = null;
+			Bitmap image() => imageInstance ?? (imageInstance = TestIcons.TestImage);
 			var zeroSize = Platform.Instance.IsGtk ? new Size(1, 1) : new Size(0, 0); // gtk doesn't allow 0,0 size controls?
-			yield return new object[] { logo.WithSize(16, 16), new Size(16, 16), logo.WithSize(32, 32), new Size(32, 32) };
-			yield return new object[] { logo.WithSize(32, 32), new Size(32, 32), null, zeroSize };
-			yield return new object[] { image, image.Size, image.WithSize(32, 32), new Size(32, 32) };
+			yield return new ImageSizeTestCase(() => logo().WithSize(16, 16), new Size(16, 16), () => logo().WithSize(32, 32), new Size(32, 32));
+			yield return new ImageSizeTestCase(() => logo().WithSize(32, 32), new Size(32, 32), null, zeroSize);
+			yield return new ImageSizeTestCase(() => image(), () => image().Size, () => image().WithSize(32, 32), () => new Size(32, 32));
 			if (Platform.Instance.IsWinForms)
 				zeroSize = new Size(1, 1); // what the? Can't figure out how not to do this.. Not detrimental though.
-			yield return new object[] { null, zeroSize, logo.WithSize(32, 32), new Size(32, 32) };
+			yield return new ImageSizeTestCase(null, zeroSize, () => logo().WithSize(32, 32), new Size(32, 32));
 		}
 
 		[Test, TestCaseSource(nameof(GetImageSizeTests))]
-		public void ImageSizeShouldUpdateImageViewSize(Image startingImage, Size startingSize, Image updateImage, Size updateSize)
+		public void ImageSizeShouldUpdateImageViewSize(ImageSizeTestCase imageInfo)
 		{
 			Exception exception = null;
 			Form(form =>
 			{
 				var imageView = new ImageView();
-				imageView.Image = startingImage;
+				imageView.Image = imageInfo.StartImage?.Invoke();
 				Assert.AreEqual(new Size(-1, -1), imageView.Size, "#1");
 				form.ClientSize = new Size(200, 200);
 				form.Content = new StackLayout { Items = { imageView } };
@@ -101,7 +126,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						{
 							try
 							{
-								Assert.AreEqual(updateSize, imageView.Size);
+								Assert.AreEqual(imageInfo.UpdateSize(), imageView.Size);
 								form.Close();
 							}
 							catch (Exception ex)
@@ -111,8 +136,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 							}
 						};
 
-						Assert.AreEqual(startingSize, imageView.Size);
-						imageView.Image = updateImage;
+						Assert.AreEqual(imageInfo.StartSize(), imageView.Size);
+						imageView.Image = imageInfo.UpdateImage?.Invoke();
 					}
 					catch (Exception ex)
 					{

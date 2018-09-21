@@ -10,9 +10,231 @@ using System.Linq;
 using NUnit.Framework.Interfaces;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Text;
+using System.Collections.Concurrent;
+using System.Collections;
+using System.ComponentModel;
 
 namespace Eto.Test.Sections
 {
+	static class TestHelpers
+	{
+		public static IEnumerable<ITest> GetChildren(this ITest test) => GetChildren(test, true);
+
+		public static IEnumerable<ITest> GetChildren(this ITest test, bool recursive)
+		{
+			if (test.HasChildren)
+			{
+				foreach (var child in test.Tests)
+				{
+					yield return child;
+					if (recursive)
+					{
+						foreach (var childTest in GetChildren(child, recursive))
+							yield return childTest;
+					}
+				}
+			}
+		}
+
+		public static IEnumerable<ITest> GetParents(this ITest test)
+		{
+			while (test != null)
+			{
+				yield return test;
+				test = test.Parent;
+			}
+		}
+
+		public static IEnumerable<string> GetCategories(this ITest test)
+		{
+			var categories = test.Properties["Category"];
+			if (categories == null || categories.Count == 0)
+				return Enumerable.Empty<string>();
+			return categories.OfType<string>();
+		}
+
+		public static BindableBinding<T, IEnumerable<TTo>> CastItems<T, TFrom, TTo>(this BindableBinding<T, IEnumerable<TFrom>> binding, TTo to)
+			where T : Eto.Forms.IBindable
+		{
+			return binding.Convert(source => source.Cast<TTo>(), list => list.Cast<TFrom>());
+		}
+	}
+
+	abstract class BaseFilter : ITestFilter
+	{
+		public bool IsExplicitMatch(ITest test) => Matches(test);
+
+		public bool ChildCanMatch { get; set; } = true;
+		public bool ParentCanMatch { get; set; } = true;
+
+		public bool Pass(ITest test)
+		{
+			var matches = Matches(test);
+
+			if (test.IsSuite)
+			{
+				if (ChildCanMatch)
+					matches |= test.GetChildren().Any(Matches);
+			}
+			else if (ParentCanMatch)
+				matches |= test.GetParents().Any(ParentMatch);
+
+			return matches;
+		}
+
+		protected bool ParentMatch(ITest test) => Matches(test, true);
+
+		protected bool Matches(ITest test) => Matches(test, false);
+
+		protected abstract bool Matches(ITest test, bool parent);
+
+		public TNode AddToXml(TNode parentNode, bool recursive) => throw new NotImplementedException();
+
+		public TNode ToXml(bool recursive) => throw new NotImplementedException();
+	}
+
+	class NotFilter : ITestFilter
+	{
+		public ITestFilter Filter { get; set; }
+
+		public NotFilter(ITestFilter filter)
+		{
+			Filter = filter;
+		}
+
+		public NotFilter()
+		{
+		}
+
+		public bool IsExplicitMatch(ITest test) => Filter?.IsExplicitMatch(test) != true;
+
+		public bool Pass(ITest test) => Filter?.Pass(test) != true;
+
+		public TNode AddToXml(TNode parentNode, bool recursive) => throw new NotImplementedException();
+
+		public TNode ToXml(bool recursive) => throw new NotImplementedException();
+	}
+
+
+	class AndFilter : ITestFilter
+	{
+		public List<ITestFilter> Filters { get; }
+
+		public AndFilter()
+		{
+			Filters = new List<ITestFilter>();
+		}
+
+		public AndFilter(params ITestFilter[] filters)
+		{
+			Filters = filters.ToList();
+		}
+
+		public AndFilter(IEnumerable<ITestFilter> filters)
+		{
+			Filters = filters.ToList();
+		}
+
+		public TNode AddToXml(TNode parentNode, bool recursive) => throw new NotImplementedException();
+
+		public bool IsExplicitMatch(ITest test)
+		{
+			for (int i = 0; i < Filters.Count; i++)
+			{
+				if (!Filters[i].IsExplicitMatch(test))
+					return false;
+			}
+			return true;
+		}
+
+		public bool Pass(ITest test)
+		{
+			for (int i = 0; i < Filters.Count; i++)
+			{
+				if (!Filters[i].Pass(test))
+					return false;
+			}
+			return true;
+		}
+
+		public TNode ToXml(bool recursive) => throw new NotImplementedException();
+	}
+
+	class CategoryFilter : BaseFilter
+	{
+		public List<string> Categories { get; }
+
+		public CategoryFilter()
+		{
+			Categories = new List<string>();
+		}
+
+		public CategoryFilter(IEnumerable<string> categories)
+		{
+			Categories = categories.ToList();
+		}
+
+		public bool MatchAll { get; set; }
+
+		public bool AllowNone { get; set; }
+
+		protected override bool Matches(ITest test, bool parent)
+		{
+			var categories = test.Properties["Category"];
+			if (categories == null || categories.Count == 0)
+				return Categories.Count == 0;
+
+			return MatchAll ? Categories.All(categories.Contains) : Categories.Any(categories.Contains);
+		}
+	}
+
+
+	class OrFilter : ITestFilter
+	{
+		public List<ITestFilter> Filters { get; }
+
+		public OrFilter()
+		{
+			Filters = new List<ITestFilter>();
+		}
+
+		public OrFilter(params ITestFilter[] filters)
+		{
+			Filters = filters.ToList();
+		}
+
+		public OrFilter(IEnumerable<ITestFilter> filters)
+		{
+			Filters = filters.ToList();
+		}
+		public TNode AddToXml(TNode parentNode, bool recursive) => throw new NotImplementedException();
+
+		public bool IsExplicitMatch(ITest test)
+		{
+			for (int i = 0; i < Filters.Count; i++)
+			{
+				if (Filters[i].IsExplicitMatch(test))
+					return true;
+			}
+			return false;
+		}
+
+		public bool Pass(ITest test)
+		{
+			for (int i = 0; i < Filters.Count; i++)
+			{
+				if (Filters[i].Pass(test))
+					return true;
+			}
+			return false;
+		}
+
+		public TNode ToXml(bool recursive) => throw new NotImplementedException();
+	}
+
 	class SingleTestFilter : ITestFilter
 	{
 		public ITest Test { get; set; }
@@ -21,15 +243,27 @@ namespace Eto.Test.Sections
 
 		public bool IsExplicitMatch(ITest test)
 		{
-			if (Assembly != null && !test.IsSuite && test.TypeInfo?.Assembly != Assembly)
-				return false;
+			if (Assembly != null)
+			{
+				if (!test.IsSuite && test.TypeInfo?.Assembly != Assembly)
+					return false;
+				if (test is TestAssembly testAssembly && testAssembly.Assembly != Assembly)
+					return false;
+			}
 			return test.FullName == Test.FullName;
 		}
 
 		public bool Pass(ITest test)
 		{
-			if (Assembly != null && !test.IsSuite && test.TypeInfo?.Assembly != Assembly)
-				return false;
+			if (Assembly != null)
+			{
+				if (!test.IsSuite && test.TypeInfo?.Assembly != Assembly)
+					return false;
+
+				if (test is TestAssembly testAssembly && testAssembly.Assembly != Assembly)
+					return false;
+			}
+
 
 			var parent = Test;
 			// check if it is a parent of the test
@@ -55,122 +289,101 @@ namespace Eto.Test.Sections
 		public TNode ToXml(bool recursive) => throw new NotImplementedException();
 	}
 
-	class CategoryFilter : ITestFilter
+	class KeywordFilter : BaseFilter
 	{
-		public Assembly Assembly { get; set; }
+		string keywords;
+		string[][] keywordTokens;
 
-		public List<string> IncludeCategories { get; private set; }
+		string[] SplitMatches(string value, string regex) => Regex.Matches(value, regex).OfType<Match>().Select(r => r.Value).ToArray();
 
-		public List<string> ExcludeCategories { get; private set; }
-
-		public string Keyword { get; set; }
-
-		public int SkipCount { get; set; }
-
-		public ITestFilter InnerFilter { get; set; }
-
-		public CategoryFilter()
+		/// <summary>
+		/// Gets or sets the keyword string to search for.
+		/// </summary>
+		/// <remarks>
+		/// Supports:
+		///	  - '-' prefix to exclude keyword
+		///   - Quotes for literal matches e.g. "my test"
+		///   - Multiple keywords separated by whitespace
+		/// </remarks>
+		/// <value>The keywords.</value>
+		public string Keywords
 		{
-			IncludeCategories = new List<string>();
-			ExcludeCategories = new List<string>();
-		}
-
-		protected static IEnumerable<ITest> GetParents(ITest test)
-		{
-			while (test != null)
+			get => keywords;
+			set
 			{
-				yield return test;
-				test = test.Parent;
-			}
-		}
-
-		internal static IEnumerable<ITest> GetChildren(ITest test)
-		{
-			if (test.HasChildren)
-			{
-				foreach (var child in test.Tests)
-				{
-					yield return child;
-					foreach (var childTest in GetChildren(child))
-						yield return childTest;
-				}
-			}
-		}
-
-		bool Matches(ITest test) => MatchesKeyword(test) && MatchesIncludeCategory(test);
-
-		bool MatchesKeyword(ITest test)
-		{
-			if (string.IsNullOrEmpty(Keyword))
-				return true;
-			return test.FullName.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0;
-		}
-
-		bool MatchesIncludeCategory(ITest test)
-		{
-			if (IncludeCategories.Count == 0)
-				return true;
-
-			var categoryList = test.Properties["Category"];
-			if (categoryList == null || categoryList.Count == 0)
-				return false;
-
-			return categoryList.OfType<string>().Any(IncludeCategories.Contains);
-		}
-
-		bool MatchesExcludeCategory(ITest test)
-		{
-			if (ExcludeCategories.Count == 0)
-				return false;
-
-			var categoryList = test.Properties["Category"];
-			if (categoryList == null || categoryList.Count == 0)
-				return false;
-
-			return categoryList.OfType<string>().Any(ExcludeCategories.Contains);
-		}
-		public virtual bool Pass(ITest test)
-		{
-			if (Assembly != null && !test.IsSuite && test.TypeInfo?.Assembly != Assembly)
-				return false;
-
-			bool pass = InnerFilter?.Pass(test) ?? true;
-			if (pass)
-			{
-				if (!test.IsSuite)
-				{
-					var parents = GetParents(test).ToList();
-					pass &= parents.Any(Matches);
-					pass &= !parents.Any(MatchesExcludeCategory);
-				}
+				keywords = value;
+				if (string.IsNullOrWhiteSpace(value))
+					keywordTokens = null;
 				else
 				{
-					pass &= !MatchesExcludeCategory(test);
-					pass &= GetChildren(test).Any(Matches);
+					var searches = SplitMatches(value, @"([-]?""[^""]*"")|((?<=[\s]|^)[^""\s]+(?=[\s]|$))");
+					keywordTokens = searches
+						.Select(s => SplitMatches(s, @"(^-)|((?<=^-?"").+(?=""$))|([A-Z][^A-Z]*[^A-Z""]?)|((?<!^-"")[^A-Z""][^A-Z]*[^A-Z""])|\w+"))
+						.ToArray();
+					if (keywordTokens.Length == 1 && keywordTokens[0].Length == 1 && keywordTokens[0][0] == keywords)
+						keywordTokens = null;
 				}
 			}
-
-			if (!pass)
-				SkipCount++;
-
-			return pass;
 		}
 
-		public bool IsExplicitMatch(ITest test)
+		protected override bool Matches(ITest test, bool parent)
 		{
-			return MatchesKeyword(test) && MatchesIncludeCategory(test) && !MatchesExcludeCategory(test);
-		}
+			if (string.IsNullOrEmpty(keywords))
+				return true;
 
-		public TNode ToXml(bool recursive)
-		{
-			throw new NotImplementedException();
-		}
+			var name = test.FullName;
+			if (keywordTokens != null)
+			{
+				// poor man's search algo
+				bool lastIsUpper = false;
+				for (int i = 0; i < keywordTokens.Length; i++)
+				{
+					var search = keywordTokens[i];
+					int index = 0;
+					bool inverse = false;
 
-		public TNode AddToXml(TNode parentNode, bool recursive)
-		{
-			throw new NotImplementedException();
+					for (int j = 0; j < search.Length; j++)
+					{
+						var kw = search[j];
+						if (!inverse && j == 0 && kw.Length == 1 && kw[0] == '-')
+						{
+							if (search.Length == 1) // just a '-', which is invalid
+								break;
+							if (parent) // only match inverse expressions on test itself or its children.
+								return false;
+							inverse = true;
+							continue;
+						}
+
+						var isUpper = kw.Length == 1 && char.IsUpper(kw[0]);
+						var idx = name.IndexOf(kw, index, isUpper ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+						if (idx == -1)
+						{
+							if (lastIsUpper && isUpper && char.ToUpper(name[index]) == kw[0])
+								index++;
+							else if (inverse)
+							{
+								inverse = false;
+								break;
+							}
+							else
+								return !parent && inverse;
+						}
+						else
+							index = idx + kw.Length;
+
+						lastIsUpper = isUpper;
+					}
+					if (inverse)
+						return false;
+				}
+				return true;
+			}
+			return name.IndexOf(keywords, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 	}
+
+
 
 	class MultipleTestResult : ITestResult
 	{
@@ -236,6 +449,26 @@ namespace Eto.Test.Sections
 		}
 	}
 
+	public sealed class UnitTestResultEventArgs : EventArgs
+	{
+		public ITestResult Result { get; private set; }
+
+		public UnitTestResultEventArgs(ITestResult result)
+		{
+			Result = result;
+		}
+	}
+
+	public sealed class UnitTestTestEventArgs : EventArgs
+	{
+		public ITest Test { get; private set; }
+
+		public UnitTestTestEventArgs(ITest test)
+		{
+			Test = test;
+		}
+	}
+
 	public class UnitTestProgressEventArgs : EventArgs
 	{
 		public int TestCaseCount { get; private set; }
@@ -275,13 +508,14 @@ namespace Eto.Test.Sections
 	{
 		MultipleTestResult allresults;
 		ObservableCollection<Assembly> assemblies = new ObservableCollection<Assembly>();
-		Queue<Assembly> assembliesToTest;
+		Queue<ITestAssemblyRunner> runnersToTest;
 		ITestFilter testFilter;
-		NUnitTestAssemblyRunner runner;
 		bool isRunning;
+		ITestAssemblyRunner currentRunner;
 		TaskCompletionSource<ITestResult> tcs;
 		UnitTestProgressEventArgs progressArgs;
-		List<TestAssembly> testSuiteCache;
+		List<ITestAssemblyRunner> runnerCache;
+		ITestAssemblyBuilder builder = new DefaultTestAssemblyBuilder();
 
 		public IList<Assembly> Assemblies => assemblies;
 
@@ -302,11 +536,15 @@ namespace Eto.Test.Sections
 
 		public event EventHandler<UnitTestProgressEventArgs> Progress;
 
+		public event EventHandler<UnitTestResultEventArgs> TestFinished;
+
+		public event EventHandler<UnitTestTestEventArgs> TestStarted;
+
 		public event EventHandler<EventArgs> IsRunningChanged;
 
 		public UnitTestRunner()
 		{
-			assemblies.CollectionChanged += (sender, e) => testSuiteCache = null;
+			assemblies.CollectionChanged += (sender, e) => runnerCache = null;
 		}
 
 		public UnitTestRunner(IEnumerable<Assembly> assemblies)
@@ -321,16 +559,38 @@ namespace Eto.Test.Sections
 			Log?.Invoke(this, new UnitTestLogEventArgs(message));
 		}
 
-		public IEnumerable<TestAssembly> GetTestSuites() => testSuiteCache ?? (testSuiteCache = BuildTestSuites().ToList());
-
-		IEnumerable<TestAssembly> BuildTestSuites()
+		IEnumerable<ITestAssemblyRunner> GetRunners()
 		{
-			var builder = new DefaultTestAssemblyBuilder();
+			if (runnerCache != null)
+				return runnerCache;
+			runnerCache = new List<ITestAssemblyRunner>();
 			var settings = new Dictionary<string, object>();
+
 			foreach (var assembly in Assemblies)
 			{
-				yield return builder.Build(assembly, settings) as TestAssembly;
+				var runner = new NUnitTestAssemblyRunner(builder);
+				runner.Load(assembly, settings);
+				runnerCache.Add(runner);
 			}
+			return runnerCache;
+		}
+
+		public IEnumerable<TestAssembly> GetTests()
+		{
+			foreach (var runner in GetRunners())
+			{
+				yield return (TestAssembly)runner.ExploreTests(TestFilter.Empty);
+			}
+		}
+
+		public IEnumerable<string> GetCategories(ITestFilter filter)
+		{
+			return GetTests().SelectMany(TestHelpers.GetChildren).Where(filter.Pass).SelectMany(TestHelpers.GetCategories).Distinct();
+		}
+
+		public int GetTestCount(ITestFilter filter)
+		{
+			return GetTests().SelectMany(TestHelpers.GetChildren).Count(r => !r.IsSuite && filter.Pass(r));
 		}
 
 		public ITestResult RunTests(ITestFilter filter = null) => RunTestsAsync(filter).GetAwaiter().GetResult();
@@ -346,9 +606,9 @@ namespace Eto.Test.Sections
 
 			allresults = new MultipleTestResult();
 			testFilter = filter ?? TestFilter.Empty;
-			assembliesToTest = new Queue<Assembly>(assemblies);
+			runnersToTest = new Queue<ITestAssemblyRunner>(GetRunners().Where(r => testFilter.Pass(r.LoadedTest)));
 
-			var totalTestCount = GetTestSuites().SelectMany(CategoryFilter.GetChildren).Count(r => !r.IsSuite && testFilter.Pass(r));
+			var totalTestCount = GetTestCount(testFilter);
 			progressArgs = new UnitTestProgressEventArgs(totalTestCount);
 
 			WriteLog($"Total test count: {totalTestCount}");
@@ -360,29 +620,30 @@ namespace Eto.Test.Sections
 		{
 			lock (this)
 			{
-				Assembly nextAssembly = null;
-				if (assembliesToTest?.Count > 0)
-					nextAssembly = assembliesToTest.Dequeue();
-				if (nextAssembly == null)
+				ITestAssemblyRunner nextRunner = null;
+				if (runnersToTest?.Count > 0)
+					nextRunner = runnersToTest.Dequeue();
+				if (nextRunner == null)
 				{
 					WriteLog(allresults.FailCount > 0 ? "FAILED" : "PASSED");
 					WriteLog($"\tPassed: {allresults.PassCount}, Failed: {allresults.FailCount}, Skipped: {allresults.SkipCount}, Inconclusive: {allresults.InconclusiveCount}, Warnings: {allresults.WarningCount}");
 					WriteLog($"\tDuration: {allresults.Duration}");
+					currentRunner = null;
 					IsRunning = false;
 					tcs.SetResult(allresults);
 					return;
 				}
 				try
 				{
-					runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
-					var settings = new Dictionary<string, object>();
-					runner.Load(nextAssembly, settings);
-					runner.RunAsync(this, testFilter);
+					new TestExecutionContext.AdhocContext().EstablishExecutionEnvironment();
+					currentRunner = nextRunner;
+					nextRunner.RunAsync(this, testFilter);
 				}
 				catch (Exception ex)
 				{
 					WriteLog($"Error running tests: {ex}");
 					tcs.SetException(ex);
+					currentRunner = null;
 					IsRunning = false;
 				}
 			}
@@ -392,11 +653,11 @@ namespace Eto.Test.Sections
 		{
 			lock (this)
 			{
-				if (runner != null && IsRunning)
+				if (IsRunning)
 				{
 					WriteLog("Stopping tests...");
-					assembliesToTest?.Clear();
-					runner.StopRun(true);
+					runnersToTest?.Clear();
+					currentRunner?.StopRun(true);
 					IsRunning = false;
 				}
 			}
@@ -411,12 +672,14 @@ namespace Eto.Test.Sections
 
 		void ITestListener.TestStarted(ITest test)
 		{
+			TestStarted?.Invoke(this, new UnitTestTestEventArgs(test));
 			if (!test.IsSuite)
 				WriteLog(test.FullName);
 		}
 
 		void ITestListener.TestFinished(ITestResult result)
 		{
+			TestFinished?.Invoke(this, new UnitTestResultEventArgs(result));
 			if (!result.Test.IsSuite)
 			{
 				progressArgs.AddResult(result);
@@ -506,26 +769,139 @@ namespace Eto.Test.Sections
 		}
 	}
 
+	public class AsyncQueue
+	{
+		List<Action> actions = new List<Action>();
+		Dictionary<string, Action> namedActions = new Dictionary<string, Action>();
+		UITimer timer;
+		double delay = 0.2;
+		bool isQueued;
 
-	public class UnitTestPanel : Panel
+		public double Delay
+		{
+			get => delay;
+			set
+			{
+				delay = value;
+				if (timer != null)
+					timer.Interval = delay;
+			}
+		}
+
+		public void Add(string name, Action action)
+		{
+			lock (this)
+			{
+				namedActions[name] = action;
+				Start();
+			}
+		}
+
+		public void Add(Action action)
+		{
+			lock (this)
+			{
+				actions.Add(action);
+				Start();
+			}
+		}
+
+		void Start()
+		{
+			if (!isQueued)
+			{
+				isQueued = true;
+				/**
+				Application.Instance.AsyncInvoke(FlushQueue);
+				/**/
+				Application.Instance.AsyncInvoke(StartTimer);
+				/**/
+			}
+		}
+
+		void StartTimer()
+		{
+			if (timer == null)
+			{
+				timer = new UITimer { Interval = delay };
+				timer.Elapsed += Timer_Elapsed;
+			}
+			timer.Start();
+		}
+
+		void Timer_Elapsed(object sender, EventArgs e) => FlushQueue();
+
+		void FlushQueue()
+		{
+			List<Action> actionList;
+			lock (this)
+			{
+				actionList = actions;
+				actionList.AddRange(namedActions.Values);
+				namedActions.Clear();
+				actions = new List<Action>();
+				isQueued = false;
+				timer?.Stop();
+			}
+
+			foreach (var action in actionList)
+			{
+				action();
+			}
+		}
+	}
+
+	public class UnitTestPanel : Panel, INotifyPropertyChanged
 	{
 		TreeGridView tree;
 		Button startButton;
 		Button stopButton;
+		Control filterControls;
 		SearchBox search;
 		TextArea log;
 		UnitTestProgressBar progress;
+		Label testCountLabel;
 		bool hasLogged;
 		UITimer timer;
-		Panel customContent;
-		List<string> includeCategories;
-		List<string> excludeCategories;
+		Panel customFilterControls;
+		ITestFilter customFilter;
+		Dictionary<object, UnitTestItem> testMap;
+		Dictionary<TestStatus, Image> stateImages = new Dictionary<TestStatus, Image>();
+		Image notRunStateImage;
+		Image runningStateImage;
+		ConcurrentDictionary<ITest, ITestResult> lastResultMap = new ConcurrentDictionary<ITest, ITestResult>();
+		ConcurrentDictionary<ITest, IList<ITestResult>> allResultsMap = new ConcurrentDictionary<ITest, IList<ITestResult>>();
+		AsyncQueue asyncQueue = new AsyncQueue();
+		IEnumerable<ITestFilter> statusFilters = Enumerable.Empty<ITestFilter>();
+		IEnumerable<string> includeCategories = Enumerable.Empty<string>();
+		IEnumerable<string> excludeCategories = Enumerable.Empty<string>();
+		IList<string> availableCategories;
+
+		public event EventHandler<UnitTestLogEventArgs> Log;
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		public new Control Content
 		{
-			get => customContent.Content;
-			set => customContent.Content = value;
+			get => customFilterControls.Content;
+			set => customFilterControls.Content = value;
 		}
+
+		public ITestFilter CustomFilter
+		{
+			get => customFilter;
+			set
+			{
+				customFilter = value;
+				if (Loaded)
+					PopulateTree();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to merge nodes with only a single child into its parent.
+		/// </summary>
+		/// <value><c>true</c> to merge single nodes; otherwise, <c>false</c>.</value>
+		public bool MergeSingleNodes { get; set; } = true;
 
 		public UnitTestRunner Runner { get; }
 
@@ -534,53 +910,152 @@ namespace Eto.Test.Sections
 		{
 		}
 
+		class NotRunFilter : ITestFilter
+		{
+			Func<ITest, ITestResult> LookupResult { get; }
+
+			public NotRunFilter(Func<ITest, ITestResult> lookupResult)
+			{
+				LookupResult = lookupResult;
+			}
+
+			public override string ToString() => "Not Run";
+
+			public bool Pass(ITest test)
+			{
+				if (test.IsSuite)
+					return test.GetChildren(false).Any(Pass);
+				return IsExplicitMatch(test);
+			}
+
+			public bool IsExplicitMatch(ITest test) => LookupResult(test) == null;
+
+			public TNode ToXml(bool recursive) => throw new NotImplementedException();
+
+			public TNode AddToXml(TNode parentNode, bool recursive) => throw new NotImplementedException();
+		}
+
+		class StatusFilter : ITestFilter
+		{
+			Func<ITest, ITestResult> _lookupResult;
+
+			public string Name => Status.ToString();
+
+			public TestStatus Status { get; }
+
+			public StatusFilter(Func<ITest, ITestResult> lookupResult, TestStatus status)
+			{
+				Status = status;
+				_lookupResult = lookupResult;
+			}
+
+			public override string ToString() => Name;
+
+			public bool Pass(ITest test)
+			{
+				if (test.IsSuite)
+					return test.GetChildren(false).Any(Pass);
+				return IsExplicitMatch(test);
+			}
+
+			public bool IsExplicitMatch(ITest test) => _lookupResult(test)?.ResultState.Status == Status;
+
+			public TNode ToXml(bool recursive) => throw new NotImplementedException();
+
+			public TNode AddToXml(TNode parentNode, bool recursive) => throw new NotImplementedException();
+		}
+
+		IEnumerable<ITestFilter> GetOptionalFilters()
+		{
+			foreach (var value in Enum.GetValues(typeof(TestStatus)).Cast<TestStatus>())
+			{
+				yield return new StatusFilter(LookupResult, value);
+			}
+
+			yield return new NotRunFilter(LookupResult);
+		}
+
+		ITestResult LookupResult(ITest test)
+		{
+			if (!lastResultMap.TryGetValue(test, out var result))
+				return null;
+			return result;
+		}
+
+		IEnumerable<ITestFilter> StatusFilters
+		{
+			get => statusFilters;
+			set
+			{
+				statusFilters = value.ToList();
+				PopulateTree();
+			}
+		}
+
+		IEnumerable<string> IncludeCategories
+		{
+			get => includeCategories;
+			set
+			{
+				includeCategories = value.ToList();
+				PopulateTree();
+			}
+		}
+
+		IEnumerable<string> ExcludeCategories
+		{
+			get => excludeCategories;
+			set
+			{
+				excludeCategories = value.ToList();
+				PopulateTree();
+			}
+		}
+
+		IEnumerable<string> AvailableCategories
+		{
+			get => availableCategories;
+			set
+			{
+				if (ReferenceEquals(value, availableCategories))
+					return;
+				var newCategories = value.ToList();
+				if (availableCategories?.SequenceEqual(newCategories) != true)
+				{
+					availableCategories = newCategories;
+					OnPropertyChanged(nameof(AvailableCategories));
+				}
+			}
+		}
+
+		void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+
 		public UnitTestPanel(UnitTestRunner runner, bool showLog = true)
 		{
 			this.Runner = runner;
-			runner.Log += (sender, e) => Application.Instance.Invoke(() =>
-			{
-				if (hasLogged)
-					log?.Append("\n");
-				else
-					hasLogged = true;
-				log?.Append(e.Message, true);
-			});
 
-			customContent = new Panel();
+			customFilterControls = new Panel();
 
 			progress = new UnitTestProgressBar();
 
-			runner.Progress += (sender, e) =>
-			{
-				var progressAmount = e.TestCaseCount > 0 ? (float)e.CompletedCount / e.TestCaseCount : 0;
-				var color = e.FailCount > 0 ? Colors.Red : e.WarningCount > 0 ? Colors.Yellow : Colors.Green;
-				Application.Instance.AsyncInvoke(() =>
-				{
-					progress.Progress = progressAmount;
-					progress.Color = color;
-				});
-			};
+			runner.Log += Runner_Log;
+			runner.Progress += Runner_Progress;
+			runner.TestFinished += Runner_TestFinished;
+			runner.TestStarted += Runner_TestStarted;
+			runner.IsRunningChanged += Runner_IsRunningChanged;
 
 			timer = new UITimer();
 			timer.Interval = 0.5;
 			timer.Elapsed += (sender, e) => PerformSearch();
 
-			var isRunningBinding = Binding.Property(runner, r => r.IsRunning);
-			var enabledPropertyBinding = Binding.Property((Button c) => c.Enabled).Invoke();
+			testCountLabel = new Label();
+
 			startButton = new Button { Text = "Start" };
 			startButton.Click += (s, e) => RunTests();
-			startButton.Bind(enabledPropertyBinding, isRunningBinding.Convert(r => !r));
 
-			stopButton = new Button { Text = "Stop" };
+			stopButton = new Button { Text = "Stop", Enabled = false };
 			stopButton.Click += (s, e) => runner?.StopTests();
-			stopButton.Bind(enabledPropertyBinding, isRunningBinding);
-
-			var buttons = new TableLayout
-			{
-				Padding = new Padding(10),
-				Spacing = new Size(5, 5),
-				Rows = { new TableRow(startButton, stopButton, null) }
-			};
 
 			search = new SearchBox();
 			search.Focus();
@@ -592,28 +1067,27 @@ namespace Eto.Test.Sections
 					e.Handled = true;
 				}
 			};
-			search.TextChanged += (sender, e) =>
-			{
-				if (timer.Started)
-					timer.Stop();
-				timer.Start();
-			};
+			search.TextChanged += (sender, e) => timer.Start();
 
 
 			tree = new TreeGridView { ShowHeader = false, Size = new Size(400, -1) };
 			tree.Columns.Add(new GridColumn
 			{
-				DataCell = new TextBoxCell { Binding = Binding.Property((UnitTestItem m) => m.Text) }
+				DataCell = new ImageTextCell
+				{
+					TextBinding = Binding.Property((UnitTestItem m) => m.Text),
+					ImageBinding = Binding.Property((UnitTestItem m) => m.Image)
+				}
 			});
 
 			tree.Activated += (sender, e) =>
 			{
 				if (runner.IsRunning)
 					return;
-				var item = (TreeGridItem)tree.SelectedItem;
+				var item = (UnitTestItem)tree.SelectedItem;
 				if (item != null)
 				{
-					var filter = item.Tag as ITestFilter;
+					var filter = item.Filter;
 					if (filter != null)
 					{
 						RunTests(filter);
@@ -621,6 +1095,45 @@ namespace Eto.Test.Sections
 				}
 			};
 
+			var buttons = new TableLayout
+			{
+				Padding = new Padding(10),
+				Spacing = new Size(5, 5),
+				Rows = { new TableRow(startButton, stopButton, null, testCountLabel) }
+			};
+
+			var statusChecks = new CheckBoxList
+			{
+				Orientation = Orientation.Horizontal,
+				DataStore = GetOptionalFilters()
+			};
+			statusChecks.SelectedValuesBinding.CastItems((ITestFilter)null).Bind(this, c => c.StatusFilters);
+
+			var includeChecks = new CheckBoxList();
+			includeChecks.Bind(c => c.DataStore, this, c => c.AvailableCategories);
+			includeChecks.SelectedValuesBinding.CastItems((string)null).Bind(this, c => c.IncludeCategories);
+
+			var excludeChecks = new CheckBoxList();
+			excludeChecks.Bind(c => c.DataStore, this, c => c.AvailableCategories);
+			excludeChecks.SelectedValuesBinding.CastItems((string)null).Bind(this, c => c.ExcludeCategories);
+
+			filterControls = new TableLayout
+			{
+				Rows = {
+					new TableRow("Show", statusChecks, null),
+					new TableRow("Include", includeChecks),
+					new TableRow("Exclude", excludeChecks)
+				}
+			};
+
+			var allFilters = new GroupBox
+			{
+				Content = new Scrollable
+				{
+					Border = BorderType.None,
+					Content = new TableLayout { Rows = { filterControls, customFilterControls } }
+				}
+			};
 
 			if (showLog)
 			{
@@ -640,7 +1153,7 @@ namespace Eto.Test.Sections
 					Panel2 = new TableLayout
 					{
 						Spacing = new Size(5, 5),
-						Rows = { buttons, customContent, progress, log }
+						Rows = { buttons, allFilters, progress, log }
 					}
 				};
 			}
@@ -650,7 +1163,7 @@ namespace Eto.Test.Sections
 				base.Content = new TableLayout
 				{
 					Spacing = new Size(5, 5),
-					Rows = { buttons, customContent, search, progress, tree }
+					Rows = { buttons, allFilters, search, progress, tree }
 				};
 			}
 		}
@@ -661,8 +1174,170 @@ namespace Eto.Test.Sections
 			PopulateTree();
 		}
 
-		public IList<string> IncludeCategories => includeCategories ?? (includeCategories = new List<string>());
-		public IList<string> ExcludeCategories => excludeCategories ?? (excludeCategories = new List<string>());
+		List<UnitTestLogEventArgs> logQueue = new List<UnitTestLogEventArgs>();
+
+		void Runner_IsRunningChanged(object sender, EventArgs e)
+		{
+			var running = Runner.IsRunning;
+			Application.Instance.Invoke(() =>
+			{
+				startButton.Enabled = !running;
+				stopButton.Enabled = running;
+				search.Enabled = !running;
+				filterControls.Enabled = !running;
+
+				if (!running && StatusFilters.Any())
+					PopulateTree();
+			});
+		}
+
+		void Runner_Log(object sender, UnitTestLogEventArgs e)
+		{
+			lock (logQueue)
+			{
+				logQueue.Add(e);
+			}
+			asyncQueue.Add("log", () =>
+			{
+				List<UnitTestLogEventArgs> logQueueCopy;
+				lock (logQueue)
+				{
+					logQueueCopy = logQueue;
+					logQueue = new List<UnitTestLogEventArgs>();
+				}
+				var sb = new StringBuilder();
+
+				foreach (var logEvent in logQueueCopy)
+				{
+					if (log != null)
+					{
+						if (hasLogged)
+							sb.AppendLine();
+						else
+							hasLogged = true;
+						sb.Append(logEvent.Message);
+					}
+					Log?.Invoke(this, logEvent);
+				}
+
+				log?.Append(sb.ToString(), true);
+			});
+		}
+
+		void Runner_Progress(object sender, UnitTestProgressEventArgs e)
+		{
+			var progressAmount = e.TestCaseCount > 0 ? (float)e.CompletedCount / e.TestCaseCount : 0;
+			var color = e.FailCount > 0 ? Colors.Red : e.WarningCount > 0 ? Colors.Yellow : Colors.Green;
+			asyncQueue.Add("progress", () =>
+			{
+				progress.Progress = progressAmount;
+				progress.Color = color;
+			});
+		}
+
+
+		void Runner_TestStarted(object sender, UnitTestTestEventArgs e)
+		{
+			var test = e.Test;
+			if (testMap.TryGetValue(test, out var treeItem))
+			{
+				if (lastResultMap.ContainsKey(test))
+					lastResultMap.TryRemove(test, out var result);
+				asyncQueue.Add(() =>
+				{
+					treeItem.Image = RunningStateImage;
+					tree.ReloadItem(treeItem, false);
+				});
+			}
+		}
+
+		IList<ITestResult> GetAllResults(ITest test)
+		{
+			if (allResultsMap.TryGetValue(test, out var list))
+				return list;
+
+			list = new List<ITestResult>();
+			if (allResultsMap.TryAdd(test, list))
+				return list;
+
+			if (allResultsMap.TryGetValue(test, out list))
+				return list;
+
+			throw new InvalidOperationException($"All results does not have an entry for {test.FullName}");
+		}
+
+		void Runner_TestFinished(object sender, UnitTestResultEventArgs e)
+		{
+			var test = e.Result.Test;
+			var result = e.Result;
+			if (testMap.TryGetValue(test, out var treeItem))
+			{
+				lastResultMap[test] = result;
+				GetAllResults(test).Add(result);
+
+				asyncQueue.Add(() =>
+				{
+					treeItem.Image = GetStateImage(result);
+					tree.ReloadItem(treeItem, false);
+				});
+			}
+		}
+
+		Image NotRunStateImage => notRunStateImage ?? (notRunStateImage = CreateImage(Colors.Silver, Colors.Black, null));
+
+		Image RunningStateImage => runningStateImage ?? (runningStateImage = CreateImage(Colors.Blue, Colors.White, "↻"));
+
+		Image GetStateImage(ITestResult result) => result != null ? GetStateImage(result.ResultState.Status) : NotRunStateImage;
+
+		Image GetStateImage(TestStatus status)
+		{
+			if (stateImages.TryGetValue(status, out var image))
+				return image;
+			image = CreateImage(status);
+			stateImages[status] = image;
+			return image;
+		}
+
+
+		Image CreateImage(TestStatus status)
+		{
+			switch (status)
+			{
+				case TestStatus.Warning:
+					return CreateImage(Colors.Yellow, Colors.Black, "!");
+				case TestStatus.Failed:
+					return CreateImage(Colors.Red, Colors.White, "✖");
+				case TestStatus.Inconclusive:
+					return CreateImage(Colors.Yellow, Colors.Black, "?");
+				case TestStatus.Skipped:
+					return CreateImage(Colors.Yellow, Colors.Black, "»");
+				case TestStatus.Passed:
+					return CreateImage(Colors.Green, Colors.White, "✓");
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		static Image CreateImage(Color color, Color textcolor, string text)
+		{
+			return Application.Instance.Invoke(() =>
+			{
+				var bmp = new Bitmap(32, 32, PixelFormat.Format32bppRgba);
+				using (var g = new Graphics(bmp))
+				{
+					var r = new RectangleF(Point.Empty, bmp.Size);
+					r.Inflate(-1, -1);
+					g.FillEllipse(color, r);
+					if (text != null)
+					{
+						var font = SystemFonts.Default(SystemFonts.Default().Size * 2);
+						var size = g.MeasureString(font, text);
+						g.DrawText(font, textcolor, r.Location + (PointF)(r.Size - size) / 2, text);
+					}
+				}
+				return bmp.WithSize(16, 16);
+			});
+		}
 
 		void RunTests(ITestFilter filter = null)
 		{
@@ -679,18 +1354,37 @@ namespace Eto.Test.Sections
 			Runner.RunTestsAsync(CreateFilter(filter));
 		}
 
-		ITestFilter CreateFilter(ITestFilter filter = null)
+		ITestFilter CreateFilter(ITestFilter testFilter = null)
 		{
-			var categoryFilter = new CategoryFilter();
-			categoryFilter.InnerFilter = filter;
+			var filters = GetFilters(testFilter).ToList();
+			if (filters.Count > 1)
+				return new AndFilter(filters);
 
-			if (includeCategories != null)
-				categoryFilter.IncludeCategories.AddRange(includeCategories);
-			if (excludeCategories != null)
-				categoryFilter.ExcludeCategories.AddRange(excludeCategories);
+			if (filters.Count == 0)
+				return TestFilter.Empty;
 
-			categoryFilter.Keyword = search.Text;
-			return categoryFilter;
+			return filters[0];
+		}
+
+		IEnumerable<ITestFilter> GetFilters(ITestFilter testFilter)
+		{
+			if (customFilter != null)
+				yield return customFilter;
+
+			if (IncludeCategories.Any())
+				yield return new CategoryFilter(IncludeCategories);
+
+			if (ExcludeCategories.Any())
+				yield return new NotFilter(new CategoryFilter(ExcludeCategories) { ChildCanMatch = false });
+
+			if (testFilter != null)
+				yield return testFilter;
+
+			if (StatusFilters.Any())
+				yield return new OrFilter(StatusFilters.OfType<ITestFilter>());
+
+			if (!string.IsNullOrWhiteSpace(search.Text))
+				yield return new KeywordFilter { Keywords = search.Text };
 		}
 
 		protected override void OnLoadComplete(EventArgs e)
@@ -715,25 +1409,39 @@ namespace Eto.Test.Sections
 		void PopulateTree()
 		{
 			var filter = CreateFilter();
-			Task.Factory.StartNew(() =>
+			Task.Run(() =>
 			{
-				var testSuites = Runner.GetTestSuites().Select(suite => ToTree(suite.Assembly, suite, filter)).Where(r => r != null).ToList();
-
+				var map = new Dictionary<object, UnitTestItem>();
+				var tests = Runner.GetTests();
+				// always show all categories
+				var categories = AvailableCategories ?? Runner.GetCategories(TestFilter.Empty).OrderBy(r => r);
+				var totalTestCount = Runner.GetTestCount(filter);
+				var testSuites = tests.Select(suite => ToTree(suite.Assembly, suite, filter, map)).Where(r => r != null);
 				var treeData = new TreeGridItem(testSuites);
-				Application.Instance.AsyncInvoke(() => tree.DataStore = treeData);
+				Application.Instance.AsyncInvoke(() =>
+				{
+					AvailableCategories = categories;
+					testCountLabel.Text = $"{totalTestCount} Tests";
+					testMap = map;
+					tree.DataStore = treeData;
+				});
 			});
 		}
 
 		class UnitTestItem : TreeGridItem
 		{
 			public string Text { get; set; }
+			public ITest Test { get; set; }
+			public Image Image { get; set; }
+			public ITestFilter Filter { get; set; }
 		}
 
-		TreeGridItem ToTree(Assembly assembly, ITest test, ITestFilter filter)
+		TreeGridItem ToTree(Assembly assembly, ITest test, ITestFilter filter, IDictionary<object, UnitTestItem> map)
 		{
 			// add a test
 			var name = test.Name;
-			if (test.IsSuite)
+			var isTestAssembly = test is TestAssembly;
+			if (isTestAssembly)
 			{
 				var an = new AssemblyName(Path.GetFileNameWithoutExtension(test.Name));
 				name = an.Name;
@@ -742,28 +1450,49 @@ namespace Eto.Test.Sections
 			if (!filter.Pass(test))
 				return null;
 
-			var item = new UnitTestItem { Text = name, Tag = new SingleTestFilter { Test = test, Assembly = assembly } };
+			lastResultMap.TryGetValue(test, out var result);
+			var worstChildResult = test.GetChildren()
+				.Select(t => lastResultMap.TryGetValue(t, out var r) ? r : null)
+				.Where(r => r != null)
+				.OrderByDescending(r => r.ResultState.Status)
+				.FirstOrDefault();
+			if (worstChildResult?.ResultState.Status > result?.ResultState.Status)
+				result = worstChildResult;
+
+			var item = new UnitTestItem
+			{
+				Text = name,
+				Test = test,
+				Image = GetStateImage(result),
+				Filter = new SingleTestFilter { Test = test, Assembly = assembly }
+			};
+			map.Add(test, item);
 			if (test.HasChildren)
 			{
 				item.Expanded = !(test is ParameterizedMethodSuite);
 				foreach (var child in test.Tests)
 				{
-					var treeItem = ToTree(assembly, child, filter);
+					var treeItem = ToTree(assembly, child, filter, map);
 					if (treeItem != null)
 						item.Children.Add(treeItem);
 				}
-				while (item.Children.Count == 1)
+				if (MergeSingleNodes)
 				{
-					// collapse test nodes
-					var child = item.Children[0] as UnitTestItem;
-					if (child.Children.Count == 0)
-						break;
-					if (!child.Text.StartsWith(item.Text, StringComparison.Ordinal))
-						item.Text += "." + child.Text;
-					else
-						item.Text = child.Text;
-					item.Children.Clear();
-					item.Children.AddRange(child.Children);
+					while (item.Children.Count == 1)
+					{
+						// collapse test nodes
+						var child = item.Children[0] as UnitTestItem;
+						if (child.Children.Count == 0)
+							break;
+						if (!child.Text.StartsWith(item.Text, StringComparison.Ordinal))
+						{
+							var separator = isTestAssembly ? ":" : ".";
+
+							child.Text = $"{item.Text}{separator}{child.Text}";
+						}
+						child.Expanded |= (test is TestAssembly);
+						item = child;
+					}
 				}
 				if (item.Children.Count == 0)
 					return null;
