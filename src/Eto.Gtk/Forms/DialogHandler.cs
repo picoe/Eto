@@ -12,7 +12,6 @@ namespace Eto.GtkSharp.Forms
 		public DialogHandler()
 		{
 			Control = new Gtk.Dialog("", null, Gtk.DialogFlags.DestroyWithParent);
-			Control.KeyPressEvent += Control_KeyPressEvent;
 
 			Resizable = false;
 		}
@@ -20,6 +19,8 @@ namespace Eto.GtkSharp.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control.KeyPressEvent += Connector.Control_KeyPressEvent;
+
 #if GTK2
 			Control.VBox.PackStart(WindowActionControl, false, true, 0);
 			Control.VBox.PackStart(WindowContentControl, true, true, 0);
@@ -208,6 +209,17 @@ namespace Eto.GtkSharp.Forms
 			});
 
 			return tcs.Task;
+		}
+
+		protected new DialogConnector Connector => (DialogConnector)base.Connector;
+
+		protected override WeakConnector CreateConnector() => new DialogConnector();
+
+		protected class DialogConnector : GtkWindowConnector
+		{
+			public new DialogHandler Handler => (DialogHandler)base.Handler;
+
+			internal void Control_KeyPressEvent(object o, Gtk.KeyPressEventArgs args) => Handler.Control_KeyPressEvent(o, args);
 		}
 	}
 }

@@ -468,11 +468,18 @@ namespace Eto.Wpf.Forms
 					Control.DragLeave += Control_DragLeave;
 					HandleEvent(Eto.Forms.Control.DragEnterEvent); // need DragEnter so it doesn't get called when going over children
 					break;
-
+				case Eto.Forms.Control.EnabledChangedEvent:
+					Control.IsEnabledChanged += Control_IsEnabledChanged;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		private void Control_IsEnabledChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			Callback.OnEnabledChanged(Widget, EventArgs.Empty);
 		}
 
 		private void Control_DragEnter(object sender, sw.DragEventArgs e)
@@ -728,10 +735,11 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public virtual void SetParent(Container parent)
+		public virtual void SetParent(Container oldParent, Container newParent)
 		{
-			if (parent == null && Widget.VisualParent != null)
+			if (newParent == null && Widget.VisualParent != null)
 			{
+				// don't use GetWpfContainer() extension as we don't want to traverse themed controls
 				var currentParent = Widget.VisualParent.Handler as IWpfContainer;
 				if (currentParent != null)
 					currentParent.Remove(ContainerControl);

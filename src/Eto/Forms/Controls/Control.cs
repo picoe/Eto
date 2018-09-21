@@ -671,6 +671,26 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected virtual void OnDragLeave(DragEventArgs e) => Properties.TriggerEvent(DragLeaveEvent, this, e);
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="EnabledChanged"/> event
+		/// </summary>
+		public const string EnabledChangedEvent = "Control.EnabledChanged";
+
+		/// <summary>
+		/// Occurs when the <see cref="Enabled"/> value is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> EnabledChanged
+		{
+			add { Properties.AddHandlerEvent(EnabledChangedEvent, value); }
+			remove { Properties.RemoveEvent(EnabledChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="EnabledChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnEnabledChanged(EventArgs e) => Properties.TriggerEvent(EnabledChangedEvent, this, e);
+
 		#endregion
 
 		static Control()
@@ -693,6 +713,7 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnDragOver(null), Control.DragOverEvent);
 			EventLookup.Register<Control>(c => c.OnDragEnter(null), Control.DragEnterEvent);
 			EventLookup.Register<Control>(c => c.OnDragLeave(null), Control.DragLeaveEvent);
+			EventLookup.Register<Control>(c => c.OnEnabledChanged(null), Control.EnabledChangedEvent);
 		}
 
 		/// <summary>
@@ -795,47 +816,21 @@ namespace Eto.Forms
 			set { Size = new Size(Size.Width, value); }
 		}
 
-		static readonly object EnabledChangedKey = new object();
-
 		/// <summary>
-		/// Occurs when the <see cref="Enabled"/> value is changed.
-		/// </summary>
-		public event EventHandler<EventArgs> EnabledChanged
-		{
-			add { Properties.AddEvent(EnabledChangedKey, value); }
-			remove { Properties.RemoveEvent(EnabledChangedKey, value); }
-		}
-
-		/// <summary>
-		/// Raises the <see cref="EnabledChanged"/> event.
-		/// </summary>
-		/// <param name="e">Event arguments</param>
-		protected virtual void OnEnabledChanged(EventArgs e)
-		{
-			Properties.TriggerEvent(EnabledChangedKey, this, e);
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> (or its children) are enabled and accept user input.
 		/// </summary>
 		/// <remarks>
-		/// Typically when a control is disabled, the user cannot do anything with the control (including for example, selecting
-		/// text in a text control).  Certain controls can have a 'Read Only' mode, such as <see cref="TextBox.ReadOnly"/> which
-		/// allows the user to select text, but not change its contents.
+		/// Typically when a control is disabled, the user cannot do anything with the control or any of its children.
+		/// Including for example, selecting text in a text control.
+		/// Certain controls can have a 'Read Only' mode, such as <see cref="TextBox.ReadOnly"/> which allow the user to 
+		/// select text, but not change its contents.
 		/// </remarks>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 		[DefaultValue(true)]
 		public virtual bool Enabled
 		{
-			get { return Handler.Enabled; }
-			set
-			{ 
-				if (value != Enabled)
-				{
-					Handler.Enabled = value;
-					OnEnabledChanged(EventArgs.Empty);
-				}
-			}
+			get => Handler.Enabled;
+			set => Handler.Enabled = value;
 		}
 
 		/// <summary>
@@ -889,8 +884,9 @@ namespace Eto.Forms
 			get { return Properties.Get<Container>(VisualParent_Key); }
 			internal set
 			{
+				var old = VisualParent;
 				Properties.Set(VisualParent_Key, value);
-				Handler.SetParent(value);
+				Handler.SetParent(old, value);
 			}
 		}
 
@@ -1391,6 +1387,10 @@ namespace Eto.Forms
 			/// Raises the DragLeave event.
 			/// </summary>
 			void OnDragLeave(Control widget, DragEventArgs e);
+			/// <summary>
+			/// Raises the EnabledChanged event.
+			/// </summary>
+			void OnEnabledChanged(Control widget, EventArgs e);
 		}
 
 		/// <summary>
@@ -1546,6 +1546,15 @@ namespace Eto.Forms
 				using (widget.Platform.Context)
 					widget.OnDragLeave(e);
 			}
+
+			/// <summary>
+			/// Raises the EnabledChanged event.
+			/// </summary>
+			public void OnEnabledChanged(Control widget, EventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnEnabledChanged(e);
+			}
 		}
 
 		#endregion
@@ -1692,8 +1701,9 @@ namespace Eto.Forms
 			/// <summary>
 			/// Called when the parent of the control has been set
 			/// </summary>
-			/// <param name="parent">New parent for the control, or null if the parent was removed</param>
-			void SetParent(Container parent);
+			/// <param name="oldParent">Old parent for the control, or null if the control is added</param>
+			/// <param name="newParent">New parent for the control, or null if the parent was removed</param>
+			void SetParent(Container oldParent, Container newParent);
 
 			/// <summary>
 			/// Gets the supported platform commands that can be used to hook up system functions to user defined logic

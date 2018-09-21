@@ -60,19 +60,24 @@ namespace Eto.Mac.Forms
 
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
-		public override bool Enabled { get; set; }
-
 		public override IEnumerable<Control> VisualControls => Widget.Controls;
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-			Enabled = true;
-		}
 
 		public virtual void Update()
 		{
 			InvalidateMeasure();
+		}
+
+		protected override bool ControlEnabled
+		{
+			get => base.ControlEnabled;
+			set
+			{
+				base.ControlEnabled = value;
+				foreach (var child in Widget.Controls)
+				{
+					child.GetMacViewHandler()?.SetEnabled(value);
+				}
+			}
 		}
 
 #if OSX

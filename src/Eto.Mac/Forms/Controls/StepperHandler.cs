@@ -84,12 +84,14 @@ namespace Eto.Mac.Forms.Controls
 			SetStepperEnabled();
 		}
 
-		static object Enabled_Key = new object();
-
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return Widget.Properties.Get(Enabled_Key, true); }
-			set { Widget.Properties.Set(Enabled_Key, value, SetStepperEnabled, true); }
+			get => base.ControlEnabled;
+			set
+			{
+				base.ControlEnabled = value;
+				SetStepperEnabled();
+			}
 		}
 
 		void SetStepperEnabled()

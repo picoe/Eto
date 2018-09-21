@@ -95,9 +95,9 @@ namespace Eto.Mac.Forms.Controls
 		public WeakReference WeakHandler { get; set; }
 
 		public object Handler
-		{ 
+		{
 			get { return WeakHandler.Target; }
-			set { WeakHandler = new WeakReference(value); } 
+			set { WeakHandler = new WeakReference(value); }
 		}
 
 		public override void ChangeColor(NSObject sender)
@@ -123,8 +123,8 @@ namespace Eto.Mac.Forms.Controls
 	}
 
 	public class TextAreaHandler<TControl, TCallback> : MacView<NSTextView, TControl, TCallback>, TextArea.IHandler, ITextAreaHandler
-		where TControl: TextArea
-		where TCallback: TextArea.ICallback
+		where TControl : TextArea
+		where TCallback : TextArea.ICallback
 	{
 		int suppressSelectionChanged;
 		int? ITextAreaHandler.lastCaretIndex { get; set; }
@@ -193,27 +193,27 @@ namespace Eto.Mac.Forms.Controls
 			switch (id)
 			{
 				case TextControl.TextChangedEvent:
-				/*Control.TextDidChange += (sender, e) => {
-					Widget.OnTextChanged (EventArgs.Empty);
-				};*/
+					/*Control.TextDidChange += (sender, e) => {
+						Widget.OnTextChanged (EventArgs.Empty);
+					};*/
 					break;
 				case TextArea.SelectionChangedEvent:
-				/*Control.DidChangeSelection += (sender, e) => {
-					var selection = this.Selection;
-					if (selection != lastSelection) {
-						Widget.OnSelectionChanged (EventArgs.Empty);
-						lastSelection = selection;
-					}
-				};*/
+					/*Control.DidChangeSelection += (sender, e) => {
+						var selection = this.Selection;
+						if (selection != lastSelection) {
+							Widget.OnSelectionChanged (EventArgs.Empty);
+							lastSelection = selection;
+						}
+					};*/
 					break;
 				case TextArea.CaretIndexChangedEvent:
-				/*Control.DidChangeSelection += (sender, e) => {
-					var caretIndex = Handler.CaretIndex;
-					if (caretIndex != lastCaretIndex) {
-						Handler.Widget.OnCaretIndexChanged (EventArgs.Empty);
-						lastCaretIndex = caretIndex;
-					}
-				};*/
+					/*Control.DidChangeSelection += (sender, e) => {
+						var caretIndex = Handler.CaretIndex;
+						if (caretIndex != lastCaretIndex) {
+							Handler.Widget.OnCaretIndexChanged (EventArgs.Empty);
+							lastCaretIndex = caretIndex;
+						}
+					};*/
 					break;
 				default:
 					base.AttachEvent(id);
@@ -229,9 +229,9 @@ namespace Eto.Mac.Forms.Controls
 			set { Widget.Properties.Set(ReadOnly_Key, value, () => Control.Editable = !value); }
 		}
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return Control.Selectable; }
+			get => Control.Selectable;
 			set
 			{
 				Control.Selectable = value;
@@ -444,7 +444,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public TextReplacements TextReplacements
 		{
-			get { 
+			get
+			{
 				var replacements = TextReplacements.None;
 				if (Control.AutomaticTextReplacementEnabled)
 					replacements |= TextReplacements.Text;
@@ -457,7 +458,7 @@ namespace Eto.Mac.Forms.Controls
 				return replacements;
 			}
 			set
-			{ 
+			{
 				Control.AutomaticTextReplacementEnabled = value.HasFlag(TextReplacements.Text);
 				Control.AutomaticQuoteSubstitutionEnabled = value.HasFlag(TextReplacements.Quote);
 				Control.AutomaticDashSubstitutionEnabled = value.HasFlag(TextReplacements.Dash);

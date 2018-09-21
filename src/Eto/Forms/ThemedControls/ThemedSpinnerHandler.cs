@@ -1,6 +1,5 @@
-using System;
-using Eto.Forms;
 using Eto.Drawing;
+using System;
 
 namespace Eto.Forms.ThemedControls
 {
@@ -46,7 +45,6 @@ namespace Eto.Forms.ThemedControls
 	public class ThemedSpinnerHandler : ThemedControlHandler<Drawable, Spinner, Spinner.ICallback>, Spinner.IHandler
 	{
 		UITimer timer;
-		bool enabled;
 		int numberOfElements;
 		int numberOfVisibleElements;
 		float currentValue;
@@ -141,6 +139,7 @@ namespace Eto.Forms.ThemedControls
 		protected override void Initialize()
 		{
 			Control = new Drawable();
+			Control.Enabled = false;
 			Control.Size = new Size(16, 16);
 			Control.Paint += HandlePaint;
 			timer = new UITimer();
@@ -174,7 +173,7 @@ namespace Eto.Forms.ThemedControls
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			if (enabled)
+			if (Enabled)
 				timer.Start();
 		}
 
@@ -185,7 +184,7 @@ namespace Eto.Forms.ThemedControls
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
-			if (enabled)
+			if (Enabled)
 				timer.Stop();
 		}
 
@@ -195,15 +194,15 @@ namespace Eto.Forms.ThemedControls
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 		public override bool Enabled
 		{
-			get { return enabled; }
+			get { return Control.Enabled; }
 			set
 			{
-				if (enabled != value)
+				if (Enabled != value)
 				{
-					enabled = value;
+					Control.Enabled = value;
 					if (Widget.Loaded)
 					{
-						if (enabled)
+						if (value)
 							timer.Start();
 						else
 							timer.Stop();
@@ -228,7 +227,7 @@ namespace Eto.Forms.ThemedControls
 				float alphaValue = (float)i / numberOfVisibleElements;
 				if (alphaValue > 1f)
 					alphaValue = 0f;
-				float alpha = enabled ? alphaValue : DisabledAlpha;
+				float alpha = Enabled ? alphaValue : DisabledAlpha;
 				var elementColor = new Color(ElementColor, alpha);
 
 				float rate = 5F / ElementSize;

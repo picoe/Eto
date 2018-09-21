@@ -11,10 +11,10 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class TextStepperHandler : TextBoxHandler<Gtk.SpinButton, TextStepper, TextStepper.ICallback>, TextStepper.IHandler
 	{
 		#if GTK2
-		static Gtk.Adjustment DefaultAdjustment = new Gtk.Adjustment(0, 0, 2, 1, 1, 1);
+		static Gtk.Adjustment DefaultAdjustment = new Gtk.Adjustment(0, 0, 2, 1, 1, 0);
 		#else
 		// in gtk3 the upper adjustment is not inclusive?? ugh
-		static Gtk.Adjustment DefaultAdjustment = new Gtk.Adjustment(0, 0, 3, 1, 1, 1);
+		static Gtk.Adjustment DefaultAdjustment = new Gtk.Adjustment(0, 0, 3, 1, 1, 0);
 		#endif
 		int disableNotification;
 

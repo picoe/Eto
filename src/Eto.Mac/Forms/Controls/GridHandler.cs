@@ -132,7 +132,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return font ?? (font = CellHandler.GetFont(View)); }
 			set
-			{ 
+			{
 				if (!ReferenceEquals(font, value))
 				{
 					font = value;
@@ -156,9 +156,9 @@ namespace Eto.Mac.Forms.Controls
 	}
 
 	public abstract class GridHandler<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, Grid.IHandler, IDataViewHandler, IGridHandler
-		where TControl: NSTableView
-		where TWidget: Grid
-		where TCallback: Grid.ICallback
+		where TControl : NSTableView
+		where TWidget : Grid
+		where TCallback : Grid.ICallback
 	{
 		ColumnCollection columns;
 
@@ -212,7 +212,7 @@ namespace Eto.Mac.Forms.Controls
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<TControl,TWidget,TCallback> Handler { get; set; }
+			public GridHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
 			public override void AddItem(GridColumn item)
 			{
@@ -269,7 +269,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void RemoveAllItems()
 			{
-				foreach (var col in Handler.Control.TableColumns ())
+				foreach (var col in Handler.Control.TableColumns())
 					Handler.Control.RemoveColumn(col);
 				if (Handler.Loaded)
 					Handler.UpdateColumns();
@@ -292,7 +292,7 @@ namespace Eto.Mac.Forms.Controls
 
 		static void HandleScrolled(ObserverActionEventArgs e)
 		{
-			var handler = (GridHandler<TControl,TWidget,TCallback>)e.Handler;
+			var handler = (GridHandler<TControl, TWidget, TCallback>)e.Handler;
 			handler.AutoSizeColumns(false);
 		}
 
@@ -398,7 +398,7 @@ namespace Eto.Mac.Forms.Controls
 		public virtual IEnumerable<int> SelectedRows
 		{
 			get
-			{ 
+			{
 				var rows = Control.SelectedRows;
 				if (rows != null && rows.Count > 0)
 					return rows.Select(r => (int)r);
@@ -493,12 +493,12 @@ namespace Eto.Mac.Forms.Controls
 			get { return (int)Control.RowCount; }
 		}
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return base.Enabled; }
+			get => base.ControlEnabled;
 			set
 			{
-				base.Enabled = value;
+				base.ControlEnabled = value;
 				foreach (var ctl in ColumnHandlers)
 				{
 					ctl.EnabledChanged(value);

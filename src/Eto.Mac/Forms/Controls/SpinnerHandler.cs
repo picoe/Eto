@@ -85,9 +85,9 @@ namespace Eto.Mac.Forms.Controls
 				Control.StopAnimation(Control);
 		}
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return enabled; }
+			get => enabled;
 			set
 			{
 				if (enabled != value)

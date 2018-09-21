@@ -401,8 +401,6 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override bool Enabled { get; set; }
-
 		public SplitterFixedPanel FixedPanel
 		{
 			get { return fixedPanel; }

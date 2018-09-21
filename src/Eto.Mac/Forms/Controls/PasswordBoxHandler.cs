@@ -41,9 +41,9 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 
 			public PasswordBoxHandler Handler
-			{ 
+			{
 				get { return (PasswordBoxHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 
 			public int MaxLength
@@ -113,22 +113,18 @@ namespace Eto.Mac.Forms.Controls
 
 		static readonly object Text_Key = new object();
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return base.Enabled; }
+			get => base.ControlEnabled;
 			set
 			{
-				if (value != Enabled)
+				if (!value)
+					Widget.Properties.Set(Text_Key, Text);
+				base.ControlEnabled = value;
+				if (value)
 				{
-					if (!value)
-						Widget.Properties.Set(Text_Key, Text);
-					base.Enabled = value;
-					if (value)
-					{
-						Text = Widget.Properties.Get<string>(Text_Key);
-						Widget.Properties.Set<string>(Text_Key, null);
-					}
-
+					Text = Widget.Properties.Get<string>(Text_Key);
+					Widget.Properties.Set<string>(Text_Key, null);
 				}
 			}
 		}

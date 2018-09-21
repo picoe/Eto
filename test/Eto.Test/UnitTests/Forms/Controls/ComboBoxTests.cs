@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
-	[TestFixture, Category("ui")]
+	[TestFixture]
 	public class ComboBoxTests
 	{
 		[Test]

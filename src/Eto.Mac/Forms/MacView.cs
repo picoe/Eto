@@ -93,6 +93,8 @@ namespace Eto.Mac.Forms
 		bool? ShouldHaveFocus { get; set; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
+
+		void SetEnabled(bool parentEnabled);
 	}
 
 	static class MacView
@@ -104,6 +106,8 @@ namespace Eto.Mac.Forms
 		public static readonly object NaturalAvailableSize_Key = new object();
 		public static readonly object NaturalSize_Key = new object();
 		public static readonly object NaturalSizeInfinity_Key = new object();
+		public static readonly object Enabled_Key = new object();
+		public static readonly object ActualEnabled_Key = new object();
 		public static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
 		public static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
 		public static readonly IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
@@ -342,8 +346,9 @@ namespace Eto.Mac.Forms
 			EventControl.AddTrackingArea(tracking);
 		}
 
-		public virtual void SetParent(Container parent)
+		public virtual void SetParent(Container oldParent, Container newParent)
 		{
+			SetEnabled(ParentEnabled);
 		}
 
 		public override void AttachEvent(string id)
@@ -763,7 +768,37 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public abstract bool Enabled { get; set; }
+		public bool Enabled
+		{
+			get => ControlEnabled;
+			set => SetEnabled(ParentEnabled, value);
+		}
+
+		protected bool ParentEnabled => Widget.VisualParent?.Enabled != false;
+
+		public void SetEnabled(bool parentEnabled) => SetEnabled(parentEnabled, null);
+
+		void SetEnabled(bool parentEnabled, bool? newValue)
+		{
+			var controlEnabled = ControlEnabled;
+
+			var enabled = Widget.Properties.Get<bool?>(MacView.Enabled_Key);
+			if (enabled == null || newValue != null)
+				Widget.Properties.Set<bool?>(MacView.Enabled_Key, enabled = newValue ?? controlEnabled);
+
+			var newEnabled = parentEnabled && enabled.Value;
+			if (controlEnabled != newEnabled)
+			{
+				ControlEnabled = newEnabled;
+				Callback.OnEnabledChanged(Widget, EventArgs.Empty);
+			}
+		}
+
+		protected virtual bool ControlEnabled
+		{
+			get => Widget.Properties.Get<bool?>(MacView.ActualEnabled_Key) ?? true;
+			set => Widget.Properties.Set<bool?>(MacView.ActualEnabled_Key, value);
+		}
 
 		public bool? ShouldHaveFocus
 		{
@@ -847,7 +882,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
-			if (Widget.Parent?.Loaded != false && !(Widget is Window))
+			if (Widget.VisualParent?.Loaded != false && !(Widget is Window))
 			{
 				// adding dynamically or loading without a parent (e.g. embedding into a native app)
 				AsyncQueue.Add(FireOnShown);
@@ -1016,12 +1051,15 @@ namespace Eto.Mac.Forms
 		{
 			if (!control.Visible)
 				return;
-			control.GetMacViewHandler()?.Callback.OnShown(control, EventArgs.Empty);
+
+			// don't use GetMacViewHandler() extension, as that will trigger OnShown for themed controls, which will
+			// trigger Shown multiple times for the same themed control
+			var handler = control.Handler as IMacViewHandler;
+			handler?.Callback.OnShown(control, EventArgs.Empty);
 
 			foreach (var ctl in control.VisualControls)
 			{
-				if (ctl.Visible)
-					FireOnShown(ctl);
+				FireOnShown(ctl);
 			}
 		}
 

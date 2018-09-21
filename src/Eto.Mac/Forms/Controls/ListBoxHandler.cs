@@ -187,12 +187,6 @@ namespace Eto.Mac.Forms.Controls
 			set;
 		}
 
-		public override bool Enabled
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-
 		protected override NSTableView CreateControl()
 		{
 			return new EtoListBoxTableView();

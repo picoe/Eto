@@ -282,7 +282,7 @@ namespace Eto.GtkSharp.Forms
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
 			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
 			Control.SetSizeRequest(-1, -1);
-			Control.Realized += Control_Realized;
+			Control.Realized += Connector.Control_Realized;
 		}
 
 		public override void AttachEvent(string id)
@@ -417,6 +417,8 @@ namespace Eto.GtkSharp.Forms
 				}
 				handler.currentLocation = null;
 			}
+
+			internal void Control_Realized(object sender, EventArgs e) => Handler?.Control_Realized(sender, e);
 		}
 
 		public MenuBar Menu

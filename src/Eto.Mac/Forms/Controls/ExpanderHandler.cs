@@ -100,13 +100,13 @@ namespace Eto.Mac.Forms.Controls
 			base.Initialize();
 		}
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get => base.Enabled;
+			get => disclosureButton.Enabled;
 			set
 			{
-				base.Enabled = value;
 				disclosureButton.Enabled = value;
+				base.ControlEnabled = value;
 			}
 		}
 

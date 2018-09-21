@@ -20,6 +20,10 @@ namespace Eto.GtkSharp.Forms
 		Color? SelectedBackgroundColor { get; }
 
 		void SetBackgroundColor();
+
+#if GTK2
+		void TriggerEnabled(bool oldEnabled, bool newEnabled, bool force = false);
+#endif
 	}
 
 	public static class GtkControlExtensions
@@ -61,9 +65,9 @@ namespace Eto.GtkSharp.Forms
 	}
 
 	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IGtkControl
-		where TControl: Gtk.Widget
-		where TWidget: Control
-		where TCallback: Control.ICallback
+		where TControl : Gtk.Widget
+		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		Size size;
 		Size asize;
@@ -101,7 +105,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				return ContainerControl.Visible ? ContainerControl.Allocation.Size.ToEto() : size; 
+				return ContainerControl.Visible ? ContainerControl.Allocation.Size.ToEto() : size;
 			}
 			set
 			{
@@ -120,16 +124,38 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 		}
-
 		public virtual bool Enabled
 		{
-			get { return Control.Sensitive; }
+			get
+			{
+#if GTK3
+				return ContainerControl.IsSensitive;
+#else
+				return ContainerControl.Sensitive && Widget.VisualParent?.Enabled != false;
+#endif
+			}
 			set
 			{
-				Control.Sensitive = value;
-					
+#if GTK3
+				ContainerControl.Sensitive = value;
+#else
+				TriggerEnabled(Enabled, value, true);
+#endif
 			}
 		}
+
+#if GTK2
+		public virtual void TriggerEnabled(bool oldEnabled, bool newEnabled, bool force)
+		{
+			if (force && newEnabled != ContainerControl.Sensitive)
+				ContainerControl.Sensitive = newEnabled;
+
+			newEnabled = force ? Enabled : newEnabled;
+
+			if (oldEnabled != newEnabled)
+				Callback.OnEnabledChanged(Widget, EventArgs.Empty);
+		}
+#endif
 
 		public virtual string Text
 		{
@@ -158,9 +184,9 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				#if GTK3
+#if GTK3
 				return backgroundColor;
-				#else
+#else
 				Color? col;
 				if (cachedBackgroundColor != null)
 					return cachedBackgroundColor.Value;
@@ -177,7 +203,7 @@ namespace Eto.GtkSharp.Forms
 				}
 				cachedBackgroundColor = col;
 				return col;
-				#endif
+#endif
 			}
 		}
 
@@ -253,7 +279,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return ContainerControl.Visible; }
 			set
-			{ 
+			{
 				ContainerControl.Visible = value;
 				ContainerControl.NoShowAll = !value;
 				if (value && Widget.Loaded)
@@ -263,13 +289,27 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public virtual void SetParent(Container parent)
+		public virtual void SetParent(Container oldParent, Container newParent)
 		{
-			/*if (parent == null)
+			if (newParent == null)
 			{
-				if (ContainerControl.Parent != null)
-					((Gtk.Container)ContainerControl.Parent).Remove(ContainerControl);
-			}*/
+#if GTK3
+				ContainerControl.Unparent();
+				var isSensitive = ContainerControl.Sensitive;
+				if (ContainerControl.IsSensitive != isSensitive)
+				{
+					// HACK: Gtk3 does not appear to properly propagate the INSENSITIVE state flag when removed from a parent
+					ContainerControl.Sensitive = !isSensitive;
+					ContainerControl.Sensitive = isSensitive;
+				}
+#else
+				// when removed from a parent that wasn't enabled, trigger the change if needed!
+				if (oldParent?.Enabled == false)
+				{
+					TriggerEnabled(false, true, false);
+				}
+#endif
+			}
 		}
 
 		protected override void Initialize()
@@ -299,7 +339,7 @@ namespace Eto.GtkSharp.Forms
 		{
 		}
 
-		void RealizedSetup()
+		protected virtual void RealizedSetup()
 		{
 			if (Cursor != null)
 				Control.GetWindow().Cursor = Cursor.ControlObject as Gdk.Cursor;
@@ -383,6 +423,11 @@ namespace Eto.GtkSharp.Forms
 				case Eto.Forms.Control.DragLeaveEvent:
 					HandleEvent(Eto.Forms.Control.DragOverEvent);
 					DragControl.DragLeave += Connector.HandleDragLeave;
+					break;
+				case Eto.Forms.Control.EnabledChangedEvent:
+#if GTK3
+					ContainerControl.StateFlagsChanged += Connector.HandleStateFlagsChangedForEnabled;
+#endif
 					break;
 				default:
 					base.AttachEvent(id);
@@ -518,10 +563,10 @@ namespace Eto.GtkSharp.Forms
 				get
 				{
 					if (context != null)
-						return context; 
+						return context;
 					context = new Gtk.IMContextSimple();
 
-					context.Commit += (o, args) => 
+					context.Commit += (o, args) =>
 					{
 						var handler = Handler;
 						if (handler == null || string.IsNullOrEmpty(args.Str))
@@ -623,7 +668,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				var h = DragArgs?.Data.Handler as DataObjectHandler;
 				h?.SetDataReceived(args);
-				
+
 				args.RetVal = true;
 			}
 
@@ -669,6 +714,21 @@ namespace Eto.GtkSharp.Forms
 				isDragOver = false;
 				Eto.Forms.Application.Instance.AsyncInvoke(() => DragArgs = null);
 			}
+
+#if GTK3
+			public virtual void HandleStateFlagsChangedForEnabled(object o, Gtk.StateFlagsChangedArgs args)
+			{
+				var h = Handler;
+				if (h == null)
+					return;
+				var wasSensitive = args.PreviousStateFlags.HasFlag(Gtk.StateFlags.Insensitive);
+				var isSensitive = h.ContainerControl.StateFlags.HasFlag(Gtk.StateFlags.Insensitive);
+				if (wasSensitive != isSensitive)
+				{
+					h.Callback.OnEnabledChanged(h.Widget, EventArgs.Empty);
+				}
+			}
+#endif
 		}
 
 		protected virtual Gtk.Widget FontControl

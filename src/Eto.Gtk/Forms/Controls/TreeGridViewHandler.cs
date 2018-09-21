@@ -582,7 +582,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				vscrollbar.Value = vscroll.Value;
 		}
 
-		public void ReloadItem(ITreeGridItem item)
+		public void ReloadItem(ITreeGridItem item, bool reloadChildren)
 		{
 			var tree = Tree;
 			var path = model.GetPathFromItem(item);
@@ -596,12 +596,15 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (item.Expandable)
 				{
 					tree.Model.EmitRowChanged(path, iter);
-					tree.Model.EmitRowHasChildToggled(path, iter);
-					tree.CollapseRow(path);
-					if (item.Expanded)
+					if (reloadChildren || item.Expanded != wasExpanded)
 					{
-						tree.ExpandRow(path, false);
-						collection.ExpandItems((ITreeGridStore<ITreeGridItem>)item, path);
+						tree.Model.EmitRowHasChildToggled(path, iter);
+						tree.CollapseRow(path);
+						if (item.Expanded)
+						{
+							tree.ExpandRow(path, false);
+							collection.ExpandItems((ITreeGridStore<ITreeGridItem>)item, path);
+						}
 					}
 				}
 				else if (wasExpanded)

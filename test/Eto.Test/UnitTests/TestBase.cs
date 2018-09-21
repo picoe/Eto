@@ -32,7 +32,7 @@ namespace Eto.Test.UnitTests
 	}
 
 	[System.AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-	sealed class RunOnUIAttribute : Attribute, IWrapSetUpTearDown, IWrapTestMethod
+	sealed class InvokeOnUIAttribute : Attribute, IWrapSetUpTearDown
 	{
 		public TestCommand Wrap(TestCommand command) => new RunOnUICommand(command);
 
@@ -487,9 +487,9 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
-		public static IEnumerable<Type> GetAllControlTypes()
+		public static IEnumerable<IControlTypeInfo<Control>> GetAllControlTypes()
 		{
-			return typeof(Control)
+			foreach (var type in typeof(Control)
 				.GetTypeInfo().Assembly.ExportedTypes
 				.Where(r =>
 				{
@@ -502,57 +502,150 @@ namespace Eto.Test.UnitTests
 						&& !ti.IsGenericType
 						&& ti.DeclaredConstructors.Any(c => c.GetParameters().Length == 0);
 				})
-				.OrderBy(r => r.FullName);
+					 .OrderBy(r => r.FullName))
+			{
+				yield return new ControlTypeInfo<Control>(type);
+			}
 		}
 
 
-		public static IEnumerable<Type> GetControlTypes()
+		public static IEnumerable<IControlTypeInfo<Control>> GetControlTypes()
 		{
 			return GetAllControlTypes()
 				.Where(r =>
 				{
-					var ti = r.GetTypeInfo();
+					var ti = r.Type.GetTypeInfo();
 					return !typeof(Window).GetTypeInfo().IsAssignableFrom(ti)
 						&& !typeof(TabPage).GetTypeInfo().IsAssignableFrom(ti);
 				});
 		}
 
-		public static IEnumerable<Type> GetPanelTypes()
+		public interface IControlTypeInfo<out T>
+			where T : Control
 		{
-			yield return typeof(Panel);
-			yield return typeof(Expander);
-			yield return typeof(GroupBox);
-			yield return typeof(TabPage);
-			yield return typeof(DocumentPage);
-			yield return typeof(Scrollable);
-			yield return typeof(Drawable);
+			Type Type { get; }
+			T CreateControl();
+			Container CreateContainer(Control control);
 		}
 
-		public static Panel CreatePanelType(Type panelType, out Control container)
+		public interface IContainerTypeInfo<out T> : IControlTypeInfo<T>
+			where T : Container
 		{
-			var panel = Activator.CreateInstance(panelType) as Panel;
-			container = panel;
-			if (panel is TabPage tabPage)
+			T CreateControl(Control content);
+			void SetContent(Container container, Control child);
+		}
+
+		public class ControlTypeInfo<T> : IControlTypeInfo<T>
+			where T : Control
+		{
+			Func<T> _createControl;
+			Type _type;
+			public ControlTypeInfo(Func<T> createControl)
 			{
-				tabPage.Text = "TabPage";
-				container = new TabControl { Pages = { tabPage } };
-			}
-			else if (panel is DocumentPage documentPage)
-			{
-				documentPage.Text = "DocumentPage";
-				container = new DocumentControl { Pages = { documentPage } };
-			}
-			else if (panel is GroupBox groupBox)
-			{
-				groupBox.Text = "GroupBox";
-			}
-			else if (panel is Expander expander)
-			{
-				expander.Header = "Expander";
-				expander.Expanded = true;
+				_createControl = createControl;
 			}
 
-			return panel;
+			public ControlTypeInfo(Type type)
+			{
+				_type = type;
+				_createControl = () => (T)Activator.CreateInstance(type);
+			}
+
+			public Type Type => _type ?? typeof(T);
+
+			public T CreateControl() => _createControl();
+
+			public virtual Container CreateContainer(Control control)
+			{
+				if (typeof(Container).GetTypeInfo().IsInstanceOfType(control))
+					return (Container)control;
+
+				return new Panel { Content = control };
+			}
+
+			public override string ToString() => Type.Name;
+		}
+
+		public static class ContainerTypeInfo
+		{
+			public static ContainerTypeInfo<T> New<T>(Action<T, Control> addChild, Func<T, Container> createContainer = null)
+				where T : Container, new()
+			{
+				return new ContainerTypeInfo<T>(() => new T(), addChild, createContainer);
+			}
+
+			public static ContainerTypeInfo<T> New<T>(Func<T> create, Action<T, Control> addChild, Func<T, Container> createContainer = null)
+				where T : Container
+			{
+				return new ContainerTypeInfo<T>(create, addChild, createContainer);
+			}
+		}
+
+		public class ContainerTypeInfo<T> : ControlTypeInfo<T>, IContainerTypeInfo<T>
+			where T : Container
+		{
+			Action<T, Control> _setContent;
+			Func<T, Container> _createContainer;
+
+			public ContainerTypeInfo(Func<T> create, Action<T, Control> setContent, Func<T, Container> createContainer = null)
+				: base(create)
+			{
+				_setContent = setContent;
+				_createContainer = createContainer;
+			}
+
+			public override Container CreateContainer(Control control)
+			{
+				if (_createContainer != null)
+					return _createContainer((T)control);
+				return base.CreateContainer(control);
+			}
+
+			public virtual T CreateControl(Control content)
+			{
+				var control = CreateControl();
+				SetContent(control, content);
+				return control;
+			}
+
+			public virtual void SetContent(Container container, Control child)
+			{
+				_setContent?.Invoke((T)container, child);
+			}
+		}
+
+		public static IEnumerable<IContainerTypeInfo<Container>> GetContainerTypes()
+		{
+			foreach (var type in GetPanelTypes())
+				yield return type;
+			yield return ContainerTypeInfo.New<TableLayout>((container, child) => container.Rows.Add(child));
+			yield return ContainerTypeInfo.New<StackLayout>((container, child) => container.Items.Add(child));
+			yield return ContainerTypeInfo.New<DynamicLayout>((container, child) => container.Add(child));
+		}
+
+		public static IEnumerable<IContainerTypeInfo<Panel>> GetPanelTypes()
+		{
+			yield return ContainerTypeInfo.New<Panel>((container, child) => container.Content = child);
+			yield return ContainerTypeInfo.New(
+				() => new Expander { Header = "Expander", Expanded = true },
+				(container, child) => container.Content = child
+			);
+			yield return ContainerTypeInfo.New(
+				() => new GroupBox { Text = "GroupBox" },
+				(container, child) => container.Content = child
+			);
+			yield return ContainerTypeInfo.New(
+				() => new TabPage { Text = "TabPage" },
+				(container, child) => container.Content = child,
+				container => new TabControl { Pages = { container } }
+			);
+			yield return ContainerTypeInfo.New(
+				() => new DocumentPage { Text = "DocumentPage" },
+				(container, child) => container.Content = child,
+				container => new DocumentControl { Pages = { container } }
+			);
+			yield return ContainerTypeInfo.New<Scrollable>((container, child) => container.Content = child);
+			yield return ContainerTypeInfo.New<Drawable>((container, child) => container.Content = child);
 		}
 	}
 }
