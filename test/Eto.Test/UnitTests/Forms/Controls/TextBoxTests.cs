@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Eto.Forms;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -127,6 +128,72 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(selection, textBox.Selection, "#7");
 				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#8");
 			});
+		}
+
+		[TestCaseSource(typeof(TextChangingEventArgsTests), nameof(TextChangingEventArgsTests.GetTextChangingCases))]
+		public void TextChangingShouldReturnCorrectResults(string oldText, string newText, string text, int rangeStart, int rangeLength)
+		{
+			Invoke(() =>
+			{
+				TextChangingEventArgs args = null;
+				var tb = new TextBox();
+				tb.Text = oldText;
+
+				tb.TextChanging += (sender, e) => args = e;
+				tb.Text = newText;
+
+				Assert.IsNotNull(args, "#1");
+				Assert.AreEqual(oldText, args.OldText, "#2");
+				Assert.AreEqual(newText, args.NewText, "#3");
+				Assert.AreEqual(text, args.Text, "#4");
+				Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#5");
+
+			});
+		}
+
+		[ManualTest]
+		[TestCaseSource(typeof(TextChangingEventArgsTests), nameof(TextChangingEventArgsTests.GetTextChangingCases))]
+		public void InsertingTextShouldFireTextChanging(string oldText, string newText, string text, int rangeStart, int rangeLength)
+		{
+			TextChangingEventArgs args = null;
+			Form(form =>
+			{
+				var textToSelect = oldText.Substring(rangeStart, rangeLength);
+				var tb = new TextBox
+				{
+					AutoSelectMode = AutoSelectMode.Never,
+					Text = oldText,
+					Selection = Range.FromLength(rangeStart, rangeLength)
+				};
+				tb.TextChanging += (sender, e) =>
+				{
+					args = e;
+					form.Close();
+				};
+				tb.Focus();
+
+				Assert.AreEqual(textToSelect, tb.SelectedText, "#1");
+
+				new Clipboard().Text = text;
+
+				var help = new Label
+				{
+					Text = $"Select '{textToSelect}', and paste '{text}' (which should be on the clipboard)"
+				};
+
+				form.Content = new StackLayout
+				{
+					Padding = 10,
+					Spacing = 10,
+					Items = { help, tb }
+				};
+			}, -1);
+
+			Assert.IsNotNull(args, "#2.1");
+			Assert.AreEqual(oldText, args.OldText, "#2.2");
+			Assert.AreEqual(newText, args.NewText, "#2.3");
+			Assert.AreEqual(text, args.Text, "#2.4");
+			Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#2.5");
 		}
 	}
 
