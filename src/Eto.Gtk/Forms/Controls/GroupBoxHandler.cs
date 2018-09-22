@@ -10,14 +10,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control = new Gtk.Frame ();
 		}
 
-		protected override Gtk.Widget FontControl
-		{
-			get { return Control.LabelWidget; }
-		}
+		protected override Gtk.Widget FontControl => Control.LabelWidget ?? new Gtk.Label();
 
 		public override string Text {
 			get { return Control.Label; }
-			set { Control.Label = value; }
+			set
+			{
+				var needsFont = Control.LabelWidget == null && Widget.Properties.ContainsKey(GtkControl.Font_Key);
+				Control.Label = value;
+				if (needsFont)
+					Control.LabelWidget?.SetFont(Font.ToPango());
+			}
 		}
 
 		public override Size ClientSize {

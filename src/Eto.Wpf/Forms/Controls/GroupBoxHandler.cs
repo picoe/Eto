@@ -20,7 +20,6 @@ namespace Eto.Wpf.Forms.Controls
 
 	public class GroupBoxHandler : WpfPanel<swc.GroupBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
-		Font font;
 		swc.Label Header { get; set; }
 		swc.AccessText AccessText { get { return (swc.AccessText)Header.Content; } }
 
@@ -41,12 +40,14 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
+		static readonly object Font_Key = new object();
+
 		public Font Font
 		{
-			get { return font; }
+			get => Widget.Properties.Get<Font>(Font_Key) ?? Widget.Properties.Create(Font_Key, () => Header.GetEtoFont());
 			set
 			{
-				font = Header.SetEtoFont(value, r => AccessText.TextDecorations = r);
+				Widget.Properties.Set(Font_Key, Header.SetEtoFont(value, r => AccessText.TextDecorations = r));
 				UpdatePreferredSize();
 			}
 		}

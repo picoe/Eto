@@ -257,5 +257,26 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.IsNull(reference.Target);
 			Assert.IsFalse(reference.IsAlive);
 		}
+
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlsShouldReturnAFont(IControlTypeInfo<Control> info)
+		{
+			Invoke(() =>
+			{
+				var control = info.CreateControl();
+				if (control is CommonControl commonControl)
+				{
+					Assert.IsNotNull(commonControl.Font);
+				}
+				else if (control is GroupBox groupBox)
+				{
+					Assert.IsNotNull(groupBox.Font);
+				}
+				else
+				{
+					Assert.Pass("Control does not have a font property");
+				}
+			});
+		}
 	}
 }
