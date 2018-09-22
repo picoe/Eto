@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
@@ -109,8 +109,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (!e.Cancel)
 				{
-					var tia = new TextChangingEventArgs(e.Text, Handler.Selection);
-					Handler.Callback.OnTextChanging(Handler.Widget, tia);
+					var h = Handler;
+					if (h == null)
+						return;
+					var tia = new TextChangingEventArgs(e.Text, h.Selection);
+					h.Callback.OnTextChanging(h.Widget, tia);
 					e.Cancel = tia.Cancel;
 				}
 			}
@@ -118,8 +121,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			[GLib.ConnectBefore]
 			public void HandleClipboardPasted(object sender, EventArgs e)
 			{
-				var tia = new TextChangingEventArgs(Clipboard.Text, Handler.Selection);
-				Handler.Callback.OnTextChanging(Handler.Widget, tia);
+				var h = Handler;
+				if (h == null)
+					return;
+				var tia = new TextChangingEventArgs(Clipboard.Text, h.Selection);
+				Handler.Callback.OnTextChanging(h.Widget, tia);
 				if (tia.Cancel)
 					NativeMethods.g_signal_stop_emission_by_name(Handler.Control.Handle, "paste-clipboard");
 			}
@@ -227,8 +233,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.Text; }
 			set
 			{
-				Control.Text = value ?? string.Empty;
-				lastSelection = null;
+				var oldText = Control.Text;
+				var newText = value ?? string.Empty;
+				if (newText != oldText)
+				{
+					Callback.OnTextChanging(Widget, new TextChangingEventArgs(oldText, newText));
+					Control.Text = newText;
+					lastSelection = null;
+				}
 			}
 		}
 

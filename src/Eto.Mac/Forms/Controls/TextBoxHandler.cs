@@ -188,5 +188,12 @@ namespace Eto.Mac.Forms.Controls
 		TextBox.ICallback IMacTextBoxHandler.Callback => Callback;
 
 		TextBox IMacTextBoxHandler.Widget => Widget;
+
+		protected override void TextChanging(string oldText, string newText)
+		{
+			base.TextChanging(oldText, newText);
+
+			Callback.OnTextChanging(Widget, new TextChangingEventArgs(oldText, newText));
+		}
 	}
 }

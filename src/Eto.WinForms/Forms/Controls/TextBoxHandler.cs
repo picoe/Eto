@@ -316,9 +316,15 @@ namespace Eto.WinForms.Forms.Controls
 			get { return base.Text; }
 			set
 			{
-				base.Text = value;
-				if (AutoSelectMode == AutoSelectMode.Never)
-					Selection = new Range<int>(value.Length, value.Length - 1);
+				var oldText = Text;
+				var newText = value ?? string.Empty;
+				if (newText != oldText)
+				{
+					Callback.OnTextChanging(Widget, new TextChangingEventArgs(oldText, newText));
+					base.Text = value;
+					if (AutoSelectMode == AutoSelectMode.Never)
+						Selection = new Range<int>(value.Length, value.Length - 1);
+				}
 			}
 		}
 
