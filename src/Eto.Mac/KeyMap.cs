@@ -263,18 +263,16 @@ namespace Eto.Mac
 			inverse.Add(Keys.Grave, "`");
 			inverse.Add(Keys.Minus, "-");
 			inverse.Add(Keys.Semicolon, ";");
-			inverse.Add(Keys.Up, ((char)NSKey.UpArrow).ToString());
-			inverse.Add(Keys.Down, ((char)NSKey.DownArrow).ToString());
-			inverse.Add(Keys.Right, ((char)NSKey.RightArrow).ToString());
-			inverse.Add(Keys.Left, ((char)NSKey.LeftArrow).ToString());
-			inverse.Add(Keys.Home, ((char)NSKey.Home).ToString());
-			inverse.Add(Keys.End, ((char)NSKey.End).ToString());
-			#if !UNIFIED
-			inverse.Add(Keys.Insert, ((char)NSKey.Insert).ToString());
-			#endif
-			inverse.Add(Keys.Delete, ((char)KeyCharacters.NSDeleteCharacter).ToString());
-			inverse.Add(Keys.Backspace, ((char)KeyCharacters.NSBackspaceCharacter).ToString());
-			inverse.Add(Keys.Tab, ((char)KeyCharacters.NSTabCharacter).ToString());
+			inverse.Add(Keys.Up, "\xF700");
+			inverse.Add(Keys.Down, "\xF701");
+			inverse.Add(Keys.Left, "\xF702");
+			inverse.Add(Keys.Right, "\xF703");
+			inverse.Add(Keys.Home, "\xF729");
+			inverse.Add(Keys.End, "\xF72B");
+			inverse.Add(Keys.Insert, "\xF727");
+			inverse.Add(Keys.Delete, "\x007f");
+			inverse.Add(Keys.Backspace, "\x0008");
+			inverse.Add(Keys.Tab, "\x0009");
 			inverse.Add(Keys.D0, "0");
 			inverse.Add(Keys.D1, "1");
 			inverse.Add(Keys.D2, "2");
@@ -285,18 +283,18 @@ namespace Eto.Mac
 			inverse.Add(Keys.D7, "7");
 			inverse.Add(Keys.D8, "8");
 			inverse.Add(Keys.D9, "9");
-			inverse.Add(Keys.F1, ((char)NSKey.F1).ToString());
-			inverse.Add(Keys.F2, ((char)NSKey.F2).ToString());
-			inverse.Add(Keys.F3, ((char)NSKey.F3).ToString());
-			inverse.Add(Keys.F4, ((char)NSKey.F4).ToString());
-			inverse.Add(Keys.F5, ((char)NSKey.F5).ToString());
-			inverse.Add(Keys.F6, ((char)NSKey.F6).ToString());
-			inverse.Add(Keys.F7, ((char)NSKey.F7).ToString());
-			inverse.Add(Keys.F8, ((char)NSKey.F8).ToString());
-			inverse.Add(Keys.F9, ((char)NSKey.F9).ToString());
-			inverse.Add(Keys.F10, ((char)NSKey.F10).ToString());
-			inverse.Add(Keys.F11, ((char)NSKey.F11).ToString());
-			inverse.Add(Keys.F12, ((char)NSKey.F12).ToString());
+			inverse.Add(Keys.F1, "\xF704");
+			inverse.Add(Keys.F2, "\xF705");
+			inverse.Add(Keys.F3, "\xF706");
+			inverse.Add(Keys.F4, "\xF707");
+			inverse.Add(Keys.F5, "\xF708");
+			inverse.Add(Keys.F6, "\xF709");
+			inverse.Add(Keys.F7, "\xF70A");
+			inverse.Add(Keys.F8, "\xF70B");
+			inverse.Add(Keys.F9, "\xF70C");
+			inverse.Add(Keys.F10, "\xF70D");
+			inverse.Add(Keys.F11, "\xF70E");
+			inverse.Add(Keys.F12, "\xF70F");
 			return inverse;
 		}
 	}
