@@ -768,7 +768,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public bool Enabled
+		public virtual bool Enabled
 		{
 			get => ControlEnabled;
 			set => SetEnabled(ParentEnabled, value);
