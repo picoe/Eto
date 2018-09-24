@@ -2,18 +2,17 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
+using Gtk;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
-		Font font;
 		readonly Gtk.EventBox box;
 
-		public override Gtk.Widget ContainerControl
-		{
-			get { return box; }
-		}
+		public override Gtk.Widget ContainerControl => box;
+
+		protected override Gtk.Widget FontControl => Control.Child ?? new Gtk.Label();
 
 		public CheckBoxHandler()
 		{
@@ -66,21 +65,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		public override string Text
 		{
 			get { return Control.Label.ToEtoMnemonic(); }
-			set { Control.Label = value.ToPlatformMnemonic(); }
-		}
-
-		public override Font Font
-		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(Control.Child));
-				return font;
-			}
-			set
-			{
-				font = value;
-				Control.Child.SetFont(font.ToPango());
+			set {
+				var needsFont = Control.Child == null && Widget.Properties.ContainsKey(GtkControl.Font_Key);
+				Control.Label = value.ToPlatformMnemonic();
+				if (needsFont)
+					Control.Child?.SetFont(Font.ToPango());
 			}
 		}
 

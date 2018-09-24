@@ -1,4 +1,4 @@
-﻿using Eto.Forms;
+using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using System;
@@ -76,17 +76,23 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				var oldValue = Control.AttributedStringValue;
-				var val = value ?? string.Empty;
-				if (val != oldValue.Value)
+				var newText = value ?? string.Empty;
+				var oldText = oldValue.Value;
+				if (newText != oldText)
 				{
+					TextChanging(oldText, newText);
 					if (HasFont)
-						Control.AttributedStringValue = Font.AttributedString(val, oldValue);
+						Control.AttributedStringValue = Font.AttributedString(newText, oldValue);
 					else
-						Control.AttributedStringValue = oldValue.ToMutable(val);
+						Control.AttributedStringValue = oldValue.ToMutable(newText);
 					
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
 			}
+		}
+
+		protected virtual void TextChanging(string oldText, string newText)
+		{
 		}
 
 		public virtual Color TextColor

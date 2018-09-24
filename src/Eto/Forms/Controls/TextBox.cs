@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 
 namespace Eto.Forms
@@ -328,6 +328,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnTextChanging(TextBox widget, TextChangingEventArgs e)
 			{
+				if (e.NeedsOldText)
+					e.SetOldText(widget.Text);
 				using (widget.Platform.Context)
 					widget.OnTextChanging(e);
 			}

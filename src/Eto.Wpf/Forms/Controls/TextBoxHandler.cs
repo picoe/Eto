@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using mwc = Xceed.Wpf.Toolkit;
@@ -235,7 +235,13 @@ namespace Eto.Wpf.Forms.Controls
 			get { return TextBox.Text; }
 			set
 			{
-				TextBox.Text = value;
+				var oldText = TextBox.Text;
+				var newText = value ?? string.Empty;
+				if (newText != oldText)
+				{
+					Callback.OnTextChanging(Widget, new TextChangingEventArgs(oldText, newText));
+					TextBox.Text = newText;
+				}
 				if (value != null && AutoSelectMode == AutoSelectMode.Never && !HasFocus)
 				{
 					TextBox.SelectionStart = value.Length;

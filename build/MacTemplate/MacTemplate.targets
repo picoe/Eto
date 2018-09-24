@@ -109,7 +109,7 @@
 		</ItemGroup>
 
 		<!-- copy executable files -->
-		<Copy SourceFiles="@(ExecutableFiles)" DestinationFolder="$(OutputMonoBundlePath)\%(RecursiveDir)" />
+		<Copy SourceFiles="@(ExecutableFiles)" DestinationFolder="$(OutputMonoBundlePath)\%(ExecutableFiles.DestinationSubDirectory)" />
 		<Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)\%(RecursiveDir)" SkipUnchangedFiles="true" />
 
 		<!--
