@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Mac.Forms.Controls;
 
@@ -65,7 +65,7 @@ namespace Eto.Mac.Forms
 			var handler = Handler as IMacTextBoxHandler;
 			if (handler != null)
 			{
-				var args = new TextChangingEventArgs(replacementString, affectedCharRange.ToEto());
+				var args = new TextChangingEventArgs(replacementString, affectedCharRange.ToEto(), true);
 				handler.Callback.OnTextChanging(handler.Widget, args);
 				if (args.Cancel)
 					return false;
