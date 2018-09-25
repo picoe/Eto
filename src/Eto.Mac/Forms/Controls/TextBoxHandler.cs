@@ -191,7 +191,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override bool TextChanging(string oldText, string newText)
 		{
-			var args = new TextChangingEventArgs(oldText, newText);
+			var args = new TextChangingEventArgs(oldText, newText, false);
 			Callback.OnTextChanging(Widget, args);
 			return args.Cancel;
 		}

@@ -24,7 +24,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCaseSource(nameof(GetTextChangingCases))]
 		public void OldAndNewTextShouldCalculateRangeAndText(string oldText, string newText, string text, int rangeStart, int rangeLength)
 		{
-			var args = new TextChangingEventArgs(oldText, newText);
+			var args = new TextChangingEventArgs(oldText, newText, false);
 
 			Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#1");
 			Assert.AreEqual(newText ?? string.Empty, args.NewText, "#2");
@@ -35,7 +35,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCaseSource(nameof(GetTextChangingCases))]
 		public void OldAndRangeShouldCalculateNewText(string oldText, string newText, string text, int rangeStart, int rangeLength)
 		{
-			var args = new TextChangingEventArgs(text, Range.FromLength(rangeStart, rangeLength), oldText);
+			var args = new TextChangingEventArgs(text, Range.FromLength(rangeStart, rangeLength), oldText, false);
 
 			Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#1");
 			Assert.AreEqual(newText ?? string.Empty, args.NewText, "#2");

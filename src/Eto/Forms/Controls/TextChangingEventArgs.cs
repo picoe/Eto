@@ -53,14 +53,21 @@ namespace Eto.Forms
 		public string NewText => newText ?? (newText = GetNewText());
 
 		/// <summary>
+		/// Gets a value indicating that the change was initiated by the user, false
+		/// </summary>
+		public bool FromUser { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.TextChangingEventArgs"/> class.
 		/// </summary>
 		/// <param name="text">Text to be replaced in the range.</param>
 		/// <param name="range">Range of text to be effected.</param>
-		public TextChangingEventArgs(string text, Range<int> range)
+		/// <param name="fromUser">Value indicating that the change was initiated from the user</param>
+		public TextChangingEventArgs(string text, Range<int> range, bool fromUser)
 		{
 			this.text = text ?? string.Empty;
 			this.range = range;
+			FromUser = fromUser;
 		}
 
 		/// <summary>
@@ -69,11 +76,13 @@ namespace Eto.Forms
 		/// <param name="text">Text to be replaced in the range.</param>
 		/// <param name="range">Range of text to be effected.</param>
 		/// <param name="oldText">Current text in the control.</param>
-		public TextChangingEventArgs(string text, Range<int> range, string oldText)
+		/// <param name="fromUser">Value indicating that the change was initiated from the user</param>
+		public TextChangingEventArgs(string text, Range<int> range, string oldText, bool fromUser)
 		{
 			this.text = text ?? string.Empty;
 			this.range = range;
 			this.oldText = oldText ?? string.Empty;
+			FromUser = fromUser;
 		}
 
 		/// <summary>
@@ -81,10 +90,12 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="newText">Old text for the control</param>
 		/// <param name="oldText">New text for the control</param>
-		public TextChangingEventArgs(string oldText, string newText)
+		/// <param name="fromUser">Value indicating that the change was initiated from the user</param>
+		public TextChangingEventArgs(string oldText, string newText, bool fromUser)
 		{
 			this.oldText = oldText ?? string.Empty;
 			this.newText = newText ?? string.Empty;
+			FromUser = fromUser;
 		}
 
 		Range<int> GetRange()

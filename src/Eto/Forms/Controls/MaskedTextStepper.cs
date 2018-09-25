@@ -340,7 +340,7 @@ namespace Eto.Forms
 		protected override void OnTextChanging(TextChangingEventArgs e)
 		{
 			base.OnTextChanging(e);
-			if (e.Cancel || ReadOnly || !Enabled)
+			if (e.Cancel || ReadOnly || !Enabled || !e.FromUser)
 				return;
 			var sel = e.Range;
 			var pos = sel.Start;
