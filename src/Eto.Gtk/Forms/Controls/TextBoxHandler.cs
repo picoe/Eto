@@ -237,7 +237,10 @@ namespace Eto.GtkSharp.Forms.Controls
 				var newText = value ?? string.Empty;
 				if (newText != oldText)
 				{
-					Callback.OnTextChanging(Widget, new TextChangingEventArgs(oldText, newText));
+					var args = new TextChangingEventArgs(oldText, newText);
+					Callback.OnTextChanging(Widget, args);
+					if (args.Cancel)
+						return;
 					Control.Text = newText;
 					lastSelection = null;
 				}

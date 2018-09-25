@@ -18,7 +18,7 @@ namespace Eto.Forms
 
 		internal bool NeedsOldText => oldText == null;
 
-		internal void SetOldText(string oldText) => this.oldText = oldText;
+		internal void SetOldText(string oldText) => this.oldText = oldText ?? string.Empty;
 
 		/// <summary>
 		/// Gets the text that is to be inserted at the given <see cref="Range"/>, or string.Empty if text will be deleted.
@@ -59,7 +59,7 @@ namespace Eto.Forms
 		/// <param name="range">Range of text to be effected.</param>
 		public TextChangingEventArgs(string text, Range<int> range)
 		{
-			this.text = text;
+			this.text = text ?? string.Empty;
 			this.range = range;
 		}
 
@@ -71,9 +71,9 @@ namespace Eto.Forms
 		/// <param name="oldText">Current text in the control.</param>
 		public TextChangingEventArgs(string text, Range<int> range, string oldText)
 		{
-			this.text = text;
+			this.text = text ?? string.Empty;
 			this.range = range;
-			this.oldText = oldText;
+			this.oldText = oldText ?? string.Empty;
 		}
 
 		/// <summary>
@@ -83,25 +83,26 @@ namespace Eto.Forms
 		/// <param name="oldText">New text for the control</param>
 		public TextChangingEventArgs(string oldText, string newText)
 		{
-			this.oldText = oldText;
-			this.newText = newText;
+			this.oldText = oldText ?? string.Empty;
+			this.newText = newText ?? string.Empty;
 		}
 
 		Range<int> GetRange()
 		{
-			var old = OldText;
+			var ot = OldText;
+			var nt = NewText;
 			int start = 0;
-			for (int i = 0; i < old.Length; i++)
+			for (int i = 0; i < ot.Length; i++)
 			{
-				if (i >= newText.Length || old[i] != newText[i])
+				if (i >= nt.Length || ot[i] != nt[i])
 					break;
 				start++;
 			}
 
-			int end = old.Length - 1;
-			for (int i = newText.Length - 1; i >= 0; i--)
+			int end = ot.Length - 1;
+			for (int i = nt.Length - 1; i >= 0; i--)
 			{
-				if (end == 0 || old[end] != newText[i])
+				if (end <= 0 || ot[end] != nt[i])
 					break;
 				end--;
 			}
@@ -121,7 +122,7 @@ namespace Eto.Forms
 		string GetText()
 		{
 			var r = Range;
-			if (r.Length() <= 0)
+			if (r.Length() < 0 || newText == null)
 				return string.Empty;
 			return newText.Substring(r.Start, newText.Length - (OldText.Length - r.End - 1) - r.Start);
 		}

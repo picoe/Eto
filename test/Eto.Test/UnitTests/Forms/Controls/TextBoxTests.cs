@@ -143,8 +143,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				tb.Text = newText;
 
 				Assert.IsNotNull(args, "#1");
-				Assert.AreEqual(oldText, args.OldText, "#2");
-				Assert.AreEqual(newText, args.NewText, "#3");
+				Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#2");
+				Assert.AreEqual(newText ?? string.Empty, args.NewText, "#3");
 				Assert.AreEqual(text, args.Text, "#4");
 				Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#5");
 
