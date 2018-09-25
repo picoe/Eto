@@ -1,0 +1,64 @@
+variables:
+  build.version: 2.5.0-ci-$(Date:yyyyMMdd)-$(Build.SourceVersion)
+  build.configuration: Release
+  build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version)
+
+trigger:
+  - master
+  - develop
+
+jobs:
+- job: Mac
+  pool:
+    vmImage: 'macOS-10.13'
+  
+  steps:
+  - task: msbuild@1
+    displayName: Build and Package
+    inputs: 
+      solution: build/Build.proj
+      msbuildArguments: $(build.arguments)
+
+  - task: CopyFiles@2
+    displayName: Copy nupkg
+    inputs:
+      contents: artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    displayName: Publish XamMac nupkg
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/nuget/$(build.configuration)
+      artifactName: nuget
+      publishLocation: container
+    
+- job: Windows
+  pool:
+    vmImage: 'VS2017-Win2016'
+  
+  steps:
+  - script: cinst gtksharp -y
+    displayName: Install GTK#
+  - task: msbuild@1
+    displayName: Build and Package
+    inputs: 
+      solution: build/Build.proj
+      msbuildArguments: $(build.arguments)
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish nupkg
+    inputs:
+      pathtoPublish: artifacts/nuget/$(build.configuration)
+      artifactName: nuget
+      publishLocation: container
+  - task: PublishBuildArtifacts@1
+    displayName: Publish tests
+    inputs:
+      pathtoPublish: artifacts/test/$(build.configuration)
+      artifactName: test
+      publishLocation: container
+  - task: PublishBuildArtifacts@1
+    displayName: Publish samples
+    inputs:
+      pathtoPublish: artifacts/samples/$(build.configuration)
+      artifactName: samples
+      publishLocation: container
