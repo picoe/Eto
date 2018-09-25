@@ -143,8 +143,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				tb.Text = newText;
 
 				Assert.IsNotNull(args, "#1");
-				Assert.AreEqual(oldText, args.OldText, "#2");
-				Assert.AreEqual(newText, args.NewText, "#3");
+				Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#2");
+				Assert.AreEqual(newText ?? string.Empty, args.NewText, "#3");
 				Assert.AreEqual(text, args.Text, "#4");
 				Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#5");
 
@@ -158,7 +158,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			TextChangingEventArgs args = null;
 			Form(form =>
 			{
-				var textToSelect = oldText.Substring(rangeStart, rangeLength);
+				var textToSelect = oldText?.Substring(rangeStart, rangeLength) ?? string.Empty;
 				var tb = new TextBox
 				{
 					AutoSelectMode = AutoSelectMode.Never,
@@ -190,8 +190,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			}, -1);
 
 			Assert.IsNotNull(args, "#2.1");
-			Assert.AreEqual(oldText, args.OldText, "#2.2");
-			Assert.AreEqual(newText, args.NewText, "#2.3");
+			Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#2.2");
+			Assert.AreEqual(newText ?? string.Empty, args.NewText, "#2.3");
 			Assert.AreEqual(text, args.Text, "#2.4");
 			Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#2.5");
 		}

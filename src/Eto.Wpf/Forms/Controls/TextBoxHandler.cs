@@ -123,7 +123,7 @@ namespace Eto.Wpf.Forms.Controls
 						clipboard = new Clipboard();
 					TextBox.PreviewTextInput += (sender, e) =>
 					{
-						var tia = new TextChangingEventArgs(e.Text, Selection);
+						var tia = new TextChangingEventArgs(e.Text, Selection, true);
 						Callback.OnTextChanging(Widget, tia);
 						e.Handled = tia.Cancel;
 					};
@@ -135,7 +135,7 @@ namespace Eto.Wpf.Forms.Controls
 						if (command == swi.ApplicationCommands.Cut || command == swi.ApplicationCommands.Delete)
 						{
 							var text = TextBox.SelectedText;
-							var tia = new TextChangingEventArgs(string.Empty, Selection);
+							var tia = new TextChangingEventArgs(string.Empty, Selection, true);
 							Callback.OnTextChanging(Widget, tia);
 							if (tia.Cancel)
 							{
@@ -147,7 +147,7 @@ namespace Eto.Wpf.Forms.Controls
 						else if (command == swi.ApplicationCommands.Paste)
 						{
 							var text = clipboard.Text;
-							var tia = new TextChangingEventArgs(text, Selection);
+							var tia = new TextChangingEventArgs(text, Selection, true);
 							Callback.OnTextChanging(Widget, tia);
 							e.Handled = tia.Cancel;
 						}
@@ -158,7 +158,7 @@ namespace Eto.Wpf.Forms.Controls
 								range = new Range<int>(command == swd.EditingCommands.Delete ? range.Start : range.Start - 1);
 							if (range.Start >= 0)
 							{
-								var tia = new TextChangingEventArgs(string.Empty, range);
+								var tia = new TextChangingEventArgs(string.Empty, range, true);
 								Callback.OnTextChanging(Widget, tia);
 								e.Handled = tia.Cancel;
 							}
@@ -177,7 +177,7 @@ namespace Eto.Wpf.Forms.Controls
 
 							if (end > start)
 							{
-								var tia = new TextChangingEventArgs(string.Empty, new Range<int>(start, end - 1));
+								var tia = new TextChangingEventArgs(string.Empty, new Range<int>(start, end - 1), true);
 								Callback.OnTextChanging(Widget, tia);
 								e.Handled = tia.Cancel;
 							}
@@ -197,7 +197,7 @@ namespace Eto.Wpf.Forms.Controls
 
 							if (end > start)
 							{
-								var tia = new TextChangingEventArgs(string.Empty, new Range<int>(start, end - 1));
+								var tia = new TextChangingEventArgs(string.Empty, new Range<int>(start, end - 1), true);
 								Callback.OnTextChanging(Widget, tia);
 								e.Handled = tia.Cancel;
 							}
@@ -206,7 +206,7 @@ namespace Eto.Wpf.Forms.Controls
 						{
 							// space doesn't trigger TextInput (which you'd expect) as it can be interpreted through IME
 							var text = " ";
-							var tia = new TextChangingEventArgs(text, Selection);
+							var tia = new TextChangingEventArgs(text, Selection, true);
 							Callback.OnTextChanging(Widget, tia);
 							e.Handled = tia.Cancel;
 						}
@@ -239,7 +239,10 @@ namespace Eto.Wpf.Forms.Controls
 				var newText = value ?? string.Empty;
 				if (newText != oldText)
 				{
-					Callback.OnTextChanging(Widget, new TextChangingEventArgs(oldText, newText));
+					var args = new TextChangingEventArgs(oldText, newText, false);
+					Callback.OnTextChanging(Widget, args);
+					if (args.Cancel)
+						return;
 					TextBox.Text = newText;
 				}
 				if (value != null && AutoSelectMode == AutoSelectMode.Never && !HasFocus)

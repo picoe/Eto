@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
@@ -284,7 +284,7 @@ namespace Eto.Forms
 				};
 				textBox.TextChanging += (sender, e) =>
 				{
-					e.Cancel = !e.Text.ToCharArray().Select(r => r.ToString()).All("0123456789abcdefABCDEF".Contains);
+					e.Cancel = e.FromUser && !e.Text.ToCharArray().Select(r => r.ToString()).All("0123456789abcdefABCDEF".Contains);
 				};
 				var colorBinding = textBox.Bind(c => c.TextColor, args, a => a.CellTextColor);
 				textBox.TextBinding.BindDataContext(ItemBinding.Convert(v => v.ToHex(ShowAlpha), v =>

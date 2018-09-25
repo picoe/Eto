@@ -112,7 +112,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					var h = Handler;
 					if (h == null)
 						return;
-					var tia = new TextChangingEventArgs(e.Text, h.Selection);
+					var tia = new TextChangingEventArgs(e.Text, h.Selection, true);
 					h.Callback.OnTextChanging(h.Widget, tia);
 					e.Cancel = tia.Cancel;
 				}
@@ -124,7 +124,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var h = Handler;
 				if (h == null)
 					return;
-				var tia = new TextChangingEventArgs(Clipboard.Text, h.Selection);
+				var tia = new TextChangingEventArgs(Clipboard.Text, h.Selection, true);
 				Handler.Callback.OnTextChanging(h.Widget, tia);
 				if (tia.Cancel)
 					NativeMethods.g_signal_stop_emission_by_name(Handler.Control.Handle, "paste-clipboard");
@@ -140,7 +140,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					deleting = true;
 					if (args.StartPos < args.EndPos)
 					{
-						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, Handler.Control.Text.Length - 1)));
+						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, Handler.Control.Text.Length - 1)), true);
 						Handler.Callback.OnTextChanging(Handler.Widget, tia);
 						if (tia.Cancel)
 							args.RetVal = true;
@@ -237,7 +237,10 @@ namespace Eto.GtkSharp.Forms.Controls
 				var newText = value ?? string.Empty;
 				if (newText != oldText)
 				{
-					Callback.OnTextChanging(Widget, new TextChangingEventArgs(oldText, newText));
+					var args = new TextChangingEventArgs(oldText, newText, false);
+					Callback.OnTextChanging(Widget, args);
+					if (args.Cancel)
+						return;
 					Control.Text = newText;
 					lastSelection = null;
 				}
