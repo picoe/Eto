@@ -13,8 +13,8 @@
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
     <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Deterministic>True</Deterministic>
-    <GenerateAssemblyVersion>True</GenerateAssemblyVersion>
+    <Deterministic Condition="$(Deterministic) == ''">True</Deterministic>
+    <GenerateAssemblyVersion Condition="$(GenerateAssemblyVersion) == ''">True</GenerateAssemblyVersion>
     <!-- RestoreProjectStyle will be supported in VS for Mac 7.4 -->
     <RestoreProjectStyle Condition="'$(RestoreProjectStyle)' == '' AND $(UsePackagesConfig) != 'True'">PackageReference</RestoreProjectStyle>
   </PropertyGroup>
