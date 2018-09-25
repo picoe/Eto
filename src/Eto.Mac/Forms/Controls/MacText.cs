@@ -80,7 +80,8 @@ namespace Eto.Mac.Forms.Controls
 				var oldText = oldValue.Value;
 				if (newText != oldText)
 				{
-					TextChanging(oldText, newText);
+					if (TextChanging(oldText, newText))
+						return;
 					if (HasFont)
 						Control.AttributedStringValue = Font.AttributedString(newText, oldValue);
 					else
@@ -91,8 +92,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected virtual void TextChanging(string oldText, string newText)
+		protected virtual bool TextChanging(string oldText, string newText)
 		{
+			return false;
 		}
 
 		public virtual Color TextColor
