@@ -11,19 +11,19 @@
     <ReferencePath Condition="$(ReferencePath) == '' and Exists('$(XamarinMacLibPath)')">$(XamarinMacLibPath)</ReferencePath>
     
     <ArtifactsDir Condition="$(BuildOutoutDir) == ''">$(BasePath)artifacts\</ArtifactsDir>
-    <ArtifactsNet45Dir Condition="$(ArtifactsNet45Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\net45\</ArtifactsNet45Dir>
-    <ArtifactsNetStandard10Dir Condition="$(ArtifactsNetStandard10Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\netstandard1.0\</ArtifactsNetStandard10Dir>
-    <ArtifactsNetStandard20Dir Condition="$(ArtifactsNetStandard20Dir) == ''">$(ArtifactsDir)\core\$(Configuration)\netstandard2.0\</ArtifactsNetStandard20Dir>
-    <ArtifactsModernDir Condition="$(ArtifactsModernDir) == ''">$(ArtifactsDir)\core\$(Configuration)\modern\</ArtifactsModernDir>
+    <ArtifactsNet45Dir Condition="$(ArtifactsNet45Dir) == ''">$(ArtifactsDir)core\$(Configuration)\net45\</ArtifactsNet45Dir>
+    <ArtifactsNetStandard10Dir Condition="$(ArtifactsNetStandard10Dir) == ''">$(ArtifactsDir)core\$(Configuration)\netstandard1.0\</ArtifactsNetStandard10Dir>
+    <ArtifactsNetStandard20Dir Condition="$(ArtifactsNetStandard20Dir) == ''">$(ArtifactsDir)core\$(Configuration)\netstandard2.0\</ArtifactsNetStandard20Dir>
+    <ArtifactsModernDir Condition="$(ArtifactsModernDir) == ''">$(ArtifactsDir)core\$(Configuration)\modern\</ArtifactsModernDir>
     <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <SourceDir Condition="$(SourceDir) == ''">$(BasePath)src\</SourceDir>
     <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
-    <NugetOutputDir Condition="$(NugetOutputDir) == ''">$(ArtifactsDir)\nuget\$(Configuration)\</NugetOutputDir>
+    <NugetOutputDir Condition="$(NugetOutputDir) == ''">$(ArtifactsDir)nuget\$(Configuration)\</NugetOutputDir>
     <AddinDir>$(SourceDir)\Addins\</AddinDir>
     <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Linux'">"mdtool"</mdtool>
     <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
     <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
-    <UtilitiesBasePath>$(ArtifactsDir)\obj</UtilitiesBasePath>
+    <UtilitiesBasePath>$(ArtifactsDir)obj</UtilitiesBasePath>
     
     <VersionInfoPropsFile>$(ArtifactsDir)obj\VersionInfo.props</VersionInfoPropsFile>
     

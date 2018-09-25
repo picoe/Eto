@@ -46,7 +46,7 @@
       Pattern='(?&lt;=&lt;AssemblyVersion\\s*[^&gt;]+?&gt;)[^&lt;]+(?=&lt;/AssemblyVersion&gt;)'
       Replacement='$(AssemblyVersion)' />
 
-    <FileUpdate Files="$(BasePath)\appveyor.yml"
+    <FileUpdate Files="$(BasePath)appveyor.yml"
       WarnOnNoUpdate="true"
       Pattern='((?&lt;=^version:\\s+)(.+?)(?=[.]\\{build\\}))|((?&lt;=BUILD_VERSION[=]\\s*)([^-]+?)(?=[-]ci))'
       Replacement='$(AssemblyVersionThreePart)' />
@@ -81,7 +81,7 @@
           <TemplateFiles Include="$(SourceDir)Addins\Eto.Addin.MonoDevelop\**\*.xpt.xml" />
           <TemplateFiles Include="$(SourceDir)Addins\Eto.Addin.MonoDevelop\Properties\Manifest.addin.xml" />
           <TemplateFiles Include="$(BasePath)**\packages.config" />
-          <TemplateFiles Include="$(MSBuildThisFileDirectory)\nuspec\**\*.nuspec" />
+          <TemplateFiles Include="$(MSBuildThisFileDirectory)nuspec\**\*.nuspec" />
 
       <ProjFiles Include="$(ProjFiles)" Condition="$(ProjFiles) != ''" />
           <ProjFiles Include="$(BasePath)**\*.csproj" />
@@ -134,13 +134,13 @@
   <Target Name="BuildHelpShfb" DependsOnTargets="Build">
     <PropertyGroup>
           <SHFBVersion>2017.12.30.2</SHFBVersion>
-      <SHFBPath>$(MSBuildThisFileDirectory)\..\artifacts\packages\EWSoftware.SHFB.$(SHFBVersion)\tools</SHFBPath>
-        <SHFBLib>$([MSBUILD]::Unescape($(SHFBPath)\MSBuild.Community.Tasks.dll))</SHFBLib>
+      <SHFBPath>$(MSBuildThisFileDirectory)..\artifacts\packages\EWSoftware.SHFB.$(SHFBVersion)\tools\</SHFBPath>
+        <SHFBLib>$([MSBUILD]::Unescape($(SHFBPath)MSBuild.Community.Tasks.dll))</SHFBLib>
       <SHFBROOT Condition=" '$(SHFBROOT)' == '' ">$(SHFBPath)</SHFBROOT>
     </PropertyGroup>
-      <Exec Command='nuget install EWSoftware.SHFB -OutputDirectory "$(MSBuildThisFileDirectory)\..\artifacts\packages"' Condition="! Exists('$(SHFBPath)')" />
+      <Exec Command='nuget install EWSoftware.SHFB -OutputDirectory "$(MSBuildThisFileDirectory)..\artifacts\packages"' Condition="! Exists('$(SHFBPath)')" />
 
-      <MSBuild Projects="$(MSBuildThisFileDirectory)\help\Help.shfbproj" Properties="Configuration=$(Configuration)" />
+      <MSBuild Projects="$(MSBuildThisFileDirectory)help\Help.shfbproj" Properties="Configuration=$(Configuration)" />
   </Target>
   
   <ItemGroup>
