@@ -38,12 +38,12 @@ namespace Eto.Forms
 	[Handler(typeof(TextBox.IHandler))]
 	public class TextBox : TextControl
 	{
-		static readonly object SuppressTextChangingKey = new object();
+		static readonly object SuppressTextChanging_Key = new object();
 
 		int SuppressTextChanging
 		{
-			get => Properties.Get<int>(SuppressTextChangingKey);
-			set => Properties.Set(SuppressTextChanging, value);
+			get => Properties.Get<int>(SuppressTextChanging_Key);
+			set => Properties.Set(SuppressTextChanging_Key, value);
 		}
 
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
