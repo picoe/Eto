@@ -52,9 +52,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="UnitTests\DataContextTests.cs" />
     <Compile Include="UnitTests\MenuBarTests.cs" />

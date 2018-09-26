@@ -86,9 +86,6 @@
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="DragDropConversions.cs" />
     <Compile Include="Drawing\CachedBitmapFrame.cs" />
     <Compile Include="Drawing\IconFrameHandler.cs" />

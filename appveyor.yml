@@ -4,8 +4,8 @@ install:
 - cinst gtksharp -y
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
-- set BUILD_VERSION=000%APPVEYOR_BUILD_NUMBER%
-- set BUILD_VERSION=2.5.0-build%BUILD_VERSION:~-4%
+- set BUILD_VERSION_NUMBER=000%APPVEYOR_BUILD_NUMBER%
+- set BUILD_VERSION=2.5.0-build%BUILD_VERSION_NUMBER:~-4%
 - msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% build\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 - msbuild -t:BuildAddins build\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 test: off

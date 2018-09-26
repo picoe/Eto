@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<PackageType>Template</PackageType>
 		<PackageId>Eto.Forms.Templates</PackageId>
-		<PackageVersion>2.5.0-alpha</PackageVersion>
+		<PackageVersion>2.5.0-dev</PackageVersion>
 		<Authors>Curtis Wensley</Authors>
 		<Description>Project and File templates for Eto.Forms</Description>
 		<Tags>cross-platform;gui;ui-framework;desktop;winforms;wpf;mac;osx;gtk;eto;eto.forms;dotnet-new</Tags>
@@ -18,6 +18,7 @@
 		<NoBuild>True</NoBuild>
 		<IncludeBuildOutput>False</IncludeBuildOutput>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<GenerateAssemblyVersion>False</GenerateAssemblyVersion>
 		<DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
 	</PropertyGroup>
 

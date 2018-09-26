@@ -54,6 +54,8 @@
     <Target Name="BuildPackage" DependsOnTargets="_GetAssemblyInfo">
 	    <MakeDir Directories="$(NupkgOutputDir)"/>
     	<PropertyGroup>
+          <BasePath>$(BasePath.TrimEnd('\'))</BasePath>
+          <NupkgOutputDir>$(NupkgOutputDir.TrimEnd('\'))</NupkgOutputDir>
 	        <BuildCommand>$(NuGetCommand) pack "$(NuspecPath)" -BasePath "$(BasePath)" -Properties "Configuration=$(Configuration);Platform=$(Platform);$(NugetBuildProperties)" $(NonInteractiveSwitch) -OutputDirectory "$(NupkgOutputDir)" $(NugetBuildOptions)</BuildCommand>
 	    </PropertyGroup>
         <Exec Command="$(BuildCommand)" />
