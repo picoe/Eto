@@ -45,9 +45,6 @@
     <Compile Include="Converters\StackLayoutConverter.cs" />
     <Compile Include="Converters\TableLayoutConverter.cs" />
     <Compile Include="Converters\TypeConverterConverter.cs" />
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\Eto\TypeHelper.cs">
       <Link>TypeHelper.cs</Link>
     </Compile>

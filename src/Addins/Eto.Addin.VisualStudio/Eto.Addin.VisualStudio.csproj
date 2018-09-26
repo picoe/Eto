@@ -105,8 +105,8 @@
     <Content Include="template.pkgdef">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\..\..\artifacts\nuget\$(Configuration)\Eto.Forms.Templates.2.5.0-alpha.nupkg">
-      <Link>Eto.Forms.Templates.2.5.0-alpha.nupkg</Link>
+    <Content Include="..\..\..\artifacts\nuget\$(Configuration)\Eto.Forms.Templates.2.5.0-dev.nupkg">
+      <Link>Eto.Forms.Templates.2.5.0-dev.nupkg</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Templates\File-FSharp\File.ico" />

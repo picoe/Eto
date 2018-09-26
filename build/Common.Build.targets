@@ -27,6 +27,50 @@
       </Code>
     </Task>
   </UsingTask>
+	 
+  <UsingTask TaskName="GenerateVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <Version ParameterType="System.String" Required="true" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Class" Language="cs">
+<![CDATA[
+    using System;
+    using System.IO;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Reflection;
+    using System.Diagnostics;
+    using System.Linq;
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
+    public class GenerateVersion : Task
+    {
+      [Output]
+      public string Version { get; set; }
+
+      public override bool Execute()
+      {
+        var currentDate = DateTime.Now;
+        var timeSpanDays = currentDate - new DateTime(2000, 01, 01);
+        var timeSpanSeconds = currentDate - DateTime.Today;
+
+        var numberOfDays = (int)timeSpanDays.TotalDays;
+        var numberOfSeconds = (int)(timeSpanSeconds.TotalSeconds / 2);
+        var versionString = Version.Replace(".*", "");
+            
+        var version = System.Version.Parse(versionString);
+            
+        Version = string.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, numberOfDays, numberOfSeconds);
+        
+        return true;
+      }
+    }
+]]></Code>
+    </Task>
+  </UsingTask>
+
   <Target Name="_EmbedReferencedAssemblies" Condition="$(EmbedReferences) != ''" AfterTargets="ResolveAssemblyReferences">
     <PropertyGroup>
       <EmbedDebugSymbols Condition="$(EmbedDebugSymbols) == ''">false</EmbedDebugSymbols>
@@ -87,5 +131,35 @@
     <!--
     <Message Text="%(Reference.Filename) - %(Reference.HintPath)" Importance="high" />
     -->
+  </Target>
+  
+  <ItemGroup Condition="$(GenerateAssemblyVersion) == 'True'">
+    <Compile Include="$(IntermediateOutputPath)VersionInfo.cs">
+      <Link>Properties\VersionInfo.cs</Link>
+      <Visible>false</Visible>
+    </Compile>
+    <Compile Include="$(SourceDir)Shared\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+      <Visible>false</Visible>
+    </Compile>
+  </ItemGroup>
+
+  <Target Name="_WriteVersion" BeforeTargets="BeforeBuild" Condition="$(GenerateAssemblyVersion) == 'True'">
+    <!-- Generate auto version number so:
+    a) we can use deterministic builds
+    b) VS on Mac won't break intellisense when strong naming the assemblies
+       see: https://github.com/mono/monodevelop/issues/4763
+    -->
+    <GenerateVersion Version="$(AssemblyVersion)">
+    	<Output TaskParameter="Version" PropertyName="AssemblyFileVersion" />
+    </GenerateVersion>
+
+    <ItemGroup>
+      <VersionInfo Include="[assembly: System.Reflection.AssemblyVersion(&quot;$(AssemblyVersion)&quot;)]" />
+      <VersionInfo Include="[assembly: System.Reflection.AssemblyFileVersion(&quot;$(AssemblyFileVersion)&quot;)]" />
+      <VersionInfo Include="[assembly: System.Reflection.AssemblyInformationalVersion(&quot;$(AssemblyInformationalVersion)&quot;)]" />
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)VersionInfo.cs" Overwrite="True" Lines="@(VersionInfo)" />
   </Target>
 </Project>

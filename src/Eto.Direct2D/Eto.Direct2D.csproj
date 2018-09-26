@@ -41,9 +41,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="2DConversions.cs" />
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />

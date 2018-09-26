@@ -55,11 +55,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", "E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{95227DFB-FD41-4709-BB54-3EA94C89C9C1}"
 	ProjectSection(SolutionItems) = preProject
-		..\build\Build.proj = ..\build\Build.proj
-		..\build\Build.props = ..\build\Build.props
-		..\build\Build.targets = ..\build\Build.targets
-		NuGet.Config = NuGet.Config
-		..\build\Utilities.targets = ..\build\Utilities.targets
+		build\Build.proj = build\Build.proj
+		src\NuGet.Config = src\NuGet.Config
+		build\Utilities.targets = build\Utilities.targets
+		.editorconfig = .editorconfig
+		build\Common.props = build\Common.props
+		build\Common.Build.props = build\Common.Build.props
+		build\Common.Build.targets = build\Common.Build.targets
+		appveyor.yml = appveyor.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk", "Eto.Gtk\Eto.Gtk.csproj", "{659873CA-9949-4353-B0AA-E0589D045584}"

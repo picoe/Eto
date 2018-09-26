@@ -14,7 +14,6 @@
     <OutputPath>..\..\artifacts\core\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs" />
     <Compile Include="..\Eto\TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>

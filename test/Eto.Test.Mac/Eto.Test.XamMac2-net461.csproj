@@ -61,9 +61,6 @@
     <Reference Include="Xamarin.Mac" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="UnitTests\RichTextAreaHandlerTests.cs" />
     <Compile Include="UnitTests\NativeParentWindowTests.cs" />

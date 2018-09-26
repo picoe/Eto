@@ -169,9 +169,6 @@
     <Compile Include="..\Eto.Wpf\Forms\Controls\ButtonHandler.cs">
       <Link>Forms\Controls\ButtonHandler.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Conversions.Xaml.cs" />
     <Compile Include="CustomControls\EditableTextBlock.cs">
       <SubType>Code</SubType>

@@ -12,9 +12,6 @@
     <OutputPath>..\..\artifacts\test\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\..\src\Eto\Helper.cs">
       <Link>Helper.cs</Link>
     </Compile>

@@ -270,9 +270,6 @@
     <Compile Include="IO\SystemIcons.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
     <Compile Include="Forms\ColorDialogHandler.cs" />
