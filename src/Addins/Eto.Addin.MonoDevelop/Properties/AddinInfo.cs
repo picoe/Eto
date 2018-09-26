@@ -5,7 +5,7 @@ using Mono.Addins.Description;
 [assembly:Addin(
 	"MonoDevelop", 
 	Namespace = "Eto.Addin",
-	Version = "2.4.0.0"
+	Version = "2.4.9999.0"
 )]
 
 [assembly:AddinName("Eto.Forms Support Addin")]

@@ -135,7 +135,11 @@
   
   <ItemGroup Condition="$(GenerateAssemblyVersion) == 'True'">
     <Compile Include="$(IntermediateOutputPath)VersionInfo.cs">
-      <Link>Properties/VersionInfo.cs</Link>
+      <Link>Properties\VersionInfo.cs</Link>
+      <Visible>false</Visible>
+    </Compile>
+    <Compile Include="$(SourceDir)Shared\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
       <Visible>false</Visible>
     </Compile>
   </ItemGroup>

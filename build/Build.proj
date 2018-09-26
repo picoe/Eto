@@ -31,6 +31,7 @@
       <Output TaskParameter="AssemblyVersion" PropertyName="AssemblyVersion" />
       <Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
       <Output TaskParameter="AssemblyVersionThreePart" PropertyName="AssemblyVersionThreePart" />
+      <Output TaskParameter="AssemblyVersionBeforeRelease" PropertyName="AssemblyVersionBeforeRelease" />
     </IncrementVersion>
     
     <Message Text="New Version: $(AssemblyVersion)" />
@@ -50,7 +51,17 @@
       WarnOnNoUpdate="true"
       Pattern='((?&lt;=^version:\\s+)(.+?)(?=[.]\\{build\\}))|((?&lt;=BUILD_VERSION[=]\\s*)([^-]+?)(?=[-]ci))'
       Replacement='$(AssemblyVersionThreePart)' />
-            
+
+    <FileUpdate Files="$(AddinDir)Eto.Addin.MonoDevelop\Properties\AddinInfo.cs"
+      WarnOnNoUpdate="true"
+      Pattern='(?&lt;=^\\s*Version\\s*=\\s*[&quot;])(.+?)(?=[&quot;]\\s*$)'
+      Replacement='$(AssemblyVersionBeforeRelease)' />
+
+    <FileUpdate Files="$(AddinDir)Eto.Addin.VisualStudio\source.extension.vsixmanifest"
+      WarnOnNoUpdate="true"
+      Pattern='(?&lt;=^\\s*&lt;Identity\\s+Id=&quot;Eto.Addin.VisualStudio&quot;.+?Version=&quot;)(.+?)(?=&quot;\\s+)'
+      Replacement='$(AssemblyVersionBeforeRelease)' />
+
     <PropertyGroup>
       <PackageFiles>$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj</PackageFiles>
     </PropertyGroup>

@@ -13,7 +13,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Shared\EnumerableExtensions.cs" />
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE.txt">

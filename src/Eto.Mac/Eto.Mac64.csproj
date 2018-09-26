@@ -124,9 +124,6 @@
     <Compile Include="Forms\Controls\MacButton.cs" />
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
     <Compile Include="Forms\MacModal.cs" />

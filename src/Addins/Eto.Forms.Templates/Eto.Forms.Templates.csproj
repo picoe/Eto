@@ -18,6 +18,7 @@
 		<NoBuild>True</NoBuild>
 		<IncludeBuildOutput>False</IncludeBuildOutput>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<GenerateAssemblyVersion>False</GenerateAssemblyVersion>
 		<DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
 	</PropertyGroup>
 

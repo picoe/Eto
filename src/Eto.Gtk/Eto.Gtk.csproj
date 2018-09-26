@@ -31,9 +31,6 @@
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>

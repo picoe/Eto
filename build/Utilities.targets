@@ -102,6 +102,7 @@ public class GetAssemblyInfo : AppDomainIsolatedTask
       <Replacement ParameterType="System.String" Required="true" />
       <WarnOnNoUpdate ParameterType="System.Boolean" />
       <IgnoreCase ParameterType="System.Boolean" />
+      <MultiLine ParameterType="System.Boolean" />
     </ParameterGroup>
     <Task>
       <Reference Include="System.Xml" />
@@ -144,10 +145,13 @@ public class FileUpdate : Task
   
   public bool IgnoreCase { get; set; }
   
+  public bool Multiline { get; set; }
+  
   public FileUpdate()
   {
     WarnOnNoUpdate = true;
     IgnoreCase = true;
+    Multiline = true;
   }
 
   static Encoding DetectEncoding(string filename)
@@ -168,6 +172,8 @@ public class FileUpdate : Task
     {
       var pattern = Extensions.FixParameter(Pattern);
       RegexOptions options = RegexOptions.None;
+      if (Multiline)
+        options |= RegexOptions.Multiline;
       if (IgnoreCase)
         options |= RegexOptions.IgnoreCase;
       
@@ -215,6 +221,7 @@ public class FileUpdate : Task
       <AssemblyVersion ParameterType="System.String" Output="true" />
       <AssemblyInformationalVersion ParameterType="System.String" Output="true" />
       <AssemblyVersionThreePart ParameterType="System.String" Output="true" />
+      <AssemblyVersionBeforeRelease ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
       <Reference Include="System.Xml" />
@@ -246,6 +253,9 @@ public class IncrementVersion : Task
   [Output]
   public string AssemblyVersionThreePart { get; set; }
 
+  [Output]
+  public string AssemblyVersionBeforeRelease { get; set; }
+
   public override bool Execute()
   {
     try
@@ -273,7 +283,16 @@ public class IncrementVersion : Task
           Math.Max(0, version.Revision) + Math.Max(0, inc.Revision)
         );
       }
-
+      
+      Version beforeVersion;
+      if (!hasSuffix)
+        beforeVersion = version;
+      else if (version.Minor > 0)
+        beforeVersion = new Version(version.Major, version.Minor - 1, 9999, 0);
+      else {
+        beforeVersion = new Version(version.Major - 1, 9999, 0, 0);
+      }
+      
       var assemblyString = string.Format("{0}.{1}.0.0", version.Major, version.Minor);
       
       var infoString = new StringBuilder(string.Format("{0}.{1}", version.Major, version.Minor));
@@ -294,6 +313,7 @@ public class IncrementVersion : Task
     
       AssemblyVersion = assemblyString.ToString();
       AssemblyInformationalVersion = infoString.ToString();
+      AssemblyVersionBeforeRelease = beforeVersion.ToString();
     }
     catch (Exception ex)
     {
