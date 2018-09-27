@@ -49,7 +49,12 @@
 
     <FileUpdate Files="$(BasePath)appveyor.yml"
       WarnOnNoUpdate="true"
-      Pattern='((?&lt;=^version:\\s+)(.+?)(?=[.]\\{build\\}))|((?&lt;=BUILD_VERSION[=]\\s*)([^-]+?)(?=[-]ci))'
+      Pattern='((?&lt;=^version:\\s+)(.+?)(?=[.]\\{build\\}))|((?&lt;=BUILD_VERSION[=]\\s*)([^-]+?)(?=[-]\w+))'
+      Replacement='$(AssemblyVersionThreePart)' />
+
+    <FileUpdate Files="$(BasePath)azure-pipelines.yml"
+      WarnOnNoUpdate="true"
+      Pattern='(?&lt;=^\\s*build.version:\\s+)([\\d.]+)(?=[-]\\w+)'
       Replacement='$(AssemblyVersionThreePart)' />
 
     <FileUpdate Files="$(AddinDir)Eto.Addin.MonoDevelop\Properties\AddinInfo.cs"
