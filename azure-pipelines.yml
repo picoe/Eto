@@ -1,5 +1,5 @@
 variables:
-  build.version: 2.5.0-ci-$(Build.DefinitionName)
+  build.version: 2.5.0-ci-$(Build.BuildId:rrrr)
   build.configuration: Release
   build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version)
 
