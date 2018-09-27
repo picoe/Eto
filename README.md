@@ -2,7 +2,7 @@ Eto.Forms
 =========
 ### A cross platform desktop and mobile user interface framework
 
-[![Build status](https://ci.appveyor.com/api/projects/status/rftjjnd9lq2rxc7h/branch/develop?svg=true)](https://ci.appveyor.com/project/cwensley/eto/branch/develop)
+[![Build Status](https://dev.azure.com/curtiswensley/Eto.Forms/_apis/build/status/picoe.Eto?branchName=develop)](https://dev.azure.com/curtiswensley/Eto.Forms/_apis/build/status/picoe.Eto?branchName=develop)
 [![forums](https://img.shields.io/badge/join-the%20forums-yellowgreen.svg)](http://groups.google.com/group/eto-forms)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/picoe/Eto)
 [![wiki](https://img.shields.io/badge/browse-the%20wiki-orange.svg)](https://github.com/picoe/Eto/wiki)
