@@ -30,6 +30,11 @@ jobs:
     inputs:
       contents: artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
       targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: CopyFiles@2
+    displayName: Copy MonoDevelop Addin
+    inputs:
+      contents: artifacts/addin/$(build.configuration)/net461/Eto.Addin.MonoDevelop*.mpack
+      targetFolder: $(Build.ArtifactStagingDirectory)
   - task: PublishBuildArtifacts@1
     displayName: Publish XamMac nupkg
     inputs:
@@ -39,7 +44,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: Publish MonoDevelop Addin
     inputs:
-      pathtoPublish: artifacts/addin/$(build.configuration)/net461/Eto.Addin.MonoDevelop*.mpack
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/addin/$(build.configuration)/net461
       artifactName: addins
       publishLocation: container
     
