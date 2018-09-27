@@ -19,6 +19,11 @@ jobs:
     inputs: 
       solution: build/Build.proj
       msbuildArguments: $(build.arguments)
+  - task: msbuild@1
+    displayName: Build MonoDevelop Addin
+    inputs:
+      solution: build/Build.proj
+      msbuildArguments: /t:BuildAddins
 
   - task: CopyFiles@2
     displayName: Copy nupkg
@@ -30,6 +35,12 @@ jobs:
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/nuget/$(build.configuration)
       artifactName: nuget
+      publishLocation: container
+  - task: PublishBuildArtifacts@1
+    displayName: Publish MonoDevelop Addin
+    inputs:
+      pathtoPublish: artifacts/addin/$(build.configuration)/net461/Eto.Addin.MonoDevelop*.mpack
+      artifactName: addins
       publishLocation: container
     
 - job: Windows
@@ -44,6 +55,12 @@ jobs:
     inputs: 
       solution: build/Build.proj
       msbuildArguments: $(build.arguments)
+
+  - task: msbuild@1
+    displayName: Build Visual Studio Addin
+    inputs:
+      solution: build/Build.proj
+      msbuildArguments: /t:BuildAddins
 
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
@@ -62,4 +79,10 @@ jobs:
     inputs:
       pathtoPublish: artifacts/samples/$(build.configuration)
       artifactName: samples
+      publishLocation: container
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Visual Studio Addin
+    inputs:
+      pathtoPublish: artifacts/addin/$(build.configuration)/VisualStudio/Eto.Addin.VisualStudio.vsix
+      artifactName: addins
       publishLocation: container
