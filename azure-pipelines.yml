@@ -1,5 +1,6 @@
 variables:
-  build.version: 2.5.0-ci-$(Build.BuildId:rrrr)
+  build.increment: $[counter('buildnumber', 10000)]
+  build.version: 2.5.0-ci-$(build.increment)
   build.configuration: Release
   build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version)
 
