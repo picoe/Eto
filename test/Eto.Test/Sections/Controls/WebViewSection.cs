@@ -381,7 +381,7 @@ namespace Eto.Test.Sections.Controls
 						dialog.MinimumSize = new Size(300, 0);
 
 					var layout = new DynamicLayout();
-					var textBox = new TextBox { Text = "http://google.com" };
+					var textBox = new TextBox { Text = "https://google.com" };
 					var goButton = new Button { Text = "Go" };
 					dialog.DefaultButton = goButton;
 					goButton.Click += (sender, e) => dialog.Close(true);
@@ -405,7 +405,7 @@ namespace Eto.Test.Sections.Controls
 					}
 				}
 				else
-					webView.Url = new Uri("http://google.com");
+					webView.Url = new Uri("https://google.com");
 			};
 			return control;
 		}
