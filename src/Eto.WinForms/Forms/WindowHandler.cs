@@ -32,6 +32,7 @@ namespace Eto.WinForms.Forms
 		bool clientWidthSet;
 		bool clientHeightSet;
 
+		public virtual bool IsAttached => false;
 		public override swf.Control ContainerContentControl
 		{
 			get { return content; }
@@ -82,6 +83,8 @@ namespace Eto.WinForms.Forms
 
 		protected override void Initialize()
 		{
+			if (IsAttached)
+				return;
 			Control.KeyPreview = !ApplicationHandler.BubbleKeyEvents;
 			Control.FormBorderStyle = DefaultWindowStyle;
 			resizable = Control.FormBorderStyle.IsResizable();
@@ -155,6 +158,8 @@ namespace Eto.WinForms.Forms
 
 		public override void OnLoadComplete(EventArgs e)
 		{
+			if (IsAttached)
+				return;
 			base.OnLoadComplete(e);
 
 			if ((!clientWidthSet || !clientHeightSet))// && Control.AutoSize)

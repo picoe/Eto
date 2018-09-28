@@ -79,6 +79,7 @@
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />
+    <Compile Include="Forms\NativeFormHandler.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="Win32.dpi.cs" />
     <Compile Include="WinConversions.cs" />
