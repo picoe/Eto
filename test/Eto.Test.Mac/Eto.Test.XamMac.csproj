@@ -132,7 +132,7 @@
       <HintPath>..\..\artifacts\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Portable.Xaml">
-      <HintPath>..\..\artifacts\packages\Portable.Xaml.0.21.0\lib\netstandard1.3\Portable.Xaml.dll</HintPath>
+      <HintPath>..\..\artifacts\packages\Portable.Xaml.0.23.0\lib\netstandard1.3\Portable.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\artifacts\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
