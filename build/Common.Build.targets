@@ -143,8 +143,26 @@
       <Visible>false</Visible>
     </Compile>
   </ItemGroup>
-
-  <Target Name="_WriteVersion" BeforeTargets="BeforeBuild" Condition="$(GenerateAssemblyVersion) == 'True'">
+  
+  <Target Name="_WriteVersion"
+          BeforeTargets="CoreCompile"
+          Condition="$(GenerateAssemblyVersion) == 'True'"
+          Inputs="$(MSBuildAllProjects);
+                  @(Compile);
+                  @(_CoreCompileResourceInputs);
+                  $(ApplicationIcon);
+                  $(AssemblyOriginatorKeyFile);
+                  @(ReferencePathWithRefAssemblies);
+                  @(CompiledLicenseFile);
+                  @(LinkResource);
+                  @(EmbeddedDocumentation);
+                  $(Win32Resource);
+                  $(Win32Manifest);
+                  @(CustomAdditionalCompileInputs);
+                  $(ResolvedCodeAnalysisRuleSet);
+                  @(AdditionalFiles);
+                  @(EmbeddedFiles)"
+          Outputs="$(IntermediateOutputPath)VersionInfo.cs">
     <!-- Generate auto version number so:
     a) we can use deterministic builds
     b) VS on Mac won't break intellisense when strong naming the assemblies
