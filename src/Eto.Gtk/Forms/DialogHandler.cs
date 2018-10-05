@@ -137,7 +137,8 @@ namespace Eto.GtkSharp.Forms
 						(btcontainer as Gtk.HeaderBar).PackStart(negativeButtons[i].ToNative());
 				}
 
-				(btcontainer as Gtk.HeaderBar).ShowCloseButton = false;
+				if (btcontainer is Gtk.HeaderBar)
+					(btcontainer as Gtk.HeaderBar).ShowCloseButton = false;
 #endif
 
 				btcontainer.ShowAll();
@@ -149,7 +150,10 @@ namespace Eto.GtkSharp.Forms
 					btcontainer.Hide();
 #if GTKCORE
 				else
-					(btcontainer as Gtk.HeaderBar).ShowCloseButton = true;
+				{
+					if (btcontainer is Gtk.HeaderBar)
+						(btcontainer as Gtk.HeaderBar).ShowCloseButton = true;
+				}
 #endif
 			}
 		}
