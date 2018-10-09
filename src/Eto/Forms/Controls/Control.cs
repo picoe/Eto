@@ -1094,7 +1094,7 @@ namespace Eto.Forms
 					var window = c as Window;
 					if (window != null)
 						return window;
-					c = c.Parent;
+					c = c.VisualParent;
 				}
 				return Handler.GetNativeParentWindow();
 			}
