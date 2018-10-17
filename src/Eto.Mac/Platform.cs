@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.IO;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.IO;
@@ -227,7 +228,13 @@ namespace Eto.Mac
 			get
 			{
 				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-				return assembly.Location.StartsWith(NSBundle.MainBundle.BundlePath, StringComparison.Ordinal);
+
+				var assemblyDir = Path.GetDirectoryName(assembly.Location);
+				// location will be empty when embedded via mkbundle, ensure bundlepath is an .app bundle
+				if (string.IsNullOrEmpty(assemblyDir))
+					return NSBundle.MainBundle?.BundlePath.EndsWith(".app", StringComparison.Ordinal) == true;
+
+				return NSBundle.MainBundle != null && assembly.Location.StartsWith(NSBundle.MainBundle.BundlePath, StringComparison.Ordinal);
 			}
 		}
 
