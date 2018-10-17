@@ -556,8 +556,8 @@ namespace Eto.Forms
 		/// <summary>
 		/// Refreshes the specified item and all its children, keeping the selection if not part of the refreshed nodes
 		/// </summary>
-		/// <param name="item">Item to refresh</param>
-		public void ReloadItem(ITreeGridItem item) => ReloadItem(item, false);
+		/// <param name="item">Item to refresh, including its children</param>
+		public void ReloadItem(ITreeGridItem item) => ReloadItem(item, true);
 
 		/// <summary>
 		/// Refreshes the specified item and optionally all of its children, keeping the selection if not part of the refreshed nodes
