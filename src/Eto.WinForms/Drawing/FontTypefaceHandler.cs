@@ -5,19 +5,19 @@ namespace Eto.WinForms.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<sd.FontStyle, FontTypeface>, FontTypeface.IHandler
 	{
-		public FontTypefaceHandler (sd.FontStyle style)
+		string name;
+
+		public FontTypefaceHandler(sd.FontStyle style)
 		{
-			this.Control = style;
-			Name = this.FontStyle.ToString ().Replace (',', ' ');
+			Control = style;
 		}
 
-		public string Name { get; set; }
+		public string Name => name ?? (name = GetName());
 
 		public string LocalizedName => Name;
 
-		public FontStyle FontStyle
-		{
-			get { return Control.ToEtoStyle (); }
-		}
+		public FontStyle FontStyle => Control.ToEtoStyle();
+
+		string GetName() => FontStyle.ToString().Replace(",", string.Empty);
 	}
 }

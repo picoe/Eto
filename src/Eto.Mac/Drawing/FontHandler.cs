@@ -138,9 +138,15 @@ namespace Eto.Mac.Drawing
 
 		#if OSX
 		NSFontTraitMask? traits;
+		[Obsolete]
 		public static NSFont CreateFont(FontFamilyHandler familyHandler, float size, NSFontTraitMask traits, int weight = 5)
 		{
-			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, weight, size);
+			return CreateFont(familyHandler.MacName, size, traits, weight);
+		}
+
+		public static NSFont CreateFont(string familyName, nfloat size, NSFontTraitMask traits, int weight = 5)
+		{
+			var font = NSFontManager.SharedFontManager.FontWithFamily(familyName, traits, weight, size);
 			if (font == null)
 			{
 				if (traits.HasFlag(NSFontTraitMask.Italic))
@@ -153,7 +159,7 @@ namespace Eto.Mac.Drawing
 					italicTransform.TransformStruct = Matrix.FromSkew(0, kRotationForItalicText).ToCG();
 					fontTransform.AppendTransform(italicTransform);
 					traits &= ~NSFontTraitMask.Italic;
-					font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, 5, size);
+					font = NSFontManager.SharedFontManager.FontWithFamily(familyName, traits, 5, size);
 					if (font != null)
 					{
 						font = NSFont.FromDescription(font.FontDescriptor, fontTransform);
@@ -172,7 +178,7 @@ namespace Eto.Mac.Drawing
 #if OSX
 			var familyHandler = (FontFamilyHandler)family.Handler;
 			traits = style.ToNS() & familyHandler.TraitMask;
-			var font = CreateFont(familyHandler, size, traits.Value);
+			var font = CreateFont(familyHandler.MacName, size, traits.Value);
 
 			if (font == null || font.Handle == IntPtr.Zero)
 				throw new ArgumentOutOfRangeException(string.Empty, string.Format(CultureInfo.CurrentCulture, "Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
