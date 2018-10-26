@@ -532,6 +532,8 @@ namespace Eto.Test.Sections
 			}
 		}
 
+		public bool ShowOutput { get; set; }
+
 		public event EventHandler<UnitTestLogEventArgs> Log;
 
 		public event EventHandler<UnitTestProgressEventArgs> Progress;
@@ -685,6 +687,10 @@ namespace Eto.Test.Sections
 				progressArgs.AddResult(result);
 				Progress?.Invoke(this, progressArgs);
 
+				// ITestListener.ShowOutput is not currently called, we need to redirect console and trace output
+				if (ShowOutput && !string.IsNullOrEmpty(result.Output))
+					WriteLog(result.Output);
+
 				if (result.AssertionResults.Count > 0)
 				{
 					foreach (var assertion in result.AssertionResults)
@@ -708,7 +714,8 @@ namespace Eto.Test.Sections
 
 		void ITestListener.TestOutput(TestOutput output)
 		{
-			if (!string.IsNullOrEmpty(output.Text))
+			// not currently called, we need to redirect console and trace output
+			if (ShowOutput && !string.IsNullOrEmpty(output.Text))
 				WriteLog(output.Text);
 		}
 	}
@@ -1095,11 +1102,14 @@ namespace Eto.Test.Sections
 				}
 			};
 
+			var showOuputCheckBox = new CheckBox { Text = "Show Output" };
+			showOuputCheckBox.CheckedBinding.Bind(runner, r => r.ShowOutput);
+
 			var buttons = new TableLayout
 			{
 				Padding = new Padding(10),
 				Spacing = new Size(5, 5),
-				Rows = { new TableRow(startButton, stopButton, null, testCountLabel) }
+				Rows = { new TableRow(startButton, stopButton, showOuputCheckBox, null, testCountLabel) }
 			};
 
 			var statusChecks = new CheckBoxList

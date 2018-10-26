@@ -95,7 +95,7 @@ namespace Eto.Mac.Drawing
 		public FontTypeface GetFace(NSFont font, NSFontTraitMask? traits)
 		{
 			var postScriptName = font.FontDescriptor.PostscriptName;
-			var faceHandler = Typefaces.Select(r => r.Handler).OfType<FontTypefaceHandler>().FirstOrDefault(r => r.PostScriptName == postScriptName && r.Traits == traits);
+			var faceHandler = Typefaces.Select(r => r.Handler).OfType<FontTypefaceHandler>().FirstOrDefault(r => r.PostScriptName == postScriptName && (traits == null || r.Traits == traits));
 			if (faceHandler == null)
 				faceHandler = new FontTypefaceHandler(font, traits);
 			return new FontTypeface(Widget, faceHandler);

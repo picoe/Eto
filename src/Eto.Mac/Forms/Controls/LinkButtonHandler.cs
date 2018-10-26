@@ -62,12 +62,13 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool AcceptsFirstResponder()
 			{
-				return Handler.Enabled;
+				return Handler?.Enabled == true;
 			}
 
 			public override void DrawRect(CGRect dirtyRect)
 			{
-				if (Handler.HasFocus)
+				var h = Handler;
+				if (h != null && h.HasFocus)
 				{
 					NSGraphicsContext.CurrentContext.SaveGraphicsState();
 					GraphicsExtensions.SetFocusRingStyle(NSFocusRingPlacement.RingOnly);

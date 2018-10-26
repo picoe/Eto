@@ -264,12 +264,14 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Resize(NSSplitView splitView, CGSize oldSize)
 			{
-				Handler.ResizeSubviews(oldSize);
+				Handler?.ResizeSubviews(oldSize);
 			}
 
 			public override nfloat ConstrainSplitPosition(NSSplitView splitView, nfloat proposedPosition, nint subviewDividerIndex)
 			{
 				var h = Handler;
+				if (h == null)
+					return proposedPosition;
 				var totalSize = splitView.IsVertical ? splitView.Bounds.Width : splitView.Bounds.Height;
 
 				if (h.Panel1?.Visible != true)
@@ -297,6 +299,8 @@ namespace Eto.Mac.Forms.Controls
 			public override void DidResizeSubviews(NSNotification notification)
 			{
 				var h = Handler;
+				if (h == null)
+					return;
 				var subview = h.Control.Subviews[0];
 				if (subview != null && h.position != null && h.initialPositionSet && h.Widget.Loaded && h.Control.Window != null) // && h.Widget.ParentWindow != null && h.Widget.ParentWindow.Loaded)
 				{

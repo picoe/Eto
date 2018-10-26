@@ -2,6 +2,10 @@ using System;
 using Eto.Forms;
 using NUnit.Framework;
 using Eto.Drawing;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -92,8 +96,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			{
 				string val;
 				var richText = new RichTextArea();
-				// winforms always returns \n instead of \r\n.. why??
-				var nl = Platform.Instance.IsWinForms ? "\n" : Environment.NewLine;
+				var nl = "\n";
 
 				if (!Platform.Instance.IsWpf)
 				{
@@ -104,6 +107,391 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				richText.Text = val = $"This is{nl}some text{nl}";
 				Assert.AreEqual(val, richText.Text, "#2");
+			});
+		}
+
+		[Test]
+		public void SelectionRangeShouldIncludeNewlines()
+		{
+			Invoke(() =>
+			{
+				Range<int> range;
+				var richText = new RichTextArea();
+
+				var text = "Hello\nThere\nThis is some text";
+
+				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+
+				richText.Text = text;
+				Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+
+				richText.Selection = range = GetRange("There");
+				Assert.AreEqual("There", richText.SelectedText, "#2.2");
+				Assert.AreEqual(range, richText.Selection, "#2.1");
+
+				richText.Selection = range = GetRange("is some text");
+				Assert.AreEqual("is some text", richText.SelectedText, "#3.2");
+				Assert.AreEqual(range, richText.Selection, "#3.1");
+			});
+		}
+
+		public class FontVariantInfo
+		{
+			public string FamilyName { get; set; }
+			public string FaceName { get; set; }
+			public bool WithBold { get; set; }
+			public bool WithItalic { get; set; }
+			public string FontNameSuffix { get; set; }
+
+			string _rtfFontName;
+			Lazy<FontFamily> _family;
+			Lazy<FontTypeface> _typeface;
+			Lazy<FontTypeface> _baseTypeface;
+			public FontFamily Family => _family.Value;
+			public FontTypeface Typeface => _typeface.Value;
+			public FontTypeface BaseTypeface => _baseTypeface.Value;
+
+			public FontVariantInfo()
+			{
+				_family = new Lazy<FontFamily>(GetFamily);
+				_typeface = new Lazy<FontTypeface>(() => GetTypeface(Family, WithBold, WithItalic));
+				_baseTypeface = new Lazy<FontTypeface>(() => GetTypeface(Family, false, false));
+			}
+
+			public bool IsFound => Family != null && Typeface != null;
+
+			FontFamily GetFamily()
+			{
+				var family = Fonts.AvailableFontFamilies.FirstOrDefault(r => r.Name == FamilyName);
+				if (FaceName != null)
+				{
+					var face = GetTypeface(family, WithBold, WithItalic);
+					if (face == null)
+					{
+						var fontName = $"{FamilyName} {FaceName}";
+						FamilyName = fontName;
+						FaceName = null;
+
+						// some faces may have a separate family for the font, instead of grouping it into the same family.
+						family = Fonts.AvailableFontFamilies.FirstOrDefault(r => r.Name == fontName);
+					}
+				}
+				return family;
+			}
+
+			FontTypeface GetTypeface(FontFamily family, bool bold, bool italic)
+			{
+				var name = FaceName;
+				if (bold)
+					name = name == null ? "Bold" : name + " Bold";
+				if (italic)
+					name = name == null ? "Italic" : name + " Italic";
+
+				if (name == null)
+					return family?
+						.Typefaces
+						.FirstOrDefault(r => IsRegular(r.Name));
+
+				// gar, some fonts have "Regular Italic", some have "Italic", etc.
+				var typeface = family?.Typefaces.FirstOrDefault(r => r.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+				if (typeface == null && FaceName == null)
+				{
+					var thename = "Regular " + name;
+					typeface = family?.Typefaces.FirstOrDefault(r => r.Name.Equals(thename, StringComparison.CurrentCultureIgnoreCase));
+				}
+
+				if (typeface == null && FaceName == null)
+				{
+					var thename = "Normal " + name;
+					typeface = family?.Typefaces.FirstOrDefault(r => r.Name.Equals(thename, StringComparison.CurrentCultureIgnoreCase));
+				}
+
+				return typeface;
+			}
+
+
+			bool IsRegular(string name)
+			{
+				return (name.Equals("Regular", StringComparison.OrdinalIgnoreCase))
+					|| (name.Equals("Normal", StringComparison.OrdinalIgnoreCase))
+					|| (name.Equals("None", StringComparison.CurrentCultureIgnoreCase)); // winforms
+			}
+
+			bool IsBoldOrItalic(string name)
+			{
+				return (WithBold && !WithItalic && name.Equals("Bold", StringComparison.OrdinalIgnoreCase))
+					|| (WithItalic && !WithBold && (
+						name.Equals("Italic", StringComparison.OrdinalIgnoreCase)
+						|| name.Equals("Regular Italic", StringComparison.OrdinalIgnoreCase)
+						|| name.Equals("Normal Italic", StringComparison.OrdinalIgnoreCase))
+						)
+					|| (WithBold && WithItalic && name.Equals("Bold Italic", StringComparison.OrdinalIgnoreCase));
+			}
+
+			public string RtfFontName
+			{
+				get
+				{
+					if (_rtfFontName != null)
+						return _rtfFontName;
+					var typeface = BaseTypeface;
+					if (typeface == null || IsRegular(typeface.Name) || IsBoldOrItalic(typeface.Name))
+						return _rtfFontName = $"{Family.Name}{FontNameSuffix}";
+
+					return _rtfFontName = $"{Family.Name} {typeface.Name}{FontNameSuffix}";
+				}
+				set
+				{
+					_rtfFontName = value;
+				}
+			}
+
+			public string RegexFontName
+			{
+				get
+				{
+					// apparently each platform likes to write RTF differently
+					// macOS writes "Klavika-MediumItalic", with \i rtf command
+					// windows writes "Klavika Medium", with \i rtf command
+					var sb = new StringBuilder();
+
+					var familyName = Family.Name.Replace(" ", "[ ]?");
+
+					// some fonts are written to rtf without spaces or hyphens.
+					// e.g. on macOS:
+					//   "Arial Narrow" family is written as "ArialNarrow"
+					//   "Arial Black" family is written as "Arial-Black"
+					//
+					// I think it is using the postscript name from the font, perhaps that needs to be exposed in Eto..
+					var familyWithFaceName = $"({Regex.Replace(Family.Name, "[ -]", "[ -]?")})";
+
+					void AddEntry(string entry)
+					{
+						if (sb.Length > 0)
+							sb.Append("|");
+						sb.Append(entry);
+					}
+
+					void AddTypeface(string name)
+					{
+						var typefaceName = name.Replace(" ", "[ ]?");
+						var typefaceNameOption = "";
+						// regular/normal we don't write the name
+						if (BaseTypeface != null && IsRegular(name))
+						{
+							typefaceNameOption = "?";
+							AddEntry(familyWithFaceName);
+						}
+						// bold, italic, bold+italic
+						if (IsBoldOrItalic(name))
+						{
+							typefaceNameOption = "?"; // if it is in RTF, it's okay.. but if not, still okay
+						}
+						AddEntry($"({familyName}([ -]{typefaceName}){typefaceNameOption}{FontNameSuffix})");
+					}
+
+					if (BaseTypeface != null)
+						AddTypeface(BaseTypeface.Name);
+					if (Typeface != null)
+						AddTypeface(Typeface.Name);
+					else
+						AddEntry(familyWithFaceName);
+
+					return sb.ToString();
+				}
+			}
+
+
+			public override string ToString()
+			{
+				var sep = FaceName != null ? "-" : "";
+				return $"Font: {FamilyName}{sep}{FaceName}, HasBold: {WithBold}, HasItalic: {WithItalic}";
+			}
+		}
+
+		public static IEnumerable<FontVariantInfo> GetFontVariants()
+		{
+			var arialBaseName = EtoEnvironment.Platform.IsMac ? "MT" : null;
+
+			yield return new FontVariantInfo { FamilyName = "Arial", FontNameSuffix = arialBaseName };
+			yield return new FontVariantInfo { FamilyName = "Arial", FontNameSuffix = arialBaseName, WithBold = true };
+			yield return new FontVariantInfo { FamilyName = "Arial", FontNameSuffix = arialBaseName, WithItalic = true };
+			yield return new FontVariantInfo { FamilyName = "Arial", FontNameSuffix = arialBaseName, WithBold = true, WithItalic = true };
+
+			yield return new FontVariantInfo { FamilyName = "Arial", FaceName = "Narrow" };
+			yield return new FontVariantInfo { FamilyName = "Arial", FaceName = "Narrow", WithItalic = true };
+
+			yield return new FontVariantInfo { FamilyName = "Arial", FaceName = "Black" };
+
+			yield return new FontVariantInfo { FamilyName = "BolsterBold", WithBold = true };
+
+			if (EtoEnvironment.Platform.IsMac)
+			{
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue" };
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", WithBold = true };
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", WithItalic = true };
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", WithBold = true, WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", RtfFontName = "HelveticaNeue-UltraLight", FaceName = "UltraLight" };
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "UltraLight", WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "Thin" };
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "Thin", WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "Light" };
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "Light", WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "Medium" };
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "Medium", WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "Condensed Bold" };
+
+				yield return new FontVariantInfo { FamilyName = "Helvetica Neue", FaceName = "Condensed Black" };
+			}
+
+			if (EtoEnvironment.Platform.IsWindows)
+			{
+				yield return new FontVariantInfo { FamilyName = "Segoe UI" };
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", WithBold = true };
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", WithItalic = true };
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", WithBold = true, WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Black" };
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Black", WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Light" };
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Light", WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Semibold" };
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Semibold", WithItalic = true };
+
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Semilight" };
+				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Semilight", WithItalic = true };
+			}
+
+			yield return new FontVariantInfo { FamilyName = "Klavika" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithItalic = true };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true, WithItalic = true };
+
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light", WithItalic = true };
+
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", WithItalic = true };
+		}
+
+		/// <summary>
+		/// Tests font variants that should be part of the family name in RTF.
+		/// </summary>
+		/// <remarks>
+		/// In WPF, font variants by default are not saved correctly.
+		/// This tests to ensure that the font variants are saved properly in the rtf family name.
+		/// </remarks>
+		[TestCaseSource(nameof(GetFontVariants))]
+		public void FontVariantsShouldCorrectlySaveToRtf(FontVariantInfo info)
+		{
+			Invoke(() =>
+			{
+				if (Platform.Instance.IsGtk)
+					Assert.Inconclusive("Gtk does not support RTF format");
+
+				if (!info.IsFound)
+					Assert.Inconclusive("Font cannot be found on this system");
+
+				var text = "This is some Font Variant text.";
+				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+
+				var richText = new RichTextArea();
+				richText.Text = text;
+				Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+
+				richText.Selection = GetRange("Font Variant");
+				Assert.AreEqual("Font Variant", richText.SelectedText, "#2");
+
+				if (info.BaseTypeface != null)
+				{
+					// test base typeface (non-bold/italic)
+					richText.SelectionTypeface = info.BaseTypeface;
+					Assert.AreEqual(info.BaseTypeface.Name, richText.SelectionTypeface.Name, "#3.1");
+					Assert.AreEqual(info.BaseTypeface.Name, richText.SelectionFont.Typeface.Name, "#3.2");
+				}
+				else
+				{
+					richText.SelectionTypeface = info.Typeface;
+				}
+				Assert.AreEqual(info.Family.Name, richText.SelectionFamily.Name, "#3.3");
+				Assert.AreEqual(info.Family.Name, richText.SelectionFont.FamilyName, "#3.4");
+
+				// setting these should not affect font name in RTF as it uses \b and \i to specify that
+				if (info.WithBold)
+					richText.SelectionBold = true;
+
+				if (info.WithItalic)
+					richText.SelectionItalic = true;
+
+				// test it is using the right typeface
+				Assert.AreEqual(info.Typeface.Name, richText.SelectionTypeface.Name, "#4.1");
+				Assert.AreEqual(info.Typeface.Name, richText.SelectionFont.Typeface.Name, "#4.2");
+
+				// ensure the generated RTF contains the correct font variant name
+				var rtf = richText.Rtf;
+				Console.WriteLine($"Generated RTF:");
+				Console.WriteLine(rtf);
+				var reg = $@"(?<={{\\fonttbl.*)\\f\d+[^}};]* ({info.RegexFontName});";
+				Assert.IsTrue(Regex.IsMatch(rtf, reg), $"#5 - Variant '{info}' does not exist in RTF:\n{rtf}");
+			});
+
+		}
+
+		/// <summary>
+		/// Tests font variants that should be part of the family name in RTF.
+		/// </summary>
+		/// <remarks>
+		/// In WPF, font variants by default are not saved correctly.
+		/// This tests to ensure that the font variants are loaded properly when specified in the rtf family name.
+		/// </remarks>
+		[TestCaseSource(nameof(GetFontVariants))]
+		public void FontVariantsShouldCorrectlyLoadFromRtf(FontVariantInfo info)
+		{
+			Invoke(() =>
+			{
+				if (Platform.Instance.IsGtk)
+					Assert.Inconclusive("Gtk does not support RTF format");
+
+				if (!info.IsFound)
+					Assert.Inconclusive("Font cannot be found on this system");
+
+				var flags = string.Empty;
+
+				if (info.WithBold)
+					flags += @"\b";
+				if (info.WithItalic)
+					flags += @"\i";
+
+				var text = "This is some Font Variant text.";
+				var rtf = @"{\rtf1\ansi
+{\fonttbl\f0\fswiss\fcharset0 Arial;\f1\fswiss\fcharset0 " + info.RtfFontName + @";}
+{\f0\fs24 \cf0 This is some 
+\f1" + flags + @" Font Variant
+\f0\b0  text.}}";
+				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+
+				Console.WriteLine("Loading rtf");
+				Console.WriteLine(rtf);
+				var richText = new RichTextArea();
+				richText.Rtf = rtf;
+
+				Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+
+				// select Font Variant text and ensure it is correctly set
+				richText.Selection = GetRange("Font Variant");
+				Assert.AreEqual("Font Variant", richText.SelectedText, "#2");
+
+				Assert.AreEqual(info.Family.Name, richText.SelectionFamily.Name, "#3.1");
+				Assert.AreEqual(info.Family.Name, richText.SelectionFont.FamilyName, "#3.2");
+				Assert.AreEqual(info.Typeface.Name, richText.SelectionTypeface.Name, "#3.3");
+				Assert.AreEqual(info.Typeface.Name, richText.SelectionFont.Typeface.Name, "#3.4");
 			});
 		}
 
