@@ -4,6 +4,7 @@ using Eto.Mac.Forms.Actions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Eto.Mac.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -196,6 +197,8 @@ namespace Eto.Mac.Forms
 					CrashReporter.Attach();
 
 				EtoBundle.Init();
+
+				EtoFontManager.Install();
 
 				if (Control.Delegate == null)
 					Control.Delegate = AppDelegate ?? new AppDelegate();

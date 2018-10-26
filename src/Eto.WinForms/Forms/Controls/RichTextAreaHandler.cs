@@ -138,8 +138,7 @@ namespace Eto.WinForms.Forms.Controls
 			get => SelectionFont.Typeface;
 			set
 			{
-				var fontStyle = value.ToSD();
-				SetSelectionFontStyle(font => new sd.Font(font.FontFamily, font.Size, fontStyle));
+				SetSelectionFontStyle(font => value.ToSDFont(font.Size));
 			}
 		}
 

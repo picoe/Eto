@@ -226,6 +226,7 @@
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="AsyncQueue.cs" />
     <Compile Include="Forms\MacFieldEditor.cs" />
+    <Compile Include="Drawing\EtoFontManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

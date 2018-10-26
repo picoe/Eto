@@ -105,5 +105,25 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				TestDropDownSelection(dropDown, item1, item2, item3, true);
 			});
 		}
+
+		[Test]
+		public void SettingDataStoreToNullWithSelectedItemShouldNotCrash()
+		{
+			Invoke(() =>
+			{
+				var dropDown = new DropDown();
+
+				var items = new[] { "Item 1", "Item 2", "Item 3" };
+
+				dropDown.DataStore = items;
+				dropDown.SelectedIndex = 1;
+				// sanity check
+				Assert.AreEqual(items[1], dropDown.SelectedValue, "#1");
+
+				dropDown.DataStore = null;
+				Assert.AreEqual(-1, dropDown.SelectedIndex, "#2.1");
+				Assert.IsNull(dropDown.SelectedValue, "#2.2");
+			});
+		}
 	}
 }

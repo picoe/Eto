@@ -60,6 +60,12 @@ namespace Eto.Mac.Drawing
 			Traits = traits;
 		}
 
+		internal static NSString GetName(IntPtr fontHandle)
+		{
+			var namePtr = CTFontCopyName(fontHandle, CTFontNameKeySubFamily.Handle);
+			return Runtime.GetNSObject<NSString>(namePtr);
+		}
+
 		public string Name
 		{
 			get
@@ -68,8 +74,7 @@ namespace Eto.Mac.Drawing
 				{
 					if (font == null)
 						font = CreateFont(10);
-					var namePtr = CTFontCopyName(font.Handle, CTFontNameKeySubFamily.Handle);
-					name = Runtime.GetNSObject<NSString>(namePtr);
+					name = GetName(font.Handle);
 
 					/*
 					var manager = NSFontManager.SharedFontManager;
@@ -113,8 +118,12 @@ namespace Eto.Mac.Drawing
 
 		public NSFont CreateFont(float size)
 		{
+			// we have a postcript name, use that to create the font
+			if (!string.IsNullOrEmpty(PostScriptName))
+				return NSFont.FromFontName(PostScriptName, size);
+
 			var family = (FontFamilyHandler)Widget.Family.Handler;
-			return FontHandler.CreateFont(family, size, Traits, Weight);
+			return FontHandler.CreateFont(family.MacName, size, Traits, Weight);
 		}
 	}
 }

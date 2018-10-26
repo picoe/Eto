@@ -359,7 +359,7 @@ namespace Eto
 		/// <returns>Index of the item, or -1 if not found</returns>
 		protected override int InternalIndexOf(TItem item)
 		{
-			return Collection.IndexOf(item);
+			return Collection?.IndexOf(item) ?? -1;
 		}
 
 		/// <summary>
