@@ -504,10 +504,29 @@ namespace Eto.Test.Sections
 		}
 	}
 
+	public class UnitTestSource
+	{
+		public string AssemblyName { get; }
+		public Assembly Assembly { get; }
+		public UnitTestSource(string assemblyName)
+		{
+			AssemblyName = assemblyName;
+		}
+
+		public UnitTestSource(Assembly assembly)
+		{
+			Assembly = assembly;
+		}
+
+		public static implicit operator UnitTestSource(Assembly assembly) => new UnitTestSource(assembly);
+
+		public static implicit operator UnitTestSource(string assemblyName) => new UnitTestSource(assemblyName);
+	}
+
 	public class UnitTestRunner : ITestListener
 	{
 		MultipleTestResult allresults;
-		ObservableCollection<Assembly> assemblies = new ObservableCollection<Assembly>();
+		ObservableCollection<UnitTestSource> sources = new ObservableCollection<UnitTestSource>();
 		Queue<ITestAssemblyRunner> runnersToTest;
 		ITestFilter testFilter;
 		bool isRunning;
@@ -517,7 +536,7 @@ namespace Eto.Test.Sections
 		List<ITestAssemblyRunner> runnerCache;
 		ITestAssemblyBuilder builder = new DefaultTestAssemblyBuilder();
 
-		public IList<Assembly> Assemblies => assemblies;
+		public IList<UnitTestSource> Sources => sources;
 
 		public bool IsRunning
 		{
@@ -546,14 +565,21 @@ namespace Eto.Test.Sections
 
 		public UnitTestRunner()
 		{
-			assemblies.CollectionChanged += (sender, e) => runnerCache = null;
+			sources.CollectionChanged += (sender, e) => runnerCache = null;
 		}
 
 		public UnitTestRunner(IEnumerable<Assembly> assemblies)
 			: this()
 		{
 			foreach (var assembly in assemblies)
-				this.assemblies.Add(assembly);
+				sources.Add(assembly);
+		}
+
+		public UnitTestRunner(IEnumerable<UnitTestSource> sources)
+			: this()
+		{
+			foreach (var source in sources)
+				this.sources.Add(source);
 		}
 
 		public void WriteLog(string message)
@@ -568,10 +594,13 @@ namespace Eto.Test.Sections
 			runnerCache = new List<ITestAssemblyRunner>();
 			var settings = new Dictionary<string, object>();
 
-			foreach (var assembly in Assemblies)
+			foreach (var source in Sources)
 			{
 				var runner = new NUnitTestAssemblyRunner(builder);
-				runner.Load(assembly, settings);
+				if (source.Assembly != null)
+					runner.Load(source.Assembly, settings);
+				else if (!string.IsNullOrEmpty(source.AssemblyName))
+					runner.Load(source.AssemblyName, settings);
 				runnerCache.Add(runner);
 			}
 			return runnerCache;
@@ -1031,9 +1060,12 @@ namespace Eto.Test.Sections
 				{
 					availableCategories = newCategories;
 					OnPropertyChanged(nameof(AvailableCategories));
+					OnPropertyChanged(nameof(HasCategories));
 				}
 			}
 		}
+
+		bool HasCategories => availableCategories?.Count > 0;
 
 		void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
@@ -1056,7 +1088,9 @@ namespace Eto.Test.Sections
 			timer.Interval = 0.5;
 			timer.Elapsed += (sender, e) => PerformSearch();
 
-			testCountLabel = new Label();
+			testCountLabel = new Label {
+				VerticalAlignment = VerticalAlignment.Center
+			};
 
 			startButton = new Button { Text = "Start" };
 			startButton.Click += (s, e) => RunTests();
@@ -1065,6 +1099,7 @@ namespace Eto.Test.Sections
 			stopButton.Click += (s, e) => runner?.StopTests();
 
 			search = new SearchBox();
+			search.PlaceholderText = "Filter(s)";
 			search.Focus();
 			search.KeyDown += (sender, e) =>
 			{
@@ -1107,37 +1142,54 @@ namespace Eto.Test.Sections
 
 			var buttons = new TableLayout
 			{
-				Padding = new Padding(10),
+				Padding = new Padding(10, 0),
 				Spacing = new Size(5, 5),
 				Rows = { new TableRow(startButton, stopButton, showOuputCheckBox, null, testCountLabel) }
 			};
 
 			var statusChecks = new CheckBoxList
 			{
+				Spacing = new Size(2, 2),
 				Orientation = Orientation.Horizontal,
 				DataStore = GetOptionalFilters()
 			};
 			statusChecks.SelectedValuesBinding.CastItems((ITestFilter)null).Bind(this, c => c.StatusFilters);
 
-			var includeChecks = new CheckBoxList();
+			var includeChecks = new CheckBoxList
+			{
+				Spacing = new Size(2, 2),
+			};
 			includeChecks.Bind(c => c.DataStore, this, c => c.AvailableCategories);
 			includeChecks.SelectedValuesBinding.CastItems((string)null).Bind(this, c => c.IncludeCategories);
+			includeChecks.Bind(c => c.Visible, this, c => c.HasCategories);
 
-			var excludeChecks = new CheckBoxList();
+			var includeLabel = new Label { Text = "Include" };
+			includeLabel.Bind(c => c.Visible, this, c => c.HasCategories);
+
+			var excludeChecks = new CheckBoxList
+			{
+				Spacing = new Size(2, 2),
+			};
 			excludeChecks.Bind(c => c.DataStore, this, c => c.AvailableCategories);
 			excludeChecks.SelectedValuesBinding.CastItems((string)null).Bind(this, c => c.ExcludeCategories);
+			excludeChecks.Bind(c => c.Visible, this, c => c.HasCategories);
+
+			var excludeLabel = new Label { Text = "Exclude" };
+			excludeLabel.Bind(c => c.Visible, this, c => c.HasCategories);
 
 			filterControls = new TableLayout
 			{
+				Spacing = new Size(5, 5),
 				Rows = {
 					new TableRow("Show", statusChecks, null),
-					new TableRow("Include", includeChecks),
-					new TableRow("Exclude", excludeChecks)
+					new TableRow(includeLabel, includeChecks),
+					new TableRow(excludeLabel, excludeChecks)
 				}
 			};
 
-			var allFilters = new GroupBox
+			var allFilters = new Panel
 			{
+				Padding = new Padding(10, 0),
 				Content = new Scrollable
 				{
 					Border = BorderType.None,
@@ -1156,14 +1208,16 @@ namespace Eto.Test.Sections
 
 					Panel1 = new TableLayout
 					{
+						Padding = new Padding(0, 10, 0, 0),
 						Spacing = new Size(5, 5),
-						Rows = { search, tree }
+						Rows = { allFilters, search, tree }
 					},
 
 					Panel2 = new TableLayout
 					{
+						Padding = new Padding(0, 10, 0, 0),
 						Spacing = new Size(5, 5),
-						Rows = { buttons, allFilters, progress, log }
+						Rows = { buttons, progress, log }
 					}
 				};
 			}
@@ -1172,6 +1226,7 @@ namespace Eto.Test.Sections
 				Size = new Size(400, 400);
 				base.Content = new TableLayout
 				{
+					Padding = new Padding(0, 10, 0, 0),
 					Spacing = new Size(5, 5),
 					Rows = { buttons, allFilters, search, progress, tree }
 				};
@@ -1423,18 +1478,18 @@ namespace Eto.Test.Sections
 			{
 				var map = new Dictionary<object, UnitTestItem>();
 				var tests = Runner.GetTests();
-				// always show all categories
-				var categories = AvailableCategories ?? Runner.GetCategories(TestFilter.Empty).OrderBy(r => r);
+		  // always show all categories
+		  var categories = AvailableCategories ?? Runner.GetCategories(TestFilter.Empty).OrderBy(r => r);
 				var totalTestCount = Runner.GetTestCount(filter);
 				var testSuites = tests.Select(suite => ToTree(suite.Assembly, suite, filter, map)).Where(r => r != null);
 				var treeData = new TreeGridItem(testSuites);
 				Application.Instance.AsyncInvoke(() =>
-				{
-					AvailableCategories = categories;
-					testCountLabel.Text = $"{totalTestCount} Tests";
-					testMap = map;
-					tree.DataStore = treeData;
-				});
+		  {
+				  AvailableCategories = categories;
+				  testCountLabel.Text = $"{totalTestCount} Tests";
+				  testMap = map;
+				  tree.DataStore = treeData;
+			  });
 			});
 		}
 
