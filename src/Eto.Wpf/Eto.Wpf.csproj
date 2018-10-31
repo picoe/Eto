@@ -115,7 +115,7 @@
     </Compile>
     <Compile Include="CustomControls\FontDialog\fontfamilylistitem.cs" />
     <Compile Include="CustomControls\FontDialog\fontsizelistitem.cs" />
-    <Compile Include="CustomControls\FontDialog\namedictionaryhelper.cs" />
+    <Compile Include="NameDictionaryExtensions.cs" />
     <Compile Include="CustomControls\FontDialog\typefacelistitem.cs" />
     <Compile Include="CustomControls\FontDialog\typographicfeaturelistitem.cs" />
     <Compile Include="CustomControls\GlassHelper.cs" />

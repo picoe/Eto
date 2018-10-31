@@ -141,7 +141,7 @@ namespace Eto.Wpf.Drawing
 		public FontHandler(swc.Control control)
 		{
 			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
-			this.Size = PixelsToPoints(control.FontSize, control);
+			this.Size = PixelsToPoints(control.FontSize);
 			this.WpfFontStyle = control.FontStyle;
 			this.WpfFontStretch = control.FontStretch;
 			this.WpfFontWeight = control.FontWeight;
@@ -150,7 +150,7 @@ namespace Eto.Wpf.Drawing
 		public FontHandler(swc.TextBlock control)
 		{
 			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
-			this.Size = PixelsToPoints(control.FontSize, control);
+			this.Size = PixelsToPoints(control.FontSize);
 			this.WpfFontStyle = control.FontStyle;
 			this.WpfFontStretch = control.FontStretch;
 			this.WpfFontWeight = control.FontWeight;

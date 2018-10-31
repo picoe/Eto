@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -246,6 +247,20 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				}
 			}
 
+			public string RtfFlags
+			{
+				get
+				{
+					var flags = string.Empty;
+
+					if (WithBold)
+						flags += @"\b";
+					if (WithItalic)
+						flags += @"\i";
+					return flags;
+				}
+			}
+
 			public string RegexFontName
 			{
 				get
@@ -305,7 +320,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			public override string ToString()
 			{
 				var sep = FaceName != null ? "-" : "";
-				return $"Font: {FamilyName}{sep}{FaceName}, HasBold: {WithBold}, HasItalic: {WithItalic}";
+				var sb = new StringBuilder();
+				sb.Append($"Font: {FamilyName}{sep}{FaceName}, HasBold: {WithBold}, HasItalic: {WithItalic}");
+
+				if (_rtfFontName != null)
+					sb.Append($", RtfFontName: {_rtfFontName}");
+
+				return sb.ToString();
 			}
 		}
 
@@ -379,6 +400,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium" };
 			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", WithItalic = true };
+
+			// Klavika fonts have a different LOGFONT name than other fonts for some reason, but they should load!
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", RtfFontName = "Klavika Md" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Regular", RtfFontName = "Klavika Rg" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light", RtfFontName = "Klavika Lt" };
 		}
 
 		/// <summary>
@@ -462,18 +488,12 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				if (!info.IsFound)
 					Assert.Inconclusive("Font cannot be found on this system");
 
-				var flags = string.Empty;
-
-				if (info.WithBold)
-					flags += @"\b";
-				if (info.WithItalic)
-					flags += @"\i";
 
 				var text = "This is some Font Variant text.";
 				var rtf = @"{\rtf1\ansi
 {\fonttbl\f0\fswiss\fcharset0 Arial;\f1\fswiss\fcharset0 " + info.RtfFontName + @";}
 {\f0\fs24 \cf0 This is some 
-\f1" + flags + @" Font Variant
+\f1" + info.RtfFlags + @" Font Variant
 \f0\b0  text.}}";
 				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
 
@@ -552,6 +572,33 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				richText.SelectionBackground = Colors.Blue;
 				Assert.AreEqual(7, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBackground");
 				Assert.AreEqual(Colors.Blue, richText.SelectionBackground);
+			});
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void PlainTextShouldInheritBaseFont(bool withFont)
+		{
+			Invoke(() =>
+			{
+				var richText = new RichTextArea();
+				float expectedFontSize;
+				if (withFont)
+				{
+					expectedFontSize = 24;
+					richText.Font = Fonts.Sans(expectedFontSize);
+				}
+				else
+					expectedFontSize = richText.Font.Size;
+				var text = "Hello then";
+				var textBuffer = Encoding.UTF8.GetBytes(text);
+				var ms = new MemoryStream(textBuffer);
+				richText.Buffer.Load(ms, RichTextAreaFormat.PlainText);
+
+				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+
+				richText.Selection = GetRange("Hello");
+				Assert.AreEqual(expectedFontSize, richText.SelectionFont.Size);
 			});
 		}
 	}
