@@ -880,17 +880,17 @@ namespace Eto.Wpf
 
 		public static string GetEnglishName(this swm.LanguageSpecificStringDictionary nameDictionary)
 		{
-			return CustomControls.FontDialog.NameDictionaryHelper.GetEnglishName(nameDictionary);
+			return CustomControls.FontDialog.NameDictionaryExtensions.GetEnglishName(nameDictionary);
 		}
 
 		public static string GetDisplayName(this swm.LanguageSpecificStringDictionary nameDictionary)
 		{
-			return CustomControls.FontDialog.NameDictionaryHelper.GetDisplayName(nameDictionary);
+			return CustomControls.FontDialog.NameDictionaryExtensions.GetDisplayName(nameDictionary);
 		}
 
 		public static string GetName(this swm.LanguageSpecificStringDictionary nameDictionary, string ietfLanguageTag)
 		{
-			return CustomControls.FontDialog.NameDictionaryHelper.GetName(nameDictionary, ietfLanguageTag);
+			return CustomControls.FontDialog.NameDictionaryExtensions.GetName(nameDictionary, ietfLanguageTag);
 		}
 	}
 }

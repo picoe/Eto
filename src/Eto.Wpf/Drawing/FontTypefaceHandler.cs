@@ -35,9 +35,9 @@ namespace Eto.Wpf.Drawing
 			range.ApplyPropertyValue(swd.TextElement.FontWeightProperty, Control.Weight);
 		}
 
-		public string Name => name ?? (name = NameDictionaryHelper.GetEnglishName(Control.FaceNames));
+		public string Name => name ?? (name = NameDictionaryExtensions.GetEnglishName(Control.FaceNames));
 
-		public string LocalizedName => localizedName ?? (localizedName = NameDictionaryHelper.GetDisplayName(Control.FaceNames));
+		public string LocalizedName => localizedName ?? (localizedName = NameDictionaryExtensions.GetDisplayName(Control.FaceNames));
 
 		public FontStyle FontStyle => WpfConversions.Convert (Control.Style, Control.Weight);
 	}
