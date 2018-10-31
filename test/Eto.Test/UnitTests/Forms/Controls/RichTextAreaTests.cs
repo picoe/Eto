@@ -554,5 +554,32 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(Colors.Blue, richText.SelectionBackground);
 			});
 		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void PlainTextShouldInheritBaseFont(bool withFont)
+		{
+			Invoke(() =>
+			{
+				var richText = new RichTextArea();
+				float expectedFontSize;
+				if (withFont)
+				{
+					expectedFontSize = 24;
+					richText.Font = Fonts.Sans(expectedFontSize);
+				}
+				else
+					expectedFontSize = richText.Font.Size;
+				var text = "Hello then";
+				var textBuffer = Encoding.UTF8.GetBytes(text);
+				var ms = new MemoryStream(textBuffer);
+				richText.Buffer.Load(ms, RichTextAreaFormat.PlainText);
+
+				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+
+				richText.Selection = GetRange("Hello");
+				Assert.AreEqual(expectedFontSize, richText.SelectionFont.Size);
+			});
+		}
 	}
 }
