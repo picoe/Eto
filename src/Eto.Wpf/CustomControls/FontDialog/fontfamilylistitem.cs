@@ -52,7 +52,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
 
         internal static string GetDisplayName(FontFamily family)
         {
-            return NameDictionaryHelper.GetDisplayName(family.FamilyNames);
+            return NameDictionaryExtensions.GetDisplayName(family.FamilyNames);
         }
     }
 }

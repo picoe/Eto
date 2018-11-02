@@ -666,39 +666,72 @@ namespace Eto.Wpf.Forms.Controls
 				var family = swd.TextElement.GetFontFamily(elem);
 				if (family == null)
 					continue;
-				var familyName = NameDictionaryHelper.GetEnglishName(family.FamilyNames);
-				if (familyName != family.Source && family.Source.Length > familyName.Length + 1)
+
+				var typeface = ResolveWpfTypeface(family);
+				if (typeface != null)
 				{
-					var faceName = family.Source.Substring(familyName.Length + 1);
-					var newFamily = new swm.FontFamily(familyName);
-					
-					var typefaces = newFamily.GetTypefaces();
-					foreach (var typeface in typefaces)
-					{
-						var typefaceName = NameDictionaryHelper.GetEnglishName(typeface.FaceNames);
-						if (faceName == typefaceName)
-						{
-							swd.TextElement.SetFontFamily(elem,newFamily);
-							// not in RTF, so should never be set but do a check anyway.
-							if (elem.ReadLocalValue(swd.TextElement.FontStretchProperty) == sw.DependencyProperty.UnsetValue)
-								swd.TextElement.SetFontStretch(elem, typeface.Stretch);
+					swd.TextElement.SetFontFamily(elem, typeface.FontFamily);
+					// not in RTF, so should never be set but do a check anyway.
+					if (elem.ReadLocalValue(swd.TextElement.FontStretchProperty) == sw.DependencyProperty.UnsetValue)
+						swd.TextElement.SetFontStretch(elem, typeface.Stretch);
 
-							// in RTF, can be set so only set it to the typeface if not specified in RTF
-							if (elem.ReadLocalValue(swd.TextElement.FontStyleProperty) == sw.DependencyProperty.UnsetValue)
-								swd.TextElement.SetFontStyle(elem, typeface.Style);
+					// in RTF, can be set so only set it to the typeface if not specified in RTF
+					if (elem.ReadLocalValue(swd.TextElement.FontStyleProperty) == sw.DependencyProperty.UnsetValue)
+						swd.TextElement.SetFontStyle(elem, typeface.Style);
 
-							// in RTF, we can have bold/normal, but the face could be Black, etc.
-							if (elem.ReadLocalValue(swd.TextElement.FontWeightProperty) == sw.DependencyProperty.UnsetValue
-								|| (
-									typeface.Weight != sw.FontWeights.Bold
-									&& typeface.Weight != sw.FontWeights.Normal
-								))
-								swd.TextElement.SetFontWeight(elem, typeface.Weight);
-							break;
-						}
-					}
+					// in RTF, we can have bold/normal, but the face could be Black, etc.
+					if (elem.ReadLocalValue(swd.TextElement.FontWeightProperty) == sw.DependencyProperty.UnsetValue
+						|| (
+							typeface.Weight != sw.FontWeights.Bold
+							&& typeface.Weight != sw.FontWeights.Normal
+						))
+						swd.TextElement.SetFontWeight(elem, typeface.Weight);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Finds the WPF typeface if the family is not known
+		/// </summary>
+		/// <param name="family">family to find the typeface for</param>
+		/// <returns>An instance of the typeface to use, or null if the font family is correct or could not be found</returns>
+		swm.Typeface ResolveWpfTypeface(swm.FontFamily family)
+		{
+			var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
+
+			// if the resolved name is the same as the source, we're good
+			if (string.Equals(familyName, family.Source, StringComparison.OrdinalIgnoreCase))
+				return null;
+
+			var newFamily = new swm.FontFamily(familyName);
+			var typefaces = newFamily.GetTypefaces();
+
+			// find based on the win32 family name (which RTF typically uses)
+			foreach (var typeface in typefaces)
+			{
+				if (typeface.TryGetGlyphTypeface(out var glyphTypeface)
+					&& string.Equals(family.Source, glyphTypeface.Win32FamilyNames.GetEnglishName(), StringComparison.OrdinalIgnoreCase))
+				{
+					return typeface;
+				}
+			}
+
+			// check if the resolved font name has the same family prefix
+			if (family.Source.Length <= familyName.Length + 1 || !family.Source.StartsWith(familyName, StringComparison.OrdinalIgnoreCase))
+				return null;
+
+			// extract the face part of the source.  E.g. "Arial Narrow" will result in "Narrow".
+			var faceName = family.Source.Substring(familyName.Length + 1);
+
+			// find based on the non-localized face name
+			foreach (var typeface in typefaces)
+			{
+				var typefaceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
+				if (faceName == typefaceName)
+					return typeface;
+			}
+
+			return null;
 		}
 
 		public void Save(Stream stream, RichTextAreaFormat format)
@@ -741,23 +774,32 @@ namespace Eto.Wpf.Forms.Controls
 				if (style == sw.FontStyles.Italic || style == sw.FontStyles.Oblique)
 					style = sw.FontStyles.Normal;
 				var weight = swd.TextElement.GetFontWeight(elem);
-				if (weight == sw.FontWeights.Bold)
-					weight = sw.FontWeights.Normal;
 				var stretch = swd.TextElement.GetFontStretch(elem);
 
-				if (stretch != sw.FontStretches.Normal
-					|| weight != sw.FontWeights.Normal
+				var typeface = new swm.Typeface(family, style, weight, stretch);
+				var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
+				// use the win32 family name first if one is mapped
+				if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
+				{
+					// use windows font name in RTF, same as how other apps (e.g. wordpad) does it
+					var win32FamilyName = glyphTypeface.Win32FamilyNames.GetEnglishName();
+					if (!string.Equals(win32FamilyName, familyName, StringComparison.OrdinalIgnoreCase))
+					{
+						family = new swm.FontFamily(win32FamilyName);
+						swd.TextElement.SetFontFamily(elem, family);
+						continue;
+					}
+				}
+				else if (stretch != sw.FontStretches.Normal
+					|| (weight != sw.FontWeights.Normal && weight != sw.FontWeights.Bold)
 					|| style != sw.FontStyles.Normal
 					)
 				{
-					// set to the new typeface
-					var typeface = new swm.Typeface(family, style, weight, stretch);
-					var familyName = NameDictionaryHelper.GetEnglishName(family.FamilyNames);
-
+					// fallback to writing "<FamilyName> <FaceName>" if glyph typeface cannot be found
 					// ensure that the new family source is the same? Correct?
 					if (typeface != null && typeface.FontFamily.Source == familyName)
 					{
-						var faceName = NameDictionaryHelper.GetEnglishName(typeface.FaceNames);
+						var faceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
 						family = new swm.FontFamily($"{familyName} {faceName}");
 						swd.TextElement.SetFontFamily(elem, family);
 					}

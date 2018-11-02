@@ -30,7 +30,7 @@
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
   </ItemGroup>
   <ItemGroup>

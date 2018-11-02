@@ -65,7 +65,7 @@ namespace Eto.Wpf.Drawing
 				if (Widget.Properties.ContainsKey(LocalizedName_Key))
 					return Widget.Properties.Get<string>(LocalizedName_Key);
 
-				var localizedName = CustomControls.FontDialog.NameDictionaryHelper.GetDisplayName(Control.FamilyNames);
+				var localizedName = CustomControls.FontDialog.NameDictionaryExtensions.GetDisplayName(Control.FamilyNames);
 				Widget.Properties.Set(LocalizedName_Key, localizedName);
 				return localizedName;
 			}

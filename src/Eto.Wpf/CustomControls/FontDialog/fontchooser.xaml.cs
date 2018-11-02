@@ -1543,7 +1543,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
 
         void AddTableRow(TableRowGroup rowGroup, string leftText, IDictionary<CultureInfo, string> rightStrings)
         {
-            string rightText = NameDictionaryHelper.GetDisplayName(rightStrings);
+            string rightText = NameDictionaryExtensions.GetDisplayName(rightStrings);
             AddTableRow(rowGroup, leftText, rightText);
         }
 
@@ -1596,7 +1596,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
 
                 fontDescriptionBox.Document = new FlowDocument(table);
 
-                fontLicenseBox.Text = NameDictionaryHelper.GetDisplayName(glyphTypeface.LicenseDescriptions);
+                fontLicenseBox.Text = NameDictionaryExtensions.GetDisplayName(glyphTypeface.LicenseDescriptions);
             }
             else
             {

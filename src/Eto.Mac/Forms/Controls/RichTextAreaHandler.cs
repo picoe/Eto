@@ -319,7 +319,9 @@ namespace Eto.Mac.Forms.Controls
 					Control.ReplaceWithRtf(range, NSData.FromStream(stream));
 					break;
 				case RichTextAreaFormat.PlainText:
-					Control.TextStorage.SetString(new NSAttributedString(new StreamReader(stream).ReadToEnd()));
+					var str = new NSMutableAttributedString(new StreamReader(stream).ReadToEnd());
+					Font.Apply(str);
+					Control.TextStorage.SetString(str);
 					break;
 				default:
 					throw new NotSupportedException();

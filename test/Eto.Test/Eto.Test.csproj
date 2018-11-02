@@ -31,7 +31,7 @@
     <ProjectReference Include="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
   </ItemGroup>

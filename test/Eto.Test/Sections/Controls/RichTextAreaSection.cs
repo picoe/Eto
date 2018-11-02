@@ -116,6 +116,19 @@ namespace Eto.Test.Sections.Controls
 			loadButton.Enabled = buffer.SupportedFormats.Contains(formatEnum.SelectedValue);
 			loadButton.Click += (sender, e) => buffer.Load(new MemoryStream(Encoding.UTF8.GetBytes(formatEnum.SelectedValue == RichTextAreaFormat.Rtf ? RtfString : LoremText)), formatEnum.SelectedValue);
 
+			var loadFileButton = new Button { Text = "Load File..." };
+			loadFileButton.Enabled = buffer.SupportedFormats.Contains(formatEnum.SelectedValue);
+			loadFileButton.Click += (sender, e) =>
+			{
+				var dlg = new OpenFileDialog { Filters = { new FileFilter("RTF", ".rtf"), new FileFilter("TXT", "txt") } };
+				if (dlg.ShowDialog(this) == DialogResult.Ok)
+				{
+					var useRtf = string.Equals(Path.GetExtension(dlg.FileName), ".rtf", StringComparison.OrdinalIgnoreCase);
+					var fs = File.OpenRead(dlg.FileName);
+					buffer.Load(fs, useRtf ? RichTextAreaFormat.Rtf : RichTextAreaFormat.PlainText);
+				}
+			};
+
 			var saveButton = new Button { Text = "Save" };
 			saveButton.Enabled = buffer.SupportedFormats.Contains(formatEnum.SelectedValue);
 			saveButton.Click += (sender, e) =>
@@ -188,7 +201,8 @@ namespace Eto.Test.Sections.Controls
 				    formatEnum,
 				    loadButton,
 				    saveButton,
-				    clearButton,
+					loadFileButton,
+					clearButton,
 				    null
 				}
 			};
