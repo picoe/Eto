@@ -145,6 +145,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			public string FontNameSuffix { get; set; }
 
 			string _rtfFontName;
+			bool _hasSpecificRtfName;
 			Lazy<FontFamily> _family;
 			Lazy<FontTypeface> _typeface;
 			Lazy<FontTypeface> _baseTypeface;
@@ -244,8 +245,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				set
 				{
 					_rtfFontName = value;
+					_hasSpecificRtfName = !string.IsNullOrEmpty(value);
 				}
 			}
+
+			public bool HasSpecificRtfName => _hasSpecificRtfName;
 
 			public string RtfFlags
 			{
@@ -304,6 +308,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						}
 						AddEntry($"({familyName}([ -]{typefaceName}){typefaceNameOption}{FontNameSuffix})");
 					}
+
+					if (HasSpecificRtfName)
+						AddEntry(Regex.Escape(RtfFontName));
 
 					if (BaseTypeface != null)
 						AddTypeface(BaseTypeface.Name);
@@ -390,21 +397,21 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Semilight", WithItalic = true };
 			}
 
-			yield return new FontVariantInfo { FamilyName = "Klavika" };
-			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true };
-			yield return new FontVariantInfo { FamilyName = "Klavika", WithItalic = true };
-			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true, WithItalic = true };
+			yield return new FontVariantInfo { FamilyName = "Klavika", RtfFontName = "Klavika Rg" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true, RtfFontName = "Klavika Bd" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithItalic = true, RtfFontName = "Klavika Rg" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true, WithItalic = true, RtfFontName = "Klavika Bd" };
 
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light" };
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light", WithItalic = true };
+			/*
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Bold", RtfFontName = "Klavika Bd" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Bold", WithItalic = true, RtfFontName = "Klavika Bd" };
+			*/
 
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium" };
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", WithItalic = true };
-
-			// Klavika fonts have a different LOGFONT name than other fonts for some reason, but they should load!
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", RtfFontName = "Klavika Md" };
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Regular", RtfFontName = "Klavika Rg" };
 			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light", RtfFontName = "Klavika Lt" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light", WithItalic = true, RtfFontName = "Klavika Lt" };
+
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", RtfFontName = "Klavika Md" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", WithItalic = true, RtfFontName = "Klavika Md" };
 		}
 
 		/// <summary>
