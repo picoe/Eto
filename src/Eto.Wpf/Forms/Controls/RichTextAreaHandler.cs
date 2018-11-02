@@ -698,25 +698,15 @@ namespace Eto.Wpf.Forms.Controls
 		swm.Typeface ResolveWpfTypeface(swm.FontFamily family)
 		{
 			var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
-			// if the source is not the same as the resolved family name, we need to find the actual typeface
-			if (string.Equals(familyName, family.Source, StringComparison.OrdinalIgnoreCase)
-				|| family.Source.Length <= familyName.Length + 1)
+
+			// if the resolved name is the same as the source, we're good
+			if (string.Equals(familyName, family.Source, StringComparison.OrdinalIgnoreCase))
 				return null;
 
-			var faceName = family.Source.Substring(familyName.Length + 1);
 			var newFamily = new swm.FontFamily(familyName);
-
 			var typefaces = newFamily.GetTypefaces();
 
-			// find based on the non-localized name
-			foreach (var typeface in typefaces)
-			{
-				var typefaceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
-				if (faceName == typefaceName)
-					return typeface;
-			}
-
-			// find based on the win32 family name
+			// find based on the win32 family name (which RTF typically uses)
 			foreach (var typeface in typefaces)
 			{
 				if (typeface.TryGetGlyphTypeface(out var glyphTypeface)
@@ -724,6 +714,21 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					return typeface;
 				}
+			}
+
+			// check if the resolved font name has the same family prefix
+			if (family.Source.Length <= familyName.Length + 1 || !family.Source.StartsWith(familyName, StringComparison.OrdinalIgnoreCase))
+				return null;
+
+			// extract the face part of the source.  E.g. "Arial Narrow" will result in "Narrow".
+			var faceName = family.Source.Substring(familyName.Length + 1);
+
+			// find based on the non-localized face name
+			foreach (var typeface in typefaces)
+			{
+				var typefaceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
+				if (faceName == typefaceName)
+					return typeface;
 			}
 
 			return null;
@@ -769,19 +774,28 @@ namespace Eto.Wpf.Forms.Controls
 				if (style == sw.FontStyles.Italic || style == sw.FontStyles.Oblique)
 					style = sw.FontStyles.Normal;
 				var weight = swd.TextElement.GetFontWeight(elem);
-				if (weight == sw.FontWeights.Bold)
-					weight = sw.FontWeights.Normal;
 				var stretch = swd.TextElement.GetFontStretch(elem);
 
-				if (stretch != sw.FontStretches.Normal
-					|| weight != sw.FontWeights.Normal
+				var typeface = new swm.Typeface(family, style, weight, stretch);
+				var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
+				// use the win32 family name first if one is mapped
+				if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
+				{
+					// use windows font name in RTF, same as how other apps (e.g. wordpad) does it
+					var win32FamilyName = glyphTypeface.Win32FamilyNames.GetEnglishName();
+					if (!string.Equals(win32FamilyName, familyName, StringComparison.OrdinalIgnoreCase))
+					{
+						family = new swm.FontFamily(win32FamilyName);
+						swd.TextElement.SetFontFamily(elem, family);
+						continue;
+					}
+				}
+				else if (stretch != sw.FontStretches.Normal
+					|| (weight != sw.FontWeights.Normal && weight != sw.FontWeights.Bold)
 					|| style != sw.FontStyles.Normal
 					)
 				{
-					// set to the new typeface
-					var typeface = new swm.Typeface(family, style, weight, stretch);
-					var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
-
+					// fallback to writing "<FamilyName> <FaceName>" if glyph typeface cannot be found
 					// ensure that the new family source is the same? Correct?
 					if (typeface != null && typeface.FontFamily.Source == familyName)
 					{

@@ -743,9 +743,14 @@ namespace Eto.Test.Sections
 
 		void ITestListener.TestOutput(TestOutput output)
 		{
-			// not currently called, we need to redirect console and trace output
-			if (ShowOutput && !string.IsNullOrEmpty(output.Text))
-				WriteLog(output.Text);
+			if (ShowOutput)
+				WriteLog(output.ToString());
+		}
+
+		void ITestListener.SendMessage(TestMessage message)
+		{
+			if (ShowOutput)
+				WriteLog(message.ToString());
 		}
 	}
 

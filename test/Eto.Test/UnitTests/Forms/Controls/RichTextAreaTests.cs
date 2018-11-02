@@ -15,46 +15,44 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	{
 
 		[Test]
+		[InvokeOnUI]
 		public void CheckSelectionTextCaretAfterSettingRtf()
 		{
-			Invoke(() =>
-			{
-				// not supported in GTK yet
-				if (Platform.Instance.IsGtk)
-					Assert.Inconclusive("Gtk does not support RTF format");
-				int selectionChanged = 0;
-				int textChanged = 0;
-				int caretChanged = 0;
-				string val;
-				var textArea = new RichTextArea();
-				textArea.TextChanged += (sender, e) => textChanged++;
-				textArea.SelectionChanged += (sender, e) => selectionChanged++;
-				textArea.CaretIndexChanged += (sender, e) => caretChanged++;
-				Assert.AreEqual(Range.FromLength(0, 0), textArea.Selection, "#1");
+			// not supported in GTK yet
+			if (Platform.Instance.IsGtk)
+				Assert.Inconclusive("Gtk does not support RTF format");
+			int selectionChanged = 0;
+			int textChanged = 0;
+			int caretChanged = 0;
+			string val;
+			var textArea = new RichTextArea();
+			textArea.TextChanged += (sender, e) => textChanged++;
+			textArea.SelectionChanged += (sender, e) => selectionChanged++;
+			textArea.CaretIndexChanged += (sender, e) => caretChanged++;
+			Assert.AreEqual(Range.FromLength(0, 0), textArea.Selection, "#1");
 
-				textArea.Rtf = @"{\rtf1\ansi {Hello \ul Underline \i Italic \b Bold \strike Strike}}";
-				Assert.AreEqual(val = "Hello Underline Italic Bold Strike", textArea.Text.TrimEnd(), "#2-1");
-				Assert.AreEqual(Range.FromLength(val.Length, 0), textArea.Selection, "#2-2");
-				Assert.AreEqual(val.Length, textArea.CaretIndex, "#2-3");
-				Assert.AreEqual(1, textChanged, "#2-4");
-				Assert.AreEqual(1, selectionChanged, "#2-5");
-				Assert.AreEqual(1, caretChanged, "#2-6");
+			textArea.Rtf = @"{\rtf1\ansi {Hello \ul Underline \i Italic \b Bold \strike Strike}}";
+			Assert.AreEqual(val = "Hello Underline Italic Bold Strike", textArea.Text.TrimEnd(), "#2-1");
+			Assert.AreEqual(Range.FromLength(val.Length, 0), textArea.Selection, "#2-2");
+			Assert.AreEqual(val.Length, textArea.CaretIndex, "#2-3");
+			Assert.AreEqual(1, textChanged, "#2-4");
+			Assert.AreEqual(1, selectionChanged, "#2-5");
+			Assert.AreEqual(1, caretChanged, "#2-6");
 
-				textArea.Selection = Range.FromLength(6, 5);
-				Assert.AreEqual(Range.FromLength(6, 5), textArea.Selection, "#3-1");
-				Assert.AreEqual(6, textArea.CaretIndex, "#3-2");
-				Assert.AreEqual(1, textChanged, "#3-3");
-				Assert.AreEqual(2, selectionChanged, "#3-4");
-				Assert.AreEqual(2, caretChanged, "#3-5");
+			textArea.Selection = Range.FromLength(6, 5);
+			Assert.AreEqual(Range.FromLength(6, 5), textArea.Selection, "#3-1");
+			Assert.AreEqual(6, textArea.CaretIndex, "#3-2");
+			Assert.AreEqual(1, textChanged, "#3-3");
+			Assert.AreEqual(2, selectionChanged, "#3-4");
+			Assert.AreEqual(2, caretChanged, "#3-5");
 
-				textArea.Rtf = @"{\rtf1\ansi {Some \b other \i text}}";
-				Assert.AreEqual(val = "Some other text", textArea.Text.TrimEnd(), "#4-1");
-				Assert.AreEqual(Range.FromLength(val.Length, 0), textArea.Selection, "#4-2");
-				Assert.AreEqual(val.Length, textArea.CaretIndex, "#4-3");
-				Assert.AreEqual(2, textChanged, "#4-4");
-				Assert.AreEqual(3, selectionChanged, "#4-5");
-				Assert.AreEqual(3, caretChanged, "#4-6");
-			});
+			textArea.Rtf = @"{\rtf1\ansi {Some \b other \i text}}";
+			Assert.AreEqual(val = "Some other text", textArea.Text.TrimEnd(), "#4-1");
+			Assert.AreEqual(Range.FromLength(val.Length, 0), textArea.Selection, "#4-2");
+			Assert.AreEqual(val.Length, textArea.CaretIndex, "#4-3");
+			Assert.AreEqual(2, textChanged, "#4-4");
+			Assert.AreEqual(3, selectionChanged, "#4-5");
+			Assert.AreEqual(3, caretChanged, "#4-6");
 		}
 
 		public static void TestSelectionAttributes(RichTextArea richText, string tag, bool italic = false, bool underline = false, bool bold = false, bool strikethrough = false)
@@ -66,74 +64,68 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[Test]
+		[InvokeOnUI]
 		public void SelectionAttributesShouldBeCorrectWithLoadedRtf()
 		{
-			Invoke(() =>
-			{
-				// not supported in GTK yet
-				if (Platform.Instance.IsGtk)
-					Assert.Inconclusive("Gtk does not support RTF format");
+			// not supported in GTK yet
+			if (Platform.Instance.IsGtk)
+				Assert.Inconclusive("Gtk does not support RTF format");
 
-				var richText = new RichTextArea();
-				richText.Rtf = @"{\rtf1\ansi {Hello \ul Underline \i Italic \b Bold \strike Strike}}";
-				Assert.AreEqual("Hello Underline Italic Bold Strike", richText.Text.TrimEnd(), "#1");
-				richText.CaretIndex = 5;
-				TestSelectionAttributes(richText, "#2");
-				richText.CaretIndex = 7;
-				TestSelectionAttributes(richText, "#3", underline: true);
-				richText.CaretIndex = 17;
-				TestSelectionAttributes(richText, "#4", underline: true, italic: true);
-				richText.CaretIndex = 24;
-				TestSelectionAttributes(richText, "#5", underline: true, italic: true, bold: true);
-				richText.CaretIndex = 29;
-				TestSelectionAttributes(richText, "#6", underline: true, italic: true, bold: true, strikethrough: true);
-			});
+			var richText = new RichTextArea();
+			richText.Rtf = @"{\rtf1\ansi {Hello \ul Underline \i Italic \b Bold \strike Strike}}";
+			Assert.AreEqual("Hello Underline Italic Bold Strike", richText.Text.TrimEnd(), "#1");
+			richText.CaretIndex = 5;
+			TestSelectionAttributes(richText, "#2");
+			richText.CaretIndex = 7;
+			TestSelectionAttributes(richText, "#3", underline: true);
+			richText.CaretIndex = 17;
+			TestSelectionAttributes(richText, "#4", underline: true, italic: true);
+			richText.CaretIndex = 24;
+			TestSelectionAttributes(richText, "#5", underline: true, italic: true, bold: true);
+			richText.CaretIndex = 29;
+			TestSelectionAttributes(richText, "#6", underline: true, italic: true, bold: true, strikethrough: true);
 		}
 
 		[Test]
+		[InvokeOnUI]
 		public void NewLineAtEndShouldNotBeRemoved()
 		{
-			Invoke(() =>
+			string val;
+			var richText = new RichTextArea();
+			var nl = "\n";
+
+			if (!Platform.Instance.IsWpf)
 			{
-				string val;
-				var richText = new RichTextArea();
-				var nl = "\n";
+				// why does WPF always add a newline even when the content doesn't have a newline?
+				richText.Text = val = $"This is{nl}some text";
+				Assert.AreEqual(val, richText.Text, "#1");
+			}
 
-				if (!Platform.Instance.IsWpf)
-				{
-					// why does WPF always add a newline even when the content doesn't have a newline?
-					richText.Text = val = $"This is{nl}some text";
-					Assert.AreEqual(val, richText.Text, "#1");
-				}
-
-				richText.Text = val = $"This is{nl}some text{nl}";
-				Assert.AreEqual(val, richText.Text, "#2");
-			});
+			richText.Text = val = $"This is{nl}some text{nl}";
+			Assert.AreEqual(val, richText.Text, "#2");
 		}
 
 		[Test]
+		[InvokeOnUI]
 		public void SelectionRangeShouldIncludeNewlines()
 		{
-			Invoke(() =>
-			{
-				Range<int> range;
-				var richText = new RichTextArea();
+			Range<int> range;
+			var richText = new RichTextArea();
 
-				var text = "Hello\nThere\nThis is some text";
+			var text = "Hello\nThere\nThis is some text";
 
-				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+			Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
 
-				richText.Text = text;
-				Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+			richText.Text = text;
+			Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
 
-				richText.Selection = range = GetRange("There");
-				Assert.AreEqual("There", richText.SelectedText, "#2.2");
-				Assert.AreEqual(range, richText.Selection, "#2.1");
+			richText.Selection = range = GetRange("There");
+			Assert.AreEqual("There", richText.SelectedText, "#2.2");
+			Assert.AreEqual(range, richText.Selection, "#2.1");
 
-				richText.Selection = range = GetRange("is some text");
-				Assert.AreEqual("is some text", richText.SelectedText, "#3.2");
-				Assert.AreEqual(range, richText.Selection, "#3.1");
-			});
+			richText.Selection = range = GetRange("is some text");
+			Assert.AreEqual("is some text", richText.SelectedText, "#3.2");
+			Assert.AreEqual(range, richText.Selection, "#3.1");
 		}
 
 		public class FontVariantInfo
@@ -145,6 +137,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			public string FontNameSuffix { get; set; }
 
 			string _rtfFontName;
+			bool _hasSpecificRtfName;
 			Lazy<FontFamily> _family;
 			Lazy<FontTypeface> _typeface;
 			Lazy<FontTypeface> _baseTypeface;
@@ -244,8 +237,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				set
 				{
 					_rtfFontName = value;
+					_hasSpecificRtfName = !string.IsNullOrEmpty(value);
 				}
 			}
+
+			public bool HasSpecificRtfName => _hasSpecificRtfName;
 
 			public string RtfFlags
 			{
@@ -304,6 +300,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						}
 						AddEntry($"({familyName}([ -]{typefaceName}){typefaceNameOption}{FontNameSuffix})");
 					}
+
+					if (HasSpecificRtfName)
+						AddEntry(Regex.Escape(RtfFontName));
 
 					if (BaseTypeface != null)
 						AddTypeface(BaseTypeface.Name);
@@ -390,21 +389,21 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				yield return new FontVariantInfo { FamilyName = "Segoe UI", FaceName = "Semilight", WithItalic = true };
 			}
 
-			yield return new FontVariantInfo { FamilyName = "Klavika" };
-			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true };
-			yield return new FontVariantInfo { FamilyName = "Klavika", WithItalic = true };
-			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true, WithItalic = true };
+			yield return new FontVariantInfo { FamilyName = "Klavika", RtfFontName = "Klavika Rg" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true, RtfFontName = "Klavika Bd" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithItalic = true, RtfFontName = "Klavika Rg" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", WithBold = true, WithItalic = true, RtfFontName = "Klavika Bd" };
 
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light" };
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light", WithItalic = true };
+			/*
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Bold", RtfFontName = "Klavika Bd" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Bold", WithItalic = true, RtfFontName = "Klavika Bd" };
+			*/
 
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium" };
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", WithItalic = true };
-
-			// Klavika fonts have a different LOGFONT name than other fonts for some reason, but they should load!
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", RtfFontName = "Klavika Md" };
-			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Regular", RtfFontName = "Klavika Rg" };
 			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light", RtfFontName = "Klavika Lt" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Light", WithItalic = true, RtfFontName = "Klavika Lt" };
+
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", RtfFontName = "Klavika Md" };
+			yield return new FontVariantInfo { FamilyName = "Klavika", FaceName = "Medium", WithItalic = true, RtfFontName = "Klavika Md" };
 		}
 
 		/// <summary>
@@ -415,59 +414,56 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		/// This tests to ensure that the font variants are saved properly in the rtf family name.
 		/// </remarks>
 		[TestCaseSource(nameof(GetFontVariants))]
+		[InvokeOnUI]
 		public void FontVariantsShouldCorrectlySaveToRtf(FontVariantInfo info)
 		{
-			Invoke(() =>
+			if (Platform.Instance.IsGtk)
+				Assert.Inconclusive("Gtk does not support RTF format");
+
+			if (!info.IsFound)
+				Assert.Inconclusive("Font cannot be found on this system");
+
+			var text = "This is some Font Variant text.";
+			Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+
+			var richText = new RichTextArea();
+			richText.Text = text;
+			Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+
+			richText.Selection = GetRange("Font Variant");
+			Assert.AreEqual("Font Variant", richText.SelectedText, "#2");
+
+			if (info.BaseTypeface != null)
 			{
-				if (Platform.Instance.IsGtk)
-					Assert.Inconclusive("Gtk does not support RTF format");
+				// test base typeface (non-bold/italic)
+				richText.SelectionTypeface = info.BaseTypeface;
+				Assert.AreEqual(info.BaseTypeface.Name, richText.SelectionTypeface.Name, "#3.1");
+				Assert.AreEqual(info.BaseTypeface.Name, richText.SelectionFont.Typeface.Name, "#3.2");
+			}
+			else
+			{
+				richText.SelectionTypeface = info.Typeface;
+			}
+			Assert.AreEqual(info.Family.Name, richText.SelectionFamily.Name, "#3.3");
+			Assert.AreEqual(info.Family.Name, richText.SelectionFont.FamilyName, "#3.4");
 
-				if (!info.IsFound)
-					Assert.Inconclusive("Font cannot be found on this system");
+			// setting these should not affect font name in RTF as it uses \b and \i to specify that
+			if (info.WithBold)
+				richText.SelectionBold = true;
 
-				var text = "This is some Font Variant text.";
-				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+			if (info.WithItalic)
+				richText.SelectionItalic = true;
 
-				var richText = new RichTextArea();
-				richText.Text = text;
-				Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+			// test it is using the right typeface
+			Assert.AreEqual(info.Typeface.Name, richText.SelectionTypeface.Name, "#4.1");
+			Assert.AreEqual(info.Typeface.Name, richText.SelectionFont.Typeface.Name, "#4.2");
 
-				richText.Selection = GetRange("Font Variant");
-				Assert.AreEqual("Font Variant", richText.SelectedText, "#2");
-
-				if (info.BaseTypeface != null)
-				{
-					// test base typeface (non-bold/italic)
-					richText.SelectionTypeface = info.BaseTypeface;
-					Assert.AreEqual(info.BaseTypeface.Name, richText.SelectionTypeface.Name, "#3.1");
-					Assert.AreEqual(info.BaseTypeface.Name, richText.SelectionFont.Typeface.Name, "#3.2");
-				}
-				else
-				{
-					richText.SelectionTypeface = info.Typeface;
-				}
-				Assert.AreEqual(info.Family.Name, richText.SelectionFamily.Name, "#3.3");
-				Assert.AreEqual(info.Family.Name, richText.SelectionFont.FamilyName, "#3.4");
-
-				// setting these should not affect font name in RTF as it uses \b and \i to specify that
-				if (info.WithBold)
-					richText.SelectionBold = true;
-
-				if (info.WithItalic)
-					richText.SelectionItalic = true;
-
-				// test it is using the right typeface
-				Assert.AreEqual(info.Typeface.Name, richText.SelectionTypeface.Name, "#4.1");
-				Assert.AreEqual(info.Typeface.Name, richText.SelectionFont.Typeface.Name, "#4.2");
-
-				// ensure the generated RTF contains the correct font variant name
-				var rtf = richText.Rtf;
-				Console.WriteLine($"Generated RTF:");
-				Console.WriteLine(rtf);
-				var reg = $@"(?<={{\\fonttbl.*)\\f\d+[^}};]* ({info.RegexFontName});";
-				Assert.IsTrue(Regex.IsMatch(rtf, reg), $"#5 - Variant '{info}' does not exist in RTF:\n{rtf}");
-			});
-
+			// ensure the generated RTF contains the correct font variant name
+			var rtf = richText.Rtf;
+			Console.WriteLine($"Generated RTF:");
+			Console.WriteLine(rtf);
+			var reg = $@"(?<={{\\fonttbl.*)\\f\d+[^}};]* ({info.RegexFontName});";
+			Assert.IsTrue(Regex.IsMatch(rtf, reg), $"#5 - Variant '{info}' does not exist in RTF:\n{rtf}");
 		}
 
 		/// <summary>
@@ -478,128 +474,122 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		/// This tests to ensure that the font variants are loaded properly when specified in the rtf family name.
 		/// </remarks>
 		[TestCaseSource(nameof(GetFontVariants))]
+		[InvokeOnUI]
 		public void FontVariantsShouldCorrectlyLoadFromRtf(FontVariantInfo info)
 		{
-			Invoke(() =>
-			{
-				if (Platform.Instance.IsGtk)
-					Assert.Inconclusive("Gtk does not support RTF format");
+			if (Platform.Instance.IsGtk)
+				Assert.Inconclusive("Gtk does not support RTF format");
 
-				if (!info.IsFound)
-					Assert.Inconclusive("Font cannot be found on this system");
+			if (!info.IsFound)
+				Assert.Inconclusive("Font cannot be found on this system");
 
 
-				var text = "This is some Font Variant text.";
-				var rtf = @"{\rtf1\ansi
+			var text = "This is some Font Variant text.";
+			var rtf = @"{\rtf1\ansi
 {\fonttbl\f0\fswiss\fcharset0 Arial;\f1\fswiss\fcharset0 " + info.RtfFontName + @";}
 {\f0\fs24 \cf0 This is some 
 \f1" + info.RtfFlags + @" Font Variant
 \f0\b0  text.}}";
-				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+			Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
 
-				Console.WriteLine("Loading rtf");
-				Console.WriteLine(rtf);
-				var richText = new RichTextArea();
-				richText.Rtf = rtf;
+			Console.WriteLine("Loading rtf");
+			Console.WriteLine(rtf);
+			var richText = new RichTextArea();
+			richText.Rtf = rtf;
 
-				Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+			Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
 
-				// select Font Variant text and ensure it is correctly set
-				richText.Selection = GetRange("Font Variant");
-				Assert.AreEqual("Font Variant", richText.SelectedText, "#2");
+			// select Font Variant text and ensure it is correctly set
+			richText.Selection = GetRange("Font Variant");
+			Assert.AreEqual("Font Variant", richText.SelectedText, "#2");
 
-				Assert.AreEqual(info.Family.Name, richText.SelectionFamily.Name, "#3.1");
-				Assert.AreEqual(info.Family.Name, richText.SelectionFont.FamilyName, "#3.2");
-				Assert.AreEqual(info.Typeface.Name, richText.SelectionTypeface.Name, "#3.3");
-				Assert.AreEqual(info.Typeface.Name, richText.SelectionFont.Typeface.Name, "#3.4");
-			});
+			Assert.AreEqual(info.Family.Name, richText.SelectionFamily.Name, "#3.1");
+			Assert.AreEqual(info.Family.Name, richText.SelectionFont.FamilyName, "#3.2");
+			Assert.AreEqual(info.Typeface.Name, richText.SelectionTypeface.Name, "#3.3");
+			Assert.AreEqual(info.Typeface.Name, richText.SelectionFont.Typeface.Name, "#3.4");
 		}
 
 		[Test]
+		[InvokeOnUI]
 		public void SelectionBoldItalicUnderlineShouldTriggerTextChanged()
 		{
-			Invoke(() =>
-			{
-				int textChangedCount = 0;
-				var richText = new RichTextArea();
-				richText.TextChanged += (sender, e) => textChangedCount++;
+			int textChangedCount = 0;
+			var richText = new RichTextArea();
+			richText.TextChanged += (sender, e) => textChangedCount++;
 
-				string text = "This is some underline, strikethrough, bold, and italic text. This is green, background blue text.";
+			string text = "This is some underline, strikethrough, bold, and italic text. This is green, background blue text.";
 
-				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+			Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
 
-				richText.Text = text;
-				Assert.AreEqual(1, textChangedCount);
+			richText.Text = text;
+			Assert.AreEqual(1, textChangedCount);
 
-				richText.Selection = GetRange("underline");
-				richText.SelectionUnderline = true;
-				Assert.AreEqual(2, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionUnderline");
-				Assert.AreEqual(true, richText.SelectionUnderline);
-				Assert.AreEqual(false, richText.SelectionStrikethrough);
-				Assert.AreEqual(false, richText.SelectionBold);
-				Assert.AreEqual(false, richText.SelectionItalic);
+			richText.Selection = GetRange("underline");
+			richText.SelectionUnderline = true;
+			Assert.AreEqual(2, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionUnderline");
+			Assert.AreEqual(true, richText.SelectionUnderline);
+			Assert.AreEqual(false, richText.SelectionStrikethrough);
+			Assert.AreEqual(false, richText.SelectionBold);
+			Assert.AreEqual(false, richText.SelectionItalic);
 
-				richText.Selection = GetRange("strikethrough");
-				richText.SelectionStrikethrough = true;
-				Assert.AreEqual(3, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionStrikethrough");
-				Assert.AreEqual(false, richText.SelectionUnderline);
-				Assert.AreEqual(true, richText.SelectionStrikethrough);
-				Assert.AreEqual(false, richText.SelectionBold);
-				Assert.AreEqual(false, richText.SelectionItalic);
+			richText.Selection = GetRange("strikethrough");
+			richText.SelectionStrikethrough = true;
+			Assert.AreEqual(3, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionStrikethrough");
+			Assert.AreEqual(false, richText.SelectionUnderline);
+			Assert.AreEqual(true, richText.SelectionStrikethrough);
+			Assert.AreEqual(false, richText.SelectionBold);
+			Assert.AreEqual(false, richText.SelectionItalic);
 
-				richText.Selection = GetRange("bold");
-				richText.SelectionBold = true;
-				Assert.AreEqual(4, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBold");
-				Assert.AreEqual(false, richText.SelectionUnderline);
-				Assert.AreEqual(false, richText.SelectionStrikethrough);
-				Assert.AreEqual(true, richText.SelectionBold);
-				Assert.AreEqual(false, richText.SelectionItalic);
+			richText.Selection = GetRange("bold");
+			richText.SelectionBold = true;
+			Assert.AreEqual(4, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBold");
+			Assert.AreEqual(false, richText.SelectionUnderline);
+			Assert.AreEqual(false, richText.SelectionStrikethrough);
+			Assert.AreEqual(true, richText.SelectionBold);
+			Assert.AreEqual(false, richText.SelectionItalic);
 
-				richText.Selection = GetRange("italic");
-				richText.SelectionItalic = true;
-				Assert.AreEqual(5, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionItalic");
-				Assert.AreEqual(false, richText.SelectionUnderline);
-				Assert.AreEqual(false, richText.SelectionStrikethrough);
-				Assert.AreEqual(false, richText.SelectionBold);
-				Assert.AreEqual(true, richText.SelectionItalic);
+			richText.Selection = GetRange("italic");
+			richText.SelectionItalic = true;
+			Assert.AreEqual(5, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionItalic");
+			Assert.AreEqual(false, richText.SelectionUnderline);
+			Assert.AreEqual(false, richText.SelectionStrikethrough);
+			Assert.AreEqual(false, richText.SelectionBold);
+			Assert.AreEqual(true, richText.SelectionItalic);
 
-				richText.Selection = GetRange("green");
-				richText.SelectionForeground = Colors.Green;
-				Assert.AreEqual(6, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionForeground");
-				Assert.AreEqual(Colors.Green, richText.SelectionForeground);
+			richText.Selection = GetRange("green");
+			richText.SelectionForeground = Colors.Green;
+			Assert.AreEqual(6, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionForeground");
+			Assert.AreEqual(Colors.Green, richText.SelectionForeground);
 
-				richText.Selection = GetRange("green");
-				richText.SelectionBackground = Colors.Blue;
-				Assert.AreEqual(7, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBackground");
-				Assert.AreEqual(Colors.Blue, richText.SelectionBackground);
-			});
+			richText.Selection = GetRange("green");
+			richText.SelectionBackground = Colors.Blue;
+			Assert.AreEqual(7, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBackground");
+			Assert.AreEqual(Colors.Blue, richText.SelectionBackground);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
+		[InvokeOnUI]
 		public void PlainTextShouldInheritBaseFont(bool withFont)
 		{
-			Invoke(() =>
+			var richText = new RichTextArea();
+			float expectedFontSize;
+			if (withFont)
 			{
-				var richText = new RichTextArea();
-				float expectedFontSize;
-				if (withFont)
-				{
-					expectedFontSize = 24;
-					richText.Font = Fonts.Sans(expectedFontSize);
-				}
-				else
-					expectedFontSize = richText.Font.Size;
-				var text = "Hello then";
-				var textBuffer = Encoding.UTF8.GetBytes(text);
-				var ms = new MemoryStream(textBuffer);
-				richText.Buffer.Load(ms, RichTextAreaFormat.PlainText);
+				expectedFontSize = 24;
+				richText.Font = Fonts.Sans(expectedFontSize);
+			}
+			else
+				expectedFontSize = richText.Font.Size;
+			var text = "Hello then";
+			var textBuffer = Encoding.UTF8.GetBytes(text);
+			var ms = new MemoryStream(textBuffer);
+			richText.Buffer.Load(ms, RichTextAreaFormat.PlainText);
 
-				Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
+			Range<int> GetRange(string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
 
-				richText.Selection = GetRange("Hello");
-				Assert.AreEqual(expectedFontSize, richText.SelectionFont.Size);
-			});
+			richText.Selection = GetRange("Hello");
+			Assert.AreEqual(expectedFontSize, richText.SelectionFont.Size);
 		}
 	}
 }

@@ -31,7 +31,7 @@ namespace Eto.Test.UnitTests
 		}
 	}
 
-	[System.AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+	[System.AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
 	sealed class InvokeOnUIAttribute : Attribute, IWrapSetUpTearDown
 	{
 		public TestCommand Wrap(TestCommand command) => new RunOnUICommand(command);
@@ -41,11 +41,32 @@ namespace Eto.Test.UnitTests
 			public RunOnUICommand(TestCommand innerCommand)
 				: base(innerCommand)
 			{
-
 			}
+
 			public override TestResult Execute(TestExecutionContext context)
 			{
-				return Application.Instance.Invoke(() => innerCommand.Execute(context));
+				Exception exception = null;
+
+				var result = Application.Instance.Invoke(() =>
+				{
+					try
+					{
+						context.EstablishExecutionEnvironment();
+						return innerCommand.Execute(context);
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+						return null;
+					}
+				});
+
+				if (exception != null)
+				{
+					ExceptionDispatchInfo.Capture(exception).Throw();
+				}
+
+				return result;
 			}
 		}
 	}
@@ -157,10 +178,12 @@ namespace Eto.Test.UnitTests
 			var application = Application;
 			Exception exception = null;
 			Action finished = () => ev.Set();
+			var context = TestExecutionContext.CurrentContext;
 			Action run = () =>
 			{
 				try
 				{
+					context.EstablishExecutionEnvironment();
 					test(application, finished);
 				}
 				catch (Exception ex)
