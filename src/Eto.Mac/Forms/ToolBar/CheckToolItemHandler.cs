@@ -35,6 +35,7 @@ namespace Eto.Mac.Forms.ToolBar
 		public override void InvokeButton()
 		{
 			Widget.OnClick(EventArgs.Empty);
+			Widget.OnCheckedChanged(EventArgs.Empty);
 		}
 	}
 }
