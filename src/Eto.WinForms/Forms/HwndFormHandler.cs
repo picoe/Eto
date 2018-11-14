@@ -172,11 +172,17 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return (Win32.GetWindowLong(Control, Win32.GWL.STYLE) & (uint)Win32.WS.SIZEBOX) != 0;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				var styleInt = Win32.GetWindowLong(Control, Win32.GWL.STYLE);
+				if (value)
+					styleInt |= (uint)Win32.WS.SIZEBOX;
+				else
+					styleInt &= (uint)~Win32.WS.SIZEBOX;
+
+				Win32.SetWindowLong(Control, Win32.GWL.STYLE, styleInt);
 			}
 		}
 
@@ -184,11 +190,17 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return (Win32.GetWindowLong(Control, Win32.GWL.STYLE) & (uint)Win32.WS.MAXIMIZEBOX) != 0;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				var styleInt = Win32.GetWindowLong(Control, Win32.GWL.STYLE);
+				if (value)
+					styleInt |= (uint)Win32.WS.MAXIMIZEBOX;
+				else
+					styleInt &= (uint)~Win32.WS.MAXIMIZEBOX;
+
+				Win32.SetWindowLong(Control, Win32.GWL.STYLE, styleInt);
 			}
 		}
 
@@ -196,11 +208,17 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return (Win32.GetWindowLong(Control, Win32.GWL.STYLE) & (uint)Win32.WS.MINIMIZEBOX) != 0;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				var styleInt = Win32.GetWindowLong(Control, Win32.GWL.STYLE);
+				if (value)
+					styleInt |= (uint)Win32.WS.MINIMIZEBOX;
+				else
+					styleInt &= (uint)~Win32.WS.MINIMIZEBOX;
+
+				Win32.SetWindowLong(Control, Win32.GWL.STYLE, styleInt);
 			}
 		}
 
@@ -208,11 +226,17 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return (Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE) & (uint) Win32.WS_EX.APPWINDOW) != 0;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				var styleInt = Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE);
+				if (value)
+					styleInt |= (uint)Win32.WS_EX.APPWINDOW;
+				else
+					styleInt &= (uint)~Win32.WS_EX.APPWINDOW;
+
+				Win32.SetWindowLong(Control, Win32.GWL.EXSTYLE, styleInt);
 			}
 		}
 
@@ -220,11 +244,17 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return (Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE) & (uint)Win32.WS_EX.TOPMOST) != 0;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				var styleInt = Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE);
+				if (value)
+					styleInt |= (uint)Win32.WS_EX.TOPMOST;
+				else
+					styleInt &= (uint)~Win32.WS_EX.TOPMOST;
+
+				Win32.SetWindowLong(Control, Win32.GWL.EXSTYLE, styleInt);
 			}
 		}
 
@@ -232,11 +262,36 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				if (Win32.IsIconic(Control))
+					return WindowState.Minimized;
+
+				if (Win32.IsZoomed(Control))
+					return WindowState.Maximized;
+
+				return WindowState.Normal;
 			}
 			set
 			{
-				throw new NotImplementedException();
+				if (WindowState != value)
+				{
+					switch (value)
+					{
+						case WindowState.Normal:
+							if (!Win32.ShowWindow(Control, Win32.SW.RESTORE))
+								Win32.ShowWindow(Control, Win32.SW.HIDE);
+							break;
+						case WindowState.Maximized:
+							if(!Win32.ShowWindow(Control, Win32.SW.MAXIMIZE))
+								Win32.ShowWindow(Control, Win32.SW.HIDE);
+							break;
+						case WindowState.Minimized:
+							if(!Win32.ShowWindow(Control, Win32.SW.MINIMIZE))
+								Win32.ShowWindow(Control, Win32.SW.HIDE);
+							break;
+					}
+
+					throw new NotImplementedException();
+				}
 			}
 		}
 
@@ -351,11 +406,11 @@ namespace Eto.WinForms.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return Win32.IsWindowEnabled(Control);
 			}
 			set
 			{
-				throw new NotImplementedException();
+				Win32.EnableWindow(Control, value);
 			}
 		}
 
@@ -397,8 +452,9 @@ namespace Eto.WinForms.Forms
 			}
 			set
 			{
-				throw new NotImplementedException();
+				Win32.ShowWindow(Control, value ? Win32.SW.SHOWNA : Win32.SW.HIDE);
 			}
+
 		}
 
 		public void OnPreLoad(EventArgs e)
