@@ -230,6 +230,9 @@ namespace Eto.Mac.Forms
 		{
 			switch (id)
 			{
+				case Application.UnhandledExceptionEvent:
+					AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
+					break;
 				case Application.TerminatingEvent:
 					// handled by app delegate
 					break;
@@ -241,6 +244,12 @@ namespace Eto.Mac.Forms
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+		{
+			var unhandledExceptionArgs = new UnhandledExceptionEventArgs(e.ExceptionObject, e.IsTerminating);
+			Callback.OnUnhandledException(Widget, unhandledExceptionArgs);
 		}
 
 		static readonly NSString s_NSApplicationLaunchUserNotificationKey = Dlfcn.GetStringConstant(Messaging.AppKitHandle, "NSApplicationLaunchUserNotificationKey");
