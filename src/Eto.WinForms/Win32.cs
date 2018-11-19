@@ -109,7 +109,9 @@ namespace Eto
 		[Flags]
 		public enum WS_EX : uint
 		{
-			TOOLWINDOW = 0x80,
+			TOPMOST = 0x00000008,
+			TOOLWINDOW = 0x00000080,
+			APPWINDOW = 0x00040000,
 			NOACTIVATE = 0x08000000
 		}
 
@@ -235,11 +237,27 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsIconic(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsZoomed(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool IsWindowVisible(IntPtr hWnd);
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool ShowWindow(IntPtr hWnd, SW nCmdShow);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool EnableWindow(IntPtr hWnd, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsWindowEnabled(IntPtr hWnd);
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]

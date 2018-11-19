@@ -10,7 +10,7 @@ using System.Windows.Threading;
 
 namespace Eto.Wpf.Forms
 {
-	public class ApplicationHandler : WidgetHandler<System.Windows.Application, Application, Application.ICallback>, Application.IHandler
+	public class ApplicationHandler : WidgetHandler<sw.Application, Application, Application.ICallback>, Application.IHandler
 	{
 		bool attached;
 		bool shutdown;
@@ -83,12 +83,21 @@ namespace Eto.Wpf.Forms
 
 		protected override void Initialize()
 		{
+			if (SynchronizationContext.Current == null)
+				SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext());
+
 			Control = sw.Application.Current;
 			if (Control == null)
 			{
 				Control = new sw.Application { ShutdownMode = sw.ShutdownMode.OnExplicitShutdown };
-				System.Windows.Forms.Application.EnableVisualStyles();
+				sw.Forms.Application.EnableVisualStyles();
 			}
+
+			// Prevent race condition with volatile font collection field in WPF when measuring a window the first time
+			// When running on non-english windows it can cause a NullReferenceException in System.Windows.Media.FontFamily.LookupFontFamilyAndFace
+			// This is a hack, but no way around it thus far..
+			var temp = sw.SystemFonts.MessageFontFamily.Baseline;
+
 			dispatcher = sw.Application.Current.Dispatcher ?? Dispatcher.CurrentDispatcher;
 			instance = this;
 			Control.Startup += HandleStartup;
@@ -215,7 +224,7 @@ namespace Eto.Wpf.Forms
 				if (Widget.MainForm != null)
 				{
 					Control.ShutdownMode = sw.ShutdownMode.OnMainWindowClose;
-					Control.Run((System.Windows.Window)Widget.MainForm.ControlObject);
+					Control.Run((sw.Window)Widget.MainForm.ControlObject);
 				}
 				else
 				{
@@ -232,13 +241,13 @@ namespace Eto.Wpf.Forms
 
 		public void OnMainFormChanged()
 		{
-			System.Windows.Application.Current.MainWindow = Widget.MainForm.ToNative();
+			sw.Application.Current.MainWindow = Widget.MainForm.ToNative();
 		}
 
 		public void Restart()
 		{
-			Process.Start(System.Windows.Application.ResourceAssembly.Location);
-			System.Windows.Application.Current.Shutdown();
+			Process.Start(sw.Application.ResourceAssembly.Location);
+			sw.Application.Current.Shutdown();
 		}
 
 		public override void AttachEvent(string id)

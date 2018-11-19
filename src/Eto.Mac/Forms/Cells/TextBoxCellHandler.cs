@@ -57,9 +57,9 @@ namespace Eto.Mac.Forms.Cells
 			if (Widget.Binding != null)
 			{
 				var val = Widget.Binding.GetValue(dataItem);
-				return val != null ? new NSString(Convert.ToString(val)) : null;
+				return val != null ? new NSString(Convert.ToString(val)) : NSString.Empty;
 			}
-			return null;
+			return NSString.Empty;
 		}
 
 		public override void SetObjectValue(object dataItem, NSObject value)

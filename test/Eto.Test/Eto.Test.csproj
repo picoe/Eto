@@ -17,7 +17,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
+    <EmbeddedResource Include="Sections\Serialization\Json\Test.jeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xeto">
