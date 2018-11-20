@@ -83,6 +83,9 @@ namespace Eto.Wpf.Forms
 
 		protected override void Initialize()
 		{
+			if (SynchronizationContext.Current == null)
+				SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext());
+
 			Control = sw.Application.Current;
 			if (Control == null)
 			{

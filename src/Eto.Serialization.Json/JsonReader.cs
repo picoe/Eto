@@ -14,7 +14,8 @@ namespace Eto.Serialization.Json
 			return
 				GetStream(type, type.FullName + ".jeto")
 				?? GetStream(type, type.FullName + ".json")
-				?? GetStream(type, type.Name + ".jeto"); // for f# projects
+				?? GetStream(type, type.Name + ".jeto") // for f# projects
+				?? throw new InvalidOperationException($"Embedded resource '{type.FullName}.jeto' not found in assembly '{type.GetAssembly()}'");
 		}
 
 		static Stream GetStream(Type type, string resourceName)
@@ -79,6 +80,9 @@ namespace Eto.Serialization.Json
 		/// <param name="namespaceManager">Namespace manager to use when loading</param>
 		public static void Load<T>(T instance, NamespaceManager namespaceManager = null)
 		{
+			if (Equals(instance, null))
+				throw new ArgumentNullException(nameof(instance));
+
 			using (var stream = GetStream(typeof(T)))
 			{
 				Load<T>(stream, instance, namespaceManager);
@@ -100,8 +104,14 @@ namespace Eto.Serialization.Json
 		/// <param name="resourceName">Fully qualified name of the embedded resource to load.</param>
 		public static void Load<T>(T instance, string resourceName, NamespaceManager namespaceManager = null)
 		{
+			if (Equals(instance, null))
+				throw new ArgumentNullException(nameof(instance));
+
 			using (var stream = GetStream(typeof(T), resourceName))
 			{
+				if (stream == null)
+					throw new ArgumentException(nameof(resourceName), $"Embedded resource '{resourceName}' not found in assembly '{typeof(T).GetAssembly()}'");
+
 				Load<T>(stream, instance, namespaceManager);
 			}
 		}

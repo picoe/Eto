@@ -672,15 +672,15 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					swd.TextElement.SetFontFamily(elem, typeface.FontFamily);
 					// not in RTF, so should never be set but do a check anyway.
-					if (elem.ReadLocalValue(swd.TextElement.FontStretchProperty) == sw.DependencyProperty.UnsetValue)
+					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontStretchProperty))
 						swd.TextElement.SetFontStretch(elem, typeface.Stretch);
-
+					
 					// in RTF, can be set so only set it to the typeface if not specified in RTF
-					if (elem.ReadLocalValue(swd.TextElement.FontStyleProperty) == sw.DependencyProperty.UnsetValue)
+					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontStyleProperty))
 						swd.TextElement.SetFontStyle(elem, typeface.Style);
 
 					// in RTF, we can have bold/normal, but the face could be Black, etc.
-					if (elem.ReadLocalValue(swd.TextElement.FontWeightProperty) == sw.DependencyProperty.UnsetValue
+					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontWeightProperty)
 						|| (
 							typeface.Weight != sw.FontWeights.Bold
 							&& typeface.Weight != sw.FontWeights.Normal
@@ -741,6 +741,14 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				case RichTextAreaFormat.Rtf:
 					var fd = new swd.FlowDocument();
+
+					// use same base font for new document
+					fd.FontFamily = Control.FontFamily;
+					fd.FontSize = Control.FontSize;
+					fd.FontStyle = Control.FontStyle;
+					fd.FontWeight = Control.FontWeight;
+					fd.FontStretch = Control.FontStretch;
+
 					using (var ms = new MemoryStream())
 					{
 						range.Save(ms, sw.DataFormats.Xaml);
@@ -1076,6 +1084,12 @@ namespace Eto.Wpf.Forms.Controls
                 }
             }
 			return value;
+		}
+
+		public static bool PropertyIsInheritedOrLocal(this sw.DependencyObject obj, sw.DependencyProperty prop)
+		{
+			var source = sw.DependencyPropertyHelper.GetValueSource(obj, prop);
+			return source.BaseValueSource == sw.BaseValueSource.Local || source.BaseValueSource == sw.BaseValueSource.Inherited;
 		}
 
 	}
