@@ -225,6 +225,8 @@ namespace Eto.WinForms
 			{
 				case SystemFont.Default:
 					return sd.SystemFonts.DefaultFont;
+				case SystemFont.User:
+					return sd.SystemFonts.DefaultFont;
 				case SystemFont.Bold:
 					return new sd.Font(sd.SystemFonts.DefaultFont, sd.FontStyle.Bold);
 				case SystemFont.TitleBar:

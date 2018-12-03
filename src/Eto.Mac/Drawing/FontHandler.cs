@@ -121,6 +121,9 @@ namespace Eto.Mac.Drawing
 				case SystemFont.StatusBar:
 					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
+				case SystemFont.User:
+					Control = NSFont.UserFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
+					break;
 #endif
 				default:
 					throw new NotSupportedException();

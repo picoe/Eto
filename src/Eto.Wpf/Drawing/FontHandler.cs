@@ -232,6 +232,7 @@ namespace Eto.Wpf.Drawing
 			switch (systemFont)
 			{
 				case SystemFont.Label:
+				case SystemFont.User:
 				case SystemFont.Default:
 				case SystemFont.Message:
 				case SystemFont.Palette:

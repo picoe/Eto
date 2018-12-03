@@ -68,6 +68,7 @@ namespace Eto.GtkSharp.Drawing
 
 		Dictionary<SystemFont, Gtk.Widget> fontMap = new Dictionary<SystemFont, Gtk.Widget> 
 		{
+			{ SystemFont.User, new Gtk.Entry() },
 			{ SystemFont.Default, new Gtk.Entry() },
 			{ SystemFont.Bold, new Gtk.Entry() },
 			{ SystemFont.Label, new Gtk.Label() },
