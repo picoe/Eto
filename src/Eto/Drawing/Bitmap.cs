@@ -26,7 +26,7 @@ namespace Eto.Drawing
 		Format32bppRgb,
 		
 		/// <summary>
-		/// 24-bits (4 bytes) per pixel, ordered by Red in the highest order, followed by Green, and Blue.
+		/// 24-bits (3 bytes) per pixel, ordered by Red in the highest order, followed by Green, and Blue.
 		/// </summary>
 		Format24bppRgb,
 
