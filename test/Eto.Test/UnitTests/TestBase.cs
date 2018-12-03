@@ -333,6 +333,108 @@ namespace Eto.Test.UnitTests
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
 
+		public static void Dialog(Action<Dialog> test, int timeout = DefaultTimeout)
+		{
+			Dialog<Dialog>(test, timeout);
+		}
+
+		/// <summary>
+		/// Test operations on a form
+		/// </summary>
+		/// <param name="test">Delegate to execute on the form</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete</param>
+		public static void Dialog<T>(Action<T> test, int timeout = DefaultTimeout)
+			where T : Dialog, new()
+		{
+			T dialog = null;
+			bool shown = false;
+			try
+			{
+				Run((app, finished) =>
+				{
+					if (!Platform.Instance.Supports<Dialog>())
+						Assert.Inconclusive("This platform does not support Dialog");
+
+					dialog = new T();
+
+					test(dialog);
+
+					dialog.Closed += (sender, e) =>
+					{
+						dialog = null;
+						finished();
+					};
+					shown = true;
+					dialog.ShowModal();
+
+				}, timeout);
+			}
+			catch
+			{
+				if (dialog != null && shown)
+				{
+					var application = Application;
+					if (application != null)
+						application.Invoke(() =>
+						{
+							if (dialog != null && dialog.Loaded)
+								dialog.Close();
+						});
+					else
+						dialog.Close();
+				}
+				throw;
+			}
+		}
+
+		public static void ManualDialog(string description, Func<Dialog, Control> init)
+		{
+			ManualDialog(description, (form, Label) => init(form));
+		}
+
+		public static void ManualDialog(string description, Func<Dialog, Label, Control> init)
+		{
+			Exception exception = null;
+			Dialog(dialog =>
+			{
+				var label = new Label { Text = description };
+				var c = init(dialog, label);
+
+				var failButton = new Button { Text = "Fail" };
+				failButton.Click += (sender, e) =>
+				{
+					try
+					{
+						Assert.Fail(description);
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+					}
+					finally
+					{
+						dialog.Close();
+					}
+				};
+
+				var passButton = new Button { Text = "Pass" };
+				passButton.Click += (sender, e) => dialog.Close();
+
+				dialog.Content = new StackLayout
+				{
+					Spacing = 10,
+					Items =
+					{
+						new StackLayoutItem(c, HorizontalAlignment.Stretch, true),
+						label,
+						new StackLayoutItem(TableLayout.Horizontal(2, failButton, passButton), HorizontalAlignment.Center)
+					}
+				};
+			}, timeout: -1);
+
+			if (exception != null)
+				ExceptionDispatchInfo.Capture(exception).Throw();
+		}
 		/// <summary>
 		/// Test operations on a form once it is shown
 		/// </summary>

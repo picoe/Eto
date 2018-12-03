@@ -20,8 +20,6 @@ namespace Eto.Mac.Forms
 {
 	class FontDialogHelper : NSWindowDelegate
 	{
-		NSFont font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
-
 		public static FontDialogHelper Instance { get; set; }
 
 		WeakReference handler;
@@ -31,37 +29,35 @@ namespace Eto.Mac.Forms
 			set => handler = new WeakReference(value);
 		}
 
-		public NSFont Font
-		{
-			get => font;
-			set => font = value;
-		}
-
+		public NSFont Font { get; set; } = NSFont.UserFontOfSize(NSFont.SystemFontSize);
 
 		[Export("changeFont:")]
 		public void ChangeFont(NSFontManager sender)
 		{
 			var h = Handler;
 			if (h == null)
+			{
+				Cleanup();
 				return;
-			font = sender.ConvertFont(font);
-			h.Font = font != null ? new Font(new FontHandler(font)) : null;
+			}
+			Font = sender.ConvertFont(Font);
+			h.Font = Font != null ? new Font(new FontHandler(Font)) : null;
 			h.Callback.OnFontChanged(h.Widget, EventArgs.Empty);
 		}
 
-		public override void WillClose(NSNotification notification)
+		public override void WillClose(NSNotification notification) => Cleanup();
+
+		void Cleanup()
 		{
-			var h = Handler;
-			if (h == null)
-				return;
-			h.Manager.Target = null;
-			h.Manager.Action = null;
+			NSFontManager.SharedFontManager.WeakDelegate = null;
+			NSFontPanel.SharedFontPanel.Delegate = null;
 			FontDialogHelper.Instance = null;
 		}
 
 		public override void DidResignKey(NSNotification notification)
 		{
-			Handler?.Control.PerformClose(this);
+			Handler?.ClosePanel();
+			Cleanup();
 		}
 
 		[Export("changeAttributes:")]
@@ -78,24 +74,19 @@ namespace Eto.Mac.Forms
 		[Export("modalClosed:")]
 		public void ModalClosed(NSNotification notification)
 		{
-			Handler?.Control.PerformClose(this);
 			NSNotificationCenter.DefaultCenter.RemoveObserver(this);
+			Handler?.ClosePanel();
+			Cleanup();
 		}
 	}
 
 	public class FontDialogHandler : MacObject<NSFontPanel, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
 	{
-		public NSFontManager Manager
-		{
-			get { return NSFontManager.SharedFontManager; }
-		}
+		protected override NSFontPanel CreateControl() => NSFontPanel.SharedFontPanel;
 
-		protected override NSFontPanel CreateControl()
-		{
-			return NSFontPanel.SharedFontPanel;
-		}
+		public bool ClosePanelWhenFinished { get; set; }
 
-		protected override bool DisposeControl { get { return false; } }
+		protected override bool DisposeControl => false;
 
 		public override void AttachEvent(string id)
 		{
@@ -112,48 +103,39 @@ namespace Eto.Mac.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
-			NSWindow parentWindow;
-			if (parent != null)
-			{
-				parentWindow = parent.ParentWindow.ControlObject as NSWindow ?? NSApplication.SharedApplication.KeyWindow;
-				if (parentWindow != null)
-					Control.ParentWindow = parentWindow;
-			}
-			else
-				parentWindow = NSApplication.SharedApplication.KeyWindow;
-
-			NSFont selectedFont = Font.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
-
-			FontDialogHelper.Instance = new FontDialogHelper { Handler = this, Font = selectedFont };
-
-			Manager.Target = null;
-			Manager.Action = null;
-			Manager.SetSelectedFont(selectedFont, false);
-
-			Control.Delegate = FontDialogHelper.Instance;
-			Manager.Target = FontDialogHelper.Instance;
-			Manager.Action = new Selector("changeFont:");
-
+			var parentWindow = parent?.ParentWindow.ControlObject as NSWindow ?? NSApplication.SharedApplication.KeyWindow;
 			if (parentWindow != null)
+				Control.ParentWindow = parentWindow;
+
+			var selectedFont = Font.ToNS() ?? NSFont.UserFontOfSize(NSFont.SystemFontSize);
+			var helper = FontDialogHelper.Instance = new FontDialogHelper { Handler = this, Font = selectedFont };
+
+			if (parentWindow != null && parentWindow == NSApplication.SharedApplication.ModalWindow)
 			{
-				if (parentWindow == NSApplication.SharedApplication.ModalWindow)
-				{
-					NSNotificationCenter.DefaultCenter.AddObserver(FontDialogHelper.Instance, new Selector("modalClosed:"), new NSString("NSWindowWillCloseNotification"), parentWindow);
-				}
+				NSNotificationCenter.DefaultCenter.AddObserver(helper, new Selector("modalClosed:"), new NSString("NSWindowWillCloseNotification"), parentWindow);
 			}
-			
-			Manager.OrderFrontFontPanel(parentWindow);
-			//if (isModal) Control.MakeKeyWindow();
-			Control.MakeKeyAndOrderFront(parentWindow);
+
+			var manager = NSFontManager.SharedFontManager;
+
+			manager.Target = null;
+			manager.Action = new Selector("changeFont:"); // in case it was set to something else
+			Control.Delegate = helper;
+			manager.WeakDelegate = helper; // using the delegate makes it work with modal dialogs, see: https://stackoverflow.com/a/9506984/981187
+			manager.SetSelectedFont(selectedFont, false);
+
+			manager.OrderFrontFontPanel(parentWindow);
+			Control.MakeKeyWindow(); // make key so when it loses key we can reset the delegate
 
 			return DialogResult.None; // signal that we are returning right away!
 		}
 
-		public Font Font
+		internal void ClosePanel()
 		{
-			get;
-			set;
+			if (ClosePanelWhenFinished)
+				Control.PerformClose(Control);
 		}
+
+		public Font Font { get; set; }
 	}
 }
 
