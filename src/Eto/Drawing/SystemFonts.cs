@@ -155,6 +155,20 @@ namespace Eto.Drawing
 		{
 			return GetFont(SystemFont.ToolTip, size, decoration);
 		}
+
+		/// <summary>
+		/// Gets the user font with optional specified <paramref name="size"/> and <paramref name="decoration"/>.
+		/// </summary>
+		/// <remarks>
+		/// On macOS, the system font isn't normally a font that the user would select or use, other than for user interface elements.
+		/// This should be used instead as the starting font for the user to select.
+		/// </remarks>
+		/// <param name="size">Size for the font, or null for the default system font size.</param>
+		/// <param name="decoration">Decorations to add to the font.</param>
+		public static Font User(float? size = null, FontDecoration decoration = FontDecoration.None)
+		{
+			return GetFont(SystemFont.User, size, decoration);
+		}
 	}
 }
 

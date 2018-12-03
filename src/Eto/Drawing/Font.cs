@@ -53,7 +53,14 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Default font for status bars
 		/// </summary>
-		StatusBar
+		StatusBar,
+		/// <summary>
+		/// Default font for text that a user can typically change
+		/// </summary>
+		/// <remarks>
+		/// On macOS, the system font isn't normally a font that the user would select or use, other than for user interface elements.
+		/// </remarks>
+		User
 	}
 
 	/// <summary>
