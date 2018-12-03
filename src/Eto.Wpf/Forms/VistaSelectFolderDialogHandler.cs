@@ -34,8 +34,9 @@ namespace Eto.Wpf.Forms
 				result = (cp.CommonFileDialogResult)showDialogMethod.Invoke(Control, new object[] { handle.Value });
 			}
 #elif WPF
-			var wpfParent = parent.ToNative();
-			var result = wpfParent != null ? Control.ShowDialog(wpfParent) : Control.ShowDialog();
+			// don't use WPF window, parent might be a HwndFormHandler
+			var wpfParent = parent?.NativeHandle;
+			var result = wpfParent != null ? Control.ShowDialog(wpfParent.Value) : Control.ShowDialog();
 #endif
 			switch (result)
 			{
