@@ -9,7 +9,9 @@ namespace Eto.Serialization.Json.Converters
 {
 	public class TypeConverterConverter : JsonConverter
 	{
+#pragma warning disable 618
 		readonly Dictionary<Type, TypeConverter> converters = new Dictionary<Type, TypeConverter>();
+#pragma warning restore 618
 
 		public override bool CanRead { get { return true; } }
 		public override bool CanWrite { get { return false; } }
@@ -54,6 +56,7 @@ namespace Eto.Serialization.Json.Converters
 			return reader.Value;
 		}
 
+#pragma warning disable 618
 		TypeConverter GetConverter(Type objectType, Type destinationType)
 		{
 			TypeConverter converter;
@@ -67,6 +70,7 @@ namespace Eto.Serialization.Json.Converters
 			}
 			return null;
 		}
+#pragma warning restore 618
 
 		public override bool CanConvert(Type objectType)
 		{

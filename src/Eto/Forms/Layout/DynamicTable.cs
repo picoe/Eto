@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace Eto.Forms
@@ -10,7 +10,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Represents a row for a <see cref="DynamicTable"/>
 	/// </summary>
-	[TypeConverter(typeof(DynamicRowConverter))]
+	[sc.TypeConverter(typeof(DynamicRowConverter))]
 	public class DynamicRow : Collection<DynamicItem>
 	{
 		/// <summary>

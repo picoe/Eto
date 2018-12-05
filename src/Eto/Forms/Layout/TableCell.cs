@@ -2,7 +2,7 @@ using System;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
 using System.Collections;
@@ -13,7 +13,7 @@ namespace Eto.Forms
 	/// Represents a cell in a <see cref="TableRow"/>
 	/// </summary>
 	[ContentProperty("Control")]
-	[TypeConverter(typeof(TableCellConverter))]
+	[sc.TypeConverter(typeof(TableCellConverter))]
 	public class TableCell
 	{
 		Control control;
