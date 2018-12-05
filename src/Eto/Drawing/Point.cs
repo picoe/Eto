@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Globalization;
 
 namespace Eto.Drawing
@@ -12,7 +12,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TypeConverter(typeof(PointConverter))]
+	[sc.TypeConverter(typeof(PointConverterInternal))]
 	public struct Point : IEquatable<Point>
 	{
 		int x;

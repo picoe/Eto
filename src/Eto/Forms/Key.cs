@@ -1,7 +1,7 @@
 ﻿﻿﻿﻿﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Diagnostics;
 
 namespace Eto.Forms
@@ -10,7 +10,7 @@ namespace Eto.Forms
 	/// Enumeration of values that correspond to physical keys on a keyboard
 	/// </summary>
 	[Flags]
-	[TypeConverter(typeof(KeysConverter))]
+	[sc.TypeConverter(typeof(KeysConverter))]
 	public enum Keys
 	{
 		/// <summary>No key</summary>

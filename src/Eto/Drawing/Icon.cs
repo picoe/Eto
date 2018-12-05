@@ -5,7 +5,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 
 namespace Eto.Drawing
 {
@@ -23,7 +23,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2016 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Icon.IHandler))]
-	[TypeConverter(typeof(IconConverter))]
+	[sc.TypeConverter(typeof(IconConverter))]
 	public class Icon : Image
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }

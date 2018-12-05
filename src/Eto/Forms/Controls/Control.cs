@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Globalization;
 using Eto.Drawing;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace Eto.Forms
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
-	[TypeConverter(typeof(ControlConverter))]
+	[sc.TypeConverter(typeof(ControlConverter))]
 	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
@@ -826,7 +826,7 @@ namespace Eto.Forms
 		/// select text, but not change its contents.
 		/// </remarks>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		[DefaultValue(true)]
+		[sc.DefaultValue(true)]
 		public virtual bool Enabled
 		{
 			get => Handler.Enabled;
@@ -842,7 +842,7 @@ namespace Eto.Forms
 		/// of one of the panels is changed.
 		/// </remarks>
 		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
-		[DefaultValue(true)]
+		[sc.DefaultValue(true)]
 		public virtual bool Visible
 		{
 			get { return Handler.Visible; }
@@ -1237,7 +1237,7 @@ namespace Eto.Forms
 		/// <see cref="PlatformFeatures.TabIndexWithCustomContainers"/> flag to determine if it is supported.
 		/// </remarks>
 		/// <value>The index of the control in the tab order.</value>
-		[DefaultValue(int.MaxValue)]
+		[sc.DefaultValue(int.MaxValue)]
 		public virtual int TabIndex
 		{
 			get { return Handler.TabIndex; }

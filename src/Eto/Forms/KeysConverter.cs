@@ -1,10 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Linq;
 
 namespace Eto.Forms
 {
-	class KeysConverter : TypeConverter
+	class KeysConverter : sc.TypeConverter
 	{
 		public string[] Separators { get; set; }
 
@@ -13,17 +13,17 @@ namespace Eto.Forms
 			Separators = new [] { "+", ",", "|" };
 		}
 
-		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 		{
 			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
 		}
 
-		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		public override bool CanConvertTo(sc.ITypeDescriptorContext context, Type destinationType)
 		{
 			return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
 		}
 
-		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(sc.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
 			var text = value as string;
 			if (text != null)
@@ -44,7 +44,7 @@ namespace Eto.Forms
 			return base.ConvertFrom(context, culture, value);
 		}
 
-		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(sc.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
 		{
 			if (destinationType == typeof(string) && value is Keys)
 			{

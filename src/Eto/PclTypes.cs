@@ -1,4 +1,4 @@
-﻿#if PCL
+#if PCL
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -29,6 +29,7 @@ namespace Eto
 		void EndInit();
 	}
 
+	[Obsolete]
 	abstract class BaseNumberConverter : TypeConverter
 	{
 		internal virtual bool AllowHex { get { return true; } }
@@ -112,10 +113,12 @@ namespace Eto
 	/// <summary>
 	/// Interface for a type descriptor context, for type converter compatibility in portable class libraries.
 	/// </summary>
+	[Obsolete("Since 2.5, Use System.ComponentModel.ITypeDescriptorContext instead")]
 	public interface ITypeDescriptorContext : IServiceProvider
 	{
 	}
 
+	[Obsolete]
 	class SingleConverter : BaseNumberConverter
 	{
 		internal override bool AllowHex { get { return false; } }
@@ -141,6 +144,7 @@ namespace Eto
 	/// <summary>
 	/// Type converter attribute, for type converter compatibility in portable class libraries.
 	/// </summary>
+	[Obsolete("Since 2.5, Use System.ComponentModel.TypeConverterAttribute instead")]
 	public class TypeConverterAttribute : Attribute
 	{
 		/// <summary>
@@ -171,6 +175,7 @@ namespace Eto
 	/// <summary>
 	/// Type descriptor for conversion compatibility.
 	/// </summary>
+	[Obsolete("Since 2.5, Use System.ComponentModel.TypeDescriptor instead")]
 	public static class TypeDescriptor
 	{
 		/// <summary>
@@ -190,6 +195,7 @@ namespace Eto
 	/// <summary>
 	/// Type converter implementation, for type converter compatibility in portable class libraries.
 	/// </summary>
+	[Obsolete("Since 2.5, Use System.ComponentModel.TypeConverter instead")]
 	public class TypeConverter
 	{
 		/// <summary>

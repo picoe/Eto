@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -43,7 +43,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TypeConverter(typeof(MenuItemConverter))]
+	[sc.TypeConverter(typeof(MenuItemConverter))]
 	public abstract class MenuItem : Menu, ICommandItem
 	{
 		/// <summary>
