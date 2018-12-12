@@ -366,10 +366,19 @@ namespace Eto.Mac.Forms.Controls
 			public override void Layout()
 			{
 				base.Layout();
-				Handler?.UpdatePosition();
+				Handler?.PerformLayout();
 			}
 		}
 
+		private void PerformLayout()
+		{
+			if (!initialPositionSet && Widget.Loaded)
+			{
+				SetInitialSplitPosition();
+				initialPositionSet = true;
+			}
+			UpdatePosition();
+		}
 
 		protected override NSSplitView CreateControl() => new EtoSplitView(this);
 
@@ -521,9 +530,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.OnLoadComplete(e);
 			WasLoaded = false;
-			SetInitialSplitPosition();
-			UpdatePosition();
-			initialPositionSet = true;
 		}
 
 		public override void OnUnLoad(EventArgs e)
