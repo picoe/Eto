@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Text;
 
 namespace Eto
@@ -355,5 +354,43 @@ namespace Eto
 				return null;
 			}
 		}
-	}
+
+		  // for tray indicator
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+		public static extern int CallNextHookEx(int hookId, int code, int param, IntPtr dataPointer);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+		public static extern IntPtr GetModuleHandle(string moduleName);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+		public static extern int SetWindowsHookEx(int hookId, HookProc function, IntPtr instance, int threadId);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+		public static extern int UnhookWindowsHookEx(int hookId);
+
+		public delegate int HookProc(int code, int wParam, IntPtr structPointer);
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct MouseLowLevelHook
+		{
+			internal readonly int X;
+			internal readonly int Y;
+			internal readonly int MouseData;
+			internal readonly int Flags;
+			internal readonly int Time;
+			internal readonly int ExtraInfo;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct KeyboardLowLevelHook
+		{
+			internal readonly int VirtualKeyCode;
+			internal readonly int ScanCode;
+			internal readonly int Flags;
+			internal readonly int Time;
+			internal readonly int ExtraInfo;
+		}
+
+	 }
 }
