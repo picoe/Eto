@@ -169,9 +169,9 @@ namespace Eto.Wpf.Forms
 
 		private int MouseEventProc(int code, int wParam, IntPtr lParam)
 		{
-			if (code == 0 && (wParam == WmLeftButtonDown || wParam == WmRightButtonDown))
+			var menu = ContextMenuHandler.GetControl(Menu);
+			if (menu.IsVisible && code == 0 && (wParam == WmLeftButtonDown || wParam == WmRightButtonDown))
 			{
-				var menu = ContextMenuHandler.GetControl(Menu);
 				var contextMenuRect = GetContextMenuRect(menu);
 				var hitPoint = GetHitPoint(lParam);
 
