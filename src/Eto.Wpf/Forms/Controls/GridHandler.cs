@@ -592,5 +592,7 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Widget.Properties.Get<GridDragRowState>(GridHandler.LastDragRow_Key); }
 			set { Widget.Properties.Set(GridHandler.LastDragRow_Key, value); }
 		}
+
+		bool IGridHandler.Loaded => Widget.Loaded;
 	}
 }

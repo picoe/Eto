@@ -7,6 +7,7 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public interface IGridHandler
 	{
+		bool Loaded { get; }
 		sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent);
 		void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem);
 		void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem);
@@ -60,6 +61,8 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
+				if (GridHandler?.Loaded == true)
+					return (int)Control.ActualWidth;
 				return (int)Control.Width.Value;
 			}
 			set
