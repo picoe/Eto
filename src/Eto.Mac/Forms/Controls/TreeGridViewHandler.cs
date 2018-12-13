@@ -517,6 +517,12 @@ namespace Eto.Mac.Forms.Controls
 				SetDraggingSourceOperationMask(NSDragOperation.All, true);
 				SetDraggingSourceOperationMask(NSDragOperation.All, false);
 			}
+
+			public override void Layout()
+			{
+				base.Layout();
+				Handler?.PerformLayout();
+			}
 		}
 
 		public override object EventObject
@@ -774,7 +780,10 @@ namespace Eto.Mac.Forms.Controls
 			bool isSelectionChanged = false;
 			foreach (var sel in selection)
 			{
-				var row = Control.RowForItem(GetCachedItem(sel as ITreeGridItem));
+				var cachedItem = GetCachedItem(sel as ITreeGridItem);
+				if (cachedItem == null)
+					continue;
+				var row = Control.RowForItem(cachedItem);
 				if (row >= 0)
 					Control.SelectRow((nnint)row, true);
 				else

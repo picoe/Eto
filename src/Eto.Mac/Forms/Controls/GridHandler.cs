@@ -52,6 +52,7 @@ namespace Eto.Mac.Forms.Controls
 		NSTableView Table { get; }
 
 		bool AutoSizeColumns(bool force);
+		void PerformLayout();
 	}
 
 	class EtoGridScrollView : NSScrollView, IMacControl
@@ -327,24 +328,24 @@ namespace Eto.Mac.Forms.Controls
 				Control.ScrollRowToVisible(0);
 			else
 				Widget.Properties.Remove(GridHandler.ScrolledToRow_Key);
-
-			AutoSizeColumns(true);
 		}
 
 		NSRange autoSizeRange;
 
-		public bool AutoSizeColumns(bool force)
+		public bool AutoSizeColumns(bool force) => AutoSizeColumns(force, false);
+
+		public bool AutoSizeColumns(bool force, bool forceNewSize)
 		{
 			if (Widget.Loaded)
 			{
 				var rect = Table.VisibleRect();
 				var newRange = Table.RowsInRect(rect);
-				if (newRange.Length > 0 && (force || autoSizeRange.Location != newRange.Location || autoSizeRange.Length != newRange.Length))
+				if (force || autoSizeRange.Location != newRange.Location || autoSizeRange.Length != newRange.Length)
 				{
 					IsAutoSizingColumns = true;
 					foreach (var col in ColumnHandlers)
 					{
-						col.AutoSizeColumn(newRange, force);
+						col.AutoSizeColumn(newRange, forceNewSize);
 					}
 					autoSizeRange = newRange;
 					IsAutoSizingColumns = false;
@@ -521,6 +522,8 @@ namespace Eto.Mac.Forms.Controls
 			if (width == 0)
 				width = 100;
 			var height = RowHeight * 4;
+			if (Border != BorderType.None)
+				width += 4;
 			return new Size(width, height);
 		}
 
@@ -582,6 +585,19 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		protected void SetIsEditing(bool value) => Widget.Properties.Set(GridHandler.IsEditing_Key, value, false);
+
+		bool hasAutoSizedColumns;
+		protected void ResetAutoSizedColumns() => hasAutoSizedColumns = false;
+
+		public void PerformLayout()
+		{
+			if (!hasAutoSizedColumns && Widget.Loaded && !Table.VisibleRect().IsNull())
+			{
+				AutoSizeColumns(true, true);
+				hasAutoSizedColumns = true;
+			}
+
+		}
 
 		public bool IsEditing => Widget.Properties.Get(GridHandler.IsEditing_Key, Control.EditedRow != -1 && Control.EditedColumn != -1);
 

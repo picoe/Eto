@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Eto.Forms;
 
-namespace Eto.Test.UnitTests.Forms.Binding
+namespace Eto.Test.UnitTests.Forms.Bindings
 {
 	[TestFixture]
 	public class ObjectBindingObjectChangedTests

@@ -10,6 +10,7 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, ListBox.IHandler, IGtkEnumerableModelHandler<object>
 	{
+		IIndirectBinding<string> _itemTextBinding;
 		readonly Gtk.ScrolledWindow scroll;
 		GtkEnumerableModel<object> model;
 		ContextMenu contextMenu;
@@ -224,5 +225,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.GetBase(); }
 			set { Control.SetBase(value); }
 		}
+
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => _itemTextBinding;
+			set
+			{
+				_itemTextBinding = value;
+				if (Widget.Loaded)
+					Control.QueueDraw();
+			}
+		}
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 	}
 }

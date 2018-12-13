@@ -60,10 +60,11 @@ namespace Eto.Mac.Forms.Cells
 				widthCell = Callback.OnCreateCell(Widget, args);
 				if (widthCell == null)
 					return Callback.OnGetPreferredWidth(Widget, args);
-				widthCell.ToNative(true);
+				widthCell.AttachNative();
 				widthCells.Add(identifier, widthCell);
 			}
 			Callback.OnConfigureCell(Widget, args, widthCell);
+			widthCell.GetMacControl()?.InvalidateMeasure();
 
 			var result = widthCell.GetPreferredSize(SizeF.PositiveInfinity).Width;
 

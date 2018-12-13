@@ -171,7 +171,8 @@ namespace Eto.WinForms.Forms.Controls
 		where TWidget: DropDown
 		where TCallback: DropDown.ICallback
 	{
-		CollectionHandler collection;
+		IIndirectBinding<string> _itemTextBinding;
+		CollectionHandler _collection;
 
 		public bool ShowBorder
 		{
@@ -252,29 +253,45 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected virtual void UpdateSizes()
 		{
-			if (Widget.Loaded)
-				SetMinimumSize();
 			Control.ResetSize();
+			if (Widget.Loaded)
+				SetMinimumSize(true);
 		}
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get { return _collection != null ? _collection.Collection : null; }
 			set
 			{
 				var selected = Widget.SelectedValue;
-				collection?.Unregister();
-				collection = new CollectionHandler { Handler = this };
-				collection.Register(value);
+				_collection?.Unregister();
+				_collection = new CollectionHandler { Handler = this };
+				_collection.Register(value);
 				if (!ReferenceEquals(selected, null))
 				{
-					var newSelectedIndex = collection.IndexOf(selected);
+					var newSelectedIndex = _collection.IndexOf(selected);
 					SelectedIndex = newSelectedIndex;
 					if (newSelectedIndex == -1)
 						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
+
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => _itemTextBinding;
+			set
+			{
+				_itemTextBinding = value;
+				if (Widget.Loaded)
+				{
+					Control.Refresh();
+					UpdateSizes();
+				}
+			}
+
+		}
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
 		public override bool ShouldBubbleEvent(swf.Message msg)

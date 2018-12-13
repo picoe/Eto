@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.ComponentModel;
 using Eto.Forms;
 
-namespace Eto.Test.UnitTests.Forms.Binding
+namespace Eto.Test.UnitTests.Forms.Bindings
 {
 	class BindObject : INotifyPropertyChanged
 	{

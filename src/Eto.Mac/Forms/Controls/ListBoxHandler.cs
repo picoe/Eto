@@ -324,5 +324,17 @@ namespace Eto.Mac.Forms.Controls
 				Control.SetNeedsDisplay();
 			}
 		}
+
+		IIndirectBinding<string> itemTextBinding;
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => itemTextBinding;
+			set
+			{
+				itemTextBinding = value;
+				Control.ReloadData();
+			}
+		}
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 	}
 }
