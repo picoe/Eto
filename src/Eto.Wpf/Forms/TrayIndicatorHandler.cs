@@ -24,9 +24,9 @@ namespace Eto.Wpf.Forms
 		private const int WmRightButtonDown = 0x204;
 		private Image _image;
 		private int _keyboardHookHandle;
-		private HookProc _keyboardHookProcRef;
+		private Win32.HookProc _keyboardHookProcRef;
 		private int _mouseHookHandle;
-		private HookProc _mouseHookProcRef;
+		private Win32.HookProc _mouseHookProcRef;
 
 
 		public TrayIndicatorHandler()
@@ -75,12 +75,12 @@ namespace Eto.Wpf.Forms
 		{
 			if (_mouseHookHandle != 0)
 			{
-				UnhookWindowsHookEx(_mouseHookHandle);
+				Win32.UnhookWindowsHookEx(_mouseHookHandle);
 			}
 
 			if (_keyboardHookHandle != 0)
 			{
-				UnhookWindowsHookEx(_keyboardHookHandle);
+				Win32.UnhookWindowsHookEx(_keyboardHookHandle);
 			}
 
 			var menu = ContextMenuHandler.GetControl(Menu);
@@ -116,13 +116,13 @@ namespace Eto.Wpf.Forms
 
 		private static Point GetHitPoint(IntPtr structPointer)
 		{
-			var mouseHook = (MouseLowLevelHook) Marshal.PtrToStructure(structPointer, typeof(MouseLowLevelHook));
+			var mouseHook = (Win32.MouseLowLevelHook) Marshal.PtrToStructure(structPointer, typeof(Win32.MouseLowLevelHook));
 			return new Point(mouseHook.X, mouseHook.Y);
 		}
 
 		private static int GetKeyCode(IntPtr structPointer)
 		{
-			var keyboardHook = (KeyboardLowLevelHook) Marshal.PtrToStructure(structPointer, typeof(KeyboardLowLevelHook));
+			var keyboardHook = (Win32.KeyboardLowLevelHook) Marshal.PtrToStructure(structPointer, typeof(Win32.KeyboardLowLevelHook));
 			return keyboardHook.VirtualKeyCode;
 		}
 
@@ -137,14 +137,14 @@ namespace Eto.Wpf.Forms
 			using (var process = Process.GetCurrentProcess())
 			using (var module = process.MainModule)
 			{
-				_mouseHookHandle = SetWindowsHookEx(WhMouseLowLevel, _mouseHookProcRef, GetModuleHandle(module.ModuleName), 0);
+				_mouseHookHandle = Win32.SetWindowsHookEx(WhMouseLowLevel, _mouseHookProcRef, Win32.GetModuleHandle(module.ModuleName), 0);
 				if (_mouseHookHandle == 0)
 				{
 					throw new Win32Exception(Marshal.GetLastWin32Error());
 				}
 
 				_keyboardHookHandle =
-					SetWindowsHookEx(WhKeyboardLowLevel, _keyboardHookProcRef, GetModuleHandle(module.ModuleName), 0);
+					Win32.SetWindowsHookEx(WhKeyboardLowLevel, _keyboardHookProcRef, Win32.GetModuleHandle(module.ModuleName), 0);
 				if (_keyboardHookHandle == 0)
 				{
 					throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -164,7 +164,7 @@ namespace Eto.Wpf.Forms
 				}
 			}
 
-			return CallNextHookEx(_keyboardHookHandle, code, wParam, lParam);
+			return Win32.CallNextHookEx(_keyboardHookHandle, code, wParam, lParam);
 		}
 
 		private int MouseEventProc(int code, int wParam, IntPtr lParam)
@@ -181,42 +181,7 @@ namespace Eto.Wpf.Forms
 				}
 			}
 
-			return CallNextHookEx(_mouseHookHandle, code, wParam, lParam);
-		}
-
-		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-		private static extern int CallNextHookEx(int hookId, int code, int param, IntPtr dataPointer);
-
-		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-		private static extern IntPtr GetModuleHandle(string moduleName);
-
-		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-		private static extern int SetWindowsHookEx(int hookId, HookProc function, IntPtr instance, int threadId);
-
-		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-		private static extern int UnhookWindowsHookEx(int hookId);
-
-		private delegate int HookProc(int code, int wParam, IntPtr structPointer);
-
-		[StructLayout(LayoutKind.Sequential)]
-		private struct MouseLowLevelHook
-		{
-			internal readonly int X;
-			internal readonly int Y;
-			internal readonly int MouseData;
-			internal readonly int Flags;
-			internal readonly int Time;
-			internal readonly int ExtraInfo;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		private struct KeyboardLowLevelHook
-		{
-			internal readonly int VirtualKeyCode;
-			internal readonly int ScanCode;
-			internal readonly int Flags;
-			internal readonly int Time;
-			internal readonly int ExtraInfo;
+			return Win32.CallNextHookEx(_mouseHookHandle, code, wParam, lParam);
 		}
 	}
 }
