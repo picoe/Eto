@@ -107,7 +107,7 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		private static Rect GetContextMenuRect(swc.ContextMenu menu)
+		private static Rect GetElementRect(FrameworkElement menu)
 		{
 			var begin = menu.PointToScreen(new Point(0, 0));
 			var end = menu.PointToScreen(new Point(menu.ActualWidth, menu.ActualHeight));
@@ -172,16 +172,40 @@ namespace Eto.Wpf.Forms
 			var menu = ContextMenuHandler.GetControl(Menu);
 			if (menu.IsVisible && code == 0 && (wParam == WmLeftButtonDown || wParam == WmRightButtonDown))
 			{
-				var contextMenuRect = GetContextMenuRect(menu);
+				swc.MenuItem subMenuItem = GetCurrentSubMenuItem(menu.Items);
 				var hitPoint = GetHitPoint(lParam);
+				Rect menuRect = subMenuItem != null ? GetElementRect(subMenuItem) : GetElementRect(menu);
 
-				if (!contextMenuRect.Contains(hitPoint))
+				if (!menuRect.Contains(hitPoint))
 				{
 					menu.IsOpen = false;
 				}
 			}
 
 			return Win32.CallNextHookEx(_mouseHookHandle, code, wParam, lParam);
+		}
+
+		private swc.MenuItem GetCurrentSubMenuItem(swc.ItemCollection items)
+		{
+			foreach (var item in items)
+			{
+				if (item is swc.MenuItem menuItem)
+				{
+					if (menuItem.IsSubmenuOpen)
+					{
+						var subItem = GetCurrentSubMenuItem(menuItem.Items);
+						if (subItem != null)
+							return subItem;
+					}
+
+					if (menuItem.IsMouseOver)
+					{
+						return menuItem;
+					}
+				}
+			}
+
+			return null;
 		}
 	}
 }
