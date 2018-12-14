@@ -280,6 +280,27 @@ namespace Eto.GtkSharp.Forms.Controls
 				args.RetVal = false;
 		}
 
+		public void ScrollTo(Range<int> range)
+		{
+			var iter = Control.Buffer.GetIterAtOffset(range.Start + range.Length());
+			var mark = Control.Buffer.CreateMark(null, iter, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
+		public void ScrollToEnd()
+		{
+			var end = Control.Buffer.EndIter;
+			var mark = Control.Buffer.CreateMark(null, end, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
+		public void ScrollToBeginning()
+		{
+			var end = Control.Buffer.StartIter;
+			var mark = Control.Buffer.CreateMark(null, end, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
 		public override Font Font
 		{
 			get { return base.Font; }
@@ -328,5 +349,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return TextReplacements.None; }
 		}
+
+		public int TextLength => Control.Buffer.CharCount;
 	}
 }

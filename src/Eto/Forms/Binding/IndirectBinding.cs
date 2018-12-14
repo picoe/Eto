@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq.Expressions;
 
@@ -477,9 +477,19 @@ namespace Eto.Forms
 		/// <param name="delay">The delay time span to wait after the value has changed before updating the binding.</param>
 		/// <param name="reset"><c>true</c> to reset the delay every time the event is fired, <c>false</c> to trigger the change at least by the delay interval since the last time it was triggered</param>
 		/// <returns>A binding that will delay the change event</returns>
-		public IndirectBinding<T> AfterDelay(TimeSpan delay, bool reset = false)
+		public IndirectBinding<T> AfterDelay(TimeSpan delay, bool reset)
 		{
 			return AfterDelay(delay.TotalSeconds, reset);
+		}
+
+		public IndirectBinding<T> AfterDelay(TimeSpan delay, bool reset = false, bool initialInvoke = false)
+		{
+			return AfterDelay(delay.TotalSeconds, reset, initialInvoke);
+		}
+
+		public IndirectBinding<T> AfterDelay(double delay, bool reset)
+		{
+			return AfterDelay(delay, reset, false);
 		}
 
 		/// <summary>
@@ -495,11 +505,12 @@ namespace Eto.Forms
 		/// <param name="delay">The delay, in seconds to wait after the value has changed before updating the binding.</param>
 		/// <param name="reset"><c>true</c> to reset the delay every time the event is fired, <c>false</c> to trigger the change at least by the delay interval since the last time it was triggered</param>
 		/// <returns>A binding that will delay the change event</returns>
-		public IndirectBinding<T> AfterDelay(double delay, bool reset = false)
+		public IndirectBinding<T> AfterDelay(double delay, bool reset = false, bool initialInvoke = false)
 		{
 			UITimer timer = null;
 			EventArgs args = null;
 			object sender = null;
+			DateTime lastInvoke = DateTime.Now;
 			return new DelegateBinding<object, T>(
 				m => GetValue(m),
 				(m, val) => SetValue(m, val),
@@ -509,17 +520,27 @@ namespace Eto.Forms
 					{
 						args = e;
 						sender = s;
-						if (timer == null)
+						Application.Instance.Invoke(() =>
 						{
-							timer = new UITimer { Interval = delay };
-							timer.Elapsed += (s2, e2) =>
+							if (timer == null)
 							{
-								timer.Stop();
-								ev(sender, args);
-							};
-						}
-						if (reset || !timer.Started)
-							timer.Start();
+								timer = new UITimer { Interval = delay };
+								timer.Elapsed += (s2, e2) =>
+								{
+									timer.Stop();
+									ev(sender, args);
+								};
+							}
+							if (reset || !timer.Started)
+							{
+								var now = DateTime.Now;
+								if (initialInvoke && lastInvoke.AddSeconds(delay) < now)
+									ev(sender, args);
+								else 
+									timer.Start();
+								lastInvoke = now;
+							}
+						});
 					};
 					AddValueChangedHandler(m, ev2);
 				},

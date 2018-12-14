@@ -40,7 +40,7 @@ namespace Eto.Wpf.Forms
 				action();
 			else
 			{
-				sw.Application.Current.Dispatcher.Invoke(action);
+				dispatcher?.Invoke(action);
 			}
 		}
 

@@ -575,5 +575,19 @@ namespace Eto.Mac
 			text = text.Replace("\x01", "&");
 			return text;
 		}
+
+		public static NSAttributedString ToNS(this ITextBuffer buffer)
+		{
+			if (buffer == null)
+				return null;
+
+			if (buffer.ControlObject is NSAttributedString str)
+				return str;
+
+			if (buffer.ControlObject is NSTextView tv)
+				return tv.TextStorage;
+
+			return null;
+		}
 	}
 }

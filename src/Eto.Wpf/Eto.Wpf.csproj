@@ -95,6 +95,7 @@
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
     <Compile Include="Forms\NativeFormHandler.cs" />
+    <Compile Include="Forms\TextBufferHandler.cs" />
     <Compile Include="LogicalScreenHelper.cs" />
     <Compile Include="PropertyChangeNotifier.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
@@ -333,7 +334,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Project>{F5CC5299-471A-4D06-80FD-2D16A9CEB992}</Project>
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>

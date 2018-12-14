@@ -15,16 +15,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		List<Gtk.TextTag> insertTags = new List<Gtk.TextTag>();
 		List<Gtk.TextTag> removeTags = new List<Gtk.TextTag>();
 
-		const string WeightTagPrefix = "w-";
-		const string StyleTagPrefix = "s-";
-		const string StretchTagPrefix = "h-";
-		const string UnderlineTagPrefix = "u-";
-		const string StrikethroughTagPrefix = "t-";
-		const string FontSizePrefix = "f-";
-		const string ForegroundTagPrefix = "fg-";
-		const string BackgroundTagPrefix = "bg-";
-		const string FamilyTagPrefix = "fm-";
-
 		bool keepTags;
 
 		protected override void Initialize()
@@ -66,72 +56,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			keepTags = true;
 		}
 
-		void ApplySelectionTag(string prefix, string variation, Action<Gtk.TextTag> apply)
-		{
-			var tagName = prefix + variation;
-
-			Gtk.TextIter start, end;
-			var buffer = Control.Buffer;
-			if (buffer.GetSelectionBounds(out start, out end))
-			{
-				// apply formatting to the selection
-				ApplyTag(prefix, variation, start, end, apply);
-			}
-			else
-			{
-				// nothing selected, set insertion formatting
-				buffer.TagTable.Foreach(t =>
-				{
-					if (t.Name != null && t.Name != tagName && t.Name.StartsWith(prefix, StringComparison.Ordinal) && !removeTags.Contains(t))
-						removeTags.Add(t);
-				});
-				insertTags.RemoveAll(removeTags.Contains);
-				removeTags.RemoveAll(r => r.Name == tagName);
-
-				var tag = buffer.TagTable.Lookup(tagName);
-				if (tag == null)
-				{
-					tag = new Gtk.TextTag(tagName);
-					apply(tag);
-					buffer.TagTable.Add(tag);
-				}
-				insertTags.Add(tag);
-			}
-		}
-
-		void ApplyTag(string prefix, string variation, Gtk.TextIter start, Gtk.TextIter end, Action<Gtk.TextTag> apply)
-		{
-			var buffer = Control.Buffer;
-			var tagName = prefix + variation;
-			var tagsToRemove = new List<Gtk.TextTag>();
-			buffer.TagTable.Foreach(t =>
-			{
-				if (t.Name != null && t.Name.StartsWith(prefix, StringComparison.Ordinal))
-					tagsToRemove.Add(t);
-			});
-			foreach (var removeTag in tagsToRemove)
-			{
-				buffer.RemoveTag(removeTag, start, end);
-			}
-
-			var tag = buffer.TagTable.Lookup(tagName);
-			if (tag == null)
-			{
-				tag = new Gtk.TextTag(tagName);
-				apply(tag);
-				buffer.TagTable.Add(tag);
-			}
-			buffer.ApplyTag(tag, start, end);
-		}
-
-		void ApplyTag(string prefix, string variation, Range<int> range, Action<Gtk.TextTag> apply)
-		{
-			var buffer = Control.Buffer;
-			var start = buffer.GetIterAtOffset(range.Start);
-			var end = buffer.GetIterAtOffset(range.End + 1);
-			ApplyTag(prefix, variation, start, end, apply);
-		}
-
 		bool SelectionHasTag(string prefix, string variation)
 		{
 			var tagName = prefix + variation;
@@ -148,46 +72,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void SetFont(Range<int> range, Font font)
 		{
-			var pangoFont = font.ToPango();
-			var variation = pangoFont != null ? pangoFont.Handle.ToString() : string.Empty;
-			ApplyTag(FamilyTagPrefix, pangoFont.Family, range, tag =>
-			{
-				tag.Family = pangoFont.Family;
-				tag.FamilySet = true;
-			});
-			ApplyTag(FontSizePrefix, pangoFont.Size.ToString(), range, tag =>
-			{
-				tag.Size = pangoFont.Size;
-				tag.SizeSet = true;
-			});
-			ApplyTag(StretchTagPrefix, variation, range, tag =>
-			{
-				tag.Stretch = pangoFont.Stretch;
-				tag.StretchSet = true;
-			});
-			ApplyTag(StyleTagPrefix, pangoFont.Style.ToString(), range, tag =>
-			{
-				tag.Style = pangoFont.Style;
-				tag.StyleSet = true;
-			});
-			ApplyTag(WeightTagPrefix, pangoFont.Weight.ToString(), range, tag =>
-			{
-				tag.Weight = pangoFont.Weight;
-				tag.WeightSet = true;
-			});
-			SetUnderline(range, font.FontDecoration.HasFlag(FontDecoration.Underline));
-			SetStrikethrough(range, font.FontDecoration.HasFlag(FontDecoration.Strikethrough));
+			Control.Buffer.SetFont(range, font);
 			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
 		public void SetFamily(Range<int> range, FontFamily family)
 		{
-			var pangoFamily = family.ToPango().Name;
-			ApplyTag(FamilyTagPrefix, pangoFamily, range, tag =>
-			{
-				tag.Family = pangoFamily;
-				tag.FamilySet = true;
-			});
+			Control.Buffer.SetFamily(range, family);
 			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}
 
@@ -604,6 +495,31 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected new RichTextAreaConnector Connector => (RichTextAreaConnector)base.Connector;
 
 		protected override WeakConnector CreateConnector() => new RichTextAreaConnector();
+
+		public void Insert(int position, ITextBuffer buffer)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Append(string text)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Append(ITextBuffer buffer)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void BeginEdit()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void EndEdit()
+		{
+			throw new NotImplementedException();
+		}
 
 		protected class RichTextAreaConnector : TextAreaConnector
 		{

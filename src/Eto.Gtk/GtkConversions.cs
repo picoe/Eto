@@ -826,5 +826,9 @@ namespace Eto.GtkSharp
 			natural_size = Math.Max(natural_size, min);
 		}
 #endif
+		public static Gtk.TextBuffer ToGtk(this ITextBuffer buffer)
+		{
+			return buffer.ControlObject as Gtk.TextBuffer;
+		}
 	}
 }

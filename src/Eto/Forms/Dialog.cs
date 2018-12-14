@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Eto.Forms
@@ -127,7 +129,20 @@ namespace Eto.Forms
 	{
 		ButtonCollection positiveButtons, negativeButtons;
 
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
+
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
+				var controls = base.Controls;
+				if (positiveButtons != null)
+					controls = controls.Concat(positiveButtons);
+				if (negativeButtons != null)
+					controls = controls.Concat(negativeButtons);
+				return controls;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the display mode hint

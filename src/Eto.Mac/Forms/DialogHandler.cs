@@ -250,7 +250,7 @@ namespace Eto.Mac.Forms
 
 		public void InsertDialogButton(bool positive, int index, Button item)
 		{
-			Control.ContentView.AddSubview(item.ToNative());
+			ContentControl.AddSubview(item.ToNative());
 			InvalidateMeasure();
 		}
 
@@ -264,7 +264,7 @@ namespace Eto.Mac.Forms
 		{
 			get
 			{
-				var availableSize = Control.ContentView.Frame.Size.ToEto();
+				var availableSize = ContentControl.Frame.Size.ToEto();
 				var buttonSize = GetButtonSize(availableSize);
 
 				var frame = base.ContentFrame;
@@ -272,6 +272,12 @@ namespace Eto.Mac.Forms
 				frame.Height -= buttonSize.Height;
 				return frame;
 			}
+		}
+
+		public override void PerformContentLayout()
+		{
+			base.PerformContentLayout();
+			PositionButtons();
 		}
 
 		void PositionButtons()
@@ -283,6 +289,10 @@ namespace Eto.Mac.Forms
 			var buttonSize = GetButtonSize(availableSize);
 
 			Control.SetContentBorderThickness(UseContentBorder ? buttonSize.Height : 0, NSRectEdge.MinYEdge);
+			if (!ContentControl.IsFlipped)
+			{
+				point.Y = availableSize.Height - buttonSize.Height;
+			}
 
 			foreach (var button in Widget.PositiveButtons.Reverse().Concat(Widget.NegativeButtons))
 			{

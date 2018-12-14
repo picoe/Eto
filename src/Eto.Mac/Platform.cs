@@ -177,6 +177,7 @@ namespace Eto.Mac
 			p.Add<ButtonSegmentedItem.IHandler>(() => new ButtonSegmentedItemHandler());
 			p.Add<MenuSegmentedItem.IHandler>(() => new MenuSegmentedItemHandler());
 			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
+			p.Add<TextBuffer.IHandler>(() => new TextBufferHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

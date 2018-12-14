@@ -43,6 +43,15 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
+		internal static readonly object AcceptsTab_Key = new object();
+		internal static readonly object AcceptsReturn_Key = new object();
+		internal static readonly object ReadOnly_Key = new object();
+		internal static readonly object TextColor_Key = new object();
+		internal static readonly object BackgroundColor_Key = new object();
+		internal static readonly object Font_Key = new object();
+
+		internal static readonly IntPtr selString = Selector.GetHandle("string");
+		internal static readonly IntPtr selLength = Selector.GetHandle("length");
 	}
 
 	public interface ITextAreaHandler
@@ -229,12 +238,10 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static readonly object ReadOnly_Key = new object();
-
 		public bool ReadOnly
 		{
-			get { return Widget.Properties.Get<bool>(ReadOnly_Key); }
-			set { Widget.Properties.Set(ReadOnly_Key, value, () => Control.Editable = !value); }
+			get { return Widget.Properties.Get<bool>(TextAreaHandler.ReadOnly_Key); }
+			set { Widget.Properties.Set(TextAreaHandler.ReadOnly_Key, value, () => Control.Editable = !value); }
 		}
 
 		protected override bool ControlEnabled
@@ -271,42 +278,36 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static readonly object TextColor_Key = new object();
-
 		public Color TextColor
 		{
-			get { return Widget.Properties.Get(TextColor_Key, () => NSColor.ControlText.ToEto()); }
+			get { return Widget.Properties.Get(TextAreaHandler.TextColor_Key, () => NSColor.ControlText.ToEto()); }
 			set
 			{
-				Widget.Properties.Set(TextColor_Key, value, () =>
+				Widget.Properties.Set(TextAreaHandler.TextColor_Key, value, () =>
 				{
 					Control.TextColor = Control.InsertionPointColor = value.ToNSUI();
 				});
 			}
 		}
 
-		static readonly object BackgroundColor_Key = new object();
-
 		public override Color BackgroundColor
 		{
-			get { return Widget.Properties.Get<Color>(BackgroundColor_Key, () => NSColor.ControlBackground.ToEto()); }
+			get { return Widget.Properties.Get<Color>(TextAreaHandler.BackgroundColor_Key, () => NSColor.ControlBackground.ToEto()); }
 			set
 			{
-				Widget.Properties.Set(BackgroundColor_Key, value, () =>
+				Widget.Properties.Set(TextAreaHandler.BackgroundColor_Key, value, () =>
 				{
 					Control.BackgroundColor = value.ToNSUI();
 				});
 			}
 		}
 
-		static readonly object Font_Key = new object();
-
 		public Font Font
 		{
-			get { return Widget.Properties.Create(Font_Key, () => new Font(new FontHandler(Control.Font))); }
+			get { return Widget.Properties.Create(TextAreaHandler.Font_Key, () => new Font(new FontHandler(Control.Font))); }
 			set
 			{
-				Widget.Properties.Set(Font_Key, value, () =>
+				Widget.Properties.Set(TextAreaHandler.Font_Key, value, () =>
 				{
 					Control.Font = value.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					InvalidateMeasure();
@@ -374,47 +375,43 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.SetSelectedRange(new NSRange(value, 0)); }
 		}
 
-		static readonly object AcceptsTab_Key = new object();
-
 		public bool AcceptsTab
 		{
-			get { return Widget.Properties.Get<bool?>(AcceptsTab_Key) ?? true; }
+			get { return Widget.Properties.Get<bool?>(TextAreaHandler.AcceptsTab_Key) ?? true; }
 			set
 			{
-				Widget.Properties[AcceptsTab_Key] = value;
+				Widget.Properties[TextAreaHandler.AcceptsTab_Key] = value;
 				if (!value)
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 			}
 		}
-
-		static readonly object AcceptsReturn_Key = new object();
 
 		public bool AcceptsReturn
 		{
-			get { return Widget.Properties.Get<bool?>(AcceptsReturn_Key) ?? true; }
+			get { return Widget.Properties.Get<bool?>(TextAreaHandler.AcceptsReturn_Key) ?? true; }
 			set
 			{
-				Widget.Properties[AcceptsReturn_Key] = value;
+				Widget.Properties[TextAreaHandler.AcceptsReturn_Key] = value;
 				if (!value)
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 			}
 		}
 
-		static readonly IntPtr selGetString = Selector.GetHandle("string");
-
 		public void Append(string text, bool scrollToCursor)
 		{
-			// get NSString object so we don't have to marshal the entire string to get its length
-			var stringValuePtr = Messaging.IntPtr_objc_msgSend(Control.Handle, selGetString);
-			var str = Runtime.GetNSObject<NSString>(stringValuePtr);
-
-			var range = new NSRange(str != null ? str.Length : 0, 0);
+			var range = new NSRange(TextLength, 0);
 			Control.Replace(range, text);
 			range.Location += text.Length;
 			Control.SetSelectedRange(range);
 			if (scrollToCursor)
 				Control.ScrollRangeToVisible(range);
 		}
+
+		public void ScrollTo(Range<int> range) => Control.ScrollRangeToVisible(range.ToNS());
+
+		public void ScrollToBeginning() => ScrollTo(new Range<int>(0));
+
+		public void ScrollToEnd() => ScrollTo(new Range<int>(TextLength));
 
 		public TextAlignment TextAlignment
 		{
@@ -476,6 +473,18 @@ namespace Eto.Mac.Forms.Controls
 		public TextReplacements SupportedTextReplacements
 		{
 			get { return TextReplacements.Quote | TextReplacements.Text | TextReplacements.Dash | TextReplacements.Spelling; }
+		}
+
+		public int TextLength
+		{
+			get
+			{
+				// get NSString ptr so we don't have to marshal the entire string just to get its length
+				var stringValuePtr = Messaging.IntPtr_objc_msgSend(Control.Handle, TextAreaHandler.selString);
+				if (stringValuePtr == IntPtr.Zero)
+					return 0;
+				return (int)Messaging.IntPtr_objc_msgSend(stringValuePtr, TextAreaHandler.selLength);
+			}
 		}
 	}
 }

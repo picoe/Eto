@@ -75,14 +75,25 @@ namespace Eto.Forms
 		/// </summary>
 		public void Start()
 		{
+			Application.Instance.Invoke(DoStart);
+		}
+
+		void DoStart()
+		{
 			Started = true;
 			Handler.Start();
 		}
+
 
 		/// <summary>
 		/// Stops a running timer
 		/// </summary>
 		public void Stop()
+		{
+			Application.Instance.Invoke(DoStop);
+		}
+
+		void DoStop()
 		{
 			Started = false;
 			Handler.Stop();

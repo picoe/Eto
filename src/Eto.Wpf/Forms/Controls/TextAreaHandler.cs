@@ -84,6 +84,25 @@ namespace Eto.Wpf.Forms.Controls
 					break;
 			}
 		}
+
+		public override void ScrollTo(Range<int> range)
+		{
+			var rect = Control.GetRectFromCharacterIndex(range.End);
+			Control.ScrollToVerticalOffset(rect.Top);
+			Control.ScrollToHorizontalOffset(rect.Left);
+		}
+
+		public override int TextLength
+		{
+			get
+			{
+				var sel = Selection;
+				SelectAll();
+				var length = Control.SelectionLength;
+				Selection = sel;
+				return length;
+			}
+		}
 	}
 
 	public abstract class TextAreaHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextArea.IHandler
@@ -174,10 +193,13 @@ namespace Eto.Wpf.Forms.Controls
 
 		public abstract int CaretIndex { get; set; }
 
-		public void SelectAll()
-		{
-			Control.SelectAll();
-		}
+		public void SelectAll() => Control.SelectAll();
+
+		public abstract void ScrollTo(Range<int> range);
+
+		public void ScrollToEnd() => Control.ScrollToEnd();
+
+		public void ScrollToBeginning() => Control.ScrollToHome();
 
 		static readonly object AcceptsTabKey = new object();
 
@@ -220,13 +242,12 @@ namespace Eto.Wpf.Forms.Controls
 
 		public TextReplacements TextReplacements
 		{
-			get { return TextReplacements.None; }
+			get => TextReplacements.None;
 			set { }
 		}
 
-		public TextReplacements SupportedTextReplacements
-		{
-			get { return TextReplacements.None; }
-		}
+		public TextReplacements SupportedTextReplacements => TextReplacements.None;
+
+		public abstract int TextLength { get; }
 	}
 }

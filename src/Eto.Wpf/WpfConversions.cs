@@ -892,5 +892,14 @@ namespace Eto.Wpf
 		{
 			return CustomControls.FontDialog.NameDictionaryExtensions.GetName(nameDictionary, ietfLanguageTag);
 		}
+
+		public static swd.FlowDocument ToWpf(this ITextBuffer buffer)
+		{
+			if (buffer.ControlObject is swd.FlowDocument fd)
+				return fd;
+			if (buffer.ControlObject is swc.RichTextBox rtb)
+				return rtb.Document;
+			return null;
+		}
 	}
 }

@@ -61,7 +61,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Interface for a formatted text buffer
 	/// </summary>
-	public interface ITextBuffer
+	public interface ITextBuffer : IControlObjectSource
 	{
 		/// <summary>
 		/// Sets the bold flag for the specified text range.
@@ -159,6 +159,18 @@ namespace Eto.Forms
 		/// <param name="position">Position to insert the text.</param>
 		/// <param name="text">Text to insert.</param>
 		void Insert(int position, string text);
+
+		void Insert(int position, ITextBuffer buffer);
+
+		void Append(string text);
+
+		void Append(ITextBuffer buffer);
+
+		void BeginEdit();
+
+		void EndEdit();
+
+		int TextLength { get; }
 	}
 
 	/// <summary>

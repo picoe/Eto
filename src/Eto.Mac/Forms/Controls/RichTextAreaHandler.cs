@@ -372,10 +372,17 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public ITextBuffer Buffer
-		{
-			get { return this; }
-		}
+		public ITextBuffer Buffer => this;
+
+		public void BeginEdit() => Control.TextStorage.BeginEditing();
+
+		public void EndEdit() => Control.TextStorage.EndEditing();
+
+		public void Append(string text) => Control.TextStorage.Append(new NSAttributedString(text, Control.TypingAttributes));
+
+		public void Insert(int position, ITextBuffer buffer) => Control.TextStorage.Insert(buffer.ToNS(), (nnint)position);
+
+		public void Append(ITextBuffer buffer) => Control.TextStorage.Append(buffer.ToNS());
 	}
 }
 

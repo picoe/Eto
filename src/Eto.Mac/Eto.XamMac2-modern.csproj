@@ -244,6 +244,7 @@
     <Compile Include="Forms\Controls\SegmentedButtonHandler.cs" />
     <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
     <Compile Include="ColorizeView.cs" />
+    <Compile Include="Forms\TextBufferHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>
@@ -260,7 +261,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Project>{2FE387FB-343F-4CB4-80F9-7EEC2EB0CE17}</Project>
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>

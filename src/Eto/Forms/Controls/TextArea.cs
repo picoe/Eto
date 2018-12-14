@@ -297,6 +297,12 @@ namespace Eto.Forms
 			Handler.Append(text, scrollToCursor);
 		}
 
+		public void ScrollTo(Range<int> range) => Handler.ScrollTo(range);
+
+		public void ScrollToEnd() => Handler.ScrollToEnd();
+
+		public int TextLength => Handler.TextLength;
+
 		static readonly object callback = new Callback();
 
 		/// <summary>
@@ -382,6 +388,10 @@ namespace Eto.Forms
 			/// <param name="text">Text to insert.</param>
 			/// <param name="scrollToCursor">If set to <c>true</c>, scroll to the inserted text.</param>
 			void Append(string text, bool scrollToCursor);
+
+			void ScrollTo(Range<int> range);
+			void ScrollToEnd();
+			void ScrollToBeginning();
 
 			/// <summary>
 			/// Gets or sets the selected text.
@@ -473,6 +483,8 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if spell check is supported; otherwise, <c>false</c>.</value>
 			bool SpellCheckIsSupported { get; }
+
+			int TextLength { get; }
 		}
 	}
 }

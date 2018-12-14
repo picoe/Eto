@@ -461,12 +461,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		swd.TextRange GetRange(Range<int> range)
-		{
-			var content = Control.Document.ContentStart;
-			var start = content.GetTextPositionAtOffset(range.Start);
-			return new swd.TextRange(start, start.GetTextPositionAtOffset(range.Length()));
-		}
+		swd.TextRange GetRange(Range<int> range) => Control.Document.GetRange(range);
 
 		void SetRange(Range<int> range, Action<swd.TextRange> action)
 		{
@@ -485,12 +480,14 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void SetForeground(Range<int> range, Color color)
 		{
-			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.ForegroundProperty, color.ToWpfBrush()));
+			var brush = color.ToWpfBrush();
+			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.ForegroundProperty, brush));
 		}
 
 		public void SetBackground(Range<int> range, Color color)
 		{
-			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.BackgroundProperty, color.ToWpfBrush()));
+			var brush = color.ToWpfBrush();
+			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.BackgroundProperty, brush));
 		}
 
 		public bool SelectionBold
@@ -537,48 +534,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			using (Control.DeclareChangeBlock())
 			{
-				// set the property to each element in the range so it keeps all other decorations
-				foreach (var element in range.GetInlineElements())
-				{
-					var existingDecorations = element.GetValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
-
-					// need to keep the range before changing otherwise the range changes
-					var elementRange = new swd.TextRange(element.ElementStart, element.ElementEnd);
-
-					sw.TextDecorationCollection newDecorations = null;
-
-					// remove decorations from the element
-					element.SetValue(swd.Inline.TextDecorationsProperty, null);
-
-					if (existingDecorations != null && existingDecorations.Count > 0)
-					{
-						// merge desired decorations with existing decorations.
-						if (value)
-							newDecorations = new sw.TextDecorationCollection(existingDecorations.Union(decorations));
-						else
-							newDecorations = new sw.TextDecorationCollection(existingDecorations.Except(decorations));
-
-						// split up existing decorations to the parts of the element that don't fall within the range
-						existingDecorations = new sw.TextDecorationCollection(existingDecorations); // copy so we don't update existing elements
-						if (elementRange.Start.CompareTo(range.Start) < 0)
-							new swd.TextRange(elementRange.Start, range.Start).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, existingDecorations);
-						if (elementRange.End.CompareTo(range.End) > 0)
-							new swd.TextRange(range.End, elementRange.End).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, existingDecorations);
-					}
-					else
-					{
-						// no existing decorations, just set the new value
-						newDecorations = value ? decorations : null;
-					}
-
-					if (newDecorations != null && newDecorations.Count > 0)
-					{
-						// apply new decorations to the desired range, which may be a combination of existing decorations
-						swd.TextPointer start = elementRange.Start.CompareTo(range.Start) < 0 ? range.Start : elementRange.Start;
-						swd.TextPointer end = elementRange.End.CompareTo(range.End) > 0 ? range.End : elementRange.End;
-						new swd.TextRange(start, end).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, newDecorations);
-					}
-				}
+				range.SetDecorations(decorations, value);
 			}
 		}
 
@@ -614,7 +570,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void SetItalic(Range<int> range, bool italic)
 		{
-			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.FontStyleProperty, italic ? sw.FontStyles.Italic : sw.FontStyles.Normal));
+			var style = italic ? sw.FontStyles.Italic : sw.FontStyles.Normal;
+			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.FontStyleProperty, style));
 		}
 
 		public void SetUnderline(Range<int> range, bool underline)
@@ -827,7 +784,7 @@ namespace Eto.Wpf.Forms.Controls
 		public void Delete(Range<int> range)
 		{
 			var textRange = GetRange(range);
-			textRange.Text = null;
+			textRange.Text = string.Empty;
 		}
 
 		public void Insert(int position, string text)
@@ -836,10 +793,32 @@ namespace Eto.Wpf.Forms.Controls
 			pos.InsertTextInRun(text);
 		}
 
-		public ITextBuffer Buffer
+		public void Append(string text) => Control.AppendText(text);
+
+		public void BeginEdit() => Control.BeginChange();
+
+		public void EndEdit() => Control.EndChange();
+
+		public override void ScrollTo(Range<int> range)
 		{
-			get { return this; }
+			var textRange = GetRange(range);
+			var rect = textRange.End.GetCharacterRect(swd.LogicalDirection.Backward);
+			Control.ScrollToVerticalOffset(rect.Top);
+			Control.ScrollToHorizontalOffset(rect.Left);
 		}
+
+		public void Insert(int position, ITextBuffer buffer)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Append(ITextBuffer buffer)
+		{
+			using (Control.DeclareChangeBlock())
+				Control.Document.Blocks.AddRange(buffer.ToWpf().Blocks.ToList());
+		}
+
+		public ITextBuffer Buffer => this;
 
 		public override TextAlignment TextAlignment
 		{
@@ -850,6 +829,8 @@ namespace Eto.Wpf.Forms.Controls
 				ContentRange.ApplyPropertyValue(swd.Block.TextAlignmentProperty, value.ToWpfTextAlignment());
 			}
 		}
+
+		public override int TextLength => ContentRange.GetLength();
 	}
 
 	static class FlowDocumentExtensions
@@ -1019,9 +1000,62 @@ namespace Eto.Wpf.Forms.Controls
 			return offset;
 		}
 
+		public static swd.TextRange GetRange(this swd.FlowDocument doc, Range<int> range)
+		{
+			var content = doc.ContentStart;
+			//var start = content.GetTextPositionAtOffset(range.Start);
+			var start = doc.GetTextPositionAtOffset(range.Start);
+			return new swd.TextRange(start, start.GetTextPositionAtOffset(range.Length()));
+		}
+
+		public static swd.TextPointer GetTextPositionAtOffset(this swd.FlowDocument doc, int position)
+		{
+			// only supports paragraphs/runs, no lists, tables, etc.
+			foreach (var block in doc.Blocks)
+			{
+				if (block is swd.Paragraph p)
+				{
+					if (GetTextPositionAtOffset(p.Inlines, ref position, out var pointer))
+						return pointer;
+
+					position--; // newline for each paragraph
+				}
+			}
+			return doc.ContentEnd;
+		}
+
+		static bool GetTextPositionAtOffset(swd.InlineCollection inlines, ref int position, out swd.TextPointer pointer)
+		{
+			foreach (var inline in inlines)
+			{
+				if (inline is swd.Run run)
+				{
+					var length = run.Text.Length;
+					if (length >= position)
+					{
+						pointer = run.ContentStart.GetPositionAtOffset(position);
+						return true;
+					}
+
+					position -= length;
+				}
+				else if (inline is swd.LineBreak lb)
+				{
+					position--;
+				}
+				else if (inline is swd.Span span)
+				{
+					if (GetTextPositionAtOffset(span.Inlines, ref position, out pointer))
+						return true;
+				}
+			}
+			pointer = null;
+			return false;
+		}
+
 		public static swd.TextPointer GetTextPositionAtOffset(this swd.TextPointer position, int characterCount)
 		{
-			/*
+			/* *
 			System.Diagnostics.Debug.WriteLine($"Finding position with {characterCount}");
 			var p = position;
 			while (p != null)
@@ -1033,7 +1067,7 @@ namespace Eto.Wpf.Forms.Controls
 				System.Diagnostics.Debug.WriteLine($"Context: {ctx}, Adjacent: {adj}, Length: {len}, Text: {text}");
 				p = p.GetNextContextPosition(swd.LogicalDirection.Forward);
 			}
-			*/
+			/* */
 
 			while (position != null && characterCount > 0)
 			{
@@ -1094,6 +1128,52 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			var source = sw.DependencyPropertyHelper.GetValueSource(obj, prop);
 			return source.BaseValueSource == sw.BaseValueSource.Local || source.BaseValueSource == sw.BaseValueSource.Inherited;
+		}
+
+		public static void SetDecorations(this swd.TextRange range, sw.TextDecorationCollection decorations, bool value)
+		{
+			// set the property to each element in the range so it keeps all other decorations
+			foreach (var element in range.GetInlineElements())
+			{
+				var existingDecorations = element.GetValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
+
+				// need to keep the range before changing otherwise the range changes
+				var elementRange = new swd.TextRange(element.ElementStart, element.ElementEnd);
+
+				sw.TextDecorationCollection newDecorations = null;
+
+				// remove decorations from the element
+				element.SetValue(swd.Inline.TextDecorationsProperty, null);
+
+				if (existingDecorations != null && existingDecorations.Count > 0)
+				{
+					// merge desired decorations with existing decorations.
+					if (value)
+						newDecorations = new sw.TextDecorationCollection(existingDecorations.Union(decorations));
+					else
+						newDecorations = new sw.TextDecorationCollection(existingDecorations.Except(decorations));
+
+					// split up existing decorations to the parts of the element that don't fall within the range
+					existingDecorations = new sw.TextDecorationCollection(existingDecorations); // copy so we don't update existing elements
+					if (elementRange.Start.CompareTo(range.Start) < 0)
+						new swd.TextRange(elementRange.Start, range.Start).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, existingDecorations);
+					if (elementRange.End.CompareTo(range.End) > 0)
+						new swd.TextRange(range.End, elementRange.End).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, existingDecorations);
+				}
+				else
+				{
+					// no existing decorations, just set the new value
+					newDecorations = value ? decorations : null;
+				}
+
+				if (newDecorations != null && newDecorations.Count > 0)
+				{
+					// apply new decorations to the desired range, which may be a combination of existing decorations
+					swd.TextPointer start = elementRange.Start.CompareTo(range.Start) < 0 ? range.Start : elementRange.Start;
+					swd.TextPointer end = elementRange.End.CompareTo(range.End) > 0 ? range.End : elementRange.End;
+					new swd.TextRange(start, end).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, newDecorations);
+				}
+			}
 		}
 
 	}
