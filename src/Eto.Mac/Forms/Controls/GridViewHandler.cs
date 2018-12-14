@@ -138,6 +138,12 @@ namespace Eto.Mac.Forms.Controls
 			{
 				return AllowedOperation ?? NSDragOperation.None;
 			}
+
+			public override void Layout()
+			{
+				base.Layout();
+				Handler?.PerformLayout();
+			}
 		}
 
 		public class EtoTableViewDataSource : NSTableViewDataSource
@@ -520,8 +526,8 @@ namespace Eto.Mac.Forms.Controls
 					collection.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
-				if (Widget.Loaded)
-					AutoSizeColumns(true);
+				ResetAutoSizedColumns();
+				InvalidateMeasure();
 			}
 		}
 

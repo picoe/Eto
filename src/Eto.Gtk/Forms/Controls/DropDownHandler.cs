@@ -29,6 +29,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		where TWidget : DropDown
 		where TCallback : DropDown.ICallback
 	{
+		IIndirectBinding<string> _itemTextBinding;
 		protected Font font;
 		protected CollectionHandler collection;
 		protected Gtk.ListStore listStore;
@@ -227,6 +228,18 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.QueueDraw();
 			}
 		}
+
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => _itemTextBinding;
+			set
+			{
+				_itemTextBinding = value;
+				if (Widget.Loaded)
+					Control.QueueDraw();
+			}
+		}
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		public override void AttachEvent(string id)
 		{

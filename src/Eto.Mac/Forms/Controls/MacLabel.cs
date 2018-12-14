@@ -161,12 +161,12 @@ namespace Eto.Mac.Forms.Controls
 				return naturalSizeInfinity.Value;
 			}
 
-			if (Widget.Loaded && Wrap != WrapMode.None && Size.Width > 0)
+			if (Widget.Loaded && Wrap != WrapMode.None && PreferredSize?.Width > 0)
 			{
 				/*if (!float.IsPositiveInfinity(availableSize.Width))
 					availableSize.Width = Math.Max(Size.Width, availableSize.Width);
 				else*/
-					availableSize.Width = Size.Width;
+				availableSize.Width = PreferredSize.Value.Width;
 				availableSize.Height = float.PositiveInfinity;
 			}
 

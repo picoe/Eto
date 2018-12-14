@@ -265,7 +265,6 @@ namespace Eto.Forms
 						SetRowScale(y);
 				}
 			}
-			created = true;
 		}
 
 		void SetCellSize(Size value, bool createRows)
@@ -280,9 +279,9 @@ namespace Eto.Forms
 				{
 					var rows = Enumerable.Range(0, value.Height).Select(r => new TableRow(Enumerable.Range(0, value.Width).Select(c => new TableCell())));
 					Rows = new TableRowCollection(this, rows);
-					created = true;
 				}
 			}
+			created = true;
 		}
 
 		/// <summary>

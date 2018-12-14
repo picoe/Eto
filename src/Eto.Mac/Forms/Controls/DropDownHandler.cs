@@ -225,7 +225,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection == null ? null : collection.Collection; }
+			get => collection?.Collection;
 			set
 			{
 				var selected = Widget.SelectedValue;
@@ -238,6 +238,7 @@ namespace Eto.Mac.Forms.Controls
 					Control.SelectItem(collection.IndexOf(selected));
 					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
+				InvalidateMeasure();
 			}
 		}
 
@@ -283,8 +284,30 @@ namespace Eto.Mac.Forms.Controls
 		public bool ShowBorder
 		{
 			get { return Control.Bordered; }
-			set { Control.Bordered = value; }
+			set
+			{
+				Control.Bordered = value;
+				InvalidateMeasure();
+			}
 		}
+
+		IIndirectBinding<string> itemTextBinding;
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => itemTextBinding;
+			set
+			{
+				itemTextBinding = value;
+				var dataStore = DataStore;
+				if (dataStore != null)
+				{
+					// re-add all items
+					DataStore = dataStore;
+				}
+			}
+		}
+
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		void EnsureDelegate()
 		{

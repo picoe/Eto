@@ -1,15 +1,15 @@
-﻿using Eto.Forms;
+using Eto.Forms;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
-	public class ComboBoxTests
+	public class ComboBoxTests : ListControlTests<ComboBox>
 	{
 		[Test]
 		public void InitialValuesShouldBeCorrect()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				var comboBox = new ComboBox();
 				Assert.IsFalse(comboBox.AutoComplete, "AutoComplete should be false");
@@ -21,7 +21,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void TextNotMatchingItemsShouldNotHaveSelectedItem()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				int selectedIndexChanged = 0;
 				var comboBox = new ComboBox { Items = { "Item 1", "Item 2", "Item 3" } };
