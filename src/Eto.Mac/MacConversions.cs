@@ -336,16 +336,19 @@ namespace Eto.Mac
 			KeyEventArgs kpea;
 			Keys modifiers = theEvent.ModifierFlags.ToEto();
 			key |= modifiers;
+
+			KeyEventType keyEventType = theEvent.Type == NSEventType.KeyUp ? KeyEventType.KeyUp : KeyEventType.KeyDown;
+
 			if (key != Keys.None)
 			{
 				if (((modifiers & ~(Keys.Shift | Keys.Alt)) == 0))
-					kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
+					kpea = new KeyEventArgs(key, keyEventType, keyChar);
 				else
-					kpea = new KeyEventArgs(key, KeyEventType.KeyDown);
+					kpea = new KeyEventArgs(key, keyEventType);
 			}
 			else
 			{
-				kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
+				kpea = new KeyEventArgs(key, keyEventType, keyChar);
 			}
 			return kpea;
 		}
