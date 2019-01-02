@@ -510,14 +510,16 @@ namespace Eto.GtkSharp
 		{
 			Keys key = args.Key.ToEto() | args.State.ToEtoKey();
 
+			KeyEventType keyEventType = args.Type == Gdk.EventType.KeyRelease ? KeyEventType.KeyUp : KeyEventType.KeyDown;
+
 			if (key != Keys.None)
 			{
 				Keys modifiers = (key & Keys.ModifierMask);
 				if (args.KeyValue <= 128 && ((modifiers & ~Keys.Shift) == 0))
-					return new KeyEventArgs(key, KeyEventType.KeyDown, (char)args.KeyValue);
-				return new KeyEventArgs(key, KeyEventType.KeyDown);
+					return new KeyEventArgs(key, keyEventType, (char)args.KeyValue);
+				return new KeyEventArgs(key, keyEventType);
 			}
-			return args.KeyValue <= 128 ? new KeyEventArgs(key, KeyEventType.KeyDown, (char)args.KeyValue) : null;
+			return args.KeyValue <= 128 ? new KeyEventArgs(key, keyEventType, (char)args.KeyValue) : null;
 		}
 
 		public static MouseButtons ToEtoMouseButtons(this Gdk.ModifierType modifiers)
