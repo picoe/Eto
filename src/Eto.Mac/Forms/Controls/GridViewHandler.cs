@@ -295,10 +295,11 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 					var columns = NSIndexSet.FromNSRange(new NSRange(0, Handler.Control.TableColumns().Length));
-					if (previouslySelected != null)
+					if (previouslySelected?.Count > 0)
 						Handler.Control.ReloadData(previouslySelected, columns);
 					var selected = Handler.Control.SelectedRows;
-					Handler.Control.ReloadData(selected, columns);
+					if (selected?.Count > 0)
+						Handler.Control.ReloadData(selected, columns);
 					previouslySelected = selected;
 				}
 			}
