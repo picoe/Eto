@@ -260,7 +260,7 @@ namespace Eto.Mac.Forms
 		static void HandleWillClose(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
-			if (handler == null)
+			if (handler == null || !handler.Widget.Loaded) // could already be closed
 				return;
 			if (ApplicationHandler.Instance.ShouldCloseForm(handler.Widget, true))
 				handler.Callback.OnClosed(handler.Widget, EventArgs.Empty);
@@ -610,6 +610,9 @@ namespace Eto.Mac.Forms
 
 		public bool CloseWindow(Action<CancelEventArgs> closing = null)
 		{
+			if (!Widget.Loaded)
+				return true;
+
 			var args = new CancelEventArgs();
 			Callback.OnClosing(Widget, args);
 			if (!args.Cancel && closing != null)

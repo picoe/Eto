@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Globalization;
 
 namespace Eto.Drawing
@@ -9,7 +9,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TypeConverter (typeof(SizeFConverter))]
+	[sc.TypeConverter (typeof(SizeFConverterInternal))]
 	public struct SizeF : IEquatable<SizeF>
 	{
 		/// <summary>

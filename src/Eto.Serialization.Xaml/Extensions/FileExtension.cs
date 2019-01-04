@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.IO;
 using System.Reflection;
 #if PORTABLE
@@ -45,7 +45,7 @@ namespace Eto.Serialization.Xaml.Extensions
 					var propertyInfo = provideValue.TargetProperty as PropertyInfo;
 					if (propertyInfo != null && !propertyInfo.PropertyType.GetTypeInfo().IsAssignableFrom(typeof(Stream).GetTypeInfo()))
 					{
-						var converter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
+						var converter = sc.TypeDescriptor.GetConverter(propertyInfo.PropertyType);
 						if (converter != null)
 						{
 							if (converter.CanConvertFrom(typeof(string)))
@@ -53,6 +53,17 @@ namespace Eto.Serialization.Xaml.Extensions
 							if (converter.CanConvertFrom(typeof(Stream)))
 								return converter.ConvertFrom(GetStream());
 						}
+
+#pragma warning disable 618
+						var etoConverter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
+						if (etoConverter != null)
+						{
+							if (etoConverter.CanConvertFrom(typeof(string)))
+								return etoConverter.ConvertFrom(FileName);
+							if (etoConverter.CanConvertFrom(typeof(Stream)))
+								return etoConverter.ConvertFrom(GetStream());
+						}
+#pragma warning restore 618
 					}
 				}
 				return GetStream();

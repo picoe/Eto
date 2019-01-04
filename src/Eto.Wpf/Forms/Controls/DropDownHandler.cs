@@ -8,6 +8,7 @@ using Eto.Forms;
 using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
+using System.Globalization;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -183,6 +184,20 @@ namespace Eto.Wpf.Forms.Controls
 					base.TextColor = value;
 			}
 		}
+
+		IIndirectBinding<string> _itemTextBinding;
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => _itemTextBinding;
+			set
+			{
+				_itemTextBinding = value;
+				if (Widget.Loaded)
+					CreateTemplate();
+			}
+		}
+
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		void CreateTemplate()
 		{

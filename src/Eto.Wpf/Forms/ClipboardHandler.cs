@@ -2,7 +2,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.Wpf.Drawing;
 using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -85,11 +85,18 @@ namespace Eto.Wpf.Forms
 						return bytes;
 					if (data != null)
 					{
-						var converter = TypeDescriptor.GetConverter(data.GetType());
+						var converter = sc.TypeDescriptor.GetConverter(data.GetType());
 						if (converter != null && converter.CanConvertTo(typeof(byte[])))
 						{
 							return converter.ConvertTo(data, typeof(byte[])) as byte[];
 						}
+#pragma warning disable 618
+						var etoConverter = TypeDescriptor.GetConverter(data.GetType());
+						if (etoConverter != null && etoConverter.CanConvertTo(typeof(byte[])))
+						{
+							return etoConverter.ConvertTo(data, typeof(byte[])) as byte[];
+						}
+#pragma warning restore 618
 					}
 					if (data is string)
 					{

@@ -46,12 +46,12 @@ namespace Eto.Test.Sections.Behaviors
 
 		void control_KeyUp(object sender, KeyEventArgs e)
 		{
-			LogKeyEvent(sender, "KeyUp", e);
+			LogKeyEvent(sender, e.KeyEventType.ToString(), e);
 		}
 
 		void control_KeyDown(object sender, KeyEventArgs e)
 		{
-			LogKeyEvent(sender, "KeyDown", e);
+			LogKeyEvent(sender, e.KeyEventType.ToString(), e);
 		}
 
 		Control ShowParentEvents()

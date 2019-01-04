@@ -2,7 +2,7 @@ using System;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
 using System.Collections;
@@ -14,7 +14,7 @@ namespace Eto.Forms
 	/// Represents the contents of a row in a <see cref="TableLayout"/> 
 	/// </summary>
 	[ContentProperty("Cells")]
-	[TypeConverter(typeof(TableRowConverter))]
+	[sc.TypeConverter(typeof(TableRowConverter))]
 	public class TableRow
 	{
 		Collection<TableCell> cells;

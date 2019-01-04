@@ -4,7 +4,7 @@ using Eto.Forms;
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
-	public class DropDownTests : TestBase
+	public class DropDownTests : ListControlTests<DropDown>
 	{
 		static void TestDropDownSelection(DropDown dropDown, object item1, object item2, object item3, bool useIndex = false)
 		{

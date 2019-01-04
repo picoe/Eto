@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using swf = System.Windows.Forms;
@@ -11,6 +11,7 @@ namespace Eto.WinForms.Forms.Controls
 	public class ComboBoxHandler : DropDownHandler<EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		bool readOnly;
+		int suppressTextChanged;
 
 		public ComboBoxHandler()
 		{
@@ -21,18 +22,22 @@ namespace Eto.WinForms.Forms.Controls
 
 		void ControlOnTextChanged(object sender, EventArgs e)
 		{
+			if (suppressTextChanged > 0)
+				return;
 			var selected = SelectedIndex;
 			var text = Text;
 			var item = Control.Items.Cast<object>().FirstOrDefault(r => Widget.ItemTextBinding.GetValue(r) == text);
 			var newIndex = item != null ? Control.Items.IndexOf(item) : -1;
 			if (selected != newIndex)
 			{
+				suppressTextChanged++;
 				var selectionStart = Control.SelectionStart;
 				var selectionLength = Control.SelectionLength;
 				SelectedIndex = newIndex;
 				Text = text;
 				Control.SelectionStart = selectionStart;
 				Control.SelectionLength = selectionLength;
+				suppressTextChanged--;
 			}
 			Callback.OnTextChanged(Widget, EventArgs.Empty);
 		}

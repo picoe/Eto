@@ -121,17 +121,17 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var width = GetPreferredWidth(rowRange);
 				if (force || width > Control.Width)
-					Control.Width = width;
+					Control.Width = (nfloat)Math.Ceiling(width);
 			}
 		}
 
 		public nfloat GetPreferredWidth(NSRange? range = null)
 		{
 			var handler = DataViewHandler;
-			nfloat width = (nfloat)0; //Control.DataCell.CellSize.Width;
+			nfloat width = 0;
 			var outlineView = handler.Table as NSOutlineView;
 			if (handler.ShowHeader)
-				width = (nfloat)Math.Max(Control.HeaderCell.CellSize.Width, width);
+				width = (nfloat)Math.Max(Control.HeaderCell.CellSizeForBounds(new CGRect(0, 0, int.MaxValue, int.MaxValue)).Width, width);
 
 			if (dataCell != null)
 			{
@@ -210,8 +210,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public int Width
 		{
-			get { return (int)Control.Width; }
-			set { Control.Width = value; }
+			get { return (int)Math.Ceiling(Control.Width) + 3; }
+			set { Control.Width = Math.Max(0, value - 3); }
 		}
 
 		public bool Visible

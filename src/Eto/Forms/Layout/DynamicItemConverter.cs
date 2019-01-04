@@ -1,27 +1,27 @@
 using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Globalization;
 
 namespace Eto.Forms
 {
-	class DynamicItemConverter : TypeConverter
+	class DynamicItemConverter : sc.TypeConverter
 	{
-		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		public override bool CanConvertTo(sc.ITypeDescriptorContext context, Type destinationType)
 		{
 			return false;
 		}
 
-		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 		{
 			return typeof(Control).IsAssignableFrom(sourceType);
 		}
 
-		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(sc.ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			throw new NotSupportedException();
 		}
 
-		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+		public override object ConvertFrom(sc.ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			return new DynamicControl { Control = value as Control };
 		}

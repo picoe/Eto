@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TypeConverter(typeof(ColorConverter))]
+	[sc.TypeConverter(typeof(ColorConverterInternal))]
 	public struct Color : IEquatable<Color>, IComparable<Color>
 	{
 		// static members for mapping color names from the Colors class

@@ -44,6 +44,7 @@ namespace Eto.Serialization.Xaml
 	#endif
 
 	#if PORTABLE || NET45
+	[Obsolete("Since 2.5")]
 	class TypeConverterConverter : cm.TypeConverter
 	{
 		readonly EtoTypeConverter etoConverter;
@@ -74,6 +75,7 @@ namespace Eto.Serialization.Xaml
 		}
 	}
 
+	[Obsolete("Since 2.5")]
 	class EtoValueConverter : XamlValueConverter<cm.TypeConverter>
 	{
 		public EtoValueConverter(Type converterType, XamlType targetType)
@@ -175,6 +177,7 @@ namespace Eto.Serialization.Xaml
 
 			gotTypeConverter = true;
 
+#pragma warning disable 618
 			// convert from Eto.TypeConverter to Portable.Xaml.ComponentModel.TypeConverter
 			var typeConverterAttrib = GetCustomAttribute<EtoTypeConverterAttribute>();
 
@@ -191,6 +194,8 @@ namespace Eto.Serialization.Xaml
 				if (converterType != null)
 					typeConverter = new EtoValueConverter(converterType, this);
 			}
+#pragma warning restore 618
+
 			if (typeof(MulticastDelegate).GetTypeInfo().IsAssignableFrom(UnderlyingType.GetTypeInfo()))
 			{
 				var context = SchemaContext as EtoXamlSchemaContext;

@@ -20,7 +20,9 @@
     <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
     <PackageReference Include="Portable.Xaml" Version="0.23.0" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework) == 'netstandard1.0'">
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
   </ItemGroup>
 </Project>

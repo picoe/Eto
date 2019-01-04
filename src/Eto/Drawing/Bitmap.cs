@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 
 namespace Eto.Drawing
 {
@@ -78,7 +78,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Bitmap.IHandler))]
-	[TypeConverter(typeof(BitmapConverter))]
+	[sc.TypeConverter(typeof(BitmapConverter))]
 	public class Bitmap : Image
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }

@@ -138,6 +138,12 @@ namespace Eto.Mac.Forms.Controls
 			{
 				return AllowedOperation ?? NSDragOperation.None;
 			}
+
+			public override void Layout()
+			{
+				base.Layout();
+				Handler?.PerformLayout();
+			}
 		}
 
 		public class EtoTableViewDataSource : NSTableViewDataSource
@@ -289,10 +295,11 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 					var columns = NSIndexSet.FromNSRange(new NSRange(0, Handler.Control.TableColumns().Length));
-					if (previouslySelected != null)
+					if (previouslySelected?.Count > 0)
 						Handler.Control.ReloadData(previouslySelected, columns);
 					var selected = Handler.Control.SelectedRows;
-					Handler.Control.ReloadData(selected, columns);
+					if (selected?.Count > 0)
+						Handler.Control.ReloadData(selected, columns);
 					previouslySelected = selected;
 				}
 			}
@@ -520,8 +527,8 @@ namespace Eto.Mac.Forms.Controls
 					collection.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
-				if (Widget.Loaded)
-					AutoSizeColumns(true);
+				ResetAutoSizedColumns();
+				InvalidateMeasure();
 			}
 		}
 
