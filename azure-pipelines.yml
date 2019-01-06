@@ -15,6 +15,11 @@ jobs:
   
   steps:
   - task: msbuild@1
+    displayName: Build Eto.Build.Tasks
+    inputs: 
+      solution: src/Eto.Build.Tasks/Eto.Build.Tasks.csproj
+      msbuildArguments: /t:CiBuild /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version)
+  - task: msbuild@1
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
@@ -55,6 +60,11 @@ jobs:
   steps:
   - script: cinst gtksharp -y
     displayName: Install GTK#
+  - task: msbuild@1
+    displayName: Build Eto.Build.Tasks
+    inputs: 
+      solution: src/Eto.Build.Tasks/Eto.Build.Tasks.csproj
+      msbuildArguments: /t:CiBuild /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version)
   - task: msbuild@1
     displayName: Build and Package
     inputs: 

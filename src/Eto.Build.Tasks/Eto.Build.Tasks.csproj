@@ -35,4 +35,8 @@
           OverwriteReadOnlyFiles="false"
           SkipUnchangedFiles="true" />
   </Target>
+  <Target Name="CiBuild">
+    <MSBuild Targets="RestorePackages" Properties="PackageSource=$(MSBuildThisFileFullPath)" Projects="$(MSBuildThisFileDirectory)..\..\build\NuGet.targets" />
+    <CallTarget Targets="Build" />
+  </Target>
 </Project>
