@@ -59,11 +59,11 @@
 
   <Target Name="FixGtkReferences" Condition="$(FixGtkReferences)=='true'" BeforeTargets="BeforeBuild">
     <!-- 
-  	Set the path of gtk references explicitly for linux msbuild support.
-  	msbuild on linux crashes with gtk references and uses the wrong references when 
-  	both Gtk#2 and Gtk#3 are installed.
-  	It's most likely because the Reference.Filename incorrectly includes the ", Version=" portion of the reference.
-  	-->
+    Set the path of gtk references explicitly for linux msbuild support.
+    msbuild on linux crashes with gtk references and uses the wrong references when 
+    both Gtk#2 and Gtk#3 are installed.
+    It's most likely because the Reference.Filename incorrectly includes the ", Version=" portion of the reference.
+    -->
     <PropertyGroup>
       <CliReferencePath Condition="$(CliReferencePath)==''">/usr/lib/cli/</CliReferencePath>
     </PropertyGroup>
