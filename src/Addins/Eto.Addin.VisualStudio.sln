@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Xaml", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Forms.Templates", "Eto.Forms.Templates\Eto.Forms.Templates.csproj", "{F3B5405C-64C3-4EEE-B32E-C028F48DB745}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Build.Tasks", "..\Eto.Build.Tasks\Eto.Build.Tasks.csproj", "{BE3E0BA0-25D3-4F7E-8AE0-F795275B4EC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{F3B5405C-64C3-4EEE-B32E-C028F48DB745}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3B5405C-64C3-4EEE-B32E-C028F48DB745}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3B5405C-64C3-4EEE-B32E-C028F48DB745}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE3E0BA0-25D3-4F7E-8AE0-F795275B4EC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE3E0BA0-25D3-4F7E-8AE0-F795275B4EC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE3E0BA0-25D3-4F7E-8AE0-F795275B4EC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE3E0BA0-25D3-4F7E-8AE0-F795275B4EC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\Eto\Eto.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Forms.Templates", "Eto.Forms.Templates\Eto.Forms.Templates.csproj", "{0FC60318-C91B-4753-AC96-50D40C9F3DA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Build.Tasks", "..\Eto.Build.Tasks\Eto.Build.Tasks.csproj", "{FE377C62-5511-40BA-89AB-D9FD26AE36F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Debug|Any CPU.Build.0 = MDDebug|Any CPU
 		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Release|Any CPU.ActiveCfg = MDRelease|Any CPU
 		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Release|Any CPU.Build.0 = MDRelease|Any CPU
+		{FE377C62-5511-40BA-89AB-D9FD26AE36F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE377C62-5511-40BA-89AB-D9FD26AE36F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE377C62-5511-40BA-89AB-D9FD26AE36F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE377C62-5511-40BA-89AB-D9FD26AE36F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

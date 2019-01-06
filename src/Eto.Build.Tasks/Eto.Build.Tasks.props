@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project TreatAsLocalProperty="TaskAssemblyFrameworkMoniker;TaskAssemblyFile;DefineEtoBuildTasks">
+  <PropertyGroup>
+    <TaskAssemblyFrameworkMoniker Condition=" '$(MSBuildRuntimeType)' == 'Core' ">netstandard2.0</TaskAssemblyFrameworkMoniker>
+    <TaskAssemblyFrameworkMoniker Condition=" '$(MSBuildRuntimeType)' != 'Core' ">net46</TaskAssemblyFrameworkMoniker>
+    <TaskAssemblyFile>$(MSBuildThisFileDirectory)..\..\artifacts\build\$(TaskAssemblyFrameworkMoniker)\Eto.Build.Tasks.dll</TaskAssemblyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)'!='Eto.Build.Tasks'">
+    <DefineEtoBuildTasks>true</DefineEtoBuildTasks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)'=='Eto.Build.Tasks'">
+    <DefineEtoBuildTasks>false</DefineEtoBuildTasks>
+  </PropertyGroup>
+
+  <UsingTask TaskName="_GetCommonFiles" AssemblyFile="$(TaskAssemblyFile)" Condition="$(DefineEtoBuildTasks)" />
+  <UsingTask TaskName="GenerateVersion" AssemblyFile="$(TaskAssemblyFile)" Condition="$(DefineEtoBuildTasks)" />
+</Project>

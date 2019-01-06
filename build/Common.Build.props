@@ -19,5 +19,11 @@
     <!-- RestoreProjectStyle will be supported in VS for Mac 7.4 -->
     <RestoreProjectStyle Condition="'$(RestoreProjectStyle)' == '' AND $(UsePackagesConfig) != 'True'">PackageReference</RestoreProjectStyle>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\src\Eto.Build.Tasks\Eto.Build.Tasks.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\src\Eto.Build.Tasks\Eto.Build.Tasks.props"/>
   <Import Condition="Exists('$(BasePath)..\Eto.Common.props')" Project="$(BasePath)..\Eto.Common.props" />
 </Project>

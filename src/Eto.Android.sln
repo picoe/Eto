@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test", "..\test\Eto.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Build.Tasks", "Eto.Build.Tasks\Eto.Build.Tasks.csproj", "{CAC3ADE2-F815-4E87-AC80-255453BF9337}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAC3ADE2-F815-4E87-AC80-255453BF9337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAC3ADE2-F815-4E87-AC80-255453BF9337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAC3ADE2-F815-4E87-AC80-255453BF9337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAC3ADE2-F815-4E87-AC80-255453BF9337}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

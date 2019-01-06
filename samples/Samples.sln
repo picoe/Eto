@@ -69,6 +69,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.Tutorial3.TableLayout", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.Tutorial4.Binding", "Tutorials\CSharp\Tutorial4\CS.Tutorial4.Binding.csproj", "{DDC8A290-2F20-11E4-8C21-0800200C9A66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Build.Tasks", "..\src\Eto.Build.Tasks\Eto.Build.Tasks.csproj", "{F016FC20-EF87-4C78-98AF-954BA792BEDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Linux = Debug|Linux
@@ -331,6 +333,18 @@ Global
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Debug|Linux.Build.0 = Debug|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Debug|Mac.Build.0 = Debug|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Debug|Windows.Build.0 = Debug|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Release|Linux.ActiveCfg = Release|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Release|Linux.Build.0 = Release|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Release|Mac.ActiveCfg = Release|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Release|Mac.Build.0 = Release|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Release|Windows.ActiveCfg = Release|Any CPU
+		{F016FC20-EF87-4C78-98AF-954BA792BEDE}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

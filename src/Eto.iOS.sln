@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test", "..\test\Eto.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Build.Tasks", "Eto.Build.Tasks\Eto.Build.Tasks.csproj", "{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|iPhone = Ad-Hoc|iPhone
@@ -101,6 +103,18 @@ Global
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|iPhone.Build.0 = Release|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Release|iPhone.Build.0 = Release|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{1296AF58-A890-4A1D-AF4B-F650F2BECB3A}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

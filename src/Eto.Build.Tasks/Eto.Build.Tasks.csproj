@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.0;netstandard2.0;net46</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);MSBUILD</DefineConstants>
+    <OutputPath>..\..\artifacts\build\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.0'">
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.9.20" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.9.20" />
+    <!-- marks all packages as 'local only' so they don't end up in the nuspec -->
+    <PackageReference Update="@(PackageReference)" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Remove="$(MSBuildThisFileFullPath)" />
+  </ItemGroup>
+  <!-- 
+  MSBuild in Visual Studio will keep the Eto.Build.Tasks.dll file in artifacts\build open, 
+  which leads to annoying "Unable to copy file errors" during build.
+  The target below addresses this issue, by simply copying the file only if it does not
+  exist already.
+  NOTE: As a consequence, if changes are made to the Eto.Build.Tasks project or its sources,
+  the file artifacts\build\Eto.Build.Tasks.dll needs to be deleted manually. This file can only
+  be deleted when the solution file is closed in Visual Studio.
+  -->
+  <Target Name="CopyOutputToCommonDirectory"
+          Inputs="$(OutputPath)$(MSBuildProjectName).dll"
+          Outputs="$(OutputPath)..\..\$(TargetFramework)\$(MSBuildProjectName).dll"
+          AfterTargets="AfterBuild">
+    <Copy Condition="!Exists('$(OutputPath)..\..\$(TargetFramework)\$(MSBuildProjectName).dll')"
+          SourceFiles="$(OutputPath)$(MSBuildProjectName).dll"
+          DestinationFolder="$(OutputPath)..\..\$(TargetFramework)\"
+          OverwriteReadOnlyFiles="false"
+          SkipUnchangedFiles="true" />
+  </Target>
+</Project>

@@ -1,76 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask TaskName="_GetCommonFiles" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-      <Names ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-      <Result ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[  
-        var result = new List<ITaskItem>();
-        foreach (var fileItem in Files)
-        {  
-          string name = fileItem.GetMetadata("Filename");
-          foreach (var nameItem in Names)
-          {
-            if (string.Equals(name, nameItem.ItemSpec, StringComparison.OrdinalIgnoreCase))
-            {
-              result.Add(new TaskItem(fileItem.ItemSpec));
-              break;
-            }
-          }
-        }  
-        Result = result.ToArray();
-]]>
-      </Code>
-    </Task>
-  </UsingTask>
-	 
-  <UsingTask TaskName="GenerateVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <Version ParameterType="System.String" Required="true" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Code Type="Class" Language="cs">
-<![CDATA[
-    using System;
-    using System.IO;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Reflection;
-    using System.Diagnostics;
-    using System.Linq;
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    public class GenerateVersion : Task
-    {
-      [Output]
-      public string Version { get; set; }
-
-      public override bool Execute()
-      {
-        var currentDate = DateTime.Now;
-        var timeSpanDays = currentDate - new DateTime(2000, 01, 01);
-        var timeSpanSeconds = currentDate - DateTime.Today;
-
-        var numberOfDays = (int)timeSpanDays.TotalDays;
-        var numberOfSeconds = (int)(timeSpanSeconds.TotalSeconds / 2);
-        var versionString = Version.Replace(".*", "");
-            
-        var version = System.Version.Parse(versionString);
-            
-        Version = string.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, numberOfDays, numberOfSeconds);
-        
-        return true;
-      }
-    }
-]]></Code>
-    </Task>
-  </UsingTask>
-
   <Target Name="_EmbedReferencedAssemblies" Condition="$(EmbedReferences) != ''" AfterTargets="ResolveAssemblyReferences">
     <PropertyGroup>
       <EmbedDebugSymbols Condition="$(EmbedDebugSymbols) == ''">false</EmbedDebugSymbols>
@@ -168,13 +97,14 @@
     b) VS on Mac won't break intellisense when strong naming the assemblies
        see: https://github.com/mono/monodevelop/issues/4763
     -->
-    <GenerateVersion Version="$(AssemblyVersion)">
+    <GenerateVersion Version="$(AssemblyVersion)" Condition="$(DefineEtoBuildTasks)">
     	<Output TaskParameter="Version" PropertyName="AssemblyFileVersion" />
     </GenerateVersion>
 
     <ItemGroup>
       <VersionInfo Include="[assembly: System.Reflection.AssemblyVersion(&quot;$(AssemblyVersion)&quot;)]" />
-      <VersionInfo Include="[assembly: System.Reflection.AssemblyFileVersion(&quot;$(AssemblyFileVersion)&quot;)]" />
+      <VersionInfo Include="[assembly: System.Reflection.AssemblyFileVersion(&quot;$(AssemblyFileVersion)&quot;)]"
+                   Condition="'$(AssemblyFileVersion)'!=''"/>
       <VersionInfo Include="[assembly: System.Reflection.AssemblyInformationalVersion(&quot;$(AssemblyInformationalVersion)&quot;)]" />
     </ItemGroup>
     <MakeDir Directories="$(IntermediateOutputPath)" />

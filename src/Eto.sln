@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk", "Eto.Gtk\Eto.Gtk.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk", "..\test\Eto.Test.Gtk\Eto.Test.Gtk.csproj", "{063AF7E7-18BD-488F-85BF-53B6E3D75685}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Build.Tasks", "Eto.Build.Tasks\Eto.Build.Tasks.csproj", "{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Linux = Debug|Linux
@@ -360,6 +362,18 @@ Global
 		{063AF7E7-18BD-488F-85BF-53B6E3D75685}.Release|Mac.Build.0 = Release|Any CPU
 		{063AF7E7-18BD-488F-85BF-53B6E3D75685}.Release|Windows.ActiveCfg = Release|Any CPU
 		{063AF7E7-18BD-488F-85BF-53B6E3D75685}.Release|Windows.Build.0 = Release|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Debug|Linux.Build.0 = Debug|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Debug|Mac.Build.0 = Debug|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Debug|Windows.Build.0 = Debug|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Release|Linux.ActiveCfg = Release|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Release|Linux.Build.0 = Release|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Release|Mac.ActiveCfg = Release|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Release|Mac.Build.0 = Release|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Release|Windows.ActiveCfg = Release|Any CPU
+		{D66F6EE1-1FA1-4A97-8EBB-CAE04F7B107C}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
