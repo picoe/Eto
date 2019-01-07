@@ -56,7 +56,8 @@ namespace Eto.Mac.Forms
 			if (Directory.Exists(url.Path))
 				return true;
 
-			var extension = Path.GetExtension(url.Path).TrimStart('.');
+			// Xamarin.Mac's version of mono has string.TrimStart(char), which is not in the .NET Framework!
+			var extension = Path.GetExtension(url.Path).TrimStart(new[] { '.' });
 			if (Handler.MacFilters == null || Handler.MacFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
 				return true;
 			return false;
