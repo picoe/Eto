@@ -30,6 +30,8 @@ namespace Eto.Mac.Forms
 
 		public bool IsSheet { get; private set; }
 
+		public Action<ModalEventArgs> StopAction { get; set; }
+
 		public ModalEventArgs(IntPtr session, Window window, NSWindow nativeWindow, bool isModal = false, bool isSheet = false)
 		{
 			Session = session;
@@ -41,14 +43,10 @@ namespace Eto.Mac.Forms
 
 		public void Stop()
 		{
+			if (Stopped)
+				return;
 			Stopped = true;
-			if (IsSheet)
-			{
-				NSApplication.SharedApplication.EndSheet(NativeWindow);
-				NativeWindow.OrderOut(NativeWindow);
-			}
-			else if (IsModal)
-				NSApplication.SharedApplication.StopModal();
+			StopAction?.Invoke(this);
 		}
 	}
 
@@ -113,14 +111,14 @@ namespace Eto.Mac.Forms
 			ContinuesResponse = (-1002)
 		}
 
-		public static void Run(Window window, NSWindow nativeWindow, out ModalEventArgs helper)
+		public static void Run(Window window, NSWindow nativeWindow, out ModalEventArgs helper, bool isSheet = false)
 		{
 			var app = NSApplication.SharedApplication;
 			var session = app.BeginModalSession(nativeWindow);
-			helper = new ModalEventArgs(session, window, nativeWindow, isModal: true);
+			helper = new ModalEventArgs(session, window, nativeWindow, isModal: true, isSheet: isSheet);
 			int result;
 			var etoapp = ApplicationHandler.Instance;
-			
+
 			// Loop until some result other than continues:
 			do
 			{
@@ -130,6 +128,10 @@ namespace Eto.Mac.Forms
 
 				// Give the main loop some time:
 				NSRunLoop.Current.RunUntil(NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);
+				if (helper.Stopped && result == (int)NSRun.ContinuesResponse)
+				{
+					app.StopModal();
+				}
 			} while (result == (int)NSRun.ContinuesResponse || !helper.Stopped);
 			
 			app.EndModalSession(session);
@@ -137,46 +139,26 @@ namespace Eto.Mac.Forms
 
 		public static void RunSheet(Window window, NSWindow theWindow, NSWindow parent, out ModalEventArgs helper)
 		{
-			var app = NSApplication.SharedApplication;
-			app.BeginSheet(theWindow, parent, delegate
-			{
-				NSApplication.SharedApplication.StopModal();				
-			});
-			
-			var session = app.BeginModalSession(theWindow);
-			helper = new ModalEventArgs(session, window, theWindow, isModal: true, isSheet: true);
-			int result;
-			var etoapp = ApplicationHandler.Instance;
+			NSApplication.SharedApplication.BeginSheet(theWindow, parent);
 
-			// Loop until some result other than continues:
-			do
-			{
-				etoapp.TriggerProcessModalSession(helper);
-				// Run the window modally until there are no events to process:
-				result = (int)app.RunModalSession(session);
-				
-				// Give the main loop some time:
-				NSRunLoop.Current.RunUntil(NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);
-			} while (result == (int)NSRun.ContinuesResponse || !helper.Stopped);
-			
-			app.EndModalSession(session);
+			Run(window, theWindow, out helper, isSheet: true);
 
-			/**
-			theWindow.OrderOut (null);
-			app.EndSheet (theWindow);
-			/**/
+			NSApplication.SharedApplication.EndSheet(theWindow);
+			theWindow.OrderOut(theWindow);
 		}
 
 		public static void BeginSheet(Window window, NSWindow theWindow, NSWindow parent, out ModalEventArgs helper, Action completed)
 		{
 			var app = NSApplication.SharedApplication;
-			app.BeginSheet(theWindow, parent, delegate
-			{
-				NSApplication.SharedApplication.StopModal();
-				if (completed != null)
-					completed();
-			});
+			app.BeginSheet(theWindow, parent);
 			helper = new ModalEventArgs(IntPtr.Zero, window, theWindow, isSheet: true);
+			helper.StopAction = e =>
+			{
+				NSApplication.SharedApplication.EndSheet(e.NativeWindow);
+				e.NativeWindow.OrderOut(e.NativeWindow);
+				NSApplication.SharedApplication.StopModal();
+				completed?.Invoke();
+			};
 		}
 				
 	}

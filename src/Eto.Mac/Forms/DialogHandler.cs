@@ -1,7 +1,8 @@
 using System;
-using Eto.Forms;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+using Eto.Forms;
 using Eto.Drawing;
 
 #if XAMMAC2
@@ -216,7 +217,15 @@ namespace Eto.Mac.Forms
 		public override void Close()
 		{
 			if (session != null && session.IsSheet)
-				session.Stop();
+			{
+				var args = new CancelEventArgs();
+				Callback.OnClosing(Widget, args);
+				if (!args.Cancel)
+				{
+					session.Stop();
+					Callback.OnClosed(Widget, args);
+				}
+			}
 			else
 				base.Close();
 		}
