@@ -224,14 +224,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Widget.Properties.Get<Color?>(MacLabel.TextColorKey) ?? NSColor.Text.ToEto(); }
+			get { return Widget.Properties.Get<Color?>(MacLabel.TextColorKey) ?? SystemColors.ControlText; }
 			set
 			{
-				if (value != TextColor)
-				{
-					Widget.Properties[MacLabel.TextColorKey] = value;
-					SetAttributes();
-				}
+				Widget.Properties[MacLabel.TextColorKey] = value;
+				SetAttributes();
 			}
 		}
 

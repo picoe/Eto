@@ -56,12 +56,24 @@ namespace Eto.iOS
 
 		public static CGColor ToCG(this Color color)
 		{
+			if (color.ControlObject is NSColor nscolor)
+				return nscolor.CGColor;
+			if (color.ControlObject is CGColor cgcolor)
+				return cgcolor;
 			return new CGColor(CreateDeviceRGB(), new nfloat[] { color.R, color.G, color.B, color.A });
 		}
 
 		public static Color ToEto(this CGColor color)
 		{
-			return new Color((float)color.Components[0], (float)color.Components[1], (float)color.Components[2], (float)color.Alpha);
+			// rgb/rgba
+			if (color.NumberOfComponents >= 3)
+				return new Color(color, (float)color.Components[0], (float)color.Components[1], (float)color.Components[2], (float)color.Alpha);
+
+			// monochrome
+			if (color.NumberOfComponents == 2 && color.ColorSpace.Model == CGColorSpaceModel.Monochrome)
+				return new Color(color, (float)color.Components[0], (float)color.Components[0], (float)color.Components[0], (float)color.Alpha);
+
+			throw new ArgumentOutOfRangeException(nameof(color), "Could not convert CGColor to Eto Color");
 		}
 
 		public static CGInterpolationQuality ToCG(this ImageInterpolation value)
