@@ -13,7 +13,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[sc.TypeConverter(typeof(ColorConverterInternal))]
-	public struct Color : IEquatable<Color>, IComparable<Color>
+	public struct Color : IEquatable<Color>, IComparable<Color>, IControlObjectSource
 	{
 		// static members for mapping color names from the Colors class
 		static Dictionary<string, Color> colormap;
@@ -63,6 +63,8 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <value>The blue component</value>
 		public int Bb { get { return (int)((B * 255) + 0.5f); } set { B = value / 255f; } }
+
+		public object ControlObject { get; private set; }
 
 		/// <summary>
 		/// The character to split up the string which will be converted
@@ -194,6 +196,16 @@ namespace Eto.Drawing
 			G = color.G;
 			B = color.B;
 			A = alpha ?? color.A;
+		}
+
+		public Color(object controlObject, float red, float green, float blue, float alpha)
+			: this()
+		{
+			ControlObject = controlObject;
+			R = red;
+			G = green;
+			B = blue;
+			A = alpha;
 		}
 
 		/// <summary>

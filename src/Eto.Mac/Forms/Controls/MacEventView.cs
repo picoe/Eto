@@ -33,13 +33,18 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class MacEventView : NSView, IMacControl
+	public class MacEventView : NSBox, IMacControl
 	{
 		static readonly NSString CIOutputImage = new NSString("outputImage");
 		static readonly Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
 
 		public MacEventView()
 		{
+			BoxType = NSBoxType.NSBoxCustom;
+			Transparent = true;
+			BorderWidth = 0;
+			BorderType = NSBorderType.NoBorder;
+			ContentViewMargins = CGSize.Empty;
 		}
 
 		public MacEventView(IntPtr handle)

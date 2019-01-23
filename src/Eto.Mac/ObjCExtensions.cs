@@ -24,15 +24,9 @@ namespace Eto.Mac
 		[DllImport("/usr/lib/libobjc.dylib")]
 		static extern IntPtr class_getClassMethod(IntPtr cls, IntPtr sel);
 
-		public static IntPtr GetMethod(this Class cls, IntPtr selector)
-		{
-			return class_getClassMethod(cls.Handle, selector);
-		}
+		public static IntPtr GetMethod(this Class cls, IntPtr selector) => class_getClassMethod(cls.Handle, selector);
 
-		public static IntPtr GetMethod(IntPtr cls, IntPtr selector)
-		{
-			return class_getClassMethod(cls, selector);
-		}
+		public static IntPtr GetMethod(IntPtr cls, IntPtr selector) => class_getClassMethod(cls, selector);
 
 		[DllImport("/usr/lib/libobjc.dylib")]
 		static extern bool class_addMethod(IntPtr cls, IntPtr sel, Delegate method, string argTypes);
@@ -60,33 +54,50 @@ namespace Eto.Mac
 		[DllImport("/usr/lib/libobjc.dylib")]
 		public static extern IntPtr object_getClass(IntPtr obj);
 
-		public static Class GetClass(IntPtr obj)
-		{
-			return new Class(object_getClass(obj));
-		}
+		public static Class GetClass(IntPtr obj) => new Class(object_getClass(obj));
 
 		[DllImport("/usr/lib/libobjc.dylib")]
 		public static extern IntPtr class_getSuperclass(IntPtr obj);
 
-		public static Class GetSuperclass(IntPtr cls)
-		{
-			return new Class(class_getSuperclass(cls));
-		}
+		public static Class GetSuperclass(IntPtr cls) => new Class(class_getSuperclass(cls));
 
 		[DllImport("/usr/lib/libobjc.dylib")]
 		static extern IntPtr objc_getMetaClass(string metaClassName);
 
-		public static Class GetMetaClass(string metaClassName)
-		{
-			return new Class(objc_getMetaClass(metaClassName));
-		}
+		public static Class GetMetaClass(string metaClassName) => new Class(objc_getMetaClass(metaClassName));
 
 		static readonly IntPtr selInstancesRespondToSelector = Selector.GetHandle("instancesRespondToSelector:");
+		static readonly IntPtr selRespondsToSelector = Selector.GetHandle("respondsToSelector:");
 
 		public static bool ClassInstancesRespondToSelector(IntPtr cls, IntPtr selector)
 		{
 			return Messaging.bool_objc_msgSend_IntPtr(cls, selInstancesRespondToSelector, selector);
 		}
+
+		public static bool InstancesRespondToSelector<T>(IntPtr selector)
+		{
+			var cls = Class.GetHandle(typeof(T));
+			return ClassInstancesRespondToSelector(cls, selector);
+		}
+
+		public static bool InstancesRespondToSelector<T>(string selector) => InstancesRespondToSelector<T>(Selector.GetHandle(selector));
+
+		public static bool InstancesRespondToSelector(this Class cls, Selector selector) => ClassInstancesRespondToSelector(cls.Handle, selector.Handle);
+
+		public static bool ClassRespondsToSelector(IntPtr cls, IntPtr selector)
+		{
+			return Messaging.bool_objc_msgSend_IntPtr(cls, selInstancesRespondToSelector, selector);
+		}
+
+		public static bool RespondsToSelector<T>(IntPtr selector)
+		{
+			var cls = Class.GetHandle(typeof(T));
+			return ClassRespondsToSelector(cls, selector);
+		}
+
+		public static bool RespondsToSelector<T>(string selector) => RespondsToSelector<T>(Selector.GetHandle(selector));
+
+		public static bool RespondsToSelector(this Class cls, Selector selector) => ClassRespondsToSelector(cls.Handle, selector.Handle);
 	}
 }
 
