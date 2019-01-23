@@ -45,8 +45,6 @@ namespace Eto.Mac.Forms
 		{
 			new PixelLayoutHandler Handler => base.Handler as PixelLayoutHandler;
 
-			public override bool IsFlipped => true;
-
 			public override void Layout()
 			{
 				base.Layout();
@@ -84,6 +82,8 @@ namespace Eto.Mac.Forms
 				origin.Y = Control.Frame.Height - origin.Y - preferredSize.Height;
 			}
 
+
+			childView.AutoresizingMask = NSViewResizingMask.MinYMargin;
 			childView.Frame = new CGRect(origin, preferredSize.ToNS());;
 		}
 
