@@ -57,7 +57,7 @@ namespace Eto.Mac.Forms.Controls
 			where T: class
 		{
 			NSRange effectiveRange;
-			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange);
+			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange);
 			NSObject value;
 			return attrib.TryGetValue(attributeName, out value) ? value as T : null;
 		}
@@ -116,7 +116,7 @@ namespace Eto.Mac.Forms.Controls
 		bool HasFontAttribute(NSFontTraitMask traitMask)
 		{
 			NSRange effectiveRange;
-			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange, Control.SelectedRange);
+			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange, Control.SelectedRange);
 			NSObject value;
 			if (attrib.TryGetValue(NSStringAttributeKey.Font, out value))
 			{
@@ -178,7 +178,7 @@ namespace Eto.Mac.Forms.Controls
 					var attribs = Control.TextStorage.GetAttributes(current.Location, out effectiveRange, current);
 					attribs = UpdateFontAttributes(attribs, enabled, updateFont);
 					var span = effectiveRange.Location + effectiveRange.Length - current.Location;
-					var newRange = new NSRange(current.Location, (nnint)Math.Min(span, current.Length));
+					var newRange = new NSRange(current.Location, (nint)Math.Min(span, current.Length));
 					Control.TextStorage.AddAttributes(attribs, newRange);
 					current.Location += span;
 					current.Length -= span;
@@ -312,17 +312,43 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Load(Stream stream, RichTextAreaFormat format)
 		{
+			var range = new NSRange(0, Control.TextStorage.Length);
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
-					var range = new NSRange(0, Control.TextStorage.Length);
-					Control.ReplaceWithRtf(range, NSData.FromStream(stream));
-					break;
+					{
+						var str = NSAttributedString.CreateWithRTF(NSData.FromStream(stream), out var docAttributes);
+						NSMutableAttributedString mut = null;
+						nint pos = 0;
+						// when encountering an RTF without a defined foreground, use the system foreground for dark mode
+						var textColor = TextColor.ToNSUI();
+						do
+						{
+							var color = str.GetAttribute(NSStringAttributeKey.ForegroundColor, pos, out var effectiveRange);
+							pos = effectiveRange.Location + effectiveRange.Length;
+							if (color == null)
+							{
+								if (mut == null)
+									mut = new NSMutableAttributedString(str);
+
+								mut.AddAttribute(NSStringAttributeKey.ForegroundColor, textColor, effectiveRange);
+							}
+						} while (pos < str.Length);
+
+						if (mut != null)
+							str = mut;
+
+						Control.TextStorage.Replace(range, str);
+						break;
+					}
 				case RichTextAreaFormat.PlainText:
-					var str = new NSMutableAttributedString(new StreamReader(stream).ReadToEnd());
-					Font.Apply(str);
-					Control.TextStorage.SetString(str);
-					break;
+					{
+						var str = new NSMutableAttributedString(new StreamReader(stream).ReadToEnd());
+						Font.Apply(str);
+						str.AddAttribute(NSStringAttributeKey.ForegroundColor, TextColor.ToNSUI(), new NSRange(0, str.Length));
+						Control.TextStorage.Replace(range, str);
+						break;
+					}
 				default:
 					throw new NotSupportedException();
 			}
