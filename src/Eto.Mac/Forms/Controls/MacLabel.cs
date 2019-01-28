@@ -374,7 +374,7 @@ namespace Eto.Mac.Forms.Controls
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{
-						var num = (NSNumber)str.GetAttribute(NSStringAttributeKey.UnderlineStyle, (nnint)underlineIndex, out range);
+						var num = (NSNumber)str.GetAttribute(NSStringAttributeKey.UnderlineStyle, underlineIndex, out range);
 						var newStyle = (num != null && (NSUnderlineStyle)num.Int64Value == NSUnderlineStyle.Single) ? NSUnderlineStyle.Double : NSUnderlineStyle.Single;
 						str.AddAttribute(NSStringAttributeKey.UnderlineStyle, new NSNumber((int)newStyle), new NSRange(underlineIndex, 1));
 					}
