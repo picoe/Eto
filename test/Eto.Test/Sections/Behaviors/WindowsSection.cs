@@ -23,6 +23,8 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox visibleCheckBox;
 		CheckBox showActivatedCheckBox;
 		CheckBox canFocusCheckBox;
+		CheckBox createMenuBar;
+		EnumCheckBoxList<MenuBarSystemItems> systemMenuItems;
 
 		static readonly object CancelCloseKey = new object();
 		public bool CancelClose
@@ -40,6 +42,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
+			layout.AddSeparateRow(null, CreateMenuBarControls(), null);
 			layout.AddSeparateRow(null, CreateInitialLocationControls(), null);
 			layout.AddSeparateRow(null, CreateSizeControls(), null);
 			layout.AddSeparateRow(null, CreateClientSizeControls(), null);
@@ -56,6 +59,50 @@ namespace Eto.Test.Sections.Behaviors
 			base.OnUnLoad(e);
 			if (child != null)
 				child.Close();
+		}
+
+		MenuBar CreateMenuBar()
+		{
+			var menu = new MenuBar();
+			if (systemMenuItems.SelectedValues.Any())
+				menu.IncludeSystemItems = GetMenuItems();
+			return menu;
+		}
+
+		MenuBarSystemItems GetMenuItems()
+		{
+			var val = MenuBarSystemItems.None;
+			foreach (var value in systemMenuItems.SelectedValues)
+			{
+				val |= value;
+			}
+			return val;
+		}
+
+		Control CreateMenuBarControls()
+		{
+			createMenuBar = new CheckBox { Text = "Create MenuBar" };
+			createMenuBar.CheckedChanged += (sender, e) =>
+			{
+				if (child != null)
+					child.Menu = createMenuBar.Checked == true ? CreateMenuBar() : null;
+			};
+
+			systemMenuItems = new EnumCheckBoxList<MenuBarSystemItems>();
+			systemMenuItems.IncludeNoneFlag = true;
+			systemMenuItems.SelectedValuesChanged += (sender, e) =>
+			{
+				if (child?.Menu != null)
+				{
+					child.Menu.IncludeSystemItems = GetMenuItems();
+				}
+
+			};
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Items = { createMenuBar, "MenuBarSystemItems:", systemMenuItems }
+			};
 		}
 
 		Control CreateTypeControls()
@@ -435,6 +482,8 @@ namespace Eto.Test.Sections.Behaviors
 				child.MinimumSize = initialMinimumSize;
 			if (setOwnerCheckBox.Checked ?? false)
 				child.Owner = ParentWindow;
+			if (createMenuBar.Checked ?? false)
+				child.Menu = CreateMenuBar();
 			bringToFrontButton.Enabled = true;
 			show();
 			//visibleCheckBox.Checked = child?.Visible == true; // child will be null after it is shown
