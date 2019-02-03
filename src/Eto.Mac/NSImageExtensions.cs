@@ -71,7 +71,7 @@ namespace Eto.Mac
 		{
 			var colorGenerator = new CIConstantColorGenerator
 			{ 
-				Color = CIColor.FromCGColor(tint.CGColor)
+				Color = CIColor.FromCGColor(tint.ToCG())
 			};
 
 			var colorFilter = new CIColorControls

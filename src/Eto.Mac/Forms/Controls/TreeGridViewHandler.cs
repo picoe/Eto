@@ -520,8 +520,8 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Layout()
 			{
-				base.Layout();
 				Handler?.PerformLayout();
+				base.Layout();
 			}
 		}
 

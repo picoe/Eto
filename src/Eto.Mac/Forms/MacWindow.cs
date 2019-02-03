@@ -435,6 +435,13 @@ namespace Eto.Mac.Forms
 			Control.ContentView = new EtoContentView { WeakHandler = new WeakReference(this) };
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+
+			if (!MacVersion.IsAtLeast(10, 12))
+			{
+				// need at least one constraint to enable auto-layout, which calls NSView.Layout automatically.
+				Control.ContentView.AddConstraint(NSLayoutConstraint.Create(Control.ContentView, NSLayoutAttribute.Leading, NSLayoutRelation.Equal, Control.ContentView, NSLayoutAttribute.Leading, 1, 0));
+			}
+
 			Control.ReleasedWhenClosed = false;
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
