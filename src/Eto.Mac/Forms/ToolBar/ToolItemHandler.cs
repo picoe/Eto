@@ -168,20 +168,25 @@ namespace Eto.Mac.Forms.ToolBar
 
 		protected virtual MacToolBarItemStyle DefaultStyle { get { return MacToolBarItemStyle.StandardButton; } }
 
+		protected virtual bool IsButton => true;
+
 		protected override void Initialize()
 		{
 			this.Identifier = Guid.NewGuid().ToString();
-			Control.Target = new ToolBarItemHandlerTarget { Handler = this };
-			Control.Action = selAction;
-			Control.Autovalidates = false;
-			Control.Label = string.Empty;
+			if (IsButton)
+			{
+				Control.Target = new ToolBarItemHandlerTarget { Handler = this };
+				Control.Action = selAction;
+				Control.Autovalidates = false;
+				Control.Label = string.Empty;
 
-			menuItem = new NSMenuItem(string.Empty);
-			menuItem.Action = Control.Action;
-			menuItem.Target = Control.Target;
-			Control.MenuFormRepresentation = menuItem;
-			Control.Enabled = true;
-			this.ToolBarItemStyle = DefaultStyle;
+				menuItem = new NSMenuItem(string.Empty);
+				menuItem.Action = Control.Action;
+				menuItem.Target = Control.Target;
+				Control.MenuFormRepresentation = menuItem;
+				Control.Enabled = true;
+				this.ToolBarItemStyle = DefaultStyle;
+			}
 			base.Initialize();
 		}
 
