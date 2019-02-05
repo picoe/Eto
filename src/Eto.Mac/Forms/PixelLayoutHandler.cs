@@ -45,10 +45,15 @@ namespace Eto.Mac.Forms
 		{
 			new PixelLayoutHandler Handler => base.Handler as PixelLayoutHandler;
 
+			public PixelLayoutView()
+			{
+				AutoresizesSubviews = false;
+			}
+
 			public override void Layout()
 			{
-				base.Layout();
 				Handler?.PerformLayout();
+				base.Layout();
 			}
 		}
 

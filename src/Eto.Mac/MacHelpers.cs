@@ -50,8 +50,7 @@ namespace Eto.Forms
 			{
 				control.AttachNative();
 				var macControl = control.GetMacControl();
-				if (macControl != null && macControl.AutoSize)
-					macControl.ContainerControl.SetFrameSize(macControl.GetPreferredSize(SizeF.PositiveInfinity).ToNS());
+				macControl?.ContainerControl.SetFrameSize(macControl.GetPreferredSize(SizeF.PositiveInfinity).ToNS());
 			}
 			return control.GetContainerView();
 		}

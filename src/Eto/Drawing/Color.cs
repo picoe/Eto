@@ -64,6 +64,13 @@ namespace Eto.Drawing
 		/// <value>The blue component</value>
 		public int Bb { get { return (int)((B * 255) + 0.5f); } set { B = value / 255f; } }
 
+		/// <summary>
+		/// Gets the native color control object.
+		/// </summary>
+		/// <remarks>
+		/// This can be null for platforms that do not have (or need) to store the native object.
+		/// </remarks>
+		/// <value>The native color control object.</value>
 		public object ControlObject { get; private set; }
 
 		/// <summary>
@@ -198,6 +205,18 @@ namespace Eto.Drawing
 			A = alpha ?? color.A;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Eto.Drawing.Color"/> struct with the specified native control object.
+		/// </summary>
+		/// <remarks>
+		/// Some platforms (e.g. macOS) have system color objects that change their RGB value automatically based on the display mode,
+		/// such as light &amp; dark.
+		/// </remarks>
+		/// <param name="controlObject">Native control object representing this color.</param>
+		/// <param name="red">Red component (0-1)</param>
+		/// <param name="green">Green component (0-1)</param>
+		/// <param name="blue">Blue component (0-1)</param>
+		/// <param name="alpha">Alpha component (0-1)</param>
 		public Color(object controlObject, float red, float green, float blue, float alpha)
 			: this()
 		{

@@ -55,7 +55,7 @@ namespace Eto.Drawing
 		/// <returns>True if this converter can handle converting from the specified <paramref name="sourceType"/> to an image</returns>
 		public override bool CanConvertFrom (sc.ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof(string) || typeof(NamespaceInfo).IsAssignableFrom(sourceType) || typeof(Stream).IsAssignableFrom(sourceType) || base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string) || typeof(NamespaceInfo).IsAssignableFrom(sourceType) || typeof(Stream).IsAssignableFrom(sourceType);
 		}
 
 		/// <summary>
@@ -160,7 +160,7 @@ namespace Eto.Drawing
 		/// <returns>True if this converter can handle converting from the specified <paramref name="sourceType"/> to an image</returns>
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof(string) || typeof(NamespaceInfo).IsAssignableFrom(sourceType) || typeof(Stream).IsAssignableFrom(sourceType) || base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string) || typeof(NamespaceInfo).IsAssignableFrom(sourceType) || typeof(Stream).IsAssignableFrom(sourceType);
 		}
 
 		/// <summary>

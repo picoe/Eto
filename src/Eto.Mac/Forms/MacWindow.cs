@@ -435,6 +435,13 @@ namespace Eto.Mac.Forms
 			Control.ContentView = new EtoContentView { WeakHandler = new WeakReference(this) };
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+
+			if (!MacVersion.IsAtLeast(10, 12))
+			{
+				// need at least one constraint to enable auto-layout, which calls NSView.Layout automatically.
+				Control.ContentView.AddConstraint(NSLayoutConstraint.Create(Control.ContentView, NSLayoutAttribute.Leading, NSLayoutRelation.Equal, Control.ContentView, NSLayoutAttribute.Leading, 1, 0));
+			}
+
 			Control.ReleasedWhenClosed = false;
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
@@ -588,6 +595,7 @@ namespace Eto.Mac.Forms
 				}
 
 				NSApplication.SharedApplication.MainMenu = MenuBar;
+				RemoveSuperfluousCloseAll();
 			}
 			else
 			{
@@ -605,8 +613,39 @@ namespace Eto.Mac.Forms
 				Messaging.void_objc_msgSend_IntPtr(NSApplication.SharedApplication.Handle, MacWindow.selSetMainMenu, oldMenu);
 				MacExtensions.Release(oldMenu);
 				oldMenu = IntPtr.Zero;
+				RemoveSuperfluousCloseAll();
 			}
 		}
+
+        /// <summary>
+        /// Removes the Close All menu item for document-based apps
+        /// </summary>
+        /// <remarks>
+        /// macOS automatically re-adds this back for document based apps, but not for SaveAs/Duplicate
+        /// Appears to be a bug (feature) of macOS.
+        /// </remarks>
+        void RemoveSuperfluousCloseAll()
+        {
+			var menu = NSApplication.SharedApplication.MainMenu;
+			if (menu == null)
+                return;
+            for (int j = 0; j < menu.Count; j++)
+            {
+                var item = menu.ItemAt(j);
+                if (!item.HasSubmenu)
+                    continue;
+                var submenu = item.Submenu;
+                for (int i = 0; i < submenu.Count; i++)
+                {
+                    var submenuItem = submenu.ItemAt(i);
+                    if (submenuItem.Title == "<<Close All - unlocalized>>" && submenuItem.Action?.Name == "closeAll:")
+                    {
+                        submenu.RemoveItemAt(i);
+                        return;
+                    }
+                }
+            }
+        }
 
 		public bool CloseWindow(Action<CancelEventArgs> closing = null)
 		{

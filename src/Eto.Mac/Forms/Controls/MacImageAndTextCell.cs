@@ -208,7 +208,7 @@ namespace Eto.Mac.Forms.Controls
 
 						if (DrawsBackground && !Highlighted)
 						{
-							g.SetFillColor(BackgroundColor.CGColor);
+							BackgroundColor.SetFill();
 							g.FillRect(new CGRect(frame.X, frame.Y, newWidth + ImagePadding, frame.Height));
 						}
 
