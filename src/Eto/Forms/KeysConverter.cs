@@ -15,12 +15,12 @@ namespace Eto.Forms
 
 		public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string);
 		}
 
 		public override bool CanConvertTo(sc.ITypeDescriptorContext context, Type destinationType)
 		{
-			return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+			return destinationType == typeof(string);
 		}
 
 		public override object ConvertFrom(sc.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
