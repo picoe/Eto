@@ -22,7 +22,7 @@ namespace Eto.Drawing
 		/// <returns>True if this converter can handle converting from the specified <paramref name="sourceType"/> to an font</returns>
 		public override bool CanConvertFrom (sc.ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof (string) || base.CanConvertFrom (context, sourceType);
+			return sourceType == typeof(string);
 		}
 
 		/// <summary>

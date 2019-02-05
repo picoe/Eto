@@ -7,7 +7,7 @@ namespace Eto.Forms
 	{
 		public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof(string) || typeof(Control).IsAssignableFrom(sourceType) || base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string);
 		}
 
 		public override bool CanConvertTo(sc.ITypeDescriptorContext context, Type destinationType)
@@ -17,15 +17,9 @@ namespace Eto.Forms
 
 		public override object ConvertFrom(sc.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
-			var text = value as string;
-			if (!string.IsNullOrEmpty(text))
+			if (value is string text)
 				return new Label { Text = text };
-			var control = value as Control;
-			if (control != null)
-				return control;
-			if (value == null)
-				return null;
-			return base.ConvertFrom(context, culture, value);
+			return null;
 		}
 	}
 }
