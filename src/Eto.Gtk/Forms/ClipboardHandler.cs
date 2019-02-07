@@ -178,6 +178,11 @@ namespace Eto.GtkSharp.Forms
 			Update();
 		}
 
+		public bool Contains(string type)
+		{
+			return Control.WaitIsTargetAvailable(Gdk.Atom.Intern(type, false));
+		}
+
 		public string[] Types
 		{
 			get
@@ -208,11 +213,20 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+
+		public bool ContainsText => Control.WaitIsTextAvailable();
+
+		public bool ContainsHtml => Contains("text/html");
+
+		public bool ContainsImage => Control.WaitIsImageAvailable() || Contains("eto-icon");
+
+		public bool ContainsUris => Contains("text/uri-list");
+
 		public Uri[] Uris
 		{
 			set
 			{
-				var uris = value?.Select(r => r.AbsolutePath).ToArray();
+				var uris = value?.Select(r => r.AbsoluteUri).ToArray();
 				AddEntry("text/uri-list", value, (data, selection) => selection.SetSelectedUris2(uris));
 			}
 			get

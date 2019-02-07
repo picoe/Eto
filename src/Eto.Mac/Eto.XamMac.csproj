@@ -246,6 +246,7 @@
     <Compile Include="Forms\MacFieldEditor.cs" />
     <Compile Include="Drawing\EtoFontManager.cs" />
     <Compile Include="MacVersion.cs" />
+    <Compile Include="Forms\MemoryDataObjectHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
