@@ -37,6 +37,12 @@ namespace Eto.WinForms.Forms.Menu
 			set { Control.Enabled = value; }
 		}
 
+		public bool Visible
+		{
+			get => Control.Visible;
+			set => Control.Visible = value;
+		}
+
 		public Keys Shortcut
 		{
 			get { return Widget.Properties.Get<Keys>(CustomShortcutKey, Control.ShortcutKeys.ToEto()); }

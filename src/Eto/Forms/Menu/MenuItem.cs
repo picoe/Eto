@@ -210,6 +210,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.MenuItem"/> is visible.
+		/// </summary>
+		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		public bool Visible
+		{
+			get { return Handler.Visible; }
+			set { Handler.Visible = value; }
+		}
+
+		/// <summary>
 		/// Performs the click handler for this item.
 		/// </summary>
 		/// <remarks>
@@ -309,6 +319,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 			bool Enabled { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.MenuItem"/> is visible.
+			/// </summary>
+			/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+			bool Visible { get; set; }
 		}
 	}
 

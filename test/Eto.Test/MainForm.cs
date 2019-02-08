@@ -253,6 +253,14 @@ namespace Eto.Test
 
 				}
 
+				edit.Items.AddSeparator();
+				var hiddenItem = new ButtonMenuItem { Text = "This button should not be visible!", Visible = false };
+				var toggleHiddenItem = new ButtonMenuItem { Text = "Toggle Hidden Item" };
+				toggleHiddenItem.Click += (sender, e) => hiddenItem.Visible = !hiddenItem.Visible;
+				edit.Items.Add(hiddenItem);
+				edit.Items.Add(toggleHiddenItem);
+
+
 				Menu = new MenuBar
 				{
 					Items =
