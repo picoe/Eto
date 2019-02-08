@@ -6,7 +6,7 @@ namespace Eto
 {
 	partial class Win32
 	{
-		public static Bitmap FromDIB(MemoryStream ms)
+		public static Bitmap FromDIB(Stream ms)
 		{
 			var header = new byte[40];
 			ms.Read(header, 0, header.Length);

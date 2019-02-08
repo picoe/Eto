@@ -13,7 +13,7 @@ namespace Eto.Forms
 	[Handler(typeof(Clipboard.IHandler))]
 	public class Clipboard : Widget, IDataObject
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		static readonly object Clipboard_Key = new object();
 
@@ -28,6 +28,34 @@ namespace Eto.Forms
 		/// </summary>
 		/// <value>The content types in the clipboard.</value>
 		public string[] Types => Handler.Types;
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.Clipboard"/> contains a value for <see cref="Text"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains text; otherwise, <c>false</c>.</value>
+		public bool ContainsText => Handler.ContainsText;
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.Clipboard"/> contains a value for <see cref="Html"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains html; otherwise, <c>false</c>.</value>
+		public bool ContainsHtml => Handler.ContainsHtml;
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.Clipboard"/> contains a value for <see cref="Image"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains an image; otherwise, <c>false</c>.</value>
+		public bool ContainsImage => Handler.ContainsImage;
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.Clipboard"/> contains a value for <see cref="Uris"/>.
+		/// </summary>
+		/// <remarks>
+		/// This can be a mix of both URL and File objects.  You can use <see cref="Uri.IsFile"/> to test for that.
+		/// On some platforms, (e.g. windows), only a single URL can be retrieved or set.
+		/// </remarks>
+		/// <value><c>true</c> if the data object contains uris; otherwise, <c>false</c>.</value>
+		public bool ContainsUris => Handler.ContainsUris;
 
 		/// <summary>
 		/// Sets a data stream into the clipboard with the specified type identifier.
@@ -58,6 +86,13 @@ namespace Eto.Forms
 		/// <param name="value">Data to store in the clipboard.</param>
 		/// <param name="type">Type identifier to store the data.</param>
 		public void SetData(byte[] value, string type) => Handler.SetData(value, type);
+
+		/// <summary>
+		/// Gets a value indicating that data with the specified type is contained in the clipboard.
+		/// </summary>
+		/// <returns><c>true</c> if the clipboard contains the specified type, <c>false</c> otherwise.</returns>
+		/// <param name="type">Type to test.</param>
+		public bool Contains(string type) => Handler.Contains(type);
 
 		/// <summary>
 		/// Gets a data array from the clipboard with the specified type identifier.
@@ -128,7 +163,6 @@ namespace Eto.Forms
 			get { return Handler.Image; }
 			set { Handler.Image = value; }
 		}
-
 
 		/// <summary>
 		/// Gets or sets the Uri's of the files in the clipboard.

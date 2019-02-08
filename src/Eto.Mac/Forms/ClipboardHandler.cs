@@ -40,6 +40,7 @@ namespace Eto.Mac.Forms
 
 		protected override bool DisposeControl => false;
 
+		/*
 		public DataObject DataObject
 		{
 			get
@@ -53,7 +54,7 @@ namespace Eto.Mac.Forms
 				handler?.Apply(Control);
 			}
 		}
-
+		*/
 
 	}
 }

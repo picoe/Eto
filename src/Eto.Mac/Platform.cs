@@ -205,7 +205,7 @@ namespace Eto.Mac
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
-			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
+			p.Add<DataObject.IHandler>(() => new MemoryDataObjectHandler());
 			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			p.Add<Notification.IHandler>(() => new NotificationHandler());
 			p.Add<TrayIndicator.IHandler>(() => new TrayIndicatorHandler());

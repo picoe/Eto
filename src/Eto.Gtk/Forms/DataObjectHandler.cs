@@ -25,7 +25,7 @@ namespace Eto.GtkSharp.Forms
 		public void GetData(Gtk.SelectionData selectionData) => GetDataFunc?.Invoke(this, selectionData);
 	}
 
-	public class DataObjectHandler : WidgetHandler<List<DataObjectData>, DataObject, DataObject.ICallback>, DataObject.IHandler
+	public class DataObjectHandler : WidgetHandler<Dictionary<string, DataObjectData>, DataObject, DataObject.ICallback>, DataObject.IHandler
 	{
 
 		Gdk.DragContext _dragContext;
@@ -35,7 +35,7 @@ namespace Eto.GtkSharp.Forms
 
 		public DataObjectHandler()
 		{
-			Control = new List<DataObjectData>();
+			Control = new Dictionary<string, DataObjectData>();
 		}
 
 		public DataObjectHandler(Gtk.Widget widget, Gdk.DragContext context, uint time)
@@ -55,13 +55,13 @@ namespace Eto.GtkSharp.Forms
 		public Gtk.TargetList GetTargets()
 		{
 			var targets = new Gtk.TargetList();
-			targets.AddTable(Control.Select(r => r.Target).ToArray());
+			targets.AddTable(Control.Values.Select(r => r.Target).ToArray());
 			return targets;
 		}
 
 		public void Apply(Gtk.SelectionData data)
 		{
-			foreach (var item in Control)
+			foreach (var item in Control.Values)
 			{
 				if (item.Target.Target == data.Target.Name)
 				{
@@ -73,23 +73,19 @@ namespace Eto.GtkSharp.Forms
 
 		void AddEntry(string type, object data, Action<DataObjectData, Gtk.SelectionData> getData)
 		{
-			Control.Add(new DataObjectData
+			Control[type] = new DataObjectData
 			{
 				Target = new Gtk.TargetEntry(type, 0, (uint)Control.Count),
 				Data = data,
 				GetDataFunc = getData
-			});
+			};
 		}
 
 		T GetSelectionData<T>(string type, Func<Gtk.SelectionData, T> getData)
 		{
 			if (_dragContext != null)
 			{
-#if GTK2
-				var target = _dragContext.Targets.FirstOrDefault(r => r.Name == type);
-#else
 				var target = _dragContext.ListTargets().FirstOrDefault(r => r.Name == type);
-#endif
 				if (target != null)
 				{
 					object data = null;
@@ -129,17 +125,26 @@ namespace Eto.GtkSharp.Forms
 			});
 		}
 
+		T GetControlData<T>(string type, Func<DataObjectData, T> getValue)
+		{
+			if (Control.TryGetValue(type, out var value))
+				return getValue(value);
+			return default(T);
+		}
+
 		public string GetString(string type)
 		{
-			return GetSelectionData(type, selection =>
-			{
-				// using selection.Text doesn't always seem to work
-				var data = selection.Data;
-				if (data != null)
-					return Encoding.UTF8.GetString(data);
-				else
-					return null;
-			});
+			return
+				GetControlData(type, d => d.Data as string)
+				?? GetSelectionData(type, selection =>
+				{
+					// using selection.Text doesn't always seem to work
+					var data = selection.Data;
+					if (data != null)
+						return Encoding.UTF8.GetString(data);
+					else
+						return null;
+				});
 		}
 
 		public string Html
@@ -190,7 +195,8 @@ namespace Eto.GtkSharp.Forms
 			}
 			get
 			{
-				return GetSelectionData("image/pixbuf", selection => selection.Pixbuf.ToEto())
+				return GetControlData("image/png", d => d.Data as Bitmap)
+					?? GetSelectionData("image/pixbuf", selection => selection.Pixbuf.ToEto())
 					?? GetSelectionData("image/png", selection => new Bitmap(selection.Data))
 					?? GetSelectionData("image/tiff", selection => new Bitmap(selection.Data))
 					?? GetSelectionData("image/bmp", selection => new Bitmap(selection.Data))
@@ -205,12 +211,25 @@ namespace Eto.GtkSharp.Forms
 
 		public byte[] GetData(string type)
 		{
-			return GetSelectionData(type, selection => selection.Data);
+			return GetControlData(type, d => d.Data as byte[]) 
+				?? GetSelectionData(type, selection => selection.Data);
 		}
 
 		public void Clear()
 		{
 			Control.Clear();
+		}
+
+		public bool Contains(string type)
+		{
+			return _dragContext?.ListTargets().Any(r => r.Name == type)
+				?? Control.ContainsKey(type);
+		}
+
+		public bool Contains(params string[] types)
+		{
+			return _dragContext?.ListTargets().Any(r => types.Contains(r.Name))
+				?? Control.Keys.Any(r => types.Contains(r));
 		}
 
 		public string[] Types
@@ -220,7 +239,7 @@ namespace Eto.GtkSharp.Forms
 				if (_dragContext != null)
 					return _dragContext.ListTargets().Select(r => r.Name).ToArray();
 
-				return Control.Select(r => r.Target.Target).ToArray();
+				return Control.Values.Select(r => r.Target.Target).ToArray();
 			}
 		}
 
@@ -228,14 +247,23 @@ namespace Eto.GtkSharp.Forms
 		{
 			set
 			{
-				var uris = value?.Select(r => r.AbsolutePath).ToArray();
+				var uris = value?.Select(r => r.AbsoluteUri).ToArray();
 				AddEntry("text/uri-list", value, (data, selection) => selection.SetSelectedUris2(uris));
 			}
 			get
 			{
-				var urls = GetSelectionData("text/uri-list", selection => selection.GetSelectedUris());
-				return urls?.Select(r => new Uri(r)).ToArray();
+				var urls = GetControlData("text/uri-list", d => d.Data as Uri[])
+					?? GetSelectionData("text/uri-list", selection => selection.GetSelectedUris())?.Select(r => new Uri(r)).ToArray();
+				return urls;
 			}
 		}
+
+		public bool ContainsText => Contains("UTF8_STRING", "STRING");
+
+		public bool ContainsHtml => Contains("text/html");
+
+		public bool ContainsImage => Contains("image/pixbuf", "image/png", "image/tiff", "image/bmp", "image/jpeg");
+
+		public bool ContainsUris => Contains("text/uri-list");
 	}
 }

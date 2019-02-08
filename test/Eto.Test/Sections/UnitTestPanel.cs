@@ -1253,7 +1253,7 @@ namespace Eto.Test.Sections
 			{
 				startButton.Enabled = !running;
 				stopButton.Enabled = running;
-				search.Enabled = !running;
+				search.ReadOnly = running;
 				filterControls.Enabled = !running;
 
 				if (!running && StatusFilters.Any())
