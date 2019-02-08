@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
@@ -806,18 +808,8 @@ namespace Eto.GtkSharp
 		public static bool SetSelectedUris2(this Gtk.SelectionData data, string[] uris)
 		{
 			int length = uris?.Length ?? 0;
-			IntPtr[] array = new IntPtr[length + 1];
-			for (int i = 0; i < length; i++)
-			{
-				array[i] = GLib.Marshaller.StringToPtrGStrdup(uris[i]);
-			}
-			array[length] = IntPtr.Zero;
-			var result = NativeMethods.gtk_selection_data_set_uris(data.Handle, array);
-			for (int i = 0; i < length; i++)
-			{
-				GLib.Marshaller.Free(array[i]);
-			}
-			return result;
+			var ptr = GLib.Marshaller.StringArrayToNullTermPointer(uris);
+			return NativeMethods.gtk_selection_data_set_uris(data.Handle, ptr);
 		}
 
 		public static string[] GetSelectedUris(this Gtk.SelectionData data)

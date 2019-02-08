@@ -864,8 +864,12 @@ namespace Eto.Mac.Forms
 			{
 				if (Cursor != value)
 				{
+					bool needsMethod = !Widget.Properties.ContainsKey(MacView.Cursor_Key);
 					Widget.Properties[MacView.Cursor_Key] = value;
+					if (needsMethod)
 					AddMethod(MacView.selResetCursorRects, new Action<IntPtr, IntPtr>(TriggerResetCursorRects), "v@:");
+
+					EventControl.Window?.InvalidateCursorRectsForView(EventControl);
 				}
 			}
 		}
