@@ -10,10 +10,11 @@ namespace Eto.GtkSharp.Forms.ToolBar
 		{
 			Gtk.Toolbar tb = handler.Control;
 			Control = new Gtk.SeparatorToolItem();
+			Control.ShowAll();
+			Control.NoShowAll = true;
+			Control.Visible = Visible;
 			SetType();
 			tb.Insert(Control, index);
-			if (tb.Visible)
-				Control.ShowAll();
 		}
 
 		void SetType()

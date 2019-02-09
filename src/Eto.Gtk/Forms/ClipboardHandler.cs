@@ -95,7 +95,7 @@ namespace Eto.GtkSharp.Forms
 			if (Control.WaitIsTargetAvailable(target))
 			{
 				var data = Control.WaitForContents(target);
-				if (data != null)
+				if (data != null && data.GetDataType() != null)
 					return data;
 			}
 			return null;

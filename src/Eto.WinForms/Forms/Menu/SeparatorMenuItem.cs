@@ -36,5 +36,11 @@ namespace Eto.WinForms.Forms.Menu
 			get { return false; }
 			set { throw new NotSupportedException(); }
 		}
+
+		public bool Visible
+		{
+			get => Control.Visible;
+			set => Control.Visible = value;
+		}
 	}
 }

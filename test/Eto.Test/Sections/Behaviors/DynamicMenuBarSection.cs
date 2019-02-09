@@ -2,14 +2,29 @@
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
+using System.ComponentModel;
 
 
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "Dynamic MenuBar")]
-	public class DynamicMenuBar : Panel
+	public class DynamicMenuBarSection : Panel, INotifyPropertyChanged
 	{
-		public DynamicMenuBar()
+		MenuItem _CurrentMenuItem;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		MenuItem CurrentMenuItem
+		{
+			get => _CurrentMenuItem;
+			set
+			{
+				_CurrentMenuItem = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMenuItem)));
+			}
+		}
+
+		public DynamicMenuBarSection()
 		{
 			var count = 0;
 			var menu = Application.Instance.MainForm.Menu;
@@ -21,6 +36,7 @@ namespace Eto.Test.Sections.Behaviors
 				DataStore = menu.Items.OfType<ISubmenu>().Union(new ISubmenu[] { menu }).ToList(),
 				ItemTextBinding = Binding.Delegate((MenuItem item) => item.Text, defaultGetValue: "Main Menu")
 			};
+			menuToEdit.SelectedValueBinding.Bind(this, t => t.CurrentMenuItem);
 			menuToEdit.SelectedValueBinding.Bind(() => editMenu, v => editMenu = v as ISubmenu);
 
 			// tag to identify items that we've added
@@ -47,19 +63,21 @@ namespace Eto.Test.Sections.Behaviors
 				}
 			};
 
+			var visibilityCheckBox = new CheckBox { Text = "MenuItem.Visible" };
+			visibilityCheckBox.CheckedBinding.Bind(this, t => t.CurrentMenuItem.Visible);
+
+
 			// layout of the form
-			Content = new StackLayout
-			{
-				Spacing = 5,
-				HorizontalContentAlignment = HorizontalAlignment.Center,
-				Items =
-				{
-					null,
-					new StackLayout { Orientation = Orientation.Horizontal, Spacing = 5, Items = { new Label { Text = "Submenu to add to", VerticalAlignment = VerticalAlignment.Center }, menuToEdit } },
-					new StackLayout { Orientation = Orientation.Horizontal, Spacing = 5, Items = { addToEditMenu, removeFromEditMenu } },
-					null
-				}
-			};
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
+
+			layout.BeginCentered(yscale: true);
+			layout.AddSeparateRow("Submenu to add to", menuToEdit);
+			layout.AddSeparateRow(addToEditMenu, removeFromEditMenu);
+			layout.AddSeparateRow(visibilityCheckBox);
+
+			layout.EndCentered();
+
+			Content = layout;
 		}
 	}
 }
