@@ -110,6 +110,8 @@ namespace Eto.GtkSharp
 		public static Gdk.Atom[] ListTargets(this Gtk.SelectionData data) => data.Targets;
 
 		public static Gdk.Atom[] ListTargets(this Gdk.DragContext context) => context.Targets;
+
+		public static Gdk.Atom GetDataType(this Gtk.SelectionData data) => data.Type;
 #else
 		public static Gtk.StateFlags ToGtk(this GtkStateFlags flags)
 		{
@@ -212,6 +214,8 @@ namespace Eto.GtkSharp
 		{
 			widget.OverrideColor(state.ToGtk(), color.ToRGBA());
 		}
+
+		public static Gdk.Atom GetDataType(this Gtk.SelectionData data) => data.DataType;
 #endif
 
 	}

@@ -295,7 +295,8 @@ namespace Eto.Test
 					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
 				}
 				ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Space });
-				ToolBar.Items.Add(new ButtonToolItem { Text = "Click Me", Image = TestIcons.Logo });
+				ButtonToolItem clickButton = new ButtonToolItem { Text = "Click Me", Image = TestIcons.Logo };
+				ToolBar.Items.Add(clickButton);
 				if (Platform.Supports<RadioToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
@@ -303,6 +304,9 @@ namespace Eto.Test
 					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
 					ToolBar.Items.Add(new RadioToolItem { Text = "Radio3 (Disabled)", Image = TestIcons.TestImage, Enabled = false });
 				}
+				var invisibleButton = new ButtonToolItem { Text = "Invisible", Visible = false };
+				ToolBar.Items.Add(invisibleButton);
+				clickButton.Click += (sender, e) => invisibleButton.Visible = !invisibleButton.Visible;
 			}
 		}
 

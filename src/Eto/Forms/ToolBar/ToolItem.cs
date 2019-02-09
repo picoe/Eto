@@ -122,6 +122,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.ToolItem"/> is visible.
+		/// </summary>
+		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		public bool Visible
+		{
+			get { return Handler.Visible; }
+			set { Handler.Visible = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets a user-defined tag for the tool item.
 		/// </summary>
 		/// <value>The user-defined tag.</value>
@@ -165,6 +175,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 			bool Enabled { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.ToolItem"/> is visible.
+			/// </summary>
+			/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+			bool Visible { get; set; }
 		}
 	}
 }
