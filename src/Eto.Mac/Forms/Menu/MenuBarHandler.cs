@@ -66,7 +66,7 @@ namespace Eto.Mac.Forms.Menu
 
 		public ButtonMenuItem HelpMenu
 		{
-			get { return Widget.Items.GetSubmenu("&Help", 1000); }
+			get { return Widget.Items.GetSubmenu(Application.Instance.Localize(Widget, "&Help"), 1000); }
 		}
 
 		MenuItem quitItem;
@@ -99,44 +99,44 @@ namespace Eto.Mac.Forms.Menu
 			yield return new Command((sender, e) => NSApplication.SharedApplication.Hide(NSApplication.SharedApplication))
 			{ 
 				ID = "mac_hide", 
-				MenuText = string.Format("Hide {0}", appName),
-				ToolBarText = "Hide",
-				ToolTip = string.Format("Hides the main {0} window", appName), 
+				MenuText = Application.Instance.Localize(Widget, string.Format("Hide {0}", appName)),
+				ToolBarText = Application.Instance.Localize(Widget, "Hide"),
+				ToolTip = Application.Instance.Localize(Widget, string.Format("Hides the main {0} window", appName)), 
 				Shortcut = Keys.H | Keys.Application
 			};
 
 			yield return new Command((sender, e) => NSApplication.SharedApplication.HideOtherApplications(NSApplication.SharedApplication))
 			{
 				ID = "mac_hideothers", 
-				MenuText = "Hide Others",
-				ToolBarText = "Hide Others",
-				ToolTip = "Hides all other application windows",
+				MenuText = Application.Instance.Localize(Widget, "Hide Others"),
+				ToolBarText = Application.Instance.Localize(Widget, "Hide Others"),
+				ToolTip = Application.Instance.Localize(Widget, "Hides all other application windows"),
 				Shortcut = Keys.H | Keys.Application | Keys.Alt
 			};
 
 			yield return new Command((sender, e) => NSApplication.SharedApplication.UnhideAllApplications(NSApplication.SharedApplication))
 			{
 				ID = "mac_showall",
-				MenuText = "Show All",
-				ToolBarText = "Show All",
-				ToolTip = "Show All Windows"
+				MenuText = Application.Instance.Localize(Widget, "Show All"),
+				ToolBarText = Application.Instance.Localize(Widget, "Show All"),
+				ToolTip = Application.Instance.Localize(Widget, "Show All Windows")
 			};
 
-			yield return new MacCommand("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Shortcut = Keys.Application | Keys.M };
-			yield return new MacCommand("mac_performZoom", "Zoom", "performZoom:");
-			yield return new MacCommand("mac_performClose", "Close", "performClose:") { Shortcut = Keys.Application | Keys.W };
-			yield return new MacCommand("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:");
-			yield return new MacCommand("mac_cut", "Cut", "cut:") { Shortcut = Keys.Application | Keys.X };
-			yield return new MacCommand("mac_copy", "Copy", "copy:") { Shortcut = Keys.Application | Keys.C };
-			yield return new MacCommand("mac_paste", "Paste", "paste:") { Shortcut = Keys.Application | Keys.V };
-			yield return new MacCommand("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Shortcut = Keys.Application | Keys.Alt | Keys.Shift | Keys.V };
-			yield return new MacCommand("mac_delete", "Delete", "delete:");
-			yield return new MacCommand("mac_selectAll", "Select All", "selectAll:") { Shortcut = Keys.Application | Keys.A };
-			yield return new MacCommand("mac_undo", "Undo", "undo:") { Shortcut = Keys.Application | Keys.Z };
-			yield return new MacCommand("mac_redo", "Redo", "redo:") { Shortcut = Keys.Application | Keys.Shift | Keys.Z };
-			yield return new MacCommand("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Shortcut = Keys.Application | Keys.Control | Keys.F };
-			yield return new MacCommand("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Shortcut = Keys.Application | Keys.Shift | Keys.P };
-			yield return new MacCommand("mac_print", "Print...", "print:") { Shortcut = Keys.Application | Keys.P };
+			yield return new MacCommand("mac_performMiniaturize", Application.Instance.Localize(Widget, "Minimize"), "performMiniaturize:") { Shortcut = Keys.Application | Keys.M };
+			yield return new MacCommand("mac_performZoom", Application.Instance.Localize(Widget, "Zoom"), "performZoom:");
+			yield return new MacCommand("mac_performClose", Application.Instance.Localize(Widget, "Close"), "performClose:") { Shortcut = Keys.Application | Keys.W };
+			yield return new MacCommand("mac_arrangeInFront", Application.Instance.Localize(Widget, "Bring All To Front"), "arrangeInFront:");
+			yield return new MacCommand("mac_cut", Application.Instance.Localize(Widget, "Cut"), "cut:") { Shortcut = Keys.Application | Keys.X };
+			yield return new MacCommand("mac_copy", Application.Instance.Localize(Widget, "Copy"), "copy:") { Shortcut = Keys.Application | Keys.C };
+			yield return new MacCommand("mac_paste", Application.Instance.Localize(Widget, "Paste"), "paste:") { Shortcut = Keys.Application | Keys.V };
+			yield return new MacCommand("mac_pasteAsPlainText", Application.Instance.Localize(Widget, "Paste and Match Style"), "pasteAsPlainText:") { Shortcut = Keys.Application | Keys.Alt | Keys.Shift | Keys.V };
+			yield return new MacCommand("mac_delete", Application.Instance.Localize(Widget, "Delete"), "delete:");
+			yield return new MacCommand("mac_selectAll", Application.Instance.Localize(Widget, "Select All"), "selectAll:") { Shortcut = Keys.Application | Keys.A };
+			yield return new MacCommand("mac_undo", Application.Instance.Localize(Widget, "Undo"), "undo:") { Shortcut = Keys.Application | Keys.Z };
+			yield return new MacCommand("mac_redo", Application.Instance.Localize(Widget, "Redo"), "redo:") { Shortcut = Keys.Application | Keys.Shift | Keys.Z };
+			yield return new MacCommand("mac_toggleFullScreen", Application.Instance.Localize(Widget, "Enter Full Screen"), "toggleFullScreen:") { Shortcut = Keys.Application | Keys.Control | Keys.F };
+			yield return new MacCommand("mac_runPageLayout", Application.Instance.Localize(Widget, "Page Setup..."), "runPageLayout:") { Shortcut = Keys.Application | Keys.Shift | Keys.P };
+			yield return new MacCommand("mac_print", Application.Instance.Localize(Widget, "Print..."), "print:") { Shortcut = Keys.Application | Keys.P };
 		}
 
 		public void CreateLegacySystemMenu()
@@ -152,7 +152,7 @@ namespace Eto.Mac.Forms.Menu
 			if (Widget.IncludeSystemItems.HasFlag(MenuBarSystemItems.Quit) && quitItem == null)
 			{
 				var application = ApplicationMenu;
-				var quitCommand = new Command { MenuText = "Quit", Shortcut = Keys.Application | Keys.Q };
+				var quitCommand = new Command { MenuText = Application.Instance.Localize(Widget, "Quit"), Shortcut = Keys.Application | Keys.Q };
 				quitCommand.Executed += (sender, e) => Application.Instance.Quit();
 				application.Items.AddSeparator(999);
 				application.Items.Add(quitCommand, 1000);
@@ -166,7 +166,7 @@ namespace Eto.Mac.Forms.Menu
 				application.Items.AddRange(lookup["mac_showall"], 800);
 				application.Items.AddSeparator(801);
 
-				var file = items.GetSubmenu("&File", 100);
+				var file = items.GetSubmenu(Application.Instance.Localize(Widget, "&File"), 100);
 				file.Trim = true;
 				file.Items.AddSeparator(900);
 				file.Items.AddRange(lookup["mac_performClose"], 900);
@@ -178,7 +178,7 @@ namespace Eto.Mac.Forms.Menu
 					file.Items.AddRange(lookup["mac_print"], 1000);
 				}
 
-				var edit = items.GetSubmenu("&Edit", 200);
+				var edit = items.GetSubmenu(Application.Instance.Localize(Widget, "&Edit"), 200);
 				edit.Trim = true;
 				edit.Items.AddSeparator(100);
 				edit.Items.AddRange(lookup["mac_undo"], 100);
@@ -193,7 +193,7 @@ namespace Eto.Mac.Forms.Menu
 				edit.Items.AddRange(lookup["mac_selectAll"], 200);
 				edit.Items.AddSeparator(201);
 
-				var window = items.GetSubmenu("&Window", 900);
+				var window = items.GetSubmenu(Application.Instance.Localize(Widget, "&Window"), 900);
 				window.Trim = true;
 				window.Items.AddSeparator(100);
 				window.Items.AddRange(lookup["mac_performMiniaturize"], 100);
@@ -206,14 +206,14 @@ namespace Eto.Mac.Forms.Menu
 
 				if (ApplicationHandler.Instance.AddFullScreenMenuItem)
 				{
-					var view = items.GetSubmenu("&View", 300);
+					var view = items.GetSubmenu(Application.Instance.Localize(Widget, "&View"), 300);
 					view.Trim = true;
 					view.Items.AddSeparator(900);
 					view.Items.AddRange(lookup["mac_toggleFullScreen"], 900);
 					view.Items.AddSeparator(901);
 				}
 
-				var help = items.GetSubmenu("&Help", 900);
+				var help = HelpMenu;
 				// always show help menu
 				help.Trim = false;
 			}
