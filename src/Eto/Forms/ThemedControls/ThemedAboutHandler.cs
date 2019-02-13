@@ -212,11 +212,11 @@ namespace Eto.Forms.ThemedControls
 			textArea2.ReadOnly = true;
 
 			if (developers != null && developers.Length != 0)
-				textArea1.Text += "Developers:" + Environment.NewLine + string.Join(Environment.NewLine, developers) + Environment.NewLine + Environment.NewLine;
+				textArea1.Text += Application.Instance.Localize(Widget, "Developers:") + Environment.NewLine + string.Join(Environment.NewLine, developers) + Environment.NewLine + Environment.NewLine;
 			if (designers != null && designers.Length != 0)
-				textArea1.Text += "Designers:" + Environment.NewLine + string.Join(Environment.NewLine, designers) + Environment.NewLine + Environment.NewLine;
+				textArea1.Text += Application.Instance.Localize(Widget, "Designers:") + Environment.NewLine + string.Join(Environment.NewLine, designers) + Environment.NewLine + Environment.NewLine;
 			if (documenters != null && documenters.Length != 0)
-				textArea1.Text += "Documenters:" + Environment.NewLine + string.Join(Environment.NewLine, documenters) + Environment.NewLine + Environment.NewLine;
+				textArea1.Text += Application.Instance.Localize(Widget, "Documenters:") + Environment.NewLine + string.Join(Environment.NewLine, documenters) + Environment.NewLine + Environment.NewLine;
 			textArea1.Text = textArea1.Text.TrimEnd(Environment.NewLine.ToCharArray());
 
 			if (!string.IsNullOrEmpty(license))
@@ -230,13 +230,13 @@ namespace Eto.Forms.ThemedControls
 			{
 				var tabControl = new TabControl();
 
-				tabControl.Pages.Add(new TabPage(layout) { Text = "About" });
+				tabControl.Pages.Add(new TabPage(layout) { Text = Application.Instance.Localize(Widget, "About") });
 
 				if (!string.IsNullOrEmpty(textArea1.Text))
-					tabControl.Pages.Add(new TabPage(textArea1) { Text = "Credits" });
+					tabControl.Pages.Add(new TabPage(textArea1) { Text = Application.Instance.Localize(Widget, "Credits") });
 
 				if (!string.IsNullOrEmpty(textArea2.Text))
-					tabControl.Pages.Add(new TabPage(textArea2) { Text = "License" });
+					tabControl.Pages.Add(new TabPage(textArea2) { Text = Application.Instance.Localize(Widget, "License") });
 
 				Control.Content = tabControl;
 			}

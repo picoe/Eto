@@ -22,6 +22,13 @@ namespace Eto.Test
 
 		public List<Assembly> TestAssemblies { get; private set; }
 
+		protected override void OnLocalizeString(LocalizeEventArgs e)
+		{
+			base.OnLocalizeString(e);
+			//Console.WriteLine($"Localize {e.Source}:{e.Text}");
+			//e.LocalizedText = e.Text + "_localized";
+		}
+
 		public TestApplication(Platform platform)
 			: base(platform)
 		{
