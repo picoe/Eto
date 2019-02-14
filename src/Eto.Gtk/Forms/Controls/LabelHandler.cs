@@ -11,15 +11,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		TextAlignment horizontalAlign = TextAlignment.Left;
 		VerticalAlignment verticalAlign = VerticalAlignment.Top;
 
-		public override Gtk.Widget ContainerControl
-		{
-			get { return eventBox; }
-		}
+		public override Gtk.Widget ContainerControl => eventBox;
 
-		public override Gtk.Widget EventControl
-		{
-			get { return eventBox; }
-		}
+		public override Gtk.Widget EventControl => eventBox;
 
 		public class EtoLabel : Gtk.Label
 		{
@@ -70,15 +64,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				// the allocation may default to 1, in that case ignore OnRealized
 				if (Allocation.Width > 1 && wrapWidth != Allocation.Width)
 				{
-					Layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);
-					int pixWidth, pixHeight;
-					Layout.GetPixelSize(out pixWidth, out pixHeight);
-					HeightRequest = pixHeight;
-					wrapWidth = Allocation.Width;
-#if GTK3
-					if (Parent != null)
-						Gtk.Application.Invoke((sender, e) => Parent.QueueResize());
-#endif
+					CalculateHeight(Allocation.Width);
 				}
 
 				base.OnRealized();
@@ -94,26 +80,34 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				if (wrapWidth != width)
 				{
-					Layout.Width = (int)(width * Pango.Scale.PangoScale);
-					int pixWidth, pixHeight;
-					Layout.GetPixelSize(out pixWidth, out pixHeight);
-					HeightRequest = pixHeight;
-					wrapWidth = width;
-#if GTK3
-					if (Parent != null)
-						Gtk.Application.Invoke((sender, e) => Parent.QueueResize());
-#endif
+					CalculateHeight(width);
 				}
 			}
+
+			void CalculateHeight(int width)
+			{
+				Layout.Width = (int)(width * Pango.Scale.PangoScale);
+				int pixWidth, pixHeight;
+				Layout.GetPixelSize(out pixWidth, out pixHeight);
+				HeightRequest = pixHeight;
+				wrapWidth = width;
+#if GTK3
+				Gtk.Application.Invoke((sender, e) => QueueResize());
+#endif
+			}
+
 		}
 
 		public LabelHandler()
 		{
 			eventBox = new Gtk.EventBox();
+#if GTK2
 			eventBox.ResizeMode = Gtk.ResizeMode.Immediate;
+#endif
 			//eventBox.VisibleWindow = false;
 			Control = new EtoLabel();
-			Control.SetAlignment(0, 0);
+			Control.Xalign = 0;
+			Control.Yalign = 0;
 			eventBox.Child = Control;
 			Wrap = WrapMode.Word;
 		}
@@ -206,8 +200,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			Control.ResetWidth();
 			Control.Justify = horizontalAlign.ToGtk();
-			Control.SetAlignment(horizontalAlign.ToAlignment(), verticalAlign.ToAlignment());
+			Control.Xalign = horizontalAlign.ToAlignment();
+			Control.Yalign = verticalAlign.ToAlignment();
+#if GTK2
 			eventBox.ResizeChildren();
+#endif
 		}
 
 		public VerticalAlignment VerticalAlignment
