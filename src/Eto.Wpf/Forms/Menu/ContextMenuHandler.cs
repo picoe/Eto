@@ -76,18 +76,43 @@ namespace Eto.Wpf.Forms.Menu
 
 		public void Show(Control relativeTo, PointF? location)
 		{
-			Control.Placement = swc.Primitives.PlacementMode.MousePoint;
 			if (relativeTo != null)
 			{
 				Control.PlacementTarget = relativeTo.ControlObject as sw.UIElement;
 				if (location != null)
 				{
-					Control.Placement = PlacementMode.RelativePoint;
-					Control.HorizontalOffset = location.Value.X;
-					Control.VerticalOffset = location.Value.Y;
+					Control.HorizontalOffset = 0;
+					Control.VerticalOffset = 0;
+
+					var pt = location.Value;
+
+					if (pt.X == 0 && pt.Y == relativeTo.Height)
+					{
+						// try to stay at the bottom and scroll if needed, e.g. useful for drop down menus
+						// will show above control if necessary
+						Control.Placement = PlacementMode.Bottom;
+					}
+					else if (pt.Y == 0 && pt.X == relativeTo.Width)
+					{
+						Control.Placement = PlacementMode.Right;
+					}
+					else
+					{
+						// Location should be the upper left corner, but PlacementMode.RelativePoint 
+						// can show the menu from its upper right corner.
+						Control.Placement = PlacementMode.Custom;
+						var logicalPixelSize = relativeTo.ParentWindow?.LogicalPixelSize;
+						if (logicalPixelSize != null)
+							pt *= logicalPixelSize.Value;
+						Control.CustomPopupPlacementCallback = (popupSize, targetSize, offset) =>
+						{
+							return new[] { new CustomPopupPlacement(pt.ToWpf(), PopupPrimaryAxis.Horizontal) };
+						};
+					}
 				}
 				else
 				{
+					Control.Placement = swc.Primitives.PlacementMode.MousePoint;
 					Control.HorizontalOffset = 0;
 					Control.VerticalOffset = 0;
 				}
@@ -100,6 +125,7 @@ namespace Eto.Wpf.Forms.Menu
 			}
 			else
 			{
+				Control.Placement = swc.Primitives.PlacementMode.MousePoint;
 				Control.HorizontalOffset = 0;
 				Control.VerticalOffset = 0;
 			}

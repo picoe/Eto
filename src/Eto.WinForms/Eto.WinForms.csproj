@@ -76,6 +76,7 @@
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />

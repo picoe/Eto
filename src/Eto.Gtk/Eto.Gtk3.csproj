@@ -285,6 +285,7 @@
     <Compile Include="Forms\TableLayoutHandler.gtk3.cs" />
     <Compile Include="CustomControls\BaseComboBox.gtk2.cs" />
     <Compile Include="CustomControls\BaseComboBox.gtk3.cs" />
+    <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

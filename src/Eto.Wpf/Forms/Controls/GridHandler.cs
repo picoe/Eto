@@ -563,7 +563,7 @@ namespace Eto.Wpf.Forms.Controls
 		public BorderType Border
 		{
 			get { return Widget.Properties.Get(GridHandler.Border_Key, BorderType.Bezel); }
-			set { Widget.Properties.Set(GridHandler.Border_Key, value, () => Control.SetEtoBorderType(value)); }
+			set { if (Widget.Properties.TrySet(GridHandler.Border_Key, value)) Control.SetEtoBorderType(value); }
 		}
 
 		public void ReloadData(IEnumerable<int> rows)

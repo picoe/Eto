@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -174,6 +174,8 @@ namespace Eto
 		void IStyleProvider.ApplyCascadingStyle(object container, object widget, string style)
 		{
 			ApplyDefaults(widget);
+			if (widget is IHandlerSource handlerSource)
+				ApplyDefaults(handlerSource.Handler);
 			ApplyStyles(widget, style);
 		}
 

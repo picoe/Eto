@@ -141,7 +141,16 @@ namespace Eto.Forms
 			{
 				base.Size = value;
 				// Ensure minimum size is at least as small as the desired explicit size
-				MinimumSize = Size.Min(value, MinimumSize);
+				if (value.Width != -1 || value.Height != -1)
+				{
+					var min = MinimumSize;
+					var size = Size.Min(value, min);
+					if (size.Width == -1)
+						size.Width = min.Width;
+					if (size.Height == -1)
+						size.Height = min.Height;
+					MinimumSize = size;
+				}
 			}
 		}
 
@@ -165,9 +174,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Triggers the <see cref="Click"/> event for the button, if the button is visable and enabled.
+		/// Triggers the <see cref="Click"/> event for the button, if the button is visible and enabled.
 		/// </summary>
-		public void PerformClick()
+		public virtual void PerformClick()
 		{
 			if (Enabled && Visible)
 				OnClick(EventArgs.Empty);

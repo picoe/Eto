@@ -141,7 +141,8 @@ namespace Eto.Forms
 		/// <value>The default style provider for this container.</value>
 		public DefaultStyleProvider Styles => Properties.Create<DefaultStyleProvider>(DefaultStyleProvider_Key);
 
-		internal void ApplyStyles(object widget, string style)
+		/// <inheritdoc />
+		protected override void ApplyStyles(object widget, string style)
 		{
 			var styleProvider = StyleProvider;
 
