@@ -289,8 +289,6 @@ namespace Eto.WinForms.Forms
 								Win32.ShowWindow(Control, Win32.SW.HIDE);
 							break;
 					}
-
-					throw new NotImplementedException();
 				}
 			}
 		}
