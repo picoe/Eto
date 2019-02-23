@@ -491,6 +491,8 @@ namespace Eto.Forms
 		{
 			Properties.TriggerEvent(PreLoadKey, this, e);
 			Handler.OnPreLoad(e);
+
+			ApplyStyles();
 		}
 
 		static readonly object LoadKey = new object();
@@ -1001,6 +1003,12 @@ namespace Eto.Forms
 				OnUnLoad(e);
 		}
 
+		internal void TriggerStyleChanged(EventArgs e)
+		{
+			using (Platform.Context)
+				OnStyleChanged(e);
+		}
+
 		/// <summary>
 		/// Gets or sets the color for the background of the control
 		/// </summary>
@@ -1262,6 +1270,24 @@ namespace Eto.Forms
 		{
 			Handler.DoDragDrop(data, allowedEffects);
 		}
+
+		/// <summary>
+		/// Handles when the <see cref="Style"/> is changed.
+		/// </summary>
+		/// <remarks>
+		/// This applies the cascading styles to the control and any of its children.
+		/// </remarks>
+		protected override void OnStyleChanged(EventArgs e)
+		{
+			base.OnStyleChanged(e);
+
+			// already loaded, re-apply styles as they have changed
+			if (Loaded)
+				ApplyStyles();
+		}
+
+		internal virtual void ApplyStyles() => Parent?.ApplyStyles(this, Style);
+
 
 		/// <summary>
 		/// Handles the disposal of this control

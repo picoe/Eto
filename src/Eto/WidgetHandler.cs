@@ -124,7 +124,7 @@ namespace Eto
 		/// </remarks>
 		protected virtual void Initialize()
 		{
-			Style.OnStyleWidgetDefaults(this);
+			Style.Provider?.ApplyDefault(this);
 		}
 
 		void Widget.IHandler.Initialize()
