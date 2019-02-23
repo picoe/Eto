@@ -267,7 +267,8 @@ namespace Eto.Test.UnitTests.Drawing
 				Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#5");
 				Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#6");
 			}
-			Shown(f => new ImageView { Image = bmp }, 
+
+			await Task.Run(() => Shown(f => new ImageView { Image = bmp }, 
 				iv => {
 
 				// also test in UI thread
@@ -281,7 +282,7 @@ namespace Eto.Test.UnitTests.Drawing
 					Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#11");
 					Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#12");
 				}
-			});
+			}));
 		}
 
 		[Test]

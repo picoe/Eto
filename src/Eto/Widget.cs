@@ -426,7 +426,7 @@ namespace Eto
 		/// </summary>
 		protected virtual void OnStyleChanged(EventArgs e)
 		{
-			Eto.Style.OnStyleWidget(this);
+			Eto.Style.Provider?.ApplyStyle(this, Style);
 			Properties.TriggerEvent(StyleChangedKey, this, e);
 		}
 

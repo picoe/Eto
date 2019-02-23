@@ -19,6 +19,8 @@ namespace Eto.Test.Sections.Behaviors
 
 		ContextMenuSection(bool inDialog)
 		{
+			Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
+
 			var relativeToLabelCheckBox = new CheckBox { Text = "Relative to label" };
 			relativeToLabelCheckBox.CheckedBinding.Bind(this, c => c.RelativeToLabel);
 
@@ -139,7 +141,6 @@ namespace Eto.Test.Sections.Behaviors
 				BackgroundColor = Colors.Blue,
 				TextColor = Colors.White,
 				TextAlignment = TextAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
 				Text = "Click on me!"
 			};
 			label.MouseDown += (sender, e) =>
