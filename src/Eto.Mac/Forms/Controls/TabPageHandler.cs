@@ -48,9 +48,10 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DrawLabel(bool shouldTruncateLabel, CGRect labelRect)
 			{
-				if (Handler.image != null)
+				var h = Handler;
+				if (h?.image != null)
 				{
-					var nsimage = (NSImage)Handler.image.ControlObject;
+					var nsimage = (NSImage)h.image.ControlObject;
 
 					if (nsimage.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
 						nsimage.Draw(new CGRect(labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect(CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
@@ -72,7 +73,7 @@ namespace Eto.Mac.Forms.Controls
 			public override CGSize SizeOfLabel(bool computeMin)
 			{
 				var size = base.SizeOfLabel(computeMin);
-				if (Handler.image != null)
+				if (Handler?.image != null)
 				{
 					size.Width += size.Height + ICON_PADDING;
 				}
