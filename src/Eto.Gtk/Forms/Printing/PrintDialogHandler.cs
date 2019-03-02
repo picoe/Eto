@@ -62,6 +62,7 @@ namespace Eto.GtkSharp.Forms.Printing
 			Control.ShowAll ();
 			var response = (Gtk.ResponseType)Control.Run ();
 			Control.Hide ();
+			Control.Unrealize();
 
 			printSettingsHandler.Set(Control.PrintSettings, Control.PageSetup, customOptions.SelectionOnly.Active);
 			if (response == Gtk.ResponseType.Apply) {

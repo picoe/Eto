@@ -99,6 +99,7 @@ namespace Eto.GtkSharp.Forms
 
 			WasClosed = false;
 			Control.Hide();
+			Control.Unrealize();
 
 			CleanupButtons();
 		}

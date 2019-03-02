@@ -468,7 +468,7 @@ namespace Eto.GtkSharp.Forms
 					closing(args);
 				else
 				{
-					var windows = Gdk.Screen.Default.ToplevelWindows.Where(r => r.WindowType != Gdk.WindowType.Temp).ToList();
+					var windows = Gdk.Screen.Default.ToplevelWindows.Where(r => r.State != Gdk.WindowState.Withdrawn && r.WindowType != Gdk.WindowType.Temp).ToList();
 					if (windows.Count == 1 && ReferenceEquals(windows[0], Control.GetWindow()))
 					{
 						var app = ((ApplicationHandler)Application.Instance.Handler);
@@ -492,6 +492,7 @@ namespace Eto.GtkSharp.Forms
 			if (CloseWindow())
 			{
 				Control.Hide();
+				Control.Unrealize();
 			}
 		}
 

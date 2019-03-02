@@ -72,6 +72,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			var result = savedialog.Run();
 			savedialog.Hide();
+			savedialog.Unrealize();
 
 			if (result == (int)Gtk.ResponseType.Ok)
 				saveentry.Text = savedialog.Filename;
