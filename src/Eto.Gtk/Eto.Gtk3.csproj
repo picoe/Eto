@@ -190,7 +190,6 @@
     <Compile Include="Forms\ColorDialogHandlerOld.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
-    <Compile Include="CustomControls\BaseComboBox.cs" />
     <Compile Include="CustomControls\DateComboBox.cs" />
     <Compile Include="CustomControls\DateComboBoxDialog.cs" />
     <Compile Include="CustomControls\AnalogClock.cs" />
@@ -283,6 +282,8 @@
     <Compile Include="Forms\LinuxNotificationHandler.cs" />
     <Compile Include="Forms\Controls\WebKit2WebViewHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />
+    <Compile Include="CustomControls\BaseComboBox.gtk2.cs" />
+    <Compile Include="CustomControls\BaseComboBox.gtk3.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

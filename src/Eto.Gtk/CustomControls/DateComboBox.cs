@@ -83,7 +83,7 @@ namespace Eto.GtkSharp.CustomControls
 			NormalColor = Entry.GetTextColor();
 
 			Entry.Changed += HandleChanged;
-			PopupButton.Clicked += delegate
+			PopupButtonClicked += delegate
 			{
 				var dlg = new DateComboBoxDialog(selectedDate ?? DateTime.Now, this.Mode);
 				dlg.DateChanged += delegate
