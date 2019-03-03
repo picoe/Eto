@@ -147,8 +147,6 @@ namespace Eto.GtkSharp.Forms
 			var geom = new Gdk.Geometry();
 			geom.MinWidth = minimumSize.Width;
 			geom.MinHeight = minimumSize.Height;
-			geom.MaxWidth = 9999999;
-			geom.MaxHeight = 9999999;
 
 			if (!resizable)
 			{
@@ -169,7 +167,7 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
-			Control.SetGeometryHints(Control, geom, Gdk.WindowHints.MinSize | Gdk.WindowHints.MaxSize);
+			Control.SetGeometryHints(Control, geom, Gdk.WindowHints.MinSize);
 		}
 
 		public bool Minimizable { get; set; }
