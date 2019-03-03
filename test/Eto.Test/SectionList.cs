@@ -173,7 +173,7 @@ namespace Eto.Test
 			get
 			{
 				var sectionTreeItem = treeView.SelectedItem as SectionTreeItem;
-				return sectionTreeItem.Section as ISection;
+				return sectionTreeItem?.Section as ISection;
 			}
 		}
 
