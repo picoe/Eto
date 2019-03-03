@@ -84,17 +84,15 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public Padding Padding
+		public virtual Padding Padding
 		{
-			get
-			{
-				uint top, left, right, bottom;
-				alignment.GetPadding(out top, out bottom, out left, out right);
-				return new Padding((int)left, (int)top, (int)right, (int)bottom);
-			}
+			get => new Padding((int)alignment.LeftPadding, (int)alignment.TopPadding, (int)alignment.RightPadding, (int)alignment.BottomPadding);
 			set
 			{
-				alignment.SetPadding((uint)value.Top, (uint)value.Bottom, (uint)value.Left, (uint)value.Right);
+				alignment.LeftPadding = (uint)value.Left;
+				alignment.RightPadding = (uint)value.Right;
+				alignment.TopPadding = (uint)value.Top;
+				alignment.BottomPadding = (uint)value.Bottom;
 			}
 		}
 
