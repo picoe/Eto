@@ -70,6 +70,21 @@ namespace Eto.GtkSharp
 			AddTo(this);
 		}
 
+#if GTK3
+		static Platform()
+		{
+			Style.Add<ThemedStepperHandler>(null, h =>
+			{
+				h.Orientation = Orientation.Horizontal;
+				h.Widget.Size = new Size(50, 30);
+				if (h.Control.Content.Handler is TableLayoutHandler table)
+				{
+					table.Control.StyleContext.AddClass("linked");
+				}
+			});
+		}
+#endif
+
 		public static void AddTo(Eto.Platform p)
 		{
 			// Drawing
