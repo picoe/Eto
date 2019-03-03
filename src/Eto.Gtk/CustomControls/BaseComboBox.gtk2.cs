@@ -1,14 +1,10 @@
+#if GTK2
 using System;
 using Gtk;
 
 namespace Eto.GtkSharp.CustomControls
 {
-	public class BaseComboBox 
-	#if GTK3
-		: EventBox
-	#else
-		: SizableBin
-	#endif
+	public class BaseComboBox : SizableBin
 	{
 		Entry entry;
 		Button popupButton;
@@ -17,17 +13,9 @@ namespace Eto.GtkSharp.CustomControls
 		{
 			AppPaintable = true;
 			Build();
-#if GTK3
-			SetSizeRequest(150, 30);
-			foreach (var cls in PopupButton.StyleContext.ListClasses())
-				PopupButton.StyleContext.RemoveClass(cls);
-			entry.StyleContext.RemoveClass("entry");
-			StyleContext.AddClass("entry");
-#else
 			BorderWidth = 1;
-#endif
 		}
-		#if GTK2
+
 		int vpadding;
 		static readonly int DefaultEntryHeight = new ComboBoxEntry().SizeRequest().Height;
 
@@ -35,6 +23,12 @@ namespace Eto.GtkSharp.CustomControls
 		{
 			base.OnSizeRequested(ref requisition);
 			requisition.Height += vpadding; // for border
+		}
+
+		public event EventHandler PopupButtonClicked
+		{
+			add => PopupButton.Clicked += value;
+			remove => PopupButton.Clicked -= value;
 		}
 
 		[GLib.ConnectBefore]
@@ -59,50 +53,6 @@ namespace Eto.GtkSharp.CustomControls
 			}
 			return true;
 		}
-		#else
-		protected override bool OnDrawn(Cairo.Context cr)
-		{
-			bool ret = true;
-			var rect = this.Allocation;
-			if (rect.Width > 0 && rect.Height > 0)
-			{
-				var arrowWidth = popupButton.Allocation.Width;
-				var arrowPos = rect.Width - arrowWidth;
-				var arrowSize = 10;
-
-				StyleContext.Save();
-				StyleContext.State = Entry.StyleContext.State;
-				StyleContext.RenderBackground(cr, 0, 0, rect.Width, rect.Height);
-
-				ret = base.OnDrawn(cr);
-
-				StyleContext.RenderArrow(cr, Math.PI, arrowPos, (rect.Height - arrowSize) / 2, arrowSize);
-
-				cr.SetSourceColor(new Cairo.Color(.8, .8, .8));
-				cr.Rectangle(arrowPos - 5, 2, 1, rect.Height - 4);
-				cr.Fill();
-
-				StyleContext.RenderFrame(cr, 0, 0, rect.Width, rect.Height);
-				StyleContext.Restore();
-
-			}
-			return ret;
-		}
-
-		class InvisibleButton : Gtk.Button
-		{
-			public InvisibleButton()
-			{
-				AppPaintable = true;
-			}
-
-			protected override bool OnDrawn(Cairo.Context cr)
-			{
-				return false; //return base.OnDrawn(cr);
-			}
-		}
-
-		#endif
 		public Entry Entry { get { return entry; } }
 
 		public Button PopupButton { get { return popupButton; } }
@@ -132,12 +82,7 @@ namespace Eto.GtkSharp.CustomControls
 
 		Gtk.Widget CreatePopupButton()
 		{
-#if GTK3
-			popupButton = new InvisibleButton();
-#else
-
 			popupButton = new Button();
-#endif
 			popupButton.WidthRequest = ArrowSize + 6;
 			popupButton.CanFocus = false;
 			return popupButton;
@@ -148,20 +93,15 @@ namespace Eto.GtkSharp.CustomControls
 			var vbox = new VBox();
 			var hbox = new HBox();
 
-#if GTK2
 			CreateEntry();
 			vpadding = (DefaultEntryHeight - entry.SizeRequest().Height) / 2;
 			entry.HeightRequest = -1;
 			hbox.PackStart(entry, true, true, 4);
 			hbox.PackEnd(CreatePopupButton(), false, false, 2);
 			vbox.PackStart(hbox, true, true, (uint)vpadding);
-#else
-			hbox.PackStart(CreateEntry(), true, true, 8);
-			hbox.PackEnd(CreatePopupButton(), false, false, 2);
-			vbox.PackStart(hbox, true, true, 0);
-#endif
 			Add(vbox);
 		}
 	}
 }
 
+#endif

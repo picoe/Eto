@@ -4,6 +4,12 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {
+	static class GtkPanel
+	{
+		public static readonly object ContextMenu_Key = new object();
+		public static readonly object MinimumSize_Key = new object();
+	}
+
 	public abstract class GtkPanel<TControl, TWidget, TCallback> : GtkContainer<TControl, TWidget, TCallback>
 		where TControl: Gtk.Widget
 		where TWidget: Panel
@@ -44,7 +50,7 @@ namespace Eto.GtkSharp.Forms
 
 		protected class GtkPanelEventConnector : GtkControlConnector
 		{
-			public new GtkPanel<TControl, TWidget, TCallback> Handler { get { return (GtkPanel<TControl, TWidget, TCallback>)base.Handler; } }
+			public new GtkPanel<TControl, TWidget, TCallback> Handler => (GtkPanel<TControl, TWidget, TCallback>)base.Handler;
 			#if GTK2
 			public void HandleContentSizeRequested(object o, Gtk.SizeRequestedArgs args)
 			{
@@ -63,38 +69,37 @@ namespace Eto.GtkSharp.Forms
 			#endif
 		}
 
-		ContextMenu contextMenu;
 
 		public ContextMenu ContextMenu
 		{
-			get { return contextMenu; }
-			set { contextMenu = value; } // TODO
+			get => Widget.Properties.Get<ContextMenu>(GtkPanel.ContextMenu_Key);
+			set => Widget.Properties.Set(GtkPanel.ContextMenu_Key, value); // TODO
 		}
 
-		Size minimumSize;
 		public virtual Size MinimumSize
 		{
-			get { return minimumSize; }
+			get => Widget.Properties.Get<Size>(GtkPanel.MinimumSize_Key);
 			set
 			{
-				minimumSize = value;
-				#if GTK3
-				ContainerControl.SetSizeRequest(value.Width > 0 ? value.Width : -1, value.Height > 0 ? value.Height : -1);
-				#endif
+				Widget.Properties.Set(GtkPanel.MinimumSize_Key, value);
+				ContainerControl.QueueResize();
 			}
 		}
 
-		public Padding Padding
+		protected override void SetSize(Size size)
 		{
-			get
-			{
-				uint top, left, right, bottom;
-				alignment.GetPadding(out top, out bottom, out left, out right);
-				return new Padding((int)left, (int)top, (int)right, (int)bottom);
-			}
+			base.SetSize(Size.Max(size, MinimumSize));
+		}
+
+		public virtual Padding Padding
+		{
+			get => new Padding((int)alignment.LeftPadding, (int)alignment.TopPadding, (int)alignment.RightPadding, (int)alignment.BottomPadding);
 			set
 			{
-				alignment.SetPadding((uint)value.Top, (uint)value.Bottom, (uint)value.Left, (uint)value.Right);
+				alignment.LeftPadding = (uint)value.Left;
+				alignment.RightPadding = (uint)value.Right;
+				alignment.TopPadding = (uint)value.Top;
+				alignment.BottomPadding = (uint)value.Bottom;
 			}
 		}
 
@@ -113,17 +118,14 @@ namespace Eto.GtkSharp.Forms
 					{
 						if (widget.Parent != null)
 							((Gtk.Container)widget.Parent).Remove(widget);
-						alignment.Child = widget;
 						widget.ShowAll();
+						alignment.Child = widget;
 					}
 				}
 			}
 		}
 
-		public override Gtk.Widget BackgroundControl
-		{
-			get { return Control; }
-		}
+		public override Gtk.Widget BackgroundControl => Control;
 
 		protected abstract void SetContainerContent(Gtk.Widget content);
 	}

@@ -47,6 +47,7 @@ namespace Eto.GtkSharp.Forms
 			Control.ShowAll();
 			var response = (Gtk.ResponseType)Control.Run();
 			Control.Hide();
+			Control.Unrealize();
 
 			if (response == Gtk.ResponseType.Ok)
 			{

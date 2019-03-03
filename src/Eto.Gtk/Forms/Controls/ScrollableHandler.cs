@@ -13,16 +13,10 @@ namespace Eto.GtkSharp.Forms.Controls
 		bool expandWidth = true;
 		bool expandHeight = true;
 		Gtk.Widget layoutWidget;
-		#if GTK2
-		bool autoSize = true;
-		#endif
 
 		public BorderType Border
 		{
-			get
-			{
-				return border;
-			}
+			get => border;
 			set
 			{
 				border = value;
@@ -43,19 +37,63 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		public class EtoScrolledWindow : Gtk.ScrolledWindow
+		{
+#if GTK3
+			// does this always work?
+			int GetBorderSize() => Math.Max(0, AllocatedHeight - Child.AllocatedHeight);
+
+			protected override void OnAdjustSizeRequest(Gtk.Orientation orientation, out int minimum_size, out int natural_size)
+			{
+				base.OnAdjustSizeRequest(orientation, out minimum_size, out natural_size);
+
+				// the natural size of the scrolled window should be the size of the child viewport
+				if (Child != null)
+				{
+					Child.GetPreferredSize(out var ms, out var ns);
+					var child_size = orientation == Gtk.Orientation.Horizontal ? ns.Width : ns.Height;
+					natural_size = Math.Max(natural_size, child_size + GetBorderSize());
+				}
+			}
+#endif
+		}
+
+		public class EtoVBox : Gtk.VBox
+		{
+#if GTK3
+			protected override void OnAdjustSizeRequest(Gtk.Orientation orientation, out int minimum_size, out int natural_size)
+			{
+				base.OnAdjustSizeRequest(orientation, out minimum_size, out natural_size);
+				// scrolled size should always be the natural size, not minimum size
+				minimum_size = natural_size;
+			}
+#endif
+		}
+
 		public ScrollableHandler()
 		{
-			Control = new Gtk.ScrolledWindow();
-			vp = new Gtk.Viewport();
+			Control = new EtoScrolledWindow();
+#if GTK3
+			// for some reason on mac it doesn't shrink past 47 pixels otherwise
+			// also, what is an appropriate size?
+			if (EtoEnvironment.Platform.IsMac)
+				Control.SetSizeRequest(10, 10);
+#endif
+			// ensure things are top-left and not centered
 			hbox = new Gtk.HBox();
-			vbox = new Gtk.VBox();
-			vbox.PackStart(hbox, true, true, 0);
-			vp.Add(vbox);
 
-			// autosize the scrolled window to the size of the content
+			vbox = new EtoVBox();
+			vbox.PackStart(hbox, true, true, 0);
+
+			// use viewport to autosize the scrolled window to the size of the content
+			vp = new Gtk.Viewport
+			{
+				ShadowType = Gtk.ShadowType.None,
+				Child = vbox
+			};
+
 			Control.Add(vp);
-			vp.ShadowType = Gtk.ShadowType.None;
-			this.Border = BorderType.Bezel;
+			Border = BorderType.Bezel;
 		}
 
 		protected override void Initialize()
@@ -69,12 +107,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.HScrollbar.VisibilityNotifyEvent += Connector.HandleScrollbarVisibilityChanged;
 		}
 
-		protected new ScrollableConnector Connector { get { return (ScrollableConnector)base.Connector; } }
+		protected new ScrollableConnector Connector => (ScrollableConnector)base.Connector;
 
-		protected override WeakConnector CreateConnector()
-		{
-			return new ScrollableConnector();
-		}
+		protected override WeakConnector CreateConnector() => new ScrollableConnector();
 
 		protected class ScrollableConnector : GtkPanelEventConnector
 		{
@@ -129,7 +164,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		#if GTK2
+#if GTK2
+		bool autoSize = true;
 		public override Size Size
 		{
 			get { return base.Size; }
@@ -139,7 +175,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				autoSize = false;
 			}
 		}
-		#endif
+#endif
 
 		protected override void SetContainerContent(Gtk.Widget content)
 		{

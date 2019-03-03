@@ -22,9 +22,25 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return label; }
 		}
 
+		public class EtoButton : Gtk.Button
+		{
+			public ButtonHandler Handler { get; set; }
+
+#if GTK3
+			protected override void OnAdjustSizeRequest(Gtk.Orientation orientation, out int minimum_size, out int natural_size)
+			{
+				base.OnAdjustSizeRequest(orientation, out minimum_size, out natural_size);
+				var minSize = Handler.MinimumSize;
+
+				//minimum_size = orientation == Gtk.Orientation.Horizontal ? minSize.Width : minSize.Height;
+				//natural_size = Math.Max(natural_size, minimum_size);
+			}
+#endif
+		}
+
 		public ButtonHandler()
 		{
-			Control = new Gtk.Button();
+			Control = new EtoButton { Handler = this };
 			// need separate widgets as the theme can (and usually) disables images on buttons
 			// gtk3 can override the theme per button, but gtk2 cannot
 			table = new Gtk.Table(3, 3, false);
@@ -42,8 +58,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			base.Initialize();
 			Control.Clicked += Connector.HandleClicked;
-			Control.SizeAllocated += Connector.HandleButtonSizeAllocated;
 #if GTK2
+			Control.SizeAllocated += Connector.HandleButtonSizeAllocated;
 			Control.SizeRequested += Connector.HandleButtonSizeRequested;
 #else
 			Control.WidthRequest = MinimumWidth;
@@ -68,6 +84,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				Handler.Callback.OnClick(Handler.Widget, EventArgs.Empty);
 			}
 
+#if GTK2
 			public void HandleButtonSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
 			{
 				var handler = Handler;
@@ -89,7 +106,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 			}
 
-			#if GTK2
 			public void HandleButtonSizeRequested(object o, Gtk.SizeRequestedArgs args)
 			{
 				var handler = Handler;
@@ -105,7 +121,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					}
 				}
 			}
-			#endif
+#endif
 		}
 
 		public override string Text
@@ -227,9 +243,18 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (MinimumSize != value)
 				{
 					Widget.Properties[MinimumSize_Key] = value;
-					Control.QueueResize(); 
+#if GTK3
+					SetSize();
+#else
+					ContainerControl.QueueResize();
+#endif
 				}
 			}
+		}
+
+		protected override void SetSize(Size size)
+		{
+			base.SetSize(Size.Max(size, MinimumSize));
 		}
 
 		public override void AttachEvent(string id)

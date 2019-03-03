@@ -48,7 +48,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			tab.PackEnd(closeButton, false, true, 0);
 			label = new Gtk.Label();
-			label.SetAlignment(0.5f, 0.5f);
+			label.Xalign = 0.5f;
+			label.Yalign = 0.5f;
 			tab.PackEnd(label, true, true, 0);
 
 			tab.ShowAll();
@@ -69,10 +70,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			var closewidth = (closeButton.Visible) ? closeButton.Allocation.Width : 0;
 			var width = (float)label.Allocation.Width / (label.Allocation.Width - Math.Abs(closewidth - imagewidth));
 
+			label.Yalign = 0.5f;
 			if (imagewidth >= closewidth)
-				label.SetAlignment(1 - width / 2, 0.5f);
+				label.Xalign = 1 - width / 2;
 			else
-				label.SetAlignment(width / 2, 0.5f);
+				label.Xalign = width / 2;
 		}
 
 		public Gtk.Widget LabelControl

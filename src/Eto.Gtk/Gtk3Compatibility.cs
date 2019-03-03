@@ -216,6 +216,14 @@ namespace Eto.GtkSharp
 		}
 
 		public static Gdk.Atom GetDataType(this Gtk.SelectionData data) => data.DataType;
+
+#if !GTKCORE
+		public static Gtk.Widget GetChildAt(this Gtk.Grid grid, int left, int top)
+		{
+			var ptr = NativeMethods.gtk_grid_get_child_at(grid.Handle, left, top);
+			return GLib.Object.GetObject(ptr) as Gtk.Widget;
+		}
+#endif
 #endif
 
 	}

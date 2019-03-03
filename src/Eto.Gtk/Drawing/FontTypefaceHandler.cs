@@ -9,7 +9,7 @@ namespace Eto.GtkSharp.Drawing
 			this.Control = pangoFace;
 		}
 
-		public string Name => Control.FaceName;
+		public string Name => Control?.FaceName;
 
 		public string LocalizedName => Name;
 
@@ -17,6 +17,8 @@ namespace Eto.GtkSharp.Drawing
 		{
 			get {
 				var style = FontStyle.None;
+				if (Control == null)
+					return style;
 				var description = Control.Describe ();
 				if (description.Style == Pango.Style.Italic || description.Style == Pango.Style.Oblique)
 					style |= FontStyle.Italic;
