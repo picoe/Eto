@@ -101,6 +101,8 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual Point CurrentLocation { get; set; }
 
+		public Size DesiredSize => size;
+
 		public virtual Size Size
 		{
 			get
@@ -120,10 +122,18 @@ namespace Eto.GtkSharp.Forms
 						if (size.Height == -1)
 							size.Height = defSize.Height;
 					}
-					ContainerControl.SetSizeRequest(size.Width, size.Height);
+					SetSize(size);
 				}
 			}
 		}
+
+		protected void SetSize() => SetSize(DefaultSize);
+
+		protected virtual void SetSize(Size size)
+		{
+			ContainerControl.SetSizeRequest(size.Width, size.Height);
+		}
+
 		public virtual bool Enabled
 		{
 			get

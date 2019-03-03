@@ -137,7 +137,7 @@
     <Compile Include="Forms\SaveFileDialog.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\TableLayoutHandler.cs">
+    <Compile Include="Forms\TableLayoutHandler.gtk2.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GtkConversions.cs" />
@@ -282,6 +282,7 @@
     <Compile Include="Forms\LinuxNotificationHandler.cs" />
     <Compile Include="Forms\Controls\WebKit2WebViewHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />
+    <Compile Include="Forms\TableLayoutHandler.gtk3.cs" />
     <Compile Include="CustomControls\BaseComboBox.gtk2.cs" />
     <Compile Include="CustomControls\BaseComboBox.gtk3.cs" />
   </ItemGroup>

@@ -17,6 +17,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public class EtoLabel : Gtk.Label
 		{
+#if GTK2
 			int? wrapWidth;
 
 			public void ResetWidth()
@@ -24,7 +25,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				wrapWidth = null;
 			}
 
-			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				int width, height;
@@ -41,17 +41,6 @@ namespace Eto.GtkSharp.Forms.Controls
 					requisition.Height = height;
 				}
 			}
-			#else
-
-			protected override void OnAdjustSizeRequest (Gtk.Orientation orientation, out int minimum_size, out int natural_size)
-			{
-				base.OnAdjustSizeRequest (orientation, out minimum_size, out natural_size);
-				if (orientation == Gtk.Orientation.Horizontal)
-				{
-					minimum_size = natural_size;// wrapWidth ?? natural_size;
-				}
-			}
-			#endif
 
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
@@ -91,10 +80,22 @@ namespace Eto.GtkSharp.Forms.Controls
 				Layout.GetPixelSize(out pixWidth, out pixHeight);
 				HeightRequest = pixHeight;
 				wrapWidth = width;
-#if GTK3
-				Gtk.Application.Invoke((sender, e) => QueueResize());
-#endif
 			}
+#else
+			public void ResetWidth()
+			{
+			}
+
+			protected override Gtk.SizeRequestMode OnGetRequestMode() => Gtk.SizeRequestMode.HeightForWidth;
+
+			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+			{
+				base.OnGetPreferredWidth(out minimum_width, out natural_width);
+
+				// label should allow shrinking, natural width is used instead
+				minimum_width = 0;
+			}
+#endif
 
 		}
 
@@ -104,7 +105,6 @@ namespace Eto.GtkSharp.Forms.Controls
 #if GTK2
 			eventBox.ResizeMode = Gtk.ResizeMode.Immediate;
 #endif
-			//eventBox.VisibleWindow = false;
 			Control = new EtoLabel();
 			Control.Xalign = 0;
 			Control.Yalign = 0;
@@ -155,7 +155,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
-			eventBox.QueueResize();
+			Control.QueueResize();
 		}
 
 		public override void AttachEvent(string id)

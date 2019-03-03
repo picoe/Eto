@@ -1,3 +1,4 @@
+#if GTK2
 using System;
 using Eto.Forms;
 using Eto.Drawing;
@@ -40,15 +41,13 @@ namespace Eto.GtkSharp.Forms
 
 		public Padding Padding
 		{
-			get
-			{
-				uint top, bottom, left, right;
-				align.GetPadding(out top, out bottom, out left, out right);
-				return new Padding((int)left, (int)top, (int)right, (int)bottom);
-			}
+			get => new Padding((int)align.LeftPadding, (int)align.TopPadding, (int)align.RightPadding, (int)align.BottomPadding);
 			set
 			{
-				align.SetPadding((uint)value.Top, (uint)value.Bottom, (uint)value.Left, (uint)value.Right);
+				align.LeftPadding = (uint)value.Left;
+				align.RightPadding = (uint)value.Right;
+				align.TopPadding = (uint)value.Top;
+				align.BottomPadding = (uint)value.Bottom;
 			}
 		}
 
@@ -92,7 +91,8 @@ namespace Eto.GtkSharp.Forms
 			lastColumnScale = cols - 1;
 			rowScale = new bool[rows];
 			lastRowScale = rows - 1;
-			Control.Resize((uint)Math.Max(1, rows), (uint)Math.Max(1, cols));
+			Control.NRows = (uint)Math.Max(1, rows);
+			Control.NColumns = (uint)Math.Max(1, cols);
 			controls = new Control[rows, cols];
 			blank = new Gtk.Widget[rows, cols];
 			align.Add(Control);
@@ -161,13 +161,6 @@ namespace Eto.GtkSharp.Forms
 				var widget = child.GetContainerWidget();
 				if (widget.Parent != null)
 					((Gtk.Container)widget.Parent).Remove(widget);
-#if GTK3
-				// fix an odd problem in GTK 3.20 where a drop down would set vertical scaling of a row
-				// even though it is not set to do so (Tested on Ubuntu 16.10)
-				// TODO: we should probably create a new TableLayoutHandler using Gtk.Grid instead
-				widget.Vexpand = false;
-				widget.Hexpand = false;
-#endif
 				Control.Attach(widget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions(x), GetRowOptions(y), 0, 0);
 				widget.ShowAll();
 				return true;
@@ -247,3 +240,4 @@ namespace Eto.GtkSharp.Forms
 		}
 	}
 }
+#endif
