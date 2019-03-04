@@ -211,6 +211,80 @@ namespace Eto.Forms
 				defaultContextValue
 			);
 		}
+
+		/// <summary>
+		/// Gets a bindable binding with the inverse of the specified boolean value binding.
+		/// </summary>
+		/// <returns>A new binding to the inverse value.</returns>
+		/// <param name="binding">Binding to invert.</param>
+		/// <typeparam name="T">The type of the bindable object.</typeparam>
+		public static BindableBinding<T, bool?> Inverse<T>(this BindableBinding<T, bool?> binding)
+			where T: IBindable
+		{
+			return binding.Convert(c => !c, c => !c);
+		}
+
+		/// <summary>
+		/// Gets a bindable binding with the inverse of the specified boolean value binding.
+		/// </summary>
+		/// <returns>A new binding to the inverse value.</returns>
+		/// <param name="binding">Binding to invert.</param>
+		/// <typeparam name="T">The type of the bindable object.</typeparam>
+		public static BindableBinding<T, bool> Inverse<T>(this BindableBinding<T, bool> binding)
+			where T: IBindable
+		{
+			return binding.Convert(c => !c, c => !c);
+		}
+
+		/// <summary>
+		/// Gets a binding with the inverse of the specified nullable boolean value binding.
+		/// </summary>
+		/// <returns>A new binding to the inverse value.</returns>
+		/// <param name="binding">Binding to invert.</param>
+		public static DirectBinding<bool?> Inverse(this DirectBinding<bool?> binding)
+		{
+			return binding.Convert(c => !c, c => !c);
+		}
+
+		/// <summary>
+		/// Gets a binding with the inverse of the specified nullable boolean value binding.
+		/// </summary>
+		/// <returns>A new binding to the inverse value.</returns>
+		/// <param name="binding">Binding to invert.</param>
+		public static DirectBinding<bool> Inverse(this DirectBinding<bool> binding)
+		{
+			return binding.Convert(c => !c, c => !c);
+		}
+
+		/// <summary>
+		/// Gets a binding that returns a <paramref name="defaultValue"/> if the specified <paramref name="binding"/> returns a null value.
+		/// </summary>
+		/// <returns>A new binding that returns a non-nullable value.</returns>
+		/// <param name="binding">Source of the binding to get the value.</param>
+		/// <param name="defaultValue">Default value, or null to use <c>default(TValue)</c>.</param>
+		/// <typeparam name="T">The type of the bindable object.</typeparam>
+		/// <typeparam name="TValue">The value type to convert from nullable to non-nullable.</typeparam>
+		public static BindableBinding<T, TValue> DefaultIfNull<T, TValue>(this BindableBinding<T, TValue?> binding, TValue? defaultValue = null)
+			where T: IBindable
+			where TValue: struct
+		{
+			return binding.Convert(c => c ?? defaultValue ?? default(TValue), c => c);
+		}
+
+		/// <summary>
+		/// Gets a binding that returns a <paramref name="defaultValue"/> if the specified <paramref name="binding"/> returns a null value.
+		/// </summary>
+		/// <returns>A new binding that returns a non-null value.</returns>
+		/// <param name="binding">Source of the binding to get the value.</param>
+		/// <param name="defaultValue">Default value to return instead of null.</param>
+		/// <typeparam name="T">The type of the bindable object.</typeparam>
+		/// <typeparam name="TValue">The value type.</typeparam>
+		public static BindableBinding<T, TValue> DefaultIfNull<T, TValue>(this BindableBinding<T, TValue> binding, TValue defaultValue)
+			where T : IBindable
+			where TValue : class
+		{
+			return binding.Convert(c => c ?? defaultValue, c => c);
+		}
 	}
 }
 

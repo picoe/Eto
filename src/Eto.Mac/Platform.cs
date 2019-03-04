@@ -164,6 +164,10 @@ namespace Eto.Mac
 			p.Add<FilePicker.IHandler>(() => new ThemedFilePickerHandler());
 			p.Add<DocumentControl.IHandler>(() => new ThemedDocumentControlHandler());
 			p.Add<DocumentPage.IHandler>(() => new ThemedDocumentPageHandler());
+			p.Add<SegmentedButton.IHandler>(() => new SegmentedButtonHandler());
+			p.Add<ButtonSegmentedItem.IHandler>(() => new ButtonSegmentedItemHandler());
+			p.Add<MenuSegmentedItem.IHandler>(() => new MenuSegmentedItemHandler());
+			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

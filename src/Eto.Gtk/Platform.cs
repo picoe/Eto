@@ -12,6 +12,7 @@ using Eto.Forms.ThemedControls;
 using Eto.GtkSharp.Forms.Menu;
 using Eto.GtkSharp.Forms.ToolBar;
 using Eto.Shared.Forms;
+using System.Linq;
 
 namespace Eto.GtkSharp
 {
@@ -81,6 +82,16 @@ namespace Eto.GtkSharp
 				{
 					table.Control.StyleContext.AddClass("linked");
 				}
+			});
+
+			Style.Add<ThemedSegmentedButtonHandler>(null, h =>
+			{
+				// show segmented buttons linked together
+				h.Control.Styles.Add<TableLayout>("buttons", table =>
+				{
+					var tableHandler = table.Handler as TableLayoutHandler;
+					tableHandler?.Control.StyleContext.AddClass("linked");
+				});
 			});
 		}
 #endif
@@ -157,6 +168,10 @@ namespace Eto.GtkSharp
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
 			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
+			p.Add<ButtonSegmentedItem.IHandler>(() => new ThemedButtonSegmentedItemHandler());
+			p.Add<MenuSegmentedItem.IHandler>(() => new ThemedMenuSegmentedItemHandler());
+			p.Add<SegmentedButton.IHandler>(() => new ThemedSegmentedButtonHandler());
+			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

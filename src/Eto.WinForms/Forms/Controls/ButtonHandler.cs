@@ -7,18 +7,23 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	/// <summary>
-	/// Button handler.
-	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : WindowsControl<ButtonHandler.EtoButton, Button, Button.ICallback>, Button.IHandler
+	public class ButtonHandler : ButtonHandler<ButtonHandler.EtoButton, Button, Button.ICallback>, Button.IHandler
 	{
+
 		// windows guidelines specify default height of 23
 		public static Size DefaultMinimumSize = new Size(80, 23);
 
+		protected override Size GetDefaultMinimumSize() => DefaultMinimumSize;
+
 		public class EtoButton : swf.Button
 		{
+			public EtoButton()
+			{
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink;
+				TextImageRelation = swf.TextImageRelation.ImageBeforeText;
+				AutoSize = true;
+			}
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var size = base.GetPreferredSize(sd.Size.Empty);
@@ -43,23 +48,28 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public override Size? GetDefaultSize(Size availableSize)
+		protected override EtoButton CreateControl() => new EtoButton();
+
+	}
+
+	public abstract class ButtonHandler<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, Button.IHandler
+		where TControl: swf.ButtonBase
+		where TWidget: Button
+		where TCallback: Button.ICallback
+	{
+		protected abstract Size GetDefaultMinimumSize();
+
+		public override Size? GetDefaultSize(Size availableSize) => MinimumSize;
+
+		protected override void Initialize()
 		{
-			return MinimumSize;
+			base.Initialize();
+			Control.Click += Control_Click;
 		}
 
-		public ButtonHandler()
+		void Control_Click(object sender, EventArgs e)
 		{
-			Control = new EtoButton
-			{
-				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
-				TextImageRelation = swf.TextImageRelation.ImageBeforeText,
-				AutoSize = true
-			};
-			Control.Click += delegate
-			{
-				Callback.OnClick(Widget, EventArgs.Empty);
-			};
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public override string Text
@@ -109,7 +119,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public Size MinimumSize
 		{
-			get { return Widget.Properties.Get(MinimumSize_Key, DefaultMinimumSize); }
+			get { return Widget.Properties.Get(MinimumSize_Key, GetDefaultMinimumSize); }
 			set
 			{
 				if (MinimumSize != value)

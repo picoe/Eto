@@ -34,104 +34,130 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.Controls
 {
-	/// <summary>
-	/// Button handler.
-	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : MacButton<NSButton, Button, Button.ICallback>, Button.IHandler
+	public class ButtonHandler : ButtonHandler<Button, Button.ICallback>, Button.IHandler
 	{
-		int disableSetBezel;
-		static readonly Size originalSize;
-
 		public static int MinimumWidth = 80;
 
-		protected override Size DefaultMinimumSize
-		{
-			get { return new Size(MinimumWidth, originalSize.Height); }
-		}
+		static readonly Size originalSize;
+		protected override NSButtonType DefaultButtonType => NSButtonType.MomentaryPushIn;
 
-		public class EtoButtonCell : NSButtonCell
-		{
-			public Color? Color { get; set; }
-
-			public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
-			{
-				if (Color != null)
-				{
-					MacEventView.Colourize(controlView, Color.Value, delegate
-					{
-						base.DrawBezelWithFrame(frame, controlView);
-					});
-				}
-				else
-					base.DrawBezelWithFrame(frame, controlView);
-			}
-
-			public EtoButtonCell()
-			{
-				ImageScale = NSImageScale.ProportionallyDown;//.ProportionallyUpOrDown;
-			}
-		}
-
-		public class EtoButton : NSButton, IMacControl
-		{
-			public WeakReference WeakHandler { get; set; }
-
-			public ButtonHandler Handler
-			{ 
-				get { return (ButtonHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
-			}
-
-			public override void SizeToFit()
-			{
-				var h = Handler;
-				if (h == null)
-					return;
-				h.disableSetBezel++;
-				base.SizeToFit();
-				if (h.AutoSize)
-				{
-					var size = Frame.Size;
-					var minSize = h.MinimumSize;
-					size.Height = (nfloat)Math.Max(size.Height, minSize.Height);
-					size.Width = (nfloat)Math.Max(size.Width, minSize.Width);
-					SetFrameSize(size);
-				}
-				h.disableSetBezel--;
-			}
-
-			public override void SetFrameSize(CGSize newSize)
-			{
-				base.SetFrameSize(newSize);
-				var h = Handler;
-				if (h == null)
-					return;
-				
-				h.SetBezel();
-
-				h.OnSizeChanged(EventArgs.Empty);
-				h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
-			}
-
-			public EtoButton()
-			{
-				Cell = new EtoButtonCell();
-				Title = string.Empty;
-				BezelStyle = NSBezelStyle.Rounded;
-				ImagePosition = NSCellImagePosition.ImageLeft;
-				SetButtonType(NSButtonType.MomentaryPushIn);
-			}
-		}
+		protected override Size DefaultMinimumSize => new Size(MinimumWidth, originalSize.Height);
 
 		static ButtonHandler()
 		{
 			// store the normal size for a rounded button, so we can determine what style to give it based on actual size
-			var b = new NSButton { BezelStyle = NSBezelStyle.Rounded };
-			b.SizeToFit();
-			originalSize = b.Frame.Size.ToEtoSize();
+			var b = new EtoButton(NSButtonType.MomentaryPushIn);
+			originalSize = b.FittingSize.ToEtoSize();
+			/*
+			var b = new NSButton(); 
+			b.SetButtonType(NSButtonType.MomentaryPushIn);
+			originalSize = b.FittingSize.ToEtoSize();
+			*/		
 		}
+	}
+
+	public class EtoButtonCell : NSButtonCell
+	{
+		public Color? Color { get; set; }
+
+		public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
+		{
+			if (Color != null)
+			{
+				MacEventView.Colourize(controlView, Color.Value, delegate
+				{
+					base.DrawBezelWithFrame(frame, controlView);
+				});
+			}
+			else
+				base.DrawBezelWithFrame(frame, controlView);
+		}
+
+		public EtoButtonCell()
+		{
+			ImageScale = NSImageScale.ProportionallyDown;//.ProportionallyUpOrDown;
+		}
+	}
+
+	public interface IButtonHandler
+	{
+		bool SetBezel();
+		bool AutoSize { get; }
+		Size MinimumSize { get; }
+		int DisableSetBezel { get; set; }
+		void TriggerSizeChanged();
+		void InvalidateMeasure();
+	}
+
+	public class EtoButton : NSButton, IMacControl
+	{
+		public WeakReference WeakHandler { get; set; }
+
+		public IButtonHandler Handler
+		{
+			get { return (IButtonHandler)WeakHandler?.Target; }
+			set { WeakHandler = new WeakReference(value); }
+		}
+
+		public override void SizeToFit()
+		{
+			var h = Handler;
+			if (h == null)
+			{
+				base.SizeToFit();
+				return;
+			}
+			h.DisableSetBezel++;
+			base.SizeToFit();
+			if (h.AutoSize)
+			{
+				var size = Frame.Size;
+				var minSize = h.MinimumSize;
+				size.Height = (nfloat)Math.Max(size.Height, minSize.Height);
+				size.Width = (nfloat)Math.Max(size.Width, minSize.Width);
+				SetFrameSize(size);
+			}
+			h.DisableSetBezel--;
+		}
+
+		public override void SetFrameSize(CGSize newSize)
+		{
+			base.SetFrameSize(newSize);
+			var h = Handler;
+			if (h == null)
+				return;
+
+			if (h.SetBezel())
+				Application.Instance.AsyncInvoke(h.InvalidateMeasure);
+
+			h.TriggerSizeChanged();
+		}
+		public EtoButton() : this(NSButtonType.MomentaryPushIn)
+		{
+		}
+
+		public EtoButton(NSButtonType buttonType)
+		{
+			Cell = new EtoButtonCell();
+			Title = string.Empty;
+			BezelStyle = NSBezelStyle.Rounded;
+			SetButtonType(buttonType);
+			ImagePosition = NSCellImagePosition.ImageLeft;
+		}
+	}
+
+	/// <summary>
+	/// Button handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2019 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public abstract class ButtonHandler<TWidget, TCallback> : MacButton<NSButton, TWidget, TCallback>, Button.IHandler, IButtonHandler
+		where TWidget: Button
+		where TCallback: Button.ICallback
+	{
+
+		protected abstract NSButtonType DefaultButtonType { get; }
+
 
 		protected override void Initialize()
 		{
@@ -140,10 +166,7 @@ namespace Eto.Mac.Forms.Controls
 			Control.Activated += HandleActivated;
 		}
 
-		protected override NSButton CreateControl()
-		{
-			return new EtoButton();
-		}
+		protected override NSButton CreateControl() => new EtoButton(DefaultButtonType);
 
 		public override void OnLoadComplete(EventArgs e)
 		{
@@ -153,12 +176,14 @@ namespace Eto.Mac.Forms.Controls
 
 		static void HandleActivated(object sender, EventArgs e)
 		{
-			var handler = GetHandler(sender) as ButtonHandler;
-			if (handler != null)
-			{
-				handler.TriggerMouseCallback();
-				handler.Callback.OnClick(handler.Widget, EventArgs.Empty);
-			}
+			var handler = GetHandler(sender) as ButtonHandler<TWidget, TCallback>;
+			handler?.OnActivated();
+		}
+
+		protected virtual void OnActivated()
+		{
+			TriggerMouseCallback();
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public override void AttachEvent(string id)
@@ -195,12 +220,12 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<Image>(Image_Key); }
 			set
 			{
-				Widget.Properties.Set(Image_Key, value, () =>
+				if (Widget.Properties.TrySet(Image_Key, value))
 				{
 					Control.Image = value.ToNS();
 					SetImagePosition();
 					InvalidateMeasure();
-				});
+				}
 			}
 		}
 
@@ -212,11 +237,13 @@ namespace Eto.Mac.Forms.Controls
 			if (BezelStyle != null)
 				return BezelStyle.Value;
 			var size = Control.Frame.Size.ToEtoSize();
-			if (size.Width == 0 || size.Height == 0)
+			if (size.IsEmpty)
 				return Control.BezelStyle;
-			if (size.Height < 22 || size.Width < 22)
+
+			var defaultHeight = DefaultMinimumSize.Height;
+			if (size.Height < defaultHeight || size.Width < defaultHeight)
 				return NSBezelStyle.SmallSquare;
-			if (size.Height > originalSize.Height)
+			if (size.Height > defaultHeight)
 				return NSBezelStyle.RegularSquare;
 			var image = Image;
 			if (image == null)
@@ -227,6 +254,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				case NSCellImagePosition.ImageAbove:
 				case NSCellImagePosition.ImageBelow:
+				case NSCellImagePosition.ImageOnly:
 					if (!string.IsNullOrEmpty(Text))
 						return NSBezelStyle.RegularSquare;
 					break;
@@ -234,20 +262,21 @@ namespace Eto.Mac.Forms.Controls
 			return NSBezelStyle.Rounded;
 		}
 
-		protected virtual void SetBezel()
+		protected virtual bool SetBezel()
 		{
-			if (disableSetBezel > 0)
-				return;
+			if (DisableSetBezel > 0)
+				return false;
 			var bezel = Control.BezelStyle;
 			var requiredBezel = GetBezelStyle();
 			if (bezel != requiredBezel)
 			{
-				disableSetBezel++;
+				DisableSetBezel++;
 				// setting the bezel style can fire a size changed?
 				Control.BezelStyle = requiredBezel;
-				InvalidateMeasure();
-				disableSetBezel--;
+				DisableSetBezel--;
+				return true;
 			}
+			return false;
 		}
 
 		public override string Text
@@ -258,6 +287,11 @@ namespace Eto.Mac.Forms.Controls
 				base.Text = value;
 				SetImagePosition();
 			}
+		}
+
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			return base.GetNaturalSize(availableSize);
 		}
 
 		protected virtual void SetImagePosition()
@@ -281,11 +315,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<ButtonImagePosition>(ImagePosition_Key); }
 			set
 			{
-				Widget.Properties.Set(ImagePosition_Key, value, () =>
+				if (Widget.Properties.TrySet(ImagePosition_Key, value))
 				{
 					SetImagePosition();
 					InvalidateMeasure();
-				});
+				}
 			}
 		}
 
@@ -296,8 +330,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<NSBezelStyle?>(CustomBezelStyle_Key); }
 			set
 			{
-				Widget.Properties.Set(CustomBezelStyle_Key, value);
-				SetBezel();
+				if (Widget.Properties.TrySet(CustomBezelStyle_Key, value))
+				{
+					SetBezel();
+					InvalidateMeasure();
+				}
 			}
 		}
 
@@ -311,5 +348,15 @@ namespace Eto.Mac.Forms.Controls
 				InvalidateMeasure();
 			}
 		}
+
+		public int DisableSetBezel { get; set; }
+
+		public void TriggerSizeChanged()
+		{
+			OnSizeChanged(EventArgs.Empty);
+			Callback.OnSizeChanged(Widget, EventArgs.Empty);
+		}
+
+		bool IButtonHandler.SetBezel() => SetBezel();
 	}
 }

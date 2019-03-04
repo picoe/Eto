@@ -14,6 +14,7 @@ using Eto.IO;
 using Eto.Wpf.IO;
 using Eto.Forms.ThemedControls;
 using Eto.Shared.Forms;
+using System.Linq;
 
 namespace Eto.Wpf
 {
@@ -33,6 +34,20 @@ namespace Eto.Wpf
 		static Platform()
 		{
 			EmbeddedAssemblyLoader.Register("Eto.Wpf.CustomControls.Assemblies");
+
+			Style.Add<ThemedSegmentedButtonHandler>(null, h =>
+			{
+				h.Control.Styles.Add<ToggleButtonHandler>(null, tb =>
+				{
+					if (tb.Widget.Parent is TableLayout tl && tl.Rows.Count > 0 && tl.Spacing.Width == 0)
+					{
+						var isFirst = ReferenceEquals(tl.Rows[0].Cells[0].Control, tb.Widget);
+						var thickness = tb.Control.BorderThickness;
+						thickness.Left = isFirst ? thickness.Right : 0;
+						tb.Control.BorderThickness = thickness;
+					}
+				});
+			});
 		}
 
 		public Platform()
@@ -116,6 +131,10 @@ namespace Eto.Wpf
 			p.Add<FilePicker.IHandler>(() => new ThemedFilePickerHandler());
 			p.Add<DocumentControl.IHandler>(() => new ThemedDocumentControlHandler());
 			p.Add<DocumentPage.IHandler>(() => new ThemedDocumentPageHandler());
+			p.Add<SegmentedButton.IHandler>(() => new ThemedSegmentedButtonHandler());
+			p.Add<ButtonSegmentedItem.IHandler>(() => new ThemedButtonSegmentedItemHandler());
+			p.Add<MenuSegmentedItem.IHandler>(() => new ThemedMenuSegmentedItemHandler());
+			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
 			
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
