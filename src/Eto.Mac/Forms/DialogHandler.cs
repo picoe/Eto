@@ -127,7 +127,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				defaultButton = value;
-				
+
 				if (defaultButton != null)
 				{
 					var b = defaultButton.ControlObject as NSButton;
@@ -287,6 +287,16 @@ namespace Eto.Mac.Forms
 				ctl.Frame = new CGRect(point.ToNS(), size.ToNS());
 				ctl.AutoresizingMask = NSViewResizingMask.MinXMargin;
 			}
+		}
+
+		public bool IsDisplayedAsSheet => session?.IsSheet == true;
+
+		public bool RestartModal(Action action)
+		{
+			if (session == null)
+				return false;
+			session.Restart(action);
+			return true;
 		}
 	}
 }
