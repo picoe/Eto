@@ -491,6 +491,8 @@ namespace Eto.Forms
 		{
 			Properties.TriggerEvent(PreLoadKey, this, e);
 			Handler.OnPreLoad(e);
+
+			OnApplyCascadingStyles();
 		}
 
 		static readonly object LoadKey = new object();
@@ -1001,6 +1003,12 @@ namespace Eto.Forms
 				OnUnLoad(e);
 		}
 
+		internal void TriggerStyleChanged(EventArgs e)
+		{
+			using (Platform.Context)
+				OnStyleChanged(e);
+		}
+
 		/// <summary>
 		/// Gets or sets the color for the background of the control
 		/// </summary>
@@ -1262,6 +1270,45 @@ namespace Eto.Forms
 		{
 			Handler.DoDragDrop(data, allowedEffects);
 		}
+
+		/// <summary>
+		/// Handles when the <see cref="Style"/> is changed.
+		/// </summary>
+		/// <remarks>
+		/// This applies the cascading styles to the control and any of its children.
+		/// </remarks>
+		protected override void OnStyleChanged(EventArgs e)
+		{
+			base.OnStyleChanged(e);
+
+			// already loaded, re-apply styles as they have changed
+			if (Loaded)
+				OnApplyCascadingStyles();
+		}
+
+		/// <summary>
+		/// Called when cascading styles should be applied to this control.
+		/// </summary>
+		/// <remarks>
+		/// You don't typically have to call this directly, but override it to apply styles to any child item(s)
+		/// that may need styling at the same time.
+		/// 
+		/// This is automatically done for any Container based control and its child controls.
+		/// </remarks>
+		protected virtual void OnApplyCascadingStyles() => ApplyStyles(this, Style);
+
+		/// <summary>
+		/// Applies the styles to the specified <paramref name="widget"/> up the parent chain.
+		/// </summary>
+		/// <remarks>
+		/// This traverses up the parent chain to apply any cascading styles defined in parent container objects.
+		/// 
+		/// Call this method on any child widget of a control.
+		/// </remarks>
+		/// <param name="widget">Widget to style.</param>
+		/// <param name="style">Style of the widget to apply.</param>
+		protected virtual void ApplyStyles(object widget, string style) => Parent?.ApplyStyles(this, Style);
+
 
 		/// <summary>
 		/// Handles the disposal of this control

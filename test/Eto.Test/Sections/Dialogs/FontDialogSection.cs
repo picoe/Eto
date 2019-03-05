@@ -181,7 +181,13 @@ namespace Eto.Test.Sections.Dialogs
 				if (updating || fontList.SelectedKey == null)
 					return;
 				var family = lookup[fontList.SelectedKey];
-				UpdatePreview(new Font(family.Typefaces.First(), selectedFont.Size, selectedFont.FontDecoration));
+				var typeface = family.Typefaces.FirstOrDefault();
+				Font font;
+				if (typeface == null)
+					font = new Font(family, selectedFont.Size, FontStyle.None, selectedFont.FontDecoration);
+				else
+					font = new Font(family.Typefaces.FirstOrDefault(), selectedFont.Size, selectedFont.FontDecoration);
+				UpdatePreview(font);
 			};
 
 			return fontList;

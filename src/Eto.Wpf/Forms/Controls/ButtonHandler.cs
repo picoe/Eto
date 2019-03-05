@@ -30,24 +30,38 @@ namespace Eto.Wpf.Forms.Controls
 		}
 	}
 
+	public class ButtonHandler : ButtonHandler<swc.Button, Button, Button.ICallback>, Button.IHandler
+	{
+		public static Size DefaultMinimumSize = new Size(80, 23);
+
+		protected override Size GetDefaultMinimumSize() => DefaultMinimumSize;
+
+		protected override swc.Button CreateControl() => new EtoButton { Handler = this };
+	}
+
 	/// <summary>
 	/// Button handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2015 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2019 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : WpfControl<swc.Button, Button, Button.ICallback>, Button.IHandler
+	public class ButtonHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, Button.IHandler
+		where TControl: swc.Primitives.ButtonBase
+		where TWidget: Button
+		where TCallback: Button.ICallback
 	{
-		readonly swc.Image swcimage;
-		readonly WpfLabel label;
+		swc.Image swcimage;
+		WpfLabel label;
 
-		public static Size DefaultMinimumSize = new Size(80, 23);
 
 		protected override wf.Size DefaultSize => MinimumSize.ToWpf();
 
-		public ButtonHandler()
+		protected virtual Size GetDefaultMinimumSize() => Size.Empty;
+
+		protected override void Initialize()
 		{
-			Control = new EtoButton { Handler = this };
+			base.Initialize();
+
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 			label = new WpfLabel
 			{
@@ -71,17 +85,13 @@ namespace Eto.Wpf.Forms.Controls
 			grid.Children.Add(label);
 
 			Control.Content = grid;
-		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
 			SetImagePosition();
 		}
 
-		public override bool UseMousePreview { get { return true; } }
+		public override bool UseMousePreview => true;
 
-		public override bool UseKeyPreview { get { return true; } }
+		public override bool UseKeyPreview => true;
 
 #if WINRT
 		public string Text
@@ -112,7 +122,7 @@ namespace Eto.Wpf.Forms.Controls
 			swcimage.Source = Image.ToWpf();
 		}
 #else
-		protected override bool NeedsPixelSizeNotifications { get { return true; } }
+		protected override bool NeedsPixelSizeNotifications => true;
 
 		protected override void OnLogicalPixelSizeChanged()
 		{
@@ -206,11 +216,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public
-#if WPF
-		override 
-#endif
-		Color TextColor
+		public override  Color TextColor
 		{
 			get { return label.Foreground.ToEtoColor(); }
 			set { label.Foreground = value.ToWpfBrush(Control.Foreground); }
@@ -220,12 +226,13 @@ namespace Eto.Wpf.Forms.Controls
 
 		public Size MinimumSize
 		{
-			get { return Widget.Properties.Get<Size>(MinimumSize_Key, DefaultMinimumSize); }
+			get { return Widget.Properties.Get<Size?>(MinimumSize_Key) ?? GetDefaultMinimumSize(); }
 			set
 			{
 				if (MinimumSize != value)
 				{
 					Widget.Properties[MinimumSize_Key] = value;
+					SetSize();
 					Control.InvalidateMeasure();
 				}
 			}

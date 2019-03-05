@@ -64,7 +64,9 @@ var gtkmethods = new[]
     "IntPtr gtk_selection_data_get_uris(IntPtr raw)",
     "bool gtk_selection_data_set_uris(IntPtr raw, IntPtr[] uris)",
     "bool gtk_print_unix_dialog_get_embed_page_setup(IntPtr raw)",
-    "void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed)"
+    "void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed)",
+    "IntPtr gtk_grid_get_child_at(IntPtr raw, int left, int top)",
+    "IntPtr gtk_button_get_event_window(IntPtr button)"
 };
 
 var gdkmethods = new[]

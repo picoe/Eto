@@ -39,16 +39,25 @@ namespace Eto.Mac.Forms
 {
 	public class PixelLayoutHandler : MacContainer<NSView, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler
 	{
-		public override NSView ContainerControl { get { return Control; } }
+		MacEventView container;
+		public override NSView ContainerControl => container;
 
-		public class PixelLayoutView : MacEventView 
+		public class PixelLayoutView : NSView, IMacControl
 		{
-			new PixelLayoutHandler Handler => base.Handler as PixelLayoutHandler;
+			public WeakReference WeakHandler { get; set; }
+
+			public PixelLayoutHandler Handler
+			{
+				get { return (PixelLayoutHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); }
+			}
 
 			public PixelLayoutView()
 			{
 				AutoresizesSubviews = false;
 			}
+
+			public override bool IsFlipped => true;
 
 			public override void Layout()
 			{
@@ -57,7 +66,13 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		protected override NSView CreateControl() => new PixelLayoutView();
+		protected override NSView CreateControl()
+		{
+			container = new MacEventView { Handler = this };
+			var control = new PixelLayoutView { Handler = this };
+			container.ContentView = control;
+			return control;
+		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -87,9 +102,7 @@ namespace Eto.Mac.Forms
 				origin.Y = Control.Frame.Height - origin.Y - preferredSize.Height;
 			}
 
-
-			childView.AutoresizingMask = NSViewResizingMask.MinYMargin;
-			childView.Frame = new CGRect(origin, preferredSize.ToNS());;
+			childView.Frame = new CGRect(origin, preferredSize.ToNS());
 		}
 
 		public override void InvalidateMeasure()

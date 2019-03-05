@@ -28,7 +28,7 @@ namespace Eto.Forms
 		/// </param>
 		public AboutDialog(Assembly assembly)
 		{
-			Title = "About";
+			Title = Application.Instance.Localize(this, "About");
 
 			if (assembly != null)
 			{

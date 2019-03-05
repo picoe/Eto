@@ -14,6 +14,7 @@ namespace Eto.GtkSharp.Forms.ToolBar
 		where TWidget: ToolItem
 	{
 		bool enabled = true;
+		bool visible = true;
 		Image image;
 
 		protected Gtk.Image GtkImage { get; set; }
@@ -41,6 +42,17 @@ namespace Eto.GtkSharp.Forms.ToolBar
 				enabled = value;
 				if (Control != null)
 					Control.Sensitive = value;
+			}
+		}
+
+		public bool Visible
+		{
+			get => visible;
+			set
+			{
+				visible = value;
+				if (Control != null)
+					Control.Visible = value;
 			}
 		}
 

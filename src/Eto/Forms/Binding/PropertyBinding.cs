@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Eto.Forms
 {
@@ -126,8 +127,16 @@ namespace Eto.Forms
 				object val = descriptor.GetValue(dataItem);
 				if (val != null && !propertyType.IsInstanceOfType(val))
 				{
-					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-					val = System.Convert.ChangeType(val, propertyType, CultureInfo.InvariantCulture);
+					try
+					{
+						propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+						val = System.Convert.ChangeType(val, propertyType, CultureInfo.InvariantCulture);
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine($"Could not convert object of type {val.GetType()} to {propertyType}\n{ex}");
+						val = propertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyType) : null;
+					}
 				}
 				return (T)val;
 			}
@@ -154,10 +163,18 @@ namespace Eto.Forms
 				object val = value;
 				if (val != null && !propertyType.IsInstanceOfType(val))
 				{
-					#if PCL
-					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-					#endif
-					val = System.Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
+					try
+					{
+#if PCL
+						propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+#endif
+						val = System.Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine($"Could not convert object of type {val.GetType()} to {propertyType}\n{ex}");
+						val = propertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyType) : null;
+					}
 				}
 				descriptor.SetValue(dataItem, val);
 			}

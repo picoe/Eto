@@ -84,6 +84,12 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
+		public bool Visible
+		{
+			get => Control.Visibility == sw.Visibility.Visible;
+			set => Control.Visibility = value ? sw.Visibility.Visible : sw.Visibility.Collapsed;
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)

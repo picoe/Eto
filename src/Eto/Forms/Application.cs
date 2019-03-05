@@ -17,6 +17,8 @@ namespace Eto.Forms
 	[Handler(typeof(Application.IHandler))]
 	public class Application : Widget
 	{
+		LocalizeEventArgs localizeArgs;
+		readonly object localizeLock = new object();
 		static readonly object ApplicationKey = new object();
 
 		/// <summary>
@@ -32,6 +34,22 @@ namespace Eto.Forms
 			}
 			private set { Platform.Instance.SetSharedProperty(ApplicationKey, value); }
 		}
+
+		/// <summary>
+		/// Event to handle when a string needs to be localized
+		/// </summary>
+		/// <remarks>
+		/// This can be used by some controls (e.g. <see cref="AboutDialog"/> and <see cref="MenuBar"/> on some platforms.
+		/// You can use this event or override <see cref="OnLocalizeString(LocalizeEventArgs)"/> to provide your own implementation
+		/// for localizing system-supplied strings to other languages.
+		/// </remarks>
+		public event EventHandler<LocalizeEventArgs> LocalizeString;
+
+		/// <summary>
+		/// Triggers the <see cref="LocalizeString"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments for localization</param>
+		protected internal virtual void OnLocalizeString(LocalizeEventArgs e) => LocalizeString?.Invoke(this, e);
 
 		/// <summary>
 		/// Occurs when the application is initialized
@@ -464,6 +482,27 @@ namespace Eto.Forms
 		public void Restart()
 		{
 			Handler.Restart();
+		}
+
+		/// <summary>
+		/// Localizes the specified text for the current locale, or provide alternative text for system supplied strings.
+		/// </summary>
+		/// <remarks>
+		/// This depends on your custom implementation for the <see cref="LocalizeString"/> event.
+		/// You can provide your own localization for system-supplied strings or change the strings to your own liking.
+		/// </remarks>
+		/// <returns>The localized text.</returns>
+		/// <param name="source">Source widget to localize for.</param>
+		/// <param name="text">English text to localize.</param>
+		public string Localize(object source, string text)
+		{
+			lock (localizeLock)
+			{
+				localizeArgs = localizeArgs ?? new LocalizeEventArgs();
+				localizeArgs.Initialize(source, text);
+				OnLocalizeString(localizeArgs);
+				return localizeArgs.LocalizedText ?? localizeArgs.Text;
+			}
 		}
 
 		static readonly object callback = new Callback();

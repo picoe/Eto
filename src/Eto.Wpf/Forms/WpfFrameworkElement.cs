@@ -625,7 +625,7 @@ namespace Eto.Wpf.Forms
 			var args = e.ToEto(Control, swi.MouseButtonState.Released);
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
-			if (isMouseCaptured && Control.IsMouseCaptured)
+			if ((isMouseCaptured || args.Handled) && Control.IsMouseCaptured)
 			{
 				Control.ReleaseMouseCapture();
 				isMouseCaptured = false;
@@ -836,6 +836,12 @@ namespace Eto.Wpf.Forms
 			// otherwise, we're hosted it something native like win32 or mfc.
 			// TODO: check if handle is a window?
 			return WinFormsHelpers.ToEtoWindow(handle);
+		}
+
+		protected void AttachPropertyChanged(sw.DependencyProperty property, EventHandler handler, sw.DependencyObject control = null)
+		{
+			control = control ?? Control;
+			Widget.Properties.Set(property, PropertyChangeNotifier.Register(property, handler, control));
 		}
 	}
 }

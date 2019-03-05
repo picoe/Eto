@@ -18,7 +18,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		public LinkButtonHandler()
 		{
 			Control = new Gtk.LinkButton(string.Empty);
-			Control.SetAlignment(0f, .5f);
+			Control.Xalign = 0f;
+			Control.Yalign = .5f;
 			Control.TooltipText = null;
 			box = new Gtk.EventBox();
 			box.Child = Control;

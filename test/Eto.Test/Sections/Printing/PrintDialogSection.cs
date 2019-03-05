@@ -5,7 +5,7 @@ using Eto.Drawing;
 namespace Eto.Test.Sections.Printing
 {
 	[Section("Printing", "Print Dialog")]
-	public class PrintDialogSection : Panel
+	public class PrintDialogSection : Scrollable
 	{
 		PrintSettings settings = new PrintSettings();
 		NumericStepper selectedEnd;

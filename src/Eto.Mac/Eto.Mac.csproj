@@ -229,6 +229,8 @@
     <Compile Include="Drawing\EtoFontManager.cs" />
     <Compile Include="MacVersion.cs" />
     <Compile Include="Forms\MemoryDataObjectHandler.cs" />
+    <Compile Include="Forms\Controls\SegmentedButtonHandler.cs" />
+    <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

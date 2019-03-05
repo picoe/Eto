@@ -110,6 +110,75 @@ namespace Eto.Forms
 			}
 		}
 
+		static readonly object StyleProvider_Key = new object();
+		static readonly object DefaultStyleProvider_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the style provider for this container.
+		/// </summary>
+		/// <remarks>
+		/// The style provider is used to style this container and its children.
+		/// </remarks>
+		/// <value>The style provider.</value>
+		public IStyleProvider StyleProvider
+		{
+			get => Properties.Get<IStyleProvider>(StyleProvider_Key) ?? Properties.Get<DefaultStyleProvider>(DefaultStyleProvider_Key);
+			set => Properties.Set(StyleProvider_Key, value);
+		}
+
+		/// <summary>
+		/// Gets the default style provider for this container.
+		/// </summary>
+		/// <remarks>
+		/// Use this to apply styles to any child controls of this container.
+		/// By default, styles will apply to all children, including children of children unless
+		/// <see cref="DefaultStyleProvider.Inherit"/> is set to <c>false</c>.
+		/// 
+		/// Typically, you would set Inherit to false when creating composite controls
+		/// that already have all their styles applied and you don't want any other styles
+		/// to be inherited.
+		/// </remarks>
+		/// <value>The default style provider for this container.</value>
+		public DefaultStyleProvider Styles => Properties.Create<DefaultStyleProvider>(DefaultStyleProvider_Key);
+
+		/// <inheritdoc />
+		protected override void ApplyStyles(object widget, string style)
+		{
+			var styleProvider = StyleProvider;
+
+			if (styleProvider == null)
+			{
+				// no styles for this container, check the parent
+				Parent?.ApplyStyles(widget, style);
+				return;
+			}
+
+			// apply parent styles first, if this provider allows inheriting them
+			if (styleProvider.Inherit)
+				Parent?.ApplyStyles(widget, style);
+
+			// now apply any of this providers' styles, which may override parent styles
+			styleProvider.ApplyCascadingStyle(this, widget, style);
+		}
+
+		/// <summary>
+		/// Handles when the <see cref="Style"/> is changed.
+		/// </summary>
+		/// <remarks>
+		/// This applies the cascading styles to the control and any of its children.
+		/// </remarks>
+		protected override void OnStyleChanged(EventArgs e)
+		{
+			base.OnStyleChanged(e);
+			if (Loaded && Handler.RecurseToChildren)
+			{
+				foreach (Control control in VisualControls)
+				{
+					control.TriggerStyleChanged(EventArgs.Empty);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Raises the <see cref="Control.PreLoad"/> event, and recurses to this container's children
 		/// </summary>

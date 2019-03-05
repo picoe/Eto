@@ -11,18 +11,13 @@ namespace Eto.GtkSharp.Forms.Controls
 		TextAlignment horizontalAlign = TextAlignment.Left;
 		VerticalAlignment verticalAlign = VerticalAlignment.Top;
 
-		public override Gtk.Widget ContainerControl
-		{
-			get { return eventBox; }
-		}
+		public override Gtk.Widget ContainerControl => eventBox;
 
-		public override Gtk.Widget EventControl
-		{
-			get { return eventBox; }
-		}
+		public override Gtk.Widget EventControl => eventBox;
 
 		public class EtoLabel : Gtk.Label
 		{
+#if GTK2
 			int? wrapWidth;
 
 			public void ResetWidth()
@@ -30,7 +25,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				wrapWidth = null;
 			}
 
-			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				int width, height;
@@ -47,17 +41,6 @@ namespace Eto.GtkSharp.Forms.Controls
 					requisition.Height = height;
 				}
 			}
-			#else
-
-			protected override void OnAdjustSizeRequest (Gtk.Orientation orientation, out int minimum_size, out int natural_size)
-			{
-				base.OnAdjustSizeRequest (orientation, out minimum_size, out natural_size);
-				if (orientation == Gtk.Orientation.Horizontal)
-				{
-					minimum_size = natural_size;// wrapWidth ?? natural_size;
-				}
-			}
-			#endif
 
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
@@ -70,15 +53,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				// the allocation may default to 1, in that case ignore OnRealized
 				if (Allocation.Width > 1 && wrapWidth != Allocation.Width)
 				{
-					Layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);
-					int pixWidth, pixHeight;
-					Layout.GetPixelSize(out pixWidth, out pixHeight);
-					HeightRequest = pixHeight;
-					wrapWidth = Allocation.Width;
-#if GTK3
-					if (Parent != null)
-						Gtk.Application.Invoke((sender, e) => Parent.QueueResize());
-#endif
+					CalculateHeight(Allocation.Width);
 				}
 
 				base.OnRealized();
@@ -94,26 +69,45 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				if (wrapWidth != width)
 				{
-					Layout.Width = (int)(width * Pango.Scale.PangoScale);
-					int pixWidth, pixHeight;
-					Layout.GetPixelSize(out pixWidth, out pixHeight);
-					HeightRequest = pixHeight;
-					wrapWidth = width;
-#if GTK3
-					if (Parent != null)
-						Gtk.Application.Invoke((sender, e) => Parent.QueueResize());
-#endif
+					CalculateHeight(width);
 				}
 			}
+
+			void CalculateHeight(int width)
+			{
+				Layout.Width = (int)(width * Pango.Scale.PangoScale);
+				int pixWidth, pixHeight;
+				Layout.GetPixelSize(out pixWidth, out pixHeight);
+				HeightRequest = pixHeight;
+				wrapWidth = width;
+			}
+#else
+			public void ResetWidth()
+			{
+			}
+
+			protected override Gtk.SizeRequestMode OnGetRequestMode() => Gtk.SizeRequestMode.HeightForWidth;
+
+			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+			{
+				base.OnGetPreferredWidth(out minimum_width, out natural_width);
+
+				// label should allow shrinking, natural width is used instead
+				minimum_width = 0;
+			}
+#endif
+
 		}
 
 		public LabelHandler()
 		{
 			eventBox = new Gtk.EventBox();
+#if GTK2
 			eventBox.ResizeMode = Gtk.ResizeMode.Immediate;
-			//eventBox.VisibleWindow = false;
+#endif
 			Control = new EtoLabel();
-			Control.SetAlignment(0, 0);
+			Control.Xalign = 0;
+			Control.Yalign = 0;
 			eventBox.Child = Control;
 			Wrap = WrapMode.Word;
 		}
@@ -161,7 +155,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
-			eventBox.QueueResize();
+			Control.QueueResize();
 		}
 
 		public override void AttachEvent(string id)
@@ -206,8 +200,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			Control.ResetWidth();
 			Control.Justify = horizontalAlign.ToGtk();
-			Control.SetAlignment(horizontalAlign.ToAlignment(), verticalAlign.ToAlignment());
+			Control.Xalign = horizontalAlign.ToAlignment();
+			Control.Yalign = verticalAlign.ToAlignment();
+#if GTK2
 			eventBox.ResizeChildren();
+#endif
 		}
 
 		public VerticalAlignment VerticalAlignment

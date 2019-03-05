@@ -1376,7 +1376,13 @@ namespace Eto.Test.Sections
 				case TestStatus.Warning:
 					return CreateImage(Colors.Yellow, Colors.Black, "!");
 				case TestStatus.Failed:
-					return CreateImage(Colors.Red, Colors.White, "✖");
+					return CreateImage(Colors.Red, (g, b) =>
+					{
+						var offset = 10;
+						var pen = new Pen(Colors.White, 4);
+						g.DrawLine(pen, offset, offset, b.Width - offset, b.Height - offset);
+						g.DrawLine(pen, b.Width - offset, offset, offset, b.Height - offset);
+					});
 				case TestStatus.Inconclusive:
 					return CreateImage(Colors.Yellow, Colors.Black, "?");
 				case TestStatus.Skipped:
@@ -1388,24 +1394,31 @@ namespace Eto.Test.Sections
 			}
 		}
 
+		static Image CreateImage(Color color, Action<Graphics, Bitmap> draw)
+		{
+			var bmp = new Bitmap(32, 32, PixelFormat.Format32bppRgba);
+			using (var g = new Graphics(bmp))
+			{
+				var r = new RectangleF(Point.Empty, bmp.Size);
+				r.Inflate(-1, -1);
+				g.FillEllipse(color, r);
+				draw?.Invoke(g, bmp);
+			}
+			return bmp.WithSize(16, 16);
+		}
+
 		static Image CreateImage(Color color, Color textcolor, string text)
 		{
-			return Application.Instance.Invoke(() =>
+			return CreateImage(color, (g, b) =>
 			{
-				var bmp = new Bitmap(32, 32, PixelFormat.Format32bppRgba);
-				using (var g = new Graphics(bmp))
+				var r = new RectangleF(Point.Empty, b.Size);
+				r.Inflate(-1, -1);
+				if (text != null)
 				{
-					var r = new RectangleF(Point.Empty, bmp.Size);
-					r.Inflate(-1, -1);
-					g.FillEllipse(color, r);
-					if (text != null)
-					{
-						var font = SystemFonts.Default(SystemFonts.Default().Size * 2);
-						var size = g.MeasureString(font, text);
-						g.DrawText(font, textcolor, r.Location + (PointF)(r.Size - size) / 2, text);
-					}
+					var font = SystemFonts.Default(SystemFonts.Default().Size * 2);
+					var size = g.MeasureString(font, text);
+					g.DrawText(font, textcolor, r.Location + (PointF)(r.Size - size) / 2, text);
 				}
-				return bmp.WithSize(16, 16);
 			});
 		}
 

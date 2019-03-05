@@ -87,6 +87,7 @@ namespace Eto.GtkSharp.Forms
 			int result = Control.Run();
 
 			Control.Hide ();
+			Control.Unrealize();
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
 			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))

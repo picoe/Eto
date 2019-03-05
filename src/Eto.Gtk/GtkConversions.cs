@@ -817,5 +817,14 @@ namespace Eto.GtkSharp
 			IntPtr ptr = NativeMethods.gtk_selection_data_get_uris(data.Handle);
 			return GLib.Marshaller.NullTermPtrToStringArray(ptr, true);
 		}
+
+#if GTK3
+		public static void AdjustMinimumSizeRequest(this Size minimumSize, Gtk.Orientation orientation, ref int minimum_size, ref int natural_size)
+		{
+			var min = orientation == Gtk.Orientation.Horizontal ? minimumSize.Width : minimumSize.Height;
+			minimum_size = Math.Max(minimum_size, min);
+			natural_size = Math.Max(natural_size, min);
+		}
+#endif
 	}
 }

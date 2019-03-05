@@ -254,6 +254,34 @@ namespace Eto
 				Remove(key);
 			else
 				this[key] = value;
+
+		}
+
+
+		/// <summary>
+		/// Set the value for the specified property key, removing the value from the dictionary if it is the default value of T.
+		/// </summary>
+		/// <remarks>
+		/// This can be used as an optimized way to set the value in the dictionary as if the value set equal to the default value.
+		/// (e.g. null for reference types, false for bool, 0 for int, etc), then it will be removed from the dictionary
+		/// instead of just set to the value, reducing memory usage.
+		/// </remarks>
+		/// <param name="key">Key of the property to set.</param>
+		/// <param name="value">Value for the property.</param>
+		/// <param name="defaultValue">Value of the property when it should be removed from the dictionary. This should match what is passed to <see cref="Get{T}(object,T)"/> when getting the value.</param>
+		/// <returns><c>true</c> if the value was changed, <c>false</c> otherwise.</returns>
+		/// <typeparam name="T">The type of the property to set.</typeparam>
+		public bool TrySet<T>(object key, T value, T defaultValue = default(T))
+		{
+			if (!IsEqual(value, Get<T>(key, defaultValue)))
+			{
+				if (IsEqual(value, defaultValue))
+					Remove(key);
+				else
+					this[key] = value;
+				return true;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -285,18 +313,13 @@ namespace Eto
 		/// <param name="propertyName">Name of the property, or omit to get the property name from the caller.</param>
 		/// <typeparam name="T">The type of the property to set.</typeparam>
 		/// <returns>true if the property was changed, false if not</returns>
-		#if PCL
 		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, T defaultValue = default(T), [CallerMemberName] string propertyName = null)
-		#else
-		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, T defaultValue, string propertyName)
-		#endif
 		{
-			var existing = Get<T>(key);
+			var existing = Get<T>(key, defaultValue);
 			if (!IsEqual(existing, value))
 			{
 				Set<T>(key, value, defaultValue);
-				if (propertyChanged != null)
-					propertyChanged(Parent, new PropertyChangedEventArgs(propertyName));
+				propertyChanged?.Invoke(Parent, new PropertyChangedEventArgs(propertyName));
 				return true;
 			}
 			return false;

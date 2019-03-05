@@ -46,12 +46,11 @@ namespace Eto.Mac.Forms.ToolBar
 
 			public override string[] SelectableItemIdentifiers(NSToolbar toolbar)
 			{
-				return Handler.items.Where(r => r.Selectable).Select(r => r.Identifier).ToArray();
+				return Handler.items.Where(r => r.Selectable && r.Visible).Select(r => r.Identifier).ToArray();
 			}
 
 			public override void WillAddItem(NSNotification notification)
 			{
-				
 			}
 
 			public override void DidRemoveItem(NSNotification notification)
@@ -61,12 +60,12 @@ namespace Eto.Mac.Forms.ToolBar
 			public override NSToolbarItem WillInsertItem(NSToolbar toolbar, string itemIdentifier, bool willBeInserted)
 			{
 				var item = Handler.items.FirstOrDefault(r => r.Identifier == itemIdentifier);
-				return item == null ? null : item.Control;
+				return item == null || !item.Visible ? null : item.Control;
 			}
 
 			public override string[] DefaultItemIdentifiers(NSToolbar toolbar)
 			{
-				return Handler.items.Select(r => r.Identifier).ToArray();
+				return Handler.items.Where(r => r.Visible).Select(r => r.Identifier).ToArray();
 			}
 
 			public override string[] AllowedItemIdentifiers(NSToolbar toolbar)
@@ -111,10 +110,10 @@ namespace Eto.Mac.Forms.ToolBar
 		{
 			var handler = (IToolBarBaseItemHandler)item.Handler;
 			items.Insert(index, handler);
-			Control.InsertItem(handler.Identifier, index);
+			if (item.Visible)
+				Control.InsertItem(handler.Identifier, index);
 			if (handler != null)
 				handler.ControlAdded(this);
-			//Control.ValidateVisibleItems();
 		}
 
 		public void RemoveButton(ToolItem item)
@@ -123,8 +122,9 @@ namespace Eto.Mac.Forms.ToolBar
 			var index = items.IndexOf(handler);
 			items.Remove(handler);
 			//var handler = item.Handler as IToolBarItemHandler;
-			Control.RemoveItem(index);
-			//Control.ValidateVisibleItems();
+			var idx = GetIndex(item);
+			if (idx >= 0)
+				Control.RemoveItem(index);
 		}
 
 		public ToolBarTextAlign TextAlign
@@ -162,8 +162,11 @@ namespace Eto.Mac.Forms.ToolBar
 			items.Clear();
 			// allow menu items to be GC'd
 			var newitems = Control.Items;
+		}
 
-			//Control.ValidateVisibleItems();
+		internal int GetIndex(ToolItem item)
+		{
+			return Widget.Items.Where(r => r.Visible).TakeWhile(r => !ReferenceEquals(r, item)).Count();
 		}
 	}
 }

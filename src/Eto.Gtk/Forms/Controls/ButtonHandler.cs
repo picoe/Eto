@@ -4,27 +4,59 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
+	public class ButtonHandler : ButtonHandler<Gtk.Button, Button, Button.ICallback>
+	{
+		public static int MinimumWidth = 80;
+
+		public class EtoButton : Gtk.Button
+		{
+			WeakReference _reference;
+			public ButtonHandler Handler
+			{
+				get => _reference?.Target as ButtonHandler;
+				set => _reference = new WeakReference(value);
+			}
+#if GTK3
+			protected override void OnAdjustSizeRequest(Gtk.Orientation orientation, out int minimum_size, out int natural_size)
+			{
+				base.OnAdjustSizeRequest(orientation, out minimum_size, out natural_size);
+				var h = Handler;
+				if (h == null)
+					return;
+				h.MinimumSize.AdjustMinimumSizeRequest(orientation, ref minimum_size, ref natural_size);
+			}
+#endif
+		}
+
+		protected override int DefaultMinimumWidth => MinimumWidth;
+
+		internal static readonly object Image_Key = new object();
+		internal static readonly object ImagePosition_Key = new object();
+		internal static readonly object MinimumSize_Key = new object();
+
+		protected override Gtk.Button CreateControl() => new EtoButton { Handler = this };
+	}
+
 	/// <summary>
 	/// Button handler.
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2019 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : GtkControl<Gtk.Button, Button, Button.ICallback>, Button.IHandler
+	public class ButtonHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, Button.IHandler
+		where TControl : Gtk.Button
+		where TWidget : Button
+		where TCallback : Button.ICallback
 	{
 		readonly Gtk.AccelLabel label;
 		readonly Gtk.Image gtkimage;
 		readonly Gtk.Table table;
 
-		public static int MinimumWidth = 80;
+		protected override Gtk.Widget FontControl => label;
 
-		protected override Gtk.Widget FontControl
-		{
-			get { return label; }
-		}
+		protected virtual int DefaultMinimumWidth => 0;
 
 		public ButtonHandler()
 		{
-			Control = new Gtk.Button();
 			// need separate widgets as the theme can (and usually) disables images on buttons
 			// gtk3 can override the theme per button, but gtk2 cannot
 			table = new Gtk.Table(3, 3, false);
@@ -35,39 +67,38 @@ namespace Eto.GtkSharp.Forms.Controls
 			table.Attach(label, 1, 2, 1, 2, Gtk.AttachOptions.Expand, Gtk.AttachOptions.Expand, 0, 0);
 			gtkimage = new Gtk.Image();
 			gtkimage.NoShowAll = true;
-			Control.Child = table;
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control.Child = table;
 			Control.Clicked += Connector.HandleClicked;
-			Control.SizeAllocated += Connector.HandleButtonSizeAllocated;
 #if GTK2
+			Control.SizeAllocated += Connector.HandleButtonSizeAllocated;
 			Control.SizeRequested += Connector.HandleButtonSizeRequested;
-#else
-			Control.WidthRequest = MinimumWidth;
 #endif
 
 			SetImagePosition(false);
 		}
 
-		protected new ButtonConnector Connector { get { return (ButtonConnector)base.Connector; } }
+		protected new ButtonConnector Connector => (ButtonConnector)base.Connector;
 
-		protected override WeakConnector CreateConnector()
-		{
-			return new ButtonConnector();
-		}
+		protected override WeakConnector CreateConnector() => new ButtonConnector();
 
 		protected class ButtonConnector : GtkControlConnector
 		{
-			public new ButtonHandler Handler { get { return (ButtonHandler)base.Handler; } }
+			new ButtonHandler<TControl, TWidget, TCallback> Handler => (ButtonHandler<TControl, TWidget, TCallback>)base.Handler;
 
-			public void HandleClicked(object sender, EventArgs e)
+			public virtual void HandleClicked(object sender, EventArgs e)
 			{
-				Handler.Callback.OnClick(Handler.Widget, EventArgs.Empty);
+				var h = Handler;
+				if (h == null)
+					return;
+				h.Callback.OnClick(h.Widget, EventArgs.Empty);
 			}
 
+#if GTK2
 			public void HandleButtonSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
 			{
 				var handler = Handler;
@@ -89,7 +120,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 			}
 
-			#if GTK2
 			public void HandleButtonSizeRequested(object o, Gtk.SizeRequestedArgs args)
 			{
 				var handler = Handler;
@@ -105,7 +135,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					}
 				}
 			}
-			#endif
+#endif
 		}
 
 		public override string Text
@@ -118,21 +148,20 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		static readonly object Image_Key = new object();
-
 		public Image Image
 		{
-			get { return Widget.Properties.Get<Image>(Image_Key); }
+			get { return Widget.Properties.Get<Image>(ButtonHandler.Image_Key); }
 			set
 			{
-				Widget.Properties.Set(Image_Key, value, () =>
+				if (Widget.Properties.TrySet(ButtonHandler.Image_Key, value))
 				{
 					Image.SetGtkImage(gtkimage);
 					if (value == null)
 						gtkimage.Hide();
 					else
 						gtkimage.Show();
-				});
+					Control.QueueResize();
+				};
 			}
 		}
 
@@ -200,15 +229,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (removeImage)
 				table.Remove(gtkimage);
 			table.Attach(gtkimage, left, right, top, bottom, options, options, 0, 0);
-
+			Control.QueueResize();
 		}
-
-		static readonly object ImagePosition_Key = new object();
 
 		public ButtonImagePosition ImagePosition
 		{
-			get { return Widget.Properties.Get<ButtonImagePosition>(ImagePosition_Key); }
-			set { Widget.Properties.Set(ImagePosition_Key, value, () => SetImagePosition()); }
+			get { return Widget.Properties.Get<ButtonImagePosition>(ButtonHandler.ImagePosition_Key); }
+			set
+			{
+				if (Widget.Properties.TrySet(ButtonHandler.ImagePosition_Key, value))
+					SetImagePosition();
+			}
 		}
 
 		public Color TextColor
@@ -217,19 +248,22 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { label.SetForeground(value); }
 		}
 
-		static readonly object MinimumSize_Key = new object();
-
 		public Size MinimumSize
 		{
-			get { return Widget.Properties.Get(MinimumSize_Key, () => new Size(MinimumWidth, 0)); }
+			get { return Widget.Properties.Get<Size?>(ButtonHandler.MinimumSize_Key) ?? new Size(DefaultMinimumWidth, 0); }
 			set
 			{
 				if (MinimumSize != value)
 				{
-					Widget.Properties[MinimumSize_Key] = value;
+					Widget.Properties[ButtonHandler.MinimumSize_Key] = value;
 					Control.QueueResize(); 
 				}
 			}
+		}
+
+		protected override void SetSize(Size size)
+		{
+			base.SetSize(Size.Max(size, MinimumSize));
 		}
 
 		public override void AttachEvent(string id)
