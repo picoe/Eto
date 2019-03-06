@@ -11,11 +11,14 @@ namespace Eto.Wpf.Forms.Controls
 	public class ImageViewHandler : WpfFrameworkElement<CustomControls.MultiSizeImage, ImageView, ImageView.ICallback>, ImageView.IHandler
 	{
 		Image image;
+		swc.Border border;
+
+		public override FrameworkElement ContainerControl => border;
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Background.ToEtoColor(); }
-			set { Control.Background = value.ToWpfBrush(Control.Background); }
+			get { return border.Background.ToEtoColor(); }
+			set { border.Background = value.ToWpfBrush(border.Background); }
 		}
 
 		public ImageViewHandler()
@@ -28,6 +31,7 @@ namespace Eto.Wpf.Forms.Controls
 				StretchDirection = swc.StretchDirection.Both
 			};
 			Control.SizeChanged += Control_SizeChanged;
+			border = new swc.Border { Child = Control };
 		}
 
 		void Control_SizeChanged(object sender, SizeChangedEventArgs e)

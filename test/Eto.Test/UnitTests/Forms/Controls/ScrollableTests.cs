@@ -33,5 +33,24 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 			});
 		}
+
+		[Test, TestCaseSource(nameof(GetControlTypes)), ManualTest]
+		public void AllControlsShouldExpandWidth(IControlTypeInfo<Control> info)
+		{
+			ManualForm("Control and blue background should expand to width of scrollable", form =>
+			{
+				var control = info.CreateControl();
+				info.PopulateControl(control);
+				control.BackgroundColor = Colors.Blue;
+
+				return new Scrollable
+				{
+					Size = new Size(300, 200),
+					Content = control,
+					ExpandContentWidth = true,
+					ExpandContentHeight = false
+				};
+			});
+		}
 	}
 }
