@@ -126,7 +126,7 @@
     -->
     <PropertyGroup>
       <AssemblyVersionMajorMinor>$([System.Version]::Parse($([System.String]::Copy('$(AssemblyVersion)').Replace('.*', ''))).ToString(2))</AssemblyVersionMajorMinor>
-      <DaysSince2000>$([System.DateTime]::Now.Subtract($([System.DateTime]::Parse('2000-01-01T00:00:00Z'))).TotalDays.ToString('0'))</DaysSince2000>
+      <DaysSince2000>$([System.DateTime]::Today.Subtract($([System.DateTime]::Parse('2000-01-01T00:00:00Z'))).TotalDays.ToString('0'))</DaysSince2000>
       <SecondsOfTodayHalved>$([MSBuild]::Divide($([System.DateTime]::Now.Subtract($([System.DateTime]::Today)).TotalSeconds), 2).ToString('0'))</SecondsOfTodayHalved>
       <AssemblyFileVersion>$(AssemblyVersionMajorMinor).$(DaysSince2000).$(SecondsOfTodayHalved)</AssemblyFileVersion>
     </PropertyGroup>
