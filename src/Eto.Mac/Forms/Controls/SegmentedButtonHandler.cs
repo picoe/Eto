@@ -280,22 +280,31 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				// NSSegmentedControl.SelectedSegment returns the item that was last changed, but we want the currently selected segment.
-				for (int i = 0; i < Control.SegmentCount; i++)
-				{
-					if (Control.IsSelectedForSegment(i))
-						return i;
-				}
-				return -1;
+				if (SelectionMode == SegmentedSelectionMode.None)
+					return -1;
+				return GetSelectedIndex();
 			}
 			set
 			{
+				if (SelectionMode == SegmentedSelectionMode.None)
+					return;
 				if (value != SelectedIndex)
 				{
 					Control.SelectedSegment = value;
 					TriggerSelectionChanged(true);
 				}
 			}
+		}
+
+		private int GetSelectedIndex()
+		{
+			// NSSegmentedControl.SelectedSegment returns the item that was last changed, but we want the currently selected segment.
+			for (int i = 0; i < Control.SegmentCount; i++)
+			{
+				if (Control.IsSelectedForSegment(i))
+					return i;
+			}
+			return -1;
 		}
 
 		public IEnumerable<int> SelectedIndexes
@@ -436,7 +445,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		bool HasSelection => SelectedIndex != -1;
+		bool HasSelection => GetSelectedIndex() != -1;
 
 		public void SelectAll()
 		{
@@ -463,8 +472,12 @@ namespace Eto.Mac.Forms.Controls
 
 		internal void TriggerSelectionChanged(bool force)
 		{
+			var mode = SelectionMode;
+			if (!force && mode == SegmentedSelectionMode.None)
+				return;
+
 			var selectedIndex = SelectedIndex;
-			if (force || SelectionMode == SegmentedSelectionMode.Multiple || lastSelected != selectedIndex)
+			if (force || mode == SegmentedSelectionMode.Multiple || lastSelected != selectedIndex)
 			{
 				Callback.OnSelectedIndexesChanged(Widget, EventArgs.Empty);
 				lastSelected = selectedIndex;

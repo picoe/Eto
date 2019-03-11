@@ -156,7 +156,6 @@ namespace Eto.Serialization.Json
 				serializer.Converters.Add(new DynamicLayoutConverter());
 				serializer.Converters.Add(new DelegateConverter());
 				serializer.Converters.Add(new PropertyStoreConverter());
-				serializer.Converters.Add(new ImageConverter());
 				serializer.Converters.Add(new FontConverter());
 				serializer.Converters.Add(new StackLayoutConverter());
 				serializer.Converters.Add(new ListItemConverter());
