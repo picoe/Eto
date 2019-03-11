@@ -284,12 +284,12 @@ namespace Eto.Test.UnitTests
 			);
 		}
 
-		public static void ManualForm(string description, Func<Form, Control> init)
+		public static void ManualForm(string description, Func<Form, Control> init, bool allowPassFail = true)
 		{
-			ManualForm(description, (form, Label) => init(form));
+			ManualForm(description, (form, Label) => init(form), allowPassFail);
 		}
 
-		public static void ManualForm(string description, Func<Form, Label, Control> init)
+		public static void ManualForm(string description, Func<Form, Label, Control> init, bool allowPassFail = true)
 		{
 			Exception exception = null;
 			Form(form =>
@@ -297,36 +297,41 @@ namespace Eto.Test.UnitTests
 				var label = new Label { Text = description };
 				var c = init(form, label);
 
-				var failButton = new Button { Text = "Fail" };
-				failButton.Click += (sender, e) =>
-				{
-					try
-					{
-						Assert.Fail(description);
-					}
-					catch (Exception ex)
-					{
-						exception = ex;
-					}
-					finally
-					{
-						form.Close();
-					}
-				};
-
-				var passButton = new Button { Text = "Pass" };
-				passButton.Click += (sender, e) => form.Close();
-
-				form.Content = new StackLayout
+				var layout = new StackLayout
 				{
 					Spacing = 10,
 					Items =
 					{
 						new StackLayoutItem(c, HorizontalAlignment.Stretch, true),
-						label,
-						new StackLayoutItem(TableLayout.Horizontal(2, failButton, passButton), HorizontalAlignment.Center)
+						label
 					}
 				};
+
+				if (allowPassFail)
+				{
+					var failButton = new Button { Text = "Fail" };
+					failButton.Click += (sender, e) =>
+					{
+						try
+						{
+							Assert.Fail(description);
+						}
+						catch (Exception ex)
+						{
+							exception = ex;
+						}
+						finally
+						{
+							form.Close();
+						}
+					};
+
+					var passButton = new Button { Text = "Pass" };
+					passButton.Click += (sender, e) => form.Close();
+					layout.Items.Add(new StackLayoutItem(TableLayout.Horizontal(2, failButton, passButton), HorizontalAlignment.Center));
+				}
+
+				form.Content = layout;
 			}, timeout: -1);
 
 			if (exception != null)

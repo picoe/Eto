@@ -13,6 +13,11 @@ namespace Eto.Forms
     {
         new IHandler Handler => (IHandler)base.Handler;
 
+		static SegmentedItem()
+		{
+			EventLookup.Register<SegmentedItem>(c => c.OnClick(null), ClickEvent);
+		}
+
 		/// <summary>
 		/// Gets the parent button this item belongs to.
 		/// </summary>
