@@ -165,6 +165,7 @@ namespace Eto.Forms.ThemedControls
 		{
 			base.Initialize();
 
+			Control.Click += Control_Click;
 			Control.CheckedChanged += Control_CheckedChanged;
 			Control.MouseUp += Control_MouseUp;
 		}
@@ -194,7 +195,6 @@ namespace Eto.Forms.ThemedControls
 			switch (id)
 			{
 				case SegmentedItem.ClickEvent:
-					Control.Click += Control_Click;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -264,7 +264,7 @@ namespace Eto.Forms.ThemedControls
 			{
 				if (selectionMode == SegmentedSelectionMode.None)
 					return;
-				if (value > 0)
+				if (value >= 0)
 					Widget.Items[value].Selected = true;
 				else
 					ClearSelection();
@@ -444,6 +444,21 @@ namespace Eto.Forms.ThemedControls
 			suppressSelectionChanged--;
 			if (wasSelected)
 				TriggerSelectionChanged();
+		}
+
+		/// <inheritdoc/>
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case SegmentedButton.ItemClickEvent:
+				case SegmentedButton.SelectedIndexesChangedEvent:
+					// handled intrinsically
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 
 		/// <inheritdoc/>

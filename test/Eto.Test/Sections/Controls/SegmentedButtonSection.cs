@@ -74,6 +74,8 @@ namespace Eto.Test.Sections.Controls
 			button.SelectedIndexesChanged += (sender, e) => Log.Write(sender, $"SelectedIndexesChanged: {string.Join(", ", button.SelectedIndexes.Select(r => r.ToString()))}");
 			button.SelectedItemsChanged += (sender, e) => Log.Write(sender, $"SelectedItemsChanged: {string.Join(", ", button.SelectedItems.Select(ItemDesc))}");
 			button.ItemClick += (sender, e) => Log.Write(sender, $"ItemClick: {ItemDesc(e.Item)}, Index: {e.Index}");
+			button.SelectedIndexChanged += (sender, e) => Log.Write(sender, $"SelectedIndexChanged: {button.SelectedIndex}");
+			button.SelectedItemChanged += (sender, e) => Log.Write(sender, $"SelectedItemChanged: {ItemDesc(button.SelectedItem)}");
 
 			foreach (var item in button.Items)
 			{
@@ -93,6 +95,6 @@ namespace Eto.Test.Sections.Controls
 			return item;
 		}
 
-		string ItemDesc(SegmentedItem item) => $"{item.GetType().Name}, {item.Text}";
+		string ItemDesc(SegmentedItem item) => item != null ? $"{item.GetType().Name}, {item.Text}" : "(null)";
 	}
 }

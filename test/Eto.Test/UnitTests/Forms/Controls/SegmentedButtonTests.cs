@@ -46,7 +46,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					Spacing = 10,
 					Padding = 10,
 					Items =
-					{ 
+					{
 						"Click the selected segment",
 						segmentedButton
 					}
@@ -201,6 +201,136 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.AreEqual(null, segmentedButton.SelectedItem, "#4.3");
 			CollectionAssert.IsEmpty(segmentedButton.SelectedIndexes, "#4.4");
 			CollectionAssert.IsEmpty(segmentedButton.SelectedItems, "#4.5");
+		}
+
+		class SegmentedButtonSubclass : SegmentedButton
+		{
+			public int SelectedIndexChangedCount { get; set; }
+
+			protected override void OnSelectedIndexChanged(EventArgs e)
+			{
+				base.OnSelectedIndexChanged(e);
+				SelectedIndexChangedCount++;
+			}
+		}
+
+		[Test, InvokeOnUI]
+		public void SelectedIndexOverrideShouldTriggerEvent()
+		{
+			var control = new SegmentedButtonSubclass { Items = { "Item1", "Item2", "Item3" }, SelectionMode = SegmentedSelectionMode.Single };
+
+			Assert.AreEqual(0, control.SelectedIndexChangedCount, "#1");
+
+			control.SelectedIndex = 0;
+
+			Assert.AreEqual(1, control.SelectedIndexChangedCount, "#2");
+		}
+
+		[Test, InvokeOnUI]
+		public void ChangingSelectionWhenModeIsNoneShouldNotRaiseChangedEvents()
+		{
+			var control = new SegmentedButton();
+			int selectedIndexesChangedCount = 0;
+			control.SelectedIndexesChanged += (sender, e) => selectedIndexesChangedCount++;
+			control.Items.Add("Item1");
+			control.Items.Add("Item2");
+			control.Items.Add("Item3");
+
+			Assert.AreEqual(0, selectedIndexesChangedCount, "#1");
+
+			control.SelectedIndex = 0;
+			Assert.AreEqual(-1, control.SelectedIndex, "#2.1");
+			Assert.AreEqual(0, selectedIndexesChangedCount, "#2.2");
+			CollectionAssert.IsEmpty(control.SelectedIndexes, "#2.3");
+
+			control.SelectedIndexes = new[] { 1, 2 };
+			Assert.AreEqual(-1, control.SelectedIndex, "#3.1");
+			Assert.AreEqual(0, selectedIndexesChangedCount, "#3.2");
+			CollectionAssert.IsEmpty(control.SelectedIndexes, "#3.3");
+		}
+
+		[Test, ManualTest]
+		public void ClickingAnItemWhenModeIsNoneShouldNotRaiseChangedEvents()
+		{
+			int selectedIndexesChangedCount = 0;
+			int itemWasClicked = 0;
+
+			ManualForm("Click on an item", form =>
+			{
+				var control = new SegmentedButton();
+				control.SelectedIndexesChanged += (sender, e) => selectedIndexesChangedCount++;
+				control.Items.Add("Item1");
+				control.Items.Add("Item2");
+				control.Items.Add("Item3");
+
+				// async in case code runs after this event.
+				control.ItemClick += (sender, e) =>
+				{
+					itemWasClicked++;
+					Application.Instance.AsyncInvoke(form.Close);
+				};
+				return control;
+			}, false);
+
+			Assert.AreEqual(1, itemWasClicked, "#1"); // ensure user actually clicked an item.
+			Assert.AreEqual(0, selectedIndexesChangedCount, "#2");
+		}
+
+		class SegmentedModel
+		{
+			int selectedIndex;
+
+			public int SelectedIndexChangedCount { get; set; }
+			public int SelectedIndex
+			{
+				get => selectedIndex;
+				set
+				{
+					selectedIndex = value;
+					SelectedIndexChangedCount++;
+				}
+			}
+		}
+
+		[TestCase(SegmentedSelectionMode.Single)]
+		[TestCase(SegmentedSelectionMode.Multiple)]
+		[ManualTest]
+		public void ClickingAnItemShouldRaiseChangedEvents(SegmentedSelectionMode selectionMode)
+		{
+			int selectedIndexesChangedCount = 0;
+			int selectedIndexChangedCount = 0;
+			int itemWasClicked = 0;
+			int selectedIndex = -1;
+			var model = new SegmentedModel();
+
+			ManualForm("Click on an item", form =>
+			{
+				var control = new SegmentedButton();
+				control.SelectionMode = selectionMode;
+
+				control.Bind(c => c.SelectedIndex, model, m => m.SelectedIndex, DualBindingMode.OneWayToSource);
+				control.SelectedIndexesChanged += (sender, e) => selectedIndexesChangedCount++;
+				control.SelectedIndexChanged += (sender, e) => selectedIndexChangedCount++;
+				control.Items.Add("Item1");
+				control.Items.Add("Item2");
+				control.Items.Add("Item3");
+
+				// async in case code runs after this event.
+				control.ItemClick += (sender, e) =>
+				{
+					itemWasClicked++;
+					selectedIndex = control.SelectedIndex;
+					Application.Instance.AsyncInvoke(form.Close);
+				};
+				return control;
+			}, false);
+
+			Assert.AreEqual(1, itemWasClicked, "#1"); // ensure user actually clicked an item.
+			Assert.AreEqual(1, selectedIndexChangedCount, "#2");
+			Assert.AreEqual(1, selectedIndexesChangedCount, "#3");
+			Assert.IsTrue(selectedIndex >= 0, "#4");
+			Assert.AreEqual(2, model.SelectedIndexChangedCount, "#5"); // one for binding, one when it actually changes.
+			Assert.AreEqual(selectedIndex, model.SelectedIndex, "#6");
 		}
 	}
 }

@@ -40,6 +40,15 @@ namespace Eto.Forms
 	{
 		new IHandler Handler => (IHandler)base.Handler;
 
+		static SegmentedButton()
+		{
+			EventLookup.Register<SegmentedButton>(c => c.OnSelectedItemsChanged(null), SelectedIndexesChangedEvent);
+			EventLookup.Register<SegmentedButton>(c => c.OnSelectedItemChanged(null), SelectedIndexesChangedEvent);
+			EventLookup.Register<SegmentedButton>(c => c.OnSelectedIndexChanged(null), SelectedIndexesChangedEvent);
+			EventLookup.Register<SegmentedButton>(c => c.OnSelectedIndexesChanged(null), SelectedIndexesChangedEvent);
+			EventLookup.Register<SegmentedButton>(c => c.OnItemClicked(null), ItemClickEvent);
+		}
+
 		/// <summary>
 		/// Gets the collection of segmented items
 		/// </summary>
@@ -75,10 +84,7 @@ namespace Eto.Forms
 		#region Events
 
 
-		/// <summary>
-		/// Identifier for handlers when attaching the <see cref="SelectedItemsChanged"/> event.
-		/// </summary>
-		public const string SelectedItemsChangedEvent = "SegmentedButton.SelectedItemsChanged";
+		static readonly object SelectedItemsChangedEvent = new object();
 
 		/// <summary>
 		/// Occurs when the <see cref="SelectedItems"/> have changed.
@@ -96,6 +102,7 @@ namespace Eto.Forms
 		protected virtual void OnSelectedItemsChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectedItemsChangedEvent, this, e);
+			OnSelectedItemChanged(e);
 		}
 
 		/// <summary>
@@ -119,6 +126,7 @@ namespace Eto.Forms
 		protected virtual void OnSelectedIndexesChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectedIndexesChangedEvent, this, e);
+			OnSelectedIndexChanged(e);
 			OnSelectedItemsChanged(e);
 		}
 
@@ -144,6 +152,46 @@ namespace Eto.Forms
 		protected virtual void OnItemClicked(SegmentedItemClickEventArgs e)
 		{
 			Properties.TriggerEvent(ItemClickEvent, this, e);
+		}
+
+		static readonly object SelectedIndexChangedEvent = new object();
+
+		/// <summary>
+		/// Event to handle when the <see cref="SelectedIndex"/> changes.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedIndexChanged
+		{
+			add => Properties.AddEvent(SelectedIndexChangedEvent, value);
+			remove => Properties.RemoveEvent(SelectedIndexChangedEvent, value);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="SelectedIndexChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnSelectedIndexChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(SelectedIndexChangedEvent, this, e);
+		}
+
+		static readonly object SelectedItemChangedEvent = new object();
+
+		/// <summary>
+		/// Event to handle when the <see cref="SelectedItem"/> changes.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedItemChanged
+		{
+			add => Properties.AddEvent(SelectedItemChangedEvent, value);
+			remove => Properties.RemoveEvent(SelectedItemChangedEvent, value);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="SelectedItemChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnSelectedItemChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(SelectedItemChangedEvent, this, e);
 		}
 
 		#endregion

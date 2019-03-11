@@ -38,8 +38,7 @@ namespace Eto
 			if (type.GetAssembly() == etoAssembly)
 				return;
 
-			var handler = widget.Handler as Widget.IHandler;
-			if (handler != null)
+			if (widget.Handler is Widget.IHandler handler)
 			{
 				var ids = GetEvents(type);
 				for (int i = 0; i < ids.Length; i++)
@@ -61,12 +60,11 @@ namespace Eto
 
 		static string[] GetEvents(Type type)
 		{
-			string[] events;
-			if (!externalEvents.TryGetValue(type, out events))
-			{
-				events = FindTypeEvents(type).Distinct().ToArray();
-				externalEvents.Add(type, events);
-			}
+			if (externalEvents.TryGetValue(type, out var events))
+				return events;
+
+			events = FindTypeEvents(type).Distinct().ToArray();
+			externalEvents.Add(type, events);
 			return events;
 		}
 
@@ -78,40 +76,34 @@ namespace Eto
 			{
 				if (current.GetAssembly() == etoAssembly)
 				{
-					List<EventDeclaration> declarations;
-					if (registeredEvents.TryGetValue(current, out declarations))
+					if (registeredEvents.TryGetValue(current, out var declarations))
 					{
-						foreach (var externalType in externalTypes)
+						for (int i = 0; i < externalTypes.Count; i++)
 						{
-#if PCL
-							var methods = (from m in externalType.GetTypeInfo().DeclaredMethods select m).ToList();
-#else
-							var methods = externalType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-#endif
-							foreach (var item in declarations)
+							var externalType = externalTypes[i];
+							foreach (var method in externalType.GetTypeInfo().DeclaredMethods)
 							{
-								var currentItem = item;
-#if PCL
-								if (methods.Any(r => r.GetRuntimeBaseDefinition() == currentItem.Method))
-									yield return item.Identifier;
-#else
-								if (methods.Any(r => r.GetBaseDefinition() == currentItem.Method))
-									yield return item.Identifier;
-#endif
+								for (int j = 0; j < declarations.Count; j++)
+								{
+									var declaration = declarations[j];
+									if (method.GetRuntimeBaseDefinition() == declaration.Method)
+										yield return declaration.Identifier;
+								}
 							}
 						}
 					}
 				}
 				else
+				{
 					externalTypes.Add(current);
+				}
 				current = current.GetBaseType();
 			}
 		}
 
 		static List<EventDeclaration> GetDeclarations(Type type)
 		{
-			List<EventDeclaration> declarations;
-			if (!registeredEvents.TryGetValue(type, out declarations))
+			if (!registeredEvents.TryGetValue(type, out var declarations))
 			{
 				declarations = new List<EventDeclaration>();
 				registeredEvents.Add(type, declarations);
