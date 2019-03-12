@@ -646,7 +646,8 @@ namespace Eto.Test.UnitTests
 				{
 					var ti = r.Type.GetTypeInfo();
 					return !typeof(Window).GetTypeInfo().IsAssignableFrom(ti)
-						&& !typeof(TabPage).GetTypeInfo().IsAssignableFrom(ti);
+						&& !typeof(TabPage).GetTypeInfo().IsAssignableFrom(ti)
+						&& !typeof(DocumentPage).GetTypeInfo().IsAssignableFrom(ti);
 				});
 		}
 
@@ -656,6 +657,7 @@ namespace Eto.Test.UnitTests
 			Type Type { get; }
 			T CreateControl();
 			Container CreateContainer(Control control);
+			void PopulateControl(Control control);
 		}
 
 		public interface IContainerTypeInfo<out T> : IControlTypeInfo<T>
@@ -691,6 +693,89 @@ namespace Eto.Test.UnitTests
 					return (Container)control;
 
 				return new Panel { Content = control };
+			}
+
+			public void PopulateControl(Control control)
+			{
+				if (control is TextControl textControl)
+					textControl.Text = "Some Text";
+				else if (control is ImageView imageView)
+					imageView.Image = TestIcons.Logo;
+				else if (control is ListControl listControl)
+				{
+					listControl.Items.Add("Item 1");
+					listControl.Items.Add("Item 2");
+					listControl.Items.Add("Item 3");
+				}
+				else if (control is NumericStepper numericStepper)
+					numericStepper.Value = 100;
+				else if (control is TabControl tabControl)
+				{
+					tabControl.Pages.Add(new TabPage { Text = "Tab 1", Content = new Panel { Size = new Size(100, 100), Content = "Hello" }  });
+					tabControl.Pages.Add(new TabPage { Text = "Tab 2" });
+					tabControl.Pages.Add(new TabPage { Text = "Tab 3" });
+				}
+				else if (control is DocumentControl documentControl)
+				{
+					documentControl.Pages.Add(new DocumentPage { Text = "Tab 1", Content = new Panel { Size = new Size(100, 100), Content = "Hello" } });
+					documentControl.Pages.Add(new DocumentPage { Text = "Tab 2" });
+					documentControl.Pages.Add(new DocumentPage { Text = "Tab 3" });
+				}
+				else if (control is Drawable drawable)
+				{
+					drawable.Size = new Size(100, 40);
+					drawable.Paint += (sender, e) =>
+					{
+						var c = drawable.BackgroundColor;
+						if (c.A == 0)
+							c = SystemColors.ControlText;
+						else
+							c.Invert();
+						e.Graphics.DrawText(SystemFonts.Default(), c, 0, 0, "Hello!");
+					};
+				}
+				else if (control is SegmentedButton segmented)
+				{
+					segmented.Items.Add("Segment 1");
+					segmented.Items.Add(TestIcons.Logo.WithSize(20, 20));
+					segmented.Items.Add("Segment 3");
+				}
+				else if (control is CheckBoxList checkBoxList)
+				{
+					checkBoxList.Items.Add("Item 1");
+					checkBoxList.Items.Add("Item 2");
+					checkBoxList.Items.Add("Item 3");
+				}
+				else if (control is RadioButtonList radioButtonList)
+				{
+					radioButtonList.Items.Add("Item 1");
+					radioButtonList.Items.Add("Item 2");
+					radioButtonList.Items.Add("Item 3");
+				}
+				else if (control is PixelLayout pixelLayout)
+				{
+					pixelLayout.Add("Hello", 0, 0);
+					pixelLayout.Add("World!", 24, 24);
+				}
+				else if (control is DynamicLayout dynamicLayout)
+				{
+					dynamicLayout.Add("Hello");
+					dynamicLayout.Add("World!");
+				}
+				else if (control is StackLayout stackLayout)
+				{
+					stackLayout.Items.Add("Hello");
+					stackLayout.Items.Add("World!");
+				}
+				else if (control is TableLayout tableLayout)
+				{
+					tableLayout.Rows.Add(new TableRow(new TableCell("Hello", true), new TableCell("World!", true)));
+					tableLayout.Rows.Add(new TableRow("Row", "2"));
+				}
+				else if (control is Panel panel && panel.Content == null)
+				{
+					panel.Content = "Hello, World!";
+				}
 			}
 
 			public override string ToString() => Type.Name;

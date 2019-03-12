@@ -79,13 +79,17 @@ namespace Eto.Wpf.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
+	class WpfFrameworkElement
+	{
+		internal static readonly object Cursor_Key = new object();
+	}
+
 	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
 		where TControl : System.Windows.FrameworkElement
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
 		Size? newSize;
-		Cursor cursor;
 		sw.Size parentMinimumSize;
 		bool isMouseOver;
 		bool isMouseCaptured;
@@ -254,11 +258,13 @@ namespace Eto.Wpf.Forms
 
 		public virtual Cursor Cursor
 		{
-			get { return cursor; }
+			get => Widget.Properties.Get<Cursor>(WpfFrameworkElement.Cursor_Key);
 			set
 			{
-				cursor = value;
-				Control.Cursor = cursor != null ? ((CursorHandler)cursor.Handler).Control : null;
+				if (Widget.Properties.TrySet(WpfFrameworkElement.Cursor_Key, value))
+				{
+					ContainerControl.Cursor = (value?.Handler as CursorHandler)?.Control;
+				}
 			}
 		}
 
