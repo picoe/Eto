@@ -101,5 +101,12 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				e.Graphics.DrawRectangle(Colors.Green, rect);
 			}
 		}
+
+		[Test, InvokeOnUI]
+		public void NullDataStoreShouldNotCrash()
+		{
+			var control = new TreeGridView();
+			control.DataStore = null; // when binding, this will be done so it should not crash!
+		}
 	}
 }
