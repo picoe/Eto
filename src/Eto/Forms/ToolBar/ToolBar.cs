@@ -171,7 +171,8 @@ namespace Eto.Forms
 			/// Removes the specified button.
 			/// </summary>
 			/// <param name="button">Button to remove.</param>
-			void RemoveButton(ToolItem button);
+			/// <param name="index">Index of the button to remove.</param>
+			void RemoveButton(ToolItem button, int index);
 
 			/// <summary>
 			/// Clears all buttons from the toolbar

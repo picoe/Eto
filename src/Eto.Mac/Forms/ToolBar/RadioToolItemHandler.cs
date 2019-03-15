@@ -37,10 +37,7 @@ namespace Eto.Mac.Forms.ToolBar
 			}
 		}
 
-		public override bool Selectable
-		{
-			get { return true; }
-		}
+		public override bool Selectable => true;
 
 		public override void ControlAdded (ToolBarHandler toolbar)
 		{

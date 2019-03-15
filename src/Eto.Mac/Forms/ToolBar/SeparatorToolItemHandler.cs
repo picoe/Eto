@@ -34,9 +34,9 @@ namespace Eto.Mac.Forms.ToolBar
 {
 	public class SeparatorToolItemHandler : ToolItemHandler<NSToolbarItem, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarBaseItemHandler
 	{
-		public static string DividerIdentifier = "divider";
-		Drawable drawable;
 		SeparatorToolItemType type = SeparatorToolItemType.Divider;
+
+		ToolBarHandler ParentHandler => Widget.Parent?.Handler as ToolBarHandler;
 
 		protected override bool IsButton => false;
 
@@ -47,7 +47,7 @@ namespace Eto.Mac.Forms.ToolBar
 				switch (Type)
 				{
 					case SeparatorToolItemType.Divider:
-						return DividerIdentifier;
+						return ToolBarHandler.DividerIdentifier;
 					case SeparatorToolItemType.Space:
 						return NSToolbar.NSToolbarSpaceItemIdentifier;
 					case SeparatorToolItemType.FlexibleSpace:
@@ -62,36 +62,17 @@ namespace Eto.Mac.Forms.ToolBar
 
 		public SeparatorToolItemType Type
 		{
-			get { return type; }
+			get => type;
 			set
 			{
 				if (type != value)
 				{
 					type = value;
-					drawable = null;
-					Control = null;
+					ParentHandler?.ChangeIdentifier(Widget);
 				}
 			}
 		}
 
-		protected override NSToolbarItem CreateControl()
-		{
-			if (type == SeparatorToolItemType.Divider)
-			{
-				drawable = new Drawable { Size = new Size(1, 20) };
-				drawable.Paint += (sender, e) =>
-				{
-					e.Graphics.DrawLine(new Color(SystemColors.WindowBackground, 0.5f), 0, 0, 0, drawable.Height);
-				};
-				var view = drawable.ToNative(true);
-				view.AutoresizingMask = NSViewResizingMask.HeightSizable;
-				return new NSToolbarItem(DividerIdentifier)
-				{
-					View = view,
-					PaletteLabel = "Divider"
-				};
-			}
-			return null;
-		}
+		protected override NSToolbarItem CreateControl() => null;
 	}
 }
