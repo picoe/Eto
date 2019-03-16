@@ -355,6 +355,9 @@ namespace Eto.Mac.Forms
 		{
 			switch (id)
 			{
+				case Eto.Forms.Control.EnabledChangedEvent:
+					// handled manually
+					break;
 				case Eto.Forms.Control.MouseEnterEvent:
 					HandleEvent(Eto.Forms.Control.MouseLeaveEvent);
 					break;
