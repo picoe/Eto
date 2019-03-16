@@ -304,9 +304,17 @@ namespace Eto.Test
 					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
 					ToolBar.Items.Add(new RadioToolItem { Text = "Radio3 (Disabled)", Image = TestIcons.TestImage, Enabled = false });
 				}
+
+				// add an invisible button and separator and allow them to be toggled.
 				var invisibleButton = new ButtonToolItem { Text = "Invisible", Visible = false };
+				var sep = new SeparatorToolItem { Type = SeparatorToolItemType.Divider, Visible = false };
+				ToolBar.Items.Add(sep);
 				ToolBar.Items.Add(invisibleButton);
-				clickButton.Click += (sender, e) => invisibleButton.Visible = !invisibleButton.Visible;
+				clickButton.Click += (sender, e) =>
+				{
+					invisibleButton.Visible = !invisibleButton.Visible;
+					sep.Visible = invisibleButton.Visible;
+				};
 			}
 		}
 

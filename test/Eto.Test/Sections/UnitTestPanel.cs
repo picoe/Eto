@@ -726,12 +726,17 @@ namespace Eto.Test.Sections
 					{
 						if (assertion.Status == AssertionStatus.Passed)
 							continue;
-						WriteLog($"{assertion.Status}: {result.Message}\n{result.StackTrace}");
+						if (!string.IsNullOrEmpty(result.StackTrace))
+							WriteLog($"{assertion.Status}: {assertion.Message}\n{assertion.StackTrace}");
+						else
+							WriteLog($"{assertion.Status}: {assertion.Message}");
 					}
 				}
-				else
+				else if (result.ResultState.Status != TestStatus.Passed && result.ResultState.Status != TestStatus.Skipped)
 				{
-					if (result.ResultState.Status != TestStatus.Passed && result.ResultState.Status != TestStatus.Skipped)
+					if (!string.IsNullOrEmpty(result.StackTrace))
+						WriteLog($"{result.ResultState.Status}: {result.Message}\n{result.StackTrace}");
+					else
 						WriteLog($"{result.ResultState.Status}: {result.Message}");
 				}
 			}
