@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Windows.Input;
 using Eto.Drawing;
 using sc = System.ComponentModel;
 
@@ -9,7 +10,7 @@ namespace Eto.Forms
 	/// Base class for items of the <see cref="SegmentedButton"/> control.
 	/// </summary>
     [sc.TypeConverter(typeof(SegmentedItemConverter))]
-    public abstract class SegmentedItem : Widget
+    public abstract class SegmentedItem : BindableWidget
     {
         new IHandler Handler => (IHandler)base.Handler;
 
@@ -19,13 +20,62 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Eto.Forms.SegmentedItem"/> class.
+		/// </summary>
+		protected SegmentedItem()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.SegmentedItem"/> class with the specified command.
+		/// </summary>
+		/// <remarks>
+		/// This links the segmented item with the specified command, and will trigger <see cref="Eto.Forms.Command.Execute"/>
+		/// when the user clicks the item, and enable/disable the menu item based on <see cref="Eto.Forms.Command.Enabled"/>.
+		/// 
+		/// This also supports <see cref="RadioCommand"/> and <see cref="CheckCommand"/>, which may be appropriate depending
+		/// on the current <see cref="SegmentedButton.SelectionMode"/>.  For <see cref="SegmentedSelectionMode.Multiple"/>, then
+		/// CheckCommand would be preferred, whereas for <see cref="SegmentedSelectionMode.Single"/>, RadioCommand would make more
+		/// sense. Otherwise, use Command if the mode is <see cref="SegmentedSelectionMode.None"/>.
+		/// 
+		/// This is not a weak link, so you should not reuse the Command instance for other menu items if you are disposing
+		/// this segmented item.
+		/// </remarks>
+		/// <param name="command">Command to initialize the menu item with.</param>
+		protected SegmentedItem(Command command)
+		{
+			ID = command.ID;
+			Text = command.ToolBarText;
+			ToolTip = command.ToolTip;
+			Image = command.Image;
+			Command = command;
+
+			if (command is RadioCommand radioCommand)
+			{
+				Selected = radioCommand.Checked;
+				SelectedChanged += (sender, e) => radioCommand.Checked = Selected;
+				radioCommand.CheckedChanged += (sender, e) => Selected = radioCommand.Checked;
+			}
+			if (command is CheckCommand checkCommand)
+			{
+				Selected = checkCommand.Checked;
+				SelectedChanged += (sender, e) => checkCommand.Checked = Selected;
+				checkCommand.CheckedChanged += (sender, e) => Selected = checkCommand.Checked;
+			}
+		}
+
+		/// <summary>
 		/// Gets the parent button this item belongs to.
 		/// </summary>
 		/// <remarks>
 		/// Note this is only set after adding your item to the <see cref="SegmentedButton.Items"/> collection.
 		/// </remarks>
 		/// <value>The parent control.</value>
-		public SegmentedButton Parent { get; internal set; }
+		public new SegmentedButton Parent
+		{
+			get => base.Parent as SegmentedButton;
+			internal set => base.Parent = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the text to display for this segment.
@@ -100,6 +150,34 @@ namespace Eto.Forms
             set => Handler.Width = value;
         }
 
+		static readonly object Command_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the command to invoke when the segmented item is pressed.
+		/// </summary>
+		/// <remarks>
+		/// This will invoke the specified command when the segmented item is pressed.
+		/// The <see cref="ICommand.CanExecute"/> will also used to set the enabled/disabled state of the segmented item.
+		/// </remarks>
+		/// <value>The command to invoke.</value>
+		public ICommand Command
+		{
+			get { return Properties.GetCommand(Command_Key); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter); }
+		}
+
+		static readonly object CommandParameter_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the parameter to pass to the <see cref="Command"/> when executing or determining its CanExecute state.
+		/// </summary>
+		/// <value>The command parameter.</value>
+		public object CommandParameter
+		{
+			get { return Properties.Get<object>(CommandParameter_Key); }
+			set { Properties.Set(CommandParameter_Key, value, () => Properties.UpdateCommandCanExecute(Command_Key)); }
+		}
+
 		#region Events
 
 		/// <summary>
@@ -125,6 +203,29 @@ namespace Eto.Forms
             Properties.TriggerEvent(ClickEvent, this, e);
         }
 
+		/// <summary>
+		/// Identifier for handlers to attach the <see cref="SelectedChanged"/> event.
+		/// </summary>
+		public const string SelectedChangedEvent = "SegmentedItem.SelectedChanged";
+
+		/// <summary>
+		/// Occurs when this <see cref="Selected"/> property changes.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedChanged
+		{
+			add => Properties.AddHandlerEvent(SelectedChangedEvent, value);
+			remove => Properties.RemoveEvent(SelectedChangedEvent, value);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="SelectedChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event argments</param>
+		protected virtual void OnSelectedChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(SelectedChangedEvent, this, e);
+		}
+
 		#endregion
 
 		static readonly ICallback s_callback = new Callback();
@@ -141,12 +242,17 @@ namespace Eto.Forms
 			/// Raises the Click event.
 			/// </summary>
             void OnClick(SegmentedItem widget, EventArgs e);
-        }
+
+			/// <summary>
+			/// Raises the SelectedChanged event.
+			/// </summary>
+			void OnSelectedChanged(SegmentedItem widget, EventArgs e);
+		}
 
 		/// <summary>
 		/// Callback implementation for the <see cref="SegmentedItem"/>.
 		/// </summary>
-        protected class Callback : ICallback
+		protected class Callback : ICallback
         {
 			/// <summary>
 			/// Raises the Click event.
@@ -156,7 +262,16 @@ namespace Eto.Forms
                 using (widget.Platform.Context)
                     widget.OnClick(e);
             }
-        }
+
+			/// <summary>
+			/// Raises the SelectedChanged event.
+			/// </summary>
+			public void OnSelectedChanged(SegmentedItem widget, EventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnSelectedChanged(e);
+			}
+		}
 
 		/// <summary>
 		/// Handler interface for the <see cref="SegmentedItem"/>.
@@ -230,6 +345,20 @@ namespace Eto.Forms
 		public static implicit operator SegmentedItem(Image image)
         {
             return new ButtonSegmentedItem { Image = image };
+		}
+
+		/// <summary>
+		/// Implicitly converts a command to a segmented item.
+		/// </summary>
+		/// <remarks>
+		/// This can be a <see cref="RadioCommand"/>, <see cref="CheckCommand"/>, or <see cref="Command"/>
+		/// depending on the <see cref="SegmentedButton.SelectionMode"/>.
+		/// </remarks>
+		/// <returns>A segmented item linked to the specified command.</returns>
+		/// <param name="command">Command to create the segmented item.</param>
+		public static implicit operator SegmentedItem(Command command)
+		{
+			return new ButtonSegmentedItem(command);
 		}
 	}
 }
