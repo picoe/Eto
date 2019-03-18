@@ -9,6 +9,24 @@ namespace Eto.Forms
         new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Eto.Forms.MenuSegmentedItem"/> class.
+		/// </summary>
+		public MenuSegmentedItem()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Eto.Forms.MenuSegmentedItem"/> class with the specified command.
+		/// </summary>
+		/// <seealso cref="SegmentedItem(Command)"/>
+		/// <param name="command">Command to initialize the segmented item with.</param>
+		public MenuSegmentedItem(Command command)
+			: base(command)
+		{
+			CanSelect = true; // otherwise command would never execute
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.MenuSegmentedItem"/> can be selected.
 		/// </summary>
 		/// <remarks>
@@ -16,7 +34,7 @@ namespace Eto.Forms
 		/// a single click will bring up the menu and the item will never be selected/clicked.
 		/// </remarks>
 		/// <value><c>true</c> if this item can be selected; otherwise, <c>false</c>.</value>
-        public bool CanSelect
+		public bool CanSelect
         {
             get => Handler.CanSelect;
             set => Handler.CanSelect = value;

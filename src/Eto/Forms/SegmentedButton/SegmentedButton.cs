@@ -36,7 +36,7 @@ namespace Eto.Forms
 	/// The SegmentedButton allows you to group multiple buttons together visually.
 	/// </remarks>
 	[Handler(typeof(IHandler))]
-	public class SegmentedButton : Control
+	public class SegmentedButton : Control, IBindableWidgetContainer
 	{
 		new IHandler Handler => (IHandler)base.Handler;
 
@@ -267,6 +267,8 @@ namespace Eto.Forms
 			get => Handler.SelectedIndex;
 			set => Handler.SelectedIndex = value;
 		}
+
+		IEnumerable<BindableWidget> IBindableWidgetContainer.Children => Items;
 
 		/// <summary>
 		/// Selects all items when <see cref="SelectionMode"/> is set to Multiple.

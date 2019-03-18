@@ -10,11 +10,18 @@ namespace Eto.Test.Sections.Controls
 	{
 		public SegmentedButtonSection()
 		{
+			var checkCommand = new CheckCommand
+			{
+				ToolBarText = "CheckCommand"
+			};
+			checkCommand.CheckedChanged += (sender, e) => Log.Write(sender, $"CheckedChanged: {checkCommand.Checked}");
+			checkCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
+
 			var segbutton = new SegmentedButton();
 
 			segbutton.Items.Add(new ButtonSegmentedItem { Image = TestIcons.TestIcon.WithSize(16, 16) });
 			segbutton.Items.Add(new ButtonSegmentedItem { Text = "Some Text", Image = TestIcons.TestImage.WithSize(16, 16) });
-			segbutton.Items.Add(new ButtonSegmentedItem { Text = "Text Only" });
+			segbutton.Items.Add(new ButtonSegmentedItem(checkCommand));
 			segbutton.Items.Add(new ButtonSegmentedItem { Text = "Width=150", Width = 150 });
 			segbutton.Items.Add(new MenuSegmentedItem
 			{
@@ -58,11 +65,15 @@ namespace Eto.Test.Sections.Controls
 			clearSelectionButton.Click += (sender, e) => segbutton.ClearSelection();
 			clearSelectionButton.Bind(c => c.Enabled, selectionModeDropDown.SelectedValueBinding.Convert(r => r != SegmentedSelectionMode.None));
 
+			var checkCommandEnabled = new CheckBox { Text = "CheckCommand.Enabled" };
+			checkCommandEnabled.Bind(c => c.Checked, checkCommand, c => c.Enabled);
+
 
 			// layout
 			BeginCentered();
 			AddSeparateRow("SelectionMode:", selectionModeDropDown);
 			AddSeparateRow(selectAllButton, clearSelectionButton);
+			AddSeparateRow(checkCommandEnabled);
 			EndCentered();
 
 			AddSeparateRow(segbutton);

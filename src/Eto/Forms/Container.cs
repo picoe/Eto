@@ -9,9 +9,9 @@ namespace Eto.Forms
 	/// <summary>
 	/// Base class for controls that contain children controls
 	/// </summary>
-	public abstract class Container : Control
+	public abstract class Container : Control, IBindableWidgetContainer
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets or sets the size for the client area of the control
@@ -46,7 +46,14 @@ namespace Eto.Forms
 		/// <value>The logical controls.</value>
 		IEnumerable<Control> LogicalControls
 		{
-			get { return Controls.Where(r => ReferenceEquals(r.InternalLogicalParent, this)); }
+			get
+			{
+				foreach (var control in Controls)
+				{
+					if (ReferenceEquals(control.InternalLogicalParent, this))
+						yield return control;
+				}
+			}
 		}
 
 		/// <summary>
@@ -60,8 +67,7 @@ namespace Eto.Forms
 				foreach (var control in Controls)
 				{
 					yield return control;
-					var container = control as Container;
-					if (container != null)
+					if (control is Container container)
 					{
 						foreach (var child in container.Children)
 							yield return child;
@@ -81,32 +87,12 @@ namespace Eto.Forms
 				foreach (var control in VisualControls)
 				{
 					yield return control;
-					var container = control as Container;
-					if (container != null)
+					if (control is Container container)
 					{
 						foreach (var child in container.VisualChildren)
 							yield return child;
 					}
 				}
-			}
-		}
-
-		/// <summary>
-		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
-		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			base.OnDataContextChanged(e);
-
-			foreach (var control in LogicalControls)
-			{
-				control.TriggerDataContextChanged();
 			}
 		}
 
@@ -140,6 +126,8 @@ namespace Eto.Forms
 		/// </remarks>
 		/// <value>The default style provider for this container.</value>
 		public DefaultStyleProvider Styles => Properties.Create<DefaultStyleProvider>(DefaultStyleProvider_Key);
+
+		IEnumerable<BindableWidget> IBindableWidgetContainer.Children => LogicalControls;
 
 		/// <inheritdoc />
 		protected override void ApplyStyles(object widget, string style)
@@ -261,30 +249,6 @@ namespace Eto.Forms
 		protected Container(IHandler handler)
 			: base(handler)
 		{
-		}
-
-		/// <summary>
-		/// Unbinds any bindings in the <see cref="BindableWidget.Bindings"/> collection and removes the bindings, and recurses to this container's children
-		/// </summary>
-		public override void Unbind()
-		{
-			base.Unbind();
-			foreach (var control in LogicalControls)
-			{
-				control.Unbind();
-			}
-		}
-
-		/// <summary>
-		/// Updates all bindings in this widget, and recurses to this container's children
-		/// </summary>
-		public override void UpdateBindings(BindingUpdateMode mode = BindingUpdateMode.Source)
-		{
-			base.UpdateBindings(mode);
-			foreach (var control in LogicalControls)
-			{
-				control.UpdateBindings(mode);
-			}
 		}
 
 		/// <summary>
@@ -476,7 +440,7 @@ namespace Eto.Forms
 		public Control FindChild(Type type, string id = null)
 		{
 			if (id == null)
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			if (string.IsNullOrEmpty(id))
 				return Children.FirstOrDefault(r => type.IsInstanceOfType(r));
 			else
@@ -491,7 +455,7 @@ namespace Eto.Forms
 		public Control FindChild(string id)
 		{
 			if (id == null)
-				throw new ArgumentNullException("id");
+				throw new ArgumentNullException(nameof(id));
 			return Children.FirstOrDefault(r => r.ID == id);
 		}
 
