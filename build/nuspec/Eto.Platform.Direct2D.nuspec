@@ -8,6 +8,7 @@
 		<owners>$author$</owners>
 		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
+		<repository type="git" url="https://github.com/picoe/Eto" />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
 		<description>

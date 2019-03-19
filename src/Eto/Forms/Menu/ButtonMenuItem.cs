@@ -12,7 +12,7 @@ namespace Eto.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[ContentProperty("Items")]
 	[Handler(typeof(ButtonMenuItem.IHandler))]
-	public class ButtonMenuItem : MenuItem, ISubmenu
+	public class ButtonMenuItem : MenuItem, ISubmenu, IBindableWidgetContainer
 	{
 		MenuItemCollection items;
 
@@ -74,6 +74,8 @@ namespace Eto.Forms
 			set { Handler.Image = value; }
 		}
 
+		IEnumerable<BindableWidget> IBindableWidgetContainer.Children => Items;
+
 		/// <summary>
 		/// Called when the menu is assigned to a control/window
 		/// </summary>
@@ -94,22 +96,6 @@ namespace Eto.Forms
 			base.OnUnLoad(e);
 			foreach (var item in Items)
 				item.OnUnLoad(e);
-		}
-
-		/// <summary>
-		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
-		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			base.OnDataContextChanged(e);
-			foreach (var item in Items)
-				item.TriggerDataContextChanged();
 		}
 
 		/// <summary>

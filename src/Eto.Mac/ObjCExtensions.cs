@@ -86,7 +86,7 @@ namespace Eto.Mac
 
 		public static bool ClassRespondsToSelector(IntPtr cls, IntPtr selector)
 		{
-			return Messaging.bool_objc_msgSend_IntPtr(cls, selInstancesRespondToSelector, selector);
+			return Messaging.bool_objc_msgSend_IntPtr(cls, selRespondsToSelector, selector);
 		}
 
 		public static bool RespondsToSelector<T>(IntPtr selector)

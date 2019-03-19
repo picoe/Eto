@@ -231,14 +231,14 @@ namespace Eto.Mac
 		{
 			get
 			{
-				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-
-				var assemblyDir = Path.GetDirectoryName(assembly.Location);
-				// location will be empty when embedded via mkbundle, ensure bundlepath is an .app bundle
-				if (string.IsNullOrEmpty(assemblyDir))
-					return NSBundle.MainBundle?.BundlePath.EndsWith(".app", StringComparison.Ordinal) == true;
-
-				return NSBundle.MainBundle != null && assembly.Location.StartsWith(NSBundle.MainBundle.BundlePath, StringComparison.Ordinal);
+				var bundle = NSBundle.MainBundle;
+				if (bundle == null)
+					return false;
+				if (!bundle.BundlePath.EndsWith(".app", StringComparison.Ordinal))
+					return false;
+				if (!bundle.IsLoaded)
+					return false;
+				return true;
 			}
 		}
 

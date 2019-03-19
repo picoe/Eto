@@ -39,8 +39,8 @@ namespace Eto.Forms
 		protected override void RemoveItem(int index)
 		{
 			var item = this[index];
+			parent.Handler.RemoveButton(item, index);
 			base.RemoveItem(index);
-			parent.Handler.RemoveButton(item);
 			item.Parent = null;
 		}
 

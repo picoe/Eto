@@ -39,6 +39,7 @@ namespace Eto.Mac.Forms.Controls
 	interface ISegmentedItemHandler
 	{
 		void TriggerClick();
+		void TriggerSelectionChanged();
 	}
 
 	static class SegmentedItemHandler
@@ -97,7 +98,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public bool Selected
 		{
-			get => SegmentedControl?.IsSelectedForSegment(CurrentSegment) ?? Widget.Properties.Get<bool>(SegmentedItemHandler.Selected_Key);
+			get
+			{
+				if (ParentHandler?.SelectionMode == SegmentedSelectionMode.None)
+					return false;
+				return SegmentedControl?.IsSelectedForSegment(CurrentSegment) ?? Widget.Properties.Get<bool>(SegmentedItemHandler.Selected_Key);
+			}
 			set
 			{
 				if (value != Selected)
@@ -107,6 +113,9 @@ namespace Eto.Mac.Forms.Controls
 						SegmentedControl.SelectedSegment = -1;
 					else
 						SegmentedControl?.SetSelected(value, CurrentSegment);
+
+					if (ParentHandler?.SelectionMode != SegmentedSelectionMode.None)
+						Callback.OnSelectedChanged(Widget, EventArgs.Empty);
 					ParentHandler?.TriggerSelectionChanged(false);
 				}
 			}
@@ -136,6 +145,8 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public void TriggerClick() => Callback.OnClick(Widget, EventArgs.Empty);
+
+		public void TriggerSelectionChanged() => Callback.OnSelectedChanged(Widget, EventArgs.Empty);
 
 		public override void AttachEvent(string id)
 		{
@@ -222,7 +233,14 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var item = Widget.Items[selected];
 				Callback.OnItemClicked(Widget, new SegmentedItemClickEventArgs(item, selected));
-				(item.Handler as ISegmentedItemHandler)?.TriggerClick();
+				var itemHandler = item.Handler as ISegmentedItemHandler;
+				itemHandler?.TriggerClick();
+				var mode = SelectionMode;
+				if (mode == SegmentedSelectionMode.Multiple || 
+					(mode == SegmentedSelectionMode.Single && selected != lastSelected))
+				{
+					itemHandler?.TriggerSelectionChanged();
+				}
 			}
 
 			TriggerSelectionChanged(false);
@@ -455,8 +473,15 @@ namespace Eto.Mac.Forms.Controls
 			var count = Control.SegmentCount;
 			for (int i = 0; i < count; i++)
 			{
-				didSelect |= !Control.IsSelectedForSegment(i);
-				Control.SetSelected(true, i);
+				var isSelected = Control.IsSelectedForSegment(i);
+				if (!isSelected)
+				{
+					Control.SetSelected(true, i);
+					didSelect = true;
+					var item = Widget.Items[i];
+					var itemHandler = item.Handler as ISegmentedItemHandler;
+					itemHandler?.TriggerSelectionChanged();
+				}
 			}
 			if (didSelect)
 				TriggerSelectionChanged(true);
@@ -464,8 +489,21 @@ namespace Eto.Mac.Forms.Controls
 
 		public void ClearSelection()
 		{
-			var wasSelected = HasSelection;
-			Control.UnselectAllSegments();
+			var wasSelected = false;
+			var count = Control.SegmentCount;
+			for (int i = 0; i < count; i++)
+			{
+				var isSelected = Control.IsSelectedForSegment(i);
+				if (isSelected)
+				{
+					Control.SetSelected(false, i);
+					wasSelected = true;
+					var item = Widget.Items[i];
+					var itemHandler = item.Handler as ISegmentedItemHandler;
+					itemHandler?.TriggerSelectionChanged();
+				}
+			}
+
 			if (wasSelected)
 				TriggerSelectionChanged(true);
 		}

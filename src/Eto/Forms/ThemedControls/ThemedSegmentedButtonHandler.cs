@@ -184,6 +184,7 @@ namespace Eto.Forms.ThemedControls
 
 		private void Control_CheckedChanged(object sender, EventArgs e)
 		{
+			Callback.OnSelectedChanged(Widget, EventArgs.Empty);
 			ParentHandler?.TriggerSelectionChanged(Widget);
 			if (Control.Checked)
 				ParentHandler?.EnsureSingleSelected(Widget, false);
