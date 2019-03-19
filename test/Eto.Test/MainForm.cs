@@ -223,14 +223,22 @@ namespace Eto.Test
 					edit.Items.AddSeparator();
 
 					var checkMenuItem1 = new CheckMenuItem { Text = "Check Menu Item", Shortcut = Keys.Shift | Keys.K };
-					checkMenuItem1.Click += (sender, e) => Log.Write(checkMenuItem1, "Click, {0}, Checked: {1}", checkMenuItem1.Text, checkMenuItem1.Checked);
-					checkMenuItem1.CheckedChanged += (sender, e) => Log.Write(checkMenuItem1, "CheckedChanged, {0}: {1}", checkMenuItem1.Text, checkMenuItem1.Checked);
+					checkMenuItem1.Click += (sender, e) => Log.Write(sender, "Click, {0}, Checked: {1}", checkMenuItem1.Text, checkMenuItem1.Checked);
+					checkMenuItem1.CheckedChanged += (sender, e) => Log.Write(sender, "CheckedChanged, {0}: {1}", checkMenuItem1.Text, checkMenuItem1.Checked);
 					edit.Items.Add(checkMenuItem1);
 
 					var checkMenuItem2 = new CheckMenuItem { Text = "Initially Checked Menu Item", Checked = true };
-					checkMenuItem2.Click += (sender, e) => Log.Write(checkMenuItem2, "Click, {0}, Checked: {1}", checkMenuItem2.Text, checkMenuItem2.Checked);
-					checkMenuItem2.CheckedChanged += (sender, e) => Log.Write(checkMenuItem2, "CheckedChanged, {0}: {1}", checkMenuItem2.Text, checkMenuItem2.Checked);
+					checkMenuItem2.Click += (sender, e) => Log.Write(sender, "Click, {0}, Checked: {1}", checkMenuItem2.Text, checkMenuItem2.Checked);
+					checkMenuItem2.CheckedChanged += (sender, e) => Log.Write(sender, "CheckedChanged, {0}: {1}", checkMenuItem2.Text, checkMenuItem2.Checked);
 					edit.Items.Add(checkMenuItem2);
+
+					var checkMenuItem3 = new CheckCommand { MenuText = "Check Command", Shortcut = Keys.Shift | Keys.K };
+					checkMenuItem3.Executed += (sender, e) => Log.Write(sender, "Executed, {0}, Checked: {1}", checkMenuItem3.MenuText, checkMenuItem3.Checked);
+					checkMenuItem3.CheckedChanged += (sender, e) => Log.Write(sender, "CheckedChanged, {0}: {1}", checkMenuItem3.MenuText, checkMenuItem3.Checked);
+					edit.Items.Add(checkMenuItem3);
+
+					checkMenuItem1.Click += (sender, e) => checkMenuItem3.Checked = !checkMenuItem3.Checked;
+
 				}
 
 				if (Platform.Supports<RadioMenuItem>())
@@ -251,6 +259,21 @@ namespace Eto.Test
 						edit.Items.Add(radio);
 					}
 
+					edit.Items.AddSeparator();
+
+					RadioCommand commandController = null;
+					for (int i = 0; i < 2; i++)
+					{
+						var radio = new RadioCommand { MenuText = "Radio Command " + (i + 1), Controller = commandController };
+						if (commandController == null)
+						{
+							radio.Checked = true; // check the first item initially
+							commandController = radio;
+						}
+						radio.Executed += (sender, e) => Log.Write(radio, "Executed, {0}, Checked: {1}", radio.MenuText, radio.Checked);
+						radio.CheckedChanged += (sender, e) => Log.Write(radio, "CheckedChanged, {0}: {1}", radio.MenuText, radio.Checked);
+						edit.Items.Add(radio);
+					}
 				}
 
 				edit.Items.AddSeparator();

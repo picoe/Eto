@@ -25,8 +25,18 @@ namespace Eto.Forms
 		/// <value>The command to invoke.</value>
 		public ICommand Command
 		{
-			get { return Properties.GetCommand(Command_Key); }
-			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter); }
+			get => Properties.GetCommand(Command_Key);
+			set
+			{
+				var oldValue = Command;
+				if (!ReferenceEquals(oldValue, value))
+					SetCommand(oldValue, value);
+			}
+		}
+
+		internal virtual void SetCommand(ICommand oldValue, ICommand newValue)
+		{
+			Properties.SetCommand(Command_Key, newValue, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter);
 		}
 
 		static readonly object CommandParameter_Key = new object();
