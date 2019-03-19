@@ -69,8 +69,19 @@ namespace Eto.Forms
 		/// <value>The command to invoke.</value>
 		public ICommand Command
 		{
-			get { return Properties.GetCommand(Command_Key); }
-			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter); }
+			get => Properties.GetCommand(Command_Key);
+			set
+			{
+				var oldValue = Command;
+				if (!ReferenceEquals(oldValue, value))
+					SetCommand(oldValue, value);
+			}
+		}
+
+		internal virtual void SetCommand(ICommand oldValue, ICommand newValue)
+		{
+			Properties.SetCommand(Command_Key, newValue, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter);
+			HandleEvent(ValidateEvent);
 		}
 
 		static readonly object CommandParameter_Key = new object();
@@ -128,6 +139,10 @@ namespace Eto.Forms
 		protected virtual void OnValidate(EventArgs e)
 		{
 			Properties.TriggerEvent(ValidateEvent, this, e);
+
+			var command = Command;
+			if (command != null)
+				Enabled = command.CanExecute(CommandParameter);
 		}
 
 		/// <summary>
@@ -154,7 +169,6 @@ namespace Eto.Forms
 			Text = command.MenuText;
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
-			Validate += (sender, e) => Enabled = command.Enabled;
 			Command = command;
 		}
 

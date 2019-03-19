@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Input;
 
 namespace Eto.Forms
 {
@@ -29,10 +30,26 @@ namespace Eto.Forms
 		public CheckToolItem(CheckCommand command)
 			: base(command)
 		{
-			Checked = command.Checked;
-			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
 			Handler.CreateFromCommand(command);
+		}
+
+		internal override void SetCommand(ICommand oldValue, ICommand newValue)
+		{
+			if (oldValue is IValueCommand<bool> oldValueCommand)
+				oldValueCommand.ValueChanged -= ValueCommand_ValueChanged;
+
+			base.SetCommand(oldValue, newValue);
+			if (newValue is IValueCommand<bool> valueCommand)
+			{
+				Checked = valueCommand.GetValue(CommandParameter);
+				valueCommand.ValueChanged += ValueCommand_ValueChanged;
+			}
+		}
+
+		void ValueCommand_ValueChanged(object sender, EventArgs e)
+		{
+			if (Command is IValueCommand<bool> valueCommand)
+				Checked = valueCommand.GetValue(CommandParameter);
 		}
 
 		/// <summary>
@@ -51,8 +68,10 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		public void OnCheckedChanged(EventArgs e)
 		{
-			if (CheckedChanged != null)
-				CheckedChanged(this, e);
+			CheckedChanged?.Invoke(this, e);
+
+			if (Command is IValueCommand<bool> valueCommand)
+				valueCommand.SetValue(CommandParameter, Checked);
 		}
 
 		/// <summary>

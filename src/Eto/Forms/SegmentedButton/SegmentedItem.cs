@@ -49,19 +49,6 @@ namespace Eto.Forms
 			ToolTip = command.ToolTip;
 			Image = command.Image;
 			Command = command;
-
-			if (command is RadioCommand radioCommand)
-			{
-				Selected = radioCommand.Checked;
-				SelectedChanged += (sender, e) => radioCommand.Checked = Selected;
-				radioCommand.CheckedChanged += (sender, e) => Selected = radioCommand.Checked;
-			}
-			if (command is CheckCommand checkCommand)
-			{
-				Selected = checkCommand.Checked;
-				SelectedChanged += (sender, e) => checkCommand.Checked = Selected;
-				checkCommand.CheckedChanged += (sender, e) => Selected = checkCommand.Checked;
-			}
 		}
 
 		/// <summary>
@@ -163,7 +150,36 @@ namespace Eto.Forms
 		public ICommand Command
 		{
 			get { return Properties.GetCommand(Command_Key); }
-			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter); }
+			set
+			{
+				var oldValue = Command;
+				if (!ReferenceEquals(oldValue, value))
+					SetCommand(oldValue, value);
+			}
+		}
+
+		internal virtual void SetCommand(ICommand oldValue, ICommand newValue)
+		{
+			if (oldValue is IValueCommand<bool> lastValueCommand)
+			{
+				lastValueCommand.ValueChanged -= ValueCommand_ValueChanged;
+			}
+
+			Properties.SetCommand(Command_Key, newValue, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter);
+
+			if (newValue is IValueCommand<bool> valueCommand)
+			{
+				Selected = valueCommand.GetValue(CommandParameter);
+				valueCommand.ValueChanged += ValueCommand_ValueChanged;
+			}
+		}
+
+		void ValueCommand_ValueChanged(object sender, EventArgs e)
+		{
+			if (Command is IValueCommand<bool> command)
+			{
+				Selected = command.GetValue(CommandParameter);
+			}
 		}
 
 		static readonly object CommandParameter_Key = new object();
@@ -224,6 +240,11 @@ namespace Eto.Forms
 		protected virtual void OnSelectedChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectedChangedEvent, this, e);
+
+			if (Command is IValueCommand<bool> command)
+			{
+				command.SetValue(CommandParameter, Selected);
+			}
 		}
 
 		#endregion
@@ -326,7 +347,7 @@ namespace Eto.Forms
 		/// </remarks>
 		/// <returns>A segmented item with the specified text.</returns>
 		/// <param name="text">Text for the segmented item.</param>
-        public static implicit operator SegmentedItem(string text)
+		public static implicit operator SegmentedItem(string text)
         {
             return new ButtonSegmentedItem { Text = text };
         }

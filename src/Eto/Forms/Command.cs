@@ -8,7 +8,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Command for a menu/tool item that can be checked on or off.
 	/// </summary>
-	public class CheckCommand : Command
+	public class CheckCommand : Command, IValueCommand<bool>
 	{
 #region Events
 
@@ -67,6 +67,16 @@ namespace Eto.Forms
 			: base(execute)
 		{
 		}
+
+		event EventHandler<EventArgs> IValueCommand<bool>.ValueChanged
+		{
+			add => CheckedChanged += value;
+			remove => CheckedChanged -= value;
+		}
+
+		bool IValueCommand<bool>.GetValue(object parameter) => Checked;
+
+		void IValueCommand<bool>.SetValue(object parameter, bool value) => Checked = value;
 
 		/// <summary>
 		/// Creates a new menu item attached to this command.
