@@ -1065,7 +1065,7 @@ namespace Eto.Mac.Forms
 
 		static void FireOnShown(Control control)
 		{
-			if (!control.Visible)
+			if (control.IsDisposed || !control.Visible)
 				return;
 
 			// don't use GetMacViewHandler() extension, as that will trigger OnShown for themed controls, which will
