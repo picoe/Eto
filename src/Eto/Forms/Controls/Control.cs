@@ -22,7 +22,7 @@ namespace Eto.Forms
 	[sc.TypeConverter(typeof(ControlConverter))]
 	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown
@@ -33,7 +33,11 @@ namespace Eto.Forms
 		/// 
 		/// The <see cref="OnUnLoad"/> method will set this value to <c>false</c> when the control is removed from its parent
 		/// </remarks>
-		public bool Loaded { get; private set; }
+		public bool Loaded
+		{
+			get => GetState(StateFlag.Loaded);
+			private set => SetState(StateFlag.Loaded, value);
+		}
 
 		/// <summary>
 		/// Gets an enumeration of controls that are in the visual tree.
@@ -75,7 +79,7 @@ namespace Eto.Forms
 					var foundVisual = false;
 					foreach (var parent in Parents.OfType<Container>())
 					{
-						if (!foundVisual && parent.Properties.Get<bool>(IsVisualControl_Key))
+						if (!foundVisual && parent.GetState(StateFlag.IsVisualControl))
 							foundVisual = true;
 						else
 							return parent;
@@ -85,20 +89,14 @@ namespace Eto.Forms
 			}
 		}
 
-		static object IsVisualControl_Key = new object();
-
 		/// <summary>
 		/// Gets a value indicating this <see cref="T:Eto.Forms.Control"/> is part of the visual tree.
 		/// </summary>
 		/// <value><c>true</c> if is visual control; otherwise, <c>false</c>.</value>
 		public bool IsVisualControl
 		{
-			get {
-				if (Properties.ContainsKey(IsVisualControl_Key))
-					return Properties.Get<bool>(IsVisualControl_Key);
-				return Parent?.IsVisualControl ?? false; // traverse up logical tree
-			}
-			internal set { Properties.Set(IsVisualControl_Key, value); }
+			get => GetState(StateFlag.IsVisualControl, StateFlag.IsVisualControlHasValue) ?? Parent?.IsVisualControl ?? false; // traverse up logical tree
+			internal set => SetState(StateFlag.IsVisualControl, StateFlag.IsVisualControlHasValue, value);
 		}
 
 		static readonly object TagKey = new object();
@@ -960,7 +958,7 @@ namespace Eto.Forms
 		void PostAttach()
 		{
 			// if the control is disposed before we get here Handler will be null, so omit calling OnLoadComplete
-			if (Handler != null)
+			if (!IsDisposed && Handler != null)
 				OnLoadComplete(EventArgs.Empty);
 		}
 

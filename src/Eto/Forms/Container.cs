@@ -224,7 +224,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected override void OnUnLoad(EventArgs e)
 		{
-			if (Handler != null && Handler.RecurseToChildren)
+			if (!IsDisposed && Handler != null && Handler.RecurseToChildren)
 			{
 				foreach (Control control in VisualControls)
 				{

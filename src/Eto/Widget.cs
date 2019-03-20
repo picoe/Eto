@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Eto
 {
@@ -69,8 +70,9 @@ namespace Eto
 	[RuntimeNameProperty("ID")]
 	public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 	{
-		IHandler WidgetHandler { get { return Handler as IHandler; } }
-
+		StateFlag _state;
+		object _handler;
+		IHandler WidgetHandler => Handler as IHandler;
 
 		/// <summary>
 		/// Gets the platform that was used to create the <see cref="Handler"/> for this widget
@@ -83,16 +85,22 @@ namespace Eto
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
-		public object Handler { get; internal set; }
+		public object Handler
+		{
+			get
+			{
+				if (IsDisposed)
+					throw new ObjectDisposedException(GetType().FullName);
+				return _handler;
+			}
+			internal set => _handler = value;
+		}
 
 		/// <summary>
 		/// Gets the native platform-specific handle for integration purposes
 		/// </summary>
 		/// <value>The native handle.</value>
-		public IntPtr NativeHandle
-		{
-			get { return WidgetHandler.NativeHandle; }
-		}
+		public IntPtr NativeHandle => WidgetHandler.NativeHandle;
 
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
@@ -104,9 +112,9 @@ namespace Eto
 		/// This should return a static instance to avoid having overhead for each instance of your control.
 		/// </remarks>
 		/// <returns>The callback instance to use for this widget</returns>
-		protected virtual object GetCallback() { return null; }
+		protected virtual object GetCallback() => null;
 
-		object ICallbackSource.Callback { get { return GetCallback(); } }
+		object ICallbackSource.Callback => GetCallback();
 
 		/// <summary>>
 		/// Base callback interface for all widgets
@@ -305,8 +313,7 @@ namespace Eto
 				throw new ArgumentOutOfRangeException(string.Format(CultureInfo.CurrentCulture, "Type for '{0}' could not be found in this platform", GetType().FullName));
 			Handler = info.Instantiator();
 			Platform = platform;
-			var widgetHandler = this.Handler as IHandler;
-			if (widgetHandler != null)
+			if (Handler is IHandler widgetHandler)
 			{
 				widgetHandler.Widget = this;
 			}
@@ -344,9 +351,7 @@ namespace Eto
 		/// </remarks>
 		protected void Initialize()
 		{
-			var handler = WidgetHandler;
-			if (handler != null)
-				handler.Initialize();
+			WidgetHandler?.Initialize();
 			EventLookup.HookupEvents(this);
 			Platform.Instance.TriggerWidgetCreated(new WidgetCreatedEventArgs(this));
 		}
@@ -356,18 +361,20 @@ namespace Eto
 		/// <summary>
 		/// Gets the dictionary of properties for this widget
 		/// </summary>
-		public PropertyStore Properties
-		{ 
-			get { return properties ?? (properties = new PropertyStore(this)); } 
-		}
+		public PropertyStore Properties => properties ?? (properties = new PropertyStore(this));
 
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
 		public string ID
 		{
-			get { return WidgetHandler.ID; }
-			set { WidgetHandler.ID = value; }
+			get => WidgetHandler?.ID;
+			set
+			{
+				var handler = WidgetHandler;
+				if (handler != null)
+					handler.ID = value;
+			}
 		}
 
 		/// <summary>
@@ -394,7 +401,7 @@ namespace Eto
 		/// </example>
 		public string Style
 		{
-			get { return Properties.Get<string>(StyleKey); }
+			get => Properties.Get<string>(StyleKey);
 			set
 			{
 				var style = Style;
@@ -445,13 +452,47 @@ namespace Eto
 		/// For example, the <see cref="Forms.Application"/> object's handler for OS X has a AddFullScreenMenuItem
 		/// property to specify if you want full screen support in your app.
 		/// </remarks>
-		public object ControlObject
+		public object ControlObject => (Handler as IControlObjectSource)?.ControlObject;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="T:Eto.Widget"/> has been disposed.
+		/// </summary>
+		/// <remarks>
+		/// When the widget is disposed, it can no longer be used.
+		/// </remarks>
+		/// <value><c>true</c> if this instance has been disposed; otherwise, <c>false</c>.</value>
+		public bool IsDisposed
 		{
-			get
-			{ 
-				var controlObjectSource = Handler as IControlObjectSource;
-				return controlObjectSource != null ? controlObjectSource.ControlObject : null;
-			}
+			get => GetState(StateFlag.Disposed);
+			internal set => SetState(StateFlag.Disposed, value);
+		}
+
+		[Flags]
+		internal enum StateFlag
+		{
+			Disposed = 0x01,
+			Loaded = 0x02,
+			IsVisualControl = 0x04,
+			IsVisualControlHasValue = 0x08
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal bool GetState(StateFlag flag) => (_state & flag) != 0;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void SetState(StateFlag flag, bool value) => _state = value ? _state | flag : _state & ~flag;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal bool? GetState(StateFlag flag, StateFlag hasValueFlag)
+		{
+			return GetState(hasValueFlag) ? GetState(flag) : (bool?)null;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void SetState(StateFlag flag, StateFlag hasValueFlag, bool? value)
+		{
+			SetState(hasValueFlag, value.HasValue);
+			SetState(flag, value.HasValue && value.Value);
 		}
 
 		/// <summary>
@@ -484,10 +525,7 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
-		internal void HandleEvent(string id)
-		{
-			WidgetHandler.HandleEvent(id);
-		}
+		internal void HandleEvent(string id) => WidgetHandler?.HandleEvent(id);
 
 		/// <summary>
 		/// Disposes of this widget, supressing the finalizer
@@ -506,9 +544,9 @@ namespace Eto
 		{
 			if (disposing)
 			{
-				var handler = Handler as IDisposable;
-				if (handler != null)
+				if (Handler is IDisposable handler)
 					handler.Dispose();
+				IsDisposed = true;
 				Handler = null;
 			}
 #if TRACK_GC
