@@ -958,7 +958,7 @@ namespace Eto.Forms
 		void PostAttach()
 		{
 			// if the control is disposed before we get here Handler will be null, so omit calling OnLoadComplete
-			if (Handler != null)
+			if (!IsDisposed && Handler != null)
 				OnLoadComplete(EventArgs.Empty);
 		}
 
