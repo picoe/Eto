@@ -73,7 +73,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				base.ControlEnabled = value;
-				foreach (var child in Widget.Controls)
+				foreach (var child in Widget.VisualControls)
 				{
 					child.GetMacViewHandler()?.SetEnabled(value);
 				}
