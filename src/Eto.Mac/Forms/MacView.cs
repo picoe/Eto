@@ -808,8 +808,8 @@ namespace Eto.Mac.Forms
 
 		protected virtual bool ControlEnabled
 		{
-			get => Widget.Properties.Get<bool?>(MacView.ActualEnabled_Key) ?? true;
-			set => Widget.Properties.Set<bool?>(MacView.ActualEnabled_Key, value);
+			get => Widget.Properties.Get<bool>(MacView.ActualEnabled_Key, true);
+			set => Widget.Properties.Set<bool>(MacView.ActualEnabled_Key, value, true);
 		}
 
 		public bool? ShouldHaveFocus

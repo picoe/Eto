@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
 using NUnit.Framework;
@@ -257,6 +259,57 @@ namespace Eto.Test.UnitTests.Forms
 				Assert.AreEqual(++expectedCount, enabledChanged, "#6.2");
 
 			});
+		}
+
+		enum TestEnum
+		{
+			Entry1,
+			Entry2,
+			Entry3
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		[ManualTest]
+		public void EnabledShouldBeToggleable(bool initiallyEnabled)
+		{
+			int incorrectTableLayoutEnabledState = 0;
+			int changedCount = 0;
+			bool initialStateMatchesInitiallyEnabled = false;
+			ManualForm("You should be able to toggle the radio buttons between enabled and disabled.\nChange the check box twice and verify the result.",
+				form =>
+				{
+					var label = new Label { TextAlignment = TextAlignment.Left };
+					var radio = new EnumRadioButtonList<TestEnum> { Orientation = Orientation.Vertical };
+					var check = new CheckBox { Text = "Enable radio buttons", Checked = initiallyEnabled };
+					radio.EnabledChanged += (sender, e) => label.Text = $"EnabledChanged->radio.Enabled({radio.Enabled})";
+					radio.Enabled = initiallyEnabled;
+					Assert.AreEqual(initiallyEnabled, radio.Enabled, "#1.1");
+					check.CheckedChanged += (sender, e) => {
+						var isChecked = check.Checked == true;
+						radio.Enabled = isChecked;
+						changedCount++;
+						// check visual child enabled state
+						var tableLayout = radio.VisualChildren.OfType<TableLayout>().FirstOrDefault();
+						if (tableLayout?.Enabled != isChecked)
+							incorrectTableLayoutEnabledState++;
+					};
+
+					radio.LoadComplete += (sender, e) =>
+					{
+						var theButton = radio.VisualChildren.OfType<RadioButton>().FirstOrDefault();
+						if (theButton?.Enabled == initiallyEnabled)
+							initialStateMatchesInitiallyEnabled = true;
+					};
+
+					form.ClientSize = new Size(450, -1);
+					form.Resizable = true;
+					return new TableLayout { Rows = { check, radio, label } };
+				});
+
+			Assert.AreEqual(0, incorrectTableLayoutEnabledState, "#2.1 - internal TableLayout did not have the correct enabled state");
+			Assert.GreaterOrEqual(changedCount, 2, "#2.2 - The check box was not toggled at least twice");
+			Assert.IsTrue(initialStateMatchesInitiallyEnabled, "#2.3 - initial state of radio button did not match");
 		}
 
 	}
