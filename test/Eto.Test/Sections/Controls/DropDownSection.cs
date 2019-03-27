@@ -31,8 +31,8 @@ namespace Eto.Test.Sections.Controls
 
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(TableLayout.AutoSized(control));
-			layout.AddSeparateRow(null, AddRowsButton(control), AddWithImagesCheckBox(), RemoveRowsButton(control), ClearButton(control), null);
-			layout.AddSeparateRow(null, EnabledCheckBox(control), SetSelected(control), ClearSelected(control), null);
+			layout.AddSeparateRow(AddRowsButton(control), AddWithImagesCheckBox(), RemoveRowsButton(control), ClearButton(control), null);
+			layout.AddSeparateRow(EnabledCheckBox(control), SetSelected(control), ClearSelected(control), null);
 
 			return layout;
 		}

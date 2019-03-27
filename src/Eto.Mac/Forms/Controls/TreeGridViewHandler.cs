@@ -135,7 +135,7 @@ namespace Eto.Mac.Forms.Controls
 				if (theEvent.ButtonMask != 0)
 				{
 					// user is dragging the mouse, fire mouse move notifications
-					var args = MacConversions.GetMouseEvent(Handler.ContainerControl, theEvent, false);
+					var args = MacConversions.GetMouseEvent(Handler, theEvent, false);
 
 				}
 			}
@@ -438,7 +438,7 @@ namespace Eto.Mac.Forms.Controls
 					// give MouseMove event a chance to start the drag
 					h.DragPasteboard = pboard;
 					h.CustomSelectedItems = GetItems(items).ToList();
-					var args = MacConversions.GetMouseEvent(h.ContainerControl, NSApplication.SharedApplication.CurrentEvent, false);
+					var args = MacConversions.GetMouseEvent(h, NSApplication.SharedApplication.CurrentEvent, false);
 					h.Callback.OnMouseMove(h.Widget, args);
 					h.DragPasteboard = null;
 					h.CustomSelectedItems = null;
@@ -472,7 +472,7 @@ namespace Eto.Mac.Forms.Controls
 				var handler = Handler;
 				if (handler != null)
 				{
-					var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+					var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 					if (theEvent.ClickCount >= 2)
 						handler.Callback.OnMouseDoubleClick(handler.Widget, args);
 					else

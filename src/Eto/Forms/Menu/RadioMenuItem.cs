@@ -50,6 +50,7 @@ namespace Eto.Forms
 			Handler.Create(controller);
 			Initialize();
 			Handler.CreateFromCommand(command);
+			HandleEvent(CheckedChangedEvent);
 		}
 
 		internal override void SetCommand(ICommand oldValue, ICommand newValue)
@@ -65,7 +66,11 @@ namespace Eto.Forms
 			{
 				Checked = valueCommand.GetValue(CommandParameter);
 				valueCommand.ValueChanged += ValueCommand_ValueChanged;
-				HandleEvent(CheckedChangedEvent);
+
+				// HACK: should be checked some other way, perhaps during initialize
+				// this is why we don't call virtual methods from constructors..
+				if (ControlObject != null)
+					HandleEvent(CheckedChangedEvent);
 			}
 		}
 

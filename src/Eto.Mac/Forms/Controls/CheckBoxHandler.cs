@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -86,10 +87,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override NSButton CreateControl()
-		{
-			return new EtoCheckBoxButton();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSButton CreateControl() => new EtoCheckBoxButton();
 
 		protected override void Initialize()
 		{
@@ -138,6 +138,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.AllowsMixedState; }
 			set { Control.AllowsMixedState = value; }
+		}
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			base.SetBackgroundColor(color);
+			InvalidateMeasure();
 		}
 	}
 }

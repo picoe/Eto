@@ -22,7 +22,7 @@ namespace Eto.Test.Sections.Controls
 					update(foregroundPicker.Value);
 			};
 
-			var backgroundPicker = new ColorPicker { AllowAlpha = false }; // alpha not supported for all controls
+			var backgroundPicker = new ColorPicker { AllowAlpha = true }; // alpha not supported for all controls
 			backgroundPicker.ValueChanged += (sender, e) =>
 			{
 				foreach (var update in backgroundUpdates)
