@@ -98,6 +98,8 @@ namespace Eto.Mac
 
 		public static NSColor UsingColorSpaceFast(this NSColor color, NSString colorSpace)
 		{
+			if (color == null)
+				return null;
 			var intPtr = Messaging.IntPtr_objc_msgSend_IntPtr(color.Handle, selColorUsingColorSpaceName_Handle, colorSpace.Handle);
 			return Runtime.GetNSObject<NSColor>(intPtr);
 		}

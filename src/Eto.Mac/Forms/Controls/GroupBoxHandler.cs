@@ -54,6 +54,8 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		protected override bool DefaultUseAlignmentFrame => true;
+
 		protected override NSBox CreateControl() => new EtoBox(this);
 
 		protected override void Initialize()
@@ -126,5 +128,7 @@ namespace Eto.Mac.Forms.Controls
 				Control.SetNeedsDisplay();
 			}
 		}
+
+		protected override bool UseNSBoxBackgroundColor => false;
 	}
 }

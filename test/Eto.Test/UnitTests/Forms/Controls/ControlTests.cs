@@ -278,5 +278,24 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				}
 			});
 		}
+
+		[TestCaseSource(nameof(GetControlTypes)), ManualTest]
+		public void ControlsShouldNotHaveIntrinsicPadding(IControlTypeInfo<Control> info)
+		{
+			ManualForm("Controls should be touching horizontally and vertically,\nwithout being clipped.", form =>
+			{
+				return new TableLayout
+				{
+					Rows =
+					{
+						new TableRow(new TableCell(info.CreatePopulatedControl(), true), new TableCell(info.CreatePopulatedControl(), true)),
+						new TableRow(new Panel { Content = info.CreatePopulatedControl() }, info.CreatePopulatedControl()),
+						new TableRow(info.CreatePopulatedControl(), new Drawable { Content = info.CreatePopulatedControl() }),
+						null
+					}
+				};
+			});
+		}
+
 	}
 }

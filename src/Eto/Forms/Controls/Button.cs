@@ -149,7 +149,8 @@ namespace Eto.Forms
 						size.Width = min.Width;
 					if (size.Height == -1)
 						size.Height = min.Height;
-					MinimumSize = size;
+					if (size != min)
+						MinimumSize = size;
 				}
 			}
 		}

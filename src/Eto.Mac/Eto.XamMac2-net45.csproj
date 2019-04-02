@@ -253,6 +253,7 @@
     <Compile Include="Forms\MemoryDataObjectHandler.cs" />
     <Compile Include="Forms\Controls\SegmentedButtonHandler.cs" />
     <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
+    <Compile Include="ColorizeView.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

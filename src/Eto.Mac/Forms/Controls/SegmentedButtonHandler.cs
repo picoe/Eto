@@ -180,7 +180,14 @@ namespace Eto.Mac.Forms.Controls
 
 		public class EtoSegmentedCell : NSSegmentedCell
 		{
+			ColorizeView colorize;
 			public SegmentedButtonHandler Handler => (ControlView as EtoSegmentedControl)?.Handler;
+
+			public Color? BackgroundColor
+			{
+				get => colorize?.Color;
+				set => ColorizeView.Create(ref colorize, value);
+			}
 
 			static IntPtr selMenuDelayTimeForSegment = Selector.GetHandle("_menuDelayTimeForSegment:");
 
@@ -202,6 +209,24 @@ namespace Eto.Mac.Forms.Controls
 				return item?.CanSelect == false;
 			}
 
+			public override void DrawWithFrame(CGRect cellFrame, NSView inView)
+			{
+				colorize?.Begin(cellFrame, inView);
+				base.DrawWithFrame(cellFrame, inView);
+				colorize?.End();
+			}
+
+			public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
+			{
+				if (colorize != null)
+				{
+					var context = NSGraphicsContext.CurrentContext.GraphicsPort;
+					var frame = inView.Frame;
+					context.TranslateCTM(0, frame.Height + cellFrame.Y - (frame.Height - cellFrame.Y - cellFrame.Height) + 1);
+					context.ScaleCTM(1, -1);
+				}
+				base.DrawInteriorWithFrame(cellFrame, inView);
+			}
 		}
 
 		public class EtoSegmentedControl : NSSegmentedControl, IMacControl
@@ -245,6 +270,8 @@ namespace Eto.Mac.Forms.Controls
 
 			TriggerSelectionChanged(false);
 		}
+
+		protected override bool DefaultUseAlignmentFrame => true;
 
 		protected override NSSegmentedControl CreateControl() => new EtoSegmentedControl();
 
@@ -519,6 +546,15 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Callback.OnSelectedIndexesChanged(Widget, EventArgs.Empty);
 				lastSelected = selectedIndex;
+			}
+		}
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			if (Control.Cell is EtoSegmentedCell cell)
+			{
+				cell.BackgroundColor = color;
+				Control.SetNeedsDisplay();
 			}
 		}
 	}

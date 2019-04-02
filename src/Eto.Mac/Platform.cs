@@ -58,6 +58,15 @@ namespace Eto.Mac
 			| PlatformFeatures.CustomCellSupportsControlView
 			| PlatformFeatures.TabIndexWithCustomContainers;
 
+		static Platform()
+		{
+			Style.Add<ThemedTextStepperHandler>(null, h =>
+			{
+				h.Control.Spacing = new Size(3, 0);
+			});
+
+		}
+
 		public Platform()
 		{
 #if Mac64

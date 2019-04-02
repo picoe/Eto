@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -104,6 +105,8 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 		}
+
+		protected override bool DefaultUseAlignmentFrame => true;
 
 		protected override NSButton CreateControl() => new EtoRadioButton();
 

@@ -20,7 +20,7 @@ namespace Eto.Forms.ThemedControls
 			textBox = new TextBox();
 			stepper = new Stepper();
 			Control = TableLayout.Horizontal(
-				new TableCell(new TableLayout(null, textBox, null), true),
+				new TableCell(textBox, true),
 				stepper
 			);
 			Control.EndInit();

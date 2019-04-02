@@ -37,17 +37,17 @@ namespace Eto.Mac.Forms.Controls
 		public class EtoStepper : NSStepper, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
+
+			public EtoStepper()
+			{
+				MinValue = 0;
+				MaxValue = 2;
+			}
 		}
 
-		public StepperHandler()
-		{
-			Control = new EtoStepper
-			{
-				WeakHandler = new WeakReference(this),
-				MinValue = 0,
-				MaxValue = 2
-			};
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSStepper CreateControl() => new EtoStepper();
 
 		static object ValidDirection_Key = new object();
 
