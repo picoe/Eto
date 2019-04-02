@@ -31,31 +31,32 @@ namespace Eto.iOS.Drawing
 	{
 		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode)
 		{
+			var nscolor = ((Color)control).ToNSUI();
 			if (stroke)
 			{
-				graphics.Control.SetStrokeColor((CGColor)control);
+				nscolor.SetStroke();
 				graphics.Control.StrokePath();
 			}
 			else
 			{
-				graphics.Control.SetFillColor((CGColor)control);
+				nscolor.SetFill();
 				graphics.Fill(fillMode);
 			}
 		}
 
 		public Color GetColor(SolidBrush widget)
 		{
-			return ((CGColor)widget.ControlObject).ToEto();
+			return (Color)widget.ControlObject;
 		}
 
 		public void SetColor(SolidBrush widget, Color color)
 		{
-			widget.ControlObject = color.ToCG();
+			widget.ControlObject = color;
 		}
 
 		object SolidBrush.IHandler.Create(Color color)
 		{
-			return color.ToCG();
+			return color;
 		}
 	}
 }

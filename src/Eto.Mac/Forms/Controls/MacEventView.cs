@@ -35,9 +35,6 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class MacEventView : NSBox, IMacControl
 	{
-		static readonly NSString CIOutputImage = new NSString("outputImage");
-		static readonly Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
-
 		public MacEventView()
 		{
 			BoxType = NSBoxType.NSBoxCustom;
@@ -50,45 +47,6 @@ namespace Eto.Mac.Forms.Controls
 		public MacEventView(IntPtr handle)
 			: base(handle)
 		{
-		}
-
-		public static void Colourize(NSView control, Color color, Action drawAction)
-		{
-			var size = control.Frame.Size;
-			if (size.Width <= 0 || size.Height <= 0)
-				return;
-			var image = new NSImage(size);
-			
-			image.LockFocusFlipped(!control.IsFlipped);
-			drawAction();
-			image.UnlockFocus();
-
-			var ciImage = CIImage.FromCGImage(image.CGImage);
-
-			CGSize realSize;
-			if (control.RespondsToSelector(selConvertSizeToBacking))
-				realSize = control.ConvertSizeToBacking(size);
-			else
-				realSize = control.ConvertSizeToBase(size);
-
-			var filter2 = new CIColorControls();
-			filter2.SetDefaults();
-			filter2.Image = ciImage;
-			filter2.Saturation = 0.0f;
-			ciImage = (CIImage)filter2.ValueForKey(CIOutputImage);
-
-			var filter3 = new CIColorMatrix();
-			filter3.SetDefaults();
-			filter3.Image = ciImage;
-			filter3.RVector = new CIVector(0, color.R, 0);
-			filter3.GVector = new CIVector(color.G, 0, 0);
-			filter3.BVector = new CIVector(0, 0, color.B);
-			filter3.AVector = new CIVector(0, 0, 0, color.A);
-			ciImage = (CIImage)filter3.ValueForKey(CIOutputImage);
-
-			// create separate context so we can force using the software renderer, which is more than fast enough for this
-			var ciContext = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, new CIContextOptions { UseSoftwareRenderer = true });
-			ciContext.DrawImage(ciImage, new CGRect(CGPoint.Empty, size), new CGRect(CGPoint.Empty, realSize));
 		}
 
 		public WeakReference WeakHandler { get; set; }

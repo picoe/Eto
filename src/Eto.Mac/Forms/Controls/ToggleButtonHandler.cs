@@ -46,7 +46,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			// store the normal size for a rounded button, so we can determine what style to give it based on actual size
 			var b = new EtoButton(NSButtonType.PushOnPushOff);
-			s_defaultMinimumSize = b.FittingSize.ToEtoSize();
+			s_defaultMinimumSize = b.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, b.FittingSize)).Size.ToEtoSize();
 		}
 
 		protected override void SetImagePosition()

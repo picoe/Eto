@@ -43,6 +43,9 @@ namespace Eto.Mac
 
 		public static NSColor ToNS(this CGColor color)
 		{
+			if (color == null)
+				return null;
+
 			if (MacVersion.IsAtLeast(10, 8))
 				return NSColor.FromCGColor(color);
 

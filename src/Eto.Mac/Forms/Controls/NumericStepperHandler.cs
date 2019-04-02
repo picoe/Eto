@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
@@ -50,13 +50,13 @@ namespace Eto.Mac.Forms.Controls
 	{
 		Size? naturalSize;
 
-		public override NSView ContainerControl { get { return Control; } }
+		public override NSView ContainerControl => Control;
 
-		public override NSView FocusControl { get { return Control.TextField; } }
+		public override NSView FocusControl => Control.TextField;
 
-		public NSTextField TextField { get { return Control.TextField; } }
+		public NSTextField TextField => Control.TextField;
 
-		public NSStepper Stepper { get { return Control.Stepper; } }
+		public NSStepper Stepper => Control.Stepper;
 
 		public class EtoTextField : NSTextField, IMacControl
 		{
@@ -72,15 +72,27 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void SetFrameSize(CGSize newSize)
 			{
+				var spacing = 3;
+
 				base.SetFrameSize(newSize);
 				var views = Subviews;
 				var text = views[0];
-				var splitter = views[1];
-				var offset = (newSize.Height - text.Frame.Height) / 2;
-				text.SetFrameOrigin(new CGPoint(0, offset));
-				text.SetFrameSize(new CGSize((float)(newSize.Width - splitter.Frame.Width), (float)text.Frame.Height));
-				offset = (newSize.Height - splitter.Frame.Height) / 2;
-				splitter.SetFrameOrigin(new CGPoint(newSize.Width - splitter.Frame.Width, offset));
+				var stepper = views[1];
+
+				var stepperSize = stepper.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, stepper.FittingSize)).Size;
+				stepperSize.Height = (nfloat)Math.Min(newSize.Height, stepperSize.Height);
+
+				var stepperFrame = new CGRect(); 
+				stepperFrame.Size = stepperSize;
+				stepperFrame.X = newSize.Width - stepperFrame.Width;
+				stepperFrame.Y = (nfloat)Math.Truncate((newSize.Height - stepperSize.Height) / 2);
+				stepper.Frame = stepper.GetFrameForAlignmentRect(stepperFrame);
+
+				var textFrame = new CGRect();
+				textFrame.Height = newSize.Height;
+				textFrame.Width = newSize.Width - stepperFrame.Width - spacing;
+				text.Frame = textFrame;
+
 
 				var h = WeakHandler?.Target as IMacViewHandler;
 				if (h == null)
@@ -135,10 +147,7 @@ namespace Eto.Mac.Forms.Controls
 			MaximumFractionDigits = 0
 		};
 
-		protected override EtoNumericStepperView CreateControl()
-		{
-			return new EtoNumericStepperView(this);
-		}
+		protected override EtoNumericStepperView CreateControl() => new EtoNumericStepperView(this);
 
 		static void HandleStepperActivated(object sender, EventArgs e)
 		{
@@ -273,9 +282,10 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (naturalSize == null)
 			{
-				TextField.SizeToFit();
-				Stepper.SizeToFit();
-				var naturalHeight = Math.Max(TextField.Frame.Height, Stepper.Frame.Height);
+				var textSize = TextField.FittingSize;
+				var stepperSize = Stepper.FittingSize;
+				stepperSize = Stepper.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, stepperSize)).Size;
+				var naturalHeight = Math.Max(textSize.Height, stepperSize.Height);
 				naturalSize = new Size(80, (int)naturalHeight);
 			}
 			return naturalSize.Value;

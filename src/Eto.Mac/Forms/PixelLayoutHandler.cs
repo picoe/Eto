@@ -91,10 +91,9 @@ namespace Eto.Mac.Forms
 
 		void SetPosition(Control control, PointF point)
 		{
-			var macControl = control.GetMacControl();
-			var childView = macControl.ContainerControl;
-			var availableSize = Widget.Loaded ? Size.MaxValue : Control.Frame.Size.ToEtoSize();
-			var preferredSize = macControl.GetPreferredSize(availableSize);
+			var macView = control.GetMacViewHandler();
+			var availableSize = Widget.Loaded ? Size.MaxValue : macView.GetAlignmentFrame().Size.ToEtoSize();
+			var preferredSize = macView.GetPreferredSize(availableSize);
 
 			var origin = point.ToNS();
 			if (!Control.IsFlipped)
@@ -102,7 +101,7 @@ namespace Eto.Mac.Forms
 				origin.Y = Control.Frame.Height - origin.Y - preferredSize.Height;
 			}
 
-			childView.Frame = new CGRect(origin, preferredSize.ToNS());
+			macView.SetAlignmentFrame(new CGRect(origin, preferredSize.ToNS()));
 		}
 
 		public override void InvalidateMeasure()
@@ -115,13 +114,14 @@ namespace Eto.Mac.Forms
 		{
 			// set sizes of controls when resizing since available size changes, 
 			// it may change the preferred size of the children.
-			foreach (var control in Widget.Controls.Select(r => r.GetMacControl()))
+			foreach (var control in Widget.Controls)
 			{
-				if (control == null)
+				var macView = control.GetMacViewHandler();
+				if (macView == null)
 					continue;
 
-				var preferredSize = control.GetPreferredSize(SizeF.PositiveInfinity);
-				control.ContainerControl.SetFrameSize(preferredSize.ToNS());
+				var preferredSize = macView.GetPreferredSize(SizeF.PositiveInfinity);
+				macView.SetAlignmentFrameSize(preferredSize.ToNS());
 			}
 		}
 

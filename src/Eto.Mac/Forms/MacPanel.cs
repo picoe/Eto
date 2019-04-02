@@ -191,10 +191,10 @@ namespace Eto.Mac.Forms
 		/// </summary>
 		public virtual void PerformContentLayout()
 		{
-			var view = Content.GetContainerView();
-			if (view != null)
+			var viewHandler = Content.GetMacViewHandler();
+			if (viewHandler != null)
 			{
-				view.Frame = ContentFrame;
+				viewHandler.SetAlignmentFrame(ContentFrame);
 			}
 		}
 	}

@@ -220,17 +220,17 @@ namespace Eto.Mac
 			return new GridCellMouseEventArgs(column, row, col, item, buttons, modifiers, location);
 		}
 
-		public static PointF GetLocation(NSView view, NSEvent theEvent) => theEvent.LocationInWindow.ToEto(view);
-
-		public static MouseEventArgs GetMouseEvent(NSView view, NSEvent theEvent, bool includeWheel)
+		public static MouseEventArgs GetMouseEvent(IMacViewHandler handler, NSEvent theEvent, bool includeWheel)
 		{
-			var pt = MacConversions.GetLocation(view, theEvent);
+			var view = handler.ContainerControl;
+			var pt = theEvent.LocationInWindow;
+			pt = handler.GetAlignmentPointForFramePoint(pt);
 			Keys modifiers = theEvent.ModifierFlags.ToEto();
 			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
 			if (includeWheel)
 				delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
-			return new MouseEventArgs(buttons, modifiers, pt, delta);
+			return new MouseEventArgs(buttons, modifiers, pt.ToEto(view), delta);
 		}
 
 		public static MouseButtons GetMouseButtons(this NSEvent theEvent)
@@ -397,6 +397,11 @@ namespace Eto.Mac
 		public static SizeF ToEtoSize(this NSEdgeInsets insets)
 		{
 			return new SizeF((float)(insets.Left + insets.Right), (float)(insets.Top + insets.Bottom));
+		}
+
+		public static Padding ToEto(this NSEdgeInsets insets)
+		{
+			return new Padding((int)insets.Left, (int)insets.Top, (int)insets.Right, (int)insets.Bottom);
 		}
 
 		public static CalendarMode ToEto(this NSDatePickerMode mode)

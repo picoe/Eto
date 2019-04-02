@@ -22,11 +22,11 @@ namespace Eto.Mac
 	public static class ObjCExtensions
 	{
 		[DllImport("/usr/lib/libobjc.dylib")]
-		static extern IntPtr class_getClassMethod(IntPtr cls, IntPtr sel);
+		static extern IntPtr class_getInstanceMethod(IntPtr cls, IntPtr sel);
 
-		public static IntPtr GetMethod(this Class cls, IntPtr selector) => class_getClassMethod(cls.Handle, selector);
+		public static IntPtr GetInstanceMethod(this Class cls, IntPtr selector) => class_getInstanceMethod(cls.Handle, selector);
 
-		public static IntPtr GetMethod(IntPtr cls, IntPtr selector) => class_getClassMethod(cls, selector);
+		public static IntPtr GetInstanceMethod(IntPtr cls, IntPtr selector) => class_getInstanceMethod(cls, selector);
 
 		[DllImport("/usr/lib/libobjc.dylib")]
 		static extern bool class_addMethod(IntPtr cls, IntPtr sel, Delegate method, string argTypes);
@@ -46,8 +46,8 @@ namespace Eto.Mac
 
 		public static void ExchangeMethod(this Class cls, IntPtr selMethod1, IntPtr selMethod2)
 		{
-			var method1 = class_getClassMethod(cls.Handle, selMethod1);
-			var method2 = GetMethod(cls, selMethod2);
+			var method1 = class_getInstanceMethod(cls.Handle, selMethod1);
+			var method2 = GetInstanceMethod(cls, selMethod2);
 			method_exchangeImplementations(method1, method2);
 		}
 
