@@ -347,6 +347,11 @@
         if (!string.IsNullOrEmpty(MonoMinimumVersion)) {
           AddStringProperty("MonoMinimumVersion", MonoMinimumVersion);
         }
+        
+        // support dark mode even when using mkbundle.
+        // As of mono 5.18, it appears to be compiled with macOS 10.12 SDK
+        // So dark mode would be disabled by default.
+        AddStringProperty("NSRequiresAquaSystemAppearance", "False");
 
         using (var sw = new NullSubsetXmlTextWriter(PListFile, Encoding.UTF8))
           xml.Save(sw);
