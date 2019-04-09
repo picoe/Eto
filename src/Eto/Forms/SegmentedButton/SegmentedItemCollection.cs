@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
@@ -68,5 +69,15 @@ namespace Eto.Forms
             Handler.SetItem(index, item);
 			item.Parent = Parent;
         }
+
+		/// <summary>
+		/// Adds an enumerable of items to the collection
+		/// </summary>
+		/// <param name="items">Items to add.</param>
+		public void AddRange(IEnumerable<SegmentedItem> items)
+		{
+			foreach (var item in items)
+				Add(item);
+		}
     }
 }
