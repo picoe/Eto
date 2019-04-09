@@ -173,7 +173,7 @@ namespace Eto.Mac.Forms.Controls
 				Control.TextStorage.BeginEditing();
 				var current = range;
 				var left = current.Length;
-				do
+				while (left > 0)
 				{
 					var attribs = Control.TextStorage.GetAttributes(current.Location, out effectiveRange, current);
 					attribs = UpdateFontAttributes(attribs, enabled, updateFont);
@@ -183,7 +183,7 @@ namespace Eto.Mac.Forms.Controls
 					current.Location += span;
 					current.Length -= span;
 					left -= span;
-				} while (left > 0);
+				}
 				Control.TextStorage.EndEditing();
 				Control.DidChangeText();
 			}
@@ -322,7 +322,7 @@ namespace Eto.Mac.Forms.Controls
 						nint pos = 0;
 						// when encountering an RTF without a defined foreground, use the system foreground for dark mode
 						var textColor = TextColor.ToNSUI();
-						do
+						while (pos < str.Length)
 						{
 							var color = str.GetAttribute(NSStringAttributeKey.ForegroundColor, pos, out var effectiveRange);
 							pos = effectiveRange.Location + effectiveRange.Length;
@@ -333,7 +333,7 @@ namespace Eto.Mac.Forms.Controls
 
 								mut.AddAttribute(NSStringAttributeKey.ForegroundColor, textColor, effectiveRange);
 							}
-						} while (pos < str.Length);
+						}
 
 						if (mut != null)
 							str = mut;
