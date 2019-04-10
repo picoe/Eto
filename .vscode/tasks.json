@@ -1,15 +1,91 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build_gtk",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj"
-            ],
-            "problemMatcher": "$msCompile"
-        }
-    ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"command": "msbuild",
+			"windows": { "command": "build/msbuild.cmd" },
+			"type": "process",
+			"args": [
+				"/t:Build",
+				"/p:Configuration=${input:configuration}",
+				"${workspaceFolder}/build/Build.proj"
+			],
+			"problemMatcher": "$msCompile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "build-gtk",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"/p:Configuration=Debug",
+				"${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj"
+			],
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build-gtk2",
+			"command": "msbuild",
+			"windows": { "command": "build/msbuild.cmd" },
+			"type": "process",
+			"args": [
+				"/p:Configuration=Debug",
+				"${workspaceFolder}/test/Eto.Test.Gtk2/Eto.Test.Gtk2.csproj"
+			],
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build-mac64",
+			"command": "msbuild",
+			"windows": { "command": "build/msbuild.cmd" },
+			"type": "process",
+			"args": [
+				"/p:Configuration=Debug",
+				"${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj"
+			],
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build-wpf",
+			"command": "msbuild",
+			"windows": { "command": "build/msbuild.cmd" },
+			"type": "process",
+			"args": [
+				"/p:Configuration=Debug",
+				"${workspaceFolder}/test/Eto.Test.Wpf/Eto.Test.Wpf.csproj"
+			],
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "restore",
+			"command": "nuget",
+			"type": "process",
+			"args": [
+				"restore",
+				"${workspaceFolder}/src/Eto.sln"
+			],
+			"problemMatcher": "$msCompile"
+		}
+	],
+	"inputs": [
+		{
+			"id": "configuration",
+			"type": "pickString",
+			"default": "Debug",
+			"description": "Build Configuration",
+			"options": [
+				"Debug",
+				"Release"
+			]
+		}
+	]
 }
