@@ -57,7 +57,7 @@ namespace Eto.Mac.Forms.Controls
 				if (string.IsNullOrEmpty(Text))
 					position = NSCellImagePosition.ImageOnly;
 				Control.ImagePosition = position;
-				SetBezel();
+				InvalidateMeasure();
 			}
 			else
 				base.SetImagePosition();
