@@ -601,5 +601,17 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.AreEqual("Arial", richText.SelectionFamily.Name, "#2");
 			Assert.AreEqual("Black Oblique", richText.SelectionTypeface.Name, "#3");
 		}
+
+		[Test]
+		[InvokeOnUI]
+		public void EmptyRtfShouldNotCrash()
+		{
+			var richText = new RichTextArea();
+
+			var rtf = @"{\rtf1\ansi\ansicpg1252{\fonttbl}{\colortbl;\red255\green255\blue255;}}";
+			richText.Rtf = rtf;
+
+			Assert.AreEqual(string.Empty, richText.Text);
+		}
 	}
 }

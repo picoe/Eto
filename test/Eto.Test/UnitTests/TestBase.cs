@@ -32,7 +32,7 @@ namespace Eto.Test.UnitTests
 	}
 
 	[System.AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
-	sealed class InvokeOnUIAttribute : Attribute, IWrapSetUpTearDown
+	public sealed class InvokeOnUIAttribute : Attribute, IWrapSetUpTearDown
 	{
 		public TestCommand Wrap(TestCommand command) => new RunOnUICommand(command);
 
