@@ -1177,7 +1177,7 @@ namespace Eto.Mac.Forms
 			ContainerControl.SetFrameSize(size);
 		}
 
-		public void SetAlignmentFrame(CGRect frame) => ContainerControl.Frame = GetFrameForAlignmentRect(frame);
+		public virtual void SetAlignmentFrame(CGRect frame) => ContainerControl.Frame = GetFrameForAlignmentRect(frame);
 
 		public virtual CGRect GetFrameForAlignmentRect(CGRect frame)
 		{

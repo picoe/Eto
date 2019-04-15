@@ -1,4 +1,13 @@
 {
+	"omnisharp.defaultLaunchSolution": "Eto.sln",
     "editor.insertSpaces": false,
-    "editor.detectIndentation": false
+	"editor.detectIndentation": false,
+	"files.exclude": {
+		"**/.vs": true,
+		"**/obj": true,
+		"**/bin": true,
+		"**/*.user": true,
+		"**/packages": true
+	},
+	"vssolution.trackActiveItem": true
 }

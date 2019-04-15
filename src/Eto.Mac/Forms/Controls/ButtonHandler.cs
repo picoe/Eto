@@ -1,3 +1,5 @@
+//#define BUTTON_DEBUG
+
 using System;
 using Eto.Drawing;
 using Eto.Forms;
@@ -52,12 +54,6 @@ namespace Eto.Mac.Forms.Controls
 			// store the normal size for a rounded button, so we can determine what style to give it based on actual size
 			var b = new EtoButton(NSButtonType.MomentaryPushIn);
 			originalSize = b.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, b.FittingSize)).Size.ToEtoSize();
-
-			/*
-			var b = new NSButton(); 
-			b.SetButtonType(NSButtonType.MomentaryPushIn);
-			originalSize = b.FittingSize.ToEtoSize();
-			*/		
 		}
 	}
 
@@ -85,7 +81,7 @@ namespace Eto.Mac.Forms.Controls
 
 	public interface IButtonHandler
 	{
-		bool SetBezel();
+		bool SetBezel(Size size);
 		bool AutoSize { get; }
 		Size MinimumSize { get; }
 		int DisableSetBezel { get; set; }
@@ -131,11 +127,16 @@ namespace Eto.Mac.Forms.Controls
 			if (h == null)
 				return;
 
-			if (h.SetBezel())
-				Application.Instance.AsyncInvoke(h.InvalidateMeasure);
+#if BUTTON_DEBUG
+			Console.WriteLine($"Setting frame size to {newSize}");
+#endif
+
+			if (h.SetBezel(GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, newSize)).Size.ToEtoSize()))
+				Application.Instance.AsyncInvoke(() => h.InvalidateMeasure());
 
 			h.TriggerSizeChanged();
 		}
+
 		public EtoButton() : this(NSButtonType.MomentaryPushIn)
 		{
 		}
@@ -171,12 +172,6 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		protected override NSButton CreateControl() => new EtoButton(DefaultButtonType);
-
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			SetBezel();
-		}
 
 		static void HandleActivated(object sender, EventArgs e)
 		{
@@ -231,20 +226,39 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override bool DefaultUseAlignmentFrame => true; //Control.BezelStyle != NSBezelStyle.SmallSquare;
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			var size = base.GetNaturalSize(availableSize);
+			// when bezel is RegularSquare, it reports different than other bezels
+			// so we adjust here to report a more consistent natural size
+			if (Control.BezelStyle == NSBezelStyle.RegularSquare)
+				size.Height -= 2;
+			size.Height = Math.Max(size.Height, DefaultMinimumSize.Height);
+
+#if BUTTON_DEBUG
+			Console.WriteLine($"Button.GetNaturalSize {Text}, Size: {size}, Bezel: {Control.BezelStyle}");
+#endif
+			return size;
+		}
+
+		protected override bool DefaultUseAlignmentFrame => true; 
+
+		public override void SetAlignmentFrame(CGRect frame)
+		{
+			if (SetBezel(frame.Size.ToEtoSize()))
+				Application.Instance.AsyncInvoke(InvalidateMeasure);
+
+			base.SetAlignmentFrame(frame);
+		}
 
 		/// <summary>
 		/// Gets the bezel style of the button based on its size and image position
 		/// </summary>
-		protected virtual NSBezelStyle GetBezelStyle()
+		protected virtual NSBezelStyle GetBezelStyle(Size? frameSize = null)
 		{
 			if (BezelStyle != null)
 				return BezelStyle.Value;
-			var size = GetAlignmentFrame().Size.ToEtoSize();
-			// when bezel is RegularSquare, it reports different than other bezels
-			// only add two if we got the height from the alignment frame
-			if (Control.BezelStyle == NSBezelStyle.RegularSquare)
-				size.Height -= 2;
+			var size = frameSize ?? GetAlignmentFrame().Size.ToEtoSize();
 
 			// use the preferred size to determine style to use, if set
 			var preferredSize = PreferredSize;
@@ -288,17 +302,19 @@ namespace Eto.Mac.Forms.Controls
 			return NSBezelStyle.Rounded;
 		}
 
-		protected virtual bool SetBezel()
+		protected virtual bool SetBezel(Size size)
 		{
 			if (DisableSetBezel > 0)
 				return false;
-			var bezel = Control.BezelStyle;
-			var requiredBezel = GetBezelStyle();
-			if (bezel != requiredBezel)
+			var bezel = GetBezelStyle(size);
+			if (bezel != Control.BezelStyle)
 			{
 				DisableSetBezel++;
 				// setting the bezel style can fire a size changed?
-				Control.BezelStyle = requiredBezel;
+				Control.BezelStyle = bezel;
+#if BUTTON_DEBUG
+				Console.WriteLine($"Changing Button {Text} to bezel {bezel}");
+#endif
 				DisableSetBezel--;
 				return true;
 			}
@@ -326,7 +342,7 @@ namespace Eto.Mac.Forms.Controls
 			    ))
 				position = NSCellImagePosition.ImageOnly;
 			Control.ImagePosition = position;
-			SetBezel();
+			SetBezel(GetAlignmentFrame().Size.ToEtoSize());
 		}
 
 		public ButtonImagePosition ImagePosition
@@ -349,7 +365,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (Widget.Properties.TrySet(ButtonHandler.CustomBezelStyle_Key, value))
 				{
-					SetBezel();
+					if (value != null)
+						Control.BezelStyle = value.Value;
 					InvalidateMeasure();
 				}
 			}
@@ -374,6 +391,6 @@ namespace Eto.Mac.Forms.Controls
 			Callback.OnSizeChanged(Widget, EventArgs.Empty);
 		}
 
-		bool IButtonHandler.SetBezel() => SetBezel();
+		bool IButtonHandler.SetBezel(Size size) => SetBezel(size);
 	}
 }
