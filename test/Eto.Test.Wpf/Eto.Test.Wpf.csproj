@@ -13,6 +13,7 @@
     <AssemblyName>Eto.Test.Wpf</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
