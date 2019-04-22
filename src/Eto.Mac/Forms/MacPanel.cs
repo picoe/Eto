@@ -125,15 +125,8 @@ namespace Eto.Mac.Forms
 		void SetContent(NSView control)
 		{
 #if OSX
-			if (ContentControl is NSBox box)
-			{
-				box.ContentView = control;
-			}
-			else
-			{
-				control.AutoresizingMask = ContentResizingMask();
-				ContentControl.AddSubview(control); // default
-			}
+			control.AutoresizingMask = ContentResizingMask();
+			ContentControl.AddSubview(control); // default
 #elif IOS
 			control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			control.Frame = new CGRect(0, 0, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
