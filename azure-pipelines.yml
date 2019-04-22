@@ -15,7 +15,7 @@ jobs:
     vmImage: 'macOS-10.13'
   
   steps:
-  - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_16_0
+  - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_18_1
     displayName: 'Select Xamarin SDK version'
   - task: msbuild@1
     displayName: Build and Package
