@@ -25,6 +25,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox canFocusCheckBox;
 		CheckBox createMenuBar;
 		EnumCheckBoxList<MenuBarSystemItems> systemMenuItems;
+		EnumDropDown<DialogDisplayMode?> dialogDisplayModeDropDown;
 
 		static readonly object CancelCloseKey = new object();
 		public bool CancelClose
@@ -42,6 +43,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
+			layout.AddSeparateRow(null, "Dialog Display Mode", DisplayModeDropDown(), null);
 			layout.AddSeparateRow(null, CreateMenuBarControls(), null);
 			layout.AddSeparateRow(null, CreateInitialLocationControls(), null);
 			layout.AddSeparateRow(null, CreateSizeControls(), null);
@@ -143,6 +145,18 @@ namespace Eto.Test.Sections.Behaviors
 					child.WindowStyle = styleCombo.SelectedValue;
 			};
 			return styleCombo;
+		}
+
+		Control DisplayModeDropDown()
+		{
+			dialogDisplayModeDropDown = new EnumDropDown<DialogDisplayMode?>();
+			dialogDisplayModeDropDown.Bind(c => c.Enabled, typeRadio, Binding.Property((RadioButtonList t) => t.SelectedKey).ToBool("dialog"));
+			dialogDisplayModeDropDown.SelectedValueChanged += (sender, e) =>
+			{
+				if (child is Dialog dlg)
+					dlg.DisplayMode = dialogDisplayModeDropDown.SelectedValue ?? DialogDisplayMode.Default;
+			};
+			return dialogDisplayModeDropDown;
 		}
 
 		Control WindowState()
@@ -448,6 +462,8 @@ namespace Eto.Test.Sections.Behaviors
 
 				child = dialog;
 				show = dialog.ShowModal;
+
+				dialog.DisplayMode = dialogDisplayModeDropDown.SelectedValue ?? DialogDisplayMode.Default;
 			}
 
 			layout.Add(null);

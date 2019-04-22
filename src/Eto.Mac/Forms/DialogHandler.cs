@@ -89,6 +89,13 @@ namespace Eto.Mac.Forms
 					}
 				}
 			}
+
+			public override double AnimationResizeTime(CGRect newFrame)
+			{
+				if (AnimationBehavior == NSWindowAnimationBehavior.None)
+					return 0;
+				return base.AnimationResizeTime(newFrame);
+			}
 		}
 
 		SizeF GetButtonSize(SizeF availableSize)
@@ -229,6 +236,8 @@ namespace Eto.Mac.Forms
 			else
 				base.Close();
 		}
+
+		protected override bool DefaultSetAsChildWindow => false;
 
 		public override void SetOwner(Window owner)
 		{

@@ -127,9 +127,12 @@ namespace Eto.Mac.Forms
 
 	static class MacWindow
 	{
-		public static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
-		public static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
-		public static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
+		internal static readonly object InitialLocation_Key = new object();
+		internal static readonly object PreferredClientSize_Key = new object();
+		internal static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
+		internal static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
+		internal static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
+		internal static readonly object SetAsChildWindow_Key = new object();
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
@@ -148,12 +151,11 @@ namespace Eto.Mac.Forms
 		bool topmost;
 		Point? oldLocation;
 
-		static readonly object InitialLocation_Key = new object();
 
 		Point? InitialLocation
 		{
-			get => Widget.Properties.Get<Point?>(InitialLocation_Key);
-			set => Widget.Properties.Set(InitialLocation_Key, value);
+			get => Widget.Properties.Get<Point?>(MacWindow.InitialLocation_Key);
+			set => Widget.Properties.Set(MacWindow.InitialLocation_Key, value);
 		}
 
 		Window.ICallback IMacWindow.Callback { get { return Callback; } }
@@ -701,11 +703,10 @@ namespace Eto.Mac.Forms
 
 		public string Id { get; set; }
 
-		static readonly object PreferredClientSize_Key = new object();
 		public Size? PreferredClientSize
 		{
-			get { return Widget.Properties.Get<Size?>(PreferredClientSize_Key); }
-			set { Widget.Properties[PreferredClientSize_Key] = value; }
+			get { return Widget.Properties.Get<Size?>(MacWindow.PreferredClientSize_Key); }
+			set { Widget.Properties[MacWindow.PreferredClientSize_Key] = value; }
 		}
 
 		public override Size ClientSize
@@ -996,6 +997,10 @@ namespace Eto.Mac.Forms
 				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
 				{
 					Control.StyleMask = value.ToNS(Control.StyleMask);
+
+					// don't use animation when there's no border.
+					if (value == WindowStyle.None && Control.AnimationBehavior == NSWindowAnimationBehavior.Default)
+						Control.AnimationBehavior = NSWindowAnimationBehavior.None;
 				}
 			}
 		}
@@ -1015,8 +1020,37 @@ namespace Eto.Mac.Forms
 			Control.ResignKeyWindow();
 		}
 
+		protected virtual bool DefaultSetAsChildWindow => false;
+
+		/// <summary>
+		/// Gets or sets a value indicating that this window should be set as a child of its owner.
+		/// When it is a child, it will move with the owner.
+		/// This is useful when you want a modal dialog to move with the window, or to disable this
+		/// feature for forms with the owner set.
+		/// </summary>
+		public bool SetAsChildWindow
+		{
+			get => Widget.Properties.Get<bool>(MacWindow.SetAsChildWindow_Key, DefaultSetAsChildWindow);
+			set => Widget.Properties.Set(MacWindow.SetAsChildWindow_Key, value, DefaultSetAsChildWindow);
+		}
+
 		public virtual void SetOwner(Window owner)
 		{
+			if (SetAsChildWindow)
+			{
+				if (owner != null)
+				{
+					var macWindow = owner.Handler as IMacWindow;
+					if (macWindow != null)
+						macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
+				}
+				else
+				{
+					var parentWindow = Control.ParentWindow;
+					if (parentWindow != null)
+						parentWindow.RemoveChildWindow(Control);
+				}
+			}
 		}
 
 		public float LogicalPixelSize => Screen?.LogicalPixelSize ?? 1f;
