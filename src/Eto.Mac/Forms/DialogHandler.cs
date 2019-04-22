@@ -42,20 +42,19 @@ namespace Eto.Mac.Forms
 	{
 		Button defaultButton;
 		ModalEventArgs session;
-		const int BUTTON_PADDING = 2;
+		static Padding s_ButtonPadding = new Padding(6, 6);
+		static int s_ButtonSpacing = 12;
 
 		static readonly object UseContentBorder_Key = new object();
 
 		public bool UseContentBorder
 		{
-			get => Widget.Properties.Get(UseContentBorder_Key, true);
+			get => Widget.Properties.Get<bool>(UseContentBorder_Key);
 			set
 			{
-				if (UseContentBorder != value)
+				if (Widget.Properties.TrySet(UseContentBorder_Key, value))
 				{
-					Widget.Properties.Set(UseContentBorder_Key, value, true);
-					if (Widget.Loaded)
-						PositionButtons();
+					InvalidateMeasure();
 				}
 			}
 		}
@@ -89,6 +88,13 @@ namespace Eto.Mac.Forms
 					}
 				}
 			}
+
+			public override double AnimationResizeTime(CGRect newFrame)
+			{
+				if (AnimationBehavior == NSWindowAnimationBehavior.None)
+					return 0;
+				return base.AnimationResizeTime(newFrame);
+			}
 		}
 
 		SizeF GetButtonSize(SizeF availableSize)
@@ -96,15 +102,19 @@ namespace Eto.Mac.Forms
 			var buttonSize = SizeF.Empty;
 			if (Widget.NegativeButtons.Count > 0 || Widget.PositiveButtons.Count > 0)
 			{
+				bool addSpacing = false;
 				foreach (var button in Widget.NegativeButtons.Concat(Widget.PositiveButtons))
 				{
 					var preferredSize = button.GetPreferredSize(availableSize);
+					if (addSpacing)
+						buttonSize.Width += s_ButtonSpacing;
+					else
+						addSpacing = true;
 					buttonSize.Width += preferredSize.Width;
 					buttonSize.Height = Math.Max(buttonSize.Height, preferredSize.Height);
 				}
-				buttonSize.Height += BUTTON_PADDING;
 			}
-			return buttonSize;
+			return buttonSize + s_ButtonPadding.Size;
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
@@ -230,6 +240,8 @@ namespace Eto.Mac.Forms
 				base.Close();
 		}
 
+		protected override bool DefaultSetAsChildWindow => false;
+
 		public override void SetOwner(Window owner)
 		{
 			base.SetOwner(owner);
@@ -239,21 +251,13 @@ namespace Eto.Mac.Forms
 		public void InsertDialogButton(bool positive, int index, Button item)
 		{
 			Control.ContentView.AddSubview(item.ToNative());
-			if (Widget.Loaded)
-				PositionButtons();
+			InvalidateMeasure();
 		}
 
 		public void RemoveDialogButton(bool positive, int index, Button item)
 		{
 			item.ToNative().RemoveFromSuperview();
-			if (Widget.Loaded)
-				PositionButtons();
-		}
-
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			PositionButtons();
+			InvalidateMeasure();
 		}
 
 		protected override CGRect ContentFrame
@@ -272,8 +276,9 @@ namespace Eto.Mac.Forms
 
 		void PositionButtons()
 		{
-			var availableSize = Control.ContentView.Frame.Size.ToEto();
-			var point = new PointF(availableSize.Width, 0);
+			var contentView = Control.ContentView;
+			var availableSize = contentView.Frame.Size.ToEto();
+			var point = new PointF(availableSize.Width - s_ButtonPadding.Right, s_ButtonPadding.Bottom);
 
 			var buttonSize = GetButtonSize(availableSize);
 
@@ -281,12 +286,20 @@ namespace Eto.Mac.Forms
 
 			foreach (var button in Widget.PositiveButtons.Reverse().Concat(Widget.NegativeButtons))
 			{
-				var ctl = button.GetContainerView();
-				var size = button.GetPreferredSize(availableSize);
+				var ctl = button.GetMacViewHandler();
+				var size = ctl.GetPreferredSize(availableSize);
 				point.X -= size.Width;
-				ctl.Frame = new CGRect(point.ToNS(), size.ToNS());
-				ctl.AutoresizingMask = NSViewResizingMask.MinXMargin;
+				ctl.SetAlignmentFrame(new CGRect(point.ToNS(), size.ToNS()));
+				ctl.ContentControl.AutoresizingMask = NSViewResizingMask.MinXMargin;
+
+				point.X -= s_ButtonSpacing;
 			}
+		}
+
+		public override void PerformContentLayout()
+		{
+			base.PerformContentLayout();
+			PositionButtons();
 		}
 
 		public bool IsDisplayedAsSheet => session?.IsSheet == true;
