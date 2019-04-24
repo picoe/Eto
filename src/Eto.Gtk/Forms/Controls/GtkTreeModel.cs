@@ -224,15 +224,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			var node = GetNodeAtIter(iter);
 			if (node != null)
 			{
-				var row = node.Indices.Sum();
 				if (node.Item != null)
 				{
-					val = Handler.GetColumnValue(node.Item, col, row);
+					val = Handler.GetColumnValue(node.Item, col, -1, iter);
 					return;
 				}
 			}
 
-			val = Handler.GetColumnValue(null, col, -1);
+			val = Handler.GetColumnValue(null, col, -1, iter);
 
 		}
 

@@ -326,7 +326,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public GLib.Value GetColumnValue(ITreeItem item, int column, int row)
+		public GLib.Value GetColumnValue(ITreeItem item, int column, int row, Gtk.TreeIter iter)
 		{
 			switch (column)
 			{
