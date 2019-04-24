@@ -5,10 +5,11 @@ using Eto.Forms;
 using System.Windows.Controls;
 using Eto.CustomControls;
 using swc = System.Windows.Controls;
+using swcp = System.Windows.Controls.Primitives;
 
 namespace Eto.Wpf.CustomControls.TreeGridView
 {
-	public class TreeToggleButton : ToggleButton
+	public class TreeToggleButton : swcp.ToggleButton
 	{
 		public const int LevelWidth = 16;
 

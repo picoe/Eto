@@ -43,6 +43,12 @@ namespace Eto.Forms
 		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		/// <summary>
+		/// Gets or sets the binding to get the tooltip text for each radio button.
+		/// </summary>
+		/// <value>The item tool tip binding.</value>
+		public IIndirectBinding<string> ItemToolTipBinding { get; set; }
+
+		/// <summary>
 		/// Gets or sets the binding to get the text for each radio button.
 		/// </summary>
 		/// <remarks>
@@ -443,6 +449,8 @@ namespace Eto.Forms
 				button.TextColor = TextColor;
 			button.CheckedChanged += HandleCheckedChanged;
 			button.Text = ItemTextBinding.GetValue(item);
+			if (ItemToolTipBinding != null)
+				button.ToolTip = ItemToolTipBinding.GetValue(item);
 			button.Tag = item;
 			button.Enabled = base.Enabled;
 			if (controller == null)

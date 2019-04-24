@@ -104,6 +104,12 @@ namespace Eto.Mac.Forms.Menu
 			}
 		}
 
+		public bool Visible
+		{
+			get => !Control.Hidden;
+			set => Control.Hidden = !value;
+		}
+
 		public bool WorksWhenModal
 		{
 			get

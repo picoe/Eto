@@ -58,6 +58,15 @@ namespace Eto.Mac
 			| PlatformFeatures.CustomCellSupportsControlView
 			| PlatformFeatures.TabIndexWithCustomContainers;
 
+		static Platform()
+		{
+			Style.Add<ThemedTextStepperHandler>(null, h =>
+			{
+				h.Control.Spacing = new Size(3, 0);
+			});
+
+		}
+
 		public Platform()
 		{
 #if Mac64
@@ -164,6 +173,10 @@ namespace Eto.Mac
 			p.Add<FilePicker.IHandler>(() => new ThemedFilePickerHandler());
 			p.Add<DocumentControl.IHandler>(() => new ThemedDocumentControlHandler());
 			p.Add<DocumentPage.IHandler>(() => new ThemedDocumentPageHandler());
+			p.Add<SegmentedButton.IHandler>(() => new SegmentedButtonHandler());
+			p.Add<ButtonSegmentedItem.IHandler>(() => new ButtonSegmentedItemHandler());
+			p.Add<MenuSegmentedItem.IHandler>(() => new MenuSegmentedItemHandler());
+			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
@@ -205,7 +218,7 @@ namespace Eto.Mac
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
-			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
+			p.Add<DataObject.IHandler>(() => new MemoryDataObjectHandler());
 			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			p.Add<Notification.IHandler>(() => new NotificationHandler());
 			p.Add<TrayIndicator.IHandler>(() => new TrayIndicatorHandler());
@@ -227,14 +240,14 @@ namespace Eto.Mac
 		{
 			get
 			{
-				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-
-				var assemblyDir = Path.GetDirectoryName(assembly.Location);
-				// location will be empty when embedded via mkbundle, ensure bundlepath is an .app bundle
-				if (string.IsNullOrEmpty(assemblyDir))
-					return NSBundle.MainBundle?.BundlePath.EndsWith(".app", StringComparison.Ordinal) == true;
-
-				return NSBundle.MainBundle != null && assembly.Location.StartsWith(NSBundle.MainBundle.BundlePath, StringComparison.Ordinal);
+				var bundle = NSBundle.MainBundle;
+				if (bundle == null)
+					return false;
+				if (!bundle.BundlePath.EndsWith(".app", StringComparison.Ordinal))
+					return false;
+				if (!bundle.IsLoaded)
+					return false;
+				return true;
 			}
 		}
 

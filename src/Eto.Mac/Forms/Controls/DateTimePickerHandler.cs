@@ -64,9 +64,9 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 
 			public DateTimePickerHandler Handler
-			{ 
+			{
 				get { return (DateTimePickerHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 
 			public EtoDatePicker()
@@ -77,10 +77,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override NSDatePicker CreateControl()
-		{
-			return new EtoDatePicker();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSDatePicker CreateControl() => new EtoDatePicker();
 
 		protected override void Initialize()
 		{
@@ -218,8 +217,8 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.Bordered; }
 			set
-			{ 
-				Control.Bordered = value; 
+			{
+				Control.Bordered = value;
 
 				Control.DatePickerStyle = value ? NSDatePickerStyle.TextFieldAndStepper : NSDatePickerStyle.TextField;
 			}

@@ -25,9 +25,7 @@ namespace Eto.Drawing
 		/// <returns>True if this converter supports the <paramref name="destinationType"/>, false otherwise</returns>
 		public override bool CanConvertTo(sc.ITypeDescriptorContext context, Type destinationType)
 		{
-			if (destinationType == typeof(string))
-				return true;
-			return base.CanConvertTo(context, destinationType);
+			return destinationType == typeof(string);
 		}
 
 		/// <summary>
@@ -38,9 +36,7 @@ namespace Eto.Drawing
 		/// <returns>True if this can convert to the <paramref name="sourceType"/>, false otherwise</returns>
 		public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 		{
-			if (sourceType == typeof(string))
-				return true;
-			return base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string);
 		}
 
 		/// <summary>
@@ -102,9 +98,7 @@ namespace Eto.Drawing
 		/// <returns>True if this converter supports the <paramref name="destinationType"/>, false otherwise</returns>
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
-			if (destinationType == typeof(string))
-				return true;
-			return base.CanConvertTo(context, destinationType);
+			return destinationType == typeof(string);
 		}
 
 		/// <summary>
@@ -115,9 +109,7 @@ namespace Eto.Drawing
 		/// <returns>True if this can convert to the <paramref name="sourceType"/>, false otherwise</returns>
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
-			if (sourceType == typeof(string))
-				return true;
-			return base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string);
 		}
 
 		/// <summary>

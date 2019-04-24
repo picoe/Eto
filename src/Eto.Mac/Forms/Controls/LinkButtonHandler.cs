@@ -89,7 +89,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.Initialize();
 
-			TextColor = NSColor.Blue.ToEto();
+			TextColor = SystemColors.LinkText;
 			Cursor = Cursors.Pointer;
 			Widget.MouseEnter += HandleMouseEnter;
 			Widget.MouseLeave += HandleMouseLeave;
@@ -164,7 +164,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color DisabledTextColor
 		{
-			get { return Widget.Properties.Get<Color?>(DisabledTextColorKey) ?? NSColor.DisabledControlText.ToEto(); }
+			get { return Widget.Properties.Get<Color?>(DisabledTextColorKey) ?? SystemColors.DisabledText; }
 			set
 			{
 				if (value != DisabledTextColor)

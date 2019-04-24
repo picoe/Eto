@@ -98,11 +98,28 @@ namespace Eto.Mac
 
 		public static NSColor UsingColorSpaceFast(this NSColor color, NSString colorSpace)
 		{
+			if (color == null)
+				return null;
 			var intPtr = Messaging.IntPtr_objc_msgSend_IntPtr(color.Handle, selColorUsingColorSpaceName_Handle, colorSpace.Handle);
 			return Runtime.GetNSObject<NSColor>(intPtr);
 		}
 
-		#if !XAMMAC
+		static readonly IntPtr selCanReadItemWithDataConformingToTypes_Handle = Selector.GetHandle("canReadItemWithDataConformingToTypes:");
+		public static bool CanReadItemWithDataConformingToTypes(this NSPasteboard pasteboard, NSString[] utiTypes)
+		{
+			NSApplication.EnsureUIThread();
+			if (utiTypes == null)
+			{
+				throw new ArgumentNullException(nameof(utiTypes));
+			}
+			NSArray nSArray = NSArray.FromNSObjects(utiTypes);
+			bool result = Messaging.bool_objc_msgSend_IntPtr(pasteboard.Handle, selCanReadItemWithDataConformingToTypes_Handle, nSArray.Handle);
+			nSArray.Dispose();
+			return result;
+		}
+
+
+#if !XAMMAC
 		public static void DangerousRetain(this NSObject obj)
 		{
 			obj.Retain();
@@ -120,7 +137,7 @@ namespace Eto.Mac
 		{
 			return Messaging.GetNSObject<NSColor>(Messaging.IntPtr_objc_msgSend_IntPtr(NSColorClassPtr, selColorWithCGColor, cgColor.Handle));
 		}
-		#endif
+#endif
 	}
 }
 

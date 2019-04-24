@@ -93,10 +93,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override NSComboBox CreateControl()
-		{
-			return new EtoComboBox();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSComboBox CreateControl() => new EtoComboBox();
 
 		protected override void Initialize()
 		{
@@ -156,7 +155,8 @@ namespace Eto.Mac.Forms.Controls
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var size = base.GetNaturalSize(availableSize);
-			return new SizeF(Math.Max(size.Width, 100), size.Height);
+			// note: natural height reported by NSComboBox.FittingSize is 25, but should be 26.
+			return new SizeF(Math.Max(size.Width, 100), size.Height + 1);
 		}
 
 		static void SelectionDidChange(ObserverActionEventArgs e)

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using Eto.Drawing;
+using System.Threading;
 
 #if XAMMAC2
 using AppKit;
@@ -19,39 +20,37 @@ namespace Eto.Mac.Drawing
 {
 	public class SystemColorsHandler : SystemColors.IHandler
 	{
-		public Color ControlText
-		{
-			get { return NSColor.ControlText.ToEto(false); }
-		}
+		public Color ControlText => NSColor.ControlText.ToEtoWithAppearance(false);
 
-		public Color HighlightText
-		{
-			get { return NSColor.AlternateSelectedControlText.ToEto(false); }
-		}
+		public Color HighlightText => NSColor.AlternateSelectedControlText.ToEtoWithAppearance(false);
 
-		public Color Control
-		{
-			get { return NSColor.Control.ToEto(false); }
-		}
+		public Color Control => NSColor.Control.ToEtoWithAppearance(false);
 
-		public Color Highlight
-		{
-			get { return NSColor.AlternateSelectedControl.ToEto(false); }
-		}
+		public Color Highlight => NSColor.AlternateSelectedControl.ToEtoWithAppearance(false);
 
-		public Color WindowBackground
-		{
-			get { return NSColor.WindowBackground.ToEto(false); }
-		}
+		public Color WindowBackground => NSColor.WindowBackground.ToEtoWithAppearance(false);
 
-		public Color DisabledText
-		{
-			get { return NSColor.DisabledControlText.ToEto(false); }
-		}
+		public Color DisabledText => NSColor.DisabledControlText.ToEtoWithAppearance(false);
 
-		public Color ControlBackground
+		public Color ControlBackground => NSColor.ControlBackground.ToEtoWithAppearance(false);
+
+		public Color SelectionText => NSColor.SelectedText.ToEtoWithAppearance(false);
+
+		public Color Selection => NSColor.SelectedTextBackground.ToEtoWithAppearance(false);
+
+		// todo: remove when CI supports NSColor.LinkColor
+		static IntPtr s_classHandle = Class.GetHandle(typeof(NSColor));
+		static IntPtr s_selLinkColorHandle = Selector.GetHandle("linkColor");
+		static Lazy<bool> s_supportsLinkColor = new Lazy<bool>(() => ObjCExtensions.RespondsToSelector<NSColor>(s_selLinkColorHandle));
+
+		public Color LinkText
 		{
-			get { return NSColor.ControlBackground.ToEto(false); }
+			get {
+				if (s_supportsLinkColor.Value)
+					return Runtime.GetNSObject<NSColor>(Messaging.IntPtr_objc_msgSend(s_classHandle, s_selLinkColorHandle)).ToEtoWithAppearance(false);
+
+				return Highlight;
+			}
 		}
 	}
 }

@@ -127,9 +127,6 @@
     <Compile Include="Forms\SaveFileDialog.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\TableLayoutHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="IO\SystemIcons.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -192,7 +189,6 @@
     <Compile Include="Forms\ColorDialogHandlerOld.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
-    <Compile Include="CustomControls\BaseComboBox.cs" />
     <Compile Include="CustomControls\DateComboBox.cs" />
     <Compile Include="CustomControls\DateComboBoxDialog.cs" />
     <Compile Include="CustomControls\AnalogClock.cs" />
@@ -288,6 +284,10 @@
     </Compile>
     <Compile Include="Forms\LinuxTrayIndicatorHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />
+    <Compile Include="Forms\TableLayoutHandler.gtk2.cs" />
+    <Compile Include="CustomControls\BaseComboBox.gtk2.cs" />
+    <Compile Include="CustomControls\BaseComboBox.gtk3.cs" />
+    <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -12,6 +12,7 @@ using sd = System.Drawing;
 using sdi = System.Drawing.Imaging;
 using sc = System.ComponentModel;
 using System.Collections.Specialized;
+using System.IO;
 
 namespace Eto.WinForms.Forms
 {
@@ -26,29 +27,53 @@ namespace Eto.WinForms.Forms
 		{
 			Control = control;
 		}
+
+		public override string[] Types => Control.GetFormats();
+
+		protected override swf.IDataObject InnerDataObject => Control;
+
+		protected override bool InnerContainsFileDropList => Control.ContainsFileDropList();
+
+		protected override StringCollection InnerGetFileDropList() => Control.GetFileDropList();
+
+		public override bool Contains(string type) => Control.GetDataPresent(type);
+
+		public override void Clear() => Control = new swf.DataObject();
+
+		public override bool ContainsText => Control.ContainsText();
+
+		public override bool ContainsHtml => Control.ContainsText(swf.TextDataFormat.Html);
+
+		protected override bool InnerContainsImage => Control.ContainsImage();
+
+		protected override sd.Image InnerGetImage() => Control.GetImage();
+
+		protected override object InnerGetData(string type) => Control.GetData(type);
 	}
 
-	public class DataObjectHandler<TWidget, TCallback> : WidgetHandler<swf.DataObject, TWidget, TCallback>, IDataObject
+	public abstract class DataObjectHandler<TWidget, TCallback> : WidgetHandler<swf.DataObject, TWidget, TCallback>, IDataObject
 		where TWidget: Widget, IDataObject
 	{
+		public const string UniformResourceLocatorW_Format = "UniformResourceLocatorW";
+		public const string UniformResourceLocator_Format = "UniformResourceLocator";
 
-		protected void Update()
+		protected virtual void Update()
 		{
 		}
 
-		public void SetData(byte[] value, string type)
-		{
-			Control.SetData(type, value);
-			Update();
-		}
-
-		public void SetString(string value, string type)
+		public virtual void SetData(byte[] value, string type)
 		{
 			Control.SetData(type, value);
 			Update();
 		}
 
-		public string Html
+		public virtual void SetString(string value, string type)
+		{
+			Control.SetData(type, value);
+			Update();
+		}
+
+		public virtual string Html
 		{
 			set
 			{
@@ -61,7 +86,7 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public string Text
+		public virtual string Text
 		{
 			set
 			{
@@ -74,173 +99,189 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		protected abstract bool InnerContainsImage { get; }
+		protected abstract sd.Image InnerGetImage();
+
+
 		public Image Image
 		{
-			set
-			{
-				var dib = (value as Bitmap)?.ToDIB();
-				if (dib != null)
-					Control.SetData(swf.DataFormats.Dib, dib);
-				else
-					Control.SetImage(value.ToSD());
-				Update();
-			}
 			get
 			{
-				Image result = null;
-
-				try
+				if (InnerContainsImage && InnerGetImage() is sd.Bitmap bmp)
+					return bmp.ToEto();
+				if (Contains(swf.DataFormats.Dib) && InnerGetData(swf.DataFormats.Dib) is Stream stream)
+					return Win32.FromDIB(stream);
+				return null;
+			}
+			set
+			{
+				var dib = (value as Bitmap).ToDIB();
+				if (dib != null)
 				{
-					var sdimage = GetImageFromClipboard() as sd.Bitmap;
-
-					return sdimage.ToEto();
+					// write a DIB here, so we can preserve transparency of the image
+					Control.SetData(swf.DataFormats.Dib, dib);
 				}
-				catch
-				{
-				}
+				else
+					Control.SetImage(value.ToSD());
 
-				return result;
+				Update();
 			}
 		}
 
-		/// <summary>
-		/// see http://stackoverflow.com/questions/11273669/how-to-paste-a-transparent-image-from-the-clipboard-in-a-c-sharp-winforms-app
-		/// </summary>
-		sd.Image GetImageFromClipboard()
-		{
-			if (Control.GetDataPresent(swf.DataFormats.Dib))
-			{
-				var dib = ((System.IO.MemoryStream)Control.GetData(swf.DataFormats.Dib)).ToArray();
+		protected abstract swf.IDataObject InnerDataObject { get; }
 
-				var width = BitConverter.ToInt32(dib, 4);
-				var height = BitConverter.ToInt32(dib, 8);
-				var bpp = BitConverter.ToInt16(dib, 14);
+		protected abstract bool InnerContainsFileDropList { get; }
+		protected abstract StringCollection InnerGetFileDropList();
 
-				if (bpp == 32)
-				{
-					var gch = GCHandle.Alloc(dib, GCHandleType.Pinned);
 
-					sd.Bitmap bmp = null;
-
-					try
-					{
-						var ptr = new IntPtr((long)gch.AddrOfPinnedObject() + 40);
-
-						bmp = new sd.Bitmap(width, height, width * 4, sdi.PixelFormat.Format32bppArgb, ptr);
-
-						var result = new sd.Bitmap(bmp);
-
-						// Images are rotated and flipped for some reason.
-						// This rotates them back.
-						result.RotateFlip(sd.RotateFlipType.Rotate180FlipX);
-
-						return result;
-					}
-					finally
-					{
-						gch.Free();
-
-						if (bmp != null)
-							bmp.Dispose();
-					}
-				}
-			}
-			if (Control.ContainsFileDropList())
-			{
-				var list = Control.GetFileDropList();
-				if (list != null && list.Count > 0)
-				{
-					var path = list[0];
-					sd.Image bmp = null;
-					try
-					{
-						bmp = sd.Image.FromFile(path);
-						var result = new sd.Bitmap(bmp);
-						return result;
-					}
-					catch
-					{
-					}
-					finally
-					{
-						if (bmp != null)
-							bmp.Dispose();
-					}
-				}
-			}
-
-			return Control.ContainsImage() ? Control.GetImage() : null;
-		}
+		protected abstract object InnerGetData(string type);
 
 		public byte[] GetData(string type)
 		{
-			if (Control.GetDataPresent(type))
+			if (Contains(type))
 			{
-				var data = Control.GetData(type);
-				var bytes = data as byte[];
-				if (bytes != null)
-					return bytes;
-				if (data != null)
-				{
-					var converter = sc.TypeDescriptor.GetConverter(data.GetType());
-					if (converter != null && converter.CanConvertTo(typeof(byte[])))
-					{
-						return converter.ConvertTo(data, typeof(byte[])) as byte[];
-					}
-
-#pragma warning disable 618
-					var etoConverter = TypeDescriptor.GetConverter(data.GetType());
-					if (etoConverter != null && etoConverter.CanConvertTo(typeof(byte[])))
-					{
-						return etoConverter.ConvertTo(data, typeof(byte[])) as byte[];
-					}
-#pragma warning restore 618
-				}
-				if (data is string)
-				{
-					return Encoding.UTF8.GetBytes(data as string);
-				}
-				if (data is IConvertible)
-				{
-					return Convert.ChangeType(data, typeof(byte[])) as byte[];
-				}
+				return GetAsData(InnerGetData(type));
 			}
 			return null;
 		}
 
-		public string GetString(string type)
+		protected byte[] GetAsData(object data)
 		{
-			if (Control.GetFormats().Contains(type))
-				return Control.GetData(type) as string;
+			if (data is byte[] bytes)
+				return bytes;
+			if (data is string str)
+				return Encoding.UTF8.GetBytes(str);
+			if (data is MemoryStream ms)
+				return ms.ToArray();
+			if (data is Stream stream)
+			{
+				ms = new MemoryStream();
+				stream.CopyTo(ms);
+				ms.Position = 0;
+				return ms.ToArray();
+			}
+			if (data != null)
+			{
+				var converter = sc.TypeDescriptor.GetConverter(data.GetType());
+				if (converter != null && converter.CanConvertTo(typeof(byte[])))
+				{
+					return converter.ConvertTo(data, typeof(byte[])) as byte[];
+				}
+#pragma warning disable 618
+				var etoConverter = TypeDescriptor.GetConverter(data.GetType());
+				if (etoConverter != null && etoConverter.CanConvertTo(typeof(byte[])))
+				{
+					return etoConverter.ConvertTo(data, typeof(byte[])) as byte[];
+				}
+#pragma warning restore 618
+			}
+			if (data is IConvertible)
+				return Convert.ChangeType(data, typeof(byte[])) as byte[];
 			return null;
 		}
 
-		public string[] Types => Control.GetFormats();
+		public string GetString(string type) => GetString(type, Encoding.UTF8);
 
-		public Uri[] Uris
+		protected virtual string GetString(string type, Encoding encoding)
+		{
+			if (string.IsNullOrEmpty(type))
+				return Text;
+			if (!Contains(type))
+				return null;
+			return GetAsString(InnerGetData(type), encoding);
+		}
+
+		protected string GetAsString(object data, Encoding encoding)
+		{
+			if (data is string str)
+				return str;
+			if (data is MemoryStream ms)
+				return encoding.GetString(ms.ToArray()).TrimEnd('\0'); // can contain a zero at the end, thanks windows.
+			if (data != null)
+			{
+				var converter = sc.TypeDescriptor.GetConverter(data.GetType());
+				if (converter != null && converter.CanConvertTo(typeof(string)))
+				{
+					return converter.ConvertTo(data, typeof(string)) as string;
+				}
+#pragma warning disable 618
+				var etoConverter = TypeDescriptor.GetConverter(data.GetType());
+				if (etoConverter != null && etoConverter.CanConvertTo(typeof(string)))
+				{
+					return etoConverter.ConvertTo(data, typeof(string)) as string;
+				}
+#pragma warning restore 618
+			}
+			if (data is IConvertible)
+				return Convert.ChangeType(data, typeof(string)) as string;
+			return null;
+		}
+
+		public abstract string[] Types { get; }
+
+		public virtual Uri[] Uris
 		{
 			get
 			{
-				return Control.ContainsFileDropList() ? Control.GetFileDropList().OfType<string>().Select(s => new Uri(s)).ToArray() : null;
+				var list = InnerContainsFileDropList
+					? InnerGetFileDropList().OfType<string>().Select(s => new Uri(s))
+					: null;
+
+				string urlString = null;
+				if (Contains(UniformResourceLocatorW_Format))
+					urlString = GetString(UniformResourceLocatorW_Format, Encoding.Unicode);
+				else if (Contains(UniformResourceLocator_Format))
+					urlString = GetString(UniformResourceLocator_Format);
+
+				if (!string.IsNullOrEmpty(urlString) && Uri.TryCreate(urlString, UriKind.RelativeOrAbsolute, out var uri))
+				{
+					var uris = new[] { uri };
+					list = list?.Concat(uris) ?? uris;
+				}
+				return list?.ToArray();
 			}
 			set
 			{
 				if (value != null)
 				{
+					var coll = value as IList<Uri> ?? value.ToList();
+
+					// file uris
 					var files = new StringCollection();
-					files.AddRange(value.Select(r => r.AbsolutePath).ToArray());
-					Control.SetFileDropList(files);
+					files.AddRange(coll.Where(r => r.IsFile).Select(r => r.AbsolutePath).ToArray());
+					if (files.Count > 0)
+						Control.SetFileDropList(files);
+
+					// web uris (windows only supports one)
+					var url = coll.Where(r => !r.IsFile).FirstOrDefault();
+					if (url != null)
+					{
+						SetString(url.ToString(), UniformResourceLocator_Format);
+						SetString(url.ToString(), UniformResourceLocatorW_Format);
+					}
 				}
 				else
 				{
-					Control.SetFileDropList(null);
+					Control.SetData(swf.DataFormats.FileDrop, null);
+					Control.SetData(UniformResourceLocatorW_Format, null);
+					Control.SetData(UniformResourceLocator_Format, null);
 				}
+				Update();
 			}
 		}
 
-		public virtual void Clear()
-		{
-			Control = new swf.DataObject();
-		}
+		public abstract bool ContainsText { get; }
+
+		public abstract bool ContainsHtml { get; }
+
+		public bool ContainsImage => InnerContainsImage || Contains(swf.DataFormats.Dib);
+
+		public bool ContainsUris => InnerContainsFileDropList 
+			|| Contains(UniformResourceLocatorW_Format)
+			|| Contains(UniformResourceLocator_Format);
+
+		public abstract void Clear();
+
+		public abstract bool Contains(string type);
 	}
 }

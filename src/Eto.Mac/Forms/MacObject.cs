@@ -63,9 +63,9 @@ namespace Eto.Mac.Forms
 		///   <item>{CGSize=ff} - CGSize struct with float values</item>
 		/// </list>
 		/// </summary>
-		public new void AddMethod (IntPtr selector, Delegate action, string arguments, object control = null)
+		public new bool AddMethod (IntPtr selector, Delegate action, string arguments, object control = null)
 		{
-			base.AddMethod (selector, action, arguments, control ?? EventObject);
+			return base.AddMethod (selector, action, arguments, control ?? EventObject);
 		}
 
 		public new bool HasMethod(IntPtr selector, object control = null)

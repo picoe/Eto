@@ -24,7 +24,7 @@ namespace Eto.Drawing
 		/// <returns>True if this converter can convert from the specified type, false otherwise</returns>
 		public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string);
 		}
 
 		/// <summary>
@@ -95,7 +95,7 @@ namespace Eto.Drawing
 		/// <returns>True if this converter can convert from the specified type, false otherwise</returns>
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string);
 		}
 
 		/// <summary>

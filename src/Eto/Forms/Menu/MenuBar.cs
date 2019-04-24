@@ -36,7 +36,7 @@ namespace Eto.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[ContentProperty("Items")]
 	[Handler(typeof(MenuBar.IHandler))]
-	public class MenuBar : Menu, ISubmenu
+	public class MenuBar : Menu, ISubmenu, IBindableWidgetContainer
 	{
 		bool loaded;
 		MenuItemCollection items;
@@ -175,6 +175,8 @@ namespace Eto.Forms
 			get { return HelpMenu.Items; }
 		}
 
+		IEnumerable<BindableWidget> IBindableWidgetContainer.Children => Items;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
 		/// </summary>
@@ -244,23 +246,6 @@ namespace Eto.Forms
 			foreach (var item in Items)
 				item.OnLoad(e);
 		}
-
-		/// <summary>
-		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
-		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			base.OnDataContextChanged(e);
-			foreach (var item in Items)
-				item.TriggerDataContextChanged();
-		}
-
 
 		/// <summary>
 		/// Handler interface for the <see cref="MenuBar"/>

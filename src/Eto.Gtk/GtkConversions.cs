@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
@@ -510,14 +512,16 @@ namespace Eto.GtkSharp
 		{
 			Keys key = args.Key.ToEto() | args.State.ToEtoKey();
 
+			KeyEventType keyEventType = args.Type == Gdk.EventType.KeyRelease ? KeyEventType.KeyUp : KeyEventType.KeyDown;
+
 			if (key != Keys.None)
 			{
 				Keys modifiers = (key & Keys.ModifierMask);
 				if (args.KeyValue <= 128 && ((modifiers & ~Keys.Shift) == 0))
-					return new KeyEventArgs(key, KeyEventType.KeyDown, (char)args.KeyValue);
-				return new KeyEventArgs(key, KeyEventType.KeyDown);
+					return new KeyEventArgs(key, keyEventType, (char)args.KeyValue);
+				return new KeyEventArgs(key, keyEventType);
 			}
-			return args.KeyValue <= 128 ? new KeyEventArgs(key, KeyEventType.KeyDown, (char)args.KeyValue) : null;
+			return args.KeyValue <= 128 ? new KeyEventArgs(key, keyEventType, (char)args.KeyValue) : null;
 		}
 
 		public static MouseButtons ToEtoMouseButtons(this Gdk.ModifierType modifiers)
@@ -804,18 +808,8 @@ namespace Eto.GtkSharp
 		public static bool SetSelectedUris2(this Gtk.SelectionData data, string[] uris)
 		{
 			int length = uris?.Length ?? 0;
-			IntPtr[] array = new IntPtr[length + 1];
-			for (int i = 0; i < length; i++)
-			{
-				array[i] = GLib.Marshaller.StringToPtrGStrdup(uris[i]);
-			}
-			array[length] = IntPtr.Zero;
-			var result = NativeMethods.gtk_selection_data_set_uris(data.Handle, array);
-			for (int i = 0; i < length; i++)
-			{
-				GLib.Marshaller.Free(array[i]);
-			}
-			return result;
+			var ptr = GLib.Marshaller.StringArrayToNullTermPointer(uris);
+			return NativeMethods.gtk_selection_data_set_uris(data.Handle, ptr);
 		}
 
 		public static string[] GetSelectedUris(this Gtk.SelectionData data)
@@ -823,5 +817,14 @@ namespace Eto.GtkSharp
 			IntPtr ptr = NativeMethods.gtk_selection_data_get_uris(data.Handle);
 			return GLib.Marshaller.NullTermPtrToStringArray(ptr, true);
 		}
+
+#if GTK3
+		public static void AdjustMinimumSizeRequest(this Size minimumSize, Gtk.Orientation orientation, ref int minimum_size, ref int natural_size)
+		{
+			var min = orientation == Gtk.Orientation.Horizontal ? minimumSize.Width : minimumSize.Height;
+			minimum_size = Math.Max(minimum_size, min);
+			natural_size = Math.Max(natural_size, min);
+		}
+#endif
 	}
 }

@@ -43,31 +43,62 @@ namespace Eto.Mac
 {
 	public static partial class MacConversions
 	{
-		public static NSColor ToNSUI(this Color color) => NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
+		public static NSColor ToNSUI(this Color color)
+		{
+			if (color.ControlObject is NSColor nscolor)
+				return nscolor;
+			if (color.ControlObject is CGColor cgcolor && MacVersion.IsAtLeast(10, 8))
+				return NSColor.FromCGColor(cgcolor);
+			return NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
+		}
 
 		public static NSColor ToNSUI(this Color color, bool calibrated)
 		{
+			if (color.ControlObject is NSColor nscolor)
+				return nscolor;
+			if (color.ControlObject is CGColor cgcolor && MacVersion.IsAtLeast(10, 8))
+				return NSColor.FromCGColor(cgcolor);
 			return calibrated
 				? NSColor.FromCalibratedRgba(color.R, color.G, color.B, color.A)
 				: NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
 		}
 
-		public static Color ToEto(this NSColor color, bool calibrated = true)
+		public static Color ToEtoWithAppearance(this NSColor color, bool calibrated = true)
 		{
 			if (color == null)
 				return Colors.Transparent;
+			if (!MacVersion.IsAtLeast(10, 9))
+				return color.ToEto(calibrated);
+
+			// use the current appearance to get the proper RGB values (it can be different than when the application started).
+			NSAppearance saved = NSAppearance.CurrentAppearance;
+			var appearance = NSApplication.SharedApplication.MainWindow?.EffectiveAppearance;
+			if (appearance != null)
+				NSAppearance.CurrentAppearance = appearance;
+
+			var result = color.ToEto(calibrated);
+			NSAppearance.CurrentAppearance = saved;
+			return result;
+		}
+
+		public static Color ToEto(this NSColor color, bool calibrated = false)
+		{
+			if (color == null)
+				return Colors.Transparent;
+
 			var colorspace = calibrated ? NSColorSpace.CalibratedRGB : NSColorSpace.DeviceRGB;
 			var converted = color.UsingColorSpaceFast(colorspace);
 			if (converted == null)
 			{
 				// Convert named (e.g. system) colors to RGB using its CGColor
-				converted = color.CGColor.ToNS().UsingColorSpaceFast(colorspace);
+				converted = color.ToCG().ToNS().UsingColorSpaceFast(colorspace);
+
 				if (converted == null)
-					throw new ArgumentOutOfRangeException("color", "Color cannot be converted to an RGB colorspace");
+					return new Color(color, 0, 0, 0, 1f);
 			}
 			nfloat red, green, blue, alpha;
 			converted.GetRgba(out red, out green, out blue, out alpha);
-			return new Color((float)red, (float)green, (float)blue, (float)alpha);
+			return new Color(color, (float)red, (float)green, (float)blue, (float)alpha);
 		}
 
 		public static NSRange ToNS(this Range<int> range)
@@ -189,17 +220,17 @@ namespace Eto.Mac
 			return new GridCellMouseEventArgs(column, row, col, item, buttons, modifiers, location);
 		}
 
-		public static PointF GetLocation(NSView view, NSEvent theEvent) => theEvent.LocationInWindow.ToEto(view);
-
-		public static MouseEventArgs GetMouseEvent(NSView view, NSEvent theEvent, bool includeWheel)
+		public static MouseEventArgs GetMouseEvent(IMacViewHandler handler, NSEvent theEvent, bool includeWheel)
 		{
-			var pt = MacConversions.GetLocation(view, theEvent);
+			var view = handler.ContainerControl;
+			var pt = theEvent.LocationInWindow;
+			pt = handler.GetAlignmentPointForFramePoint(pt);
 			Keys modifiers = theEvent.ModifierFlags.ToEto();
 			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
 			if (includeWheel)
 				delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
-			return new MouseEventArgs(buttons, modifiers, pt, delta);
+			return new MouseEventArgs(buttons, modifiers, pt.ToEto(view), delta);
 		}
 
 		public static MouseButtons GetMouseButtons(this NSEvent theEvent)
@@ -336,16 +367,19 @@ namespace Eto.Mac
 			KeyEventArgs kpea;
 			Keys modifiers = theEvent.ModifierFlags.ToEto();
 			key |= modifiers;
+
+			KeyEventType keyEventType = theEvent.Type == NSEventType.KeyUp ? KeyEventType.KeyUp : KeyEventType.KeyDown;
+
 			if (key != Keys.None)
 			{
 				if (((modifiers & ~(Keys.Shift | Keys.Alt)) == 0))
-					kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
+					kpea = new KeyEventArgs(key, keyEventType, keyChar);
 				else
-					kpea = new KeyEventArgs(key, KeyEventType.KeyDown);
+					kpea = new KeyEventArgs(key, keyEventType);
 			}
 			else
 			{
-				kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
+				kpea = new KeyEventArgs(key, keyEventType, keyChar);
 			}
 			return kpea;
 		}
@@ -363,6 +397,11 @@ namespace Eto.Mac
 		public static SizeF ToEtoSize(this NSEdgeInsets insets)
 		{
 			return new SizeF((float)(insets.Left + insets.Right), (float)(insets.Top + insets.Bottom));
+		}
+
+		public static Padding ToEto(this NSEdgeInsets insets)
+		{
+			return new Padding((int)insets.Left, (int)insets.Top, (int)insets.Right, (int)insets.Bottom);
 		}
 
 		public static CalendarMode ToEto(this NSDatePickerMode mode)

@@ -64,7 +64,7 @@ namespace Eto.GtkSharp.CustomControls
 			this.ButtonPressEvent += delegate(object o, Gtk.ButtonPressEventArgs args) {
 				if (args.Event.Type == Gdk.EventType.ButtonPress) {
 					// single click only!
-					Close ();
+					CloseDialog ();
 				}
 			};
 			
@@ -100,7 +100,7 @@ namespace Eto.GtkSharp.CustomControls
 		}
 #endif
 
-		void Close ()
+		void CloseDialog ()
 		{
 			this.RemoveGrab ();
 			Destroy();
@@ -130,7 +130,7 @@ namespace Eto.GtkSharp.CustomControls
 			
 			calendar.DaySelectedDoubleClick += delegate {
 				OnDateChanged (EventArgs.Empty);
-				Close ();
+				CloseDialog ();
 			};
 
 			vbox.PackStart(calendar, false, false, 0);
@@ -152,7 +152,7 @@ namespace Eto.GtkSharp.CustomControls
 					UpdateClock ();
 				}
 				OnDateChanged (EventArgs.Empty);
-				Close ();
+				CloseDialog ();
 			};
 			
 			hbox.PackStart (todayButton, false, false, 0);

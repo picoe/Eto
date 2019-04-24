@@ -7,6 +7,7 @@ using Eto.WinForms.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.WinForms.Forms.Menu;
+using System.Reflection;
 
 namespace Eto.WinForms.Forms
 {
@@ -650,9 +651,23 @@ namespace Eto.WinForms.Forms
 			get { return Widget.Properties.Get<bool?>(WindowsControl.InternalVisibleKey) ?? true; }
 		}
 
+		static MethodInfo getStateMethod = typeof(swf.Control).GetMethod("GetState", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		bool WouldBeVisible
+		{
+			get
+			{
+				// use Control.GetState() to tell if the control should be visible
+				// see https://stackoverflow.com/a/5980637/981187
+				var ctl = ContainerControl;
+				if (getStateMethod == null) return ctl.Visible;
+				return (bool)(getStateMethod.Invoke(ctl, new object[] { 2 }));
+			}
+		}
+
 		public virtual bool Visible
 		{
-			get { return ContainerControl.IsHandleCreated ? ContainerControl.Visible : Widget.Properties.Get<bool?>(WindowsControl.InternalVisibleKey) ?? true; }
+			get { return ContainerControl.IsHandleCreated ? WouldBeVisible : Widget.Properties.Get<bool?>(WindowsControl.InternalVisibleKey) ?? true; }
 			set
 			{
 				if (Visible != value)

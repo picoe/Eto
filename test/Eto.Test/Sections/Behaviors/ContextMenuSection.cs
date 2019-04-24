@@ -19,6 +19,8 @@ namespace Eto.Test.Sections.Behaviors
 
 		ContextMenuSection(bool inDialog)
 		{
+			Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
+
 			var relativeToLabelCheckBox = new CheckBox { Text = "Relative to label" };
 			relativeToLabelCheckBox.CheckedBinding.Bind(this, c => c.RelativeToLabel);
 
@@ -120,6 +122,13 @@ namespace Eto.Test.Sections.Behaviors
 			_menu.Items.Add(new CheckMenuItem { Text = "Check 7", Shortcut = Keys.Alt | Keys.Application | Keys.G });
 			_menu.Items.Add(new CheckMenuItem { Text = "Disabled Check", Checked = true, Enabled = false });
 
+			_menu.Items.AddSeparator();
+			var hiddenItem = new ButtonMenuItem { Text = "This button should not be visible!", Visible = false };
+			var toggleHiddenItem = new ButtonMenuItem { Text = "Toggle Hidden Item" };
+			toggleHiddenItem.Click += (sender, e) => hiddenItem.Visible = !hiddenItem.Visible;
+			_menu.Items.Add(hiddenItem);
+			_menu.Items.Add(toggleHiddenItem);
+
 			LogEvents(_menu);
 			return _menu;
 		}
@@ -132,7 +141,6 @@ namespace Eto.Test.Sections.Behaviors
 				BackgroundColor = Colors.Blue,
 				TextColor = Colors.White,
 				TextAlignment = TextAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
 				Text = "Click on me!"
 			};
 			label.MouseDown += (sender, e) =>

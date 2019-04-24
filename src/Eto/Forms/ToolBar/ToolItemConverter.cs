@@ -7,7 +7,7 @@ namespace Eto.Forms
 	{
 		public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 		{
-			return typeof(Command).IsAssignableFrom(sourceType) || base.CanConvertFrom(context, sourceType);
+			return typeof(Command).IsAssignableFrom(sourceType);
 		}
 
 		public override bool CanConvertTo(sc.ITypeDescriptorContext context, Type destinationType)

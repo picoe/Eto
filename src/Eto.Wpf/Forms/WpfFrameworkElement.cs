@@ -79,13 +79,17 @@ namespace Eto.Wpf.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
+	class WpfFrameworkElement
+	{
+		internal static readonly object Cursor_Key = new object();
+	}
+
 	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
 		where TControl : System.Windows.FrameworkElement
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
 		Size? newSize;
-		Cursor cursor;
 		sw.Size parentMinimumSize;
 		bool isMouseOver;
 		bool isMouseCaptured;
@@ -254,11 +258,13 @@ namespace Eto.Wpf.Forms
 
 		public virtual Cursor Cursor
 		{
-			get { return cursor; }
+			get => Widget.Properties.Get<Cursor>(WpfFrameworkElement.Cursor_Key);
 			set
 			{
-				cursor = value;
-				Control.Cursor = cursor != null ? ((CursorHandler)cursor.Handler).Control : null;
+				if (Widget.Properties.TrySet(WpfFrameworkElement.Cursor_Key, value))
+				{
+					ContainerControl.Cursor = (value?.Handler as CursorHandler)?.Control;
+				}
 			}
 		}
 
@@ -625,7 +631,7 @@ namespace Eto.Wpf.Forms
 			var args = e.ToEto(Control, swi.MouseButtonState.Released);
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
-			if (isMouseCaptured && Control.IsMouseCaptured)
+			if ((isMouseCaptured || args.Handled) && Control.IsMouseCaptured)
 			{
 				Control.ReleaseMouseCapture();
 				isMouseCaptured = false;
@@ -836,6 +842,12 @@ namespace Eto.Wpf.Forms
 			// otherwise, we're hosted it something native like win32 or mfc.
 			// TODO: check if handle is a window?
 			return WinFormsHelpers.ToEtoWindow(handle);
+		}
+
+		protected void AttachPropertyChanged(sw.DependencyProperty property, EventHandler handler, sw.DependencyObject control = null)
+		{
+			control = control ?? Control;
+			Widget.Properties.Set(property, PropertyChangeNotifier.Register(property, handler, control));
 		}
 	}
 }

@@ -125,5 +125,23 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.IsNull(dropDown.SelectedValue, "#2.2");
 			});
 		}
+
+		[Test, ManualTest]
+		public void DropDownShouldAlignWithTextBox()
+		{
+			ManualForm("DropDown should align to the left and right of the text box,\nwithout being clipped.", form =>
+			{
+				return new TableLayout
+				{
+					Rows =
+					{
+						new TableRow(new TableCell(new TextBox { Text = "TextBox"}, true), new TableCell(new DropDown { }, true)),
+						new TableRow(new DropDown { }),
+						null
+					}
+				};
+			});
+		}
+
 	}
 }

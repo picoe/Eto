@@ -40,7 +40,13 @@ namespace Eto.GtkSharp.Forms.Controls
 				Handler.Callback.OnColorChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
-
+#if GTK3
+		public Eto.Drawing.Color Color
+		{
+			get { return Control.Rgba.ToEto(); }
+			set { Control.Rgba = value.ToRGBA(); }
+		}
+#else
 		public Eto.Drawing.Color Color
 		{
 			get { return Control.Color.ToEto(Control.Alpha); }
@@ -49,7 +55,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.Alpha = (ushort)(value.A * ushort.MaxValue);
 			}
 		}
-
+#endif
 		public bool AllowAlpha
 		{
 			get { return Control.UseAlpha; }

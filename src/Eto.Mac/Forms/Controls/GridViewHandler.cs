@@ -95,7 +95,7 @@ namespace Eto.Mac.Forms.Controls
 				var handler = Handler;
 				if (handler != null)
 				{
-					var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+					var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 					if (theEvent.ClickCount >= 2)
 						handler.Callback.OnMouseDoubleClick(handler.Widget, args);
 					else
@@ -141,8 +141,8 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Layout()
 			{
-				base.Layout();
 				Handler?.PerformLayout();
+				base.Layout();
 			}
 		}
 
@@ -261,7 +261,7 @@ namespace Eto.Mac.Forms.Controls
 					// give MouseMove event a chance to start the drag
 					h.DragPasteboard = pboard;
 					h.CustomSelectedRows = rowIndexes.Select(r => (int)r).ToList();
-					var args = MacConversions.GetMouseEvent(h.ContainerControl, NSApplication.SharedApplication.CurrentEvent, false);
+					var args = MacConversions.GetMouseEvent(h, NSApplication.SharedApplication.CurrentEvent, false);
 					h.Callback.OnMouseMove(h.Widget, args);
 					h.DragPasteboard = null;
 					h.CustomSelectedRows = null;
@@ -295,10 +295,11 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 					var columns = NSIndexSet.FromNSRange(new NSRange(0, Handler.Control.TableColumns().Length));
-					if (previouslySelected != null)
+					if (previouslySelected?.Count > 0)
 						Handler.Control.ReloadData(previouslySelected, columns);
 					var selected = Handler.Control.SelectedRows;
-					Handler.Control.ReloadData(selected, columns);
+					if (selected?.Count > 0)
+						Handler.Control.ReloadData(selected, columns);
 					previouslySelected = selected;
 				}
 			}

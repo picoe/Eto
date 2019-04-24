@@ -22,7 +22,7 @@ namespace Eto.Forms
 	[sc.TypeConverter(typeof(ControlConverter))]
 	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown
@@ -33,7 +33,11 @@ namespace Eto.Forms
 		/// 
 		/// The <see cref="OnUnLoad"/> method will set this value to <c>false</c> when the control is removed from its parent
 		/// </remarks>
-		public bool Loaded { get; private set; }
+		public bool Loaded
+		{
+			get => GetState(StateFlag.Loaded);
+			private set => SetState(StateFlag.Loaded, value);
+		}
 
 		/// <summary>
 		/// Gets an enumeration of controls that are in the visual tree.
@@ -75,7 +79,7 @@ namespace Eto.Forms
 					var foundVisual = false;
 					foreach (var parent in Parents.OfType<Container>())
 					{
-						if (!foundVisual && parent.Properties.Get<bool>(IsVisualControl_Key))
+						if (!foundVisual && parent.GetState(StateFlag.IsVisualControl))
 							foundVisual = true;
 						else
 							return parent;
@@ -85,20 +89,14 @@ namespace Eto.Forms
 			}
 		}
 
-		static object IsVisualControl_Key = new object();
-
 		/// <summary>
 		/// Gets a value indicating this <see cref="T:Eto.Forms.Control"/> is part of the visual tree.
 		/// </summary>
 		/// <value><c>true</c> if is visual control; otherwise, <c>false</c>.</value>
 		public bool IsVisualControl
 		{
-			get {
-				if (Properties.ContainsKey(IsVisualControl_Key))
-					return Properties.Get<bool>(IsVisualControl_Key);
-				return Parent?.IsVisualControl ?? false; // traverse up logical tree
-			}
-			internal set { Properties.Set(IsVisualControl_Key, value); }
+			get => GetState(StateFlag.IsVisualControl, StateFlag.IsVisualControlHasValue) ?? Parent?.IsVisualControl ?? false; // traverse up logical tree
+			internal set => SetState(StateFlag.IsVisualControl, StateFlag.IsVisualControlHasValue, value);
 		}
 
 		static readonly object TagKey = new object();
@@ -491,6 +489,8 @@ namespace Eto.Forms
 		{
 			Properties.TriggerEvent(PreLoadKey, this, e);
 			Handler.OnPreLoad(e);
+
+			OnApplyCascadingStyles();
 		}
 
 		static readonly object LoadKey = new object();
@@ -958,7 +958,7 @@ namespace Eto.Forms
 		void PostAttach()
 		{
 			// if the control is disposed before we get here Handler will be null, so omit calling OnLoadComplete
-			if (Handler != null)
+			if (!IsDisposed && Handler != null)
 				OnLoadComplete(EventArgs.Empty);
 		}
 
@@ -999,6 +999,12 @@ namespace Eto.Forms
 		{
 			using (Platform.Context)
 				OnUnLoad(e);
+		}
+
+		internal void TriggerStyleChanged(EventArgs e)
+		{
+			using (Platform.Context)
+				OnStyleChanged(e);
 		}
 
 		/// <summary>
@@ -1262,6 +1268,45 @@ namespace Eto.Forms
 		{
 			Handler.DoDragDrop(data, allowedEffects);
 		}
+
+		/// <summary>
+		/// Handles when the <see cref="Style"/> is changed.
+		/// </summary>
+		/// <remarks>
+		/// This applies the cascading styles to the control and any of its children.
+		/// </remarks>
+		protected override void OnStyleChanged(EventArgs e)
+		{
+			base.OnStyleChanged(e);
+
+			// already loaded, re-apply styles as they have changed
+			if (Loaded)
+				OnApplyCascadingStyles();
+		}
+
+		/// <summary>
+		/// Called when cascading styles should be applied to this control.
+		/// </summary>
+		/// <remarks>
+		/// You don't typically have to call this directly, but override it to apply styles to any child item(s)
+		/// that may need styling at the same time.
+		/// 
+		/// This is automatically done for any Container based control and its child controls.
+		/// </remarks>
+		protected virtual void OnApplyCascadingStyles() => ApplyStyles(this, Style);
+
+		/// <summary>
+		/// Applies the styles to the specified <paramref name="widget"/> up the parent chain.
+		/// </summary>
+		/// <remarks>
+		/// This traverses up the parent chain to apply any cascading styles defined in parent container objects.
+		/// 
+		/// Call this method on any child widget of a control.
+		/// </remarks>
+		/// <param name="widget">Widget to style.</param>
+		/// <param name="style">Style of the widget to apply.</param>
+		protected virtual void ApplyStyles(object widget, string style) => Parent?.ApplyStyles(this, Style);
+
 
 		/// <summary>
 		/// Handles the disposal of this control

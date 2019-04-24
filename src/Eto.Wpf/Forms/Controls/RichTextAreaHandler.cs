@@ -703,6 +703,10 @@ namespace Eto.Wpf.Forms.Controls
 			if (string.Equals(familyName, family.Source, StringComparison.OrdinalIgnoreCase))
 				return null;
 
+			// can't find fonts with face suffixes in their 'Source' property (ex: DINPro-Regular) so remove -Regular suffix
+			if (!family.Source.Contains(familyName) && family.Source.Contains("-"))
+				familyName = family.Source.Substring(0, family.Source.IndexOf('-'));
+
 			var newFamily = new swm.FontFamily(familyName);
 			var typefaces = newFamily.GetTypefaces();
 

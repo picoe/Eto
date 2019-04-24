@@ -63,7 +63,7 @@ namespace Eto.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[ContentProperty("Items")]
 	[Handler(typeof(ToolBar.IHandler))]
-	public class ToolBar : Tool
+	public class ToolBar : Tool, IBindableWidgetContainer
 	{
 		internal new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -109,6 +109,8 @@ namespace Eto.Forms
 			set { Handler.TextAlign = value; }
 		}
 
+		IEnumerable<BindableWidget> IBindableWidgetContainer.Children => Items;
+
 		/// <summary>
 		/// Called when the tool item is loaded to be shown on the form.
 		/// </summary>
@@ -140,22 +142,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
-		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			base.OnDataContextChanged(e);
-			foreach (var item in Items)
-				item.TriggerDataContextChanged();
-		}
-
-		/// <summary>
 		/// Handler interface for the <see cref="ToolBar"/>.
 		/// </summary>
 		public new interface IHandler : Widget.IHandler
@@ -171,7 +157,8 @@ namespace Eto.Forms
 			/// Removes the specified button.
 			/// </summary>
 			/// <param name="button">Button to remove.</param>
-			void RemoveButton(ToolItem button);
+			/// <param name="index">Index of the button to remove.</param>
+			void RemoveButton(ToolItem button, int index);
 
 			/// <summary>
 			/// Clears all buttons from the toolbar

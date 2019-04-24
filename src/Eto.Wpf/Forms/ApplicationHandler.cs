@@ -109,7 +109,6 @@ namespace Eto.Wpf.Forms
 		{
 			var unhandledExceptionArgs = new UnhandledExceptionEventArgs(e.Exception, true);
 			Callback.OnUnhandledException(Widget, unhandledExceptionArgs);
-			e.Handled = true;
 		}
 
 		void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)

@@ -172,6 +172,8 @@ namespace Eto.Mac.Forms
 
 		List<ObserverHelper> observers;
 
+		public static object GetHandler(IntPtr sender) => GetHandler(Runtime.GetNSObject(sender));
+
 		public static object GetHandler(object control)
 		{
 			var notification = control as NSNotification;
@@ -184,7 +186,7 @@ namespace Eto.Mac.Forms
 			return macControl.WeakHandler.Target;
 		}
 
-		public void AddMethod(IntPtr selector, Delegate action, string arguments, object control)
+		public bool AddMethod(IntPtr selector, Delegate action, string arguments, object control)
 		{
 			var type = control.GetType();
 			#if OSX
@@ -194,14 +196,14 @@ namespace Eto.Mac.Forms
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' has a null handler", type));
 			#endif
 			var classHandle = Class.GetHandle(type);
-			ObjCExtensions.AddMethod(classHandle, selector, action, arguments);
+			return ObjCExtensions.AddMethod(classHandle, selector, action, arguments);
 		}
 
 		public bool HasMethod(IntPtr selector, object control)
 		{
 			var type = control.GetType();
 			var classHandle = Class.GetHandle(type);
-			return ObjCExtensions.GetMethod(classHandle, selector) != IntPtr.Zero;
+			return ObjCExtensions.GetInstanceMethod(classHandle, selector) != IntPtr.Zero;
 		}
 
 

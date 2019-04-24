@@ -163,6 +163,12 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_grid_get_child_at(IntPtr raw, int left, int top);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_button_get_event_window(IntPtr button);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
@@ -315,6 +321,12 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_grid_get_child_at(IntPtr raw, int left, int top);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_button_get_event_window(IntPtr button);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
@@ -466,6 +478,12 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_print_unix_dialog_set_embed_page_setup(IntPtr raw, bool embed);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_grid_get_child_at(IntPtr raw, int left, int top);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_button_get_event_window(IntPtr button);
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
@@ -723,6 +741,26 @@ namespace Eto.GtkSharp
 				NMMac.gtk_print_unix_dialog_set_embed_page_setup(raw, embed);
 			else
 				NMWindows.gtk_print_unix_dialog_set_embed_page_setup(raw, embed);
+		}
+
+		public static IntPtr gtk_grid_get_child_at(IntPtr raw, int left, int top)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_grid_get_child_at(raw, left, top);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_grid_get_child_at(raw, left, top);
+			else
+				return NMWindows.gtk_grid_get_child_at(raw, left, top);
+		}
+
+		public static IntPtr gtk_button_get_event_window(IntPtr button)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_button_get_event_window(button);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_button_get_event_window(button);
+			else
+				return NMWindows.gtk_button_get_event_window(button);
 		}
 
 		public static IntPtr webkit_web_view_new()

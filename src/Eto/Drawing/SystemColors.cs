@@ -9,73 +9,67 @@ namespace Eto.Drawing
 	[Handler(typeof(IHandler))]
 	public static class SystemColors
 	{
-		static IHandler Handler
-		{
-			get { return Platform.Instance.CreateShared<IHandler>(); }
-		}
+		static IHandler Handler => Platform.Instance.CreateShared<IHandler>();
 
 		/// <summary>
 		/// Gets the color of disabled text.
 		/// </summary>
 		/// <value>The color of disabled text.</value>
-		public static Color DisabledText
-		{
-			get { return Handler.DisabledText; }
-		}
+		public static Color DisabledText => Handler.DisabledText;
 
 		/// <summary>
 		/// Gets the color of text in a control, such as a TextBox or GridView.
 		/// </summary>
 		/// <value>The color of control text.</value>
-		public static Color ControlText
-		{
-			get { return Handler.ControlText; }
-		}
+		public static Color ControlText => Handler.ControlText;
 
 		/// <summary>
 		/// Gets the color of highlighted text in controls such as a TextBox or GridView.
 		/// </summary>
 		/// <value>The color of highlighted text.</value>
-		public static Color HighlightText
-		{
-			get { return Handler.HighlightText; }
-		}
+		public static Color HighlightText => Handler.HighlightText;
 
 		/// <summary>
 		/// Gets the color of a control.
 		/// </summary>
 		/// <value>The control color.</value>
-		public static Color Control
-		{
-			get { return Handler.Control; }
-		}
+		public static Color Control => Handler.Control;
 
 		/// <summary>
 		/// Gets the color of a control's background, such as the entry area of a TextBox.
 		/// </summary>
 		/// <value>The control background color.</value>
-		public static Color ControlBackground
-		{
-			get { return Handler.ControlBackground; }
-		}
+		public static Color ControlBackground => Handler.ControlBackground;
 
 		/// <summary>
 		/// Gets the highlight color.
 		/// </summary>
 		/// <value>The highlight.</value>
-		public static Color Highlight
-		{
-			get { return Handler.Highlight; }
-		}
+		public static Color Highlight => Handler.Highlight;
 
 		/// <summary>
 		/// Gets the color of a window background.
 		/// </summary>
 		/// <value>The window background.</value>
-		public static Color WindowBackground
-		{
-			get { return Handler.WindowBackground; }
-		}
+		public static Color WindowBackground => Handler.WindowBackground;
+
+		/// <summary>
+		/// Gets the color of selected text
+		/// </summary>
+		/// <value>The selection text c.</value>
+		public static Color SelectionText => Handler.SelectionText;
+
+		/// <summary>
+		/// Gets the background color of selected text
+		/// </summary>
+		/// <value>The selection background color.</value>
+		public static Color Selection => Handler.Selection;
+
+		/// <summary>
+		/// Gets the color of hyperlink text
+		/// </summary>
+		/// <value>The hyperlink text color.</value>
+		public static Color LinkText => Handler.LinkText;
 
 		/// <summary>
 		/// Handler interface for <see cref="SystemColors"/>
@@ -123,6 +117,24 @@ namespace Eto.Drawing
 			/// </summary>
 			/// <value>The window background.</value>
 			Color WindowBackground { get; }
+
+			/// <summary>
+			/// Gets the color of selected text
+			/// </summary>
+			/// <value>The selection text c.</value>
+			Color SelectionText { get; }
+
+			/// <summary>
+			/// Gets the background color of selected text
+			/// </summary>
+			/// <value>The selection background color.</value>
+			Color Selection { get; }
+
+			/// <summary>
+			/// Gets the color of hyperlink text
+			/// </summary>
+			/// <value>The hyperlink text color.</value>
+			Color LinkText { get; }
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace Eto.Wpf.Forms.ToolBar
 			Control.Items.Insert(index, button.ControlObject);
 		}
 
-		public void RemoveButton(ToolItem button)
+		public void RemoveButton(ToolItem button, int index)
 		{
 			Control.Items.Remove(button.ControlObject);
 		}

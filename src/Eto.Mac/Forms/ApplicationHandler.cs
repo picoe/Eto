@@ -237,8 +237,11 @@ namespace Eto.Mac.Forms
 					// handled by app delegate
 					break;
 				case Application.NotificationActivatedEvent:
-					NSUserNotificationCenter.DefaultUserNotificationCenter.DidActivateNotification += (sender, e) => DidActivateNotification(e.Notification);
-					NSApplication.Notifications.ObserveDidFinishLaunching(DidFinishLaunching);
+					if (MacVersion.IsAtLeast(10, 8))
+					{
+						NSUserNotificationCenter.DefaultUserNotificationCenter.DidActivateNotification += (sender, e) => DidActivateNotification(e.Notification);
+						NSApplication.Notifications.ObserveDidFinishLaunching(DidFinishLaunching);
+					}
 					break;
 				default:
 					base.AttachEvent(id);

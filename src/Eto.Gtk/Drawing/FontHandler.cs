@@ -192,7 +192,9 @@ namespace Eto.GtkSharp.Drawing
 
 			foreach (var face in family.Faces)
 			{
-				var faceDesc = face.Describe();
+				var faceDesc = face?.Describe();
+				if (faceDesc == null)
+					continue;
 				if (faceDesc.Weight == weight && faceDesc.Style == style && faceDesc.Stretch == stretch)
 				{
 					return face;

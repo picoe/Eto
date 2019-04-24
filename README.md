@@ -92,12 +92,14 @@ Your project only needs to reference Eto.dll, and include the corresponding plat
 * Eto.dll - Eto.Forms (UI), Eto.Drawing (Graphics), and platform loading
 * Eto.Mac.dll - MonoMac platform for OS X using 32-bit mono
 * Eto.Mac64.dll - MonoMac platform for OS X using 64-bit mono
-* Eto.XamMac.dll - Xamarin.Mac platform for OS X to embed mono
+* Eto.XamMac.dll - Xamarin.Mac Classic platform for OS X to embed mono
+* Eto.XamMac2.dll - Xamarin.Mac Unified platform for OS X to embed mono
 * Eto.WinForms.dll - Windows Forms platform using GDI+ for graphics
 * Eto.Direct2D.dll - Windows Forms platform using Direct2D for graphics
 * Eto.Wpf.dll - Windows Presentation Foundation platform
-* Eto.Gtk2.dll - Gtk2 platform
-* Eto.Gtk3.dll - Gtk3 platform
+* Eto.Gtk.dll - Gtk+3 platform for Mac, Windows, and Linux.
+* Eto.Gtk2.dll - Gtk2 platform using gtk-sharp2 on Mac, Windows, and Linux.
+* Eto.Gtk3.dll - [deprecated] Gtk3 platform for running on Linux with gtk-sharp3 package
 * Eto.iOS.dll - Xamarin.iOS platform
 * Eto.Android.dll - Xamarin.Android platform
 

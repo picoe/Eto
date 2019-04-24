@@ -23,7 +23,7 @@ namespace Eto.Forms
 		bool settingChecked;
 
 		/// <summary>
-		/// Gets or sets the binding to get the text for each radio button.
+		/// Gets or sets the binding to get the text for each check box.
 		/// </summary>
 		/// <remarks>
 		/// By default, this will bind to a "Text" property, or <see cref="IListItem.Text"/> when implemented.
@@ -32,7 +32,13 @@ namespace Eto.Forms
 		public IIndirectBinding<string> ItemTextBinding { get; set; }
 
 		/// <summary>
-		/// Gets or sets the binding to get the key for each radio button.
+		/// Gets or sets the binding to get the tooltop for each check box.
+		/// </summary>
+		/// <value>The item tool tip binding.</value>
+		public IIndirectBinding<string> ItemToolTipBinding { get; set; }
+
+		/// <summary>
+		/// Gets or sets the binding to get the key for each check box.
 		/// </summary>
 		/// <remarks>
 		/// By default, this will bind to a "Key" property, or <see cref="IListItem.Key"/> when implemented.
@@ -366,6 +372,8 @@ namespace Eto.Forms
 				button.TextColor = TextColor;
 			button.CheckedChanged += HandleCheckedChanged;
 			button.Text = ItemTextBinding.GetValue(item);
+			if (ItemToolTipBinding != null)
+				button.ToolTip = ItemToolTipBinding.GetValue(item);
 			button.Tag = item;
 			button.Enabled = base.Enabled;
 			return button;

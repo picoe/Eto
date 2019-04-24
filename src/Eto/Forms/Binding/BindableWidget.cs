@@ -4,6 +4,19 @@ using System.Collections.Generic;
 namespace Eto.Forms
 {
 	/// <summary>
+	/// Interface to specify that the <see cref="BindableWidget"/> contains child bindable widgets that
+	/// should participate in binding events.
+	/// </summary>
+	public interface IBindableWidgetContainer
+	{
+		/// <summary>
+		/// Gets the children that in the container.
+		/// </summary>
+		/// <value>The children bindable widgets.</value>
+		IEnumerable<BindableWidget> Children { get; }
+	}
+
+	/// <summary>
 	/// Base widget to support binding with the <see cref="IBindable"/> interface.
 	/// </summary>
 	public abstract class BindableWidget : Widget, IBindable
@@ -24,7 +37,7 @@ namespace Eto.Forms
 		{
 		}
 
-#region IBindable implementation
+		#region IBindable implementation
 
 		/// <summary>
 		/// Event to handle when the <see cref="DataContext"/> has changed
@@ -46,6 +59,10 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// 
+		/// Alternatively, implement <see cref="IBindableWidgetContainer"/> for your widget and this will
+		/// trigger any events on the children automatically.
+		/// 
 		/// This allows a control to be bound to its own <see cref="DataContext"/>, which would be set
 		/// on one of the parent control(s).
 		/// </remarks>
@@ -53,24 +70,37 @@ namespace Eto.Forms
 		protected virtual void OnDataContextChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(DataContextChangedKey, this, e);
+
+			if (this is IBindableWidgetContainer container)
+			{
+				foreach (var child in container.Children)
+					child.TriggerDataContextChanged();
+			}
 		}
 
 		static readonly object Parent_Key = new object();
 
 		/// <summary>
-		/// Gets the parent widget which this widget has been added to, if any
+		/// Gets or sets the parent widget which this widget has been added to, if any
 		/// </summary>
+		/// <remarks>
+		/// When implementing child widgets that can participate in the context based binding (MVVM),
+		/// You can set this to the parent widget when it is added or removed to it (usually via a collection).
+		/// 
+		/// Note that you should typically provide a <code>public new [ParentWidget] Parent { get; }</code> property 
+		/// so that consumers of your API cannot set the parent to an invalid value.
+		/// </remarks>
 		/// <value>The parent widget, or null if there is no parent</value>
 		public Widget Parent
 		{
-			get { return Properties.Get<Widget>(Parent_Key); }
-			internal set
+			get => Properties.Get<Widget>(Parent_Key);
+			internal protected set
 			{
-				Properties.Set(Parent_Key, value, () =>
+				if (Properties.TrySet(Parent_Key, value))
 				{
-					if (!HasDataContext && !ReferenceEquals(DataContext, null))
-						TriggerDataContextChanged();
-				});
+					if (!HasDataContext && !(DataContext is null))
+						OnDataContextChanged(EventArgs.Empty);
+				}
 			}
 		}
 
@@ -86,13 +116,12 @@ namespace Eto.Forms
 			var control = Parent;
 			while (control != null)
 			{
-				var ctl = control as T;
-				if (ctl != null && (string.IsNullOrEmpty(id) || control.ID == id))
+				if (control is T ctl && (string.IsNullOrEmpty(id) || control.ID == id))
 				{
 					return ctl;
 				}
 				var bindable = control as BindableWidget;
-				control = bindable != null ? bindable.Parent : null;
+				control = bindable?.Parent;
 			}
 			return default(T);
 		}
@@ -113,7 +142,7 @@ namespace Eto.Forms
 					return control;
 				}
 				var bindable = control as BindableWidget;
-				control = bindable != null ? bindable.Parent : null;
+				control = bindable?.Parent;
 			}
 			return null;
 		}
@@ -123,10 +152,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The parent if found, or null if not found.</returns>
 		/// <param name="id">Identifier of the parent control to find.</param>
-		public Widget FindParent(string id)
-		{
-			return FindParent(null, id);
-		}
+		public Widget FindParent(string id) => FindParent(null, id);
 
 		/// <summary>
 		/// Gets an enumeration of all parent widgets in the heirarchy by traversing the <see cref="Parent"/> property.
@@ -141,7 +167,7 @@ namespace Eto.Forms
 					yield return control;
 
 					var bindable = control as BindableWidget;
-					control = bindable != null ? bindable.Parent : null;
+					control = bindable?.Parent;
 				}
 			}
 		}
@@ -160,13 +186,15 @@ namespace Eto.Forms
 		{
 			get
 			{
-				return Properties.Get(DataContext_Key, () =>
-				{
-					var bindable = Parent as IBindable;
-					return bindable != null ? bindable.DataContext : null;
-				});
+				if (Properties.TryGetValue(DataContext_Key, out var context))
+					return context;
+				return (Parent as IBindable)?.DataContext;
 			}
-			set { Properties.Set(DataContext_Key, value, () => OnDataContextChanged(EventArgs.Empty)); }
+			set
+			{
+				if (Properties.TrySet(DataContext_Key, value))
+					OnDataContextChanged(EventArgs.Empty);
+			}
 		}
 
 		internal bool HasDataContext => Properties.ContainsKey(DataContext_Key);
@@ -176,10 +204,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets the collection of bindings that are attached to this widget
 		/// </summary>
-		public BindingCollection Bindings
-		{
-			get { return Properties.Create(Bindings_Key, () => new BindingCollection()); }
-		}
+		public BindingCollection Bindings => Properties.Create(Bindings_Key, () => new BindingCollection());
 
 		#endregion
 
@@ -192,6 +217,9 @@ namespace Eto.Forms
 		/// <summary>
 		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
 		/// </summary>
+		/// <remarks>
+		/// When you implement <see cref="IBindableWidgetContainer"/>, this will also unbind any of its children.
+		/// </remarks>
 		public virtual void Unbind()
 		{
 			var bindings = Properties.Get<BindingCollection>(Bindings_Key);
@@ -200,11 +228,20 @@ namespace Eto.Forms
 				bindings.Unbind();
 				Properties.Remove(Bindings_Key);
 			}
+
+			if (this is IBindableWidgetContainer container)
+			{
+				foreach (var child in container.Children)
+					child.Unbind();
+			}
 		}
 
 		/// <summary>
 		/// Updates all bindings in this widget
 		/// </summary>
+		/// <remarks>
+		/// When you implement <see cref="IBindableWidgetContainer"/>, this will also update bindings for all of its children.
+		/// </remarks>
 		public virtual void UpdateBindings(BindingUpdateMode mode = BindingUpdateMode.Source)
 		{
 			var bindings = Properties.Get<BindingCollection>(Bindings_Key);
@@ -212,7 +249,12 @@ namespace Eto.Forms
 			{
 				bindings.Update(mode);
 			}
-		}
 
+			if (this is IBindableWidgetContainer container)
+			{
+				foreach (var child in container.Children)
+					child.UpdateBindings(mode);
+			}
+		}
 	}
 }

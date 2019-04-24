@@ -19,6 +19,34 @@ namespace Eto.Forms
 		string[] Types { get; }
 
 		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.IDataObject"/> contains a value for <see cref="Text"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains text; otherwise, <c>false</c>.</value>
+		bool ContainsText { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.IDataObject"/> contains a value for <see cref="Html"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains html; otherwise, <c>false</c>.</value>
+		bool ContainsHtml { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.IDataObject"/> contains a value for <see cref="Image"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains an image; otherwise, <c>false</c>.</value>
+		bool ContainsImage { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.IDataObject"/> contains a value for <see cref="Uris"/>.
+		/// </summary>
+		/// <remarks>
+		/// This can be a mix of both URL and File objects.  You can use <see cref="Uri.IsFile"/> to test for that.
+		/// On some platforms, (e.g. windows), only a single URL can be retrieved or set.
+		/// </remarks>
+		/// <value><c>true</c> if the data object contains uris; otherwise, <c>false</c>.</value>
+		bool ContainsUris { get; }
+
+		/// <summary>
 		/// Sets a string into the data object with the specified type identifier.
 		/// </summary>
 		/// <remarks>
@@ -46,12 +74,20 @@ namespace Eto.Forms
 		string GetString(string type);
 
 		/// <summary>
+		/// Gets a value indicating that data with the specified type is contained in the data object.
+		/// </summary>
+		/// <returns><c>true</c> if the data object contains the specified type, <c>false</c> otherwise.</returns>
+		/// <param name="type">Type to test.</param>
+		bool Contains(string type);
+
+		/// <summary>
 		/// Gets a data array from the data object with the specified type identifier.
 		/// </summary>
 		/// <returns>The data array, or null if not found in the data object.</returns>
 		/// <seealso cref="SetData"/>
 		/// <param name="type">Type identifier that was used to store the data.</param>
 		byte[] GetData(string type);
+
 
 		/// <summary>
 		/// Gets or sets the plain text in the data object.
@@ -74,6 +110,10 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets or sets the Uri's of the files in the data object.
 		/// </summary>
+		/// <remarks>
+		/// This can be a mix of both URL and File objects.  You can use <see cref="Uri.IsFile"/> to test for that.
+		/// On some platforms, (e.g. windows), only a single URL can be retrieved or set.
+		/// </remarks>
 		/// <value>The uris of the files, or null if no files are in the data object.</value>
 		Uri[] Uris { get; set; }
 
@@ -113,6 +153,35 @@ namespace Eto.Forms
 		/// <value>The types.</value>
 		public string[] Types => Handler.Types;
 
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.DataObject"/> contains a value for <see cref="Text"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains text; otherwise, <c>false</c>.</value>
+		public bool ContainsText => Handler.ContainsText;
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.DataObject"/> contains a value for <see cref="Html"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains html; otherwise, <c>false</c>.</value>
+		public bool ContainsHtml => Handler.ContainsHtml;
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.DataObject"/> contains a value for <see cref="Image"/>.
+		/// </summary>
+		/// <value><c>true</c> if the data object contains an image; otherwise, <c>false</c>.</value>
+		public bool ContainsImage => Handler.ContainsImage;
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.Forms.DataObject"/> contains a value for <see cref="Uris"/>.
+		/// </summary>
+		/// <remarks>
+		/// This can be a mix of both URL and File objects.  You can use <see cref="Uri.IsFile"/> to test for that.
+		/// On some platforms, (e.g. windows), only a single URL can be retrieved or set.
+		/// </remarks>
+		/// <value><c>true</c> if the data object contains uris; otherwise, <c>false</c>.</value>
+		public bool ContainsUris => Handler.ContainsUris;
+
 		/// <summary>
 		/// Sets a string into the data object with the specified custom type.
 		/// </summary>
@@ -151,6 +220,13 @@ namespace Eto.Forms
 		public void SetData(byte[] value, string type) => Handler.SetData(value, type);
 
 		/// <summary>
+		/// Gets a value indicating that data with the specified type is contained in the data object.
+		/// </summary>
+		/// <returns><c>true</c> if the data object contains the specified type, <c>false</c> otherwise.</returns>
+		/// <param name="type">Type to test.</param>
+		public bool Contains(string type) => Handler.Contains(type);
+
+		/// <summary>
 		/// Gets a string from the data object with the specified type identifier.
 		/// </summary>
 		/// <returns>The string value, or null if it does not exist in the data object.</returns>
@@ -175,7 +251,6 @@ namespace Eto.Forms
 		/// <returns>The byte data.</returns>
 		/// <param name="type">Type identifier to get the data for.</param>
 		public byte[] GetData(string type) => Handler.GetData(type);
-
 
 		/// <summary>
 		/// Gets or sets the plain text in the data object.

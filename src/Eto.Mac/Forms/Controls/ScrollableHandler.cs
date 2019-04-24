@@ -64,6 +64,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				BackgroundColor = NSColor.Clear;
 				BorderType = NSBorderType.BezelBorder;
+				AutoresizesSubviews = false;
 				DrawsBackground = false;
 				HasVerticalScroller = true;
 				HasHorizontalScroller = true;
@@ -75,8 +76,8 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Layout()
 			{
-				base.Layout();
 				Handler?.PerformScrollLayout();
+				base.Layout();
 			}
 		}
 

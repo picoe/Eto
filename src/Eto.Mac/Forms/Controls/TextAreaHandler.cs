@@ -59,6 +59,8 @@ namespace Eto.Mac.Forms.Controls
 
 		Range<int> lastSelection { get; set; }
 		int? lastCaretIndex { get; set; }
+
+		void PerformLayout();
 	}
 
 	public class EtoTextAreaDelegate : NSTextViewDelegate
@@ -119,6 +121,12 @@ namespace Eto.Mac.Forms.Controls
 			MinSize = CGSize.Empty;
 			MaxSize = new CGSize(float.MaxValue, float.MaxValue);
 			TextContainer.WidthTracksTextView = true;
+		}
+
+		public override void Layout()
+		{
+			(Handler as ITextAreaHandler)?.PerformLayout();
+			base.Layout();
 		}
 	}
 
@@ -317,7 +325,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value)
 				{
 					Control.TextContainer.WidthTracksTextView = true;
-					Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
+					Control.NeedsLayout = true;
 				}
 				else
 				{
@@ -342,7 +350,7 @@ namespace Eto.Mac.Forms.Controls
 				var newText = value ?? string.Empty;
 				var range = Control.SelectedRange;
 				Control.Replace(range, newText);
-				range.Length = (nnint)newText.Length;
+				range.Length = newText.Length;
 				suppressSelectionChanged--;
 				Control.SetSelectedRange(range);
 				Callback.OnTextChanged(Widget, EventArgs.Empty);
@@ -402,7 +410,7 @@ namespace Eto.Mac.Forms.Controls
 
 			var range = new NSRange(str != null ? str.Length : 0, 0);
 			Control.Replace(range, text);
-			range.Location += (nnint)text.Length;
+			range.Location += text.Length;
 			Control.SetSelectedRange(range);
 			if (scrollToCursor)
 				Control.ScrollRangeToVisible(range);
@@ -432,12 +440,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public void PerformLayout()
 		{
-			base.OnLoadComplete(e);
 			if (Wrap)
 			{
-				// set initial width of content to the size of the control
+				// set width of content to the size of the control when wrapping
 				Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
 			}
 		}

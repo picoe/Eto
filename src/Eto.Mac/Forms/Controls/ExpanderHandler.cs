@@ -49,8 +49,8 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Layout()
 			{
-				base.Layout();
 				Handler?.PerformLayout();
+				base.Layout();
 			}
 		}
 
@@ -112,7 +112,7 @@ namespace Eto.Mac.Forms.Controls
 
 		static void DisclosureButton_Activated(object sender, EventArgs e)
 		{
-			var handler = GetHandler((sender as NSView)?.Superview) as ExpanderHandler;
+			var handler = GetHandler((sender as NSView)?.Superview?.Superview) as ExpanderHandler;
 			handler?.UpdateExpandedState();
 		}
 

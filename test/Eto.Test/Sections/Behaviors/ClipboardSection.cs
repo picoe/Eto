@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using System.Text;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Test.Sections.Behaviors
 {
@@ -65,12 +66,12 @@ namespace Eto.Test.Sections.Behaviors
 			var panel = new StackLayout { Padding = new Padding(10) };
 			if (clipboard.Text != null)
 			{
-				panel.Items.Add("\nText:");
+				panel.Items.Add(new Label { Text = "\nText:", Font = SystemFonts.Bold() });
 				panel.Items.Add(clipboard.Text);
 			}
 			if (clipboard.Image != null)
 			{
-				panel.Items.Add("\nImage:");
+				panel.Items.Add(new Label { Text = "\nImage:", Font = SystemFonts.Bold() });
 				panel.Items.Add(new ImageView
 					{
 						Image = clipboard.Image
@@ -78,15 +79,22 @@ namespace Eto.Test.Sections.Behaviors
 			}
 			if (clipboard.Html != null)
 			{
-				panel.Items.Add("\nHtml:");
+				panel.Items.Add(new Label { Text = "\nHtml:", Font = SystemFonts.Bold() });
 				panel.Items.Add(clipboard.Html);
 			}
+			var uris = clipboard.Uris;
+			if (uris != null)
+			{
+				panel.Items.Add(new Label { Text = "\nUris:", Font = SystemFonts.Bold() });
+				panel.Items.Add(string.Join(", ", uris.Select(r => r.AbsoluteUri)));
+			}
+
 			var types = clipboard.Types;
 			if (types != null)
 			{
 				foreach (var type in types)
 				{
-					panel.Items.Add(string.Format("\n{0}:", type));
+					panel.Items.Add(new Label { Text = $"\n{type}:", Font = SystemFonts.Bold() });
 					var data = clipboard.GetData(type);
 					if (data != null)
 					{

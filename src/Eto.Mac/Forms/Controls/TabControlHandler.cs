@@ -43,10 +43,9 @@ namespace Eto.Mac.Forms.Controls
 		// CWEN: should have some form of implementation here
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
-		protected override NSTabView CreateControl()
-		{
-			return new EtoTabView();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSTabView CreateControl() => new EtoTabView();
 
 		protected override void Initialize()
 		{

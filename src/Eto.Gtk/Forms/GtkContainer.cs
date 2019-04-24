@@ -34,6 +34,8 @@ namespace Eto.GtkSharp.Forms
 		IEnumerable<Gtk.Widget> GetOrderedWidgets()
 		{
 			var parent = Widget.IsVisualControl ? Widget.LogicalParent : Widget;
+			if (parent == null)
+				yield break;
 			foreach (var ctl in parent.Controls.OrderBy(r => r.TabIndex))
 			{
 				var widget = ctl.GetContainerWidget();

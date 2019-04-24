@@ -22,7 +22,20 @@ namespace Eto.Forms.ThemedControls
 		Drawable tabDrawable;
 		Panel contentPanel;
 		Font font;
-		static Padding TabPadding = 10;
+
+		static Padding DefaultTabPadding = 6;
+
+		static readonly object TabPadding_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the padding inside each tab around the text.
+		/// </summary>
+		/// <value>The tab padding.</value>
+		public Padding TabPadding
+		{
+			get => Widget.Properties.Get<Padding?>(TabPadding_Key) ?? DefaultTabPadding;
+			set => Widget.Properties.Set(TabPadding_Key, value, DefaultTabPadding);
+		}
 
 		/// <summary>
 		/// Gets or sets the font for the tab text.
@@ -414,18 +427,19 @@ namespace Eto.Forms.ThemedControls
 
 		void CalculateTab(ThemedDocumentPageHandler tab, int i, ref float posx)
 		{
+			var tabPadding = TabPadding;
 			var textSize = string.IsNullOrEmpty(tab.Text) ? Size.Empty : Size.Ceiling(Font.MeasureString(tab.Text));
 			var size = textSize;
 			var prevnextsel = mousePos.X > nextPrevWidth || i == -1;
 			var textoffset = 0;
 			if (tab.Image != null)
 			{
-				textoffset = tab.Image.Size.Width + TabPadding.Left;
+				textoffset = tab.Image.Size.Width + tabPadding.Left;
 				size.Width += textoffset;
 			}
 
 			var closesize = tabDrawable.Height / 2;
-			var tabRect = new RectangleF(posx, 0, size.Width + (tab.Closable ? closesize + TabPadding.Horizontal + TabPadding.Right : TabPadding.Horizontal), tabDrawable.Height);
+			var tabRect = new RectangleF(posx, 0, size.Width + (tab.Closable ? closesize + tabPadding.Horizontal + tabPadding.Right : tabPadding.Horizontal), tabDrawable.Height);
 
 			if (i == selectedIndex && draggingLocation != null)
 			{
@@ -435,7 +449,7 @@ namespace Eto.Forms.ThemedControls
 			tab.Rect = tabRect;
 
 			tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabDrawable.Height / 4 - closesize, tabDrawable.Height / 4, closesize, closesize);
-			tab.TextRect = new RectangleF(tabRect.X + TabPadding.Left + textoffset, (tabDrawable.Height - size.Height) / 2, textSize.Width, textSize.Height);
+			tab.TextRect = new RectangleF(tabRect.X + tabPadding.Left + textoffset, (tabDrawable.Height - size.Height) / 2, textSize.Width, textSize.Height);
 
 			posx += tab.Rect.Width;
 		}

@@ -49,10 +49,9 @@ namespace Eto.Mac.Forms.Controls
 			public override nint IsVertical => Handler?.Orientation == Orientation.Vertical ? 1 : 0;
 		}
 
-		protected override NSSlider CreateControl()
-		{
-			return new EtoSlider();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSSlider CreateControl() => new EtoSlider();
 
 		protected override void Initialize()
 		{

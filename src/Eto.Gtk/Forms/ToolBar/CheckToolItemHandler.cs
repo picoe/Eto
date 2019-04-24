@@ -33,9 +33,10 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			Control.Sensitive = Enabled;
 			Control.CanFocus = false;
 			Control.IsImportant = true;
+			Control.ShowAll();
+			Control.NoShowAll = true;
+			Control.Visible = Visible;
 			tb.Insert(Control, index);
-			if (tb.Visible)
-				Control.ShowAll();
 			Control.Toggled += Connector.HandleToggled;
 		}
 

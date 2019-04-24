@@ -502,10 +502,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public GLib.Value GetColumnValue(ITreeGridItem item, int dataColumn, int row)
+		public GLib.Value GetColumnValue(ITreeGridItem item, int dataColumn, int row, Gtk.TreeIter iter)
 		{
 			if (dataColumn == RowDataColumn)
-				return new GLib.Value(row);
+			{
+				return new GLib.Value(GetRowIndexOfPath(model.GetPath(iter)));
+			}
 
 			int column;
 			if (ColumnMap.TryGetValue(dataColumn, out column))

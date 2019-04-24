@@ -43,5 +43,11 @@ namespace Eto.GtkSharp.Forms.Menu
 			get { return false; }
 			set { }
 		}
+
+		public bool Visible
+		{
+			get => Control.Visible;
+			set => Control.Visible = value;
+		}
 	}
 }

@@ -1,6 +1,7 @@
 using Eto.Drawing;
 using Eto.Forms;
 using System;
+using sw = System.Windows;
 
 namespace Eto.Wpf.Forms.ToolBar
 {
@@ -15,6 +16,11 @@ namespace Eto.Wpf.Forms.ToolBar
 		public abstract Image Image { get; set; }
 
 		public abstract bool Enabled { get; set; }
+		public bool Visible
+		{
+			get => Control.Visibility == sw.Visibility.Visible;
+			set => Control.Visibility = value ? sw.Visibility.Visible : sw.Visibility.Collapsed;
+		}
 
 		public virtual void CreateFromCommand(Command command)
 		{

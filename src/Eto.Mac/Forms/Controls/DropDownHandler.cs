@@ -71,8 +71,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 			NSDictionary textAttributes;
 			Color? textColor;
-
-			public Color? Color { get; set; }
+			ColorizeView colorize;
+			public Color? Color
+			{
+				get => colorize?.Color;
+				set => ColorizeView.Create(ref colorize, value);
+			}
 
 			public Color? TextColor
 			{
@@ -86,15 +90,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
 			{
-				if (Color != null)
-				{
-					MacEventView.Colourize(controlView, Color.Value, delegate
-					{
-						base.DrawBezelWithFrame(frame, controlView);
-					});
-				}
-				else
-					base.DrawBezelWithFrame(frame, controlView);
+				colorize?.Begin(frame, controlView);
+				base.DrawBezelWithFrame(frame, controlView);
+				colorize?.End();
 			}
 
 			public override CGRect DrawTitle(NSAttributedString title, CGRect frame, NSView controlView)
@@ -125,10 +123,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override NSPopUpButton CreateControl()
-		{
-			return new EtoPopUpButton();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSPopUpButton CreateControl() => new EtoPopUpButton();
 
 		protected override void Initialize()
 		{

@@ -167,9 +167,8 @@ namespace Eto
 		/// <param name="e">Arguments for the event</param>
 		protected virtual void OnWidgetCreated(WidgetCreatedEventArgs e)
 		{
-			Eto.Style.OnStyleWidgetDefaults(e.Instance);
-			if (WidgetCreated != null)
-				WidgetCreated(this, e);
+			Eto.Style.Provider?.ApplyDefault(e.Instance);
+			WidgetCreated?.Invoke(this, e);
 		}
 
 		internal void TriggerWidgetCreated(WidgetCreatedEventArgs args)
@@ -388,39 +387,47 @@ namespace Eto
 				if (globalInstance != null)
 					return globalInstance;
 
+				var errors = new List<Exception>();
 				Platform detected = null;
 			
 				if (EtoEnvironment.Platform.IsMac)
 				{
 					if (EtoEnvironment.Is64BitProcess)
-						detected = Platform.Get(Platforms.Mac64, true);
+						detected = Get(Platforms.Mac64, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.XamMac2, true);
+						detected = Get(Platforms.XamMac2, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.XamMac, true);
+						detected = Get(Platforms.XamMac, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.Mac, true);
+						detected = Get(Platforms.Mac, true, errors);
 				}
 				else if (EtoEnvironment.Platform.IsWindows)
 				{
-					detected = Platform.Get(Platforms.Wpf, true);
+					detected = Get(Platforms.Wpf, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.WinForms, true);
+						detected = Get(Platforms.WinForms, true, errors);
 				}
 
 				if (detected == null && EtoEnvironment.Platform.IsUnix)
 				{
-					detected = Platform.Get(Platforms.Gtk, true);
+					detected = Get(Platforms.Gtk, true, errors);
 #pragma warning disable CS0618
 					if (detected == null)
-						detected = Platform.Get(Platforms.Gtk3, true);
+						detected = Get(Platforms.Gtk3, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.Gtk2, true);
+						detected = Get(Platforms.Gtk2, true, errors);
 #pragma warning restore CS0618
 				}
-				
+
 				if (detected == null)
-					throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Could not detect platform. Are you missing a platform assembly?"));
+				{
+					var message = "Could not detect platform. Are you missing a platform assembly?";
+					if (errors.Count > 1)
+						throw new AggregateException(message, errors);
+					if (errors.Count == 1)
+						throw new InvalidOperationException(message, errors[0]);
+					throw new InvalidOperationException(message);
+				}
 					
 				Initialize(detected);
 				return globalInstance;
@@ -457,38 +464,44 @@ namespace Eto
 		/// <returns>An instance of a Generator of the specified type, or null if it cannot be loaded</returns>
 		public static Platform Get(string generatorType)
 		{
-			return Get(generatorType, true);
+			return Get(generatorType, true, null);
 		}
 
-		internal static Platform Get(string platformType, bool allowNull)
+		internal static Platform Get(string platformType, bool allowNull, List<Exception> errors)
 		{
 			Type type = Type.GetType(platformType);
 			if (type == null)
 			{
 				if (allowNull)
 					return null;
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Platform not found. Are you missing the platform assembly?"));
+				throw new InvalidOperationException($"Platform type '{platformType}' was not found. Are you missing the platform assembly?");
 			}
 			try
 			{
 				var platform = (Platform)Activator.CreateInstance(type);
-				if (!platform.IsValid)
-				{
-					var message = string.Format("Platform type {0} was loaded but is not valid in the current context.  E.g. Mac platforms require to be in an .app bundle to run", platformType);
-					if (allowNull)
-						Debug.WriteLine(message);
-					else
-						throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, message));
-					return null;
-				}
-				return platform;
+				if (platform.IsValid)
+					return platform;
+
+				var message = $"Platform type '{platformType}' was loaded but is not valid in the current context.  E.g. Mac platforms require to be in an .app bundle to run";
+				var error = new InvalidOperationException(message);
+				errors?.Add(error);
+				if (!allowNull)
+					throw error;
+
+				Debug.WriteLine(message);
+				return null;
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine(string.Format("Error creating instance of platform type '{0}'\n{1}", platformType, ex));
-				if (allowNull)
-					return null;
-				throw;
+				var message = $"Error creating instance of platform type '{platformType}'";
+				var error = new InvalidOperationException(message, ex);
+				errors?.Add(error);
+				if (!allowNull)
+					throw error;
+
+				Debug.WriteLine(message);
+				Debug.WriteLine(ex);
+				return null;
 			}
 		}
 

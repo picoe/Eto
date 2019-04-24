@@ -70,7 +70,7 @@ namespace Eto.Mac.Forms.Cells
 					var nscontext = NSGraphicsContext.CurrentContext;
 					var context = nscontext.GraphicsPort;
 
-					context.SetFillColor(BackgroundColor.CGColor);
+					BackgroundColor.SetFill();
 					context.FillRect(cellFrame);
 				}
 

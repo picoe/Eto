@@ -47,7 +47,7 @@ namespace Eto.Mac
 		public static readonly IntPtr CoreTextHandle = Dlfcn.dlopen("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText", 0);
 
 		public static T GetNSObject<T>(IntPtr ptr)
-			where T: NSObject
+			where T : NSObject
 		{
 			return Runtime.GetNSObject<T>(ptr);
 		}
@@ -60,6 +60,9 @@ namespace Eto.Mac
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]
 		public static extern void void_objc_msgSendSuper_SizeF(IntPtr receiver, IntPtr selector, CGSize arg1);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]
+		public static extern nfloat nfloat_objc_msgSendSuper_nint(IntPtr receiver, IntPtr selector, nint segment);
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]
 		public static extern bool bool_objc_msgSendSuper(IntPtr receiver, IntPtr selector);
@@ -75,6 +78,12 @@ namespace Eto.Mac
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]
 		public static extern void void_objc_msgSendSuper_CGRect(IntPtr receiver, IntPtr selector, CGRect arg1);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]
+		public static extern void void_objc_msgSendSuper(IntPtr receiver, IntPtr selector);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		public static extern bool bool_objc_msgSend(IntPtr receiver, IntPtr selector);
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public static extern bool bool_objc_msgSend_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1);
