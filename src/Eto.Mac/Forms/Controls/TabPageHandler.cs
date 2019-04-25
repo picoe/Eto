@@ -96,7 +96,7 @@ namespace Eto.Mac.Forms.Controls
 		public string Text
 		{
 			get { return Control.Label; }
-			set { Control.Label = value; }
+			set { Control.Label = value ?? string.Empty; }
 		}
 
 		public Image Image
