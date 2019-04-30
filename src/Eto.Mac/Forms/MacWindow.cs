@@ -453,6 +453,14 @@ namespace Eto.Mac.Forms
 			Control.DidResignKey += HandleDidResignKey;
 			Control.ShouldZoom = HandleShouldZoom;
 			Control.WillMiniaturize += HandleWillMiniaturize;
+#if MONOMAC
+			// AppKit still calls some delegate methods on the window after closing a form (e.g. WillReturnFieldEditor),
+			// causing exceptions trying to recreate the delegate if it has been garbage collected.
+			// This is because MonoMac doesn't use ref counting to determine when objects can be GC'd like Xamarin.Mac.
+			// We avoid this problem by clearing out the delegate after the window is closed.
+			// In Eto, we don't expect any events to be called after that point anyway.
+			Widget.Closed += (sender, e) => Application.Instance.AsyncInvoke(() => Control.Delegate = null);
+#endif
 		}
 
 		static NSObject HandleWillReturnFieldEditor(NSWindow sender, NSObject client)
