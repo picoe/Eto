@@ -307,7 +307,7 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = b.ToWpf();
-				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
+				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
 				if (fontHandler.WpfTextDecorationsFrozen != null)
 					formattedText.SetTextDecorations(fontHandler.WpfTextDecorationsFrozen, 0, text.Length);
 				Control.DrawText(formattedText, new sw.Point(x, y));
@@ -322,7 +322,7 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = new swm.SolidColorBrush(swm.Colors.White);
-				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
+				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
 				result = new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 			}
 

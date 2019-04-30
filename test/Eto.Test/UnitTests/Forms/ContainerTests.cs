@@ -5,6 +5,7 @@ using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
 using NUnit.Framework;
+using Container = Eto.Forms.Container;
 
 namespace Eto.Test.UnitTests.Forms
 {

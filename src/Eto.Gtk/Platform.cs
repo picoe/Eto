@@ -172,6 +172,8 @@ namespace Eto.GtkSharp
 			p.Add<MenuSegmentedItem.IHandler>(() => new ThemedMenuSegmentedItemHandler());
 			p.Add<SegmentedButton.IHandler>(() => new ThemedSegmentedButtonHandler());
 			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
+			p.Add<PropertyGrid.IHandler>(() => new ThemedPropertyGridHandler());
+			p.Add<CollectionEditor.IHandler>(() => new ThemedCollectionEditorHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

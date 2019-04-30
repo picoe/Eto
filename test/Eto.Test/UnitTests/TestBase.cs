@@ -17,6 +17,7 @@ using System.ComponentModel;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal.Commands;
 using NUnit.Framework.Internal;
+using Container = Eto.Forms.Container;
 
 namespace Eto.Test.UnitTests
 {

@@ -34,6 +34,12 @@ namespace Eto.GtkSharp.Drawing
 			this.widget = widget;
 			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
+
+		public GraphicsHandler(Gtk.Widget widget, Cairo.Context context)
+		{
+			this.widget = widget;
+			this.Control = context;
+		}
 #endif
 		public GraphicsHandler(Cairo.Context context, Pango.Context pangoContext, bool dispose = true)
 		{

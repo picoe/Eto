@@ -89,6 +89,10 @@ namespace Eto.Forms
 		{
 			if (window == null)
 				return null;
+
+			if (window is IMacControl macControl && macControl.WeakHandler?.Target is IMacWindow macWindow)
+				return macWindow.Widget;
+
 			return new Form(new NativeFormHandler(window));
 		}
 

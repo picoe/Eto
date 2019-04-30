@@ -411,7 +411,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				var handler = ((FontHandler)value?.Handler);
 				ApplyFont(handler?.WpfFamily, handler?.WpfTypeface, handler?.WpfFontWeight, handler?.WpfFontStretch, handler?.WpfFontStyle);
-				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.PixelSize);
+				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.WpfSize);
 				SetSelectionAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorationsFrozen);
 			}
 		}

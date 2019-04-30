@@ -116,7 +116,7 @@ namespace Eto.Mac.Forms
 		public string Text
 		{
 			get => GetDataItem<StringItem>(NSPasteboard.NSPasteboardTypeString)?.Value;
-			set => Control[NSPasteboard.NSPasteboardTypeString] = string.IsNullOrEmpty(value) ? null : new StringItem { Value = value };
+			set => Control[NSPasteboard.NSPasteboardTypeString] = value == null ? null : new StringItem { Value = value };
 		}
 
 		public Image Image
@@ -179,7 +179,7 @@ namespace Eto.Mac.Forms
 		{
 			foreach (var item in Control)
 			{
-				item.Value.Apply(pasteboard, item.Key);
+				item.Value?.Apply(pasteboard, item.Key);
 			}
 		}
 
