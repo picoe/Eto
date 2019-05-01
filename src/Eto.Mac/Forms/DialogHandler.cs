@@ -113,8 +113,9 @@ namespace Eto.Mac.Forms
 					buttonSize.Width += preferredSize.Width;
 					buttonSize.Height = Math.Max(buttonSize.Height, preferredSize.Height);
 				}
+				buttonSize += s_ButtonPadding.Size;
 			}
-			return buttonSize + s_ButtonPadding.Size;
+			return buttonSize;
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
