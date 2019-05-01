@@ -11,7 +11,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		
 		int NumberOfColumns { get; }
 		
-		GLib.Value GetColumnValue (TItem item, int column, int row);
+		GLib.Value GetColumnValue (TItem item, int column, int row, Gtk.TreeIter iter);
 
 		int GetRowOfItem (TItem item);
 	}
@@ -108,9 +108,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			var row = ((int)iter.UserData) - 1;
 			if (row >= 0) {
 				var item = Handler.DataStore [row];
-				val = Handler.GetColumnValue (item, col, row);
+				val = Handler.GetColumnValue (item, col, row, iter);
 			} else 
-				val = Handler.GetColumnValue (null, col, row);
+				val = Handler.GetColumnValue (null, col, row, iter);
 
 		}
 
