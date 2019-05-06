@@ -407,7 +407,7 @@ namespace Eto.Forms
 				m => System.Convert.ToString(GetValue(m)),
 				(m, val) =>
 				{
-					var value = Enum.IsDefined(enumType, val)
+					var value = (!string.IsNullOrEmpty(val) && Enum.IsDefined(enumType, val))
 						? (T)Enum.Parse(enumType, val)
 						: defaultValue;
 					SetValue(m, value);
