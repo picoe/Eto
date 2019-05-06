@@ -53,14 +53,32 @@ namespace Eto.Mac.Forms
 			StopAction?.Invoke(this);
 		}
 
-		public void Restart(Action restartAction)
+		public void Restart(Action restartAction, bool useAsync = true)
 		{
 			if (CanRestart)
 			{
-				this.restartAction = restartAction;
-				shouldRestart = true;
-				Stop();
-			}
+
+				if (useAsync)
+				{
+					this.restartAction = restartAction;
+					shouldRestart = true;
+					Stop();
+				}
+				else
+                {
+                    var app = NSApplication.SharedApplication;
+
+                    // end modal session
+                    app.StopModal();
+                    app.EndModalSession(Session);
+
+                    restartAction?.Invoke();
+
+                    // restart new session
+                    Session = app.BeginModalSession(NativeWindow);
+                    Stopped = false;
+                }
+            }
 			else
 			{
 				restartAction?.Invoke();

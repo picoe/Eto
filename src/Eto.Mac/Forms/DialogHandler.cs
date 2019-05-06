@@ -305,11 +305,39 @@ namespace Eto.Mac.Forms
 
 		public bool IsDisplayedAsSheet => session?.IsSheet == true;
 
+		/// <summary>
+		/// Stop the modal session, run the specified action, then restart the modal session.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you need to return control to the main (or non-modal) window for a short period of time
+		/// without actually closing the dialog, then restarting the modal session when complete.
+		/// </remarks>
+		/// <param name="action">Action to run after the modal session is stopped</param>
+		/// <returns>True if the session was restarted, false if there is no modal session running</returns>
 		public bool RestartModal(Action action)
 		{
 			if (session == null)
 				return false;
-			session.Restart(action);
+			session.Restart(action, false);
+			return true;
+		}
+
+		/// <summary>
+		/// Stops the modal session asynchronously, runs the specified action, then restarts the modal session.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you need to return control to the main (or non-modal) window for a short period of time
+		/// without actually closing the dialog, then restarting the modal session when complete.
+		///
+		/// Note that this method returns immediately and runs the action asynchronously on the UI thread.
+		/// </remarks>
+		/// <param name="action">Action to run after the modal session is stopped</param>
+		/// <returns>True if the session was restarted, false if there is no modal session running</returns>
+		public bool RestartModalAsync(Action action)
+		{
+			if (session == null)
+				return false;
+			session.Restart(action, true);
 			return true;
 		}
 	}
