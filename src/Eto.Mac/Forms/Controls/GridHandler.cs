@@ -349,6 +349,7 @@ namespace Eto.Mac.Forms.Controls
 					}
 					autoSizeRange = newRange;
 					IsAutoSizingColumns = false;
+					InvalidateMeasure();
 					return true;
 				}
 			}
