@@ -542,6 +542,10 @@ namespace Eto.Mac.Forms.Controls
 		public void ReloadData(IEnumerable<int> rows)
 		{
 			Control.ReloadData(NSIndexSet.FromArray(rows.Select(r => (nuint)r).ToArray()), NSIndexSet.FromNSRange(new NSRange(0, Control.TableColumns().Length)));
+			if (Widget.Columns.Any(r => r.AutoSize))
+			{
+				AutoSizeColumns(true);
+			}
 		}
 
 		public object GetCellAt(PointF location, out int column, out int row)

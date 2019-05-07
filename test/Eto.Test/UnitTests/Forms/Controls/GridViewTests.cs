@@ -144,5 +144,43 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 
 		}
+
+		[Test, ManualTest]
+		public void AutoSizedColumnShouldChangeSizeOfControl()
+		{
+			ManualForm("GridView should auto size to content", form =>
+			{
+				var collection = new ObservableCollection<DataItem>();
+				var gridView = new GridView
+				{
+					Height = 180,
+					DataStore = collection,
+					Columns =
+					{
+						new GridColumn
+						{
+							AutoSize = true,
+							DataCell = new TextBoxCell { Binding = Binding.Property((DataItem m) => m.TextValue) }
+						}
+					}
+				};
+				var item = new DataItem { TextValue = "Some Text" };
+				collection.Add(item);
+
+				var textBox = new TextBox();
+				textBox.Focus();
+				textBox.TextBinding.Bind(item, i => i.TextValue);
+				textBox.TextChanged += (sender, e) => gridView.ReloadData(0);
+
+				var layout = new DynamicLayout();
+				layout.BeginVertical(yscale: true);
+				layout.AddRow(gridView, null); // gridView is auto sized
+				layout.EndVertical();
+
+				layout.AddSeparateRow("Text:", textBox);
+
+				return layout;
+			});
+		}
 	}
 }
