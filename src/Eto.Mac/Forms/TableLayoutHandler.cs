@@ -205,6 +205,9 @@ namespace Eto.Mac.Forms
 					if (!xscaled && !yscaled)
 						continue;
 
+					if (final && xscaled && yscaled)
+						continue;
+
 					availableControlSize.Width = xscaled ? remaining.Width : float.PositiveInfinity;
 
 					var view = views[y, x];
