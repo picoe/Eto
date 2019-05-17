@@ -86,7 +86,7 @@ namespace Eto.Serialization.Xaml.Extensions
 			}
 
 			// Direct binding
-			var widget = provideValue.TargetObject as BindableWidget;
+			var widget = provideValue.TargetObject as IBindable;
 			var propertyType = propertyInfo.PropertyType;
 			if (widget != null && !typeof(IBinding).GetTypeInfo().IsAssignableFrom(propertyType.GetTypeInfo()))
 			{
