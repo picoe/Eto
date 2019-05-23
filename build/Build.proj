@@ -170,7 +170,7 @@
     <Package Include="Eto.Platform.Mac64" Assembly="$(ArtifactsNet45Dir)Eto.Mac64.dll" />
     <Package Include="Eto.Platform.XamMac" Assembly="$(ArtifactsNet45Dir)Eto.XamMac.dll" />
     <Package Include="Eto.Platform.XamMac2"  Condition="$(OSPlatform) == 'Mac'" Assembly="$(ArtifactsModernDir)Eto.XamMac2.dll" />
-    <Package Include="Eto.Platform.Windows" Assembly="$(ArtifactsNet45Dir)Eto.WinForms.dll" />
+    <NetSdkPackage Include="Eto.Platform.Windows" Assembly="$(ArtifactsNet45Dir)Eto.WinForms.dll" Project="$(SourceDir)\Eto.WinForms\Eto.WinForms.csproj" />
     <Package Include="Eto.Platform.Direct2D" Assembly="$(ArtifactsNet45Dir)Eto.Direct2D.dll" />
     <Package Include="Eto.Platform.Wpf" Condition="$(OSPlatform) == 'Windows'" Assembly="$(ArtifactsNet45Dir)Eto.Wpf.dll" />
     <!--

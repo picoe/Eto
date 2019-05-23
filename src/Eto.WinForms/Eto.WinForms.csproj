@@ -1,52 +1,55 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</ProjectGuid>
+    <TargetFrameworks>net45</TargetFrameworks>
+  </PropertyGroup>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+
+  <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.WinForms</RootNamespace>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.WinForms</AssemblyName>
+    <RestorePackages>true</RestorePackages>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
+    <OutputPath>..\..\artifacts\core\$(Configuration)\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+
+  <Import Project="..\..\build\nuspec\Eto.Platform.Windows.nuspec.props"/>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
     <EmbedReferences>Microsoft.WindowsAPICodePack;Microsoft.WindowsAPICodePack.Shell;Interop.SHDocVw</EmbedReferences>
     <EmbedPrefix>Eto.WinForms.CustomControls.Assemblies</EmbedPrefix>
   </PropertyGroup>
-  <PropertyGroup>
-    <FileAlignment>512</FileAlignment>
-    <DebugSymbols>True</DebugSymbols>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;WINFORMS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\artifacts\core\Debug\net45\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;WINFORMS</DefineConstants>
+  
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\artifacts\core\Release\net45\</OutputPath>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\lib\SHDocVw\Interop.SHDocVw.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Core" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Include="..\Eto.Mac\SDConversions.cs">
       <Link>SDConversions.cs</Link>
@@ -72,264 +75,24 @@
     <Compile Include="..\Shared\GradientHelper.cs">
       <Link>Drawing\GradientHelper.cs</Link>
     </Compile>
-    <Compile Include="BubbleEventFilter.cs" />
-    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
-    <Compile Include="Drawing\SystemColorsHandler.cs" />
-    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
-    <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
-    <Compile Include="Forms\Controls\TextStepperHandler.cs" />
-    <Compile Include="Forms\Controls\StepperHandler.cs" />
-    <Compile Include="Forms\DataObjectHandler.cs" />
-    <Compile Include="Forms\NativeFormHandler.cs" />
-    <Compile Include="Forms\TrayIndicatorHandler.cs" />
-    <Compile Include="Win32.dpi.cs" />
-    <Compile Include="WinConversions.cs" />
-    <Compile Include="CustomControls\ExtendedDateTimePicker.cs" />
-    <Compile Include="CustomControls\TreeController.cs" />
-    <Compile Include="Drawing\BrushHandler.cs" />
-    <Compile Include="Drawing\FontsHandler.cs" />
-    <Compile Include="Drawing\FontTypefaceHandler.cs" />
-    <Compile Include="Drawing\FontFamilyHandler.cs" />
-    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
-    <Compile Include="Drawing\MatrixHandler.cs" />
-    <Compile Include="Drawing\PenHandler.cs" />
-    <Compile Include="Drawing\SolidBrushHandler.cs" />
-    <Compile Include="Drawing\TextureBrushHandler.cs" />
-    <Compile Include="EtoEnvironmentHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
-    <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
-    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\DropDownHandler.cs" />
-    <Compile Include="Forms\Controls\GridHandler.cs" />
-    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
-    <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
-    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
-    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
-    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
-    <Compile Include="Forms\Controls\TreeViewHandler.cs" />
-    <Compile Include="Forms\MouseHandler.cs" />
-    <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
-    <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
-    <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
-    <Compile Include="Forms\FontDialogHandler.cs" />
-    <Compile Include="Forms\ScreenHandler.cs" />
-    <Compile Include="Forms\ScreensHandler.cs" />
-    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
-    <Compile Include="KeyMap.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="LeakHelper.cs" />
-    <Compile Include="OctreeQuantizer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PaletteQuantizer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Quantizer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\BitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\FontHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\GraphicsHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\IconHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\IndexedBitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ApplicationHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\DialogHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\FormHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\MessageBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\OpenFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\PixelLayoutHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\SaveFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\SelectFolderDialogHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\TableLayoutHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\UITimerHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\WindowHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\WindowsContainer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\WindowsFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ButtonHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\CheckBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ControlHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\DrawableHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\GroupBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ImageViewHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\LabelHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ListBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\NumericStepperHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\PanelHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\RadioButton.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ScrollableHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\SplitterHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\TabControlHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\TabPageHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
-    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
-    <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\MenuBarHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\MenuHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\RadioMenuItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\SeparatorMenuItem.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\ShellIcon.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\SystemIcons.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\WebViewHandler.cs" />
-    <Compile Include="Forms\ClipboardHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandler.cs" />
-    <Compile Include="Drawing\GraphicsPathHandler.cs" />
-    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
-    <Compile Include="ScrollMessageFilter.cs" />
-    <Compile Include="Forms\Menu\ContextMenuHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Extensions.cs" />
-    <Compile Include="Forms\Controls\SliderHandler.cs" />
-    <Compile Include="Forms\CursorHandler.cs" />
-    <Compile Include="Forms\Controls\GridViewHandler.cs" />
-    <Compile Include="Forms\Cells\CellHandler.cs" />
-    <Compile Include="Forms\Cells\TextBoxCellHandler.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
-    <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
-    <Compile Include="Win32.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\WindowsPanel.cs" />
     <Compile Include="..\Shared\EmbeddedAssemblyLoader.cs">
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>
-    <Compile Include="Platform.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
-    <Compile Include="Win32TextBox.cs" />
-    <Compile Include="Forms\Controls\CalendarHandler.cs" />
-    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
-    <Compile Include="WinConversions.shared.cs" />
-    <Compile Include="WinFormsHelpers.cs" />
-    <Compile Include="Forms\HwndFormHandler.cs" />
-    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
-    <Compile Include="Forms\WindowsControl.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\KeyboardHandler.cs" />
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
-    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
-    </Compile>
-    <Compile Include="Drawing\IconFrameHandler.cs" />
-    <Compile Include="Forms\OpenWithDialogHandler.cs" />
+    </Compile>    
   </ItemGroup>
+
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -341,15 +104,15 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="CustomControls\CalendarPicker.png" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Windows7APICodePack-Shell">
       <Version>1.1.0</Version>
@@ -358,5 +121,6 @@
       <PrivateAssets>contentfiles;analyzers;build;compile</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
 </Project>
