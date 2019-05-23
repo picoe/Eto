@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TargetFrameworks></TargetFrameworks>
@@ -18,6 +18,8 @@
     <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
     <OutputPath>..\..\artifacts\core\$(Configuration)\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
+    <!-- Suppress warning NU1701: Package 'Windows7APICodePack-Core 1.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
+    <NoWarn>NU1701;MSB4011;$(NoWarn)</NoWarn>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
