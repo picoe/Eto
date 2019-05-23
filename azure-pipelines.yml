@@ -17,6 +17,11 @@ jobs:
   steps:
   - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_18_1
     displayName: 'Select Xamarin SDK version'
+  - task: UseDotNet@2
+    displayName: Install .NET Core 3.0 Preview 5 SDK
+    inputs:
+      packageType:  sdk
+      version:      3.0.100-preview5-011568
   - task: msbuild@1
     displayName: Build and Package
     inputs: 
@@ -64,6 +69,11 @@ jobs:
   steps:
   - script: cinst gtksharp -y
     displayName: Install GTK#
+  - task: UseDotNet@2
+    displayName: Install .NET Core 3.0 Preview 5 SDK
+    inputs:
+      packageType:  sdk
+      version:      3.0.100-preview5-011568
 
   - task: msbuild@1
     displayName: Build and Package

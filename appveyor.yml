@@ -2,6 +2,8 @@ version: 2.5.0.{build}
 image: Visual Studio 2017
 install:
 - cinst gtksharp -y
+- appveyor DownloadFile "https://dot.net/v1/dotnet-install.ps1"
+- ps: "& ./dotnet-install.ps1 -Version 3.0.100-preview5-011568"
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
 - set BUILD_VERSION_NUMBER=000%APPVEYOR_BUILD_NUMBER%
