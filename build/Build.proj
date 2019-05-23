@@ -187,13 +187,14 @@
   <!-- Build all source code -->
   <Target Name="Build" DependsOnTargets="UpdateVersion">
     <!-- use nuget as msbuild/dotnet restore doesn't use package.config (needed only for Eto.Test.XamMac currently) -->
-    <MSBuild Targets="RestorePackages" Properties="PackageSource=$(SourceDir)Eto.sln" Projects="NuGet.targets" />
+    <!-- <MSBuild Targets="RestorePackages" Properties="PackageSource=$(SourceDir)Eto.sln" Projects="NuGet.targets" /> -->
 
     <PropertyGroup>
       <BuildProperties>Configuration=$(Configuration);Platform=$(OSPlatform)</BuildProperties>
       <BuildProperties Condition="$(AssemblyVersion) != ''">$(BuildProperties);AssemblyVersion=$(AssemblyVersion)</BuildProperties>
     </PropertyGroup>
 
+    <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True" />
     <MSBuild Projects="$(SourceDir)Eto.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)" />
 
     <!-- When building windows, assume xamarin.mac is installed and build XamMac2 platform 
@@ -202,7 +203,8 @@
       <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Eto_XamMac2_net45:$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Mac" Condition="$(OSPlatform) == 'Windows'"/>
       -->
 
-    <MSBuild Targets="RestorePackages" Properties="PackageSource=$(BasePath)samples\Samples.sln" Projects="NuGet.targets" />
+    <!-- <MSBuild Targets="RestorePackages" Properties="PackageSource=$(BasePath)samples\Samples.sln" Projects="NuGet.targets" /> -->
+    <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="Restore" Properties="Configuration=$(Configuration);Platform=$(OSPlatform);_RestoreEnforceEvaluate=True"/>
     <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(OSPlatform)"/>
 
     <!-- hack: publish Eto.Serialization.Xaml to get a copy of Portable.Xaml, so we can get version info -->
@@ -218,7 +220,8 @@
     <MSBuild Targets="BuildNetSdkPackage" Properties="Configuration=$(Configuration);AssemblyProjectFile=%(NetSdkPackage.Project);AssemblyPath=%(NetSdkPackage.Assembly);PackageOutputPath=$(NugetOutputDir);NuspecAssemblyInformationalVersion=$(AssemblyVersion)" Projects="nuget.targets"/>
 
     <!-- build dotnet template -->
-    <MSBuild Targets="RestorePackages" Properties="PackageSource=$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" Projects="NuGet.targets" />
+    <!--<MSBuild Targets="RestorePackages" Properties="PackageSource=$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" Projects="NuGet.targets" />-->
+    <MSBuild Projects="$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" Targets="Restore" Properties="Configuration=$(Configuration);_RestoreEnforceEvaluate=True" />
     <MSBuild Projects="$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" Targets="Pack" Properties="Configuration=$(Configuration)" />
   </Target>
   
@@ -274,12 +277,14 @@
   <!-- build the MD/VS for Mac and/or the VS addin, depending on your platform -->
   <Target Name="BuildAddins">
     <!-- monodevelop/VS for Mac -->
-    <MSBuild Targets="RestorePackages" Properties="PackageSource=$(AddinDir)Eto.Addin.MonoDevelop.sln" Projects="NuGet.targets" Condition="$(OSPlatform) != 'Windows'" />
-    <MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop.sln" Targets="Restore;Build" Properties="Configuration=$(Configuration)" Condition="$(OSPlatform) != 'Windows'" />
+    <!-- <MSBuild Targets="RestorePackages" Properties="PackageSource=$(AddinDir)Eto.Addin.MonoDevelop.sln" Projects="NuGet.targets" Condition="$(OSPlatform) != 'Windows'" /> -->
+    <MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop.sln" Targets="Restore" Properties="Configuration=$(Configuration);_RestoreEnforceEvaluate=True" Condition="$(OSPlatform) != 'Windows'" />
+    <MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop.sln" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(OSPlatform) != 'Windows'" />
     <MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop\Eto.Addin.MonoDevelop.csproj" Targets="PackageAddin" Properties="Configuration=$(Configuration)" Condition="$(OSPlatform) != 'Windows'" />
 
     <!-- Visual Studio Addin -->
-    <MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.sln" Targets="Restore;Build" Properties="Configuration=$(Configuration);DeployExtension=false" Condition="$(OSPlatform) == 'Windows'" />
+    <MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.sln" Targets="Restore" Properties="Configuration=$(Configuration);_RestoreEnforceEvaluate=True" Condition="$(OSPlatform) == 'Windows'" />
+    <MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.sln" Targets="Build" Properties="Configuration=$(Configuration);DeployExtension=false" Condition="$(OSPlatform) == 'Windows'" />
   </Target>
 
   <!-- publish nuget packages to nuget.org -->
