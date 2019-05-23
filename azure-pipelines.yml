@@ -17,11 +17,6 @@ jobs:
   steps:
   - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_18_1
     displayName: 'Select Xamarin SDK version'
-  - task: UseDotNet@2
-    displayName: Install .NET Core 3.0 Preview 5 SDK
-    inputs:
-      packageType:  sdk
-      version:      3.0.100-preview5-011568
   - task: msbuild@1
     displayName: Build and Package
     inputs: 
@@ -69,11 +64,20 @@ jobs:
   steps:
   - script: cinst gtksharp -y
     displayName: Install GTK#
+  - powershell: |
+      Write-Host "##vso[task.setvariable variable=DOTNET_SDK_VERSION]3.0.100-preview5-011568"
+    displayName: Set .NET Core SDK version to install
   - task: UseDotNet@2
-    displayName: Install .NET Core 3.0 Preview 5 SDK
+    displayName: Install .NET Core SDK
     inputs:
       packageType:  sdk
-      version:      3.0.100-preview5-011568
+      version:      $(DOTNET_SDK_VERSION)
+  - powershell: |
+      $DOTNET_CLI_COMMAND = Get-Command -CommandType Application dotnet | Select-Object -First 1
+      $DOTNET_ROOT = (Join-Path -Resolve $DOTNET_CLI_COMMAND.Path ..)
+      $MSBuildSDKsPath = (Join-Path -Resolve $DOTNET_ROOT sdk/$ENV:DOTNET_SDK_VERSION/Sdks)
+      Write-Host "##vso[task.setvariable variable=MSBuildSDKsPath]$MSBuildSDKsPath"
+    displayName: Add installed .NET Core SDKs to MSBuild SDK lookup path
 
   - task: msbuild@1
     displayName: Build and Package
