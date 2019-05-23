@@ -2,8 +2,10 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'" />
+  <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'" />
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -14,6 +16,10 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\..\..\artifacts\samples\$(Configuration)\</OutputPath>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.0'">
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,5 +47,6 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'" />
+  <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'" />
 </Project>
