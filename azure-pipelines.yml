@@ -21,12 +21,12 @@ jobs:
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments) /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
+      msbuildArguments: $(build.arguments) /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
   - task: msbuild@1
     displayName: Build MonoDevelop Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.MacOS.binlog
+      msbuildArguments: /t:BuildAddins /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.MacOS.binlog
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
@@ -69,13 +69,13 @@ jobs:
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments) /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
+      msbuildArguments: $(build.arguments) /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
 
   - task: msbuild@1
     displayName: Build Visual Studio Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
+      msbuildArguments: /t:BuildAddins /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
 
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
