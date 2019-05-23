@@ -162,8 +162,8 @@
   </Target>
 
   <ItemGroup>
-    <Package Include="Eto.Forms" Assembly="$(ArtifactsNet45Dir)Eto.dll" />
-    <Package Include="Eto.Platform.Gtk" Assembly="$(ArtifactsNetStandard20Dir)Eto.Gtk.dll" />
+    <NetSdkPackage Include="Eto.Forms" Assembly="$(ArtifactsNet45Dir)Eto.dll" Project="$(SourceDir)\Eto\Eto.csproj" />
+    <NetSdkPackage Include="Eto.Platform.Gtk" Assembly="$(ArtifactsNetStandard20Dir)Eto.Gtk.dll" Project="$(SourceDir)\Eto.Gtk\Eto.Gtk.csproj" />
     <Package Include="Eto.Platform.Gtk2" Assembly="$(ArtifactsNet45Dir)Eto.Gtk2.dll" />
     <Package Include="Eto.Platform.Gtk3" Assembly="$(ArtifactsNet45Dir)Eto.Gtk3.dll" />
     <Package Include="Eto.Platform.Mac" Assembly="$(ArtifactsNet45Dir)Eto.Mac.dll" />
@@ -177,8 +177,8 @@
     <Package Include="Eto.Platform.WinRT" Condition="$(OSPlatform) == 'Windows'" Assembly="$(BuildOutputPCLDir)Eto.WinRT.dll" />
     <Package Include="Eto.Platform.iOS" Condition="$(OSPlatform) == 'Mac'" Assembly="$(BuildOutputPCLDir)Eto.iOS.dll" />
     -->
-    <Package Include="Eto.Serialization.Json" Assembly="$(ArtifactsNetStandard10Dir)Eto.Serialization.Json.dll" />
-    <Package Include="Eto.Serialization.Xaml" Assembly="$(ArtifactsNetStandard10Dir)publish\Eto.Serialization.Xaml.dll" />
+    <NetSdkPackage Include="Eto.Serialization.Json" Assembly="$(ArtifactsNetStandard10Dir)Eto.Serialization.Json.dll" Project="$(SourceDir)\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
+    <NetSdkPackage Include="Eto.Serialization.Xaml" Assembly="$(ArtifactsNetStandard10Dir)publish\Eto.Serialization.Xaml.dll" Project="$(SourceDir)\Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj" />
 
     <StandalonePackage Include="Eto.Forms.Sample" Folder="Eto.Forms.Sample\"/>
     <StandalonePackage Include="Eto.Platform.Mac.Template"/>
@@ -214,6 +214,8 @@
     <MSBuild Targets="BuildPackage" Properties="Configuration=$(Configuration);AssemblyPath=%(Package.Assembly);NuspecPath=nuspec\%(Package.Identity).nuspec;BasePath=$(BasePath);NupkgOutputDir=$(NugetOutputDir)" Projects="nuget.targets" Condition="Exists('%(Package.Assembly)')" />
 
     <MSBuild Targets="BuildPackage" Properties="Configuration=$(Configuration);AssemblyPath=;NuspecPath=nuspec\%(StandalonePackage.Folder)%(StandalonePackage.Identity).nuspec;NupkgOutputDir=$(NugetOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="nuget.targets" />
+
+    <MSBuild Targets="BuildNetSdkPackage" Properties="Configuration=$(Configuration);AssemblyProjectFile=%(NetSdkPackage.Project);AssemblyPath=%(NetSdkPackage.Assembly);PackageOutputPath=$(NugetOutputDir);NuspecAssemblyInformationalVersion=$(AssemblyVersion)" Projects="nuget.targets"/>
 
     <!-- build dotnet template -->
     <MSBuild Targets="RestorePackages" Properties="PackageSource=$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" Projects="NuGet.targets" />

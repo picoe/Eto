@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<package>
-	<metadata>
-		<id>Eto.Forms</id>
-		<version>$version$</version>
-		<title>$title$</title>
-		<authors>$author$</authors>
-		<owners>$author$</owners>
-		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
-		<projectUrl>https://github.com/picoe/Eto</projectUrl>
-		<repository type="git" url="https://github.com/picoe/Eto" />
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>Eto.Forms UI Framework</summary>
-		<description>
+<Project>
+  <PropertyGroup>
+    <PackageId>Eto.Forms</PackageId>
+    <PackageVersion>$(NuspecAssemblyInformationalVersion)</PackageVersion>
+    <Title>$(NuspecAssemblyTitle)</Title>
+    <Authors>$(NuspecAssemblyCompany)</Authors>
+    <PackageLicenseFile>Eto-LICENSE.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/picoe/Eto</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Eto.Forms UI Framework</Description>
+    <PackageDescription>
 Eto.Forms is a cross platform desktop user interface framework.
 
 This framework is built so that you can target multiple platforms with one UI codebase.
@@ -37,21 +37,18 @@ In order to run your Eto.Forms based application, you must also install one (or 
 
 To get more information about how to get started, read the wiki:
 
-https://github.com/picoe/Eto/wiki		
-		</description>
-		<copyright>$copyright$</copyright>
-		<tags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</tags>
-		<dependencies>
-			<group>
-				<dependency id="System.ComponentModel" version="4.3.0" />
-				<dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
-			</group>
-		</dependencies>
-	</metadata>
-	<files>
-		<file src="artifacts\core\$configuration$\netstandard1.0\Eto.dll" target="lib\netstandard1.0" />
-		<file src="artifacts\core\$configuration$\netstandard1.0\Eto.xml" target="lib\netstandard1.0" />
-		<file src="build\nuspec\Eto.Forms.targets" target="build\" />
-		<file src="LICENSE.txt" target="Eto-LICENSE.txt" />
-	</files>
-</package>
+https://github.com/picoe/Eto/wiki
+    </PackageDescription>
+    <Copyright>$(NuspecAssemblyCopyright)</Copyright>
+    <PackageTags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Eto.Forms.targets" Pack="true">
+      <PackagePath>build\</PackagePath>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\LICENSE.txt">
+      <Pack>true</Pack>
+      <PackagePath>$(PackageLicenseFile)</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>
