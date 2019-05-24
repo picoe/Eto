@@ -39,29 +39,29 @@ namespace Eto.Forms
     }
 
 	/// <summary>
-	/// Interface for custom editors of the <see cref="PropertyGrid"/>
+	/// Interface for custom type editors of the <see cref="PropertyGrid"/>
 	/// </summary>
 	/// <remarks>
 	/// Use the System.ComponentModel.EditorAttribute to specify the editor for a particular property or type.
 	/// For example:
 	/// <code>
-	/// [Editor(typeof(MyEditorClass), typeof(IPropertyGridEditor))]
+	/// [Editor(typeof(MyEditorClass), typeof(PropertyGridTypeEditor))]
 	/// </code>
 	/// </remarks>
-    public interface IPropertyGridEditor
+	public abstract class PropertyGridTypeEditor
     {
 		/// <summary>
 		/// Creates the control for editing (and viewing for platforms that support it)
 		/// </summary>
 		/// <param name="args">Arguments to create the control</param>
 		/// <returns>The control instance to set to the cell</returns>
-        Control CreateControl(CellEventArgs args);
+        public abstract Control CreateControl(CellEventArgs args);
 
 		/// <summary>
 		/// Paints the cell when viewing for platforms that don't support custom controls for non-editing cells (E.g. Gtk, WinForms).
 		/// </summary>
 		/// <param name="args">Arguments to paint the cell</param>
-        void PaintCell(CellPaintEventArgs args);
+		public abstract void PaintCell(CellPaintEventArgs args);
     }
 
 	/// <summary>
