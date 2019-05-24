@@ -73,7 +73,31 @@ namespace Eto.Forms.ThemedControls
         /// <returns>The control instance</returns>
         protected override ThemedPropertyGrid CreateControl() => new ThemedPropertyGrid();
 
-    }
+		/// <summary>
+		/// Attaches the specified event to the platform-specific control
+		/// </summary>
+		/// <remarks>Implementors should override this method to handle any events that the widget
+		/// supports. Ensure to call the base class' implementation if the event is not
+		/// one the specific widget supports, so the base class' events can be handled as well.</remarks>
+		/// <param name="id">Identifier of the event</param>
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case PropertyGrid.PropertyValueChangedEvent:
+					Control.PropertyValueChanged += Control_PropertyValueChanged;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		void Control_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e)
+		{
+			Callback.OnPropertyValueChanged(Widget, e);
+		}
+	}
 
     /// <summary>
     /// Implementation of the PropertyGrid using the TreeGridView and PropertyCell
