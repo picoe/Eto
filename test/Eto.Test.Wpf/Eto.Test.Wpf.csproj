@@ -1,9 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks></TargetFrameworks>
+    <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'" />
+  <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'" />
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -16,6 +20,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\..\artifacts\test\$(Configuration)\</OutputPath>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -67,5 +72,6 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
 
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'" />
+  <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'" />
 </Project>

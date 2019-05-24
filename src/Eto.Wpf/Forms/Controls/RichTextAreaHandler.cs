@@ -376,7 +376,7 @@ namespace Eto.Wpf.Forms.Controls
 			get
 			{
 				var sel = Control.Selection;
-				return Range.FromLength(sel.Start.GetTextOffset(), sel.GetLength());
+				return Eto.Forms.Range.FromLength(sel.Start.GetTextOffset(), sel.GetLength()); // Fully qualified because System.Range was introduced in .NET Core 3.0
 			}
 			set
 			{
