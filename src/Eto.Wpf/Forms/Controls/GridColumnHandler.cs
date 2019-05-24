@@ -7,6 +7,7 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public interface IGridHandler
 	{
+		Grid Widget { get; }
 		bool Loaded { get; }
 		sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent);
 		void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem);
@@ -128,10 +129,9 @@ namespace Eto.Wpf.Forms.Controls
 				GridHandler.FormatCell (this, cell, element, gridcell, dataItem);
 		}
 
-		swc.DataGridColumn IGridColumnHandler.Control
-		{
-			get { return Control; }
-		}
+		swc.DataGridColumn IGridColumnHandler.Control => Control;
+
+		public Grid Grid => GridHandler?.Widget;
 
 		public void CellEdited(ICellHandler cell, sw.FrameworkElement element)
 		{

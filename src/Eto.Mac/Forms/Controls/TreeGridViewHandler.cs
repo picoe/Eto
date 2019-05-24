@@ -61,6 +61,24 @@ namespace Eto.Mac.Forms.Controls
 		int suppressExpandCollapseEvents;
 		int skipSelectionChanged;
 
+		static readonly object ShowGroupItems_Key = new object();
+		static readonly object AllowGroupSelection_Key = new object();
+
+		/// <summary>
+		/// Gets or sets a value indicating that the top level will be shown as groups
+		/// </summary>
+		public bool ShowGroups
+		{
+			get => Widget.Properties.Get<bool>(ShowGroupItems_Key);
+			set => Widget.Properties.Set(ShowGroupItems_Key, value);
+		}
+
+		public bool AllowGroupSelection
+		{
+			get => Widget.Properties.Get<bool>(AllowGroupSelection_Key);
+			set => Widget.Properties.Set(AllowGroupSelection_Key, value);
+		}
+
 		public class EtoTreeItem : NSObject
 		{
 			Dictionary<int, EtoTreeItem> items;
@@ -113,6 +131,16 @@ namespace Eto.Mac.Forms.Controls
 
 			bool? collapsedItemIsSelected;
 			ITreeGridItem lastSelected;
+
+			public override bool IsGroupItem(NSOutlineView outlineView, NSObject item)
+			{
+				return Handler.ShowGroups && item != null && outlineView.LevelForItem(item) == 0;
+			}
+
+			public override bool ShouldSelectItem(NSOutlineView outlineView, NSObject item)
+			{
+				return Handler.AllowGroupSelection || !IsGroupItem(outlineView, item);
+			}
 
 			public override bool ShouldEditTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
@@ -240,6 +268,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
+				if (tableColumn == null && Handler.ShowGroups)
+					tableColumn = outlineView.TableColumns()[0];
+
 				var colHandler = Handler.GetColumn(tableColumn);
 				if (colHandler != null && colHandler.DataCell != null)
 				{
@@ -249,7 +280,7 @@ namespace Eto.Mac.Forms.Controls
 						return cellHandler.GetViewForItem(outlineView, tableColumn, -1, item, (obj, row) => obj != null ? ((EtoTreeItem)obj).Item : null);
 					}
 				}
-				return outlineView.MakeView(tableColumn.Identifier, this);
+				return outlineView.MakeView(tableColumn?.Identifier ?? string.Empty, this);
 			}
 		}
 
@@ -260,6 +291,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSObject GetObjectValue(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
+				if (tableColumn == null && Handler.ShowGroups)
+					tableColumn = outlineView.TableColumns()[0];
+
 				var colHandler = Handler.GetColumn(tableColumn);
 				if (colHandler != null)
 				{

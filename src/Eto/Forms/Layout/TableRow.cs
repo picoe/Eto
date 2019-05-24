@@ -20,6 +20,32 @@ namespace Eto.Forms
 		Collection<TableCell> cells;
 
 		/// <summary>
+		/// Creates a scaled table row with the specified <paramref name="cells"/>
+		/// </summary>
+		/// <remarks>
+		/// This is the same as creating a new TableRow and setting ScaleHeight = true.
+		/// </remarks>
+		/// <param name="cells">Cells for the table row</param>
+		/// <returns>A new scaled TableRow with the specified cells</returns>
+		public static TableRow Scaled(params TableCell[] cells)
+		{
+			return new TableRow(cells) { ScaleHeight = true };
+		}
+
+		/// <summary>
+		/// Creates a scaled table row with the specified <paramref name="cells"/>
+		/// </summary>
+		/// <remarks>
+		/// This is the same as creating a new TableRow and setting ScaleHeight = true.
+		/// </remarks>
+		/// <param name="cells">Cells for the table row</param>
+		/// <returns>A new scaled TableRow with the specified cells</returns>
+		public static TableRow Scaled(IEnumerable<TableCell> cells)
+		{
+			return new TableRow(cells) { ScaleHeight = true };
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TableCell"/> will scale its height
 		/// </summary>
 		/// <remarks>

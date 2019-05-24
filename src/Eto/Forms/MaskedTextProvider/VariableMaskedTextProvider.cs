@@ -118,10 +118,13 @@ namespace Eto.Forms
 			set
 			{
 				sb.Clear();
-				int pos = 0;
-				foreach (char ch in value)
+				if (value != null)
 				{
-					Insert(ch, ref pos);
+					int pos = 0;
+					foreach (char ch in value)
+					{
+						Insert(ch, ref pos);
+					}
 				}
 			}
 		}

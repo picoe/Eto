@@ -1305,7 +1305,7 @@ namespace Eto.Forms
 		/// </remarks>
 		/// <param name="widget">Widget to style.</param>
 		/// <param name="style">Style of the widget to apply.</param>
-		protected virtual void ApplyStyles(object widget, string style) => Parent?.ApplyStyles(this, Style);
+		protected virtual void ApplyStyles(object widget, string style) => Parent?.ApplyStyles(widget, Style);
 
 
 		/// <summary>
