@@ -114,6 +114,8 @@ namespace Eto.WinForms
 			p.Add<ButtonSegmentedItem.IHandler>(() => new ThemedButtonSegmentedItemHandler());
 			p.Add<MenuSegmentedItem.IHandler>(() => new ThemedMenuSegmentedItemHandler());
 			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
+			p.Add<PropertyGrid.IHandler>(() => new ThemedPropertyGridHandler());
+			p.Add<CollectionEditor.IHandler>(() => new ThemedCollectionEditorHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

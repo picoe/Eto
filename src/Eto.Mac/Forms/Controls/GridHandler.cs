@@ -193,6 +193,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public GridColumnHandler GetColumn(NSTableColumn tableColumn)
 		{
+			if (tableColumn == null)
+				return null;
 			var str = tableColumn.Identifier;
 			if (!string.IsNullOrEmpty(str))
 			{

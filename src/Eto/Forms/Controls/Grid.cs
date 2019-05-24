@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
@@ -154,9 +154,9 @@ namespace Eto.Forms
 		/// <param name="row">Row number being formatted</param>
 		protected GridCellFormatEventArgs(GridColumn column, object item, int row)
 		{
-			this.Column = column;
-			this.Item = item;
-			this.Row = row;
+			Column = column;
+			Item = item;
+			Row = row;
 		}
 	}
 

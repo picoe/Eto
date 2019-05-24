@@ -92,6 +92,16 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets the cell that triggered this event
+		/// </summary>
+		public Cell Cell { get; }
+
+		/// <summary>
+		/// Gets the grid that this event was triggered from
+		/// </summary>
+		public Grid Grid { get; }
+
 		Color cellTextColor = SystemColors.ControlText;
         
 		/// <summary>
@@ -117,8 +127,24 @@ namespace Eto.Forms
 		/// <param name="row">Row for the cell.</param>
 		/// <param name="item">Item the cell is displaying.</param>
 		/// <param name="cellState">State of the cell.</param>
+		[Obsolete("Use overload that passes the custom cell these arguments are for")]
 		public CellEventArgs(int row, object item, CellStates cellState)
+			: this(null, null, row, item, cellState)
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.CellEventArgs"/> class.
+		/// </summary>
+		/// <param name="grid">Grid the event is triggered for.</param>
+		/// <param name="cell">Cell the event is triggered for.</param>
+		/// <param name="row">Row for the cell.</param>
+		/// <param name="item">Item the cell is displaying.</param>
+		/// <param name="cellState">State of the cell.</param>
+		public CellEventArgs(Grid grid, Cell cell, int row, object item, CellStates cellState)
+		{
+			Grid = grid;
+			Cell = cell;
 			Row = row;
 			Item = item;
 			CellState = cellState;

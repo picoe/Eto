@@ -594,5 +594,7 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 		bool IGridHandler.Loaded => Widget.Loaded;
+
+		Grid IGridHandler.Widget => Widget;
 	}
 }

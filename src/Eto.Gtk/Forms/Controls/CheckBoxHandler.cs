@@ -77,13 +77,20 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Control.Inconsistent ? null : (bool?)Control.Active; }
 			set
-			{ 
+			{
 				if (value == null)
+				{
 					Control.Inconsistent = true;
+					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+				}
 				else
 				{
+					// gtk doesn't trigger an event if just Inconsistent has changed.
+					var hasChanged = (Control.Inconsistent && Control.Active == value.Value);
 					Control.Inconsistent = false;
 					Control.Active = value.Value;
+					if (hasChanged)
+						Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
@@ -94,14 +101,21 @@ namespace Eto.GtkSharp.Forms.Controls
 			set;
 		}
 
+#if GTK3
+		Gtk.Widget TextColorWidget => Control;
+#else
+		Gtk.Widget TextColorWidget => Control.Child ?? Control;
+#endif
+
 		public Color TextColor
 		{
-			get { return Control.Child.GetForeground(); }
+			get { return TextColorWidget.GetForeground(); }
 			set
 			{
-				Control.Child.SetForeground(value, GtkStateFlags.Normal);
-				Control.Child.SetForeground(value, GtkStateFlags.Active);
-				Control.Child.SetForeground(value, GtkStateFlags.Prelight);
+				var child = TextColorWidget;
+				child.SetForeground(value, GtkStateFlags.Normal);
+				child.SetForeground(value, GtkStateFlags.Active);
+				child.SetForeground(value, GtkStateFlags.Prelight);
 			}
 		}
 

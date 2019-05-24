@@ -68,7 +68,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (Widget.Properties.TrySet(SegmentedItemHandler.Text_Key, value))
 				{
-					SegmentedControl?.SetLabel(value, CurrentSegment);
+					SegmentedControl?.SetLabel(value ?? string.Empty, CurrentSegment);
 				}
 			}
 		}

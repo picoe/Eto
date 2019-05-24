@@ -41,7 +41,7 @@ namespace Eto.Wpf.Forms.Cells
 
 			EtoCanvas Create(swc.DataGridCell cell)
 			{
-				var control = cell.Content as EtoCanvas;
+				var control = GetControl<EtoCanvas>(cell);
 				if (control == null)
 				{
 					control = new EtoCanvas { Column = this };
