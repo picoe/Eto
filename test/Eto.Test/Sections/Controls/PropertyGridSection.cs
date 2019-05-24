@@ -1,23 +1,19 @@
 ﻿using System;using System.Globalization;using System.ComponentModel;using System.Collections.Generic;
-#if PCLusing Eto.Drawing;using Eto.Forms;
-#elseusing System.Drawing;
-using Colors = System.Drawing.Color;
-#endifusing System.Linq;using sc = System.ComponentModel;
+using Eto.Drawing;using Eto.Forms;
+using System.Linq;using sc = System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-#if PCLnamespace Eto.Test.Sections.Controls{
+namespace Eto.Test.Sections.Controls{
 	[Section("Controls", typeof(PropertyGrid))]
 	public class PropertyGridSection : Panel
 	{
 		public PropertyGridSection()
 		{
-
 			var grid = new PropertyGrid();
 			grid.SelectedObjects = new[]
 			{
 				new MyPropertyObject()
 			};
-
 
 			var showCategoriesCheckBox = new CheckBox { Text = "ShowCategories" };
 			showCategoriesCheckBox.CheckedBinding.Bind(grid, c => c.ShowCategories);
@@ -33,15 +29,10 @@ using System.ComponentModel.DataAnnotations;
 
 			Content = layout;
 		}
-	}}
+	}
 
-#endif
-namespace Eto.Test.Sections.Controls{
+	public class CustomEditor : PropertyGridTypeEditor	{		public override Control CreateControl(CellEventArgs args)		{			return new Label { Text = "Custom Editor!" };		}		public override void PaintCell(CellPaintEventArgs args)		{		}	}
 
-
-
-#if PCL    public class CustomEditor : IPropertyGridEditor	{		public Control CreateControl(CellEventArgs args)		{			return new Label { Text = "Custom Editor!" };		}		public void PaintCell(CellPaintEventArgs args)		{		}	}
-#endif
 	public enum MyEnum
 	{
 		FirstEnum,
@@ -171,7 +162,7 @@ namespace Eto.Test.Sections.Controls{
 		[DisplayName("Some Other Name")]
 		public string PropertyWithNameThatShouldNotBeShown { get; set; }
 
-		[Editor(typeof(CustomEditor), typeof(IPropertyGridEditor))]
+		[Editor(typeof(CustomEditor), typeof(PropertyGridTypeEditor))]
 		public string PropertyWithEditor { get; set; }
 
 		[Description("This is a description.  It should be shown.")]
