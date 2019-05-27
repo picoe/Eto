@@ -18,19 +18,16 @@
     <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
     <OutputPath>..\..\artifacts\core\$(Configuration)\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <Import Project="..\..\build\nuspec\Eto.Platform.Windows.nuspec.props"/>
 
-  <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
+  <PropertyGroup>
     <EmbedReferences>Microsoft.WindowsAPICodePack;Microsoft.WindowsAPICodePack.Shell;Interop.SHDocVw</EmbedReferences>
     <EmbedPrefix>Eto.WinForms.CustomControls.Assemblies</EmbedPrefix>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.0'">
-    <UseWindowsForms>true</UseWindowsForms>
-  </PropertyGroup>
-  
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
