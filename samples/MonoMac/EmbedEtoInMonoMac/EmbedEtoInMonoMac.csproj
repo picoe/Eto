@@ -11,6 +11,7 @@
     <AssemblyName>EmbedEtoInMonoMac</AssemblyName>
     <SuppressXamMacMigration>True</SuppressXamMacMigration>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
