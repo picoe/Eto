@@ -75,7 +75,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public EtoButtonCell()
 		{
-			ImageScale = NSImageScale.ProportionallyDown;//.ProportionallyUpOrDown;
+			ImageScale = NSImageScale.ProportionallyDown;
+		}
+
+		public EtoButtonCell(IntPtr handle) : base(handle)
+		{
 		}
 	}
 
@@ -135,6 +139,10 @@ namespace Eto.Mac.Forms.Controls
 				Application.Instance.AsyncInvoke(() => h.InvalidateMeasure());
 
 			h.TriggerSizeChanged();
+		}
+
+		public EtoButton(IntPtr handle) : base(handle)
+		{
 		}
 
 		public EtoButton() : this(NSButtonType.MomentaryPushIn)
