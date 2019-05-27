@@ -6,7 +6,7 @@
 		<title>Eto.Forms - macOS Template (OBSOLETE)</title>
 		<authors>Curtis Wensley</authors>
 		<owners>Curtis Wensley</owners>
-		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+		<license type="file">LICENSE.txt</license>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
 		<repository type="git" url="https://github.com/picoe/Eto" />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -23,5 +23,6 @@ This package is obsolete in Eto.Forms 2.4.  Please remove this package.
 		</dependencies>
 	</metadata>
 	<files>
+		<file src="..\..\LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>
