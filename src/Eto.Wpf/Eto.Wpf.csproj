@@ -24,7 +24,7 @@
 
   <Import Project="..\..\build\nuspec\Eto.Platform.Wpf.nuspec.props"/>
 
-  <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
+  <PropertyGroup>
     <EmbedReferences>Microsoft.WindowsAPICodePack;Microsoft.WindowsAPICodePack.Shell;Xceed.Wpf.Toolkit;Interop.SHDocVw</EmbedReferences>
     <EmbedPrefix>Eto.Wpf.CustomControls.Assemblies</EmbedPrefix>
   </PropertyGroup>
