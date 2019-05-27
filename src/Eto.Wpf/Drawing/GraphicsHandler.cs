@@ -307,7 +307,9 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = b.ToWpf();
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
+#pragma warning restore CS0618 // Type or member is obsolete
 				if (fontHandler.WpfTextDecorationsFrozen != null)
 					formattedText.SetTextDecorations(fontHandler.WpfTextDecorationsFrozen, 0, text.Length);
 				Control.DrawText(formattedText, new sw.Point(x, y));
@@ -322,7 +324,9 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = new swm.SolidColorBrush(swm.Colors.White);
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
+#pragma warning restore CS0618 // Type or member is obsolete
 				result = new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 			}
 
