@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="GetAssemblyInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <AssemblyFileName ParameterType="System.String" Required="true" />
+      <AssemblyInformationalVersion ParameterType="System.String" Output="true" />
+      <AssemblyTitle ParameterType="System.String" Output="true" />
+      <AssemblyDescription ParameterType="System.String" Output="true" />
+      <AssemblyCopyright ParameterType="System.String" Output="true" />
+      <AssemblyCompany ParameterType="System.String" Output="true" />
+      <AssemblyName ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Xml" />
+      <Code Type="Class" Language="cs"><![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public static class Extensions
+{
+  public static T GetAssemblyAttribute<T>(this System.Reflection.Assembly ass) where T :  Attribute
+  {
+    object[] attributes = ass.GetCustomAttributes(typeof(T), false);
+    if (attributes == null || attributes.Length == 0)
+      return null;
+    return attributes.OfType<T>().SingleOrDefault();
+  }
+}
+
+public class GetAssemblyInfo : AppDomainIsolatedTask
+{
+  public string AssemblyFileName { get; set; }
+
+  [Output]
+  public string AssemblyInformationalVersion { get; set; }
+
+  [Output]
+  public string AssemblyTitle { get; set; }
+
+  [Output]
+  public string AssemblyDescription { get; set; }
+
+  [Output]
+  public string AssemblyCopyright { get; set; }
+
+  [Output]
+  public string AssemblyCompany { get; set; }
+
+  [Output]
+  public string AssemblyName { get; set; }
+
+
+  public override bool Execute()
+  {
+    try
+    {
+      AssemblyFileName = Path.GetFullPath(AssemblyFileName);
+
+      Log.LogMessage("Getting assembly info...", null);
+      AssemblyInformationalVersion = FileVersionInfo.GetVersionInfo(AssemblyFileName).ProductVersion;
+
+        var assembly = Assembly.LoadFrom(AssemblyFileName);
+      var informationalVersion = assembly.GetAssemblyAttribute<AssemblyInformationalVersionAttribute>();
+      if (informationalVersion != null)
+        AssemblyInformationalVersion = informationalVersion.InformationalVersion;
+      var title = assembly.GetAssemblyAttribute<AssemblyTitleAttribute>();
+      if (title != null)
+        AssemblyTitle = title.Title;
+      var description = assembly.GetAssemblyAttribute<AssemblyDescriptionAttribute>();
+      if (description != null)
+        AssemblyDescription = description.Description;
+      var copyright = assembly.GetAssemblyAttribute<AssemblyCopyrightAttribute>();
+      if (copyright != null)
+        AssemblyCopyright = copyright.Copyright;
+      var company = assembly.GetAssemblyAttribute<AssemblyCompanyAttribute>();
+      if (company != null)
+        AssemblyCompany = company.Company;
+      AssemblyName = assembly.GetName().Name;
+      return true;
+    }
+    catch (Exception ex)
+    {
+      Log.LogErrorFromException(ex);
+      return false;
+    }
+  }
+}
+]]></Code>
+    </Task>
+  </UsingTask>
+  <UsingTask TaskName="FileUpdate" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <Pattern ParameterType="System.String" Required="true" />
+      <Replacement ParameterType="System.String" Required="true" />
+      <WarnOnNoUpdate ParameterType="System.Boolean" />
+      <IgnoreCase ParameterType="System.Boolean" />
+      <MultiLine ParameterType="System.Boolean" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Xml" />
+      <Code Type="Class" Language="cs"><![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public static class Extensions
+{
+  public static bool IsMono
+  {
+    get { return Type.GetType("Mono.Runtime", false) != null; }
+  }
+  
+  public static string FixParameter(string value)
+  {
+    if (IsMono)
+      return value.Replace("//", @"\");
+    else
+      return value.Replace(@"\\", @"\");
+  }
+}
+
+public class FileUpdate : Task
+{
+  public ITaskItem[] Files { get; set; }
+
+  public string Pattern { get; set; }
+
+  public string Replacement { get; set; }
+  
+  public bool WarnOnNoUpdate { get; set; }
+  
+  public bool IgnoreCase { get; set; }
+  
+  public bool Multiline { get; set; }
+  
+  public FileUpdate()
+  {
+    WarnOnNoUpdate = true;
+    IgnoreCase = true;
+    Multiline = true;
+  }
+
+  static Encoding DetectEncoding(string filename)
+  {
+    var bom = new byte[3];
+    using (var file = new FileStream(filename, FileMode.Open, FileAccess.Read))
+    {
+      file.Read(bom, 0, 3);
+    }
+
+    if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) return Encoding.UTF8;
+    return new UTF8Encoding(false);
+  }
+
+  public override bool Execute()
+  {
+    try
+    {
+      var pattern = Extensions.FixParameter(Pattern);
+      RegexOptions options = RegexOptions.None;
+      if (Multiline)
+        options |= RegexOptions.Multiline;
+      if (IgnoreCase)
+        options |= RegexOptions.IgnoreCase;
+      
+      var regex = new Regex(pattern, options);
+
+      foreach (var item in Files)
+      {
+        var fileName = item.ItemSpec;
+        
+        // use the same encoding as the existing file
+        var encoding = DetectEncoding(fileName);
+
+        var text = File.ReadAllText(fileName, encoding);
+
+        if (!regex.IsMatch(text))
+        {
+          if (WarnOnNoUpdate)
+            Log.LogWarning("File '{0}' not updated. Pattern: '{1}'", fileName, pattern);
+          continue;
+        }
+        else
+          Log.LogMessage("Updating file '{0}'", fileName);
+
+        var updatedText = regex.Replace(text, Replacement);
+
+        File.WriteAllText(fileName, updatedText, encoding);
+      }
+    }
+    catch (Exception ex)
+    {
+      Log.LogErrorFromException(ex);
+      return false;
+    }
+    return true;    
+  }
+}
+]]></Code>
+    </Task>
+  </UsingTask>
+  <UsingTask TaskName="IncrementVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <Version ParameterType="System.String" Required="true" />
+      <Increment ParameterType="System.String" />
+      <RemovePrerelease ParameterType="System.Boolean" />
+      <AssemblyVersion ParameterType="System.String" Output="true" />
+      <AssemblyInformationalVersion ParameterType="System.String" Output="true" />
+      <AssemblyVersionThreePart ParameterType="System.String" Output="true" />
+      <AssemblyVersionBeforeRelease ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Xml" />
+      <Code Type="Class" Language="cs"><![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public class IncrementVersion : Task
+{
+  public string Version { get; set; }
+  
+  public string Increment { get; set; }
+  
+  public bool RemovePrerelease { get; set; }
+
+  [Output]
+  public string AssemblyVersion { get; set; }
+
+  [Output]
+  public string AssemblyInformationalVersion { get; set; }
+  
+  [Output]
+  public string AssemblyVersionThreePart { get; set; }
+
+  [Output]
+  public string AssemblyVersionBeforeRelease { get; set; }
+
+  public override bool Execute()
+  {
+    try
+    {
+      var input = Version;
+      var suffix = string.Empty;
+      var idx = input.IndexOf ("-");
+      if (idx >= 0) {
+        suffix = input.Substring (idx);
+        input = input.Substring (0, idx );
+      }
+      var hasSuffix = !string.IsNullOrEmpty(suffix);
+      
+      var num = input.Count (r => r == '.');
+
+      var version = System.Version.Parse (input);
+
+      if (!string.IsNullOrEmpty(Increment))
+      {
+        var inc = System.Version.Parse(Increment);
+        version = new Version (
+          Math.Max(0, version.Major) + Math.Max(0, inc.Major),
+          Math.Max(0, version.Minor) + Math.Max(0, inc.Minor),
+          Math.Max(0, version.Build) + Math.Max(0, inc.Build),
+          Math.Max(0, version.Revision) + Math.Max(0, inc.Revision)
+        );
+      }
+      
+      Version beforeVersion;
+      if (!hasSuffix)
+        beforeVersion = version;
+      else if (version.Minor > 0)
+        beforeVersion = new Version(version.Major, version.Minor - 1, 9999, 0);
+      else {
+        beforeVersion = new Version(version.Major - 1, 9999, 0, 0);
+      }
+      
+      var assemblyString = string.Format("{0}.{1}.0.0", version.Major, version.Minor);
+      
+      var infoString = new StringBuilder(string.Format("{0}.{1}", version.Major, version.Minor));
+      if (num > 1)
+        infoString.AppendFormat (".{0}", version.Build);
+      if (num > 2)
+        infoString.AppendFormat (".{0}", version.Revision);
+        
+      AssemblyVersionThreePart = infoString.ToString();
+        
+      if (!RemovePrerelease)
+        infoString.Append (suffix);
+      else if (string.IsNullOrEmpty(suffix))
+      {
+        Log.LogError("Version is not a prerelease but RemovePrerelease was specified", null);
+        return false;
+      }
+    
+      AssemblyVersion = assemblyString.ToString();
+      AssemblyInformationalVersion = infoString.ToString();
+      AssemblyVersionBeforeRelease = beforeVersion.ToString();
+    }
+    catch (Exception ex)
+    {
+      Log.LogErrorFromException(ex);
+      return false;
+    }
+    return true;
+  }
+}
+]]></Code>
+    </Task>
+  </UsingTask>
+  <UsingTask TaskName="FileExtract" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <File ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+      <Pattern ParameterType="System.String" Required="true" />
+      <Output ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Xml" />
+      <Code Type="Class" Language="cs"><![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public static class Extensions
+{
+  public static bool IsMono
+  {
+    get { return Type.GetType("Mono.Runtime", false) != null; }
+  }
+  
+  public static string FixParameter(string value)
+  {
+    if (IsMono)
+      return value.Replace("//", @"\");
+    else
+      return value.Replace(@"\\", @"\");
+  }
+}
+
+public class FileExtract : Task
+{
+  public ITaskItem File { get; set; }
+
+  public string Pattern { get; set; }
+  
+  [Output]
+  public string Output { get; set; }
+
+  public override bool Execute()
+  {
+    try
+    {
+      var regex = new Regex(Extensions.FixParameter(Pattern), RegexOptions.None);
+
+      var fileName = File.ItemSpec;
+
+      var text = System.IO.File.ReadAllText(fileName);
+
+      var match = regex.Match (text);
+      if (match.Success) {
+        Output = match.Value;
+        return true;
+      }
+      
+      Log.LogError("Could not extract from '{0}'", fileName);
+    }
+    catch (Exception ex)
+    {
+      Log.LogErrorFromException(ex);
+      return false;
+    }
+    return false;
+  }
+}
+]]></Code>
+    </Task>
+  </UsingTask>
+</Project>

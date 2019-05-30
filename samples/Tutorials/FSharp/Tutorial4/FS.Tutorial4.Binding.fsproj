@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net461</TargetFramework>
+    <OutputPath>..\..\..\..\artifacts\samples\$(Configuration)\</OutputPath>
+    <RootNamespace>Tutorial4</RootNamespace>
+    <Name>Tutorial4 - Binding</Name>
+    <UseMacTemplate>True</UseMacTemplate>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Eto.Gtk\Eto.Gtk2.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Eto.Mac\Eto.Mac64.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Eto.WinForms\Eto.WinForms.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Eto\Eto.csproj" />
+    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
+  </ItemGroup>
+
+</Project>

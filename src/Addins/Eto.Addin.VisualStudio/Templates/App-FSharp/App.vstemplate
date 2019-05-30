@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="ProjectGroup" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Eto.Forms Application</Name>
+    <Description>A new Eto.Forms cross-platform application in F#.</Description>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <SortOrder>20</SortOrder>
+
+    <TemplateID>Eto.App.FSharp</TemplateID>
+    <ProjectType>FSharp</ProjectType>
+    <Icon>App.ico</Icon>
+    <DefaultName>EtoApp</DefaultName>
+    <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
+    
+    <CreateNewFolder>false</CreateNewFolder>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectCollection/>
+    <CustomParameters>
+      <CustomParameter Name = "$language$" Value="F#" />
+      <CustomParameter Name = "$uistyle$" Value="none"/>
+      <CustomParameter Name = "$groupid$" Value="Eto.App" />
+      <CustomParameter Name="SideWaffleNewProjNode" Value="Project\FSharp\Eto.Forms"/>
+    </CustomParameters>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ProjectWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.TemplateEngine.Wizard, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.TemplateEngine.Wizard.TemplateEngineWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <SupportedParameters>Separated,Xeto,Jeto,Preview,XamMac</SupportedParameters>
+  </WizardData>
+</VSTemplate>

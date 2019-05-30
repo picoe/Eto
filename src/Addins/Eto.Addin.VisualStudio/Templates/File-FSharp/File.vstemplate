@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+	<TemplateData>
+		<Name>Eto.Forms View</Name>
+		<Description>Creates a new cross platform Panel or Window class using Eto.Forms.</Description>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+
+    <TemplateID>Eto.File.FSharp</TemplateID>
+    <ProjectType>FSharp</ProjectType>
+    <AppliesTo>FSharp + MultiTarget</AppliesTo>
+    <Icon>File.ico</Icon>
+    <DefaultName>Panel.fs</DefaultName>
+
+    <ProvideDefaultName>false</ProvideDefaultName>
+  </TemplateData>
+	<TemplateContent>
+    <ProjectCollection/>
+    <CustomParameters>
+      <CustomParameter Name = "$language$" Value="F#" />
+      <CustomParameter Name = "$uistyle$" Value="none"/>
+      <CustomParameter Name = "$groupid$" Value="Eto.File" />
+      <CustomParameter Name="SideWaffleNewProjNode" Value="Item\FSharp\Eto.Forms"/>
+    </CustomParameters>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ProjectWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.TemplateEngine.Wizard, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.TemplateEngine.Wizard.TemplateEngineWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <SupportedParameters>Xeto,Jeto,Preview,Base</SupportedParameters>
+  </WizardData>
+</VSTemplate>

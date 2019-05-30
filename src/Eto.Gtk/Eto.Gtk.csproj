@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>Eto.GtkSharp</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DefineConstants>TRACE;PCL;GTK3;DEBUG;NETSTANDARD2_0;GTKCORE</DefineConstants>
+    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DefineConstants>TRACE;PCL;GTK3;RELEASE;NETSTANDARD2_0;GTKCORE</DefineConstants>
+    <DebugType></DebugType>
+    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GtkSharp" Version="3.22.24.37" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="EtoWebView.cs" />
+    <Compile Remove="Forms\FontDialogHandlerOld.cs" />
+    <Compile Remove="Forms\ColorDialogHandlerOld.cs" />
+    <Compile Remove="Forms\Controls\WebViewHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\Conversions.cs">
+      <Link>Conversions.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
+      <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\PlatformDetect.cs">
+      <Link>PlatformDetect.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
+      <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,465 @@
+using System;
+using System.Linq;
+using System.ComponentModel;
+
+
+namespace Eto.Forms
+{
+	/// <summary>
+	/// Masked text box with a variable length numeric mask.
+	/// </summary>
+	/// <remarks>
+	/// This provides a text box that limits the user input to only allow numeric values.
+	/// </remarks>
+	/// <typeparam name="T">Numeric type such as int, decimal, double, etc.</typeparam>
+	public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
+	{
+		/// <summary>
+		/// Gets the numeric provider.
+		/// </summary>
+		/// <value>The masked text provider.</value>
+		public new NumericMaskedTextProvider<T> Provider => (NumericMaskedTextProvider<T>)base.Provider;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the mask can accept a sign.
+		/// </summary>
+		/// <remarks>
+		/// This defaults to whether the type specified by <typeparamref name="T"/> allows negative values.
+		/// </remarks>
+		/// <value><c>true</c> to allow sign character; otherwise, <c>false</c>.</value>
+		public bool AllowSign
+		{
+			get { return Provider.AllowSign; }
+			set { Provider.AllowSign = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the mask can input a decimal.
+		/// </summary>
+		/// <remarks>
+		/// This defaults to whether the type specified by <typeparamref name="T"/> allows decimals, such as when
+		/// it is a decimal, double, or float.
+		/// </remarks>
+		/// <value><c>true</c> to allow decimal; otherwise, <c>false</c>.</value>
+		public bool AllowDecimal
+		{
+			get { return Provider.AllowDecimal; }
+			set { Provider.AllowDecimal = value; }
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Forms.NumericMaskedTextStepper{T}"/> class.
+		/// </summary>
+		public NumericMaskedTextStepper()
+			: base(new NumericMaskedTextProvider<T>())
+		{
+		}
+	}
+
+	/// <summary>
+	/// Masked text box that provides a value converted to/from text
+	/// </summary>
+	/// <remarks>
+	/// This is useful when the text can be converted to another type (e.g. DateTime, numeric, etc).
+	/// 
+	/// The <see cref="Provider"/> specified for the control is responsible for converting the value.
+	/// </remarks>
+	public class MaskedTextStepper<T> : MaskedTextStepper
+	{
+		/// <summary>
+		/// Event to handle when the <see cref="Value"/> property changes
+		/// </summary>
+		public event EventHandler<EventArgs> ValueChanged
+		{
+			add { TextChanged += value; }
+			remove { TextChanged -= value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the provider for the text box
+		/// </summary>
+		/// <value>The provider.</value>
+		public new IMaskedTextProvider<T> Provider
+		{
+			get { return base.Provider as IMaskedTextProvider<T>; }
+			set { base.Provider = value; }
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Forms.MaskedTextStepper{T}"/> class.
+		/// </summary>
+		public MaskedTextStepper()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Forms.MaskedTextStepper{T}"/> class with the specified masked text provider.
+		/// </summary>
+		/// <param name="provider">Masked text provider to format the mask.</param>
+		public MaskedTextStepper(IMaskedTextProvider<T> provider)
+			: base(provider)
+		{
+		}
+
+		/// <summary>
+		/// Gets or sets the translated value of the masked text.
+		/// </summary>
+		/// <value>The translated value.</value>
+		public T Value
+		{
+			get { return Provider != null ? Provider.Value : default(T); }
+			set
+			{
+				if (Provider != null)
+					Provider.Value = value;
+				UpdateText();
+			}
+		}
+
+		/// <summary>
+		/// Gets a binding for the <see cref="Value"/> property.
+		/// </summary>
+		/// <value>The value binding.</value>
+		public BindableBinding<MaskedTextStepper<T>, T> ValueBinding
+		{
+			get
+			{
+				return new BindableBinding<MaskedTextStepper<T>, T>(
+					this,
+					c => c.Value,
+					(c, v) => c.Value = v,
+					(c, eh) => c.ValueChanged += eh,
+					(c, eh) => c.ValueChanged -= eh
+				);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Text box with masking capabilities.
+	/// </summary>
+	/// <remarks>
+	/// This uses the <see cref="IMaskedTextProvider"/> as its interface to the mask.  
+	/// The mask can implement any format it wishes, including both fixed or variable length masks.
+	/// </remarks>
+	[ContentProperty("Provider")]
+	public class MaskedTextStepper : TextStepper
+	{
+		IMaskedTextProvider provider;
+		static readonly object InsertKeyModeKey = new object();
+		static readonly object ShowPromptOnFocusKey = new object();
+		static readonly object SupportsInsertKey = new object();
+		static readonly object OverwriteModeKey = new object();
+		static readonly object ShowPlaceholderWhenEmptyKey = new object();
+
+		/// <summary>
+		/// Gets a cached value indicating the current platform supports getting the insert mode state.
+		/// </summary>
+		static bool SupportsInsert
+		{
+			get
+			{
+				// cache whether the platform supports the insert key for Keyboard.IsKeyLocked
+				return Platform.Instance.GetSharedProperty(SupportsInsertKey, () => Keyboard.SupportedLockKeys.Contains(Keys.Insert));
+			}
+		}
+
+		/// <summary>
+		/// If the platform doesn't support global insert/overwrite mode, this stores an application-wide state of the insert mode
+		/// </summary>
+		static bool ManualOverwriteMode
+		{
+			get { return Platform.Instance.GetSharedProperty(OverwriteModeKey, () => false); }
+			set { Platform.Instance.SetSharedProperty(OverwriteModeKey, value); }
+		}
+
+		/// <summary>
+		/// Gets or sets the masked text provider to specify the mask format.
+		/// </summary>
+		/// <value>The masked text provider.</value>
+		public IMaskedTextProvider Provider
+		{
+			get { return provider; }
+			set
+			{
+				if (!ReferenceEquals(value, provider))
+				{
+					var oldProvider = provider;
+					provider = value;
+					if (provider != null && oldProvider != null)
+						provider.Text = oldProvider.Text;
+					UpdateText();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the mode for insertion. Use <see cref="IsOverwrite"/> to determine the current mode.
+		/// </summary>
+		/// <value>The desired insert mode.</value>
+		public InsertKeyMode InsertMode
+		{
+			get { return Properties.Get<InsertKeyMode?>(InsertKeyModeKey) ?? InsertKeyMode.Insert; }
+			set { Properties[InsertKeyModeKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether typing will overwrite text.
+		/// </summary>
+		/// <seealso cref="InsertMode"/> 
+		/// <value><c>true</c> if text will be overwritten; otherwise, <c>false</c> to insert text.</value>
+		public bool IsOverwrite
+		{
+			get
+			{
+				if (InsertMode == InsertKeyMode.Overwrite)
+					return true;
+				var overwrite = SupportsInsert ? Keyboard.IsKeyLocked(Keys.Insert) : ManualOverwriteMode;
+				return InsertMode == InsertKeyMode.Toggle && overwrite;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating that the prompt characters should only be shown when the control has focus.
+		/// </summary>
+		/// <value><c>true</c> if to show the prompt only when focussed; otherwise, <c>false</c>.</value>
+		public bool ShowPromptOnFocus
+		{
+			get { return Properties.Get<bool>(ShowPromptOnFocusKey); }
+			set
+			{
+				if (ShowPromptOnFocus != value)
+				{
+					Properties[ShowPromptOnFocusKey] = value;
+					UpdateText();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating that the placeholder should be shown when the mask is empty and the control does
+		/// not have focus.
+		/// </summary>
+		/// <value><c>true</c> to show the placeholder when its value is empty; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
+		public bool ShowPlaceholderWhenEmpty
+		{
+			get { return Properties.Get<bool?>(ShowPlaceholderWhenEmptyKey) ?? true; }
+			set
+			{
+				if (ShowPlaceholderWhenEmpty != value)
+				{
+					Properties[ShowPlaceholderWhenEmptyKey] = value;
+					UpdateText();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MaskedTextStepper"/> class.
+		/// </summary>
+		public MaskedTextStepper()
+		{
+			HandleEvent(TextChangingEvent);
+			HandleEvent(KeyDownEvent);
+			HandleEvent(GotFocusEvent);
+			HandleEvent(LostFocusEvent);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MaskedTextStepper"/> class with the specified masked text provider.
+		/// </summary>
+		/// <param name="provider">Masked text provider to specify the format of the mask.</param>
+		public MaskedTextStepper(IMaskedTextProvider provider)
+			: this()
+		{
+			if (provider == null)
+				throw new ArgumentNullException(nameof(provider));
+			this.provider = provider;
+			UpdateText();
+		}
+
+		/// <summary>
+		/// Updates the text to the display text from the provider.
+		/// </summary>
+		/// <remarks>
+		/// Call this in a subclass when you want to update the text based on the state of the control.
+		/// When the <see cref="IMaskedTextProvider.IsEmpty"/> is true, it will set the text to null to show the placeholder text.
+		/// 
+		/// Override this to perform other actions before or after the text of the control is updated.
+		/// </remarks>
+		protected virtual void UpdateText()
+		{
+			if (provider == null)
+				return;
+			var hasFocus = HasFocus;
+			if (!hasFocus && ShowPlaceholderWhenEmpty && provider.IsEmpty && !string.IsNullOrEmpty(PlaceholderText))
+				base.Text = null;
+			else if (hasFocus || !ShowPromptOnFocus)
+				base.Text = provider.DisplayText;
+			else
+				base.Text = provider.Text;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Control.LoadComplete"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			UpdateText();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Control.GotFocus"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected override void OnGotFocus(EventArgs e)
+		{
+			base.OnGotFocus(e);
+			if (ShowPromptOnFocus || ShowPlaceholderWhenEmpty)
+				UpdateText();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Control.LostFocus"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected override void OnLostFocus(EventArgs e)
+		{
+			base.OnLostFocus(e);
+			if (ShowPromptOnFocus || ShowPlaceholderWhenEmpty)
+				UpdateText();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="TextBox.TextChanging"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected override void OnTextChanging(TextChangingEventArgs e)
+		{
+			base.OnTextChanging(e);
+			if (e.Cancel || ReadOnly || !Enabled || !e.FromUser)
+				return;
+			var sel = e.Range;
+			var pos = sel.Start;
+			var len = sel.Length();
+			var overwrite = IsOverwrite;
+			if (provider == null)
+			{
+				// with no provider, still have some functionality
+				if (e.Text.Length > 0)
+				{
+					if (overwrite && len == 0)
+					{
+						var text = Text;
+						if (sel.Start < text.Length)
+							text = text.Remove(sel.Start, Math.Min(text.Length - sel.Start, e.Text.Length));
+						text = text.Insert(sel.Start, e.Text);
+						Text = text;
+					}
+					else
+						SelectedText = e.Text;
+					CaretIndex = pos + e.Text.Length;
+					e.Cancel = true;
+				}
+				return;
+			}
+
+			if (len > 0)
+			{
+				var tempPos = pos;
+				if (overwrite)
+					provider.Clear(ref tempPos, len, true);
+				else
+					provider.Delete(ref tempPos, len, true);
+			}
+
+			foreach (char ch in e.Text)
+			{
+				if (overwrite)
+					provider.Replace(ch, ref pos);
+				else
+					provider.Insert(ch, ref pos);
+			}
+
+			UpdateText();
+			CaretIndex = pos;
+			e.Cancel = true;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Control.KeyDown"/> event.
+		/// </summary>
+		/// <param name="e">Key event arguments</param>
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (e.Handled || ReadOnly || !Enabled)
+				return;
+			switch (e.KeyData)
+			{
+				case Keys.Delete:
+				case Keys.Backspace:
+					if (provider == null)
+						return;
+					// override default delete/backspace behaviour so we can skip past literals
+					var sel = Selection;
+					var pos = sel.Start;
+					var len = sel.Length();
+					var forward = len > 0 || e.KeyData == Keys.Delete;
+					len = Math.Max(1, len);
+					bool changed;
+					if (IsOverwrite)
+						changed = provider.Clear(ref pos, len, forward);
+					else
+						changed = provider.Delete(ref pos, len, forward);
+
+					if (changed)
+					{
+						Text = provider.DisplayText;
+						CaretIndex = pos;
+					}
+					e.Handled = true;
+					break;
+				case Keys.Insert:
+					if (!SupportsInsert && InsertMode == InsertKeyMode.Toggle)
+					{
+						ManualOverwriteMode = !ManualOverwriteMode;
+						e.Handled = true;
+					}
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the text of the control including any mask characters.
+		/// </summary>
+		/// <value>The text content of the control.</value>
+		public override string Text
+		{
+			get
+			{
+				return provider != null ? provider.Text : base.Text;
+			}
+			set
+			{
+				if (provider != null)
+				{
+					provider.Text = value;
+					UpdateText();
+				}
+				else
+					base.Text = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the mask is completed.
+		/// </summary>
+		/// <value><c>true</c> if mask completed; otherwise, <c>false</c>.</value>
+		public bool MaskCompleted => provider?.MaskCompleted == true;
+	}
+}
+

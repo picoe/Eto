@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Panel (Xaml)</_Name>
+		<Icon>md-xml-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description><![CDATA[Creates a new Eto.Forms cross platform Panel class using Xaml.
+
+You must add the Eto.Serialization.Xaml nuget package to your project to use this template.]]></_Description>
+		<DefaultFilename>MyPanel</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+		<!-- using DependsOn causes compile order to be incorrect: DependsOn="${Name}.xeto" -->
+        <File name="${Name}.xeto.fs" AddStandardHeader="true" src="panel.xeto.fs" />
+        <EnhancedFile name="${Name}.xeto" AddStandardHeader="true" src="panel.xeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.${Name}.xeto" />
+	</TemplateFiles>
+</Template>

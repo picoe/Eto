@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+  <ItemGroup Condition=" '$(EnableDefaultCompileItems)' == 'true' ">
+    <None Remove="**\*.xeto" />
+    <EmbeddedResource Include="**\*.xeto" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="**\*.xeto.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

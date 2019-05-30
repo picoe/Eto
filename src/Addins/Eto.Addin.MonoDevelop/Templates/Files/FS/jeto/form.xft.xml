@@ -1,0 +1,18 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Form (Json)</_Name>
+		<Icon>md-xml-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description><![CDATA[Creates a new Eto.Forms cross platform Form class using Json.
+
+You must add the Eto.Serialization.Json nuget package to your project to use this template.]]></_Description>
+		<DefaultFilename>MyForm</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+		<File name="${Name}.jeto.fs" AddStandardHeader="true" src="form.jeto.fs" DependsOn="${Name}.jeto" />
+		<EnhancedFile name="${Name}.jeto" AddStandardHeader="true" src="form.jeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.${Name}.jeto" />
+	</TemplateFiles>
+</Template>

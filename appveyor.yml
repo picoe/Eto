@@ -1,21 +1,27 @@
-version: 2.4.0.{build}
+version: 2.5.0.{build}
+image: Visual Studio 2017
 install:
-- appveyor DownloadFile %GTKSHARP_LOCATION%/gtk-sharp-2.12.38.msi -FileName gtk-sharp.msi
-- msiexec /i gtk-sharp.msi /qn /norestart
+- cinst gtksharp -y
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
-- set BUILD_VERSION=000%APPVEYOR_BUILD_NUMBER%
-- set BUILD_VERSION=2.4.0-build%BUILD_VERSION:~-4%
-- echo Downloading XamMac.dll for build..
-- mkdir %BASE%\BuildOutput\net45\Release
-- appveyor DownloadFile %XAMMAC_LOCATION%/XamMac.dll -FileName "%BASE%\BuildOutput\net45\Release\XamMac.dll"
-- msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% Resources\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
+- set BUILD_VERSION_NUMBER=000%APPVEYOR_BUILD_NUMBER%
+- set BUILD_VERSION=2.5.0-build%BUILD_VERSION_NUMBER:~-4%
+- msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% build\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
+- msbuild -t:BuildAddins build\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 test: off
 #test_script:
-#- nunit-console --framework=4.5 --include=TestPlatform BuildOutput/net45/Release/test/Eto.Test.dll
+#- nunit-console --framework=4.5 --include=TestPlatform artifacts/Release/net45/test/Eto.Test.dll
 artifacts:
-- path: BuildOutput/Nuget/Release/*.nupkg
+- path: artifacts/nuget/Release/*.nupkg
   name: nuget
+- path: artifacts/samples
+  name: samples
+  type: zip
+- path: artifacts/test
+  name: test
+  type: zip
+- path: artifacts/addin/Release/VisualStudio/Eto.Addin.VisualStudio.vsix
+  name: vsix
 branches:
   only:
   - develop

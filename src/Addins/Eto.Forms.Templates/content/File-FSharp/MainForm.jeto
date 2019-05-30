@@ -1,0 +1,38 @@
+﻿{
+	"$type": "Form",
+/*#if(IsWindow)*/
+	"Title": "My Eto Form",
+	"ClientSize": "400,350",
+/*#endif */
+	"Padding": "10",
+	"Content": {
+		"$type": "StackLayout",
+		"Items": [
+			"Some Content",
+		]
+	},
+/*#if(IsForm)*/
+	"Menu": {
+		"Items": [
+			{ 
+				"$type": "ButtonMenuItem",
+				"Text": "&File",
+				"Items": [
+					{ "$type": "ButtonMenuItem", "Text": "Click Me!", "Click": "HandleClickMe" }
+				]
+			}
+		],
+		"ApplicationItems": [
+			{ "$type": "ButtonMenuItem", "Text": "Preferences..." }
+
+		],
+		"QuitItem": { "$type": "ButtonMenuItem", "Text": "Quit", "Shortcut": "CommonModifier+Q", "Click": "HandleQuit" },
+		"AboutItem": { "$type": "ButtonMenuItem", "Text": "About...", "Click": "HandleAbout" }
+	},
+	"ToolBar": {
+		"Items": [
+			{ "$type": "ButtonToolItem", "Text": "Click Me", "Click": "HandleClickMe" }
+		]
+	}
+/*#endif*/
+}

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Form</_Name>
+		<Icon>md-xml-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description>
+			<![CDATA[Creates a new Eto.Forms cross platform non-modal Form class using F#.]]>
+		</_Description>
+		<DefaultFilename>MyForm</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+        <File name="${Name}.fs" AddStandardHeader="true" src="form.fs"/>
+	</TemplateFiles>
+</Template>

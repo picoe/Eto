@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net461</TargetFramework>
+  </PropertyGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\EtoApp.1\EtoApp.1.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Eto.Platform.Mac64" Version="2.5.0-dev" />
+  </ItemGroup>
+	
+</Project>

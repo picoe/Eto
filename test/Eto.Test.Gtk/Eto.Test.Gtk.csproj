@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>..\..\artifacts\test\Debug\</OutputPath>
+    <DefineConstants>CAIRO;TRACE;GTK3;DEBUG;NETCOREAPP2_0</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\..\artifacts\test\Release\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Project</StartAction>
+    <ExternalConsole>false</ExternalConsole>
+    <EnvironmentVariables>
+      <Variable name="DYLD_FALLBACK_LIBRARY_PATH" value="/usr/local/lib" />
+    </EnvironmentVariables>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Eto.Gtk\Eto.Gtk.csproj" />
+    <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UnitTests\" />
+  </ItemGroup>
+</Project>

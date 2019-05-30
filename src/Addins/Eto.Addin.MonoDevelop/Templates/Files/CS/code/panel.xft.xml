@@ -1,0 +1,18 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Panel</_Name>
+		<Icon>md-text-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<_Description><![CDATA[Creates a new Eto.Forms cross platform Panel class using C#.
+
+This template provides a partial *.eto.cs file for form preview.]]>
+		</_Description>
+		<DefaultFilename>MyPanel</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+        <File name="${Name}.cs" AddStandardHeader="true" src="panel.cs" />
+	</TemplateFiles>
+</Template>

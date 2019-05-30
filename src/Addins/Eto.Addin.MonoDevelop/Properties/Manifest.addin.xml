@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+	<ConditionType id="ExtensionExists" type="Eto.Addin.MonoDevelop.ExtensionExistsCondition" />
+	<!-- Not supported with dotnet template engine, so let's not bloat things
+	Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
+		<PackageRepository path="Packages" />
+	</Extension-->
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
+		<Class id="Eto.Addin.MonoDevelop.ProjectWizard" class="Eto.Addin.MonoDevelop.ProjectWizard" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat">
+			<Category id="multiplat" name="Multiplatform" icon="md-platform-crossplatform" insertbefore="other" />
+		</Condition>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat">
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat/library">
+			<Category id="library" name="Library" />
+		</Condition>
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat/app">
+			<Category id="app" name="App" insertbefore="library" />
+		</Condition>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat/app">
+		<Category id="eto" name="Eto.Forms" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat/library">
+		<Category id="eto" name="Eto.Forms" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Templates">
+		<Template
+			id="Eto.App.CSharp"
+			path="Packages/Eto.Forms.Templates.2.5.0-dev.nupkg"
+			imageId="eto-project"
+			wizard="Eto.Addin.MonoDevelop.ProjectWizard"
+			category="multiplat/app/eto"
+			supportedParameters="AppName,Separated,Xeto,Preview,Jeto,XamMac,NoDash"
+			/>
+		<Template
+			id="Eto.App.FSharp"
+			path="Packages/Eto.Forms.Templates.2.5.0-dev.nupkg"
+			imageId="eto-project"
+			wizard="Eto.Addin.MonoDevelop.ProjectWizard"
+			category="multiplat/app/eto"
+			supportedParameters="AppName,Separated,Xeto,Preview,Jeto,XamMac,NoDash"
+			/>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/FileTemplateTypes">
+		<!-- So we can get access to project properties, e.g. namespace for resource ID  -->
+		<FileTemplateType name="EnhancedFile" class="Eto.Addin.MonoDevelop.EnhancedFile" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id="eto.cs.code.form" file="Templates/Files/CS/code/form.xft.xml" />
+		<FileTemplate id="eto.cs.code.dialog" file="Templates/Files/CS/code/dialog.xft.xml" />
+		<FileTemplate id="eto.cs.code.panel" file="Templates/Files/CS/code/panel.xft.xml" />
+		<FileTemplate id="eto.cs.preview.form" file="Templates/Files/CS/code/preview.form.xft.xml" />
+		<FileTemplate id="eto.cs.preview.dialog" file="Templates/Files/CS/code/preview.dialog.xft.xml" />
+		<FileTemplate id="eto.cs.preview.panel" file="Templates/Files/CS/code/preview.panel.xft.xml" />
+		<FileTemplate id="eto.cs.xeto.form" file="Templates/Files/CS/xeto/form.xft.xml" />
+		<FileTemplate id="eto.cs.xeto.dialog" file="Templates/Files/CS/xeto/dialog.xft.xml" />
+		<FileTemplate id="eto.cs.xeto.panel" file="Templates/Files/CS/xeto/panel.xft.xml" />
+		<FileTemplate id="eto.cs.jeto.form" file="Templates/Files/CS/jeto/form.xft.xml" />
+		<FileTemplate id="eto.cs.jeto.dialog" file="Templates/Files/CS/jeto/dialog.xft.xml" />
+		<FileTemplate id="eto.cs.jeto.panel" file="Templates/Files/CS/jeto/panel.xft.xml" />
+		<!-- No VB until it is (properly) supported on mono and monodevelop.
+		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
+			<FileTemplate id="eto.vb.code.panel" file="Templates/Files/VB/code/panel.xft.xml" />
+			<FileTemplate id="eto.vb.xeto.panel" file="Templates/Files/VB/xeto/panel.xft.xml" />
+			<FileTemplate id="eto.vb.jeto.panel" file="Templates/Files/VB/jeto/panel.xft.xml" />
+		</Condition>
+		-->
+		<ComplexCondition>
+			<Or>
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+			</Or>
+			<FileTemplate id="eto.fs.code.form" file="Templates/Files/FS/code/form.xft.xml" />
+			<FileTemplate id="eto.fs.code.dialog" file="Templates/Files/FS/code/dialog.xft.xml" />
+			<FileTemplate id="eto.fs.code.panel" file="Templates/Files/FS/code/panel.xft.xml" />
+			<FileTemplate id="eto.fs.preview.form" file="Templates/Files/FS/code/preview.form.xft.xml" />
+			<FileTemplate id="eto.fs.preview.dialog" file="Templates/Files/FS/code/preview.dialog.xft.xml" />
+			<FileTemplate id="eto.fs.preview.panel" file="Templates/Files/FS/code/preview.panel.xft.xml" />
+			<FileTemplate id="eto.fs.xeto.form" file="Templates/Files/FS/xeto/form.xft.xml" />
+			<FileTemplate id="eto.fs.xeto.dialog" file="Templates/Files/FS/xeto/dialog.xft.xml" />
+			<FileTemplate id="eto.fs.xeto.panel" file="Templates/Files/FS/xeto/panel.xft.xml" />
+			<FileTemplate id="eto.fs.jeto.form" file="Templates/Files/FS/jeto/form.xft.xml" />
+			<FileTemplate id="eto.fs.jeto.dialog" file="Templates/Files/FS/jeto/dialog.xft.xml" />
+			<FileTemplate id="eto.fs.jeto.panel" file="Templates/Files/FS/jeto/panel.xft.xml" />
+		</ComplexCondition>
+	</Extension>
+	
+	<Runtime>
+		<Import assembly="Eto.dll" />
+		<Import assembly="Eto.Gtk2.dll" />
+		<Import assembly="Eto.Addin.Shared.dll" />
+		<Import assembly="Eto.Designer.dll" />
+		<Import assembly="Eto.Serialization.Json.dll" />
+		<Import assembly="Eto.Serialization.Xaml.dll" />
+		<Import assembly="Portable.Xaml.dll" />
+		<Import assembly="FSharp.Compiler.CodeDom.dll" />
+		<Import file="Eto.xml" />
+	</Runtime>
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<!--ProjectFlavor guid="" type="Eto.Addin.MonoDevelop.FSharpProjectExtension" alias="Eto.FSharp"/-->
+	</Extension>	
+	
+	<Extension path="/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding insertbefore="DefaultDisplayBinding" class="Eto.Addin.MonoDevelop.Editor.DisplayBinding" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions=".xeto" class="Eto.Addin.MonoDevelop.Editor.XetoTextEditorExtension" insertbefore="XmlTextEditorExtension" />
+	</Extension>
+	<Extension path="/MonoDevelop/Core/MimeTypes">
+		<MimeType id="application/x-xeto" _description="Eto Xaml document" icon="md-xml-file-icon" isText="true" baseType="application/xml">
+			<File pattern="*.xeto" />
+		</MimeType>
+		<MimeType id="application/x-jeto" _description="Eto Json document" isText="true" baseType="application/json">
+			<File pattern="*.jeto" />
+		</MimeType>
+	</Extension>
+	<Extension path = "/MonoDevelop/Xml/Editor/XmlFileAssociations">
+		<Association extension = ".xeto" namespaceUri="http://schema.picoe.ca/eto.forms" />
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="eto-project" resource="Eto.Addin.MonoDevelop.Images.project.png" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="eto-project" resource="Eto.Addin.MonoDevelop.Images.project.png" size="Dnd" />
+	</Extension>
+</ExtensionModel>

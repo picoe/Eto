@@ -1,0 +1,112 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Android", "..\test\Eto.Test.Android\Eto.Test.Android.csproj", "{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Android", "Eto.Android\Eto.Android.csproj", "{7A02E771-D30B-41A1-8A35-C78D3940FC33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json", "Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test", "..\test\Eto.Test\Eto.Test.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F8178EF-0710-43F7-92E2-130B9BE2212D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F8178EF-0710-43F7-92E2-130B9BE2212D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F8178EF-0710-43F7-92E2-130B9BE2212D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F8178EF-0710-43F7-92E2-130B9BE2212D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A02E771-D30B-41A1-8A35-C78D3940FC33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A02E771-D30B-41A1-8A35-C78D3940FC33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A02E771-D30B-41A1-8A35-C78D3940FC33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A02E771-D30B-41A1-8A35-C78D3940FC33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.inheritsSet = VisualStudio
+		$1.scope = text/plain
+		$1.FileWidth = 120
+		$1.TabsToSpaces = False
+		$1.inheritsScope = text/plain
+		$0.CSharpFormattingPolicy = $2
+		$2.IndentSwitchBody = True
+		$2.IndentBlocksInsideExpressions = True
+		$2.AnonymousMethodBraceStyle = NextLine
+		$2.PropertyBraceStyle = NextLine
+		$2.PropertyGetBraceStyle = NextLine
+		$2.PropertySetBraceStyle = NextLine
+		$2.EventBraceStyle = NextLine
+		$2.EventAddBraceStyle = NextLine
+		$2.EventRemoveBraceStyle = NextLine
+		$2.StatementBraceStyle = NextLine
+		$2.ElseNewLinePlacement = NewLine
+		$2.CatchNewLinePlacement = NewLine
+		$2.FinallyNewLinePlacement = NewLine
+		$2.WhileNewLinePlacement = DoNotCare
+		$2.ArrayInitializerWrapping = DoNotChange
+		$2.ArrayInitializerBraceStyle = NextLine
+		$2.BeforeMethodDeclarationParentheses = False
+		$2.BeforeMethodCallParentheses = False
+		$2.BeforeConstructorDeclarationParentheses = False
+		$2.NewLineBeforeConstructorInitializerColon = NewLine
+		$2.NewLineAfterConstructorInitializerColon = SameLine
+		$2.BeforeDelegateDeclarationParentheses = False
+		$2.NewParentheses = False
+		$2.SpacesBeforeBrackets = False
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/x-csharp
+		$2.scope = text/x-csharp
+		$2.IndentSwitchSection = True
+		$2.NewLinesForBracesInProperties = True
+		$2.NewLinesForBracesInAccessors = True
+		$2.NewLinesForBracesInAnonymousMethods = True
+		$2.NewLinesForBracesInControlBlocks = True
+		$2.NewLinesForBracesInAnonymousTypes = True
+		$2.NewLinesForBracesInObjectCollectionArrayInitializers = True
+		$2.NewLinesForBracesInLambdaExpressionBody = True
+		$2.NewLineForElse = True
+		$2.NewLineForCatch = True
+		$2.NewLineForFinally = True
+		$2.NewLineForMembersInObjectInit = True
+		$2.NewLineForMembersInAnonymousTypes = True
+		$2.NewLineForClausesInQuery = True
+		$2.SpacingAfterMethodDeclarationName = False
+		$2.SpaceAfterMethodCallName = False
+		$2.SpaceBeforeOpenSquareBracket = False
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabsToSpaces = False
+		$3.inheritsSet = VisualStudio
+		$3.inheritsScope = text/plain
+		$3.scope = text/plain
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

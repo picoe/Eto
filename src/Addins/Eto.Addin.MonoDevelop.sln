@@ -1,0 +1,139 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.MonoDevelop", "Eto.Addin.MonoDevelop\Eto.Addin.MonoDevelop.csproj", "{54A88D77-39C6-49E5-971E-05451209F2A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2", "..\Eto.Gtk\Eto.Gtk2.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared", "Eto.Addin.Shared\Eto.Addin.Shared.csproj", "{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer", "Eto.Designer\Eto.Designer.csproj", "{7FAA1841-0869-474C-9D89-87E1B4BAB190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", "..\Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json", "..\Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4E4F6B1-48B2-4D57-8CEB-39796557ECB5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\addin-project.xml = ..\..\addin-project.xml
+		..\..\NuGet.Config = ..\..\NuGet.Config
+		..\..\Directory.Build.props = ..\..\Directory.Build.props
+		..\..\Directory.Build.targets = ..\..\Directory.Build.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\Eto\Eto.csproj", "{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Forms.Templates", "Eto.Forms.Templates\Eto.Forms.Templates.csproj", "{0FC60318-C91B-4753-AC96-50D40C9F3DA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54A88D77-39C6-49E5-971E-05451209F2A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54A88D77-39C6-49E5-971E-05451209F2A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54A88D77-39C6-49E5-971E-05451209F2A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54A88D77-39C6-49E5-971E-05451209F2A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Debug|Any CPU.ActiveCfg = MDDebug|Any CPU
+		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Debug|Any CPU.Build.0 = MDDebug|Any CPU
+		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Release|Any CPU.ActiveCfg = MDRelease|Any CPU
+		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Release|Any CPU.Build.0 = MDRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.inheritsSet = null
+		$1.scope = application/x-addin-xpt+xml
+		$1.FileWidth = 120
+		$1.TabsToSpaces = False
+		$1.inheritsScope = text/plain
+		$0.CSharpFormattingPolicy = $2
+		$2.IndentSwitchBody = True
+		$2.IndentBlocksInsideExpressions = True
+		$2.AnonymousMethodBraceStyle = NextLine
+		$2.PropertyBraceStyle = NextLine
+		$2.PropertyGetBraceStyle = NextLine
+		$2.PropertySetBraceStyle = NextLine
+		$2.EventBraceStyle = NextLine
+		$2.EventAddBraceStyle = NextLine
+		$2.EventRemoveBraceStyle = NextLine
+		$2.StatementBraceStyle = NextLine
+		$2.ElseNewLinePlacement = NewLine
+		$2.CatchNewLinePlacement = NewLine
+		$2.FinallyNewLinePlacement = NewLine
+		$2.WhileNewLinePlacement = DoNotCare
+		$2.ArrayInitializerWrapping = DoNotChange
+		$2.ArrayInitializerBraceStyle = NextLine
+		$2.BeforeMethodDeclarationParentheses = False
+		$2.BeforeMethodCallParentheses = False
+		$2.BeforeConstructorDeclarationParentheses = False
+		$2.NewLineBeforeConstructorInitializerColon = NewLine
+		$2.NewLineAfterConstructorInitializerColon = SameLine
+		$2.BeforeDelegateDeclarationParentheses = False
+		$2.NewParentheses = False
+		$2.SpacesBeforeBrackets = False
+		$2.scope = text/x-csharp
+		$0.TextStylePolicy = $3
+		$3.scope = text/plain
+		$0.TextStylePolicy = $4
+		$4.inheritsSet = null
+		$4.scope = application/x-addin+xml
+		$0.XmlFormattingPolicy = $5
+		$5.inheritsSet = null
+		$5.scope = application/config+xml
+		$5.inheritsScope = application/xml
+		$0.DotNetNamingPolicy = $6
+		$6.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$6.ResourceNamePolicy = MSBuild
+		$0.TextStylePolicy = $7
+		$7.inheritsSet = null
+		$7.scope = application/xml
+		$0.XmlFormattingPolicy = $8
+		$8.scope = application/xml
+		$0.TextStylePolicy = $9
+		$9.inheritsSet = null
+		$9.scope = application/x-addin-xft+xml
+		$0.XmlFormattingPolicy = $10
+		$10.inheritsSet = null
+		$10.scope = application/x-addin-xft+xml
+		$0.TextStylePolicy = $11
+		$11.inheritsSet = null
+		$11.scope = application/config+xml
+		$0.XmlFormattingPolicy = $12
+		$12.inheritsSet = null
+		$12.scope = application/x-addin-xpt+xml
+		$0.TextStylePolicy = $13
+		$13.inheritsSet = null
+		$13.scope = application/config+xml
+		$0.XmlFormattingPolicy = $14
+		$14.inheritsSet = null
+		$14.scope = application/config+xml
+	EndGlobalSection
+EndGlobal

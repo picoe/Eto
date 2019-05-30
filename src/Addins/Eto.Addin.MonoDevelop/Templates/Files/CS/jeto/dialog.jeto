@@ -1,0 +1,15 @@
+﻿{
+	"$type": "Dialog",
+	"Content": {
+		"$type": "StackLayout",
+		"Items": [
+			{ "$type": "Label", "Text": "Some Content" }
+		]
+	},
+	"PositiveButtons": [
+		{ "$type": "Button", "Text": "Ok" }
+	],
+	"NegativeButtons": [
+		{ "$type": "Button", "Text": "Cancel" }
+	]
+}

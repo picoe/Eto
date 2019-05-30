@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{E711B298-D141-4EC5-9BFD-84962B264F90}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Eto.iOS</RootNamespace>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>Eto.iOS</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\artifacts\core\Debug\modern\</OutputPath>
+    <DefineConstants>DEBUG;IOS;MOBILE;UNIFIED</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\artifacts\core\Release\modern\</OutputPath>
+    <DefineConstants>IOS;MOBILE;UNIFIED</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <Import Project="..\Shared\Common.props" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.iOS" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Drawing\BitmapHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\IconHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\ImageHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\IndexedBitmapHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ApplicationHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\FormHandler.cs" />
+    <Compile Include="InvokeHelper.cs" />
+    <Compile Include="Forms\DialogHandler.cs" />
+    <Compile Include="Forms\PixelLayoutHandler.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Forms\Controls\ButtonHandler.cs" />
+    <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DrawableHandler.cs" />
+    <Compile Include="Forms\Controls\ListBoxHandler.cs" />
+    <Compile Include="Forms\Controls\SplitterHandler.cs" />
+    <Compile Include="EtoEnvironmentHandler.cs" />
+    <Compile Include="Forms\Controls\NavigationHandler.cs" />
+    <Compile Include="Forms\Controls\ScrollableHandler.cs" />
+    <Compile Include="Forms\Controls\PanelHandler.cs" />
+    <Compile Include="..\Eto.Mac\Drawing\FontHandler.cs">
+      <Link>Drawing\FontHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Forms\TableLayoutHandler.cs">
+      <Link>Forms\TableLayoutHandler.cs</Link>
+    </Compile>
+    <Compile Include="Forms\MessageBoxHandler.cs" />
+    <Compile Include="..\Eto.Mac\ObjCExtensions.cs">
+      <Link>ObjCExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Threading\ThreadHandler.cs" />
+    <Compile Include="EtoAppDelegate.cs" />
+    <Compile Include="Forms\Controls\GridHandler.cs" />
+    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
+    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
+    <Compile Include="Forms\Cells\CellHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
+    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
+    <Compile Include="Forms\Controls\LabelHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
+    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ImageViewHandler.cs" />
+    <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
+    <Compile Include="..\Eto.Mac\Forms\UITimerHandler.cs">
+      <Link>Forms\UITimerHandler.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\GridViewHandler.cs" />
+    <Compile Include="Forms\Controls\SliderHandler.cs" />
+    <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
+    <Compile Include="..\Eto.Mac\Drawing\GraphicsHandler.cs">
+      <Link>Drawing\GraphicsHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Drawing\GraphicsPathHandler.cs">
+      <Link>Drawing\GraphicsPathHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\CGConversions.cs">
+      <Link>CGConversions.cs</Link>
+    </Compile>
+    <Compile Include="Conversions.cs" />
+    <Compile Include="..\Eto.Mac\Drawing\FontsHandler.cs">
+      <Link>Drawing\FontsHandler.cs</Link>
+    </Compile>
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
+    <Compile Include="..\Eto.Mac\Drawing\PenHandler.cs">
+      <Link>Drawing\PenHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Drawing\SolidBrushHandler.cs">
+      <Link>Drawing\SolidBrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Drawing\BrushHandler.cs">
+      <Link>Drawing\BrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Drawing\MatrixHandler.cs">
+      <Link>Drawing\MatrixHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
+      <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\NumericStepperHandler.cs" />
+    <Compile Include="..\Eto.Mac\Drawing\TextureBrushHandler.cs">
+      <Link>Drawing\TextureBrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Drawing\LinearGradientBrushHandler.cs">
+      <Link>Drawing\LinearGradientBrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Forms\MacBase.cs">
+      <Link>Forms\MacBase.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Eto.Mac\Forms\MacContainer.cs">
+      <Link>Forms\MacContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Forms\MacObject.cs">
+      <Link>Forms\MacObject.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Forms\MacControlExtensions.cs">
+      <Link>Forms\Controls\MacControlExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Forms\MacCompatibility.cs" />
+    <Compile Include="Forms\IosLayout.cs" />
+    <Compile Include="Forms\IosView.cs" />
+    <Compile Include="Forms\IosViewExtensions.cs" />
+    <Compile Include="Forms\Controls\IosControl.cs" />
+    <Compile Include="Forms\Controls\IosButton.cs" />
+    <Compile Include="Forms\IosWindow.cs" />
+    <Compile Include="..\Eto.Mac\Drawing\FontExtensions.cs">
+      <Link>Drawing\FontExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="..\Eto.Mac\Forms\MacPanel.cs">
+      <Link>Forms\MacPanel.cs</Link>
+    </Compile>
+    <Compile Include="Platform.cs" />
+    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
+    <Compile Include="Forms\Controls\BasePickerHandler.cs" />
+    <Compile Include="Forms\RotatableViewController.cs" />
+    <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
+    <Compile Include="Forms\Controls\TabControlHandler.cs" />
+    <Compile Include="Forms\Controls\TabPageHandler.cs" />
+    <Compile Include="Forms\ScreenHandler.cs" />
+    <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Forms\Toolbar\ToolbarHandler.cs" />
+    <Compile Include="Forms\Toolbar\ToolItemHandler.cs" />
+    <Compile Include="Forms\Toolbar\ButtonToolItemHandler.cs" />
+    <Compile Include="Forms\Toolbar\CheckToolItemHandler.cs" />
+    <Compile Include="Forms\Toolbar\SeparatorToolItemHandler.cs" />
+    <Compile Include="..\Eto.Mac\Mac64Extensions.cs">
+      <Link>Mac64Extensions.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Toolbar\RadioToolItemHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="..\Eto.Mac\Messaging.cs">
+      <Link>Messaging.cs</Link>
+    </Compile>
+    <Compile Include="Forms\ClipboardHandler.cs" />
+    <Compile Include="..\Eto.Mac\Drawing\RadialGradientBrushHandler.cs">
+      <Link>Drawing\RadialGradientBrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>Drawing\GradientHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentBlock="True" IndentBraces="False" IndentSwitchCaseSection="True" LabelPositioning="OneLess" NewLinesForBracesInTypes="True" NewLinesForBracesInMethods="True" SpaceWithinMethodDeclarationParenthesis="False" SpaceBetweenEmptyMethodDeclarationParentheses="False" SpaceWithinMethodCallParentheses="False" SpaceBetweenEmptyMethodCallParentheses="False" SpaceAfterControlFlowStatementKeyword="True" SpaceWithinExpressionParentheses="False" SpaceWithinCastParentheses="False" SpaceWithinOtherParentheses="False" SpaceAfterCast="False" SpacesIgnoreAroundVariableDeclaration="False" SpaceBetweenEmptySquareBrackets="False" SpaceWithinSquareBrackets="False" SpaceAfterColonInBaseTypeDeclaration="True" SpaceAfterComma="True" SpaceAfterDot="False" SpaceAfterSemicolonsInForStatement="True" SpaceBeforeColonInBaseTypeDeclaration="True" SpaceBeforeComma="False" SpaceBeforeDot="False" SpaceBeforeSemicolonsInForStatement="False" SpacingAroundBinaryOperator="Single" WrappingPreserveSingleLine="True" WrappingKeepStatementsOnSingleLine="True" PlaceSystemDirectiveFirst="True" IndentSwitchSection="True" NewLinesForBracesInProperties="True" NewLinesForBracesInAccessors="True" NewLinesForBracesInAnonymousMethods="True" NewLinesForBracesInControlBlocks="True" NewLinesForBracesInAnonymousTypes="True" NewLinesForBracesInObjectCollectionArrayInitializers="True" NewLinesForBracesInLambdaExpressionBody="True" NewLineForElse="True" NewLineForCatch="True" NewLineForFinally="True" NewLineForMembersInObjectInit="True" NewLineForMembersInAnonymousTypes="True" NewLineForClausesInQuery="True" SpacingAfterMethodDeclarationName="False" SpaceAfterMethodCallName="False" SpaceBeforeOpenSquareBracket="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+  <Import Project="..\Shared\Common.targets" />
+</Project>

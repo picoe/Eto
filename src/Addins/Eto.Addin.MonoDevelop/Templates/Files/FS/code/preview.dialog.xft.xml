@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Dialog (with form preview)</_Name>
+		<Icon>md-xml-file-icon</Icon>
+		<_Category>Eto.Forms</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description><![CDATA[Creates a new Eto.Forms cross platform modal Dialog class using F#.
+			
+This template provides a partial *.eto.fs file for form preview.]]>
+		</_Description>
+		<DefaultFilename>MyDialog</DefaultFilename>
+		<GroupId>eto-file-panel</GroupId>
+	</TemplateConfiguration>
+	<TemplateFiles>
+        <File name="${Name}.fs" AddStandardHeader="true" src="preview.panel.fs"/>
+        <File name="${Name}.eto.fs" AddStandardHeader="true" src="preview.dialog.eto.fs" DependsOn="${Name}.fs" />
+	</TemplateFiles>
+</Template>

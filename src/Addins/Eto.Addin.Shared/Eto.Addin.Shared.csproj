@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto\Eto.csproj" />
+    <ProjectReference Include="..\Eto.Designer\Eto.Designer.csproj" />
+  </ItemGroup>
+</Project>
