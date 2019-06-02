@@ -83,6 +83,7 @@ Applications
 * [DotImaging.UI](https://github.com/dajuric/dot-imaging) - Portable UI elements for DotImaging
 * [DWSIM](https://github.com/DanWBR/dwsim5) - Chemical Process Simulator
 * [Termission](https://github.com/junian/termission) - Cross-platform Serial/TCP Terminal with Scriptable Auto-Response
+* [Visual SEO Studio] (https://visual-seo.com/) - Technical SEO Auditing Tool
 
 Assemblies
 ----------
