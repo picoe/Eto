@@ -213,10 +213,26 @@ namespace Eto.Wpf.Forms.Controls
 		public bool SpellCheck
 		{
 			get { return Control.SpellCheck.IsEnabled; }
-			set { Control.SpellCheck.IsEnabled = value; }
+			set
+			{
+				// if it can't be enabled, just ignore instead of crashing..
+				// see: https://support.microsoft.com/en-us/help/3088234/spelling-checker-isn-t-supported-in-the-net-4-6-1-in-some-conditions
+				if (!WpfExtensions.SpellCheckCanBeEnabled)
+					return;
+
+				try
+				{
+					Control.SpellCheck.IsEnabled = value;
+				}
+				catch
+				{
+					// can sometimes fail if the spell checker is still initializing, so just disable.
+					Control.SpellCheck.IsEnabled = false;
+				}
+			}
 		}
 
-		public bool SpellCheckIsSupported { get { return true; } }
+		public bool SpellCheckIsSupported => WpfExtensions.SpellCheckCanBeEnabled;
 
 		public TextReplacements TextReplacements
 		{
