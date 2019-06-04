@@ -9,6 +9,7 @@ using Eto.Wpf.Forms;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Eto.Wpf
 {
@@ -321,5 +322,40 @@ namespace Eto.Wpf
 			// GC.Collect alone seems to fix the issue.  Adding GC.WaitForPendingFinalizers may impact performance.
 			GC.Collect();
 		}
+
+
+		static Lazy<bool> s_SpellCheckCanBeEnabled = new Lazy<bool>(CheckIfSpellCheckCanBeEnabled);
+
+		public static bool SpellCheckCanBeEnabled => s_SpellCheckCanBeEnabled.Value;
+
+		private static bool CheckIfSpellCheckCanBeEnabled()
+		{
+			try
+			{
+				// check if we can create the spell checker com component
+				var spellCheckerFactory = new SpellCheckerFactoryCoClass();
+
+				if (Marshal.IsComObject(spellCheckerFactory))
+				{
+					Marshal.ReleaseComObject(spellCheckerFactory);
+					return true;
+				}
+				return false;
+			}
+			catch
+			{
+				// there was a problem!
+				return false;
+			}
+		}
+
+		[Guid("7AB36653-1796-484B-BDFA-E74F1DB7C1DC")]
+		[TypeLibType(TypeLibTypeFlags.FCanCreate)]
+		[ClassInterface(ClassInterfaceType.None)]
+		[ComImport]
+		private class SpellCheckerFactoryCoClass
+		{
+		}
+
 	}
 }
