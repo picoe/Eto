@@ -203,10 +203,12 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (attributes == null)
 				return;
-			foreach (var attribute in attributes)
+			Control.BeginChange();
+			foreach (var attribute in attributes.ToList())
 			{
 				range.ApplyPropertyValue(attribute.Key, attribute.Value);
 			}
+			Control.EndChange();
 		}
 
 		protected override void Dispose(bool disposing)
