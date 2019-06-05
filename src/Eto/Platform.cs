@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
@@ -435,6 +436,17 @@ namespace Eto
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating that the platform should allow reinitialization.
+		/// </summary>
+		/// <remarks>
+		/// When false, prevents incorrect logic that may create multiple instances of <see cref="Forms.Application"/>
+		/// or <see cref="Platform"/> in the same thread which can causes issues where handlers are no longer registered, etc.
+		/// 
+		/// Multiple instances should still be able to be created in separate threads (for platforms that support it) when this is false.
+		/// </remarks>
+		public static bool AllowReinitialize { get; set; }
+
+		/// <summary>
 		/// Initializes the specified <paramref name="platform"/> as the current generator, for the current thread
 		/// </summary>
 		/// <remarks>
@@ -443,8 +455,12 @@ namespace Eto
 		/// <param name="platform">Generator to set as the current generator</param>
 		public static void Initialize(Platform platform)
 		{
+			if (!AllowReinitialize && instance.IsValueCreated && !ReferenceEquals(platform, instance.Value))
+				throw new InvalidOperationException("The Eto.Forms Platform is already initialized.");
+
 			if (globalInstance == null)
 				globalInstance = platform;
+
 			instance.Value = platform;
 		}
 
@@ -766,4 +782,4 @@ namespace Eto
 			}
 		}
 	}
-}
+};
