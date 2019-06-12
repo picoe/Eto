@@ -461,6 +461,11 @@ namespace Eto
 			if (globalInstance == null)
 				globalInstance = platform;
 
+			SetInstance(platform);
+		}
+
+		internal static void SetInstance(Platform platform)
+		{
 			instance.Value = platform;
 		}
 
@@ -782,4 +787,4 @@ namespace Eto
 			}
 		}
 	}
-};
+}

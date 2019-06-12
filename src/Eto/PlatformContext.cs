@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,12 +15,12 @@ namespace Eto
 		public PlatformContext(Platform platform)
 		{
 			previous = Platform.Instance;
-			Platform.Initialize(platform);
+			Platform.SetInstance(platform);
 		}
 
 		public void Dispose()
 		{
-			Platform.Initialize(previous);
+			Platform.SetInstance(previous);
 		}
 	}
 }
