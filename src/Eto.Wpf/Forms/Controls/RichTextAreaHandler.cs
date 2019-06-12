@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Collections;
 using System.IO;
 using Eto.Wpf.CustomControls.FontDialog;
+using System.Text.RegularExpressions;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -646,7 +647,9 @@ namespace Eto.Wpf.Forms.Controls
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
-					range.Load(stream, sw.DataFormats.Rtf);
+					var ms = EncodeRtfFontNames(stream);
+
+					range.Load(ms, sw.DataFormats.Rtf);
 					UpdateFacesToFamilyVariant(range);
 					break;
 				case RichTextAreaFormat.PlainText:
@@ -661,6 +664,8 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Selection.Select(Control.Document.ContentEnd, Control.Document.ContentEnd);
 		}
 
+		const string AmpersandPlaceholder = "!!amp!!";
+
 		void UpdateFacesToFamilyVariant(swd.TextRange range)
 		{
 			foreach (var elem in range.GetInlineElements())
@@ -668,6 +673,15 @@ namespace Eto.Wpf.Forms.Controls
 				var family = swd.TextElement.GetFontFamily(elem);
 				if (family == null)
 					continue;
+
+				// ampersands in the font name crash WPF, so we replace it in the RTF before loading, then fix it up here.
+				var ampPosition = family.Source.IndexOf(AmpersandPlaceholder, StringComparison.Ordinal);
+				if (ampPosition >= 0)
+				{
+					var src = family.Source.Replace(AmpersandPlaceholder, "&");
+					family = new swm.FontFamily(src);
+					swd.TextElement.SetFontFamily(elem, family);
+				}
 
 				var typeface = ResolveWpfTypeface(family);
 				if (typeface != null)
@@ -761,9 +775,12 @@ namespace Eto.Wpf.Forms.Controls
 						var fdr = new swd.TextRange(fd.ContentStart, fd.ContentEnd);
 						ms.Position = 0;
 						fdr.Load(ms, sw.DataFormats.Xaml);
-						UpdateFamilyVariantToFaces(fdr);
+						UpdateFamilyVariantToFaces(fdr, out var needsEncodingFix);
 
-						fdr.Save(stream, sw.DataFormats.Rtf);
+						if (needsEncodingFix)
+							UnencodeRtfFontNames(ms, stream, fdr);
+						else
+							fdr.Save(stream, sw.DataFormats.Rtf);
 					}
 					break;
 				case RichTextAreaFormat.PlainText:
@@ -774,8 +791,62 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		void UpdateFamilyVariantToFaces(swd.TextRange range)
+		static MemoryStream EncodeRtfFontNames(Stream stream)
 		{
+			var rtf = new StreamReader(stream).ReadToEnd();
+			var regExp = @"(?<=\{[^}]+\\fcharset\d+[^};]+)[&]";
+			rtf = Regex.Replace(rtf, regExp, AmpersandPlaceholder, RegexOptions.Compiled);
+
+			var ms = new MemoryStream();
+			var writer = new StreamWriter(ms, Encoding.UTF8);
+			writer.Write(rtf);
+			writer.Flush();
+			ms.Position = 0;
+			return ms;
+		}
+
+		/// <summary>
+		/// work around WPF bug that writes xml encoded font names.
+		/// 
+		/// This unencodes any improperly xml-encoded characters in the font names of the RTF.
+		/// </summary>
+		static void UnencodeRtfFontNames(MemoryStream ms, Stream stream, swd.TextRange fdr)
+		{
+			// use existing memory stream to save on memory.
+			ms.SetLength(0);
+			ms.Position = 0;
+			fdr.Save(ms, sw.DataFormats.Rtf);
+			ms.Position = 0;
+
+			// use regex to replace the unencoded characters for fcharset's. not ideal.
+			var rtf = new StreamReader(ms).ReadToEnd();
+			var regExp = @"(?<=\{[^}]+\\fcharset\d+[^}]+)\&(amp|lt|gt|quot|apos);";
+			rtf = Regex.Replace(rtf, regExp, ReplaceEncodedCharacter, RegexOptions.Compiled);
+			var writer = new StreamWriter(stream, Encoding.UTF8);
+			writer.Write(rtf);
+			writer.Flush();
+		}
+
+		static string ReplaceEncodedCharacter(Match match)
+		{
+			if (match.Value == "&amp;")
+				return "&";
+			if (match.Value == "&lt;")
+				return "<";
+			if (match.Value == "&gt;")
+				return ">";
+			if (match.Value == "&quot;")
+				return "\"";
+			if (match.Value == "&apos;")
+				return "'";
+			return match.Value;
+		}
+
+		static char[] s_encodedFontNameCharacters = { '&', '<', '>', '\'', '"' };
+
+		void UpdateFamilyVariantToFaces(swd.TextRange range, out bool needsEncodingFix)
+		{
+			needsEncodingFix = false;
 			foreach (var elem in range.GetInlineElements())
 			{
 				var family = swd.TextElement.GetFontFamily(elem);
@@ -792,11 +863,14 @@ namespace Eto.Wpf.Forms.Controls
 
 				var typeface = new swm.Typeface(family, style, weight, stretch);
 				var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
+
 				// use the win32 family name first if one is mapped
 				if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
 				{
 					// use windows font name in RTF, same as how other apps (e.g. wordpad) does it
 					var win32FamilyName = glyphTypeface.Win32FamilyNames.GetEnglishName();
+					needsEncodingFix |= win32FamilyName.IndexOfAny(s_encodedFontNameCharacters) >= 0;
+
 					if (!string.Equals(win32FamilyName, familyName, StringComparison.OrdinalIgnoreCase))
 					{
 						family = new swm.FontFamily(win32FamilyName);
@@ -814,7 +888,10 @@ namespace Eto.Wpf.Forms.Controls
 					if (typeface != null && typeface.FontFamily.Source == familyName)
 					{
 						var faceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
-						family = new swm.FontFamily($"{familyName} {faceName}");
+						var fullFontName = $"{familyName} {faceName}";
+						needsEncodingFix |= fullFontName.IndexOfAny(s_encodedFontNameCharacters) >= 0;
+
+						family = new swm.FontFamily(fullFontName);
 						swd.TextElement.SetFontFamily(elem, family);
 					}
 				}
