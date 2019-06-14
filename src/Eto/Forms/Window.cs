@@ -300,6 +300,9 @@ namespace Eto.Forms
 		/// </remarks>
 		public virtual void Close()
 		{
+			// if we're already disposed, don't bother crashing.
+			if (IsDisposed)
+				return;
 			Handler.Close();
 		}
 
