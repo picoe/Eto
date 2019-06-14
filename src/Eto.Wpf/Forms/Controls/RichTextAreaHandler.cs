@@ -794,7 +794,7 @@ namespace Eto.Wpf.Forms.Controls
 		static MemoryStream EncodeRtfFontNames(Stream stream)
 		{
 			var rtf = new StreamReader(stream).ReadToEnd();
-			var regExp = @"(?<=\{[^}]+\\fcharset\d+[^};]+)[&]";
+			var regExp = @"(?<={\\f\d+[^}]+?)&(?=[^}]+)";
 			rtf = Regex.Replace(rtf, regExp, AmpersandPlaceholder, RegexOptions.Compiled);
 
 			var ms = new MemoryStream();
@@ -820,7 +820,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			// use regex to replace the unencoded characters for fcharset's. not ideal.
 			var rtf = new StreamReader(ms).ReadToEnd();
-			var regExp = @"(?<=\{[^}]+\\fcharset\d+[^}]+)\&(amp|lt|gt|quot|apos);";
+			var regExp = @"(?<={\\f\d+[^}]+?)&(amp|lt|gt|quot|apos);(?=[^}]+)";
 			rtf = Regex.Replace(rtf, regExp, ReplaceEncodedCharacter, RegexOptions.Compiled);
 			var writer = new StreamWriter(stream, Encoding.UTF8);
 			writer.Write(rtf);
