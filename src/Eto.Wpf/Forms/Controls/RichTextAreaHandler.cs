@@ -719,9 +719,24 @@ namespace Eto.Wpf.Forms.Controls
 			if (string.Equals(familyName, family.Source, StringComparison.OrdinalIgnoreCase))
 				return null;
 
-			// can't find fonts with face suffixes in their 'Source' property (ex: DINPro-Regular) so remove -Regular suffix
-			if (!family.Source.Contains(familyName) && family.Source.Contains("-"))
-				familyName = family.Source.Substring(0, family.Source.IndexOf('-'));
+			// can't find fonts where their Win32 name is different from the WPF name, so lookup based on the win32 name
+			// do we need to cache this, or is it fast enough?
+			foreach (var font in swm.Fonts.SystemFontFamilies)
+			{
+				foreach (var typeface in font.GetTypefaces())
+				{
+					if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
+					{
+						if (string.Equals(family.Source, glyphTypeface.Win32FamilyNames.GetEnglishName(), StringComparison.OrdinalIgnoreCase))
+						{
+							// found it!
+							return typeface;
+						}
+					}
+				}
+			}
+
+			// old, probably not needed code, the above should theoretically handle everything now: 
 
 			var newFamily = new swm.FontFamily(familyName);
 			var typefaces = newFamily.GetTypefaces();
@@ -794,7 +809,7 @@ namespace Eto.Wpf.Forms.Controls
 		static MemoryStream EncodeRtfFontNames(Stream stream)
 		{
 			var rtf = new StreamReader(stream).ReadToEnd();
-			var regExp = @"(?<=\{[^}]+\\fcharset\d+[^};]+)[&]";
+			var regExp = @"(?<={\\f\d+[^}]+?)&(?=[^}]+)";
 			rtf = Regex.Replace(rtf, regExp, AmpersandPlaceholder, RegexOptions.Compiled);
 
 			var ms = new MemoryStream();
@@ -820,7 +835,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			// use regex to replace the unencoded characters for fcharset's. not ideal.
 			var rtf = new StreamReader(ms).ReadToEnd();
-			var regExp = @"(?<=\{[^}]+\\fcharset\d+[^}]+)\&(amp|lt|gt|quot|apos);";
+			var regExp = @"(?<={\\f\d+[^}]+?)&(amp|lt|gt|quot|apos);(?=[^}]+)";
 			rtf = Regex.Replace(rtf, regExp, ReplaceEncodedCharacter, RegexOptions.Compiled);
 			var writer = new StreamWriter(stream, Encoding.UTF8);
 			writer.Write(rtf);
