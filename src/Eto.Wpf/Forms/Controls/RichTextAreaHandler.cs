@@ -688,7 +688,12 @@ namespace Eto.Wpf.Forms.Controls
 				if (family == null)
 					continue;
 
-				family = OnTranslateFamily(family);
+				var newFamily = OnTranslateFamily(family);
+				if (!ReferenceEquals(newFamily, family))
+				{
+					family = newFamily;
+					swd.TextElement.SetFontFamily(elem, family);
+				}
 
 				// ampersands in the font name crash WPF, so we replace it in the RTF before loading, then fix it up here.
 				var ampPosition = family.Source.IndexOf(AmpersandPlaceholder, StringComparison.Ordinal);
