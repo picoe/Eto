@@ -222,7 +222,7 @@ namespace Eto.Wpf.Forms.Controls
 			base.Dispose(disposing);
 		}
 
-		swd.TextRange ContentRange => new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd);
+		protected swd.TextRange ContentRange => new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd);
 
 		public override string Text
 		{
@@ -407,38 +407,38 @@ namespace Eto.Wpf.Forms.Controls
 			SetSelectionAttribute(swd.TextElement.FontStretchProperty, stretch ?? sw.FontStretches.Normal);
 		}
 
-		public Font SelectionFont
+		public virtual Font SelectionFont
 		{
 			get { return new Font(new FontHandler(Control.Selection, Control)); }
 			set
 			{
 				var handler = ((FontHandler)value?.Handler);
-				ApplyFont(handler?.WpfFamily, handler?.WpfTypeface, handler?.WpfFontWeight, handler?.WpfFontStretch, handler?.WpfFontStyle);
+				ApplyFont(OnTranslateFamily(handler?.WpfFamily), OnTranslateTypeface(handler?.WpfTypeface), handler?.WpfFontWeight, handler?.WpfFontStretch, handler?.WpfFontStyle);
 				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.WpfSize);
 				SetSelectionAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorationsFrozen);
 			}
 		}
 
-		public FontFamily SelectionFamily
+		public virtual FontFamily SelectionFamily
 		{
 			get { return new FontFamily(new FontFamilyHandler(Control.Selection, Control)); }
 			set
 			{
-				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, ((FontFamilyHandler)value?.Handler)?.Control);
+				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, OnTranslateFamily(((FontFamilyHandler)value?.Handler)?.Control));
 			}
 		}
 
-		public FontTypeface SelectionTypeface
+		public virtual FontTypeface SelectionTypeface
 		{
 			get { return new FontTypeface(SelectionFamily, new FontTypefaceHandler(Control.Selection, Control)); }
 			set
 			{
 				var typeface = (value?.Handler as FontTypefaceHandler)?.Control;
-				ApplyFont(typeface?.FontFamily ?? Control.FontFamily, typeface, typeface?.Weight, typeface?.Stretch, typeface?.Style);
+				ApplyFont(OnTranslateFamily(typeface?.FontFamily ?? Control.FontFamily), OnTranslateTypeface(typeface), typeface?.Weight, typeface?.Stretch, typeface?.Style);
 			}
 		}
 
-		public Color SelectionForeground
+		public virtual Color SelectionForeground
 		{
 			get
 			{
@@ -451,7 +451,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public Color SelectionBackground
+		public virtual Color SelectionBackground
 		{
 			get
 			{
@@ -476,27 +476,27 @@ namespace Eto.Wpf.Forms.Controls
 			action(GetRange(range));
 		}
 
-		public void SetFont(Range<int> range, Font font)
+		public virtual void SetFont(Range<int> range, Font font)
 		{
 			SetRange(range, tr => tr.SetEtoFont(font));
 		}
 
-		public void SetFamily(Range<int> range, FontFamily family)
+		public virtual void SetFamily(Range<int> range, FontFamily family)
 		{
 			SetRange(range, tr => tr.SetEtoFamily(family));
 		}
 
-		public void SetForeground(Range<int> range, Color color)
+		public virtual void SetForeground(Range<int> range, Color color)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.ForegroundProperty, color.ToWpfBrush()));
 		}
 
-		public void SetBackground(Range<int> range, Color color)
+		public virtual void SetBackground(Range<int> range, Color color)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.BackgroundProperty, color.ToWpfBrush()));
 		}
 
-		public bool SelectionBold
+		public virtual bool SelectionBold
 		{
 			get
 			{
@@ -509,13 +509,13 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void SetBold(Range<int> range, bool bold)
+		public virtual void SetBold(Range<int> range, bool bold)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.FontWeightProperty, bold ? sw.FontWeights.Bold : sw.FontWeights.Normal));
 		}
 
 
-		public bool SelectionItalic
+		public virtual bool SelectionItalic
 		{
 			get
 			{
@@ -585,7 +585,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public bool SelectionUnderline
+		public virtual bool SelectionUnderline
 		{
 			get
 			{
@@ -600,7 +600,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public bool SelectionStrikethrough
+		public virtual bool SelectionStrikethrough
 		{
 			get
 			{
@@ -615,22 +615,22 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void SetItalic(Range<int> range, bool italic)
+		public virtual void SetItalic(Range<int> range, bool italic)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.FontStyleProperty, italic ? sw.FontStyles.Italic : sw.FontStyles.Normal));
 		}
 
-		public void SetUnderline(Range<int> range, bool underline)
+		public virtual void SetUnderline(Range<int> range, bool underline)
 		{
 			SetRange(range, tr => SetDecorations(tr, sw.TextDecorations.Underline, underline));
 		}
 
-		public void SetStrikethrough(Range<int> range, bool strikethrough)
+		public virtual void SetStrikethrough(Range<int> range, bool strikethrough)
 		{
 			SetRange(range, tr => SetDecorations(tr, sw.TextDecorations.Strikethrough, strikethrough));
 		}
 
-		public IEnumerable<RichTextAreaFormat> SupportedFormats
+		public virtual IEnumerable<RichTextAreaFormat> SupportedFormats
 		{
 			get
 			{
@@ -639,11 +639,29 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void Load(Stream stream, RichTextAreaFormat format)
+		protected virtual swm.FontFamily OnTranslateFamily(swm.FontFamily family)
+		{
+			return family;
+		}
+
+		protected virtual swm.Typeface OnTranslateTypeface(swm.Typeface typeface)
+		{
+			return typeface;
+		}
+
+		public virtual void Load(Stream stream, RichTextAreaFormat format)
 		{
 			SuppressSelectionChanged++;
 			SuppressTextChanged++;
-			var range = ContentRange;
+			InnerLoad(stream, format, ContentRange);
+			SuppressTextChanged--;
+			SuppressSelectionChanged--;
+			Control.Selection.Select(Control.Document.ContentEnd, Control.Document.ContentEnd);
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
+		}
+
+		protected virtual void InnerLoad(Stream stream, RichTextAreaFormat format, swd.TextRange range)
+		{
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
@@ -658,10 +676,6 @@ namespace Eto.Wpf.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
-			SuppressTextChanged--;
-			SuppressSelectionChanged--;
-			Callback.OnTextChanged(Widget, EventArgs.Empty);
-			Control.Selection.Select(Control.Document.ContentEnd, Control.Document.ContentEnd);
 		}
 
 		const string AmpersandPlaceholder = "!!amp!!";
@@ -673,6 +687,13 @@ namespace Eto.Wpf.Forms.Controls
 				var family = swd.TextElement.GetFontFamily(elem);
 				if (family == null)
 					continue;
+
+				var newFamily = OnTranslateFamily(family);
+				if (!ReferenceEquals(newFamily, family))
+				{
+					family = newFamily;
+					swd.TextElement.SetFontFamily(elem, family);
+				}
 
 				// ampersands in the font name crash WPF, so we replace it in the RTF before loading, then fix it up here.
 				var ampPosition = family.Source.IndexOf(AmpersandPlaceholder, StringComparison.Ordinal);
@@ -769,7 +790,7 @@ namespace Eto.Wpf.Forms.Controls
 			return null;
 		}
 
-		public void Save(Stream stream, RichTextAreaFormat format)
+		public virtual void Save(Stream stream, RichTextAreaFormat format)
 		{
 			var range = ContentRange;
 			switch (format)
