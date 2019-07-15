@@ -22,34 +22,38 @@ jobs:
     inputs: 
       solution: build/Build.proj
       msbuildArguments: $(build.arguments)
-  - task: msbuild@1
-    displayName: Build MonoDevelop Addin
-    inputs:
-      solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins
 
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
       contents: artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
       targetFolder: $(Build.ArtifactStagingDirectory)
-  - task: CopyFiles@2
-    displayName: Copy MonoDevelop Addin
-    inputs:
-      contents: artifacts/addin/$(build.configuration)/net461/Eto.Addin.MonoDevelop*.mpack
-      targetFolder: $(Build.ArtifactStagingDirectory)
+      
   - task: PublishBuildArtifacts@1
     displayName: Publish XamMac nupkg
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/nuget/$(build.configuration)
       artifactName: nuget
       publishLocation: container
-  - task: PublishBuildArtifacts@1
-    displayName: Publish MonoDevelop Addin
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/addin/$(build.configuration)/net461
-      artifactName: addins
-      publishLocation: container
+
+#  - task: msbuild@1
+#    displayName: Build MonoDevelop Addin
+#    inputs:
+#      solution: build/Build.proj
+#      msbuildArguments: /t:BuildAddins
+#
+#  - task: CopyFiles@2
+#    displayName: Copy MonoDevelop Addin
+#    inputs:
+#      contents: artifacts/addin/$(build.configuration)/net461/Eto.Addin.MonoDevelop*.mpack
+#      targetFolder: $(Build.ArtifactStagingDirectory)
+#
+#  - task: PublishBuildArtifacts@1
+#    displayName: Publish MonoDevelop Addin
+#    inputs:
+#      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/addin/$(build.configuration)/net461
+#      artifactName: addins
+#      publishLocation: container
     
 - job: Windows
   pool:
