@@ -37,7 +37,7 @@ namespace Eto.GtkSharp.Forms
 #if GTKCORE
 			Control = new Gtk.Application(null, GLib.ApplicationFlags.None);
 			Control.Register(GLib.Cancellable.Current);
-			Helper.UseHeaderBar = Control.PrefersAppMenu();
+			Helper.UseHeaderBar = true;
 #else
 			Helper.UseHeaderBar = false;
 #endif

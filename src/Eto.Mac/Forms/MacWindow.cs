@@ -133,6 +133,11 @@ namespace Eto.Mac.Forms
 		internal static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
 		internal static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
 		internal static readonly object SetAsChildWindow_Key = new object();
+		internal static readonly IntPtr selWindows_Handle = Selector.GetHandle("windows");
+		internal static readonly IntPtr selCount_Handle = Selector.GetHandle("count");
+		internal static readonly IntPtr selObjectAtIndex_Handle = Selector.GetHandle("objectAtIndex:");
+		internal static readonly IntPtr selMakeKeyWindow_Handle = Selector.GetHandle("makeKeyWindow");
+		internal static readonly IntPtr selIsVisible_Handle = Selector.GetHandle("isVisible");
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
@@ -1021,11 +1026,42 @@ namespace Eto.Mac.Forms
 
 		public void SendToBack()
 		{
-			Control.OrderBack(Control);
-			var window = NSApplication.SharedApplication.Windows.FirstOrDefault(r => r != Control);
+			// resign key window.  This does not set another window as key, so we do it below to match other platforms.
+			Control.ResignKeyWindow();
+
+			// using NSApplication.SharedApplication.Windows is not recommended apparently as it can prevent windows from properly closing/disposing.
+
+			// find the visible window ordered before this one, and make it key
+			var arrPtr = Messaging.IntPtr_objc_msgSend(NSApplication.SharedApplication.Handle, MacWindow.selWindows_Handle);
+			if (arrPtr != IntPtr.Zero)
+			{
+				var thisWindowHandle = Control.Handle;
+				var lastWindowHandle = IntPtr.Zero;
+				var count = Messaging.nuint_objc_msgSend(arrPtr, MacWindow.selCount_Handle);
+				for (nuint i = 0; i < count; i++)
+				{
+					var windowHandle = Messaging.IntPtr_objc_msgSend_nuint(arrPtr, MacWindow.selObjectAtIndex_Handle, i);
+					if (windowHandle == thisWindowHandle)
+					{
+						// found this window, set the last visible as key
+						if (lastWindowHandle != IntPtr.Zero)
+							Messaging.void_objc_msgSend(lastWindowHandle, MacWindow.selMakeKeyWindow_Handle);
+						break;
+					}
+					// only set as last if it is visible
+					if (Messaging.bool_objc_msgSend(windowHandle, MacWindow.selIsVisible_Handle))
+						lastWindowHandle = windowHandle;
+				}
+			}
+
+			/* the above does this but in a less dangerous/leaky way.
+			var window = NSApplication.SharedApplication.Windows.FirstOrDefault(r => r.IsVisible && r != Control);
 			if (window != null)
 				window.MakeKeyWindow();
-			Control.ResignKeyWindow();
+			/**/
+
+			// order back after finding the window to set as key
+			Control.OrderBack(Control);
 		}
 
 		protected virtual bool DefaultSetAsChildWindow => false;
