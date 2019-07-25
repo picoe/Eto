@@ -5,9 +5,13 @@ variables:
   build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:Branch=$(Build.SourceBranch)
 
 trigger:
-  - master
-  - develop
-  - refs/tags/*
+  branches:
+    include:
+    - master
+    - develop
+  tags:
+    include: 
+    - '*'
 
 jobs:
 - job: Mac
