@@ -286,6 +286,9 @@
     <Compile Include="CustomControls\BaseComboBox.gtk2.cs" />
     <Compile Include="CustomControls\BaseComboBox.gtk3.cs" />
     <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
+    <Compile Include="Forms\EtoControls.cs">
+      <DependentUpon>EtoControls.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -298,6 +301,10 @@
     <None Include="NativeMethods.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>NativeMethods.cs</LastGenOutput>
+    </None>
+    <None Include="Forms\EtoControls.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EtoControls.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ProjectExtensions>
