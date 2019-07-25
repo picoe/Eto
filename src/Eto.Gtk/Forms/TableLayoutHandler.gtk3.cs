@@ -64,7 +64,7 @@ namespace Eto.GtkSharp.Forms
 			align = new Gtk.Alignment(0, 0, 1.0F, 1.0F);
 			align.Hexpand = false;
 			align.Vexpand = false;
-			box = new Gtk.EventBox { Child = align };
+			box = new EtoEventBox { Child = align, Handler = this };
 			Control = new Gtk.Grid();
 			align.Add(Control);
 		}
