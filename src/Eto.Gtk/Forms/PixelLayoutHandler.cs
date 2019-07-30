@@ -2,14 +2,16 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Forms.Controls;
 using Gtk;
+using System;
 
 namespace Eto.GtkSharp.Forms
 {
+
 	public class PixelLayoutHandler : GtkContainer<Gtk.Fixed, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler
 	{
 		public PixelLayoutHandler()
 		{
-			Control = new Gtk.Fixed();
+			Control = new EtoFixed { Handler = this };
 		}
 
 #if GTK3

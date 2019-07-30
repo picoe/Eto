@@ -15,6 +15,8 @@ namespace Eto.GtkSharp.Forms
 	{
 		Point CurrentLocation { get; set; }
 
+		Size PreferredSize { get; }
+
 		Gtk.Widget ContainerControl { get; }
 
 		Color? SelectedBackgroundColor { get; }

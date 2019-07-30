@@ -101,7 +101,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public LabelHandler()
 		{
-			eventBox = new Gtk.EventBox();
+			eventBox = new EtoEventBox { Handler = this };
 #if GTK2
 			eventBox.ResizeMode = Gtk.ResizeMode.Immediate;
 #endif
