@@ -68,6 +68,7 @@
     <Compile Include="UnitTests\NativeParentWindowTests.cs" />
     <Compile Include="UnitTests\RadioButtonTests.cs" />
     <Compile Include="UnitTests\ScrollableTests.cs" />
+    <Compile Include="UnitTests\LabelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
