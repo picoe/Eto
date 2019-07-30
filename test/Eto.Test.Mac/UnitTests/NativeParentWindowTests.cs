@@ -10,6 +10,11 @@ using CoreGraphics;
 #else
 using MonoMac.AppKit;
 using MonoMac.CoreGraphics;
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+#endif
 #endif
 
 namespace Eto.Test.Mac.UnitTests
