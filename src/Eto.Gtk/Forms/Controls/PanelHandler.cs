@@ -1,3 +1,4 @@
+using System;
 using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
@@ -7,7 +8,7 @@ namespace Eto.GtkSharp.Forms.Controls
 #if GTK3
 		public PanelHandler()
 		{
-			Control = new Gtk.EventBox();
+			Control = new EtoEventBox { Handler = this };
 		}
 
 		protected override void SetContainerContent(Gtk.Widget content)

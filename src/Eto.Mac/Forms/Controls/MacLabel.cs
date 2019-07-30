@@ -83,6 +83,7 @@ namespace Eto.Mac.Forms.Controls
 				var lineHeight = CellSizeForBounds(theRect).Height;
 				offset = (nfloat)Math.Round(theRect.Height - lineHeight);
 			}
+			offset = (nfloat)Math.Max(0, offset);
 			rect.Y += offset;
 			rect.Height -= offset;
 			return rect;
@@ -128,8 +129,6 @@ namespace Eto.Mac.Forms.Controls
 		public static readonly object FontKey = new object();
 
 		public static readonly object TextColorKey = new object();
-
-		public static readonly bool SupportsSingleLine = ObjCExtensions.ClassInstancesRespondToSelector(Class.GetHandle("NSTextFieldCell"), Selector.GetHandle("setUsesSingleLineMode:"));
 	}
 
 	public abstract class MacLabel<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
@@ -210,9 +209,6 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void Initialize()
 		{
-			if (MacLabel.SupportsSingleLine)
-				Control.Cell.UsesSingleLineMode = false;
-
 			base.Initialize();
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent);
 		}
@@ -248,7 +244,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				if (MacLabel.SupportsSingleLine && Control.Cell.UsesSingleLineMode)
+				if (paragraphStyle.LineBreakMode == NSLineBreakMode.Clipping)
 					return WrapMode.None;
 				if (paragraphStyle.LineBreakMode == NSLineBreakMode.ByWordWrapping)
 					return WrapMode.Word;
@@ -259,18 +255,12 @@ namespace Eto.Mac.Forms.Controls
 				switch (value)
 				{
 					case WrapMode.None:
-						if (MacLabel.SupportsSingleLine)
-							Control.Cell.UsesSingleLineMode = true;
 						paragraphStyle.LineBreakMode = NSLineBreakMode.Clipping;
 						break;
 					case WrapMode.Word:
-						if (MacLabel.SupportsSingleLine)
-							Control.Cell.UsesSingleLineMode = false;
 						paragraphStyle.LineBreakMode = NSLineBreakMode.ByWordWrapping;
 						break;
 					case WrapMode.Character:
-						if (MacLabel.SupportsSingleLine)
-							Control.Cell.UsesSingleLineMode = false;
 						paragraphStyle.LineBreakMode = NSLineBreakMode.CharWrapping;
 						break;
 					default:

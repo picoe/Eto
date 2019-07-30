@@ -45,4 +45,22 @@
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="NativeMethods.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NativeMethods.cs</LastGenOutput>
+    </None>
+    <None Update="Forms\EtoControls.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EtoControls.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="NativeMethods.cs">
+      <DependentUpon>NativeMethods.tt</DependentUpon>
+    </Compile>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="Forms\EtoControls.cs">
+      <DependentUpon>EtoControls.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>
