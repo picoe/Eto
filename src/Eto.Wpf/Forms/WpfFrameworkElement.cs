@@ -427,15 +427,7 @@ namespace Eto.Wpf.Forms
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += (sender, e) =>
-					{
-						var args = e.ToEto(KeyEventType.KeyUp);
-						if (args.Key != Keys.None)
-						{
-							Callback.OnKeyUp(Widget, args);
-							e.Handled = args.Handled;
-						}
-					};
+					Control.KeyUp += HandleKeyUp;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					ContainerControl.IsVisibleChanged += (sender, e) =>
@@ -612,9 +604,19 @@ namespace Eto.Wpf.Forms
 		void HandleKeyDown(object sender, swi.KeyEventArgs e)
 		{
 			var args = e.ToEto(KeyEventType.KeyDown);
-			if (args.Key != Keys.None)
+			if (args.KeyData != Keys.None)
 			{
 				Callback.OnKeyDown(Widget, args);
+				e.Handled = args.Handled;
+			}
+		}
+
+		void HandleKeyUp(object sender, swi.KeyEventArgs e)
+		{
+			var args = e.ToEto(KeyEventType.KeyUp);
+			if (args.KeyData != Keys.None)
+			{
+				Callback.OnKeyUp(Widget, args);
 				e.Handled = args.Handled;
 			}
 		}

@@ -89,6 +89,8 @@ namespace Eto.Mac.Forms
 
 		void OnKeyDown(KeyEventArgs e);
 
+		void OnKeyUp(KeyEventArgs e);
+
 		void OnSizeChanged(EventArgs e);
 
 		bool? ShouldHaveFocus { get; set; }
@@ -122,6 +124,7 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selRightMouseUp = Selector.GetHandle("rightMouseUp:");
 		public static readonly IntPtr selRightMouseDragged = Selector.GetHandle("rightMouseDragged:");
 		public static readonly IntPtr selScrollWheel = Selector.GetHandle("scrollWheel:");
+		public static readonly IntPtr selFlagsChanged = Selector.GetHandle("flagsChanged:");
 		public static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
 		public static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
 		public static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
@@ -173,6 +176,8 @@ namespace Eto.Mac.Forms
 		public static readonly Selector selSetCanDrawSubviewsIntoLayer = new Selector("setCanDrawSubviewsIntoLayer:");
 		public static readonly bool supportsCanDrawSubviewsIntoLayer = ObjCExtensions.InstancesRespondToSelector<NSView>("setCanDrawSubviewsIntoLayer:");
 		public static readonly object UseAlignmentFrame_Key = new object();
+
+		public const string FlagsChangedEvent = "MacView.FlagsChangedEvent";
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -418,9 +423,14 @@ namespace Eto.Mac.Forms
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
 					AddMethod(MacView.selKeyDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyDown), "v@:@");
+					HandleEvent(MacView.FlagsChangedEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					AddMethod(MacView.selKeyUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyUp), "v@:@");
+					HandleEvent(MacView.FlagsChangedEvent);
+					break;
+				case MacView.FlagsChangedEvent:
+					AddMethod(MacView.selFlagsChanged, new Action<IntPtr, IntPtr, IntPtr>(TriggerFlagsChanged), "v@:@");
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					AddMethod(MacView.selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:");
@@ -591,6 +601,20 @@ namespace Eto.Mac.Forms
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				if (!MacEventView.KeyDown(handler.Widget, theEvent))
+				{
+					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+				}
+			}
+		}
+
+		static void TriggerFlagsChanged(IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var handler = GetHandler(obj) as IMacViewHandler;
+			if (handler != null)
+			{
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
+				if (!MacEventView.FlagsChanged(handler.Widget, theEvent))
 				{
 					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
 				}
@@ -964,10 +988,8 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public virtual void OnKeyDown(KeyEventArgs e)
-		{
-			Callback.OnKeyDown(Widget, e);
-		}
+		public virtual void OnKeyDown(KeyEventArgs e) => Callback.OnKeyDown(Widget, e);
+		public virtual void OnKeyUp(KeyEventArgs e) => Callback.OnKeyUp(Widget, e);
 
 		Control IMacViewHandler.Widget { get { return Widget; } }
 
