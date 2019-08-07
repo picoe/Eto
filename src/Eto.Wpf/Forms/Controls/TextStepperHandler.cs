@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,11 +13,41 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoButtonSpinner : mwc.ButtonSpinner, IEtoWpfControl
 	{
+		swc.TextBox TextBox => Content as swc.TextBox;
+
 		public IWpfFrameworkElement Handler { get; set; }
 
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+
+		/// <summary>
+		/// Identifies the MouseWheelActiveTrigger dependency property
+		/// </summary>
+		public static readonly sw.DependencyProperty MouseWheelActiveTriggerProperty = sw.DependencyProperty.Register("MouseWheelActiveTrigger", typeof(mwc.Primitives.MouseWheelActiveTrigger), typeof(EtoButtonSpinner), new sw.UIPropertyMetadata(mwc.Primitives.MouseWheelActiveTrigger.FocusedMouseOver));
+
+		/// <summary>
+		/// Get or set when the mouse wheel event should affect the value.
+		/// </summary>
+		public mwc.Primitives.MouseWheelActiveTrigger MouseWheelActiveTrigger
+		{
+			get => (mwc.Primitives.MouseWheelActiveTrigger)GetValue(MouseWheelActiveTriggerProperty);
+			set => SetValue(MouseWheelActiveTriggerProperty, value);
+		}
+
+		protected override void OnSpin(mwc.SpinEventArgs e)
+		{
+			var activeTrigger = this.MouseWheelActiveTrigger;
+			bool spin = !e.UsingMouseWheel;
+			spin |= (activeTrigger == mwc.Primitives.MouseWheelActiveTrigger.MouseOver);
+			spin |= ((TextBox != null) && TextBox.IsFocused && (activeTrigger == mwc.Primitives.MouseWheelActiveTrigger.FocusedMouseOver));
+			spin |= ((TextBox != null) && TextBox.IsFocused && (activeTrigger == mwc.Primitives.MouseWheelActiveTrigger.Focused) && (sw.Input.Mouse.Captured is Spinner));
+
+			if (spin)
+			{
+				base.OnSpin(e);
+			}
 		}
 	}
 
@@ -30,6 +60,7 @@ namespace Eto.Wpf.Forms.Controls
 				Handler = this,
 				IsTabStop = false,
 				Focusable = false,
+
 				Content = new mwc.WatermarkTextBox
 				{
 					KeepWatermarkOnGotFocus = true,
