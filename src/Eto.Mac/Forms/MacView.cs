@@ -123,6 +123,9 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selRightMouseDown = Selector.GetHandle("rightMouseDown:");
 		public static readonly IntPtr selRightMouseUp = Selector.GetHandle("rightMouseUp:");
 		public static readonly IntPtr selRightMouseDragged = Selector.GetHandle("rightMouseDragged:");
+		public static readonly IntPtr selOtherMouseDown = Selector.GetHandle("otherMouseDown:");
+		public static readonly IntPtr selOtherMouseUp = Selector.GetHandle("otherMouseUp:");
+		public static readonly IntPtr selOtherMouseDragged = Selector.GetHandle("otherMouseDragged:");
 		public static readonly IntPtr selScrollWheel = Selector.GetHandle("scrollWheel:");
 		public static readonly IntPtr selFlagsChanged = Selector.GetHandle("flagsChanged:");
 		public static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
@@ -403,6 +406,7 @@ namespace Eto.Mac.Forms
 					CreateTracking();
 					AddMethod(MacView.selMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					AddMethod(MacView.selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
+					AddMethod(MacView.selOtherMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					AddMethod(MacView.selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), EtoEnvironment.Is64BitProcess ? "v@:{CGSize=dd}" : "v@:{CGSize=ff}", ContainerControl);
@@ -410,10 +414,12 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.MouseDownEvent:
 					AddMethod(MacView.selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
 					AddMethod(MacView.selRightMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
+					AddMethod(MacView.selOtherMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					AddMethod(MacView.selMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
 					AddMethod(MacView.selRightMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
+					AddMethod(MacView.selOtherMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
 					HandleEvent(Eto.Forms.Control.MouseDownEvent);
@@ -676,8 +682,6 @@ namespace Eto.Mac.Forms
 				Callback.OnMouseMove(Widget, MacConversions.GetMouseEvent(this, evt, false));
 			}
 		}
-
-
 
 		static void TriggerMouseUp(IntPtr sender, IntPtr sel, IntPtr e)
 		{
