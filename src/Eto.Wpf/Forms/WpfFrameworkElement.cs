@@ -82,6 +82,11 @@ namespace Eto.Wpf.Forms
 	class WpfFrameworkElement
 	{
 		internal static readonly object Cursor_Key = new object();
+
+		// unique instance value so we can tell if we are dragging/dropping within the same instance
+		internal static string DragEtoInstanceValue = Guid.NewGuid().ToString();
+		internal const string DragEtoInstanceKey = "eto.instance";
+		internal const string DragEtoSourceKey = "eto.source";
 	}
 
 	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
@@ -427,15 +432,7 @@ namespace Eto.Wpf.Forms
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += (sender, e) =>
-					{
-						var args = e.ToEto(KeyEventType.KeyUp);
-						if (args.Key != Keys.None)
-						{
-							Callback.OnKeyUp(Widget, args);
-							e.Handled = args.Handled;
-						}
-					};
+					Control.KeyUp += HandleKeyUp;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					ContainerControl.IsVisibleChanged += (sender, e) =>
@@ -566,12 +563,25 @@ namespace Eto.Wpf.Forms
 			e.Handled = true;
 		}
 
-
 		protected virtual DragEventArgs GetDragEventArgs(sw.DragEventArgs data, object controlObject)
         {
             var dragData = (data.Data as sw.DataObject).ToEto();
-            var sourceWidget = data.Data.GetData("source");
-            var source = sourceWidget == null ? null : (Control)sourceWidget;
+			var instanceKey = data.Data.GetData(WpfFrameworkElement.DragEtoInstanceKey) as string;
+			Control source = null;
+			// only try to get the source control within the same instance of the application
+			// since Eto objects can't be serialized through COM
+			if (instanceKey == WpfFrameworkElement.DragEtoInstanceValue)
+			{
+				try
+				{
+					source = data.Data.GetData(WpfFrameworkElement.DragEtoSourceKey) as Control;
+				}
+				catch
+				{
+					// ignore errors here, just in case.
+				}
+			}
+
 			var location = data.GetPosition(Control).ToEto();
 			var modifiers = Keys.None;
 			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.AltKey))
@@ -612,9 +622,19 @@ namespace Eto.Wpf.Forms
 		void HandleKeyDown(object sender, swi.KeyEventArgs e)
 		{
 			var args = e.ToEto(KeyEventType.KeyDown);
-			if (args.Key != Keys.None)
+			if (args.KeyData != Keys.None)
 			{
 				Callback.OnKeyDown(Widget, args);
+				e.Handled = args.Handled;
+			}
+		}
+
+		void HandleKeyUp(object sender, swi.KeyEventArgs e)
+		{
+			var args = e.ToEto(KeyEventType.KeyUp);
+			if (args.KeyData != Keys.None)
+			{
+				Callback.OnKeyUp(Widget, args);
 				e.Handled = args.Handled;
 			}
 		}
@@ -794,11 +814,12 @@ namespace Eto.Wpf.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
-        public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		public void DoDragDrop(DataObject data, DragEffects allowedAction)
         {
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			var dataObject = data.ToWpf();
-            dataObject.SetData("source", Widget);
+			dataObject.SetData(WpfFrameworkElement.DragEtoInstanceKey, WpfFrameworkElement.DragEtoInstanceValue);
+            dataObject.SetData(WpfFrameworkElement.DragEtoSourceKey, Widget);
             sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
         }
 

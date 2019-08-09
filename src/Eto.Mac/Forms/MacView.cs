@@ -89,6 +89,8 @@ namespace Eto.Mac.Forms
 
 		void OnKeyDown(KeyEventArgs e);
 
+		void OnKeyUp(KeyEventArgs e);
+
 		void OnSizeChanged(EventArgs e);
 
 		bool? ShouldHaveFocus { get; set; }
@@ -121,7 +123,11 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selRightMouseDown = Selector.GetHandle("rightMouseDown:");
 		public static readonly IntPtr selRightMouseUp = Selector.GetHandle("rightMouseUp:");
 		public static readonly IntPtr selRightMouseDragged = Selector.GetHandle("rightMouseDragged:");
+		public static readonly IntPtr selOtherMouseDown = Selector.GetHandle("otherMouseDown:");
+		public static readonly IntPtr selOtherMouseUp = Selector.GetHandle("otherMouseUp:");
+		public static readonly IntPtr selOtherMouseDragged = Selector.GetHandle("otherMouseDragged:");
 		public static readonly IntPtr selScrollWheel = Selector.GetHandle("scrollWheel:");
+		public static readonly IntPtr selFlagsChanged = Selector.GetHandle("flagsChanged:");
 		public static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
 		public static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
 		public static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
@@ -173,6 +179,8 @@ namespace Eto.Mac.Forms
 		public static readonly Selector selSetCanDrawSubviewsIntoLayer = new Selector("setCanDrawSubviewsIntoLayer:");
 		public static readonly bool supportsCanDrawSubviewsIntoLayer = ObjCExtensions.InstancesRespondToSelector<NSView>("setCanDrawSubviewsIntoLayer:");
 		public static readonly object UseAlignmentFrame_Key = new object();
+
+		public const string FlagsChangedEvent = "MacView.FlagsChangedEvent";
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -398,6 +406,7 @@ namespace Eto.Mac.Forms
 					CreateTracking();
 					AddMethod(MacView.selMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					AddMethod(MacView.selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
+					AddMethod(MacView.selOtherMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					AddMethod(MacView.selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), EtoEnvironment.Is64BitProcess ? "v@:{CGSize=dd}" : "v@:{CGSize=ff}", ContainerControl);
@@ -405,10 +414,12 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.MouseDownEvent:
 					AddMethod(MacView.selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
 					AddMethod(MacView.selRightMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
+					AddMethod(MacView.selOtherMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					AddMethod(MacView.selMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
 					AddMethod(MacView.selRightMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
+					AddMethod(MacView.selOtherMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
 					HandleEvent(Eto.Forms.Control.MouseDownEvent);
@@ -418,9 +429,14 @@ namespace Eto.Mac.Forms
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
 					AddMethod(MacView.selKeyDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyDown), "v@:@");
+					HandleEvent(MacView.FlagsChangedEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					AddMethod(MacView.selKeyUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyUp), "v@:@");
+					HandleEvent(MacView.FlagsChangedEvent);
+					break;
+				case MacView.FlagsChangedEvent:
+					AddMethod(MacView.selFlagsChanged, new Action<IntPtr, IntPtr, IntPtr>(TriggerFlagsChanged), "v@:@");
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					AddMethod(MacView.selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:");
@@ -597,6 +613,20 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		static void TriggerFlagsChanged(IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var handler = GetHandler(obj) as IMacViewHandler;
+			if (handler != null)
+			{
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
+				if (!MacEventView.FlagsChanged(handler.Widget, theEvent))
+				{
+					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+				}
+			}
+		}
+
 		static void TriggerKeyUp(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var obj = Runtime.GetNSObject(sender);
@@ -652,8 +682,6 @@ namespace Eto.Mac.Forms
 				Callback.OnMouseMove(Widget, MacConversions.GetMouseEvent(this, evt, false));
 			}
 		}
-
-
 
 		static void TriggerMouseUp(IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -964,10 +992,8 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public virtual void OnKeyDown(KeyEventArgs e)
-		{
-			Callback.OnKeyDown(Widget, e);
-		}
+		public virtual void OnKeyDown(KeyEventArgs e) => Callback.OnKeyDown(Widget, e);
+		public virtual void OnKeyUp(KeyEventArgs e) => Callback.OnKeyUp(Widget, e);
 
 		Control IMacViewHandler.Widget { get { return Widget; } }
 
