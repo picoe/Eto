@@ -137,7 +137,10 @@ namespace Eto.Wpf
 
 		public static KeyEventArgs ToEto(this swi.KeyEventArgs e, KeyEventType keyType)
 		{
-			var key = e.Key.ToEtoWithModifier(swi.Keyboard.Modifiers);
+			var swkey = e.Key;
+			if (swkey == swi.Key.System)
+				swkey = e.SystemKey;
+			var key = swkey.ToEtoWithModifier(swi.Keyboard.Modifiers);
 			return new KeyEventArgs(key, keyType) { Handled = e.Handled };
 		}
 

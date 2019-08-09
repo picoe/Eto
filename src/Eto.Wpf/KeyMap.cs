@@ -1,4 +1,4 @@
-﻿using Eto.Forms;
+using Eto.Forms;
 using System.Collections.Generic;
 using System.Diagnostics;
 using swi = System.Windows.Input;
@@ -155,8 +155,8 @@ namespace Eto.Wpf
 			keymap.Add(swi.Key.Pause, Keys.Pause);
 			keymap.Add(swi.Key.Clear, Keys.Clear);
 			//keymap.Add(swi.Key., Keys.KeypadEqual);
-			keymap.Add(swi.Key.RightAlt, Keys.Menu);
-			keymap.Add(swi.Key.LeftAlt, Keys.Menu);
+			//keymap.Add(swi.Key.RightAlt, Keys.Menu);
+			//keymap.Add(swi.Key.LeftAlt, Keys.Menu);
 			keymap.Add(swi.Key.OemPipe, Keys.Backslash);
 			keymap.Add(swi.Key.OemPlus, Keys.Equal);
 			keymap.Add(swi.Key.OemSemicolon, Keys.Semicolon);
@@ -177,6 +177,14 @@ namespace Eto.Wpf
 			keymap.Add(swi.Key.NumPad7, Keys.Keypad7);
 			keymap.Add(swi.Key.NumPad8, Keys.Keypad8);
 			keymap.Add(swi.Key.NumPad9, Keys.Keypad9);
+			keymap.Add(swi.Key.LeftShift, Keys.LeftShift);
+			keymap.Add(swi.Key.RightShift, Keys.RightShift);
+			keymap.Add(swi.Key.LeftCtrl, Keys.LeftControl);
+			keymap.Add(swi.Key.RightCtrl, Keys.RightControl);
+			keymap.Add(swi.Key.LeftAlt, Keys.LeftAlt);
+			keymap.Add(swi.Key.RightAlt, Keys.RightAlt);
+			keymap.Add(swi.Key.LWin, Keys.LeftAlt);
+			keymap.Add(swi.Key.RWin, Keys.RightAlt);
 
 			return keymap;
 		}
