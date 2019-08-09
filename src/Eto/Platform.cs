@@ -556,10 +556,14 @@ namespace Eto
 		/// <param name="type">Type of the handler interface to get the instantiator for (usually derived from <see cref="Widget.IHandler"/> or another type)</param>
 		public Func<object> Find(Type type)
 		{
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
+
 			Func<object> activator;
 			if (instantiatorMap.TryGetValue(type, out activator))
 				return activator;
 
+			// the type is not mapped, try the type from the handler attribute
 			var handler = type.GetCustomAttribute<HandlerAttribute>(true);
 			if (handler != null && instantiatorMap.TryGetValue(handler.Type, out activator))
 			{
@@ -567,9 +571,20 @@ namespace Eto
 				return activator;
 			}
 
-			if (!loadedAssemblies.Contains(type.GetAssembly()))
+			// load the handler type assembly and try again (as type could be a derived class)
+			var handlerAssembly = handler?.Type.GetAssembly();
+			if (handlerAssembly != null && !loadedAssemblies.Contains(handlerAssembly))
 			{
-				LoadAssembly(type.GetAssembly());
+				LoadAssembly(handlerAssembly);
+				// since we recurse here it will fall to the next one if this fails.
+				return Find(type);
+			}
+
+			// finally, try the assembly of the current type if we still can't find it
+			var typeAssembly = type.GetAssembly();
+			if (!loadedAssemblies.Contains(typeAssembly))
+			{
+				LoadAssembly(typeAssembly);
 				return Find(type);
 			}
 
