@@ -255,7 +255,19 @@ namespace Eto.Mac
 				case NSEventType.OtherMouseUp:
 				case NSEventType.OtherMouseDown:
 				case NSEventType.OtherMouseDragged:
-					buttons |= MouseButtons.Middle;
+					var buttonNumber = (int)theEvent.ButtonNumber;
+                    switch (buttonNumber)
+                    {
+						case 0:
+							buttons |= MouseButtons.Primary;
+							break;
+						case 1:
+							buttons |= MouseButtons.Alternate;
+							break;
+						case 2:
+							buttons |= MouseButtons.Middle;
+							break;
+					}
 					break;
 			}
 			return buttons;
