@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Startup.cs" />
     <Compile Include="UnitTests\DataContextTests.cs" />
+    <Compile Include="UnitTests\LabelTests.cs" />
     <Compile Include="UnitTests\MenuBarTests.cs" />
     <Compile Include="UnitTests\NativeParentWindowTests.cs" />
     <Compile Include="UnitTests\ScreenTests.cs" />
