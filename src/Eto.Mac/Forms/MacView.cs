@@ -1004,9 +1004,10 @@ namespace Eto.Mac.Forms
 			var window = view.Window;
 			if (window != null)
 			{
-				var screen = window.Screen;
-				if (screen != null)
-					pt.Y = screen.Frame.Height - pt.Y;
+				// macOS has flipped co-ordinates starting at the bottom left of the main screen,
+				// so we flip to make 0,0 top left
+				var mainFrame = NSScreen.Screens[0].Frame;
+				pt.Y = mainFrame.Height - pt.Y;
 				pt = window.ConvertScreenToBase(pt);
 			}
 			pt = view.ConvertPointFromView(pt, null);
@@ -1028,9 +1029,10 @@ namespace Eto.Mac.Forms
 			if (window != null)
 			{
 				pt = window.ConvertBaseToScreen(pt);
-				var screen = window.Screen;
-				if (screen != null)
-					pt.Y = screen.Frame.Height - pt.Y;
+				// macOS has flipped co-ordinates starting at the bottom left of the main screen,
+				// so we flip to make 0,0 top left
+				var mainFrame = NSScreen.Screens[0].Frame;
+				pt.Y = mainFrame.Height - pt.Y;
 			}
 			return pt.ToEto();
 		}
