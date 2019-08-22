@@ -455,7 +455,7 @@ namespace Eto
 		/// <param name="platform">Generator to set as the current generator</param>
 		public static void Initialize(Platform platform)
 		{
-			if (!AllowReinitialize && instance.IsValueCreated && !ReferenceEquals(platform, instance.Value))
+			if (!AllowReinitialize && instance.IsValueCreated && instance.Value != null && !ReferenceEquals(platform, instance.Value))
 				throw new InvalidOperationException("The Eto.Forms Platform is already initialized.");
 
 			if (globalInstance == null)
