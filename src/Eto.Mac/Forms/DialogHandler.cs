@@ -314,7 +314,7 @@ namespace Eto.Mac.Forms
 		/// </remarks>
 		/// <param name="action">Action to run after the modal session is stopped</param>
 		/// <returns>True if the session was restarted, false if there is no modal session running</returns>
-		public bool RestartModal(Action action)
+		public virtual bool RestartModal(Action action)
 		{
 			if (session == null)
 				return false;
@@ -333,7 +333,7 @@ namespace Eto.Mac.Forms
 		/// </remarks>
 		/// <param name="action">Action to run after the modal session is stopped</param>
 		/// <returns>True if the session was restarted, false if there is no modal session running</returns>
-		public bool RestartModalAsync(Action action)
+		public virtual bool RestartModalAsync(Action action)
 		{
 			if (session == null)
 				return false;
