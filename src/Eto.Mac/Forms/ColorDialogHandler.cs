@@ -23,8 +23,11 @@ namespace Eto.Mac.Forms
 		ColorDialog Widget { get; }
 		NSColorPanel Control { get; }
 		ColorDialog.ICallback Callback { get; }
+
+		void OnWillClose(NSNotification notification);
+		void OnDidResignKey(NSNotification notification);
 	}
-	
+
 	class ColorHandler : NSWindowDelegate
 	{
 		public static ColorHandler Instance { get; set; }
@@ -46,22 +49,30 @@ namespace Eto.Mac.Forms
 				Instance = null;
 			}
 		}
-		
-		public override void WillClose (NSNotification notification)
+
+		public override void WillClose(NSNotification notification)
 		{
-			NSColorPanel.SharedColorPanel.SetTarget (null);
-			NSColorPanel.SharedColorPanel.SetAction (null);
+			Handler?.OnWillClose(notification);
+			var control = Handler?.Control ?? NSColorPanel.SharedColorPanel;
+			control.SetTarget(null);
+			control.SetAction(null);
 			Instance = null;
 		}
-		
+
+		public override void DidResignKey(NSNotification notification)
+		{
+			Handler?.OnDidResignKey(notification);
+		}
+
 		[Export("modalClosed:")]
 		public void ModalClosed(NSNotification notification)
 		{
-			NSColorPanel.SharedColorPanel.PerformClose (this);
-			NSNotificationCenter.DefaultCenter.RemoveObserver (this);
+			var control = Handler?.Control ?? NSColorPanel.SharedColorPanel;
+			control.PerformClose(this);
+			NSNotificationCenter.DefaultCenter.RemoveObserver(this);
 		}
 	}
-	
+
 	public class ColorDialogHandler : MacObject<NSColorPanel, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler, IColorDialogHandler
 	{
 		protected override NSColorPanel CreateControl()
@@ -85,31 +96,33 @@ namespace Eto.Mac.Forms
 
 		#region IDialog implementation
 
-		public DialogResult ShowDialog (Window parent)
+		public virtual DialogResult ShowDialog(Window parent)
 		{
 			//Control = new NSColorPanel();
 			NSWindow parentWindow;
 			//Console.WriteLine ("Parent: {0}. {1}, {2}", parent, parent.ControlObject, NSApplication.SharedApplication.ModalWindow);
-			if (parent != null) {
+			if (parent != null)
+			{
 				parentWindow = parent.ParentWindow.ControlObject as NSWindow ?? NSApplication.SharedApplication.KeyWindow;
 				if (parentWindow != null)
 					Control.ParentWindow = parentWindow;
 			}
 			else parentWindow = NSApplication.SharedApplication.KeyWindow;
-			
-			ColorHandler.Instance = new ColorHandler{ Handler = this };
+
+			ColorHandler.Instance = new ColorHandler { Handler = this };
 			Control.Delegate = ColorHandler.Instance;
-			Control.SetTarget (null);
-			Control.SetAction (null);
-			Control.Color = Color.ToNSUI ();
-			
-			Control.SetTarget (ColorHandler.Instance);
-			Control.SetAction (new Selector("changeColor:"));
+			Control.SetTarget(null);
+			Control.SetAction(null);
+			Control.Color = Color.ToNSUI();
+
+			Control.SetTarget(ColorHandler.Instance);
+			Control.SetAction(new Selector("changeColor:"));
 			Control.ShowsAlpha = AllowAlpha;
 
 			//Control.Continuous = false;
 			bool isModal = false;
-			if (parentWindow != null) {
+			if (parentWindow != null)
+			{
 				if (parentWindow == NSApplication.SharedApplication.ModalWindow)
 				{
 					//Control.WorksWhenModal = true;
@@ -118,20 +131,38 @@ namespace Eto.Mac.Forms
 					isModal = true;
 				}
 			}
-			
-			
+
+
 			// work around for modal dialogs wanting to show the color panel.. only works when the panel is key
-			
+
 			//if (isModal) Control.MakeKeyAndOrderFront (parentWindow);
 			//else Control.OrderFront (parentWindow);
-			NSApplication.SharedApplication.OrderFrontColorPanel (parentWindow);
+			if (Control == NSColorPanel.SharedColorPanel)
+				NSApplication.SharedApplication.OrderFrontColorPanel(parentWindow);
+			else
+				Control.OrderFront(parentWindow);
+
 			if (isModal) Control.MakeKeyWindow();
 			//Control.OrderFront (parentWindow);
-			
-			
+
+
 			return DialogResult.None; // signal that we are returning right away!
 		}
-		
+
+		protected virtual void OnWillClose(NSNotification notification)
+		{
+			// extension to do custom stuff when the panel is closed
+		}
+
+		void IColorDialogHandler.OnWillClose(NSNotification notification) => OnWillClose(notification);
+
+		protected virtual void OnDidResignKey(NSNotification notification)
+		{
+			// extension to do custom stuff when the panel loses key focus
+		}
+
+		void IColorDialogHandler.OnDidResignKey(NSNotification notification) => OnDidResignKey(notification);
+
 		#endregion
 	}
 }
