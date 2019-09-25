@@ -127,6 +127,7 @@ namespace Eto.Mac.Forms
 
 	static class MacWindow
 	{
+		internal static readonly object MovableByWindowBackground_Key = new object();
 		internal static readonly object InitialLocation_Key = new object();
 		internal static readonly object PreferredClientSize_Key = new object();
 		internal static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
@@ -172,6 +173,19 @@ namespace Eto.Mac.Forms
 		public NSObject FieldEditorClient { get; set; }
 
 		public MacFieldEditor FieldEditor => fieldEditor;
+
+		/// <summary>
+		/// Allow moving the window by dragging the background, null to only enable it in certain cases (e.g. when borderless)
+		/// </summary>
+		public bool? MovableByWindowBackground
+		{
+			get => Widget.Properties.Get<bool?>(MacWindow.MovableByWindowBackground_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(MacWindow.MovableByWindowBackground_Key, value))
+					SetMovable();
+			}
+		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -479,13 +493,18 @@ namespace Eto.Mac.Forms
 
 		public override NSView ContentControl => Control.ContentView;
 
-		public virtual string Title { get { return Control.Title; } set { Control.Title = value ?? ""; } }
-		// Control.Title throws an exception if value is null
+		public virtual string Title { get => Control.Title; set => Control.Title = value ?? ""; }
+
 		void SetButtonStates()
 		{
 			var button = Control.StandardWindowButton(NSWindowButton.ZoomButton);
 			if (button != null)
 				button.Enabled = Maximizable && Resizable;
+		}
+
+		void SetMovable()
+		{
+			Control.MovableByWindowBackground = MovableByWindowBackground ?? (Resizable && WindowStyle == WindowStyle.None);
 		}
 
 		public bool Resizable
@@ -500,6 +519,7 @@ namespace Eto.Mac.Forms
 					else
 						Control.StyleMask &= ~NSWindowStyle.Resizable;
 					SetButtonStates();
+					SetMovable();
 				}
 			}
 		}
@@ -1009,11 +1029,15 @@ namespace Eto.Mac.Forms
 			{
 				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
 				{
-					Control.StyleMask = value.ToNS(Control.StyleMask);
+					var newStyleMask = value.ToNS(Control.StyleMask);
+					Control.StyleMask = 0; // reset titled
+					Control.StyleMask = newStyleMask;
 
 					// don't use animation when there's no border.
 					if (value == WindowStyle.None && Control.AnimationBehavior == NSWindowAnimationBehavior.Default)
 						Control.AnimationBehavior = NSWindowAnimationBehavior.None;
+
+					SetMovable();
 				}
 			}
 		}
