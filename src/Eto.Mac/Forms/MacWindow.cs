@@ -577,7 +577,7 @@ namespace Eto.Mac.Forms
 			get
 			{
 				if (!Widget.Loaded)
-					return PreferredSize ?? new Size(-1, -1);
+					return UserPreferredSize;
 				return Control.Frame.Size.ToEtoSize();
 			}
 			set
@@ -586,16 +586,15 @@ namespace Eto.Mac.Forms
 				var newFrame = oldFrame.SetSize(value);
 				newFrame.Y = (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldFrame.Height));
 				Control.SetFrame(newFrame, true);
-				PreferredSize = value;
+				UserPreferredSize = value;
 				SetAutoSize();
 			}
 		}
 
-		void SetAutoSize()
+
+		protected override void SetAutoSize()
 		{
-			AutoSize = true;
-			if (PreferredSize != null)
-				AutoSize &= PreferredSize.Value.Width == -1 || PreferredSize.Value.Height == -1;
+			base.SetAutoSize();
 			if (PreferredClientSize != null)
 				AutoSize &= PreferredClientSize.Value.Width == -1 || PreferredClientSize.Value.Height == -1;
 		}
@@ -754,16 +753,12 @@ namespace Eto.Mac.Forms
 				if (!Widget.Loaded)
 				{
 					PreferredClientSize = value;
-					if (PreferredSize != null)
-					{
-						if (value.Width != -1 && value.Height != -1)
-							PreferredSize = null;
-						else if (value.Width != -1)
-							PreferredSize = new Size(-1, PreferredSize.Value.Height);
-						else if (value.Height != -1)
-							PreferredSize = new Size(PreferredSize.Value.Width, -1);
-
-					}
+					if (value.Width != -1 && value.Height != -1)
+						UserPreferredSize = new Size(-1, -1);
+					else if (value.Width != -1)
+						UserPreferredSize = new Size(-1, UserPreferredSize.Height);
+					else if (value.Height != -1)
+						UserPreferredSize = new Size(UserPreferredSize.Width, -1);
 				}
 				SetAutoSize();
 			}
@@ -901,18 +896,14 @@ namespace Eto.Mac.Forms
 			{
 				AutoSize = false;
 				var availableSize = SizeF.PositiveInfinity;
-				if (PreferredSize != null)
-				{
-					var borderSize = GetBorderSize();
-					if (PreferredSize.Value.Width != -1)
-						availableSize.Width = PreferredSize.Value.Width - borderSize.Width;
-					if (PreferredSize.Value.Height != -1)
-						availableSize.Height = PreferredSize.Value.Height - borderSize.Height;
-				}
+				var borderSize = GetBorderSize();
+				if (UserPreferredSize.Width != -1)
+					availableSize.Width = UserPreferredSize.Width - borderSize.Width;
+				if (UserPreferredSize.Height != -1)
+					availableSize.Height = UserPreferredSize.Height - borderSize.Height;
 				var size = GetPreferredSize(availableSize);
 				SetContentSize(size.ToNS());
 				setInitialSize = true;
-
 			}
 			PositionWindow();
 			base.OnLoad(e);
