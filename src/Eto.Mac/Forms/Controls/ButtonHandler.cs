@@ -269,17 +269,14 @@ namespace Eto.Mac.Forms.Controls
 			var size = frameSize ?? GetAlignmentFrame().Size.ToEtoSize();
 
 			// use the preferred size to determine style to use, if set
-			var preferredSize = PreferredSize;
+			var userPreferredSize = UserPreferredSize;
 			bool autoSize = true;
-			if (preferredSize != null)
+			if (userPreferredSize.Width > -1)
+				size.Width = userPreferredSize.Width;
+			if (userPreferredSize.Height > -1)
 			{
-				if (preferredSize.Value.Width > -1)
-					size.Width = preferredSize.Value.Width;
-				if (preferredSize.Value.Height > -1)
-				{
-					size.Height = preferredSize.Value.Height;
-					autoSize = false;
-				}
+				size.Height = userPreferredSize.Height;
+				autoSize = false;
 			}
 
 			if (Widget.Loaded || !size.IsEmpty)

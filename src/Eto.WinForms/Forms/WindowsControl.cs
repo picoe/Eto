@@ -123,7 +123,7 @@ namespace Eto.WinForms.Forms
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var userSize = Handler.UserDesiredSize;
+				var userSize = Handler.UserPreferredSize;
 				var size = userSize.Width >= 0 && userSize.Height >= 0 ? sd.Size.Empty
 					: base.GetPreferredSize(proposedSize);
 				if (userSize.Width >= 0)
@@ -197,7 +197,7 @@ namespace Eto.WinForms.Forms
 		Size? cachedDefaultSize;
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
-			var size = UserDesiredSize;
+			var size = UserPreferredSize;
 			if (size.Width == -1 || size.Height == -1)
 			{
 				Size? defSize;
@@ -214,16 +214,24 @@ namespace Eto.WinForms.Forms
 			return Size.Max(parentMinimumSize, size);
 		}
 
-		public Size UserDesiredSize
+		public Size UserPreferredSize
 		{
 			get { return Widget.Properties.Get<Size?>(WindowsControl.DesiredSizeKey) ?? new Size(-1, -1); }
-			set { Widget.Properties.Set(WindowsControl.DesiredSizeKey, value); }
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.DesiredSizeKey, value))
+					SetAutoSize();
+			}
 		}
 
 		public Size UserDesiredClientSize
 		{
 			get { return Widget.Properties.Get<Size?>(WindowsControl.DesiredClientSizeKey) ?? new Size(-1, -1); }
-			set { Widget.Properties.Set(WindowsControl.DesiredClientSizeKey, value); }
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.DesiredClientSizeKey, value))
+					SetAutoSize();
+			}
 		}
 
 		public virtual Size ParentMinimumSize
@@ -516,13 +524,14 @@ namespace Eto.WinForms.Forms
 		{
 			get {
 				if (!Widget.Loaded)
-					return UserDesiredSize;
+					return UserPreferredSize;
 				return ContainerControl.Size.ToEto();
 			}
 			set
 			{
-				UserDesiredSize = value;
-				SetAutoSize();
+				if (UserPreferredSize == value)
+					return;
+				UserPreferredSize = value;
 				if (Widget.Loaded)
 					SetScale();
 				var minset = SetMinimumSize();
@@ -536,10 +545,22 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public virtual int Width
+		{
+			get => Size.Width;
+			set => Size = new Size(value, UserPreferredSize.Height);
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set => Size = new Size(UserPreferredSize.Width, value);
+		}
+
 		protected virtual void SetAutoSize()
 		{
 			ContainerControl.AutoSize = 
-				(UserDesiredSize.Width == -1 || UserDesiredSize.Height == -1)
+				(UserPreferredSize.Width == -1 || UserPreferredSize.Height == -1)
 				&& (UserDesiredClientSize.Width == -1 || UserDesiredClientSize.Height == -1);
 		}
 
@@ -554,7 +575,6 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				UserDesiredClientSize = value;
-				SetAutoSize();
 				Control.ClientSize = value.ToSD();
 			}
 		}
