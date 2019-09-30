@@ -79,7 +79,7 @@ namespace Eto.Mac.Forms
 
 	public interface IMacViewHandler : IMacControlHandler
 	{
-		Size? PreferredSize { get; }
+		Size UserPreferredSize { get; }
 
 		Control Widget { get; }
 
@@ -111,7 +111,7 @@ namespace Eto.Mac.Forms
 		public static readonly object AutoSize_Key = new object();
 		public static readonly object MinimumSize_Key = new object();
 		public static readonly object MaximumSize_Key = new object();
-		public static readonly object PreferredSize_Key = new object();
+		public static readonly object UserPreferredSize_Key = new object();
 		public static readonly object NaturalAvailableSize_Key = new object();
 		public static readonly object NaturalSize_Key = new object();
 		public static readonly object NaturalSizeInfinity_Key = new object();
@@ -232,10 +232,14 @@ namespace Eto.Mac.Forms
 			set { Widget.Properties[MacView.MaximumSize_Key] = value; InvalidateMeasure(); }
 		}
 
-		public Size? PreferredSize
+		public Size UserPreferredSize
 		{
-			get { return Widget.Properties.Get<Size?>(MacView.PreferredSize_Key); }
-			set { Widget.Properties[MacView.PreferredSize_Key] = value; }
+			get => Widget.Properties.Get<Size?>(MacView.UserPreferredSize_Key) ?? new Size(-1, -1);
+			set
+			{
+				if (Widget.Properties.TrySet(MacView.UserPreferredSize_Key, value))
+					SetAutoSize();
+			}
 		}
 
 		public virtual Size Size
@@ -243,22 +247,21 @@ namespace Eto.Mac.Forms
 			get
 			{
 				if (!Widget.Loaded)
-					return PreferredSize ?? new Size(-1, -1);
+					return UserPreferredSize;
 				return GetAlignmentFrame().Size.ToEtoSize();
 			}
 			set
 			{
-				AutoSize = value.Width == -1 || value.Height == -1;
+				var preferredSize = UserPreferredSize;
+				if (preferredSize == value)
+					return;
+				UserPreferredSize = value;
+
 				if (!Widget.Loaded)
 				{
-					if (PreferredSize != value)
-					{
-						PreferredSize = value;
-						Callback.OnSizeChanged(Widget, EventArgs.Empty);
-					}
+					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 					return;
 				}
-				PreferredSize = value;
 
 				var oldFrame = GetAlignmentFrame();
 				var newFrame = oldFrame;
@@ -275,6 +278,24 @@ namespace Eto.Mac.Forms
 				CreateTracking();
 				InvalidateMeasure();
 			}
+		}
+
+		public virtual int Width
+		{
+			get => Size.Width;
+			set => Size = new Size(value, UserPreferredSize.Height);
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set => Size = new Size(UserPreferredSize.Width, value);
+		}
+
+		protected virtual void SetAutoSize()
+		{
+			var userPreferredSize = UserPreferredSize;
+			AutoSize = userPreferredSize.Width == -1 || userPreferredSize.Height == -1;
 		}
 
 		protected Size? NaturalAvailableSize
@@ -324,28 +345,24 @@ namespace Eto.Mac.Forms
 		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
 			SizeF size;
-			if (PreferredSize != null)
+			var preferredSize = UserPreferredSize;
+			// only get natural size if the size isn't explicitly set.
+			if (preferredSize.Width == -1 || preferredSize.Height == -1)
 			{
-				var preferredSize = PreferredSize.Value;
-				// only get natural size if the size isn't explicitly set.
-				if (preferredSize.Width == -1 || preferredSize.Height == -1)
-				{
-					if (preferredSize.Width >= 0)
-						availableSize.Width = preferredSize.Width;
-					if (preferredSize.Height >= 0)
-						availableSize.Height = preferredSize.Height;
-					size = GetNaturalSize(availableSize);
-				}
-				else
-					size = SizeF.Empty;
-
 				if (preferredSize.Width >= 0)
-					size.Width = preferredSize.Width;
+					availableSize.Width = preferredSize.Width;
 				if (preferredSize.Height >= 0)
-					size.Height = preferredSize.Height;
+					availableSize.Height = preferredSize.Height;
+				size = GetNaturalSize(availableSize);
 			}
 			else
-				size = GetNaturalSize(availableSize);
+				size = SizeF.Empty;
+
+			if (preferredSize.Width >= 0)
+				size.Width = preferredSize.Width;
+			if (preferredSize.Height >= 0)
+				size.Height = preferredSize.Height;
+
 			size =  SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
 
 			return size;

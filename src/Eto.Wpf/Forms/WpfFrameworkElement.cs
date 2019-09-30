@@ -140,7 +140,18 @@ namespace Eto.Wpf.Forms
 			return size;
 		}
 
-		protected sw.Size UserPreferredSize { get; set; } = new sw.Size(double.NaN, double.NaN);
+		sw.Size _userPreferredSize = new sw.Size(double.NaN, double.NaN);
+		protected sw.Size UserPreferredSize
+		{
+			get => _userPreferredSize;
+			set
+			{
+				_userPreferredSize = value;
+				SetSize();
+				ContainerControl.InvalidateMeasure();
+				UpdatePreferredSize();
+			}
+		}
 
 		protected virtual sw.Size DefaultSize => new sw.Size(double.NaN, double.NaN);
 
@@ -186,10 +197,36 @@ namespace Eto.Wpf.Forms
 			}
 			set
 			{
-				UserPreferredSize = value.ToWpf();
-				SetSize();
-				ContainerControl.InvalidateMeasure();
-				UpdatePreferredSize();
+				var newSize = value.ToWpf();
+				if (UserPreferredSize == newSize)
+					return;
+				UserPreferredSize = newSize;
+			}
+		}
+
+		public virtual int Width
+		{
+			get => Size.Width;
+			set
+			{
+				var newWidth = value == -1 ? double.NaN : value;
+				var userPreferredSize = UserPreferredSize;
+				if (userPreferredSize.Width == newWidth)
+					return;
+				UserPreferredSize = new sw.Size(newWidth, userPreferredSize.Height);
+			}
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set
+			{
+				var newHeight = value == -1 ? double.NaN : value;
+				var userPreferredSize = UserPreferredSize;
+				if (userPreferredSize.Height == newHeight)
+					return;
+				UserPreferredSize = new sw.Size(userPreferredSize.Width, newHeight);
 			}
 		}
 

@@ -51,7 +51,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void SetImagePosition()
 		{
-			if ((PreferredSize?.Width ?? -1) == -1)
+			if (UserPreferredSize.Width == -1)
 			{
 				var position = ImagePosition.ToNS();
 				if (string.IsNullOrEmpty(Text))

@@ -15,7 +15,7 @@ namespace Eto.GtkSharp.Forms
 	{
 		Point CurrentLocation { get; set; }
 
-		Size PreferredSize { get; }
+		Size UserPreferredSize { get; }
 
 		Gtk.Widget ContainerControl { get; }
 
@@ -57,6 +57,8 @@ namespace Eto.GtkSharp.Forms
 
 	static class GtkControl
 	{
+		public static readonly object UserPreferredSize_Key = new object();
+		public static readonly object ScrollAmount_Key = new object();
 		public static readonly object DragInfo_Key = new object();
 		public static readonly object DropSource_Key = new object();
 		public static readonly object Font_Key = new object();
@@ -71,23 +73,26 @@ namespace Eto.GtkSharp.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
-		Size size;
 		Size asize;
 		bool mouseDownHandled;
 #if GTK2
 		Color? cachedBackgroundColor;
 #endif
 		Color? backgroundColor;
-		public static float ScrollAmount = 2f;
+
+		public float ScrollAmount
+		{
+			get => Widget.Properties.Get<float?>(GtkControl.ScrollAmount_Key) ?? 2f;
+			set => Widget.Properties.Set(GtkControl.ScrollAmount_Key, value);
+		}
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
-		protected GtkControl()
+		public Size UserPreferredSize
 		{
-			size = new Size(-1, -1);
+			get => Widget.Properties.Get<Size?>(GtkControl.UserPreferredSize_Key) ?? new Size(-1, -1);
+			set => Widget.Properties.Set(GtkControl.UserPreferredSize_Key, value);
 		}
-
-		public Size PreferredSize { get { return size; } }
 
 		public virtual Size DefaultSize { get { return new Size(-1, -1); } }
 
@@ -103,30 +108,38 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual Point CurrentLocation { get; set; }
 
-		public Size DesiredSize => size;
-
 		public virtual Size Size
 		{
-			get
-			{
-				return ContainerControl.Visible ? ContainerControl.Allocation.Size.ToEto() : size;
-			}
+			get => ContainerControl.Visible ? ContainerControl.Allocation.Size.ToEto() : UserPreferredSize;
 			set
 			{
-				if (size != value)
+				var userPreferredSize = UserPreferredSize;
+				if (userPreferredSize == value)
+					return;
+				userPreferredSize = value;
+				UserPreferredSize = userPreferredSize;
+				if (userPreferredSize.Width == -1 || userPreferredSize.Height == -1)
 				{
-					size = value;
-					if (size.Width == -1 || size.Height == -1)
-					{
-						var defSize = DefaultSize;
-						if (size.Width == -1)
-							size.Width = defSize.Width;
-						if (size.Height == -1)
-							size.Height = defSize.Height;
-					}
-					SetSize(size);
+					var defSize = DefaultSize;
+					if (userPreferredSize.Width == -1)
+						userPreferredSize.Width = defSize.Width;
+					if (userPreferredSize.Height == -1)
+						userPreferredSize.Height = defSize.Height;
 				}
+				SetSize(userPreferredSize);
 			}
+		}
+
+		public virtual int Width
+		{
+			get => Size.Width;
+			set => Size = new Size(value, UserPreferredSize.Height);
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set => Size = new Size(UserPreferredSize.Width, value);
 		}
 
 		protected void SetSize() => SetSize(DefaultSize);
@@ -466,6 +479,9 @@ namespace Eto.GtkSharp.Forms
 
 			public void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
 			{
+				var h = Handler;
+				if (h == null)
+					return;
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
@@ -474,22 +490,22 @@ namespace Eto.GtkSharp.Forms
 				switch (args.Event.Direction)
 				{
 					case Gdk.ScrollDirection.Down:
-						delta = new SizeF(0f, -ScrollAmount);
+						delta = new SizeF(0f, -h.ScrollAmount);
 						break;
 					case Gdk.ScrollDirection.Left:
-						delta = new SizeF(ScrollAmount, 0f);
+						delta = new SizeF(h.ScrollAmount, 0f);
 						break;
 					case Gdk.ScrollDirection.Right:
-						delta = new SizeF(-ScrollAmount, 0f);
+						delta = new SizeF(-h.ScrollAmount, 0f);
 						break;
 					case Gdk.ScrollDirection.Up:
-						delta = new SizeF(0f, ScrollAmount);
+						delta = new SizeF(0f, h.ScrollAmount);
 						break;
 					default:
 						throw new NotSupportedException();
 				}
 
-				Handler.Callback.OnMouseWheel(Handler.Widget, new MouseEventArgs(buttons, modifiers, p, delta));
+				h.Callback.OnMouseWheel(h.Widget, new MouseEventArgs(buttons, modifiers, p, delta));
 			}
 
 			[GLib.ConnectBefore]

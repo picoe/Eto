@@ -197,7 +197,7 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			if (desired)
 			{
-				var size = UserDesiredSize;
+				var size = UserPreferredSize;
 				var pick = Orientation == Orientation.Horizontal ? size.Width : size.Height;
 				if (pick >= 0)
 					return pick - Control.SplitterWidth;
