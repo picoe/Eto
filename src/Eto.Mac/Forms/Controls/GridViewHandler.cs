@@ -249,6 +249,20 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 
+			[Export("tableView:draggingSession:endedAtPoint:operation:")]
+			public new void DraggingSessionEnded(NSTableView tableView, NSDraggingSession draggingSession, CGPoint endedAtScreenPoint, NSDragOperation operation)
+			{
+				var h = Handler;
+				if (h == null)
+					return;
+
+				if (h.CustomSelectedRows != null)
+				{
+					h.CustomSelectedRows = null;
+					h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
+				}
+			}
+
 			public override bool WriteRows(NSTableView tableView, NSIndexSet rowIndexes, NSPasteboard pboard)
 			{
 				var h = Handler;
@@ -260,11 +274,36 @@ namespace Eto.Mac.Forms.Controls
 					h.Control.AllowedOperation = null;
 					// give MouseMove event a chance to start the drag
 					h.DragPasteboard = pboard;
-					h.CustomSelectedRows = rowIndexes.Select(r => (int)r).ToList();
+
+
+					// check if the dragged rows are different than the selection so we can fire a changed event
+					var dragRows = rowIndexes.Select(r => (int)r).ToList();
+					bool isDifferentSelection = (nint)dragRows.Count != h.Control.SelectedRowCount;
+					if (!isDifferentSelection)
+					{
+						// same count, ensure they're not different rows
+						// typically only tests one entry here, as there's no way to drag more than a single non-selected item.
+						var selectedRows = h.Control.SelectedRows.ToArray();
+						for (var i = 0; i < selectedRows.Length; i++)
+						{
+							if (!dragRows.Contains((int)selectedRows[i]))
+							{
+								isDifferentSelection = true;
+								break;
+							}
+						}
+					}
+
+					if (isDifferentSelection)
+					{
+						h.CustomSelectedRows = dragRows;
+						h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
+					}
+
 					var args = MacConversions.GetMouseEvent(h, NSApplication.SharedApplication.CurrentEvent, false);
 					h.Callback.OnMouseMove(h.Widget, args);
 					h.DragPasteboard = null;
-					h.CustomSelectedRows = null;
+
 					return h.Control.AllowedOperation != null;
 				}
 

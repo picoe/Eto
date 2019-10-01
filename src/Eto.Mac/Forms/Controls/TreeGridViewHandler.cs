@@ -460,6 +460,24 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 
+			[Export("outlineView:draggingSession:endedAtPoint:operation:")]
+#if XAMMAC
+			public new void DraggingSessionEnded(NSOutlineView outlineView, NSDraggingSession session, CGPoint screenPoint, NSDragOperation operation)
+#else
+			public void DraggingSessionEnded(NSOutlineView outlineView, NSDraggingSession session, CGPoint screenPoint, NSDragOperation operation)
+#endif
+			{
+				var h = Handler;
+				if (h == null)
+					return;
+
+				if (h.CustomSelectedItems != null)
+				{
+					h.CustomSelectedItems = null;
+					h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
+				}
+			}
+
 			public override bool OutlineViewwriteItemstoPasteboard(NSOutlineView outlineView, NSArray items, NSPasteboard pboard)
 			{
 				var h = Handler;
@@ -471,11 +489,32 @@ namespace Eto.Mac.Forms.Controls
 					h.Control.AllowedOperation = null;
 					// give MouseMove event a chance to start the drag
 					h.DragPasteboard = pboard;
-					h.CustomSelectedItems = GetItems(items).ToList();
+
+					// check if the items are different than the selection so we can fire a changed event
+					bool isDifferentSelection = (nint)items.Count != h.Control.SelectedRowCount;
+					if (!isDifferentSelection)
+					{
+						// same count, ensure they're not different rows
+						// typically only tests one entry here, as there's no way to drag more than a single non-selected item.
+						var selectedRows = h.Control.SelectedRows.ToArray();
+						for (var i = 0; i < selectedRows.Length; i++)
+						{
+							if (items.ValueAt((nuint)i) != h.Control.ItemAtRow((nint)selectedRows[i]).Handle)
+							{
+								isDifferentSelection = true;
+								break;
+							}
+						}
+					}
+
+					if (isDifferentSelection)
+					{
+						h.CustomSelectedItems = GetItems(items).ToList();
+						h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
+					}
 					var args = MacConversions.GetMouseEvent(h, NSApplication.SharedApplication.CurrentEvent, false);
 					h.Callback.OnMouseMove(h.Widget, args);
 					h.DragPasteboard = null;
-					h.CustomSelectedItems = null;
 					return h.Control.AllowedOperation != null;
 				}
 
