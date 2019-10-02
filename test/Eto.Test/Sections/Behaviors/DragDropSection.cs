@@ -75,6 +75,7 @@ namespace Eto.Test.Sections.Behaviors
 			};
 
 			var treeSource = new TreeGridView { Size = new Size(200, 200) };
+			treeSource.SelectedItemsChanged += (sender, e) => Log.Write(treeSource, $"TreeGridView.SelectedItemsChanged (source) Rows: {string.Join(", ", treeSource.SelectedRows.Select(r => r.ToString()))}");
 			treeSource.DataStore = CreateTreeData();
 			SetupTreeColumns(treeSource);
 			treeSource.MouseMove += (sender, e) =>
@@ -94,6 +95,7 @@ namespace Eto.Test.Sections.Behaviors
 			};
 
 			var gridSource = new GridView {  };
+			gridSource.SelectedRowsChanged += (sender, e) => Log.Write(gridSource, $"GridView.SelectedItemsChanged (source): {string.Join(", ", gridSource.SelectedRows.Select(r => r.ToString()))}");
 			SetupGridColumns(gridSource);
 			gridSource.DataStore = CreateGridData();
 			gridSource.MouseMove += (sender, e) =>
