@@ -24,8 +24,8 @@ namespace Eto.Mac.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<FontTypeface>, FontTypeface.IHandler
 	{
-		NSFont font;
-		string name;
+		NSFont _font;
+		string _name;
 		static readonly object LocalizedName_Key = new object();
 
 		public string PostScriptName { get; private set; }
@@ -37,14 +37,14 @@ namespace Eto.Mac.Drawing
 		public FontTypefaceHandler(NSArray descriptor)
 		{
 			PostScriptName = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(0));
-			name = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(1));
+			_name = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(1));
 			Weight = Messaging.GetNSObject<NSNumber>(descriptor.ValueAt(2))?.Int32Value ?? 1;
 			Traits = (NSFontTraitMask)(Messaging.GetNSObject<NSNumber>(descriptor.ValueAt(3))?.Int32Value ?? 0);
 		}
 
 		public FontTypefaceHandler(NSFont font, NSFontTraitMask? traits = null)
 		{
-			this.font = font;
+			this._font = font;
 			var descriptor = font.FontDescriptor;
 			PostScriptName = descriptor.PostscriptName;
 			var manager = NSFontManager.SharedFontManager;
@@ -55,7 +55,7 @@ namespace Eto.Mac.Drawing
 		public FontTypefaceHandler(string postScriptName, string name, NSFontTraitMask traits, int weight)
 		{
 			PostScriptName = postScriptName;
-			this.name = name;
+			this._name = name;
 			Weight = weight;
 			Traits = traits;
 		}
@@ -70,11 +70,11 @@ namespace Eto.Mac.Drawing
 		{
 			get
 			{
-				if (name == null)
+				if (_name == null)
 				{
-					if (font == null)
-						font = CreateFont(10);
-					name = GetName(font.Handle);
+					if (_font == null)
+						_font = CreateFont(10);
+					_name = GetName(_font.Handle);
 
 					/*
 					var manager = NSFontManager.SharedFontManager;
@@ -86,7 +86,7 @@ namespace Eto.Mac.Drawing
 						name = (string)Runtime.GetNSObject<NSString>(member.ValueAt(1));
 					}*/
 				}
-				return name;
+				return _name;
 			}
 		}
 
@@ -103,11 +103,11 @@ namespace Eto.Mac.Drawing
 
 		string GetLocalizedName()
 		{
-			if (font == null)
-				font = CreateFont(10);
+			if (_font == null)
+				_font = CreateFont(10);
 
 			// no (easy) way to get a CTFont from an NSFont
-			var localizedNamePtr = CTFontCopyLocalizedName(font.Handle, CTFontNameKeySubFamily.Handle, out var actualLanguagePtr);
+			var localizedNamePtr = CTFontCopyLocalizedName(_font.Handle, CTFontNameKeySubFamily.Handle, out var actualLanguagePtr);
 			var actualLanguage = Runtime.GetNSObject<NSString>(actualLanguagePtr);
 			var localizedName = Runtime.GetNSObject<NSString>(localizedNamePtr);
 
@@ -118,9 +118,26 @@ namespace Eto.Mac.Drawing
 
 		public NSFont CreateFont(float size)
 		{
+
 			// we have a postcript name, use that to create the font
 			if (!string.IsNullOrEmpty(PostScriptName))
-				return NSFont.FromFontName(PostScriptName, size);
+			{
+				var font = NSFont.FromFontName(PostScriptName, size);
+				if (font == null)
+				{
+					// macOS 10.15 returns null for the above API for system fonts (when compiled using xcode 11).
+					font = NSFont.SystemFontOfSize(size);
+					if (font.FontDescriptor.PostscriptName == PostScriptName)
+						return font;
+					font = NSFont.BoldSystemFontOfSize(size);
+					if (font.FontDescriptor.PostscriptName == PostScriptName)
+						return font;
+
+					// always return something..?
+					return NSFont.UserFontOfSize(size);
+				}
+				return font;
+			}
 
 			var family = (FontFamilyHandler)Widget.Family.Handler;
 			return FontHandler.CreateFont(family.MacName, size, Traits, Weight);
