@@ -117,6 +117,12 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); }
 			}
 
+			public EtoPopUpButton(IntPtr handle)
+				: base(handle)
+			{
+				Cell = new EtoPopUpButtonCell();
+			}
+
 			public EtoPopUpButton()
 			{
 				Cell = new EtoPopUpButtonCell();
