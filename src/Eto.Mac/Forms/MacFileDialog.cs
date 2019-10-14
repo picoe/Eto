@@ -198,8 +198,8 @@ namespace Eto.Mac.Forms
 
 		public string Title
 		{
-			get { return Control.Title; }
-			set { Control.Title = value ?? string.Empty; }
+			get { return Control.Message; }
+			set { Control.Message = value ?? string.Empty; }
 		}
 
 		public DialogResult ShowDialog(Window parent)
