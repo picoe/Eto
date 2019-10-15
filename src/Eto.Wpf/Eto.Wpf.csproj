@@ -5,7 +5,6 @@
     <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net45</TargetFrameworks>
     <TargetFrameworks Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'" />
   <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'" />
 
@@ -20,6 +19,7 @@
     <DefineConstants>$(DefineConstants);WPF</DefineConstants>
     <OutputPath>..\..\artifacts\core\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <!-- Suppress warning NU1701: Package 'Extended.Wpf.Toolkit 3.2.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
     <!-- Suppress warning NU1701: Package 'Windows7APICodePack-Core 1.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
     <!-- Suppress warning NU1701: Package 'Windows7APICodePack-Shell 1.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
@@ -51,7 +51,7 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
-
+  
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
