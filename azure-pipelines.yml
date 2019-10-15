@@ -67,7 +67,7 @@ jobs:
   - script: cinst gtksharp -y
     displayName: Install GTK#
   - powershell: |
-      Write-Host "##vso[task.setvariable variable=DOTNET_SDK_VERSION]3.0.100-preview5-011568"
+      Write-Host "##vso[task.setvariable variable=DOTNET_SDK_VERSION]3.0.100"
     displayName: Set .NET Core SDK version to install
   - task: UseDotNet@2
     displayName: Install .NET Core SDK

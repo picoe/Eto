@@ -2,7 +2,7 @@ version: 2.5.0.{build}
 image: Visual Studio 2017
 install:
 - cinst gtksharp -y
-- ps: $DOTNET_SDK_VERSION = "3.0.100-preview5-011568"
+- ps: $DOTNET_SDK_VERSION = "3.0.100"
 - ps: Start-FileDownload "https://dot.net/v1/dotnet-install.ps1"
 - ps: "& ./dotnet-install.ps1 -Version $DOTNET_SDK_VERSION"
 - ps: $DOTNET_CLI_COMMAND = Get-Command -CommandType Application dotnet | Select-Object -First 1
