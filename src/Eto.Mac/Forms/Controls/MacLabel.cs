@@ -187,7 +187,7 @@ namespace Eto.Mac.Forms.Controls
 				return;
 			isSizing = true;
 			var size = Size;
-			if (Wrap != WrapMode.None && lastSize.Width != size.Width)
+			if (Wrap != WrapMode.None && lastSize.Width != size.Width && !Control.IsHiddenOrHasHiddenAncestor)
 			{
 				// when wrapping we use the current size, if it changes we check if we need another layout pass
 				// this is needed when resizing a form/label so it can wrap correctly as GetNaturalSize()
