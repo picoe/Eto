@@ -4,7 +4,6 @@
     <TargetFrameworks>net461</TargetFrameworks>
     <TargetFrameworks Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'" />
   <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'" />
 
