@@ -85,13 +85,13 @@ jobs:
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments) /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
+      msbuildArguments: $(build.arguments)
 
   - task: msbuild@1
     displayName: Build Visual Studio Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
+      msbuildArguments: /t:BuildAddins
 
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
@@ -116,11 +116,4 @@ jobs:
     inputs:
       pathtoPublish: artifacts/addin/$(build.configuration)/VisualStudio/Eto.Addin.VisualStudio.vsix
       artifactName: addins
-      publishLocation: container
-  - task: PublishBuildArtifacts@1
-    condition: failed()
-    displayName: Publish MSBuild logs
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog
-      artifactName: msbuild-binlog
       publishLocation: container
