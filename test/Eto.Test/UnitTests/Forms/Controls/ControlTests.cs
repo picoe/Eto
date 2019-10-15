@@ -6,6 +6,7 @@ using Eto.Drawing;
 using System.Threading;
 using System.Runtime.ExceptionServices;
 using System.Reflection;
+using System.Linq;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -295,6 +296,62 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					}
 				};
 			});
+		}
+
+		[Test, ManualTest]
+		public void PointToScreenShouldWorkOnSecondaryScreen()
+		{
+			bool wasClicked = false;
+			Form childForm = null;
+			try
+			{
+				ManualForm("The Form with the button should be above the text box exactly.\nClick the button to pass the test, close the window to fail.", form =>
+				{
+					var screens = Screen.Screens.ToArray();
+					Assert.GreaterOrEqual(screens.Length, 2, "You must have a secondary monitor for this test");
+					form.Location = Point.Round(screens[1].Bounds.Location) + new Size(50, 50);
+					form.ClientSize = new Size(200, 200);
+
+					var textBox = new TextBox { Text = "You shouldn't see this" };
+
+					form.Shown += (sender, e) =>
+					{
+						childForm = new Form
+						{
+							WindowStyle = WindowStyle.None,
+							ShowInTaskbar = false,
+							Maximizable = false,
+							Resizable = false,
+							BackgroundColor = Colors.Red,
+							Topmost = true,
+							Location = Point.Round(textBox.PointToScreen(PointF.Empty)),
+							Size = textBox.Size
+						};
+						var b = new Button { Text = "Click Me!" };
+						b.Click += (sender2, e2) =>
+						{
+							wasClicked = true;
+							childForm.Close();
+							childForm = null;
+							form.Close();
+						};
+
+						childForm.Content = new TableLayout { Rows = { b } };
+						childForm.Show();
+					};
+
+					var layout = new DynamicLayout();
+					layout.AddCentered(textBox);
+
+					return layout;
+				}, allowPassFail: false);
+			}
+			finally
+			{
+				if (childForm != null)
+					Application.Instance.Invoke(() => childForm.Close());
+			}
+			Assert.IsTrue(wasClicked, "The test completed without clicking the button");
 		}
 
 	}

@@ -327,7 +327,7 @@ namespace Eto.Mac.Drawing
 			return NSDictionary.FromObjectsAndKeys(
 				new NSObject[]
 				{
-					Control,
+					Control ?? NSFont.UserFontOfSize(Size),
 					new NSNumber((int)(decoration.HasFlag(FontDecoration.Underline) ? NSUnderlineStyle.Single : NSUnderlineStyle.None)),
 					NSNumber.FromBoolean(decoration.HasFlag(FontDecoration.Strikethrough))
 				},

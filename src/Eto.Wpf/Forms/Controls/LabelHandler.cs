@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using swc = System.Windows.Controls;
@@ -29,7 +29,7 @@ namespace Eto.Wpf.Forms.Controls
 	public class LabelHandler : WpfControl<swc.Label, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly swc.AccessText accessText;
-		sw.Size? previousRenderSize;
+		int? previousWidth;
 		string text;
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
@@ -52,21 +52,28 @@ namespace Eto.Wpf.Forms.Controls
 
 		void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
 		{
-			if (previousRenderSize == null)
+			// not loaded? don't worry about it.
+			if (!Control.IsLoaded)
+				return;
+			// convert to int as in some scales (e.g. 150%) it can cause an endless update cycle
+			var newWidth = (int)Control.ActualWidth;
+			if (previousWidth == null)
 			{
 				// don't update preferred sizes when called the first time.
 				// when there's many labels this causes a major slowdown
 				// the initial size should already have been taken care of by 
 				// the initial layout pass.
-				previousRenderSize = Control.RenderSize;
+				previousWidth = newWidth;
 				return;
 			}
 
-			if (previousRenderSize == Control.RenderSize)
+			if (previousWidth == newWidth)
 				return;
-			// update parents only when the render size has changed
-			previousRenderSize = Control.RenderSize;
-            if (Wrap != WrapMode.None)
+			// update parents when the actual width has changed
+			// otherwise it won't shrink vertically when it gets wider
+			// when wrapped
+			previousWidth = newWidth;
+			if (Wrap != WrapMode.None)
                 UpdatePreferredSize();
 		}
 

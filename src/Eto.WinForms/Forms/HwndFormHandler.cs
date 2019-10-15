@@ -400,6 +400,24 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public virtual int Width
+		{
+			get => Size.Width;
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		public bool Enabled
 		{
 			get

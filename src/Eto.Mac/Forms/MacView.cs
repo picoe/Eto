@@ -79,7 +79,7 @@ namespace Eto.Mac.Forms
 
 	public interface IMacViewHandler : IMacControlHandler
 	{
-		Size? PreferredSize { get; }
+		Size UserPreferredSize { get; }
 
 		Control Widget { get; }
 
@@ -88,6 +88,8 @@ namespace Eto.Mac.Forms
 		Cursor CurrentCursor { get; }
 
 		void OnKeyDown(KeyEventArgs e);
+
+		void OnKeyUp(KeyEventArgs e);
 
 		void OnSizeChanged(EventArgs e);
 
@@ -109,7 +111,7 @@ namespace Eto.Mac.Forms
 		public static readonly object AutoSize_Key = new object();
 		public static readonly object MinimumSize_Key = new object();
 		public static readonly object MaximumSize_Key = new object();
-		public static readonly object PreferredSize_Key = new object();
+		public static readonly object UserPreferredSize_Key = new object();
 		public static readonly object NaturalAvailableSize_Key = new object();
 		public static readonly object NaturalSize_Key = new object();
 		public static readonly object NaturalSizeInfinity_Key = new object();
@@ -121,7 +123,11 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selRightMouseDown = Selector.GetHandle("rightMouseDown:");
 		public static readonly IntPtr selRightMouseUp = Selector.GetHandle("rightMouseUp:");
 		public static readonly IntPtr selRightMouseDragged = Selector.GetHandle("rightMouseDragged:");
+		public static readonly IntPtr selOtherMouseDown = Selector.GetHandle("otherMouseDown:");
+		public static readonly IntPtr selOtherMouseUp = Selector.GetHandle("otherMouseUp:");
+		public static readonly IntPtr selOtherMouseDragged = Selector.GetHandle("otherMouseDragged:");
 		public static readonly IntPtr selScrollWheel = Selector.GetHandle("scrollWheel:");
+		public static readonly IntPtr selFlagsChanged = Selector.GetHandle("flagsChanged:");
 		public static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
 		public static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
 		public static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
@@ -173,6 +179,8 @@ namespace Eto.Mac.Forms
 		public static readonly Selector selSetCanDrawSubviewsIntoLayer = new Selector("setCanDrawSubviewsIntoLayer:");
 		public static readonly bool supportsCanDrawSubviewsIntoLayer = ObjCExtensions.InstancesRespondToSelector<NSView>("setCanDrawSubviewsIntoLayer:");
 		public static readonly object UseAlignmentFrame_Key = new object();
+
+		public const string FlagsChangedEvent = "MacView.FlagsChangedEvent";
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -224,10 +232,14 @@ namespace Eto.Mac.Forms
 			set { Widget.Properties[MacView.MaximumSize_Key] = value; InvalidateMeasure(); }
 		}
 
-		public Size? PreferredSize
+		public Size UserPreferredSize
 		{
-			get { return Widget.Properties.Get<Size?>(MacView.PreferredSize_Key); }
-			set { Widget.Properties[MacView.PreferredSize_Key] = value; }
+			get => Widget.Properties.Get<Size?>(MacView.UserPreferredSize_Key) ?? new Size(-1, -1);
+			set
+			{
+				if (Widget.Properties.TrySet(MacView.UserPreferredSize_Key, value))
+					SetAutoSize();
+			}
 		}
 
 		public virtual Size Size
@@ -235,22 +247,21 @@ namespace Eto.Mac.Forms
 			get
 			{
 				if (!Widget.Loaded)
-					return PreferredSize ?? new Size(-1, -1);
+					return UserPreferredSize;
 				return GetAlignmentFrame().Size.ToEtoSize();
 			}
 			set
 			{
-				AutoSize = value.Width == -1 || value.Height == -1;
+				var preferredSize = UserPreferredSize;
+				if (preferredSize == value)
+					return;
+				UserPreferredSize = value;
+
 				if (!Widget.Loaded)
 				{
-					if (PreferredSize != value)
-					{
-						PreferredSize = value;
-						Callback.OnSizeChanged(Widget, EventArgs.Empty);
-					}
+					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 					return;
 				}
-				PreferredSize = value;
 
 				var oldFrame = GetAlignmentFrame();
 				var newFrame = oldFrame;
@@ -267,6 +278,24 @@ namespace Eto.Mac.Forms
 				CreateTracking();
 				InvalidateMeasure();
 			}
+		}
+
+		public virtual int Width
+		{
+			get => Size.Width;
+			set => Size = new Size(value, UserPreferredSize.Height);
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set => Size = new Size(UserPreferredSize.Width, value);
+		}
+
+		protected virtual void SetAutoSize()
+		{
+			var userPreferredSize = UserPreferredSize;
+			AutoSize = userPreferredSize.Width == -1 || userPreferredSize.Height == -1;
 		}
 
 		protected Size? NaturalAvailableSize
@@ -316,28 +345,24 @@ namespace Eto.Mac.Forms
 		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
 			SizeF size;
-			if (PreferredSize != null)
+			var preferredSize = UserPreferredSize;
+			// only get natural size if the size isn't explicitly set.
+			if (preferredSize.Width == -1 || preferredSize.Height == -1)
 			{
-				var preferredSize = PreferredSize.Value;
-				// only get natural size if the size isn't explicitly set.
-				if (preferredSize.Width == -1 || preferredSize.Height == -1)
-				{
-					if (preferredSize.Width >= 0)
-						availableSize.Width = preferredSize.Width;
-					if (preferredSize.Height >= 0)
-						availableSize.Height = preferredSize.Height;
-					size = GetNaturalSize(availableSize);
-				}
-				else
-					size = SizeF.Empty;
-
 				if (preferredSize.Width >= 0)
-					size.Width = preferredSize.Width;
+					availableSize.Width = preferredSize.Width;
 				if (preferredSize.Height >= 0)
-					size.Height = preferredSize.Height;
+					availableSize.Height = preferredSize.Height;
+				size = GetNaturalSize(availableSize);
 			}
 			else
-				size = GetNaturalSize(availableSize);
+				size = SizeF.Empty;
+
+			if (preferredSize.Width >= 0)
+				size.Width = preferredSize.Width;
+			if (preferredSize.Height >= 0)
+				size.Height = preferredSize.Height;
+
 			size =  SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
 
 			return size;
@@ -398,6 +423,7 @@ namespace Eto.Mac.Forms
 					CreateTracking();
 					AddMethod(MacView.selMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					AddMethod(MacView.selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
+					AddMethod(MacView.selOtherMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					AddMethod(MacView.selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), EtoEnvironment.Is64BitProcess ? "v@:{CGSize=dd}" : "v@:{CGSize=ff}", ContainerControl);
@@ -405,10 +431,12 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.MouseDownEvent:
 					AddMethod(MacView.selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
 					AddMethod(MacView.selRightMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
+					AddMethod(MacView.selOtherMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					AddMethod(MacView.selMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
 					AddMethod(MacView.selRightMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
+					AddMethod(MacView.selOtherMouseUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseUp), "v@:@");
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
 					HandleEvent(Eto.Forms.Control.MouseDownEvent);
@@ -418,9 +446,14 @@ namespace Eto.Mac.Forms
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
 					AddMethod(MacView.selKeyDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyDown), "v@:@");
+					HandleEvent(MacView.FlagsChangedEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					AddMethod(MacView.selKeyUp, new Action<IntPtr, IntPtr, IntPtr>(TriggerKeyUp), "v@:@");
+					HandleEvent(MacView.FlagsChangedEvent);
+					break;
+				case MacView.FlagsChangedEvent:
+					AddMethod(MacView.selFlagsChanged, new Action<IntPtr, IntPtr, IntPtr>(TriggerFlagsChanged), "v@:@");
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					AddMethod(MacView.selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:");
@@ -597,6 +630,20 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		static void TriggerFlagsChanged(IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var handler = GetHandler(obj) as IMacViewHandler;
+			if (handler != null)
+			{
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
+				if (!MacEventView.FlagsChanged(handler.Widget, theEvent))
+				{
+					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+				}
+			}
+		}
+
 		static void TriggerKeyUp(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var obj = Runtime.GetNSObject(sender);
@@ -652,8 +699,6 @@ namespace Eto.Mac.Forms
 				Callback.OnMouseMove(Widget, MacConversions.GetMouseEvent(this, evt, false));
 			}
 		}
-
-
 
 		static void TriggerMouseUp(IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -964,10 +1009,8 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public virtual void OnKeyDown(KeyEventArgs e)
-		{
-			Callback.OnKeyDown(Widget, e);
-		}
+		public virtual void OnKeyDown(KeyEventArgs e) => Callback.OnKeyDown(Widget, e);
+		public virtual void OnKeyUp(KeyEventArgs e) => Callback.OnKeyUp(Widget, e);
 
 		Control IMacViewHandler.Widget { get { return Widget; } }
 
@@ -978,9 +1021,10 @@ namespace Eto.Mac.Forms
 			var window = view.Window;
 			if (window != null)
 			{
-				var screen = window.Screen;
-				if (screen != null)
-					pt.Y = screen.Frame.Height - pt.Y;
+				// macOS has flipped co-ordinates starting at the bottom left of the main screen,
+				// so we flip to make 0,0 top left
+				var mainFrame = NSScreen.Screens[0].Frame;
+				pt.Y = mainFrame.Height - pt.Y;
 				pt = window.ConvertScreenToBase(pt);
 			}
 			pt = view.ConvertPointFromView(pt, null);
@@ -1002,9 +1046,10 @@ namespace Eto.Mac.Forms
 			if (window != null)
 			{
 				pt = window.ConvertBaseToScreen(pt);
-				var screen = window.Screen;
-				if (screen != null)
-					pt.Y = screen.Frame.Height - pt.Y;
+				// macOS has flipped co-ordinates starting at the bottom left of the main screen,
+				// so we flip to make 0,0 top left
+				var mainFrame = NSScreen.Screens[0].Frame;
+				pt.Y = mainFrame.Height - pt.Y;
 			}
 			return pt.ToEto();
 		}

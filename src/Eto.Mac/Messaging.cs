@@ -104,6 +104,12 @@ namespace Eto.Mac
 		public static extern IntPtr IntPtr_objc_msgSend(IntPtr receiver, IntPtr selector);
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		public static extern IntPtr IntPtr_objc_msgSend_nuint(IntPtr receiver, IntPtr selector, nuint arg1);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		public static extern nuint nuint_objc_msgSend(IntPtr receiver, IntPtr selector);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public static extern void RectangleF_objc_msgSend_stret(out CGRect rect, IntPtr receiver, IntPtr selector);
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend_stret")]

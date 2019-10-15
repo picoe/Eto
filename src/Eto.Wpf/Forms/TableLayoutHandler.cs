@@ -226,7 +226,7 @@ namespace Eto.Wpf.Forms
 					}
 				}
 			}
-			Control.UpdateLayout();
+			Control.InvalidateMeasure();
 		}
 
 		void SetChildrenSizes(bool force)

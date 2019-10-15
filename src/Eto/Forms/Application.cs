@@ -240,7 +240,10 @@ namespace Eto.Forms
 		public Application(Platform platform)
 			: this(InitializePlatform(platform))
 		{
-			Application.Instance = this;
+			if (!Platform.AllowReinitialize && Instance != null)
+				throw new InvalidOperationException("The Eto.Forms Application is already created.");
+
+			Instance = this;
 		}
 
 		Application(InitHelper init)

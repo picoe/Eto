@@ -83,6 +83,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the width of the control size.
+		/// </summary>
+		public virtual int Width
+		{
+			get => Control.Width;
+			set => Control.Width = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the height of the control size.
+		/// </summary>
+		public virtual int Height
+		{
+			get => Control.Height;
+			set => Control.Height = value;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this control is enabled
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>

@@ -5,9 +5,13 @@ variables:
   build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:Branch=$(Build.SourceBranch)
 
 trigger:
-  - master
-  - develop
-  - refs/tags/*
+  branches:
+    include:
+    - master
+    - develop
+  tags:
+    include: 
+    - '*'
 
 jobs:
 - job: Mac
@@ -22,40 +26,46 @@ jobs:
     inputs: 
       solution: build/Build.proj
       msbuildArguments: $(build.arguments) /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
-  - task: msbuild@1
-    displayName: Build MonoDevelop Addin
-    inputs:
-      solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.MacOS.binlog
+
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
       contents: artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
       targetFolder: $(Build.ArtifactStagingDirectory)
-  - task: CopyFiles@2
-    displayName: Copy MonoDevelop Addin
-    inputs:
-      contents: artifacts/addin/$(build.configuration)/net461/Eto.Addin.MonoDevelop*.mpack
-      targetFolder: $(Build.ArtifactStagingDirectory)
+      
   - task: PublishBuildArtifacts@1
     displayName: Publish XamMac nupkg
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/nuget/$(build.configuration)
       artifactName: nuget
       publishLocation: container
-  - task: PublishBuildArtifacts@1
-    displayName: Publish MonoDevelop Addin
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/addin/$(build.configuration)/net461
-      artifactName: addins
-      publishLocation: container
+
+#  - task: msbuild@1
+#    displayName: Build MonoDevelop Addin
+#    inputs:
+#      solution: build/Build.proj
+#      msbuildArguments: /t:BuildAddins
+#
+#  - task: CopyFiles@2
+#    displayName: Copy MonoDevelop Addin
+#    inputs:
+#      contents: artifacts/addin/$(build.configuration)/net461/Eto.Addin.MonoDevelop*.mpack
+#      targetFolder: $(Build.ArtifactStagingDirectory)
+#
+#  - task: PublishBuildArtifacts@1
+#    displayName: Publish MonoDevelop Addin
+#    inputs:
+#      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/addin/$(build.configuration)/net461
+#      artifactName: addins
+#      publishLocation: container
+
   - task: PublishBuildArtifacts@1
     condition: failed()
     displayName: Publish MSBuild logs
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog
       artifactName: msbuild-binlog
-      publishLocation: container
+      publishLocation: container                            
     
 - job: Windows
   pool:

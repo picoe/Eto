@@ -8,6 +8,7 @@ using swm = System.Windows.Media;
 using swi = System.Windows.Input;
 using Eto.Forms;
 using System.Collections;
+using System.ComponentModel;
 using Eto.Wpf.Forms.Menu;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
@@ -38,9 +39,16 @@ namespace Eto.Wpf.Forms.Controls
 			base.OnPreviewKeyDown(e);
 			if (!e.Handled && e.Key == swi.Key.Enter && swi.Keyboard.Modifiers == swi.ModifierKeys.None)
 			{
-				CommitEdit(); // if needed, commit the editing
-				// don't go to next row!
-				e.Handled = true;
+				IEditableCollectionView itemsView = Items;
+				// IsEditingItem value will be true twice because we commit cell first, then the row.
+				// See the remark on this page:
+				// https://docs.microsoft.com/en-us/dotnet/api/system.windows.controls.datagrid.commitedit
+				if (itemsView.IsAddingNew || itemsView.IsEditingItem)
+				{
+					CommitEdit();
+					// don't go to next row!
+					e.Handled = true;
+				}
 			}
 		}
 

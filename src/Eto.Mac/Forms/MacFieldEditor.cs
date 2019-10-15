@@ -60,6 +60,80 @@ namespace Eto.Mac.Forms
 			base.KeyDown(theEvent);
 		}
 
+		public override void FlagsChanged(NSEvent theEvent)
+		{
+			var handler = Handler as IMacViewHandler;
+			if (handler != null && MacEventView.FlagsChanged(handler.Widget, theEvent))
+				return;
+
+			base.FlagsChanged(theEvent);
+		}
+
+		bool MouseDownEvent(NSEvent theEvent)
+		{
+			var handler = Handler as IMacViewHandler;
+			if (handler == null)
+				return false;
+
+			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
+			if (theEvent.ClickCount >= 2)
+				handler.Callback.OnMouseDoubleClick(handler.Widget, args);
+
+			if (!args.Handled)
+			{
+				handler.Callback.OnMouseDown(handler.Widget, args);
+			}
+
+			return args.Handled;
+		}
+
+		bool MouseUpEvent(NSEvent theEvent)
+		{
+			var handler = Handler as IMacViewHandler;
+			if (handler == null)
+				return false;
+
+			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
+			handler.Callback.OnMouseUp(handler.Widget, args);
+			return args.Handled;
+		}
+
+		public override void MouseDown(NSEvent theEvent)
+		{
+			if (!MouseDownEvent(theEvent))
+				base.MouseDown(theEvent);
+		}
+
+		public override void MouseUp(NSEvent theEvent)
+		{
+			if (!MouseUpEvent(theEvent))
+				base.MouseUp(theEvent);
+		}
+
+		public override void RightMouseDown(NSEvent theEvent)
+		{
+			if (!MouseDownEvent(theEvent))
+				base.RightMouseDown(theEvent);
+		}
+
+		public override void RightMouseUp(NSEvent theEvent)
+		{
+			if (!MouseUpEvent(theEvent))
+				base.RightMouseUp(theEvent);
+		}
+
+		public override void OtherMouseDown(NSEvent theEvent)
+		{
+			if (!MouseDownEvent(theEvent))
+				base.OtherMouseDown(theEvent);
+		}
+
+		public override void OtherMouseUp(NSEvent theEvent)
+		{
+			if (!MouseUpEvent(theEvent))
+				base.OtherMouseUp(theEvent);
+		}
+
 		public override bool ShouldChangeText(NSRange affectedCharRange, string replacementString)
 		{
 			var handler = Handler as IMacTextBoxHandler;

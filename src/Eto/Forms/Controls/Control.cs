@@ -803,8 +803,8 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual int Width
 		{
-			get { return Handler.Size.Width; }
-			set { Size = new Size(value, Size.Height); }
+			get => Handler.Width;
+			set => Handler.Width = value;
 		}
 
 		/// <summary>
@@ -812,8 +812,8 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual int Height
 		{
-			get { return Handler.Size.Height; }
-			set { Size = new Size(Size.Width, value); }
+			get => Handler.Height;
+			set => Handler.Height = value;
 		}
 
 		/// <summary>
@@ -1635,6 +1635,16 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The current size of the control</value>
 			Size Size { get; set; }
+
+			/// <summary>
+			/// Gets or sets the width of the control size.
+			/// </summary>
+			int Width { get; set; }
+
+			/// <summary>
+			/// Gets or sets the height of the control size.
+			/// </summary>
+			int Height { get; set; }
 
 			/// <summary>
 			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
