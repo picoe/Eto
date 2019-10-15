@@ -7,6 +7,8 @@ using Eto.Drawing;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -181,6 +183,60 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				return layout;
 			});
+		}
+
+
+		class CustomCellWithTableLayout : CustomCell
+		{
+			protected override Control OnCreateCell(CellEventArgs args)
+			{
+				var label = new Label { Text = "Hello" };
+				
+				var button = new Button { MinimumSize = Size.Empty, Text = "..." };
+				button.Bind(c => c.Visible, args, a => a.IsSelected); // kaboom when reloading!
+
+				return new TableLayout
+				{
+					Rows = { new TableRow(new TableCell(label, true), button) }
+				};
+			}
+		}
+
+		[Test]
+		public void ReloadingDataStoreShouldNotCrash()
+		{
+			Form f = null;
+			GridView g = null;
+			try
+			{
+				Application.Instance.Invoke(() =>
+				{
+					f = new Form { Size = new Size(300, 300) };
+
+					g = new GridView();
+					g.Columns.Add(new GridColumn
+					{
+						DataCell = new CustomCellWithTableLayout()
+					});
+					g.DataStore = Enumerable.Range(0, 100).Cast<object>().ToList();
+					g.SelectedRow = 1;
+					f.Content = g;
+					f.Show();
+				});
+
+				Thread.Sleep(1000);
+
+				Application.Instance.Invoke(() =>
+				{
+					g.DataStore = Enumerable.Range(0, 10).Cast<object>().ToList();
+				});
+
+				Thread.Sleep(1000);
+			}
+			finally
+			{
+				Application.Instance.Invoke(() => f?.Close());
+			}
 		}
 	}
 }

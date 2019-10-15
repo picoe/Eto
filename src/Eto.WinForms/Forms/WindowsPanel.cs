@@ -39,7 +39,7 @@ namespace Eto.WinForms.Forms
 
 		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
-            var userSize = UserDesiredSize;
+            var userSize = UserPreferredSize;
 			var desiredSize = base.GetPreferredSize(availableSize, useCache);
 
 			var handler = content.GetWindowsHandler();
@@ -69,7 +69,7 @@ namespace Eto.WinForms.Forms
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
-			SetContentScale(xscale || UserDesiredSize.Width >= 0, yscale || UserDesiredSize.Height >= 0);
+			SetContentScale(xscale || UserPreferredSize.Width >= 0, yscale || UserPreferredSize.Height >= 0);
 		}
 
 		protected virtual void SetContentScale(bool xscale, bool yscale)

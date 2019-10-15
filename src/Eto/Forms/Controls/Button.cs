@@ -156,6 +156,38 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the width of the control size.
+		/// </summary>
+		public override int Width
+		{
+			get => base.Width;
+			set
+			{
+				base.Width = value;
+				if (value != -1 && value < MinimumSize.Width)
+				{
+					MinimumSize = new Size(value, MinimumSize.Height);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the height of the control size.
+		/// </summary>
+		public override int Height
+		{
+			get => base.Height;
+			set
+			{
+				base.Height = value;
+				if (value != -1 && value < MinimumSize.Height)
+				{
+					MinimumSize = new Size(MinimumSize.Width, value);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
 		/// </summary>
 		public Button()

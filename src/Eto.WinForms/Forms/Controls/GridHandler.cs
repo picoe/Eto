@@ -45,7 +45,7 @@ namespace Eto.WinForms.Forms.Controls
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var size = base.GetPreferredSize(proposedSize);
-				var def = Handler.UserDesiredSize;
+				var def = Handler.UserPreferredSize;
 				if (def.Width >= 0)
 					size.Width = def.Width;
 				if (def.Height >= 0)

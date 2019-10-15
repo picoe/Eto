@@ -29,7 +29,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			scroll = new Gtk.ScrolledWindow();
 			scroll.ShadowType = Gtk.ShadowType.In;
 			Control = new Gtk.TreeView(new Gtk.TreeModelAdapter(model));
-			Size = new Size(80, 80);
 			Control.FixedHeightMode = false;
 			Control.ShowExpanders = false;
 			scroll.Add(Control);
@@ -44,6 +43,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Size = new Size(80, 80);
 			Control.ButtonPressEvent += Connector.HandleTreeButtonPressEvent;
 			Control.Selection.Changed += Connector.HandleSelectionChanged;
 			Control.RowActivated += Connector.HandleTreeRowActivated;
