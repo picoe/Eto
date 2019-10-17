@@ -1,11 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
-    <TargetFrameworks Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
+
+  <PropertyGroup Condition="$([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">
+    <HaveWindowsDesktopSdk>true</HaveWindowsDesktopSdk>
   </PropertyGroup>
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'" />
-  <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'" />
+
+  <PropertyGroup>
+    <TargetFrameworks></TargetFrameworks>
+    <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
+          Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
+          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -35,7 +44,7 @@
   </ItemGroup>
 
   <!-- Automatically added by WindowsDesktop SDK -->
-  <ItemGroup Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'">
+  <ItemGroup Condition="'$(HaveWindowsDesktopSdk)' != 'true'">
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -85,7 +94,9 @@
     <ProjectReference Include="..\..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
 
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" Condition="'$(NoNetWindowsDesktopSdk)' != '' And '$(NoNetWindowsDesktopSdk)' != 'false'" />
-  <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" Condition="'$(NoNetWindowsDesktopSdk)' == '' Or '$(NoNetWindowsDesktopSdk)' != 'true'" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
+          Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
+          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+
 </Project>

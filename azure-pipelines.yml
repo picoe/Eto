@@ -25,7 +25,7 @@ jobs:
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments) /p:NoNetWindowsDesktopSdk=true
+      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=false
 
   - task: CopyFiles@2
     displayName: Copy nupkg
@@ -85,13 +85,13 @@ jobs:
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments)
+      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=true
 
   - task: msbuild@1
     displayName: Build Visual Studio Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins
+      msbuildArguments: /t:BuildAddins /p:HaveWindowsDesktopSdk=true
 
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
