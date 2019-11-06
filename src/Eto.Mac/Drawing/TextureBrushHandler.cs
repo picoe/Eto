@@ -70,11 +70,12 @@ namespace Eto.iOS.Drawing
 				set { transform = value; }
 			}
 
-			public void Draw(GraphicsHandler graphics, bool stroke, FillMode fillMode)
+			public void Draw(GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip)
 			{
 				if (stroke)
 					graphics.Control.ReplacePathWithStrokedPath();
-				graphics.Clip(fillMode);
+				if (clip)
+					graphics.Clip(fillMode);
 
 				var context = graphics.Control;
 
@@ -122,9 +123,9 @@ namespace Eto.iOS.Drawing
 			((BrushObject)widget.ControlObject).Opacity = opacity;
 		}
 
-		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode)
+		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip)
 		{
-			((BrushObject)control).Draw(graphics, stroke, fillMode);
+			((BrushObject)control).Draw(graphics, stroke, fillMode, clip);
 		}
 	}
 }

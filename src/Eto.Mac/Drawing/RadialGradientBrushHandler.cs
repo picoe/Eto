@@ -87,7 +87,7 @@ namespace Eto.iOS.Drawing
 				}
 			}
 
-			public void Draw(GraphicsHandler graphics, bool stroke, FillMode fillMode)
+			public void Draw(GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip)
 			{
 				var outerRadius = Radius.Width;
 				var yscale = Radius.Height / Radius.Width;
@@ -97,7 +97,8 @@ namespace Eto.iOS.Drawing
 				var rect = graphics.Control.GetPathBoundingBox().ToEto();
 				if (stroke)
 					graphics.Control.ReplacePathWithStrokedPath();
-				graphics.Clip(fillMode);
+				if (clip)
+					graphics.Clip(fillMode);
 
 				if (wrap != GradientWrapMode.Pad)
 				{
@@ -169,9 +170,9 @@ namespace Eto.iOS.Drawing
 			((BrushObject)widget.ControlObject).Wrap = gradientWrap;
 		}
 
-		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode)
+		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip)
 		{
-			((BrushObject)control).Draw(graphics, stroke, fillMode);
+			((BrushObject)control).Draw(graphics, stroke, fillMode, clip);
 		}
 	}
 }

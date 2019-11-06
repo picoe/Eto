@@ -13,7 +13,7 @@ using Eto.WinForms.Forms.Controls;
 namespace Eto.Direct2D.Drawing
 {
 	/// <summary>
-	/// Handler for <see cref="IGraphics"/>
+	/// Handler for <see cref="Graphics"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
@@ -312,13 +312,19 @@ namespace Eto.Direct2D.Drawing
 			}
 		}
 
-		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
+		public void DrawText(Font font, Brush brush, float x, float y, string text)
 		{
 			SetOffset(true);
 			using (var textLayout = GetTextLayout(font, text))
 			{
 				Control.DrawTextLayout(new s.Vector2(x, y), textLayout, brush.ToDx(Control));
 			}
+		}
+
+		public void DrawText(FormattedText formattedText, PointF location)
+		{
+			var h = formattedText.Handler as FormattedTextHandler;
+			h?.Draw(this, location);
 		}
 
 		public SizeF MeasureString(Font font, string text)

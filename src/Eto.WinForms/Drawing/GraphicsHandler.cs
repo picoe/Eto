@@ -336,17 +336,24 @@ namespace Eto.WinForms.Drawing
 			handler.DrawImage(this, source, destination);
 		}
 
-		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
+		public void DrawText(Font font, Brush brush, float x, float y, string text)
 		{
 			SetOffset(false);
-			if (UseCompatibleTextRendering)
+			if (!UseCompatibleTextRendering && brush is SolidBrush solidBrush)
 			{
-				Control.DrawString(text, (sd.Font)font.ControlObject, (sd.Brush)brush.ControlObject, x, y, DefaultStringFormat);
+				swf.TextRenderer.DrawText(Control, text, (sd.Font)font.ControlObject, new sd.Point((int)x, (int)y), solidBrush.Color.ToSD(), DefaultTextFormat);
 			}
 			else
 			{
-				swf.TextRenderer.DrawText(Control, text, (sd.Font)font.ControlObject, new sd.Point((int)x, (int)y), brush.Color.ToSD(), DefaultTextFormat);
+				var size = MeasureString(font, text);
+				var bounds = new RectangleF(x, y, size.Width, size.Height);
+				Control.DrawString(text, (sd.Font)font.ControlObject, brush.ToSD(bounds), x, y, DefaultStringFormat);
 			}
+		}
+
+		public void DrawText(FormattedText formattedText, PointF location)
+		{
+			(formattedText.Handler as FormattedTextHandler)?.Draw(this, location);
 		}
 
 		public SizeF MeasureString(Font font, string text)

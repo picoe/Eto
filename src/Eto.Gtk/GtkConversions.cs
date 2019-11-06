@@ -826,5 +826,34 @@ namespace Eto.GtkSharp
 			natural_size = Math.Max(natural_size, min);
 		}
 #endif
+
+		public static FormattedTextWrapMode ToEto(this Pango.WrapMode wrap)
+		{
+			switch (wrap)
+			{
+				case Pango.WrapMode.Word:
+					return FormattedTextWrapMode.Word;
+				case Pango.WrapMode.Char:
+				case Pango.WrapMode.WordChar:
+					return FormattedTextWrapMode.Character;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static Pango.WrapMode ToPango(this FormattedTextWrapMode wrap)
+		{
+			switch (wrap)
+			{
+				case FormattedTextWrapMode.None:
+					return Pango.WrapMode.Word;
+				case FormattedTextWrapMode.Word:
+					return Pango.WrapMode.Word;
+				case FormattedTextWrapMode.Character:
+					return Pango.WrapMode.Char;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

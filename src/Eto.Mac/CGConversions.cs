@@ -219,9 +219,9 @@ namespace Eto.iOS
 		}
 
 
-		public static void Draw(this Brush brush, GraphicsHandler graphics, bool stroke, FillMode fillMode)
+		public static void Draw(this Brush brush, GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip = true)
 		{
-			((BrushHandler)brush.Handler).Draw(brush.ControlObject, graphics, stroke, fillMode);
+			((BrushHandler)brush.Handler).Draw(brush.ControlObject, graphics, stroke, fillMode, clip);
 		}
 
 		public static GraphicsPathHandler ToHandler(this IGraphicsPath path)

@@ -135,6 +135,9 @@ namespace Eto.Mac
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public static extern CGSize CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(IntPtr receiver, IntPtr selector, CGSize arg1, IntPtr arg2, IntPtr arg3, ulong arg4, ulong arg5, long arg6);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSendSuper")]
+		public static extern void void_objc_msgSendSuper_IntPtr_IntPtr_nuint_IntPtr_CGAffineTransform_IntPtr_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1, IntPtr arg2, nuint arg3, IntPtr arg4, CGAffineTransform arg5, IntPtr arg6, IntPtr arg7);
 	}
 }
 
