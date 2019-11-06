@@ -139,7 +139,7 @@ namespace Eto.Test
 	public abstract class SectionList
 	{
 		public abstract Control Control { get; }
-		public abstract ISection SelectedItem { get; }
+		public abstract ISection SelectedItem { get; set; }
 		public event EventHandler SelectedItemChanged;
 
 		public string SectionTitle
@@ -151,10 +151,9 @@ namespace Eto.Test
 			}
 		}
 
-		protected void OnSelectedItemChanged(object sender, EventArgs e)
+		protected void OnSelectedItemChanged(EventArgs e)
 		{
-			if (this.SelectedItemChanged != null)
-				this.SelectedItemChanged(sender, e);
+			SelectedItemChanged?.Invoke(this, e);
 		}
 
 		public abstract void Focus();
@@ -175,6 +174,26 @@ namespace Eto.Test
 				var sectionTreeItem = treeView.SelectedItem as SectionTreeItem;
 				return sectionTreeItem?.Section as ISection;
 			}
+			set
+			{
+				treeView.SelectedItem = FindItem(treeView.DataStore as SectionTreeItem, value);
+			}
+		}
+
+		ITreeGridItem FindItem(SectionTreeItem node, ISection section)
+		{
+			foreach (var item in node)
+			{
+				if (ReferenceEquals(item.Section, section))
+					return item;
+				if (item.Count > 0)
+				{
+					var child = FindItem(item, section);
+					if (child != null)
+						return child;
+				}
+			}
+			return null;
 		}
 
 		public SectionListTreeGridView(IEnumerable<Section> topNodes)
@@ -184,12 +203,13 @@ namespace Eto.Test
 			treeView.ShowHeader = false;
 			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new DelegateBinding<SectionTreeItem, string>(r => r.Text) } });
 			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
-			treeView.SelectedItemChanged += OnSelectedItemChanged;
+			treeView.SelectedItemChanged += (sender, e) => OnSelectedItemChanged(e);
 		}
 	}
 
 	public class SectionListGridView : SectionList
 	{
+		FilterCollection<MyItem> items;
 		class MyItem
 		{
 			public string Name { get; set; }
@@ -209,6 +229,11 @@ namespace Eto.Test
 				var item = gridView.SelectedItem as MyItem;
 				return item != null ? item.Section as ISection : null;
 			}
+			set
+			{
+				var item = items.FirstOrDefault(r => ReferenceEquals(r.Section, value));
+				gridView.SelectedRow = items.IndexOf(item);
+			}
 		}
 
 		public override void Focus() { filterText.Focus(); }
@@ -218,7 +243,7 @@ namespace Eto.Test
 			gridView = new GridView { GridLines = GridLines.None };
 			gridView.Columns.Add(new GridColumn { HeaderText = "Name", Width = 100, AutoSize = false, DataCell = new TextBoxCell { Binding = new DelegateBinding<MyItem, string>(r => r.Name) }, Sortable = true });
 			gridView.Columns.Add(new GridColumn { HeaderText = "Section", DataCell = new TextBoxCell { Binding = new DelegateBinding<MyItem, string>(r => r.SectionName) }, Sortable = true });
-			var items = new FilterCollection<MyItem>();
+			items = new FilterCollection<MyItem>();
 			foreach (var section in topNodes)
 			{
 				foreach (var test in section)
@@ -232,7 +257,7 @@ namespace Eto.Test
 				}
 			}
 			gridView.DataStore = items;
-			gridView.SelectionChanged += OnSelectedItemChanged;
+			gridView.SelectionChanged += (sender, e) => OnSelectedItemChanged(e);
 
 			layout = new TableLayout(
 				filterText = new SearchBox { PlaceholderText = "Filter" },

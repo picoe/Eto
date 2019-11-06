@@ -29,7 +29,7 @@ namespace Eto.iOS.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
-		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode)
+		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip)
 		{
 			var nscolor = ((Color)control).ToNSUI();
 			if (stroke)

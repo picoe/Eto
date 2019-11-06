@@ -15,7 +15,7 @@ namespace Eto.iOS.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class BrushHandler : Brush.IHandler
 	{
-		public abstract void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode);
+		public abstract void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip);
 	}
 }
 
