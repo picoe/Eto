@@ -588,6 +588,8 @@ namespace Eto.Mac
 			return text;
 		}
 
+		public static NSCursor ToNS(this Cursor cursor) => CursorHandler.GetControl(cursor);
+
 		public static NSLineBreakMode ToNS(this FormattedTextTrimming trim)
 		{
 			switch (trim)

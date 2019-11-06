@@ -47,5 +47,10 @@ namespace Eto.GtkSharp.Forms
 				return modifier.ToEtoMouseButtons();
 			}
 		}
+
+		public void SetCursor(Cursor cursor)
+		{
+			
+		}
 	}
 }

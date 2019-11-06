@@ -855,5 +855,7 @@ namespace Eto.GtkSharp
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Gdk.Cursor ToGdk(this Cursor cursor) => CursorHandler.GetControl(cursor);
 	}
 }

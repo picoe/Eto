@@ -873,17 +873,23 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public void DoDragDrop(DataObject data, DragEffects allowedEffects)
+		public void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
 		{
 			var targets = (data.Handler as DataObjectHandler)?.GetTargets();
 
 			DragInfo = new DragInfoObject { Data = data, AllowedEffects = allowedEffects };
 
 			DragControl.Data[GtkControl.DropSource_Key] = Widget;
-			var context = Gtk.Drag.Begin(DragControl, targets, allowedEffects.ToGdk(), 1, Gtk.Application.CurrentEvent);
 
-			//Gtk.Drag.SetIconPixbuf(context, bmp.ToGdk(), 0, 0);
-		}
+#if GTKCORE
+			var context = Gtk.Drag.BeginWithCoordinates(DragControl, targets, allowedEffects.ToGdk(), 1, Gtk.Application.CurrentEvent, -1, -1);
+#else
+			var context = Gtk.Drag.Begin(DragControl, targets, allowedEffects.ToGdk(), 1, Gtk.Application.CurrentEvent);
+#endif
+			if (image != null)
+				Gtk.Drag.SetIconPixbuf(context, image.ToGdk(), (int)cursorOffset.X, (int)cursorOffset.Y);
+
+			}
 
 		public Window GetNativeParentWindow() => (Control.Toplevel as Gtk.Window).ToEtoWindow();
 

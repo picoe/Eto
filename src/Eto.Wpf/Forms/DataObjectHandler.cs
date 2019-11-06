@@ -10,6 +10,7 @@ using Eto.Drawing;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows.Media.Imaging;
+using static System.Windows.WpfDataObjectExtensions;
 
 namespace Eto.Wpf.Forms
 {
@@ -33,11 +34,19 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
+		public DataObjectHandler(sw.DataObject data)
+			: base(data)
+		{
+		}
+
 		protected override object InnerGetData(string type) => Control.GetData(type);
 
 		public override void Clear()
 		{
-			Control = new sw.DataObject();
+			if (IsExtended)
+				Control = new sw.DataObject(new DragDropLib.DataObject());
+			else
+				Control = new sw.DataObject();
 			Update();
 		}
 
@@ -51,17 +60,25 @@ namespace Eto.Wpf.Forms
 	public abstract class DataObjectHandler<TWidget, TCallback> : WidgetHandler<sw.DataObject, TWidget, TCallback>, DataObject.IHandler
 		where TWidget: Widget
 	{
+		protected bool IsExtended { get; }
 		public const string UniformResourceLocatorW_Format = "UniformResourceLocatorW";
 		public const string UniformResourceLocator_Format = "UniformResourceLocator";
 
 		public DataObjectHandler()
 		{
-			Control = new sw.DataObject();
+			Control = new sw.DataObject(new DragDropLib.DataObject());
+			IsExtended = true;
 		}
 
 		public DataObjectHandler(sw.IDataObject data)
 		{
+			IsExtended = data is DragDropLib.DataObject;
 			Control = new sw.DataObject(data);
+		}
+
+		public DataObjectHandler(sw.DataObject data)
+		{
+			Control = data;
 		}
 
 		protected virtual void Update()
@@ -77,7 +94,10 @@ namespace Eto.Wpf.Forms
 			get { return ContainsText ? Control.GetText() : null; }
 			set
 			{
-				Control.SetText(value);
+				if (IsExtended)
+					Control.SetDataEx(sw.DataFormats.Text, value);
+				else
+					Control.SetText(value);
 				Update();
 			}
 		}
@@ -89,7 +109,10 @@ namespace Eto.Wpf.Forms
 			get { return Control.ContainsText(sw.TextDataFormat.Html) ? Control.GetText(sw.TextDataFormat.Html) : null; }
 			set
 			{
-				Control.SetText(value, sw.TextDataFormat.Html);
+				if (IsExtended)
+					Control.SetDataEx(sw.DataFormats.Html, value);
+				else
+					Control.SetText(value, sw.TextDataFormat.Html);
 				Update();
 			}
 		}
@@ -115,8 +138,13 @@ namespace Eto.Wpf.Forms
 				if (dib != null)
 				{
 					// write a DIB here, so we can preserve transparency of the image
-					Control.SetData(sw.DataFormats.Dib, dib);
+					if (IsExtended)
+						Control.SetDataEx(sw.DataFormats.Dib, dib);
+					else
+						Control.SetData(sw.DataFormats.Dib, dib);
 				}
+				else if (IsExtended)
+					Control.SetDataEx(sw.DataFormats.Bitmap, value.ToWpf());
 				else
 					Control.SetImage(value.ToWpf());
 
@@ -163,7 +191,12 @@ namespace Eto.Wpf.Forms
 					var files = new StringCollection();
 					files.AddRange(coll.Where(r => r.IsFile).Select(r => r.AbsolutePath).ToArray());
 					if (files.Count > 0)
-						Control.SetFileDropList(files);
+					{
+						if (IsExtended)
+							Control.SetDataEx(sw.DataFormats.FileDrop, files.OfType<string>().ToArray());
+						else
+							Control.SetFileDropList(files);
+					}
 
 					// web uris (windows only supports one)
 					var url = coll.Where(r => !r.IsFile).FirstOrDefault();
@@ -175,9 +208,18 @@ namespace Eto.Wpf.Forms
 				}
 				else
 				{
-					Control.SetData(sw.DataFormats.FileDrop, null);
-					Control.SetData(UniformResourceLocatorW_Format, null);
-					Control.SetData(UniformResourceLocator_Format, null);
+					if (IsExtended)
+					{
+						Control.SetDataEx(sw.DataFormats.FileDrop, null);
+						Control.SetDataEx(UniformResourceLocatorW_Format, null);
+						Control.SetDataEx(UniformResourceLocator_Format, null);
+					}
+					else
+					{
+						Control.SetData(sw.DataFormats.FileDrop, null);
+						Control.SetData(UniformResourceLocatorW_Format, null);
+						Control.SetData(UniformResourceLocator_Format, null);
+					}
 				}
 				Update();
 			}
@@ -272,17 +314,28 @@ namespace Eto.Wpf.Forms
 
 		public void SetData(byte[] value, string type)
 		{
-			Control.SetData(type, value);
+			if (IsExtended)
+				Control.SetDataEx(type, value);
+			else
+				Control.SetData(type, value);
 			Update();
 		}
 
 		public void SetString(string value, string type)
 		{
 			if (string.IsNullOrEmpty(type))
-				Control.SetText(value);
+				Text = value;
+			else if (IsExtended)
+				Control.SetDataEx(type, value);
 			else
 				Control.SetData(type, value);
+
 			Update();
+		}
+
+		public void SetDragImage(Bitmap bitmap, PointF offset)
+		{
+			sw.WpfDataObjectExtensions.SetDragImage(Control, bitmap.ToWpf(), offset.ToWpf());
 		}
 	}
 }
