@@ -25,7 +25,7 @@ On Linux, mono framework 2.10 or higher and gtk-sharp2 are required.
 		<dependencies>
 			<group>
 				<dependency id="Eto.Forms" version="[$version$]" />
-				<dependency id="GtkSharp" version="3.22.24.29" />
+				<dependency id="GtkSharp" version="3.22.25.56" />
 			</group>
 		</dependencies>
 	</metadata>
