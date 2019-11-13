@@ -300,14 +300,14 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			tree.ShowHeader = false;
 			tree.AllowMultipleSelection = true;
-			tree.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0) });
+			tree.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0), Editable = true });
 		}
 
 		void SetupGridColumns(GridView grid)
 		{
 			grid.ShowHeader = false;
 			grid.AllowMultipleSelection = true;
-			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0) });
+			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0), Editable = true });
 		}
 
 		TreeGridItemCollection CreateTreeData()

@@ -742,7 +742,7 @@ namespace Eto.Wpf.Forms
 			e.Handled = args.Handled;
 		}
 
-		void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
+		protected virtual void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
 			var args = e.ToEto(Control, swi.MouseButtonState.Released);
 			Callback.OnMouseUp(Widget, args);
@@ -761,7 +761,7 @@ namespace Eto.Wpf.Forms
 			e.Handled = args.Handled;
 		}
 
-		void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
+		protected virtual void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
 			var args = e.ToEto(Control);
 			if (!(Control is swc.Control) && e.ClickCount == 2)

@@ -97,6 +97,7 @@ namespace Eto.Wpf.Forms.Controls
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object LastDragRow_Key = new object();
 		public static readonly object Border_Key = new object();
+		public static readonly object MultipleSelectionRow_Key = new object();
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
@@ -239,6 +240,14 @@ namespace Eto.Wpf.Forms.Controls
 			// from: http://gonetdotnet.blogspot.ca/2014/04/solved-how-to-disable-default-keyboard.html
 			Control.InputBindings.Add(new swi.KeyBinding(swi.ApplicationCommands.NotACommand, swi.Key.C, swi.ModifierKeys.Control));
 			Control.InputBindings.Add(new swi.KeyBinding(swi.ApplicationCommands.NotACommand, swi.Key.Delete, swi.ModifierKeys.None));
+
+			// Ensure we override selection behaviour to better support drag/drop:
+			// 1. When multi-select is on, don't change selection until mouse up 
+			//    when clicking on a selected item
+			// 2. When a cell is editable, don't begin editing until mouse up when
+			//    the cell is selected.
+			HandleEvent(Eto.Forms.Control.MouseDownEvent);
+			HandleEvent(Eto.Forms.Control.MouseUpEvent);
 		}
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
@@ -284,7 +293,75 @@ namespace Eto.Wpf.Forms.Controls
 		public bool AllowMultipleSelection
 		{
 			get { return Control.SelectionMode == swc.DataGridSelectionMode.Extended; }
-			set { Control.SelectionMode = value ? swc.DataGridSelectionMode.Extended : swc.DataGridSelectionMode.Single; }
+			set
+			{
+				Control.SelectionMode = value ? swc.DataGridSelectionMode.Extended : swc.DataGridSelectionMode.Single;
+			}
+		}
+
+
+		swc.DataGridRow MultipleSelectionRow
+		{
+			get => Widget.Properties.Get<swc.DataGridRow>(GridHandler.MultipleSelectionRow_Key);
+			set => Widget.Properties.Set(GridHandler.MultipleSelectionRow_Key, value);
+		}
+
+		protected override void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
+		{
+			base.HandleMouseUp(sender, e);
+
+			if (!e.Handled && MultipleSelectionRow != null)
+			{
+				// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+				if (ReferenceEquals(row, MultipleSelectionRow))
+				{
+					bool hadMultipleSelection = Control.SelectedItems.Count > 1;
+					Control.SelectedItem = row.Item;
+					var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+					if (cell != null)
+					{
+						cell.Focus();
+						if (!hadMultipleSelection && !cell.Column.IsReadOnly)
+							Control.BeginEdit();
+					}
+					else
+						row.Focus();
+					e.Handled = true;
+				}
+
+				MultipleSelectionRow = null;
+			}
+		}
+
+		protected override void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
+		{
+			base.HandleMouseDown(sender, e);
+			MultipleSelectionRow = null;
+			if (!e.Handled 
+				&& e.LeftButton == swi.MouseButtonState.Pressed 
+				&& swi.Keyboard.Modifiers == swi.ModifierKeys.None)
+			{
+				// prevent WPF from deselecting other rows until mouse up.
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+				
+				if (row != null && row.IsSelected 
+					&& (
+						cell?.Column.IsReadOnly == false
+						|| Control.SelectedItems.Count > 1
+					))
+				{
+					MultipleSelectionRow = row;
+					if (cell != null)
+						cell.Focus();
+					else
+						row.Focus();
+					e.Handled = true;
+				}
+			}
 		}
 
 		public IEnumerable<int> SelectedRows
