@@ -64,6 +64,7 @@ namespace Eto.Wpf.Forms
 			if (IsAttached)
 				return;
 			content = new swc.DockPanel();
+			UseShellDropManager = true;
 
 			base.Initialize();
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
@@ -103,6 +104,25 @@ namespace Eto.Wpf.Forms
 			};
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+		}
+
+		public bool UseShellDropManager
+		{
+			get => Widget.Properties.Get<WpfShellDropBehavior>(typeof(WpfShellDropBehavior)) != null;
+			set
+			{
+				if (value != UseShellDropManager)
+				{
+					if (value)
+						Widget.Properties.TrySet(typeof(WpfShellDropBehavior), new WpfShellDropBehavior(Control));
+					else
+					{
+						var shellDrop = Widget.Properties.Get<WpfShellDropBehavior>(typeof(WpfShellDropBehavior));
+						shellDrop.Detatch();
+						Widget.Properties.Remove(typeof(WpfShellDropBehavior));
+					}
+				}
+			}
 		}
 
 		void SetupPerMonitorDpi()

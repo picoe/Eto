@@ -156,6 +156,19 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
+	class GridDragInfo
+	{
+		public NSDragOperation AllowedOperation { get; set; }
+		public NSImage DragImage { get; set; }
+		public PointF ImageOffset { get; set; }
+
+		public CGPoint GetDragImageOffset()
+		{
+			var size = DragImage.Size;
+			return new CGPoint(size.Width / 2 - ImageOffset.X, ImageOffset.Y - size.Height / 2);
+		}
+	}
+
 	public abstract class GridHandler<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, Grid.IHandler, IDataViewHandler, IGridHandler
 		where TControl : NSTableView
 		where TWidget : Grid

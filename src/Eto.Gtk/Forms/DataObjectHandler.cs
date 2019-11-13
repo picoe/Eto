@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
@@ -32,6 +32,8 @@ namespace Eto.GtkSharp.Forms
 		Gtk.Widget _sourceWidget;
 		uint _dragTime;
 		Action<Gtk.SelectionData> _getData;
+
+		public Gdk.DragContext DragContext => _dragContext;
 
 		public DataObjectHandler()
 		{

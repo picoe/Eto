@@ -597,7 +597,7 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF offset)
 		{
 			throw new NotImplementedException();
 		}

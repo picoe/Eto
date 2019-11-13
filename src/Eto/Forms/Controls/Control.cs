@@ -1266,7 +1266,19 @@ namespace Eto.Forms
 		/// <param name="allowedEffects">Allowed action.</param>
 		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects)
 		{
-			Handler.DoDragDrop(data, allowedEffects);
+			Handler.DoDragDrop(data, allowedEffects, null, PointF.Empty);
+		}
+
+		/// <summary>
+		/// Starts drag operation using this control as drag source.
+		/// </summary>
+		/// <param name="data">Drag data.</param>
+		/// <param name="allowedEffects">Allowed effects.</param>
+		/// <param name="image">Custom drag image</param>
+		/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
+		{
+			Handler.DoDragDrop(data, allowedEffects, image, cursorOffset);
 		}
 
 		/// <summary>
@@ -1867,7 +1879,9 @@ namespace Eto.Forms
 			/// </summary>
 			/// <param name="data">Drag data.</param>
 			/// <param name="allowedEffects">Allowed effects.</param>
-			void DoDragDrop(DataObject data, DragEffects allowedEffects);
+			/// <param name="image">Custom drag image</param>
+			/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+			void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset);
 
 			/// <summary>
 			/// Gets a parent window wrapper around the native window

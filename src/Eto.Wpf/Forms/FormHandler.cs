@@ -11,6 +11,10 @@ namespace Eto.Wpf.Forms
 		public class EtoWindow : sw.Window
 		{
 
+			public EtoWindow()
+			{
+				AllowDrop = true;
+			}
 
 			protected override void OnActivated(EventArgs e)
 			{

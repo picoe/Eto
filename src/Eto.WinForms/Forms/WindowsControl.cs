@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.WinForms.Forms.Menu;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace Eto.WinForms.Forms
 {
@@ -40,6 +41,8 @@ namespace Eto.WinForms.Forms
 		void BeforeAddControl(bool top = true);
 
 		bool ShouldBubbleEvent(swf.Message msg);
+
+		bool UseShellDropManager { get; set; }
 	}
 
 	public static class WindowsControlExtensions
@@ -98,6 +101,7 @@ namespace Eto.WinForms.Forms
 		public static readonly object InternalVisibleKey = new object();
 		public static readonly object FontKey = new object();
 		public static readonly object Enabled_Key = new object();
+		public static readonly object UseShellDropManager_Key = new object();
 	}
 
 	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWindowsControl
@@ -461,15 +465,16 @@ namespace Eto.WinForms.Forms
 
 		const string SourceDataFormat = "eto.source.control";
 
+
 		DragEventArgs GetDragEventArgs(swf.DragEventArgs data)
 		{
-			var dragData = (data.Data as swf.DataObject).ToEto();
+			var dragData = data.Data.ToEto();
 			var sourceWidget = data.Data.GetData(SourceDataFormat);
 			var source = sourceWidget == null ? null : (Control)sourceWidget;
 			var modifiers = data.GetEtoModifiers();
 			var buttons = data.GetEtoButtons();
 			var location = PointFromScreen(new PointF(data.X, data.Y));
-			return new DragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
+			return new SwfDragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
 		}
 
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
@@ -899,17 +904,75 @@ namespace Eto.WinForms.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
+		/// <summary>
+		/// Gets or sets a value indicating that the shell drop manager should be used.
+		/// </summary>
+		public bool UseShellDropManager
+		{
+			get => Widget.Properties.Get(WindowsControl.UseShellDropManager_Key, true);
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.UseShellDropManager_Key, value, true))
+				{
+					if (value && Control.AllowDrop)
+					{
+						DropBehavior = new SwfShellDropBehavior(Control);
+					}
+					else
+					{
+						DropBehavior?.Detach();
+						DropBehavior = null;
+					}
+				}
+			}
+		}
+
 		public bool AllowDrop
 		{
 			get => Control.AllowDrop;
-			set => Control.AllowDrop = value;
+			set
+			{
+				Control.AllowDrop = value;
+				if (value && UseShellDropManager)
+					DropBehavior = new SwfShellDropBehavior(Control);
+				else
+				{
+					DropBehavior?.Detach();
+					DropBehavior = null;
+				}
+			}
 		}
 
-		public void DoDragDrop(DataObject data, DragEffects allowedEffects)
+		SwfShellDropBehavior DropBehavior
+		{
+			get => Widget.Properties.Get<SwfShellDropBehavior>(typeof(SwfShellDropBehavior));
+			set => Widget.Properties.Set(typeof(SwfShellDropBehavior), value);
+		}
+
+		public void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
 		{
 			var dataObject = data.ToSwf();
 			dataObject.SetData(SourceDataFormat, Widget);
-			Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+			if (UseShellDropManager)
+			{
+				swf.DragSourceHelper.AllowDropDescription(true);
+
+				swf.SwfDataObjectExtensions.SetDropDescription(dataObject, swf.DropImageType.Invalid, null, null);
+				if (image == null)
+					image = new Bitmap(1, 1, PixelFormat.Format32bppRgba);
+
+				swf.SwfDataObjectExtensions.SetDragImage(dataObject, image.ToSD(), cursorOffset.ToSDPoint());
+				swf.DragSourceHelper.RegisterDefaultDragSource(Control, dataObject);
+				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+				swf.DragSourceHelper.UnregisterDefaultDragSource(Control);
+			}
+			else
+			{
+				if (image != null)
+					Debug.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
+
+				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+			}
 		}
 
 		public Window GetNativeParentWindow() => ContainerControl.FindForm().ToEtoWindow();

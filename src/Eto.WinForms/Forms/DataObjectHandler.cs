@@ -20,12 +20,14 @@ namespace Eto.WinForms.Forms
 	{
 		public DataObjectHandler()
 		{
-			Control = new swf.DataObject();
+			Control = new swf.DataObject(new DragDropLib.DataObject());
+			IsExtended = true;
 		}
 
-		public DataObjectHandler(swf.DataObject control)
+		public DataObjectHandler(swf.IDataObject data)
 		{
-			Control = control;
+			IsExtended = data is DragDropLib.DataObject;
+			Control = data as swf.DataObject ?? new swf.DataObject(data);
 		}
 
 		public override string[] Types => Control.GetFormats();
@@ -38,7 +40,11 @@ namespace Eto.WinForms.Forms
 
 		public override bool Contains(string type) => Control.GetDataPresent(type);
 
-		public override void Clear() => Control = new swf.DataObject();
+		public override void Clear()
+		{
+			Control = new swf.DataObject(new DragDropLib.DataObject());
+			IsExtended = true;
+		}
 
 		public override bool ContainsText => Control.ContainsText();
 
@@ -56,6 +62,8 @@ namespace Eto.WinForms.Forms
 	{
 		public const string UniformResourceLocatorW_Format = "UniformResourceLocatorW";
 		public const string UniformResourceLocator_Format = "UniformResourceLocator";
+
+		protected bool IsExtended { get; set; }
 
 		protected virtual void Update()
 		{
@@ -90,7 +98,10 @@ namespace Eto.WinForms.Forms
 		{
 			set
 			{
-				Control.SetText(value ?? string.Empty);
+				if (IsExtended)
+					swf.SwfDataObjectExtensions.SetDataEx(Control, swf.DataFormats.Text, value ?? string.Empty);
+				else 
+					Control.SetText(value ?? string.Empty);
 				Update();
 			}
 			get

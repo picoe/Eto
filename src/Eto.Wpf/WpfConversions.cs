@@ -911,5 +911,7 @@ namespace Eto.Wpf
 		{
 			return CustomControls.FontDialog.NameDictionaryExtensions.GetName(nameDictionary, ietfLanguageTag);
 		}
+
+		public static swi.Cursor ToWpf(this Cursor cursor) => cursor?.ControlObject as swi.Cursor;
 	}
 }

@@ -32,6 +32,12 @@ namespace Eto.WinForms.Forms
 		bool clientWidthSet;
 		bool clientHeightSet;
 
+		public bool ShowShellDropForWindow
+		{
+			get => AllowDrop;
+			set => AllowDrop = value;
+		}
+
 		public virtual bool IsAttached => false;
 		public override swf.Control ContainerContentControl
 		{
@@ -85,6 +91,10 @@ namespace Eto.WinForms.Forms
 		{
 			if (IsAttached)
 				return;
+
+			// show shell drop images for the entire window
+			ShowShellDropForWindow = true;
+
 			Control.KeyPreview = !ApplicationHandler.BubbleKeyEvents;
 			Control.FormBorderStyle = DefaultWindowStyle;
 			resizable = Control.FormBorderStyle.IsResizable();

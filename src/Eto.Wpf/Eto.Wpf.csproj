@@ -39,6 +39,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -86,6 +87,9 @@
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
+    <Compile Include="CustomControls\DragDropLib.Wpf.cs" />
+    <Compile Include="CustomControls\DragDropLib.Swf.cs" />
+    <Compile Include="CustomControls\DragDropLib.cs" />
     <Compile Include="DragDropConversions.cs" />
     <Compile Include="Drawing\CachedBitmapFrame.cs" />
     <Compile Include="Drawing\FormattedTextHandler.cs" />
@@ -96,6 +100,8 @@
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
     <Compile Include="Forms\NativeFormHandler.cs" />
+    <Compile Include="Forms\WpfShellDropBehavior.cs" />
+    <Compile Include="Forms\WpfDragEventArgs.cs" />
     <Compile Include="LogicalScreenHelper.cs" />
     <Compile Include="PropertyChangeNotifier.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />

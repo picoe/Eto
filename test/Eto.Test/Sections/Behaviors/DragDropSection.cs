@@ -11,8 +11,14 @@ namespace Eto.Test.Sections.Behaviors
 	[Section("Behaviors", "Drag and Drop")]
 	public class DragDropSection : Panel
 	{
-		EnumDropDown<DragEffects> dragOverEffect;
+		EnumDropDown<DragEffects?> dragOverEffect;
 		CheckBox showDragOverEvents;
+		CheckBox useDragImage;
+		PointEntry imageOffset;
+		TextBox descriptionTextBox;
+		TextBox innerTextBox;
+		CheckBox writeDataCheckBox;
+		EnumDropDown<DragEffects> allowedEffectDropDown;
 
 		public DragDropSection()
 		{
@@ -20,9 +26,15 @@ namespace Eto.Test.Sections.Behaviors
 
 			showDragOverEvents = new CheckBox { Text = "Show DragOver Events" };
 			var includeImageCheck = new CheckBox { Text = "Include Image" };
+			descriptionTextBox = new TextBox { PlaceholderText = "Format", ToolTip = "Add {0} to insert inner text into the description, e.g. 'Move to {0}'" };
+			innerTextBox = new TextBox { PlaceholderText = "Inner", ToolTip = "Highlighted text to insert into description" };
 			var textBox = new TextBox { Text = "Some text" };
-			var allowedEffectDropDown = new EnumDropDown<DragEffects> { SelectedValue = DragEffects.All };
-			dragOverEffect = new EnumDropDown<DragEffects> { SelectedValue = DragEffects.Copy };
+			allowedEffectDropDown = new EnumDropDown<DragEffects> { SelectedValue = DragEffects.All };
+			dragOverEffect = new EnumDropDown<DragEffects?> { SelectedValue = DragEffects.Copy };
+			writeDataCheckBox = new CheckBox { Text = "Write data to log" };
+			useDragImage = new CheckBox { Text = "Use custom drag image" };
+			imageOffset = new PointEntry { Value = new Point(80, 80) };
+			imageOffset.Bind(c => c.Enabled, useDragImage, c => c.Checked);
 
 			var htmlTextArea = new TextArea();
 			var selectFilesButton = new Button { Text = "Select Files" };
@@ -39,7 +51,7 @@ namespace Eto.Test.Sections.Behaviors
 
 			var urlTextBox = new TextBox();
 
-			Func<DataObject> createDataObject = () =>
+			DataObject CreateDataObject()
 			{
 				var data = new DataObject();
 				if (!string.IsNullOrEmpty(textBox.Text))
@@ -56,22 +68,28 @@ namespace Eto.Test.Sections.Behaviors
 				if (includeImageCheck.Checked == true)
 					data.Image = TestIcons.Logo;
 				return data;
-			};
+			}
 
 			// sources
 
 			var buttonSource = new Button { Text = "Source" };
 			buttonSource.MouseDown += (sender, e) =>
 			{
-				buttonSource.DoDragDrop(createDataObject(), allowedEffectDropDown.SelectedValue);
-				e.Handled = true;
+				if (e.Buttons != MouseButtons.None)
+				{
+					DoDragDrop(buttonSource, CreateDataObject());
+					e.Handled = true;
+				}
 			};
 
 			var panelSource = new Panel { BackgroundColor = Colors.Red, Size = new Size(50, 50) };
-			panelSource.MouseDown += (sender, e) =>
+			panelSource.MouseMove += (sender, e) =>
 			{
-				panelSource.DoDragDrop(createDataObject(), allowedEffectDropDown.SelectedValue);
-				e.Handled = true;
+				if (e.Buttons != MouseButtons.None)
+				{
+					DoDragDrop(panelSource, CreateDataObject());
+					e.Handled = true;
+				}
 			};
 
 			var treeSource = new TreeGridView { Size = new Size(200, 200) };
@@ -85,11 +103,11 @@ namespace Eto.Test.Sections.Behaviors
 					var cell = treeSource.GetCellAt(e.Location);
 					if (cell.Item == null || cell.ColumnIndex == -1)
 						return;
-					var data = createDataObject();
+					var data = CreateDataObject();
 					var selected = treeSource.SelectedItems.OfType<TreeGridItem>().Select(r => (string)r.Values[0]);
 					data.SetString(string.Join(";", selected), "my-tree-data");
 
-					treeSource.DoDragDrop(data, allowedEffectDropDown.SelectedValue);
+					DoDragDrop(treeSource, data);
 					e.Handled = true;
 				}
 			};
@@ -102,11 +120,11 @@ namespace Eto.Test.Sections.Behaviors
 			{
 				if (e.Buttons == MouseButtons.Primary)
 				{
-					var data = createDataObject();
+					var data = CreateDataObject();
 					var selected = gridSource.SelectedItems.OfType<GridItem>().Select(r => (string)r.Values[0]);
 					data.SetString(string.Join(";", selected), "my-grid-data");
 
-					gridSource.DoDragDrop(data, allowedEffectDropDown.SelectedValue);
+					DoDragDrop(gridSource, data);
 					e.Handled = true;
 				}
 			};
@@ -219,7 +237,14 @@ namespace Eto.Test.Sections.Behaviors
 
 			layout.AddSeparateRow(showDragOverEvents);
 			layout.AddSeparateRow("AllowedEffect", allowedEffectDropDown, null);
+			layout.BeginVertical();
+			layout.AddRow("DropDescription", descriptionTextBox);
+			layout.AddRow(new Panel(), innerTextBox);
+			layout.EndVertical();
 			layout.AddSeparateRow("DragOver Effect", dragOverEffect, null);
+			layout.AddSeparateRow(useDragImage);
+			layout.AddSeparateRow("Image offset:", imageOffset);
+			layout.AddSeparateRow(writeDataCheckBox);
 
 			layout.BeginGroup("DataObject", 10);
 			layout.AddRow("Text", textBox);
@@ -252,6 +277,23 @@ namespace Eto.Test.Sections.Behaviors
 			layout.EndHorizontal();
 
 			Content = layout;
+		}
+
+		void DoDragDrop(Control control, DataObject data)
+		{
+			if (useDragImage.Checked == true)
+			{
+				var bmp = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
+				using (var g = new Graphics(bmp))
+				{
+					g.FillEllipse(Brushes.Blue, 0, 0, 100, 100);
+				}
+				control.DoDragDrop(data, allowedEffectDropDown.SelectedValue, bmp, imageOffset.Value);
+			}
+			else
+			{
+				control.DoDragDrop(data, allowedEffectDropDown.SelectedValue);
+			}
 		}
 
 		void SetupTreeColumns(TreeGridView tree)
@@ -331,25 +373,71 @@ namespace Eto.Test.Sections.Behaviors
 			control.DragEnter += (sender, e) =>
 			{
 				Log.Write(sender, $"DragEnter: {WriteDragInfo(sender, e)}");
-				e.Effects = dragOverEffect.SelectedValue;
+
+				if (dragOverEffect.SelectedValue != null)
+					e.Effects = dragOverEffect.SelectedValue.Value;
+				if (!string.IsNullOrEmpty(descriptionTextBox.Text) && e.SupportsDropDescription)
+					e.SetDropDescription(descriptionTextBox.Text, innerTextBox.Text);
+				WriteData(e.Data);
 			};
 			control.DragLeave += (sender, e) =>
 			{
 				Log.Write(sender, $"DragLeave: {WriteDragInfo(sender, e)}");
-				e.Effects = dragOverEffect.SelectedValue;
+				if (dragOverEffect.SelectedValue != null)
+					e.Effects = dragOverEffect.SelectedValue.Value;
+
+				WriteData(e.Data);
 			};
 			control.DragOver += (sender, e) =>
 			{
 				if (showDragOverEvents.Checked == true)
+				{
 					Log.Write(sender, $"DragOver: {WriteDragInfo(sender, e)}");
 
-				e.Effects = dragOverEffect.SelectedValue;
+					if (!string.IsNullOrEmpty(descriptionTextBox.Text) && e.SupportsDropDescription)
+						e.SetDropDescription(descriptionTextBox.Text + " (over)", innerTextBox.Text);
+
+				}
+
+				if (dragOverEffect.SelectedValue != null)
+					e.Effects = dragOverEffect.SelectedValue.Value;
+
+				if (showDragOverEvents.Checked == true)
+					WriteData(e.Data);
 			};
 			control.DragDrop += (sender, e) =>
 			{
 				Log.Write(sender, $"DragDrop: {WriteDragInfo(sender, e)}");
-				e.Effects = dragOverEffect.SelectedValue;
+
+				if (dragOverEffect.SelectedValue != null)
+					e.Effects = dragOverEffect.SelectedValue.Value;
+
+				WriteData(e.Data);
 			};
+		}
+
+		void WriteData(DataObject data)
+		{
+			if (writeDataCheckBox.Checked != true)
+				return;
+			foreach (var format in data.Types)
+			{
+				try
+				{
+					var d = data.GetData(format);
+					if (d != null)
+					{
+						var s = string.Join(",", d.Select(r => r.ToString()).Take(1000));
+						Log.Write(null, $"\t{format}: {s}");
+					}
+					else
+						Log.Write(null, $"\t{format}: {d}");
+				}
+				catch
+				{
+
+				}
+			}
 		}
 	}
 }

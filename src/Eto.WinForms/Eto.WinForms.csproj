@@ -51,6 +51,12 @@
     <Compile Include="..\Eto.Mac\SDConversions.cs">
       <Link>SDConversions.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\CustomControls\DragDropLib.cs">
+      <Link>CustomControls\DragDropLib.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Wpf\CustomControls\DragDropLib.Swf.cs">
+      <Link>CustomControls\DragDropLib.Swf.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.Wpf\CustomControls\HttpServer.cs">
       <Link>CustomControls\HttpServer.cs</Link>
     </Compile>
@@ -82,6 +88,8 @@
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />
     <Compile Include="Forms\NativeFormHandler.cs" />
+    <Compile Include="Forms\SwfDragEventArgs.cs" />
+    <Compile Include="Forms\SwfShellDropBehavior.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="Win32.dpi.cs" />
     <Compile Include="WinConversions.cs" />
