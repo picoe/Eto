@@ -98,7 +98,7 @@ namespace Eto.Test.Sections.Behaviors
 			SetupTreeColumns(treeSource);
 			treeSource.MouseMove += (sender, e) =>
 			{
-				if (e.Buttons == MouseButtons.Primary)
+				if (e.Buttons == MouseButtons.Primary && !treeSource.IsEditing)
 				{
 					var cell = treeSource.GetCellAt(e.Location);
 					if (cell.Item == null || cell.ColumnIndex == -1)
@@ -118,8 +118,11 @@ namespace Eto.Test.Sections.Behaviors
 			gridSource.DataStore = CreateGridData();
 			gridSource.MouseMove += (sender, e) =>
 			{
-				if (e.Buttons == MouseButtons.Primary)
+				if (e.Buttons == MouseButtons.Primary && !gridSource.IsEditing)
 				{
+					var cell = gridSource.GetCellAt(e.Location);
+					if (cell.RowIndex == -1 || cell.ColumnIndex == -1)
+						return;
 					var data = CreateDataObject();
 					var selected = gridSource.SelectedItems.OfType<GridItem>().Select(r => (string)r.Values[0]);
 					data.SetString(string.Join(";", selected), "my-grid-data");

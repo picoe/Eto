@@ -104,7 +104,6 @@ namespace Eto.Wpf.Forms
 			}
 			else
 			{
-				//e.Effects = sw.DragDropEffects.None;
 				sw.DropTargetHelper.DragOver(e.GetPosition(element), e.Effects);
 			}
 		}
