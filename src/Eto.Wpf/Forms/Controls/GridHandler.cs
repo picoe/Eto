@@ -97,7 +97,7 @@ namespace Eto.Wpf.Forms.Controls
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object LastDragRow_Key = new object();
 		public static readonly object Border_Key = new object();
-		public static readonly object MultipleSelectionRow_Key = new object();
+		public static readonly object MultipleSelectionInfo_Key = new object();
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
@@ -299,46 +299,60 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-
-		swc.DataGridRow MultipleSelectionRow
+		class SelectionInfo
 		{
-			get => Widget.Properties.Get<swc.DataGridRow>(GridHandler.MultipleSelectionRow_Key);
-			set => Widget.Properties.Set(GridHandler.MultipleSelectionRow_Key, value);
+			public swc.DataGridRow Row { get; set; }
+			public swc.DataGridCell Cell { get; set; }
+			public int ClickCount { get; set; }
+
+		}
+
+		SelectionInfo MultipleSelectionInfo
+		{
+			get => Widget.Properties.Get<SelectionInfo>(GridHandler.MultipleSelectionInfo_Key);
+			set => Widget.Properties.Set(GridHandler.MultipleSelectionInfo_Key, value);
 		}
 
 		protected override void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
 			base.HandleMouseUp(sender, e);
 
-			if (!e.Handled && MultipleSelectionRow != null)
+			var info = MultipleSelectionInfo;
+			if (!e.Handled && info != null)
 			{
 				// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
 				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
 				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
-				if (ReferenceEquals(row, MultipleSelectionRow))
+				if (ReferenceEquals(row, info.Row))
 				{
 					bool hadMultipleSelection = Control.SelectedItems.Count > 1;
 					Control.SelectedItem = row.Item;
 					var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
 					if (cell != null)
 					{
+						Callback.OnCellClick(Widget, CreateCellMouseArgs(cell, e));
 						cell.Focus();
-						if (!hadMultipleSelection && !cell.Column.IsReadOnly)
+						if (!hadMultipleSelection && !cell.Column.IsReadOnly && ReferenceEquals(info.Cell, cell))
+						{
 							Control.BeginEdit();
+							// we double clicked to fire this event, so trigger a double click event
+							if (info.ClickCount >= 2)
+								Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(cell, e));
+						}
 					}
 					else
 						row.Focus();
 					e.Handled = true;
 				}
 
-				MultipleSelectionRow = null;
+				MultipleSelectionInfo = null;
 			}
 		}
 
 		protected override void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
 			base.HandleMouseDown(sender, e);
-			MultipleSelectionRow = null;
+			MultipleSelectionInfo = null;
 			if (!e.Handled 
 				&& e.LeftButton == swi.MouseButtonState.Pressed 
 				&& swi.Keyboard.Modifiers == swi.ModifierKeys.None)
@@ -350,11 +364,16 @@ namespace Eto.Wpf.Forms.Controls
 				
 				if (row != null && row.IsSelected 
 					&& (
-						cell?.Column.IsReadOnly == false
+						(cell?.Column.IsReadOnly == false && !cell.IsEditing && cell.IsFocused)
 						|| Control.SelectedItems.Count > 1
 					))
 				{
-					MultipleSelectionRow = row;
+					MultipleSelectionInfo = new SelectionInfo
+					{
+						Row = row,
+						Cell = cell,
+						ClickCount = e.ClickCount
+					};
 					if (cell != null)
 						cell.Focus();
 					else
