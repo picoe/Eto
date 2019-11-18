@@ -830,8 +830,20 @@ namespace Eto.Wpf.Forms.Controls
 		static MemoryStream EncodeRtfFontNames(Stream stream)
 		{
 			var rtf = new StreamReader(stream).ReadToEnd();
-			var regExp = @"(?<={\\f\d+[^}]+?)&(?=[^}]+)";
-			rtf = Regex.Replace(rtf, regExp, AmpersandPlaceholder, RegexOptions.Compiled);
+			const string regFonttbl = @"(?<={\\fonttbl(\s*))(({[^}]+)}(\s*?))+(?=\s*})";
+			var fontTblMatch = Regex.Match(rtf, regFonttbl, RegexOptions.Compiled);
+			if (fontTblMatch.Success)
+			{
+				// only replace ampersands in the fonttbl section, leave everything else
+				const string regExp = @"(?<={\\f\d+[^}]+?)&(?=[^}]+)";
+				var fontTbl = Regex.Replace(fontTblMatch.Value, regExp, AmpersandPlaceholder, RegexOptions.Compiled);
+				if (fontTbl.Length != fontTblMatch.Length)
+				{
+					// found ampersand in font name, replace fonttbl string
+					rtf = rtf.Remove(fontTblMatch.Index, fontTblMatch.Length);
+					rtf = rtf.Insert(fontTblMatch.Index, fontTbl);
+				}
+			}
 
 			var ms = new MemoryStream();
 			var writer = new StreamWriter(ms, Encoding.UTF8);
