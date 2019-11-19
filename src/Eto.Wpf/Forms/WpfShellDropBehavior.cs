@@ -42,9 +42,19 @@ namespace Eto.Wpf.Forms
 		private void Element_PreviewDrop(object sender, sw.DragEventArgs e)
 		{
 			var element = (UIElement)sender;
-			IsDragEntered = false;
-			IsDragLeaving = false;
-			sw.DropTargetHelper.Drop(e.Data, e.GetPosition(element), e.Effects);
+			if (IsDragEntered)
+			{
+				IsDragEntered = false;
+				IsDragLeaving = false;
+				try
+				{
+					sw.DropTargetHelper.Drop(e.Data, e.GetPosition(element), e.Effects);
+				}
+				catch
+				{
+					// ignore errors
+				}
+			}
 		}
 
 		private void Element_PreviewDragLeave(object sender, sw.DragEventArgs e)
@@ -59,7 +69,14 @@ namespace Eto.Wpf.Forms
 					{
 						IsDragEntered = false;
 						IsDragLeaving = false;
-						sw.DropTargetHelper.DragLeave(e.Data);
+						try
+						{
+							sw.DropTargetHelper.DragLeave(e.Data);
+						}
+						catch
+						{
+							// ignore errors
+						}
 					}
 				}));
 			}
@@ -76,7 +93,14 @@ namespace Eto.Wpf.Forms
 			var element = (UIElement)sender;
 			if (IsDragEntered)
 			{
-				sw.DropTargetHelper.DragOver(e.GetPosition(element), e.Effects);
+				try
+				{
+					sw.DropTargetHelper.DragOver(e.GetPosition(element), e.Effects);
+				}
+				catch
+				{
+					// ignore errors
+				}
 			}
 		}
 
@@ -91,20 +115,24 @@ namespace Eto.Wpf.Forms
 			var element = (UIElement)sender;
 			IsDragLeaving = false;
 
-			if (!IsDragEntered)
+			try
 			{
-				IsDragEntered = true;
-				try
+				if (!IsDragEntered)
 				{
-					sw.DropTargetHelper.DragEnter(element.GetVisualParent<sw.Window>(), e.Data, e.GetPosition(element), e.Effects);
+					if (sw.DropTargetHelper.IsSupported(e.Data))
+					{
+						sw.DropTargetHelper.DragEnter(element.GetVisualParent<sw.Window>(), e.Data, e.GetPosition(element), e.Effects);
+						IsDragEntered = true;
+					}
 				}
-				catch
+				else
 				{
+					sw.DropTargetHelper.DragOver(e.GetPosition(element), e.Effects);
 				}
 			}
-			else
+			catch
 			{
-				sw.DropTargetHelper.DragOver(e.GetPosition(element), e.Effects);
+				// ignore errors
 			}
 		}
 	}

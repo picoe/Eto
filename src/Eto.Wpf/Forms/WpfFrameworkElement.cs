@@ -644,8 +644,11 @@ namespace Eto.Wpf.Forms
 			if (e.Data.GetDataPresent(WpfFrameworkElement.CustomCursor_DataKey))
 				e.Data.SetDataEx(WpfFrameworkElement.CustomCursor_DataKey, false);
 			Callback.OnDragLeave(Widget, args);
-			sw.WpfDataObjectExtensions.SetDropDescription(e.Data, sw.DropImageType.Invalid, null, null);
-			sw.DragSourceHelper.SetDropDescriptionIsDefault(e.Data, true);
+			if (sw.DropTargetHelper.IsSupported(e.Data))
+			{
+				sw.WpfDataObjectExtensions.SetDropDescription(e.Data, sw.DropImageType.Invalid, null, null);
+				sw.DragSourceHelper.SetDropDescriptionIsDefault(e.Data, true);
+			}
 		}
 
 		protected virtual void HandleDragOver(sw.DragEventArgs e, DragEventArgs args)
