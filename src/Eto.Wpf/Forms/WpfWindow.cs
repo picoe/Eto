@@ -591,6 +591,7 @@ namespace Eto.Wpf.Forms
 				}
 				else
 				{
+					LocationSet = true;
 					SetLocation(value);
 				}
 			}
