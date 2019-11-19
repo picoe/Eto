@@ -44,7 +44,8 @@ namespace Eto.Wpf.Forms
 			}
 
 			var data = Data.ToWpf();
-			sw.WpfDataObjectExtensions.SetDropDescription(data, (sw.DropImageType)Effects.ToWpf(), format, inner);
+			if (sw.DropTargetHelper.IsSupported(data))
+				sw.WpfDataObjectExtensions.SetDropDescription(data, (sw.DropImageType)Effects.ToWpf(), format, inner);
 		}
 	}
 }

@@ -362,9 +362,17 @@ namespace System.Windows.Forms
 
 	public static class DropTargetHelper
 	{
+		/// <summary>
+		/// Gets a value indicating that the DropTargetHelper is supported with the current drag operation
+		/// </summary>
+		/// <remarks>
+		/// Make sure not to call any of the other DropTargetHelper methods unless this returns true.
+		/// </remarks>
+		/// <param name="data">The DataObject containing a drag image.</param>
+		/// <returns>True if it is supported, false otherwise</returns>
 		public static bool IsSupported(IDataObject data)
 		{
-			return data.GetDataPresent("DropDescription");
+			return data.GetDataPresent("DragSourceHelperFlags");
 		}
 
 		/// <summary>
