@@ -93,6 +93,24 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		public override bool Visible
+		{
+			get => base.Visible;
+			set
+			{
+				if (value && !ShowActivated)
+				{
+					if (value != Visible)
+					{
+						Control.OrderFront(ApplicationHandler.Instance.AppDelegate);
+						FireOnShown();
+					}
+				}
+				else
+					base.Visible = value;
+			}
+		}
+
 		public bool ShowActivated { get; set; } = true;
 
 		public bool CanFocus
