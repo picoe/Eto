@@ -574,9 +574,10 @@ namespace Eto.Test.Sections.Behaviors
 			Log.Write(child, "OwnerChanged: {0}", child.Owner);
 		}
 
-		static void child_WindowStateChanged(object sender, EventArgs e)
+		void child_WindowStateChanged(object sender, EventArgs e)
 		{
 			var child = (Window)sender;
+			stateCombo.SelectedValue = child.WindowState;
 			Log.Write(child, "StateChanged: {0}", child.WindowState);
 		}
 

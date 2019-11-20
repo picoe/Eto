@@ -20,7 +20,8 @@ namespace Eto.Forms
 		/// <summary>
 		/// Window is minimized to the dock/taskbar/etc.
 		/// </summary>
-		Minimized
+		Minimized,
+		FullScreen
 	}
 
 	/// <summary>

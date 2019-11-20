@@ -347,6 +347,8 @@ namespace Eto.Mac.Forms
 				case Window.WindowStateChangedEvent:
 					Control.DidMiniaturize += HandleWindowStateChanged;
 					Control.DidDeminiaturize += HandleWindowStateChanged;
+					Control.DidEnterFullScreen += HandleWindowStateChanged;
+					Control.DidExitFullScreen += HandleWindowStateChanged;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 				// handled when shown
@@ -845,6 +847,8 @@ namespace Eto.Mac.Forms
 			{
 				if (initialState != null)
 					return initialState.Value;
+				if (Control.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow))
+					return WindowState.FullScreen;
 				if (Control.IsMiniaturized)
 					return WindowState.Minimized;
 				if (Control.IsZoomed)
@@ -856,21 +860,38 @@ namespace Eto.Mac.Forms
 				if (!Widget.Loaded)
 				{
 					initialState = value;
+					Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
 					return;
 				}
 				switch (value)
 				{
-					case WindowState.Maximized: 
+					case WindowState.FullScreen:
+						if (!Control.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow))
+							Control.ToggleFullScreen(Control);
+						break;
+					case WindowState.Maximized:
+						if (Control.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow))
+						{
+							Control.ToggleFullScreen(Control);
+							Application.Instance.AsyncInvoke(() => Control.OrderFront(Control));
+						}
 						if (Control.IsMiniaturized)
 							Control.Deminiaturize(Control);
 						if (!Control.IsZoomed)
 							Control.PerformZoom(Control);
 						break;
 					case WindowState.Minimized:
+						if (Control.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow))
+							Control.ToggleFullScreen(Control);
 						if (!Control.IsMiniaturized)
 							Control.Miniaturize(Control);
 						break;
-					case WindowState.Normal: 
+					case WindowState.Normal:
+						if (Control.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow))
+						{
+							Control.ToggleFullScreen(Control);
+							Application.Instance.AsyncInvoke(() => Control.OrderFront(Control));
+						}
 						if (Control.IsZoomed)
 							Control.Zoom(Control);
 						if (Control.IsMiniaturized)
