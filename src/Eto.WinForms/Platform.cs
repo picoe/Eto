@@ -165,6 +165,7 @@ namespace Eto.WinForms
 			p.Add<TrayIndicator.IHandler>(() => new TrayIndicatorHandler());
 			p.Add<Notification.IHandler>(() => new NotificationHandler());
 			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
+			p.Add<Taskbar.IHandler>(() => new Eto.Wpf.Forms.TaskbarHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

@@ -332,6 +332,9 @@
     </Compile>
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Forms\OpenWithDialogHandler.cs" />
+    <Compile Include="..\Eto.Wpf\Forms\TaskbarHandler.cs">
+      <Link>Forms\TaskbarHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <PreBuildEvent>

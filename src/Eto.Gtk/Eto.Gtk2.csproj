@@ -283,6 +283,7 @@
       <DependentUpon>NativeMethods.tt</DependentUpon>
     </Compile>
     <Compile Include="Forms\LinuxTrayIndicatorHandler.cs" />
+    <Compile Include="Forms\UnityTaskbarHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.gtk2.cs" />
     <Compile Include="CustomControls\BaseComboBox.gtk2.cs" />

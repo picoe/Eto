@@ -279,6 +279,7 @@
     </Compile>
     <Compile Include="Forms\LinuxTrayIndicatorHandler.cs" />
     <Compile Include="Forms\OtherTrayIndicatorHandler.cs" />
+    <Compile Include="Forms\UnityTaskbarHandler.cs" />
     <Compile Include="Forms\LinuxNotificationHandler.cs" />
     <Compile Include="Forms\Controls\WebKit2WebViewHandler.cs" />
     <Compile Include="Forms\DataObjectHandler.cs" />

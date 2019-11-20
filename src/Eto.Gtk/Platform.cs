@@ -219,11 +219,13 @@ namespace Eto.GtkSharp
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
 			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
 			if (EtoEnvironment.Platform.IsLinux)
+			{
 				p.Add<TrayIndicator.IHandler>(() => new LinuxTrayIndicatorHandler());
+				p.Add<Notification.IHandler>(() => new LinuxNotificationHandler());
+				p.Add<Taskbar.IHandler>(() => new UnityTaskbarHandler());
+			}
             else
                 p.Add<TrayIndicator.IHandler>(() => new OtherTrayIndicatorHandler());
-			if (EtoEnvironment.Platform.IsLinux)
-				p.Add<Notification.IHandler>(() => new LinuxNotificationHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
