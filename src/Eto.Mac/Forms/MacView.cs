@@ -183,6 +183,10 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selSetDataProviderForTypes_Handle = Selector.GetHandle("setDataProvider:forTypes:");
 		public static readonly IntPtr selInitWithPasteboardWriter_Handle = Selector.GetHandle("initWithPasteboardWriter:");
 		public const string FlagsChangedEvent = "MacView.FlagsChangedEvent";
+
+		// before 10.12, we have to call base.Layout() AFTER we do our layout otherwise it doesn't work correctly..
+		// however, that causes (temporary) glitches when resizing especially with Scrollable >= 10.12
+		public static readonly bool NewLayout = MacVersion.IsAtLeast(10, 12);
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
