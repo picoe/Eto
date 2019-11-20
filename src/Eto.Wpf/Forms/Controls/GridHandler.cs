@@ -98,6 +98,7 @@ namespace Eto.Wpf.Forms.Controls
 		public static readonly object LastDragRow_Key = new object();
 		public static readonly object Border_Key = new object();
 		public static readonly object MultipleSelectionInfo_Key = new object();
+		public static readonly object AllowEmptySelection_Key = new object();
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
@@ -347,22 +348,37 @@ namespace Eto.Wpf.Forms.Controls
 
 				MultipleSelectionInfo = null;
 			}
+			if (!e.Handled && AllowEmptySelection)
+			{
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				if (hitTestResult != null
+					&& (
+						hitTestResult is swc.ScrollViewer // below rows
+						|| swm.VisualTreeHelper.GetParent(hitTestResult) is swc.DataGridRow // right of rows
+						)
+					)
+				{
+					UnselectAll();
+					e.Handled = true;
+				}
+
+			}
 		}
 
 		protected override void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
 			base.HandleMouseDown(sender, e);
 			MultipleSelectionInfo = null;
-			if (!e.Handled 
-				&& e.LeftButton == swi.MouseButtonState.Pressed 
+			if (!e.Handled
+				&& e.LeftButton == swi.MouseButtonState.Pressed
 				&& swi.Keyboard.Modifiers == swi.ModifierKeys.None)
 			{
 				// prevent WPF from deselecting other rows until mouse up.
 				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
 				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
 				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
-				
-				if (row != null && row.IsSelected 
+
+				if (row != null && row.IsSelected
 					&& (
 						(cell?.Column.IsReadOnly == false && !cell.IsEditing && cell.IsFocused)
 						|| Control.SelectedItems.Count > 1
@@ -378,6 +394,24 @@ namespace Eto.Wpf.Forms.Controls
 						cell.Focus();
 					else
 						row.Focus();
+					e.Handled = true;
+				}
+			}
+			else if (!e.Handled
+				&& !AllowEmptySelection
+				&& e.LeftButton == swi.MouseButtonState.Pressed
+				&& swi.Keyboard.Modifiers == swi.ModifierKeys.Control)
+			{
+				// prevent deselecting the last selected item
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+
+				if (row != null && row.IsSelected
+					&& cell != null
+					&& Control.SelectedItems.Count == 1
+					)
+				{
 					e.Handled = true;
 				}
 			}
@@ -700,5 +734,21 @@ namespace Eto.Wpf.Forms.Controls
 		bool IGridHandler.Loaded => Widget.Loaded;
 
 		Grid IGridHandler.Widget => Widget;
+
+		public bool AllowEmptySelection
+		{
+			get => Widget.Properties.Get<bool>(GridHandler.AllowEmptySelection_Key, true);
+			set => Widget.Properties.Set(GridHandler.AllowEmptySelection_Key, value, true);
+		}
+
+		protected void EnsureSelection()
+		{
+			if (!AllowEmptySelection && (Control.SelectedItems?.Count ?? 0) == 0)
+			{
+				SelectRow(0);
+			}
+		}
+
+
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Eto.Drawing;
 
@@ -527,6 +528,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating that the user can clear the selection.
+		/// </summary>
+		/// <remarks>
+		/// When true, the user can deselect the item by cmd/ctrl+click the last selected row, or
+		/// by clicking on the empty space in the Grid. Some platforms may have empty space to the
+		/// right, and some only have space at the bottom.
+		/// When false, this setting will make it so the user cannot deselect the last selected item, and
+		/// the control will initially select the first item when setting the DataStore property.
+		/// This does not affect the ability to clear the selection programmatically.
+		/// </remarks>
+		[DefaultValue(true)]
+		public bool AllowEmptySelection
+		{
+			get => Handler.AllowEmptySelection;
+			set => Handler.AllowEmptySelection = value;
+		}
+
+		/// <summary>
 		/// Selects the row to the specified <paramref name="row"/>, clearing other selections
 		/// </summary>
 		/// <param name="row">Row to select</param>
@@ -818,6 +837,19 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if the current cell is in edit mode; otherwise, <c>false</c>.</value>
 			bool IsEditing { get; }
+
+			/// <summary>
+			/// Gets or sets a value indicating that the user can clear the selection.
+			/// </summary>
+			/// <remarks>
+			/// When true, the user can deselect the item by cmd/ctrl+click the last selected row, or
+			/// by clicking on the empty space in the Grid. Some platforms may have empty space to the
+			/// right, and some only have space at the bottom.
+			/// When false, this setting will make it so the user cannot deselect the last selected item, and
+			/// the control will initially select the first item when setting the DataStore property.
+			/// This does not affect the ability to clear the selection programmatically.
+			/// </remarks>
+			bool AllowEmptySelection { get; set; }
 
 			/// <summary>
 			/// Scrolls to show the specified row in the view

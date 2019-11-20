@@ -178,6 +178,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView DragControl => Control;
 
+		public bool AllowEmptySelection
+		{
+			get => Control.AllowsEmptySelection;
+			set => Control.AllowsEmptySelection = value;
+		}
+
 		protected int SuppressUpdate { get; set; }
 
 		bool IDataViewHandler.SuppressUpdate => SuppressUpdate > 0;

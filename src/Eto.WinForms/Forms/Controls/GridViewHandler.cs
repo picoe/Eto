@@ -172,8 +172,10 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				if (collection != null)
 					collection.Unregister();
+				UnselectAll();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				EnsureSelection();
 			}
 		}
 

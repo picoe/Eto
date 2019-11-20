@@ -201,9 +201,10 @@ namespace Eto.Test
 			this.treeView = new TreeGridView();
 			treeView.Style = "sectionList";
 			treeView.ShowHeader = false;
+			treeView.AllowEmptySelection = false;
 			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new DelegateBinding<SectionTreeItem, string>(r => r.Text) } });
-			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
 			treeView.SelectedItemChanged += (sender, e) => OnSelectedItemChanged(e);
+			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
 		}
 	}
 
