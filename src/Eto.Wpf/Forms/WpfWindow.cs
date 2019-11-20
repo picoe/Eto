@@ -610,7 +610,7 @@ namespace Eto.Wpf.Forms
 			var handle = WindowHandle;
 			var loc = location.LogicalToScreen();
 
-			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE);
+			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE);
 		}
 
 		public WindowState WindowState
