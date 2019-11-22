@@ -125,8 +125,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void Layout()
 		{
+			if (MacView.NewLayout)
+				base.Layout();
 			(Handler as ITextAreaHandler)?.PerformLayout();
-			base.Layout();
+			if (!MacView.NewLayout)
+				base.Layout();
 		}
 	}
 

@@ -21,7 +21,6 @@
     <Content Include="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Info.plist" />
     <None Remove="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>

@@ -31,8 +31,8 @@ namespace Eto.Test.Sections.Controls
 				null
 			);
 			layout.AddSeparateRow(null, InsertButton(), AddChildButton(), RemoveButton(), ExpandButton(), CollapseButton(), null);
-			layout.AddSeparateRow(null, EnabledCheck(), AllowMultipleSelect(), "Border", CreateBorderType(grid), null);
-			layout.AddSeparateRow(null, ReloadDataButton(grid), null);
+			layout.AddSeparateRow(null, EnabledCheck(), AllowMultipleSelect(), AllowEmptySelectionCheckBox(), "Border", CreateBorderType(grid), null);
+			layout.AddSeparateRow(null, ReloadDataButton(grid), SetDataButton(grid), null);
 
 			layout.Add(grid, yscale: true);
 			layout.Add(HoverNodeLabel());
@@ -51,6 +51,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Button { Text = "ReloadData" };
 			control.Click += (sender, e) => grid.ReloadData();
+			return control;
+		}
+
+		Control SetDataButton(TreeGridView grid)
+		{
+			var control = new Button { Text = "SetDataStore" };
+			control.Click += (sender, e) => SetDataStore(grid);
 			return control;
 		}
 
@@ -206,6 +213,14 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+		Control AllowEmptySelectionCheckBox()
+		{
+			var control = new CheckBox { Text = "AllowEmptySelection" };
+			control.CheckedBinding.Bind(grid, g => g.AllowEmptySelection);
+			return control;
+		}
+
+
 		TreeGridItem CreateComplexTreeItem(int level, string name, Image image)
 		{
 			var item = new TreeGridItem
@@ -249,9 +264,14 @@ namespace Eto.Test.Sections.Controls
 				control.ContextMenu = menu;
 			}
 
-			control.DataStore = CreateComplexTreeItem(0, "", Image);
+			SetDataStore(control);
 			LogEvents(control);
 			return control;
+		}
+
+		private void SetDataStore(TreeGridView control)
+		{
+			control.DataStore = CreateComplexTreeItem(0, "", Image);
 		}
 
 		static string SelectedRowsString(TreeGridView grid)
