@@ -524,7 +524,7 @@ namespace Eto.Wpf.Forms
 		public string Title
 		{
 			get { return Control.Title; }
-			set { Control.Title = value; }
+			set { Control.Title = value ?? string.Empty; }
 		}
 
 		static readonly object LocationSet_Key = new object();
