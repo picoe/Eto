@@ -344,7 +344,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					layout.AddCentered(textBox);
 
 					return layout;
-				}, allowPassFail: false);
+				}, allowPass: false, allowFail: false);
 			}
 			finally
 			{

@@ -743,7 +743,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected void EnsureSelection()
 		{
-			if (!AllowEmptySelection && (Control.SelectedItems?.Count ?? 0) == 0)
+			if (!AllowEmptySelection 
+				&& (Control.SelectedItems?.Count ?? 0) == 0
+				&& (Control.ItemsSource as IList)?.Count > 0)
 			{
 				SelectRow(0);
 			}
