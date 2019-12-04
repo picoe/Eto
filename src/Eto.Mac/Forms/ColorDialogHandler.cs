@@ -96,6 +96,8 @@ namespace Eto.Mac.Forms
 
 		#region IDialog implementation
 
+		static IntPtr s_NSColorChangingHandle = new AdoptsAttribute("NSColorChanging").ProtocolHandle;
+
 		public virtual DialogResult ShowDialog(Window parent)
 		{
 			//Control = new NSColorPanel();
@@ -113,6 +115,7 @@ namespace Eto.Mac.Forms
 			Control.Delegate = ColorHandler.Instance;
 			Control.SetTarget(null);
 			Control.SetAction(null);
+			Control.WorksWhenModal = true;
 			Control.Color = Color.ToNSUI();
 
 			Control.SetTarget(ColorHandler.Instance);
@@ -128,6 +131,14 @@ namespace Eto.Mac.Forms
 					//Control.WorksWhenModal = true;
 					//Control.ParentWindow = parentWindow;
 					NSNotificationCenter.DefaultCenter.AddObserver(ColorHandler.Instance, new Selector("modalClosed:"), new NSString("NSWindowWillCloseNotification"), parentWindow);
+
+					// if an NSText is the first responder, we won't get any color change notifications.
+					// only when modal though..  Why? who knows.
+					// So, we check to see if the first responder conforms to the NSColorChanging protocol,
+					// which NSText does, which is presumably the problem here.
+					if (parentWindow?.FirstResponder?.ConformsToProtocol(s_NSColorChangingHandle) == true)
+						parentWindow?.MakeFirstResponder(null);
+
 					isModal = true;
 				}
 			}
@@ -142,7 +153,11 @@ namespace Eto.Mac.Forms
 			else
 				Control.OrderFront(parentWindow);
 
-			if (isModal) Control.MakeKeyWindow();
+
+			if (isModal)
+			{
+				Control.MakeKeyWindow();
+			}
 			//Control.OrderFront (parentWindow);
 
 
