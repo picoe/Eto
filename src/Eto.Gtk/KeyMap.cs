@@ -28,6 +28,9 @@ namespace Eto.GtkSharp
 			if (modifier.HasFlag(Gdk.ModifierType.ControlMask)) result |= Keys.Control;
 			if (modifier.HasFlag(Gdk.ModifierType.SuperMask)) result |= Keys.Application;
 			if (modifier.HasFlag(Gdk.ModifierType.ShiftMask)) result |= Keys.Shift;
+
+			// map CMD key to Control on macOS
+			if (EtoEnvironment.Platform.IsMac && modifier.HasFlag(Gdk.ModifierType.Mod2Mask)) result |= Keys.Control;
 			return result;
 		}
 

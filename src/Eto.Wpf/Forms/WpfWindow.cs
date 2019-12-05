@@ -64,6 +64,7 @@ namespace Eto.Wpf.Forms
 			if (IsAttached)
 				return;
 			content = new swc.DockPanel();
+			UseShellDropManager = true;
 
 			base.Initialize();
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
@@ -103,6 +104,25 @@ namespace Eto.Wpf.Forms
 			};
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+		}
+
+		public bool UseShellDropManager
+		{
+			get => Widget.Properties.Get<WpfShellDropBehavior>(typeof(WpfShellDropBehavior)) != null;
+			set
+			{
+				if (value != UseShellDropManager)
+				{
+					if (value)
+						Widget.Properties.TrySet(typeof(WpfShellDropBehavior), new WpfShellDropBehavior(Control));
+					else
+					{
+						var shellDrop = Widget.Properties.Get<WpfShellDropBehavior>(typeof(WpfShellDropBehavior));
+						shellDrop.Detatch();
+						Widget.Properties.Remove(typeof(WpfShellDropBehavior));
+					}
+				}
+			}
 		}
 
 		void SetupPerMonitorDpi()
@@ -504,7 +524,7 @@ namespace Eto.Wpf.Forms
 		public string Title
 		{
 			get { return Control.Title; }
-			set { Control.Title = value; }
+			set { Control.Title = value ?? string.Empty; }
 		}
 
 		static readonly object LocationSet_Key = new object();
@@ -571,6 +591,7 @@ namespace Eto.Wpf.Forms
 				}
 				else
 				{
+					LocationSet = true;
 					SetLocation(value);
 				}
 			}
@@ -589,7 +610,7 @@ namespace Eto.Wpf.Forms
 			var handle = WindowHandle;
 			var loc = location.LogicalToScreen();
 
-			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE);
+			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE);
 		}
 
 		public WindowState WindowState

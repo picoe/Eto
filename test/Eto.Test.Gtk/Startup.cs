@@ -1,12 +1,13 @@
 using Eto;
 using Eto.Test;
+using System;
 using System.Diagnostics;
 
 namespace Eto.Test.Gtk
 {
 	class Startup
 	{
-		//[STAThread]
+		[STAThread]
 		static void Main(string[] args)
 		{
 			var generator = new Eto.GtkSharp.Platform();

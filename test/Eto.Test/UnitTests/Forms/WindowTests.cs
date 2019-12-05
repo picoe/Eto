@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Eto.Forms;
 using System.Collections.Generic;
@@ -67,6 +67,35 @@ namespace Eto.Test.UnitTests.Forms
 				form.Shown += (sender, e) => form.Close();
 			});
 			Assert.AreEqual(1, closed, "Closed event should only fire once");
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		[ManualTest]
+		public void InitialLocationOfFormShouldBeCorrect(bool withOwner)
+		{
+			ManualForm("This form should be located at the top left of the screen", form =>
+			{
+				if (withOwner)
+					form.Owner = Application.Instance.MainForm;
+				form.Location = new Point(0, 0);
+
+				return new Panel { Size = new Size(200, 200) };
+			});
+		}
+		[TestCase(true)]
+		[TestCase(false)]
+		[ManualTest]
+		public void InitialLocationOfDialogShouldBeCorrect(bool withOwner)
+		{
+			ManualDialog("This dialog should be located at the top left of the screen", form =>
+			{
+				if (withOwner)
+					form.Owner = Application.Instance.MainForm;
+				form.Location = new Point(0, 0);
+
+				return new Panel { Size = new Size(200, 200) };
+			});
 		}
 	}
 }

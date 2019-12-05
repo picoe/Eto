@@ -13,12 +13,18 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
-		public Eto.Platform Platform { get; set; }
-
 		public PointF Position
 		{
-			get { return swf.Control.MousePosition.ScreenToLogical(); }
-			set { swf.Cursor.Position = Point.Round(value.LogicalToScreen()).ToSD(); }
+			get => swf.Control.MousePosition.ScreenToLogical();
+			set => swf.Cursor.Position = Point.Round(value.LogicalToScreen()).ToSD();
+		}
+
+		public static int s_CursorSetCount;
+
+		public void SetCursor(Cursor cursor)
+		{
+			swi.Mouse.SetCursor(cursor.ToWpf());
+			s_CursorSetCount++;
 		}
 
 		public MouseButtons Buttons

@@ -55,10 +55,10 @@ namespace Eto
 			RAW_DPI = 2
 		}
 
-		public static uint GetWindowDpi(IntPtr hwnd)
+		public static uint GetWindowDpi(IntPtr hwnd, bool onlyIfSupported = true)
 		{
 			// use system DPI if per-monitor DPI is not supported.
-			if (!PerMonitorDpiSupported)
+			if (onlyIfSupported && !PerMonitorDpiSupported)
 				return 1;
 
 			var monitor = MonitorFromWindow(hwnd, MONITOR.DEFAULTTONEAREST);
@@ -164,6 +164,12 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr MonitorFromWindow(IntPtr hwnd, MONITOR flags);
+
+		[DllImport("user32.dll")]
+		public static extern uint GetDpiForWindow(IntPtr hwnd);
+
+		[DllImport("user32.dll")]
+		public static extern uint GetDpiForSystem();
 
 		[DllImport("shcore.dll")]
 		public static extern uint GetDpiForMonitor(IntPtr hmonitor, MDT dpiType, out uint dpiX, out uint dpiY);

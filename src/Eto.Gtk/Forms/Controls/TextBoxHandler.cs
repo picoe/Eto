@@ -11,6 +11,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			Control = new Gtk.Entry();
 			Control.WidthRequest = 100;
+			Control.WidthChars = 0;
 		}
 
 	}

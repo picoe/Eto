@@ -493,4 +493,47 @@ namespace Eto.Forms
 			};
 		}
 	}
+
+	/// <summary>
+	/// Used to easily insert a <see cref="Scrollable"/> into a dynamic layout
+	/// </summary>
+	public class DynamicScrollable : DynamicTable
+	{
+		BorderType _border;
+
+		/// <summary>
+		/// Gets or sets the border for the contained scrollable
+		/// </summary>
+		public BorderType Border
+		{
+			get => _border;
+			set
+			{
+				_border = value;
+				if (Scrollable != null)
+					Scrollable.Border = _border;
+			}
+		}
+
+		/// <summary>
+		/// Gets the Scrollable instance when the layout has been generated.
+		/// </summary>
+		/// <value>The Scrollable instance.</value>
+		public Scrollable Scrollable { get; private set; }
+
+		/// <summary>
+		/// Creates the group box layout.
+		/// </summary>
+		/// <returns>The control created for this item.</returns>
+		/// <param name="layout">Layout we are creating this item for.</param>
+		public override Control Create(DynamicLayout layout)
+		{
+			return Scrollable = new Scrollable
+			{
+				Border = _border,
+				Content = base.Create(layout)
+			};
+		}
+	}
+
 }

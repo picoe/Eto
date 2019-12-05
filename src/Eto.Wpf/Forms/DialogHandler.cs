@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
@@ -48,7 +48,11 @@ namespace Eto.Wpf.Forms
 		{
             ReloadButtons();
 
-			if (Widget.Owner != null)
+			if (LocationSet)
+			{
+				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
+			}
+			else if (Widget.Owner != null)
 			{
 				// CenterOwner does not work in certain cases (e.g. with autosizing)
 				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;

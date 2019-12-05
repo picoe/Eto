@@ -374,7 +374,7 @@ namespace Eto.GtkSharp.Drawing
 			return PangoContext != null ? new Pango.Layout(PangoContext) : Pango.CairoHelper.CreateLayout(Control);
 		}
 
-		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
+		public void DrawText(Font font, Brush brush, float x, float y, string text)
 		{
 			var oldAA = AntiAlias;
 			AntiAlias = true;
@@ -384,11 +384,23 @@ namespace Eto.GtkSharp.Drawing
 				font.Apply(layout);
 				layout.SetText(text);
 				Control.Save();
-				Control.SetSourceColor(brush.Color.ToCairo());
+				brush.Apply(this);
 				Control.MoveTo(x, y);
 				Pango.CairoHelper.LayoutPath(Control, layout);
 				Control.Fill();
 				Control.Restore();
+			}
+			AntiAlias = oldAA;
+		}
+		public void DrawText(FormattedText formattedText, PointF location)
+		{
+			var oldAA = AntiAlias;
+			AntiAlias = true;
+			SetOffset(true);
+			using (var layout = CreateLayout())
+			{
+				var handler = (FormattedTextHandler)formattedText.Handler;
+				handler.Draw(this, layout, Control, location);
 			}
 			AntiAlias = oldAA;
 		}

@@ -44,5 +44,7 @@ namespace Eto.Wpf
 		public static sw.DataObject ToWpf(this DataObject data) => DataObjectHandler.GetControl(data);
 
 		public static DataObject ToEto(this sw.IDataObject data) => new DataObject(new DataObjectHandler(data));
+
+		public static DataObject ToEto(this sw.DataObject data) => new DataObject(new DataObjectHandler(data));
 	}
 }

@@ -394,6 +394,42 @@ namespace Eto.Forms
 		public void EndGroup() => EndVertical();
 
 		/// <summary>
+		/// Begins a the scrollable section in the dynamic layout with a specified border.
+		/// </summary>
+		/// <remarks>
+		/// Should be balanced with a call to <see cref="EndScrollable"/>.
+		/// </remarks>
+		/// <returns>The scrollable instance.</returns>
+		/// <param name="border">BorderType for the Scrollable.</param>
+		/// <param name="padding">Padding around the children in the scrollable.</param>
+		/// <param name="spacing">Spacing between the children in the scrollable.</param>
+		/// <param name="xscale">Xscale of the scrollable itself.</param>
+		/// <param name="yscale">Yscale of the scrollable itself.</param>
+		public DynamicScrollable BeginScrollable(BorderType border = BorderType.Bezel, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		{
+			var newItem = new DynamicScrollable
+			{
+				Border = border,
+				Padding = padding,
+				Spacing = spacing,
+				XScale = xscale,
+				YScale = yscale
+			};
+			currentItem.Add(newItem);
+			currentItem = newItem;
+			return newItem;
+		}
+
+		/// <summary>
+		/// Ends a scrollable section.
+		/// </summary>
+		/// <remarks>
+		/// Should be balanced with a previous call to <see cref="BeginScrollable"/>.
+		/// </remarks>
+		public void EndScrollable() => EndVertical();
+
+
+		/// <summary>
 		/// Add the control with the optional scaling
 		/// </summary>
 		/// <remarks>

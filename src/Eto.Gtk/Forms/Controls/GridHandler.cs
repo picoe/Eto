@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
@@ -8,6 +8,14 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
+	class GridHandler
+	{
+		internal static readonly object Border_Key = new object();
+		internal static readonly object RowDataColumn_Key = new object();
+		internal static readonly object AllowColumnReordering_Key = new object();
+		internal static readonly object AllowEmptySelection_Key = new object();
+	}
+
 	public abstract class GridHandler<TWidget, TCallback> : GtkControl<Gtk.ScrolledWindow, TWidget, TCallback>, Grid.IHandler, ICellDataSource, IGridHandler
 		where TWidget : Grid
 		where TCallback : Grid.ICallback
@@ -58,6 +66,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
 			base.Initialize();
+
+			Widget.MouseDown += Widget_MouseDown;
+
 		}
 
 		protected new GridConnector Connector { get { return (GridConnector)base.Connector; } }
@@ -219,12 +230,10 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		static readonly object RowDataColumn_Key = new object();
-
 		public int RowDataColumn
 		{
-			get { return Widget.Properties.Get<int>(RowDataColumn_Key); }
-			private set { Widget.Properties.Set(RowDataColumn_Key, value); }
+			get { return Widget.Properties.Get<int>(GridHandler.RowDataColumn_Key); }
+			private set { Widget.Properties.Set(GridHandler.RowDataColumn_Key, value); }
 		}
 
 		protected virtual void UpdateColumns()
@@ -289,14 +298,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { Tree.HeadersVisible = value; }
 		}
 
-		static readonly object AllowColumnReordering_Key = new object();
 
 		public bool AllowColumnReordering
 		{
-			get { return Widget.Properties.Get<bool>(AllowColumnReordering_Key, true); }
+			get { return Widget.Properties.Get<bool>(GridHandler.AllowColumnReordering_Key, true); }
 			set
 			{
-				Widget.Properties.Set(AllowColumnReordering_Key, value, true);
+				Widget.Properties.Set(GridHandler.AllowColumnReordering_Key, value, true);
 				UpdateColumns();
 			}
 		}
@@ -509,11 +517,10 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		static readonly object Border_Key = new object();
 		public BorderType Border
 		{
-			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
-			set { Widget.Properties.Set(Border_Key, value, () => Control.ShadowType = value.ToGtk(), BorderType.Bezel); }
+			get { return Widget.Properties.Get(GridHandler.Border_Key, BorderType.Bezel); }
+			set { Widget.Properties.Set(GridHandler.Border_Key, value, () => Control.ShadowType = value.ToGtk(), BorderType.Bezel); }
 		}
 
 		public bool IsEditing
@@ -530,6 +537,54 @@ namespace Eto.GtkSharp.Forms.Controls
 				var cells = focus_column?.Cells;
 #endif
 				return cells?.OfType<IEtoCellRenderer>().Any(r => r.Editing) ?? false;
+			}
+		}
+
+		protected abstract bool HasRows { get; }
+
+		public bool AllowEmptySelection
+		{
+			get => Widget.Properties.Get<bool>(GridHandler.AllowEmptySelection_Key, true);
+			set => Widget.Properties.TrySet(GridHandler.AllowEmptySelection_Key, value, true);
+		}
+
+		private void Widget_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (!e.Handled && e.Buttons == MouseButtons.Primary)
+			{
+				var location = e.Location;
+				if (AllowEmptySelection)
+				{
+					// clicked on an empty area
+					if (!Tree.GetPathAtPos((int)location.X, (int)location.Y, out _, out _))
+					{
+						UnselectAll();
+						e.Handled = true;
+					}
+				}
+				else
+				{
+					// cancel ctrl+clicking to remove last selected item
+					if (Tree.GetPathAtPos((int)location.X, (int)location.Y, out var path, out _))
+					{
+						if (Tree.Model.GetIter(out var iter, path))
+						{
+							var isSelected = Tree.Selection.IterIsSelected(iter);
+							if (e.Modifiers == Keys.Control && isSelected && Tree.Selection.CountSelectedRows() == 1)
+							{
+								e.Handled = true;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		protected void EnsureSelection()
+		{
+			if (!AllowEmptySelection && Tree.Selection.CountSelectedRows() == 0)
+			{
+				SelectRow(0);
 			}
 		}
 	}

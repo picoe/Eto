@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
@@ -25,7 +25,8 @@ namespace Eto.Test.Sections.Behaviors
 				Cursor = Cursors.Default; // should be able to set more than once.
 
 				var loc = Rects.FirstOrDefault(r => r.Rectangle.Contains(Point.Round(e.Location)));
-				Cursor = loc?.Cursor ?? Cursors.Default;
+				var c = loc?.Cursor ?? Cursors.Default;
+				Cursor = c;
 			}
 
 			protected override void OnPaint(PaintEventArgs e)
@@ -44,6 +45,16 @@ namespace Eto.Test.Sections.Behaviors
 			}
 		}
 
+		IEnumerable<(string name, Cursor cursor)> GetCursors()
+		{
+			foreach (var type in Enum.GetValues(typeof(CursorType)).OfType<CursorType?>())
+			{
+				yield return (type.ToString(), new Cursor(type.Value));
+			}
+
+			yield return ("Custom (.cur)", TestIcons.TestCursor);
+			yield return ("Custom (.png)", new Cursor(new Bitmap(TestIcons.Logo, 32, 32), new PointF(16, 16)));
+		}
 
 		public CursorSection()
 		{
@@ -59,10 +70,10 @@ namespace Eto.Test.Sections.Behaviors
 			layout.BeginVertical(spacing: new Size(20, 20));
 			layout.BeginHorizontal();
 			int count = 0;
-			foreach (var type in Enum.GetValues(typeof(CursorType)).OfType<CursorType?>())
+			foreach (var type in GetCursors())
 			{
-				var cursor = new Cursor(type.Value);
-				var text = type.ToString();
+				var cursor = type.cursor;
+				var text = type.name;
 				drawable.Rects.Add(new CursorRect { Rectangle = rect, Cursor = cursor, Text = text });
 				rect.X += rect.Width + 20;
 
@@ -74,7 +85,7 @@ namespace Eto.Test.Sections.Behaviors
 					TextAlignment = TextAlignment.Center,
 					BackgroundColor = Colors.Silver
 				};
-				if (type == null)
+				if (cursor == null)
 					label.Cursor = null;
 				else
 					label.Cursor = cursor;

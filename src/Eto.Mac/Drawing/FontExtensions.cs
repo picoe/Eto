@@ -42,14 +42,52 @@ using NSFont = UIKit.UIFont;
 namespace Eto.iOS.Drawing
 #endif
 {
-	public static class FontExtensions
+
+	class FontUtility
 	{
-		#if OSX
+#if OSX
 		static readonly NSString ForegroundColorAttribute = NSStringAttributeKey.ForegroundColor;
-		#elif IOS
+#elif IOS
 		static readonly NSString ForegroundColorAttribute = UIStringAttributeKey.ForegroundColor;
 		static readonly Selector selSetSize = new Selector("setSize:");
-		#endif
+#endif
+		readonly NSTextStorage storage;
+		readonly NSLayoutManager layout;
+		readonly NSTextContainer container;
+
+		public FontUtility()
+		{
+			storage = new NSTextStorage();
+			layout = new NSLayoutManager { UsesFontLeading = true };
+#if OSX
+			layout.BackgroundLayoutEnabled = false;
+#endif
+			container = new NSTextContainer { LineFragmentPadding = 0f };
+			layout.UsesFontLeading = true;
+			layout.AddTextContainer(container);
+			storage.AddLayoutManager(layout);
+		}
+
+		public SizeF MeasureString(NSAttributedString str, SizeF? availableSize = null)
+		{
+			SetContainerSize(availableSize);
+			storage.SetString(str);
+			return layout.BoundingRectForGlyphRange(new NSRange(0, (int)str.Length), container).Size.ToEto();
+		}
+
+		void SetContainerSize(SizeF? availableSize)
+		{
+#if OSX
+			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToNS();
+#elif IOS
+			if (container.RespondsToSelector(selSetSize))
+				container.Size = (availableSize ?? SizeF.MaxValue).ToNS();
+#endif
+		}
+	}
+
+	public static class FontExtensions
+	{
 
 		public static NSDictionary Attributes(this Font font)
 		{
@@ -108,79 +146,6 @@ namespace Eto.iOS.Drawing
 			font.Apply(mutable);
 
 			return mutable;
-		}
-
-		public static float LineHeight(this NSFont font)
-		{
-			#if OSX
-			return (float)layout.DefaultLineHeightForFont(font);
-			#elif IOS
-			return (float)font.LineHeight;
-			#endif
-			/**
-			var leading = Math.Floor (Math.Max (0, font.Leading) + 0.5f);
-			var lineHeight = (float)(Math.Floor(font.Ascender + 0.5f) - Math.Floor (font.Descender + 0.5f) + leading);
-
-			if (leading > 0)
-				return lineHeight;
-			else
-				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
-			/**/
-		}
-
-		static readonly NSTextStorage storage;
-		static readonly NSLayoutManager layout;
-		static readonly NSTextContainer container;
-
-		public static NSLayoutManager SharedLayout { get { return layout; } }
-
-		public static SizeF MeasureString(string text, Font font = null, SizeF? availableSize = null)
-		{
-			return MeasureString(font.AttributedString(text), availableSize);
-		}
-
-		public static SizeF MeasureString(NSAttributedString str, SizeF? availableSize = null)
-		{
-			SetContainerSize(availableSize);
-			storage.SetString(str);
-			return layout.BoundingRectForGlyphRange(new NSRange(0, (int)str.Length), container).Size.ToEto();
-		}
-
-		public static void DrawString(NSAttributedString str, PointF point, SizeF? availableSize = null)
-		{
-			SetContainerSize(availableSize);
-			storage.SetString(str);
-			layout.DrawGlyphs(new NSRange(0, (int)str.Length), point.ToNS());
-		}
-
-		public static void DrawString(string text, PointF point, Color color, Font font = null, SizeF? availableSize = null)
-		{
-			var str = font.AttributedString(text);
-			str.AddAttribute(ForegroundColorAttribute, color.ToNSUI(), new NSRange(0, text.Length));
-			DrawString(str, point, availableSize);
-		}
-
-		static void SetContainerSize(SizeF? availableSize)
-		{
-			#if OSX
-			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToNS();
-			#elif IOS
-			if (container.RespondsToSelector(selSetSize))
-				container.Size = (availableSize ?? SizeF.MaxValue).ToNS();
-			#endif
-		}
-
-		static FontExtensions()
-		{
-			storage = new NSTextStorage();
-			layout = new NSLayoutManager { UsesFontLeading = true };
-			#if OSX
-			layout.BackgroundLayoutEnabled = false;
-			#endif
-			container = new NSTextContainer { LineFragmentPadding = 0f };
-			layout.UsesFontLeading = true;
-			layout.AddTextContainer(container);
-			storage.AddLayoutManager(layout);
 		}
 	}
 }
