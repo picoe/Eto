@@ -147,8 +147,14 @@ namespace Eto.Mac.Forms
 
 		public void RunSession()
 		{
+			var etoWindow = NativeWindow as EtoWindow;
+			if (etoWindow != null && etoWindow.DisableCenterParent)
+				etoWindow.DisableSetOrigin = true;
+
 			Session = app.BeginModalSession(NativeWindow);
 			bool result;
+			if (etoWindow != null)
+				etoWindow.DisableSetOrigin = false;
 
 			// Loop until some result other than continues:
 			do

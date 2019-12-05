@@ -141,6 +141,7 @@ namespace Eto.Test.Sections.Controls
 		Control EnumCombo()
 		{
 			var control = new EnumDropDown<Keys>();
+			control.Width = 100;
 			LogEvents(control);
 			control.SelectedKey = ((int)Keys.E).ToString();
 			return control;

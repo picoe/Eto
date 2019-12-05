@@ -59,6 +59,29 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is visible to the user.
+		/// </summary>
+		/// <remarks>
+		/// When the visibility of a control is set to false, it will still occupy space in the layout, but not be shown.
+		/// The only exception is for controls like the <see cref="Splitter"/>, which will hide a pane if the visibility
+		/// of one of the panels is changed.
+		/// </remarks>
+		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
+		public override bool Visible
+		{
+			get => base.Visible;
+			set
+			{
+				// when setting Visible = true for the first time it should be like calling Show()
+				if (value && !Loaded)
+					Show();
+				else
+					base.Visible = value;
+			}
+		}
+
+		/// <summary>
 		/// Show the form
 		/// </summary>
 		public void Show()
@@ -69,9 +92,10 @@ namespace Eto.Forms
 				OnPreLoad(EventArgs.Empty);
 				OnLoad(EventArgs.Empty);
 				OnLoadComplete(EventArgs.Empty);
+
+				Application.Instance.AddWindow(this);
 			}
 
-			Application.Instance.AddWindow(this);
 			Handler.Show();
 		}
 

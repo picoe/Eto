@@ -932,6 +932,18 @@ namespace Eto.Forms
 				VisualParent.Remove(this);
 		}
 
+		static readonly object IsAttached_Key = new object();
+
+		/// <summary>
+		/// Gets or sets a value indicating this control has been attached to a native container
+		/// </summary>
+		/// <seealso cref="AttachNative"/>
+		bool IsAttached
+		{
+			get => Properties.Get<bool>(IsAttached_Key);
+			set => Properties.Set(IsAttached_Key, value);
+		}
+
 		/// <summary>
 		/// Attaches the control for direct use in a native application
 		/// </summary>
@@ -945,8 +957,12 @@ namespace Eto.Forms
 		public void AttachNative()
 		{
 			if (VisualParent != null)
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "You can only attach a parentless control"));
+				throw new InvalidOperationException("You can only attach a parentless control");
+			
+			if (IsAttached)
+				return;
 
+			IsAttached = true;
 			using (Platform.Context)
 			{
 				OnPreLoad(EventArgs.Empty);
@@ -971,6 +987,10 @@ namespace Eto.Forms
 		/// </remarks>
 		public void DetachNative()
 		{
+			if (!IsAttached)
+				return;
+
+			IsAttached = false;
 			using (Platform.Context)
 			{
 				OnUnLoad(EventArgs.Empty);
@@ -1266,7 +1286,19 @@ namespace Eto.Forms
 		/// <param name="allowedEffects">Allowed action.</param>
 		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects)
 		{
-			Handler.DoDragDrop(data, allowedEffects);
+			Handler.DoDragDrop(data, allowedEffects, null, PointF.Empty);
+		}
+
+		/// <summary>
+		/// Starts drag operation using this control as drag source.
+		/// </summary>
+		/// <param name="data">Drag data.</param>
+		/// <param name="allowedEffects">Allowed effects.</param>
+		/// <param name="image">Custom drag image</param>
+		/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
+		{
+			Handler.DoDragDrop(data, allowedEffects, image, cursorOffset);
 		}
 
 		/// <summary>
@@ -1317,6 +1349,8 @@ namespace Eto.Forms
 			if (disposing)
 			{
 				Unbind();
+				Detach();
+				DetachNative();
 			}
 
 			base.Dispose(disposing);
@@ -1867,7 +1901,9 @@ namespace Eto.Forms
 			/// </summary>
 			/// <param name="data">Drag data.</param>
 			/// <param name="allowedEffects">Allowed effects.</param>
-			void DoDragDrop(DataObject data, DragEffects allowedEffects);
+			/// <param name="image">Custom drag image</param>
+			/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+			void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset);
 
 			/// <summary>
 			/// Gets a parent window wrapper around the native window

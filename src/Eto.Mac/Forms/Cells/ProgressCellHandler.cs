@@ -119,6 +119,8 @@ namespace Eto.Mac.Forms.Cells
 			return view;
 		}
 
+		FontUtility _fontUtility = new FontUtility();
+
 		// The progress cell
 		public class EtoCell : NSLevelIndicatorCell, IMacControl
 		{
@@ -134,9 +136,9 @@ namespace Eto.Mac.Forms.Cells
 			public WeakReference WeakHandler { get; set; }
 
 			public ProgressCellHandler Handler
-			{ 
-				get { return (ProgressCellHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+			{
+				get { return WeakHandler?.Target as ProgressCellHandler; }
+				set { WeakHandler = new WeakReference(value); }
 			}
 
 			[Export("backgroundColor")]
@@ -174,7 +176,12 @@ namespace Eto.Mac.Forms.Cells
 				{
 					str.AddAttributes(NSDictionary.FromObjectAndKey(Font, NSStringAttributeKey.Font), range);
 				}
-				var size = FontExtensions.MeasureString(str, cellFrame.Size.ToEto());
+				var h = Handler;
+				if (h == null)
+					return;
+
+
+				var size = h._fontUtility.MeasureString(str, cellFrame.Size.ToEto());
 				var rect = cellFrame.ToEto();
 				var offset = (rect.Size - size) / 2;
 				if (!NSGraphicsContext.CurrentContext.IsFlipped)

@@ -40,10 +40,10 @@ namespace Eto.Mac.Forms
 		
 		public string Title {
 			get {
-				return Control.Title;
+				return Control.Message;
 			}
 			set {
-				Control.Title = value ?? string.Empty;
+				Control.Message = value ?? string.Empty;
 			}
 		}
 		

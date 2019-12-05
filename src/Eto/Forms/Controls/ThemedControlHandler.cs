@@ -381,9 +381,11 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="data">Drag data.</param>
 		/// <param name="allowedAction">Allowed action.</param>
-		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		/// <param name="image">Custom drag image</param>
+		/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF cursorOffset)
 		{
-			Control.DoDragDrop(data, allowedAction);
+			Control.DoDragDrop(data, allowedAction, image, cursorOffset);
 		}
 
 		#region Events

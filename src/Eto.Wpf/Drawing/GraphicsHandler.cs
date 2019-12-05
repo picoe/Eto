@@ -300,7 +300,16 @@ namespace Eto.Wpf.Drawing
             Control.Pop();
         }
 
-		public void DrawText(Font font, SolidBrush b, float x, float y, string text)
+		public void DrawText(FormattedText formattedText, PointF location)
+		{
+			SetOffset(true);
+			if (formattedText.Handler is FormattedTextHandler handler)
+			{
+				handler.DrawText(this, location);
+			}
+		}
+
+		public void DrawText(Font font, Brush b, float x, float y, string text)
 		{
 			SetOffset(true);
 			var fontHandler = font.Handler as FontHandler;

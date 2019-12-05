@@ -800,7 +800,7 @@ namespace Eto.WinForms
 		}
 		public static swf.DataObject ToSwf(this DataObject data) => DataObjectHandler.GetControl(data);
 
-		public static DataObject ToEto(this swf.IDataObject data) => new DataObject(new DataObjectHandler(new swf.DataObject(data)));
+		public static DataObject ToEto(this swf.IDataObject data) => new DataObject(new DataObjectHandler(data));
 
 		public static Keys GetEtoModifiers(this swf.DragEventArgs e)
 		{
@@ -825,6 +825,8 @@ namespace Eto.WinForms
 				buttons |= MouseButtons.Middle;
 			return buttons;
 		}
+
+		public static swf.Cursor ToSwf(this Cursor cursor) => CursorHandler.GetControl(cursor);
 
 	}
 }

@@ -55,7 +55,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets or sets target drag/drop operation.
 		/// </summary>
-		public DragEffects Effects { get; set; }
+		public virtual DragEffects Effects { get; set; }
 
 		/// <summary>
 		/// Location of the cursor in control coordinates
@@ -101,6 +101,27 @@ namespace Eto.Forms
 			Modifiers = modifiers;
 			Buttons = buttons;
 			ControlObject = controlObject;
+		}
+
+		/// <summary>
+		/// Gets a value indicating that the <see cref="SetDropDescription(string, string)"/> method is supported
+		/// for the current drag/drop operation.
+		/// </summary>
+		public virtual bool SupportsDropDescription => false;
+
+		/// <summary>
+		/// Sets the drop description when dragging overtop your control to specify additional context of what will be done.
+		/// </summary>
+		/// <remarks>
+		/// Note that some platforms may not support this, as it is only a hint for drag/drop operations.
+		/// Use <see cref="SupportsDropDescription"/> to determine if the platform supports it.
+		/// Currently works only in Wpf, and WinForms.
+		/// </remarks>
+		/// <param name="format">Format string, include <c>{0}</c> in the string for the inner parameter</param>
+		/// <param name="inner">Optional inner parameter to be highlighted from the rest of the string.</param>
+		public virtual void SetDropDescription(string format, string inner = null)
+		{
+			// do nothing by default
 		}
 	}
 }

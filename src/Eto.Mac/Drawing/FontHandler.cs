@@ -52,6 +52,12 @@ namespace Eto.Mac.Drawing
 		FontStyle? style;
 		FontDecoration decoration;
 		NSDictionary _attributes;
+		FormattedText _formattedText;
+
+		FormattedText FormattedText => _formattedText ?? (_formattedText = new FormattedText { Font = Widget });
+
+		static NSLayoutManager s_layoutManager;
+		static NSLayoutManager SharedLayoutManager => s_layoutManager ?? (s_layoutManager = new NSLayoutManager { UsesFontLeading = true });
 
 		public FontHandler()
 		{
@@ -131,14 +137,6 @@ namespace Eto.Mac.Drawing
 			this.decoration = decoration;
 		}
 
-		public float LineHeight
-		{
-			get
-			{
-				return Control.LineHeight(); // LineHeight() is the extension method above
-			}
-		}
-
 		#if OSX
 		NSFontTraitMask? traits;
 		[Obsolete]
@@ -211,15 +209,9 @@ namespace Eto.Mac.Drawing
 			Control = font;
 		}
 
-		public float Size
-		{
-			get { return (float)Control.PointSize; }
-		}
+		public float Size => (float)Control.PointSize;
 
-		public string FamilyName
-		{
-			get { return Control.FamilyName; }
-		}
+		public string FamilyName => Control.FamilyName;
 
 		public FontFamily Family
 		{
@@ -259,20 +251,11 @@ namespace Eto.Mac.Drawing
 			}
 		}
 
-		public FontDecoration FontDecoration
-		{
-			get { return decoration; }
-		}
+		public FontDecoration FontDecoration => decoration;
 
-		public float Ascent
-		{
-			get { return (float)Control.Ascender; }
-		}
+		public float Ascent => (float)Control.Ascender;
 
-		public float Descent
-		{
-			get { return (float)-Control.Descender; }
-		}
+		public float Descent => (float)-Control.Descender;
 
 		public float XHeight
 		{
@@ -283,15 +266,11 @@ namespace Eto.Mac.Drawing
 #endif
 		}
 
-		public float Leading
-		{
-			get { return (float)Control.Leading; }
-		}
+		public float Leading => (float)Control.Leading;
 
-		public float Baseline
-		{
-			get { return Control.LineHeight() - Leading - Descent; }
-		}
+		public float Baseline => LineHeight - Leading - Descent;
+
+		public float LineHeight => (float)SharedLayoutManager.DefaultLineHeightForFont(Control);
 
 		public NSDictionary Attributes
 		{
@@ -337,7 +316,8 @@ namespace Eto.Mac.Drawing
 
 		public SizeF MeasureString(string text)
 		{
-			return FontExtensions.MeasureString(text, Widget);
+			FormattedText.Text = text;
+			return FormattedText.Measure();
 		}
 	}
 }

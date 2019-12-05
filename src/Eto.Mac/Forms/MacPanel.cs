@@ -64,8 +64,11 @@ namespace Eto.Mac.Forms
 
 		public override void Layout()
 		{
+			if (MacView.NewLayout)
+				base.Layout();
 			Handler?.PerformContentLayout();
-			base.Layout();
+			if (!MacView.NewLayout)
+				base.Layout();
 		}
 	}
 

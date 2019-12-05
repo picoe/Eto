@@ -47,6 +47,8 @@ namespace Eto.Mac.Forms
 		[DllImport(Constants.CoreGraphicsLibrary)]
  		static extern int CGWarpMouseCursorPosition(CGPoint point);
 
+		public void SetCursor(Cursor cursor) => cursor.ToNS().Set();
+
 		public Eto.Drawing.PointF Position
 		{
 			get

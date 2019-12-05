@@ -66,6 +66,16 @@ namespace Eto.Wpf.Drawing
 			control.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, WpfTextDecorationsFrozen);
 		}
 
+		public void Apply(swm.FormattedText control)
+		{
+			control.SetFontFamily(WpfFamily);
+			control.SetFontStyle(WpfFontStyle);
+			control.SetFontStretch(WpfFontStretch);
+			control.SetFontWeight(WpfFontWeight);
+			control.SetFontSize(WpfSize);
+			control.SetTextDecorations(WpfTextDecorationsFrozen);
+		}
+
 		sd.Font SDFont
 		{
 			get
