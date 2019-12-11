@@ -234,15 +234,9 @@ _vstemplatefullpath: $(_vstemplatefullpath)
   <!--=====================================================
     Inline Tasks
     =========================================================-->
-  <PropertyGroup Condition="'$(ls-msbuildtasks-path)'=='' ">
-    <ls-msbuildtasks-path Condition=" '$(ls-msbuildtasks-path)'=='' or !Exists('$(ls-msbuildtasks-path)') ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</ls-msbuildtasks-path>
-    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll</ls-msbuildtasks-path>
-    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
-    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(MSBuildFrameworkToolsPath)\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
-    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(windir)\Microsoft.NET\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
-  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\..\..\build\MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
   <UsingTask Condition="false" TaskName="AddToZipTask" AssemblyFile="C:\data\mycode\sidewafflev2.1\SideWaffleTasks\bin\Debug\SideWaffleTasks.dll"/>
-  <UsingTask TaskName="AddToZipTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(ls-msbuildtasks-path)">
+  <UsingTask TaskName="AddToZipTask" TaskFactory="$(MSBuildTaskFactoryType)" AssemblyFile="$(MSBuildTasksAssemblyFile)">
     <ParameterGroup>
       <ZipFilePath ParameterType="System.String" Required="true" />
       <FilesToAdd ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />

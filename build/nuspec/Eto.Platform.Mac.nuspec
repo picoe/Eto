@@ -6,7 +6,7 @@
 		<title>$title$</title>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
-		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
+		<license type="file">LICENSE.txt</license>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
 		<repository type="git" url="https://github.com/picoe/Eto" />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -15,13 +15,13 @@
 This package is deprecated and should not be used in new projects, please use Eto.Platform.Mac64 or Eto.Platform.XamMac2 instead.
 
 This is the 32-bit MonoMac platform for Eto.Forms UI Framework.
-    	
+			
 Include this along with your Eto.Forms application to provide a native interface for Mac users.
-    	
+			
 Eto.Platform.Mac uses the open source MonoMac, which allows you to create macOS application bundles from any platform.  However, it does require mono to be installed when running on macOS.
 
 Use Eto.Platform.XamMac2 if you want to bundle mono inside your .app, however it requires Visual Studio on a Mac.
-    	
+			
 You do not need to use any of the classes of this assembly (unless customizing the MonoMac functionality of the platform), and should just use the UI controls from the Eto assembly.
 		</description>
 		<copyright>$copyright$</copyright>

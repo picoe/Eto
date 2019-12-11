@@ -10,7 +10,7 @@
     <ApplicationIcon>..\Eto.Test\Images\TestIcon.ico</ApplicationIcon>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.Gtk2</AssemblyName>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <FixGtkReferences Condition="$(FixGtkReferences)==''">true</FixGtkReferences>
   </PropertyGroup>
   <PropertyGroup>

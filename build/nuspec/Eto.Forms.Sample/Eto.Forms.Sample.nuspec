@@ -6,7 +6,7 @@
     <title>Eto.Forms - Sample Application</title>
     <authors>Curtis Wensley</authors>
     <owners>Curtis Wensley</owners>
-    <licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE.txt</licenseUrl>
+    <license type="file">LICENSE.txt</license>
     <projectUrl>https://github.com/picoe/Eto</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Eto.Forms - Sample Cross Platform Application</summary>
@@ -33,6 +33,7 @@ In Xamarin Studio, set the compile target to 'Executable with GUI' and uncheck '
   <files>
     <file src="Program.cs.pp" target="content" /> 
     <file src="MainForm.cs.pp" target="content" /> 
-    <file src="README.txt" target="" /> 
+    <file src="README.txt" target="" />
+    <file src="..\..\..\LICENSE.txt" target="LICENSE.txt" />
   </files>
 </package>

@@ -57,9 +57,6 @@
 
   <!-- Build target -->
   <Target Name="BuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle" Condition="$(MacBuildBundle) == 'True'" Outputs="$(OutputAppPath)">
-    <Error Text="A reference to the NuGet package RoslynCodeTaskFactory is required to build the macOS .app bundle, or add &lt;MacBuildBundle&gt;False&lt;/MacBuildBundle&gt; to your project"
-           Condition=" '$(RoslynCodeTaskFactory)' == '' " />
-
     <!-- bundle mono with mkbundle -->
     <CallTarget Targets="MacBundleMono" Condition="$(MacBundleMono) == 'True'" />
     <!-- copy executables and run with installed mono -->
@@ -244,14 +241,19 @@
     <Exec Command="chmod +x &quot;$(LauncherFileWithPath)&quot;" Condition="'$(OS)'=='Unix'" />
   </Target>
   
+  <Import Project="$(MSBuildThisFileDirectory)..\MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
   <!-- Task to update the plist file with new values -->
-  <UsingTask TaskName="UpdatePList" TaskFactory="CodeTaskFactory"  AssemblyFile="$(RoslynCodeTaskFactory)"
-               Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+  <UsingTask TaskName="UpdatePList" TaskFactory="$(MSBuildTaskFactoryType)"  AssemblyFile="$(MSBuildTasksAssemblyFile)">
+    <ParameterGroup>
+      <PListFile ParameterType="System.String" Required="true" />
+      <TargetFileName ParameterType="System.String" Required="true" />
+      <MacBundleName ParameterType="System.String" Required="true" />
+      <LauncherFile ParameterType="System.String" Required="true" />
+      <MonoMinimumVersion ParameterType="System.String" />
+      <IconFile ParameterType="System.String" Output="true" />
+    </ParameterGroup>
     <Task>
       <Reference Include="System.Xml" />
-      <Using Namespace="System" />
-      <Using Namespace="System.IO" />
-      <Using Namespace="System.Xml" />
       <Code Type="Class" Language="cs"><![CDATA[
     using System;
     using System.IO;

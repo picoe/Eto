@@ -6,6 +6,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RootNamespace>Eto.GtkSharp</RootNamespace>
   </PropertyGroup>
+  <Import Project="..\..\build\nuspec\Eto.Platform.Gtk.nuspec.props"/>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>TRACE;PCL;GTK3;DEBUG;NETSTANDARD2_0;GTKCORE</DefineConstants>
     <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
