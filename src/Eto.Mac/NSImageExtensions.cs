@@ -74,6 +74,7 @@ namespace Eto.Mac
 				Color = CIColor.FromCGColor(tint.ToCG())
 			};
 
+#pragma warning disable CS0618 // Image => InputImage in Xamarin.Mac 6.6
 			var colorFilter = new CIColorControls
 			{
 				Image = (CIImage)colorGenerator.ValueForKey(CIFilterOutputKey.Image),
@@ -94,6 +95,7 @@ namespace Eto.Mac
 				Image = (CIImage)colorFilter.ValueForKey(CIFilterOutputKey.Image),
 				BackgroundImage = (CIImage)monochromeFilter.ValueForKey(CIFilterOutputKey.Image)
 			};
+#pragma warning restore CS0618
 
 			var outputImage = (CIImage)compositingFilter.ValueForKey(CIFilterOutputKey.Image);
 			var extent = outputImage.Extent;

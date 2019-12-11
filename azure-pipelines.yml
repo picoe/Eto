@@ -3,6 +3,8 @@ variables:
   build.version: 2.5.0-ci-$(build.increment)
   build.configuration: Release
   build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:Branch=$(Build.SourceBranch)
+  build.dotnetversion: 3.1.x
+  build.xamarinversion: 6_4_0
 
 trigger:
   branches:
@@ -16,11 +18,16 @@ trigger:
 jobs:
 - job: Mac
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   
   steps:
-  - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_18_1
+  - task: UseDotNet@2
+    inputs:
+      version: $(build.dotnetversion)
+      
+  - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(build.xamarinversion)
     displayName: 'Select Xamarin SDK version'
+    
   - task: msbuild@1
     displayName: Build and Package
     inputs: 
@@ -69,11 +76,15 @@ jobs:
     
 - job: Windows
   pool:
-    vmImage: 'VS2017-Win2016'
+    vmImage: 'windows-2019'
   
   steps:
   - script: cinst gtksharp -y
     displayName: Install GTK#
+
+  - task: UseDotNet@2
+    inputs:
+      version: $(build.dotnetversion)
 
   - task: msbuild@1
     displayName: Build and Package
