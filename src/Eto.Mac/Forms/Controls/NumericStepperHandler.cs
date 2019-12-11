@@ -427,7 +427,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				// monomac can't handle out params that pass a null pointer (errorDescription), so we marshal manually here
 				var h = Handler;
-				if (h.NeedsFormat)
+				if (h != null && h.NeedsFormat)
 				{
 					double result;
 					var str = NSString.FromHandle(strPtr);
@@ -459,7 +459,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var h = Handler;
 				var number = value as NSNumber;
-				if (h.NeedsFormat && number != null)
+				if (h != null && h.NeedsFormat && number != null)
 				{
 					var format = h.ComputedFormatString;
 					return number.DoubleValue.ToString(format, h.CultureInfo);

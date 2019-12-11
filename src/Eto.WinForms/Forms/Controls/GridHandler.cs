@@ -30,7 +30,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected void ResetSelection()
 		{
-			if (!SelectedRows.Any())
+			if (!SelectedRows.Any() && AllowEmptySelection)
 				isFirstSelection = true;
 		}
 
@@ -45,7 +45,7 @@ namespace Eto.WinForms.Forms.Controls
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var size = base.GetPreferredSize(proposedSize);
-				var def = Handler.UserDesiredSize;
+				var def = Handler.UserPreferredSize;
 				if (def.Width >= 0)
 					size.Width = def.Width;
 				if (def.Height >= 0)
@@ -117,6 +117,31 @@ namespace Eto.WinForms.Forms.Controls
 
 			Control.SelectionChanged += HandleFirstSelection;
 			Control.DataError += HandleDataError;
+		}
+
+		private void Widget_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (!e.Handled && e.Buttons == MouseButtons.Primary)
+			{
+				var hitTest = Control.HitTest((int)e.Location.X, (int)e.Location.Y);
+				if (AllowEmptySelection)
+				{
+					if (hitTest.Type == swf.DataGridViewHitTestType.None)
+					{
+						if (IsEditing)
+							CancelEdit();
+						UnselectAll();
+					}
+				}
+				else if (e.Modifiers == Keys.Control
+					&& hitTest.RowIndex >= 0 
+					&& Control.SelectedRows.Count == 1 
+					&& Control.SelectedRows[0].Index == hitTest.RowIndex)
+				{
+					// don't allow user to deselect all items
+					e.Handled = true;
+				}
+			}
 		}
 
 		void HandleDataError(object sender, swf.DataGridViewDataErrorEventArgs e)
@@ -284,6 +309,7 @@ namespace Eto.WinForms.Forms.Controls
 			base.Initialize();
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
+			Widget.MouseDown += Widget_MouseDown;
 		}
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
@@ -376,11 +402,13 @@ namespace Eto.WinForms.Forms.Controls
 		public void SelectAll()
 		{
 			Control.SelectAll();
+			isFirstSelection = false;
 		}
 
 		public void SelectRow(int row)
 		{
 			Control.Rows[row].Selected = true;
+			isFirstSelection = false;
 		}
 
 		public void UnselectRow(int row)
@@ -490,6 +518,16 @@ namespace Eto.WinForms.Forms.Controls
 		}
 
 		public bool IsEditing => Control.IsCurrentCellInEditMode;
+
+		public bool AllowEmptySelection { get; set; } = true;
+
+		protected void EnsureSelection()
+		{
+			if (!AllowEmptySelection && Control.RowCount > 0)
+			{
+				SelectRow(0);
+			}
+		}
 	}
 }
 

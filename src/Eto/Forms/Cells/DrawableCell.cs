@@ -49,6 +49,21 @@ namespace Eto.Forms
 		{
 			get { return CellState.HasFlag(CellStates.Selected); }
 		}
+
+		internal void DrawCenteredText(string value, Color? color = null, Font font = null, RectangleF? rect = null)
+		{
+			var c = color ?? (IsSelected ? SystemColors.HighlightText : SystemColors.ControlText);
+			var f = font ?? SystemFonts.Default();
+			DrawCenteredText(rect ?? ClipRectangle, c, f, value);
+		}
+
+		internal void DrawCenteredText(RectangleF rect, Color color, Font font, string value)
+		{
+			var size = Graphics.MeasureString(font, value);
+			var y = (rect.Height - size.Height) / 2;
+			var location = rect.Location + new PointF(0, y);
+			Graphics.DrawText(font, color, location, value);
+		}
 	}
 
 	/// <summary>

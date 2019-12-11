@@ -79,8 +79,11 @@ namespace Eto.Mac.Forms
 
 			public override void Layout()
 			{
+				if (MacView.NewLayout)
+					base.Layout();
 				Handler?.PerformLayout();
-				base.Layout();
+				if (!MacView.NewLayout)
+					base.Layout();
 			}
 		}
 
@@ -203,6 +206,9 @@ namespace Eto.Mac.Forms
 					var xscaled = x == lastxscale || xscaling[x];
 
 					if (!xscaled && !yscaled)
+						continue;
+
+					if (final && xscaled && yscaled)
 						continue;
 
 					availableControlSize.Width = xscaled ? remaining.Width : float.PositiveInfinity;

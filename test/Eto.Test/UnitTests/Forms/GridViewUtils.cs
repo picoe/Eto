@@ -10,17 +10,20 @@ namespace Eto.Test.UnitTests.Forms
 {
 	class DataItem
 	{
+		public string TextValue { get; set; }
+
 		public int Id { get; private set; }
+
+		public DataItem()
+		{
+		}
 
 		public DataItem(int id)
 		{
 			Id = id;
 		}
 
-		public override string ToString()
-		{
-			return "Item " + Id;
-		}
+		public override string ToString() => "Item " + Id;
 	}
 
 	static class GridViewUtils

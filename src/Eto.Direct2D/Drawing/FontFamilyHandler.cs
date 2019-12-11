@@ -48,6 +48,10 @@ namespace Eto.Direct2D.Drawing
 		public FontFamilyHandler(sw.FontFamily family)
 		{
 			Control = family;
+			if (Control.FamilyNames.FindLocaleName("en-us", out var index))
+				Name = Control.FamilyNames.GetLocaleName(index);
+			else
+				Name = Control.FamilyNames.GetString(0);
 		}
 
 		public void Create(string familyName)

@@ -282,7 +282,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					Application.Instance.AsyncInvoke(form.Close);
 				};
 				return control;
-			}, false);
+			}, allowPass: false);
 
 			Assert.AreEqual(1, itemClickWasRaised, "#1.1"); // ensure user actually clicked an item.
 			Assert.AreEqual(0, selectedIndexesChangedCount, "#1.2");
@@ -377,7 +377,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					Application.Instance.AsyncInvoke(form.Close);
 				};
 				return control;
-			}, false);
+			}, allowPass: false);
 
 			Assert.Multiple(() =>
 			{

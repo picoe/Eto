@@ -156,6 +156,19 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
+	class GridDragInfo
+	{
+		public NSDragOperation AllowedOperation { get; set; }
+		public NSImage DragImage { get; set; }
+		public PointF ImageOffset { get; set; }
+
+		public CGPoint GetDragImageOffset()
+		{
+			var size = DragImage.Size;
+			return new CGPoint(size.Width / 2 - ImageOffset.X, ImageOffset.Y - size.Height / 2);
+		}
+	}
+
 	public abstract class GridHandler<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, Grid.IHandler, IDataViewHandler, IGridHandler
 		where TControl : NSTableView
 		where TWidget : Grid
@@ -164,6 +177,12 @@ namespace Eto.Mac.Forms.Controls
 		ColumnCollection columns;
 
 		public override NSView DragControl => Control;
+
+		public bool AllowEmptySelection
+		{
+			get => Control.AllowsEmptySelection;
+			set => Control.AllowsEmptySelection = value;
+		}
 
 		protected int SuppressUpdate { get; set; }
 
@@ -193,6 +212,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public GridColumnHandler GetColumn(NSTableColumn tableColumn)
 		{
+			if (tableColumn == null)
+				return null;
 			var str = tableColumn.Identifier;
 			if (!string.IsNullOrEmpty(str))
 			{
@@ -349,6 +370,7 @@ namespace Eto.Mac.Forms.Controls
 					}
 					autoSizeRange = newRange;
 					IsAutoSizingColumns = false;
+					InvalidateMeasure();
 					return true;
 				}
 			}

@@ -93,6 +93,14 @@ namespace Eto.Mac.Forms
 			Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
 		}
 
+		public bool DisableSetOrigin { get; set; }
+
+		public override void SetFrameOrigin(CGPoint aPoint)
+		{
+			if (!DisableSetOrigin)
+				base.SetFrameOrigin(aPoint);
+		}
+
 		public override void RecalculateKeyViewLoop()
 		{
 			base.RecalculateKeyViewLoop();
@@ -127,12 +135,18 @@ namespace Eto.Mac.Forms
 
 	static class MacWindow
 	{
+		internal static readonly object MovableByWindowBackground_Key = new object();
 		internal static readonly object InitialLocation_Key = new object();
 		internal static readonly object PreferredClientSize_Key = new object();
 		internal static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
 		internal static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
 		internal static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
 		internal static readonly object SetAsChildWindow_Key = new object();
+		internal static readonly IntPtr selWindows_Handle = Selector.GetHandle("windows");
+		internal static readonly IntPtr selCount_Handle = Selector.GetHandle("count");
+		internal static readonly IntPtr selObjectAtIndex_Handle = Selector.GetHandle("objectAtIndex:");
+		internal static readonly IntPtr selMakeKeyWindow_Handle = Selector.GetHandle("makeKeyWindow");
+		internal static readonly IntPtr selIsVisible_Handle = Selector.GetHandle("isVisible");
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
@@ -167,6 +181,19 @@ namespace Eto.Mac.Forms
 		public NSObject FieldEditorClient { get; set; }
 
 		public MacFieldEditor FieldEditor => fieldEditor;
+
+		/// <summary>
+		/// Allow moving the window by dragging the background, null to only enable it in certain cases (e.g. when borderless)
+		/// </summary>
+		public bool? MovableByWindowBackground
+		{
+			get => Widget.Properties.Get<bool?>(MacWindow.MovableByWindowBackground_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(MacWindow.MovableByWindowBackground_Key, value))
+					SetMovable();
+			}
+		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -453,6 +480,14 @@ namespace Eto.Mac.Forms
 			Control.DidResignKey += HandleDidResignKey;
 			Control.ShouldZoom = HandleShouldZoom;
 			Control.WillMiniaturize += HandleWillMiniaturize;
+#if MONOMAC
+			// AppKit still calls some delegate methods on the window after closing a form (e.g. WillReturnFieldEditor),
+			// causing exceptions trying to recreate the delegate if it has been garbage collected.
+			// This is because MonoMac doesn't use ref counting to determine when objects can be GC'd like Xamarin.Mac.
+			// We avoid this problem by clearing out the delegate after the window is closed.
+			// In Eto, we don't expect any events to be called after that point anyway.
+			Widget.Closed += (sender, e) => Application.Instance.AsyncInvoke(() => Control.Delegate = null);
+#endif
 		}
 
 		static NSObject HandleWillReturnFieldEditor(NSWindow sender, NSObject client)
@@ -466,13 +501,18 @@ namespace Eto.Mac.Forms
 
 		public override NSView ContentControl => Control.ContentView;
 
-		public virtual string Title { get { return Control.Title; } set { Control.Title = value ?? ""; } }
-		// Control.Title throws an exception if value is null
+		public virtual string Title { get => Control.Title; set => Control.Title = value ?? ""; }
+
 		void SetButtonStates()
 		{
 			var button = Control.StandardWindowButton(NSWindowButton.ZoomButton);
 			if (button != null)
 				button.Enabled = Maximizable && Resizable;
+		}
+
+		void SetMovable()
+		{
+			Control.MovableByWindowBackground = MovableByWindowBackground ?? (Resizable && WindowStyle == WindowStyle.None);
 		}
 
 		public bool Resizable
@@ -487,6 +527,7 @@ namespace Eto.Mac.Forms
 					else
 						Control.StyleMask &= ~NSWindowStyle.Resizable;
 					SetButtonStates();
+					SetMovable();
 				}
 			}
 		}
@@ -544,7 +585,7 @@ namespace Eto.Mac.Forms
 			get
 			{
 				if (!Widget.Loaded)
-					return PreferredSize ?? new Size(-1, -1);
+					return UserPreferredSize;
 				return Control.Frame.Size.ToEtoSize();
 			}
 			set
@@ -553,16 +594,15 @@ namespace Eto.Mac.Forms
 				var newFrame = oldFrame.SetSize(value);
 				newFrame.Y = (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldFrame.Height));
 				Control.SetFrame(newFrame, true);
-				PreferredSize = value;
+				UserPreferredSize = value;
 				SetAutoSize();
 			}
 		}
 
-		void SetAutoSize()
+
+		protected override void SetAutoSize()
 		{
-			AutoSize = true;
-			if (PreferredSize != null)
-				AutoSize &= PreferredSize.Value.Width == -1 || PreferredSize.Value.Height == -1;
+			base.SetAutoSize();
 			if (PreferredClientSize != null)
 				AutoSize &= PreferredClientSize.Value.Width == -1 || PreferredClientSize.Value.Height == -1;
 		}
@@ -721,16 +761,12 @@ namespace Eto.Mac.Forms
 				if (!Widget.Loaded)
 				{
 					PreferredClientSize = value;
-					if (PreferredSize != null)
-					{
-						if (value.Width != -1 && value.Height != -1)
-							PreferredSize = null;
-						else if (value.Width != -1)
-							PreferredSize = new Size(-1, PreferredSize.Value.Height);
-						else if (value.Height != -1)
-							PreferredSize = new Size(PreferredSize.Value.Width, -1);
-
-					}
+					if (value.Width != -1 && value.Height != -1)
+						UserPreferredSize = new Size(-1, -1);
+					else if (value.Width != -1)
+						UserPreferredSize = new Size(-1, UserPreferredSize.Height);
+					else if (value.Height != -1)
+						UserPreferredSize = new Size(UserPreferredSize.Width, -1);
 				}
 				SetAutoSize();
 			}
@@ -793,16 +829,14 @@ namespace Eto.Mac.Forms
 			// location is relative to the main screen, translate to bottom left, inversed
 			var mainFrame = NSScreen.Screens[0].Frame;
 			var frame = Control.Frame;
-			var point = new CGPoint((nfloat)value.X, (nfloat)(mainFrame.Height - value.Y - frame.Height));
-			Control.SetFrameOrigin(point);
+			var point = new CGPoint((nfloat)value.X, (nfloat)(mainFrame.Height - value.Y));
 			if (Control.Screen == null)
 			{
 				// ensure that the control lands on a screen
 				point.X = (nfloat)Math.Min(Math.Max(mainFrame.X, point.X), mainFrame.Right - frame.Width);
 				point.Y = (nfloat)Math.Min(Math.Max(mainFrame.Y, point.Y), mainFrame.Bottom - frame.Height);
-
-				Control.SetFrameOrigin(point);
 			}
+			Control.SetFrameTopLeftPoint(point);
 		}
 
 		public WindowState WindowState
@@ -868,18 +902,14 @@ namespace Eto.Mac.Forms
 			{
 				AutoSize = false;
 				var availableSize = SizeF.PositiveInfinity;
-				if (PreferredSize != null)
-				{
-					var borderSize = GetBorderSize();
-					if (PreferredSize.Value.Width != -1)
-						availableSize.Width = PreferredSize.Value.Width - borderSize.Width;
-					if (PreferredSize.Value.Height != -1)
-						availableSize.Height = PreferredSize.Value.Height - borderSize.Height;
-				}
+				var borderSize = GetBorderSize();
+				if (UserPreferredSize.Width != -1)
+					availableSize.Width = UserPreferredSize.Width - borderSize.Width;
+				if (UserPreferredSize.Height != -1)
+					availableSize.Height = UserPreferredSize.Height - borderSize.Height;
 				var size = GetPreferredSize(availableSize);
 				SetContentSize(size.ToNS());
 				setInitialSize = true;
-
 			}
 			PositionWindow();
 			base.OnLoad(e);
@@ -916,7 +946,8 @@ namespace Eto.Mac.Forms
 				SetLocation(InitialLocation.Value);
 				InitialLocation = null;
 			}
-			Control.Center();
+			else
+				Control.Center();
 		}
 
 		#region IMacContainer implementation
@@ -996,11 +1027,15 @@ namespace Eto.Mac.Forms
 			{
 				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
 				{
-					Control.StyleMask = value.ToNS(Control.StyleMask);
+					var newStyleMask = value.ToNS(Control.StyleMask);
+					Control.StyleMask = 0; // reset titled
+					Control.StyleMask = newStyleMask;
 
 					// don't use animation when there's no border.
 					if (value == WindowStyle.None && Control.AnimationBehavior == NSWindowAnimationBehavior.Default)
 						Control.AnimationBehavior = NSWindowAnimationBehavior.None;
+
+					SetMovable();
 				}
 			}
 		}
@@ -1013,11 +1048,42 @@ namespace Eto.Mac.Forms
 
 		public void SendToBack()
 		{
-			Control.OrderBack(Control);
-			var window = NSApplication.SharedApplication.Windows.FirstOrDefault(r => r != Control);
+			// resign key window.  This does not set another window as key, so we do it below to match other platforms.
+			Control.ResignKeyWindow();
+
+			// using NSApplication.SharedApplication.Windows is not recommended apparently as it can prevent windows from properly closing/disposing.
+
+			// find the visible window ordered before this one, and make it key
+			var arrPtr = Messaging.IntPtr_objc_msgSend(NSApplication.SharedApplication.Handle, MacWindow.selWindows_Handle);
+			if (arrPtr != IntPtr.Zero)
+			{
+				var thisWindowHandle = Control.Handle;
+				var lastWindowHandle = IntPtr.Zero;
+				var count = Messaging.nuint_objc_msgSend(arrPtr, MacWindow.selCount_Handle);
+				for (nuint i = 0; i < count; i++)
+				{
+					var windowHandle = Messaging.IntPtr_objc_msgSend_nuint(arrPtr, MacWindow.selObjectAtIndex_Handle, i);
+					if (windowHandle == thisWindowHandle)
+					{
+						// found this window, set the last visible as key
+						if (lastWindowHandle != IntPtr.Zero)
+							Messaging.void_objc_msgSend(lastWindowHandle, MacWindow.selMakeKeyWindow_Handle);
+						break;
+					}
+					// only set as last if it is visible
+					if (Messaging.bool_objc_msgSend(windowHandle, MacWindow.selIsVisible_Handle))
+						lastWindowHandle = windowHandle;
+				}
+			}
+
+			/* the above does this but in a less dangerous/leaky way.
+			var window = NSApplication.SharedApplication.Windows.FirstOrDefault(r => r.IsVisible && r != Control);
 			if (window != null)
 				window.MakeKeyWindow();
-			Control.ResignKeyWindow();
+			/**/
+
+			// order back after finding the window to set as key
+			Control.OrderBack(Control);
 		}
 
 		protected virtual bool DefaultSetAsChildWindow => false;

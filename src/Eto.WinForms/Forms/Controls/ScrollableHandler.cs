@@ -114,7 +114,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
-			var baseSize = UserDesiredSize;
+			var baseSize = UserPreferredSize;
 			var size = base.GetPreferredSize(availableSize, useCache);
 			size -= Padding.Size;
 			// if we have set to a specific size, then try to use that

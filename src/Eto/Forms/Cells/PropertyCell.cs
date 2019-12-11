@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.Windows.Input;
+using System.Reflection;
 
 namespace Eto.Forms
 {
@@ -117,6 +118,11 @@ namespace Eto.Forms
 	public class PropertyCellTypeBoolean : PropertyCellType<bool?>
 	{
 		/// <summary>
+		/// Gets or sets a binding to indicate that the check box should allow three state (null).
+		/// </summary>
+		public IndirectBinding<bool> ItemThreeStateBinding { get; set; }
+
+		/// <summary>
 		/// Creates the content control for the cell.
 		/// </summary>
 		/// <remarks>
@@ -132,10 +138,12 @@ namespace Eto.Forms
 				return null;
 			var checkBox = new CheckBox();
 			checkBox.CheckedBinding.BindDataContext(ItemBinding);
+			if (ItemThreeStateBinding != null)
+				checkBox.BindDataContext(c => c.ThreeState, ItemThreeStateBinding);
 			var label = new Label { Wrap = WrapMode.None, VerticalAlignment = VerticalAlignment.Center };
 			label.MouseDoubleClick += (sender, e) => checkBox.Checked = !checkBox.Checked;
 			label.Bind(c => c.TextColor, args, a => a.CellTextColor);
-			label.TextBinding.BindDataContext(ItemBinding.Convert(r => Convert.ToString(r)));
+			label.TextBinding.Bind(checkBox, Binding.Property((CheckBox c) => c.Checked).Convert(r => Convert.ToString(r)));
 			return new TableLayout
 			{
 				Spacing = new Size(5, 0),
@@ -156,8 +164,7 @@ namespace Eto.Forms
 			if (ItemBinding == null)
 				return;
 			var value = ItemBinding.GetValue(args.Item);
-			var color = args.IsSelected ? SystemColors.HighlightText : SystemColors.ControlText;
-			args.Graphics.DrawText(SystemFonts.Default(), color, args.ClipRectangle.Location, value.ToString());
+			args.DrawCenteredText(value?.ToString());
 		}
 	}
 
@@ -210,8 +217,61 @@ namespace Eto.Forms
 			if (ItemBinding == null)
 				return;
 			var value = ItemBinding.GetValue(args.Item);
-			var color = args.IsSelected ? SystemColors.HighlightText : SystemColors.ControlText;
-			args.Graphics.DrawText(SystemFonts.Default(), color, args.ClipRectangle.Location, value);
+			args.DrawCenteredText(value);
+		}
+	}
+
+
+	/// <summary>
+	/// Property cell type to edit int values.
+	/// </summary>
+	public class PropertyCellTypeNumber<T> : PropertyCellType<T>
+	{
+		/// <summary>
+		/// Creates the content control for the cell.
+		/// </summary>
+		/// <remarks>The control returned may be reused for other cells, so it is ideal to use MVVM data binding using
+		/// BindDataContext() 
+		/// methods of your controls.
+		/// This should return the same control for each row, otherwise the incorrect control may be shown on certain cells.</remarks>
+		/// <param name="args">Cell arguments.</param>
+		public override Control OnCreate(CellEventArgs args)
+		{
+			if (ItemBinding == null)
+				return null;
+			var textBox = new NumericMaskedTextBox<T> { ShowBorder = false };
+			textBox.BackgroundColor = Colors.Transparent;
+			var colorBinding = textBox.Bind(c => c.TextColor, args, a => a.CellTextColor);
+			textBox.GotFocus += (sender, e) =>
+			{
+				colorBinding.Mode = DualBindingMode.Manual;
+				textBox.BackgroundColor = SystemColors.ControlBackground;
+				textBox.TextColor = SystemColors.ControlText;
+			};
+			textBox.LostFocus += (sender, e) =>
+			{
+				textBox.BackgroundColor = Colors.Transparent;
+				colorBinding.Mode = DualBindingMode.TwoWay;
+				colorBinding.Update();
+			};
+			textBox.ValueBinding.BindDataContext(ItemBinding);
+			return textBox;
+		}
+
+		/// <summary>
+		/// Paints the cell when <see cref="CustomCell.SupportsControlView"/> is false.
+		/// </summary>
+		/// <remarks>
+		/// For platforms like GTK and WinForms which don't support using a custom control per cell, this will be called
+		/// to paint the content of the cell when it is not in edit mode.
+		/// </remarks>
+		/// <param name="args">Cell paint arguments.</param>
+		public override void OnPaint(CellPaintEventArgs args)
+		{
+			if (ItemBinding == null)
+				return;
+			var value = ItemBinding.GetValue(args.Item);
+			args.DrawCenteredText(Convert.ToString(value));
 		}
 	}
 
@@ -287,10 +347,11 @@ namespace Eto.Forms
 					e.Cancel = e.FromUser && !e.Text.ToCharArray().Select(r => r.ToString()).All("0123456789abcdefABCDEF".Contains);
 				};
 				var colorBinding = textBox.Bind(c => c.TextColor, args, a => a.CellTextColor);
-				textBox.TextBinding.BindDataContext(ItemBinding.Convert(v => v.ToHex(ShowAlpha), v =>
+				textBox.TextBinding.Bind(picker, Binding.Property((ColorPicker p) => p.Value).Convert(v => v.ToHex(ShowAlpha), v =>
 				{
 					Color c;
-					Color.TryParse(v, out c);
+					if (!Color.TryParse(v, out c) && !ShowAlpha)
+						c = Colors.Black;
 					return c;
 				}));
 
@@ -312,7 +373,7 @@ namespace Eto.Forms
 			{
 				var label = new Label();
 				label.Bind(c => c.TextColor, args, a => a.CellTextColor);
-				label.TextBinding.BindDataContext(ItemBinding.Convert(v => v.ToHex(ShowAlpha), v =>
+				label.TextBinding.Bind(picker, Binding.Property((ColorPicker p) => p.Value).Convert(v => v.ToHex(ShowAlpha), v =>
 				{
 					Color c;
 					Color.TryParse(v, out c);
@@ -342,10 +403,14 @@ namespace Eto.Forms
 			if (ItemBinding == null)
 				return;
 			var value = ItemBinding.GetValue(args.Item);
-			var color = args.IsSelected ? SystemColors.HighlightText : SystemColors.ControlText;
-			args.Graphics.DrawText(SystemFonts.Default(), color, args.ClipRectangle.Location, value.ToHex(ShowAlpha));
+
+			const int size = 35;
 			var rect = args.ClipRectangle;
-			rect.Left = rect.Right - 35;
+			rect.Right -= size;
+			args.DrawCenteredText(value.ToHex(ShowAlpha), rect: rect);
+
+			rect = args.ClipRectangle;
+			rect.Left = rect.Right - size;
 			args.Graphics.FillRectangle(value, rect);
 		}
 	}
@@ -408,14 +473,14 @@ namespace Eto.Forms
 			if (ItemBinding == null)
 				return;
 			var value = ItemBinding.GetValue(args.Item);
-			var color = args.IsSelected ? SystemColors.HighlightText : SystemColors.ControlText;
-			args.Graphics.DrawText(SystemFonts.Default(), color, args.ClipRectangle.Location, string.Format("{0:d}", value));
+			args.DrawCenteredText(string.Format("{0:d}", value));
 		}
 	}
 
 	/// <summary>
 	/// Property cell type to edit an enum value using an <see cref="EnumDropDown{T}"/>.
 	/// </summary>
+	/// <seealso cref="PropertyCellTypeEnum"/>
 	public class PropertyCellTypeEnum<T> : PropertyCellType<T>
 		where T: struct
 	{
@@ -452,8 +517,246 @@ namespace Eto.Forms
 			if (ItemBinding == null)
 				return;
 			var value = ItemBinding.GetValue(args.Item);
-			var color = args.IsSelected ? SystemColors.HighlightText : SystemColors.ControlText;
-			args.Graphics.DrawText(SystemFonts.Default(), color, args.ClipRectangle.Location, Convert.ToString(value));
+			args.DrawCenteredText(Convert.ToString(value));
+		}
+	}
+
+	/// <summary>
+	/// Property cell type to edit any type of number
+	/// </summary>
+	public class PropertyCellTypeNumber : PropertyCellType<object>
+	{
+		/// <summary>
+		/// Gets the identifier for this cell type
+		/// </summary>
+		public override string Identifier => "PropertyCellTypeNumber";
+
+		/// <summary>
+		/// Gets or sets the item binding to get/set the type of the numeric value
+		/// </summary>
+		/// <remarks>
+		/// Use this to specify what numeric type should be used to create the NumericMaskedTextBox.
+		/// Otherwise, the type of the current value will be used.  This is only needed when the value can be null.
+		/// </remarks>
+		/// <value>The item type binding.</value>
+		public IndirectBinding<Type> ItemTypeBinding { get; set; }
+
+		/// <summary>
+		/// Determines whether this instance can display the specified itemType.
+		/// </summary>
+		/// <returns><c>true</c> if this instance can display the specified itemType; otherwise, <c>false</c>.</returns>
+		/// <param name="itemType">Item type.</param>
+		public override bool CanDisplay(object itemType)
+		{
+			var type = itemType as Type;
+			if (type == null)
+				return false;
+			type = Nullable.GetUnderlyingType(type) ?? type;
+			return type == typeof(sbyte)
+				|| type == typeof(short)
+				|| type == typeof(int)
+				|| type == typeof(long)
+				|| type == typeof(byte)
+				|| type == typeof(ushort)
+				|| type == typeof(uint)
+				|| type == typeof(ulong)
+				|| type == typeof(float)
+				|| type == typeof(double)
+				|| type == typeof(decimal);
+		}
+
+		/// <summary>
+		/// Creates the content control for the cell.
+		/// </summary>
+		/// <remarks>
+		/// The control returned may be reused for other cells, so it is ideal to use MVVM data binding using BindDataContext() 
+		/// methods of your controls.
+		/// This should return the same control for each row, otherwise the incorrect control may be shown on certain cells.
+		/// </remarks>
+		/// <param name="args">Cell arguments.</param>
+		public override Control OnCreate(CellEventArgs args)
+		{
+			if (ItemBinding == null)
+				return null;
+			return new Panel { Content = CreateNumericTextBox(args, null) };
+		}
+
+		/// <summary>
+		/// Configures the content control for the given cell information.
+		/// </summary>
+		/// <remarks>
+		/// When the DataContext changes on a cell, this will be called to configure the cell.
+		/// 
+		/// You are only required to override this when you are not using MVVM data binding with your controls created by
+		/// <see cref="OnCreate"/>.
+		/// </remarks>
+		/// <param name="args">Cell arguments</param>
+		/// <param name="control">Content control that was previously created with the OnCreate method.</param>
+		public override void OnConfigure(CellEventArgs args, Control control)
+		{
+			base.OnConfigure(args, control);
+
+			if (control is Panel panel)
+			{
+				var content = panel.Content;
+				var newContent = CreateNumericTextBox(args, content);
+				if (!ReferenceEquals(content, newContent))
+					panel.Content = newContent;
+			}
+		}
+
+		Control CreateNumericTextBox(CellEventArgs args, Control current)
+		{
+			var type = ItemTypeBinding?.GetValue(args.Item)
+				?? ItemBinding?.GetValue(args.Item)?.GetType();
+			if (type == null)
+				return null;
+			var controlType = typeof(NumericMaskedTextBox<>).MakeGenericType(type);
+			if (controlType.IsInstanceOfType(current))
+				return current;
+
+			var textBox = Activator.CreateInstance(controlType) as TextBox;
+
+			textBox.ShowBorder = false;
+			textBox.BackgroundColor = Colors.Transparent;
+			var colorBinding = textBox.Bind(c => c.TextColor, args, a => a.CellTextColor);
+			textBox.GotFocus += (sender, e) =>
+			{
+				colorBinding.Mode = DualBindingMode.Manual;
+				textBox.BackgroundColor = SystemColors.ControlBackground;
+				textBox.TextColor = SystemColors.ControlText;
+			};
+			textBox.LostFocus += (sender, e) =>
+			{
+				textBox.BackgroundColor = Colors.Transparent;
+				colorBinding.Mode = DualBindingMode.TwoWay;
+				colorBinding.Update();
+			};
+
+			var binding = ItemBinding.BindingOfType(typeof(object), type);
+			textBox.BindDataContextProperty(nameof(NumericMaskedTextBox<int>.ValueBinding), type, binding);
+
+			return textBox;
+		}
+
+		/// <summary>
+		/// Paints the cell when <see cref="CustomCell.SupportsControlView"/> is false.
+		/// </summary>
+		/// <remarks>
+		/// For platforms like GTK and WinForms which don't support using a custom control per cell, this will be called
+		/// to paint the content of the cell when it is not in edit mode.
+		/// </remarks>
+		/// <param name="args">Cell paint arguments.</param>
+		public override void OnPaint(CellPaintEventArgs args)
+		{
+			if (ItemBinding == null)
+				return;
+			var value = ItemBinding.GetValue(args.Item);
+			args.DrawCenteredText(Convert.ToString(value));
+		}
+	}
+
+	/// <summary>
+	/// Property cell type to display any type of enumeration
+	/// </summary>
+	/// <seealso cref="PropertyCellTypeEnum{T}"/>
+	public class PropertyCellTypeEnum : PropertyCellType<object>
+	{
+		/// <summary>
+		/// Gets the identifier for this cell type
+		/// </summary>
+		public override string Identifier => "PropertyCellTypeEnum";
+
+		/// <summary>
+		/// Gets or sets the item binding to get/set the type of the numeric value
+		/// </summary>
+		/// <remarks>
+		/// Use this to specify what enum type should be used to create the EnumDropDown.
+		/// Otherwise, the type of the current value will be used.  This is only needed when the value can be null.
+		/// </remarks>
+		/// <value>The item type binding.</value>
+		public IndirectBinding<Type> ItemTypeBinding { get; set; }
+
+		/// <summary>
+		/// Determines whether this instance can display the specified itemType.
+		/// </summary>
+		/// <returns><c>true</c> if this instance can display the specified itemType; otherwise, <c>false</c>.</returns>
+		/// <param name="itemType">Item type.</param>
+		public override bool CanDisplay(object itemType)
+		{
+			return (itemType as Type)?.IsEnum() == true;
+		}
+
+		/// <summary>
+		/// Creates the content control for the cell.
+		/// </summary>
+		/// <remarks>
+		/// The control returned may be reused for other cells, so it is ideal to use MVVM data binding using
+		/// BindDataContext() 
+		/// methods of your controls.
+		/// This should return the same control for each row, otherwise the incorrect control may be shown on certain cells.
+		/// </remarks>
+		/// <param name="args">Cell arguments.</param>
+		public override Control OnCreate(CellEventArgs args)
+		{
+			return new Panel { Content = CreateDropDown(args, null) };
+		}
+
+		/// <summary>
+		/// Configures the content control for the given cell information.
+		/// </summary>
+		/// <remarks>
+		/// When the DataContext changes on a cell, this will be called to configure the cell.
+		/// 
+		/// You are only required to override this when you are not using MVVM data binding with your controls created by
+		/// <see cref="OnCreate"/>.
+		/// </remarks>
+		/// <param name="args">Cell arguments</param>
+		/// <param name="control">Content control that was previously created with the OnCreate method.</param>
+		public override void OnConfigure(CellEventArgs args, Control control)
+		{
+			base.OnConfigure(args, control);
+			if (control is Panel panel)
+			{
+				var content = panel.Content;
+				var newContent = CreateDropDown(args, content);
+				if (!ReferenceEquals(content, newContent))
+					panel.Content = newContent;
+			}
+		}
+
+		Control CreateDropDown(CellEventArgs args, Control current)
+		{
+			var type = ItemTypeBinding?.GetValue(args.Item) ?? ItemBinding?.GetValue(args.Item).GetType();
+			if (type == null || !type.IsEnum())
+				return null;
+			var enumType = typeof(EnumDropDown<>).MakeGenericType(type);
+			if (enumType.IsInstanceOfType(current))
+				return current;
+			var enumDropDown = Activator.CreateInstance(enumType) as Control;
+			enumType.GetRuntimeProperty("ShowBorder")?.SetValue(enumDropDown, false);
+
+
+			var binding = ItemBinding.BindingOfType(typeof(object), type);
+			enumDropDown.BindDataContextProperty(nameof(EnumDropDown<Orientation>.SelectedValueBinding), type, binding);
+
+			return enumDropDown;
+		}
+
+		/// <summary>
+		/// Paints the cell when <see cref="CustomCell.SupportsControlView"/> is false.
+		/// </summary>
+		/// <remarks>
+		/// For platforms like GTK and WinForms which don't support using a custom control per cell, this will be called
+		/// to paint the content of the cell when it is not in edit mode.
+		/// </remarks>
+		/// <param name="args">Cell paint arguments.</param>
+		public override void OnPaint(CellPaintEventArgs args)
+		{
+			if (ItemBinding == null)
+				return;
+			var value = ItemBinding.GetValue(args.Item);
+			args.DrawCenteredText(Convert.ToString(value));
 		}
 	}
 
@@ -520,8 +823,7 @@ namespace Eto.Forms
 			if (ItemBinding == null)
 				return;
 			var value = ItemBinding.GetValue(args.Item);
-			var color = args.IsSelected ? SystemColors.HighlightText : SystemColors.ControlText;
-			args.Graphics.DrawText(SystemFonts.Default(), color, args.ClipRectangle.Location, Convert.ToString(value));
+			args.DrawCenteredText(Convert.ToString(value));
 		}
 	}
 
@@ -546,6 +848,14 @@ namespace Eto.Forms
 	public class PropertyCell : CustomCell
 	{
 		List<PropertyCellType> types = new List<PropertyCellType>();
+
+		/// <summary>
+		/// Initializes a new instance of the property cell
+		/// </summary>
+		public PropertyCell()
+		{
+			TypeBinding = Binding.Property((object o) => (object)o.GetType());
+		}
 
 		/// <summary>
 		/// Gets or sets the binding to get the type for the 
@@ -598,10 +908,13 @@ namespace Eto.Forms
 		/// <param name="control">Existing control to configure for the new cell and/or data</param>
 		protected override void OnConfigureCell(CellEventArgs args, Control control)
 		{
+			base.OnConfigureCell(args, control);
+
 			var type = GetType(args.Item);
 			if (type != null)
+			{
 				type.OnConfigure(args, control);
-			base.OnConfigureCell(args, control);
+			}
 		}
 
 		/// <summary>

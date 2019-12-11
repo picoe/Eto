@@ -137,7 +137,10 @@ namespace Eto.Wpf
 
 		public static KeyEventArgs ToEto(this swi.KeyEventArgs e, KeyEventType keyType)
 		{
-			var key = e.Key.ToEtoWithModifier(swi.Keyboard.Modifiers);
+			var swkey = e.Key;
+			if (swkey == swi.Key.System)
+				swkey = e.SystemKey;
+			var key = swkey.ToEtoWithModifier(swi.Keyboard.Modifiers);
 			return new KeyEventArgs(key, keyType) { Handled = e.Handled };
 		}
 
@@ -699,6 +702,16 @@ namespace Eto.Wpf
 			return font;
 		}
 
+		public static Font SetEtoFont(this swm.FormattedText control, Font font)
+		{
+			if (control == null) return font;
+			if (font != null)
+			{
+				((FontHandler)font.Handler).Apply(control);
+			}
+			return font;
+		}
+
 		public static FontFamily SetEtoFamily(this swd.TextRange control, FontFamily fontFamily)
 		{
 			if (control == null) return fontFamily;
@@ -728,6 +741,12 @@ namespace Eto.Wpf
 				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
 			}
 			return font;
+		}
+
+		public static swm.Typeface ToWpfTypeface(this Font font)
+		{
+			var handler = (FontHandler)font.Handler;
+			return handler.WpfTypeface;
 		}
 
 		public static swc.Dock ToWpf(this DockPosition position)
@@ -892,5 +911,7 @@ namespace Eto.Wpf
 		{
 			return CustomControls.FontDialog.NameDictionaryExtensions.GetName(nameDictionary, ietfLanguageTag);
 		}
+
+		public static swi.Cursor ToWpf(this Cursor cursor) => cursor?.ControlObject as swi.Cursor;
 	}
 }

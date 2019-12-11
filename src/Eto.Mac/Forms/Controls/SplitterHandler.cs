@@ -365,8 +365,11 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Layout()
 			{
+				if (MacView.NewLayout)
+					base.Layout();
 				Handler?.PerformLayout();
-				base.Layout();
+				if (!MacView.NewLayout)
+					base.Layout();
 			}
 		}
 
@@ -511,9 +514,12 @@ namespace Eto.Mac.Forms.Controls
 						break;
 				}
 			}
-			else if (PreferredSize != null)
+			else
 			{
-				var preferredSize = Orientation == Orientation.Horizontal ? PreferredSize.Value.Width : PreferredSize.Value.Height;
+				var preferredSize = Orientation == Orientation.Horizontal ? UserPreferredSize.Width : UserPreferredSize.Height;
+				if (preferredSize == -1)
+					return;
+
 				var size = Orientation == Orientation.Horizontal ? Size.Width : Size.Height;
 				switch (fixedPanel)
 				{

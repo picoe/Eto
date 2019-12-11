@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Eto.Forms
 {
@@ -191,7 +192,13 @@ namespace Eto.Forms
 		public IndirectBinding<TValue> Cast<TValue>()
 		{
 			return new DelegateBinding<object, TValue>(
-				m => (TValue)(object)GetValue(m),
+				m =>
+				{
+					var value = (object)GetValue(m);
+					if (value == null)
+						return default(TValue);
+					return (TValue)value;
+				},
 				(m, val) => SetValue(m, (T)(object)val),
 				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
 				removeChangeEvent: RemoveValueChangedHandler
@@ -407,7 +414,7 @@ namespace Eto.Forms
 				m => System.Convert.ToString(GetValue(m)),
 				(m, val) =>
 				{
-					var value = Enum.IsDefined(enumType, val)
+					var value = (!string.IsNullOrEmpty(val) && Enum.IsDefined(enumType, val))
 						? (T)Enum.Parse(enumType, val)
 						: defaultValue;
 					SetValue(m, value);
@@ -561,6 +568,5 @@ namespace Eto.Forms
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
-
 	}
 }

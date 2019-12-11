@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Eto.Drawing;
+using Eto.Forms;
 
 namespace Eto.Test
 {
@@ -21,5 +22,7 @@ namespace Eto.Test
 		public static Icon Logo288 => Icon.FromResource("Eto.Test.Images.LogoWith288DPI.png");
 
 		public static Bitmap Logo288Bitmap => Bitmap.FromResource("Eto.Test.Images.LogoWith288DPI.png");
+
+		public static Cursor TestCursor => Cursor.FromResource("Eto.Test.Images.Busy.cur");
 	}
 }

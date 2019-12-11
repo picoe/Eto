@@ -64,8 +64,11 @@ namespace Eto.Mac.Forms
 
 		public override void Layout()
 		{
+			if (MacView.NewLayout)
+				base.Layout();
 			Handler?.PerformContentLayout();
-			base.Layout();
+			if (!MacView.NewLayout)
+				base.Layout();
 		}
 	}
 
@@ -162,7 +165,7 @@ namespace Eto.Mac.Forms
 		{
 			var contentControl = content.GetMacControl();
 			if (contentControl != null && content.Visible)
-				return contentControl.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
+				return contentControl.GetPreferredSize(SizeF.Max(SizeF.Empty, availableSize - Padding.Size)) + Padding.Size;
 			
 			return Padding.Size;
 		}

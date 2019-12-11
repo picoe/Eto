@@ -83,6 +83,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the width of the control size.
+		/// </summary>
+		public virtual int Width
+		{
+			get => Control.Width;
+			set => Control.Width = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the height of the control size.
+		/// </summary>
+		public virtual int Height
+		{
+			get => Control.Height;
+			set => Control.Height = value;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this control is enabled
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
@@ -363,9 +381,11 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="data">Drag data.</param>
 		/// <param name="allowedAction">Allowed action.</param>
-		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		/// <param name="image">Custom drag image</param>
+		/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF cursorOffset)
 		{
-			Control.DoDragDrop(data, allowedAction);
+			Control.DoDragDrop(data, allowedAction, image, cursorOffset);
 		}
 
 		#region Events

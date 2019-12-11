@@ -6,8 +6,8 @@ namespace Eto.Shared
 {
 	public class MutableCellEventArgs : CellEventArgs
 	{
-		public MutableCellEventArgs(int row, object item, CellStates cellState)
-			: base(row, item, cellState)
+		public MutableCellEventArgs(Grid grid, Cell cell, int row, object item, CellStates cellState)
+			: base(grid, cell, row, item, cellState)
 		{
 		}
 

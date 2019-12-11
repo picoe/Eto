@@ -8,6 +8,7 @@ using swm = System.Windows.Media;
 using swi = System.Windows.Input;
 using Eto.Forms;
 using System.Collections;
+using System.ComponentModel;
 using Eto.Wpf.Forms.Menu;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
@@ -38,9 +39,16 @@ namespace Eto.Wpf.Forms.Controls
 			base.OnPreviewKeyDown(e);
 			if (!e.Handled && e.Key == swi.Key.Enter && swi.Keyboard.Modifiers == swi.ModifierKeys.None)
 			{
-				CommitEdit(); // if needed, commit the editing
-				// don't go to next row!
-				e.Handled = true;
+				IEditableCollectionView itemsView = Items;
+				// IsEditingItem value will be true twice because we commit cell first, then the row.
+				// See the remark on this page:
+				// https://docs.microsoft.com/en-us/dotnet/api/system.windows.controls.datagrid.commitedit
+				if (itemsView.IsAddingNew || itemsView.IsEditingItem)
+				{
+					CommitEdit();
+					// don't go to next row!
+					e.Handled = true;
+				}
 			}
 		}
 
@@ -89,6 +97,8 @@ namespace Eto.Wpf.Forms.Controls
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object LastDragRow_Key = new object();
 		public static readonly object Border_Key = new object();
+		public static readonly object MultipleSelectionInfo_Key = new object();
+		public static readonly object AllowEmptySelection_Key = new object();
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
@@ -231,6 +241,14 @@ namespace Eto.Wpf.Forms.Controls
 			// from: http://gonetdotnet.blogspot.ca/2014/04/solved-how-to-disable-default-keyboard.html
 			Control.InputBindings.Add(new swi.KeyBinding(swi.ApplicationCommands.NotACommand, swi.Key.C, swi.ModifierKeys.Control));
 			Control.InputBindings.Add(new swi.KeyBinding(swi.ApplicationCommands.NotACommand, swi.Key.Delete, swi.ModifierKeys.None));
+
+			// Ensure we override selection behaviour to better support drag/drop:
+			// 1. When multi-select is on, don't change selection until mouse up 
+			//    when clicking on a selected item
+			// 2. When a cell is editable, don't begin editing until mouse up when
+			//    the cell is selected.
+			HandleEvent(Eto.Forms.Control.MouseDownEvent);
+			HandleEvent(Eto.Forms.Control.MouseUpEvent);
 		}
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
@@ -276,7 +294,127 @@ namespace Eto.Wpf.Forms.Controls
 		public bool AllowMultipleSelection
 		{
 			get { return Control.SelectionMode == swc.DataGridSelectionMode.Extended; }
-			set { Control.SelectionMode = value ? swc.DataGridSelectionMode.Extended : swc.DataGridSelectionMode.Single; }
+			set
+			{
+				Control.SelectionMode = value ? swc.DataGridSelectionMode.Extended : swc.DataGridSelectionMode.Single;
+			}
+		}
+
+		class SelectionInfo
+		{
+			public swc.DataGridRow Row { get; set; }
+			public swc.DataGridCell Cell { get; set; }
+			public int ClickCount { get; set; }
+
+		}
+
+		SelectionInfo MultipleSelectionInfo
+		{
+			get => Widget.Properties.Get<SelectionInfo>(GridHandler.MultipleSelectionInfo_Key);
+			set => Widget.Properties.Set(GridHandler.MultipleSelectionInfo_Key, value);
+		}
+
+		protected override void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
+		{
+			base.HandleMouseUp(sender, e);
+
+			var info = MultipleSelectionInfo;
+			if (!e.Handled && info != null)
+			{
+				// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+				if (ReferenceEquals(row, info.Row))
+				{
+					bool hadMultipleSelection = Control.SelectedItems.Count > 1;
+					Control.SelectedItem = row.Item;
+					var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+					if (cell != null)
+					{
+						Callback.OnCellClick(Widget, CreateCellMouseArgs(cell, e));
+						cell.Focus();
+						if (!hadMultipleSelection && !cell.Column.IsReadOnly && ReferenceEquals(info.Cell, cell))
+						{
+							Control.BeginEdit();
+							// we double clicked to fire this event, so trigger a double click event
+							if (info.ClickCount >= 2)
+								Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(cell, e));
+						}
+					}
+					else
+						row.Focus();
+					e.Handled = true;
+				}
+
+				MultipleSelectionInfo = null;
+			}
+			if (!e.Handled && AllowEmptySelection)
+			{
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				if (hitTestResult != null
+					&& (
+						hitTestResult is swc.ScrollViewer // below rows
+						|| swm.VisualTreeHelper.GetParent(hitTestResult) is swc.DataGridRow // right of rows
+						)
+					)
+				{
+					UnselectAll();
+					e.Handled = true;
+				}
+
+			}
+		}
+
+		protected override void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
+		{
+			base.HandleMouseDown(sender, e);
+			MultipleSelectionInfo = null;
+			if (!e.Handled
+				&& e.LeftButton == swi.MouseButtonState.Pressed
+				&& swi.Keyboard.Modifiers == swi.ModifierKeys.None)
+			{
+				// prevent WPF from deselecting other rows until mouse up.
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+
+				if (row != null && row.IsSelected
+					&& (
+						(cell?.Column.IsReadOnly == false && !cell.IsEditing && cell.IsFocused)
+						|| Control.SelectedItems.Count > 1
+					))
+				{
+					MultipleSelectionInfo = new SelectionInfo
+					{
+						Row = row,
+						Cell = cell,
+						ClickCount = e.ClickCount
+					};
+					if (cell != null)
+						cell.Focus();
+					else
+						row.Focus();
+					e.Handled = true;
+				}
+			}
+			else if (!e.Handled
+				&& !AllowEmptySelection
+				&& e.LeftButton == swi.MouseButtonState.Pressed
+				&& swi.Keyboard.Modifiers == swi.ModifierKeys.Control)
+			{
+				// prevent deselecting the last selected item
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+
+				if (row != null && row.IsSelected
+					&& cell != null
+					&& Control.SelectedItems.Count == 1
+					)
+				{
+					e.Handled = true;
+				}
+			}
 		}
 
 		public IEnumerable<int> SelectedRows
@@ -594,5 +732,25 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 		bool IGridHandler.Loaded => Widget.Loaded;
+
+		Grid IGridHandler.Widget => Widget;
+
+		public bool AllowEmptySelection
+		{
+			get => Widget.Properties.Get<bool>(GridHandler.AllowEmptySelection_Key, true);
+			set => Widget.Properties.Set(GridHandler.AllowEmptySelection_Key, value, true);
+		}
+
+		protected void EnsureSelection()
+		{
+			if (!AllowEmptySelection 
+				&& (Control.SelectedItems?.Count ?? 0) == 0
+				&& (Control.ItemsSource as IList)?.Count > 0)
+			{
+				SelectRow(0);
+			}
+		}
+
+
 	}
 }

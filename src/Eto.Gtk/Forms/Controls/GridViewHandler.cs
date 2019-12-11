@@ -58,13 +58,15 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get => collection?.Collection;
 			set
 			{
 				if (collection != null)
 					collection.Unregister();
+				UnselectAll();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				EnsureSelection();
 			}
 		}
 
@@ -243,6 +245,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected override WeakConnector CreateConnector() => new GridViewConnector();
 
 		public GridViewDragInfo GetDragInfo(DragEventArgs e) => e.ControlObject as GridViewDragInfo;
+
+		protected override bool HasRows => model.Count > 0;
 
 	}
 }

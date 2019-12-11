@@ -30,9 +30,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			scroll = new Gtk.ScrolledWindow();
 			scroll.ShadowType = Gtk.ShadowType.In;
 			Control = new TControl();
-			Size = new Size(100, 60);
 			scroll.Add(Control);
 			Wrap = true;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Size = new Size(100, 60);
 		}
 
 		public override void AttachEvent(string id)

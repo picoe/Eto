@@ -1,4 +1,8 @@
 using System;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -71,6 +75,86 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the Cursor class by loading the specified .cur <paramref name="fileName"/>
+		/// </summary>
+		/// <param name="fileName">Name of the cursor file to load from disk</param>
+		public Cursor(string fileName)
+		{
+			Handler.Create(fileName);
+			Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Cursor class by loading a cursor from the specified <paramref name="stream"/>
+		/// </summary>
+		/// <param name="stream">Stream to load from</param>
+		public Cursor(Stream stream)
+		{
+			Handler.Create(stream);
+			Initialize();
+		}
+
+		/// <summary>
+		/// Loads a cursor from the resource in the specified or caller's <paramref name="assembly"/>
+		/// </summary>
+		/// <param name="resourceName">Name of the resource in the caller's assembly to load. E.g. "MyProject.SomeFolder.YourFile.cur"</param>
+		/// <param name="assembly">Assembly to load the cursor from, or null to use the caller's assembly</param>
+		/// <returns>A new instance of a Cursor loaded from the specified resource</returns>
+		public static Cursor FromResource(string resourceName, Assembly assembly = null)
+		{
+
+			if (assembly == null)
+			{
+#if PCL
+				if (TypeHelper.GetCallingAssembly == null)
+					throw new ArgumentNullException(nameof(assembly), string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
+#else
+				assembly = Assembly.GetCallingAssembly();
+#endif
+			}
+
+			using (var stream = assembly.GetManifestResourceStream(resourceName))
+			{
+				if (stream == null)
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName));
+				return new Cursor(stream);
+			}
+		}
+
+		/// <summary>
+		/// Loads a bitmap from a resource in the same assembly as the specified <paramref name="type"/>
+		/// </summary>
+		/// <returns>The bitmap instance.</returns>
+		/// <param name="resourceName">Full name of the resource in the type's assembly. E.g. "MyProject.SomeFolder.YourFile.extension"</param>
+		/// <param name="type">Type of the assembly to get the resource.</param>
+		public static Cursor FromResource(string resourceName, Type type)
+		{
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
+			return FromResource(resourceName, type.GetAssembly());
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Cursor with the specified <paramref name="image"/> and <paramref name="hotspot"/>. 
+		/// </summary>
+		/// <param name="image">Image for the cursor</param>
+		/// <param name="hotspot">Hotspot for where the cursor pointer is located on the image</param>
+		public Cursor(Bitmap image, PointF hotspot)
+		{
+			Handler.Create(image, hotspot);
+			Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Cursor class with the specified <paramref name="handler"/>.
+		/// </summary>
+		/// <param name="handler">Handler to assign to this cursor for its implementation</param>
+		public Cursor(IHandler handler) : base(handler)
+		{
+		}
+
+		/// <summary>
 		/// Platform interface for the <see cref="Cursor"/> class
 		/// </summary>
 		[AutoInitialize(false)]
@@ -81,6 +165,22 @@ namespace Eto.Forms
 			/// </summary>
 			/// <param name="type">Cursor type.</param>
 			void Create(CursorType type);
+			/// <summary>
+			/// Creates the cursor instance with the specified <paramref name="image"/> and <paramref name="hotspot"/>. 
+			/// </summary>
+			/// <param name="image">Image for the cursor</param>
+			/// <param name="hotspot">Hotspot for where the cursor pointer is located on the image</param>
+			void Create(Bitmap image, PointF hotspot);
+			/// <summary>
+			/// Creates the cursor instance with the specified <paramref name="fileName"/>
+			/// </summary>
+			/// <param name="fileName">Name of the cursor to load from disk</param>
+			void Create(string fileName);
+			/// <summary>
+			/// Creates the cursor instance with the specified <paramref name="stream"/>
+			/// </summary>
+			/// <param name="stream">Stream to load from</param>
+			void Create(Stream stream);
 		}
 	}
 }

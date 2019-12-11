@@ -21,8 +21,8 @@ namespace Eto.Wpf.Forms.Cells
 
 		public class WpfCellEventArgs : CellEventArgs
 		{
-			public WpfCellEventArgs(int row, object item, CellStates cellState)
-				: base(row, item, cellState)
+			public WpfCellEventArgs(Grid grid, CustomCell cell, int row, object item, CellStates cellState)
+				: base(grid, cell, row, item, cellState)
 			{
 			}
 
@@ -77,7 +77,7 @@ namespace Eto.Wpf.Forms.Cells
 
 			EtoBorder Create(swc.DataGridCell cell)
 			{
-				var control = cell.Content as EtoBorder;
+				var control = GetControl<EtoBorder>(cell);
 				if (control == null)
 				{
 					control = new EtoBorder { Column = this };
@@ -127,7 +127,7 @@ namespace Eto.Wpf.Forms.Cells
 				var handler = col?.Handler;
 				if (handler == null)
 					return;
-				var args = new WpfCellEventArgs(-1, ctl.DataContext, CellStates.None);
+				var args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, ctl.DataContext, CellStates.None);
 				args.SetSelected(cell);
 				var id = handler.Callback.OnGetIdentifier(handler.Widget, args);
 				var child = ctl.Control;
@@ -157,12 +157,16 @@ namespace Eto.Wpf.Forms.Cells
 					else
 					{
 						child = handler.Callback.OnCreateCell(handler.Widget, args);
+						child?.Properties.Set(CellEventArgs_Key, args);
+					}
+					if (ctl.IsLoaded && child?.Loaded == false)
+					{
 						child.GetWpfFrameworkElement()?.SetScale(true, true);
-						child.Properties.Set(CellEventArgs_Key, args);
+						child.AttachNative();
 					}
 					ctl.Control = child;
 					ctl.Identifier = id;
-					ctl.Child = child.ToNative(ctl.IsLoaded);
+					ctl.Child = child.ToNative();
 				}
 				else
 				{
@@ -187,7 +191,10 @@ namespace Eto.Wpf.Forms.Cells
 				var wpfctl = sender as EtoBorder;
 				var ctl = wpfctl.Control;
 				if (ctl != null && !ctl.Loaded)
+				{
+					ctl.GetWpfFrameworkElement()?.SetScale(true, true);
 					ctl.AttachNative();
+				}
 			}
 
 			static void HandleControlUnloaded(object sender, sw.RoutedEventArgs e)
@@ -202,7 +209,9 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var cell = sender as swc.DataGridCell;
 				var col = cell?.Column as Column;
-				if (cell?.Content is EtoBorder ctl)
+				var ctl = GetControl<EtoBorder>(cell);
+
+				if (ctl != null)
 				{
 					var args = ctl.Control?.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
 					if (args != null)

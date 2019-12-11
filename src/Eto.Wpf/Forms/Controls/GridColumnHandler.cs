@@ -7,6 +7,7 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public interface IGridHandler
 	{
+		Grid Widget { get; }
 		bool Loaded { get; }
 		sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent);
 		void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem);
@@ -128,15 +129,19 @@ namespace Eto.Wpf.Forms.Controls
 				GridHandler.FormatCell (this, cell, element, gridcell, dataItem);
 		}
 
-		swc.DataGridColumn IGridColumnHandler.Control
-		{
-			get { return Control; }
-		}
+		swc.DataGridColumn IGridColumnHandler.Control => Control;
+
+		public Grid Grid => GridHandler?.Widget;
 
 		public void CellEdited(ICellHandler cell, sw.FrameworkElement element)
 		{
 			var dataCell = element.GetVisualParent<swc.DataGridCell>();
 			var dataRow = element.GetVisualParent<swc.DataGridRow>();
+			// These can sometimes be null, but I'm not exactly sure why
+			// It could possibly be if another event occurs to refresh the data before this call?
+			// either way, if we aren't part of a row/cell, just don't raise the event.
+			if (dataRow == null || dataCell == null)
+				return;
 			var row = dataRow.GetIndex();
 			var dataItem = element.DataContext;
 			GridHandler.CellEdited(row, dataCell.Column, dataItem);

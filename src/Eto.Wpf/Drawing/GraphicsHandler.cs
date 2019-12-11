@@ -300,14 +300,23 @@ namespace Eto.Wpf.Drawing
             Control.Pop();
         }
 
-		public void DrawText(Font font, SolidBrush b, float x, float y, string text)
+		public void DrawText(FormattedText formattedText, PointF location)
+		{
+			SetOffset(true);
+			if (formattedText.Handler is FormattedTextHandler handler)
+			{
+				handler.DrawText(this, location);
+			}
+		}
+
+		public void DrawText(Font font, Brush b, float x, float y, string text)
 		{
 			SetOffset(true);
 			var fontHandler = font.Handler as FontHandler;
 			if (fontHandler != null)
 			{
 				var brush = b.ToWpf();
-				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
+				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
 				if (fontHandler.WpfTextDecorationsFrozen != null)
 					formattedText.SetTextDecorations(fontHandler.WpfTextDecorationsFrozen, 0, text.Length);
 				Control.DrawText(formattedText, new sw.Point(x, y));
@@ -322,7 +331,7 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = new swm.SolidColorBrush(swm.Colors.White);
-				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
+				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
 				result = new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 			}
 

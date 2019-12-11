@@ -1,7 +1,8 @@
-﻿using System;
-using SD = System.Drawing;
+using System;
+using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
+using Eto.Drawing;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
@@ -118,6 +119,18 @@ namespace Eto.WinForms.Forms.Controls
 				if (Handler?.NeedsFormat == true)
 					return;
 				base.OnTextBoxKeyPress(source, e);
+			}
+
+			public override sd.Size GetPreferredSize(sd.Size proposedSize)
+			{
+				var size = Handler?.UserPreferredSize ?? new Eto.Drawing.Size(-1, -1);
+				var basePreferredSize = base.GetPreferredSize(proposedSize);
+				if (size.Width < 0)
+					size.Width = basePreferredSize.Width;
+
+				if (size.Height < 0)
+					size.Height = basePreferredSize.Height;
+				return size.ToSD();
 			}
 		}
 

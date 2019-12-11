@@ -70,6 +70,27 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public class EtoRadioCenteredButtonCell : EtoCenteredButtonCell
+		{
+			// radio buttons get clipped at the top in small/mini mode using the alignment rects. macOS 10.14.6
+			// see Eto.Test.Mac.UnitTests.RadioButtonTests.ButtonShouldNotBeClipped()
+			protected override nfloat Offset => ControlSize != NSControlSize.Regular ? 0.5f : 0;
+
+			protected override nfloat GetDefaultHeight()
+			{
+				switch (ControlSize)
+				{
+					default:
+					case NSControlSize.Regular:
+						return 14;
+					case NSControlSize.Small:
+						return 12;
+					case NSControlSize.Mini:
+						return 10;
+				}
+			}
+		}
+
 		public class EtoRadioButton : NSButton, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -88,11 +109,9 @@ namespace Eto.Mac.Forms.Controls
 				defaultHeight = b.Frame.Height;
 			}
 
-			static readonly Selector s_selClicked = new Selector("clicked");
-
 			public EtoRadioButton()
 			{
-				Cell = new EtoCenteredButton(defaultHeight);
+				Cell = new EtoRadioCenteredButtonCell();
 				Title = string.Empty;
 				SetButtonType(NSButtonType.Radio);
 			}

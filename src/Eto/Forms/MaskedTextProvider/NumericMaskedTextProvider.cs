@@ -28,8 +28,8 @@ namespace Eto.Forms
 		Dictionary<Type, Info> numericTypes = new Dictionary<Type, Info>
 		{
 			{ typeof(decimal), new Info { Parse = s => { decimal d; return decimal.TryParse(s, out d) ? (object)d : null; }, AllowSign = true, AllowDecimal = true } },
-			{ typeof(double), new Info { Parse = s => { double d; return double.TryParse(s, out d) ? (object)d : null; }, ToText = v => ((double)v).ToString("F99").TrimEnd('0', '.'), AllowSign = true, AllowDecimal = true } },
-			{ typeof(float), new Info { Parse = s => { float d; return float.TryParse(s, out d) ? (object)d : null; }, ToText = v => ((float)v).ToString("F99").TrimEnd('0', '.'), AllowSign = true, AllowDecimal = true } },
+			{ typeof(double), new Info { Parse = s => { double d; return double.TryParse(s, out d) ? (object)d : null; }, ToText = v => ((double?)v)?.ToString("F99").TrimEnd('0', '.'), AllowSign = true, AllowDecimal = true } },
+			{ typeof(float), new Info { Parse = s => { float d; return float.TryParse(s, out d) ? (object)d : null; }, ToText = v => ((float?)v)?.ToString("F99").TrimEnd('0', '.'), AllowSign = true, AllowDecimal = true } },
 			{ typeof(int), new Info { Parse = s => { int d; return int.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
 			{ typeof(uint), new Info { Parse = s => { uint d; return uint.TryParse(s, out d) ? (object)d : null; } } },
 			{ typeof(long), new Info { Parse = s => { long d; return long.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },

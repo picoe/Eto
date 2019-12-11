@@ -137,10 +137,17 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\artifacts\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Startup.cs" />
+    <Compile Include="UnitTests\ButtonTests.cs" />
+    <Compile Include="UnitTests\CheckBoxTests.cs" />
+    <Compile Include="UnitTests\NativeParentWindowTests.cs" />
+    <Compile Include="UnitTests\RadioButtonTests.cs" />
     <Compile Include="UnitTests\RichTextAreaHandlerTests.cs" />
+    <Compile Include="UnitTests\ScrollableTests.cs" />
+    <Compile Include="UnitTests\LabelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

@@ -13,8 +13,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public NumericStepperHandler()
 		{
 			Control = new Gtk.SpinButton(double.MinValue, double.MaxValue, 1);
-			Control.WidthRequest = 120;
-			Control.Wrap = true;
+			Control.WidthChars = 0;
 			Value = 0;
 		}
 

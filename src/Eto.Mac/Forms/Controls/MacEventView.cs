@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Diagnostics;
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -64,29 +65,85 @@ namespace Eto.Mac.Forms.Controls
 
 		public static bool KeyDown(Control control, NSEvent theEvent)
 		{
-			if (control != null)
+			var handler = control?.Handler as IMacViewHandler;
+			if (handler == null)
+				return false;
+
+			var kpea = theEvent.ToEtoKeyEventArgs();
+			handler.OnKeyDown(kpea);
+			return kpea.Handled;
+		}
+
+		public static bool FlagsChanged(Control control, NSEvent theEvent)
+		{
+			var handler = control?.Handler as IMacViewHandler;
+			if (handler == null)
+				return false;
+
+			Keys key;
+			NSEventModifierMask requiredModifier;
+
+			// check which key is being pressed currently and figure out correct modifier mask for that key alone
+			switch (theEvent.KeyCode)
 			{
-				var handler = control.Handler as IMacViewHandler;
-				var kpea = theEvent.ToEtoKeyEventArgs();
-				handler.OnKeyDown(kpea);
-				return kpea.Handled;
+				case 56:
+					key = Keys.LeftShift;
+					requiredModifier = (NSEventModifierMask)0x20002;
+					break;
+				case 60:
+					key = Keys.RightShift;
+					requiredModifier = (NSEventModifierMask)0x20004;
+					break;
+				case 59:
+					key = Keys.LeftControl;
+					requiredModifier = (NSEventModifierMask)0x40001;
+					break;
+				case 57:
+					key = Keys.RightControl;
+					requiredModifier = (NSEventModifierMask)0x40002; // correct?  I don't have a keyboard with right control key.
+					break;
+				case 58:
+					key = Keys.LeftAlt;
+					requiredModifier = (NSEventModifierMask)0x80020;
+					break;
+				case 61:
+					key = Keys.RightAlt;
+					requiredModifier = (NSEventModifierMask)0x80040;
+					break;
+				case 55:
+					key = Keys.LeftApplication;
+					requiredModifier = (NSEventModifierMask)0x100008;
+					break;
+				case 54:
+					key = Keys.RightApplication;
+					requiredModifier = (NSEventModifierMask)0x100010;
+					break;
+				default:
+					Debug.WriteLine($"Unknown FlagsChanged Key: {theEvent.KeyCode}, Modifiers: {theEvent.ModifierFlags}");
+					return false;
 			}
-			return false;
+			// test the modifier to see if the key was pressed or released
+			var modifierFlags = theEvent.ModifierFlags;
+			var type = modifierFlags.HasFlag(requiredModifier) ? KeyEventType.KeyDown : KeyEventType.KeyUp;
+
+			key |= modifierFlags.ToEto();
+			var kpea = new KeyEventArgs(key, type);
+			if (type == KeyEventType.KeyDown)
+				handler.OnKeyDown(kpea);
+			else
+				handler.OnKeyUp(kpea);
+			return kpea.Handled;
 		}
 
 		public static bool KeyUp(Control control, NSEvent theEvent)
 		{
-			if (control != null)
-			{
-				var handler = control.Handler as IMacViewHandler;
-				if (handler != null)
-				{
-					var kpea = theEvent.ToEtoKeyEventArgs ();
-					handler.Callback.OnKeyUp (control, kpea);
-					return kpea.Handled;
-				}
-			}
-			return false;
+			var handler = control?.Handler as IMacViewHandler;
+			if (handler == null)
+				return false;
+
+			var kpea = theEvent.ToEtoKeyEventArgs();
+			handler.Callback.OnKeyUp(control, kpea);
+			return kpea.Handled;
 		}
 
 		public override void ResetCursorRects()

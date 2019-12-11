@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.WinForms.Forms.Menu;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace Eto.WinForms.Forms
 {
@@ -40,6 +41,8 @@ namespace Eto.WinForms.Forms
 		void BeforeAddControl(bool top = true);
 
 		bool ShouldBubbleEvent(swf.Message msg);
+
+		bool UseShellDropManager { get; set; }
 	}
 
 	public static class WindowsControlExtensions
@@ -98,6 +101,9 @@ namespace Eto.WinForms.Forms
 		public static readonly object InternalVisibleKey = new object();
 		public static readonly object FontKey = new object();
 		public static readonly object Enabled_Key = new object();
+		public static readonly object UseShellDropManager_Key = new object();
+
+		internal static Control DragSourceControl { get; set; }
 	}
 
 	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWindowsControl
@@ -123,7 +129,7 @@ namespace Eto.WinForms.Forms
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var userSize = Handler.UserDesiredSize;
+				var userSize = Handler.UserPreferredSize;
 				var size = userSize.Width >= 0 && userSize.Height >= 0 ? sd.Size.Empty
 					: base.GetPreferredSize(proposedSize);
 				if (userSize.Width >= 0)
@@ -197,7 +203,7 @@ namespace Eto.WinForms.Forms
 		Size? cachedDefaultSize;
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
-			var size = UserDesiredSize;
+			var size = UserPreferredSize;
 			if (size.Width == -1 || size.Height == -1)
 			{
 				Size? defSize;
@@ -214,16 +220,24 @@ namespace Eto.WinForms.Forms
 			return Size.Max(parentMinimumSize, size);
 		}
 
-		public Size UserDesiredSize
+		public Size UserPreferredSize
 		{
 			get { return Widget.Properties.Get<Size?>(WindowsControl.DesiredSizeKey) ?? new Size(-1, -1); }
-			set { Widget.Properties.Set(WindowsControl.DesiredSizeKey, value); }
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.DesiredSizeKey, value))
+					SetAutoSize();
+			}
 		}
 
 		public Size UserDesiredClientSize
 		{
 			get { return Widget.Properties.Get<Size?>(WindowsControl.DesiredClientSizeKey) ?? new Size(-1, -1); }
-			set { Widget.Properties.Set(WindowsControl.DesiredClientSizeKey, value); }
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.DesiredClientSizeKey, value))
+					SetAutoSize();
+			}
 		}
 
 		public virtual Size ParentMinimumSize
@@ -451,17 +465,15 @@ namespace Eto.WinForms.Forms
 			Callback.OnEnabledChanged(Widget, EventArgs.Empty);
 		}
 
-		const string SourceDataFormat = "eto.source.control";
 
 		DragEventArgs GetDragEventArgs(swf.DragEventArgs data)
 		{
-			var dragData = (data.Data as swf.DataObject).ToEto();
-			var sourceWidget = data.Data.GetData(SourceDataFormat);
-			var source = sourceWidget == null ? null : (Control)sourceWidget;
+			var dragData = data.Data.ToEto();
+			var source = WindowsControl.DragSourceControl;
 			var modifiers = data.GetEtoModifiers();
 			var buttons = data.GetEtoButtons();
 			var location = PointFromScreen(new PointF(data.X, data.Y));
-			return new DragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
+			return new SwfDragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
 		}
 
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
@@ -516,13 +528,14 @@ namespace Eto.WinForms.Forms
 		{
 			get {
 				if (!Widget.Loaded)
-					return UserDesiredSize;
+					return UserPreferredSize;
 				return ContainerControl.Size.ToEto();
 			}
 			set
 			{
-				UserDesiredSize = value;
-				SetAutoSize();
+				if (UserPreferredSize == value)
+					return;
+				UserPreferredSize = value;
 				if (Widget.Loaded)
 					SetScale();
 				var minset = SetMinimumSize();
@@ -536,10 +549,22 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public virtual int Width
+		{
+			get => Size.Width;
+			set => Size = new Size(value, UserPreferredSize.Height);
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set => Size = new Size(UserPreferredSize.Width, value);
+		}
+
 		protected virtual void SetAutoSize()
 		{
 			ContainerControl.AutoSize = 
-				(UserDesiredSize.Width == -1 || UserDesiredSize.Height == -1)
+				(UserPreferredSize.Width == -1 || UserPreferredSize.Height == -1)
 				&& (UserDesiredClientSize.Width == -1 || UserDesiredClientSize.Height == -1);
 		}
 
@@ -554,7 +579,6 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				UserDesiredClientSize = value;
-				SetAutoSize();
 				Control.ClientSize = value.ToSD();
 			}
 		}
@@ -879,17 +903,76 @@ namespace Eto.WinForms.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
+		/// <summary>
+		/// Gets or sets a value indicating that the shell drop manager should be used.
+		/// </summary>
+		public bool UseShellDropManager
+		{
+			get => Widget.Properties.Get(WindowsControl.UseShellDropManager_Key, true);
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.UseShellDropManager_Key, value, true))
+				{
+					if (value && Control.AllowDrop)
+					{
+						DropBehavior = new SwfShellDropBehavior(Control);
+					}
+					else
+					{
+						DropBehavior?.Detach();
+						DropBehavior = null;
+					}
+				}
+			}
+		}
+
 		public bool AllowDrop
 		{
 			get => Control.AllowDrop;
-			set => Control.AllowDrop = value;
+			set
+			{
+				Control.AllowDrop = value;
+				if (value && UseShellDropManager)
+					DropBehavior = new SwfShellDropBehavior(Control);
+				else
+				{
+					DropBehavior?.Detach();
+					DropBehavior = null;
+				}
+			}
 		}
 
-		public void DoDragDrop(DataObject data, DragEffects allowedEffects)
+		SwfShellDropBehavior DropBehavior
+		{
+			get => Widget.Properties.Get<SwfShellDropBehavior>(typeof(SwfShellDropBehavior));
+			set => Widget.Properties.Set(typeof(SwfShellDropBehavior), value);
+		}
+
+		public void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
 		{
 			var dataObject = data.ToSwf();
-			dataObject.SetData(SourceDataFormat, Widget);
-			Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+			WindowsControl.DragSourceControl = Widget;
+			if (UseShellDropManager)
+			{
+				swf.DragSourceHelper.AllowDropDescription(true);
+
+				swf.SwfDataObjectExtensions.SetDropDescription(dataObject, swf.DropImageType.Invalid, null, null);
+				if (image == null)
+					image = new Bitmap(1, 1, PixelFormat.Format32bppRgba);
+
+				swf.SwfDataObjectExtensions.SetDragImage(dataObject, image.ToSD(), cursorOffset.ToSDPoint());
+				swf.DragSourceHelper.RegisterDefaultDragSource(Control, dataObject);
+				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+				swf.DragSourceHelper.UnregisterDefaultDragSource(Control);
+			}
+			else
+			{
+				if (image != null)
+					Debug.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
+
+				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+			}
+			WindowsControl.DragSourceControl = null;
 		}
 
 		public Window GetNativeParentWindow() => ContainerControl.FindForm().ToEtoWindow();

@@ -103,6 +103,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				controller.InitializeItems(value);
 				Control.ItemsSource = controller;
+				EnsureSelection();
 			}
 		}
 

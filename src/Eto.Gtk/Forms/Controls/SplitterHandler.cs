@@ -200,7 +200,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			if (desired)
 			{
-				var size = PreferredSize;
+				var size = UserPreferredSize;
 				var pick = Orientation == Orientation.Horizontal ?
 					size.Width : size.Height;
 				if (pick >= 0)

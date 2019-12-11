@@ -119,13 +119,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public class NewWindowHandler : NSObject
 		{
-			public WebViewHandler Handler { get { return WebView.Handler; } set { WebView.Handler = value; } }
+			public WebViewHandler Handler => WebView.Handler;
 
 			public EtoWebView WebView { get; set; }
 
-			public NewWindowHandler()
+			public NewWindowHandler(WebViewHandler handler)
 			{
-				WebView = new EtoWebView(Handler);
+				WebView = new EtoWebView(handler);
 				WebView.WeakUIDelegate = this;
 				WebView.WeakPolicyDelegate = this;
 				WebView.WeakResourceLoadDelegate = this;
@@ -268,7 +268,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override wk.WebView UICreateWebView(wk.WebView sender, NSUrlRequest request)
 			{
-				Handler.newWindowHandler = new NewWindowHandler { Handler = Handler };
+				Handler.newWindowHandler = new NewWindowHandler(Handler);
 				return Handler.newWindowHandler.WebView;
 			}
 		}
