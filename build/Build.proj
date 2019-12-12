@@ -166,9 +166,7 @@
     <NetSdkPackage Include="Eto.Platform.Gtk" Assembly="$(ArtifactsNetStandard20Dir)Eto.Gtk.dll" Project="$(SourceDir)\Eto.Gtk\Eto.Gtk.csproj" />
     <Package Include="Eto.Platform.Gtk2" Assembly="$(ArtifactsNet45Dir)Eto.Gtk2.dll" />
     <Package Include="Eto.Platform.Gtk3" Assembly="$(ArtifactsNet45Dir)Eto.Gtk3.dll" />
-    <Package Include="Eto.Platform.Mac" Assembly="$(ArtifactsNet45Dir)Eto.Mac.dll" />
     <Package Include="Eto.Platform.Mac64" Assembly="$(ArtifactsNet45Dir)Eto.Mac64.dll" />
-    <Package Include="Eto.Platform.XamMac" Assembly="$(ArtifactsNet45Dir)Eto.XamMac.dll" />
     <Package Include="Eto.Platform.XamMac2"  Condition="$(OSPlatform) == 'Mac'" Assembly="$(ArtifactsModernDir)Eto.XamMac2.dll" />
     <Package Include="Eto.Platform.Windows" Assembly="$(ArtifactsNet45Dir)Eto.WinForms.dll" />
     <Package Include="Eto.Platform.Direct2D" Assembly="$(ArtifactsNet45Dir)Eto.Direct2D.dll" />
@@ -181,13 +179,10 @@
     <NetSdkPackage Include="Eto.Serialization.Xaml" Assembly="$(ArtifactsNetStandard10Dir)publish\Eto.Serialization.Xaml.dll" Project="$(SourceDir)\Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj" />
 
     <StandalonePackage Include="Eto.Forms.Sample" Folder="Eto.Forms.Sample\"/>
-    <StandalonePackage Include="Eto.Platform.Mac.Template"/>
   </ItemGroup>
 
   <!-- Build all source code -->
   <Target Name="Build" DependsOnTargets="UpdateVersion">
-    <!-- use nuget as msbuild/dotnet restore doesn't use package.config (needed only for Eto.Test.XamMac currently) -->
-    <!-- <MSBuild Targets="RestorePackages" Properties="PackageSource=$(SourceDir)Eto.sln" Projects="NuGet.targets" /> -->
 
     <PropertyGroup>
       <BuildProperties>Configuration=$(Configuration);Platform=$(OSPlatform)</BuildProperties>

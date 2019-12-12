@@ -12,33 +12,16 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
 		<description>
-This package is deprecated and should not be used in new projects, please use Eto.Platform.Mac64 or Eto.Platform.XamMac2 instead.
-
-This is the 32-bit MonoMac platform for Eto.Forms UI Framework.
-			
-Include this along with your Eto.Forms application to provide a native interface for Mac users.
-			
-Eto.Platform.Mac uses the open source MonoMac, which allows you to create macOS application bundles from any platform.  However, it does require mono to be installed when running on macOS.
-
-Use Eto.Platform.XamMac2 if you want to bundle mono inside your .app, however it requires Visual Studio on a Mac.
-			
-You do not need to use any of the classes of this assembly (unless customizing the MonoMac functionality of the platform), and should just use the UI controls from the Eto assembly.
+This package is obsolete in Eto.Forms 2.5.  Please remove this package.
 		</description>
 		<copyright>$copyright$</copyright>
-		<tags>cross platform gui ui framework desktop monomac osx mac eto.forms</tags>
 		<dependencies>
 			<group>
-				<dependency id="Eto.Forms" version="[$version$]" />
-				<dependency id="RoslynCodeTaskFactory" version="2.0.7" />
+				<dependency id="Eto.Platform.Mac64" version="[$version$]" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="lib\MonoMac\MonoMac.dll" target="lib\net45" />
-		<file src="lib\MonoMac\MonoMac-License.txt" target="MonoMac-License.txt" />
-		<file src="artifacts\core\$configuration$\net45\Eto.Mac.dll" target="lib\net45" />
 		<file src="LICENSE.txt" target="LICENSE.txt" />
-		<file src="build\MacTemplate\*" target="build" />
-		<file src="build\nuspec\Mac.targets" target="build\Eto.Platform.Mac.targets" />
 	</files>
 </package>

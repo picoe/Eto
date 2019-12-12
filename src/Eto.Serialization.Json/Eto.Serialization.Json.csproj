@@ -5,7 +5,7 @@
     <TargetFrameworks>netstandard1.3;portable-net45+win8+wpa81+wp8</TargetFrameworks>
     -->
   </PropertyGroup>
-  <Import Project="..\..\build\nuspec\Eto.Serialization.Json.nuspec.props"/>
+  <Import Project="..\..\build\nuspec\Eto.Serialization.Json.nuspec.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>TRACE;DEBUG;PCL</DefineConstants>
     <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
