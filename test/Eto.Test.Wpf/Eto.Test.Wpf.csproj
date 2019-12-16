@@ -4,6 +4,9 @@
   <PropertyGroup Condition="$([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">
     <HaveWindowsDesktopSdk>true</HaveWindowsDesktopSdk>
   </PropertyGroup>
+  <PropertyGroup Condition="!$([MSBuild]::IsOsPlatform(Windows))">
+    <HaveWindowsDesktopSdk>false</HaveWindowsDesktopSdk>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFrameworks></TargetFrameworks>
