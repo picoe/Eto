@@ -87,10 +87,8 @@ namespace Eto.Wpf.Forms
 	{
 		internal static readonly object Cursor_Key = new object();
 
-		// unique instance value so we can tell if we are dragging/dropping within the same instance
-		internal static string DragEtoInstanceValue = Guid.NewGuid().ToString();
-		internal const string DragEtoInstanceKey = "eto.instance";
-		internal const string DragEtoSourceKey = "eto.source";
+		// source Eto control for drag operations
+		internal static Control DragSourceControl { get; set; }
 
 		internal const string CustomCursor_DataKey = "Eto.CustomCursor";
 
@@ -665,21 +663,8 @@ namespace Eto.Wpf.Forms
 		protected virtual DragEventArgs GetDragEventArgs(sw.DragEventArgs data, object controlObject)
         {
             var dragData = (data.Data as sw.DataObject).ToEto();
-			var instanceKey = data.Data.GetData(WpfFrameworkElement.DragEtoInstanceKey) as string;
-			Control source = null;
-			// only try to get the source control within the same instance of the application
-			// since Eto objects can't be serialized through COM
-			if (instanceKey == WpfFrameworkElement.DragEtoInstanceValue)
-			{
-				try
-				{
-					source = data.Data.GetData(WpfFrameworkElement.DragEtoSourceKey) as Control;
-				}
-				catch
-				{
-					// ignore errors here, just in case.
-				}
-			}
+
+			Control source = WpfFrameworkElement.DragSourceControl;
 
 			var location = data.GetPosition(Control).ToEto();
 			var modifiers = Keys.None;
@@ -915,11 +900,10 @@ namespace Eto.Wpf.Forms
 
 		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF offset)
         {
-
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			var dataObject = data.ToWpf();
 
-			sw.WpfDataObjectExtensions.SetDataEx(dataObject, WpfFrameworkElement.DragEtoInstanceKey, WpfFrameworkElement.DragEtoInstanceValue);
+			WpfFrameworkElement.DragSourceControl = Widget;
 
 			sw.DragSourceHelper.RegisterDefaultDragSource(Control, dataObject);
 			sw.DragSourceHelper.AllowDropDescription(true);
@@ -938,7 +922,8 @@ namespace Eto.Wpf.Forms
 
 			sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
 
-			//sw.DragSourceHelper.UnregisterDefaultDragSource(Control);
+			WpfFrameworkElement.DragSourceControl = null;
+			sw.DragSourceHelper.UnregisterDefaultDragSource(Control);
 		}
 
 

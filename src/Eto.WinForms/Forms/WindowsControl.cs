@@ -102,6 +102,8 @@ namespace Eto.WinForms.Forms
 		public static readonly object FontKey = new object();
 		public static readonly object Enabled_Key = new object();
 		public static readonly object UseShellDropManager_Key = new object();
+
+		internal static Control DragSourceControl { get; set; }
 	}
 
 	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWindowsControl
@@ -463,14 +465,11 @@ namespace Eto.WinForms.Forms
 			Callback.OnEnabledChanged(Widget, EventArgs.Empty);
 		}
 
-		const string SourceDataFormat = "eto.source.control";
-
 
 		DragEventArgs GetDragEventArgs(swf.DragEventArgs data)
 		{
 			var dragData = data.Data.ToEto();
-			var sourceWidget = data.Data.GetData(SourceDataFormat);
-			var source = sourceWidget == null ? null : (Control)sourceWidget;
+			var source = WindowsControl.DragSourceControl;
 			var modifiers = data.GetEtoModifiers();
 			var buttons = data.GetEtoButtons();
 			var location = PointFromScreen(new PointF(data.X, data.Y));
@@ -952,7 +951,7 @@ namespace Eto.WinForms.Forms
 		public void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
 		{
 			var dataObject = data.ToSwf();
-			dataObject.SetData(SourceDataFormat, Widget);
+			WindowsControl.DragSourceControl = Widget;
 			if (UseShellDropManager)
 			{
 				swf.DragSourceHelper.AllowDropDescription(true);
@@ -973,6 +972,7 @@ namespace Eto.WinForms.Forms
 
 				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
 			}
+			WindowsControl.DragSourceControl = null;
 		}
 
 		public Window GetNativeParentWindow() => ContainerControl.FindForm().ToEtoWindow();
