@@ -33,7 +33,10 @@ namespace Eto.Test
 			}
 		}
 
-		string initialSection; // set to initial section to select for easier debugging
+		/// <summary>
+		/// Set to initial section name to select for easier debugging
+		/// </summary>
+		public string InitialSection { get; set; }
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
@@ -100,9 +103,9 @@ namespace Eto.Test
 
 			CreateMenuToolBar();
 
-			if (initialSection != null)
+			if (InitialSection != null)
 			{
-				SectionList.SelectedItem = nodes.SelectMany(r => r).OfType<ISection>().FirstOrDefault(r => r.Text == initialSection);
+				SectionList.SelectedItem = nodes.SelectMany(r => r).OfType<ISection>().FirstOrDefault(r => r.Text == InitialSection);
 			}
 
 		}

@@ -44,11 +44,14 @@ type MyForm() as this =
         // Set data context so it propegates to all child controls
         this.DataContext <- MyObject(TextProperty = "Initial Value 1")
 
-        this.Menu <- new MenuBar(
-            QuitItem = (new Command((fun sender e -> Application.Instance.Quit()), 
-            MenuText = "Quit", 
-            Shortcut = (Application.Instance.CommonModifier ||| Keys.Q))).CreateMenuItem()
-        )
+        let quitItem = 
+            new Command(
+                (fun sender e -> Application.Instance.Quit()),
+                MenuText = "Quit",
+                Shortcut = (Application.Instance.CommonModifier ||| Keys.Q)
+            )
+
+        this.Menu <- new MenuBar(QuitItem = quitItem.CreateMenuItem())
 
     member this.DataContextBinding () =
         let textBox = new TextBox()
