@@ -89,6 +89,8 @@ namespace Eto.Mac
 
 			var ciImage = CIImage.FromCGImage(_image.CGImage);
 
+
+#pragma warning disable CS0618 // Image => InputImage in Xamarin.Mac 6.6
 			var filter2 = new CIColorControls();
 			filter2.SetDefaults();
 			filter2.Image = ciImage;
@@ -98,6 +100,8 @@ namespace Eto.Mac
 			var filter3 = new CIColorMatrix();
 			filter3.SetDefaults();
 			filter3.Image = ciImage;
+#pragma warning restore CS0618
+
 			var cgColor = Color.ToCG();
 			var components = cgColor.Components;
 			if (components.Length >= 3)
