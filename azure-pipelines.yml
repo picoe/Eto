@@ -25,7 +25,7 @@ jobs:
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments) /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
+      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=false /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
 
   - task: CopyFiles@2
     displayName: Copy nupkg
@@ -74,18 +74,32 @@ jobs:
   steps:
   - script: cinst gtksharp -y
     displayName: Install GTK#
+  - powershell: |
+      Write-Host "##vso[task.setvariable variable=DOTNET_SDK_VERSION]3.0.100"
+    displayName: Set .NET Core SDK version to install
+  - task: UseDotNet@2
+    displayName: Install .NET Core SDK
+    inputs:
+      packageType:  sdk
+      version:      $(DOTNET_SDK_VERSION)
+  - powershell: |
+      $DOTNET_CLI_COMMAND = Get-Command -CommandType Application dotnet | Select-Object -First 1
+      $DOTNET_ROOT = (Join-Path -Resolve $DOTNET_CLI_COMMAND.Path ..)
+      $MSBuildSDKsPath = (Join-Path -Resolve $DOTNET_ROOT sdk/$ENV:DOTNET_SDK_VERSION/Sdks)
+      Write-Host "##vso[task.setvariable variable=MSBuildSDKsPath]$MSBuildSDKsPath"
+    displayName: Add installed .NET Core SDKs to MSBuild SDK lookup path
 
   - task: msbuild@1
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments) /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
+      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
 
   - task: msbuild@1
     displayName: Build Visual Studio Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
+      msbuildArguments: /t:BuildAddins /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
 
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
@@ -110,11 +124,4 @@ jobs:
     inputs:
       pathtoPublish: artifacts/addin/$(build.configuration)/VisualStudio/Eto.Addin.VisualStudio.vsix
       artifactName: addins
-      publishLocation: container
-  - task: PublishBuildArtifacts@1
-    condition: failed()
-    displayName: Publish MSBuild logs
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog
-      artifactName: msbuild-binlog
       publishLocation: container

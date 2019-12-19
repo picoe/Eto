@@ -109,6 +109,7 @@ namespace Eto.Wpf.Drawing
 			var text = Text ?? string.Empty;
 			text = SetWrap(text);
 
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 			var formattedText = new swm.FormattedText(
 				text,
 				CultureInfo.CurrentUICulture,
@@ -116,6 +117,7 @@ namespace Eto.Wpf.Drawing
 				font.ToWpfTypeface(),
 				font.Size,
 				ForegroundBrush.ToWpf());
+#pragma warning restore CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 			if (Wrap == FormattedTextWrapMode.None)
 				formattedText.MaxLineCount = 1;
 			SetTextAlignment(formattedText);
@@ -245,6 +247,7 @@ namespace Eto.Wpf.Drawing
 				x += advanceWidth;
 			}
 
+#pragma warning disable CS0618 // 'GlyphRun.GlyphRun(GlyphTypeface, int, bool, double, IList<ushort>, Point, IList<double>, IList<Point>, IList<char>, string, IList<ushort>, IList<bool>, XmlLanguage)' is obsolete: 'Use the PixelsPerDip override'
 			return new swm.GlyphRun(
 				glyphTypeface,
 				0,
@@ -259,6 +262,7 @@ namespace Eto.Wpf.Drawing
 				null,
 				null,
 				null);
+#pragma warning restore CS0618 // 'GlyphRun.GlyphRun(GlyphTypeface, int, bool, double, IList<ushort>, Point, IList<double>, IList<Point>, IList<char>, string, IList<ushort>, IList<bool>, XmlLanguage)' is obsolete: 'Use the PixelsPerDip override'
 		}
 	}
 }

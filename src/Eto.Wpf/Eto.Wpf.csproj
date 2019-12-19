@@ -1,42 +1,69 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Condition="$([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">
+    <HaveWindowsDesktopSdk>true</HaveWindowsDesktopSdk>
+  </PropertyGroup>
+  <PropertyGroup Condition="!$([MSBuild]::IsOsPlatform(Windows))">
+    <HaveWindowsDesktopSdk>false</HaveWindowsDesktopSdk>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{63137FA0-CA55-11E3-9C1A-0800200C9A66}</ProjectGuid>
+    <TargetFrameworks></TargetFrameworks>
+    <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net45</TargetFrameworks>
+    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
+          Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
+          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
+
+  <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Wpf</RootNamespace>
+    <AssemblyName>Eto.Wpf</AssemblyName>
     <RestorePackages>true</RestorePackages>
     <UseMSBuildEngine>False</UseMSBuildEngine>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <AssemblyName>Eto.Wpf</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DefineConstants>$(DefineConstants);WPF</DefineConstants>
+    <OutputPath>..\..\artifacts\core\$(Configuration)\</OutputPath>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Suppress warning NU1701: Package 'Extended.Wpf.Toolkit 3.2.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
+    <!-- Suppress warning NU1701: Package 'Windows7APICodePack-Core 1.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
+    <!-- Suppress warning NU1701: Package 'Windows7APICodePack-Shell 1.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
+    <NoWarn>NU1701;MSB4011;$(NoWarn)</NoWarn>
+  </PropertyGroup>
+
+  <Import Project="..\..\build\nuspec\Eto.Platform.Wpf.nuspec.props"/>
+
+  <PropertyGroup>
     <EmbedReferences>Microsoft.WindowsAPICodePack;Microsoft.WindowsAPICodePack.Shell;Xceed.Wpf.Toolkit;Interop.SHDocVw</EmbedReferences>
     <EmbedPrefix>Eto.Wpf.CustomControls.Assemblies</EmbedPrefix>
   </PropertyGroup>
-  <PropertyGroup>
-    <FileAlignment>512</FileAlignment>
-    <DebugSymbols>True</DebugSymbols>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DefineConstants>TRACE;WPF</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\artifacts\core\Debug\net45\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\artifacts\core\Release\net45\</OutputPath>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
   <ItemGroup>
+    <Reference Include="Interop.SHDocVw">
+      <HintPath>..\..\lib\SHDocVw\Interop.SHDocVw.dll</HintPath>
+      <Private>False</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
@@ -45,11 +72,6 @@
     <Reference Include="System.Xaml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
-    <Reference Include="Interop.SHDocVw">
-      <HintPath>..\..\lib\SHDocVw\Interop.SHDocVw.dll</HintPath>
-      <Private>False</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="PresentationCore" />
@@ -59,6 +81,7 @@
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
@@ -87,193 +110,41 @@
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
-    <Compile Include="CustomControls\DragDropLib.Wpf.cs" />
-    <Compile Include="CustomControls\DragDropLib.Swf.cs" />
-    <Compile Include="CustomControls\DragDropLib.cs" />
-    <Compile Include="DragDropConversions.cs" />
-    <Compile Include="Drawing\CachedBitmapFrame.cs" />
-    <Compile Include="Drawing\FormattedTextHandler.cs" />
-    <Compile Include="Drawing\IconFrameHandler.cs" />
-    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
-    <Compile Include="Drawing\SystemColorsHandler.cs" />
-    <Compile Include="Forms\Controls\ExpanderHandler.cs" />
-    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
-    <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
-    <Compile Include="Forms\NativeFormHandler.cs" />
-    <Compile Include="Forms\WpfShellDropBehavior.cs" />
-    <Compile Include="Forms\WpfDragEventArgs.cs" />
-    <Compile Include="LogicalScreenHelper.cs" />
-    <Compile Include="PropertyChangeNotifier.cs" />
-    <Compile Include="Forms\Controls\TextStepperHandler.cs" />
-    <Compile Include="Forms\Controls\StepperHandler.cs" />
-    <Compile Include="Forms\DataObjectHandler.cs" />
-    <Compile Include="Forms\EtoBorder.cs" />
-    <Compile Include="Forms\Menu\MenuHandler.cs" />
-    <Compile Include="Forms\NotificationHandler.cs" />
-    <Compile Include="Forms\PerMonitorDpiHelper.cs" />
-    <Compile Include="Forms\TrayIndicatorHandler.cs" />
-    <Compile Include="Forms\VistaSelectFolderDialogHandler.cs" />
-    <Compile Include="Forms\WindowsFormsHostHandler.cs" />
-    <Compile Include="Win32.dib.cs" />
-    <Compile Include="WinFormsHelpers.cs" />
-    <Compile Include="WpfConversions.cs" />
-    <Compile Include="CustomControls\EditableTextBlock.cs" />
-    <Compile Include="CustomControls\FontDialog\fontchooser.xaml.cs">
+    <Compile Update="CustomControls\FontDialog\fontchooser.xaml.cs">
       <DependentUpon>fontchooser.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\FontDialog\fontfamilylistitem.cs" />
-    <Compile Include="CustomControls\FontDialog\fontsizelistitem.cs" />
-    <Compile Include="NameDictionaryExtensions.cs" />
-    <Compile Include="CustomControls\FontDialog\typefacelistitem.cs" />
-    <Compile Include="CustomControls\FontDialog\typographicfeaturelistitem.cs" />
-    <Compile Include="CustomControls\GlassHelper.cs" />
-    <Compile Include="CustomControls\HttpServer.cs" />
-    <Compile Include="CustomControls\MultiSizeImage.cs" />
-    <Compile Include="CustomControls\OverlayIcon.xaml.cs">
+    <Compile Update="CustomControls\OverlayIcon.xaml.cs">
       <DependentUpon>OverlayIcon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\SelectableTreeView.cs" />
-    <Compile Include="CustomControls\TreeGridView\TreeToggleButton.cs" />
-    <Compile Include="Drawing\BitmapHandler.cs" />
-    <Compile Include="Drawing\FontHandler.cs" />
-    <Compile Include="Drawing\FontsHandler.cs" />
-    <Compile Include="Drawing\GraphicsHandler.cs" />
-    <Compile Include="Drawing\GraphicsPathHandler.cs" />
-    <Compile Include="Drawing\IconHandler.cs" />
-    <Compile Include="Drawing\IndexedBitmapHandler.cs" />
-    <Compile Include="Drawing\FontFamilyHandler.cs" />
-    <Compile Include="Drawing\FontTypefaceHandler.cs" />
-    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
-    <Compile Include="Drawing\MatrixHandler.cs" />
-    <Compile Include="Drawing\PenHandler.cs" />
-    <Compile Include="Drawing\SolidBrushHandler.cs" />
-    <Compile Include="Drawing\TextureBrushHandler.cs" />
-    <Compile Include="EtoEnvironmentHandler.cs" />
-    <Compile Include="Forms\ApplicationHandler.cs" />
-    <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
-    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
-    <Compile Include="Forms\ClipboardHandler.cs" />
-    <Compile Include="Forms\Controls\ButtonHandler.cs" />
-    <Compile Include="Forms\Cells\CellHandler.cs" />
-    <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
-    <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
-    <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
-    <Compile Include="Forms\Controls\DropDownHandler.cs" />
-    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
-    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
-    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
-    <Compile Include="Forms\Controls\SwfWebViewHandler.cs" />
-    <Compile Include="Forms\Controls\GridHandler.cs" />
-    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
-    <Compile Include="Forms\Controls\DrawableHandler.cs" />
-    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
-    <Compile Include="Forms\Controls\GridViewHandler.cs" />
-    <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
-    <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
-    <Compile Include="Forms\Controls\ImageViewHandler.cs" />
-    <Compile Include="Forms\Controls\LabelHandler.cs" />
-    <Compile Include="Forms\Controls\ListBoxHandler.cs" />
-    <Compile Include="Forms\Controls\NumericStepperHandler.cs" />
-    <Compile Include="Forms\Controls\PanelHandler.cs" />
-    <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
-    <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
-    <Compile Include="Forms\Controls\ScrollableHandler.cs" />
-    <Compile Include="Forms\Controls\SliderHandler.cs" />
-    <Compile Include="Forms\Controls\SplitterHandler.cs" />
-    <Compile Include="Forms\Controls\TabControlHandler.cs" />
-    <Compile Include="Forms\Controls\TabPageHandler.cs" />
-    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
-    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
-    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
-    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
-    <Compile Include="Forms\Controls\TreeViewHandler.cs" />
-    <Compile Include="Forms\Controls\WpfWebViewHandler.cs" />
-    <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
-    <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
-    <Compile Include="Forms\EnableThemingInScope.cs" />
-    <Compile Include="Forms\KeyboardHandler.cs" />
-    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
-    <Compile Include="Forms\WpfPanel.cs" />
-    <Compile Include="Forms\CursorHandler.cs" />
-    <Compile Include="Forms\FontDialogHandler.cs" />
-    <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
-    <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
-    <Compile Include="Forms\Menu\MenuItemHandler.cs" />
-    <Compile Include="Forms\Menu\SeparatorMenuItemHandler.cs" />
-    <Compile Include="Forms\MouseHandler.cs" />
-    <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
-    <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
-    <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
-    <Compile Include="Forms\SaveFileDialogHandler.cs" />
-    <Compile Include="Forms\ScreenHandler.cs" />
-    <Compile Include="Forms\ScreensHandler.cs" />
-    <Compile Include="Forms\SelectFolderDialogHandler.cs" />
-    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
-    <Compile Include="Forms\UITimerHandler.cs" />
-    <Compile Include="Forms\WpfContainer.cs" />
-    <Compile Include="Forms\WpfFileDialog.cs" />
-    <Compile Include="Forms\WpfCommonDialog.cs" />
-    <Compile Include="Forms\DialogHandler.cs" />
-    <Compile Include="Forms\Menu\ContextMenuHandler.cs" />
-    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
-    <Compile Include="Forms\MessageBoxHandler.cs" />
-    <Compile Include="Forms\OpenFileDialogHandler.cs" />
-    <Compile Include="Forms\PixelLayoutHandler.cs" />
-    <Compile Include="Forms\TableLayoutHandler.cs" />
-    <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
-    <Compile Include="Forms\WpfFrameworkElement.cs" />
-    <Compile Include="Forms\WpfLayout.cs" />
-    <Compile Include="Forms\FormHandler.cs" />
-    <Compile Include="Forms\Menu\MenuBarHandler.cs" />
-    <Compile Include="Forms\WpfControl.cs" />
-    <Compile Include="Forms\WpfWindow.cs" />
-    <Compile Include="KeyMap.cs" />
-    <Compile Include="Platform.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\FontDialogResources.Designer.cs">
+    <Compile Update="Properties\FontDialogResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>FontDialogResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="PropertyPathHelper.cs" />
-    <Compile Include="WpfExtensions.cs" />
-    <Compile Include="Drawing\TransformStack.cs" />
     <Compile Include="..\Eto.WinForms\IO\ShellIcon.cs">
       <Link>IO\ShellIcon.cs</Link>
-    </Compile>
-    <Compile Include="IO\SystemIcons.cs">
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\Shared\EmbeddedAssemblyLoader.cs">
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>
-    <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandler.cs" />
-    <Compile Include="Forms\Controls\CalendarHandler.cs" />
-    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
-    <Compile Include="WpfHelpers.cs" />
     <Compile Include="..\Eto.WinForms\Forms\HwndFormHandler.cs">
       <Link>Forms\HwndFormHandler.cs</Link>
     </Compile>
-    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
-    <Compile Include="Forms\OpenWithDialogHandler.cs" />
   </ItemGroup>
+  
   <ItemGroup>
-    <EmbeddedResource Include="Properties\FontDialogResources.resx">
+    <EmbeddedResource Update="Properties\FontDialogResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FontDialogResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
+
+  <!-- Automatically added by WindowsDesktop SDK -->
+  <ItemGroup Condition="'$(HaveWindowsDesktopSdk)' != 'true'">
     <Page Include="CustomControls\FontDialog\fontchooser.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -319,20 +190,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit">
       <Version>3.2.0</Version>
@@ -347,4 +208,10 @@
       <PrivateAssets>contentfiles;analyzers;build;compile</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
+          Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
+          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+
 </Project>
