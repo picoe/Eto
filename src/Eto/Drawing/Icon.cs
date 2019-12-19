@@ -106,7 +106,7 @@ namespace Eto.Drawing
 		{
 			if (assembly == null)
 			{
-				#if PCL
+				#if NETSTANDARD
 				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 				#else
 				assembly = Assembly.GetCallingAssembly();

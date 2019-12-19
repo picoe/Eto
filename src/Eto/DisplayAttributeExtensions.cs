@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
-#if !NETSTANDARD1_0
+using System.Linq;
+#if NETSTANDARD2_0
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 #endif
 
@@ -81,17 +83,20 @@ namespace Eto
 		public static DisplayAttribute Get(IPropertyDescriptor descriptor) => Get(s_DisplayAttributeType, descriptor);
 	}
 
-#else
+#elif NETSTANDARD2_0
 	class BaseAttributeWrapper<T>
 		where T : Attribute
 	{
 		public static T Get(Type type) => type.GetTypeInfo().GetCustomAttribute<T>();
 
-		public static T Get(PropertyDescriptor descriptor) => descriptor.GetCustomAttribute<T>();
-	}
+		public static T Get(PropertyDescriptor descriptor) => descriptor.Attributes.OfType<T>().FirstOrDefault();
+
+		public static T Get(IPropertyDescriptor descriptor) => descriptor.GetCustomAttribute<T>();	}
 
 	class EditorAttributeWrapper : BaseAttributeWrapper<EditorAttribute> { }
 
 	class DisplayAttributeWrapper : BaseAttributeWrapper<DisplayAttribute> { }
+#else
+	Not Implemented.
 #endif
 }

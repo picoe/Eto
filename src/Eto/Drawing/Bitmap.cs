@@ -94,7 +94,7 @@ namespace Eto.Drawing
 
 			if (assembly == null)
 			{
-#if PCL
+#if NETSTANDARD
 				if (TypeHelper.GetCallingAssembly == null)
 					throw new ArgumentNullException("assembly", string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
 				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);

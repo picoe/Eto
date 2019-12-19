@@ -47,7 +47,7 @@ namespace Eto
 		/// </summary>
 		public bool IsLinux { get; private set; }
 
-		#if PCL
+		#if NETSTANDARD
 
 		static string GetUnixType()
 		{

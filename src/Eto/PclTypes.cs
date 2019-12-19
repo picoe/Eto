@@ -1,4 +1,4 @@
-#if PCL
+#if NETSTANDARD
 using System;
 using System.Collections.Generic;
 using System.Globalization;

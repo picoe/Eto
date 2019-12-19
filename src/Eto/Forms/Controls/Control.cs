@@ -14,7 +14,7 @@ namespace Eto.Forms
 	/// All visual user interface elements should inherit from this class to provide common functionality like binding,
 	/// load/unload, and common events.
 	/// </remarks>
-	#if !PCL
+	#if !NETSTANDARD
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
