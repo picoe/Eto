@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <PackageId>Eto.Forms</PackageId>
+    <PackageVersion>$(NuspecAssemblyInformationalVersion)</PackageVersion>
+    <Title>$(NuspecAssemblyTitle)</Title>
+    <Authors>$(NuspecAssemblyCompany)</Authors>
+    <PackageLicenseFile>Eto-LICENSE.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/picoe/Eto</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Eto.Forms UI Framework</Description>
+    <PackageDescription>
+Eto.Forms is a cross platform desktop user interface framework.
+
+This framework is built so that you can target multiple platforms with one UI codebase.
+
+The goal of this framework is to expose a common API that can be used to build functional applications that run across platforms using their native toolkit. This will make your applications look and work as if it were a native application on all platforms.
+
+For advanced scenarios, you can take advantage of each platform's capabilities by wrapping your common UI in a larger application, or even create your own high-level controls with a custom implementations per platform.
+
+This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac, Xamarin.Mac, and GTK#.
+
+In order to run your Eto.Forms based application, you must also install one (or more) of the following packages:
+
+- Eto.Platform.Wpf
+- Eto.Platform.Windows
+- Eto.Platform.Direct2D
+- Eto.Platform.Gtk
+- Eto.Platform.Gtk2
+- Eto.Platform.Gtk3
+- Eto.Platform.Mac
+- Eto.Platform.Mac64
+- Eto.Platform.XamMac  * requires Visual Studio for Mac
+- Eto.Platform.XamMac2
+
+To get more information about how to get started, read the wiki:
+
+https://github.com/picoe/Eto/wiki
+    </PackageDescription>
+    <Copyright>$(NuspecAssemblyCopyright)</Copyright>
+    <PackageTags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Eto.Forms.targets" Pack="true">
+      <PackagePath>build\</PackagePath>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\LICENSE.txt">
+      <Pack>true</Pack>
+      <PackagePath>$(PackageLicenseFile)</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask TaskName="_GetCommonFiles" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
+  <UsingTask TaskName="_GetCommonFiles" TaskFactory="$(MSBuildTaskFactoryType)" AssemblyFile="$(MSBuildTasksAssemblyFile)">
     <ParameterGroup>
       <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
       <Names ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />

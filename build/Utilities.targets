@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask TaskName="GetAssemblyInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
+
+  <UsingTask TaskName="GetAssemblyInfo" TaskFactory="$(MSBuildTaskFactoryType)" AssemblyFile="$(MSBuildTasksAssemblyFile)">
     <ParameterGroup>
       <AssemblyFileName ParameterType="System.String" Required="true" />
       <AssemblyInformationalVersion ParameterType="System.String" Output="true" />
@@ -11,7 +13,6 @@
       <AssemblyName ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Xml" />
       <Code Type="Class" Language="cs"><![CDATA[
 using System;
 using System.IO;
@@ -92,10 +93,10 @@ public class GetAssemblyInfo : AppDomainIsolatedTask
     }
   }
 }
-]]></Code>
+]]>      </Code>
     </Task>
   </UsingTask>
-  <UsingTask TaskName="FileUpdate" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  <UsingTask TaskName="FileUpdate" TaskFactory="$(MSBuildTaskFactoryType)" AssemblyFile="$(MSBuildTasksAssemblyFile)">
     <ParameterGroup>
       <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
       <Pattern ParameterType="System.String" Required="true" />
@@ -105,7 +106,6 @@ public class GetAssemblyInfo : AppDomainIsolatedTask
       <MultiLine ParameterType="System.Boolean" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Xml" />
       <Code Type="Class" Language="cs"><![CDATA[
 using System;
 using System.IO;
@@ -210,10 +210,10 @@ public class FileUpdate : Task
     return true;    
   }
 }
-]]></Code>
+]]>      </Code>
     </Task>
   </UsingTask>
-  <UsingTask TaskName="IncrementVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  <UsingTask TaskName="IncrementVersion" TaskFactory="$(MSBuildTaskFactoryType)" AssemblyFile="$(MSBuildTasksAssemblyFile)">
     <ParameterGroup>
       <Version ParameterType="System.String" Required="true" />
       <Increment ParameterType="System.String" />
@@ -224,7 +224,6 @@ public class FileUpdate : Task
       <AssemblyVersionBeforeRelease ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Xml" />
       <Code Type="Class" Language="cs"><![CDATA[
 using System;
 using System.IO;
@@ -323,17 +322,16 @@ public class IncrementVersion : Task
     return true;
   }
 }
-]]></Code>
+]]>      </Code>
     </Task>
   </UsingTask>
-  <UsingTask TaskName="FileExtract" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  <UsingTask TaskName="FileExtract" TaskFactory="$(MSBuildTaskFactoryType)" AssemblyFile="$(MSBuildTasksAssemblyFile)">
     <ParameterGroup>
       <File ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
       <Pattern ParameterType="System.String" Required="true" />
       <Output ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Xml" />
       <Code Type="Class" Language="cs"><![CDATA[
 using System;
 using System.IO;
@@ -396,7 +394,7 @@ public class FileExtract : Task
     return false;
   }
 }
-]]></Code>
+]]>      </Code>
     </Task>
   </UsingTask>
 </Project>
