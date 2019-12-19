@@ -1,37 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <PropertyGroup Condition="$([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">
-    <HaveWindowsDesktopSdk>true</HaveWindowsDesktopSdk>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$([MSBuild]::IsOsPlatform(Windows))">
-    <HaveWindowsDesktopSdk>false</HaveWindowsDesktopSdk>
-  </PropertyGroup>
+﻿<Project>
 
   <PropertyGroup>
+    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT' and $([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">true</HaveWindowsDesktopSdk>
+
     <TargetFrameworks></TargetFrameworks>
     <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net461</TargetFrameworks>
     <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
 
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
-          Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
-          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Eto.Test.Wpf</RootNamespace>
     <ApplicationIcon>TestIcon.ico</ApplicationIcon>
-    <RestorePackages>true</RestorePackages>
-    <AssemblyName>Eto.Test.Wpf</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Prefer32Bit>false</Prefer32Bit>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>..\..\artifacts\test\$(Configuration)\</OutputPath>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWPF>
+    <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -60,32 +47,29 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj"/>
-    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj"/>
-    <ProjectReference Include="..\..\src\Eto\Eto.csproj"/>
+    <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj" />
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="app.config">
+    <None Update="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="app.manifest">
+    <None Update="app.manifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="NUnit">
-      <Version>3.11.0</Version>
+    <PackageReference Include="NUnit" Version="3.11.0">
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
 
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
-          Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
-          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
 
 </Project>

@@ -1,9 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <PropertyGroup Condition="$([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">
-    <HaveWindowsDesktopSdk>true</HaveWindowsDesktopSdk>
-  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFrameworks></TargetFrameworks>
@@ -11,19 +6,13 @@
     <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
 
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
-          Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
-          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EmbedEtoInWpf</RootNamespace>
-    <AssemblyName>EmbedEtoInWpf</AssemblyName>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>..\..\..\artifacts\samples\$(Configuration)\</OutputPath>
-    <UseWPF>true</UseWPF>
+    <UseWPF Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWPF>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
@@ -36,7 +25,6 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -86,17 +74,11 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <ProjectReference Include="..\..\..\src\Eto.Wpf\Eto.Wpf.csproj" />
     <ProjectReference Include="..\..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
 
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
-          Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
-          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
 
 </Project>

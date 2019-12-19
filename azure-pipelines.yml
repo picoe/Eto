@@ -30,11 +30,13 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
-      contents: artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
+      contents: |
+        artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
+        artifacts/nuget/$(build.configuration)/Eto.Platform.Gtk2*.nupkg
       targetFolder: $(Build.ArtifactStagingDirectory)
       
   - task: PublishBuildArtifacts@1
-    displayName: Publish XamMac nupkg
+    displayName: Publish nupkg
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/nuget/$(build.configuration)
       artifactName: nuget
@@ -72,8 +74,6 @@ jobs:
     vmImage: 'VS2017-Win2016'
   
   steps:
-  - script: cinst gtksharp -y
-    displayName: Install GTK#
   - powershell: |
       Write-Host "##vso[task.setvariable variable=DOTNET_SDK_VERSION]3.0.100"
     displayName: Set .NET Core SDK version to install

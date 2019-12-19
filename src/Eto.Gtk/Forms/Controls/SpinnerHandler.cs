@@ -1,3 +1,4 @@
+#if GTK3
 using System;
 using Eto.Forms;
 
@@ -47,3 +48,4 @@ namespace Eto.GtkSharp.Forms.Controls
 	}
 }
 
+#endif

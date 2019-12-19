@@ -9,8 +9,6 @@
 		<Tags>cross-platform;gui;ui-framework;desktop;winforms;wpf;mac;osx;gtk;eto;eto.forms;dotnet-new</Tags>
 		
 		<TargetFramework>netstandard1.0</TargetFramework>
-		<OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
-		<PackageOutputPath>..\..\..\artifacts\nuget\$(Configuration)\</PackageOutputPath>
 		<ContentTargetFolders>content</ContentTargetFolders>
     
 		<EnableDefaultItems>false</EnableDefaultItems>
@@ -20,6 +18,9 @@
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<GenerateAssemblyVersion>False</GenerateAssemblyVersion>
 		<DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+    <CopyBuildOutputToOutputDirectory>False</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>False</CopyOutputSymbolsToOutputDirectory>
+		<SuppressDependenciesWhenPacking>True</SuppressDependenciesWhenPacking>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDRelease|AnyCPU' ">

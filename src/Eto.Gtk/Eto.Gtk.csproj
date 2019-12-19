@@ -2,19 +2,24 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RootNamespace>Eto.GtkSharp</RootNamespace>
+    <DefineConstants>$(DefineConstants);GTK3;GTKCORE</DefineConstants>
   </PropertyGroup>
-  <Import Project="..\..\build\nuspec\Eto.Platform.Gtk.nuspec.props"/>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;PCL;GTK3;DEBUG;NETSTANDARD2_0;GTKCORE</DefineConstants>
-    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE;PCL;GTK3;RELEASE;NETSTANDARD2_0;GTKCORE</DefineConstants>
-    <DebugType></DebugType>
-    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
+  <PropertyGroup>
+    <PackageId>Eto.Platform.Gtk</PackageId>
+    <Title>Eto.Forms - GTK+3 Platform</Title>
+    <PackageTags>cross platform gui ui framework desktop gtk eto.forms</PackageTags>
+    <Description>GTK+3 Platform for the Eto.Forms UI Framework</Description>
+    <PackageDescription>
+This is the GTK platform for Eto.Forms UI Framework. Currently this package is targetting Gtk 3.14 or newer.
+
+Include this along with your Eto.Forms application to provide a GTK interface, typically for Linux users.
+
+You do not need to use any of the classes of this assembly (unless customizing the GTK functionality of the platform), and should just use the UI controls from the Eto assembly.
+
+On Linux, mono framework 2.10 or higher and gtk-sharp2 are required.
+    </PackageDescription>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,12 +27,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="EtoWebView.cs" />
-    <Compile Remove="Forms\FontDialogHandlerOld.cs" />
-    <Compile Remove="Forms\ColorDialogHandlerOld.cs" />
-    <Compile Remove="Forms\Controls\WebViewHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\Conversions.cs">

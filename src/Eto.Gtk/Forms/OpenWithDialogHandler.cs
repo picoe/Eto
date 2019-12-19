@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if GTK3
+using System;
 using System.Diagnostics;
 using Eto.Forms;
 
@@ -30,3 +31,4 @@ namespace Eto.GtkSharp.Forms
 		}
 	}
 }
+#endif

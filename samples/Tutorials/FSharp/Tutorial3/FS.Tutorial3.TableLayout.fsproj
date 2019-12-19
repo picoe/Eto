@@ -3,10 +3,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net461</TargetFramework>
-    <OutputPath>..\..\..\..\artifacts\samples\$(Configuration)\</OutputPath>
     <RootNamespace>Tutorial3</RootNamespace>
     <Name>Tutorial3 - Table Layout</Name>
-    <UseMacTemplate>True</UseMacTemplate>
+    <UseMacTargets>True</UseMacTargets>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
@@ -19,7 +18,6 @@
     <ProjectReference Include="..\..\..\..\src\Eto.Mac\Eto.Mac64.csproj" />
     <ProjectReference Include="..\..\..\..\src\Eto.WinForms\Eto.WinForms.csproj" />
     <ProjectReference Include="..\..\..\..\src\Eto\Eto.csproj" />
-    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
   </ItemGroup>
 
 </Project>

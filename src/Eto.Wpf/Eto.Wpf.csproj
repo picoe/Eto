@@ -1,23 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <PropertyGroup Condition="$([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">
-    <HaveWindowsDesktopSdk>true</HaveWindowsDesktopSdk>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$([MSBuild]::IsOsPlatform(Windows))">
-    <HaveWindowsDesktopSdk>false</HaveWindowsDesktopSdk>
-  </PropertyGroup>
+﻿<Project>
 
   <PropertyGroup>
+    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT' and $([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">true</HaveWindowsDesktopSdk>
+
     <TargetFrameworks></TargetFrameworks>
     <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net45</TargetFrameworks>
     <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
 
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
-          Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
-          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -26,32 +18,36 @@
     <RestorePackages>true</RestorePackages>
     <UseMSBuildEngine>False</UseMSBuildEngine>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DefineConstants>$(DefineConstants);WPF</DefineConstants>
-    <OutputPath>..\..\artifacts\core\$(Configuration)\</OutputPath>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWPF>
+    <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
     <!-- Suppress warning NU1701: Package 'Extended.Wpf.Toolkit 3.2.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
     <!-- Suppress warning NU1701: Package 'Windows7APICodePack-Core 1.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
     <!-- Suppress warning NU1701: Package 'Windows7APICodePack-Shell 1.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
     <NoWarn>NU1701;MSB4011;$(NoWarn)</NoWarn>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <PackageId>Eto.Platform.Wpf</PackageId>
+    <AssemblyTitle>Eto.Forms - WPF Platform</AssemblyTitle>
+    <Description>WPF Platform for the Eto.Forms UI Framework</Description>
+    <PackageTags>cross platform gui ui framework desktop wpf eto.forms</PackageTags>
+    <PackageDescription>
+This is the WPF platform for Eto.Forms UI Framework.
 
-  <Import Project="..\..\build\nuspec\Eto.Platform.Wpf.nuspec.props"/>
+Include this along with your Eto.Forms application to provide a WPF interface for your windows users.  WPF is by default preferred over the Eto.Platform.Windows platform, so if both are included, WPF will be selected.
+
+You do not need to use any of the classes of this assembly (unless customizing the WPF functionality of the platform), and should just use the UI controls from the Eto assembly.
+    </PackageDescription>
+  </PropertyGroup>
 
   <PropertyGroup>
     <EmbedReferences>Microsoft.WindowsAPICodePack;Microsoft.WindowsAPICodePack.Shell;Xceed.Wpf.Toolkit;Interop.SHDocVw</EmbedReferences>
     <EmbedPrefix>Eto.Wpf.CustomControls.Assemblies</EmbedPrefix>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <Optimize>false</Optimize>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
 
@@ -195,23 +191,19 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit">
-      <Version>3.2.0</Version>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.2.0">
       <IncludeAssets>compile</IncludeAssets>
       <ExcludeAssets>none</ExcludeAssets>
       <PrivateAssets>contentfiles;analyzers;build;compile</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Windows7APICodePack-Shell">
-      <Version>1.1.0</Version>
+    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0">
       <IncludeAssets>compile</IncludeAssets>
       <ExcludeAssets>none</ExcludeAssets>
       <PrivateAssets>contentfiles;analyzers;build;compile</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'"
-          Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'"
-          Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
 
 </Project>
