@@ -9,7 +9,7 @@
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>LSMinimumSystemVersion</key>
-    <string>10.7</string>
+    <string>10.9</string>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>NSHumanReadableCopyright</key>
