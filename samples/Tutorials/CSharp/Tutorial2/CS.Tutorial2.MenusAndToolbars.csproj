@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Eto.Gtk\Eto.Gtk2.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Eto.Gtk\Eto.Gtk.csproj" />
     <ProjectReference Include="..\..\..\..\src\Eto.Mac\Eto.Mac64.csproj" />
     <ProjectReference Include="..\..\..\..\src\Eto.WinForms\Eto.WinForms.csproj" />
     <ProjectReference Include="..\..\..\..\src\Eto\Eto.csproj" />
