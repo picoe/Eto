@@ -19,6 +19,9 @@
     
     <!-- we add this manually in .targets so it doesn't trigger a rebuild each time -->
     <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
+    
+    <!-- GtkSharp package likes to install things during package restore, we don't want that -->
+    <SkipGtkInstall>True</SkipGtkInstall>
   </PropertyGroup>
   
   <Import Condition="Exists('$(BasePath)..\Eto.Common.props')" Project="$(BasePath)..\Eto.Common.props" />
