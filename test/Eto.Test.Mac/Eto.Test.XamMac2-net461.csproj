@@ -12,7 +12,6 @@
     <AssemblyName>Eto.Test.XamMac2</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <UseXamMacFullFramework>true</UseXamMacFullFramework>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -37,13 +36,6 @@
     <Profiling>false</Profiling>
     <EnableSGenConc>true</EnableSGenConc>
     <AOTMode>None</AOTMode>
-    <PackagingExtraArgs></PackagingExtraArgs>
-    <I18n></I18n>
-    <MonoBundlingExtraArgs></MonoBundlingExtraArgs>
-    <CodeSignExtraArgs></CodeSignExtraArgs>
-    <PackagingExtraArgs></PackagingExtraArgs>
-    <I18n></I18n>
-    <MonoBundlingExtraArgs></MonoBundlingExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\artifacts\test\Release\net461</OutputPath>
