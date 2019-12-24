@@ -41,6 +41,7 @@ namespace Eto.GtkSharp.Forms
 			}
 			control.DefaultResponse = DefaultButton.ToGtk(Buttons);
 			int ret = control.Run();
+			control.Hide();
 			control.Destroy();
 			var result = ((Gtk.ResponseType)ret).ToEto();
 			if (result == DialogResult.None)
