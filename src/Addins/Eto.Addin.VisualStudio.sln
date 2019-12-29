@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.VisualStudio", "Eto.Addin.VisualStudio\Eto.Addin.VisualStudio.csproj", "{4A50E311-097A-403F-BEE5-8A4EC3A8230B}"
 EndProject
@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Designer", "Eto.Designe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto", "..\Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf", "..\Eto.Wpf\Eto.Wpf.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Wpf", "..\Eto.Wpf\Eto.Wpf.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Json", "..\Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
 EndProject
