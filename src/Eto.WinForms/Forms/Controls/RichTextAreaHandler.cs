@@ -271,7 +271,7 @@ namespace Eto.WinForms.Forms.Controls
 					throw new NotSupportedException();
 			}
 			SuppressSelectionChanged--;
-			Selection = Range.FromLength(Control.TextLength, 0);
+			Selection = Eto.Forms.Range.FromLength(Control.TextLength, 0); // Fully qualified because System.Range was introduced in .NET Core 3.0
 		}
 
 		public void Save(System.IO.Stream stream, RichTextAreaFormat format)

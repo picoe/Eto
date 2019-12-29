@@ -333,7 +333,7 @@ namespace Eto.Forms.ThemedControls
 		{
 			var type = ElementType;
 			var typeInfo = type.GetTypeInfo();
-			if (typeInfo.IsValueType || type.GetConstructor() != null)
+			if (typeInfo.IsValueType || type.GetConstructor(new Type[0]) != null)
 			{
 				return Activator.CreateInstance(type);
 			}

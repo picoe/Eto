@@ -379,7 +379,7 @@ namespace Eto.Wpf.Forms.Controls
 			get
 			{
 				var sel = Control.Selection;
-				return Range.FromLength(sel.Start.GetTextOffset(), sel.GetLength());
+				return Eto.Forms.Range.FromLength(sel.Start.GetTextOffset(), sel.GetLength()); // Fully qualified because System.Range was introduced in .NET Core 3.0
 			}
 			set
 			{
@@ -1040,6 +1040,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			
 			var runsAndParagraphs = GetRunsAndParagraphs(doc).ToList();
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 			var output = new swm.FormattedText(
 			  GetText(runsAndParagraphs),
 			  CultureInfo.CurrentCulture,
@@ -1049,6 +1050,7 @@ namespace Eto.Wpf.Forms.Controls
 			  doc.Foreground,
 			  null,
 			  swm.TextOptions.GetTextFormattingMode(doc));
+#pragma warning restore CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 
 			int offset = 0;
 

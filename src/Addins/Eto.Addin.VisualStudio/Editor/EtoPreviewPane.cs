@@ -251,12 +251,19 @@ namespace Eto.Addin.VisualStudio.Editor
 				//var wpfView = editorSvc.GetWpfTextView(viewAdapter);
 
 				wpfViewHost = editorSvc.GetWpfTextViewHost(viewAdapter);
-				
 
-				var wpfElement = wpfViewHost?.HostControl;
+				System.Windows.FrameworkElement wpfElement = wpfViewHost?.HostControl;
 				if (wpfElement != null)
 				{
-                    editorControl.Content = wpfElement.ToEto();
+					// get real host?
+					var parent = VisualTreeHelper.GetParent(wpfElement) as System.Windows.FrameworkElement;
+					while (parent != null)
+					{
+						wpfElement = parent;
+						parent = VisualTreeHelper.GetParent(wpfElement) as System.Windows.FrameworkElement;
+					}
+
+					editorControl.Content = wpfElement.ToEto();
 					return;
 				}
 			}

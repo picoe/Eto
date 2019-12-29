@@ -73,7 +73,7 @@ namespace Eto
 		{
 			get
 			{
-				#if PCL
+				#if NETSTANDARD
 				return IntPtr.Size == 8; // test based on size of IntPtr, which is 4 bytes in 32 bit, 8 in 64 bit.
 				#else
 				return Environment.Is64BitProcess;

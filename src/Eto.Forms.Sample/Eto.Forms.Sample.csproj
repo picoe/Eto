@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp3.0</TargetFrameworks>
+    
+    <EnableDefaultItems>false</EnableDefaultItems>
+    
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <NoBuild>True</NoBuild>
+    <IncludeSource>False</IncludeSource>
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <GenerateAssemblyVersion>False</GenerateAssemblyVersion>
+    <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+    <CopyBuildOutputToOutputDirectory>False</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>False</CopyOutputSymbolsToOutputDirectory>
+    
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>Eto.Forms.Sample</PackageId>
+    <Title>Eto.Forms - Sample Application</Title>
+    <PackageTags>cross platform gui framework desktop winforms wpf mac osx gtk eto.forms sample</PackageTags>
+    <PackageDescription>
+This sample application provides a starting point for your Eto.Forms application.
+      
+Add this package to a blank console application, which will replace your Program.cs with the Eto.Forms startup code and include a MainForm.cs as a sample form to get you started.
+      
+You will need to change the console application's output type to 'Windows Application' to suppress the console window from showing.
+
+In VS For Mac, set the compile target to 'Executable with GUI' and uncheck 'Run on external console' in Run &gt; Build. 
+    </PackageDescription>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="README.txt" Pack="True" PackagePath="" />
+    <None Include="content\*" Pack="True" PackagePath="content" />
+    <None Include="lib\**\*" Pack="True" PackagePath="lib" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="$(TargetFramework) == 'net461'">
+    <ProjectReference Include="..\Eto.Mac\Eto.Mac64.csproj" />
+    <ProjectReference Include="..\Eto.Wpf\Eto.Wpf.csproj" />
+    <ProjectReference Include="..\Eto.Gtk\Eto.Gtk.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="$(TargetFramework) == 'netcoreapp3.0'">
+    <ProjectReference Include="..\Eto.Wpf\Eto.Wpf.csproj" />
+    <ProjectReference Include="..\Eto.Gtk\Eto.Gtk.csproj" />
+  </ItemGroup>
+  
+</Project>

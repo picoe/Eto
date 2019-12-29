@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!-- 
+    Prevent multiple import 
+    
+    Import as follows (if in same directory):
+    <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
+  -->
+  <PropertyGroup Label="MSBuildTaskHelpersImported">
+    <MSBuildTaskHelpersImported>true</MSBuildTaskHelpersImported>
+  </PropertyGroup>
+  
+  <PropertyGroup Label="MSBuildTasksAssemblyFile" Condition="'$(MSBuildTasksAssemblyFile)'=='' Or !Exists('$(MSBuildTasksAssemblyFile)')">
+    <MSBuildTasksAssemblyFile>$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MSBuildTasksAssemblyFile>
+    <MSBuildTasksAssemblyFile Condition="!Exists('$(MSBuildTasksAssemblyFile)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll</MSBuildTasksAssemblyFile>
+    <MSBuildTasksAssemblyFile Condition="!Exists('$(MSBuildTasksAssemblyFile)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</MSBuildTasksAssemblyFile>
+    <MSBuildTasksAssemblyFile Condition="!Exists('$(MSBuildTasksAssemblyFile)')">$(MSBuildFrameworkToolsPath)\Microsoft.Build.Tasks.v4.0.dll</MSBuildTasksAssemblyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Label="MSBuildTaskFactoryType">
+    <MSBuildTaskFactoryType>CodeTaskFactory</MSBuildTaskFactoryType>
+    <MSBuildTaskFactoryType Condition="'$(MSBuildRuntimeType)'=='Core'">RoslynCodeTaskFactory</MSBuildTaskFactoryType>
+  </PropertyGroup>
+  
+  <!--
+      Future:
+  
+      RoslynCodeTaskFactory was introduced into MSBuild version 16.0
+      Fallback to older CodeTaskFactory when using older version of MSBuild.
+      
+      Mono on Mac claims version 16.0.40, but does not support RoslynCodeTaskFactory
+  -->
+  <!--
+  <PropertyGroup>
+    <MSBuildTaskFactoryType>RoslynCodeTaskFactory</MSBuildTaskFactoryType>
+    <MSBuildTaskFactoryType Condition="$([System.Version]::Parse('$(MSBuildVersion)')) &lt; $([System.Version]::Parse('16.0'))">CodeTaskFactory</MSBuildTaskFactoryType>
+  </PropertyGroup>
+  -->
+</Project>

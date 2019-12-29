@@ -2,13 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <UseMacTemplate>True</UseMacTemplate>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\artifacts\test\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\artifacts\test\Release\</OutputPath>
+    <UseMacTargets>True</UseMacTargets>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -30,7 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

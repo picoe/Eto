@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if GTKCORE || GTK3
+using System;
 using System.Runtime.InteropServices;
 using Eto.Forms;
 
@@ -233,3 +234,4 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 	}
 }
+#endif

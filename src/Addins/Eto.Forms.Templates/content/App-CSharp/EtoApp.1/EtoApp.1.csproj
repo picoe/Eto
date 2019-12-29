@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>EtoApp._1</RootNamespace>
     <DefineConstants Condition="$(Mode)==''">UseCode;IsWindow;IsForm</DefineConstants>
     <PackageVersion>1.0</PackageVersion>
     <Title>EtoApp.1</Title>
-    <Copyright>Copyright © 2018</Copyright>
+    <Copyright>Copyright © 2019</Copyright>
     <Description>Description of EtoApp.1</Description>
   </PropertyGroup>
   

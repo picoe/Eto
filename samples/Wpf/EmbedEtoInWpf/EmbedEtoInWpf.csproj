@@ -1,37 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project>
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D528D241-8063-4732-B19D-6939838E516F}</ProjectGuid>
+    <TargetFrameworks></TargetFrameworks>
+    <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
+
+  <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EmbedEtoInWpf</RootNamespace>
-    <AssemblyName>EmbedEtoInWpf</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
+    <UseWPF Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWPF>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\artifacts\samples\Debug\net461</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\artifacts\samples\Release\net461</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -40,13 +25,14 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
   </ItemGroup>
-  <ItemGroup>
+
+  <!-- Automatically added by WindowsDesktop SDK -->
+  <ItemGroup Condition="'$(HaveWindowsDesktopSdk)' != 'true'">
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -55,59 +41,44 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Update="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MyEtoPanel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Properties\Settings.settings">
+    <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
+  
   <ItemGroup>
-    <None Include="App.config" />
+    <ProjectReference Include="..\..\..\src\Eto.Wpf\Eto.Wpf.csproj" />
+    <ProjectReference Include="..\..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Eto.Wpf\Eto.Wpf.csproj">
-      <Project>{63137fa0-ca55-11e3-9c1a-0800200c9a66}</Project>
-      <Name>Eto.Wpf</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Eto\Eto.csproj">
-      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+
 </Project>

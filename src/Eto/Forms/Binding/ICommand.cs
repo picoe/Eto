@@ -1,4 +1,4 @@
-﻿#if !PCL
+﻿#if !NETSTANDARD
 using System;
 
 namespace System.Windows.Input

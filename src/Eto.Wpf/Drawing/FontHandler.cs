@@ -392,7 +392,9 @@ namespace Eto.Wpf.Drawing
 		{
 			if (measureBrush == null)
 				measureBrush = new swm.SolidColorBrush(swm.Colors.White);
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 			var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, WpfTypeface, WpfSize, measureBrush);
+#pragma warning restore CS0618 // Type or member is obsolete
 			return new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 		}
 	}

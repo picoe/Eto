@@ -136,8 +136,60 @@ namespace Eto
 			return Attributes.OfType<T>().FirstOrDefault();
 		}
 	}
+#elif NETSTANDARD2_0
+	class PropertyDescriptorDescriptor : IPropertyDescriptor
+	{
+		PropertyDescriptor _propertyDescriptor;
+
+		public static bool IsSupported => true;
+
+		public static PropertyDescriptorDescriptor Get(object obj)
+		{
+			if (obj is PropertyDescriptor propertyDescriptor)
+				return new PropertyDescriptorDescriptor(propertyDescriptor);
+
+			return null;
+		}
+
+		public PropertyDescriptorDescriptor(PropertyDescriptor descriptor)
+		{
+			_propertyDescriptor = descriptor;
+		}
+
+		public Type ComponentType => _propertyDescriptor.ComponentType;
+
+		public Type PropertyType => _propertyDescriptor.PropertyType;
+
+		public string Name => _propertyDescriptor.Name;
+
+		public string DisplayName => _propertyDescriptor.DisplayName;
+
+		public bool IsReadOnly => _propertyDescriptor.IsReadOnly;
+
+		public bool CanRead => true;
+
+		public bool IsBrowsable => _propertyDescriptor.IsBrowsable;
+
+		public sc.TypeConverter Converter => _propertyDescriptor.Converter;
+
+		public object GetValue(object obj) => _propertyDescriptor.GetValue(obj);
+
+		public void SetValue(object obj, object value) => _propertyDescriptor.SetValue(obj, value);
+
+		ICollection Attributes => _propertyDescriptor.Attributes;
+
+		public Attribute GetCustomAttribute(Type attributeType)
+		{
+			return Attributes.OfType<Attribute>().FirstOrDefault(r => r.GetType() == attributeType);
+		}
+
+		public T GetCustomAttribute<T>() where T : Attribute
+		{
+			return Attributes.OfType<T>().FirstOrDefault();
+		}
+	}
 #else
-	TODO: implement .net standard 2.0 property descriptor
+	Not Implemented.
 #endif
 	static class EtoTypeDescriptor
 	{

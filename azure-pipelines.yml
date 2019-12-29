@@ -3,6 +3,8 @@ variables:
   build.version: 2.5.0-ci-$(build.increment)
   build.configuration: Release
   build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:Branch=$(Build.SourceBranch)
+  build.dotnetversion: 3.1.100
+  build.xamarinversion: 6_4_0
 
 trigger:
   branches:
@@ -16,25 +18,34 @@ trigger:
 jobs:
 - job: Mac
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   
   steps:
-  - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_18_1
+  - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(build.xamarinversion)
     displayName: 'Select Xamarin SDK version'
+
+  - task: UseDotNet@2
+    displayName: Install .NET Core SDK
+    inputs:
+      packageType:  sdk
+      version:      $(build.dotnetversion)
+
   - task: msbuild@1
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments)
+      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=false /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
 
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
-      contents: artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
+      contents: |
+        artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
+        artifacts/nuget/$(build.configuration)/Eto.Platform.Gtk2*.nupkg
       targetFolder: $(Build.ArtifactStagingDirectory)
       
   - task: PublishBuildArtifacts@1
-    displayName: Publish XamMac nupkg
+    displayName: Publish nupkg
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/nuget/$(build.configuration)
       artifactName: nuget
@@ -58,25 +69,37 @@ jobs:
 #      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/addin/$(build.configuration)/net461
 #      artifactName: addins
 #      publishLocation: container
+
+  - task: PublishBuildArtifacts@1
+    condition: failed()
+    displayName: Publish MSBuild logs
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog
+      artifactName: msbuild-binlog
+      publishLocation: container                            
     
 - job: Windows
   pool:
-    vmImage: 'VS2017-Win2016'
+    vmImage: 'windows-2019'
   
   steps:
-  - script: cinst gtksharp -y
-    displayName: Install GTK#
+  - task: UseDotNet@2
+    displayName: Install .NET Core SDK
+    inputs:
+      packageType:  sdk
+      version:      $(build.dotnetversion)
+
   - task: msbuild@1
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments)
+      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
 
   - task: msbuild@1
     displayName: Build Visual Studio Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins
+      msbuildArguments: /t:BuildAddins /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
 
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
