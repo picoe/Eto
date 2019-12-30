@@ -18,7 +18,6 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Prefer32Bit>false</Prefer32Bit>
     <UseWPF Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWPF>
-    <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
   </PropertyGroup>
   
   <PropertyGroup>
