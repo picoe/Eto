@@ -25,7 +25,11 @@ namespace Eto.GtkSharp.Forms
 
 			if (adialog.Run() == (int)Gtk.ResponseType.Ok)
 				Process.Start(adialog.AppInfo.Executable, "\"" + FilePath + "\"");
+#if GTKCORE
+			adialog.Dispose();
+#else
 			adialog.Destroy();
+#endif
 
 			return DialogResult.Ok;
 		}
