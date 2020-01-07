@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;MONOMAC;Mac64</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>build\*</DefaultItemExcludes>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Eto.Platform.Mac64</PackageId>
@@ -24,9 +26,6 @@ You can create your own .app bundle to run your app on OS X, without an OS X mac
 You do not need to use any of the classes of this assembly (unless customizing the MonoMac functionality of the platform), and should just use the UI controls from the Eto assembly.
     </PackageDescription>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="..\..\lib\MonoMac64\MonoMac.dll" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>
@@ -47,18 +46,24 @@ You do not need to use any of the classes of this assembly (unless customizing t
   
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
+    <ProjectReference Include="..\..\lib\monomac\src\MonoMac.csproj" PrivateAssets="all" Pack="True" />
   </ItemGroup>
   
   <ItemGroup>
-    <Content Include="..\..\lib\MonoMac64\MonoMac-License.txt" Pack="True" PackagePath="MonoMac-License.txt" PackageCopyToOutput="False">
-      <Link>MonoMac-License.txt</Link>
+    <Content Include="..\..\lib\monomac\LICENSE.txt" Pack="True" PackagePath="MonoMac-LICENSE.txt" PackageCopyToOutput="False">
+      <Link>MonoMac-LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="..\..\lib\MonoMac64\MonoMac.dll" Pack="True" PackagePath="lib\net45" />
     <None Include="build\*" Exclude="build\Mac.*" Pack="True" PackagePath="build" />
     <None Include="build\Mac.targets" Pack="True" PackagePath="build\$(PackageId).targets" />
     <None Include="build\Mac.props" Pack="True" PackagePath="build\$(PackageId).props" />
     
     <None Include="..\..\build\MSBuildTaskHelper.props" Pack="True" PackagePath="build" />
   </ItemGroup>
+  
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('Pack', 'True'))" />
+    </ItemGroup>
+  </Target>
 </Project>

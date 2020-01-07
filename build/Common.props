@@ -44,10 +44,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="$(BasePath)LICENSE.txt" PackageCopyToOutput="False" Pack="True" PackagePath="$(PackageLicenseFile)">
+    <None Include="$(BasePath)LICENSE.txt" PackageCopyToOutput="False" Pack="True" PackagePath="$(PackageLicenseFile)">
       <Link>Eto-LICENSE.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
 

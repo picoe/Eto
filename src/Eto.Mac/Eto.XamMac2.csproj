@@ -7,10 +7,11 @@
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>build\*</DefaultItemExcludes>
-    <LanguageTargets>$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
+    <LanguageTargets Condition="Exists('$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets')">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
     <UseSGen>false</UseSGen>
     <AOTMode>None</AOTMode>
     <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+    <UseXamMacFullFramework Condition="$(TargetFramework) == 'net45'">true</UseXamMacFullFramework>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -34,10 +35,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
   <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <UseXamMacFullFramework>false</UseXamMacFullFramework>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework) == 'net45'">
-    <UseXamMacFullFramework>true</UseXamMacFullFramework>
   </PropertyGroup>
   
   <ItemGroup>

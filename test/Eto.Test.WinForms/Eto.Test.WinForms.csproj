@@ -1,11 +1,11 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT' and $([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">true</HaveWindowsDesktopSdk>
+    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT' and $([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) >= $([System.Version]::Parse('16.0'))">true</HaveWindowsDesktopSdk>
 
     <TargetFrameworks></TargetFrameworks>
     <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net461</TargetFrameworks>
-    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />

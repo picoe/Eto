@@ -6,7 +6,7 @@
     <TargetFrameworks>net461;xamarinmac20</TargetFrameworks>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);XAMMAC2</DefineConstants>
-    <LanguageTargets>$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
+    <LanguageTargets Condition="Exists('$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets')">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
     <UseSGen>True</UseSGen>
@@ -38,8 +38,7 @@
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
     <ProjectReference Include="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.XamMac2.csproj" />
-  </ItemGroup
-  >
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.11.0" />
   </ItemGroup>

@@ -156,6 +156,24 @@ namespace Eto.Mac.Forms
 		WeakReference WeakHandler { get; set; }
 	}
 
+	static class MacBase
+	{
+		public static object GetHandler(IntPtr sender) => GetHandler(Runtime.GetNSObject(sender));
+
+		public static object GetHandler(object control)
+		{
+			var notification = control as NSNotification;
+			if (notification != null)
+				control = notification.Object;
+
+			var macControl = control as IMacControl;
+			if (macControl == null || macControl.WeakHandler == null)
+				return null;
+			return macControl.WeakHandler.Target;
+		}
+
+	}
+
 	public abstract class MacBase<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>
 		where TControl: class
 		where TWidget: Widget
@@ -172,19 +190,9 @@ namespace Eto.Mac.Forms
 
 		List<ObserverHelper> observers;
 
-		public static object GetHandler(IntPtr sender) => GetHandler(Runtime.GetNSObject(sender));
+		public static object GetHandler(IntPtr sender) => MacBase.GetHandler(Runtime.GetNSObject(sender));
 
-		public static object GetHandler(object control)
-		{
-			var notification = control as NSNotification;
-			if (notification != null)
-				control = notification.Object;
-
-			var macControl = control as IMacControl;
-			if (macControl == null || macControl.WeakHandler == null)
-				return null;
-			return macControl.WeakHandler.Target;
-		}
+		public static object GetHandler(object control) => MacBase.GetHandler(control);
 
 		public bool AddMethod(IntPtr selector, Delegate action, string arguments, object control)
 		{
@@ -196,6 +204,7 @@ namespace Eto.Mac.Forms
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' has a null handler", type));
 			#endif
 			var classHandle = Class.GetHandle(type);
+
 			return ObjCExtensions.AddMethod(classHandle, selector, action, arguments);
 		}
 
