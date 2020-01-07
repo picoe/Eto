@@ -37,6 +37,10 @@ namespace Eto.WinForms
 								BindingFlags.FlattenHierarchy |
 								BindingFlags.NonPublic);
 
+			// Not there in .NET Core..
+			if (oFieldInfo == null)
+				return;
+
 			//now, get a reference to the value of this field so that you can manipulate it.
 			//pass null to GetValue() because we are working with a static member.
 			object oFieldInfoValue = oFieldInfo.GetValue(null);
