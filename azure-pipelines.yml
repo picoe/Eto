@@ -21,6 +21,9 @@ jobs:
     vmImage: 'macOS-10.14'
   
   steps:
+  - checkout: self
+    submodules: true
+    
   - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(build.xamarinversion)
     displayName: 'Select Xamarin SDK version'
 
@@ -83,6 +86,9 @@ jobs:
     vmImage: 'windows-2019'
   
   steps:
+  - checkout: self
+    submodules: true
+    
   - task: UseDotNet@2
     displayName: Install .NET Core SDK
     inputs:
