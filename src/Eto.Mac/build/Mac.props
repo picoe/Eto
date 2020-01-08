@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacTouchApp">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
 
+  <PropertyGroup>
+    <IsMac Condition="$(OS) == 'Unix' and Exists('/usr/lib/libc.dylib')">True</IsMac>
+    <IsUnix Condition="$(OS) == 'Unix'">True</IsUnix>
+    <IsWindows Condition="$(IsUnix) != 'True'">True</IsWindows>
+    <OutputPath Condition="$(MacOutputPath) != ''">$(MacOutputPath)</OutputPath>
+  </PropertyGroup>
+  
   <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
 
 </Project>

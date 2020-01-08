@@ -1,51 +1,52 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacTouchApp">
 
   <PropertyGroup Condition="$(MacBuildBundle) == 'True'">
+    <!-- properties you can override in your project file -->
+  
+    <!-- Set to True to automatically publish the bundle during build -->
     <MacAutoPublishBundle Condition="$(MacAutoPublishBundle) == ''">True</MacAutoPublishBundle>
+    
+    <!-- Set the runtime identifier to use for the mac bundle -->
     <MacBundleRuntimeIdentifier Condition="$(MacBundleRuntimeIdentifier) == ''">osx.10.10-x64</MacBundleRuntimeIdentifier>
-    <RuntimeIdentifiers>$(RuntimeIdentifiers);$(MacBundleRuntimeIdentifier)</RuntimeIdentifiers>
+    
+    <!-- Set to True to bundle .NET Core runtime, false to use a shared runtime (useful to speed up debug builds) -->
     <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(Configuration) == 'Release'">True</MacBundleDotNet>
     <MacBundleDotNet Condition="$(MacBundleDotNet) == ''">False</MacBundleDotNet>
   </PropertyGroup>
   
+  <PropertyGroup Condition="$(MacBuildBundle) == 'True'">
+    <RuntimeIdentifiers>$(RuntimeIdentifiers);$(MacBundleRuntimeIdentifier)</RuntimeIdentifiers>
+  </PropertyGroup>
+  
   <Target Name="MacTouchApp" Condition="$(MacBuildBundle) == 'True'">
     <!-- This makes it so we can debug in VS for Mac right away without building first -->
-    <MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != '' AND $(TargetFramework) != '' AND $(RuntimeIdentifier) != ''" />
+    <MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != '' AND $(TargetFramework) != '' AND $(RuntimeIdentifier) == ''" />
   </Target>
   
   <!-- Build target to automatically publish -->
   <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" Condition="$(MacAutoPublishBundle) == 'True' AND $(MacIsBuildingBundle) != 'True'" Outputs="$(OutputAppPath)">
-    <!--Error Text="$(PublishSingleFile), $(PublishTrimmed), $(SelfContained)" /-->
     <PropertyGroup>
+      <MacTempBuildPath>$(IntermediateOutputPath)macbuild\</MacTempBuildPath>
+      
       <MacBuildProperties>MacIsBuildingBundle=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);RuntimeIdentifier=$(MacBundleRuntimeIdentifier)</MacBuildProperties>
-      <MacBuildProperties>$(MacBuildProperties);IntermediateOutputPath=$(IntermediateOutputPath)macbuild\</MacBuildProperties>
+      <MacBuildProperties>$(MacBuildProperties);TargetFramework=$(TargetFramework)</MacBuildProperties>
       <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishSingleFile=True</MacBuildProperties>
       <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishTrimmed=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);SelfContained=$(MacBundleDotNet)</MacBuildProperties>
-      <MacBuildProperties>$(MacBuildProperties);PublishDir=$(IntermediateOutputPath)macbuild\publish\</MacBuildProperties>
+      <MacBuildProperties>$(MacBuildProperties);OutputAppPath=$(OutputAppPath)</MacBuildProperties>
+      <MacBuildProperties>$(MacBuildProperties);MacOutputPath=$(MacTempBuildPath)bin\</MacBuildProperties>
+      <MacBuildProperties>$(MacBuildProperties);PublishDir=$(MacTempBuildPath)publish\</MacBuildProperties>
       
-      <_MacPublishTarget Condition="$(MacBundleDotNet) == 'True'">MacCleanPublishAppBundle;Publish</_MacPublishTarget>
+      <_MacPublishTarget Condition="$(MacBundleDotNet) == 'True'">Publish</_MacPublishTarget>
       <_MacPublishTarget Condition="$(_MacPublishTarget) == ''">Build</_MacPublishTarget>
     </PropertyGroup>
-    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Restore" Properties="$(MacBuildProperties);_RestoreEnforceEvaluate=True" />
+    <!--Projects="$(MSBuildProjectFullPath)" Targets="Restore" Properties="$(MacBuildProperties);_RestoreEnforceEvaluate=True" /-->
     <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="$(_MacPublishTarget)" Properties="$(MacBuildProperties)" />
-    
   </Target>
 
-  <Target Name="MacCleanAppBundle" AfterTargets="AfterClean" Condition="$(MacAutoPublishBundle) == 'True' AND $(MacIsBuildingBundle) != 'True'">
-    <!--Error Text="$(PublishSingleFile), $(PublishTrimmed), $(SelfContained)" /-->
-    <PropertyGroup>
-      <MacBuildProperties>MacIsBuildingBundle=True</MacBuildProperties>
-      <MacBuildProperties>$(MacBuildProperties);RuntimeIdentifier=$(MacBundleRuntimeIdentifier)</MacBuildProperties>
-      <MacBuildProperties>$(MacBuildProperties);IntermediateOutputPath=$(IntermediateOutputPath)macbuild\</MacBuildProperties>
-      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishSingleFile=True</MacBuildProperties>
-      <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishTrimmed=True</MacBuildProperties>
-      <MacBuildProperties>$(MacBuildProperties);SelfContained=$(MacBundleDotNet)</MacBuildProperties>
-      
-    </PropertyGroup>
-    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Clean" Properties="$(MacBuildProperties)" />
-    
+  <Target Name="MacCleanAppBundle" AfterTargets="AfterClean">
+    <RemoveDir Directories="$(OutputAppPath);$(MacTempBuildPath)" />
   </Target>
   
   <!-- Bundle using a system shared runtime -->
@@ -61,10 +62,6 @@
     <CallTarget Targets="MacFinishBundle" />
   </Target>
   
-  <Target Name="MacCleanPublishAppBundle" Condition="$(MacBuildBundle) == 'True'">
-    <RemoveDir Directories="$(PublishDir)" />
-  </Target>
-
   <!-- Publish with bundled runtime -->
   <Target Name="MacPublishAppBundle" AfterTargets="Publish" Condition="$(MacBuildBundle) == 'True'" DependsOnTargets="MacInitializeBundle">
     <ItemGroup>

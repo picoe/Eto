@@ -1,12 +1,7 @@
 version: 2.5.0.{build}
-image: Visual Studio 2017
+image: Visual Studio 2019
 install:
-- ps: $DOTNET_SDK_VERSION = "3.1.100"
-- ps: Start-FileDownload "https://dot.net/v1/dotnet-install.ps1"
-- ps: "& ./dotnet-install.ps1 -Version $DOTNET_SDK_VERSION"
-- ps: $DOTNET_CLI_COMMAND = Get-Command -CommandType Application dotnet | Select-Object -First 1
-- ps: Set-Item -Path Env:DOTNET_ROOT -Value (Join-Path -Resolve $DOTNET_CLI_COMMAND.Path ..)
-- ps: Set-Item -Path Env:MSBuildSDKsPath -Value (Join-Path -Resolve $Env:DOTNET_ROOT sdk/$DOTNET_SDK_VERSION/Sdks)
+- cmd: git submodule -q update --init
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
 - set BUILD_VERSION_NUMBER=000%APPVEYOR_BUILD_NUMBER%

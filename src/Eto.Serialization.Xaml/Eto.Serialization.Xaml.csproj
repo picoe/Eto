@@ -5,6 +5,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
+    <PackageId>Eto.Serialization.Xaml</PackageId>
     <Title>Eto.Forms Xaml serializer</Title>
     <Description>Eto.Forms Xaml serializer</Description>
     <PackageTags>cross platform gui ui framework desktop xaml eto.forms</PackageTags>

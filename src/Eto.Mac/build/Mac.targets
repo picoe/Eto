@@ -1,50 +1,50 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
-
-  <PropertyGroup>
-    <IsMac Condition="$(OS) == 'Unix' and Exists('/usr/lib/libc.dylib')">True</IsMac>
-    <IsUnix Condition="$(OS) == 'Unix'">True</IsUnix>
-    <IsWindows Condition="$(IsUnix) != 'True'">True</IsWindows>
-  </PropertyGroup>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacSetProperties">
 
   <PropertyGroup>
     <!-- properties you can override in your project file -->
-    
+
     <!-- Specify that the bundle should be created during build -->
     <!-- Enabled by default only for exe's and if not using a specific project type (e.g. Xamarin.Mac) -->
     <MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == '' and ( $(OutputType) == 'Exe' Or $(OutputType) == 'WinExe' )">True</MacBuildBundle>
-    
+
     <!-- Specifies the name of the .app bundle, usually the same as the project -->
     <MacBundleName Condition="'$(MacBundleName)'==''">$(MSBuildProjectName)</MacBundleName>
     
     <!-- Specifies a folder to copy verbatim into the .app bundle (useful for frameworks, etc) -->
     <InputAppPath Condition="'$(InputAppPath)'==''"></InputAppPath>
     
-    <!-- Specifies the full output .app path -->
-    <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(OutputPath) != '' AND $(TargetFramework) != ''">$(OutputPath)\$(MacBundleName).app</OutputAppPath>
-    <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(TargetDir) != ''">$(TargetDir)\$(MacBundleName).app</OutputAppPath>
-    
     <!-- Sets the default run configuration, or false to use a special 'Mac' configuration.
     If False, the default configuration of the project will run using the GTK platform when using Eto's platform detection.
     -->
     <MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultRunConfiguration)' == ''">True</MacSetDefaultRunConfiguration>
-    
-    <!-- minimum installed version of mono required to run -->
-    <MacMonoMinimumVersion Condition="$(MacMonoMinimumVersion) == ''">5.10</MacMonoMinimumVersion>
-    
-    <!-- Target server to download packages from.  Use non-ssl so it works on windows. See https://github.com/mono/mono/issues/17201#issuecomment-557943107 -->
-    <MacBundleTargetServer Condition="$(MacBundleTargetServer) == '' AND $(IsWindows) == 'True'">http://download.mono-project.com/runtimes/raw/</MacBundleTargetServer>
-    
-    <MacUseDotNetCore Condition="$(UseDotNetCore) == '' AND $(TargetFramework.StartsWith('netcoreapp'))">True</MacUseDotNetCore>
+
   </PropertyGroup>
-  
+
   <PropertyGroup>
+    <!-- internal properties -->
+    <MacUseDotNetCore Condition="$(MacUseDotNetCore) == '' AND $(TargetFramework.StartsWith('netcoreapp'))">True</MacUseDotNetCore>
+  </PropertyGroup>
+
+  <Target Name="MacSetProperties">
+    <PropertyGroup>
+      <!-- these use properties only set in targets, but we also want to use this file as .props for ease of use -->
+      
+      <!-- properties you can override in your project file -->
+
+      <!-- Specifies the full output .app path -->
+      <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(OutputPath) != '' AND $(TargetFramework) != ''">$(OutputPath)$(MacBundleName).app</OutputAppPath>
+      <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(TargetDir) != ''">$(TargetDir)$(MacBundleName).app</OutputAppPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
       <!-- internal properties -->
       <OutputContents>$(OutputAppPath)\Contents</OutputContents>
       <OutputResourcesPath>$(OutputContents)\Resources</OutputResourcesPath>
       <LauncherFile>$([System.IO.Path]::GetFileNameWithoutExtension('$(TargetFileName)'))</LauncherFile>
       <LauncherPath>$(OutputContents)\MacOS\</LauncherPath>
       <LauncherFileWithPath>$(LauncherPath)$(LauncherFile)</LauncherFileWithPath>
-  </PropertyGroup>
+    </PropertyGroup>
+  </Target>
 
   <ItemGroup>
     <AvailableItemName Include="BundleResource" />
@@ -196,7 +196,7 @@
       <InputPListFile Condition="'$(InputPListFile)' == ''">$(ReferenceFiles)Info.plist</InputPListFile>
     </PropertyGroup>
 
-    <Message Text="Creating $(MacBundleName).app in target directory" Importance="high" />
+    <Message Text="$(MSBuildProjectName) -> $(OutputAppPath)" Importance="high" />
 
     <!-- Delete existing stuff, we're going to rebuild them -->
     <RemoveDir Directories="$(LauncherPath)" />

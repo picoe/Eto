@@ -6,9 +6,14 @@
     <MacBundleMono Condition="$(MacBundleMono) == '' AND $(Configuration) == 'Release'">detect</MacBundleMono> 
     <MacBundleMono Condition="$(MacBundleMono) == ''">False</MacBundleMono>
 
+    <!-- Target server to download packages from.  Use non-ssl so it works on windows. See https://github.com/mono/mono/issues/17201#issuecomment-557943107 -->
+    <MkBundleTargetServer Condition="$(MkBundleTargetServer) == '' AND $(IsWindows) == 'True'">http://download.mono-project.com/runtimes/raw/</MkBundleTargetServer>
+
     <!-- Target when bundling mono, or 'default' to use system mono.  See mkbundle -list-targets -->
     <MacBundleTarget Condition="$(MacBundleTarget) == '' AND $(IsMac) != 'True'">mono-6.4.0-osx-10.9-x64</MacBundleTarget>
 
+    <!-- minimum installed version of mono required to run -->
+    <MacMonoMinimumVersion Condition="$(MacMonoMinimumVersion) == ''">5.10</MacMonoMinimumVersion>
   </PropertyGroup>
   
   <Target Name="MacTouchApp" Condition="$(MacBuildBundle) == 'True'">
@@ -17,7 +22,7 @@
   </Target>
 
   <!-- Build target -->
-  <Target Name="BuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle" Condition="$(MacBuildBundle) == 'True'" Outputs="$(OutputAppPath)">
+  <Target Name="BuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="MacSetProperties;DetectMkBundle" Condition="$(MacBuildBundle) == 'True'" Outputs="$(OutputAppPath)">
     <!-- bundle mono with mkbundle -->
     <CallTarget Targets="MacBundleMono" Condition="$(MacBundleMono) == 'True'" />
     <!-- copy executables and run with installed mono -->
@@ -55,7 +60,7 @@
     </Exec>
     <PropertyGroup>
       <MkBundleArgs></MkBundleArgs>
-      <MkBundleArgs Condition="$(MacBundleTargetServer) != ''">$(MkBundleArgs) --target-server "$(MacBundleTargetServer)"</MkBundleArgs>
+      <MkBundleArgs Condition="$(MkBundleTargetServer) != ''">$(MkBundleArgs) --target-server "$(MkBundleTargetServer)"</MkBundleArgs>
       <MkBundleArgs>$(MkBundleArgs) --fetch-target $(MacBundleTarget)</MkBundleArgs>
     </PropertyGroup>
     <Exec Command='"$(MkBundleExe)" $(MkBundleArgs)' Condition="!$(LocalMkBundleTargets.Contains('$(MacBundleTarget)'))" />

@@ -7,7 +7,7 @@
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>build\*</DefaultItemExcludes>
-    <LanguageTargets Condition="Exists('$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets')">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
+    <LanguageTargets Condition="$(HasXamarinMac) == 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
     <UseSGen>false</UseSGen>
     <AOTMode>None</AOTMode>
     <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>

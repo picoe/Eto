@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Wpf", "..\test\Eto.Test.Wpf\Eto.Test.Wpf.csproj", "{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
@@ -52,9 +52,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Gtk2", "..\test\Et
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Gtk3", "..\test\Eto.Test.Gtk\Eto.Test.Gtk3.csproj", "{B45F3211-6C33-43B9-A492-1495FB149636}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2", "..\test\Eto.Test.Mac\Eto.Test.XamMac2.csproj", "{96C9D209-238D-4EBF-8391-F632A14921AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.XamMac2", "..\test\Eto.Test.Mac\Eto.Test.XamMac2.csproj", "{96C9D209-238D-4EBF-8391-F632A14921AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "Eto.Mac\Eto.XamMac2.csproj", "{6A38350E-51D6-4C13-ADD8-B9C6DC8A4358}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.XamMac2", "Eto.Mac\Eto.XamMac2.csproj", "{6A38350E-51D6-4C13-ADD8-B9C6DC8A4358}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Forms.Sample", "Eto.Forms.Sample\Eto.Forms.Sample.csproj", "{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}"
 EndProject
@@ -62,28 +62,28 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Direct2D", "..\tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.WinForms", "..\test\Eto.Test.WinForms\Eto.Test.WinForms.csproj", "{CF18B0BB-2C60-437F-8AA3-711ABAE11A91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoMac", "..\lib\monomac\src\MonoMac.csproj", "{4C76B511-0849-4E5A-BF4B-C3365E103259}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoMac", "..\lib\monomac\src\MonoMac.csproj", "{4C76B511-0849-4E5A-BF4B-C3365E103259}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "monomac", "monomac", "{9A93A30F-7627-4F92-ACC4-226BDAD712FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "core", "..\lib\monomac\src\core.csproj", "{CEB897E2-8040-44F5-B41E-DBA9144FEDB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "core", "..\lib\monomac\src\core.csproj", "{CEB897E2-8040-44F5-B41E-DBA9144FEDB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "generator", "..\lib\monomac\src\generator.csproj", "{5A16F4FA-C960-46A2-875E-C6CE556F0C36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "generator", "..\lib\monomac\src\generator.csproj", "{5A16F4FA-C960-46A2-875E-C6CE556F0C36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Windows = Debug|Windows
-		Debug|Mac = Debug|Mac
 		Debug|Linux = Debug|Linux
-		Release|Windows = Release|Windows
-		Release|Mac = Release|Mac
+		Debug|Mac = Debug|Mac
+		Debug|Windows = Debug|Windows
 		Release|Linux = Release|Linux
+		Release|Mac = Release|Mac
+		Release|Windows = Release|Windows
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
 		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
 		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
 		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
 		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
@@ -223,15 +223,11 @@ Global
 		{659873CA-9949-4353-B0AA-E0589D045584}.Release|Windows.ActiveCfg = Release|Any CPU
 		{659873CA-9949-4353-B0AA-E0589D045584}.Release|Windows.Build.0 = Release|Any CPU
 		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Debug|Linux.Build.0 = Debug|Any CPU
 		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Debug|Mac.Build.0 = Debug|Any CPU
 		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Debug|Windows.ActiveCfg = Debug|Any CPU
 		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Debug|Windows.Build.0 = Debug|Any CPU
 		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Release|Linux.ActiveCfg = Release|Any CPU
-		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Release|Linux.Build.0 = Release|Any CPU
 		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Release|Mac.ActiveCfg = Release|Any CPU
-		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Release|Mac.Build.0 = Release|Any CPU
 		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Release|Windows.ActiveCfg = Release|Any CPU
 		{3511ADDE-7CA8-4F7F-9721-AB48D3913760}.Release|Windows.Build.0 = Release|Any CPU
 		{E3832AF1-FCBA-4575-8FB1-7168949150D8}.Debug|Linux.ActiveCfg = Debug|Any CPU
@@ -280,15 +276,11 @@ Global
 		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Release|Mac.ActiveCfg = Release|Any CPU
 		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Release|Windows.ActiveCfg = Release|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Linux.Build.0 = Debug|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Mac.Build.0 = Debug|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Windows.ActiveCfg = Debug|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Windows.Build.0 = Debug|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Release|Linux.ActiveCfg = Release|Any CPU
-		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Release|Linux.Build.0 = Release|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Release|Mac.ActiveCfg = Release|Any CPU
-		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Release|Mac.Build.0 = Release|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Release|Windows.ActiveCfg = Release|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Release|Windows.Build.0 = Release|Any CPU
 		{CF18B0BB-2C60-437F-8AA3-711ABAE11A91}.Debug|Linux.ActiveCfg = Debug|Any CPU
