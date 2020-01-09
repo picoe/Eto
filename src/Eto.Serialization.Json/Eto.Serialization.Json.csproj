@@ -5,6 +5,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
+    <PackageId>Eto.Serialization.Json</PackageId>
     <Title>Eto.Forms Json serializer</Title>
     <Description>Eto.Forms Json serializer</Description>
     <PackageTags>cross platform gui ui framework desktop json eto.forms</PackageTags>

@@ -498,7 +498,9 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (disposing)
 			{
+#if !GTKCORE
 				Control.Destroy();
+#endif
 				if (menuBox != null)
 				{
 					menuBox.Dispose();

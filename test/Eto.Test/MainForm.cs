@@ -7,6 +7,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Eto.Test
 {
@@ -40,15 +41,15 @@ namespace Eto.Test
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
-			Title = string.Format("Test Application [{0}, {1} {2}, {3}]",
-				Platform.ID,
-				EtoEnvironment.Is64BitProcess ? "64bit" : "32bit",
-				EtoEnvironment.Platform.IsMono ? "Mono" : ".NET",
-				EtoEnvironment.Platform.IsWindows ? EtoEnvironment.Platform.IsWinRT
+			var bitness = EtoEnvironment.Is64BitProcess ? "64bit" : "32bit";
+			var runtime = RuntimeInformation.FrameworkDescription ?? (EtoEnvironment.Platform.IsMono ? "Mono" : EtoEnvironment.Platform.IsNetCore ? ".NET Core" : ".NET");
+			var platform = EtoEnvironment.Platform.IsWindows ? EtoEnvironment.Platform.IsWinRT
 				? "WinRT" : "Windows" : EtoEnvironment.Platform.IsMac
 				? "Mac" : EtoEnvironment.Platform.IsLinux
 				? "Linux" : EtoEnvironment.Platform.IsUnix
-				? "Unix" : "Unknown");
+				? "Unix" : "Unknown";
+
+			Title = $"Test Application [{Platform.ID}, {bitness}, {runtime}, {platform}]";
 			Style = "main";
 			MinimumSize = new Size(400, 400);
 			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());

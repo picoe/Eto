@@ -103,7 +103,11 @@ namespace Eto.GtkSharp.CustomControls
 		void CloseDialog ()
 		{
 			this.RemoveGrab ();
+#if GTKCORE
+			Close();
+#else
 			Destroy();
+#endif
 		}
 
 		void UpdateClock ()

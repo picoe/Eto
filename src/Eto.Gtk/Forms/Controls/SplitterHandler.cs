@@ -346,7 +346,11 @@ namespace Eto.GtkSharp.Forms.Controls
 				old.Remove(child1);
 				Control.Pack1(child1 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
 				Control.Pack2(child2 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
+#if GTKCORE
+				old.Dispose();
+#else
 				old.Destroy();
+#endif
 			}
 			else
 			{

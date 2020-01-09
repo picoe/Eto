@@ -1,26 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461;netcoreapp3.1</TargetFrameworks>
     <OutputType>WinExe</OutputType>
-    <UseMacTargets>True</UseMacTargets>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="$(TargetFramework) == 'net461'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="MonoMac">
-      <HintPath>..\..\lib\MonoMac64\MonoMac.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestIcon.icns" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.Mac64.csproj" />
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\..\lib\monomac\src\MonoMac.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.11.0" />
@@ -28,4 +19,7 @@
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
+
+  <Import Project="$(BuildDir)\Common.Mac.targets" />
+  
 </Project>

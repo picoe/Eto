@@ -20,6 +20,11 @@ namespace Eto
 		public bool IsMono { get; private set; }
 
 		/// <summary>
+		/// Gets a value indicating that the current .NET runtime is .NET Core
+		/// </summary>
+		public bool IsNetCore { get; private set; }
+
+		/// <summary>
 		/// Gets a value indicating that the current OS is windows system
 		/// </summary>
 		public bool IsWindows { get; private set; }
@@ -82,6 +87,10 @@ namespace Eto
 		/// </summary>
 		public OperatingSystemPlatform()
 		{
+#if NETSTANDARD2_0
+			if (RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
+				IsNetCore = true;
+#endif
 			if (Type.GetType("Mono.Runtime", false) != null || Type.GetType("Mono.Interop.IDispatch", false) != null)
 				IsMono = true;
 

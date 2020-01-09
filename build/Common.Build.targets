@@ -56,7 +56,6 @@
     </ItemGroup>
     <Message Importance="high" Text="Embedding: @(FilesToEmbed->'%(Filename)%(Extension)', ', ')" />
   </Target>
-  <Import Project="$(MSBuildThisFileDirectory)Common.Mac.targets" Condition="$(UseMacTargets) == 'True'" />
   <Import Condition="Exists('$(BasePath)..\Eto.Common.targets')" Project="$(BasePath)..\Eto.Common.targets" />
   
   <PropertyGroup>

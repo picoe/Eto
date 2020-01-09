@@ -5,8 +5,8 @@
     <TargetFramework>net461</TargetFramework>
     <RootNamespace>Tutorial2</RootNamespace>
     <Name>Tutorial2 - Menus and Toolbars</Name>
-    <UseMacTargets>True</UseMacTargets>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <MacBundleMono>False</MacBundleMono>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,5 +19,7 @@
     <ProjectReference Include="..\..\..\..\src\Eto.WinForms\Eto.WinForms.csproj" />
     <ProjectReference Include="..\..\..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
+
+  <Import Project="$(BuildDir)\Common.Mac.targets" />
 
 </Project>

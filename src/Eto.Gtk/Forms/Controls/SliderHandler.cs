@@ -117,7 +117,9 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					scale.ValueChanged -= Connector.HandleScaleValueChanged;
 					Control.Remove(scale);
+#if !GTKCORE
 					scale.Destroy();
+#endif
 					scale.Dispose();
 					if (value == Orientation.Horizontal)
 						scale = new Gtk.HScale(min, max, 1);
