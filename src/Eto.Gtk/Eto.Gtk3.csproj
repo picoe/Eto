@@ -22,7 +22,7 @@ Include this along with your Eto.Forms application to provide a GTK3 interface, 
       
 You do not need to use any of the classes of this assembly (unless customizing the GTK functionality of the platform), and should just use the UI controls from the Eto assembly.
       
-On Linux, mono framework 4.6 or higher and gtk-sharp3 are required.
+On Linux, mono framework 5.10 or higher and gtk-sharp3 are required.
     </PackageDescription>
   </PropertyGroup>
 
