@@ -22,7 +22,7 @@
   </Target>
 
   <!-- Build target -->
-  <Target Name="BuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="MacSetProperties;DetectMkBundle" Condition="$(MacBuildBundle) == 'True'" Outputs="$(OutputAppPath)">
+  <Target Name="BuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle" Condition="$(MacBuildBundle) == 'True'" Outputs="$(OutputAppPath)">
     <!-- bundle mono with mkbundle -->
     <CallTarget Targets="MacBundleMono" Condition="$(MacBundleMono) == 'True'" />
     <!-- copy executables and run with installed mono -->

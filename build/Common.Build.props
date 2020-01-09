@@ -3,9 +3,6 @@
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <PropertyGroup>
     
-    <XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current</XamarinMacPath>
-    <XamarinMacLibPath>$(XamarinMacPath)\lib\mono</XamarinMacLibPath>
-    <ReferencePath Condition="$(ReferencePath) == '' and Exists('$(XamarinMacLibPath)')">$(XamarinMacLibPath)</ReferencePath>
     <!-- Prevent VS2015 from copying files from the GAC to the output folder -->
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
     <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>

@@ -23,7 +23,7 @@ Include this along with your Eto.Forms application to provide a GTK2 interface, 
 
 You do not need to use any of the classes of this assembly (unless customizing the GTK functionality of the platform), and should just use the UI controls from the Eto assembly.
 
-On Linux, mono-complete 4.6 or higher and gtk-sharp2 packages are required.
+On Linux, mono-complete 5.10 or higher and gtk-sharp2 packages are required.
     </PackageDescription>
   </PropertyGroup>
   
