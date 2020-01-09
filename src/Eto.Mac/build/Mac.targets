@@ -1,5 +1,20 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacSetProperties">
 
+  <PropertyGroup Condition="$(BaseOutputAppPath) == ''">
+    <!-- Compute where the .app bundle should be created, if not specified -->
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(OutputPath) != ''">$(OutputPath)</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(TargetDir) != ''">$(TargetDir)</BaseOutputAppPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="$(BaseOutputAppPath) == ''">
+    <!-- If no explicit location found compute based on base path, configuration, and framework -->
+    <!-- This is used when these are imported directly in sdk-style projects, otherwise OutputPath is usually set above -->
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(BaseOutputPath) != ''">$(BaseOutputPath)</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == ''">bin\</BaseOutputAppPath>
+    <BaseOutputAppPath>$(BaseOutputAppPath)$(Configuration)\</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(AppendTargetFrameworkToOutputPath) != 'False' AND $(TargetFramework) != ''">$(BaseOutputAppPath)$(TargetFramework)\</BaseOutputAppPath>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!-- properties you can override in your project file -->
 
@@ -17,29 +32,21 @@
     If False, the default configuration of the project will run using the GTK platform when using Eto's platform detection.
     -->
     <MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultRunConfiguration)' == ''">True</MacSetDefaultRunConfiguration>
-
+    
+    <!-- Specifies the full output .app path -->
+    <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(BaseOutputAppPath) != ''">$(BaseOutputAppPath)$(MacBundleName).app</OutputAppPath>
+    
   </PropertyGroup>
 
   <PropertyGroup>
     <!-- internal properties -->
     <MacUseDotNetCore Condition="$(MacUseDotNetCore) == '' AND $(TargetFramework.StartsWith('netcoreapp'))">True</MacUseDotNetCore>
+    <OutputContents>$(OutputAppPath)\Contents</OutputContents>
+    <OutputResourcesPath>$(OutputContents)\Resources</OutputResourcesPath>
   </PropertyGroup>
-
+  
   <Target Name="MacSetProperties">
     <PropertyGroup>
-      <!-- these use properties only set in targets, but we also want to use this file as .props for ease of use -->
-      
-      <!-- properties you can override in your project file -->
-
-      <!-- Specifies the full output .app path -->
-      <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(OutputPath) != '' AND $(TargetFramework) != ''">$(OutputPath)$(MacBundleName).app</OutputAppPath>
-      <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(TargetDir) != ''">$(TargetDir)$(MacBundleName).app</OutputAppPath>
-    </PropertyGroup>
-
-    <PropertyGroup>
-      <!-- internal properties -->
-      <OutputContents>$(OutputAppPath)\Contents</OutputContents>
-      <OutputResourcesPath>$(OutputContents)\Resources</OutputResourcesPath>
       <LauncherFile>$([System.IO.Path]::GetFileNameWithoutExtension('$(TargetFileName)'))</LauncherFile>
       <LauncherPath>$(OutputContents)\MacOS\</LauncherPath>
       <LauncherFileWithPath>$(LauncherPath)$(LauncherFile)</LauncherFileWithPath>
