@@ -606,5 +606,19 @@ namespace Eto.WinForms.Forms
 		{
 			throw new NotImplementedException();
 		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Window.LogicalPixelSizeChangedEvent:
+					// don't spam the output with warnings for this, many controls use it internally
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+
+		}
 	}
 }
