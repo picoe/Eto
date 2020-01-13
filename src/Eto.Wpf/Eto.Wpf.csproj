@@ -60,22 +60,22 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="ReachFramework" />
-    <Reference Include="System.Printing" />
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="System" Pack="False" />
+    <Reference Include="System.Core" Pack="False" />
+    <Reference Include="System.Design" Pack="False" />
+    <Reference Include="System.Drawing" Pack="False" />
+    <Reference Include="System.Windows.Forms" Pack="False" />
+    <Reference Include="System.Xaml" Pack="False" />
+    <Reference Include="Microsoft.CSharp" Pack="False" />
+    <Reference Include="System.Xml" Pack="False" />
+    <Reference Include="WindowsBase" Pack="False" />
+    <Reference Include="System.Xml.Linq" Pack="False" />
+    <Reference Include="PresentationCore" Pack="False" />
+    <Reference Include="PresentationFramework" Pack="False" />
+    <Reference Include="ReachFramework" Pack="False" />
+    <Reference Include="System.Printing" Pack="False" />
+    <Reference Include="UIAutomationProvider" Pack="False" />
+    <Reference Include="WindowsFormsIntegration" Pack="False" />
   </ItemGroup>
   
   <ItemGroup>
@@ -106,12 +106,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
-    <Compile Update="CustomControls\FontDialog\fontchooser.xaml.cs">
-      <DependentUpon>fontchooser.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="CustomControls\OverlayIcon.xaml.cs">
-      <DependentUpon>OverlayIcon.xaml</DependentUpon>
-    </Compile>
     <Compile Update="Properties\FontDialogResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -141,66 +135,22 @@ You do not need to use any of the classes of this assembly (unless customizing t
 
   <!-- Automatically added by WindowsDesktop SDK -->
   <ItemGroup Condition="'$(HaveWindowsDesktopSdk)' != 'true'">
-    <Page Include="CustomControls\FontDialog\fontchooser.xaml">
+    <Page Include="**\*.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="CustomControls\OverlayIcon.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="themes\royale.normalcolor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="themes\luna.homestead.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="themes\luna.metallic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="themes\luna.normalcolor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="themes\classic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="themes\aero2.normalcolor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="themes\aero.normalcolor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="themes\generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="themes\wpftoolkit\ButtonSpinner.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>$([System.String]::Copy('%(Filename)').Replace('.xaml', ''))%(Extension)</DependentUpon>
+    </Compile>
+    <None Remove="**\*.xaml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.2.0">
-      <IncludeAssets>compile</IncludeAssets>
-      <ExcludeAssets>none</ExcludeAssets>
-      <PrivateAssets>contentfiles;analyzers;build;compile</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0">
-      <IncludeAssets>compile</IncludeAssets>
-      <ExcludeAssets>none</ExcludeAssets>
-      <PrivateAssets>contentfiles;analyzers;build;compile</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.2.0" PrivateAssets="all" />
+    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" PrivateAssets="all" />
   </ItemGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

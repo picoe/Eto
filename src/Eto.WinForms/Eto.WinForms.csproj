@@ -50,10 +50,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Core" />
+    <Reference Include="System" Pack="False" />
+    <Reference Include="System.Drawing" Pack="False" />
+    <Reference Include="System.Windows.Forms" Pack="False" />
+    <Reference Include="System.Core" Pack="False" />
   </ItemGroup>
 
   <ItemGroup>

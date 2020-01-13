@@ -17,6 +17,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox resizableCheckBox;
 		CheckBox maximizableCheckBox;
 		CheckBox minimizableCheckBox;
+		CheckBox movableByWindowBackgroundCheckBox;
 		CheckBox showInTaskBarCheckBox;
 		CheckBox topMostCheckBox;
 		CheckBox setOwnerCheckBox;
@@ -38,7 +39,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), CreateCancelClose(), null);
+			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), MovableByWindowBackground(), null);
 			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
@@ -49,6 +50,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow(null, CreateSizeControls(), null);
 			layout.AddSeparateRow(null, CreateClientSizeControls(), null);
 			layout.AddSeparateRow(null, CreateMinimumSizeControls(), null);
+			layout.AddSeparateRow(null, CreateCancelClose(), null);
 			layout.AddSeparateRow(null, CreateChildWindowButton(), null);
 			layout.AddSeparateRow(null, BringToFrontButton(), null);
 			layout.Add(null);
@@ -201,6 +203,21 @@ namespace Eto.Test.Sections.Behaviors
 					child.Maximizable = maximizableCheckBox.Checked ?? false;
 			};
 			return maximizableCheckBox;
+		}
+
+		Control MovableByWindowBackground()
+		{
+			movableByWindowBackgroundCheckBox = new CheckBox
+			{
+				Text = "MovableByWindowBackground",
+				Checked = false
+			};
+			movableByWindowBackgroundCheckBox.CheckedChanged += (sender, e) =>
+			{
+				if (child != null)
+					child.MovableByWindowBackground = movableByWindowBackgroundCheckBox.Checked ?? false;
+			};
+			return movableByWindowBackgroundCheckBox;
 		}
 
 		Control Minimizable()
@@ -488,6 +505,7 @@ namespace Eto.Test.Sections.Behaviors
 			child.Maximizable = maximizableCheckBox.Checked ?? false;
 			child.Minimizable = minimizableCheckBox.Checked ?? false;
 			child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
+			child.MovableByWindowBackground = movableByWindowBackgroundCheckBox.Checked ?? false;
 			if (setInitialLocation)
 				child.Location = initialLocation;
 			if (setInitialClientSize)

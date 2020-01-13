@@ -543,9 +543,15 @@ namespace Eto.Forms
 		/// Use the <see cref="LogicalPixelSizeChanged"/> to detect when the window is moved to 
 		/// a display with a different DPI.
 		/// </remarks>
-		public float LogicalPixelSize
+		public float LogicalPixelSize => Handler.LogicalPixelSize;
+
+		/// <summary>
+		/// Gets or sets a value indicating that the window can be moved by click+dragging the window background
+		/// </summary>
+		public bool MovableByWindowBackground
 		{
-			get { return Handler.LogicalPixelSize; }
+			get => Handler.MovableByWindowBackground;
+			set => Handler.MovableByWindowBackground = value;
 		}
 
 		#region Callback
@@ -803,6 +809,11 @@ namespace Eto.Forms
 			/// a display with a different DPI.
 			/// </remarks>
 			float LogicalPixelSize { get; }
+
+			/// <summary>
+			/// Gets or sets a value indicating that the window can be moved by click+dragging the window background
+			/// </summary>
+			bool MovableByWindowBackground { get; set; }
 		}
 
 		#endregion

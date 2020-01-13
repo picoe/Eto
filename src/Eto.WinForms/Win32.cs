@@ -155,7 +155,13 @@ namespace Eto
 			EM_SETCUEBANNER = ECM_FIRST + 1,
 
 			DPICHANGED = 0x02E0,
-			NCCREATE = 0x0081
+			NCCREATE = 0x0081,
+			NCLBUTTONDOWN = 0x00A1
+		}
+
+		public enum HT
+		{
+			CAPTION = 0x2
 		}
 
 		public static ushort LOWORD(IntPtr word)
@@ -368,6 +374,9 @@ namespace Eto
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
 		public static extern int UnhookWindowsHookEx(int hookId);
+
+		[DllImportAttribute("user32.dll")]
+		public static extern bool ReleaseCapture();
 
 		public delegate int HookProc(int code, int wParam, IntPtr structPointer);
 

@@ -725,14 +725,14 @@ namespace Eto.Wpf.Forms
 
 		void HandleMouseMove(object sender, swi.MouseEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			Callback.OnMouseMove(Widget, args);
 			e.Handled = args.Handled;
 		}
 
 		protected virtual void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control, swi.MouseButtonState.Released);
+			var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
 			if ((isMouseCaptured || args.Handled) && Control.IsMouseCaptured)
@@ -744,14 +744,14 @@ namespace Eto.Wpf.Forms
 
 		void HandleMouseDoubleClick(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			Callback.OnMouseDoubleClick(Widget, args);
 			e.Handled = args.Handled;
 		}
 
 		protected virtual void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Callback.OnMouseDoubleClick(Widget, args);
 			if (!args.Handled)
