@@ -16,6 +16,11 @@ namespace Eto.WinForms.Forms
 		swf.IWin32Window Win32Window { get; }
 	}
 
+	static class WindowHandler
+	{
+		internal static readonly object MovableByWindowBackground_Key = new object();
+	}
+
 	public abstract class WindowHandler<TControl, TWidget, TCallback> : WindowsPanel<TControl, TWidget, TCallback>, Window.IHandler, IWindowHandler
 		where TControl : swf.Form
 		where TWidget : Window
@@ -73,6 +78,31 @@ namespace Eto.WinForms.Forms
 				}
 				clientWidthSet = value.Width != -1;
 				clientHeightSet = value.Height != -1;
+			}
+		}
+
+		public bool MovableByWindowBackground
+		{
+			get => Widget.Properties.Get<bool>(WindowHandler.MovableByWindowBackground_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(WindowHandler.MovableByWindowBackground_Key, value))
+				{
+					if (value)
+						Widget.MouseDown += Content_MouseDown;
+					else
+						Widget.MouseDown -= Content_MouseDown;
+				}
+			}
+		}
+
+		private void Content_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Buttons == MouseButtons.Primary)
+			{
+				Win32.ReleaseCapture();
+				Win32.SendMessage(Control.Handle, Win32.WM.NCLBUTTONDOWN, (IntPtr)Win32.HT.CAPTION, IntPtr.Zero);
+				e.Handled = true;
 			}
 		}
 

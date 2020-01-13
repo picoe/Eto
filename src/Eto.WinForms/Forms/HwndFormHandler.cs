@@ -597,6 +597,8 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public bool MovableByWindowBackground { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
 		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF offset)
 		{
 			throw new NotImplementedException();
