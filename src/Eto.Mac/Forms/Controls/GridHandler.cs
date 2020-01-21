@@ -511,10 +511,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public abstract object GetItem(int row);
 
-		public virtual int RowCount
-		{
-			get { return (int)Control.RowCount; }
-		}
+		public virtual int RowCount => (int)Control.RowCount;
 
 		protected override bool ControlEnabled
 		{
@@ -561,10 +558,7 @@ namespace Eto.Mac.Forms.Controls
 				Widget.Properties[GridHandler.ScrolledToRow_Key] = true;
 		}
 
-		public bool Loaded
-		{
-			get { return Widget.Loaded; }
-		}
+		public bool Loaded => Widget.Loaded;
 
 		public GridLines GridLines
 		{
@@ -599,12 +593,20 @@ namespace Eto.Mac.Forms.Controls
 			SetIsEditing(false);
 			if (e.Item != null)
 				Callback.OnCellEdited(Widget, e);
+
+			// reload this entire row
+			if (e.Row >= 0)
+			{
+				Control.ReloadData(NSIndexSet.FromIndex((nnint)e.Row), NSIndexSet.FromNSRange(new NSRange(0, Control.ColumnCount)));
+			}
+
+			if (e.GridColumn.AutoSize)
+			{
+				AutoSizeColumns(true);
+			}
 		}
 
-		Grid IDataViewHandler.Widget
-		{
-			get { return Widget; }
-		}
+		Grid IDataViewHandler.Widget => Widget;
 
 		protected void SetIsEditing(bool value) => Widget.Properties.Set(GridHandler.IsEditing_Key, value, false);
 

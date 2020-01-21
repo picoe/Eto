@@ -199,6 +199,7 @@ namespace Eto.Mac.Forms.Controls
 			col.ResizingMask = NSTableColumnResizing.Autoresizing;
 			col.Editable = false;
 			cell = new MacImageListItemCell();
+			cell.VerticalAlignment = VerticalAlignment.Center;
 			cell.Wraps = false;
 			col.DataCell = cell;
 			Control.AddColumn(col);

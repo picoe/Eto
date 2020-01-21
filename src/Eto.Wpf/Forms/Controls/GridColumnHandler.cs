@@ -129,6 +129,18 @@ namespace Eto.Wpf.Forms.Controls
 				GridHandler.FormatCell (this, cell, element, gridcell, dataItem);
 		}
 
+		internal ICellHandler DataCellHandler => DataCell?.Handler as ICellHandler;
+
+		internal bool OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+			return DataCellHandler?.OnMouseDown(args, hitTestResult, cell) ?? false;
+		}
+
+		internal bool OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+			return DataCellHandler?.OnMouseUp(args, hitTestResult, cell) ?? false;
+		}
+
 		swc.DataGridColumn IGridColumnHandler.Control => Control;
 
 		public Grid Grid => GridHandler?.Widget;

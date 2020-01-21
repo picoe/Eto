@@ -5,6 +5,8 @@ using Eto.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -369,7 +371,6 @@ namespace Eto.Test.Sections.Controls
 
 		List<MyGridItem> CreateItems(int count = 10000)
 		{
-			var rand = new Random();
 			var sw = new System.Diagnostics.Stopwatch();
 			sw.Start();
 
@@ -377,7 +378,7 @@ namespace Eto.Test.Sections.Controls
 
 			for (int i = 0; i < count; i++)
 			{
-				list.Add(new MyGridItem(rand, i));
+				list.Add(new MyGridItem(i));
 			}
 			sw.Stop();
 			Log.Write(null, $"Time: {sw.Elapsed}");
@@ -437,7 +438,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				var i = grid.SelectedItems.First() as MyGridItem;
 				if (i != null)
-					filteredCollection.Insert(0, new MyGridItem(new Random(), 0));
+					filteredCollection.Insert(0, new MyGridItem(0));
 			};
 			menu.Items.Add(insertItem);
 
@@ -480,7 +481,7 @@ namespace Eto.Test.Sections.Controls
 		Button AddItemButton()
 		{
 			var control = new Button { Text = "Add Item" };
-			control.Click += (sender, e) => filteredCollection.Add(new MyGridItem(new Random(), filteredCollection.Count + 1));
+			control.Click += (sender, e) => filteredCollection.Add(new MyGridItem(filteredCollection.Count + 1));
 			return control;
 		}
 
@@ -499,13 +500,22 @@ namespace Eto.Test.Sections.Controls
 		/// <summary>
 		/// POCO (Plain Old CLR Object) to test property bindings
 		/// </summary>
-		protected class MyGridItem
+		protected class MyGridItem : INotifyPropertyChanged
 		{
 			bool? check;
 			string text;
 			string dropDownKey;
 			float? progress;
+			Color color;
+			Image image;
 			Command command;
+
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			void OnPropertyChanged([CallerMemberName] string propertyName = null)
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			}
 
 			public int Row { get; set; }
 
@@ -520,6 +530,7 @@ namespace Eto.Test.Sections.Controls
 				set
 				{
 					check = value;
+					OnPropertyChanged();
 					Log("Check", value);
 				}
 			}
@@ -530,11 +541,20 @@ namespace Eto.Test.Sections.Controls
 				set
 				{
 					text = value;
+					OnPropertyChanged();
 					Log("Text", value);
 				}
 			}
 
-			public Image Image { get; set; }
+			public Image Image
+			{
+				get { return image; }
+				set
+				{
+					image = value;
+					OnPropertyChanged();
+				}
+			}
 
 			public string DropDownKey
 			{
@@ -543,11 +563,21 @@ namespace Eto.Test.Sections.Controls
 				{
 					dropDownKey = value;
 					Log("DropDownKey", value);
+					OnPropertyChanged();
 				}
 			}
 
 			// used for drawable cell
-			public Color Color { get; set; }
+			public Color Color
+			{
+				get { return color; }
+				set
+				{
+					color = value;
+					Log("Color", value);
+					OnPropertyChanged();
+				}
+			}
 
 			public float? Progress
 			{
@@ -556,6 +586,7 @@ namespace Eto.Test.Sections.Controls
 				{
 					progress = value;
 					Log("Progress", value);
+					OnPropertyChanged();
 				}
 			}
 
@@ -567,7 +598,7 @@ namespace Eto.Test.Sections.Controls
 				}
 			}
 
-			public MyGridItem(Random rand, int row)
+			public MyGridItem(int row)
 			{
 				// initialize to random values
 				this.Row = row;
@@ -575,11 +606,14 @@ namespace Eto.Test.Sections.Controls
 				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
 				val = row % 2;
-				Image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
+				image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
+				OnPropertyChanged(nameof(Image));
 
 				text = string.Format("Col 1 Row {0}", row);
+				OnPropertyChanged(nameof(Text));
 
-				Color = Color.FromElementId(row);
+				color = Color.FromElementId(row);
+				OnPropertyChanged(nameof(Color));
 
 				val = row % 5;
 				if (val < 4)

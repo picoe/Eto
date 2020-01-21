@@ -331,14 +331,26 @@ namespace Eto.Wpf.Forms.Controls
 					var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
 					if (cell != null)
 					{
-						Callback.OnCellClick(Widget, CreateCellMouseArgs(cell, e));
-						cell.Focus();
-						if (!hadMultipleSelection && !cell.Column.IsReadOnly && ReferenceEquals(info.Cell, cell))
+						var args = CreateCellMouseArgs(cell, e);
+						Callback.OnCellClick(Widget, args);
+						if (!args.Handled)
 						{
-							Control.BeginEdit();
-							// we double clicked to fire this event, so trigger a double click event
-							if (info.ClickCount >= 2)
-								Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(cell, e));
+							cell.Focus();
+							if (!hadMultipleSelection && !cell.Column.IsReadOnly && ReferenceEquals(info.Cell, cell))
+							{
+								// we double clicked to fire this event, so trigger a double click event
+								if (info.ClickCount >= 2)
+									Callback.OnCellDoubleClick(Widget, args);
+								if (!args.Handled)
+								{
+									// let the column handler perform something specific if needed
+									var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+									if (columnHandler?.OnMouseUp(args, hitTestResult, cell) != true)
+									{
+										Control.BeginEdit();
+									}
+								}
+							}
 						}
 					}
 					else
@@ -395,6 +407,17 @@ namespace Eto.Wpf.Forms.Controls
 					else
 						row.Focus();
 					e.Handled = true;
+				} 
+				else if (cell?.IsEditing == true)
+				{
+					// allow clicking on the image of an ImageTextCell to commit editing.
+					var args = CreateCellMouseArgs(cell, e); 
+					var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+					if (columnHandler?.OnMouseDown(args, hitTestResult, cell) == true)
+					{
+						Control.CommitEdit();
+						e.Handled = true;
+					}
 				}
 			}
 			else if (!e.Handled

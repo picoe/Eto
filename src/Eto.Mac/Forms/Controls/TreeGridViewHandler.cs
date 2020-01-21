@@ -151,7 +151,7 @@ namespace Eto.Mac.Forms.Controls
 				var etoItem = h.GetEtoItem(item);
 				var row = h.Control.RowForItem(item);
 
-				var args = new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item);
+				var args = new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, etoItem);
 				h.Callback.OnCellEditing(h.Widget, args);
 				h.SetIsEditing(true);
 				return true;
