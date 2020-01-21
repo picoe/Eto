@@ -60,38 +60,7 @@ namespace Eto.Test
 			else
 				SectionList = new SectionListTreeGridView(nodes);
 
-			SectionList.SelectedItemChanged += (sender, e) =>
-			{
-				Control content = null;
-				var item = SectionList.SelectedItem;
-
-				try
-				{
-					content = item?.CreateContent();
-				}
-				catch (Exception ex)
-				{
-					Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
-					contentContainer.Content = null;
-				}
-				finally
-				{
-					if (navigation != null)
-					{
-						if (content != null)
-							navigation.Push(content, item?.Text);
-					}
-					else
-					{
-						contentContainer.Content = content;
-					}
-				}
-
-#if DEBUG
-				GC.Collect();
-				GC.WaitForPendingFinalizers();
-#endif
-			};
+			SectionList.SelectedItemChanged += SectionList_SelectedItemChanged;
 
 
 			this.Icon = TestIcons.TestIcon;
@@ -104,11 +73,50 @@ namespace Eto.Test
 
 			CreateMenuToolBar();
 
+			if (TestApplication.Settings.SaveInitialSection && InitialSection == null)
+				InitialSection = TestApplication.Settings.InitialSection;
+
 			if (InitialSection != null)
 			{
 				SectionList.SelectedItem = nodes.SelectMany(r => r).OfType<ISection>().FirstOrDefault(r => r.Text == InitialSection);
 			}
 
+		}
+
+		private void SectionList_SelectedItemChanged(object sender, EventArgs e)
+		{
+			Control content = null;
+			var item = SectionList.SelectedItem;
+
+			try
+			{
+				content = item?.CreateContent();
+			}
+			catch (Exception ex)
+			{
+				Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
+				contentContainer.Content = null;
+			}
+			finally
+			{
+				if (navigation != null)
+				{
+					if (content != null)
+						navigation.Push(content, item?.Text);
+				}
+				else
+				{
+					contentContainer.Content = content;
+				}
+			}
+
+			// save the initial section
+			TestApplication.Settings.InitialSection = item?.Text;
+
+#if DEBUG
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+#endif
 		}
 
 		public SectionList SectionList { get; set; }
@@ -207,6 +215,9 @@ namespace Eto.Test
 
 			if (Platform.Supports<MenuBar>())
 			{
+				var saveSettingsItem = new CheckMenuItem { Text = "Save Selected Section" };
+				saveSettingsItem.Bind(c => c.Checked, TestApplication.Settings, s => s.SaveInitialSection);
+
 				var fileCommand = new Command { MenuText = "File Command", Shortcut = Application.Instance.CommonModifier | Keys.F };
 				fileCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
 				var editCommand = new Command { MenuText = "Edit Command", Shortcut = Keys.Shift | Keys.E };
@@ -227,7 +238,7 @@ namespace Eto.Test
 				subMenu.Items.Add(new ButtonMenuItem { Text = "Item 2" });
 				subMenu.Items.Add(new ButtonMenuItem { Text = "Item 3" });
 
-				var file = new ButtonMenuItem { Text = "&File", Items = { fileCommand, crashCommand } };
+				var file = new ButtonMenuItem { Text = "&File", Items = { saveSettingsItem, fileCommand, crashCommand } };
 				var edit = new ButtonMenuItem { Text = "&Edit", Items = { editCommand, subMenu } };
                 var view = new ButtonMenuItem { Text = "&View", Items = { viewCommand } };
 				var window = new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { windowCommand } };

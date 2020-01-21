@@ -11,6 +11,10 @@ namespace Eto.Test
 {
 	public class TestApplication : Application
 	{
+		static Settings settings;
+
+		public static Settings Settings => settings ?? (settings = Settings.Load());
+
 		public static IEnumerable<Assembly> DefaultTestAssemblies()
 		{
 #if PCL
@@ -69,16 +73,18 @@ namespace Eto.Test
 #endif
 		}
 
-		/*
 		protected override void OnTerminating(CancelEventArgs e)
 		{
 			base.OnTerminating(e);
 			Log.Write(this, "Terminating");
+			Settings.Save();
 
+			/*
 			var result = MessageBox.Show(MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
 			if (result == DialogResult.No)
 				e.Cancel = true;
-		}*/
+			*/
+		}
 	}
 }
 
