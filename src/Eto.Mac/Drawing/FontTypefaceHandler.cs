@@ -116,26 +116,23 @@ namespace Eto.Mac.Drawing
 
 		public FontStyle FontStyle => Traits.ToEto();
 
+		static string SystemFontName => NSFont.SystemFontOfSize(NSFont.SystemFontSize).FontDescriptor.PostscriptName;
+		static string BoldSystemFontName => NSFont.BoldSystemFontOfSize(NSFont.SystemFontSize).FontDescriptor.PostscriptName;
+
 		public NSFont CreateFont(float size)
 		{
 
 			// we have a postcript name, use that to create the font
 			if (!string.IsNullOrEmpty(PostScriptName))
 			{
-				var font = NSFont.FromFontName(PostScriptName, size);
-				if (font == null)
-				{
-					// macOS 10.15 returns null for the above API for system fonts (when compiled using xcode 11).
-					font = NSFont.SystemFontOfSize(size);
-					if (font.FontDescriptor.PostscriptName == PostScriptName)
-						return font;
-					font = NSFont.BoldSystemFontOfSize(size);
-					if (font.FontDescriptor.PostscriptName == PostScriptName)
-						return font;
+				// if we try to get a system font by name we get errors now..
+				if (PostScriptName == SystemFontName)
+					return NSFont.SystemFontOfSize(size);
+				if (PostScriptName == BoldSystemFontName)
+					return NSFont.BoldSystemFontOfSize(size);
 
-					// always return something..?
-					return NSFont.UserFontOfSize(size);
-				}
+				// always return something...
+				var font = NSFont.FromFontName(PostScriptName, size) ?? NSFont.UserFontOfSize(size);
 				return font;
 			}
 
