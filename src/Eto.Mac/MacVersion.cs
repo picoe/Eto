@@ -1,12 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
-#if XAMMAC2
 using Foundation;
 using ObjCRuntime;
-#else
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
-#endif
 
 namespace Eto.Mac
 {

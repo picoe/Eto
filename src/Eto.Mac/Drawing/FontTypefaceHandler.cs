@@ -3,22 +3,12 @@ using Eto.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-
-#if XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreText;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreText;
-#endif
 
 namespace Eto.Mac.Drawing
 {

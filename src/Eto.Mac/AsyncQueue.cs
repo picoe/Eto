@@ -2,12 +2,7 @@ using System;
 using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Mac.Forms;
-#if XAMMAC2
 using AppKit;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-#endif
 
 namespace Eto.Mac
 {
