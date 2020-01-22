@@ -10,12 +10,6 @@ using ObjCRuntime;
 using CoreAnimation;
 using CoreText;
 
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 #if IOS
 using NSView = UIKit.UIView;
 using NSControl = UIKit.UIControl;

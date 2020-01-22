@@ -11,12 +11,6 @@ using CoreAnimation;
 using CoreImage;
 using ImageIO;
 
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 namespace Eto.Mac.Forms
 {
 	public class CursorHandler : WidgetHandler<NSCursor, Cursor>, Cursor.IHandler

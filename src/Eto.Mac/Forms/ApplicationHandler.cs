@@ -14,12 +14,6 @@ using CoreAnimation;
 using CoreImage;
 using System.Runtime.CompilerServices;
 
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 namespace Eto.Mac.Forms
 {
 	public class ApplicationHandler : WidgetHandler<NSApplication, Application, Application.ICallback>, Application.IHandler
@@ -130,21 +124,13 @@ namespace Eto.Mac.Forms
 				action();
 			else
 			{
-#if XAMMAC1
-				Control.InvokeOnMainThread(new NSAction(action));
-#else
 				Control.InvokeOnMainThread(action);
-#endif
 			}
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-#if XAMMAC1
-			Control.BeginInvokeOnMainThread(new NSAction(action));
-#else
 			Control.BeginInvokeOnMainThread(action);
-#endif
 		}
 
 		public void Restart()

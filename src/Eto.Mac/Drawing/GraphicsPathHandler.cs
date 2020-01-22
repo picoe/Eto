@@ -11,12 +11,6 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 using Eto.Mac;
 namespace Eto.Mac.Drawing
 #elif IOS
@@ -230,11 +224,7 @@ namespace Eto.iOS.Drawing
 
 		public void AddEllipse (float x, float y, float width, float height)
 		{
-			#if XAMMAC || XAMMAC2 || IOS
 			Control.AddEllipseInRect(new CGRect(x, y, width, height));
-			#else
-			Control.AddElipseInRect (new CGRect(x, y, width, height));
-			#endif
 			startFigure = true;
 			isFirstFigure = false;
 		}

@@ -15,12 +15,6 @@ using CoreAnimation;
 using CoreImage;
 using ImageIO;
 
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 namespace Eto.Mac
 {
 	public static partial class MacConversions

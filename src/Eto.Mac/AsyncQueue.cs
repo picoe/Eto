@@ -59,11 +59,7 @@ namespace Eto.Mac
 			if (_actionQueue.Count == 1)
 			{
 				// first one added, schedule a layout!
-#if XAMMAC1
-				NSApplication.SharedApplication.BeginInvokeOnMainThread(new NSAction(FlushQueue));
-#else
 				NSApplication.SharedApplication.BeginInvokeOnMainThread(FlushQueue);
-#endif
 			}
 		}
 

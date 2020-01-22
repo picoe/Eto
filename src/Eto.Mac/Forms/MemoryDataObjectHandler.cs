@@ -9,12 +9,6 @@ using AppKit;
 using Foundation;
 using ObjCRuntime;
 
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 namespace Eto.Mac.Forms
 {
 	public class MemoryDataObjectHandler : WidgetHandler<Dictionary<string, MemoryDataObjectHandler.BaseItem>, DataObject, DataObject.ICallback>, DataObject.IHandler, IDataObject, IDataObjectHandler

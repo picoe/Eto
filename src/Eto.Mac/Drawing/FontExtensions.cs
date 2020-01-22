@@ -7,12 +7,6 @@ using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
 
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 #if OSX
 namespace Eto.Mac.Drawing
 #elif IOS
