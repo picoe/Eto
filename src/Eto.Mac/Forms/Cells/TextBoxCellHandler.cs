@@ -36,8 +36,8 @@ namespace Eto.Mac.Forms.Cells
 {
 	public class TextBoxCellHandler : CellHandler<TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler, IMacText
 	{
-		static EtoCellTextField field = new EtoCellTextField { Cell = new EtoLabelFieldCell() };
-		static NSFont defaultFont = field.Font;
+		static readonly CellView field = new CellView();
+		static readonly NSFont defaultFont = field.Font;
 
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
@@ -76,32 +76,32 @@ namespace Eto.Mac.Forms.Cells
 
 		public override Color GetBackgroundColor(NSView view)
 		{
-			return ((EtoLabelFieldCell)((EtoCellTextField)view).Cell).BetterBackgroundColor.ToEto();
+			return ((CellView)view).Cell.BetterBackgroundColor.ToEto();
 		}
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
-			((EtoLabelFieldCell)((EtoCellTextField)view).Cell).BetterBackgroundColor = color.ToNSUI();
+			((CellView)view).Cell.BetterBackgroundColor = color.ToNSUI();
 		}
 
 		public override Color GetForegroundColor(NSView view)
 		{
-			return ((EtoCellTextField)view).TextColor.ToEto();
+			return ((CellView)view).TextColor.ToEto();
 		}
 
 		public override void SetForegroundColor(NSView view, Color color)
 		{
-			((EtoCellTextField)view).TextColor = color.ToNSUI();
+			((CellView)view).TextColor = color.ToNSUI();
 		}
 
 		public override Font GetFont(NSView view)
 		{
-			return ((EtoCellTextField)view).Font.ToEto();
+			return ((CellView)view).Font.ToEto();
 		}
 
 		public override void SetFont(NSView view, Font font)
 		{
-			((EtoCellTextField)view).Font = font.ToNS();
+			((CellView)view).Font = font.ToNS();
 		}
 
 		TextAlignment _textAlignment;
@@ -138,11 +138,27 @@ namespace Eto.Mac.Forms.Cells
 		{
 			[Export("item")]
 			public NSObject Item { get; set; }
-			public CellView() { }
+
+			public CellView()
+			{
+				base.Cell = new EtoLabelFieldCell
+				{
+					Wraps = false,
+					Scrollable = true,
+					UsesSingleLineMode = false // true prevents proper vertical alignment 
+				};
+				Selectable = false;
+				DrawsBackground = false;
+				Bezeled = false;
+				Bordered = false;
+				AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+			}
 			public CellView(IntPtr handle) : base(handle) { }
+
+			public new EtoLabelFieldCell Cell => (EtoLabelFieldCell)base.Cell;
 		}
 
-		static NSString editableBinding = new NSString("editable");
+		static readonly NSString editableBinding = new NSString("editable");
 
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
@@ -152,18 +168,7 @@ namespace Eto.Mac.Forms.Cells
 				view = new CellView
 				{
 					WeakHandler = new WeakReference(this),
-					Cell = new EtoLabelFieldCell
-					{
-						Wraps = false,
-						Scrollable = true,
-						UsesSingleLineMode = false // true prevents proper vertical alignment 
-					},
 					Identifier = tableColumn.Identifier,
-					Selectable = false,
-					DrawsBackground = false,
-					Bezeled = false,
-					Bordered = false,
-					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable
 				};
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
@@ -200,7 +205,7 @@ namespace Eto.Mac.Forms.Cells
 				view.Bind(editableBinding, tableColumn, "editable", null);
 			}
 
-			var cell = (EtoLabelFieldCell)view.Cell;
+			var cell = view.Cell;
 			cell.VerticalAlignment = VerticalAlignment;
 			cell.Alignment = TextAlignment.ToNS();
 

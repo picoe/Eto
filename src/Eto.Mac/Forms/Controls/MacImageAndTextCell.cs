@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Mac.Drawing;
+using Eto.Drawing;
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -102,6 +103,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
+		public override void SelectWithFrame(CGRect aRect, NSView inView, NSText editor, NSObject delegateObject, nint selStart, nint selLength)
+		{
+			aRect = AdjustBoundsForImage(aRect);
+			base.SelectWithFrame(aRect, inView, editor, delegateObject, selStart, selLength);
+		}
+
 		public NSImageInterpolation ImageInterpolation { get; set; }
 
 		public NSColor GroupColor
@@ -173,20 +180,65 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
+		CGSize GetImageSize(CGRect bounds)
+		{
+			if (ObjectValue is MacImageData data && data.Image != null)
+			{
+				var imageSize = data.Image.Size;
+				if (imageSize.Width > 0)
+				{
+					var newHeight = Math.Min(imageSize.Height, bounds.Height);
+					var newWidth = imageSize.Width * newHeight / imageSize.Height;
+					newWidth += ImagePadding;
+					return new CGSize(newWidth, newHeight);
+				}
+
+			}
+			return CGSize.Empty;
+		}
+
+		CGRect AdjustBoundsForImage(CGRect bounds)
+		{
+			var imageSize = GetImageSize(bounds);
+			if (imageSize.Width > 0)
+			{
+				bounds.X += imageSize.Width;
+				bounds.Width -= imageSize.Width;
+			}
+			return bounds;
+		}
+
+		public override void DrawFocusRing(CGRect cellFrameMask, NSView inControlView)
+		{
+			cellFrameMask = AdjustBoundsForImage(cellFrameMask);
+			base.DrawFocusRing(cellFrameMask, inControlView);
+		}
+
+		public override CGRect GetFocusRingMaskBounds(CGRect cellFrame, NSView controlView)
+		{
+			var rect = base.GetFocusRingMaskBounds(cellFrame, controlView);
+			rect = AdjustBoundsForImage(rect);
+			return rect;
+		}
+
 		public override CGSize CellSizeForBounds(CGRect bounds)
 		{
 			var size = base.CellSizeForBounds(bounds);
-			var data = ObjectValue as MacImageData;
-			if (data != null && data.Image != null)
+			var imageSize = GetImageSize(bounds);
+			if (imageSize.Width > 0)
 			{
-				var imageSize = data.Image.Size;
-				var newHeight = Math.Min(imageSize.Height, bounds.Height);
-				var newWidth = imageSize.Width * newHeight / imageSize.Height;
-				size.Width += (nfloat)(newWidth + ImagePadding);
-				size.Height = (nfloat)Math.Max(newHeight, size.Height);
+				size.Width += (nfloat)(imageSize.Width + ImagePadding);
+				size.Height = (nfloat)Math.Max(imageSize.Height, size.Height);
 			}
 			size.Width = (nfloat)Math.Min(size.Width, bounds.Width);
 			return size;
+		}
+
+		public override CGRect TitleRectForBounds(CGRect theRect)
+		{
+			var result = base.TitleRectForBounds(theRect);
+			result = AdjustBoundsForImage(result);
+			return result;
 		}
 
 		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)

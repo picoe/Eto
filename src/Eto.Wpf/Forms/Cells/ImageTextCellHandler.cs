@@ -227,5 +227,26 @@ namespace Eto.Wpf.Forms.Cells
 		}
 
 		public AutoSelectMode AutoSelectMode { get; set; } = AutoSelectMode.OnFocus;
+
+		public override bool OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+			if (cell?.IsEditing == true && hitTestResult is swc.Image)
+			{
+				// commit editing when clicking on the image
+				ContainerHandler?.Grid.CommitEdit();
+				return true;
+			}
+
+			return base.OnMouseDown(args, hitTestResult, cell);
+		}
+		public override bool OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+			if (cell?.IsEditing == false && !Control.IsReadOnly && hitTestResult is swc.Image)
+			{
+				// prevent default behaviour of editing if we click on the image
+				return true;
+			}
+			return base.OnMouseUp(args, hitTestResult, cell);
+		}
 	}
 }

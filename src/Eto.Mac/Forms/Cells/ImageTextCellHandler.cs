@@ -65,20 +65,19 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
-		static EtoCellTextField field = new EtoCellTextField { Cell = new MacImageListItemCell() };
-		static NSFont defaultFont = field.Font;
+		static readonly CellView field = new CellView();
+		static readonly NSFont defaultFont = field.TextField.Font;
 
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
-			field.Font = defaultFont;
+			field.TextField.Font = defaultFont;
+			field.SetFrameSize(cellSize);
 
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, dataItem, row, field);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 
-			if (args.FontSet)
-				field.Font = args.Font.ToNS();
 			field.ObjectValue = value as NSObject;
-			return field.Cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
+			return field.FittingSize.Width;
 		}
 
 		ImageInterpolation _imageInterpolation;
@@ -97,32 +96,32 @@ namespace Eto.Mac.Forms.Cells
 
 		public override Color GetBackgroundColor(NSView view)
 		{
-			return ((EtoLabelFieldCell)((EtoCellTextField)view).Cell).BetterBackgroundColor.ToEto();
+			return ((CellView)view).BetterBackgroundColor.ToEto();
 		}
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
-			((EtoLabelFieldCell)((EtoCellTextField)view).Cell).BetterBackgroundColor = color.ToNSUI();
+			((CellView)view).BetterBackgroundColor = color.ToNSUI();
 		}
 
 		public override Color GetForegroundColor(NSView view)
 		{
-			return ((EtoCellTextField)view).TextColor.ToEto();
+			return ((CellView)view).TextField.TextColor.ToEto();
 		}
 
 		public override void SetForegroundColor(NSView view, Color color)
 		{
-			((EtoCellTextField)view).TextColor = color.ToNSUI();
+			((CellView)view).TextField.TextColor = color.ToNSUI();
 		}
 
 		public override Font GetFont(NSView view)
 		{
-			return ((EtoCellTextField)view).Font.ToEto();
+			return ((CellView)view).TextField.Font.ToEto();
 		}
 
 		public override void SetFont(NSView view, Font font)
 		{
-			((EtoCellTextField)view).Font = font.ToNS();
+			((CellView)view).TextField.Font = font.ToNS();
 		}
 
 		TextAlignment _textAlignment;
@@ -155,15 +154,66 @@ namespace Eto.Mac.Forms.Cells
 
 		public AutoSelectMode AutoSelectMode { get; set; }
 
-		class CellView : EtoCellTextField
+		class CellView : MacImageTextView, IMacControl
 		{
+			NSObject _objectValue;
+			public CellView(IntPtr handle) : base(handle) { }
+
+			public CellView()
+			{
+			}
+
+			protected override NSTextField CreateTextField() => new EtoCellTextField
+			{
+				Cell = new EtoLabelFieldCell
+				{
+					Wraps = false,
+					Scrollable = true,
+					UsesSingleLineMode = false // true prevents proper vertical alignment 
+				},
+				Selectable = false,
+				DrawsBackground = false,
+				Bezeled = false,
+				Bordered = false,
+				UsesSingleLineMode = false
+			};
+
+			public EtoLabelFieldCell TextCell => (EtoLabelFieldCell)TextField.Cell;
+
+			public new EtoCellTextField TextField => (EtoCellTextField)base.TextField;
+
+			[Export("objectValue")]
+			public NSObject ObjectValue
+			{
+				get => _objectValue;
+				set
+				{
+					var val = value as MacImageData;
+
+					TextField.ObjectValue = val?.Text ?? NSString.Empty;
+					Image = val?.Image;
+					_objectValue = value;
+				}
+			}
+
 			[Export("item")]
 			public NSObject Item { get; set; }
-			public CellView() { }
-			public CellView(IntPtr handle) : base(handle) { }
+
+			public WeakReference WeakHandler
+			{
+				get => TextField.WeakHandler;
+				set => TextField.WeakHandler = value;
+			}
+
+			[Export("tag")]
+			public new nint Tag
+			{
+				get => TextField.Tag;
+				set => TextField.Tag = value;
+			}
 		}
 
-		static NSString editableBinding = new NSString("editable");
+		static readonly NSString editableBinding = new NSString("editable");
 
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
@@ -173,58 +223,50 @@ namespace Eto.Mac.Forms.Cells
 				view = new CellView
 				{
 					WeakHandler = new WeakReference(this),
-					Cell = new MacImageListItemCell
-					{
-						Wraps = false,
-						Scrollable = true,
-						UsesSingleLineMode = false // true prevents proper vertical alignment 
-					},
 					Identifier = tableColumn.Identifier,
-					Selectable = false,
-					DrawsBackground = false,
-					Bezeled = false,
-					Bordered = false,
 					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable
 				};
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
-				view.BecameFirstResponder += (sender, e) =>
+				view.TextField.BecameFirstResponder += (sender, e) =>
 				{
-					var control = (CellView)sender;
+					var control = (CellView)(sender as NSView)?.Superview;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
 
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.OnCellEditing(ee);
 				};
-				view.EditingEnded += (sender, e) =>
+				view.TextField.EditingEnded += (sender, e) =>
 				{
 					var notification = (NSNotification)sender;
-					var control = (CellView)notification.Object;
+					var control = (CellView)(notification.Object as NSView)?.Superview;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					SetObjectValue(item, control.ObjectValue);
+					SetObjectValue(item, control.TextField.ObjectValue);
 
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.OnCellEdited(ee);
 					control.ObjectValue = GetObjectValue(item);
 				};
-				view.ResignedFirstResponder += (sender, e) =>
+				view.TextField.ResignedFirstResponder += (sender, e) =>
 				{
-					var control = (CellView)sender;
+					var control = (CellView)(sender as NSView)?.Superview;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					SetObjectValue(item, control.ObjectValue);
+					SetObjectValue(item, control.TextField.ObjectValue);
 
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.OnCellEdited(ee);
 				};
-				view.Bind(editableBinding, tableColumn, "editable", null);
+				view.TextField.Bind(editableBinding, tableColumn, "editable", null);
 			}
-			var cell = (MacImageListItemCell)view.Cell;
-			cell.ImageInterpolation = ImageInterpolation.ToNS();
+			view.ImageInterpolation = ImageInterpolation.ToNS();
+
+			var cell = view.TextCell;
 			cell.VerticalAlignment = VerticalAlignment;
 			cell.Alignment = TextAlignment.ToNS();
+
 			view.Tag = row;
 			view.Item = obj;
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
