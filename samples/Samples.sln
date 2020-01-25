@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XamarinMac", "XamarinMac", "{F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}"
 	ProjectSection(MonoDevelopProperties) = preProject
@@ -74,6 +74,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "..\src\Eto.Mac\Eto.XamMac2.csproj", "{6C147DFC-0EC3-4B94-8239-D0A47A035739}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk", "..\src\Eto.Gtk\Eto.Gtk.csproj", "{800E0242-6368-4F10-AE85-1B218C08463C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoMac", "..\lib\monomac\src\MonoMac.csproj", "{23244704-480A-4158-9823-532F67AAEBD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "core", "..\lib\monomac\src\core.csproj", "{E8BF4713-68B0-452A-A798-B448FC07CA0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "monomac", "monomac", "{028C71AC-ACDF-48D3-B2AC-811FC787C70F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "generator", "..\lib\monomac\src\generator.csproj", "{5124D2E8-236E-4CB6-9065-5E44DCE3B636}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -325,6 +333,42 @@ Global
 		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Mac.Build.0 = Release|Any CPU
 		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Windows.ActiveCfg = Release|Any CPU
 		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Windows.Build.0 = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Linux.Build.0 = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Mac.Build.0 = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Windows.Build.0 = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Linux.ActiveCfg = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Linux.Build.0 = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Mac.ActiveCfg = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Mac.Build.0 = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Windows.ActiveCfg = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Windows.Build.0 = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Linux.Build.0 = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Mac.Build.0 = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Windows.Build.0 = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Linux.ActiveCfg = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Linux.Build.0 = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Mac.ActiveCfg = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Mac.Build.0 = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Windows.ActiveCfg = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Windows.Build.0 = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Linux.Build.0 = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Mac.Build.0 = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Windows.Build.0 = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Linux.ActiveCfg = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Linux.Build.0 = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Mac.ActiveCfg = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Mac.Build.0 = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Windows.ActiveCfg = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -354,6 +398,10 @@ Global
 		{41266591-508F-40B6-9360-AFECE6FBFC27} = {F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}
 		{6C147DFC-0EC3-4B94-8239-D0A47A035739} = {19A4EA01-CA9E-4390-B448-974152AB5706}
 		{800E0242-6368-4F10-AE85-1B218C08463C} = {19A4EA01-CA9E-4390-B448-974152AB5706}
+		{23244704-480A-4158-9823-532F67AAEBD2} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
+		{028C71AC-ACDF-48D3-B2AC-811FC787C70F} = {19A4EA01-CA9E-4390-B448-974152AB5706}
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C5EE3ED5-BFCC-4709-9FC2-0053C18D5883}
