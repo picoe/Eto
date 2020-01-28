@@ -204,7 +204,7 @@
     <RemoveDir Directories="$(ArtifactsDir)templates"/>
 
     <!-- install the current version of the templates -->
-    <Exec Command="dotnet new -i $(NugetOutputDir)Eto.Forms.Templates.$(CurrentVersion).nupkg" />
+    <Exec Command="dotnet new -i $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
 
     <!-- generate project templates -->
     <ItemGroup>
@@ -224,13 +224,18 @@
       <Separate Include="separate" Value="-s" />
       <Separate Include="combined" Value="" />
 
+      <Framework Include="full" />
+      <Framework Include="core" />
+      <Framework Include="both" />
+
       <CombinedProject1 Include="*" LanguageId="%(Language.Identity)" Language="%(Language.Value)" />
       <CombinedProject2 Include="@(CombinedProject1)" ModeId="%(Mode.Identity)" Mode="%(Mode.Identity)" />
       <CombinedProject3 Include="@(CombinedProject2)" SeparateId="%(Separate.Identity)" Separate="%(Separate.Value)" />
-      <CombinedProject Include="@(CombinedProject3)" OtherId="%(OtherOptions.Identity)" Other="%(OtherOptions.Value)" />
+      <CombinedProject4 Include="@(CombinedProject3)" OtherId="%(OtherOptions.Identity)" Other="%(OtherOptions.Value)" />
+      <CombinedProject Include="@(CombinedProject4)" FrameworkId="%(Framework.Identity)" Framework="%(Framework.Identity)" />
     </ItemGroup>
 
-    <Exec Command="dotnet new etoapp -m %(CombinedProject.Mode) -sln -lang %(Language) %(Other) %(Separate) -o $(ArtifactsDir)templates\App.%(LanguageId)-%(SeparateId)-%(OtherId)-%(ModeId)" />
+    <Exec Command="dotnet new etoapp -m %(CombinedProject.Mode) -sln -lang %(Language) %(Other) %(Separate) -f %(Framework) -o $(ArtifactsDir)templates\App.%(LanguageId)-%(SeparateId)-%(OtherId)-%(ModeId)-%(FrameworkId)" />
 
     <!-- generate file templates -->
     <ItemGroup>
