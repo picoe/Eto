@@ -26,6 +26,8 @@ namespace Eto.Addin.Shared
 			IncludeSolution = false;
 			if (SupportsBase)
 				Base = "Panel";
+			if (SupportsFramework)
+				SelectedFrameworks = new[] { SupportedFrameworks[0] };
 		}
 
 		public bool IsValid
@@ -215,6 +217,38 @@ namespace Eto.Addin.Shared
 
 		public bool RequiresInput => SupportsSeparated || SupportsProjectType || SupportsPanelType;
 
+		public class FrameworkInfo
+		{
+			public string Text { get; set; }
+			public string Value { get; set; }
+			public string Description { get; set; }
+		}
+
+		public FrameworkInfo[] SupportedFrameworks => frameworkInformation;
+
+		static readonly FrameworkInfo[] frameworkInformation =
+		{
+			new FrameworkInfo { Text = "Full .NET Framework", Value = "full"},
+			new FrameworkInfo { Text = ".NET Core", Value = "core" }
+		};
+
+		List<FrameworkInfo> _selectedFrameworks;
+
+		public IEnumerable<object> SelectedFrameworks
+		{
+			get => _selectedFrameworks ?? Enumerable.Empty<FrameworkInfo>();
+			set
+			{
+				_selectedFrameworks = (value?.OfType<FrameworkInfo>() ?? Enumerable.Empty<FrameworkInfo>()).ToList();
+
+				string parameterValue = _selectedFrameworks.Count == 1 ? _selectedFrameworks[0].Value : "both";
+				Source.SetParameter("Framework", parameterValue);
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(Information));
+			}
+		}
+
+
 		struct TypeInfo
 		{
 			public string Text;
@@ -300,6 +334,12 @@ namespace Eto.Addin.Shared
 				if (SupportsBase)
 				{
 
+				}
+
+				if (SupportsFramework)
+				{
+					var frameworks = string.Join(" and ", _selectedFrameworks?.Select(r => r.Text) ?? Enumerable.Empty<string>());
+					text.Add($"For {frameworks} framework(s).");
 				}
 
 				return string.Join("\n\n", text);

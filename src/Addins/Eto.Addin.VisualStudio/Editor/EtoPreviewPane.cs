@@ -44,7 +44,7 @@ namespace Eto.Addin.VisualStudio.Editor
 	{
 		IVsTextLines textBuffer;
 		EtoAddinPackage package;
-		PreviewEditorView preview;
+		PreviewEditorViewSplitter preview;
 		Panel editorControl;
 		uint dataEventsCookie;
 		uint linesEventsCookie;
@@ -105,7 +105,7 @@ namespace Eto.Addin.VisualStudio.Editor
 			FileName = fileName;
 
 			editorControl = new Panel();
-			preview = new PreviewEditorView(editorControl, mainAssembly, references, () => textBuffer?.GetText());
+			preview = new PreviewEditorViewSplitter(editorControl, mainAssembly, references, () => textBuffer?.GetText());
 			preview.GotFocus += (sender, e) =>
 			{
 				wpfViewHost?.TextView?.VisualElement?.Focus();

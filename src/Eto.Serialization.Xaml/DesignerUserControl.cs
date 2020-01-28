@@ -24,6 +24,8 @@ namespace Eto.Serialization.Xaml
 			set { label.ToolTip = value; }
 		}
 
+		public object GenericProperty { get; set; }
+
 		public DesignerUserControl()
 		{
 			BackgroundColor = Colors.White;
@@ -69,7 +71,7 @@ namespace Eto.Serialization.Xaml
 				if (coltype != null)
 				{
 					var ct = sc.GetXamlType(typeof(Control));
-					if (ct.CanConvertTo(coltype.ItemType))
+					if (ct.CanConvertTo(coltype.ItemType) || coltype.ItemType.CanConvertFrom(ct))
 					{
 						return new DesignerUserControl { Text = Text, ToolTip = ToolTip };
 					}

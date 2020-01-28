@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
+    <DefineConstants>Roslyn;RoslynCS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj" />
@@ -10,5 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Compiler.CodeDom" Version="1.0.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.4.0" ExcludeAssets="runtime" />
   </ItemGroup>
 </Project>

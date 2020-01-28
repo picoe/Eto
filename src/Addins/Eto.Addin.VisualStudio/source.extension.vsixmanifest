@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="Eto.Addin.VisualStudio" Version="2.4.9999.0" Language="en-US" Publisher="Curtis Wensley" />
         <DisplayName>Eto.Forms Visual Studio Addin</DisplayName>
-        <Description xml:space="preserve">Eto.Forms Support for Visual Studio.  Eto.Forms is a cross platform GUI framework for desktop and mobile applications in .NET that can target Wpf, WinForms, Direct2D, MonoMac, Xamarin.Mac, Gtk2, Gtk3, and iOS with a single codebase.</Description>
+        <Description xml:space="preserve">Eto.Forms Support for Visual Studio.  Eto.Forms is a cross platform GUI framework for desktop and mobile applications in .NET that can target Wpf, WinForms, Direct2D, MonoMac, Xamarin.Mac, Gtk2, and Gtk3 with a single codebase.</Description>
         <MoreInfo>https://github.com/picoe/Eto</MoreInfo>
         <License>LICENSE.txt</License>
         <Icon>Icon.png</Icon>
@@ -16,7 +16,7 @@
         <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Enterprise" />
     </Installation>
     <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.1,)" />
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7.2,)" />
         <Dependency d:Source="Installed" Version="[16.0,17.0)" Id="Microsoft.VisualStudio.MPF.16.0" DisplayName="Visual Studio MPF 16.0" />
         <Dependency d:Source="Installed" Id="3B5EAFB3-87E4-4986-8924-D24DF860D894" DisplayName="Microsoft Visual Studio Template Engine" Version="[16.4.457.38025,17.0)" />
     </Dependencies>
@@ -31,5 +31,6 @@
         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.1.28811.260,17.0)" DisplayName="Visual Studio core editor" />
         <Prerequisite Id="Microsoft.NetCore.Component.SDK" Version="[16.4.29519.181,17.0)" DisplayName=".NET Core 3.1 SDK" />
         <Prerequisite Id="Microsoft.VisualStudio.Component.ManagedDesktop.Prerequisites" Version="[16.4.29429.68,17.0)" DisplayName=".NET desktop development tools" />
+        <Prerequisite Id="Microsoft.Net.Component.4.7.2.TargetingPack" Version="[16.0.28517.75,17.0)" DisplayName=".NET Framework 4.7.2 targeting pack" />
     </Prerequisites>
 </PackageManifest>

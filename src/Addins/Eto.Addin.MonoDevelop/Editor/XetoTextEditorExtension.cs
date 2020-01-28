@@ -76,6 +76,7 @@ namespace Eto.Addin.MonoDevelop.Editor
 			if (CompletionWindowManager.IsVisible)
 			{
 				// do some things to minimize keystrokes with code completion
+#if MD_7_0
 				if (keyChar == '=')
 				{
 					// we're in an attribute completion, so automatically add the quote and show completions (if available)
@@ -88,6 +89,7 @@ namespace Eto.Addin.MonoDevelop.Editor
 					}
 					return ret;
 				}
+#endif
 				if (key == SpecialKey.Return
 					&& modifier == ModifierKeys.None
 					&& isParameterValueCompletion)
@@ -125,8 +127,12 @@ namespace Eto.Addin.MonoDevelop.Editor
 				// add self-closing tag if there is no content for the control
 				if (!HasContentAtCurrentElement())
 				{
+#if MD_7_0
 					base.KeyPress(KeyDescriptor.FromGtk((Gdk.Key)0, '/', Gdk.ModifierType.None));
-					//buffer.InsertText(buffer.CursorPosition++, "/");
+#elif MD_8_0
+					// md 8.x inserts the closing '>' automatically, so we just need to insert the foward slash
+					descriptor = KeyDescriptor.FromGtk((Gdk.Key)0, '/', Gdk.ModifierType.None);
+#endif
 					return base.KeyPress(descriptor);
 				}
 			}

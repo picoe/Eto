@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace ${Namespace}
 {	
-	class ${EscapedIdentifier} : Dialog
+	partial class ${EscapedIdentifier} : Dialog
 	{	
 		void InitializeComponent()
 		{

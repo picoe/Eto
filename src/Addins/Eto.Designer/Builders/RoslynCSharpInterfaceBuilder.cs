@@ -1,4 +1,4 @@
-﻿#if RoslynCS
+#if RoslynCS
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;

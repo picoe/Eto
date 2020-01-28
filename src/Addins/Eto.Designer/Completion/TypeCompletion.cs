@@ -34,7 +34,7 @@ namespace Eto.Designer.Completion
 			var contentType = GetContentType(nodeType, propertyName);
 			if (contentType != null)
 			{
-				var converter = TypeDescriptor.GetConverter(contentType);
+				var converter = System.ComponentModel.TypeDescriptor.GetConverter(contentType);
 				if (converter != null)
 				{
 					return t => contentType.IsAssignableFrom(t) || converter.CanConvertFrom(t);
