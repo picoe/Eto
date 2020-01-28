@@ -85,8 +85,10 @@ namespace Eto.Wpf.Forms.Controls
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
+					PositionChangedEnabled++;
 					Widget.Properties.Set(swc.RowDefinition.HeightProperty, PropertyChangeNotifier.Register(swc.RowDefinition.HeightProperty, HandlePositionChanged, Control.RowDefinitions[0]));
 					Widget.Properties.Set(swc.ColumnDefinition.WidthProperty, PropertyChangeNotifier.Register(swc.ColumnDefinition.WidthProperty, HandlePositionChanged, Control.ColumnDefinitions[0]));
+					PositionChangedEnabled--;
 					break;
 				default:
 					base.AttachEvent(id);
