@@ -486,7 +486,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (size <= 0)
 				return;
 
-			if (!initialPositionSet && Control.IsRealized)
+			if (!initialPositionSet && Control.IsRealized && GetAvailableSize() > 0)
 			{
 				initialPositionSet = true;
 				SetInitialPosition();
