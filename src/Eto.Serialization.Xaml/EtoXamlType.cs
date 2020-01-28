@@ -10,6 +10,7 @@ using Eto.Forms;
 using Portable.Xaml;
 using Portable.Xaml.Schema;
 using cm = System.ComponentModel;
+using Portable.Xaml.Markup;
 
 #if NET40
 using EtoTypeConverter = System.ComponentModel.TypeConverter;
@@ -140,11 +141,50 @@ namespace Eto.Serialization.Xaml
 
 		}
 
+		public EmptyXamlMember(string propertyName, XamlType declaringType)
+			: base(propertyName, declaringType, false)
+		{
+		}
+
+		protected override XamlType LookupType()
+		{
+			return DeclaringType.SchemaContext.GetXamlType(typeof(object));
+		}
+
+		protected override MethodInfo LookupUnderlyingSetter()
+		{
+			return typeof(DesignerUserControl).GetRuntimeProperty("GenericProperty").GetSetMethod();
+		}
+
+		protected override bool LookupIsUnknown() => false;
+
 		class EmptyConverter : cm.TypeConverter
 		{
 			public override bool CanConvertFrom(cm.ITypeDescriptorContext context, Type sourceType) => true;
 
 			public override object ConvertFrom(cm.ITypeDescriptorContext context, CultureInfo culture, object value) => null;
+		}
+
+		class EmptyValueSerializer : ValueSerializer
+		{
+			public override bool CanConvertFromString(string value, IValueSerializerContext context) => true;
+
+			public override object ConvertFromString(string value, IValueSerializerContext context) => null;
+		}
+
+		class EmptyMemberInvoker : XamlMemberInvoker
+		{
+			public override void SetValue(object instance, object value)
+			{
+				// do nothing
+			}
+		}
+
+		protected override XamlMemberInvoker LookupInvoker() => new EmptyMemberInvoker();
+
+		protected override XamlValueConverter<ValueSerializer> LookupValueSerializer()
+		{
+			return new XamlValueConverter<ValueSerializer>(typeof(EmptyValueSerializer), Type);
 		}
 
 		protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
@@ -177,25 +217,6 @@ namespace Eto.Serialization.Xaml
 
 			gotTypeConverter = true;
 
-#pragma warning disable 618
-			// convert from Eto.TypeConverter to Portable.Xaml.ComponentModel.TypeConverter
-			var typeConverterAttrib = GetCustomAttribute<EtoTypeConverterAttribute>();
-
-			if (typeConverterAttrib == null
-			    && UnderlyingType.GetTypeInfo().IsGenericType
-			    && UnderlyingType.GetTypeInfo().GetGenericTypeDefinition() == typeof(Nullable<>))
-			{
-				typeConverterAttrib = Nullable.GetUnderlyingType(UnderlyingType).GetTypeInfo().GetCustomAttribute<EtoTypeConverterAttribute>();
-			}
-
-			if (typeConverterAttrib != null)
-			{
-				var converterType = Type.GetType(typeConverterAttrib.ConverterTypeName);
-				if (converterType != null)
-					typeConverter = new EtoValueConverter(converterType, this);
-			}
-#pragma warning restore 618
-
 			if (typeof(MulticastDelegate).GetTypeInfo().IsAssignableFrom(UnderlyingType.GetTypeInfo()))
 			{
 				var context = SchemaContext as EtoXamlSchemaContext;
@@ -217,6 +238,17 @@ namespace Eto.Serialization.Xaml
 			if (this.UnderlyingType != null && UnderlyingType == typeof(PropertyStore))
 				return true;
 			return base.LookupIsAmbient();
+		}
+
+		protected override XamlMember LookupMember(string name, bool skipReadOnlyCheck)
+		{
+			var member = base.LookupMember(name, skipReadOnlyCheck);
+			if (member == null && (SchemaContext as EtoXamlSchemaContext)?.DesignMode == true && this.UnderlyingType == typeof(DesignerMarkupExtension))
+			{
+				// using designer user control, so allow any unknown member
+				return new EmptyXamlMember(name, this);
+			}
+			return member;
 		}
 
 		bool gotContentProperty;

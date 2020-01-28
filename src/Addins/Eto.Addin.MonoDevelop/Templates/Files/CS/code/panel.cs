@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace ${Namespace}
 {	
-	public partial class ${EscapedIdentifier} : Panel
+	public class ${EscapedIdentifier} : Panel
 	{	
 		public ${EscapedIdentifier}()
 		{

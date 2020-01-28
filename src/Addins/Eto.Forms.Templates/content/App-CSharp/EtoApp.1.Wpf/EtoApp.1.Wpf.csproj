@@ -2,7 +2,10 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework Condition="$(Framework) == 'full'">net461</TargetFramework>
+    <TargetFramework Condition="$(Framework) == 'core'">netcoreapp3.1</TargetFramework>
+    <TargetFrameworks Condition="$(Framework) == '' OR $(Framework) == 'both'">net461;netcoreapp3.1</TargetFrameworks>
+    <UseWpf Condition="$(Framework) != 'full'">True</UseWpf>
   </PropertyGroup>
 
   <ItemGroup>

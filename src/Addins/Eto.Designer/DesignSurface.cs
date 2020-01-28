@@ -42,9 +42,16 @@ namespace Eto.Designer
 			set
 			{
 				_content = value;
-				base.Content = TableLayout.AutoSized(value, centered: true);
 
-				_content.SizeChanged += content_SizeChanged;
+				if (_content != null)
+				{
+					base.Content = TableLayout.AutoSized(_content, centered: true);
+					_content.SizeChanged += content_SizeChanged;
+				}
+				else
+				{
+					base.Content = null;
+				}
 			}
 		}
 

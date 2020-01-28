@@ -9,6 +9,8 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Eto.Addin.VisualStudio.Editor;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Eto.Addin.VisualStudio
 {

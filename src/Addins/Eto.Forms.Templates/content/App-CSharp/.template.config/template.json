@@ -49,15 +49,15 @@
 			"choices": [
 				{
 					"choice": "Gtk",
-					"description": "Gtk# 3.14+ platform\n              (requires dotnet 2.0 sdk)"
+					"description": "Gtk# 3.14+"
 				},
 				{
 					"choice": "Gtk2",
-					"description": "Gtk# 2.12"
+					"description": "Gtk# 2.12 (depricated)"
 				},
 				{
 					"choice": "Gtk3",
-					"description": "GTK# 3.0"
+					"description": "GTK# 3.0 (depricated)"
 				}
 			],
 			"replaces": "Gtk"
@@ -86,6 +86,26 @@
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
+		"Framework": {
+			"type": "parameter",
+			"description": "Specify the framework(s) to support",
+			"dataType": "choice",
+			"defaultValue": "core",
+			"choices": [
+				{
+					"choice": "full",
+					"description": "Full .NET Framework and/or Mono"
+				},
+				{
+					"choice": "core",
+					"description": ".NET Core"
+				},
+				{
+					"choice": "both",
+					"description": "Target both .NET Core and .NET Framework / Mono"
+				}
+			]
+		},
 		"UseCode": {
 			"type": "computed",
 			"value": "(Mode == \"code\")"
@@ -113,7 +133,7 @@
 		"CopyrightYear": {
 			"type": "generated",
 			"generator": "now",
-			"replaces": "2018",
+			"replaces": "2020",
 			"parameters": {
 				"format": "yyyy"
 			}
@@ -161,13 +181,13 @@
 					"exclude": [
 						"**/EtoApp.1.Gtk/**/*",
 						"**/EtoApp.1.Mac/**/*",
-						"**/EtoApp.1.Wpf/**/*",
+						"**/EtoApp.1.Wpf/**/*"
 					]
 				},
 				{
 					"condition": "(!IncludeWinForms || !Separate)",
 					"exclude": [
-						"**/EtoApp.1.WinForms/**/*",
+						"**/EtoApp.1.WinForms/**/*"
 					]
 				},
 				{
@@ -175,52 +195,52 @@
 					"exclude": [
 						"**/EtoApp.1.XamMac/**/*"
 					]
-				},
+				}
 			]
 		}
 	],
 	"primaryOutputs": [
-		{ "path": "EtoApp.1\\EtoApp.1.csproj" },
+		{ "path": "EtoApp.1/EtoApp.1.csproj" },
 		{
-			"path": "EtoApp.1.Desktop\\EtoApp.1.Desktop.csproj",
+			"path": "EtoApp.1.Desktop/EtoApp.1.Desktop.csproj",
 			"condition": "(!Separate)"
 		},
 		{
-			"path": "EtoApp.1.Gtk\\EtoApp.1.Gtk.csproj",
+			"path": "EtoApp.1.Gtk/EtoApp.1.Gtk.csproj",
 			"condition": "(Separate)"
 		},
 		{
-			"path": "EtoApp.1.Mac\\EtoApp.1.Mac.csproj",
+			"path": "EtoApp.1.Mac/EtoApp.1.Mac.csproj",
 			"condition": "(Separate)"
 		},
 		{
-			"path": "EtoApp.1.WinForms\\EtoApp.1.WinForms.csproj",
+			"path": "EtoApp.1.WinForms/EtoApp.1.WinForms.csproj",
 			"condition": "(Separate && IncludeWinForms)"
 		},
 		{
-			"path": "EtoApp.1.Wpf\\EtoApp.1.Wpf.csproj",
+			"path": "EtoApp.1.Wpf/EtoApp.1.Wpf.csproj",
 			"condition": "(Separate)"
 		},
 		{
-			"path": "EtoApp.1.XamMac\\EtoApp.1.XamMac.csproj",
+			"path": "EtoApp.1.XamMac/EtoApp.1.XamMac.csproj",
 			"condition": "(IncludeXamMac)"
 		},
 		{
-			"path": "EtoApp.1\\MainForm.cs",
+			"path": "EtoApp.1/MainForm.cs",
 			"condition": "UseCode"
 		},
 		{
-			"path": "EtoApp.1\\MainForm.eto.cs",
+			"path": "EtoApp.1/MainForm.eto.cs",
 			"condition": "UseCodePreview"
 		},
 		{
-			"path": "EtoApp.1\\MainForm.xeto",
+			"path": "EtoApp.1/MainForm.xeto",
 			"condition": "UseXeto"
 		},
 		{
-			"path": "EtoApp.1\\MainForm.jeto",
+			"path": "EtoApp.1/MainForm.jeto",
 			"condition": "UseJeto"
-		},
+		}
 	],
 	"guids": [
 		"4A7EEA91-18CE-4C33-8501-76049670866D",
@@ -242,7 +262,7 @@
 						"actionableElseif": [ "#elseif", "<!--#elseif" ],
 						"endif": [ "#endif", "<!--#endif" ],
 						"trim": "true",
-						"wholeLine": "true",
+						"wholeLine": "true"
 					}
 				}
 			]
@@ -257,7 +277,7 @@
 						"actionableElseif": [ "#elseif", "/*#elseif" ],
 						"endif": [ "#endif", "/*#endif" ],
 						"trim": "true",
-						"wholeLine": "true",
+						"wholeLine": "true"
 					}
 				}
 			]

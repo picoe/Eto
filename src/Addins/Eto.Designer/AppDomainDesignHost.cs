@@ -92,6 +92,7 @@ namespace Eto.Designer
 			designPanel.References = references;
 
 			designPanel.Error = eventSink.Error;
+			designPanel.ControlCreating = eventSink.ControlCreating;
 			designPanel.ControlCreated = eventSink.ControlCreated;
 		}
 
@@ -154,20 +155,10 @@ namespace Eto.Designer
 	{
 		public AppDomainDesignHost Host { get; set; }
 
-		public void ControlCreated()
-		{
-			Host.ControlCreated?.Invoke();
-		}
-
-		public void Error(DesignError ex)
-		{
-			Host.Error?.Invoke(ex);
-		}
-
-		public override object InitializeLifetimeService()
-		{
-			return null;
-		}
+		public void ControlCreated() => Host.ControlCreated?.Invoke();
+		public void ControlCreating() => Host.ControlCreated?.Invoke();
+		public void Error(DesignError ex) => Host.Error?.Invoke(ex);
+		public override object InitializeLifetimeService() => null;
 
 		public int GetThemeColor(string name)
 		{
@@ -319,6 +310,7 @@ namespace Eto.Designer
 		public Action ContainerChanged { get; set; }
 
 		public Action ControlCreated { get; set; }
+		public Action ControlCreating { get; set; }
 
 		public Action<DesignError> Error { get; set; }
 
