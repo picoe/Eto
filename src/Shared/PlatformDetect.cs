@@ -5,10 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace Eto
 {
-	#if XAMMAC2
+	#if OSX
 	[Foundation.Preserve(AllMembers = true)]
-	#elif OSX
-	[MonoMac.Foundation.Preserve(AllMembers = true)]
 	#endif
 	static class PlatformDetect
 	{

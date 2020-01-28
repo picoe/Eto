@@ -1,17 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
-#if XAMMAC2
+
+#if OSX
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
 #elif IOS
 using ObjCRuntime;
 using Eto.iOS;

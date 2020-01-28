@@ -5,15 +5,9 @@ using Eto.Mac.Forms;
 using Eto.Mac.Forms.Controls;
 using Eto.Drawing;
 
-#if XAMMAC2
 using AppKit;
 using Foundation;
 using ObjCRuntime;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
-#endif
 
 namespace Eto.Forms
 {
