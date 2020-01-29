@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworks>net45;xamarinmac20</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks Condition="$(HasXamarinMac) == 'True'">$(TargetFrameworks);xamarinmac20</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
