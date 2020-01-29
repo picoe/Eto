@@ -205,10 +205,13 @@ namespace Eto.Wpf.Forms
 						var args = new CancelEventArgs { Cancel = e.Cancel };
 						Callback.OnClosing(Widget, args);
 						var willShutDown =
-							sw.Application.Current.Windows.Count == 1
+							(
+								sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
+								&& sw.Application.Current.Windows.Count == 1
+							)
 							|| (
-								sw.Application.Current.MainWindow == Control
-								&& sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
+								sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
+								&& sw.Application.Current.MainWindow == Control
 							);
 
 						if (!args.Cancel && willShutDown)
