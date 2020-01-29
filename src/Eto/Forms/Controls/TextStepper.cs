@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 
 namespace Eto.Forms
@@ -37,7 +37,7 @@ namespace Eto.Forms
 		/// Triggers the <see cref="Step"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected void OnStep(StepperEventArgs e)
+		protected virtual void OnStep(StepperEventArgs e)
 		{
 			Properties.TriggerEvent(StepEvent, this, e);
 		}
