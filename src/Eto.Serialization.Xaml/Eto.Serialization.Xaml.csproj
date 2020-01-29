@@ -20,7 +20,8 @@ https://github.com/picoe/Eto/wiki
 
   <ItemGroup>
     <Compile Include="..\Eto\TypeHelper.cs" />
-    <None Update="$(MSBuildThisFileDirectory)Eto.Serialization.Xaml.targets" Pack="true" PackagePath="build" />
+    <None Remove="Eto.Serialization.Xaml.targets" />
+    <None Include="Eto.Serialization.Xaml.targets" Pack="true" PackagePath="build" />
   </ItemGroup>
   
   <ItemGroup>

@@ -20,7 +20,8 @@ https://github.com/picoe/Eto/wiki
 
   <ItemGroup>
     <Compile Include="..\Eto\TypeHelper.cs" />
-    <None Update="$(MSBuildThisFileDirectory)Eto.Serialization.Json.targets" Pack="true" PackagePath="build" />
+    <None Remove="Eto.Serialization.Json.targets" />
+    <None Include="Eto.Serialization.Json.targets" Pack="true" PackagePath="build" />
   </ItemGroup>
   
   <ItemGroup>
