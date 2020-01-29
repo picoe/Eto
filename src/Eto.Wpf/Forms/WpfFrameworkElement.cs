@@ -347,18 +347,20 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
+		protected virtual sw.FrameworkElement FocusControl => Control;
+
 		public virtual void Focus()
 		{
-			if (Control.IsLoaded)
-				Control.Focus();
+			if (FocusControl.IsLoaded)
+				FocusControl.Focus();
 			else
-				Control.Loaded += HandleFocus;
+				FocusControl.Loaded += HandleFocus;
 		}
 
 		void HandleFocus(object sender, sw.RoutedEventArgs e)
 		{
-			Control.Focus();
-			Control.Loaded -= HandleFocus;
+			FocusControl.Focus();
+			FocusControl.Loaded -= HandleFocus;
 		}
 
 		protected virtual void EnsureLoaded()
