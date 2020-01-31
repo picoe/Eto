@@ -12,6 +12,7 @@ using System.ComponentModel;
 using Eto.Wpf.Forms.Menu;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
+using Eto.Wpf.CustomControls.TreeGridView;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -318,51 +319,62 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.HandleMouseUp(sender, e);
 
+			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+			var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+			var row = cell?.GetVisualParent<swc.DataGridRow>();
+
 			var info = MultipleSelectionInfo;
 			if (!e.Handled && info != null)
 			{
-				// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
-				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
-				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
 				if (ReferenceEquals(row, info.Row))
 				{
+					// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
 					bool hadMultipleSelection = Control.SelectedItems.Count > 1;
 					Control.SelectedItem = row.Item;
-					var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
 					if (cell != null)
 					{
 						var args = CreateCellMouseArgs(cell, e);
 						Callback.OnCellClick(Widget, args);
 						if (!args.Handled)
 						{
-							cell.Focus();
-							if (!hadMultipleSelection && !cell.Column.IsReadOnly && ReferenceEquals(info.Cell, cell))
+							if (!hadMultipleSelection && ReferenceEquals(info.Cell, cell))
 							{
 								// we double clicked to fire this event, so trigger a double click event
 								if (info.ClickCount >= 2)
 									Callback.OnCellDoubleClick(Widget, args);
 								if (!args.Handled)
 								{
-									// let the column handler perform something specific if needed
-									var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
-									if (columnHandler?.OnMouseUp(args, hitTestResult, cell) != true)
+									if (TreeTogglePanel.IsOverContent(hitTestResult) != false)
 									{
-										Control.BeginEdit();
+										// let the column handler perform something specific if needed
+										var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+										columnHandler?.OnMouseUp(args, hitTestResult, cell);
+
+										if (!args.Handled && !cell.Column.IsReadOnly)
+										{
+											cell.Focus();
+											Control.BeginEdit();
+										}
+
+										e.Handled = true; // prevent default behaviour
 									}
 								}
 							}
+							else
+								cell.Focus();
+						}
+						else
+						{
+							row.Focus();
+							e.Handled = true;
 						}
 					}
-					else
-						row.Focus();
-					e.Handled = true;
 				}
 
 				MultipleSelectionInfo = null;
 			}
 			if (!e.Handled && AllowEmptySelection)
 			{
-				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
 				if (hitTestResult != null
 					&& (
 						hitTestResult is swc.ScrollViewer // below rows
@@ -374,6 +386,15 @@ namespace Eto.Wpf.Forms.Controls
 					e.Handled = true;
 				}
 
+			}
+
+			if (!e.Handled && cell != null && TreeTogglePanel.IsOverContent(hitTestResult) != false)
+			{
+				var args = CreateCellMouseArgs(cell, e);
+				// let the column handler perform something specific if needed
+				var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+				columnHandler?.OnMouseUp(args, hitTestResult, cell);
+				e.Handled = args.Handled;
 			}
 		}
 
@@ -394,7 +415,8 @@ namespace Eto.Wpf.Forms.Controls
 					&& (
 						(cell?.Column.IsReadOnly == false && !cell.IsEditing && cell.IsFocused)
 						|| Control.SelectedItems.Count > 1
-					))
+					)
+				)
 				{
 					MultipleSelectionInfo = new SelectionInfo
 					{
@@ -413,9 +435,13 @@ namespace Eto.Wpf.Forms.Controls
 					// allow clicking on the image of an ImageTextCell to commit editing.
 					var args = CreateCellMouseArgs(cell, e); 
 					var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
-					if (columnHandler?.OnMouseDown(args, hitTestResult, cell) == true)
+					columnHandler?.OnMouseDown(args, hitTestResult, cell);
+					e.Handled = args.Handled;
+
+					if (!args.Handled && TreeTogglePanel.IsOverContent(hitTestResult) != true)
 					{
-						Control.CommitEdit();
+						// clicked outside of content area, so we should commit editing.
+						CommitEdit();
 						e.Handled = true;
 					}
 				}

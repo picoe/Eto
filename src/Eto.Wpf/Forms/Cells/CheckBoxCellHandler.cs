@@ -3,6 +3,9 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
 using sw = System.Windows;
+using System.Windows;
+using System.Windows.Controls;
+using System.Linq;
 
 namespace Eto.Wpf.Forms.Cells
 {
@@ -50,21 +53,6 @@ namespace Eto.Wpf.Forms.Cells
 						enableEvents = true;
 						Handler.FormatCell(control, cell, control.DataContext);
 					};
-					SetControlInitialized(element, true);
-				}
-				else
-				{
-					element.IsChecked = Handler.GetValue(dataItem);
-					Handler.FormatCell(element, cell, dataItem);
-				}
-			}
-
-			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
-			{
-				var element = (swc.CheckBox)base.GenerateEditingElement(cell, dataItem);
-				InitializeElement(element, cell, dataItem);
-				if (!IsControlEditInitialized(element))
-				{
 					element.Checked += (sender, e) =>
 					{
 						if (!enableEvents)
@@ -79,8 +67,19 @@ namespace Eto.Wpf.Forms.Cells
 						var control = (swc.CheckBox)sender;
 						Handler.SetValue(control.DataContext, control.IsChecked);
 					};
-					SetControlEditInitialized(element, true);
+					SetControlInitialized(element, true);
 				}
+				else
+				{
+					element.IsChecked = Handler.GetValue(dataItem);
+					Handler.FormatCell(element, cell, dataItem);
+				}
+			}
+
+			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
+			{
+				var element = (swc.CheckBox)base.GenerateEditingElement(cell, dataItem);
+				InitializeElement(element, cell, dataItem);
 				return Handler.SetupCell(element);
 			}
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
@@ -93,6 +92,23 @@ namespace Eto.Wpf.Forms.Cells
 		public CheckBoxCellHandler()
 		{
 			Control = new Column { Handler = this };
+		}
+
+		public override void OnMouseUp(GridCellMouseEventArgs args, DependencyObject hitTestResult, DataGridCell cell)
+		{
+			// check/uncheck right away, otherwise it takes three clicks to change the value.. 
+			if (!cell.IsReadOnly)
+			{
+				var checkBox = hitTestResult.GetVisualParents().TakeWhile(r => !(r is swc.DataGridCell)).OfType<swc.CheckBox>().FirstOrDefault();
+				if (checkBox != null)
+				{
+					var value = checkBox.IsChecked ?? false;
+					checkBox.IsChecked = !value;
+
+					args.Handled = true;
+				}
+			}
+			base.OnMouseUp(args, hitTestResult, cell);
 		}
 	}
 }
