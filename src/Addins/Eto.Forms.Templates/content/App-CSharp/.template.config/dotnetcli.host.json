@@ -9,9 +9,9 @@
 			"longName": "gtk-version",
 			"shortName": "g"
 		},
-		"Separate": {
-			"longName": "separate",
-			"shortName": "s"
+		"Combined": {
+			"longName": "combined",
+			"shortName": "c"
 		},
 		"Framework": {
 			"longName": "framework",

@@ -37,8 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <AddinFile Include="Templates\Files\**\*" />
-    <AddinFile Include="$(ArtifactsDir)\nuget\$(Configuration)\Eto.Forms.Templates.2.5.0-dev.nupkg">
-      <Link>Packages\Eto.Forms.Templates.2.5.0-dev.nupkg</Link>
+    <AddinFile Include="$(ArtifactsDir)\nuget\$(Configuration)\Eto.Forms.Templates.$(InformationalVersion).nupkg">
+      <Link>Packages\Eto.Forms.Templates.$(InformationalVersion).nupkg</Link>
     </AddinFile>
   </ItemGroup>
   <ItemGroup>
@@ -50,5 +50,13 @@
       <AddinReference Update="MonoDevelop.Core" Version="$(MonoDevelopVersion)" />
       <AddinReference Update="MonoDevelop.Ide" Version="$(MonoDevelopVersion)" />
     </ItemGroup>
+  </Target>
+  
+  <Target Name="RenameMpack" AfterTargets="PackageAddin">
+    <PropertyGroup>
+      <MPackName>$(OutputPath)Eto.Addin.MonoDevelop-$(InformationalVersion).mpack</MPackName>
+    </PropertyGroup>
+    <Delete Files="$(MPackName)" />
+    <Move SourceFiles="$(PackageFile)" DestinationFiles="$(MPackName)" />
   </Target>
 </Project>

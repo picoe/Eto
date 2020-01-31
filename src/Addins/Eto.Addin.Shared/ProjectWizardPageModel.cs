@@ -21,7 +21,7 @@ namespace Eto.Addin.Shared
 			UsePCL = SupportsPCL;
 			UseNET = !SupportsPCL;
 			UseSAL = false;
-			Separate = false;
+			Combined = false;
 			Mode = "code";
 			IncludeSolution = false;
 			if (SupportsBase)
@@ -40,6 +40,8 @@ namespace Eto.Addin.Shared
 					if (string.IsNullOrWhiteSpace(AppName) || AppNameInvalid)
 						return false;
 				}
+				if (SupportsFramework && !SelectedFrameworks.Any())
+					return false;
 				return true;
 			}
 		}
@@ -94,7 +96,7 @@ namespace Eto.Addin.Shared
 
 		public bool SupportsProjectType => SupportsPCL || SupportsSAL || SupportsNetStandard;
 
-		public bool SupportsSeparated => Source.IsSupportedParameter("Separated");
+		public bool SupportsCombined => Source.IsSupportedParameter("Combined");
 
 		public bool SupportsXamMac => Source.IsSupportedParameter("XamMac");
 
@@ -110,12 +112,12 @@ namespace Eto.Addin.Shared
 
 		public bool NoDash => Source.IsSupportedParameter("NoDash");
 
-		public bool Separate
+		public bool Combined
 		{
-			get { return Source.GetParameter("Separate").ToBool(); }
+			get { return Source.GetParameter("Combined").ToBool(); }
 			set
 			{
-				Source.SetParameter("Separate", value.ToString());
+				Source.SetParameter("Combined", value.ToString());
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
 			}
@@ -215,21 +217,22 @@ namespace Eto.Addin.Shared
 			set { base.Title = value; }
 		}
 
-		public bool RequiresInput => SupportsSeparated || SupportsProjectType || SupportsPanelType;
+		public bool RequiresInput => SupportsCombined || SupportsProjectType || SupportsPanelType;
 
 		public class FrameworkInfo
 		{
 			public string Text { get; set; }
 			public string Value { get; set; }
 			public string Description { get; set; }
+			public bool CanUseCombined { get; set; }
 		}
 
 		public FrameworkInfo[] SupportedFrameworks => frameworkInformation;
 
 		static readonly FrameworkInfo[] frameworkInformation =
 		{
-			new FrameworkInfo { Text = "Full .NET Framework", Value = "full"},
-			new FrameworkInfo { Text = ".NET Core", Value = "core" }
+			new FrameworkInfo { Text = "Full .NET Framework", Value = "full", CanUseCombined = true },
+			new FrameworkInfo { Text = ".NET Core", Value = "core", CanUseCombined = false }
 		};
 
 		List<FrameworkInfo> _selectedFrameworks;
@@ -243,10 +246,16 @@ namespace Eto.Addin.Shared
 
 				string parameterValue = _selectedFrameworks.Count == 1 ? _selectedFrameworks[0].Value : "both";
 				Source.SetParameter("Framework", parameterValue);
+
+				if (!AllowCombined)
+					Combined = false;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
+				OnPropertyChanged(nameof(AllowCombined));
 			}
 		}
+
+		public bool AllowCombined => _selectedFrameworks?.All(r => r.CanUseCombined) == true;
 
 
 		struct TypeInfo
@@ -266,14 +275,14 @@ namespace Eto.Addin.Shared
 		struct CombinedInfo
 		{
 			public string Text;
-			public bool Separate;
+			public bool Combined;
 			public bool? IncludeXamMac;
 		}
 
 		static CombinedInfo[] combinedInformation = {
-			new CombinedInfo { Separate = false, IncludeXamMac = true, Text = "A single combined project that can build for Windows, Linux and Mac, and a separate Xamarin.Mac project to bundle mono with VS for Mac." },
-			new CombinedInfo { Separate = false, IncludeXamMac = false, Text = "A single combined project that can build for Windows, Linux, and Mac." },
-			new CombinedInfo { Separate = true, Text = "A separate project for each platform." },
+			new CombinedInfo { Combined = true, IncludeXamMac = true, Text = "A single combined project that can build for Windows, Linux and Mac, and a separate Xamarin.Mac project to bundle mono with VS for Mac." },
+			new CombinedInfo { Combined = true, IncludeXamMac = false, Text = "A single combined project that can build for Windows, Linux, and Mac." },
+			new CombinedInfo { Combined = false, Text = "A separate project for each platform." },
 		};
 
 		struct FormatInfo
@@ -307,10 +316,10 @@ namespace Eto.Addin.Shared
 			{
 				var text = new List<string>();
 
-				if (SupportsSeparated)
+				if (SupportsCombined)
 				{
 					var combinedInfo = from i in combinedInformation
-									   where i.Separate == Separate
+									   where i.Combined == Combined
 											  && (i.IncludeXamMac == null || i.IncludeXamMac == IncludeXamMac)
 									   select i.Text;
 					text.Add(combinedInfo.FirstOrDefault());

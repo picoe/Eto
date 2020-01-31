@@ -45,7 +45,7 @@ namespace Eto.Addin.Shared
 				content.AddRow(HeadingLabel((model.IsLibrary ? "Library" : "App") + " Name:"), label);
 			}
 
-			if (model.SupportsSeparated)
+			if (model.SupportsCombined)
 			{
 				var platformTypeList = new RadioButtonList
 				{
@@ -53,13 +53,14 @@ namespace Eto.Addin.Shared
 					Spacing = radioSpacing,
 					Items =
 					{
-						new ListItem { Text = "Single Windows, Linux, and Mac desktop project", Key = "combined" },
-						new ListItem { Text = "Separate projects for each platform", Key = "separate" }
+						new ListItem { Text = "Separate projects for each platform", Key = "separate" },
+						new ListItem { Text = "Single Windows, Linux, and Mac desktop project", Key = "combined" }
 					}
 				};
+				platformTypeList.BindDataContext(c => c.Enabled, (ProjectWizardPageModel m) => m.AllowCombined);
 				platformTypeList.SelectedKeyBinding
-				                .Convert(v => v == "separate", v => v ? "separate" : "combined")
-				                .BindDataContext((ProjectWizardPageModel m) => m.Separate);
+				                .Convert(v => v == "combined", v => v ? "combined" : "separate")
+				                .BindDataContext((ProjectWizardPageModel m) => m.Combined);
 				content.AddRow(HeadingLabel("Launcher:"), platformTypeList);
 			}
 
