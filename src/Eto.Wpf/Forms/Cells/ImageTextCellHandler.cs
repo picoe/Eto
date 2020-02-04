@@ -7,6 +7,7 @@ using swm = System.Windows.Media;
 using Eto.Wpf.Drawing;
 using Eto.Drawing;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Eto.Wpf.Forms.Cells
 {
@@ -228,25 +229,25 @@ namespace Eto.Wpf.Forms.Cells
 
 		public AutoSelectMode AutoSelectMode { get; set; } = AutoSelectMode.OnFocus;
 
-		public override bool OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		public override void OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
 		{
-			if (cell?.IsEditing == true && hitTestResult is swc.Image)
+			if (cell?.IsEditing == true && !hitTestResult.GetVisualParents().TakeWhile(r => !(r is swc.DataGridCell)).OfType<swc.TextBox>().Any())
 			{
-				// commit editing when clicking on the image
+				// commit editing when clicking on anything other than the text box
 				ContainerHandler?.Grid.CommitEdit();
-				return true;
+				args.Handled = true;
 			}
 
-			return base.OnMouseDown(args, hitTestResult, cell);
+			base.OnMouseDown(args, hitTestResult, cell);
 		}
-		public override bool OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		public override void OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
 		{
-			if (cell?.IsEditing == false && !Control.IsReadOnly && hitTestResult is swc.Image)
+			if (cell?.IsEditing == false && !Control.IsReadOnly && !hitTestResult.GetVisualParents().TakeWhile(r => !(r is swc.DataGridCell)).OfType<swc.TextBlock>().Any())
 			{
-				// prevent default behaviour of editing if we click on the image
-				return true;
+				// prevent default behaviour of editing unless we click on the text
+				args.Handled = true;
 			}
-			return base.OnMouseUp(args, hitTestResult, cell);
+			base.OnMouseUp(args, hitTestResult, cell);
 		}
 	}
 }

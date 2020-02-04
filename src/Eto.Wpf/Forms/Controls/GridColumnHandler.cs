@@ -131,14 +131,14 @@ namespace Eto.Wpf.Forms.Controls
 
 		internal ICellHandler DataCellHandler => DataCell?.Handler as ICellHandler;
 
-		internal bool OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		internal void OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
 		{
-			return DataCellHandler?.OnMouseDown(args, hitTestResult, cell) ?? false;
+			DataCellHandler?.OnMouseDown(args, hitTestResult, cell);
 		}
 
-		internal bool OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		internal void OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
 		{
-			return DataCellHandler?.OnMouseUp(args, hitTestResult, cell) ?? false;
+			DataCellHandler?.OnMouseUp(args, hitTestResult, cell);
 		}
 
 		swc.DataGridColumn IGridColumnHandler.Control => Control;
