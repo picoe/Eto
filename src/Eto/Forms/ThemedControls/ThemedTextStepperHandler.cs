@@ -253,6 +253,12 @@ namespace Eto.Forms.ThemedControls
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether this instance has the keyboard input focus.
+		/// </summary>
+		/// <value><c>true</c> if this instance has focus; otherwise, <c>false</c>.</value>
+		public override bool HasFocus => base.HasFocus || TextBox.HasFocus || Stepper.HasFocus;
+
+		/// <summary>
 		/// Attaches the specified event to the platform-specific control
 		/// </summary>
 		/// <remarks>Implementors should override this method to handle any events that the widget
