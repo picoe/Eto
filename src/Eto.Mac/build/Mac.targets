@@ -65,6 +65,13 @@
     <RemoveDir Directories="$(OutputAppPath)"/>
   </Target>
 
+  <PropertyGroup Condition="'$(MSBuildTaskFactoryType)'=='CodeTaskFactory'">
+      <_UpdatePListReference>System.Xml</_UpdatePListReference>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildTaskFactoryType)'!='CodeTaskFactory'">
+      <_UpdatePListReference>netstandard</_UpdatePListReference>
+  </PropertyGroup>
+
   <!-- Task to update the plist file with new values -->
   <UsingTask TaskName="UpdatePList" TaskFactory="$(MSBuildTaskFactoryType)"  AssemblyFile="$(MSBuildTasksAssemblyFile)">
     <ParameterGroup>
@@ -76,7 +83,7 @@
       <IconFile ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Xml" />
+      <Reference Include="$(_UpdatePListReference)"/>
       <Code Type="Class" Language="cs"><![CDATA[
     using System;
     using System.IO;
