@@ -17,7 +17,7 @@
             "type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-gtk",
-            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp2.0/Eto.Test.Gtk.dll",
+            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp3.1/Eto.Test.Gtk.dll",
             "args": [],
             "console": "internalConsole",
             "stopAtEntry": false,
