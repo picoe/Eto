@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <TargetFrameworks>netcoreapp3.1;net461</TargetFrameworks>
     <DefineConstants>$(DefineConstants);CAIRO;GTK3</DefineConstants>
     <TreatWarningsAsErrors Condition="$(Configuration) == 'Release'">true</TreatWarningsAsErrors>
