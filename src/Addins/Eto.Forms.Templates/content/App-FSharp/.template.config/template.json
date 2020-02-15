@@ -53,18 +53,18 @@
 				},
 				{
 					"choice": "Gtk2",
-					"description": "Gtk# 2.12 (depricated)"
+					"description": "Gtk# 2.12 (deprecated)"
 				},
 				{
 					"choice": "Gtk3",
-					"description": "GTK# 3.0 (depricated)"
+					"description": "GTK# 3.0 (deprecated)"
 				}
 			],
 			"replaces": "Gtk"
 		},
-		"Separate": {
+		"Combined": {
 			"type": "parameter",
-			"description": "Use separate projects for each platform.\nDefault is to create a single destkop project that\nbuilds for all platforms",
+			"description": "Use a combined project to launch the application (Full .NET Framework only)",
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
@@ -122,6 +122,10 @@
 			"type": "computed",
 			"value": "(Mode == \"json\")"
 		},
+		"UseCore": {
+			"type": "computed",
+			"value": "(Framework != \"full\")"
+		},
 		"IsWindow": {
 			"type": "computed",
 			"value": "true"
@@ -173,11 +177,11 @@
 					"exclude": [ "**/*.jeto", "**/*.jeto.*" ]
 				},
 				{
-					"condition": "(Separate)",
+					"condition": "(!Combined)",
 					"exclude": [ "**/EtoApp.1.Desktop/**/*" ]
 				},
 				{
-					"condition": "(!Separate)",
+					"condition": "(Combined)",
 					"exclude": [
 						"**/EtoApp.1.Gtk/**/*",
 						"**/EtoApp.1.Mac/**/*",
@@ -185,7 +189,7 @@
 					]
 				},
 				{
-					"condition": "(!IncludeWinForms || !Separate)",
+					"condition": "(!IncludeWinForms || Combined)",
 					"exclude": [
 						"**/EtoApp.1.WinForms/**/*"
 					]
@@ -203,23 +207,23 @@
 		{ "path": "EtoApp.1\\EtoApp.1.fsproj" },
 		{
 			"path": "EtoApp.1.Desktop\\EtoApp.1.Desktop.fsproj",
-			"condition": "(!Separate)"
+			"condition": "(Combined)"
 		},
 		{
 			"path": "EtoApp.1.Gtk\\EtoApp.1.Gtk.fsproj",
-			"condition": "(Separate)"
+			"condition": "(!Combined)"
 		},
 		{
 			"path": "EtoApp.1.Mac\\EtoApp.1.Mac.fsproj",
-			"condition": "(Separate)"
+			"condition": "(!Combined)"
 		},
 		{
 			"path": "EtoApp.1.WinForms\\EtoApp.1.WinForms.fsproj",
-			"condition": "(Separate && IncludeWinForms)"
+			"condition": "(!Combined && IncludeWinForms)"
 		},
 		{
 			"path": "EtoApp.1.Wpf\\EtoApp.1.Wpf.fsproj",
-			"condition": "(Separate)"
+			"condition": "(!Combined)"
 		},
 		{
 			"path": "EtoApp.1.XamMac\\EtoApp.1.XamMac.fsproj",

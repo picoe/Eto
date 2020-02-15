@@ -20,7 +20,7 @@ artifacts:
 - path: artifacts/test
   name: test
   type: zip
-- path: artifacts/addin/Release/VisualStudio/Eto.Addin.VisualStudio.vsix
+- path: artifacts/addin/Release/VisualStudio/Eto.Addin.VisualStudio*.vsix
   name: vsix
 branches:
   only:

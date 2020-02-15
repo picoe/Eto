@@ -40,6 +40,6 @@
     <FullClassName>Microsoft.VisualStudio.TemplateEngine.Wizard.TemplateEngineWizard</FullClassName>
   </WizardExtension>
   <WizardData>
-    <SupportedParameters>Separated,Xeto,Jeto,Preview,XamMac</SupportedParameters>
+    <SupportedParameters>Combined,Xeto,Jeto,Preview,XamMac,Framework</SupportedParameters>
   </WizardData>
 </VSTemplate>

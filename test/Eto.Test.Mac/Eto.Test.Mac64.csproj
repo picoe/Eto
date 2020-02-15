@@ -1,12 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props"/>
+  
+  <Import Project="..\..\build\MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
+  <Import Project="..\..\src\Eto.Mac\build\Mac.props" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
+  
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp3.1</TargetFrameworks>
     <OutputType>WinExe</OutputType>
+    
+    <RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
   </PropertyGroup>
+  
   <ItemGroup Condition="$(TargetFramework) == 'net461'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.Mac64.csproj" />
@@ -19,7 +29,9 @@
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
-
-  <Import Project="$(BuildDir)\Common.Mac.targets" />
+  
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets"/>
+  
+  <Import Project="..\..\src\Eto.Mac\build\Mac.targets" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
   
 </Project>

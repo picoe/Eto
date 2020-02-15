@@ -221,8 +221,8 @@
       <OtherOptions Include="xm" Value="-xm" />
       <OtherOptions Include="wf_xm" Value="-wf -xm" />
 
-      <Separate Include="separate" Value="-s" />
-      <Separate Include="combined" Value="" />
+      <Combined Include="separate" Value="" />
+      <Combined Include="combined" Value="-c" />
 
       <Framework Include="full" />
       <Framework Include="core" />
@@ -230,12 +230,12 @@
 
       <CombinedProject1 Include="*" LanguageId="%(Language.Identity)" Language="%(Language.Value)" />
       <CombinedProject2 Include="@(CombinedProject1)" ModeId="%(Mode.Identity)" Mode="%(Mode.Identity)" />
-      <CombinedProject3 Include="@(CombinedProject2)" SeparateId="%(Separate.Identity)" Separate="%(Separate.Value)" />
-      <CombinedProject4 Include="@(CombinedProject3)" OtherId="%(OtherOptions.Identity)" Other="%(OtherOptions.Value)" />
-      <CombinedProject Include="@(CombinedProject4)" FrameworkId="%(Framework.Identity)" Framework="%(Framework.Identity)" />
+      <CombinedProject3 Include="@(CombinedProject2)" CombinedId="%(Combined.Identity)" Combined="%(Combined.Value)" />
+      <CombinedProject4 Include="@(CombinedProject3)" FrameworkId="%(Framework.Identity)" Framework="%(Framework.Identity)" />
+      <CombinedProject Include="@(CombinedProject4)" OtherId="%(OtherOptions.Identity)" Other="%(OtherOptions.Value)" />
     </ItemGroup>
 
-    <Exec Command="dotnet new etoapp -m %(CombinedProject.Mode) -sln -lang %(Language) %(Other) %(Separate) -f %(Framework) -o $(ArtifactsDir)templates\App.%(LanguageId)-%(SeparateId)-%(OtherId)-%(ModeId)-%(FrameworkId)" />
+    <Exec Command="export DOTNET_NEW_LOCAL_SEARCH_FILE_ONLY=TRUE &amp;&amp; dotnet new etoapp -m %(CombinedProject.Mode) -sln -lang %(Language) %(Other) %(Combined) -f %(Framework) -o $(ArtifactsDir)templates\App.%(LanguageId)-%(CombinedId)-%(OtherId)-%(ModeId)-%(FrameworkId)" />
 
     <!-- generate file templates -->
     <ItemGroup>

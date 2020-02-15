@@ -42,15 +42,16 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
+      sourceFolder: artifacts/nuget/$(build.configuration)/
       contents: |
-        artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
-        artifacts/nuget/$(build.configuration)/Eto.Platform.Gtk2*.nupkg
-      targetFolder: $(Build.ArtifactStagingDirectory)
+        Eto.Platform.XamMac*.nupkg
+        Eto.Platform.Gtk2*.nupkg
+      targetFolder: $(Build.ArtifactStagingDirectory)/nuget/
       
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
     inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/nuget/$(build.configuration)
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/nuget/
       artifactName: nuget
       publishLocation: container
 
@@ -58,18 +59,19 @@ jobs:
     displayName: Build MonoDevelop Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins
+      msbuildArguments: /t:BuildAddins /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.MacOS.binlog
 
   - task: CopyFiles@2
     displayName: Copy MonoDevelop Addin
     inputs:
-      contents: artifacts/addin/$(build.configuration)/net472/Eto.Addin.MonoDevelop*.mpack
-      targetFolder: $(Build.ArtifactStagingDirectory)
+      sourceFolder: artifacts/addin/$(build.configuration)/net472/
+      contents: Eto.Addin.MonoDevelop*.mpack
+      targetFolder: $(Build.ArtifactStagingDirectory)/addin/
 
   - task: PublishBuildArtifacts@1
     displayName: Publish MonoDevelop Addin
     inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/addin/$(build.configuration)/net472
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/addin/
       artifactName: addins
       publishLocation: container
 
@@ -77,7 +79,7 @@ jobs:
     condition: failed()
     displayName: Publish MSBuild logs
     inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog/
       artifactName: msbuild-binlog
       publishLocation: container                            
     
@@ -101,33 +103,47 @@ jobs:
       solution: build/Build.proj
       msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
 
-  - task: msbuild@1
-    displayName: Build Visual Studio Addin
-    inputs:
-      solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
-
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
     inputs:
-      pathtoPublish: artifacts/nuget/$(build.configuration)
+      pathtoPublish: artifacts/nuget/$(build.configuration)/
       artifactName: nuget
       publishLocation: container
   - task: PublishBuildArtifacts@1
     displayName: Publish tests
     inputs:
-      pathtoPublish: artifacts/test/$(build.configuration)
+      pathtoPublish: artifacts/test/$(build.configuration)/
       artifactName: test
       publishLocation: container
   - task: PublishBuildArtifacts@1
     displayName: Publish samples
     inputs:
-      pathtoPublish: artifacts/samples/$(build.configuration)
+      pathtoPublish: artifacts/samples/$(build.configuration)/
       artifactName: samples
       publishLocation: container
+      
+  - task: msbuild@1
+    displayName: Build Visual Studio Addin
+    inputs:
+      solution: build/Build.proj
+      msbuildArguments: /t:BuildAddins /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
+  - task: CopyFiles@2
+    displayName: Copy Visual Studio Addin
+    inputs:
+      sourceFolder: artifacts/addin/$(build.configuration)/VisualStudio/
+      contents: Eto.Addin.VisualStudio*.vsix
+      targetFolder: $(Build.ArtifactStagingDirectory)/addin/
   - task: PublishBuildArtifacts@1
     displayName: Publish Visual Studio Addin
     inputs:
-      pathtoPublish: artifacts/addin/$(build.configuration)/VisualStudio/Eto.Addin.VisualStudio.vsix
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/addin/
       artifactName: addins
       publishLocation: container
+      
+  - task: PublishBuildArtifacts@1
+    condition: failed()
+    displayName: Publish MSBuild logs
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog/
+      artifactName: msbuild-binlog
+      publishLocation: container                            

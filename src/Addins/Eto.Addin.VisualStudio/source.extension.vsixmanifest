@@ -28,9 +28,9 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.1.28811.260,17.0)" DisplayName="Visual Studio core editor" />
-        <Prerequisite Id="Microsoft.NetCore.Component.SDK" Version="[16.4.29519.181,17.0)" DisplayName=".NET Core 3.1 SDK" />
-        <Prerequisite Id="Microsoft.VisualStudio.Component.ManagedDesktop.Prerequisites" Version="[16.4.29429.68,17.0)" DisplayName=".NET desktop development tools" />
-        <Prerequisite Id="Microsoft.Net.Component.4.7.2.TargetingPack" Version="[16.0.28517.75,17.0)" DisplayName=".NET Framework 4.7.2 targeting pack" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,17.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.NetCore.Component.SDK" Version="[16.0,17.0)" DisplayName=".NET Core 3.1 SDK" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.ManagedDesktop.Prerequisites" Version="[16.0,17.0)" DisplayName=".NET desktop development tools" />
+        <Prerequisite Id="Microsoft.Net.Component.4.7.2.TargetingPack" Version="[16.0,17.0)" DisplayName=".NET Framework 4.7.2 targeting pack" />
     </Prerequisites>
 </PackageManifest>

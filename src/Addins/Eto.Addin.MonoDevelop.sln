@@ -13,12 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json", "..\Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4E4F6B1-48B2-4D57-8CEB-39796557ECB5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{B4E4F6B1-48B2-4D57-8CEB-39796557ECB5}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\addin-project.xml = ..\..\addin-project.xml
-		..\..\NuGet.Config = ..\..\NuGet.Config
-		..\..\Directory.Build.props = ..\..\Directory.Build.props
-		..\..\Directory.Build.targets = ..\..\Directory.Build.targets
+		..\..\build\Build.proj = ..\..\build\Build.proj
+		..\..\build\Common.Build.props = ..\..\build\Common.Build.props
+		..\..\build\Common.Build.targets = ..\..\build\Common.Build.targets
+		..\..\build\Common.props = ..\..\build\Common.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\Eto\Eto.csproj", "{04348E2F-003F-4CFF-B0CB-5E8B073FCA91}"

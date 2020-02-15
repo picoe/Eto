@@ -36,7 +36,7 @@
 			imageId="eto-project"
 			wizard="Eto.Addin.MonoDevelop.ProjectWizard"
 			category="multiplat/app/eto"
-			supportedParameters="AppName,Separated,Xeto,Preview,Jeto,XamMac,NoDash,Framework"
+			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,NoDash,Framework"
 			/>
 		<Template
 			id="Eto.App.FSharp"
@@ -44,7 +44,7 @@
 			imageId="eto-project"
 			wizard="Eto.Addin.MonoDevelop.ProjectWizard"
 			category="multiplat/app/eto"
-			supportedParameters="AppName,Separated,Xeto,Preview,Jeto,XamMac,NoDash,Framework"
+			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,NoDash,Framework"
 			/>
 	</Extension>
 
