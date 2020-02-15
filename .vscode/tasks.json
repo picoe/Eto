@@ -8,6 +8,7 @@
 			"type": "process",
 			"args": [
 				"/t:Build",
+				"/v:Minimal",
 				"/p:Configuration=${input:configuration}",
 				"${workspaceFolder}/build/Build.proj"
 			],
@@ -23,20 +24,10 @@
 			"type": "process",
 			"args": [
 				"build",
+				"/v:Minimal",
 				"/p:Configuration=Debug",
+				"/p:TargetFramework=netcoreapp3.1",
 				"${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj"
-			],
-			"group": "build",
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "build-gtk2",
-			"command": "msbuild",
-			"windows": { "command": "build/msbuild.cmd" },
-			"type": "process",
-			"args": [
-				"/p:Configuration=Debug",
-				"${workspaceFolder}/test/Eto.Test.Gtk2/Eto.Test.Gtk2.csproj"
 			],
 			"group": "build",
 			"problemMatcher": "$msCompile"
@@ -44,10 +35,11 @@
 		{
 			"label": "build-mac64",
 			"command": "msbuild",
-			"windows": { "command": "build/msbuild.cmd" },
 			"type": "process",
 			"args": [
+				"/v:Minimal",
 				"/p:Configuration=Debug",
+				"/p:TargetFramework=netcoreapp3.1",
 				"${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj"
 			],
 			"group": "build",
@@ -55,11 +47,13 @@
 		},
 		{
 			"label": "build-wpf",
-			"command": "msbuild",
-			"windows": { "command": "build/msbuild.cmd" },
+			"command": "dotnet",
 			"type": "process",
 			"args": [
+				"build",
+				"/v:Minimal",
 				"/p:Configuration=Debug",
+				"/p:TargetFramework=netcoreapp3.1",
 				"${workspaceFolder}/test/Eto.Test.Wpf/Eto.Test.Wpf.csproj"
 			],
 			"group": "build",
@@ -67,10 +61,11 @@
 		},
 		{
 			"label": "restore",
-			"command": "nuget",
+			"command": "dotnet",
 			"type": "process",
 			"args": [
 				"restore",
+				"/v:Minimal",
 				"${workspaceFolder}/src/Eto.sln"
 			],
 			"problemMatcher": "$msCompile"
