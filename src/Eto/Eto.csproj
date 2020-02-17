@@ -40,7 +40,8 @@ https://github.com/picoe/Eto/wiki
     <Compile Include="..\Shared\EnumerableExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Eto.Forms.targets" Pack="true" PackagePath="build" />
+    <None Remove="Eto.Forms.targets" />
+    <None Include="Eto.Forms.targets" Pack="true" PackagePath="build" />
     <None Update="$(BasePath)LICENSE.txt" CopyToOutputDirectory="PreserveNewest" /> 
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
