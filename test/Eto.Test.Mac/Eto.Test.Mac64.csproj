@@ -1,8 +1,8 @@
 <Project>
   
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props"/>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
   
-  <Import Project="..\..\build\MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
+  <Import Project="..\..\build\MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'" />
   <Import Project="..\..\src\Eto.Mac\build\Mac.props" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
   
   <PropertyGroup>
@@ -24,13 +24,13 @@
     <ProjectReference Include="..\..\lib\monomac\src\MonoMac.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets"/>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
   
   <Import Project="..\..\src\Eto.Mac\build\Mac.targets" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
   
