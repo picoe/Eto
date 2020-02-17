@@ -361,6 +361,10 @@ namespace Eto.Forms
 		/// <param name="previousChild">Previous child that the new child is replacing.</param>
 		protected void SetParent(Control child, Action assign = null, Control previousChild = null)
 		{
+			if (ReferenceEquals(child, this))
+			{
+				throw new InvalidOperationException("Cannot assign a control as a child of itself.");
+			}
 			if (Handler is IThemedControlHandler)
 			{
 				if (!ReferenceEquals(previousChild, null))
@@ -374,7 +378,7 @@ namespace Eto.Forms
 			{
 #if DEBUG
 				if (!ReferenceEquals(previousChild.VisualParent, this))
-					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The previous child control is not a child of this container. Ensure you only remove children that you own."));
+					throw new ArgumentException("The previous child control is not a child of this container. Ensure you only remove children that you own.");
 #endif
 
 				if (!ReferenceEquals(previousChild.VisualParent, null))

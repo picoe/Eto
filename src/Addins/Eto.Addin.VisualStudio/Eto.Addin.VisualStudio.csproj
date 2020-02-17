@@ -301,8 +301,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="4.3.1" />
-    <PackageReference Include="Portable.Xaml" Version="0.23.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.2.0" />
+    <PackageReference Include="Portable.Xaml" Version="0.24.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.6.0" />
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.202" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.4.1057" />
   </ItemGroup>

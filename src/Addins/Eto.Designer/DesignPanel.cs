@@ -91,11 +91,19 @@ namespace Eto.Designer
 
 		void ControlCreatedInternal(Control control)
 		{
-			ControlCreating?.Invoke();
-			contentControl = control;
-			designSurface.Content = GetContent(control);
-			token = null;
-			ControlCreated?.Invoke();
+			try
+			{
+				ControlCreating?.Invoke();
+				contentControl = control;
+				designSurface.Content = GetContent(control);
+				token = null;
+				ControlCreated?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				designSurface.Content = null;
+				ErrorInternal(ex);
+			}
 		}
 
 		void ErrorInternal(Exception ex)
