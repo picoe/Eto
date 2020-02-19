@@ -26,7 +26,7 @@
     <!-- global nuget/assembly properties -->
     
     <Version Condition="$(AssemblyVersion) == ''">2.5.0.0</Version>
-    <InformationalVersion Condition="$(InformationalVersion) == ''">2.5.0-dev</InformationalVersion>
+    <InformationalVersion Condition="$(InformationalVersion) == ''">2.5.1-dev</InformationalVersion>
     <Company>Picoe Software Solutions</Company>
     <Copyright>(c) 2010-2019 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
     
