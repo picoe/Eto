@@ -86,7 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Eto.Platform.XamMac2">
-      <Version>2.5.0-dev</Version>
+      <Version>2.5.1-dev</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
