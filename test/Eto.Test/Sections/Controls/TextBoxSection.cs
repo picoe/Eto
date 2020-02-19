@@ -61,8 +61,16 @@ namespace Eto.Test.Sections.Controls
 		void LogEvents(TextBox control)
 		{
 			control.TextChanging += (sender, e) => Log.Write(control, $"TextChanging, Range: {e.Range}, Text: {e.Text}");
-			control.TextChanged += (sender, e) => Log.Write(control, "TextChanged, Text: {0}", control.Text);
+			control.TextChanged += (sender, e) => Log.Write(control, $"TextChanged, Text: {control.Text}, Selection: {control.Selection}");
 			control.TextInput += (sender, e) => Log.Write(control, "TextInput: {0}", e.Text);
+			control.KeyDown += (sender, e) =>
+			{
+				if (e.KeyData == (Keys.Slash | Keys.Shift))
+				{
+					e.Handled = true;
+					Log.Write(control, $"Selection: {control.Selection}");
+				}
+			};
 		}
 	}
 }
