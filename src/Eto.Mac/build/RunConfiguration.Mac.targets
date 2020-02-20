@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
 	<PropertyGroup Condition="$(RunConfiguration) == 'Mac' ">
 		<StartAction>Program</StartAction>
-    	<StartProgram>$(OutputAppPath)</StartProgram>
+    	<StartProgram>$(_MacRunConfigurationStartPath)</StartProgram>
 	    <ExternalConsole>false</ExternalConsole>
 	</PropertyGroup>
 </Project>
