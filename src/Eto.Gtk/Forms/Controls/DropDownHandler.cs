@@ -113,7 +113,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				else
 				{
 					text.Ellipsize = Pango.EllipsizeMode.End;
-					text.Width = 0;
+					text.Width = 1;
 				}
 
 				base.Size = value;
