@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Eto.Threading;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -269,13 +268,39 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
+		public static void Async(Func<Task> test)
+		{
+			Exception exception = null;
+			var mre = new ManualResetEvent(false);
+			Application.Instance.Invoke(async () =>
+			{
+				try
+				{
+					await test();
+				}
+				catch (Exception ex)
+				{
+					exception = ex;
+				}
+				finally
+				{
+					mre.Set();
+				}
+			});
+			mre.WaitOne();
+			if (exception != null)
+			{
+				ExceptionDispatchInfo.Capture(exception).Throw();
+			}
+		}
+
 		public static void Shown(Action<Form> init, Action test, bool replay = false, int timeout = DefaultTimeout)
 		{
 			Shown(form =>
-				{
-					init(form);
-					return null;
-				},
+			{
+				init(form);
+				return null;
+			},
 				(Control c) =>
 				{
 					test();

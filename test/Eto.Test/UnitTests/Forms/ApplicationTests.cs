@@ -7,7 +7,7 @@ namespace Eto.Test.UnitTests.Forms
 	[TestFixture]
 	public class ApplicationTests : TestBase
 	{
-		[Test]
+		[Test, InvokeOnUI]
 		public void ReinitializingWithNewPlatformShouldThrowException()
 		{
 			Assert.Throws<InvalidOperationException>(() =>
@@ -16,7 +16,7 @@ namespace Eto.Test.UnitTests.Forms
 			});
 		}
 
-		[Test]
+		[Test, InvokeOnUI]
 		public void ReinitializingWithCurrentPlatformShouldThrowException()
 		{
 			Assert.Throws<InvalidOperationException>(() =>
