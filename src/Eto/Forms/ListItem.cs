@@ -12,7 +12,7 @@ namespace Eto.Forms
 	/// passing a collection to the DataStore property, and using TextBinding/KeyBinding to specify how to get/set the
 	/// Text and Key properties.
 	/// 
-	/// Otherwise, use <see cref="ListItem"/> to define items.  This may be depricated in the future.
+	/// Otherwise, use <see cref="ListItem"/> to define items.  This may be deprecated in the future.
 	/// </remarks>
 	public interface IListItem
 	{
