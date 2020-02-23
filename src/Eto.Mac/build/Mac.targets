@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacSetProperties">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
 
   <PropertyGroup Condition="$(BaseOutputAppPath) == ''">
     <!-- Compute where the .app bundle should be created, if not specified -->
@@ -42,24 +42,25 @@
   <PropertyGroup>
     <!-- internal properties -->
     <MacUseDotNetCore Condition="$(MacUseDotNetCore) == '' AND $(TargetFramework.StartsWith('netcoreapp'))">True</MacUseDotNetCore>
-    <OutputContents>$(OutputAppPath)\Contents</OutputContents>
-    <OutputResourcesPath>$(OutputContents)\Resources</OutputResourcesPath>
+    <MacUseDotNetCore Condition="$(MacUseDotNetCore) == ''">False</MacUseDotNetCore>
+    <OutputContents>$(OutputAppPath)\Contents\</OutputContents>
+    <OutputResourcesPath>$(OutputContents)\Resources\</OutputResourcesPath>
+
+    <LauncherFile>$(AssemblyName)</LauncherFile>
+    <LauncherPath>$(OutputContents)MacOS\</LauncherPath>
+    <LauncherFileWithPath>$(LauncherPath)$(LauncherFile)</LauncherFileWithPath>
+    
+    <_MacRunConfigurationStartPath Condition="$(MacUseDotNetCore) == 'False'">$(OutputAppPath)</_MacRunConfigurationStartPath>
+    <_MacRunConfigurationStartPath Condition="$(MacUseDotNetCore) == 'True'">$(LauncherFileWithPath)</_MacRunConfigurationStartPath>
   </PropertyGroup>
   
-  <Target Name="MacSetProperties">
-    <PropertyGroup>
-      <LauncherFile>$([System.IO.Path]::GetFileNameWithoutExtension('$(TargetFileName)'))</LauncherFile>
-      <LauncherPath>$(OutputContents)\MacOS\</LauncherPath>
-      <LauncherFileWithPath>$(LauncherPath)$(LauncherFile)</LauncherFileWithPath>
-    </PropertyGroup>
-  </Target>
-
   <ItemGroup>
     <AvailableItemName Include="BundleResource" />
   </ItemGroup>
-
+  
   <Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
   <Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
+  
 
   <!-- Clean target -->
   <Target Name="CleanAppBundle" AfterTargets="BeforeClean" Condition="$(MacBuildBundle) == 'True'">
@@ -206,7 +207,7 @@
       <MacArch Condition="'$(MacArch)'==''">x86_64</MacArch>
 
       <ReferenceFiles>$(MSBuildThisFileDirectory)</ReferenceFiles>
-      <OutputPListFile>$(OutputContents)\Info.plist</OutputPListFile>
+      <OutputPListFile>$(OutputContents)Info.plist</OutputPListFile>
       <InputPListFile Condition="'@(None->WithMetadataValue('Identity', 'Info.plist')->Distinct())' != ''">$(MSBuildProjectDirectory)\@(None->WithMetadataValue('Identity', 'Info.plist')->Distinct())</InputPListFile>
       <InputPListFile Condition="'$(InputPListFile)' == ''">$(ReferenceFiles)Info.plist</InputPListFile>
     </PropertyGroup>
@@ -230,7 +231,7 @@
       <ResourceFiles Include="@(BundleResource)" />
       <ResourceFiles Include="@(Content)" />
     </ItemGroup>
-    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)\%(ResourceFiles.DestinationSubDirectory)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)%(ResourceFiles.DestinationSubDirectory)" SkipUnchangedFiles="true" />
 
     <!-- Add any missing keys to the PListFile -->
     <UpdatePList 
@@ -247,7 +248,7 @@
     <Message Text="  Info: $(InputPListFile)" Importance="low" /> 
 
     <!-- Copy default icon if it doesn't exist -->
-    <Copy SourceFiles="$(ReferenceFiles)Icon.icns" DestinationFiles="$(OutputResourcesPath)\$(IconFile)" Condition="!Exists('$(OutputResourcesPath)\$(IconFile)')" />
+    <Copy SourceFiles="$(ReferenceFiles)Icon.icns" DestinationFiles="$(OutputResourcesPath)$(IconFile)" Condition="!Exists('$(OutputResourcesPath)$(IconFile)')" />
 
     <!-- Set executable bit on launcher if on *nix -->
     <Exec Command="chmod +x &quot;$(LauncherFileWithPath)&quot;" Condition="'$(OS)'=='Unix'" EchoOff="True" />

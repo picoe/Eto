@@ -98,7 +98,7 @@
   <!-- Copy executables to the MonoBundle folder, which requires mono to be installed in the system -->
   <Target Name="MacCopyExecutables" DependsOnTargets="MacInitializeBundle">
     <PropertyGroup>
-      <OutputMonoBundlePath>$(OutputContents)\MonoBundle</OutputMonoBundlePath>
+      <OutputMonoBundlePath>$(OutputContents)MonoBundle</OutputMonoBundlePath>
       <LauncherExecutable Condition="'$(LauncherExecutable)' == '' AND $(MacArch)=='x86_64'">$(ReferenceFiles)Launcher64</LauncherExecutable>
 
       <XamarinMacAssembly Condition="$(XamarinMacAssembly) == '' AND Exists('$(ReferenceFiles)Xamarin.Mac.dll')">$(ReferenceFiles)Xamarin.Mac.dll</XamarinMacAssembly>
