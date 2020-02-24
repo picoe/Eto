@@ -16,6 +16,7 @@ using System.Text;
 using System.Collections.Concurrent;
 using System.Collections;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Eto.Test.Sections
 {
@@ -647,6 +648,19 @@ namespace Eto.Test.Sections
 			return tcs.Task;
 		}
 
+		class CustomSynchronizationContext : SynchronizationContext
+		{
+			public override void Post(SendOrPostCallback d, object state)
+			{
+				Application.Instance.AsyncInvoke(() => d(state));
+			}
+			public override void Send(SendOrPostCallback d, object state)
+			{
+				Application.Instance.Invoke(() => d(state));
+			}
+		}
+
+
 		void TestNextAssembly()
 		{
 			lock (this)
@@ -664,8 +678,11 @@ namespace Eto.Test.Sections
 					tcs.SetResult(allresults);
 					return;
 				}
+				var lastSync = SynchronizationContext.Current;
 				try
 				{
+					// prevent nunit from trying to use the WPF or WinForms context in a bad way..
+					SynchronizationContext.SetSynchronizationContext(new CustomSynchronizationContext());
 					new TestExecutionContext.AdhocContext().EstablishExecutionEnvironment();
 					currentRunner = nextRunner;
 					nextRunner.RunAsync(this, testFilter);
@@ -676,6 +693,10 @@ namespace Eto.Test.Sections
 					tcs.SetException(ex);
 					currentRunner = null;
 					IsRunning = false;
+				}
+				finally
+				{
+					SynchronizationContext.SetSynchronizationContext(lastSync);
 				}
 			}
 		}

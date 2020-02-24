@@ -240,9 +240,6 @@ namespace Eto.Forms
 		public Application(Platform platform)
 			: this(InitializePlatform(platform))
 		{
-			if (!Platform.AllowReinitialize && Instance != null)
-				throw new InvalidOperationException("The Eto.Forms Application is already created.");
-
 			Instance = this;
 		}
 
@@ -258,6 +255,10 @@ namespace Eto.Forms
 		static InitHelper InitializePlatform(Platform platform)
 		{
 			Platform.Initialize(platform);
+
+			if (!Platform.AllowReinitialize && Instance != null)
+				throw new InvalidOperationException("The Eto.Forms Application is already created.");
+
 			return null;
 		}
 
@@ -352,7 +353,6 @@ namespace Eto.Forms
 		{
 			Handler.AsyncInvoke(action);
 		}
-
 
 		/// <summary>
 		/// Invokes the specified function on the UI thread asynchronously and return the result in a Task.
