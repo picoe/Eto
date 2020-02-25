@@ -83,6 +83,7 @@ Applications
 * [DWSIM](https://github.com/DanWBR/dwsim5) - Chemical Process Simulator
 * [Termission](https://github.com/junian/termission) - Cross-platform Serial/TCP Terminal with Scriptable Auto-Response
 * [Visual SEO Studio](https://visual-seo.com/) - Technical SEO Auditing Tool
+* [RegexTestBench](https://github.com/CommonLoon102/RegexTestBench) - Cross-platform regex testing tool in .NET Core
 
 Assemblies
 ----------
