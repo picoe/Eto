@@ -168,11 +168,17 @@ namespace Eto.Forms
 		/// <param name="create">If set to <c>true</c>, creates the menu if it doesn't exist in the collection, otherwise <c>false</c>.</param>
 		public ButtonMenuItem GetSubmenu(string submenuText, int order = 0, bool plaintextMatch = true, bool create = true)
 		{
+			if (string.IsNullOrEmpty(submenuText))
+				throw new ArgumentOutOfRangeException(nameof(submenuText), "submenuText must be a non null, non-empty value");
+
 			// replace accelerators if plaintextMatch is true
-			Func<string, string> convert = s => plaintextMatch ? s.Replace("&", "") : s;
+			string convert(string s) => plaintextMatch ? s?.Replace("&", "") : s;
 
 			var matchText = convert(submenuText);
-			var submenu = this.OfType<ButtonMenuItem>().FirstOrDefault(r => convert(r.Text) == matchText);
+
+			bool match(ButtonMenuItem r) => convert(r.Text) == matchText;
+
+			var submenu = this.OfType<ButtonMenuItem>().FirstOrDefault(match);
 
 			if (submenu == null && create)
 			{
