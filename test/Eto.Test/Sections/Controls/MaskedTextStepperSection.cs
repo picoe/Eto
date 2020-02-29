@@ -7,49 +7,68 @@ using System.Linq;
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(MaskedTextStepper))]
-	public class MaskedTextStepperSection : StackLayout
+	public class MaskedTextStepperSection : DynamicLayout
 	{
+		static bool rememberValue;
+		static double lastValue;
+
 		public MaskedTextStepperSection()
 		{
-			Spacing = 5;
+			DefaultSpacing = new Size(5, 5);
 			Padding = new Padding(10);
 
 			var enabledCheckBox = new CheckBox { Text = "Enabled", Checked = true };
-			enabledCheckBox.CheckedChanged += (sender, e) =>
-			{
-				foreach (var child in Children.OfType<MaskedTextStepper>())
-				{
-					child.Enabled = enabledCheckBox.Checked == true;
-				}
-			};
+			enabledCheckBox.CheckedChanged += (sender, e) => Set(m => m.Enabled = enabledCheckBox.Checked == true);
 
 			var readOnlyCheckBox = new CheckBox { Text = "ReadOnly", Checked = false };
-			readOnlyCheckBox.CheckedChanged += (sender, e) =>
-			{
-				foreach (var child in Children.OfType<MaskedTextStepper>())
-				{
-					child.ReadOnly = readOnlyCheckBox.Checked == true;
-				}
-			};
+			readOnlyCheckBox.CheckedChanged += (sender, e) => Set(m => m.ReadOnly = readOnlyCheckBox.Checked == true);
 
-			var tb = new NumericMaskedTextStepper<decimal> { Value = 123.456M };
+
+			var tb = new NumericMaskedTextStepper<double> { Value = rememberValue ? lastValue : 123.456 };
+			tb.ValueChanged += (sender, e) => lastValue = tb.Value;
+
 			var l = new Label();
 			l.TextBinding.Bind(Binding.Property(tb, c => c.Value).Convert(r => "Value: " + Convert.ToString(r)));
 
-			Items.Add(enabledCheckBox);
-			Items.Add(readOnlyCheckBox);
-			Items.Add(new StackLayout { Orientation = Orientation.Horizontal, Spacing = 5, Items = { tb, l } });
-			Items.Add(new NumericMaskedTextStepper<double> { Value = 0.000000123 });
-			Items.Add(new MaskedTextStepper(new FixedMaskedTextProvider("(999) 000-0000")) { ShowPromptOnFocus = true, PlaceholderText = "(123) 456-7890" });
-			Items.Add(new MaskedTextStepper<DateTime>(new FixedMaskedTextProvider<DateTime>("&&/90/0000") { ConvertToValue = DateTime.Parse }));
-			Items.Add(new MaskedTextStepper(new FixedMaskedTextProvider(">L0L 0L0")));
-			Items.Add(new MaskedTextStepper { InsertMode = InsertKeyMode.Toggle });
+			var cultureSelector = new CultureDropDown();
+			cultureSelector.SelectedValueBinding.Bind(tb, s => s.Culture);
 
+			var rememberCheckBox = new CheckBox { Text = "Remember Value", Checked = rememberValue };
+			rememberCheckBox.CheckedChanged += (sender, e) => rememberValue = rememberCheckBox.Checked == true;
+
+			AddAutoSized(enabledCheckBox);
+			AddAutoSized(readOnlyCheckBox);
+
+			BeginGroup("FixedMaskedTextProvider", padding: 10);
+			AddAutoSized(new MaskedTextStepper(new FixedMaskedTextProvider("(999) 000-0000")) { ShowPromptOnFocus = true, PlaceholderText = "(123) 456-7890" });
+			AddAutoSized(new MaskedTextStepper<DateTime>(new FixedMaskedTextProvider<DateTime>("&&/90/0000") { ConvertToValue = DateTime.Parse }));
+			AddAutoSized(new MaskedTextStepper(new FixedMaskedTextProvider(">L0L 0L0")));
+			AddAutoSized(new MaskedTextStepper { InsertMode = InsertKeyMode.Toggle });
+			EndGroup();
+
+			BeginGroup("NumericMaskedTextStepper<double>", padding: 10);
+			AddSeparateRow(tb, l, rememberCheckBox, null);
+			AddSeparateRow("Culture:", cultureSelector, null);
+			BeginHorizontal();
+			EndHorizontal();
+			EndGroup();
+
+			AddSpace();
 
 			foreach (var child in Children.OfType<MaskedTextStepper>())
 			{
 				child.Step += (sender, e) => Log.Write(sender, $"Step {e.Direction}");
 			}
 		}
+
+		void Set(Action<MaskedTextStepper> action)
+		{
+			foreach (var child in Children.OfType<MaskedTextStepper>())
+			{
+				action(child);
+			}
+
+		}
+
 	}
 }
