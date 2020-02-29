@@ -135,7 +135,10 @@ namespace Eto.Forms
 			var r = Range;
 			if (r.Length() < 0 || newText == null)
 				return string.Empty;
-			return newText.Substring(r.Start, newText.Length - (OldText.Length - r.End - 1) - r.Start);
+			var length = newText.Length - (OldText.Length - r.End - 1) - r.Start;
+			if (length <= 0)
+				return string.Empty;
+			return newText.Substring(r.Start, length);
 		}
 	}
 }

@@ -1,7 +1,8 @@
 using System;
 using System.Linq;
 using System.ComponentModel;
-
+using System.Globalization;
+using System.Text;
 
 namespace Eto.Forms
 {
@@ -48,11 +49,38 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the culture for the <see cref="NumericMaskedTextProvider.DecimalCharacter"/> and <see cref="NumericMaskedTextProvider.SignCharacters"/> formatting characters.
+		/// </summary>
+		public CultureInfo Culture
+		{
+			get => Provider.Culture;
+			set
+			{
+				Provider.Culture = value;
+				UpdateText();
+			}
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Forms.NumericMaskedTextStepper{T}"/> class.
 		/// </summary>
 		public NumericMaskedTextStepper()
 			: base(new NumericMaskedTextProvider<T>())
 		{
+		}
+
+		/// <inheritdoc/>
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (e.KeyData == Keys.Decimal)
+			{
+				var pos = CaretIndex;
+				Provider.Insert(Provider.DecimalCharacter, ref pos);
+				UpdateText();
+				CaretIndex = pos;
+				e.Handled = true;
+			}
 		}
 	}
 

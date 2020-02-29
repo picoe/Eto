@@ -57,10 +57,7 @@ namespace Eto.Test.Sections.Controls
 			formatString.TextBinding.Convert(c => string.IsNullOrEmpty(c)).Bind(decimalPlaces, d => d.Enabled);
 			formatString.TextBinding.Convert(c => string.IsNullOrEmpty(c)).Bind(maxDecimalPlaces, d => d.Enabled);
 
-			var cultureDropDown = new DropDown();
-			cultureDropDown.ItemTextBinding = Binding.Delegate((CultureInfo c) => c == CultureInfo.InvariantCulture ? "invariant" : c.ToString());
-			var cultures = typeof(CultureInfo).GetTypeInfo().GetDeclaredMethod("GetCultures")?.Invoke(null, new object[] { 7 /* AllCultures */}) as IEnumerable<CultureInfo>;
-			cultureDropDown.DataStore = cultures.OrderBy(r => r.ToString());
+			var cultureDropDown = new CultureDropDown();
 			cultureDropDown.SelectedValueBinding.Bind(numeric, c => c.CultureInfo);
 
 			var increment = new NumericStepper { MaximumDecimalPlaces = 15 };
