@@ -960,7 +960,11 @@ namespace Eto.Mac.Forms
 			set => SetEnabled(ParentEnabled, value);
 		}
 
+		protected bool WantsEnabled => Widget.Properties.Get<bool?>(MacView.Enabled_Key) ?? true;
+
 		protected bool ParentEnabled => Widget.VisualParent?.Enabled != false;
+
+		public void SetEnabled() => SetEnabled(ParentEnabled);
 
 		public void SetEnabled(bool parentEnabled) => SetEnabled(parentEnabled, null);
 
