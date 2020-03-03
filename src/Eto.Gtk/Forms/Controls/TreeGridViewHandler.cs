@@ -104,8 +104,10 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (collection != null)
 					collection.Unregister();
+				UnselectAll();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				EnsureSelection();
 			}
 		}
 
@@ -646,5 +648,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public override IEnumerable<int> SelectedRows => Tree.Selection.GetSelectedRows().Select(GetRowIndexOfPath);
 
 		public IEnumerable<object> SelectedItems => Tree.Selection.GetSelectedRows().Select(GetItem);
+
+		protected override bool HasRows => model.IterHasChild(Gtk.TreeIter.Zero);
 	}
 }

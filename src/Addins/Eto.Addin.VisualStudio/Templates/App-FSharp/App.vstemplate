@@ -8,6 +8,11 @@
 
     <TemplateID>Eto.App.FSharp</TemplateID>
     <ProjectType>FSharp</ProjectType>
+    <PlatformTag>Windows</PlatformTag>
+    <PlatformTag>Linux</PlatformTag>
+    <PlatformTag>macOS</PlatformTag>
+    <ProjectTypeTag>Desktop</ProjectTypeTag>
+    <LanguageTag>FSharp</LanguageTag>
     <Icon>App.ico</Icon>
     <DefaultName>EtoApp</DefaultName>
     <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
@@ -27,7 +32,7 @@
     </CustomParameters>
   </TemplateContent>
   <WizardExtension>
-    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <Assembly>Eto.Addin.VisualStudio, Version=2.5.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
     <FullClassName>Eto.Addin.VisualStudio.Wizards.ProjectWizard</FullClassName>
   </WizardExtension>
   <WizardExtension>
@@ -35,6 +40,6 @@
     <FullClassName>Microsoft.VisualStudio.TemplateEngine.Wizard.TemplateEngineWizard</FullClassName>
   </WizardExtension>
   <WizardData>
-    <SupportedParameters>Separated,Xeto,Jeto,Preview,XamMac</SupportedParameters>
+    <SupportedParameters>Combined,Xeto,Jeto,Preview,XamMac,Framework</SupportedParameters>
   </WizardData>
 </VSTemplate>

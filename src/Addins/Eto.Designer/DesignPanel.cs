@@ -14,6 +14,7 @@ namespace Eto.Designer
 		IInterfaceBuilder interfaceBuilder;
 
 		public Action ContainerChanged { get; set; }
+		public Action ControlCreating { get; set; }
 		public Action ControlCreated { get; set; }
 		public Action<DesignError> Error { get; set; }
 
@@ -90,10 +91,19 @@ namespace Eto.Designer
 
 		void ControlCreatedInternal(Control control)
 		{
-			contentControl = control;
-			designSurface.Content = GetContent(control);
-			token = null;
-			ControlCreated?.Invoke();
+			try
+			{
+				ControlCreating?.Invoke();
+				contentControl = control;
+				designSurface.Content = GetContent(control);
+				token = null;
+				ControlCreated?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				designSurface.Content = null;
+				ErrorInternal(ex);
+			}
 		}
 
 		void ErrorInternal(Exception ex)

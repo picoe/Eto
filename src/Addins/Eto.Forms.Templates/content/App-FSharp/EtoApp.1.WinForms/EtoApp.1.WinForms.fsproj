@@ -1,8 +1,10 @@
-﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks Condition="$(Framework) == 'full'">net461</TargetFrameworks>
+    <TargetFrameworks Condition="$(Framework) == 'core'">netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks Condition="$(Framework) == '' OR $(Framework) == 'both'">net461;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,18 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EtoApp.1\EtoApp.1.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
-    <PackageReference Include="FSharp.Core" Version="4.3.2" />
-    <PackageReference Include="Eto.Platform.Windows" Version="2.5.0-dev" />
+    <PackageReference Include="Eto.Platform.Windows" Version="2.5.1-dev" />
   </ItemGroup>
 
 </Project>

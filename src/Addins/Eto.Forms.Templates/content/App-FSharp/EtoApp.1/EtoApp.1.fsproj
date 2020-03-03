@@ -1,38 +1,27 @@
-﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
-    <RootNamespace>EtoApp._1</RootNamespace>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <DefineConstants Condition="$(Mode)==''">UseCode;IsWindow;IsForm</DefineConstants>
     <UseCode Condition="$(Mode)==''">True</UseCode>
-    <PackageVersion>1.0</PackageVersion>
-    <Title>EtoApp.1</Title>
-    <Copyright>Copyright © 2018</Copyright>
-    <Description>Description of EtoApp.1</Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="MainForm.fs" Condition="$(UseCodePreview) == 'True'" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="MainForm.fs" Condition="$(UseCode) == 'True'" />
     <Compile Include="MainForm.eto.fs" Condition="$(UseCodePreview) == 'True'" />
-    <Compile Include="MainForm.fs" Condition="$(UseCodePreview) == 'True'" />
     <Compile Include="MainForm.xeto.fs" Condition="$(UseXeto) == 'True'">
       <DependentUpon>MainForm.xeto</DependentUpon>
     </Compile>
     <Compile Include="MainForm.jeto.fs" Condition="$(UseJeto) == 'True'">
       <DependentUpon>MainForm.jeto</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="MainForm.xeto" Condition="$(UseXeto) == 'True'" />
     <EmbeddedResource Include="MainForm.jeto" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Forms" Version="2.5.1-dev" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.5.1-dev" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.1-dev" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
-    <PackageReference Include="FSharp.Core" Version="4.3.2" />
-    <PackageReference Include="Eto.Forms" Version="2.5.0-dev" />
-    <PackageReference Include="Eto.Serialization.Json" Version="2.5.0-dev" Condition="$(UseJeto) == 'True'" />
-    <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.0-dev" Condition="$(UseXeto) == 'True'" />
-  </ItemGroup>
-  
 </Project>

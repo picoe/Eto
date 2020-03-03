@@ -13,7 +13,7 @@ namespace Eto
 	/// </summary>
 	static class TypeHelper
 	{
-		#if PCL
+#if NETSTANDARD
 		static MethodInfo getCallingAssembly = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
 		
 		static TypeHelper()
@@ -24,11 +24,11 @@ namespace Eto
 		}
 
 		public static MethodInfo GetCallingAssembly { get { return getCallingAssembly; } }
-		#endif
+#endif
 
-		public static Assembly GetAssembly(this Type type)
+				public static Assembly GetAssembly(this Type type)
 		{
-#if PCL
+#if NETSTANDARD1_0
 			return type.GetTypeInfo().Assembly;
 #else
 			return type.Assembly;
@@ -37,7 +37,7 @@ namespace Eto
 
 		public static Type GetBaseType(this Type type)
 		{
-#if PCL
+#if NETSTANDARD1_0
 			return type.GetTypeInfo().BaseType;
 #else
 			return type.BaseType;
@@ -46,7 +46,7 @@ namespace Eto
 
 		public static bool IsEnum(this Type type)
 		{
-#if PCL
+#if NETSTANDARD1_0
 			return type.GetTypeInfo().IsEnum;
 #else
 			return type.IsEnum;
@@ -55,7 +55,7 @@ namespace Eto
 
 		public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
 		{
-#if PCL
+#if NETSTANDARD1_0
 			return propertyInfo.GetMethod;
 #else
 			return propertyInfo.GetGetMethod(true);
@@ -64,18 +64,18 @@ namespace Eto
 
 		public static MethodInfo GetSetMethod(this PropertyInfo propertyInfo)
 		{
-#if PCL
+#if NETSTANDARD1_0
 			return propertyInfo.SetMethod;
 #else
 			return propertyInfo.GetSetMethod(true);
 #endif
 		}
 
-#if PCL
+#if NETSTANDARD1_0
 		public static T GetCustomAttribute<T>(this Type type, bool inherit)
 			where T: Attribute
 		{
-			return type.GetTypeInfo().GetCustomAttribute<T>(inherit);
+			return CustomAttributeExtensions.GetCustomAttribute<T>(type.GetTypeInfo(), inherit);
 		}
 
 		public static MethodInfo GetAddMethod(this EventInfo eventInfo)
@@ -107,15 +107,11 @@ namespace Eto
 			return c != null && type.GetTypeInfo().IsAssignableFrom(c.GetTypeInfo());
 		}
 
-		public static ConstructorInfo GetConstructor(this Type type, params Type[] args)
+		public static ConstructorInfo GetConstructor(this Type type, Type[] args)
 		{
 			return type.GetTypeInfo().DeclaredConstructors.FirstOrDefault(r => r.GetParameters().Select(p => p.ParameterType).SequenceEqual(args));
 		}
 #else
-		public static Type GetTypeInfo(this Type type)
-		{
-			return type;
-		}
 
 		public static T GetCustomAttribute<T>(this Type type, bool inherit)
 			where T: Attribute
@@ -172,7 +168,6 @@ namespace Eto
 		{
 			return type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 		}
-
 #endif
 	}
 }

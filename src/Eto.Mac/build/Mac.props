@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+  <PropertyGroup>
+    <IsMac Condition="$(OS) == 'Unix' and Exists('/usr/lib/libc.dylib')">True</IsMac>
+    <IsUnix Condition="$(OS) == 'Unix'">True</IsUnix>
+    <IsWindows Condition="$(IsUnix) != 'True'">True</IsWindows>
+  </PropertyGroup>
+  
+  <!-- for .NET Core publishing -->
+  <PropertyGroup Condition="$(MacIsBuildingBundle) == 'True' AND $(MacOutputPath) != ''">
+    <BaseOutputAppPath>$(MacOutputPath)</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(MacAppendRuntimeIdentifierToOutputPath) == 'True'">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
+    <OutputPath>$(MacTempBuildPath)bin\</OutputPath>
+    <PublishDir>$(MacTempBuildPath)publish\</PublishDir>
+  </PropertyGroup>
+  
+  <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
+
+</Project>

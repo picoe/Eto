@@ -74,11 +74,38 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the culture for the <see cref="NumericMaskedTextProvider.DecimalCharacter"/> and <see cref="NumericMaskedTextProvider.SignCharacters"/> formatting characters.
+		/// </summary>
+		public CultureInfo Culture
+		{
+			get => Provider.Culture;
+			set
+			{
+				Provider.Culture = value;
+				UpdateText();
+			}
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.NumericMaskedTextBox{T}"/> class.
 		/// </summary>
 		public NumericMaskedTextBox()
 			: base(new NumericMaskedTextProvider<T>())
 		{
+		}
+
+		/// <inheritdoc/>
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (e.KeyData == Keys.Decimal)
+			{
+				var pos = CaretIndex;
+				Provider.Insert(Provider.DecimalCharacter, ref pos);
+				UpdateText();
+				CaretIndex = pos;
+				e.Handled = true;
+			}
 		}
 	}
 
@@ -177,6 +204,7 @@ namespace Eto.Forms
 		static readonly object SupportsInsertKey = new object();
 		static readonly object OverwriteModeKey = new object();
 		static readonly object ShowPlaceholderWhenEmptyKey = new object();
+		static readonly object IsUpdatingTextKey = new object();
 
 		/// <summary>
 		/// Gets a cached value indicating the current platform supports getting the insert mode state.
@@ -186,7 +214,7 @@ namespace Eto.Forms
 			get
 			{
 				// cache whether the platform supports the insert key for Keyboard.IsKeyLocked
-				return Platform.Instance.GetSharedProperty<bool>(SupportsInsertKey, () => Keyboard.SupportedLockKeys.Contains(Keys.Insert));
+				return Platform.Instance.GetSharedProperty(SupportsInsertKey, () => Keyboard.SupportedLockKeys.Contains(Keys.Insert));
 			}
 		}
 
@@ -195,7 +223,7 @@ namespace Eto.Forms
 		/// </summary>
 		static bool ManualOverwriteMode
 		{
-			get { return Platform.Instance.GetSharedProperty<bool>(OverwriteModeKey, () => false); }
+			get { return Platform.Instance.GetSharedProperty(OverwriteModeKey, () => false); }
 			set { Platform.Instance.SetSharedProperty(OverwriteModeKey, value); }
 		}
 
@@ -256,7 +284,7 @@ namespace Eto.Forms
 			{ 
 				if (ShowPromptOnFocus != value)
 				{
-					Properties[ShowPromptOnFocusKey] = value; 
+					Properties[ShowPromptOnFocusKey] = value;
 					UpdateText();
 				}
 			}
@@ -275,25 +303,33 @@ namespace Eto.Forms
 			{ 
 				if (ShowPlaceholderWhenEmpty != value)
 				{
-					Properties[ShowPlaceholderWhenEmptyKey] = value; 
+					Properties[ShowPlaceholderWhenEmptyKey] = value;
 					UpdateText();
 				}
 			}
 		}
 
+		int IsUpdatingText
+		{
+			get => Properties.Get<int>(IsUpdatingTextKey);
+			set => Properties.Set(IsUpdatingTextKey, value);
+		}
+
+
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MaskedTextBox"/> class.
+		/// Initializes a new instance of the <see cref="MaskedTextBox"/> class.
 		/// </summary>
 		public MaskedTextBox()
 		{
 			HandleEvent(TextChangingEvent);
+			HandleEvent(TextChangedEvent);
 			HandleEvent(KeyDownEvent);
 			HandleEvent(GotFocusEvent);
 			HandleEvent(LostFocusEvent);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MaskedTextBox"/> class with the specified masked text provider.
+		/// Initializes a new instance of the <see cref="MaskedTextBox"/> class with the specified masked text provider.
 		/// </summary>
 		/// <param name="provider">Masked text provider to specify the format of the mask.</param>
 		public MaskedTextBox(IMaskedTextProvider provider)
@@ -318,6 +354,7 @@ namespace Eto.Forms
 		{
 			if (provider == null)
 				return;
+			IsUpdatingText++;
 			var hasFocus = HasFocus;
 			if (!hasFocus && ShowPlaceholderWhenEmpty && provider.IsEmpty && !string.IsNullOrEmpty(PlaceholderText))
 				base.Text = null;
@@ -325,6 +362,7 @@ namespace Eto.Forms
 				base.Text = provider.DisplayText;
 			else
 				base.Text = provider.Text;
+			IsUpdatingText--;
 		}
 
 		/// <summary>
@@ -357,6 +395,22 @@ namespace Eto.Forms
 			base.OnLostFocus(e);
 			if (ShowPromptOnFocus || ShowPlaceholderWhenEmpty)
 				UpdateText();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="TextControl.TextChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected override void OnTextChanged(EventArgs e)
+		{
+			// handle undo/redo and drag/drop which doesn't always get a TextChanging event.
+			if (IsUpdatingText == 0 && provider != null)
+			{
+				provider.Text = base.Text;
+				UpdateText();
+			}
+
+			base.OnTextChanged(e);
 		}
 
 		/// <summary>
@@ -485,10 +539,7 @@ namespace Eto.Forms
 		/// Gets a value indicating whether the mask is completed.
 		/// </summary>
 		/// <value><c>true</c> if mask completed; otherwise, <c>false</c>.</value>
-		public bool MaskCompleted
-		{
-			get { return provider != null && provider.MaskCompleted; }
-		}
+		public bool MaskCompleted => provider?.MaskCompleted == true;
 	}
 }
 

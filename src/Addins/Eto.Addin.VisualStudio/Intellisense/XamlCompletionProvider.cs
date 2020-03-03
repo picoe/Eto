@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text.Operations;
 namespace Eto.Addin.VisualStudio.Intellisense
 {
 	[Order(Before = "High")]
-	[Export(typeof(ICompletionSourceProvider)), ContentType("XML"), FileExtension(".xeto"), Name("XetoCompletion")]
+	[Export(typeof(ICompletionSourceProvider)), ContentType("xeto"), Name("XetoCompletion")]
 	public class XamlCompletionProvider : ICompletionSourceProvider
 	{
 		[Import]

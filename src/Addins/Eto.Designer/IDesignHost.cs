@@ -9,6 +9,7 @@ namespace Eto.Designer
 {
 	public interface IDesignHost : IDisposable
 	{
+		Action ControlCreating { get; set; }
 		Action ControlCreated { get; set; }
 		Action<DesignError> Error { get; set; }
 		Action ContainerChanged { get; set; }

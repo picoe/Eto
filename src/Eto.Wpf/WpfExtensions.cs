@@ -35,6 +35,16 @@ namespace Eto.Wpf
 			return null;
 		}
 
+		public static IEnumerable<sw.DependencyObject> GetVisualParents(this sw.DependencyObject control)
+		{
+			while (control != null)
+			{
+				yield return control;
+
+				control = control.GetVisualParent<sw.DependencyObject>();
+			}
+		}
+
 		public static T GetParent<T>(this sw.FrameworkElement control)
 			where T : class
 		{

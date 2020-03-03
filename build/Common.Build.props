@@ -3,21 +3,23 @@
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <PropertyGroup>
     
-    <AssemblyVersion Condition="$(AssemblyVersion) == ''">2.5.0.0</AssemblyVersion>
-    <AssemblyInformationalVersion Condition="$(AssemblyInformationalVersion) == ''">2.5.0-dev</AssemblyInformationalVersion>
-    
-    <XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current</XamarinMacPath>
-    <XamarinMacLibPath>$(XamarinMacPath)\lib\mono</XamarinMacLibPath>
-    <ReferencePath Condition="$(ReferencePath) == '' and Exists('$(XamarinMacLibPath)')">$(XamarinMacLibPath)</ReferencePath>
     <!-- Prevent VS2015 from copying files from the GAC to the output folder -->
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
     <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateAssemblyVersion Condition="$(GenerateAssemblyVersion) == ''">True</GenerateAssemblyVersion>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <Deterministic Condition="$(Deterministic) == '' and $(GenerateAssemblyVersion) == 'True'">True</Deterministic>
     <Deterministic Condition="$(Deterministic) == ''">False</Deterministic>
     <!-- RestoreProjectStyle will be supported in VS for Mac 7.4 -->
     <RestoreProjectStyle Condition="'$(RestoreProjectStyle)' == '' AND $(UsePackagesConfig) != 'True'">PackageReference</RestoreProjectStyle>
+    
+    <DefaultItemExcludes>$(DefaultItemExcludes);**\.DS_Store</DefaultItemExcludes>
+    
+    <!-- we add this manually in .targets so it doesn't trigger a rebuild each time -->
+    <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
+    
+    <!-- GtkSharp package likes to install things during package restore, we don't want that -->
+    <SkipGtkInstall>True</SkipGtkInstall>
   </PropertyGroup>
+  
   <Import Condition="Exists('$(BasePath)..\Eto.Common.props')" Project="$(BasePath)..\Eto.Common.props" />
 </Project>

@@ -2,18 +2,19 @@
 	
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461</TargetFrameworks>
+    <AssemblySearchPaths Condition="$(GtkVersion)=='Gtk2' or $(GtkVersion)=='Gtk3'">$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
   </PropertyGroup>
-	
+  
   <ItemGroup>
     <ProjectReference Include="..\EtoApp.1\EtoApp.1.csproj" />
   </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Windows" Version="2.5.0-dev" Condition="$(IncludeWinForms) == 'True'" />
-    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.0-dev" />
-    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.0-dev" />
-    <PackageReference Include="Eto.Platform.Mac64" Version="2.5.0-dev" />
+    <PackageReference Include="Eto.Platform.Windows" Version="2.5.1-dev" Condition="$(IncludeWinForms) == 'True'" />
+    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.1-dev" />
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.1-dev" />
+    <PackageReference Include="Eto.Platform.Mac64" Version="2.5.1-dev" />
   </ItemGroup>
 	
 </Project>

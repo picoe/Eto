@@ -137,7 +137,7 @@ namespace Eto.Mac.Forms.Cells
 
 			public ProgressCellHandler Handler
 			{
-				get { return (ProgressCellHandler)WeakHandler.Target; }
+				get { return WeakHandler?.Target as ProgressCellHandler; }
 				set { WeakHandler = new WeakReference(value); }
 			}
 

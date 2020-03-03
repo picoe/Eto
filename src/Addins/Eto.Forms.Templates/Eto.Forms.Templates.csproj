@@ -3,14 +3,12 @@
 	<PropertyGroup>
 		<PackageType>Template</PackageType>
 		<PackageId>Eto.Forms.Templates</PackageId>
-		<PackageVersion>2.5.0-dev</PackageVersion>
+		<PackageVersion>2.5.1-dev</PackageVersion>
 		<Authors>Curtis Wensley</Authors>
 		<Description>Project and File templates for Eto.Forms</Description>
 		<Tags>cross-platform;gui;ui-framework;desktop;winforms;wpf;mac;osx;gtk;eto;eto.forms;dotnet-new</Tags>
 		
 		<TargetFramework>netstandard1.0</TargetFramework>
-		<OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
-		<PackageOutputPath>..\..\..\artifacts\nuget\$(Configuration)\</PackageOutputPath>
 		<ContentTargetFolders>content</ContentTargetFolders>
     
 		<EnableDefaultItems>false</EnableDefaultItems>
@@ -20,21 +18,19 @@
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<GenerateAssemblyVersion>False</GenerateAssemblyVersion>
 		<DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+    <CopyBuildOutputToOutputDirectory>False</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>False</CopyOutputSymbolsToOutputDirectory>
+		<SuppressDependenciesWhenPacking>True</SuppressDependenciesWhenPacking>
+    
+    <NoWarn>8021</NoWarn>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDRelease|AnyCPU' ">
-		<UseMDTtemplate>True</UseMDTtemplate>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDDebug|AnyCPU' ">
-		<UseMDTtemplate>True</UseMDTtemplate>
-	</PropertyGroup>
 	<ItemGroup>
 		<None Include="content\NuGet.Config" />
 		<None Include="content\Directory.*" />
 		<Content Include="content\**\*">
 			<PackagePath>%(RelativeDir)%(Filename)%(Extension)</PackagePath>
 		</Content>
-		<Content Remove="**\template.md.json" />
 		<Content Remove="**\bin\**\*" />
 		<Content Remove="**\obj\**\*" />
 		<Content Remove="**\.*DS_Store" />
@@ -47,18 +43,4 @@
 
 	</ItemGroup>
 	
-	<ItemGroup Condition="$(UseMDTtemplate) == 'True'">
-		<!-- VS for Mac 7.3 does not support safe_namespace or safe_name yet -->
-		<None Include="content\App-CSharp\.template.config\template.json" />
-		<Content Remove="content\App-CSharp\.template.config\template.json" />
-		<Content Include="content\App-CSharp\.template.config\template.md.json">
-			<PackagePath>%(RelativeDir)template.json</PackagePath>
-		</Content>
-
-		<None Include="content\App-FSharp\.template.config\template.json" />
-		<Content Remove="content\App-FSharp\.template.config\template.json" />
-		<Content Include="content\App-FSharp\.template.config\template.md.json">
-			<PackagePath>%(RelativeDir)template.json</PackagePath>
-		</Content>
-	</ItemGroup>
 </Project>

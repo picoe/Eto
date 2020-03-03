@@ -1,0 +1,259 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
+
+  <PropertyGroup Condition="$(BaseOutputAppPath) == ''">
+    <!-- Compute where the .app bundle should be created, if not specified -->
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(OutputPath) != ''">$(OutputPath)</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(TargetDir) != ''">$(TargetDir)</BaseOutputAppPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="$(BaseOutputAppPath) == ''">
+    <!-- If no explicit location found compute based on base path, configuration, and framework -->
+    <!-- This is used when these are imported directly in sdk-style projects, otherwise OutputPath is usually set above -->
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(BaseOutputPath) != ''">$(BaseOutputPath)</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == ''">bin\</BaseOutputAppPath>
+    <BaseOutputAppPath>$(BaseOutputAppPath)$(Configuration)\</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(AppendTargetFrameworkToOutputPath) != 'False' AND $(TargetFramework) != ''">$(BaseOutputAppPath)$(TargetFramework)\</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(AppendRuntimeIdentifierToOutputPath) == 'True' AND $(RuntimeIdentifer) != ''">$(BaseOutputAppPath)$(RuntimeIdentifer)\</BaseOutputAppPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- properties you can override in your project file -->
+
+    <!-- Specify that the bundle should be created during build -->
+    <!-- Enabled by default only for exe's and if not using a specific project type (e.g. Xamarin.Mac) -->
+    <MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == '' and ( $(OutputType) == 'Exe' Or $(OutputType) == 'WinExe' )">True</MacBuildBundle>
+
+    <!-- Specifies the name of the .app bundle, usually the same as the project -->
+    <MacBundleName Condition="'$(MacBundleName)'==''">$(MSBuildProjectName)</MacBundleName>
+    
+    <!-- Specifies a folder to copy verbatim into the .app bundle (useful for frameworks, etc) -->
+    <InputAppPath Condition="'$(InputAppPath)'==''"></InputAppPath>
+    
+    <!-- Sets the default run configuration, or false to use a special 'Mac' configuration.
+    If False, the default configuration of the project will run using the GTK platform when using Eto's platform detection.
+    -->
+    <MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultRunConfiguration)' == ''">True</MacSetDefaultRunConfiguration>
+    
+    <!-- Specifies the full output .app path.  When building for more than one runtime identifier, this is ignored. -->
+    <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(BaseOutputAppPath) != ''">$(BaseOutputAppPath)$(MacBundleName).app\</OutputAppPath>
+    
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- internal properties -->
+    <MacUseDotNetCore Condition="$(MacUseDotNetCore) == '' AND $(TargetFramework.StartsWith('netcoreapp'))">True</MacUseDotNetCore>
+    <MacUseDotNetCore Condition="$(MacUseDotNetCore) == ''">False</MacUseDotNetCore>
+    <OutputContents>$(OutputAppPath)\Contents\</OutputContents>
+    <OutputResourcesPath>$(OutputContents)\Resources\</OutputResourcesPath>
+
+    <LauncherFile>$(AssemblyName)</LauncherFile>
+    <LauncherPath>$(OutputContents)MacOS\</LauncherPath>
+    <LauncherFileWithPath>$(LauncherPath)$(LauncherFile)</LauncherFileWithPath>
+    
+    <_MacRunConfigurationStartPath Condition="$(MacUseDotNetCore) == 'False'">$(OutputAppPath)</_MacRunConfigurationStartPath>
+    <_MacRunConfigurationStartPath Condition="$(MacUseDotNetCore) == 'True'">$(LauncherFileWithPath)</_MacRunConfigurationStartPath>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <AvailableItemName Include="BundleResource" />
+  </ItemGroup>
+  
+  <Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
+  
+
+  <!-- Clean target -->
+  <Target Name="CleanAppBundle" AfterTargets="BeforeClean" Condition="$(MacBuildBundle) == 'True'">
+    <RemoveDir Directories="$(OutputAppPath)"/>
+  </Target>
+
+  <PropertyGroup Condition="'$(MSBuildTaskFactoryType)'=='CodeTaskFactory'">
+      <_UpdatePListReference>System.Xml</_UpdatePListReference>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildTaskFactoryType)'!='CodeTaskFactory'">
+      <_UpdatePListReference>netstandard</_UpdatePListReference>
+  </PropertyGroup>
+
+  <!-- Task to update the plist file with new values -->
+  <UsingTask TaskName="UpdatePList" TaskFactory="$(MSBuildTaskFactoryType)"  AssemblyFile="$(MSBuildTasksAssemblyFile)">
+    <ParameterGroup>
+      <PListFile ParameterType="System.String" Required="true" />
+      <TargetFileName ParameterType="System.String" Required="true" />
+      <MacBundleName ParameterType="System.String" Required="true" />
+      <LauncherFile ParameterType="System.String" Required="true" />
+      <MonoMinimumVersion ParameterType="System.String" />
+      <IconFile ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="$(_UpdatePListReference)"/>
+      <Code Type="Class" Language="cs"><![CDATA[
+    using System;
+    using System.IO;
+    using System.Xml;
+    using System.Text;
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
+    public class UpdatePList : Task
+    {
+      [Required]
+      public string PListFile { get; set; }
+      [Required]
+      public string TargetFileName { get; set; }
+      [Required]
+      public string MacBundleName { get; set; }
+      [Required]
+      public string LauncherFile { get; set; }
+
+      public string MonoMinimumVersion { get; set; }
+
+      [Output]
+      public string IconFile { get; set; }
+
+      XmlDocument xml;
+      XmlNode dict;
+
+      class NullSubsetXmlTextWriter : XmlTextWriter
+      {
+        XmlWriterSettings _settings;
+        public NullSubsetXmlTextWriter(string inputFileName, Encoding encoding)
+          : base(inputFileName, encoding)
+        {
+          Formatting = Formatting.Indented;
+          IndentChar = ' ';
+          Indentation = 2;
+          _settings = new XmlWriterSettings();
+          _settings.Encoding = Encoding.UTF8;
+          _settings.Indent = true;
+          _settings.IndentChars = "  ";
+          _settings.NewLineChars = "\n";
+          _settings.NewLineHandling = NewLineHandling.Entitize;
+        }
+
+        public override XmlWriterSettings Settings { get { return _settings; } }
+
+        public override void WriteDocType(string name, string pubid, string sysid, string subset)
+        {
+          // fix issue writing doctype
+          if (subset == string.Empty)
+            subset = null;
+          base.WriteDocType(name, pubid, sysid, subset);
+        }
+      }
+
+      string GetStringProperty(string name)
+      {
+        var location = dict.SelectSingleNode("key[.='" + name + "']/following-sibling::string[1]");
+        return location.InnerText;
+      }
+
+      void AddStringProperty(string name, string value, bool force = false)
+      {
+        XmlNode node;
+      
+        var exists = dict.SelectSingleNode("key[text()='" + name + "']") != null;
+        if (exists && !force)
+          return;
+      
+        dict.AppendChild(node = xml.CreateNode(XmlNodeType.Element, "key", null));
+        node.InnerText = name;
+        dict.AppendChild(node = xml.CreateNode(XmlNodeType.Element, "string", null));
+        node.InnerText = value;
+      }
+      
+      public override bool Execute()
+      {
+        xml = new XmlDocument();
+        xml.Load(PListFile);
+
+        dict = xml.SelectSingleNode("plist/dict") as XmlElement;
+
+        AddStringProperty("CFBundleIconFile", "Icon.icns");
+        IconFile = GetStringProperty("CFBundleIconFile");
+
+        AddStringProperty("CFBundleInfoDictionaryVersion", "6.0");
+        AddStringProperty("CFBundlePackageType", "APPL");
+        AddStringProperty("CFBundleSignature", "????");
+        AddStringProperty("NSPrincipalClass", "NSApplication");
+        AddStringProperty("CFBundleName", MacBundleName);
+        AddStringProperty("CFBundleExecutable", LauncherFile, true);
+        AddStringProperty("LSMinimumSystemVersion", "10.9");
+        if (!string.IsNullOrEmpty(MonoMinimumVersion)) {
+          AddStringProperty("MonoMinimumVersion", MonoMinimumVersion);
+        }
+        
+        // support dark mode even when using mkbundle.
+        // As of mono 5.18, it appears to be compiled with macOS 10.12 SDK
+        // So dark mode would be disabled by default.
+        AddStringProperty("NSRequiresAquaSystemAppearance", "False");
+
+        using (var sw = new NullSubsetXmlTextWriter(PListFile, Encoding.UTF8))
+          xml.Save(sw);
+          return true;
+      }
+    }
+]]></Code>
+    </Task>
+  </UsingTask>
+  
+    <!-- Initialize properties then create the app bundle and .plist -->
+  <Target Name="MacInitializeBundle">
+    <PropertyGroup>
+
+      <HasXamMac>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.XamMac2'))</HasXamMac>
+      <Has64Bit>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.Mac64'))</Has64Bit>
+      <Has64Bit Condition="$(Has64Bit) != 'True'">$(HasXamMac)</Has64Bit>
+      <MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == ''">true</MacIncludeSymbols>
+      <MacArch Condition="'$(MacArch)'==''">x86_64</MacArch>
+
+      <ReferenceFiles>$(MSBuildThisFileDirectory)</ReferenceFiles>
+      <OutputPListFile>$(OutputContents)Info.plist</OutputPListFile>
+      <InputPListFile Condition="'@(None->WithMetadataValue('Identity', 'Info.plist')->Distinct())' != ''">$(MSBuildProjectDirectory)\@(None->WithMetadataValue('Identity', 'Info.plist')->Distinct())</InputPListFile>
+      <InputPListFile Condition="'$(InputPListFile)' == ''">$(ReferenceFiles)Info.plist</InputPListFile>
+    </PropertyGroup>
+
+    <Message Text="$(MSBuildProjectName) -> $(OutputAppPath)" Importance="high" />
+
+    <!-- Delete existing stuff, we're going to rebuild them -->
+    <RemoveDir Directories="$(LauncherPath)" />
+    <RemoveDir Directories="$(OutputMonoBundlePath)" />
+    <Delete Files="$(OutputPListFile)" />
+
+    <!-- Copy icon/launcher/etc -->
+    <Copy SourceFiles="$(InputAppPath)\**\*.*" DestinationFolder="$(OutputContents)" SkipUnchangedFiles="true" Condition="Exists('$(InputAppPath)')" />
+    <Copy SourceFiles="$(InputPListFile)" DestinationFiles="$(OutputPListFile)" Condition="!Exists('$(OutputPListFile)')" />
+  </Target>
+  
+  <!-- Finish up by copying resource files and updating the plist -->
+  <Target Name="MacFinishBundle">
+    <!-- copy resource files -->
+    <ItemGroup>
+      <ResourceFiles Include="@(BundleResource)" />
+      <ResourceFiles Include="@(Content)" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)%(ResourceFiles.DestinationSubDirectory)" SkipUnchangedFiles="true" />
+
+    <!-- Add any missing keys to the PListFile -->
+    <UpdatePList 
+      PListFile="$(OutputPListFile)"
+      TargetFileName="$(TargetFileName)"
+      MacBundleName="$(MacBundleName)"
+      LauncherFile="$(LauncherFile)"
+      MonoMinimumVersion="$(MacMonoMinimumVersion)">
+      <Output PropertyName="IconFile" TaskParameter="IconFile" />
+    </UpdatePList>
+
+    <Message Text="  MacArch: $(MacArch)" Importance="low" /> 
+    <Message Text="  Icon: $(IconFile)" Importance="low" /> 
+    <Message Text="  Info: $(InputPListFile)" Importance="low" /> 
+
+    <!-- Copy default icon if it doesn't exist -->
+    <Copy SourceFiles="$(ReferenceFiles)Icon.icns" DestinationFiles="$(OutputResourcesPath)$(IconFile)" Condition="!Exists('$(OutputResourcesPath)$(IconFile)')" />
+
+    <!-- Set executable bit on launcher if on *nix -->
+    <Exec Command="chmod +x &quot;$(LauncherFileWithPath)&quot;" Condition="'$(OS)'=='Unix'" EchoOff="True" />
+  </Target>
+  
+  <Import Project="BundleMono.targets" Condition="$(MacUseDotNetCore) != 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="BundleDotNetCore.targets" Condition="$(MacUseDotNetCore) == 'True' AND $(MacBuildBundle) == 'True'" />
+</Project>

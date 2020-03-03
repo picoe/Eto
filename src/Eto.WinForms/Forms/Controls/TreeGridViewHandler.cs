@@ -111,7 +111,9 @@ namespace Eto.WinForms.Forms.Controls
 			get { return controller.Store; }
 			set
 			{
+				UnselectAll();
 				controller.InitializeItems(value);
+				EnsureSelection();
 			}
 		}
 

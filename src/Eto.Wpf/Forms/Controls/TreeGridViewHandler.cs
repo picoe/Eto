@@ -3,6 +3,7 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
+using swi = System.Windows.Input;
 using Eto.Forms;
 using Eto.CustomControls;
 using Eto.Wpf.CustomControls.TreeGridView;
@@ -27,6 +28,63 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 			controller = new TreeController { Handler = this };
 			Control.Background = sw.SystemColors.WindowBrush;
+			Control.PreviewKeyDown += Control_PreviewKeyDown;
+		}
+
+		private void Control_PreviewKeyDown(object sender, sw.Input.KeyEventArgs e)
+		{
+			if (e.Handled || swi.Keyboard.Modifiers != swi.ModifierKeys.None)
+				return;
+
+			// handle expanding/collapsing via the keyboard
+			if (e.Key == swi.Key.Right)
+			{
+				var currentCell = Control.CurrentCell;
+				if (currentCell.Column != null 
+					&& Control.Columns.IndexOf(currentCell.Column) == 0
+					&& currentCell.Item is ITreeGridItem item
+					&& item.Expandable
+					&& !item.Expanded)
+				{
+					var index = controller.IndexOf(item);
+					if (index >= 0)
+					{
+						controller.ExpandRow(index);
+
+						e.Handled = true;
+					}
+				}
+			}
+			else if (e.Key == swi.Key.Left)
+			{
+				var currentCell = Control.CurrentCell;
+				if (currentCell.Column != null
+					&& Control.Columns.IndexOf(currentCell.Column) == 0
+					&& currentCell.Item is ITreeGridItem item)
+				{
+					if (!item.Expandable || !item.Expanded)
+					{
+						// select parent if not the top node
+						item = item.Parent;
+						if (item != null && !ReferenceEquals(item, DataStore))
+						{
+							Control.CurrentCell = new swc.DataGridCellInfo(item, currentCell.Column);
+							SelectedItem = item;
+							e.Handled = true;
+						}
+					}
+					else
+					{
+						var index = controller.IndexOf(item);
+						if (index >= 0)
+						{
+							controller.CollapseRow(index);
+
+							e.Handled = true;
+						}
+					}
+				}
+			}
 		}
 
 		public override void AttachEvent(string id)
@@ -103,6 +161,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				controller.InitializeItems(value);
 				Control.ItemsSource = controller;
+				EnsureSelection();
 			}
 		}
 

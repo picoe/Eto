@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks Condition="$(HasXamarinMac) == 'True'">$(TargetFrameworks);xamarinmac20</TargetFrameworks>
+    <RootNamespace>Eto.Mac</RootNamespace>
+    <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefaultItemExcludes>build\*</DefaultItemExcludes>
+    <LanguageTargets Condition="$(HasXamarinMac) == 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
+    <UseSGen>false</UseSGen>
+    <AOTMode>None</AOTMode>
+    <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+    <UseXamMacFullFramework Condition="$(TargetFramework) == 'net45'">true</UseXamMacFullFramework>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <PackageId>Eto.Platform.XamMac2</PackageId>
+    <Title>Eto.Forms - Xamarin.Mac (unified) Platform</Title>
+    <Description>OS X Platform for the Eto.Forms UI Framework using 64-bit Xamarin.Mac v2.0 (unified)</Description>
+    <PackageTags>cross platform gui ui framework desktop osx xamarin.mac mac eto.forms</PackageTags>
+    <PackageDescription>
+This is the Xamarin.Mac2 (unified) platform for Eto.Forms UI Framework.
+      
+Include this along with your Eto.Forms application to provide an macOS interface for Mac users.
+
+When used in a desktop project, this package will automatically create a macOS application bundle to run on a Mac.  However, it will require mono to be installed when running on macOS.
+      
+In order to bundle mono with your application, you must create a Xamarin.Mac project using Visual Studio on Mac.
+
+You do not need to use any of the classes of this assembly (unless customizing the Xamarin.Mac functionality of the platform), and should just use the UI controls from the Eto assembly.
+    </PackageDescription>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">
+    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.Mac" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\PlatformDetect.cs">
+      <Link>PlatformDetect.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
+      <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>Drawing\GradientHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\MutableCellEventArgs.cs">
+      <Link>Forms\Cells\MutableCellEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build\*" Exclude="build\Mac.*" Pack="True" PackagePath="build" />
+    <None Include="build\Mac.targets" Pack="True" PackagePath="build\Eto.Platform.XamMac2.targets" />
+    <None Include="build\Mac.props" Pack="True" PackagePath="build\Eto.Platform.XamMac2.props" />
+    <None Include="..\..\build\MSBuildTaskHelper.props" Pack="True" PackagePath="build" />
+  </ItemGroup>
+  
+</Project>

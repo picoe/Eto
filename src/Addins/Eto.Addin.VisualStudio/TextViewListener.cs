@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -28,23 +28,6 @@ using Eto.Addin.VisualStudio.Util;
 
 namespace Eto.Addin.VisualStudio
 {
-
-	internal static class Components
-	{
-#pragma warning disable 649
-		// Use XML editor for xeto files
-		[Export]
-		[FileExtension(".xeto")]
-		[ContentType("XML")]
-		internal static FileExtensionToContentTypeDefinition XetoFileExtensionDefinition;
-
-		// Use Json editor for jeto files
-		[Export]
-		[FileExtension(".jeto")]
-		[ContentType("Json")]
-		internal static FileExtensionToContentTypeDefinition JetoFileExtensionDefinition;
-#pragma warning restore 649
-	}
 
 	[Export(typeof(IWpfTextViewCreationListener))]
 	[Export(typeof(TextViewListener))]		// To let unit tests modify the instance

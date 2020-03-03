@@ -13,31 +13,30 @@
 	"sourceName": "EtoApp.1",
 	"preferNameDirectory": true,
 	"symbols": {
-    "Mode": {
-      "type": "parameter",
-      "description": "How your UI is defined",
-      "datatype": "choice",
-      "defaultValue": "code",
-      "choices": [
-        {
-          "choice": "code",
-          "description": "Code only UI"
-        },
-        {
-          "choice": "preview",
-          "description": "Partial class with preview"
-        },
-        {
-          "choice": "xaml",
-          "description": "Xaml definition with code behind"
-        },
-        {
-          "choice": "json",
-          "description": "Json definition with code behind"
-        }
-      ]
-    },
-    /* Re-enable when sdk-style projects for net461 support netstandard 2.0 references
+		"Mode": {
+			"type": "parameter",
+			"description": "How your UI is defined",
+			"datatype": "choice",
+			"defaultValue": "code",
+			"choices": [
+				{
+					"choice": "code",
+					"description": "Code only UI"
+				},
+				{
+					"choice": "preview",
+					"description": "Partial class with preview"
+				},
+				{
+					"choice": "xaml",
+					"description": "Xaml definition with code behind"
+				},
+				{
+					"choice": "json",
+					"description": "Json definition with code behind"
+				}
+			]
+		},
 		"GtkVersion": {
 			"type": "parameter",
 			"description": "The Gtk# version to target",
@@ -50,22 +49,22 @@
 			"choices": [
 				{
 					"choice": "Gtk",
-					"description": "Gtk# 3.14+ platform\n              (requires dotnet 2.0 sdk)"
+					"description": "Gtk# 3.14+"
 				},
 				{
 					"choice": "Gtk2",
-					"description": "Gtk# 2.12"
+					"description": "Gtk# 2.12 (deprecated)"
 				},
 				{
 					"choice": "Gtk3",
-					"description": "GTK# 3.0"
+					"description": "GTK# 3.0 (deprecated)"
 				}
 			],
 			"replaces": "Gtk"
-		},*/
-		"Separate": {
+		},
+		"Combined": {
 			"type": "parameter",
-			"description": "Use separate projects for each platform.\nDefault is to create a single destkop project that\nbuilds for all platforms",
+			"description": "Use a combined project to launch the application (Full .NET Framework only)",
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
@@ -87,6 +86,26 @@
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
+		"Framework": {
+			"type": "parameter",
+			"description": "Specify the framework(s) to support",
+			"dataType": "choice",
+			"defaultValue": "core",
+			"choices": [
+				{
+					"choice": "full",
+					"description": "Full .NET Framework and/or Mono"
+				},
+				{
+					"choice": "core",
+					"description": ".NET Core"
+				},
+				{
+					"choice": "both",
+					"description": "Target both .NET Core and .NET Framework / Mono"
+				}
+			]
+		},
 		"UseCode": {
 			"type": "computed",
 			"value": "(Mode == \"code\")"
@@ -103,6 +122,10 @@
 			"type": "computed",
 			"value": "(Mode == \"json\")"
 		},
+		"UseCore": {
+			"type": "computed",
+			"value": "(Framework != \"full\")"
+		},
 		"IsWindow": {
 			"type": "computed",
 			"value": "true"
@@ -114,7 +137,7 @@
 		"CopyrightYear": {
 			"type": "generated",
 			"generator": "now",
-			"replaces": "2018",
+			"replaces": "2020",
 			"parameters": {
 				"format": "yyyy"
 			}
@@ -154,21 +177,21 @@
 					"exclude": [ "**/*.jeto", "**/*.jeto.*" ]
 				},
 				{
-					"condition": "(Separate)",
+					"condition": "(!Combined)",
 					"exclude": [ "**/EtoApp.1.Desktop/**/*" ]
 				},
 				{
-					"condition": "(!Separate)",
+					"condition": "(Combined)",
 					"exclude": [
 						"**/EtoApp.1.Gtk/**/*",
 						"**/EtoApp.1.Mac/**/*",
-						"**/EtoApp.1.Wpf/**/*",
+						"**/EtoApp.1.Wpf/**/*"
 					]
 				},
 				{
-					"condition": "(!IncludeWinForms || !Separate)",
+					"condition": "(!IncludeWinForms || Combined)",
 					"exclude": [
-						"**/EtoApp.1.WinForms/**/*",
+						"**/EtoApp.1.WinForms/**/*"
 					]
 				},
 				{
@@ -176,7 +199,7 @@
 					"exclude": [
 						"**/EtoApp.1.XamMac/**/*"
 					]
-				},
+				}
 			]
 		}
 	],
@@ -184,23 +207,23 @@
 		{ "path": "EtoApp.1\\EtoApp.1.fsproj" },
 		{
 			"path": "EtoApp.1.Desktop\\EtoApp.1.Desktop.fsproj",
-			"condition": "(!Separate)"
+			"condition": "(Combined)"
 		},
 		{
 			"path": "EtoApp.1.Gtk\\EtoApp.1.Gtk.fsproj",
-			"condition": "(Separate)"
+			"condition": "(!Combined)"
 		},
 		{
 			"path": "EtoApp.1.Mac\\EtoApp.1.Mac.fsproj",
-			"condition": "(Separate)"
+			"condition": "(!Combined)"
 		},
 		{
 			"path": "EtoApp.1.WinForms\\EtoApp.1.WinForms.fsproj",
-			"condition": "(Separate && IncludeWinForms)"
+			"condition": "(!Combined && IncludeWinForms)"
 		},
 		{
 			"path": "EtoApp.1.Wpf\\EtoApp.1.Wpf.fsproj",
-			"condition": "(Separate)"
+			"condition": "(!Combined)"
 		},
 		{
 			"path": "EtoApp.1.XamMac\\EtoApp.1.XamMac.fsproj",
@@ -243,7 +266,7 @@
 						"actionableElseif": [ "#elseif", "<!--#elseif" ],
 						"endif": [ "#endif", "<!--#endif" ],
 						"trim": "true",
-						"wholeLine": "true",
+						"wholeLine": "true"
 					}
 				}
 			]
@@ -258,7 +281,7 @@
 						"actionableElseif": [ "#elseif", "/*#elseif" ],
 						"endif": [ "#endif", "/*#endif" ],
 						"trim": "true",
-						"wholeLine": "true",
+						"wholeLine": "true"
 					}
 				}
 			]

@@ -142,13 +142,13 @@ namespace Eto.Forms
 			get => buttons.Where(r => r.Checked == true).Select(r => r.Tag);
 			set
 			{
-				var items = value.ToList();
+				var items = value?.ToList();
 				settingChecked = true;
 				var changed = false;
 				foreach (var button in buttons)
 				{
 					var item = button.Tag;
-					var isChecked = items.Contains(item);
+					var isChecked = items != null && items.Contains(item);
 					if (button.Checked != isChecked)
 					{
 						changed = true;

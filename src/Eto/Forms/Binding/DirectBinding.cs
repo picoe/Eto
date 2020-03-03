@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Eto.Forms
 {
@@ -156,15 +157,24 @@ namespace Eto.Forms
 		{
 			object childBindingReference = null;
 			EventHandler<EventArgs> eventHandler = null;
-			EventHandler<EventArgs> valueChanged = (sender, e) =>
+			void valueChanged(object sender, EventArgs e)
 			{
 				binding.RemoveValueChangedHandler(childBindingReference, eventHandler);
 				eventHandler?.Invoke(sender, e);
 				childBindingReference = binding.AddValueChangedHandler(DataValue, eventHandler);
-			};
+			}
+			void setValueStruct(TValue v)
+			{
+				object parentValue = DataValue;
+				binding.SetValue(parentValue, v);
+				DataValue = (T)parentValue;
+			}
+			void setValueObject(TValue v) => binding.SetValue(DataValue, v);
+			var isStruct = typeof(T).GetTypeInfo().IsValueType;
+
 			return new DelegateBinding<TValue>(
 				() => binding.GetValue(DataValue),
-				v => binding.SetValue(DataValue, v),
+				isStruct ? (Action<TValue>)setValueStruct : setValueObject,
 				addChangeEvent: ev =>
 				{
 					eventHandler = ev;

@@ -620,7 +620,7 @@ namespace Eto.Forms.ThemedControls
 
             public object CreateNewValue()
             {
-                if (PropertyType.GetConstructor() == null)
+                if (PropertyType.GetConstructor(new Type[0]) == null)
                     return null;
                 return Activator.CreateInstance(PropertyType);
             }
@@ -679,7 +679,9 @@ namespace Eto.Forms.ThemedControls
                 var descriptors = new List<IPropertyDescriptor>();
                 for (int i = 0; i < properties.Count; i++)
                 {
-                    descriptors.Add(new PropertyDescriptorDescriptor(properties[i]));
+					var descriptor = EtoTypeDescriptor.Get(properties[i]);
+					if (descriptor == null)
+						descriptors.Add(descriptor);
                 }
 
                 if (_grid.PropertySort != null)
@@ -974,7 +976,7 @@ namespace Eto.Forms.ThemedControls
         {
             public override string Identifier => "PropertyCellTypeReadOnly";
 
-            public override bool CanDisplay(object itemType) => itemType == typeof(PropertyCellTypeReadOnly);
+            public override bool CanDisplay(object itemType) => itemType as Type == typeof(PropertyCellTypeReadOnly);
 
             public override Control OnCreate(CellEventArgs args)
             {

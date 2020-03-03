@@ -1,17 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
-	<!-- can't find gtk-sharp with sdk-style projects for some reason -->
-    <AssemblySearchPaths Condition="Exists('/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0')">$(AssemblySearchPaths);/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0</AssemblySearchPaths>
-    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/gtk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/gtk-sharp-2.0</AssemblySearchPaths>
-    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/gdk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/gdk-sharp-2.0</AssemblySearchPaths>
-    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/glib-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/glib-sharp-2.0</AssemblySearchPaths>
-    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/atk-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/atk-sharp-2.0</AssemblySearchPaths>
-    <AssemblySearchPaths Condition="Exists('/usr/lib/cli/pango-sharp-2.0')">$(AssemblySearchPaths);/usr/lib/cli/pango-sharp-2.0</AssemblySearchPaths>
-	<MDBinDir Condition="Exists('/opt/MonoDevelop/bin')">/opt/MonoDevelop/bin</MDBinDir>
-	<MDAddinsDir Condition="Exists('/opt/MonoDevelop/AddIns')">/opt/MonoDevelop/AddIns</MDAddinsDir>
-    <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
-	<MonoDevelopVersion>7.3</MonoDevelopVersion>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblySearchPaths>$(AssemblySearchPaths);{gac}</AssemblySearchPaths>
+  	<MDBinDir Condition="Exists('/opt/MonoDevelop/bin')">/opt/MonoDevelop/bin</MDBinDir>
+  	<MDAddinsDir Condition="Exists('/opt/MonoDevelop/AddIns')">/opt/MonoDevelop/AddIns</MDAddinsDir>
+    <OutputPath>$(ArtifactsDir)addin\$(Configuration)\</OutputPath>
+  	<MonoDevelopVersion>8.4</MonoDevelopVersion>
+    <Title>Eto.Addin.MonoDevelop</Title>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj" />
@@ -24,12 +19,13 @@
 	</ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MonoDevelop.Addins" Version="0.4.1" />
+    <PackageReference Include="MonoDevelop.Addins" Version="0.4.7" />
   </ItemGroup>
   <ItemGroup>
-    <AddinReference Include="MonoDevelop.Xml" Version="$(MonoDevelopVersion)" />
-    <AddinReference Include="MonoDevelop.DesignerSupport" Version="$(MonoDevelopVersion)" />
-    <AddinReference Include="MonoDevelop.PackageManagement" Version="$(MonoDevelopVersion)" />
+    <AddinReference Include="MonoDevelop.Xml" Version="8.4" />
+    <AddinReference Include="MonoDevelop.DesignerSupport" Version="8.4" />
+    <AddinReference Include="MonoDevelop.PackageManagement" Version="8.4" />
+    <AddinReference Include="MonoDevelop.TextEditor" Version="8.4" />
   </ItemGroup>
   <ItemGroup>
 	<None Remove="Templates\**\*" />
@@ -41,8 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <AddinFile Include="Templates\Files\**\*" />
-    <AddinFile Include="..\..\..\artifacts\nuget\MD$(Configuration)\Eto.Forms.Templates.2.5.0-dev.nupkg">
-      <Link>Packages\Eto.Forms.Templates.2.5.0-dev.nupkg</Link>
+    <AddinFile Include="$(ArtifactsDir)\nuget\$(Configuration)\Eto.Forms.Templates.$(InformationalVersion).nupkg">
+      <Link>Packages\Eto.Forms.Templates.$(InformationalVersion).nupkg</Link>
     </AddinFile>
   </ItemGroup>
   <ItemGroup>
@@ -54,5 +50,13 @@
       <AddinReference Update="MonoDevelop.Core" Version="$(MonoDevelopVersion)" />
       <AddinReference Update="MonoDevelop.Ide" Version="$(MonoDevelopVersion)" />
     </ItemGroup>
+  </Target>
+  
+  <Target Name="RenameMpack" AfterTargets="PackageAddin">
+    <PropertyGroup>
+      <MPackName>$(OutputPath)Eto.Addin.MonoDevelop-$(InformationalVersion).mpack</MPackName>
+    </PropertyGroup>
+    <Delete Files="$(MPackName)" />
+    <Move SourceFiles="$(PackageFile)" DestinationFiles="$(MPackName)" />
   </Target>
 </Project>

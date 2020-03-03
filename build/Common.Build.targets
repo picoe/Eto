@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask TaskName="_GetCommonFiles" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  
+  <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
+  <UsingTask TaskName="_GetCommonFiles" TaskFactory="$(MSBuildTaskFactoryType)" AssemblyFile="$(MSBuildTasksAssemblyFile)">
     <ParameterGroup>
       <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
       <Names ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
@@ -54,9 +56,13 @@
     </ItemGroup>
     <Message Importance="high" Text="Embedding: @(FilesToEmbed->'%(Filename)%(Extension)', ', ')" />
   </Target>
-  <Import Project="$(BasePath)build\MacTemplate\MacTemplate.targets" Condition="$(UseMacTemplate) == 'True'" />
   <Import Condition="Exists('$(BasePath)..\Eto.Common.targets')" Project="$(BasePath)..\Eto.Common.targets" />
-
+  
+  <PropertyGroup>
+    <AssemblySearchPaths Condition="$(FixGtkReferences)=='true'">$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+  </PropertyGroup>
+  
+  
   <Target Name="FixGtkReferences" Condition="$(FixGtkReferences)=='true'" BeforeTargets="BeforeBuild">
     <!-- 
     Set the path of gtk references explicitly for linux msbuild support.
@@ -88,55 +94,20 @@
     <Message Text="%(Reference.Filename) - %(Reference.HintPath)" Importance="high" />
     -->
   </Target>
-
-  <ItemGroup Condition="$(GenerateAssemblyVersion) == 'True'">
-    <Compile Include="$(IntermediateOutputPath)VersionInfo.cs">
-      <Link>Properties\VersionInfo.cs</Link>
-      <Visible>false</Visible>
-    </Compile>
-    <Compile Include="$(SourceDir)Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-      <Visible>false</Visible>
-    </Compile>
-  </ItemGroup>
-
-  <Target Name="_WriteVersion"
-          BeforeTargets="CoreCompile"
-          Condition="$(GenerateAssemblyVersion) == 'True'"
-          Inputs="$(MSBuildAllProjects);
-                  @(Compile);
-                  @(_CoreCompileResourceInputs);
-                  $(ApplicationIcon);
-                  $(AssemblyOriginatorKeyFile);
-                  @(ReferencePathWithRefAssemblies);
-                  @(CompiledLicenseFile);
-                  @(LinkResource);
-                  @(EmbeddedDocumentation);
-                  $(Win32Resource);
-                  $(Win32Manifest);
-                  @(CustomAdditionalCompileInputs);
-                  $(ResolvedCodeAnalysisRuleSet);
-                  @(AdditionalFiles);
-                  @(EmbeddedFiles)"
-          Outputs="$(IntermediateOutputPath)VersionInfo.cs">
-    <!-- Generate auto version number so:
-    a) we can use deterministic builds
-    b) VS on Mac won't break intellisense when strong naming the assemblies
-       see: https://github.com/mono/monodevelop/issues/4763
-    -->
-    <PropertyGroup>
-      <AssemblyVersionMajorMinor>$([System.Version]::Parse($([System.String]::Copy('$(AssemblyVersion)').Replace('.*', ''))).ToString(2))</AssemblyVersionMajorMinor>
-      <DaysSince2000>$([System.DateTime]::Today.Subtract($([System.DateTime]::Parse('2000-01-01T00:00:00Z'))).TotalDays.ToString('0'))</DaysSince2000>
-      <SecondsOfTodayHalved>$([MSBuild]::Divide($([System.DateTime]::Now.Subtract($([System.DateTime]::Today)).TotalSeconds), 2).ToString('0'))</SecondsOfTodayHalved>
-      <AssemblyFileVersion>$(AssemblyVersionMajorMinor).$(DaysSince2000).$(SecondsOfTodayHalved)</AssemblyFileVersion>
-    </PropertyGroup>
-
+  
+  <PropertyGroup>
+    <!-- why oh why do we need to specify both explicitly -->
+    <AssemblyTitle Condition="$(Title) != ''">$(Title)</AssemblyTitle>
+  </PropertyGroup>
+  
+  
+  <Target Name="_AddFileVersionAttribute" BeforeTargets="CoreGenerateAssemblyInfo">
+    <!-- We add this here so it doesn't trigger a rebuild due to changing based on time -->
     <ItemGroup>
-      <VersionInfo Include="[assembly: System.Reflection.AssemblyVersion(&quot;$(AssemblyVersion)&quot;)]" />
-      <VersionInfo Include="[assembly: System.Reflection.AssemblyFileVersion(&quot;$(AssemblyFileVersion)&quot;)]" />
-      <VersionInfo Include="[assembly: System.Reflection.AssemblyInformationalVersion(&quot;$(AssemblyInformationalVersion)&quot;)]" />
+      <AssemblyAttribute Include="System.Reflection.AssemblyFileVersionAttribute" Condition="'$(FileVersion)' != ''">
+        <_Parameter1>$(FileVersion)</_Parameter1>
+      </AssemblyAttribute>
     </ItemGroup>
-    <MakeDir Directories="$(IntermediateOutputPath)" />
-    <WriteLinesToFile File="$(IntermediateOutputPath)VersionInfo.cs" Overwrite="True" Lines="@(VersionInfo)" />
+    
   </Target>
 </Project>

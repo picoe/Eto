@@ -1,8 +1,10 @@
 variables:
   build.increment: $[counter('buildnumber', 10000)]
-  build.version: 2.5.0-ci-$(build.increment)
+  build.version: 2.5.1-ci-$(Build.BuildNumber)
   build.configuration: Release
   build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:Branch=$(Build.SourceBranch)
+  build.dotnetversion: 3.1.100
+  build.xamarinversion: 6_4_0
 
 trigger:
   branches:
@@ -16,89 +18,132 @@ trigger:
 jobs:
 - job: Mac
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   
   steps:
-  - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_18_1
+  - checkout: self
+    submodules: true
+    
+  - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(build.xamarinversion)
     displayName: 'Select Xamarin SDK version'
+
+  - task: UseDotNet@2
+    displayName: Install .NET Core SDK
+    inputs:
+      packageType:  sdk
+      version:      $(build.dotnetversion)
+
   - task: msbuild@1
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments)
+      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=false /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
 
   - task: CopyFiles@2
     displayName: Copy nupkg
     inputs:
-      contents: artifacts/nuget/$(build.configuration)/Eto.Platform.XamMac*.nupkg
-      targetFolder: $(Build.ArtifactStagingDirectory)
+      sourceFolder: artifacts/nuget/$(build.configuration)/
+      contents: |
+        Eto.Platform.XamMac*.nupkg
+        Eto.Platform.Gtk2*.nupkg
+      targetFolder: $(Build.ArtifactStagingDirectory)/nuget/
       
   - task: PublishBuildArtifacts@1
-    displayName: Publish XamMac nupkg
+    displayName: Publish nupkg
     inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/nuget/$(build.configuration)
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/nuget/
       artifactName: nuget
       publishLocation: container
 
-#  - task: msbuild@1
-#    displayName: Build MonoDevelop Addin
-#    inputs:
-#      solution: build/Build.proj
-#      msbuildArguments: /t:BuildAddins
-#
-#  - task: CopyFiles@2
-#    displayName: Copy MonoDevelop Addin
-#    inputs:
-#      contents: artifacts/addin/$(build.configuration)/net461/Eto.Addin.MonoDevelop*.mpack
-#      targetFolder: $(Build.ArtifactStagingDirectory)
-#
-#  - task: PublishBuildArtifacts@1
-#    displayName: Publish MonoDevelop Addin
-#    inputs:
-#      pathtoPublish: $(Build.ArtifactStagingDirectory)/artifacts/addin/$(build.configuration)/net461
-#      artifactName: addins
-#      publishLocation: container
+  - task: msbuild@1
+    displayName: Build MonoDevelop Addin
+    inputs:
+      solution: build/Build.proj
+      msbuildArguments: /t:BuildAddins /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.MacOS.binlog
+
+  - task: CopyFiles@2
+    displayName: Copy MonoDevelop Addin
+    inputs:
+      sourceFolder: artifacts/addin/$(build.configuration)/net472/
+      contents: Eto.Addin.MonoDevelop*.mpack
+      targetFolder: $(Build.ArtifactStagingDirectory)/addin/
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish MonoDevelop Addin
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/addin/
+      artifactName: addins
+      publishLocation: container
+
+  - task: PublishBuildArtifacts@1
+    condition: failed()
+    displayName: Publish MSBuild logs
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog/
+      artifactName: msbuild-binlog
+      publishLocation: container                            
     
 - job: Windows
   pool:
-    vmImage: 'VS2017-Win2016'
+    vmImage: 'windows-2019'
   
   steps:
-  - script: cinst gtksharp -y
-    displayName: Install GTK#
+  - checkout: self
+    submodules: true
+    
+  - task: UseDotNet@2
+    displayName: Install .NET Core SDK
+    inputs:
+      packageType:  sdk
+      version:      $(build.dotnetversion)
+
   - task: msbuild@1
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments)
-
-  - task: msbuild@1
-    displayName: Build Visual Studio Addin
-    inputs:
-      solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins
+      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
 
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
     inputs:
-      pathtoPublish: artifacts/nuget/$(build.configuration)
+      pathtoPublish: artifacts/nuget/$(build.configuration)/
       artifactName: nuget
       publishLocation: container
   - task: PublishBuildArtifacts@1
     displayName: Publish tests
     inputs:
-      pathtoPublish: artifacts/test/$(build.configuration)
+      pathtoPublish: artifacts/test/$(build.configuration)/
       artifactName: test
       publishLocation: container
   - task: PublishBuildArtifacts@1
     displayName: Publish samples
     inputs:
-      pathtoPublish: artifacts/samples/$(build.configuration)
+      pathtoPublish: artifacts/samples/$(build.configuration)/
       artifactName: samples
       publishLocation: container
+      
+  - task: msbuild@1
+    displayName: Build Visual Studio Addin
+    inputs:
+      solution: build/Build.proj
+      msbuildArguments: /t:BuildAddins /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
+  - task: CopyFiles@2
+    displayName: Copy Visual Studio Addin
+    inputs:
+      sourceFolder: artifacts/addin/$(build.configuration)/VisualStudio/
+      contents: Eto.Addin.VisualStudio*.vsix
+      targetFolder: $(Build.ArtifactStagingDirectory)/addin/
   - task: PublishBuildArtifacts@1
     displayName: Publish Visual Studio Addin
     inputs:
-      pathtoPublish: artifacts/addin/$(build.configuration)/VisualStudio/Eto.Addin.VisualStudio.vsix
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/addin/
       artifactName: addins
       publishLocation: container
+      
+  - task: PublishBuildArtifacts@1
+    condition: failed()
+    displayName: Publish MSBuild logs
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/msbuild-binlog/
+      artifactName: msbuild-binlog
+      publishLocation: container                            

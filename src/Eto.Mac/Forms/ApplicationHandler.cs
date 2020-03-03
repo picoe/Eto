@@ -166,11 +166,17 @@ namespace Eto.Mac.Forms
 
 		public void Restart()
 		{
+			// prevent System.InvalidOperationException:
+			// Event registration is overwriting existing delegate.
+			// Either just use events or your own delegate: Eto.Mac.AppDelegate
+			var oldDelegate = Control.Delegate;
+			Control.Delegate = null;
 			NSApplication.SharedApplication.WillTerminate += restart_WillTerminate;
 			NSApplication.SharedApplication.Terminate(AppDelegate);
 
 			// only get here if cancelled, remove event to restart
 			NSApplication.SharedApplication.WillTerminate -= restart_WillTerminate;
+			Control.Delegate = oldDelegate;
 		}
 
 		public void RunIteration()

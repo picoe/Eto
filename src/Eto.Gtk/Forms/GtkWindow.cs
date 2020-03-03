@@ -49,6 +49,10 @@ namespace Eto.GtkSharp.Forms
 #endif
 	}
 
+	static class GtkWindow
+	{
+		internal static readonly object MovableByWindowBackground_Key = new object();
+	}
 
 	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
 		where TControl: Gtk.Window
@@ -263,6 +267,20 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 		}
+		public bool MovableByWindowBackground
+		{
+			get => Widget.Properties.Get<bool>(GtkWindow.MovableByWindowBackground_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(GtkWindow.MovableByWindowBackground_Key, value))
+				{
+					if (value)
+						Control.ButtonPressEvent += Connector.ButtonPressEvent_Movable;
+					else
+						Control.ButtonPressEvent -= Connector.ButtonPressEvent_Movable;
+				}
+			}
+		}
 
 		private void Control_Realized(object sender, EventArgs e)
 		{
@@ -417,6 +435,16 @@ namespace Eto.GtkSharp.Forms
 			}
 
 			internal void Control_Realized(object sender, EventArgs e) => Handler?.Control_Realized(sender, e);
+
+			internal void ButtonPressEvent_Movable(object o, Gtk.ButtonPressEventArgs args)
+			{
+				var h = Handler;
+				var evt = args.Event;
+				if (h != null && evt.Type == Gdk.EventType.ButtonPress && evt.Button == 1)
+				{
+					h.Control.BeginMoveDrag((int)evt.Button, (int)evt.XRoot, (int)evt.YRoot, evt.Time);
+				}
+			}
 		}
 
 		public MenuBar Menu
@@ -498,7 +526,9 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (disposing)
 			{
+#if !GTKCORE
 				Control.Destroy();
+#endif
 				if (menuBox != null)
 				{
 					menuBox.Dispose();

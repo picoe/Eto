@@ -8,8 +8,14 @@ namespace Eto.Addin.Shared
 
 	public class ProjectWizardPageView : BasePageView
 	{
+		Label HeadingLabel(string text)
+		{
+			return new Label { Text = text, VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Right };
+		}
+
 		public ProjectWizardPageView(ProjectWizardPageModel model)
 		{
+
 			var radioSpacing = Platform.IsGtk ? Size.Empty : new Size(2, 2);
 
 			var content = new DynamicLayout
@@ -29,17 +35,17 @@ namespace Eto.Addin.Shared
 
 
 				content.BeginHorizontal();
-				content.Add(new Label { Text = (model.IsLibrary ? "Library" : "App") + " Name:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center });
+				content.Add(HeadingLabel((model.IsLibrary ? "Library" : "App") + " Name:"));
 				content.AddColumn(nameBox, nameValid);
 				content.EndHorizontal();
 			}
 			else if (!string.IsNullOrEmpty(model.AppName))
 			{
 				var label = new Label { Text = model.AppName, VerticalAlignment = VerticalAlignment.Center };
-				content.AddRow(new Label { Text = (model.IsLibrary ? "Library" : "App") + " Name:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, label);
+				content.AddRow(HeadingLabel((model.IsLibrary ? "Library" : "App") + " Name:"), label);
 			}
 
-			if (model.SupportsSeparated)
+			if (model.SupportsCombined)
 			{
 				var platformTypeList = new RadioButtonList
 				{
@@ -47,14 +53,15 @@ namespace Eto.Addin.Shared
 					Spacing = radioSpacing,
 					Items =
 					{
-						new ListItem { Text = "Single Windows, Linux, and Mac desktop project", Key = "combined" },
-						new ListItem { Text = "Separate projects for each platform", Key = "separate" }
+						new ListItem { Text = "Separate projects for each platform", Key = "separate" },
+						new ListItem { Text = "Single Windows, Linux, and Mac desktop project", Key = "combined" }
 					}
 				};
+				platformTypeList.BindDataContext(c => c.Enabled, (ProjectWizardPageModel m) => m.AllowCombined);
 				platformTypeList.SelectedKeyBinding
-				                .Convert(v => v == "separate", v => v ? "separate" : "combined")
-				                .BindDataContext((ProjectWizardPageModel m) => m.Separate);
-				content.AddRow(new Label { Text = "Launcher:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, platformTypeList);
+				                .Convert(v => v == "combined", v => v ? "combined" : "separate")
+				                .BindDataContext((ProjectWizardPageModel m) => m.Combined);
+				content.AddRow(HeadingLabel("Launcher:"), platformTypeList);
 			}
 
 			if (model.SupportsXamMac)
@@ -65,7 +72,7 @@ namespace Eto.Addin.Shared
 					ToolTip = "This enables you to bundle mono with your app so your users don't have to install it separately.  You can only compile this on a Mac"
 				};
 				cb.CheckedBinding.BindDataContext((ProjectWizardPageModel m) => m.IncludeXamMac);
-				content.AddRow(new Panel(), cb);
+				content.AddRow(HeadingLabel(string.Empty), cb);
 			}
 
 			/*
@@ -87,6 +94,17 @@ namespace Eto.Addin.Shared
 
 			content.Rows.Add(new TableRow(new Label { Text = "Platforms:", TextAlignment = TextAlignment.Right }, platformCheckBoxes));
 			/**/
+
+			if (model.SupportsFramework)
+			{
+				var frameworkCheckBoxes = new CheckBoxList();
+				frameworkCheckBoxes.BindDataContext(c => c.DataStore, (ProjectWizardPageModel m) => m.SupportedFrameworks);
+				frameworkCheckBoxes.ItemTextBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Text);
+				frameworkCheckBoxes.ItemKeyBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Value);
+				frameworkCheckBoxes.SelectedValuesBinding.BindDataContext((ProjectWizardPageModel m) => m.SelectedFrameworks);
+
+				content.AddRow(HeadingLabel("Framework:"), frameworkCheckBoxes);
+			}
 
 			if (model.SupportsProjectType)
 			{
@@ -141,7 +159,7 @@ namespace Eto.Addin.Shared
 					panelTypeList.Items.Add(new ListItem { Text = "Code Preview", Key = "preview" });
 				}
 
-				content.AddRow(new Label { Text = "Form:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, panelTypeList);
+				content.AddRow(HeadingLabel("Form:"), panelTypeList);
 			}
 
 			if (model.SupportsBase)
@@ -157,7 +175,7 @@ namespace Eto.Addin.Shared
 				baseTypeList.Items.Add(new ListItem { Text = "Form", Key = "Form" });
 				baseTypeList.SelectedKeyBinding.BindDataContext((ProjectWizardPageModel m) => m.Base);
 
-				content.AddRow(new Label { Text = "Base:", TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }, baseTypeList);
+				content.AddRow(HeadingLabel("Base:"), baseTypeList);
 			}
 
 #if DEBUG

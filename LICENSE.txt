@@ -1,7 +1,7 @@
 The BSD-3 License.
 
 AUTHORS
-Copyright © 2011-2018 Curtis Wensley. All Rights Reserved.
+Copyright © 2011-2019 Curtis Wensley. All Rights Reserved.
 Copyright © 2012-2013 Vivek Jhaveri. All Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted 

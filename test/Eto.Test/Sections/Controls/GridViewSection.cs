@@ -5,6 +5,8 @@ using Eto.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -29,20 +31,23 @@ namespace Eto.Test.Sections.Controls
 	{
 		static Icon image1 = new Icon(1, TestIcons.TestImage).WithSize(16, 16);
 		static Icon image2 = TestIcons.TestIcon.WithSize(16, 16);
+		GridView gridView;
+		SelectableFilterCollection<MyGridItem> filteredCollection;
 
 		public GridViewSection()
 		{
-			var gridView = CreateGrid();
+			Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
+
+			gridView = CreateGrid();
 			var selectionGridView = CreateGrid();
 
 			// hook up selection of main grid to the selection grid
 			gridView.SelectionChanged += (s, e) => selectionGridView.DataStore = gridView.SelectedItems.ToList();
 
-			var filteredCollection = new SelectableFilterCollection<MyGridItem>(gridView, CreateItems().ToList());
-			gridView.DataStore = filteredCollection;
+			SetDataStore();
 
 			if (Platform.Supports<ContextMenu>())
-				gridView.ContextMenu = CreateContextMenu(gridView, filteredCollection);
+				gridView.ContextMenu = CreateContextMenu(gridView);
 
 			Content = new TableLayout
 			{
@@ -53,14 +58,20 @@ namespace Eto.Test.Sections.Controls
 					new TableRow(
 						"Grid",
 						new TableLayout(
-							CreateOptions(gridView, filteredCollection),
+							CreateOptions(gridView),
 							new TableRow(gridView) { ScaleHeight = true },
-                            CreatePositionLabel(gridView)
+							CreatePositionLabel(gridView)
 						)
 					) { ScaleHeight = true },
 					new TableRow("Selected Items", selectionGridView)
 				}
 			};
+		}
+
+		private void SetDataStore()
+		{
+			filteredCollection = new SelectableFilterCollection<MyGridItem>(gridView, CreateItems());
+			gridView.DataStore = filteredCollection;
 		}
 
 		Label CreatePositionLabel(GridView grid)
@@ -74,57 +85,46 @@ namespace Eto.Test.Sections.Controls
 			return label;
 		}
 
-		StackLayout CreateOptions(GridView grid, SelectableFilterCollection<MyGridItem> filtered)
+		Control CreateOptions(GridView grid)
 		{
-			return new StackLayout
-			{
-				Spacing = 5,
-				HorizontalContentAlignment = HorizontalAlignment.Stretch,
-				Items =
-				{
-					TableLayout.Horizontal(
-						5,
-						null,
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
+
+			layout.AddSeparateRow(null,
 						EnabledCheckBox(grid),
 						EditableCheckBox(grid),
-						AllowMultiSelectCheckBox(grid),
 						ShowHeaderCheckBox(grid),
 						GridLinesDropDown(grid),
+						null);
+			layout.AddSeparateRow(null,
+						AllowMultiSelectCheckBox(grid),
+						AllowEmptySelectionCheckBox(grid),
 						null
-					),
-					TableLayout.Horizontal(
-						5,
-						null,
-						AddItemButton(filtered),
+					);
+			layout.AddSeparateRow(null,
+						AddItemButton(),
 						CreateScrollToRow(grid),
 						CreateBeginEditButton(grid),
 						"Border",
 						CreateBorderType(grid),
 						null
-					),
-					TableLayout.Horizontal(
-						5,
-						null,
+					);
+			layout.AddSeparateRow(null,
 						ReloadDataButton(grid),
+						SetDataButton(grid),
 						null
-					),
-					TableLayout.Horizontal(
-						5,
-						null,
+					);
+			layout.AddSeparateRow(null,
 						"TextBoxCell:",
 						"TextAlignment", TextAlignmentDropDown(grid),
 						"VerticalAlignment", VerticalAlignmentDropDown(grid),
 						null
-					),
-					TableLayout.Horizontal(
-						5,
-						null,
+					);
+			layout.AddSeparateRow(null,
 						"AutoSelectMode", AutoSelectModeDropDown(grid),
 						null
-					),
-					CreateSearchBox(filtered)
-				}
-			};
+					);
+			layout.Add(CreateSearchBox());
+			return layout;
 		}
 
 		Control TextAlignmentDropDown(GridView grid)
@@ -163,6 +163,13 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+		Control AllowEmptySelectionCheckBox(GridView grid)
+		{
+			var control = new CheckBox { Text = "AllowEmptySelection" };
+			control.CheckedBinding.Bind(grid, g => g.AllowEmptySelection);
+			return control;
+		}
+
 		ComboBoxCell MyDropDown(string bindingProperty)
 		{
 			var combo = new ComboBoxCell(bindingProperty);
@@ -194,6 +201,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Button { Text = "ReloadData" };
 			control.Click += (sender, e) => grid.ReloadData(grid.SelectedRows);
+			return control;
+		}
+
+		Control SetDataButton(GridView grid)
+		{
+			var control = new Button { Text = "SetDataStore" };
+			control.Click += (sender, e) => SetDataStore();
 			return control;
 		}
 
@@ -229,7 +243,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		SearchBox CreateSearchBox(SelectableFilterCollection<MyGridItem> filtered)
+		SearchBox CreateSearchBox()
 		{
 			var filterText = new SearchBox { PlaceholderText = "Filter" };
 			filterText.TextChanged += (s, e) =>
@@ -237,13 +251,14 @@ namespace Eto.Test.Sections.Controls
 				var filterItems = (filterText.Text ?? "").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
 				if (filterItems.Length == 0)
-					filtered.Filter = null;
+					filteredCollection.Filter = null;
 				else
-					filtered.Filter = i =>
+					filteredCollection.Filter = i =>
 				{
 					// Every item in the split filter string should be within the Text property
-					foreach (var filterItem in filterItems)
+					for (int i1 = 0; i1 < filterItems.Length; i1++)
 					{
+						string filterItem = filterItems[i1];
 						if (i.Text.IndexOf(filterItem, StringComparison.OrdinalIgnoreCase) == -1)
 						{
 							return false;
@@ -354,16 +369,23 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		IEnumerable<MyGridItem> CreateItems()
+		List<MyGridItem> CreateItems(int count = 10000)
 		{
-			var rand = new Random();
-			for (int i = 0; i < 10000; i++)
+			var sw = new System.Diagnostics.Stopwatch();
+			sw.Start();
+
+			var list = new List<MyGridItem>(count);
+
+			for (int i = 0; i < count; i++)
 			{
-				yield return new MyGridItem(rand, i);
+				list.Add(new MyGridItem(i));
 			}
+			sw.Stop();
+			Log.Write(null, $"Time: {sw.Elapsed}");
+			return list;
 		}
 
-		ContextMenu CreateContextMenu(GridView grid, SelectableFilterCollection<MyGridItem> filtered)
+		ContextMenu CreateContextMenu(GridView grid)
 		{
 			// Context menu
 			var menu = new ContextMenu();
@@ -406,7 +428,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				var i = grid.SelectedItems.First() as MyGridItem;
 				if (i != null)
-					filtered.Remove(i);
+					filteredCollection.Remove(i);
 			};
 			menu.Items.Add(deleteItem);
 
@@ -416,7 +438,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				var i = grid.SelectedItems.First() as MyGridItem;
 				if (i != null)
-					filtered.Insert(0, new MyGridItem(new Random(), 0));
+					filteredCollection.Insert(0, new MyGridItem(0));
 			};
 			menu.Items.Add(insertItem);
 
@@ -456,10 +478,10 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Button AddItemButton(SelectableFilterCollection<MyGridItem> filtered)
+		Button AddItemButton()
 		{
 			var control = new Button { Text = "Add Item" };
-			control.Click += (sender, e) => filtered.Add(new MyGridItem(new Random(), filtered.Count + 1));
+			control.Click += (sender, e) => filteredCollection.Add(new MyGridItem(filteredCollection.Count + 1));
 			return control;
 		}
 
@@ -478,13 +500,22 @@ namespace Eto.Test.Sections.Controls
 		/// <summary>
 		/// POCO (Plain Old CLR Object) to test property bindings
 		/// </summary>
-		protected class MyGridItem
+		protected class MyGridItem : INotifyPropertyChanged
 		{
 			bool? check;
 			string text;
 			string dropDownKey;
 			float? progress;
+			Color color;
+			Image image;
 			Command command;
+
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			void OnPropertyChanged([CallerMemberName] string propertyName = null)
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			}
 
 			public int Row { get; set; }
 
@@ -499,6 +530,7 @@ namespace Eto.Test.Sections.Controls
 				set
 				{
 					check = value;
+					OnPropertyChanged();
 					Log("Check", value);
 				}
 			}
@@ -509,11 +541,20 @@ namespace Eto.Test.Sections.Controls
 				set
 				{
 					text = value;
+					OnPropertyChanged();
 					Log("Text", value);
 				}
 			}
 
-			public Image Image { get; set; }
+			public Image Image
+			{
+				get { return image; }
+				set
+				{
+					image = value;
+					OnPropertyChanged();
+				}
+			}
 
 			public string DropDownKey
 			{
@@ -522,11 +563,21 @@ namespace Eto.Test.Sections.Controls
 				{
 					dropDownKey = value;
 					Log("DropDownKey", value);
+					OnPropertyChanged();
 				}
 			}
 
 			// used for drawable cell
-			public Color Color { get; set; }
+			public Color Color
+			{
+				get { return color; }
+				set
+				{
+					color = value;
+					Log("Color", value);
+					OnPropertyChanged();
+				}
+			}
 
 			public float? Progress
 			{
@@ -535,6 +586,7 @@ namespace Eto.Test.Sections.Controls
 				{
 					progress = value;
 					Log("Progress", value);
+					OnPropertyChanged();
 				}
 			}
 
@@ -546,7 +598,7 @@ namespace Eto.Test.Sections.Controls
 				}
 			}
 
-			public MyGridItem(Random rand, int row)
+			public MyGridItem(int row)
 			{
 				// initialize to random values
 				this.Row = row;
@@ -554,11 +606,14 @@ namespace Eto.Test.Sections.Controls
 				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
 				val = row % 2;
-				Image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
+				image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
+				OnPropertyChanged(nameof(Image));
 
 				text = string.Format("Col 1 Row {0}", row);
+				OnPropertyChanged(nameof(Text));
 
-				Color = Color.FromElementId(row);
+				color = Color.FromElementId(row);
+				OnPropertyChanged(nameof(Color));
 
 				val = row % 5;
 				if (val < 4)

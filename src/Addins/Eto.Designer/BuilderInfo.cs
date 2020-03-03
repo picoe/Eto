@@ -1,4 +1,4 @@
-﻿using Eto.Designer.Builders;
+using Eto.Designer.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,16 +39,14 @@ namespace Eto.Designer
 				GetDesignFile = fileName => Regex.Replace(fileName, @"(.+)([.]vb)", "$1.eto$2")
 			};
 
-			if (EtoEnvironment.Platform.IsWindows)
-			{
 #if RoslynCS
-				// use Roslyn on windows only, for now
-				csBuilder.CreateBuilder = () => new RoslynCSharpInterfaceBuilder();
+			// use Roslyn on windows only, for now
+			csBuilder.CreateBuilder = () => new RoslynCSharpInterfaceBuilder();
 #endif
 #if RoslynVB
-				vbBuilder.CreateBuilder = () => new RoslynVbInterfaceBuilder();
+			vbBuilder.CreateBuilder = () => new RoslynVbInterfaceBuilder();
 #endif
-			}
+
 			yield return csBuilder;
 			yield return vbBuilder;
 

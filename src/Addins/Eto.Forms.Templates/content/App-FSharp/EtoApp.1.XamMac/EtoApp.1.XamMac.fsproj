@@ -9,8 +9,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>EtoApp._1.XamMac</RootNamespace>
     <AssemblyName>EtoApp.1.XamMac</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
-    <UseXamMacFullFramework>true</UseXamMacFullFramework>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -26,16 +28,19 @@
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>true</UseSGen>
     <UseRefCounting>true</UseRefCounting>
-    <PlatformTarget></PlatformTarget>
+    <PlatformTarget>
+    </PlatformTarget>
     <HttpClientHandler>HttpClientHandler</HttpClientHandler>
     <LinkMode>None</LinkMode>
-    <XamMacArch></XamMacArch>
+    <XamMacArch>
+    </XamMacArch>
     <AOTMode>None</AOTMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>true</CreatePackage>
@@ -45,28 +50,14 @@
     <UseRefCounting>true</UseRefCounting>
     <LinkMode>None</LinkMode>
     <GenerateTailCalls>true</GenerateTailCalls>
-    <PlatformTarget></PlatformTarget>
+    <PlatformTarget>
+    </PlatformTarget>
     <HttpClientHandler>HttpClientHandler</HttpClientHandler>
-    <XamMacArch></XamMacArch>
+    <XamMacArch>
+    </XamMacArch>
     <AOTMode>None</AOTMode>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Xamarin.Mac" />
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Eto">
-      <HintPath>..\packages\Eto.Forms.2.5.0-dev\lib\netstandard1.0\Eto.dll</HintPath>
-    </Reference>
-    <Reference Include="Eto.XamMac2">
-      <HintPath>..\packages\Eto.Platform.XamMac2.2.5.0-dev\lib\net45\Eto.XamMac2.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets" />
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128.png" />
@@ -82,7 +73,22 @@
     <ImageAsset Include="Assets.xcassets\Contents.json" />
     <None Include="Info.plist" />
     <Compile Include="Program.fs" />
-    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.Mac" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Eto.Platform.XamMac2">
+      <Version>2.5.1-dev</Version>
+    </PackageReference>
+    <PackageReference Include="FSharp.Core">
+      <Version>4.7.0</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EtoApp.1\EtoApp.1.fsproj">
@@ -90,7 +96,4 @@
       <Name>EtoApp.1</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets" />
-  <Import Project="..\packages\Eto.Forms.2.5.0-dev\build\Eto.Forms.targets" Condition="Exists('..\packages\Eto.Forms.2.5.0-dev\build\Eto.Forms.targets')" />
-  <Import Project="..\packages\Eto.Platform.XamMac2.2.5.0-dev\build\Eto.Platform.XamMac2.targets" Condition="Exists('..\packages\Eto.Platform.XamMac2.2.5.0-dev\build\Eto.Platform.XamMac2.targets')" />
 </Project>

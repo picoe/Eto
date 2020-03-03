@@ -8,17 +8,40 @@ namespace Eto.Test.Sections.Dialogs
 	{
 		public bool AllowAlpha { get; set; }
 
-		public ColorDialogSection()
+		public ColorDialogSection() : this(true)
+		{
+
+		}
+
+		ColorDialogSection(bool showCreateDialog)
 		{
 			var layout = new DynamicLayout { Spacing = new Size(20, 20), DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddRow(null, CreateAllowAlphaCheckBox(), null);
-			layout.AddRow(null, PickColor(), null);
-			layout.AddRow(null, PickColorWithStartingColor(), null);
+			var btnCreateDialog = new Button { Text = "Use in Dialog" };
+			btnCreateDialog.Click += BtnCreateDialog_Click;
 
-			layout.Add(null);
+			layout.BeginCentered();
+			layout.Add(CreateAllowAlphaCheckBox());
+			layout.Add(PickColor());
+			layout.Add(PickColorWithStartingColor());
+			if (showCreateDialog)
+				layout.Add(btnCreateDialog);
+
+			layout.EndCentered();
+			layout.AddCentered(new ColorPicker());
+
+			layout.AddCentered(new TextBox());
+
+			layout.AddSpace();
 
 			Content = layout;
+		}
+
+		private void BtnCreateDialog_Click(object sender, System.EventArgs e)
+		{
+			var dlg = new Dialog();
+			dlg.Content = new ColorDialogSection(false);
+			dlg.ShowModal(this);
 		}
 
 		Control CreateAllowAlphaCheckBox()

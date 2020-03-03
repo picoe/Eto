@@ -21,6 +21,10 @@ namespace Eto.Wpf.Forms.Controls
 
 	public class TextBoxHandler : TextBoxHandler<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
+		internal static object CurrentText_Key = new object();
+		internal static object CurrentSelection_Key = new object();
+		internal static object DisableTextChanged_Key = new object();
+
 		protected override swc.TextBox TextBox => Control;
 
 		public TextBoxHandler()
@@ -116,17 +120,48 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			switch (id) {
 				case TextControl.TextChangedEvent:
-					TextBox.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
+					TextBox.TextChanged += TextBox_TextChanged;
 					break;
 				case Eto.Forms.TextBox.TextChangingEvent:
 					if (clipboard == null)
 						clipboard = new Clipboard();
-					TextBox.PreviewTextInput += (sender, e) =>
+					bool didUpdate = false;
+
+					swi.TextCompositionManager.AddPreviewTextInputStartHandler(TextBox, (sender, e) =>
 					{
-						var tia = new TextChangingEventArgs(e.Text, Selection, true);
-						Callback.OnTextChanging(Widget, tia);
-						e.Handled = tia.Cancel;
-					};
+						// ensure we only fire TextChanging after any IME composition is completed
+						DisableTextChanged++;
+						didUpdate = false;
+						// keep selection/text as they change during composition
+						CurrentSelection = Selection;
+						CurrentText = Text;
+					});
+					swi.TextCompositionManager.AddPreviewTextInputUpdateHandler(TextBox, (sender, e) =>
+					{
+						didUpdate = true;
+					});
+					swi.TextCompositionManager.AddPreviewTextInputHandler(TextBox, (sender, e) =>
+					{
+						// composition is finished, fire textchanging event unless it was cancelled
+						DisableTextChanged--;
+						if (!string.IsNullOrEmpty(e.Text) || Selection.Length() > 0)
+						{
+							var tia = new TextChangingEventArgs(e.Text, Selection, Text, true);
+							Callback.OnTextChanging(Widget, tia);
+							e.Handled = tia.Cancel;
+							if (didUpdate && tia.Cancel && CurrentText != null)
+							{
+								// restore last text value if the event was cancelled and the text wasn't changed manually.
+								DisableTextChanged++;
+								Text = CurrentText;
+								DisableTextChanged--;
+							}
+						}
+
+						CurrentText = null;
+						CurrentSelection = null;
+						didUpdate = false;
+					});
 					TextBox.AddHandler(swi.CommandManager.PreviewExecutedEvent, new swi.ExecutedRoutedEventHandler((sender, e) =>
 					{
 						var command = e.Command as swi.RoutedUICommand;
@@ -218,6 +253,12 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		private void TextBox_TextChanged(object sender, swc.TextChangedEventArgs e)
+		{
+			if (DisableTextChanged == 0)
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
+		}
+
 		public bool ReadOnly
 		{
 			get { return TextBox.IsReadOnly; }
@@ -230,12 +271,19 @@ namespace Eto.Wpf.Forms.Controls
 			set { TextBox.MaxLength = value; }
 		}
 
+		string CurrentText
+		{
+			get => Widget.Properties.Get<string>(TextBoxHandler.CurrentText_Key);
+			set => Widget.Properties.Set(TextBoxHandler.CurrentText_Key, value);
+		}
+
 		public string Text
 		{
-			get { return TextBox.Text; }
+			get => CurrentText ?? TextBox.Text;
 			set
 			{
-				var oldText = TextBox.Text;
+				var oldText = Text;
+				CurrentText = null;
 				var newText = value ?? string.Empty;
 				if (newText != oldText)
 				{
@@ -243,7 +291,12 @@ namespace Eto.Wpf.Forms.Controls
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
 						return;
+					var needsTextChanged = TextBox.Text == newText;
 					TextBox.Text = newText;
+					if (needsTextChanged)
+					{
+						Callback.OnTextChanged(Widget, EventArgs.Empty);
+					}
 				}
 				if (value != null && AutoSelectMode == AutoSelectMode.Never && !HasFocus)
 				{
@@ -257,9 +310,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		public int CaretIndex
 		{
-			get { return TextBox.CaretIndex; }
+			get => CurrentSelection?.Start ?? TextBox.CaretIndex;
 			set
 			{
+				CurrentSelection = null;
 				TextBox.CaretIndex = value;
 				if (!HasFocus)
 					initialSelection = true;
@@ -273,11 +327,24 @@ namespace Eto.Wpf.Forms.Controls
 				initialSelection = true;
 		}
 
+		int DisableTextChanged
+		{
+			get => Widget.Properties.Get<int>(TextBoxHandler.DisableTextChanged_Key);
+			set => Widget.Properties.Set(TextBoxHandler.DisableTextChanged_Key, value);
+		}
+
+		Range<int>? CurrentSelection
+		{
+			get => Widget.Properties.Get<Range<int>?>(TextBoxHandler.CurrentSelection_Key);
+			set => Widget.Properties.Set(TextBoxHandler.CurrentSelection_Key, value);
+		}
+
 		public Range<int> Selection
 		{
-			get { return new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1); }
+			get => CurrentSelection ??　new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1);
 			set
 			{
+				CurrentSelection = null;
 				TextBox.SelectionStart = value.Start;
 				TextBox.SelectionLength = value.Length();
 				if (!HasFocus)

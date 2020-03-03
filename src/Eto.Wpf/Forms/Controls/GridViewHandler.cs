@@ -203,6 +203,7 @@ namespace Eto.Wpf.Forms.Controls
 					Control.ItemsSource = store;
 				else
 					Control.ItemsSource = store != null ? new ObservableCollection<object>(store) : null;
+				EnsureSelection();
 			}
 		}
 

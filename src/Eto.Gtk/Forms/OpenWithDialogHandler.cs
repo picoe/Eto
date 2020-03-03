@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if GTK3
+using System;
 using System.Diagnostics;
 using Eto.Forms;
 
@@ -24,9 +25,14 @@ namespace Eto.GtkSharp.Forms
 
 			if (adialog.Run() == (int)Gtk.ResponseType.Ok)
 				Process.Start(adialog.AppInfo.Executable, "\"" + FilePath + "\"");
+#if GTKCORE
+			adialog.Dispose();
+#else
 			adialog.Destroy();
+#endif
 
 			return DialogResult.Ok;
 		}
 	}
 }
+#endif

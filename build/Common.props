@@ -8,24 +8,48 @@
     
     <XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\</XamarinMacPath>
     <XamarinMacLibPath>$(XamarinMacPath)lib\mono\</XamarinMacLibPath>
-    <ReferencePath Condition="$(ReferencePath) == '' and Exists('$(XamarinMacLibPath)')">$(XamarinMacLibPath)</ReferencePath>
+    <XamarinMacTargetsPath>$(XamarinMacPath)lib\msbuild\</XamarinMacTargetsPath>
+    <HasXamarinMac Condition="!Exists('$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets')">False</HasXamarinMac>
+    <HasXamarinMac Condition="$(HasXamarinMac) == ''">True</HasXamarinMac> <!-- VS for Mac needs this, Exists isn't evaluated -->
     
     <ArtifactsDir Condition="$(BuildOutoutDir) == ''">$(BasePath)artifacts\</ArtifactsDir>
-    <ArtifactsNet45Dir Condition="$(ArtifactsNet45Dir) == ''">$(ArtifactsDir)core\$(Configuration)\net45\</ArtifactsNet45Dir>
-    <ArtifactsNetStandard10Dir Condition="$(ArtifactsNetStandard10Dir) == ''">$(ArtifactsDir)core\$(Configuration)\netstandard1.0\</ArtifactsNetStandard10Dir>
-    <ArtifactsNetStandard20Dir Condition="$(ArtifactsNetStandard20Dir) == ''">$(ArtifactsDir)core\$(Configuration)\netstandard2.0\</ArtifactsNetStandard20Dir>
-    <ArtifactsModernDir Condition="$(ArtifactsModernDir) == ''">$(ArtifactsDir)core\$(Configuration)\modern\</ArtifactsModernDir>
-    <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition="$(BaseIntermediateOutputPath) == ''">$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <SourceDir Condition="$(SourceDir) == ''">$(BasePath)src\</SourceDir>
     <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
-    <NugetOutputDir Condition="$(NugetOutputDir) == ''">$(ArtifactsDir)nuget\$(Configuration)\</NugetOutputDir>
+    <PackageOutputPath>$(ArtifactsDir)nuget\$(Configuration)\</PackageOutputPath>
     <AddinDir>$(SourceDir)\Addins\</AddinDir>
-    <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Linux'">"mdtool"</mdtool>
-    <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
-    <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
-    <UtilitiesBasePath>$(ArtifactsDir)obj</UtilitiesBasePath>
-    
-    <VersionInfoPropsFile>$(ArtifactsDir)obj\VersionInfo.props</VersionInfoPropsFile>
+    <BuildDir>$(MSBuildThisFileDirectory)</BuildDir>
     
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <!-- global nuget/assembly properties -->
+    
+    <Version Condition="$(AssemblyVersion) == ''">2.5.0.0</Version>
+    <InformationalVersion Condition="$(InformationalVersion) == ''">2.5.1-dev</InformationalVersion>
+    <Company>Picoe Software Solutions</Company>
+    <Copyright>(c) 2010-2019 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
+    
+    <PackageVersion>$(InformationalVersion)</PackageVersion>
+    <PackageLicenseFile>Eto-LICENSE.txt</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+    <AssemblyVersionMajorMinor>$([System.Version]::Parse($([System.String]::Copy('$(Version)').Replace('.*', ''))).ToString(2))</AssemblyVersionMajorMinor>
+    <DaysSince2000>$([System.DateTime]::Today.Subtract($([System.DateTime]::Parse('2000-01-01T00:00:00Z'))).TotalDays.ToString('0'))</DaysSince2000>
+    <SecondsOfTodayHalved>$([MSBuild]::Divide($([System.DateTime]::Now.Subtract($([System.DateTime]::Today)).TotalSeconds), 2).ToString('0'))</SecondsOfTodayHalved>
+    <FileVersion>$(AssemblyVersionMajorMinor).$(DaysSince2000).$(SecondsOfTodayHalved)</FileVersion>
+    
+    <PackageProjectUrl>https://github.com/picoe/Eto</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
+    
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(BasePath)LICENSE.txt" PackageCopyToOutput="False" Pack="True" PackagePath="$(PackageLicenseFile)">
+      <Link>Eto-LICENSE.txt</Link>
+    </None>
+  </ItemGroup>
+
+
 </Project>

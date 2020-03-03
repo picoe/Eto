@@ -20,7 +20,7 @@ namespace Eto.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PropertyBinding<T> : IndirectBinding<T>
 	{
-#if PCL
+#if NETSTANDARD
 		PropertyInfo descriptor;
 		Type declaringType;
 #else
@@ -76,7 +76,7 @@ namespace Eto.Forms
 				|| (descriptor == null || declaringType != dataItem.GetType())
 			)
 			{
-#if PCL
+#if NETSTANDARD
 				var dataItemType = dataItem.GetType();
 				descriptor = null;
 				// iterate to find non-public properties or with different case
@@ -118,7 +118,7 @@ namespace Eto.Forms
 		{
 			EnsureProperty(dataItem);
 			if (descriptor != null && dataItem != null
-				#if PCL
+				#if NETSTANDARD
 				&& descriptor.CanRead
 				#endif
 				)
@@ -152,7 +152,7 @@ namespace Eto.Forms
 		{
 			EnsureProperty(dataItem);
 			if (descriptor != null && dataItem != null
-				#if PCL
+				#if NETSTANDARD
 				&& descriptor.CanWrite
 				#else
 				&& !descriptor.IsReadOnly
@@ -165,7 +165,7 @@ namespace Eto.Forms
 				{
 					try
 					{
-#if PCL
+#if NETSTANDARD
 						propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 #endif
 						val = System.Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);

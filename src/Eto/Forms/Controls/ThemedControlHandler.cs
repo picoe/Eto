@@ -169,8 +169,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets a value indicating whether this instance has the keyboard input focus.
 		/// </summary>
-		/// <value>true</value>
-		/// <c>false</c>
+		/// <value><c>true</c> if this instance has focus; otherwise, <c>false</c>.</value>
 		public virtual bool HasFocus
 		{
 			get { return Control.HasFocus; }

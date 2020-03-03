@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks Condition="$(HasXamarinMac) == 'True'">$(TargetFrameworks);xamarinmac20</TargetFrameworks>
+    <RootNamespace>Eto.Test.Mac</RootNamespace>
+    <DefineConstants>$(DefineConstants);XAMMAC2</DefineConstants>
+    <LanguageTargets Condition="$(HasXamarinMac) == 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
+    <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
+    <EnableDefaultContentItems>False</EnableDefaultContentItems>
+    <UseSGen>True</UseSGen>
+    <AOTMode>None</AOTMode>
+    <CodeSigningKey>Mac Developer</CodeSigningKey>
+    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
+    <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+    <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:5220</MonoBundlingExtraArgs>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">
+    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <LinkMode Condition="$(Configuration) == 'Release'">Platform</LinkMode>
+    <UseXamMacFullFramework>false</UseXamMacFullFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework) != 'xamarinmac20'">
+    <UseXamMacFullFramework>true</UseXamMacFullFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.Mac" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
+    <ProjectReference Include="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\src\Eto.Mac\Eto.XamMac2.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.12.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestIcon.icns" />
+    <None Include="Info.plist" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+</Project>

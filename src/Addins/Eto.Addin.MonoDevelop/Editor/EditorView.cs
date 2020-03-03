@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if MD_7_0
+using System;
 using MonoDevelop.Ide.Gui;
 using Eto.Forms;
 using MonoDevelop.Ide;
@@ -227,3 +228,5 @@ namespace Eto.Addin.MonoDevelop.Editor
 		object ICommandRouter.GetNextCommandTarget() => (content as ICommandRouter)?.GetNextCommandTarget();
 	}
 }
+
+#endif

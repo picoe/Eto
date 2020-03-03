@@ -236,6 +236,7 @@ namespace Eto.Test.Sections.Behaviors
 
 			layout.BeginHorizontal();
 
+			layout.BeginScrollable(BorderType.None);
 			layout.BeginCentered();
 
 			layout.AddSeparateRow(showDragOverEvents);
@@ -264,6 +265,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSpace();
 
 			layout.EndCentered();
+			layout.EndScrollable();
 
 			layout.BeginVertical(xscale: true);
 			layout.AddRange("Drag sources:", buttonSource, panelSource);

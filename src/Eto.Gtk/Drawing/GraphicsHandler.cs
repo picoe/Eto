@@ -550,6 +550,7 @@ namespace Eto.GtkSharp.Drawing
 			ApplyTransform();
 		}
 
+#if !GTK2
 		public static bool GetClipRectangle(Cairo.Context cr, ref Gdk.Rectangle rect)
 		{
 			IntPtr intPtr = Marshaller.StructureToPtrAlloc(rect);
@@ -559,11 +560,21 @@ namespace Eto.GtkSharp.Drawing
 			Marshal.FreeHGlobal(intPtr);
 			return result;
 		}
+#endif
 
 		public RectangleF ClipBounds
 		{
 			get
 			{
+#if GTK2
+				var bounds = clipBounds ?? (widget != null ? (RectangleF)widget.Allocation.ToEto() : RectangleF.Empty);
+				var matrix = Control.Matrix;
+				if (matrix.IsIdentity())
+					return bounds;
+				var etoMatrix = matrix.ToEto();
+				etoMatrix.Invert();
+				return etoMatrix.TransformRectangle(bounds);
+#else
 				var bounds = clipBounds;
 				if (bounds == null)
 				{
@@ -579,6 +590,7 @@ namespace Eto.GtkSharp.Drawing
 				var etoMatrix = matrix.ToEto();
 				etoMatrix.Invert();
 				return etoMatrix.TransformRectangle(bounds.Value);
+#endif
 			}
 		}
 

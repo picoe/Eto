@@ -18,7 +18,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class Palette : ObservableCollection<Color>
-	#if !PCL
+	#if !NETSTANDARD
 	, ICloneable
 	#endif
 	{
@@ -366,7 +366,7 @@ namespace Eto.Drawing
 			return new Palette(this);
 		}
 
-		#if !PCL
+		#if !NETSTANDARD
 
 		/// <summary>
 		/// Creates a clone of this palette

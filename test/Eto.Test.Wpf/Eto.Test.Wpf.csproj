@@ -1,42 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}</ProjectGuid>
+    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT' and $([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">true</HaveWindowsDesktopSdk>
+
+    <TargetFrameworks></TargetFrameworks>
+    <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.1</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
+
+  <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Eto.Test.Wpf</RootNamespace>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <ApplicationIcon>TestIcon.ico</ApplicationIcon>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <AssemblyName>Eto.Test.Wpf</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
     <Prefer32Bit>false</Prefer32Bit>
+    <UseWPF Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWPF>
+    <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
   </PropertyGroup>
-  <PropertyGroup>
-    <FileAlignment>512</FileAlignment>
-    <DebugSymbols>True</DebugSymbols>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\artifacts\test\Debug\net461\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\artifacts\test\Release\net461\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
+  
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-  <ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -52,61 +41,35 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Startup.cs" />
-    <Compile Include="UnitTests\DataContextTests.cs" />
-    <Compile Include="UnitTests\LabelTests.cs" />
-    <Compile Include="UnitTests\MenuBarTests.cs" />
-    <Compile Include="UnitTests\NativeParentWindowTests.cs" />
-    <Compile Include="UnitTests\ScreenTests.cs" />
-    <Compile Include="UnitTests\ScrollableTests.cs" />
-    <Compile Include="UnitTests\TransformStackTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <AppDesigner Include="Properties\" />
-  </ItemGroup>
+  
   <ItemGroup>
     <Resource Include="TestIcon.ico" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj">
-      <Project>{63137FA0-CA55-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Wpf</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
-      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
-      <Name>Eto.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Eto\Eto.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj" />
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
-    <None Include="app.config">
+    <None Update="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="app.manifest">
+    <None Update="app.manifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  
   <ItemGroup>
-    <PackageReference Include="NUnit">
-      <Version>3.11.0</Version>
+    <PackageReference Include="NUnit" Version="3.12.0">
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+
 </Project>

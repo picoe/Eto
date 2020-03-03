@@ -70,7 +70,7 @@ namespace Eto.Wpf.Forms.Controls
 			style.Setters.Add(new sw.Setter(sw.FrameworkElement.HorizontalAlignmentProperty, sw.HorizontalAlignment.Stretch));
 
 			UpdateOrientation();
-			Control.Loaded += (sender, e) => SetInitialPosition();
+			Control.Loaded += Control_Loaded;
 			Control.SizeChanged += (sender, e) => ResetMinMax();
 
 			panel1VisibilityNotifier = new PropertyChangeNotifier(sw.UIElement.VisibilityProperty);
@@ -80,13 +80,22 @@ namespace Eto.Wpf.Forms.Controls
 			panel2VisibilityNotifier.ValueChanged += HandlePanel2IsVisibleChanged;
 		}
 
+		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			// only set on initial load, subsequent loads should keep the last position
+			Control.Loaded -= Control_Loaded;
+			SetInitialPosition();
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
+					PositionChangedEnabled++;
 					Widget.Properties.Set(swc.RowDefinition.HeightProperty, PropertyChangeNotifier.Register(swc.RowDefinition.HeightProperty, HandlePositionChanged, Control.RowDefinitions[0]));
 					Widget.Properties.Set(swc.ColumnDefinition.WidthProperty, PropertyChangeNotifier.Register(swc.ColumnDefinition.WidthProperty, HandlePositionChanged, Control.ColumnDefinitions[0]));
+					PositionChangedEnabled--;
 					break;
 				default:
 					base.AttachEvent(id);

@@ -87,10 +87,8 @@ namespace Eto.Wpf.Forms
 	{
 		internal static readonly object Cursor_Key = new object();
 
-		// unique instance value so we can tell if we are dragging/dropping within the same instance
-		internal static string DragEtoInstanceValue = Guid.NewGuid().ToString();
-		internal const string DragEtoInstanceKey = "eto.instance";
-		internal const string DragEtoSourceKey = "eto.source";
+		// source Eto control for drag operations
+		internal static Control DragSourceControl { get; set; }
 
 		internal const string CustomCursor_DataKey = "Eto.CustomCursor";
 
@@ -349,18 +347,20 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
+		protected virtual sw.FrameworkElement FocusControl => Control;
+
 		public virtual void Focus()
 		{
-			if (Control.IsLoaded)
-				Control.Focus();
+			if (FocusControl.IsLoaded)
+				FocusControl.Focus();
 			else
-				Control.Loaded += HandleFocus;
+				FocusControl.Loaded += HandleFocus;
 		}
 
 		void HandleFocus(object sender, sw.RoutedEventArgs e)
 		{
-			Control.Focus();
-			Control.Loaded -= HandleFocus;
+			FocusControl.Focus();
+			FocusControl.Loaded -= HandleFocus;
 		}
 
 		protected virtual void EnsureLoaded()
@@ -665,21 +665,8 @@ namespace Eto.Wpf.Forms
 		protected virtual DragEventArgs GetDragEventArgs(sw.DragEventArgs data, object controlObject)
         {
             var dragData = (data.Data as sw.DataObject).ToEto();
-			var instanceKey = data.Data.GetData(WpfFrameworkElement.DragEtoInstanceKey) as string;
-			Control source = null;
-			// only try to get the source control within the same instance of the application
-			// since Eto objects can't be serialized through COM
-			if (instanceKey == WpfFrameworkElement.DragEtoInstanceValue)
-			{
-				try
-				{
-					source = data.Data.GetData(WpfFrameworkElement.DragEtoSourceKey) as Control;
-				}
-				catch
-				{
-					// ignore errors here, just in case.
-				}
-			}
+
+			Control source = WpfFrameworkElement.DragSourceControl;
 
 			var location = data.GetPosition(Control).ToEto();
 			var modifiers = Keys.None;
@@ -740,14 +727,14 @@ namespace Eto.Wpf.Forms
 
 		void HandleMouseMove(object sender, swi.MouseEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			Callback.OnMouseMove(Widget, args);
 			e.Handled = args.Handled;
 		}
 
 		protected virtual void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control, swi.MouseButtonState.Released);
+			var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
 			if ((isMouseCaptured || args.Handled) && Control.IsMouseCaptured)
@@ -759,14 +746,14 @@ namespace Eto.Wpf.Forms
 
 		void HandleMouseDoubleClick(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			Callback.OnMouseDoubleClick(Widget, args);
 			e.Handled = args.Handled;
 		}
 
 		protected virtual void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Callback.OnMouseDoubleClick(Widget, args);
 			if (!args.Handled)
@@ -915,11 +902,10 @@ namespace Eto.Wpf.Forms
 
 		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF offset)
         {
-
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			var dataObject = data.ToWpf();
 
-			sw.WpfDataObjectExtensions.SetDataEx(dataObject, WpfFrameworkElement.DragEtoInstanceKey, WpfFrameworkElement.DragEtoInstanceValue);
+			WpfFrameworkElement.DragSourceControl = Widget;
 
 			sw.DragSourceHelper.RegisterDefaultDragSource(Control, dataObject);
 			sw.DragSourceHelper.AllowDropDescription(true);
@@ -938,7 +924,8 @@ namespace Eto.Wpf.Forms
 
 			sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
 
-			//sw.DragSourceHelper.UnregisterDefaultDragSource(Control);
+			WpfFrameworkElement.DragSourceControl = null;
+			sw.DragSourceHelper.UnregisterDefaultDragSource(Control);
 		}
 
 

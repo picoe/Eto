@@ -3,43 +3,31 @@
    "configurations": [
         {
             "name": "Eto.Test.Mac64",
-            "type": "mono",
+            "type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-mac64",
-			"useRuntime": false,
-            "program": "${workspaceFolder}/artifacts/test/Debug/net461/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp3.1/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "name": "Eto.Test.Gtk",
-            "type": "coreclr",
+			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-gtk",
-            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp2.0/Eto.Test.Gtk.dll",
+            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp3.1/Eto.Test.Gtk.dll",
             "args": [],
             "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "Eto.Test.Gtk2",
-			"type": "clr",
-			"osx": {"type": "mono"},
-            "request": "launch",
-			"preLaunchTask": "build-gtk2",
-            "program": "${workspaceFolder}/artifacts/test/Debug/net461/Eto.Test.Gtk2.exe",
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
-        },
-        {
             "name": "Eto.Test.Wpf",
-			"type": "clr",
+			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
-            "program": "${workspaceFolder}/artifacts/test/Debug/net461/Eto.Test.Wpf.exe",
+            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp3.1/Eto.Test.Wpf.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"

@@ -1,19 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <RootNamespace>EtoApp._1</RootNamespace>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <DefineConstants Condition="$(Mode)==''">UseCode;IsWindow;IsForm</DefineConstants>
-    <PackageVersion>1.0</PackageVersion>
-    <Title>EtoApp.1</Title>
-    <Copyright>Copyright © 2018</Copyright>
-    <Description>Description of EtoApp.1</Description>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Eto.Forms" Version="2.5.0-dev" />
-    <PackageReference Include="Eto.Serialization.Json" Version="2.5.0-dev" Condition="$(UseJeto) == 'True'" />
-    <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.0-dev" Condition="$(UseXeto) == 'True'" />
+    <PackageReference Include="Eto.Forms" Version="2.5.1-dev" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.5.1-dev" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.1-dev" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
   
 </Project>

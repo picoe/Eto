@@ -1,4 +1,4 @@
-﻿using Eto.Forms;
+using Eto.Forms;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -124,8 +124,8 @@ namespace Eto.Designer.Builders
 		}
 
 
-		protected const string ReferenceAssembliesFolder = @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5";
-		protected const string MacMonoInstallationFolder = @"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5";
+		protected const string ReferenceAssembliesFolder = @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2";
+		protected const string MacMonoInstallationFolder = @"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.7.2-api";
 
 		protected string GetReferenceAssembliesPath(string basePath)
 		{

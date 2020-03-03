@@ -1,39 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project>
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{74328428-C412-4BC3-BD0C-E1DBC43FB479}</ProjectGuid>
+    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT' and $([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">true</HaveWindowsDesktopSdk>
+
+    <TargetFrameworks></TargetFrameworks>
+    <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.1</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
+
+  <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Eto.Test.Direct2D</RootNamespace>
-    <AssemblyName>Eto.Test.Direct2D</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <ApplicationIcon>..\Eto.Test\Images\TestIcon.ico</ApplicationIcon>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
   </PropertyGroup>
+  
   <PropertyGroup>
-    <FileAlignment>512</FileAlignment>
-    <DebugSymbols>True</DebugSymbols>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <Title>Eto Test for Direct2D</Title>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\artifacts\test\Debug\net461\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\artifacts\test\Release\net461\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <ItemGroup>
+  
+  <ItemGroup Condition="$(TargetFramework) == 'net461'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,37 +36,15 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
+  
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Startup.cs" />
+    <ProjectReference Include="..\..\src\Eto.WinForms\Eto.WinForms.csproj" />
+    <ProjectReference Include="..\..\src\Eto.Direct2D\Eto.Direct2D.csproj" />
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Eto.WinForms\Eto.WinForms.csproj">
-      <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
-      <Name>Eto.WinForms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Eto.Direct2D\Eto.Direct2D.csproj">
-      <Project>{330EF9FD-5947-4AC9-9796-950C7633695F}</Project>
-      <Name>Eto.Direct2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
-      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
-      <Name>Eto.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Eto\Eto.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
+  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+  
 </Project>

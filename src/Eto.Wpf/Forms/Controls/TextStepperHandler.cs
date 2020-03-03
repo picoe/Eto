@@ -104,6 +104,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override swc.Control BorderControl => Control;
 
+		protected override sw.FrameworkElement FocusControl => TextBox;
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)

@@ -1,3 +1,4 @@
+#if GTK2
 using System;
 using System.Globalization;
 using System.Threading;
@@ -266,3 +267,4 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 	}
 }
+#endif

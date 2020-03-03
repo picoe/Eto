@@ -1,13 +1,13 @@
-version: 2.5.0.{build}
-image: Visual Studio 2017
+version: 2.5.1.{build}
+image: Visual Studio 2019
 install:
-- cinst gtksharp -y
+- cmd: git submodule -q update --init
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
 - set BUILD_VERSION_NUMBER=000%APPVEYOR_BUILD_NUMBER%
 - set BUILD_VERSION=2.5.0-build%BUILD_VERSION_NUMBER:~-4%
-- msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% build\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
-- msbuild -t:BuildAddins build\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
+- msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% build\Build.proj /v:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary /p:HaveWindowsDesktopSdk=true
+- msbuild -t:BuildAddins build\Build.proj /v:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary /p:HaveWindowsDesktopSdk=true
 test: off
 #test_script:
 #- nunit-console --framework=4.5 --include=TestPlatform artifacts/Release/net45/test/Eto.Test.dll
@@ -20,7 +20,7 @@ artifacts:
 - path: artifacts/test
   name: test
   type: zip
-- path: artifacts/addin/Release/VisualStudio/Eto.Addin.VisualStudio.vsix
+- path: artifacts/addin/Release/VisualStudio/Eto.Addin.VisualStudio*.vsix
   name: vsix
 branches:
   only:

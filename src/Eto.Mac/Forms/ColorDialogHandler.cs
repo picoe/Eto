@@ -26,69 +26,110 @@ namespace Eto.Mac.Forms
 
 		void OnWillClose(NSNotification notification);
 		void OnDidResignKey(NSNotification notification);
+		void OnColorChanged();
 	}
 
-	class ColorHandler : NSWindowDelegate
+	class ColorWindowDelegate : NSWindowDelegate
 	{
-		public static ColorHandler Instance { get; set; }
-		WeakReference handler;
-		public IColorDialogHandler Handler { get { return (IColorDialogHandler)handler.Target; } set { handler = new WeakReference(value); } }
+		static readonly NSString s_ColorProperty = new NSString("color");
+		const string s_ChangeColorMethodName = "changeColor:";
+		static readonly Selector s_selChangeColor = new Selector(s_ChangeColorMethodName);
 
-		[Export("changeColor:")]
+		static ColorWindowDelegate Instance { get; set; }
+
+		WeakReference handler;
+		public IColorDialogHandler Handler { get => (IColorDialogHandler)handler.Target; set => handler = new WeakReference(value); }
+
+		public ColorWindowDelegate(IColorDialogHandler handler)
+		{
+			Handler = handler;
+			Attach();
+		}
+
+		[Export(s_ChangeColorMethodName)]
 		public void ChangeColor(NSColorPanel panel)
 		{
-			var h = Handler;
-			if (h != null)
-			{
-				h.Color = panel.Color.UsingColorSpace(NSColorSpace.DeviceRGB).ToEto(false);
-				h.Callback.OnColorChanged(h.Widget, EventArgs.Empty);
-			}
-			else
-			{
-				// the ColorDialog was probably GC'd, so unhook gracefully
-				Instance = null;
-			}
+			Handler?.OnColorChanged();
+
+			// the ColorDialog was probably GC'd, so unhook gracefully
+			if (Handler == null)
+				Detach();
 		}
 
 		public override void WillClose(NSNotification notification)
 		{
 			Handler?.OnWillClose(notification);
-			var control = Handler?.Control ?? NSColorPanel.SharedColorPanel;
-			control.SetTarget(null);
-			control.SetAction(null);
-			Instance = null;
+			Detach();
 		}
 
 		public override void DidResignKey(NSNotification notification)
 		{
 			Handler?.OnDidResignKey(notification);
+			Detach();
 		}
 
-		[Export("modalClosed:")]
-		public void ModalClosed(NSNotification notification)
+		[Export("observeValueForKeyPath:ofObject:change:context:")]
+		public void ObserveValueForKeyPath(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
+		{
+			if (keyPath == s_ColorProperty)
+			{
+				Handler?.OnColorChanged();
+
+				// the ColorDialog was probably GC'd, so unhook gracefully
+				if (Handler == null)
+					Detach();
+			}
+		}
+
+		public void Detach()
 		{
 			var control = Handler?.Control ?? NSColorPanel.SharedColorPanel;
-			control.PerformClose(this);
-			NSNotificationCenter.DefaultCenter.RemoveObserver(this);
+			if (control.Delegate == this)
+			{
+				control.Delegate = null;
+				control.SetTarget(null);
+				control.SetAction(null);
+				control.RemoveObserver(this, s_ColorProperty);
+			}
+			if (ReferenceEquals(this, Instance))
+				Instance = null;
+		}
+
+		public void Attach()
+		{
+			Instance?.Detach();
+
+			var control = Handler?.Control ?? NSColorPanel.SharedColorPanel;
+			// set delegate so we know when it resigns key or is closed
+			control.Delegate = this;
+			// set target
+			control.SetTarget(this);
+			control.SetAction(s_selChangeColor);
+			// set KVO observer as target doesn't work when called from a modal dialog
+			control.AddObserver(this, s_ColorProperty, NSKeyValueObservingOptions.New, IntPtr.Zero);
+			Instance = this;
 		}
 	}
 
 	public class ColorDialogHandler : MacObject<NSColorPanel, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler, IColorDialogHandler
 	{
-		protected override NSColorPanel CreateControl()
+		ColorWindowDelegate _delegate;
+		Color _color = Colors.White;
+		Color? _lastColor;
+
+		protected override NSColorPanel CreateControl() => NSColorPanel.SharedColorPanel;
+
+		protected override bool DisposeControl => false;
+
+		public Color Color
 		{
-			return NSColorPanel.SharedColorPanel;
+			get => _color;
+			set
+			{
+				_color = value;
+				_lastColor = value;
+			}
 		}
-
-		protected override bool DisposeControl { get { return false; } }
-
-		protected override void Initialize()
-		{
-			Color = Colors.White;
-			base.Initialize();
-		}
-
-		public Color Color { get; set; }
 
 		public bool AllowAlpha { get; set; }
 
@@ -98,53 +139,16 @@ namespace Eto.Mac.Forms
 
 		public virtual DialogResult ShowDialog(Window parent)
 		{
-			//Control = new NSColorPanel();
-			NSWindow parentWindow;
-			//Console.WriteLine ("Parent: {0}. {1}, {2}", parent, parent.ControlObject, NSApplication.SharedApplication.ModalWindow);
-			if (parent != null)
-			{
-				parentWindow = parent.ParentWindow.ControlObject as NSWindow ?? NSApplication.SharedApplication.KeyWindow;
-				if (parentWindow != null)
-					Control.ParentWindow = parentWindow;
-			}
-			else parentWindow = NSApplication.SharedApplication.KeyWindow;
+			_delegate = new ColorWindowDelegate(this);
 
-			ColorHandler.Instance = new ColorHandler { Handler = this };
-			Control.Delegate = ColorHandler.Instance;
-			Control.SetTarget(null);
-			Control.SetAction(null);
+			Control.WorksWhenModal = true;
 			Control.Color = Color.ToNSUI();
-
-			Control.SetTarget(ColorHandler.Instance);
-			Control.SetAction(new Selector("changeColor:"));
 			Control.ShowsAlpha = AllowAlpha;
 
-			//Control.Continuous = false;
-			bool isModal = false;
-			if (parentWindow != null)
-			{
-				if (parentWindow == NSApplication.SharedApplication.ModalWindow)
-				{
-					//Control.WorksWhenModal = true;
-					//Control.ParentWindow = parentWindow;
-					NSNotificationCenter.DefaultCenter.AddObserver(ColorHandler.Instance, new Selector("modalClosed:"), new NSString("NSWindowWillCloseNotification"), parentWindow);
-					isModal = true;
-				}
-			}
+			NSApplication.SharedApplication.OrderFrontColorPanel(Control);
 
-
-			// work around for modal dialogs wanting to show the color panel.. only works when the panel is key
-
-			//if (isModal) Control.MakeKeyAndOrderFront (parentWindow);
-			//else Control.OrderFront (parentWindow);
-			if (Control == NSColorPanel.SharedColorPanel)
-				NSApplication.SharedApplication.OrderFrontColorPanel(parentWindow);
-			else
-				Control.OrderFront(parentWindow);
-
-			if (isModal) Control.MakeKeyWindow();
-			//Control.OrderFront (parentWindow);
-
+			// we detach when we resign key as there's no other way to know.
+			Control.MakeKeyWindow();
 
 			return DialogResult.None; // signal that we are returning right away!
 		}
@@ -163,7 +167,25 @@ namespace Eto.Mac.Forms
 
 		void IColorDialogHandler.OnDidResignKey(NSNotification notification) => OnDidResignKey(notification);
 
+		public virtual void OnColorChanged()
+		{
+			_color = Control.Color.UsingColorSpace(NSColorSpace.DeviceRGB).ToEto(false);
+			if (_color == _lastColor)
+				return;
+			_lastColor = _color;
+			Callback.OnColorChanged(Widget, EventArgs.Empty);
+		}
+
+		void IColorDialogHandler.OnColorChanged() => OnColorChanged();
+
 		#endregion
+
+		protected override void Dispose(bool disposing)
+		{
+			_delegate?.Detach();
+			_delegate = null;
+			base.Dispose(disposing);
+		}
 	}
 }
 

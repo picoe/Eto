@@ -32,19 +32,19 @@
 	<Extension path="/MonoDevelop/Ide/Templates">
 		<Template
 			id="Eto.App.CSharp"
-			path="Packages/Eto.Forms.Templates.2.5.0-dev.nupkg"
+			path="Packages/Eto.Forms.Templates.2.5.1-dev.nupkg"
 			imageId="eto-project"
 			wizard="Eto.Addin.MonoDevelop.ProjectWizard"
 			category="multiplat/app/eto"
-			supportedParameters="AppName,Separated,Xeto,Preview,Jeto,XamMac,NoDash"
+			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,NoDash,Framework"
 			/>
 		<Template
 			id="Eto.App.FSharp"
-			path="Packages/Eto.Forms.Templates.2.5.0-dev.nupkg"
+			path="Packages/Eto.Forms.Templates.2.5.1-dev.nupkg"
 			imageId="eto-project"
 			wizard="Eto.Addin.MonoDevelop.ProjectWizard"
 			category="multiplat/app/eto"
-			supportedParameters="AppName,Separated,Xeto,Preview,Jeto,XamMac,NoDash"
+			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,NoDash,Framework"
 			/>
 	</Extension>
 
@@ -52,7 +52,7 @@
 		<!-- So we can get access to project properties, e.g. namespace for resource ID  -->
 		<FileTemplateType name="EnhancedFile" class="Eto.Addin.MonoDevelop.EnhancedFile" />
 	</Extension>
-
+    
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id="eto.cs.code.form" file="Templates/Files/CS/code/form.xft.xml" />
 		<FileTemplate id="eto.cs.code.dialog" file="Templates/Files/CS/code/dialog.xft.xml" />
@@ -110,9 +110,11 @@
 		<!--ProjectFlavor guid="" type="Eto.Addin.MonoDevelop.FSharpProjectExtension" alias="Eto.FSharp"/-->
 	</Extension>	
 	
+	<!-- MD 7
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding insertbefore="DefaultDisplayBinding" class="Eto.Addin.MonoDevelop.Editor.DisplayBinding" />
 	</Extension>
+	-->
 	<Extension path="/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions=".xeto" class="Eto.Addin.MonoDevelop.Editor.XetoTextEditorExtension" insertbefore="XmlTextEditorExtension" />
 	</Extension>

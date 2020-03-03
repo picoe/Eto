@@ -238,5 +238,47 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Application.Instance.Invoke(() => f?.Close());
 			}
 		}
+
+		[TestCase(true, true)]
+		[TestCase(true, false)]
+		[TestCase(false, true)]
+		[TestCase(false, false)]
+		public void ClickingWithEmptyDataShouldNotCrash(bool allowEmptySelection, bool allowMultipleSelection)
+		{
+			Exception exception = null;
+			Form(form =>
+			{
+				var dd = new List<GridItem>();
+
+				dd.Add(new GridItem { Values = new[] { "Hello" } });
+				var control = new GridView();
+				control.AllowEmptySelection = allowEmptySelection;
+				control.AllowMultipleSelection = allowMultipleSelection;
+				control.Columns.Add(new GridColumn
+				{
+					DataCell = new TextBoxCell(0),
+					Width = 100,
+					HeaderText = "Text Cell"
+				});
+				control.DataStore = dd;
+				Application.Instance.AsyncInvoke(() => {
+					// can crash when had selection initially but no selection after.
+					try
+					{
+						control.DataStore = new List<GridItem>();
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+					}
+					Application.Instance.AsyncInvoke(form.Close);
+				});
+
+				form.Content = control;
+			});
+
+			if (exception != null)
+				ExceptionDispatchInfo.Capture(exception).Throw();
+		}
 	}
 }

@@ -23,6 +23,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.Add(TextAreaControl());
 			if (Platform.Supports<ListBox>())
 				layout.Add(ListBoxControl());
+			layout.Add(PanelControl());
 			layout.EndHorizontal();
 
 			layout.AddRow(null, CheckBoxControl(), RadioButtonControl());
@@ -186,6 +187,16 @@ namespace Eto.Test.Sections.Behaviors
 			LogEvents(control);
 			return control;
 		}
+
+		Control PanelControl()
+		{
+			var control = new Panel();
+			control.Padding = 10;
+
+			LogEvents(control);
+			return new Panel { Content = control, BackgroundColor = Colors.Yellow };
+		}
+
 
 
 		Control DrawableControl()

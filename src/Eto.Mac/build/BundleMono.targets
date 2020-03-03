@@ -1,0 +1,151 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacTouchApp">
+
+  <PropertyGroup>
+    
+    <!-- Specifies that the executable should be bundled using mkbundle so mono isn't required to be installed on the user's machine -->
+    <MacBundleMono Condition="$(MacBundleMono) == '' AND $(Configuration) == 'Release'">detect</MacBundleMono> 
+    <MacBundleMono Condition="$(MacBundleMono) == ''">False</MacBundleMono>
+
+    <!-- Target server to download packages from.  Use non-ssl so it works on windows. See https://github.com/mono/mono/issues/17201#issuecomment-557943107 -->
+    <MkBundleTargetServer Condition="$(MkBundleTargetServer) == '' AND $(IsWindows) == 'True'">http://download.mono-project.com/runtimes/raw/</MkBundleTargetServer>
+
+    <!-- Target when bundling mono, or 'default' to use system mono.  See mkbundle -list-targets -->
+    <MacBundleTarget Condition="$(MacBundleTarget) == '' AND $(IsMac) != 'True'">mono-6.4.0-osx-10.9-x64</MacBundleTarget>
+
+    <!-- minimum installed version of mono required to run -->
+    <MacMonoMinimumVersion Condition="$(MacMonoMinimumVersion) == ''">5.10</MacMonoMinimumVersion>
+  </PropertyGroup>
+  
+  <Target Name="MacTouchApp" Condition="$(MacBuildBundle) == 'True'">
+    <!-- This makes it so we can debug in VS for Mac right away without building first -->
+    <MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != '' AND $(TargetFramework) != '' AND $(RuntimeIdentifier) == ''" />
+  </Target>
+
+  <!-- Build target -->
+  <Target Name="BuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle" Condition="$(MacBuildBundle) == 'True'" Outputs="$(OutputAppPath)">
+    <!-- bundle mono with mkbundle -->
+    <CallTarget Targets="MacBundleMono" Condition="$(MacBundleMono) == 'True'" />
+    <!-- copy executables and run with installed mono -->
+    <CallTarget Targets="MacCopyExecutables" Condition="$(MacBundleMono) != 'True'" />
+    <!-- finish building the bundle -->
+    <CallTarget Targets="MacFinishBundle" />
+    
+  </Target>
+
+  <Target Name="DetectMkBundle" Condition="$(MacBundleMono) == 'True' OR $(MacBundleMono) == 'detect'">
+    <PropertyGroup>
+      <MonoPath Condition="$(MonoPath) == '' AND $(IsMac) == 'True' AND Exists('/Library/Frameworks/Mono.framework/Versions/Current/')">/Library/Frameworks/Mono.framework/Versions/Current/</MonoPath>
+      <MonoPath Condition="$(MonoPath) == '' AND $(IsWindows) == 'True' AND Exists('$(ProgramW6432)\mono\')">$(ProgramW6432)\mono\</MonoPath>
+      <MonoPath Condition="$(MonoPath) == '' AND $(IsWindows) == 'True' AND Exists('$(MSBuildProgramFiles32)\mono\')">$(MSBuildProgramFiles32)\mono\</MonoPath>
+      <MonoPath Condition="$(MonoPath) == '' AND $(IsUnix) == 'True' AND Exists('/usr/bin/mono')">/usr/</MonoPath>
+
+      <MonoBinPath Condition="$(MonoPath) != '' AND Exists('$(MonoPath)bin\')">$(MonoPath)bin\</MonoBinPath>
+      <MkBundleExe>$(MonoBinPath)mkbundle</MkBundleExe>
+
+      <IsDetectingMkBundle Condition="$(MacBundleMono) == 'detect'">True</IsDetectingMkBundle>
+      <MacBundleMono Condition="$(MacBundleMono) == 'detect' AND Exists('$(MkBundleExe)')">True</MacBundleMono>
+
+      <MacBundleTarget Condition="$(MacBundleTarget) == 'default'"></MacBundleTarget>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(MkBundleExe)') AND $(MacBundleMono) == 'True'" Text="You must install mono to bundle your app (from https://mono-project.com), or add &lt;MacBundleMono&gt;False&lt;/MacBundleMono&gt; to your project." />
+    
+    <Message Text="Found mkbundle, bundling mono inside app" Condition="$(IsDetectingMkBundle) == 'True' and $(MacBundleMono) == 'True'" />
+    <Warning Text="Couldn't find mkbundle, so app bundle will require mono to be installed! Install mono from https://mono-project.com to bundle it with your app or set MonoPath to where it is installed." Condition="$(IsDetectingMkBundle) == 'True' and $(MacBundleMono) != 'True'" />
+  </Target>
+
+  <!-- Install the mono target if needed (e.g. cross compiling on linux or windows) -->
+  <Target Name="MacEnsureBundleTarget" Condition="$(MacBundleTarget) != ''">
+    <Exec Command='"$(MkBundleExe)" --local-targets' ConsoleToMSBuild="true" StandardOutputImportance="low" >
+      <Output TaskParameter="ConsoleOutput" PropertyName="LocalMkBundleTargets" />
+    </Exec>
+    <PropertyGroup>
+      <MkBundleArgs></MkBundleArgs>
+      <MkBundleArgs Condition="$(MkBundleTargetServer) != ''">$(MkBundleArgs) --target-server "$(MkBundleTargetServer)"</MkBundleArgs>
+      <MkBundleArgs>$(MkBundleArgs) --fetch-target $(MacBundleTarget)</MkBundleArgs>
+    </PropertyGroup>
+    <Exec Command='"$(MkBundleExe)" $(MkBundleArgs)' Condition="!$(LocalMkBundleTargets.Contains('$(MacBundleTarget)'))" />
+    
+  </Target>
+
+  <!-- Bundle mono inside the .app using mkbundle -->
+  <Target Name="MacBundleMono" DependsOnTargets="MacInitializeBundle;MacEnsureBundleTarget">
+    <PropertyGroup>
+      <MkBundleArgs></MkBundleArgs>
+      <MkBundleArgs Condition="$(MacBundleTarget) != ''">$(MkBundleArgs) --cross $(MacBundleTarget)</MkBundleArgs>
+      
+      <MkBundleArgs Condition="$(MacBundleTarget) == ''">$(MkBundleArgs) --sdk "$(MonoPath)"</MkBundleArgs>
+      <MkBundleArgs Condition="$(MacBundleTarget) == ''">$(MkBundleArgs) -L "$(MonoPath)\lib\mono\4.5\Facades"</MkBundleArgs>
+      <MkBundleArgs>$(MkBundleArgs) -L "$(TargetDir.TrimEnd('\'))"</MkBundleArgs>
+      <MkBundleArgs>$(MkBundleArgs) --simple --deps</MkBundleArgs> 
+      <MkBundleArgs>$(MkBundleArgs) -o "$(LauncherFileWithPath)" "$(TargetPath)"</MkBundleArgs>
+      <MkBundleArgs Condition="$(HasXamMac) == 'True'">$(MkBundleArgs) "$(TargetDir)Eto.XamMac2.dll"</MkBundleArgs>
+      <MkBundleArgs Condition="$(HasXamMac) != 'True' AND $(Has64Bit) == 'True'">$(MkBundleArgs) "$(TargetDir)Eto.Mac64.dll"</MkBundleArgs>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <!-- missing dependencies in mac cross targets, so copy them over from the system mono -->
+      <CrossCompileMissingDependencies Include="$(MonoPath)lib\mono\4.5\WindowsBase.dll" Condition="Exists('$(MonoPath)lib\mono\4.5\WindowsBase.dll')" />
+    </ItemGroup>
+    
+    <!-- fix problems with cross compiling target not including some dependencies -->
+    <Copy SourceFiles="@(CrossCompileMissingDependencies)" DestinationFolder="$(TargetDir)" Condition="$(MacBundleTarget) != ''"/>
+    
+    <!-- Make standalone bundle with embedded mono -->
+    <MakeDir Directories="$(LauncherPath)" />
+    <Exec Command='"$(MkBundleExe)" $(MkBundleArgs)' StandardOutputImportance="low" />
+  </Target>
+  
+  <!-- Copy executables to the MonoBundle folder, which requires mono to be installed in the system -->
+  <Target Name="MacCopyExecutables" DependsOnTargets="MacInitializeBundle">
+    <PropertyGroup>
+      <OutputMonoBundlePath>$(OutputContents)MonoBundle</OutputMonoBundlePath>
+      <LauncherExecutable Condition="'$(LauncherExecutable)' == '' AND $(MacArch)=='x86_64'">$(ReferenceFiles)Launcher64</LauncherExecutable>
+
+      <XamarinMacAssembly Condition="$(XamarinMacAssembly) == '' AND Exists('$(ReferenceFiles)Xamarin.Mac.dll')">$(ReferenceFiles)Xamarin.Mac.dll</XamarinMacAssembly>
+      <XamarinMacAssembly Condition="$(XamarinMacAssembly) == '' AND Exists('\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll')">\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll</XamarinMacAssembly>
+    </PropertyGroup>
+    
+    <Copy SourceFiles="$(LauncherExecutable)" DestinationFiles="$(LauncherFileWithPath)" SkipUnchangedFiles="true" />
+    
+    <FindUnderPath  
+      Files="@(FileWrites)"
+      Path="$(TargetDir)">
+            <Output TaskParameter="InPath" ItemName="ExecutableFiles" />
+    </FindUnderPath>
+    
+    <!-- Copy ouput files, except for non-mac Eto platforms -->
+    <ItemGroup>
+      <!--ExecutableFiles Include="$(TargetDir)\**" Exclude="$(OutputAppPath)\**\*" /-->
+      <ExecutableFiles Include="$(XamarinMacAssembly)" Condition="$(HasXamMac) == 'True'" />
+      <ExecutableFiles Include="@(MacExecutableFiles->'$(TargetDir)%(Identity)')" />
+      <ExecutableFiles Include="@(None)" Condition="%(None.CopyToOutputDirectory) != ''" />
+      <ExecutableFiles Include="@(ReferenceCopyLocalPaths)" Condition="
+        !(%(Filename) == 'Eto' and %(Extension) == '.xml')
+        and %(Filename) != 'Eto.Direct2D'
+        and %(Filename) != 'Eto.Gtk2'
+        and %(Filename) != 'Eto.Gtk3'
+        and %(Filename) != 'Eto.Gtk'
+        and %(Filename) != 'Eto.Wpf'
+        and %(Filename) != 'Eto.WinForms'
+        and %(Filename) != 'Eto.iOS'
+        and %(Filename) != 'Eto.WinRT'
+        and %(Filename) != 'Eto.Android'
+        and %(Filename) != 'Eto.XamMac'
+        and (
+          $(MacIncludeSymbols) == 'True'
+          or (
+            %(Extension) != '.pdb'
+            and %(Extension) != '.mdb'
+          )
+        )
+        and (($(HasXamMac) != 'True' and $(Has64Bit) == 'True') or %(Filename) != 'Eto.Mac64')
+        and ($(HasXamMac) == 'True' or %(Filename) != 'Eto.XamMac2')
+        " />
+    </ItemGroup>
+    
+    <!-- copy executable files -->
+    <Copy SourceFiles="@(ExecutableFiles)" DestinationFolder="$(OutputMonoBundlePath)\%(ExecutableFiles.DestinationSubDirectory)" />
+  </Target>
+  
+  
+</Project>

@@ -261,27 +261,40 @@ namespace Eto.Forms
 			object childBindingReference = null;
 			object context = null;
 			EventHandler<EventArgs> eventHandler = null;
-			EventHandler<EventArgs> valueChanged = (sender, e) =>
+			void ValueChanged(object sender, EventArgs e)
 			{
 				binding.RemoveValueChangedHandler(childBindingReference, eventHandler);
 				eventHandler?.Invoke(sender, e);
 				childBindingReference = binding.AddValueChangedHandler(GetValue(context), eventHandler);
-			};
+			}
+
+			void setValueStruct(object c, TNewValue v)
+			{
+				// for structs, we need to box as an object then set the value back
+				object parentValue = GetValue(context = c);
+				binding.SetValue(parentValue, v);
+				SetValue(c, (T)parentValue);
+			}
+
+			void setValueObject(object c, TNewValue v) => binding.SetValue(GetValue(context = c), v);
+
+			var isStruct = typeof(TNewValue).GetTypeInfo().IsValueType;
+
 			return new DelegateBinding<object, TNewValue>(
 				c => binding.GetValue(GetValue(context = c)),
-				(c, v) => binding.SetValue(GetValue(context = c), v),
+				isStruct ? (Action<object, TNewValue>)setValueStruct : setValueObject,
 				addChangeEvent: (c, ev) =>
 				{
 					context = c;
 					eventHandler = ev;
-					bindingReference = AddValueChangedHandler(c, valueChanged);
+					bindingReference = AddValueChangedHandler(c, ValueChanged);
 
 					childBindingReference = binding.AddValueChangedHandler(GetValue(c), ev);
 				},
 				removeChangeEvent: (c, ev) =>
 				{
 					binding.RemoveValueChangedHandler(childBindingReference, ev);
-					RemoveValueChangedHandler(bindingReference, valueChanged);
+					RemoveValueChangedHandler(bindingReference, ValueChanged);
 				}
 			);
 		}

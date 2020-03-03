@@ -1,29 +1,55 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TargetFrameworks>netstandard1.0;netstandard2.0</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors Condition="$(Configuration) == 'Release'">true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;DEBUG;PCL</DefineConstants>
-    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE;PCL</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
+  <PropertyGroup>
+    <PackageId>Eto.Forms</PackageId>
+    <Title>Eto.Forms</Title>
+    <Description>Eto.Forms UI Framework</Description>
+    <PackageTags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</PackageTags>
+    <PackageDescription>
+Eto.Forms is a cross platform desktop user interface framework.
+
+This framework is built so that you can target multiple platforms with one UI codebase.
+
+The goal of this framework is to expose a common API that can be used to build functional applications that run across platforms using their native toolkit. This will make your applications look and work as if it were a native application on all platforms.
+
+For advanced scenarios, you can take advantage of each platform's capabilities by wrapping your common UI in a larger application, or even create your own high-level controls with a custom implementations per platform.
+
+This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac, Xamarin.Mac, and GTK#.
+
+In order to run your Eto.Forms based application, you must also install one (or more) of the following packages:
+
+- Eto.Platform.Wpf
+- Eto.Platform.Windows
+- Eto.Platform.Direct2D
+- Eto.Platform.Gtk
+- Eto.Platform.Gtk2
+- Eto.Platform.Gtk3
+- Eto.Platform.Mac64
+- Eto.Platform.XamMac2
+
+To get more information about how to get started, read the wiki:
+
+https://github.com/picoe/Eto/wiki
+    </PackageDescription>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Shared\EnumerableExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\LICENSE.txt">
-      <Link>Eto-LICENSE.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Remove="Eto.Forms.targets" />
+    <None Include="Eto.Forms.targets" Pack="true" PackagePath="build" />
+    <None Update="$(BasePath)LICENSE.txt" CopyToOutputDirectory="PreserveNewest" /> 
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
 </Project>

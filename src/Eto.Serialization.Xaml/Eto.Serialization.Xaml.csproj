@@ -1,27 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-    <!-- Use this when multi-targeting works in VS for Mac (it works with msbuild though!)
-    <TargetFrameworks>netstandard1.0;netstandard1.3</TargetFrameworks>
-    -->
+    <TargetFrameworks>netstandard1.0;netstandard2.0</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);PCL;PORTABLE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;DEBUG;PCL;PORTABLE</DefineConstants>
-    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
+  
+  <PropertyGroup>
+    <PackageId>Eto.Serialization.Xaml</PackageId>
+    <Title>Eto.Forms Xaml serializer</Title>
+    <Description>Eto.Forms Xaml serializer</Description>
+    <PackageTags>cross platform gui ui framework desktop xaml eto.forms</PackageTags>
+    <PackageDescription>
+Eto.Xaml allows you to load xaml UI definitions for the Eto.Forms framework
+
+To get more information about how to get started, read the wiki:
+
+https://github.com/picoe/Eto/wiki
+    </PackageDescription>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE;PCL;PORTABLE</DefineConstants>
-    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
-  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\Eto\TypeHelper.cs" />
+    <None Remove="Eto.Serialization.Xaml.targets" />
+    <None Include="Eto.Serialization.Xaml.targets" Pack="true" PackagePath="build" />
   </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
-    <PackageReference Include="Portable.Xaml" Version="0.23.0" />
+    <PackageReference Include="Portable.Xaml" Version="0.24.0" />
   </ItemGroup>
+  
   <ItemGroup Condition="$(TargetFramework) == 'netstandard1.0'">
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
   </ItemGroup>

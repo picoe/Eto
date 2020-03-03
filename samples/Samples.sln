@@ -1,28 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoMac", "MonoMac", "{F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XamarinMac", "XamarinMac", "{F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}"
 	ProjectSection(MonoDevelopProperties) = preProject
-		BaseDirectory = MonoMac
+		BaseDirectory = XamarinMac
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedEtoInMonoMac", "MonoMac\EmbedEtoInMonoMac\EmbedEtoInMonoMac.csproj", "{95B6E385-A0ED-4A49-99B5-19569156FCE6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedMonoMacInEto", "MonoMac\EmbedMonoMacInEto\EmbedMonoMacInEto.csproj", "{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Eto", "Eto", "{19A4EA01-CA9E-4390-B448-974152AB5706}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto", "..\src\Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac", "..\src\Eto.Mac\Eto.Mac.csproj", "{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinForms", "..\src\Eto.WinForms\Eto.WinForms.csproj", "{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf", "..\src\Eto.Wpf\Eto.Wpf.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2", "..\src\Eto.Gtk\Eto.Gtk2.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinForms", "WinForms", "{1A922E1B-12D1-4CAA-929C-A400BC875EAB}"
 EndProject
@@ -49,25 +41,47 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tutorials", "Tutorials", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharp", "FSharp", "{7F02CD51-CD4B-4927-AAF3-3B056D5413B3}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FS.Tutorial1.HelloWorld", "Tutorials\FSharp\Tutorial1\FS.Tutorial1.HelloWorld.fsproj", "{1364E3AE-8EA7-4A0C-88DD-5131A31F2B3F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FS.Tutorial1.HelloWorld", "Tutorials\FSharp\Tutorial1\FS.Tutorial1.HelloWorld.fsproj", "{1364E3AE-8EA7-4A0C-88DD-5131A31F2B3F}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FS.Tutorial2.MenusAndToolbars", "Tutorials\FSharp\Tutorial2\FS.Tutorial2.MenusAndToolbars.fsproj", "{4A9DEB43-39B2-4AE6-98B2-7F0F73E449C4}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FS.Tutorial2.MenusAndToolbars", "Tutorials\FSharp\Tutorial2\FS.Tutorial2.MenusAndToolbars.fsproj", "{4A9DEB43-39B2-4AE6-98B2-7F0F73E449C4}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FS.Tutorial3.TableLayout", "Tutorials\FSharp\Tutorial3\FS.Tutorial3.TableLayout.fsproj", "{4A9DEB43-39B3-4AE6-98B2-7F0F73E449C4}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FS.Tutorial3.TableLayout", "Tutorials\FSharp\Tutorial3\FS.Tutorial3.TableLayout.fsproj", "{4A9DEB43-39B3-4AE6-98B2-7F0F73E449C4}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FS.Tutorial4.Binding", "Tutorials\FSharp\Tutorial4\FS.Tutorial4.Binding.fsproj", "{B7ED284C-EDAF-4F91-829A-04C297FA92B6}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FS.Tutorial4.Binding", "Tutorials\FSharp\Tutorial4\FS.Tutorial4.Binding.fsproj", "{B7ED284C-EDAF-4F91-829A-04C297FA92B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64", "..\src\Eto.Mac\Eto.Mac64.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{C1F05813-B09E-4946-808C-42D46BF999A3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.Tutorial1.HelloWorld", "Tutorials\CSharp\Tutorial1\CS.Tutorial1.HelloWorld.csproj", "{7BE9E187-3FC4-49D2-A322-F4651C3AE256}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.Tutorial1.HelloWorld", "Tutorials\CSharp\Tutorial1\CS.Tutorial1.HelloWorld.csproj", "{7BE9E187-3FC4-49D2-A322-F4651C3AE256}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.Tutorial2.MenusAndToolbars", "Tutorials\CSharp\Tutorial2\CS.Tutorial2.MenusAndToolbars.csproj", "{0844A0AD-778A-4DB3-8332-03AC50A17D05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.Tutorial2.MenusAndToolbars", "Tutorials\CSharp\Tutorial2\CS.Tutorial2.MenusAndToolbars.csproj", "{0844A0AD-778A-4DB3-8332-03AC50A17D05}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.Tutorial3.TableLayout", "Tutorials\CSharp\Tutorial3\CS.Tutorial3.TableLayout.csproj", "{D51732E0-1E93-11E3-8224-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.Tutorial3.TableLayout", "Tutorials\CSharp\Tutorial3\CS.Tutorial3.TableLayout.csproj", "{D51732E0-1E93-11E3-8224-0800200C9A66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.Tutorial4.Binding", "Tutorials\CSharp\Tutorial4\CS.Tutorial4.Binding.csproj", "{DDC8A290-2F20-11E4-8C21-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.Tutorial4.Binding", "Tutorials\CSharp\Tutorial4\CS.Tutorial4.Binding.csproj", "{DDC8A290-2F20-11E4-8C21-0800200C9A66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedEtoInXamarinMac", "XamarinMac\EmbedEtoInXamarinMac\EmbedEtoInXamarinMac.csproj", "{BD58EE60-9197-4C28-87C7-85AA13E02332}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedXamarinMacInEto", "XamarinMac\EmbedXamarinMacInEto\EmbedXamarinMacInEto.csproj", "{41266591-508F-40B6-9360-AFECE6FBFC27}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{212A0614-C2B8-4BA8-9EA6-3CD26A5629D2}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "..\src\Eto.Mac\Eto.XamMac2.csproj", "{6C147DFC-0EC3-4B94-8239-D0A47A035739}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk", "..\src\Eto.Gtk\Eto.Gtk.csproj", "{800E0242-6368-4F10-AE85-1B218C08463C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoMac", "..\lib\monomac\src\MonoMac.csproj", "{23244704-480A-4158-9823-532F67AAEBD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "core", "..\lib\monomac\src\core.csproj", "{E8BF4713-68B0-452A-A798-B448FC07CA0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "monomac", "monomac", "{028C71AC-ACDF-48D3-B2AC-811FC787C70F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "generator", "..\lib\monomac\src\generator.csproj", "{5124D2E8-236E-4CB6-9065-5E44DCE3B636}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,30 +93,6 @@ Global
 		Release|Windows = Release|Windows
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Debug|Linux.Build.0 = Debug|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Debug|Mac.Build.0 = Debug|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Debug|Windows.Build.0 = Debug|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Release|Linux.ActiveCfg = Release|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Release|Linux.Build.0 = Release|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Release|Mac.ActiveCfg = Release|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Release|Mac.Build.0 = Release|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Release|Windows.ActiveCfg = Release|Any CPU
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6}.Release|Windows.Build.0 = Release|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Debug|Linux.Build.0 = Debug|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Debug|Mac.Build.0 = Debug|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Debug|Windows.Build.0 = Debug|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Release|Linux.ActiveCfg = Release|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Release|Linux.Build.0 = Release|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Release|Mac.ActiveCfg = Release|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Release|Mac.Build.0 = Release|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Release|Windows.ActiveCfg = Release|Any CPU
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF}.Release|Windows.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Linux.Build.0 = Debug|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Mac.ActiveCfg = Debug|Any CPU
@@ -115,18 +105,6 @@ Global
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Release|Mac.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Release|Windows.ActiveCfg = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Release|Windows.Build.0 = Release|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Debug|Linux.Build.0 = Debug|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Release|Linux.Build.0 = Release|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
 		{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}.Debug|Linux.Build.0 = Debug|Any CPU
 		{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}.Debug|Mac.ActiveCfg = Debug|Any CPU
@@ -147,18 +125,6 @@ Global
 		{63137FA0-CA55-11E3-9C1A-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
 		{63137FA0-CA55-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
 		{63137FA0-CA55-11E3-9C1A-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Linux.Build.0 = Debug|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Linux.Build.0 = Release|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
 		{733C7D13-F676-4E41-BDB2-27696BD5AD15}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{733C7D13-F676-4E41-BDB2-27696BD5AD15}.Debug|Linux.Build.0 = Debug|Any CPU
 		{733C7D13-F676-4E41-BDB2-27696BD5AD15}.Debug|Mac.ActiveCfg = Debug|Any CPU
@@ -331,18 +297,86 @@ Global
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
+		{BD58EE60-9197-4C28-87C7-85AA13E02332}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{BD58EE60-9197-4C28-87C7-85AA13E02332}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{BD58EE60-9197-4C28-87C7-85AA13E02332}.Debug|Mac.Build.0 = Debug|Any CPU
+		{BD58EE60-9197-4C28-87C7-85AA13E02332}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{BD58EE60-9197-4C28-87C7-85AA13E02332}.Release|Linux.ActiveCfg = Release|Any CPU
+		{BD58EE60-9197-4C28-87C7-85AA13E02332}.Release|Mac.ActiveCfg = Release|Any CPU
+		{BD58EE60-9197-4C28-87C7-85AA13E02332}.Release|Mac.Build.0 = Release|Any CPU
+		{BD58EE60-9197-4C28-87C7-85AA13E02332}.Release|Windows.ActiveCfg = Release|Any CPU
+		{41266591-508F-40B6-9360-AFECE6FBFC27}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{41266591-508F-40B6-9360-AFECE6FBFC27}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{41266591-508F-40B6-9360-AFECE6FBFC27}.Debug|Mac.Build.0 = Debug|Any CPU
+		{41266591-508F-40B6-9360-AFECE6FBFC27}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{41266591-508F-40B6-9360-AFECE6FBFC27}.Release|Linux.ActiveCfg = Release|Any CPU
+		{41266591-508F-40B6-9360-AFECE6FBFC27}.Release|Mac.ActiveCfg = Release|Any CPU
+		{41266591-508F-40B6-9360-AFECE6FBFC27}.Release|Mac.Build.0 = Release|Any CPU
+		{41266591-508F-40B6-9360-AFECE6FBFC27}.Release|Windows.ActiveCfg = Release|Any CPU
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Debug|Mac.Build.0 = Debug|Any CPU
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Release|Linux.ActiveCfg = Release|Any CPU
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Release|Mac.ActiveCfg = Release|Any CPU
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Release|Mac.Build.0 = Release|Any CPU
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Release|Windows.ActiveCfg = Release|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Linux.Build.0 = Debug|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Mac.Build.0 = Debug|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Windows.Build.0 = Debug|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Linux.ActiveCfg = Release|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Linux.Build.0 = Release|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Mac.ActiveCfg = Release|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Mac.Build.0 = Release|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Windows.ActiveCfg = Release|Any CPU
+		{800E0242-6368-4F10-AE85-1B218C08463C}.Release|Windows.Build.0 = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Linux.Build.0 = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Mac.Build.0 = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Debug|Windows.Build.0 = Debug|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Linux.ActiveCfg = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Linux.Build.0 = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Mac.ActiveCfg = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Mac.Build.0 = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Windows.ActiveCfg = Release|Any CPU
+		{23244704-480A-4158-9823-532F67AAEBD2}.Release|Windows.Build.0 = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Linux.Build.0 = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Mac.Build.0 = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Debug|Windows.Build.0 = Debug|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Linux.ActiveCfg = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Linux.Build.0 = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Mac.ActiveCfg = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Mac.Build.0 = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Windows.ActiveCfg = Release|Any CPU
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C}.Release|Windows.Build.0 = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Linux.Build.0 = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Mac.Build.0 = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Debug|Windows.Build.0 = Debug|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Linux.ActiveCfg = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Linux.Build.0 = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Mac.ActiveCfg = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Mac.Build.0 = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Windows.ActiveCfg = Release|Any CPU
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{95B6E385-A0ED-4A49-99B5-19569156FCE6} = {F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}
-		{86A6EB85-7A64-4E9A-9C72-121A904D8EAF} = {F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2} = {19A4EA01-CA9E-4390-B448-974152AB5706}
-		{3E7995E0-C9EB-11E3-9C1A-0800200C9A66} = {19A4EA01-CA9E-4390-B448-974152AB5706}
 		{9F51798A-354C-47A1-9207-4BB7D7FC7FC4} = {19A4EA01-CA9E-4390-B448-974152AB5706}
 		{63137FA0-CA55-11E3-9C1A-0800200C9A66} = {19A4EA01-CA9E-4390-B448-974152AB5706}
-		{80915A80-CA54-11E3-9C1A-0800200C9A66} = {19A4EA01-CA9E-4390-B448-974152AB5706}
 		{733C7D13-F676-4E41-BDB2-27696BD5AD15} = {1A922E1B-12D1-4CAA-929C-A400BC875EAB}
 		{05323072-56A7-4CFE-9C64-2E7762D592EB} = {1A922E1B-12D1-4CAA-929C-A400BC875EAB}
 		{D528D241-8063-4732-B19D-6939838E516F} = {F72787D2-13C7-4CBA-A383-5BFC74ACEFFB}
@@ -360,55 +394,16 @@ Global
 		{0844A0AD-778A-4DB3-8332-03AC50A17D05} = {C1F05813-B09E-4946-808C-42D46BF999A3}
 		{D51732E0-1E93-11E3-8224-0800200C9A66} = {C1F05813-B09E-4946-808C-42D46BF999A3}
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66} = {C1F05813-B09E-4946-808C-42D46BF999A3}
+		{BD58EE60-9197-4C28-87C7-85AA13E02332} = {F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}
+		{41266591-508F-40B6-9360-AFECE6FBFC27} = {F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}
+		{6C147DFC-0EC3-4B94-8239-D0A47A035739} = {19A4EA01-CA9E-4390-B448-974152AB5706}
+		{800E0242-6368-4F10-AE85-1B218C08463C} = {19A4EA01-CA9E-4390-B448-974152AB5706}
+		{23244704-480A-4158-9823-532F67AAEBD2} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
+		{E8BF4713-68B0-452A-A798-B448FC07CA0C} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
+		{028C71AC-ACDF-48D3-B2AC-811FC787C70F} = {19A4EA01-CA9E-4390-B448-974152AB5706}
+		{5124D2E8-236E-4CB6-9065-5E44DCE3B636} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C5EE3ED5-BFCC-4709-9FC2-0053C18D5883}
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Tutorials\Tutorial1\Tutorial1 - Hello World.csproj
-		Policies = $0
-		$0.TextStylePolicy = $1
-		$1.inheritsSet = null
-		$1.scope = text/x-csharp
-		$0.CSharpFormattingPolicy = $2
-		$2.IndentSwitchBody = True
-		$2.AnonymousMethodBraceStyle = NextLine
-		$2.PropertyBraceStyle = NextLine
-		$2.PropertyGetBraceStyle = NextLine
-		$2.PropertySetBraceStyle = NextLine
-		$2.EventBraceStyle = NextLine
-		$2.EventAddBraceStyle = NextLine
-		$2.EventRemoveBraceStyle = NextLine
-		$2.StatementBraceStyle = NextLine
-		$2.ElseNewLinePlacement = NewLine
-		$2.CatchNewLinePlacement = NewLine
-		$2.FinallyNewLinePlacement = NewLine
-		$2.WhileNewLinePlacement = DoNotCare
-		$2.ArrayInitializerWrapping = DoNotChange
-		$2.ArrayInitializerBraceStyle = NextLine
-		$2.BeforeMethodDeclarationParentheses = False
-		$2.BeforeMethodCallParentheses = False
-		$2.BeforeConstructorDeclarationParentheses = False
-		$2.BeforeDelegateDeclarationParentheses = False
-		$2.NewParentheses = False
-		$2.SpacesBeforeBrackets = False
-		$2.scope = text/x-csharp
-		$2.IndentSwitchSection = False
-		$2.NewLinesForBracesInProperties = False
-		$2.NewLinesForBracesInAccessors = False
-		$2.NewLinesForBracesInAnonymousMethods = False
-		$2.NewLinesForBracesInControlBlocks = False
-		$2.NewLinesForBracesInAnonymousTypes = False
-		$2.NewLinesForBracesInObjectCollectionArrayInitializers = False
-		$2.NewLinesForBracesInLambdaExpressionBody = False
-		$2.NewLineForElse = False
-		$2.NewLineForCatch = False
-		$2.NewLineForFinally = False
-		$2.NewLineForMembersInObjectInit = False
-		$2.NewLineForMembersInAnonymousTypes = False
-		$2.NewLineForClausesInQuery = False
-		$2.SpacingAfterMethodDeclarationName = True
-		$2.SpaceAfterMethodCallName = True
-		$2.SpaceBeforeOpenSquareBracket = True
 	EndGlobalSection
 EndGlobal

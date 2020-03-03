@@ -9,23 +9,30 @@ namespace Eto.Forms.ThemedControls
 	/// </summary>
 	public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextStepper, TextStepper.ICallback>, TextStepper.IHandler
 	{
-		readonly TextBox textBox;
-		readonly Stepper stepper;
+		/// <summary>
+		/// Gets the TextBox part of the themed text stepper
+		/// </summary>
+		public TextBox TextBox { get; private set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedTextStepperHandler"/> class.
+		/// Gets the Stepper part of the themed text stepper
 		/// </summary>
-		public ThemedTextStepperHandler()
+        public Stepper Stepper { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedTextStepperHandler"/> class.
+        /// </summary>
+        public ThemedTextStepperHandler()
 		{
-			textBox = new TextBox();
-			stepper = new Stepper();
+			TextBox = new TextBox();
+			Stepper = new Stepper();
 			Control = TableLayout.Horizontal(
-				new TableCell(textBox, true),
-				stepper
+				new TableCell(TextBox, true),
+				Stepper
 			);
 			Control.EndInit();
 
-			textBox.KeyDown += TextBox_KeyDown;
+			TextBox.KeyDown += TextBox_KeyDown;
 		}
 
 		void TextBox_KeyDown(object sender, KeyEventArgs e)
@@ -57,8 +64,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The index of the current insertion point.</value>
 		public int CaretIndex
 		{
-			get { return textBox.CaretIndex; }
-			set { textBox.CaretIndex = value; }
+			get { return TextBox.CaretIndex; }
+			set { TextBox.CaretIndex = value; }
 		}
 
 		/// <summary>
@@ -67,8 +74,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The text font.</value>
 		public Font Font
 		{
-			get { return textBox.Font; }
-			set { textBox.Font = value; }
+			get { return TextBox.Font; }
+			set { TextBox.Font = value; }
 		}
 
 		/// <summary>
@@ -81,8 +88,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The maximum length of the text in the control.</value>
 		public int MaxLength
 		{
-			get { return textBox.MaxLength; }
-			set { textBox.MaxLength = value; }
+			get { return TextBox.MaxLength; }
+			set { TextBox.MaxLength = value; }
 		}
 
 		/// <summary>
@@ -95,8 +102,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The placeholder text.</value>
 		public string PlaceholderText
 		{
-			get { return textBox.PlaceholderText; }
-			set { textBox.PlaceholderText = value; }
+			get { return TextBox.PlaceholderText; }
+			set { TextBox.PlaceholderText = value; }
 		}
 
 		/// <summary>
@@ -109,8 +116,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value><c>true</c> if the control is read only; otherwise, <c>false</c>.</value>
 		public bool ReadOnly
 		{
-			get { return textBox.ReadOnly; }
-			set { textBox.ReadOnly = value; }
+			get { return TextBox.ReadOnly; }
+			set { TextBox.ReadOnly = value; }
 		}
 
 		/// <summary>
@@ -119,8 +126,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The text selection.</value>
 		public Range<int> Selection
 		{
-			get { return textBox.Selection; }
-			set { textBox.Selection = value; }
+			get { return TextBox.Selection; }
+			set { TextBox.Selection = value; }
 		}
 
 		/// <summary>
@@ -135,8 +142,8 @@ namespace Eto.Forms.ThemedControls
 		[DefaultValue(true)]
 		public bool ShowBorder
 		{
-			get { return textBox.ShowBorder; }
-			set { textBox.ShowBorder = value; }
+			get { return TextBox.ShowBorder; }
+			set { TextBox.ShowBorder = value; }
 		}
 
 		/// <summary>
@@ -145,8 +152,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The text content.</value>
 		public string Text
 		{
-			get { return textBox.Text; }
-			set { textBox.Text = value; }
+			get { return TextBox.Text; }
+			set { TextBox.Text = value; }
 		}
 
 		/// <summary>
@@ -158,8 +165,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The color of the text.</value>
 		public Color TextColor
 		{
-			get { return textBox.TextColor; }
-			set { textBox.TextColor = value; }
+			get { return TextBox.TextColor; }
+			set { TextBox.TextColor = value; }
 		}
 
 		/// <summary>
@@ -173,8 +180,8 @@ namespace Eto.Forms.ThemedControls
 		[DefaultValue(StepperValidDirections.Both)]
 		public StepperValidDirections ValidDirection
 		{
-			get { return stepper.ValidDirection; }
-			set { stepper.ValidDirection = value; }
+			get { return Stepper.ValidDirection; }
+			set { Stepper.ValidDirection = value; }
 		}
 
 		/// <summary>
@@ -183,10 +190,12 @@ namespace Eto.Forms.ThemedControls
 		/// <remarks>
 		/// When setting the selection, the control will be focussed and the associated keyboard may appear on mobile platforms.
 		/// </remarks>
-		public void SelectAll()
-		{
-			textBox.SelectAll();
-		}
+		public void SelectAll() => TextBox.SelectAll();
+
+		/// <summary>
+		/// Set focus to the text box
+		/// </summary>
+		public override void Focus() => TextBox.Focus();
 
 		/// <summary>
 		/// Gets or sets the alignment of the text in the entry box.
@@ -194,8 +203,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The text alignment.</value>
 		public TextAlignment TextAlignment
 		{
-			get { return textBox.TextAlignment; }
-			set { textBox.TextAlignment = value; }
+			get { return TextBox.TextAlignment; }
+			set { TextBox.TextAlignment = value; }
 		}
 
 		/// <summary>
@@ -209,15 +218,15 @@ namespace Eto.Forms.ThemedControls
 		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
 		public bool ShowStepper
 		{
-			get { return stepper.Visible; }
-			set { stepper.Visible = value; }
+			get { return Stepper.Visible; }
+			set { Stepper.Visible = value; }
 		}
 
 		/// <summary>
 		/// Gets the control used to attach keyboard and text input events
 		/// </summary>
 		/// <value>The keyboard control.</value>
-		protected override Control KeyboardControl => textBox;
+		protected override Control KeyboardControl => TextBox;
 
 		/// <summary>
 		/// Gets or sets the color for the background of the control
@@ -229,8 +238,8 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The color of the background.</value>
 		public override Color BackgroundColor
 		{
-			get { return textBox.BackgroundColor; }
-			set { textBox.BackgroundColor = value; }
+			get { return TextBox.BackgroundColor; }
+			set { TextBox.BackgroundColor = value; }
 		}
 
 		/// <summary>
@@ -239,9 +248,15 @@ namespace Eto.Forms.ThemedControls
 		/// <value>The auto selection mode.</value>
 		public AutoSelectMode AutoSelectMode
 		{
-			get { return textBox.AutoSelectMode; }
-			set { textBox.AutoSelectMode = value; }
+			get { return TextBox.AutoSelectMode; }
+			set { TextBox.AutoSelectMode = value; }
 		}
+
+		/// <summary>
+		/// Gets a value indicating whether this instance has the keyboard input focus.
+		/// </summary>
+		/// <value><c>true</c> if this instance has focus; otherwise, <c>false</c>.</value>
+		public override bool HasFocus => base.HasFocus || TextBox.HasFocus || Stepper.HasFocus;
 
 		/// <summary>
 		/// Attaches the specified event to the platform-specific control
@@ -255,18 +270,64 @@ namespace Eto.Forms.ThemedControls
 			switch (id)
 			{
 				case TextControl.TextChangedEvent:
-					textBox.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, e);
+					TextBox.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, e);
 					break;
 				case TextBox.TextChangingEvent:
-					textBox.TextChanging += (sender, e) => Callback.OnTextChanging(Widget, e);
+					TextBox.TextChanging += (sender, e) => Callback.OnTextChanging(Widget, e);
 					break;
 				case TextStepper.StepEvent:
-					stepper.Step += (sender, e) => Callback.OnStep(Widget, e);
+					Stepper.Step += (sender, e) => Callback.OnStep(Widget, e);
+					break;
+				case Forms.Control.MouseDownEvent:
+					TextBox.MouseDown += Child_MouseDown;
+					Stepper.MouseDown += Child_MouseDown;
+					base.AttachEvent(id);
+					break;
+				case Forms.Control.MouseMoveEvent:
+					TextBox.MouseMove += Child_MouseMove;
+					Stepper.MouseMove += Child_MouseMove;
+					base.AttachEvent(id);
+					break;
+				case Forms.Control.MouseUpEvent:
+					TextBox.MouseUp += Child_MouseUp;
+					Stepper.MouseUp += Child_MouseUp;
+					base.AttachEvent(id);
+					break;
+				case Forms.Control.MouseWheelEvent:
+					TextBox.MouseWheel += Child_MouseWheel;
+					Stepper.MouseWheel += Child_MouseWheel;
+					base.AttachEvent(id);
+					break;
+				case Forms.Control.MouseDoubleClickEvent:
+					TextBox.MouseDoubleClick += Child_MouseDoubleClick;
+					Stepper.MouseDoubleClick += Child_MouseDoubleClick;
+					base.AttachEvent(id);
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void Child_MouseDoubleClick(object sender, MouseEventArgs e) => CallMouseCallback(sender, e, Callback.OnMouseDoubleClick);
+
+		void Child_MouseWheel(object sender, MouseEventArgs e) => CallMouseCallback(sender, e, Callback.OnMouseWheel);
+
+		void Child_MouseUp(object sender, MouseEventArgs e) => CallMouseCallback(sender, e, Callback.OnMouseUp);
+
+		void Child_MouseMove(object sender, MouseEventArgs e) => CallMouseCallback(sender, e, Callback.OnMouseMove);
+
+		void Child_MouseDown(object sender, MouseEventArgs e) => CallMouseCallback(sender, e, Callback.OnMouseDown);
+
+
+		void CallMouseCallback(object sender, MouseEventArgs e, Action<Control, MouseEventArgs> callback)
+		{
+			var ctl = (Control)sender;
+			var location = Widget.PointFromScreen(ctl.PointToScreen(e.Location));
+			var args = new MouseEventArgs(e.Buttons, e.Modifiers, location, e.Delta, e.Pressure);
+
+			callback(Widget, args);
+			e.Handled = args.Handled;
 		}
 	}
 }

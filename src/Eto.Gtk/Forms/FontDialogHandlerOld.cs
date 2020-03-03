@@ -1,3 +1,4 @@
+#if !GTKCORE
 using System;
 using System.Text;
 using Eto.Drawing;
@@ -58,3 +59,4 @@ namespace Eto.GtkSharp.Forms
 		}
 	}
 }
+#endif

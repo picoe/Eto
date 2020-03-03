@@ -16,6 +16,8 @@ namespace Eto.Wpf.Forms.Cells
 	{
 		ICellContainerHandler ContainerHandler { get; set; }
 		swc.DataGridColumn Control { get; }
+		void OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell);
+		void OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell);
 	}
 
 	static class CellProperties
@@ -63,5 +65,12 @@ namespace Eto.Wpf.Forms.Cells
 			return null;
 		}
 
+		public virtual void OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+		}
+
+		public virtual void OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+		}
 	}
 }

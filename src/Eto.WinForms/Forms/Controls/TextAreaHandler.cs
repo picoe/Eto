@@ -147,7 +147,7 @@ namespace Eto.WinForms.Forms.Controls
 				base.Text = val;
 				if (!Control.IsHandleCreated) // correct??
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
-				Selection = Range.FromLength(val.Length, 0);
+				Selection = Eto.Forms.Range.FromLength(val.Length, 0); // Fully qualified because System.Range was introduced in .NET Core 3.0
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				SuppressSelectionChanged--;
 			}

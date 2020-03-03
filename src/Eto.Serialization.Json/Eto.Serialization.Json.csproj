@@ -1,24 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-    <!-- Use this when multi-targeting works in VS for Mac (it works with msbuild though!)
-    <TargetFrameworks>netstandard1.3;portable-net45+win8+wpa81+wp8</TargetFrameworks>
-    -->
+    <TargetFrameworks>netstandard1.0;netstandard2.0</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);PCL</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;DEBUG;PCL</DefineConstants>
-    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
+  
+  <PropertyGroup>
+    <PackageId>Eto.Serialization.Json</PackageId>
+    <Title>Eto.Forms Json serializer</Title>
+    <Description>Eto.Forms Json serializer</Description>
+    <PackageTags>cross platform gui ui framework desktop json eto.forms</PackageTags>
+    <PackageDescription>
+Eto.Json allows you to load json UI definitions for the Eto.Forms framework
+
+To get more information about how to get started, read the wiki:
+
+https://github.com/picoe/Eto/wiki
+    </PackageDescription>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE;PCL</DefineConstants>
-    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
-  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\Eto\TypeHelper.cs" />
+    <None Remove="Eto.Serialization.Json.targets" />
+    <None Include="Eto.Serialization.Json.targets" Pack="true" PackagePath="build" />
   </ItemGroup>
+  
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>

@@ -12,6 +12,7 @@ using System.ComponentModel;
 using Eto.Wpf.Forms.Menu;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
+using Eto.Wpf.CustomControls.TreeGridView;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -98,6 +99,7 @@ namespace Eto.Wpf.Forms.Controls
 		public static readonly object LastDragRow_Key = new object();
 		public static readonly object Border_Key = new object();
 		public static readonly object MultipleSelectionInfo_Key = new object();
+		public static readonly object AllowEmptySelection_Key = new object();
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
@@ -317,35 +319,82 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.HandleMouseUp(sender, e);
 
+			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+			var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+			var row = cell?.GetVisualParent<swc.DataGridRow>();
+
 			var info = MultipleSelectionInfo;
 			if (!e.Handled && info != null)
 			{
-				// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
-				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
-				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
 				if (ReferenceEquals(row, info.Row))
 				{
+					// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
 					bool hadMultipleSelection = Control.SelectedItems.Count > 1;
 					Control.SelectedItem = row.Item;
-					var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
 					if (cell != null)
 					{
-						Callback.OnCellClick(Widget, CreateCellMouseArgs(cell, e));
-						cell.Focus();
-						if (!hadMultipleSelection && !cell.Column.IsReadOnly && ReferenceEquals(info.Cell, cell))
+						var args = CreateCellMouseArgs(cell, e);
+						Callback.OnCellClick(Widget, args);
+						if (!args.Handled)
 						{
-							Control.BeginEdit();
-							// we double clicked to fire this event, so trigger a double click event
-							if (info.ClickCount >= 2)
-								Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(cell, e));
+							if (!hadMultipleSelection && ReferenceEquals(info.Cell, cell))
+							{
+								// we double clicked to fire this event, so trigger a double click event
+								if (info.ClickCount >= 2)
+									Callback.OnCellDoubleClick(Widget, args);
+								if (!args.Handled)
+								{
+									if (TreeTogglePanel.IsOverContent(hitTestResult) != false)
+									{
+										// let the column handler perform something specific if needed
+										var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+										columnHandler?.OnMouseUp(args, hitTestResult, cell);
+
+										if (!args.Handled && !cell.Column.IsReadOnly)
+										{
+											cell.Focus();
+											Control.BeginEdit();
+										}
+
+										e.Handled = true; // prevent default behaviour
+									}
+								}
+							}
+							else
+								cell.Focus();
+						}
+						else
+						{
+							row.Focus();
+							e.Handled = true;
 						}
 					}
-					else
-						row.Focus();
-					e.Handled = true;
 				}
 
 				MultipleSelectionInfo = null;
+			}
+			if (!e.Handled && AllowEmptySelection)
+			{
+				if (hitTestResult != null
+					&& (
+						hitTestResult is swc.ScrollViewer // below rows
+						|| swm.VisualTreeHelper.GetParent(hitTestResult) is swc.DataGridRow // right of rows
+						)
+					)
+				{
+					UnselectAll();
+					e.Handled = true;
+				}
+
+			}
+
+			if (!e.Handled && cell != null && TreeTogglePanel.IsOverContent(hitTestResult) != false)
+			{
+				var args = CreateCellMouseArgs(cell, e);
+				// let the column handler perform something specific if needed
+				var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+				columnHandler?.OnMouseUp(args, hitTestResult, cell);
+				e.Handled = args.Handled;
 			}
 		}
 
@@ -353,20 +402,21 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.HandleMouseDown(sender, e);
 			MultipleSelectionInfo = null;
-			if (!e.Handled 
-				&& e.LeftButton == swi.MouseButtonState.Pressed 
+			if (!e.Handled
+				&& e.LeftButton == swi.MouseButtonState.Pressed
 				&& swi.Keyboard.Modifiers == swi.ModifierKeys.None)
 			{
 				// prevent WPF from deselecting other rows until mouse up.
 				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
 				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
 				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
-				
-				if (row != null && row.IsSelected 
+
+				if (row != null && row.IsSelected
 					&& (
 						(cell?.Column.IsReadOnly == false && !cell.IsEditing && cell.IsFocused)
 						|| Control.SelectedItems.Count > 1
-					))
+					)
+				)
 				{
 					MultipleSelectionInfo = new SelectionInfo
 					{
@@ -378,6 +428,39 @@ namespace Eto.Wpf.Forms.Controls
 						cell.Focus();
 					else
 						row.Focus();
+					e.Handled = true;
+				} 
+				else if (cell?.IsEditing == true)
+				{
+					// allow clicking on the image of an ImageTextCell to commit editing.
+					var args = CreateCellMouseArgs(cell, e); 
+					var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+					columnHandler?.OnMouseDown(args, hitTestResult, cell);
+					e.Handled = args.Handled;
+
+					if (!args.Handled && TreeTogglePanel.IsOverContent(hitTestResult) != true)
+					{
+						// clicked outside of content area, so we should commit editing.
+						CommitEdit();
+						e.Handled = true;
+					}
+				}
+			}
+			else if (!e.Handled
+				&& !AllowEmptySelection
+				&& e.LeftButton == swi.MouseButtonState.Pressed
+				&& swi.Keyboard.Modifiers == swi.ModifierKeys.Control)
+			{
+				// prevent deselecting the last selected item
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+
+				if (row != null && row.IsSelected
+					&& cell != null
+					&& Control.SelectedItems.Count == 1
+					)
+				{
 					e.Handled = true;
 				}
 			}
@@ -700,5 +783,23 @@ namespace Eto.Wpf.Forms.Controls
 		bool IGridHandler.Loaded => Widget.Loaded;
 
 		Grid IGridHandler.Widget => Widget;
+
+		public bool AllowEmptySelection
+		{
+			get => Widget.Properties.Get<bool>(GridHandler.AllowEmptySelection_Key, true);
+			set => Widget.Properties.Set(GridHandler.AllowEmptySelection_Key, value, true);
+		}
+
+		protected void EnsureSelection()
+		{
+			if (!AllowEmptySelection 
+				&& (Control.SelectedItems?.Count ?? 0) == 0
+				&& (Control.ItemsSource as IList)?.Count > 0)
+			{
+				SelectRow(0);
+			}
+		}
+
+
 	}
 }
