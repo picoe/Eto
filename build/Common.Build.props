@@ -19,6 +19,9 @@
     
     <!-- GtkSharp package likes to install things during package restore, we don't want that -->
     <SkipGtkInstall>True</SkipGtkInstall>
+
+    <!-- Ignore errors/warnings about semver 2.0 when packing CI builds -->
+    <NoWarn>$(NoWarn);NU5105</NoWarn>
   </PropertyGroup>
   
   <Import Condition="Exists('$(BasePath)..\Eto.Common.props')" Project="$(BasePath)..\Eto.Common.props" />
