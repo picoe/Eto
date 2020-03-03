@@ -8,7 +8,7 @@
   </PropertyGroup>
   
   <!-- for .NET Core publishing -->
-  <PropertyGroup Condition="$(MacIsBuildingBundle) == 'True' AND $(MacOutputPath) != ''">
+  <PropertyGroup Condition="$(MacIsBuildingBundle) == 'True' AND $(MacOutputPath) != '' AND $(MacBundlingProject) == $(MSBuildProjectFullPath)">
     <BaseOutputAppPath>$(MacOutputPath)</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(MacAppendRuntimeIdentifierToOutputPath) == 'True'">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
     <OutputPath>$(MacTempBuildPath)bin\</OutputPath>

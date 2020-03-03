@@ -37,6 +37,7 @@
       <MacTempBuildPath>$(IntermediateOutputPath)macbuild\</MacTempBuildPath>
       
       <MacBuildProperties>MacIsBuildingBundle=True</MacBuildProperties>
+      <MacBuildProperties>$(MacBuildProperties);MacBundlingProject=$(MSBuildProjectFullPath)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);TargetFramework=$(TargetFramework)</MacBuildProperties>
       <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishSingleFile=True</MacBuildProperties>
       <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishTrimmed=True</MacBuildProperties>
