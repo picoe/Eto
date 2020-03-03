@@ -81,22 +81,13 @@ namespace Eto.Mac.Forms.Controls
 					Control.MaxValue = 0;
 					break;
 			}
-			SetStepperEnabled();
+			SetEnabled();
 		}
 
 		protected override bool ControlEnabled
 		{
 			get => base.ControlEnabled;
-			set
-			{
-				base.ControlEnabled = value;
-				SetStepperEnabled();
-			}
-		}
-
-		void SetStepperEnabled()
-		{
-			Control.Enabled = Enabled && ValidDirection != StepperValidDirections.None;
+			set => base.ControlEnabled = value && ValidDirection != StepperValidDirections.None;
 		}
 
 		StepperDirection? GetDirection()
