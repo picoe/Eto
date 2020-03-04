@@ -548,6 +548,8 @@ namespace Eto
 			if (handler != null)
 				instantiatorMap[handler.Type] = instantiator; // for backward compatibility, for now
 			instantiatorMap[type] = instantiator;
+			// clear handler map so it can pick up the new instantiator next time it is created
+			handlerMap.Clear();
 		}
 
 		/// <summary>
