@@ -680,7 +680,7 @@ namespace Eto.Forms.ThemedControls
                 for (int i = 0; i < properties.Count; i++)
                 {
 					var descriptor = EtoTypeDescriptor.Get(properties[i]);
-					if (descriptor == null)
+					if (descriptor != null)
 						descriptors.Add(descriptor);
                 }
 
