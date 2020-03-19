@@ -114,6 +114,11 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
+		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
+		{
+			return -1; // TODO: Add ability for DrawableCell to provide a preferred width for a specific item.
+		}
+
 		public override Color GetBackgroundColor(NSView view)
 		{
 			return ((EtoCellView)view).BackgroundColor;
