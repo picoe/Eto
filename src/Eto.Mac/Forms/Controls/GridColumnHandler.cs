@@ -146,7 +146,10 @@ namespace Eto.Mac.Forms.Controls
 					var item = DataViewHandler.GetItem(i);
 					var val = GetObjectValue(item);
 					var cellWidth = cell.GetPreferredWidth(val, cellSize, i, item);
-					if (outlineView != null && Column == 0)
+					// -1 signifies that it doesn't support getting the preferred width
+					if (cellWidth == -1)
+						cellWidth = Control.Width;
+					else if (outlineView != null && Column == 0)
 					{
 						cellWidth += (float)((outlineView.LevelForRow((nint)i) + 1) * outlineView.IndentationPerLevel);
 					}

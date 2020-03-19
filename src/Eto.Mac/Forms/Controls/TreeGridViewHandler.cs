@@ -273,6 +273,20 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 
+			public override void ColumnDidResize(NSNotification notification)
+			{
+				if (!Handler.IsAutoSizingColumns)
+				{
+					// when the user resizes the column, don't autosize anymore when data/scroll changes
+					var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
+					if (column != null)
+					{
+						var colHandler = Handler.GetColumn(column);
+						colHandler.AutoSize = false;
+					}
+				}
+			}
+
 			public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
 				if (tableColumn == null && Handler.ShowGroups)
@@ -620,7 +634,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Delegate = new EtoOutlineDelegate { Handler = handler };
 				//HeaderView = null,
-				//AutoresizesOutlineColumn = true,
+				AutoresizesOutlineColumn = false;
 				//AllowsColumnResizing = false,
 				AllowsColumnReordering = false;
 				FocusRingType = NSFocusRingType.None;
