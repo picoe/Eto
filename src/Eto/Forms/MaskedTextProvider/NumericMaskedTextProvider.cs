@@ -42,8 +42,8 @@ namespace Eto.Forms
 			{ typeof(sbyte), new Info { Parse = s => sbyte.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true } }
 		};
 
-		static string DoubleToText(object v) => ((double)v).ToString("F99", Inv).TrimEnd('0').TrimEnd('.');
-		static string FloatToText(object v) => ((float)v).ToString("F99", Inv).TrimEnd('0').TrimEnd('.');
+		static string DoubleToText(object v) => ((double?)v)?.ToString("F99", Inv).TrimEnd('0').TrimEnd('.') ?? string.Empty;
+		static string FloatToText(object v) => ((float?)v)?.ToString("F99", Inv).TrimEnd('0').TrimEnd('.') ?? string.Empty;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.NumericMaskedTextProvider{T}"/> class.
@@ -66,7 +66,7 @@ namespace Eto.Forms
 					toString = val => info.ToText(val);
 				else
 					toString = val => Convert.ToString(val, CultureInfo.InvariantCulture);
-				Validate = text => info.Parse(text.Replace(DecimalCharacter, '.')) != null;
+				Validate = text => info.Parse(text?.Replace(DecimalCharacter, '.')) != null;
 			}
 			else
 			{
@@ -87,11 +87,11 @@ namespace Eto.Forms
 					}
 					return default;
 				};
-				toString = val => val.ToString();
+				toString = val => Convert.ToString(val, CultureInfo.InvariantCulture);
 
 				Validate = text =>
 				{
-					var parameters = new object[] { text.Replace(DecimalCharacter, '.'), null };
+					var parameters = new object[] { text?.Replace(DecimalCharacter, '.'), null };
 					return (bool)tryParseMethod.Invoke(null, parameters);
 				};
 			}
@@ -103,8 +103,8 @@ namespace Eto.Forms
 		/// <value>The value of the mask.</value>
 		public T Value
 		{
-			get => parse(Text.Replace(DecimalCharacter, '.'));
-			set => Text = toString(value).Replace('.', DecimalCharacter);
+			get => parse(Text?.Replace(DecimalCharacter, '.'));
+			set => Text = toString(value)?.Replace('.', DecimalCharacter);
 		}
 
 		internal override void SetCulture()
