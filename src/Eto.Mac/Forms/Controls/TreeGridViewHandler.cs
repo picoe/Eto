@@ -157,22 +157,14 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 
-			public override void SelectionIsChanging(NSNotification notification)
-			{
-				var theEvent = NSApplication.SharedApplication.CurrentEvent;
-				if (theEvent.ButtonMask != 0)
-				{
-					// user is dragging the mouse, fire mouse move notifications
-					var args = MacConversions.GetMouseEvent(Handler, theEvent, false);
-
-				}
-			}
-
 			public override void SelectionDidChange(NSNotification notification)
 			{
 				var h = Handler;
 				if (h.skipSelectionChanged > 0)
 					return;
+
+				// didn't start a drag (when this was set), so clear this out when the selection changes
+				h.CustomSelectedItems = null;
 
 				h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
 				var item = h.SelectedItem;

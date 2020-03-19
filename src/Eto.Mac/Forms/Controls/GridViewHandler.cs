@@ -360,15 +360,22 @@ namespace Eto.Mac.Forms.Controls
 			NSIndexSet previouslySelected;
 			public override void SelectionDidChange(NSNotification notification)
 			{
-				if (Handler.SuppressSelectionChanged == 0)
+				var h = Handler;
+				if (h == null)
+					return;
+
+				// didn't start a drag (when this was set), so clear this out when the selection changes
+				h.CustomSelectedRows = null;
+
+				if (h.SuppressSelectionChanged == 0)
 				{
-					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
-					var columns = NSIndexSet.FromNSRange(new NSRange(0, Handler.Control.TableColumns().Length));
+					h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
+					var columns = NSIndexSet.FromNSRange(new NSRange(0, h.Control.TableColumns().Length));
 					if (previouslySelected?.Count > 0)
-						Handler.Control.ReloadData(previouslySelected, columns);
-					var selected = Handler.Control.SelectedRows;
+						h.Control.ReloadData(previouslySelected, columns);
+					var selected = h.Control.SelectedRows;
 					if (selected?.Count > 0)
-						Handler.Control.ReloadData(selected, columns);
+						h.Control.ReloadData(selected, columns);
 					previouslySelected = selected;
 				}
 			}
