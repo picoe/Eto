@@ -41,7 +41,18 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public void Create(Bitmap image, PointF hotspot)
+		public void Create(Image image, PointF hotspot)
+		{
+			if (image is Bitmap bitmap)
+				CreateBitmap(bitmap, hotspot);
+			else if (image is Icon icon)
+			{
+				var frame = icon.GetFrame(Screen.PrimaryScreen.LogicalPixelSize);
+				CreateBitmap(frame.Bitmap, hotspot * frame.Scale);
+			}
+		}
+
+		void CreateBitmap(Bitmap image, PointF hotspot)
 		{
 			using (var pngStream = new MemoryStream())
 			{

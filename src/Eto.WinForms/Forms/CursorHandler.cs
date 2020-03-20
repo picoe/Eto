@@ -60,10 +60,20 @@ namespace Eto.WinForms.Forms
 		[DllImport("user32.dll", CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
 		private static extern IntPtr LoadCursorFromFile(String str);
 
-
-		public void Create(Bitmap image, PointF hotspot)
+		public void Create(Image image, PointF hotspot)
 		{
-			if (image.ToSD() is sd.Bitmap bmp)
+			if (image.ControlObject is sd.Icon ico)
+			{
+				IntPtr ptr = ico.Handle;
+				IconInfo tmp = new IconInfo();
+				GetIconInfo(ptr, ref tmp);
+				tmp.xHotspot = (int)hotspot.X;
+				tmp.yHotspot = (int)hotspot.Y;
+				tmp.fIcon = false;
+				ptr = CreateIconIndirect(ref tmp);
+				Control = new swf.Cursor(ptr);
+			}
+			else if (image.ToSD() is sd.Bitmap bmp)
 			{
 				IntPtr ptr = bmp.GetHicon();
 				IconInfo tmp = new IconInfo();
