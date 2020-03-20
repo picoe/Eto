@@ -171,6 +171,12 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gdk_get_default_root_window();
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
 		}
 
 		static class NMLinux
@@ -329,6 +335,12 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gdk_get_default_root_window();
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
 		}
 
 		static class NMMac
@@ -487,6 +499,12 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gdk_get_default_root_window();
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
 		}
 
 		public static string GetString(IntPtr handle)
@@ -981,6 +999,26 @@ namespace Eto.GtkSharp
 				return NMMac.gdk_cairo_get_clip_rectangle(context, rect);
 			else
 				return NMWindows.gdk_cairo_get_clip_rectangle(context, rect);
+		}
+
+		public static IntPtr gdk_get_default_root_window()
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gdk_get_default_root_window();
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gdk_get_default_root_window();
+			else
+				return NMWindows.gdk_get_default_root_window();
+		}
+
+		public static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gdk_pixbuf_get_from_window(window, x, y, width, height);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gdk_pixbuf_get_from_window(window, x, y, width, height);
+			else
+				return NMWindows.gdk_pixbuf_get_from_window(window, x, y, width, height);
 		}
 	}
 }

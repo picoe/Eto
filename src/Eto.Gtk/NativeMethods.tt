@@ -71,7 +71,9 @@ var gtkmethods = new[]
 
 var gdkmethods = new[]
 {
-	"bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect)"
+	"bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect)",
+    "IntPtr gdk_get_default_root_window()",
+    "IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height)",
 };
 
 var methods = giomethods.Concat(gtkmethods).Concat(webkitmethods).Concat(gdkmethods).ToArray();

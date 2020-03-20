@@ -6,6 +6,7 @@ using swm = System.Windows.Media;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using System.Linq;
+using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms
 {
@@ -45,6 +46,25 @@ namespace Eto.Wpf.Forms
 				realScale = Control.GetLogicalPixelSize();
 			}
 			return realScale ?? 1f;
+		}
+
+		public Image GetImage(RectangleF rect)
+		{
+			var realRect = Rectangle.Ceiling(rect * Widget.LogicalPixelSize);
+			using (var screenBmp = new sd.Bitmap(realRect.Width, realRect.Height, sd.Imaging.PixelFormat.Format32bppArgb))
+			{
+				using (var bmpGraphics = sd.Graphics.FromImage(screenBmp))
+				{
+					bmpGraphics.CopyFromScreen(realRect.X, realRect.Y, 0, 0, realRect.Size.ToSD());
+					var bitmapSource = sw.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+						screenBmp.GetHbitmap(),
+						IntPtr.Zero,
+						sw.Int32Rect.Empty,
+						sw.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+
+					return new Bitmap(new BitmapHandler(bitmapSource));
+				}
+			}
 		}
 
 		public float RealScale => GetRealScale() * Scale;

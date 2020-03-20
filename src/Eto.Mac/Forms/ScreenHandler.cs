@@ -1,6 +1,8 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Runtime.InteropServices;
+using Eto.Mac.Drawing;
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -74,6 +76,29 @@ namespace Eto.Mac.Forms
 		public bool IsPrimary
 		{
 			get { return Control == NSScreen.Screens[0]; }
+		}
+
+		[DllImport("/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/CoreGraphics")]
+		private static extern IntPtr CGDisplayCreateImageForRect(uint display, CGRect rect);
+
+		public Image GetImage(RectangleF rect)
+		{
+			if (Control.DeviceDescription["NSScreenNumber"] is NSNumber id)
+			{
+				// needs screen recording permission on Catalina
+				var logicalRect = rect;
+				logicalRect.Size *= Widget.LogicalPixelSize;
+				var cgimagePtr = CGDisplayCreateImageForRect(id.UInt32Value, logicalRect.ToNS());
+#if XAMMAC
+				var cgimage = Runtime.GetINativeObject<CGImage>(cgimagePtr, true);
+#else
+				var cgimage = cgimagePtr == IntPtr.Zero ? null : new CGImage(cgimagePtr);
+#endif
+				if (cgimage != null)
+					return new Icon(new IconHandler(new NSImage(cgimage, rect.Size.ToNS())));
+			}
+
+			return null;
 		}
 	}
 }
