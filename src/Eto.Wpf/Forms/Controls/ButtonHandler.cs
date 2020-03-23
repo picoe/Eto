@@ -77,8 +77,6 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override void Initialize()
 		{
-			base.Initialize();
-
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 			Control.Padding = new sw.Thickness(2);
 			LabelPart = new WpfLabel
@@ -106,6 +104,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Content = grid;
 
 			SetImagePosition();
+			base.Initialize();
 		}
 
 		public override bool UseMousePreview => true;
