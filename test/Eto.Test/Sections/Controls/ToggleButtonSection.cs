@@ -27,7 +27,7 @@ namespace Eto.Test.Sections.Controls
 			AddSeparateRow(null, checkedCheck, null);
 		}
 	}
-	[Section("Controls", typeof(ToggleButton), "Button (new)")]
+	[Section("Controls", typeof(Button), "Button (new)")]
 	public class NewButtonSection : BaseButtonSection<Button>
 	{
 		protected override string DefaultText => "Click Me";
@@ -40,11 +40,22 @@ namespace Eto.Test.Sections.Controls
 
 		protected abstract string DefaultText { get; }
 
+		Bitmap CreatePlainImage()
+		{
+			var b = new Bitmap(32, 32, PixelFormat.Format32bppRgba);
+			using (var g = new Graphics(b))
+			{
+				g.FillRectangle(Colors.Blue, new Rectangle(b.Size));
+			}
+			return b;
+		}
+
 		public BaseButtonSection()
 		{
 			Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
 
 			Image image = TestIcons.TestIcon.WithSize(16, 16);
+			Image plainImage = CreatePlainImage();
 			Image largeImage = TestIcons.TestIcon.WithSize(100, 100);
 
 			DefaultSpacing = new Size(2, 2);
@@ -73,11 +84,11 @@ namespace Eto.Test.Sections.Controls
 				.Bind(button, c => c.Text);
 			withTextCheck.CheckedBinding.Bind(textBox, b => b.Enabled);
 
-			var withImageSelection = new RadioButtonList { Items = { "Image", "Large Image", "No Image" } };
+			var withImageSelection = new RadioButtonList { Items = { "Image", "Large Image", "Plain Image", "No Image" } };
 			withImageSelection.SelectedIndexBinding
 				.Convert(
-					i => i == 0 ? image : i == 1 ? largeImage : null,
-					img => img == image ? 0 : img == largeImage ? 1 : 2
+					i => i == 0 ? image : i == 1 ? largeImage : i == 2 ? plainImage : null,
+					img => img == image ? 0 : img == largeImage ? 1 : img == plainImage ? 2 : 3
 					)
 				.Bind(button, c => c.Image);
 
