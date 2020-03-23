@@ -198,8 +198,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		void ITreeHandler.PostResetTree()
 		{
+			DisableAutoScrollToSelection = true;
 			RestoreFocus();
 			SkipSelectionChanged = false;
+			DisableAutoScrollToSelection = false;
 		}
 
 		public void ReloadData()
