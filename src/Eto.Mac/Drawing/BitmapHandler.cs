@@ -310,21 +310,25 @@ namespace Eto.Mac.Drawing
 		{
 			if (rep == null)
 				rep = Control.BestRepresentationForDevice(null);
+			if (bmprep != null)
+				return;
+
+			if (rep is IconFrameHandler.LazyImageRep lazyRep)
+			{
+				bmprep = lazyRep.Rep;
+			}
+			else
+			{
+				bmprep = rep as NSBitmapImageRep ?? Control.BestRepresentationForDevice(null) as NSBitmapImageRep;
+			}
+
 			if (bmprep == null)
 			{
-				var lazyRep = rep as IconFrameHandler.LazyImageRep;
-				if (lazyRep != null)
-					bmprep = lazyRep.Rep;
-				else
-				{
-					bmprep = rep as NSBitmapImageRep;
-					if (bmprep == null)
-					{
-						rep = Control.BestRepresentationForDevice(null);
-						bmprep = rep as NSBitmapImageRep;
-					}
-				}
-			}				
+				Control.LockFocus();
+				bmprep = new NSBitmapImageRep(new CGRect(CGPoint.Empty, Control.Size));
+				//bmprep.Type.ColorSpaceName = Control.Representations()[0].ColorSpaceName;
+				Control.UnlockFocus();
+			}
 		}
 	}
 }

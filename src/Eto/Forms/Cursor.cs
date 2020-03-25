@@ -147,6 +147,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the Cursor with the specified <paramref name="image"/> and <paramref name="hotspot"/>. 
+		/// </summary>
+		/// <param name="image">Image for the cursor</param>
+		/// <param name="hotspot">Hotspot for where the cursor pointer is located on the image</param>
+		/// TODO: Combine with above using Image base class in 3.x
+		public Cursor(Icon image, PointF hotspot)
+		{
+			Handler.Create(image, hotspot);
+			Initialize();
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the Cursor class with the specified <paramref name="handler"/>.
 		/// </summary>
 		/// <param name="handler">Handler to assign to this cursor for its implementation</param>
@@ -170,7 +182,7 @@ namespace Eto.Forms
 			/// </summary>
 			/// <param name="image">Image for the cursor</param>
 			/// <param name="hotspot">Hotspot for where the cursor pointer is located on the image</param>
-			void Create(Bitmap image, PointF hotspot);
+			void Create(Image image, PointF hotspot);
 			/// <summary>
 			/// Creates the cursor instance with the specified <paramref name="fileName"/>
 			/// </summary>

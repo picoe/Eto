@@ -10,17 +10,33 @@ namespace Eto.Test.Sections.Behaviors
 	{
 		readonly RectangleF displayBounds = Screen.DisplayBounds;
 		readonly Screen[] screens;
+		Drawable screenLayoutDrawable;
 		Window parentWindow;
 		Label windowPositionLabel;
 		Label mousePositionLabel;
+		bool showScreenContent;
+
+		protected bool ShowScreenContent
+		{
+			get => showScreenContent;
+			set
+			{
+				showScreenContent = value;
+				screenLayoutDrawable.Invalidate(false);
+			}
+		}
 
 		public ScreenSection()
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
+			var showScreenContent = new CheckBox { Text = "Show screen content" };
+			showScreenContent.CheckedBinding.Bind(this, c => c.ShowScreenContent);
+
 			screens = Screen.Screens.ToArray();
 
 			layout.BeginCentered();
+			layout.Add(showScreenContent);
 			layout.Add($"Display Bounds: {displayBounds}");
 			layout.BeginVertical(Padding.Empty);
 			var num = 0;
@@ -71,31 +87,45 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control ScreenLayout()
 		{
-			var drawable = new Drawable();
-			drawable.Paint += (sender, pe) =>
+			screenLayoutDrawable = new Drawable();
+			screenLayoutDrawable.Paint += (sender, pe) =>
 			{
-				var scaleSize = (SizeF)drawable.Size / displayBounds.Size;
+				var scaleSize = (SizeF)screenLayoutDrawable.Size / displayBounds.Size;
 				var scale = Math.Min(scaleSize.Width, scaleSize.Height);
-				var offset = (drawable.Size - (displayBounds.Size * scale)) / 2;
+				var offset = (screenLayoutDrawable.Size - (displayBounds.Size * scale)) / 2;
 				offset.Height -= displayBounds.Y * scale;
 				offset.Width -= displayBounds.X * scale;
 				offset = Size.Round(offset);
+				bool hasScreenImages = false;
 				foreach (var screen in screens)
 				{
 					var screenBounds = (screen.Bounds * scale) + offset;
                     screenBounds.Size -= 1;
 
-                    pe.Graphics.FillRectangle(Colors.White, screenBounds);
-
 					var workingArea = (screen.WorkingArea * scale) + offset;
-					pe.Graphics.FillRectangle(Colors.Blue, workingArea);
+					var screenImage = showScreenContent ? screen.GetImage(new RectangleF(screen.Bounds.Size)) : null;
+					if (screenImage != null)
+					{
+						pe.Graphics.DrawImage(screenImage, screenBounds);
+						pe.Graphics.DrawRectangle(Colors.Blue, workingArea);
+						hasScreenImages = true;
+					}
+					else
+					{
+						pe.Graphics.FillRectangle(Colors.White, screenBounds);
+						pe.Graphics.FillRectangle(Colors.Blue, workingArea);
+					}
 
 					pe.Graphics.DrawRectangle(Colors.Black, screenBounds);
 				}
 
                 var windowBounds = ((RectangleF)ParentWindow.Bounds * scale) + offset;
                 windowBounds.Size -= 1;
-                pe.Graphics.FillRectangle(new Color(Colors.LightSkyBlue, 0.8f), windowBounds);
+
+				if (!hasScreenImages)
+				{
+					pe.Graphics.FillRectangle(new Color(Colors.LightSkyBlue, 0.8f), windowBounds);
+				}
                 pe.Graphics.DrawRectangle(Colors.White, windowBounds);
 
 				var mousePosition = Mouse.Position * scale + offset;
@@ -103,7 +133,7 @@ namespace Eto.Test.Sections.Behaviors
 				mouseRect.Inflate(2, 2);
 				pe.Graphics.FillEllipse(Colors.Red, mouseRect);
 			};
-			return drawable;
+			return screenLayoutDrawable;
 		}
 	}
 }

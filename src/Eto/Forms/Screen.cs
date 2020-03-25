@@ -172,6 +172,13 @@ namespace Eto.Forms
 		public float LogicalPixelSize { get { return RealScale / Scale; } }
 
 		/// <summary>
+		/// Gets a copy of a portion of the screen as an image
+		/// </summary>
+		/// <param name="rect">Rectangle to get the screen contents</param>
+		/// <returns>A new image (Icon or Bitmap) representing the specified rectangle</returns>
+		public Image GetImage(RectangleF rect) => Handler.GetImage(rect);
+
+		/// <summary>
 		/// Handler interface for the <see cref="Screen"/>.
 		/// </summary>
 		public new interface IHandler : Widget.IHandler
@@ -226,6 +233,13 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if this is the primary screen; otherwise, <c>false</c>.</value>
 			bool IsPrimary { get; }
+
+			/// <summary>
+			/// Gets a copy of a portion of the screen as an image
+			/// </summary>
+			/// <param name="rect">Rectangle to get the screen contents</param>
+			/// <returns>A new image (Icon or Bitmap) representing the specified rectangle</returns>
+			Image GetImage(RectangleF rect);
 		}
 
 		/// <summary>

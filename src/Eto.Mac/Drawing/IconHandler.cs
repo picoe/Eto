@@ -79,20 +79,19 @@ namespace Eto.Mac.Drawing
 
 		public void Create(IEnumerable<IconFrame> frames)
 		{
-			this._frames = frames.ToList();
+			_frames = frames.ToList();
 			var curScale = Screen.PrimaryScreen.LogicalPixelSize;
-			var item = this._frames.FirstOrDefault(r => Math.Abs(r.Scale - curScale) < 0.0001) ?? this._frames.First();
+			var item = _frames.FirstOrDefault(r => Math.Abs(r.Scale - curScale) < 0.0001) ?? _frames.First();
 
 			var size = Size.Ceiling((SizeF)item.PixelSize / (float)item.Scale).ToNS();
 
-			Control = new NSImage();
-			Control.Size = size;
-			foreach (var frame in this._frames)
+			Control = new NSImage { Size = size };
+			foreach (var frame in _frames)
 			{
-				var rep = frame.Bitmap.ToNS().Representations().First();
+				var rep = (NSImageRep)frame.Bitmap.ToNS().Representations().First().Copy();
+				
 				rep.Size = (new SizeF(rep.PixelsWide, rep.PixelsHigh) / (float)frame.Scale).ToNS();
-				var mns = rep as IconFrameHandler.LazyImageRep;
-				if (mns != null)
+				if (rep is IconFrameHandler.LazyImageRep mns)
 				{
 					mns.Size = size;//(size.ToEto() * (float)r.Scale).ToNS();
 					var pixelSize = Size.Ceiling(size.ToEto() * (float)frame.Scale);

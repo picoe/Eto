@@ -30,8 +30,15 @@ namespace Eto.Wpf.Forms.Controls
 				Stretch = swm.Stretch.Uniform,
 				StretchDirection = swc.StretchDirection.Both
 			};
+			Control.Loaded += Control_Loaded;
 			Control.SizeChanged += Control_SizeChanged;
 			border = new swc.Border { Child = Control };
+		}
+
+		private void Control_Loaded(object sender, RoutedEventArgs e)
+		{
+			if (image is Icon)
+				SetSource();
 		}
 
 		void Control_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -48,14 +55,23 @@ namespace Eto.Wpf.Forms.Controls
 		void SetSource()
 		{
 			var fittingSize = image?.Size;
-			if (Widget.Loaded)
+			if (Control.IsLoaded)
 			{
 				// use actual size of the control to get the correct image
 				var size = Size;
 				if (size.Width > 0 && size.Height > 0)
 					fittingSize = size;
 			}
-			Control.Source = image.ToWpf(ParentScale, fittingSize);
+			Image img = image;
+			if (image is Icon icon)
+			{
+				var frame = icon.GetFrame(ParentScale, fittingSize);
+				Control.Source = frame.Bitmap.ToWpf();
+			}
+			else
+			{
+				Control.Source = img.ToWpf(ParentScale, fittingSize);
+			}
 		}
 
 		public Image Image
