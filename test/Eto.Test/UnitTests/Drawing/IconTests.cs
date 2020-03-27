@@ -2,11 +2,12 @@ using System;
 using NUnit.Framework;
 using Eto.Drawing;
 using System.Linq;
+using Eto.Forms;
 
 namespace Eto.Test.UnitTests.Drawing
 {
 	[TestFixture]
-	public class IconTests
+	public class IconTests : TestBase
 	{
 		[TestCase(.25f, .5f)]
 		[TestCase(1f, 1f)]
@@ -120,6 +121,16 @@ namespace Eto.Test.UnitTests.Drawing
 			Assert.AreEqual(bmp.Size, oldSize, "#1");
 			Assert.AreEqual(new Size(32, 32), icon.Size, "#2");
 			Assert.AreEqual(bmp.Size, icon.Frames.First().PixelSize, "#3");
+		}
+
+		[Test]
+		public void IconFromBackgroundThreadShouldBeUsable()
+		{
+			// we are running tests in a background thread already, just generate it there.
+			var icon = TestIcons.TestIcon;
+
+			// test showing it on a form
+			Shown(f => new ImageView { Image = icon });
 		}
 	}
 }
