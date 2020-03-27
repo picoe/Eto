@@ -108,6 +108,19 @@ namespace Eto.Test.UnitTests.Drawing
 				Assert.AreEqual(height, frame.Size.Height, $"Frame #{i} with scale {frame.Scale} does not match icon height");
 			}
 		}
+
+		[Test]
+		public void BitmapToIconShouldNotChangeBitmapSize()
+		{
+			var bmp = TestIcons.LogoBitmap;
+			var oldSize = bmp.Size;
+
+			var icon = bmp.WithSize(32, 32);
+
+			Assert.AreEqual(bmp.Size, oldSize, "#1");
+			Assert.AreEqual(new Size(32, 32), icon.Size, "#2");
+			Assert.AreEqual(bmp.Size, icon.Frames.First().PixelSize, "#3");
+		}
 	}
 }
 

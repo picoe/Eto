@@ -160,7 +160,15 @@ namespace Eto.Mac.Drawing
 			[Export("copyWithZone:")]
 			public NSObject CopyWithZone(IntPtr zone)
 			{
-				return new LazyImageRep { rep = rep?.Copy() as NSBitmapImageRep, Load = Load };
+				var obj = new LazyImageRep {
+					rep = rep?.Copy() as NSBitmapImageRep,
+					pixelsHigh = pixelsHigh,
+					pixelsWide = pixelsWide,
+					size = size,
+					Load = Load
+				};
+				obj.DangerousRetain();
+				return obj;
 			}
 		}
 
