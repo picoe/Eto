@@ -380,6 +380,25 @@ namespace Eto.Forms
 			RemoveSelectedItem(this[index]);
 			base.RemoveAt(index);
 		}
+
+		/// <inheritdoc/>
+		protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+		{
+			base.OnCollectionChanged(e);
+
+			if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null && selectedItems != null)
+			{
+				// removing an item from this collection directly, trigger selection changed if needed
+				foreach (var item in e.OldItems)
+				{
+					if (selectedItems.Contains((T)item))
+					{
+						OnSelectionChanged(EventArgs.Empty);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	/// <summary>

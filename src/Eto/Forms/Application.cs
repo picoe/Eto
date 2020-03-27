@@ -504,7 +504,7 @@ namespace Eto.Forms
 				localizeArgs = localizeArgs ?? new LocalizeEventArgs();
 				localizeArgs.Initialize(source, text);
 				OnLocalizeString(localizeArgs);
-				return localizeArgs.LocalizedText ?? localizeArgs.Text;
+				return localizeArgs.GetResultAndReset();
 			}
 		}
 

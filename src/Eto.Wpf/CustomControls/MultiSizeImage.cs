@@ -176,6 +176,8 @@ namespace Eto.Wpf.CustomControls
 			var first = _availableFrames.LastOrDefault();
 			var size = PreferredSize ?? GetSize(first ?? Source);
 
+			inputSize = inputSize.Min(size);
+
 			Size scale = ComputeScaleFactor(inputSize, size, Stretch, StretchDirection);
 			if (UseSmallestSpace)
 			{

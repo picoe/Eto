@@ -369,9 +369,10 @@ namespace Eto.Forms
 			{
 				if (!ReferenceEquals(previousChild, null))
 					RemoveLogicalParent(previousChild);
-				assign();
-				if (!ReferenceEquals(child, null))
+
+				if (!ReferenceEquals(child, null) && ReferenceEquals(child.LogicalParent, null))
 					SetLogicalParent(child);
+				assign();
 				return;
 			}
 			if (!ReferenceEquals(previousChild, null) && !ReferenceEquals(previousChild, child))
@@ -402,8 +403,8 @@ namespace Eto.Forms
 				// no-op if there is no parent (handled in detach)
 				child.Detach();
 
-				if (child.InternalLogicalParent == null)
-					child.InternalLogicalParent = this;
+				if (ReferenceEquals(child.InternalLogicalParent, null))
+					SetLogicalParent(child);
 				child.VisualParent = this;
 				if (Loaded && !child.Loaded)
 				{
