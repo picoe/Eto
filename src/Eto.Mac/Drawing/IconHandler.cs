@@ -48,14 +48,12 @@ namespace Eto.Mac.Drawing
 		public IconHandler(NSImage image)
 		{
 			Control = image;
-			SetFrames();
 		}
 
 		public void Create(Stream stream)
 		{
 			var data = NSData.FromStream(stream);
 			Control = new NSImage(data);
-			SetFrames();
 		}
 
 		public void Create(string fileName)
@@ -63,17 +61,15 @@ namespace Eto.Mac.Drawing
 			if (!File.Exists(fileName))
 				throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "Icon not found"), fileName);
 			Control = new NSImage(fileName);
-			SetFrames();
 		}
 
-		void SetFrames()
+		IEnumerable<IconFrame> GetFrames()
 		{
-			_frames = new List<IconFrame>();
 			foreach (var rep in Control.Representations())
 			{
 				var img = new NSImage();
 				img.AddRepresentation(rep);
-				_frames.Add(IconFrame.FromControlObject(1, new Bitmap(new BitmapHandler(img))));
+				yield return IconFrame.FromControlObject(1, new Bitmap(new BitmapHandler(img)));
 			}
 		}
 
@@ -89,7 +85,7 @@ namespace Eto.Mac.Drawing
 			foreach (var frame in _frames)
 			{
 				var rep = (NSImageRep)frame.Bitmap.ToNS().Representations().First().Copy();
-				
+
 				rep.Size = (new SizeF(rep.PixelsWide, rep.PixelsHigh) / (float)frame.Scale).ToNS();
 				if (rep is IconFrameHandler.LazyImageRep mns)
 				{
@@ -98,6 +94,7 @@ namespace Eto.Mac.Drawing
 					mns.PixelsHigh = pixelSize.Height;
 					mns.PixelsWide = pixelSize.Width;
 				}
+
 				Control.AddRepresentation(rep);
 			}
 		}
@@ -119,12 +116,6 @@ namespace Eto.Mac.Drawing
 			Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 		}
 
-		public IEnumerable<IconFrame> Frames
-		{
-			get
-			{
-				return _frames;
-			}
-		}
+		public IEnumerable<IconFrame> Frames => _frames ?? (_frames = GetFrames().ToList());
 	}
 }
