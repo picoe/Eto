@@ -51,9 +51,16 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			if (_frames == null)
+				_frames = GetFrames().ToList();
+		}
+
 		IEnumerable<IconFrame> GetFrames()
 		{
-			var icons = Control.Decoder?.Frames;
+			var icons = Control?.Decoder?.Frames;
 			if (icons == null)
 			{
 				yield return IconFrame.FromControlObject(1f, new Bitmap(new BitmapHandler(Control)));
@@ -61,6 +68,9 @@ namespace Eto.Wpf.Drawing
 			}
 			foreach (var icon in icons)
 			{
+				// this is needed to actually load the icon so it can then be used in other threads.
+				// even though we freeze it, it delays the creation until something like this is called..
+				_ = icon.PixelWidth;
 				yield return IconFrame.FromControlObject(1f, new Bitmap(new BitmapHandler(icon)));
 			}
 		}
