@@ -194,6 +194,10 @@ namespace Eto.Forms
 	/// <remarks>
 	/// This uses the <see cref="IMaskedTextProvider"/> as its interface to the mask.  
 	/// The mask can implement any format it wishes, including both fixed or variable length masks.
+	/// The MaskedTextBox allows you to mask, or limit which characters can be entered in the text box with either a fixed, variable, or custom mask.
+	/// A fixed mask can be a phone number, postal code, or something that requires a specific format and can be created using the <see cref="FixedMaskedTextProvider"/>. 
+	/// A variable mask limits which characters can be entered but is not limited to a fixed number of characters.
+	/// An implementation of a variable mask is the <see cref="NumericMaskedTextBox{T}"/> which allows you to enter only numeric values in a text box, and places the positive / negative symbol at the beginning regardless of where you type it.
 	/// </remarks>
 	[ContentProperty("Provider")]
 	public class MaskedTextBox : TextBox
