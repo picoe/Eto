@@ -24,7 +24,7 @@ namespace Eto.Mac.Drawing
 
 		public string Name { get; set; }
 
-		static IntPtr sel_LocalizedNameForFamilyFace = Selector.GetHandle("localizedNameForFamily:face:");
+		static readonly IntPtr sel_LocalizedNameForFamilyFace = Selector.GetHandle("localizedNameForFamily:face:");
 
 		public string LocalizedName
 		{
@@ -48,6 +48,8 @@ namespace Eto.Mac.Drawing
 			get
 			{ 
 				var descriptors = NSFontManager.SharedFontManager.AvailableMembersOfFontFamily(MacName);
+				if (descriptors == null)
+					return Enumerable.Empty<FontTypeface>();
 				return descriptors.Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r)));
 			}
 		}
