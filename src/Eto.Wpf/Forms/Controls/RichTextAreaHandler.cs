@@ -709,7 +709,9 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					swd.TextElement.SetFontFamily(elem, typeface.FontFamily);
 					// not in RTF, so should never be set but do a check anyway.
-					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontStretchProperty))
+					// In some cases we need to set this anyway (e.g. Arial -> Arial Narrow), so we ensure it matches the current typeface
+					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontStretchProperty) 
+						|| (elem.GetValue(swd.TextElement.FontStretchProperty) as sw.FontStretch?) != typeface.Stretch)
 						swd.TextElement.SetFontStretch(elem, typeface.Stretch);
 					
 					// in RTF, can be set so only set it to the typeface if not specified in RTF
