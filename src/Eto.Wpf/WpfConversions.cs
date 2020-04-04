@@ -358,6 +358,8 @@ namespace Eto.Wpf
 
 		public static Bitmap ToEto(this swmi.BitmapSource bitmap)
 		{
+			if (bitmap == null)
+				return null;
 			return new Bitmap(new BitmapHandler(bitmap));
 		}
 
