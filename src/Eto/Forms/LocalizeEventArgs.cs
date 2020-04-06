@@ -26,6 +26,15 @@ namespace Eto.Forms
         /// <value>The source object.</value>
         public object Source { get; private set; }
 
+		internal string GetResultAndReset()
+		{
+            var result = LocalizedText ?? Text;
+            Source = null;
+            Text = null;
+            LocalizedText = null;
+            return result;
+		}
+
         internal void Initialize(object source, string text)
         {
             Text = text;

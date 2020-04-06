@@ -42,6 +42,7 @@ namespace Eto.Test.UnitTests.Forms
 				content.DataContextChanged += (sender, e) => contentDataContextChanged++;
 
 				base.Content = content;
+
 				Assert.AreEqual(0, dataContextChanged);
 				Assert.AreEqual(0, contentDataContextChanged);
 				Control.DataContext = new MyViewModel2(); // this shouldn't fire data context changes for logical children
@@ -157,7 +158,9 @@ namespace Eto.Test.UnitTests.Forms
 			{
 				c = new Panel();
 				c.DataContextChanged += (sender, e) => dataContextChanged++;
-				form.Content = new CustomExpander { Content = c };
+				var expander = new CustomExpander();
+				expander.Content = c;
+				form.Content = expander;
 				form.DataContext = dataContext = new MyViewModel();
 				Assert.AreEqual(1, dataContextChanged);
 				Assert.IsInstanceOf<MyViewModel>(c.DataContext);

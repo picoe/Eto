@@ -199,9 +199,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			// simply create all control types and ensure they can be GC'd without hooking up anything.
 			foreach (var type in GetAllControlTypes())
 			{
-				if (Platform.Instance.IsWpf)
+				if (Platform.Instance.IsWpf || Platform.Instance.IsMac)
 				{
-					// wpf has (known) problems GC'ing a Window right away, so let's not test it.
+					// wpf and macos has (known) problems GC'ing a Window right away, so let's not test it.
 					if (typeof(Window).GetTypeInfo().IsAssignableFrom(type.Type))
 						continue;
 				}
