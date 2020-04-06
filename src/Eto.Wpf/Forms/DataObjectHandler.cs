@@ -95,7 +95,7 @@ namespace Eto.Wpf.Forms
 			set
 			{
 				if (IsExtended)
-					Control.SetDataEx(sw.DataFormats.Text, value);
+					Control.SetDataEx(sw.DataFormats.UnicodeText, value);
 				else
 					Control.SetText(value);
 				Update();
@@ -106,7 +106,7 @@ namespace Eto.Wpf.Forms
 
 		public virtual string Html
 		{
-			get { return Control.ContainsText(sw.TextDataFormat.Html) ? Control.GetText(sw.TextDataFormat.Html) : null; }
+			get { return ContainsHtml ? Control.GetText(sw.TextDataFormat.Html) : null; }
 			set
 			{
 				if (IsExtended)
@@ -127,7 +127,12 @@ namespace Eto.Wpf.Forms
 			get
 			{
 				if (InnerContainsImage)
-					return InnerGetImage().ToEto();
+				{
+					// clipboard returns true but the image returned is null sometimes.. hrmph.
+					var img = InnerGetImage().ToEto();
+					if (img != null)
+						return img;
+				}
 				if (Contains(sw.DataFormats.Dib) && InnerGetData(sw.DataFormats.Dib) is Stream stream)
 					return Win32.FromDIB(stream);
 				return null;
