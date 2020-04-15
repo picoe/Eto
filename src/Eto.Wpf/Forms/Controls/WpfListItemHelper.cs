@@ -5,9 +5,36 @@ using swd = System.Windows.Data;
 using Eto.Forms;
 using Eto.Wpf.CustomControls;
 using Eto.Drawing;
+using System.Globalization;
 
 namespace Eto.Wpf.Forms.Controls
 {
+
+	public class WpfActionValueConverter : swd.IValueConverter
+	{
+		public delegate object ConvertDelegate(object value, Type targetType, object parameter, CultureInfo culture);
+
+		readonly ConvertDelegate _convert;
+		readonly ConvertDelegate _convertBack;
+
+		public WpfActionValueConverter(ConvertDelegate convert, ConvertDelegate convertBack = null)
+		{
+			_convert = convert ?? throw new ArgumentNullException(nameof(convert));
+			_convertBack = convertBack;
+		}
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return _convert(value, targetType, parameter, culture);
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (_convertBack != null)
+				return _convertBack.Invoke(value, targetType, parameter, culture);
+			throw new NotImplementedException();
+		}
+	}
 
 	public class WpfEditableTextBindingBlock : sw.FrameworkElementFactory
 	{

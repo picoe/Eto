@@ -85,16 +85,16 @@ namespace Eto
 		/// <param name="defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
 		public void HandleEvent(string id, bool defaultEvent = false)
 		{
+			var instanceId = id + InstanceEventSuffix;
+			if (Widget.Properties.ContainsKey(instanceId))
+				return;
+
 			if (defaultEvent)
 			{
-				if (!Widget.Properties.ContainsKey(id + InstanceEventSuffix))
-					AttachEvent(id);
+				AttachEvent(id);
 			}
-			else if (!Widget.Properties.ContainsKey(id) && !EventLookup.IsDefault(Widget, id))
+			else if (!EventLookup.IsDefault(Widget, id))
 			{
-				var instanceId = id + InstanceEventSuffix;
-				if (Widget.Properties.ContainsKey(instanceId))
-					return;
 				Widget.Properties.Add(instanceId, true);
 				AttachEvent(id);
 			}

@@ -1,3 +1,4 @@
+using Eto.Forms;
 using System;
 using System.Collections.Generic;
 
@@ -18,7 +19,7 @@ namespace Eto.Drawing
 	[Handler(typeof(FontFamily.IHandler))]
 	public class FontFamily : Widget, IEquatable<FontFamily>
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets the name of this font family
@@ -27,7 +28,7 @@ namespace Eto.Drawing
 		/// This is a non-localized version of the name, suitable for internal use.
 		/// </remarks>
 		/// <seealso cref="LocalizedName"/>
-		public string Name { get { return Handler.Name; } }
+		public string Name => Handler.Name;
 
 		/// <summary>
 		/// Gets the localized name of the font for the current UI language
@@ -39,12 +40,12 @@ namespace Eto.Drawing
 		/// value of <see cref="Name"/> will be returned.
 		/// </remarks>
 		/// <value>The localized name of this font.</value>
-		public string LocalizedName { get { return Handler.LocalizedName; } }
+		public string LocalizedName => Handler.LocalizedName;
 
 		/// <summary>
 		/// Gets an enumeration of the one or more supported typefaces for this font family
 		/// </summary>
-		public IEnumerable<FontTypeface> Typefaces { get { return Handler.Typefaces; } }
+		public IEnumerable<FontTypeface> Typefaces => Handler.Typefaces;
 
 		/// <summary>
 		/// Initializes a new instance of the FontFamily class with the specified handler
@@ -53,7 +54,7 @@ namespace Eto.Drawing
 		/// Used by platform implementations to create instances of the FontFamily class directly
 		/// </remarks>
 		/// <param name="handler">Handler to use</param>
-		public FontFamily (IHandler handler)
+		public FontFamily(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -62,34 +63,35 @@ namespace Eto.Drawing
 		/// Initializes a new instance of the FontFamily class with the given font <paramref name="familyName"/>
 		/// </summary>
 		/// <param name="familyName">Name of the font family to assign to this instance</param>
-		public FontFamily (string familyName)
+		public FontFamily(string familyName)
 		{
-			if (familyName.IndexOf (',') > 0)
+			if (familyName.IndexOf(',') > 0)
 				familyName = SplitFamilyName(familyName);
 
-			Handler.Create (familyName);
+			Handler.Create(familyName);
 		}
 
-		static string SplitFamilyName (string familyName)
+		static string SplitFamilyName(string familyName)
 		{
 			var handler = Platform.Instance.CreateShared<Fonts.IHandler>();
-			var families = familyName.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+			var families = familyName.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 			char[] trimChars = { ' ', '\'', '"' };
 			foreach (var name in families)
 			{
-				var trimmedName = name.Trim (trimChars);
-				switch (trimmedName.ToUpperInvariant ()) {
-				case FontFamilies.MonospaceFamilyName:
-				case FontFamilies.SansFamilyName:
-				case FontFamilies.SerifFamilyName:
-				case FontFamilies.CursiveFamilyName:
-				case FontFamilies.FantasyFamilyName:
-					return trimmedName;
-				default:
-					if (handler.FontFamilyAvailable (trimmedName))
+				var trimmedName = name.Trim(trimChars);
+				switch (trimmedName.ToUpperInvariant())
+				{
+					case FontFamilies.MonospaceFamilyName:
+					case FontFamilies.SansFamilyName:
+					case FontFamilies.SerifFamilyName:
+					case FontFamilies.CursiveFamilyName:
+					case FontFamilies.FantasyFamilyName:
 						return trimmedName;
-					break;
+					default:
+						if (handler.FontFamilyAvailable(trimmedName))
+							return trimmedName;
+						break;
 				}
 			}
 			return FontFamilies.SansFamilyName;
@@ -103,10 +105,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="other">Other font to test</param>
 		/// <returns>True if the families are equal, false otherwise</returns>
-		public bool Equals (FontFamily other)
-		{
-			return other == this;
-		}
+		public bool Equals(FontFamily other) => other == this;
 
 		/// <summary>
 		/// Tests two FontFamily objects for equality
@@ -117,7 +116,7 @@ namespace Eto.Drawing
 		/// <param name="value1">First font family to test</param>
 		/// <param name="value2">Second font family to test</param>
 		/// <returns>True if the font families are equal, false otherwise</returns>
-		public static bool operator == (FontFamily value1, FontFamily value2)
+		public static bool operator ==(FontFamily value1, FontFamily value2)
 		{
 			if (ReferenceEquals(value1, value2))
 				return true;
@@ -132,7 +131,7 @@ namespace Eto.Drawing
 		/// <param name="value1">First font family to test</param>
 		/// <param name="value2">Second font family to test</param>
 		/// <returns>True if the font families are not equal, false otherwise</returns>
-		public static bool operator != (FontFamily value1, FontFamily value2)
+		public static bool operator !=(FontFamily value1, FontFamily value2)
 		{
 			return !(value1 == value2);
 		}
@@ -141,29 +140,20 @@ namespace Eto.Drawing
 		/// Gets the hash code for this instance
 		/// </summary>
 		/// <returns>Hash code for this instance</returns>
-		public override int GetHashCode ()
-		{
-			return Name.GetHashCode ();
-		}
+		public override int GetHashCode() => Name.GetHashCode();
 
 		/// <summary>
 		/// Tests if this instance is equal to the specified object
 		/// </summary>
 		/// <param name="obj">Object to test with</param>
 		/// <returns>True if the specified object is a FontFamily and is equal to this instance</returns>
-		public override bool Equals (object obj)
-		{
-			return this == obj as FontFamily;
-		}
+		public override bool Equals(object obj) => this == obj as FontFamily;
 
 		/// <summary>
 		/// Gets a string representation of this font family
 		/// </summary>
 		/// <returns>String representation of this font family</returns>
-		public override string ToString ()
-		{
-			return Name;
-		}
+		public override string ToString() => Name;
 
 		/// <summary>
 		/// Interface for a <see cref="FontFamily"/> handler
@@ -199,7 +189,7 @@ namespace Eto.Drawing
 			/// Creates a new instance of a font family with a given name
 			/// </summary>
 			/// <param name="familyName">Name of the font family to create this instance for</param>
-			void Create (string familyName);
+			void Create(string familyName);
 		}
 	}
 }

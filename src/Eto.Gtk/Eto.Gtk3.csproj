@@ -99,9 +99,14 @@ On Linux, mono framework 5.10 or higher and gtk-sharp3 are required.
   <ItemGroup>
     <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="NativeMethods.cs">
       <DependentUpon>NativeMethods.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="Forms\EtoControls.cs">
       <DependentUpon>EtoControls.tt</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 </Project>

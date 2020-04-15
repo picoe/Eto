@@ -6,6 +6,7 @@ using sw = System.Windows;
 using swd = System.Windows.Documents;
 using System.Diagnostics;
 using System.Globalization;
+using Eto.Forms;
 
 namespace Eto.Wpf.Drawing
 {

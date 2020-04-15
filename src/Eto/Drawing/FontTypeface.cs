@@ -1,4 +1,7 @@
 
+using Eto.Forms;
+using System.Collections.Generic;
+
 namespace Eto.Drawing
 {
 	/// <summary>
@@ -70,7 +73,7 @@ namespace Eto.Drawing
 		public FontTypeface(FontFamily family, IHandler handler)
 			: base(handler)
 		{
-			this.Family = family;
+			Family = family;
 		}
 
 		/// <summary>
@@ -87,10 +90,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="other">Other font typeface to test</param>
 		/// <returns>True if the typefaces are equal, false otherwise</returns>
-		public bool Equals(FontTypeface other)
-		{
-			return other == this;
-		}
+		public bool Equals(FontTypeface other) => other == this;
 
 		/// <summary>
 		/// Tests two FontTypeface objects for equality
@@ -116,10 +116,7 @@ namespace Eto.Drawing
 		/// <param name="value1">First font typeface to test</param>
 		/// <param name="value2">Second font typeface to test</param>
 		/// <returns>True if the font typefaces are not equal, false otherwise</returns>
-		public static bool operator !=(FontTypeface value1, FontTypeface value2)
-		{
-			return !(value1 == value2);
-		}
+		public static bool operator !=(FontTypeface value1, FontTypeface value2) => !(value1 == value2);
 
 		/// <summary>
 		/// Gets the hash code for this instance
@@ -138,10 +135,38 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="obj">Object to test with</param>
 		/// <returns>True if the specified object is a FontTypeface and is equal to this instance</returns>
-		public override bool Equals(object obj)
-		{
-			return this == obj as FontTypeface;
-		}
+		public override bool Equals(object obj) => this == obj as FontTypeface;
+
+		/// <summary>
+		/// Gets a value indicating that this font is a symbol font and not generally used for text
+		/// </summary>
+		/// <remarks>
+		/// Some platforms (e.g. Gtk) might not support this and simply return false for all fonts.
+		/// </remarks>
+		public bool IsSymbol => Handler.IsSymbol;
+
+		/// <summary>
+		/// Gets a value indicating that this font supports the character range specified
+		/// </summary>
+		/// <param name="start">Start of the range</param>
+		/// <param name="end">End of the range (inclusive)</param>
+		/// <returns>True if the font supports the characters in the specified range, false otherwise</returns>
+		public bool HasCharacterRange(int start, int end) => Handler.HasCharacterRanges(new[] { new Range<int>(start, end) });
+
+		/// <summary>
+		/// Gets a value indicating that this font supports the character range specified
+		/// </summary>
+		/// <param name="range">Range to test</param>
+		/// <returns>True if the font supports the characters in the specified range, false otherwise</returns>
+		public bool HasCharacterRange(Range<int> range) => Handler.HasCharacterRanges(new[] { range });
+
+		/// <summary>
+		/// Gets a value indicating that this font supports the character ranges specified
+		/// </summary>
+		/// <param name="ranges">Ranges to test</param>
+		/// <returns>True if the font supports all characters in the specified ranges, false otherwise</returns>
+		public bool HasCharacterRanges(IEnumerable<Range<int>> ranges) => Handler.HasCharacterRanges(ranges);
+
 
 		/// <summary>
 		/// Platform handler interface for the <see cref="FontTypeface"/> class
@@ -168,6 +193,18 @@ namespace Eto.Drawing
 			/// This style does not fully describe the characteristics of the typeface, just very broad characteristics.
 			/// </remarks>
 			FontStyle FontStyle { get; }
+
+			/// <summary>
+			/// Gets a value indicating that this font is a symbol font and not generally used for text
+			/// </summary>
+			bool IsSymbol { get; }
+
+			/// <summary>
+			/// Gets a value indicating that this font supports the character ranges specified
+			/// </summary>
+			/// <param name="ranges">Ranges to test</param>
+			/// <returns>True if the font supports all characters in the specified ranges, false otherwise</returns>
+			bool HasCharacterRanges(IEnumerable<Range<int>> ranges);
 		}
 	}
 }

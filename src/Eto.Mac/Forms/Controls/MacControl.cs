@@ -39,7 +39,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public virtual Font Font
 		{
-			get { return Widget.Properties.Create(MacControl.Font_Key, () => new Font(new FontHandler(Control.Font))); }
+			get => Widget.Properties.Get<Font>(MacControl.Font_Key) ?? Widget.Properties.Create(MacControl.Font_Key, () => new Font(new FontHandler(Control.Font)));
 			set
 			{
 				Widget.Properties.Set(MacControl.Font_Key, value, () =>

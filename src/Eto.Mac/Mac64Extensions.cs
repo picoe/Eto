@@ -47,6 +47,7 @@ namespace Eto.Mac
 		public static NSString ForegroundColor = NSAttributedString.ForegroundColorAttributeName;
 		public static NSString Shadow = NSAttributedString.ShadowAttributeName;
 		public static NSString Font = NSAttributedString.FontAttributeName;
+		public static NSString BaselineOffset = NSAttributedString.BaselineOffsetAttributeName;
 		public static NSString UnderlineStyle = NSAttributedString.UnderlineStyleAttributeName;
 		public static NSString BackgroundColor = NSAttributedString.BackgroundColorAttributeName;
 		public static NSString StrikethroughStyle = NSAttributedString.StrikethroughStyleAttributeName;

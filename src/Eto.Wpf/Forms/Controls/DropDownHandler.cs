@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
 using System.Globalization;
+using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -122,6 +123,11 @@ namespace Eto.Wpf.Forms.Controls
 			Control = (TControl)new EtoComboBox();
 			Control.Handler = this;
 			Control.SelectionChanged += (sender, e) => Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			CreateTemplate();
 		}
 
@@ -201,10 +207,40 @@ namespace Eto.Wpf.Forms.Controls
 
 		void CreateTemplate()
 		{
-			Control.ItemTemplate = new sw.DataTemplate
+			var textBlock = new WpfImageTextBindingBlock(() => Widget.ItemTextBinding, () => Widget.ItemImageBinding, false);
+			if (IsEventHandled(DropDown.FormatItemEvent))
 			{
-				VisualTree = new WpfImageTextBindingBlock(() => Widget.ItemTextBinding, () => Widget.ItemImageBinding, false)
-			};
+				var fontConverter = new WpfActionValueConverter(ConvertFontFamily);
+				textBlock.SetBinding(swc.TextBlock.FontFamilyProperty, new swd.Binding { Converter = fontConverter });
+				textBlock.SetBinding(swc.TextBlock.FontStretchProperty, new swd.Binding { Converter = fontConverter });
+				textBlock.SetBinding(swc.TextBlock.FontWeightProperty, new swd.Binding { Converter = fontConverter });
+				textBlock.SetBinding(swc.TextBlock.FontStyleProperty, new swd.Binding { Converter = fontConverter });
+				textBlock.SetBinding(swc.TextBlock.FontSizeProperty, new swd.Binding { Converter = fontConverter });
+			}
+
+			Control.ItemTemplate = new sw.DataTemplate { VisualTree = textBlock };
+		}
+
+		private object ConvertFontFamily(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			var args = new DropDownFormatEventArgs(value, 0, Font);
+			Callback.OnFormatItem(Widget, args);
+			if (args.Font is Font font && font.Handler is FontHandler fontHandler)
+			{
+				if (typeof(swm.FontFamily).IsAssignableFrom(targetType))
+					return fontHandler.WpfFamily;
+				else if (typeof(sw.FontStretch).IsAssignableFrom(targetType))
+					return fontHandler.WpfFontStretch;
+				else if (typeof(sw.FontWeight).IsAssignableFrom(targetType))
+					return fontHandler.WpfFontWeight;
+				else if (typeof(sw.FontStyle).IsAssignableFrom(targetType))
+					return fontHandler.WpfFontStyle;
+				else if (typeof(double).IsAssignableFrom(targetType))
+					return fontHandler.WpfSize;
+				else if (typeof(swm.Typeface).IsAssignableFrom(targetType))
+					return fontHandler.WpfTypeface;
+			}
+			return null;
 		}
 
 		public override void AttachEvent(string id)
@@ -217,10 +253,18 @@ namespace Eto.Wpf.Forms.Controls
 				case DropDown.DropDownClosedEvent:
 					Control.DropDownClosed += (sender, e) => Callback.OnDropDownClosed(Widget, EventArgs.Empty);
 					break;
+				case DropDown.FormatItemEvent:
+					CreateTemplate();
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+		public void AttachEvent(object widget, object id)
+		{
+			
+			//if (id == )
 		}
 	}
 }

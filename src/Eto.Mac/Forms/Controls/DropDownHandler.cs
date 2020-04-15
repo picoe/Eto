@@ -97,12 +97,18 @@ namespace Eto.Mac.Forms.Controls
 
 			public override CGRect DrawTitle(NSAttributedString title, CGRect frame, NSView controlView)
 			{
+				var str = new NSMutableAttributedString(title);
+				var range = new NSRange(0, str.Length);
 				if (textAttributes != null)
 				{
-					var str = new NSMutableAttributedString(title);
-					str.AddAttributes(textAttributes, new NSRange(0, title.Length));
-					title = str;
+					str.AddAttributes(textAttributes, range);
 				}
+
+				// enforce the control font if it had been overridden for this item, macOS doesn't support non-standard fonts for its NSPopUpButton.
+				if (controlView is NSControl control)
+					str.AddAttribute(NSStringAttributeKey.Font, control.Font, range);
+
+				title = str;
 				return base.DrawTitle(title, frame, controlView);
 			}
 		}
@@ -144,16 +150,45 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var handler = GetHandler(sender) as DropDownHandler;
 			handler?.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
+
+			
+
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public DropDownHandler Handler { get; set; }
 
-			NSMenuItem CreateItem(object dataItem)
+			NSMenuItem CreateItem(object dataItem, int row)
 			{
-				var item = new NSMenuItem(Handler.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty);
-				item.Image = Handler.Widget.ItemImageBinding?.GetValue(dataItem).ToNS();
+				var h = Handler;
+
+				var item = new NSMenuItem();
+				var title = h.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty;
+				item.Image = h.Widget.ItemImageBinding?.GetValue(dataItem).ToNS();
+
+				if (h.IsEventHandled(DropDown.FormatItemEvent))
+				{
+					var args = new DropDownFormatEventArgs(dataItem, row, h.Font);
+					h.Callback.OnFormatItem(h.Widget, args);
+					if (args.IsFontSet && args.Font != null)
+					{
+						var attr = new NSMutableAttributedString(title);
+						var font = args.Font.ToNS();
+						var range = new NSRange(0, attr.Length);
+						attr.AddAttribute(NSStringAttributeKey.Font, font, range);
+						item.AttributedTitle = attr;
+					}
+					else
+					{
+						item.Title = title;
+					}
+				}
+				else
+				{
+					item.Title = title;
+				}
+
 				return item;
 			}
 
@@ -171,7 +206,7 @@ namespace Eto.Mac.Forms.Controls
 				var itemList = items.ToList();
 				for (int i = 0; i < itemList.Count; i++)
 				{
-					var menuItem = CreateItem(itemList[i]);
+					var menuItem = CreateItem(itemList[i], i);
 					if (i < itemList.Count - 1)
 						Messaging.void_objc_msgSend_IntPtr(menu.Handle, selAddItem_Handle, menuItem.Handle);
 					else
@@ -186,7 +221,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void AddItem(object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.Menu.AddItem(CreateItem(item));
+				Handler.Control.Menu.AddItem(CreateItem(item, Count));
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.InvalidateMeasure();
@@ -195,7 +230,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void InsertItem(int index, object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.Menu.InsertItem(CreateItem(item), index);
+				Handler.Control.Menu.InsertItem(CreateItem(item, index), index);
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.InvalidateMeasure();
@@ -223,6 +258,13 @@ namespace Eto.Mac.Forms.Controls
 					Handler.Control.SelectItem(-1);
 					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 				}
+			}
+
+			public void Recreate()
+			{
+				Handler.Control.RemoveAllItems();
+				InitializeCollection();
+				Handler.InvalidateMeasure();
 			}
 		}
 
@@ -325,6 +367,9 @@ namespace Eto.Mac.Forms.Controls
 				case DropDown.DropDownOpeningEvent:
 				case DropDown.DropDownClosedEvent:
 					EnsureDelegate();
+					break;
+				case DropDown.FormatItemEvent:
+					collection?.Recreate();
 					break;
 				default:
 					base.AttachEvent(id);

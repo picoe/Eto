@@ -5,6 +5,8 @@ using swm = System.Windows.Media;
 using sw = System.Windows;
 using swd = System.Windows.Documents;
 using Eto.Wpf.CustomControls.FontDialog;
+using System.Collections.Generic;
+using Eto.Forms;
 
 namespace Eto.Wpf.Drawing
 {
@@ -40,5 +42,25 @@ namespace Eto.Wpf.Drawing
 		public string LocalizedName => localizedName ?? (localizedName = NameDictionaryExtensions.GetDisplayName(Control.FaceNames));
 
 		public FontStyle FontStyle => WpfConversions.Convert (Control.Style, Control.Weight);
+
+
+		public bool IsSymbol => Control.TryGetGlyphTypeface(out var glyph) && glyph.Symbol;
+
+		public bool HasCharacterRanges(IEnumerable<Range<int>> ranges)
+		{
+			if (Control.TryGetGlyphTypeface(out var glyph))
+			{
+				foreach (var range in ranges)
+				{
+					for (int i = range.Start; i <= range.End; i++)
+					{
+						if (!glyph.CharacterToGlyphMap.ContainsKey(i)) return false;
+					}
+				}
+			}
+
+			return true;
+		}
+
 	}
 }

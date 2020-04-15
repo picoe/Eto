@@ -76,7 +76,12 @@ var gdkmethods = new[]
     "IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height)",
 };
 
-var methods = giomethods.Concat(gtkmethods).Concat(webkitmethods).Concat(gdkmethods).ToArray();
+var pangomethods = new[]
+{
+	"bool pango_font_has_char(IntPtr font, int wc)"
+};
+
+var methods = giomethods.Concat(gtkmethods).Concat(webkitmethods).Concat(gdkmethods).Concat(pangomethods).ToArray();
 
 #>
 using System;
@@ -110,6 +115,7 @@ namespace Eto.GtkSharp
 			const string libgobject = "libgobject-2.0" + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 			const string libgdk = "libgdk-" + plat + ver + ext;
+			const string libpango = "libpango-" + plat + ver + ext;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 <#
 		foreach (var method in giomethods)
@@ -147,6 +153,16 @@ namespace Eto.GtkSharp
 #>
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
+<#
+		}
+#>
+<#
+		foreach (var method in pangomethods)
+		{
+#>
+
+			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
 <#
 		}
