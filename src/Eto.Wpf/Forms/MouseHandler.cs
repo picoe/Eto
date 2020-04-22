@@ -27,19 +27,6 @@ namespace Eto.Wpf.Forms
 			s_CursorSetCount++;
 		}
 
-		public MouseButtons Buttons
-		{
-			get
-			{
-				MouseButtons buttons = MouseButtons.None;
-				if (swi.Mouse.LeftButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Primary;
-				if (swi.Mouse.MiddleButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Middle;
-				if (swi.Mouse.RightButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Alternate;
-				return buttons;
-			}
-		}
+		public MouseButtons Buttons => swf.Control.MouseButtons.ToEto();
 	}
 }

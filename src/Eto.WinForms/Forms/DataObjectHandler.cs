@@ -294,5 +294,17 @@ namespace Eto.WinForms.Forms
 		public abstract void Clear();
 
 		public abstract bool Contains(string type);
+
+		public void SetObject(object value, string type) => Widget.SetObject(value, type);
+
+		public T GetObject<T>(string type) => Widget.GetObject<T>(type);
+
+		public bool TrySetObject(object value, string type) => false;
+
+		public bool TryGetObject(string type, out object value)
+		{
+			value = null;
+			return false;
+		}
 	}
 }

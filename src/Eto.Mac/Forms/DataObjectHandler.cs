@@ -37,6 +37,15 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms
 {
+	public class DataFormatsHandler : DataFormats.IHandler
+	{
+		public string Text => NSPasteboard.NSPasteboardTypeString;
+
+		public string Html => NSPasteboard.NSPasteboardTypeHTML;
+
+		public string Color => NSPasteboard.NSPasteboardTypeColor;
+	}
+
 	public interface IDataObjectHandler
 	{
 		void Apply(NSPasteboard pasteboard);
@@ -55,7 +64,7 @@ namespace Eto.Mac.Forms
 	}
 
 	public abstract class DataObjectHandler<TWidget, TCallback> : WidgetHandler<NSPasteboard, TWidget, TCallback>, IDataObject
-		where TWidget : Widget
+		where TWidget : Widget, IDataObject
 		where TCallback : Widget.ICallback
 	{
 		nint _changeCount;
@@ -218,5 +227,30 @@ namespace Eto.Mac.Forms
 		{
 			return Control.GetAvailableTypeFromArray(new[] { type }) != null;
 		}
+
+		public bool TryGetObject(string type, out object value)
+		{
+			if (type == NSPasteboard.NSPasteboardTypeColor)
+			{
+				value = NSColor.FromPasteboard(Control)?.ToEto();
+				return true;
+			}
+			value = null;
+			return false;
+		}
+
+		public bool TrySetObject(object value, string type)
+		{
+			if (value is Color color && type == NSPasteboard.NSPasteboardTypeColor)
+			{
+				Control.WriteObjects(new[] { color.ToNSUI() });
+				return true;
+			}
+			return false;
+		}
+
+		public void SetObject(object value, string type) => Widget.SetObject(value, type);
+
+		public T GetObject<T>(string type) => Widget.GetObject<T>(type);
 	}
 }
