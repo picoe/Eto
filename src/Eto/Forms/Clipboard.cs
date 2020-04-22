@@ -2,6 +2,9 @@ using System;
 using Eto;
 using Eto.Drawing;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace Eto.Forms
 {
@@ -180,10 +183,131 @@ namespace Eto.Forms
 		public void Clear() => Handler.Clear();
 
 		/// <summary>
+		/// Sets the <paramref name="value"/> into the data object with the specified <paramref name="type"/> using serialization or type converter
+		/// </summary>
+		/// <remarks>
+		/// The object specified must be serializable or have a type converter to convert to a string.
+		/// </remarks>
+		/// <param name="value">Serializable value to set as a value in the data object</param>
+		/// <param name="type">Type identifier to set the value for</param>
+		public void SetObject(object value, string type)
+		{
+			if (Handler.TrySetObject(value, type))
+				return;
+
+			if (value == null)
+				return;
+
+			var baseType = value.GetType();
+			baseType = Nullable.GetUnderlyingType(baseType) ?? baseType;
+
+			if (baseType.GetTypeInfo().IsSerializable)
+			{
+				using (var ms = new MemoryStream())
+				{
+					var binaryFormatter = new BinaryFormatter();
+					binaryFormatter.Serialize(ms, value);
+					SetDataStream(ms, type);
+					return;
+				}
+			}
+			var converter = System.ComponentModel.TypeDescriptor.GetConverter(baseType);
+			if (converter != null && converter.CanConvertTo(typeof(string)))
+			{
+				SetString(converter.ConvertToString(value), type);
+				return;
+			}
+			throw new InvalidOperationException("T must be serializable or convertable to string");
+		}
+
+		/// <summary>
+		/// Gets an object from the data object with the specified type
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you know the type of object, and it is serializable or has a type converter to convert from string.
+		/// If it cannot be converted it will return the default value.
+		/// </remarks>
+		/// <typeparam name="T">Type of the object to get</typeparam>
+		/// <param name="type">Type identifier to get from the data object</param>
+		/// <returns>An instance of the object to recieve, or the default value.</returns>
+		public T GetObject<T>(string type)
+		{
+			if (Handler.TryGetObject(type, out var obj) && obj is T handlerValue)
+				return handlerValue;
+
+			var baseType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+			try
+			{
+				if (baseType.GetTypeInfo().IsSerializable && GetObject(type) is T value)
+				{
+					return value;
+				}
+
+				var converter = System.ComponentModel.TypeDescriptor.GetConverter(baseType);
+				if (converter?.CanConvertFrom(typeof(string)) == true)
+				{
+					return (T)converter.ConvertFromString(GetString(type));
+				}
+			}
+			catch (Exception ex)
+			{
+				// log error in debug
+				Debug.WriteLine(ex);
+			}
+			return default;
+		}
+
+		/// <summary>
+		/// Gets a serialized value with the specified <paramref name="type"/> identifier.
+		/// </summary>
+		/// <param name="type">type identifier to get the value for.</param>
+		/// <returns>Value of the object if deserializable, otherwise null.</returns>
+		public object GetObject(string type)
+		{
+			if (Handler.TryGetObject(type, out var value))
+				return value;
+
+			var stream = GetDataStream(type);
+			if (stream == null)
+				return null;
+			try
+			{
+				var binaryFormatter = new BinaryFormatter();
+				return binaryFormatter.Deserialize(stream);
+			}
+			catch (Exception ex)
+			{
+				// log error in debug
+				Debug.WriteLine(ex);
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Handler interface for the <see cref="Clipboard"/>.
 		/// </summary>
 		public new interface IHandler : Widget.IHandler, IDataObject
 		{
+			/// <summary>
+			/// Attempts to set the specified object to the clipboard in a native-supplied way
+			/// </summary>
+			/// <remarks>
+			/// This is used so native handlers can set certain objects in a particular way.
+			/// For example, on macOS, setting a Color object for <see cref="DataFormats.Color"/> will use native API to set the value.
+			/// </remarks>
+			/// <param name="value">Value to set</param>
+			/// <param name="type">Data format type</param>
+			/// <returns>true if the native handler set the value, or false to fallback to serialization or conversion to string</returns>
+			bool TrySetObject(object value, string type);
+
+			/// <summary>
+			/// Attempts to get the specified value from the clipboard in a native-supplied way
+			/// </summary>
+			/// <param name="type">Data format type to get the value</param>
+			/// <param name="value">Value returned</param>
+			/// <returns>True if the value was returned, false otherwise</returns>
+			bool TryGetObject(string type, out object value);
 		}
 	}
 }

@@ -14,6 +14,13 @@ using static System.Windows.WpfDataObjectExtensions;
 
 namespace Eto.Wpf.Forms
 {
+	public class DataFormatsHandler : DataFormats.IHandler
+	{
+		public virtual string Text => sw.DataFormats.UnicodeText;
+		public virtual string Html => sw.DataFormats.Html;
+		public virtual string Color => "Color";
+	}
+
 	public class DataObjectHandler : DataObjectHandler<DataObject, DataObject.ICallback>
 	{
 		public override string[] Types => Control.GetFormats();
@@ -58,7 +65,7 @@ namespace Eto.Wpf.Forms
 	}
 
 	public abstract class DataObjectHandler<TWidget, TCallback> : WidgetHandler<sw.DataObject, TWidget, TCallback>, DataObject.IHandler
-		where TWidget: Widget
+		where TWidget: Widget, IDataObject
 	{
 		protected bool IsExtended { get; }
 		public const string UniformResourceLocatorW_Format = "UniformResourceLocatorW";
@@ -342,5 +349,20 @@ namespace Eto.Wpf.Forms
 		{
 			sw.WpfDataObjectExtensions.SetDragImage(Control, bitmap.ToWpf(), offset.ToWpf());
 		}
+
+		public bool TrySetObject(object value, string type)
+		{
+			return false;
+		}
+
+		public bool TryGetObject(string type, out object value)
+		{
+			value = null;
+			return false;
+		}
+
+		public void SetObject(object value, string type) => Widget.SetObject(value, type);
+
+		public T GetObject<T>(string type) => Widget.GetObject<T>(type);
 	}
 }

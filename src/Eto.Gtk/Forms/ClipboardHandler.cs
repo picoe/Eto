@@ -183,6 +183,18 @@ namespace Eto.GtkSharp.Forms
 			return Control.WaitIsTargetAvailable(Gdk.Atom.Intern(type, false));
 		}
 
+		public bool TrySetObject(object value, string type) => false;
+
+		public bool TryGetObject(string type, out object value)
+		{
+			value = null;
+			return false;
+		}
+
+		public void SetObject(object value, string type) => Widget.SetObject(value, type);
+
+		public T GetObject<T>(string type) => Widget.GetObject<T>(type);
+
 		public string[] Types
 		{
 			get

@@ -1,9 +1,11 @@
 using Eto.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace Eto.Forms
@@ -123,6 +125,27 @@ namespace Eto.Forms
 		/// </summary>
 		void Clear();
 
+		/// <summary>
+		/// Sets the <paramref name="value"/> into the data object with the specified <paramref name="type"/> using serialization or type converter
+		/// </summary>
+		/// <remarks>
+		/// The object specified must be serializable or have a type converter to convert to a string.
+		/// </remarks>
+		/// <param name="value">Serializable value to set as a value in the data object</param>
+		/// <param name="type">Type identifier to set the value for</param>
+		void SetObject(object value, string type);
+
+		/// <summary>
+		/// Gets an object from the data object with the specified type
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you know the type of object, and it is serializable or has a type converter to convert from string.
+		/// If it cannot be converted it will return the default value.
+		/// </remarks>
+		/// <typeparam name="T">Type of the object to get</typeparam>
+		/// <param name="type">Type identifier to get from the data object</param>
+		/// <returns>An instance of the object to recieve, or the default value.</returns>
+		T GetObject<T>(string type);
 	}
 
 	/// <summary>
@@ -215,30 +238,80 @@ namespace Eto.Forms
 			}
 		}
 
-		static Type s_BinaryFormatterType = Type.GetType("System.Runtime.Serialization.Formatters.Binary.BinaryFormatter")
-			?? Type.GetType("System.Runtime.Serialization.Formatters.Binary.BinaryFormatter, System.Runtime.Serialization.Formatters")
-			?? Type.GetType("System.Runtime.Serialization.Formatters.Binary.BinaryFormatter, netstandard");
-		static MethodInfo s_SerializeMethod = s_BinaryFormatterType?.GetRuntimeMethod("Serialize", new[] { typeof(Stream), typeof(object) });
-		static MethodInfo s_DeserializeMethod = s_BinaryFormatterType?.GetRuntimeMethod("Deserialize", new[] { typeof(Stream) });
-
 		/// <summary>
-		/// Sets the <paramref name="value"/> into the data object with the specified <paramref name="type"/> using serialization.
+		/// Sets the <paramref name="value"/> into the data object with the specified <paramref name="type"/> using serialization or type converter
 		/// </summary>
 		/// <remarks>
-		/// The object specified must be serializable.
+		/// The object specified must be serializable or have a type converter to convert to a string.
 		/// </remarks>
 		/// <param name="value">Serializable value to set as a value in the data object</param>
 		/// <param name="type">Type identifier to set the value for</param>
 		public void SetObject(object value, string type)
 		{
-			if (s_BinaryFormatterType == null || s_SerializeMethod == null)
-				throw new InvalidOperationException("Could not create an instance of BinaryFormatter");
-			using (var stream = new MemoryStream())
+			if (Handler.TrySetObject(value, type))
+				return;
+
+			if (value == null)
+				return;
+
+			var baseType = value.GetType();
+			baseType = Nullable.GetUnderlyingType(baseType) ?? baseType;
+
+			if (baseType.GetTypeInfo().IsSerializable)
 			{
-				var binaryFormatter = Activator.CreateInstance(s_BinaryFormatterType);
-				s_SerializeMethod.Invoke(binaryFormatter, new object[] { stream, value });
-				SetDataStream(stream, type);
+				using (var ms = new MemoryStream())
+				{
+					var binaryFormatter = new BinaryFormatter();
+					binaryFormatter.Serialize(ms, value);
+					SetDataStream(ms, type);
+					return;
+				}
 			}
+			var converter = System.ComponentModel.TypeDescriptor.GetConverter(baseType);
+			if (converter != null && converter.CanConvertTo(typeof(string)))
+			{
+				SetString(converter.ConvertToString(value), type);
+				return;
+			}
+			throw new InvalidOperationException("T must be serializable or convertable to string");
+		}
+
+		/// <summary>
+		/// Gets an object from the data object with the specified type
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you know the type of object, and it is serializable or has a type converter to convert from string.
+		/// If it cannot be converted it will return the default value.
+		/// </remarks>
+		/// <typeparam name="T">Type of the object to get</typeparam>
+		/// <param name="type">Type identifier to get from the data object</param>
+		/// <returns>An instance of the object to recieve, or the default value.</returns>
+		public T GetObject<T>(string type)
+		{
+			if (Handler.TryGetObject(type, out var obj) && obj is T handlerValue)
+				return handlerValue;
+
+			var baseType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+			try
+			{
+				if (baseType.GetTypeInfo().IsSerializable && GetObject(type) is T value)
+				{
+					return value;
+				}
+
+				var converter = System.ComponentModel.TypeDescriptor.GetConverter(baseType);
+				if (converter?.CanConvertFrom(typeof(string)) == true)
+				{
+					return (T)converter.ConvertFromString(GetString(type));
+				}
+			}
+			catch (Exception ex)
+			{
+				// log error in debug
+				Debug.WriteLine(ex);
+			}
+			return default;
 		}
 
 		/// <summary>
@@ -248,13 +321,23 @@ namespace Eto.Forms
 		/// <returns>Value of the object if deserializable, otherwise null.</returns>
 		public object GetObject(string type)
 		{
-			if (s_BinaryFormatterType == null || s_DeserializeMethod == null)
-				throw new InvalidOperationException("Could not create an instance of BinaryFormatter");
+			if (Handler.TryGetObject(type, out var value))
+				return value;
+
 			var stream = GetDataStream(type);
 			if (stream == null)
 				return null;
-			var binaryFormatter = Activator.CreateInstance(s_BinaryFormatterType);
-			return s_DeserializeMethod.Invoke(binaryFormatter, new object[] { stream });
+			try
+			{
+				var binaryFormatter = new BinaryFormatter();
+				return binaryFormatter.Deserialize(stream);
+			}
+			catch (Exception ex)
+			{
+				// log error in debug
+				Debug.WriteLine(ex);
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -347,7 +430,25 @@ namespace Eto.Forms
 		/// </summary>
 		public new interface IHandler : Widget.IHandler, IDataObject
 		{
+			/// <summary>
+			/// Attempts to set the specified object to the clipboard in a native-supplied way
+			/// </summary>
+			/// <remarks>
+			/// This is used so native handlers can set certain objects in a particular way.
+			/// For example, on macOS, setting a Color object for <see cref="DataFormats.Color"/> will use native API to set the value.
+			/// </remarks>
+			/// <param name="value">Value to set</param>
+			/// <param name="type">Data format type</param>
+			/// <returns>true if the native handler set the value, or false to fallback to serialization or conversion to string</returns>
+			bool TrySetObject(object value, string type);
 
+			/// <summary>
+			/// Attempts to get the specified value from the clipboard in a native-supplied way
+			/// </summary>
+			/// <param name="type">Data format type to get the value</param>
+			/// <param name="value">Value returned</param>
+			/// <returns>True if the value was returned, false otherwise</returns>
+			bool TryGetObject(string type, out object value);
 		}
 	}
 }
