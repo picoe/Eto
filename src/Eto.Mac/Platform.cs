@@ -282,6 +282,7 @@ namespace Eto.Mac
 			p.Add<Notification.IHandler>(() => new NotificationHandler());
 			p.Add<TrayIndicator.IHandler>(() => new TrayIndicatorHandler());
 			p.Add<DataFormats.IHandler>(() => new DataFormatsHandler());
+			p.Add<Taskbar.IHandler>(() => new TaskbarHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

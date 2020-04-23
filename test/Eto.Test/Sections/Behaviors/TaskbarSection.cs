@@ -26,7 +26,7 @@ namespace Eto.Test.Sections.Behaviors
             layout.BeginHorizontal();
             layout.Add(new Label { Text = "State:", VerticalAlignment = VerticalAlignment.Center }, false, false);
             dropTaskbarState = new EnumDropDown<TaskbarProgressState>();
-            dropTaskbarState.SelectedValue = TaskbarProgressState.ShowProgressbar;
+            dropTaskbarState.SelectedValue = TaskbarProgressState.Progress;
             layout.Add(dropTaskbarState, true, false);
             layout.EndHorizontal();
 

@@ -3,9 +3,13 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Eto.Forms;
 
+#if WPF
 namespace Eto.Wpf.Forms
+#elif WINFORMS
+namespace Eto.WinForms.Forms
+#endif
 {
-	class TaskbarHandler : WidgetHandler<Widget>, Taskbar.IHandler
+	public class TaskbarHandler : Taskbar.IHandler
 	{
 		[ComImport()]
 		[Guid("ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf")]
@@ -66,7 +70,7 @@ namespace Eto.Wpf.Forms
 				case TaskbarProgressState.Indeterminate:
 					taskstate = 0x1;
 					break;
-				case TaskbarProgressState.ShowProgressbar:
+				case TaskbarProgressState.Progress:
 					taskstate = 0x2;
 					break;
 				case TaskbarProgressState.Error:

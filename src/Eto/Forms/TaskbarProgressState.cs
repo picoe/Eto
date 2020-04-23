@@ -7,14 +7,14 @@ namespace Eto.Forms
 	public enum TaskbarProgressState
 	{
 		/// <summary>
-		/// The default state with no progressbar.
+		/// The default state with no progress or indication.
 		/// </summary>
-		NoProgressbar,
+		None,
 
 		/// <summary>
-		/// Standard state with visible progressbar.
+		/// Standard state with visible progress.
 		/// </summary>
-		ShowProgressbar,
+        Progress,
 
 		/// <summary>
 		/// Indeterminate state where the progressbar value will be ignored.

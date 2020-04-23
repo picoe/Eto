@@ -96,6 +96,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>    
+    <Compile Include="..\Eto.Wpf\Forms\TaskbarHandler.cs">
+      <Link>Forms\TaskbarHandler.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

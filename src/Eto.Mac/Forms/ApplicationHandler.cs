@@ -106,6 +106,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				Control.DockTile.BadgeLabel = value ?? string.Empty;
+				Control.DockTile.Display();
 			}
 		}
 

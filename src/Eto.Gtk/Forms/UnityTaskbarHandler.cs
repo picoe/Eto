@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class UnityTaskbarHandler : WidgetHandler<Widget>, Taskbar.IHandler
+	public class UnityTaskbarHandler : Taskbar.IHandler
 	{
 		private const string libunity = "libunity.so.9";
 
@@ -47,15 +47,15 @@ namespace Eto.GtkSharp
 			if (_handle == IntPtr.Zero)
 				return;
 
-			unity_launcher_entry_set_progress_visible(_handle, state != TaskbarProgressState.NoProgressbar);
+			unity_launcher_entry_set_progress_visible(_handle, state != TaskbarProgressState.None);
 
 			switch (state)
 			{
-				case TaskbarProgressState.NoProgressbar:
+				case TaskbarProgressState.None:
 					unity_launcher_entry_set_urgent(_handle, false);
 					unity_launcher_entry_set_progress(_handle, 0f);
 					break;
-				case TaskbarProgressState.ShowProgressbar:
+				case TaskbarProgressState.Progress:
 					unity_launcher_entry_set_urgent(_handle, (int)progress == 1);
 					unity_launcher_entry_set_progress(_handle, progress);
 					break;
