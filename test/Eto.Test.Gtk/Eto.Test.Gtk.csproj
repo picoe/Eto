@@ -11,7 +11,7 @@
     <StartAction>Project</StartAction>
     <ExternalConsole>false</ExternalConsole>
     <EnvironmentVariables>
-      <Variable name="DYLD_FALLBACK_LIBRARY_PATH" value="/usr/local/lib" />
+      <Variable name="LD_LIBRARY_PATH" value="/usr/local/lib:/usr/lib" />
     </EnvironmentVariables>
   </PropertyGroup>
   <ItemGroup>
