@@ -187,7 +187,8 @@ namespace Eto.Wpf
 			p.Add<Notification.IHandler>(() => new NotificationHandler());
 			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
 			p.Add<DataFormats.IHandler>(() => new DataFormatsHandler());
-
+			p.Add<Taskbar.IHandler>(() => new TaskbarHandler());
+			
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
 			
