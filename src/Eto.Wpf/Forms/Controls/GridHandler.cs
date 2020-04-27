@@ -148,6 +148,7 @@ namespace Eto.Wpf.Forms.Controls
 				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
 				Background = sw.SystemColors.WindowBrush
 			};
+			Control.MouseUp += HandleOutsideMouseUp;
 		}
 
 		protected ColumnCollection Columns { get; private set; }
@@ -390,7 +391,22 @@ namespace Eto.Wpf.Forms.Controls
 				}
 
 				MultipleSelectionInfo = null;
+			}			
+
+			if (!e.Handled && cell != null && TreeTogglePanel.IsOverContent(hitTestResult) != false)
+			{
+				var args = CreateCellMouseArgs(cell, e);
+				// let the column handler perform something specific if needed
+				var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+				columnHandler?.OnMouseUp(args, hitTestResult, cell);
+				e.Handled = args.Handled;
 			}
+		}
+
+
+		private void HandleOutsideMouseUp(object sender, swi.MouseButtonEventArgs e)
+		{
+			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
 			if (!e.Handled)
 			{
 				if (hitTestResult != null
@@ -407,16 +423,6 @@ namespace Eto.Wpf.Forms.Controls
 						e.Handled = true;
 					}
 				}
-
-			}
-
-			if (!e.Handled && cell != null && TreeTogglePanel.IsOverContent(hitTestResult) != false)
-			{
-				var args = CreateCellMouseArgs(cell, e);
-				// let the column handler perform something specific if needed
-				var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
-				columnHandler?.OnMouseUp(args, hitTestResult, cell);
-				e.Handled = args.Handled;
 			}
 		}
 
