@@ -29,9 +29,20 @@ namespace Eto.iOS.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
+		struct BrushData
+		{
+			public Color Color;
+			public NSColor NSColor;
+			public BrushData(Color color)
+			{
+				Color = color;
+				NSColor = color.ToNSUI();
+			}
+		}
+
 		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip)
 		{
-			var nscolor = ((Color)control).ToNSUI();
+			var nscolor = ((BrushData)control).NSColor;
 			if (stroke)
 			{
 				nscolor.SetStroke();
@@ -46,17 +57,17 @@ namespace Eto.iOS.Drawing
 
 		public Color GetColor(SolidBrush widget)
 		{
-			return (Color)widget.ControlObject;
+			return ((BrushData)widget.ControlObject).Color;
 		}
 
 		public void SetColor(SolidBrush widget, Color color)
 		{
-			widget.ControlObject = color;
+			widget.ControlObject = new BrushData(color);
 		}
 
 		object SolidBrush.IHandler.Create(Color color)
 		{
-			return color;
+			return new BrushData(color);
 		}
 	}
 }
