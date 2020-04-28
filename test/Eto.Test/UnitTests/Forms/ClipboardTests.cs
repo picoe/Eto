@@ -208,8 +208,6 @@ namespace Eto.Test.UnitTests.Forms
 		[TestCaseSource(nameof(GetDataTypes))]
 		public void IndividualValuesShouldBeIndependent(DataType property)
 		{
-			var byteData = new byte[] { 10, 20, 30 };
-
 			Invoke(() =>
 			{
 				using (var clipboard = new T())
@@ -231,6 +229,33 @@ namespace Eto.Test.UnitTests.Forms
 				}
 			});
 		}
+
+		[TestCaseSource(nameof(GetDataTypes))]
+		public void ClearingBeforeSettingShouldNotCrash(DataType property)
+		{
+			Invoke(() =>
+			{
+				using (var clipboard = new T())
+				{
+					clipboard.Clear();
+					SetValue(clipboard, property);
+					TestValue(clipboard, property);
+					// test all other entries are blank!
+					TestIsNullExcept(clipboard, property);
+				}
+			});
+			// if it's a clipboard, test a new instance of the clipboard has the same values that we set.
+			if (IsClipboard)
+				Invoke(() =>
+				{
+					using (var clipboard = new T())
+					{
+						TestValue(clipboard, property);
+						TestIsNullExcept(clipboard, property);
+					}
+				});
+		}
+
 
 		[Test]
 		public void SettingMultipleFormatsShouldWork()
