@@ -17,6 +17,11 @@ namespace Eto.Wpf.Forms
 {
 	public class ClipboardHandler : DataObjectHandler<Clipboard, Clipboard.ICallback>, Clipboard.IHandler
 	{
+		public ClipboardHandler()
+		{
+			Control = new sw.DataObject();
+		}
+
 		public override string[] Types => sw.Clipboard.GetDataObject()?.GetFormats();
 
 		protected override void Update()

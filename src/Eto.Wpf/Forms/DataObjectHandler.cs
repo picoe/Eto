@@ -35,6 +35,8 @@ namespace Eto.Wpf.Forms
 
 		public DataObjectHandler()
 		{
+			Control = new sw.DataObject(new DragDropLib.DataObject());
+			IsExtended = true;
 		}
 		public DataObjectHandler(sw.IDataObject data)
 			: base(data)
@@ -67,14 +69,12 @@ namespace Eto.Wpf.Forms
 	public abstract class DataObjectHandler<TWidget, TCallback> : WidgetHandler<sw.DataObject, TWidget, TCallback>, DataObject.IHandler
 		where TWidget: Widget, IDataObject
 	{
-		protected bool IsExtended { get; }
+		protected bool IsExtended { get; set; }
 		public const string UniformResourceLocatorW_Format = "UniformResourceLocatorW";
 		public const string UniformResourceLocator_Format = "UniformResourceLocator";
 
 		public DataObjectHandler()
 		{
-			Control = new sw.DataObject(new DragDropLib.DataObject());
-			IsExtended = true;
 		}
 
 		public DataObjectHandler(sw.IDataObject data)
