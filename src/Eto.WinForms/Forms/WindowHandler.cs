@@ -374,25 +374,6 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public void AddToolbar(Eto.Forms.ToolBar toolBar)
-		{
-			Control.Controls.Add((swf.Control)toolBar.ControlObject);
-		}
-
-		public void RemoveToolbar(Eto.Forms.ToolBar toolBar)
-		{
-			Control.Controls.Remove((swf.Control)toolBar.ControlObject);
-		}
-
-		public void ClearToolbars()
-		{
-			foreach (swf.Control c in Control.Controls)
-			{
-				if (c is swf.ToolBar)
-					Control.Controls.Remove(c);
-			}
-		}
-
 		public void Close()
 		{
 			Control.Close();
