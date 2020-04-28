@@ -3,11 +3,11 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public interface IGtkListModelHandler<TItem, TStore>
-		where TStore: IDataStore<TItem>
-		where TItem: class
+	public interface IGtkListModelHandler<TItem>
 	{
-		TStore DataStore { get; }
+		TItem GetItem(int row);
+
+		int Count { get; }
 		
 		int NumberOfColumns { get; }
 		
@@ -16,12 +16,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		int GetRowOfItem (TItem item);
 	}
 
-	public class GtkListModel<TItem, TStore> : GLib.Object, ITreeModelImplementor
-		where TStore: class, IDataStore<TItem>
-		where TItem: class
+	public class GtkListModel<TItem> : GLib.Object, ITreeModelImplementor
 	{
 		WeakReference handler;
-		public IGtkListModelHandler<TItem, TStore> Handler { get { return (IGtkListModelHandler<TItem, TStore>)handler.Target; } set { handler = new WeakReference(value); } }
+		public IGtkListModelHandler<TItem> Handler
+		{
+			get => (IGtkListModelHandler<TItem>)handler.Target;
+			set => handler = new WeakReference(value);
+		}
 
 		public Gtk.TreeIter GetIterAtRow (int row)
 		{
@@ -38,7 +40,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public TItem GetItemAtPath (Gtk.TreePath path)
 		{
 			var row = GetRow (path);
-			return row >= 0 ? Handler.DataStore[row] : default(TItem);
+			return row >= 0 ? Handler.GetItem(row) : default(TItem);
 		}
 
 		public TItem GetItemAtPath (string path)
@@ -49,13 +51,13 @@ namespace Eto.GtkSharp.Forms.Controls
 		public TItem GetItemAtIter (Gtk.TreeIter iter)
 		{
 			var node = NodeFromIter (iter);
-			return node >= 0 ? Handler.DataStore[node] : default(TItem);
+			return node >= 0 ? Handler.GetItem(node) : default(TItem);
 		}
 
 		int GetRow (Gtk.TreePath path)
 		{
 			var h = Handler;
-			if (h != null && path.Indices.Length > 0 && h.DataStore != null && h.DataStore.Count > 0)
+			if (h != null && path.Indices.Length > 0 && h.Count > 0)
 				return path.Indices[0];
 			return -1;
 		}
@@ -107,17 +109,17 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var row = ((int)iter.UserData) - 1;
 			if (row >= 0) {
-				var item = Handler.DataStore [row];
+				var item = Handler.GetItem(row);
 				val = Handler.GetColumnValue (item, col, row, iter);
 			} else 
-				val = Handler.GetColumnValue (null, col, row, iter);
+				val = Handler.GetColumnValue (default, col, row, iter);
 
 		}
 
 		public bool IterNext (ref Gtk.TreeIter iter)
 		{
 			var row = ((int)iter.UserData) - 1;
-			if (row >= 0 && Handler.DataStore != null && row < Handler.DataStore.Count - 1) {
+			if (row >= 0 && row < Handler.Count - 1) {
 				iter = new Gtk.TreeIter { UserData = (IntPtr)(row + 2) };
 				return true;
 			}
@@ -138,7 +140,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public bool IterChildren (out Gtk.TreeIter child, Gtk.TreeIter parent)
 		{
-			if (parent.UserData == IntPtr.Zero && Handler.DataStore != null && Handler.DataStore.Count > 0) {
+			if (parent.UserData == IntPtr.Zero && Handler.Count > 0) {
 				child = new Gtk.TreeIter { UserData = (IntPtr)1 };
 				return true;
 			}
@@ -154,16 +156,16 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int IterNChildren (Gtk.TreeIter iter)
 		{
 			var h = Handler;
-			if (iter.UserData == IntPtr.Zero && h.DataStore != null)
-				return h.DataStore.Count;
+			if (iter.UserData == IntPtr.Zero)
+				return h.Count;
 			return 0;
 		}
 
 		public bool IterNthChild (out Gtk.TreeIter child, Gtk.TreeIter parent, int n)
 		{
 			var h = Handler;
-			if (parent.UserData == IntPtr.Zero && h != null && h.DataStore != null) {
-				if (n < h.DataStore.Count) {
+			if (parent.UserData == IntPtr.Zero && h != null) {
+				if (n < h.Count) {
 					child = new Gtk.TreeIter { UserData = (IntPtr)(n+1) };
 					return true;
 				}

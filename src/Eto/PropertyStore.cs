@@ -181,9 +181,13 @@ namespace Eto
 			{
 				if (!EventLookup.IsDefault(parentWidget, key))
 				{
+					Add(key, value);
 					parentWidget.HandleEvent(key);
 				}
-				Add(key, value);
+				else
+				{
+					Add(key, value);
+				}
 			}
 		}
 

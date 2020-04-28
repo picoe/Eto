@@ -8,7 +8,7 @@ using Eto.GtkSharp.Forms.Menu;
 namespace Eto.GtkSharp.Forms.Controls
 {
 	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
-	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, TreeView.IHandler, IGtkListModelHandler<ITreeItem, ITreeStore>
+	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, TreeView.IHandler, IGtkTreeModelHandler<ITreeItem, ITreeStore>
 	{
 		GtkTreeModel<ITreeItem, ITreeStore> model;
 		CollectionHandler collection;
@@ -394,6 +394,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			return null;
 		}
 
+		public ITreeItem GetItem(int row) => DataStore?[row];
+
 		public bool LabelEdit
 		{
 			get { return textCell.Editable; }
@@ -405,6 +407,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return textCell.ForegroundGdk.ToEto(); }
 			set { textCell.ForegroundGdk = value.ToGdk(); }
 		}
+
+		public int Count => DataStore?.Count ?? 0;
 	}
 }
 

@@ -6,13 +6,22 @@ using System.Runtime.InteropServices;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
+	public interface IGtkTreeModelHandler<TItem, TStore> : IGtkListModelHandler<TItem>
+	{
+		TStore DataStore { get; }
+	}
+
 	public class GtkTreeModel<TItem, TStore> : GLib.Object, ITreeModelImplementor
 		where TStore: class, IDataStore<TItem>
 		where TItem: class, ITreeItem<TItem>
 	{
 		WeakReference handler;
 
-		public IGtkListModelHandler<TItem, TStore> Handler { get { return (IGtkListModelHandler<TItem, TStore>)handler.Target; } set { handler = new WeakReference(value); } }
+		public IGtkTreeModelHandler<TItem, TStore> Handler
+		{
+			get => (IGtkTreeModelHandler<TItem, TStore>)handler.Target;
+			set => handler = new WeakReference(value);
+		}
 
 		class Node
 		{
