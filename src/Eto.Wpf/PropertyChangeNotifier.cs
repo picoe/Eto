@@ -20,9 +20,9 @@ namespace Eto.Wpf
 		public static PropertyChangeNotifier Register(sw.DependencyProperty property, EventHandler handler, sw.DependencyObject propertySource = null)
 		{
 			var notifier = new PropertyChangeNotifier(property);
-			notifier.ValueChanged += handler;
 			if (propertySource != null)
 				notifier.PropertySource = propertySource;
+			notifier.ValueChanged += handler;
 			return notifier;
 		}
 
@@ -54,7 +54,6 @@ namespace Eto.Wpf
 				}
 			}
 		}
-
 		public static readonly sw.DependencyProperty ValueProperty = sw.DependencyProperty.Register(
 			"Value", typeof(object), typeof(PropertyChangeNotifier), 
 			new sw.FrameworkPropertyMetadata(null, new sw.PropertyChangedCallback(OnPropertyChanged)));
