@@ -84,7 +84,7 @@ namespace Eto.Wpf.Forms.Controls
 					// possibly due to some async call in Xceed.Wpf.Toolkit.
 					// so, we set the text specifically.
 					textBox.Text = Control.Value.Value.ToString(Control.FormatString, Control.CultureInfo);
-					textBox.SelectionStart = Control.TextBox.Text.Length;
+					textBox.SelectionStart = textBox.Text.Length;
 					textBox.SelectionLength = 0;
 				}
 			};
@@ -98,7 +98,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				Control.TextBox.TextChanged += (sender2, e2) => TriggerValueChanged();
 				if (Control.Spinner != null)
-					Control.Spinner.GotKeyboardFocus += (sender2, e2) => Control.TextBox.Focus();
+					Control.Spinner.GotKeyboardFocus += (sender2, e2) => Control.TextBox?.Focus();
 				Control.Loaded -= Control_Loaded;
 			}
 		}
@@ -175,14 +175,14 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			// focus the inner text box
 			if (Control.IsLoaded)
-				Control.TextBox.Focus();
+				Control.TextBox?.Focus();
 			else
 				Control.Loaded += HandleFocus;
 		}
 
 		void HandleFocus(object sender, sw.RoutedEventArgs e)
 		{
-			Control.TextBox.Focus();
+			Control.TextBox?.Focus();
 			Control.Loaded -= HandleFocus;
 		}
 
