@@ -243,13 +243,13 @@ namespace Eto.iOS.Drawing
 			var handler = image.Handler as BitmapHandler;
 			SourceImage = image;
 #if OSX
-			var rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+			var rep = handler.GetBitmapImageRep();
 			if (rep.BitsPerPixel != 32)
 			{
 				// CoreGraphics only supports drawing to 32bpp, create a new 32-bpp image and copy back when disposed or flushed.
 				DrawingImage = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppRgb);
 				handler = DrawingImage.Handler as BitmapHandler;
-				rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+				rep = handler.GetBitmapImageRep();
 			}
 			graphicsContext = NSGraphicsContext.FromBitmap(rep);
 			if (graphicsContext == null)
@@ -257,7 +257,7 @@ namespace Eto.iOS.Drawing
 				// invalid parameters for the rep
 				DrawingImage = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppRgba);
 				handler = DrawingImage.Handler as BitmapHandler;
-				rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+				rep = handler.GetBitmapImageRep();
 				graphicsContext = NSGraphicsContext.FromBitmap(rep);
 			}
 

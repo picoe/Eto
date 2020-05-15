@@ -293,7 +293,6 @@ namespace Eto.Mac
 				var mainScale = Screen.PrimaryScreen.RealScale;
 				var scales = new[] { 1f, 2f }; // generate both retina and non-retina representations
 				var sz = (float)Math.Ceiling(size.Value / mainScale);
-				var rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
 				sz = size.Value;
 				var imgsize = image.Size;
 				var max = Math.Max(imgsize.Width, imgsize.Height);
@@ -303,11 +302,20 @@ namespace Eto.Mac
 				foreach (var scale in scales)
 				{
 					sz = (float)Math.Ceiling(size.Value * scale / mainScale);
-					rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
+					var rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
 					max = (int)Math.Max(rep.PixelsWide, rep.PixelsHigh);
 					sz = (float)Math.Ceiling(size.Value * scale);
-					var newsize = new CGSize((nint)(sz * rep.PixelsWide / max), (nint)(sz * rep.PixelsHigh / max));
-					newimage.AddRepresentation(rep.Resize(newsize, imageSize: newimagesize));
+					if (rep is NSCustomImageRep custom)
+					{
+						rep = custom.Copy() as NSImageRep;
+						rep.Size = newimagesize;
+						newimage.AddRepresentation(rep);
+					}
+					else
+					{
+						var newsize = new CGSize((nint)(sz * rep.PixelsWide / max), (nint)(sz * rep.PixelsHigh / max));
+						newimage.AddRepresentation(rep.Resize(newsize, imageSize: newimagesize));
+					}
 				}
 				nsimage = newimage;
 			}
