@@ -85,6 +85,7 @@ namespace Eto.Mac.Forms.Controls
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object IsMouseDragging_Key = new object();
 		public static readonly object ContextMenu_Key = new object();
+		public static readonly object IsCancelEdit_Key = new object();
 	}
 
 	class EtoTableHeaderView : NSTableHeaderView
@@ -474,7 +475,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public void BeginEdit(int row, int column)
 		{
-			Control.SelectRow((nnint)row, false);
+			if (!Control.IsRowSelected(row))
+			{
+				Control.SelectRow((nnint)row, false);
+			}
 			Control.EditColumn((nint)column, (nint)row, new NSEvent(), true);
 		}
 
@@ -482,10 +486,16 @@ namespace Eto.Mac.Forms.Controls
 
 		public bool CancelEdit()
 		{
-			SuppressUpdate++;
-			var ret = SetFocusToControl();
-			SuppressUpdate--;
-			return ret;
+			if (IsEditing)
+			{
+				SuppressUpdate++;
+				IsCancellingEdit = true;
+				var ret = SetFocusToControl();
+				IsCancellingEdit = false;
+				SuppressUpdate--;
+				return ret;
+			}
+			return true;
 		}
 
 		bool SetFocusToControl()
@@ -588,10 +598,16 @@ namespace Eto.Mac.Forms.Controls
 			SetIsEditing(true);
 		}
 
+		public bool IsCancellingEdit
+		{
+			get => Widget.Properties.Get<bool>(GridHandler.IsCancelEdit_Key);
+			set => Widget.Properties.Set(GridHandler.IsCancelEdit_Key, value);
+		}
+
 		void IDataViewHandler.OnCellEdited(GridViewCellEventArgs e)
 		{
 			SetIsEditing(false);
-			if (e.Item != null)
+			if (e.Item != null && !IsCancellingEdit)
 				Callback.OnCellEdited(Widget, e);
 
 			// reload this entire row

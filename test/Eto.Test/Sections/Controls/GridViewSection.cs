@@ -455,12 +455,12 @@ namespace Eto.Test.Sections.Controls
 
 		protected virtual void LogEvents(GridView control)
 		{
-			control.CellEditing += (sender, e) => Log.Write(control, $"BeginCellEdit, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
-			control.CellEdited += (sender, e) => Log.Write(control, $"EndCellEdit, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
-			control.SelectionChanged += (sender, e) => Log.Write(control, $"Selection Changed, Rows: {SelectedRowsString(control)}");
-			control.ColumnHeaderClick += (sender, e) => Log.Write(control, $"Column Header Clicked: {e.Column.HeaderText}");
-			control.CellClick += (sender, e) => Log.Write(control, $"Cell Clicked, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
-			control.CellDoubleClick += (sender, e) => Log.Write(control, $"Cell Double Clicked, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
+			control.CellEditing += (sender, e) => Log.Write(control, $"CellEditing, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
+			control.CellEdited += (sender, e) => Log.Write(control, $"CellEdited, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
+			control.SelectionChanged += (sender, e) => Log.Write(control, $"SelectionChanged, Rows: {SelectedRowsString(control)}");
+			control.ColumnHeaderClick += (sender, e) => Log.Write(control, $"ColumnHeaderClick: {e.Column.HeaderText}");
+			control.CellClick += (sender, e) => Log.Write(control, $"CellClick, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
+			control.CellDoubleClick += (sender, e) => Log.Write(control, $"CellDoubleClick, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
 
 			control.MouseDown += (sender, e) => Log.Write(control, $"MouseDown, Buttons: {e.Buttons}, Location: {e.Location}");
 			control.MouseDoubleClick += (sender, e) => Log.Write(control, $"MouseDoubleClick, Buttons: {e.Buttons}, Location: {e.Location}");

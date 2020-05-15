@@ -154,7 +154,7 @@
   </ItemGroup>
 
   <!-- Build all source code -->
-  <Target Name="Build" DependsOnTargets="UpdateVersion">
+  <Target Name="Build" DependsOnTargets="UpdateVersion;PrintInfo">
 
     <PropertyGroup>
       <BuildProperties>Configuration=$(Configuration);Platform=$(OSPlatform)</BuildProperties>

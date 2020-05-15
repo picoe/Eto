@@ -106,7 +106,8 @@ namespace Eto.GtkSharp.Forms.Cells
 			IGtkCellEditable CreateEditable(Gdk.Rectangle cellArea)
 			{
 				var item = Handler.Source.GetItem(Row);
-				var args = new CellEventArgs(null, Handler.Widget, Row, item, CellStates.Editing);
+				int column = -1;
+				var args = new CellEventArgs(null, Handler.Widget, Row, column, item, CellStates.Editing, null);
 
 				var ed = new EtoCellEditable();
 				ed.Content = Handler.Callback.OnCreateCell(Handler.Widget, args);
@@ -125,7 +126,10 @@ namespace Eto.GtkSharp.Forms.Cells
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				height = Math.Max(height, Handler.Source.RowHeight);
+				var h = Handler;
+				if (h == null)
+					return;
+				height = Math.Max(height, h.Source.RowHeight);
 			}
 
 			public override Gtk.CellEditable StartEditing(Gdk.Event evnt, Gtk.Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
@@ -135,22 +139,42 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
+				var h = Handler;
+				if (h == null)
+					return;
+
 				if (editingRow == row)
 				{
 					return;
 				}
 				using (var graphics = new Graphics(new GraphicsHandler(widget, window)))
 				{
-					var item = Handler.Source.GetItem(Row);
+					var item = h.Source.GetItem(Row);
 					var args = new CellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
-					Handler.Callback.OnPaint(Handler.Widget, args);
+					h.Callback.OnPaint(h.Widget, args);
 				}
 			}
 #else
 			protected override void OnGetPreferredHeight(Gtk.Widget widget, out int minimum_size, out int natural_size)
 			{
 				base.OnGetPreferredHeight(widget, out minimum_size, out natural_size);
-				natural_size = Handler.Source.RowHeight;
+				var h = Handler;
+				if (h == null)
+					return;
+				natural_size = h.Source.RowHeight;
+			}
+
+			protected override void OnGetPreferredWidth(Gtk.Widget widget, out int minimum_size, out int natural_size)
+			{
+				base.OnGetPreferredWidth(widget, out minimum_size, out natural_size);
+				var h = Handler;
+				if (h == null)
+					return;
+				var item = h.Source?.GetItem(Row);
+				int column = -1;
+				var args = new CellEventArgs(null, h.Widget, Row, column, item, CellStates.Editing, null);
+
+				natural_size = (int)h.Callback.OnGetPreferredWidth(h.Widget, args);
 			}
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]

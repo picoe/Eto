@@ -52,7 +52,8 @@ namespace Eto.Mac.Forms.Cells
 
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
-			var args = new CellEventArgs(ColumnHandler?.DataViewHandler as Grid, Widget, row, dataItem, CellStates.None);
+			var column = -1;// TODO: lookup!
+			var args = new MutableCellEventArgs(ColumnHandler?.DataViewHandler as Grid, Widget, row, column, dataItem, CellStates.None, null);
 			var identifier = Callback.OnGetIdentifier(Widget, args) ?? string.Empty;
 			Control widthCell;
 			if (!widthCells.TryGetValue(identifier, out widthCell))
@@ -63,6 +64,7 @@ namespace Eto.Mac.Forms.Cells
 				widthCell.AttachNative();
 				widthCells.Add(identifier, widthCell);
 			}
+			args.SetControl(widthCell);
 			Callback.OnConfigureCell(Widget, args, widthCell);
 			widthCell.GetMacControl()?.InvalidateMeasure();
 
@@ -76,6 +78,7 @@ namespace Eto.Mac.Forms.Cells
 
 		public class EtoCustomCellView : NSTableCellView
 		{
+			public CustomCellHandler Handler { get; set;}
 			public MutableCellEventArgs Args { get; set; }
 
 			public Control EtoControl { get; set; }
@@ -109,6 +112,43 @@ namespace Eto.Mac.Forms.Cells
 						Args.SetTextColor(ControlText);
 				}
 			}
+
+			public void Setup()
+			{
+				EtoControl.GotFocus += ControlGotFocus;
+				EtoControl.LostFocus += ControlLostFocus;
+			}
+
+			bool losingFocus;
+
+			private void ControlLostFocus(object sender, EventArgs e)
+			{
+				if (losingFocus)
+					return;
+
+				losingFocus = true;
+				var h = Handler;
+				var ee = MacConversions.CreateCellEventArgs(h.ColumnHandler.Widget, null, Args.Row, Args.Column, Args.Item);
+				if (!h.ColumnHandler.DataViewHandler.IsCancellingEdit)
+				{
+					h.Callback.OnCommitEdit(h.Widget, Args);
+					h.ColumnHandler.DataViewHandler.OnCellEdited(ee);
+				}
+				else
+				{
+					h.Callback.OnCancelEdit(h.Widget, Args);
+				}
+				losingFocus = false;
+			}
+
+			private void ControlGotFocus(object sender, EventArgs e)
+			{
+				var h = Handler;
+				h.Callback.OnBeginEdit(h.Widget, Args);
+				var ee = MacConversions.CreateCellEventArgs(h.ColumnHandler.Widget, null, Args.Row, Args.Column, Args.Item);
+				h.ColumnHandler.DataViewHandler.OnCellEditing(ee);
+			}
+
 		}
 
 		public override Color GetBackgroundColor(NSView view)
@@ -131,7 +171,8 @@ namespace Eto.Mac.Forms.Cells
 				state |= CellStates.Selected;
 			if (tableColumn.Editable)
 				state |= CellStates.Editing;
-			var args = new MutableCellEventArgs(ColumnHandler.DataViewHandler as Grid, Widget, row, item, state);
+			var column = -1; // TODO: get index or lookup when needed.
+			var args = new MutableCellEventArgs(ColumnHandler.DataViewHandler as Grid, Widget, row, column, item, state, null);
 			var identifier = tableColumn.Identifier;
 			var id = Callback.OnGetIdentifier(Widget, args);
 			if (!string.IsNullOrEmpty(id))
@@ -141,9 +182,11 @@ namespace Eto.Mac.Forms.Cells
 			if (view == null)
 			{
 				var control = Callback.OnCreateCell(Widget, args);
+				args.SetControl(control);
 
 				view = new EtoCustomCellView
 				{ 
+					Handler = this,
 					Args = args,
 					EtoControl = control,
 					Identifier = identifier,
@@ -156,6 +199,7 @@ namespace Eto.Mac.Forms.Cells
 					childView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 					childView.Frame = view.Frame;
 					view.AddSubview(childView);
+					view.Setup();
 				}
 			}
 			else
