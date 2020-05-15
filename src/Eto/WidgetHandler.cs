@@ -124,12 +124,13 @@ namespace Eto
 		/// </remarks>
 		protected virtual void Initialize()
 		{
-			Style.Provider?.ApplyDefault(this);
 		}
 
 		void Widget.IHandler.Initialize()
 		{
 			Initialize();
+			// apply styles after the handler is fully initialized.
+			Style.Provider?.ApplyDefault(this);
 		}
 
 		/// <summary>
