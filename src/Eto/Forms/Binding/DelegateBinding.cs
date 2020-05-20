@@ -144,13 +144,13 @@ namespace Eto.Forms
 		/// Gets or sets the delegate to register the change event, when needed by the consumer of this binding.
 		/// </summary>
 		/// <value>The add change event delegate.</value>
-		public Action<T, EventHandler<EventArgs>> AddChangeEvent { get; set; }
+		public Func<T, EventHandler<EventArgs>, object> AddChangeEvent { get; set; }
 
 		/// <summary>
 		/// Gets or sets the delegate to remove the change event.
 		/// </summary>
 		/// <value>The remove change event delegate.</value>
-		public Action<T, EventHandler<EventArgs>> RemoveChangeEvent { get; set; }
+		public Action<object, EventHandler<EventArgs>> RemoveChangeEvent { get; set; }
 
 		/// <summary>
 		/// Gets or sets the default get value, when the object instance is null.
@@ -173,7 +173,31 @@ namespace Eto.Forms
 		/// <param name="removeChangeEvent">Delegate to remove the change event.</param>
 		/// <param name="defaultGetValue">Default get value, when the object instance is null.</param>
 		/// <param name="defaultSetValue">Default set value, when the incoming value is null.</param>
-		public DelegateBinding(Func<T, TValue> getValue = null, Action<T, TValue> setValue = null, Action<T, EventHandler<EventArgs>> addChangeEvent = null, Action<T, EventHandler<EventArgs>> removeChangeEvent = null, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		public DelegateBinding(Func<T, TValue> getValue, Action<T, TValue> setValue, Action<T, EventHandler<EventArgs>> addChangeEvent, Action<T, EventHandler<EventArgs>> removeChangeEvent, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		{
+			GetValue = getValue;
+			DefaultGetValue = defaultGetValue;
+			SetValue = setValue;
+			DefaultSetValue = defaultSetValue;
+			if (addChangeEvent != null && removeChangeEvent != null)
+			{
+				AddChangeEvent = (obj, eh) => { addChangeEvent(obj, eh); return obj; };
+				RemoveChangeEvent = (obj, eh) => { if (obj is T tobj) removeChangeEvent(tobj, eh); };
+			}
+			else if (addChangeEvent != null || removeChangeEvent != null)
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "You must either specify both the add and remove change event delegates, or pass null for both"));
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DelegateBinding{T,TValue}"/> class.
+		/// </summary>
+		/// <param name="getValue">Delegate to get the value for the binding.</param>
+		/// <param name="setValue">Delegate to set the value for the binding.</param>
+		/// <param name="addChangeEvent">Delegate to register the change event, when needed by the consumer of this binding.</param>
+		/// <param name="removeChangeEvent">Delegate to remove the change event.</param>
+		/// <param name="defaultGetValue">Default get value, when the object instance is null.</param>
+		/// <param name="defaultSetValue">Default set value, when the incoming value is null.</param>
+		public DelegateBinding(Func<T, TValue> getValue = null, Action<T, TValue> setValue = null, Func<T, EventHandler<EventArgs>, object> addChangeEvent = null, Action<object, EventHandler<EventArgs>> removeChangeEvent = null, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
 		{
 			GetValue = getValue;
 			DefaultGetValue = defaultGetValue;
@@ -204,7 +228,7 @@ namespace Eto.Forms
 			DefaultSetValue = defaultSetValue;
 			if (!string.IsNullOrEmpty(notifyProperty))
 			{
-				AddChangeEvent = (obj, eh) => AddPropertyEvent(obj, notifyProperty, eh);
+				AddChangeEvent = (obj, eh) => { AddPropertyEvent(obj, notifyProperty, eh); return obj; };
 				RemoveChangeEvent = (obj, eh) => RemovePropertyEvent(obj, eh);
 			}
 		}
@@ -243,12 +267,11 @@ namespace Eto.Forms
 		/// <returns>binding reference used to track the event hookup, to pass to <see cref="RemoveValueChangedHandler"/> when removing the handler</returns>
 		public override object AddValueChangedHandler(object dataItem, EventHandler<EventArgs> handler)
 		{
-			if (AddChangeEvent != null && dataItem is T)
+			if (AddChangeEvent != null && dataItem is T typedItem)
 			{
-				AddChangeEvent((T)dataItem, handler);
-				return dataItem;
+				return AddChangeEvent(typedItem, handler);
 			}
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -258,10 +281,9 @@ namespace Eto.Forms
 		/// <param name="handler">Same handler that was set up during the <see cref="AddValueChangedHandler"/> call</param>
 		public override void RemoveValueChangedHandler(object bindingReference, EventHandler<EventArgs> handler)
 		{
-			if (RemoveChangeEvent != null && bindingReference is T)
+			if (RemoveChangeEvent != null)
 			{
-				var dataItem = bindingReference;
-				RemoveChangeEvent((T)dataItem, handler);
+				RemoveChangeEvent(bindingReference, handler);
 			}
 		}
 	}

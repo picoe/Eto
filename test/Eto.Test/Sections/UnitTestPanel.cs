@@ -1130,6 +1130,7 @@ namespace Eto.Test.Sections
 			stopButton.Click += (s, e) => runner?.StopTests();
 
 			search = new SearchBox();
+			search.Text = TestApplication.Settings.LastUnitTestFilter;
 			search.PlaceholderText = "Filter(s)";
 			search.Focus();
 			search.KeyDown += (sender, e) =>
@@ -1140,7 +1141,11 @@ namespace Eto.Test.Sections
 					e.Handled = true;
 				}
 			};
-			search.TextChanged += (sender, e) => timer.Start();
+			search.TextChanged += (sender, e) =>
+			{
+				TestApplication.Settings.LastUnitTestFilter = search.Text;
+				timer.Start();
+			};
 
 
 			tree = new TreeGridView { ShowHeader = false, Size = new Size(400, -1) };
