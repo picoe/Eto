@@ -29,6 +29,25 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
+	/// Mode for when prompt characters are shown in a control.
+	/// </summary>
+	public enum ShowPromptMode
+	{
+		/// <summary>
+		/// Always show the prompt characters.
+		/// </summary>
+		Always,
+		/// <summary>
+		/// Only show the prompt characters when the control has focus.
+		/// </summary>
+		OnFocus,
+		/// <summary>
+		/// Never show the prompt characters
+		/// </summary>
+		Never
+	}
+
+	/// <summary>
 	/// Masked text box with a variable length numeric mask.
 	/// </summary>
 	/// <remarks>
@@ -204,7 +223,7 @@ namespace Eto.Forms
 	{
 		IMaskedTextProvider provider;
 		static readonly object InsertKeyModeKey = new object();
-		static readonly object ShowPromptOnFocusKey = new object();
+		static readonly object ShowPromptModeKey = new object();
 		static readonly object SupportsInsertKey = new object();
 		static readonly object OverwriteModeKey = new object();
 		static readonly object ShowPlaceholderWhenEmptyKey = new object();
@@ -281,14 +300,23 @@ namespace Eto.Forms
 		/// Gets or sets a value indicating that the prompt characters should only be shown when the control has focus.
 		/// </summary>
 		/// <value><c>true</c> if to show the prompt only when focussed; otherwise, <c>false</c>.</value>
+		[Obsolete("Since 2.5.1, Use ShowPromptMode instead")]
 		public bool ShowPromptOnFocus
 		{
-			get { return Properties.Get<bool>(ShowPromptOnFocusKey); }
+			get => ShowPromptMode == ShowPromptMode.OnFocus;
+			set => ShowPromptMode = value ? ShowPromptMode.OnFocus : ShowPromptMode.Always;
+		}
+
+		/// <summary>
+		/// Gets or sets the mode for when the input prompts should be shown
+		/// </summary>
+		public ShowPromptMode ShowPromptMode
+		{
+			get => Properties.Get<ShowPromptMode>(ShowPromptModeKey);
 			set
 			{ 
-				if (ShowPromptOnFocus != value)
+				if (Properties.TrySet(ShowPromptModeKey, value))
 				{
-					Properties[ShowPromptOnFocusKey] = value;
 					UpdateText();
 				}
 			}
@@ -362,7 +390,7 @@ namespace Eto.Forms
 			var hasFocus = HasFocus;
 			if (!hasFocus && ShowPlaceholderWhenEmpty && provider.IsEmpty && !string.IsNullOrEmpty(PlaceholderText))
 				base.Text = null;
-			else if (hasFocus || !ShowPromptOnFocus)
+			else if ((hasFocus && ShowPromptMode == ShowPromptMode.OnFocus) || ShowPromptMode == ShowPromptMode.Always)
 				base.Text = provider.DisplayText;
 			else
 				base.Text = provider.Text;
@@ -386,7 +414,7 @@ namespace Eto.Forms
 		protected override void OnGotFocus(EventArgs e)
 		{
 			base.OnGotFocus(e);
-			if (ShowPromptOnFocus || ShowPlaceholderWhenEmpty)
+			if (ShowPromptMode == ShowPromptMode.OnFocus || ShowPlaceholderWhenEmpty)
 				UpdateText();
 		}
 
@@ -397,7 +425,7 @@ namespace Eto.Forms
 		protected override void OnLostFocus(EventArgs e)
 		{
 			base.OnLostFocus(e);
-			if (ShowPromptOnFocus || ShowPlaceholderWhenEmpty)
+			if (ShowPromptMode == ShowPromptMode.OnFocus || ShowPlaceholderWhenEmpty)
 				UpdateText();
 		}
 
