@@ -56,7 +56,10 @@ namespace Eto.Mac.Forms.Controls
 			/// </summary>
 			public override void DrawBackground(CGRect clipRect)
 			{
-				var backgroundColor = Handler.BackgroundColor;
+				var h = Handler;
+				if (h == null)
+					return;
+				var backgroundColor = h.BackgroundColor;
 				if (backgroundColor != Colors.Transparent)
 				{
 					backgroundColor.ToNSUI().Set();
@@ -85,9 +88,15 @@ namespace Eto.Mac.Forms.Controls
 				if (HandleMouseEvent(theEvent))
 					return;
 
-				Handler.IsMouseDragging = true;
+				var h = Handler;
+				if (h == null)
+				{
+					base.MouseDown(theEvent);
+					return;
+				}
+				h.IsMouseDragging = true;
 				base.MouseDown(theEvent);
-				Handler.IsMouseDragging = true;
+				h.IsMouseDragging = false;
 			}
 
 			bool HandleMouseEvent(NSEvent theEvent)
