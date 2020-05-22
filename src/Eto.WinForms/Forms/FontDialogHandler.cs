@@ -9,7 +9,7 @@ namespace Eto.WinForms.Forms
 {
 	public class FontDialogHandler : WidgetHandler<swf.FontDialog, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
 	{
-		Font font;
+		Font _font;
 
 		public FontDialogHandler()
 		{
@@ -20,37 +20,48 @@ namespace Eto.WinForms.Forms
 			};
 		}
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
-			case FontDialog.FontChangedEvent:
-				// handled in ShowDialog
-				break;
-			default:
-				base.AttachEvent (id);
-				break;
+			switch (id)
+			{
+				case FontDialog.FontChangedEvent:
+					Control.ShowApply = true;
+					Control.Apply += Control_Apply;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
+		}
+
+		private void Control_Apply(object sender, EventArgs e)
+		{
+			_font = null;
+			Callback.OnFontChanged(Widget, EventArgs.Empty);
 		}
 
 		public Font Font
 		{
-			get {
-				if (font == null)
-					font = new Font(new FontHandler(Control.Font));
-				return font;
+			get
+			{
+				if (_font == null)
+					_font = Control.Font.ToEto();
+				return _font;
 			}
-			set {
-				font = value;
-				Control.Font = font.ToSD ();
+			set
+			{
+				_font = value;
+				Control.Font = _font.ToSD();
+				Callback.OnFontChanged(Widget, EventArgs.Empty);
 			}
 		}
 
-		public DialogResult ShowDialog (Window parent)
+		public DialogResult ShowDialog(Window parent)
 		{
 			var result = Control.ShowDialog();
 			if (result == swf.DialogResult.OK)
 			{
-				font = Control.Font.ToEto();
+				_font = null;
 				Callback.OnFontChanged(Widget, EventArgs.Empty);
 				return DialogResult.Ok;
 			}
