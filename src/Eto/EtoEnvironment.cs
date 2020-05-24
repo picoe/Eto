@@ -31,7 +31,16 @@ namespace Eto
 		/// <summary>
 		/// The user's documents folder
 		/// </summary>
-		Documents
+		Documents,
+
+		/// <summary>
+		/// Gets the path of the entry executable (.exe or native executable)
+		/// </summary>
+		/// <remarks>
+		/// This is used as in some cases when the application is bundled (e.g. using mkbundle),
+		/// the location of the assembly can no longer be found as it is loaded from memory.
+		/// </remarks>
+		EntryExecutable
 	}
 
 	/// <summary>

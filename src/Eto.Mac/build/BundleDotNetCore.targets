@@ -60,15 +60,11 @@
   </Target>
   
   <!-- Bundle using a system shared runtime -->
-  <Target Name="MacBuildAppBundleWithoutRuntime" AfterTargets="AfterBuild" Condition="$(MacBundleDotNet) != 'True' AND $(MacIsBuildingBundle) == 'True'" DependsOnTargets="MacInitializeBundle">
-    <ItemGroup>
-      <LauncherFiles Include="$(TargetDir)**\*" />
-      <LauncherFiles Remove="$(TargetDir)**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
-    </ItemGroup>
-    
-    <!-- copy executable and all files which need to be in the same folder -->
-    <Copy SourceFiles="@(LauncherFiles)" DestinationFolder="$(LauncherPath)\%(LauncherFiles.DestinationSubDirectory)" />
-    
+  <Target Name="MacBuildAppBundleWithoutRuntime" AfterTargets="AfterBuild" Condition="$(MacBundleDotNet) != 'True' AND $(MacIsBuildingBundle) == 'True'" DependsOnTargets="MacInitializeBundle;MacCollectExecutableFiles">
+
+    <!-- copy executable files -->
+    <Copy SourceFiles="@(MacExecutableFiles)" DestinationFiles="$(LauncherPath)%(MacExecutableFiles.TargetPath)" />
+
     <!-- finish building the bundle -->
     <CallTarget Targets="MacFinishBundle" />
   </Target>
@@ -81,7 +77,7 @@
     </ItemGroup>
     
     <!-- copy executable and all files which need to be in the same folder -->
-    <Copy SourceFiles="@(LauncherFiles)" DestinationFolder="$(LauncherPath)\%(LauncherFiles.DestinationSubDirectory)" />
+    <Copy SourceFiles="@(LauncherFiles)" DestinationFolder="$(LauncherPath)\%(LauncherFiles.RecursiveDir)" />
     
     <!-- finish building the bundle -->
     <CallTarget Targets="MacFinishBundle" />

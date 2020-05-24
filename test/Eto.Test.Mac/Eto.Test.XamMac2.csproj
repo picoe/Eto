@@ -47,6 +47,19 @@
     <Content Include="TestIcon.icns" />
     <None Include="Info.plist" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Assets\TestCopyToOutput.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\TestContent.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Assets\TestBundleResource.txt" />
+  </ItemGroup>
+
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>

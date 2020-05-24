@@ -125,11 +125,7 @@ namespace Eto.Test
 		{
 			contentContainer = new Panel();
 
-			// set focus when the form is shown
-			Shown += delegate
-			{
-				SectionList.Focus();
-			};
+			SectionList.Focus();
 			if (Splitter.IsSupported)
 			{
 				var splitter = new Splitter

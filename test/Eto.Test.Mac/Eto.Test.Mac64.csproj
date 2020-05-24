@@ -26,6 +26,21 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   
+  <ItemGroup>
+    <None Remove="Assets\TestContent.txt" />
+    <None Remove="Assets\TestBundleResource.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\TestCopyToOutput.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\TestContent.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Assets\TestBundleResource.txt" />
+  </ItemGroup>
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
   
   <Import Project="..\..\src\Eto.Mac\build\Mac.targets" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />

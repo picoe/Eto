@@ -43,8 +43,8 @@
     <!-- internal properties -->
     <MacUseDotNetCore Condition="$(MacUseDotNetCore) == '' AND $(TargetFramework.StartsWith('netcoreapp'))">True</MacUseDotNetCore>
     <MacUseDotNetCore Condition="$(MacUseDotNetCore) == ''">False</MacUseDotNetCore>
-    <OutputContents>$(OutputAppPath)\Contents\</OutputContents>
-    <OutputResourcesPath>$(OutputContents)\Resources\</OutputResourcesPath>
+    <OutputContents>$(OutputAppPath)Contents\</OutputContents>
+    <OutputResourcesPath>$(OutputContents)Resources\</OutputResourcesPath>
 
     <LauncherFile>$(AssemblyName)</LauncherFile>
     <LauncherPath>$(OutputContents)MacOS\</LauncherPath>
@@ -199,10 +199,7 @@
     <!-- Initialize properties then create the app bundle and .plist -->
   <Target Name="MacInitializeBundle">
     <PropertyGroup>
-
       <HasXamMac>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.XamMac2'))</HasXamMac>
-      <Has64Bit>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.Mac64'))</Has64Bit>
-      <Has64Bit Condition="$(Has64Bit) != 'True'">$(HasXamMac)</Has64Bit>
       <MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == ''">true</MacIncludeSymbols>
       <MacArch Condition="'$(MacArch)'==''">x86_64</MacArch>
 
@@ -226,12 +223,13 @@
   
   <!-- Finish up by copying resource files and updating the plist -->
   <Target Name="MacFinishBundle">
+
     <!-- copy resource files -->
     <ItemGroup>
       <ResourceFiles Include="@(BundleResource)" />
       <ResourceFiles Include="@(Content)" />
     </ItemGroup>
-    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)%(ResourceFiles.DestinationSubDirectory)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)%(ResourceFiles.RelativeDir)" SkipUnchangedFiles="true" />
 
     <!-- Add any missing keys to the PListFile -->
     <UpdatePList 
@@ -253,7 +251,25 @@
     <!-- Set executable bit on launcher if on *nix -->
     <Exec Command="chmod +x &quot;$(LauncherFileWithPath)&quot;" Condition="'$(OS)'=='Unix'" EchoOff="True" />
   </Target>
-  
+
+
+  <Target Name="MacCollectExecutableFiles">
+    <FindUnderPath  
+      Files="@(FileWrites)"
+      Path="$(TargetDir)">
+            <Output TaskParameter="InPath" ItemName="MacExecutableFiles" />
+    </FindUnderPath>
+
+    <ItemGroup>
+      <!--MacExecutableFiles Include="$(TargetDir)\**" Exclude="$(OutputAppPath)\**\*" /-->
+      <MacExecutableFiles Include="@(ReferenceCopyLocalPaths)" />
+      <MacExecutableFiles Remove="@(MacExecutableFiles)" Condition="$(MacIncludeSymbols) != 'True' and %(Extension) == '.pdb'" />
+
+      <!-- Ensure we use TargetPath for the destination file including subfolder -->
+      <MacExecutableFiles Update="@(MacExecutableFiles)" Condition="%(MacExecutableFiles.TargetPath) == ''" TargetPath="%(MacExecutableFiles.DestinationSubDirectory)%(Filename)%(Extension)"/>
+    </ItemGroup>
+  </Target>
+
   <Import Project="BundleMono.targets" Condition="$(MacUseDotNetCore) != 'True' AND $(MacBuildBundle) == 'True'" />
   <Import Project="BundleDotNetCore.targets" Condition="$(MacUseDotNetCore) == 'True' AND $(MacBuildBundle) == 'True'" />
 </Project>
