@@ -216,8 +216,7 @@ namespace Eto.WinForms.Forms
 
 		public void Open(string url)
 		{
-			var info = new ProcessStartInfo(url);
-			Process.Start(info);
+		    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 		}
 
 		public override void AttachEvent(string id)
