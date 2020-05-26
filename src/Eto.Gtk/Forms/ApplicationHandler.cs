@@ -222,8 +222,7 @@ namespace Eto.GtkSharp.Forms
 
 		public void Open(string url)
 		{
-			var info = new ProcessStartInfo(url);
-			Process.Start(info);
+			Process.Start(new ProcessStartInfo("https://www.google.com") { UseShellExecute = true });
 		}
 
 		public Keys CommonModifier { get { return Keys.Control; } }
