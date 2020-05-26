@@ -210,7 +210,7 @@ namespace Eto.Wpf.Forms
 
 		public void Open(string url)
 		{
-			Process.Start(url);
+			Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 		}
 
 		public void Run()
