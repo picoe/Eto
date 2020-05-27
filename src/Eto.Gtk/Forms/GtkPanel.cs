@@ -83,6 +83,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				Widget.Properties.Set(GtkPanel.MinimumSize_Key, value);
 				ContainerControl.QueueResize();
+				SetSize(UserPreferredSize);
 			}
 		}
 
