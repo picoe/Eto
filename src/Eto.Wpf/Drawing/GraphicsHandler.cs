@@ -350,7 +350,7 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
-		bool Close()
+		unsafe bool Close()
 		{
 			CloseGroup();
 			if (image != null)
@@ -360,7 +360,23 @@ namespace Eto.Wpf.Drawing
 				var bmp = image.ToWpf();
 				var newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
 				newbmp.RenderWithCollect(visual);
-				handler.SetBitmap(newbmp);
+				if (!bmp.Format.HasAlpha())
+				{
+					// convert to non-alpha, as RenderTargetBitmap does not support anything other than Pbgra32
+					var wb = new swmi.WriteableBitmap(bmp.PixelWidth, bmp.PixelWidth, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Bgr32, null);
+					var rect = new sw.Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
+					var pixels = new byte[bmp.PixelHeight * wb.BackBufferStride];
+					newbmp.CopyPixels(rect, pixels, wb.BackBufferStride, 0);
+					fixed (byte* ptr = pixels)
+					{
+						wb.WritePixels(rect, (IntPtr)ptr, pixels.Length, wb.BackBufferStride, 0, 0);
+					}
+					handler.SetBitmap(wb);
+				}
+				else
+				{
+					handler.SetBitmap(newbmp);
+				}
 				return true;
 			}
 			return false;

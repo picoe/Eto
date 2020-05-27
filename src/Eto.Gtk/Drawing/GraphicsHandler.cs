@@ -119,6 +119,7 @@ namespace Eto.GtkSharp.Drawing
 			surface = handler.Surface;
 			if (surface == null)
 			{
+				handler.FixupAlpha();
 				var format = handler.Alpha ? Cairo.Format.Argb32 : Cairo.Format.Rgb24;
 				surface = new Cairo.ImageSurface(format, image.Size.Width, image.Size.Height);
 				Control = new Cairo.Context(surface);
@@ -553,12 +554,16 @@ namespace Eto.GtkSharp.Drawing
 #if !GTK2
 		public static bool GetClipRectangle(Cairo.Context cr, ref Gdk.Rectangle rect)
 		{
+#if GTKCORE
+			return Gdk.CairoHelper.GetClipRectangle(cr, out rect);
+#else
 			IntPtr intPtr = Marshaller.StructureToPtrAlloc(rect);
 			bool flag = NativeMethods.gdk_cairo_get_clip_rectangle((cr != null) ? cr.Handle : IntPtr.Zero, intPtr);
 			bool result = flag;
 			rect = (Gdk.Rectangle)Marshal.PtrToStructure(intPtr, typeof(Gdk.Rectangle));
 			Marshal.FreeHGlobal(intPtr);
 			return result;
+#endif
 		}
 #endif
 

@@ -915,5 +915,14 @@ namespace Eto.Wpf
 		}
 
 		public static swi.Cursor ToWpf(this Cursor cursor) => cursor?.ControlObject as swi.Cursor;
+
+		public static bool HasAlpha(this swm.PixelFormat format)
+		{
+			return format == swm.PixelFormats.Pbgra32
+				|| format == swm.PixelFormats.Prgba128Float
+				|| format == swm.PixelFormats.Prgba64
+				|| format == swm.PixelFormats.Rgba64
+				|| format == swm.PixelFormats.Rgba64;
+		}
 	}
 }
