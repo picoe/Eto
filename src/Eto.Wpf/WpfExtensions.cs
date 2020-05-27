@@ -330,7 +330,11 @@ namespace Eto.Wpf
 			// fix memory leak with RenderTargetBitmap.  See http://stackoverflow.com/questions/14786490/wpf-memory-leak-using-rendertargetbitmap
 			// Reproducible with the 
 			// GC.Collect alone seems to fix the issue.  Adding GC.WaitForPendingFinalizers may impact performance.
-			GC.Collect();
+			
+			// Note: this may no longer be an issue with the latest version of .NET after some testing, however
+			// we keep it here to keep memory in check, but instead make it non-blocking so it doesn't cause a huge
+			// performance penalty creating many Bitmaps with a Graphics object.
+			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, false);
 		}
 
 
