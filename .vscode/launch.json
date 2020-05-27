@@ -32,5 +32,15 @@
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
+        {
+            "name": "Eto.Test.WinForms",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-winforms",
+            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp3.1/Eto.Test.WinForms.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        }
 	]
 }

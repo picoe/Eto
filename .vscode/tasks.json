@@ -60,6 +60,20 @@
 			"problemMatcher": "$msCompile"
 		},
 		{
+			"label": "build-winforms",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"/v:Minimal",
+				"/p:Configuration=Debug",
+				"/p:TargetFramework=netcoreapp3.1",
+				"${workspaceFolder}/test/Eto.Test.WinForms/Eto.Test.WinForms.csproj"
+			],
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
 			"label": "restore",
 			"command": "dotnet",
 			"type": "process",
