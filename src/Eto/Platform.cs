@@ -611,14 +611,24 @@ namespace Eto
 				return info;
 
 			var handler = type.GetCustomAttribute<HandlerAttribute>(true);
-			Func<object> activator;
-			if (handler != null && instantiatorMap.TryGetValue(handler.Type, out activator))
+			if (handler != null)
 			{
-				var autoInit = handler.Type.GetCustomAttribute<AutoInitializeAttribute>(true);
-				info = new HandlerInfo(autoInit == null || autoInit.Initialize, activator);
-				handlerMap.Add(type, info);
-				return info;
+				if (instantiatorMap.TryGetValue(handler.Type, out var activator))
+				{
+					var autoInit = handler.Type.GetCustomAttribute<AutoInitializeAttribute>(true);
+					info = new HandlerInfo(autoInit == null || autoInit.Initialize, activator);
+					handlerMap.Add(type, info);
+					return info;
+				}
+				// load the assembly of the handler type (needed when type is a subclass)
+				if (!loadedAssemblies.Contains(handler.Type.GetAssembly()))
+				{
+					LoadAssembly(handler.Type.GetAssembly());
+					return FindHandler(type);
+				}
 			}
+
+			// load the assembly of the target type (can be a subclass)
 			if (!loadedAssemblies.Contains(type.GetAssembly()))
 			{
 				LoadAssembly(type.GetAssembly());
