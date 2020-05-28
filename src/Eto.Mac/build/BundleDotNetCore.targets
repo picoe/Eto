@@ -63,7 +63,7 @@
   <Target Name="MacBuildAppBundleWithoutRuntime" AfterTargets="AfterBuild" Condition="$(MacBundleDotNet) != 'True' AND $(MacIsBuildingBundle) == 'True'" DependsOnTargets="MacInitializeBundle;MacCollectExecutableFiles">
 
     <!-- copy executable files -->
-    <Copy SourceFiles="@(MacExecutableFiles)" DestinationFiles="$(LauncherPath)%(MacExecutableFiles.TargetPath)" />
+    <Copy SourceFiles="@(MacExecutableFiles)" DestinationFiles="@(MacExecutableFiles->'$(LauncherPath)%(TargetPath)')" />
 
     <!-- finish building the bundle -->
     <CallTarget Targets="MacFinishBundle" />

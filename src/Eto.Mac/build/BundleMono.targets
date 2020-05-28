@@ -165,7 +165,7 @@
     </ItemGroup>
 
     <!-- copy executable files -->
-    <Copy SourceFiles="@(MacExecutableFiles)" DestinationFiles="$(OutputMonoBundlePath)%(MacExecutableFiles.TargetPath)" />
+    <Copy SourceFiles="@(MacExecutableFiles)" DestinationFiles="@(MacExecutableFiles->'$(OutputMonoBundlePath)%(TargetPath)')" />
   </Target>
   
   

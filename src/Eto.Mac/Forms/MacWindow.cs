@@ -580,8 +580,14 @@ namespace Eto.Mac.Forms
 			set
 			{
 				var oldFrame = Control.Frame;
-				var newFrame = oldFrame.SetSize(value);
-				newFrame.Y = (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldFrame.Height));
+				var newFrame = oldFrame;
+				if (value.Width >= 0)
+					newFrame.Width = value.Width;
+				if (value.Height > 0)
+				{
+					newFrame.Height = value.Height;
+					newFrame.Y = (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldFrame.Height));
+				}
 				Control.SetFrame(newFrame, true);
 				UserPreferredSize = value;
 				SetAutoSize();
