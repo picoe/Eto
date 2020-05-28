@@ -222,7 +222,16 @@ namespace Eto.GtkSharp.Forms
 
 		public void Open(string url)
 		{
-			Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+			try
+			{
+				Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+			}
+			catch
+			{
+				// Use fallback for recent mono versions that do not support UseShellExecute.
+				url = Uri.EscapeUriString(url);
+				Process.Start("xdg-open", url);
+			}
 		}
 
 		public Keys CommonModifier { get { return Keys.Control; } }
