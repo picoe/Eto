@@ -11,10 +11,10 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Windows" Version="2.5.1-dev" Condition="$(IncludeWinForms) == 'True'" />
-    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.1-dev" />
-    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.1-dev" />
-    <PackageReference Include="Eto.Platform.Mac64" Version="2.5.1-dev" />
+    <PackageReference Include="Eto.Platform.Windows" Version="2.5.3-dev" Condition="$(IncludeWinForms) == 'True'" />
+    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.3-dev" />
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.3-dev" />
+    <PackageReference Include="Eto.Platform.Mac64" Version="2.5.3-dev" />
   </ItemGroup>
 	
 </Project>

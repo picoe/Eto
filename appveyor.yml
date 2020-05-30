@@ -1,4 +1,4 @@
-version: 2.5.1.{build}
+version: 2.5.3.{build}
 image: Visual Studio 2019
 install:
 - cmd: git submodule -q update --init
