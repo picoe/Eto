@@ -95,6 +95,13 @@ namespace Eto.GtkSharp.Forms.Controls
 				// label should allow shrinking, natural width is used instead
 				minimum_width = 0;
 			}
+
+			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
+			{
+				if (width == 0)
+					width = int.MaxValue;
+				base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
+			}
 #endif
 
 		}
