@@ -96,7 +96,12 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int Width
 		{
 			get { return Control.Width; }
-			set { Control.FixedWidth = value; }
+			set 
+			{ 
+				autoSize = value == -1;
+				Control.FixedWidth = value;
+				Control.Sizing = autoSize ? Gtk.TreeViewColumnSizing.GrowOnly : Gtk.TreeViewColumnSizing.Fixed;
+			}
 		}
 
 		public Cell DataCell

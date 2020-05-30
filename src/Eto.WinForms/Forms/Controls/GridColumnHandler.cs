@@ -14,7 +14,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public IGridHandler GridHandler { get; private set; }
 
-		public GridColumnHandler ()
+		public GridColumnHandler()
 		{
 			Control = new swf.DataGridViewColumn();
 			DataCell = new TextBoxCell();
@@ -23,39 +23,52 @@ namespace Eto.WinForms.Forms.Controls
 			Resizable = true;
 		}
 
-		public string HeaderText {
+		public string HeaderText
+		{
 			get { return Control.HeaderText; }
 			set { Control.HeaderText = value; }
 		}
 
-		public bool Resizable {
+		public bool Resizable
+		{
 			get { return Control.Resizable == swf.DataGridViewTriState.True; }
 			set { Control.Resizable = value ? swf.DataGridViewTriState.True : swf.DataGridViewTriState.False; }
 		}
 
-		public bool Sortable {
+		public bool Sortable
+		{
 			get { return Control.SortMode == swf.DataGridViewColumnSortMode.Programmatic; }
 			set { Control.SortMode = (value) ? swf.DataGridViewColumnSortMode.Programmatic : swf.DataGridViewColumnSortMode.NotSortable; }
 		}
 
-		public bool AutoSize {
+		public bool AutoSize
+		{
 			get { return autosize; }
-			set {
+			set
+			{
 				autosize = value;
-				Control.AutoSizeMode = (value) ? swf.DataGridViewAutoSizeColumnMode.NotSet : swf.DataGridViewAutoSizeColumnMode.None; 
+				Control.AutoSizeMode = (value) ? swf.DataGridViewAutoSizeColumnMode.NotSet : swf.DataGridViewAutoSizeColumnMode.None;
 			}
 		}
 
-		public int Width {
+		public int Width
+		{
 			get { return Control.Width; }
-			set { Control.Width = value; }
+			set
+			{
+				AutoSize = value == -1;
+				Control.Width = value;
+			}
 		}
 
-		public Cell DataCell {
+		public Cell DataCell
+		{
 			get { return dataCell; }
-			set {
+			set
+			{
 				dataCell = value;
-				if (dataCell != null) {
+				if (dataCell != null)
+				{
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					cellHandler.CellConfig = this;
 					Control.CellTemplate = cellHandler.Control;
@@ -65,52 +78,56 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public bool Editable {
+		public bool Editable
+		{
 			get { return !Control.ReadOnly; }
 			set { Control.ReadOnly = !value; }
 		}
 
-		public bool Visible {
+		public bool Visible
+		{
 			get { return Control.Visible; }
 			set { Control.Visible = value; }
 		}
 
 		public swf.DataGridViewColumn Column => Control;
 
-		public void SetCellValue (object dataItem, object value)
+		public void SetCellValue(object dataItem, object value)
 		{
-			if (dataCell != null) {
+			if (dataCell != null)
+			{
 				var cellHandler = (ICellHandler)dataCell.Handler;
-				cellHandler.SetCellValue (dataItem, value);
+				cellHandler.SetCellValue(dataItem, value);
 			}
 		}
 
-		public object GetCellValue (object dataItem)
+		public object GetCellValue(object dataItem)
 		{
-			if (dataCell != null) {
+			if (dataCell != null)
+			{
 				var cellHandler = ((ICellHandler)dataCell.Handler);
-				return cellHandler.GetCellValue (dataItem);
+				return cellHandler.GetCellValue(dataItem);
 			}
 			return null;
 		}
 
-		public virtual void Setup (IGridHandler gridHandler)
+		public virtual void Setup(IGridHandler gridHandler)
 		{
 			GridHandler = gridHandler;
 		}
 
-		public void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)
+		public void Paint(sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)
 		{
 			if (GridHandler != null)
-				GridHandler.Paint (this, graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
+				GridHandler.Paint(this, graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
 		}
 
-		public int GetRowOffset (int rowIndex)
+		public int GetRowOffset(int rowIndex)
 		{
 			return GridHandler != null ? GridHandler.GetRowOffset(this, rowIndex) : 0;
 		}
 
-		public bool MouseClick (swf.MouseEventArgs e, int rowIndex)
+		public bool MouseClick(swf.MouseEventArgs e, int rowIndex)
 		{
 			return GridHandler != null && GridHandler.CellMouseClick(this, e, rowIndex);
 		}

@@ -280,5 +280,35 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
+
+		[Test, ManualTest]
+		public void SettingWidthShouldDisableAutosize()
+		{
+			ManualForm("Width of column should be 300px and not change when scrolling",
+			form => {
+				var control = new GridView();
+				control.Width = 400;
+				control.Height = 200;
+				var column = new GridColumn
+				{
+					DataCell = new TextBoxCell(0),
+					AutoSize = true,
+					Width = 300, // setting width should set AutoSize to false
+					HeaderText = "Cell"
+				};
+				control.Columns.Add(column);
+
+				Assert.IsFalse(column.AutoSize, "#1");
+
+				var dd = new List<GridItem>();
+				for (int i = 0; i < 1000; i++)
+				{
+					dd.Add(new GridItem { Values = new[] { "Row " + i } });
+				}
+				control.DataStore = dd;
+
+				return control;
+			});
+		}
 	}
 }
