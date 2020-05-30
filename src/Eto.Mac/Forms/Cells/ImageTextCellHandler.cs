@@ -174,8 +174,7 @@ namespace Eto.Mac.Forms.Cells
 				Selectable = false,
 				DrawsBackground = false,
 				Bezeled = false,
-				Bordered = false,
-				UsesSingleLineMode = false
+				Bordered = false
 			};
 
 			public EtoLabelFieldCell TextCell => (EtoLabelFieldCell)TextField.Cell;
