@@ -73,7 +73,8 @@ namespace Eto.WinForms.Forms.Controls
 				Dock = swf.DockStyle.Fill,
 				BorderStyle = swf.BorderStyle.None,
 				ScrollBars = swf.RichTextBoxScrollBars.Both,
-				LanguageOption = swf.RichTextBoxLanguageOptions.DualFont
+				LanguageOption = swf.RichTextBoxLanguageOptions.DualFont,
+				DetectUrls = false
 			};
 			container = new swf.TableLayoutPanel
 			{
