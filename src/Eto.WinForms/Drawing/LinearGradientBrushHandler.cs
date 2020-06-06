@@ -130,7 +130,8 @@ namespace Eto.WinForms.Drawing
 
 		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			return null;
+			GradientHelper.GetLinearFromRectangle(rectangle, angle, out var startPoint, out var endPoint);
+			return Create(startColor, endColor, startPoint, endPoint);
 		}
 
 		public IMatrix GetTransform(LinearGradientBrush widget)

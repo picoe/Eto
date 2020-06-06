@@ -144,13 +144,8 @@ namespace Eto.iOS.Drawing
 
 		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			return new BrushObject
-			{
-				StartColor = startColor.ToCG(),
-				EndColor = endColor.ToCG(),
-				StartPoint = rectangle.TopLeft,
-				EndPoint = rectangle.TopRight // TODO
-			};
+			GradientHelper.GetLinearFromRectangle(rectangle, angle, out var startPoint, out var endPoint);
+			return Create(startColor, endColor, startPoint, endPoint);
 		}
 
 		public IMatrix GetTransform(LinearGradientBrush widget)

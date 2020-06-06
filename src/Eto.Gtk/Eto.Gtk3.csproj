@@ -82,6 +82,9 @@ On Linux, mono framework 5.10 or higher and gtk-sharp3 are required.
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>GradientHelper.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
