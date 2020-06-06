@@ -22,6 +22,7 @@ namespace Eto.Test.Sections.Drawing
 		readonly DynamicRow radialRow;
 		readonly DynamicRow radiusRow;
 		readonly DynamicRow linearRow;
+		readonly DynamicRow angleRow;
 		readonly DynamicRow textureRow;
 		readonly DynamicRow colorStartEndRow;
 		bool useBackgroundColor;
@@ -41,6 +42,8 @@ namespace Eto.Test.Sections.Drawing
 		public float OffsetX { get; set; }
 
 		public float OffsetY { get; set; }
+
+		public float Angle { get; set; }
 
 		public SizeF Radius { get; set; }
 
@@ -84,13 +87,14 @@ namespace Eto.Test.Sections.Drawing
 			Radius = new SizeF(100f, 50f);
 			StartPoint = new PointF(50, 50);
 			EndPoint = new PointF(100, 100);
+			Angle = 0;
 			Opacity = 1f;
 
 			drawable = new Drawable { Size = new Size(450, 400) };
 
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
-			if (( Platform.SupportedFeatures & PlatformFeatures.DrawableWithTransparentContent ) == 0)
+			if ((Platform.SupportedFeatures & PlatformFeatures.DrawableWithTransparentContent) == 0)
 				layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), CreateModeControl(), null);
 			else
 				layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), WithContent(), CreateModeControl(), null);
@@ -104,6 +108,7 @@ namespace Eto.Test.Sections.Drawing
 			radialRow = layout.AddSeparateRow(null, "Center:", CenterControl(), "GradientOrigin:", GradientOriginControl(), null);
 			radiusRow = layout.AddSeparateRow(null, "Radius:", RadiusControl(), null);
 			linearRow = layout.AddSeparateRow(null, "Start:", StartPointControl(), "End:", EndPointControl(), null);
+			angleRow = layout.AddSeparateRow(null, "Angle:", AngleControl(), null);
 			textureRow = layout.AddSeparateRow(null, "Opacity:", CreateOpacityControl(), null);
 			colorStartEndRow = layout.AddSeparateRow(null, "Start:", CreateStartColor(), "End:", CreateEndColor(), null);
 			layout.AddSeparateRow(null, drawable, null);
@@ -125,6 +130,7 @@ namespace Eto.Test.Sections.Drawing
 			public bool SupportsLinear { get; set; }
 
 			public bool SupportsTexture { get; set; }
+			public bool SupportsAngle { get; set; }
 
 			public bool SupportsStartEndColor { get; set; }
 		}
@@ -148,6 +154,20 @@ namespace Eto.Test.Sections.Drawing
 				SupportsLinear = true,
 				SupportsStartEndColor = true,
 				CreateBrush = () => new LinearGradientBrush(StartColor, EndColor, StartPoint, EndPoint)
+				{
+					Wrap = GradientWrap,
+					Transform = GetTransform()
+				}
+			});
+			control.Items.Add(new BrushItem
+			{
+				Text = "Linear Gradient (Rectangle)",
+				SupportsMatrix = true,
+				SupportsGradient = true,
+				SupportsLinear = true,
+				SupportsAngle = true,
+				SupportsStartEndColor = true,
+				CreateBrush = () => new LinearGradientBrush(new RectangleF(StartPoint, EndPoint), StartColor, EndColor, Angle)
 				{
 					Wrap = GradientWrap,
 					Transform = GetTransform()
@@ -185,6 +205,7 @@ namespace Eto.Test.Sections.Drawing
 			gradientRow.Table.Visible = item.SupportsGradient;
 			radialRow.Table.Visible = radiusRow.Table.Visible = item.SupportsRadial;
 			linearRow.Table.Visible = item.SupportsLinear;
+			angleRow.Table.Visible = item.SupportsAngle;
 			textureRow.Table.Visible = item.SupportsTexture;
 			colorStartEndRow.Table.Visible = item.SupportsStartEndColor;
 			Refresh();
@@ -275,6 +296,17 @@ namespace Eto.Test.Sections.Drawing
 		Control StartPointControl()
 		{
 			return PointControl(() => StartPoint, v => StartPoint = v);
+		}
+
+		Control AngleControl()
+		{
+			var angle = new NumericStepper { MinValue = 0, MaxValue = 360 };
+			angle.ValueBinding.Bind(() => Angle, v =>
+			{
+				Angle = (float)v;
+				Refresh();
+			});
+			return angle;
 		}
 
 		Control EndPointControl()
@@ -392,11 +424,13 @@ namespace Eto.Test.Sections.Drawing
 			var control = new CheckBox() { Text = "With Content" };
 			control.CheckedChanged += (s, e) =>
 			{
-				drawable.Content = ( (CheckBox)s ).Checked == true ?
+				drawable.Content = ((CheckBox)s).Checked == true ?
 				TableLayout.AutoSized(
-					new Label() {
+					new Label()
+					{
 						Text = "Some text",
-						BackgroundColor = Colors.Transparent },
+						BackgroundColor = Colors.Transparent
+					},
 					centered: true
 				).With(tl => tl.BackgroundColor = Color.FromArgb(0x40000000)) : null;
 			};
@@ -427,6 +461,8 @@ namespace Eto.Test.Sections.Drawing
 		{
 			if (brush == null)
 				return;
+
+
 			var rect = new RectangleF(10, 10, 200, 100);
 
 			if (Mode == DrawMode.Fill)
@@ -448,9 +484,13 @@ namespace Eto.Test.Sections.Drawing
 				g.FillPolygon(brush, points);
 				g.DrawPolygon(pen, points);
 				/**/
+				var path = GraphicsPath.GetRoundRect(new Rectangle(300, 120, 50, 50), 8);
+				g.FillPath(brush, path);
+				g.DrawPath(pen, path);
+				/**/
 				pen.Dispose();
 			}
-			else 
+			else
 			{
 				var pen = new Pen(brush, 10);
 				/**/
@@ -465,6 +505,9 @@ namespace Eto.Test.Sections.Drawing
 				var points = new[] { new PointF(300, 10), new PointF(350, 30), new PointF(400, 90), new PointF(320, 100) };
 				g.DrawPolygon(pen, points);
 				/**/
+				/**/
+				var path = GraphicsPath.GetRoundRect(new Rectangle(300, 120, 50, 50), 8);
+				g.DrawPath(pen, path);
 				pen.Dispose();
 			}
 		}

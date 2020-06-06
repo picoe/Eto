@@ -103,6 +103,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>GradientHelper.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>

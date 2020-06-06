@@ -44,6 +44,9 @@ When building for the full framework, .NET Framework 4.6.1 or mono framework 5.1
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>GradientHelper.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="NativeMethods.tt">
