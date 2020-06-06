@@ -305,6 +305,12 @@ namespace Eto.Mac.Drawing
 		{
 		}
 
+		public NSBitmapImageRep GetBitmapImageRep()
+		{
+			EnsureRep();
+			return bmprep;
+		}
+
 
 		protected void EnsureRep()
 		{
