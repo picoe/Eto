@@ -708,9 +708,12 @@ namespace Eto.GtkSharp.Forms
 			[GLib.ConnectBefore]
 			public virtual void HandleDragDataGet(object o, Gtk.DragDataGetArgs args)
 			{
-				var data = Handler?.DragInfo.Data.Handler as DataObjectHandler;
-				data?.Apply(args.SelectionData);
-				args.RetVal = true;
+				var data = Handler?.DragInfo?.Data.Handler as DataObjectHandler;
+				if (data != null)
+				{
+					data.Apply(args.SelectionData);
+					args.RetVal = true;
+				}
 			}
 
 			[GLib.ConnectBefore]
