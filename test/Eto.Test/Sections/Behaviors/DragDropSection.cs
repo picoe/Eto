@@ -369,7 +369,7 @@ namespace Eto.Test.Sections.Behaviors
 				sb.Append($"\n\tTypes: {string.Join(", ", data.Types)}");
 			var uris = data.Uris;
 			if (uris != null)
-				sb.Append($"\n\tUris: {string.Join(", ", uris.Select(r => r.AbsoluteUri))})");
+				sb.Append($"\n\tUris: {string.Join(", ", uris.Select(r => r.IsFile ? r.LocalPath : r.AbsoluteUri))})");
 			return sb.ToString();
 		}
 
