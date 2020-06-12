@@ -201,7 +201,7 @@ namespace Eto.Wpf.Forms
 
 					// file uris
 					var files = new StringCollection();
-					files.AddRange(coll.Where(r => r.IsFile).Select(r => r.AbsolutePath).ToArray());
+					files.AddRange(coll.Where(r => r.IsFile).Select(r => r.LocalPath).ToArray());
 					if (files.Count > 0)
 					{
 						if (IsExtended)
