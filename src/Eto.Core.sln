@@ -3,25 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "Eto\Eto.csproj", "{FE25EE53-3993-4463-AB8E-CCDCE5E3BDC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto", "Eto\Eto.csproj", "{FE25EE53-3993-4463-AB8E-CCDCE5E3BDC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json", "Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{503A9238-E2D0-4849-8B62-4CEFB799A252}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Json", "Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{503A9238-E2D0-4849-8B62-4CEFB799A252}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{5830F6AC-68BE-4444-9160-0739F36BD761}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{5830F6AC-68BE-4444-9160-0739F36BD761}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test", "..\test\Eto.Test\Eto.Test.csproj", "{509D49DE-8BDD-43D2-B5D9-EDD390FDA8F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test", "..\test\Eto.Test\Eto.Test.csproj", "{509D49DE-8BDD-43D2-B5D9-EDD390FDA8F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk", "Eto.Gtk\Eto.Gtk.csproj", "{0C792DAE-8855-44CF-87F9-CE7385E3F141}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Gtk", "Eto.Gtk\Eto.Gtk.csproj", "{0C792DAE-8855-44CF-87F9-CE7385E3F141}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk", "..\test\Eto.Test.Gtk\Eto.Test.Gtk.csproj", "{9122333E-56EF-4A18-BBC4-0100589EA49C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Gtk", "..\test\Eto.Test.Gtk\Eto.Test.Gtk.csproj", "{9122333E-56EF-4A18-BBC4-0100589EA49C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinForms", "Eto.WinForms\Eto.WinForms.csproj", "{675E4CC9-41B2-45A6-925D-4E21DD23FAFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.WinForms", "Eto.WinForms\Eto.WinForms.csproj", "{675E4CC9-41B2-45A6-925D-4E21DD23FAFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinForms", "..\test\Eto.Test.WinForms\Eto.Test.WinForms.csproj", "{BC4CAE43-F35A-47FD-9284-1D76502A4F2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.WinForms", "..\test\Eto.Test.WinForms\Eto.Test.WinForms.csproj", "{BC4CAE43-F35A-47FD-9284-1D76502A4F2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf", "Eto.Wpf\Eto.Wpf.csproj", "{4BF1720D-10C5-468E-A419-95EE76BF3C98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Wpf", "Eto.Wpf\Eto.Wpf.csproj", "{4BF1720D-10C5-468E-A419-95EE76BF3C98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Wpf", "..\test\Eto.Test.Wpf\Eto.Test.Wpf.csproj", "{AE451719-9FDC-4C53-A34A-2788D564A1E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Wpf", "..\test\Eto.Test.Wpf\Eto.Test.Wpf.csproj", "{AE451719-9FDC-4C53-A34A-2788D564A1E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
