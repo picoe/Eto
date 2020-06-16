@@ -3,6 +3,8 @@ using Eto.Drawing;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
+using sw = System.Windows;
+using System.Windows;
 
 namespace Eto.Wpf.Forms.ToolBar
 {
@@ -21,10 +23,13 @@ namespace Eto.Wpf.Forms.ToolBar
 			panel.Children.Add(swcImage);
 			panel.Children.Add(label);
 			Control.Content = panel;
-			Control.Click += delegate
-			{
-				Widget.OnClick(EventArgs.Empty);
-			};
+			Control.Click += Control_Click;
+			sw.Automation.AutomationProperties.SetLabeledBy(Control, label);
+		}
+
+		private void Control_Click(object sender, RoutedEventArgs e)
+		{
+			Widget.OnClick(EventArgs.Empty);
 		}
 
 		public override string Text

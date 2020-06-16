@@ -1,8 +1,10 @@
 using System;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
+using sw = System.Windows;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Windows;
 
 namespace Eto.Wpf.Forms.ToolBar
 {
@@ -23,15 +25,21 @@ namespace Eto.Wpf.Forms.ToolBar
 			panel.Children.Add (label);
 			Control.Content = panel;
 
-			Control.Checked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
-			Control.Unchecked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
-			Control.Click += delegate {
-				Widget.OnClick (EventArgs.Empty);
-			};
+			Control.Checked += Control_CheckedChanged;
+			Control.Unchecked += Control_CheckedChanged;
+			Control.Click += Control_Click;
+			
+			sw.Automation.AutomationProperties.SetLabeledBy(Control, label);
+		}
+
+		private void Control_Click(object sender, RoutedEventArgs e)
+		{
+			Widget.OnClick(EventArgs.Empty);
+		}
+
+		private void Control_CheckedChanged(object sender, RoutedEventArgs e)
+		{
+			Widget.OnCheckedChanged(EventArgs.Empty);
 		}
 
 		public bool Checked
