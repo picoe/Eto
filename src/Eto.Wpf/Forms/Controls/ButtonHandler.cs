@@ -103,6 +103,8 @@ namespace Eto.Wpf.Forms.Controls
 
 			Control.Content = grid;
 
+			sw.Automation.AutomationProperties.SetLabeledBy(Control, LabelPart);
+
 			SetImagePosition();
 			base.Initialize();
 		}
