@@ -2,12 +2,13 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Text;
+using System.Diagnostics;
 
 namespace Eto
 {
 	static partial class Win32
 	{
-		#pragma warning disable 0649
+#pragma warning disable 0649
 		// Analysis disable InconsistentNaming
 		public struct RECT
 		{
@@ -18,7 +19,7 @@ namespace Eto
 			public int width => right - left;
 			public int height => bottom - top;
 		}
-		#pragma warning restore 0649
+#pragma warning restore 0649
 
 		[Flags]
 		public enum SWP : uint
@@ -361,7 +362,7 @@ namespace Eto
 			}
 		}
 
-		  // for tray indicator
+		// for tray indicator
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
 		public static extern int CallNextHookEx(int hookId, int code, int param, IntPtr dataPointer);
@@ -401,5 +402,27 @@ namespace Eto
 			internal readonly int ExtraInfo;
 		}
 
-	 }
+		public static bool ApplicationIsActivated()
+		{
+			var activatedHandle = GetForegroundWindow();
+			if (activatedHandle == IntPtr.Zero)
+			{
+				return false;       // No window is currently activated
+			}
+
+			var procId = Process.GetCurrentProcess().Id;
+			int activeProcId;
+			GetWindowThreadProcessId(activatedHandle, out activeProcId);
+
+			return activeProcId == procId;
+		}
+
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+		private static extern IntPtr GetForegroundWindow();
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
+
+	}
 }

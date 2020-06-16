@@ -110,6 +110,78 @@ namespace Eto.Mac.Forms
 		}
 	}
 
+	public class EtoPanel : NSPanel, IMacControl
+	{
+		CGRect oldFrame;
+		bool zoom;
+
+		public WeakReference WeakHandler { get; set; }
+
+		public IMacWindow Handler { get { return (IMacWindow)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
+
+		public EtoPanel(CGRect rect, NSWindowStyle style, NSBackingStore store, bool flag)
+			: base(rect, style, store, flag)
+		{
+		}
+
+		public bool? CanFocus { get; set; }
+
+		public override bool CanBecomeKeyWindow => CanFocus ?? base.CanBecomeKeyWindow;
+
+		public bool DisableCenterParent { get; set; }
+
+		public NSWindow OwnerWindow { get; set; }
+
+		public override void Center()
+		{
+			if (DisableCenterParent)
+				return;
+			// implement centering to parent if there is a parent window for this one..
+			var window = OwnerWindow ?? ParentWindow;
+			if (window != null)
+			{
+				var parentFrame = window.Frame;
+				var frame = Frame;
+				var location = new CGPoint((parentFrame.Width - frame.Width) / 2 + parentFrame.X, (parentFrame.Height - frame.Height) / 2 + parentFrame.Y);
+				SetFrameOrigin(location);
+			}
+			else
+				base.Center();
+		}
+
+		public override void Zoom(NSObject sender)
+		{
+			if (zoom)
+			{
+				SetFrame(oldFrame, true, true);
+				zoom = false;
+			}
+			else
+			{
+				oldFrame = Frame;
+				base.Zoom(sender ?? this); // null when double clicking the title bar, but xammac/monomac doesn't allow it
+				zoom = true;
+			}
+			Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
+		}
+
+		public bool DisableSetOrigin { get; set; }
+
+		public override void SetFrameOrigin(CGPoint aPoint)
+		{
+			if (!DisableSetOrigin)
+				base.SetFrameOrigin(aPoint);
+		}
+
+		public override void RecalculateKeyViewLoop()
+		{
+			base.RecalculateKeyViewLoop();
+
+			NSView last = null;
+			Handler?.RecalculateKeyViewLoop(ref last);
+		}
+	}
+
 	class EtoContentView : MacPanelView
 	{
 	}
@@ -161,7 +233,6 @@ namespace Eto.Mac.Forms
 		bool setInitialSize;
 		WindowState? initialState;
 		bool maximizable = true;
-		bool topmost;
 		Point? oldLocation;
 
 
@@ -556,15 +627,16 @@ namespace Eto.Mac.Forms
 			set;
 		}
 
+		protected virtual NSWindowLevel TopmostWindowLevel => NSWindowLevel.PopUpMenu;
+
 		public bool Topmost
 		{
-			get { return topmost; }
+			get => Control.Level >= NSWindowLevel.Floating;
 			set
 			{
-				if (topmost != value)
+				if (Topmost != value)
 				{
-					topmost = value;
-					Control.Level = value ? NSWindowLevel.PopUpMenu : NSWindowLevel.Normal;
+					Control.Level = value ? TopmostWindowLevel : NSWindowLevel.Normal;
 				}
 			}
 		}
@@ -1030,8 +1102,10 @@ namespace Eto.Mac.Forms
 				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
 				{
 					var newStyleMask = value.ToNS(Control.StyleMask);
-					Control.StyleMask = 0; // reset titled
+					var title = Title;
+					//Control.StyleMask = 0; // only way to reset titled??
 					Control.StyleMask = newStyleMask;
+					Title = title; // gets cleared here.. ugh.
 
 					// don't use animation when there's no border.
 					if (value == WindowStyle.None && Control.AnimationBehavior == NSWindowAnimationBehavior.Default)

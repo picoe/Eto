@@ -20,7 +20,22 @@ namespace Eto.WinForms.Forms
 		public static bool BubbleMouseEvents = true;
 		public static bool BubbleKeyEvents = true;
 
-		public static ApplicationHandler Instance => Application.Instance?.Handler as ApplicationHandler;
+		public static ApplicationHandler Instance => Eto.Forms.Application.Instance?.Handler as ApplicationHandler;
+
+		public event EventHandler IsActiveChanged;
+		bool _isActive;
+		public bool IsActive
+		{
+			get => _isActive;
+			set
+			{
+				if (_isActive != value)
+				{
+					_isActive = value;
+					IsActiveChanged?.Invoke(this, EventArgs.Empty);
+				}
+			}
+		}
 
 		public ApplicationHandler()
 		{
@@ -131,6 +146,8 @@ namespace Eto.WinForms.Forms
 			}
 			context = SynchronizationContext.Current;
 
+			_isActive = Win32.ApplicationIsActivated();
+
 			if (EtoEnvironment.Platform.IsWindows && EnableScrollingUnderMouse)
 				swf.Application.AddMessageFilter(new ScrollMessageFilter());
 
@@ -140,7 +157,8 @@ namespace Eto.WinForms.Forms
 				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseWheel(c, e), null, Win32.WM.MOUSEWHEEL);
 				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseMove(c, e), null, Win32.WM.MOUSEMOVE);
 				bubble.AddBubbleMouseEvents((c, cb, e) => cb.OnMouseDown(c, e), true, Win32.WM.LBUTTONDOWN, Win32.WM.RBUTTONDOWN, Win32.WM.MBUTTONDOWN);
-				bubble.AddBubbleMouseEvents((c, cb, e) => {
+				bubble.AddBubbleMouseEvents((c, cb, e) =>
+				{
 					cb.OnMouseDoubleClick(c, e);
 					if (!e.Handled)
 						cb.OnMouseDown(c, e);
@@ -216,7 +234,7 @@ namespace Eto.WinForms.Forms
 
 		public void Open(string url)
 		{
-		    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+			Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 		}
 
 		public override void AttachEvent(string id)

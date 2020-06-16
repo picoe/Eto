@@ -35,7 +35,15 @@ namespace Eto.Forms
 		/// <summary>
 		/// Window with no border
 		/// </summary>
-		None
+		None,
+		/// <summary>
+		/// Utility window, usually with a smaller border
+		/// </summary>
+		/// <remarks>
+		/// Note that this is only a hint; some platforms may show it as a default window.
+		/// E.g. on macOS, only a <see cref="FloatingForm"/> supports this mode.
+		/// </remarks>
+		Utility
 	}
 
 	/// <summary>

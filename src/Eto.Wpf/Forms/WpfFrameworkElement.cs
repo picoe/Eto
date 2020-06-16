@@ -373,9 +373,9 @@ namespace Eto.Wpf.Forms
 			get { return Control.IsKeyboardFocusWithin; }
 		}
 
-		public bool Visible
+		public virtual bool Visible
 		{
-			get { return ContainerControl.Visibility != sw.Visibility.Collapsed; }
+			get { return ContainerControl.Visibility == sw.Visibility.Visible; }
 			set
 			{
 				ContainerControl.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;

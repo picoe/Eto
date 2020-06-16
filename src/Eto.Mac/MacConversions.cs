@@ -362,19 +362,24 @@ namespace Eto.Mac
 
 		public static WindowStyle ToEtoWindowStyle(this NSWindowStyle style)
 		{
-			return style.HasFlag(NSWindowStyle.Titled) ? WindowStyle.Default : WindowStyle.None;
+			return style.HasFlag(NSWindowStyle.Utility) 
+				? WindowStyle.Utility
+				: style.HasFlag(NSWindowStyle.Titled) 
+				? WindowStyle.Default 
+				: WindowStyle.None;
 		}
 
 		public static NSWindowStyle ToNS(this WindowStyle style, NSWindowStyle existing)
 		{
-			const NSWindowStyle NONE_STYLE = NSWindowStyle.Borderless;
-			const NSWindowStyle DEFAULT_STYLE = NSWindowStyle.Titled;
+			existing &= ~(NSWindowStyle.Utility | NSWindowStyle.Titled | NSWindowStyle.Borderless);
 			switch (style)
 			{
 				case WindowStyle.Default:
-					return (existing & ~NONE_STYLE) | DEFAULT_STYLE;
+					return existing | NSWindowStyle.Titled;
 				case WindowStyle.None:
-					return (existing & ~DEFAULT_STYLE) | NONE_STYLE;
+					return existing | NSWindowStyle.Borderless;
+				case WindowStyle.Utility:
+					return existing | NSWindowStyle.Utility | NSWindowStyle.Titled;
 				default:
 					throw new NotSupportedException();
 			}
