@@ -522,6 +522,8 @@ namespace Eto.Wpf
 					return WindowStyle.None;
 				case sw.WindowStyle.ThreeDBorderWindow:
 					return WindowStyle.Default;
+				case sw.WindowStyle.ToolWindow:
+					return WindowStyle.Utility;
 				default:
 					throw new NotSupportedException();
 			}
@@ -535,6 +537,8 @@ namespace Eto.Wpf
 					return sw.WindowStyle.None;
 				case WindowStyle.Default:
 					return sw.WindowStyle.ThreeDBorderWindow;
+				case WindowStyle.Utility:
+					return sw.WindowStyle.ToolWindow;
 				default:
 					throw new NotSupportedException();
 			}

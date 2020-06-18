@@ -121,6 +121,7 @@ namespace Eto.Wpf.Forms
 		{
 			IsActive = true;
 			IsStarted = true;
+			_isActive = Win32.ApplicationIsActivated();
 			Control.Activated += (sender2, e2) => IsActive = true;
 			Control.Deactivated += (sender2, e2) => IsActive = false;
 			if (delayShownWindows != null)
@@ -133,7 +134,21 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public bool IsActive { get; private set; }
+		public event EventHandler IsActiveChanged;
+
+		bool _isActive;
+		public bool IsActive
+		{
+			get => _isActive;
+			set
+			{
+				if (_isActive != value)
+				{
+					_isActive = value;
+					IsActiveChanged?.Invoke(this, EventArgs.Empty);
+				}
+			}
+		}
 
 		public string BadgeLabel
 		{

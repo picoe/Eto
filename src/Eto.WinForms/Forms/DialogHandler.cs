@@ -15,7 +15,7 @@ namespace Eto.WinForms.Forms
 
         public DialogHandler()
         {
-            Control = new swf.Form
+            Control = new EtoFormBase
 			{
 				StartPosition = swf.FormStartPosition.CenterParent,
 				AutoSize = true,

@@ -44,7 +44,7 @@ namespace Eto.Wpf.Forms
 			Control = new EtoWindow();
 		}
 
-		public void Show()
+		public virtual void Show()
 		{
 			Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
 			if (ApplicationHandler.Instance.IsStarted)

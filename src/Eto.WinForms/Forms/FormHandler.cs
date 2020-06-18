@@ -6,9 +6,24 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms
 {
+	public class EtoFormBase : swf.Form
+	{
+		const int WM_ACTIVATEAPP = 0x1C;
+		protected override void WndProc(ref swf.Message m)
+		{
+			base.WndProc(ref m);
+
+			if (m.Msg == WM_ACTIVATEAPP)
+			{
+				bool isActive = m.WParam != IntPtr.Zero;
+				ApplicationHandler.Instance.IsActive = isActive;
+			}
+		}
+	}
+
 	public class FormHandler : WindowHandler<swf.Form, Form, Form.ICallback>, Form.IHandler
 	{
-		public class EtoForm : swf.Form
+		public class EtoForm : EtoFormBase
 		{
 			bool hideFromAltTab;
 
@@ -124,8 +139,7 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				base.ShowInTaskbar = value;
-				var etoForm = Control as EtoForm;
-				if (etoForm != null)
+				if (Control is EtoForm etoForm)
 					etoForm.HideFromAltTab = !value;
 			}
 		}

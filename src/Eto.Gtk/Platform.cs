@@ -203,6 +203,7 @@ namespace Eto.GtkSharp
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());
+			p.Add<FloatingForm.IHandler>(() => new FloatingFormHandler());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());

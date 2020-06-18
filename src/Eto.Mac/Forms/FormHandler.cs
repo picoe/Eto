@@ -33,7 +33,31 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms
 {
-	public class FormHandler : MacWindow<NSWindow, Form, Form.ICallback>, Form.IHandler
+	public class FormHandler : FormHandler<NSWindow>
+	{
+		public FormHandler()
+		{
+		}
+
+		public FormHandler(NSWindow window)
+			: base(window)
+		{
+		}
+		public FormHandler(NSWindowController controller)
+			: base(controller)
+		{
+		}
+
+		protected override NSWindow CreateControl()
+		{
+			return new EtoWindow(new CGRect(0, 0, 200, 200), 
+				NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Titled, 
+				NSBackingStore.Buffered, false);
+		}
+	}
+
+	public class FormHandler<TWindow> : MacWindow<TWindow, Form, Form.ICallback>, Form.IHandler
+		where TWindow: NSWindow
 	{
 		#pragma warning disable 414
 		// keep reference to controller so it doesn't get disposed
@@ -47,20 +71,13 @@ namespace Eto.Mac.Forms
 
 		public FormHandler(NSWindow window)
 		{
-			Control = window;
+			Control = (TWindow)window;
 		}
 
 		public FormHandler(NSWindowController controller)
 		{
 			this.controller = controller;
-			Control = controller.Window;
-		}
-
-		protected override NSWindow CreateControl()
-		{
-			return new EtoWindow(new CGRect(0, 0, 200, 200), 
-				NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Titled, 
-				NSBackingStore.Buffered, false);
+			Control = (TWindow)controller.Window;
 		}
 
 		protected override void Initialize()

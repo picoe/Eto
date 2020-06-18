@@ -237,8 +237,7 @@ namespace Eto.Mac.Forms
 
 		public static void BeginSheet(Window window, NSWindow theWindow, NSWindow parent, out ModalEventArgs helper, Action completed)
 		{
-			var app = NSApplication.SharedApplication;
-			app.BeginSheet(theWindow, parent);
+			NSApplication.SharedApplication.BeginSheet(theWindow, parent);
 			helper = new ModalEventArgs(window, theWindow, isSheet: true);
 			helper.StopAction = e =>
 			{

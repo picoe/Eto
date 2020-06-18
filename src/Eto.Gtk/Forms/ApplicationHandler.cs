@@ -9,22 +9,23 @@ using System.Collections.Generic;
 using Eto.GtkSharp.Forms;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 
 namespace Eto.GtkSharp.Forms
 {
-#if GTKCORE
-	public class ApplicationHandler : WidgetHandler<Gtk.Application, Application, Application.ICallback>, Application.IHandler
+#if GTK3
+	public class ApplicationHandler : WidgetHandler<Gtk.Application, Eto.Forms.Application, Eto.Forms.Application.ICallback>, Eto.Forms.Application.IHandler
 #else
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
 #endif
 	{
-		internal static List<string> TempFiles = new List<string>(); 
+		internal static List<string> TempFiles = new List<string>();
 
 		bool attached;
 		Gtk.StatusIcon statusIcon;
 		readonly List<ManualResetEvent> invokeResetEvents = new List<ManualResetEvent>();
 
-		public static ApplicationHandler Instance => Application.Instance?.Handler as ApplicationHandler;
+		public static ApplicationHandler Instance => Eto.Forms.Application.Instance?.Handler as ApplicationHandler;
 
 		protected override void Initialize()
 		{
@@ -34,7 +35,7 @@ namespace Eto.GtkSharp.Forms
 			if (SynchronizationContext.Current == null)
 				SynchronizationContext.SetSynchronizationContext(new GtkSynchronizationContext());
 
-#if GTKCORE
+#if GTK3
 			Control = new Gtk.Application(null, GLib.ApplicationFlags.None);
 			Control.Register(GLib.Cancellable.Current);
 			Helper.UseHeaderBar = true;
@@ -61,7 +62,7 @@ namespace Eto.GtkSharp.Forms
 			GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 			Gtk.Application.Quit();
 
-			RestartInternal();			
+			RestartInternal();
 		}
 
 		string badgeLabel;
@@ -79,7 +80,7 @@ namespace Eto.GtkSharp.Forms
 						statusIcon = new Gtk.StatusIcon();
 						statusIcon.Activate += delegate
 						{
-							var form = Application.Instance.MainForm;
+							var form = Eto.Forms.Application.Instance.MainForm;
 							if (form != null)
 								form.BringToFront();
 						};
@@ -111,7 +112,7 @@ namespace Eto.GtkSharp.Forms
 			graphics.Flush();
 		}
 
-		public void Invoke(Action action)
+		public void Invoke(System.Action action)
 		{
 			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
 				action();
@@ -138,7 +139,7 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public void AsyncInvoke(Action action)
+		public void AsyncInvoke(System.Action action)
 		{
 			Gtk.Application.Invoke(delegate
 			{
@@ -149,10 +150,158 @@ namespace Eto.GtkSharp.Forms
 		public void Attach(object context)
 		{
 			attached = true;
+			Control = context as Gtk.Application;
 		}
 
 		public void OnMainFormChanged()
 		{
+		}
+
+		public bool IsActive
+		{
+			get
+			{
+				if (_isActive != null)
+					return _isActive.Value;
+
+				var windows = Gtk.Window.ListToplevels();
+				return windows.Any(r => r.HasFocus | r.HasToplevelFocus) | AnyIsActiveWindow(windows);
+			}
+		}
+
+
+		protected virtual void OnIsActiveChanged(EventArgs e) => _IsActiveChanged?.Invoke(this, e);
+
+		UITimer _timer;
+		bool? _isActive;
+		bool _didGetFocus;
+		internal void TriggerIsActiveChanged(bool gotFocus)
+		{
+			// don't do anything until we really need to know.
+			if (_IsActiveChanged == null)
+				return;
+
+			_didGetFocus |= gotFocus;
+
+			if (_timer == null)
+			{
+				// use a timer as the active window does not get updated immediately or when showing the task switcher
+				// not sure if there's a platform-specific way to do this that would work better...
+				_timer = new UITimer();
+				_timer.Elapsed += (sender, e) =>
+				{
+					var windows = Gtk.Window.ListToplevels();
+					// first, check if any window has focus.. then yes, we are the active application.
+					bool isActive = _didGetFocus | windows.Any(r => r.HasFocus | r.HasToplevelFocus);
+					if (!isActive)
+					{
+						// no windows have focus, so check the active window
+						isActive = AnyIsActiveWindow(windows);
+
+						// we are "active" but not really as there's no top level window with focus.
+						// so keep checking until one of the top levels actually has focus or the active window changes.
+						if (isActive || _didGetFocus)
+							_timer.Interval = 0.5;
+						else
+							_timer.Stop();
+
+					}
+					else
+						_timer.Stop();
+
+					_didGetFocus = false;
+
+					if (_isActive != isActive)
+					{
+						_isActive = isActive;
+						OnIsActiveChanged(EventArgs.Empty);
+					}
+				};
+			}
+			_timer.Interval = 0.2;
+			_timer.Start();
+		}
+
+		private static bool AnyIsActiveWindow(Gtk.Window[] windows)
+		{
+			var activeWindow = Gdk.Screen.Default.ActiveWindow;
+			if (activeWindow != null)
+			{
+				var activeWindowHandle = activeWindow.Handle;
+				for (int i = 0; i < windows.Length; i++)
+				{
+					Gtk.Window window = windows[i];
+					var gdkwindow = window.GetWindow();
+					if (gdkwindow != null && gdkwindow.Handle == activeWindowHandle)
+					{
+						return true;
+					}
+				}
+				activeWindow.Dispose();
+			}
+
+			return false;
+		}
+
+		public void RegisterIsActiveChanged(Gtk.Window window)
+		{
+			new WindowActiveHelper(window);
+		}
+
+		EventHandler _IsActiveChanged;
+		public event EventHandler IsActiveChanged
+		{
+			add
+			{
+				if (_IsActiveChanged == null)
+				{
+					/*
+					foreach (var window in Application.Instance.Windows)
+					{
+						new WindowActiveHelper(window.ToGtk());
+					}*/
+
+					/* Does not work... Windows array is always empty.
+					Control.WindowAdded += (o, args) => new WindowActiveHelper(args.Window);
+					for (int i = 0; i < Control.Windows.Length; i++)
+					{
+						var window = Control.Windows[i];
+						new WindowActiveHelper(window);
+					}*/
+				}
+				_IsActiveChanged += value;
+
+			}
+			remove
+			{
+				_IsActiveChanged -= value;
+			}
+		}
+
+		class WindowActiveHelper
+		{
+			Gtk.Window _window;
+
+			public WindowActiveHelper(Gtk.Window window)
+			{
+				if (window == null)
+					return;
+				_window = window;
+				_window.AddEvents((int)Gdk.EventMask.FocusChangeMask);
+				_window.FocusInEvent += _window_FocusInEvent;
+				_window.FocusOutEvent += _window_FocusOutEvent;
+			}
+
+			private void _window_FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
+			{
+				Instance.TriggerIsActiveChanged(false);
+			}
+
+			private void _window_FocusInEvent(object o, Gtk.FocusInEventArgs args)
+			{
+				Instance.TriggerIsActiveChanged(true);
+			}
+
 		}
 
 		public void Run()
@@ -187,13 +336,13 @@ namespace Eto.GtkSharp.Forms
 		{
 			switch (id)
 			{
-				case Application.TerminatingEvent:
+				case Eto.Forms.Application.TerminatingEvent:
 					// called automatically
 					break;
-				case Application.UnhandledExceptionEvent:
+				case Eto.Forms.Application.UnhandledExceptionEvent:
 					GLib.ExceptionManager.UnhandledException += OnUnhandledException;
 					break;
-				case Application.NotificationActivatedEvent:
+				case Eto.Forms.Application.NotificationActivatedEvent:
 					// handled by NotificationHandler
 					break;
 				default:

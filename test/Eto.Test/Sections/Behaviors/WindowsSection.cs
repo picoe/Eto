@@ -16,7 +16,7 @@ namespace Eto.Test.Sections.Behaviors
 		RadioButtonList typeRadio;
 		CheckBox resizableCheckBox;
 		CheckBox maximizableCheckBox;
-		CheckBox minimizableCheckBox;
+		ResettableCheckBox minimizableCheckBox;
 		CheckBox movableByWindowBackgroundCheckBox;
 		CheckBox showInTaskBarCheckBox;
 		CheckBox topMostCheckBox;
@@ -39,9 +39,11 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
+			var typeControls = CreateTypeControls();
+
 			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), MovableByWindowBackground(), null);
 			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
-			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
+			layout.AddSeparateRow(null, "Type", typeControls, null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
 			layout.AddSeparateRow(null, "Dialog Display Mode", DisplayModeDropDown(), null);
@@ -114,15 +116,16 @@ namespace Eto.Test.Sections.Behaviors
 			typeRadio = new RadioButtonList
 			{
 				Items =
-				{ 
+				{
 					new ListItem { Text = "Form (modeless)", Key = "form" },
+					new ListItem { Text = "Floating Form (modeless)", Key = "floating" },
 					new ListItem { Text = "Dialog (modal)", Key = "dialog" }
 				},
 				SelectedKey = "form"
 			};
 
 			setOwnerCheckBox = new CheckBox { Text = "Set Owner", Checked = false };
-			setOwnerCheckBox.CheckedChanged += (sender, e) => 
+			setOwnerCheckBox.CheckedChanged += (sender, e) =>
 			{
 				if (child != null)
 					child.Owner = setOwnerCheckBox.Checked ?? false ? ParentWindow : null;
@@ -133,6 +136,35 @@ namespace Eto.Test.Sections.Behaviors
 				Orientation = Orientation.Horizontal,
 				Items = { typeRadio, setOwnerCheckBox }
 			};
+		}
+
+		class ResettableCheckBox : CheckBox
+		{
+			bool wasNull;
+			public ResettableCheckBox()
+			{
+				ThreeState = true;
+				Checked = null;
+			}
+
+			protected override void OnDataContextChanged(EventArgs e)
+			{
+				if (DataContext != null)
+				{
+					wasNull = Checked == null;
+				}
+				base.OnDataContextChanged(e);
+				if (DataContext != null && Checked != null)
+				{
+					ThreeState = false;
+				}
+				else if (DataContext == null)
+				{
+					ThreeState = true;
+					if (wasNull)
+						Checked = null;
+				}
+			}
 		}
 
 		Control WindowStyle()
@@ -177,136 +209,65 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control Resizable()
 		{
-			resizableCheckBox = new CheckBox
-			{
-				Text = "Resizable",
-				Checked = true
-			};
-			resizableCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Resizable = resizableCheckBox.Checked ?? false;
-			};
+			resizableCheckBox = new ResettableCheckBox { Text = "Resizable" };
+			resizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Resizable);
 			return resizableCheckBox;
 		}
 
 		Control Maximizable()
 		{
-			maximizableCheckBox = new CheckBox
-			{
-				Text = "Maximizable",
-				Checked = true
-			};
-			maximizableCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Maximizable = maximizableCheckBox.Checked ?? false;
-			};
+			maximizableCheckBox = new ResettableCheckBox { Text = "Maximizable" };
+			maximizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Maximizable);
 			return maximizableCheckBox;
 		}
 
 		Control MovableByWindowBackground()
 		{
-			movableByWindowBackgroundCheckBox = new CheckBox
-			{
-				Text = "MovableByWindowBackground",
-				Checked = false
-			};
-			movableByWindowBackgroundCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.MovableByWindowBackground = movableByWindowBackgroundCheckBox.Checked ?? false;
-			};
+			movableByWindowBackgroundCheckBox = new ResettableCheckBox { Text = "MovableByWindowBackground" };
+			movableByWindowBackgroundCheckBox.CheckedBinding.BindDataContext((Window w) => w.MovableByWindowBackground);
 			return movableByWindowBackgroundCheckBox;
 		}
 
 		Control Minimizable()
 		{
-			minimizableCheckBox = new CheckBox
-			{
-				Text = "Minimizable",
-				Checked = true
-			};
-			minimizableCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Minimizable = minimizableCheckBox.Checked ?? false;
-			};
+			minimizableCheckBox = new ResettableCheckBox { Text = "Minimizable" };
+			minimizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Minimizable);
 			return minimizableCheckBox;
 		}
 
 		Control ShowInTaskBar()
 		{
-			showInTaskBarCheckBox = new CheckBox
-			{
-				Text = "Show In TaskBar",
-				Checked = true
-			};
-			showInTaskBarCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
-			};
+			showInTaskBarCheckBox = new ResettableCheckBox { Text = "Show In TaskBar" };
+			showInTaskBarCheckBox.CheckedBinding.BindDataContext((Window w) => w.ShowInTaskbar);
 			return showInTaskBarCheckBox;
 		}
 
 		Control CreateCanFocus()
 		{
-			canFocusCheckBox = new CheckBox {
-				Text = "CanFocus",
-				Checked = true
-			};
-			canFocusCheckBox.CheckedChanged += (sender, e) => {
-				var form = child as Form;
-				if (form != null)
-					form.CanFocus = canFocusCheckBox.Checked ?? false;
-			};
+			canFocusCheckBox = new ResettableCheckBox { Text = "CanFocus" };
+			canFocusCheckBox.CheckedBinding.BindDataContext((Form w) => w.CanFocus);
 			return canFocusCheckBox;
 		}
 
 		Control TopMost()
 		{
-			topMostCheckBox = new CheckBox
-			{
-				Text = "Top Most",
-				Checked = false
-			};
-			topMostCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Topmost = topMostCheckBox.Checked ?? false;
-			};
+			topMostCheckBox = new ResettableCheckBox { Text = "Top Most" };
+			topMostCheckBox.CheckedBinding.BindDataContext((Window w) => w.Topmost);
 			return topMostCheckBox;
 		}
 
 		Control VisibleCheckbox()
 		{
-			visibleCheckBox = new CheckBox
-			{
-				Text = "Visible",
-				Checked = true
-			};
-			visibleCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Visible = visibleCheckBox.Checked ?? false;
-			};
+			visibleCheckBox = new ResettableCheckBox { Text = "Visible" };
+			visibleCheckBox.CheckedBinding.BindDataContext((Window w) => w.Visible);
 			return visibleCheckBox;
 		}
 
 		Control CreateShowActivatedCheckbox()
 		{
-			showActivatedCheckBox = new CheckBox
-			{
-				Text = "Show Activated",
-				Checked = true
-			};
-			showActivatedCheckBox.CheckedChanged += (sender, e) =>
-			{
-				var form = child as Form;
-				if (form != null)
-					form.ShowActivated = showActivatedCheckBox.Checked ?? false;
-			};
+			showActivatedCheckBox = new ResettableCheckBox { Text = "ShowActivated" };
+			showActivatedCheckBox.CheckedBinding.BindDataContext((Form w) => w.ShowActivated);
+			showActivatedCheckBox.Bind(c => c.Enabled, typeRadio, Binding.Property((RadioButtonList t) => t.SelectedKey).ToBool("dialog").Convert(v => !v));
 			return showActivatedCheckBox;
 
 		}
@@ -337,7 +298,7 @@ namespace Eto.Test.Sections.Behaviors
 			return new StackLayout
 			{
 				Orientation = Orientation.Horizontal,
-				Items = 
+				Items =
 				{
 					setLocationCheckBox,
 					left,
@@ -394,7 +355,7 @@ namespace Eto.Test.Sections.Behaviors
 			return new StackLayout
 			{
 				Orientation = Orientation.Horizontal,
-				Items = 
+				Items =
 				{
 					setClientSize,
 					left,
@@ -433,7 +394,7 @@ namespace Eto.Test.Sections.Behaviors
 			return new StackLayout
 			{
 				Orientation = Orientation.Horizontal,
-				Items = 
+				Items =
 				{
 					setMinimumSize,
 					width,
@@ -462,8 +423,20 @@ namespace Eto.Test.Sections.Behaviors
 				var form = new Form();
 				child = form;
 				show = form.Show;
-				form.ShowActivated = showActivatedCheckBox.Checked == true;
-				form.CanFocus = canFocusCheckBox.Checked == true;
+				if (showActivatedCheckBox.Checked != null)
+					form.ShowActivated = showActivatedCheckBox.Checked == true;
+				if (canFocusCheckBox.Checked != null)
+					form.CanFocus = canFocusCheckBox.Checked == true;
+			}
+			else if (typeRadio.SelectedKey == "floating")
+			{
+				var form = new FloatingForm();
+				child = form;
+				show = form.Show;
+				if (showActivatedCheckBox.Checked != null)
+					form.ShowActivated = showActivatedCheckBox.Checked == true;
+				if (canFocusCheckBox.Checked != null)
+					form.CanFocus = canFocusCheckBox.Checked == true;
 			}
 			else
 			{
@@ -480,7 +453,8 @@ namespace Eto.Test.Sections.Behaviors
 				child = dialog;
 				show = dialog.ShowModal;
 
-				dialog.DisplayMode = dialogDisplayModeDropDown.SelectedValue ?? DialogDisplayMode.Default;
+				if (dialogDisplayModeDropDown.SelectedValue != null)
+					dialog.DisplayMode = dialogDisplayModeDropDown.SelectedValue ?? DialogDisplayMode.Default;
 			}
 
 			layout.Add(null);
@@ -500,12 +474,18 @@ namespace Eto.Test.Sections.Behaviors
 			child.Title = "Child Window";
 			child.WindowStyle = styleCombo.SelectedValue;
 			child.WindowState = stateCombo.SelectedValue;
-			child.Topmost = topMostCheckBox.Checked ?? false;
-			child.Resizable = resizableCheckBox.Checked ?? false;
-			child.Maximizable = maximizableCheckBox.Checked ?? false;
-			child.Minimizable = minimizableCheckBox.Checked ?? false;
-			child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
-			child.MovableByWindowBackground = movableByWindowBackgroundCheckBox.Checked ?? false;
+			if (topMostCheckBox.Checked != null)
+				child.Topmost = topMostCheckBox.Checked ?? false;
+			if (resizableCheckBox.Checked != null)
+				child.Resizable = resizableCheckBox.Checked ?? false;
+			if (maximizableCheckBox.Checked != null)
+				child.Maximizable = maximizableCheckBox.Checked ?? false;
+			if (minimizableCheckBox.Checked != null)
+				child.Minimizable = minimizableCheckBox.Checked ?? false;
+			if (showInTaskBarCheckBox.Checked != null)
+				child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
+			if (movableByWindowBackgroundCheckBox.Checked != null)
+				child.MovableByWindowBackground = movableByWindowBackgroundCheckBox.Checked ?? false;
 			if (setInitialLocation)
 				child.Location = initialLocation;
 			if (setInitialClientSize)
@@ -519,6 +499,7 @@ namespace Eto.Test.Sections.Behaviors
 			if (createMenuBar.Checked ?? false)
 				child.Menu = CreateMenuBar();
 			bringToFrontButton.Enabled = true;
+			DataContext = child;
 			show();
 			//visibleCheckBox.Checked = child?.Visible == true; // child will be null after it is shown
 			// show that the child is now referenced
@@ -528,6 +509,7 @@ namespace Eto.Test.Sections.Behaviors
 		void child_Closed(object sender, EventArgs e)
 		{
 			Log.Write(child, "Closed");
+			DataContext = null;
 			child.OwnerChanged -= child_OwnerChanged;
 			child.WindowStateChanged -= child_WindowStateChanged;
 			child.Closed -= child_Closed;
