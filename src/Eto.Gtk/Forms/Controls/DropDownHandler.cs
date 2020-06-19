@@ -297,7 +297,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				// text
 				var val = ItemTextBinding?.GetValue(item);
-				return val != null ? new Value(val) : Value.Empty;
+				return new Value(val ?? string.Empty);
 			}
 			else if (column == 1)
 			{

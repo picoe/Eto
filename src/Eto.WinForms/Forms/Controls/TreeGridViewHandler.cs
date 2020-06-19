@@ -156,7 +156,7 @@ namespace Eto.WinForms.Forms.Controls
 					controller.ExpandToItem(value);
 					var index = controller.IndexOf(value);
 					if (index >= 0)
-						Control.Rows[index].Selected = true;
+						SelectRow(index);
 				}
 				else
 					Control.ClearSelection();
@@ -374,13 +374,13 @@ namespace Eto.WinForms.Forms.Controls
 			var selectedItems = SelectedItems.OfType<ITreeGridItem>().ToList();
 			SupressSelectionChanged++;
 			controller.ReloadData();
-			Control.ClearSelection();
+			UnselectAll();
 			bool selectionChanged = false;
 			foreach (var selectedItem in selectedItems)
 			{
 				var row = controller.IndexOf(selectedItem);
 				if (row >= 0)
-					Control.Rows[row].Selected = true;
+					SelectRow(row);
 				else
 					selectionChanged = true;
 			}

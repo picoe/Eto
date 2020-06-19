@@ -674,8 +674,13 @@ namespace Eto.GtkSharp.Forms
 				var gdkWindow = Control.GetWindow();
 				if (screen != null && gdkWindow != null)
 				{
+#if GTKCORE
+					var monitor = screen.Display.GetMonitorAtWindow(gdkWindow);
+					return new Screen(new ScreenHandler(monitor));
+#else
 					var monitor = screen.GetMonitorAtWindow(gdkWindow);
 					return new Screen(new ScreenHandler(screen, monitor));
+#endif
 				}
 				return null;
 			}

@@ -84,13 +84,16 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		IEnumerable<TStore> GetParents(TItem item)
 		{
-			var parent = item.Parent;
-			while (parent != null)
+			TStore store = null;
+			item = item.Parent;
+			while (item != null)
 			{
-				yield return parent as TStore;
-				parent = parent.Parent;
+				store = item as TStore;
+				if (store != null)
+					yield return store;
+				item = item.Parent;
 			}
-			if (!ReferenceEquals(parent, Handler.DataStore))
+			if (!ReferenceEquals(store, Handler.DataStore))
 			{
 				yield return Handler.DataStore;
 			}
