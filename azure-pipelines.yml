@@ -1,8 +1,8 @@
 variables:
   build.increment: $[counter('buildnumber', 10000)]
-  build.version: 2.5.3-ci-$(Build.BuildNumber)
+  build.version: ci-$(Build.BuildNumber)
   build.configuration: Release
-  build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:Branch=$(Build.SourceBranch)
+  build.arguments:  /v:minimal /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:BuildBranch=$(Build.SourceBranch)
   build.dotnetversion: 3.1.100
   build.xamarinversion: 6_4_0
 
@@ -37,7 +37,7 @@ jobs:
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=false /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
+      msbuildArguments: /t:Package $(build.arguments) /p:HaveWindowsDesktopSdk=false /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.MacOS.binlog
 
   - task: CopyFiles@2
     displayName: Copy nupkg
@@ -59,7 +59,7 @@ jobs:
     displayName: Build MonoDevelop Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.MacOS.binlog
+      msbuildArguments: /t:BuildAddins $(build.arguments) /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.MacOS.binlog
 
   - task: CopyFiles@2
     displayName: Copy MonoDevelop Addin
@@ -101,7 +101,7 @@ jobs:
     displayName: Build and Package
     inputs: 
       solution: build/Build.proj
-      msbuildArguments: $(build.arguments) /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
+      msbuildArguments: /t:Package $(build.arguments) /p:HaveWindowsDesktopSdk=true /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildPackage.Windows.binlog
 
   - task: PublishBuildArtifacts@1
     displayName: Publish nupkg
@@ -126,7 +126,7 @@ jobs:
     displayName: Build Visual Studio Addin
     inputs:
       solution: build/Build.proj
-      msbuildArguments: /t:BuildAddins /p:HaveWindowsDesktopSdk=true /v:minimal /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
+      msbuildArguments: /t:BuildAddins $(build.arguments) /p:HaveWindowsDesktopSdk=true /bl:$(Build.ArtifactStagingDirectory)/msbuild-binlog/MSBuild.BuildAddins.Windows.binlog
   - task: CopyFiles@2
     displayName: Copy Visual Studio Addin
     inputs:

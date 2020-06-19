@@ -26,11 +26,20 @@
   
   <PropertyGroup>
     <!-- global nuget/assembly properties -->
-    
-    <Version Condition="$(AssemblyVersion) == ''">2.5.0.0</Version>
-    <InformationalVersion Condition="$(InformationalVersion) == ''">2.5.3-dev</InformationalVersion>
+
+    <DevVersion>2.5.3</DevVersion>
+
+    <Version Condition="$(Version) == ''">2.5.0.0</Version>
+
+    <!-- set version from tag -->
+    <InformationalVersion Condition="$(InformationalVersion) == '' AND $(BuildBranch.StartsWith('refs/tags/'))">$(BuildBranch.Substring(10))</InformationalVersion>
+    <!-- set version for CI build -->
+    <InformationalVersion Condition="$(InformationalVersion) == '' AND $(BuildVersion) != ''">$(DevVersion)-$(BuildVersion)</InformationalVersion>
+    <!-- set version for development -->
+    <InformationalVersion Condition="$(InformationalVersion) == ''">$(DevVersion)-dev</InformationalVersion>
+
     <Company>Picoe Software Solutions</Company>
-    <Copyright>(c) 2010-2019 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
+    <Copyright>(c) 2010-2020 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
     
     <PackageVersion>$(InformationalVersion)</PackageVersion>
     <PackageLicenseFile>Eto-LICENSE.txt</PackageLicenseFile>
