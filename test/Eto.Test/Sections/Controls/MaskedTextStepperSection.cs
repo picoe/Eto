@@ -40,7 +40,7 @@ namespace Eto.Test.Sections.Controls
 			AddAutoSized(readOnlyCheckBox);
 
 			BeginGroup("FixedMaskedTextProvider", padding: 10);
-			AddAutoSized(new MaskedTextStepper(new FixedMaskedTextProvider("(999) 000-0000")) { ShowPromptOnFocus = true, PlaceholderText = "(123) 456-7890" });
+			AddAutoSized(new MaskedTextStepper(new FixedMaskedTextProvider("(999) 000-0000")) { ShowPromptMode = ShowPromptMode.OnFocus, PlaceholderText = "(123) 456-7890" });
 			AddAutoSized(new MaskedTextStepper<DateTime>(new FixedMaskedTextProvider<DateTime>("&&/90/0000") { ConvertToValue = DateTime.Parse }));
 			AddAutoSized(new MaskedTextStepper(new FixedMaskedTextProvider(">L0L 0L0")));
 			AddAutoSized(new MaskedTextStepper { InsertMode = InsertKeyMode.Toggle });

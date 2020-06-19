@@ -41,7 +41,7 @@ namespace Eto.Test.Sections.Controls
 			AddAutoSized(readOnlyCheckBox);
 
 			BeginGroup("FixedMaskedTextProvider", padding: 10);
-			AddAutoSized(new MaskedTextBox(new FixedMaskedTextProvider("(999) 000-0000")) { ShowPromptOnFocus = true, PlaceholderText = "(123) 456-7890" });
+			AddAutoSized(new MaskedTextBox(new FixedMaskedTextProvider("(999) 000-0000")) { ShowPromptMode = ShowPromptMode.OnFocus, PlaceholderText = "(123) 456-7890" });
 			AddAutoSized(new MaskedTextBox<DateTime>(new FixedMaskedTextProvider<DateTime>("&&/90/0000") { ConvertToValue = DateTime.Parse }));
 			AddAutoSized(new MaskedTextBox(new FixedMaskedTextProvider(">L0L 0L0")));
 			AddAutoSized(new MaskedTextBox { InsertMode = InsertKeyMode.Toggle });
