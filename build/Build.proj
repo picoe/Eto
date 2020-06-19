@@ -13,7 +13,7 @@
   <Target Name="PrintInfo" Condition="$(PrintInfo) != 'False'">
     <PropertyGroup>
       <PrintInfo>False</PrintInfo>
-      <BuildVersion Condition="$(Branch.StartsWith('refs/tags/'))">$(Branch.Substring(10))</BuildVersion>
+      <BuildVersion Condition="$(BuildBranch.StartsWith('refs/tags/'))">$(BuildBranch.Substring(10))</BuildVersion>
     </PropertyGroup>
     <Message Text="Building:" Importance="high" />
     <Message Text="  Configuration: $(Configuration)" Importance="high" />

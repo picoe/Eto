@@ -2,7 +2,7 @@ variables:
   build.increment: $[counter('buildnumber', 10000)]
   build.version: 2.5.3-ci-$(Build.BuildNumber)
   build.configuration: Release
-  build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:Branch=$(Build.SourceBranch)
+  build.arguments: /t:Package /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:BuildBranch=$(Build.SourceBranch)
   build.dotnetversion: 3.1.100
   build.xamarinversion: 6_4_0
 

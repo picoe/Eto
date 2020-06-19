@@ -1,0 +1,76 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  create:
+    tags:
+      - '*'
+env:
+  DotNetVersion: "3.1.301"
+  BuildVersion: "CI.${{ github.run_id }}"
+  BuildBranch: "${{ github.ref }}"
+  BuildParameters: "build/Build.proj /t:Package /v:Minimal /p:Configuration=Release"
+
+jobs:
+  build-windows:
+
+    runs-on: windows-latest
+
+    env:
+      PlatformBuildParameters: /p:Platform=Windows
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DotNetVersion }}
+
+    - name: Setup msbuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Pack
+      run: msbuild ${{ env.BuildParameters }} ${{ env.PlatformBuildParameters }}
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: nuget
+        path: artifacts/nuget/**/*.nupkg
+
+  build-mac:
+
+    runs-on: macos-latest
+
+    env:
+      PlatformBuildParameters: /p:Platform=Mac
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DotNetVersion }}
+
+    - name: setup-xamarin
+      uses: maxim-lobanov/setup-xamarin@v1.1
+      with:
+        mono-version: latest
+        xamarin-mac-version: latest
+        xcode-version: latest
+
+    - name: Build
+      run: msbuild ${{ env.BuildParameters }} ${{ env.PlatformBuildParameters }}
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: nuget
+        path: |
+          artifacts/nuget/**/Eto.Platform.XamMac2*.nupkg
+          artifacts/nuget/**/Eto.Platform.Gtk2*.nupkg
