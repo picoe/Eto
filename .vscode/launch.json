@@ -37,7 +37,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}e/netcoreapp3.1/Eto.Test.WinForms.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/netcoreapp3.1/Eto.Test.WinForms.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"

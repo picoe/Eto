@@ -407,7 +407,10 @@ namespace Eto.WinForms.Forms.Controls
 
 		public void SelectRow(int row)
 		{
-			Control.Rows[row].Selected = true;
+			if (!AllowMultipleSelection)
+				Control.CurrentCell = Control.Rows[row].Cells[0];
+			else
+				Control.Rows[row].Selected = true;
 			isFirstSelection = false;
 		}
 
@@ -523,7 +526,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected void EnsureSelection()
 		{
-			if (!AllowEmptySelection && Control.RowCount > 0)
+			if (!AllowEmptySelection && Control.RowCount > 0 && Control.SelectedRows.Count == 0)
 			{
 				SelectRow(0);
 			}
