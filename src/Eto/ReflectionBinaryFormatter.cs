@@ -5,7 +5,14 @@ using System.Reflection;
 
 namespace System.Runtime.Serialization.Formatters.Binary
 {
-	// used for .net standard 1.0 compatibility
+	// so we don't need #if's everywhere
+}
+
+namespace Eto
+{
+	/// <summary>
+	/// BinaryFormatter via reflection used for .net standard 1.0 compatibility
+	/// </summary>
 	class BinaryFormatter
 	{
 
@@ -19,9 +26,10 @@ namespace System.Runtime.Serialization.Formatters.Binary
 
 		public BinaryFormatter()
 		{
-			binaryFormatter = Activator.CreateInstance(s_BinaryFormatterType);
 			if (s_BinaryFormatterType == null || s_SerializeMethod == null || s_DeserializeMethod == null)
 				throw new InvalidOperationException("Could not create an instance of BinaryFormatter");
+
+			binaryFormatter = Activator.CreateInstance(s_BinaryFormatterType);
 		}
 
 		public void Serialize(Stream stream, object value)
