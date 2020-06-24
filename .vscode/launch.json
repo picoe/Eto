@@ -12,6 +12,18 @@
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
+			// requires mono extension from https://github.com/cwensley/vscode-mono-debug/releases
+            "name": "Eto.Test.XamMac2",
+            "type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-xammac2",
+			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net461/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
+			"useRuntime": false,
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
             "name": "Eto.Test.Gtk",
 			"type": "coreclr",
 			"request": "launch",

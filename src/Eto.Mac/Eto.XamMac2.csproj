@@ -1,18 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <UseXamarinMac>True</UseXamarinMac>
     <TargetFrameworks>net45</TargetFrameworks>
     <TargetFrameworks Condition="$(HasXamarinMac) == 'True'">$(TargetFrameworks);xamarinmac20</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
-    <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
+    <DefineConstants>$(DefineConstants);OSX;DESKTOP</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>build\*</DefaultItemExcludes>
-    <LanguageTargets Condition="$(HasXamarinMac) == 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
-    <UseSGen>false</UseSGen>
-    <AOTMode>None</AOTMode>
-    <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
-    <UseXamMacFullFramework Condition="$(TargetFramework) == 'net45'">true</UseXamMacFullFramework>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -33,16 +28,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
     </PackageDescription>
   </PropertyGroup>
   
-  <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">
-    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Xamarin.Mac" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>
@@ -72,4 +57,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <None Include="..\..\build\MSBuildTaskHelper.props" Pack="True" PackagePath="build" />
   </ItemGroup>
   
+  <Import Project="..\..\build\Xamarin.Mac.targets" />
+
 </Project>

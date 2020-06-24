@@ -52,9 +52,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Gtk2", "..\test\Et
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Gtk3", "..\test\Eto.Test.Gtk\Eto.Test.Gtk3.csproj", "{B45F3211-6C33-43B9-A492-1495FB149636}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.XamMac2", "..\test\Eto.Test.Mac\Eto.Test.XamMac2.csproj", "{96C9D209-238D-4EBF-8391-F632A14921AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2", "..\test\Eto.Test.Mac\Eto.Test.XamMac2.csproj", "{96C9D209-238D-4EBF-8391-F632A14921AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.XamMac2", "Eto.Mac\Eto.XamMac2.csproj", "{6A38350E-51D6-4C13-ADD8-B9C6DC8A4358}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "Eto.Mac\Eto.XamMac2.csproj", "{6A38350E-51D6-4C13-ADD8-B9C6DC8A4358}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Forms.Sample", "Eto.Forms.Sample\Eto.Forms.Sample.csproj", "{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}"
 EndProject
