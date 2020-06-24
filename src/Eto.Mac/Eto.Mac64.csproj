@@ -47,6 +47,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
   
   <ItemGroup>
+	<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
     <ProjectReference Include="..\..\lib\monomac\src\MonoMac.csproj" PrivateAssets="all" Pack="True" />
   </ItemGroup>

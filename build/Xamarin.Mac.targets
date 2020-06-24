@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Xamarin.Mac support for sdk style projects
+
+    Set UseXamarinMac or UseXamarinMacBinding to True and import this at the end of your .csproj
+  -->
+  <PropertyGroup>
+    <XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\</XamarinMacPath>
+    <XamarinMacLibPath>$(XamarinMacPath)lib\mono\</XamarinMacLibPath>
+    <XamarinMacTargetsPath>$(XamarinMacPath)lib\msbuild\</XamarinMacTargetsPath>
+    <HasXamarinMac Condition="!Exists('$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets')">False</HasXamarinMac>
+    <HasXamarinMac Condition="$(HasXamarinMac) == ''">True</HasXamarinMac> <!-- VS for Mac needs this, Exists isn't evaluated -->
+
+    <EnableDefaultImageAssets Condition="$(EnableDefaultImageAssets) == ''">True</EnableDefaultImageAssets>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(UseXamarinMac) == 'True' OR $(UseXamarinMacBinding) == 'True'">
+    <ProjectTypeGuids Condition="$(UseXamarinMacBinding) != 'True'">{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids Condition="$(UseXamarinMacBinding) == 'True'">{810C163F-4746-4721-8B8E-88A3673A62EA};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+
+    <UseXamarinMac>True</UseXamarinMac>
+    <IsXamarinMacMobile Condition="$(TargetFramework.StartsWith('xamarinmac')) == 'True'">True</IsXamarinMacMobile>
+    <DefineConstants>$(DefineConstants);XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
+
+    <LanguageTargets Condition="$(HasXamarinMac) == 'True' AND $(UseXamarinMacBinding) != 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
+    <LanguageTargets Condition="$(HasXamarinMac) == 'True' AND $(UseXamarinMacBinding) == 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.ObjcBinding.CSharp.targets</LanguageTargets>
+
+    <TargetFrameworkIdentifier Condition="$(IsXamarinMacMobile) == 'True'">Xamarin.Mac</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion Condition="$(IsXamarinMacMobile) == 'True'">v2.0</TargetFrameworkVersion>
+
+    <MacBuildBundle>False</MacBuildBundle>
+    <UseSGen Condition="$(UseSGen) == ''">True</UseSGen>
+    <AOTMode Condition="$(AOTMode) == ''">None</AOTMode>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(UseXamarinMac) == 'True' AND $(TargetFramework.StartsWith('xamarinmac')) != 'True'">
+    <UseXamMacFullFramework>true</UseXamMacFullFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(UseXamarinMac) == 'True'">
+    <ProjectReference Update="@(ProjectReference)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(DisableImplicitFrameworkReferences) != 'True'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.Mac" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(UseXamarinMac) == 'True'">
+    <AvailableItemName Include="ObjcBindingApiDefinition" />
+    <AvailableItemName Include="ObjcBindingCoreSource" />
+    <AvailableItemName Include="NativeReference" />
+    <AvailableItemName Include="ImageAsset" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(UseXamarinMac) == 'True'">
+    <!-- Doesn't actually work for some reason.. -->
+    <!--ImageAsset Include="Assets.xcassets\**\*" Condition="$(EnableDefaultImageAssets) == 'True'" /-->
+  </ItemGroup>
+
+  <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(EnableDefaultCompileItems) != 'False'">
+    <Compile Remove="@(ObjcBindingApiDefinition)" />
+    <Compile Remove="@(ObjcBindingCoreSource)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(EnableDefaultNoneItems) != 'False'">
+    <None Remove="@(ImageAsset)" />
+
+    <!-- Xamarin.Mac looks for the logical name, but implicit entries don't have it -->
+    <None Include="Info.plist" LogicalName="Info.plist" Condition="$(OutputType) == 'Exe'" />
+  </ItemGroup>
+
+  <Target Name="_XamarinMacRemoveImplicitReference" BeforeTargets="BeforeBuild" Condition="$(UseXamarinMac) == 'True'">
+    <ItemGroup>
+      <!-- System.Drawing doesn't exist even when targetting full framework -->
+      <Reference Remove="System.Drawing" Condition="$(DisableImplicitFrameworkReferences) != 'True'" />
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -23,7 +23,14 @@
 		},
 		{
 			"label": "build-mac64",
-			"command": "msbuild ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build-xammac2",
+			"command": "msbuild /restore ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.XamMac2.csproj",
 			"type": "shell",
 			"group": "build",
 			"problemMatcher": "$msCompile"
@@ -48,11 +55,27 @@
 			"type": "shell",
 			"problemMatcher": "$msCompile"
 		},
-		{
-			"label": "echo value of configuration",
+        {
+            "label": "Git clean + submodule init (DANGEROUS!)",
 			"type": "shell",
-			"command": "echo \"Current value of configuration is '${input:configuration}'.\"",
+			"osx": {
+				"command": "[ '${input:confirm}' = 'Yes' ] && git clean -dxff && git submodule foreach git clean -dxff && git submodule update --init --recursive"
+			},
+			"windows": {
+				"command": "IF ('${input:confirm}' -ne 'Yes')  { exit 1 }; git clean -dxff ; git submodule foreach git clean -dxff ; git submodule update --init --recursive"
+			},
 			"problemMatcher": []
+        },
+	],
+	"inputs": [
+		{
+			"type": "pickString",
+			"id": "confirm",
+			"description": "Confirm?",
+			"options": [
+				"No",
+				"Yes"
+			]
 		}
 	]
 }
