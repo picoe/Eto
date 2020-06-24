@@ -5,7 +5,7 @@
 			"label": "build",
 			"command": "msbuild /t:Build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
 			"windows": {
-				"command": "build/msbuild.cmd /t:Build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj"
+				"command": "${workspaceFolder}/build/msbuild.cmd /t:Build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj"
 			},
 			"type": "shell",
 			"problemMatcher": "$msCompile",

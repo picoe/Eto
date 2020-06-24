@@ -3,6 +3,7 @@ using Eto.Forms;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -404,6 +405,26 @@ namespace Eto.Test.UnitTests.Drawing
 				Assert.AreEqual(new Size(128, 128), TestIcons.Logo288Bitmap.Size);
 
 				Assert.AreEqual(new Size(128, 128), TestIcons.LogoBitmap.Size);
+			});
+		}
+
+		[Test, ManualTest]
+		public void UsingDisposedMemoryStreamShouldShowImage()
+		{
+			ManualForm("Image should be shown", form => {
+				Bitmap bitmap;
+				using (var ms = new MemoryStream())
+				{
+					// use a seperate memory stream that we dispose
+					GetType().Assembly.GetManifestResourceStream("Eto.Test.Images.TestImage.png").CopyTo(ms);
+					ms.Position = 0;
+					bitmap = new Bitmap(ms);
+				}
+				var imageView = new ImageView();
+
+				imageView.Image = bitmap;
+
+				return imageView;
 			});
 		}
 	}
