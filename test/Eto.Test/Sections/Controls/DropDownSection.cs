@@ -23,6 +23,12 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow("EnumDropDown<Key>", TableLayout.AutoSized(EnumCombo()));
 
 			layout.AddRow("FormatItem", TableLayout.AutoSized(DropDownWithFonts()));
+			
+			// TODO: get this working on Gtk as it is unusably slow and WinForms is a wee slow.
+			if (!Platform.IsGtk)
+			{
+			layout.AddRow("LotsOfItems", TableLayout.AutoSized(LotsOfItems()));
+			}
 
 			layout.Add(null, null, true);
 
@@ -179,6 +185,14 @@ namespace Eto.Test.Sections.Controls
 			control.Width = 100;
 			LogEvents(control);
 			control.SelectedKey = ((int)Keys.E).ToString();
+			return control;
+		}
+
+		Control LotsOfItems()
+		{
+			var control = new DropDown();
+			LogEvents(control);
+			control.DataStore = Enumerable.Range(0, 5000).Select(r => $"Item {r}").ToList();
 			return control;
 		}
 
