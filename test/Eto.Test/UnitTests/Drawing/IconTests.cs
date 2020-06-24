@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Eto.Drawing;
 using System.Linq;
 using Eto.Forms;
+using System.IO;
 
 namespace Eto.Test.UnitTests.Drawing
 {
@@ -131,6 +132,28 @@ namespace Eto.Test.UnitTests.Drawing
 
 			// test showing it on a form
 			Shown(f => new ImageView { Image = icon });
+		}
+
+		[Test, ManualTest]
+		public void UsingDisposedMemoryStreamShouldNotCrashAndShowImage()
+		{
+			ManualForm("Image should be shown, and the window icon\nshould also be set (for platforms that support it)", form => {
+				Icon icon;
+				using (var ms = new MemoryStream())
+				{
+					// use a seperate memory stream that we dispose
+					GetType().Assembly.GetManifestResourceStream("Eto.Test.Images.TestIcon.ico").CopyTo(ms);
+					ms.Position = 0;
+					icon = new Icon(ms);
+				}
+				var imageView = new ImageView();
+
+				imageView.Image = icon;
+
+				form.Icon = icon;
+
+				return imageView;
+			});
 		}
 	}
 }

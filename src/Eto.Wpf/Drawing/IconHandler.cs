@@ -40,14 +40,14 @@ namespace Eto.Wpf.Drawing
 
 		public void Create(Stream stream)
 		{
-			Control = swmi.BitmapFrame.Create(stream);
+			Control = swmi.BitmapFrame.Create(stream, swmi.BitmapCreateOptions.None, swmi.BitmapCacheOption.OnLoad);
 		}
 
 		public void Create(string fileName)
 		{
 			using (var stream = File.OpenRead(fileName))
 			{
-				Control = swmi.BitmapFrame.Create(stream);
+				Create(stream);
 			}
 		}
 
