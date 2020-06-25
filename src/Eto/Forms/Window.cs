@@ -328,13 +328,14 @@ namespace Eto.Forms
 		/// <value>The owner of this window.</value>
 		public Window Owner
 		{
-			get { return Properties.Get<Window>(OwnerKey); }
-			set {
-				Properties.Set(OwnerKey, value, () =>
+			get => Properties.Get<Window>(OwnerKey);
+			set
+			{
+				if (Properties.TrySet(OwnerKey, value))
 				{
 					Handler.SetOwner(value);
 					OnOwnerChanged(EventArgs.Empty);
-				});
+				};
 			}
 		}
 

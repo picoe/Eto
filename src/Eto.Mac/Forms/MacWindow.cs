@@ -1174,9 +1174,11 @@ namespace Eto.Mac.Forms
 			set => Widget.Properties.Set(MacWindow.SetAsChildWindow_Key, value, DefaultSetAsChildWindow);
 		}
 
+		protected void EnsureOwner() => SetOwner(Widget.Owner);
+
 		public virtual void SetOwner(Window owner)
 		{
-			if (SetAsChildWindow)
+			if (SetAsChildWindow && Widget.Loaded)
 			{
 				if (owner != null)
 				{

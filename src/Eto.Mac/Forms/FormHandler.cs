@@ -89,7 +89,7 @@ namespace Eto.Mac.Forms
 
 		protected override bool DefaultSetAsChildWindow => true;
 
-		public void Show()
+		public virtual void Show()
 		{
 			var visible = Control.IsVisible;
 			if (ShowActivated)
@@ -103,6 +103,9 @@ namespace Eto.Mac.Forms
 			{
 				Control.OrderFront(ApplicationHandler.Instance.AppDelegate);
 			}
+			
+			// setting the owner shows the window, so we have to do this here.
+			EnsureOwner();
 
 			if (!visible)
 			{
