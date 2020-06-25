@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="PrintInfo">
+<Project ToolsVersion="15.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   
   <PropertyGroup>
@@ -13,41 +13,31 @@
   <Target Name="PrintInfo" Condition="$(PrintInfo) != 'False'">
     <PropertyGroup>
       <PrintInfo>False</PrintInfo>
-      <BuildVersion Condition="$(Branch.StartsWith('refs/tags/'))">$(Branch.Substring(10))</BuildVersion>
     </PropertyGroup>
     <Message Text="Building:" Importance="high" />
     <Message Text="  Configuration: $(Configuration)" Importance="high" />
     <Message Text="  Platform: $(OSPlatform)" Importance="high" />
+    <Message Text="  Version: $(AssemblyVersion)" Importance="high" />
+    <Message Text="  Informational Version: $(AssemblyInformationalVersion)" Importance="high" />
   </Target>
 
   <Import Project="Utilities.targets" Condition="$(UtilitiesImported) == ''" />
 
-  <Target Name="UpdateVersion" Condition="$(BuildVersion) != ''">
-    <Message Text="Set Version: $(BuildVersion)" Condition="$(BuildVersion) != ''" />
+  <Target Name="UpdateVersion" Condition="$(InformationalVersion) != ''">
 
-    <PropertyGroup>
-      <BuildIncrement Condition="$(BuildVersion) == '' and $(BuildIncrement) == ''">0.1.0.0</BuildIncrement>
-      <BuildVersion Condition="$(BuildVersion) == ''">$(CurrentVersion)</BuildVersion>
-      <CurrentVersion>$(Version)</CurrentVersion>
-    </PropertyGroup>
-
-    <Message Text="Current Version: $(CurrentVersion)" Condition="$(CurrentVersion) != ''" />
-    <Message Text="Incrementing by: $(BuildIncrement)" Condition="$(BuildIncrement) != ''" />
-
-    <IncrementVersion Version="$(BuildVersion)" Increment="$(BuildIncrement)">
+    <IncrementVersion Version="$(InformationalVersion)">
       <Output TaskParameter="AssemblyVersion" PropertyName="AssemblyVersion" />
       <Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
       <Output TaskParameter="AssemblyVersionThreePart" PropertyName="AssemblyVersionThreePart" />
       <Output TaskParameter="AssemblyVersionBeforeRelease" PropertyName="AssemblyVersionBeforeRelease" />
     </IncrementVersion>
 
-    <Message Text="New Version: $(AssemblyVersion)" Importance="high" />
-    <Message Text="New Informational Version: $(AssemblyInformationalVersion)" Importance="high" />
+    <Message Text="New Version: $(AssemblyInformationalVersion)" Importance="high" Condition="$(AssemblyInformationalVersion) != '$(DevVersion)-dev'" />
 
     <FileUpdate Files="$(BasePath)build\Common.props"
       WarnOnNoUpdate="true"
-      Pattern='(?&lt;=&lt;InformationalVersion\\s*[^&gt;]+?&gt;)[^&lt;]+(?=&lt;/InformationalVersion&gt;)'
-      Replacement='$(AssemblyInformationalVersion)' />
+      Pattern='(?&lt;=&lt;DevVersion&gt;)[^&lt;]+(?=&lt;/DevVersion&gt;)'
+      Replacement='$(AssemblyVersionThreePart)' />
 
     <FileUpdate Files="$(BasePath)build\Common.props"
       WarnOnNoUpdate="true"
@@ -57,11 +47,6 @@
     <FileUpdate Files="$(BasePath)appveyor.yml"
       WarnOnNoUpdate="true"
       Pattern='((?&lt;=^version:\\s+)(.+?)(?=[.]\\{build\\}))|((?&lt;=BUILD_VERSION[=]\\s*)([^-]+?)(?=[-]\w+))'
-      Replacement='$(AssemblyVersionThreePart)' />
-
-    <FileUpdate Files="$(BasePath)azure-pipelines.yml"
-      WarnOnNoUpdate="true"
-      Pattern='(?&lt;=^\\s*build.version:\\s+)([\\d.]+)(?=[-]\\w+)'
       Replacement='$(AssemblyVersionThreePart)' />
 
     <FileUpdate Files="$(AddinDir)Eto.Addin.MonoDevelop\Properties\AddinInfo.cs"
@@ -165,7 +150,6 @@
   </Target>
 
   <ItemGroup>
-    <StandalonePackage Include="$(SourceDir)Eto.Forms.Sample\Eto.Forms.Sample.csproj" />
     <StandalonePackage Include="$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" />
   </ItemGroup>
 

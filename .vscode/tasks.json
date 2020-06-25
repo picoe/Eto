@@ -15,6 +15,16 @@
 			}
 		},
 		{
+			"label": "build addins",
+			"command": "msbuild /t:BuildAddins ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
+			"windows": {
+				"command": "${workspaceFolder}/build/msbuild.cmd /t:BuildAddins ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj"
+			},
+			"type": "shell",
+			"problemMatcher": "$msCompile",
+			"group": "build",
+		},
+		{
 			"label": "build-gtk",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj",
 			"type": "shell",

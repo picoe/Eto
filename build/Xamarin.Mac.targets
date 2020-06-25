@@ -38,10 +38,6 @@
     <UseXamMacFullFramework>true</UseXamMacFullFramework>
   </PropertyGroup>
 
-  <ItemGroup Condition="$(UseXamarinMac) == 'True'">
-    <ProjectReference Update="@(ProjectReference)" />
-  </ItemGroup>
-
   <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(DisableImplicitFrameworkReferences) != 'True'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,10 +45,16 @@
   </ItemGroup>
 
   <ItemGroup Condition="$(UseXamarinMac) == 'True'">
+    <ProjectReference Update="@(ProjectReference)" />
+
     <AvailableItemName Include="ObjcBindingApiDefinition" />
     <AvailableItemName Include="ObjcBindingCoreSource" />
     <AvailableItemName Include="NativeReference" />
     <AvailableItemName Include="ImageAsset" />
+
+    <Compile Update="**\*.designer.cs">
+      <DependentUpon>$([System.String]::Copy('%(Filename)').Replace('.designer', ''))%(Extension)</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup Condition="$(UseXamarinMac) == 'True'">
@@ -63,9 +65,7 @@
   <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(EnableDefaultCompileItems) != 'False'">
     <Compile Remove="@(ObjcBindingApiDefinition)" />
     <Compile Remove="@(ObjcBindingCoreSource)" />
-  </ItemGroup>
 
-  <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(EnableDefaultNoneItems) != 'False'">
     <None Remove="@(ImageAsset)" />
 
     <!-- Xamarin.Mac looks for the logical name, but implicit entries don't have it -->
