@@ -68,9 +68,7 @@
         {
             "label": "Git clean + submodule init (DANGEROUS!)",
 			"type": "shell",
-			"osx": {
-				"command": "[ '${input:confirm}' = 'Yes' ] && git clean -dxff && git submodule foreach git clean -dxff && git submodule update --init --recursive"
-			},
+			"command": "[ '${input:confirm}' = 'Yes' ] && git clean -dxff && git submodule foreach git clean -dxff && git submodule update --init --recursive",
 			"windows": {
 				"command": "IF ('${input:confirm}' -ne 'Yes')  { exit 1 }; git clean -dxff ; git submodule foreach git clean -dxff ; git submodule update --init --recursive"
 			},

@@ -147,7 +147,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./addins/Eto.Addin.VisualStudio-${{ steps.get_version.outputs.VERSION }}.vsix
+          asset_path: Eto.Addin.VisualStudio-${{ steps.get_version.outputs.VERSION }}.vsix
           asset_content_type: application/octet-stream
 
       - name: Upload VS/Mac addin
@@ -156,7 +156,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./addins/Eto.Addin.MonoDevelop-${{ steps.get_version.outputs.VERSION }}.mpack
+          asset_path: Eto.Addin.MonoDevelop-${{ steps.get_version.outputs.VERSION }}.mpack
           asset_content_type: application/octet-stream
 
   publish:
@@ -170,8 +170,8 @@ jobs:
           name: nuget
 
       - name: Push packages to myget.org
-        run: dotnet nuget push './nuget/**/*.nupkg' --skip-duplicate -s https://www.myget.org/F/eto/api/v2/package -k ${{secrets.MYGET_API_KEY}}
+        run: dotnet nuget push '*.nupkg' --skip-duplicate -s https://www.myget.org/F/eto/api/v2/package -k ${{secrets.MYGET_API_KEY}}
 
       - name: Push packages to nuget.org
         if: startsWith(github.ref, 'refs/tags/')
-        run: dotnet nuget push './nuget/**/*.nupkg' --skip-duplicate -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}}
+        run: dotnet nuget push '*.nupkg' --skip-duplicate -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}}
