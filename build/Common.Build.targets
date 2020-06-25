@@ -97,7 +97,7 @@
   
   <PropertyGroup>
     <!-- why oh why do we need to specify both explicitly -->
-    <AssemblyTitle Condition="$(Title) != ''">$(Title)</AssemblyTitle>
+    <AssemblyTitle Condition="$(Title) != '' AND $(AssemblyTitle) == ''">$(Title)</AssemblyTitle>
   </PropertyGroup>
   
   

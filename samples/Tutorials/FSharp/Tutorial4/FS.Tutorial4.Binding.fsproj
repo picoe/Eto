@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>Tutorial4</RootNamespace>
     <Name>Tutorial4 - Binding</Name>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

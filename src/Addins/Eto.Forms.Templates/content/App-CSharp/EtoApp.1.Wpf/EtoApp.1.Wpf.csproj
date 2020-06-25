@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks Condition="$(Framework) == 'full'">net461</TargetFrameworks>
+    <TargetFrameworks Condition="$(Framework) == 'full'">net472</TargetFrameworks>
     <TargetFrameworks Condition="$(Framework) == 'core'">netcoreapp3.1</TargetFrameworks>
-    <TargetFrameworks Condition="$(Framework) == '' OR $(Framework) == 'both'">net461;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks Condition="$(Framework) == '' OR $(Framework) == 'both'">net472;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
   
   <ItemGroup>

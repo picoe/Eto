@@ -2,7 +2,7 @@
 	
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
     <AssemblySearchPaths Condition="$(GtkVersion)=='Gtk2' or $(GtkVersion)=='Gtk3'">$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
   </PropertyGroup>
   

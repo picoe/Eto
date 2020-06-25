@@ -5,7 +5,7 @@
 
     <TargetFrameworks></TargetFrameworks>
     <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net45</TargetFrameworks>
-    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />

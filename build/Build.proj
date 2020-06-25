@@ -165,7 +165,6 @@
   </Target>
 
   <ItemGroup>
-    <StandalonePackage Include="$(SourceDir)Eto.Forms.Sample\Eto.Forms.Sample.csproj" />
     <StandalonePackage Include="$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" />
   </ItemGroup>
 

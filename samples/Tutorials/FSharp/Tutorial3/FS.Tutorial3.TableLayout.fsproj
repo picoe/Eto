@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>Tutorial3</RootNamespace>
     <Name>Tutorial3 - Table Layout</Name>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

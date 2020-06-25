@@ -56,8 +56,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2", "..\test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "Eto.Mac\Eto.XamMac2.csproj", "{6A38350E-51D6-4C13-ADD8-B9C6DC8A4358}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Forms.Sample", "Eto.Forms.Sample\Eto.Forms.Sample.csproj", "{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.Direct2D", "..\test\Eto.Test.Direct2D\Eto.Test.Direct2D.csproj", "{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test.WinForms", "..\test\Eto.Test.WinForms\Eto.Test.WinForms.csproj", "{CF18B0BB-2C60-437F-8AA3-711ABAE11A91}"
@@ -268,13 +266,6 @@ Global
 		{6A38350E-51D6-4C13-ADD8-B9C6DC8A4358}.Release|Mac.ActiveCfg = Release|Any CPU
 		{6A38350E-51D6-4C13-ADD8-B9C6DC8A4358}.Release|Mac.Build.0 = Release|Any CPU
 		{6A38350E-51D6-4C13-ADD8-B9C6DC8A4358}.Release|Windows.ActiveCfg = Release|Any CPU
-		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Debug|Mac.Build.0 = Debug|Any CPU
-		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Release|Linux.ActiveCfg = Release|Any CPU
-		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Release|Mac.ActiveCfg = Release|Any CPU
-		{D34D3F47-2E1B-4A36-87D0-C77969C7EA90}.Release|Windows.ActiveCfg = Release|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{7EBEA53F-6CDC-4DB8-8042-1B048C3502CF}.Debug|Windows.ActiveCfg = Debug|Any CPU
