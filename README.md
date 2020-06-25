@@ -107,7 +107,6 @@ Your project only needs to reference Eto.dll, and include the corresponding plat
 Currently supported targets
 ---------------------------
 
-* iOS using Xamarin.iOS
 * OS X: MonoMac or Xamarin.Mac
 * Linux: GTK# 2 or 3
 * Windows: Windows Forms (using GDI or Direct2D) or WPF
@@ -115,7 +114,8 @@ Currently supported targets
 Under development
 -----------------
 
-These platforms are currently in development. Any eager bodies willing to help feel free to do so!
+These platforms are currently incomplete or in development. Any eager bodies willing to help feel free to do so!
 
+* iOS using Xamarin.iOS
 * Android using Xamarin.Android (Eto.Android)
 * Windows 8.x and Windows Phone (Eto.WinRT)
