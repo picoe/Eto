@@ -1,5 +1,5 @@
 {
-	"omnisharp.defaultLaunchSolution": "Eto.sln",
+	"omnisharp.defaultLaunchSolution": "Eto.Core.sln",
     "editor.insertSpaces": false,
 	"editor.detectIndentation": false,
 	"files.exclude": {

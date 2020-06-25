@@ -180,6 +180,7 @@ namespace Eto.Mac.Forms
 		public virtual void ShowModal()
 		{
 			session = null;
+			EnsureOwner();
 			Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 
 			Widget.Closed += HandleClosed;
@@ -196,6 +197,7 @@ namespace Eto.Mac.Forms
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			session = null;
+			EnsureOwner();
 
 			Widget.Closed += HandleClosed;
 			if (ShowAttached)

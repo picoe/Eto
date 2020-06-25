@@ -49,6 +49,15 @@ namespace Eto.Mac.Forms
 			ShowInTaskbar = false;
 		}
 
+		public override void SetOwner(Window owner)
+		{
+			base.SetOwner(owner);
+			
+			// When this is true, the NSPanel would hide the panel and owner if they aren't key.
+			// So, only hide on deactivate if it is an ownerless form.
+			Control.HidesOnDeactivate = owner == null;
+		}
+
 		protected override NSPanel CreateControl()
 		{
 			var panel = new EtoPanel(new CGRect(0, 0, 200, 200), 
