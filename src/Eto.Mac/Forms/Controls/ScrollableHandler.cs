@@ -45,6 +45,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public class EtoScrollView : NSScrollView, IMacControl
 		{
+			EtoDocumentView documentView; // keep reference as it can be GC'd in some circumstances (in Xamarin.Mac)
+
 			public WeakReference WeakHandler { get; set; }
 
 			public ScrollableHandler Handler
@@ -71,7 +73,7 @@ namespace Eto.Mac.Forms.Controls
 				AutohidesScrollers = true;
 				// only draw dirty regions, instead of entire scroll area
 				ContentView.CopiesOnScroll = true;
-				DocumentView = new EtoDocumentView { Handler = handler };
+				DocumentView = documentView = new EtoDocumentView { Handler = handler };
 			}
 
 			public override void Layout()
@@ -86,6 +88,15 @@ namespace Eto.Mac.Forms.Controls
 
 		public class EtoDocumentView : MacPanelView
 		{
+			public EtoDocumentView()
+			{
+			}
+
+			public EtoDocumentView(IntPtr handle)
+				: base(handle)
+			{
+				
+			}
 		}
 
 		protected override NSScrollView CreateControl() => new EtoScrollView(this);
