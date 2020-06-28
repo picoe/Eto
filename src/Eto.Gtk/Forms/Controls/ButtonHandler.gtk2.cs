@@ -111,7 +111,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return label.Text.ToEtoMnemonic(); }
 			set
 			{
-				label.Text = value;
+				label.TextWithMnemonic = value.ToPlatformMnemonic();
 				SetImagePosition();
 			}
 		}
