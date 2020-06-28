@@ -164,13 +164,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			jsrunning = true;
 			jsreturn = "";
 
-			NativeMethods.webkit_web_view_run_javascript(Control.Handle, "function EtOrEtFuN() {" + script + " } EtOrEtFuN();", IntPtr.Zero, (Action<IntPtr, IntPtr, IntPtr>)FinishScriptExecution, IntPtr.Zero);
+			NativeMethods.webkit_web_view_run_javascript(Control.Handle, "function EtOrEtFuN() {" + script + " } EtOrEtFuN();", IntPtr.Zero, (FinishScriptExecutionDelegate)FinishScriptExecution, IntPtr.Zero);
 
 			while (jsrunning)
 				Gtk.Application.RunIteration();
 
 			return jsreturn;
 		}
+
+		delegate void FinishScriptExecutionDelegate(IntPtr webview, IntPtr result, IntPtr error);
 
 		private void FinishScriptExecution(IntPtr webview, IntPtr result, IntPtr error)
 		{
