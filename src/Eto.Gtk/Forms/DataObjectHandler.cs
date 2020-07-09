@@ -150,11 +150,17 @@ namespace Eto.GtkSharp.Forms
 				?? GetSelectionData(type, selection =>
 				{
 					// using selection.Text doesn't always seem to work
-					var data = selection.Data;
-					if (data != null)
-						return Encoding.UTF8.GetString(data);
-					else
-						return null;
+					try 
+					{
+						var data = selection.Data;
+						if (data != null)
+							return Encoding.UTF8.GetString(data);
+					}
+					catch
+					{
+					}
+
+					return null;
 				});
 		}
 
