@@ -60,6 +60,8 @@ namespace Eto.Mac.Forms.Controls
 		Grid Widget { get; }
 
 		bool SuppressUpdate { get; }
+
+		bool IsCancellingEdit { get; }
 	}
 
 	public interface IDataColumnHandler

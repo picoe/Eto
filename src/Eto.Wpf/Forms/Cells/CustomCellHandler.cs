@@ -3,10 +3,14 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
+using swi = System.Windows.Input;
 using Eto.Wpf.Drawing;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System;
+using System.Windows;
+using System.Windows.Input;
+using Eto.Wpf.Forms.Controls;
 
 namespace Eto.Wpf.Forms.Cells
 {
@@ -21,18 +25,46 @@ namespace Eto.Wpf.Forms.Cells
 
 		public class WpfCellEventArgs : CellEventArgs
 		{
-			public WpfCellEventArgs(Grid grid, CustomCell cell, int row, object item, CellStates cellState)
-				: base(grid, cell, row, item, cellState)
+			swc.DataGridColumn _gridColumn;
+			int? _column;
+			public WpfCellEventArgs(Grid grid, CustomCell cell, int row, swc.DataGridColumn column, object item, CellStates cellState, Control control = null)
+				: base(grid, cell, row, -1, item, cellState, control)
 			{
+				_gridColumn = column;
+			}
+
+			public override int Column => _column ?? (_column = GetColumnIndex()).Value;
+
+			int GetColumnIndex()
+			{
+				if (_gridColumn != null && Grid.ControlObject is swc.DataGrid grid)
+				{
+					return grid.Columns.IndexOf(_gridColumn);
+				}
+				return -1;
 			}
 
 			public void SetSelected(swc.DataGridCell cell)
 			{
-				var row = cell.GetVisualParent<swc.DataGrid>();
+				var grid = cell.GetVisualParent<swc.DataGrid>();
 				var selected = cell.IsSelected;
 				IsSelected = selected;
-				var focused = row?.IsKeyboardFocusWithin == true;
-				CellTextColor = selected && focused ? SystemColors.HighlightText : SystemColors.ControlText;
+				var focused = grid?.IsKeyboardFocusWithin == true;
+				CellTextColor = selected ? Eto.Drawing.SystemColors.HighlightText : Eto.Drawing.SystemColors.ControlText;
+			}
+			public void SetRow(sw.FrameworkElement element)
+			{
+				SetRow(element.GetVisualParent<swc.DataGridRow>()?.GetIndex() ?? -1);
+			}
+
+			public void SetRow(int row)
+			{
+				Row = row;
+			}
+
+			public void SetIsEditing(bool isEditing)
+			{
+				IsEditing = isEditing;
 			}
 
 			public void SetDataContext(object dataContext)
@@ -84,6 +116,9 @@ namespace Eto.Wpf.Forms.Cells
 					control.Unloaded += HandleControlUnloaded;
 					control.Loaded += HandleControlLoaded;
 					control.DataContextChanged += HandleControlDataContextChanged;
+					control.PreviewMouseDown += HandlePreviewMouseDown;
+					control.IsKeyboardFocusWithinChanged += HandleIsKeyboardFocusWithinChanged;
+
 					if (!Equals(cell.GetValue(dpSelectedHookedUp), true))
 					{
 						cell.SetValue(dpSelectedHookedUp, true);
@@ -100,6 +135,44 @@ namespace Eto.Wpf.Forms.Cells
 				return control;
 			}
 
+			private void HandlePreviewMouseDown(object sender, MouseButtonEventArgs e)
+			{
+				var ctl = sender as sw.FrameworkElement;
+				var cell = ctl?.GetVisualParent<swc.DataGridCell>();
+				if (!cell.IsKeyboardFocusWithin)
+				{
+					cell.IsEditing = true;
+					//var row = cell.GetVisualParent<swc.DataGridRow>();
+					//if (row != null)
+					//	row.IsSelected = true;
+					//var ee = new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, e.ChangedButton, e.StylusDevice);
+					//ee.RoutedEvent = sw.FrameworkElement.MouseDownEvent;
+					//cell.RaiseEvent(ee);
+					//e.Handled = true;
+				}
+			}
+
+			void HandleIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs e)
+			{
+				var h = Handler;
+				var ctl = sender as sw.FrameworkElement;
+				var cell = ctl?.GetVisualParent<swc.DataGridCell>();
+				var isEditing = ctl.IsKeyboardFocusWithin || cell.IsEditing;
+				var args = GetEditArgs(cell, ctl);
+				if (args?.IsEditing != isEditing)
+				{
+					args.SetIsEditing(isEditing);
+					//cell.IsEditing = isEditing;
+					if (isEditing)
+					{
+						h.Callback.OnBeginEdit(h.Widget, args);
+					}
+					else {
+						h.Callback.OnCommitEdit(h.Widget, args);
+						h.ContainerHandler.CellEdited(h, ctl);
+					}
+				}
+			}
 			static void HandleRowFocusChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 			{
 				var grid = sender as swc.DataGrid;
@@ -127,8 +200,9 @@ namespace Eto.Wpf.Forms.Cells
 				var handler = col?.Handler;
 				if (handler == null)
 					return;
-				var args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, ctl.DataContext, CellStates.None);
+				var args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, ctl.DataContext, CellStates.None);
 				args.SetSelected(cell);
+				args.SetRow(cell);
 				var id = handler.Callback.OnGetIdentifier(handler.Widget, args);
 				var child = ctl.Control;
 				if (id != ctl.Identifier || child == null)
@@ -230,6 +304,82 @@ namespace Eto.Wpf.Forms.Cells
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
 				return Handler.SetupCell(Create(cell));
+			}
+
+			protected override object PrepareCellForEdit(sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
+			{
+				var obj = base.PrepareCellForEdit(editingElement, editingEventArgs);
+				var handler = Handler;
+				var cell = editingElement?.GetParent<swc.DataGridCell>();
+				var args = GetEditArgs(cell, editingElement);
+				if (handler != null && args != null)
+				{
+					args.SetIsEditing(true);
+					handler.Callback.OnBeginEdit(handler.Widget, args);
+				}
+				if (args?.Handled != true && !cell.IsKeyboardFocusWithin)
+				{
+					// default implementation is to focus the cell's control
+					editingElement.Focus();
+					editingElement.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.First));
+				}
+				return obj;
+			}
+
+			WpfCellEventArgs GetEditArgs(swc.DataGridCell cell, FrameworkElement editingElement)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return null;
+				var ctl = editingElement as EtoBorder;
+				var args = ctl.Control.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
+				if (args == null)
+				{
+					args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, ctl.DataContext, CellStates.None, ctl.Control);
+					ctl.Control.Properties.Set(CellEventArgs_Key, args);
+				}
+				args.Handled = false;
+				return args;
+			}
+
+			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
+			{
+				var result = base.CommitCellEdit(editingElement);
+				var handler = Handler;
+				var cell = editingElement?.GetParent<swc.DataGridCell>();
+				var args = GetEditArgs(cell, editingElement);
+				if (handler != null && args != null)
+				{
+					args.SetIsEditing(false);
+					cell.IsEditing = false;
+					handler.Callback.OnCommitEdit(handler.Widget, args);
+				}
+				if (args?.Handled != true && editingElement.IsKeyboardFocusWithin)
+				{
+					// default implementation is to move focus back to the grid
+					var grid = editingElement.GetVisualParent<swc.DataGrid>();
+					grid?.Focus();
+				}
+				handler?.ContainerHandler.CellEdited(handler, editingElement);
+
+				return true;
+			}
+
+			protected override void CancelCellEdit(sw.FrameworkElement editingElement, object uneditedValue)
+			{
+				var handler = Handler;
+				var cell = editingElement?.GetParent<swc.DataGridCell>();
+				var args = GetEditArgs(cell, editingElement);
+				if (handler != null && args != null)
+				{
+					args.SetIsEditing(false);
+					cell.IsEditing = false;
+					handler.Callback.OnCancelEdit(handler.Widget, args);
+				}
+				if (args?.Handled != true && editingElement.IsKeyboardFocusWithin)
+				{
+					editingElement.GetVisualParent<swc.DataGrid>()?.Focus();
+				}
 			}
 		}
 

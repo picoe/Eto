@@ -12,6 +12,9 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
+			},
+			"presentation": {
+				"clear": true
 			}
 		},
 		{
@@ -23,41 +26,59 @@
 			"type": "shell",
 			"problemMatcher": "$msCompile",
 			"group": "build",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "build-gtk",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj",
 			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "build-mac64",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj",
 			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "build-xammac2",
 			"command": "msbuild /restore ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.XamMac2.csproj",
 			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "build-wpf",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Wpf/Eto.Test.Wpf.csproj",
 			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "build-winforms",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.WinForms/Eto.Test.WinForms.csproj",
 			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "restore",
@@ -72,7 +93,10 @@
 			"windows": {
 				"command": "IF ('${input:confirm}' -ne 'Yes')  { exit 1 }; git clean -dxff ; git submodule foreach git clean -dxff ; git submodule update --init --recursive"
 			},
-			"problemMatcher": []
+			"problemMatcher": [],
+			"presentation": {
+				"clear": true
+			}
         },
 	],
 	"inputs": [

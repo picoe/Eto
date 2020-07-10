@@ -581,10 +581,15 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void BeginEdit(int row, int column)
 		{
-			Control.UnselectAll();
+			CommitEdit();
 			//sometimes couldn't focus to cell, so use ScrollIntoView
 			Control.ScrollIntoView(Control.Items[row]);
-			//set current cell
+			//set current cell and select its row.
+			if (!SelectedRows.Contains(row))
+			{
+				Control.UnselectAll();
+				Control.SelectedIndex = row;
+			}
 			Control.CurrentCell = new swc.DataGridCellInfo(Control.Items[row], Control.Columns[column]);	
 			Control.Focus();
 			Control.BeginEdit();
