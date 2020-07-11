@@ -17,15 +17,15 @@
     <Message Text="Building:" Importance="high" />
     <Message Text="  Configuration: $(Configuration)" Importance="high" />
     <Message Text="  Platform: $(OSPlatform)" Importance="high" />
-    <Message Text="  Version: $(AssemblyVersion)" Importance="high" />
-    <Message Text="  Informational Version: $(AssemblyInformationalVersion)" Importance="high" />
+    <Message Text="  PackageVersion: $(PackageVersion)" Importance="high" />
+    <Message Text="  InformationalVersion: $(InformationalVersion)" Importance="high" />
   </Target>
 
   <Import Project="Utilities.targets" Condition="$(UtilitiesImported) == ''" />
 
-  <Target Name="UpdateVersion" Condition="$(InformationalVersion) != ''">
+  <Target Name="UpdateVersion">
 
-    <IncrementVersion Version="$(InformationalVersion)">
+    <IncrementVersion Version="$(PackageVersion)">
       <Output TaskParameter="AssemblyVersion" PropertyName="AssemblyVersion" />
       <Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
       <Output TaskParameter="AssemblyVersionThreePart" PropertyName="AssemblyVersionThreePart" />
@@ -43,11 +43,6 @@
       WarnOnNoUpdate="true"
       Pattern='(?&lt;=&lt;Version\\s*[^&gt;]+?&gt;)[^&lt;]+(?=&lt;/Version&gt;)'
       Replacement='$(AssemblyVersion)' />
-
-    <FileUpdate Files="$(BasePath)appveyor.yml"
-      WarnOnNoUpdate="true"
-      Pattern='((?&lt;=^version:\\s+)(.+?)(?=[.]\\{build\\}))|((?&lt;=BUILD_VERSION[=]\\s*)([^-]+?)(?=[-]\w+))'
-      Replacement='$(AssemblyVersionThreePart)' />
 
     <FileUpdate Files="$(AddinDir)Eto.Addin.MonoDevelop\Properties\AddinInfo.cs"
       WarnOnNoUpdate="true"
@@ -237,7 +232,7 @@
   </Target>
 
   <!-- build the MD/VS for Mac and/or the VS addin, depending on your platform -->
-  <Target Name="BuildAddins">
+  <Target Name="BuildAddins" DependsOnTargets="PrintInfo">
     <!-- monodevelop/VS for Mac -->
     <MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop.sln" Targets="Restore" Properties="Configuration=$(Configuration);_RestoreEnforceEvaluate=True" Condition="$(HasVSMac) == 'True'" />
     <MSBuild Projects="$(AddinDir)Eto.Addin.MonoDevelop.sln" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(HasVSMac) == 'True'" />

@@ -11,7 +11,7 @@ on:
 env:
   DotNetVersion: "3.1.301"
   BuildConfiguration: "Release"
-  BuildParameters: "build/Build.proj /v:Minimal /p:Configuration=Release /p:BuildVersion=ci-${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
+  BuildParameters: "build/Build.proj /v:Minimal /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
 
 jobs:
   build-windows:

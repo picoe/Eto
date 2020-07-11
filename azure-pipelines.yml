@@ -1,6 +1,6 @@
 variables:
   build.increment: $[counter('buildnumber', 10000)]
-  build.version: ci-$(Build.BuildNumber)
+  build.version: azure-$(Build.BuildNumber)
   build.configuration: Release
   build.arguments:  /v:minimal /p:Configuration=$(build.configuration) /p:BuildVersion=$(build.version) /p:BuildBranch=$(Build.SourceBranch)
   build.dotnetversion: 3.1.100
