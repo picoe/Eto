@@ -51,10 +51,13 @@ namespace Eto.Mac.Forms.Controls
 		[Export("isPartialStringValid:proposedSelectedRange:originalString:originalSelectedRange:errorDescription:")]
 		public bool IsPartialStringValid(ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
 		{
-			if (Handler.MaxLength > 0)
+			var h = Handler;
+			if (h == null)
+				return true;
+			if (h.MaxLength > 0)
 			{
 				int size = (int)value.Length;
-				if (size > Handler.MaxLength)
+				if (size > h.MaxLength)
 				{
 					return false;
 				}

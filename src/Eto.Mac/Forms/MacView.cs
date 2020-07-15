@@ -51,13 +51,17 @@ namespace Eto.Mac.Forms
 		[Export("mouseMoved:")]
 		public void MouseMoved(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseMove(Handler.Widget, MacConversions.GetMouseEvent(Handler, theEvent, false));
+			var h = Handler;
+			if (h == null) return;
+			h.Callback.OnMouseMove(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
 		[Export("mouseEntered:")]
 		public void MouseEntered(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseEnter(Handler.Widget, MacConversions.GetMouseEvent(Handler, theEvent, false));
+			var h = Handler;
+			if (h == null) return;
+			h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
 		[Export("cursorUpdate:")]
@@ -68,13 +72,17 @@ namespace Eto.Mac.Forms
 		[Export("mouseExited:")]
 		public void MouseExited(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseLeave(Handler.Widget, MacConversions.GetMouseEvent(Handler, theEvent, false));
+			var h = Handler;
+			if (h == null) return;
+			h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
 		[Export("scrollWheel:")]
 		public void ScrollWheel(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseWheel(Handler.Widget, MacConversions.GetMouseEvent(Handler, theEvent, true));
+			var h = Handler;
+			if (h == null) return;
+			h.Callback.OnMouseWheel(h.Widget, MacConversions.GetMouseEvent(h, theEvent, true));
 		}
 	}
 
