@@ -7,4 +7,4 @@ pause
 )
 
 set BUILD_DIR=%~dp0build
-msbuild -v:minimal -t:Package -p:InformationalVersion=%1 "%BUILD_DIR%\Build.proj"
+msbuild -v:minimal -t:Package -p:SetVersion=%1 "%BUILD_DIR%\Build.proj"

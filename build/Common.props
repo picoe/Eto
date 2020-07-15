@@ -31,10 +31,11 @@
 
     <Version Condition="$(Version) == ''">2.5.0.0</Version>
 
+    <InformationalVersion Condition="$(SetVersion) != ''">$(SetVersion)</InformationalVersion>
     <!-- set version from tag -->
     <InformationalVersion Condition="$(InformationalVersion) == '' AND $(BuildBranch.StartsWith('refs/tags/'))">$(BuildBranch.Substring(10))</InformationalVersion>
     <!-- set version for CI build -->
-    <InformationalVersion Condition="$(InformationalVersion) == '' AND $(BuildVersion) != ''">$(DevVersion)-$(BuildVersion)</InformationalVersion>
+    <InformationalVersion Condition="$(InformationalVersion) == '' AND $(BuildVersion) != ''">$(DevVersion)-ci-$([System.DateTime]::Now.ToString('yyyyMMdd')).$(BuildVersion)</InformationalVersion>
     <!-- set version for development -->
     <InformationalVersion Condition="$(InformationalVersion) == ''">$(DevVersion)-dev</InformationalVersion>
 
@@ -53,7 +54,10 @@
     <PackageProjectUrl>https://github.com/picoe/Eto</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
-    
+
+    <!-- add git sha to informational version, after package version is set -->
+    <InformationalVersion Condition="$(GITHUB_SHA) != ''">$(InformationalVersion)+$(GITHUB_SHA)</InformationalVersion>
+
   </PropertyGroup>
 
   <ItemGroup>

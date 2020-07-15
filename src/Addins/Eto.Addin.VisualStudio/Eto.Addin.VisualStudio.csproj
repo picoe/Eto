@@ -25,7 +25,7 @@
     <DefaultNewProjectNode>CSharp\Eto.Forms</DefaultNewProjectNode>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <TargetFrameworkProfile />
-    <TargetVsixContainerName>Eto.Addin.VisualStudio-$(InformationalVersion).vsix</TargetVsixContainerName>
+    <TargetVsixContainerName>Eto.Addin.VisualStudio-$(PackageVersion).vsix</TargetVsixContainerName>
   </PropertyGroup>
   <PropertyGroup>
     <StartAction>Program</StartAction>
@@ -109,8 +109,8 @@
     <Content Include="template.pkgdef">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\..\..\artifacts\nuget\$(Configuration)\Eto.Forms.Templates.$(InformationalVersion).nupkg">
-      <Link>Eto.Forms.Templates.$(InformationalVersion).nupkg</Link>
+    <Content Include="..\..\..\artifacts\nuget\$(Configuration)\Eto.Forms.Templates.$(PackageVersion).nupkg">
+      <Link>Eto.Forms.Templates.$(PackageVersion).nupkg</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Templates\File-FSharp\File.ico" />
