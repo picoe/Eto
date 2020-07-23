@@ -144,18 +144,6 @@ namespace Eto.Forms
 		{
 			this.dataItem = dataItem;
 			InnerBinding = innerBinding;
-			InnerBinding.Changed += HandleInnerBindingChanged;
-			InnerBinding.Changing += HandleInnerBindingChanging;
-		}
-
-		void HandleInnerBindingChanging(object sender, BindingChangingEventArgs e)
-		{
-			OnChanging(e);
-		}
-
-		void HandleInnerBindingChanged(object sender, BindingChangedEventArgs e)
-		{
-			OnChanged(e);
 		}
 
 		/// <summary>
@@ -173,7 +161,12 @@ namespace Eto.Forms
 			}
 			set
 			{
+				var args = new BindingChangingEventArgs(DataValue);
+				OnChanging(args);
+				if (args.Cancel)
+					return;
 				InnerBinding.SetValue(DataItem, Equals(value, default(T)) ? SettingNullValue : value);
+				OnChanged(new BindingChangedEventArgs(DataValue));
 			}
 		}
 
