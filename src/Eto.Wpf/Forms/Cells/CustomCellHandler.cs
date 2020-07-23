@@ -135,7 +135,7 @@ namespace Eto.Wpf.Forms.Cells
 				return control;
 			}
 
-			private void HandlePreviewMouseDown(object sender, MouseButtonEventArgs e)
+			static void HandlePreviewMouseDown(object sender, MouseButtonEventArgs e)
 			{
 				var ctl = sender as sw.FrameworkElement;
 				var cell = ctl?.GetVisualParent<swc.DataGridCell>();
@@ -152,24 +152,28 @@ namespace Eto.Wpf.Forms.Cells
 				}
 			}
 
-			void HandleIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs e)
+			static void HandleIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs e)
 			{
-				var h = Handler;
-				var ctl = sender as sw.FrameworkElement;
-				var cell = ctl?.GetVisualParent<swc.DataGridCell>();
+				var ctl = sender as EtoBorder;
+				var cell = ctl?.GetParent<swc.DataGridCell>();
+				var col = cell?.Column as Column;
+				var handler = col?.Handler;
+				if (handler == null)
+					return;
+
 				var isEditing = ctl.IsKeyboardFocusWithin || cell.IsEditing;
-				var args = GetEditArgs(cell, ctl);
+				var args = GetEditArgs(handler, cell, ctl);
 				if (args?.IsEditing != isEditing)
 				{
 					args.SetIsEditing(isEditing);
 					//cell.IsEditing = isEditing;
 					if (isEditing)
 					{
-						h.Callback.OnBeginEdit(h.Widget, args);
+						handler.Callback.OnBeginEdit(handler.Widget, args);
 					}
 					else {
-						h.Callback.OnCommitEdit(h.Widget, args);
-						h.ContainerHandler.CellEdited(h, ctl);
+						handler.Callback.OnCommitEdit(handler.Widget, args);
+						handler.ContainerHandler.CellEdited(handler, ctl);
 					}
 				}
 			}
@@ -276,7 +280,11 @@ namespace Eto.Wpf.Forms.Cells
 				var wpfctl = sender as EtoBorder;
 				var ctl = wpfctl.Control;
 				if (ctl != null && ctl.Loaded)
+				{
+					// clear out the context to remove any bindings
+					wpfctl.DataContext = null;
 					ctl.DetachNative();
+				}
 			}
 
 			static void HandleCellSelectedChanged(object sender, sw.RoutedEventArgs e)
@@ -311,7 +319,7 @@ namespace Eto.Wpf.Forms.Cells
 				var obj = base.PrepareCellForEdit(editingElement, editingEventArgs);
 				var handler = Handler;
 				var cell = editingElement?.GetParent<swc.DataGridCell>();
-				var args = GetEditArgs(cell, editingElement);
+				var args = GetEditArgs(handler, cell, editingElement);
 				if (handler != null && args != null)
 				{
 					args.SetIsEditing(true);
@@ -326,9 +334,8 @@ namespace Eto.Wpf.Forms.Cells
 				return obj;
 			}
 
-			WpfCellEventArgs GetEditArgs(swc.DataGridCell cell, FrameworkElement editingElement)
+			static WpfCellEventArgs GetEditArgs(CustomCellHandler handler, swc.DataGridCell cell, FrameworkElement editingElement)
 			{
-				var handler = Handler;
 				if (handler == null)
 					return null;
 				var ctl = editingElement as EtoBorder;
@@ -347,7 +354,7 @@ namespace Eto.Wpf.Forms.Cells
 				var result = base.CommitCellEdit(editingElement);
 				var handler = Handler;
 				var cell = editingElement?.GetParent<swc.DataGridCell>();
-				var args = GetEditArgs(cell, editingElement);
+				var args = GetEditArgs(handler, cell, editingElement);
 				if (handler != null && args != null)
 				{
 					args.SetIsEditing(false);
@@ -369,7 +376,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var handler = Handler;
 				var cell = editingElement?.GetParent<swc.DataGridCell>();
-				var args = GetEditArgs(cell, editingElement);
+				var args = GetEditArgs(handler, cell, editingElement);
 				if (handler != null && args != null)
 				{
 					args.SetIsEditing(false);
