@@ -148,6 +148,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: Eto.Addin.VisualStudio-${{ steps.get_version.outputs.VERSION }}.vsix
+          asset_name: Eto.Addin.VisualStudio-${{ steps.get_version.outputs.VERSION }}.vsix
           asset_content_type: application/octet-stream
 
       - name: Upload VS/Mac addin
@@ -157,6 +158,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: Eto.Addin.MonoDevelop-${{ steps.get_version.outputs.VERSION }}.mpack
+          asset_name: Eto.Addin.MonoDevelop-${{ steps.get_version.outputs.VERSION }}.mpack
           asset_content_type: application/octet-stream
 
   publish:
