@@ -80,11 +80,6 @@ namespace Eto.Wpf.Forms.Cells
 			public Column Column { get; set; }
 
 			public string Identifier { get; set; }
-
-			protected override void OnRender(swm.DrawingContext dc)
-			{
-				var handler = Column.Handler;
-			}
 		}
 
 		public class Column : swc.DataGridColumn
@@ -198,24 +193,25 @@ namespace Eto.Wpf.Forms.Cells
 
 			static void HandleControlDataContextChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 			{
-				var ctl = sender as EtoBorder;
-				var cell = ctl?.GetParent<swc.DataGridCell>();
+				var wpfctl = sender as EtoBorder;
+				var cell = wpfctl?.GetParent<swc.DataGridCell>();
 				var col = cell?.Column as Column;
 				var handler = col?.Handler;
 				if (handler == null)
 					return;
-				var args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, ctl.DataContext, CellStates.None);
+
+				var args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, wpfctl.DataContext, CellStates.None);
 				args.SetSelected(cell);
 				args.SetRow(cell);
 				var id = handler.Callback.OnGetIdentifier(handler.Widget, args);
-				var child = ctl.Control;
-				if (id != ctl.Identifier || child == null)
+				var child = wpfctl.Control;
+				if (id != wpfctl.Identifier || child == null)
 				{
 					Stack<Control> cache;
 					if (child != null)
 					{
 						// store old child into cache
-						cache = col.GetCached(ctl.Identifier);
+						cache = col.GetCached(wpfctl.Identifier);
 						cache.Push(child);
 					}
 					// get new from cache or create if none created yet
@@ -227,7 +223,7 @@ namespace Eto.Wpf.Forms.Cells
 						{
 							args = child.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
 							args.SetSelected(cell);
-							args.SetDataContext(ctl.DataContext);
+							args.SetDataContext(wpfctl.DataContext);
 						}
 						else
 							child.Properties.Set(CellEventArgs_Key, args);
@@ -237,14 +233,14 @@ namespace Eto.Wpf.Forms.Cells
 						child = handler.Callback.OnCreateCell(handler.Widget, args);
 						child?.Properties.Set(CellEventArgs_Key, args);
 					}
-					if (ctl.IsLoaded && child?.Loaded == false)
+					if (wpfctl.IsLoaded && child?.Loaded == false)
 					{
 						child.GetWpfFrameworkElement()?.SetScale(true, true);
 						child.AttachNative();
 					}
-					ctl.Control = child;
-					ctl.Identifier = id;
-					ctl.Child = child.ToNative();
+					wpfctl.Control = child;
+					wpfctl.Identifier = id;
+					wpfctl.Child = child.ToNative();
 				}
 				else
 				{
@@ -252,38 +248,47 @@ namespace Eto.Wpf.Forms.Cells
 					{
 						args = child.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
 						args.SetSelected(cell);
-						args.SetDataContext(ctl.DataContext);
+						args.SetDataContext(wpfctl.DataContext);
 					}
 					else
 						child.Properties.Set(CellEventArgs_Key, args);
 				}
 				handler.Callback.OnConfigureCell(handler.Widget, args, child);
 
-				handler.FormatCell(ctl, cell, ctl.DataContext);
-				ctl.InvalidateVisual();
+				handler.FormatCell(wpfctl, cell, wpfctl.DataContext);
 			}
 
 			static void HandleControlLoaded(object sender, sw.RoutedEventArgs e)
 			{
 				// WPF's loaded event is called more than once, e.g. when on a tab that is not initially visible.
 				var wpfctl = sender as EtoBorder;
-				var ctl = wpfctl.Control;
-				if (ctl != null && !ctl.Loaded)
+				var etoctl = wpfctl.Control;
+				if (etoctl != null && !etoctl.Loaded)
 				{
-					ctl.GetWpfFrameworkElement()?.SetScale(true, true);
-					ctl.AttachNative();
+					etoctl.GetWpfFrameworkElement()?.SetScale(true, true);
+					etoctl.AttachNative();
 				}
 			}
 
 			static void HandleControlUnloaded(object sender, sw.RoutedEventArgs e)
 			{
 				var wpfctl = sender as EtoBorder;
-				var ctl = wpfctl.Control;
-				if (ctl != null && ctl.Loaded)
+				var etoctl = wpfctl.Control;
+				var cell = wpfctl?.GetParent<swc.DataGridCell>();
+				var col = cell?.Column as Column;
+				var handler = col?.Handler;
+
+				if (etoctl != null && etoctl.Loaded)
 				{
-					// clear out the context to remove any bindings
-					wpfctl.DataContext = null;
-					ctl.DetachNative();
+					etoctl.DetachNative();
+
+					if (handler != null)
+					{
+						// Configure cell with null item to clear out data context and bindings.
+						// Bindings can cause memory leaks if they are bounds to long lived objects.
+						var args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, null, CellStates.None);
+						handler.Callback.OnConfigureCell(handler.Widget, args, etoctl);
+					}
 				}
 			}
 
