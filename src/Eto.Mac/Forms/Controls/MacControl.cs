@@ -42,12 +42,12 @@ namespace Eto.Mac.Forms.Controls
 			get => Widget.Properties.Get<Font>(MacControl.Font_Key) ?? Widget.Properties.Create(MacControl.Font_Key, () => new Font(new FontHandler(Control.Font)));
 			set
 			{
-				Widget.Properties.Set(MacControl.Font_Key, value, () =>
+				if (Widget.Properties.TrySet(MacControl.Font_Key, value))
 				{
-					Control.Font = value.ToNS();
+					Control.Font = value.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					Control.AttributedStringValue = value.AttributedString(Control.AttributedStringValue);
 					InvalidateMeasure();
-				});
+				};
 			}
 		}
 	}
