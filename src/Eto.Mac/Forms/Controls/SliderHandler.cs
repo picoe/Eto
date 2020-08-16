@@ -83,7 +83,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public double MaxValue
 		{
-			get { return (int)Control.MaxValue; }
+			get { return Control.MaxValue; }
 			set
 			{ 
 				var old = TickFrequency;
@@ -94,7 +94,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public double MinValue
 		{
-			get { return (int)Control.MinValue; }
+			get { return Control.MinValue; }
 			set
 			{
 				var old = TickFrequency;
