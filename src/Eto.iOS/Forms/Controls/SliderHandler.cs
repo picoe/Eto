@@ -43,25 +43,25 @@ namespace Eto.iOS.Forms.Controls
 			TickFrequency = 1;
 		}
 
-		public int MaxValue
+		public double MaxValue
 		{
-			get { return (int)Control.MaxValue; }
+			get { return Control.MaxValue; }
 			set { Control.MaxValue = value; }
 		}
 
-		public int MinValue
+		public double MinValue
 		{
-			get { return (int)Control.MinValue; }
+			get { return Control.MinValue; }
 			set { Control.MinValue = value; }
 		}
 
-		public int Value
+		public double Value
 		{
-			get { return (int)Control.Value; }
+			get { return Control.Value; }
 			set { Control.Value = value; }
 		}
 
-		public int TickFrequency { get; set; }
+		public double TickFrequency { get; set; }
 
 		public bool SnapToTick
 		{

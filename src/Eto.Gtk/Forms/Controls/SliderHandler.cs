@@ -5,9 +5,9 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class SliderHandler : GtkControl<Gtk.EventBox, Slider, Slider.ICallback>, Slider.IHandler
 	{
-		int min;
-		int max = 100;
-		int tick = 1;
+		double min;
+		double max = 100;
+		double tick = 1;
 		Gtk.Scale scale;
 
 		public SliderHandler()
@@ -64,7 +64,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public int MaxValue
+		public double MaxValue
 		{
 			get { return max; }
 			set
@@ -74,7 +74,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public int MinValue
+		public double MinValue
 		{
 			get { return min; }
 			set
@@ -84,15 +84,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public int Value
+		public double Value
 		{
-			get { return (int)scale.Value; }
+			get { return scale.Value; }
 			set { scale.Value = value; }
 		}
 
 		public bool SnapToTick { get; set; }
 
-		public int TickFrequency
+		public double TickFrequency
 		{
 			get
 			{

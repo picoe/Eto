@@ -81,7 +81,7 @@ namespace Eto.Mac.Forms.Controls
 			return Orientation == Orientation.Horizontal ? new Size(80, 30) : new Size(30, 80);
 		}
 
-		public int MaxValue
+		public double MaxValue
 		{
 			get { return (int)Control.MaxValue; }
 			set
@@ -92,7 +92,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public int MinValue
+		public double MinValue
 		{
 			get { return (int)Control.MinValue; }
 			set
@@ -103,10 +103,10 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public int Value
+		public double Value
 		{
-			get { return Control.IntValue; }
-			set { Control.IntValue = value; }
+			get { return Control.DoubleValue; }
+			set { Control.DoubleValue = value; }
 		}
 
 		public bool SnapToTick
@@ -115,12 +115,12 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.AllowsTickMarkValuesOnly = value; }
 		}
 
-		public int TickFrequency
+		public double TickFrequency
 		{
 			get
 			{ 
 				if (Control.TickMarksCount > 1)
-					return (int)((MaxValue - MinValue) / (Control.TickMarksCount - 1));
+					return (MaxValue - MinValue) / (Control.TickMarksCount - 1);
 				return 0;
 			}
 			set
