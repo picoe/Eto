@@ -125,7 +125,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{ 
-				Control.TickMarksCount = value > 0 ? ((MaxValue - MinValue) / value) + 1 : 0;
+				Control.TickMarksCount = (long)(value > 0 ? ((MaxValue - MinValue) / value) + 1 : 0);
 			}
 		}
 
