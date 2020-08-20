@@ -18,11 +18,6 @@ namespace Eto.Wpf.Forms.Cells
 	{
 		public static int ImageSize = 16;
 
-		object GetValue(object dataItem)
-		{
-			return dataItem;
-		}
-
 		public class WpfCellEventArgs : CellEventArgs
 		{
 			swc.DataGridColumn _gridColumn;
@@ -200,9 +195,11 @@ namespace Eto.Wpf.Forms.Cells
 				if (handler == null)
 					return;
 
-				var args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, wpfctl.DataContext, CellStates.None);
+				var args = GetEditArgs(handler, cell, wpfctl);
+				var originalArgs = args;
 				args.SetSelected(cell);
 				args.SetRow(cell);
+				args.SetDataContext(wpfctl.DataContext);
 				var id = handler.Callback.OnGetIdentifier(handler.Widget, args);
 				var child = wpfctl.Control;
 				if (id != wpfctl.Identifier || child == null)
@@ -219,39 +216,32 @@ namespace Eto.Wpf.Forms.Cells
 					if (cache.Count > 0)
 					{
 						child = cache.Pop();
-						if (child.Properties.ContainsKey(CellEventArgs_Key))
-						{
-							args = child.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
-							args.SetSelected(cell);
-							args.SetDataContext(wpfctl.DataContext);
-						}
-						else
-							child.Properties.Set(CellEventArgs_Key, args);
+						wpfctl.Control = child;
+						// get args for this control
+						args = GetEditArgs(handler, cell, wpfctl);
 					}
 					else
 					{
 						child = handler.Callback.OnCreateCell(handler.Widget, args);
-						child?.Properties.Set(CellEventArgs_Key, args);
+						wpfctl.Control = child;
+						// create args for this new control
+						args = GetEditArgs(handler, cell, wpfctl);
 					}
+
+					if (!ReferenceEquals(args, originalArgs))
+					{
+						args.SetSelected(cell);
+						args.SetRow(cell);
+						args.SetDataContext(wpfctl.DataContext);
+					}
+
 					if (wpfctl.IsLoaded && child?.Loaded == false)
 					{
 						child.GetWpfFrameworkElement()?.SetScale(true, true);
 						child.AttachNative();
 					}
-					wpfctl.Control = child;
 					wpfctl.Identifier = id;
 					wpfctl.Child = child.ToNative();
-				}
-				else
-				{
-					if (child.Properties.ContainsKey(CellEventArgs_Key))
-					{
-						args = child.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
-						args.SetSelected(cell);
-						args.SetDataContext(wpfctl.DataContext);
-					}
-					else
-						child.Properties.Set(CellEventArgs_Key, args);
 				}
 				handler.Callback.OnConfigureCell(handler.Widget, args, child);
 
@@ -286,7 +276,8 @@ namespace Eto.Wpf.Forms.Cells
 					{
 						// Configure cell with null item to clear out data context and bindings.
 						// Bindings can cause memory leaks if they are bounds to long lived objects.
-						var args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, null, CellStates.None);
+						var args = GetEditArgs(handler, cell, wpfctl);
+						args.SetDataContext(null);
 						handler.Callback.OnConfigureCell(handler.Widget, args, etoctl);
 					}
 				}
@@ -343,12 +334,13 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				if (handler == null)
 					return null;
-				var ctl = editingElement as EtoBorder;
-				var args = ctl.Control.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
+				var wpfctl = editingElement as EtoBorder;
+				var etoctl = wpfctl?.Control;
+				var args = etoctl?.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
 				if (args == null)
 				{
-					args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, ctl.DataContext, CellStates.None, ctl.Control);
-					ctl.Control.Properties.Set(CellEventArgs_Key, args);
+					args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, wpfctl.IsLoaded ? wpfctl.DataContext : null, CellStates.None, etoctl);
+					etoctl?.Properties.Set(CellEventArgs_Key, args);
 				}
 				args.Handled = false;
 				return args;
