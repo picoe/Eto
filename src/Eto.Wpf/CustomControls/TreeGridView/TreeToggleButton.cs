@@ -41,6 +41,20 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 			}
 		}
 
+		public static bool IsOverExpander(DependencyObject hitTestResult)
+		{
+			while (hitTestResult != null)
+			{
+				if (hitTestResult is TreeToggleButton ttb)
+					return ttb.IsVisible;
+				if (hitTestResult is DataGridCell)
+					return false;
+				hitTestResult = hitTestResult.GetVisualParent<DependencyObject>();
+			}
+
+			return false;
+		}
+
 		public static bool? IsOverContent(DependencyObject hitTestResult)
 		{
 			if (hitTestResult is TreeTogglePanel)
@@ -55,7 +69,7 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 					return true;
 				hitTestResult = hitTestResult.GetVisualParent<DependencyObject>();
 			}
-			return false;
+			return !ReferenceEquals(hitTestResult, panel);
 		}
 	}
 

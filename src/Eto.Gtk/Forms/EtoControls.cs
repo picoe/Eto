@@ -1,10 +1,17 @@
 ﻿
+
+
+
+
+
+
 using System;
 using Eto;
 using Eto.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {
+
     public partial class EtoFixed : Gtk.Fixed
     {
         WeakReference _handler;
@@ -90,7 +97,8 @@ namespace Eto.GtkSharp.Forms
 
     }
     
-    public partial class EtoEventBox : Gtk.EventBox
+
+    public partial class EtoEventBox  : Gtk.EventBox 
     {
         WeakReference _handler;
         public IGtkControl Handler
@@ -175,4 +183,5 @@ namespace Eto.GtkSharp.Forms
 
     }
     
+
 }

@@ -156,6 +156,43 @@ namespace Eto.GtkSharp.Forms.Controls
 					}
 				}
 			}
+
+			[GLib.ConnectBefore]
+			public virtual void OnTreeButtonPress(object sender, Gtk.ButtonPressEventArgs e)
+			{
+				if (e.Event.Type == Gdk.EventType.TwoButtonPress || e.Event.Type == Gdk.EventType.ThreeButtonPress)
+					return;
+				var h = Handler;
+				if (h == null)
+					return;
+
+				Gtk.TreePath path;
+				Gtk.TreeViewColumn clickedColumn;
+
+				// Get path and column from mouse position
+				h.Tree.GetPathAtPos((int)e.Event.X, (int)e.Event.Y, out path, out clickedColumn);
+				if (path == null || clickedColumn == null)
+					return;
+
+				var rowIndex = h.GetRowIndexOfPath(path);
+				var columnIndex = h.GetColumnOfItem(clickedColumn);
+				var item = h.GetItem(path);
+				var column = columnIndex == -1 || columnIndex >= h.Widget.Columns.Count ? null : h.Widget.Columns[columnIndex];
+
+				var loc = h.PointFromScreen(new PointF((float)e.Event.XRoot, (float)e.Event.YRoot));
+
+				if (ReferenceEquals(h.Tree.ExpanderColumn, clickedColumn))
+				{
+					var cellArea = h.Tree.GetCellArea(path, clickedColumn);
+					if (loc.X < cellArea.Left && loc.X >= cellArea.Left - 18) // how do we get the size of the expander?
+					{
+						// clicked on the expander, don't fire the CellClick event
+						return;
+					}
+				}
+
+				h.Callback.OnCellClick(h.Widget, new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, e.Event.ToEtoMouseButtons(), e.Event.State.ToEtoKey(), loc));
+			}
 		}
 
 		public override void AttachEvent(string id)
@@ -169,7 +206,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					SetupColumnEvents();
 					break;
 				case Grid.CellClickEvent:
-					Tree.ButtonPressEvent += OnTreeButtonPress;
+					Tree.ButtonPressEvent += Connector.OnTreeButtonPress;
 					break;
 				case Grid.CellDoubleClickEvent:
 					Tree.RowActivated += (sender, e) =>
@@ -190,28 +227,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		[GLib.ConnectBefore]
-		protected virtual void OnTreeButtonPress(object sender, Gtk.ButtonPressEventArgs e)
-		{
-			if (e.Event.Type == Gdk.EventType.TwoButtonPress || e.Event.Type == Gdk.EventType.ThreeButtonPress)
-				return;
-
-			Gtk.TreePath path;
-			Gtk.TreeViewColumn clickedColumn;
-
-			// Get path and column from mouse position
-			Tree.GetPathAtPos((int)e.Event.X, (int)e.Event.Y, out path, out clickedColumn);
-			if (path == null || clickedColumn == null)
-				return;
-
-			var rowIndex = GetRowIndexOfPath(path);
-			var columnIndex = GetColumnOfItem(clickedColumn);
-			var item = GetItem(path);
-			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
-
-			var loc = PointFromScreen(new PointF((float)e.Event.XRoot, (float)e.Event.YRoot));
-			Callback.OnCellClick(Widget, new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, e.Event.ToEtoMouseButtons(), e.Event.State.ToEtoKey(), loc));
-		}
 
 		public override void OnLoadComplete(EventArgs e)
 		{

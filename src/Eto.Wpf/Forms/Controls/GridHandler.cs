@@ -180,7 +180,15 @@ namespace Eto.Wpf.Forms.Controls
 					// handled by each cell after value is set with the CellEdited method
 					break;
 				case Grid.CellClickEvent:
-					Control.PreviewMouseDown += (sender, e) => Callback.OnCellClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
+					Control.PreviewMouseDown += (sender, e) => {
+						var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+						if (!TreeTogglePanel.IsOverExpander(hitTestResult))
+						{
+							var args = CreateCellMouseArgs(e.OriginalSource, e);
+							Callback.OnCellClick(Widget, args);
+							e.Handled = args.Handled;
+						}
+					};
 					break;
 				case Grid.CellDoubleClickEvent:
 					Control.MouseDoubleClick += (sender, e) => Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
@@ -353,7 +361,9 @@ namespace Eto.Wpf.Forms.Controls
 					if (cell != null)
 					{
 						var args = CreateCellMouseArgs(cell, e);
-						Callback.OnCellClick(Widget, args);
+						if (!TreeTogglePanel.IsOverExpander(hitTestResult))
+							Callback.OnCellClick(Widget, args);
+
 						if (!args.Handled)
 						{
 							if (!hadMultipleSelection && ReferenceEquals(info.Cell, cell))
