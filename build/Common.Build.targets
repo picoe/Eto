@@ -110,4 +110,20 @@
     </ItemGroup>
     
   </Target>
+
+  <ItemGroup>
+    <None Remove="**\*.tt" />
+  </ItemGroup>
+
+  <Target Name="Transform" BeforeTargets="BeforeBuild" Inputs="@(TextTemplate)" Outputs="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" Condition="$(MSBuildRuntimeType) == 'Core'">
+    <Message Text="Transforming T4 templates..." Importance="high" />
+    <ItemGroup>
+      <Compile Remove="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" />
+    </ItemGroup>
+    <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet t4 %(TextTemplate.Identity) --out %(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs"/>
+    <ItemGroup>
+      <Compile Include="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" />
+    </ItemGroup>
+  </Target>
+
 </Project>
