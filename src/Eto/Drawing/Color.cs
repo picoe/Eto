@@ -18,7 +18,7 @@ namespace Eto.Drawing
 		// static members for mapping color names from the Colors class
 		static Dictionary<string, Color> colormap;
 		static readonly object colormaplock = new object();
-		internal const float Epsilon = 1f / byte.MaxValue;
+		internal const float Epsilon = 1f / 256f;
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity (0-1)
