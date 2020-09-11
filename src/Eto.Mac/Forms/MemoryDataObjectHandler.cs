@@ -9,12 +9,14 @@ using System.Collections.Generic;
 using AppKit;
 using Foundation;
 using ObjCRuntime;
+using MobileCoreServices;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
+using MonoMac.MobileCoreServices;
 #if Mac64
 using nfloat = System.Double;
 using nint = System.Int64;
@@ -37,6 +39,15 @@ namespace Eto.Mac.Forms
 	{
 		const string UrlKey = "ba330802-0ac2-4ee0-a22f-0e67316ac339";
 
+		static string TranslateType(string type)
+		{
+			// register custom types with a UTType.Item base type so it gets picked up by the drag/drop infrastructure 
+			if (!UTType.IsDynamic(type) && !UTType.IsDeclared(type))
+				type = UTType.CreatePreferredIdentifier(UTType.TagClassNSPboardType, type, UTType.Item);
+			return type;
+		}
+
+
 		public abstract class BaseItem
 		{
 			public abstract void Apply(NSPasteboard pasteboard, string type);
@@ -47,11 +58,7 @@ namespace Eto.Mac.Forms
 		public class StringItem : BaseItem
 		{
 			public string Value { get; set; }
-			public override void Apply(NSPasteboard pasteboard, string type)
-			{
-				//pasteboard.DeclareTypes(new[] { type }, null);
-				pasteboard.SetStringForType(Value, type);
-			}
+			public override void Apply(NSPasteboard pasteboard, string type) => pasteboard.SetStringForType(Value, type);
 			public override void Apply(NSPasteboardItem item, string type) => item.SetStringForType(Value, type);
 		}
 
@@ -187,7 +194,7 @@ namespace Eto.Mac.Forms
 		{
 			foreach (var item in Control)
 			{
-				item.Value?.Apply(pasteboard, item.Key);
+				item.Value?.Apply(pasteboard, TranslateType(item.Key));
 			}
 		}
 
@@ -208,7 +215,7 @@ namespace Eto.Mac.Forms
 				{
 					if (pasteboardItem == null)
 						pasteboardItem = new NSPasteboardItem();
-					item.Value.Apply(pasteboardItem, item.Key);
+					item.Value.Apply(pasteboardItem, TranslateType(item.Key));
 				}
 			}
 			if (pasteboardItem != null)
