@@ -32,6 +32,12 @@ namespace Eto.Test.Sections.Behaviors
 				clipboard.Image = TestIcons.TestImage;
 				Update();
 			};
+			var copyCustomButton = new Button { Text = "Copy Custom" };
+			copyCustomButton.Click += (sender, e) =>
+			{
+				clipboard.SetString("my value", "my.custom.type");
+				Update();
+			};
 
 			var pasteTextButton = new Button { Text = "Paste" };
 			pasteTextButton.Click += (sender, e) => Update();
@@ -54,7 +60,7 @@ namespace Eto.Test.Sections.Behaviors
 						Orientation = Orientation.Horizontal, 
 						Spacing = 5,
 						Padding = new Padding(10),
-						Items = { copyTextButton, copyHtmlButton, copyImageButton, pasteTextButton, clearButton }
+						Items = { copyTextButton, copyHtmlButton, copyImageButton, copyCustomButton, pasteTextButton, clearButton }
 					},
 					new StackLayoutItem(pasteData, expand: true)
 				}
