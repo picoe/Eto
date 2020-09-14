@@ -29,7 +29,7 @@ namespace Eto.Wpf.Forms.Controls
 	public class LabelHandler : WpfControl<swc.Label, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly swc.AccessText accessText;
-		int? previousWidth;
+		double? previousWidth;
 		string text;
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
@@ -55,8 +55,7 @@ namespace Eto.Wpf.Forms.Controls
 			// not loaded? don't worry about it.
 			if (!Control.IsLoaded)
 				return;
-			// convert to int as in some scales (e.g. 150%) it can cause an endless update cycle
-			var newWidth = (int)Control.ActualWidth;
+			var newWidth = Control.ActualWidth;
 			if (previousWidth == null)
 			{
 				// don't update preferred sizes when called the first time.
@@ -67,7 +66,8 @@ namespace Eto.Wpf.Forms.Controls
 				return;
 			}
 
-			if (previousWidth == newWidth)
+			// ignore tiny changes as in some scales (e.g. 150%, 175%) it can cause an endless update cycle
+			if (Math.Abs(previousWidth.Value - newWidth) < 1)
 				return;
 			// update parents when the actual width has changed
 			// otherwise it won't shrink vertically when it gets wider
