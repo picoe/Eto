@@ -7,7 +7,7 @@ namespace Eto.Wpf.Forms.Cells
 	public interface ICellContainerHandler
 	{
 		Grid Grid { get; }
-		sw.FrameworkElement SetupCell(ICellHandler cell, sw.FrameworkElement defaultContent);
+		sw.FrameworkElement SetupCell(ICellHandler handler, sw.FrameworkElement defaultContent, swc.DataGridCell cell);
 		void FormatCell(ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell datacell, object dataItem);
 		void CellEdited(ICellHandler cell, sw.FrameworkElement element);
 	}
@@ -44,9 +44,9 @@ namespace Eto.Wpf.Forms.Cells
 			ContainerHandler.FormatCell(this, element, cell, dataItem);
 		}
 
-		public sw.FrameworkElement SetupCell(sw.FrameworkElement defaultContent)
+		public sw.FrameworkElement SetupCell(sw.FrameworkElement defaultContent, swc.DataGridCell cell)
 		{
-			return ContainerHandler != null ? ContainerHandler.SetupCell(this, defaultContent) : defaultContent;
+			return ContainerHandler != null ? ContainerHandler.SetupCell(this, defaultContent, cell) : defaultContent;
 		}
 
 		protected static T GetControl<T>(swc.DataGridCell cell)

@@ -609,7 +609,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public bool CancelEdit() => Control.CancelEdit();
 
-		public virtual sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent)
+		public virtual sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent, swc.DataGridCell cell)
 		{
 			return defaultContent;
 		}

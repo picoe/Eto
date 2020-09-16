@@ -68,12 +68,12 @@ namespace Eto.Wpf.Forms.Cells
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell));
+				return Handler.SetupCell(Create(cell), cell);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell));
+				return Handler.SetupCell(Create(cell), cell);
 			}
 		}
 

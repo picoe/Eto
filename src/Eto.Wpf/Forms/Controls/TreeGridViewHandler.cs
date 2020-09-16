@@ -183,11 +183,21 @@ namespace Eto.Wpf.Forms.Controls
 
 		public IEnumerable<object> SelectedItems => Control.SelectedItems.OfType<object>();
 
-		public override sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent)
+		public override sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent, swc.DataGridCell cell)
 		{
-			if (object.ReferenceEquals(column, Columns.Collection[0].Handler))
-				return TreeToggleButton.Create(defaultContent, controller);
-			return defaultContent;
+			// only first column
+			if (!ReferenceEquals(column, Columns.Collection[0].Handler))
+				return defaultContent;
+
+			// already a toggle panel, reuse it and set new content (if needed)
+			if (cell.Content is TreeTogglePanel ttp)
+			{
+				ttp.SetContent(defaultContent);
+				return ttp;
+			}
+
+			// create a new toggle panel
+			return new TreeTogglePanel(defaultContent, controller);
 		}
 
 		void ITreeHandler.PreResetTree()

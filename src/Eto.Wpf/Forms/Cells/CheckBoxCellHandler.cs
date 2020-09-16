@@ -37,7 +37,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var element = (swc.CheckBox)base.GenerateElement(cell, dataItem);
 				InitializeElement(element, cell, dataItem);
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			void InitializeElement(swc.CheckBox element, swc.DataGridCell cell, object dataItem)
@@ -80,7 +80,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var element = (swc.CheckBox)base.GenerateEditingElement(cell, dataItem);
 				InitializeElement(element, cell, dataItem);
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
 			{

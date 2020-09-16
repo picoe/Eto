@@ -129,7 +129,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var ctl = sender as sw.FrameworkElement;
 				var cell = ctl?.GetVisualParent<swc.DataGridCell>();
-				if (!cell.IsKeyboardFocusWithin)
+				if (!cell.IsKeyboardFocusWithin && !cell.Column.IsReadOnly)
 				{
 					cell.IsEditing = true;
 					//var row = cell.GetVisualParent<swc.DataGridRow>();
@@ -302,12 +302,13 @@ namespace Eto.Wpf.Forms.Cells
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell));
+				return Handler.SetupCell(Create(cell), cell);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell));
+
+				return Handler.SetupCell(Create(cell), cell);
 			}
 
 			protected override object PrepareCellForEdit(sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
@@ -334,10 +335,10 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				if (handler == null)
 					return null;
-				var wpfctl = editingElement as EtoBorder;
+				var wpfctl = editingElement as EtoBorder ?? GetControl<EtoBorder>(cell);
 				var etoctl = wpfctl?.Control;
 				var args = etoctl?.Properties.Get<WpfCellEventArgs>(CellEventArgs_Key);
-				if (args == null)
+				if (args == null && wpfctl != null)
 				{
 					args = new WpfCellEventArgs(handler.ContainerHandler?.Grid, handler.Widget, -1, cell.Column, wpfctl.IsLoaded ? wpfctl.DataContext : null, CellStates.None, etoctl);
 					etoctl?.Properties.Set(CellEventArgs_Key, args);
