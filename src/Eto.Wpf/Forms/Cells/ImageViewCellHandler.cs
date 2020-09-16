@@ -59,7 +59,7 @@ namespace Eto.Wpf.Forms.Cells
 
 			protected override sw.FrameworkElement GenerateElement (swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell (Image(cell));
+				return Handler.SetupCell (Image(cell), cell);
 			}
 
 			protected override object PrepareCellForEdit (sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
@@ -70,7 +70,7 @@ namespace Eto.Wpf.Forms.Cells
 
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell (Image (cell));
+				return Handler.SetupCell (Image (cell), cell);
 			}
 		}
 

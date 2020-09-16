@@ -15,7 +15,7 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 	{
 		public const int LevelWidth = 16;
 		readonly TreeToggleButton button;
-		readonly FrameworkElement content;
+		FrameworkElement _content;
 
 		public TreeTogglePanel(FrameworkElement content, TreeController controller)
 		{
@@ -24,9 +24,19 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 			SetDock(button, Dock.Left);
 			Children.Add(button);
 			Children.Add(content);
-			this.content = content;
+			_content = content;
 
 			DataContextChanged += OnDataContextChanged;
+		}
+
+		public void SetContent(FrameworkElement content)
+		{
+			if (ReferenceEquals(content, _content))
+				return;
+
+			Children.Remove(_content);
+			Children.Add(content);
+			_content = content;
 		}
 
 		private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -65,7 +75,7 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 
 			while (hitTestResult != null && !ReferenceEquals(hitTestResult, panel))
 			{
-				if (ReferenceEquals(hitTestResult, panel.content))
+				if (ReferenceEquals(hitTestResult, panel._content))
 					return true;
 				hitTestResult = hitTestResult.GetVisualParent<DependencyObject>();
 			}
@@ -83,12 +93,6 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 		{
 			DefaultStyleKeyProperty.OverrideMetadata (typeof (TreeToggleButton), new FrameworkPropertyMetadata (typeof (TreeToggleButton)));
 		}
-
-		public static FrameworkElement Create (FrameworkElement content, TreeController controller)
-		{
-			return new TreeTogglePanel(content, controller);
-		}
-
 
 		protected override void OnPreviewMouseLeftButtonUp(MouseButtonEventArgs e)
 		{

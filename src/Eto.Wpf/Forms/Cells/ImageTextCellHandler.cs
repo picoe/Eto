@@ -122,13 +122,13 @@ namespace Eto.Wpf.Forms.Cells
 				return image;
 			}
 
-			sw.FrameworkElement SetupCell(sw.FrameworkElement element)
+			sw.FrameworkElement SetupCell(sw.FrameworkElement element, swc.DataGridCell cell)
 			{
 				element.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
 				var container = new swc.DockPanel();
 				container.Children.Add(CreateImage());
 				container.Children.Add(element);
-				return Handler.SetupCell(container);
+				return Handler.SetupCell(container, cell);
 			}
 
 			swd.Binding CreateBinding(string property)
@@ -154,7 +154,7 @@ namespace Eto.Wpf.Forms.Cells
 					control.Text = Handler.GetTextValue(control.DataContext);
 					Handler.FormatCell(control, cell, control.DataContext);
 				};
-				return SetupCell(element);
+				return SetupCell(element, cell);
 			}
 
 			protected override object PrepareCellForEdit(sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
@@ -203,7 +203,7 @@ namespace Eto.Wpf.Forms.Cells
 					control.Text = Handler.GetTextValue(control.DataContext);
 					Handler.FormatCell(control, cell, control.DataContext);
 				};
-				return SetupCell(element);
+				return SetupCell(element, cell);
 			}
 
 

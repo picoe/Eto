@@ -69,12 +69,13 @@ namespace Eto.Wpf.Forms.Cells
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
 				var element = GenerateProgressBar(cell, dataItem);
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				return GenerateProgressBar(cell, dataItem);
+				var element = GenerateProgressBar(cell, dataItem);
+				return Handler.SetupCell(element, cell);
 			}
 
 			private swc.Grid GenerateProgressBar(swc.DataGridCell cell, object dataItem)
