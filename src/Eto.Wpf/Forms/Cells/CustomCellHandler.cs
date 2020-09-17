@@ -75,6 +75,8 @@ namespace Eto.Wpf.Forms.Cells
 			public Column Column { get; set; }
 
 			public string Identifier { get; set; }
+
+			public bool NeedsDataContext { get; set; }
 		}
 
 		public class Column : swc.DataGridColumn
@@ -244,6 +246,7 @@ namespace Eto.Wpf.Forms.Cells
 					wpfctl.Child = child.ToNative();
 				}
 				handler.Callback.OnConfigureCell(handler.Widget, args, child);
+				wpfctl.NeedsDataContext = false;
 
 				handler.FormatCell(wpfctl, cell, wpfctl.DataContext);
 			}
@@ -253,10 +256,23 @@ namespace Eto.Wpf.Forms.Cells
 				// WPF's loaded event is called more than once, e.g. when on a tab that is not initially visible.
 				var wpfctl = sender as EtoBorder;
 				var etoctl = wpfctl.Control;
+				var cell = wpfctl?.GetParent<swc.DataGridCell>();
+				var col = cell?.Column as Column;
+				var handler = col?.Handler;
+
 				if (etoctl != null && !etoctl.Loaded)
 				{
 					etoctl.GetWpfFrameworkElement()?.SetScale(true, true);
 					etoctl.AttachNative();
+
+					// we got loaded, set data context back if needed
+					if (wpfctl.NeedsDataContext && handler != null)
+					{
+						var args = GetEditArgs(handler, cell, wpfctl);
+						args.SetDataContext(wpfctl.DataContext);
+						handler.Callback.OnConfigureCell(handler.Widget, args, etoctl);
+						wpfctl.NeedsDataContext = false;
+					}
 				}
 			}
 
@@ -279,6 +295,8 @@ namespace Eto.Wpf.Forms.Cells
 						var args = GetEditArgs(handler, cell, wpfctl);
 						args.SetDataContext(null);
 						handler.Callback.OnConfigureCell(handler.Widget, args, etoctl);
+
+						wpfctl.NeedsDataContext = true;
 					}
 				}
 			}
