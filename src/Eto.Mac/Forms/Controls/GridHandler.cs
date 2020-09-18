@@ -646,6 +646,36 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get(GridHandler.IsMouseDragging_Key, false); }
 			set { Widget.Properties.Set(GridHandler.IsMouseDragging_Key, value, false); }
 		}
+
+		static readonly object DragPasteboard_Key = new object();
+
+		protected NSPasteboard DragPasteboard
+		{
+			get { return Widget.Properties.Get<NSPasteboard>(DragPasteboard_Key); }
+			set { Widget.Properties.Set(DragPasteboard_Key, value); }
+		}
+
+		internal GridDragInfo DragInfo { get; set; }
+
+		public override void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF origin)
+		{
+			if (DragPasteboard != null)
+			{
+				var handler = data.Handler as IDataObjectHandler;
+				handler?.Apply(DragPasteboard);
+				SetupDragPasteboard(DragPasteboard);
+				DragInfo = new GridDragInfo
+				{
+					AllowedOperation = allowedAction.ToNS(),
+					DragImage = image.ToNS(),
+					ImageOffset = origin
+				};
+			}
+			else
+			{
+				base.DoDragDrop(data, allowedAction, image, origin);
+			}
+		}
 	}
 }
 

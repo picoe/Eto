@@ -507,7 +507,7 @@ namespace Eto.Mac.Forms.Controls
 
 				if (h.IsMouseDragging)
 				{
-					h.Control.DragInfo = null;
+					h.DragInfo = null;
 					// give MouseMove event a chance to start the drag
 					h.DragPasteboard = pboard;
 
@@ -536,7 +536,7 @@ namespace Eto.Mac.Forms.Controls
 					var args = MacConversions.GetMouseEvent(h, NSApplication.SharedApplication.CurrentEvent, false);
 					h.Callback.OnMouseMove(h.Widget, args);
 					h.DragPasteboard = null;
-					return h.Control.DragInfo != null;
+					return h.DragInfo != null;
 				}
 
 				return false;
@@ -553,15 +553,14 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); }
 			}
 
-			internal GridDragInfo DragInfo { get; set; }
-
 #if XAMMAC2
 			public override NSImage DragImageForRowsWithIndexestableColumnseventoffset(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
 			{
-				var img = DragInfo?.DragImage;
+				var dragInfo = Handler?.DragInfo;
+				var img = dragInfo?.DragImage;
 				if (img != null)
 				{
-					dragImageOffset = DragInfo.GetDragImageOffset();
+					dragImageOffset = dragInfo.GetDragImageOffset();
 					return img;
 				}
 				return base.DragImageForRowsWithIndexestableColumnseventoffset(dragRows, tableColumns, dragEvent, ref dragImageOffset);
@@ -572,10 +571,11 @@ namespace Eto.Mac.Forms.Controls
 			[Export("dragImageForRowsWithIndexes:tableColumns:event:offset:")]
 			public NSImage DragImageForRows(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
 			{
-				var img = DragInfo?.DragImage;
+				var dragInfo = Handler?.DragInfo;
+				var img = dragInfo?.DragImage;
 				if (img != null)
 				{
-					dragImageOffset = DragInfo.GetDragImageOffset();
+					dragImageOffset = dragInfo.GetDragImageOffset();
 					return img;
 				}
 
@@ -589,7 +589,7 @@ namespace Eto.Mac.Forms.Controls
 			[Export("draggingSession:sourceOperationMaskForDraggingContext:")]
 			public NSDragOperation DraggingSessionSourceOperationMask(NSDraggingSession session, IntPtr context)
 			{
-				return DragInfo?.AllowedOperation ?? NSDragOperation.None;
+				return Handler?.DragInfo?.AllowedOperation ?? NSDragOperation.None;
 			}
 
 			public override void MouseDown(NSEvent theEvent)
@@ -1034,39 +1034,12 @@ namespace Eto.Mac.Forms.Controls
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;
 
 
-		static readonly object DragPasteboard_Key = new object();
-
-		NSPasteboard DragPasteboard
-		{
-			get { return Widget.Properties.Get<NSPasteboard>(DragPasteboard_Key); }
-			set { Widget.Properties.Set(DragPasteboard_Key, value); }
-		}
-
 		static readonly object CustomSelectedItems_Key = new object();
 
 		IList<object> CustomSelectedItems
 		{
 			get { return Widget.Properties.Get<IList<object>>(CustomSelectedItems_Key); }
 			set { Widget.Properties.Set(CustomSelectedItems_Key, value); }
-		}
-
-		public override void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF origin)
-		{
-			if (DragPasteboard != null)
-			{
-				var handler = data.Handler as IDataObjectHandler;
-				handler?.Apply(DragPasteboard);
-				Control.DragInfo = new GridDragInfo
-				{
-					AllowedOperation = allowedAction.ToNS(),
-					DragImage = image.ToNS(),
-					ImageOffset = origin
-				};
-			}
-			else
-			{
-				base.DoDragDrop(data, allowedAction, image, origin);
-			}
 		}
 
 		static IEnumerable<object> GetItems(NSArray items)

@@ -71,14 +71,6 @@ namespace Eto.Mac.Forms
 	{
 		nint _changeCount;
 
-		static string TranslateType(string type)
-		{
-			// register custom types with a UTType.Item base type so it gets picked up by the drag/drop infrastructure 
-			if (!UTType.IsDynamic(type) && !UTType.IsDeclared(type))
-				type = UTType.CreatePreferredIdentifier(UTType.TagClassNSPboardType, type, UTType.Item);
-			return type;
-		}
-
 		void ClearIfNeeded()
 		{
 			if (Control.ChangeCount != _changeCount)
@@ -88,7 +80,6 @@ namespace Eto.Mac.Forms
 		public void SetData(byte[] value, string type)
 		{
 			ClearIfNeeded();
-			type = TranslateType(type);
 			Control.SetDataForType(NSData.FromArray(value), type);
 		}
 
@@ -108,7 +99,6 @@ namespace Eto.Mac.Forms
 		public void SetString(string value, string type)
 		{
 			ClearIfNeeded();
-			type = TranslateType(type);
 			Control.SetStringForType(value, type);
 		}
 
@@ -155,7 +145,6 @@ namespace Eto.Mac.Forms
 
 		public byte[] GetData(string type)
 		{
-			type = TranslateType(type);
 			var availableType = Control.GetAvailableTypeFromArray(new string[] { type });
 
 			if (availableType != null)
@@ -172,7 +161,6 @@ namespace Eto.Mac.Forms
 
 		public string GetString(string type)
 		{
-			type = TranslateType(type);
 			return Control.GetStringForType(type);
 		}
 
@@ -242,13 +230,11 @@ namespace Eto.Mac.Forms
 
 		public bool Contains(string type)
 		{
-			type = TranslateType(type);
 			return Control.GetAvailableTypeFromArray(new[] { type }) != null;
 		}
 
 		public bool TryGetObject(string type, out object value)
 		{
-			type = TranslateType(type);
 			if (type == NSPasteboard.NSPasteboardTypeColor)
 			{
 				value = NSColor.FromPasteboard(Control)?.ToEto();
@@ -260,7 +246,6 @@ namespace Eto.Mac.Forms
 
 		public bool TrySetObject(object value, string type)
 		{
-			type = TranslateType(type);
 			if (value is Color color && type == NSPasteboard.NSPasteboardTypeColor)
 			{
 				Control.WriteObjects(new[] { color.ToNSUI() });
