@@ -262,7 +262,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			else
 			{
-				var preferred = Content.GetPreferredSize(SizeF.PositiveInfinity);
+				var preferred = Content.GetPreferredSize(SizeF.PositiveInfinity) + Padding.Size;
 				var vbar = preferred.Height > clientSize.Height;
 				var hbar = preferred.Width > clientSize.Width;
 				if (hbar || vbar)
@@ -283,18 +283,17 @@ namespace Eto.Mac.Forms.Controls
 			
 			var size = Content.GetPreferredSize(SizeF.PositiveInfinity).ToNS();
 
-			var clientSize = ContentControl.Frame.Size;
+			var padding = Padding;
+			var clientSize = ContentControl.Frame.Size.ToEto() - padding.Size;
 
 			if (ExpandContentWidth)
 				size.Width = (nfloat)Math.Max(clientSize.Width, size.Width);
 			if (ExpandContentHeight)
 				size.Height = (nfloat)Math.Max(clientSize.Height, size.Height);
 
-			var clientFrame = new CGRect(new CGPoint(0, (nfloat)Math.Max(0, clientSize.Height - size.Height)), size);
+			var clientFrame = new CGRect(new CGPoint(padding.Left, (nfloat)(padding.Bottom + clientSize.Height - size.Height)), size);
 
-			var padding = Padding;
-			padding.Bottom = (int)Math.Max(0, Math.Min(clientSize.Height - size.Height, padding.Bottom));
-			ctl.Frame = clientFrame.WithPadding(padding);
+			ctl.Frame = clientFrame;
 		}
 
 		public override Color BackgroundColor
