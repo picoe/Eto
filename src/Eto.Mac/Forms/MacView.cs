@@ -1216,17 +1216,33 @@ namespace Eto.Mac.Forms
 
 		protected virtual void FireOnShown() => FireOnShown(Widget);
 
+		static readonly string[] s_dropTypes = { UTType.Item, UTType.Content };
+
 		public bool AllowDrop
 		{
-			get { return Widget.Properties.Get<bool>(MacView.AllowDrop_Key); }
+			get => Widget.Properties.Get<bool>(MacView.AllowDrop_Key);
 			set
 			{
-				Widget.Properties.Set(MacView.AllowDrop_Key, value);
-				if (value)
-					DragControl.RegisterForDraggedTypes(new string[] { UTType.Item });
-				else
-					DragControl.UnregisterDraggedTypes();
+				if (Widget.Properties.TrySet(MacView.AllowDrop_Key, value))
+				{
+					if (value)
+						DragControl.RegisterForDraggedTypes(s_dropTypes);
+					else
+						DragControl.UnregisterDraggedTypes();
+				}
 			}
+		}
+
+		static string s_etoDragItemType;
+		static string s_etoDragImageType;
+
+		protected void SetupDragPasteboard(NSPasteboard pasteboard)
+		{
+			// add a UTType.Item base type so dragging works regardless of what was put in the DataObject.
+			if (s_etoDragItemType == null)
+				s_etoDragItemType = UTType.CreatePreferredIdentifier(UTType.TagClassNSPboardType, "eto.dragitem", UTType.Item);
+
+			pasteboard.SetStringForType(string.Empty, s_etoDragItemType);
 		}
 
 		public virtual void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF origin)
@@ -1239,11 +1255,12 @@ namespace Eto.Mac.Forms
 			if (image != null)
 			{
 				var pasteboardItem = new NSPasteboardItem();
-				// item needs to have data, but we don't want to supply a standard UTI
-				const string utdragimage = "eto.dragimage";
-				pasteboardItem.SetStringForType(string.Empty, utdragimage);
-				// custom types need to be registered when using an NSPasteboardItem..
-				ContainerControl.RegisterForDraggedTypes(new string[] { utdragimage });
+
+				// register custom UTI for the drag image
+				if (s_etoDragImageType == null)
+					s_etoDragImageType = UTType.CreatePreferredIdentifier(UTType.TagClassNSPboardType, "eto.dragimage", UTType.Image);
+
+				pasteboardItem.SetStringForType(string.Empty, s_etoDragImageType);
 #if XAMMAC2
 				var draggingItem = new NSDraggingItem(pasteboardItem);
 #else
@@ -1266,6 +1283,8 @@ namespace Eto.Mac.Forms
 
 			var session = ContainerControl.BeginDraggingSession(draggingItems, NSApplication.SharedApplication.CurrentEvent, source);
 			handler.Apply(session.DraggingPasteboard);
+
+			SetupDragPasteboard(session.DraggingPasteboard);
 
 			// TODO: block until drag is complete?
 		}

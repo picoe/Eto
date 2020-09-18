@@ -39,15 +39,6 @@ namespace Eto.Mac.Forms
 	{
 		const string UrlKey = "ba330802-0ac2-4ee0-a22f-0e67316ac339";
 
-		static string TranslateType(string type)
-		{
-			// register custom types with a UTType.Item base type so it gets picked up by the drag/drop infrastructure 
-			if (!UTType.IsDynamic(type) && !UTType.IsDeclared(type))
-				type = UTType.CreatePreferredIdentifier(UTType.TagClassNSPboardType, type, UTType.Item);
-			return type;
-		}
-
-
 		public abstract class BaseItem
 		{
 			public abstract void Apply(NSPasteboard pasteboard, string type);
@@ -194,7 +185,7 @@ namespace Eto.Mac.Forms
 		{
 			foreach (var item in Control)
 			{
-				item.Value?.Apply(pasteboard, TranslateType(item.Key));
+				item.Value?.Apply(pasteboard, item.Key);
 			}
 		}
 
@@ -215,7 +206,7 @@ namespace Eto.Mac.Forms
 				{
 					if (pasteboardItem == null)
 						pasteboardItem = new NSPasteboardItem();
-					item.Value.Apply(pasteboardItem, TranslateType(item.Key));
+					item.Value?.Apply(pasteboardItem, item.Key);
 				}
 			}
 			if (pasteboardItem != null)

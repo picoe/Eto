@@ -17,7 +17,7 @@
             "type": "mono",
 			"request": "launch",
 			"preLaunchTask": "build-xammac2",
-			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net461/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
+			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
 			"useRuntime": false,
             "args": [],
             "console": "internalConsole",
