@@ -41,7 +41,7 @@
 
   <PropertyGroup>
     <!-- internal properties -->
-    <MacUseDotNetCore Condition="$(MacUseDotNetCore) == '' AND $(TargetFramework.StartsWith('netcoreapp'))">True</MacUseDotNetCore>
+    <MacUseDotNetCore Condition="$(MacUseDotNetCore) == '' AND ( $(TargetFramework.StartsWith('netcoreapp')) OR $(TargetFramework.StartsWith('net5')) )">True</MacUseDotNetCore>
     <MacUseDotNetCore Condition="$(MacUseDotNetCore) == ''">False</MacUseDotNetCore>
     <OutputContents>$(OutputAppPath)Contents\</OutputContents>
     <OutputResourcesPath>$(OutputContents)Resources\</OutputResourcesPath>
