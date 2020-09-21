@@ -226,10 +226,13 @@
 
     <!-- copy resource files -->
     <ItemGroup>
-      <ResourceFiles Include="@(BundleResource)" />
-      <ResourceFiles Include="@(Content)" />
+      <ResourceFiles Include="@(BundleResource)" Condition="'%(BundleResource.Link)' != ''" Link="@(BundleResource -> '%(Link)')" />
+      <ResourceFiles Include="@(BundleResource)" Condition="'%(BundleResource.Link)' == ''" />
+      <ResourceFiles Include="@(Content)" Condition="'%(Content.Link)' != ''" Link="@(Content -> '%(Link)')" />
+      <ResourceFiles Include="@(Content)" Condition="'%(Content.Link)' == ''" />
     </ItemGroup>
-    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)%(ResourceFiles.RelativeDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)%(Link.RelativeDir)" SkipUnchangedFiles="true" Condition="'%(ResourceFiles.Link)' != ''" />
+    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputResourcesPath)%(ResourceFiles.RelativeDir)" SkipUnchangedFiles="true" Condition="'%(ResourceFiles.Link)' == ''" />
 
     <!-- Add any missing keys to the PListFile -->
     <UpdatePList 

@@ -6,10 +6,20 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms
 {
+	public delegate void WndProcDelegate(ref swf.Message m);
+	public delegate void CustomWndProcDelegate(ref swf.Message m, WndProcDelegate baseImpl);
+
 	public class EtoFormBase : swf.Form
 	{
+		public CustomWndProcDelegate CustomWndProcHandler;
 		const int WM_ACTIVATEAPP = 0x1C;
 		protected override void WndProc(ref swf.Message m)
+		{
+			if (CustomWndProcHandler == null) WndProcImpl(ref m);
+			else CustomWndProcHandler(ref m, WndProcImpl);
+		}
+
+		private void WndProcImpl(ref swf.Message m)
 		{
 			base.WndProc(ref m);
 
