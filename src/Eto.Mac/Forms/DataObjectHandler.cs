@@ -150,7 +150,7 @@ namespace Eto.Mac.Forms
 			if (availableType != null)
 			{
 				var data = Control.GetDataForType(availableType);
-				if (data == null)
+				if (data == null || data.Bytes == IntPtr.Zero)
 					return null;
 				var bytes = new byte[data.Length];
 				Marshal.Copy(data.Bytes, bytes, 0, (int)data.Length);

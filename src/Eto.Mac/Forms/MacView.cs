@@ -1242,7 +1242,8 @@ namespace Eto.Mac.Forms
 			if (s_etoDragItemType == null)
 				s_etoDragItemType = UTType.CreatePreferredIdentifier(UTType.TagClassNSPboardType, "eto.dragitem", UTType.Item);
 
-			pasteboard.SetStringForType(string.Empty, s_etoDragItemType);
+			// don't send an empty string, some code can't handle null data.
+			pasteboard.SetStringForType(".", s_etoDragItemType);
 		}
 
 		public virtual void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF origin)
