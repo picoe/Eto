@@ -1,0 +1,32 @@
+on: 
+  milestone:
+    types: [closed]
+
+name: Create Release
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Create Release Notes
+      uses: docker://decathlon/release-notes-generator-action:2.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Add Milestone Description
+      run: echo -e "${{ github.event.milestone.description }}\n\n$(cat release_file.md)" > release_file.md
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.milestone.title }}
+        release_name: ${{ github.event.milestone.title }}
+        body_path: release_file.md
+        draft: false
+        prerelease: false      
