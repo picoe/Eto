@@ -46,6 +46,15 @@ namespace Eto.GtkSharp.Forms
 			if (Resizable)
 				minimum_height = 0;
 		}
+
+#if GTKCORE
+		protected override void OnGetPreferredHeightAndBaselineForWidth(int width, out int minimum_height, out int natural_height, out int minimum_baseline, out int natural_baseline)
+		{
+			base.OnGetPreferredHeightAndBaselineForWidth(width, out minimum_height, out natural_height, out minimum_baseline, out natural_baseline);
+			if (Resizable)
+				minimum_height = 0;
+		}
+#endif
 #endif
 	}
 
