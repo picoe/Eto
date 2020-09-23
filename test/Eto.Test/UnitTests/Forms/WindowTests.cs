@@ -21,10 +21,11 @@ namespace Eto.Test.UnitTests.Forms
 				form.Content = new Panel { Size = new Size(300, 300) };
 				form.SizeChanged += (sender, e) => size = form.Size;
 
-				form.Shown += (sender, e) => {
+				form.Shown += (sender, e) =>
+				{
 					Assert.IsNotNull(size, "#1");
 					Assert.IsTrue(size.Value.Width >= 300, "#2");
-					Assert.IsTrue(size.Value.Height>= 300, "#3");
+					Assert.IsTrue(size.Value.Height >= 300, "#3");
 					form.Close();
 				};
 			});
@@ -95,6 +96,32 @@ namespace Eto.Test.UnitTests.Forms
 				form.Location = new Point(0, 0);
 
 				return new Panel { Size = new Size(200, 200) };
+			});
+		}
+
+		[TestCase(-1)]
+		[TestCase(100)] // fails on Mac and Wpf currently, due to the bottom label being wider than this size...
+		[TestCase(250)]
+		[ManualTest]
+		public void SizeOfFormShouldWorkWithLabels(int width)
+		{
+			ManualForm("Form should not have large space at\nthe bottom or between labels", form =>
+			{
+				Label CreateLabel()
+				{
+					var label = new Label { Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dictum ultricies augue, non mollis ligula sagittis ac." };
+					if (width > 0)
+						label.Width = width;
+					return label;
+				}
+
+				var layout = new TableLayout();
+				layout.Rows.Add(CreateLabel());
+				layout.Rows.Add(CreateLabel());
+				layout.Rows.Add(CreateLabel());
+				layout.Rows.Add(CreateLabel());
+
+				return layout;
 			});
 		}
 	}
