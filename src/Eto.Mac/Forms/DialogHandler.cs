@@ -236,7 +236,7 @@ namespace Eto.Mac.Forms
 				if (!args.Cancel)
 				{
 					session.Stop();
-					Callback.OnClosed(Widget, args);
+					Control.Close();
 				}
 			}
 			else
