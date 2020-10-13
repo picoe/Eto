@@ -148,6 +148,10 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
+			// set attributes if it hasn't been loaded yet, so we get the correct size.
+			if (!Widget.Loaded)
+				SetAttributes(true);
+
 			if (float.IsPositiveInfinity(availableSize.Width))
 			{
 				if (naturalSizeInfinity != null)
@@ -393,6 +397,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.OnLoad(e);
 			SetAttributes(true);
+			InvalidateMeasure();
 		}
 
 		public override void AttachEvent(string id)
