@@ -101,7 +101,12 @@ namespace Eto.iOS.Drawing
 
 		void SetOffset(bool fill)
 		{
-			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			var currentMode = PixelOffsetMode;
+			var requiresOffset =
+				(
+					currentMode == PixelOffsetMode.Aligned
+					|| (!fill && currentMode == PixelOffsetMode.None)
+				);
 			if (requiresOffset != isOffset)
 			{
 				RewindAll();
@@ -472,7 +477,7 @@ namespace Eto.iOS.Drawing
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			SetOffset(true);
+			SetOffset(false);
 			StartDrawing();
 
 			var rect = new CGRect(x, y, width, height);
@@ -605,7 +610,7 @@ namespace Eto.iOS.Drawing
 
 		public void DrawText(FormattedText formattedText, PointF location)
 		{
-			SetOffset(true);
+			SetOffset(false);
 			StartDrawing();
 			if (formattedText.Handler is FormattedTextHandler handler)
 				handler.DrawText(this, location);

@@ -279,6 +279,8 @@ namespace Eto.WinForms
 					return sd2.PixelOffsetMode.None;
 				case PixelOffsetMode.Half:
 					return sd2.PixelOffsetMode.Half;
+				case PixelOffsetMode.Aligned:
+					return sd2.PixelOffsetMode.None;
 				default:
 					throw new NotSupportedException();
 			}

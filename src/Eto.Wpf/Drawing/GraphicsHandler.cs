@@ -44,7 +44,12 @@ namespace Eto.Wpf.Drawing
 
 		void SetOffset(bool fill)
 		{
-			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			var currentMode = PixelOffsetMode;
+			var requiresOffset =
+				(
+					currentMode == PixelOffsetMode.Aligned
+					|| (!fill && currentMode == PixelOffsetMode.None)
+				);
 			if (requiresOffset != isOffset)
 			{
 				RewindAll();
@@ -302,7 +307,7 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawText(FormattedText formattedText, PointF location)
 		{
-			SetOffset(true);
+			SetOffset(false);
 			if (formattedText.Handler is FormattedTextHandler handler)
 			{
 				handler.DrawText(this, location);
@@ -311,7 +316,7 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawText(Font font, Brush b, float x, float y, string text)
 		{
-			SetOffset(true);
+			SetOffset(false);
 			var fontHandler = font.Handler as FontHandler;
 			if (fontHandler != null)
 			{

@@ -64,7 +64,12 @@ namespace Eto.GtkSharp.Drawing
 
 		void SetOffset(bool fill)
 		{
-			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			var currentMode = PixelOffsetMode;
+			var requiresOffset =
+				(
+					currentMode == PixelOffsetMode.Aligned
+					|| (!fill && currentMode == PixelOffsetMode.None)
+				);
 			if (requiresOffset != isOffset)
 			{
 				ReverseAll();
@@ -379,7 +384,7 @@ namespace Eto.GtkSharp.Drawing
 		{
 			var oldAA = AntiAlias;
 			AntiAlias = true;
-			SetOffset(true);
+			SetOffset(false);
 			using (var layout = CreateLayout())
 			{
 				font.Apply(layout);
@@ -397,7 +402,7 @@ namespace Eto.GtkSharp.Drawing
 		{
 			var oldAA = AntiAlias;
 			AntiAlias = true;
-			SetOffset(true);
+			SetOffset(false);
 			using (var layout = CreateLayout())
 			{
 				var handler = (FormattedTextHandler)formattedText.Handler;
