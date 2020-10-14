@@ -40,11 +40,11 @@ namespace Eto.WinForms.Drawing
 		static GraphicsHandler()
 		{
 			DefaultTextFormat = swf.TextFormatFlags.Left
-			                    | swf.TextFormatFlags.NoPadding
-			                    | swf.TextFormatFlags.NoClipping
-			                    | swf.TextFormatFlags.PreserveGraphicsClipping
-			                    | swf.TextFormatFlags.PreserveGraphicsTranslateTransform
-			                    | swf.TextFormatFlags.NoPrefix;
+								| swf.TextFormatFlags.NoPadding
+								| swf.TextFormatFlags.NoClipping
+								| swf.TextFormatFlags.PreserveGraphicsClipping
+								| swf.TextFormatFlags.PreserveGraphicsTranslateTransform
+								| swf.TextFormatFlags.NoPrefix;
 
 			// Set the StringFormat
 			DefaultStringFormat = new sd.StringFormat(sd.StringFormat.GenericTypographic);
@@ -113,14 +113,27 @@ namespace Eto.WinForms.Drawing
 		public PixelOffsetMode PixelOffsetMode
 		{
 			get { return Widget.Properties.Get<PixelOffsetMode>(PixelOffsetMode_Key); }
-			set { Widget.Properties.Set(PixelOffsetMode_Key, value); }
+			set
+			{
+				if (Widget.Properties.TrySet(PixelOffsetMode_Key, value))
+				{
+					if (value == PixelOffsetMode.Aligned)
+						Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
+				}
+			}
 		}
 
 		void SetOffset(bool fill)
 		{
-			var mode = sdd.PixelOffsetMode.Half;
-			if (!fill && PixelOffsetMode == PixelOffsetMode.None)
+			var currentMode = PixelOffsetMode;
+			if (currentMode == PixelOffsetMode.Aligned)
+				return;
+
+			sdd.PixelOffsetMode mode;
+			if (!fill && currentMode == PixelOffsetMode.None)
 				mode = sdd.PixelOffsetMode.None;
+			else
+				mode = sdd.PixelOffsetMode.Half;
 			Control.PixelOffsetMode = mode;
 		}
 
@@ -154,7 +167,7 @@ namespace Eto.WinForms.Drawing
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
 			SetOffset(false);
-            Control.DrawLine(pen.ToSD(new RectangleF(startx, starty, endx, endy)), startx, starty, endx, endy);
+			Control.DrawLine(pen.ToSD(new RectangleF(startx, starty, endx, endy)), startx, starty, endx, endy);
 		}
 
 		public void DrawLines(Pen pen, IEnumerable<PointF> points)

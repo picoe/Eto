@@ -4,32 +4,27 @@ using Eto.Forms;
 namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "PixelOffsetMode")]
-	public class PixelOffsetSection : Scrollable
+	public class PixelOffsetModeSection : Scrollable
 	{
-		Size canvasSize = new Size(501, 221);
-
-		public PixelOffsetSection()
+		public PixelOffsetModeSection()
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			var drawable = new Drawable { Size = canvasSize };
-			drawable.Paint += (sender, pe) =>
-			{
-				pe.Graphics.FillRectangle(Brushes.Black, pe.ClipRectangle);
-				pe.Graphics.PixelOffsetMode = PixelOffsetMode.None;
-				Draw(pe.Graphics);
-			};
-			layout.AddRow(new Label { Text = "None (Default)" }, drawable);
+			var pixelLayoutMode = new EnumDropDown<PixelOffsetMode> { SelectedValue = PixelOffsetMode.None };
 
-			drawable = new Drawable { Size = canvasSize };
+			var drawable = new Drawable { Size = new Size(600, 250) };
 			drawable.Paint += (sender, pe) =>
 			{
 				pe.Graphics.FillRectangle(Brushes.Black, pe.ClipRectangle);
-				pe.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
+				pe.Graphics.PixelOffsetMode = pixelLayoutMode.SelectedValue;
 				Draw(pe.Graphics);
 			};
-			layout.AddRow(new Label { Text = "Half" }, drawable);
-			layout.Add(null);
+
+			pixelLayoutMode.SelectedValueChanged += (sender, e) => drawable.Invalidate();
+
+			layout.AddCentered(pixelLayoutMode);
+
+			layout.Add(drawable);
 
 			Content = layout;
 		}
