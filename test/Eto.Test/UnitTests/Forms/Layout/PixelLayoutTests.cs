@@ -33,5 +33,20 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				return layout;
 			});
 		}
+
+		[Test, ManualTest]
+		public void LabelsShouldGetCorrectSize()
+		{
+			ManualForm("Labels should end with a period", form => {
+				// note: this actually failed only when the form was the initial window, as it calculated its size before it was even shown.
+				form.ClientSize = new Size(200, 200);
+
+				var layout = new PixelLayout();
+				layout.Add(new Label { Text = "Hello world.", BackgroundColor = Colors.Yellow, TextColor = Colors.Black }, 50, 50);
+				layout.Add(new Label { Text = "Bonjour monde.", BackgroundColor = Colors.LightGreen, TextColor = Colors.Black }, 20, 20);
+				form.Content = layout;
+				return layout;
+			});
+		}
 	}
 }
