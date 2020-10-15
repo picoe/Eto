@@ -75,7 +75,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				using (var graphics = new Graphics(new GraphicsHandler(h.Control, ev.Window)))
 				{
 					Rectangle rect = ev.Region.Clipbox.ToEto();
-					h.Callback.OnPaint(h.Widget, new PaintEventArgs (graphics, rect));
+					h.Callback.OnPaint(h.Widget, new PaintEventArgs(graphics, rect));
 				}
 			}
 #else
