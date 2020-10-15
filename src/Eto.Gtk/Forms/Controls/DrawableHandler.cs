@@ -96,11 +96,10 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					if (h.SelectedBackgroundColor != null)
 						graphics.Clear(h.SelectedBackgroundColor.Value);
-
+					
 					h.Callback.OnPaint(h.Widget, new PaintEventArgs(graphics, rect.ToEto()));
 				}
 			}
-
 #endif
 		}
 
