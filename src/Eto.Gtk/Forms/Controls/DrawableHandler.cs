@@ -92,27 +92,13 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (!GraphicsHandler.GetClipRectangle(args.Cr, ref rect))
 					rect = new Gdk.Rectangle(Gdk.Point.Zero, allocation);
 
-#if old
-				using (var graphics = new Graphics(new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false)))
+				using (var graphics = new Graphics(new GraphicsHandler(args.Cr, h.Control.PangoContext, false)))
 				{
 					if (h.SelectedBackgroundColor != null)
 						graphics.Clear(h.SelectedBackgroundColor.Value);
 
 					h.Callback.OnPaint(h.Widget, new PaintEventArgs(graphics, rect.ToEto()));
 				}
-
-#else
-				using (var pango = h.Control.CreatePangoContext())
-				{
-					using (var graphics = new Graphics(new GraphicsHandler(args.Cr, pango, false)))
-					{
-						if (h.SelectedBackgroundColor != null)
-							graphics.Clear(h.SelectedBackgroundColor.Value);
-
-						h.Callback.OnPaint(h.Widget, new PaintEventArgs(graphics, rect.ToEto()));
-					}
-				}
-#endif
 			}
 
 #endif
