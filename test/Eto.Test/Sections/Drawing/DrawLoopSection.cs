@@ -174,7 +174,7 @@ namespace Eto.Test.Sections.Drawing
 	{
 		readonly Image texture;
 		readonly Font font;
-		readonly SolidBrush textBrush;		
+		readonly SolidBrush textBrush;
 		readonly SolidBrush eraseBrush;
 
 		public readonly Stopwatch Watch = new Stopwatch();
@@ -189,7 +189,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			texture = TestIcons.Textures;
 			font = SystemFonts.Default();
-			textBrush = new SolidBrush(Colors.White);			
+			textBrush = new SolidBrush(Colors.White);
 			eraseBrush = new SolidBrush(Colors.Black);
 		}
 
@@ -334,7 +334,7 @@ namespace Eto.Test.Sections.Drawing
 			public void CoordianateDisplay(Graphics graphics, Font font, Brush textbrush)
 			{
 				if (DisplayTextCoordinates)
-				{					
+				{
 					graphics.DrawText(font, textbrush, position.X, position.Y, Coordinates());
 				}
 			}
