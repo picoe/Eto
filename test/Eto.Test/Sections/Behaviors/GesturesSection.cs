@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Behaviors
 		Window parentWindow;
 		Label windowPositionLabel;
 		Label mousePositionLabel;
-		bool enableGestures;
+		bool handleGestures;
 		
 		private double swipe_x;
 		private double swipe_y;
@@ -26,12 +26,16 @@ namespace Eto.Test.Sections.Behaviors
 		private bool pan_active;
 		private bool zoom_active;
 		private bool rotate_active;
+		private bool drag_active;
+		private double drag_x;
+		private double drag_y;
+		
 		protected bool EnableGestureHandling
 		{
-			get => enableGestures;
+			get => handleGestures;
 			set
 			{
-				enableGestures = value;
+				handleGestures = value;
 				gesturesDrawable.Invalidate(false);
 			}
 		}
@@ -95,6 +99,9 @@ namespace Eto.Test.Sections.Behaviors
 				LogZoomEvent(control, "Zoom Gesture", e);
 				gesturesDrawable.Invalidate();
 			};
+			
+			control.DragGesture += HandleDrag;
+			
 		}
 
 		private void HandlePan(object sender, PanGestureEventArgs e)
@@ -119,6 +126,20 @@ namespace Eto.Test.Sections.Behaviors
 			LogPanEvent(control, "Pan Gesture", e);
 			gesturesDrawable.Invalidate();
 		}
+
+		private void HandleDrag(object sender, DragGestureEventArgs e)
+		{
+			Control control = sender as Control;
+			if (e.Pressed)
+			{
+				drag_x = e.deltaX;
+				drag_y = e.deltaY;
+			}
+			drag_active = true;
+			LogDragEvent(control, "Drag Gesture", e);
+			gesturesDrawable.Invalidate();
+		}
+
 
 		Control DefineGestureWindow()
 		{
@@ -178,8 +199,6 @@ namespace Eto.Test.Sections.Behaviors
 					double cx = center_x + pan_x;
 					double cy = center_y + pan_y;
 					RectangleF bound = new RectangleF((float)(cx - 10), (float)(cy - 10), 20, 20);
-
-					var p2 = new PointF((float)(swipe_x+center_x), (float)(swipe_y+center_y));
 					args.Graphics.DrawEllipse(Colors.Aquamarine, bound);
 				}
 
@@ -188,10 +207,34 @@ namespace Eto.Test.Sections.Behaviors
 				{
 
 					RectangleF bound = new RectangleF((float)(center_x - 25), (float)(center_y - 25), 50, 50);
-
-					var p2 = new PointF((float)(swipe_x+center_x), (float)(swipe_y+center_y));
 					args.Graphics.DrawEllipse(Colors.Gold, bound);
 				}
+				
+				// drag rectangle
+				if (drag_active) 
+				{
+					if (drag_x < (-1 * center_x + 20))
+					{
+						drag_x = center_x * -1;
+					}
+					if (drag_x > (center_x))
+					{
+						drag_x = center_x;
+					}
+					if (drag_y < (-1 * center_y + 20))
+					{
+						drag_y = center_y * -1;
+					}
+					if (drag_y > (center_y))
+					{
+						drag_y = center_y;
+					}
+					double cx = center_x + drag_x;
+					double cy = center_y + drag_y;
+					RectangleF bound = new RectangleF((float)(cx - 10), (float)(cy - 10), 20, 20);
+					args.Graphics.DrawRectangle(Colors.Orange, bound);
+				}
+				
 			};
 			return gesturesDrawable;
 		}
@@ -199,14 +242,14 @@ namespace Eto.Test.Sections.Behaviors
 		void LogSwipeEvent(object sender, string type, SwipeGestureEventArgs e)
 		{
 			Console.WriteLine("{0}, VelocityX: {1}, VelocityY: {2}", type, e.VelocityX, e.VelocityY);
-			if (enableGestures == true)
+			if (handleGestures == true)
 				e.Handled = true;
 		}
 
 		void LogLongpressEvent(object sender, string type, LongPressGestureEventArgs e)
 		{
 			Console.WriteLine("{0}, Pressed: {1}, N Press: {2} X: {3} Y: {4}", type, e.Pressed, e.NPress, e.X, e.Y);
-			if (enableGestures == true)
+			if (handleGestures == true)
 				e.Handled = true;
 		}
 
@@ -214,7 +257,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 
 			Console.WriteLine("{0}, Direction: {1}, Offset: {2}", type, e.Direction, e.Offset);
-			if (enableGestures == true)
+			if (handleGestures == true)
 				e.Handled = true;
 		}
 
@@ -222,14 +265,22 @@ namespace Eto.Test.Sections.Behaviors
 		{
 
 			Console.WriteLine("{0}, Angle Delta: {1} Rotation {2}", type, e.AngleDelta, rotate_angle);
-			if (enableGestures == true)
+			if (handleGestures == true)
 				e.Handled = true;
 		}
 
 		void LogZoomEvent(object sender, string type, ZoomGestureEventArgs e)
 		{
 			Console.WriteLine("{0}, Scale Delta: {1}", type, e.ScaleDelta);
-			if (enableGestures == true)
+			if (handleGestures == true)
+				e.Handled = true;
+		}
+		
+		void LogDragEvent(object sender, string type, DragGestureEventArgs e)
+		{
+
+			Console.WriteLine("{0}, Pressed: {1}, Fingers: {2}, Delta: {3}x{4} ", type, e.Pressed, e.NPress, e.deltaX, e.deltaY);
+			if (handleGestures == true)
 				e.Handled = true;
 		}
 

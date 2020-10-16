@@ -7,6 +7,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Eto.GtkSharp.Forms
@@ -88,6 +89,8 @@ namespace Eto.GtkSharp.Forms
 		private static Gtk.GestureZoom zoom;
 		private static Gtk.GesturePan pan;
 		private static Gtk.GestureLongPress longpress;
+		private static Gtk.GestureDrag drag;
+		
 #endif
 		Color? backgroundColor;
 
@@ -475,6 +478,15 @@ namespace Eto.GtkSharp.Forms
 					zoom.PropagationPhase = Gtk.PropagationPhase.Bubble;
 					zoom.ScaleChanged += Connector.HandleZoomGestureEvent;					
 					break;
+				case Eto.Forms.Control.DragGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					drag = new Gtk.GestureDrag(Control);
+					drag.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					drag.DragBegin += Connector.HandleDragStartGestureEvent;
+					drag.Update += Connector.HandleDragGestureEvent;
+					drag.End += Connector.HandleDragDoneGestureEvent;
+					break;
+				
 #endif
 				case Eto.Forms.Control.GotFocusEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.FocusChangeMask);
@@ -836,6 +848,65 @@ namespace Eto.GtkSharp.Forms
 					args.RetVal = e.Handled;
 				}
 			}
+			
+			
+			[GLib.ConnectBefore]
+			public void HandleDragStartGestureEvent(object o, Gtk.DragBeginArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				
+				// capture the 
+				drag.GetStartPoint(out double X, out double Y);
+
+				var e = new DragGestureEventArgs (true, (int)drag.NPoints, X ,Y, 0, 0);
+				if (e != null)
+				{
+					handler.Callback.OnDragGesture(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			
+			[GLib.ConnectBefore]
+			public void HandleDragGestureEvent(object o, Gtk.UpdateArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				drag.GetStartPoint(out double Xstart, out double Ystart);
+				drag.GetBoundingBoxCenter (out double X, out double Y);
+				
+				// usually we will want a relative delta here
+				double deltaX = X - Xstart;
+				double deltaY = Y - Ystart;
+				
+				
+				var e = new DragGestureEventArgs (true, (int)drag.NPoints, Xstart, Ystart, deltaX, deltaY);
+				if (e != null)
+				{
+					handler.Callback.OnDragGesture(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleDragDoneGestureEvent(object o, Gtk.EndArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				var e = new DragGestureEventArgs(false, 0,0,0, 0, 0);
+				if (e != null)
+				{
+					handler.Callback.OnDragGesture(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
 #endif
 		
 			public virtual void FocusInEvent(object o, Gtk.FocusInEventArgs args)

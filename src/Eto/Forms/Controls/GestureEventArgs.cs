@@ -16,7 +16,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Swipe gesture 
 		/// </summary>
-		Swap = 0x01,
+		Swipe = 0x01,
 		/// <summary>
 		/// long press gesture
 		/// </summary>
@@ -36,7 +36,11 @@ namespace Eto.Forms
 		/// <summary>
 		/// zoom/expand
 		/// </summary>
-		Zoom = 0x20
+		Zoom = 0x20,
+		/// <summary>
+		/// drag is an XY pan
+		/// </summary>
+		Drag = 0x40
 	}
 
 
@@ -101,6 +105,7 @@ namespace Eto.Forms
 		/// </summary>
 		Right
 	}
+	
 	/// <summary>
 	/// touch pan gesture event arguments.
 	/// </summary>
@@ -254,5 +259,61 @@ namespace Eto.Forms
 		/// <value><c>true</c> if handled; otherwise, <c>false</c>.</value>
 		public bool Handled { get; set; }
 	}
+	
+	/// <summary>
+	/// touch pan gesture event arguments.
+	/// </summary>
+	public class DragGestureEventArgs : EventArgs
+	{
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DragGestureEventArgs"/> class.
+		/// </summary>
+		/// <param name="Pressed">Are we touching...</param>
+		/// <param name="NPress">how many fingers do we have.</param>
+		/// <param name="startX">Starting X position.</param>
+		/// <param name="startY">Starting Y position.</param>
+		/// <param name="deltaX">Offset in the X direction.</param>
+		/// <param name="deltaY">Offset int the Y direction.</param>
+		public DragGestureEventArgs(bool Pressed, int NPress, double startX, double startY, double deltaX, double deltaY)
+		{
+			this.Pressed = Pressed;
+			this.NPress = NPress;
+			
+			this.startX = startX;
+			this.startY = startY;
+			this.deltaX = deltaX;
+			this.deltaY = deltaY;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <value>The location of the mouse cursor.</value>
+		public bool Pressed { get; private set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <value>The location of the mouse cursor.</value>
+		public int NPress { get; private set; }
+		
+		public double startX { get; private set; }
+		public double startY { get; private set; }
+		
+		public double deltaX { get; private set; }
+		public double deltaY { get; private set; }
+
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the event is handled.
+		/// </summary>
+		/// <remarks>
+		/// Set this to true if you perform logic with the event and wish the default event to be cancelled.
+		/// Some platforms may cause audio feedback if the user's action does not perform anything.
+		/// </remarks>
+		/// <value><c>true</c> if handled; otherwise, <c>false</c>.</value>
+		public bool Handled { get; set; }
+	}
+
 
 }

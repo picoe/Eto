@@ -523,6 +523,29 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.DragGestureEvent"/> event
+		/// </summary>
+		public const string DragGestureEvent = "Control.DragGesture";
+
+		/// <summary>
+		/// Occurs when we get a drag gesture
+		/// </summary>
+		public event EventHandler<DragGestureEventArgs> DragGesture
+		{
+			add { Properties.AddHandlerEvent(DragGestureEvent, value); }
+			remove { Properties.RemoveEvent(DragGestureEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragGesture"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragGesture(DragGestureEventArgs e)
+		{
+			Properties.TriggerEvent(DragGestureEvent, this, e);
+		}
+
+		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="Control.GotFocus"/> event
 		/// </summary>
 		public const string GotFocusEvent = "Control.GotFocus";
@@ -531,7 +554,7 @@ namespace Eto.Forms
 		/// Occurs when the control receives keyboard focus.
 		/// </summary>
 		/// <remarks>
-		/// Note that not all controls can recieve keyboard focus.
+		/// Note that not all controls can receive keyboard focus.
 		/// </remarks>
 		/// <seealso cref="LostFocus"/>
 		public event EventHandler<EventArgs> GotFocus
@@ -847,7 +870,8 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnPanH(null), Control.PanHGestureEvent);
 			EventLookup.Register<Control>(c => c.OnPanV(null), Control.PanVGestureEvent);
 			EventLookup.Register<Control>(c => c.OnLongpress(null), Control.LongPressGestureEvent);
-			EventLookup.Register<Control>(c => c.OnZoomExpand(null), Control.ZoomGestureEvent);			
+			EventLookup.Register<Control>(c => c.OnZoomExpand(null), Control.ZoomGestureEvent); 
+			EventLookup.Register<Control>(c => c.OnDragGesture(null), Control.DragGestureEvent);		
 			EventLookup.Register<Control>(c => c.OnShown(null), Control.ShownEvent);
 			EventLookup.Register<Control>(c => c.OnSizeChanged(null), Control.SizeChangedEvent);
 			EventLookup.Register<Control>(c => c.OnTextInput(null), Control.TextInputEvent);
@@ -1624,6 +1648,12 @@ namespace Eto.Forms
 			/// Raises the swipe gesture event.
 			/// </summary>
 			void OnZoomExpand(Control widget, ZoomGestureEventArgs e);
+			
+			/// <summary>
+			/// Raises the drag gesture event.
+			/// </summary>
+			void OnDragGesture(Control widget, DragGestureEventArgs e);
+			
 			/// <summary>
 			/// Raises the got focus event.
 			/// </summary>
@@ -1795,6 +1825,15 @@ namespace Eto.Forms
 			{
 				widget.Platform.Invoke(() => widget.OnZoomExpand(e));
 			}
+			/// <summary>
+			/// Raises the drag gesture event.
+			/// </summary>
+			public void OnDragGesture(Control widget, DragGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnDragGesture(e));
+			}
+
+			
 			/// <summary>/// 
 			/// Raises the got focus event.
 			/// </summary>
