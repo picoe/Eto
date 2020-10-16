@@ -102,7 +102,7 @@ jobs:
         xcode-version: latest
 
     - name: Build
-      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /bl:artifacts/log/Build.Mac.binlog
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /p:EnableCodeSignBuild=True /bl:artifacts/log/Build.Mac.binlog
 
     - name: Build VS/Mac Extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Mac.binlog

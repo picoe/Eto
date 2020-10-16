@@ -14,15 +14,18 @@
 
     <!-- minimum installed version of mono required to run -->
     <MacMonoMinimumVersion Condition="$(MacMonoMinimumVersion) == ''">6.0</MacMonoMinimumVersion>
+
+    <!-- Set the default code signing entitlements for Mono if none specified -->
+    <CodeSignEntitlements Condition="$(CodeSignEntitlements) == ''">$(MSBuildThisFileDirectory)Mono.entitlements</CodeSignEntitlements>
   </PropertyGroup>
-  
-  <Target Name="MacTouchApp" Condition="$(MacBuildBundle) == 'True'">
+
+  <Target Name="MacTouchApp">
     <!-- This makes it so we can debug in VS for Mac right away without building first -->
     <MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != '' AND $(TargetFramework) != '' AND $(RuntimeIdentifier) == ''" />
   </Target>
 
   <!-- Build target -->
-  <Target Name="BuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle" Condition="$(MacBuildBundle) == 'True'" Outputs="$(OutputAppPath)">
+  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle;$(MacBuildAppBundleDependsOn)" Outputs="$(OutputAppPath)">
     <!-- bundle mono with mkbundle -->
     <CallTarget Targets="MacBundleMono" Condition="$(MacBundleMono) == 'True'" />
     <!-- copy executables and run with installed mono -->
