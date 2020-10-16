@@ -1,0 +1,47 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
+
+  <PropertyGroup>
+    <!-- File Name of the DMG -->
+    <DmgName Condition="$(DmgName) == ''">$(MacBundleName)</DmgName>
+    <!-- DMG volume name -->
+    <DmgVolumeName Condition="$(DmgVolumeName) == ''">$(DmgName)</DmgVolumeName>
+    <!-- Where to put the DMG -->
+    <DmgOutputPath Condition="$(DmgOutputPath) == ''">$(OutputPath)</DmgOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_MacDmgTempPath>$(IntermediateOutputPath)macdmg\</_MacDmgTempPath>
+    <_MacDmgContentPath>$(_MacDmgTempPath)content\</_MacDmgContentPath>
+    <_DmgPath>$(DmgOutputPath)$(DmgName).dmg</_DmgPath>
+  </PropertyGroup>
+
+  <Target Name="MacBuildDmg_Unsupported" AfterTargets="MacBuildAppBundle" DependsOnTargets="$(MacBuildDmgDependsOnTargets)" Condition="$(IsMac) != 'True'">
+    <Warning Text="Can only build dmg on macOS" />
+  </Target>
+
+  <Target Name="MacBuildDmg" AfterTargets="MacBuildAppBundle" DependsOnTargets="$(MacBuildDmgDependsOnTargets)" Condition="$(IsMac) == 'True'">
+
+    <Message Text="Creating $(DmgName).dmg" />
+
+    <RemoveDir Directories="$(_MacDmgTempPath)" />
+    <Delete Files="$(_DmgPath)" />
+
+    <ItemGroup>
+      <_DmgAppFiles Include="$(OutputAppPath)**\*" TargetPath="$([System.IO.Path]::GetFileName($(OutputAppPath.TrimEnd('/'))))\%(RecursiveDir)%(Filename)%(Extension)" />
+      <_DmgFiles Include="@(_DmgAppFiles)" TargetPath="$([System.IO.Path]::GetFileName($(OutputAppPath.TrimEnd('/'))))\%(RecursiveDir)%(Filename)%(Extension)" />
+      <_DmgFiles Include="@(DmgContent)" TargetPath="%(RecursiveDir)%(Filename)%(Extension)" Condition="%(TargetPath) == ''"/>
+      <_DmgFiles Include="@(DmgContent)" Condition="%(TargetPath) != ''"/>
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_DmgFiles)" DestinationFiles="@(_DmgFiles->'$(_MacDmgContentPath)%(TargetPath)')" />
+
+    <Exec Command='hdiutil create "$(_DmgPath)" -ov -quiet -volname "$(DmgVolumeName)" -fs HFS+ -srcfolder "$(_MacDmgContentPath)"' />
+
+    <Message Text="$(MSBuildProjectName) -> $(_DmgPath)" Importance="high" />
+  </Target>
+
+  <Target Name="MacCleanDmg" AfterTargets="Clean" Condition="$(MacIsBuildingBundle) != 'True'">
+    <Delete Files="$(_DmgPath)" />
+  </Target>
+
+</Project>

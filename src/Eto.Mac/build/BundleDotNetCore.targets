@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacTouchApp">
 
   
-  <PropertyGroup Condition="$(MacBuildBundle) == 'True'">
+  <PropertyGroup>
     <!-- properties you can override in your project file -->
   
     <!-- Set to True to automatically publish the bundle during build -->
@@ -10,6 +10,9 @@
     <!-- Set to True to bundle .NET Core runtime, false to use a shared runtime (useful to speed up debug builds) -->
     <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(Configuration) == 'Release'">True</MacBundleDotNet>
     <MacBundleDotNet Condition="$(MacBundleDotNet) == ''">False</MacBundleDotNet>
+
+    <!-- Set the default code signing entitlements for .NET Core if none specified -->
+    <CodeSignEntitlements Condition="$(CodeSignEntitlements) == ''">$(MSBuildThisFileDirectory)DotNetCore.entitlements</CodeSignEntitlements>
   </PropertyGroup>
 
   <ItemGroup Condition="$(MacBundleRuntimeIdentifiers) == ''">
@@ -17,29 +20,26 @@
     <MacBundleRuntimeIdentifiers Include="$(RuntimeIdentifiers)" Condition="$(RuntimeIdentifiers) != ''" />
     <MacBundleRuntimeIdentifiers Include="$(RuntimeIdentifier)" Condition="$(RuntimeIdentifier) != ''" />
   </ItemGroup>  
-  <PropertyGroup  Condition="$(MacBundleRuntimeIdentifiers) == ''">
-
-  </PropertyGroup>
   <ItemGroup>
     <!-- runtime identifiers have been explicitly set -->
     <MacBundleRuntimeIdentifiers Include="$(MacBundleRuntimeIdentifiers)" Condition="$(MacBundleRuntimeIdentifiers) != ''" />
   </ItemGroup>
 
-  <Target Name="MacTouchApp" Condition="$(MacBuildBundle) == 'True'">
+  <Target Name="MacTouchApp">
     <!-- This makes it so we can debug in VS for Mac right away without building first -->
     <MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != '' AND $(TargetFramework) != '' AND $(RuntimeIdentifier) != ''" />
   </Target>
   
   <!-- Build target to automatically publish -->
-  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" Condition="$(MacAutoPublishBundle) == 'True' AND $(MacIsBuildingBundle) != 'True'" Outputs="$(OutputAppPath)">
+  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="$(MacBuildAppBundleDependsOn)" Condition="$(MacAutoPublishBundle) == 'True' AND $(MacIsBuildingBundle) != 'True'" Outputs="$(OutputAppPath)">
     <Error Text="No RuntimeIdentifiers or MacRuntimeIdentifiers have been specified" Condition="@(MacBundleRuntimeIdentifiers->Count()) == 0" />
     <PropertyGroup>
       <MacTempBuildPath>$(IntermediateOutputPath)macbuild\</MacTempBuildPath>
-      
+
       <MacBuildProperties>MacIsBuildingBundle=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacBundlingProject=$(MSBuildProjectFullPath)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);TargetFramework=$(TargetFramework)</MacBuildProperties>
-      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishSingleFile=True</MacBuildProperties>
+      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release' AND $(MacEnableCodeSigning) != 'True'">$(MacBuildProperties);PublishSingleFile=True</MacBuildProperties>
       <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishTrimmed=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);SelfContained=$(MacBundleDotNet)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacTempBuildPath=$(MacTempBuildPath)</MacBuildProperties>
@@ -55,7 +55,7 @@
              Condition="$([System.String]::Copy(%(MacBundleRuntimeIdentifiers.Identity)).StartsWith('osx'))" />
   </Target>
 
-  <Target Name="MacCleanAppBundle" AfterTargets="AfterClean" Condition="$(MacBuildBundle) == 'True'">
+  <Target Name="MacCleanAppBundle" AfterTargets="AfterClean">
     <RemoveDir Directories="$(MacTempBuildPath)" />
   </Target>
   
@@ -70,7 +70,7 @@
   </Target>
   
   <!-- Publish with bundled runtime -->
-  <Target Name="MacPublishAppBundle" AfterTargets="Publish" Condition="$(MacBuildBundle) == 'True'" DependsOnTargets="MacInitializeBundle">
+  <Target Name="MacPublishAppBundle" AfterTargets="Publish" DependsOnTargets="MacInitializeBundle">
     <ItemGroup>
       <LauncherFiles Include="$(PublishDir)**\*" />
       <LauncherFiles Remove="$(PublishDir)**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />

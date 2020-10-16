@@ -275,4 +275,9 @@
 
   <Import Project="BundleMono.targets" Condition="$(MacUseDotNetCore) != 'True' AND $(MacBuildBundle) == 'True'" />
   <Import Project="BundleDotNetCore.targets" Condition="$(MacUseDotNetCore) == 'True' AND $(MacBuildBundle) == 'True'" />
+
+  <Import Project="BuildDmg.targets" Condition="$(MacBuildDmg) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="CodeSign.targets" Condition="$(MacEnableCodeSigning) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="Notarization.targets" Condition="$(MacEnableNotarization) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
+
 </Project>
