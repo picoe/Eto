@@ -12,6 +12,20 @@ using System.Diagnostics;
 
 namespace Eto.WinForms.Forms
 {
+
+	public enum GestureTouchSequence
+	{
+		Down,
+		Move,
+		Up
+	}
+
+	public interface GestureWatcher
+	{
+		void Feed_Gestures(GestureTouchSequence state, int Npresses, MouseEventArgs e);
+
+	}
+
 	public interface IWindowsControl: Control.IHandler
 	{
 		bool InternalVisible { get; }
@@ -285,6 +299,9 @@ namespace Eto.WinForms.Forms
 			YScale = true;
 			Control.Margin = swf.Padding.Empty;
 			Control.Tag = this;
+
+			// define gesture handlers for the control
+			Define_Gesture_Handlers();
 		}
 
 		public virtual swf.DockStyle DockStyle
@@ -419,6 +436,80 @@ namespace Eto.WinForms.Forms
 						Control.MouseWheel += HandleMouseWheel;
 					}
 					break;
+				case Eto.Forms.Control.SwipeGestureEvent:					
+					// should there be a bubble gesture events
+					
+					break;
+				case Eto.Forms.Control.RotateGestureEvent:
+					// should there be a bubble gesture events					
+					//Callback.OnRotate(Widget, args);
+					/*
+					var args = GetDragEventArgs(e);
+					Callback.OnDragOver(Widget, args);
+					e.Effect = args.Effects.ToSwf();
+					*/
+
+					break;
+				case Eto.Forms.Control.PanHGestureEvent:
+					// should there be a bubble gesture events
+					break;
+				case Eto.Forms.Control.PanVGestureEvent:
+					// should there be a bubble gesture events
+					break;
+				case Eto.Forms.Control.LongPressGestureEvent:
+					// should there be a bubble gesture events
+					break;
+				case Eto.Forms.Control.DragGestureEvent:
+					// should there be a bubble gesture events
+
+					break;
+					/*
+				case Eto.Forms.Control.SwipeGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					swipe = new Gtk.GestureSwipe(Control);
+					swipe.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					swipe.Swipe += Connector.HandleSwipeGestureEvent;
+					break;
+				case Eto.Forms.Control.RotateGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					rotate = new Gtk.GestureRotate(Control);
+					rotate.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					rotate.AngleChanged += Connector.HandleRotateGestureEvent;
+					break;
+				case Eto.Forms.Control.PanHGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					pan = new Gtk.GesturePan(Control, Gtk.Orientation.Horizontal);
+					pan.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					pan.Pan += Connector.HandlePanGestureEvent;
+					break;
+				case Eto.Forms.Control.PanVGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					pan = new Gtk.GesturePan(Control, Gtk.Orientation.Vertical);
+					pan.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					pan.Pan += Connector.HandlePanGestureEvent;
+					break;
+				case Eto.Forms.Control.LongPressGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					longpress = new Gtk.GestureLongPress(Control);
+					longpress.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					longpress.Pressed += Connector.HandleLongPressGestureEvent;
+					longpress.End += Connector.HandleLongPressDoneGestureEvent;
+					break;
+				case Eto.Forms.Control.ZoomGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					zoom = new Gtk.GestureZoom(Control);
+					zoom.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					zoom.ScaleChanged += Connector.HandleZoomGestureEvent;
+					break;
+				case Eto.Forms.Control.DragGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					drag = new Gtk.GestureDrag(Control);
+					drag.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					drag.DragBegin += Connector.HandleDragStartGestureEvent;
+					drag.Update += Connector.HandleDragGestureEvent;
+					drag.End += Connector.HandleDragDoneGestureEvent;
+					break;
+					*/
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.GotFocus += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 					break;
@@ -517,24 +608,70 @@ namespace Eto.WinForms.Forms
 				Callback.OnMouseDown(Widget, ee);
 		}
 
+		
 		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
 		{
+			
 			if (ShouldCaptureMouse)
 				Control.Capture = false;
-			Callback.OnMouseUp(Widget, e.ToEto(Control));
+			var args = e.ToEto(Control);
+			// feed gesture recognizers here
+			Feed_Gesture_Handlers(GestureTouchSequence.Move, 1, args);
+			Callback.OnMouseUp(Widget, args);
 		}
 
 		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
 		{
-			Callback.OnMouseMove(Widget, e.ToEto(Control));
+			var args = e.ToEto(Control);
+			// feed gesture recognizers here
+			Feed_Gesture_Handlers(GestureTouchSequence.Move, 1, args);
+			Callback.OnMouseMove(Widget, args);
 		}
 
 		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
-			Callback.OnMouseDown(Widget, e.ToEto(Control));
+			var args = e.ToEto(Control);
+			// feed gesture recognizers here
+			Feed_Gesture_Handlers(GestureTouchSequence.Down, 1, args);
+			Callback.OnMouseDown(Widget, args);
 			if (ShouldCaptureMouse)
 				Control.Capture = true;
 		}
+
+
+		#region Gesture Simulation
+
+		private List<GestureWatcher> GestureWatchers;
+
+
+		private void Define_Gesture_Handlers()
+		{
+			GestureWatchers = new List<GestureWatcher>();
+
+			// add gesture watchers for each type...
+
+			//GestureWatchers.Add();
+			//GestureWatchers.Add();
+			//GestureWatchers.Add();
+			//GestureWatchers.Add();
+			//GestureWatchers.Add();
+		}
+
+		/// <summary>
+		/// Send mouse input to the watchers 
+		/// </summary>
+		/// <param name="state"></param>
+		/// <param name="Npresses"></param>
+		/// <param name="e"></param>
+		private void Feed_Gesture_Handlers(GestureTouchSequence state, int Npresses, MouseEventArgs e)
+		{
+			foreach (var w in GestureWatchers)
+			{
+				w.Feed_Gestures(state, Npresses, e);
+			}
+		}
+
+		#endregion
 
 		public virtual string Text
 		{
