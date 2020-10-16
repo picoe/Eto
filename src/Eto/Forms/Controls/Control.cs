@@ -385,6 +385,142 @@ namespace Eto.Forms
 		{
 			Properties.TriggerEvent(MouseWheelEvent, this, e);
 		}
+		
+				/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.Swipe"/> event
+		/// </summary>
+		public const string SwipeGestureEvent = "Control.Swipe";
+
+		/// <summary>
+		/// Occurs when we get a swipe gesture
+		/// </summary>
+		public event EventHandler<SwipeGestureEventArgs> Swipe
+		{
+			add { Properties.AddHandlerEvent(SwipeGestureEvent, value); }
+			remove { Properties.RemoveEvent(SwipeGestureEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Swipe"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnSwipe(SwipeGestureEventArgs e)
+		{
+			Properties.TriggerEvent(SwipeGestureEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.Rotate"/> event
+		/// </summary>
+		public const string RotateGestureEvent = "Control.Rotate";
+
+		/// <summary>
+		/// Occurs when we get a rotate gesture
+		/// </summary>
+		public event EventHandler<RotateGestureEventArgs> Rotate
+		{
+			add { Properties.AddHandlerEvent(RotateGestureEvent, value); }
+			remove { Properties.RemoveEvent(RotateGestureEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Rotate"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnRotate(RotateGestureEventArgs e)
+		{
+			Properties.TriggerEvent(RotateGestureEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.PanH"/> event
+		/// </summary>
+		public const string PanHGestureEvent = "Control.PanH";
+
+		/// <summary>
+		/// Occurs when we get a pan gesture
+		/// </summary>
+		public event EventHandler<PanGestureEventArgs> PanH
+		{
+			add { Properties.AddHandlerEvent(PanHGestureEvent, value); }
+			remove { Properties.RemoveEvent(PanHGestureEvent, value); }
+		}
+		/// <summary>
+		/// Raises the <see cref="PanH"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnPanH(PanGestureEventArgs e)
+		{
+			Properties.TriggerEvent(PanHGestureEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.PanV"/> event
+		/// </summary>
+		public const string PanVGestureEvent = "Control.PanV";
+
+		/// <summary>
+		/// Occurs when we get a pan gesture
+		/// </summary>
+		public event EventHandler<PanGestureEventArgs> PanV
+		{
+			add { Properties.AddHandlerEvent(PanVGestureEvent, value); }
+			remove { Properties.RemoveEvent(PanVGestureEvent, value); }
+		}
+		/// <summary>
+		/// Raises the <see cref="PanV"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnPanV(PanGestureEventArgs e)
+		{
+			Properties.TriggerEvent(PanVGestureEvent, this, e);
+		}
+
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.LongPressGestureEvent"/> event
+		/// </summary>
+		public const string LongPressGestureEvent = "Control.LongPress";
+
+		/// <summary>
+		/// Occurs when we get a longpress gesture
+		/// </summary>
+		public event EventHandler<LongPressGestureEventArgs> Longpress
+		{
+			add { Properties.AddHandlerEvent(LongPressGestureEvent, value); }
+			remove { Properties.RemoveEvent(LongPressGestureEvent, value); }
+		}
+		/// <summary>
+		/// Raises the <see cref="Longpress"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnLongpress(LongPressGestureEventArgs e)
+		{
+			Properties.TriggerEvent(LongPressGestureEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.ZoomGestureEvent"/> event
+		/// </summary>
+		public const string ZoomGestureEvent = "Control.ZoomExpand";
+
+		/// <summary>
+		/// Occurs when we get a zoom gesture
+		/// </summary>
+		public event EventHandler<ZoomGestureEventArgs> ZoomExpand
+		{
+			add { Properties.AddHandlerEvent(ZoomGestureEvent, value); }
+			remove { Properties.RemoveEvent(ZoomGestureEvent, value); }
+		}
+		
+		/// <summary>
+		/// Raises the <see cref="ZoomExpand"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnZoomExpand(ZoomGestureEventArgs e)
+		{
+			Properties.TriggerEvent(ZoomGestureEvent, this, e);
+		}
 
 		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="Control.GotFocus"/> event
@@ -706,6 +842,12 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnMouseMove(null), Control.MouseMoveEvent);
 			EventLookup.Register<Control>(c => c.OnMouseUp(null), Control.MouseUpEvent);
 			EventLookup.Register<Control>(c => c.OnMouseWheel(null), Control.MouseWheelEvent);
+			EventLookup.Register<Control>(c => c.OnSwipe(null), Control.SwipeGestureEvent);
+			EventLookup.Register<Control>(c => c.OnRotate(null), Control.RotateGestureEvent);
+			EventLookup.Register<Control>(c => c.OnPanH(null), Control.PanHGestureEvent);
+			EventLookup.Register<Control>(c => c.OnPanV(null), Control.PanVGestureEvent);
+			EventLookup.Register<Control>(c => c.OnLongpress(null), Control.LongPressGestureEvent);
+			EventLookup.Register<Control>(c => c.OnZoomExpand(null), Control.ZoomGestureEvent);			
 			EventLookup.Register<Control>(c => c.OnShown(null), Control.ShownEvent);
 			EventLookup.Register<Control>(c => c.OnSizeChanged(null), Control.SizeChangedEvent);
 			EventLookup.Register<Control>(c => c.OnTextInput(null), Control.TextInputEvent);
@@ -1459,6 +1601,30 @@ namespace Eto.Forms
 			/// </summary>
 			void OnMouseWheel(Control widget, MouseEventArgs e);
 			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnSwipe(Control widget, SwipeGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnRotate(Control widget, RotateGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnPanH(Control widget, PanGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnPanV(Control widget, PanGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnLongPress(Control widget, LongPressGestureEventArgs e);
+			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			void OnZoomExpand(Control widget, ZoomGestureEventArgs e);
+			/// <summary>
 			/// Raises the got focus event.
 			/// </summary>
 			void OnGotFocus(Control widget, EventArgs e);
@@ -1586,6 +1752,50 @@ namespace Eto.Forms
 					widget.OnMouseWheel(e);
 			}
 			/// <summary>
+			/// Raises the swipe gesture event.
+			/// </summary>
+			public void OnSwipe(Control widget, SwipeGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnSwipe(e));
+			}
+			/// <summary>
+			/// Raises the rotate gesture event.
+			/// </summary>
+			public void OnRotate(Control widget, RotateGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnRotate(e));
+			}
+			/// <summary>
+			/// Raises the horizontal pan gesture event.
+			/// </summary>
+			public void OnPanH(Control widget, PanGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnPanH(e));
+			}
+			/// <summary>
+			/// Raises the vertical pan gesture event.
+			/// </summary>
+			public void OnPanV(Control widget, PanGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnPanV(e));
+			}
+
+			/// <summary>
+			/// Raises the longpress gesture event.
+			/// </summary>
+			public void OnLongPress(Control widget, LongPressGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnLongpress(e));
+			}
+
+			/// <summary>
+			/// Raises the zoom gesture event.
+			/// </summary>
+			public void OnZoomExpand(Control widget, ZoomGestureEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnZoomExpand(e));
+			}
+			/// <summary>/// 
 			/// Raises the got focus event.
 			/// </summary>
 			public void OnGotFocus(Control widget, EventArgs e)
