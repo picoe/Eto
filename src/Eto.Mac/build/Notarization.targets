@@ -15,7 +15,8 @@
 
     <!--
       The notarization password. To use from the keychain (the default), use the following command:
-      xcrun altool -​-store-password-in-keychain-item "AC_PASSWORD" -u "<NotarizationUserName>" -p <secret_password>
+
+      xcrun altool - -store-password-in-keychain-item "AC_PASSWORD" -u "<NotarizationUserName>" -p <secret_password>
     -->
     <NotarizationPassword Condition="$(NotarizationPassword) == ''">@keychain:AC_PASSWORD</NotarizationPassword>
   </PropertyGroup>

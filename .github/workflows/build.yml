@@ -101,6 +101,14 @@ jobs:
         xamarin-mac-version: latest
         xcode-version: latest
 
+    - name: Import code signing certificate
+      uses: apple-actions/import-codesign-certs@v1
+      with:
+        p12-file-base64: ${{ secrets.DEVID_CERTIFICATE_P12 }}
+        p12-password: ${{ secrets.DEVID_CERTIFICATE_P12_PASSWORD }}
+
+    - run: xcrun altool --store-password-in-keychain-item "AC_PASSWORD" -u "${{ secrets.AC_USERNAME }}" -p "${{ secrets.AC_PASSWORD }}"
+
     - name: Build
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /p:EnableCodeSignBuild=True /bl:artifacts/log/Build.Mac.binlog
 
