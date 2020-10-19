@@ -1,21 +1,24 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
 
   <PropertyGroup>
-    <!-- search key for the code signing identity for the .app (partial strings match) -->
+    <!-- Search key for the code signing identity for the .app (partial strings match)
+         If empty, this will use the code signing identity if only a single identity is installed.
+     -->
     <CodeSigningKey Condition="$(CodeSigningKey) == ''"></CodeSigningKey>
-    <!-- search key for the code signing identity for the .dmg (partial strings match) -->
+    <!-- Search key for the code signing identity for the .dmg (partial strings match) -->
     <DmgCodeSigningKey Condition="$(DmgCodeSigningKey) == ''">$(CodeSigningKey)</DmgCodeSigningKey>
+    <!-- Code signing entitlements to use -->
+    <CodeSignEntitlements Condition="$(CodeSignEntitlements) == ''">$(MSBuildThisFileDirectory)CodeSign.entitlements</CodeSignEntitlements>
   </PropertyGroup>
 
   <PropertyGroup>
-    <MacBuildDmgDependsOnTargets>$(MacBuildDmgDependsOnTargets);MacCodeSignApp_Unsupported;MacCodeSignApp</MacBuildDmgDependsOnTargets>
+    <MacBuildDmgDependsOnTargets>MacCodeSignApp;$(MacBuildDmgDependsOnTargets)</MacBuildDmgDependsOnTargets>
   </PropertyGroup>
 
-  <Target Name="MacCodeSignApp_Unsupported" AfterTargets="MacBuildAppBundle" DependsOnTargets="$(MacCodeSignDependsOnTargets)" Condition="$(IsMac) != 'True'">
-    <Warning Text="Can only code sign an app on macOS" />
+  <Target Name="MacCodeSign" AfterTargets="MacBuildAppBundle" DependsOnTargets="$(MacCodeSignDependsOnTargets)">
   </Target>
 
-  <Target Name="MacCodeSignApp" AfterTargets="MacBuildAppBundle" DependsOnTargets="$(MacCodeSignDependsOnTargets)" Condition="$(IsMac) == 'True'">
+  <Target Name="MacCodeSignApp" DependsOnTargets="MacBuildAppBundle">
 
     <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_MacResolveCodeSignIdentity" Properties="CodeSignSearchKey=$(CodeSigningKey)" >
       <Output TaskParameter="TargetOutputs" PropertyName="ResolvedCodeSigningKey" />
@@ -32,15 +35,19 @@
     </ItemGroup>
 
     <Exec Command='codesign --force %(_CodeSignFiles.CodeSignOptions) --sign "$(ResolvedCodeSigningKey)" "@(_CodeSignFiles)"' />
+
+    <Message Text="Code signed $(OutputAppPath)" Importance="high" />
   </Target>
 
-  <Target Name="MacCodeSignDmg" AfterTargets="MacBuildDmg" Condition="$(IsMac) == 'True'">
+  <Target Name="MacCodeSignDmg" DependsOnTargets="MacBuildDmg" Condition="$(EnableDmgBuild) == 'True'">
 
     <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_MacResolveCodeSignIdentity" Properties="CodeSignSearchKey=$(DmgCodeSigningKey)" >
       <Output TaskParameter="TargetOutputs" PropertyName="ResolvedDmgCodeSigningKey" />
     </MSBuild>
 
     <Exec Command='codesign --force --sign "$(ResolvedDmgCodeSigningKey)" "$(_DmgPath)"' />
+    
+    <Message Text="Code signed $(_DmgPath)" Importance="high" />
   </Target>
 
   <!-- Resolve a code sign identity.  Parameters: CodeSignSearchKey -->

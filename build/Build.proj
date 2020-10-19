@@ -158,12 +158,6 @@
     <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True" />
     <MSBuild Projects="$(SourceDir)Eto.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)" />
 
-    <!-- When building windows, assume xamarin.mac is installed and build XamMac2 platform 
-      Note: works when compiling through VS 2017 but not msbuild command line.. why?
-      <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Eto_XamMac2_modern:$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Mac" Condition="$(OSPlatform) == 'Windows'"/>
-      <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Eto_XamMac2_net45:$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Mac" Condition="$(OSPlatform) == 'Windows'"/>
-      -->
-
     <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True"/>
     <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)"/>
   </Target>

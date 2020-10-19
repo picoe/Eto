@@ -17,4 +17,16 @@
   
   <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
 
+  <PropertyGroup Condition="$(IsMac) == 'True'">
+    <MacBuildDmgDependsOnTargets>MacCreateDmg;MacBeautifyDmg</MacBuildDmgDependsOnTargets>
+    <MacCodeSignDependsOnTargets>MacCodeSignApp;MacCodeSignDmg</MacCodeSignDependsOnTargets>
+    <MacNotarizeDependsOnTargets>MacNotarizeDmg;MacStapleDmg</MacNotarizeDependsOnTargets>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(IsMac) != 'True'">
+    <MacBuildDmgDependsOnTargets>MacPackagingUnsupported</MacBuildDmgDependsOnTargets>
+    <MacCodeSignDependsOnTargets>MacPackagingUnsupported</MacCodeSignDependsOnTargets>
+    <MacNotarizeDependsOnTargets>MacPackagingUnsupported</MacNotarizeDependsOnTargets>
+  </PropertyGroup>
+
 </Project>

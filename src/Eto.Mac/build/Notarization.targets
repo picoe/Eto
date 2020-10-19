@@ -21,12 +21,10 @@
     <NotarizationPassword Condition="$(NotarizationPassword) == ''">@keychain:AC_PASSWORD</NotarizationPassword>
   </PropertyGroup>
 
-  <Target Name="MacNotarize_Unsupported" AfterTargets="MacBuildDmg_Unsupported" DependsOnTargets="$(MacNotarizeDependsOnTargets)" Condition="$(IsMac) != 'True'">
-    <Warning Text="Can only notarize on macOS" />
+  <Target Name="MacNotarize" AfterTargets="MacCodeSignDmg" DependsOnTargets="$(MacNotarizeDependsOnTargets)" Condition="$(EnableDmgBuild) == 'True'">
   </Target>
 
-  <Target Name="MacNotarize" AfterTargets="MacBuildDmg" DependsOnTargets="$(MacNotarizeDependsOnTargets)" Condition="$(IsMac) == 'True'">
-
+  <Target Name="MacNotarizeDmg" DependsOnTargets="MacBuildDmg">
     <PropertyGroup>
       <_DmgZipPath>$(_MacDmgTempPath)$(DmgName).zip</_DmgZipPath>
 
@@ -37,7 +35,7 @@
     </PropertyGroup>
 
     <!-- Notarization could take a while, so always show this message -->
-    <Message Text="Notarizing $(DmgName).dmg" Importance="high" />
+    <Message Text="Notarizing $(_DmgPath)" Importance="high" />
 
     <Exec Command='/usr/bin/ditto -c -k --keepParent "$(_DmgPath)" "$(_DmgZipPath)"' />
 
@@ -82,7 +80,7 @@
 
   </Target>
 
-  <Target Name="MacStapler" AfterTargets="MacNotarize" Condition="$(EnableNotarizationStapler) == 'True' AND $(IsMac) == 'True'">
+  <Target Name="MacStapleDmg" DependsOnTargets="MacNotarizeDmg" Condition="$(EnableNotarizationStapler) == 'True'">
     <!-- 
       "Notarization completes for most software within 5 minutes, and for 98% of software within 15"
       So, we keep retrying every 30 seconds for 15 minutes.
@@ -90,7 +88,7 @@
     <Message Text="Checking notarization status" />
 
     <PropertyGroup>
-      <!-- lazy man's way of doing a loop in msbuild.. -->
+      <!-- lazy man's way of doing a loop in msbuild.. 30 iterations x 30 seconds = 15 minutes max. -->
       <_Retries>1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30</_Retries>
     </PropertyGroup>
     <ItemGroup>
@@ -130,7 +128,7 @@
     <!-- success if we got here, so staple the DMG -->
     <Exec Command='xcrun stapler staple "$(_DmgPath)"' />
 
-    <Message Text="Stapled $(DmgName).dmg with notarization ticket" Importance="high" />
+    <Message Text="Stapled notarization ticket to $(_DmgPath)" Importance="high" />
 
   </Target>
 

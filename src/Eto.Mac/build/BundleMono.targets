@@ -14,9 +14,6 @@
 
     <!-- minimum installed version of mono required to run -->
     <MacMonoMinimumVersion Condition="$(MacMonoMinimumVersion) == ''">6.0</MacMonoMinimumVersion>
-
-    <!-- Set the default code signing entitlements for Mono if none specified -->
-    <CodeSignEntitlements Condition="$(CodeSignEntitlements) == ''">$(MSBuildThisFileDirectory)Mono.entitlements</CodeSignEntitlements>
   </PropertyGroup>
 
   <Target Name="MacTouchApp">
@@ -25,7 +22,7 @@
   </Target>
 
   <!-- Build target -->
-  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle;$(MacBuildAppBundleDependsOn)" Outputs="$(OutputAppPath)">
+  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle;$(MacBuildAppBundleDependsOnTargets)" Outputs="$(OutputAppPath)">
     <!-- bundle mono with mkbundle -->
     <CallTarget Targets="MacBundleMono" Condition="$(MacBundleMono) == 'True'" />
     <!-- copy executables and run with installed mono -->

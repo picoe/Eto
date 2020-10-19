@@ -10,9 +10,6 @@
     <!-- Set to True to bundle .NET Core runtime, false to use a shared runtime (useful to speed up debug builds) -->
     <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(Configuration) == 'Release'">True</MacBundleDotNet>
     <MacBundleDotNet Condition="$(MacBundleDotNet) == ''">False</MacBundleDotNet>
-
-    <!-- Set the default code signing entitlements for .NET Core if none specified -->
-    <CodeSignEntitlements Condition="$(CodeSignEntitlements) == ''">$(MSBuildThisFileDirectory)DotNetCore.entitlements</CodeSignEntitlements>
   </PropertyGroup>
 
   <ItemGroup Condition="$(MacBundleRuntimeIdentifiers) == ''">
@@ -31,7 +28,7 @@
   </Target>
   
   <!-- Build target to automatically publish -->
-  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="$(MacBuildAppBundleDependsOn)" Condition="$(MacAutoPublishBundle) == 'True' AND $(MacIsBuildingBundle) != 'True'" Outputs="$(OutputAppPath)">
+  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="$(MacBuildAppBundleDependsOnTargets)" Condition="$(MacAutoPublishBundle) == 'True' AND $(MacIsBuildingBundle) != 'True'" Outputs="$(OutputAppPath)">
     <Error Text="No RuntimeIdentifiers or MacRuntimeIdentifiers have been specified" Condition="@(MacBundleRuntimeIdentifiers->Count()) == 0" />
     <PropertyGroup>
       <MacTempBuildPath>$(IntermediateOutputPath)macbuild\</MacTempBuildPath>
@@ -39,7 +36,7 @@
       <MacBuildProperties>MacIsBuildingBundle=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacBundlingProject=$(MSBuildProjectFullPath)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);TargetFramework=$(TargetFramework)</MacBuildProperties>
-      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release' AND $(MacEnableCodeSigning) != 'True'">$(MacBuildProperties);PublishSingleFile=True</MacBuildProperties>
+      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release' AND $(EnableCodeSigning) != 'True'">$(MacBuildProperties);PublishSingleFile=True</MacBuildProperties>
       <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishTrimmed=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);SelfContained=$(MacBundleDotNet)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacTempBuildPath=$(MacTempBuildPath)</MacBuildProperties>
