@@ -13,11 +13,11 @@
 
     <!-- Size of the icons in the DMG -->
     <DmgIconSize Condition="$(DmgIconSize) == ''">72</DmgIconSize>
-    <!-- Bounds of the Finder window when opened -->
+    <!-- Bounds of the Finder window when opened (left, top, right, bottom) -->
     <DmgBounds Condition="$(DmgBounds) == ''">400, 100, 900, 430</DmgBounds>
-    <!-- Location of your app icon -->
+    <!-- Location of your app icon (x, y) -->
     <DmgAppLocation Condition="$(DmgAppLocation) == ''">120, 150</DmgAppLocation>
-    <!-- Location of the applications shortcut icon -->
+    <!-- Location of the applications shortcut icon (x, y) -->
     <DmgApplicationsShortcutLocation Condition="$(DmgApplicationsShortcutLocation) == ''">380, 150</DmgApplicationsShortcutLocation>
     <!-- Image to use for the background, or 'none' to omit the background image. -->
     <DmgBackgroundImage Condition="$(DmgBackgroundImage) == ''">$(MSBuildThisFileDirectory)Dmg.background.png</DmgBackgroundImage>
