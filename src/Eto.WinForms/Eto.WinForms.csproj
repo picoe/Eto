@@ -36,7 +36,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
 
   <PropertyGroup>
-    <EmbedReferences>Microsoft.WindowsAPICodePack;Microsoft.WindowsAPICodePack.Shell;Interop.SHDocVw</EmbedReferences>
+    <EmbedReferences>Interop.SHDocVw</EmbedReferences>
     <EmbedPrefix>Eto.WinForms.CustomControls.Assemblies</EmbedPrefix>
   </PropertyGroup>
 
@@ -110,7 +110,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" PrivateAssets="all" />
+    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
   </ItemGroup>
 
