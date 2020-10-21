@@ -616,11 +616,13 @@ namespace Eto.Wpf.Drawing
 
 		public void ResetClip()
 		{
-			if (clipBounds != null)
+			if (clipBounds != null || clipPath != null)
 			{
-				Control.Pop();
+				RewindTransform();
+				RewindClip();
 				clipBounds = null;
 				clipPath = null;
+				ApplyTransform();
 			}
 		}
 
