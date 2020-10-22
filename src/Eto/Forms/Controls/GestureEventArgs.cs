@@ -115,13 +115,28 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.PanGestureEventArgs"/> class.
 		/// </summary>
+		/// <param name="Pressed">indicates the active phase of the gesture.</param>
+		/// <param name="NPress">number of fingers used.</param>
 		/// <param name="Direction">Direction.</param>
 		/// <param name="Offset">Offset.</param>
-		public PanGestureEventArgs(PanDirection Direction, double Offset)
+		public PanGestureEventArgs(bool Pressed, int NPress, PanDirection Direction, double Offset)
 		{
+			this.Pressed = Pressed;
+			this.NPress = NPress;
 			this.Direction = Direction;
 			this.Offset = Offset;
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <value>The location of the mouse cursor.</value>
+		public bool Pressed { get; private set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <value>The location of the mouse cursor.</value>
+		public int NPress { get; private set; }
 
 		/// <summary>
 		/// 
@@ -297,10 +312,22 @@ namespace Eto.Forms
 		/// <value>The location of the mouse cursor.</value>
 		public int NPress { get; private set; }
 		
+		/// <summary>
+		/// starting X position of the gesture 
+		/// </summary>
 		public double startX { get; private set; }
+		/// <summary>
+		///  starting Y position of the gesture 
+		/// </summary>
 		public double startY { get; private set; }
 		
+		/// <summary>
+		/// change in X position during the gesture
+		/// </summary>
 		public double deltaX { get; private set; }
+		/// <summary>
+		/// change in Y position during the gesture
+		/// </summary>
 		public double deltaY { get; private set; }
 
 

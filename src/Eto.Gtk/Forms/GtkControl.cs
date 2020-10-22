@@ -87,8 +87,10 @@ namespace Eto.GtkSharp.Forms
 		private static Gtk.GestureSwipe swipe;
 		private static Gtk.GestureRotate rotate;
 		private static Gtk.GestureZoom zoom;
-		private static Gtk.GesturePan pan;
-		private static Gtk.GestureLongPress longpress;
+		private static Gtk.GesturePan panv;
+		private static Gtk.GesturePan panh;
+		//private static Gtk.GestureLongPress longpress;
+		private static Gtk.GestureMultiPress longpress;
 		private static Gtk.GestureDrag drag;
 		
 #endif
@@ -455,22 +457,29 @@ namespace Eto.GtkSharp.Forms
 					break;
 				case Eto.Forms.Control.PanHGestureEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
-					pan = new Gtk.GesturePan(Control,Gtk.Orientation.Horizontal);
-					pan.PropagationPhase = Gtk.PropagationPhase.Bubble;
-					pan.Pan += Connector.HandlePanGestureEvent;
+					panh = new Gtk.GesturePan(Control,Gtk.Orientation.Horizontal);
+					panh.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					panh.Pan += Connector.HandlePanHGestureEvent;
+					//pan.TouchOnly = true;
 					break;
 				case Eto.Forms.Control.PanVGestureEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
-					pan = new Gtk.GesturePan(Control,Gtk.Orientation.Vertical);
-					pan.PropagationPhase = Gtk.PropagationPhase.Bubble;
-					pan.Pan += Connector.HandlePanGestureEvent;
+					panv = new Gtk.GesturePan(Control,Gtk.Orientation.Vertical);
+					panv.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					//pan.TouchOnly = true;
+					panv.Pan += Connector.HandlePanVGestureEvent;
 					break;
+
 				case Eto.Forms.Control.LongPressGestureEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
-					longpress = new Gtk.GestureLongPress(Control);
+					longpress = new Gtk.GestureMultiPress(Control);
+					
 					longpress.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					longpress.Begin += Connector.HandleLongPressBeginGestureEvent;
 					longpress.Pressed += Connector.HandleLongPressGestureEvent;
 					longpress.End += Connector.HandleLongPressDoneGestureEvent;
+					longpress.Cancel += Connector.HandleLongPressCancelGestureEvent;
+					longpress.TouchOnly = true;
 					break;
 				case Eto.Forms.Control.ZoomGestureEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
@@ -525,6 +534,7 @@ namespace Eto.GtkSharp.Forms
 					return;
 			}
 		}
+
 
 		protected new GtkControlConnector Connector { get { return (GtkControlConnector)base.Connector; } }
 
@@ -747,8 +757,8 @@ namespace Eto.GtkSharp.Forms
 					return;
 
 				// could be rotate.AngleDelta if event args is not right
-				//var e = new RotateGestureEventArgs(rotate.AngleDelta);
-				var e = new RotateGestureEventArgs(args.Angle);
+				var e = new RotateGestureEventArgs(rotate.AngleDelta);
+				//var e = new RotateGestureEventArgs(args.Angle);
 				if (e != null)
 				{
 					handler.Callback.OnRotate(Handler.Widget, e);
@@ -757,7 +767,7 @@ namespace Eto.GtkSharp.Forms
 			}
 
 			[GLib.ConnectBefore]
-			public void HandlePanGestureEvent(object o, Gtk.PanArgs args)
+			public void HandlePanHGestureEvent(object o, Gtk.PanArgs args)
 			{
 				var handler = Handler;
 				if (handler == null)
@@ -765,6 +775,47 @@ namespace Eto.GtkSharp.Forms
 
 				bool vpan = false;
 
+
+				PanDirection Dir = PanDirection.Left;
+
+				switch (args.Direction)
+				{
+					case Gtk.PanDirection.Up:
+						Dir = PanDirection.Up;
+						vpan = true;
+						break;
+					case Gtk.PanDirection.Down:
+						Dir = PanDirection.Down;
+						vpan = true;
+						break;
+					case Gtk.PanDirection.Left:
+						Dir = PanDirection.Left;
+						vpan = false;
+						break;
+					case Gtk.PanDirection.Right:
+						Dir = PanDirection.Right;
+						vpan = false;
+						break;
+					default:
+						break;
+				}
+				var e = new PanGestureEventArgs(true, 1, Dir, args.Offset);
+				if (e != null)
+				{
+					handler.Callback.OnPanH(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+
+			[GLib.ConnectBefore]
+			public void HandlePanVGestureEvent(object o, Gtk.PanArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				bool vpan = false;
 
 				PanDirection Dir = PanDirection.Left;
 
@@ -789,16 +840,33 @@ namespace Eto.GtkSharp.Forms
 					break;
 				}
 				// could be rotate.AngleDelta if event args is not right
-				var e = new PanGestureEventArgs(Dir, args.Offset);
+				var e = new PanGestureEventArgs(true, 1, Dir, args.Offset);
 				if (e != null)
 				{
-					if (vpan) 
-						handler.Callback.OnPanV(Handler.Widget, e);
-					else
-						handler.Callback.OnPanH(Handler.Widget, e);
+					handler.Callback.OnPanV(Handler.Widget, e);
 					args.RetVal = e.Handled;
 				}
 			}
+
+			[GLib.ConnectBefore]
+			public void HandleLongPressBeginGestureEvent(object o, Gtk.BeginArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				double X, Y;
+				longpress.GetBoundingBoxCenter(out X, out Y);
+				
+
+				var e = new LongPressGestureEventArgs(false, (int)longpress.NPoints, X, Y);
+				if (e != null)
+				{
+					handler.Callback.OnLongPress(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
 
 			[GLib.ConnectBefore]
 			public void HandleLongPressGestureEvent(object o, Gtk.PressedArgs args)
@@ -807,10 +875,11 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 
-				double X, Y;
-				longpress.GetBoundingBoxCenter (out X, out Y);
+				//double X, Y;
+				//longpress.GetBoundingBoxCenter (out X, out Y);
 
-				var e = new LongPressGestureEventArgs (true, (int)longpress.NPoints, X, Y);
+				//var e = new LongPressGestureEventArgs (true, (int)longpress.NPoints, X, Y);
+				var e = new LongPressGestureEventArgs(true, args.NPress, args.X, args.Y);
 				if (e != null)
 				{
 					handler.Callback.OnLongPress(Handler.Widget, e);
@@ -826,6 +895,22 @@ namespace Eto.GtkSharp.Forms
 					return;
 
 				var e = new LongPressGestureEventArgs(false, 0,0,0);
+				if (e != null)
+				{
+					handler.Callback.OnLongPress(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			
+			[GLib.ConnectBefore]
+			public void HandleLongPressCancelGestureEvent(object o, Gtk.CancelArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+								
+				var e = new LongPressGestureEventArgs(false, 0, 0, 0);
 				if (e != null)
 				{
 					handler.Callback.OnLongPress(Handler.Widget, e);

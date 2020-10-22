@@ -437,7 +437,7 @@ namespace Eto.WinForms.Forms
 					}
 					break;
 				case Eto.Forms.Control.SwipeGestureEvent:					
-					// should there be a bubble gesture events
+					// these have to come down from the 
 					
 					break;
 				case Eto.Forms.Control.RotateGestureEvent:
@@ -463,6 +463,7 @@ namespace Eto.WinForms.Forms
 					// should there be a bubble gesture events
 
 					break;
+
 					/*
 				case Eto.Forms.Control.SwipeGestureEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
