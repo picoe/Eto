@@ -37,24 +37,18 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			Control.NoShowAll = true;
 			Control.Visible = Visible;
 			tb.Insert(Control, index);
-			Control.Toggled += Connector.HandleToggled;
+			Control.Toggled += Control_CheckedChanged;
+			Control.Clicked += Control_Click;
 		}
 
-		protected new CheckToolItemConnector Connector { get { return (CheckToolItemConnector)base.Connector; } }
-
-		protected override WeakConnector CreateConnector()
+		private void Control_Click(object sender, EventArgs e)
 		{
-			return new CheckToolItemConnector();
+			Widget.OnClick(EventArgs.Empty);
 		}
 
-		protected class CheckToolItemConnector : WeakConnector
+		private void Control_CheckedChanged(object sender, EventArgs e)
 		{
-			public new CheckToolItemHandler Handler { get { return (CheckToolItemHandler)base.Handler; } }
-
-			public void HandleToggled(object sender, EventArgs e)
-			{
-				Handler.Widget.OnClick(EventArgs.Empty);
-			}
+			Widget.OnCheckedChanged(EventArgs.Empty);
 		}
 	}
 }
