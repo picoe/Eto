@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Eto.Drawing;
 
 namespace Eto.Test
 {
@@ -14,6 +15,8 @@ namespace Eto.Test
 		public bool SaveInitialSection { get; set; }
 
 		public string LastUnitTestFilter { get; set; }
+
+		public Rectangle? LastFormPosition { get; set; }
 
 		public static Settings Load()
 		{

@@ -15,8 +15,21 @@ namespace Eto.Wpf.Forms
 
 		public PointF Position
 		{
-			get => swf.Control.MousePosition.ScreenToLogical();
-			set => swf.Cursor.Position = Point.Round(value.LogicalToScreen()).ToSD();
+			get
+			{
+				var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : Win32.DPI_AWARENESS_CONTEXT.NONE;
+				var result = swf.Control.MousePosition.ScreenToLogical();
+				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+					Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
+				return result;
+			}
+			set
+			{
+				var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : Win32.DPI_AWARENESS_CONTEXT.NONE;
+				swf.Cursor.Position = Point.Round(value.LogicalToScreen()).ToSD();
+				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+					Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
+			}
 		}
 
 		public static int s_CursorSetCount;
