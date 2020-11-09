@@ -24,7 +24,10 @@ namespace Eto.GtkSharp.CustomControls
 		{
 			if (args.Event.X > AllocatedWidth - ArrowWidth && Sensitive)
 			{
-				OnPopupButtonClicked(EventArgs.Empty);
+				if (args.Event.Type == Gdk.EventType.ButtonPress)
+				{
+					OnPopupButtonClicked(EventArgs.Empty);
+				}
 			}
 		}
 

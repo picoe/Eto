@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Eto.Forms;
 
 namespace Eto.GtkSharp.CustomControls
@@ -13,11 +14,20 @@ namespace Eto.GtkSharp.CustomControls
 		Gtk.SpinButton secondsSpin;
 		
 		public event EventHandler<EventArgs> DateChanged;
-		
+		public event EventHandler<EventArgs> DialogClosed;
+
+		int start_count = 0;
+
 		protected virtual void OnDateChanged (EventArgs e)
 		{
 			if (DateChanged != null)
 				DateChanged (this, e);
+		}
+
+		protected virtual void OnDialogClosed(EventArgs e)
+		{
+			if (DialogClosed != null)
+				DialogClosed(this, e);
 		}
 
 		bool HasTime {
@@ -50,6 +60,7 @@ namespace Eto.GtkSharp.CustomControls
 		{
 			this.mode = mode;
 			this.CreateControls ();
+			
 
 			if (HasDate) {
 				calendar.Date = dateTime;
@@ -61,23 +72,31 @@ namespace Eto.GtkSharp.CustomControls
 				UpdateClock ();
 			}
 
+			
 			this.ButtonPressEvent += delegate(object o, Gtk.ButtonPressEventArgs args) {
+
 				if (args.Event.Type == Gdk.EventType.ButtonPress) {
-					// single click only!
-					CloseDialog ();
+						CloseDialog();
 				}
 			};
 			
+			
 		}
-		
+
 		public void ShowPopup (Gtk.Widget parent)
 		{
 			int x, y;
+
+
 			parent.ParentWindow.GetOrigin (out x, out y);
 			Move(x + parent.Allocation.Left, y + parent.Allocation.Top + parent.Allocation.Height);
 
 			ShowAll();
-			this.Grab ();
+
+			start_count++;
+
+			//if (! this.HasGrab) this.Grab ();
+			
 		}
 
 #if GTK2
@@ -100,13 +119,24 @@ namespace Eto.GtkSharp.CustomControls
 		}
 #endif
 
-		void CloseDialog ()
+		public void CloseDialog ()
 		{
-			this.RemoveGrab ();
+
+			start_count--;
+
+			if (this.HasGrab)
+			{
+				this.RemoveGrab();
+			}
+
 #if GTKCORE
 			Close();
+			
+			// let the parent know we closed...			
+			DialogClosed(this, EventArgs.Empty);
+
 #else
-			Destroy();
+		Destroy();
 #endif
 		}
 

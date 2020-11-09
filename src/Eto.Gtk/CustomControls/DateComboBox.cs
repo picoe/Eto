@@ -1,16 +1,21 @@
 using System;
+using System.Threading;
 using Eto.Forms;
 using Eto.Drawing;
+
 using System.Globalization;
+using Eto.GtkSharp.Forms;
 
 namespace Eto.GtkSharp.CustomControls
 {
 	public class DateComboBox : BaseComboBox
 	{
 		DateTime? selectedDate;
+		private DateComboBoxDialog dlg;
 		DateTimePickerMode mode = DateTimePickerMode.DateTime;
 
 		public event EventHandler DateChanged;
+		public event EventHandler DialogClosed;
 
 		protected void OnDateChanged(EventArgs e)
 		{
@@ -27,6 +32,7 @@ namespace Eto.GtkSharp.CustomControls
 				SetValue();
 			}
 		}
+
 
 		public Color ErrorColor { get; set; }
 
@@ -73,8 +79,10 @@ namespace Eto.GtkSharp.CustomControls
 			}
 		}
 
+		
 		public DateComboBox()
 		{
+			
 			
 			MinDate = DateTime.MinValue;
 			MaxDate = DateTime.MaxValue;
@@ -83,17 +91,58 @@ namespace Eto.GtkSharp.CustomControls
 			NormalColor = Entry.GetTextColor();
 
 			Entry.Changed += HandleChanged;
+			Entry.FocusOutEvent += Entry_FocusOutEvent;
+
+			// called on button press..
 			PopupButtonClicked += delegate
-			{
-				var dlg = new DateComboBoxDialog(selectedDate ?? DateTime.Now, this.Mode);
-				dlg.DateChanged += delegate
+			{	
+				// if we are still up somehow, take the old dialog down..
+				if (dlg != null)
 				{
-					selectedDate = dlg.SelectedDate;
-					ValidateDateRange();
-					SetValue();
-				};
-				dlg.ShowPopup(this);
+					dlg.Close();
+					dlg = null;
+				}
+				else			
+				{
+					// move the focus to the Entry control so we can detect it moving away..
+					Entry.GrabFocusWithoutSelecting();
+					dlg = new DateComboBoxDialog(selectedDate ?? DateTime.Now, this.Mode);
+					dlg.DateChanged += delegate
+					{
+						selectedDate = dlg.SelectedDate;
+						ValidateDateRange();
+						SetValue();
+					};			
+					// get nofications when the dialog closes
+					dlg.DialogClosed += HandleDialogClose;					
+					dlg.ShowPopup(this);
+				}
 			};
+		}
+
+		/// <summary>
+		/// If the drop down dialog is up and lose focus on the parent field, close it
+		/// </summary>
+		/// <param name="o"></param>
+		/// <param name="args"></param>
+		private void Entry_FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
+		{
+			// if we are up and lose
+			if (dlg != null)
+			{
+				dlg.CloseDialog();
+			}
+		}
+
+		/// <summary>
+		/// The drop-down dialog has closed - remove our reference to it
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void HandleDialogClose(object sender, EventArgs e)
+		{
+			// remove our reference to the drop-down dialog
+			dlg = null;						
 		}
 
 		void HandleChanged(object sender, EventArgs e)
