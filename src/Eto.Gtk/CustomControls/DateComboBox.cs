@@ -115,11 +115,21 @@ namespace Eto.GtkSharp.CustomControls
 						ValidateDateRange();
 						SetValue();
 					};			
-					// get nofications when the dialog closes
-					dlg.DialogClosed += HandleDialogClose;					
+					dlg.Destroyed += Dlg_Destroyed;
 					dlg.ShowPopup(this);
 				}
 			};
+		}
+
+		/// <summary>
+		/// remove our reference to the dialog ONLY when we know it's 
+		/// really gone..
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Dlg_Destroyed(object sender, EventArgs e)
+		{
+			dlg = null;
 		}
 
 		/// <summary>
@@ -129,7 +139,7 @@ namespace Eto.GtkSharp.CustomControls
 		/// <param name="args"></param>
 		private void Entry_FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
 		{
-			// if we are up, close the dialog
+			// if the pull-down is are up, close it
 			if (dlg != null)
 			{
 				dlg.CloseDialog();

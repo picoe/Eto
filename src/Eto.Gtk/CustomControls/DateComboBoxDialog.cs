@@ -14,18 +14,12 @@ namespace Eto.GtkSharp.CustomControls
 		Gtk.SpinButton secondsSpin;
 		
 		public event EventHandler<EventArgs> DateChanged;
-		public event EventHandler<EventArgs> DialogClosed;
+		
 
 		protected virtual void OnDateChanged (EventArgs e)
 		{
 			if (DateChanged != null)
 				DateChanged (this, e);
-		}
-
-		protected virtual void OnDialogClosed(EventArgs e)
-		{
-			if (DialogClosed != null)
-				DialogClosed(this, e);
 		}
 
 		bool HasTime {
@@ -116,19 +110,11 @@ namespace Eto.GtkSharp.CustomControls
 
 		public void CloseDialog ()
 		{
-			if (this.HasGrab)
-			{
-				this.RemoveGrab();
-			}
-
 #if GTKCORE
-			Close();
-			
-			// let the parent know we closed...			
-			DialogClosed(this, EventArgs.Empty);
-
+			Close();		
+		
 #else
-		Destroy();
+			Destroy();
 #endif
 		}
 
