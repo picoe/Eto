@@ -16,8 +16,6 @@ namespace Eto.GtkSharp.CustomControls
 		public event EventHandler<EventArgs> DateChanged;
 		public event EventHandler<EventArgs> DialogClosed;
 
-		int start_count = 0;
-
 		protected virtual void OnDateChanged (EventArgs e)
 		{
 			if (DateChanged != null)
@@ -93,10 +91,7 @@ namespace Eto.GtkSharp.CustomControls
 
 			ShowAll();
 
-			start_count++;
-
 			//if (! this.HasGrab) this.Grab ();
-			
 		}
 
 #if GTK2
@@ -121,9 +116,6 @@ namespace Eto.GtkSharp.CustomControls
 
 		public void CloseDialog ()
 		{
-
-			start_count--;
-
 			if (this.HasGrab)
 			{
 				this.RemoveGrab();

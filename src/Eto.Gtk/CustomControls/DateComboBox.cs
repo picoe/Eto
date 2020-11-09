@@ -99,6 +99,8 @@ namespace Eto.GtkSharp.CustomControls
 				// if we are still up somehow, take the old dialog down..
 				if (dlg != null)
 				{
+					// this will appear to the user as a click that doesn't 
+					// bring up a window..
 					dlg.Close();
 					dlg = null;
 				}
@@ -127,7 +129,7 @@ namespace Eto.GtkSharp.CustomControls
 		/// <param name="args"></param>
 		private void Entry_FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
 		{
-			// if we are up and lose
+			// if we are up, close the dialog
 			if (dlg != null)
 			{
 				dlg.CloseDialog();
