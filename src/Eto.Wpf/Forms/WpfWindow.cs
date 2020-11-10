@@ -595,9 +595,19 @@ namespace Eto.Wpf.Forms
 				if (handle != IntPtr.Zero)
 				{
 					// Left/Top doesn't always report correct location when maximized, so use Win32 when we can.
-					Win32.RECT rect;
-					if (Win32.GetWindowRect(handle, out rect))
-						return Point.Round(new Point(rect.left, rect.top).ScreenToLogical(SwfScreen));
+					var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : Win32.DPI_AWARENESS_CONTEXT.NONE;
+					try
+					{
+
+						Win32.RECT rect;
+						if (Win32.GetWindowRect(handle, out rect))
+							return Point.Round(new Point(rect.left, rect.top).ScreenToLogical(SwfScreen));
+					}
+					finally
+					{
+						if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+							Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
+					}
 				}
 				// in WPF, left/top of a window is transformed by the (current) screen dpi, which makes absolutely no sense.
 				var left = Control.Left;
@@ -644,10 +654,14 @@ namespace Eto.Wpf.Forms
 
 		void SetLocation(PointF location)
 		{
+			var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : Win32.DPI_AWARENESS_CONTEXT.NONE;
+
 			var handle = WindowHandle;
 			var loc = location.LogicalToScreen();
 
 			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE);
+			if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+				Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
 		}
 
 		public WindowState WindowState
@@ -693,7 +707,17 @@ namespace Eto.Wpf.Forms
 
 		public Rectangle RestoreBounds
 		{
-			get { return Control.WindowState == sw.WindowState.Normal || Control.RestoreBounds.IsEmpty ? Widget.Bounds : Control.RestoreBounds.ToEto(); }
+			get
+			{
+				if (Control.WindowState == sw.WindowState.Normal || Control.RestoreBounds.IsEmpty)
+					return Widget.Bounds;
+
+				var restoreBounds = Control.RestoreBounds.ToEto();
+				var scale = DpiScale;
+				var position = new Point((int)(restoreBounds.X / scale), (int)(restoreBounds.Y / scale));
+				restoreBounds.Location = Point.Truncate(position.ScreenToLogical(SwfScreen));
+				return restoreBounds;
+			}
 		}
 
 		sw.Window IWpfWindow.Control
@@ -814,7 +838,8 @@ namespace Eto.Wpf.Forms
 
 		public float LogicalPixelSize
 		{
-			get {
+			get
+			{
 				var scale = (float)(dpiHelper?.Scale ?? sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformToDevice.M11 ?? 1.0);
 				// will be zero after the window is closed, but should always be a positive number
 				if (scale <= 0)
