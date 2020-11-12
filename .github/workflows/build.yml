@@ -40,8 +40,8 @@ jobs:
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
-    - name: Setup msbuild
-      uses: microsoft/setup-msbuild@v1
+    # - name: Setup msbuild
+    #   uses: microsoft/setup-msbuild@v1
 
     - name: Build
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Package /bl:artifacts/log/Build.Windows.binlog
