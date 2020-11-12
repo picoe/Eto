@@ -124,6 +124,7 @@
     <ItemGroup>
       <Compile Remove="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" />
     </ItemGroup>
+    <Exec Command="dotnet tool restore" />
     <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet t4 %(TextTemplate.Identity) --out %(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs"/>
     <ItemGroup>
       <Compile Include="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" />
