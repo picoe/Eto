@@ -11,7 +11,7 @@ on:
 env:
   DotNetVersion: "5.0.100"
   BuildConfiguration: "Release"
-  BuildParameters: "build/Build.proj /v:Minimal /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
+  BuildParameters: "build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
 
 jobs:
   build-windows:
@@ -83,7 +83,7 @@ jobs:
         dotnet-version: ${{ env.DotNetVersion }}
 
     - name: setup-xamarin
-      uses: maxim-lobanov/setup-xamarin@v1.1
+      uses: maxim-lobanov/setup-xamarin@v1
       with:
         mono-version: latest
         xamarin-mac-version: latest
