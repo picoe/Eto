@@ -9,7 +9,7 @@ on:
     types: [ published ]
 
 env:
-  DotNetVersion: "3.1.301"
+  DotNetVersion: "5.0.100"
   BuildConfiguration: "Release"
   BuildParameters: "build/Build.proj /v:Minimal /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
 
@@ -32,7 +32,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1
 
     - name: Build
-      run: msbuild ${{ env.BuildParameters }} /p:Platform=Windows /t:Package /bl:artifacts/log/Build.Windows.binlog
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Package /bl:artifacts/log/Build.Windows.binlog
 
     - name: Build VS/Win Extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Windows.binlog
@@ -90,7 +90,7 @@ jobs:
         xcode-version: latest
 
     - name: Build
-      run: msbuild ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /bl:artifacts/log/Build.Mac.binlog
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /bl:artifacts/log/Build.Mac.binlog
 
     - name: Build VS/Mac Extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Mac.binlog

@@ -57,13 +57,17 @@
     <Message Importance="high" Text="Embedding: @(FilesToEmbed->'%(Filename)%(Extension)', ', ')" />
   </Target>
   <Import Condition="Exists('$(BasePath)..\Eto.Common.targets')" Project="$(BasePath)..\Eto.Common.targets" />
-  
-  <PropertyGroup>
-    <AssemblySearchPaths Condition="$(FixGtkReferences)=='true'">$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
-  </PropertyGroup>
-  
-  
+
   <Target Name="FixGtkReferences" Condition="$(FixGtkReferences)=='true'" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <GtkAssemblyFiles Include="\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\gac\**\*.dll" />
+      <GtkAssemblyPaths Include="@(GtkAssemblyFiles->'%(RootDir)%(Directory)')"/>
+    </ItemGroup>
+    
+    <PropertyGroup>
+      <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+      <AssemblySearchPaths>$(AssemblySearchPaths);@(GtkAssemblyPaths->'%(Identity)', ';')</AssemblySearchPaths>
+    </PropertyGroup>
     <!-- 
     Set the path of gtk references explicitly for linux msbuild support.
     msbuild on linux crashes with gtk references and uses the wrong references when 
@@ -125,5 +129,33 @@
       <Compile Include="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" />
     </ItemGroup>
   </Target>
+
+
+<UsingTask
+  TaskName="GetMetadata"
+  TaskFactory="$(MSBuildTaskFactoryType)" AssemblyFile="$(MSBuildTasksAssemblyFile)">
+  <ParameterGroup>
+    <ItemGroup ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+    <Output Output="true" />
+  </ParameterGroup>
+  <Task>
+    <Using Namespace="System"/>
+    <Code Type="Fragment" Language="cs">
+      <![CDATA[
+          var command = new StringBuilder();
+          foreach (ITaskItem item in ItemGroup )
+          {
+              command.AppendLine(string.Format("ItemName={0}", item));
+              foreach (string parameter in item.MetadataNames)
+              {
+                  command.AppendLine(string.Format("  {0}={1}", parameter, item.GetMetadata(parameter)));
+              }
+              command.AppendLine();
+          }
+          Output = command.ToString();
+      ]]>
+    </Code>
+  </Task>
+</UsingTask>  
 
 </Project>

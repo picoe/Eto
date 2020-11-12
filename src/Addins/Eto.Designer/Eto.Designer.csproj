@@ -11,6 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Compiler.CodeDom" Version="1.0.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.4.0" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.7.0" ExcludeAssets="runtime" />
   </ItemGroup>
 </Project>
