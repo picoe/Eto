@@ -23,6 +23,13 @@ jobs:
       with:
         submodules: true
 
+    # use preview version of VS for now to support .NET 5
+    - run: dotnet tool update -g dotnet-vs
+    - run: echo "name=MSB::$(vs where preview --prop=InstallationPath)" >> $GITHUB_ENV
+    - run: vs install preview sku:enterprise --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools
+      if: env.MSB == ''
+    - run: echo "::add-path::$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
