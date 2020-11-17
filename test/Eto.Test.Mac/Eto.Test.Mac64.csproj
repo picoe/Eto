@@ -12,10 +12,10 @@
     <RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release' AND $(EnableCodeSignBuild) == 'True' AND $(TargetFramework) == 'netcoreapp3.1'">
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
     <EnableDmgBuild>True</EnableDmgBuild>
-    <EnableCodeSigning>True</EnableCodeSigning>
-    <EnableNotarization>True</EnableNotarization>
+    <EnableCodeSigning Condition="$(EnableCodeSignBuild) == 'True'">True</EnableCodeSigning>
+    <EnableNotarization Condition="$(EnableNotarizationBuild) == 'True'">True</EnableNotarization>
   </PropertyGroup>
   
   <ItemGroup>
