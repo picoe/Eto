@@ -4,7 +4,8 @@
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-  <!-- <Import Project="..\..\Directory.Build.props" /> -->
+  <!-- This gives a warning when building.. but it doesn't work without it. -->
+  <Import Project="..\..\Directory.Build.props" />
   <PropertyGroup>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>

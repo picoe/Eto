@@ -19,8 +19,8 @@ jobs:
     - name: Add Milestone Description
       run: |
         echo "${{ github.event.milestone.description }}" > release_file_combined.md
-        echo -e "\n\n" > release_file_combined.md
-        cat release_file.md > release_file_combined.md
+        echo -e "\n\n" >> release_file_combined.md
+        cat release_file.md >> release_file_combined.md
     
     - name: Create Release
       id: create_release
