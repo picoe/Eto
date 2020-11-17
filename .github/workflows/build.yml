@@ -34,12 +34,6 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Package /bl:artifacts/log/Build.Windows.binlog
 
-    # Can't use .NET 5 with msbuild until VS is updated to 16.8 in GitHub Actions
-    - name: Setup .NET Core 3.1.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: "3.1.x"
-
     - name: Build VS/Win Extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Windows.binlog
 
