@@ -23,6 +23,12 @@ jobs:
       with:
         submodules: true
 
+    # needed for dotnet-t4
+    - name: Setup .NET Core 2.1.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "2.1.x"
+
     # Can't use .NET 5 with msbuild until VS is updated to 16.8 in GitHub Actions
     - name: Setup .NET Core 3.1.x
       uses: actions/setup-dotnet@v1
