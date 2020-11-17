@@ -65,7 +65,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: test
-        path: artifacts/test/${{ env.BuildConfiguration }}/**/*
+        path: |
+          artifacts/test/${{ env.BuildConfiguration }}/**/*
+          !artifacts/test/${{ env.BuildConfiguration }}/**/*Mac64.*
 
     - name: Upload sample artifacts
       uses: actions/upload-artifact@v2
@@ -94,17 +96,29 @@ jobs:
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
-    - name: setup-xamarin
+    - name: Setup Xamarin and XCode
       uses: maxim-lobanov/setup-xamarin@v1
       with:
         mono-version: latest
         xamarin-mac-version: latest
         xcode-version: latest
 
-    - name: Build
-      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /bl:artifacts/log/Build.Mac.binlog
+    - name: Import code signing certificate
+      uses: apple-actions/import-codesign-certs@v1
+      with:
+        p12-file-base64: ${{ secrets.DEVID_CERTIFICATE_P12 }}
+        p12-password: ${{ secrets.DEVID_CERTIFICATE_P12_PASSWORD }}
 
-    - name: Build VS/Mac Extension
+    - name: Set notarization credentials
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        xcrun altool --store-password-in-keychain-item "AC_PASSWORD" -u "${{ secrets.AC_USERNAME }}" -p "${{ secrets.AC_PASSWORD }}"
+        echo "BuildParameters=${{ env.BuildParameters }} /p:EnableNotarizationBuild=True" >> $GITHUB_ENV
+
+    - name: Build
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /p:EnableCodeSignBuild=True /bl:artifacts/log/Build.Mac.binlog
+
+    - name: Build VS/Mac extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Mac.binlog
 
     - name: Upload nuget artifacts
@@ -120,6 +134,14 @@ jobs:
       with:
         name: addins
         path: artifacts/addin/${{ env.BuildConfiguration }}/net472/Eto.Addin.MonoDevelop*.mpack
+
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: test
+        path: |
+          artifacts/test/${{ env.BuildConfiguration }}/**/*Mac64.*
+          artifacts/test/${{ env.BuildConfiguration }}/**/*Gtk2.*
 
     - name: Upload log files
       if: ${{ failure() }}

@@ -276,6 +276,15 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="MacPackagingUnsupported" Condition="$(IsMac) != 'true'">
+    <Warning Text="You can only create dmg's, code sign, or notarize on macOS" />
+  </Target>
+
   <Import Project="BundleMono.targets" Condition="$(MacUseDotNetCore) != 'True' AND $(MacBuildBundle) == 'True'" />
   <Import Project="BundleDotNetCore.targets" Condition="$(MacUseDotNetCore) == 'True' AND $(MacBuildBundle) == 'True'" />
+
+  <Import Project="Dmg.targets" Condition="$(EnableDmgBuild) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="CodeSign.targets" Condition="$(EnableCodeSigning) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="Notarization.targets" Condition="$(EnableNotarization) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
+
 </Project>
