@@ -43,7 +43,7 @@
       <MkBundleExe>$(MonoBinPath)mkbundle</MkBundleExe>
 
       <IsDetectingMkBundle Condition="$(MacBundleMono) == 'detect'">True</IsDetectingMkBundle>
-      <MacBundleMono Condition="$(MacBundleMono) == 'detect' AND Exists('$(MkBundleExe)')">True</MacBundleMono>
+      <MacBundleMono Condition="$(MacBundleMono) == 'detect' AND Exists('$(MkBundleExe)') AND $(EnableCodeSigning) != 'True'">True</MacBundleMono>
 
       <MacBundleTarget Condition="$(MacBundleTarget) == 'default'"></MacBundleTarget>
     </PropertyGroup>
