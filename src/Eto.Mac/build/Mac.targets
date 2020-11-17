@@ -200,6 +200,7 @@
   <Target Name="MacInitializeBundle">
     <PropertyGroup>
       <HasXamMac>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.XamMac2'))</HasXamMac>
+      <MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == '' AND $(Configuration) == 'Release'">false</MacIncludeSymbols>
       <MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == ''">true</MacIncludeSymbols>
       <MacArch Condition="'$(MacArch)'==''">x86_64</MacArch>
 
@@ -260,11 +261,13 @@
     <FindUnderPath  
       Files="@(FileWrites)"
       Path="$(TargetDir)">
-            <Output TaskParameter="InPath" ItemName="MacExecutableFiles" />
+      <Output TaskParameter="InPath" ItemName="MacExecutableFiles" />
     </FindUnderPath>
 
     <ItemGroup>
-      <!--MacExecutableFiles Include="$(TargetDir)\**" Exclude="$(OutputAppPath)\**\*" /-->
+      <MacExecutableFiles>
+        <TargetPath>$([System.String]::Copy('%(FullPath)').SubString($(TargetDir.Length)))</TargetPath>
+      </MacExecutableFiles>
       <MacExecutableFiles Include="@(ReferenceCopyLocalPaths)" />
       <MacExecutableFiles Remove="@(MacExecutableFiles)" Condition="$(MacIncludeSymbols) != 'True' and %(Extension) == '.pdb'" />
 

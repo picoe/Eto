@@ -3,8 +3,7 @@
   <PropertyGroup>
     <UseXamarinMac>True</UseXamarinMac>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net472</TargetFrameworks>
-    <TargetFrameworks Condition="$(HasXamarinMac) == 'True'">$(TargetFrameworks);xamarinmac20</TargetFrameworks>
+    <TargetFrameworks>net472;xamarinmac20</TargetFrameworks>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
     <EnableDefaultContentItems>False</EnableDefaultContentItems>

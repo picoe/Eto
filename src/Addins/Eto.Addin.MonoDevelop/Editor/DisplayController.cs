@@ -26,20 +26,19 @@ namespace Eto.Addin.MonoDevelop.Editor
 
 		protected override async Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync(FileDescriptor file)
 		{
-			var list = ImmutableList<DocumentControllerDescription>.Empty;
 			if (!enabled)
-				return list;
-
+				return Enumerable.Empty<DocumentControllerDescription>();
+			
 			var info = Eto.Designer.BuilderInfo.Find(file.FilePath);
 			if (info == null)
-				return list;
+				return Enumerable.Empty<DocumentControllerDescription>();
 
-			return list.Add(new DocumentControllerDescription
+			return new [] { new DocumentControllerDescription
 			{
 				Name = "Eto.Forms Visual Designer",
 				Role = DocumentControllerRole.VisualDesign,
 				CanUseAsDefault = true
-			});
+			} };
 		}
 
 		public override async Task<DocumentController> CreateController(FileDescriptor file, DocumentControllerDescription controllerDescription)

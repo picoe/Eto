@@ -9,9 +9,9 @@ on:
     types: [ published ]
 
 env:
-  DotNetVersion: "3.1.301"
+  DotNetVersion: "5.0.100"
   BuildConfiguration: "Release"
-  BuildParameters: "build/Build.proj /v:Minimal /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
+  BuildParameters: "build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
 
 jobs:
   build-windows:
@@ -23,6 +23,18 @@ jobs:
       with:
         submodules: true
 
+    # needed for dotnet-t4
+    - name: Setup .NET Core 2.1.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "2.1.x"
+
+    # Can't use .NET 5 with msbuild until VS is updated to 16.8 in GitHub Actions
+    - name: Setup .NET Core 3.1.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "3.1.x"
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -32,7 +44,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1
 
     - name: Build
-      run: msbuild ${{ env.BuildParameters }} /p:Platform=Windows /t:Package /bl:artifacts/log/Build.Windows.binlog
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Package /bl:artifacts/log/Build.Windows.binlog
 
     - name: Build VS/Win Extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Windows.binlog
@@ -83,14 +95,14 @@ jobs:
         dotnet-version: ${{ env.DotNetVersion }}
 
     - name: setup-xamarin
-      uses: maxim-lobanov/setup-xamarin@v1.1
+      uses: maxim-lobanov/setup-xamarin@v1
       with:
         mono-version: latest
         xamarin-mac-version: latest
         xcode-version: latest
 
     - name: Build
-      run: msbuild ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /bl:artifacts/log/Build.Mac.binlog
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /bl:artifacts/log/Build.Mac.binlog
 
     - name: Build VS/Mac Extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Mac.binlog
