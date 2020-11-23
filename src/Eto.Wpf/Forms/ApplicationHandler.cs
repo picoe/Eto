@@ -184,6 +184,15 @@ namespace Eto.Wpf.Forms
 
 		public void RunIteration()
 		{
+			var frame = new DispatcherFrame();
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+			Dispatcher.PushFrame(frame);
+		}
+
+		static object ExitFrame(object f)
+		{
+			((DispatcherFrame)f).Continue = false;
+			return null;
 		}
 
 		public void Quit()

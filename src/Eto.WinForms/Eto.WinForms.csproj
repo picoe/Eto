@@ -4,7 +4,7 @@
   <PropertyGroup>
     <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT'">true</HaveWindowsDesktopSdk>
     
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net462;net45</TargetFrameworks>
     <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
@@ -48,7 +48,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Reference Include="..\..\lib\SHDocVw\Interop.SHDocVw.dll" EmbedInteropTypes="False" Private="False" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) == 'true'">
     <Reference Include="System" Pack="False" />
     <Reference Include="System.Drawing" Pack="False" />
     <Reference Include="System.Windows.Forms" Pack="False" />
@@ -98,6 +98,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Eto.Wpf\Forms\TaskbarHandler.cs">
       <Link>Forms\TaskbarHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\Forms\Controls\WebView2Handler.cs">
+      <Link>Forms\Controls\WebView2Handler.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -111,6 +114,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   <ItemGroup>
     <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.664.37" PrivateAssets="all" Condition="$(TargetFramework) != 'net45'" />
   </ItemGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

@@ -208,7 +208,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public string ExecuteScript(string script)
 		{
 			// no access to DOM or return value, so get return value via URL (limited length, but better than nothing)
-			var getResultScript = @"try {{ var fn = function () {{ {0} }}; window.location.href = '" + EtoReturnPrefix + @"' + encodeURIComponent(fn()); }} catch (e) {{ window.location.href = '" + EtoReturnPrefix + @"'; }}";
+			var getResultScript = @"try {{ var _fn = function () {{ {0} }}; window.location.href = '" + EtoReturnPrefix + @"' + encodeURIComponent(_fn()); }} catch (e) {{ window.location.href = '" + EtoReturnPrefix + @"'; }}";
 			returnResetEvent.Reset();
 			Control.ExecuteScript(string.Format(getResultScript, script));
 			while (!returnResetEvent.Wait(0))

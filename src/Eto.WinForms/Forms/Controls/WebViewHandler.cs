@@ -6,6 +6,8 @@ using Eto.Forms;
 using Eto.CustomControls;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Eto.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -37,6 +39,8 @@ namespace Eto.WinForms.Forms.Controls
 		}
 
 		static readonly string[] ValidInputTags = { "input", "textarea" };
+
+		public override Size? GetDefaultSize(Size availableSize) => new Size(100, 100);
 
 		public WebViewHandler()
 		{
@@ -103,7 +107,12 @@ namespace Eto.WinForms.Forms.Controls
 					Control.Navigated += (s, e) => Callback.OnNavigated(Widget, new WebViewLoadedEventArgs(e.Url));
 					break;
 				case WebView.DocumentLoadedEvent:
-					Control.DocumentCompleted += (sender, e) => Callback.OnDocumentLoaded(Widget, new WebViewLoadedEventArgs(e.Url));
+					Control.DocumentCompleted += async (sender, e) =>
+					{
+						var args = new WebViewLoadedEventArgs(e.Url);
+						await Task.Delay(1000);
+						Callback.OnDocumentLoaded(Widget, args);
+					};
 					break;
 				case WebView.DocumentLoadingEvent:
 					Control.Navigating += (sender, e) =>
@@ -123,7 +132,7 @@ namespace Eto.WinForms.Forms.Controls
 					base.AttachEvent(handler);
 					break;
 			}
-			
+
 		}
 
 		void HookDocumentEvents(string newEvent = null)
@@ -154,9 +163,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public string ExecuteScript(string script)
 		{
-			var fullScript = string.Format("var fn = function() {{ {0} }}; fn();", script);
+			var fullScript = string.Format("var _fn = function() {{ {0} }}; _fn();", script);
 			return Convert.ToString(Control.Document.InvokeScript("eval", new object[] { fullScript }));
 		}
+
+		public Task<string> ExecuteScriptAsync(string script) => Task.FromResult(ExecuteScript(script));
 
 		public void Stop()
 		{

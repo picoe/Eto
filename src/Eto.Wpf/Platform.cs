@@ -15,6 +15,7 @@ using Eto.Wpf.IO;
 using Eto.Forms.ThemedControls;
 using Eto.Shared.Forms;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Eto.Wpf
 {
@@ -28,7 +29,7 @@ namespace Eto.Wpf
 
 		public override PlatformFeatures SupportedFeatures =>
 			PlatformFeatures.DrawableWithTransparentContent
-            | PlatformFeatures.CustomCellSupportsControlView
+			| PlatformFeatures.CustomCellSupportsControlView
 			| PlatformFeatures.TabIndexWithCustomContainers;
 
 		static Platform()
@@ -54,8 +55,8 @@ namespace Eto.Wpf
 		{
 			AddTo(this);
 
-			// by default, use WinForms web view (it has more features we can control)
-			UseSwfWebView();
+			// use WebView2 by default as it is more modern than IE
+			UseWebView2();
 		}
 
 		public static void AddTo(Eto.Platform p)
@@ -88,7 +89,7 @@ namespace Eto.Wpf
 			p.Add<DrawableCell.IHandler>(() => new DrawableCellHandler());
 			p.Add<ProgressCell.IHandler>(() => new ProgressCellHandler());
 			p.Add<CustomCell.IHandler>(() => new CustomCellHandler());
-			
+
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<Calendar.IHandler>(() => new CalendarHandler());
@@ -146,19 +147,19 @@ namespace Eto.Wpf
 			p.Add<MenuBar.IHandler>(() => new MenuBarHandler());
 			p.Add<RadioMenuItem.IHandler>(() => new RadioMenuItemHandler());
 			p.Add<SeparatorMenuItem.IHandler>(() => new SeparatorMenuItemHandler());
-			
+
 			// Forms.Printing
 			p.Add<PrintDialog.IHandler>(() => new PrintDialogHandler());
 			p.Add<PrintDocument.IHandler>(() => new PrintDocumentHandler());
 			p.Add<PrintSettings.IHandler>(() => new PrintSettingsHandler());
-			
+
 			// Forms.ToolBar
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
 			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
-			
+
 			// Forms
 			p.Add<AboutDialog.IHandler>(() => new ThemedAboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
@@ -189,10 +190,10 @@ namespace Eto.Wpf
 			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
 			p.Add<DataFormats.IHandler>(() => new DataFormatsHandler());
 			p.Add<Taskbar.IHandler>(() => new TaskbarHandler());
-			
+
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
-			
+
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
 		}
@@ -205,6 +206,32 @@ namespace Eto.Wpf
 		public void UseSwfWebView()
 		{
 			Add<WebView.IHandler>(() => new SwfWebViewHandler());
+		}
+
+		public void UseWebView2()
+		{
+			Add<WebView.IHandler>(Create_WebView2);
+		}
+
+		private WebView.IHandler Create_WebView2()
+		{
+#if NET45
+			Debug.WriteLine("Warning: .NET 4.5 target cannot use WebView2.  Target at least .NET 4.6.2, .NET Core, or .NET 5 instead and install the Microsoft.Web.WebView2 nuget package. Falling back to the Windows Forms WebView.");
+			UseSwfWebView();
+			return new SwfWebViewHandler();
+#else
+			try
+			{
+				return WebView2Loader.Create();
+			}
+			catch
+			{
+				Debug.WriteLine("Warning: Could not create WebView2 handler. Add Microsoft.Web.WebView2 nuget package to your project to take advantage of the latest web control.");
+				// switch to SWF version for subsequent controls
+				UseSwfWebView();
+				return new SwfWebViewHandler();
+			}
+#endif
 		}
 	}
 }
