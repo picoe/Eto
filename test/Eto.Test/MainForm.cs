@@ -336,21 +336,21 @@ namespace Eto.Test
 				if (Platform.Supports<CheckToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
-					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
+					ToolBar.Items.Add(LogEvents(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage }));
 				}
 				ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Space });
-				ButtonToolItem clickButton = new ButtonToolItem { Text = "Click Me", Image = TestIcons.Logo };
+				ButtonToolItem clickButton = LogEvents(new ButtonToolItem { Text = "Click Me", Image = TestIcons.Logo });
 				ToolBar.Items.Add(clickButton);
 				if (Platform.Supports<RadioToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.Logo, Checked = true });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio3 (Disabled)", Image = TestIcons.TestImage, Enabled = false });
+					ToolBar.Items.Add(LogEvents(new RadioToolItem { Text = "Radio1", Image = TestIcons.Logo, Checked = true }));
+					ToolBar.Items.Add(LogEvents(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage }));
+					ToolBar.Items.Add(LogEvents(new RadioToolItem { Text = "Radio3 (Disabled)", Image = TestIcons.TestImage, Enabled = false }));
 				}
 
 				// add an invisible button and separator and allow them to be toggled.
-				var invisibleButton = new ButtonToolItem { Text = "Invisible", Visible = false };
+				var invisibleButton = LogEvents(new ButtonToolItem { Text = "Invisible", Visible = false });
 				var sep = new SeparatorToolItem { Type = SeparatorToolItemType.Divider, Visible = false };
 				ToolBar.Items.Add(sep);
 				ToolBar.Items.Add(invisibleButton);
@@ -360,6 +360,24 @@ namespace Eto.Test
 					sep.Visible = invisibleButton.Visible;
 				};
 			}
+		}
+
+		RadioToolItem LogEvents(RadioToolItem item)
+		{
+			item.CheckedChanged += (sender, e) => Log.Write(sender, $"CheckedChanged: {item.Text}");
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
+		}
+		CheckToolItem LogEvents(CheckToolItem item)
+		{
+			item.CheckedChanged += (sender, e) => Log.Write(sender, $"CheckedChanged: {item.Text}");
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
+		}
+		ButtonToolItem LogEvents(ButtonToolItem item)
+		{
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
 		}
 
 		protected override void OnWindowStateChanged(EventArgs e)

@@ -61,7 +61,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core}/Eto.Test.Wpf.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core-win}/Eto.Test.Wpf.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -81,7 +81,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core}/Eto.Test.WinForms.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core-win}/Eto.Test.WinForms.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -101,7 +101,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-direct2d",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core}/Eto.Test.Direct2D.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core-win}/Eto.Test.Direct2D.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -128,6 +128,15 @@
 			"description": "Platform",
 			"options": [
 				"net5.0",
+				"netcoreapp3.1"
+			]
+		},
+		{
+			"type": "pickString",
+			"id": "platform-core-win",
+			"description": "Platform",
+			"options": [
+				"net5.0-windows",
 				"netcoreapp3.1"
 			]
 		}
