@@ -60,7 +60,8 @@
 
   <Target Name="FixGtkReferences" Condition="$(FixGtkReferences)=='true'" BeforeTargets="BeforeBuild">
     <ItemGroup>
-      <GtkAssemblyFiles Include="\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\gac\**\*.dll" />
+      <GtkAssemblyFiles Include="\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\gac\**\*.dll" Condition="Exists('\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\gac')" />
+      <GtkAssemblyFiles Include="\lib\mono\gac\**\*.dll" Condition="Exists('\lib\mono\gac')" />
       <GtkAssemblyPaths Include="@(GtkAssemblyFiles->'%(RootDir)%(Directory)')"/>
     </ItemGroup>
     

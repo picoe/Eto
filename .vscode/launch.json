@@ -40,6 +40,7 @@
 			"request": "launch",
 			"preLaunchTask": "build-gtk",
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Gtk.exe",
+			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -50,6 +51,7 @@
 			"request": "launch",
 			"preLaunchTask": "build-gtk2",
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Gtk2.exe",
+			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"

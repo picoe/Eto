@@ -72,12 +72,13 @@ namespace Eto.Test.Sections.Controls
 				return webView;
 
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 				var control = new Label
 				{
-					Text = string.Format("WebView not supported on this platform with the {0} generator", Platform.ID),
+					Text = $"WebView not supported on this platform with the {Platform.ID} generator\n{ex}",
 					BackgroundColor = Colors.Red,
+
 					TextAlignment = TextAlignment.Center,
 					VerticalAlignment = VerticalAlignment.Center,
 					TextColor = Colors.White
