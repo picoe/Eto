@@ -40,6 +40,7 @@
 			"request": "launch",
 			"preLaunchTask": "build-gtk",
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Gtk.exe",
+			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -50,26 +51,57 @@
 			"request": "launch",
 			"preLaunchTask": "build-gtk2",
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Gtk2.exe",
+			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "Eto.Test.Wpf",
+            "name": "Eto.Test.Wpf - core",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-windows}/Eto.Test.Wpf.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core}/Eto.Test.Wpf.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "Eto.Test.WinForms",
+            "name": "Eto.Test.Wpf - net framework",
+			"type": "clr",
+			"request": "launch",
+			"preLaunchTask": "build-wpf",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Wpf.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Eto.Test.WinForms - core",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-windows}/Eto.Test.WinForms.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core}/Eto.Test.WinForms.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+		},
+        {
+            "name": "Eto.Test.WinForms - net framework",
+			"type": "clr",
+			"request": "launch",
+			"preLaunchTask": "build-winforms",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.WinForms.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+		},
+        {
+            "name": "Eto.Test.Direct2D",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-direct2d",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core}/Eto.Test.Direct2D.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -90,16 +122,6 @@
 		}
 	],
 	"inputs": [
-		{
-			"type": "pickString",
-			"id": "platform-windows",
-			"description": "Platform",
-			"options": [
-				"net5.0-windows",
-				"netcoreapp3.1",
-				"net472"
-			]
-		},
 		{
 			"type": "pickString",
 			"id": "platform-core",

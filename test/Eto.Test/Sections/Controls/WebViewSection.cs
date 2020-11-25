@@ -72,12 +72,13 @@ namespace Eto.Test.Sections.Controls
 				return webView;
 
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 				var control = new Label
 				{
-					Text = string.Format("WebView not supported on this platform with the {0} generator", Platform.ID),
+					Text = $"WebView not supported on this platform with the {Platform.ID} generator\n{ex}",
 					BackgroundColor = Colors.Red,
+
 					TextAlignment = TextAlignment.Center,
 					VerticalAlignment = VerticalAlignment.Center,
 					TextColor = Colors.White
@@ -196,6 +197,8 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+		int executeScriptCount;
+
 		Control ExecuteScriptButton()
 		{
 			var control = new Button
@@ -204,7 +207,7 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate
 			{
-				var ret = webView.ExecuteScript("alert('this is called from code'); return 'return value from ExecuteScript';");
+				var ret = webView.ExecuteScript($"alert('this is called from code {executeScriptCount}'); return 'return value from ExecuteScript: {executeScriptCount++}';");
 				Log.Write(this, "ExecuteScript, Return: {0}", ret);
 			};
 			return control;

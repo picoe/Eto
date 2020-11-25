@@ -150,7 +150,7 @@ namespace Eto.WinForms.Forms
             var native = button.ToNative();
             native.Margin = new swf.Padding(0, 6, 6, 3);
 
-            panelButtons.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.Absolute, button.Width > 0 ? button.Width : Controls.ButtonHandler.DefaultMinimumSize.Width));
+            panelButtons.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.AutoSize));
             panelButtons.Controls.Add(native, pos, 0);
         }
 

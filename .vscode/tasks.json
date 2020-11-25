@@ -88,6 +88,16 @@
 			}
 		},
 		{
+			"label": "build-direct2d",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Direct2D/Eto.Test.Direct2D.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "restore",
 			"command": "dotnet restore /v:Minimal ${workspaceFolder}/src/Eto.sln",
 			"type": "shell",
