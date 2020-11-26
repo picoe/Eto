@@ -594,20 +594,23 @@ namespace Eto.Wpf.Forms
 				var handle = WindowHandle;
 				if (handle != IntPtr.Zero)
 				{
+					Point? location = null;
 					// Left/Top doesn't always report correct location when maximized, so use Win32 when we can.
 					var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : Win32.DPI_AWARENESS_CONTEXT.NONE;
 					try
 					{
-
 						Win32.RECT rect;
 						if (Win32.GetWindowRect(handle, out rect))
-							return Point.Round(new Point(rect.left, rect.top).ScreenToLogical(SwfScreen));
+							location = new Point(rect.left, rect.top);
 					}
 					finally
 					{
 						if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
 							Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
 					}
+
+					if (location != null)
+						return Point.Round(location.Value.ScreenToLogical(SwfScreen));
 				}
 				// in WPF, left/top of a window is transformed by the (current) screen dpi, which makes absolutely no sense.
 				var left = Control.Left;
