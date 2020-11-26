@@ -21,6 +21,7 @@ namespace Eto
 			public int height => bottom - top;
 
 			public System.Drawing.Rectangle ToSD() => new System.Drawing.Rectangle(left, top, width, height);
+			public Eto.Drawing.Rectangle ToEto() => new Eto.Drawing.Rectangle(left, top, width, height);
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
