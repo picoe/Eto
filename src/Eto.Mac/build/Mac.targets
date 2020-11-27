@@ -24,18 +24,21 @@
     <MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == '' and ( $(OutputType) == 'Exe' Or $(OutputType) == 'WinExe' )">True</MacBuildBundle>
 
     <!-- Specifies the name of the .app bundle, usually the same as the project -->
-    <MacBundleName Condition="'$(MacBundleName)'==''">$(MSBuildProjectName)</MacBundleName>
+    <MacBundleName Condition="$(MacBundleName) == '' AND $(OutputAppPath.TrimEnd('/').TrimEnd('\').EndsWith('.app')) == 'True'">$([System.IO.Path]::GetFileName($(OutputAppPath.TrimEnd('/').TrimEnd('\'))))</MacBundleName>
+    <MacBundleName Condition="$(MacBundleName.EndsWith('.app')) == 'True'">$(MacBundleName.SubString(0, $([MSBuild]::Subtract($(MacBundleName.Length), 4))))</MacBundleName>
+    <MacBundleName Condition="$(MacBundleName) == ''">$(MSBuildProjectName)</MacBundleName>
     
     <!-- Specifies a folder to copy verbatim into the .app bundle (useful for frameworks, etc) -->
-    <InputAppPath Condition="'$(InputAppPath)'==''"></InputAppPath>
+    <InputAppPath Condition="$(InputAppPath) == ''"></InputAppPath>
     
     <!-- Sets the default run configuration, or false to use a special 'Mac' configuration.
     If False, the default configuration of the project will run using the GTK platform when using Eto's platform detection.
     -->
-    <MacSetDefaultRunConfiguration Condition="'$(MacSetDefaultRunConfiguration)' == ''">True</MacSetDefaultRunConfiguration>
+    <MacSetDefaultRunConfiguration Condition="$(MacSetDefaultRunConfiguration) == ''">True</MacSetDefaultRunConfiguration>
     
     <!-- Specifies the full output .app path.  When building for more than one runtime identifier, this is ignored. -->
-    <OutputAppPath Condition="'$(OutputAppPath)'=='' AND $(BaseOutputAppPath) != ''">$(BaseOutputAppPath)$(MacBundleName).app\</OutputAppPath>
+    <OutputAppPath Condition="$(OutputAppPath) == '' AND $(BaseOutputAppPath) != ''">$(BaseOutputAppPath)$(MacBundleName).app\</OutputAppPath>
+    <OutputAppPath Condition="$(OutputAppPath.EndsWith('/')) == 'False' AND $(OutputAppPath.EndsWith('\')) == 'False'">$(OutputAppPath)\</OutputAppPath>
     
   </PropertyGroup>
 

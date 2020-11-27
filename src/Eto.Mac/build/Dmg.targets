@@ -43,8 +43,8 @@
     <Delete Files="$(_DmgPath)" />
 
     <ItemGroup>
-      <_DmgAppFiles Include="$(OutputAppPath)**\*" TargetPath="$([System.IO.Path]::GetFileName($(OutputAppPath.TrimEnd('/'))))\%(RecursiveDir)%(Filename)%(Extension)" />
-      <_DmgFiles Include="@(_DmgAppFiles)" TargetPath="$([System.IO.Path]::GetFileName($(OutputAppPath.TrimEnd('/'))))\%(RecursiveDir)%(Filename)%(Extension)" />
+      <_DmgAppFiles Include="$(OutputAppPath)**\*" />
+      <_DmgFiles Include="@(_DmgAppFiles)" TargetPath="$(MacBundleName).app\%(RecursiveDir)%(Filename)%(Extension)" />
       <_DmgFiles Include="@(DmgContent)" TargetPath="%(RecursiveDir)%(Filename)%(Extension)" Condition="%(TargetPath) == ''"/>
       <_DmgFiles Include="@(DmgContent)" Condition="%(TargetPath) != ''"/>
     </ItemGroup>
