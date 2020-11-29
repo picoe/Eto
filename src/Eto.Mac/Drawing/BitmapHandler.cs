@@ -93,8 +93,9 @@ namespace Eto.Mac.Drawing
 		public BitmapHandler(NSImage image)
 		{
 			Control = image;
-			rep = Control.BestRepresentationForDevice(null);
+			rep = GetBestRepresentation();
 			bmprep = rep as NSBitmapImageRep;
+			alpha = rep.HasAlpha;
 		}
 
 		public void Create(string fileName)
@@ -102,17 +103,19 @@ namespace Eto.Mac.Drawing
 			if (!File.Exists(fileName))
 				throw new FileNotFoundException("Icon not found", fileName);
 			Control = new NSImage(fileName);
-			rep = Control.BestRepresentationForDevice(null);
+			rep = GetBestRepresentation();
 			bmprep = rep as NSBitmapImageRep;
 			Control.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh);
+			alpha = rep.HasAlpha;
 		}
 
 		public void Create(Stream stream)
 		{
 			Control = new NSImage(NSData.FromStream(stream));
-			rep = Control.BestRepresentationForDevice(null);
+			rep = GetBestRepresentation();
 			bmprep = rep as NSBitmapImageRep;
 			Control.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh);
+			alpha = rep.HasAlpha;
 		}
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
@@ -233,21 +236,7 @@ namespace Eto.Mac.Drawing
 			datastream.Dispose();
 		}
 
-		public override Size Size
-		{
-			get
-			{
-				/*
-				NSImageRep rep = this.rep;
-				if (rep == null)
-					rep = Control.BestRepresentationForDevice (null);
-				if (rep != null)
-					return new Size(rep.PixelsWide, rep.PixelsHigh);
-				else
-				*/
-				return Control.Size.ToEtoSize();
-			}
-		}
+		public override Size Size => Control.Size.ToEtoSize();
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
@@ -310,12 +299,21 @@ namespace Eto.Mac.Drawing
 			EnsureRep();
 			return bmprep;
 		}
+		
+		NSImageRep GetBestRepresentation()
+		{
+			// Control.BestRepresentationForDevice() is deprecated
+			return Control.BestRepresentation(new CGRect(CGPoint.Empty, Control.Size), null, null);
+		}
 
 
 		protected void EnsureRep()
 		{
 			if (rep == null)
-				rep = Control.BestRepresentationForDevice(null);
+				rep = GetBestRepresentation();
+
+			// on Big Sur, rep is usually going to be a proxy, so let's find the concrete NSBitmapImageRep class the slow way..
+
 			if (bmprep != null)
 				return;
 
@@ -325,16 +323,48 @@ namespace Eto.Mac.Drawing
 			}
 			else
 			{
-				bmprep = rep as NSBitmapImageRep ?? Control.BestRepresentationForDevice(null) as NSBitmapImageRep;
+				bmprep = rep as NSBitmapImageRep ?? GetBestRepresentation() as NSBitmapImageRep;
 			}
 
-			if (bmprep == null)
+			if (bmprep != null)
+				return;
+
+			// go through concrete representations as we might have a proxy (Big Sur)
+			// this is fixed with MonoMac, but not Xamarin.Mac.
+			var representations = Control.Representations();
+			for (int i = 0; i < representations.Length; i++)
 			{
-				Control.LockFocus();
-				bmprep = new NSBitmapImageRep(new CGRect(CGPoint.Empty, Control.Size));
-				//bmprep.Type.ColorSpaceName = Control.Representations()[0].ColorSpaceName;
-				Control.UnlockFocus();
+				NSImageRep rep = representations[i];
+				if (rep is NSBitmapImageRep brep)
+				{
+					bmprep = brep;
+					return;
+				}
 			}
+
+			// create a new bitmap rep and copy the contents
+			var size = Size;
+			int numComponents = rep.HasAlpha ? 4 : 3;
+			int bitsPerComponent = 8;
+			int bitsPerPixel = numComponents * bitsPerComponent;
+			int bytesPerPixel = bitsPerPixel / 8;
+			int bytesPerRow = bytesPerPixel * size.Width;
+			bmprep = new NSBitmapImageRep(IntPtr.Zero, size.Width, size.Height, bitsPerComponent, numComponents, true, false, rep.ColorSpaceName, bytesPerRow, bitsPerPixel);
+			var graphicsContext = NSGraphicsContext.FromBitmap(bmprep);
+			NSGraphicsContext.GlobalSaveGraphicsState();
+			NSGraphicsContext.CurrentContext = graphicsContext;
+			Control.Draw(CGPoint.Empty, new CGRect(CGPoint.Empty, size.ToNS()), NSCompositingOperation.Copy, 1);
+			NSGraphicsContext.GlobalRestoreGraphicsState();
+			
+			// remove all existing representations
+			for (int i = 0; i < representations.Length; i++)
+			{
+				NSImageRep rep = representations[i];
+				Control.RemoveRepresentation(rep);
+			}
+
+			// add the new one back
+			Control.AddRepresentation(bmprep);
 		}
 	}
 }
