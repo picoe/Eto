@@ -5,7 +5,7 @@ namespace Eto.Mac
 {
 	public static class CrashReporter
 	{
-		[DllImport("libSystem.B.Dylib")]
+		[DllImport("/usr/lib/libSystem.dylib")]
 		static extern IntPtr dlsym(IntPtr handle, string symbol);
 
 		[DllImport("libc")]
@@ -55,8 +55,11 @@ namespace Eto.Mac
 		{
 			// if we're not debugging, generate native crash reports with .NET exception info included
 			Write(e.ExceptionObject?.ToString());
-			signal(SIGSEGV, IntPtr.Zero); // replace mono's SIGSEGV handler with the system default
-			kill(getpid(), SIGSEGV); // cause a SIGSEGV
+			if (EtoEnvironment.Platform.IsMono)
+			{
+				signal(SIGSEGV, IntPtr.Zero); // replace mono's SIGSEGV handler with the system default
+				kill(getpid(), SIGSEGV); // cause a SIGSEGV
+			}
 		}
 	}
 }
