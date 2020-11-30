@@ -27,7 +27,7 @@ namespace Eto.Addin.Shared
 			if (SupportsBase)
 				Base = "Panel";
 			if (SupportsFramework)
-				SelectedFrameworks = new[] { SupportedFrameworks[0] };
+				SelectedFramework = SupportedFrameworks[0];
 		}
 
 		public bool IsValid
@@ -40,7 +40,7 @@ namespace Eto.Addin.Shared
 					if (string.IsNullOrWhiteSpace(AppName) || AppNameInvalid)
 						return false;
 				}
-				if (SupportsFramework && !SelectedFrameworks.Any())
+				if (SupportsFramework && SelectedFramework == null)
 					return false;
 				return true;
 			}
@@ -231,21 +231,21 @@ namespace Eto.Addin.Shared
 
 		static readonly FrameworkInfo[] frameworkInformation =
 		{
-			new FrameworkInfo { Text = "Full .NET Framework", Value = "full", CanUseCombined = true },
-			new FrameworkInfo { Text = ".NET Core", Value = "core", CanUseCombined = false }
+			new FrameworkInfo { Text = ".NET 5", Value = "net5.0", CanUseCombined = false },
+			new FrameworkInfo { Text = ".NET Core 3.1", Value = "netcoreapp3.1", CanUseCombined = false },
+			new FrameworkInfo { Text = ".NET Framework 4.7.2 / Mono", Value = "net472", CanUseCombined = true },
 		};
 
-		List<FrameworkInfo> _selectedFrameworks;
+		FrameworkInfo _selectedFramework;
 
-		public IEnumerable<object> SelectedFrameworks
+		public FrameworkInfo SelectedFramework
 		{
-			get => _selectedFrameworks ?? Enumerable.Empty<FrameworkInfo>();
+			get => _selectedFramework;
 			set
 			{
-				_selectedFrameworks = (value?.OfType<FrameworkInfo>() ?? Enumerable.Empty<FrameworkInfo>()).ToList();
+				_selectedFramework = value;
 
-				string parameterValue = _selectedFrameworks.Count == 1 ? _selectedFrameworks[0].Value : "both";
-				Source.SetParameter("Framework", parameterValue);
+				Source.SetParameter("TargetFrameworkOverride", value.Value);
 
 				if (!AllowCombined)
 					Combined = false;
@@ -255,7 +255,7 @@ namespace Eto.Addin.Shared
 			}
 		}
 
-		public bool AllowCombined => _selectedFrameworks?.All(r => r.CanUseCombined) == true;
+		public bool AllowCombined => _selectedFramework?.CanUseCombined == true;
 
 
 		struct TypeInfo
@@ -347,8 +347,7 @@ namespace Eto.Addin.Shared
 
 				if (SupportsFramework)
 				{
-					var frameworks = string.Join(" and ", _selectedFrameworks?.Select(r => r.Text) ?? Enumerable.Empty<string>());
-					text.Add($"For {frameworks} framework(s).");
+					text.Add($"For {SelectedFramework.Text}.");
 				}
 
 				return string.Join("\n\n", text);

@@ -97,13 +97,21 @@ namespace Eto.Addin.Shared
 
 			if (model.SupportsFramework)
 			{
+				var frameworkDropDown = new DropDown();
+				frameworkDropDown.BindDataContext(c => c.DataStore, (ProjectWizardPageModel m) => m.SupportedFrameworks);
+				frameworkDropDown.ItemTextBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Text);
+				frameworkDropDown.ItemKeyBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Value);
+				frameworkDropDown.SelectedValueBinding.BindDataContext((ProjectWizardPageModel m) => m.SelectedFramework);
+
+				/*
 				var frameworkCheckBoxes = new CheckBoxList();
 				frameworkCheckBoxes.BindDataContext(c => c.DataStore, (ProjectWizardPageModel m) => m.SupportedFrameworks);
 				frameworkCheckBoxes.ItemTextBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Text);
 				frameworkCheckBoxes.ItemKeyBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Value);
 				frameworkCheckBoxes.SelectedValuesBinding.BindDataContext((ProjectWizardPageModel m) => m.SelectedFrameworks);
+				*/
 
-				content.AddRow(HeadingLabel("Framework:"), frameworkCheckBoxes);
+				content.AddRow(HeadingLabel("Framework:"), frameworkDropDown);
 			}
 
 			if (model.SupportsProjectType)
@@ -179,9 +187,9 @@ namespace Eto.Addin.Shared
 			}
 
 #if DEBUG
-			var showColorsButton = new Button { Text = "Show all themed colors" };
-			showColorsButton.Click += (sender, e) => new ThemedColorsDialog().ShowModal(this);
-			content.AddRow(new Panel(), showColorsButton);
+			//var showColorsButton = new Button { Text = "Show all themed colors" };
+			//showColorsButton.Click += (sender, e) => new ThemedColorsDialog().ShowModal(this);
+			//content.AddRow(new Panel(), showColorsButton);
 #endif
 
 			var informationLabel = new Label();

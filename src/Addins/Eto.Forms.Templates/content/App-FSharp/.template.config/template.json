@@ -86,23 +86,31 @@
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
+		"TargetFrameworkOverride": {
+			"type": "parameter",
+			"description": "Overrides the target framework",
+			"replaces": "TargetFrameworkOverride",
+			"datatype": "string",
+			"defaultValue": ""
+		},
 		"Framework": {
 			"type": "parameter",
 			"description": "Specify the framework(s) to support",
 			"dataType": "choice",
-			"defaultValue": "core",
+			"defaultValue": "net5.0",
+			"replaces": "net5.0",
 			"choices": [
 				{
-					"choice": "full",
-					"description": "Full .NET Framework and/or Mono"
+					"choice": "net5.0",
+					"description": ".NET 5.0"
 				},
 				{
-					"choice": "core",
-					"description": ".NET Core"
+					"choice": "netcoreapp3.1",
+					"description": ".NET Core 3.1"
 				},
 				{
-					"choice": "both",
-					"description": "Target both .NET Core and .NET Framework / Mono"
+					"choice": "net462",
+					"description": ".NET Framework 4.6.2 / Mono"
 				}
 			]
 		},
@@ -141,16 +149,6 @@
 			"parameters": {
 				"format": "yyyy"
 			}
-		},
-		/* Support SDK 2.0.0 */
-		"namespace-for-old-sdk": {
-			"type": "generated",
-			"generator": "coalesce",
-			"parameters": {
-				"sourceVariableName": "safe_namespace",
-				"fallbackVariableName": "safe_name"
-			},
-			"replaces": "EtoApp._1"
 		}
 	},
 	"sources": [

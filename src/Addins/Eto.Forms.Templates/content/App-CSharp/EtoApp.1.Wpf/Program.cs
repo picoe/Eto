@@ -1,7 +1,7 @@
 ﻿using System;
 using Eto.Forms;
 
-namespace EtoApp._1.Wpf
+namespace EtoApp.1.Wpf
 {
 	class MainClass
 	{

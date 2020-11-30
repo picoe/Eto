@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net472</TargetFrameworks>
-    <AssemblySearchPaths Condition="$(GtkVersion)=='Gtk2' or $(GtkVersion)=='Gtk3'">$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+    <TargetFramework Condition="$(TargetFrameworkOverride) == ''">net5.0</TargetFramework>
+    <TargetFramework Condition="$(TargetFrameworkOverride) != ''">TargetFrameworkOverride</TargetFramework>
   </PropertyGroup>
   
   <ItemGroup>

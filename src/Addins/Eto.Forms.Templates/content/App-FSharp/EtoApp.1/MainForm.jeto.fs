@@ -1,5 +1,5 @@
 ﻿#if (UseJeto)
-namespace EtoApp._1
+namespace EtoApp.1
 
 open System
 open Eto.Forms

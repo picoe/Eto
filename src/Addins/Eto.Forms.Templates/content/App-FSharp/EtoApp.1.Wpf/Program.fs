@@ -1,8 +1,8 @@
-﻿namespace EtoApp._1.Wpf
+﻿namespace EtoApp.1.Wpf
 module Program =
 
     open System
-    open EtoApp._1
+    open EtoApp.1
 
     [<EntryPoint>]
     [<STAThread>]

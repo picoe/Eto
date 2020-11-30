@@ -2,7 +2,7 @@
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace EtoApp._1.Desktop
+namespace EtoApp.1.Desktop
 {
 	class Program
 	{

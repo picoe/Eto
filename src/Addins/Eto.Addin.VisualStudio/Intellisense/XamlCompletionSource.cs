@@ -1,4 +1,4 @@
-﻿using Eto.Designer.Completion;
+using Eto.Designer.Completion;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
@@ -53,41 +53,49 @@ namespace Eto.Addin.VisualStudio.Intellisense
 
 		public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
 		{
-			// read XML up to the cursor
-			var point = session.TextView.Caret.Position.BufferPosition;
-			var info = XmlParser.Read(buffer.CurrentSnapshot.GetText(0, point.Position));
-			if (info.Mode == CompletionMode.Class)
+			try
 			{
-				var prevPoint = point - 1;
-				var prevCh = prevPoint.GetChar();
-                if (prevCh != '<' && prevCh != '.')
+				// read XML up to the cursor
+				var point = session.TextView.Caret.Position.BufferPosition;
+				var info = XmlParser.Read(buffer.CurrentSnapshot.GetText(0, point.Position));
+				if (info.Mode == CompletionMode.Class)
 				{
-					session.Dismiss();
-					return;
+					var prevPoint = point - 1;
+					var prevCh = prevPoint.GetChar();
+					if (prevCh != '<' && prevCh != '.')
+					{
+						session.Dismiss();
+						return;
+					}
 				}
+				var nodes = info.Nodes;
+				var ns = nodes.SelectMany(r => r.Namespaces ?? Enumerable.Empty<CompletionNamespace>());
+				var path = nodes.Where(r => r.Mode == CompletionMode.Class).Select(r => r.Name).ToList();
+				var last = nodes.LastOrDefault();
+
+				// get available completion items
+				var items = Designer.Completion.Completion.GetCompletionItems(ns, info.Mode, path, last);
+
+				// translate to VS completions
+				var completionList = new List<mvli.Completion>();
+				foreach (var cls in items.OrderBy(r => r.Name))
+				{
+					completionList.Add(new mvli.Completion(cls.Name, cls.Name, cls.Description, GetGlyph(cls.Type), null));
+				}
+
+				completionSets.Insert(0, new CompletionSet(
+					"eto",
+					"Eto",
+					FindTokenSpanAtPosition(session.GetTriggerPoint(buffer), session, info.Mode),
+					completionList,
+					null));
+				return;
 			}
-			var nodes = info.Nodes;
-			var ns = nodes.SelectMany(r => r.Namespaces ?? Enumerable.Empty<CompletionNamespace>());
-			var path = nodes.Where(r => r.Mode == CompletionMode.Class).Select(r => r.Name).ToList();
-			var last = nodes.LastOrDefault();
-
-			// get available completion items
-			var items = Designer.Completion.Completion.GetCompletionItems(ns, info.Mode, path, last);
-
-			// translate to VS completions
-			var completionList = new List<mvli.Completion>();
-            foreach (var cls in items.OrderBy(r => r.Name))
+			catch (Exception ex)
 			{
-                completionList.Add(new mvli.Completion(cls.Name, cls.Name, cls.Description, GetGlyph(cls.Type), null));
+				Debug.WriteLine($"Error doing autocomplete: {ex}");
+				throw;
 			}
-
-			completionSets.Insert(0, new CompletionSet(
-				"Eto",
-				"Eto",
-				FindTokenSpanAtPosition(session.GetTriggerPoint(buffer), session, info.Mode),
-				completionList,
-				null));
-			return;
 		}
 
 		System.Windows.Media.ImageSource GetGlyph(CompletionType type)

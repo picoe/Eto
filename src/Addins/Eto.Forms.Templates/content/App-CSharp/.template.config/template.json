@@ -37,31 +37,6 @@
 				}
 			]
 		},
-		"GtkVersion": {
-			"type": "parameter",
-			"description": "The Gtk# version to target",
-			"dataType": "choice",
-			"defaultValue": "Gtk",
-			"onlyIf": [
-				{ "after": ".Platform." },
-				{ "after": ".Platforms." }
-			],
-			"choices": [
-				{
-					"choice": "Gtk",
-					"description": "Gtk# 3.14+"
-				},
-				{
-					"choice": "Gtk2",
-					"description": "Gtk# 2.12 (deprecated)"
-				},
-				{
-					"choice": "Gtk3",
-					"description": "GTK# 3.0 (deprecated)"
-				}
-			],
-			"replaces": "Gtk"
-		},
 		"Combined": {
 			"type": "parameter",
 			"description": "Use a combined project to launch the application (Full .NET Framework only)",
@@ -86,23 +61,31 @@
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
+		"TargetFrameworkOverride": {
+			"type": "parameter",
+			"description": "Overrides the target framework",
+			"replaces": "TargetFrameworkOverride",
+			"datatype": "string",
+			"defaultValue": ""
+		},
 		"Framework": {
 			"type": "parameter",
 			"description": "Specify the framework(s) to support",
 			"dataType": "choice",
-			"defaultValue": "core",
+			"defaultValue": "net5.0",
+			"replaces": "net5.0",
 			"choices": [
 				{
-					"choice": "full",
-					"description": "Full .NET Framework and/or Mono"
+					"choice": "net5.0",
+					"description": ".NET 5.0"
 				},
 				{
-					"choice": "core",
-					"description": ".NET Core"
+					"choice": "netcoreapp3.1",
+					"description": ".NET Core 3.1"
 				},
 				{
-					"choice": "both",
-					"description": "Target both .NET Core and .NET Framework / Mono"
+					"choice": "net462",
+					"description": ".NET Framework 4.6.2 / Mono"
 				}
 			]
 		},
@@ -140,16 +123,6 @@
 			"replaces": "2020",
 			"parameters": {
 				"format": "yyyy"
-			}
-		},
-		/* Support SDK 2.0.0 */
-		"namespace-for-old-sdk": {
-			"type": "generated",
-			"generator": "coalesce",
-			"replaces": "EtoApp._1",
-			"parameters": {
-				"sourceVariableName": "safe_namespace",
-				"fallbackVariableName": "safe_name"
 			}
 		}
 	},
@@ -206,6 +179,22 @@
 	"primaryOutputs": [
 		{ "path": "EtoApp.1/EtoApp.1.csproj" },
 		{
+			"path": "EtoApp.1/MainForm.cs",
+			"condition": "UseCode"
+		},
+		{
+			"path": "EtoApp.1/MainForm.eto.cs",
+			"condition": "UseCodePreview"
+		},
+		{
+			"path": "EtoApp.1/MainForm.xeto",
+			"condition": "UseXeto"
+		},
+		{
+			"path": "EtoApp.1/MainForm.jeto",
+			"condition": "UseJeto"
+		},
+		{
 			"path": "EtoApp.1.Desktop/EtoApp.1.Desktop.csproj",
 			"condition": "(Combined)"
 		},
@@ -228,22 +217,6 @@
 		{
 			"path": "EtoApp.1.XamMac/EtoApp.1.XamMac.csproj",
 			"condition": "(IncludeXamMac)"
-		},
-		{
-			"path": "EtoApp.1/MainForm.cs",
-			"condition": "UseCode"
-		},
-		{
-			"path": "EtoApp.1/MainForm.eto.cs",
-			"condition": "UseCodePreview"
-		},
-		{
-			"path": "EtoApp.1/MainForm.xeto",
-			"condition": "UseXeto"
-		},
-		{
-			"path": "EtoApp.1/MainForm.jeto",
-			"condition": "UseJeto"
 		}
 	],
 	"guids": [
@@ -286,5 +259,17 @@
 				}
 			]
 		}
-	}
+	},
+	"postActions": [
+		{
+			"condition": "(HostIdentifier != \"dotnetcli\" && HostIdentifier != \"dotnetcli-preview\")",
+			"description": "Opens MainForm in the editor",
+			"manualInstructions": [],
+			"actionId": "84C0DA21-51C8-4541-9940-6CA19AF04EE6",
+			"args": {
+				"files": "1"
+			},
+			"continueOnError": true
+		}
+	]
 }

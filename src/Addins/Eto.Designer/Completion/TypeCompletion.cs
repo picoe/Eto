@@ -9,6 +9,7 @@ using System.Collections;
 using Eto.Drawing;
 using Portable.Xaml;
 using Eto.Forms;
+using sc = System.ComponentModel;
 
 namespace Eto.Designer.Completion
 {
@@ -27,6 +28,20 @@ namespace Eto.Designer.Completion
 			return exportedTypes;
 		}
 
+		public static sc.TypeConverter GetConverter(Type type)
+		{
+			var attribute = type.GetCustomAttribute<sc.TypeConverterAttribute>(false);
+
+			if (attribute != null)
+			{
+				var converterType = Type.GetType(attribute.ConverterTypeName, false);
+				if (converterType != null)
+					return Activator.CreateInstance(converterType) as sc.TypeConverter;
+			}
+
+			return sc.TypeDescriptor.GetConverter(type);
+		}
+
 		public override Func<Type, bool> GetFilter(IEnumerable<string> path)
 		{
 			string propertyName;
@@ -34,15 +49,19 @@ namespace Eto.Designer.Completion
 			var contentType = GetContentType(nodeType, propertyName);
 			if (contentType != null)
 			{
-				var converter = System.ComponentModel.TypeDescriptor.GetConverter(contentType);
-				if (converter != null)
+				var converter = GetConverter(contentType);
+				return t =>
 				{
-					return t => contentType.IsAssignableFrom(t) || converter.CanConvertFrom(t);
-				}
-				else
-				{
-					return contentType.IsAssignableFrom;
-				}
+					if (contentType.IsAssignableFrom(t))
+						return true;
+
+					if (converter?.CanConvertFrom(t) == true)
+						return true;
+					if (GetConverter(t)?.CanConvertTo(contentType) == true)
+						return true;
+
+					return false;
+				};
 			}
 			return null;
 		}
