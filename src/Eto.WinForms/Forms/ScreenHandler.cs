@@ -43,14 +43,14 @@ namespace Eto.WinForms.Forms
 			if (hmonitor != IntPtr.Zero)
 			{
 				// get actual monitor dimentions
-				var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE) : Win32.DPI_AWARENESS_CONTEXT.NONE;
+				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE);
 
 				var info = new Win32.MONITORINFOEX();
 				Win32.GetMonitorInfo(new HandleRef(null, hmonitor), info);
 				realBounds = info.rcMonitor.ToSD().ToEto();
 
 				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
-					Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
+					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 			}
 
 			var adjustedRect = rect;

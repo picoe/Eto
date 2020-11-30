@@ -17,19 +17,19 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : Win32.DPI_AWARENESS_CONTEXT.NONE;
+				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
 				var result = swf.Control.MousePosition;
 				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
-					Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
+					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 				return result.ScreenToLogical();
 			}
 			set
 			{
 				var pos = value.LogicalToScreen();
-				var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : Win32.DPI_AWARENESS_CONTEXT.NONE;
+				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
 				swf.Cursor.Position = Point.Round(pos).ToSD();
 				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
-					Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
+					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 			}
 		}
 

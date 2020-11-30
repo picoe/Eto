@@ -57,7 +57,7 @@ namespace Eto.Wpf.Forms
 			Win32.GetMonitorInfo(Control, ref info);
 			adjustedRect.Location += info.rcMonitor.ToEto().Location;
 
-			var oldDpiAwareness = Win32.PerMonitorDpiSupported ? Win32.SetThreadDpiAwarenessContext(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : Win32.DPI_AWARENESS_CONTEXT.NONE;
+			var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
 			var realRect = Rectangle.Ceiling(adjustedRect);
 			using (var screenBmp = new sd.Bitmap(realRect.Width, realRect.Height, sd.Imaging.PixelFormat.Format32bppRgb))
 			{
@@ -71,7 +71,7 @@ namespace Eto.Wpf.Forms
 						sw.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
 
 					if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
-						Win32.SetThreadDpiAwarenessContext(oldDpiAwareness);
+						Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 
 					return new Bitmap(new BitmapHandler(bitmapSource));
 				}
