@@ -657,11 +657,10 @@ namespace Eto.Wpf.Forms
 
 		void SetLocation(PointF location)
 		{
-			var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
-
 			var handle = WindowHandle;
 			var loc = location.LogicalToScreen();
 
+			var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
 			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE);
 			if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
 				Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);

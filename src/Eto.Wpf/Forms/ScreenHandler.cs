@@ -82,9 +82,9 @@ namespace Eto.Wpf.Forms
 
 		public float Scale => 96f / 72f;
 
-		public RectangleF Bounds => Control.GetBounds().ScreenToLogical();
+		public RectangleF Bounds => Control.GetBounds().ScreenToLogical(Control);
 
-		public RectangleF WorkingArea => Control.GetWorkingArea().ScreenToLogical();
+		public RectangleF WorkingArea => Control.GetWorkingArea().ScreenToLogical(Control);
 
 		public int BitsPerPixel => Control.BitsPerPixel;
 

@@ -69,7 +69,7 @@ namespace Eto
 			var screen = Eto.Forms.Screen.FromPoint(point);
 			var sdscreen = ScreenHandler.GetControl(screen);
 			var pixelSize = sdscreen.GetLogicalPixelSize();
-			var location = sdscreen.Bounds.Location;
+			var location = sdscreen.GetBounds().Location;
 			var screenBounds = screen.Bounds;
 
 			var x = location.X + (point.X - screenBounds.X) * pixelSize;
@@ -97,9 +97,9 @@ namespace Eto
 			return new Drawing.PointF(x, y);
 		}
 
-		public static Eto.Drawing.RectangleF ScreenToLogical(this Eto.Drawing.Rectangle rect)
+		public static Eto.Drawing.RectangleF ScreenToLogical(this Eto.Drawing.Rectangle rect, swf.Screen screen)
 		{
-			var screen = swf.Screen.FromPoint(new sd.Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2));
+			screen = screen ?? swf.Screen.FromPoint(rect.Location.ToSD());
 			var location = screen.GetLogicalLocation();
 			var pixelSize = screen.GetLogicalPixelSize();
 			var screenBounds = screen.GetBounds();

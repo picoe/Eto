@@ -159,7 +159,7 @@ namespace Eto.Test.Sections.Behaviors
 			var restoreForm = new Form {
 				Content = "This form should restore its size and position", 
 				Resizable = true,
-				MinimumSize = new Size(450, 300),
+				ClientSize = new Size(450, 300),
 				ShowActivated = false
 			};
 			restoreForm.LocationChanged += (_, __) => Invalidate();
