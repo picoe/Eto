@@ -17,11 +17,12 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
+				var screen = swf.Screen.FromPoint(swf.Control.MousePosition);
 				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
 				var result = swf.Control.MousePosition;
 				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
 					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
-				return result.ScreenToLogical();
+				return result.ScreenToLogical(screen);
 			}
 			set
 			{
