@@ -6,7 +6,7 @@
     <ProjectGuid>{05DB20E8-D401-4094-8096-88499C50E28A}</ProjectGuid>
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>EtoApp._1.XamMac</RootNamespace>
+    <RootNamespace>EtoApp.1.XamMac</RootNamespace>
     <AssemblyName>EtoApp.1.XamMac</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>

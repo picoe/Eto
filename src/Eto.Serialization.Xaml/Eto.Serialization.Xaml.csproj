@@ -29,7 +29,7 @@ https://github.com/picoe/Eto/wiki
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Portable.Xaml" Version="0.24.0" />
+    <PackageReference Include="Portable.Xaml" Version="0.26.0" />
   </ItemGroup>
   
   <ItemGroup Condition="$(TargetFramework) == 'netstandard1.0'">

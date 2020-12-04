@@ -4,7 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 <!--#if(IsWindow)-->
 	Title="My Eto Form"
-	ClientSize="400, 350"
+	MinimumSize="200,200"
 <!--#endif-->
 	Padding="10"
 	>

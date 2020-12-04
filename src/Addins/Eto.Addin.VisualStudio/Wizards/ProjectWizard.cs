@@ -31,9 +31,9 @@ namespace Eto.Addin.VisualStudio.Wizards
         {
             get
             {
-                Version ver;
-                if (Version.TryParse(replacements["$targetframeworkversion$"], out ver))
-                    return ver;
+//                Version ver;
+//                if (Version.TryParse(replacements["$targetframeworkversion$"], out ver))
+//                    return ver;
                 return new Version(4, 5);
             }
         }
@@ -74,6 +74,15 @@ namespace Eto.Addin.VisualStudio.Wizards
 				var dialog = new BaseDialog { Content = panel, Title = model.Title, ClientSize = new Size(-1, 400), Style="themed" };
 				if (!dialog.ShowModal(Helpers.MainWindow))
 					throw new WizardBackoutException();
+
+				// super hack: Due to a bug in VS we cannot use item templates without it crashing..
+				// see Microsoft.VisualStudio.TemplateEngine.Wizard.TemplateEngineWizard.PostInvocationTelemetry
+				// for details on why it doesn't work... 
+				if (customParams[0] is string str && !str.Contains("~PC"))
+				{
+					str = str.Replace("~IC", "~PC");
+					customParams[0] = str;
+				}
 			}
 		}
 	}

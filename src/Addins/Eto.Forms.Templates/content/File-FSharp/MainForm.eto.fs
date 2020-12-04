@@ -1,5 +1,5 @@
 ﻿#if (UseCodePreview)
-namespace EtoApp._1
+namespace EtoApp.1
 
 open System
 open Eto.Forms
@@ -10,7 +10,7 @@ type MainFormBase () =
     member this.InitializeComponent() =
 #if IsWindow
         base.Title <- "My Eto Form"
-        base.ClientSize <- new Size(400, 350)
+        base.MinimumSize <- new Size(200, 200)
 #endif
 
         // table with three rows

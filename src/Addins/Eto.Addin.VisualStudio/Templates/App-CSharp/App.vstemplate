@@ -15,7 +15,6 @@
     <LanguageTag>CSharp</LanguageTag>
     <Icon>App.ico</Icon>
     <DefaultName>EtoApp</DefaultName>
-    <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
 
     <CreateNewFolder>true</CreateNewFolder>
     <ProvideDefaultName>true</ProvideDefaultName>

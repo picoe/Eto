@@ -2,7 +2,7 @@
 	"$type": "Form",
 /*#if(IsWindow)*/
 	"Title": "My Eto Form",
-	"ClientSize": "400,350",
+	"MinimumSize": "200,200",
 /*#endif */
 	"Padding": "10",
 	"Content": {

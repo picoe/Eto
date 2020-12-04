@@ -1,9 +1,9 @@
-﻿#if (UseCode || UseCodePreview)
+#if (UseCode || UseCodePreview)
 using System;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace EtoApp._1
+namespace EtoApp.1
 {
 	public partial class MainForm : Form
 	{
@@ -14,7 +14,7 @@ namespace EtoApp._1
 #else
 #if IsWindow
 			Title = "My Eto Form";
-			ClientSize = new Size(400, 350);
+			MinimumSize = new Size(200, 200);
 #endif
 
 			Content = new StackLayout
