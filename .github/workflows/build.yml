@@ -145,6 +145,7 @@ jobs:
       with:
         name: test
         path: |
+          artifacts/test/${{ env.BuildConfiguration }}/**/*XamMac2.*
           artifacts/test/${{ env.BuildConfiguration }}/**/*Mac64.*
           artifacts/test/${{ env.BuildConfiguration }}/**/*Gtk2.*
 
@@ -153,7 +154,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: log
-        path: artifacts/log/**/*
+        path: |
+          artifacts/log/**/*
+          lib/monomac/artifacts/generated/**/*.binlog
 
   update-release:
     needs: [ build-windows, build-mac ]

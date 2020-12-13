@@ -5,7 +5,7 @@ using Eto.Drawing;
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(WebView))]
-	public class WebViewSection : Scrollable
+	public class WebViewSection : Panel
 	{
 		WebView webView;
 		Button goBack;
@@ -65,7 +65,7 @@ namespace Eto.Test.Sections.Controls
 				{
 					Log.Write(webView, "OpenNewWindow: {0}, Url: {1}", e.NewWindowName, e.Uri);
 				};
-				webView.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e)
+				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e)
 				{
 					titleLabel.Text = e.Title;
 				};
@@ -207,8 +207,13 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate
 			{
-				var ret = webView.ExecuteScript($"alert('this is called from code {executeScriptCount}'); return 'return value from ExecuteScript: {executeScriptCount++}';");
-				Log.Write(this, "ExecuteScript, Return: {0}", ret);
+				var script = $"alert('this is called from code {executeScriptCount}');\nreturn 'value from ExecuteScript: {executeScriptCount++}';";
+				script = PromptString("Script", script, "Execute", true);
+				if (!string.IsNullOrEmpty(script))
+				{
+					var ret = webView.ExecuteScript(script);
+					Log.Write(this, "ExecuteScript, Return: {0}", ret);
+				}
 			};
 			return control;
 		}
@@ -369,6 +374,41 @@ namespace Eto.Test.Sections.Controls
 </html>");
 		}
 
+		string PromptString(string title, string initialValue = null, string action = null, bool largeText = false)
+		{
+			if (!Platform.Supports<Dialog>())
+				return initialValue;
+
+			var dialog = new Dialog<bool>();
+			if (Platform.IsDesktop)
+				dialog.MinimumSize = new Size(300, 0);
+
+			var layout = new DynamicLayout();
+			layout.Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
+			layout.DefaultSpacing = new Size(5, 5);
+			layout.Padding = 10;
+			var textBox = largeText ? (TextControl)new TextArea { TextReplacements = TextReplacements.None } : new TextBox();
+			textBox.Text = initialValue;
+
+			var goButton = new Button { Text = action ?? "OK" };
+			dialog.DefaultButton = goButton;
+			goButton.Click += (sender, e) => dialog.Close(true);
+			var cancelButton = new Button { Text = "Cancel" };
+			dialog.AbortButton = cancelButton;
+			cancelButton.Click += (sender, e) => dialog.Close(false);
+			layout.BeginVertical();
+			layout.AddRow(new Label { Text = title }, textBox);
+			layout.EndBeginVertical();
+			layout.AddRow(null, cancelButton, goButton);
+			layout.EndVertical();
+
+			dialog.Content = layout;
+
+			if (dialog.ShowModal(this))
+				return textBox.Text;
+			return null;
+		}
+
 		Control LoadUrl()
 		{
 			var control = new Button
@@ -377,38 +417,11 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate
 			{
-				if (Platform.Supports<Dialog>())
+				var url = PromptString("Url", "https://html5test.com", "Go");
+				if (!string.IsNullOrEmpty(url) && Uri.TryCreate(url, UriKind.Absolute, out var uri))
 				{
-					var dialog = new Dialog<bool>();
-					if (Platform.IsDesktop)
-						dialog.MinimumSize = new Size(300, 0);
-
-					var layout = new DynamicLayout();
-					var textBox = new TextBox { Text = "https://google.com" };
-					var goButton = new Button { Text = "Go" };
-					dialog.DefaultButton = goButton;
-					goButton.Click += (sender, e) => dialog.Close(true);
-					var cancelButton = new Button { Text = "Cancel" };
-					dialog.AbortButton = cancelButton;
-					cancelButton.Click += (sender, e) => dialog.Close();
-					layout.BeginVertical();
-					layout.AddRow(new Label { Text = "Url" }, textBox);
-					layout.EndBeginVertical();
-					layout.AddRow(null, cancelButton, goButton);
-					layout.EndVertical();
-
-					dialog.Content = layout;
-
-
-					if (dialog.ShowModal(this))
-					{
-						Uri uri;
-						if (Uri.TryCreate(textBox.Text, UriKind.Absolute, out uri))
-							webView.Url = uri;
-					}
+					webView.Url = uri;
 				}
-				else
-					webView.Url = new Uri("https://google.com");
 			};
 			return control;
 		}

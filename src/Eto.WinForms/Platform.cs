@@ -178,11 +178,17 @@ namespace Eto.WinForms
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
 		}
 
+		/// <summary>
+		/// Uses the WinForms WebBrowser control for Eto's WebView
+		/// </summary>
 		public void UseSwfWebView()
 		{
 			Add<WebView.IHandler>(() => new WebViewHandler());
 		}
 
+		/// <summary>
+		/// Uses the Microsoft.Web.WebView2 control for Eto's WebView (default if included with your app)
+		/// </summary>
 		public void UseWebView2()
 		{
 			Add<WebView.IHandler>(Create_WebView2);

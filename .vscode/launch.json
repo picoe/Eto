@@ -6,12 +6,24 @@
             "type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-mac64",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core}/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
-        {
+		{
+            "name": "Eto.Test.Mac64 - mono",
+            "type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-mac64",
+			"program": ".",
+			"runtimeExecutable": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+			"passDebugOptionsViaEnvironmentVariable": true,
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+		{
             "name": "Eto.Test.XamMac2",
             "type": "mono",
 			"request": "launch",
@@ -28,7 +40,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-gtk",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core}/Eto.Test.Gtk.dll",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0/Eto.Test.Gtk.dll",
             "args": [],
             "console": "internalConsole",
             "stopAtEntry": false,
@@ -57,17 +69,17 @@
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "Eto.Test.Wpf - core",
+            "name": "Eto.Test.Wpf",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core-win}/Eto.Test.Wpf.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0-windows/Eto.Test.Wpf.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "Eto.Test.Wpf - net framework",
+            "name": "Eto.Test.Wpf - .NET 4.7.2",
 			"type": "clr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
@@ -77,17 +89,17 @@
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "Eto.Test.WinForms - core",
+            "name": "Eto.Test.WinForms",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core-win}/Eto.Test.WinForms.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0-windows/Eto.Test.WinForms.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
 		},
         {
-            "name": "Eto.Test.WinForms - net framework",
+            "name": "Eto.Test.WinForms - .NET 4.7.2",
 			"type": "clr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
@@ -101,7 +113,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-direct2d",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/${input:platform-core-win}/Eto.Test.Direct2D.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0-windows/Eto.Test.Direct2D.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -119,26 +131,6 @@
 				"MONODEVELOP_CONSOLE_LOG_LEVEL": "All",
 				"MONODEVELOP_DEV_ADDINS": "${workspaceFolder}/artifacts/addin/${config:var.configuration}/net472/"
 			}
-		}
-	],
-	"inputs": [
-		{
-			"type": "pickString",
-			"id": "platform-core",
-			"description": "Platform",
-			"options": [
-				"net5.0",
-				"netcoreapp3.1"
-			]
-		},
-		{
-			"type": "pickString",
-			"id": "platform-core-win",
-			"description": "Platform",
-			"options": [
-				"net5.0-windows",
-				"netcoreapp3.1"
-			]
 		}
 	]
 }
