@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <!-- Automatically added by WindowsDesktop SDK -->
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+  <ItemGroup Condition="$(HaveWindowsDesktopSdk) == 'False'">
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

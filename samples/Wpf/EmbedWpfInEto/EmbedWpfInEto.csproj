@@ -37,7 +37,7 @@
   </ItemGroup>
   
   <!-- Automatically added by WindowsDesktop SDK -->
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+  <ItemGroup Condition="$(HaveWindowsDesktopSdk) == 'False'">
     <Page Include="MyNativeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

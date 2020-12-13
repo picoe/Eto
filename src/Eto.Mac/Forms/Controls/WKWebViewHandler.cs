@@ -32,8 +32,6 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		NewWindowHandler newWindowHandler;
-
 		public wk.WKWebViewConfiguration Configuration { get; set; } = new wk.WKWebViewConfiguration();
 
 		protected override wk.WKWebView CreateControl()
@@ -53,7 +51,6 @@ namespace Eto.Mac.Forms.Controls
 				{
 					h.SetupContextMenu();
 					var args = new WebViewLoadedEventArgs(h.Url);
-					//if (forFrame == h.Control.MainFrame)
 					h.Callback.OnNavigated(h.Widget, args);
 					h.Callback.OnDocumentLoaded(h.Widget, args);
 				}
@@ -70,19 +67,6 @@ namespace Eto.Mac.Forms.Controls
 					decisionHandler(policy, preferences);
 				}
 			}
-
-			// public override void DecidePolicyForNewWindow(wk.WebView webView, NSDictionary actionInformation, NSUrlRequest request, string newFrameName, NSObject decisionToken)
-			// {
-			// 	var h = Handler;
-			// 	if (h != null)
-			// 	{
-			// 		var args = new WebViewNewWindowEventArgs(new Uri(request.Url.AbsoluteString), newFrameName);
-			// 		h.Callback.OnOpenNewWindow(h.Widget, args);
-			// 		if (!args.Cancel)
-			// 			NSWorkspace.SharedWorkspace.OpenUrl(request.Url);
-			// 		decisionToken.PerformSelector(selIgnore, null, 0);
-			// 	}
-			// }
 		}
 
 		protected override void Initialize()
@@ -106,30 +90,6 @@ namespace Eto.Mac.Forms.Controls
 				UIDelegate = new EtoUIDelegate { Handler = handler };
 			}
 
-		}
-
-		public class NewWindowHandler : NSObject
-		{
-			public WKWebViewHandler Handler => WebView.Handler;
-
-			public EtoWebView WebView { get; set; }
-
-			public NewWindowHandler(WKWebViewHandler handler)
-			{
-				WebView = new EtoWebView(handler);
-				WebView.WeakNavigationDelegate = this;
-			}
-
-			[Export("webView:decidePolicyForNavigationAction:request:frame:decisionListener:")]
-			public void DecidePolicyForNavigation(wk.WebView webView, NSDictionary action, NSUrlRequest request, wk.WebFrame frame, NSObject listener)
-			{
-				var url = (NSUrl)action.ObjectForKey(new NSString("WebActionOriginalURLKey"));
-				var args = new WebViewNewWindowEventArgs(new Uri(url.AbsoluteString), frame.Name);
-				Handler.Callback.OnOpenNewWindow(Handler.Widget, args);
-				if (!args.Cancel)
-					NSWorkspace.SharedWorkspace.OpenUrl(url);
-				listener.PerformSelector(selIgnore, null, 0);
-			}
 		}
 
 		class PromptDialog : Dialog<bool>
@@ -226,8 +186,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			public override wk.WKWebView CreateWebView(wk.WKWebView webView, wk.WKWebViewConfiguration configuration, wk.WKNavigationAction navigationAction, wk.WKWindowFeatures windowFeatures)
 			{
-				Handler.newWindowHandler = new NewWindowHandler(Handler);
-				return Handler.newWindowHandler.WebView;
+				return new EtoWebView(Handler);
 			}
 		}
 
@@ -294,8 +253,25 @@ namespace Eto.Mac.Forms.Controls
 
 		public bool CanGoForward => Control.CanGoForward;
 
-		// doesn't actually work?!
-		public void ShowPrintDialog() => Control.Print(Control);
+		static Selector s_selGetPrintOperationInternal = new Selector("_printOperationWithPrintInfo:");
+		static Selector s_selGetPrintOperation = new Selector("printOperationWithPrintInfo:");
+
+		public void ShowPrintDialog()
+		{
+			var printInfo = NSPrintInfo.SharedPrintInfo;
+			NSPrintOperation printOperation = null;
+			if (Control.RespondsToSelector(s_selGetPrintOperation))
+			{
+				// big sur
+				printOperation = Control.GetPrintOperation(printInfo);
+			}
+			else if (Control.RespondsToSelector(s_selGetPrintOperationInternal))
+			{
+				// older versions have this but is undocumented and internal..
+				printOperation = Runtime.GetNSObject<NSPrintOperation>(Messaging.IntPtr_objc_msgSend_IntPtr(Control.Handle, s_selGetPrintOperationInternal.Handle, printInfo.Handle));
+			}
+			printOperation?.RunOperation();
+		}
 
 		public bool BrowserContextMenuEnabled
 		{
