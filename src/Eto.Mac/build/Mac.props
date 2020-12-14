@@ -13,6 +13,9 @@
     <BaseOutputAppPath Condition="$(MacAppendRuntimeIdentifierToOutputPath) == 'True'">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
     <OutputPath>$(MacTempBuildPath)bin\</OutputPath>
     <PublishDir>$(MacTempBuildPath)publish\</PublishDir>
+    <SelfContained Condition="$(MacSelfContained) != ''">$(MacSelfContained)</SelfContained>
+    <PublishSingleFile Condition="$(MacPublishSingleFile) != ''">$(MacPublishSingleFile)</PublishSingleFile>
+    <PublishTrimmed Condition="$(MacPublishTrimmed) != ''">$(MacPublishTrimmed)</PublishTrimmed>
   </PropertyGroup>
   
   <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>

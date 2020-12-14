@@ -36,9 +36,9 @@
       <MacBuildProperties>MacIsBuildingBundle=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacBundlingProject=$(MSBuildProjectFullPath)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);TargetFramework=$(TargetFramework)</MacBuildProperties>
-      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release' AND $(EnableCodeSigning) != 'True'">$(MacBuildProperties);PublishSingleFile=True</MacBuildProperties>
-      <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);PublishTrimmed=True</MacBuildProperties>
-      <MacBuildProperties>$(MacBuildProperties);SelfContained=$(MacBundleDotNet)</MacBuildProperties>
+      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release' AND $(EnableCodeSigning) != 'True'">$(MacBuildProperties);MacPublishSingleFile=True</MacBuildProperties>
+      <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);MacPublishTrimmed=True</MacBuildProperties>
+      <MacBuildProperties>$(MacBuildProperties);MacSelfContained=$(MacBundleDotNet)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacTempBuildPath=$(MacTempBuildPath)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacOutputPath=$(OutputPath)</MacBuildProperties>
       <MacBuildProperties Condition="@(MacBundleRuntimeIdentifiers->Count()) > 1">$(MacBuildProperties);MacAppendRuntimeIdentifierToOutputPath=True</MacBuildProperties>

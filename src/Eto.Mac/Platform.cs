@@ -156,6 +156,14 @@ namespace Eto.Mac
 			AddTo(this);
 		}
 
+		/// <summary>
+		/// Use the older WebView handler. Useful if you need printing functionality.
+		/// </summary>
+		public void UseWebView()
+		{
+			Add<WebView.IHandler>(() => new WebViewHandler());
+		}
+
 		public static void AddTo(Eto.Platform p)
 		{
 			// Drawing
@@ -223,7 +231,7 @@ namespace Eto.Mac
 #pragma warning disable CS0618 // Type or member is obsolete
 			p.Add<TreeView.IHandler>(() => new TreeViewHandler());
 #pragma warning restore CS0618 // Type or member is obsolete
-			p.Add<WebView.IHandler>(() => new WebViewHandler());
+			p.Add<WebView.IHandler>(() => new WKWebViewHandler());
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			p.Add<Stepper.IHandler>(() => new StepperHandler());
 			p.Add<TextStepper.IHandler>(() => new ThemedTextStepperHandler());
@@ -244,19 +252,19 @@ namespace Eto.Mac
 			p.Add<MenuBar.IHandler>(() => new MenuBarHandler());
 			p.Add<RadioMenuItem.IHandler>(() => new RadioMenuItemHandler());
 			p.Add<SeparatorMenuItem.IHandler>(() => new SeparatorMenuItemHandler());
-			
+
 			// Forms.Printing
 			p.Add<PrintDialog.IHandler>(() => new PrintDialogHandler());
 			p.Add<PrintDocument.IHandler>(() => new PrintDocumentHandler());
 			p.Add<PrintSettings.IHandler>(() => new PrintSettingsHandler());
-			
+
 			// Forms.ToolBar
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
 			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
-			
+
 			// Forms
 			p.Add<AboutDialog.IHandler>(() => new ThemedAboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
