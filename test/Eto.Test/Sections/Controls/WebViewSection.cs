@@ -68,6 +68,7 @@ namespace Eto.Test.Sections.Controls
 				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e)
 				{
 					titleLabel.Text = e.Title;
+					Log.Write(webView, $"DocumentTitleChange: {e.Title}");
 				};
 				return webView;
 
@@ -238,6 +239,8 @@ namespace Eto.Test.Sections.Controls
 <body>
 	<h1>Some custom html</h1>
 	<script type='text/javascript'>
+		var titleChange = 0;
+
 		function appendResult(id, value) {
 			var element = document.getElementById(id);
 
@@ -272,6 +275,9 @@ namespace Eto.Test.Sections.Controls
 			<a href='http://www.example.com'>Open link in this window</a>
 			<a href='http://www.example.com' target='_blank'>Open in new window</a>
 			<a href='http://www.example.com' target='another_name_of_new_window'>Open in named window</a>
+		</p>
+		<p><h2>Dynamic title changes</h2>
+			<button onclick=""document.title = 'some title ' + titleChange++; return false;"">Change title</button>
 		</p>
 		<h2>Input Types</h2>
 		<table>

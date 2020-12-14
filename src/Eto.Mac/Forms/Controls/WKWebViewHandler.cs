@@ -61,12 +61,32 @@ namespace Eto.Mac.Forms.Controls
 				var h = Handler;
 				if (h != null)
 				{
-					var args = new WebViewLoadingEventArgs(new Uri(navigationAction.Request.Url.AbsoluteString), navigationAction.TargetFrame?.MainFrame == true);
+					var requestUrl = navigationAction.Request.Url;
+					if (h.EnablePrintRouting && requestUrl.AbsoluteString == "eto:print")
+					{
+						// WKWebKit doesn't enable printing, so we have to handle it manually...
+						h.ShowPrintDialog();
+						decisionHandler(wk.WKNavigationActionPolicy.Cancel, preferences);
+						return;
+					}
+					if (navigationAction.TargetFrame == null)
+					{
+						var newWindowArgs = new WebViewNewWindowEventArgs(requestUrl, string.Empty);
+						h.Callback.OnOpenNewWindow(h.Widget, newWindowArgs);
+						if (!newWindowArgs.Cancel)
+						{
+							Application.Instance.Open(navigationAction.Request.Url.AbsoluteString);
+						}
+						decisionHandler(wk.WKNavigationActionPolicy.Cancel, preferences);
+						return;
+					}
+					var args = new WebViewLoadingEventArgs(new Uri(requestUrl.AbsoluteString), navigationAction.TargetFrame?.MainFrame == true);
 					h.Callback.OnDocumentLoading(h.Widget, args);
 					var policy = args.Cancel ? wk.WKNavigationActionPolicy.Cancel : wk.WKNavigationActionPolicy.Allow;
 					decisionHandler(policy, preferences);
 				}
 			}
+
 		}
 
 		protected override void Initialize()
@@ -74,7 +94,7 @@ namespace Eto.Mac.Forms.Controls
 			Enabled = true;
 			base.Initialize();
 
-			 Control.NavigationDelegate = new EtoNavigationDelegate { Handler = this };
+			Control.NavigationDelegate = new EtoNavigationDelegate { Handler = this };
 		}
 
 		public class EtoWebView : wk.WKWebView, IMacControl
@@ -171,7 +191,6 @@ namespace Eto.Mac.Forms.Controls
 				completionHandler(result);
 			}
 
-
 			public override void RunOpenPanel(wk.WKWebView webView, wk.WKOpenPanelParameters parameters, wk.WKFrameInfo frame, Action<NSUrl[]> completionHandler)
 			{
 				var openDlg = new OpenFileDialog();
@@ -186,10 +205,21 @@ namespace Eto.Mac.Forms.Controls
 			}
 			public override wk.WKWebView CreateWebView(wk.WKWebView webView, wk.WKWebViewConfiguration configuration, wk.WKNavigationAction navigationAction, wk.WKWindowFeatures windowFeatures)
 			{
+				var h = Handler;
+				if (h == null)
+					return null;
+				if (navigationAction.TargetFrame == null)
+				{
+					// open in new window
+					Application.Instance.Open(navigationAction.Request.Url.AbsoluteString);
+					return null;
+				}
+
 				return new EtoWebView(Handler);
 			}
 		}
 
+		static NSString s_titleKey = new NSString("title");
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -200,13 +230,24 @@ namespace Eto.Mac.Forms.Controls
 				case WebView.DocumentLoadedEvent:
 				case WebView.OpenNewWindowEvent:
 				case WebView.DocumentLoadingEvent:
-				case WebView.DocumentTitleChangedEvent:
 					// handled by delegates
+					break;
+				case WebView.DocumentTitleChangedEvent:
+					AddControlObserver(s_titleKey, TitleChangedObserver);
+					// todo. need to observe the Title property.
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		static void TitleChangedObserver(ObserverActionEventArgs obj)
+		{
+			var h = obj.Handler as WKWebViewHandler;
+			if (h == null)
+				return;
+			h.Callback.OnDocumentTitleChanged(h.Widget, new WebViewTitleEventArgs(h.DocumentTitle));
 		}
 
 		public Uri Url
@@ -260,6 +301,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var printInfo = NSPrintInfo.SharedPrintInfo;
 			NSPrintOperation printOperation = null;
+
 			if (Control.RespondsToSelector(s_selGetPrintOperation))
 			{
 				// big sur
@@ -270,14 +312,37 @@ namespace Eto.Mac.Forms.Controls
 				// older versions have this but is undocumented and internal..
 				printOperation = Runtime.GetNSObject<NSPrintOperation>(Messaging.IntPtr_objc_msgSend_IntPtr(Control.Handle, s_selGetPrintOperationInternal.Handle, printInfo.Handle));
 			}
-			printOperation?.RunOperation();
+			if (printOperation != null)
+			{
+				// RunOperation() doesn't work..
+				printOperation.RunOperationModal(Control.Window, Control, new Selector("printOperationDidRun:success:contextInfo:"), IntPtr.Zero);
+			}
 		}
 
+		static readonly object BrowserContextMenuEnabled_Key = new object();
 		public bool BrowserContextMenuEnabled
 		{
-			get;
-			set;
+			get => Widget.Properties.Get<bool>(BrowserContextMenuEnabled_Key, true);
+			set
+			{
+				if (Widget.Properties.TrySet<bool>(BrowserContextMenuEnabled_Key, value, true))
+				{
+					// this interferes with the current page, but there's no other way that I can find..
+					if (Control.IsLoading)
+						return;
+					if (value)
+					{
+						ExecuteScript("document.body.setAttribute('oncontextmenu', '');");
+					}
+					else
+					{
+						ExecuteScript("document.body.setAttribute('oncontextmenu', 'event.preventDefault();');");
+					}
+				}
+			}
 		}
+
+		public bool EnablePrintRouting { get; set; } = true;
 
 		void SetupContextMenu()
 		{
@@ -286,8 +351,13 @@ namespace Eto.Mac.Forms.Controls
 				// no way to do this through code.. 
 				ExecuteScript("document.body.setAttribute('oncontextmenu', 'event.preventDefault();');");
 			}
+			if (EnablePrintRouting)
+			{
+				// no way to do this through code.. 
+				ExecuteScript(@"window.print = function () { window.location = 'eto:print'; };");
+			}
 
-		}		
+		}
 	}
 }
 
