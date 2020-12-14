@@ -6,9 +6,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Eto.Forms" Version="2.5.8-dev" />
-    <PackageReference Include="Eto.Serialization.Json" Version="2.5.8-dev" Condition="$(UseJeto) == 'True'" />
-    <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.8-dev" Condition="$(UseXeto) == 'True'" />
+    <PackageReference Include="Eto.Forms" Version="2.5.9-dev" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.5.9-dev" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.9-dev" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
   
 </Project>
