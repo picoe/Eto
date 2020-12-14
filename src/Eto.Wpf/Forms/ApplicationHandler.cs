@@ -275,7 +275,7 @@ namespace Eto.Wpf.Forms
 
 		public void Restart()
 		{
-			Process.Start(sw.Application.ResourceAssembly.Location);
+			System.Windows.Forms.Application.Restart();
 			sw.Application.Current.Shutdown();
 		}
 

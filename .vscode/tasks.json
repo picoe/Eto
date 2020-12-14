@@ -114,7 +114,16 @@
 			"presentation": {
 				"clear": true
 			}
-        },
+		},
+		{
+			"label": "Set Eto version",
+			"type": "shell",
+			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:UpdateVersion /p:SetVersion=${input:version}",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		}
 	],
 	"inputs": [
 		{
@@ -125,6 +134,12 @@
 				"No",
 				"Yes"
 			]
+		},
+		{
+			"type": "promptString",
+			"id": "version",
+			"description": "Enter the version to update to",
+			"default": "2.5.x"
 		}
 	]
 }
