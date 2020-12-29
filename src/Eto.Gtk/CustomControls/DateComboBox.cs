@@ -15,7 +15,6 @@ namespace Eto.GtkSharp.CustomControls
 		DateTimePickerMode mode = DateTimePickerMode.DateTime;
 
 		public event EventHandler DateChanged;
-		public event EventHandler DialogClosed;
 
 		protected void OnDateChanged(EventArgs e)
 		{
@@ -101,24 +100,38 @@ namespace Eto.GtkSharp.CustomControls
 				{
 					// this will appear to the user as a click that doesn't 
 					// bring up a window..
-					dlg.Close();
-					dlg = null;
+					dlg.CloseDialog();
+					CleanDialog();
 				}
 				else			
 				{
 					// move the focus to the Entry control so we can detect it moving away..
 					Entry.GrabFocusWithoutSelecting();
 					dlg = new DateComboBoxDialog(selectedDate ?? DateTime.Now, this.Mode);
-					dlg.DateChanged += delegate
-					{
-						selectedDate = dlg.SelectedDate;
-						ValidateDateRange();
-						SetValue();
-					};			
-					dlg.Destroyed += Dlg_Destroyed;
+					dlg.DateChanged += Dlg_DateChanged;
+					dlg.DialogClosed += Dlg_DialogClosed;
 					dlg.ShowPopup(this);
 				}
 			};
+		}
+
+		private void CleanDialog()
+		{
+			if (dlg == null)
+				return;
+
+			dlg.DateChanged -= Dlg_DateChanged;
+			dlg.DialogClosed -= Dlg_DialogClosed;
+			dlg = null;
+		}
+
+		private void Dlg_DateChanged(object sender, EventArgs e)
+		{
+			if (dlg == null)
+				return;
+			selectedDate = dlg.SelectedDate;
+			ValidateDateRange();
+			SetValue();
 		}
 
 		/// <summary>
@@ -127,9 +140,9 @@ namespace Eto.GtkSharp.CustomControls
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void Dlg_Destroyed(object sender, EventArgs e)
+		private void Dlg_DialogClosed(object sender, EventArgs e)
 		{
-			dlg = null;
+			CleanDialog();
 		}
 
 		/// <summary>
@@ -140,21 +153,7 @@ namespace Eto.GtkSharp.CustomControls
 		private void Entry_FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
 		{
 			// if the pull-down is are up, close it
-			if (dlg != null)
-			{
-				dlg.CloseDialog();
-			}
-		}
-
-		/// <summary>
-		/// The drop-down dialog has closed - remove our reference to it
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		void HandleDialogClose(object sender, EventArgs e)
-		{
-			// remove our reference to the drop-down dialog
-			dlg = null;						
+			dlg?.CloseDialog();
 		}
 
 		void HandleChanged(object sender, EventArgs e)
