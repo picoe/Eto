@@ -105,8 +105,10 @@ namespace Eto.GtkSharp.CustomControls
 				}
 				else			
 				{
+#if GTKCORE
 					// move the focus to the Entry control so we can detect it moving away..
 					Entry.GrabFocusWithoutSelecting();
+#endif
 					dlg = new DateComboBoxDialog(selectedDate ?? DateTime.Now, this.Mode);
 					dlg.DateChanged += Dlg_DateChanged;
 					dlg.DialogClosed += Dlg_DialogClosed;
