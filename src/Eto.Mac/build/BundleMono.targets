@@ -15,14 +15,14 @@
     <!-- minimum installed version of mono required to run -->
     <MacMonoMinimumVersion Condition="$(MacMonoMinimumVersion) == ''">6.0</MacMonoMinimumVersion>
   </PropertyGroup>
-  
-  <Target Name="MacTouchApp" Condition="$(MacBuildBundle) == 'True'">
+
+  <Target Name="MacTouchApp">
     <!-- This makes it so we can debug in VS for Mac right away without building first -->
     <MakeDir Directories="$(OutputAppPath)" Condition="$(IsMac) == 'True' AND $(VisualStudioVersion) != '' AND $(TargetFramework) != '' AND $(RuntimeIdentifier) == ''" />
   </Target>
 
   <!-- Build target -->
-  <Target Name="BuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle" Condition="$(MacBuildBundle) == 'True'" Outputs="$(OutputAppPath)">
+  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="DetectMkBundle;$(MacBuildAppBundleDependsOnTargets)" Outputs="$(OutputAppPath)">
     <!-- bundle mono with mkbundle -->
     <CallTarget Targets="MacBundleMono" Condition="$(MacBundleMono) == 'True'" />
     <!-- copy executables and run with installed mono -->
@@ -43,7 +43,7 @@
       <MkBundleExe>$(MonoBinPath)mkbundle</MkBundleExe>
 
       <IsDetectingMkBundle Condition="$(MacBundleMono) == 'detect'">True</IsDetectingMkBundle>
-      <MacBundleMono Condition="$(MacBundleMono) == 'detect' AND Exists('$(MkBundleExe)')">True</MacBundleMono>
+      <MacBundleMono Condition="$(MacBundleMono) == 'detect' AND Exists('$(MkBundleExe)') AND $(EnableCodeSigning) != 'True'">True</MacBundleMono>
 
       <MacBundleTarget Condition="$(MacBundleTarget) == 'default'"></MacBundleTarget>
     </PropertyGroup>

@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
+using System.Threading.Tasks;
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -308,9 +309,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public string ExecuteScript(string script)
 		{
-			var fullScript = string.Format("var fn = function () {{ {0} }}; fn();", script);
+			var fullScript = string.Format("var _fn = function() {{ {0} }}; _fn();", script);
 			return Control.StringByEvaluatingJavaScriptFromString(fullScript);
 		}
+
+		public Task<string> ExecuteScriptAsync(string script) => Task.FromResult(ExecuteScript(script));
 
 		public void LoadHtml(string html, Uri baseUri)
 		{

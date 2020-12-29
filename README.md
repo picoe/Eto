@@ -3,7 +3,7 @@ Eto.Forms
 ### A cross platform desktop and mobile user interface framework
 
 [![Build Status](https://dev.azure.com/picoe/Eto.Forms/_apis/build/status/picoe.Eto?branchName=develop)](https://dev.azure.com/picoe/Eto.Forms/_build/latest?definitionId=1&branchName=develop)
-[![forums](https://img.shields.io/badge/join-the%20forums-yellowgreen.svg)](http://groups.google.com/group/eto-forms)
+[![discussions](https://img.shields.io/badge/join-the%20discussions-yellowgreen.svg)](https://github.com/picoe/Eto/discussions)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/picoe/Eto)
 [![wiki](https://img.shields.io/badge/browse-the%20wiki-orange.svg)](https://github.com/picoe/Eto/wiki)
 [![NuGet](http://img.shields.io/nuget/v/Eto.Forms.svg?style=flat)](https://www.nuget.org/packages/Eto.Forms/)
@@ -82,8 +82,8 @@ Applications
 * [DWSIM](https://github.com/DanWBR/dwsim5) - Chemical Process Simulator
 * [Termission](https://github.com/junian/termission) - Cross-platform Serial/TCP Terminal with Scriptable Auto-Response
 * [Visual SEO Studio](https://visual-seo.com/) - Technical SEO Auditing Tool
-* [RegexTestBench](https://github.com/CommonLoon102/RegexTestBench) - Cross-platform regex testing tool in .NET Core
-* [RegexFileSearcher](https://github.com/CommonLoon102/RegexFileSearcher) - Cross-platform regex file searching tool in .NET Core
+* [RegexFileSearcher](https://github.com/CommonLoon102/RegexFileSearcher) - Cross-platform regex file searching tool in .NET 5
+* [RegexTestBench](https://github.com/CommonLoon102/RegexTestBench) - Cross-platform regex testing tool in .NET 5
 
 Assemblies
 ----------

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard1.0</TargetFrameworks>
     <DefineConstants>$(DefineConstants);PCL;PORTABLE</DefineConstants>
   </PropertyGroup>
   
@@ -29,7 +29,7 @@ https://github.com/picoe/Eto/wiki
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Portable.Xaml" Version="0.24.0" />
+    <PackageReference Include="Portable.Xaml" Version="0.26.0" />
   </ItemGroup>
   
   <ItemGroup Condition="$(TargetFramework) == 'netstandard1.0'">

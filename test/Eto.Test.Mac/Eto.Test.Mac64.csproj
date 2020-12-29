@@ -6,12 +6,17 @@
   <Import Project="..\..\src\Eto.Mac\build\Mac.props" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
   
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <TargetFrameworks>net5.0;net472</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     
     <RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
   </PropertyGroup>
-  
+
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
+    <EnableDmgBuild>True</EnableDmgBuild>
+    <EnableCodeSigning Condition="$(EnableCodeSignBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableCodeSigning>
+    <EnableNotarization Condition="$(EnableNotarizationBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableNotarization>
+  </PropertyGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />

@@ -38,6 +38,7 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			Control.Visible = Visible;
 			tb.Insert(Control, index);
 			Control.Toggled += Connector.HandleToggled;
+			Control.Clicked += Connector.HandleClicked;
 		}
 
 		protected new CheckToolItemConnector Connector { get { return (CheckToolItemConnector)base.Connector; } }
@@ -52,6 +53,11 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			public new CheckToolItemHandler Handler { get { return (CheckToolItemHandler)base.Handler; } }
 
 			public void HandleToggled(object sender, EventArgs e)
+			{
+				Handler.Widget.OnCheckedChanged(EventArgs.Empty);
+			}
+			
+			public void HandleClicked(object sender, EventArgs e)
 			{
 				Handler.Widget.OnClick(EventArgs.Empty);
 			}

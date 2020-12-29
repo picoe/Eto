@@ -1,8 +1,8 @@
-﻿namespace EtoApp._1.Desktop
+﻿namespace EtoApp.1.Desktop
 module Program =
 
     open System
-    open EtoApp._1
+    open EtoApp.1
 
     [<EntryPoint>]
     [<STAThread>]

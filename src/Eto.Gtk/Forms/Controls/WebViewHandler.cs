@@ -1,7 +1,10 @@
-#if GTK2
 using System;
 using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+#if GTK2
 using Eto.Forms;
 #if GTK3
 using NewWindowPolicyDecisionRequestedArgs = WebKit.NewWindowPolicyDecisionRequestedArgs;
@@ -12,8 +15,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class WebViewHandler : GtkControl<EtoWebView, WebView, WebView.ICallback>, WebView.IHandler
 	{
 		readonly Gtk.ScrolledWindow scroll;
-		readonly ManualResetEventSlim returnResetEvent = new ManualResetEventSlim();
-		string scriptReturnValue;
+		Queue<TaskCompletionSource<string>> jscs;
 		const string EtoReturnPrefix = "etoscriptreturn://";
 
 		public Gtk.ScrolledWindow Scroll
@@ -36,7 +38,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			catch (Exception ex)
 			{
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "GTK WebView is only supported on Linux, and requires webkit-sharp", ex));
+				throw new InvalidOperationException("GTK WebView is only supported on Linux, and requires webkit-sharp", ex);
 			}
 			scroll.Add(Control);
 		}
@@ -117,8 +119,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (args.Request.Uri.StartsWith(EtoReturnPrefix, StringComparison.Ordinal))
 				{
 					// pass back the response to ExecuteScript()
-					handler.scriptReturnValue = Uri.UnescapeDataString(args.Request.Uri.Substring(EtoReturnPrefix.Length).Replace('+', ' '));
-					handler.returnResetEvent.Set();
+					var tcs = handler.jscs?.Count > 0 ? handler.jscs?.Dequeue() : null;
+					tcs?.SetResult(Uri.UnescapeDataString(args.Request.Uri.Substring(EtoReturnPrefix.Length).Replace('+', ' ')));
 					args.RetVal = WebKit.NavigationResponse.Ignore;
 				}
 				else
@@ -136,8 +138,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (args.Request.Uri.StartsWith(EtoReturnPrefix, StringComparison.Ordinal))
 				{
 					// pass back the response to ExecuteScript()
-					handler.scriptReturnValue = Uri.UnescapeDataString(args.Request.Uri.Substring(EtoReturnPrefix.Length).Replace('+', ' '));
-					handler.returnResetEvent.Set();
+					var tcs = handler.jscs?.Count > 0 ? handler.jscs?.Dequeue() : null;
+					tcs?.SetResult(Uri.UnescapeDataString(args.Request.Uri.Substring(EtoReturnPrefix.Length).Replace('+', ' ')));
 					args.PolicyDecision.Ignore();
 				}
 				else
@@ -207,15 +209,27 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public string ExecuteScript(string script)
 		{
-			// no access to DOM or return value, so get return value via URL (limited length, but better than nothing)
-			var getResultScript = @"try {{ var fn = function () {{ {0} }}; window.location.href = '" + EtoReturnPrefix + @"' + encodeURIComponent(fn()); }} catch (e) {{ window.location.href = '" + EtoReturnPrefix + @"'; }}";
-			returnResetEvent.Reset();
-			Control.ExecuteScript(string.Format(getResultScript, script));
-			while (!returnResetEvent.Wait(0))
+			var task = ExecuteScriptAsync(script);
+
+			while (!task.IsCompleted)
 			{
 				Gtk.Application.RunIteration();
 			}
-			return scriptReturnValue;
+
+			return task.Result;
+		}
+
+		public Task<string> ExecuteScriptAsync(string script)
+		{
+			var getResultScript = $"try {{ var _fn = function () {{ {{{script}}} }}; window.location.href = '" + EtoReturnPrefix + @"' + encodeURIComponent(_fn()); }} catch (e) {{ window.location.href = '" + EtoReturnPrefix + @"'; }}";
+			TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+			if (jscs == null)
+				jscs = new Queue<TaskCompletionSource<string>>();
+			jscs.Enqueue(tcs);
+
+			Control.ExecuteScript(string.Format(getResultScript, script));
+			
+			return tcs.Task;
 		}
 
 		public void LoadHtml(string html, Uri baseUri)

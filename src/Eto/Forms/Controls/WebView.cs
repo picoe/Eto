@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Eto.Forms
 {
@@ -264,39 +265,27 @@ namespace Eto.Forms
 		/// Navigates the browser back to the previous page in history, if there is one.
 		/// </summary>
 		/// <seealso cref="CanGoBack"/>
-		public void GoBack()
-		{
-			Handler.GoBack();
-		}
+		public void GoBack() => Handler.GoBack();
 
 		/// <summary>
 		/// Gets a value indicating whether the browser can go back to the previous page in history.
 		/// </summary>
 		/// <seealso cref="GoBack"/>
 		/// <value><c>true</c> if the browser can go back; otherwise, <c>false</c>.</value>
-		public bool CanGoBack
-		{
-			get{ return Handler.CanGoBack; }
-		}
+		public bool CanGoBack => Handler.CanGoBack;
 
 		/// <summary>
 		/// Navigates the browser forward to the next page in history, if there is one.
 		/// </summary>
 		/// <seealso cref="CanGoForward"/>
-		public void GoForward()
-		{
-			Handler.GoForward();
-		}
+		public void GoForward() => Handler.GoForward();
 
 		/// <summary>
 		/// Gets a value indicating whether the browser can go forward to the next page.
 		/// </summary>
 		/// <seealso cref="GoForward"/>
 		/// <value><c>true</c> if the browser can go forward; otherwise, <c>false</c>.</value>
-		public bool CanGoForward
-		{
-			get { return Handler.CanGoForward; }
-		}
+		public bool CanGoForward => Handler.CanGoForward;
 
 		/// <summary>
 		/// Gets or sets the URL of the currently navigated page.
@@ -318,28 +307,29 @@ namespace Eto.Forms
 		/// <remarks>
 		/// You can determine if the page is finished loading by the <see cref="DocumentLoaded"/> event.
 		/// </remarks>
-		public void Stop()
-		{
-			Handler.Stop();
-		}
+		public void Stop() => Handler.Stop();
 
 		/// <summary>
 		/// Reloads the current page
 		/// </summary>
-		public void Reload()
-		{
-			Handler.Reload();
-		}
+		public void Reload() => Handler.Reload();
 
 		/// <summary>
 		/// Executes the specified javascript in the context of the current page, returning its result.
 		/// </summary>
 		/// <returns>The script to execute.</returns>
 		/// <param name="script">Script result.</param>
-		public string ExecuteScript(string script)
-		{
-			return Handler.ExecuteScript(script);
-		}
+		public string ExecuteScript(string script) => Handler.ExecuteScript(script);
+
+		/// <summary>
+		/// Executes the specified javascript in the context of the current page asynchronously, returning its result.
+		/// </summary>
+		/// <remarks>
+		/// Note that not all platforms support asynchronous execution of javascript and may run synchronously.
+		/// </remarks>
+		/// <returns>A task with the script to execute.</returns>
+		/// <param name="script">Script result.</param>
+		public Task<string> ExecuteScriptAsync(string script) => Handler.ExecuteScriptAsync(script);
 
 		/// <summary>
 		/// Gets the document title of the current page.
@@ -565,6 +555,13 @@ namespace Eto.Forms
 			/// <returns>The script to execute.</returns>
 			/// <param name="script">Script result.</param>
 			string ExecuteScript(string script);
+
+			/// <summary>
+			/// Executes the specified javascript in the context of the current page asynchronously, returning its result.
+			/// </summary>
+			/// <returns>A task with the script to execute.</returns>
+			/// <param name="script">Script result.</param>
+			Task<string> ExecuteScriptAsync(string script);
 
 			/// <summary>
 			/// Shows the print dialog for the current page.

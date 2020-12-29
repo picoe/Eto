@@ -13,3 +13,4 @@ AppPackages
 [Tt]humbs.db
 /artifacts
 packages/
+.store

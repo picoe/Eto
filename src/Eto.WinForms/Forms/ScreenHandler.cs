@@ -36,22 +36,28 @@ namespace Eto.WinForms.Forms
 
 		public Image GetImage(RectangleF rect)
 		{
-			var ss = Bounds.Size;
+			var bounds = Bounds;
+			var realBounds = bounds;
 
-			// get scale based on actual pixel size, we don't support high DPI on winforms (yet)
-			// and the CopyFromScreen API always requires actual pixel size.
-			using (var g = sd.Graphics.FromHwnd(IntPtr.Zero))
+			var hmonitor = Win32.MonitorFromPoint(bounds.Location.ToSDPoint(), 0);
+			if (hmonitor != IntPtr.Zero)
 			{
-				var hdc = g.GetHdc();
+				// get actual monitor dimentions
+				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE);
 
-				ss.Width = GetDeviceCaps(hdc, DESKTOPHORZRES);
-				ss.Height = GetDeviceCaps(hdc, DESKTOPVERTRES);
+				var info = new Win32.MONITORINFOEX();
+				Win32.GetMonitorInfo(new HandleRef(null, hmonitor), info);
+				realBounds = info.rcMonitor.ToSD().ToEto();
 
-				g.ReleaseHdc(hdc);
+				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 			}
 
-			var realRect = Rectangle.Ceiling(rect * (float)(ss.Width / Bounds.Width));
-			var screenBmp = new sd.Bitmap(realRect.Width, realRect.Height, sd.Imaging.PixelFormat.Format32bppArgb);
+			var adjustedRect = rect;
+			adjustedRect.Size *= (float)(realBounds.Width / bounds.Width);
+			adjustedRect.Location += realBounds.Location;
+			var realRect = Rectangle.Ceiling(adjustedRect);
+			var screenBmp = new sd.Bitmap(realRect.Width, realRect.Height, sd.Imaging.PixelFormat.Format32bppRgb);
 			using (var bmpGraphics = sd.Graphics.FromImage(screenBmp))
 			{
 				bmpGraphics.CopyFromScreen(realRect.X, realRect.Y, 0, 0, realRect.Size.ToSD());

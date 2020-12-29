@@ -2,9 +2,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
 
   <PropertyGroup>
-    <IsMac Condition="$(OS) == 'Unix' and Exists('/usr/lib/libc.dylib')">True</IsMac>
+    <IsMac Condition="$([MSBuild]::IsOsPlatform(OSX))">True</IsMac>
     <IsUnix Condition="$(OS) == 'Unix'">True</IsUnix>
-    <IsWindows Condition="$(IsUnix) != 'True'">True</IsWindows>
+    <IsWindows Condition="$([MSBuild]::IsOsPlatform(Windows))">True</IsWindows>
   </PropertyGroup>
   
   <!-- for .NET Core publishing -->
@@ -13,8 +13,23 @@
     <BaseOutputAppPath Condition="$(MacAppendRuntimeIdentifierToOutputPath) == 'True'">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
     <OutputPath>$(MacTempBuildPath)bin\</OutputPath>
     <PublishDir>$(MacTempBuildPath)publish\</PublishDir>
+    <SelfContained Condition="$(MacSelfContained) != ''">$(MacSelfContained)</SelfContained>
+    <PublishSingleFile Condition="$(MacPublishSingleFile) != ''">$(MacPublishSingleFile)</PublishSingleFile>
+    <PublishTrimmed Condition="$(MacPublishTrimmed) != ''">$(MacPublishTrimmed)</PublishTrimmed>
   </PropertyGroup>
   
   <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
+
+  <PropertyGroup Condition="$(IsMac) == 'True'">
+    <MacBuildDmgDependsOnTargets>MacCreateDmg;MacBeautifyDmg</MacBuildDmgDependsOnTargets>
+    <MacCodeSignDependsOnTargets>MacCodeSignApp;MacCodeSignDmg</MacCodeSignDependsOnTargets>
+    <MacNotarizeDependsOnTargets>MacNotarizeDmg;MacStapleDmg</MacNotarizeDependsOnTargets>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(IsMac) != 'True'">
+    <MacBuildDmgDependsOnTargets>MacPackagingUnsupported</MacBuildDmgDependsOnTargets>
+    <MacCodeSignDependsOnTargets>MacPackagingUnsupported</MacCodeSignDependsOnTargets>
+    <MacNotarizeDependsOnTargets>MacPackagingUnsupported</MacNotarizeDependsOnTargets>
+  </PropertyGroup>
 
 </Project>

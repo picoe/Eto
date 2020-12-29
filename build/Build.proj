@@ -41,24 +41,24 @@
 
     <FileUpdate Files="$(BasePath)build\Common.props"
       WarnOnNoUpdate="true"
-      Pattern='(?&lt;=&lt;Version\\s*[^&gt;]+?&gt;)[^&lt;]+(?=&lt;/Version&gt;)'
+      Pattern='(?&lt;=&lt;Version\s*[^&gt;]+?&gt;)[^&lt;]+(?=&lt;/Version&gt;)'
       Replacement='$(AssemblyVersion)' />
 
     <FileUpdate Files="$(AddinDir)Eto.Addin.MonoDevelop\Properties\AddinInfo.cs"
       WarnOnNoUpdate="true"
-      Pattern='(?&lt;=^\\s*Version\\s*=\\s*[&quot;])(.+?)(?=[&quot;]\\s*$)'
+      Pattern='(?&lt;=^\s*Version\s*=\s*[&quot;])(.+?)(?=[&quot;]\s*$)'
       Replacement='$(AssemblyVersionBeforeRelease)' />
 
     <FileUpdate Files="$(AddinDir)Eto.Addin.VisualStudio\source.extension.vsixmanifest"
       WarnOnNoUpdate="true"
-      Pattern='(?&lt;=^\\s*&lt;Identity\\s+Id=&quot;Eto.Addin.VisualStudio&quot;.+?Version=&quot;)(.+?)(?=&quot;\\s+)'
+      Pattern='(?&lt;=^\s*&lt;Identity\s+Id=&quot;Eto.Addin.VisualStudio&quot;.+?Version=&quot;)(.+?)(?=&quot;\s+)'
       Replacement='$(AssemblyVersionBeforeRelease)' />
 
     <PropertyGroup>
       <PackageFiles>$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj</PackageFiles>
     </PropertyGroup>
 
-    <MSBuild Targets="UpdateReference" Properties="ReferenceName=(Eto([\\.][\\w]+)+);ReferenceVersion=$(AssemblyInformationalVersion);PackageFiles=$(PackageFiles);PrintInfo=False" Projects="$(MSBuildProjectFile)"/>
+    <MSBuild Targets="UpdateReference" Properties="ReferenceName=(Eto([.][\\w]+)+);ReferenceVersion=$(AssemblyInformationalVersion);PackageFiles=$(PackageFiles);PrintInfo=False" Projects="$(MSBuildProjectFile)"/>
 
   </Target>
 
@@ -74,8 +74,8 @@
     <Error Condition="$(ReferenceName) == '' or $(ReferenceVersion) == ''" Text="Must Specify ReferenceName and ReferenceVersion properties" />
 
     <PropertyGroup>
-      <ReferenceName>$(ReferenceName.Replace('.', '\\.'))</ReferenceName>
-      <ReplaceVersionPattern>([\\d][\\.\\d\\-\\w]+)</ReplaceVersionPattern>
+      <ReferenceName>$(ReferenceName.Replace('.', '\.'))</ReferenceName>
+      <ReplaceVersionPattern>([\d][\.\d\-\w]+)</ReplaceVersionPattern>
     </PropertyGroup>
 
     <ItemGroup>
@@ -91,28 +91,22 @@
       <PackageFiles Include="$(PackageFiles)" Condition="$(PackageFiles) != ''" />
     </ItemGroup>
 
-    <!-- references to old style packages -->
-    <FileUpdate Files="@(ProjFiles)"
-      WarnOnNoUpdate="false"
-            Pattern="(?&lt;=[\\\\]packages[\\\\]$(ReferenceName)\\.)$(ReplaceVersionPattern)(?=[\\\\])"
-            Replacement='$(ReferenceVersion)' />
-
     <!-- references to nuget template package -->
     <FileUpdate Files="@(ProjFiles)"
       WarnOnNoUpdate="false"
-            Pattern="(?&lt;=$(ReferenceName)[\\.])$(ReplaceVersionPattern)(?=\\.nupkg)"
+            Pattern="(?&lt;=$(ReferenceName)[\.])$(ReplaceVersionPattern)(?=\.nupkg)"
             Replacement='$(ReferenceVersion)' />
 
     <!-- single line PackageReference -->
     <FileUpdate Files="@(ProjFiles)"
       WarnOnNoUpdate="false"
-            Pattern="(?&lt;=&lt;PackageReference.+?Include\\s*[=]\\s*&quot;$(ReferenceName)&quot;.+?Version\\s*[=]\\s*&quot;)$(ReplaceVersionPattern)(?=&quot;)"
+            Pattern="(?&lt;=&lt;PackageReference.+?Include\s*[=]\s*&quot;$(ReferenceName)&quot;.+?Version\s*[=]\s*&quot;)$(ReplaceVersionPattern)(?=&quot;)"
             Replacement='$(ReferenceVersion)' />
 
     <!-- multi-line PackageReference -->
     <FileUpdate Files="@(ProjFiles)"
       WarnOnNoUpdate="false"
-            Pattern="(?&lt;=&lt;PackageReference.+?Include\\s*[=]\\s*&quot;$(ReferenceName)&quot;.*&gt;\\s*&lt;Version&gt;)$(ReplaceVersionPattern)(?=&lt;)"
+            Pattern="(?&lt;=&lt;PackageReference.+?Include\s*[=]\s*&quot;$(ReferenceName)&quot;.*&gt;\s*&lt;Version&gt;)$(ReplaceVersionPattern)(?=&lt;)"
             Replacement='$(ReferenceVersion)' />
 
     <!-- PackageVersion tag in sdk-style projects -->
@@ -123,12 +117,12 @@
 
     <FileUpdate Files="@(TemplateFiles)"
       WarnOnNoUpdate="false"
-            Pattern="(?&lt;=id\\s*[=]\\s*&quot;$(ReferenceName)&quot;\\s+version\\s*=\\s*&quot;)$(ReplaceVersionPattern)(?=&quot;)"
+            Pattern="(?&lt;=id\s*[=]\s*&quot;$(ReferenceName)&quot;\s+version\s*=\s*&quot;)$(ReplaceVersionPattern)(?=&quot;)"
             Replacement='$(ReferenceVersion)' />
 
     <FileUpdate Files="@(TemplateFiles)"
       WarnOnNoUpdate="false"
-            Pattern="(?&lt;=$(ReferenceName)[\\.])$(ReplaceVersionPattern)(?=\\.nupkg)"
+            Pattern="(?&lt;=$(ReferenceName)[\.])$(ReplaceVersionPattern)(?=\.nupkg)"
             Replacement='$(ReferenceVersion)' />
   </Target>
 
@@ -157,12 +151,6 @@
 
     <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True" />
     <MSBuild Projects="$(SourceDir)Eto.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)" />
-
-    <!-- When building windows, assume xamarin.mac is installed and build XamMac2 platform 
-      Note: works when compiling through VS 2017 but not msbuild command line.. why?
-      <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Eto_XamMac2_modern:$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Mac" Condition="$(OSPlatform) == 'Windows'"/>
-      <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Eto_XamMac2_net45:$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Mac" Condition="$(OSPlatform) == 'Windows'"/>
-      -->
 
     <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True"/>
     <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)"/>

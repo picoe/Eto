@@ -76,6 +76,12 @@ namespace Eto.Wpf.Forms
 			if (!EnableCustomThemes)
 				return;
 
+			// ensure the Xceed.Wpf.Toolkit assembly is loaded here.
+			// kind of pointless, but adding the resource dictionary below fails unless this assembly is loaded..
+			var xceedWpfToolkit = typeof(Xceed.Wpf.Toolkit.ButtonSpinner).Assembly;
+			if (xceedWpfToolkit == null)
+				throw new InvalidOperationException("Could not load Xceed.Wpf.Toolkit");
+
 			// Add themes to our controls
 			var assemblyName = typeof(ApplicationHandler).Assembly.GetName().Name;
 			Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = new Uri($"pack://application:,,,/{assemblyName};component/themes/generic.xaml", UriKind.RelativeOrAbsolute) });
@@ -184,6 +190,15 @@ namespace Eto.Wpf.Forms
 
 		public void RunIteration()
 		{
+			var frame = new DispatcherFrame();
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+			Dispatcher.PushFrame(frame);
+		}
+
+		static object ExitFrame(object f)
+		{
+			((DispatcherFrame)f).Continue = false;
+			return null;
 		}
 
 		public void Quit()
@@ -260,7 +275,7 @@ namespace Eto.Wpf.Forms
 
 		public void Restart()
 		{
-			Process.Start(sw.Application.ResourceAssembly.Location);
+			System.Windows.Forms.Application.Restart();
 			sw.Application.Current.Shutdown();
 		}
 

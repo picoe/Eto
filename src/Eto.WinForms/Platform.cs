@@ -13,6 +13,7 @@ using Eto.WinForms.Forms.Cells;
 using Eto.WinForms.Forms.Menu;
 using Eto.WinForms.Forms.ToolBar;
 using Eto.Shared.Forms;
+using System.Diagnostics;
 
 namespace Eto.WinForms
 {
@@ -35,6 +36,9 @@ namespace Eto.WinForms
 		public Platform()
 		{
 			AddTo(this);
+
+			// use WebView2 by default as it is more modern than IE
+			UseWebView2();
 		}
 
 		public static void AddTo(Eto.Platform p)
@@ -104,7 +108,6 @@ namespace Eto.WinForms
 #pragma warning disable CS0618 // Type or member is obsolete
 			p.Add<TreeView.IHandler>(() => new TreeViewHandler());
 #pragma warning restore CS0618 // Type or member is obsolete
-			p.Add<WebView.IHandler>(() => new WebViewHandler());
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
 			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
@@ -173,6 +176,43 @@ namespace Eto.WinForms
 			
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
+		}
+
+		/// <summary>
+		/// Uses the WinForms WebBrowser control for Eto's WebView
+		/// </summary>
+		public void UseSwfWebView()
+		{
+			Add<WebView.IHandler>(() => new WebViewHandler());
+		}
+
+		/// <summary>
+		/// Uses the Microsoft.Web.WebView2 control for Eto's WebView (default if included with your app)
+		/// </summary>
+		public void UseWebView2()
+		{
+			Add<WebView.IHandler>(Create_WebView2);
+		}
+
+		private WebView.IHandler Create_WebView2()
+		{
+#if NET45
+			Debug.WriteLine("Warning: .NET 4.5 target cannot use WebView2.  Target at least .NET 4.6.2, .NET Core, or .NET 5 instead and install the Microsoft.Web.WebView2 nuget package. Falling back to the Windows Forms WebView.");
+			UseSwfWebView();
+			return new WebViewHandler();
+#else
+			try
+			{
+				return WebView2Loader.Create();
+			}
+			catch
+			{
+				Debug.WriteLine("Warning: Could not create WebView2 handler. Add Microsoft.Web.WebView2 nuget package to your project to take advantage of the latest web control.");
+				// switch to SWF version for subsequent controls
+				UseSwfWebView();
+				return new WebViewHandler();
+			}
+#endif
 		}
 	}
 }

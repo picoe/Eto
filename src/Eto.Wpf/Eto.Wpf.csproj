@@ -1,11 +1,9 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT' and $([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">true</HaveWindowsDesktopSdk>
+    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT'">true</HaveWindowsDesktopSdk>
 
-    <TargetFrameworks></TargetFrameworks>
-    <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net45</TargetFrameworks>
-    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net45;net462</TargetFrameworks>
   </PropertyGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
@@ -16,7 +14,6 @@
     <RootNamespace>Eto.Wpf</RootNamespace>
     <AssemblyName>Eto.Wpf</AssemblyName>
     <RestorePackages>true</RestorePackages>
-    <UseMSBuildEngine>False</UseMSBuildEngine>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);WPF</DefineConstants>
     <UseWPF Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWPF>
@@ -42,7 +39,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
 
   <PropertyGroup>
-    <EmbedReferences>Microsoft.WindowsAPICodePack;Microsoft.WindowsAPICodePack.Shell;Xceed.Wpf.Toolkit;Interop.SHDocVw</EmbedReferences>
+    <EmbedReferences>Interop.SHDocVw</EmbedReferences>
     <EmbedPrefix>Eto.Wpf.CustomControls.Assemblies</EmbedPrefix>
   </PropertyGroup>
 
@@ -59,7 +56,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
     </Reference>
   </ItemGroup>
   
-  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) == 'true'">
     <Reference Include="System" Pack="False" />
     <Reference Include="System.Core" Pack="False" />
     <Reference Include="System.Design" Pack="False" />
@@ -152,9 +149,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.6.0" PrivateAssets="all" />
-    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" PrivateAssets="all" />
-	<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.6.0" />
+    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" />
+  	<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.664.37" PrivateAssets="all" Condition="$(TargetFramework) != 'net45'" />
   </ItemGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

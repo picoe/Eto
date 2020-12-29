@@ -6,19 +6,31 @@
             "type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-mac64",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/netcoreapp3.1/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
-        {
-			// requires mono extension from https://github.com/cwensley/vscode-mono-debug/releases
+		{
+            "name": "Eto.Test.Mac64 - mono",
+            "type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-mac64",
+			"program": ".",
+			"runtimeExecutable": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+			"passDebugOptionsViaEnvironmentVariable": true,
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+		{
             "name": "Eto.Test.XamMac2",
             "type": "mono",
 			"request": "launch",
 			"preLaunchTask": "build-xammac2",
-			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
-			"useRuntime": false,
+			"program": ".",
+			"runtimeExecutable": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
+			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -28,10 +40,32 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-gtk",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/netcoreapp3.1/Eto.Test.Gtk.dll",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0/Eto.Test.Gtk.dll",
             "args": [],
             "console": "internalConsole",
             "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Eto.Test.Gtk - mono",
+			"type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-gtk",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Gtk.exe",
+			"passDebugOptionsViaEnvironmentVariable": true,
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Eto.Test.Gtk2",
+			"type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-gtk2",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Gtk2.exe",
+			"passDebugOptionsViaEnvironmentVariable": true,
+            "args": [],
+            "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
@@ -39,7 +73,17 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/netcoreapp3.1/Eto.Test.Wpf.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0-windows/Eto.Test.Wpf.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Eto.Test.Wpf - .NET 4.7.2",
+			"type": "clr",
+			"request": "launch",
+			"preLaunchTask": "build-wpf",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.Wpf.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -49,10 +93,44 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
-            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/netcoreapp3.1/Eto.Test.WinForms.exe",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0-windows/Eto.Test.WinForms.exe",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
-        }
+		},
+        {
+            "name": "Eto.Test.WinForms - .NET 4.7.2",
+			"type": "clr",
+			"request": "launch",
+			"preLaunchTask": "build-winforms",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net472/Eto.Test.WinForms.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+		},
+        {
+            "name": "Eto.Test.Direct2D",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-direct2d",
+            "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net5.0-windows/Eto.Test.Direct2D.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+		},
+		{
+			"name": "Eto.Addin.VisualStudio.Mac",
+			"type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-addins",
+			"program": ".",
+			"runtimeExecutable": "/Applications/Visual Studio.app/Contents/MacOS/VisualStudio",
+			"passDebugOptionsViaEnvironmentVariable": true,
+			"args": [ "--no-redirect" ],
+			"env": {
+				"MONODEVELOP_CONSOLE_LOG_LEVEL": "All",
+				"MONODEVELOP_DEV_ADDINS": "${workspaceFolder}/artifacts/addin/${config:var.configuration}/net472/"
+			}
+		}
 	]
 }

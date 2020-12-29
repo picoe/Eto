@@ -1,0 +1,135 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
+
+  <PropertyGroup>
+    <!--
+      Wait for notarization to complete and staple the DMG.
+      Note that this can make the build take a long time waiting for your app to be notarized.
+      -->
+    <EnableNotarizationStapler Condition="$(EnableNotarizationStapler) == ''">True</EnableNotarizationStapler>
+
+    <!-- Identifier for the notarization, which is returned in the notarization email to identify what has been notarized -->
+    <NotarizationBundleIdentifier Condition="$(NotarizationBundleIdentifier) == ''">$(DmgName).dmg</NotarizationBundleIdentifier>
+
+    <!-- The notarization user name. The username can be inferred from the password keychain entry if not specified. -->
+    <NotarizationUserName Condition="$(NotarizationUserName) == ''"></NotarizationUserName>
+
+    <!--
+      The notarization password. To use from the keychain (the default), use the following command:
+
+      xcrun altool - -store-password-in-keychain-item "AC_PASSWORD" -u "<NotarizationUserName>" -p <secret_password>
+    -->
+    <NotarizationPassword Condition="$(NotarizationPassword) == ''">@keychain:AC_PASSWORD</NotarizationPassword>
+  </PropertyGroup>
+
+  <Target Name="MacNotarize" AfterTargets="MacCodeSignDmg" DependsOnTargets="$(MacNotarizeDependsOnTargets)" Condition="$(EnableDmgBuild) == 'True'">
+  </Target>
+
+  <Target Name="MacNotarizeDmg" DependsOnTargets="MacBuildDmg">
+    <PropertyGroup>
+      <_DmgZipPath>$(_MacDmgTempPath)$(DmgName).zip</_DmgZipPath>
+
+      <_NotarizationParameters>--primary-bundle-id '$(NotarizationBundleIdentifier)'</_NotarizationParameters>
+      <_NotarizationParameters Condition="$(NotarizationUserName) != ''">$(_NotarizationParameters) --username '$(NotarizationUserName)'</_NotarizationParameters>
+      <_NotarizationParameters>$(_NotarizationParameters) --password '$(NotarizationPassword)'</_NotarizationParameters>
+      <_NotarizationParameters>$(_NotarizationParameters) --file '$(_DmgZipPath)'</_NotarizationParameters>
+    </PropertyGroup>
+
+    <!-- Notarization could take a while, so always show this message -->
+    <Message Text="Notarizing $(_DmgPath)" Importance="high" />
+
+    <Exec Command='/usr/bin/ditto -c -k --keepParent "$(_DmgPath)" "$(_DmgZipPath)"' />
+
+    <Message Text="Sending $(DmgName).dmg for Notarization" />
+    <Exec Command="xcrun altool --notarize-app $(_NotarizationParameters) 2>&amp;1 | grep RequestUUID | awk '{print $3}'" 
+      StandardOutputImportance="normal"
+      ConsoleToMSBuild="True">
+      <Output TaskParameter="ConsoleOutput" PropertyName="NotarizationUUID" />
+    </Exec>
+
+    <Message Text="Notarization RequestUUID: $(NotarizationUUID)" />
+
+    <Delete Files="$(_DmgZipPath)" />
+  </Target>
+
+  <PropertyGroup>
+    <!-- Bit of a hack, but we stop the loop when this file exists.. -->
+    <_NotarizationCompleteFile>$(IntermediateOutputPath)macbuild\notarization_complete</_NotarizationCompleteFile>
+  </PropertyGroup>
+
+  <Target Name="_MacGetNotarizationStatus" Outputs="$(_Progress)" Condition="!Exists($(_NotarizationCompleteFile))">
+
+    <PropertyGroup>
+      <_InProgressString>Status: in progress</_InProgressString>
+      <_NotarizationParameters>--notarization-info '$(NotarizationUUID)'</_NotarizationParameters>
+      <_NotarizationParameters Condition="$(NotarizationUserName) != ''">$(_NotarizationParameters) --username '$(NotarizationUserName)'</_NotarizationParameters>
+      <_NotarizationParameters>$(_NotarizationParameters) --password '$(NotarizationPassword)'</_NotarizationParameters>
+    </PropertyGroup>
+
+    <!-- check the notarization status... -->
+    <Exec Command="xcrun altool $(_NotarizationParameters) 2>&amp;1"
+          ConsoleToMSBuild="True">
+        <Output TaskParameter="ConsoleOutput" PropertyName="_Progress"/>
+    </Exec>
+
+    <Exec Command="sleep 30" Condition="$(_Progress.Contains($(_InProgressString))) == 'True'" />
+
+    <WriteLinesToFile File="$(_NotarizationCompleteFile)" 
+                      Overwrite="True"
+                      Lines="$(_Progress)"
+                      Condition="$(_Progress.Contains($(_InProgressString))) != 'True'" />
+
+  </Target>
+
+  <Target Name="MacStapleDmg" DependsOnTargets="MacNotarizeDmg" Condition="$(EnableNotarizationStapler) == 'True'">
+    <!-- 
+      "Notarization completes for most software within 5 minutes, and for 98% of software within 15"
+      So, we keep retrying every 30 seconds for 15 minutes.
+     -->
+    <Message Text="Checking notarization status" />
+
+    <PropertyGroup>
+      <!-- lazy man's way of doing a loop in msbuild.. 30 iterations x 30 seconds = 15 minutes max. -->
+      <_Retries>1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30</_Retries>
+    </PropertyGroup>
+    <ItemGroup>
+      <_Retries Include="$(_Retries)" />
+    </ItemGroup>
+
+    <!-- in case we notarized before.. -->
+    <Delete Files="$(_NotarizationCompleteFile)" />
+
+    <!-- Wait a bit before we do the first check, it most likely won't be ready right away.. -->
+    <Exec Command="sleep 10" />
+
+    <!-- Check the status -->
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="_MacGetNotarizationStatus" Properties="Retry=%(_Retries.Identity);NotarizationUUID=$(NotarizationUUID)" />
+
+    <!-- Read the status -->
+    <ReadLinesFromFile File="$(_NotarizationCompleteFile)">
+      <Output TaskParameter="Lines" PropertyName="_Progress" />
+    </ReadLinesFromFile>
+    <Delete Files="$(_NotarizationCompleteFile)" />
+
+    <PropertyGroup>
+      <_SuccessString>Status: success</_SuccessString>
+      <_InvalidString>Status: Invalid</_InvalidString>
+      <_InProgressString>Status: in progress</_InProgressString>
+    </PropertyGroup>
+
+    <Error Text="Error notarizing your app. Check the LogFileURL above and validate your app with 'codesign -vvv --deep --strict /path/to/MyApp.app'. See https://developer.apple.com/documentation/xcode/notarizing_macos_software_before_distribution/resolving_common_notarization_issues for troubleshooting tips."
+           Condition="$(_Progress.Contains($(_InvalidString))) == 'True'" />
+
+    <Error Text="Timeout notarizing. You may have to staple manually using 'xcrun stapler staple MyApp.dmg' after recieving the success notarization email"
+           Condition="$(_Progress.Contains($(_InProgressString))) == 'True'" />
+           
+    <Error Text="Error notarizing"
+           Condition="$(_Progress.Contains($(_SuccessString))) != 'True'" />
+
+    <!-- success if we got here, so staple the DMG -->
+    <Exec Command='xcrun stapler staple "$(_DmgPath)"' />
+
+    <Message Text="Stapled notarization ticket to $(_DmgPath)" Importance="high" />
+
+  </Target>
+
+</Project>

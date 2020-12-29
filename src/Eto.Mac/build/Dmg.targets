@@ -1,0 +1,126 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
+
+  <PropertyGroup>
+    <!-- File Name of the DMG -->
+    <DmgName Condition="$(DmgName) == ''">$(MacBundleName)</DmgName>
+    <!-- DMG volume name -->
+    <DmgVolumeName Condition="$(DmgVolumeName) == ''">$(DmgName)</DmgVolumeName>
+    <!-- Where to put the DMG -->
+    <DmgOutputPath Condition="$(DmgOutputPath) == ''">$(OutputPath)</DmgOutputPath>
+
+    <!-- True to add typical formatting to the DMG, add application shortcut icon, background, auto-open, etc. -->
+    <DmgBeautify Condition="$(DmgBeautify) == ''">True</DmgBeautify>
+
+    <!-- Size of the icons in the DMG -->
+    <DmgIconSize Condition="$(DmgIconSize) == ''">72</DmgIconSize>
+    <!-- Bounds of the Finder window when opened (left, top, right, bottom) -->
+    <DmgBounds Condition="$(DmgBounds) == ''">400, 100, 900, 430</DmgBounds>
+    <!-- Location of your app icon (x, y) -->
+    <DmgAppLocation Condition="$(DmgAppLocation) == ''">120, 150</DmgAppLocation>
+    <!-- Location of the applications shortcut icon (x, y) -->
+    <DmgApplicationsShortcutLocation Condition="$(DmgApplicationsShortcutLocation) == ''">380, 150</DmgApplicationsShortcutLocation>
+    <!-- Image to use for the background, or 'none' to omit the background image. -->
+    <DmgBackgroundImage Condition="$(DmgBackgroundImage) == ''">$(MSBuildThisFileDirectory)Dmg.background.png</DmgBackgroundImage>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_MacDmgTempPath>$(IntermediateOutputPath)macdmg\</_MacDmgTempPath>
+    <_MacDmgContentPath>$(_MacDmgTempPath)content\</_MacDmgContentPath>
+    <_DmgPath>$(DmgOutputPath)$(DmgName).dmg</_DmgPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvailableItemName Include="DmgContent" />
+  </ItemGroup>
+
+  <Target Name="MacBuildDmg" AfterTargets="MacBuildAppBundle" DependsOnTargets="$(MacBuildDmgDependsOnTargets)">
+  </Target>
+
+  <Target Name="MacCreateDmg" DependsOnTargets="MacBuildAppBundle">
+    <Message Text="Creating $(DmgName).dmg" />
+
+    <RemoveDir Directories="$(_MacDmgTempPath)" />
+    <Delete Files="$(_DmgPath)" />
+
+    <ItemGroup>
+      <_DmgAppFiles Include="$(OutputAppPath)**\*" />
+      <_DmgFiles Include="@(_DmgAppFiles)" TargetPath="$(MacBundleName).app\%(RecursiveDir)%(Filename)%(Extension)" />
+      <_DmgFiles Include="@(DmgContent)" TargetPath="%(RecursiveDir)%(Filename)%(Extension)" Condition="%(TargetPath) == ''"/>
+      <_DmgFiles Include="@(DmgContent)" Condition="%(TargetPath) != ''"/>
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_DmgFiles)" DestinationFiles="@(_DmgFiles->'$(_MacDmgContentPath)%(TargetPath)')" />
+
+    <Exec Command='hdiutil create "$(_DmgPath)" -ov -quiet -volname "$(DmgVolumeName)" -format UDZO -fs HFS+ -srcfolder "$(_MacDmgContentPath)"' />
+
+    <Message Text="$(MSBuildProjectName) -> $(_DmgPath)" Importance="high" />
+  </Target>
+
+  <Target Name="MacBeautifyDmg" Condition="$(DmgBeautify) == 'True'">
+
+    <PropertyGroup>
+      <_TempReadWriteDmgPath>$(_MacDmgTempPath)$(DmgName).rw.dmg</_TempReadWriteDmgPath>
+    </PropertyGroup>
+
+    <!-- convert to read-write so we can modify the dmg directly -->
+    <Exec Command='hdiutil convert -format UDRW -o "$(_TempReadWriteDmgPath)" "$(_DmgPath)"' 
+          StandardOutputImportance="normal" />
+
+    <Exec Command="hdiutil attach -readwrite -noverify -noautoopen '$(_TempReadWriteDmgPath)' | grep 'Apple_HFS' | awk -v m='\x' -v N='3' '{$N=m$N; print substr($0,index($0,m)+1)}'"
+          ConsoleToMSBuild="True"
+          StandardOutputImportance="normal">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_DmgVolume" />
+    </Exec>
+
+    <Exec Command="sleep 2" />
+
+    <Exec Command="bless '$(_DmgVolume)/' --openfolder '$(_DmgVolume)'" />
+
+    <PropertyGroup>
+      <DmgBackgroundImage Condition="$(DmgBackgroundImage) != '' AND !Exists($(DmgBackgroundImage)) AND Exists('$(MSBuildProjectDirectory)\$(DmgBackgroundImage)')">$(MSBuildProjectDirectory)\$(DmgBackgroundImage)</DmgBackgroundImage>
+      <_DmgBackgroundImageName>$([System.IO.Path]::GetFileName($(DmgBackgroundImage)))</_DmgBackgroundImageName>
+      <_DmgFinderOptions Condition="$(DmgBackgroundImage) != '' AND Exists($(DmgBackgroundImage))">set background picture of theViewOptions to file &quot;.background:$(_DmgBackgroundImageName)&quot;</_DmgFinderOptions>
+    </PropertyGroup>
+
+    <Copy SourceFiles="$(DmgBackgroundImage)"
+          DestinationFiles="$(_DmgVolume)/.background/$(_DmgBackgroundImageName)"
+          Condition="$(DmgBackgroundImage) != '' AND Exists($(DmgBackgroundImage))" />
+
+    <Exec Command="echo '
+   tell application &quot;Finder&quot;
+     tell disk &quot;'$(_DmgVolume.SubString(9))'&quot;
+           open
+           set current view of container window to icon view
+           set toolbar visible of container window to false
+           set statusbar visible of container window to false
+           set the bounds of container window to {$(DmgBounds)}
+           set theViewOptions to the icon view options of container window
+           set arrangement of theViewOptions to not arranged
+           set icon size of theViewOptions to $(DmgIconSize)
+           $(_DmgFinderOptions)
+           make new alias file at container window to POSIX file &quot;/Applications&quot; with properties {name:&quot;Applications&quot;}
+           set position of item &quot;'$(MacBundleName)'&quot; of container window to {$(DmgAppLocation)}
+           set position of item &quot;Applications&quot; of container window to {$(DmgApplicationsShortcutLocation)}
+           update without registering applications
+           delay 2
+           close
+     end tell
+     set visible to false
+   end tell
+' | osascript"
+          StandardOutputImportance="normal" />
+
+    <Exec Command="hdiutil detach '$(_DmgVolume)'"
+          StandardOutputImportance="normal" />
+
+    <Delete Files="$(_DmgPath)" />
+    <Exec Command='hdiutil convert -format UDZO -o "$(_DmgPath)" "$(_TempReadWriteDmgPath)" '
+          StandardOutputImportance="normal" />
+
+  </Target>
+
+  <Target Name="MacCleanDmg" AfterTargets="Clean" Condition="$(MacIsBuildingBundle) != 'True'">
+    <Delete Files="$(_DmgPath)" />
+  </Target>
+
+</Project>

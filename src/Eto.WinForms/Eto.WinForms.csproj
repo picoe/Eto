@@ -2,11 +2,9 @@
 <Project>
 
   <PropertyGroup>
-    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT' and $([System.Version]::Parse($([MSBuild]::ValueOrDefault('$(VisualStudioVersion)', '1.0')))) &gt;= $([System.Version]::Parse('16.0'))">true</HaveWindowsDesktopSdk>
+    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT'">true</HaveWindowsDesktopSdk>
     
-    <TargetFrameworks></TargetFrameworks>
-    <TargetFrameworks Condition="'$(NoNetFramework)'=='' or '$(NoNetFramework)'=='false'">$(TargetFrameworks);net45</TargetFrameworks>
-    <TargetFrameworks Condition="'$(HaveWindowsDesktopSdk)' == 'true'">$(TargetFrameworks);netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net45;net462</TargetFrameworks>
   </PropertyGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
@@ -36,7 +34,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
 
   <PropertyGroup>
-    <EmbedReferences>Microsoft.WindowsAPICodePack;Microsoft.WindowsAPICodePack.Shell;Interop.SHDocVw</EmbedReferences>
+    <EmbedReferences>Interop.SHDocVw</EmbedReferences>
     <EmbedPrefix>Eto.WinForms.CustomControls.Assemblies</EmbedPrefix>
   </PropertyGroup>
 
@@ -49,7 +47,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Reference Include="..\..\lib\SHDocVw\Interop.SHDocVw.dll" EmbedInteropTypes="False" Private="False" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) == 'true'">
     <Reference Include="System" Pack="False" />
     <Reference Include="System.Drawing" Pack="False" />
     <Reference Include="System.Windows.Forms" Pack="False" />
@@ -99,6 +97,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Eto.Wpf\Forms\TaskbarHandler.cs">
       <Link>Forms\TaskbarHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\Forms\Controls\WebView2Handler.cs">
+      <Link>Forms\Controls\WebView2Handler.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -110,8 +111,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" PrivateAssets="all" />
+    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.664.37" PrivateAssets="all" Condition="$(TargetFramework) != 'net45'" />
   </ItemGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

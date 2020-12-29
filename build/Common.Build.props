@@ -26,7 +26,6 @@
 
   <!-- support t4 templates in projects -->
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-t4-project-tool" Version="2.0.5"/>
     <TextTemplate Include="**\*.tt" />
     <AvailableItemName Include="TextTemplate" />
   </ItemGroup>

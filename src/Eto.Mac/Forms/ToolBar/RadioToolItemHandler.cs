@@ -49,6 +49,7 @@ namespace Eto.Mac.Forms.ToolBar
 		
 		public override void InvokeButton()
 		{
+			var wasChecked = isChecked;
 			if (toolbarHandler != null && toolbarHandler.Control != null)
 			{
 				isChecked = toolbarHandler.Control.SelectedItemIdentifier == Identifier;
@@ -62,7 +63,8 @@ namespace Eto.Mac.Forms.ToolBar
 				}
 			}
 			Widget.OnClick(EventArgs.Empty);
-			Widget.OnCheckedChanged(EventArgs.Empty);
+			if (wasChecked != isChecked)
+				Widget.OnCheckedChanged(EventArgs.Empty);
 		}
 	}
 }

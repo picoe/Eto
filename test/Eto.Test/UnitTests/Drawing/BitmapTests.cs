@@ -427,5 +427,29 @@ namespace Eto.Test.UnitTests.Drawing
 				return imageView;
 			});
 		}
+		[Test, ManualTest]
+		public void UsingLockOnExistingImageShouldWork()
+		{
+			ManualForm("Test image should be shown with a blue square in the middle", form => {
+				var bitmap = TestIcons.TestImage;
+				using (var bd = bitmap.Lock())
+				{
+					var size = bitmap.Size;
+					var squareSize = size / 2;
+					var offset = (size - squareSize) / 2;
+					for (int x = 0; x < squareSize.Width; x++)
+					for (int y = 0; y < squareSize.Height; y++)
+					{
+						bd.SetPixel(x + offset.Width, y + offset.Height, Colors.Blue);
+					}
+				}
+
+				var imageView = new ImageView();
+
+				imageView.Image = bitmap;
+
+				return imageView;
+			});
+		}
 	}
 }

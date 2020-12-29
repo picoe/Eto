@@ -50,8 +50,16 @@ namespace Eto.Wpf.Forms
 
 		public Image GetImage(RectangleF rect)
 		{
-			var realRect = Rectangle.Ceiling(rect * Widget.LogicalPixelSize);
-			using (var screenBmp = new sd.Bitmap(realRect.Width, realRect.Height, sd.Imaging.PixelFormat.Format32bppArgb))
+			var adjustedRect = rect * Widget.LogicalPixelSize;
+			//adjustedRect.Location += Control.Bounds.Location.ToEto();
+
+			var info = new Win32.MONITORINFOEX();
+			Win32.GetMonitorInfo(Control, ref info);
+			adjustedRect.Location += info.rcMonitor.ToEto().Location;
+
+			var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
+			var realRect = Rectangle.Ceiling(adjustedRect);
+			using (var screenBmp = new sd.Bitmap(realRect.Width, realRect.Height, sd.Imaging.PixelFormat.Format32bppRgb))
 			{
 				using (var bmpGraphics = sd.Graphics.FromImage(screenBmp))
 				{
@@ -62,6 +70,9 @@ namespace Eto.Wpf.Forms
 						sw.Int32Rect.Empty,
 						sw.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
 
+					if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+						Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
+
 					return new Bitmap(new BitmapHandler(bitmapSource));
 				}
 			}
@@ -71,9 +82,9 @@ namespace Eto.Wpf.Forms
 
 		public float Scale => 96f / 72f;
 
-		public RectangleF Bounds => Control.Bounds.ScreenToLogical();
+		public RectangleF Bounds => Control.GetBounds().ScreenToLogical(Control);
 
-		public RectangleF WorkingArea => Control.WorkingArea.ScreenToLogical();
+		public RectangleF WorkingArea => Control.GetWorkingArea().ScreenToLogical(Control);
 
 		public int BitsPerPixel => Control.BitsPerPixel;
 

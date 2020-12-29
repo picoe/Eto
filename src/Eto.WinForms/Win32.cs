@@ -10,6 +10,7 @@ namespace Eto
 	{
 #pragma warning disable 0649
 		// Analysis disable InconsistentNaming
+		[StructLayout(LayoutKind.Sequential)]
 		public struct RECT
 		{
 			public int left;
@@ -18,6 +19,21 @@ namespace Eto
 			public int bottom;
 			public int width => right - left;
 			public int height => bottom - top;
+
+			public System.Drawing.Rectangle ToSD() => new System.Drawing.Rectangle(left, top, width, height);
+			public Eto.Drawing.Rectangle ToEto() => new Eto.Drawing.Rectangle(left, top, width, height);
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct POINT
+		{
+			public int x;
+			public int y;
+			public POINT(int x, int y)
+			{
+				this.x = x;
+				this.y = y;
+			}
 		}
 #pragma warning restore 0649
 

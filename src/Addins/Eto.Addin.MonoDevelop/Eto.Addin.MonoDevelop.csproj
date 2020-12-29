@@ -5,7 +5,7 @@
   	<MDBinDir Condition="Exists('/opt/MonoDevelop/bin')">/opt/MonoDevelop/bin</MDBinDir>
   	<MDAddinsDir Condition="Exists('/opt/MonoDevelop/AddIns')">/opt/MonoDevelop/AddIns</MDAddinsDir>
     <OutputPath>$(ArtifactsDir)addin\$(Configuration)\</OutputPath>
-  	<MonoDevelopVersion>8.4</MonoDevelopVersion>
+  	<MonoDevelopVersion>8.8</MonoDevelopVersion>
     <Title>Eto.Addin.MonoDevelop</Title>
   </PropertyGroup>
   <ItemGroup>
@@ -22,13 +22,13 @@
     <PackageReference Include="MonoDevelop.Addins" Version="0.4.7" />
   </ItemGroup>
   <ItemGroup>
-    <AddinReference Include="MonoDevelop.Xml" Version="8.4" />
-    <AddinReference Include="MonoDevelop.DesignerSupport" Version="8.4" />
-    <AddinReference Include="MonoDevelop.PackageManagement" Version="8.4" />
-    <AddinReference Include="MonoDevelop.TextEditor" Version="8.4" />
+    <AddinReference Include="MonoDevelop.Xml" Version="8.8" />
+    <AddinReference Include="MonoDevelop.DesignerSupport" Version="8.8" />
+    <AddinReference Include="MonoDevelop.PackageManagement" Version="8.8" />
+    <AddinReference Include="MonoDevelop.TextEditor" Version="8.8" />
   </ItemGroup>
   <ItemGroup>
-	<None Remove="Templates\**\*" />
+	  <None Remove="Templates\**\*" />
     <None Remove="Images\project%402x.png" />
     <None Remove="Images\project.png" />
   </ItemGroup>

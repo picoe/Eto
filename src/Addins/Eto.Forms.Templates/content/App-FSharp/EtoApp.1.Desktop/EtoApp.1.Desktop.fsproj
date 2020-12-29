@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net472</TargetFrameworks>
-    <AssemblySearchPaths Condition="$(GtkVersion)=='Gtk2' or $(GtkVersion)=='Gtk3'">$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+    <TargetFramework Condition="$(TargetFrameworkOverride) == ''">net5.0</TargetFramework>
+    <TargetFramework Condition="$(TargetFrameworkOverride) != ''">TargetFrameworkOverride</TargetFramework>
   </PropertyGroup>
   
   <ItemGroup>
@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Mac64" Version="2.5.6-dev" />
-    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.6-dev" />
-    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.6-dev" />
+    <PackageReference Include="Eto.Platform.Mac64" Version="2.5.9-dev" />
+    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.9-dev" />
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.9-dev" />
   </ItemGroup>
 
 

@@ -5,13 +5,14 @@
 			"longName": "mode",
 			"shortName": "m"
 		},
-		"GtkVersion": {
-			"longName": "gtk-version",
-			"shortName": "g"
-		},
 		"Combined": {
 			"longName": "combined",
 			"shortName": "c"
+		},
+		"TargetFrameworkOverride": {
+			"isHidden": "true",
+			"longName": "target-framework-override",
+			"shortName": ""
 		},
 		"Framework": {
 			"longName": "framework",

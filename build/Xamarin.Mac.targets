@@ -32,6 +32,17 @@
     <MacBuildBundle>False</MacBuildBundle>
     <UseSGen Condition="$(UseSGen) == ''">True</UseSGen>
     <AOTMode Condition="$(AOTMode) == ''">None</AOTMode>
+
+    <!-- stuff needed for .NET Core tooling -->
+    <FrameworkPathOverride Condition="$(IsXamarinMacMobile) != 'True'">$(XamarinMacLibPath)4.5\</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="$(IsXamarinMacMobile) == 'True'">$(XamarinMacLibPath)Xamarin.Mac\</FrameworkPathOverride>
+    <MSBuildRuntimeVersion Condition="$(MSBuildRuntimeVersion) == ''">16.8</MSBuildRuntimeVersion>
+  </PropertyGroup>
+
+    <!-- stuff needed for .NET Core tooling -->
+  <PropertyGroup Condition="'$(FrameworkPathOverride)' != '' AND $(IsXamarinMacMobile) == 'True'">
+    <_FullFrameworkReferenceAssemblyPaths>$(FrameworkPathOverride)</_FullFrameworkReferenceAssemblyPaths>
+    <_TargetFrameworkDirectories>$(FrameworkPathOverride)</_TargetFrameworkDirectories>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(UseXamarinMac) == 'True' AND $(TargetFramework.StartsWith('xamarinmac')) != 'True'">

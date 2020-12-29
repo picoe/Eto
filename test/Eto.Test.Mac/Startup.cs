@@ -20,9 +20,13 @@ namespace Eto.Test.Mac
 		{
 			AddStyles();
 
+			var stopwatch = new Stopwatch();
+			stopwatch.Start();
 			var platform = new Eto.Mac.Platform();
+			stopwatch.Stop();
 			
 			var app = new TestApplication(platform);
+			app.AsyncInvoke(() => Log.Write(null, $"Startup: {stopwatch.Elapsed}"));
 			app.TestAssemblies.Add(typeof(Startup).Assembly);
 
 			// use this to use your own app delegate:

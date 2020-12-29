@@ -3,10 +3,7 @@
 	"tasks": [
 		{
 			"label": "build",
-			"command": "msbuild /t:Build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
-			"windows": {
-				"command": "${workspaceFolder}/build/msbuild.cmd /t:Build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj"
-			},
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
 			"type": "shell",
 			"problemMatcher": "$msCompile",
 			"group": {
@@ -18,7 +15,7 @@
 			}
 		},
 		{
-			"label": "build addins",
+			"label": "build-addins",
 			"command": "msbuild /t:BuildAddins ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
 			"windows": {
 				"command": "${workspaceFolder}/build/msbuild.cmd /t:BuildAddins ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj"
@@ -41,6 +38,16 @@
 			}
 		},
 		{
+			"label": "build-gtk2",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk2.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "build-mac64",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj",
 			"type": "shell",
@@ -52,7 +59,7 @@
 		},
 		{
 			"label": "build-xammac2",
-			"command": "msbuild /restore ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.XamMac2.csproj",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.XamMac2.csproj",
 			"type": "shell",
 			"group": "build",
 			"problemMatcher": "$msCompile",
@@ -81,6 +88,16 @@
 			}
 		},
 		{
+			"label": "build-direct2d",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Direct2D/Eto.Test.Direct2D.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "restore",
 			"command": "dotnet restore /v:Minimal ${workspaceFolder}/src/Eto.sln",
 			"type": "shell",
@@ -97,7 +114,16 @@
 			"presentation": {
 				"clear": true
 			}
-        },
+		},
+		{
+			"label": "Set Eto version",
+			"type": "shell",
+			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:UpdateVersion /p:SetVersion=${input:version}",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		}
 	],
 	"inputs": [
 		{
@@ -108,6 +134,12 @@
 				"No",
 				"Yes"
 			]
+		},
+		{
+			"type": "promptString",
+			"id": "version",
+			"description": "Enter the version to update to",
+			"default": "2.5.x"
 		}
 	]
 }
