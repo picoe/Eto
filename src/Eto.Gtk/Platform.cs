@@ -77,7 +77,8 @@ namespace Eto.GtkSharp
 			Style.Add<ThemedStepperHandler>(null, h =>
 			{
 				h.Orientation = Orientation.Horizontal;
-				h.Widget.Size = new Size(50, 30);
+				h.Widget.Size = new Size(-1, -1);
+				h.Font = SystemFonts.Default();
 				if (h.Control.Content.Handler is TableLayoutHandler table)
 				{
 					table.Control.StyleContext.AddClass("linked");
