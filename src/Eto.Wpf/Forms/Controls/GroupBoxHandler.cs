@@ -5,6 +5,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
 using System;
+using System.Windows;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -20,13 +21,34 @@ namespace Eto.Wpf.Forms.Controls
 
 	public class GroupBoxHandler : WpfPanel<swc.GroupBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
-		swc.Label Header { get; set; }
-		swc.AccessText AccessText { get { return (swc.AccessText)Header.Content; } }
+		sw.Thickness? headerPadding;
+		public swc.Label Header { get; set; }
+		swc.AccessText AccessText => (swc.AccessText)Header.Content;
 
 		public GroupBoxHandler()
 		{
 			Control = new EtoGroupBox { Handler = this };
-			Header = new swc.Label { Content = new swc.AccessText() };
+			Control.Loaded += Control_Loaded;
+			Header = new swc.Label { Content = new swc.AccessText(), Padding = new sw.Thickness(0) };
+			Control.Header = Header;
+		}
+
+		private void Control_Loaded(object sender, RoutedEventArgs e)
+		{
+			SetHeaderPadding();
+		}
+
+		protected virtual swc.Border HeaderControl => Control.FindChild<swc.Border>("Header");
+
+		private void SetHeaderPadding()
+		{
+			var header = HeaderControl;
+			if (header == null)
+				return;
+			if (headerPadding == null)
+				headerPadding = header.Padding;
+			var noHeader = string.IsNullOrEmpty(Text);
+			header.Padding = noHeader ? new sw.Thickness(0) : headerPadding.Value;
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)
@@ -58,7 +80,8 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				AccessText.Text = value.ToPlatformMnemonic();
-				Control.Header = string.IsNullOrEmpty(value) ? null : Header;
+				if (Control.IsLoaded)
+					SetHeaderPadding();
 				UpdatePreferredSize();
 			}
 		}
