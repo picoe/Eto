@@ -37,6 +37,8 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class GroupBoxHandler : MacPanel<NSBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
+		SizeF? borderSize;
+
 		public class EtoBox : NSBox, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -50,6 +52,7 @@ namespace Eto.Mac.Forms.Controls
 			public EtoBox(GroupBoxHandler handler)
 			{
 				Title = string.Empty;
+				TitlePosition = NSTitlePosition.NoTitle;
 				ContentView = new MacPanelView { Handler = handler };
 			}
 		}
@@ -106,18 +109,36 @@ namespace Eto.Mac.Forms.Controls
 		public virtual string Text
 		{
 			get { return Control.Title; }
-			set { Control.Title = value; }
+			set 
+			{
+				Control.Title = value ?? string.Empty;
+				Control.TitlePosition = string.IsNullOrEmpty(value) ? NSTitlePosition.NoTitle : NSTitlePosition.AtTop;
+				InvalidateMeasure();
+			}
 		}
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			var boundsSize = new SizeF(16, (float)TitleCell.CellSize.Height + 8);
-			availableSize -= boundsSize;
+			if (borderSize == null)
+			{
+				var frame = Control.Frame;
+				var contentSize = ContentControl.Frame.Size;
+				if (contentSize.Width <= 10 || contentSize.Height <= 10)
+				{
+					contentSize = new CGSize(100, 100);
+					var oldFrame = Control.Frame;
+					Control.SetFrameFromContentFrame(new CGRect(CGPoint.Empty, contentSize));
+					frame = Control.Frame;
+					Control.Frame = oldFrame;
+				}
+				frame = Control.GetAlignmentRectForFrame(frame);
+				borderSize = (frame.Size - contentSize).ToEto();
+			}
 
-			return base.GetPreferredSize(availableSize) + boundsSize;
+			return base.GetPreferredSize(availableSize - borderSize.Value) + borderSize.Value;
 		}
 
-		NSTextFieldCell TitleCell { get { return (NSTextFieldCell)Control.TitleCell; } }
+		NSTextFieldCell TitleCell => (NSTextFieldCell)Control.TitleCell;
 
 		public Color TextColor
 		{
@@ -127,6 +148,12 @@ namespace Eto.Mac.Forms.Controls
 				TitleCell.TextColor = value.ToNSUI(); 
 				Control.SetNeedsDisplay();
 			}
+		}
+
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+			borderSize = null;
 		}
 
 		protected override bool UseNSBoxBackgroundColor => false;
