@@ -349,7 +349,7 @@ namespace Eto.Mac.Drawing
 			int bitsPerPixel = numComponents * bitsPerComponent;
 			int bytesPerPixel = bitsPerPixel / 8;
 			int bytesPerRow = bytesPerPixel * size.Width;
-			bmprep = new NSBitmapImageRep(IntPtr.Zero, size.Width, size.Height, bitsPerComponent, numComponents, true, false, rep.ColorSpaceName, bytesPerRow, bitsPerPixel);
+			bmprep = new NSBitmapImageRep(IntPtr.Zero, size.Width, size.Height, bitsPerComponent, numComponents, rep.HasAlpha, false, rep.ColorSpaceName, bytesPerRow, bitsPerPixel);
 			var graphicsContext = NSGraphicsContext.FromBitmap(bmprep);
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphicsContext;
