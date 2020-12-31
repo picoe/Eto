@@ -233,7 +233,9 @@ namespace Eto.Addin.Shared
 		{
 			new FrameworkInfo { Text = ".NET 5", Value = "net5.0", CanUseCombined = false },
 			new FrameworkInfo { Text = ".NET Core 3.1", Value = "netcoreapp3.1", CanUseCombined = false },
-			new FrameworkInfo { Text = ".NET Framework 4.7.2 / Mono", Value = "net472", CanUseCombined = true },
+			new FrameworkInfo { Text = ".NET Framework 4.8", Value = "net48", CanUseCombined = true },
+			new FrameworkInfo { Text = ".NET Framework 4.7.2", Value = "net472", CanUseCombined = true },
+			new FrameworkInfo { Text = ".NET Framework 4.6.2", Value = "net462", CanUseCombined = true },
 		};
 
 		FrameworkInfo _selectedFramework;

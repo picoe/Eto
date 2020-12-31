@@ -109,8 +109,16 @@
 					"description": ".NET Core 3.1"
 				},
 				{
+					"choice": "net48",
+					"description": ".NET Framework 4.8"
+				},
+				{
+					"choice": "net472",
+					"description": ".NET Framework 4.7.2"
+				},
+				{
 					"choice": "net462",
-					"description": ".NET Framework 4.6.2 / Mono"
+					"description": ".NET Framework 4.6.2"
 				}
 			]
 		},
