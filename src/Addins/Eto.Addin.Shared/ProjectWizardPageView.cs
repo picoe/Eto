@@ -45,6 +45,25 @@ namespace Eto.Addin.Shared
 				content.AddRow(HeadingLabel((model.IsLibrary ? "Library" : "App") + " Name:"), label);
 			}
 
+			if (model.SupportsFramework)
+			{
+				var frameworkDropDown = new DropDown();
+				frameworkDropDown.BindDataContext(c => c.DataStore, (ProjectWizardPageModel m) => m.SupportedFrameworks);
+				frameworkDropDown.ItemTextBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Text);
+				frameworkDropDown.ItemKeyBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Value);
+				frameworkDropDown.SelectedValueBinding.BindDataContext((ProjectWizardPageModel m) => m.SelectedFramework);
+
+				/*
+				var frameworkCheckBoxes = new CheckBoxList();
+				frameworkCheckBoxes.BindDataContext(c => c.DataStore, (ProjectWizardPageModel m) => m.SupportedFrameworks);
+				frameworkCheckBoxes.ItemTextBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Text);
+				frameworkCheckBoxes.ItemKeyBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Value);
+				frameworkCheckBoxes.SelectedValuesBinding.BindDataContext((ProjectWizardPageModel m) => m.SelectedFrameworks);
+				*/
+
+				content.AddRow(HeadingLabel("Framework:"), frameworkDropDown);
+			}
+
 			if (model.SupportsCombined)
 			{
 				var platformTypeList = new RadioButtonList
@@ -57,11 +76,13 @@ namespace Eto.Addin.Shared
 						new ListItem { Text = "Single Windows, Linux, and Mac desktop project", Key = "combined" }
 					}
 				};
-				platformTypeList.BindDataContext(c => c.Enabled, (ProjectWizardPageModel m) => m.AllowCombined);
+				platformTypeList.BindDataContext(c => c.Visible, (ProjectWizardPageModel m) => m.AllowCombined);
 				platformTypeList.SelectedKeyBinding
 				                .Convert(v => v == "combined", v => v ? "combined" : "separate")
 				                .BindDataContext((ProjectWizardPageModel m) => m.Combined);
-				content.AddRow(HeadingLabel("Launcher:"), platformTypeList);
+				var heading = HeadingLabel("Launcher:");
+				heading.BindDataContext(c => c.Visible, (ProjectWizardPageModel m) => m.AllowCombined);
+				content.AddRow(heading, platformTypeList);
 			}
 
 			if (model.SupportsXamMac)
@@ -94,25 +115,6 @@ namespace Eto.Addin.Shared
 
 			content.Rows.Add(new TableRow(new Label { Text = "Platforms:", TextAlignment = TextAlignment.Right }, platformCheckBoxes));
 			/**/
-
-			if (model.SupportsFramework)
-			{
-				var frameworkDropDown = new DropDown();
-				frameworkDropDown.BindDataContext(c => c.DataStore, (ProjectWizardPageModel m) => m.SupportedFrameworks);
-				frameworkDropDown.ItemTextBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Text);
-				frameworkDropDown.ItemKeyBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Value);
-				frameworkDropDown.SelectedValueBinding.BindDataContext((ProjectWizardPageModel m) => m.SelectedFramework);
-
-				/*
-				var frameworkCheckBoxes = new CheckBoxList();
-				frameworkCheckBoxes.BindDataContext(c => c.DataStore, (ProjectWizardPageModel m) => m.SupportedFrameworks);
-				frameworkCheckBoxes.ItemTextBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Text);
-				frameworkCheckBoxes.ItemKeyBinding = Binding.Property((ProjectWizardPageModel.FrameworkInfo i) => i.Value);
-				frameworkCheckBoxes.SelectedValuesBinding.BindDataContext((ProjectWizardPageModel m) => m.SelectedFrameworks);
-				*/
-
-				content.AddRow(HeadingLabel("Framework:"), frameworkDropDown);
-			}
 
 			if (model.SupportsProjectType)
 			{
