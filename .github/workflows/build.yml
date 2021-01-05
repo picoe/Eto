@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ develop ]
   release:
-    types: [ released ]
+    types: [ published ]
 
 env:
   DotNetVersion: "5.0.100"
