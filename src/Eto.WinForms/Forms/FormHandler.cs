@@ -143,17 +143,6 @@ namespace Eto.WinForms.Forms
 			Control.Show();
 		}
 
-		public override bool ShowInTaskbar
-		{
-			get { return base.ShowInTaskbar; }
-			set
-			{
-				base.ShowInTaskbar = value;
-				if (Control is EtoForm etoForm)
-					etoForm.HideFromAltTab = !value;
-			}
-		}
-
 		public Color TransparencyKey
 		{
 			get { return Control.TransparencyKey.ToEto(); }

@@ -157,6 +157,12 @@ namespace Eto.Mac.Forms.Controls
 				AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
+
+		public override bool AcceptsFirstMouse(NSEvent theEvent)
+		{
+			return Handler?.OnAcceptsFirstMouse(theEvent) ?? base.AcceptsFirstMouse(theEvent);
+		}
+
 	}
 }
 

@@ -62,14 +62,20 @@ namespace Eto.Mac.Forms.Controls
 
 			public bool CanFocus { get; set; }
 
-			public override bool AcceptsFirstResponder()
-			{
-				return CanFocus;
-			}
+			public override bool AcceptsFirstResponder() => CanFocus;
 
-			public override bool AcceptsFirstMouse(NSEvent theEvent)
+			public override bool AcceptsFirstMouse(NSEvent theEvent) => CanFocus || base.AcceptsFirstMouse(theEvent);
+
+			public override NSView HitTest(CGPoint aPoint)
 			{
-				return CanFocus;
+				var view = base.HitTest(aPoint);
+				if (view == ContentView)
+				{
+					// forward all events to this view, not the content view (which covers the drawable)
+					// the properly enables AcceptsFirstMouse above, since the ContentView returns false
+					return this;
+				}
+				return view;
 			}
 		}
 
