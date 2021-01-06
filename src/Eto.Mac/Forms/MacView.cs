@@ -118,6 +118,7 @@ namespace Eto.Mac.Forms
 		CGSize GetAlignmentSizeForSize(CGSize size);
 		CGPoint GetAlignmentPointForFramePoint(CGPoint point);
 		CGRect GetAlignmentRectForFrame(CGRect frame);
+		bool OnAcceptsFirstMouse(NSEvent theEvent);
 	}
 
 	static class MacView
@@ -131,6 +132,7 @@ namespace Eto.Mac.Forms
 		public static readonly object NaturalSizeInfinity_Key = new object();
 		public static readonly object Enabled_Key = new object();
 		public static readonly object ActualEnabled_Key = new object();
+		public static readonly object AcceptsFirstMouse_Key = new object();
 		public static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
 		public static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
 		public static readonly IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
@@ -1363,6 +1365,36 @@ namespace Eto.Mac.Forms
 			else
 				point.Y += alignment.Y;
 			return point;
+		}
+
+		
+		/// <summary>
+		/// Provides an event to specify that this control should trigger an initial MouseDown event when clicked on an inactive window
+		/// </summary>
+		/// <remarks>
+		/// On macOS, controls don't usually respond to clicks when initially clicking on an inactive window so the user can focus
+		/// that window without ill effects.  However, in some cases you may want the user to do this, so this event allows you to
+		/// specify if that should be allowed by setting <see cref="MouseEventArgs.Handled"/> to true.
+		/// </remarks>
+		public event EventHandler<MouseEventArgs> AcceptsFirstMouse
+		{
+			add => Widget.Properties.AddEvent(MacView.AcceptsFirstMouse_Key, value);
+			remove => Widget.Properties.RemoveEvent(MacView.AcceptsFirstMouse_Key, value);
+		}
+
+		protected virtual void OnAcceptsFirstMouse(MouseEventArgs e)
+		{
+			Widget?.Properties.TriggerEvent(MacView.AcceptsFirstMouse_Key, this, e);
+		}
+
+		bool IMacViewHandler.OnAcceptsFirstMouse(NSEvent theEvent)
+		{
+			if (!Widget.Properties.ContainsKey(MacView.AcceptsFirstMouse_Key))
+				return false;
+
+			var args = MacConversions.GetMouseEvent(this, theEvent, false);
+			OnAcceptsFirstMouse(args);
+			return args.Handled;
 		}
 	}
 }
