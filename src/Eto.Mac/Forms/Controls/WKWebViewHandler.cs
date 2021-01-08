@@ -22,14 +22,8 @@ using wk = MonoMac.WebKit;
 
 namespace Eto.Mac.Forms.Controls
 {
-	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public delegate void Blar(IntPtr block);
-
 	public class WKWebViewHandler : MacView<wk.WKWebView, WebView, WebView.ICallback>, WebView.IHandler
 	{
-		static readonly Selector selIgnore = new Selector("ignore");
-		static readonly Selector selUse = new Selector("use");
-
 		public override NSView ContainerControl { get { return Control; } }
 
 		public wk.WKWebViewConfiguration Configuration { get; set; } = new wk.WKWebViewConfiguration();
@@ -315,7 +309,21 @@ namespace Eto.Mac.Forms.Controls
 			if (printOperation != null)
 			{
 				// RunOperation() doesn't work..
-				printOperation.RunOperationModal(Control.Window, Control, new Selector("printOperationDidRun:success:contextInfo:"), IntPtr.Zero);
+				var printHelper = new PrintHelper();
+				printOperation.RunOperationModal(Control.Window, printHelper, PrintHelper.PrintOperationDidRunSelector, IntPtr.Zero);
+			}
+		}
+
+		class PrintHelper : NSObject
+		{
+			public static Selector PrintOperationDidRunSelector = new Selector("printOperationDidRun:success:contextInfo:");
+
+			public bool Success { get; set; }
+
+			[Export("printOperationDidRun:success:contextInfo:")]
+			public void PrintOperationDidRun(IntPtr printOperation, bool success, IntPtr contextInfo)
+			{
+				Success = success;
 			}
 		}
 

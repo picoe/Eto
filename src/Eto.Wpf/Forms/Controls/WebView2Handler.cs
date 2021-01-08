@@ -59,6 +59,10 @@ namespace Eto.Wpf.Forms.Controls
 		/// </summary>
 		public static WebView2InstallMode InstallMode = WebView2InstallMode.Manual;
 
+
+		const string reg64BitKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
+		const string reg32BitKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
+
 		/// <summary>
 		/// Detects whether WebView2 is installed
 		/// </summary>
@@ -69,7 +73,7 @@ namespace Eto.Wpf.Forms.Controls
 			return false;
 #endif
 			// https://docs.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution#deploying-the-evergreen-webview2-runtime
-			var pv = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}", "pv", null);
+			var pv = Registry.GetValue(Environment.Is64BitOperatingSystem ? reg64BitKey : reg32BitKey, "pv", null);
 			return pv is string s && !string.IsNullOrEmpty(s);
 		}
 
@@ -203,7 +207,7 @@ namespace Eto.Wpf.Forms.Controls
 				reportProgress?.Invoke(info);
 			}
 			// download bootstrapper to temp folder
-			var tempFile = Path.GetTempFileName();
+			var tempFile = Path.GetTempFileName() + ".exe";
 			try
 			{
 				info.Text = Loc("Downloading bootstrapper...");
@@ -229,6 +233,7 @@ namespace Eto.Wpf.Forms.Controls
 				// run with elevated privileges
 				var startInfo = new ProcessStartInfo(tempFile);
 				startInfo.Verb = "runas";
+				startInfo.UseShellExecute = false;
 				var result = await RunProcessAsync(startInfo);
 				if (result != 0 && !Detect())
 				{
