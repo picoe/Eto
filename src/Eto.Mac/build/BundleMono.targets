@@ -10,7 +10,7 @@
     <MkBundleTargetServer Condition="$(MkBundleTargetServer) == '' AND $(MacBundleTarget) == ''">http://pages.picoe.ca/runtimes/</MkBundleTargetServer>
 
     <!-- Target when bundling mono, or 'default' to use system mono.  See mkbundle -list-targets -->
-    <MacBundleTarget Condition="$(MacBundleTarget) == ''">mono-6.8.0-osx-10.9-x64-eto.zip</MacBundleTarget>
+    <MacBundleTarget Condition="$(MacBundleTarget) == ''">mono-6.12.0-osx-10.9-x64-eto.zip</MacBundleTarget>
 
     <!-- minimum installed version of mono required to run -->
     <MacMonoMinimumVersion Condition="$(MacMonoMinimumVersion) == ''">6.0</MacMonoMinimumVersion>

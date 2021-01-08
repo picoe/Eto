@@ -64,16 +64,22 @@ namespace Eto.Mac.Forms.Controls
 		public override CGRect DrawingRectForBounds(CGRect theRect)
 		{
 			var rect = base.DrawingRectForBounds(theRect);
-			rect.Y += ButtonOffset;
-			rect.Y += Offset;
+			if (!MacVersion.IsAtLeast(10, 16)) // big sur
+			{
+				rect.Y += ButtonOffset;
+				rect.Y += Offset;
+			}
 			return rect;
 		}
 
 		public override CGRect TitleRectForBounds(CGRect theRect)
 		{
 			var rect = base.TitleRectForBounds(theRect);
-			rect.Y -= ButtonOffset;
-			rect.Y -= Offset;
+			if (!MacVersion.IsAtLeast(10, 16)) // big sur
+			{
+				rect.Y -= ButtonOffset;
+				rect.Y -= Offset;
+			}
 			return rect;
 		}
 	}
