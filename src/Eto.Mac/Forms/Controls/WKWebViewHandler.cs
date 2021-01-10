@@ -293,7 +293,15 @@ namespace Eto.Mac.Forms.Controls
 
 		public void ShowPrintDialog()
 		{
-			var printInfo = NSPrintInfo.SharedPrintInfo;
+			const float margin = 24f;
+			var printInfo = new NSPrintInfo 
+			{ 
+				VerticallyCentered = false, 
+				LeftMargin = margin, 
+				RightMargin = margin, 
+				TopMargin = margin, 
+				BottomMargin = margin 
+			};
 			NSPrintOperation printOperation = null;
 
 			if (Control.RespondsToSelector(s_selGetPrintOperation))
