@@ -193,10 +193,10 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void RunOpenPanel(wk.WKWebView webView, wk.WKOpenPanelParameters parameters, wk.WKFrameInfo frame, Action<NSUrl[]> completionHandler)
 			{
-				var openDlg = new OpenFileDialog();
+				var openDlg = new OpenFileDialog { MultiSelect = parameters.AllowsMultipleSelection };
 				if (openDlg.ShowDialog(Handler.Widget.ParentWindow) == DialogResult.Ok)
 				{
-					completionHandler(openDlg.Filenames.Select(r => new NSUrl(r)).ToArray());
+					completionHandler(openDlg.Filenames.Select(r => NSUrl.FromFilename(r)).ToArray());
 				}
 				else
 				{
