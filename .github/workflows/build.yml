@@ -31,6 +31,9 @@ jobs:
     - name: Setup msbuild
       uses: microsoft/setup-msbuild@v1
 
+    - name: Clear package cache # workaround for actions/setup-dotnet#155
+      run: dotnet nuget locals all --clear
+
     - name: Build
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Package /bl:artifacts/log/Build.Windows.binlog
 
