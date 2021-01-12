@@ -726,6 +726,15 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
+#if GTKCORE
+				var screen = Control.Screen;
+				var gdkWindow = Control.GetWindow();
+				if (screen != null && gdkWindow != null)
+				{
+					var monitor = screen.Display.GetMonitorAtWindow(gdkWindow);
+					return monitor?.ScaleFactor ?? 1f;
+				}
+#endif
 				return 1f;
 			}
 		}
