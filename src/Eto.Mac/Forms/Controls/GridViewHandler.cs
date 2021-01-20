@@ -135,7 +135,7 @@ namespace Eto.Mac.Forms.Controls
 				FocusRingType = NSFocusRingType.None;
 				DataSource = new EtoTableViewDataSource { Handler = handler };
 				Delegate = new EtoTableDelegate { Handler = handler };
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform;
 				SetDraggingSourceOperationMask(NSDragOperation.All, true);
 				SetDraggingSourceOperationMask(NSDragOperation.All, false);
 			}
@@ -416,16 +416,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void ColumnDidResize(NSNotification notification)
 			{
-				if (!Handler.IsAutoSizingColumns)
-				{
-					// when the user resizes the column, don't autosize anymore when data/scroll changes
-					var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
-					if (column != null)
-					{
-						var colHandler = Handler.GetColumn(column);
-						colHandler.AutoSize = false;
-					}
-				}
+				Handler?.ColumnDidResize(notification);
 			}
 
 			public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, nint row)

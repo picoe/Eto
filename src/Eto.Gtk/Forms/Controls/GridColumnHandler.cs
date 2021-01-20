@@ -96,8 +96,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int Width
 		{
 			get { return Control.Width; }
-			set 
-			{ 
+			set
+			{
 				autoSize = value == -1;
 				Control.FixedWidth = value;
 				Control.Sizing = autoSize ? Gtk.TreeViewColumnSizing.GrowOnly : Gtk.TreeViewColumnSizing.Fixed;
@@ -182,6 +182,19 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Control; }
 		}
+
+		public bool Expand
+		{
+			get => Control.Expand;
+			set => Control.Expand = value;
+		}
+		public TextAlignment HeaderTextAlignment
+		{
+			get => GtkConversions.ToEtoAlignment(Control.Alignment);
+			set => Control.Alignment = value.ToAlignment();
+		}
+		public int MinWidth { get => Control.MinWidth; set => Control.MinWidth = value; }
+		public int MaxWidth { get => Control.MaxWidth; set => Control.MaxWidth = value; }
 	}
 }
 

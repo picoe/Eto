@@ -111,6 +111,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow(null,
 						ReloadDataButton(grid),
 						SetDataButton(grid),
+						SetTextBoxWidth(grid),
 						null
 					);
 			layout.AddSeparateRow(null,
@@ -127,15 +128,25 @@ namespace Eto.Test.Sections.Controls
 			return layout;
 		}
 
+		Control SetTextBoxWidth(GridView grid)
+		{
+			var button = new Button { Text = "Set TextBoxCell.Width" };
+			var textBoxCell = grid.Columns.FirstOrDefault(r => r.DataCell is TextBoxCell);
+			button.Click += (sender, e) => textBoxCell.Width = 100;
+			return button;
+		}
+
 		Control TextAlignmentDropDown(GridView grid)
 		{
 			var control = new EnumDropDown<TextAlignment>();
 
-			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().First();
-			control.SelectedValueBinding.Bind(textBoxCell, c => c.TextAlignment);
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
+			if (textBoxCell != null)
+				control.SelectedValueBinding.Bind(textBoxCell, c => c.TextAlignment);
 
-			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
-			control.SelectedValueBinding.Bind(imageTextCell, c => c.TextAlignment);
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
+			if (imageTextCell != null)
+				control.SelectedValueBinding.Bind(imageTextCell, c => c.TextAlignment);
 			return control;
 		}
 
@@ -143,11 +154,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new EnumDropDown<VerticalAlignment>();
 
-			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().First();
-			control.SelectedValueBinding.Bind(textBoxCell, c => c.VerticalAlignment);
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
+			if (textBoxCell != null)
+				control.SelectedValueBinding.Bind(textBoxCell, c => c.VerticalAlignment);
 
-			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
-			control.SelectedValueBinding.Bind(imageTextCell, c => c.VerticalAlignment);
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
+			if (imageTextCell != null)
+				control.SelectedValueBinding.Bind(imageTextCell, c => c.VerticalAlignment);
 			return control;
 		}
 
@@ -155,11 +168,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new EnumDropDown<AutoSelectMode>();
 
-			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().First();
-			control.SelectedValueBinding.Bind(textBoxCell, c => c.AutoSelectMode);
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
+			if (textBoxCell != null)
+				control.SelectedValueBinding.Bind(textBoxCell, c => c.AutoSelectMode);
 
-			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().First();
-			control.SelectedValueBinding.Bind(imageTextCell, c => c.AutoSelectMode);
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
+			if (imageTextCell != null)
+				control.SelectedValueBinding.Bind(imageTextCell, c => c.AutoSelectMode);
 			return control;
 		}
 

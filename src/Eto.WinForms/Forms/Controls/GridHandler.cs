@@ -20,8 +20,8 @@ namespace Eto.WinForms.Forms.Controls
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WindowsControl<swf.DataGridView, TWidget, TCallback>, Grid.IHandler, IGridHandler
-		where TWidget: Grid
-		where TCallback: Grid.ICallback
+		where TWidget : Grid
+		where TCallback : Grid.ICallback
 	{
 		ColumnCollection columns;
 		bool isFirstSelection = true;
@@ -42,16 +42,51 @@ namespace Eto.WinForms.Forms.Controls
 
 			public EtoDataGridView() { DoubleBuffered = true; }
 
+			sd.Size GetSizeWithData(sd.Size proposedSize)
+			{
+				int width = RowHeadersWidth;
+				int height = 0;
+				if (ColumnHeadersVisible)
+					height += ColumnHeadersHeight;
+
+				if (BorderStyle == swf.BorderStyle.Fixed3D)
+				{
+					width += 4;
+					height += 4;
+				}
+				else if (BorderStyle == swf.BorderStyle.FixedSingle)
+				{
+					width += 2;
+					height += 2;
+				}
+
+				height += RowCount * (RowTemplate.Height + RowTemplate.DividerHeight);
+
+				for (int i = 0; i < ColumnCount; i++)
+				{
+					var col = Columns[i];
+					if (col.Visible)
+					{
+						width += col.GetPreferredWidth(swf.DataGridViewAutoSizeColumnMode.DisplayedCells, true);
+					}
+				}
+
+				if (proposedSize.Height > 0 && proposedSize.Height < height)
+					width += swf.SystemInformation.VerticalScrollBarWidth;
+
+				return new sd.Size(width, height);
+			}
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var size = base.GetPreferredSize(proposedSize);
+				var size = GetSizeWithData(proposedSize);
+
 				var def = Handler.UserPreferredSize;
 				if (def.Width >= 0)
 					size.Width = def.Width;
 				if (def.Height >= 0)
 					size.Height = def.Height;
-				else
-					size.Height = Math.Min(size.Height, 100);
+
 				return size;
 			}
 
@@ -134,8 +169,8 @@ namespace Eto.WinForms.Forms.Controls
 					}
 				}
 				else if (e.Modifiers == Keys.Control
-					&& hitTest.RowIndex >= 0 
-					&& Control.SelectedRows.Count == 1 
+					&& hitTest.RowIndex >= 0
+					&& Control.SelectedRows.Count == 1
 					&& Control.SelectedRows[0].Index == hitTest.RowIndex)
 				{
 					// don't allow user to deselect all items
@@ -390,7 +425,7 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			get { return Control.RowTemplate.Height; }
 			set
-			{ 
+			{
 				Control.RowTemplate.Height = value;
 				foreach (swf.DataGridViewRow row in Control.Rows)
 				{

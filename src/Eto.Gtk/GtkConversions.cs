@@ -691,6 +691,17 @@ namespace Eto.GtkSharp
 			}
 		}
 
+		public static TextAlignment ToEtoAlignment(float align)
+		{
+			if (align == 0f)
+				return TextAlignment.Left;
+			else if (align == 0.5f)
+				return TextAlignment.Center;
+			else if (align == 1f)
+				return TextAlignment.Right;
+			return TextAlignment.Left;
+		}
+
 		public static float ToAlignment(this TextAlignment alignment)
 		{
 			switch (alignment)

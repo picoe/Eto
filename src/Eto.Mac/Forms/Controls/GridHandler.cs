@@ -51,7 +51,7 @@ namespace Eto.Mac.Forms.Controls
 
 		NSTableView Table { get; }
 
-		bool AutoSizeColumns(bool force);
+		bool AutoSizeColumns(bool force, bool forceNewSize = false);
 		void PerformLayout();
 	}
 
@@ -72,7 +72,7 @@ namespace Eto.Mac.Forms.Controls
 
 			if (!autoSized)
 			{
-				autoSized = h.AutoSizeColumns(false);
+				autoSized = h.AutoSizeColumns(false, true);
 			}
 			h.OnSizeChanged(EventArgs.Empty);
 			h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
@@ -345,18 +345,14 @@ namespace Eto.Mac.Forms.Controls
 			base.OnLoadComplete(e);
 			UpdateColumns();
 
-			if (!Widget.Properties.Get<bool>(GridHandler.ScrolledToRow_Key))
-				// Yosemite bug: hides first row when DataStore is set before control is visible
-				Control.ScrollRowToVisible(0);
-			else
-				Widget.Properties.Remove(GridHandler.ScrolledToRow_Key);
+			var row = Widget.Properties.Get<int>(GridHandler.ScrolledToRow_Key, 0);
+			// Yosemite bug: hides first row when DataStore is set before control is visible, so we always call this
+			Control.ScrollRowToVisible(row);
 		}
 
 		NSRange autoSizeRange;
 
-		public bool AutoSizeColumns(bool force) => AutoSizeColumns(force, false);
-
-		public bool AutoSizeColumns(bool force, bool forceNewSize)
+		public bool AutoSizeColumns(bool force, bool forceNewSize = false)
 		{
 			if (Widget.Loaded)
 			{
@@ -434,8 +430,13 @@ namespace Eto.Mac.Forms.Controls
 				UnselectAll();
 				if (value != null)
 				{
-					var indexes = NSIndexSet.FromArray(value.ToArray());
-					Control.SelectRows(indexes, AllowMultipleSelection);
+					var rows = value.ToArray();
+					if (rows.Length > 0)
+					{
+						var indexes = NSIndexSet.FromArray(rows);
+						Control.SelectRows(indexes, AllowMultipleSelection);
+						ScrollToRow(rows[0]);
+					}
 				}
 				SuppressSelectionChanged--;
 				if (SuppressSelectionChanged == 0)
@@ -547,12 +548,19 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var width = Widget.Columns.Sum(r => r.Width);
+			EnsureAutoSizedColumns();
+			var width = (int)ColumnHandlers.Sum(r => r.Width);
 			if (width == 0)
 				width = 100;
-			var height = RowHeight * 4;
+
 			if (Border != BorderType.None)
 				width += 4;
+
+			width -= 2; // it's okay for the last divider to be hidden
+
+			var height = (RowHeight + 2) * RowCount;
+			if (ShowHeader)
+				height += 2 + (int)Control.HeaderView.Frame.Height;
 			return new Size(width, height);
 		}
 
@@ -563,9 +571,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public void ScrollToRow(int row)
 		{
-			Control.ScrollRowToVisible(row);
 			if (!Widget.Loaded)
-				Widget.Properties[GridHandler.ScrolledToRow_Key] = true;
+				Widget.Properties[GridHandler.ScrolledToRow_Key] = row;
+			else
+				Control.ScrollRowToVisible(row);
 		}
 
 		public bool Loaded => Widget.Loaded;
@@ -629,14 +638,23 @@ namespace Eto.Mac.Forms.Controls
 		bool hasAutoSizedColumns;
 		protected void ResetAutoSizedColumns() => hasAutoSizedColumns = false;
 
-		public void PerformLayout()
+		void EnsureAutoSizedColumns()
 		{
-			if (!hasAutoSizedColumns && Widget.Loaded && !Table.VisibleRect().IsNull())
+			if (!hasAutoSizedColumns && !Table.VisibleRect().IsEmpty)
 			{
 				AutoSizeColumns(true, true);
+				var width = ColumnHandlers.Sum(r => r.Width);
+				if (width < Table.Frame.Width && Widget.Columns.Any(r => r.Expand))
+				{
+					Control.SizeToFit();
+				}
 				hasAutoSizedColumns = true;
 			}
+		}
 
+		public void PerformLayout()
+		{
+			EnsureAutoSizedColumns();
 		}
 
 		public bool IsEditing => Widget.Properties.Get(GridHandler.IsEditing_Key, Control.EditedRow != -1 && Control.EditedColumn != -1);
@@ -674,6 +692,21 @@ namespace Eto.Mac.Forms.Controls
 			else
 			{
 				base.DoDragDrop(data, allowedAction, image, origin);
+			}
+		}
+
+		protected void ColumnDidResize(NSNotification notification)
+		{
+			if (!IsAutoSizingColumns && Widget.Loaded && hasAutoSizedColumns)
+			{
+				// when the user resizes the column, don't autosize anymore when data/scroll changes
+				var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
+				if (column != null)
+				{
+					var colHandler = GetColumn(column);
+					colHandler.AutoSize = false;
+					InvalidateMeasure();
+				}
 			}
 		}
 	}

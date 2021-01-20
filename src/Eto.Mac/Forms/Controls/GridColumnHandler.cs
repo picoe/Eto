@@ -64,7 +64,7 @@ namespace Eto.Mac.Forms.Controls
 		bool IsCancellingEdit { get; }
 	}
 
-	public interface IDataColumnHandler
+	public interface IDataColumnHandler : GridColumn.IHandler
 	{
 		void Setup(IDataViewHandler handler, int column);
 
@@ -72,7 +72,7 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetObjectValue(object dataItem, NSObject val);
 
-		GridColumn Widget { get; }
+		new GridColumn Widget { get; }
 
 		IDataViewHandler DataViewHandler { get; }
 
@@ -81,6 +81,7 @@ namespace Eto.Mac.Forms.Controls
 		void EnabledChanged(bool value);
 
 		nfloat GetPreferredWidth(NSRange? range = null);
+		void SizeToFit();
 	}
 
 	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn, GridColumn.ICallback>, GridColumn.IHandler, IDataColumnHandler
@@ -112,6 +113,7 @@ namespace Eto.Mac.Forms.Controls
 			HeaderText = string.Empty;
 			Editable = false;
 			AutoSize = true;
+			Control.Width = Control.MinWidth;
 			DataCell = new TextBoxCell();
 			base.Initialize();
 		}
@@ -119,7 +121,10 @@ namespace Eto.Mac.Forms.Controls
 		public void AutoSizeColumn(NSRange rowRange, bool force = false)
 		{
 			var handler = DataViewHandler;
-			if (AutoSize && handler != null)
+			if (handler == null)
+				return;
+
+			if (AutoSize)
 			{
 				var width = GetPreferredWidth(rowRange);
 				if (force || width > Control.Width)
@@ -131,9 +136,17 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var handler = DataViewHandler;
 			nfloat width = 0;
+
+			if (!AutoSize)
+				return Width;
+
 			var outlineView = handler.Table as NSOutlineView;
 			if (handler.ShowHeader)
+			{
 				width = (nfloat)Math.Max(Control.HeaderCell.CellSizeForBounds(new CGRect(0, 0, int.MaxValue, int.MaxValue)).Width, width);
+				if (outlineView != null && Column == 0)
+					width += (float)outlineView.IndentationPerLevel;
+			}
 
 			if (dataCell != null)
 			{
@@ -217,9 +230,15 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get => (int)Math.Ceiling(Control.Width) + 3;
 			set
-			{ 
+			{
 				AutoSize = value == -1;
 				Control.Width = Math.Max(0, value - 3);
+
+				var table = Control.TableView;
+				if (DataViewHandler != null && DataViewHandler.Loaded && table != null)
+				{
+					table.SizeToFit();
+				}
 			}
 		}
 
@@ -290,6 +309,25 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public bool Expand
+		{
+			get => Control.ResizingMask.HasFlag(NSTableColumnResizing.Autoresizing);
+			set
+			{
+				if (value)
+					Control.ResizingMask |= NSTableColumnResizing.Autoresizing;
+				else
+					Control.ResizingMask &= ~NSTableColumnResizing.Autoresizing;
+			}
+		}
+		public TextAlignment HeaderTextAlignment
+		{
+			get => Control.HeaderCell.Alignment.ToEto();
+			set => Control.HeaderCell.Alignment = value.ToNS();
+		}
+		public int MinWidth { get => (int)Control.MinWidth; set => Control.MinWidth = value; }
+		public int MaxWidth { get => (int)Control.MaxWidth; set => Control.MaxWidth = value; }
+
 		public void EnabledChanged(bool value)
 		{
 			if (dataCell != null)
@@ -298,6 +336,8 @@ namespace Eto.Mac.Forms.Controls
 				cellHandler.EnabledChanged(value);
 			}
 		}
+
+		public void SizeToFit() => Control.SizeToFit();
 	}
 }
 

@@ -13,6 +13,7 @@ using Eto.Wpf.Forms.Menu;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
 using Eto.Wpf.CustomControls.TreeGridView;
+using System.Windows;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -277,6 +278,20 @@ namespace Eto.Wpf.Forms.Controls
 			//    the cell is selected.
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);
+
+			Control.Loaded += Control_Loaded;
+		}
+
+		private void Control_Loaded(object sender, RoutedEventArgs e)
+		{
+			// expanded columns don't get autosized, so we flip to star width after they are auto sized.
+			foreach (var col in Widget.Columns)
+			{
+				if (col.Handler is IGridColumnHandler columnHandler)
+				{
+					columnHandler.OnLoad();
+				}
+			}
 		}
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
