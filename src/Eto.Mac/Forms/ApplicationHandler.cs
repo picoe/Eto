@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Eto.Mac.Drawing;
+using System.Runtime.CompilerServices;
 
 #if XAMMAC2
 using AppKit;
@@ -13,14 +14,16 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-using System.Runtime.CompilerServices;
+using CoreFoundation;
 #else
+using MonoMac;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
+using MonoMac.CoreFoundation;
 #if Mac64
 using nfloat = System.Double;
 using nint = System.Int64;
@@ -65,6 +68,19 @@ namespace Eto.Mac.Forms
 		/// </remarks>
 		/// <value><c>true</c> to enable native crash reports; otherwise, <c>false</c>.</value>
 		public bool EnableNativeCrashReport { get; set; } = !System.Diagnostics.Debugger.IsAttached;
+
+#if Mac64
+		/// <summary>
+		/// Gets or sets a value indicating whether we should translate native exceptions into .NET so it shows the .net stack trace
+		/// </summary>
+		/// <remarks>
+		/// This allows us to get the stack trace of the .NET Code if it calls something that causes a native crash.
+		/// 
+		/// There is currently no way to catch the translated exceptions, however the crash report will be much more useful.
+		/// </remarks>
+		/// <value><c>true</c> to enable native crash translation; otherwise, <c>false</c></value>
+		public bool EnableNativeExceptionTranslation { get; set; } = true;
+#endif
 
 		public ApplicationHandler()
 		{
@@ -147,22 +163,12 @@ namespace Eto.Mac.Forms
 			if (NSThread.IsMain)
 				action();
 			else
-			{
-#if XAMMAC1
-				Control.InvokeOnMainThread(new NSAction(action));
-#else
-				Control.InvokeOnMainThread(action);
-#endif
-			}
+				DispatchQueue.MainQueue.DispatchSync(action);
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-#if XAMMAC1
-			Control.BeginInvokeOnMainThread(new NSAction(action));
-#else
-			Control.BeginInvokeOnMainThread(action);
-#endif
+			DispatchQueue.MainQueue.DispatchAsync(action);
 		}
 
 		public void Restart()
@@ -203,6 +209,13 @@ namespace Eto.Mac.Forms
 				if (EnableNativeCrashReport)
 					CrashReporter.Attach();
 
+#if Mac64
+				// convert objective-c exceptions into .NET exceptions
+				if (EnableNativeExceptionTranslation)
+					NSSetUncaughtExceptionHandler(UncaughtExceptionHandler);
+#endif
+
+
 				EtoBundle.Init();
 
 				EtoFontManager.Install();
@@ -232,6 +245,35 @@ namespace Eto.Mac.Forms
 		{
 			NSWorkspace.SharedWorkspace.OpenUrl(new NSUrl(url));
 		}
+
+#if Mac64
+		delegate void UncaughtExceptionHandlerDelegate(IntPtr nsexceptionPtr);
+		
+		[DllImport(Constants.FoundationLibrary)]
+		static extern void NSSetUncaughtExceptionHandler(UncaughtExceptionHandlerDelegate handler);
+
+		static void UncaughtExceptionHandler(IntPtr nsexceptionPtr)
+		{
+			var nsexception = Runtime.GetNSObject<NSException>(nsexceptionPtr);
+			if (nsexception != null)
+			{
+				if (EtoEnvironment.Platform.IsMono)
+				{
+					// mono includes full stack already
+					throw new ObjCException(nsexception);
+				}
+				else
+				{
+					// .NET 5 does not include the full stack as it goes through native code.
+					// Fortunately, .NET 5 does actually use the StackTrace property for its Exception.ToString() implementation,
+					// so we can feed the stack to the exception object.
+					var st = new System.Diagnostics.StackTrace(1); // skip UncaughtException method
+					var ststr = st.ToString();
+					throw new ObjCException(nsexception, st.ToString());
+				}
+			}
+		}
+#endif
 
 		public override void AttachEvent(string id)
 		{
