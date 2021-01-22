@@ -122,6 +122,18 @@ namespace Eto.WinForms
 			keymap.Add(swf.Keys.F10, Keys.F10);
 			keymap.Add(swf.Keys.F11, Keys.F11);
 			keymap.Add(swf.Keys.F12, Keys.F12);
+			keymap.Add(swf.Keys.F13, Keys.F13);
+			keymap.Add(swf.Keys.F14, Keys.F14);
+			keymap.Add(swf.Keys.F15, Keys.F15);
+			keymap.Add(swf.Keys.F16, Keys.F16);
+			keymap.Add(swf.Keys.F17, Keys.F17);
+			keymap.Add(swf.Keys.F18, Keys.F18);
+			keymap.Add(swf.Keys.F19, Keys.F19);
+			keymap.Add(swf.Keys.F20, Keys.F20);
+			keymap.Add(swf.Keys.F21, Keys.F21);
+			keymap.Add(swf.Keys.F22, Keys.F22);
+			keymap.Add(swf.Keys.F23, Keys.F23);
+			keymap.Add(swf.Keys.F24, Keys.F24);
 			keymap.Add(swf.Keys.D0, Keys.D0);
 			keymap.Add(swf.Keys.D1, Keys.D1);
 			keymap.Add(swf.Keys.D2, Keys.D2);

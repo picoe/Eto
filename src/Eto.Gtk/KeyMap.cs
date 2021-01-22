@@ -93,6 +93,18 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.F10, Keys.F10);
 			keymap.Add(Gdk.Key.F11, Keys.F11);
 			keymap.Add(Gdk.Key.F12, Keys.F12);
+			keymap.Add(Gdk.Key.F13, Keys.F13);
+			keymap.Add(Gdk.Key.F14, Keys.F14);
+			keymap.Add(Gdk.Key.F15, Keys.F15);
+			keymap.Add(Gdk.Key.F16, Keys.F16);
+			keymap.Add(Gdk.Key.F17, Keys.F17);
+			keymap.Add(Gdk.Key.F18, Keys.F18);
+			keymap.Add(Gdk.Key.F19, Keys.F19);
+			keymap.Add(Gdk.Key.F20, Keys.F20);
+			keymap.Add(Gdk.Key.F21, Keys.F21);
+			keymap.Add(Gdk.Key.F22, Keys.F22);
+			keymap.Add(Gdk.Key.F23, Keys.F23);
+			keymap.Add(Gdk.Key.F24, Keys.F24);
 			keymap.Add(Gdk.Key.Key_0, Keys.D0);
 			keymap.Add(Gdk.Key.Key_1, Keys.D1);
 			keymap.Add(Gdk.Key.Key_2, Keys.D2);
@@ -132,11 +144,10 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.Help, Keys.Help);
 			keymap.Add(Gdk.Key.Pause, Keys.Pause);
 			keymap.Add(Gdk.Key.Clear, Keys.Clear);
-			keymap.Add(Gdk.Key.KP_Equal, Keys.KeypadEqual);
+			keymap.Add(Gdk.Key.equal, Keys.Equal);
 			//keymap.Add(Gdk.Key.Alt_R, Keys.Menu);
 			//keymap.Add(Gdk.Key.Alt_L, Keys.Menu);
 			keymap.Add(Gdk.Key.backslash, Keys.Backslash);
-			keymap.Add(Gdk.Key.equal, Keys.Equal);
 			keymap.Add(Gdk.Key.semicolon, Keys.Semicolon);
 			keymap.Add(Gdk.Key.apostrophe, Keys.Quote);
 			keymap.Add(Gdk.Key.comma, Keys.Comma);
@@ -163,11 +174,22 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.Alt_R, Keys.RightAlt);
 			keymap.Add(Gdk.Key.Meta_L, Keys.LeftApplication);
 			keymap.Add(Gdk.Key.Meta_R, Keys.RightApplication);
+			keymap.Add(Gdk.Key.KP_Enter, Keys.Enter);
+			keymap.Add(Gdk.Key.KP_Up, Keys.Up);
+			keymap.Add(Gdk.Key.KP_Down, Keys.Down);
+			keymap.Add(Gdk.Key.KP_Left, Keys.Left);
+			keymap.Add(Gdk.Key.KP_Right, Keys.Right);
+			keymap.Add(Gdk.Key.KP_Page_Down, Keys.PageDown);
+			keymap.Add(Gdk.Key.KP_Page_Up, Keys.PageUp);
+			keymap.Add(Gdk.Key.KP_Home, Keys.Home);
+			keymap.Add(Gdk.Key.KP_End, Keys.End);
+			keymap.Add(Gdk.Key.KP_Insert, Keys.Insert);
+			keymap.Add(Gdk.Key.KP_Equal, Keys.Equal);
+			keymap.Add(Gdk.Key.KP_Delete, Keys.Delete);
 
 			if (EtoEnvironment.Platform.IsMac)
 			{
 				// os x
-				keymap.Add(Gdk.Key.KP_Enter, Keys.Insert);
 				keymap.Add((Gdk.Key)0x1000010, Keys.ContextMenu);
 			}
 			keymap.Add(Gdk.Key.a, Keys.A);
