@@ -111,7 +111,7 @@ namespace Eto.WinForms.Forms.Controls
 				var bordersAndPadding = Padding.Size;
 				if (proposedSize.Width <= 1)
 					proposedSize.Width = int.MaxValue;
-				else if (Width > 1)
+				else if (IsHandleCreated && Width > 1)
 					proposedSize.Width = Width;
 
 				sd.SizeF size;
