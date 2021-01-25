@@ -275,16 +275,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void ColumnDidResize(NSNotification notification)
 			{
-				if (!Handler.IsAutoSizingColumns)
-				{
-					// when the user resizes the column, don't autosize anymore when data/scroll changes
-					var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
-					if (column != null)
-					{
-						var colHandler = Handler.GetColumn(column);
-						colHandler.AutoSize = false;
-					}
-				}
+				Handler?.ColumnDidResize(notification);
 			}
 
 			public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
@@ -340,6 +331,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool ItemExpandable(NSOutlineView outlineView, NSObject item)
 			{
+				if (item == null)
+					return true;
+
 				var myitem = Handler.GetEtoItem(item);
 				return myitem != null && myitem.Expandable;
 			}
@@ -633,12 +627,13 @@ namespace Eto.Mac.Forms.Controls
 			public EtoOutlineView(TreeGridViewHandler handler)
 			{
 				Delegate = new EtoOutlineDelegate { Handler = handler };
+				DataSource = new EtoDataSource { Handler = handler };
 				//HeaderView = null,
 				AutoresizesOutlineColumn = false;
 				//AllowsColumnResizing = false,
 				AllowsColumnReordering = false;
 				FocusRingType = NSFocusRingType.None;
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform;
 				SetDraggingSourceOperationMask(NSDragOperation.All, true);
 				SetDraggingSourceOperationMask(NSDragOperation.All, false);
 			}
@@ -662,6 +657,10 @@ namespace Eto.Mac.Forms.Controls
 		{
 			switch (id)
 			{
+				case Grid.CellEditingEvent:
+				case Grid.CellEditedEvent:
+					// handled by delegate
+					break;
 				case TreeGridView.ActivatedEvent:
 					Widget.KeyDown += (sender, e) =>
 					{
@@ -714,18 +713,18 @@ namespace Eto.Mac.Forms.Controls
 			get { return store; }
 			set
 			{
+				Control.BeginUpdates();
 				store = value;
 				topitems.Clear();
 				cachedItems.Clear();
-				if (Control.DataSource == null)
-					Control.DataSource = new EtoDataSource { Handler = this };
-				else
-					Control.ReloadData();
+				Control.ReloadData();
 				suppressExpandCollapseEvents++;
 				ExpandItems(null);
 				suppressExpandCollapseEvents--;
-				if (Widget.Loaded)
-					AutoSizeColumns(true);
+				Control.EndUpdates();
+
+				ResetAutoSizedColumns();
+				InvalidateMeasure();
 			}
 		}
 
@@ -830,24 +829,25 @@ namespace Eto.Mac.Forms.Controls
 					Control.DeselectAll(Control);
 				else
 				{
-
 					EtoTreeItem myitem;
 					if (cachedItems.TryGetValue(value, out myitem))
 					{
 						var cachedRow = Control.RowForItem(myitem);
 						if (cachedRow >= 0)
 						{
-							Control.ScrollRowToVisible(cachedRow);
 							Control.SelectRow((nnint)cachedRow, false);
+							ScrollToRow((int)cachedRow);
 							return;
 						}
 					}
 
+					Control.BeginUpdates();
 					var row = ExpandToItem(value);
+					Control.EndUpdates();
 					if (row != null)
 					{
-						Control.ScrollRowToVisible(row.Value);
 						Control.SelectRow((nnint)row.Value, false);
+						ScrollToRow((int)row.Value);
 					}
 				}
 			}
@@ -855,11 +855,15 @@ namespace Eto.Mac.Forms.Controls
 
 		void ExpandItems(NSObject parent)
 		{
-			var ds = (EtoDataSource)Control.DataSource;
-			var count = ds.GetChildrenCount(Control, parent);
+			int count;
+			if (parent == null)
+				count = store?.Count ?? 0;
+			else
+				count = ((parent as EtoTreeItem)?.Item as ITreeGridStore<ITreeGridItem>)?.Count ?? 0;
+
 			for (int i = 0; i < count; i++)
 			{
-				var item = ds.GetChild(Control, i, parent) as EtoTreeItem;
+				var item = Control.GetChild(i, parent) as EtoTreeItem;
 				if (item != null && item.Item.Expanded && !Control.IsItemExpanded(item))
 				{
 					Control.ExpandItem(item);
@@ -894,6 +898,7 @@ namespace Eto.Mac.Forms.Controls
 			if (!Control.IsFlipped)
 				loc.Y = Control.Frame.Height - contentView.Frame.Height - loc.Y;
 
+			Control.BeginUpdates();
 			topitems.Clear();
 			cachedItems.Clear();
 			Control.ReloadData();
@@ -916,6 +921,7 @@ namespace Eto.Mac.Forms.Controls
 				else
 					isSelectionChanged = true;
 			}
+			Control.EndUpdates();
 
 			ScrollView.ReflectScrolledClipView(contentView);
 			suppressExpandCollapseEvents--;

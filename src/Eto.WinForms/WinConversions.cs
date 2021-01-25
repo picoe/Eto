@@ -603,6 +603,47 @@ namespace Eto.WinForms
 			}
 		}
 
+		public static swf.DataGridViewContentAlignment ToSWFGridViewContentAlignment(this TextAlignment alignment, VerticalAlignment vertical = VerticalAlignment.Center)
+		{
+			switch (alignment)
+			{
+				default:
+				case TextAlignment.Left:
+					switch (vertical)
+					{
+						case VerticalAlignment.Top:
+							return swf.DataGridViewContentAlignment.TopLeft;	
+						default:
+						case VerticalAlignment.Center:
+							return swf.DataGridViewContentAlignment.MiddleLeft;	
+						case VerticalAlignment.Bottom:
+							return swf.DataGridViewContentAlignment.BottomLeft;	
+					}
+				case TextAlignment.Center:
+					switch (vertical)
+					{
+						case VerticalAlignment.Top:
+							return swf.DataGridViewContentAlignment.TopCenter;	
+						default:
+						case VerticalAlignment.Center:
+							return swf.DataGridViewContentAlignment.MiddleCenter;	
+						case VerticalAlignment.Bottom:
+							return swf.DataGridViewContentAlignment.BottomCenter;	
+					}
+				case TextAlignment.Right:
+					switch (vertical)
+					{
+						case VerticalAlignment.Top:
+							return swf.DataGridViewContentAlignment.TopRight;	
+						default:
+						case VerticalAlignment.Center:
+							return swf.DataGridViewContentAlignment.MiddleRight;	
+						case VerticalAlignment.Bottom:
+							return swf.DataGridViewContentAlignment.BottomRight;	
+					}
+			}
+		}
+
 		public static VerticalAlignment ToEtoVerticalAlignment(this swf.DataGridViewContentAlignment existing)
 		{
 			switch (existing)

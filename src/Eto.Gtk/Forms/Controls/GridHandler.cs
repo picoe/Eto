@@ -34,11 +34,56 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Gtk.Widget DragControl => Tree;
 
+		class EtoScrolledWindow : Gtk.ScrolledWindow
+		{
+			WeakReference handler;
+			public IGtkControl Handler { get => handler?.Target as IGtkControl; set => handler = new WeakReference(value); }
+
+#if GTKCORE			
+
+			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+			{
+				base.OnGetPreferredWidth(out minimum_width, out natural_width);
+
+				var h = Handler;
+				if (h != null)
+				{
+					var size = h.UserPreferredSize;
+					if (size.Width >= 0)
+					{
+						natural_width = Math.Min(size.Width, natural_width);
+						minimum_width = Math.Min(size.Width, minimum_width);
+					}
+				}
+			}
+
+			protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
+			{
+				base.OnGetPreferredHeight(out minimum_height, out natural_height);
+				var h = Handler;
+				if (h != null)
+				{
+					var size = h.UserPreferredSize;
+					if (size.Height >= 0)
+					{
+						natural_height = Math.Min(size.Height, natural_height);
+						minimum_height = Math.Min(size.Height, minimum_height);
+					}
+				}
+			}
+#endif
+		}
+
 		protected GridHandler()
 		{
-			Control = new Gtk.ScrolledWindow
+			Control = new EtoScrolledWindow
 			{
-				ShadowType = Gtk.ShadowType.In
+				Handler = this,
+				ShadowType = Gtk.ShadowType.In,
+#if GTKCORE
+				PropagateNaturalHeight = true,
+				PropagateNaturalWidth = true
+#endif
 			};
 		}
 

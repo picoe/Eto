@@ -4,11 +4,12 @@ using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
 using System.Runtime.ExceptionServices;
+using System.Collections.Generic;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
-	public class TreeGridViewTests : TestBase
+	public class TreeGridViewTests : GridTests<TreeGridView>
 	{
 		[Test]
 		public void SelectedItemsShouldNotCrash()
@@ -151,6 +152,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 
+		}
+
+		protected override void SetDataStore(TreeGridView grid, IEnumerable<object> dataStore)
+		{
+			grid.DataStore = (ITreeGridStore<ITreeGridItem>)dataStore;
 		}
 	}
 }

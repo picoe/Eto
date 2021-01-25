@@ -3,6 +3,7 @@ using sd = System.Drawing;
 using Eto.Forms;
 using Eto.WinForms.Forms.Cells;
 using System;
+using System.Diagnostics;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -10,7 +11,6 @@ namespace Eto.WinForms.Forms.Controls
 	public class GridColumnHandler : WidgetHandler<swf.DataGridViewColumn, GridColumn>, GridColumn.IHandler, ICellConfigHandler
 	{
 		Cell dataCell;
-		bool autosize;
 
 		public IGridHandler GridHandler { get; private set; }
 
@@ -19,8 +19,13 @@ namespace Eto.WinForms.Forms.Controls
 			Control = new swf.DataGridViewColumn();
 			DataCell = new TextBoxCell();
 			Editable = false;
-			AutoSize = true;
 			Resizable = true;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			SetAutoSizeMode();
 		}
 
 		public string HeaderText
@@ -41,13 +46,15 @@ namespace Eto.WinForms.Forms.Controls
 			set { Control.SortMode = (value) ? swf.DataGridViewColumnSortMode.Programmatic : swf.DataGridViewColumnSortMode.NotSortable; }
 		}
 
+		static readonly object AutoSize_Key = new object();
+
 		public bool AutoSize
 		{
-			get { return autosize; }
+			get => Widget.Properties.Get<bool>(AutoSize_Key, true);
 			set
 			{
-				autosize = value;
-				Control.AutoSizeMode = (value) ? swf.DataGridViewAutoSizeColumnMode.NotSet : swf.DataGridViewAutoSizeColumnMode.None;
+				if (Widget.Properties.TrySet(AutoSize_Key, value, true))
+					SetAutoSizeMode();
 			}
 		}
 
@@ -91,6 +98,45 @@ namespace Eto.WinForms.Forms.Controls
 		}
 
 		public swf.DataGridViewColumn Column => Control;
+
+		static readonly object Expand_Key = new object();
+
+		public bool Expand
+		{
+			get => Widget.Properties.Get<bool>(Expand_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(Expand_Key, value))
+				{
+					SetAutoSizeMode();
+				}
+			}
+		}
+
+		void SetAutoSizeMode()
+		{
+			if (Expand)
+				Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.Fill;
+			else if (AutoSize)
+				Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.DisplayedCells;
+			else
+				Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.None;
+		}
+
+		public TextAlignment HeaderTextAlignment
+		{
+			get => Control.HeaderCell.Style.Alignment.ToEtoTextAlignment();
+			set => Control.HeaderCell.Style.Alignment = value.ToSWFGridViewContentAlignment();
+		}
+		public int MinWidth { get => Control.MinimumWidth; set => Control.MinimumWidth = value; }
+		public int MaxWidth
+		{
+			get => int.MaxValue;
+			set
+			{
+				Debug.WriteLine("GridColumn.MaxWidth is not supported in WinForms");
+			}
+		}
 
 		public void SetCellValue(object dataItem, object value)
 		{
