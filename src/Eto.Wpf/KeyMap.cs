@@ -115,6 +115,18 @@ namespace Eto.Wpf
 			keymap.Add(swi.Key.F10, Keys.F10);
 			keymap.Add(swi.Key.F11, Keys.F11);
 			keymap.Add(swi.Key.F12, Keys.F12);
+			keymap.Add(swi.Key.F13, Keys.F13);
+			keymap.Add(swi.Key.F14, Keys.F14);
+			keymap.Add(swi.Key.F15, Keys.F15);
+			keymap.Add(swi.Key.F16, Keys.F16);
+			keymap.Add(swi.Key.F17, Keys.F17);
+			keymap.Add(swi.Key.F18, Keys.F18);
+			keymap.Add(swi.Key.F19, Keys.F19);
+			keymap.Add(swi.Key.F20, Keys.F20);
+			keymap.Add(swi.Key.F21, Keys.F21);
+			keymap.Add(swi.Key.F22, Keys.F22);
+			keymap.Add(swi.Key.F23, Keys.F23);
+			keymap.Add(swi.Key.F24, Keys.F24);
 			keymap.Add(swi.Key.D0, Keys.D0);
 			keymap.Add(swi.Key.D1, Keys.D1);
 			keymap.Add(swi.Key.D2, Keys.D2);

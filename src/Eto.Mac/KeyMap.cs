@@ -41,11 +41,16 @@ namespace Eto.Mac
 		static Dictionary<ushort, Keys> Map => _map ?? (_map = GetMap());
 		static Dictionary<Keys, string> InverseMap = _inverseMap ?? (_inverseMap = GetInverseMap());
 
-		public static Keys MapKey(ushort key)
+		public static Keys MapKey(ushort key, NSEventModifierMask modifiers)
 		{
 			Keys value;
 			if (Map.TryGetValue(key, out value))
+			{
+				// special case, fn+return is usually interpreted as insert key on macOS, even though it is actually enter.
+				if (value == Keys.Enter && modifiers.HasFlag(NSEventModifierMask.FunctionKeyMask))
+					return Keys.Insert;
 				return value;
+			}
 			Debug.WriteLine($"Unknown key '{key}'");
 			return Keys.None;
 		}
@@ -160,6 +165,18 @@ namespace Eto.Mac
 			keymap.Add(109, Keys.F10);
 			keymap.Add(103, Keys.F11);
 			keymap.Add(111, Keys.F12);
+			keymap.Add(105, Keys.F13);
+			keymap.Add(107, Keys.F14);
+			keymap.Add(113, Keys.F15);
+			keymap.Add(106, Keys.F16);
+			keymap.Add(64, Keys.F17);
+			keymap.Add(79, Keys.F18);
+			keymap.Add(80, Keys.F19);
+			// keymap.Add(80, Keys.F20);
+			// keymap.Add(80, Keys.F21);
+			// keymap.Add(80, Keys.F22);
+			// keymap.Add(80, Keys.F23);
+			// keymap.Add(80, Keys.F24);
 			keymap.Add(18, Keys.D1);
 			keymap.Add(19, Keys.D2);
 			keymap.Add(20, Keys.D3);
@@ -172,7 +189,7 @@ namespace Eto.Mac
 			keymap.Add(29, Keys.D0);
 			keymap.Add(27, Keys.Minus);
 			keymap.Add(50, Keys.Grave);
-			keymap.Add(76, Keys.Insert);
+			keymap.Add(76, Keys.Enter); // numpad
 			keymap.Add(115, Keys.Home);
 			keymap.Add(121, Keys.PageDown);
 			keymap.Add(116, Keys.PageUp);
@@ -199,7 +216,7 @@ namespace Eto.Mac
 			keymap.Add(114, Keys.Help);
 			//keymap.Add(, Keys.Pause);
 			keymap.Add(71, Keys.Clear);
-			keymap.Add(81, Keys.KeypadEqual);
+			keymap.Add(81, Keys.Equal);
 			//keymap.Add(, Keys.Menu);
 			keymap.Add(42, Keys.Backslash);
 			keymap.Add(24, Keys.Equal);

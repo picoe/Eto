@@ -204,8 +204,7 @@ namespace Eto.Test.Sections.Behaviors
 			var control = new Drawable { Size = new Size(100, 30), CanFocus = true };
 			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
-				if (control.BackgroundColor.A <= 0)
-					pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
+				pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
 				var size = pe.Graphics.MeasureString(SystemFonts.Label(), "Drawable");
 				pe.Graphics.DrawText(SystemFonts.Label(), Brushes.White, (PointF)((control.Size - size) / 2), "Drawable");
 			};

@@ -175,6 +175,7 @@ namespace Eto.Forms
 		/// <summary>The Clear key</summary>
 		Clear = 0x004E,
 		/// <summary>The Equal '=' key on the keypad/number pad</summary>
+		[Obsolete("Since 2.5.11. Use Equal instead.")]
 		KeypadEqual = 0x004F,
 
 		/// <summary>The menu (alt) key</summary>
@@ -244,6 +245,30 @@ namespace Eto.Forms
 		LeftApplication = 0x0080,
 		/// <summary>The right application/windows key</summary>
 		RightApplication = 0x0081,
+		/// <summary>The F13 key</summary>
+		F13 = 0x0082,
+		/// <summary>The F14 key</summary>
+		F14 = 0x0083,
+		/// <summary>The F15 key</summary>
+		F15 = 0x0084,
+		/// <summary>The F16 key</summary>
+		F16 = 0x0085,
+		/// <summary>The F17 key</summary>
+		F17 = 0x0086,
+		/// <summary>The F18 key</summary>
+		F18 = 0x0087,
+		/// <summary>The F19 key</summary>
+		F19 = 0x0088,
+		/// <summary>The F20 key</summary>
+		F20 = 0x0089,
+		/// <summary>The F21 key</summary>
+		F21 = 0x008A,
+		/// <summary>The F22 key</summary>
+		F22 = 0x008B,
+		/// <summary>The F23 key</summary>
+		F23 = 0x008C,
+		/// <summary>The F24 key</summary>
+		F24 = 0x008D,
 
 		/// <summary>The Shift Key Modifier</summary>
 		Shift = 0x1000,
@@ -291,7 +316,9 @@ namespace Eto.Forms
 			{ Keys.Divide, "/" },
 			{ Keys.Decimal, "." },
 			{ Keys.Backslash, "\\" },
+#pragma warning disable 618
 			{ Keys.KeypadEqual, "=" },
+#pragma warning restore 618
 			{ Keys.Multiply, "*" },
 			{ Keys.Add, "+" },
 			{ Keys.Subtract, "-" },
