@@ -1,9 +1,15 @@
-﻿using System;using System.Globalization;using System.ComponentModel;using System.Collections.Generic;
-using Eto.Drawing;using Eto.Forms;
-using System.Linq;using sc = System.ComponentModel;
+﻿using System;
+using System.Globalization;
+using System.ComponentModel;
+using System.Collections.Generic;
+using Eto.Drawing;
+using Eto.Forms;
+using System.Linq;
+using sc = System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Eto.Test.Sections.Controls{
+namespace Eto.Test.Sections.Controls
+{
 	[Section("Controls", typeof(PropertyGrid))]
 	public class PropertyGridSection : Panel
 	{
@@ -31,7 +37,17 @@ namespace Eto.Test.Sections.Controls{
 		}
 	}
 
-	public class CustomEditor : PropertyGridTypeEditor	{		public override Control CreateControl(CellEventArgs args)		{			return new Label { Text = "Custom Editor!" };		}		public override void PaintCell(CellPaintEventArgs args)		{		}	}
+	public class CustomEditor : PropertyGridTypeEditor
+	{
+		public override Control CreateControl(CellEventArgs args)
+		{
+			return new Label { Text = "Custom Editor!" };
+		}
+
+		public override void PaintCell(CellPaintEventArgs args)
+		{
+		}
+	}
 
 	public enum MyEnum
 	{
@@ -155,7 +171,7 @@ namespace Eto.Test.Sections.Controls{
 
 		public bool? NullableBoolProperty { get; set; }
 
-		public DateTime DateTimeProperty { get; set; }
+		public DateTime DateTimeProperty { get; set; } = DateTime.Now;
 
 		public DateTime? NullableDateTimeProperty { get; set; }
 
@@ -316,4 +332,6 @@ namespace Eto.Test.Sections.Controls{
 		public int[] IntArrayProperty { get; set; }
 
 		public List<int> IntListProperty { get; set; }
-	}}
+	}
+
+}

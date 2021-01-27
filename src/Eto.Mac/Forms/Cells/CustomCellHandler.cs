@@ -72,7 +72,6 @@ namespace Eto.Mac.Forms.Cells
 
 			widthCell.DataContext = null;
 			return result;
-			//return Callback.OnGetPreferredWidth(Widget, new CellEventArgs(row, dataItem, CellStates.None));
 		}
 
 
@@ -149,6 +148,17 @@ namespace Eto.Mac.Forms.Cells
 				h.ColumnHandler.DataViewHandler.OnCellEditing(ee);
 			}
 
+			public override void Layout()
+			{
+				base.Layout();
+				var sv = this.Subviews;
+				if (sv.Length > 0)
+				{
+					var view = sv[0];
+					view.Frame = this.Bounds;
+				}
+			}
+
 		}
 
 		public override Color GetBackgroundColor(NSView view)
@@ -190,14 +200,11 @@ namespace Eto.Mac.Forms.Cells
 					Args = args,
 					EtoControl = control,
 					Identifier = identifier,
-					Frame = CGRect.Empty,
-					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable 
+					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable
 				};
 				if (control != null)
 				{
 					var childView = control.ToNative(true);
-					childView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-					childView.Frame = view.Frame;
 					view.AddSubview(childView);
 					view.Setup();
 				}

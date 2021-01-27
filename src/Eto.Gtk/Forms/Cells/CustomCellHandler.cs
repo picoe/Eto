@@ -174,7 +174,17 @@ namespace Eto.GtkSharp.Forms.Cells
 				int column = -1;
 				var args = new CellEventArgs(null, h.Widget, Row, column, item, CellStates.Editing, null);
 
-				natural_size = (int)h.Callback.OnGetPreferredWidth(h.Widget, args);
+				natural_size = (int)h.OnGetPreferredWidth(args);
+				
+				// this crashes sometimes.. ???  looks like minimum_size gets a null pointer
+				try
+				{
+					minimum_size = natural_size;
+				}
+				catch
+				{
+
+				}
 			}
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -224,10 +234,27 @@ namespace Eto.GtkSharp.Forms.Cells
 #endif
 		}
 
+		private int OnGetPreferredWidth(CellEventArgs args)
+		{
+			var column = Column;
+			if (column != null)
+			{
+				if (!column.AutoSize)
+					return column.Width;
+
+				var width = Callback.OnGetPreferredWidth(Widget, args);
+				width = Math.Max(column.MinWidth, Math.Min(column.MaxWidth, width));
+				return (int)width;
+			}
+			else
+			{
+				return (int)Callback.OnGetPreferredWidth(Widget, args);
+			}
+		}
 
 		public CustomCellHandler()
 		{
-			Control = new Renderer { Handler = this, Mode = Gtk.CellRendererMode.Editable };
+			Control = new Renderer { Handler = this, Mode = Gtk.CellRendererMode.Inert };
 		}
 
 		protected override void BindCell(ref int dataIndex)
@@ -238,6 +265,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		public override void SetEditable(Gtk.TreeViewColumn column, bool editable)
 		{
+			Control.Mode = editable ? Gtk.CellRendererMode.Editable : Gtk.CellRendererMode.Inert;
 		}
 
 		public override void SetValue(object dataItem, object value)

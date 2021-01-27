@@ -28,6 +28,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected Gtk.TreeView Tree { get; private set; }
 
+		Gtk.TreeView IGridHandler.Tree => Tree;
+
 		protected Dictionary<int, int> ColumnMap { get { return columnMap; } }
 
 		public override Gtk.Widget EventControl => Tree;

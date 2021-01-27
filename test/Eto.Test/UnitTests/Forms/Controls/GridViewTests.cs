@@ -137,10 +137,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 		}
 
-		IEnumerable<object> CreateDataStore()
+		public IEnumerable<object> CreateDataStore(int rows = 20)
 		{
 			var list = new TreeGridItemCollection();
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < rows; i++)
 			{
 				list.Add(new GridTestItem { Text = $"Item {i}", Values = new[] { $"col {i}.2", $"col {i}.3", $"col {i}.4" } });
 			}
@@ -148,10 +148,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[ManualTest]
-		[TestCase(0)]
-		[TestCase(1)]
-		[TestCase(2)]
-		public void ExpandedColumnShouldExpand(int columnToExpand)
+		[TestCase(0, -1)]
+		[TestCase(1, -1)]
+		[TestCase(2, -1)]
+		[TestCase(0, 1)]
+		[TestCase(1, 2)]
+		[TestCase(0, 2)]
+		public void ExpandedColumnShouldExpand(int columnToExpand, int secondColumn)
 		{
 			ManualForm("First Column should be expanded, and change size with the Grid", form =>
 			{
@@ -166,16 +169,25 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				expandColumn.HeaderText = "Expanded";
 				expandColumn.Expand = true;
 
+				if (secondColumn != -1)
+				{
+					var expandColumn2 = grid.Columns[secondColumn];
+					expandColumn2.HeaderText = "Expanded2";
+					expandColumn2.Expand = true;
+				}
 
 				return grid;
 			});
 		}
 
 		[ManualTest]
-		[TestCase(0)]
-		[TestCase(1)]
-		[TestCase(2)]
-		public void ExpandedColumnShouldAutoSize(int columnToExpand)
+		[TestCase(0, -1)]
+		[TestCase(1, -1)]
+		[TestCase(2, -1)]
+		[TestCase(0, 1)]
+		[TestCase(1, 2)]
+		[TestCase(0, 2)]
+		public void ExpandedColumnShouldAutoSize(int columnToExpand, int secondColumn)
 		{
 			ManualForm("First Column should be expanded, and change size with the Grid", form =>
 			{
@@ -189,6 +201,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var expandColumn = grid.Columns[columnToExpand];
 				expandColumn.HeaderText = "Expanded";
 				expandColumn.Expand = true;
+
+				if (secondColumn != -1)
+				{
+					var expandColumn2 = grid.Columns[secondColumn];
+					expandColumn2.HeaderText = "Expanded2";
+					expandColumn2.Expand = true;
+				}
 
 				return TableLayout.AutoSized(grid);
 			});
@@ -267,6 +286,23 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		protected abstract void SetDataStore(T grid, IEnumerable<object> dataStore);
+
+
+		[Test, ManualTest]
+		public void ColumnWidthShouldNotIncludeSpacing() => ManualForm("Columns should be exactly 100 pixels wide", form =>
+		{
+			var grid = new T();
+			grid.Width = 250;
+			grid.Height = 200;
+			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0), Width = 100 });
+			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(1), Width = 100 });
+
+			var data = CreateDataStore(10);
+			SetDataStore(grid, data);
+
+			return grid;
+		});
+
 	}
 
 	[TestFixture]

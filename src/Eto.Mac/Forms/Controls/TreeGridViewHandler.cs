@@ -543,7 +543,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public TreeGridViewHandler Handler
 			{
-				get { return WeakHandler.Target as TreeGridViewHandler; }
+				get { return WeakHandler?.Target as TreeGridViewHandler; }
 				set { WeakHandler = new WeakReference(value); }
 			}
 

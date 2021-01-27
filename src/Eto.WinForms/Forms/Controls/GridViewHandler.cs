@@ -11,7 +11,7 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		CollectionHandler collection;
 
-		protected override object GetItemAtRow(int row)
+		public override object GetItemAtRow(int row)
 		{
 			if (row >= 0 && collection != null && collection.Collection != null && collection.Count > row)
 				return collection.ElementAt(row);

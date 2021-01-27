@@ -170,7 +170,7 @@ namespace Eto.Forms
 		/// <param name="cellState">State of the cell.</param>
 		[Obsolete("Use constructor with column number and control")]
 		public CellEventArgs(Grid grid, Cell cell, int row, object item, CellStates cellState)
-			: this(null, null, row, -1, item, cellState, null)
+			: this(grid, cell, row, -1, item, cellState, null)
 		{
 		}
 

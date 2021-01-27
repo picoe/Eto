@@ -62,24 +62,21 @@ namespace Eto.Mac.Forms.Controls
 		bool SuppressUpdate { get; }
 
 		bool IsCancellingEdit { get; }
+
+		void ResetAutoSizedColumns();
+		bool AutoSizeColumns(bool force, bool forceNewSize = false);
 	}
 
 	public interface IDataColumnHandler : GridColumn.IHandler
 	{
+		NSTableColumn Control { get; }
 		void Setup(IDataViewHandler handler, int column);
-
 		NSObject GetObjectValue(object dataItem);
-
 		void SetObjectValue(object dataItem, NSObject val);
-
 		new GridColumn Widget { get; }
-
 		IDataViewHandler DataViewHandler { get; }
-
 		void AutoSizeColumn(NSRange rowRange, bool force = false);
-
 		void EnabledChanged(bool value);
-
 		nfloat GetPreferredWidth(NSRange? range = null);
 		void SizeToFit();
 	}
@@ -87,17 +84,18 @@ namespace Eto.Mac.Forms.Controls
 	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn, GridColumn.ICallback>, GridColumn.IHandler, IDataColumnHandler
 	{
 		Cell dataCell;
-		Font font;
+
+		static readonly object Font_Key = new object();
+		static readonly object WidthAdjust_Key = new object();
+		static readonly object MinWidthAdjust_Key = new object();
+		static readonly object MaxWidthAdjust_Key = new object();
+
+		// get the cell spacing so we can set column widths based on actual width
+		int IntercellSpacingWidth => (int)(Control.TableView?.IntercellSpacing.Width ?? 0);
 
 		public IDataViewHandler DataViewHandler { get; private set; }
 
-		public ICellHandler DataCellHandler
-		{
-			get
-			{
-				return dataCell != null ? dataCell.Handler as ICellHandler : null;
-			}
-		}
+		public ICellHandler DataCellHandler => dataCell?.Handler as ICellHandler;
 
 		public int Column { get; private set; }
 
@@ -166,11 +164,12 @@ namespace Eto.Mac.Forms.Controls
 						cellWidth = Control.Width;
 					else if (outlineView != null && Column == 0)
 					{
-						cellWidth += (float)((outlineView.LevelForRow((nint)i) + 1) * outlineView.IndentationPerLevel);
+						cellWidth += outlineView.GetCellFrame(0, i).X;
 					}
 					width = (nfloat)Math.Max(width, cellWidth);
 				}
 			}
+			width = (nfloat)Math.Max(MinWidth, Math.Min(MaxWidth, width));
 			return width;
 		}
 
@@ -217,27 +216,31 @@ namespace Eto.Mac.Forms.Controls
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					cellHandler.Editable = value;
 				}
-				var table = Control.TableView;
-				if (DataViewHandler != null && DataViewHandler.Loaded && table != null)
+				if (IsLoaded)
 				{
-					table.SetNeedsDisplay();
+					Control.TableView?.SetNeedsDisplay();
 				}
 
 			}
 		}
 
+		bool IsLoaded => DataViewHandler != null && DataViewHandler.Loaded && Control.TableView != null;
+
 		public int Width
 		{
-			get => (int)Math.Ceiling(Control.Width) + 3;
+			get => (int)Math.Ceiling(Control.Width) + IntercellSpacingWidth;
 			set
 			{
 				AutoSize = value == -1;
-				Control.Width = Math.Max(0, value - 3);
+				Control.Width = Math.Max(0, value - IntercellSpacingWidth);
 
-				var table = Control.TableView;
-				if (DataViewHandler != null && DataViewHandler.Loaded && table != null)
+				if (IsLoaded)
 				{
-					table.SizeToFit();
+					Control.TableView?.SizeToFit();
+				}
+				else if (Control.TableView == null)
+				{
+					Widget.Properties.Set(WidthAdjust_Key, true);
 				}
 			}
 		}
@@ -271,6 +274,24 @@ namespace Eto.Mac.Forms.Controls
 			Column = column;
 			Control.Identifier = new NSString(column.ToString());
 			DataViewHandler = handler;
+
+			// adjust widths now that we know the cell spacing
+			var dividerWidth = IntercellSpacingWidth;
+			if (Widget.Properties.Get<bool>(WidthAdjust_Key))
+			{
+				Control.Width = (nfloat)Math.Max(0, Control.Width - dividerWidth);
+				Widget.Properties.Remove(WidthAdjust_Key);
+			}
+			if (Widget.Properties.Get<bool>(MaxWidthAdjust_Key))
+			{
+				Control.MaxWidth = (nfloat)Math.Max(0, Control.MaxWidth - dividerWidth);
+				Widget.Properties.Remove(MaxWidthAdjust_Key);
+			}
+			if (Widget.Properties.Get<bool>(MinWidthAdjust_Key))
+			{
+				Control.MinWidth = (nfloat)Math.Max(0, Control.MinWidth - dividerWidth);
+				Widget.Properties.Remove(MinWidthAdjust_Key);
+			}
 		}
 
 		public NSObject GetObjectValue(object dataItem)
@@ -283,29 +304,26 @@ namespace Eto.Mac.Forms.Controls
 			((ICellHandler)dataCell.Handler).SetObjectValue(dataItem, val);
 		}
 
-		GridColumn IDataColumnHandler.Widget
-		{
-			get { return Widget; }
-		}
+		GridColumn IDataColumnHandler.Widget => Widget;
 
 		public Font Font
 		{
 			get
 			{
+				var font = Widget.Properties.Get<Font>(Font_Key);
 				if (font == null)
+				{
 					font = new Font(new FontHandler(Control.DataCell.Font));
+					Widget.Properties.Set(Font_Key, font);
+				}
 				return font;
 			}
 			set
 			{
-				font = value;
-				if (font != null)
+				if (Widget.Properties.TrySet(Font_Key, value))
 				{
-					var fontHandler = (FontHandler)font.Handler;
-					Control.DataCell.Font = fontHandler.Control;
+					Control.DataCell.Font = FontHandler.GetControl(value);
 				}
-				else
-					Control.DataCell.Font = null;
 			}
 		}
 
@@ -325,8 +343,70 @@ namespace Eto.Mac.Forms.Controls
 			get => Control.HeaderCell.Alignment.ToEto();
 			set => Control.HeaderCell.Alignment = value.ToNS();
 		}
-		public int MinWidth { get => (int)Control.MinWidth; set => Control.MinWidth = value; }
-		public int MaxWidth { get => (int)Control.MaxWidth; set => Control.MaxWidth = value; }
+		public int MinWidth
+		{
+			get => (int)Control.MinWidth + IntercellSpacingWidth;
+			set 
+			{
+				if (value == MinWidth)
+					return;
+
+				var width = Math.Max(0, value - IntercellSpacingWidth);
+				if (Control.Width < width)
+				{
+					// need to set width for things to update correctly..
+					var autoSize = AutoSize;
+					Control.Width = width;
+					AutoSize = autoSize;
+				}
+
+				Control.MinWidth = width;
+				if (IsLoaded)
+				{
+					DataViewHandler?.ResetAutoSizedColumns();
+					Control.TableView.NeedsLayout = true;
+				}
+				else if (Control.TableView == null)
+				{
+					Widget.Properties.Set(MinWidthAdjust_Key, true);
+				}
+			}
+		}
+
+		public int MaxWidth
+		{
+			get
+			{
+				var width = Control.MaxWidth + IntercellSpacingWidth;
+				if (width > int.MaxValue)
+					return int.MaxValue;
+				return (int)width;
+			}
+			set
+			{
+				if (value == MaxWidth)
+					return;
+
+				var width = Math.Max(0, value - IntercellSpacingWidth);
+				if (Control.Width > width)
+				{
+					// need to set width for things to update correctly..
+					var autoSize = AutoSize;
+					Control.Width = width;
+					AutoSize = autoSize;
+				}
+				Control.MaxWidth = width;
+				if (IsLoaded)
+				{
+					DataViewHandler?.ResetAutoSizedColumns();
+					Control.TableView.NeedsLayout = true;
+				}
+				else if (Control.TableView == null)
+				{
+					Widget.Properties.Set(MaxWidthAdjust_Key, true);
+				}
+			}
+		}
 
 		public void EnabledChanged(bool value)
 		{

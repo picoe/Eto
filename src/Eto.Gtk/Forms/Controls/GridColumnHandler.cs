@@ -6,6 +6,8 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public interface IGridHandler
 	{
+		Gtk.TreeView Tree { get; }
+
 		bool IsEventHandled(string handler);
 
 		void ColumnClicked(GridColumnHandler column);
@@ -29,6 +31,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		bool editable;
 		bool cellsAdded;
 		IGridHandler grid;
+
+		public IGridHandler GridHandler => grid;
 
 		public GridColumnHandler()
 		{
@@ -65,7 +69,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			set
 			{
 				autoSize = value;
-				Control.Sizing = value ? Gtk.TreeViewColumnSizing.GrowOnly : Gtk.TreeViewColumnSizing.Fixed;
+				Control.Sizing = value ? Gtk.TreeViewColumnSizing.Autosize : Gtk.TreeViewColumnSizing.Fixed;
 			}
 		}
 
@@ -100,7 +104,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				autoSize = value == -1;
 				Control.FixedWidth = value;
-				Control.Sizing = autoSize ? Gtk.TreeViewColumnSizing.GrowOnly : Gtk.TreeViewColumnSizing.Fixed;
+				Control.Sizing = autoSize ? Gtk.TreeViewColumnSizing.Autosize : Gtk.TreeViewColumnSizing.Fixed;
 			}
 		}
 
@@ -193,8 +197,24 @@ namespace Eto.GtkSharp.Forms.Controls
 			get => GtkConversions.ToEtoAlignment(Control.Alignment);
 			set => Control.Alignment = value.ToAlignment();
 		}
-		public int MinWidth { get => Control.MinWidth; set => Control.MinWidth = value; }
-		public int MaxWidth { get => Control.MaxWidth; set => Control.MaxWidth = value; }
+		public int MinWidth
+		{
+			get => Control.MinWidth == -1 ? 0 : Control.MinWidth;
+			set
+			{
+				Control.MinWidth = value;
+				GridHandler?.Tree?.ColumnsAutosize();
+			}
+		}
+		public int MaxWidth
+		{
+			get => Control.MaxWidth == -1 ? int.MaxValue : Control.MaxWidth;
+			set
+			{
+				Control.MaxWidth = value == int.MaxValue ? -1 : value;
+				GridHandler?.Tree?.ColumnsAutosize();
+			}
+		}
 	}
 }
 
