@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.WinForms.Forms.Cells;
 using System;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -12,11 +13,22 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		Cell dataCell;
 
+		class EtoDataGridViewColumn : swf.DataGridViewColumn
+		{
+			public GridColumnHandler Handler { get; set; }
+
+			public override int GetPreferredWidth(DataGridViewAutoSizeColumnMode autoSizeColumnMode, bool fixedHeight)
+			{
+				return Math.Min(Handler.MaxWidth, base.GetPreferredWidth(autoSizeColumnMode, fixedHeight));
+			}
+
+		}
+
 		public IGridHandler GridHandler { get; private set; }
 
 		public GridColumnHandler()
 		{
-			Control = new swf.DataGridViewColumn();
+			Control = new EtoDataGridViewColumn { Handler = this };
 			DataCell = new TextBoxCell();
 			Editable = false;
 			Resizable = true;
@@ -129,12 +141,23 @@ namespace Eto.WinForms.Forms.Controls
 			set => Control.HeaderCell.Style.Alignment = value.ToSWFGridViewContentAlignment();
 		}
 		public int MinWidth { get => Control.MinimumWidth; set => Control.MinimumWidth = value; }
+
+		int maxWidth = int.MaxValue;
 		public int MaxWidth
 		{
-			get => int.MaxValue;
+			get => maxWidth;
 			set
 			{
-				Debug.WriteLine("GridColumn.MaxWidth is not supported in WinForms");
+				maxWidth = value;
+				if (AutoSize)
+				{
+					Control.DataGridView?.AutoResizeColumn(Control.Index);
+				}
+				else if (Control.Width > maxWidth)
+				{
+					Control.Width = maxWidth;
+				}
+
 			}
 		}
 

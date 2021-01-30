@@ -46,7 +46,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public GridViewHandler Handler
 			{
-				get { return (GridViewHandler)WeakHandler.Target; }
+				get { return WeakHandler?.Target as GridViewHandler; }
 				set { WeakHandler = new WeakReference(value); }
 			}
 

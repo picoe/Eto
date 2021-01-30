@@ -17,6 +17,9 @@ namespace Eto.WinForms.Forms.Controls
 		int GetRowOffset(GridColumnHandler column, int rowIndex);
 
 		bool CellMouseClick(GridColumnHandler column, swf.MouseEventArgs e, int rowIndex);
+		object GetItemAtRow(int row);
+
+		Grid Grid { get; }		
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WindowsControl<swf.DataGridView, TWidget, TCallback>, Grid.IHandler, IGridHandler
@@ -34,7 +37,9 @@ namespace Eto.WinForms.Forms.Controls
 				isFirstSelection = true;
 		}
 
-		protected abstract object GetItemAtRow(int row);
+		public abstract object GetItemAtRow(int row);
+
+		Grid IGridHandler.Grid => Widget;
 
 		class EtoDataGridView : swf.DataGridView
 		{
@@ -228,9 +233,9 @@ namespace Eto.WinForms.Forms.Controls
 				if (col.AutoSize)
 				{
 					Control.AutoResizeColumn(colNum, colHandler.Control.InheritedAutoSizeMode);
-					var width = col.Width;
+					var width = colHandler.Control.Width;
 					colHandler.Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.None;
-					col.Width = width;
+					colHandler.Control.Width = width;
 				}
 				colNum++;
 			}

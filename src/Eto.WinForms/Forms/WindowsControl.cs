@@ -629,7 +629,18 @@ namespace Eto.WinForms.Forms
 		public virtual Color BackgroundColor
 		{
 			get { return Control.BackColor.ToEto(); }
-			set { backgroundColorSet = true; Control.BackColor = value.ToSD(); }
+			set
+			{
+				backgroundColorSet = true;
+				try
+				{
+					Control.BackColor = value.ToSD();
+				}
+				catch
+				{
+					// some controls don't support transparent colors, ignore..
+				}
+			}
 		}
 		bool backgroundColorSet;
 		public bool BackgroundColorSet {

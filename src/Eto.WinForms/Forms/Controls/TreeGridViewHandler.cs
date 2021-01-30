@@ -25,7 +25,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		TreeController controller;
 
-		protected override object GetItemAtRow(int row)
+		public override object GetItemAtRow(int row)
 		{
 			if (row >= controller.Count)
 				return null;

@@ -48,11 +48,10 @@ namespace Eto.Mac.Forms.Controls
 	public interface IGridHandler : IMacViewHandler
 	{
 		new Grid Widget { get; }
-
 		NSTableView Table { get; }
-
 		bool AutoSizeColumns(bool force, bool forceNewSize = false);
 		void PerformLayout();
+		void ResetAutoSizedColumns();
 	}
 
 	class EtoGridScrollView : NSScrollView, IMacControl
@@ -60,23 +59,6 @@ namespace Eto.Mac.Forms.Controls
 		public IGridHandler Handler { get { return (IGridHandler)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
 		public WeakReference WeakHandler { get; set; }
-
-		bool autoSized;
-
-		public override void SetFrameSize(CGSize newSize)
-		{
-			base.SetFrameSize(newSize);
-			var h = Handler;
-			if (h == null)
-				return;
-
-			if (!autoSized)
-			{
-				autoSized = h.AutoSizeColumns(false, true);
-			}
-			h.OnSizeChanged(EventArgs.Empty);
-			h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
-		}
 	}
 
 	static class GridHandler
@@ -316,7 +298,8 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleScrolled(ObserverActionEventArgs e)
 		{
 			var handler = (GridHandler<TControl, TWidget, TCallback>)e.Handler;
-			handler.AutoSizeColumns(false);
+			if (handler.hasAutoSizedColumns == true)
+				handler.AutoSizeColumns(false);
 		}
 
 		public override void AttachEvent(string id)
@@ -345,6 +328,13 @@ namespace Eto.Mac.Forms.Controls
 			base.OnLoadComplete(e);
 			UpdateColumns();
 
+			if (Widget.Columns.Any(r => r.Expand))
+			{
+				// expanded columns need readjustment after initial size
+				AutoSizeColumns(true, false);
+				Control.SizeToFit();
+			}
+
 			var row = Widget.Properties.Get<int>(GridHandler.ScrolledToRow_Key, 0);
 			// Yosemite bug: hides first row when DataStore is set before control is visible, so we always call this
 			Control.ScrollRowToVisible(row);
@@ -361,10 +351,42 @@ namespace Eto.Mac.Forms.Controls
 				if (force || autoSizeRange.Location != newRange.Location || autoSizeRange.Length != newRange.Length)
 				{
 					IsAutoSizingColumns = true;
+					int expandCount = 0;
+					nfloat requiredWidth = 0;
+					nfloat expandedWidth = 0;
+					var intercellSpacingWidth = Table.IntercellSpacing.Width;
 					foreach (var col in ColumnHandlers)
 					{
 						col.AutoSizeColumn(newRange, forceNewSize);
+						if (col.Expand)
+						{
+							expandCount++;
+							expandedWidth += col.Control.Width + intercellSpacingWidth;
+						}
+						else
+						{
+							requiredWidth += col.Control.Width + intercellSpacingWidth;
+						}
 					}
+					if (expandCount > 0 && !forceNewSize)
+					{
+						var remaining = (nfloat)Math.Max(0, rect.Width - requiredWidth + (int)Math.Round(intercellSpacingWidth / 3) - 1);
+						// System.Diagnostics.Debug.WriteLine($"Remaining: {remaining}, Required: {requiredWidth}, Width: {rect.Width}");
+						if (remaining > 0)
+						{
+							var each = (nfloat)Math.Max(0, (remaining / expandCount) - intercellSpacingWidth);
+							foreach (var col in ColumnHandlers)
+							{
+								if (col.Expand)
+								{
+									var existingWidth = col.Control.Width + intercellSpacingWidth;
+									var weightedWidth = existingWidth / expandedWidth * remaining;
+									col.Control.Width = (nfloat)Math.Max(0, weightedWidth - intercellSpacingWidth);
+								}
+							}
+						}
+					}
+
 					autoSizeRange = newRange;
 					IsAutoSizingColumns = false;
 					InvalidateMeasure();
@@ -549,19 +571,23 @@ namespace Eto.Mac.Forms.Controls
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			EnsureAutoSizedColumns();
-			var width = (int)ColumnHandlers.Sum(r => r.Width);
+			var width = ColumnHandlers.Sum(r => r.Control.Width);
 			if (width == 0)
 				width = 100;
 
 			if (Border != BorderType.None)
-				width += 4;
+				width += 2;
 
-			width -= 2; // it's okay for the last divider to be hidden
+			var intercellSpacing = Control.IntercellSpacing;
+			width += Control.ColumnCount * intercellSpacing.Width;
 
-			var height = (RowHeight + 2) * RowCount;
+			// it's okay to the hide last divider, it won't cause the control to scroll horizontally
+			width -= (int)Math.Round(intercellSpacing.Width / 3) - 1; 
+
+			var height = (int)((RowHeight + intercellSpacing.Height) * RowCount);
 			if (ShowHeader)
 				height += 2 + (int)Control.HeaderView.Frame.Height;
-			return new Size(width, height);
+			return new SizeF((float)width, height);
 		}
 
 		public void OnCellFormatting(GridCellFormatEventArgs args)
@@ -635,19 +661,18 @@ namespace Eto.Mac.Forms.Controls
 
 		protected void SetIsEditing(bool value) => Widget.Properties.Set(GridHandler.IsEditing_Key, value, false);
 
-		bool hasAutoSizedColumns;
-		protected void ResetAutoSizedColumns() => hasAutoSizedColumns = false;
+		bool? hasAutoSizedColumns;
+		public void ResetAutoSizedColumns()
+		{
+			if (hasAutoSizedColumns != null)
+				hasAutoSizedColumns = false;
+		}
 
 		void EnsureAutoSizedColumns()
 		{
-			if (!hasAutoSizedColumns && !Table.VisibleRect().IsEmpty)
+			if (hasAutoSizedColumns != true && !Table.VisibleRect().IsEmpty)
 			{
-				AutoSizeColumns(true, true);
-				var width = ColumnHandlers.Sum(r => r.Width);
-				if (width < Table.Frame.Width && Widget.Columns.Any(r => r.Expand))
-				{
-					Control.SizeToFit();
-				}
+				AutoSizeColumns(true, hasAutoSizedColumns == null);
 				hasAutoSizedColumns = true;
 			}
 		}
@@ -697,7 +722,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected void ColumnDidResize(NSNotification notification)
 		{
-			if (!IsAutoSizingColumns && Widget.Loaded && hasAutoSizedColumns)
+			if (!IsAutoSizingColumns && Widget.Loaded && hasAutoSizedColumns == true)
 			{
 				// when the user resizes the column, don't autosize anymore when data/scroll changes
 				var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
