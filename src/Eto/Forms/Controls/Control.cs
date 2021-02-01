@@ -837,9 +837,7 @@ namespace Eto.Forms
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is visible to the user.
 		/// </summary>
 		/// <remarks>
-		/// When the visibility of a control is set to false, it will still occupy space in the layout, but not be shown.
-		/// The only exception is for controls like the <see cref="Splitter"/>, which will hide a pane if the visibility
-		/// of one of the panels is changed.
+		/// When the visibility of a control is set to false, it will not occupy space in the layout.
 		/// </remarks>
 		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
 		[sc.DefaultValue(true)]
