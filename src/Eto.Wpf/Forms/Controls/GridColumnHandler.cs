@@ -1,12 +1,16 @@
 using Eto.Wpf.Forms.Cells;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
+using swd = System.Windows.Data;
 using Eto.Forms;
+using System.Globalization;
+using System;
 
 namespace Eto.Wpf.Forms.Controls
 {
 	public interface IGridHandler
 	{
+		EtoDataGrid Control { get; }
 		Grid Widget { get; }
 		bool Loaded { get; }
 		bool DisableAutoScrollToSelection { get; }
@@ -20,6 +24,8 @@ namespace Eto.Wpf.Forms.Controls
 		swc.DataGridColumn Control { get; }
 
 		void OnLoad();
+
+		void SetHeaderStyle();
 	}
 
 
@@ -27,7 +33,7 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		Cell dataCell;
 
-		public IGridHandler GridHandler { get; set; }
+		public IGridHandler GridHandler { get; private set; }
 
 		protected override void Initialize()
 		{
@@ -182,6 +188,7 @@ namespace Eto.Wpf.Forms.Controls
 		public void Setup(IGridHandler gridHandler)
 		{
 			GridHandler = gridHandler;
+			SetHeaderStyle();
 		}
 
 		public sw.FrameworkElement SetupCell(ICellHandler handler, sw.FrameworkElement defaultContent, swc.DataGridCell cell)
@@ -225,17 +232,24 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				if (Widget.Properties.TrySet(HeaderTextAlignment_Key, value))
-				{
-					if (value == TextAlignment.Left)
-						Control.HeaderStyle = null;
-					else
-					{
-						var style = new sw.Style();
-						style.TargetType = typeof(swc.Primitives.DataGridColumnHeader);
-						style.Setters.Add(new sw.Setter(swc.Primitives.DataGridColumnHeader.HorizontalContentAlignmentProperty, value.ToWpf()));
-						Control.HeaderStyle = style;
-					}
-				}
+					SetHeaderStyle();
+			}
+		}
+
+		public virtual void SetHeaderStyle()
+		{
+			var alignment = HeaderTextAlignment;
+			if (alignment == TextAlignment.Left)
+			{
+				Control.ClearValue(swc.DataGridColumn.HeaderStyleProperty);
+			}
+			else if (GridHandler != null)
+			{
+				var style = new sw.Style();
+				style.BasedOn = GridHandler.Control.ColumnHeaderStyle;
+				style.TargetType = typeof(swc.Primitives.DataGridColumnHeader);
+				style.Setters.Add(new sw.Setter(swc.Primitives.DataGridColumnHeader.HorizontalContentAlignmentProperty, alignment.ToWpf()));
+				Control.HeaderStyle = style;
 			}
 		}
 

@@ -280,6 +280,20 @@ namespace Eto.Wpf.Forms.Controls
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);
 
 			Control.Loaded += Control_Loaded;
+
+			// Listen to changes of the column header style so we can apply column styles appropriately for alignment
+			Widget.Properties.Set(swc.DataGrid.ColumnHeaderStyleProperty, PropertyChangeNotifier.Register(swc.DataGrid.ColumnHeaderStyleProperty, Control_ColumnHeaderStyleChanged, Control));
+		}
+
+		private void Control_ColumnHeaderStyleChanged(object sender, EventArgs e)
+		{
+			foreach (var col in Widget.Columns)
+			{
+				if (col.Handler is IGridColumnHandler columnHandler)
+				{
+					columnHandler.SetHeaderStyle();
+				}
+			}
 		}
 
 		private void Control_Loaded(object sender, RoutedEventArgs e)
@@ -301,14 +315,14 @@ namespace Eto.Wpf.Forms.Controls
 			public override void AddItem(GridColumn item)
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
-				colhandler.GridHandler = Handler;
+				colhandler.Setup(Handler);
 				Handler.Control.Columns.Add(colhandler.Control);
 			}
 
 			public override void InsertItem(int index, GridColumn item)
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
-				colhandler.GridHandler = Handler;
+				colhandler.Setup(Handler);
 				Handler.Control.Columns.Insert(index, colhandler.Control);
 			}
 
