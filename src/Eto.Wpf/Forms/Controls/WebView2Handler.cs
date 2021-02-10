@@ -385,7 +385,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			WebView2Loader.EnsureWebView2Runtime();
 			Control = new WebView2Control();
-			Control.CoreWebView2Ready += Control_CoreWebView2Ready;
+			Control.CoreWebView2InitializationCompleted += Control_CoreWebView2Ready;
 			InitializeAsync();
 		}
 
@@ -577,12 +577,23 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void ShowPrintDialog() => ExecuteScript("print()");
 
+
+		static readonly object BrowserContextMenuEnabled_Key = new object();
+
 		public bool BrowserContextMenuEnabled
 		{
-			get => true;
+			get => CoreWebView2?.Settings.AreDefaultContextMenusEnabled ?? Widget.Properties.Get<bool>(BrowserContextMenuEnabled_Key, true);
 			set
 			{
-				Debug.WriteLine("BrowserContextMenuEnabled is not supported with WebView2.  Use javascript to disable.");
+				if (Widget.Properties.TrySet<bool>(BrowserContextMenuEnabled_Key, value, true))
+				{
+					if (!webView2Ready)
+					{
+						RunWhenReady(() => CoreWebView2.Settings.AreDefaultContextMenusEnabled = value);
+						return;
+					}
+					CoreWebView2.Settings.AreDefaultContextMenusEnabled = value;
+				}
 			}
 		}
 
