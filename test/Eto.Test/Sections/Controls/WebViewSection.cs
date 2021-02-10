@@ -64,6 +64,7 @@ namespace Eto.Test.Sections.Controls
 				webView.OpenNewWindow += (sender, e) =>
 				{
 					Log.Write(webView, "OpenNewWindow: {0}, Url: {1}", e.NewWindowName, e.Uri);
+					e.Cancel = cancelLoad.Checked ?? false;
 				};
 				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e)
 				{
@@ -275,6 +276,16 @@ namespace Eto.Test.Sections.Controls
 			<a href='http://www.example.com'>Open link in this window</a>
 			<a href='http://www.example.com' target='_blank'>Open in new window</a>
 			<a href='http://www.example.com' target='another_name_of_new_window'>Open in named window</a>
+		</p>
+		<p><h2>Test Custom Protocol</h2>
+			<button onclick=""window.location='eto:dosomething'; return false;"">window.location='eto:dosomething'</button>
+			<button onclick=""window.location.replace('eto://dosomething')"">window.location.replace('eto://dosomething')</button>
+			<button onclick=""window.open('eto:dosomething'); return false;"">window.open('eto:dosomething')</button>
+			<button onclick=""window.open('eto:dosomething', 'name_of_new_window'); return false;"">window.open('eto:dosomething', 'name_of_new_window')</button>
+			<br>
+			<a href='eto:dosomething'>href='eto:dosomething'</a>
+			<a href='eto:dosomething' target='_blank'>href='eto:dosomething' target='_blank'</a>
+			<a href='eto:dosomething' target='another_name_of_new_window'>href='eto:dosomething' target='another_name_of_new_window'</a>
 		</p>
 		<p><h2>Dynamic title changes</h2>
 			<button onclick=""document.title = 'some title ' + titleChange++; return false;"">Change title</button>

@@ -157,7 +157,7 @@ namespace Eto.Mac
 		}
 
 		/// <summary>
-		/// Use the older WebView handler. Useful if you need printing functionality.
+		/// Use the older WebView handler. Useful if you need it for compatibility.
 		/// </summary>
 		public void UseWebView()
 		{

@@ -65,11 +65,12 @@ namespace Eto.Mac.Forms.Controls
 					}
 					if (navigationAction.TargetFrame == null)
 					{
+						// how do we get the name/target??
 						var newWindowArgs = new WebViewNewWindowEventArgs(requestUrl, string.Empty);
 						h.Callback.OnOpenNewWindow(h.Widget, newWindowArgs);
 						if (!newWindowArgs.Cancel)
 						{
-							Application.Instance.Open(navigationAction.Request.Url.AbsoluteString);
+							Application.Instance.Open(requestUrl.AbsoluteString);
 						}
 						decisionHandler(wk.WKNavigationActionPolicy.Cancel, preferences);
 						return;
@@ -202,10 +203,16 @@ namespace Eto.Mac.Forms.Controls
 				var h = Handler;
 				if (h == null)
 					return null;
+				var requestUrl = navigationAction.Request.Url;
 				if (navigationAction.TargetFrame == null)
 				{
-					// open in new window
-					Application.Instance.Open(navigationAction.Request.Url.AbsoluteString);
+					var newWindowArgs = new WebViewNewWindowEventArgs(requestUrl, string.Empty);
+					h.Callback.OnOpenNewWindow(h.Widget, newWindowArgs);
+					if (!newWindowArgs.Cancel)
+					{
+						// open in new window
+						Application.Instance.Open(requestUrl.AbsoluteString);
+					}
 					return null;
 				}
 
