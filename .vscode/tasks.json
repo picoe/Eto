@@ -49,7 +49,7 @@
 		},
 		{
 			"label": "build-mac64",
-			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} \"${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj\"",
 			"type": "shell",
 			"group": "build",
 			"problemMatcher": "$msCompile",
