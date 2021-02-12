@@ -50,36 +50,42 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 
+			public override void DecidePolicy(wk.WKWebView webView, wk.WKNavigationAction navigationAction, Action<wk.WKNavigationActionPolicy> decisionHandler)
+			{
+				// support for <= 10.14.x
+				DecidePolicy(webView, navigationAction, null, (policy, preferences) => decisionHandler(policy));
+			}
+
 			public override void DecidePolicy(wk.WKWebView webView, wk.WKNavigationAction navigationAction, wk.WKWebpagePreferences preferences, Action<wk.WKNavigationActionPolicy, wk.WKWebpagePreferences> decisionHandler)
 			{
 				var h = Handler;
-				if (h != null)
+				if (h == null)
+					return;
+					
+				var requestUrl = navigationAction.Request.Url;
+				if (h.EnablePrintRouting && requestUrl.AbsoluteString == "eto:print")
 				{
-					var requestUrl = navigationAction.Request.Url;
-					if (h.EnablePrintRouting && requestUrl.AbsoluteString == "eto:print")
-					{
-						// WKWebKit doesn't enable printing, so we have to handle it manually...
-						h.ShowPrintDialog();
-						decisionHandler(wk.WKNavigationActionPolicy.Cancel, preferences);
-						return;
-					}
-					if (navigationAction.TargetFrame == null)
-					{
-						// how do we get the name/target??
-						var newWindowArgs = new WebViewNewWindowEventArgs(requestUrl, string.Empty);
-						h.Callback.OnOpenNewWindow(h.Widget, newWindowArgs);
-						if (!newWindowArgs.Cancel)
-						{
-							Application.Instance.Open(requestUrl.AbsoluteString);
-						}
-						decisionHandler(wk.WKNavigationActionPolicy.Cancel, preferences);
-						return;
-					}
-					var args = new WebViewLoadingEventArgs(new Uri(requestUrl.AbsoluteString), navigationAction.TargetFrame?.MainFrame == true);
-					h.Callback.OnDocumentLoading(h.Widget, args);
-					var policy = args.Cancel ? wk.WKNavigationActionPolicy.Cancel : wk.WKNavigationActionPolicy.Allow;
-					decisionHandler(policy, preferences);
+					// WKWebKit doesn't enable printing, so we have to handle it manually...
+					h.ShowPrintDialog();
+					decisionHandler(wk.WKNavigationActionPolicy.Cancel, preferences);
+					return;
 				}
+				if (navigationAction.TargetFrame == null)
+				{
+					// how do we get the name/target??
+					var newWindowArgs = new WebViewNewWindowEventArgs(requestUrl, string.Empty);
+					h.Callback.OnOpenNewWindow(h.Widget, newWindowArgs);
+					if (!newWindowArgs.Cancel)
+					{
+						Application.Instance.Open(requestUrl.AbsoluteString);
+					}
+					decisionHandler(wk.WKNavigationActionPolicy.Cancel, preferences);
+					return;
+				}
+				var args = new WebViewLoadingEventArgs(new Uri(requestUrl.AbsoluteString), navigationAction.TargetFrame?.MainFrame == true);
+				h.Callback.OnDocumentLoading(h.Widget, args);
+				var policy = args.Cancel ? wk.WKNavigationActionPolicy.Cancel : wk.WKNavigationActionPolicy.Allow;
+				decisionHandler(policy, preferences);
 			}
 
 		}
@@ -198,6 +204,7 @@ namespace Eto.Mac.Forms.Controls
 					completionHandler(null);
 				}
 			}
+
 			public override wk.WKWebView CreateWebView(wk.WKWebView webView, wk.WKWebViewConfiguration configuration, wk.WKNavigationAction navigationAction, wk.WKWindowFeatures windowFeatures)
 			{
 				var h = Handler;
