@@ -100,7 +100,7 @@ namespace Eto.Drawing
 		/// Each platform can have a different pixel format, and this allows you to abstract 
 		/// setting the data directly.
 		/// 
-		/// The ARGB value can be easily retrieved using <see cref="Color.ToArgb"/>.
+		/// The ARGB value can be easily retrieved using <see cref="Color.ToArgb()"/>.
 		/// 
 		/// For non-alpha bitmaps, the alpha component will be ignored
 		/// </remarks>

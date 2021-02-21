@@ -8,6 +8,37 @@ using System.Reflection;
 namespace Eto.Drawing
 {
 	/// <summary>
+	/// Color styles when parsing or converting the Color struct
+	/// </summary>
+	[Flags]
+	public enum ColorStyles
+	{
+		/// <summary>
+		/// Default style for Eto
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Exclude the alpha component when parsing or when converting to hex, omit alpha if possible (it equals 1.0 / 255)
+		/// </summary>
+		ExcludeAlpha = 1 << 0,
+		/// <summary>
+		/// Specifies that the alpha component comes last when in hex (compatible with CSS format), otherwise alpha is first
+		/// </summary>
+		AlphaLast = 1 << 2,
+		/// <summary>
+		/// Use short hex version, if possible.
+		/// </summary>
+		/// <remarks>
+		/// This is only used when converting to hex, and only if all component values support the short version
+		/// </remarks>
+		ShortHex = 1 << 3,
+		/// <summary>
+		/// All color styles
+		/// </summary>
+		All = ExcludeAlpha | AlphaLast | ShortHex
+	}
+
+	/// <summary>
 	/// Represents a color with RGBA (Red, Green, Blue, and Alpha) components
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
@@ -76,7 +107,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// The character to split up the string which will be converted
 		/// </summary>
-		static readonly string[] ColorSplitter = new string[1] { "," };
+		static readonly char[] ColorSplitter = new [] { ',', ' ' };
 
 		/// <summary>
 		/// Creates a color from 8-bit ARGB components
@@ -231,20 +262,43 @@ namespace Eto.Drawing
 		/// Converts the specified string to a color
 		/// </summary>
 		/// <remarks>
-		/// The string can be any of these formats:
+		/// The string can be any of these formats
 		///		- #AARRGGBB or #RRGGBB  (where ARGB are hex values)
 		///		- 0xAARRGGBB or 0xRRGGBB
 		///		- [named] (where [named] is a name of one of the properties in <see cref="Colors"/>)
 		///		- [uint]  (where [uint] is a base-10 ARGB value)
-		///		- [red], [green], [blue] (where each component is a value from 0-255)
-		///		- [alpha], [red], [green], [blue]  (where each component is a value from 0-255)
+		///		- [red], [green], [blue] (where each component is a value from 0-255, 0%-100%, or 0.0-1.0)
+		///		- [alpha], [red], [green], [blue] (where each component is a value from 0-255, 0%-100%, or 0.0-1.0)
 		///		
 		/// If the string is null or empty, this will return <see cref="Colors.Transparent"/>
 		/// </remarks>
 		/// <param name="value">String value to parse</param>
 		/// <param name="color">Color struct with the parsed value, or Transparent if value is invalid</param>
 		/// <returns>True if the value was successfully parsed into a color, false otherwise</returns>
-		public static bool TryParse(string value, out Color color)
+		public static bool TryParse(string value, out Color color) => TryParse(value, out color, ColorStyles.None);
+
+		/// <summary>
+		/// Converts the specified string to a color
+		/// </summary>
+		/// <remarks>
+		/// The string can be any of these formats:
+		///		- #AARRGGBB or 0xAARRGGBB (where ARGB are hex values)
+		///		- #RRGGBBAA or 0xRRGGBBAA (when <paramref name="style" /> has <see cref="ColorStyles.AlphaLast" />)
+		///		- #RRGGBB or 0xRRGGBB
+		///		- [named] (where [named] is a name of one of the properties in <see cref="Colors"/>)
+		///		- [uint]  (where [uint] is a base-10 ARGB value)
+		///		- [uint]  (where [uint] is a base-10 RGBA value when <paramref name="style" /> has <see cref="ColorStyles.AlphaLast" />)
+		///		- [red], [green], [blue] (where each component is a value from 0-255, 0%-100%, or 0.0-1.0)
+		///		- [alpha], [red], [green], [blue] (where each component is a value from 0-255, 0%-100%, or 0.0-1.0)
+		///		- [red], [green], [blue], [alpha] (when <paramref name="style" /> has <see cref="ColorStyles.AlphaLast" />)
+		///		
+		/// If the string is null or empty, this will return <see cref="Colors.Transparent"/>
+		/// </remarks>
+		/// <param name="value">String value to parse</param>
+		/// <param name="color">Color struct with the parsed value, or Transparent if value is invalid</param>
+		/// <param name="style">Styles for parsing</param>
+		/// <returns>True if the value was successfully parsed into a color, false otherwise</returns>
+		public static bool TryParse(string value, out Color color, ColorStyles style)
 		{
 			value = value.Trim();
 			if (value.Length == 0)
@@ -253,88 +307,209 @@ namespace Eto.Drawing
 				return true;
 			}
 
-			if (value.IndexOf(ColorSplitter[0], StringComparison.OrdinalIgnoreCase) == -1)
-			{
-				bool isArgb = value[0] == '#';
-				int num = (!isArgb) ? 0 : 1;
-				bool ixHex = false;
-				if (value.Length > num + 1 && value[num] == '0')
-				{
-					ixHex = (value[num + 1] == 'x' || value[num + 1] == 'X');
-					if (ixHex)
-					{
-						num += 2;
-					}
-				}
-				if (isArgb || ixHex)
-				{
-					value = value.Substring(num);
-					uint num2;
-					if (!uint.TryParse(value, NumberStyles.HexNumber, null, out num2))
-					{
-						color = Colors.Transparent;
-						return false;
-					}
+			// hex values
+			bool isHex = false;
+			int pos = 0;
+			var len = value.Length;
 
-					if (value.Length < 6 || (value.Length == 6 && isArgb && ixHex))
+			if (len >= 4 && value[0] == '#')
+			{
+				isHex = true;
+				pos = 1;
+			}
+			else if (len >= 6 && value[0] == '0' && (value[1] == 'x' || value[1] == 'X'))
+			{
+				isHex = true;
+				pos = 2;
+			}
+
+			if (isHex)
+			{
+				len -= pos;
+				if (!(len == 3 || len == 4 || len == 6 || len == 8))
+				{
+					goto invalid;
+				}
+
+				var isShort = len <= 4;
+				var clen = isShort ? 1 : 2;
+				var hasAlpha = len == 4 || len == 8;
+
+				if (!int.TryParse(value.Substring(pos, clen), NumberStyles.HexNumber, null, out var c1))
+					goto invalid;
+				pos += clen;
+				if (!int.TryParse(value.Substring(pos, clen), NumberStyles.HexNumber, null, out var c2))
+					goto invalid;
+				pos += clen;
+				if (!int.TryParse(value.Substring(pos, clen), NumberStyles.HexNumber, null, out var c3))
+					goto invalid;
+
+				if (isShort)
+				{
+					c1 += c1 * 16;
+					c2 += c2 * 16;
+					c3 += c3 * 16;
+				}
+
+				int c4;
+				if (hasAlpha)
+				{
+					pos += clen;
+					if (!int.TryParse(value.Substring(pos, clen), NumberStyles.HexNumber, null, out c4))
+						goto invalid;
+
+					if (isShort)
+						c4 += c4 * 16;
+					if (style.HasFlag(ColorStyles.ExcludeAlpha))
 					{
-						num2 &= 0xFFFFFF;
+						if (style.HasFlag(ColorStyles.AlphaLast))
+							color = Color.FromArgb(c1, c2, c3);
+						else
+							color = Color.FromArgb(c2, c3, c4);
 					}
 					else
 					{
-						if (num2 >> 24 == 0) num2 |= 0xFF000000;
+						if (style.HasFlag(ColorStyles.AlphaLast))
+							color = Color.FromArgb(c1, c2, c3, c4);
+						else
+							color = Color.FromArgb(c2, c3, c4, c1);
 					}
-					color = Color.FromArgb((int)num2);
-					return true;
 				}
-				if (colormap == null)
+				else
 				{
-					lock (colormaplock)
+					color = Color.FromArgb(c1, c2, c3);
+				}
+
+				return true;
+
+			}
+
+			// colormap
+			if (colormap == null)
+			{
+				lock (colormaplock)
+				{
+					if (colormap == null)
 					{
-						if (colormap == null)
-						{
 #if NETSTANDARD
-							var props = from p in typeof(Colors).GetRuntimeProperties() where p.GetGetMethod().IsStatic && p.GetGetMethod().IsPublic select p;
+						var props = from p in typeof(Colors).GetRuntimeProperties() where p.GetGetMethod().IsStatic && p.GetGetMethod().IsPublic select p;
 #else
-							var props = typeof (Colors).GetProperties (BindingFlags.Public | BindingFlags.Static);
+						var props = typeof (Colors).GetProperties (BindingFlags.Public | BindingFlags.Static);
 #endif
-							colormap = new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase);
-							foreach (var val in props.Where(r => r.PropertyType == typeof(Color)))
-							{
-								var col = (Color)val.GetValue(null, null);
-								colormap.Add(val.Name, col);
-							}
+						colormap = new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase);
+						foreach (var val in props.Where(r => r.PropertyType == typeof(Color)))
+						{
+							var col = (Color)val.GetValue(null, null);
+							colormap.Add(val.Name, col);
 						}
 					}
 				}
-				if (colormap.TryGetValue(value, out color))
-					return true;
 			}
+			if (colormap.TryGetValue(value, out color))
+				return true;
+
+
+			// component values
+
+			bool alphaIsFloat = false;
+			if (value.StartsWith("rgba"))
+			{
+				style |= ColorStyles.AlphaLast;
+				value = value.Substring(4).TrimStart(' ', '(').TrimEnd(' ', ')');
+				alphaIsFloat = true;
+			}
+			else if (value.StartsWith("rgb"))
+			{
+				value = value.Substring(3).TrimStart(' ', '(').TrimEnd(' ', ')');
+			}
+			int alphaIndex = style.HasFlag(ColorStyles.AlphaLast) ? 3 : 0; 
+
 
 			string[] array = value.Split(ColorSplitter, StringSplitOptions.RemoveEmptyEntries);
 			var array2 = new uint[array.Length];
 			for (int i = 0; i < array2.Length; i++)
 			{
-				uint num;
-				if (!uint.TryParse(array[i], out num))
+				double fnum;
+				bool isPercent = false;
+				if (array[i].EndsWith("%"))
 				{
-					color = Colors.Transparent;
-					return false;
+					array[i] = array[i].TrimEnd('%');
+					isPercent = true;
 				}
-				array2[i] = num;
+
+				if (alphaIsFloat && i == alphaIndex)
+				{
+					if (!double.TryParse(array[i], out fnum))
+						goto invalid;
+					if (!isPercent)
+						fnum *= 255;
+				}
+				else if (uint.TryParse(array[i], out var num))
+				{
+					fnum = num;
+				}
+				else if (double.TryParse(array[i], out fnum))
+				{
+					if (!isPercent)
+						fnum *= 255;
+				}
+				else
+				{
+					goto invalid;
+				}
+
+				if (isPercent)
+				{
+					fnum = fnum * 255.0 / 100.0;
+				}
+
+				array2[i] = (uint)Math.Max(0, fnum);
 			}
-			switch (array.Length)
+			if (array.Length == 1)
 			{
-				case 1:
-					color = Color.FromArgb((int)array2[0]);
-					return true;
-				case 3:
-					color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2]);
-					return true;
-				case 4:
-					color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2], (int)array2[3]);
-					return true;
+				if (style.HasFlag(ColorStyles.AlphaLast))
+				{
+					var alpha = array2[0] & 255;
+					var c = array2[0] >> 8;
+					c += alpha << 24;
+					array2[0] = c;
+				}
+				color = Color.FromArgb((int)array2[0]);
+				if (style.HasFlag(ColorStyles.ExcludeAlpha))
+					color.A = 1;
+				return true;
 			}
+
+			for (int i = 0; i < array.Length; i++)
+			{
+				// ensure we're in range
+				array2[i] = Math.Min(255, array2[i]);
+			}
+
+			if (array.Length == 3)
+			{
+				color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2]);
+				return true;
+			}
+			if (array.Length == 4)
+			{
+				if (style.HasFlag(ColorStyles.ExcludeAlpha))
+				{
+					if (style.HasFlag(ColorStyles.AlphaLast))
+						color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2]);
+					else
+						color = Color.FromArgb((int)array2[1], (int)array2[2], (int)array2[3]);
+				}
+				else
+				{
+					if (style.HasFlag(ColorStyles.AlphaLast))
+						color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2], (int)array2[3]);
+					else
+						color = Color.FromArgb((int)array2[1], (int)array2[2], (int)array2[3], (int)array2[0]);
+				}
+				return true;
+			}
+		invalid:
 			color = Colors.Transparent;
 			return false;
 		}
@@ -343,7 +518,7 @@ namespace Eto.Drawing
 		/// Converts a string into a new instance of a Color
 		/// </summary>
 		/// <remarks>
-		/// Use <see cref="TryParse"/> instead of try/catch.
+		/// Use <see cref="TryParse(string, out Color, ColorStyles)"/> instead of try/catch.
 		/// </remarks>
 		/// <exception cref="ArgumentOutOfRangeException">If the value is an invalid color</exception>
 		/// <param name="value">Value to convert</param>
@@ -425,6 +600,21 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Converts this color to a 32-bit ARGB value given the specified <paramref name="style" />
+		/// </summary>
+		/// <returns>The 32-bit ARGB value that corresponds to this color</returns>
+		public int ToArgb(ColorStyles style)
+		{
+			if (style.HasFlag(ColorStyles.ExcludeAlpha))
+				return (int)((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16);
+
+			if (style.HasFlag(ColorStyles.AlphaLast))
+				return (int)((uint)(A * byte.MaxValue) | (uint)(B * byte.MaxValue) << 8 | (uint)(G * byte.MaxValue) << 16 | (uint)(R * byte.MaxValue) << 24);
+			else
+				return (int)((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
+		}
+
+		/// <summary>
 		/// Converts this color to a hex representation
 		/// </summary>
 		/// <remarks>
@@ -432,18 +622,60 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="includeAlpha">True to include the alpha component, false to exclude it</param>
 		/// <returns>A hex representation of this color, with 8 digits if <paramref name="includeAlpha"/> is true, or 6 digits if false</returns>
-		public string ToHex(bool includeAlpha = true)
+		public string ToHex(bool includeAlpha = true) => ToHex(includeAlpha ? ColorStyles.None : ColorStyles.ExcludeAlpha);
+
+		/// <summary>
+		/// Converts this color to a hex representation
+		/// </summary>
+		/// <remarks>
+		/// This will either return a hex value with 8 digits (two per component), or 6 digits (two per RGB) depending on the specified <paramref name="style" />
+		/// </remarks>
+		/// <param name="style">Styles for converting to hex</param>
+		/// <returns>A hex representation of this color, with 6 digits if <paramref name="style" /> has <see cref="ColorStyles.ExcludeAlpha" />, or 8 digits if not</returns>
+		public string ToHex(ColorStyles style)
 		{
-			if (includeAlpha)
-				return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", Ab, Rb, Gb, Bb);
-			return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", Rb, Gb, Bb);
+			var r = Rb;
+			var g = Gb;
+			var b = Bb;
+			var a = Ab;
+
+			bool CanBeShort(int value) => value % 16 == value / 16;
+			if (style.HasFlag(ColorStyles.ShortHex))
+			{
+				if (CanBeShort(r) && CanBeShort(g) && CanBeShort(b))
+				{
+					r /= 16;
+					g /= 16;
+					b /= 16;
+
+					if (style.HasFlag(ColorStyles.ExcludeAlpha))
+						return string.Format(CultureInfo.InvariantCulture, "#{0:X1}{1:X1}{2:X1}", r, g, b);
+					
+					if (CanBeShort(a))
+					{
+						a /= 16;
+						if (style.HasFlag(ColorStyles.AlphaLast))
+							return string.Format(CultureInfo.InvariantCulture, "#{0:X1}{1:X1}{2:X1}{3:X1}", r, g, b, a);
+						else
+							return string.Format(CultureInfo.InvariantCulture, "#{0:X1}{1:X1}{2:X1}{3:X1}", a, r, g, b);
+					}
+				}
+			}
+
+			if (style.HasFlag(ColorStyles.ExcludeAlpha))
+				return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", r, g, b);
+
+			if (style.HasFlag(ColorStyles.AlphaLast))
+				return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", r, g, b, a);
+
+			return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", a, r, g, b);
 		}
 
 		/// <summary>
 		/// Converts this object to a string
 		/// </summary>
 		/// <remarks>
-		/// This just calls <see cref="ToHex"/>
+		/// This just calls <see cref="ToHex(bool)"/>
 		/// </remarks>
 		/// <returns>A string representation of this object</returns>
 		public override string ToString()

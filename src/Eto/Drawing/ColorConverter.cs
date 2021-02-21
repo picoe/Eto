@@ -9,9 +9,9 @@ namespace Eto.Drawing
 	/// Converts instances of other types to and from a <see cref="Color"/>.
 	/// </summary>
 	/// <remarks>
-	/// This only supports converting from a string supported by the <see cref="Color.TryParse"/> method.
+	/// This only supports converting from a string supported by the <see cref="Color.TryParse(string, out Color)"/> method.
 	/// 
-	/// When converting to a string, it converts to a Hex format via <see cref="Color.ToHex"/>
+	/// When converting to a string, it converts to a Hex format via <see cref="Color.ToHex(bool)"/>
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
@@ -81,9 +81,9 @@ namespace Eto.Drawing
 	/// Converts instances of other types to and from a <see cref="Color"/>.
 	/// </summary>
 	/// <remarks>
-	/// This only supports converting from a string supported by the <see cref="Color.TryParse"/> method.
+	/// This only supports converting from a string supported by the <see cref="Color.TryParse(string, out Color)"/> method.
 	/// 
-	/// When converting to a string, it converts to a Hex format via <see cref="Color.ToHex"/>
+	/// When converting to a string, it converts to a Hex format via <see cref="Color.ToHex(bool)"/>
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>

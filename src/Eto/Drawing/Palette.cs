@@ -13,7 +13,7 @@ namespace Eto.Drawing
 	/// Typically used for <see cref="IndexedBitmap"/> or other purposes where a collection of colors is needed.
 	/// 
 	/// This class keeps a cache of 32-bit ARGB values for each element in the collection for faster retrieval. These
-	/// values are generated using <see cref="Color.ToArgb"/>.
+	/// values are generated using <see cref="Color.ToArgb()"/>.
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
