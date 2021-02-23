@@ -7,16 +7,14 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Represents an amount of padding to apply to an object at the top, left, right, and bottom.
 	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[sc.TypeConverter(typeof(PaddingConverterInternal))]
-	public struct Padding : IEquatable<Padding>
+	[sc.TypeConverter(typeof(PaddingFConverterInternal))]
+	public struct PaddingF : IEquatable<PaddingF>
 	{
-		int top, left, right, bottom;
+		float top, left, right, bottom;
 		/// <summary>
 		/// Gets or sets the padding on the top
 		/// </summary>
-		public int Top
+		public float Top
 		{
 			get => top;
 			set => top = value;
@@ -25,7 +23,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets or sets the padding on the left
 		/// </summary>
-		public int Left
+		public float Left
 		{
 			get => left;
 			set => left = value;
@@ -34,7 +32,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets or sets the padding on the right
 		/// </summary>
-		public int Right
+		public float Right
 		{
 			get => right;
 			set => right = value;
@@ -43,7 +41,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets or sets the padding on the bottom
 		/// </summary>
-		public int Bottom
+		public float Bottom
 		{
 			get => bottom;
 			set => bottom = value;
@@ -52,13 +50,13 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets an empty padding with zero for each side
 		/// </summary>
-		public static readonly Padding Empty = new Padding(0);
+		public static readonly PaddingF Empty = new PaddingF(0f);
 
 		/// <summary>
 		/// Initializes a new instance of the Padding class with the specified padding for all sides
 		/// </summary>
 		/// <param name="all">Amount of padding to apply to each side</param>
-		public Padding(int all)
+		public PaddingF(float all)
 		{
 			this.left = all;
 			this.top = all;
@@ -71,7 +69,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="horizontal">Amount of padding to set the <see cref="Left"/> and <see cref="Right"/> sides</param>
 		/// <param name="vertical">Amount of padding to set the <see cref="Top"/> and <see cref="Bottom"/> sides</param>
-		public Padding(int horizontal, int vertical)
+		public PaddingF(float horizontal, float vertical)
 		{
 			this.left = horizontal;
 			this.top = vertical;
@@ -86,7 +84,7 @@ namespace Eto.Drawing
 		/// <param name="top">Amount of padding to apply to the top</param>
 		/// <param name="right">Amount of padding to apply to the right</param>
 		/// <param name="bottom">Amount of padding to apply to the bottom</param>
-		public Padding(int left, int top, int right, int bottom)
+		public PaddingF(float left, float top, float right, float bottom)
 		{
 			this.left = left;
 			this.top = top;
@@ -95,39 +93,9 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Converts a floating point <paramref name="padding"/> to an integral padding by rounding each of its components
-		/// </summary>
-		/// <param name="padding">Padding to convert</param>
-		/// <returns>A new instance of a Padding class with rounded components of the specified <paramref name="padding"/></returns>
-		public static Padding Round(PaddingF padding)
-		{
-			return new Padding((int)Math.Round(padding.Left), (int)Math.Round(padding.Top), (int)Math.Round(padding.Right), (int)Math.Round(padding.Bottom));
-		}
-
-		/// <summary>
-		/// Converts a floating point <paramref name="padding"/> to an integral padding by truncating each of its components
-		/// </summary>
-		/// <param name="padding">Padding to convert</param>
-		/// <returns>A new instance of a Padding class with truncated components of the specified <paramref name="padding"/></returns>
-		public static Padding Truncate(PaddingF padding)
-		{
-			return new Padding((int)padding.Left, (int)padding.Top, (int)padding.Right, (int)padding.Bottom);
-		}
-
-		/// <summary>
-		/// Converts a floating point <paramref name="padding"/> to an integral padding by taking the ceiling of its components
-		/// </summary>
-		/// <param name="padding">Padding to convert</param>
-		/// <returns>A new instance of a Padding class with the ceiling of the specified <paramref name="padding"/></returns>
-		public static Padding Ceiling(PaddingF padding)
-		{
-			return new Padding((int)Math.Ceiling(padding.Left), (int)Math.Ceiling(padding.Top), (int)Math.Ceiling(padding.Right), (int)Math.Ceiling(padding.Bottom));
-		}
-
-		/// <summary>
 		/// Gets the total horizontal padding, which is the sum of <see cref="Left"/> and <see cref="Right"/>.
 		/// </summary>
-		public int Horizontal
+		public float Horizontal
 		{
 			get { return Left + Right; }
 		}
@@ -135,7 +103,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets the total vertical padding, which is the sum of <see cref="Top"/> and <see cref="Bottom"/>
 		/// </summary>
-		public int Vertical
+		public float Vertical
 		{
 			get { return Top + Bottom; }
 		}
@@ -144,9 +112,9 @@ namespace Eto.Drawing
 		/// Gets the padding as a size value with the <see cref="Horizontal"/> and <see cref="Vertical"/> values as 
 		/// the <see cref="Eto.Drawing.Size.Width"/> and <see cref="Eto.Drawing.Size.Height"/>, respectively.
 		/// </summary>
-		public Size Size
+		public SizeF Size
 		{
-			get { return new Size(Horizontal, Vertical); }
+			get { return new SizeF(Horizontal, Vertical); }
 		}
 
 		/// <summary>
@@ -163,9 +131,9 @@ namespace Eto.Drawing
 		/// <param name="value1">First padding value to add</param>
 		/// <param name="value2">Second padding value to add</param>
 		/// <returns>The sum of both padding values</returns>
-		public static Padding operator +(Padding value1, Padding value2)
+		public static PaddingF operator +(PaddingF value1, PaddingF value2)
 		{
-			return new Padding(value1.Left + value2.Left, value1.Top + value2.Top, value1.Right + value2.Right, value1.Bottom + value2.Bottom);
+			return new PaddingF(value1.Left + value2.Left, value1.Top + value2.Top, value1.Right + value2.Right, value1.Bottom + value2.Bottom);
 		}
 
 		/// <summary>
@@ -174,9 +142,9 @@ namespace Eto.Drawing
 		/// <param name="value1">Padding value to subtract from</param>
 		/// <param name="value2">Padding value to subtract from the first value</param>
 		/// <returns>The value of the first padding minus the second padding value</returns>
-		public static Padding operator -(Padding value1, Padding value2)
+		public static PaddingF operator -(PaddingF value1, PaddingF value2)
 		{
-			return new Padding(value1.Left - value2.Left, value1.Top - value2.Top, value1.Right - value2.Right, value1.Bottom - value2.Bottom);
+			return new PaddingF(value1.Left - value2.Left, value1.Top - value2.Top, value1.Right - value2.Right, value1.Bottom - value2.Bottom);
 		}
 
 		/// <summary>
@@ -185,7 +153,7 @@ namespace Eto.Drawing
 		/// <param name="value1">First padding value to compare</param>
 		/// <param name="value2">Second padding value to compare</param>
 		/// <returns>True if the two padding values are equal, false otherwise</returns>
-		public static bool operator ==(Padding value1, Padding value2)
+		public static bool operator ==(PaddingF value1, PaddingF value2)
 		{
 			return value1.Top == value2.Top && value1.Bottom == value2.Bottom && value1.Left == value2.Left && value1.Right == value2.Right;
 		}
@@ -196,7 +164,7 @@ namespace Eto.Drawing
 		/// <param name="value1">First padding value to compare</param>
 		/// <param name="value2">Second padding value to compare</param>
 		/// <returns>True if the values are not equal, false if they are equal</returns>
-		public static bool operator !=(Padding value1, Padding value2)
+		public static bool operator !=(PaddingF value1, PaddingF value2)
 		{
 			return !(value1 == value2);
 		}
@@ -205,9 +173,9 @@ namespace Eto.Drawing
 		/// Implicitly converts a single integer to a padding with all sides of equal value.
 		/// </summary>
 		/// <param name="all">Value for padding on all sides</param>
-		public static implicit operator Padding(int all)
+		public static implicit operator PaddingF(float all)
 		{
-			return new Padding(all);
+			return new PaddingF(all);
 		}
 
 		/// <summary>
@@ -217,7 +185,7 @@ namespace Eto.Drawing
 		/// <returns>True if obj is a Padding object and is equal to this instance, false if not</returns>
 		public override bool Equals(object obj)
 		{
-			return obj is Padding && (Padding)obj == this;
+			return obj is PaddingF && (PaddingF)obj == this;
 		}
 
 		/// <summary>
@@ -226,7 +194,7 @@ namespace Eto.Drawing
 		/// <returns>Hash code for this instance</returns>
 		public override int GetHashCode()
 		{
-			return Top ^ Left ^ Right ^ Bottom;
+			return Top.GetHashCode() ^ Left.GetHashCode() ^ Right.GetHashCode() ^ Bottom.GetHashCode();
 		}
 
 		/// <summary>
@@ -243,18 +211,18 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="other">Other padding instance to compare with</param>
 		/// <returns>True if the specified padding is equal to this instance, false if not</returns>
-		public bool Equals(Padding other)
+		public bool Equals(PaddingF other)
 		{
 			return other == this;
 		}
 
 		/// <summary>
-		/// Converts a floating precision padding to integral values by truncating them.
+		/// Converts an integral padding to floading precision padding.
 		/// </summary>
-		/// <param name="padding">Padding to truncate</param>
-		public static explicit operator Padding(PaddingF padding)
+		/// <param name="padding">Padding to convert</param>
+		public static implicit operator PaddingF(Padding padding)
 		{
-			return Padding.Truncate(padding);
+			return new PaddingF(padding.Left, padding.Top, padding.Right, padding.Bottom);
 		}
 
 		/// <summary>
@@ -262,10 +230,11 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="padding">Padding to negate</param>
 		/// <returns>A new padding with negative values</returns>
-		public static Padding operator -(Padding padding)
+		public static PaddingF operator -(PaddingF padding)
 		{
-			return new Padding(-padding.Left, -padding.Top, -padding.Right, -padding.Bottom);
+			return new PaddingF(-padding.Left, -padding.Top, -padding.Right, -padding.Bottom);
 		}
+
 	}
 }
 
