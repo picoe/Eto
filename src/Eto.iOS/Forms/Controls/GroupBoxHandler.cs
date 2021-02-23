@@ -36,7 +36,7 @@ namespace Eto.iOS.Forms.Controls
 			get { return label.Text; }
 			set
 			{
-				var size = GetPreferredSize(SizeF.MaxValue);
+				var size = GetPreferredSize(SizeF.PositiveInfinity);
 				label.Text = value ?? string.Empty;
 				SetSize();
 				LayoutIfNeeded(size);

@@ -81,8 +81,8 @@ namespace Eto.WinForms.Forms.Controls
 						size2.Width = 0;
 					}
 				}
-				size.Width = size1.Width + size2.Width + SplitterWidth;
-				size.Height = Math.Max(size1.Height, size2.Height);
+				size.Width = (int)(size1.Width + size2.Width + SplitterWidth);
+				size.Height = (int)Math.Max(size1.Height, size2.Height);
 			}
 			else
 			{
@@ -107,8 +107,8 @@ namespace Eto.WinForms.Forms.Controls
 						size2.Height = 0;
 					}
 				}
-				size.Height = size1.Height + size2.Height + SplitterWidth;
-				size.Width = Math.Max(size1.Width, size2.Width);
+				size.Height = (int)(size1.Height + size2.Height + SplitterWidth);
+				size.Width = (int)Math.Max(size1.Width, size2.Width);
 			}
 			return size;
 		}

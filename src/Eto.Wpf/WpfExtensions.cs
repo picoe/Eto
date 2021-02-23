@@ -74,6 +74,34 @@ namespace Eto.Wpf
 			return FindVisualChildren<T>(parent, childName).FirstOrDefault();
 		}
 
+		public static void ApplyAllTemplates(this sw.FrameworkElement parent)
+		{
+			if (parent == null) return;
+
+			parent.ApplyTemplate();
+
+			foreach (var logicalChild in sw.LogicalTreeHelper.GetChildren(parent))
+			{
+				if (logicalChild is sw.FrameworkElement childElement)
+				{
+					// recursively apply
+					childElement.ApplyAllTemplates();
+				}
+			}
+			
+			int childrenCount = swm.VisualTreeHelper.GetChildrenCount(parent);
+			for (int i = 0; i < childrenCount; i++)
+			{
+				var child = swm.VisualTreeHelper.GetChild(parent, i);
+				// If the child is not of the request child type child
+				if (child is sw.FrameworkElement childElement)
+				{
+					// recursively apply
+					childElement.ApplyAllTemplates();
+				}
+			}
+		}
+
 		public static IEnumerable<T> FindVisualChildren<T>(this sw.DependencyObject parent, string childName = null)
 			 where T : sw.DependencyObject
 		{
@@ -169,6 +197,8 @@ namespace Eto.Wpf
 
 		public static void EnsureLoaded(this sw.FrameworkElement control)
 		{
+			if (control.IsLoaded)
+				return;
 			ApplicationHandler.InvokeIfNecessary(() =>
 			{
 				if (!control.IsLoaded)

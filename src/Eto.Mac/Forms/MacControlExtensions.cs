@@ -46,25 +46,12 @@ namespace Eto.Mac.Forms
 {
 	public static class MacControlExtensions
 	{
-		public static SizeF GetPreferredSize(this Control control, SizeF availableSize)
+		[Obsolete("Use Control.GetPreferredSize")]
+		public static SizeF GetPreferredSize(Control control, SizeF availableSize)
 		{
 			if (control == null)
 				return Size.Empty;
-			var mh = control.GetMacControl();
-			if (mh != null)
-			{
-				return mh.GetPreferredSize(availableSize);
-			}
-			
-			var c = control.ControlObject as NSControl;
-			if (c != null)
-			{
-				c.SizeToFit();
-				return c.Frame.Size.ToEto();
-			}
-			var child = control.ControlObject as Control;
-			return child == null ? SizeF.Empty : child.GetPreferredSize(availableSize);
-
+			return control.GetPreferredSize(availableSize);
 		}
 
 		public static IMacViewHandler GetMacViewHandler(this Control control)

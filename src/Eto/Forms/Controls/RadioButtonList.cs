@@ -380,9 +380,9 @@ namespace Eto.Forms
 				DataStore = CreateDefaultItems();
 		}
 
-		void LayoutButtons()
+		void LayoutButtons(bool force = false)
 		{
-			if (!Loaded)
+			if (!Loaded && !force)
 				return;
 			SuspendLayout();
 			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = spacing };
@@ -456,6 +456,13 @@ namespace Eto.Forms
 			if (controller == null)
 				controller = button;
 			return button;
+		}
+
+		internal override void InternalEnsureLayout()
+		{
+			if (Content == null)
+				LayoutButtons(true);
+			base.InternalEnsureLayout();
 		}
 
 		void UnregisterButton(RadioButton button)

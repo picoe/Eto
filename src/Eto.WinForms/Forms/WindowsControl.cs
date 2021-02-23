@@ -61,7 +61,8 @@ namespace Eto.WinForms.Forms
 
 		}
 
-		public static Size GetPreferredSize(this Control control, Size? availableSize = null)
+		[Obsolete("Use Control.GetPreferredSize instead")]
+		public static Size GetPreferredSize(Control control, Size? availableSize = null)
 		{
 			var handler = control.GetWindowsHandler();
 			return handler != null ? handler.GetPreferredSize(availableSize ?? Size.Empty) : Size.Empty;
@@ -138,6 +139,7 @@ namespace Eto.WinForms.Forms
 					size.Height = Math.Max(userSize.Height, MinimumSize.Height);
 				return size;
 			}
+
 			// Need to override IsInputKey to capture 
 			// the arrow keys.
 			protected override bool IsInputKey(swf.Keys keyData)
@@ -218,6 +220,22 @@ namespace Eto.WinForms.Forms
 				}
 			}
 			return Size.Max(parentMinimumSize, size);
+		}
+
+		public SizeF GetPreferredSize(SizeF availableSize)
+		{
+			if (!Widget.Loaded)
+				SetMinimumSizeInternal(false);
+			var size = Eto.Drawing.Size.Round(availableSize);
+			if (availableSize.Width >= float.MaxValue)
+			{
+				size.Width = int.MaxValue;
+			}
+			if (availableSize.Height >= float.MaxValue)
+			{
+				size.Height = int.MaxValue;
+			}
+			return GetPreferredSize(size, false);
 		}
 
 		public Size UserPreferredSize

@@ -96,7 +96,7 @@ namespace Eto.Mac.Forms
 		{
 			var macView = control.GetMacViewHandler();
 			var availableSize = Widget.Loaded ? Size.MaxValue : macView.GetAlignmentFrame().Size.ToEtoSize();
-			var preferredSize = macView.GetPreferredSize(availableSize);
+			var preferredSize = control.GetPreferredSize(availableSize);
 
 			var origin = point.ToNS();
 			if (!Control.IsFlipped)
@@ -123,7 +123,7 @@ namespace Eto.Mac.Forms
 				if (macView == null)
 					continue;
 
-				var preferredSize = macView.GetPreferredSize(SizeF.PositiveInfinity);
+				var preferredSize = control.GetPreferredSize(SizeF.PositiveInfinity);
 				macView.SetAlignmentFrameSize(preferredSize.ToNS());
 			}
 		}

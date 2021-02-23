@@ -592,5 +592,13 @@ namespace Eto.Forms
 			if (ReferenceEquals(control?.InternalLogicalParent, this))
 				RemoveLogicalParent(control);
 		}
+
+		internal override void InternalEnsureLayout()
+		{
+			if (!created)
+				Create();
+			base.InternalEnsureLayout();
+		}
+
 	}
 }

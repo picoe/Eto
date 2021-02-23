@@ -290,7 +290,7 @@ namespace Eto.Mac.Forms
 			foreach (var button in Widget.PositiveButtons.Reverse().Concat(Widget.NegativeButtons))
 			{
 				var ctl = button.GetMacViewHandler();
-				var size = ctl.GetPreferredSize(availableSize);
+				var size = button.GetPreferredSize(availableSize);
 				point.X -= size.Width;
 				ctl.SetAlignmentFrame(new CGRect(point.ToNS(), size.ToNS()));
 				ctl.ContentControl.AutoresizingMask = NSViewResizingMask.MinXMargin;

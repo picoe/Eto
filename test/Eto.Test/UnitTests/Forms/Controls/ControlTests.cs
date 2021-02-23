@@ -354,5 +354,20 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.IsTrue(wasClicked, "The test completed without clicking the button");
 		}
 
+		[TestCaseSource(nameof(GetControlTypes)), InvokeOnUI]
+		public void ControlsShouldHavePreferredSize(IControlTypeInfo<Control> info)
+		{
+			var control = info.CreatePopulatedControl();
+			var size = control.GetPreferredSize();
+			Console.WriteLine($"PreferredSize for {info.Type}: {size}");
+			Assert.Greater(size.Width, 0, "#1.1 - Preferred width should be greater than zero");
+			Assert.Greater(size.Height, 0, "#1.2 - Preferred height should be greater than zero");
+			var padding = new Padding(10);
+			var container = new Panel { Content = control, Padding = padding };
+			var containerSize = container.GetPreferredSize();
+			Assert.That(containerSize.Width, Is.EqualTo(size.Width + padding.Horizontal).Within(0.1), "#2.1 - panel with padding should have correct width");
+			Assert.That(containerSize.Height, Is.EqualTo(size.Height + padding.Vertical).Within(0.1), "#2.2 - panel with padding should have correct height");
+		}
+
 	}
 }

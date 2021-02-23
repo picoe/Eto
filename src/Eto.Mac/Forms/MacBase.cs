@@ -39,7 +39,7 @@ namespace Eto.Mac.Forms
 
 		bool AutoSize { get; }
 
-		SizeF GetPreferredSize(SizeF availableSize);
+		// SizeF GetPreferredSize(SizeF availableSize);
 
 		void RecalculateKeyViewLoop(ref NSView last);
 

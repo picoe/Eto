@@ -323,9 +323,9 @@ namespace Eto.Forms
 				DataStore = CreateDefaultItems();
 		}
 
-		void LayoutButtons()
+		void LayoutButtons(bool force = false)
 		{
-			if (!Loaded)
+			if (!Loaded && !force)
 				return;
 			SuspendLayout();
 			var layout = new TableLayout { Spacing = spacing, Padding = Padding.Empty };
@@ -377,6 +377,13 @@ namespace Eto.Forms
 			button.Tag = item;
 			button.Enabled = base.Enabled;
 			return button;
+		}
+
+		internal override void InternalEnsureLayout()
+		{
+			if (Content == null)
+				LayoutButtons(true);
+			base.InternalEnsureLayout();
 		}
 
 		void UnregisterButton(CheckBox button)

@@ -622,5 +622,10 @@ namespace Eto.WinForms.Forms
 			}
 
 		}
+
+		public SizeF GetPreferredSize(SizeF availableSize)
+		{
+			return Size;
+		}
 	}
 }

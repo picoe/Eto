@@ -464,6 +464,14 @@ namespace Eto.Forms
 			return Children.FirstOrDefault(r => r.ID == id);
 		}
 
+		internal override void InternalEnsureLayout()
+		{
+			foreach (var child in VisualControls)
+			{
+				child.InternalEnsureLayout();
+			}
+			base.InternalEnsureLayout();
+		}
 
 		/// <summary>
 		/// Handler interface for the <see cref="Container"/> control
