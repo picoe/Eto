@@ -138,6 +138,27 @@ namespace Eto.Mac
 			return Messaging.GetNSObject<NSColor>(Messaging.IntPtr_objc_msgSend_IntPtr(NSColorClassPtr, selColorWithCGColor, cgColor.Handle));
 		}
 #endif
+
+		static readonly IntPtr selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+		static readonly IntPtr selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("contentSizeForFrameSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+		static readonly IntPtr classScroller_Handle = Class.GetHandle(typeof(NSScroller));
+
+		public static CGSize FrameSizeForContentSize(this NSScrollView scrollView, CGSize size, bool hbar, bool vbar)
+		{
+			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
+			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
+			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
+			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(scrollView.ClassHandle, selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)scrollView.BorderType, (ulong)scrollView.VerticalScroller.ControlSize, (long)scrollView.VerticalScroller.ScrollerStyle);
+		}
+
+		public static CGSize ContentSizeForFrame(this NSScrollView scrollView, CGSize size, bool hbar, bool vbar)
+		{
+			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
+			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
+			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
+			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(scrollView.ClassHandle, selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)scrollView.BorderType, (ulong)scrollView.VerticalScroller.ControlSize, (long)scrollView.VerticalScroller.ScrollerStyle);
+		}
+
 	}
 }
 

@@ -176,7 +176,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var size = Control.Frame.Size;
 			var disclosureSize = disclosureButton.Frame.Size;
-			var headerSize = SizeF.Max(disclosureSize.ToEto(), Header.GetPreferredSize(Size));
+			var headerSize = SizeF.Max(disclosureSize.ToEto(), Header?.GetPreferredSize(Size) ?? Size.Empty);
 			disclosureButton.SetFrameOrigin(new CGPoint(0, (nfloat)Math.Round(size.Height - disclosureSize.Height - ((headerSize.Height - disclosureSize.Height) / 2))));
 			header.Frame = new CGRect(disclosureSize.Width, size.Height - headerSize.Height, size.Width - disclosureSize.Width, headerSize.Height);
 			if (suspendContentSizing <= 0)
@@ -191,7 +191,7 @@ namespace Eto.Mac.Forms.Controls
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var disclosureSize = disclosureButton.Frame.Size.ToEto();
-			var headerSize = Header.GetPreferredSize(availableSize);
+			var headerSize = Header?.GetPreferredSize(availableSize) ?? Size.Empty;
 			headerSize = new SizeF(disclosureSize.Width + headerSize.Width, Math.Max(disclosureSize.Height, headerSize.Height));
 			var contentSize = base.GetNaturalSize(availableSize);
 			if (!Expanded)

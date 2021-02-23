@@ -568,5 +568,13 @@ namespace Eto.Forms
 			Content = table;
 			isCreated = true;
 		}
+
+		internal override void InternalEnsureLayout()
+		{
+			if (!isCreated)
+				Create();
+			base.InternalEnsureLayout();
+		}
+
 	}
 }

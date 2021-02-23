@@ -498,5 +498,18 @@ namespace Eto.Forms.ThemedControls
 					Control.Content = null;
 			}
 		}
+
+		/// <summary>
+		/// Gets the preferred size of this control given the specified <paramref name="availableSize" />.
+		/// </summary>
+		/// <param name="availableSize">The available size to determine the preferred size</param>
+		/// <returns>The preferred size this control would like to be, which can be larger than the specified <paramref name="availableSize" />.</returns>
+		public override SizeF GetPreferredSize(SizeF availableSize)
+		{
+			if (Control.Content == null)
+				CreateTable(true);
+
+			return base.GetPreferredSize(availableSize);
+		}
 	}
 }

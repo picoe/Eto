@@ -502,11 +502,11 @@ namespace Eto.Mac.Forms.Controls
 				{
 					case SplitterFixedPanel.None:
 					case SplitterFixedPanel.Panel1:
-						var size1 = panel1.GetPreferredSize(SizeF.PositiveInfinity);
+						var size1 = panel1?.GetPreferredSize(SizeF.PositiveInfinity) ?? SizeF.Empty;
 						position = (int)(Orientation == Orientation.Horizontal ? size1.Width : size1.Height);
 						break;
 					case SplitterFixedPanel.Panel2:
-						var size2 = panel2.GetPreferredSize(SizeF.PositiveInfinity);
+						var size2 = panel2?.GetPreferredSize(SizeF.PositiveInfinity) ?? SizeF.Empty;
 						if (Orientation == Orientation.Horizontal)
 							position = (int)(Control.Frame.Width - size2.Width - Control.DividerThickness);
 						else
@@ -554,8 +554,8 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var size = new SizeF();
 
-			var size1 = panel1.GetPreferredSize(availableSize);
-			var size2 = panel2.GetPreferredSize(availableSize);
+			var size1 = panel1?.GetPreferredSize(availableSize) ?? SizeF.Empty;
+			var size2 = panel2?.GetPreferredSize(availableSize) ?? SizeF.Empty;
 			if (Control.IsVertical)
 			{
 				if (!double.IsNaN(relative))

@@ -9,7 +9,7 @@
     
     <!-- Set to True to bundle .NET Core runtime, false to use a shared runtime (useful to speed up debug builds) -->
     <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(SelfContained) == 'True'">True</MacBundleDotNet>
-    <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(Configuration) == 'Release'">True</MacBundleDotNet>
+    <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(SelfContained) != 'False' AND $(Configuration) == 'Release'">True</MacBundleDotNet>
     <MacBundleDotNet Condition="$(MacBundleDotNet) == ''">False</MacBundleDotNet>
   </PropertyGroup>
 

@@ -69,7 +69,8 @@ namespace Eto.Wpf.Forms
 			return control.ControlObject as sw.FrameworkElement;
 		}
 
-		public static sw.Size GetPreferredSize(this Control control, sw.Size available)
+		[Obsolete("Use Control.GetPreferredSize instead")]
+		public static sw.Size GetPreferredSize(Control control, sw.Size available)
 		{
 			var handler = control.GetWpfFrameworkElement();
 			if (handler != null)
@@ -296,6 +297,23 @@ namespace Eto.Wpf.Forms
 		{
 			ContainerControl.Measure(constraint);
 			return ContainerControl.DesiredSize;
+		}
+
+		public SizeF GetPreferredSize(SizeF availableSize)
+		{
+			var size = availableSize.ToWpf();
+			if (ContainerControl.Parent == null && !(ContainerControl is swc.Panel))
+			{
+				// what the?!? some controls don't measure correctly when not in a container..
+				var p = new swc.DockPanel();
+				p.Children.Add(ContainerControl);
+				p.Measure(size);
+				var result = p.DesiredSize.ToEto();
+				p.Children.Remove(ContainerControl);
+				return result;
+			}
+			ContainerControl.Measure(size);
+			return ContainerControl.DesiredSize.ToEto();
 		}
 
 		public virtual bool Enabled

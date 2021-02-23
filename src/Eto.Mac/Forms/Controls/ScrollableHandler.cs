@@ -155,27 +155,7 @@ namespace Eto.Mac.Forms.Controls
 			Control.NeedsLayout = true;
 		}
 
-		static readonly IntPtr selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
-		static readonly IntPtr selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("contentSizeForFrameSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
-		static readonly IntPtr classScroller_Handle = Class.GetHandle(typeof(NSScroller));
-
-		CGSize FrameSizeForContentSize(CGSize size, bool hbar, bool vbar)
-		{
-			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
-			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
-			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
-			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(Control.ClassHandle, selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)Control.BorderType, (ulong)Control.VerticalScroller.ControlSize, (long)Control.VerticalScroller.ScrollerStyle);
-		}
-
-		CGSize ContentSizeForFrame(CGSize size, bool hbar, bool vbar)
-		{
-			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
-			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
-			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
-			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(Control.ClassHandle, selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)Control.BorderType, (ulong)Control.VerticalScroller.ControlSize, (long)Control.VerticalScroller.ScrollerStyle);
-		}
-
-		Size GetBorderSize() => FrameSizeForContentSize(new CGSize(0, 0), false, false).ToEtoSize();
+		Size GetBorderSize() => Control.FrameSizeForContentSize(new CGSize(0, 0), false, false).ToEtoSize();
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -196,12 +176,12 @@ namespace Eto.Mac.Forms.Controls
 				NaturalAvailableSize = naturalAvailableSize;
 			}
 
-			var size = Content.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
+			var size = (Content?.GetPreferredSize(availableSize - Padding.Size) ?? Size.Empty) + Padding.Size;
 
 			// include the space needed for scroll bars
 
 			// first, get frame for the content size with no scroll bars
-			var frameSize = FrameSizeForContentSize(size.ToNS(), false, false);
+			var frameSize = Control.FrameSizeForContentSize(size.ToNS(), false, false);
 
 
 			// constrain the frame size to our available size
@@ -211,7 +191,7 @@ namespace Eto.Mac.Forms.Controls
 				frameSize.Height = (nfloat)Math.Min(availableSize.Height, frameSize.Height);
 
 			// get the client size for the new frame size
-			var clientSize = ContentSizeForFrame(frameSize, false, false);
+			var clientSize = Control.ContentSizeForFrame(frameSize, false, false);
 
 			// if our new client size is smaller than the width/height, we need scrollbars
 			var vbar = size.Height > clientSize.Height;
@@ -219,7 +199,7 @@ namespace Eto.Mac.Forms.Controls
 			if (hbar || vbar)
 			{
 				// given the enabled scroll bars, what size do we need?
-				frameSize = FrameSizeForContentSize(size.ToNS(), hbar, vbar);
+				frameSize = Control.FrameSizeForContentSize(size.ToNS(), hbar, vbar);
 			}
 			var etoFrameSize = frameSize.ToEto();
 			if (isInfinity)
@@ -237,7 +217,7 @@ namespace Eto.Mac.Forms.Controls
 
 		void PerformScrollLayout()
 		{
-			var clientSize = ContentSizeForFrame(Control.Frame.Size, false, false).ToEto();
+			var clientSize = Control.ContentSizeForFrame(Control.Frame.Size, false, false).ToEto();
 
 			var size = SizeF.Empty;
 			if (DesiredScrollSize != null)
@@ -253,7 +233,7 @@ namespace Eto.Mac.Forms.Controls
 				else if (availableSize.Height < 0)
 					availableSize.Height = float.PositiveInfinity;
 
-				var preferred = Content.GetPreferredSize(availableSize);
+				var preferred = (Content?.GetPreferredSize(availableSize) ?? Size.Empty);
 
 				if (availableSize.Width < 0)
 					size.Width = preferred.Width;
@@ -262,11 +242,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 			else
 			{
-				var preferred = Content.GetPreferredSize(SizeF.PositiveInfinity) + Padding.Size;
+				var preferred = (Content?.GetPreferredSize(SizeF.PositiveInfinity) ?? Size.Empty) + Padding.Size;
 				var vbar = preferred.Height > clientSize.Height;
 				var hbar = preferred.Width > clientSize.Width;
 				if (hbar || vbar)
-					clientSize = ContentSizeForFrame(Control.Frame.Size, hbar, vbar).ToEto();
+					clientSize = Control.ContentSizeForFrame(Control.Frame.Size, hbar, vbar).ToEto();
 
 				size = SizeF.Max(clientSize, preferred);
 			}

@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Mac.Forms.Controls;
+using Eto.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -71,6 +72,13 @@ namespace Eto.Mac.Forms.Controls
 					return false;
 				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorClient == Control;
 			}
+		}
+
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			var size = base.GetNaturalSize(availableSize);
+			size.Width = Math.Max(100, size.Height);
+			return size;
 		}
 
 		protected override NSTextField CreateControl()

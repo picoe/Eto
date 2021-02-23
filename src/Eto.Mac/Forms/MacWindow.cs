@@ -267,15 +267,11 @@ namespace Eto.Mac.Forms
 			var preferredClientSize = PreferredClientSize;
 			if (Content != null && Content.Visible)
 			{
-				var contentControl = Content.GetMacControl();
-				if (contentControl != null)
-				{
-					if (preferredClientSize?.Width > 0)
-						availableSize.Width = preferredClientSize.Value.Width;
-					if (preferredClientSize?.Height > 0)
-						availableSize.Height = preferredClientSize.Value.Height;
-					naturalSize = contentControl.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
-				}
+				if (preferredClientSize?.Width > 0)
+					availableSize.Width = preferredClientSize.Value.Width;
+				if (preferredClientSize?.Height > 0)
+					availableSize.Height = preferredClientSize.Value.Height;
+				naturalSize = Content.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
 			}
 			if (preferredClientSize != null)
 			{

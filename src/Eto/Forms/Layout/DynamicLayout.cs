@@ -749,5 +749,12 @@ namespace Eto.Forms
 		{
 			RemoveLogicalParent(child);
 		}
+
+		internal override void InternalEnsureLayout()
+		{
+			if (!IsCreated)
+				Create();
+			base.InternalEnsureLayout();
+		}
 	}
 }

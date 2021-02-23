@@ -11,7 +11,7 @@ namespace Eto.WinForms.Forms.Controls
 	{
 
 		// windows guidelines specify default height of 23
-		public static Size DefaultMinimumSize = new Size(80, 23);
+		public static Size DefaultMinimumSize = new Size(80, 25);
 
 		protected override Size GetDefaultMinimumSize() => DefaultMinimumSize;
 

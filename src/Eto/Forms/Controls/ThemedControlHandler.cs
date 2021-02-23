@@ -83,6 +83,13 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the preferred size of this control given the specified <paramref name="availableSize" />.
+		/// </summary>
+		/// <param name="availableSize">The available size to determine the preferred size</param>
+		/// <returns>The preferred size this control would like to be, which can be larger than the specified <paramref name="availableSize" />.</returns>
+		public virtual SizeF GetPreferredSize(SizeF availableSize) => Control.GetPreferredSize(availableSize);
+
+		/// <summary>
 		/// Gets or sets the width of the control size.
 		/// </summary>
 		public virtual int Width

@@ -232,7 +232,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return base.Font; }
 			set
 			{
-				Widget.Properties.Set(MacControl.Font_Key, value, () =>
+				if (Widget.Properties.TrySet(MacControl.Font_Key, value))
 				{
 					if (value != null)
 					{
@@ -242,7 +242,8 @@ namespace Eto.Mac.Forms.Controls
 					else
 						cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					Control.ReloadData();
-				});
+					InvalidateMeasure();
+				};
 			}
 		}
 
@@ -253,26 +254,31 @@ namespace Eto.Mac.Forms.Controls
 			public override void AddRange(IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void AddItem(object item)
 			{
 				Handler.Control.ReloadData();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
 				Handler.Control.ReloadData();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void RemoveItem(int index)
 			{
 				Handler.Control.ReloadData();
+				Handler.InvalidateMeasure();
 			}
 
 			public override void RemoveAllItems()
 			{
 				Handler.Control.ReloadData();
+				Handler.InvalidateMeasure();
 			}
 		}
 
@@ -337,5 +343,60 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			bool isInfinity = float.IsPositiveInfinity(availableSize.Width) && float.IsPositiveInfinity(availableSize.Height);
+
+			if (isInfinity)
+			{
+				var naturalSizeInfinity = NaturalSizeInfinity;
+				if (naturalSizeInfinity != null)
+					return naturalSizeInfinity.Value;
+			}
+			else
+			{
+				var naturalAvailableSize = availableSize.TruncateInfinity();
+				var naturalSize = NaturalSize;
+				if (naturalSize != null && NaturalAvailableSize == naturalAvailableSize)
+					return naturalSize.Value;
+				NaturalAvailableSize = naturalAvailableSize;
+			}
+
+			var intercellSpacing = Control.IntercellSpacing;
+			var count = Control.RowCount;
+			var height = (int)((Control.RowHeight + intercellSpacing.Height) * count);
+
+			// we need to go through each item to calculate its preferred size
+			var size = new CGSize(0, height);
+			var cell = new MacImageTextView();
+			var font = Font.ToNS();
+			if (font != null)
+				cell.TextField.Font = font;
+			var dataSource = Control.DataSource;
+			var column = Control.TableColumns()[0];
+			for (nint i = 0; i < count; i++)
+			{
+				var data = dataSource.GetObjectValue(Control, column, i) as MacImageData;
+				if (data != null)
+				{
+					cell.TextField.ObjectValue = data.Text;
+					cell.Image = data.Image;
+					size.Width = (nfloat)Math.Max(size.Width, cell.FittingSize.Width);
+				}
+			}
+
+			var frameSize = scroll.FrameSizeForContentSize(size, false, false);
+
+			var etoFrameSize = frameSize.ToEto();
+
+			if (isInfinity)
+				NaturalSizeInfinity = etoFrameSize;
+			else
+				NaturalSize = etoFrameSize;
+
+			return etoFrameSize;
+		}
+
 	}
 }

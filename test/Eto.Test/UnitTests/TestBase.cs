@@ -815,6 +815,11 @@ namespace Eto.Test.UnitTests
 				{
 					panel.Content = "Hello, World!";
 				}
+				else if (control is Splitter splitter)
+				{
+					splitter.Panel1 = new TextArea { Text = "Hello" };
+					splitter.Panel2 = new Panel { Size = new Size(200, 200) };
+				}
 			}
 
 			public override string ToString() => Type.Name;

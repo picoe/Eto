@@ -142,10 +142,7 @@ namespace Eto.Wpf.Forms
 			if (Widget.Loaded)
 			{
 				// happens with a blank TableLayout, or if populated during Load event.
-				InitializeSizes();
-				SetScale(true);
-				SetMargins(true);
-				SetChildrenSizes(true);
+				SetupGrid();
 			}
 
 			Control.LayoutUpdated += Control_LayoutUpdated;
@@ -180,12 +177,25 @@ namespace Eto.Wpf.Forms
 			if (IsCreated)
 			{
 				// won't be created yet if populated on Load event or if empty.
-
-				InitializeSizes();
-				SetScale(true);
-				SetMargins(true);
-				SetChildrenSizes(true);
+				SetupGrid();
 			}
+		}
+
+		private void SetupGrid()
+		{
+			InitializeSizes();
+			SetScale(true);
+			SetMargins(true);
+			SetChildrenSizes(true);
+		}
+
+		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
+		{
+			if (IsCreated && !Widget.Loaded)
+			{
+				SetupGrid();
+			}
+			return base.MeasureOverride(constraint, measure);
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
