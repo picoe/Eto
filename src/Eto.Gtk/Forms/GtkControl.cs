@@ -516,6 +516,9 @@ namespace Eto.GtkSharp.Forms
 			[GLib.ConnectBefore]
 			public void HandleControlLeaveNotifyEvent(object o, Gtk.LeaveNotifyEventArgs args)
 			{
+				// ignore child events
+				if (args.Event.Detail == Gdk.NotifyType.Inferior)
+					return;
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
@@ -526,6 +529,9 @@ namespace Eto.GtkSharp.Forms
 			[GLib.ConnectBefore]
 			public void HandleControlEnterNotifyEvent(object o, Gtk.EnterNotifyEventArgs args)
 			{
+				// ignore child events
+				if (args.Event.Detail == Gdk.NotifyType.Inferior)
+					return;
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
