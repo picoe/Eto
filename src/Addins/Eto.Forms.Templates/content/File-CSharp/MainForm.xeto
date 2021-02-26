@@ -2,6 +2,7 @@
 <Form
 	xmlns="http://schema.picoe.ca/eto.forms" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:EtoApp._1;assembly=EtoApp.1"
 <!--#if(IsWindow)-->
 	Title="My Eto Form"
 	MinimumSize="200,200"
@@ -15,7 +16,7 @@
 <!--#if(IsForm)-->
 	<Form.Menu>
 		<MenuBar>
-			<SubMenuItem Text="F&amp;ile">
+			<SubMenuItem Text="&amp;File">
 				<ButtonMenuItem Text="Click Me!" Click="HandleClickMe" />
 			</SubMenuItem>
 			<MenuBar.ApplicationItems>

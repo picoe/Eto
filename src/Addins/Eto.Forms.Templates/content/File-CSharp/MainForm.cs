@@ -57,7 +57,7 @@ namespace EtoApp._1
 				AboutItem = aboutCommand
 			};
 
-			// create toolbar			
+			// create toolbar
 			ToolBar = new ToolBar { Items = { clickMe } };
 #endif
 #endif

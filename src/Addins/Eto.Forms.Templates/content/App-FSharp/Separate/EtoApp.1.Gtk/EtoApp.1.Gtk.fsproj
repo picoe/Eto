@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework Condition="$(TargetFrameworkOverride) == ''">net5.0</TargetFramework>
+    <TargetFramework Condition="$(TargetFrameworkOverride) != ''">TargetFrameworkOverride</TargetFramework>
+    <RootNamespace Condition="'$(name)' != '$(name{-VALUE-FORMS-}safe_namespace)'">EtoApp._1.Gtk</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EtoApp.1\EtoApp.1.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.11-dev" />
+  </ItemGroup>
+
+</Project>

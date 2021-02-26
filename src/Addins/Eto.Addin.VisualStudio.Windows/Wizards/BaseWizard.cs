@@ -26,13 +26,9 @@ namespace Eto.Addin.VisualStudio.Windows.Wizards
 
 		public virtual void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
 		{
-			var doc = Helpers.LoadWizardXml(replacementsDictionary);
-			var ns = Helpers.WizardNamespace;
-			var supportedParameters = doc.Root.Element(ns + "SupportedParameters");
-			if (supportedParameters != null)
+			if (replacementsDictionary.TryGetValue("SupportedParameters", out var supportedParameters))
 			{
-				var parametersString = supportedParameters.Value;
-				var parametersArray = parametersString.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+				var parametersArray = supportedParameters.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
 				foreach (var parameter in parametersArray)
 					replacementsDictionary.SetSupportedParameter(parameter, true);
             }

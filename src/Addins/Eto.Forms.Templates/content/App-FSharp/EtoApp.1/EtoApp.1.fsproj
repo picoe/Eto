@@ -1,27 +1,50 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!--#if (Combined)-->
+<Project Sdk="Eto.Forms/2.5.11-dev">
+
+  <!--
+    Set the BuildPlatform property to the Eto platform you wish to build for.
+    The default is the platform you are building on.
+    Valid values: Wpf, Windows, Mac64, XamMac2, Gtk, Direct2D
+  -->
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <DefineConstants Condition="$(Mode)==''">UseCode;IsWindow;IsForm</DefineConstants>
-    <UseCode Condition="$(Mode)==''">True</UseCode>
+    <TargetFramework Condition="$(TargetFrameworkOverride) == ''">net5.0</TargetFramework>
+    <TargetFramework Condition="$(TargetFrameworkOverride) != ''">TargetFrameworkOverride</TargetFramework>
+    <RootNamespace Condition="'$(name)' != '$(name{-VALUE-FORMS-}safe_namespace)'">EtoApp._1</RootNamespace>
+
+    <UseXamarinMac Condition="$(IncludeXamMac) == 'True'">True</UseXamarinMac>
+    <UseWinForms Condition="$(IncludeWinForms) == 'True'">True</UseWinForms>
+    <UseJeto Condition="$(UseJeto) == 'True'">True</UseJeto>
+    <UseXeto Condition="$(UseXeto) == 'True'">True</UseXeto>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="MainForm.fs" Condition="$(UseCodePreview) == 'True'" />
+    <None Include="Info.plist" />
+    <None Include="MacIcon.icns" />
   </ItemGroup>
+<!--#else-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace Condition="'$(name)' != '$(name{-VALUE-FORMS-}safe_namespace)'">EtoApp._1</RootNamespace>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="MainForm.fs" Condition="$(UseCode) == 'True'" />
-    <Compile Include="MainForm.eto.fs" Condition="$(UseCodePreview) == 'True'" />
-    <Compile Include="MainForm.xeto.fs" Condition="$(UseXeto) == 'True'">
-      <DependentUpon>MainForm.xeto</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.jeto.fs" Condition="$(UseJeto) == 'True'">
-      <DependentUpon>MainForm.jeto</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="MainForm.xeto" Condition="$(UseXeto) == 'True'" />
-    <EmbeddedResource Include="MainForm.jeto" Condition="$(UseJeto) == 'True'" />
     <PackageReference Include="Eto.Forms" Version="2.5.11-dev" />
     <PackageReference Include="Eto.Serialization.Json" Version="2.5.11-dev" Condition="$(UseJeto) == 'True'" />
     <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.11-dev" Condition="$(UseXeto) == 'True'" />
+  </ItemGroup>
+<!--#endif-->
+
+  <ItemGroup>
+    <Compile Include="MainForm.eto.fs" Condition="$(UseCodePreview) == 'True'" />
+    <Compile Include="MainForm.fs" Condition="$(UseCode) == 'True' OR $(UseCodePreview) == 'True'" />
+    <Compile Include="MainForm.xeto.fs" Condition="$(UseXeto) == 'True'" />
+    <Compile Include="MainForm.jeto.fs" Condition="$(UseJeto) == 'True'" />
+    <Compile Include="Program.fs" Condition="$(Combined) == 'True'" />
+
+    <EmbeddedResource Include="MainForm.xeto" Condition="$(UseXeto) == 'True'" />
+    <EmbeddedResource Include="MainForm.jeto" Condition="$(UseJeto) == 'True'" />
   </ItemGroup>
 </Project>

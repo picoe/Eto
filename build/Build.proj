@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   
   <PropertyGroup>
@@ -8,6 +8,8 @@
     <BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
     <HasVSWin Condition="$(HasVSWin) == '' and $(OSPlatform) == 'Windows'">True</HasVSWin>
     <HasVSMac Condition="$(HasVSMac) == '' and $(OSPlatform) != 'Windows'">True</HasVSMac>
+
+    <BuildProperties>Configuration=$(Configuration);Platform=$(OSPlatform)</BuildProperties>
   </PropertyGroup>
 
   <Target Name="PrintInfo" Condition="$(PrintInfo) != 'False'">
@@ -51,14 +53,15 @@
 
     <FileUpdate Files="$(AddinDir)Eto.Addin.VisualStudio.Windows\source.extension.vsixmanifest"
       WarnOnNoUpdate="true"
-      Pattern='(?&lt;=^\s*&lt;Identity\s+Id=&quot;Eto.Addin.VisualStudio.Windows&quot;.+?Version=&quot;)(.+?)(?=&quot;\s+)'
+      Pattern='(?&lt;=^\s*&lt;Identity\s+Id=&quot;Eto.Addin.VisualStudio&quot;.+?Version=&quot;)(.+?)(?=&quot;\s+)'
       Replacement='$(AssemblyVersionBeforeRelease)' />
 
     <PropertyGroup>
       <PackageFiles>$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj</PackageFiles>
+      <ProjFiles>$(BasePath)src\Eto\sdk\Sdk.targets</ProjFiles>
     </PropertyGroup>
 
-    <MSBuild Targets="UpdateReference" Properties="ReferenceName=(Eto([.][\\w]+)+);ReferenceVersion=$(AssemblyInformationalVersion);PackageFiles=$(PackageFiles);PrintInfo=False" Projects="$(MSBuildProjectFile)"/>
+    <MSBuild Targets="UpdateReference" Properties='ReferenceName=(Eto[.][^"]+);ReferenceVersion=$(AssemblyInformationalVersion);PackageFiles=$(PackageFiles);ProjFiles=$(ProjFiles);PrintInfo=False' Projects="$(MSBuildProjectFile)"/>
 
   </Target>
 
@@ -87,6 +90,7 @@
       <ProjFiles Include="$(ProjFiles)" Condition="$(ProjFiles) != ''" />
       <ProjFiles Include="$(BasePath)**\*.csproj" />
       <ProjFiles Include="$(BasePath)**\*.fsproj" />
+      <ProjFiles Include="$(BasePath)**\*.vbproj" />
 
       <PackageFiles Include="$(PackageFiles)" Condition="$(PackageFiles) != ''" />
     </ItemGroup>
@@ -109,6 +113,12 @@
             Pattern="(?&lt;=&lt;PackageReference.+?Include\s*[=]\s*&quot;$(ReferenceName)&quot;.*&gt;\s*&lt;Version&gt;)$(ReplaceVersionPattern)(?=&lt;)"
             Replacement='$(ReferenceVersion)' />
 
+    <!-- Sdk version -->
+    <FileUpdate Files="@(ProjFiles)"
+      WarnOnNoUpdate="false"
+            Pattern='(?&lt;=&lt;Project Sdk\s*[=]\s*&quot;$(ReferenceName)[/])$(ReplaceVersionPattern)(?="&gt;)'
+            Replacement='$(ReferenceVersion)' />
+
     <!-- PackageVersion tag in sdk-style projects -->
     <FileUpdate Files="@(PackageFiles)"
       WarnOnNoUpdate="false"
@@ -126,7 +136,7 @@
             Replacement='$(ReferenceVersion)' />
   </Target>
 
-  <Target Name="BuildHelpShfb" DependsOnTargets="Build">
+  <Target Name="BuildHelpShfb" DependsOnTargets="BuildCore">
     <PropertyGroup>
       <SHFBVersion>2017.12.30.2</SHFBVersion>
       <SHFBPath>$(MSBuildThisFileDirectory)..\artifacts\packages\EWSoftware.SHFB.$(SHFBVersion)\tools\</SHFBPath>
@@ -142,67 +152,113 @@
     <StandalonePackage Include="$(AddinDir)Eto.Forms.Templates\Eto.Forms.Templates.csproj" />
   </ItemGroup>
 
+  <Target Name="Build" DependsOnTargets="BuildCore;Package;BuildSamples">
+  </Target>
+
   <!-- Build all source code -->
-  <Target Name="Build" DependsOnTargets="UpdateVersion;PrintInfo">
-
-    <PropertyGroup>
-      <BuildProperties>Configuration=$(Configuration);Platform=$(OSPlatform)</BuildProperties>
-    </PropertyGroup>
-
+  <Target Name="BuildCore" DependsOnTargets="UpdateVersion;PrintInfo">
     <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True" />
     <MSBuild Projects="$(SourceDir)Eto.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)" />
+  </Target>
 
+  <Target Name="BuildSamples" DependsOnTargets="BuildCore">
     <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True"/>
     <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)"/>
   </Target>
 
   <!-- Package everything up into nuget packages -->
-  <Target Name="Package" DependsOnTargets="Build">
+  <Target Name="Package">
+    <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Restore" Properties="$(BuildProperties);IsPacking=True;_RestoreEnforceEvaluate=True" />
     <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Pack" Properties="$(BuildProperties);IsPacking=True" />
 
     <!-- build dotnet template -->
     <MSBuild Projects="%(StandalonePackage.Identity)" Targets="Restore" Properties="Configuration=$(Configuration);_RestoreEnforceEvaluate=True" />
     <MSBuild Projects="%(StandalonePackage.Identity)" Targets="Pack" Properties="Configuration=$(Configuration);IsPacking=True" />
+
+    <ItemGroup>
+      <EtoFormsPackages Include="$([System.IO.Directory]::GetDirectories('$(ArtifactsDir)packages', 'eto.*'))" Condition="Exists('$(ArtifactsDir)packages')"/>
+    </ItemGroup>
+
+    <RemoveDir Directories="@(EtoFormsPackages)" />
+  </Target>
+
+  <Target Name="SetupNugetConfig">
+    <PropertyGroup>
+      <NugetConfigPath>$(ArtifactsDir)nuget.config</NugetConfigPath>
+      <NugetPackagesPath>$(ArtifactsDir)packages</NugetPackagesPath>
+    </PropertyGroup>
+
+    <!-- <RemoveDir Directories="$(NugetPackagesPath)"/> -->
+
+    <Exec Command='dotnet new nuget -o $(ArtifactsDir) &amp;&amp; dotnet nuget add source "./nuget/$(Configuration)" --name eto-local --configfile "$(NugetConfigPath)"'
+          Condition="!Exists('$(NugetConfigPath)')" />
   </Target>
   
   <!-- Generate all permutations of the templates for testing -->
-  <Target Name="GenerateTemplates">
+  <Target Name="GenerateTemplates" DependsOnTargets="Package;SetupNugetConfig">
 
     <RemoveDir Directories="$(ArtifactsDir)templates"/>
 
     <!-- install the current version of the templates -->
     <Exec Command="dotnet new -i $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
-
+  
     <!-- generate project templates -->
     <ItemGroup>
-      <Language Include="fs" Value="F#" />
       <Language Include="cs" Value="C#" />
+      <Language Include="fs" Value="F#" />
+      <Language Include="vb" Value="VB" />
 
       <Mode Include="code" />
+      <Mode Include="json" />
       <Mode Include="preview" />
       <Mode Include="xaml" />
-      <Mode Include="json" />
+
+      <Combined Include="combined" Value="-c" />
+      <Combined Include="separate" Value="" />
+
+      <Framework Include="net50" Value="net5.0" />
+      <Framework Include="net48" Value="net48" />
 
       <OtherOptions Include="none" Value="" />
       <OtherOptions Include="wf" Value="-wf" />
-      <OtherOptions Include="xm" Value="-xm" />
       <OtherOptions Include="wf_xm" Value="-wf -xm" />
-
-      <Combined Include="separate" Value="" />
-      <Combined Include="combined" Value="-c" />
-
-      <Framework Include="full" />
-      <Framework Include="core" />
-      <Framework Include="both" />
+      <OtherOptions Include="xm" Value="-xm" />
 
       <CombinedProject1 Include="*" LanguageId="%(Language.Identity)" Language="%(Language.Value)" />
       <CombinedProject2 Include="@(CombinedProject1)" ModeId="%(Mode.Identity)" Mode="%(Mode.Identity)" />
       <CombinedProject3 Include="@(CombinedProject2)" CombinedId="%(Combined.Identity)" Combined="%(Combined.Value)" />
-      <CombinedProject4 Include="@(CombinedProject3)" FrameworkId="%(Framework.Identity)" Framework="%(Framework.Identity)" />
+      <CombinedProject4 Include="@(CombinedProject3)" FrameworkId="%(Framework.Identity)" Framework="%(Framework.Value)" />
       <CombinedProject Include="@(CombinedProject4)" OtherId="%(OtherOptions.Identity)" Other="%(OtherOptions.Value)" />
+      <CombinedProject Update="@(CombinedProject)"
+        OutputPath="$(ArtifactsDir)templates\App.%(LanguageId)-%(CombinedId)-%(OtherId)-%(ModeId)-%(FrameworkId)"
+        BuildCommand="&amp;&amp; dotnet build" />
+
+      <!-- Xamarin.Mac doesn't support VB -->
+      <CombinedProject Remove="@(CombinedProject)" Condition="%(CombinedId) == 'combined' and %(LanguageId) == 'vb' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm')" />
+      <!-- Wpf doesn't support F#  -->
+      <CombinedProject Remove="@(CombinedProject)" Condition="%(LanguageId) == 'fs' and (%(OtherId) == 'none' or %(OtherId) == 'xm')" />
+
+
+      <!-- Can only build wpf/winforms .NET 5 projects on windows.. :( -->
+      <CombinedProject Update="@(CombinedProject)"
+        Condition="%(CombinedId) == 'separate' and !$([MSBuild]::IsOSPlatform(Windows))"
+        BuildCommand="&amp;&amp; dotnet build **/*.Mac.*proj &amp;&amp;dotnet build **/*.Gtk.*proj" />
+
+      <!-- Xamarin.Mac separate projects require msbuild -->
+      <CombinedProject Update="@(CombinedProject)" Condition="%(CombinedId) == 'separate' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm')"
+        BuildCommand='%(BuildCommand) &amp;&amp;env -i HOME="$HOME" bash -l -c "msbuild /restore /v:Minimal **/*.XamMac.*proj"' />
+
+      <!-- Xamarin.Mac combined doesn't support building with dotnet other than csharp :( -->
+      <CombinedProject Update="@(CombinedProject)" Condition="%(CombinedId) == 'combined' and (%(LanguageId) != 'cs' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm'))"
+        BuildCommand='&amp;&amp; env -i HOME="$HOME" bash -l -c "msbuild /restore /v:Minimal"' />
+
+      <!-- Only build Xamarin.Mac on Mac -->
+      <CombinedProject Update="@(CombinedProject)" Condition="!$([MSBuild]::IsOSPlatform(OSX)) and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm')"
+        BuildCommand="" />
+
     </ItemGroup>
 
-    <Exec Command="export DOTNET_NEW_LOCAL_SEARCH_FILE_ONLY=TRUE &amp;&amp; dotnet new etoapp -m %(CombinedProject.Mode) -sln -lang %(Language) %(Other) %(Combined) -f %(Framework) -o $(ArtifactsDir)templates\App.%(LanguageId)-%(CombinedId)-%(OtherId)-%(ModeId)-%(FrameworkId)" />
+    <Exec Command="dotnet new etoapp -m %(CombinedProject.Mode) -sln -lang %(Language) %(Other) %(Combined) -f %(Framework) -o %(OutputPath) &amp;&amp; cd %(OutputPath) %(BuildCommand)"  EnvironmentVariables="NUGET_PACKAGES=$(NugetPackagesPath);DOTNET_NEW_LOCAL_SEARCH_FILE_ONLY=1" />
 
     <!-- generate file templates -->
     <ItemGroup>
@@ -215,8 +271,38 @@
       <CombinedFile Include="@(CombinedFile2)" BaseId="%(Base.Identity)" Base="%(Base.Value)" />
     </ItemGroup>
 
-    <Exec Command="dotnet new etofile -m %(CombinedFile.Mode) -b %(Base) -o $(ArtifactsDir)templates\File_%(LanguageId)-%(ModeId)-%(Base)" />
+    <Exec Command="dotnet new etofile -m %(CombinedFile.Mode) -b %(Base) -lang %(Language) -o $(ArtifactsDir)templates/File_%(LanguageId)-%(ModeId)-%(Base)" />
 
+  </Target>
+
+  <Target Name="TestMacPublishing" DependsOnTargets="Package;SetupNugetConfig">
+
+    <RemoveDir Directories="$(ArtifactsDir)mac-publish"/>
+
+    <!-- install the current version of the templates -->
+    <Exec Command="dotnet new -i $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
+
+    <!-- generate project templates -->
+    <ItemGroup>
+      <Config Include="release" Value="-c Release" />
+      <Config Include="debug" Value="-c Debug" />
+
+      <Build Include="build-net4" Create="-f net48" Build="build" />
+      <Build Include="build-net5" Create="-f net5.0" Build="build" />
+      <Build Include="build-rid-net5" Create="-f net5.0" Build="build -r osx-x64" />
+      <Build Include="publish-net5" Create="-f net5.0" Build="publish" />
+      <Build Include="publish-rid-net5" Create="-f net5.0" Build="publish -r osx-x64" />
+
+      <Combined Include="combined" Value="-c" />
+      <Combined Include="separate" Value="" Build="**/*.Mac.csproj" />
+
+      <CombinedPublish2 Include="*" CombinedId="%(Combined.Identity)" Combined="%(Combined.Value)" CombinedBuild="%(Combined.Build)" />
+      <CombinedPublish1 Include="@(CombinedPublish2)" ConfigId="%(Config.Identity)" Config="%(Config.Value)" />
+      <CombinedPublish Include="@(CombinedPublish1)" BuildId="%(Build.Identity)" BuildCreate="%(Build.Create)" Build="%(Build.Build)" />
+      <CombinedPublish Update="@(CombinedPublish)" OutputPath="$(ArtifactsDir)mac-publish/App-%(BuildId)-%(ConfigId)-%(CombinedId)/" />
+    </ItemGroup>
+
+    <Exec Command="dotnet new etoapp %(CombinedPublish.Combined) %(BuildCreate) -o %(OutputPath) &amp;&amp; cd %(OutputPath) &amp;&amp; dotnet %(Build) %(Config) %(CombinedBuild)" EnvironmentVariables="NUGET_PACKAGES=$(ArtifactsDir)packages/" />
   </Target>
 
   <!-- build the MD/VS for Mac and/or the VS addin, depending on your platform -->

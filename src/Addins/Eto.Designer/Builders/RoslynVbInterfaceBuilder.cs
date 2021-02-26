@@ -1,4 +1,4 @@
-﻿#if VB
+﻿#if RoslynVB
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using System;

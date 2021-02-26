@@ -184,6 +184,8 @@ public class IncrementVersion : Task
       Version beforeVersion;
       if (!hasSuffix)
         beforeVersion = version;
+      else if (version.Build > 0)
+        beforeVersion = new Version(version.Major, version.Minor, version.Build - 1, 9999);
       else if (version.Minor > 0)
         beforeVersion = new Version(version.Major, version.Minor - 1, 9999, 0);
       else {

@@ -17,6 +17,7 @@ type MainForm () as this =
         base.Title <- "My Eto Form"
         base.MinimumSize <- new Size(200, 200)
 #endif
+        base.Padding <- new Padding(10)
 
         // table with three rows
         let layout = new StackLayout()

@@ -33,6 +33,7 @@
     </PackageReference>
     <PackageReference Include="System.ComponentModel.Composition" Version="5.0.0" />
     <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+    <PackageReference Include="FSharp.Core" Version="5.0.1" />
   </ItemGroup>
   <ItemGroup>
     <AddinReference Include="MonoDevelop.Xml" Version="8.8" />

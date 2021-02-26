@@ -10,12 +10,11 @@ using System.Text.RegularExpressions;
 
 namespace Eto.Addin.Shared
 {
-	public class ProjectWizardPageModel : OptionsPageModel, INotifyPropertyChanged
+	public class ProjectWizardPageModel : INotifyPropertyChanged
 	{
 		public IParameterSource Source { get; private set; }
 
-		public ProjectWizardPageModel(IParameterSource source, XElement optionsElement)
-			: base(optionsElement)
+		public ProjectWizardPageModel(IParameterSource source)
 		{
 			Source = source;
 			UsePCL = SupportsPCL;
@@ -211,11 +210,7 @@ namespace Eto.Addin.Shared
 			}
 		}
 
-		public override string Title
-		{
-			get { return string.Format("Eto.Forms {0} Properties", IsLibrary ? "Library" : "Application"); }
-			set { base.Title = value; }
-		}
+		public string Title => string.Format("Eto.Forms {0} Properties", IsLibrary ? "Library" : "Application");
 
 		public bool RequiresInput => SupportsCombined || SupportsProjectType || SupportsPanelType;
 
@@ -231,8 +226,8 @@ namespace Eto.Addin.Shared
 
 		static readonly FrameworkInfo[] frameworkInformation =
 		{
-			new FrameworkInfo { Text = ".NET 5", Value = "net5.0", CanUseCombined = false },
-			new FrameworkInfo { Text = ".NET Core 3.1", Value = "netcoreapp3.1", CanUseCombined = false },
+			new FrameworkInfo { Text = ".NET 5", Value = "net5.0", CanUseCombined = true },
+			new FrameworkInfo { Text = ".NET Core 3.1", Value = "netcoreapp3.1", CanUseCombined = true },
 			new FrameworkInfo { Text = ".NET Framework 4.8", Value = "net48", CanUseCombined = true },
 			new FrameworkInfo { Text = ".NET Framework 4.7.2", Value = "net472", CanUseCombined = true },
 			new FrameworkInfo { Text = ".NET Framework 4.6.2", Value = "net462", CanUseCombined = true },

@@ -1,5 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacTouchApp">
 
+  <Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True'" />
+  <Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True'" />
+
   <PropertyGroup>
     
     <!-- Specifies that the executable should be bundled using mkbundle so mono isn't required to be installed on the user's machine -->

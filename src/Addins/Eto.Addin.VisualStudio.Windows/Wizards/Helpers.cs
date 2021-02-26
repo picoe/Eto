@@ -33,27 +33,7 @@ namespace Eto.Addin.VisualStudio.Windows.Wizards
 			}
 		}
 
-		public static XNamespace WizardNamespace { get; } = XNamespace.Get("http://schemas.microsoft.com/developer/vstemplate/2005");
-
-		public static XDocument LoadWizardXml(Dictionary<string, string> replacementsDictionary)
-		{
-            if (replacementsDictionary.ContainsKey("$wizarddata$"))
-			{
-				var wizardData = "<root>" + replacementsDictionary["$wizarddata$"] + "</root>";
-				return XDocument.Load(new StringReader(wizardData));
-			}
-			return XDocument.Load(new StringReader("<root></root>"));
-		}
 		
-		static readonly Regex propertyRegex = new Regex(@"\$[\w\.]+\$", RegexOptions.Compiled);
-
-		internal static string ReplaceProperties(string value, Dictionary<string, string> replacementsDictionary)
-		{
-            if (string.IsNullOrEmpty(value))
-                return null;
-			return propertyRegex.Replace(value, match => replacementsDictionary[match.Value]);
-		}
-
 		const string SupportedParametersPrefix = "$IsSupportedParameter.";
 		const string ParametersPrefix = "$passthrough:";
 
@@ -120,33 +100,6 @@ namespace Eto.Addin.VisualStudio.Windows.Wizards
 					return false;
 			}
 			return true;
-		}
-
-		public static IEnumerable<ReplacementItem> FindMatchedItems(this IEnumerable<ReplacementGroup> groups, Dictionary<string, string> replacementsDictionary)
-		{
-			foreach (var group in groups.Where(r => replacementsDictionary.MatchesCondition(r.Condition)))
-			{
-				foreach (var item in group.Replacements.Where(r => replacementsDictionary.MatchesCondition(r.Condition)))
-				{
-					yield return item;
-				}
-			}
-		}
-
-		public static void SetMatchedItems(this IEnumerable<ReplacementGroup> groups, Dictionary<string, string> replacementsDictionary)
-		{
-			foreach (var replacement in groups.FindMatchedItems(replacementsDictionary))
-			{
-				var content = replacement.Content;
-				if (replacement.ReplaceParameters)
-				{
-					foreach (var replacementItem in replacementsDictionary)
-					{
-						content = content.Replace(replacementItem.Key, replacementItem.Value);
-					}
-				}
-				replacementsDictionary[replacement.Name] = content;
-			}
 		}
 	}
 }

@@ -32,8 +32,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{95227DFB-FD41-4709-BB54-3EA94C89C9C1}"
 	ProjectSection(SolutionItems) = preProject
 		..\.editorconfig = ..\.editorconfig
-		..\appveyor.yml = ..\appveyor.yml
-		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\build\Build.proj = ..\build\Build.proj
 		..\build\Common.Build.props = ..\build\Common.Build.props
 		..\build\Common.Build.targets = ..\build\Common.Build.targets

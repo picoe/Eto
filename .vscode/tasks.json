@@ -28,6 +28,50 @@
 			}
 		},
 		{
+			"label": "build-templates",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/src/Addins/Eto.Forms.Templates/Eto.Forms.Templates.csproj ; dotnet new -i ${workspaceFolder}/",
+			"type": "shell",
+			"problemMatcher": "$msCompile",
+			"group": "build",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "generate-templates",
+			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:GenerateTemplates",
+			"type": "shell",
+			"dependsOn": [ "build-templates" ],
+			"problemMatcher": "$msCompile",
+			"group": "build",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "test-mac-publishing",
+			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:TestMacPublishing",
+			"type": "shell",
+			"problemMatcher": "$msCompile",
+			"group": "build",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "build-packages",
+			"command": "dotnet msbuild /t:Package ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
+			"type": "shell",
+			"problemMatcher": "$msCompile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "build-gtk",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj",
 			"type": "shell",
@@ -139,7 +183,7 @@
 			"type": "promptString",
 			"id": "version",
 			"description": "Enter the version to update to",
-			"default": "2.5.x"
+			"default": "2.5.x-dev"
 		}
 	]
 }
