@@ -90,6 +90,12 @@ jobs:
         mono-version: latest
         xamarin-mac-version: latest
         xcode-version: latest
+    
+    # See https://github.com/actions/virtual-environments/issues/2790
+    - name: Fix issue with latest macos image
+      run: |
+        curl -o xamarinmac.pkg 'https://bosstoragemirror.blob.core.windows.net/wrench/xcode12.4/a4c70e7d04e3904d17aa60f6d640eb048081c757/4477741/package/notarized/xamarin.mac-7.4.0.10.pkg'
+        sudo installer -pkg xamarinmac.pkg -target /
 
     - name: Import code signing certificate
       if: github.event_name != 'pull_request'
