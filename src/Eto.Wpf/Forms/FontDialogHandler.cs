@@ -40,7 +40,7 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		private void FontChanged(object sender, EventArgs e)
+		private void FontChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			if (DisableFontChanged > 0)
 				return;

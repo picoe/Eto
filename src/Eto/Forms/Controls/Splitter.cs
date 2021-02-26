@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -20,6 +21,27 @@ namespace Eto.Forms
 		/// Both panels will resize along with the splitter's container.
 		/// </summary>
 		None
+	}
+
+	/// <summary>
+	/// Event arguments for the <see cref="Splitter.PositionChanging"/> event.
+	/// </summary>
+	public class SplitterPositionChangingEventArgs : CancelEventArgs
+	{
+		/// <summary>
+		/// The new position for the splitter
+		/// </summary>
+		/// <value></value>
+		public int NewPosition { get; }
+
+		/// <summary>
+		/// Initializes a new instance of the SplitterPositionChangingEventArgs class
+		/// </summary>
+		/// <param name="newPosition"></param>
+		public SplitterPositionChangingEventArgs(int newPosition)
+		{
+			NewPosition = newPosition;
+		}
 	}
 
 	/// <summary>
@@ -85,11 +107,35 @@ namespace Eto.Forms
 			Properties.TriggerEvent(PositionChangedEvent, this, e);
 		}
 
+		/// <summary>
+		/// Identifier for the <see cref="PositionChanging"/> event
+		/// </summary>
+		public const string PositionChangingEvent = "Splitter.PositionChanging";
+
+		/// <summary>
+		/// Raised when the user moves the splitter. Set <see cref="CancelEventArgs.Cancel" /> to true to abort the change.
+		/// </summary>
+		public event EventHandler<SplitterPositionChangingEventArgs> PositionChanging
+		{
+			add { Properties.AddHandlerEvent(PositionChangingEvent, value); }
+			remove { Properties.RemoveEvent(PositionChangingEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="PositionChanging"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnPositionChanging(SplitterPositionChangingEventArgs e)
+		{
+			Properties.TriggerEvent(PositionChangingEvent, this, e);
+		}
+
 		#endregion
 
 		static Splitter()
 		{
 			EventLookup.Register<Splitter>(c => c.OnPositionChanged(null), Splitter.PositionChangedEvent);
+			EventLookup.Register<Splitter>(c => c.OnPositionChanging(null), Splitter.PositionChangingEvent);
 		}
 
 		/// <summary>
@@ -232,6 +278,10 @@ namespace Eto.Forms
 			/// Raises the position changed event.
 			/// </summary>
 			void OnPositionChanged(Splitter widget, EventArgs e);
+			/// <summary>
+			/// Raises the position changing event.
+			/// </summary>
+			void OnPositionChanging(Splitter widget, SplitterPositionChangingEventArgs e);
 		}
 
 		/// <summary>
@@ -246,6 +296,14 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnPositionChanged(e);
+			}
+			/// <summary>
+			/// Raises the position changing event.
+			/// </summary>
+			public void OnPositionChanging(Splitter widget, SplitterPositionChangingEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnPositionChanging(e);
 			}
 		}
 

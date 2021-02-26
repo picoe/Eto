@@ -93,9 +93,14 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				case Splitter.PositionChangedEvent:
 					PositionChangedEnabled++;
-					Widget.Properties.Set(swc.RowDefinition.HeightProperty, PropertyChangeNotifier.Register(swc.RowDefinition.HeightProperty, HandlePositionChanged, Control.RowDefinitions[0]));
-					Widget.Properties.Set(swc.ColumnDefinition.WidthProperty, PropertyChangeNotifier.Register(swc.ColumnDefinition.WidthProperty, HandlePositionChanged, Control.ColumnDefinitions[0]));
+					AttachPropertyChanged(swc.RowDefinition.HeightProperty, HandlePositionChanged, Control.RowDefinitions[0]);
+					AttachPropertyChanged(swc.ColumnDefinition.WidthProperty, HandlePositionChanged, Control.ColumnDefinitions[0]);
 					PositionChangedEnabled--;
+					break;
+				case Splitter.PositionChangingEvent:
+					splitter.DragStarted += (sender, e) => HandlePositionChanging(e.HorizontalOffset, e.VerticalOffset);
+					splitter.DragCompleted += (sender, e) => e.Handled = HandlePositionChanging(e.HorizontalChange, e.VerticalChange);
+					splitter.DragDelta += (sender, e) => e.Handled = HandlePositionChanging(e.HorizontalChange, e.VerticalChange);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -103,9 +108,44 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		void HandlePositionChanged(object sender, EventArgs e)
+		void HandlePositionChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
-			OnPositionChanged();
+			if (PositionChangedEnabled > 0)
+				return;
+			// we use actual width vs. width itself, so we have to use the value passed in
+			var old = position;
+			var pos = (sw.GridLength)e.NewValue;
+			if (pos.GridUnitType == sw.GridUnitType.Pixel)
+			{
+				var newPosition = (int)pos.Value;
+				if (newPosition != Position)
+				{
+					var args = new SplitterPositionChangingEventArgs(newPosition);
+					Callback.OnPositionChanging(Widget, args);
+					if (args.Cancel)
+					{
+						return;
+					}
+				}
+				position = newPosition;
+			}
+			Callback.OnPositionChanged(Widget, EventArgs.Empty);
+			position = old;
+		}
+
+		bool HandlePositionChanging(double horizontal, double vertical)
+		{
+			var position = DoublePosition;
+			if (orientation == Orientation.Horizontal)
+				position += horizontal;
+			else
+				position += vertical;
+			// restrict to control size
+			position = Math.Max(0, Math.Min(GetAvailableSize(false), position));
+
+			var args = new SplitterPositionChangingEventArgs((int)Math.Round(position));
+			Callback.OnPositionChanging(Widget, args);
+			return args.Cancel;
 		}
 
 		static object PositionChangedEnabled_Key = new object();
@@ -113,12 +153,6 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Widget.Properties.Get(PositionChangedEnabled_Key, 0); }
 			set { Widget.Properties.Set(PositionChangedEnabled_Key, value, 0); }
-		}
-
-		void OnPositionChanged()
-		{
-			if (PositionChangedEnabled == 0)
-				Callback.OnPositionChanged(Widget, EventArgs.Empty);
 		}
 
 		void SetInitialPosition()
@@ -370,16 +404,23 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public int Position
+		double DoublePosition
 		{
 			get
 			{
+				if (position != null)
+					return position.Value;
 				if (!Control.IsLoaded && !WasLoaded)
-					return position ?? 0;
+					return 0;
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns)
-					return (int)Math.Round(Control.ColumnDefinitions[0].ActualWidth);
-				return (int)Math.Round(Control.RowDefinitions[0].ActualHeight);
+					return Control.ColumnDefinitions[0].ActualWidth;
+				return Control.RowDefinitions[0].ActualHeight;
 			}
+		}
+
+		public int Position
+		{
+			get => (int)Math.Round(DoublePosition);
 			set
 			{
 				SetPosition(value);
@@ -633,12 +674,12 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		void HandlePanel2IsVisibleChanged(object sender, EventArgs e)
+		void HandlePanel2IsVisibleChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			HandlePanelVisibleChanged(ref panel2Visible, panel2);
 		}
 
-		void HandlePanel1IsVisibleChanged(object sender, EventArgs e)
+		void HandlePanel1IsVisibleChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			HandlePanelVisibleChanged(ref panel1Visible, panel1);
 		}

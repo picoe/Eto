@@ -399,5 +399,45 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				return tabs;
 			});
 		}
+
+		[Test, ManualTest]
+		public void SplitterChangingShouldAllowRestrictingWithoutArtifacts()
+		{
+			int? outOfBounds = null;
+			ManualForm("Splitter should be restricted between 100 and 200, and start at 300", form => {
+            	form.ClientSize = new Size(600, 300);
+				var splitter = new Splitter {
+
+					Panel1 = new Panel { BackgroundColor = Colors.Blue, Size = new Size(300, 200) },
+					Panel2 = new Panel { BackgroundColor = Colors.Red, Size = new Size(300, 200) }
+				};
+
+				splitter.PositionChanging += (sender, e) => {
+					System.Diagnostics.Debug.WriteLine($"PositionChanging, Position {splitter.Position}, NewPosition: {e.NewPosition}");
+					if (e.NewPosition < 100)
+					{
+						splitter.Position = 100;
+						e.Cancel = true;
+					}
+					if (e.NewPosition > 200)
+					{
+						splitter.Position = 200;
+						e.Cancel = true;
+					}
+				};
+				splitter.PositionChanged += (sender, e) => {
+					var position = splitter.Position;
+					System.Diagnostics.Debug.WriteLine($"PositionChanged, Position: {position}");
+					if (position > 200 || position < 100)
+					{
+						outOfBounds = position;
+						form.Close();
+					}
+				};
+
+		    	return splitter;
+			});
+			Assert.IsNull(outOfBounds, $"#1 - Position went out of bounds 100-200, was {outOfBounds}");
+		}
 	}
 }

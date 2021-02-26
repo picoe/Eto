@@ -216,7 +216,7 @@ namespace Eto.Test.Sections.Controls
 
 			public SplitLayout(Panel[] panels = null)
 			{
-				Panels = panels ?? new []
+				Panels = panels ?? new[]
 				{
 					new Panel(), new Panel(), new Panel(), new Panel(), new Panel(), new Panel()
 				};
@@ -356,11 +356,12 @@ namespace Eto.Test.Sections.Controls
 						size.Height -= split.SplitterWidth;
 					if (size.Width <= 0 || size.Height <= 0)
 						return;
-					app.AsyncInvoke(() => {
-					area.Text = string.Format(
-						"W:{0} ({1}%)\r\nH:{2} ({3}%)",
-						area.Width, (area.Width * 200 + size.Width) / (size.Width + size.Width),
-						area.Height, (area.Height * 200 + size.Height) / (size.Height + size.Height));
+					app.AsyncInvoke(() =>
+					{
+						area.Text = string.Format(
+							"W:{0} ({1}%)\r\nH:{2} ({3}%)",
+							area.Width, (area.Width * 200 + size.Width) / (size.Width + size.Width),
+							area.Height, (area.Height * 200 + size.Height) / (size.Height + size.Height));
 					});
 				};
 				return area;
@@ -449,6 +450,30 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+		enum PanelVisible
+		{
+			Visible,
+			Invisible,
+			Null
+		}
+
+		// should support all transitions
+		// Visible > Invisible
+		// Invisible > Null
+		// Null > Visible
+		// Visible > Null
+		// Null > Invisible
+		// Invisible > Visible
+		static PanelVisible[] modes = {
+			PanelVisible.Visible,
+			PanelVisible.Invisible,
+			PanelVisible.Null,
+			PanelVisible.Visible,
+			PanelVisible.Null,
+			PanelVisible.Invisible,
+		};
+
+
 		Button TestHiding()
 		{
 			var control = new Button { Text = "Test Hiding" };
@@ -479,40 +504,41 @@ namespace Eto.Test.Sections.Controls
 					var orientation = new EnumDropDown<Orientation>();
 					orientation.SelectedValueBinding.Bind(splitter, r => r.Orientation);
 
+
 					int count = 0;
+					Control CreatePanel(string desc, ref int mode, Color color)
+					{
+						mode++;
+						if (mode >= modes.Length)
+							mode = 0;
+						var vis = modes[mode];
+						switch (vis)
+						{
+							case PanelVisible.Visible:
+							case PanelVisible.Invisible:
+								bool isVisible = vis == PanelVisible.Visible;
+								Log.Write(this, $"Replacing {desc} to a control with Visible = {isVisible} (mode {mode})");
+								return new Panel { Padding = 20, BackgroundColor = color, Visible = isVisible, Content = new Panel { BackgroundColor = Colors.White, Content = $"Count: {count++}" } };
+							default:
+								Log.Write(this, $"Replacing {desc} with null (mode {mode})");
+								return null;
+						}
+					}
+					int panel1Mode = 0;
+					int panel2Mode = 0;
 					var replacePanel1Button = new Button { Text = "Replace Panel1" };
 					replacePanel1Button.Click += (s, ee) =>
 					{
-						bool isVisible = rnd.Next(2) == 1;
 						showPanel1.Unbind();
-						if (isVisible || rnd.Next(2) == 1)
-						{
-							Log.Write(this, $"Replacing Panel1 to a control with Visible = {isVisible}");
-							splitter.Panel1 = new Panel { Padding = 20, BackgroundColor = Colors.Red, Visible = isVisible, Content = new Panel { BackgroundColor = Colors.White, Content = $"Count: {count++}" } };
-						}
-						else
-						{
-							Log.Write(this, "Replacing Panel1 with null");
-							splitter.Panel1 = null;
-						}
+						splitter.Panel1 = CreatePanel("Panel1", ref panel1Mode, Colors.Red);
 						showPanel1.CheckedBinding.Bind(splitter.Panel1, r => r.Visible);
 					};
 
 					var replacePanel2Button = new Button { Text = "Replace Panel2" };
 					replacePanel2Button.Click += (s, ee) =>
 					{
-						bool isVisible = rnd.Next(2) == 1;
 						showPanel2.Unbind();
-						if (isVisible || rnd.Next(2) == 1)
-						{
-							Log.Write(this, $"Replacing Panel2 to a control with Visible = {isVisible}");
-							splitter.Panel2 = new Panel { Padding = 20, BackgroundColor = Colors.Blue, Visible = isVisible, Content = new Panel { BackgroundColor = Colors.White, Content = $"Count: {count++}" } };
-						}
-						else
-						{
-							Log.Write(this, "Replacing Panel2 with null");
-							splitter.Panel2 = null;
-						}
+						splitter.Panel2 = CreatePanel("Panel2", ref panel2Mode, Colors.Blue);
 						showPanel2.CheckedBinding.Bind(splitter.Panel2, r => r.Visible);
 					};
 
@@ -520,7 +546,8 @@ namespace Eto.Test.Sections.Controls
 					var splitPanel = new Panel { Content = splitter };
 
 					var showSplitter = new CheckBox { Text = "Show Splitter", Checked = true };
-					showSplitter.CheckedChanged += (sender2, e2) => {
+					showSplitter.CheckedChanged += (sender2, e2) =>
+					{
 						if (showSplitter.Checked == true)
 							splitPanel.Content = splitter;
 						else
@@ -529,7 +556,7 @@ namespace Eto.Test.Sections.Controls
 
 					var buttons1 = TableLayout.Horizontal(null, showSplitter, showPanel1, showPanel2, fixedPanel, orientation, null);
 					var buttons2 = TableLayout.Horizontal(null, replacePanel1Button, replacePanel2Button, null);
-				
+
 					form.Content = new StackLayout
 					{
 						HorizontalContentAlignment = HorizontalAlignment.Stretch,

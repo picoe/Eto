@@ -126,13 +126,13 @@ namespace Eto.WinForms.Forms.Controls
 			Control.HandleCreated += (sender, e) =>
 			{
 				SetInitialPosition();
-				HookEvents();
 				SetFixedPanel();
 			};
 			Control.SplitterMoved += (sender, e) => CheckSplitterPos();
 		}
 
 		int splitterMoving;
+		int lastPosition;
 		private void CheckSplitterPos()
 		{
 			if (splitterMoving > 0)
@@ -142,25 +142,42 @@ namespace Eto.WinForms.Forms.Controls
 			if (controlsize <= panel1MinimumSize)
 				return;
 
+			if (Widget.ParentWindow == null || !Widget.Loaded || suppressSplitterMoved > 0)
+				return;
+
 			splitterMoving++;
-			if (Control.SplitterDistance > controlsize - panel2MinimumSize)
-				Control.SplitterDistance = controlsize - panel2MinimumSize;
+			var originalPosition = Control.SplitterDistance;
+			var newPosition = originalPosition;
+			if (newPosition > controlsize - panel2MinimumSize)
+				newPosition = controlsize - panel2MinimumSize;
 
-			if (Control.SplitterDistance < panel1MinimumSize)
-				Control.SplitterDistance = panel1MinimumSize;
-			splitterMoving--;
-		}
-
-		void HookEvents()
-		{
-			Control.SplitterMoved += (sender, e) =>
+			if (newPosition < panel1MinimumSize)
+				newPosition = panel1MinimumSize;
+			
+			position = lastPosition;
+			var args = new SplitterPositionChangingEventArgs(newPosition);
+			Callback.OnPositionChanging(Widget, args);
+			position = null;
+			if (args.Cancel)
 			{
-				if (Widget.ParentWindow == null || !Widget.Loaded || suppressSplitterMoved > 0)
-					return;
-				// keep track of the desired position (for removing/re-adding/resizing the control)
-				UpdateRelative();
-				Callback.OnPositionChanged(Widget, EventArgs.Empty);
-			};
+				newPosition = lastPosition;
+			}
+
+			if (lastPosition != newPosition)
+			{
+				if (Control.IsHandleCreated)
+				{
+					// keep track of the desired position (for removing/re-adding/resizing the control)
+					UpdateRelative();
+					position = newPosition;
+					Callback.OnPositionChanged(Widget, EventArgs.Empty);
+				}
+
+				Control.SplitterDistance = newPosition;
+			}
+			lastPosition = newPosition;
+				
+			splitterMoving--;
 		}
 
 		public override void AttachEvent(string id)
@@ -168,6 +185,7 @@ namespace Eto.WinForms.Forms.Controls
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
+				case Splitter.PositionChangingEvent:
 					break;
 				default:
 					base.AttachEvent(id);
@@ -177,7 +195,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int Position
 		{
-			get { return Control.SplitterDistance; }
+			get { return position ?? Control.SplitterDistance; }
 			set
 			{
 				if (value != position)
@@ -257,7 +275,7 @@ namespace Eto.WinForms.Forms.Controls
 				: fixedPanel == SplitterFixedPanel.Panel2 ? Math.Max(0, size - newPosition)
 				: size <= 0 ? 0.5 : Math.Max(0.0, Math.Min(1.0, newPosition / (double)size));
 			if (size > 0)
-				Control.SplitterDistance = Math.Max(0, Math.Min(size, newPosition));
+				Control.SplitterDistance = lastPosition = Math.Max(0, Math.Min(size, newPosition));
 		}
 		void SetRelative(double newRelative)
 		{
@@ -271,15 +289,16 @@ namespace Eto.WinForms.Forms.Controls
 				switch (fixedPanel)
 				{
 					case SplitterFixedPanel.Panel1:
-					Control.SplitterDistance = Math.Max(0, Math.Min(size, (int)Math.Round(relative)));
+						lastPosition = Math.Max(0, Math.Min(size, (int)Math.Round(relative)));
 						break;
 					case SplitterFixedPanel.Panel2:
-					Control.SplitterDistance = Math.Max(0, Math.Min(size, size - (int)Math.Round(relative)));
+						lastPosition = Math.Max(0, Math.Min(size, size - (int)Math.Round(relative)));
 						break;
 					case SplitterFixedPanel.None:
-					Control.SplitterDistance = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
+						lastPosition = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
 						break;
 				}
+				Control.SplitterDistance = lastPosition;
 			}
 			catch
 			{
