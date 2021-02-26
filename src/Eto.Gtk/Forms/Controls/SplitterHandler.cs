@@ -173,12 +173,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public int Position
 		{
-			get { return Control.Position; }
+			get { return position ?? Control.Position; }
 			set
 			{
 				if (value != position)
 				{
 					position = value;
+					lastPosition = value;
 					relative = double.NaN;
 					if (Control.IsRealized)
 						SetPosition(value);
@@ -254,6 +255,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				: fixedPanel == SplitterFixedPanel.Panel2 ? Math.Max(0, size - newPosition)
 				: size <= 0 ? 0.5 : Math.Max(0.0, Math.Min(1.0, newPosition / (double)size));
 			Control.Position = newPosition;
+			lastPosition = newPosition;
 		}
 
 		void SetRelative(double newRelative)
@@ -266,15 +268,16 @@ namespace Eto.GtkSharp.Forms.Controls
 			switch (fixedPanel)
 			{
 				case SplitterFixedPanel.Panel1:
-					Control.Position = Math.Max(0, Math.Min(size, (int)Math.Round(relative)));
+					lastPosition = Math.Max(0, Math.Min(size, (int)Math.Round(relative)));
 					break;
 				case SplitterFixedPanel.Panel2:
-					Control.Position = Math.Max(0, Math.Min(size, size - (int)Math.Round(relative)));
+					lastPosition = Math.Max(0, Math.Min(size, size - (int)Math.Round(relative)));
 					break;
 				case SplitterFixedPanel.None:
-					Control.Position = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
+					lastPosition = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
 					break;
 			}
+			Control.Position = lastPosition;
 		}
 
 		public SplitterFixedPanel FixedPanel
@@ -363,22 +366,41 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		void HookEvents()
 		{
-			if (EtoEnvironment.Platform.IsMac)
-				Control.AddNotification("position", PositionChangedBefore); // macOS throw NRE when resizing the window without this
 			Control.AddNotification("position", PositionChanged);
 		}
-
-		[GLib.ConnectBefore]
-		void PositionChangedBefore(object o, GLib.NotifyArgs args) => PositionChanged(o, args);
+		int lastPosition;
 
 		void PositionChanged(object o, GLib.NotifyArgs args)
 		{
 			if (!Widget.Loaded || suppressSplitterMoved > 0)
 				return;
+
+			suppressSplitterMoved++;
 			// keep track of the desired position (for removing/re-adding/resizing the control)
-			UpdateRelative();
 			EnsurePosition();
-			Callback.OnPositionChanged(Widget, EventArgs.Empty);
+
+			var newPosition = Position;
+			if (newPosition == lastPosition)
+			{
+				suppressSplitterMoved--;
+				return;
+			}
+			position = lastPosition;
+			var e = new SplitterPositionChangingEventArgs(newPosition);
+			Callback.OnPositionChanging(Widget, e);
+			position = null;
+			if (e.Cancel)
+			{
+				Position = lastPosition;
+				args.RetVal = false;
+			}
+			else
+			{
+				UpdateRelative();
+				lastPosition = newPosition;
+				Callback.OnPositionChanged(Widget, EventArgs.Empty);
+			}
+			suppressSplitterMoved--;
 		}
 
 		public override void AttachEvent(string id)
@@ -386,6 +408,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
+				case Splitter.PositionChangingEvent:
 					break;
 				default:
 					base.AttachEvent(id);
@@ -502,6 +525,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		static Gtk.Widget EmptyContainer()
 		{
 			var bin = new Gtk.VBox();
+			bin.Visible = false;
+			bin.NoShowAll = true;
 			return bin;
 		}
 

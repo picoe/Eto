@@ -50,7 +50,7 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
-		void HandleIsOpenChanged(object sender, EventArgs e)
+		void HandleIsOpenChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			if (!Control.IsOpen)
 				Callback.OnClosing(Widget, EventArgs.Empty);

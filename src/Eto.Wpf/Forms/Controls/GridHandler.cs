@@ -282,10 +282,10 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Loaded += Control_Loaded;
 
 			// Listen to changes of the column header style so we can apply column styles appropriately for alignment
-			Widget.Properties.Set(swc.DataGrid.ColumnHeaderStyleProperty, PropertyChangeNotifier.Register(swc.DataGrid.ColumnHeaderStyleProperty, Control_ColumnHeaderStyleChanged, Control));
+			AttachPropertyChanged(swc.DataGrid.ColumnHeaderStyleProperty, Control_ColumnHeaderStyleChanged, Control);
 		}
 
-		private void Control_ColumnHeaderStyleChanged(object sender, EventArgs e)
+		private void Control_ColumnHeaderStyleChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			foreach (var col in Widget.Columns)
 			{

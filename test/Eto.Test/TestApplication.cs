@@ -9,78 +9,6 @@ using System.Reflection;
 
 namespace Eto.Test
 {
-
-	class TestForm : Form
-	{
-     	public TestForm()
-        {
-            Title = "GM Kickout";
-			Menu = new MenuBar();
-            MinimumSize = new Size(200, 200);
-            Size = new Size(600, 300);
-            var root  = new DynamicLayout();
-            root.BackgroundColor = Colors.White;
-
-            var header = new DynamicLayout();
-            header.Height = 70;
-            header.BackgroundColor = Color.FromRgb(0x008080);
-
-            root.Add(header);
-
-            var content = new DynamicLayout();
-            content.Padding = new Padding(0, 20, 0, 0);
-           
-
-            var layout1 = CreateMainContentItem("Content Editor", "Edit the Content files of the project.", null);
-            content.Add(layout1);
-            root.Add(content);
-	    Content = root;
-
-            Focus();
-	}
-        public static DynamicLayout CreateMainContentItem(string title, string description, Action click)
-        {
-            DynamicLayout layout = new DynamicLayout();
-            
-            StackLayout stackLayout = new StackLayout();
-            stackLayout.Orientation = Orientation.Vertical;
-            stackLayout.Padding = new Padding(0, 10);
-            stackLayout.HorizontalContentAlignment = HorizontalAlignment.Center;
-            stackLayout.MouseEnter += ((e, o) =>
-            {
-                stackLayout.BackgroundColor = Color.FromRgb(0xdfdfdf);
-            });
-            stackLayout.MouseDown += ((e, o) =>
-            {
-                stackLayout.BackgroundColor = Color.FromRgb(0x008080);
-                if(click != null)
-                click();
-            });
-            stackLayout.MouseLeave += ((e, o) =>
-            {
-                stackLayout.BackgroundColor = SystemColors.ControlBackground;
-            });
-
-            Label titleLbl = new Label();
-            titleLbl.TextColor = Color.FromRgb(0xf88379);
-            titleLbl.Font = new Font(SystemFont.Label, 20f);
-            titleLbl.Text = title;
-
-            Label descriptionLbl = new Label();
-            descriptionLbl.Font = new Font(SystemFont.Label);
-            descriptionLbl.Text = description;
-
-            stackLayout.Items.Add(titleLbl);
-            stackLayout.Items.Add(descriptionLbl);
-
-            StackLayout dummy = new StackLayout();
-            layout.Add(stackLayout);
-            layout.Add(dummy);
-
-            return layout;
-        }		
-	}
-	
 	public class TestApplication : Application
 	{
 		static Settings settings;
@@ -121,7 +49,6 @@ namespace Eto.Test
 		protected override void OnInitialized(EventArgs e)
 		{
 			MainForm = new MainForm(TestSections.Get(TestAssemblies));
-			// MainForm = new TestForm();
 
 			base.OnInitialized(e);
 

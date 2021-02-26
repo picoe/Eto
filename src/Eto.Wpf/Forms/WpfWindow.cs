@@ -32,6 +32,7 @@ namespace Eto.Wpf.Forms
 		internal static readonly object MovableByWindowBackground_Key = new object();
 		internal static EventInfo dpiChangedEvent = typeof(sw.Window).GetEvent("DpiChanged");
 		internal static readonly object LastPixelSize_Key = new object();
+		internal static readonly object IsClosing_Key = new object();
 		internal static readonly object LocationSet_Key = new object();
 
 
@@ -200,29 +201,7 @@ namespace Eto.Wpf.Forms
 					};
 					break;
 				case Window.ClosingEvent:
-					Control.Closing += (sender, e) =>
-					{
-						var args = new CancelEventArgs { Cancel = e.Cancel };
-						Callback.OnClosing(Widget, args);
-						var willShutDown =
-							(
-								sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
-								&& sw.Application.Current.Windows.Count == 1
-							)
-							|| (
-								sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
-								&& sw.Application.Current.MainWindow == Control
-							);
-
-						if (!args.Cancel && willShutDown)
-						{
-							// last window closing, so call OnTerminating to let the app abort terminating
-							var app = ((ApplicationHandler)Application.Instance.Handler);
-							app.Callback.OnTerminating(app.Widget, args);
-						}
-						e.Cancel = args.Cancel;
-						IsApplicationClosing = !args.Cancel && willShutDown;
-					};
+					Control.Closing += Control_Closing;
 					break;
 				case Window.WindowStateChangedEvent:
 					Control.StateChanged += (sender, e) => Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
@@ -251,6 +230,38 @@ namespace Eto.Wpf.Forms
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		bool IsClosing
+		{
+			get => Widget.Properties.Get<bool>(WpfWindow.IsClosing_Key);
+			set => Widget.Properties.Set(WpfWindow.IsClosing_Key, value);
+		}
+
+		private void Control_Closing(object sender, CancelEventArgs e)
+		{
+			IsClosing = true;
+			var args = new CancelEventArgs { Cancel = e.Cancel };
+			Callback.OnClosing(Widget, args);
+			var willShutDown =
+				(
+					sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
+					&& sw.Application.Current.Windows.Count == 1
+				)
+				|| (
+					sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
+					&& sw.Application.Current.MainWindow == Control
+				);
+
+			if (!args.Cancel && willShutDown)
+			{
+				// last window closing, so call OnTerminating to let the app abort terminating
+				var app = ((ApplicationHandler)Application.Instance.Handler);
+				app.Callback.OnTerminating(app.Widget, args);
+			}
+			e.Cancel = args.Cancel;
+			IsApplicationClosing = !e.Cancel && willShutDown;
+			IsClosing = !e.Cancel;
 		}
 
 		float LastPixelSize
@@ -328,7 +339,11 @@ namespace Eto.Wpf.Forms
 		public void Close()
 		{
 			if (!IsApplicationClosing)
-				Control.Close();
+			{
+				// prevent crash if we call this more than once..
+				if (!IsClosing)
+					Control.Close();
+			}
 			else
 				Visible = false;
 

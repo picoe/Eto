@@ -123,6 +123,7 @@ namespace Eto.Mac.Forms.Controls
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
+				case Splitter.PositionChangingEvent:
 					// handled by delegate
 					break;
 				default:
@@ -293,6 +294,12 @@ namespace Eto.Mac.Forms.Controls
 					proposedPosition = (nfloat)Math.Min(totalSize, proposedPosition);
 				}
 
+				var args = new SplitterPositionChangingEventArgs((int)Math.Round(proposedPosition));
+				h.Callback.OnPositionChanging(h.Widget, args);
+				if (args.Cancel)
+					return h.Position;
+
+
 				return (nfloat)Math.Round(proposedPosition);
 			}
 			
@@ -318,6 +325,7 @@ namespace Eto.Mac.Forms.Controls
 					h.Callback.OnPositionChanged(h.Widget, EventArgs.Empty);
 				}
 			}
+
 		}
 		// stupid hack for OSX 10.5 so that mouse down/drag/up events fire in children properly..
 		public class EtoSplitView : NSSplitView, IMacControl
@@ -639,6 +647,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.InvalidateMeasure();
 			Control.NeedsLayout = true;
+			UpdatePosition();
 		}
 
 		void UpdatePosition()
