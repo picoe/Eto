@@ -104,6 +104,25 @@ namespace Eto.Test.Sections.Behaviors
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 6", Shortcut = Keys.I });
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Disabled Item 2", Enabled = false });
 
+
+			var dynamicSubMenu = new SubMenuItem { Text = "Dynamic Sub Menu" };
+			dynamicSubMenu.Opening += (sender, e) => {
+				Log.Write(dynamicSubMenu, "Opening");
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 1" });
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 2" });
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 3", Enabled = false });
+				LogEvents(dynamicSubMenu);
+			};
+			dynamicSubMenu.Closing += (sender, e) => {
+				Log.Write(dynamicSubMenu, "Closing");
+			};
+			dynamicSubMenu.Closed += (sender, e) => {
+				Log.Write(dynamicSubMenu, "Closed");
+				dynamicSubMenu.Items.Clear();
+			};
+
+			_menu.Items.Add(dynamicSubMenu);
+
 			_menu.Items.AddSeparator();
 			RadioMenuItem radioController;
 			_menu.Items.Add(radioController = new RadioMenuItem { Text = "Radio 1" });

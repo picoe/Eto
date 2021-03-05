@@ -1,7 +1,7 @@
 using System;
 using Eto.Drawing;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -16,13 +16,13 @@ namespace Eto.Forms
 	{
 		MenuItemCollection items;
 
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets the collection of menu items.
 		/// </summary>
 		/// <value>The items.</value>
-		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler, this)); } }
+		public MenuItemCollection Items => items ?? (items = new MenuItemCollection(Handler, this));
 
 		/// <summary>
 		/// Gets a value indicating whether this sub menu should trim its child menu items when loaded onto a form
@@ -74,6 +74,7 @@ namespace Eto.Forms
 			set { Handler.Image = value; }
 		}
 
+		[Obsolete]
 		IEnumerable<BindableWidget> IBindableWidgetContainer.Children => Items;
 
 		/// <summary>
@@ -83,8 +84,14 @@ namespace Eto.Forms
 		internal protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			foreach (var item in Items)
-				item.OnLoad(e);
+			if (items != null)
+			{
+				for (int i = 0; i < items.Count; i++)
+				{
+					MenuItem item = items[i];
+					item.OnLoad(e);
+				}
+			}
 		}
 
 		/// <summary>
@@ -94,8 +101,14 @@ namespace Eto.Forms
 		internal protected override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
-			foreach (var item in Items)
-				item.OnUnLoad(e);
+			if (items != null)
+			{
+				for (int i = 0; i < items.Count; i++)
+				{
+					MenuItem item = items[i];
+					item.OnUnLoad(e);
+				}
+			}
 		}
 
 		/// <summary>

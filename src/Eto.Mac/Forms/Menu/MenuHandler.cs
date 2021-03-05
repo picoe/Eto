@@ -42,7 +42,7 @@ namespace Eto.Mac.Forms.Menu
 		where TCallback : Eto.Forms.Menu.ICallback
 	{
 
-		public void EnsureSubMenu()
+		public virtual void EnsureSubMenu()
 		{
 			if (!Control.HasSubmenu)
 			{

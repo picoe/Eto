@@ -252,6 +252,7 @@ namespace Eto.Mac
 			p.Add<MenuBar.IHandler>(() => new MenuBarHandler());
 			p.Add<RadioMenuItem.IHandler>(() => new RadioMenuItemHandler());
 			p.Add<SeparatorMenuItem.IHandler>(() => new SeparatorMenuItemHandler());
+			p.Add<SubMenuItem.IHandler>(() => new SubMenuItemHandler());
 
 			// Forms.Printing
 			p.Add<PrintDialog.IHandler>(() => new PrintDialogHandler());

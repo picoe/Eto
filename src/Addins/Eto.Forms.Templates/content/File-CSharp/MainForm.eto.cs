@@ -41,9 +41,9 @@ namespace EtoApp.1
 				Items =
 				{
 					// File submenu
-					new ButtonMenuItem { Text = "&File", Items = { clickMe } },
-					// new ButtonMenuItem { Text = "&Edit", Items = { /* commands/items */ } },
-					// new ButtonMenuItem { Text = "&View", Items = { /* commands/items */ } },
+					new SubMenuItem { Text = "&File", Items = { clickMe } },
+					// new SubMenuItem { Text = "&Edit", Items = { /* commands/items */ } },
+					// new SubMenuItem { Text = "&View", Items = { /* commands/items */ } },
 				},
 				ApplicationItems =
 				{

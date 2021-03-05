@@ -176,15 +176,16 @@ namespace Eto.Forms
 
 			var matchText = convert(submenuText);
 
-			bool match(ButtonMenuItem r) => convert(r.Text) == matchText;
+			bool match(MenuItem r) => convert(r.Text) == matchText;
 
 			var submenu = this.OfType<ButtonMenuItem>().FirstOrDefault(match);
 
 			if (submenu == null && create)
 			{
-				submenu = new ButtonMenuItem { Text = submenuText, Order = order, Trim = true };
+				submenu = new SubMenuItem { Text = submenuText, Order = order, Trim = true };
 				Add(submenu);
 			}
+
 			return submenu;
 		}
 

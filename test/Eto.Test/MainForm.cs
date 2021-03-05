@@ -229,15 +229,15 @@ namespace Eto.Test
 					throw new InvalidOperationException("This is the exception message");
 				};
 
-				var subMenu = new ButtonMenuItem { Text = "Sub Menu" };
+				var subMenu = new SubMenuItem { Text = "Sub Menu" };
 				subMenu.Items.Add(new ButtonMenuItem { Text = "Item 1" });
 				subMenu.Items.Add(new ButtonMenuItem { Text = "Item 2" });
 				subMenu.Items.Add(new ButtonMenuItem { Text = "Item 3" });
 
-				var file = new ButtonMenuItem { Text = "&File", Items = { saveSettingsItem, fileCommand, crashCommand } };
-				var edit = new ButtonMenuItem { Text = "&Edit", Items = { editCommand, subMenu } };
-                var view = new ButtonMenuItem { Text = "&View", Items = { viewCommand } };
-				var window = new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { windowCommand } };
+				var file = new SubMenuItem { Text = "&File", Items = { saveSettingsItem, fileCommand, crashCommand } };
+				var edit = new SubMenuItem { Text = "&Edit", Items = { editCommand, subMenu } };
+                var view = new SubMenuItem { Text = "&View", Items = { viewCommand } };
+				var window = new SubMenuItem { Text = "&Window", Order = 1000, Items = { windowCommand } };
 
 				if (Platform.Supports<CheckMenuItem>())
 				{
