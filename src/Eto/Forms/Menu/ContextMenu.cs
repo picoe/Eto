@@ -44,6 +44,13 @@ namespace Eto.Forms
 		/// <value><c>true</c> to trim the child menu items; otherwise, <c>false</c>.</value>
 		public bool Trim { get; set; }
 
+		static ContextMenu()
+		{
+			RegisterEvent<ContextMenu>(c => c.OnOpening(null), OpeningEvent);
+			RegisterEvent<ContextMenu>(c => c.OnClosing(null), ClosingEvent);
+			RegisterEvent<ContextMenu>(c => c.OnClosed(null), ClosedEvent);
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class.
 		/// </summary>

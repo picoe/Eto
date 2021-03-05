@@ -15,7 +15,7 @@
 	"Menu": {
 		"Items": [
 			{ 
-				"$type": "ButtonMenuItem",
+				"$type": "SubMenuItem",
 				"Text": "&File",
 				"Items": [
 					{ "$type": "ButtonMenuItem", "Text": "Click Me!", "Click": "HandleClickMe" }

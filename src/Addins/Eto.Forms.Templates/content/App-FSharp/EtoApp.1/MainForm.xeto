@@ -15,9 +15,9 @@
 <!--#if(IsForm)-->
 	<Form.Menu>
 		<MenuBar>
-			<ButtonMenuItem Text="F&amp;ile">
+			<SubMenuItem Text="F&amp;ile">
 				<ButtonMenuItem Text="Click Me!" Click="HandleClickMe" />
-			</ButtonMenuItem>
+			</SubMenuItem>
 			<MenuBar.ApplicationItems>
 				<ButtonMenuItem Text="Preferences.." Shortcut="{On Control+O, Mac=Application+Comma}" />
 			</MenuBar.ApplicationItems>

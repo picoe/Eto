@@ -18,7 +18,13 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac.Forms.Menu
 {
-	public class ButtonMenuItemHandler : MenuHandler<NSMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler, IMenuActionHandler
+	public class ButtonMenuItemHandler : ButtonMenuItemHandler<ButtonMenuItem, ButtonMenuItem.ICallback>
+	{
+	}
+
+	public class ButtonMenuItemHandler<TWidget, TCallback> : MenuHandler<NSMenuItem, TWidget, TCallback>, ButtonMenuItem.IHandler, IMenuActionHandler
+		where TWidget: MenuItem
+		where TCallback: MenuItem.ICallback
 	{
 		Image image;
 		string text;
@@ -110,9 +116,8 @@ namespace Eto.Mac.Forms.Menu
 			Control.Image = ShowImage ? image.ToNS(16) : null;
 		}
 
-		MenuItem IMenuActionHandler.Widget
-		{
-			get { return Widget; }
-		}
+		MenuItem IMenuActionHandler.Widget => Widget;
+
+		MenuItem.ICallback IMenuActionHandler.Callback => Callback;
 	}
 }

@@ -22,7 +22,7 @@ namespace Eto.Test.Wpf.UnitTests
 				var form = new Form();
 				form.Menu = new MenuBar();
 
-				var file = new ButtonMenuItem { Text = "File" };
+				var file = new SubMenuItem { Text = "File" };
 
 				var command = new Command { MenuText = "Click Me!" };
 				command.Shortcut = Keys.Control | Keys.N;

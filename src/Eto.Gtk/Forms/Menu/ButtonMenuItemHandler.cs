@@ -5,12 +5,20 @@ using Eto.GtkSharp.Forms.Controls;
 
 namespace Eto.GtkSharp.Forms.Menu
 {
-	public class ButtonMenuItemHandler : MenuActionItemHandler<Gtk.ImageMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
+	public class ButtonMenuItemHandler : ButtonMenuItemHandler<ButtonMenuItem, ButtonMenuItem.ICallback>
+	{
+	}
+
+	public class ButtonMenuItemHandler<TWidget, TCallback> : MenuActionItemHandler<Gtk.ImageMenuItem, TWidget, TCallback>, ButtonMenuItem.IHandler
+		where TWidget: ButtonMenuItem
+		where TCallback: ButtonMenuItem.ICallback
 	{
 		string tooltip;
 		Keys shortcut;
 		Image image;
 		readonly Gtk.AccelLabel label;
+
+		protected Gtk.Menu Submenu => Control.Submenu as Gtk.Menu;
 
 		public ButtonMenuItemHandler()
 		{
@@ -29,16 +37,13 @@ namespace Eto.GtkSharp.Forms.Menu
 			Control.Activated += Connector.HandleActivated;
 		}
 
-		protected new ButtonMenuItemConnector Connector { get { return (ButtonMenuItemConnector)base.Connector; } }
+		protected new ButtonMenuItemConnector Connector => (ButtonMenuItemConnector)base.Connector;
 
-		protected override WeakConnector CreateConnector()
-		{
-			return new ButtonMenuItemConnector();
-		}
+		protected override WeakConnector CreateConnector() => new ButtonMenuItemConnector();
 
 		protected class ButtonMenuItemConnector : WeakConnector
 		{
-			public new ButtonMenuItemHandler Handler { get { return (ButtonMenuItemHandler)base.Handler; } }
+			public new ButtonMenuItemHandler<TWidget, TCallback> Handler => (ButtonMenuItemHandler<TWidget, TCallback>)base.Handler;
 
 			public void HandleActivated(object sender, EventArgs e)
 			{
@@ -101,17 +106,18 @@ namespace Eto.GtkSharp.Forms.Menu
 			}
 		}
 
-		public void AddMenu(int index, MenuItem item)
+		public virtual void AddMenu(int index, MenuItem item)
 		{
-			if (Control.Submenu == null) Control.Submenu = new Gtk.Menu();
-			((Gtk.Menu)Control.Submenu).Insert((Gtk.Widget)item.ControlObject, index);
+			var menu = Submenu;
+			if (menu == null) Control.Submenu = menu = new Gtk.Menu();
+			menu.Insert((Gtk.Widget)item.ControlObject, index);
 			SetChildAccelGroup(item);
 		}
 
-		public void RemoveMenu(MenuItem item)
+		public virtual void RemoveMenu(MenuItem item)
 		{
-			if (Control.Submenu == null) return;
-			var menu = (Gtk.Menu)Control.Submenu;
+			var menu = Submenu;
+			if (menu == null) return;
 			menu.Remove((Gtk.Widget)item.ControlObject);
 			if (menu.Children.Length == 0)
 			{
@@ -119,7 +125,7 @@ namespace Eto.GtkSharp.Forms.Menu
 			}
 		}
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			Control.Submenu = null;
 		}

@@ -1,25 +1,31 @@
 using System;
 using System.Linq;
 using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Menu
 {
-	public class ButtonMenuItemHandler : MenuItemHandler<SWF.ToolStripMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
+	public class ButtonMenuItemHandler : ButtonMenuItemHandler<ButtonMenuItem, ButtonMenuItem.ICallback>
+	{
+	}
+
+	public class ButtonMenuItemHandler<TWidget, TCallback> : MenuItemHandler<swf.ToolStripMenuItem, TWidget, TCallback>, ButtonMenuItem.IHandler
+		where TWidget: ButtonMenuItem
+		where TCallback: ButtonMenuItem.ICallback
 	{
 		Image image;
 		int imageSize = 16;
-		bool openedHandled;
 
 		public ButtonMenuItemHandler()
 		{
-			Control = new SWF.ToolStripMenuItem();
+			Control = new swf.ToolStripMenuItem();
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
+			Control.DropDownOpening += HandleDropDownOpened;
 		}
 
-		void HandleDropDownOpened(object sender, EventArgs e)
+		protected virtual void HandleDropDownOpened(object sender, EventArgs e)
 		{
 			foreach (var item in Widget.Items)
 			{
@@ -49,22 +55,17 @@ namespace Eto.WinForms.Forms.Menu
 			}
 		}
 
-		public void AddMenu(int index, MenuItem item)
+		public virtual void AddMenu(int index, MenuItem item)
 		{
-			Control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
-			if (!openedHandled)
-			{
-				Control.DropDownOpening += HandleDropDownOpened;
-				openedHandled = true;
-			}
+			Control.DropDownItems.Insert(index, (swf.ToolStripItem)item.ControlObject);
 		}
 
-		public void RemoveMenu(MenuItem item)
+		public virtual void RemoveMenu(MenuItem item)
 		{
-			Control.DropDownItems.Remove((SWF.ToolStripItem)item.ControlObject);
+			Control.DropDownItems.Remove((swf.ToolStripItem)item.ControlObject);
 		}
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			Control.DropDownItems.Clear();
 		}
