@@ -33,7 +33,7 @@ namespace Eto.Wpf.Forms.Controls
 	/// <summary>
 	/// Loader class and helper utilities to install the WebView2 runtime.
 	/// </summary>
-	static class WebView2Loader
+	public static class WebView2Loader
 	{
 		/// <summary>
 		/// Creates the WetView2Handler
