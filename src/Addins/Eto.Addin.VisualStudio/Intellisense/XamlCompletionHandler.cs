@@ -1,4 +1,5 @@
-﻿using Eto.Addin.VisualStudio.Util;
+#if FALSE
+using Eto.Addin.VisualStudio.Util;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -147,3 +148,4 @@ namespace Eto.Addin.VisualStudio.Intellisense
 		}
 	}
 }
+#endif

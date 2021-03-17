@@ -65,13 +65,15 @@ namespace Eto.Designer
 					size.Width = -1;
 				if (size.Height == 0)
 					size.Height = -1;
+				content = window.Content;
+				window.Content = null;
 				// swap out window for a panel so we can add it as a child
 				content = new Panel
 				{
 					BackgroundColor = Global.Theme.DesignerPanel,
 					Padding = window.Padding,
 					Size = size,
-					Content = window.Content
+					Content = content
 				};
 			}
 			else
@@ -94,8 +96,10 @@ namespace Eto.Designer
 			try
 			{
 				ControlCreating?.Invoke();
+				var old = contentControl;
 				contentControl = control;
 				designSurface.Content = GetContent(control);
+				old?.Dispose();
 				token = null;
 				ControlCreated?.Invoke();
 			}

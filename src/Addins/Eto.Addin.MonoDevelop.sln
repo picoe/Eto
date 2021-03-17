@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.MonoDevelop", "Eto.Addin.MonoDevelop\Eto.Addin.MonoDevelop.csproj", "{54A88D77-39C6-49E5-971E-05451209F2A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2", "..\Eto.Gtk\Eto.Gtk2.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared", "Eto.Addin.Shared\Eto.Addin.Shared.csproj", "{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer", "Eto.Designer\Eto.Designer.csproj", "{7FAA1841-0869-474C-9D89-87E1B4BAB190}"
@@ -25,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\Eto\Eto.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Forms.Templates", "Eto.Forms.Templates\Eto.Forms.Templates.csproj", "{0FC60318-C91B-4753-AC96-50D40C9F3DA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "..\Eto.Mac\Eto.XamMac2.csproj", "{FF398A16-1FA7-4627-A458-02CEA0C5857E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,10 +43,6 @@ Global
 		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -63,6 +59,10 @@ Global
 		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FC60318-C91B-4753-AC96-50D40C9F3DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF398A16-1FA7-4627-A458-02CEA0C5857E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF398A16-1FA7-4627-A458-02CEA0C5857E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF398A16-1FA7-4627-A458-02CEA0C5857E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF398A16-1FA7-4627-A458-02CEA0C5857E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

@@ -1,29 +1,29 @@
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Eto.Addin.VisualStudio.Intellisense
 {
-	[Order(Before = "High")]
-	[Export(typeof(ICompletionSourceProvider)), ContentType("xeto"), Name("XetoCompletion")]
-	public class XamlCompletionProvider : ICompletionSourceProvider
+	[Order(Before = "XML")]
+	[ContentType("xeto"), Name("XetoCompletion")]
+	[Export(typeof(IAsyncCompletionSourceProvider))]
+	public class XamlCompletionSourceProvider : IAsyncCompletionSourceProvider
 	{
-		[Import]
-		public IGlyphService GlyphService { get; set; }
+		public IAsyncCompletionSource GetOrCreate(ITextView textView) => new XamlCompletionSource(textView);
+	}
 
-		[Import]
-		internal ITextStructureNavigatorSelectorService NavigatorService { get; set; }
-
-		public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
-		{
-			return new XamlCompletionSource(this, textBuffer);
-		}
+	[Order(Before = "XML")]
+	[ContentType("xeto"), Name("XetoCompletion")]
+	[Export(typeof(IAsyncCompletionCommitManagerProvider))]
+	public class XamlCompletionManagerProvider : IAsyncCompletionCommitManagerProvider
+	{
+		public IAsyncCompletionCommitManager GetOrCreate(ITextView textView) => new XamlCompletionManager(textView);
 	}
 }

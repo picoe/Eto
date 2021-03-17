@@ -162,6 +162,7 @@ namespace Eto.Addin.MonoDevelop.Editor
 		protected override object OnGetContent(Type type) => _inner.GetContent(type);
 
 		protected override IEnumerable<object> OnGetContents(Type type) => _inner.GetContents(type);
+		Eto.Designer.PreviewEditorView preview;
 
 		Task<Control> OnGetViewControlAsync(CancellationToken token)
 		{
@@ -172,13 +173,12 @@ namespace Eto.Addin.MonoDevelop.Editor
 				//assemblyFile = owner.GetOutputFileName(ConfigurationSelector.Default);
 			}
 
-			var preview = new Eto.Designer.PreviewEditorView(assemblyFile, Enumerable.Empty<string>(), () => new StreamReader(_inner.FileModel.GetContent()).ReadToEnd());
+			preview = new Eto.Designer.PreviewEditorView(assemblyFile, Enumerable.Empty<string>(), () => new StreamReader(_inner.FileModel.GetContent()).ReadToEnd());
 			_inner.FileModel.Changed += (sender, e) => preview.Update();
 			preview.SetBuilder(_inner.FilePath);
 
 			// gtk2 only for now.. 
-			var nativeControl = Eto.Forms.Gtk2Helpers.ToNative(preview, true);
-			nativeControl.ShowAll();
+			var nativeControl = Eto.Forms.XamMac2Helpers.ToNative(preview, true);
 			var result = (Control)nativeControl;
 
 			Eto.Forms.Application.Instance.AsyncInvoke(preview.Update);

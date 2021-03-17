@@ -52,7 +52,7 @@ namespace Eto.Addin.VisualStudio
 		public static TextViewListener Instance { get; private set; }
 
 		static readonly object ViewFormKey = new object();
-		static readonly object ViewCodeKey = new object();
+		//static readonly object ViewCodeKey = new object();
 
 		public void TextViewCreated(IWpfTextView textView)
 		{
@@ -70,8 +70,8 @@ namespace Eto.Addin.VisualStudio
 				// add commands to view form or code
 				//textView.Properties.AddProperty(ViewFormKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewForm, () => ViewDesigner(document)));
 				//textView.Properties.AddProperty(ViewCodeKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewCode, () => ViewCode(document)));
-				if (string.Equals(info.Extension, ".xeto", StringComparison.OrdinalIgnoreCase))
-					textView.Properties.GetOrCreateSingletonProperty(() => new XamlCompletionHandler(textViewAdapter, textView, this));
+				//if (string.Equals(info.Extension, ".xeto", StringComparison.OrdinalIgnoreCase))
+				//	textView.Properties.GetOrCreateSingletonProperty(() => new XamlCompletionHandler(textViewAdapter, textView, this));
 			}
 			else if (BuilderInfo.IsCodeBehind(document.FilePath))
 			{
