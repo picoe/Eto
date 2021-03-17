@@ -251,6 +251,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public ListBoxHandler Handler { get; set; }
 
+			protected override void InitializeCollection()
+			{
+				Handler.Control.ReloadData();
+				Handler.InvalidateMeasure();
+			}
+
 			public override void AddRange(IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData();

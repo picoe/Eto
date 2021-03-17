@@ -13,7 +13,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	}
 
 	public class ListControlTests<T> : TestBase
-		where T: ListControl, new()
+		where T : ListControl, new()
 	{
 		[ManualTest]
 		[TestCase(SetBindingMode.Before)]
@@ -48,6 +48,28 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				}
 				else
 					return dropDown;
+			});
+		}
+
+		[Test]
+		public void SettingDataStoreToNullAfterPopulatedShouldNotCrash()
+		{
+			Form(form =>
+			{
+				var list = new T();
+
+				list.DataStore = new[] { "Item 1", "Item 2", "Item 3" };
+				form.Content = list;
+
+				form.Shown += (sender, e) =>
+				{
+					Application.Instance.AsyncInvoke(() =>
+					{
+						list.DataStore = null;
+						list.Invalidate();
+						new UITimer((sender2, e2) => { form.Close(); }) { Interval = 1 }.Start();
+					});
+				};
 			});
 		}
 	}
