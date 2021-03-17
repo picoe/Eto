@@ -8,6 +8,12 @@ using System.Text;
 
 namespace Eto.Designer.Completion
 {
+	[Flags]
+	public enum CompletionBehavior
+	{
+		None = 0,
+		ChildProperty = 1 << 0
+	}
 
 	public class CompletionItem
 	{
@@ -16,6 +22,10 @@ namespace Eto.Designer.Completion
 		public string Name { get; set; }
 
 		public string Description { get; set; }
+
+		public string Suffix { get; set; }
+
+		public CompletionBehavior Behavior { get; set; }
 	}
 	
 }

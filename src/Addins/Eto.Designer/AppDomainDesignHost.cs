@@ -156,7 +156,7 @@ namespace Eto.Designer
 		public AppDomainDesignHost Host { get; set; }
 
 		public void ControlCreated() => Host.ControlCreated?.Invoke();
-		public void ControlCreating() => Host.ControlCreated?.Invoke();
+		public void ControlCreating() => Host.ControlCreating?.Invoke();
 		public void Error(DesignError ex) => Host.Error?.Invoke(ex);
 		public override object InitializeLifetimeService() => null;
 

@@ -1,3 +1,4 @@
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
@@ -11,6 +12,11 @@ namespace Eto.Addin.VisualStudio
 		[Name("xeto")]
 		[BaseDefinition("XML")]
 		internal static ContentTypeDefinition XetoContentTypeDefinition;
+
+		//[Export]
+		//[Name("xeto")]
+		//[BaseDefinition("XML")]
+		//internal static ClassificationTypeDefinition XetoDefinition;
 
 		[Export]
 		[FileExtension(".xeto")]

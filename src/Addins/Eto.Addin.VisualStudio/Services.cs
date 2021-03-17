@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.ComponentModelHost;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace Eto.Addin.VisualStudio
 		public static IOleServiceProvider ServiceProvider = (IOleServiceProvider)Package.GetGlobalService(typeof(IOleServiceProvider));
 		static ServiceProvider vsServiceProvider;
 
-		public static ServiceProvider VsServiceProvider {  get { return vsServiceProvider; } }
+		public static ServiceProvider VsServiceProvider => vsServiceProvider ?? (vsServiceProvider = new ServiceProvider(ServiceProvider));
 
 		public static T GetComponentService<T>()
 			where T : class
@@ -26,16 +26,12 @@ namespace Eto.Addin.VisualStudio
 		public static T GetService<T>()
 			where T : class
 		{
-			if (vsServiceProvider == null)
-				vsServiceProvider = new ServiceProvider(ServiceProvider);
-			return vsServiceProvider.GetService(typeof(T)) as T;
+			return VsServiceProvider.GetService(typeof(T)) as T;
 		}
 		public static TInterface GetService<T, TInterface>()
 			where T : class
 		{
-			if (vsServiceProvider == null)
-				vsServiceProvider = new ServiceProvider(ServiceProvider);
-			return (TInterface)vsServiceProvider.GetService(typeof(T));
+			return (TInterface)VsServiceProvider.GetService(typeof(T));
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using Eto.Designer.Completion;
+using Eto.Designer.Completion;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,23 +14,17 @@ namespace Eto.Addin.VisualStudio.Intellisense
 	{
 		public IEnumerable<CompletionPathNode> Nodes { get; set; }
 		public CompletionMode Mode { get; set; }
+		public bool IsChildProperty { get; set; }
 	}
 
 	static class XmlParser
 	{
-		static Stream GetStream(string s)
-		{
-			var stream = new MemoryStream();
-			var writer = new StreamWriter(stream);
-			writer.Write(s);
-			writer.Flush();
-			stream.Position = 0;
-			return stream;
-		}
-		static RegexOptions opts = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase;
-		static Regex valueReg = new Regex(@"(?<=\w+\s*=\s*)(('[^']*)|(""[^""]*))?$", opts);
-		static Regex propertyReg = new Regex(@"([<]\w+\s+)([^<]*)?(?<!/|([/][>])|[>])$", opts);
-		static Regex classReg = new Regex(@"([<]\w*)$", opts);
+		const RegexOptions opts = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase;
+		static readonly Regex valueReg = new Regex(@"(?<=\w+\s*=\s*)(('[^']*)|(""[^""]*))?$", opts);
+		static readonly Regex propertyReg = new Regex(@"([<]\w+\s+)([^<>]+\s+)?[^<>/]*$", opts);
+		//static readonly Regex propertyReg = new Regex(@"([<]\w+\s+)([^<]*)?(?<!(/|([/][>])|[>])[^<]*)$", opts);
+		static readonly Regex classReg = new Regex(@"([<]\w*)$", opts);
+		static readonly Regex classPropertyReg = new Regex(@"([<]\w*[.])$", opts);
 
 		public static XmlParseInfo Read(string text)
 		{
@@ -39,23 +33,32 @@ namespace Eto.Addin.VisualStudio.Intellisense
 
 			// check the last part of the xml to see what type of completion we are in
 			// and complete it so we can parse the property or class name.
-			var m = valueReg.Match(text);
-			if (m.Success)
+			Match m;
+			if ((m = valueReg.Match(text)).Success)
 			{
 				info.Mode = CompletionMode.Value;
 				text = text.Substring(0, m.Index) + "''>";
 			}
-			else
+			else if (classReg.Match(text).Success)
 			{
-				m = classReg.Match(text);
-				if (m.Success)
-					info.Mode = CompletionMode.Class;
-				else
-				{
-					m = propertyReg.Match(text);
-					if (m.Success)
-						info.Mode = CompletionMode.Property;
-				}
+				info.Mode = CompletionMode.Class;
+				text += ">";
+			}
+			else if (propertyReg.Match(text).Success)
+			{
+				int i = text.Length - 1;
+				while (i > 0 && !char.IsWhiteSpace(text[i]) && text[i] != '<')
+					i--;
+				if (i < text.Length - 1)
+					text = text.Substring(0, i + 1);
+
+				info.Mode = CompletionMode.Property;
+				text += ">";
+			}
+			else if (classPropertyReg.Match(text).Success)
+			{
+				info.Mode = CompletionMode.Property;
+				info.IsChildProperty = true;
 				text += ">";
 			}
 
@@ -64,8 +67,7 @@ namespace Eto.Addin.VisualStudio.Intellisense
 			CompletionPathNode attribute = null;
 			try
 			{
-				using (var stream = GetStream(text))
-				using (var reader = XmlReader.Create(stream))
+				using (var reader = XmlReader.Create(new StringReader(text)))
 				{
 					while (reader.Read())
 					{
@@ -110,6 +112,13 @@ namespace Eto.Addin.VisualStudio.Intellisense
 			catch (XmlException)
 			{
 				// ignore errors, since xml will usually be incomplete
+			}
+
+			if (current?.LocalName.Contains(".") == true && info.Mode == CompletionMode.None && current.Mode == CompletionMode.Class)
+			{
+				current.LocalName = current.LocalName.Substring(current.LocalName.IndexOf('.') + 1);
+				current.Mode = CompletionMode.Property;
+				info.Mode = CompletionMode.Value;
 			}
 
 			if (info.Mode == CompletionMode.Value && attribute != null)

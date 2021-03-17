@@ -1,16 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AssemblySearchPaths>$(AssemblySearchPaths);{gac}</AssemblySearchPaths>
   	<MDBinDir Condition="Exists('/opt/MonoDevelop/bin')">/opt/MonoDevelop/bin</MDBinDir>
   	<MDAddinsDir Condition="Exists('/opt/MonoDevelop/AddIns')">/opt/MonoDevelop/AddIns</MDAddinsDir>
     <OutputPath>$(ArtifactsDir)addin\$(Configuration)\</OutputPath>
   	<MonoDevelopVersion>8.8</MonoDevelopVersion>
     <Title>Eto.Addin.MonoDevelop</Title>
+    <DefineConstants>$(DefineConstants);MAC</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Editor\XetoTextEditorExtension.cs" />
+    <Compile Include="..\Eto.Addin.VisualStudio\Intellisense\*.cs" Link="Intellisense\%(Filename)%(Extension)" />
+    <Compile Include="..\Eto.Addin.VisualStudio\Components.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj" />
-    <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk2.csproj" />
+    <ProjectReference Include="..\..\Eto.Mac\Eto.XamMac2.csproj" />
     <ProjectReference Include="..\Eto.Designer\Eto.Designer.csproj" />
     <ProjectReference Include="..\Eto.Addin.Shared\Eto.Addin.Shared.csproj" />
     <ProjectReference Include="..\Eto.Forms.Templates\Eto.Forms.Templates.csproj">
@@ -20,6 +27,11 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoDevelop.Addins" Version="0.4.7" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.206" ExcludeAssets="runtime">
+      <IncludeAssets>compile;build;native;contentfiles;analyzers;buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.Composition" Version="5.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <AddinReference Include="MonoDevelop.Xml" Version="8.8" />
@@ -38,7 +50,7 @@
   <ItemGroup>
     <AddinFile Include="Templates\Files\**\*" />
     <AddinFile Include="$(ArtifactsDir)\nuget\$(Configuration)\Eto.Forms.Templates.$(PackageVersion).nupkg">
-      <Link>Packages\Eto.Forms.Templates.$(PackageVersion).nupkg</Link>
+      <Link>Packages\Eto.Forms.Templates.2.5.9-dev.nupkg</Link>
     </AddinFile>
   </ItemGroup>
   <ItemGroup>

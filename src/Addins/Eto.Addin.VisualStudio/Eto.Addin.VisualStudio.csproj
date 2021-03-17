@@ -75,6 +75,7 @@
     <Compile Include="Editor\EtoPreviewPane.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Intellisense\XamlCompletionHandler.cs" />
+    <Compile Include="Intellisense\XamlCompletionManager.cs" />
     <Compile Include="Intellisense\XamlCompletionProvider.cs" />
     <Compile Include="Intellisense\XamlCompletionSource.cs" />
     <Compile Include="Intellisense\XmlParser.cs" />

@@ -16,6 +16,7 @@ using System.Xml;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 
 namespace Eto.Addin.MonoDevelop.Editor
 {

@@ -38,12 +38,7 @@ namespace Eto.Addin.MonoDevelop
 			if (view == null)
 				view = new ProjectWizardPageView(model);
 
-#if Mac
-			if (Platform.Instance.IsMac)
-				return XamMac2Helpers.ToNative (view, true);
-			else
-#endif
-			return Gtk2Helpers.ToNative (view, true);
+			return XamMac2Helpers.ToNative (view, true);
 		}
 
 		public void Validate()

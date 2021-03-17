@@ -110,7 +110,7 @@ namespace Eto.Addin.VisualStudio.Editor
 			{
 				wpfViewHost?.TextView?.VisualElement?.Focus();
 			};
-			if (!preview.SetBuilder(fileName))
+			if (!preview.Preview.SetBuilder(fileName))
 				throw new InvalidOperationException(string.Format("Could not find builder for file {0}", fileName));
 
 			var content = preview.ToNative(true);
@@ -210,7 +210,7 @@ namespace Eto.Addin.VisualStudio.Editor
 
 			InheritKeyBindings();
 
-			preview.Update();
+			preview.Preview.Update();
 		}
 
 		void InheritKeyBindings()
@@ -248,7 +248,7 @@ namespace Eto.Addin.VisualStudio.Editor
 			if (ErrorHandler.Succeeded(codeWindow.GetPrimaryView(out viewAdapter)))
 			{
 				// get the view first so host is created 
-				//var wpfView = editorSvc.GetWpfTextView(viewAdapter);
+				var wpfView = editorSvc.GetWpfTextView(viewAdapter);
 
 				wpfViewHost = editorSvc.GetWpfTextViewHost(viewAdapter);
 
@@ -294,13 +294,14 @@ namespace Eto.Addin.VisualStudio.Editor
 			{
 				if (disposing)
 				{
-					preview?.Dispose();
-					preview = null;
 
 					RegisterIndependentView(false);
 
 					editorControl?.Dispose();
 					editorControl = null;
+
+					preview?.Dispose();
+					preview = null;
 
 					GC.SuppressFinalize(this);
 				}
@@ -326,7 +327,7 @@ namespace Eto.Addin.VisualStudio.Editor
 		void ViewCode()
 		{
 			// Open the referenced document using the standard text editor.
-			var codeFile = preview.GetCodeFile(FileName);
+			var codeFile = preview.Preview.GetCodeFile(FileName);
 
 			IVsWindowFrame frame;
 			IVsUIHierarchy hierarchy;
@@ -344,12 +345,12 @@ namespace Eto.Addin.VisualStudio.Editor
 
 		void IVsTextBufferDataEvents.OnFileChanged(uint grfChange, uint dwFileAttrs)
 		{
-			preview.Update();
+			preview.Preview.Update();
 		}
 
 		int IVsTextBufferDataEvents.OnLoadCompleted(int fReload)
 		{
-			preview.Update();
+			preview.Preview.Update();
 			return VSConstants.S_OK;
 		}
 
@@ -359,7 +360,7 @@ namespace Eto.Addin.VisualStudio.Editor
 
 		void IVsTextLinesEvents.OnChangeLineText(TextLineChange[] pTextLineChange, int fLast)
 		{
-			preview.Update();
+			preview.Preview.Update();
 		}
 
 		public int SetBuffer(IVsTextLines pBuffer)

@@ -110,7 +110,8 @@ namespace Eto.Designer.Completion
 				{
 					Name = prefixWithColon + nodeType.Name + ".",
 					Description = "Add a property tag",
-					Type = CompletionType.Property
+					Type = CompletionType.Property,
+					Behavior = CompletionBehavior.ChildProperty
 				};
 			}
 
@@ -218,6 +219,7 @@ namespace Eto.Designer.Completion
 					yield return new CompletionItem
 					{ 
 						Name = prop.Name,
+						Suffix = prop.PropertyType.Name,
 						Description = XmlComments.GetSummary(prop),
 						Type = CompletionType.Property 
 					};

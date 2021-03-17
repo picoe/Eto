@@ -2,6 +2,7 @@
 using System.Linq;
 using Eto.Forms;
 using Eto.Designer;
+using System.Reflection;
 
 namespace Eto.Addin.MonoDevelop
 {
@@ -13,11 +14,14 @@ namespace Eto.Addin.MonoDevelop
 			{
 				try
 				{
-					var platform = new Eto.GtkSharp.Platform();
+					var platform = new Eto.Mac.Platform();
 
 					platform.LoadAssembly(typeof(EtoInitializer).Assembly);
 
 					new Eto.Forms.Application(platform).Attach();
+
+					var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(r => r.GetName().Name.StartsWith("Xamarin")).ToArray();
+					
 				}
 				catch (Exception ex)
 				{
