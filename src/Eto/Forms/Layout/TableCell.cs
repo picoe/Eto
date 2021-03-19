@@ -196,9 +196,10 @@ namespace Eto.Forms
 		int IList.Add(object value)
 		{
 			// allow adding a control directly from xaml
-			var control = value as Control;
-			if (control != null)
-				Add((TableCell)control);
+			if (value is Control control)
+				Add(control);
+			else if (value is string str)
+				Add(new Label { Text = str });
 			else
 				Add((TableCell)value);
 			return Count - 1;

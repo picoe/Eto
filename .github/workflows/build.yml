@@ -47,7 +47,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: addins
-        path: artifacts/addin/${{ env.BuildConfiguration }}/VisualStudio/Eto.Addin.VisualStudio*.vsix
+        path: artifacts/addin/${{ env.BuildConfiguration }}/Eto.Addin.VisualStudio.Win*.vsix
 
     - name: Upload test artifacts
       uses: actions/upload-artifact@v2
@@ -132,7 +132,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: addins
-        path: artifacts/addin/${{ env.BuildConfiguration }}/net472/Eto.Addin.MonoDevelop*.mpack
+        path: artifacts/addin/${{ env.BuildConfiguration }}/Eto.Addin.VisualStudio.Mac*.mpack
 
     - name: Upload test artifacts
       uses: actions/upload-artifact@v2
@@ -178,8 +178,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: Eto.Addin.VisualStudio-${{ steps.get_version.outputs.VERSION }}.vsix
-          asset_name: Eto.Addin.VisualStudio-${{ steps.get_version.outputs.VERSION }}.vsix
+          asset_path: Eto.Addin.VisualStudio.Win-${{ steps.get_version.outputs.VERSION }}.vsix
+          asset_name: Eto.Addin.VisualStudio.Win-${{ steps.get_version.outputs.VERSION }}.vsix
           asset_content_type: application/octet-stream
 
       - name: Upload VS/Mac addin
@@ -188,8 +188,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: Eto.Addin.MonoDevelop-${{ steps.get_version.outputs.VERSION }}.mpack
-          asset_name: Eto.Addin.MonoDevelop-${{ steps.get_version.outputs.VERSION }}.mpack
+          asset_path: Eto.Addin.VisualStudio.Mac-${{ steps.get_version.outputs.VERSION }}.mpack
+          asset_name: Eto.Addin.VisualStudio.Mac-${{ steps.get_version.outputs.VERSION }}.mpack
           asset_content_type: application/octet-stream
 
   publish:

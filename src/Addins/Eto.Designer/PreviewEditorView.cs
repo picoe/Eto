@@ -80,10 +80,13 @@ namespace Eto.Designer
 			}
 		}
 
+		//Stopwatch sw = new Stopwatch();
+
 		void Timer_Elapsed(object sender, EventArgs e)
 		{
 			timer.Stop();
 			processingCount = 1; // only check for additional changes AFTER this point to restart the timer
+			//sw.Start();
 			var code = getCode();
 			if (!string.IsNullOrEmpty(code))
 			{
@@ -118,14 +121,17 @@ namespace Eto.Designer
 				errorContent = null;
 			}
 
-			if (processingCount > 1)
-			{
-				// process was requested while we were processing the last one, so redo
-				processingCount = 1;
-				timer.Start();
-			}
-			else
-				processingCount = 0;
+			//sw.Stop();
+			//System.Diagnostics.Debug.WriteLine($"Elapsed: {sw.Elapsed}");
+
+			//if (processingCount > 1)
+			//{
+			//	// process was requested while we were processing the last one, so redo
+			//	processingCount = 1;
+			//	timer.Start();
+			//}
+			//else
+			//	processingCount = 0;
 		}
 
 		void Stop()
@@ -139,9 +145,7 @@ namespace Eto.Designer
 		public void Update()
 		{
 			processingCount++;
-			// only start if we aren't already compiling the UI
-			if (processingCount == 1)
-				timer.Start();
+			timer.Start();
 		}
 
 		/// <summary>

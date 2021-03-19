@@ -135,6 +135,18 @@ namespace Eto.Designer.Completion
 						Assembly = typeof(Eto.Widget).Assembly,
 						Namespace = "Eto.Forms"
 					};
+					yield return new TypeCompletion
+					{
+						Prefix = ns.Prefix,
+						Assembly = typeof(Eto.Widget).Assembly,
+						Namespace = "Eto"
+					};
+					yield return new TypeCompletion
+					{
+						Prefix = ns.Prefix,
+						Assembly = typeof(Eto.Serialization.Xaml.XamlReader).Assembly,
+						Namespace = "Eto.Serialization.Xaml.Extensions"
+					};
 				}
 				if (ns.Namespace == XamlNamespace2006)
 				{

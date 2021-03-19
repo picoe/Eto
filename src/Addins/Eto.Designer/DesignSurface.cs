@@ -22,6 +22,8 @@ namespace Eto.Designer
 
 		public bool EnableResizing { get; set; } = true;
 
+		public event EventHandler InvalidateContent;
+
 		public DesignSurface()
 		{
 			if (!Platform.Instance.IsGtk) // doesn't work correctly on Gtk2 due to lack of control transparency
@@ -194,6 +196,7 @@ namespace Eto.Designer
 				{
 					_sizeBounds = null;
 					_content.Size = _originalContentSize ?? new Size(-1, -1);
+					InvalidateContent?.Invoke(this, EventArgs.Empty);
 				},
 				ShouldDraw = location => _sizeBounds != null,
 				ToolTip = "Click to reset to auto size",

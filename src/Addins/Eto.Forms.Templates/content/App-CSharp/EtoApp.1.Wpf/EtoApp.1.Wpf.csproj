@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.9-dev" />
+    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.11-dev" />
   </ItemGroup>
 
 </Project>
