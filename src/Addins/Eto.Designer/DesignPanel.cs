@@ -23,6 +23,7 @@ namespace Eto.Designer
 		public DesignPanel()
 		{
 			designSurface = new DesignSurface();
+			designSurface.InvalidateContent += (sender, e) => Update(_code);
 			Border = BorderType.None;
 			BackgroundColor = Global.Theme.DesignerBackground;
 			Content = designSurface;
@@ -37,6 +38,7 @@ namespace Eto.Designer
 		public IEnumerable<string> References { get; set; }
 
 		IBuildToken token;
+		string _code;
 
 		public virtual void Update(string code)
 		{
@@ -46,7 +48,8 @@ namespace Eto.Designer
 			token?.Cancel();
 			try
 			{
-				token = interfaceBuilder.Create(code, MainAssembly, References, ControlCreatedInternal, ErrorInternal);
+				_code = code;
+				token = interfaceBuilder.Create(_code, MainAssembly, References, ControlCreatedInternal, ErrorInternal);
 			}
 			catch (Exception ex)
 			{
@@ -59,7 +62,8 @@ namespace Eto.Designer
 			var window = content as Window;
 			if (window != null)
 			{
-				var size = window.ClientSize;
+				// mac defaults to 200, 200.. why..
+				var size = Platform.Instance.IsMac ? new Size(-1, -1) : window.ClientSize;
 				// some platforms report 0,0 even though it probably should be -1, -1 initially.
 				if (size.Width == 0)
 					size.Width = -1;
@@ -87,9 +91,9 @@ namespace Eto.Designer
 			return content;
 		}
 
-		#pragma warning disable 414
+#pragma warning disable 414
 		Control contentControl;
-		#pragma warning restore 414
+#pragma warning restore 414
 
 		void ControlCreatedInternal(Control control)
 		{

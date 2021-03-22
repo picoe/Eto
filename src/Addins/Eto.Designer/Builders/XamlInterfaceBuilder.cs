@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,13 +18,9 @@ namespace Eto.Designer.Builders
 			XamlReader.DesignMode = true;
 			try
 			{
-				using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(text ?? ""), false))
-				{
-					stream.Position = 0;
-					var control = XamlReader.Load<Panel>(stream);
-					if (control != null)
-						controlCreated(control);
-				}
+				var control = XamlReader.Load<Panel>(new StringReader(text), null);
+				if (control != null)
+					controlCreated(control);
 			}
 			catch (Exception ex)
 			{

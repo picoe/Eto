@@ -71,7 +71,8 @@ namespace Eto.Designer.Completion
 			var prefixWithColon = PrefixWithColon;
 
 			string contentProperty;
-			var nodeType = GetNodeType(path.LastOrDefault(), out contentProperty);
+			var lastPath = path.LastOrDefault();
+			var nodeType = GetNodeType(lastPath, out contentProperty);
 			var contentType = GetContentType(nodeType, contentProperty);
 
 			var types = GetExportedTypes();
@@ -104,7 +105,7 @@ namespace Eto.Designer.Completion
 					Description = XmlComments.GetSummary(contentType),
 					Type = CompletionType.Class
 				}; 
-			if (nodeType != null)
+			if (nodeType != null && !lastPath.Contains("."))
 			{
 				yield return new CompletionItem
 				{
@@ -216,10 +217,16 @@ namespace Eto.Designer.Completion
 
 					if (prop.GetCustomAttribute<ObsoleteAttribute>() != null)
 						continue;
+
+					var underlyingType = Nullable.GetUnderlyingType(prop.PropertyType);
+					var suffix = underlyingType != null ? underlyingType.Name + "?" : prop.PropertyType.Name;
+					
+					// todo: get friendly names for generic types
+
 					yield return new CompletionItem
 					{ 
 						Name = prop.Name,
-						Suffix = prop.PropertyType.Name,
+						Suffix = suffix,
 						Description = XmlComments.GetSummary(prop),
 						Type = CompletionType.Property 
 					};
