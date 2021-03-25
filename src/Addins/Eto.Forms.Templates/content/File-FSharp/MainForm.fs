@@ -1,5 +1,5 @@
 ﻿#if (UseCode || UseCodePreview)
-namespace EtoApp.1
+namespace EtoApp._1
 
 open System
 open Eto.Forms

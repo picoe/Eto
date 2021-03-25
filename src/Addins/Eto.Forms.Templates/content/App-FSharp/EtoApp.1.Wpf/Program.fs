@@ -1,4 +1,4 @@
-﻿namespace EtoApp.1.Wpf
+﻿namespace EtoApp._1.Wpf
 module Program =
 
     open System

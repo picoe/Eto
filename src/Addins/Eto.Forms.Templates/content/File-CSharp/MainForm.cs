@@ -3,7 +3,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace EtoApp.1
+namespace EtoApp._1
 {
 	public partial class MainForm : Form
 	{

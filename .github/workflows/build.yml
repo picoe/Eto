@@ -47,7 +47,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: addins
-        path: artifacts/addin/${{ env.BuildConfiguration }}/Eto.Addin.VisualStudio.Win*.vsix
+        path: artifacts/addin/${{ env.BuildConfiguration }}/Eto.Addin.VisualStudio.Windows*.vsix
 
     - name: Upload test artifacts
       uses: actions/upload-artifact@v2
@@ -178,8 +178,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: Eto.Addin.VisualStudio.Win-${{ steps.get_version.outputs.VERSION }}.vsix
-          asset_name: Eto.Addin.VisualStudio.Win-${{ steps.get_version.outputs.VERSION }}.vsix
+          asset_path: Eto.Addin.VisualStudio.Windows-${{ steps.get_version.outputs.VERSION }}.vsix
+          asset_name: Eto.Addin.VisualStudio.Windows-${{ steps.get_version.outputs.VERSION }}.vsix
           asset_content_type: application/octet-stream
 
       - name: Upload VS/Mac addin

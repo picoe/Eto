@@ -31,5 +31,5 @@ jobs:
         tag_name: ${{ github.event.milestone.title }}
         release_name: ${{ github.event.milestone.title }}
         body_path: release_file_combined.md
-        draft: false
+        draft: true
         prerelease: false      

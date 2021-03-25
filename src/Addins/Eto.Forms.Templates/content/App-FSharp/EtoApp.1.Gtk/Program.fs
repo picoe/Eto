@@ -1,4 +1,4 @@
-﻿namespace EtoApp.1.Gtk
+﻿namespace EtoApp._1.Gtk
 module Program =
 
     open System

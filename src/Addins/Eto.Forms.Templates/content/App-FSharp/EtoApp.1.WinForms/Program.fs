@@ -1,4 +1,4 @@
-﻿namespace EtoApp.1.WinForms
+﻿namespace EtoApp._1.WinForms
 module Program =
 
     open System
