@@ -242,7 +242,10 @@ namespace Eto.Designer
 		bool SetupAppDomain(bool setBuilder)
 		{
 			if (!requiresNewDomain && domain != null)
+			{
+				EnsureWatcher();
 				return false;
+			}
 
 			requiresNewDomain = false;
 #pragma warning disable 618
@@ -296,15 +299,23 @@ namespace Eto.Designer
 				throw new InvalidOperationException($"Could not set up proxy for domain: {ex.GetBaseException().Message}", ex);
 			}
 
+			EnsureWatcher();
+
+			return true;
+		}
+
+		private void EnsureWatcher()
+		{
 			if (watcher == null && !string.IsNullOrEmpty(MainAssembly))
 			{
-				watcher = new FileSystemWatcher(Path.GetDirectoryName(MainAssembly), "*.dll");
+				var mainAssemblyPath = Path.GetDirectoryName(MainAssembly);
+				if (!Directory.Exists(mainAssemblyPath))
+					return;
+				watcher = new FileSystemWatcher(mainAssemblyPath, "*.dll");
 				watcher.Changed += (sender, e) => Application.Instance.AsyncInvoke(() => timer.Start());
 				watcher.Created += (sender, e) => Application.Instance.AsyncInvoke(() => timer.Start());
 				watcher.EnableRaisingEvents = true;
 			}
-
-			return true;
 		}
 
 		public Action ContainerChanged { get; set; }

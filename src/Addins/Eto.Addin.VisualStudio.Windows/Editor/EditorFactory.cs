@@ -18,11 +18,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using System.Xml;
+using Eto.Forms;
 
 namespace Eto.Addin.VisualStudio.Windows.Editor
 {
 	[Guid(Constants.EtoPreviewEditorFactory_string)]
-	public sealed class EditorFactory : IVsEditorFactory, IDisposable
+	public sealed class EditorFactory : IVsEditorFactory, IDisposable, IVsEditorFactoryChooser
 	{
 		EtoAddinPackage editorPackage;
 		ServiceProvider vsServiceProvider;
@@ -174,7 +175,9 @@ namespace Eto.Addin.VisualStudio.Windows.Editor
 
 
 			if (!BuilderInfo.Supports(pszMkDocument))
+			{
 				return VSConstants.VS_E_UNSUPPORTEDFORMAT;
+			}
 
 			// Validate inputs
 			if ((grfCreateDoc & (VSConstants.CEF_OPENFILE | VSConstants.CEF_SILENT)) == 0)
@@ -204,14 +207,24 @@ namespace Eto.Addin.VisualStudio.Windows.Editor
 			}
 
 
-			var outputFile = GetAssemblyPath(proj);
-			var references = GetReferences(proj).ToList();
-			//var outputDir = Path.GetDirectoryName(outputFile);
-
 			var codeEditor = new CodeEditorHost(textBuffer);
-			// Create the Document (editor)
-			var editor = new EtoPreviewPane(editorPackage, pszMkDocument, textBuffer, outputFile, references, codeEditor);
-			ppunkDocView = Marshal.GetIUnknownForObject(editor);
+
+			try
+			{
+				var outputFile = GetAssemblyPath(proj);
+				var references = GetReferences(proj).ToList();
+				//var outputDir = Path.GetDirectoryName(outputFile);
+
+				// Create the Document (editor)
+				var editor = new EtoPreviewPane(editorPackage, pszMkDocument, textBuffer, outputFile, references, codeEditor);
+				ppunkDocView = Marshal.GetIUnknownForObject(editor);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error creating preview pane: {ex.Message}");
+				Debug.WriteLine($"Error creating preview pane: {ex}");
+				throw;
+			}
 			//pbstrEditorCaption = " [Preview]";
 			return VSConstants.S_OK;
 		}
@@ -352,6 +365,32 @@ namespace Eto.Addin.VisualStudio.Windows.Editor
 			textBuffer.SetLanguageServiceID(ref langId);
 		}
 
+		public int ChooseEditorFactory(string pszMkDocument, IVsHierarchy pHier, uint itemid, IntPtr punkDocDataExisting, ref Guid rguidLogicalView, out Guid pguidEditorTypeActual, out Guid pguidLogicalViewActual)
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			pguidEditorTypeActual = Constants.EtoPreviewEditorFactory_guid;
+			pguidLogicalViewActual = VSConstants.LOGVIEWID.Designer_guid;
+			if (!BuilderInfo.Supports(pszMkDocument))
+			{
+				return VSConstants.VS_E_UNSUPPORTEDFORMAT;
+			}
+
+			rguidLogicalView = VSConstants.LOGVIEWID.Designer_guid;
+			object prjItemObject;
+			var projectItemId = VSConstants.VSITEMID_ROOT;
+			pHier.GetProperty(projectItemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);
+			var proj = prjItemObject as EnvDTE.Project;
+
+			// Get or open text buffer
+			var textBuffer = GetTextBuffer(punkDocDataExisting, pszMkDocument, ToVsProject(proj));
+
+			if (textBuffer == null)
+				return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
+
+
+			
+			return VSConstants.S_OK;
+		}
 
 		#endregion
 	}

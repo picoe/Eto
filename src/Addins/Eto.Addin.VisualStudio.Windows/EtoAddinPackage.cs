@@ -29,7 +29,7 @@ namespace Eto.Addin.VisualStudio.Windows
 	[ProvideEditorExtension(typeof(EditorFactory), ".fs", 0x100, NameResourceID = 106)]
 	[ProvideEditorExtension(typeof(EditorFactory), ".jeto", 0x1000, NameResourceID = 106)]
 	[ProvideEditorExtension(typeof(EditorFactory), ".xeto", 0x1000, NameResourceID = 106)]
-	[ProvideEditorFactory(typeof(EditorFactory), 106,
+	[ProvideEditorFactory(typeof(EditorFactory), 106, false,
 		CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 		TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
 	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Any_string)]

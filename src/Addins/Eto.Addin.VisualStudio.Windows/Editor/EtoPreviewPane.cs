@@ -262,8 +262,8 @@ namespace Eto.Addin.VisualStudio.Windows.Editor
 					editorControl?.Dispose();
 					editorControl = null;
 
-					preview?.Dispose();
-					preview = null;
+					previewSplitter?.Dispose();
+					previewSplitter = null;
 
 					GC.SuppressFinalize(this);
 				}
