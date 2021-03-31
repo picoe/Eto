@@ -16,16 +16,29 @@ namespace Eto.Forms
 		/// <summary>
 		/// Proposed value to set to the binding
 		/// </summary>
-		public object Value { get; set; }
-		
+		public object Value
+		{
+			get => InternalValue;
+			set => InternalValue = value;
+		}
+
+		internal virtual object InternalValue { get; set; }
+
 		/// <summary>
-		/// Initializes a new instance of the BindingChangingEventArgs
+		/// Initializes a new instance of the BindingChangingEventArgs with the specifid value
 		/// </summary>
 		/// <param name="value"></param>
-		public BindingChangingEventArgs (object value)
+		public BindingChangingEventArgs(object value)
 		{
 			this.Value = value;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the BindingChangingEventArgs
+		/// </summary>
+		internal BindingChangingEventArgs()
+		{
+		}
 	}
-	
+
 }

@@ -68,6 +68,35 @@ namespace Eto.Forms
 		bool dataValueChangedHandled;
 		T dataItem;
 
+		class ObjectBindingChangingEventArgs : BindingChangingEventArgs
+		{
+			ObjectBinding<T, TValue> _parent;
+			public ObjectBindingChangingEventArgs(ObjectBinding<T, TValue> parent)
+			{
+				_parent = parent;
+			}
+
+			internal override object InternalValue
+			{
+				get => _parent.DataValue;
+				set => _parent.DataValue = (TValue)value;
+			}
+		}
+
+		class ObjectBindingChangedEventArgs : BindingChangedEventArgs
+		{
+			ObjectBinding<T, TValue> _parent;
+			public ObjectBindingChangedEventArgs(ObjectBinding<T, TValue> parent)
+			{
+				_parent = parent;
+			}
+
+			internal override object InternalValue
+			{
+				get => _parent.DataValue;
+			}
+		}
+
 		/// <summary>
 		/// Gets the binding used to get/set the values from the <see cref="DataItem"/>
 		/// </summary>
@@ -161,12 +190,12 @@ namespace Eto.Forms
 			}
 			set
 			{
-				var args = new BindingChangingEventArgs(DataValue);
+				var args = new ObjectBindingChangingEventArgs(this);
 				OnChanging(args);
 				if (args.Cancel)
 					return;
 				InnerBinding.SetValue(DataItem, Equals(value, default(T)) ? SettingNullValue : value);
-				OnChanged(new BindingChangedEventArgs(DataValue));
+				OnChanged(new ObjectBindingChangedEventArgs(this));
 			}
 		}
 
