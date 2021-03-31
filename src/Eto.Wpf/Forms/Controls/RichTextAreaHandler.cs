@@ -729,6 +729,8 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		Dictionary<string, swm.Typeface> _cachedTypefaceMap;
+
 		/// <summary>
 		/// Finds the WPF typeface if the family is not known
 		/// </summary>
@@ -736,23 +738,31 @@ namespace Eto.Wpf.Forms.Controls
 		/// <returns>An instance of the typeface to use, or null if the font family is correct or could not be found</returns>
 		swm.Typeface ResolveWpfTypeface(swm.FontFamily family)
 		{
+			if (_cachedTypefaceMap != null && _cachedTypefaceMap.TryGetValue(family.Source, out var cachedTypeface))
+				return cachedTypeface;
+
 			var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
 
 			// if the resolved name is the same as the source, we're good
 			if (string.Equals(familyName, family.Source, StringComparison.OrdinalIgnoreCase))
 				return null;
 
+			if (_cachedTypefaceMap == null)
+				_cachedTypefaceMap = new Dictionary<string, swm.Typeface>(StringComparer.OrdinalIgnoreCase);
+
 			// can't find fonts where their Win32 name is different from the WPF name, so lookup based on the win32 name
-			// do we need to cache this, or is it fast enough?
 			foreach (var font in swm.Fonts.SystemFontFamilies)
 			{
 				foreach (var typeface in font.GetTypefaces())
 				{
 					if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
 					{
-						if (string.Equals(family.Source, glyphTypeface.Win32FamilyNames.GetEnglishName(), StringComparison.OrdinalIgnoreCase))
+						var win32Name = glyphTypeface.Win32FamilyNames.GetEnglishName();
+						
+						if (string.Equals(family.Source, win32Name, StringComparison.OrdinalIgnoreCase))
 						{
 							// found it!
+							_cachedTypefaceMap[family.Source] = typeface;
 							return typeface;
 						}
 					}
@@ -770,13 +780,17 @@ namespace Eto.Wpf.Forms.Controls
 				if (typeface.TryGetGlyphTypeface(out var glyphTypeface)
 					&& string.Equals(family.Source, glyphTypeface.Win32FamilyNames.GetEnglishName(), StringComparison.OrdinalIgnoreCase))
 				{
+					_cachedTypefaceMap[family.Source] = typeface;
 					return typeface;
 				}
 			}
 
 			// check if the resolved font name has the same family prefix
 			if (family.Source.Length <= familyName.Length + 1 || !family.Source.StartsWith(familyName, StringComparison.OrdinalIgnoreCase))
+			{
+				_cachedTypefaceMap[family.Source] = null;
 				return null;
+			}
 
 			// extract the face part of the source.  E.g. "Arial Narrow" will result in "Narrow".
 			var faceName = family.Source.Substring(familyName.Length + 1);
@@ -785,10 +799,14 @@ namespace Eto.Wpf.Forms.Controls
 			foreach (var typeface in typefaces)
 			{
 				var typefaceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
-				if (faceName == typefaceName)
+				if (string.Equals(faceName, typefaceName, StringComparison.OrdinalIgnoreCase))
+				{
+					_cachedTypefaceMap[family.Source] = typeface;
 					return typeface;
+				}
 			}
 
+			_cachedTypefaceMap[family.Source] = null;
 			return null;
 		}
 
