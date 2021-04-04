@@ -76,6 +76,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
+		public EtoTableHeaderView()
+		{
+		}
+
+		public EtoTableHeaderView(IntPtr handle) : base(handle)
+		{
+		}
 
 		public override void MouseDown(NSEvent theEvent)
 		{
@@ -312,6 +319,8 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		EtoTableHeaderView headerView;
+
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -319,7 +328,7 @@ namespace Eto.Mac.Forms.Controls
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
 
-			Control.HeaderView = new EtoTableHeaderView { Handler = this };
+			Control.HeaderView = headerView = new EtoTableHeaderView { Handler = this };
 			ScrollView.DocumentView = Control;
 		}
 
@@ -406,11 +415,11 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (value && Control.HeaderView == null)
 				{
-					Control.HeaderView = new EtoTableHeaderView { Handler = this };
+					Control.HeaderView = headerView = new EtoTableHeaderView { Handler = this };
 				}
 				else if (!value && Control.HeaderView != null)
 				{
-					Control.HeaderView = null;
+					Control.HeaderView = headerView = null;
 				}
 			}
 		}

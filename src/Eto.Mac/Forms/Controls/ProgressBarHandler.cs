@@ -51,6 +51,10 @@ namespace Eto.Mac.Forms.Controls
 				Indeterminate = false;
 			}
 
+			public EtoSlider(IntPtr handle) : base(handle)
+			{
+			}
+
 		}
 
 		public override NSView ContainerControl { get { return Control; } }

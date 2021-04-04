@@ -61,6 +61,12 @@ namespace Eto.Mac.Forms.Controls
 		public class EtoTextField : NSTextField, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
+			public EtoTextField(IntPtr handle) : base(handle)
+			{
+			}
+			public EtoTextField()
+			{
+			}
 		}
 
 		public class EtoNumericStepperView : NSView, IMacControl

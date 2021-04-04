@@ -547,6 +547,14 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); }
 			}
 
+			public EtoOutlineView()
+			{
+			}
+
+			public EtoOutlineView(IntPtr handle) : base(handle)
+			{
+			}
+
 #if XAMMAC2
 			public override NSImage DragImageForRowsWithIndexestableColumnseventoffset(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
 			{

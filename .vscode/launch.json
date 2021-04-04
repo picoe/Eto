@@ -123,7 +123,8 @@
 			"type": "mono",
 			"request": "launch",
 			"preLaunchTask": "build-addins",
-			"program": "/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/bin/VisualStudio.exe",
+			"program": ".",
+			"runtimeExecutable": "/Applications/Visual Studio.app/Contents/MacOS/VisualStudio",
 			"passDebugOptionsViaEnvironmentVariable": true,
 			"args": [ "--no-redirect" ],
 			"env": {

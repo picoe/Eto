@@ -117,9 +117,11 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
+			EtoCheckCenteredButtonCell cell;
+
 			public EtoCheckBoxButton()
 			{
-				Cell = new EtoCheckCenteredButtonCell();
+				Cell = cell = new EtoCheckCenteredButtonCell();
 				Title = string.Empty;
 				SetButtonType(NSButtonType.Switch);
 			}

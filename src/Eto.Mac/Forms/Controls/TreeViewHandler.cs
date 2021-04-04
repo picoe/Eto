@@ -287,6 +287,10 @@ namespace Eto.Mac.Forms.Controls
 				FocusRingType = NSFocusRingType.None;
 				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.FirstColumnOnly;
 			}
+
+			public EtoOutlineView(IntPtr handle) : base(handle)
+			{
+			}
 		}
 
 		public override NSView ContainerControl

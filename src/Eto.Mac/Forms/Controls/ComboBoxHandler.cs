@@ -64,6 +64,10 @@ namespace Eto.Mac.Forms.Controls
 				return new Class(typeof(EtoCell));
 			}
 
+			public EtoComboBox(IntPtr handle) : base(handle)
+			{
+			}
+
 			public EtoComboBox()
 			{
 				StringValue = string.Empty;

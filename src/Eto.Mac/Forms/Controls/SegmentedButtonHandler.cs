@@ -183,6 +183,14 @@ namespace Eto.Mac.Forms.Controls
 			ColorizeView colorize;
 			public SegmentedButtonHandler Handler => (ControlView as EtoSegmentedControl)?.Handler;
 
+			public EtoSegmentedCell()
+			{
+			}
+
+			public EtoSegmentedCell(IntPtr handle) : base(handle)
+			{
+			}
+
 			public Color? BackgroundColor
 			{
 				get => colorize?.Color;

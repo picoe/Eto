@@ -8,36 +8,32 @@ namespace Eto.Addin.VisualStudio.Mac
 {
 	public static class EtoInitializer
 	{
+		static bool initialized;
 		public static void Initialize()
 		{
-			if (Platform.Instance == null)
+			if (initialized)
+				return;
+
+			initialized = true;
+
+			try
 			{
-				try
+				var platform = Platform.Instance;
+				if (platform == null)
 				{
-					var platform = new Eto.Mac.Platform();
-
-					platform.LoadAssembly(typeof(EtoInitializer).Assembly);
-
-					new Eto.Forms.Application(platform).Attach();
-
-					var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(r => r.GetName().Name.StartsWith("Xamarin")).ToArray();
-					
+					platform = new Eto.Mac.Platform();
+					Platform.Initialize(platform);
 				}
-				catch (Exception ex)
-				{
-					Console.WriteLine($"{ex}");
-				}
-#if Mac
-				if (EtoEnvironment.Platform.IsMac)
-				{
-					var plat = Platform.Instance;
-					if (!plat.IsMac)
-					{
-						// use some Mac handlers even when using Gtk platform as base
-						plat.Add<Cursor.IHandler>(() => new Eto.Mac.Forms.CursorHandler());
-					}
-				}
-#endif
+
+				platform.LoadAssembly(typeof(EtoInitializer).Assembly);
+
+				if (Application.Instance == null)
+					new Eto.Forms.Application().Attach();
+
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"{ex}");
 			}
 		}
 	}

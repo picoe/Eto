@@ -109,9 +109,11 @@ namespace Eto.Mac.Forms.Controls
 				defaultHeight = b.Frame.Height;
 			}
 
+			EtoRadioCenteredButtonCell cell;
+
 			public EtoRadioButton()
 			{
-				Cell = new EtoRadioCenteredButtonCell();
+				Cell = cell = new EtoRadioCenteredButtonCell();
 				Title = string.Empty;
 				SetButtonType(NSButtonType.Radio);
 			}

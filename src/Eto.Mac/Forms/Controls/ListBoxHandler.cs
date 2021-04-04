@@ -168,6 +168,10 @@ namespace Eto.Mac.Forms.Controls
 			{
 				HeaderView = null;
 			}
+
+			public EtoListBoxTableView(IntPtr handle) : base(handle)
+			{
+			}
 		}
 
 		public override void OnKeyDown(KeyEventArgs e)
