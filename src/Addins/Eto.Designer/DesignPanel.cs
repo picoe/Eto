@@ -59,8 +59,7 @@ namespace Eto.Designer
 
 		public static Control GetContent(Control content)
 		{
-			var window = content as Window;
-			if (window != null)
+			if (content is Window window)
 			{
 				// mac defaults to 200, 200.. why..
 				var size = Platform.Instance.IsMac ? new Size(-1, -1) : window.ClientSize;
@@ -74,8 +73,10 @@ namespace Eto.Designer
 				// swap out window for a panel so we can add it as a child
 				content = new Panel
 				{
-					BackgroundColor = Global.Theme.DesignerPanel,
+					BackgroundColor = window.BackgroundColor,
 					Padding = window.Padding,
+					StyleProvider = window.StyleProvider,
+					MinimumSize = window.MinimumSize,
 					Size = size,
 					Content = content
 				};

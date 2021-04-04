@@ -12,20 +12,30 @@ namespace Eto.Addin.VisualStudio.Windows.Wizards
 {
 	public static class EtoInitializer
 	{
+		static bool initialized;
 		public static void Initialize()
 		{
-			if (Platform.Instance == null)
+			if (initialized)
+				return;
+
+			initialized = true;
+
+			var platform = Platform.Instance;
+			if (platform == null)
 			{
-
-				Style.Add<FormHandler>("themed", h => ThemeWindow(h.Control));
-				Style.Add<DialogHandler>("themed", h => ThemeWindow(h.Control));
-				var platform = new Eto.Wpf.Platform();
-				// uncomment to use app domains
-				platform.LoadAssembly(typeof(EtoInitializer).Assembly);
-				new Application(platform).Attach();
-
-				Eto.Designer.Builders.BaseCompiledInterfaceBuilder.InitializeAssembly = typeof(EtoInitializer).Assembly.FullName;
+				platform = new Eto.Wpf.Platform();
+				Platform.Initialize(platform);
 			}
+
+			Style.Add<FormHandler>("eto.vstheme", h => ThemeWindow(h.Control));
+			Style.Add<DialogHandler>("eto.vstheme", h => ThemeWindow(h.Control));
+
+			platform.LoadAssembly(typeof(EtoInitializer).Assembly);
+
+			if (Application.Instance == null)
+				new Eto.Forms.Application().Attach();
+
+			Eto.Designer.Builders.BaseCompiledInterfaceBuilder.InitializeAssembly = typeof(EtoInitializer).Assembly.FullName;
 		}
 
 		private static void ThemeWindow(System.Windows.Window w)

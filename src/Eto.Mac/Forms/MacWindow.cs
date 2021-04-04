@@ -268,6 +268,8 @@ namespace Eto.Mac.Forms
 			set => Control.MovableByWindowBackground = value;
 		}
 
+		protected override Color DefaultBackgroundColor => NSColor.WindowBackground.ToEtoWithAppearance(false);
+
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			SizeF naturalSize = new SizeF(200, 200);

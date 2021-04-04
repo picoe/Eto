@@ -916,9 +916,11 @@ namespace Eto.Mac.Forms
 
 		protected bool HasBackgroundColor => Widget.Properties.Get<Color?>(MacView.BackgroundColorKey) != null;
 
+		protected virtual Color DefaultBackgroundColor => Colors.Transparent;
+
 		public virtual Color BackgroundColor
 		{
-			get { return Widget.Properties.Get<Color?>(MacView.BackgroundColorKey) ?? Colors.Transparent; }
+			get { return Widget.Properties.Get<Color?>(MacView.BackgroundColorKey) ?? DefaultBackgroundColor; }
 			set
 			{
 				if (value != BackgroundColor)
