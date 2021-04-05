@@ -54,7 +54,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public IMacViewHandler Handler
 		{ 
-			get { return (IMacViewHandler)WeakHandler.Target; }
+			get { return WeakHandler?.Target as IMacViewHandler; }
 			set { WeakHandler = new WeakReference(value); } 
 		}
 

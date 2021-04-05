@@ -1,4 +1,4 @@
-﻿namespace EtoApp.1.Desktop
+﻿namespace EtoApp._1.Desktop
 module Program =
 
     open System

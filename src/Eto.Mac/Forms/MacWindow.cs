@@ -184,6 +184,13 @@ namespace Eto.Mac.Forms
 
 	class EtoContentView : MacPanelView
 	{
+		public EtoContentView()
+		{
+		}
+
+		public EtoContentView(IntPtr handle) : base(handle)
+		{
+		}
 	}
 
 	public interface IMacWindow : IMacControlHandler
@@ -260,6 +267,8 @@ namespace Eto.Mac.Forms
 			get => Control.MovableByWindowBackground;
 			set => Control.MovableByWindowBackground = value;
 		}
+
+		protected override Color DefaultBackgroundColor => NSColor.WindowBackground.ToEtoWithAppearance(false);
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -517,13 +526,14 @@ namespace Eto.Mac.Forms
 				NSApplication.SharedApplication.InvokeOnMainThread(() => handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty));
 			});
 		}
+		EtoContentView contentView;
 
 		protected virtual void ConfigureWindow()
 		{
 			var myWindow = Control as EtoWindow;
 			if (myWindow != null)
 				myWindow.Handler = this;
-			Control.ContentView = new EtoContentView { WeakHandler = new WeakReference(this) };
+			Control.ContentView = contentView = new EtoContentView { WeakHandler = new WeakReference(this) };
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using Eto.Forms;
 
-namespace EtoApp.1.Mac
+namespace EtoApp._1.Mac
 {
 	class MainClass
 	{

@@ -52,6 +52,13 @@ namespace Eto.Mac.Forms.Controls
 				get { return Handler.MaxLength; }
 			}
 
+			EtoFormatter formatter;
+
+			public EtoSecureTextField(IntPtr handle)
+				: base(handle)
+			{
+			}
+
 			public EtoSecureTextField()
 			{
 				Bezeled = true;
@@ -60,7 +67,7 @@ namespace Eto.Mac.Forms.Controls
 				Cell.Scrollable = true;
 				Cell.Wraps = false;
 				Cell.UsesSingleLineMode = true;
-				Formatter = new EtoFormatter { Handler = this };
+				Formatter = formatter = new EtoFormatter { Handler = this };
 			}
 		}
 

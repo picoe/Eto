@@ -15,7 +15,6 @@ namespace Eto.Designer
 		Panel errorPanel;
 		UITimer timer;
 		UITimer errorTimer;
-		int processingCount;
 		Func<string> getCode;
 		Control errorContent;
 		Panel designPanelHolder;
@@ -85,7 +84,6 @@ namespace Eto.Designer
 		void Timer_Elapsed(object sender, EventArgs e)
 		{
 			timer.Stop();
-			processingCount = 1; // only check for additional changes AFTER this point to restart the timer
 			//sw.Start();
 			var code = getCode();
 			if (!string.IsNullOrEmpty(code))
@@ -144,7 +142,6 @@ namespace Eto.Designer
 		/// </summary>
 		public void Update()
 		{
-			processingCount++;
 			timer.Start();
 		}
 

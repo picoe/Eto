@@ -129,8 +129,17 @@
 			"args": [ "--no-redirect" ],
 			"env": {
 				"MONODEVELOP_CONSOLE_LOG_LEVEL": "All",
-				"MONODEVELOP_DEV_ADDINS": "${workspaceFolder}/artifacts/addin/${config:var.configuration}/net472/"
+				"MONODEVELOP_DEV_ADDINS": "${workspaceFolder}/artifacts/addin/${config:var.configuration}/VisualStudio.Mac/"
 			}
+		},
+		{
+			// note you cannot actually debug as omnisharp only supports x64, this is used so we can just run without debugging more easily
+			"name": "Eto.Addin.VisualStudio.Windows",
+			"type": "clr",
+			"request": "launch",
+			"preLaunchTask": "build-addins",
+			"program": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/Common7/IDE/devenv.exe",
+			"args": [ "/RootSuffix", "Exp" ],
 		}
 	]
 }

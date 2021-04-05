@@ -1,7 +1,7 @@
 ﻿using AppKit;
 using Eto.Forms;
 
-namespace EtoApp.1.XamMac
+namespace EtoApp._1.XamMac
 {
 	static class MainClass
 	{

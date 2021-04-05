@@ -49,9 +49,9 @@
       Pattern='(?&lt;=^\s*Version\s*=\s*[&quot;])(.+?)(?=[&quot;]\s*$)'
       Replacement='$(AssemblyVersionBeforeRelease)' />
 
-    <FileUpdate Files="$(AddinDir)Eto.Addin.VisualStudio.Win\source.extension.vsixmanifest"
+    <FileUpdate Files="$(AddinDir)Eto.Addin.VisualStudio.Windows\source.extension.vsixmanifest"
       WarnOnNoUpdate="true"
-      Pattern='(?&lt;=^\s*&lt;Identity\s+Id=&quot;Eto.Addin.VisualStudio.Win&quot;.+?Version=&quot;)(.+?)(?=&quot;\s+)'
+      Pattern='(?&lt;=^\s*&lt;Identity\s+Id=&quot;Eto.Addin.VisualStudio.Windows&quot;.+?Version=&quot;)(.+?)(?=&quot;\s+)'
       Replacement='$(AssemblyVersionBeforeRelease)' />
 
     <PropertyGroup>
@@ -80,7 +80,7 @@
 
     <ItemGroup>
       <TemplateFiles Include="$(TemplateFiles)" Condition="$(TemplateFiles) != ''" />
-      <TemplateFiles Include="$(SourceDir)Addins\Eto.Addin.VisualStudio.Win\**\*.vstemplate" />
+      <TemplateFiles Include="$(SourceDir)Addins\Eto.Addin.VisualStudio.Windows\**\*.vstemplate" />
       <TemplateFiles Include="$(SourceDir)Addins\Eto.Addin.VisualStudio.Mac\**\*.xpt.xml" />
       <TemplateFiles Include="$(SourceDir)Addins\Eto.Addin.VisualStudio.Mac\Properties\Manifest.addin.xml" />
 
@@ -227,8 +227,8 @@
     <MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.Mac\Eto.Addin.VisualStudio.Mac.csproj" Targets="PackageAddin" Properties="Configuration=$(Configuration)" Condition="$(HasVSMac) == 'True'" />
 
     <!-- Visual Studio Addin -->
-    <MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.Win.sln" Targets="Restore" Properties="Configuration=$(Configuration);_RestoreEnforceEvaluate=True" Condition="$(HasVSWin) == 'True'" />
-    <MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.Win.sln" Targets="Build" Properties="Configuration=$(Configuration);DeployExtension=false" Condition="$(HasVSWin) == 'True'" />
+    <MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.Windows.sln" Targets="Restore" Properties="Configuration=$(Configuration);_RestoreEnforceEvaluate=True" Condition="$(HasVSWin) == 'True'" />
+    <MSBuild Projects="$(AddinDir)Eto.Addin.VisualStudio.Windows.sln" Targets="Build" Properties="Configuration=$(Configuration);DeployExtension=false" Condition="$(HasVSWin) == 'True'" />
   </Target>
   
   <Target Name="Clean">

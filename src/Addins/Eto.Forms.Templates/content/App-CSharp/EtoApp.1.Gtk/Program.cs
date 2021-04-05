@@ -1,7 +1,7 @@
 ﻿using System;
 using Eto.Forms;
 
-namespace EtoApp.1.Gtk
+namespace EtoApp._1.Gtk
 {
 	class MainClass
 	{

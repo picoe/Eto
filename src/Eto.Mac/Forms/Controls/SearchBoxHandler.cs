@@ -50,6 +50,10 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
+			public EtoTextField(IntPtr handle) : base(handle)
+			{
+			}
+
 			public EtoTextField()
 			{
 				Bezeled = true;
@@ -76,11 +80,13 @@ namespace Eto.Mac.Forms.Controls
 			return new EtoTextField();
 		}
 
+		EtoFormatter formatter;
+
 		protected override void Initialize()
 		{
 			var control = Control;
 
-			control.Formatter = new EtoFormatter { Handler = this };
+			control.Formatter = formatter = new EtoFormatter { Handler = this };
 
 			MaxLength = -1;
 

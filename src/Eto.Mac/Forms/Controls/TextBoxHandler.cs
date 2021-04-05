@@ -86,12 +86,14 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
+		EtoFormatter formatter;
+
 		public EtoTextField()
 		{
 			Bezeled = true;
 			Editable = true;
 			Selectable = true;
-			Formatter = new EtoFormatter { Handler = this };
+			Formatter = formatter = new EtoFormatter { Handler = this };
 			Cell.Scrollable = true;
 			Cell.Wraps = false;
 			Cell.UsesSingleLineMode = true;

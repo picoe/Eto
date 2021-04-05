@@ -12,8 +12,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Editor\XetoTextEditorExtension.cs" />
-    <Compile Include="..\Eto.Addin.VisualStudio.Win\Intellisense\*.cs" Link="Intellisense\%(Filename)%(Extension)" />
-    <Compile Include="..\Eto.Addin.VisualStudio.Win\Components.cs" />
+    <Compile Include="..\Eto.Addin.VisualStudio.Windows\Intellisense\*.cs" Link="Intellisense\%(Filename)%(Extension)" />
+    <Compile Include="..\Eto.Addin.VisualStudio.Windows\Components.cs" />
   </ItemGroup>
 
   <ItemGroup>

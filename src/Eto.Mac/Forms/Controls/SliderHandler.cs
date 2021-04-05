@@ -40,6 +40,14 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public WeakReference WeakHandler { get; set; }
 
+			public EtoSlider()
+			{
+			}
+
+			public EtoSlider(IntPtr handle) : base(handle)
+			{
+			}
+
 			public SliderHandler Handler
 			{ 
 				get { return (SliderHandler)WeakHandler?.Target; }

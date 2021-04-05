@@ -5,7 +5,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Serialization.Json;
 
-namespace EtoApp.1
+namespace EtoApp._1
 {	
 	public class MainForm : Form
 	{	
