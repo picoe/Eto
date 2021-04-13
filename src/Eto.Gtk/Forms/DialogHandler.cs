@@ -4,6 +4,51 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms
 {
+	public class EtoDialog : Gtk.Dialog
+	{
+		public EtoDialog()
+			: base("", null, Gtk.DialogFlags.DestroyWithParent)
+		{
+		}
+
+		public IGtkWindow Handler { get; set; }
+
+#if GTK3
+		protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
+		{
+			base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
+			var size = Handler.UserPreferredSize;
+			if (size.Height > 0)
+				natural_height = size.Height;
+		}
+
+		protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
+		{
+
+			base.OnGetPreferredWidthForHeight(height, out minimum_width, out natural_width);
+			var size = Handler.UserPreferredSize;
+			if (size.Width > 0)
+				natural_width = size.Width;
+		}
+
+		protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+		{
+			base.OnGetPreferredWidth(out minimum_width, out natural_width);
+			var size = Handler.UserPreferredSize;
+			if (size.Width > 0)
+				natural_width = size.Width;
+		}
+
+		protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
+		{
+			base.OnGetPreferredHeight(out minimum_height, out natural_height);
+			var size = Handler.UserPreferredSize;
+			if (size.Height > 0)
+				natural_height = size.Height;
+		}
+#endif
+	}
+
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Gtk.Container btcontainer;
@@ -11,7 +56,7 @@ namespace Eto.GtkSharp.Forms
 
 		public DialogHandler()
 		{
-			Control = new Gtk.Dialog("", null, Gtk.DialogFlags.DestroyWithParent);
+			Control = new EtoDialog { Handler = this };
 
 			Resizable = false;
 		}
@@ -195,7 +240,7 @@ namespace Eto.GtkSharp.Forms
 		}
 
 		[GLib.ConnectBefore]
-		void Control_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		void Control_KeyPressEvent(object o, Gtk.KeyPressEventArgs args)
 		{
 			if (args.Event.Key == Gdk.Key.Escape && AbortButton != null)
 			{

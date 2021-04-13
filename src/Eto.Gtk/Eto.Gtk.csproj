@@ -23,7 +23,7 @@ When building for the full framework, .NET Framework 4.6.1 or mono framework 5.1
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GtkSharp" Version="3.22.25.74" />
+    <PackageReference Include="GtkSharp" Version="3.24.24.34" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>

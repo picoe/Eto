@@ -6,12 +6,80 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Collections.Specialized;
 using Eto.Drawing;
+using System.Threading;
 
 namespace Eto.Test.UnitTests.Forms
 {
 	[TestFixture]
 	public class WindowTests : TestBase
 	{
+
+
+		[TestCase(true, true, true, false)]
+		[TestCase(true, true, false, true)]
+		[TestCase(true, false, true, false)]
+		[TestCase(true, false, false, true)]
+		[TestCase(false, true, true, false)]
+		[TestCase(false, true, false, true)]
+		[TestCase(false, false, true, false)]
+		[TestCase(false, false, false, true)]
+		public void FormShouldSizeWithLabelCorrectly(bool useForm, bool useSize, bool setWidth, bool setHeight)
+		{
+			bool wasClosed = false;
+			var mre = new ManualResetEvent(false);
+			Application.Instance.Invoke(() =>
+			{
+				var label = new Label();
+				label.TextColor = Colors.White;
+				label.Text = Sections.Controls.RichTextAreaSection.LoremText;
+
+				Window window = useForm ? (Window)new Form { ShowActivated = false } : new Dialog();
+				window.BackgroundColor = Colors.Blue;
+				// window.ShowInTaskbar = false;
+				// window.WindowStyle = WindowStyle.None;
+				// window.Resizable = true;
+				// window.Topmost = true;
+				window.Content = label;
+
+				if (useSize)
+				{
+					if (setWidth && setHeight)
+						window.Size = new Size(150, 150);
+					else if (setWidth)
+						window.Size = new Size(150, -1);
+					else if (setHeight)
+						window.Size = new Size(-1, 150);
+				}
+				else
+				{
+					if (setWidth && setHeight)
+						window.Width = window.Height = 150;
+					else if (setWidth)
+						window.Width = 150;
+					else if (setHeight)
+						window.Height = 150;
+				}
+
+				window.MouseDown += (sender, e) =>
+				{
+					window.Close();
+				};
+				window.Closed += (sender, e) =>
+				{
+					mre.Set();
+					wasClosed = true;
+				};
+
+				window.Owner = Application.Instance.MainForm;
+				if (window is Form f)
+					f.Show();
+				else if (window is Dialog d)
+					d.ShowModal();
+			});
+			mre.WaitOne(10000);
+			Assert.IsTrue(wasClosed, "#1 Form was not closed.  You need to click on it to confirm it is sized correctly");
+		}
+
 		[Test]
 		public void WindowShouldReportInitialSize()
 		{

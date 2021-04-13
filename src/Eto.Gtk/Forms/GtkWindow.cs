@@ -14,6 +14,8 @@ namespace Eto.GtkSharp.Forms
 		bool CloseWindow(Action<CancelEventArgs> closing = null);
 
 		Gtk.Window Control { get; }
+
+		Size UserPreferredSize { get; }
 	}
 
 	public class GtkShrinkableVBox : Gtk.VBox
@@ -243,6 +245,7 @@ namespace Eto.GtkSharp.Forms
 			}
 			set
 			{
+				UserPreferredSize = value;
 				var window = Control.GetWindow();
 				if (window != null)
 				{
