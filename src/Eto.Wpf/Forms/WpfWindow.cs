@@ -305,9 +305,25 @@ namespace Eto.Wpf.Forms
 			if (IsAttached)
 				return;
 
+			var size = UserPreferredSize;
+			if (!Control.IsLoaded)
+			{
+				sw.SizeToContent sizing;
+				if (double.IsNaN(size.Width) && double.IsNaN(size.Height))
+					sizing = sw.SizeToContent.Manual;
+				else if (double.IsNaN(size.Width))
+					sizing = sw.SizeToContent.Width;
+				else if (double.IsNaN(size.Height))
+					sizing = sw.SizeToContent.Height;
+				else
+					sizing = sw.SizeToContent.WidthAndHeight;
+
+				Control.SizeToContent = sizing;
+			}
+
 			// don't set the minimum size of a window, just the preferred size
-			ContainerControl.Width = UserPreferredSize.Width;
-			ContainerControl.Height = UserPreferredSize.Height;
+			ContainerControl.Width = size.Width;
+			ContainerControl.Height = size.Height;
 			SetMinimumSize();
 		}
 
@@ -565,7 +581,7 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 
-				Control.SizeToContent = sw.SizeToContent.Manual;
+
 				base.Size = value;
 				if (!Control.IsLoaded)
 				{
