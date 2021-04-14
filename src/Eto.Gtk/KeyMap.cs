@@ -115,6 +115,7 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.Key_7, Keys.D7);
 			keymap.Add(Gdk.Key.Key_8, Keys.D8);
 			keymap.Add(Gdk.Key.Key_9, Keys.D9);
+			keymap.Add(Gdk.Key.plus, Keys.Equal);
 			keymap.Add(Gdk.Key.minus, Keys.Minus);
 			keymap.Add(Gdk.Key.grave, Keys.Grave);
 			keymap.Add(Gdk.Key.Insert, Keys.Insert);
@@ -186,6 +187,7 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.KP_Insert, Keys.Insert);
 			keymap.Add(Gdk.Key.KP_Equal, Keys.Equal);
 			keymap.Add(Gdk.Key.KP_Delete, Keys.Delete);
+			keymap.Add(Gdk.Key.KP_Separator, Keys.Decimal);
 
 			if (EtoEnvironment.Platform.IsMac)
 			{
