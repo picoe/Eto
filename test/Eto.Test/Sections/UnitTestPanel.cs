@@ -1119,7 +1119,8 @@ namespace Eto.Test.Sections
 			timer.Interval = 0.5;
 			timer.Elapsed += (sender, e) => PerformSearch();
 
-			testCountLabel = new Label {
+			testCountLabel = new Label
+			{
 				VerticalAlignment = VerticalAlignment.Center
 			};
 
@@ -1527,18 +1528,18 @@ namespace Eto.Test.Sections
 			{
 				var map = new Dictionary<object, UnitTestItem>();
 				var tests = Runner.GetTests();
-		  // always show all categories
-		  var categories = AvailableCategories ?? Runner.GetCategories(TestFilter.Empty).OrderBy(r => r);
+				// always show all categories
+				var categories = AvailableCategories ?? Runner.GetCategories(TestFilter.Empty).OrderBy(r => r);
 				var totalTestCount = Runner.GetTestCount(filter);
 				var testSuites = tests.Select(suite => ToTree(suite.Assembly, suite, filter, map)).Where(r => r != null);
 				var treeData = new TreeGridItem(testSuites);
 				Application.Instance.AsyncInvoke(() =>
-		  {
-				  AvailableCategories = categories;
-				  testCountLabel.Text = $"{totalTestCount} Tests";
-				  testMap = map;
-				  tree.DataStore = treeData;
-			  });
+				{
+					  AvailableCategories = categories;
+					  testCountLabel.Text = $"{totalTestCount} Tests";
+					  testMap = map;
+					  tree.DataStore = treeData;
+				  });
 			});
 		}
 

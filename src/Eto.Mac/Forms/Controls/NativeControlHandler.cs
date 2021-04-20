@@ -43,12 +43,6 @@ namespace Eto.Mac.Forms.Controls
 			Control = nativeControl;
 		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
-			AutoSize = false;
-		}
-
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
 			return Control.FittingSize.ToEto();

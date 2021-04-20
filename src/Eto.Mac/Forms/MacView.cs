@@ -563,12 +563,6 @@ namespace Eto.Mac.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
-		public virtual bool AutoSize
-		{
-			get { return Widget.Properties.Get<bool>(MacView.AutoSize_Key, true); }
-			protected set { Widget.Properties.Set(MacView.AutoSize_Key, value, true); }
-		}
-
 		protected virtual Size DefaultMinimumSize
 		{
 			get { return Size.Empty; }
@@ -592,8 +586,12 @@ namespace Eto.Mac.Forms
 			set
 			{
 				if (Widget.Properties.TrySet(MacView.UserPreferredSize_Key, value))
-					SetAutoSize();
+					OnUserPrefferedSizeChanged();
 			}
+		}
+
+		protected virtual void OnUserPrefferedSizeChanged()
+		{
 		}
 
 		public virtual Size Size
@@ -646,12 +644,6 @@ namespace Eto.Mac.Forms
 			set => Size = new Size(UserPreferredSize.Width, value);
 		}
 
-		protected virtual void SetAutoSize()
-		{
-			var userPreferredSize = UserPreferredSize;
-			AutoSize = userPreferredSize.Width == -1 || userPreferredSize.Height == -1;
-		}
-
 		protected Size? NaturalAvailableSize
 		{
 			get { return Widget.Properties.Get<Size?>(MacView.NaturalAvailableSize_Key); }
@@ -675,7 +667,7 @@ namespace Eto.Mac.Forms
 			NaturalSize = null;
 			NaturalSizeInfinity = null;
 
-			if (!Widget.Loaded)
+			if (!Widget.Loaded || Widget.IsSuspended)
 				return;
 
 			Widget.VisualParent.GetMacControl()?.InvalidateMeasure();
@@ -897,6 +889,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void ResumeLayout()
 		{
+			InvalidateMeasure();
 		}
 
 

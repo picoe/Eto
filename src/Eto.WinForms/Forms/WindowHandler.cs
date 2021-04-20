@@ -354,10 +354,7 @@ namespace Eto.WinForms.Forms
 
 		public Eto.Forms.ToolBar ToolBar
 		{
-			get
-			{
-				return toolBar;
-			}
+			get => toolBar;
 			set
 			{
 				toolbarHolder.SuspendLayout();
@@ -374,14 +371,11 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public void Close()
-		{
-			Control.Close();
-		}
+		public void Close() => Control.Close();
 
 		public Icon Icon
 		{
-			get { return icon; }
+			get => icon;
 			set
 			{
 				icon = value;
@@ -391,16 +385,13 @@ namespace Eto.WinForms.Forms
 
 		public string Title
 		{
-			get { return Control.Text; }
-			set { Control.Text = value; }
+			get => Control.Text;
+			set => Control.Text = value;
 		}
 
 		public new Point Location
 		{
-			get
-			{
-				return Control.Location.ToEto();
-			}
+			get => Control.Location.ToEto();
 			set
 			{
 				Control.Location = value.ToSD();
@@ -480,20 +471,14 @@ namespace Eto.WinForms.Forms
 			Control.Activate();
 		}
 
-		public void SendToBack()
-		{
-			Control.SendToBack();
-		}
+		public void SendToBack() => Control.SendToBack();
 
 		public virtual void SetOwner(Window owner)
 		{
 			Control.Owner = owner.ToSWF();
 		}
 
-		public Screen Screen
-		{
-			get { return swf.Screen.FromControl(Control).ToEto(); }
-		}
+		public Screen Screen => swf.Screen.FromControl(Control).ToEto();
 
 		public override bool Visible
 		{
@@ -509,11 +494,16 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public float LogicalPixelSize
+		public float LogicalPixelSize => 1f;
+
+		public bool AutoSize
 		{
-			get
+			get => Control.AutoSize;
+			set
 			{
-				return 1f;
+				// TODO: not quite working as intended yet on winforms, user can't resize after this is turned on..
+				Control.AutoSizeMode = swf.AutoSizeMode.GrowAndShrink;
+				Control.AutoSize = value;
 			}
 		}
 	}

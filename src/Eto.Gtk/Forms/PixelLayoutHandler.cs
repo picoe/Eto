@@ -44,6 +44,7 @@ namespace Eto.GtkSharp.Forms
 #endif
 			Control.Put(widget, x, y);
 			ctl.CurrentLocation = new Point(x, y);
+			InvalidateMeasure();
 		}
 
 		public void Move(Control child, int x, int y)
@@ -60,6 +61,7 @@ namespace Eto.GtkSharp.Forms
 
 				ctl.CurrentLocation = new Point(x, y);
 			}
+			InvalidateMeasure();
 		}
 
 		public void Remove(Control child)
@@ -69,6 +71,7 @@ namespace Eto.GtkSharp.Forms
 #else
 			Control.Remove(child.GetContainerWidget());
 #endif
+			InvalidateMeasure();
 		}
 
 		public void Update()

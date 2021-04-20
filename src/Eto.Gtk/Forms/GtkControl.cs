@@ -23,6 +23,8 @@ namespace Eto.GtkSharp.Forms
 
 		void SetBackgroundColor();
 
+		void InvalidateMeasure();
+
 #if GTK2
 		void TriggerEnabled(bool oldEnabled, bool newEnabled, bool force = false);
 #endif
@@ -147,6 +149,7 @@ namespace Eto.GtkSharp.Forms
 		protected virtual void SetSize(Size size)
 		{
 			ContainerControl.SetSizeRequest(size.Width, size.Height);
+			InvalidateMeasure();
 		}
 
 		public virtual bool Enabled
@@ -274,6 +277,8 @@ namespace Eto.GtkSharp.Forms
 
 		public void ResumeLayout()
 		{
+			if (!Widget.IsSuspended)
+				InvalidateMeasure();
 		}
 
 		public void Focus()
@@ -342,6 +347,7 @@ namespace Eto.GtkSharp.Forms
 			base.Initialize();
 			DragControl.DragDataReceived += Connector.HandleDragDataReceived;
 			DragControl.DragDataGet += Connector.HandleDragDataGet;
+			HandleEvent(Eto.Forms.Control.SizeChangedEvent);
 		}
 
 		public virtual void OnPreLoad(EventArgs e)
@@ -920,7 +926,7 @@ namespace Eto.GtkSharp.Forms
 
 		public Window GetNativeParentWindow() => (Control.Toplevel as Gtk.Window).ToEtoWindow();
 
-		public SizeF GetPreferredSize(SizeF availableSize)
+		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
 			if (!ContainerControl.IsRealized)
 			{
@@ -929,22 +935,41 @@ namespace Eto.GtkSharp.Forms
 			}
 #if GTK3
 			var requestMode = ContainerControl.RequestMode;
+			var preferred = UserPreferredSize;
 			var size = new Size(availableSize.Width >= float.MaxValue ? int.MaxValue : (int)availableSize.Width, availableSize.Height >= float.MaxValue ? int.MaxValue : (int)availableSize.Height);
-			if (requestMode == Gtk.SizeRequestMode.HeightForWidth)
+			if (requestMode == Gtk.SizeRequestMode.HeightForWidth && preferred.Height < 0)
 			{
-				ContainerControl.GetPreferredWidth(out var minimum_width, out var natural_width);
-				var width = Math.Max(minimum_width, Math.Min(size.Width, natural_width));
+				int width;
+				int natural_width;
+				if (preferred.Width >= 0)
+					width = natural_width = preferred.Width;
+				else
+				{
+					ContainerControl.GetPreferredWidth(out var minimum_width, out natural_width);
+					width = Math.Max(minimum_width, Math.Min(size.Width, natural_width));
+				}
 				ContainerControl.GetPreferredHeightForWidth(width, out var minimum_height, out var natural_height);
 				return new SizeF(natural_width, natural_height);
 			}
-			else if (requestMode == Gtk.SizeRequestMode.WidthForHeight)
+			else if (requestMode == Gtk.SizeRequestMode.WidthForHeight && preferred.Width < 0)
 			{
-				ContainerControl.GetPreferredHeight(out var minimum_height, out var natural_height);
-				var height = Math.Max(minimum_height, Math.Min(size.Height, natural_height));
+				int height;
+				int natural_height;
+				if (preferred.Height >= 0)
+					height = natural_height = preferred.Height;
+				else
+				{
+					ContainerControl.GetPreferredHeight(out var minimum_height, out natural_height);
+					height = Math.Max(minimum_height, Math.Min(size.Height, natural_height));
+				}
 				ContainerControl.GetPreferredHeightForWidth(height, out var minimum_width, out var natural_width);
 				return new SizeF(natural_width, natural_height);
 			}
 			ContainerControl.GetPreferredSize(out var minimum, out var natural);
+			if (preferred.Width >= 0)
+				natural.Width = preferred.Width;
+			if (preferred.Height >= 0)
+				natural.Height = preferred.Height;
 			return new SizeF(natural.Width, natural.Height);
 #else
 			var size = ContainerControl.SizeRequest();
@@ -962,6 +987,14 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return Widget.Properties.Get<DragInfoObject>(GtkControl.DragInfo_Key); }
 			set { Widget.Properties.Set(GtkControl.DragInfo_Key, value); }
+		}
+
+		public virtual void InvalidateMeasure()
+		{
+			if (Widget.Loaded && !Widget.IsSuspended)
+			{
+				Widget.VisualParent?.GetGtkControlHandler()?.InvalidateMeasure();
+			}
 		}
 	}
 }

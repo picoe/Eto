@@ -199,6 +199,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Control.ResetWidth();
 				Control.TextWithMnemonic = value.ToPlatformMnemonic();
+				InvalidateMeasure();
 			}
 		}
 

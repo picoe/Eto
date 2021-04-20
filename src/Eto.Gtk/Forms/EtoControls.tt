@@ -12,7 +12,7 @@ using Eto.Drawing;
 namespace Eto.GtkSharp.Forms
 {
 <#
-var controls = new[] { "Fixed", "EventBox" };
+var controls = new[] { "Fixed", "EventBox", "VBox" };
 
 foreach (var control in controls)
 {

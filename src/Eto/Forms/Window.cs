@@ -272,7 +272,7 @@ namespace Eto.Forms
 		{
 			get { return Handler.ToolBar; }
 			set
-			{ 
+			{
 				var toolbar = Handler.ToolBar;
 				if (toolbar != null)
 				{
@@ -563,6 +563,19 @@ namespace Eto.Forms
 			set => Handler.MovableByWindowBackground = value;
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating that the window will automatically resize when its content changes
+		/// </summary>
+		/// <remarks>
+		/// Note that if you set both dimensions of the <see cref="Size"/> and/or <see cref="Container.ClientSize"/>, this will be set to false.
+		/// </remarks>
+		/// <value><c>true</c> to auto size the window when its content changes, <c>false</c> to only auto size when first created</value>
+		public bool AutoSize
+		{
+			get => Handler.AutoSize;
+			set => Handler.AutoSize = value;
+		}
+
 		#region Callback
 
 		static readonly object callback = new Callback();
@@ -823,6 +836,15 @@ namespace Eto.Forms
 			/// Gets or sets a value indicating that the window can be moved by click+dragging the window background
 			/// </summary>
 			bool MovableByWindowBackground { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating that the window will automatically resize when its content changes
+			/// </summary>
+			/// <remarks>
+			/// Note that if you set both dimensions of the <see cref="Size"/> and/or <see cref="Container.ClientSize"/>, this will be set to false.
+			/// </remarks>
+			/// <value><c>true</c> to auto size the window when its content changes, <c>false</c> to only auto size when first created</value>
+			bool AutoSize { get; set; }
 		}
 
 		#endregion

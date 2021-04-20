@@ -365,6 +365,7 @@ namespace Eto.Forms
 			{
 				throw new InvalidOperationException("Cannot assign a control as a child of itself.");
 			}
+			SuspendLayout();
 			if (Handler is IThemedControlHandler)
 			{
 				if (!ReferenceEquals(previousChild, null))
@@ -373,6 +374,7 @@ namespace Eto.Forms
 				if (!ReferenceEquals(child, null) && ReferenceEquals(child.LogicalParent, null))
 					SetLogicalParent(child);
 				assign();
+				ResumeLayout();
 				return;
 			}
 			if (!ReferenceEquals(previousChild, null) && !ReferenceEquals(previousChild, child))
@@ -415,10 +417,12 @@ namespace Eto.Forms
 						assign?.Invoke();
 						child.TriggerLoadComplete(EventArgs.Empty);
 					}
+					ResumeLayout();
 					return;
 				}
 			}
 			assign?.Invoke();
+			ResumeLayout();
 		}
 
 		/// <summary>

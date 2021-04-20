@@ -493,6 +493,7 @@ namespace Eto.Forms
 
 		void Create()
 		{
+			SuspendLayout();
 			var table = new TableLayout { IsVisualControl = true };
 			table.Spacing = new Size(Spacing, Spacing);
 
@@ -566,6 +567,7 @@ namespace Eto.Forms
 					throw new ArgumentOutOfRangeException();
 			}
 			Content = table;
+			ResumeLayout();
 			isCreated = true;
 		}
 
