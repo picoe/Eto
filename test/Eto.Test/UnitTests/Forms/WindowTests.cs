@@ -13,6 +13,65 @@ namespace Eto.Test.UnitTests.Forms
 	[TestFixture]
 	public class WindowTests : TestBase
 	{
+		[TestCase(true)]
+		[TestCase(false)]
+		[ManualTest]
+		public void WindowShouldAutoSize(bool useForm)
+		{
+			void DoTest(Window window)
+			{
+				window.AutoSize = true;
+				window.MinimumSize = Size.Empty;
+
+				var bottomPanel = new StackLayout();
+				var rightPanel = new StackLayout { Orientation = Orientation.Horizontal };
+
+				var autoSize = new CheckBox { Text = "AutoSize", Checked = window.AutoSize };
+				autoSize.CheckedChanged += (sender, e) => {
+					window.AutoSize = autoSize.Checked == true;
+				};
+
+				var addBottomButton = new Button { Text = "Add bottom control" };
+				addBottomButton.Click += (sender, e) => {
+					bottomPanel.Items.Add(new Panel { Size = new Size(20, 20) });
+					autoSize.Checked = window.AutoSize;
+				};
+
+				var addRightButton = new Button { Text = "Add right control" };
+				addRightButton.Click += (sender, e) => {
+					rightPanel.Items.Add(new Panel { Size = new Size(20, 20) });
+					autoSize.Checked = window.AutoSize;
+				};
+
+				var resetButton = new Button { Text = "Reset" };
+				resetButton.Click += (sender, e) =>
+				{
+					window.SuspendLayout();
+					bottomPanel.Items.Clear();
+					rightPanel.Items.Clear();
+					window.ResumeLayout();
+					autoSize.Checked = window.AutoSize;
+				};
+
+				window.SizeChanged += (sender, e) => autoSize.Checked = window.AutoSize;
+
+				var layout = new DynamicLayout();
+				layout.BeginHorizontal();
+				layout.BeginCentered();
+				layout.Add(addRightButton);
+				layout.Add(addBottomButton);
+				layout.Add(resetButton);
+				layout.Add(autoSize);
+				layout.EndCentered();
+				layout.Add(rightPanel);
+				layout.EndHorizontal();
+				layout.Add(bottomPanel);
+
+				window.Content = layout;
+			}
+			if (useForm) Form(DoTest, -1); else Dialog(DoTest, -1);
+
+		}
 
 
 		[TestCase(true, true, true, false)]
@@ -23,22 +82,21 @@ namespace Eto.Test.UnitTests.Forms
 		[TestCase(false, true, false, true)]
 		[TestCase(false, false, true, false)]
 		[TestCase(false, false, false, true)]
-		public void FormShouldSizeWithLabelCorrectly(bool useForm, bool useSize, bool setWidth, bool setHeight)
+		public void WindowShouldHaveCorrectInitialSizeWithWrappedLabel(bool useForm, bool useSize, bool setWidth, bool setHeight)
 		{
 			bool wasClosed = false;
 			var mre = new ManualResetEvent(false);
 			Application.Instance.Invoke(() =>
 			{
+				const string infoText = "Click to change text.\n";
 				var label = new Label();
 				label.TextColor = Colors.White;
-				label.Text = Sections.Controls.RichTextAreaSection.LoremText;
+				label.Text = infoText + Utility.LoremText;
 
 				Window window = useForm ? (Window)new Form { ShowActivated = false } : new Dialog();
+				window.AutoSize = true;
 				window.BackgroundColor = Colors.Blue;
-				// window.ShowInTaskbar = false;
-				// window.WindowStyle = WindowStyle.None;
-				// window.Resizable = true;
-				// window.Topmost = true;
+				window.Resizable = false;
 				window.Content = label;
 
 				if (useSize)
@@ -60,10 +118,10 @@ namespace Eto.Test.UnitTests.Forms
 						window.Height = 150;
 				}
 
-				window.MouseDown += (sender, e) =>
-				{
-					window.Close();
+				label.MouseDown += (sender, e) => {
+					label.Text = infoText + Utility.GenerateLoremText(new Random().Next(200));
 				};
+
 				window.Closed += (sender, e) =>
 				{
 					mre.Set();
@@ -76,7 +134,7 @@ namespace Eto.Test.UnitTests.Forms
 				else if (window is Dialog d)
 					d.ShowModal();
 			});
-			mre.WaitOne(10000);
+			mre.WaitOne(-1);
 			Assert.IsTrue(wasClosed, "#1 Form was not closed.  You need to click on it to confirm it is sized correctly");
 		}
 
@@ -177,7 +235,7 @@ namespace Eto.Test.UnitTests.Forms
 			{
 				Label CreateLabel()
 				{
-					var label = new Label { Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dictum ultricies augue, non mollis ligula sagittis ac." };
+					var label = new Label { Text = Utility.GenerateLoremText(20) };
 					if (width > 0)
 						label.Width = width;
 					return label;

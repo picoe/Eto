@@ -86,7 +86,7 @@ namespace Eto.Mac.Forms.Controls
 	public interface IButtonHandler
 	{
 		bool SetBezel(Size size);
-		bool AutoSize { get; }
+		bool IsAutoSized { get; }
 		Size MinimumSize { get; }
 		int DisableSetBezel { get; set; }
 		void TriggerSizeChanged();
@@ -113,7 +113,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			h.DisableSetBezel++;
 			base.SizeToFit();
-			if (h.AutoSize)
+			if (h.IsAutoSized)
 			{
 				var size = Frame.Size;
 				var minSize = h.MinimumSize;
@@ -389,6 +389,8 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public int DisableSetBezel { get; set; }
+
+		public bool IsAutoSized => UserPreferredSize.Width == -1 || UserPreferredSize.Height == -1;
 
 		public void TriggerSizeChanged()
 		{

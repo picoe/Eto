@@ -126,7 +126,7 @@ namespace Eto.Wpf.Forms
 					SetContentSize();
 				}
 				// stop form from auto-sizing after it is shown
-				Control.SizeToContent = sw.SizeToContent.Manual;
+				SetSizeToContent();
 				if (Control.ShowActivated)
 					Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 			};
@@ -138,8 +138,15 @@ namespace Eto.Wpf.Forms
 					binding.Validate();
 				}
 			};
+			Control.SizeChanged += Control_SizeChanged;
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+		}
+
+		private void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
+		{
+			if (Widget.Loaded && Control.SizeToContent == sw.SizeToContent.Manual)
+				Widget.Properties.Set(AutoSize_Key, false);
 		}
 
 		public bool UseShellDropManager
@@ -305,26 +312,58 @@ namespace Eto.Wpf.Forms
 			if (IsAttached)
 				return;
 
-			var size = UserPreferredSize;
-			if (!Control.IsLoaded)
-			{
-				sw.SizeToContent sizing;
-				if (double.IsNaN(size.Width) && double.IsNaN(size.Height))
-					sizing = sw.SizeToContent.Manual;
-				else if (double.IsNaN(size.Width))
-					sizing = sw.SizeToContent.Width;
-				else if (double.IsNaN(size.Height))
-					sizing = sw.SizeToContent.Height;
-				else
-					sizing = sw.SizeToContent.WidthAndHeight;
+			SetSizeToContent();
 
-				Control.SizeToContent = sizing;
-			}
+			var size = UserPreferredSize;
 
 			// don't set the minimum size of a window, just the preferred size
 			ContainerControl.Width = size.Width;
 			ContainerControl.Height = size.Height;
 			SetMinimumSize();
+		}
+
+		private void SetSizeToContent()
+		{
+			sw.SizeToContent sizing;
+			if (Widget.Loaded && !AutoSize)
+			{
+				sizing = sw.SizeToContent.Manual;
+			}
+			else if (Control.WindowState == sw.WindowState.Maximized)
+			{
+				sizing = sw.SizeToContent.Manual;
+			}
+			else
+			{
+				var size = UserPreferredSize;
+				if (double.IsNaN(size.Width) && double.IsNaN(size.Height))
+					sizing = sw.SizeToContent.WidthAndHeight;
+				else if (double.IsNaN(size.Width))
+					sizing = sw.SizeToContent.Width;
+				else if (double.IsNaN(size.Height))
+					sizing = sw.SizeToContent.Height;
+				else
+				{
+					Widget.Properties.Set(AutoSize_Key, false);
+					sizing = sw.SizeToContent.Manual;
+				}
+			}
+
+			Control.SizeToContent = sizing;
+		}
+
+		static readonly object AutoSize_Key = new object();
+
+		public virtual bool AutoSize
+		{
+			get => Widget.Properties.Get<bool>(AutoSize_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(AutoSize_Key, value))
+				{
+					SetSizeToContent();
+				}
+			}
 		}
 
 		void SetMinimumSize()
@@ -719,22 +758,17 @@ namespace Eto.Wpf.Forms
 				{
 					case WindowState.Maximized:
 						Control.WindowState = sw.WindowState.Maximized;
-						if (!Control.IsLoaded)
-							Control.SizeToContent = sw.SizeToContent.Manual;
 						break;
 					case WindowState.Minimized:
 						Control.WindowState = sw.WindowState.Minimized;
-						if (!Control.IsLoaded)
-							Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 						break;
 					case WindowState.Normal:
 						Control.WindowState = sw.WindowState.Normal;
-						if (!Control.IsLoaded)
-							Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 						break;
 					default:
 						throw new NotSupportedException();
 				}
+				SetSizeToContent();
 			}
 		}
 

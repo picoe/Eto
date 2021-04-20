@@ -225,6 +225,7 @@ namespace Eto.Mac.Forms
 		internal static readonly IntPtr selObjectAtIndex_Handle = Selector.GetHandle("objectAtIndex:");
 		internal static readonly IntPtr selMakeKeyWindow_Handle = Selector.GetHandle("makeKeyWindow");
 		internal static readonly IntPtr selIsVisible_Handle = Selector.GetHandle("isVisible");
+		internal static readonly object AnimateSizeChanges_Key = new object();
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
@@ -291,28 +292,6 @@ namespace Eto.Mac.Forms
 			}
 
 			return naturalSize;
-		}
-
-		public override Size MinimumSize
-		{
-			get { return base.MinimumSize; }
-			set
-			{
-				base.MinimumSize = value;
-				if (value != Size.Empty)
-				{
-					Control.WillResize = (sender, frameSize) =>
-					{
-						if (value != Size.Empty)
-						{
-							return new CGSize((float)Math.Max(frameSize.Width, value.Width), (float)Math.Max(frameSize.Height, value.Height));
-						}
-						return frameSize;
-					};
-				}
-				else
-					Control.WillResize = null;
-			}
 		}
 
 		public NSMenu MenuBar
@@ -552,6 +531,7 @@ namespace Eto.Mac.Forms
 			Control.DidResignKey += HandleDidResignKey;
 			Control.ShouldZoom = HandleShouldZoom;
 			Control.WillMiniaturize += HandleWillMiniaturize;
+			Control.WillResize = HandleWillResize;
 #if MONOMAC
 			// AppKit still calls some delegate methods on the window after closing a form (e.g. WillReturnFieldEditor),
 			// causing exceptions trying to recreate the delegate if it has been garbage collected.
@@ -560,6 +540,19 @@ namespace Eto.Mac.Forms
 			// In Eto, we don't expect any events to be called after that point anyway.
 			Widget.Closed += (sender, e) => Application.Instance.AsyncInvoke(() => Control.Delegate = null);
 #endif
+		}
+
+		private static CGSize HandleWillResize(NSWindow sender, CGSize toFrameSize)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
+			if (handler == null)
+				return toFrameSize;
+			var minimumSize = handler.MinimumSize;
+			if (handler.Widget.Loaded && handler.Control.IsVisible)
+			{
+				handler.AutoSize = false;
+			}
+			return new CGSize((float)Math.Max(toFrameSize.Width, minimumSize.Width), (float)Math.Max(toFrameSize.Height, minimumSize.Height));
 		}
 
 		static NSObject HandleWillReturnFieldEditor(NSWindow sender, NSObject client)
@@ -666,18 +659,53 @@ namespace Eto.Mac.Forms
 					newFrame.Height = value.Height;
 					newFrame.Y = (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldFrame.Height));
 				}
-				Control.SetFrame(newFrame, true);
+				Control.SetFrame(newFrame, true, AnimateSizeChanges);
 				UserPreferredSize = value;
 				SetAutoSize();
 			}
 		}
 
-
-		protected override void SetAutoSize()
+		public virtual bool AutoSize
 		{
-			base.SetAutoSize();
+			get { return Widget.Properties.Get<bool>(MacView.AutoSize_Key, true); }
+			set
+			{
+				if (Widget.Properties.TrySet(MacView.AutoSize_Key, value, true))
+				{
+					if (Widget.Loaded && value)
+					{
+						PerformAutoSize();
+					}
+				}
+			}
+		}
+
+		protected void SetAutoSize()
+		{
+			var userPreferredSize = UserPreferredSize;
+			AutoSize = userPreferredSize.Width == -1 || userPreferredSize.Height == -1;
 			if (PreferredClientSize != null)
 				AutoSize &= PreferredClientSize.Value.Width == -1 || PreferredClientSize.Value.Height == -1;
+			if (AutoSize && Widget.Loaded)
+			{
+				PerformAutoSize();
+			}
+		}
+
+		private void PerformAutoSize()
+		{
+			if (AutoSize || !setInitialSize)
+			{
+				setInitialSize = true;
+				var availableSize = SizeF.PositiveInfinity;
+				var borderSize = GetBorderSize();
+				if (UserPreferredSize.Width != -1)
+					availableSize.Width = UserPreferredSize.Width - borderSize.Width;
+				if (UserPreferredSize.Height != -1)
+					availableSize.Height = UserPreferredSize.Height - borderSize.Height;
+				var size = GetPreferredSize(availableSize);
+				SetContentSize(size.ToNS());
+			}
 		}
 
 		public MenuBar Menu
@@ -969,21 +997,16 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		public bool AnimateSizeChanges
+		{
+			get => Widget.Properties.Get<bool>(MacWindow.AnimateSizeChanges_Key);
+			set => Widget.Properties.Set(MacWindow.AnimateSizeChanges_Key, value);
+		}
+
+
 		public override void OnLoad(EventArgs e)
 		{
-			if (AutoSize)
-			{
-				AutoSize = false;
-				var availableSize = SizeF.PositiveInfinity;
-				var borderSize = GetBorderSize();
-				if (UserPreferredSize.Width != -1)
-					availableSize.Width = UserPreferredSize.Width - borderSize.Width;
-				if (UserPreferredSize.Height != -1)
-					availableSize.Height = UserPreferredSize.Height - borderSize.Height;
-				var size = GetPreferredSize(availableSize);
-				SetContentSize(size.ToNS());
-				setInitialSize = true;
-			}
+			PerformAutoSize();
 			PositionWindow();
 			base.OnLoad(e);
 		}
@@ -1035,25 +1058,35 @@ namespace Eto.Mac.Forms
 
 			if (Widget.Loaded)
 			{
-				var diffy = ClientSize.Height - (int)contentSize.Height;
-				var diffx = ClientSize.Width - (int)contentSize.Width;
+				var clientSize = ClientSize;
+				var diffy = clientSize.Height - (int)contentSize.Height;
+				var diffx = clientSize.Width - (int)contentSize.Width;
 				var frame = Control.Frame;
-				if (diffx < 0 || !setInitialSize)
+				if (diffx != 0 || !setInitialSize)
 				{
 					frame.Width -= diffx;
 				}
-				if (diffy < 0 || !setInitialSize)
+				if (diffy != 0 || !setInitialSize)
 				{
 					frame.Y += diffy;
 					frame.Height -= diffy;
 				}
-				Control.SetFrame(frame, false, false);
+				Control.SetFrame(frame, true, AnimateSizeChanges);
 			}
 			else
 				Control.SetContentSize(contentSize);
 		}
 
 		#endregion
+
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+			if (Widget.Loaded && AutoSize && !Widget.IsSuspended)
+			{
+				SetContentSize(GetPreferredSize(SizeF.PositiveInfinity).ToNS());
+			}
+		}
 
 		#region IMacWindow implementation
 

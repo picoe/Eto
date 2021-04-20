@@ -15,7 +15,7 @@ namespace Eto.Test.Sections.Drawing
 
             var formattedText = new FormattedText
             {
-                Text = Sections.Controls.RichTextAreaSection.LoremText,
+                Text = Utility.LoremText,
                 MaximumSize = new SizeF(200, 100),
                 Wrap = FormattedTextWrapMode.Word,
                 Trimming = FormattedTextTrimming.CharacterEllipsis,

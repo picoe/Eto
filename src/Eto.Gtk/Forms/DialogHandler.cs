@@ -4,59 +4,15 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class EtoDialog : Gtk.Dialog
-	{
-		public EtoDialog()
-			: base("", null, Gtk.DialogFlags.DestroyWithParent)
-		{
-		}
-
-		public IGtkWindow Handler { get; set; }
-
-#if GTK3
-		protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
-		{
-			base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
-			var size = Handler.UserPreferredSize;
-			if (size.Height > 0)
-				natural_height = size.Height;
-		}
-
-		protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
-		{
-
-			base.OnGetPreferredWidthForHeight(height, out minimum_width, out natural_width);
-			var size = Handler.UserPreferredSize;
-			if (size.Width > 0)
-				natural_width = size.Width;
-		}
-
-		protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
-		{
-			base.OnGetPreferredWidth(out minimum_width, out natural_width);
-			var size = Handler.UserPreferredSize;
-			if (size.Width > 0)
-				natural_width = size.Width;
-		}
-
-		protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
-		{
-			base.OnGetPreferredHeight(out minimum_height, out natural_height);
-			var size = Handler.UserPreferredSize;
-			if (size.Height > 0)
-				natural_height = size.Height;
-		}
-#endif
-	}
-
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Gtk.Container btcontainer;
+		Gtk.Box actionarea;
 		Button defaultButton;
 
 		public DialogHandler()
 		{
-			Control = new EtoDialog { Handler = this };
+			Control = new Gtk.Dialog();
 
 			Resizable = false;
 		}
@@ -66,17 +22,22 @@ namespace Eto.GtkSharp.Forms
 			base.Initialize();
 			Control.KeyPressEvent += Connector.Control_KeyPressEvent;
 
-#if GTK2
-			Control.VBox.PackStart(WindowActionControl, false, true, 0);
-			Control.VBox.PackStart(WindowContentControl, true, true, 0);
+			var vbox = new EtoVBox { Handler = this };
+			vbox.PackStart(WindowActionControl, false, true, 0);
+			vbox.PackStart(WindowContentControl, true, true, 0);
 
+#pragma warning disable 612
+			actionarea = Control.ActionArea;
+#pragma warning restore 612
+
+#if GTK2
+			var content = Control.VBox;
 			btcontainer = Control.ActionArea;
 #else
-			Control.ContentArea.PackStart(WindowActionControl, false, true, 0);
-			Control.ContentArea.PackStart(WindowContentControl, true, true, 0);
+			var content = Control.ContentArea;
 
-			Control.ActionArea.NoShowAll = true;
-			Control.ActionArea.Hide();
+			actionarea.NoShowAll = true;
+			actionarea.Hide();
 
 #if GTKCORE
 			if (Helper.UseHeaderBar)
@@ -89,8 +50,10 @@ namespace Eto.GtkSharp.Forms
 			}
 			else
 #endif
-				btcontainer = Control.ActionArea;
+				btcontainer = actionarea;
 #endif
+
+			content.PackStart(vbox, true, true, 0);
 		}
 
 		public Button AbortButton { get; set; }
@@ -132,10 +95,12 @@ namespace Eto.GtkSharp.Forms
 
 		public void ShowModal()
 		{
+			DisableAutoSizeUpdate++;
 			ReloadButtons();
 
 			Control.Modal = true;
 			Control.ShowAll();
+			DisableAutoSizeUpdate--;
 
 			do
 			{
@@ -153,7 +118,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			var children = btcontainer.Children;
 			foreach (var child in children)
-				Control.ActionArea.Remove(child);
+				btcontainer.Remove(child);
 		}
 
 		public void ReloadButtons()
@@ -165,13 +130,13 @@ namespace Eto.GtkSharp.Forms
 			{
 				if (!Helper.UseHeaderBar)
 				{
-					Control.ActionArea.NoShowAll = false;
+					actionarea.NoShowAll = false;
 
 					for (int i = negativeButtons.Count - 1; i >= 0; i--)
-						Control.ActionArea.PackStart(negativeButtons[i].ToNative(), false, true, 1);
+						actionarea.PackStart(negativeButtons[i].ToNative(), false, true, 1);
 
 					foreach (var button in positiveButtons)
-						Control.ActionArea.PackStart(button.ToNative(), false, true, 1);
+						actionarea.PackStart(button.ToNative(), false, true, 1);
 				}
 #if GTKCORE
 				else
@@ -191,7 +156,7 @@ namespace Eto.GtkSharp.Forms
 			}
 			else
 			{
-				Control.ActionArea.NoShowAll = true;
+				actionarea.NoShowAll = true;
 				if (!Helper.UseHeaderBar)
 					btcontainer.Hide();
 #if GTKCORE
