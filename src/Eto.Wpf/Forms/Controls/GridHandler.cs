@@ -185,14 +185,21 @@ namespace Eto.Wpf.Forms.Controls
 						var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
 						if (!TreeTogglePanel.IsOverExpander(hitTestResult))
 						{
-							var args = CreateCellMouseArgs(e.OriginalSource, e);
-							Callback.OnCellClick(Widget, args);
-							e.Handled = args.Handled;
+							var args = CreateCellMouseArgs(e.OriginalSource, e, out var isValid);
+							if (isValid)
+							{
+								Callback.OnCellClick(Widget, args);
+								e.Handled = args.Handled;
+							}
 						}
 					};
 					break;
 				case Grid.CellDoubleClickEvent:
-					Control.MouseDoubleClick += (sender, e) => Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
+					Control.MouseDoubleClick += (sender, e) => {
+						var args = CreateCellMouseArgs(e.OriginalSource, e, out var isValid);
+						if (isValid)
+							Callback.OnCellDoubleClick(Widget, args);
+					};
 					break;
 				case Grid.SelectionChangedEvent:
 					Control.SelectedCellsChanged += (sender, e) =>
@@ -210,10 +217,12 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea)
+		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea) => CreateCellMouseArgs(originalSource, ea, out _);
+
+		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea, out bool isValid)
 		{
 			swc.DataGridCell cell;
-			var row = GetRowOfElement(originalSource, out cell);
+			var row = GetRowOfElement(originalSource, out cell, out isValid);
 
 			int rowIndex = row?.GetIndex() ?? -1;
 			var columnIndex = cell?.Column?.DisplayIndex ?? -1;
@@ -227,7 +236,7 @@ namespace Eto.Wpf.Forms.Controls
 			return new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, buttons, modifiers, location);
 		}
 
-		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell)
+		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell, out bool isValid)
 		{
 			// when clicking on labels, etc this will be a content element
 			while (source is sw.FrameworkContentElement)
@@ -236,13 +245,31 @@ namespace Eto.Wpf.Forms.Controls
 			// VisualTreeHelper will throw if not a Visual, we can return null here
 			var dep = source as swm.Visual;
 			while (dep != null && !(dep is swc.DataGridCell))
+			{
+				if (ReferenceEquals(dep, Control))
+				{
+					// found the grid, it's a valid click.. but no row or cell.
+					isValid = true;
+					cell = null;
+					return null;
+				}
 				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
+			}
 
 			cell = dep as swc.DataGridCell;
 			while (dep != null && !(dep is swc.DataGridRow))
 				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
 
-			return dep as swc.DataGridRow;
+			if (dep is swc.DataGridRow row)
+			{
+				isValid = true;
+				return row;
+			}
+
+			// we didn't find the DataGrid (e.g. clicking on a drop down menu, etc)
+			// so don't fire the event
+			isValid = false;
+			return null;
 		}
 
 		public bool ShowHeader
