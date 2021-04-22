@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows;net472</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform(Windows))">net5.0-windows;net472</TargetFrameworks>
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform(Windows))">net472</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>

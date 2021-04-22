@@ -26,7 +26,6 @@ namespace Eto.Designer
 			{
 				Extension = ".eto.cs",
 				DesignExtension = "^.+(?<![jx]eto)[.]cs$",
-				CreateBuilder = () => new CSharpInterfaceBuilder(),
 				GetCodeFile = fileName => Regex.Replace(fileName, @"(.+)[.]eto([.]cs)", "$1$2"),
 				GetDesignFile = fileName => Regex.Replace(fileName, @"(.+)([.]cs)", "$1.eto$2")
 			};
@@ -34,7 +33,6 @@ namespace Eto.Designer
 			{
 				Extension = ".eto.vb",
 				DesignExtension = "^.+(?<![jx]eto)[.]vb$",
-				CreateBuilder = () => new VbInterfaceBuilder(),
 				GetCodeFile = fileName => Regex.Replace(fileName, @"(.+)[.]eto([.]vb)", "$1$2"),
 				GetDesignFile = fileName => Regex.Replace(fileName, @"(.+)([.]vb)", "$1.eto$2")
 			};
@@ -42,9 +40,13 @@ namespace Eto.Designer
 #if RoslynCS
 			// use Roslyn on windows only, for now
 			csBuilder.CreateBuilder = () => new RoslynCSharpInterfaceBuilder();
+#else
+			csBuilder.CreateBuilder = () => new CSharpInterfaceBuilder(),
 #endif
 #if RoslynVB
 			vbBuilder.CreateBuilder = () => new RoslynVbInterfaceBuilder();
+#else
+			vbBuilder.CreateBuilder = () => new VbInterfaceBuilder(),
 #endif
 
 			yield return csBuilder;

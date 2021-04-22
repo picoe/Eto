@@ -9,6 +9,12 @@
     <Compile Update="**\*.xeto.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
+    <Compile Update="**\*.xeto.vb">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="**\*.xeto.fs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

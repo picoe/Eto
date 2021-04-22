@@ -56,15 +56,17 @@
     <_MacRunConfigurationStartPath Condition="$(MacUseDotNetCore) == 'False'">$(OutputAppPath)</_MacRunConfigurationStartPath>
     <_MacRunConfigurationStartPath Condition="$(MacUseDotNetCore) == 'True'">$(LauncherFileWithPath)</_MacRunConfigurationStartPath>
   </PropertyGroup>
-  
+
+  <!-- dotnet run should launch the .app on macOS -->
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform(OSX)) AND $(RunCommand) == ''">
+    <RunCommand>$(LauncherFileWithPath)</RunCommand>
+    <RunArguments> $(RunArguments)</RunArguments> <!-- space is intentional so it doesn't get overridden -->
+  </PropertyGroup>
+
   <ItemGroup>
     <AvailableItemName Include="BundleResource" />
   </ItemGroup>
   
-  <Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
-  <Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True' AND $(IsMac) == 'True' AND $(MacBuildBundle) == 'True'" />
-  
-
   <!-- Clean target -->
   <Target Name="CleanAppBundle" AfterTargets="BeforeClean" Condition="$(MacBuildBundle) == 'True'">
     <RemoveDir Directories="$(OutputAppPath)"/>
@@ -213,8 +215,6 @@
       <InputPListFile Condition="'$(InputPListFile)' == ''">$(ReferenceFiles)Info.plist</InputPListFile>
     </PropertyGroup>
 
-    <Message Text="$(MSBuildProjectName) -> $(OutputAppPath)" Importance="high" />
-
     <!-- Delete existing stuff, we're going to rebuild them -->
     <RemoveDir Directories="$(LauncherPath)" />
     <RemoveDir Directories="$(OutputMonoBundlePath)" />
@@ -248,15 +248,17 @@
       <Output PropertyName="IconFile" TaskParameter="IconFile" />
     </UpdatePList>
 
-    <Message Text="  MacArch: $(MacArch)" Importance="low" /> 
-    <Message Text="  Icon: $(IconFile)" Importance="low" /> 
-    <Message Text="  Info: $(InputPListFile)" Importance="low" /> 
-
     <!-- Copy default icon if it doesn't exist -->
     <Copy SourceFiles="$(ReferenceFiles)Icon.icns" DestinationFiles="$(OutputResourcesPath)$(IconFile)" Condition="!Exists('$(OutputResourcesPath)$(IconFile)')" />
 
     <!-- Set executable bit on launcher if on *nix -->
     <Exec Command="chmod +x &quot;$(LauncherFileWithPath)&quot;" Condition="'$(OS)'=='Unix'" EchoOff="True" />
+
+    <Message Text="$(MSBuildProjectName) -> $(OutputAppPath)" Importance="high" />
+    <Message Text="  MacArch: $(MacArch)" Importance="low" /> 
+    <Message Text="  Icon: $(IconFile)" Importance="low" /> 
+    <Message Text="  Info: $(InputPListFile)" Importance="low" /> 
+
   </Target>
 
 

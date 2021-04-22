@@ -120,7 +120,11 @@
       <Link>Eto.Forms.Templates.$(PackageVersion).nupkg</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Templates\File-VisualBasic\File.ico" />
+    <Content Include="Templates\File-VisualBasic\File.vstemplate" />
     <Resource Include="Templates\File-FSharp\File.ico" />
+    <Resource Include="Templates\App-VisualBasic\App.ico" />
+    <Content Include="Templates\App-VisualBasic\App.vstemplate" />
     <Content Include="Templates\File-FSharp\File.vstemplate" />
     <Resource Include="Templates\File-CSharp\File.ico" />
     <Resource Include="Templates\App-FSharp\App.ico" />
@@ -276,6 +280,7 @@
   </Target>
   <Target Name="ClearTemplateCache" AfterTargets="AfterBuild">
     <RemoveDir Directories="$(HOMEDRIVE)$(HOMEPATH)\.templateengine\vs" />
+    <RemoveDir Directories="$(LOCALAPPDATA)\Microsoft\VisualStudio\16.0_aa19621cExp\TemplateEngineHost" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -24,7 +24,7 @@ namespace Eto.Addin.VisualStudio.Mac
 					Validate();
 				}
 			};
-			this.model = new ProjectWizardPageModel(source, null);
+			this.model = new ProjectWizardPageModel(source);
 			Validate();
 		}
 

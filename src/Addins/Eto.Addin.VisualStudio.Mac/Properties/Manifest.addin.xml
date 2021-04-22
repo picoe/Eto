@@ -36,7 +36,7 @@
 			imageId="eto-project"
 			wizard="Eto.Addin.VisualStudio.Mac.ProjectWizard"
 			category="multiplat/app/eto"
-			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,NoDash,Framework"
+			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,Framework"
 			/>
 		<Template
 			id="Eto.App.FSharp"
@@ -44,7 +44,15 @@
 			imageId="eto-project"
 			wizard="Eto.Addin.VisualStudio.Mac.ProjectWizard"
 			category="multiplat/app/eto"
-			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,NoDash,Framework"
+			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,Framework"
+			/>
+		<Template
+			id="Eto.App.VisualBasic"
+			path="Packages/Eto.Forms.Templates.2.5.11-dev.nupkg"
+			imageId="eto-project"
+			wizard="Eto.Addin.VisualStudio.Mac.ProjectWizard"
+			category="multiplat/app/eto"
+			supportedParameters="AppName,Combined,Xeto,Preview,Jeto,XamMac,Framework"
 			/>
 	</Extension>
 
@@ -66,13 +74,11 @@
 		<FileTemplate id="eto.cs.jeto.form" file="Templates/Files/CS/jeto/form.xft.xml" />
 		<FileTemplate id="eto.cs.jeto.dialog" file="Templates/Files/CS/jeto/dialog.xft.xml" />
 		<FileTemplate id="eto.cs.jeto.panel" file="Templates/Files/CS/jeto/panel.xft.xml" />
-		<!-- No VB until it is (properly) supported on mono and monodevelop.
 		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
 			<FileTemplate id="eto.vb.code.panel" file="Templates/Files/VB/code/panel.xft.xml" />
 			<FileTemplate id="eto.vb.xeto.panel" file="Templates/Files/VB/xeto/panel.xft.xml" />
 			<FileTemplate id="eto.vb.jeto.panel" file="Templates/Files/VB/jeto/panel.xft.xml" />
 		</Condition>
-		-->
 		<ComplexCondition>
 			<Or>
 				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />

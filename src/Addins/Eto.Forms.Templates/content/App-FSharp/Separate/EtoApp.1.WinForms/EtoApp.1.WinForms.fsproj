@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework Condition="$(TargetFrameworkOverride) == '' AND $(IsNetCore) == 'True'">net5.0-windows</TargetFramework>
+    <TargetFramework Condition="$(TargetFrameworkOverride) == '' AND $(IsNetCore) == 'False'">net5.0</TargetFramework>
+    <TargetFramework Condition="$(TargetFrameworkOverride) != '' AND $(IsNetCore) == 'True'">TargetFrameworkOverride-windows</TargetFramework>
+    <TargetFramework Condition="$(TargetFrameworkOverride) != '' AND $(IsNetCore) == 'False'">TargetFrameworkOverride</TargetFramework>
+    <RootNamespace Condition="'$(name)' != '$(name{-VALUE-FORMS-}safe_namespace)'">EtoApp._1.WinForms</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EtoApp.1\EtoApp.1.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Platform.Windows" Version="2.5.11-dev" />
+  </ItemGroup>
+
+</Project>

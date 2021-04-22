@@ -4,6 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 
     <BasePath>$(MSBuildThisFileDirectory)..\</BasePath>
+    <BasePath>$([System.IO.Path]::GetFullPath($(BasePath)))</BasePath>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</OSPlatform>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</OSPlatform>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' != 'Unix'">Windows</OSPlatform>
@@ -40,7 +41,7 @@
     <InformationalVersion Condition="$(InformationalVersion) == ''">$(DevVersion)-dev</InformationalVersion>
 
     <Company>Picoe Software Solutions</Company>
-    <Copyright>(c) 2010-2020 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
+    <Copyright>(c) 2010-2021 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
     
     <PackageVersion>$(InformationalVersion)</PackageVersion>
     <PackageLicenseFile>Eto-LICENSE.txt</PackageLicenseFile>

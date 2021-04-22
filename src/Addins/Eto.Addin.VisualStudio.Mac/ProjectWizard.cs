@@ -31,7 +31,7 @@ namespace Eto.Addin.VisualStudio.Mac
 
 		public override int TotalPages => Model.RequiresInput ? 1 : 0;
 
-		ProjectWizardPageModel Model => new ProjectWizardPageModel(new ParameterSource(this), null);
+		ProjectWizardPageModel Model => new ProjectWizardPageModel(new ParameterSource(this));
 
 		public override WizardPage GetPage(int pageNumber) => new ProjectWizardPage(this);
 

@@ -9,6 +9,12 @@
     <Compile Update="**\*.jeto.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
+    <Compile Update="**\*.jeto.vb">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="**\*.jeto.fs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

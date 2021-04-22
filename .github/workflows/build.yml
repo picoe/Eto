@@ -32,7 +32,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1
 
     - name: Build
-      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Package /bl:artifacts/log/Build.Windows.binlog
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Build /bl:artifacts/log/Build.Windows.binlog
 
     - name: Build VS/Win Extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Windows.binlog
@@ -115,7 +115,7 @@ jobs:
         echo "BuildParameters=${{ env.BuildParameters }} /p:EnableNotarizationBuild=True" >> $GITHUB_ENV
 
     - name: Build
-      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Package /bl:artifacts/log/Build.Mac.binlog
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Build /bl:artifacts/log/Build.Mac.binlog
 
     - name: Build VS/Mac extension
       run: msbuild ${{ env.BuildParameters }} /t:BuildAddins /bl:artifacts/log/Addin.Mac.binlog

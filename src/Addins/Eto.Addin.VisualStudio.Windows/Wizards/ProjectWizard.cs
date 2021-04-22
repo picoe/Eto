@@ -63,10 +63,8 @@ namespace Eto.Addin.VisualStudio.Windows.Wizards
 			base.RunStarted(automationObject, replacementsDictionary, runKind, customParams);
 
 			var source = new ParameterSource(replacementsDictionary);
-			var doc = Helpers.LoadWizardXml(replacementsDictionary);
-			var ns = Helpers.WizardNamespace;
 
-			var model = new ProjectWizardPageModel(source, doc.Root.Elements(ns + "Options").FirstOrDefault());
+			var model = new ProjectWizardPageModel(source);
 			if (model.SupportsAppName)
 				model.AppName = replacementsDictionary["$projectname$"];
 			if (model.RequiresInput)

@@ -1,0 +1,52 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+  <PropertyGroup>
+    <BuildPlatform Condition="$(BuildPlatform) == 'WinForms'">Windows</BuildPlatform>
+
+    <UseXamarinMac Condition="$(UseXamarinMac) == '' AND $(BuildPlatform) == 'XamMac2'">True</UseXamarinMac>
+    <RuntimeIdentifiers Condition="$(RuntimeIdentifiers) == ''">win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(BuildPlatform) == '' ">
+    <!-- Detect the platform to build for based on current OS and runtime identifier, if not specified -->
+    <BuildPlatform Condition="$(UseWinForms) != 'True' and (($([MSBuild]::IsOSPlatform(Windows)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('win')))">Wpf</BuildPlatform>
+    <BuildPlatform Condition="$(UseWinForms) == 'True' and (($([MSBuild]::IsOSPlatform(Windows)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('win')))">Windows</BuildPlatform>
+    <BuildPlatform Condition="$(UseXamarinMac) != 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">Mac64</BuildPlatform>
+    <BuildPlatform Condition="$(UseXamarinMac) == 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">XamMac2</BuildPlatform>
+    <BuildPlatform Condition="($([MSBuild]::IsOSPlatform(Linux)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('linux'))">Gtk</BuildPlatform>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition="$(TargetFramework) != ''">
+    <TargetFramework Condition="!$(TargetFramework.StartsWith('net4')) and !$(TargetFramework.EndsWith('-windows')) and ($(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows')">$(TargetFramework)-windows</TargetFramework>
+    <TargetFramework Condition="$(BuildPlatform) == 'XamMac2' AND !$(TargetFramework.StartsWith('net4'))">xamarinmac20</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFrameworks) != '' and !$(TargetFrameworks.Contains('-windows')) and ($(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows')">
+    <TargetFrameworks Condition="$(TargetFrameworks.Contains('net5.0'))">$(TargetFrameworks.Replace('net5.0;', '').Replace(';net5.0', ''));net5.0-windows</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Forms" Version="2.5.11-dev" />
+    <PackageReference Include="Eto.Platform.$(BuildPlatform)" Version="2.5.11-dev" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.5.11-dev" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.11-dev" Condition="$(UseXeto) == 'True'" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Each platform gets its own intermediate and output path so they don't conflict -->
+    <BaseIntermediateOutputPath Condition="$(BaseIntermediateOutputPath) == ''">obj\</BaseIntermediateOutputPath>
+
+    <IntermediateOutputPath Condition="$(IntermediateOutputPath) == ''">$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <IntermediateOutputPath>$(IntermediateOutputPath)$(BuildPlatform)\</IntermediateOutputPath>
+
+    <BaseOutputPath Condition="$(BaseOutputPath) == ''">bin\</BaseOutputPath>
+    <OutputPath Condition="$(MacIsBuildingBundle) != 'True' and $(OutputPath) == ''">$(BaseOutputPath)</OutputPath>
+    <OutputPath Condition="$(MacIsBuildingBundle) != 'True'">$(OutputPath)$(BuildPlatform)\</OutputPath>
+  </PropertyGroup>
+
+  <Import Project="Xamarin.Mac.targets" Condition="$(BuildPlatform) == 'XamMac2'" />
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+</Project>

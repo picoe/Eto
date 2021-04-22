@@ -65,7 +65,7 @@
 		},
 		"Namespace": {
 			"description": "Namespace for the generated files",
-			"replaces": "EtoApp.1",
+			"replaces": "EtoApp._1",
 			"defaultValue": "EtoApp",
 			"type": "parameter"
 		},

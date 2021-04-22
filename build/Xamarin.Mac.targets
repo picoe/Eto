@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(UseXamarinMac) == 'True' OR $(UseXamarinMacBinding) == 'True'">
+    <OutputType Condition="$(OutputType) == 'WinExe'">Exe</OutputType>
     <ProjectTypeGuids Condition="$(UseXamarinMacBinding) != 'True'">{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectTypeGuids Condition="$(UseXamarinMacBinding) == 'True'">{810C163F-4746-4721-8B8E-88A3673A62EA};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
 
@@ -23,8 +24,12 @@
     <IsXamarinMacMobile Condition="$(TargetFramework.StartsWith('xamarinmac')) == 'True'">True</IsXamarinMacMobile>
     <DefineConstants>$(DefineConstants);XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
 
-    <LanguageTargets Condition="$(HasXamarinMac) == 'True' AND $(UseXamarinMacBinding) != 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets</LanguageTargets>
-    <LanguageTargets Condition="$(HasXamarinMac) == 'True' AND $(UseXamarinMacBinding) == 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.ObjcBinding.CSharp.targets</LanguageTargets>
+    <_XamMacLanguage Condition="$(MSBuildProjectFile.EndsWith('.csproj'))">CSharp</_XamMacLanguage>
+    <_XamMacLanguage Condition="$(MSBuildProjectFile.EndsWith('.fsproj'))">FSharp</_XamMacLanguage>
+    <_XamMacLanguage Condition="$(MSBuildProjectFile.EndsWith('.vbproj'))">VisualBasic</_XamMacLanguage> <!-- not actually supported -->
+
+    <LanguageTargets Condition="$(HasXamarinMac) == 'True' AND $(UseXamarinMacBinding) != 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.$(_XamMacLanguage).targets</LanguageTargets>
+    <LanguageTargets Condition="$(HasXamarinMac) == 'True' AND $(UseXamarinMacBinding) == 'True'">$(XamarinMacTargetsPath)Xamarin.Mac.ObjcBinding.$(_XamMacLanguage).targets</LanguageTargets>
 
     <TargetFrameworkIdentifier Condition="$(IsXamarinMacMobile) == 'True'">Xamarin.Mac</TargetFrameworkIdentifier>
     <TargetFrameworkVersion Condition="$(IsXamarinMacMobile) == 'True'">v2.0</TargetFrameworkVersion>
@@ -36,7 +41,7 @@
     <!-- stuff needed for .NET Core tooling -->
     <FrameworkPathOverride Condition="$(IsXamarinMacMobile) != 'True'">$(XamarinMacLibPath)4.5\</FrameworkPathOverride>
     <FrameworkPathOverride Condition="$(IsXamarinMacMobile) == 'True'">$(XamarinMacLibPath)Xamarin.Mac\</FrameworkPathOverride>
-    <MSBuildRuntimeVersion Condition="$(MSBuildRuntimeVersion) == ''">16.8</MSBuildRuntimeVersion>
+    <MSBuildRuntimeVersion Condition="$(MSBuildRuntimeVersion) == '' or $(MSBuildRuntimeVersion) &lt; '16.8'">16.8</MSBuildRuntimeVersion>
   </PropertyGroup>
 
     <!-- stuff needed for .NET Core tooling -->
@@ -52,7 +57,9 @@
   <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(DisableImplicitFrameworkReferences) != 'True'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
     <Reference Include="Xamarin.Mac" />
+    <Reference Include="$(FrameworkPathOverride)Facades\*.dll" />
   </ItemGroup>
 
   <ItemGroup Condition="$(UseXamarinMac) == 'True'">
@@ -63,14 +70,16 @@
     <AvailableItemName Include="NativeReference" />
     <AvailableItemName Include="ImageAsset" />
 
-    <Compile Update="**\*.designer.cs">
-      <DependentUpon>$([System.String]::Copy('%(Filename)').Replace('.designer', ''))%(Extension)</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup Condition="$(UseXamarinMac) == 'True'">
     <!-- Doesn't actually work for some reason.. -->
-    <!--ImageAsset Include="Assets.xcassets\**\*" Condition="$(EnableDefaultImageAssets) == 'True'" /-->
+    <ImageAsset Include="Assets.xcassets\**\*" Condition="$(EnableDefaultImageAssets) == 'True'" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(EnableDefaultNoneItems) != 'False' AND $(EnableDefaultContentItems) != 'False'">
+    <None Remove="*.icns" />
+    <Content Include="*.icns" />
   </ItemGroup>
 
   <ItemGroup Condition="$(UseXamarinMac) == 'True' AND $(EnableDefaultCompileItems) != 'False'">
@@ -79,8 +88,11 @@
 
     <None Remove="@(ImageAsset)" />
 
-    <!-- Xamarin.Mac looks for the logical name, but implicit entries don't have it -->
-    <None Include="Info.plist" LogicalName="Info.plist" Condition="$(OutputType) == 'Exe'" />
+    <None Include="Info.plist" Condition="$(OutputType) == 'Exe' OR $(OutputType) == 'WinExe'" />
+
+    <Compile Update="**\*.designer.cs">
+      <DependentUpon>$([System.String]::Copy('%(Filename)').Replace('.designer', ''))%(Extension)</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <Target Name="_XamarinMacRemoveImplicitReference" BeforeTargets="BeforeBuild" Condition="$(UseXamarinMac) == 'True'">
@@ -88,6 +100,17 @@
       <!-- System.Drawing doesn't exist even when targetting full framework -->
       <Reference Remove="System.Drawing" Condition="$(DisableImplicitFrameworkReferences) != 'True'" />
     </ItemGroup>
+  </Target>
+
+  <Target Name="_XamMacAddLogicalPaths" BeforeTargets="CollectPackageReferences" Condition="$(UseXamarinMac) == 'True'">
+    <!-- Ensure we have a logical name, as Xamarin.Mac uses it to figure out paths but implicit entries don't have it -->
+    <ItemGroup>
+      <None Update="@(None)" LogicalName="%(Identity)" Condition="%(None.LogicalName) == ''" />
+      <Content Update="@(Content)" LogicalName="%(Identity)" Condition="%(Content.LogicalName) == ''" />
+      <ImageAsset Update="@(ImageAsset)" LogicalName="%(Identity)" Condition="%(ImageAsset.LogicalName) == ''" />
+      <BundleResource Update="@(BundleResource)" LogicalName="%(Identity)" Condition="%(BundleResource.LogicalName) == ''" />
+    </ItemGroup>
+
   </Target>
 
 </Project>

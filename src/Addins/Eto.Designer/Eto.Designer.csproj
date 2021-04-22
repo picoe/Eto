@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <OutputPath>..\..\..\artifacts\addin\$(Configuration)\</OutputPath>
-    <DefineConstants>Roslyn;RoslynCS</DefineConstants>
+    <DefineConstants>Roslyn;RoslynCS;RoslynVB</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj" />
@@ -13,5 +13,6 @@
     <PackageReference Include="FSharp.Compiler.CodeDom" Version="1.0.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" ExcludeAssets="runtime" />
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="3.9.0" />
   </ItemGroup>
 </Project>

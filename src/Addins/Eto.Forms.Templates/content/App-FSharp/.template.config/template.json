@@ -37,31 +37,6 @@
 				}
 			]
 		},
-		"GtkVersion": {
-			"type": "parameter",
-			"description": "The Gtk# version to target",
-			"dataType": "choice",
-			"defaultValue": "Gtk",
-			"onlyIf": [
-				{ "after": ".Platform." },
-				{ "after": ".Platforms." }
-			],
-			"choices": [
-				{
-					"choice": "Gtk",
-					"description": "Gtk# 3.14+"
-				},
-				{
-					"choice": "Gtk2",
-					"description": "Gtk# 2.12 (deprecated)"
-				},
-				{
-					"choice": "Gtk3",
-					"description": "GTK# 3.0 (deprecated)"
-				}
-			],
-			"replaces": "Gtk"
-		},
 		"Combined": {
 			"type": "parameter",
 			"description": "Use a combined project to launch the application (Full .NET Framework only)",
@@ -138,9 +113,9 @@
 			"type": "computed",
 			"value": "(Mode == \"json\")"
 		},
-		"UseCore": {
+		"IsNetCore": {
 			"type": "computed",
-			"value": "(Framework != \"full\")"
+			"value": "(Framework >= \"net5\")"
 		},
 		"IsWindow": {
 			"type": "computed",
@@ -157,100 +132,65 @@
 			"parameters": {
 				"format": "yyyy"
 			}
+		},
+		"HostIdentifier": {
+			"type": "bind",
+			"binding": "HostIdentifier"
 		}
 	},
 	"sources": [
 		{
+			"source": "EtoApp.1",
+			"condition": "Combined",
 			"modifiers": [
-				{
-					"condition": "(!IncludeSolution)",
-					"exclude": [ "*.sln" ]
-				},
-				{
-					"condition": "(!UseCode && !UseCodePreview)",
-					"exclude": [ "**/MainForm.fs" ]
-				},
-				{
-					"condition": "(!UseCodePreview)",
-					"exclude": [ "**/*.eto.fs" ]
-				},
-				{
-					"condition": "(!UseXeto)",
-					"exclude": [ "**/*.xeto", "**/*.xeto.*" ]
-				},
-				{
-					"condition": "(!UseJeto)",
-					"exclude": [ "**/*.jeto", "**/*.jeto.*" ]
-				},
-				{
-					"condition": "(!Combined)",
-					"exclude": [ "**/EtoApp.1.Desktop/**/*" ]
-				},
-				{
-					"condition": "(Combined)",
-					"exclude": [
-						"**/EtoApp.1.Gtk/**/*",
-						"**/EtoApp.1.Mac/**/*",
-						"**/EtoApp.1.Wpf/**/*"
-					]
-				},
-				{
-					"condition": "(!IncludeWinForms || Combined)",
-					"exclude": [
-						"**/EtoApp.1.WinForms/**/*"
-					]
-				},
-				{
-					"condition": "(!IncludeXamMac)",
-					"exclude": [
-						"**/EtoApp.1.XamMac/**/*"
-					]
-				}
+				{ "condition": "!UseCode && !UseCodePreview", "exclude": [ "**/MainForm.fs" ] },
+				{ "condition": "!UseCodePreview", "exclude": [ "**/*.eto.*" ] },
+				{ "condition": "!UseXeto", "exclude": [ "**/*.xeto", "**/*.xeto.*" ] },
+				{ "condition": "!UseJeto", "exclude": [ "**/*.jeto", "**/*.jeto.*" ] },
+				{ "condition": "!IncludeXamMac", "exclude": [ "**/EtoApp.1.XamMac.fsproj" ] }
 			]
+		},
+		{
+			"condition": "!Combined",
+			"include": "EtoApp.1/**/*",
+			"exclude": [ "**/Info.plist", "**/MacIcon.icns", "**/Program.fs" ],
+			"modifiers": [
+				{ "condition": "!UseCode && !UseCodePreview", "exclude": [ "**/MainForm.fs" ] },
+				{ "condition": "!UseCodePreview", "exclude": [ "**/*.eto.*" ] },
+				{ "condition": "!UseXeto", "exclude": [ "**/*.xeto", "**/*.xeto.*" ] },
+				{ "condition": "!UseJeto", "exclude": [ "**/*.jeto", "**/*.jeto.*" ] }
+			]
+		},
+		{
+			"source": "Separate",
+			"condition": "!Combined",
+			"modifiers": [
+				{ "condition": "!IncludeWinForms", "exclude": [ "**/EtoApp.1.WinForms/**/*" ] },
+				{ "condition": "!IncludeXamMac", "exclude": [ "**/EtoApp.1.XamMac/**/*" ] }
+			]
+		},
+		{
+			"condition": "IncludeSolution",
+			"include": "*.sln"
 		}
 	],
 	"primaryOutputs": [
-		{ "path": "EtoApp.1\\EtoApp.1.fsproj" },
-		{
-			"path": "EtoApp.1.Desktop\\EtoApp.1.Desktop.fsproj",
-			"condition": "(Combined)"
-		},
-		{
-			"path": "EtoApp.1.Gtk\\EtoApp.1.Gtk.fsproj",
-			"condition": "(!Combined)"
-		},
-		{
-			"path": "EtoApp.1.Mac\\EtoApp.1.Mac.fsproj",
-			"condition": "(!Combined)"
-		},
-		{
-			"path": "EtoApp.1.WinForms\\EtoApp.1.WinForms.fsproj",
-			"condition": "(!Combined && IncludeWinForms)"
-		},
-		{
-			"path": "EtoApp.1.Wpf\\EtoApp.1.Wpf.fsproj",
-			"condition": "(!Combined)"
-		},
-		{
-			"path": "EtoApp.1.XamMac\\EtoApp.1.XamMac.fsproj",
-			"condition": "(IncludeXamMac)"
-		},
-		{
-			"path": "EtoApp.1\\MainForm.fs",
-			"condition": "UseCode"
-		},
-		{
-			"path": "EtoApp.1\\MainForm.eto.fs",
-			"condition": "UseCodePreview"
-		},
-		{
-			"path": "EtoApp.1\\MainForm.xeto",
-			"condition": "UseXeto"
-		},
-		{
-			"path": "EtoApp.1\\MainForm.jeto",
-			"condition": "UseJeto"
-		},
+		{ "path": "MainForm.fs", "condition": "Combined && UseCode" },
+		{ "path": "MainForm.eto.fs", "condition": "Combined && UseCodePreview" },
+		{ "path": "MainForm.xeto", "condition": "Combined && UseXeto" },
+		{ "path": "MainForm.jeto", "condition": "Combined && UseJeto" },
+		{ "path": "EtoApp.1.fsproj", "condition": "Combined" },
+
+		{ "path": "EtoApp.1/MainForm.fs", "condition": "!Combined && UseCode" },
+		{ "path": "EtoApp.1/MainForm.eto.fs", "condition": "!Combined && UseCodePreview" },
+		{ "path": "EtoApp.1/MainForm.xeto", "condition": "!Combined && UseXeto" },
+		{ "path": "EtoApp.1/MainForm.jeto", "condition": "!Combined && UseJeto" },
+		{ "path": "EtoApp.1/EtoApp.1.fsproj", "condition": "!Combined" },
+		{ "path": "EtoApp.1.Gtk/EtoApp.1.Gtk.fsproj", "condition": "!Combined" },
+		{ "path": "EtoApp.1.Mac/EtoApp.1.Mac.fsproj", "condition": "!Combined" },
+		{ "path": "EtoApp.1.WinForms/EtoApp.1.WinForms.fsproj", "condition": "!Combined && IncludeWinForms" },
+		{ "path": "EtoApp.1.Wpf/EtoApp.1.Wpf.fsproj", "condition": "!Combined" },
+		{ "path": "EtoApp.1.XamMac/EtoApp.1.XamMac.fsproj", "condition": "IncludeXamMac" }
 	],
 	"guids": [
 		"4A7EEA91-18CE-4C33-8501-76049670866D",
@@ -292,5 +232,17 @@
 				}
 			]
 		}
-	}
+	},
+	"postActions": [
+		{
+			"condition": "(HostIdentifier != \"dotnetcli\" && HostIdentifier != \"dotnetcli-preview\")",
+			"description": "Opens MainForm in the editor",
+			"manualInstructions": [ ],
+			"actionId": "84C0DA21-51C8-4541-9940-6CA19AF04EE6",
+			"args": {
+				"files": "0"
+			},
+			"continueOnError": true
+		}
+	]
 }
