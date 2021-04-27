@@ -59,27 +59,30 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		nfloat ButtonOffset => (nfloat)Math.Max(0, Math.Ceiling((AttributedTitle.Size.Height - defaultHeight) / 2 - 1));
+		nfloat GetButtonOffset(CGRect rect)
+		{
+			// big sur and later calculate the position a wee differently..
+			if (MacVersion.IsAtLeast(10, 16))
+				return (nfloat)Math.Ceiling((rect.Height - AttributedTitle.Size.Height) / 2);
+
+			// catalina and older
+			return (nfloat)Math.Max(0, Math.Ceiling((AttributedTitle.Size.Height - defaultHeight) / 2 - 1)) + Offset;
+		}
+		
 
 		public override CGRect DrawingRectForBounds(CGRect theRect)
 		{
 			var rect = base.DrawingRectForBounds(theRect);
-			if (!MacVersion.IsAtLeast(10, 16)) // big sur
-			{
-				rect.Y += ButtonOffset;
-				rect.Y += Offset;
-			}
+			// adjust drawing offset so the button goes in the right spot
+			rect.Y += GetButtonOffset(theRect);
 			return rect;
 		}
 
 		public override CGRect TitleRectForBounds(CGRect theRect)
 		{
 			var rect = base.TitleRectForBounds(theRect);
-			if (!MacVersion.IsAtLeast(10, 16)) // big sur
-			{
-				rect.Y -= ButtonOffset;
-				rect.Y -= Offset;
-			}
+			// adjust text offset so it goes back to where it should be
+			rect.Y -= GetButtonOffset(theRect);
 			return rect;
 		}
 	}
