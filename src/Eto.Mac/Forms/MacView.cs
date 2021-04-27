@@ -197,6 +197,7 @@ namespace Eto.Mac.Forms
 		public static readonly object UseAlignmentFrame_Key = new object();
 		public static readonly IntPtr selSetDataProviderForTypes_Handle = Selector.GetHandle("setDataProvider:forTypes:");
 		public static readonly IntPtr selInitWithPasteboardWriter_Handle = Selector.GetHandle("initWithPasteboardWriter:");
+		public static readonly IntPtr selClass_Handle = Selector.GetHandle("class");
 		public const string FlagsChangedEvent = "MacView.FlagsChangedEvent";
 
 		// before 10.12, we have to call base.Layout() AFTER we do our layout otherwise it doesn't work correctly..
@@ -523,7 +524,8 @@ namespace Eto.Mac.Forms
 						return command.Enabled;
 				}
 			}
-			var objClass = ObjCExtensions.object_getClass(sender);
+
+			var objClass = Messaging.IntPtr_objc_msgSend(sender, MacView.selClass_Handle);
 
 			if (objClass == IntPtr.Zero)
 				return false;
