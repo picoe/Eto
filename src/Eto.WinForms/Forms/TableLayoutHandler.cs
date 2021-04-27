@@ -33,8 +33,8 @@ namespace Eto.WinForms.Forms
 				// is smaller than all the children
 				var widths = GetColumnWidths();
 				var heights = GetRowHeights();
-                if (widths.Length != columnScale.Length || heights.Length != rowScale.Length)
-                    return sd.Size.Empty;
+				if (widths.Length != columnScale.Length || heights.Length != rowScale.Length)
+					return sd.Size.Empty;
 				var curSize = sd.Size.Empty;
 				for (int i = 0; i < widths.Length; i++)
 				{
@@ -60,21 +60,21 @@ namespace Eto.WinForms.Forms
 			}
 
 			// optimization especially for content on drawable
-			protected override void OnBackColorChanged( EventArgs e )
+			protected override void OnBackColorChanged(EventArgs e)
 			{
 				SetStyle
-					( swf.ControlStyles.AllPaintingInWmPaint
+					(swf.ControlStyles.AllPaintingInWmPaint
 					| swf.ControlStyles.DoubleBuffer
-					, BackColor.A != 255 );
-				base.OnBackColorChanged( e );
+					, BackColor.A != 255);
+				base.OnBackColorChanged(e);
 			}
-			protected override void OnParentBackColorChanged( EventArgs e )
+			protected override void OnParentBackColorChanged(EventArgs e)
 			{
 				SetStyle
-					( swf.ControlStyles.AllPaintingInWmPaint
+					(swf.ControlStyles.AllPaintingInWmPaint
 					| swf.ControlStyles.DoubleBuffer
-					, BackColor.A != 255 );
-				base.OnParentBackColorChanged( e );
+					, BackColor.A != 255);
+				base.OnParentBackColorChanged(e);
 			}
 		}
 
@@ -172,7 +172,7 @@ namespace Eto.WinForms.Forms
 		{
 			if (Widget.Loaded)
 				SuspendLayout();
-			
+
 			var old = views[x, y];
 			if (old != null)
 				old.GetContainerControl().Parent = null;
@@ -217,7 +217,7 @@ namespace Eto.WinForms.Forms
 
 		public override void OnLoad(EventArgs e)
 		{
-            SetMinimumSize(useCache: true); // when created during pre-load, we need this to ensure the scale is set on the children properly
+			SetMinimumSize(useCache: true); // when created during pre-load, we need this to ensure the scale is set on the children properly
 			base.OnLoad(e);
 			FillEmptyCells();
 		}
@@ -263,14 +263,12 @@ namespace Eto.WinForms.Forms
 		{
 			for (int x = 1; x < views.GetLength(0); x++)
 			{
-				var ctl = Control.GetControlFromPosition(x, 0);
-				if (ctl == null)
+				if (Control.GetControlFromPosition(x, 0) == null && views[x, 0] == null)
 					Control.Controls.Add(CreateEmptyCell(x, 0), x, 0);
 			}
 			for (int y = 0; y < views.GetLength(1); y++)
 			{
-				var ctl = Control.GetControlFromPosition(0, y);
-				if (ctl == null)
+				if (Control.GetControlFromPosition(0, y) == null && views[0, y] == null)
 					Control.Controls.Add(CreateEmptyCell(0, y), 0, y);
 			}
 		}
@@ -283,6 +281,7 @@ namespace Eto.WinForms.Forms
 				var pos = Control.GetCellPosition(childControl);
 				views[pos.Column, pos.Row] = null;
 				childControl.Parent = null;
+				SetEmptyCell(pos.Column, pos.Row);
 			}
 		}
 
