@@ -226,6 +226,7 @@ namespace Eto.Mac.Forms
 		internal static readonly IntPtr selMakeKeyWindow_Handle = Selector.GetHandle("makeKeyWindow");
 		internal static readonly IntPtr selIsVisible_Handle = Selector.GetHandle("isVisible");
 		internal static readonly object AnimateSizeChanges_Key = new object();
+		internal static readonly object DisableAutoSize_Key = new object();
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
@@ -238,7 +239,7 @@ namespace Eto.Mac.Forms
 		Icon icon;
 		Eto.Forms.ToolBar toolBar;
 		Rectangle? restoreBounds;
-		bool setInitialSize;
+		bool setInitialSize = true;
 		WindowState? initialState;
 		bool maximizable = true;
 		Point? oldLocation;
@@ -650,27 +651,39 @@ namespace Eto.Mac.Forms
 			}
 			set
 			{
-				var oldFrame = Control.Frame;
-				var newFrame = oldFrame;
-				if (value.Width >= 0)
-					newFrame.Width = value.Width;
-				if (value.Height > 0)
-				{
-					newFrame.Height = value.Height;
-					newFrame.Y = (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldFrame.Height));
-				}
-				Control.SetFrame(newFrame, true, AnimateSizeChanges);
 				UserPreferredSize = value;
-				SetAutoSize();
+				if (PreferredClientSize != null)
+				{
+					if (value.Width != -1 && value.Height != -1)
+						PreferredClientSize = new Size(-1, -1);
+					else if (value.Width != -1)
+						PreferredClientSize = new Size(-1, PreferredClientSize.Value.Height);
+					else if (value.Height != -1)
+						PreferredClientSize = new Size(PreferredClientSize.Value.Width, -1);
+				}
+				if (!SetAutoSize())
+				{
+					var oldFrame = Control.Frame;
+					var newFrame = oldFrame;
+					if (value.Width >= 0)
+						newFrame.Width = value.Width;
+					if (value.Height > 0)
+					{
+						newFrame.Height = value.Height;
+						newFrame.Y = (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldFrame.Height));
+					}
+					Control.SetFrame(newFrame, true, AnimateSizeChanges);
+
+				}
 			}
 		}
 
 		public virtual bool AutoSize
 		{
-			get { return Widget.Properties.Get<bool>(MacView.AutoSize_Key, true); }
+			get { return Widget.Properties.Get<bool>(MacView.AutoSize_Key); }
 			set
 			{
-				if (Widget.Properties.TrySet(MacView.AutoSize_Key, value, true))
+				if (Widget.Properties.TrySet(MacView.AutoSize_Key, value))
 				{
 					if (Widget.Loaded && value)
 					{
@@ -680,23 +693,34 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		protected void SetAutoSize()
+		protected bool SetAutoSize()
 		{
 			var userPreferredSize = UserPreferredSize;
-			AutoSize = userPreferredSize.Width == -1 || userPreferredSize.Height == -1;
 			if (PreferredClientSize != null)
-				AutoSize &= PreferredClientSize.Value.Width == -1 || PreferredClientSize.Value.Height == -1;
-			if (AutoSize && Widget.Loaded)
+			{
+				var preferredClientSize = PreferredClientSize.Value;
+				setInitialSize = userPreferredSize.Width == -1 && preferredClientSize.Width == -1;
+				setInitialSize |= userPreferredSize.Height == -1 && preferredClientSize.Height == -1;
+			}
+			else
+			{
+				setInitialSize = userPreferredSize.Width == -1 || userPreferredSize.Height == -1;
+			}
+
+			var ret = AutoSize || setInitialSize;
+			
+			if (Widget.Loaded)
 			{
 				PerformAutoSize();
 			}
+			return ret;
 		}
 
 		private void PerformAutoSize()
 		{
-			if (AutoSize || !setInitialSize)
+			if (AutoSize || setInitialSize)
 			{
-				setInitialSize = true;
+				setInitialSize = false;
 				var availableSize = SizeF.PositiveInfinity;
 				var borderSize = GetBorderSize();
 				if (UserPreferredSize.Width != -1)
@@ -855,21 +879,24 @@ namespace Eto.Mac.Forms
 			get { return Control.ContentView.Frame.Size.ToEtoSize(); }
 			set
 			{
-				var oldFrame = Control.Frame;
-				var oldSize = Control.ContentView.Frame;
-				Control.SetFrameOrigin(new CGPoint(oldFrame.X, (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldSize.Height))));
-				Control.SetContentSize(value.ToNS());
-				if (!Widget.Loaded)
+				if (value.Height != -1)
 				{
-					PreferredClientSize = value;
-					if (value.Width != -1 && value.Height != -1)
-						UserPreferredSize = new Size(-1, -1);
-					else if (value.Width != -1)
-						UserPreferredSize = new Size(-1, UserPreferredSize.Height);
-					else if (value.Height != -1)
-						UserPreferredSize = new Size(UserPreferredSize.Width, -1);
+					var oldFrame = Control.Frame;
+					var oldSize = Control.ContentView.Frame;
+					Control.SetFrameOrigin(new CGPoint(oldFrame.X, (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldSize.Height))));
 				}
-				SetAutoSize();
+
+				PreferredClientSize = value;
+				if (value.Width != -1 && value.Height != -1)
+					UserPreferredSize = new Size(-1, -1);
+				else if (value.Width != -1)
+					UserPreferredSize = new Size(-1, UserPreferredSize.Height);
+				else if (value.Height != -1)
+					UserPreferredSize = new Size(UserPreferredSize.Width, -1);
+				if (!SetAutoSize())
+				{
+					Control.SetContentSize(value.ToNS());
+				}
 			}
 		}
 
@@ -1031,7 +1058,7 @@ namespace Eto.Mac.Forms
 				initialState = null;
 				Callback.OnSizeChanged(Widget, EventArgs.Empty);
 			}
-			else if (setInitialSize)
+			else if (!setInitialSize)
 				Callback.OnSizeChanged(Widget, EventArgs.Empty);
 		}
 
@@ -1062,11 +1089,11 @@ namespace Eto.Mac.Forms
 				var diffy = clientSize.Height - (int)contentSize.Height;
 				var diffx = clientSize.Width - (int)contentSize.Width;
 				var frame = Control.Frame;
-				if (diffx != 0 || !setInitialSize)
+				if (diffx != 0 || setInitialSize)
 				{
 					frame.Width -= diffx;
 				}
-				if (diffy != 0 || !setInitialSize)
+				if (diffy != 0 || setInitialSize)
 				{
 					frame.Y += diffy;
 					frame.Height -= diffy;
@@ -1079,12 +1106,20 @@ namespace Eto.Mac.Forms
 
 		#endregion
 
+		int DisableAutoSize
+		{
+			get => Widget.Properties.Get<int>(MacWindow.DisableAutoSize_Key);
+			set => Widget.Properties.Set(MacWindow.DisableAutoSize_Key, value);
+		}
+
 		public override void InvalidateMeasure()
 		{
 			base.InvalidateMeasure();
-			if (Widget.Loaded && AutoSize && !Widget.IsSuspended)
+			if (Widget.Loaded && AutoSize && !Widget.IsSuspended && DisableAutoSize == 0)
 			{
-				SetContentSize(GetPreferredSize(SizeF.PositiveInfinity).ToNS());
+				DisableAutoSize++; // prevent recursion
+				PerformAutoSize();
+				DisableAutoSize--;
 			}
 		}
 
