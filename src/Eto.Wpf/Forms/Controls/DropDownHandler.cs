@@ -42,10 +42,16 @@ namespace Eto.Wpf.Forms.Controls
 
 			if (!IsLoaded)
 			{
-				selected = SelectedIndex;
-				SelectedIndex = -1;
+				var lastSelected = SelectedIndex;
+				if (lastSelected != -1)
+				{
+					selected = lastSelected;
+					SelectedIndex = -1;
+				}
 			}
 		}
+
+		internal void SetSelected(int? index) => selected = index;
 
 		public swc.Primitives.Popup Popup => GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
 
@@ -220,7 +226,12 @@ namespace Eto.Wpf.Forms.Controls
 		public int SelectedIndex
 		{
 			get { return Control.SelectedIndex; }
-			set { Control.SelectedIndex = value; }
+			set 
+			{
+				Control.SelectedIndex = value;
+				if (!Control.IsLoaded)
+					Control.SetSelected(value);
+			}
 		}
 
 		protected virtual swc.Border BorderControl => Control.FindChild<swc.Border>();
