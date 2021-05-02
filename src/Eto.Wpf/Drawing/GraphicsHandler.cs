@@ -513,7 +513,7 @@ namespace Eto.Wpf.Drawing
 
 		public IMatrix CurrentTransform
 		{
-			get { return transforms.Current != null ? transforms.Current.Clone() : Matrix.Create(); }
+			get { return transforms?.Current?.Clone() ?? Matrix.Create(); }
 		}
 
 		void RewindOffset()
