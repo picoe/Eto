@@ -567,8 +567,8 @@ namespace Eto.Forms
 					throw new ArgumentOutOfRangeException();
 			}
 			Content = table;
-			ResumeLayout();
 			isCreated = true;
+			ResumeLayout();
 		}
 
 		internal override void InternalEnsureLayout()
