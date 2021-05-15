@@ -1,5 +1,5 @@
 ﻿<!--#if (Combined)-->
-<Project Sdk="Eto.Forms/2.5.11-dev">
+<Project Sdk="Eto.Forms/2.6.0-dev">
 
   <!--
     Set the BuildPlatform property to the Eto platform you wish to build for.
@@ -26,9 +26,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Forms" Version="2.5.11-dev" />
-    <PackageReference Include="Eto.Serialization.Json" Version="2.5.11-dev" Condition="$(UseJeto) == 'True'" />
-    <PackageReference Include="Eto.Serialization.Xaml" Version="2.5.11-dev" Condition="$(UseXeto) == 'True'" />
+    <PackageReference Include="Eto.Forms" Version="2.6.0-dev" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.6.0-dev" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.6.0-dev" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
 <!--#endif-->
 
