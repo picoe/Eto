@@ -52,7 +52,7 @@
   <ItemGroup>
     <AddinFile Include="Templates\Files\**\*" />
     <AddinFile Include="$(ArtifactsDir)\nuget\$(Configuration)\Eto.Forms.Templates.$(PackageVersion).nupkg">
-      <Link>Packages\Eto.Forms.Templates.2.5.11-dev.nupkg</Link>
+      <Link>Packages\Eto.Forms.Templates.2.6.0-dev.nupkg</Link>
     </AddinFile>
   </ItemGroup>
   <ItemGroup>
