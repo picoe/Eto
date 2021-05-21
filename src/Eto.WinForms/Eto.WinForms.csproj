@@ -113,7 +113,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   <ItemGroup>
     <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
-  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.705.50" PrivateAssets="all" Condition="$(TargetFramework) != 'net45'" />
+  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.818.41" PrivateAssets="all" Condition="$(TargetFramework) != 'net45'" />
   </ItemGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
