@@ -258,6 +258,10 @@ namespace Eto.Mac.Forms.ToolBar
 			if (tint != null && nsimage != null)
 				nsimage = nsimage.Tint(tint.Value.ToNSUI());
 			Control.Image = nsimage;
+			
+			var menu = Control.MenuFormRepresentation;
+			if (menu != null)
+				menu.Image = nsimage;
 		}
 
 		public virtual bool Enabled
