@@ -471,9 +471,12 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
-						if (e.NewSize != e.PreviousSize) // WPF calls this event even if it hasn't changed
+						// 
+						var size = e.NewSize.ToEtoSize();
+						var prev = e.PreviousSize.ToEtoSize();
+						if (size != prev) // WPF calls this event even if it hasn't changed
 						{
-							newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
+							newSize = size; // so we can report this back in Control.Size
 							Callback.OnSizeChanged(Widget, EventArgs.Empty);
 							newSize = null;
 						}
