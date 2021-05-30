@@ -303,10 +303,13 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSObject GetObjectValue(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
-				if (tableColumn == null && Handler.ShowGroups)
+				var h = Handler;
+				if (h == null)
+					return null;
+				if (tableColumn == null && h.ShowGroups)
 					tableColumn = outlineView.TableColumns()[0];
 
-				var colHandler = Handler.GetColumn(tableColumn);
+				var colHandler = h.GetColumn(tableColumn);
 				if (colHandler != null)
 				{
 					var myitem = (EtoTreeItem)item;
@@ -317,21 +320,25 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void SetObjectValue(NSOutlineView outlineView, NSObject theObject, NSTableColumn tableColumn, NSObject item)
 			{
-				var colHandler = Handler.GetColumn(tableColumn);
+				var h = Handler;
+				if (h == null)
+					return;
+				var colHandler = h.GetColumn(tableColumn);
 				if (colHandler != null)
 				{
 					var myitem = (EtoTreeItem)item;
 					colHandler.SetObjectValue(myitem.Item, theObject);
 
-					Handler.SetIsEditing(false);
+					h.SetIsEditing(false);
 					var row = outlineView.RowForItem(item);
-					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, myitem.Item));
+					h.Callback.OnCellEdited(h.Widget, new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, myitem.Item));
 				}
 			}
 
 			public override bool ItemExpandable(NSOutlineView outlineView, NSObject item)
 			{
-				if (item == null)
+				var h = Handler;
+				if (item == null || h == null)
 					return true;
 
 				var myitem = Handler.GetEtoItem(item);
@@ -340,17 +347,20 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSObject GetChild(NSOutlineView outlineView, nint childIndex, NSObject item)
 			{
+				var h = Handler;
+				if (h == null)
+					return null;
 				Dictionary<int, EtoTreeItem> items;
 				var myitem = item as EtoTreeItem;
-				items = myitem == null ? Handler.topitems : myitem.Items;
+				items = myitem == null ? h.topitems : myitem.Items;
 
 				EtoTreeItem etoItem;
 				if (!items.TryGetValue((int)childIndex, out etoItem))
 				{
 
-					var parentItem = myitem != null ? (ITreeGridStore<ITreeGridItem>)myitem.Item : Handler.store;
+					var parentItem = myitem != null ? (ITreeGridStore<ITreeGridItem>)myitem.Item : h.store;
 					etoItem = new EtoTreeItem { Item = parentItem[(int)childIndex] };
-					Handler.cachedItems[etoItem.Item] = etoItem;
+					h.cachedItems[etoItem.Item] = etoItem;
 					items.Add((int)childIndex, etoItem);
 				}
 				return etoItem;
@@ -359,7 +369,7 @@ namespace Eto.Mac.Forms.Controls
 			public override nint GetChildrenCount(NSOutlineView outlineView, NSObject item)
 			{
 				var h = Handler;
-				if (h.store == null)
+				if (h?.store == null)
 					return 0;
 
 				if (item == null)
@@ -648,11 +658,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Layout()
 			{
-				if (MacView.NewLayout)
-					base.Layout();
+				// layout must occur after autosizing columns otherwise expanders don't show for some reason..
 				Handler?.PerformLayout();
-				if (!MacView.NewLayout)
-					base.Layout();
+				base.Layout();
 			}
 		}
 
