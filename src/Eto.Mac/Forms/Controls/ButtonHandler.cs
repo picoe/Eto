@@ -48,6 +48,8 @@ namespace Eto.Mac.Forms.Controls
 		protected override NSButtonType DefaultButtonType => NSButtonType.MomentaryPushIn;
 
 		protected override Size DefaultMinimumSize => new Size(MinimumWidth, originalSize.Height);
+		
+		public static Size DefaultButtonSize => originalSize;
 
 		static ButtonHandler()
 		{

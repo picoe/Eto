@@ -192,18 +192,18 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			else if (fixedPanel == SplitterFixedPanel.Panel1)
 			{
-				var size1 = panel1.GetPreferredSize();
+				var size1 = panel1?.GetPreferredSize() ?? SizeF.Empty;
 				SetRelative(orientation == Orientation.Horizontal ? size1.Width : size1.Height);
 			}
 			else if (fixedPanel == SplitterFixedPanel.Panel2)
 			{
-				var size2 = panel2.GetPreferredSize();
+				var size2 = panel2?.GetPreferredSize() ?? SizeF.Empty;
 				SetRelative(orientation == Orientation.Horizontal ? size2.Width : size2.Height);
 			}
 			else
 			{
-				var size1 = panel1.GetPreferredSize();
-				var size2 = panel2.GetPreferredSize();
+				var size1 = panel1?.GetPreferredSize() ?? SizeF.Empty;
+				var size2 = panel2?.GetPreferredSize() ?? SizeF.Empty;
 				SetRelative(orientation == Orientation.Horizontal
 					? size1.Width / (double)(size1.Width + size2.Width)
 					: size1.Height / (double)(size1.Height + size2.Height));

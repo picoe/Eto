@@ -72,7 +72,7 @@ namespace Eto.Test.UnitTests.Drawing
 			}
 		}
 
-		[Test]
+		[ManualTest, Test]
 		public void TestEdgeFillMisalignment()
 		{
 			using (var small = Chequer(20))
@@ -108,7 +108,7 @@ namespace Eto.Test.UnitTests.Drawing
 			}
 		}
 
-		[Test]
+		[ManualTest, Test]
 		public void TestPlugIcon()
 		{
 			var polygon = new PointF[]
