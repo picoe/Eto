@@ -95,6 +95,12 @@ namespace Eto.Forms
 			{
 				var childItem = _parent.GetValue(dataItem);
 				_child.SetValue(childItem, value);
+				
+				// if this is an object binding, check to see if we are a boxed struct
+				var isStruct = typeof(TParent) == typeof(object) && childItem?.GetType().GetTypeInfo().IsValueType == true;
+				if (isStruct)
+					_parent.SetValue(dataItem, childItem);
+					
 			}
 		}
 	}

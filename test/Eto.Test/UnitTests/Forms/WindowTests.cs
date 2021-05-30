@@ -74,6 +74,7 @@ namespace Eto.Test.UnitTests.Forms
 		}
 
 
+		[ManualTest]
 		[TestCase(true, true, true, false)]
 		[TestCase(true, true, false, true)]
 		[TestCase(true, false, true, false)]
