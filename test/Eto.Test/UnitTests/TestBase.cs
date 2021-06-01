@@ -205,6 +205,11 @@ namespace Eto.Test.UnitTests
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
 
+		/// <summary>
+		/// Test operations on the UI thread
+		/// </summary>
+		/// <param name="test">Delegate to execute on the UI thread</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Invoke(Action test, int timeout = DefaultTimeout)
 		{
 			Run((app, finished) =>
@@ -214,6 +219,11 @@ namespace Eto.Test.UnitTests
 			}, timeout);
 		}
 
+		/// <summary>
+		/// Test operations on a form
+		/// </summary>
+		/// <param name="test">Delegate to execute on the form</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Form(Action<Form> test, int timeout = DefaultTimeout)
 		{
 			Form<Form>(test, timeout);
@@ -223,7 +233,7 @@ namespace Eto.Test.UnitTests
 		/// Test operations on a form
 		/// </summary>
 		/// <param name="test">Delegate to execute on the form</param>
-		/// <param name="timeout">Timeout to wait for the operation to complete</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Form<T>(Action<T> test, int timeout = DefaultTimeout)
 			where T : Form, new()
 		{

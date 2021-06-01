@@ -210,7 +210,15 @@ namespace Eto.Forms
 		public bool Enabled
 		{
 			get { return Handler.Enabled; }
-			set { Handler.Enabled = value; }
+			set
+			{
+				Handler.Enabled = value;
+				
+				if (Command is Command command)
+				{
+					command.Enabled = value;
+				}
+			}
 		}
 
 		/// <summary>
