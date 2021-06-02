@@ -396,8 +396,11 @@ namespace Eto.Wpf.Forms
 			get { return ContainerControl.Visibility == sw.Visibility.Visible; }
 			set
 			{
-				ContainerControl.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
-				UpdatePreferredSize();
+				if (value != Visible)
+				{
+					ContainerControl.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
+					UpdatePreferredSize();
+				}
 			}
 		}
 

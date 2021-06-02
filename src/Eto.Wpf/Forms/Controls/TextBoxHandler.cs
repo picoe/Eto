@@ -285,6 +285,7 @@ namespace Eto.Wpf.Forms.Controls
 				var oldText = Text;
 				CurrentText = null;
 				var newText = value ?? string.Empty;
+				TextBox.BeginChange();
 				if (newText != oldText)
 				{
 					var args = new TextChangingEventArgs(oldText, newText, false);
@@ -303,6 +304,7 @@ namespace Eto.Wpf.Forms.Controls
 					TextBox.SelectionStart = value.Length;
 					TextBox.SelectionLength = 0;
 				}
+				TextBox.EndChange();
 			}
 		}
 
@@ -345,8 +347,10 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				CurrentSelection = null;
+				TextBox.BeginChange();
 				TextBox.SelectionStart = value.Start;
 				TextBox.SelectionLength = value.Length();
+				TextBox.EndChange();
 				if (!HasFocus)
 					initialSelection = true;
 			}
