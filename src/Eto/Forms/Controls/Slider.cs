@@ -82,6 +82,27 @@ namespace Eto.Forms
 			get { return Handler.Value; }
 			set { Handler.Value = value; }
 		}
+		
+		/// <summary>
+		/// Gets the binding for the <see cref="Value"/> property.
+		/// </summary>
+		/// <value>The value binding.</value>
+		public BindableBinding<Slider, int> ValueBinding
+		{
+			get
+			{
+				return new BindableBinding<Slider, int>(
+					this, 
+					c => c.Value, 
+					(c, v) => c.Value = v, 
+					(c, h) => c.ValueChanged += h, 
+					(c, h) => c.ValueChanged -= h
+				)
+				{
+					SettingNullValue = 0
+				};
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the orientation of the slider.
