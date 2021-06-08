@@ -572,7 +572,7 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual void Close()
 		{
-			if (CloseWindow())
+			if (Widget.Loaded && CloseWindow())
 			{
 				Control.Hide();
 				Control.Unrealize();
