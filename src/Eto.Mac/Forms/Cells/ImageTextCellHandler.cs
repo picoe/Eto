@@ -248,8 +248,12 @@ namespace Eto.Mac.Forms.Cells
 					ColumnHandler.DataViewHandler.OnCellEdited(ee);
 					control.ObjectValue = GetObjectValue(item);
 				};
+				bool isResigning = false;
 				view.TextField.ResignedFirstResponder += (sender, e) =>
 				{
+					if (isResigning)
+						return;
+					isResigning = true;
 					var control = (CellView)(sender as NSView)?.Superview;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
@@ -257,6 +261,7 @@ namespace Eto.Mac.Forms.Cells
 
 					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
 					ColumnHandler.DataViewHandler.OnCellEdited(ee);
+					isResigning = false;
 				};
 				view.TextField.Bind(editableBinding, tableColumn, "editable", null);
 			}
