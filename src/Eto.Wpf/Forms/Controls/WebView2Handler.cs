@@ -375,6 +375,13 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		public WebView2NotInstalledException() : base("The WebView2 runtime is not installed") { }
 	}
+	
+	public class WebView2InitializationException : System.Exception
+	{
+		public WebView2InitializationException(string message, Exception inner) : base(message, inner)
+		{
+		}
+	}
 
 	public class WebView2Handler : BaseHandler, WebView.IHandler
 	{
@@ -386,7 +393,6 @@ namespace Eto.Wpf.Forms.Controls
 			WebView2Loader.EnsureWebView2Runtime();
 			Control = new WebView2Control();
 			Control.CoreWebView2InitializationCompleted += Control_CoreWebView2Ready;
-			InitializeAsync();
 		}
 
 		protected override void Initialize()
@@ -395,15 +401,13 @@ namespace Eto.Wpf.Forms.Controls
 			Size = new Size(100, 100);
 		}
 
-		public static CoreWebView2Environment CoreWebView2Environment;
-
-		async void InitializeAsync()
+		void Control_CoreWebView2Ready(object sender, CoreWebView2InitializationCompletedEventArgs e)
 		{
-			await Control.EnsureCoreWebView2Async(CoreWebView2Environment);
-		}
-
-		void Control_CoreWebView2Ready(object sender, EventArgs e)
-		{
+			if (!e.IsSuccess)
+			{
+				throw new WebView2InitializationException("Failed to initialze WebView2", e.InitializationException);
+			}
+			
 			// can't actually do anything here, so execute them in the main loop
 			Application.Instance.AsyncInvoke(RunDelayedActions);
 		}
