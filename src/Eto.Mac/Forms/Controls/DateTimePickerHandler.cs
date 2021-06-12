@@ -40,24 +40,25 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public override void DrawRect(CGRect dirtyRect)
 			{
-				if (Handler.curValue != null)
+				var h = Handler;
+				if (h == null)
 				{
-					if (Cell.BackgroundStyle == NSBackgroundStyle.Dark && Cell.TextColor == NSColor.ControlText)
-					{
-						Cell.TextColor = NSColor.AlternateSelectedControlText;
-						base.DrawRect(dirtyRect);
-						Cell.TextColor = NSColor.ControlText;
-					}
-					else
-						base.DrawRect(dirtyRect);
+					base.DrawRect(dirtyRect);
+					return;
+				}
+
+				if (h.curValue != null)
+				{
+					base.DrawRect(dirtyRect);
 				}
 				else
 				{
 					// paint with no elements visible
-					var old = DatePickerElements;
-					DatePickerElements = 0;
+					// use transparent color so sizing is still correct.
+					var old = TextColor;
+					TextColor = NSColor.Clear;
 					base.DrawRect(dirtyRect);
-					DatePickerElements = old;
+					TextColor = old;
 				}
 			}
 
@@ -201,10 +202,12 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void SetBackgroundColor(Color? color)
 		{
+			// base.SetBackgroundColor(color);
 			if (color != null)
 			{
 				Control.BackgroundColor = color.Value.ToNSUI();
 				Control.DrawsBackground = color.Value.A > 0;
+				Control.WantsLayer = color.Value.A < 1;
 			}
 			else
 			{

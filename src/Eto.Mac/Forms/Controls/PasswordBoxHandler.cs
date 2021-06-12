@@ -61,6 +61,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public EtoSecureTextField()
 			{
+				Cell = new EtoTextFieldCell();
 				Bezeled = true;
 				Editable = true;
 				Selectable = true;

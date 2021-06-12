@@ -44,22 +44,25 @@ namespace Eto.Mac.Forms.Controls
 
 		public Range<int>? InitialSelection { get; set; }
 
-		public override Color BackgroundColor
+		protected override Color DefaultBackgroundColor => Control.BackgroundColor.ToEto();
+
+		protected override bool UseColorizeCellWithAlphaOnly => true;
+
+		protected override void SetBackgroundColor(Color? color)
 		{
-			get { return Control.BackgroundColor.ToEto(); }
-			set
+			base.SetBackgroundColor(color);
+			var c = color ?? Colors.Transparent;
+			Control.BackgroundColor = c.ToNSUI();
+			Control.DrawsBackground = c.A > 0;
+			Control.WantsLayer = c.A < 1;
+			if (Widget.Loaded && HasFocus)
 			{
-				var color = value.ToNSUI();
-				Control.BackgroundColor = color;
-				Control.DrawsBackground = value.A > 0;
-				if (Widget.Loaded && HasFocus)
+				var editor = Control.CurrentEditor;
+				if (editor != null)
 				{
-					var editor = Control.CurrentEditor;
-					if (editor != null)
-					{
-						editor.BackgroundColor = color;
-						editor.DrawsBackground = value.A > 0;
-					}
+					var nscolor = c.ToNSUI();
+					editor.BackgroundColor = nscolor;
+					editor.DrawsBackground = c.A > 0;
 				}
 			}
 		}
@@ -102,7 +105,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control.TextColor.ToEto(); }
 			set { Control.TextColor = value.ToNSUI(); }
 		}
-
+		
 		public int CaretIndex
 		{
 			get { return InitialSelection?.Start ?? (int?)Control.CurrentEditor?.SelectedRange.Location ?? LastSelection?.Start ?? 0; }

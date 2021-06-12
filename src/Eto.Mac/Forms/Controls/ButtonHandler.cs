@@ -59,7 +59,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	public class EtoButtonCell : NSButtonCell
+	public class EtoButtonCell : NSButtonCell, IColorizeCell
 	{
 		ColorizeView colorize;
 		public Color? Color
@@ -207,19 +207,13 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override Color BackgroundColor
+		protected override Color DefaultBackgroundColor => ((EtoButtonCell)Control.Cell).Color ?? Control.Cell.BackgroundColor.ToEto();
+		
+		protected override void SetBackgroundColor(Color? color)
 		{
-			get
-			{
-				var cell = (EtoButtonCell)Control.Cell;
-				return cell.Color ?? Colors.Transparent;
-			}
-			set
-			{
-				var cell = (EtoButtonCell)Control.Cell;
-				cell.Color = value.A > 0 ? (Color?)value : null;
-				Control.SetNeedsDisplay();
-			}
+			var cell = (EtoButtonCell)Control.Cell;
+			cell.Color = color;
+			Control.SetNeedsDisplay();
 		}
 
 		public Image Image

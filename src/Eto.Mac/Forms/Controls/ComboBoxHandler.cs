@@ -76,7 +76,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public class EtoCell : NSComboBoxCell
+		public class EtoCell : NSComboBoxCell, IColorizeCell
 		{
 			[Export("tableView:willDisplayCell:forTableColumn:row:")]
 			public void TableWillDisplayCellForTableColumn(NSTableView tableView, NSCell cell, NSTableColumn tableColumn, nint rowIndex)
@@ -94,6 +94,25 @@ namespace Eto.Mac.Forms.Controls
 					frame.Width = size.Width;
 					window.SetFrame(frame, true);
 				}
+			}
+
+			ColorizeView colorize;
+
+			public Color? Color
+			{
+				get => colorize?.Color;
+				set => ColorizeView.Create(ref colorize, value);
+			}
+
+			public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
+			{
+				colorize?.End();
+				base.DrawInteriorWithFrame(cellFrame, inView);
+			}
+			public override void DrawWithFrame(CGRect cellFrame, NSView inView)
+			{
+				colorize?.Begin(cellFrame, inView);
+				base.DrawWithFrame(cellFrame, inView);
 			}
 		}
 
@@ -276,19 +295,6 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override Color BackgroundColor
-		{
-			get { return ((NSComboBoxCell)Control.Cell).BackgroundColor.ToEto(); }
-			set
-			{
-				if (value != BackgroundColor)
-				{
-					((NSComboBoxCell)Control.Cell).BackgroundColor = value.ToNSUI();
-					Control.SetNeedsDisplay();
-				}
-			}
-		}
-
 		public Color TextColor
 		{
 			get { return ((NSComboBoxCell)Control.Cell).TextColor.ToEto(); }
@@ -306,7 +312,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.StringValue; }
 			set
-			{ 
+			{
 				if (Text != value)
 				{
 					Control.StringValue = value ?? string.Empty;
@@ -327,7 +333,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return !Control.Editable; }
 			set
-			{ 
+			{
 				Control.Editable = !value;
 				if (Control.Window != null)
 					Control.Window.MakeFirstResponder(null); // allows editing if currently focussed, so remove focus

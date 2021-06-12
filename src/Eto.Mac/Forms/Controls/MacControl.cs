@@ -31,7 +31,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override bool ControlEnabled
 		{
-			get => Control.Enabled; 
+			get => Control.Enabled;
 			set => Control.Enabled = value;
 		}
 
@@ -50,6 +50,9 @@ namespace Eto.Mac.Forms.Controls
 				};
 			}
 		}
+
+		protected override IColorizeCell ColorizeCell => Control.Cell as IColorizeCell;
+
 	}
 }
 

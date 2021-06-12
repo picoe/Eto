@@ -66,6 +66,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			public EtoTextField()
 			{
+				Cell = new EtoTextFieldCell();
 			}
 		}
 
@@ -139,10 +140,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override object EventObject
-		{
-			get { return Control.TextField; }
-		}
+		public override object EventObject => Control.TextField;
+		
+		protected override IColorizeCell ColorizeCell => Control.TextField.Cell as IColorizeCell;
 
 		public static NSNumberFormatter DefaultFormatter = new NSNumberFormatter
 		{
@@ -505,10 +505,26 @@ namespace Eto.Mac.Forms.Controls
 			set { TextField.TextColor = value.ToNSUI(); }
 		}
 
+		protected override bool UseColorizeCellWithAlphaOnly => true;
+
 		protected override void SetBackgroundColor(Color? color)
 		{
-			if (color != null)
-				TextField.BackgroundColor = color.Value.ToNSUI();
+			base.SetBackgroundColor(color);
+			var textField = Control.TextField;
+			var c = color ?? Colors.Transparent;
+			textField.BackgroundColor = c.ToNSUI();
+			textField.DrawsBackground = c.A > 0;
+			textField.WantsLayer = c.A < 1;
+			if (Widget.Loaded && HasFocus)
+			{
+				var editor = textField.CurrentEditor;
+				if (editor != null)
+				{
+					var nscolor = c.ToNSUI();
+					editor.BackgroundColor = nscolor;
+					editor.DrawsBackground = c.A > 0;
+				}
+			}
 		}
 
 		public override void AttachEvent(string id)
@@ -599,5 +615,6 @@ namespace Eto.Mac.Forms.Controls
 				});
 			}
 		}
+		
 	}
 }

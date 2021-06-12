@@ -213,6 +213,7 @@ namespace Eto.Mac.Forms.Controls
 			Control.Delegate = new EtoDelegate { Handler = this };
 
 			scroll = new EtoScrollView { Handler = this };
+			scroll.DrawsBackground = false;
 			scroll.AutoresizesSubviews = true;
 			scroll.DocumentView = Control;
 			scroll.HasVerticalScroller = true;
