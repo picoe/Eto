@@ -914,5 +914,14 @@ namespace Eto.Wpf.Forms
 				return scale;
 			}
 		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			// close the window when disposing from Eto explicitly
+			if (disposing)
+				Close();
+				
+			base.Dispose(disposing);
+		}
 	}
 }
