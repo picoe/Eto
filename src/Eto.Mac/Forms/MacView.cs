@@ -911,7 +911,7 @@ namespace Eto.Mac.Forms
 
 		protected bool HasBackgroundColor => Widget.Properties.Get<Color?>(MacView.BackgroundColorKey) != null;
 
-		protected virtual Color DefaultBackgroundColor => Colors.Transparent;
+		protected virtual Color DefaultBackgroundColor => ColorizeCell?.Color ?? Colors.Transparent;
 
 		public virtual Color BackgroundColor
 		{
@@ -929,21 +929,34 @@ namespace Eto.Mac.Forms
 		bool drawRectAdded;
 
 		protected virtual bool UseNSBoxBackgroundColor => true;
+		
+		protected virtual IColorizeCell ColorizeCell => null;
+		
+		protected virtual bool UseColorizeCellWithAlphaOnly => false;
 
 		protected virtual void SetBackgroundColor(Color? color)
 		{
 			if (color != null)
 			{
+				var c = color.Value;
+				var colorizeCell = ColorizeCell;
+				if (colorizeCell != null)
+				{
+					colorizeCell.Color = !UseColorizeCellWithAlphaOnly || c.A < 1 ? color : null;
+					ContainerControl.SetNeedsDisplay();
+					return;
+				}
+
 				if (UseNSBoxBackgroundColor && ContainerControl is NSBox box)
 				{
 					// use NSBox to fill instead to have better dark mode support
 					// e.g. background color is tinted by system automatically.
-					box.FillColor = color.Value.ToNSUI();
-					box.Transparent = color.Value.A <= 0;
+					box.FillColor = c.ToNSUI();
+					box.Transparent = c.A <= 0;
 					return;
 				}
 
-				if (!drawRectAdded && color.Value.A > 0)
+				if (!drawRectAdded && c.A > 0)
 				{
 					//AddMethod(MacView.selUpdateLayer, new Action<IntPtr, IntPtr>(UpdateLayerWithBackground), EtoEnvironment.Is64BitProcess ? "v@:{CGRect=dddd}" : "v@:{CGRect=ffff}", ContainerControl);
 					//ContainerControl.WantsLayer = true;

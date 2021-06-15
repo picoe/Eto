@@ -221,18 +221,11 @@ namespace Eto.Mac.Forms.Controls
 			{
 				colorize?.Begin(cellFrame, inView);
 				base.DrawWithFrame(cellFrame, inView);
-				colorize?.End();
 			}
 
 			public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 			{
-				if (colorize != null)
-				{
-					var context = NSGraphicsContext.CurrentContext.GraphicsPort;
-					var frame = inView.Frame;
-					context.TranslateCTM(0, frame.Height + cellFrame.Y - (frame.Height - cellFrame.Y - cellFrame.Height) + 1);
-					context.ScaleCTM(1, -1);
-				}
+				colorize?.End();
 				base.DrawInteriorWithFrame(cellFrame, inView);
 			}
 		}

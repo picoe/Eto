@@ -21,6 +21,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.BeginHorizontal();
 			layout.Add(null);
 			layout.Add(TextAreaControl());
+			layout.Add(RichTextAreaControl());
 			if (Platform.Supports<ListBox>())
 				layout.Add(ListBoxControl());
 			layout.Add(PanelControl());
@@ -91,6 +92,13 @@ namespace Eto.Test.Sections.Behaviors
 		Control TextAreaControl()
 		{
 			var control = new TextArea { Text = "TextArea" };
+			LogEvents(control);
+			return control;
+		}
+
+		Control RichTextAreaControl()
+		{
+			var control = new RichTextArea { Text = "RichTextArea" };
 			LogEvents(control);
 			return control;
 		}

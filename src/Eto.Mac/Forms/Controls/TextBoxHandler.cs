@@ -71,6 +71,33 @@ namespace Eto.Mac.Forms.Controls
 			return null;
 		}
 	}
+	
+	public interface IColorizeCell
+	{
+		Color? Color { get; set; }
+	}
+	
+	public class EtoTextFieldCell : NSTextFieldCell, IColorizeCell
+	{
+		ColorizeView colorize;
+
+		public Color? Color 
+		{ 
+			get => colorize?.Color;
+			set => ColorizeView.Create(ref colorize, value);
+		}
+
+		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
+		{
+			colorize?.End();
+			base.DrawInteriorWithFrame(cellFrame, inView);
+		}
+		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
+		{
+			colorize?.Begin(cellFrame, inView);
+			base.DrawWithFrame(cellFrame, inView);
+		}
+	}
 
 	public class EtoTextField : NSTextField, IMacControl, ITextBoxWithMaxLength
 	{
@@ -80,7 +107,7 @@ namespace Eto.Mac.Forms.Controls
 		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler.Target as ITextBoxWithMaxLength;
 
 		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? 0; } }
-
+		
 		public EtoTextField(IntPtr handle)
 			: base(handle)	
 		{
@@ -90,6 +117,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public EtoTextField()
 		{
+			Cell = new EtoTextFieldCell();
 			Bezeled = true;
 			Editable = true;
 			Selectable = true;

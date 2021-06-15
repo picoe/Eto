@@ -181,9 +181,11 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void Initialize()
 		{
+			// Control.BackgroundColor = Colors.Transparent.ToNSUI();
 			Scroll = new EtoScrollView
 			{
 				Handler = this,
+				DrawsBackground = false,
 				AutoresizesSubviews = true,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
@@ -237,7 +239,13 @@ namespace Eto.Mac.Forms.Controls
 		public bool ReadOnly
 		{
 			get { return Widget.Properties.Get<bool>(ReadOnly_Key); }
-			set { Widget.Properties.Set(ReadOnly_Key, value, () => Control.Editable = !value); }
+			set
+			{
+				if (Widget.Properties.TrySet(ReadOnly_Key, value))
+				{
+					Control.Editable = !value;
+				}
+			}
 		}
 
 		protected override bool ControlEnabled
@@ -249,14 +257,13 @@ namespace Eto.Mac.Forms.Controls
 				if (!value)
 				{
 					Control.TextColor = NSColor.DisabledControlText;
-					Control.BackgroundColor = NSColor.ControlBackground;
 				}
 				else
 				{
 					Control.TextColor = TextColor.ToNSUI();
-					Control.BackgroundColor = BackgroundColor.ToNSUI();
 					Control.Editable = !ReadOnly; // this gets set to false when Selectable is set to false, so we need to re-enable it.
 				}
+				SetBackgroundColor();
 			}
 		}
 
@@ -281,11 +288,19 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get(TextColor_Key, () => NSColor.ControlText.ToEto()); }
 			set
 			{
-				Widget.Properties.Set(TextColor_Key, value, () =>
+				if (Widget.Properties.TrySet(TextColor_Key, value))
 				{
 					Control.TextColor = Control.InsertionPointColor = value.ToNSUI();
-				});
+				}
 			}
+		}
+		
+		static readonly object DisabledBackgroundColor_Key = new object();
+		
+		public virtual Color DisabledBackgroundColor
+		{
+			get => Widget.Properties.Get<Color?>(DisabledBackgroundColor_Key) ?? NSColor.ControlBackground.ToEto();
+			set => Widget.Properties.Set(DisabledBackgroundColor_Key, value);
 		}
 
 		static readonly object BackgroundColor_Key = new object();
@@ -295,11 +310,17 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<Color>(BackgroundColor_Key, () => NSColor.ControlBackground.ToEto()); }
 			set
 			{
-				Widget.Properties.Set(BackgroundColor_Key, value, () =>
+				if (Widget.Properties.TrySet(BackgroundColor_Key, value))
 				{
-					Control.BackgroundColor = value.ToNSUI();
-				});
+					SetBackgroundColor();
+				}
 			}
+		}
+
+		void SetBackgroundColor()
+		{
+			var color = ControlEnabled ? BackgroundColor : DisabledBackgroundColor;
+			Control.BackgroundColor = color.ToNSUI();
 		}
 
 		static readonly object Font_Key = new object();
@@ -309,11 +330,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Create(Font_Key, () => new Font(new FontHandler(Control.Font))); }
 			set
 			{
-				Widget.Properties.Set(Font_Key, value, () =>
+				if (Widget.Properties.TrySet(Font_Key, value))
 				{
 					Control.Font = value.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					InvalidateMeasure();
-				});
+				}
 			}
 		}
 
