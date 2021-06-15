@@ -81,11 +81,24 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override NSDatePicker CreateControl() => new EtoDatePicker();
 
+
+		static IntPtr selSetPresentsCalendarOverlay_Handle = Selector.GetHandle("setPresentsCalendarOverlay:");
+		static bool SupportsCalendarOverlay => ObjCExtensions.InstancesRespondToSelector<NSDatePicker>("presentsCalendarOverlay");
+
+
 		protected override void Initialize()
 		{
 			this.Mode = DateTimePickerMode.Date;
 			// apple+backspace clears the value
 			Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
+
+			if (SupportsCalendarOverlay)
+			{
+				// 10.15+ supports having a calendar drop down! finally..
+				// no need for spinner as one is presented with the calendar
+				Control.DatePickerStyle = NSDatePickerStyle.TextField;
+				Messaging.void_objc_msgSend_bool(Control.Handle, selSetPresentsCalendarOverlay_Handle, true);
+			}
 
 			base.Initialize();
 			Widget.KeyDown += HandleKeyDown;
@@ -101,6 +114,14 @@ namespace Eto.Mac.Forms.Controls
 				if (e.KeyData == (Keys.Application | Keys.Backspace))
 				{
 					handler.curValue = null;
+					handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
+					handler.Control.NeedsDisplay = true;
+					e.Handled = true;
+				}
+				if (e.KeyData == Keys.Enter && handler.curValue == null)
+				{
+					// pressing enter will set the current value if null, and bring up calendar.
+					handler.curValue = handler.Control.DateValue.ToEto();
 					handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 					handler.Control.NeedsDisplay = true;
 				}
@@ -220,7 +241,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Control.Bordered = value;
 
-				Control.DatePickerStyle = value ? NSDatePickerStyle.TextFieldAndStepper : NSDatePickerStyle.TextField;
+				Control.DatePickerStyle = value && !SupportsCalendarOverlay ? NSDatePickerStyle.TextFieldAndStepper : NSDatePickerStyle.TextField;
 			}
 		}
 	}
