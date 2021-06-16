@@ -577,8 +577,15 @@ namespace Eto.Mac.Forms.Controls
 							size2.Width = (float)Math.Round(relative);
 							break;
 						case SplitterFixedPanel.None:
-							size1.Width = (float)Math.Round(Math.Max(size1.Width/relative, size2.Width/(1-relative)));
-							size2.Width = 0;
+							// ensure it's in range.
+							relative = Math.Max(0, Math.Min(1, relative));
+							if (relative > 0)
+							{
+								size1.Width = (float)Math.Round(Math.Max(size1.Width/relative, size2.Width/(1-relative)));
+								size2.Width = 0;
+							}
+							else
+								size1.Width = 0;
 							break;
 						default:
 							throw new ArgumentOutOfRangeException();
@@ -615,8 +622,15 @@ namespace Eto.Mac.Forms.Controls
 							size2.Height = (float)Math.Round(relative);
 							break;
 						case SplitterFixedPanel.None:
-							size1.Height = (float)Math.Round(Math.Max(size1.Height/relative, size2.Height/(1-relative)));
-							size2.Height = 0;
+							// ensure it's in range.
+							relative = Math.Max(0, Math.Min(1, relative));
+							if (relative > 0)
+							{
+								size1.Height = (float)Math.Round(Math.Max(size1.Height/relative, size2.Height/(1-relative)));
+								size2.Height = 0;
+							}
+							else
+								size1.Height = 0;
 							break;
 						default:
 							throw new ArgumentOutOfRangeException();
