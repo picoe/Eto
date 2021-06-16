@@ -72,5 +72,25 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 			});
 		}
+		
+		[Test, InvokeOnUI]
+		public void ChangingSelectedIndexMultipleTimesBeforeLoadShouldTriggerChanged()
+		{
+			var list = new T();
+			int changed = 0;
+			list.SelectedIndexChanged += (sender, e) => changed++;
+			list.DataStore = new [] { "Item 1", "Item 2", "Item 3" };
+			
+			Assert.AreEqual(0, changed, "1.1 - Setting data store should not fire selected index");
+			Assert.AreEqual(-1, list.SelectedIndex, "1.2");
+			
+			list.SelectedIndex = 0;
+			Assert.AreEqual(1, changed, "2.1 - Setting selected index should trigger event");
+			Assert.AreEqual(0, list.SelectedIndex, "2.2");
+			
+			list.SelectedIndex = 1;
+			Assert.AreEqual(2, changed, "3.1 - Setting selected index again should trigger event again");
+			Assert.AreEqual(1, list.SelectedIndex, "3.2");
+		}
 	}
 }
