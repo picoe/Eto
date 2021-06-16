@@ -439,5 +439,24 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 			Assert.IsNull(outOfBounds, $"#1 - Position went out of bounds 100-200, was {outOfBounds}");
 		}
+		
+		[TestCase(Orientation.Horizontal)]
+		[TestCase(Orientation.Vertical)]
+		public void ZeroRelativePositionShouldNotCrash(Orientation orientation)
+		{
+			Shown(form => {
+				return new Splitter 
+				{
+					Orientation = orientation,
+					Panel1 = new Panel { Size = new Size(200, 200)},
+					Panel2 = new Panel { Size = new Size(200, 200)},
+					FixedPanel = SplitterFixedPanel.None,
+					RelativePosition = 0
+				};
+			},
+			c => {
+				// if we got here it was successful
+			});
+		}
 	}
 }
