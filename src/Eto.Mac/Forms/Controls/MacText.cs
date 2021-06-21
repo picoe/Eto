@@ -32,6 +32,7 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public static object AutoSelectMode_Key = new object();
 		public static object HasInitialFocus_Key = new object();
+		public static object NeedsSelectAll_Key = new object();
 	}
 
 	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler, IMacText
@@ -169,16 +170,24 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.Initialize();
 			Widget.GotFocus += Widget_GotFocus;
+			Widget.LostFocus += Widget_LostFocus;
 			Widget.MouseDown += Widget_MouseDown;
 		}
 
 		void Widget_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (AutoSelectMode == AutoSelectMode.Always)
+			e.Handled = SelectAllOnMouseDown(e);
+		}
+		
+		protected virtual bool SelectAllOnMouseDown(MouseEventArgs e)
+		{
+			if (NeedsSelectAll)
 			{
 				SelectAll();
-				e.Handled = true;
+				NeedsSelectAll = false;
+				return true;
 			}
+			return false;
 		}
 
 
@@ -186,6 +195,18 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Widget.Properties.Get(MacText.HasInitialFocus_Key, false); }
 			set { Widget.Properties.Set(MacText.HasInitialFocus_Key, value, false); }
+		}
+
+		protected bool NeedsSelectAll
+		{
+			get { return Widget.Properties.Get(MacText.NeedsSelectAll_Key, false); }
+			set { Widget.Properties.Set(MacText.NeedsSelectAll_Key, value, false); }
+		}
+		
+		void Widget_LostFocus(object sender, EventArgs e)
+		{
+			if (AutoSelectMode == AutoSelectMode.Always)
+				NeedsSelectAll = false;
 		}
 
 		void Widget_GotFocus(object sender, EventArgs e)
@@ -208,8 +229,12 @@ namespace Eto.Mac.Forms.Controls
 				else
 				{
 					var len = Text?.Length ?? 0;
-					editor.SelectedRange = new NSRange(0, len);
+					editor.SelectedRange = new NSRange(len, 0);
 				}
+			}
+			else if (AutoSelectMode == AutoSelectMode.Always)
+			{
+				NeedsSelectAll = true;
 			}
 			HasInitialFocus = true;
 		}

@@ -104,7 +104,7 @@ namespace Eto.Wpf.Forms.Controls
 				initialSelection = false;
 				return;
 			}
-			if (AutoSelectMode == AutoSelectMode.OnFocus)
+			if (AutoSelectMode == AutoSelectMode.OnFocus || AutoSelectMode == AutoSelectMode.Always)
 				TextBox.SelectAll();
 		}
 

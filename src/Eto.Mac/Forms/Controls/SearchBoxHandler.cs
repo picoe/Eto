@@ -63,6 +63,18 @@ namespace Eto.Mac.Forms.Controls
 				Cell.Wraps = false;
 				Cell.UsesSingleLineMode = true;
 			}
+			
+			[Export("textViewDidChangeSelection:")]
+			public void TextViewDidChangeSelection(NSNotification notification)
+			{
+				var h = Handler;
+				if (h != null)
+				{
+					var textView = (NSTextView)notification.Object;
+					h.SetLastSelection(textView.SelectedRange.ToEto());
+				}
+			}
+			
 		}
 
 		public override bool HasFocus
@@ -120,6 +132,14 @@ namespace Eto.Mac.Forms.Controls
 			{
 				handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty);
 			}
+		}
+		
+		protected override bool SelectAllOnMouseDown(MouseEventArgs e)
+		{
+			var cancelRect = Control.Cell.CancelButtonRectForBounds(Control.Bounds).ToEto();
+			if (!cancelRect.Contains(e.Location))
+				return base.SelectAllOnMouseDown(e);
+			return false;
 		}
 
 		public bool ReadOnly
