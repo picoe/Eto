@@ -81,6 +81,11 @@ namespace Eto.Mac.Forms.Controls
 	{
 		ColorizeView colorize;
 
+		public EtoTextFieldCell()
+		{
+			StringValue = string.Empty;
+		}
+
 		public Color? Color 
 		{ 
 			get => colorize?.Color;

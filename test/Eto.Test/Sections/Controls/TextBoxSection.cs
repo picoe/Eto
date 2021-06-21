@@ -4,11 +4,21 @@ using Eto.Drawing;
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(TextBox))]
-	public class TextBoxSection : Scrollable
+	public class TextBoxSection : TextBoxSection<TextBox>
+	{
+	}
+	
+	[Section("Controls", typeof(SearchBox))]
+	public class SearchBoxSection : TextBoxSection<SearchBox>
+	{
+	}
+	
+	public class TextBoxSection<T> : Scrollable
+		where T: TextBox, new()
 	{
 		public TextBoxSection()
 		{
-			var textBox = new TextBox();
+			var textBox = new T();
 			LogEvents(textBox);
 
 			var placeholderText = new TextBox();
@@ -53,7 +63,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control DifferentSize()
 		{
-			var control = new TextBox { Text = "Different Size (300x50)", Size = new Size(300, 50) };
+			var control = new T { Text = "Different Size (300x50)", Size = new Size(300, 50) };
 			LogEvents(control);
 			return control;
 		}
