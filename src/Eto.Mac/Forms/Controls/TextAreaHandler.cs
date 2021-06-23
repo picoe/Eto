@@ -299,28 +299,16 @@ namespace Eto.Mac.Forms.Controls
 		
 		public virtual Color DisabledBackgroundColor
 		{
-			get => Widget.Properties.Get<Color?>(DisabledBackgroundColor_Key) ?? NSColor.ControlBackground.ToEto();
+			get => Widget.Properties.Get<Color?>(DisabledBackgroundColor_Key) ?? NSColor.WindowBackground.ToEto();
 			set => Widget.Properties.Set(DisabledBackgroundColor_Key, value);
 		}
 
-		static readonly object BackgroundColor_Key = new object();
+		protected override Color DefaultBackgroundColor => NSColor.ControlBackground.ToEto();
 
-		public override Color BackgroundColor
+		protected override void SetBackgroundColor(Color? color)
 		{
-			get { return Widget.Properties.Get<Color>(BackgroundColor_Key, () => NSColor.ControlBackground.ToEto()); }
-			set
-			{
-				if (Widget.Properties.TrySet(BackgroundColor_Key, value))
-				{
-					SetBackgroundColor();
-				}
-			}
-		}
-
-		void SetBackgroundColor()
-		{
-			var color = ControlEnabled ? BackgroundColor : DisabledBackgroundColor;
-			Control.BackgroundColor = color.ToNSUI();
+			var c = color ?? (ControlEnabled ? DefaultBackgroundColor : DisabledBackgroundColor);
+			Control.BackgroundColor = c.ToNSUI();
 		}
 
 		static readonly object Font_Key = new object();
