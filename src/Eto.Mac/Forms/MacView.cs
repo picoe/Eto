@@ -934,6 +934,8 @@ namespace Eto.Mac.Forms
 		
 		protected virtual bool UseColorizeCellWithAlphaOnly => false;
 
+		protected void SetBackgroundColor() => SetBackgroundColor(Widget.Properties.Get<Color?>(MacView.BackgroundColorKey));
+		
 		protected virtual void SetBackgroundColor(Color? color)
 		{
 			if (color != null)
