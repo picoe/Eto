@@ -108,6 +108,7 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public WeakReference WeakHandler { get; set; }
 
+		IMacViewHandler Handler => WeakHandler.Target as IMacViewHandler;
 		IMacText TextHandler => WeakHandler.Target as IMacText;
 		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler.Target as ITextBoxWithMaxLength;
 
@@ -145,11 +146,31 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void MouseDown(NSEvent theEvent)
 		{
-			base.MouseDown(theEvent);
 			var h = TextHandler;
 			if (h != null && h.AutoSelectMode == AutoSelectMode.Always && CurrentEditor?.SelectedRange.Length == 0)
 			{
 				CurrentEditor?.SelectAll(this);
+			}
+			
+			var handler = Handler;
+			if (handler == null)
+				return;
+			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
+			if (theEvent.ClickCount >= 2)
+				handler.Callback.OnMouseDoubleClick(handler.Widget, args);
+			
+			if (!args.Handled)
+			{
+				handler.Callback.OnMouseDown(handler.Widget, args);
+			}
+			if (!args.Handled)
+			{
+				handler.SuppressMouseEvents++;
+				base.MouseDown(theEvent);
+				handler.SuppressMouseEvents--;
+				
+				// some controls use event loops until mouse up, so we need to trigger the mouse up here.
+				handler.TriggerMouseCallback();
 			}
 		}
 	}

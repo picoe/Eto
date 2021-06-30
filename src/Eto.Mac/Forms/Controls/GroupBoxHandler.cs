@@ -38,6 +38,14 @@ namespace Eto.Mac.Forms.Controls
 	public class GroupBoxHandler : MacPanel<NSBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
 		SizeF? borderSize;
+		
+		/// <summary>
+		/// Use a separate class so it doesn't get event methods added
+		/// </summary>
+		public class EtoContentView : MacPanelView
+		{
+			
+		}
 
 		public class EtoBox : NSBox, IMacControl
 		{
@@ -53,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Title = string.Empty;
 				TitlePosition = NSTitlePosition.NoTitle;
-				ContentView = new MacPanelView { Handler = handler };
+				ContentView = new EtoContentView { Handler = handler };
 			}
 		}
 

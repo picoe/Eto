@@ -635,7 +635,7 @@ namespace Eto.Mac.Forms.Controls
 					handler.IsMouseDragging = false;
 
 					// NSOutlineView uses an event loop and MouseUp() does not get called
-					handler.Callback.OnMouseUp(handler.Widget, args);
+					handler.TriggerMouseCallback();
 
 					return;
 				}

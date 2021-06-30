@@ -35,17 +35,6 @@ namespace Eto.Mac.Forms.Controls
 				if (handler != null)
 				{
 					NSColorPanel.SharedColorPanel.ShowsAlpha = handler.AllowAlpha;
-					handler.TriggerMouseCallback();
-				}
-			}
-
-			public override void Deactivate()
-			{
-				base.Deactivate();
-				var handler = Handler;
-				if (handler != null)
-				{
-					handler.TriggerMouseCallback();
 				}
 			}
 

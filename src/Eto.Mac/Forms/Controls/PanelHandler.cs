@@ -19,7 +19,11 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class PanelHandler : MacPanel<NSView, Panel, Panel.ICallback>, Panel.IHandler
 	{
-		protected override NSView CreateControl() => new MacPanelView();
+		public class EtoPanelView : MacPanelView
+		{
+		}
+		
+		protected override NSView CreateControl() => new EtoPanelView();
 		
 		public override NSView ContainerControl => Control;
 	}
