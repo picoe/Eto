@@ -43,21 +43,21 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override bool UseKeyPreview { get { return true; } }
 
-		public int MaxValue
+		public double MaxValue
 		{
-			get { return (int)Control.Maximum; }
+			get { return Control.Maximum; }
 			set { Control.Maximum = value; }
 		}
 
-		public int MinValue
+		public double MinValue
 		{
-			get { return (int)Control.Minimum; }
+			get { return Control.Minimum; }
 			set { Control.Minimum = value; }
 		}
 
-		public int Value
+		public double Value
 		{
-			get { return (int)Control.Value; }
+			get { return Control.Value; }
 			set { Control.Value = value; }
 		}
 
@@ -67,9 +67,9 @@ namespace Eto.Wpf.Forms.Controls
             set { Control.IsSnapToTickEnabled = value; }
         }
 
-		public int TickFrequency
+		public double TickFrequency
 		{
-			get { return (int)Control.TickFrequency; }
+			get { return Control.TickFrequency; }
 			set { Control.TickFrequency = value; }
 		}
 
