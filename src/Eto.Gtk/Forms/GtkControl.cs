@@ -773,7 +773,6 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 
-				bool vpan = false;
 
 
 				PanDirection Dir = PanDirection.Left;
@@ -782,19 +781,16 @@ namespace Eto.GtkSharp.Forms
 				{
 					case Gtk.PanDirection.Up:
 						Dir = PanDirection.Up;
-						vpan = true;
 						break;
 					case Gtk.PanDirection.Down:
 						Dir = PanDirection.Down;
-						vpan = true;
 						break;
 					case Gtk.PanDirection.Left:
 						Dir = PanDirection.Left;
-						vpan = false;
 						break;
 					case Gtk.PanDirection.Right:
 						Dir = PanDirection.Right;
-						vpan = false;
+						
 						break;
 					default:
 						break;
