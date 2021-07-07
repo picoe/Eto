@@ -9,10 +9,12 @@ namespace Eto.WinForms.Forms
 	public delegate void WndProcDelegate(ref swf.Message m);
 	public delegate void CustomWndProcDelegate(ref swf.Message m, WndProcDelegate baseImpl);
 
-	public class EtoFormBase : swf.Form
+	public class EtoFormBase : FormGestureHandler
 	{
 		public CustomWndProcDelegate CustomWndProcHandler;
 		const int WM_ACTIVATEAPP = 0x1C;
+
+
 		protected override void WndProc(ref swf.Message m)
 		{
 			if (CustomWndProcHandler == null) WndProcImpl(ref m);
@@ -119,6 +121,8 @@ namespace Eto.WinForms.Forms
 		public FormHandler(swf.Form form)
 		{
 			Control = form;
+
+			
 		}
 
 		public FormHandler()
@@ -130,12 +134,14 @@ namespace Eto.WinForms.Forms
 				Size = sd.Size.Empty,
 				MinimumSize = sd.Size.Empty
 			};
+			
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
 			Resizable = true;
+
 		}
 
 		public void Show()
