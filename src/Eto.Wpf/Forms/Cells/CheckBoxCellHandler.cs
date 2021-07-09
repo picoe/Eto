@@ -59,6 +59,7 @@ namespace Eto.Wpf.Forms.Cells
 							return;
 						var control = (swc.CheckBox)sender;
 						Handler.SetValue(control.DataContext, control.IsChecked);
+						Handler.ContainerHandler.CellEdited(Handler, control);
 					};
 					element.Unchecked += (sender, e) =>
 					{
@@ -66,6 +67,7 @@ namespace Eto.Wpf.Forms.Cells
 							return;
 						var control = (swc.CheckBox)sender;
 						Handler.SetValue(control.DataContext, control.IsChecked);
+						Handler.ContainerHandler.CellEdited(Handler, control);
 					};
 					SetControlInitialized(element, true);
 				}
@@ -84,7 +86,7 @@ namespace Eto.Wpf.Forms.Cells
 			}
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
 			{
-				Handler.ContainerHandler.CellEdited(Handler, editingElement);
+				// does not get called when we set the checkbox value in OnMouseUp manually
 				return base.CommitCellEdit(editingElement);
 			}
 		}
