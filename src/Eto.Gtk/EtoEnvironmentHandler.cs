@@ -34,6 +34,8 @@ namespace Eto.GtkSharp
 							path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
 						return path;
 					}
+				case EtoSpecialFolder.Downloads:
+					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
 				default:
 					return Environment.GetFolderPath(Convert(folder));
 			}
