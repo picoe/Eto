@@ -13,8 +13,8 @@ namespace Eto.GtkSharp.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BaseBitmapData
 	{
-		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base(image, data, scanWidth, bitsPerPixel, controlObject)
+		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool premultipliedAlpha)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, premultipliedAlpha)
 		{
 		}
 
@@ -26,6 +26,46 @@ namespace Eto.GtkSharp.Drawing
 		public override int TranslateDataToArgb(int bitmapData)
 		{
 			return unchecked((int)(((uint)bitmapData & 0xFF00FF00) | (((uint)bitmapData & 0xFF) << 16) | (((uint)bitmapData & 0xFF0000) >> 16)));
+		}
+	}
+
+	/// <summary>
+	/// Bitmap data handler for surface data, which is always premultiplied
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class SurfaceBitmapDataHandler : BaseBitmapData
+	{
+		public SurfaceBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool premultipliedAlpha)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, premultipliedAlpha)
+		{
+		}
+
+		public override int TranslateArgbToData(int argb)
+		{
+			var a = (uint)(byte)(argb >> 24);
+			var r = (uint)(byte)(argb >> 16);
+			var g = (uint)(byte)(argb >> 8);
+			var b = (uint)(byte)(argb);
+			r = r * a / 255;
+			g = g * a / 255;
+			b = b * a / 255;
+			return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
+		}
+
+		public override int TranslateDataToArgb(int bitmapData)
+		{
+			var a = (uint)(byte)(bitmapData >> 24);
+			var r = (uint)(byte)(bitmapData >> 16);
+			var g = (uint)(byte)(bitmapData >> 8);
+			var b = (uint)(byte)(bitmapData);
+			if (a > 0)
+			{
+				b = b * 255 / a;
+				g = g * 255 / a;
+				r = r * 255 / a;
+			}
+			return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
 		}
 	}
 
@@ -111,13 +151,16 @@ namespace Eto.GtkSharp.Drawing
 
 		public BitmapData Lock()
 		{
-			EnsureData();
+			if (Surface != null)
+			{
+				return new SurfaceBitmapDataHandler(Widget, Surface.DataPtr, Surface.Stride, 32, null, true);
+			}
 			return InnerLock();
 		}
 
 		BitmapData InnerLock()
 		{
-			return new BitmapDataHandler(Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null);
+			return new BitmapDataHandler(Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null, false);
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -290,21 +333,7 @@ namespace Eto.GtkSharp.Drawing
 		{
 			using (var data = Lock())
 			{
-				unsafe
-				{
-					var srcrow = (byte*)data.Data;
-					srcrow += y * data.ScanWidth;
-					srcrow += x * data.BytesPerPixel;
-					if (data.BytesPerPixel == 4)
-					{
-						return Color.FromArgb(data.TranslateDataToArgb(*(int*)srcrow));
-					}
-					if (data.BytesPerPixel == 3)
-					{
-						return Color.FromRgb(data.TranslateDataToArgb(*(int*)srcrow));
-					}
-					throw new NotSupportedException();
-				}
+				return data.GetPixel(x, y);
 			}
 		}
 		
@@ -351,6 +380,21 @@ namespace Eto.GtkSharp.Drawing
 			}
 		}
 
+		static int UnmultiplyAlpha(int argb)
+		{
+			var a = (uint)(byte)(argb >> 24);
+			var b = (uint)(byte)(argb >> 16);
+			var g = (uint)(byte)(argb >> 8);
+			var r = (uint)(byte)(argb);
+			if (a > 0)
+			{
+				b = b * 255 / a;
+				g = g * 255 / a;
+				r = r * 255 / a;
+			}
+			return unchecked((int)((a << 24) | (b << 16) | (g << 8) | (r)));
+		}
+
 		unsafe void EnsureData()
 		{
 			if (Surface == null)
@@ -388,7 +432,7 @@ namespace Eto.GtkSharp.Drawing
 						var dest = (int*)destrow;
 						for (int x = 0; x < size.Width; x++)
 						{
-							*dest = bd.TranslateArgbToData(*src);
+							*dest = UnmultiplyAlpha(bd.TranslateArgbToData(*src));
 							src++;
 							dest++;
 						}

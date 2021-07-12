@@ -121,6 +121,30 @@ namespace Eto.Drawing
 		{
 			return new Color(alpha: alpha / 255f, red: red / 255f, green: green / 255f, blue: blue / 255f);
 		}
+		
+		/// <summary>
+		/// Creates a color from premultiplied 8-bit ARGB components
+		/// </summary>
+		/// <returns>A new instance of the Color object with the specified components unmultiplied</returns>
+		/// <param name="red">The red component (0-255)</param>
+		/// <param name="green">The green component (0-255)</param>
+		/// <param name="blue">The blue component (0-255)</param>
+		/// <param name="alpha">The alpha component (0-255)</param>
+		public static Color FromPremultipliedArgb(int red, int green, int blue, int alpha = 255)
+		{
+			var a = Math.Max(0, Math.Min(255, alpha / 255f));
+			var r = Math.Max(0, Math.Min(255, red / 255f));
+			var g = Math.Max(0, Math.Min(255, green / 255f));
+			var b = Math.Max(0, Math.Min(255, blue / 255f));
+			if (a > 0)
+			{
+				r /= a;
+				g /= a;
+				b /= a;
+			}
+			return new Color(r, g, b, a);
+		}
+		
 
 		/// <summary>
 		/// Creates a Color from a 32-bit ARGB value
@@ -130,6 +154,26 @@ namespace Eto.Drawing
 		public static Color FromArgb(int argb)
 		{
 			return new Color(((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, (argb & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
+		}
+		
+		/// <summary>
+		/// Creates a Color from a premultiplied 32-bit ARGB value
+		/// </summary>
+		/// <param name="argb">32-bit ARGB value with Alpha in the high byte</param>
+		/// <returns>A new instance of the Color object with the specified color, unmultiplied</returns>
+		public static Color FromPremultipliedArgb(int argb)
+		{
+			var a = ((argb >> 24) & 0xff) / 255f;
+			var r = ((argb >> 16) & 0xff) / 255f;
+			var g = ((argb >> 8) & 0xff) / 255f;
+			var b = (argb & 0xff) / 255f;
+			if (a > 0)
+			{
+				r /= a;
+				g /= a;
+				b /= a;
+			}
+			return new Color(r, g, b, a);
 		}
 
 		/// <summary>
@@ -597,6 +641,15 @@ namespace Eto.Drawing
 		public int ToArgb()
 		{
 			return (int)((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
+		}
+		
+		/// <summary>
+		/// Converts this color to a premultiplied 32-bit ARGB value, where each of the R, G, B components are first multiplied by the alpha component
+		/// </summary>
+		/// <returns>A premultiplied ARGB value</returns>
+		public int ToPremultipliedArgb()
+		{
+			return (int)((uint)(B * A * byte.MaxValue) | (uint)(G * A * byte.MaxValue) << 8 | (uint)(R * A * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
 		}
 
 		/// <summary>

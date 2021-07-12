@@ -47,8 +47,8 @@ namespace Eto.Mac.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BaseBitmapData
 	{
-		public BitmapDataHandler(Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base(bitmap, data, scanWidth, bitsPerPixel, controlObject)
+		public BitmapDataHandler(Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool isPremultiplied)
+			: base(bitmap, data, scanWidth, bitsPerPixel, controlObject, isPremultiplied)
 		{
 		}
 
@@ -64,12 +64,32 @@ namespace Eto.Mac.Drawing
 
 		public override int TranslateArgbToData(int argb)
 		{
-			return unchecked((int)(((uint)argb & 0xFF00FF00) | (((uint)argb & 0xFF) << 16) | (((uint)argb & 0xFF0000) >> 16)));
+			var a = (uint)(byte)(argb >> 24);
+			var r = (uint)(byte)(argb >> 16);
+			var g = (uint)(byte)(argb >> 8);
+			var b = (uint)(byte)(argb);
+			if (PremultipliedAlpha)
+			{
+				r = r * a / 255;
+				g = g * a / 255;
+				b = b * a / 255;
+			}
+			return unchecked((int)((a << 24) | (b << 16) | (g << 8) | (r)));
 		}
 
 		public override int TranslateDataToArgb(int bitmapData)
 		{
-			return unchecked((int)(((uint)bitmapData & 0xFF00FF00) | (((uint)bitmapData & 0xFF) << 16) | (((uint)bitmapData & 0xFF0000) >> 16)));
+			var a = (uint)(byte)(bitmapData >> 24);
+			var b = (uint)(byte)(bitmapData >> 16);
+			var g = (uint)(byte)(bitmapData >> 8);
+			var r = (uint)(byte)(bitmapData);
+			if (a > 0 && PremultipliedAlpha)
+			{
+				b = b * 255 / a;
+				g = g * 255 / a;
+				r = r * 255 / a;
+			}
+			return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
 		}
 
 		public override bool Flipped { get { return false; } }
@@ -268,7 +288,15 @@ namespace Eto.Mac.Drawing
 			if (bmprep == null)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep?.GetType()));
 
-			return bmprep.ColorAt(x, y).ToEto(false);
+			// don't convert colorspace here otherwise we get incorrect data.. why?
+			var nscolor = bmprep.ColorAt(x, y);
+			if (nscolor.ComponentCount >= 3)
+			{
+				nscolor.GetRgba(out var red, out var green, out var blue, out var alpha);
+				return new Color(nscolor, (float)red, (float)green, (float)blue, (float)alpha);
+			}
+			
+			return nscolor.ToEto();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -287,7 +315,11 @@ namespace Eto.Mac.Drawing
 		public BitmapData Lock()
 		{
 			EnsureRep();
-			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control);
+			if (bmprep == null)
+				return null;
+			
+			bool isPremultiplied = alpha && !bmprep.BitmapFormat.HasFlag(NSBitmapFormat.AlphaNonpremultiplied);
+			return new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control, isPremultiplied);
 		}
 
 		public void Unlock(BitmapData bitmapData)

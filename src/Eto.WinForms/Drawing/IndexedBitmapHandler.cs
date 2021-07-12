@@ -12,7 +12,7 @@ namespace Eto.WinForms.Drawing
 	public class IndexedBitmapDataHandler : BaseBitmapData
 	{
 		public IndexedBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base (image, data, scanWidth, bitsPerPixel, controlObject)
+			: base (image, data, scanWidth, bitsPerPixel, controlObject, false)
 		{
 		}
 
@@ -62,7 +62,7 @@ namespace Eto.WinForms.Drawing
 		public BitmapData Lock()
 		{
 			SD.Imaging.BitmapData bd = Control.LockBits(new SD.Rectangle(0, 0, Control.Width, Control.Height), SD.Imaging.ImageLockMode.ReadWrite, Control.PixelFormat);
-			return new BitmapDataHandler(Widget, bd.Scan0, bd.Stride, bd.PixelFormat.BitsPerPixel(), bd);
+			return new BitmapDataHandler(Widget, bd.Scan0, bd.Stride, bd.PixelFormat.BitsPerPixel(), bd, bd.PixelFormat.IsPremultiplied());
 		}
 
 		public void Unlock(BitmapData bitmapData)

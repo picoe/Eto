@@ -30,6 +30,11 @@ namespace Eto.Direct2D
 			return new s.Color(color.R, color.G, color.B, color.A);
 		}
 
+		public static Color ToEto(this s.ColorBGRA value)
+		{
+			return Color.FromArgb(value.R, value.G, value.B, value.A);
+		}
+
 		public static Color ToEto(this s.Color4 value)
 		{
 			return new Color { A = value.Alpha, R = value.Red, G = value.Green, B = value.Blue };

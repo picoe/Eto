@@ -42,7 +42,7 @@ namespace Eto.Wpf.Drawing
 			BitmapDataHandler bd = null;
 			ApplicationHandler.InvokeIfNecessary (() => {
 				Control.Lock ();
-				bd = new BitmapDataHandler (Widget, Control.BackBuffer, Size.Width, Control.Format.BitsPerPixel, Control);
+				bd = new BitmapDataHandler (Widget, Control.BackBuffer, Size.Width, Control.Format.BitsPerPixel, Control, false);
 			});
 			isLocked = true;
 			return bd;

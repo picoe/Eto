@@ -922,11 +922,28 @@ namespace Eto.Wpf
 
 		public static bool HasAlpha(this swm.PixelFormat format)
 		{
-			return format == swm.PixelFormats.Pbgra32
+			return format == swm.PixelFormats.Bgra32
+				|| format == swm.PixelFormats.Pbgra32
 				|| format == swm.PixelFormats.Prgba128Float
 				|| format == swm.PixelFormats.Prgba64
 				|| format == swm.PixelFormats.Rgba64
-				|| format == swm.PixelFormats.Rgba64;
+				|| format == swm.PixelFormats.Rgba128Float;
+		}
+		public static bool IsPremultiplied(this swm.PixelFormat format)
+		{
+			return format == swm.PixelFormats.Pbgra32
+				|| format == swm.PixelFormats.Prgba128Float
+				|| format == swm.PixelFormats.Prgba64;
+		}
+		public static swm.PixelFormat GetNonPremultipliedFormat(this swm.PixelFormat format)
+		{
+			if (format == swm.PixelFormats.Pbgra32)
+				return swm.PixelFormats.Bgra32;
+			if (format == swm.PixelFormats.Prgba128Float)
+				return swm.PixelFormats.Rgba128Float;
+			if (format == swm.PixelFormats.Prgba64)
+				return swm.PixelFormats.Rgba64;
+			return format;
 		}
 	}
 }

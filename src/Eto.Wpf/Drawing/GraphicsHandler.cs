@@ -368,15 +368,18 @@ namespace Eto.Wpf.Drawing
 				if (!bmp.Format.HasAlpha())
 				{
 					// convert to non-alpha, as RenderTargetBitmap does not support anything other than Pbgra32
-					var wb = new swmi.WriteableBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Bgr32, null);
-					var rect = new sw.Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
-					var pixels = new byte[bmp.PixelHeight * wb.BackBufferStride];
-					newbmp.CopyPixels(rect, pixels, wb.BackBufferStride, 0);
-					fixed (byte* ptr = pixels)
-					{
-						wb.WritePixels(rect, (IntPtr)ptr, pixels.Length, wb.BackBufferStride, 0, 0);
-					}
-					handler.SetBitmap(wb);
+					var converted = new swmi.FormatConvertedBitmap(newbmp, swm.PixelFormats.Bgr32, null, 0);
+					handler.SetBitmap(converted);
+
+					// var wb = new swmi.WriteableBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Bgr32, null);
+					// var rect = new sw.Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
+					// var pixels = new byte[bmp.PixelHeight * wb.BackBufferStride];
+					// newbmp.CopyPixels(rect, pixels, wb.BackBufferStride, 0);
+					// fixed (byte* ptr = pixels)
+					// {
+					// 	wb.WritePixels(rect, (IntPtr)ptr, pixels.Length, wb.BackBufferStride, 0, 0);
+					// }
+					// handler.SetBitmap(wb);
 				}
 				else
 				{
