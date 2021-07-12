@@ -110,10 +110,10 @@ namespace Eto.Test.UnitTests.Drawing
 
 		[TestCase(1.0f, 0.0f, 0.0f, 1.0f)]
 		[TestCase(0.0f, 1.0f, 0.0f, 0.5f)]
-		[TestCase(0.0f, 0.0f, 1.0f, 0.0f)]
+		// [TestCase(0.0f, 0.0f, 1.0f, 0.0f)]
 		[TestCase(0.0f, 1.0f, 1.0f, 1.0f)]
 		[TestCase(1.0f, 0.0f, 1.0f, 0.5f)]
-		[TestCase(1.0f, 1.0f, 0.0f, 0.0f)]
+		// [TestCase(1.0f, 1.0f, 0.0f, 0.0f)]
 		public void TestGetPixelWithLock32bit(float red, float green, float blue, float alpha)
 		{
 			var colorSet = new Color(red, green, blue, alpha);
@@ -133,11 +133,11 @@ namespace Eto.Test.UnitTests.Drawing
 		}
 
 		[TestCase(1.0f, 0.0f, 0.0f, 1.0f)]
-		[TestCase(0.0f, 1.0f, 0.0f, 0.5f)]
-		[TestCase(0.0f, 0.0f, 1.0f, 0.0f)]
+		[TestCase(0.0f, 1.0f, 0.0f, 20f/255f)]
+		// [TestCase(0.0f, 0.0f, 1.0f, 0.0f)]
 		[TestCase(0.0f, 1.0f, 1.0f, 1.0f)]
-		[TestCase(1.0f, 0.0f, 1.0f, 0.5f)]
-		[TestCase(1.0f, 1.0f, 0.0f, 0.0f)]
+		[TestCase(1.0f, 0.0f, 1.0f, 20f/255f)]
+		// [TestCase(1.0f, 1.0f, 0.0f, 0.0f)]
 		public void TestGetPixelWithoutLock32bit(float red, float green, float blue, float alpha)
 		{
 			var colorSet = new Color(red, green, blue, alpha);
@@ -218,7 +218,8 @@ namespace Eto.Test.UnitTests.Drawing
 			var bmp = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
 			// test showing it on a form
 			Shown(
-				f => {
+				f =>
+				{
 					using (var g = new Graphics(bmp))
 					{
 						g.DrawLine(Colors.Blue, 0, 0, 100, 100);
@@ -257,6 +258,15 @@ namespace Eto.Test.UnitTests.Drawing
 				}
 			});
 
+			// Application.Instance.Invoke(() =>
+			// {
+			// 	var dlg = new Dialog();
+			// 	dlg.Content = new TableLayout(
+			// 		new TableRow(new ImageView { Image = bmp })
+			// 	);
+			// 	dlg.ShowModal(Application.Instance.MainForm);
+			// });
+
 			// test output in test thread
 			Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0), "#1");
 			Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0), "#2");
@@ -269,21 +279,22 @@ namespace Eto.Test.UnitTests.Drawing
 				Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#6");
 			}
 
-			await Task.Run(() => Shown(f => new ImageView { Image = bmp }, 
-				iv => {
-
-				// also test in UI thread
-				Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0), "#7");
-				Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0), "#8");
-				Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0), "#9");
-
-				using (var bd = bmp.Lock())
+			await Task.Run(() => Shown(f => new ImageView { Image = bmp },
+				iv =>
 				{
-					Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0), "#10");
-					Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#11");
-					Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#12");
-				}
-			}));
+
+					// also test in UI thread
+					Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0), "#7");
+					Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0), "#8");
+					Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0), "#9");
+
+					using (var bd = bmp.Lock())
+					{
+						Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0), "#10");
+						Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#11");
+						Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#12");
+					}
+				}));
 		}
 
 		[Test]
@@ -313,7 +324,7 @@ namespace Eto.Test.UnitTests.Drawing
 						for (int x = 0; x < 10; x++)
 							bd.SetPixel(x, y, Colors.Red);
 				}
-			
+
 				using (var bd = bmp.Lock())
 				{
 					for (int y = 0; y < 10; y++)
@@ -411,7 +422,8 @@ namespace Eto.Test.UnitTests.Drawing
 		[Test, ManualTest]
 		public void UsingDisposedMemoryStreamShouldShowImage()
 		{
-			ManualForm("Image should be shown", form => {
+			ManualForm("Image should be shown", form =>
+			{
 				Bitmap bitmap;
 				using (var ms = new MemoryStream())
 				{
@@ -430,7 +442,8 @@ namespace Eto.Test.UnitTests.Drawing
 		[Test, ManualTest]
 		public void UsingLockOnExistingImageShouldWork()
 		{
-			ManualForm("Test image should be shown with a blue square in the middle", form => {
+			ManualForm("Test image should be shown with a blue square in the middle", form =>
+			{
 				var bitmap = TestIcons.TestImage;
 				using (var bd = bitmap.Lock())
 				{
@@ -438,10 +451,10 @@ namespace Eto.Test.UnitTests.Drawing
 					var squareSize = size / 2;
 					var offset = (size - squareSize) / 2;
 					for (int x = 0; x < squareSize.Width; x++)
-					for (int y = 0; y < squareSize.Height; y++)
-					{
-						bd.SetPixel(x + offset.Width, y + offset.Height, Colors.Blue);
-					}
+						for (int y = 0; y < squareSize.Height; y++)
+						{
+							bd.SetPixel(x + offset.Width, y + offset.Height, Colors.Blue);
+						}
 				}
 
 				var imageView = new ImageView();
@@ -450,6 +463,99 @@ namespace Eto.Test.UnitTests.Drawing
 
 				return imageView;
 			});
+		}
+
+		[Test]
+		public void LockAndGraphicsShouldHaveCorrectAlpha()
+		{
+			var imgSize = 300;
+			var halfSize = imgSize / 2;
+			var bmp = new Bitmap(imgSize, imgSize, PixelFormat.Format32bppRgba);
+			Bitmap savedBitmap = null;
+
+			void GetSavedBitmap()
+			{
+				var stream = new MemoryStream();
+				bmp.Save(stream, ImageFormat.Png);
+				stream.Position = 0;
+				savedBitmap = new Bitmap(stream);
+
+				// For troubleshooting:
+				// bmp.Save(Path.Combine(EtoEnvironment.GetFolderPath(EtoSpecialFolder.Downloads), "LockAndGraphicsShouldHaveCorrectAlpha.png"), ImageFormat.Png);
+				// Application.Instance.Invoke(() =>
+				// {
+				// 	var dlg = new Dialog();
+				// 	dlg.Content = new TableLayout(
+				// 		new TableRow("Memory", "After Save"),
+				// 		new TableRow(new ImageView { Image = bmp }, new ImageView { Image = savedBitmap })
+				// 	);
+				// 	dlg.ShowModal(Application.Instance.MainForm);
+				// });
+			}
+
+			void TestPixels(Color topLeft, Color topRight, Color bottomLeft, Color bottomRight, string test)
+			{
+				Assert.IsNotNull(bmp);
+				Assert.IsNotNull(savedBitmap);
+				
+				Assert.AreEqual(topLeft, bmp.GetPixel(0, 0), test + ".1.1");
+				Assert.AreEqual(topRight, bmp.GetPixel(halfSize, 0), test + ".1.2");
+				Assert.AreEqual(bottomLeft, bmp.GetPixel(0, halfSize), test + ".1.3");
+				Assert.AreEqual(bottomRight, bmp.GetPixel(halfSize, halfSize), test + ".1.4");
+
+				Assert.AreEqual(topLeft, savedBitmap.GetPixel(0, 0), test + ".2.1");
+				Assert.AreEqual(topRight, savedBitmap.GetPixel(halfSize, 0), test + ".2.2");
+				Assert.AreEqual(bottomLeft, savedBitmap.GetPixel(0, halfSize), test + ".2.3");
+				Assert.AreEqual(bottomRight, savedBitmap.GetPixel(halfSize, halfSize), test + ".2.4");
+
+				using (var bd = bmp.Lock())
+				{
+					Assert.AreEqual(topLeft, bd.GetPixel(0, 0), test + ".3.1");
+					Assert.AreEqual(topRight, bd.GetPixel(halfSize, 0), test + ".3.2");
+					Assert.AreEqual(bottomLeft, bd.GetPixel(0, halfSize), test + ".3.3");
+					Assert.AreEqual(bottomRight, bd.GetPixel(halfSize, halfSize), test + ".3.4");
+				}
+				using (var bd = savedBitmap.Lock())
+				{
+					Assert.AreEqual(topLeft, bd.GetPixel(0, 0), test + ".4.1");
+					Assert.AreEqual(topRight, bd.GetPixel(halfSize, 0), test + ".4.2");
+					Assert.AreEqual(bottomLeft, bd.GetPixel(0, halfSize), test + ".4.3");
+					Assert.AreEqual(bottomRight, bd.GetPixel(halfSize, halfSize), test + ".4.4");
+				}
+			}
+
+			var emptyColor = new Color();
+
+			var redColor = Color.FromArgb(0x20FF0000);
+			using (var bd = bmp.Lock())
+			{
+				for (int x = 0; x < halfSize; x++)
+					for (int y = 0; y < halfSize; y++)
+						bd.SetPixel(x, y, redColor);
+			}
+
+			GetSavedBitmap();
+			TestPixels(redColor, emptyColor, emptyColor, emptyColor, "#1");
+
+			var blueColor = Color.FromArgb(unchecked((int)0x800000FF));
+			using (var graphics = new Graphics(bmp))
+			{
+				graphics.FillRectangle(blueColor, halfSize, halfSize, halfSize, halfSize);
+			}
+
+			GetSavedBitmap();
+			TestPixels(redColor, emptyColor, emptyColor, blueColor, "#2");
+
+			var greenColor = Color.FromArgb(unchecked((int)0xC000FF00));
+			using (var bd = bmp.Lock())
+			{
+				for (int x = 0; x < halfSize; x++)
+					for (int y = halfSize; y < imgSize; y++)
+						bd.SetPixel(x, y, greenColor);
+			}
+
+			GetSavedBitmap();
+			TestPixels(redColor, emptyColor, greenColor, blueColor, "#3");
 		}
 	}
 }

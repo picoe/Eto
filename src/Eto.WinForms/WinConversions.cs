@@ -874,6 +874,12 @@ namespace Eto.WinForms
 		}
 
 		public static swf.Cursor ToSwf(this Cursor cursor) => CursorHandler.GetControl(cursor);
+		
+		public static bool IsPremultiplied(this sdi.PixelFormat format)
+		{
+			return format == sdi.PixelFormat.Format32bppPArgb
+				|| format == sdi.PixelFormat.Format64bppPArgb;
+		}
 
 	}
 }

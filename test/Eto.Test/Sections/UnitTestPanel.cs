@@ -1526,20 +1526,27 @@ namespace Eto.Test.Sections
 			var filter = CreateFilter();
 			Task.Run(() =>
 			{
-				var map = new Dictionary<object, UnitTestItem>();
-				var tests = Runner.GetTests();
-				// always show all categories
-				var categories = AvailableCategories ?? Runner.GetCategories(TestFilter.Empty).OrderBy(r => r);
-				var totalTestCount = Runner.GetTestCount(filter);
-				var testSuites = tests.Select(suite => ToTree(suite.Assembly, suite, filter, map)).Where(r => r != null);
-				var treeData = new TreeGridItem(testSuites);
-				Application.Instance.AsyncInvoke(() =>
+				try
 				{
-					  AvailableCategories = categories;
-					  testCountLabel.Text = $"{totalTestCount} Tests";
-					  testMap = map;
-					  tree.DataStore = treeData;
-				  });
+					var map = new Dictionary<object, UnitTestItem>();
+					var tests = Runner.GetTests();
+					// always show all categories
+					var categories = AvailableCategories ?? Runner.GetCategories(TestFilter.Empty).OrderBy(r => r);
+					var totalTestCount = Runner.GetTestCount(filter);
+					var testSuites = tests.Select(suite => ToTree(suite.Assembly, suite, filter, map)).Where(r => r != null);
+					var treeData = new TreeGridItem(testSuites);
+					Application.Instance.AsyncInvoke(() =>
+					{
+						AvailableCategories = categories;
+						testCountLabel.Text = $"{totalTestCount} Tests";
+						testMap = map;
+						tree.DataStore = treeData;
+					});
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine($"Error loading tests: {ex}");
+				}
 			});
 		}
 

@@ -31,6 +31,24 @@ namespace Eto.Direct2D.Drawing
     {
 		sd.Bitmap targetBitmap;
 		public sw.Bitmap[] Frames { get; protected set; }
+		
+		public bool IsPremultiplied => Control.PixelFormat == s.WIC.PixelFormat.Format32bppPBGRA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppPBGRA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppPRGBAHalf
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format128bppPRGBAFloat;
+		
+		public bool HasAlpha => Control.PixelFormat == s.WIC.PixelFormat.Format32bppRGBA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppRGBA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format32bppRGBA1010102
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format32bppRGBA1010102XR
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppRGBAFixedPoint
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppRGBAHalf
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format128bppRGBAFixedPoint
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format128bppRGBAFloat
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format32bppBGRA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppBGRA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format16bppBGRA5551
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppBGRAFixedPoint;
 		public sd.Bitmap GetBitmap(sd.RenderTarget target)
 		{
 			if (targetBitmap == null || !Equals(targetBitmap.Tag, target.NativePointer))
@@ -151,11 +169,13 @@ namespace Eto.Direct2D.Drawing
 			{
 				var output = new uint[1];
 				Control.CopyPixels(new s.Rectangle(x, y, 1, 1), output);
-				var eto = new s.Color4(new s.ColorBGRA(output[0]).ToRgba()).ToEto();
-				if (Control.PixelFormat == sw.PixelFormat.Format24bppBGR)
-					return Color.FromRgb(eto.ToArgb());
-				else
-					return eto;
+				var eto = new s.ColorBGRA(output[0]).ToEto();
+				if (IsPremultiplied)
+					eto = Color.FromPremultipliedArgb(eto.ToArgb());
+				else if (!HasAlpha)
+					eto.A = 1;
+					
+				return eto;
 			}
 			catch (s.SharpDXException ex)
 			{
@@ -164,10 +184,7 @@ namespace Eto.Direct2D.Drawing
 			}			
         }
 
-        public Size Size
-        {
-            get { return Control.Size.ToEto(); }
-        }
+        public Size Size => Control.Size.ToEto();
 
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{

@@ -47,7 +47,7 @@ namespace Eto.Direct2D.Drawing
 		public BitmapData Lock()
         {
 			var data = Control.Lock(sw.BitmapLockFlags.Write);
-			return new WicBitmapData(Widget, data, Widget.BitsPerPixel);
+			return new WicBitmapData(Widget, data, Widget.BitsPerPixel, false);
         }
 
         public void Unlock(BitmapData bitmapData)
