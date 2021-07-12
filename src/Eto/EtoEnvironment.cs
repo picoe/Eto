@@ -40,7 +40,12 @@ namespace Eto
 		/// This is used as in some cases when the application is bundled (e.g. using mkbundle),
 		/// the location of the assembly can no longer be found as it is loaded from memory.
 		/// </remarks>
-		EntryExecutable
+		EntryExecutable,
+		
+		/// <summary>
+		/// Gets the user's downloads folder
+		/// </summary>
+		Downloads
 	}
 
 	/// <summary>
