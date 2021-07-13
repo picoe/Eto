@@ -145,19 +145,22 @@ namespace Eto.Mac.Forms.Controls
 			switch (id)
 			{
 				case LinkButton.ClickEvent:
-					Widget.MouseDown += (sender, e) =>
-					{
-						if (Enabled && e.Buttons == MouseButtons.Primary)
-						{
-							Callback.OnClick(Widget, EventArgs.Empty);
-							e.Handled = true;
-						}
-					};
+					HandleEvent(LinkButton.MouseUpEvent);
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		public override MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent)
+		{
+			var args = base.TriggerMouseUp(obj, sel, theEvent);
+			if (!args.Handled && Enabled && args.Buttons == MouseButtons.Primary)
+			{
+				Callback.OnClick(Widget, EventArgs.Empty);
+			}
+			return args;
 		}
 
 		static readonly object DisabledTextColorKey = new object();

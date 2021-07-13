@@ -107,6 +107,8 @@ namespace Eto.Mac.Forms
 		void OnSizeChanged(EventArgs e);
 
 		bool? ShouldHaveFocus { get; set; }
+		int SuppressMouseEvents { get; set; }
+		bool SuppressMouseTriggerCallback { get; set; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
 
@@ -119,6 +121,9 @@ namespace Eto.Mac.Forms
 		CGPoint GetAlignmentPointForFramePoint(CGPoint point);
 		CGRect GetAlignmentRectForFrame(CGRect frame);
 		bool OnAcceptsFirstMouse(NSEvent theEvent);
+		bool TriggerMouseCallback();
+		MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent);
+		MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent);
 	}
 
 	static class MacView
@@ -195,6 +200,8 @@ namespace Eto.Mac.Forms
 		public static readonly Selector selSetCanDrawSubviewsIntoLayer = new Selector("setCanDrawSubviewsIntoLayer:");
 		public static readonly bool supportsCanDrawSubviewsIntoLayer = ObjCExtensions.InstancesRespondToSelector<NSView>("setCanDrawSubviewsIntoLayer:");
 		public static readonly object UseAlignmentFrame_Key = new object();
+		public static readonly object SuppressMouseEvents_Key = new object();
+		public static readonly object SuppressMouseTriggerCallback_Key = new object();
 		public static readonly IntPtr selSetDataProviderForTypes_Handle = Selector.GetHandle("setDataProvider:forTypes:");
 		public static readonly IntPtr selInitWithPasteboardWriter_Handle = Selector.GetHandle("initWithPasteboardWriter:");
 		public static readonly IntPtr selClass_Handle = Selector.GetHandle("class");
@@ -233,7 +240,6 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-
 		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr TriggerMouseDown_Delegate = TriggerMouseDown;
 		static void TriggerMouseDown(IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -241,18 +247,7 @@ namespace Eto.Mac.Forms
 			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
-				var args = MacConversions.GetMouseEvent(handler, theEvent, false);
-				if (theEvent.ClickCount >= 2)
-					handler.Callback.OnMouseDoubleClick(handler.Widget, args);
-
-				if (!args.Handled)
-				{
-					handler.Callback.OnMouseDown(handler.Widget, args);
-				}
-				if (!args.Handled)
-				{
-					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
-				}
+				handler.TriggerMouseDown(obj, sel, theEvent);
 			}
 		}
 
@@ -264,12 +259,7 @@ namespace Eto.Mac.Forms
 			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
-				var args = MacConversions.GetMouseEvent(handler, theEvent, false);
-				handler.Callback.OnMouseUp(handler.Widget, args);
-				if (!args.Handled)
-				{
-					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
-				}
+				handler.TriggerMouseUp(obj, sel, theEvent);
 			}
 		}
 
@@ -565,10 +555,7 @@ namespace Eto.Mac.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
-		protected virtual Size DefaultMinimumSize
-		{
-			get { return Size.Empty; }
-		}
+		protected virtual Size DefaultMinimumSize => Size.Empty;
 
 		public virtual Size MinimumSize
 		{
@@ -663,7 +650,7 @@ namespace Eto.Mac.Forms
 			get { return Widget.Properties.Get<SizeF?>(MacView.NaturalSizeInfinity_Key); }
 			set { Widget.Properties[MacView.NaturalSizeInfinity_Key] = value; }
 		}
-
+		
 		public virtual void InvalidateMeasure()
 		{
 			NaturalSize = null;
@@ -851,20 +838,33 @@ namespace Eto.Mac.Forms
 		/// Triggers a mouse callback from a different event. 
 		/// e.g. when an NSButton is clicked it is triggered from a mouse up event.
 		/// </summary>
-		protected void TriggerMouseCallback()
+		public bool TriggerMouseCallback()
 		{
 			// trigger mouse up event since it's buried by cocoa
 			var evt = NSApplication.SharedApplication.CurrentEvent;
 			if (evt == null)
-				return;
-			if (evt.Type == NSEventType.LeftMouseUp || evt.Type == NSEventType.RightMouseUp || evt.Type == NSEventType.OtherMouseUp)
+				return false;
+			switch (evt.Type)
 			{
-				Callback.OnMouseUp(Widget, MacConversions.GetMouseEvent(this, evt, false));
+				case NSEventType.LeftMouseUp:
+				case NSEventType.RightMouseUp:
+				case NSEventType.OtherMouseUp:
+				{
+					var args = MacConversions.GetMouseEvent(this, evt, false);
+					Callback.OnMouseUp(Widget, args);
+					SuppressMouseTriggerCallback = true;
+					return args.Handled;
+				}
+				case NSEventType.LeftMouseDragged:
+				case NSEventType.RightMouseDragged:
+				case NSEventType.OtherMouseDragged:
+				{
+					var args = MacConversions.GetMouseEvent(this, evt, false);
+					Callback.OnMouseMove(Widget, args);
+					return args.Handled;
+				}
 			}
-			if (evt.Type == NSEventType.LeftMouseDragged || evt.Type == NSEventType.RightMouseDragged || evt.Type == NSEventType.OtherMouseDragged)
-			{
-				Callback.OnMouseMove(Widget, MacConversions.GetMouseEvent(this, evt, false));
-			}
+			return false;
 		}
 
 		
@@ -1320,6 +1320,18 @@ namespace Eto.Mac.Forms
 			set => Widget.Properties.Set<bool?>(MacView.UseAlignmentFrame_Key, value);
 		}
 
+		public int SuppressMouseEvents
+		{
+			get => Widget.Properties.Get<int>(MacView.SuppressMouseEvents_Key);
+			set => Widget.Properties.Set<int>(MacView.SuppressMouseEvents_Key, value);
+		}
+
+		public bool SuppressMouseTriggerCallback
+		{
+			get => Widget.Properties.Get<bool>(MacView.SuppressMouseTriggerCallback_Key);
+			set => Widget.Properties.Set<bool>(MacView.SuppressMouseTriggerCallback_Key, value);
+		}
+
 		public void SetAlignmentFrameSize(CGSize size)
 		{
 			if (UseAlignmentFrame)
@@ -1407,6 +1419,41 @@ namespace Eto.Mac.Forms
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
 			OnAcceptsFirstMouse(args);
 			return args.Handled;
+		}
+
+		public virtual MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent)
+		{
+			var args = MacConversions.GetMouseEvent(this, theEvent, false);
+			if (theEvent.ClickCount >= 2)
+				Callback.OnMouseDoubleClick(Widget, args);
+			
+			if (!args.Handled)
+			{
+				Callback.OnMouseDown(Widget, args);
+			}
+			if (!args.Handled)
+			{
+				SuppressMouseTriggerCallback = false;
+				SuppressMouseEvents++;
+				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, theEvent.Handle);
+				SuppressMouseEvents--;
+				
+				// some controls use event loops until mouse up, so we need to trigger the mouse up here.
+				if (!SuppressMouseTriggerCallback)
+					TriggerMouseCallback();
+			}
+			return args;
+		}
+
+		public virtual MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent)
+		{
+			var args = MacConversions.GetMouseEvent(this, theEvent, false);
+			Callback.OnMouseUp(Widget, args);
+			if (!args.Handled)
+			{
+				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, theEvent.Handle);
+			}
+			return args;
 		}
 	}
 }

@@ -74,6 +74,7 @@ namespace Eto.Mac.Forms.Controls
 				if (HandleMouseEvent(theEvent))
 					return;
 				base.RightMouseDown(theEvent);
+				Handler?.TriggerMouseCallback();
 			}
 
 			public override void OtherMouseDown(NSEvent theEvent)
@@ -81,6 +82,7 @@ namespace Eto.Mac.Forms.Controls
 				if (HandleMouseEvent(theEvent))
 					return;
 				base.OtherMouseDown(theEvent);
+				Handler?.TriggerMouseCallback();
 			}
 
 			public override void MouseDown(NSEvent theEvent)
@@ -97,6 +99,7 @@ namespace Eto.Mac.Forms.Controls
 				h.IsMouseDragging = true;
 				base.MouseDown(theEvent);
 				h.IsMouseDragging = false;
+				h.TriggerMouseCallback();
 			}
 
 			bool HandleMouseEvent(NSEvent theEvent)
@@ -106,11 +109,17 @@ namespace Eto.Mac.Forms.Controls
 				{
 					var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 					if (theEvent.ClickCount >= 2)
+					{
 						handler.Callback.OnMouseDoubleClick(handler.Widget, args);
+						if (args.Handled)
+							return false;
+					}
 					else
+					{
 						handler.Callback.OnMouseDown(handler.Widget, args);
-					if (args.Handled)
-						return true;
+						if (args.Handled)
+							return true;
+					}
 
 					var point = ConvertPointFromView(theEvent.LocationInWindow, null);
 
