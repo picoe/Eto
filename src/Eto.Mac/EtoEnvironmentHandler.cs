@@ -33,6 +33,10 @@ namespace Eto.Mac
 					dir = NSSearchPathDirectory.DocumentDirectory;
 					domain = NSSearchPathDomain.User;
 					break;
+				case EtoSpecialFolder.Downloads:
+					dir = NSSearchPathDirectory.DownloadsDirectory;
+					domain = NSSearchPathDomain.User;
+					break;
 				default:
 					throw new NotSupportedException();
 			}
