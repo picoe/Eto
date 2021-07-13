@@ -40,6 +40,7 @@ namespace Eto.Wpf.Forms
 			{
 				Handler = this,
 				SnapsToDevicePixels = true,
+				ClipToBounds = true
 			};
 		}
 
