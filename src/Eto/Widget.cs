@@ -307,10 +307,10 @@ namespace Eto
 
 			var platform = Platform.Instance;
 			if (platform == null)
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Platform instance is null. Have you created your application?"));
+				throw new InvalidOperationException("Platform instance is null. Have you created your application?");
 			var info = platform.FindHandler(GetType());
 			if (info == null)
-				throw new ArgumentOutOfRangeException(string.Format(CultureInfo.CurrentCulture, "Type for '{0}' could not be found in this platform", GetType().FullName));
+				throw new InvalidOperationException($"Type for '{GetType().FullName}' could not be found in this platform");
 			Handler = info.Instantiator();
 			Platform = platform;
 			if (Handler is IHandler widgetHandler)
