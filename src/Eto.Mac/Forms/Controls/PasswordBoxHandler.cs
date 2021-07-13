@@ -35,6 +35,33 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.Controls
 {
+	public class EtoSecureTextFieldCell : NSSecureTextFieldCell, IColorizeCell
+	{
+		ColorizeView colorize;
+
+		public EtoSecureTextFieldCell()
+		{
+			StringValue = string.Empty;
+		}
+
+		public Color? Color 
+		{ 
+			get => colorize?.Color;
+			set => ColorizeView.Create(ref colorize, value);
+		}
+
+		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
+		{
+			colorize?.End();
+			base.DrawInteriorWithFrame(cellFrame, inView);
+		}
+		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
+		{
+			colorize?.Begin(cellFrame, inView);
+			base.DrawWithFrame(cellFrame, inView);
+		}
+	}
+
 	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler, ITextBoxWithMaxLength
 	{
 		public class EtoSecureTextField : NSSecureTextField, IMacControl, ITextBoxWithMaxLength
@@ -47,10 +74,7 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); }
 			}
 
-			public int MaxLength
-			{
-				get { return Handler.MaxLength; }
-			}
+			public int MaxLength => Handler.MaxLength;
 
 			EtoFormatter formatter;
 
@@ -61,7 +85,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public EtoSecureTextField()
 			{
-				Cell = new EtoTextFieldCell();
+				Cell = new EtoSecureTextFieldCell();
 				Bezeled = true;
 				Editable = true;
 				Selectable = true;
