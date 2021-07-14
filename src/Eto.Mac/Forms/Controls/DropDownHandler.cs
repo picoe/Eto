@@ -275,14 +275,17 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				var selected = Widget.SelectedValue;
+				var selectedIndex = SelectedIndex;
 				Control.SelectItem(-1);
 				collection?.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
 				if (!ReferenceEquals(selected, null))
 				{
-					Control.SelectItem(collection.IndexOf(selected));
-					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+					var newIndex = collection.IndexOf(selected);
+					Control.SelectItem(newIndex);
+					if (selectedIndex != newIndex)
+						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 				InvalidateMeasure();
 			}
