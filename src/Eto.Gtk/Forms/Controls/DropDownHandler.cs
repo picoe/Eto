@@ -184,18 +184,21 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get => collection?.Collection;
 			set
 			{
 				SuppressIndexChanged++;
 				var selected = Widget.SelectedValue;
+				var selectedIndex = SelectedIndex;
 				collection?.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
 				if (!ReferenceEquals(selected, null))
 				{
-					SelectedIndex = collection.IndexOf(selected);
-					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+					var newIndex = collection.IndexOf(selected);
+					SelectedIndex = newIndex;
+					if (newIndex != selectedIndex)
+						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 				SuppressIndexChanged--;
 			}
