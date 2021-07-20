@@ -188,9 +188,9 @@ namespace Eto.Mac.Forms
 
 		public void RunIteration()
 		{
-#pragma warning disable 0618 // for some reason we get a warning (error in Release) here even though we aren't using an obsolete api.
-			NSApplication.SharedApplication.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoop.NSDefaultRunLoopMode, true);
-#pragma warning restore 0618
+			var evt = NSApplication.SharedApplication.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoop.NSDefaultRunLoopMode, true);
+			// need to actually send the event
+			NSApplication.SharedApplication.SendEvent(evt);
 		}
 
 		public void Attach(object context)
