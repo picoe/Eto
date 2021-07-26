@@ -386,6 +386,11 @@ namespace Eto.Wpf.Forms.Controls
 	public class WebView2Handler : BaseHandler, WebView.IHandler
 	{
 		bool webView2Ready;
+		protected bool WebView2Ready
+		{
+			get { return webView2Ready; }
+		}
+
 		List<Action> delayedActions;
 
 		public WebView2Handler()
@@ -440,7 +445,7 @@ namespace Eto.Wpf.Forms.Controls
 			Callback.OnDocumentTitleChanged(Widget, new WebViewTitleEventArgs(CoreWebView2.DocumentTitle));
 		}
 
-		void RunWhenReady(Action action)
+		protected void RunWhenReady(Action action)
 		{
 			if (delayedActions == null)
 			{
@@ -569,7 +574,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		}
 
-		Microsoft.Web.WebView2.Core.CoreWebView2 CoreWebView2
+		protected Microsoft.Web.WebView2.Core.CoreWebView2 CoreWebView2
 		{
 			get
 			{
