@@ -16,79 +16,79 @@ namespace Eto.WinForms.Drawing
 		sd2.GraphicsPath Control { get; set; }
 		sd.PointF position;
 
-		public GraphicsPathHandler ()
+		public GraphicsPathHandler()
 		{
-			Control = new sd2.GraphicsPath ();
+			Control = new sd2.GraphicsPath();
 		}
 
-		GraphicsPathHandler (sd2.GraphicsPath control)
+		GraphicsPathHandler(sd2.GraphicsPath control)
 		{
 			Control = control;
 		}
 
-		public void LineTo (float x, float y)
+		public void LineTo(float x, float y)
 		{
-			var point = new sd.PointF (x, y);
-			Control.AddLine (position, point);
+			var point = new sd.PointF(x, y);
+			Control.AddLine(position, point);
 			position = point;
 		}
 
-		public void MoveTo (float x, float y)
+		public void MoveTo(float x, float y)
 		{
-			position = new sd.PointF (x, y);
+			position = new sd.PointF(x, y);
 		}
 
-		public void AddLine (float startX, float startY, float endX, float endY)
+		public void AddLine(float startX, float startY, float endX, float endY)
 		{
-			Control.AddLine (new sd.PointF (startX, startY), new sd.PointF (endX, endY));
-			position = new sd.PointF (endX, endY);
+			Control.AddLine(new sd.PointF(startX, startY), new sd.PointF(endX, endY));
+			position = new sd.PointF(endX, endY);
 		}
 
-		public void AddLines (IEnumerable<PointF> points)
+		public void AddLines(IEnumerable<PointF> points)
 		{
-			var sdpoints = from p in points select p.ToSD ();
-			var pointArray = sdpoints.ToArray ();
-			Control.AddLines (pointArray);
-			position = pointArray.Last ();
+			var sdpoints = from p in points select p.ToSD();
+			var pointArray = sdpoints.ToArray();
+			Control.AddLines(pointArray);
+			position = pointArray.Last();
 		}
 
-		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)
+		public void AddBezier(PointF start, PointF control1, PointF control2, PointF end)
 		{
-			Control.AddBezier (start.ToSD (), control1.ToSD (), control2.ToSD (), end.ToSD ());
+			Control.AddBezier(start.ToSD(), control1.ToSD(), control2.ToSD(), end.ToSD());
 		}
 
-		public void AddPath (IGraphicsPath path, bool connect = false)
+		public void AddPath(IGraphicsPath path, bool connect = false)
 		{
 			if (path != null && !path.IsEmpty) // avoid throwing an exception if the path is empty - consistent across platforms.
 				Control.AddPath(path.ToSD(), connect);
 		}
 
-		public void Transform (IMatrix matrix)
+		public void Transform(IMatrix matrix)
 		{
-			Control.Transform (matrix.ToSD ());
+			Control.Transform(matrix.ToSD());
 		}
 
-		public void CloseFigure ()
+		public void CloseFigure()
 		{
-			Control.CloseFigure ();
+			Control.CloseFigure();
 		}
 
-		public void StartFigure ()
+		public void StartFigure()
 		{
-			Control.StartFigure ();
+			Control.StartFigure();
 		}
 
-		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
+		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
 		{
-			var sdpoints = from p in points select p.ToSD ();
-			var pointArray = sdpoints.ToArray ();
-			Control.AddCurve (pointArray, tension);
-			position = pointArray.Last ();
+			var sdpoints = from p in points select p.ToSD();
+			var pointArray = sdpoints.ToArray();
+			Control.AddCurve(pointArray, tension);
+			position = pointArray.Last();
 		}
 
 		public RectangleF Bounds
 		{
-			get { return Control.GetBounds ().ToEto (); }
+			get { return Control.GetBounds().ToEto(); }
 		}
 
 		public object ControlObject
@@ -96,25 +96,25 @@ namespace Eto.WinForms.Drawing
 			get { return Control; }
 		}
 
-		public void Dispose ()
+		public void Dispose()
 		{
-			Control.Dispose ();
+			Control.Dispose();
 		}
 
 
-		public void AddArc (float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			Control.AddArc (x, y, width, height, startAngle, sweepAngle);
+			Control.AddArc(x, y, width, height, startAngle, sweepAngle);
 		}
 
-		public void AddRectangle (float x, float y, float width, float height)
+		public void AddRectangle(float x, float y, float width, float height)
 		{
-			Control.AddRectangle (new sd.RectangleF (x, y, width, height));
+			Control.AddRectangle(new sd.RectangleF(x, y, width, height));
 		}
 
-		public void AddEllipse (float x, float y, float width, float height)
+		public void AddEllipse(float x, float y, float width, float height)
 		{
-			Control.AddEllipse (x, y, width, height);
+			Control.AddEllipse(x, y, width, height);
 		}
 
 		public bool IsEmpty
@@ -124,13 +124,17 @@ namespace Eto.WinForms.Drawing
 
 		public PointF CurrentPoint
 		{
-			get { return Control.GetLastPoint ().ToEto (); }
+			get { return Control.GetLastPoint().ToEto(); }
 		}
 
-		public IGraphicsPath Clone ()
+		public IGraphicsPath Clone()
 		{
-			return new GraphicsPathHandler ((sd.Drawing2D.GraphicsPath)Control.Clone ());
+			return new GraphicsPathHandler((sd.Drawing2D.GraphicsPath)Control.Clone());
 		}
+
+		public bool FillContains(PointF point) => Control.IsVisible(point.X, point.Y);
+
+		public bool StrokeContains(Pen pen, PointF point) => Control.IsOutlineVisible(point.X, point.Y, pen.ToSD(Bounds));
 
 		public FillMode FillMode
 		{

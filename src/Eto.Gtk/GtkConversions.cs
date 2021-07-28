@@ -327,15 +327,11 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public static void Apply(this Pen pen, GraphicsHandler graphics)
-		{
-			((PenHandler)pen.Handler).Apply(pen, graphics);
-		}
+		public static void Apply(this Pen pen, GraphicsHandler graphics) => pen.Apply(graphics.Control);
+		public static void Apply(this Pen pen, Cairo.Context context) => ((PenHandler)pen.Handler).Apply(pen, context);
 
-		public static void Apply(this Brush brush, GraphicsHandler graphics)
-		{
-			((BrushHandler)brush.Handler).Apply(brush.ControlObject, graphics);
-		}
+		public static void Apply(this Brush brush, GraphicsHandler graphics) => brush.Apply(graphics.Control);
+		public static void Apply(this Brush brush, Cairo.Context context) => ((BrushHandler)brush.Handler).Apply(brush.ControlObject, context);
 
 		public static Cairo.LineJoin ToCairo(this PenLineJoin value)
 		{
