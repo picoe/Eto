@@ -237,5 +237,14 @@ namespace Eto.Direct2D.Drawing
 		{
 			Control.Dispose();
 		}
+		
+		public bool FillContains(PointF point) => Control.FillContainsPoint(point.ToDx());
+
+		public bool StrokeContains(Pen pen, PointF point)
+		{
+			var penData = pen.ToPenData();
+			
+			return Control.StrokeContainsPoint(point.ToDx(), penData.Width, penData.StrokeStyle);
+		}
 	}
 }

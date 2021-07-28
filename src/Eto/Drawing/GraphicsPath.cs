@@ -179,6 +179,21 @@ namespace Eto.Drawing
 		/// Creates a clone of the graphics path
 		/// </summary>
 		IGraphicsPath Clone();
+		
+		/// <summary>
+		/// Gets a value indicating that the specified <paramref name="point"/> is contained by the path when filled
+		/// </summary>
+		/// <param name="point">Point to test</param>
+		/// <returns><c>true</c> if the path contains the point when filled, <c>false</c> otherwise</returns>
+		bool FillContains(PointF point);
+		
+		/// <summary>
+		/// Gets a value indicating that the spedified <paramref name="point"/> is on the path when stroked with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="pen">Pen to test the stroke with</param>
+		/// <param name="point">Point to test</param>
+		/// <returns><c>true</c> if the point is on the path when stroked with the specified pen, <c>false</c> otherwise</returns>
+		bool StrokeContains(Pen pen, PointF point);
 	}
 
 	/// <summary>
@@ -515,6 +530,21 @@ namespace Eto.Drawing
 		{
 			Handler.AddPath(path, connect);
 		}
+		
+		/// <summary>
+		/// Gets a value indicating that the specified <paramref name="point"/> is contained by the path when filled
+		/// </summary>
+		/// <param name="point">Point to test</param>
+		/// <returns><c>true</c> if the path contains the point when filled, <c>false</c> otherwise</returns>
+		public bool FillContains(PointF point) => Handler.FillContains(point);
+
+		/// <summary>
+		/// Gets a value indicating that the spedified <paramref name="point"/> is on the path when stroked with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="pen">Pen to test the stroke with</param>
+		/// <param name="point">Point to test</param>
+		/// <returns><c>true</c> if the point is on the path when stroked with the specified pen, <c>false</c> otherwise</returns>
+		public bool StrokeContains(Pen pen, PointF point) => Handler.StrokeContains(pen, point);
 
 		/// <summary>
 		/// Transforms the points in the path with the specified matrix
