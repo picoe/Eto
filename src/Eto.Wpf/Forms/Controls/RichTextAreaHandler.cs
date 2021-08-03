@@ -974,7 +974,7 @@ namespace Eto.Wpf.Forms.Controls
 		public void Delete(Range<int> range)
 		{
 			var textRange = GetRange(range);
-			textRange.Text = null;
+			textRange.Text = string.Empty;
 		}
 
 		public void Insert(int position, string text)
