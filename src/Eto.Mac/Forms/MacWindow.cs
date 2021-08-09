@@ -1152,22 +1152,6 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public override PointF PointFromScreen(PointF point)
-		{
-			var sdpoint = point.ToNS();
-			sdpoint = Control.ConvertBaseToScreen(sdpoint);
-			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
-			return sdpoint.ToEto();
-		}
-
-		public override PointF PointToScreen(PointF point)
-		{
-			var sdpoint = point.ToNS();
-			sdpoint = Control.ConvertBaseToScreen(sdpoint);
-			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
-			return sdpoint.ToEto();
-		}
-
 		public WindowStyle WindowStyle
 		{
 			get { return Control.StyleMask.ToEtoWindowStyle(); }
