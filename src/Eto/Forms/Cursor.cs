@@ -49,7 +49,52 @@ namespace Eto.Forms
 		/// <summary>
 		/// Horizontal sizing cursor
 		/// </summary>
-		HorizontalSplit
+		HorizontalSplit,
+
+		/// <summary>
+		/// All direction sizing cursor
+		/// </summary>
+		SizeAll,
+
+		/// <summary>
+		/// Left side sizing cursor, which on some platforms is the same as <see cref="SizeRight"/>
+		/// </summary>
+		SizeLeft,
+
+		/// <summary>
+		/// Top side sizing cursor, which on some platforms is the same as <see cref="SizeBottom"/>
+		/// </summary>
+		SizeTop,
+
+		/// <summary>
+		/// Right side sizing cursor, which on some platforms is the same as <see cref="SizeLeft"/>
+		/// </summary>
+		SizeRight,
+
+		/// <summary>
+		/// Bottom side sizing cursor, which on some platforms is the same as <see cref="SizeTop"/>
+		/// </summary>
+		SizeBottom,
+
+		/// <summary>
+		/// Top-left corner sizing cursor, which on some platforms is the same as <see cref="SizeBottomRight"/>
+		/// </summary>
+		SizeTopLeft,
+
+		/// <summary>
+		/// Top-right corner sizing cursor, which on some platforms is the same as <see cref="SizeBottomLeft"/>
+		/// </summary>
+		SizeTopRight,
+
+		/// <summary>
+		/// Bottom-left corner sizing cursor, which on some platforms is the same as <see cref="SizeTopRight"/>
+		/// </summary>
+		SizeBottomLeft,
+
+		/// <summary>
+		/// Bottom-right corner sizing cursor, which on some platforms is the same as <see cref="SizeTopLeft"/>
+		/// </summary>
+		SizeBottomRight
 	}
 
 	/// <summary>

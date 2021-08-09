@@ -198,6 +198,24 @@ namespace Eto.GtkSharp
 					return Gdk.CursorType.Fleur;
 				case CursorType.Pointer:
 					return Gdk.CursorType.Hand2;
+				case CursorType.SizeAll:
+					return Gdk.CursorType.Fleur;
+				case CursorType.SizeLeft:
+					return Gdk.CursorType.LeftSide;
+				case CursorType.SizeTop:
+					return Gdk.CursorType.TopSide;
+				case CursorType.SizeRight:
+					return Gdk.CursorType.RightSide;
+				case CursorType.SizeBottom:
+					return Gdk.CursorType.BottomSide;
+				case CursorType.SizeTopLeft:
+					return Gdk.CursorType.TopLeftCorner;
+				case CursorType.SizeTopRight:
+					return Gdk.CursorType.TopRightCorner;
+				case CursorType.SizeBottomLeft:
+					return Gdk.CursorType.BottomLeftCorner;
+				case CursorType.SizeBottomRight:
+					return Gdk.CursorType.BottomRightCorner;
 				default:
 					throw new NotSupportedException();
 			}
