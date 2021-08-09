@@ -24,6 +24,7 @@ namespace Eto.Wpf.Forms.Printing
 			if (result == true)
 			{
 				settings.SetFromDialog(Control);
+				Document?.Print();
 				return DialogResult.Ok;
 			}
 			return DialogResult.Cancel;

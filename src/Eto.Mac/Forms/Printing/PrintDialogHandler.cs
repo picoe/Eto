@@ -16,7 +16,7 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac.Forms.Printing
 {
-	public class PrintDialogHandler : WidgetHandler<NSPrintPanel, PrintDialog>, PrintDialog.IHandler
+	public class PrintDialogHandler : WidgetHandler<NSPrintPanel, CommonDialog>, PrintDialog.IHandler, PrintPreviewDialog.IHandler
 	{
 		PrintSettings settings;
 

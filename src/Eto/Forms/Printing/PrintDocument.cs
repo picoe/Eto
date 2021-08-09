@@ -12,7 +12,29 @@ namespace Eto.Forms
 	[Handler(typeof(PrintDocument.IHandler))]
 	public class PrintDocument : Widget
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
+		
+		Control _control;
+
+		/// <summary>
+		/// Initializes a new instance of the PrintDocument class with custom drawn content only.
+		/// </summary>
+		public PrintDocument()
+		{
+			Handler.Create();
+			Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the PrintDocument class with the specified control as the print content.
+		/// </summary>
+		/// <param name="control">Control to print</param>
+		public PrintDocument(Control control)
+		{
+			_control = control;
+			Handler.Create(control);
+			Initialize();
+		}
 
 		#region Events
 
@@ -113,9 +135,11 @@ namespace Eto.Forms
 		/// </remarks>
 		public void Print()
 		{
+			OnBeforePrint();
 			Handler.Print();
+			OnAfterPrint();
 		}
-
+		
 		/// <summary>
 		/// Gets or sets the print settings for the document when printing.
 		/// </summary>
@@ -141,6 +165,26 @@ namespace Eto.Forms
 		{
 			get { return Handler.PageCount; }
 			set { Handler.PageCount = value; }
+		}
+
+		static readonly object Unload_Key = new object();
+		
+		internal void OnBeforePrint()
+		{
+			if (_control != null && !_control.Loaded)
+			{
+				Properties.Set(Unload_Key, true);
+				_control.AttachNative();
+			}
+		}
+
+		internal void OnAfterPrint()
+		{
+			if (_control != null && Properties.Get<bool>(Unload_Key))
+			{
+				Properties.Set(Unload_Key, false);
+				_control.DetachNative();
+			}
 		}
 
 		#region Callback
@@ -209,6 +253,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Handler interface for the <see cref="PrintDocument"/> widget
 		/// </summary>
+		[AutoInitialize(false)]
 		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
@@ -219,6 +264,17 @@ namespace Eto.Forms
 			/// the current <see cref="PrintSettings"/>
 			/// </remarks>
 			void Print();
+
+			/// <summary>
+			/// Creates the handler with only custom drawn content
+			/// </summary>			
+			void Create();
+			
+			/// <summary>
+			/// Creates the handler with the specified control as its content
+			/// </summary>
+			/// <param name="control">Control to use as content for the print canvas</param>
+			void Create(Control control);
 
 			/// <summary>
 			/// Gets or sets the name of the document to show in the printer queue

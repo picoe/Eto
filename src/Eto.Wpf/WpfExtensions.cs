@@ -316,6 +316,30 @@ namespace Eto.Wpf
 			return new sw.Size(Math.Max(0, size1.Width - size2.Width), Math.Max(0, size1.Height - size2.Height));
 		}
 
+		public static sw.Point Add(this sw.Point point, sw.Point point2)
+		{
+			return new sw.Point(point.X + point2.X, point.Y + point2.Y);
+		}
+		
+		public static sw.Point Add(this sw.Point point, sw.Size size2)
+		{
+			return new sw.Point(point.X + size2.Width, point.Y + size2.Height);
+		}
+
+		public static sw.Point Subtract(this sw.Point point, sw.Point point2)
+		{
+			return new sw.Point(point.X - point2.X, point.Y - point2.Y);
+		}
+		public static sw.Point Subtract(this sw.Point point, sw.Size size2)
+		{
+			return new sw.Point(point.X - size2.Width, point.Y - size2.Height);
+		}
+
+		public static sw.Point Divide(this sw.Point point, double factor)
+		{
+			return new sw.Point(point.X / factor, point.Y / factor);
+		}
+
 		public static void AddKeyBindings(this swi.InputBindingCollection bindings, swc.ItemCollection items)
 		{
 			foreach (var item in items.OfType<sw.UIElement>())

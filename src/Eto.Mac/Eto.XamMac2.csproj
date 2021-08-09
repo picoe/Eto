@@ -8,6 +8,7 @@
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>build\*</DefaultItemExcludes>
+    <NoWarn>CA1416</NoWarn>
   </PropertyGroup>
   
   <PropertyGroup>

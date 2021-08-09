@@ -260,7 +260,7 @@ namespace Eto.Wpf.Forms
 			// ideally, this should be removed, but may require overriding ArrangeOverride on all controls as well.
 			// see the ControlTests.ControlsShouldHaveSaneDefaultWidths unit test for repro of the issue.
 			var defaultSize = DefaultSize.ZeroIfNan();
-			if (XScale && Control.IsLoaded)
+			if (XScale && Widget.Loaded)
 			{
 				ContainerControl.Width = double.NaN;
 				ContainerControl.MinWidth = 0;
@@ -276,7 +276,7 @@ namespace Eto.Wpf.Forms
 				ContainerControl.MinWidth = Math.Max(0, double.IsNaN(UserPreferredSize.Width) ? defaultSize.Width : UserPreferredSize.Width);
 			}
 
-			if (YScale && Control.IsLoaded)
+			if (YScale && Widget.Loaded)
 			{
 				ContainerControl.Height = double.NaN;
 				ContainerControl.MinHeight = 0;
@@ -302,14 +302,14 @@ namespace Eto.Wpf.Forms
 		public SizeF GetPreferredSize(SizeF availableSize)
 		{
 			var size = availableSize.ToWpf();
-			if (ContainerControl.Parent == null && !(ContainerControl is swc.Panel))
+			if (ContainerControl.Parent == null && !(ContainerControl is swc.Panel) && !(ContainerControl is swc.Border))
 			{
 				// what the?!? some controls don't measure correctly when not in a container..
-				var p = new swc.DockPanel();
-				p.Children.Add(ContainerControl);
+				var p = new swc.Border();
+				p.Child = ContainerControl;
 				p.Measure(size);
 				var result = p.DesiredSize.ToEto();
-				p.Children.Remove(ContainerControl);
+				p.Child = null;
 				return result;
 			}
 			ContainerControl.Measure(size);
@@ -840,7 +840,13 @@ namespace Eto.Wpf.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			if (Widget.IsAttached)
+			{
+				SetDefaultScale();
+			}
 		}
+		
+		protected virtual void SetDefaultScale() => SetScale(true, true);
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
@@ -1021,6 +1027,15 @@ namespace Eto.Wpf.Forms
 		{
 			control = control ?? Control;
 			Widget.Properties.Set(property, PropertyChangeNotifier.Register(property, handler, control));
+		}
+
+		public void Print()
+		{
+			var dlg = new swc.PrintDialog();
+			if (dlg.ShowDialog() == true)
+			{
+				dlg.PrintVisual(ContainerControl, string.Empty);
+			}
 		}
 	}
 }

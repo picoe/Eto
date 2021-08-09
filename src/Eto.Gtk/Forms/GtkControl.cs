@@ -996,5 +996,10 @@ namespace Eto.GtkSharp.Forms
 				Widget.VisualParent?.GetGtkControlHandler()?.InvalidateMeasure();
 			}
 		}
+
+		public void Print()
+		{
+			// ContainerControl.Print
+		}
 	}
 }
