@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", typeof(Cursor))]
-	public class CursorSection : Panel
+	public class CursorSection : Scrollable
 	{
 		class CursorRect
 		{
@@ -67,7 +67,7 @@ namespace Eto.Test.Sections.Behaviors
 			var rect = new Rectangle(0, 0, 100, 50);
 
 			layout.Add("Label");
-			layout.BeginVertical(spacing: new Size(20, 20));
+			layout.BeginVertical(spacing: new Size(5, 5));
 			layout.BeginHorizontal();
 			int count = 0;
 			foreach (var type in GetCursors())
@@ -75,7 +75,7 @@ namespace Eto.Test.Sections.Behaviors
 				var cursor = type.cursor;
 				var text = type.name;
 				drawable.Rects.Add(new CursorRect { Rectangle = rect, Cursor = cursor, Text = text });
-				rect.X += rect.Width + 20;
+				rect.X += rect.Width + 5;
 
 				var label = new Label
 				{ 
@@ -95,7 +95,7 @@ namespace Eto.Test.Sections.Behaviors
 				{
 					count = 0;
 					rect.X = 0;
-					rect.Y += rect.Height + 20;
+					rect.Y += rect.Height + 5;
 					layout.EndBeginHorizontal();
 				}
 			}

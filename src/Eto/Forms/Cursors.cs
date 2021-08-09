@@ -55,65 +55,86 @@ namespace Eto.Forms
 		/// <summary>
 		/// Default cursor, which is usually an arrow but may be different depending on the control
 		/// </summary>
-		public static Cursor Default
-		{
-			get { return GetCursor(CursorType.Default); }
-		}
+		public static Cursor Default => GetCursor(CursorType.Default);
 
 		/// <summary>
 		/// Standard arrow cursor
 		/// </summary>
-		public static Cursor Arrow
-		{
-			get { return GetCursor(CursorType.Arrow); }
-		}
+		public static Cursor Arrow => GetCursor(CursorType.Arrow);
 
 		/// <summary>
 		/// Cursor with a cross hair
 		/// </summary>
-		public static Cursor Crosshair
-		{
-			get { return GetCursor(CursorType.Crosshair); }
-		}
+		public static Cursor Crosshair => GetCursor(CursorType.Crosshair);
 
 		/// <summary>
 		/// Pointer cursor, which is usually a hand
 		/// </summary>
-		public static Cursor Pointer
-		{
-			get { return GetCursor(CursorType.Pointer); }
-		}
+		public static Cursor Pointer => GetCursor(CursorType.Pointer);
 
 		/// <summary>
 		/// All direction move cursor
 		/// </summary>
-		public static Cursor Move
-		{
-			get { return GetCursor(CursorType.Move); }
-		}
+		public static Cursor Move => GetCursor(CursorType.Move);
 
 		/// <summary>
 		/// I-beam cursor for selecting text or placing the text cursor
 		/// </summary>
-		public static Cursor IBeam
-		{
-			get { return GetCursor(CursorType.IBeam); }
-		}
+		public static Cursor IBeam => GetCursor(CursorType.IBeam);
 		
 		/// <summary>
 		/// Vertical sizing cursor
 		/// </summary>
-		public static Cursor VerticalSplit
-		{
-			get { return GetCursor(CursorType.VerticalSplit); }
-		}
+		public static Cursor VerticalSplit => GetCursor(CursorType.VerticalSplit);
 		
 		/// <summary>
 		/// Horizontal sizing cursor
 		/// </summary>
-		public static Cursor HorizontalSplit
-		{
-			get { return GetCursor(CursorType.HorizontalSplit); }
-		}
+		public static Cursor HorizontalSplit => GetCursor(CursorType.HorizontalSplit);
+
+		/// <summary>
+		/// All direction sizing cursor
+		/// </summary>
+		public static Cursor SizeAll => GetCursor(CursorType.SizeAll);
+
+		/// <summary>
+		/// Left side sizing cursor, which on some platforms is the same as <see cref="SizeRight"/>
+		/// </summary>
+		public static Cursor SizeLeft => GetCursor(CursorType.SizeLeft);
+
+		/// <summary>
+		/// Top side sizing cursor, which on some platforms is the same as <see cref="SizeBottom"/>
+		/// </summary>
+		public static Cursor SizeTop => GetCursor(CursorType.SizeTop);
+
+		/// <summary>
+		/// Right side sizing cursor, which on some platforms is the same as <see cref="SizeLeft"/>
+		/// </summary>
+		public static Cursor SizeRight => GetCursor(CursorType.SizeRight);
+
+		/// <summary>
+		/// Bottom side sizing cursor, which on some platforms is the same as <see cref="SizeTop"/>
+		/// </summary>
+		public static Cursor SizeBottom => GetCursor(CursorType.SizeBottom);
+
+		/// <summary>
+		/// Top-left corner sizing cursor, which on some platforms is the same as <see cref="SizeBottomRight"/>
+		/// </summary>
+		public static Cursor SizeTopLeft => GetCursor(CursorType.SizeTopLeft);
+
+		/// <summary>
+		/// Top-right corner sizing cursor, which on some platforms is the same as <see cref="SizeBottomLeft"/>
+		/// </summary>
+		public static Cursor SizeTopRight => GetCursor(CursorType.SizeTopRight);
+
+		/// <summary>
+		/// Bottom-left corner sizing cursor, which on some platforms is the same as <see cref="SizeTopRight"/>
+		/// </summary>
+		public static Cursor SizeBottomLeft => GetCursor(CursorType.SizeBottomLeft);
+
+		/// <summary>
+		/// Bottom-right corner sizing cursor, which on some platforms is the same as <see cref="SizeTopLeft"/>
+		/// </summary>
+		public static Cursor SizeBottomRight => GetCursor(CursorType.SizeBottomRight);
 	}
 }
