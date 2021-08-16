@@ -112,6 +112,7 @@ namespace Eto.Mac.Forms.Cells
 				view = new NSLevelIndicator();
 				view.Identifier = tableColumn.Identifier;
 				view.Cell = new EtoCell { MinValue = 0, MaxValue = 1 };
+				view.Enabled = false;
 				view.Cell.LevelIndicatorStyle = NSLevelIndicatorStyle.ContinuousCapacity;
 			}
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);

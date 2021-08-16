@@ -186,7 +186,7 @@ namespace Eto.Mac.Forms.Cells
 			public override void DrawRect(CGRect dirtyRect)
 			{
 				var nscontext = NSGraphicsContext.CurrentContext;
-				var isFirstResponder = Window.FirstResponder == this;
+				var isFirstResponder = Window?.FirstResponder == this;
 
 				if (DrawsBackground)
 				{

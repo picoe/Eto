@@ -743,6 +743,39 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 		}
+		
+		protected virtual bool HandleMouseEvent(NSEvent theEvent)
+		{
+			var args = MacConversions.GetMouseEvent(this, theEvent, false);
+			if (theEvent.ClickCount >= 2)
+			{
+				Callback.OnMouseDoubleClick(Widget, args);
+				if (args.Handled)
+					return false;
+			}
+			else
+			{
+				Callback.OnMouseDown(Widget, args);
+				if (args.Handled)
+					return true;
+			}
+
+			var point = Control.ConvertPointFromView(theEvent.LocationInWindow, null);
+
+			var rowIndex = (int)Control.GetRow(point);
+			if (rowIndex >= 0)
+			{
+				var columnIndex = (int)Control.GetColumn(point);
+				var item = GetItem(rowIndex);
+				var column = columnIndex == -1 || columnIndex > Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+				var cellArgs = MacConversions.CreateCellMouseEventArgs(column, ContainerControl, rowIndex, columnIndex, item, theEvent);
+				if (theEvent.ClickCount >= 2)
+					Callback.OnCellDoubleClick(Widget, cellArgs);
+				else
+					Callback.OnCellClick(Widget, cellArgs);
+			}
+			return false;
+		}
 	}
 }
 
