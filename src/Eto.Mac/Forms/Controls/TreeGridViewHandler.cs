@@ -604,42 +604,37 @@ namespace Eto.Mac.Forms.Controls
 				return Handler?.DragInfo?.AllowedOperation ?? NSDragOperation.None;
 			}
 
+			public override void RightMouseDown(NSEvent theEvent)
+			{
+				if (Handler?.HandleMouseEvent(theEvent) == true)
+					return;
+				base.RightMouseDown(theEvent);
+				Handler?.TriggerMouseCallback();
+			}
+
+			public override void OtherMouseDown(NSEvent theEvent)
+			{
+				if (Handler?.HandleMouseEvent(theEvent) == true)
+					return;
+				base.OtherMouseDown(theEvent);
+				Handler?.TriggerMouseCallback();
+			}
+
 			public override void MouseDown(NSEvent theEvent)
 			{
-				var handler = Handler;
-				if (handler != null)
+				var h = Handler;
+				if (h == null)
 				{
-					var args = MacConversions.GetMouseEvent(handler, theEvent, false);
-					if (theEvent.ClickCount >= 2)
-						handler.Callback.OnMouseDoubleClick(handler.Widget, args);
-					else
-						handler.Callback.OnMouseDown(handler.Widget, args);
-					if (args.Handled)
-						return;
-
-					var point = ConvertPointFromView(theEvent.LocationInWindow, null);
-					int rowIndex = (int)GetRow(point);
-					if (rowIndex >= 0)
-					{
-						int columnIndex = (int)GetColumn(point);
-						var item = handler.GetItem(rowIndex);
-						var column = columnIndex == -1 || columnIndex > handler.Widget.Columns.Count ? null : handler.Widget.Columns[columnIndex];
-						var cellArgs = MacConversions.CreateCellMouseEventArgs(column, handler.ContainerControl, rowIndex, columnIndex, item, theEvent);
-						if (theEvent.ClickCount >= 2)
-							handler.Callback.OnCellDoubleClick(handler.Widget, cellArgs);
-						else
-							handler.Callback.OnCellClick(handler.Widget, cellArgs);
-					}
-					handler.IsMouseDragging = true;
 					base.MouseDown(theEvent);
-					handler.IsMouseDragging = false;
-
-					// NSOutlineView uses an event loop and MouseUp() does not get called
-					handler.TriggerMouseCallback();
-
 					return;
 				}
+				if (h.HandleMouseEvent(theEvent) == true)
+					return;
+
+				h.IsMouseDragging = true;
 				base.MouseDown(theEvent);
+				h.IsMouseDragging = false;
+				h.TriggerMouseCallback();
 			}
 
 			public EtoOutlineView(TreeGridViewHandler handler)
