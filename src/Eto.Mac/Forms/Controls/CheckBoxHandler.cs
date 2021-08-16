@@ -61,12 +61,18 @@ namespace Eto.Mac.Forms.Controls
 
 		nfloat GetButtonOffset(CGRect rect)
 		{
+			var titleSize = AttributedTitle.Size;
 			// big sur and later calculate the position a wee differently..
 			if (MacVersion.IsAtLeast(10, 16))
-				return (nfloat)Math.Ceiling((rect.Height - AttributedTitle.Size.Height) / 2);
+			{
+				if (AttributedTitle.Length > 0)
+					return (nfloat)Math.Ceiling((rect.Height - titleSize.Height) / 2);
+				else
+					return 0;
+			}
 
 			// catalina and older
-			return (nfloat)Math.Max(0, Math.Ceiling((AttributedTitle.Size.Height - defaultHeight) / 2 - 1)) + Offset;
+			return (nfloat)Math.Max(0, Math.Ceiling((titleSize.Height - defaultHeight) / 2 - 1)) + Offset;
 		}
 		
 
