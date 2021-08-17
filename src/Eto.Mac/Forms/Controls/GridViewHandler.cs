@@ -126,7 +126,12 @@ namespace Eto.Mac.Forms.Controls
 				if (!MacView.NewLayout)
 					base.Layout();
 			}
-
+			
+			public override bool ValidateProposedFirstResponder(NSResponder responder, NSEvent forEvent)
+			{
+				var valid = base.ValidateProposedFirstResponder(responder, forEvent);
+				return Handler?.ValidateProposedFirstResponder(responder, forEvent, valid) ?? valid;
+			}
 
 #if XAMMAC2
 			public override NSImage DragImageForRowsWithIndexestableColumnseventoffset(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)

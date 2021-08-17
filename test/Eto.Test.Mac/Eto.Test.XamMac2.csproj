@@ -9,7 +9,7 @@
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
-    <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:5220</MonoBundlingExtraArgs>
+    <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
   </PropertyGroup>
   
   <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">
