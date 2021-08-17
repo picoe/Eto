@@ -776,6 +776,29 @@ namespace Eto.Mac.Forms.Controls
 			}
 			return false;
 		}
+		
+		protected virtual bool ValidateProposedFirstResponder(NSResponder responder, NSEvent forEvent, bool valid)
+		{
+			if (valid || responder == null || forEvent == null)
+				return valid;
+				
+			if (responder is NSView view)
+			{
+				// forward events for controls in custom cells, as long as it can't be a first responder, like a text box.
+				var parentView = view;
+				while (parentView != null && !(parentView is NSTableRowView))
+				{
+					if (parentView is CustomCellHandler.EtoCustomCellView)
+					{
+						return !view.AcceptsFirstResponder();
+					}
+					parentView = parentView.Superview;
+				};
+			}
+			
+			return false;
+		}
+		
 	}
 }
 

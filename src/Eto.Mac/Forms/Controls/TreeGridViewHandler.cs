@@ -657,6 +657,12 @@ namespace Eto.Mac.Forms.Controls
 				Handler?.PerformLayout();
 				base.Layout();
 			}
+			
+			public override bool ValidateProposedFirstResponder(NSResponder responder, NSEvent forEvent)
+			{
+				var valid = base.ValidateProposedFirstResponder(responder, forEvent);
+				return Handler?.ValidateProposedFirstResponder(responder, forEvent, valid) ?? valid;
+			}
 		}
 
 		public override object EventObject
