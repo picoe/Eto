@@ -45,7 +45,7 @@ namespace Eto.Mac.Forms.Controls
 			size -= SplitterWidth;
 			if (fixedPanel == SplitterFixedPanel.Panel2)
 				return size - pos;
-			return pos / (double)size;
+			return Math.Max(0, Math.Min(1, pos / (double)size));
 		}
 
 		public double RelativePosition
@@ -84,7 +84,10 @@ namespace Eto.Mac.Forms.Controls
 				if (fixedPanel == SplitterFixedPanel.Panel2)
 					position = (int)Math.Round(size - relative);
 				else
+				{
+					relative = Math.Max(0, Math.Min(1, relative));
 					position = (int)Math.Round(size * relative);
+				}
 			}
 			relative = double.NaN;
 		}
@@ -579,7 +582,9 @@ namespace Eto.Mac.Forms.Controls
 						case SplitterFixedPanel.None:
 							// ensure it's in range.
 							relative = Math.Max(0, Math.Min(1, relative));
-							if (relative > 0)
+							if (relative >= 1)
+								size2.Height = 0;
+							else if (relative > 0)
 							{
 								size1.Width = (float)Math.Round(Math.Max(size1.Width/relative, size2.Width/(1-relative)));
 								size2.Width = 0;
@@ -624,7 +629,9 @@ namespace Eto.Mac.Forms.Controls
 						case SplitterFixedPanel.None:
 							// ensure it's in range.
 							relative = Math.Max(0, Math.Min(1, relative));
-							if (relative > 0)
+							if (relative >= 1)
+								size2.Height = 0;
+							else if (relative > 0)
 							{
 								size1.Height = (float)Math.Round(Math.Max(size1.Height/relative, size2.Height/(1-relative)));
 								size2.Height = 0;
