@@ -89,7 +89,7 @@ namespace Eto.Mac.Forms.Controls
 				var stepperSize = stepper.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, stepper.FittingSize)).Size;
 				stepperSize.Height = (nfloat)Math.Min(newSize.Height, stepperSize.Height);
 
-				var stepperFrame = new CGRect(); 
+				var stepperFrame = new CGRect();
 				stepperFrame.Size = stepperSize;
 				stepperFrame.X = newSize.Width - stepperFrame.Width;
 				stepperFrame.Y = (nfloat)Math.Truncate((newSize.Height - stepperSize.Height) / 2);
@@ -123,8 +123,9 @@ namespace Eto.Mac.Forms.Controls
 
 				Stepper = new EtoStepper();
 				Stepper.Activated += HandleStepperActivated;
-				Stepper.MinValue = double.NegativeInfinity;
-				Stepper.MaxValue = double.PositiveInfinity;
+				Stepper.MinValue = double.MinValue;
+				Stepper.MaxValue = double.MaxValue;
+				Stepper.ValueWraps = false;
 				TextField.DoubleValue = Stepper.DoubleValue = 0;
 
 				AddSubview(TextField);
@@ -141,7 +142,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public override object EventObject => Control.TextField;
-		
+
 		protected override IColorizeCell ColorizeCell => Control.TextField.Cell as IColorizeCell;
 
 		public static NSNumberFormatter DefaultFormatter = new NSNumberFormatter
@@ -155,22 +156,33 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override EtoNumericStepperView CreateControl() => new EtoNumericStepperView(this);
 
+		static double GetPreciseValue(double value)
+		{
+			// prevent spinner from accumulating an inprecise value, which would eventually 
+			// show values like 1.0000000000001 or 1.999999999998
+
+			// note: some versions of mono can crash roundtripping via ToString() with MaxValue, so use TryParse
+			var str = value.ToString("G15");
+			if (double.TryParse(str, out var val))
+				return val;
+			else
+				return value;
+		}
+
 		static void HandleStepperActivated(object sender, EventArgs e)
 		{
 			var handler = GetHandler(((NSView)sender).Superview) as NumericStepperHandler;
 			if (handler != null)
 			{
-				// prevent spinner from accumulating an inprecise value, which would eventually 
-				// show values like 1.0000000000001 or 1.999999999998
-				handler.Stepper.DoubleValue = double.Parse(handler.Stepper.DoubleValue.ToString());
-				var val = handler.Stepper.DoubleValue;
+				var val = GetPreciseValue(handler.Stepper.DoubleValue);
+
 				if (Math.Abs(val) < 1E-10)
 				{
 					handler.TextField.IntValue = 0;
 				}
 				else
 				{
-					handler.TextField.DoubleValue = handler.Stepper.DoubleValue;
+					handler.TextField.DoubleValue = val;
 				}
 				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 			}
@@ -265,20 +277,28 @@ namespace Eto.Mac.Forms.Controls
 			if (e.KeyData == Keys.Down)
 			{
 				var val = Value;
-				var newval = Math.Max(val - Increment, MinValue);
-				if (newval < val)
+				var newval = val - Increment;
+				if (Wrap && newval < MinValue)
+					Value = MaxValue;
+				else
 				{
-					Value = newval;
+					newval = Math.Max(GetPreciseValue(newval), MinValue);
+					if (newval < val)
+						Value = newval;
 				}
 				e.Handled = true;
 			}
 			else if (e.KeyData == Keys.Up)
 			{
 				var val = Value;
-				var newval = Math.Min(val + Increment, MaxValue);
-				if (newval > val)
+				var newval = val + Increment;
+				if (Wrap && newval > MaxValue)
+					Value = MinValue;
+				else
 				{
-					Value = newval;
+					newval = Math.Min(GetPreciseValue(newval), MaxValue);
+					if (newval > val)
+						Value = newval;
 				}
 				e.Handled = true;
 			}
@@ -615,6 +635,11 @@ namespace Eto.Mac.Forms.Controls
 				});
 			}
 		}
-		
+
+		public bool Wrap
+		{
+			get => Stepper.ValueWraps;
+			set => Stepper.ValueWraps = value;
+		}
 	}
 }
