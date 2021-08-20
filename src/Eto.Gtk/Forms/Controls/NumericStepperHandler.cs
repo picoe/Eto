@@ -117,7 +117,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return !Control.IsEditable; }
 			set
 			{
-				Control.IsEditable = !value; 
+				Control.IsEditable = !value;
 				SetIncrement();
 			}
 		}
@@ -130,20 +130,20 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public double MaxValue
 		{
-			get { return Control.Adjustment.Upper == double.MaxValue ? double.PositiveInfinity : Control.Adjustment.Upper; }
+			get => Control.Adjustment.Upper;
 			set
-			{ 
-				Control.Adjustment.Upper = double.IsPositiveInfinity(value) ? double.MaxValue : value; 
+			{
+				Control.Adjustment.Upper = double.IsPositiveInfinity(value) ? double.MaxValue : value;
 				Value = Value;
 			}
 		}
 
 		public double MinValue
 		{
-			get { return Control.Adjustment.Lower == double.MinValue ? double.NegativeInfinity : Control.Adjustment.Lower; }
+			get => Control.Adjustment.Lower;
 			set
 			{
-				Control.Adjustment.Lower = double.IsNegativeInfinity(value) ? double.MinValue : value; 
+				Control.Adjustment.Lower = double.IsNegativeInfinity(value) ? double.MinValue : value;
 				Value = Value;
 			}
 		}
@@ -170,7 +170,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Widget.Properties.Get<int>(DecimalPlaces_Key); }
 			set
-			{ 
+			{
 				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
 				{
 					MaximumDecimalPlaces = Math.Max(value, MaximumDecimalPlaces);
@@ -224,7 +224,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					DecimalPlaces = Math.Min(value, DecimalPlaces);
 					UpdateRequiredDigits();
-				}); 
+				});
 			}
 		}
 
@@ -255,12 +255,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public string FormatString
 		{
-			get { return Widget.Properties.Get<string>(FormatString_Key); }
-			set {
+			get => Widget.Properties.Get<string>(FormatString_Key);
+			set
+			{
 				// ensure format is valid first, GTK crashes if the formating throws in the Output event, even if caught while setting this
 				if (!string.IsNullOrEmpty(value))
 					0.0.ToString(value);
-				Widget.Properties.Set(FormatString_Key, value, UpdateFormat);
+				if (Widget.Properties.TrySet(FormatString_Key, value))
+					UpdateFormat();
 			}
 		}
 
@@ -268,7 +270,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			_formatString = null;
 			// GTK doesn't remember the value if the format changes as it tries to parse the old text with the new format
-			Control.Value = Control.Value; 
+			Control.Value = Control.Value;
 
 			// update to the new text
 			Control.Update();
@@ -278,8 +280,18 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public CultureInfo CultureInfo
 		{
-			get { return Widget.Properties.Get(CultureInfo_Key, CultureInfo.CurrentCulture); }
-			set { Widget.Properties.Set(CultureInfo_Key, value, UpdateFormat, CultureInfo.CurrentCulture); }
+			get => Widget.Properties.Get(CultureInfo_Key, CultureInfo.CurrentCulture);
+			set
+			{
+				if (Widget.Properties.TrySet(CultureInfo_Key, value, CultureInfo.CurrentCulture))
+					UpdateFormat();
+			}
+		}
+
+		public bool Wrap
+		{
+			get => Control.Wrap;
+			set => Control.Wrap = value;
 		}
 	}
 }

@@ -207,6 +207,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// A value indicating whether to wrap the value after the user steps past the min or max value
+		/// </summary>
+		/// <value><c>true</c> to wrap the value when stepping past its bounds, <c>false</c> to stop</value>
+		public bool Wrap
+		{
+			get => Handler.Wrap;
+			set => Handler.Wrap = value;
+		}
+
+		/// <summary>
 		/// Gets the binding for the <see cref="Value"/> property.
 		/// </summary>
 		/// <value>The value binding.</value>
@@ -215,10 +225,10 @@ namespace Eto.Forms
 			get
 			{
 				return new BindableBinding<NumericStepper, double>(
-					this, 
-					c => c.Value, 
-					(c, v) => c.Value = v, 
-					(c, h) => c.ValueChanged += h, 
+					this,
+					c => c.Value,
+					(c, v) => c.Value = v,
+					(c, h) => c.ValueChanged += h,
 					(c, h) => c.ValueChanged -= h
 				)
 				{
@@ -366,6 +376,12 @@ namespace Eto.Forms
 			/// for the thousands separator, decimal separator, and currency symbol.
 			/// </remarks>
 			CultureInfo CultureInfo { get; set; }
+			
+			/// <summary>
+			/// A value indicating whether to wrap the value after the user steps past the min or max value
+			/// </summary>
+			/// <value><c>true</c> to wrap the value when stepping past its bounds, <c>false</c> to stop</value>
+			bool Wrap { get; set; }
 		}
 	}
 }

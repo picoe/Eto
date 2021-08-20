@@ -29,7 +29,7 @@ namespace Eto.Test.Sections.Controls
 			var chkMinValue = new CheckBox { Text = "MinValue" };
 			chkMinValue.CheckedBinding.Convert(r => r == true ? DualBindingMode.OneWayToSource : DualBindingMode.Manual).Bind(minBinding, m => m.Mode);
 			chkMinValue.CheckedBinding.Bind(minValue, m => m.Enabled);
-			chkMinValue.CheckedBinding.Convert(r => r == false ? double.NegativeInfinity : minValue.Value).Bind(numeric, m => m.MinValue);
+			chkMinValue.CheckedBinding.Convert(r => r == false ? double.MinValue : minValue.Value).Bind(numeric, m => m.MinValue);
 
 			var maxValue = new NumericStepper { Enabled = false, Value = 1000 };
 			var maxBinding = maxValue.ValueBinding.Bind(numeric, (n) => n.MaxValue, DualBindingMode.Manual);
@@ -37,7 +37,7 @@ namespace Eto.Test.Sections.Controls
 			var chkMaxValue = new CheckBox { Text = "MaxValue" };
 			chkMaxValue.CheckedBinding.Convert(r => r == true ? DualBindingMode.OneWayToSource : DualBindingMode.Manual).Bind(maxBinding, m => m.Mode);
 			chkMaxValue.CheckedBinding.Bind(maxValue, m => m.Enabled);
-			chkMaxValue.CheckedBinding.Convert(r => r == false ? double.PositiveInfinity : maxValue.Value).Bind(numeric, m => m.MaxValue);
+			chkMaxValue.CheckedBinding.Convert(r => r == false ? double.MaxValue : maxValue.Value).Bind(numeric, m => m.MaxValue);
 
 			var decimalPlaces = new NumericStepper { MaxValue = 15, MinValue = 0 };
 			var decimalBinding = decimalPlaces.ValueBinding.Convert(r => (int)r, r => r).Bind(numeric, n => n.DecimalPlaces);
@@ -59,10 +59,14 @@ namespace Eto.Test.Sections.Controls
 
 			var cultureDropDown = new CultureDropDown();
 			cultureDropDown.SelectedValueBinding.Bind(numeric, c => c.CultureInfo);
+			
+			var wrap = new CheckBox { Text = "Wrap" };
+			wrap.CheckedBinding.Bind(numeric, n => n.Wrap);
+			
 
 			var increment = new NumericStepper { MaximumDecimalPlaces = 15 };
 			increment.ValueBinding.Bind(numeric, n => n.Increment);
-
+			
 			var options1 = new StackLayout
 			{
 				Spacing = 5,
@@ -71,7 +75,8 @@ namespace Eto.Test.Sections.Controls
 				Items =
 				{
 					enabled,
-					readOnly
+					readOnly,
+					wrap
 				}
 			};
 			var options2 = new StackLayout
