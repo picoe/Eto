@@ -260,6 +260,12 @@ namespace Eto.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
+			if (Control.Template)
+			{
+				DrawTemplateImage(graphics, source, destination);
+				return;
+			}
+			
 			var sourceRect = new CGRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
 			var destRect = destination.ToNS();
 			if (alpha)

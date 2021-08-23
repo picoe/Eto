@@ -121,6 +121,21 @@ namespace Eto.Mac.Forms
 				view.SetFrameOrigin(new CGPoint((nfloat)(superFrame.Width - size.Width) / 2, (nfloat)(superFrame.Height - size.Height) / 2));
 			}
 		}
+		
+		public static bool HasDarkTheme(this NSView view)
+		{
+			if (!MacVersion.IsAtLeast(10, 14))
+				return false;
+				
+			var appearance = view?.EffectiveAppearance ?? NSAppearance.CurrentAppearance;
+			
+			var name = appearance.Name;
+			
+			if (name == NSAppearance.NameDarkAqua || name == NSAppearance.NameAccessibilityHighContrastDarkAqua)
+				return true;
+				
+			return false;
+		}
 	}
 }
 
