@@ -92,6 +92,8 @@ namespace Eto.iOS.Drawing
 		public NSView DisplayView { get; private set; }
 
 		static readonly object PixelOffsetMode_Key = new object();
+		
+		public NSGraphicsContext GraphicsContext => graphicsContext;
 
 		public PixelOffsetMode PixelOffsetMode
 		{
