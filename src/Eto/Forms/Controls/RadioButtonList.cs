@@ -202,7 +202,7 @@ namespace Eto.Forms
 			set
 			{
 				EnsureButtons();
-				SetSelected(buttons[value]);
+				SetSelected(value >= 0 && value < buttons.Count ? buttons[value] : null);
 			}
 		}
 
