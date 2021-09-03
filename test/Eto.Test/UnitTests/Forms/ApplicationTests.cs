@@ -26,9 +26,13 @@ namespace Eto.Test.UnitTests.Forms
 			});
 		}
 
-		[Test]
-		public void RunIterationShouldAllowBlocking()
+		[TestCase(-1)]
+		[TestCase(10)]
+		[TestCase(1000)]
+		public void RunIterationShouldAllowBlocking(int delay)
 		{
+			int count = 0;
+			Label countLabel = null;
 			Form form = null;
 			bool running = true;
 			bool stopClicked = false;
@@ -43,16 +47,27 @@ namespace Eto.Test.UnitTests.Forms
 					running = false;
 					stopClicked = true;
 				};
+				
+				countLabel = new Label();
+				
+				var spinner = new Spinner { Enabled = false };
+				
+				var enableSpinnerCheck = new CheckBox { Text = "Enable spinner" };
+				enableSpinnerCheck.CheckedChanged += (sender, e) => {
+					spinner.Enabled = enableSpinnerCheck.Checked == true;
+				};
 
 				var layout = new DynamicLayout();
 
 				layout.Padding = 10;
 				layout.DefaultSpacing = new Size(4, 4);
-				layout.Add(new Label { Text = "The controls in this form should\nbe functional while test is running", TextAlignment = TextAlignment.Center });
+				layout.Add(new Label { Text = "The controls in this form should\nbe functional while test is running,\nand count should increase without moving the mouse.", TextAlignment = TextAlignment.Center });
 				layout.Add(new DropDown { DataStore = new[] { "Item 1", "Item 2", "Item 3" } });
 				layout.Add(new TextBox());
 				layout.Add(new DateTimePicker());
-				layout.AddCentered(new Spinner { Enabled = true });
+				layout.AddCentered(enableSpinnerCheck);
+				layout.AddCentered(spinner);
+				layout.AddCentered(countLabel);
 				layout.AddCentered(stopButton);
 
 				form.Content = layout;
@@ -65,6 +80,9 @@ namespace Eto.Test.UnitTests.Forms
 				do
 				{
 					Application.Instance.RunIteration();
+					if (delay > 0)
+						System.Threading.Thread.Sleep(delay);
+					countLabel.Text = $"Iteration Count: {count++}";
 				} while (running);
 				form.Close();
 			});
