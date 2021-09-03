@@ -773,6 +773,8 @@ namespace Eto.Mac.Forms.Controls
 					Callback.OnCellDoubleClick(Widget, cellArgs);
 				else
 					Callback.OnCellClick(Widget, cellArgs);
+				
+				return cellArgs.Handled;
 			}
 			return false;
 		}

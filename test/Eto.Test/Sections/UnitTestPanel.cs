@@ -1158,8 +1158,8 @@ namespace Eto.Test.Sections
 					ImageBinding = Binding.Property((UnitTestItem m) => m.Image)
 				}
 			});
-
-			tree.Activated += (sender, e) =>
+			
+			void RunSelectedTest()
 			{
 				if (runner.IsRunning)
 					return;
@@ -1171,6 +1171,21 @@ namespace Eto.Test.Sections
 					{
 						RunTests(filter);
 					}
+				}
+			}
+
+			tree.CellDoubleClick += (sender, e) =>
+			{
+				RunSelectedTest();
+				e.Handled = true;
+			};
+			
+			tree.KeyDown += (sender, e) =>
+			{
+				if (e.KeyData == Keys.Enter)
+				{
+					RunSelectedTest();
+					e.Handled = true;
 				}
 			};
 
