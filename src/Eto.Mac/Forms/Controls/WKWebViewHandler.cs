@@ -379,12 +379,12 @@ namespace Eto.Mac.Forms.Controls
 			if (!BrowserContextMenuEnabled)
 			{
 				// no way to do this through code.. 
-				ExecuteScript("document.body.setAttribute('oncontextmenu', 'event.preventDefault();');");
+				var task = ExecuteScriptAsync("document.body.setAttribute('oncontextmenu', 'event.preventDefault();');");
 			}
 			if (EnablePrintRouting)
 			{
 				// no way to do this through code.. 
-				ExecuteScript(@"window.print = function () { window.location = 'eto:print'; };");
+				var task = ExecuteScriptAsync(@"window.print = function () { window.location = 'eto:print'; };");
 			}
 
 		}
