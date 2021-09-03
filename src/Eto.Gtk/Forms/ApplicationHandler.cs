@@ -54,7 +54,9 @@ namespace Eto.GtkSharp.Forms
 
 		public void RunIteration()
 		{
-			Gtk.Application.RunIteration();
+			var start = DateTime.Now;
+		    while (Gtk.Application.EventsPending() && (DateTime.Now - start).TotalMilliseconds < 100)
+				Gtk.Application.RunIteration();
 		}
 
 		public void Restart()

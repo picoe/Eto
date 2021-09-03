@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Eto.Mac.Drawing;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 #if XAMMAC2
 using AppKit;
@@ -165,7 +166,7 @@ namespace Eto.Mac.Forms
 			else
 				DispatchQueue.MainQueue.DispatchSync(action);
 		}
-
+		
 		public void AsyncInvoke(Action action)
 		{
 			DispatchQueue.MainQueue.DispatchAsync(action);
@@ -178,19 +179,33 @@ namespace Eto.Mac.Forms
 			// Either just use events or your own delegate: Eto.Mac.AppDelegate
 			var oldDelegate = Control.Delegate;
 			Control.Delegate = null;
-			NSApplication.SharedApplication.WillTerminate += restart_WillTerminate;
-			NSApplication.SharedApplication.Terminate(AppDelegate);
+			Control.WillTerminate += restart_WillTerminate;
+			Control.Terminate(AppDelegate);
 
 			// only get here if cancelled, remove event to restart
-			NSApplication.SharedApplication.WillTerminate -= restart_WillTerminate;
+			Control.WillTerminate -= restart_WillTerminate;
 			Control.Delegate = oldDelegate;
 		}
 
+		static readonly IntPtr selNextEventMatchingMaskUntilDateInModeDequeue_Handle = Selector.GetHandle ("nextEventMatchingMask:untilDate:inMode:dequeue:");
+		static readonly IntPtr selSendEvent_Handle = Selector.GetHandle ("sendEvent:");
+		
 		public void RunIteration()
 		{
-			var evt = NSApplication.SharedApplication.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoop.NSDefaultRunLoopMode, true);
-			// need to actually send the event
-			NSApplication.SharedApplication.SendEvent(evt);
+			// drain the event queue only for a short period of time so it doesn't lock up
+			var date = NSDate.FromTimeIntervalSinceNow(0.001);
+			for (;;)
+			{
+				// dequeue the event
+				var evt = Control.NextEvent(NSEventMask.AnyEvent, date, NSRunLoopMode.Default, true);
+				
+				// no event? cool, let's get out of here
+				if (evt == null)
+					break;
+				
+				// dispatch the event
+				Control.SendEvent(evt);
+			}
 		}
 
 		public void Attach(object context)
@@ -236,7 +251,7 @@ namespace Eto.Mac.Forms
 
 		public void Quit()
 		{
-			NSApplication.SharedApplication.Terminate((NSObject)AppDelegate ?? NSApplication.SharedApplication);
+			Control.Terminate((NSObject)AppDelegate ?? Control);
 		}
 
 		public bool QuitIsSupported { get { return true; } }
@@ -335,20 +350,8 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public Keys CommonModifier
-		{
-			get
-			{
-				return Keys.Application;
-			}
-		}
+		public Keys CommonModifier => Keys.Application;
 
-		public Keys AlternateModifier
-		{
-			get
-			{
-				return Keys.Alt;
-			}
-		}
+		public Keys AlternateModifier => Keys.Alt;
 	}
 }
