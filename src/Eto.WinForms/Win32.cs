@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Text;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto
 {
@@ -175,7 +177,7 @@ namespace Eto
 			NCCREATE = 0x0081,
 			NCLBUTTONDOWN = 0x00A1
 		}
-
+		
 		public enum HT
 		{
 			CAPTION = 0x2
@@ -435,10 +437,46 @@ namespace Eto
 
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-		private static extern IntPtr GetForegroundWindow();
+		public static extern IntPtr GetForegroundWindow();
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
 
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool GetGUIThreadInfo(uint idThread, ref GUITHREADINFO lpgui);
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct GUITHREADINFO
+		{
+			public int cbSize;
+			public uint flags;
+			public IntPtr hwndActive;
+			public IntPtr hwndFocus;
+			public IntPtr hwndCapture;
+			public IntPtr hwndMenuOwner;
+			public IntPtr hwndMoveSize;
+			public IntPtr hwndCaret;
+			public RECT rcCaret;
+		}
+		
+		[DllImport("kernel32.dll")]
+		static extern uint GetCurrentThreadId();
+		
+		public static bool GetInfo(out GUITHREADINFO lpgui, uint? threadId = null)
+		{
+			lpgui = new GUITHREADINFO();
+			lpgui.cbSize = Marshal.SizeOf(lpgui);
+
+			return GetGUIThreadInfo(threadId ?? GetCurrentThreadId(), ref lpgui);
+		}
+		
+		public static IntPtr GetThreadFocusWindow(uint? threadId = null)
+		{
+			if (!GetInfo(out var info, threadId))
+				return IntPtr.Zero;
+				
+			return info.hwndFocus;
+		}
 	}
 }

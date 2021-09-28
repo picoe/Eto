@@ -1,10 +1,16 @@
 using System;
+using System.Windows;
+using System.Windows.Interop;
 using Eto.Forms;
 
 namespace Eto.Wpf.Forms
 {
 	public class FloatingFormHandler : FormHandler, FloatingForm.IHandler
 	{
+		static readonly object Visible_Key = new object();
+		
+		bool _wasActive;
+
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -31,19 +37,40 @@ namespace Eto.Wpf.Forms
 
 		private void Application_IsActiveChanged(object sender, EventArgs e)
 		{
-			base.Visible = ApplicationHandler.Instance.IsActive && _visible;
+			SetVisibility();
 		}
-
-		bool _visible = true;
-
+		
 		public override bool Visible
 		{
-			get => _visible;
+			get => Widget.Properties.Get<bool>(Visible_Key, true);
 			set
 			{
-				_visible = value;
-				if (ApplicationHandler.Instance.IsActive)
-					base.Visible = value;
+				if (Widget.Properties.TrySet(Visible_Key, value, true))
+					SetVisibility();
+			}
+		}
+		
+		void SetVisibility()
+		{
+			var currentlyVisible = base.Visible;
+			var isVisible = ApplicationHandler.Instance.IsActive && Visible;
+			if (isVisible == currentlyVisible)
+				return;
+				
+			if (!isVisible)
+			{
+				if (currentlyVisible)
+				{
+					_wasActive = Win32.GetThreadFocusWindow() == NativeHandle;
+				}
+				base.Visible = isVisible;
+			}
+			else
+			{
+				var oldShowActivated = Control.ShowActivated;
+				Control.ShowActivated = _wasActive;
+				base.Visible = isVisible;
+				Control.ShowActivated = oldShowActivated;
 			}
 		}
 	}
