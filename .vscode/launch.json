@@ -25,6 +25,16 @@
         },
 		{
             "name": "Eto.Test.XamMac2",
+            "type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-xammac2",
+			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-macos/osx-x64/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+		{
+            "name": "Eto.Test.XamMac2 - mono",
             "type": "mono",
 			"request": "launch",
 			"preLaunchTask": "build-xammac2",

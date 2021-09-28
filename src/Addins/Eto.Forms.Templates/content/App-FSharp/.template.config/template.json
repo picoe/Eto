@@ -76,6 +76,10 @@
 			"replaces": "net5.0",
 			"choices": [
 				{
+					"choice": "net6.0",
+					"description": ".NET 6.0"
+				},
+				{
 					"choice": "net5.0",
 					"description": ".NET 5.0"
 				},

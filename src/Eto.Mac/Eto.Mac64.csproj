@@ -12,7 +12,7 @@
   <PropertyGroup>
     <PackageId>Eto.Platform.Mac64</PackageId>
     <Title>Eto.Forms - MonoMac 64-bit Platform</Title>
-    <Description>OS X Platform for the Eto.Forms UI Framework using the open-source MonoMac with 64-bit mono</Description>
+    <Description>OS X Platform for the Eto.Forms UI Framework using the open-source MonoMac</Description>
     <PackageTags>cross platform gui ui framework desktop monomac osx mac eto.forms</PackageTags>
     <PackageDescription>
 This is the 64-bit MonoMac platform for Eto.Forms UI Framework.

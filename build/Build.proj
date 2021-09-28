@@ -190,7 +190,7 @@
 
     <!-- <RemoveDir Directories="$(NugetPackagesPath)"/> -->
 
-    <Exec Command='dotnet new nuget -o $(ArtifactsDir) &amp;&amp; dotnet nuget add source "./nuget/$(Configuration)" --name eto-local --configfile "$(NugetConfigPath)"'
+    <Exec Command='dotnet new nugetconfig -o $(ArtifactsDir) &amp;&amp; dotnet nuget add source "./nuget/$(Configuration)" --name eto-local --configfile "$(NugetConfigPath)"'
           Condition="!Exists('$(NugetConfigPath)')" />
   </Target>
   
@@ -200,6 +200,7 @@
     <RemoveDir Directories="$(ArtifactsDir)templates"/>
 
     <!-- install the current version of the templates -->
+    <Exec Command="dotnet new -u Eto.Forms.Templates" />
     <Exec Command="dotnet new -i $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
   
     <!-- generate project templates -->
@@ -216,6 +217,7 @@
       <Combined Include="combined" Value="-c" />
       <Combined Include="separate" Value="" />
 
+      <Framework Include="net60" Value="net6.0" Condition="$([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0'))" />
       <Framework Include="net50" Value="net5.0" />
       <Framework Include="net48" Value="net48" />
 
