@@ -89,5 +89,23 @@ namespace Eto.Test.UnitTests.Forms
 			
 			Assert.IsTrue(stopClicked, "#1 - Must press the stop button to close the form");
 		}
+		
+		[Test]
+		public void EnsureUIThreadShouldThrow()
+		{
+			Form form = null;
+			TextBox textBox = null;
+			var oldMode = Application.Instance.UIThreadCheckMode;
+			Application.Instance.UIThreadCheckMode = UIThreadCheckMode.Error;
+			Invoke(() => {
+				textBox = new TextBox();
+				form = new Form();
+			});
+			
+			Assert.Throws<UIThreadAccessException>(() => textBox.Text = "hello", "#1");
+			Assert.Throws<UIThreadAccessException>(() => form.Bounds = new Rectangle(0, 0, 100, 100), "#2");
+			
+			Application.Instance.UIThreadCheckMode = oldMode;
+		}
 	}
 }
