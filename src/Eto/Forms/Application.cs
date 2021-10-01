@@ -2,10 +2,65 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// UI Thread check mode when <see cref="Application.EnsureUIThread"/> is called.
+	/// </summary>
+	public enum UIThreadCheckMode
+	{
+		/// <summary>
+		/// Do no checking
+		/// </summary>
+		None,
+		/// <summary>
+		/// Emit a warning with Trace.WriteLine()
+		/// </summary>
+		Warning,
+		/// <summary>
+		/// Throw an exception
+		/// </summary>
+		Error
+	}
+
+	/// <summary>
+	/// Exception thrown when a control method is accessed in a non-UI thread using <see cref="Application.EnsureUIThread"/>.
+	/// </summary>
+#if NETSTANDARD2_0_OR_GREATER
+	[System.Serializable]
+#endif
+	public class UIThreadAccessException : System.Exception
+	{
+		/// <summary>
+		/// Initializes a new instance of the UIThreadAccessException class
+		/// </summary>
+		public UIThreadAccessException() { }
+		/// <summary>
+		/// Initializes a new instance of the UIThreadAccessException class with the specified message
+		/// </summary>
+		/// <param name="message">Message for the exception</param>
+		public UIThreadAccessException(string message) : base(message) { }
+		/// <summary>
+		/// Initializes a new instance of the UIThreadAccessException class with the specified message and inner exception
+		/// </summary>
+		/// <param name="message">Message for the exception</param>
+		/// <param name="inner">Inner exception</param>
+		public UIThreadAccessException(string message, System.Exception inner) : base(message, inner) { }
+#if NETSTANDARD2_0_OR_GREATER
+		/// <summary>
+		/// Initializes a new instance of the UIThreadAccessException class from serialization
+		/// </summary>
+		/// <param name="info">Serialization info</param>
+		/// <param name="context">Streaming context</param>
+		protected UIThreadAccessException(
+			System.Runtime.Serialization.SerializationInfo info,
+			System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+#endif
+	}
+
 	/// <summary>
 	/// Starting point for any UI application
 	/// </summary>
@@ -17,6 +72,9 @@ namespace Eto.Forms
 	[Handler(typeof(Application.IHandler))]
 	public class Application : Widget
 	{
+#if NETSTANDARD2_0_OR_GREATER
+		Thread mainThread;
+#endif
 		LocalizeEventArgs localizeArgs;
 		readonly object localizeLock = new object();
 		static readonly object ApplicationKey = new object();
@@ -28,7 +86,7 @@ namespace Eto.Forms
 		public static Application Instance
 		{
 			get
-			{ 
+			{
 				var platform = Platform.Instance;
 				return platform != null ? platform.GetSharedProperty<Application>(ApplicationKey, () => null) : null;
 			}
@@ -241,6 +299,9 @@ namespace Eto.Forms
 			: this(InitializePlatform(platform))
 		{
 			Instance = this;
+#if NETSTANDARD2_0_OR_GREATER
+			mainThread = System.Threading.Thread.CurrentThread;
+#endif
 		}
 
 		Application(InitHelper init)
@@ -260,6 +321,31 @@ namespace Eto.Forms
 				throw new InvalidOperationException("The Eto.Forms Application is already created.");
 
 			return null;
+		}
+
+
+		/// <summary>
+		/// Gets or sets the UI thread check mode which can be used to troubleshoot or ensure that all UI code is executed in the UI thread.
+		/// </summary>
+		/// <value>The current thread check mode</value>
+		[DefaultValue(UIThreadCheckMode.Warning)]
+		public UIThreadCheckMode UIThreadCheckMode { get; set; } = System.Diagnostics.Debugger.IsAttached ? UIThreadCheckMode.Error : UIThreadCheckMode.Warning;
+
+		/// <summary>
+		/// Ensures the current thread is the main/UI thread
+		/// </summary>
+		public void EnsureUIThread()
+		{
+#if NETSTANDARD2_0_OR_GREATER
+			if (UIThreadCheckMode == UIThreadCheckMode.None)
+				return;
+			if (mainThread == Thread.CurrentThread)
+				return;
+			if (UIThreadCheckMode == UIThreadCheckMode.Warning)
+				System.Diagnostics.Trace.WriteLine("Warning: Accessing UI object from a non-UI thread. UI objects can only be used from the main thread.");
+			else if (UIThreadCheckMode == UIThreadCheckMode.Error)
+				throw new UIThreadAccessException();
+#endif
 		}
 
 		/// <summary>
@@ -610,7 +696,7 @@ namespace Eto.Forms
 			/// Gets a value indicating whether the application supports the <see cref="Quit"/> operation.
 			/// </summary>
 			/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
-			bool QuitIsSupported { get ; }
+			bool QuitIsSupported { get; }
 
 			/// <summary>
 			/// Gets the common modifier for shortcuts.

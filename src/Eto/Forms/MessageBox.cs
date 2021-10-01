@@ -186,6 +186,7 @@ namespace Eto.Forms
 		/// <param name="defaultButton">Button to set focus to by default</param>
 		public static DialogResult Show(Control parent, string text, string caption, MessageBoxButtons buttons, MessageBoxType type = MessageBoxType.Information, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Default)
 		{
+			Application.Instance.EnsureUIThread();
 			var mb = Platform.Instance.Create<IHandler>();
 			mb.Text = text;
 			mb.Caption = caption;

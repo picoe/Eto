@@ -22,7 +22,18 @@ namespace Eto.Forms
 	[sc.TypeConverter(typeof(ControlConverter))]
 	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
-		new IHandler Handler => (IHandler)base.Handler;
+		/// <summary>
+		/// Gets the handler for the widget, ensuring the current thread is the UI thread
+		/// </summary>
+		/// <value>The handler object for this control</value>
+		protected new IHandler Handler
+		{
+			get
+			{
+				Application.Instance?.EnsureUIThread();
+				return (IHandler)base.Handler;
+			}
+		}
 
 		/// <summary>
 		/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown

@@ -37,6 +37,7 @@ namespace Eto.Test
 			: base(platform)
 		{
 			TestAssemblies = DefaultTestAssemblies().ToList();
+			UIThreadCheckMode = UIThreadCheckMode.Error;
 			this.Name = "Test Application";
 			this.Style = "application";
 
