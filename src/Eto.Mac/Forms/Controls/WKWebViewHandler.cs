@@ -35,6 +35,14 @@ namespace Eto.Mac.Forms.Controls
 
 		public class EtoNavigationDelegate : wk.WKNavigationDelegate
 		{
+			public EtoNavigationDelegate()
+			{
+			}
+			public EtoNavigationDelegate(IntPtr handle)
+				: base(handle)
+			{
+			}
+			
 			WeakReference handler;
 			public WKWebViewHandler Handler { get => handler?.Target as WKWebViewHandler; set => handler = new WeakReference(value); }
 
@@ -89,6 +97,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 
 		}
+		
 
 		protected override void Initialize()
 		{
@@ -110,7 +119,11 @@ namespace Eto.Mac.Forms.Controls
 				Handler = handler;
 				UIDelegate = new EtoUIDelegate { Handler = handler };
 			}
-
+			
+			public EtoWebView(IntPtr handle)
+				: base(handle)
+			{
+			}
 		}
 
 		class PromptDialog : Dialog<bool>
