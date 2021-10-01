@@ -59,6 +59,8 @@ namespace Eto.Mac.Forms
 		WeakReference handler;
 
 		public object Handler { get => handler?.Target; set => handler = new WeakReference(value); }
+		
+		public Widget Widget => (Handler as Widget.IHandler)?.Widget;
 
 		static readonly Selector selPerformAction = new Selector("performAction:");
 
@@ -135,12 +137,16 @@ namespace Eto.Mac.Forms
 			this.observer = observer;
 			this.Notification = notification;
 		}
+		
+		public Widget Widget => observer.Widget;
 
-		public object Handler { get { return observer.Handler; } }
+		public object Handler => observer.Handler;
+		
+		public object Control => observer.Control;
 
-		public NSString KeyPath { get { return observer.KeyPath; } }
+		public NSString KeyPath => observer.KeyPath;
 
-		public NSNotification Notification { get; private set; }
+		public NSNotification Notification { get; }
 	}
 
 	public interface IMacControl
