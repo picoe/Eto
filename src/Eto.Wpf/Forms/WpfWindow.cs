@@ -59,11 +59,21 @@ namespace Eto.Wpf.Forms
 
 		protected virtual bool IsAttached => false;
 
+		sw.Interop.WindowInteropHelper windowInterop;
+		
 		public override IntPtr NativeHandle
 		{
-			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
+			get
+			{
+				if (windowInterop == null)
+				{
+					windowInterop = new sw.Interop.WindowInteropHelper(Control);
+					windowInterop.EnsureHandle();
+				}
+				return windowInterop.Handle;
+			}
 		}
-
+		
 		public static bool EnablePerMonitorDpiSupport { get; set; } = true;
 
 		public swc.DockPanel ContentPanel { get { return content; } }
@@ -487,40 +497,30 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		internal void SetStyle(Win32.WS_EX style, bool value)
+		internal void SetStyleEx(Win32.WS_EX style, bool value)
 		{
-			var styleInt = Win32.GetWindowLong(WindowHandle, Win32.GWL.EXSTYLE);
-			if (value)
-				styleInt |= (uint)style;
-			else
-				styleInt &= (uint)~style;
-
-			Win32.SetWindowLong(WindowHandle, Win32.GWL.EXSTYLE, styleInt);
+			SetStyleEx(value ? style : 0, value ? 0 : style);
+		}
+		
+		internal void SetStyleEx(Win32.WS_EX styleAdd, Win32.WS_EX styleRemove = 0)
+		{
+			var styleInt = Win32.GetWindowLong(NativeHandle, Win32.GWL.EXSTYLE);
+			styleInt |= (uint)styleAdd;
+			styleInt &= (uint)~styleRemove;
+			Win32.SetWindowLong(NativeHandle, Win32.GWL.EXSTYLE, styleInt);
 		}
 
 		internal void SetStyle(Win32.WS style, bool value)
 		{
-			var styleInt = Win32.GetWindowLong(WindowHandle, Win32.GWL.STYLE);
-			if (value)
-				styleInt |= (uint)style;
-			else
-				styleInt &= (uint)~style;
-
-			Win32.SetWindowLong(WindowHandle, Win32.GWL.STYLE, styleInt);
+			SetStyle(value ? style : 0, value ? 0 : style);
 		}
 
-		sw.Interop.WindowInteropHelper windowInterop;
-		IntPtr WindowHandle
+		internal void SetStyle(Win32.WS styleAdd, Win32.WS styleRemove = 0)
 		{
-			get
-			{
-				if (windowInterop == null)
-				{
-					windowInterop = new sw.Interop.WindowInteropHelper(Control);
-					windowInterop.EnsureHandle();
-				}
-				return windowInterop.Handle;
-			}
+			var styleInt = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
+			styleInt |= (uint)styleAdd;
+			styleInt &= (uint)~styleRemove;
+			Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, styleInt);
 		}
 
 		protected virtual void SetResizeMode()
@@ -599,7 +599,7 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				var handle = WindowHandle;
+				var handle = NativeHandle;
 				if (handle != IntPtr.Zero && Control.IsLoaded)
 				{
 					// WPF doesn't always report the correct size when maximized
@@ -646,7 +646,7 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				var handle = WindowHandle;
+				var handle = NativeHandle;
 				if (handle == IntPtr.Zero)
 					return System.Windows.Forms.Screen.PrimaryScreen;
 				return System.Windows.Forms.Screen.FromHandle(handle);
@@ -661,7 +661,7 @@ namespace Eto.Wpf.Forms
 			{
 				if (initialLocation != null)
 					return initialLocation.Value;
-				var handle = WindowHandle;
+				var handle = NativeHandle;
 				if (handle != IntPtr.Zero)
 				{
 					Point? location = null;
@@ -698,7 +698,7 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 
-				if (WindowHandle == IntPtr.Zero)
+				if (NativeHandle == IntPtr.Zero)
 				{
 					// set location when the source is initialized and we have a Win32 handle to move about
 					// using Left/Top doesn't work (properly) in a per-monitor dpi environment.
@@ -727,11 +727,11 @@ namespace Eto.Wpf.Forms
 
 		void SetLocation(PointF location)
 		{
-			var handle = WindowHandle;
+			var handle = NativeHandle;
 			var loc = location.LogicalToScreen();
 
 			var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
-			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE);
+			Win32.SetWindowPos(NativeHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE);
 			if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
 				Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 		}
@@ -840,7 +840,7 @@ namespace Eto.Wpf.Forms
 
 			if (!Control.Focusable)
 			{
-				var hWnd = WindowHandle;
+				var hWnd = NativeHandle;
 				if (hWnd != IntPtr.Zero)
 					Win32.SetWindowPos(hWnd, Win32.HWND_TOP, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE);
 			}
@@ -852,7 +852,7 @@ namespace Eto.Wpf.Forms
 		{
 			if (Topmost)
 				return;
-			var hWnd = WindowHandle;
+			var hWnd = NativeHandle;
 			if (hWnd != IntPtr.Zero)
 				Win32.SetWindowPos(hWnd, Win32.HWND_BOTTOM, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE | Win32.SWP.NOACTIVATE);
 			var window = sw.Application.Current.Windows.OfType<sw.Window>().FirstOrDefault(r => r != Control);
@@ -914,14 +914,26 @@ namespace Eto.Wpf.Forms
 				return scale;
 			}
 		}
-		
+
 		protected override void Dispose(bool disposing)
 		{
 			// close the window when disposing from Eto explicitly
 			if (disposing)
 				Close();
-				
+
 			base.Dispose(disposing);
+		}
+
+		public override bool Visible
+		{
+			get => Control.IsVisible;
+			set
+			{
+				if (value)
+					Control.Show();
+				else
+					Control.Hide();
+			}
 		}
 	}
 }

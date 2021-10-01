@@ -125,9 +125,8 @@ namespace Eto.Wpf.Forms
 
 		void HandleStartup(object sender, sw.StartupEventArgs e)
 		{
-			IsActive = true;
 			IsStarted = true;
-			_isActive = Win32.ApplicationIsActivated();
+			IsActive = Win32.ApplicationIsActivated();
 			Control.Activated += (sender2, e2) => IsActive = true;
 			Control.Deactivated += (sender2, e2) => IsActive = false;
 			if (delayShownWindows != null)

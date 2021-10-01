@@ -48,7 +48,9 @@ namespace Eto.Wpf.Forms
 		{
 			Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
 			if (ApplicationHandler.Instance.IsStarted)
+			{
 				Control.Show();
+			}
 			else
 				ApplicationHandler.Instance.DelayShownWindows.Add(Control);
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
@@ -65,9 +67,8 @@ namespace Eto.Wpf.Forms
 			get { return Control.Focusable; }
 			set
 			{
-				SetStyle(Win32.WS_EX.NOACTIVATE, !value);
-				SetStyle(Win32.WS.CHILD, !value);
 				Control.Focusable = value;
+				SetStyleEx(Win32.WS_EX.NOACTIVATE, !value);
 			}
 		}
 	}
