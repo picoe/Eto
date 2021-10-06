@@ -29,7 +29,7 @@
 		},
 		{
 			"label": "build-templates",
-			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/src/Addins/Eto.Forms.Templates/Eto.Forms.Templates.csproj ; dotnet new -i ${workspaceFolder}/",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/src/Addins/Eto.Forms.Templates/Eto.Forms.Templates.csproj",
 			"type": "shell",
 			"problemMatcher": "$msCompile",
 			"group": "build",

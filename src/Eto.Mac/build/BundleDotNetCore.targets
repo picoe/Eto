@@ -67,7 +67,7 @@
   <!-- Bundle using a system shared runtime -->
   <Target Name="MacBuildAppBundleWithoutRuntime" AfterTargets="AfterBuild" Condition="($(MacBundleDotNet) != 'True' AND $(MacIsBuildingBundle) == 'True') OR ($(MacAutoPublishBundle) == 'False' AND $(MacIsBuildingBundle) != 'True')" DependsOnTargets="MacInitializeBundle;MacCollectExecutableFiles">
 
-    <Message Text="MacBuildAppBundleWithoutRuntime" Importance="high" /> 
+    <!-- <Message Text="MacBuildAppBundleWithoutRuntime" Importance="high" />  -->
     
     <!-- copy executable files -->
     <Copy SourceFiles="@(MacExecutableFiles)" DestinationFiles="@(MacExecutableFiles->'$(LauncherPath)%(TargetPath)')" />
@@ -82,8 +82,6 @@
       <LauncherFiles Include="$(PublishDir)**\*" />
       <LauncherFiles Remove="$(PublishDir)**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
     </ItemGroup>
-
-    <Message Text="MacPublishAppBundleForAutoPublish" Importance="high" /> 
     
     <!-- copy executable and all files which need to be in the same folder -->
     <Copy SourceFiles="@(LauncherFiles)" DestinationFolder="$(LauncherPath)%(LauncherFiles.RecursiveDir)" />
@@ -98,7 +96,7 @@
       <LauncherFiles Remove="$(PublishDir)**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
     </ItemGroup>
 
-    <Message Text="MacCopyPublishFiles: @(LauncherFiles)" Importance="high" /> 
+    <!-- <Message Text="MacCopyPublishFiles: @(LauncherFiles)" Importance="high" />  -->
     
     <!-- copy executable and all files which need to be in the same folder -->
     <Copy SourceFiles="@(LauncherFiles)" DestinationFolder="$(LauncherPath)%(LauncherFiles.RecursiveDir)" />
@@ -110,7 +108,7 @@
   <!-- Build bundle for published folder -->
   <Target Name="MacPublishAppBundle" AfterTargets="Publish" Condition="$(MacIsBuildingBundle) != 'True' AND $(MacAutoPublishBundle) == 'False'">
     
-    <Message Text="MacPublishAppBundle" Importance="high" /> 
+    <!-- <Message Text="MacPublishAppBundle" Importance="high" />  -->
 
     <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="MacCopyPublishFiles"
              Properties="BaseOutputAppPath=$(PublishDir)" />

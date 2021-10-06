@@ -20,8 +20,8 @@
     <!-- properties you can override in your project file -->
 
     <!-- Specify that the bundle should be created during build -->
-    <!-- Enabled by default only for exe's and if not using a specific project type (e.g. Xamarin.Mac) -->
-    <MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == '' and ( $(OutputType) == 'Exe' Or $(OutputType) == 'WinExe' )">True</MacBuildBundle>
+    <!-- Enabled by default only for exe's and if not using a specific project type (e.g. Xamarin.Mac, -macos tfm's) -->
+    <MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == '' and ( $(OutputType) == 'Exe' Or $(OutputType) == 'WinExe' ) and !$(TargetFramework.Contains('-macos'))">True</MacBuildBundle>
 
     <!-- Specifies the name of the .app bundle, usually the same as the project -->
     <MacBundleName Condition="$(MacBundleName) == '' AND $(OutputAppPath.TrimEnd('/').TrimEnd('\').EndsWith('.app')) == 'True'">$([System.IO.Path]::GetFileName($(OutputAppPath.TrimEnd('/').TrimEnd('\'))))</MacBundleName>
@@ -182,7 +182,7 @@
         AddStringProperty("NSPrincipalClass", "NSApplication");
         AddStringProperty("CFBundleName", MacBundleName);
         AddStringProperty("CFBundleExecutable", LauncherFile, true);
-        AddStringProperty("LSMinimumSystemVersion", "10.9");
+        AddStringProperty("LSMinimumSystemVersion", "10.14");
         if (!string.IsNullOrEmpty(MonoMinimumVersion)) {
           AddStringProperty("MonoMinimumVersion", MonoMinimumVersion);
         }
