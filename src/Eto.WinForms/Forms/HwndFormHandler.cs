@@ -628,5 +628,7 @@ namespace Eto.WinForms.Forms
 		{
 			return Size;
 		}
+
+		public void Print() => throw new NotImplementedException();
 	}
 }

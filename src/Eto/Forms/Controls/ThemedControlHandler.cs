@@ -464,6 +464,9 @@ namespace Eto.Forms
 		/// <returns>The parent window, or null if it is not currently on a window</returns>
 		public Window GetNativeParentWindow() => Control.ParentWindow;
 
+		/// <inheritdoc />
+		public void Print() => Control.Print();
+
 		#endregion
 
 	}

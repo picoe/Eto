@@ -9,7 +9,7 @@ namespace Eto.Forms
 	[Handler(typeof(PrintDialog.IHandler))]
 	public class PrintDialog : CommonDialog
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets or sets the print settings the print dialog is modifying.
@@ -54,14 +54,12 @@ namespace Eto.Forms
 		/// <param name="document">Document to print.</param>
 		public DialogResult ShowDialog(Control parent, PrintDocument document)
 		{
+			document.OnBeforePrint();
 			PrintSettings = document.PrintSettings;
 			PrintSettings.MaximumPageRange = new Range<int>(1, document.PageCount);
 			Handler.Document = document;
 			var result = ShowDialog(parent);
-			if (result == DialogResult.Ok)
-			{
-				document.Print();
-			}
+			document.OnAfterPrint();
 			return result;
 		}
 

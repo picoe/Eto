@@ -75,6 +75,16 @@ namespace Eto
 			SHOWDEFAULT = 10,
 			FORCEMINIMIZE = 11
 		}
+		
+		[Flags]
+		public enum PRF
+		{
+			CHECKVISIBLE = 0x00000001,
+        	NONCLIENT = 0x00000002,
+        	CLIENT = 0x00000004,
+        	ERASEBKGND = 0x00000008,
+        	CHILDREN = 0x00000010
+		}
 
 
 		public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
@@ -175,7 +185,8 @@ namespace Eto
 
 			DPICHANGED = 0x02E0,
 			NCCREATE = 0x0081,
-			NCLBUTTONDOWN = 0x00A1
+			NCLBUTTONDOWN = 0x00A1,
+			PRINT = 0x0317
 		}
 		
 		public enum HT
@@ -478,5 +489,8 @@ namespace Eto
 				
 			return info.hwndFocus;
 		}
+		
+		[DllImport("gdi32.dll")]
+		public static extern bool OffsetWindowOrgEx(IntPtr hdc, int nXOffset, int nYOffset, ref POINT lpPoint);
 	}
 }

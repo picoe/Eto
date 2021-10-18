@@ -188,6 +188,7 @@ namespace Eto.GtkSharp
 			
 			// Forms.Printing
 			p.Add<PrintDialog.IHandler>(() => new PrintDialogHandler());
+			p.Add<PrintPreviewDialog.IHandler>(() => new PrintPreviewDialogHandler());
 			p.Add<PrintDocument.IHandler>(() => new PrintDocumentHandler());
 			p.Add<PrintSettings.IHandler>(() => new PrintSettingsHandler());
 			

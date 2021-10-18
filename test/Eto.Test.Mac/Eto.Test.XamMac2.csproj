@@ -12,6 +12,8 @@
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
     <DefineConstants>XAMMAC;XAMMAC2</DefineConstants>
+    <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
+    <NoWarn>CA1416</NoWarn>
   </PropertyGroup>
   
   <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">

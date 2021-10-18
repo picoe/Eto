@@ -1040,6 +1040,12 @@ namespace Eto.Mac.Forms
 				}
 			}
 		}
+		
+		public void Print()
+		{
+			PrintSettingsHandler.SetDefaults(NSPrintInfo.SharedPrintInfo);
+			ContainerControl.Print(ContainerControl);
+		}
 
 		public virtual Cursor CurrentCursor
 		{
@@ -1069,15 +1075,6 @@ namespace Eto.Mac.Forms
 			set { ContentControl.ToolTip = value ?? string.Empty; }
 		}
 
-		public void Print(PrintSettings settings)
-		{
-			var op = NSPrintOperation.FromView(EventControl);
-			if (settings != null)
-				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
-			op.ShowsPrintPanel = false;
-			op.RunOperation();
-		}
-
 		public virtual void OnPreLoad(EventArgs e)
 		{
 		}
@@ -1088,6 +1085,10 @@ namespace Eto.Mac.Forms
 			{
 				// adding dynamically or loading without a parent (e.g. embedding into a native app)
 				AsyncQueue.Add(FireOnShown);
+			}
+			if (Widget.IsAttached)
+			{
+				SetAlignmentFrameSize(GetPreferredSize(SizeF.PositiveInfinity).ToNS());
 			}
 		}
 

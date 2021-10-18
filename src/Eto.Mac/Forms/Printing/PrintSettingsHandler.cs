@@ -43,7 +43,21 @@ namespace Eto.Mac.Forms.Printing
 
 		protected override NSPrintInfo CreateControl()
 		{
-			return new NSPrintInfo();
+			var info = new NSPrintInfo();
+			SetDefaults(info);
+			return info;
+		}
+		
+		internal static void SetDefaults(NSPrintInfo info)
+		{
+			if (info == null)
+				return;
+			info.TopMargin = 0;
+			info.BottomMargin = 0;
+			info.LeftMargin = 0;
+			info.RightMargin = 0;
+			info.VerticallyCentered = false;
+			info.HorizontallyCentered = false;
 		}
 
 		public int Copies

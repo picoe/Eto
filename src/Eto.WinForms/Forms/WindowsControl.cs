@@ -1005,5 +1005,10 @@ namespace Eto.WinForms.Forms
 		}
 
 		public Window GetNativeParentWindow() => ContainerControl.FindForm().ToEtoWindow();
+
+		public void Print()
+		{
+			
+		}
 	}
 }

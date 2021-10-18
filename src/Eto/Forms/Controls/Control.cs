@@ -966,13 +966,13 @@ namespace Eto.Forms
 		static readonly object IsAttached_Key = new object();
 
 		/// <summary>
-		/// Gets or sets a value indicating this control has been attached to a native container
+		/// Gets a value indicating this control has been attached to a native container
 		/// </summary>
 		/// <seealso cref="AttachNative"/>
-		bool IsAttached
+		public bool IsAttached
 		{
 			get => Properties.Get<bool>(IsAttached_Key);
-			set => Properties.Set(IsAttached_Key, value);
+			private set => Properties.Set(IsAttached_Key, value);
 		}
 
 		/// <summary>
@@ -1005,7 +1005,7 @@ namespace Eto.Forms
 		void PostAttach()
 		{
 			// if the control is disposed before we get here Handler will be null, so omit calling OnLoadComplete
-			if (!IsDisposed && Handler != null)
+			if (!IsDisposed && Handler != null && Loaded)
 				OnLoadComplete(EventArgs.Empty);
 		}
 
@@ -1369,7 +1369,19 @@ namespace Eto.Forms
 		/// <param name="widget">Widget to style.</param>
 		/// <param name="style">Style of the widget to apply.</param>
 		protected virtual void ApplyStyles(object widget, string style) => Parent?.ApplyStyles(widget, Style);
-
+		
+		/// <summary>
+		/// Shows a print dialog to print the specified control
+		/// </summary>
+		public void Print()
+		{
+			using (var doc = new PrintDocument(this))
+			{
+				var dlg = new PrintDialog();
+				dlg.ShowDialog(this, doc);
+			}
+		}
+		
 
 		/// <summary>
 		/// Handles the disposal of this control
