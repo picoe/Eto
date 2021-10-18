@@ -45,9 +45,15 @@ namespace Eto.Wpf.Forms
 			get => Widget.Properties.Get<bool>(Visible_Key, true);
 			set
 			{
-				if (Widget.Properties.TrySet(Visible_Key, value, true))
-					SetVisibility();
+				Widget.Properties.Set(Visible_Key, value, true);
+				SetVisibility();
 			}
+		}
+		
+		public override void Show()
+		{
+			Widget.Properties.Set(Visible_Key, true, true);
+			base.Show();
 		}
 		
 		void SetVisibility()
