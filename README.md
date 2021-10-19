@@ -118,4 +118,3 @@ These platforms are currently incomplete or in development. Any eager bodies wil
 
 * iOS using Xamarin.iOS
 * Android using Xamarin.Android (Eto.Android)
-* Windows 8.x and Windows Phone (Eto.WinRT)
