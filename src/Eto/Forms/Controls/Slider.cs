@@ -32,7 +32,7 @@ namespace Eto.Forms
 		/// This is for visual representation only, unless the <see cref="SnapToTick"/> is set to true.
 		/// </remarks>
 		/// <value>The tick frequency.</value>
-		public int TickFrequency
+		public double TickFrequency
 		{
 			get { return Handler.TickFrequency; }
 			set { Handler.TickFrequency = value; }
@@ -57,7 +57,7 @@ namespace Eto.Forms
 		/// Gets or sets the maximum value that can be set by the user.
 		/// </summary>
 		/// <value>The maximum value.</value>
-		public int MaxValue
+		public double MaxValue
 		{
 			get { return Handler.MaxValue; }
 			set { Handler.MaxValue = value; }
@@ -67,7 +67,7 @@ namespace Eto.Forms
 		/// Gets or sets the minimum value that can be set by the user.
 		/// </summary>
 		/// <value>The minimum value.</value>
-		public int MinValue
+		public double MinValue
 		{
 			get { return Handler.MinValue; }
 			set { Handler.MinValue = value; }
@@ -77,7 +77,7 @@ namespace Eto.Forms
 		/// Gets or sets the current slider value.
 		/// </summary>
 		/// <value>The value.</value>
-		public int Value
+		public double Value
 		{
 			get { return Handler.Value; }
 			set { Handler.Value = value; }
@@ -160,19 +160,19 @@ namespace Eto.Forms
 			/// Gets or sets the maximum value that can be set by the user.
 			/// </summary>
 			/// <value>The maximum value.</value>
-			int MaxValue { get; set; }
+			double MaxValue { get; set; }
 
 			/// <summary>
 			/// Gets or sets the minimum value that can be set by the user.
 			/// </summary>
 			/// <value>The minimum value.</value>
-			int MinValue { get; set; }
+			double MinValue { get; set; }
 
 			/// <summary>
 			/// Gets or sets the current slider value.
 			/// </summary>
 			/// <value>The value.</value>
-			int Value { get; set; }
+			double Value { get; set; }
 
 			/// <summary>
 			/// Gets or sets the hint for numeric value between each visual tick.
@@ -181,7 +181,7 @@ namespace Eto.Forms
 			/// This is for visual representation only, unless the <see cref="SnapToTick"/> is set to true.
 			/// </remarks>
 			/// <value>The tick frequency.</value>
-			int TickFrequency { get; set; }
+			double TickFrequency { get; set; }
 
 			/// <summary>
 			/// Gets or sets a value indicating whether the slider will snap to each tick.

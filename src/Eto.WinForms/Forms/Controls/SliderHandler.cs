@@ -57,32 +57,32 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public int MaxValue
+		public double MaxValue
 		{
-			get { return Control.Maximum; }
-			set { Control.Maximum = value; }
+			get { return (double)Control.Maximum; }
+			set { Control.Maximum = (int)value; }
 		}
 
-		public int MinValue
+		public double MinValue
 		{
-			get { return Control.Minimum; }
-			set { Control.Minimum = value; }
+			get { return (double)Control.Minimum; }
+			set { Control.Minimum = (int)value; }
 		}
 
-		public int Value
+		public double Value
 		{
-			get { return Control.Value; }
-			set { Control.Value = value; }
+			get { return (double)Control.Value; }
+			set { Control.Value = (int)value; }
 		}
 
 		public bool SnapToTick { get; set; }
 
-		public int TickFrequency
+		public double TickFrequency
 		{
-			get { return Control.TickFrequency; }
+			get { return (double)Control.TickFrequency; }
 			set
 			{
-				Control.TickFrequency = value;
+				Control.TickFrequency = (int)value;
 			}
 		}
 

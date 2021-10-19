@@ -5,16 +5,17 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class SliderHandler : GtkControl<Gtk.EventBox, Slider, Slider.ICallback>, Slider.IHandler
 	{
-		int min;
-		int max = 100;
-		int tick = 1;
+		double min;
+		double max = 100;
+		double tick = 1;
+		bool snapToTick;
 		Gtk.Scale scale;
 
 		public SliderHandler()
 		{
 			this.Control = new Gtk.EventBox();
 			//Control.VisibleWindow = false;
-			scale = new Gtk.HScale(min, max, 1);
+			scale = new Gtk.HScale(min, max, SnapToTick ? tick : 0.000000001D);
 			this.Control.Child = scale;
 		}
 
@@ -33,7 +34,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected class SliderConnector : GtkControlConnector
 		{
-			int? lastValue;
+			double? lastValue;
 
 			public new SliderHandler Handler { get { return (SliderHandler)base.Handler; } }
 
@@ -41,7 +42,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				var scale = Handler.scale;
 				var tick = Handler.tick;
-				var value = (int)scale.Value;
+				var value = scale.Value;
 				if (tick > 0)
 				{
 					var offset = value % tick;
@@ -64,7 +65,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public int MaxValue
+		public double MaxValue
 		{
 			get { return max; }
 			set
@@ -74,7 +75,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public int MinValue
+		public double MinValue
 		{
 			get { return min; }
 			set
@@ -84,15 +85,26 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public int Value
+		public double Value
 		{
-			get { return (int)scale.Value; }
+			get { return scale.Value; }
 			set { scale.Value = value; }
 		}
 
-		public bool SnapToTick { get; set; }
+		public bool SnapToTick
+		{
+			get
+			{
+				return snapToTick;
+			}
+			set
+			{
+				snapToTick = value;
+				UpdateScale(Orientation);
+			}
+		}
 
-		public int TickFrequency
+		public double TickFrequency
 		{
 			get
 			{
@@ -115,21 +127,26 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (Orientation != value)
 				{
-					scale.ValueChanged -= Connector.HandleScaleValueChanged;
-					Control.Remove(scale);
-#if !GTKCORE
-					scale.Destroy();
-#endif
-					scale.Dispose();
-					if (value == Orientation.Horizontal)
-						scale = new Gtk.HScale(min, max, 1);
-					else
-						scale = new Gtk.VScale(min, max, 1);
-					scale.ValueChanged += Connector.HandleScaleValueChanged;
-					Control.Child = scale;
-					scale.ShowAll();
+					UpdateScale(value);
 				}
 			}
+		}
+
+		protected void UpdateScale(Orientation value)
+		{
+			scale.ValueChanged -= Connector.HandleScaleValueChanged;
+			Control.Remove(scale);
+#if !GTKCORE
+			scale.Destroy();
+#endif
+			scale.Dispose();
+			if (value == Orientation.Horizontal)
+				scale = new Gtk.HScale(min, max, SnapToTick ? tick : 0.000000001D);
+			else
+				scale = new Gtk.VScale(min, max, SnapToTick ? tick : 0.000000001D);
+			scale.ValueChanged += Connector.HandleScaleValueChanged;
+			Control.Child = scale;
+			scale.ShowAll();
 		}
 	}
 }
