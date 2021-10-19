@@ -29,7 +29,7 @@ namespace Eto.Wpf.Forms.Controls
 	public class LabelHandler : WpfControl<swc.Label, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly swc.AccessText accessText;
-		double? previousWidth;
+		double? previousDesiredHeight;
 		string text;
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
@@ -55,24 +55,26 @@ namespace Eto.Wpf.Forms.Controls
 			// not loaded? don't worry about it.
 			if (!Control.IsLoaded)
 				return;
-			var newWidth = Control.ActualWidth;
-			if (previousWidth == null)
+			var newDesiredHeight = Control.DesiredSize.Height;
+			if (previousDesiredHeight == null)
 			{
 				// don't update preferred sizes when called the first time.
 				// when there's many labels this causes a major slowdown
 				// the initial size should already have been taken care of by 
 				// the initial layout pass.
-				previousWidth = newWidth;
+				previousDesiredHeight = newDesiredHeight;
 				return;
 			}
-
+			
 			// ignore tiny changes as in some scales (e.g. 150%, 175%) it can cause an endless update cycle
-			if (Math.Abs(previousWidth.Value - newWidth) < 1)
+			// Is this needed any more?  We are now only comparing desired size vs. actual, which doesn't 
+			// appear to have this problem
+			if (Math.Abs(previousDesiredHeight.Value - newDesiredHeight) < 1)
 				return;
-			// update parents when the actual width has changed
-			// otherwise it won't shrink vertically when it gets wider
-			// when wrapped
-			previousWidth = newWidth;
+			
+			// update parents when the actual desired height has changed
+			// otherwise parent containers won't shrink vertically when it gets wider when wrapped
+			previousDesiredHeight = newDesiredHeight;
 			if (Wrap != WrapMode.None)
                 UpdatePreferredSize();
 		}
