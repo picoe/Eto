@@ -32,10 +32,10 @@
       <!-- runtime identifiers have been explicitly set -->
       <MacBundleRuntimeIdentifiers Include="$(MacBundleRuntimeIdentifiers)" Condition="$(MacBundleRuntimeIdentifiers) != ''" />
       <!-- Only include osx RID's in this list -->
-      <MacBundleRuntimeIdentifiers Remove="@(MacBundleRuntimeIdentifiers)" Condition="!$([System.String]::Copy(%(MacBundleRuntimeIdentifiers.Identity)).StartsWith('osx'))" />
+      <MacBundleRuntimeIdentifiers Remove="@(MacBundleRuntimeIdentifiers)" Condition="!$([System.String]::Copy('%(MacBundleRuntimeIdentifiers.Identity)').StartsWith('osx'))" />
     </ItemGroup>
 
-    <Error Text="No RuntimeIdentifiers or MacRuntimeIdentifiers have been specified" Condition="@(MacBundleRuntimeIdentifiers->Count()) == 0" />
+    <Error Text="No RuntimeIdentifiers or MacRuntimeIdentifiers have been specified. Add &lt;RuntimeIdentifiers&gt;osx-x64&lt;/RuntimeIdentifiers&gt; to your project." Condition="@(MacBundleRuntimeIdentifiers->Count()) == 0" />
     <PropertyGroup>
       <MacTempBuildPath>$(IntermediateOutputPath)macbuild\</MacTempBuildPath>
 
