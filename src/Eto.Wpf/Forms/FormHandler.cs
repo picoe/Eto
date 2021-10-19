@@ -69,6 +69,7 @@ namespace Eto.Wpf.Forms
 			{
 				Control.Focusable = value;
 				SetStyleEx(Win32.WS_EX.NOACTIVATE, !value);
+				SetStyle(Win32.WS.CHILD, !value);
 			}
 		}
 	}
