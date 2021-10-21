@@ -785,13 +785,14 @@ namespace Eto.Wpf.Forms
 		protected virtual void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
 			var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
-			Callback.OnMouseUp(Widget, args);
-			e.Handled = args.Handled;
-			if ((isMouseCaptured || args.Handled) && Control.IsMouseCaptured)
+			if (isMouseCaptured && Control.IsMouseCaptured)
 			{
 				Control.ReleaseMouseCapture();
 				isMouseCaptured = false;
 			}
+
+			Callback.OnMouseUp(Widget, args);
+			e.Handled = args.Handled;
 		}
 
 		void HandleMouseDoubleClick(object sender, swi.MouseButtonEventArgs e)
