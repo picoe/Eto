@@ -131,6 +131,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
       <LastGenOutput>FontDialogResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="XPThemes.manifest" />
   </ItemGroup>
 
   <!-- Automatically added by WindowsDesktop SDK -->
