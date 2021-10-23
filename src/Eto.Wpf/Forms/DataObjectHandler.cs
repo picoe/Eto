@@ -4,16 +4,27 @@ using sc = System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using sw = System.Windows;
 using Eto.Drawing;
 using System.Collections.Specialized;
 using System.IO;
-using System.Windows.Media.Imaging;
+#if WPF
 using static System.Windows.WpfDataObjectExtensions;
+using sw = System.Windows;
+using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
 
 namespace Eto.Wpf.Forms
 {
+
+#elif WINFORMS
+using static System.Windows.Forms.SwfDataObjectExtensions;
+using sw = System.Windows.Forms;
+using BitmapSource = System.Drawing.Image;
+
+namespace Eto.WinForms.Forms
+{
+
+#endif
+
 	public class DataFormatsHandler : DataFormats.IHandler
 	{
 		public virtual string Text => sw.DataFormats.UnicodeText;
@@ -155,10 +166,17 @@ namespace Eto.Wpf.Forms
 					else
 						Control.SetData(sw.DataFormats.Dib, dib);
 				}
+#if WPF				
 				else if (IsExtended)
 					Control.SetDataEx(sw.DataFormats.Bitmap, value.ToWpf());
 				else
 					Control.SetImage(value.ToWpf());
+#elif WINFORMS
+				else if (IsExtended)
+					Control.SetDataEx(sw.DataFormats.Bitmap, value.ToSD());
+				else
+					Control.SetImage(value.ToSD());
+#endif
 
 				Update();
 			}
@@ -347,7 +365,11 @@ namespace Eto.Wpf.Forms
 
 		public void SetDragImage(Bitmap bitmap, PointF offset)
 		{
-			sw.WpfDataObjectExtensions.SetDragImage(Control, bitmap.ToWpf(), offset.ToWpf());
+#if WPF
+			Control.SetDragImage(bitmap.ToWpf(), offset.ToWpf());
+#elif WINFORMS
+			Control.SetDragImage(bitmap.ToSD(), offset.ToSDPoint());
+#endif
 		}
 
 		public bool TrySetObject(object value, string type)

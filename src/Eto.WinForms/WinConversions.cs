@@ -880,6 +880,13 @@ namespace Eto.WinForms
 			return format == sdi.PixelFormat.Format32bppPArgb
 				|| format == sdi.PixelFormat.Format64bppPArgb;
 		}
+		
+		public static Image ToEto(this sd.Image image)
+		{
+			if (image is sd.Bitmap bitmap)
+				return new Bitmap(new BitmapHandler(bitmap));
+			throw new NotSupportedException();
+		}
 
 	}
 }
