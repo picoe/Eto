@@ -25,8 +25,6 @@ namespace Eto.WinForms.Forms
 
 		protected override StringCollection InnerGetFileDropList() => swf.Clipboard.GetFileDropList();
 
-		protected override swf.IDataObject InnerDataObject => swf.Clipboard.GetDataObject();
-
 		public override bool ContainsText => swf.Clipboard.ContainsText();
 
 		public override bool ContainsHtml => swf.Clipboard.ContainsText(swf.TextDataFormat.Html);

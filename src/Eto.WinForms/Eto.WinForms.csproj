@@ -100,6 +100,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Eto.Wpf\Forms\Controls\WebView2Handler.cs">
       <Link>Forms\Controls\WebView2Handler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\Forms\DataObjectHandler.cs">
+      <Link>Forms\DataObjectHandler.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
