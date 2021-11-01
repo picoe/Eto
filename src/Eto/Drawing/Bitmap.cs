@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using sc = System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Eto.Drawing
 {
@@ -89,14 +90,13 @@ namespace Eto.Drawing
 		/// <param name="resourceName">Name of the resource in the caller's assembly to load. E.g. "MyProject.SomeFolder.YourFile.extension"</param>
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static Bitmap FromResource(string resourceName, Assembly assembly = null)
 		{
 
 			if (assembly == null)
 			{
-#if NETSTANDARD
-				if (TypeHelper.GetCallingAssembly == null)
-					throw new ArgumentNullException("assembly", string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
+#if NETSTANDARD1_0
 				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 #else
 				assembly = Assembly.GetCallingAssembly();

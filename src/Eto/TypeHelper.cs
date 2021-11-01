@@ -13,9 +13,9 @@ namespace Eto
 	/// </summary>
 	static class TypeHelper
 	{
-#if NETSTANDARD
+#if NETSTANDARD1_0
 		static MethodInfo getCallingAssembly = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
-		
+
 		static TypeHelper()
 		{
 			var detectType = Type.GetType("Eto.PlatformDetect, Eto.Gtk", false);
@@ -23,10 +23,10 @@ namespace Eto
 				getCallingAssembly = detectType.GetRuntimeMethod("GetCallingAssembly", new Type[] { });
 		}
 
-		public static MethodInfo GetCallingAssembly { get { return getCallingAssembly; } }
+		public static MethodInfo GetCallingAssembly => getCallingAssembly ?? throw new ArgumentNullException("assembly", "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly");
 #endif
 
-				public static Assembly GetAssembly(this Type type)
+		public static Assembly GetAssembly(this Type type)
 		{
 #if NETSTANDARD1_0
 			return type.GetTypeInfo().Assembly;
@@ -114,7 +114,7 @@ namespace Eto
 #else
 
 		public static T GetCustomAttribute<T>(this Type type, bool inherit)
-			where T: Attribute
+			where T : Attribute
 		{
 			return (T)type.GetCustomAttributes(typeof(T), inherit).FirstOrDefault();
 		}

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using sc = System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Eto.Drawing
 {
@@ -102,11 +103,12 @@ namespace Eto.Drawing
 		/// <param name="assembly">Assembly to load the resource from</param>
 		/// <param name="resourceName">Fully qualified name of the resource to load. E.g. "MyProject.SomeFolder.YourFile.extension"</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static Icon FromResource(string resourceName, Assembly assembly = null)
 		{
 			if (assembly == null)
 			{
-				#if NETSTANDARD
+				#if NETSTANDARD1_0
 				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 				#else
 				assembly = Assembly.GetCallingAssembly();

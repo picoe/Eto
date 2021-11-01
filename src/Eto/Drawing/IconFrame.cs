@@ -5,6 +5,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Eto.Drawing
 {
@@ -129,13 +130,12 @@ namespace Eto.Drawing
 		/// <param name="scale">Scale of logical to physical pixels.</param>
 		/// <param name="resourceName">Name of the embedded resource to load.</param>
 		/// <param name="assembly">Assembly to load the embedded resource from, or null to use the calling assembly.</param>
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static IconFrame FromResource(float scale, string resourceName, Assembly assembly = null)
 		{
 			if (assembly == null)
 			{
-				#if NETSTANDARD
-				if (TypeHelper.GetCallingAssembly == null)
-					throw new ArgumentNullException("assembly", string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
+				#if NETSTANDARD1_0
                 assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 				#else
 				assembly = Assembly.GetCallingAssembly();
