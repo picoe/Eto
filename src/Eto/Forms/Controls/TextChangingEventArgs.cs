@@ -124,8 +124,12 @@ namespace Eto.Forms
 		string GetNewText()
 		{
 			var old = OldText;
+			if (old.Length == 0)
+				return text;
 			var r = Range;
 			var start = old.Substring(0, r.Start);
+			if (r.End >= old.Length)
+				return start + text;
 			var end = old.Substring(r.End + 1);
 			return start + text + end;
 		}
