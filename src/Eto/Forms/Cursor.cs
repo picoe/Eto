@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -145,14 +146,13 @@ namespace Eto.Forms
 		/// <param name="resourceName">Name of the resource in the caller's assembly to load. E.g. "MyProject.SomeFolder.YourFile.cur"</param>
 		/// <param name="assembly">Assembly to load the cursor from, or null to use the caller's assembly</param>
 		/// <returns>A new instance of a Cursor loaded from the specified resource</returns>
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static Cursor FromResource(string resourceName, Assembly assembly = null)
 		{
 
 			if (assembly == null)
 			{
-#if NETSTANDARD
-				if (TypeHelper.GetCallingAssembly == null)
-					throw new ArgumentNullException(nameof(assembly), string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
+#if NETSTANDARD1_0
 				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 #else
 				assembly = Assembly.GetCallingAssembly();
