@@ -76,7 +76,7 @@ namespace Eto.Wpf.Forms
 					return contextCreationSucceeded.Value;
 					
 				// Use a custom manifest from resources and write it to a temp file
-				var manifestLoc = Path.GetTempFileName();
+				var manifestLoc = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 				try
 				{
 					var stream = typeof(EnableThemingInScope).Assembly.GetManifestResourceStream("Eto.Wpf.XPThemes.manifest");

@@ -90,9 +90,12 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
 			{
-				colorize?.Begin(frame, controlView);
-				base.DrawBezelWithFrame(frame, controlView);
-				colorize?.End();
+				if (NSGraphicsContext.IsCurrentContextDrawingToScreen)
+				{
+					colorize?.Begin(frame, controlView);
+					base.DrawBezelWithFrame(frame, controlView);
+					colorize?.End();
+				}
 			}
 
 			public override CGRect DrawTitle(NSAttributedString title, CGRect frame, NSView controlView)

@@ -126,11 +126,7 @@ namespace Eto.Mac.Forms.Printing
 
 		public bool Print(bool showPanel, Window parent, NSPrintPanel panel)
 		{
-			var op = NSPrintOperation.FromView(Control);
-			if (printSettings != null)
-				op.PrintInfo = printSettings.ToNS();
-			else
-				PrintSettingsHandler.SetDefaults(op.PrintInfo);
+			var op = NSPrintOperation.FromView(Control, PrintSettings.ToNS());
 				
 			(Control as PrintView)?.PrepareForPrint(op);
 			
@@ -229,28 +225,40 @@ namespace Eto.Mac.Forms.Printing
 				base.PrepareForPrint(operation);
 				
 				var paperSize = operation.PrintInfo.ImageablePageBounds.Size;
-				var size = Frame.Size;
+				var size = _preferredSize.ToNS();
+
 				// todo: take into account if width > page size and multiply number of pages as needed.
+				var scale = (nfloat)Math.Min(1.0, paperSize.Width / size.Width);
 				
-				_numPages = (int)Math.Ceiling(_preferredSize.Height / paperSize.Height);
+				operation.PrintInfo.ScalingFactor = scale;
 				
-				size.Width = (nfloat)Math.Max(size.Width, paperSize.Width);
-				size.Height = (nfloat)Math.Max(size.Height, paperSize.Height);
+				_numPages = (int)Math.Ceiling(_preferredSize.Height / (paperSize.Height / scale));
 				
+				size.Width = (nfloat)(Math.Max(size.Width, paperSize.Width / scale));
+				size.Height = (nfloat)(Math.Max(size.Height, paperSize.Height / scale * _numPages));
 				SetFrameSize(size);
 				UpdateConstraintsForSubtreeIfNeeded();
+				LayoutSubtreeIfNeeded();
+
+				// scale to fit
+				if (scale < 1)
+					ScaleUnitSquareToSize(new CGSize(scale, scale));
+				
 			}
 
 			public override CGRect RectForPage(nint pageNumber)
 			{
 				var operation = NSPrintOperation.CurrentOperation;
 				var paperSize = operation.PrintInfo.ImageablePageBounds.Size;
-				var size = Frame.Size;
-				size.Width = (nfloat)Math.Min(size.Width, paperSize.Width);
-				size.Height = (nfloat)Math.Min(size.Height, paperSize.Height);
-				var location = new CGPoint(0, 0);
-				location.Y = (nfloat)Math.Max(0, _preferredSize.Height - paperSize.Height * pageNumber);
-				return new CGRect(location, size);
+				var frame = Frame;
+				var scale = operation.PrintInfo.ScalingFactor;
+				
+				var rect = new CGRect();
+				rect.Y = (nfloat)Math.Max(0, frame.Height - (paperSize.Height * pageNumber / scale));
+				rect.Width = (nfloat)(Math.Min(frame.Width, paperSize.Width / scale));
+				rect.Height = (nfloat)(Math.Min(frame.Height, paperSize.Height / scale));
+				
+				return rect;
 			}
 
 			public override bool KnowsPageRange(ref NSRange aRange)

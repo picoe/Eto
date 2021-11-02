@@ -126,7 +126,7 @@ namespace Eto.WinForms.Forms
 		{
 			// using Cursor constructor doesn't support 32-bit cursors
 			// so we save to a temp file and use LoadCursorFromFile.
-			var tmp = Path.GetTempFileName();
+			var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()); //Path.GetTempFileName();
 			try
 			{
 				using (var tmpStream = File.Create(tmp))

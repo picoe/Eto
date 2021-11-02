@@ -54,7 +54,19 @@ namespace Eto.Wpf.Forms.Printing
 		{
 			Canvas _canvas;
 			sw.FrameworkElement _control;
+			double _scale = 1;
 			public PrintDocumentHandler Handler { get; set; }
+			
+			public double Scale
+			{
+				get => _scale;
+				set
+				{
+					_scale = value;
+					LayoutTransform = new swm.ScaleTransform(_scale, _scale);
+				}
+			}
+			
 			public Canvas Canvas
 			{
 				get => _canvas;
@@ -127,17 +139,22 @@ namespace Eto.Wpf.Forms.Printing
 				Canvas?.Arrange(finalRect);
 
 				var desired = Control.DesiredSize;
-				var rect = new sw.Rect(0, 0, Math.Max(finalSize.Width, desired.Width), Math.Max(finalSize.Height, desired.Height));
-				rect.Y -= PageNumber * Handler._imageableArea.Height;
+				var pageSize = Handler._imageableArea;
+				var pageCount = Handler._pageCount ?? 1;
+				var rect = new sw.Rect(0, -PageNumber * pageSize.Height / Scale, pageSize.Width / Scale, pageSize.Height * pageCount / Scale);
 				Control?.Arrange(rect);
 				return finalSize;
 			}
 
 			protected override sw.Size MeasureOverride(sw.Size availableSize)
 			{
+				base.MeasureOverride(availableSize);
+				
 				Canvas?.Measure(availableSize);
 				Control?.Measure(new sw.Size(availableSize.Width, double.PositiveInfinity));
-				return availableSize;
+				var canvasDesired = Canvas?.DesiredSize.ToEto() ?? SizeF.Empty;
+				var controlDesired = Control?.DesiredSize.ToEto() ?? SizeF.Empty;
+				return SizeF.Max(canvasDesired, controlDesired).ToWpf();
 			}
 		}
 
@@ -157,44 +174,29 @@ namespace Eto.Wpf.Forms.Printing
 
 			public override swd.IDocumentPaginatorSource Source => null;
 		}
-		
+
 		private swd.DocumentPage GetPage(int pageNumber)
 		{
 			sw.UIElement page;
 			bool measure = true;
 			if (_control != null)
 			{
+				SetupControl();
 				var control = _control.GetContainerControl();
-				
-					
+
 				if (control.Parent is Combined parentCombined)
 				{
 					parentCombined.PageNumber = pageNumber;
 					page = parentCombined;
 				}
-				else if (control.Parent == null)
-				{
-					var combined = new Combined
-					{
-						Handler = this,
-						Width = _imageableArea.Width,
-						Height = _imageableArea.Height,
-						Control = control,
-						Canvas = new Canvas { Handler = this }
-					};
-					
-					// force all children to load
-					combined.Measure(new sw.Size(double.PositiveInfinity, double.PositiveInfinity));
-					combined.Arrange(new sw.Rect(combined.DesiredSize));
-					// set the scale after the control is loaded
-					// note we need to do the additional measure/arrange below so controls get to the right spot.
-					_control?.GetWpfFrameworkElement()?.SetScale(true, true);
-					page = combined;
-				}
 				else
 				{
 					page = control;
-					measure = false;
+					var scale = Math.Min(1, Math.Min(_imageableArea.Width / page.DesiredSize.Width, _imageableArea.Height / page.DesiredSize.Height));
+					if (_lastTransform == null)
+						_lastTransform = control.LayoutTransform;
+					control.LayoutTransform = new swm.ScaleTransform(scale, scale);
+					measure = true;
 				}
 			}
 			else
@@ -207,14 +209,39 @@ namespace Eto.Wpf.Forms.Printing
 					Height = _imageableArea.Height
 				};
 			}
-			
+
 			if (measure)
 			{
 				page.Measure(_imageableArea.Size);
 				page.Arrange(_imageableArea);
 			}
-			
-			return new swd.DocumentPage(page);
+
+			return new swd.DocumentPage(page, Control.PageSize, sw.Rect.Empty, _imageableArea);
+		}
+
+		private void SetupControl()
+		{
+			var control = _control?.GetContainerControl();
+			if (control == null || control.Parent != null)
+				return;
+				
+			var combined = new Combined
+			{
+				Handler = this,
+				Control = control,
+				Canvas = new Canvas { Handler = this }
+			};
+
+			// force all children to load
+			combined.Measure(new sw.Size(double.PositiveInfinity, double.PositiveInfinity));
+			combined.Arrange(new sw.Rect(combined.DesiredSize));
+			// set the scale after the control is loaded
+			// note we need to do the additional measure/arrange below so controls get to the right spot.
+			_control?.GetWpfFrameworkElement()?.SetScale(true, true);
+
+			// limit to at most one page wide, so scale the desired size to fit..
+			// todo: allow spanning multiple pages wide somehow?
+			combined.Scale = Math.Min(1, _imageableArea.Width / combined.DesiredSize.Width);
 		}
 
 		public void Print()
@@ -229,8 +256,18 @@ namespace Eto.Wpf.Forms.Printing
 			_imageableArea = new sw.Rect(ia.OriginWidth, ia.OriginHeight, ia.ExtentWidth, ia.ExtentHeight);
 
 			print.PrintDocument(Control, Name);
+			Cleanup();
 		}
-		
+
+		private void Cleanup()
+		{
+			if (_control != null && _lastTransform != null)
+			{
+				var element = _control.GetContainerControl();
+				element.LayoutTransform = _lastTransform;
+			}
+		}
+
 		public sw.Xps.Packaging.XpsDocument GetPrintPreview(string tempFileName)
 		{
 			var print = new swc.PrintDialog();
@@ -245,6 +282,7 @@ namespace Eto.Wpf.Forms.Printing
 			var writer = sw.Xps.Packaging.XpsDocument.CreateXpsDocumentWriter(xpsDocument);
 			writer.WritingPrintTicketRequired += (sender, e) => e.CurrentPrintTicket = print.PrintTicket;
 			writer.Write(Control);
+			Cleanup();
 			return xpsDocument;
 		}
 
@@ -287,6 +325,15 @@ namespace Eto.Wpf.Forms.Printing
 		{
 			if (_control == null)
 				return 0;
+				
+			// can't span pages if printing directly from screen
+			if (_control.Parent != null)
+				return 1;
+
+			// ensure the WPF control isn't attached
+			var wpfControl = _control.GetContainerControl();
+			if (wpfControl == null || (wpfControl.Parent != null && !(wpfControl.Parent is Combined)))
+				return 1;
 
 			var settings = PrintSettings.Handler as PrintSettingsHandler;
 
@@ -302,6 +349,8 @@ namespace Eto.Wpf.Forms.Printing
 		}
 
 		PrintSettings _printSettings;
+		swm.Transform _lastTransform;
+
 		public PrintSettings PrintSettings
 		{
 			get
