@@ -127,6 +127,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				case Splitter.PositionChangedEvent:
 				case Splitter.PositionChangingEvent:
+				case Splitter.PositionChangeStartedEvent:
+				case Splitter.PositionChangeCompletedEvent:
 					// handled by delegate
 					break;
 				default:
@@ -297,6 +299,8 @@ namespace Eto.Mac.Forms.Controls
 					proposedPosition = (nfloat)Math.Min(totalSize, proposedPosition);
 				}
 
+				h.TriggerChangeStarted();
+
 				var args = new SplitterPositionChangingEventArgs((int)Math.Round(proposedPosition));
 				h.Callback.OnPositionChanging(h.Widget, args);
 				if (args.Cancel)
@@ -325,12 +329,13 @@ namespace Eto.Mac.Forms.Controls
 					if (mainFrame.Width <= 1 || mainFrame.Height <= 1)
 						return;
 					h.position = h.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
+					h.TriggerChangeStarted();
 					h.Callback.OnPositionChanged(h.Widget, EventArgs.Empty);
 				}
 			}
 
 		}
-		// stupid hack for OSX 10.5 so that mouse down/drag/up events fire in children properly..
+
 		public class EtoSplitView : NSSplitView, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -352,26 +357,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void MouseDown(NSEvent theEvent)
 			{
-				var cursor = NSCursor.CurrentCursor;
-				if (cursor == NSCursor.ResizeLeftCursor || cursor == NSCursor.ResizeRightCursor || cursor == NSCursor.ResizeLeftRightCursor
-				    || cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
-					base.MouseDown(theEvent);
-			}
-
-			public override void MouseDragged(NSEvent theEvent)
-			{
-				var cursor = NSCursor.CurrentCursor;
-				if (cursor == NSCursor.ResizeLeftCursor || cursor == NSCursor.ResizeRightCursor || cursor == NSCursor.ResizeLeftRightCursor
-				    || cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
-					base.MouseDragged(theEvent);
-			}
-
-			public override void MouseUp(NSEvent theEvent)
-			{
-				var cursor = NSCursor.CurrentCursor;
-				if (cursor == NSCursor.ResizeLeftCursor || cursor == NSCursor.ResizeRightCursor || cursor == NSCursor.ResizeLeftRightCursor
-				    || cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
-					base.MouseUp(theEvent);
+				Handler?.StartChange();
+				base.MouseDown(theEvent);
+				Handler?.TriggerChangeCompleted();
 			}
 
 			public override void Layout()
@@ -382,6 +370,31 @@ namespace Eto.Mac.Forms.Controls
 				if (!MacView.NewLayout)
 					base.Layout();
 			}
+		}
+		
+		bool changeStarted;
+
+		private void TriggerChangeStarted()
+		{
+			if (!changeStarted)
+			{
+				changeStarted = true;
+				Callback.OnPositionChangeStarted(Widget, EventArgs.Empty);
+			}
+		}
+
+		private void TriggerChangeCompleted()
+		{
+			if (changeStarted)
+			{
+				changeStarted = false;
+				Callback.OnPositionChangeCompleted(Widget, EventArgs.Empty);
+			}
+		}
+
+		private void StartChange()
+		{
+			changeStarted = false;
 		}
 
 		private void PerformLayout()
