@@ -207,7 +207,7 @@ namespace Eto.Wpf.Forms.Controls
 				reportProgress?.Invoke(info);
 			}
 			// download bootstrapper to temp folder
-			var tempFile = Path.GetTempFileName() + ".exe";
+			var tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()) + ".exe";
 			try
 			{
 				info.Text = Loc("Downloading bootstrapper...");

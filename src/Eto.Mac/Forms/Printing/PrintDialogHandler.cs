@@ -48,7 +48,7 @@ namespace Eto.Mac.Forms.Printing
 			}
 			else
 			{
-				var printInfo = settings.ToNS();
+				var printInfo = PrintSettings.ToNS();
 				if (parent != null)
 				{
 					var parentHandler = (IMacWindow)parent.Handler;
@@ -65,16 +65,8 @@ namespace Eto.Mac.Forms.Printing
 
 		public PrintSettings PrintSettings
 		{
-			get
-			{
-				if (settings == null)
-					settings = Control.PrintInfo.ToEto();
-				return settings;
-			}
-			set
-			{
-				settings = value;
-			}
+			get => settings ?? (settings = Control.PrintInfo.ToEto() ?? new PrintSettings());
+			set => settings = value;
 		}
 
 		public bool AllowCopies

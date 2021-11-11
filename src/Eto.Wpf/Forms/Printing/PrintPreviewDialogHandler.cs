@@ -53,19 +53,32 @@ namespace Eto.Wpf.Forms.Printing
 			var printCapabilities = print.PrintQueue.GetPrintCapabilities(print.PrintTicket);
 			var ia = printCapabilities.PageImageableArea;
 			var documentHandler = (PrintDocumentHandler)Document.Handler;
-			var tempFileName = Path.GetTempFileName();
+			var tempFileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()); // Path.GetTempFileName creates a file, we don't want it created yet.
 			try
 			{
 				using (var previewDocument = documentHandler.GetPrintPreview(tempFileName))
 				{
-					Control.Document = previewDocument.GetFixedDocumentSequence();
+					var fixedDocument = previewDocument.GetFixedDocumentSequence();
+					fixedDocument.PrintTicket = print.PrintTicket;
+					// fixedDocument.DocumentPaginator.PageSize = new sw.Size(1000, 800);
+					
+					Control.Document = fixedDocument;
 					Control.ShowDialog();
 				}
 			}
 			finally
 			{
 				if (File.Exists(tempFileName))
-					File.Delete(tempFileName);
+				{
+					try
+					{
+						File.Delete(tempFileName);
+					}
+					catch
+					{
+						// ignoring errors
+					}
+				}
 			}
 
 			return DialogResult.Ok;
@@ -73,7 +86,7 @@ namespace Eto.Wpf.Forms.Printing
 
 		public PrintSettings PrintSettings
 		{
-			get => settings ?? (settings = new PrintSettings());
+			get => settings ?? (settings = Document.PrintSettings ?? new PrintSettings());
 			set => settings = value;
 		}
 	}
