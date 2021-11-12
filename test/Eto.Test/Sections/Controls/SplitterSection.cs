@@ -130,17 +130,19 @@ namespace Eto.Test.Sections.Controls
 				{
 					using (Context)
 					{
+						var splitter = new Splitter
+						{
+							Panel1 = new TreeGridView { Size = new Size(100, 100) },
+							Panel2 = new GridView(),
+							Orientation = Orientation.Horizontal,
+							FixedPanel = SplitterFixedPanel.Panel1,
+							Position = 100,
+						};
+						LogEvents(splitter);
 						var newTabpage = new TabPage
 						{
 							Text = "test",
-							Content = new Splitter
-							{
-								Panel1 = new TreeGridView { Size = new Size(100, 100) },
-								Panel2 = new GridView(),
-								Orientation = Orientation.Horizontal,
-								FixedPanel = SplitterFixedPanel.Panel1,
-								Position = 100,
-							}
+							Content = splitter
 						};
 						tabcontrol.Pages.Add(newTabpage);
 						tabcontrol.SelectedPage = newTabpage;
@@ -248,6 +250,7 @@ namespace Eto.Test.Sections.Controls
 						Orientation = Orientation.Vertical,
 						Position = 200
 					};
+					LogEvents(p0_1);
 					// absolute position with height and second panel fixed (issue #309)
 					var p2_3 = new Splitter
 					{
@@ -258,6 +261,7 @@ namespace Eto.Test.Sections.Controls
 						//Position = 0,
 						Height = 205 // ~ RelativePosition=200
 					};
+					LogEvents(p2_3);
 					// ratio mode (60%)
 					var p4_5 = new Splitter
 					{
@@ -267,6 +271,7 @@ namespace Eto.Test.Sections.Controls
 						FixedPanel = SplitterFixedPanel.None,
 						RelativePosition = .6
 					};
+					LogEvents(p4_5);
 					// auto-size test
 					var p01_23 = new Splitter
 					{
@@ -274,6 +279,7 @@ namespace Eto.Test.Sections.Controls
 						Panel2 = p2_3,
 						Orientation = Orientation.Horizontal,
 					};
+					LogEvents(p01_23);
 					// relative position with second panel fixed
 					var p0123_45 = new Splitter
 					{
@@ -283,6 +289,7 @@ namespace Eto.Test.Sections.Controls
 						FixedPanel = SplitterFixedPanel.Panel2,
 						RelativePosition = 150
 					};
+					LogEvents(p0123_45);
 					return Root = p0123_45;
 				}
 			}
@@ -317,19 +324,23 @@ namespace Eto.Test.Sections.Controls
 					Panel2 = rightBottom,
 					Position = 200,
 				};
+				LogEvents(rightPane);
+
+				var mainPane = new Splitter
+				{
+					Orientation = Orientation.Horizontal,
+					FixedPanel = SplitterFixedPanel.Panel1,
+					BackgroundColor = Colors.Gray,
+					Position = 200,
+					Panel1 = leftPane,
+					Panel2 = rightPane
+				};
+				LogEvents(mainPane);
 
 				var form = new Form
 				{
 					Padding = new Padding(5),
-					Content = new Splitter
-					{
-						Orientation = Orientation.Horizontal,
-						FixedPanel = SplitterFixedPanel.Panel1,
-						BackgroundColor = Colors.Gray,
-						Position = 200,
-						Panel1 = leftPane,
-						Panel2 = rightPane
-					}
+					Content = mainPane
 				};
 				if (setSize)
 					form.Size = new Size(600, 400);
@@ -384,23 +395,27 @@ namespace Eto.Test.Sections.Controls
 					{
 						Position = 80
 					};
+					LogEvents(main);
 					var middle = new Splitter
 					{
 						FixedPanel = SplitterFixedPanel.Panel2,
 						Width = 200,
 						Position = 120 - main.SplitterWidth
 					};
+					LogEvents(middle);
 					var ltop = new Splitter
 					{
 						Orientation = Orientation.Vertical,
 						Position = 80
 					};
+					LogEvents(ltop);
 					var lbottom = new Splitter
 					{
 						Orientation = Orientation.Vertical,
 						FixedPanel = SplitterFixedPanel.Panel2,
 						RelativePosition = 80
 					};
+					LogEvents(lbottom);
 					var right = new Splitter
 					{
 						Orientation = Orientation.Vertical,
@@ -408,11 +423,13 @@ namespace Eto.Test.Sections.Controls
 						Height = 300 + main.SplitterWidth,
 						Position = 100 // ~33%
 					};
+					LogEvents(right);
 					var center = new Splitter
 					{
 						FixedPanel = SplitterFixedPanel.None,
 						RelativePosition = .4
 					};
+					LogEvents(center);
 					main.Panel1 = ltop;
 					main.Panel2 = middle;
 					ltop.Panel1 = makebox(ltop);
@@ -491,6 +508,7 @@ namespace Eto.Test.Sections.Controls
 						Panel1 = new Panel { Padding = 20, BackgroundColor = Colors.Red, Content = new Panel { BackgroundColor = Colors.White, Size = new Size(200, 400) } },
 						Panel2 = new Panel { Padding = 20, BackgroundColor = Colors.Blue, Content = new Panel { BackgroundColor = Colors.White, Size = new Size(200, 400) } }
 					};
+					LogEvents(splitter);
 
 					var showPanel1 = new CheckBox { Text = "Panel1.Visible" };
 					showPanel1.CheckedBinding.Bind(splitter.Panel1, r => r.Visible);
@@ -572,6 +590,14 @@ namespace Eto.Test.Sections.Controls
 			};
 
 			return control;
+		}
+
+		static void LogEvents(Splitter splitter)
+		{
+			splitter.PositionChanged += (sender, e) => Log.Write(sender, $"PositionChanged: {splitter.Position}");
+			splitter.PositionChanging += (sender, e) => Log.Write(sender, $"PositionChanging: New: {e.NewPosition}, Current: {splitter.Position}");
+			splitter.PositionChangeStarted += (sender, e) => Log.Write(sender, $"PositionChangeStarted");
+			splitter.PositionChangeCompleted += (sender, e) => Log.Write(sender, $"PositionChangeCompleted");
 		}
 	}
 }

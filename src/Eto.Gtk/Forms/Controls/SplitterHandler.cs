@@ -328,7 +328,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		void Create()
 		{
 			Gtk.Paned old = Control;
-
+			
 			if (orientation == Orientation.Horizontal)
 				Control = new EtoHPaned() { Handler = this };
 			else
@@ -369,6 +369,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.AddNotification("position", PositionChanged);
 		}
 		int lastPosition;
+		UITimer timer;
 
 		void PositionChanged(object o, GLib.NotifyArgs args)
 		{
@@ -386,6 +387,13 @@ namespace Eto.GtkSharp.Forms.Controls
 				return;
 			}
 			position = lastPosition;
+			if (timer == null)
+			{
+				timer = new UITimer(TriggerChangeCompleted) { Interval = 0.5 };
+				Callback.OnPositionChangeStarted(Widget, EventArgs.Empty);
+			}
+			timer.Start();
+
 			var e = new SplitterPositionChangingEventArgs(newPosition);
 			Callback.OnPositionChanging(Widget, e);
 			position = null;
@@ -403,17 +411,39 @@ namespace Eto.GtkSharp.Forms.Controls
 			suppressSplitterMoved--;
 		}
 
+		private void TriggerChangeCompleted(object sender, EventArgs e)
+		{
+			Callback.OnPositionChangeCompleted(Widget, EventArgs.Empty);
+			timer?.Dispose();
+			timer = null;
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
 				case Splitter.PositionChangingEvent:
+				case Splitter.PositionChangeStartedEvent:
+				case Splitter.PositionChangeCompletedEvent:
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			
+			Widget.MouseUp += Widget_MouseUp;
+		}
+
+		private void Widget_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (timer != null)
+				TriggerChangeCompleted(sender, EventArgs.Empty);
 		}
 
 		public override void OnLoad(EventArgs e)

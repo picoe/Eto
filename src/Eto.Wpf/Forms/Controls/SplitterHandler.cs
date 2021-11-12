@@ -6,20 +6,23 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Drawing;
 using System.ComponentModel;
+using System.Windows.Controls.Primitives;
 
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoGrid : swc.Grid, IEtoWpfControl
 	{
 		public IWpfFrameworkElement Handler { get; set; }
+		
+		internal sw.Size BaseMeasureOverride(sw.Size constraint) => base.MeasureOverride(constraint);
 
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
 	}
-
-	public class SplitterHandler : WpfContainer<swc.Grid, Splitter, Splitter.ICallback>, Splitter.IHandler
+	
+	public class SplitterHandler : WpfContainer<EtoGrid, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
 		readonly swc.GridSplitter splitter;
 		readonly swc.DockPanel pane1;
@@ -29,25 +32,45 @@ namespace Eto.Wpf.Forms.Controls
 		int? position;
 		int splitterWidth = 5;
 		double relative = double.NaN;
-		swc.ColumnDefinition xcolumn;
-		swc.RowDefinition ycolumn;
 		bool panel1Visible, panel2Visible;
 		int panel1MinimumSize, panel2MinimumSize;
 		Control panel1, panel2;
 		PropertyChangeNotifier panel1VisibilityNotifier;
 		PropertyChangeNotifier panel2VisibilityNotifier;
 
+
+		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
+		{
+			return base.MeasureOverride(constraint, BetterMeasure);
+		}
+
+		private sw.Size BetterMeasure(sw.Size constraint)
+		{
+			// call base measure override so everything gets set up correctly
+			var size = Control.BaseMeasureOverride(constraint);
+			
+			if (FixedPanel == SplitterFixedPanel.Panel2)
+			{
+				// provide our own measuring when FixedPanel is Panel2, as WPF gets it wrong sometimes
+				var panel1Size = panel1?.GetContainerControl()?.DesiredSize ?? sw.Size.Empty;
+				var panel2Size = panel2?.GetContainerControl()?.DesiredSize ?? sw.Size.Empty;
+				if (Orientation == Orientation.Horizontal)
+					size.Width = Math.Max(size.Width, panel1Size.Width + panel2Size.Width + SplitterWidth);
+				else
+					size.Height = Math.Max(size.Height, panel1Size.Height + panel2Size.Height + SplitterWidth); 
+			}
+			return size;
+		}
+
 		public SplitterHandler()
 		{
 			Control = new EtoGrid { Handler = this };
 
-			xcolumn = new swc.ColumnDefinition();
-			Control.ColumnDefinitions.Add(xcolumn);
+			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition() { Width = sw.GridLength.Auto });
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
 
-			ycolumn = new swc.RowDefinition();
-			Control.RowDefinitions.Add(ycolumn);
+			Control.RowDefinitions.Add(new swc.RowDefinition());
 			Control.RowDefinitions.Add(new swc.RowDefinition { Height = sw.GridLength.Auto });
 			Control.RowDefinitions.Add(new swc.RowDefinition());
 
@@ -79,6 +102,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			// only set on initial load, subsequent loads should keep the last position
 			Control.Loaded -= Control_Loaded;
+			ResetMinMax();
 			SetInitialPosition();
 		}
 
@@ -88,19 +112,42 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				case Splitter.PositionChangedEvent:
 					PositionChangedEnabled++;
-					AttachPropertyChanged(swc.RowDefinition.HeightProperty, HandlePositionChanged, Control.RowDefinitions[0]);
-					AttachPropertyChanged(swc.ColumnDefinition.WidthProperty, HandlePositionChanged, Control.ColumnDefinitions[0]);
+					AttachPropertyChanged(swc.RowDefinition.HeightProperty, HandlePositionChanged, Control.RowDefinitions[0], new object());
+					AttachPropertyChanged(swc.RowDefinition.HeightProperty, HandlePositionChanged, Control.RowDefinitions[2], new object());
+					AttachPropertyChanged(swc.ColumnDefinition.WidthProperty, HandlePositionChanged, Control.ColumnDefinitions[0], new object());
+					AttachPropertyChanged(swc.ColumnDefinition.WidthProperty, HandlePositionChanged, Control.ColumnDefinitions[2], new object());
 					PositionChangedEnabled--;
 					break;
 				case Splitter.PositionChangingEvent:
-					splitter.DragStarted += (sender, e) => HandlePositionChanging(e.HorizontalOffset, e.VerticalOffset);
-					splitter.DragCompleted += (sender, e) => e.Handled = HandlePositionChanging(e.HorizontalChange, e.VerticalChange);
-					splitter.DragDelta += (sender, e) => e.Handled = HandlePositionChanging(e.HorizontalChange, e.VerticalChange);
+					splitter.DragStarted += splitter_DragStarted;
+					splitter.DragCompleted += splitter_DragCompleted;
+					splitter.DragDelta += splitter_DragDelta;
+					break;
+				case Splitter.PositionChangeStartedEvent:
+				case Splitter.PositionChangeCompletedEvent:
+					HandleEvent(Splitter.PositionChangingEvent);
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		private void splitter_DragDelta(object sender, DragDeltaEventArgs e)
+		{
+			e.Handled = HandlePositionChanging(e.HorizontalChange, e.VerticalChange);
+		}
+
+		private void splitter_DragCompleted(object sender, DragCompletedEventArgs e)
+		{
+			e.Handled = HandlePositionChanging(e.HorizontalChange, e.VerticalChange);
+			Callback.OnPositionChangeCompleted(Widget, EventArgs.Empty);
+		}
+
+		private void splitter_DragStarted(object sender, DragStartedEventArgs e)
+		{
+			Callback.OnPositionChangeStarted(Widget, EventArgs.Empty);
+			HandlePositionChanging(e.HorizontalOffset, e.VerticalOffset);
 		}
 
 		void HandlePositionChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
@@ -110,37 +157,59 @@ namespace Eto.Wpf.Forms.Controls
 			// we use actual width vs. width itself, so we have to use the value passed in
 			var old = position;
 			var pos = (sw.GridLength)e.NewValue;
-			if (pos.GridUnitType == sw.GridUnitType.Pixel)
+			if (pos.GridUnitType != sw.GridUnitType.Pixel)
+				return;
+				
+			var newPosition = (int)Math.Round(pos.Value);
+			
+			if (sender is PropertyChangeNotifier notifier && 
+				(notifier.PropertySource == Control.ColumnDefinitions[2] || notifier.PropertySource == Control.RowDefinitions[2]))
 			{
-				var newPosition = (int)pos.Value;
-				if (newPosition != Position)
-				{
-					var args = new SplitterPositionChangingEventArgs(newPosition);
-					Callback.OnPositionChanging(Widget, args);
-					if (args.Cancel)
-					{
-						return;
-					}
-				}
-				position = newPosition;
+				// invert position, we are resizing the second pane, not the first
+				newPosition = (int)Math.Round(GetAvailableSize() - newPosition);
 			}
+			if (newPosition != Position)
+			{
+				var args = new SplitterPositionChangingEventArgs(newPosition);
+				// Console.WriteLine($"Source: PositionChanged: {newPosition}");
+				Callback.OnPositionChanging(Widget, args);
+				if (args.Cancel)
+				{
+					return;
+				}
+			}
+			position = newPosition;
 			Callback.OnPositionChanged(Widget, EventArgs.Empty);
 			position = old;
 		}
 
-		bool HandlePositionChanging(double horizontal, double vertical)
+		bool HandlePositionChanging(double horizontal, double vertical, [System.Runtime.CompilerServices.CallerMemberName] string source = null)
 		{
 			var position = DoublePosition;
 			if (orientation == Orientation.Horizontal)
 				position += horizontal;
 			else
 				position += vertical;
+				
 			// restrict to control size
 			position = Math.Max(0, Math.Min(GetAvailableSize(false), position));
+			
+			var intPosition = (int)Math.Round(position);
 
-			var args = new SplitterPositionChangingEventArgs((int)Math.Round(position));
+			if (intPosition == Position)
+				return false;
+			// Console.WriteLine($"Source: {source}, {intPosition}");
+			var args = new SplitterPositionChangingEventArgs(intPosition);
 			Callback.OnPositionChanging(Widget, args);
-			return args.Cancel;
+			if (args.Cancel)
+				return true;
+				
+			if (fixedPanel == SplitterFixedPanel.None)
+			{
+				Callback.OnPositionChanged(Widget, EventArgs.Empty);
+			}
+			
+			return false;
 		}
 
 		static object PositionChangedEnabled_Key = new object();
@@ -285,7 +354,7 @@ namespace Eto.Wpf.Forms.Controls
 			switch (FixedPanel)
 			{
 				case SplitterFixedPanel.Panel1:
-					SetLength(2, new sw.GridLength(1, sw.GridUnitType.Star));
+					SetLength(0, new sw.GridLength(1, sw.GridUnitType.Star));
 					break;
 				case SplitterFixedPanel.Panel2:
 					SetLength(0, new sw.GridLength(1, sw.GridUnitType.Star));
@@ -349,6 +418,12 @@ namespace Eto.Wpf.Forms.Controls
 					UpdateRelativePosition(value);
 
 				fixedPanel = value;
+				
+				if (fixedPanel == SplitterFixedPanel.None)
+				{
+					// positionchanged events get triggered here when the fixed panel is none
+					HandleEvent(Splitter.PositionChangingEvent);
+				}
 
 				UpdateColumnSizing(Control.IsLoaded);
 			}
@@ -719,16 +794,51 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Widget.Properties.Get<bool>(WasLoaded_Key); }
 			set { Widget.Properties.Set(WasLoaded_Key, value); }
 		}
-
+		
 		private void ResetMinMax()
 		{
-			xcolumn.MinWidth = panel1MinimumSize;
-			if (Widget.Width > 0)
-				xcolumn.MaxWidth = Math.Max(Widget.Width - panel2MinimumSize, 0);
+			if (Orientation == Orientation.Horizontal)
+			{
+				Control.ColumnDefinitions[0].MinWidth = panel1MinimumSize;
+				Control.ColumnDefinitions[2].MinWidth = panel2MinimumSize;
+				Control.RowDefinitions[0].MinHeight = 0;
+				Control.RowDefinitions[2].MinHeight = 0;
+			}
+			else
+			{
+				Control.ColumnDefinitions[0].MinWidth = 0;
+				Control.ColumnDefinitions[2].MinWidth = 0;
+				Control.RowDefinitions[0].MinHeight = Panel1MinimumSize;
+				Control.RowDefinitions[2].MinHeight = panel2MinimumSize;
+			}
 
-			ycolumn.MinHeight = Panel1MinimumSize;
-			if (Widget.Height > 0)
-				ycolumn.MaxHeight = Math.Max(Widget.Height - panel2MinimumSize, 0);
+			if (Control.IsLoaded)
+			{
+				var available = this.GetAvailableSize();
+				// need to set the max height of resizing panel otherwise it can grow outside of window
+				if (Orientation == Orientation.Horizontal)
+				{
+					Control.ColumnDefinitions[0].MaxWidth = FixedPanel == SplitterFixedPanel.Panel1 ? Math.Max(0, available - Panel2MinimumSize) : double.PositiveInfinity;
+					Control.ColumnDefinitions[2].MaxWidth = FixedPanel == SplitterFixedPanel.Panel2 ? Math.Max(0, available - Panel1MinimumSize) : double.PositiveInfinity;
+					Control.RowDefinitions[0].MaxHeight = double.PositiveInfinity;
+					Control.RowDefinitions[2].MaxHeight = double.PositiveInfinity;
+				}
+				else
+				{
+					Control.ColumnDefinitions[0].MaxWidth = double.PositiveInfinity;
+					Control.ColumnDefinitions[2].MaxWidth = double.PositiveInfinity;
+					Control.RowDefinitions[0].MaxHeight = FixedPanel == SplitterFixedPanel.Panel1 ? Math.Max(0, available - Panel2MinimumSize) : double.PositiveInfinity;
+					Control.RowDefinitions[2].MaxHeight = FixedPanel == SplitterFixedPanel.Panel2 ? Math.Max(0, available - Panel1MinimumSize) : double.PositiveInfinity;
+				}
+			}
+			else
+			{
+				// need to set the max height of panel 2 otherwise it will grow beyond the bounds
+				Control.ColumnDefinitions[0].MaxWidth = double.PositiveInfinity;
+				Control.ColumnDefinitions[2].MaxWidth = double.PositiveInfinity;
+				Control.RowDefinitions[0].MaxHeight = double.PositiveInfinity;
+				Control.RowDefinitions[2].MaxHeight = double.PositiveInfinity;
+			}
 		}
 
 		public int Panel1MinimumSize

@@ -41,7 +41,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					{
 						BackgroundColor = Colors.Black
 					}
-				}, 
+				},
 				it =>
 				{
 					Assert.AreEqual(50, it.Position, "Fix: {0}; {1} [replay={2}]", fix, orient, replay);
@@ -149,6 +149,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Shown(
 				form =>
 				{
+					form.WindowStyle = WindowStyle.Utility;
 					// +====test 1====+ 
 					// |        |     | 
 					// | tested |     |   Tested splitter is placed inside two other splitters
@@ -238,7 +239,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						}
 					};
 					return it;
-				}, 
+				},
 				it =>
 				{
 					Assert.AreEqual(40, it.Position, "{0}; {1}", fix, orient);
@@ -259,8 +260,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					var it = new Splitter()
 					{
 						Orientation = orient,
-						FixedPanel	= fix,
-						Position	= 50,
+						FixedPanel = fix,
+						Position = 50,
 						Panel1 = new Panel
 						{
 							BackgroundColor = Colors.White
@@ -293,10 +294,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			{
 				var posLabel = new Label();
 				var label = new Label
-				{ 
+				{
 					Text = "Drag the splitter right",
 					TextAlignment = TextAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Center 
+					VerticalAlignment = VerticalAlignment.Center
 				};
 				int stage = 0;
 				var splitter = new Splitter
@@ -404,15 +405,18 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		public void SplitterChangingShouldAllowRestrictingWithoutArtifacts()
 		{
 			int? outOfBounds = null;
-			ManualForm("Splitter should be restricted between 100 and 200, and start at 300", form => {
-            	form.ClientSize = new Size(600, 300);
-				var splitter = new Splitter {
+			ManualForm("Splitter should be restricted between 100 and 200, and start at 300", form =>
+			{
+				form.ClientSize = new Size(600, 300);
+				var splitter = new Splitter
+				{
 
 					Panel1 = new Panel { BackgroundColor = Colors.Blue, Size = new Size(300, 200) },
 					Panel2 = new Panel { BackgroundColor = Colors.Red, Size = new Size(300, 200) }
 				};
 
-				splitter.PositionChanging += (sender, e) => {
+				splitter.PositionChanging += (sender, e) =>
+				{
 					System.Diagnostics.Debug.WriteLine($"PositionChanging, Position {splitter.Position}, NewPosition: {e.NewPosition}");
 					if (e.NewPosition < 100)
 					{
@@ -425,7 +429,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						e.Cancel = true;
 					}
 				};
-				splitter.PositionChanged += (sender, e) => {
+				splitter.PositionChanged += (sender, e) =>
+				{
 					var position = splitter.Position;
 					System.Diagnostics.Debug.WriteLine($"PositionChanged, Position: {position}");
 					if (position > 200 || position < 100)
@@ -435,26 +440,28 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					}
 				};
 
-		    	return splitter;
+				return splitter;
 			});
 			Assert.IsNull(outOfBounds, $"#1 - Position went out of bounds 100-200, was {outOfBounds}");
 		}
-		
+
 		[TestCase(Orientation.Horizontal)]
 		[TestCase(Orientation.Vertical)]
 		public void ZeroRelativePositionShouldNotCrash(Orientation orientation)
 		{
-			Shown(form => {
-				return new Splitter 
+			Shown(form =>
+			{
+				return new Splitter
 				{
 					Orientation = orientation,
-					Panel1 = new Panel { Size = new Size(200, 200)},
-					Panel2 = new Panel { Size = new Size(200, 200)},
+					Panel1 = new Panel { Size = new Size(200, 200) },
+					Panel2 = new Panel { Size = new Size(200, 200) },
 					FixedPanel = SplitterFixedPanel.None,
 					RelativePosition = 0
 				};
 			},
-			c => {
+			c =>
+			{
 				// if we got here it was successful
 			});
 		}

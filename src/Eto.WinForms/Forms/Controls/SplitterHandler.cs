@@ -128,12 +128,13 @@ namespace Eto.WinForms.Forms.Controls
 				SetInitialPosition();
 				SetFixedPanel();
 			};
-			Control.SplitterMoved += (sender, e) => CheckSplitterPos();
+			Control.SplitterMoved += (sender, e) => CheckSplitterPos(true);
 		}
 
 		int splitterMoving;
 		int lastPosition;
-		private void CheckSplitterPos()
+		
+		private void CheckSplitterPos(bool userMoved)
 		{
 			if (splitterMoving > 0)
 				return;
@@ -155,6 +156,10 @@ namespace Eto.WinForms.Forms.Controls
 				newPosition = panel1MinimumSize;
 			
 			position = lastPosition;
+			
+			if (userMoved)
+				Callback.OnPositionChangeStarted(Widget, EventArgs.Empty);
+			
 			var args = new SplitterPositionChangingEventArgs(newPosition);
 			Callback.OnPositionChanging(Widget, args);
 			position = null;
@@ -176,6 +181,9 @@ namespace Eto.WinForms.Forms.Controls
 				Control.SplitterDistance = newPosition;
 			}
 			lastPosition = newPosition;
+			
+			if (userMoved)
+				Callback.OnPositionChangeCompleted(Widget, EventArgs.Empty);
 				
 			splitterMoving--;
 		}
@@ -186,6 +194,8 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				case Splitter.PositionChangedEvent:
 				case Splitter.PositionChangingEvent:
+				case Splitter.PositionChangeStartedEvent:
+				case Splitter.PositionChangeCompletedEvent:
 					break;
 				default:
 					base.AttachEvent(id);
@@ -529,7 +539,7 @@ namespace Eto.WinForms.Forms.Controls
 			set
 			{
 				panel1MinimumSize = value;
-				CheckSplitterPos();
+				CheckSplitterPos(false);
 			}
 		}
 
@@ -539,7 +549,7 @@ namespace Eto.WinForms.Forms.Controls
 			set
 			{
 				panel2MinimumSize = value;
-				CheckSplitterPos();
+				CheckSplitterPos(false);
 			}
 		}
 

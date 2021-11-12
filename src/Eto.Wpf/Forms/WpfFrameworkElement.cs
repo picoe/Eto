@@ -1024,10 +1024,10 @@ namespace Eto.Wpf.Forms
 			return WinFormsHelpers.ToEtoWindow(handle);
 		}
 
-		protected void AttachPropertyChanged(sw.DependencyProperty property, EventHandler<sw.DependencyPropertyChangedEventArgs> handler, sw.DependencyObject control = null)
+		protected void AttachPropertyChanged(sw.DependencyProperty property, EventHandler<sw.DependencyPropertyChangedEventArgs> handler, sw.DependencyObject control = null, object key = null)
 		{
 			control = control ?? Control;
-			Widget.Properties.Set(property, PropertyChangeNotifier.Register(property, handler, control));
+			Widget.Properties.Set(key ?? property, PropertyChangeNotifier.Register(property, handler, control));
 		}
 
 		public void Print()
