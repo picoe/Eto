@@ -11,7 +11,7 @@ namespace Eto.GtkSharp.Forms
 {
 	public class LinuxTrayIndicatorHandler : WidgetHandler<GLib.Object, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
 	{
-		const string libappindicator = "libappindicator3.so.1";
+		const string libappindicator = "libayatana-appindicator3.so.1";
 		Image image;
 		string imagePath;
 		ContextMenu menu;
