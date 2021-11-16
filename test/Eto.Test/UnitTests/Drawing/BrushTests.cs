@@ -57,7 +57,7 @@ namespace Eto.Test.UnitTests.Drawing
 		[Test]
 		public void LinearGradientBrushShouldFillWithRectangleAndAngle()
 		{
-			var bmp = new Bitmap(30, 30, PixelFormat.Format32bppRgba);
+			var bmp = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
 			using (var g = new Graphics(bmp))
 			{
 				var brush = new LinearGradientBrush(
