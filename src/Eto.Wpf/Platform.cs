@@ -217,11 +217,6 @@ namespace Eto.Wpf
 
 		private WebView.IHandler Create_WebView2()
 		{
-#if NET45
-			Debug.WriteLine("Warning: .NET 4.5 target cannot use WebView2.  Target at least .NET 4.6.2, .NET Core, or .NET 5 instead and install the Microsoft.Web.WebView2 nuget package. Falling back to the Windows Forms WebView.");
-			UseSwfWebView();
-			return new SwfWebViewHandler();
-#else
 			try
 			{
 				return WebView2Loader.Create();
@@ -233,7 +228,6 @@ namespace Eto.Wpf
 				UseSwfWebView();
 				return new SwfWebViewHandler();
 			}
-#endif
 		}
 	}
 }

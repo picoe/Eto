@@ -1,7 +1,6 @@
 
 // #define TEST_INSTALL // test installation without actually installing it.
 
-#if !NET45
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -616,5 +615,3 @@ namespace Eto.Wpf.Forms.Controls
 
 	}
 }
-
-#endif

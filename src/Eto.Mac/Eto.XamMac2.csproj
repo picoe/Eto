@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <UseXamarinMac>True</UseXamarinMac>
-    <TargetFrameworks>net45;xamarinmac20</TargetFrameworks>
+    <TargetFrameworks>net462;xamarinmac20</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0'))">$(TargetFrameworks);net6.0-macos</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>

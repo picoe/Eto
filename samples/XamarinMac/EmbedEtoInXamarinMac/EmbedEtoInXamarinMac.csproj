@@ -3,12 +3,14 @@
   <PropertyGroup>
     <UseXamarinMac>True</UseXamarinMac>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net48</TargetFrameworks>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:5220</MonoBundlingExtraArgs>
+    <SupportedOSPlatformVersion>10.14</SupportedOSPlatformVersion>
+    <EnableDefaultImageAssets>False</EnableDefaultImageAssets>
   </PropertyGroup>
 
   <ItemGroup>

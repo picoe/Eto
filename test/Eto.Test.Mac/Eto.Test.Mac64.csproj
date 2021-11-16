@@ -6,7 +6,7 @@
   <Import Project="..\..\src\Eto.Mac\build\Mac.props" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
   
   <PropertyGroup>
-    <TargetFrameworks>net5.0;net472</TargetFrameworks>
+    <TargetFrameworks>net6.0;net48</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     
     <RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
