@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <RootNamespace>Tutorial2</RootNamespace>
     <Name>Tutorial2 - Menus and Toolbars</Name>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

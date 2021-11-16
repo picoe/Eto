@@ -173,7 +173,7 @@
       <Name>Eto.Serialization.Xaml</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Eto.Wpf\Eto.Wpf.csproj">
-      <AdditionalProperties>TargetFramework=net45</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=net462</AdditionalProperties>
       <Project>{63137fa0-ca55-11e3-9c1a-0800200c9a66}</Project>
       <Name>Eto.Wpf</Name>
     </ProjectReference>

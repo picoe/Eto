@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net48</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <DefineConstants>$(DefineConstants);GTK2</DefineConstants>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

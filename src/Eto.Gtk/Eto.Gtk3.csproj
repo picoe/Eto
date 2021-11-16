@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RootNamespace>Eto.GtkSharp</RootNamespace>
     <DefineConstants>$(DefineConstants);CAIRO;GTK3</DefineConstants>

@@ -8,7 +8,7 @@
 		<Description>Project and File templates for Eto.Forms</Description>
 		<Tags>cross-platform;gui;ui-framework;desktop;winforms;wpf;mac;osx;gtk;eto;eto.forms;dotnet-new</Tags>
 		
-		<TargetFramework>netstandard1.0</TargetFramework>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<ContentTargetFolders>content</ContentTargetFolders>
     
 		<EnableDefaultItems>false</EnableDefaultItems>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT'">true</HaveWindowsDesktopSdk>
 
-    <TargetFrameworks>net472;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
   </PropertyGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />

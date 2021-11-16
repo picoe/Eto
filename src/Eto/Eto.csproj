@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard1.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors Condition="$(Configuration) == 'Release'">true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -45,11 +45,6 @@ https://github.com/picoe/Eto/wiki
     <None Remove="Eto.Forms.targets" />
     <None Include="Eto.Forms.targets" Pack="true" PackagePath="build" />
     <None Update="$(BasePath)LICENSE.txt" CopyToOutputDirectory="PreserveNewest" /> 
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
-    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />

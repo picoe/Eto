@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform(Windows))">net5.0-windows;net472</TargetFrameworks>
-    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform(Windows))">net472</TargetFrameworks>
+    <TargetFrameworks>net48</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform(Windows))">net6.0-windows;$(TargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,7 +18,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net48'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
