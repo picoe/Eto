@@ -435,6 +435,8 @@ namespace Eto.Test.Sections
 
 		public ICollection<TestAttachment> TestAttachments => Results.SelectMany(r => r.TestAttachments).ToList();
 
+		public int TotalCount => Results.Sum(r => r.TotalCount);
+
 		public TNode AddToXml(TNode parentNode, bool recursive) => throw new NotImplementedException();
 
 		public TNode ToXml(bool recursive) => null;

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AssemblySearchPaths>$(AssemblySearchPaths);{gac}</AssemblySearchPaths>
   	<MDBinDir Condition="Exists('/opt/MonoDevelop/bin')">/opt/MonoDevelop/bin</MDBinDir>
   	<MDAddinsDir Condition="Exists('/opt/MonoDevelop/AddIns')">/opt/MonoDevelop/AddIns</MDAddinsDir>
