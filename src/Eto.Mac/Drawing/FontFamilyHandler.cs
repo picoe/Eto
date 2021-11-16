@@ -5,6 +5,7 @@ using System.Linq;
 #if XAMMAC2
 using AppKit;
 using Foundation;
+using CoreFoundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
@@ -32,11 +33,16 @@ namespace Eto.Mac.Drawing
 			{
 				// faceName cannot be null.  Use this when it is fixed in xammac/monomac:
 				// return NSFontManager.SharedFontManager.LocalizedNameForFamily(MacName, null);
-
-				var familyPtr = NSString.CreateNative(MacName);
 				var facePtr = IntPtr.Zero;
+#if XAMMAC
+				var familyPtr = CFString.CreateNative(MacName);
+				var result = CFString.FromHandle(Messaging.IntPtr_objc_msgSend_IntPtr_IntPtr(NSFontManager.SharedFontManager.Handle, sel_LocalizedNameForFamilyFace, familyPtr, facePtr));
+				CFString.ReleaseNative(familyPtr);
+#else
+				var familyPtr = NSString.CreateNative(MacName);
 				var result = NSString.FromHandle(Messaging.IntPtr_objc_msgSend_IntPtr_IntPtr(NSFontManager.SharedFontManager.Handle, sel_LocalizedNameForFamilyFace, familyPtr, facePtr));
 				NSString.ReleaseNative(familyPtr);
+#endif
 				return result;
 			}
 		}

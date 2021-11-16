@@ -7,6 +7,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
+using CoreFoundation;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -86,11 +87,19 @@ namespace Eto.Mac
 		// replacementString should allow nulls
 		public static bool ShouldChangeTextNew(this NSTextView textView, NSRange affectedCharRange, string replacementString)
 		{
+#if XAMMAC2
+			IntPtr intPtr = replacementString != null ? CFString.CreateNative(replacementString) : IntPtr.Zero;
+			bool result;
+			result = Messaging.bool_objc_msgSend_NSRange_IntPtr(textView.Handle, selShouldChangeTextInRangeReplacementString_Handle, affectedCharRange, intPtr);
+			if (intPtr != IntPtr.Zero)
+				CFString.ReleaseNative(intPtr);
+#else
 			IntPtr intPtr = replacementString != null ? NSString.CreateNative(replacementString) : IntPtr.Zero;
 			bool result;
 			result = Messaging.bool_objc_msgSend_NSRange_IntPtr(textView.Handle, selShouldChangeTextInRangeReplacementString_Handle, affectedCharRange, intPtr);
 			if (intPtr != IntPtr.Zero)
 				NSString.ReleaseNative(intPtr);
+#endif
 			return result;
 		}
 

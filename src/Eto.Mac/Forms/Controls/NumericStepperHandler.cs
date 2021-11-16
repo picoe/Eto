@@ -14,6 +14,7 @@ using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+using CoreFoundation;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -456,7 +457,11 @@ namespace Eto.Mac.Forms.Controls
 				if (h != null && h.NeedsFormat)
 				{
 					double result;
+#if XAMMAC2
+					var str = CFString.FromHandle(strPtr);
+#else
 					var str = NSString.FromHandle(strPtr);
+#endif
 					var text = str;
 					if (h.HasFormatString)
 						text = Regex.Replace(text, $@"(?!\d|{Regex.Escape(h.CultureInfo.NumberFormat.NumberDecimalSeparator)}|{Regex.Escape(h.CultureInfo.NumberFormat.NegativeSign)}).", ""); // strip any non-numeric value

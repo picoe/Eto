@@ -138,13 +138,6 @@ namespace Eto.Mac
 				var initField = appType.GetField("initialized", BindingFlags.Static | BindingFlags.NonPublic);
 				if (initField == null || Equals(initField.GetValue(null), false))
 				{
-#if XAMMAC
-					// with out this, Xamarin.Mac borks on netstandard.dll due to System.IO.Compression.FileSystem.dll
-					// at least when run with system mono
-					// let's be forgiving until that is fixed so we can actually use .net standard!
-					NSApplication.IgnoreMissingAssembliesDuringRegistration = true;
-#endif
-
 					NSApplication.Init();
 				}
 				// until everything is marked as thread safe correctly in monomac

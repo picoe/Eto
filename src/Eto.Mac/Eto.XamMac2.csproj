@@ -3,7 +3,7 @@
   <PropertyGroup>
     <UseXamarinMac>True</UseXamarinMac>
     <TargetFrameworks>net462;xamarinmac20</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0'))">$(TargetFrameworks);net6.0-macos</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0'))">net6.0-macos10.15;$(TargetFrameworks)</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -13,17 +13,17 @@
   
   <PropertyGroup>
     <PackageId>Eto.Platform.XamMac2</PackageId>
-    <Title>Eto.Forms - Xamarin.Mac (unified) Platform</Title>
-    <Description>OS X Platform for the Eto.Forms UI Framework using Xamarin.Mac (unified)</Description>
+    <Title>Eto.Forms - Xamarin.Mac Platform</Title>
+    <Description>OS X Platform for the Eto.Forms UI Framework using Xamarin.Mac</Description>
     <PackageTags>cross platform gui ui framework desktop osx xamarin.mac mac eto.forms</PackageTags>
     <PackageDescription>
-This is the Xamarin.Mac2 (unified) platform for Eto.Forms UI Framework.
+This is the Xamarin.Mac platform for Eto.Forms UI Framework.
       
 Include this along with your Eto.Forms application to provide an macOS interface for Mac users.
 
-When used in a desktop project, this package will automatically create a macOS application bundle to run on a Mac.  However, it will require mono to be installed when running on macOS.
+When used in a desktop project, this package will automatically create a macOS application bundle to run on a Mac.
       
-In order to bundle mono with your application, you must create a Xamarin.Mac project using Visual Studio on Mac.
+You must build Xamarin.Mac projects on macOS using dotnet command line or Visual Studio for Mac.
 
 You do not need to use any of the classes of this assembly (unless customizing the Xamarin.Mac functionality of the platform), and should just use the UI controls from the Eto assembly.
     </PackageDescription>
