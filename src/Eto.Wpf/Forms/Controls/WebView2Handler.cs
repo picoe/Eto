@@ -397,8 +397,16 @@ namespace Eto.Wpf.Forms.Controls
 			WebView2Loader.EnsureWebView2Runtime();
 			Control = new WebView2Control();
 			Control.CoreWebView2InitializationCompleted += Control_CoreWebView2Ready;
+			InitializeAsync();
 		}
 
+		public static CoreWebView2Environment CoreWebView2Environment;
+
+		async void InitializeAsync()
+		{
+			await Control.EnsureCoreWebView2Async(CoreWebView2Environment);
+		}
+		
 		protected override void Initialize()
 		{
 			base.Initialize();

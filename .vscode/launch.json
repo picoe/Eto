@@ -89,7 +89,7 @@
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "Eto.Test.Wpf - .NET 4.7.2",
+            "name": "Eto.Test.Wpf - .NET 4.8",
 			"type": "clr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
@@ -109,7 +109,7 @@
             "internalConsoleOptions": "openOnSessionStart"
 		},
         {
-            "name": "Eto.Test.WinForms - .NET 4.7.2",
+            "name": "Eto.Test.WinForms - .NET 4.8",
 			"type": "clr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",

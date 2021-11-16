@@ -38,8 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
-  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.818.41" />
+  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1020.30" />
   </ItemGroup>
   
 </Project>
