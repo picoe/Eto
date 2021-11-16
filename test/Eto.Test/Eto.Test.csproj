@@ -33,7 +33,7 @@
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Sections\Serialization\Xaml\Test.xeto" />
