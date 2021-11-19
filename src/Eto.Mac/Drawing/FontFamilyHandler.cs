@@ -34,7 +34,7 @@ namespace Eto.Mac.Drawing
 				// faceName cannot be null.  Use this when it is fixed in xammac/monomac:
 				// return NSFontManager.SharedFontManager.LocalizedNameForFamily(MacName, null);
 				var facePtr = IntPtr.Zero;
-#if XAMMAC
+#if XAMMAC && NET6_0_OR_GREATER
 				var familyPtr = CFString.CreateNative(MacName);
 				var result = CFString.FromHandle(Messaging.IntPtr_objc_msgSend_IntPtr_IntPtr(NSFontManager.SharedFontManager.Handle, sel_LocalizedNameForFamilyFace, familyPtr, facePtr));
 				CFString.ReleaseNative(familyPtr);

@@ -87,7 +87,7 @@ namespace Eto.Mac
 		// replacementString should allow nulls
 		public static bool ShouldChangeTextNew(this NSTextView textView, NSRange affectedCharRange, string replacementString)
 		{
-#if XAMMAC2
+#if XAMMAC && NET6_0_OR_GREATER
 			IntPtr intPtr = replacementString != null ? CFString.CreateNative(replacementString) : IntPtr.Zero;
 			bool result;
 			result = Messaging.bool_objc_msgSend_NSRange_IntPtr(textView.Handle, selShouldChangeTextInRangeReplacementString_Handle, affectedCharRange, intPtr);
