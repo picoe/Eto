@@ -17,6 +17,7 @@ using System.Net;
 using System.IO;
 using System.Runtime.Serialization;
 
+
 #if WINFORMS
 using WebView2Control = Microsoft.Web.WebView2.WinForms.WebView2;
 using BaseHandler = Eto.WinForms.Forms.WindowsControl<Microsoft.Web.WebView2.WinForms.WebView2, Eto.Forms.WebView, Eto.Forms.WebView.ICallback>;
@@ -385,10 +386,7 @@ namespace Eto.Wpf.Forms.Controls
 	public class WebView2Handler : BaseHandler, WebView.IHandler
 	{
 		bool webView2Ready;
-		protected bool WebView2Ready
-		{
-			get { return webView2Ready; }
-		}
+		protected bool WebView2Ready => webView2Ready;
 
 		List<Action> delayedActions;
 
@@ -397,20 +395,26 @@ namespace Eto.Wpf.Forms.Controls
 			WebView2Loader.EnsureWebView2Runtime();
 			Control = new WebView2Control();
 			Control.CoreWebView2InitializationCompleted += Control_CoreWebView2Ready;
-			InitializeAsync();
 		}
 
 		public static CoreWebView2Environment CoreWebView2Environment;
 
-		async void InitializeAsync()
+		/// <summary>
+		/// Override to use your own WebView2 initialization, if necessary
+		/// </summary>
+		/// <returns>Task</returns>
+		protected async virtual Task OnInitializeWebView2Async()
 		{
 			await Control.EnsureCoreWebView2Async(CoreWebView2Environment);
 		}
+		
+		async void InitializeAsync() => await OnInitializeWebView2Async();
 		
 		protected override void Initialize()
 		{
 			base.Initialize();
 			Size = new Size(100, 100);
+			InitializeAsync();
 		}
 
 		void Control_CoreWebView2Ready(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -454,6 +458,13 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected void RunWhenReady(Action action)
 		{
+			if (webView2Ready)
+			{
+				// already ready, run now!
+				action();
+				return;
+			}
+			
 			if (delayedActions == null)
 			{
 				delayedActions = new List<Action>();
