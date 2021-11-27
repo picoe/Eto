@@ -229,7 +229,7 @@ namespace Eto.Wpf.Forms.Cells
 							args = CreateEditArgs(handler, cell, wpfctl);
 						child = handler.Callback.OnCreateCell(handler.Widget, args);
 						wpfctl.Control = child;
-						child.Properties.Set(CellEventArgs_Key, args);
+						child?.Properties.Set(CellEventArgs_Key, args);
 					}
 
 					if (!ReferenceEquals(args, originalArgs))
