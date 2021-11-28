@@ -37,7 +37,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public class EtoScrolledWindow : Gtk.ScrolledWindow
+		public partial class EtoScrolledWindow : Eto.GtkSharp.Forms.EtoScrolledWindow
 		{
 #if GTK3
 			// does this always work?
@@ -46,13 +46,23 @@ namespace Eto.GtkSharp.Forms.Controls
 			protected override void OnAdjustSizeRequest(Gtk.Orientation orientation, out int minimum_size, out int natural_size)
 			{
 				base.OnAdjustSizeRequest(orientation, out minimum_size, out natural_size);
-
 				// the natural size of the scrolled window should be the size of the child viewport
-				if (Child != null)
+
+				var h = Handler;
+				if (h != null)
 				{
-					Child.GetPreferredSize(out var ms, out var ns);
-					var child_size = orientation == Gtk.Orientation.Horizontal ? ns.Width : ns.Height;
-					natural_size = Math.Max(natural_size, child_size + GetBorderSize());
+					var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+
+					if (preferredSize > 0)
+						natural_size = preferredSize;
+					else if (Child != null)
+					{
+						Child.GetPreferredSize(out var ms, out var ns);
+						var child_size = orientation == Gtk.Orientation.Horizontal ? ns.Width : ns.Height;
+						natural_size = Math.Max(natural_size, child_size + GetBorderSize());
+					}
+
+					minimum_size = Math.Min(natural_size, minimum_size);
 				}
 			}
 #endif
@@ -72,7 +82,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public ScrollableHandler()
 		{
-			Control = new EtoScrolledWindow();
+			Control = new EtoScrolledWindow { Handler = this };
 #if GTK3
 			// for some reason on mac it doesn't shrink past 47 pixels otherwise
 			// also, what is an appropriate size?
