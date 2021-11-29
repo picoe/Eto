@@ -387,6 +387,7 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		bool webView2Ready;
 		protected bool WebView2Ready => webView2Ready;
+		CoreWebView2Environment _environment;
 
 		List<Action> delayedActions;
 
@@ -397,7 +398,26 @@ namespace Eto.Wpf.Forms.Controls
 			Control.CoreWebView2InitializationCompleted += Control_CoreWebView2Ready;
 		}
 
+		/// <summary>
+		/// The default environment to use if none is specified with <see cref="Environment"/>.
+		/// </summary>
 		public static CoreWebView2Environment CoreWebView2Environment;
+		
+		/// <summary>
+		/// Specifies a function to call when we need the default environment, if not already specified
+		/// </summary>
+		public static Func<Task<CoreWebView2Environment>> GetCoreWebView2Environment;
+		
+		/// <summary>
+		/// Gets or sets the environment to use, defaulting to <see cref="CoreWebView2Environment"/>.
+		/// This can only be set once during construction or with a style for this handler.
+		/// </summary>
+		/// <value>Environment to use to initialize WebView2</value>
+		public CoreWebView2Environment Environment
+		{
+			get => _environment ?? CoreWebView2Environment;
+			set => _environment = value;
+		}
 
 		/// <summary>
 		/// Override to use your own WebView2 initialization, if necessary
@@ -405,7 +425,13 @@ namespace Eto.Wpf.Forms.Controls
 		/// <returns>Task</returns>
 		protected async virtual Task OnInitializeWebView2Async()
 		{
-			await Control.EnsureCoreWebView2Async(CoreWebView2Environment);
+			var env = Environment;
+			if (env == null && GetCoreWebView2Environment != null)
+			{
+				env = CoreWebView2Environment = await GetCoreWebView2Environment();
+			}
+			
+			await Control.EnsureCoreWebView2Async(env);
 		}
 		
 		async void InitializeAsync() => await OnInitializeWebView2Async();
@@ -414,6 +440,13 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.Initialize();
 			Size = new Size(100, 100);
+		}
+
+		protected override void OnInitializeComplete()
+		{
+			base.OnInitializeComplete();
+			
+			// initialize webview2 after styles are applied, since styles might be used to configure the Environment or CoreWebView2Environment
 			InitializeAsync();
 		}
 

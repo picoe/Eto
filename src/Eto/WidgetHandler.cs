@@ -129,6 +129,20 @@ namespace Eto
 		void Widget.IHandler.Initialize()
 		{
 			Initialize();
+			OnInitializeComplete();
+		}
+		
+		/// <summary>
+		/// Called after initialization is complete
+		/// </summary>
+		/// <remarks>
+		/// Override this to perform any logic after the handler is fully initialized, but before
+		/// returning from the construction of the widget.
+		/// 
+		/// This by default applies the any styles for the handler.
+		/// </remarks>
+		protected virtual void OnInitializeComplete()
+		{
 			// apply styles after the handler is fully initialized.
 			Style.Provider?.ApplyDefault(this);
 		}
