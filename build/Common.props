@@ -28,7 +28,7 @@
   <PropertyGroup>
     <!-- global nuget/assembly properties -->
 
-    <DevVersion>2.6.0</DevVersion>
+    <DevVersion>2.6.1</DevVersion>
 
     <Version Condition="$(Version) == ''">2.6.0.0</Version>
 
