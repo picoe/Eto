@@ -256,6 +256,7 @@ namespace Eto.iOS.Drawing
 			Control.CurrentGraphics = graphics;
 			var ctx = graphics.Control;
 			Control.DrawGlyphs(new NSRange(0, (int)_text.Length), location.ToNS());
+			Control.CurrentGraphics = null;
 		}
 	}
 }
