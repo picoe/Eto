@@ -68,9 +68,15 @@ namespace Eto.Wpf.Forms.Controls
 #if TEST_INSTALL
 			return false;
 #endif
-			var versionInfo = CoreWebView2Environment.GetAvailableBrowserVersionString();
-			// If versionInfo is NULL, the WebView2 Runtime isn't currently installed on the client.
-			return versionInfo != null;
+			try
+			{
+				var versionInfo = CoreWebView2Environment.GetAvailableBrowserVersionString();
+				return versionInfo != null;
+			}
+			catch (WebView2RuntimeNotFoundException)
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
