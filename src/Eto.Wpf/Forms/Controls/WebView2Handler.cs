@@ -70,7 +70,7 @@ namespace Eto.Wpf.Forms.Controls
 #endif
 			try
 			{
-				var version = CoreWebView2Environment.GetAvailableBrowserVersionString();
+				var versionInfo = CoreWebView2Environment.GetAvailableBrowserVersionString();
 				return versionInfo != null;
 			}
 			catch (WebView2RuntimeNotFoundException)
