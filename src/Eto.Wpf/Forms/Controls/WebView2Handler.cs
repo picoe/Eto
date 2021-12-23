@@ -59,10 +59,6 @@ namespace Eto.Wpf.Forms.Controls
 		/// </summary>
 		public static WebView2InstallMode InstallMode = WebView2InstallMode.Manual;
 
-
-		const string reg64BitKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
-		const string reg32BitKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
-
 		/// <summary>
 		/// Detects whether WebView2 is installed
 		/// </summary>
@@ -72,9 +68,9 @@ namespace Eto.Wpf.Forms.Controls
 #if TEST_INSTALL
 			return false;
 #endif
-			// https://docs.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution#deploying-the-evergreen-webview2-runtime
-			var pv = Registry.GetValue(Environment.Is64BitOperatingSystem ? reg64BitKey : reg32BitKey, "pv", null);
-			return pv is string s && !string.IsNullOrEmpty(s);
+			var versionInfo = CoreWebView2Environment.GetAvailableBrowserVersionString();
+			// If versionInfo is NULL, the WebView2 Runtime isn't currently installed on the client.
+			return versionInfo != null;
 		}
 
 		/// <summary>
