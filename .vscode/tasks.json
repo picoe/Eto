@@ -142,6 +142,17 @@
 			}
 		},
 		{
+			"label": "build-sdk-test",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/samples/SdkTest/SdkTest.csproj",
+			"type": "shell",
+			"group": "build",
+			"dependsOn": "build-packages",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "restore",
 			"command": "dotnet restore /v:Minimal ${workspaceFolder}/src/Eto.sln",
 			"type": "shell",

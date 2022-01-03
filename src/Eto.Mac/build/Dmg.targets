@@ -51,7 +51,7 @@
 
     <Copy SourceFiles="@(_DmgFiles)" DestinationFiles="@(_DmgFiles->'$(_MacDmgContentPath)%(TargetPath)')" />
 
-    <Exec Command='hdiutil create "$(_DmgPath)" -ov -quiet -volname "$(DmgVolumeName)" -format UDZO -fs HFS+ -srcfolder "$(_MacDmgContentPath)"' />
+    <Exec Command='hdiutil create "$(_DmgPath)" -ov -volname "$(DmgVolumeName)" -format UDZO -fs HFS+ -srcfolder "$(_MacDmgContentPath)"' StandardOutputImportance="normal" />
 
     <Message Text="$(MSBuildProjectName) -> $(_DmgPath)" Importance="high" />
   </Target>

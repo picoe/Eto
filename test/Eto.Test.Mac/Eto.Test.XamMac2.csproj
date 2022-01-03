@@ -4,6 +4,7 @@
     <UseXamarinMac>True</UseXamarinMac>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net6.0-macos;net48;xamarinmac20</TargetFrameworks>
+    <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
     <EnableDefaultContentItems>False</EnableDefaultContentItems>

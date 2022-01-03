@@ -63,8 +63,12 @@
     <BaseOutputPath Condition="$(BaseOutputPath) == ''">bin\</BaseOutputPath>
     <OutputPath Condition="$(MacIsBuildingBundle) != 'True' and $(OutputPath) == ''">$(BaseOutputPath)</OutputPath>
     <OutputPath Condition="$(MacIsBuildingBundle) != 'True'">$(OutputPath)$(BuildPlatform)\$(Configuration)\</OutputPath>
+  </PropertyGroup>
 
-    <RuntimeIdentifiers Condition="$(RuntimeIdentifiers) == '' and !$(TargetFramework.Contains('-'))">win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+  <PropertyGroup Condition="$(RuntimeIdentifiers) == '' and !$(TargetFramework.Contains('-'))">
+    <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Mac64' OR $(BuildPlatform) == 'XamMac2'">osx-x64;osx-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Wpf' OR $(BuildPlatform) == 'Windows' or $(BuildPlatform) == 'Direct2D'">win-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Gtk'">linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <Import Project="Xamarin.Mac.targets" Condition="$(BuildPlatform) == 'XamMac2' and !$(TargetFramework.Contains('-macos'))" />
