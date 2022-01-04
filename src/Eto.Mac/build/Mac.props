@@ -12,10 +12,11 @@
     <BaseOutputAppPath>$(MacOutputPath)</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(MacAppendRuntimeIdentifierToOutputPath) == 'True'">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
     <OutputPath>$(MacTempBuildPath)bin\</OutputPath>
-    <PublishDir>$(MacTempBuildPath)publish\</PublishDir>
+    <PublishDir>$(MacTempBuildPath)publish\$(RuntimeIdentifier)\</PublishDir>
     <SelfContained Condition="$(MacSelfContained) != ''">$(MacSelfContained)</SelfContained>
     <PublishSingleFile Condition="$(MacPublishSingleFile) != ''">$(MacPublishSingleFile)</PublishSingleFile>
     <PublishTrimmed Condition="$(MacPublishTrimmed) != ''">$(MacPublishTrimmed)</PublishTrimmed>
+    <DebugType Condition="$(MacDebugEmbedded) == 'True'">embedded</DebugType>
   </PropertyGroup>
   
   <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
@@ -24,6 +25,8 @@
     <MacBuildDmgDependsOnTargets>MacCreateDmg;MacBeautifyDmg</MacBuildDmgDependsOnTargets>
     <MacCodeSignDependsOnTargets>MacCodeSignApp;MacCodeSignDmg</MacCodeSignDependsOnTargets>
     <MacNotarizeDependsOnTargets>MacNotarizeDmg;MacStapleDmg</MacNotarizeDependsOnTargets>
+    
+    <MacSelfContainedSpecified Condition="$(SelfContained) != ''">True</MacSelfContainedSpecified>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsMac) != 'True'">

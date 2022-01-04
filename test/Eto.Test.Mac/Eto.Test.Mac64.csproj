@@ -9,7 +9,7 @@
     <TargetFrameworks>net6.0;net48</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     
-    <RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">

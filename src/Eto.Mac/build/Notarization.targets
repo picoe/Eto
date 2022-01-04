@@ -40,13 +40,18 @@
     <Exec Command='/usr/bin/ditto -c -k --keepParent "$(_DmgPath)" "$(_DmgZipPath)"' />
 
     <Message Text="Sending $(DmgName).dmg for Notarization" />
-    <Exec Command="xcrun altool --notarize-app $(_NotarizationParameters) 2>&amp;1 | grep RequestUUID | awk '{print $3}'" 
+    <Exec Command="xcrun altool --notarize-app $(_NotarizationParameters)"
       StandardOutputImportance="normal"
+      StandardErrorImportance="normal"
       ConsoleToMSBuild="True">
-      <Output TaskParameter="ConsoleOutput" PropertyName="NotarizationUUID" />
+      <Output TaskParameter="ConsoleOutput" PropertyName="NotarizationOutput" />
     </Exec>
+    
+    <PropertyGroup>
+      <NotarizationUUID>$([System.Text.RegularExpressions.Regex]::Match($(NotarizationOutput), `(?&lt;=RequestUUID = )([A-Za-z0-9-]+)`))</NotarizationUUID>
+    </PropertyGroup>
 
-    <Message Text="Notarization RequestUUID: $(NotarizationUUID)" />
+    <Message Importance="high" Text="Notarization RequestUUID: $(NotarizationUUID)" />
 
     <Delete Files="$(_DmgZipPath)" />
   </Target>

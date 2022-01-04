@@ -7,6 +7,7 @@
 			"request": "launch",
 			"preLaunchTask": "build-mac64",
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+			// "targetArchitecture": "x86_64", // uncomment to test intel on M1
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -28,7 +29,7 @@
             "type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-xammac2",
-			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-macos/osx-x64/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
+			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-macos/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
@@ -52,6 +53,11 @@
 			"preLaunchTask": "build-gtk",
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0/Eto.Test.Gtk.dll",
             "args": [],
+			"osx": {
+				"env": {
+					"DYLD_FALLBACK_LIBRARY_PATH": "/opt/homebrew/lib"
+				}
+			},
             "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
@@ -64,6 +70,11 @@
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net48/Eto.Test.Gtk.exe",
 			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
+			"osx": {
+				"env": {
+					"DYLD_FALLBACK_LIBRARY_PATH": "/opt/homebrew/lib"
+				}
+			},
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
@@ -84,6 +95,7 @@
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-windows/Eto.Test.Wpf.exe",
+			"targetArchitecture": "x86_64",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"

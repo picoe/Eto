@@ -17,6 +17,7 @@ using System.Collections.Concurrent;
 using System.Collections;
 using System.ComponentModel;
 using System.Threading;
+using Eto.Test.UnitTests;
 
 namespace Eto.Test.Sections
 {
@@ -537,7 +538,7 @@ namespace Eto.Test.Sections
 		TaskCompletionSource<ITestResult> tcs;
 		UnitTestProgressEventArgs progressArgs;
 		List<ITestAssemblyRunner> runnerCache;
-		ITestAssemblyBuilder builder = new DefaultTestAssemblyBuilder();
+		ITestAssemblyBuilder builder = new SingleFileDefaultTestAssemblyBuilder();
 
 		public IList<UnitTestSource> Sources => sources;
 

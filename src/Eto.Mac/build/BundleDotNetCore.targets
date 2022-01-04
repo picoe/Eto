@@ -11,7 +11,7 @@
     
     <!-- Set to True to bundle .NET Core runtime, false to use a shared runtime (useful to speed up debug builds) -->
     <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(SelfContained) == 'True'">True</MacBundleDotNet>
-    <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(RuntimeIdentifier) == '' AND $(Configuration) == 'Release'">True</MacBundleDotNet>
+    <MacBundleDotNet Condition="$(MacBundleDotNet) == '' AND $(RuntimeIdentifier) == '' AND $(Configuration) == 'Release' AND $(MacSelfContainedSpecified) != 'True'">True</MacBundleDotNet>
     <MacBundleDotNet Condition="$(MacBundleDotNet) == ''">False</MacBundleDotNet>
   </PropertyGroup>
 
@@ -21,8 +21,149 @@
   </Target>
   
   <!-- Build target to automatically publish -->
-  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="$(MacBuildAppBundleDependsOnTargets)" Condition="$(MacAutoPublishBundle) == 'True' AND $(MacIsBuildingBundle) != 'True'" Outputs="$(OutputAppPath)">
+  <Target Name="MacBuildAppBundle" AfterTargets="AfterBuild" DependsOnTargets="$(MacBuildAppBundleDependsOnTargets);_MacBuildFrameworkAppBundle;_MacBuildUnifiedAppBundle" Condition="$(MacAutoPublishBundle) == 'True' AND $(MacIsBuildingBundle) != 'True'" Outputs="$(OutputAppPath)">
+  </Target>
   
+  <Target Name="_MacBuildUnifiedAppBundle" Condition="@(MacBundleRuntimeIdentifiers->Count()) > 1">
+    <!-- Copy both bundles together, using lipo to generate unified binaries -->
+    
+    <ItemGroup>
+      <UnifiedFiles Include="$(BaseOutputAppPath)%(MacBundleRuntimeIdentifiers.Identity)\$(MacBundleName).app\**" RuntimeIdentifier="%(MacBundleRuntimeIdentifiers.Identity)" BasePath="$(BaseOutputAppPath)%(MacBundleRuntimeIdentifiers.Identity)\$(MacBundleName).app\" />
+      <UnifiedFiles TargetPath="$([System.String]::Copy('%(FullPath)').TrimStart('%(BasePath)'))" />
+    </ItemGroup>
+    
+    <!-- <Message Importance="high" Text="%(UnifiedFiles.RelativeDir)%(UnifiedFiles.FileName)%(UnifiedFiles.Extension) > %(UnifiedFiles.TargetPath)" /> -->
+    
+    <Warning Text="Can only create universal binary on macOS" Condition="!$([MSBuild]::IsOSPlatform(OSX))" />
+    
+    <RemoveDir Directories="$(OutputAppPath)" />
+    <_MergeMacFiles UnifiedFiles="@(UnifiedFiles)" OutputAppPath="$(OutputAppPath)" Condition="$([MSBuild]::IsOSPlatform(OSX))" />
+    
+    <Message Text="$(MSBuildProjectName) -> $(OutputAppPath)" Importance="high" Condition="$([MSBuild]::IsOSPlatform(OSX))" />
+  </Target>
+  
+  <UsingTask TaskName="_MergeMacFiles" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+    <ParameterGroup>
+      <UnifiedFiles Required="True" ParameterType="Microsoft.Build.Framework.ITaskItem[]" />
+      <OutputAppPath Required="True" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Diagnostics" />
+      <Using Namespace="System.Linq" />
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+  (string output, string error, int exitCode) Exec(string command, string args)
+  {
+    // Log.LogMessage(MessageImportance.High, $"Executing '{command} {args}'...");
+    var process = new Process {
+      StartInfo = new ProcessStartInfo {
+        CreateNoWindow = true,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        FileName = command,
+        Arguments = args
+      }
+    };
+    process.Start();
+    var output = process.StandardOutput.ReadToEnd();
+    var error = process.StandardError.ReadToEnd();
+    process.WaitForExit();
+    return (output, error, process.ExitCode);
+  }
+  
+  string GetMimeType(string sourceFile)
+  {
+    var result = Exec("file", $"--mime-type -b \"{sourceFile}\"");
+    if (result.exitCode != 0)
+    {
+      Log.LogError($"Could not get mime type for {sourceFile}");
+    }
+    // Log.LogMessage(MessageImportance.High, $"mime {sourceFile}: {result.output}");
+    return result.output.Trim();
+  }
+  
+  bool IsMachBinary(string file) => GetMimeType(file) == "application/x-mach-binary";
+  
+  bool Lipo(string sourceFile, string destFile)
+  {
+    var sourceMach = IsMachBinary(sourceFile);
+    var destMach = IsMachBinary(sourceFile);
+    if (!sourceMach && !destMach)
+      return false;
+    if (sourceMach && !destMach)
+      Log.LogError($"{sourceFile} is not a mach-o binary");
+    if (destMach && !sourceMach)
+      Log.LogError($"{destFile} is not a mach-o binary");
+
+    Log.LogMessage(MessageImportance.Low, $"Creating universal binary with:\n\t{sourceFile}\n\t{destFile}");
+    
+    var lipoResult = Exec("lipo", $"\"{sourceFile}\" \"{destFile}\" -create -output \"{destFile}\"");
+    if (lipoResult.exitCode != 0)
+    {
+      Log.LogMessage(MessageImportance.High, $"{lipoResult.output}\n{lipoResult.error}");
+      Log.LogError($"Cannot create universal binary with files {sourceFile} and {destFile}");
+    }
+    else
+      Log.LogMessage($"{lipoResult.output?.Trim()}");
+    
+    return true;
+  }
+  
+  IEnumerable<byte> ReadAllBytes(string file)
+  {
+    using var stream = File.Open(file, FileMode.Open, FileAccess.Read);
+    using var buffered = new BufferedStream(stream, 1024 * sizeof(Int64));
+    while (true)
+    {
+      var b = buffered.ReadByte();
+      if (b == -1)
+        yield break;
+      yield return (byte)b;
+    }
+  }
+
+  // bool AreEqual(string file1, string file2) => File.ReadAllBytes(file1).SequenceEqual(File.ReadAllBytes(file2));
+  bool AreEqual(string file1, string file2) => ReadAllBytes(file1).SequenceEqual(ReadAllBytes(file2));
+  
+  // group files
+  var fileGroups = UnifiedFiles.GroupBy(r => r.GetMetadata("TargetPath"));
+
+  foreach (var group in fileGroups)
+  {
+    foreach (var file in group)
+    {
+      var sourceFile = file.GetMetadata("FullPath");
+      var destFile = Path.Combine(OutputAppPath, group.Key);
+      if (File.Exists(destFile))
+      {
+        // warn if the files are different
+        if (AreEqual(sourceFile, destFile))
+          continue;
+          
+        // merge with lipo, if needed
+        if (Lipo(sourceFile, destFile))
+          continue;
+          
+        Log.LogWarning($"{group.Key} is different between RuntimeIdentifiers. Creating universal binaries is only supported when PublishSingleFile is true.");
+          
+        continue;
+      }
+      var destDir = Path.GetDirectoryName(destFile);
+      if (!Directory.Exists(destDir))
+        Directory.CreateDirectory(destDir);
+        
+      File.Copy(sourceFile, destFile, true);
+    }
+    // Log.LogMessage(MessageImportance.High, $"File To copy: {group.Key}, count: {group.Count()}");
+  }
+]]>
+      </Code>
+    </Task>
+  </UsingTask>  
+  
+  <Target Name="_MacBuildFrameworkAppBundle">
     <ItemGroup Condition="$(MacBundleRuntimeIdentifiers) == ''">
       <!-- derive our runtime identifiers by the ones in RuntimeIdentifiers, and filter by 'osx' -->
       <MacBundleRuntimeIdentifiers Include="$(RuntimeIdentifiers)" Condition="$(RuntimeIdentifiers) != ''" />
@@ -35,21 +176,26 @@
       <MacBundleRuntimeIdentifiers Remove="@(MacBundleRuntimeIdentifiers)" Condition="!$([System.String]::Copy('%(MacBundleRuntimeIdentifiers.Identity)').StartsWith('osx'))" />
     </ItemGroup>
 
-    <Error Text="No RuntimeIdentifiers or MacRuntimeIdentifiers have been specified. Add &lt;RuntimeIdentifiers&gt;osx-x64&lt;/RuntimeIdentifiers&gt; to your project." Condition="@(MacBundleRuntimeIdentifiers->Count()) == 0" />
+    <Error Text="No RuntimeIdentifiers or MacRuntimeIdentifiers have been specified. Add &lt;RuntimeIdentifiers&gt;osx-x64;osx-arm64&lt;/RuntimeIdentifiers&gt; to your project." Condition="@(MacBundleRuntimeIdentifiers->Count()) == 0" />
     <PropertyGroup>
+      <CreateUnifiedBundle Condition="@(MacBundleRuntimeIdentifiers->Count()) > 1 AND $(RuntimeIdentifier) == ''">True</CreateUnifiedBundle>
+      <CreateUnifiedBundle Condition="$(CreateUnifiedBundle) == ''">False</CreateUnifiedBundle>
+      
+      <!-- <PublishSingleFile Condition="$(PublishSingleFile) == '' AND $(CreateUnifiedBundle) == 'True'">True</PublishSingleFile> -->
       <MacTempBuildPath>$(IntermediateOutputPath)macbuild\</MacTempBuildPath>
 
       <MacBuildProperties>MacIsBuildingBundle=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacBundlingProject=$(MSBuildProjectFullPath)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);TargetFramework=$(TargetFramework)</MacBuildProperties>
-      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND $(Configuration) == 'Release' AND $(EnableCodeSigning) != 'True'">$(MacBuildProperties);MacPublishSingleFile=True</MacBuildProperties>
-      <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(Configuration) == 'Release'">$(MacBuildProperties);MacPublishTrimmed=True</MacBuildProperties>
+      <MacBuildProperties Condition="$(PublishSingleFile) == '' AND ($(Configuration) == 'Release' OR $(CreateUnifiedBundle) == 'True')">$(MacBuildProperties);MacPublishSingleFile=True</MacBuildProperties>
+      <MacBuildProperties Condition="$(PublishTrimmed) == '' AND $(MacBundleDotNet) == 'True' AND $(Configuration) == 'Release'">$(MacBuildProperties);MacPublishTrimmed=True</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacSelfContained=$(MacBundleDotNet)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacTempBuildPath=$(MacTempBuildPath)</MacBuildProperties>
       <MacBuildProperties>$(MacBuildProperties);MacOutputPath=$(OutputPath)</MacBuildProperties>
+      <MacBuildProperties Condition="$(CreateUnifiedBundle) == 'True'">$(MacBuildProperties);MacDebugEmbedded=True;CreateUnifiedBundle=True</MacBuildProperties>
       <MacBuildProperties Condition="@(MacBundleRuntimeIdentifiers->Count()) > 1 AND $(RuntimeIdentifier) == ''">$(MacBuildProperties);MacAppendRuntimeIdentifierToOutputPath=True</MacBuildProperties>
 
-      <_MacPublishTarget Condition="$(MacBundleDotNet) == 'True'">Publish</_MacPublishTarget>
+      <_MacPublishTarget Condition="$(MacBundleDotNet) == 'True' OR $(CreateUnifiedBundle) == 'True'">Publish</_MacPublishTarget>
       <_MacPublishTarget Condition="$(_MacPublishTarget) == ''">Build</_MacPublishTarget>
     </PropertyGroup>
     
@@ -65,7 +211,7 @@
   </Target>
   
   <!-- Bundle using a system shared runtime -->
-  <Target Name="MacBuildAppBundleWithoutRuntime" AfterTargets="AfterBuild" Condition="($(MacBundleDotNet) != 'True' AND $(MacIsBuildingBundle) == 'True') OR ($(MacAutoPublishBundle) == 'False' AND $(MacIsBuildingBundle) != 'True')" DependsOnTargets="MacInitializeBundle;MacCollectExecutableFiles">
+  <Target Name="MacBuildAppBundleWithoutRuntime" AfterTargets="AfterBuild" Condition="($(MacBundleDotNet) != 'True' AND $(MacIsBuildingBundle) == 'True' AND $(CreateUnifiedBundle) != 'True') OR ($(MacAutoPublishBundle) == 'False' AND $(MacIsBuildingBundle) != 'True')" DependsOnTargets="MacInitializeBundle;MacCollectExecutableFiles">
 
     <!-- <Message Text="MacBuildAppBundleWithoutRuntime" Importance="high" />  -->
     
