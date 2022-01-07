@@ -225,8 +225,8 @@
   <!-- Publish with bundled runtime -->
   <Target Name="MacPublishAppBundleForAutoPublish" AfterTargets="Publish" DependsOnTargets="MacInitializeBundle" Condition="$(MacIsBuildingBundle) == 'True'">
     <ItemGroup>
-      <LauncherFiles Include="$(PublishDir)**\*" />
-      <LauncherFiles Remove="$(PublishDir)**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
+      <LauncherFiles Include="$(PublishDir)\**\*" />
+      <LauncherFiles Remove="$(PublishDir)\**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
     </ItemGroup>
     
     <!-- copy executable and all files which need to be in the same folder -->
@@ -238,8 +238,8 @@
 
   <Target Name="MacCopyPublishFiles" DependsOnTargets="MacInitializeBundle">
     <ItemGroup>
-      <LauncherFiles Include="$(PublishDir)**\*" Exclude="$(LauncherPath)**\*" />
-      <LauncherFiles Remove="$(PublishDir)**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
+      <LauncherFiles Include="$(PublishDir)\**\*" Exclude="$(LauncherPath)**\*" />
+      <LauncherFiles Remove="$(PublishDir)\**\*.pdb" Condition="$(MacIncludeSymbols) != 'True'" />
     </ItemGroup>
 
     <!-- <Message Text="MacCopyPublishFiles: @(LauncherFiles)" Importance="high" />  -->
