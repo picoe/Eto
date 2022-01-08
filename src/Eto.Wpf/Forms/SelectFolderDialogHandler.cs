@@ -14,6 +14,7 @@ namespace Eto.Wpf.Forms
 		public DialogResult ShowDialog (Window parent)
 		{
 			var dr = Control.ShowDialog ();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			return dr == swf.DialogResult.OK ? DialogResult.Ok : DialogResult.Cancel;
 		}
 

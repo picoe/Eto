@@ -1037,6 +1037,7 @@ namespace Eto.Wpf.Forms
 			{
 				dlg.PrintVisual(ContainerControl, string.Empty);
 			}
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 		}
 	}
 }

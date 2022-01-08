@@ -18,6 +18,7 @@ namespace Eto.Wpf.Forms
 			else {
 				result = Control.ShowDialog ();
 			}
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			return result != null && result.Value ? DialogResult.Ok : DialogResult.Cancel;
 		}
 	}

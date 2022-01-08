@@ -37,6 +37,7 @@ namespace Eto.Wpf.Forms
 			// don't use WPF window, parent might be a HwndFormHandler
 			var wpfParent = parent?.NativeHandle;
 			var result = wpfParent != null ? Control.ShowDialog(wpfParent.Value) : Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 #endif
 			switch (result)
 			{

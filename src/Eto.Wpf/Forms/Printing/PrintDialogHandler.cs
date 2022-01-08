@@ -21,6 +21,7 @@ namespace Eto.Wpf.Forms.Printing
 		{
 			Control.SetEtoSettings(settings);
 			var result = Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			if (result == true)
 			{
 				settings.SetFromDialog(Control);

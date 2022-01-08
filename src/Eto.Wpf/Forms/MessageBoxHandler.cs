@@ -31,6 +31,7 @@ namespace Eto.Wpf.Forms
 				var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
 				if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
 				else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
+				WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 				return Convert(result);
 			}
 		}
