@@ -96,6 +96,7 @@ namespace Eto.Wpf.Forms
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			}
 			var result = Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			if (result == true)
 			{
 				Callback.OnColorChanged(Widget, EventArgs.Empty);

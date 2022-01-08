@@ -105,6 +105,7 @@ namespace Eto.Wpf.Forms
 			var lastFont = Font;
 
 			var result = Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 
 			if (result != true)
 			{

@@ -64,6 +64,7 @@ namespace Eto.Wpf.Forms.Printing
 					
 					Control.Document = fixedDocument;
 					Control.ShowDialog();
+					WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 				}
 			}
 			finally
