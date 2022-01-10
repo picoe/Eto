@@ -352,8 +352,8 @@ namespace Eto.Forms
 		/// Gets or sets the menu bar for this window
 		/// </summary>
 		/// <remarks>
-		/// Some platforms have a global menu bar (e.g. ubuntu, OS X).
-		/// When the winow is in focus, the global menu bar will be changed to reflect the menu assigned.
+		/// Some platforms have a global menu bar (e.g. Ubuntu, OS X).
+		/// When the window is in focus, the global menu bar will be changed to reflect the menu assigned.
 		/// </remarks>
 		/// <value>The menu.</value>
 		public virtual MenuBar Menu
