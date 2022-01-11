@@ -74,8 +74,8 @@ To compile or contribute to Eto.Forms, read the [Contributing Guide](https://git
 
 Screenshots
 -----------
-Windows via WinForms:  
-<img src="/images/windows.png" width=75% height=75%>  
+Windows via WPF:  
+<img src="./images/windows.png" width=75% height=75%>  
 Mac via MonoMac:  
 <img src="./images/mac.png" width=75% height=75%>  
 Linux via GTK#3:  
