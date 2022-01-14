@@ -16,8 +16,8 @@
     <NoWarn>CA1416</NoWarn>
   </PropertyGroup>
   
-  <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">
-    <LinkMode Condition="$(Configuration) == 'Release'">Platform</LinkMode>
+  <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20' or $(TargetFramework) == 'net6.0-macos'">
+    <LinkMode Condition="$(Configuration) == 'Release'">SdkOnly</LinkMode>
   </PropertyGroup>
   
   <ItemGroup>
