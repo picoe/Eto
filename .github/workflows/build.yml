@@ -92,7 +92,7 @@ jobs:
       with:
         mono-version: latest
         xamarin-mac-version: latest
-        xcode-version: 13.1
+        xcode-version: latest
     
     - name: Import code signing certificate
       if: github.event_name != 'pull_request'

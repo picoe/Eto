@@ -14,6 +14,7 @@ using Eto.Drawing;
 using Eto.Wpf.Drawing;
 using Eto.Wpf.CustomControls.TreeGridView;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -119,6 +120,7 @@ namespace Eto.Wpf.Forms.Controls
 		public static readonly object Border_Key = new object();
 		public static readonly object MultipleSelectionInfo_Key = new object();
 		public static readonly object AllowEmptySelection_Key = new object();
+		public static readonly object OutsideMouseDown_Key = new object();
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
@@ -149,7 +151,6 @@ namespace Eto.Wpf.Forms.Controls
 				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
 				Background = sw.SystemColors.WindowBrush
 			};
-			Control.MouseUp += HandleOutsideMouseUp;
 		}
 
 		protected ColumnCollection Columns { get; private set; }
@@ -467,14 +468,42 @@ namespace Eto.Wpf.Forms.Controls
 				columnHandler?.OnMouseUp(args, hitTestResult, cell);
 				e.Handled = args.Handled;
 			}
+			
+			HandleOutsideMouseUp(sender, e);
 		}
 
 
 		private void HandleOutsideMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
+			if (!Widget.Properties.Get<bool>(GridHandler.OutsideMouseDown_Key))
+				return;
+			Widget.Properties.Set(GridHandler.OutsideMouseDown_Key, false);
+			
+			if (e.Handled)
+				return;
+			
 			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+			if (hitTestResult != null
+				&& (
+					hitTestResult is swc.ScrollViewer // below rows
+					|| swm.VisualTreeHelper.GetParent(hitTestResult) is swc.DataGridRow // right of rows
+					)
+				)
+			{
+				CommitEdit();
+				if (AllowEmptySelection)
+				{
+					UnselectAll();
+					e.Handled = true;
+				}
+			}
+		}
+		
+		private void HandleOutsideMouseDown(object sender, MouseButtonEventArgs e)
+		{
 			if (!e.Handled)
 			{
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
 				if (hitTestResult != null
 					&& (
 						hitTestResult is swc.ScrollViewer // below rows
@@ -482,14 +511,12 @@ namespace Eto.Wpf.Forms.Controls
 						)
 					)
 				{
-					CommitEdit();
-					if (AllowEmptySelection)
-					{
-						UnselectAll();
-						e.Handled = true;
-					}
+					Widget.Properties.Set(GridHandler.OutsideMouseDown_Key, true);
+					return;
 				}
 			}
+			
+			Widget.Properties.Set(GridHandler.OutsideMouseDown_Key, false);
 		}
 
 		protected override void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
@@ -558,6 +585,9 @@ namespace Eto.Wpf.Forms.Controls
 					e.Handled = true;
 				}
 			}
+			
+			// test if we clicked on an empty area to unselect all when mouse up is called
+			HandleOutsideMouseDown(sender, e);
 		}
 
 		public IEnumerable<int> SelectedRows
