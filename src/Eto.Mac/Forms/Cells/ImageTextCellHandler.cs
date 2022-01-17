@@ -189,7 +189,7 @@ namespace Eto.Mac.Forms.Cells
 				{
 					var val = value as MacImageData;
 
-					TextField.ObjectValue = val?.Text ?? NSString.Empty;
+					TextField.ObjectValue = (NSString)(val?.Text ?? string.Empty);
 					Image = val?.Image;
 					_objectValue = value;
 				}
