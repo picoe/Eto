@@ -50,8 +50,9 @@ namespace Eto.Mac
 			return newimage;
 		}
 
-		// remove when XamMac supports null for draw hint dictionary
-		static NSDictionary DrawHints = new NSDictionary();
+#if XAMMAC
+		static IntPtr selDrawInRect_FromRect_Operation_Fraction_RespectFlipped_Hints_Handle = Selector.GetHandle("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
+#endif
 
 		public static NSImageRep Resize(this NSImageRep image, CGSize newsize, ImageInterpolation interpolation = ImageInterpolation.Default, CGSize? imageSize = null)
 		{
@@ -62,7 +63,12 @@ namespace Eto.Mac
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-			image.DrawInRect(new CGRect(CGPoint.Empty, newrep.Size), CGRect.Empty, NSCompositingOperation.SourceOver, 1f, true, DrawHints);
+#if XAMMAC
+			// Xamarin.Mac doesn't allow null for hints, remove this when it does.
+			Messaging.bool_objc_msgSend_CGRect_CGRect_UIntPtr_nfloat_bool_IntPtr(image.Handle, selDrawInRect_FromRect_Operation_Fraction_RespectFlipped_Hints_Handle, new CGRect(CGPoint.Empty, newrep.Size), CGRect.Empty, (UIntPtr)(ulong)NSCompositingOperation.SourceOver, 1f, true, IntPtr.Zero);
+#else
+			image.DrawInRect(new CGRect(CGPoint.Empty, newrep.Size), CGRect.Empty, NSCompositingOperation.SourceOver, 1f, true, null);
+#endif
 			NSGraphicsContext.GlobalRestoreGraphicsState();
 			return newrep;
 		}
