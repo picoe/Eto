@@ -222,6 +222,7 @@ namespace Eto.GtkSharp
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
 			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
 			p.Add<DataFormats.IHandler>(() => new DataFormatsHandler());
+			p.Add<Window.IWindowHandler>(() => new WindowHandler());
 			if (EtoEnvironment.Platform.IsLinux)
 			{
 				p.Add<TrayIndicator.IHandler>(() => new LinuxTrayIndicatorHandler());
