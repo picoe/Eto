@@ -142,9 +142,13 @@ namespace Eto.Mac
 
 		[DllImport(LIBOBJC_DYLIB, EntryPoint = "objc_msgSendSuper")]
 		public static extern IntPtr IntPtr_objc_msgSendSuper_IntPtr_IntPtr_IntPtr_ref_CGPoint(IntPtr receiver, IntPtr selector, IntPtr arg1, IntPtr arg2, IntPtr arg3, ref CGPoint arg4);
-		[DllImport (LIBOBJC_DYLIB, EntryPoint="objc_msgSend")]
-		public extern static void void_objc_msgSend_IntPtr_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg1, IntPtr arg2);
-		
+		[DllImport(LIBOBJC_DYLIB, EntryPoint = "objc_msgSend")]
+		public extern static void void_objc_msgSend_IntPtr_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1, IntPtr arg2);
+
+		[DllImport(LIBOBJC_DYLIB, EntryPoint = "objc_msgSend")]
+		[return: MarshalAs(UnmanagedType.I1)]
+		public static extern bool bool_objc_msgSend_CGRect_CGRect_UIntPtr_nfloat_bool_IntPtr(IntPtr receiver, IntPtr selector, CGRect arg1, CGRect arg2, UIntPtr arg3, nfloat arg4, [MarshalAs(UnmanagedType.I1)] bool arg5, IntPtr arg6);
+
 	}
 }
 
