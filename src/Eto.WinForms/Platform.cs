@@ -173,6 +173,7 @@ namespace Eto.WinForms
 			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
 			p.Add<DataFormats.IHandler>(() => new DataFormatsHandler());
 			p.Add<Taskbar.IHandler>(() => new TaskbarHandler());
+			p.Add<Window.IWindowHandler>(() => new WindowHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

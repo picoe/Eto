@@ -492,5 +492,8 @@ namespace Eto
 		
 		[DllImport("gdi32.dll")]
 		public static extern bool OffsetWindowOrgEx(IntPtr hdc, int nXOffset, int nYOffset, ref POINT lpPoint);
+		
+		[DllImport("user32.dll")]
+		public static extern IntPtr WindowFromPoint(POINT lpPoint);
 	}
 }

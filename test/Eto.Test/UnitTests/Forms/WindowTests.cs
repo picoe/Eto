@@ -7,6 +7,7 @@ using System.Linq;
 using System.Collections.Specialized;
 using Eto.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Eto.Test.UnitTests.Forms
 {
@@ -250,6 +251,27 @@ namespace Eto.Test.UnitTests.Forms
 
 				return layout;
 			});
+		}
+		
+		[Test, ManualTest]
+		public void WindowFromPointShouldReturnWindowUnderPoint()
+		{
+			ManualForm("Move your mouse, it should show the title of the window under the mouse pointer",
+			form => {
+				var content = new Panel { MinimumSize = new Size(100, 100) };
+				var timer = new UITimer { Interval = 0.5 };
+				timer.Elapsed += (sender, e) => {
+					var window = Window.FromPoint(Mouse.Position);
+					content.Content = $"Window: {window?.Title}";
+				};
+				timer.Start();
+				form.Closed += (sender, e) => {
+					timer.Stop();	
+				};
+				form.Title = "Test Form";
+				return content;
+			}
+			);
 		}
 	}
 }
