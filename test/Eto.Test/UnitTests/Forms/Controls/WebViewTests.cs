@@ -4,6 +4,8 @@ using Eto.Forms;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Threading;
+using Eto.Drawing;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -76,6 +78,35 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					var value = await webView.ExecuteScriptAsync("return 'hello';");
 					Assert.AreEqual("hello", value, "#1");
 				});
+		}
+		
+		[Test]
+		public void WebViewClosedAsChildShouldNotCrash()
+		{
+			var mre = new ManualResetEvent(false);
+			Invoke(() => {
+				var parent = new Form();
+				parent.ClientSize = new Size(300, 300);
+				parent.Content = "This is the parent that will be closed";
+				parent.Shown += (sender, e) => {
+					var child = new Form();
+					child.ClientSize = new Size(300, 300);
+					var webView = new WebView { Url = new Uri("http://example.com") };
+					child.Content = webView;
+					child.Owner = parent;
+					webView.DocumentLoaded += async (s2, e2) => {
+						await Task.Delay(2000);
+						parent.Close();
+					};
+					child.Show();
+				};
+				parent.Show();
+				parent.Closed += (sender, e) => {
+					mre.Set();	
+				};
+			});
+			
+			mre.WaitOne(5000);
 		}
 	}
 }
