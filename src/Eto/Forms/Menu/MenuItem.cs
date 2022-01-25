@@ -142,7 +142,7 @@ namespace Eto.Forms
 
 			var command = Command;
 			if (command != null)
-				Enabled = command.CanExecute(CommandParameter);
+				Handler.Enabled = command.CanExecute(CommandParameter);
 		}
 
 		/// <summary>
@@ -250,6 +250,17 @@ namespace Eto.Forms
 		public virtual void PerformClick()
 		{
 			OnClick(EventArgs.Empty);
+		}
+		
+		/// <summary>
+		/// Executes the <see cref="OnValidate"/> for this item.
+		/// </summary>
+		/// <remarks>
+		/// This allows you to manually validate the menu item to determine its enabled state.
+		/// </remarks>
+		public virtual void PerformValidate()
+		{
+			OnValidate(EventArgs.Empty);
 		}
 
 		/// <summary>
