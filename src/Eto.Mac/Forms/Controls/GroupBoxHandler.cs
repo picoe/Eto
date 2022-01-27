@@ -37,7 +37,7 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class GroupBoxHandler : MacPanel<NSBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
-		SizeF? borderSize;
+		SizeF? _borderSize;
 		
 		/// <summary>
 		/// Use a separate class so it doesn't get event methods added
@@ -127,23 +127,24 @@ namespace Eto.Mac.Forms.Controls
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			if (borderSize == null)
-			{
-				var frame = Control.Frame;
-				var contentSize = ContentControl.Frame.Size;
-				if (contentSize.Width <= 10 || contentSize.Height <= 10)
-				{
-					contentSize = new CGSize(100, 100);
-					var oldFrame = Control.Frame;
-					Control.SetFrameFromContentFrame(new CGRect(CGPoint.Empty, contentSize));
-					frame = Control.Frame;
-					Control.Frame = oldFrame;
-				}
-				frame = Control.GetAlignmentRectForFrame(frame);
-				borderSize = (frame.Size - contentSize).ToEto();
-			}
+			var borderSize = _borderSize ?? (_borderSize = CalculateBorderSize()) ?? SizeF.Empty;
+			return base.GetPreferredSize(availableSize - borderSize) + borderSize;
+		}
 
-			return base.GetPreferredSize(availableSize - borderSize.Value) + borderSize.Value;
+		SizeF CalculateBorderSize()
+		{
+			var frame = Control.Frame;
+			var contentSize = ContentControl.Frame.Size;
+			if (contentSize.Width <= 10 || contentSize.Height <= 10)
+			{
+				contentSize = new CGSize(100, 100);
+				var oldFrame = Control.Frame;
+				Control.SetFrameFromContentFrame(new CGRect(CGPoint.Empty, contentSize));
+				frame = Control.Frame;
+				Control.Frame = oldFrame;
+			}
+			frame = Control.GetAlignmentRectForFrame(frame);
+			return (frame.Size - contentSize).ToEto();
 		}
 
 		NSTextFieldCell TitleCell => (NSTextFieldCell)Control.TitleCell;
@@ -161,7 +162,7 @@ namespace Eto.Mac.Forms.Controls
 		public override void InvalidateMeasure()
 		{
 			base.InvalidateMeasure();
-			borderSize = null;
+			_borderSize = null;
 		}
 
 		protected override bool UseNSBoxBackgroundColor => false;
