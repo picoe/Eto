@@ -149,8 +149,8 @@ namespace Eto.Wpf.Forms.Controls
 				RowHeaderWidth = 0,
 				SelectionMode = swc.DataGridSelectionMode.Single,
 				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
-				Background = sw.SystemColors.WindowBrush
 			};
+			Control.SetResourceReference(swc.Control.BackgroundProperty, sw.SystemColors.WindowBrushKey);
 		}
 
 		protected ColumnCollection Columns { get; private set; }

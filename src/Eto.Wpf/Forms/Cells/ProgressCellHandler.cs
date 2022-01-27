@@ -81,7 +81,7 @@ namespace Eto.Wpf.Forms.Cells
 			private swc.Grid GenerateProgressBar(swc.DataGridCell cell, object dataItem)
 			{
 				swc.Grid element = GetControl<swc.Grid>(cell) ?? new swc.Grid();
-				cell.Foreground = sw.SystemColors.ControlTextBrush;
+				cell.SetResourceReference(swc.Control.ForegroundProperty, sw.SystemColors.ControlTextBrushKey);
 
 				// Add a progress bar to the grid
 				var progressBar = new swc.ProgressBar { Value = 0, Minimum = 0, Maximum = 1 };

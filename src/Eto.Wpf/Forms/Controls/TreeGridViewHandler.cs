@@ -27,7 +27,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.Initialize();
 			controller = new TreeController { Handler = this };
-			Control.Background = sw.SystemColors.WindowBrush;
+			Control.SetResourceReference(swc.Panel.BackgroundProperty, sw.SystemColors.WindowBrushKey);
 			Control.PreviewKeyDown += Control_PreviewKeyDown;
 		}
 
