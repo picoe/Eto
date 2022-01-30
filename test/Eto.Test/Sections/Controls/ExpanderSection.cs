@@ -15,7 +15,7 @@ namespace Eto.Test.Sections.Controls
 			var expander = new Expander
 			{
 				Header = "Test Header",
-				Content = new Panel {  Size = new Size(200, 200), BackgroundColor = Colors.Blue }
+				Content = new Panel { Size = new Size(200, 200), BackgroundColor = Colors.Blue }
 			};
 
 			expandedCheckBox.CheckedBinding.Bind(expander, e => e.Expanded);
@@ -26,12 +26,17 @@ namespace Eto.Test.Sections.Controls
 			var expander2 = new Expander
 			{
 				Header = new StackLayout
-				{ 
-					Orientation = Orientation.Horizontal, 
+				{
+					Orientation = Orientation.Horizontal,
 					Items = { "Test Expanded with custom header", new TextBox() }
 				},
 				Expanded = true,
-				Content = new Panel { Size = new Size(300, 200), BackgroundColor = Colors.Blue }
+				Content = new Panel
+				{
+					Size = new Size(300, 200),
+					BackgroundColor = Colors.Blue,
+					Content = new TableLayout("Top", null, "Bottom")
+				}
 			};
 
 			LogEvents(expander2);
