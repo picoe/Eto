@@ -56,6 +56,13 @@ namespace Eto.Wpf.Forms
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 		}
 
+		protected override void InternalClose()
+		{
+			// Clear owner so WPF doesn't change the z-order of the parent when closing
+			SetOwner(null);
+			Control.Close();
+		}
+
 		public bool ShowActivated
 		{
 			get { return Control.ShowActivated; }
