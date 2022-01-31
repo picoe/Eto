@@ -227,7 +227,7 @@ namespace Eto.Wpf.Forms
 					Control.Activated += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.Deactivated += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
+					Control.LostKeyboardFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
 					break;
 				case Window.LocationChangedEvent:
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
@@ -407,7 +407,11 @@ namespace Eto.Wpf.Forms
 			{
 				// prevent crash if we call this more than once..
 				if (!IsClosing)
+				{
+					// Clear owner so WPF doesn't change the z-order of the parent when closing
+					SetOwner(null);
 					Control.Close();
+				}
 			}
 			else
 				Visible = false;
