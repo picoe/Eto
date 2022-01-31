@@ -400,6 +400,8 @@ namespace Eto.Wpf.Forms
 				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
 			}
 		}
+		
+		protected virtual void InternalClose() => Control.Close();
 
 		public void Close()
 		{
@@ -408,9 +410,7 @@ namespace Eto.Wpf.Forms
 				// prevent crash if we call this more than once..
 				if (!IsClosing)
 				{
-					// Clear owner so WPF doesn't change the z-order of the parent when closing
-					SetOwner(null);
-					Control.Close();
+					InternalClose();
 				}
 			}
 			else
