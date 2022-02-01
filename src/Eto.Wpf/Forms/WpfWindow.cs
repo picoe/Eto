@@ -227,11 +227,9 @@ namespace Eto.Wpf.Forms
 					Control.Activated += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					// LostKeyboardFocus is called for every child, only fire event when the form is no longer active
-					Control.LostKeyboardFocus += (sender, e) => {
-						if (!Control.IsActive)
-							Callback.OnLostFocus(Widget, EventArgs.Empty);
-					};
+					// Use AsyncInvoke here otherwise calling Close() during LostFocus does not work as expected
+					// and can lead to the z-order of windows not being correct.
+					Control.Deactivated += (sender, e) => Application.Instance.AsyncInvoke(() => Callback.OnLostFocus(Widget, EventArgs.Empty));
 					break;
 				case Window.LocationChangedEvent:
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
