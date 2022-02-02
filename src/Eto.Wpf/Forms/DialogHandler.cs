@@ -48,20 +48,24 @@ namespace Eto.Wpf.Forms
 		{
 			ReloadButtons();
 
+			var owner = Widget.Owner;
+			
 			if (LocationSet)
 			{
 				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
 			}
-			else if (Widget.Owner != null)
+			else if (owner != null)
 			{
 				// CenterOwner does not work in certain cases (e.g. with autosizing)
 				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
-				parentWindowBounds = Widget.Owner.Bounds;
+				parentWindowBounds = owner.Bounds;
 				Control.Loaded += HandleLoaded;
 			}
-			// if the owner doesn't have focus, WPF changes the owner's z-order after the dialog closes.
-			if (!Widget.Owner.HasFocus)
-				Widget.Owner?.Focus();
+			
+			// if the owner doesn't have focus, windows changes the owner's z-order after the dialog closes.
+			if (owner != null && !owner.HasFocus)
+				owner.Focus();
+
 			Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 

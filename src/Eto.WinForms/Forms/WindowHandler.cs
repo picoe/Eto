@@ -19,6 +19,7 @@ namespace Eto.WinForms.Forms
 	public class WindowHandler : Window.IWindowHandler
 	{
 		internal static readonly object MovableByWindowBackground_Key = new object();
+		internal static readonly object IsClosing_Key = new object();
 
 		public Window FromPoint(PointF point)
 		{
@@ -246,21 +247,7 @@ namespace Eto.WinForms.Forms
 					Control.FormClosed += (sender, e) => Callback.OnClosed(Widget, EventArgs.Empty);
 					break;
 				case Window.ClosingEvent:
-					Control.FormClosing += delegate(object sender, swf.FormClosingEventArgs e)
-					{
-						var args = new CancelEventArgs(e.Cancel);
-						Callback.OnClosing(Widget, args);
-
-						if (!e.Cancel && swf.Application.OpenForms.Count <= 1
-						    || e.CloseReason == swf.CloseReason.ApplicationExitCall
-						    || e.CloseReason == swf.CloseReason.WindowsShutDown)
-						{
-							var app = ((ApplicationHandler)Application.Instance.Handler);
-							app.Callback.OnTerminating(app.Widget, args);
-						}
-
-						e.Cancel = args.Cancel;
-					};
+					Control.FormClosing += Control_FormClosing;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					Control.Shown += delegate
@@ -275,10 +262,7 @@ namespace Eto.WinForms.Forms
 					};
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.Deactivate += delegate
-					{
-						Callback.OnLostFocus(Widget, EventArgs.Empty);
-					};
+					Control.Deactivate += (sender, e) => Application.Instance.AsyncInvoke(() => Callback.OnLostFocus(Widget, EventArgs.Empty));
 					break;
 				case Window.WindowStateChangedEvent:
 					var oldState = Control.WindowState;
@@ -298,6 +282,39 @@ namespace Eto.WinForms.Forms
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		bool IsClosing
+		{
+			get => Widget.Properties.Get<bool>(WindowHandler.IsClosing_Key);
+			set => Widget.Properties.Set(WindowHandler.IsClosing_Key, value);
+		}
+
+		private void Control_FormClosing(object sender, swf.FormClosingEventArgs e)
+		{
+			IsClosing = true;
+			var args = new CancelEventArgs(e.Cancel);
+			Callback.OnClosing(Widget, args);
+
+			if (!e.Cancel && swf.Application.OpenForms.Count <= 1
+				|| e.CloseReason == swf.CloseReason.ApplicationExitCall
+				|| e.CloseReason == swf.CloseReason.WindowsShutDown)
+			{
+				var app = ((ApplicationHandler)Application.Instance.Handler);
+				app.Callback.OnTerminating(app.Widget, args);
+			}
+
+			e.Cancel = args.Cancel;
+			IsClosing = !e.Cancel;
+			
+			if (!e.Cancel)
+			{
+				InternalClosing();
+			}
+		}
+
+		internal virtual void InternalClosing()
+		{
 		}
 
 		public MenuBar Menu
@@ -389,7 +406,11 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public void Close() => Control.Close();
+		public void Close()
+		{
+			if (!IsClosing)
+				Control.Close();
+		}
 
 		public Icon Icon
 		{
