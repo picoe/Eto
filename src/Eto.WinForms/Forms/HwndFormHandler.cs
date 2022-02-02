@@ -442,35 +442,20 @@ namespace Eto.WinForms.Forms
 
 		public void SuspendLayout()
 		{
-			throw new NotImplementedException();
 		}
 
 		public void ResumeLayout()
 		{
-			throw new NotImplementedException();
 		}
 
-		public void Focus()
-		{
-			throw new NotImplementedException();
-		}
+		public void Focus() => Win32.SetActiveWindow(Control);
 
-		public bool HasFocus
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public bool HasFocus => Win32.GetActiveWindow() == Control;
 
 		public bool Visible
 		{
-			get
-			{
-				return Win32.IsWindowVisible(Control);
-			}
-			set
-			{
-				Win32.ShowWindow(Control, value ? Win32.SW.SHOWNA : Win32.SW.HIDE);
-			}
-
+			get => Win32.IsWindowVisible(Control);
+			set => Win32.ShowWindow(Control, value ? Win32.SW.SHOWNA : Win32.SW.HIDE);
 		}
 
 		public void OnPreLoad(EventArgs e)

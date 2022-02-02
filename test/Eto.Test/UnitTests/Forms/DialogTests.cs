@@ -176,5 +176,45 @@ namespace Eto.Test.UnitTests.Forms
 			Assert.IsTrue(firstWasClosedFirst, "Modal 1 did not close before Modal 2");
 		}
 
+		[Test]
+		[ManualTest]
+		public void DialogShouldCloseWithoutHidingParent()
+		{
+			ManualForm("Click on the child window to open another child.\nClosing by clicking or hitting the 'x' should\nnot make any windows go behind other applications.",
+			form =>
+			{
+				var content = new Panel { MinimumSize = new Size(100, 100) };
+				form.Shown += (sender, e) =>
+				{
+					// this form is used so the parent of the dialog won't have focus when it is shown
+					var someOtherActivatingForm = new Form
+					{
+						ClientSize = new Size(100, 100), 
+						Content = TableLayout.AutoSized("Click Me", centered: true)
+					};
+					someOtherActivatingForm.LostFocus += (s2, e2) => someOtherActivatingForm.Close();
+					someOtherActivatingForm.MouseDown += (s3, e3) => {
+						
+						var childForm = new Dialog
+						{
+							Title = "Child Dialog",
+							ClientSize = new Size(100, 100),
+							Owner = form,
+							Content = TableLayout.AutoSized("Click Me too", centered: true)
+						};
+						childForm.MouseDown += (s2, e2) => childForm.Close();
+						
+						// form doesn't have focus here (yet)
+						childForm.ShowModal();
+					};
+					someOtherActivatingForm.Show();
+				};
+				form.Title = "Test Form";
+				form.Owner = Application.Instance.MainForm;
+				return content;
+			}
+			);
+		}
+
 	}
 }

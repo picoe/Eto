@@ -281,6 +281,10 @@ namespace Eto.Wpf.Forms
 			e.Cancel = args.Cancel;
 			IsApplicationClosing = !e.Cancel && willShutDown;
 			IsClosing = !e.Cancel;
+			if (!e.Cancel)
+			{
+				InternalClosing();
+			}
 		}
 
 		float LastPixelSize
@@ -403,7 +407,9 @@ namespace Eto.Wpf.Forms
 			}
 		}
 		
-		protected virtual void InternalClose() => Control.Close();
+		protected virtual void InternalClosing()
+		{
+		}
 
 		public void Close()
 		{
@@ -412,7 +418,7 @@ namespace Eto.Wpf.Forms
 				// prevent crash if we call this more than once..
 				if (!IsClosing)
 				{
-					InternalClose();
+					Control.Close();
 				}
 			}
 			else
