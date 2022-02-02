@@ -138,6 +138,12 @@ namespace Eto.WinForms.Forms
 			Resizable = true;
 		}
 
+		internal override void InternalClosing()
+		{
+			base.InternalClosing();
+			SetOwner(null);
+		}
+
 		public void Show()
 		{
 			Control.Show();

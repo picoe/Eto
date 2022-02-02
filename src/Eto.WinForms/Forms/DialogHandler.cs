@@ -79,6 +79,9 @@ namespace Eto.WinForms.Forms
 		public void ShowModal()
         {
             ReloadButtons();
+			var owner = Widget.Owner;
+			if (owner != null && !owner.HasFocus)
+				owner.Focus();
 
             Control.ShowDialog();
 			Control.Owner = null; // without this, the dialog is still active as part of the owner form
