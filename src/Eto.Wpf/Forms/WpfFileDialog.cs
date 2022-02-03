@@ -67,6 +67,8 @@ namespace Eto.Wpf.Forms
 
 		public override DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
 			SetFilters();
 			return base.ShowDialog(parent);
 		}

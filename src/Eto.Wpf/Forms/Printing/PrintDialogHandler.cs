@@ -19,6 +19,9 @@ namespace Eto.Wpf.Forms.Printing
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			Control.SetEtoSettings(settings);
 			var result = Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;

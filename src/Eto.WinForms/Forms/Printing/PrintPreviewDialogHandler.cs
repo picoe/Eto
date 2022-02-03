@@ -58,6 +58,9 @@ namespace Eto.WinForms.Forms.Printing
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			swf.DialogResult result;
 			Control.Document = PrintDocumentHandler.GetControl(Document);
 
