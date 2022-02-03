@@ -20,6 +20,9 @@ namespace Eto.Wpf.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+				
 #if WINFORMS
 			// use reflection since adding a parameter requires us to reference PresentationFramework which we don't want in winforms
 			cp.CommonFileDialogResult result;

@@ -98,6 +98,8 @@ namespace Eto.Wpf.Forms
 		{
 			if (parent != null)
 			{
+				if (!parent.HasFocus)
+					parent.Focus();
 				var owner = parent.ControlObject as sw.Window;
 				Control.Owner = owner;
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;

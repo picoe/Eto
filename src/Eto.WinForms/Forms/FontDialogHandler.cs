@@ -58,6 +58,9 @@ namespace Eto.WinForms.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			var result = Control.ShowDialog();
 			if (result == swf.DialogResult.OK)
 			{
