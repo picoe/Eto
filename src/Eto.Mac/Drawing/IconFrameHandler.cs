@@ -5,6 +5,7 @@ using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Forms;
+using System.Runtime.InteropServices;
 
 #if XAMMAC2
 using AppKit;
@@ -79,10 +80,23 @@ namespace Eto.Mac.Drawing
 				}
 			}
 
+#if XAMMAC && NET6_0_OR_GREATER
+			// .NET 6 on ARM64 crashes when using the override in macos workload preview 11, remove this when fixed.
+			[Export("CGImageForProposedRect:context:hints:")]
+			public CGImage AsCGImage(IntPtr proposedDestRectPtr, NSGraphicsContext context, NSDictionary hints)
+			{
+				var proposedDestRect = Marshal.PtrToStructure<CGRect>(proposedDestRectPtr);
+				var result = Rep.AsCGImage(ref proposedDestRect, context, hints);
+				Marshal.StructureToPtr(proposedDestRect, proposedDestRectPtr, false);
+				return result;
+			}
+#else
 			public override CGImage AsCGImage(ref CGRect proposedDestRect, NSGraphicsContext context, NSDictionary hints)
 			{
 				return Rep.AsCGImage(ref proposedDestRect, context, hints);
 			}
+#endif
+			
 
 			public override nint BitsPerSample
 			{
