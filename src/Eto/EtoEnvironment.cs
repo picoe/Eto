@@ -14,7 +14,7 @@ namespace Eto
 		/// <remarks>
 		/// This will return a different folder, depending on the platform: <br/>
 		///   OS X:    ~/Library/Preferences/ <br/>
-		///   Windows: %APPDATA% ([User's Home]/Appdata/Roaming <br/>
+		///   Windows: %APPDATA% [User's Home]/Appdata/Roaming <br/>
 		///   Linux:   ~/.config <br/>
 		/// </remarks>
 		ApplicationSettings,
@@ -41,10 +41,14 @@ namespace Eto
 		/// the location of the assembly can no longer be found as it is loaded from memory.
 		/// </remarks>
 		EntryExecutable,
-		
+
 		/// <summary>
 		/// Gets the user's downloads folder
 		/// </summary>
+		/// <remarks>
+		/// Note that for GTK on Windows, this will *always* return "[User's Home]/Downloads",
+		/// regardless of what the user's actual download path is.
+		/// </remarks>
 		Downloads
 	}
 
