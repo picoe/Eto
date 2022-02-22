@@ -170,13 +170,12 @@ namespace Eto.Mac.Drawing
 				return Rep.DrawAtPoint(point);
 			}
 
-			static NSDictionary s_emptyDictionary = new NSDictionary();
-
 			public override bool DrawInRect(CGRect dstSpacePortionRect, CGRect srcSpacePortionRect, NSCompositingOperation op, nfloat requestedAlpha, bool respectContextIsFlipped, NSDictionary hints)
 			{
+#if XAMMAC
 				// bug in Xamarin.Mac, hints can't be null when calling base..
-				hints = hints ?? s_emptyDictionary;
-
+				hints = hints ?? new NSDictionary();
+#endif
 				return Rep.DrawInRect(dstSpacePortionRect, srcSpacePortionRect, op, requestedAlpha, respectContextIsFlipped, hints);
 			}
 
