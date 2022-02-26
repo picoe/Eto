@@ -169,15 +169,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public NSScrollView Scroll { get; private set; }
 
-		public override NSView ContainerControl
-		{
-			get { return Scroll; }
-		}
+		public override NSView ContainerControl => Scroll;
 
-		protected override NSTextView CreateControl()
-		{
-			return new EtoTextView(this);
-		}
+		public override NSView TextInputControl => Control;
+
+		protected override NSTextView CreateControl() => new EtoTextView(this);
 
 		protected override void Initialize()
 		{

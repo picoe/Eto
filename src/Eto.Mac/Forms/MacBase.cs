@@ -32,10 +32,9 @@ namespace Eto.Mac.Forms
 		bool IsEventHandled(string eventName);
 
 		NSView ContentControl { get; }
-
 		NSView EventControl { get; }
-
 		NSView FocusControl { get; }
+		NSView TextInputControl { get; }
 
 		void RecalculateKeyViewLoop(ref NSView last);
 
