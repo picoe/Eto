@@ -58,12 +58,20 @@ namespace Eto.iOS
 		{
 			if (color == null)
 				return null;
-			if (MacVersion.IsAtLeast(10, 8))
-				return color.CGColor;
+			CGColor cgColor;
+			
+			// try getting the CGColor and ensure it isn't null..
+			if (MacVersion.IsAtLeast(10, 8) && (cgColor = color.CGColor) != null)
+				return cgColor;
 
+			// try to convert to RGB colorspace so we can convert it to CGColor
 			var converted = color.UsingColorSpaceFast(NSColorSpace.DeviceRGB);
 			if (converted == null)
 				return new CGColor(0, 0, 0, 1f);
+
+			// try getting the CGColor again..
+			if (MacVersion.IsAtLeast(10, 8) && (cgColor = converted.CGColor) != null)
+				return cgColor;
 
 			converted.GetComponents(out var components);
 			return new CGColor(converted.ColorSpace.ColorSpace, components);
