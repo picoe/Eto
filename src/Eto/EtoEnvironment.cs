@@ -12,10 +12,10 @@ namespace Eto
 		/// Application settings folder to store settings or data
 		/// </summary>
 		/// <remarks>
-		/// This will return a different folder, depending on the platform:
-		///   OS X:    ~/Library/Application Settings/[Name Of Application]
-		///   Windows: [User's Home]/AppSettings
-		///   Linux:   ~/.config
+		/// This will return a different folder, depending on the platform: <br/>
+		///   OS X:    ~/Library/Application Support/ <br/>
+		///   Windows: %APPDATA% [User's Home]/Appdata/Roaming <br/>
+		///   Linux:   ~/.config <br/>
 		/// </remarks>
 		ApplicationSettings,
 
@@ -23,8 +23,8 @@ namespace Eto
 		/// The application resources.path
 		/// </summary>
 		/// <remarks>
-		/// In OS X, this will be the .app bunldle's resource path.  Other platforms
-		/// will typically return the same path as the current executable file
+		/// In OS X, this will be the .app bundle's resource path.  Other platforms
+		/// will typically return the same path as the current executable file.
 		/// </remarks>
 		ApplicationResources,
 
@@ -41,10 +41,14 @@ namespace Eto
 		/// the location of the assembly can no longer be found as it is loaded from memory.
 		/// </remarks>
 		EntryExecutable,
-		
+
 		/// <summary>
 		/// Gets the user's downloads folder
 		/// </summary>
+		/// <remarks>
+		/// Note that for GTK on Windows, this will *always* return "[User's Home]/Downloads",
+		/// regardless of what the user's actual download path is.
+		/// </remarks>
 		Downloads
 	}
 
