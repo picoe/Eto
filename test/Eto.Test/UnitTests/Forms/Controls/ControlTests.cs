@@ -151,6 +151,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 								new FilePicker { FilePath = "/some/path/that/is/long/which/should/not/make/it/too/big" },
 								new GroupBox { Content = "Some content", Text = "Some text" },
 								new LinkButton {  Text = "LinkButton"},
+								new ListBox { Items = { "Item 1", "Item 2", "Item 3" } },
 								new NumericStepper(),
 								new PasswordBox(),
 								new ProgressBar { Value = 50 },

@@ -84,6 +84,7 @@ namespace Eto.Mac.Forms
 			if (h == null) return;
 			h.Callback.OnMouseWheel(h.Widget, MacConversions.GetMouseEvent(h, theEvent, true));
 		}
+		
 	}
 
 	public interface IMacViewHandler : IMacControlHandler
@@ -109,6 +110,8 @@ namespace Eto.Mac.Forms
 		bool? ShouldHaveFocus { get; set; }
 		int SuppressMouseEvents { get; set; }
 		bool SuppressMouseTriggerCallback { get; set; }
+		bool TextInputCancelled { get; set; }
+		bool TextInputImplemented { get; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
 
@@ -126,7 +129,7 @@ namespace Eto.Mac.Forms
 		MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent);
 	}
 
-	static class MacView
+	static partial class MacView
 	{
 		public static readonly object AutoSize_Key = new object();
 		public static readonly object MinimumSize_Key = new object();
@@ -138,6 +141,8 @@ namespace Eto.Mac.Forms
 		public static readonly object Enabled_Key = new object();
 		public static readonly object ActualEnabled_Key = new object();
 		public static readonly object AcceptsFirstMouse_Key = new object();
+		public static readonly object TextInputCancelled_Key = new object();
+		public static readonly object TextInputImplemented_Key = new object();
 		public static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
 		public static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
 		public static readonly IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
@@ -154,7 +159,7 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
 		public static readonly IntPtr selSetFrameSize = Selector.GetHandle("setFrameSize:");
 		public static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
-		public static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
+		public static readonly IntPtr selInsertTextReplacementRange = Selector.GetHandle("insertText:replacementRange:");
 		public static readonly IntPtr selDraggingEntered = Selector.GetHandle("draggingEntered:");
 		public static readonly IntPtr selDraggingExited = Selector.GetHandle("draggingExited:");
 		public static readonly IntPtr selDraggingUpdated = Selector.GetHandle("draggingUpdated:");
@@ -284,6 +289,7 @@ namespace Eto.Mac.Forms
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
 		}
 
+		static int _interpretingKeyEvents;
 		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr TriggerKeyDown_Delegate = TriggerKeyDown;
 		static void TriggerKeyDown(IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -293,7 +299,21 @@ namespace Eto.Mac.Forms
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				if (!MacEventView.KeyDown(handler.Widget, theEvent))
 				{
-					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+					if (handler.TextInputImplemented && _interpretingKeyEvents == 0)
+					{
+						_interpretingKeyEvents++;
+						// sending this twice for the same event actually makes it go to the same control.. 
+						handler.TextInputControl.InterpretKeyEvents(new [] { theEvent });
+						
+						if (!handler.TextInputCancelled)
+							Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+							
+						_interpretingKeyEvents--;
+					}
+					else
+					{
+						Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+					}
 				}
 			}
 		}
@@ -389,21 +409,28 @@ namespace Eto.Mac.Forms
 			}
 			Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, draggingInfoPtr);
 		}
+		
 
-		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr TriggerTextInput_Delegate = TriggerTextInput;
-		static void TriggerTextInput(IntPtr sender, IntPtr sel, IntPtr textPtr)
+		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr_NSRange TriggerTextInput_Delegate = TriggerTextInput;
+		static void TriggerTextInput(IntPtr sender, IntPtr sel, IntPtr textPtr, NSRange range)
 		{
 			var obj = Runtime.GetNSObject(sender);
 
 			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
 			{
+				handler.TextInputCancelled = false;
 				var text = (string)Messaging.GetNSObject<NSString>(textPtr);
 				var args = new TextInputEventArgs(text);
 				handler.Callback.OnTextInput(handler.Widget, args);
 				if (args.Cancel)
+				{
+					handler.TextInputCancelled = true;
 					return;
+				}
 			}
-			Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, textPtr);
+			
+			if (ObjCExtensions.SuperClassInstancesRespondsToSelector(obj, sel))
+				Messaging.void_objc_msgSendSuper_IntPtr_NSRange(obj.SuperHandle, sel, textPtr, range);
 		}
 
 
@@ -499,6 +526,7 @@ namespace Eto.Mac.Forms
 		}
 
 		internal static MarshalDelegates.Func_IntPtr_IntPtr_IntPtr_bool ValidateSystemUserInterfaceItem_Delegate = ValidateSystemUserInterfaceItem;
+
 		static bool ValidateSystemUserInterfaceItem(IntPtr sender, IntPtr sel, IntPtr item)
 		{
 			var actionHandle = Messaging.IntPtr_objc_msgSend(item, MacView.selGetAction);
@@ -514,22 +542,15 @@ namespace Eto.Mac.Forms
 						return command.Enabled;
 				}
 			}
-
-			var objClass = Messaging.IntPtr_objc_msgSend(sender, MacView.selClass_Handle);
-
-			if (objClass == IntPtr.Zero)
-				return false;
-
-			var superClass = ObjCExtensions.class_getSuperclass(objClass);
+			
 			return
-				superClass != IntPtr.Zero
-				&& ObjCExtensions.ClassInstancesRespondToSelector(superClass, sel)
+				ObjCExtensions.SuperClassInstancesRespondsToSelector(sender, sel)
 				&& Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
 		}
 
 	}
 
-	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
+	public abstract partial class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
 		where TControl : NSObject
 		where TWidget : Control
 		where TCallback : Control.ICallback
@@ -545,13 +566,13 @@ namespace Eto.Mac.Forms
 
 		public abstract NSView ContainerControl { get; }
 
-		public virtual NSView ContentControl { get { return ContainerControl; } }
+		public virtual NSView ContentControl => ContainerControl;
 
 		public virtual NSView DragControl => ContainerControl;
 
-		public virtual NSView EventControl { get { return ContainerControl; } }
+		public virtual NSView EventControl => ContainerControl;
 
-		public virtual NSView FocusControl { get { return EventControl; } }
+		public virtual NSView FocusControl => EventControl;
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
@@ -800,7 +821,10 @@ namespace Eto.Mac.Forms
 					// TODO
 					break;
 				case Eto.Forms.Control.TextInputEvent:
-					AddMethod(MacView.selInsertText, MacView.TriggerTextInput_Delegate, "v@:@");
+					if (EnsureTextInputImplemented())
+					{
+						HandleEvent(Eto.Forms.Control.KeyDownEvent);
+					}
 					break;
 
 				case Eto.Forms.Control.DragDropEvent:
@@ -1455,6 +1479,18 @@ namespace Eto.Mac.Forms
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, theEvent.Handle);
 			}
 			return args;
+		}
+		
+		bool IMacViewHandler.TextInputCancelled
+		{
+			get => Widget.Properties.Get<bool>(MacView.TextInputCancelled_Key);
+			set => Widget.Properties.Set(MacView.TextInputCancelled_Key, value);
+		}
+		
+		public bool TextInputImplemented
+		{
+			get => Widget.Properties.Get<bool>(MacView.TextInputImplemented_Key);
+			private set => Widget.Properties.Set(MacView.TextInputImplemented_Key, value);
 		}
 	}
 }

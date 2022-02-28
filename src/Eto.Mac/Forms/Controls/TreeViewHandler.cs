@@ -58,6 +58,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public NSScrollView Scroll { get; private set; }
 
+		public override NSView TextInputControl => Control;
+
 		public class EtoTreeItem : MacImageData
 		{
 			Dictionary<int, EtoTreeItem> items;
@@ -293,15 +295,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override NSView ContainerControl
-		{
-			get { return Scroll; }
-		}
+		public override NSView ContainerControl => Scroll;
 
-		protected override NSOutlineView CreateControl()
-		{
-			return new EtoOutlineView();
-		}
+		protected override NSOutlineView CreateControl() => new EtoOutlineView();
 
 		protected override void Initialize()
 		{

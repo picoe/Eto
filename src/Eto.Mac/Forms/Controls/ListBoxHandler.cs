@@ -92,15 +92,11 @@ namespace Eto.Mac.Forms.Controls
 		CollectionHandler collection;
 		MacImageListItemCell cell;
 
-		public override NSView ContainerControl
-		{
-			get { return scroll; }
-		}
+		public override NSView ContainerControl => scroll;
 
-		public NSScrollView Scroll
-		{
-			get { return scroll; }
-		}
+		public NSScrollView Scroll => scroll;
+
+		public override NSView TextInputControl => Control;
 
 		public class EtoDataSource : NSTableViewDataSource
 		{
@@ -185,16 +181,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public ContextMenu ContextMenu
-		{
-			get;
-			set;
-		}
+		public ContextMenu ContextMenu { get; set; }
 
-		protected override NSTableView CreateControl()
-		{
-			return new EtoListBoxTableView();
-		}
+		protected override NSTableView CreateControl() => new EtoListBoxTableView();
 			
 		protected override void Initialize()
 		{
