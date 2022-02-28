@@ -95,6 +95,21 @@ Applications
 * [RegexTestBench](https://github.com/CommonLoon102/RegexTestBench) - Cross-platform regex testing tool in .NET 5
 * [GEDKeeper (v3)](https://github.com/Serg-Norseman/GEDKeeper) - Cross-platform application for working with personal genealogical databases
 
+Third party libraries
+----------
+
+| |Pure Eto.Forms|[SkiaSharp](https://github.com/mono/SkiaSharp) edition| |
+|---|---|---|---|
+|[ScottPlot](https://scottplot.net/)|[![pure](https://img.shields.io/nuget/v/ScottPlot.Eto.svg)](https://www.nuget.org/packages/ScottPlot.Eto/)||Plotting library that makes it easy to interactively display large datasets.
+|[LiveCharts](https://lvcharts.net/)||[![skia](https://img.shields.io/nuget/v/LiveChartsCore.SkiaSharpView.Eto.svg)](https://www.nuget.org/packages/LiveChartsCore.SkiaSharpView.Eto/)|Simple, flexible, powerful and open source data visualization for .Net.
+|[Microcharts](https://devblogs.microsoft.com/xamarin/microcharts-elegant-cross-platform-charts-for-any-app/)||[![skia](https://img.shields.io/nuget/v/Microcharts.Eto.svg)](https://www.nuget.org/packages/Microcharts.Eto/)|Elegant Cross-Platform Charts for Every App.
+|[OxyPlot](https://oxyplot.github.io/)|[![pure](https://img.shields.io/nuget/v/OxyPlot.Eto.svg)](https://www.nuget.org/packages/OxyPlot.Eto/)|[![skia](https://img.shields.io/nuget/v/OxyPlot.Eto.Skia.svg)](https://www.nuget.org/packages/OxyPlot.Eto.Skia/)|Cross-platform plotting library for .NET.
+|[Mapsui](https://mapsui.com/)||[![skia](https://img.shields.io/nuget/v/Mapsui.Eto.svg)](https://www.nuget.org/packages/Mapsui.Eto/)|A C# map component for apps.
+|[Eto.RainbowLoading](https://github.com/rafntor/Eto.RainbowLoading)|[![pure](https://img.shields.io/nuget/v/Eto.RainbowLoading.svg)](https://www.nuget.org/packages/Eto.RainbowLoading/)|[![skia](https://img.shields.io/nuget/v/Eto.RainbowLoading.Skia.svg)](https://www.nuget.org/packages/Eto.RainbowLoading.Skia/)|A control showing the famous Android loading indicator.
+|[Eto.GifImageView](https://github.com/rafntor/Eto.GifImageView)|[![pure](https://img.shields.io/nuget/v/Eto.GifImageView.svg)](https://www.nuget.org/packages/Eto.GifImageView/)||A control for displaying GIF's.
+|[Eto.SkiaDraw](https://github.com/rafntor/Eto.SkiaDraw)|[![pure](https://img.shields.io/nuget/v/Eto.SkiaDraw.svg)](https://www.nuget.org/packages/Eto.SkiaDraw/)||A control that allows using SkiaSharp drawing in Eto.
+|[Eto.Containers](https://github.com/rafntor/Eto.Containers)|[![pure](https://img.shields.io/nuget/v/Eto.Containers.svg)](https://www.nuget.org/packages/Eto.Containers/)||Some extra Eto.Forms container controls.
+
 Assemblies
 ----------
 
