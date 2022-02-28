@@ -13,7 +13,7 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// This will return a different folder, depending on the platform: <br/>
-		///   OS X:    ~/Library/Preferences/ <br/>
+		///   OS X:    ~/Library/Application Support/ <br/>
 		///   Windows: %APPDATA% [User's Home]/Appdata/Roaming <br/>
 		///   Linux:   ~/.config <br/>
 		/// </remarks>
@@ -24,7 +24,7 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// In OS X, this will be the .app bundle's resource path.  Other platforms
-		/// will typically return the same path as the current executable file
+		/// will typically return the same path as the current executable file.
 		/// </remarks>
 		ApplicationResources,
 
