@@ -232,6 +232,11 @@ namespace Eto.Test.Sections.Behaviors
 			LogEvents(gridDest);
 
 
+			var textBoxDest = new TextBox { AllowDrop = true, Text = "TextBox" };
+			LogEvents(textBoxDest);
+
+			var comboBoxDest = new ComboBox { AllowDrop = true, Text = "ComboBox" };
+			LogEvents(comboBoxDest);
 
 			// layout
 
@@ -278,7 +283,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.EndVertical();
 
 			layout.BeginVertical(xscale: true);
-			layout.AddRange("Drag destinations:", buttonDestination, drawableDest);
+			layout.AddRange("Drag destinations:", buttonDestination, drawableDest, textBoxDest, comboBoxDest);
 			layout.Add(treeDest, yscale: true);
 			layout.Add(gridDest, yscale: true);
 			layout.EndVertical();
