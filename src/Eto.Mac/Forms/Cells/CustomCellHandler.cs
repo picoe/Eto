@@ -151,11 +151,11 @@ namespace Eto.Mac.Forms.Cells
 			public override void Layout()
 			{
 				base.Layout();
-				var sv = this.Subviews;
+				var sv = Subviews;
 				if (sv.Length > 0)
 				{
 					var view = sv[0];
-					view.Frame = this.Bounds;
+					view.Frame = view.GetFrameForAlignmentRect(Bounds);
 				}
 			}
 

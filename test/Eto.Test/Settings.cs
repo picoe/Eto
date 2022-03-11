@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Eto.Drawing;
@@ -17,6 +18,24 @@ namespace Eto.Test
 		public string LastUnitTestFilter { get; set; }
 
 		public Rectangle? LastFormPosition { get; set; }
+
+		bool _GridViewSection_SaveColumnDisplayIndexes;
+		public bool GridViewSection_SaveColumnDisplayIndexes
+		{
+			get => _GridViewSection_SaveColumnDisplayIndexes;
+			set
+			{
+				_GridViewSection_SaveColumnDisplayIndexes = value;
+				if (!value)
+				{
+					GridViewSection_DisplayIndexes = null;
+					GridViewSection_VisibleIndexes = null;
+				}
+			}
+		}
+		public List<int> GridViewSection_DisplayIndexes { get; set; }
+
+		public List<bool> GridViewSection_VisibleIndexes { get; set; }
 
 		public static Settings Load()
 		{

@@ -11,20 +11,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		bool IsEventHandled(string handler);
 
 		void ColumnClicked(GridColumnHandler column);
+		int GetColumnDisplayIndex(GridColumnHandler column);
+		void SetColumnDisplayIndex(GridColumnHandler column, int index);
 	}
 
-	public interface IGridColumnHandler
-	{
-		Gtk.TreeViewColumn Control { get; }
-
-		GLib.Value GetValue(object dataItem, int dataColumn, int row);
-
-		void BindCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex);
-
-		void SetupEvents();
-	}
-
-	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, GridColumn.IHandler, IGridColumnHandler
+	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, GridColumn.IHandler
 	{
 		Cell dataCell;
 		bool autoSize;
@@ -126,7 +117,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { Control.Visible = value; }
 		}
 
-		public void BindCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex)
+		public void SetupCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex)
 		{
 			this.grid = grid;
 			if (dataCell != null)
@@ -140,6 +131,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				SetCellAttributes();
 				cellhandler.BindCell(source, this, columnIndex, ref dataIndex);
 			}
+			SetupEvents();
 		}
 
 		public void SetupEvents()
@@ -182,11 +174,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			return new GLib.Value((string)null);
 		}
 
-		Gtk.TreeViewColumn IGridColumnHandler.Control
-		{
-			get { return Control; }
-		}
-
 		public bool Expand
 		{
 			get => Control.Expand;
@@ -213,6 +200,29 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Control.MaxWidth = value == int.MaxValue ? -1 : value;
 				GridHandler?.Tree?.ColumnsAutosize();
+			}
+		}
+		
+		int? displayIndex;
+
+		public int DisplayIndex
+		{
+			get => GridHandler?.GetColumnDisplayIndex(this) ?? displayIndex ?? -1;
+			set
+			{
+				if (GridHandler != null)
+					GridHandler.SetColumnDisplayIndex(this, value);
+				else
+					displayIndex = value;
+			}
+		}
+
+		internal void SetDisplayIndex()
+		{
+			if (displayIndex != null && GridHandler != null)
+			{
+				GridHandler.SetColumnDisplayIndex(this, displayIndex.Value);
+				displayIndex = null;
 			}
 		}
 	}

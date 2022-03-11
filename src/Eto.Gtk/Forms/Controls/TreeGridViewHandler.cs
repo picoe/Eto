@@ -105,8 +105,10 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (collection != null)
 					collection.Unregister();
 				UnselectAll();
+				suppressExpandCollapseEvents++;
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				suppressExpandCollapseEvents--;
 				EnsureSelection();
 			}
 		}
@@ -357,14 +359,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		public override int GetRowIndexOfPath(Gtk.TreePath path)
 		{
 			var tempPath = new Gtk.TreePath();
-			int count = GetCount(Gtk.TreeIter.Zero, path.Indices[0]);
+			var item = DataStore;
+			int count = item.GetExpandedRowCount(path.Indices[0]);
 			// slow but works for now
 			for (int i = 0; i < path.Indices.Length - 1; i++)
 			{
-				tempPath.AppendIndex(path.Indices[i]);
-				Gtk.TreeIter iter;
-				if (model.GetIter(out iter, tempPath))
-					count += GetCount(iter, path.Indices[i + 1]);
+				item = item[path.Indices[i]] as ITreeGridStore<ITreeGridItem>;
+				if (item != null)
+					count += item.GetExpandedRowCount(path.Indices[i + 1]);
 			}
 			count += path.Indices.Length - 1;
 			//count += path.Indices[row.Indices.Length - 1];
@@ -390,7 +392,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				// Check
 				path = Tree.Model.GetPath(iter);
-				if (GetRowIndexOfPath(path) == row)
+				if (model.GetRowIndexOfIter(iter) == row)
 					return path;
 
 				// Go Down
@@ -426,58 +428,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			return Tree.Model.GetPath(iter);
 		}
 
-		protected int GetRowCount()
-		{
-			Gtk.TreePath path;
-			Gtk.TreeIter iter;
-			Gtk.TreeIter temp;
-
-			bool valid = Tree.Model.GetIterFirst(out iter);
-			int count = 0;
-			while (valid)
-			{
-				count++;
-
-				// Go Down
-				path = Tree.Model.GetPath(iter);
-				if (Tree.GetRowExpanded(path) && Tree.Model.IterChildren(out iter, iter))
-					continue;
-
-				// Go Next
-				temp = iter;
-				if (Tree.Model.IterNext(ref iter))
-					continue;
-				else
-					iter = temp;
-
-				// Go Up and Next
-				while (true)
-				{
-					// Go Up
-					if (Tree.Model.IterParent(out iter, iter))
-					{
-						// Go Next
-						temp = iter;
-						if (Tree.Model.IterNext(ref iter))
-							break;
-						else
-							iter = temp;
-					}
-					else
-						return count;
-				}
-			}
-			return count;
-		}
-
 		protected override void SetSelectedRows(IEnumerable<int> value)
+		
 		{
 			Tree.Selection.UnselectAll();
 			if (value != null && collection != null)
 			{
 				int start = -1;
 				int end = -1;
-				var count = GetRowCount();
+				var count = DataStore.GetExpandedRowCount();
 
 				foreach (var row in value.Where(r => r < count).OrderBy(r => r))
 				{
@@ -506,15 +465,18 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public GLib.Value GetColumnValue(ITreeGridItem item, int dataColumn, int row, Gtk.TreeIter iter)
 		{
+			// yes, we can get the row.. but it slows down the TreeGridView too much when there are many items
+			// This is only used when formatting the cell, and all other platforms return row=-1 with TreeGridView
 			if (dataColumn == RowDataColumn)
-			{
-				return new GLib.Value(GetRowIndexOfPath(model.GetPath(iter)));
-			}
+				return new GLib.Value(row); //model.GetRowIndexOfIter(iter));
+
+			if (dataColumn == ItemDataColumn)
+				return new GLib.Value(item);
 
 			int column;
 			if (ColumnMap.TryGetValue(dataColumn, out column))
 			{
-				var colHandler = (IGridColumnHandler)Widget.Columns[column].Handler;
+				var colHandler = (GridColumnHandler)Widget.Columns[column].Handler;
 				return colHandler.GetValue(item, dataColumn, row);
 			}
 			return new GLib.Value((string)null);
@@ -524,27 +486,24 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			return collection == null ? -1 : collection.IndexOf(item);
 		}
-
-		int GetCount(Gtk.TreeIter parent, int upToIndex)
+		
+		(double? hscroll, double? vscroll) SaveScrollState()
 		{
-			int rows = upToIndex == -1 ? model.IterNChildren(parent) : upToIndex;
-			int count = 0;
-			var path = model.GetPath(parent);
-			path.AppendIndex(0);
-			for (int i = 0; i < rows; i++)
-			{
-				Gtk.TreeIter iter;
-				if (Tree.GetRowExpanded(path))
-				{
-					if (model.IterNthChild(out iter, parent, i))
-					{
-						count += GetCount(iter, -1);
-					}
-				}
-				path.Next();
-				count++;
-			}
-			return count;
+			var hscrollbar = Control.HScrollbar as Gtk.HScrollbar;
+			var vscrollbar = Control.VScrollbar as Gtk.VScrollbar;
+			var hscroll = hscrollbar?.Value;
+			var vscroll = vscrollbar?.Value;
+			return (hscroll, vscroll);
+		}
+		
+		void RestoreScrollState((double? hscroll, double? vscroll) state)
+		{
+			var hscrollbar = Control.HScrollbar as Gtk.HScrollbar;
+			var vscrollbar = Control.VScrollbar as Gtk.VScrollbar;
+			if (state.hscroll != null)
+				hscrollbar.Value = state.hscroll.Value;
+			if (state.vscroll != null)
+				vscrollbar.Value = state.vscroll.Value;
 		}
 
 		public void ReloadData()
@@ -552,10 +511,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			// save selected items
 			var items = SelectedItems.ToArray();
 			// save scroll state
-			var hscrollbar = Control.HScrollbar as Gtk.HScrollbar;
-			var vscrollbar = Control.VScrollbar as Gtk.VScrollbar;
-			var hscroll = hscrollbar?.Value;
-			var vscroll = vscrollbar?.Value;
+			var scrollState = SaveScrollState();
 
 			// reload data and expand items
 			suppressExpandCollapseEvents++;
@@ -580,10 +536,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 			}
 			SkipSelectedChange = false;
-			if (hscroll != null)
-				vscrollbar.Value = hscroll.Value;
-			if (vscroll != null)
-				vscrollbar.Value = vscroll.Value;
+			RestoreScrollState(scrollState);
 		}
 
 		public void ReloadItem(ITreeGridItem item, bool reloadChildren)

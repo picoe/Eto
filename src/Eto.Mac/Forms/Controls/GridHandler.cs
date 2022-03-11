@@ -198,6 +198,10 @@ namespace Eto.Mac.Forms.Controls
 
 		protected virtual void UpdateColumns()
 		{
+			foreach (var col in ColumnHandlers)
+			{
+				col.SetupDisplayIndex();
+			}
 		}
 
 		public GridColumnHandler GetColumn(NSTableColumn tableColumn)
@@ -305,6 +309,8 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleScrolled(ObserverActionEventArgs e)
 		{
 			var handler = (GridHandler<TControl, TWidget, TCallback>)e.Handler;
+			if (handler == null)
+				return;
 			if (handler.hasAutoSizedColumns == true)
 				handler.AutoSizeColumns(false);
 		}
@@ -332,10 +338,15 @@ namespace Eto.Mac.Forms.Controls
 			ScrollView.DocumentView = Control;
 		}
 
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			UpdateColumns();
+		}
+
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			UpdateColumns();
 
 			if (Widget.Columns.Any(r => r.Expand))
 			{
@@ -356,8 +367,10 @@ namespace Eto.Mac.Forms.Controls
 			if (Widget.Loaded)
 			{
 				var rect = Table.VisibleRect();
-				var newRange = Table.RowsInRect(rect);
-				if (force || autoSizeRange.Location != newRange.Location || autoSizeRange.Length != newRange.Length)
+				var newRange = rect.IsEmpty ? null : (NSRange?)Table.RowsInRect(rect);
+				if (force 
+					|| newRange == null 
+					|| (autoSizeRange.Location != newRange.Value.Location || autoSizeRange.Length != newRange.Value.Length))
 				{
 					IsAutoSizingColumns = true;
 					int expandCount = 0;
@@ -396,7 +409,8 @@ namespace Eto.Mac.Forms.Controls
 						}
 					}
 
-					autoSizeRange = newRange;
+					if (newRange != null)
+						autoSizeRange = newRange.Value;
 					IsAutoSizingColumns = false;
 					InvalidateMeasure();
 					return true;
@@ -800,7 +814,23 @@ namespace Eto.Mac.Forms.Controls
 			
 			return false;
 		}
-		
+
+		public int GetColumnDisplayIndex(GridColumn column)
+		{
+			if (column.Handler is GridColumnHandler handler)
+				return (int)Control.FindColumn(new NSString(handler.Control.Identifier));
+			return -1;
+		}
+
+		public void SetColumnDisplayIndex(GridColumn column, int index)
+		{
+			if (column.Handler is GridColumnHandler handler)
+			{
+				var fromIndex = Control.FindColumn(new NSString(handler.Control.Identifier));
+				if (fromIndex != index)
+					Control.MoveColumn(fromIndex, index);
+			}
+		}
 	}
 }
 

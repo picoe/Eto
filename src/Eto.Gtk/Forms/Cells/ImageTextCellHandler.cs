@@ -15,8 +15,6 @@ namespace Eto.GtkSharp.Forms.Cells
 		{
 			public ImageTextCellHandler Handler { get; set; }
 
-			[GLib.Property("item")]
-			public object Item { get; set; }
 
 			int row;
 			[GLib.Property("row")]
@@ -25,8 +23,19 @@ namespace Eto.GtkSharp.Forms.Cells
 				get { return row; }
 				set {
 					row = value;
+				}
+			}
+			
+			object item;
+			[GLib.Property("item")]
+			public object Item
+			{
+				get { return item; }
+				set
+				{
+					item = value;
 					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<ImageRenderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+						Handler.Format(new GtkGridCellFormatEventArgs<ImageRenderer>(this, Handler.Column.Widget, item, Row));
 				}
 			}
 		}
@@ -108,6 +117,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			if (FormattingEnabled)
 			{
 				Column.Control.AddAttribute(imageCell, "row", Source.RowDataColumn);
+				Column.Control.AddAttribute(imageCell, "item", Source.ItemDataColumn);
 			}
 		}
 

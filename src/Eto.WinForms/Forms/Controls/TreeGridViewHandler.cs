@@ -27,7 +27,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public override object GetItemAtRow(int row)
 		{
-			if (row >= controller.Count)
+			if (row >= controller.Count || row < 0)
 				return null;
 			return controller[row];
 		}

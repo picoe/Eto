@@ -33,8 +33,19 @@ namespace Eto.GtkSharp.Forms.Cells
 				set
 				{
 					row = value;
+				}
+			}
+			
+			object item;
+			[GLib.Property("item")]
+			public object Item
+			{
+				get { return item; }
+				set
+				{
+					item = value;
 					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, item, Row));
 				}
 			}
 

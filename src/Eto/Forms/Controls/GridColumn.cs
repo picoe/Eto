@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -17,7 +18,7 @@ namespace Eto.Forms
 	[ContentProperty("DataCell")]
 	public class GridColumn : Widget
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets or sets the text to display in the header of the column.
@@ -145,6 +146,19 @@ namespace Eto.Forms
 			get => Handler.MaxWidth;
 			set => Handler.MaxWidth = value;
 		}
+		
+		/// <summary>
+		/// Gets or sets the index of the column in display order, or -1 to use the order they are added.
+		/// </summary>
+		/// <remarks>
+		/// This value must be within the range of the total number of columns that are added.
+		/// </remarks>
+		[DefaultValue(-1)]
+		public int DisplayIndex
+		{
+			get => Handler.DisplayIndex;
+			set => Handler.DisplayIndex = value;
+		}
 
 		/// <summary>
 		/// Handler interface for the <see cref="GridColumn"/>.
@@ -229,6 +243,14 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The column maximum width</value>
 			int MaxWidth { get; set; }
+			
+			/// <summary>
+			/// Gets or sets the index of the column in display order, or -1 to use the order they are added.
+			/// </summary>
+			/// <remarks>
+			/// This value must be within the range of the total number of columns that are added.
+			/// </remarks>
+			int DisplayIndex { get; set; }
 		}
 	}
 }

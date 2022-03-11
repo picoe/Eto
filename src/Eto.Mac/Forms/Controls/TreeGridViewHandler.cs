@@ -294,6 +294,15 @@ namespace Eto.Mac.Forms.Controls
 				}
 				return outlineView.MakeView(tableColumn?.Identifier ?? string.Empty, this);
 			}
+
+			public override void DidDragTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn)
+			{
+				var h = Handler;
+				if (h == null)
+					return;
+				var column = h.GetColumn(tableColumn);
+				h.Callback.OnColumnOrderChanged(h.Widget, new GridColumnEventArgs(column.Widget));
+			}
 		}
 
 		public class EtoDataSource : NSOutlineViewDataSource
@@ -704,6 +713,7 @@ namespace Eto.Mac.Forms.Controls
 				case TreeGridView.SelectedItemChangedEvent:
 				case Grid.SelectionChangedEvent:
 				case Grid.ColumnHeaderClickEvent:
+				case Grid.ColumnOrderChangedEvent:
 					// handled in delegate
 					break;
 				case Grid.CellDoubleClickEvent:
@@ -1043,7 +1053,10 @@ namespace Eto.Mac.Forms.Controls
 		public ITreeGridItem GetCellAt(PointF location, out int column)
 		{
 			location += ScrollView.ContentView.Bounds.Location.ToEto();
-			column = (int)Control.GetColumn(location.ToNS());
+			// this is the diplay index, we need the actual index
+			var displayColumnIndex = (int)Control.GetColumn(location.ToNS());
+			var col = Widget.Columns.FirstOrDefault(r => r.DisplayIndex == displayColumnIndex);
+			column = col != null ? Widget.Columns.IndexOf(col) : -1;
 			var row = Control.GetRow(location.ToNS());
 			if (row >= 0)
 			{

@@ -360,6 +360,29 @@ namespace Eto.Forms
 			add { SelectionChanged += value; }
 			remove { SelectionChanged -= value; }
 		}
+		
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.ColumnOrderChanged"/> event
+		/// </summary>
+		public const string ColumnOrderChangedEvent = "Grid.ColumnOrderChanged";
+
+		/// <summary>
+		/// Event to handle when a column has been reordered by the user.
+		/// </summary>
+		public event EventHandler<GridColumnEventArgs> ColumnOrderChanged
+		{
+			add { Properties.AddHandlerEvent(ColumnOrderChangedEvent, value); }
+			remove { Properties.RemoveEvent(ColumnOrderChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Grid.ColumnOrderChanged"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnColumnOrderChanged(GridColumnEventArgs e)
+		{
+			Properties.TriggerEvent(ColumnOrderChangedEvent, this, e);
+		}
 
 		#endregion
 
@@ -372,6 +395,7 @@ namespace Eto.Forms
 			EventLookup.Register<Grid>(c => c.OnCellDoubleClick(null), Grid.CellDoubleClickEvent);
 			EventLookup.Register<Grid>(c => c.OnSelectionChanged(null), Grid.SelectionChangedEvent);
 			EventLookup.Register<Grid>(c => c.OnColumnHeaderClick(null), Grid.ColumnHeaderClickEvent);
+			EventLookup.Register<Grid>(c => c.OnColumnOrderChanged(null), Grid.ColumnOrderChangedEvent);
 		}
 
 		/// <summary>
@@ -666,6 +690,11 @@ namespace Eto.Forms
 			/// Raises the cell formatting event.
 			/// </summary>
 			void OnCellFormatting(Grid widget, GridCellFormatEventArgs e);
+			
+			/// <summary>
+			/// Raises the column display index changed event.
+			/// </summary>
+			void OnColumnOrderChanged(Grid widget, GridColumnEventArgs e);
 		}
 
 		/// <summary>
@@ -737,6 +766,15 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnCellFormatting(e);
+			}
+
+			/// <summary>
+			/// Raises the column display index changed event.
+			/// </summary>
+			public void OnColumnOrderChanged(Grid widget, GridColumnEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnColumnOrderChanged(e);
 			}
 		}
 

@@ -338,10 +338,39 @@ namespace Eto.WinForms.Forms.Controls
 						Callback.OnCellFormatting(Widget, new FormattingArgs(e, column, item, e.RowIndex));
 					};
 					break;
+				case Grid.ColumnOrderChangedEvent:
+					Control.ColumnDisplayIndexChanged += HandleColumnDisplayIndexChanged;
+					Control.MouseUp += HandleColumnOrderChangedOnMouseUp;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		static readonly object ColumnOrderChanged_Key = new object();
+		int? ColumnOrderChangedIndex
+		{
+			get => Widget.Properties.Get<int?>(ColumnOrderChanged_Key);
+			set => Widget.Properties.Set(ColumnOrderChanged_Key, value);
+		}
+
+		private void HandleColumnOrderChangedOnMouseUp(object sender, swf.MouseEventArgs e)
+		{
+			if (ColumnOrderChangedIndex != null)
+			{
+				var column = Widget.Columns[ColumnOrderChangedIndex.Value];
+				Callback.OnColumnOrderChanged(Widget, new GridColumnEventArgs(column));
+				ColumnOrderChangedIndex = null;
+			}
+		}
+
+		private void HandleColumnDisplayIndexChanged(object sender, swf.DataGridViewColumnEventArgs e)
+		{
+			// only store the first one (which is the one being dragged)
+			// we fire the event on the mouse up so it only happens once.
+			if (ColumnOrderChangedIndex == null)
+				ColumnOrderChangedIndex = e.Column.Index;
 		}
 
 		protected override void Initialize()

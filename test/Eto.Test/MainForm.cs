@@ -51,7 +51,7 @@ namespace Eto.Test
 
 			Title = $"Test Application [{Platform.ID}, {bitness}, {runtime}, {platform}]";
 			Style = "main";
-			MinimumSize = new Size(400, 400);
+			MinimumSize = new Size(600, 500);
 			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());
 
 			var nodes = topNodes.ToList();
@@ -66,7 +66,7 @@ namespace Eto.Test
 			this.Icon = TestIcons.TestIcon;
 
 			if (Platform.IsDesktop)
-				ClientSize = new Size(900, 650);
+				ClientSize = new Size(1024, 700);
 			//Opacity = 0.5;
 
 			Content = MainContent();
