@@ -161,6 +161,12 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		public int DisplayIndex
+		{
+			get => Control.DisplayIndex;
+			set => Control.DisplayIndex = value;
+		}
+
 		public void SetCellValue(object dataItem, object value)
 		{
 			if (dataCell != null)

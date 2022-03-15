@@ -145,10 +145,12 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			if (dataColumn == RowDataColumn)
 				return new GLib.Value(row);
+			if (dataColumn == ItemDataColumn)
+				return new GLib.Value(item);
 			int column;
 			if (ColumnMap.TryGetValue(dataColumn, out column))
 			{
-				var colHandler = (IGridColumnHandler)Widget.Columns[column].Handler;
+				var colHandler = (GridColumnHandler)Widget.Columns[column].Handler;
 				return colHandler.GetValue(item, dataColumn, row);
 			}
 			return new GLib.Value((string)null);

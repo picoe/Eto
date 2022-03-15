@@ -410,6 +410,15 @@ namespace Eto.Mac.Forms.Controls
 
 				return tableView.MakeView(tableColumn.Identifier, this);
 			}
+
+			public override void DidDragTableColumn(NSTableView tableView, NSTableColumn tableColumn)
+			{
+				var h = Handler;
+				if (h == null)
+					return;
+				var column = h.GetColumn(tableColumn);
+				h.Callback.OnColumnOrderChanged(h.Widget, new GridColumnEventArgs(column.Widget));
+			}
 		}
 
 		public override void AttachEvent(string id)
@@ -453,6 +462,9 @@ namespace Eto.Mac.Forms.Controls
 				case Eto.Forms.Control.DragOverEvent:
 				case Eto.Forms.Control.DragDropEvent:
 					// handled in EtoTableViewDataSource
+					break;
+				case Grid.ColumnOrderChangedEvent:
+					// handled in EtoTableDelegate
 					break;
 				default:
 					base.AttachEvent(id);

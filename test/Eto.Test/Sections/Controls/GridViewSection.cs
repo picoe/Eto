@@ -10,252 +10,38 @@ using System.Runtime.CompilerServices;
 
 namespace Eto.Test.Sections.Controls
 {
-	class LogGridItem : GridItem
-	{
-		public int Row { get; set; }
-
-		public LogGridItem(params object[] values)
-			: base(values)
-		{
-		}
-
-		public override void SetValue(int column, object value)
-		{
-			base.SetValue(column, value);
-			Log.Write(this, "SetValue, Row: {0}, Column: {1}, Value: {2}", Row, column, value);
-		}
-	}
-
 	[Section("Controls", typeof(GridView))]
-	public class GridViewSection : Panel
+	public class GridViewSection : GridViewSection<GridView>
 	{
-		static Icon image1 = new Icon(1, TestIcons.TestImage).WithSize(16, 16);
-		static Icon image2 = TestIcons.TestIcon.WithSize(16, 16);
-		GridView gridView;
-		SelectableFilterCollection<MyGridItem> filteredCollection;
+		protected SelectableFilterCollection<MyGridItem> filteredCollection;
 
-		public GridViewSection()
+		protected override string GetCellInfo(GridView grid, PointF location)
 		{
-			Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
+			var cell = grid.GetCellAt(location);
+			return $"Row: {cell?.RowIndex}, Column: {cell?.ColumnIndex} ({cell?.Column?.HeaderText}), Item: {cell?.Item}";
+		}
 
-			gridView = CreateGrid();
-			var selectionGridView = CreateGrid();
+		protected override int GetRowCount(GridView grid) => ((ICollection)grid.DataStore).Count;
 
-			// hook up selection of main grid to the selection grid
-			gridView.SelectionChanged += (s, e) => selectionGridView.DataStore = gridView.SelectedItems.ToList();
+		protected override void ReloadData(GridView grid) => grid.ReloadData(grid.SelectedRows);
 
-			SetDataStore();
+		protected override void SetContextMenu(GridView grid, ContextMenu menu) => grid.ContextMenu = menu;
 
-			if (Platform.Supports<ContextMenu>())
-				gridView.ContextMenu = CreateContextMenu(gridView);
+		protected override void SetDataStore(GridView grid)
+		{
+			filteredCollection = new SelectableFilterCollection<MyGridItem>(grid, CreateItems());
+			grid.DataStore = filteredCollection;
+		}
 
-			Content = new TableLayout
+		List<MyGridItem> CreateItems(int count = 10000)
+		{
+			var list = new List<MyGridItem>(count);
+
+			for (int i = 0; i < count; i++)
 			{
-				Padding = new Padding(10),
-				Spacing = new Size(5, 5),
-				Rows =
-				{
-					new TableRow(
-						"Grid",
-						new TableLayout(
-							CreateOptions(gridView),
-							new TableRow(gridView) { ScaleHeight = true },
-							CreatePositionLabel(gridView)
-						)
-					) { ScaleHeight = true },
-					new TableRow("Selected Items", selectionGridView)
-				}
-			};
-		}
-
-		private void SetDataStore()
-		{
-			filteredCollection = new SelectableFilterCollection<MyGridItem>(gridView, CreateItems());
-			gridView.DataStore = filteredCollection;
-		}
-
-		Label CreatePositionLabel(GridView grid)
-		{
-			var label = new Label();
-			grid.MouseMove += (sender, e) =>
-			{
-				var cell = grid.GetCellAt(e.Location);
-				label.Text = $"Row: {cell?.RowIndex}, Column: {cell?.ColumnIndex} ({cell?.Column?.HeaderText}), Item: {cell?.Item}";
-			};
-			return label;
-		}
-
-		Control CreateOptions(GridView grid)
-		{
-			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
-
-			layout.AddSeparateRow(null,
-						EnabledCheckBox(grid),
-						EditableCheckBox(grid),
-						ShowHeaderCheckBox(grid),
-						GridLinesDropDown(grid),
-						null);
-			layout.AddSeparateRow(null,
-						AllowMultiSelectCheckBox(grid),
-						AllowEmptySelectionCheckBox(grid),
-						null
-					);
-			layout.AddSeparateRow(null,
-						AddItemButton(),
-						CreateScrollToRow(grid),
-						CreateBeginEditButton(grid),
-						"Border",
-						CreateBorderType(grid),
-						null
-					);
-			layout.AddSeparateRow(null,
-						ReloadDataButton(grid),
-						SetDataButton(grid),
-						SetTextBoxWidth(grid),
-						null
-					);
-			layout.AddSeparateRow(null,
-						"TextBoxCell:",
-						"TextAlignment", TextAlignmentDropDown(grid),
-						"VerticalAlignment", VerticalAlignmentDropDown(grid),
-						null
-					);
-			layout.AddSeparateRow(null,
-						"AutoSelectMode", AutoSelectModeDropDown(grid),
-						null
-					);
-			layout.Add(CreateSearchBox());
-			return layout;
-		}
-
-		Control SetTextBoxWidth(GridView grid)
-		{
-			var button = new Button { Text = "Set TextBoxCell.Width" };
-			var textBoxCell = grid.Columns.FirstOrDefault(r => r.DataCell is TextBoxCell);
-			button.Click += (sender, e) => textBoxCell.Width = 100;
-			return button;
-		}
-
-		Control TextAlignmentDropDown(GridView grid)
-		{
-			var control = new EnumDropDown<TextAlignment>();
-
-			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
-			if (textBoxCell != null)
-				control.SelectedValueBinding.Bind(textBoxCell, c => c.TextAlignment);
-
-			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
-			if (imageTextCell != null)
-				control.SelectedValueBinding.Bind(imageTextCell, c => c.TextAlignment);
-			return control;
-		}
-
-		Control VerticalAlignmentDropDown(GridView grid)
-		{
-			var control = new EnumDropDown<VerticalAlignment>();
-
-			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
-			if (textBoxCell != null)
-				control.SelectedValueBinding.Bind(textBoxCell, c => c.VerticalAlignment);
-
-			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
-			if (imageTextCell != null)
-				control.SelectedValueBinding.Bind(imageTextCell, c => c.VerticalAlignment);
-			return control;
-		}
-
-		Control AutoSelectModeDropDown(GridView grid)
-		{
-			var control = new EnumDropDown<AutoSelectMode>();
-
-			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
-			if (textBoxCell != null)
-				control.SelectedValueBinding.Bind(textBoxCell, c => c.AutoSelectMode);
-
-			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
-			if (imageTextCell != null)
-				control.SelectedValueBinding.Bind(imageTextCell, c => c.AutoSelectMode);
-			return control;
-		}
-
-		Control AllowEmptySelectionCheckBox(GridView grid)
-		{
-			var control = new CheckBox { Text = "AllowEmptySelection" };
-			control.CheckedBinding.Bind(grid, g => g.AllowEmptySelection);
-			return control;
-		}
-
-		ComboBoxCell MyDropDown(string bindingProperty)
-		{
-			var combo = new ComboBoxCell(bindingProperty);
-			combo.DataStore = new ListItemCollection
-			{
-				new ListItem { Text = "Item 1" },
-				new ListItem { Text = "Item 2" },
-				new ListItem { Text = "Item 3" },
-				new ListItem { Text = "Item 4" }
-			};
-			return combo;
-		}
-
-		Control AllowMultiSelectCheckBox(GridView grid)
-		{
-			var control = new CheckBox { Text = "AllowMultipleSelection" };
-			control.CheckedBinding.Bind(grid, r => r.AllowMultipleSelection);
-			return control;
-		}
-
-		Control ShowHeaderCheckBox(GridView grid)
-		{
-			var control = new CheckBox { Text = "ShowHeader" };
-			control.CheckedBinding.Bind(grid, r => r.ShowHeader);
-			return control;
-		}
-
-		Control ReloadDataButton(GridView grid)
-		{
-			var control = new Button { Text = "ReloadData" };
-			control.Click += (sender, e) => grid.ReloadData(grid.SelectedRows);
-			return control;
-		}
-
-		Control SetDataButton(GridView grid)
-		{
-			var control = new Button { Text = "SetDataStore" };
-			control.Click += (sender, e) => SetDataStore();
-			return control;
-		}
-
-		Control GridLinesDropDown(GridView grid)
-		{
-			var control = new EnumDropDown<GridLines>();
-			control.SelectedValueBinding.Bind(grid, r => r.GridLines);
-			return new StackLayout
-			{
-				Orientation = Orientation.Horizontal,
-				Spacing = 5,
-				Items = { "GridLines", control }
-			};
-		}
-
-		Control EnabledCheckBox(GridView grid)
-		{
-			var control = new CheckBox { Text = "Enabled" };
-			control.CheckedBinding.Bind(grid, r => r.Enabled);
-			return control;
-		}
-
-		Control EditableCheckBox(GridView grid)
-		{
-			var control = new CheckBox { Text = "Editable" };
-			control.CheckedBinding.Bind(() => grid.Columns.First().Editable, v =>
-			{
-				foreach (var col in grid.Columns)
-				{
-					col.Editable = v ?? false;
-				}
-			});
-			return control;
+				list.Add(new MyGridItem(i, $"Row {i}"));
+			}
+			return list;
 		}
 
 		SearchBox CreateSearchBox()
@@ -285,7 +71,332 @@ namespace Eto.Test.Sections.Controls
 			return filterText;
 		}
 
-		Control CreateBorderType(GridView grid)
+		Button AddItemButton()
+		{
+			var control = new Button { Text = "Add Item" };
+			control.Click += (sender, e) => filteredCollection.Add(new MyGridItem(filteredCollection.Count + 1, $"New Row {filteredCollection.Count + 1}"));
+			return control;
+		}
+
+		protected override void AddExtraControls(DynamicLayout layout)
+		{
+			layout.AddSeparateRow(null, AddItemButton(), null);
+			layout.AddSeparateRow(CreateSearchBox());
+			base.AddExtraControls(layout);
+		}
+
+		protected override void AddExtraContextMenuItems(ContextMenu menu)
+		{
+			// Delete menu item: deletes the item from the store, the UI updates via the binding.
+			var deleteItem = new ButtonMenuItem { Text = "Delete Item" };
+			deleteItem.Click += (s, e) =>
+			{
+				var i = grid.SelectedItems.First() as MyGridItem;
+				if (i != null)
+					filteredCollection.Remove(i);
+			};
+			menu.Items.Add(deleteItem);
+
+			// Insert item: inserts an item into the store, the UI updates via the binding.
+			var insertItem = new ButtonMenuItem { Text = "Insert Item" };
+			insertItem.Click += (s, e) =>
+			{
+				var i = grid.SelectedItems.First() as MyGridItem;
+				if (i != null)
+				{
+					filteredCollection.Insert(filteredCollection.IndexOf(i), new MyGridItem(0, ""));
+				}
+			};
+			menu.Items.Add(insertItem);
+			base.AddExtraContextMenuItems(menu);
+		}
+
+		protected override int GetColumnAt(PointF location)
+		{
+			return grid.GetCellAt(location).ColumnIndex;
+		}
+	}
+
+	public abstract class GridViewSection<T> : Panel
+		where T : Grid, new()
+	{
+		static Icon image1 = new Icon(1, TestIcons.TestImage).WithSize(16, 16);
+		static Icon image2 = TestIcons.TestIcon.WithSize(16, 16);
+		protected T grid;
+
+		protected abstract void SetContextMenu(T grid, ContextMenu menu);
+		protected abstract int GetRowCount(T grid);
+		protected abstract void SetDataStore(T grid);
+		protected abstract void ReloadData(T grid);
+		protected abstract string GetCellInfo(T grid, PointF location);
+		protected abstract int GetColumnAt(PointF location);
+
+		public GridViewSection()
+		{
+			Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
+
+			grid = CreateGrid();
+
+			SetDataStore(grid);
+
+			if (Platform.Supports<ContextMenu>())
+				SetContextMenu(grid, CreateContextMenu(grid));
+
+			Content = new TableLayout
+			{
+				Padding = new Padding(5),
+				Spacing = new Size(2, 2),
+				Rows =
+				{
+					CreateOptions(grid),
+					new TableRow(grid) { ScaleHeight = true },
+					CreatePositionLabel(grid)
+				}
+			};
+		}
+
+		Label CreatePositionLabel(T grid)
+		{
+			var label = new Label();
+			grid.MouseMove += (sender, e) =>
+			{
+				label.Text = GetCellInfo(grid, e.Location);
+			};
+			return label;
+		}
+
+		Control CreateOptions(T grid)
+		{
+			var layout = new DynamicLayout { DefaultSpacing = new Size(2, 2) };
+
+			layout.AddSeparateRow(null,
+						EnabledCheckBox(grid),
+						EditableCheckBox(grid),
+						ShowHeaderCheckBox(grid),
+						GridLinesDropDown(grid),
+						"Border",
+						CreateBorderType(grid),
+						null);
+			layout.AddSeparateRow(null,
+						AllowMultiSelectCheckBox(grid),
+						AllowEmptySelectionCheckBox(grid),
+						null);
+			layout.AddSeparateRow(null,
+						AllowColumnReorderingCheckBox(grid),
+						SaveColumnDisplayOrderCheckBox(grid),
+						SetAllVisibleButton(grid),
+						null
+					);
+			layout.AddSeparateRow(null,
+						CreateScrollToRow(grid),
+						CreateBeginEditButton(grid),
+						null
+					);
+			layout.AddSeparateRow(null,
+						ReloadDataButton(grid),
+						SetDataButton(grid),
+						SetTextBoxWidth(grid),
+						null
+					);
+			layout.AddSeparateRow(null,
+						"TextBoxCell:",
+						"TextAlignment", TextAlignmentDropDown(grid),
+						"VerticalAlignment", VerticalAlignmentDropDown(grid),
+						null
+					);
+			layout.AddSeparateRow(null,
+						"AutoSelectMode", AutoSelectModeDropDown(grid),
+						null
+					);
+			AddExtraControls(layout);
+			return layout;
+		}
+
+		protected virtual void AddExtraControls(DynamicLayout layout)
+		{
+		}
+
+		Control SetTextBoxWidth(T grid)
+		{
+			var button = new Button { Text = "Set TextBoxCell.Width" };
+			var textBoxCell = grid.Columns.FirstOrDefault(r => r.DataCell is TextBoxCell);
+			button.Click += (sender, e) => textBoxCell.Width = 100;
+			return button;
+		}
+
+		Control TextAlignmentDropDown(T grid)
+		{
+			var control = new EnumDropDown<TextAlignment>();
+
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
+			if (textBoxCell != null)
+				control.SelectedValueBinding.Bind(textBoxCell, c => c.TextAlignment);
+
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
+			if (imageTextCell != null)
+				control.SelectedValueBinding.Bind(imageTextCell, c => c.TextAlignment);
+			return control;
+		}
+
+		Control VerticalAlignmentDropDown(T grid)
+		{
+			var control = new EnumDropDown<VerticalAlignment>();
+
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
+			if (textBoxCell != null)
+				control.SelectedValueBinding.Bind(textBoxCell, c => c.VerticalAlignment);
+
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
+			if (imageTextCell != null)
+				control.SelectedValueBinding.Bind(imageTextCell, c => c.VerticalAlignment);
+			return control;
+		}
+
+		Control AutoSelectModeDropDown(T grid)
+		{
+			var control = new EnumDropDown<AutoSelectMode>();
+
+			var textBoxCell = grid.Columns.Select(r => r.DataCell).OfType<TextBoxCell>().FirstOrDefault();
+			if (textBoxCell != null)
+				control.SelectedValueBinding.Bind(textBoxCell, c => c.AutoSelectMode);
+
+			var imageTextCell = grid.Columns.Select(r => r.DataCell).OfType<ImageTextCell>().FirstOrDefault();
+			if (imageTextCell != null)
+				control.SelectedValueBinding.Bind(imageTextCell, c => c.AutoSelectMode);
+			return control;
+		}
+
+		Control AllowEmptySelectionCheckBox(T grid)
+		{
+			var control = new CheckBox { Text = "AllowEmptySelection" };
+			control.CheckedBinding.Bind(grid, g => g.AllowEmptySelection);
+			return control;
+		}
+
+
+		bool orderEventAdded;
+		Control AllowColumnReorderingCheckBox(T grid)
+		{
+			var control = new CheckBox { Text = "AllowColumnReordering" };
+			control.CheckedBinding.Bind(grid, g => g.AllowColumnReordering);
+			control.CheckedChanged += (sender1, e1) =>
+			{
+				if (!orderEventAdded && grid.AllowColumnReordering)
+				{
+					orderEventAdded = true;
+					grid.ColumnOrderChanged += (sender, e) =>
+					{
+						SaveColumnOrder();
+						Log.Write(grid, $"ColumnDisplayIndexChanged, Column: {e.Column}, DisplayIndex: {e.Column.DisplayIndex}, Indexes: {GetDisplayIndexString(grid)}");
+					};
+				}
+			};
+
+			return control;
+		}
+
+		Control SaveColumnDisplayOrderCheckBox(T grid)
+		{
+			var control = new CheckBox { Text = "Save Order and Visible" };
+			control.CheckedBinding.Bind(TestApplication.Settings, s => s.GridViewSection_SaveColumnDisplayIndexes);
+			control.CheckedChanged += (sender, e) =>
+			{
+				SaveColumnOrder();
+				SaveColumnVisibility();
+			};
+
+			return control;
+		}
+		
+		Control SetAllVisibleButton(T grid)
+		{
+			var control = new Button { Text = "All Column.Visible=true" };
+			control.Click += (sender, e) =>
+			{
+				foreach (var col in grid.Columns)
+				{
+					col.Visible = true;
+				}
+				SaveColumnVisibility();
+			};
+			return control;
+		}
+
+		ComboBoxCell MyDropDown(string bindingProperty)
+		{
+			var combo = new ComboBoxCell(bindingProperty);
+			combo.DataStore = new ListItemCollection
+			{
+				new ListItem { Text = "Item 1" },
+				new ListItem { Text = "Item 2" },
+				new ListItem { Text = "Item 3" },
+				new ListItem { Text = "Item 4" }
+			};
+			return combo;
+		}
+
+		Control AllowMultiSelectCheckBox(T grid)
+		{
+			var control = new CheckBox { Text = "AllowMultipleSelection" };
+			control.CheckedBinding.Bind(grid, r => r.AllowMultipleSelection);
+			return control;
+		}
+
+		Control ShowHeaderCheckBox(T grid)
+		{
+			var control = new CheckBox { Text = "ShowHeader" };
+			control.CheckedBinding.Bind(grid, r => r.ShowHeader);
+			return control;
+		}
+
+		Control ReloadDataButton(T grid)
+		{
+			var control = new Button { Text = "ReloadData" };
+			control.Click += (sender, e) => ReloadData(grid);
+			return control;
+		}
+
+
+		Control SetDataButton(T grid)
+		{
+			var control = new Button { Text = "SetDataStore" };
+			control.Click += (sender, e) => SetDataStore(grid);
+			return control;
+		}
+
+		Control GridLinesDropDown(T grid)
+		{
+			var control = new EnumDropDown<GridLines>();
+			control.SelectedValueBinding.Bind(grid, r => r.GridLines);
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items = { "GridLines", control }
+			};
+		}
+
+		Control EnabledCheckBox(T grid)
+		{
+			var control = new CheckBox { Text = "Enabled" };
+			control.CheckedBinding.Bind(grid, r => r.Enabled);
+			return control;
+		}
+
+		Control EditableCheckBox(T grid)
+		{
+			var control = new CheckBox { Text = "Editable" };
+			control.CheckedBinding.Bind(() => grid.Columns.First().Editable, v =>
+			{
+				foreach (var col in grid.Columns)
+				{
+					col.Editable = v ?? false;
+				}
+			});
+			return control;
+		}
+
+		Control CreateBorderType(T grid)
 		{
 			var borderType = new EnumDropDown<BorderType>();
 			borderType.SelectedValueBinding.Bind(grid, g => g.Border);
@@ -303,7 +414,7 @@ namespace Eto.Test.Sections.Controls
 				control.Bind(c => c.TextColor, args, a => a.CellTextColor);
 				control.BindDataContext(c => c.Command, (MyGridItem m) => m.Command);
 				//control.Click += (sender, e) => Log.Write(sender, "Clicked row button {0}", ((Button)sender).Text);
-				return control;
+				return new Panel { Content = control, Padding = 2 };
 			}
 
 			protected override void OnConfigureCell(CellEventArgs args, Control control)
@@ -330,26 +441,43 @@ namespace Eto.Test.Sections.Controls
 			}
 		}
 
-		GridView CreateGrid()
+		GridColumn SetColumnState(int index, GridColumn column)
 		{
-			var control = new GridView
+			// only set the indexes if we are saving/restoring to ensure it is not required
+			// also, we want to support setting the indexes during creation, without having to
+			// set them all at the end after added to the columns collection
+			if (!TestApplication.Settings.GridViewSection_SaveColumnDisplayIndexes)
+				return column;
+			var indexes = TestApplication.Settings.GridViewSection_DisplayIndexes;
+			if (indexes != null && index < indexes.Count)
 			{
-				Size = new Size(300, 100)
-			};
+				column.DisplayIndex = indexes[index];
+			}
+			var visibleIndexes = TestApplication.Settings.GridViewSection_VisibleIndexes;
+			if (visibleIndexes != null && index < visibleIndexes.Count)
+			{
+				column.Visible = visibleIndexes[index];
+			}
+
+			return column;
+		}
+
+
+		T CreateGrid()
+		{
+			var control = new T();
 			LogEvents(control);
 
 			var dropDown = MyDropDown("DropDownKey");
-			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell("Check"), AutoSize = true, Resizable = false });
-			control.Columns.Add(new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image"), Resizable = false });
-			control.Columns.Add(new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text") });
-			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true });
-			control.Columns.Add(new GridColumn { HeaderText = "Progress", DataCell = new ProgressCell("Progress") });
-			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Sortable = true });
+			control.Columns.Add(SetColumnState(0, new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text") }));
+			control.Columns.Add(SetColumnState(1, new GridColumn { DataCell = new CheckBoxCell("Check"), AutoSize = true, Resizable = false }));
+			control.Columns.Add(SetColumnState(2, new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image"), Resizable = false }));
+			control.Columns.Add(SetColumnState(3, new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true }));
+			control.Columns.Add(SetColumnState(4, new GridColumn { HeaderText = "Progress", DataCell = new ProgressCell("Progress") }));
+			control.Columns.Add(SetColumnState(5, new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Sortable = true }));
 			if (Platform.Supports<CustomCell>())
 			{
-				//control.ReloadSelectedCells = true;
-				//control.SelectedRowsChanged += (sender, e) => control.ReloadData(control.SelectedRows);
-				var col = new GridColumn { HeaderText = "Custom", Sortable = true, DataCell = new MyCustomCell() };
+				var col = SetColumnState(6, new GridColumn { HeaderText = "Custom", Sortable = true, DataCell = new MyCustomCell() });
 				control.Columns.Add(col);
 			}
 
@@ -374,36 +502,32 @@ namespace Eto.Test.Sections.Controls
 						e.Graphics.DrawLine(color, rect.Right, rect.Bottom, rect.MiddleX, rect.Top);
 					}
 				};
-				control.Columns.Add(new GridColumn
+				control.Columns.Add(SetColumnState(7, new GridColumn
 				{
-					HeaderText = "Owner drawn",
+					HeaderText = "Drawable",
 					DataCell = drawableCell
-				});
+				}));
 			}
 
 			return control;
 		}
 
-		List<MyGridItem> CreateItems(int count = 10000)
-		{
-			var sw = new System.Diagnostics.Stopwatch();
-			sw.Start();
-
-			var list = new List<MyGridItem>(count);
-
-			for (int i = 0; i < count; i++)
-			{
-				list.Add(new MyGridItem(i));
-			}
-			sw.Stop();
-			Log.Write(null, $"Time: {sw.Elapsed}");
-			return list;
-		}
-
-		ContextMenu CreateContextMenu(GridView grid)
+		ContextMenu CreateContextMenu(T grid)
 		{
 			// Context menu
 			var menu = new ContextMenu();
+			int currentColumn = -1;
+
+			var columnVisibleItem = new CheckMenuItem { Text = "Column.Visible" };
+			columnVisibleItem.CheckedChanged += (sender, e) =>
+			{
+				if (currentColumn >= 0)
+				{
+					grid.Columns[currentColumn].Visible = !grid.Columns[currentColumn].Visible;
+					SaveColumnVisibility();
+				}
+			};
+			menu.Items.Add(columnVisibleItem);
 
 			var commitEditItem = new ButtonMenuItem { Text = "CommitEdit" };
 			commitEditItem.Click += (s, e) =>
@@ -425,6 +549,11 @@ namespace Eto.Test.Sections.Controls
 			{
 				commitEditItem.Enabled = grid.IsEditing;
 				abortEditItem.Enabled = grid.IsEditing;
+				var column = GetColumnAt(grid.PointFromScreen(Mouse.Position));
+				currentColumn = -1;
+				columnVisibleItem.Enabled = column >= 0;
+				columnVisibleItem.Checked = column >= 0 ? grid.Columns[column].Visible : false;
+				currentColumn = column;
 			};
 
 			var item = new ButtonMenuItem { Text = "Click Me!" };
@@ -437,25 +566,7 @@ namespace Eto.Test.Sections.Controls
 			};
 			menu.Items.Add(item);
 
-			// Delete menu item: deletes the item from the store, the UI updates via the binding.
-			var deleteItem = new ButtonMenuItem { Text = "Delete Item" };
-			deleteItem.Click += (s, e) =>
-			{
-				var i = grid.SelectedItems.First() as MyGridItem;
-				if (i != null)
-					filteredCollection.Remove(i);
-			};
-			menu.Items.Add(deleteItem);
-
-			// Insert item: inserts an item into the store, the UI updates via the binding.
-			var insertItem = new ButtonMenuItem { Text = "Insert Item at the start of the list" };
-			insertItem.Click += (s, e) =>
-			{
-				var i = grid.SelectedItems.First() as MyGridItem;
-				if (i != null)
-					filteredCollection.Insert(0, new MyGridItem(0));
-			};
-			menu.Items.Add(insertItem);
+			AddExtraContextMenuItems(menu);
 
 			var subMenu = menu.Items.GetSubmenu("Sub Menu");
 			item = new ButtonMenuItem { Text = "Item 5" };
@@ -467,12 +578,36 @@ namespace Eto.Test.Sections.Controls
 
 			return menu;
 		}
+		
+		private void SaveColumnOrder()
+		{
+			if (!TestApplication.Settings.GridViewSection_SaveColumnDisplayIndexes)
+				return;
+			TestApplication.Settings.GridViewSection_DisplayIndexes = grid.Columns.Select(r => r.DisplayIndex).ToList();			
+		}
 
-		protected virtual void LogEvents(GridView control)
+		private void SaveColumnVisibility()
+		{
+			if (!TestApplication.Settings.GridViewSection_SaveColumnDisplayIndexes)
+				return;
+			TestApplication.Settings.GridViewSection_VisibleIndexes = grid.Columns.Select(r => r.Visible).ToList();
+		}
+
+		protected virtual void AddExtraContextMenuItems(ContextMenu menu)
+		{
+		}
+
+		string GetDisplayIndexString(T control)
+		{
+			return string.Join(",", control.Columns.Select(r => r.DisplayIndex.ToString()));
+		}
+
+		protected virtual void LogEvents(T control)
 		{
 			control.CellEditing += (sender, e) => Log.Write(control, $"CellEditing, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
 			control.CellEdited += (sender, e) => Log.Write(control, $"CellEdited, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
-			control.SelectionChanged += (sender, e) => Log.Write(control, $"SelectionChanged, Rows: {SelectedRowsString(control)}");
+			control.SelectionChanged += (sender, e) => Log.Write(control, $"SelectionChanged, SelectedRows: {SelectedRowsString(control)}");
+			control.SelectedItemsChanged += (sender, e) => Log.Write(control, $"SelectedItemsChanged, SelectedItems: {SelectedItemsString(control)}");
 			control.ColumnHeaderClick += (sender, e) => Log.Write(control, $"ColumnHeaderClick: {e.Column.HeaderText}");
 			control.CellClick += (sender, e) => Log.Write(control, $"CellClick, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
 			control.CellDoubleClick += (sender, e) => Log.Write(control, $"CellDoubleClick, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
@@ -481,31 +616,29 @@ namespace Eto.Test.Sections.Controls
 			control.MouseDoubleClick += (sender, e) => Log.Write(control, $"MouseDoubleClick, Buttons: {e.Buttons}, Location: {e.Location}");
 		}
 
-		static string SelectedRowsString(GridView grid)
+		static string SelectedRowsString(T grid)
 		{
-			return string.Join(",", grid.SelectedRows.Select(r => r.ToString()).OrderBy(r => r));
+			return string.Join(",", grid.SelectedRows.OrderBy(r => r).Select(r => r.ToString()));
 		}
 
-		Button CreateBeginEditButton(GridView grid)
+		static string SelectedItemsString(T grid)
 		{
-			var control = new Button { Text = "Begin Edit Row:1, Column:2" };
-			control.Click += (sender, e) => grid.BeginEdit(1, 2);
+			return string.Join(",", grid.SelectedItems.OfType<MyGridItem>().Select(r => r.Text));
+		}
+
+		Button CreateBeginEditButton(T grid)
+		{
+			var control = new Button { Text = "Begin Edit Row:1, Column:0" };
+			control.Click += (sender, e) => grid.BeginEdit(1, 0);
 			return control;
 		}
 
-		Button AddItemButton()
-		{
-			var control = new Button { Text = "Add Item" };
-			control.Click += (sender, e) => filteredCollection.Add(new MyGridItem(filteredCollection.Count + 1));
-			return control;
-		}
-
-		Button CreateScrollToRow(GridView grid)
+		Button CreateScrollToRow(T grid)
 		{
 			var control = new Button { Text = "ScrollToRow" };
 			control.Click += (sender, e) =>
 			{
-				var row = new Random().Next(((ICollection)grid.DataStore).Count - 1);
+				var row = new Random().Next(GetRowCount(grid) - 1);
 				Log.Write(grid, "ScrollToRow: {0}", row);
 				grid.ScrollToRow(row);
 			};
@@ -613,7 +746,7 @@ namespace Eto.Test.Sections.Controls
 				}
 			}
 
-			public MyGridItem(int row)
+			public MyGridItem(int row, string name)
 			{
 				// initialize to random values
 				this.Row = row;
@@ -622,13 +755,10 @@ namespace Eto.Test.Sections.Controls
 
 				val = row % 2;
 				image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
-				OnPropertyChanged(nameof(Image));
 
-				text = string.Format("Col 1 Row {0}", row);
-				OnPropertyChanged(nameof(Text));
+				text = $"Col 1 {name}";
 
 				color = Color.FromElementId(row);
-				OnPropertyChanged(nameof(Color));
 
 				val = row % 5;
 				if (val < 4)

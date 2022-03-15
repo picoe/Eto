@@ -146,6 +146,7 @@ namespace Eto.Wpf.Forms.Controls
 				CanUserDeleteRows = false,
 				CanUserResizeRows = false,
 				CanUserAddRows = false,
+				CanUserReorderColumns = false,
 				RowHeaderWidth = 0,
 				SelectionMode = swc.DataGridSelectionMode.Single,
 				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
@@ -174,8 +175,8 @@ namespace Eto.Wpf.Forms.Controls
 					{
 						var row = e.Row.GetIndex();
 						var item = GetItemAtRow(row);
-						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-						Callback.OnCellEditing(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
+						var gridColumn = GetColumn(e.Column);
+						Callback.OnCellEditing(Widget, new GridViewCellEventArgs(gridColumn, row, Widget.Columns.IndexOf(gridColumn), item));
 					};
 					break;
 				case Grid.CellEditedEvent:
@@ -212,10 +213,19 @@ namespace Eto.Wpf.Forms.Controls
 				case Grid.CellFormattingEvent:
 					// handled by FormatCell method
 					break;
+				case Grid.ColumnOrderChangedEvent:
+					Control.ColumnReordered += HandleColumnReordered;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		private void HandleColumnReordered(object sender, swc.DataGridColumnEventArgs e)
+		{
+			var column = GetColumn(e.Column);
+			Callback.OnColumnOrderChanged(Widget, new GridColumnEventArgs(column));
 		}
 
 		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea) => CreateCellMouseArgs(originalSource, ea, out _);
@@ -226,10 +236,10 @@ namespace Eto.Wpf.Forms.Controls
 			var row = GetRowOfElement(originalSource, out cell, out isValid);
 
 			int rowIndex = row?.GetIndex() ?? -1;
-			var columnIndex = cell?.Column?.DisplayIndex ?? -1;
+			var column = GetColumn(cell?.Column);
+			var columnIndex = column != null ? Widget.Columns.IndexOf(column) : -1;
 
 			var item = row?.Item;
-			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
 
 			var buttons = ea.GetEtoButtons();
 			var modifiers = swi.Keyboard.Modifiers.ToEto();
@@ -822,12 +832,26 @@ namespace Eto.Wpf.Forms.Controls
 				RestoreColumnFocus();
 			}
 		}
+		
+		GridColumn GetColumn(swc.DataGridColumn dataGridColumn)
+		{
+			if (dataGridColumn == null)
+				return null;
+			var columns = Widget.Columns;
+			foreach (var col in columns)
+			{
+				if (col.Handler is IGridColumnHandler handler && ReferenceEquals(handler.Control, dataGridColumn))
+					return col;
+			}
+			return null;
+		}
 
 		public void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem)
 		{
-			var gridColumn = Widget.Columns[dataGridColumn.DisplayIndex];
+			var gridColumn = GetColumn(dataGridColumn);
+			var columnIndex = gridColumn != null ? Widget.Columns.IndexOf(gridColumn) : -1;
 			SetIsEditing(false);
-			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, dataGridColumn.DisplayIndex, dataItem));
+			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, columnIndex, dataItem));
 			SetIsEditing(null);
 		}
 

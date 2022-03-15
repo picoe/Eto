@@ -98,14 +98,25 @@ namespace Eto.GtkSharp.Forms.Cells
 				set
 				{
 					row = value;
+				}
+			}
+
+			object item;
+			[GLib.Property("item")]
+			public object Item
+			{
+				get { return item; }
+				set
+				{
+					item = value;
 					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, item, Row));
 				}
 			}
 
 			IGtkCellEditable CreateEditable(Gdk.Rectangle cellArea)
 			{
-				var item = Handler.Source.GetItem(Row);
+				var item = Item;
 				int column = -1;
 				var args = new CellEventArgs(null, Handler.Widget, Row, column, item, CellStates.Editing, null);
 
@@ -149,7 +160,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				}
 				using (var graphics = new Graphics(new GraphicsHandler(widget, window)))
 				{
-					var item = h.Source.GetItem(Row);
+					var item = Item;
 					var args = new CellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
 					h.Callback.OnPaint(h.Widget, args);
 				}
@@ -170,7 +181,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				var h = Handler;
 				if (h == null)
 					return;
-				var item = h.Source?.GetItem(Row);
+				var item = Item;
 				int column = -1;
 				var args = new CellEventArgs(null, h.Widget, Row, column, item, CellStates.Editing, null);
 
@@ -215,7 +226,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				}
 				using (var graphics = new Graphics(new GraphicsHandler(widget, cr)))
 				{
-					var item = Handler.Source.GetItem(Row);
+					var item = Item;
 					var args = new CellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
 					Handler.Callback.OnPaint(Handler.Widget, args);
 				}

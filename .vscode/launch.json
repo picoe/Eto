@@ -10,7 +10,8 @@
 			// "targetArchitecture": "x86_64", // uncomment to test intel on M1
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
         },
 		{
             "name": "Eto.Test.Mac64 - mono",
@@ -22,7 +23,8 @@
 			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
         },
 		{
             "name": "Eto.Test.XamMac2",
@@ -32,7 +34,8 @@
 			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-macos/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
         },
 		{
             "name": "Eto.Test.XamMac2 - mono",
@@ -44,7 +47,8 @@
 			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
         },
         {
             "name": "Eto.Test.Gtk",
@@ -60,7 +64,8 @@
 			},
             "console": "internalConsole",
             "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false,
         },
         {
             "name": "Eto.Test.Gtk - mono",
@@ -76,7 +81,8 @@
 				}
 			},
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
         },
         {
             "name": "Eto.Test.Gtk2",
@@ -87,7 +93,8 @@
 			"passDebugOptionsViaEnvironmentVariable": true,
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
         },
         {
             "name": "Eto.Test.Wpf",
@@ -98,7 +105,8 @@
 			"targetArchitecture": "x86_64",
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
         },
         {
             "name": "Eto.Test.Wpf - .NET 4.8",
@@ -108,7 +116,8 @@
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net48/Eto.Test.Wpf.exe",
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
         },
         {
             "name": "Eto.Test.WinForms",
@@ -118,7 +127,8 @@
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-windows/Eto.Test.WinForms.exe",
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
 		},
         {
             "name": "Eto.Test.WinForms - .NET 4.8",
@@ -128,7 +138,8 @@
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net48/Eto.Test.WinForms.exe",
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
 		},
         {
             "name": "Eto.Test.Direct2D",
@@ -138,7 +149,8 @@
             "program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-windows/Eto.Test.Direct2D.exe",
             "args": [],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
 		},
 		{
 			"name": "Eto.Addin.VisualStudio.Mac",

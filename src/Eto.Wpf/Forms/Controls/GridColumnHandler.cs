@@ -259,6 +259,12 @@ namespace Eto.Wpf.Forms.Controls
 			get => double.IsInfinity(Control.MaxWidth) ? int.MaxValue : (int)Control.MaxWidth;
 			set => Control.MaxWidth = value == int.MaxValue ? double.PositiveInfinity : value;
 		}
+		
+		public int DisplayIndex
+		{
+			get => Control.DisplayIndex;
+			set => Control.DisplayIndex = value;
+		}
 
 		public void CellEdited(ICellHandler cell, sw.FrameworkElement element)
 		{
