@@ -17,10 +17,12 @@ namespace Eto.Wpf.Drawing
 		string _text;
 		SizeF _maxSize = SizeF.MaxValue;
 		FormattedTextWrapMode _wrap;
-		Font _font;
+		Font _font = SystemFonts.Default();
 		FormattedTextAlignment _alignment;
 		FormattedTextTrimming _trimming;
 		Brush _foregroundBrush;
+		bool _hasNewLines;
+		bool _shouldClip;
 		public FormattedTextWrapMode Wrap
 		{
 			get => _wrap;
@@ -68,7 +70,10 @@ namespace Eto.Wpf.Drawing
 			{
 				_font = value;
 				if (HasControl)
+				{
 					SetFont(Control);
+					SetMaxSize(Control);
+				}
 			}
 		}
 		public Brush ForegroundBrush
@@ -88,14 +93,21 @@ namespace Eto.Wpf.Drawing
 			{
 				_alignment = value;
 				if (HasControl)
+				{
 					SetTextAlignment(Control);
+					SetMaxSize(Control);
+				}
 			}
 		}
 
 		public SizeF Measure()
 		{
 			var control = Control;
-			return new SizeF((float)control.WidthIncludingTrailingWhitespace, (float)control.Height);
+			double width = control.WidthIncludingTrailingWhitespace;
+			if (_shouldClip)
+				width = Math.Min(width, MaximumSize.Width);
+
+			return new SizeF((float)width, (float)control.Height);
 		}
 
 		void Invalidate()
@@ -105,9 +117,10 @@ namespace Eto.Wpf.Drawing
 
 		protected override swm.FormattedText CreateControl()
 		{
-			var font = SystemFonts.Default();
+			var font = Font;
 			var text = Text ?? string.Empty;
 			text = SetWrap(text);
+			_hasNewLines = text.IndexOf('\n') != -1;
 
 #pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 			var formattedText = new swm.FormattedText(
@@ -118,19 +131,30 @@ namespace Eto.Wpf.Drawing
 				font.Size,
 				ForegroundBrush.ToWpf());
 #pragma warning restore CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
+
+			// support correctly showing ellipsis when there's a single line
 			if (Wrap == FormattedTextWrapMode.None)
-				formattedText.MaxLineCount = 1;
+			{
+				if (!_hasNewLines)
+					formattedText.MaxLineCount = 1;
+				else
+				{
+					// can't show ellipsis when there's multiple lines currently..
+					formattedText.MaxLineCount = int.MaxValue;
+					_shouldClip = true;
+				}
+			}
 			SetTextAlignment(formattedText);
 			SetFont(formattedText);
-			SetMaxSize(formattedText);
 			SetTrimming(formattedText);
+			SetMaxSize(formattedText);
 			return formattedText;
 		}
 
 		string SetWrap(string text)
 		{
 			// character wrap only works with no trimming.
-			if (Wrap == FormattedTextWrapMode.Character && Trimming == FormattedTextTrimming.None)
+			if ((Wrap == FormattedTextWrapMode.Character || Wrap == FormattedTextWrapMode.None) && Trimming == FormattedTextTrimming.None)
 			{
 				// wpf will always word wrap, so we replace spaces with nbsp
 				// so that it is forced to wrap at the character level
@@ -168,7 +192,10 @@ namespace Eto.Wpf.Drawing
 
 		void SetMaxSize(swm.FormattedText formattedText)
 		{
-			formattedText.MaxTextWidth = Math.Min(3579139, MaximumSize.Width);
+			if ((Alignment == FormattedTextAlignment.Left || MaximumSize.Width < float.MaxValue) && (Wrap != FormattedTextWrapMode.None || !_hasNewLines))
+				formattedText.MaxTextWidth = Math.Min(3579139, MaximumSize.Width);
+			else
+				formattedText.MaxTextWidth = formattedText.WidthIncludingTrailingWhitespace;
 			formattedText.MaxTextHeight = Math.Min(3579139, MaximumSize.Height);
 		}
 		void SetTrimming(swm.FormattedText formattedText)
@@ -207,7 +234,17 @@ namespace Eto.Wpf.Drawing
 					handler.Control.DrawGlyphRun(Brushes.Red.ToWpf(), glyphRun);
 			}
 			/**/
-			handler.Control.DrawText(Control, location.ToWpf());
+			if (_shouldClip)
+			{
+				// a better way here would be to draw each line separately so alignment works on a per-paragraph basis
+				// but this is an edge case we don't fully support yet.
+				var rect = new sw.Rect(location.X, location.Y, Math.Min(MaximumSize.Width, Control.WidthIncludingTrailingWhitespace), Control.Height);
+				handler.Control.PushClip(new swm.RectangleGeometry(rect));
+				handler.Control.DrawText(Control, location.ToWpf());
+				handler.Control.Pop();
+			}
+			else
+				handler.Control.DrawText(Control, location.ToWpf());
 		}
 
 

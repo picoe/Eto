@@ -12,7 +12,12 @@ namespace Eto.WinForms.Drawing
 	{
 		FormattedTextAlignment _alignment;
 		FormattedTextWrapMode _wrap;
-		protected override sd.StringFormat CreateControl() => new sd.StringFormat();
+		protected override sd.StringFormat CreateControl()
+		{
+			var control = new sd.StringFormat();
+			control.FormatFlags |= sd.StringFormatFlags.LineLimit;
+			return control;
+		}
 
 		public FormattedTextWrapMode Wrap
 		{
@@ -113,59 +118,84 @@ namespace Eto.WinForms.Drawing
 		{
 			var brush = ForegroundBrush.ToSD(rect);
 			var font = Font.ToSD();
-
-			string[] words = Text.Split(' ');
-
-			// get widths of each word
-			float[] wordWidths = new float[words.Length];
-			for (int i = 0; i < words.Length; i++)
-			{
-				var size = graphics.Control.MeasureString(words[i], font);
-				wordWidths[i] = size.Width;
-			}
-
+			var text = Text;
 			var lineHeight = font.GetHeight(graphics.Control);
-			int currentWord = 0;
-			float y = rect.Top;
 			var format = new sd.StringFormat(Control);
 			format.Trimming = sd.StringTrimming.None; // no ellipsis
-			while (true)
+			float y = rect.Top;
+
+			void DrawParagraph(string paragraph)
 			{
-				float x = rect.Left;
-				float lineWidth = 0;
-				int wordsToDraw = 0;
-				for (int i = currentWord; i < words.Length; i++)
+				string[] words = paragraph.Split(' ');
+
+				// get widths of each word
+				float[] wordWidths = new float[words.Length];
+				for (int i = 0; i < words.Length; i++)
 				{
-					var width = wordWidths[i];
-					if (x + lineWidth + width > MaximumSize.Width)
+					var size = graphics.Control.MeasureString(words[i], font);
+					wordWidths[i] = size.Width;
+				}
+
+				int currentWord = 0;
+				while (true)
+				{
+					float x = rect.Left;
+					float lineWidth = 0;
+					int wordsToDraw = 0;
+					bool justify = false;
+					for (int i = currentWord; i < words.Length; i++)
 					{
+						var width = wordWidths[i];
+						if (x + lineWidth + width > MaximumSize.Width)
+						{
+							justify = true;
+							break;
+						}
+						wordsToDraw++;
+						lineWidth += width;
+					}
+					if (wordsToDraw == 0)
+						break;
+					if (!justify)
+					{
+						var lastLine = string.Join(" ", words.Skip(currentWord).Take(wordsToDraw));
+						graphics.Control.DrawString(lastLine, font, brush, x, y, format);
+						y += lineHeight;
 						break;
 					}
-					wordsToDraw++;
-					lineWidth += width;
+
+					float spacing = rect.Width - lineWidth;
+					if (wordsToDraw > 1) spacing /= (wordsToDraw - 1);
+
+					for (int i = 0; i < wordsToDraw; i++)
+					{
+						var idx = currentWord + i;
+						graphics.Control.DrawString(words[idx], font, brush, x, y, format);
+
+						x += wordWidths[idx] + spacing;
+					}
+					y += lineHeight;
+
+					if (y + lineHeight > rect.Bottom)
+						break;
+
+					currentWord += wordsToDraw;
 				}
-				if (wordsToDraw == 0)
-					break;
+			}
 
-				float spacing = rect.Width - lineWidth;
-				if (wordsToDraw > 1) spacing /= (wordsToDraw - 1);
 
-				for (int i = 0; i < wordsToDraw; i++)
-				{
-					var idx = currentWord + i;
-					graphics.Control.DrawString(words[idx], font, brush, x, y, format);
+			var lines = text.Split('\n');
 
-					x += wordWidths[idx] + spacing;
-				}
-				y += lineHeight;
-
+			for (int i = 0; i < lines.Length; i++)
+			{
 				if (y + lineHeight > rect.Bottom)
 					break;
-
-				currentWord += wordsToDraw;
+					
+				string line = lines[i];
+				DrawParagraph(line);
 			}
 		}
-
+		
 		public void Draw(GraphicsHandler graphics, PointF location)
 		{
 			var size = Measure();
@@ -174,7 +204,7 @@ namespace Eto.WinForms.Drawing
 				size.Width = MaximumSize.Width;
 
 			var rect = new RectangleF(location.X, location.Y, size.Width, size.Height);
-			if (Alignment == FormattedTextAlignment.Justify && rect.Width < int.MaxValue)
+			if (Wrap != FormattedTextWrapMode.None && Alignment == FormattedTextAlignment.Justify && rect.Width < int.MaxValue)
 			{
 				DrawJustifiedLines(graphics, rect);
 			}

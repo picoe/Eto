@@ -15,7 +15,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Default()
 		{
-			var text = new TextArea { Text = Utility.LoremText };
+			var text = new TextArea { Text = Utility.LoremTextWithTwoParagraphs };
 			LogEvents(text);
 
 			return new TableLayout

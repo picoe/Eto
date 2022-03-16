@@ -403,11 +403,8 @@ namespace Eto.GtkSharp.Drawing
 			var oldAA = AntiAlias;
 			AntiAlias = true;
 			SetOffset(false);
-			using (var layout = CreateLayout())
-			{
-				var handler = (FormattedTextHandler)formattedText.Handler;
-				handler.Draw(this, layout, Control, location);
-			}
+			var handler = (FormattedTextHandler)formattedText.Handler;
+			handler.Draw(this, Control, location);
 			AntiAlias = oldAA;
 		}
 

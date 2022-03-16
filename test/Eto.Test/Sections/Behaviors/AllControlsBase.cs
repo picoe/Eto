@@ -41,7 +41,16 @@ namespace Eto.Test.Sections.Behaviors
 				layout.Add(GroupBoxControl());
 			layout.Add(TableLayoutControl());
 			layout.EndHorizontal();
+
+			layout.BeginHorizontal();
+			layout.AddSpace();
+			layout.Add(ExpanderControl());
+			layout.EndHorizontal();
+
 			layout.EndVertical();
+
+
+
 			layout.Add(null);
 
 			Content = layout;
@@ -52,6 +61,27 @@ namespace Eto.Test.Sections.Behaviors
 		protected virtual Control CreateOptions()
 		{
 			return null;
+		}
+
+		Control ExpanderControl()
+		{
+			var control = new Expander
+			{
+				Header = "Expander",
+				Expanded = true,
+				Content = new Panel
+				{
+					Size = new Size(100, 100),
+					Content = new Label
+					{
+						VerticalAlignment = VerticalAlignment.Center,
+						TextAlignment = TextAlignment.Center,
+						Text = "Content"
+					}
+				}
+			};
+			LogEvents(control);
+			return control;
 		}
 
 		Control LabelControl()
@@ -210,7 +240,7 @@ namespace Eto.Test.Sections.Behaviors
 		Control DrawableControl()
 		{
 			var control = new Drawable { Size = new Size(100, 30), CanFocus = true };
-			control.Paint += delegate(object sender, PaintEventArgs pe)
+			control.Paint += delegate (object sender, PaintEventArgs pe)
 			{
 				pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
 				var size = pe.Graphics.MeasureString(SystemFonts.Label(), "Drawable");

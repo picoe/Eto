@@ -107,6 +107,7 @@ namespace Eto.iOS.Drawing
 		FormattedTextTrimming _trimming;
 		FormattedTextWrapMode _wrap;
 		FormattedTextAlignment _alignment;
+		SizeF _maximumSize = SizeF.MaxValue;
 
 		public FormattedTextAlignment Alignment
 		{
@@ -148,8 +149,47 @@ namespace Eto.iOS.Drawing
 
 		public SizeF MaximumSize
 		{
-			get => container.ContainerSize.ToEto();
-			set => container.ContainerSize = value.ToNS();
+			get => _maximumSize;
+			set
+			{
+				_maximumSize = value;
+				SetMaxSize();
+			}
+		}
+
+		private void SetMaxSize()
+		{
+			var size = _maximumSize;
+			if (size.Width >= float.MaxValue && Alignment != FormattedTextAlignment.Left)
+			{
+				// need a width to support aligning
+				size.Width = GetMaxTextWidth();
+			}
+			size.Width = Math.Min(int.MaxValue, size.Width);
+			size.Height = Math.Min(int.MaxValue, size.Height);
+			container.Size = size.ToNS();
+		}
+
+		private float GetMaxTextWidth()
+		{
+			float maxWidth = 0;
+			char newline = '\n';
+			int newlineIndex = _text.IndexOf(newline);
+			if (newlineIndex == -1)
+			{
+				return _maximumSize.Width;
+			}
+			int startIndex = 0;
+			container.Size = new CGSize(0, 0);
+			while (newlineIndex >= 0)
+			{
+				var glyphRange = new NSRange(startIndex, newlineIndex - startIndex);
+				var rect = Control.BoundingRectForGlyphRange(glyphRange, container).Size.ToEto();
+				maxWidth = Math.Max(maxWidth, rect.Width);
+				startIndex = newlineIndex + 1;
+				newlineIndex = _text.IndexOf(newline, startIndex);
+			}
+			return maxWidth;
 		}
 
 		public Font Font
@@ -192,19 +232,8 @@ namespace Eto.iOS.Drawing
 		private NSParagraphStyle CreateParagraphStyle()
 		{
 			var style = new NSMutableParagraphStyle();
-			//style.LineBreakMode = Trimming.ToNS();
-			container.MaximumNumberOfLines = 0;
 			if (Wrap == FormattedTextWrapMode.None)
-			{
-				if (Trimming != FormattedTextTrimming.None)
-					style.LineBreakMode = Trimming.ToNS();
-				else
-				{
-					// hm, setting style.LineBreakMode to Clipping doesn't appear to clip, so we wrap by character and set max lines to 1
-					style.LineBreakMode = NSLineBreakMode.CharWrapping;
-					container.MaximumNumberOfLines = 1;
-				}
-			}
+				style.LineBreakMode = Trimming.ToNS();
 			else
 				style.LineBreakMode = Wrap.ToNS();
 
@@ -217,6 +246,7 @@ namespace Eto.iOS.Drawing
 			if (invalid)
 			{
 				storage.SetString(CreateAttributedString());
+				SetMaxSize();
 				invalid = false;
 			}
 		}
@@ -230,11 +260,8 @@ namespace Eto.iOS.Drawing
 		public SizeF Measure()
 		{
 			EnsureString();
-			var size = Control.BoundingRectForGlyphRange(new NSRange(0, (int)_text.Length), container).Size.ToEto();
-			/*if (Wrap == FormattedTextWrapMode.None && Trimming != FormattedTextTrimming.None && Alignment != FormattedTextAlignment.Left)
-			{
-				size.Width = MaximumSize.Width;
-			}*/
+			// var size = Control.BoundingRectForGlyphRange(new NSRange(0, (int)_text.Length), container).Size.ToEto();
+			var size = storage.BoundingRectWithSize(container.Size, NSStringDrawingOptions.UsesLineFragmentOrigin).Size.ToEto();
 			return size;
 		}
 
@@ -245,7 +272,7 @@ namespace Eto.iOS.Drawing
 #if OSX
 			Control.BackgroundLayoutEnabled = false;
 #endif
-			container = new NSTextContainer { LineFragmentPadding = 0f };
+			container = new NSTextContainer { LineFragmentPadding = 0f, Size = new CGSize(int.MaxValue, int.MaxValue) };
 			Control.AddTextContainer(container);
 			storage.AddLayoutManager(Control);
 		}
@@ -255,7 +282,8 @@ namespace Eto.iOS.Drawing
 			EnsureString();
 			Control.CurrentGraphics = graphics;
 			var ctx = graphics.Control;
-			Control.DrawGlyphs(new NSRange(0, (int)_text.Length), location.ToNS());
+			storage.DrawString(new CGRect(location.ToNS(), container.Size), NSStringDrawingOptions.UsesLineFragmentOrigin | NSStringDrawingOptions.TruncatesLastVisibleLine);
+			// Control.DrawGlyphs(new NSRange(0, (int)_text.Length), location.ToNS());
 		}
 	}
 }
