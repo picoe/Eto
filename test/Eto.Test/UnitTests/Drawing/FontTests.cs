@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Eto.Test.UnitTests.Drawing
 {
 	[TestFixture]
-	public class FontTests
+	public class FontTests : TestBase
 	{
 		[Test]
 		public async Task FontShouldWorkInMultipleThreads()
@@ -30,5 +30,16 @@ namespace Eto.Test.UnitTests.Drawing
 				}
 			});
 		}
+
+		[Test]
+		public void FontMeasureStringShouldWorkForMultiLineStrings() => Invoke(() =>
+		{
+			var font = Fonts.Sans(10);
+			var singleLineSize = font.MeasureString("A single-line string!");
+			var multiLineSize = font.MeasureString("A\nmulti\nline\nstring!");
+			Console.WriteLine($"Single-line: {singleLineSize}, Multi-line: {multiLineSize}");
+			Assert.Greater(multiLineSize.Height, singleLineSize.Height, "#1 The multi-line string does not have a greater height than the single line");
+			Assert.Less(multiLineSize.Width, singleLineSize.Width, "#2 The multi-line string should not be as wide as the single line string");
+		});
 	}
 }

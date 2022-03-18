@@ -96,7 +96,7 @@ namespace Eto.Test.UnitTests.Forms
 				const string infoText = "Click to change text.\n";
 				var label = new Label();
 				label.TextColor = Colors.White;
-				label.Text = infoText + Utility.LoremText;
+				label.Text = infoText + Utility.LoremTextWithTwoParagraphs;
 
 				Window window = useForm ? (Window)new Form { ShowActivated = false } : new Dialog();
 				window.AutoSize = true;

@@ -129,7 +129,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var label = new Label
 			{
-				Text = Utility.LoremText
+				Text = Utility.LoremTextWithTwoParagraphs
 			};
 
 			var wrapDropDown = new EnumDropDown<WrapMode>();
