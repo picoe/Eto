@@ -7,6 +7,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Eto.GtkSharp.Forms
@@ -68,6 +69,7 @@ namespace Eto.GtkSharp.Forms
 		public static readonly object Cursor_Key = new object();
 		public static readonly object AllowDrop_Key = new object();
 		public static uint? DefaultBorderWidth;
+		
 	}
 
 	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IGtkControl
@@ -79,6 +81,18 @@ namespace Eto.GtkSharp.Forms
 		bool mouseDownHandled;
 #if GTK2
 		Color? cachedBackgroundColor;
+#else
+
+		// In GTK the gesture types are handled by external classes for each type of gesture
+		private static Gtk.GestureSwipe swipe;
+		private static Gtk.GestureRotate rotate;
+		private static Gtk.GestureZoom zoom;
+		private static Gtk.GesturePan panv;
+		private static Gtk.GesturePan panh;
+		//private static Gtk.GestureLongPress longpress;
+		private static Gtk.GestureMultiPress longpress;
+		private static Gtk.GestureDrag drag;
+		
 #endif
 		Color? backgroundColor;
 
@@ -428,6 +442,61 @@ namespace Eto.GtkSharp.Forms
 					EventControl.AddEvents((int)Gdk.EventMask.ScrollMask);
 					EventControl.ScrollEvent += Connector.HandleScrollEvent;
 					break;
+#if GTK3
+				case Eto.Forms.Control.SwipeGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					swipe = new Gtk.GestureSwipe(Control);
+					swipe.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					swipe.Swipe += Connector.HandleSwipeGestureEvent;
+					break;
+				case Eto.Forms.Control.RotateGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					rotate = new Gtk.GestureRotate(Control);
+					rotate.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					rotate.AngleChanged += Connector.HandleRotateGestureEvent;
+					break;
+				case Eto.Forms.Control.PanHGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					panh = new Gtk.GesturePan(Control,Gtk.Orientation.Horizontal);
+					panh.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					panh.Pan += Connector.HandlePanHGestureEvent;
+					//pan.TouchOnly = true;
+					break;
+				case Eto.Forms.Control.PanVGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					panv = new Gtk.GesturePan(Control,Gtk.Orientation.Vertical);
+					panv.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					//pan.TouchOnly = true;
+					panv.Pan += Connector.HandlePanVGestureEvent;
+					break;
+
+				case Eto.Forms.Control.LongPressGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					longpress = new Gtk.GestureMultiPress(Control);
+					
+					longpress.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					longpress.Begin += Connector.HandleLongPressBeginGestureEvent;
+					longpress.Pressed += Connector.HandleLongPressGestureEvent;
+					longpress.End += Connector.HandleLongPressDoneGestureEvent;
+					longpress.Cancel += Connector.HandleLongPressCancelGestureEvent;
+					longpress.TouchOnly = true;
+					break;
+				case Eto.Forms.Control.ZoomGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					zoom = new Gtk.GestureZoom(Control);
+					zoom.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					zoom.ScaleChanged += Connector.HandleZoomGestureEvent;					
+					break;
+				case Eto.Forms.Control.DragGestureEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.TouchpadGestureMask);
+					drag = new Gtk.GestureDrag(Control);
+					drag.PropagationPhase = Gtk.PropagationPhase.Bubble;
+					drag.DragBegin += Connector.HandleDragStartGestureEvent;
+					drag.Update += Connector.HandleDragGestureEvent;
+					drag.End += Connector.HandleDragDoneGestureEvent;
+					break;
+				
+#endif
 				case Eto.Forms.Control.GotFocusEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.FocusChangeMask);
 					EventControl.FocusInEvent += Connector.FocusInEvent;
@@ -465,6 +534,7 @@ namespace Eto.GtkSharp.Forms
 					return;
 			}
 		}
+
 
 		protected new GtkControlConnector Connector { get { return (GtkControlConnector)base.Connector; } }
 
@@ -662,7 +732,264 @@ namespace Eto.GtkSharp.Forms
 					args.RetVal = e.Handled;
 				}
 			}
+			
+	#if GTK3
+			[GLib.ConnectBefore]
+			public void HandleSwipeGestureEvent(object o, Gtk.SwipeArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
 
+				var e = new SwipeGestureEventArgs(args.VelocityX, args.VelocityY);
+				if (e != null)
+				{
+					handler.Callback.OnSwipe(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleRotateGestureEvent(object o, Gtk.AngleChangedArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				// could be rotate.AngleDelta if event args is not right
+				var e = new RotateGestureEventArgs(rotate.AngleDelta);
+				//var e = new RotateGestureEventArgs(args.Angle);
+				if (e != null)
+				{
+					handler.Callback.OnRotate(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandlePanHGestureEvent(object o, Gtk.PanArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+
+
+				PanDirection Dir = PanDirection.Left;
+
+				switch (args.Direction)
+				{
+					case Gtk.PanDirection.Up:
+						Dir = PanDirection.Up;
+						break;
+					case Gtk.PanDirection.Down:
+						Dir = PanDirection.Down;
+						break;
+					case Gtk.PanDirection.Left:
+						Dir = PanDirection.Left;
+						break;
+					case Gtk.PanDirection.Right:
+						Dir = PanDirection.Right;
+						
+						break;
+					default:
+						break;
+				}
+				var e = new PanGestureEventArgs(true, 1, Dir, args.Offset);
+				if (e != null)
+				{
+					handler.Callback.OnPanH(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+
+			[GLib.ConnectBefore]
+			public void HandlePanVGestureEvent(object o, Gtk.PanArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				bool vpan = false;
+
+				PanDirection Dir = PanDirection.Left;
+
+				switch (args.Direction) {
+				case Gtk.PanDirection.Up:
+					Dir = PanDirection.Up;
+					vpan = true;
+					break;
+				case Gtk.PanDirection.Down:
+					Dir = PanDirection.Down;
+					vpan = true;
+					break;
+				case Gtk.PanDirection.Left:
+					Dir = PanDirection.Left;
+					vpan = false;
+					break;
+				case Gtk.PanDirection.Right:
+					Dir = PanDirection.Right;
+					vpan = false;
+					break;
+				default:
+					break;
+				}
+				// could be rotate.AngleDelta if event args is not right
+				var e = new PanGestureEventArgs(true, 1, Dir, args.Offset);
+				if (e != null)
+				{
+					handler.Callback.OnPanV(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleLongPressBeginGestureEvent(object o, Gtk.BeginArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				double X, Y;
+				longpress.GetBoundingBoxCenter(out X, out Y);
+				
+
+				var e = new LongPressGestureEventArgs(false, (int)longpress.NPoints, X, Y);
+				if (e != null)
+				{
+					handler.Callback.OnLongPress(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+
+			[GLib.ConnectBefore]
+			public void HandleLongPressGestureEvent(object o, Gtk.PressedArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				//double X, Y;
+				//longpress.GetBoundingBoxCenter (out X, out Y);
+
+				//var e = new LongPressGestureEventArgs (true, (int)longpress.NPoints, X, Y);
+				var e = new LongPressGestureEventArgs(true, args.NPress, args.X, args.Y);
+				if (e != null)
+				{
+					handler.Callback.OnLongPress(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleLongPressDoneGestureEvent(object o, Gtk.EndArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				var e = new LongPressGestureEventArgs(false, 0,0,0);
+				if (e != null)
+				{
+					handler.Callback.OnLongPress(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			
+			[GLib.ConnectBefore]
+			public void HandleLongPressCancelGestureEvent(object o, Gtk.CancelArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+								
+				var e = new LongPressGestureEventArgs(false, 0, 0, 0);
+				if (e != null)
+				{
+					handler.Callback.OnLongPress(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleZoomGestureEvent(object o, Gtk.ScaleChangedArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				// could be rotate.AngleDelta if event args is not right
+				var e = new ZoomGestureEventArgs(args.Scale);
+				if (e != null)
+				{
+					handler.Callback.OnZoomExpand(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+			
+			
+			[GLib.ConnectBefore]
+			public void HandleDragStartGestureEvent(object o, Gtk.DragBeginArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				
+				// capture the 
+				drag.GetStartPoint(out double X, out double Y);
+
+				var e = new DragGestureEventArgs (true, (int)drag.NPoints, X ,Y, 0, 0);
+				if (e != null)
+				{
+					handler.Callback.OnDragGesture(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			
+			[GLib.ConnectBefore]
+			public void HandleDragGestureEvent(object o, Gtk.UpdateArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				drag.GetStartPoint(out double Xstart, out double Ystart);
+				drag.GetBoundingBoxCenter (out double X, out double Y);
+				
+				// usually we will want a relative delta here
+				double deltaX = X - Xstart;
+				double deltaY = Y - Ystart;
+				
+				
+				var e = new DragGestureEventArgs (true, (int)drag.NPoints, Xstart, Ystart, deltaX, deltaY);
+				if (e != null)
+				{
+					handler.Callback.OnDragGesture(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleDragDoneGestureEvent(object o, Gtk.EndArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				var e = new DragGestureEventArgs(false, 0,0,0, 0, 0);
+				if (e != null)
+				{
+					handler.Callback.OnDragGesture(Handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+#endif
+		
 			public virtual void FocusInEvent(object o, Gtk.FocusInEventArgs args)
 			{
 				var handler = Handler;
