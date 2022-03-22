@@ -16,6 +16,7 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
+using MonoMac.CoreText;
 #if Mac64
 using nfloat = System.Double;
 using nint = System.Int64;
@@ -47,10 +48,10 @@ namespace Eto.Mac.Drawing
 {
 	public class FontHandler : WidgetHandler<NSFont, Font>, Font.IHandler
 	{
-		FontFamily family;
-		FontTypeface typeface;
-		FontStyle? style;
-		FontDecoration decoration;
+		FontFamily _family;
+		FontTypeface _typeface;
+		FontStyle? _style;
+		FontDecoration _decoration;
 		NSDictionary _attributes;
 		FormattedText _formattedText;
 
@@ -71,21 +72,21 @@ namespace Eto.Mac.Drawing
 		public FontHandler(NSFont font, FontDecoration decoration)
 		{
 			Control = font;
-			this.decoration = decoration;
+			_decoration = decoration;
 		}
 
 		public FontHandler(NSFont font, FontStyle style)
 		{
 			Control = font;
-			this.style = style;
+			_style = style;
 		}
 
 		public void Create(FontTypeface face, float size, FontDecoration decoration)
 		{
-			typeface = face;
-			family = face.Family;
+			_typeface = face;
+			_family = face.Family;
 			Control = ((FontTypefaceHandler)face.Handler).CreateFont(size);
-			this.decoration = decoration;
+			_decoration = decoration;
 		}
 
 		public void Create(SystemFont systemFont, float? fontSize, FontDecoration decoration)
@@ -134,7 +135,7 @@ namespace Eto.Mac.Drawing
 				default:
 					throw new NotSupportedException();
 			}
-			this.decoration = decoration;
+			_decoration = decoration;
 		}
 
 		#if OSX
@@ -173,9 +174,9 @@ namespace Eto.Mac.Drawing
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
-			this.style = style;
-			this.family = family;
-			this.decoration = decoration;
+			_style = style;
+			_family = family;
+			_decoration = decoration;
 #if OSX
 			var familyHandler = (FontFamilyHandler)family.Handler;
 			traits = style.ToNS() & familyHandler.TraitMask;
@@ -217,9 +218,9 @@ namespace Eto.Mac.Drawing
 		{
 			get
 			{
-				if (family == null)
-					family = new FontFamily(new FontFamilyHandler(Control.FamilyName));
-				return family;
+				if (_family == null)
+					_family = new FontFamily(new FontFamilyHandler(Control.FamilyName));
+				return _family;
 			}
 		}
 
@@ -227,13 +228,13 @@ namespace Eto.Mac.Drawing
 		{
 			get
 			{
-				if (typeface == null)
+				if (_typeface == null)
 					#if IOS
 					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control);
 					#else
-					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control, traits);
+					_typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control, traits);
 					#endif
-				return typeface;
+				return _typeface;
 			}
 		}
 
@@ -241,17 +242,17 @@ namespace Eto.Mac.Drawing
 		{
 			get
 			{
-				if (style == null)
+				if (_style == null)
 #if OSX
-					style = NSFontManager.SharedFontManager.TraitsOfFont(Control).ToEto();
+					_style = NSFontManager.SharedFontManager.TraitsOfFont(Control).ToEto();
 #elif IOS
 					style = Typeface.FontStyle;
 #endif
-				return style.Value;
+				return _style.Value;
 			}
 		}
 
-		public FontDecoration FontDecoration => decoration;
+		public FontDecoration FontDecoration => _decoration;
 
 		public float Ascent => (float)Control.Ascender;
 
@@ -307,8 +308,8 @@ namespace Eto.Mac.Drawing
 				new NSObject[]
 				{
 					Control ?? NSFont.UserFontOfSize(Size),
-					new NSNumber((int)(decoration.HasFlag(FontDecoration.Underline) ? NSUnderlineStyle.Single : NSUnderlineStyle.None)),
-					NSNumber.FromBoolean(decoration.HasFlag(FontDecoration.Strikethrough))
+					new NSNumber((int)(_decoration.HasFlag(FontDecoration.Underline) ? NSUnderlineStyle.Single : NSUnderlineStyle.None)),
+					NSNumber.FromBoolean(_decoration.HasFlag(FontDecoration.Strikethrough))
 				},
 				attributeKeys
 			);

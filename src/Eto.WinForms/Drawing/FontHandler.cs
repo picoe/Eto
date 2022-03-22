@@ -13,8 +13,8 @@ namespace Eto.WinForms.Drawing
 
 	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, Font.IHandler, IWindowsFontSource
 	{
-		FontTypeface typeface;
-		FontFamily family;
+		FontTypeface _typeface;
+		FontFamily _family;
 
 		public FontHandler()
 		{
@@ -29,17 +29,17 @@ namespace Eto.WinForms.Drawing
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
-			this.family = family;
+			_family = family;
 			var familyHandler = (FontFamilyHandler)family.Handler;
 			Control = new sd.Font(familyHandler.Control, size, style.ToSD() | decoration.ToSD());
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
 		{
-			this.typeface = typeface;
-
-			var familyHandler = (FontFamilyHandler)typeface.Family.Handler;
-			Control = new sd.Font(familyHandler.Control, size, typeface.FontStyle.ToSD() | decoration.ToSD());
+			_typeface = typeface;
+			var typefaceHandler = (FontTypefaceHandler)typeface.Handler;
+			_family = typefaceHandler.Family;
+			Control = new sd.Font(typefaceHandler.SDFontFamily, size, typefaceHandler.Control | decoration.ToSD());
 		}
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
@@ -52,50 +52,23 @@ namespace Eto.WinForms.Drawing
 			}
 		}
 
-		public string FamilyName
-		{
-			get { return Control.FontFamily.Name; }
-		}
+		public string FamilyName => Control.FontFamily.Name;
 
-		public FontStyle FontStyle
-		{
-			get { return Control.Style.ToEtoStyle(); }
-		}
+		public FontStyle FontStyle => Control.Style.ToEtoStyle();
 
-		public FontDecoration FontDecoration
-		{
-			get { return Control.Style.ToEtoDecoration(); }
-		}
+		public FontDecoration FontDecoration => Control.Style.ToEtoDecoration();
 
-		public FontFamily Family
-		{
-			get { return family = family ?? new FontFamily(new FontFamilyHandler(Control.FontFamily)); }
-		}
+		public FontFamily Family => _family ?? (_family = new FontFamily(new FontFamilyHandler(Control.FontFamily)));
 
-		public FontTypeface Typeface
-		{
-			get { return typeface = typeface ?? new FontTypeface(Family, new FontTypefaceHandler(Control.Style)); }
-		}
+		public FontTypeface Typeface => _typeface ?? (_typeface = new FontTypeface(Family, new FontTypefaceHandler(Control.FontFamily, Control.Style)));
 
-		public sd.FontFamily WindowsFamily
-		{
-			get { return Control.FontFamily; }
-		}
+		public sd.FontFamily WindowsFamily => Control.FontFamily;
 
-		public float XHeight
-		{
-			get { return Size * 0.5f; }
-		}
+		public float XHeight => Size * 0.5f;
 
-		public float Baseline
-		{
-			get { return Ascent; }
-		}
+		public float Baseline => Ascent;
 
-		public float Leading
-		{
-			get { return LineHeight - (Ascent + Descent); }
-		}
+		public float Leading => LineHeight - (Ascent + Descent);
 
 		float? ascent;
 		public float Ascent
@@ -123,14 +96,11 @@ namespace Eto.WinForms.Drawing
 			}
 		}
 
-		public float LineHeight { get { return Size * Control.FontFamily.GetLineSpacing(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style); } }
+		public float LineHeight => Size * Control.FontFamily.GetLineSpacing(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
 
-		public float Size { get { return Control.SizeInPoints; } }
+		public float Size => Control.SizeInPoints;
 
-		public sd.Font GetFont()
-		{
-			return Control;
-		}
+		public sd.Font GetFont() => Control;
 
 		[DefaultValue(true)]
 		public bool UseCompatibleTextRendering { get; set; }

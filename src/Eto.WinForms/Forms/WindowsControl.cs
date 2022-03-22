@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace Eto.WinForms.Forms
 {
-	public interface IWindowsControl: Control.IHandler
+	public interface IWindowsControl : Control.IHandler
 	{
 		bool InternalVisible { get; }
 
@@ -115,11 +115,11 @@ namespace Eto.WinForms.Forms
 
 		// used in DrawableHandler
 		public class PanelBase<THandler> : swf.Panel
-			where THandler: WindowsControl<TControl, TWidget, TCallback>
+			where THandler : WindowsControl<TControl, TWidget, TCallback>
 		{
 			public THandler Handler { get; set; }
 
-			public PanelBase( THandler handler = null )
+			public PanelBase(THandler handler = null)
 			{
 				Handler = handler;
 				Size = sd.Size.Empty;
@@ -162,26 +162,26 @@ namespace Eto.WinForms.Forms
 		public class EtoPanel<THandler> : PanelBase<THandler>
 			where THandler : WindowsControl<TControl, TWidget, TCallback>
 		{
-			public EtoPanel( THandler handler = null )
-				: base( handler )
+			public EtoPanel(THandler handler = null)
+				: base(handler)
 			{ }
 
 			// optimization especially for content on drawable
-			protected override void OnBackColorChanged( EventArgs e )
+			protected override void OnBackColorChanged(EventArgs e)
 			{
 				SetStyle
-					( swf.ControlStyles.AllPaintingInWmPaint
+					(swf.ControlStyles.AllPaintingInWmPaint
 					| swf.ControlStyles.DoubleBuffer
-					, BackColor.A != 255 );
-				base.OnBackColorChanged( e );
+					, BackColor.A != 255);
+				base.OnBackColorChanged(e);
 			}
-			protected override void OnParentBackColorChanged( EventArgs e )
+			protected override void OnParentBackColorChanged(EventArgs e)
 			{
 				SetStyle
-					( swf.ControlStyles.AllPaintingInWmPaint
+					(swf.ControlStyles.AllPaintingInWmPaint
 					| swf.ControlStyles.DoubleBuffer
-					, BackColor.A != 255 );
-				base.OnParentBackColorChanged( e );
+					, BackColor.A != 255);
+				base.OnParentBackColorChanged(e);
 			}
 		}
 
@@ -544,7 +544,8 @@ namespace Eto.WinForms.Forms
 
 		public virtual Size Size
 		{
-			get {
+			get
+			{
 				if (!Widget.Loaded)
 					return UserPreferredSize;
 				return ContainerControl.Size.ToEto();
@@ -581,7 +582,7 @@ namespace Eto.WinForms.Forms
 
 		protected virtual void SetAutoSize()
 		{
-			ContainerControl.AutoSize = 
+			ContainerControl.AutoSize =
 				(UserPreferredSize.Width == -1 || UserPreferredSize.Height == -1)
 				&& (UserDesiredClientSize.Width == -1 || UserDesiredClientSize.Height == -1);
 		}
@@ -661,11 +662,12 @@ namespace Eto.WinForms.Forms
 			}
 		}
 		bool backgroundColorSet;
-		public bool BackgroundColorSet {
-			get { return backgroundColorSet;  }
+		public bool BackgroundColorSet
+		{
+			get { return backgroundColorSet; }
 			set
 			{
-				if (!( backgroundColorSet = value ))
+				if (!(backgroundColorSet = value))
 					Control.BackColor = sd.Color.Empty;
 			}
 		}
@@ -875,6 +877,8 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		internal virtual bool SetFontTwiceForSomeReason => false;
+
 		public Font Font
 		{
 			get
@@ -884,7 +888,10 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				Widget.Properties[WindowsControl.FontKey] = value;
-				Control.Font = value.ToSD();
+				var sdfont = value.ToSD();
+				Control.Font = sdfont;
+				if (SetFontTwiceForSomeReason)
+					Control.Font = sdfont;
 			}
 		}
 
@@ -1008,7 +1015,7 @@ namespace Eto.WinForms.Forms
 
 		public void Print()
 		{
-			
+
 		}
 	}
 }

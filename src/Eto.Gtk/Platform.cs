@@ -102,6 +102,7 @@ namespace Eto.GtkSharp
 			// Drawing
 			p.Add<Bitmap.IHandler>(() => new BitmapHandler());
 			p.Add<FontFamily.IHandler>(() => new FontFamilyHandler());
+			p.Add<FontTypeface.IHandler>(() => new FontTypefaceHandler());
 			p.Add<Font.IHandler>(() => new FontHandler());
 			p.Add<Fonts.IHandler>(() => new FontsHandler());
 			p.Add<Graphics.IHandler>(() => new GraphicsHandler());

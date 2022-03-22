@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Eto.Forms;
-
+using System.IO;
 
 #if XAMMAC2
 using AppKit;
@@ -27,6 +27,7 @@ namespace Eto.Mac.Drawing
 	public class FontTypefaceHandler : WidgetHandler<FontTypeface>, FontTypeface.IHandler
 	{
 		NSFont _font;
+		CGFont _cgfont;
 		string _name;
 		static readonly object LocalizedName_Key = new object();
 
@@ -59,9 +60,19 @@ namespace Eto.Mac.Drawing
 		public FontTypefaceHandler(string postScriptName, string name, NSFontTraitMask traits, int weight)
 		{
 			PostScriptName = postScriptName;
-			this._name = name;
+			_name = name;
 			Weight = weight;
 			Traits = traits;
+		}
+
+		public FontTypefaceHandler()
+		{
+		}
+
+		public FontTypefaceHandler(CGFont cgfont, string faceName)
+		{
+			_cgfont = cgfont;
+			_name = faceName;
 		}
 
 		internal static NSString GetName(IntPtr fontHandle)
@@ -93,7 +104,7 @@ namespace Eto.Mac.Drawing
 		}
 
 		[DllImport("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText")]
-		static extern IntPtr CTFontCopyName(IntPtr font, IntPtr nameKey);
+		internal static extern IntPtr CTFontCopyName(IntPtr font, IntPtr nameKey);
 
 		[DllImport("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText")]
 		static extern IntPtr CTFontCopyLocalizedName(IntPtr font, IntPtr nameKey, out IntPtr actualLanguage);
@@ -120,9 +131,15 @@ namespace Eto.Mac.Drawing
 
 		public bool IsSymbol => Font.FontDescriptor.SymbolicTraits.HasFlag(NSFontSymbolicTraits.SymbolicClass);
 
+		public FontFamily Family { get; private set; }
+
 		public NSFont CreateFont(float size)
 		{
-
+			if (_cgfont != null)
+			{
+				var ctfont = new CTFont(_cgfont, size, null);
+				return Runtime.GetNSObject<NSFont>(ctfont.Handle);
+			}
 			// we have a postcript name, use that to create the font
 			if (!string.IsNullOrEmpty(PostScriptName))
 			{
@@ -154,6 +171,34 @@ namespace Eto.Mac.Drawing
 				}
 			}
 			return true;
+		}
+
+		public void Create(Stream stream)
+		{
+			using (var ms = new MemoryStream())
+			{
+				stream.CopyTo(ms);
+				var bytes = ms.ToArray();
+				using (var dataProvider = new CGDataProvider(bytes, 0, bytes.Length))
+				{
+					_cgfont = CGFont.CreateFromProvider(dataProvider);
+				}
+			}
+			Family = new FontFamily(new FontFamilyHandler(_cgfont, this));
+		}
+
+		public void Create(string fileName)
+		{
+			using (var dataProvider = new CGDataProvider(fileName))
+			{
+				_cgfont = CGFont.CreateFromProvider(dataProvider);
+			}
+			Family = new FontFamily( new FontFamilyHandler(_cgfont, this));
+		}
+
+		public void Create(FontFamily family)
+		{
+			Family = family;
 		}
 	}
 }

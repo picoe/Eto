@@ -15,6 +15,21 @@ namespace Eto.GtkSharp
 		const string ver = "3";
 #endif
 
+		public enum FcSetName : int
+		{
+		    FcSetSystem = 0,
+	    	FcSetApplication = 1
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct FcFontSet
+		{
+	    	public int		nfont;
+	    	public int		sfont;
+	    	public IntPtr	fonts;
+		}
+
+
 		static class NMWindows
 		{
 #if GTK2
@@ -23,10 +38,14 @@ namespace Eto.GtkSharp
 			const string plat = "";
 #endif
 			const string ext = "-0.dll";
+			const string extalt = ".dll";
 			const string libgobject = "libgobject-2.0" + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 			const string libgdk = "libgdk-" + plat + ver + ext;
-			const string libpango = "libpango-" + plat + ver + ext;
+			const string libpango = "libpango-1.0" + ext;
+			const string libpangocairo = "libpangocairo-1.0" + ext;
+			const string libpangoft2 = "libpangoft2-1.0" + ext;
+			const string libfontconfig = "libfontconfig" + extalt;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
@@ -187,9 +206,22 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
-
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
+			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_cairo_font_map_new();
+			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void pango_cairo_font_map_set_default(IntPtr fontMap);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool FcInit();
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr FcConfigGetCurrent();
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool FcConfigAppFontAddFile(IntPtr fc, string fileName);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName);
 		}
 
 		static class NMLinux
@@ -200,10 +232,14 @@ namespace Eto.GtkSharp
 			const string plat = "";
 #endif
 			const string ext = ".so.0";
+			const string extalt = ".so.1";
 			const string libgobject = "libgobject-2.0" + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 			const string libgdk = "libgdk-" + plat + ver + ext;
-			const string libpango = "libpango-" + plat + ver + ext;
+			const string libpango = "libpango-1.0" + ext;
+			const string libpangocairo = "libpangocairo-1.0" + ext;
+			const string libpangoft2 = "libpangoft2-1.0" + ext;
+			const string libfontconfig = "libfontconfig" + extalt;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
@@ -364,9 +400,22 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
-
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
+			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_cairo_font_map_new();
+			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void pango_cairo_font_map_set_default(IntPtr fontMap);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool FcInit();
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr FcConfigGetCurrent();
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool FcConfigAppFontAddFile(IntPtr fc, string fileName);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName);
 		}
 
 		static class NMMac
@@ -377,10 +426,14 @@ namespace Eto.GtkSharp
 			const string plat = "";
 #endif
 			const string ext = ".dylib";
+			const string extalt = ".dylib";
 			const string libgobject = "libgobject-2.0" + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 			const string libgdk = "libgdk-" + plat + ver + ext;
-			const string libpango = "libpango-" + plat + ver + ext;
+			const string libpango = "libpango-1.0" + ext;
+			const string libpangocairo = "libpangocairo-1.0" + ext;
+			const string libpangoft2 = "libpangoft2-1.0" + ext;
+			const string libfontconfig = "libfontconfig" + extalt;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
@@ -541,9 +594,22 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
-
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
+			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_cairo_font_map_new();
+			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void pango_cairo_font_map_set_default(IntPtr fontMap);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool FcInit();
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr FcConfigGetCurrent();
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool FcConfigAppFontAddFile(IntPtr fc, string fileName);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName);
 		}
 
 		public static string GetString(IntPtr handle)
@@ -1098,6 +1164,76 @@ namespace Eto.GtkSharp
 				return NMMac.pango_font_has_char(font, wc);
 			else
 				return NMWindows.pango_font_has_char(font, wc);
+		}
+
+		public static IntPtr pango_cairo_font_map_new()
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.pango_cairo_font_map_new();
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.pango_cairo_font_map_new();
+			else
+				return NMWindows.pango_cairo_font_map_new();
+		}
+
+		public static void pango_cairo_font_map_set_default(IntPtr fontMap)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.pango_cairo_font_map_set_default(fontMap);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.pango_cairo_font_map_set_default(fontMap);
+			else
+				NMWindows.pango_cairo_font_map_set_default(fontMap);
+		}
+
+		public static IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.pango_fc_font_description_from_pattern(fcpattern, includeSize);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.pango_fc_font_description_from_pattern(fcpattern, includeSize);
+			else
+				return NMWindows.pango_fc_font_description_from_pattern(fcpattern, includeSize);
+		}
+
+		public static bool FcInit()
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.FcInit();
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.FcInit();
+			else
+				return NMWindows.FcInit();
+		}
+
+		public static IntPtr FcConfigGetCurrent()
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.FcConfigGetCurrent();
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.FcConfigGetCurrent();
+			else
+				return NMWindows.FcConfigGetCurrent();
+		}
+
+		public static bool FcConfigAppFontAddFile(IntPtr fc, string fileName)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.FcConfigAppFontAddFile(fc, fileName);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.FcConfigAppFontAddFile(fc, fileName);
+			else
+				return NMWindows.FcConfigAppFontAddFile(fc, fileName);
+		}
+
+		public static IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.FcConfigGetFonts(fc, setName);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.FcConfigGetFonts(fc, setName);
+			else
+				return NMWindows.FcConfigGetFonts(fc, setName);
 		}
 	}
 }

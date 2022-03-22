@@ -50,6 +50,8 @@ namespace Eto.WinForms.Forms.Controls
 		int? lastCaretIndex;
 		swf.TableLayoutPanel container;
 
+		internal override bool SetFontTwiceForSomeReason => true;
+		
 		public static Size DefaultMinimumSize = new Size(100, 60);
 
 		public override Size? GetDefaultSize(Size availableSize)

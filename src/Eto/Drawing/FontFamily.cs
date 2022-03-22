@@ -1,6 +1,7 @@
 using Eto.Forms;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Eto.Drawing
 {
@@ -47,6 +48,59 @@ namespace Eto.Drawing
 		/// </summary>
 		public IEnumerable<FontTypeface> Typefaces => Handler.Typefaces;
 
+
+		/// <summary>
+		/// Creates a new instance of the FontFamily class with the specified font files.
+		/// </summary>
+		/// <remarks>
+		/// All font files specified must be a part of the same typographical font family.
+		/// 
+		/// Also, calling this multiple times for the same streams may cause additional overhead or unpredictable results, 
+		/// so you should keep a copy of it in memory when you want to use it.
+		/// </remarks>
+		/// <param name="fileNames">Path to the file(s) to include in this font family</param>
+		/// <returns>A new instance of the FontFamily class</returns>
+		public static FontFamily FromFiles(params string[] fileNames) => new FontFamily(fileNames);
+		
+		/// <summary>
+		/// Creates a new instance of the FontFamily class with the specified font files.
+		/// </summary>
+		/// <remarks>
+		/// All font files specified must be a part of the same typographical font family.
+		/// 
+		/// Also, calling this multiple times for the same streams may cause additional overhead or unpredictable results, 
+		/// so you should keep a copy of it in memory when you want to use it.
+		/// </remarks>
+		/// <param name="fileNames">Path to the file(s) to include in this font family</param>
+		/// <returns>A new instance of the FontFamily class</returns>
+		public static FontFamily FromFiles(IEnumerable<string> fileNames) => new FontFamily(fileNames);
+
+		/// <summary>
+		/// Creates a new instance of the FontFamily class with the specified font file streams.
+		/// </summary>
+		/// <remarks>
+		/// All font files specified must be a part of the same typographical font family.
+		/// 
+		/// Also, calling this multiple times for the same streams may cause additional overhead or unpredictable results, 
+		/// so you should keep a copy of it in memory when you want to use it.
+		/// </remarks>
+		/// <param name="streams">Streams of the font file(s) to include in this font family</param>
+		/// <returns>A new instance of the FontFamily class</returns>
+		public static FontFamily FromStreams(params Stream[] streams) => new FontFamily(streams);
+		
+		/// <summary>
+		/// Creates a new instance of the FontFamily class with the specified font file streams.
+		/// </summary>
+		/// <remarks>
+		/// All font files specified must be a part of the same typographical font family.
+		/// 
+		/// Also, calling this multiple times for the same streams may cause additional overhead or unpredictable results, 
+		/// so you should keep a copy of it in memory when you want to use it.
+		/// </remarks>
+		/// <param name="streams">Streams of the font file(s) to include in this font family</param>
+		/// <returns>A new instance of the FontFamily class</returns>
+		public static FontFamily FromStreams(IEnumerable<Stream> streams) => new FontFamily(streams);
+
 		/// <summary>
 		/// Initializes a new instance of the FontFamily class with the specified handler
 		/// </summary>
@@ -57,6 +111,7 @@ namespace Eto.Drawing
 		public FontFamily(IHandler handler)
 			: base(handler)
 		{
+			Initialize();
 		}
 
 		/// <summary>
@@ -69,6 +124,19 @@ namespace Eto.Drawing
 				familyName = SplitFamilyName(familyName);
 
 			Handler.Create(familyName);
+			Initialize();
+		}
+		
+		private FontFamily(IEnumerable<string> fileNames)
+		{
+			Handler.CreateFromFiles(fileNames);
+			Initialize();
+		}
+
+		private FontFamily(IEnumerable<Stream> streams)
+		{
+			Handler.CreateFromStreams(streams);
+			Initialize();
 		}
 
 		static string SplitFamilyName(string familyName)
@@ -158,6 +226,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Interface for a <see cref="FontFamily"/> handler
 		/// </summary>
+		[AutoInitialize(false)]
 		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
@@ -190,6 +259,18 @@ namespace Eto.Drawing
 			/// </summary>
 			/// <param name="familyName">Name of the font family to create this instance for</param>
 			void Create(string familyName);
+			
+			/// <summary>
+			/// Creates a new instance of a font family with the given file names.
+			/// </summary>
+			/// <param name="fileNames">Paths to the font files to include in this FontFamily</param>
+			void CreateFromFiles(IEnumerable<string> fileNames);
+			
+			/// <summary>
+			/// Creates a new instance of a font family with the given font file streams.
+			/// </summary>
+			/// <param name="streams">Streams to each of the font files to include in this FontFamily</param>
+			void CreateFromStreams(IEnumerable<Stream> streams);
 		}
 	}
 }

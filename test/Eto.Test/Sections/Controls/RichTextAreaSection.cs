@@ -86,14 +86,6 @@ namespace Eto.Test.Sections.Controls
 			};
 
 			var typefaceDropDown = new DropDown();
-			typefaceDropDown.ItemKeyBinding = Binding.Property((FontTypeface f) => f.Name);
-			typefaceDropDown.DataStore = richText.SelectionFamily.Typefaces;
-			var tyepfaceBinding = typefaceDropDown.SelectedValueBinding.Bind(richText, r => r.SelectionTypeface);
-			typefaceDropDown.SelectedValueChanged += (sender, e) =>
-			{
-				richText.Focus();
-				UpdateBindings(BindingUpdateMode.Destination);
-			};
 
 			var familyDropDown = new DropDown();
 			familyDropDown.ItemTextBinding = Binding.Property((FontFamily f) => f.LocalizedName);
@@ -105,6 +97,15 @@ namespace Eto.Test.Sections.Controls
 				//tyepfaceBinding.Mode = DualBindingMode.Manual;
 				typefaceDropDown.DataStore = family?.Typefaces;
 				//tyepfaceBinding.Mode = DualBindingMode.TwoWay;
+				richText.Focus();
+				UpdateBindings(BindingUpdateMode.Destination);
+			};
+
+			typefaceDropDown.ItemKeyBinding = Binding.Property((FontTypeface f) => f.Name);
+			typefaceDropDown.DataStore = richText.SelectionFamily.Typefaces;
+			var tyepfaceBinding = typefaceDropDown.SelectedValueBinding.Bind(richText, r => r.SelectionTypeface);
+			typefaceDropDown.SelectedValueChanged += (sender, e) =>
+			{
 				richText.Focus();
 				UpdateBindings(BindingUpdateMode.Destination);
 			};
