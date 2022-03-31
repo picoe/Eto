@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using sc = System.ComponentModel;
 
 namespace Eto.Drawing
@@ -126,7 +127,41 @@ namespace Eto.Drawing
 	[Handler(typeof(Font.IHandler))]
 	public class Font : Widget
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
+
+		/// <summary>
+		/// Creates a new instance of the Font class with the specified font file on disk.
+		/// </summary>
+		/// <remarks>
+		/// Note that calling this multiple times for the same file may cause additional overhead or unpredictable results, 
+		/// so you should keep a copy of it in memory when you want to use it.
+		/// </remarks>
+		/// <param name="fileName">Path to the font file to load</param>
+		/// <param name="size">Size of the font, in points</param>
+		/// <param name="decoration">Docorations to apply to the font</param>
+		/// <returns>A new instance of the Font object</returns>
+		/// <seealso cref="FontTypeface(string)"/>
+		public static Font FromFile(string fileName, float size, FontDecoration decoration = FontDecoration.None)
+		{
+			return new Font(new FontTypeface(fileName), size, decoration);
+		}
+
+		/// <summary>
+		/// Creates a new instance of the Font class from the specified stream.
+		/// </summary>
+		/// <remarks>
+		/// Note that calling this multiple times for the same stream may cause additional overhead or unpredictable results, 
+		/// so you should keep a copy of it in memory when you want to use it.
+		/// </remarks>
+		/// <param name="stream">Stream to a font file to load</param>
+		/// <param name="size">Size of the font, in points</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
+		/// <returns>A new instance of the Font object</returns>
+		/// <seealso cref="FontTypeface(Stream)"/>
+		public static Font FromStream(Stream stream, float size, FontDecoration decoration = FontDecoration.None)
+		{
+			return new Font(new FontTypeface(stream), size, decoration);
+		}
 
 		/// <summary>
 		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
@@ -193,7 +228,7 @@ namespace Eto.Drawing
 			: base(handler)
 		{
 		}
-
+		
 		/// <summary>
 		/// Gets the name of the family of this font
 		/// </summary>

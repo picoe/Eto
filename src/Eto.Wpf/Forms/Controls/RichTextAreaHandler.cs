@@ -434,6 +434,8 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				var typeface = (value?.Handler as FontTypefaceHandler)?.Control;
+				if (typeface == null)
+					return;
 				ApplyFont(OnTranslateFamily(typeface?.FontFamily ?? Control.FontFamily), OnTranslateTypeface(typeface), typeface?.Weight, typeface?.Stretch, typeface?.Style);
 			}
 		}

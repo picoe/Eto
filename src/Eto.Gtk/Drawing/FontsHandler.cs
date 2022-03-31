@@ -21,6 +21,15 @@ namespace Eto.GtkSharp.Drawing
 				return context;
 			}
 		}
+		
+		public static void ResetFontMap()
+		{
+			IntPtr fontMapPtr = NativeMethods.pango_cairo_font_map_new();
+			NativeMethods.pango_cairo_font_map_set_default(fontMapPtr);
+			ResetContext();
+		}
+
+		public static void ResetContext() => context = null;
 
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{

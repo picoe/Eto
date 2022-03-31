@@ -7,6 +7,7 @@ using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
 using System.Globalization;
+using System.IO;
 
 namespace Eto.Direct2D.Drawing
 {
@@ -30,11 +31,11 @@ namespace Eto.Direct2D.Drawing
 			}
 		}
 
-		FontTypeface[] typefaces;
+		FontTypeface[] _typefaces;
 		public IEnumerable<FontTypeface> Typefaces
 		{
 			get {
-				return typefaces ?? (typefaces = Enumerable.Range(0, Control.FontCount)
+				return _typefaces ?? (_typefaces = Enumerable.Range(0, Control.FontCount)
 					.Select(r => Control.GetFont(r))
 					.Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r)))
 					.ToArray());
@@ -78,6 +79,16 @@ namespace Eto.Direct2D.Drawing
 			}
 
 			Control = FontHandler.GetFontFamily(translatedName);
+		}
+
+		public void CreateFromFiles(IEnumerable<string> fileNames)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void CreateFromStreams(IEnumerable<Stream> streams)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

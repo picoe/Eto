@@ -123,6 +123,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\OpenTypeFontInfo.cs">
+      <Link>Drawing\OpenTypeFontInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   
   <ItemGroup>

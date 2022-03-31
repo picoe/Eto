@@ -60,13 +60,17 @@ namespace Eto.Mac.Drawing
 
 				if (newName != null)
 				{
-					foreach (var descriptor in AvailableMembersOfFontFamily(fontObj.FamilyName))
+					var availableMembersOfFontFamily = AvailableMembersOfFontFamily(fontObj.FamilyName);
+					if (availableMembersOfFontFamily != null)
 					{
-						var fontName = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(1));
-						if (string.Equals(fontName, newName, StringComparison.OrdinalIgnoreCase))
+						foreach (var descriptor in availableMembersOfFontFamily)
 						{
-							var postScriptName = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(0));
-							return NSFont.FromFontName(postScriptName, fontObj.PointSize);
+							var fontName = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(1));
+							if (string.Equals(fontName, newName, StringComparison.OrdinalIgnoreCase))
+							{
+								var postScriptName = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(0));
+								return NSFont.FromFontName(postScriptName, fontObj.PointSize);
+							}
 						}
 					}
 				}

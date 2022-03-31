@@ -211,12 +211,17 @@ namespace Eto.WinForms
 
 		public static sd.FontStyle ToSD(this FontTypeface typeface)
 		{
+			if (typeface == null)
+				return sd.FontStyle.Regular;
 			return FontTypefaceHandler.GetControl(typeface);
 		}
 
 		public static sd.Font ToSDFont(this FontTypeface typeface, float size)
 		{
-			return new sd.Font(typeface.Family.ToSD(), size, typeface.ToSD());
+			var typefaceHandler = typeface?.Handler as FontTypefaceHandler;
+			if (typefaceHandler == null)
+				return null;
+			return new sd.Font(typefaceHandler.SDFontFamily, size, typeface.ToSD());
 		}
 
 		public static sd.Font ToSD(this SystemFont systemFont)
