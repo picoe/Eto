@@ -119,7 +119,7 @@ namespace Eto.Wpf.Forms
 			main = new swc.DockPanel();
 			menuHolder = new swc.ContentControl { IsTabStop = false };
 			toolBarHolder = new swc.ContentControl { IsTabStop = false };
-			content.Background = System.Windows.SystemColors.ControlBrush;
+			content.SetResourceReference(swc.Panel.BackgroundProperty, sw.SystemColors.ControlBrushKey);
 			swc.DockPanel.SetDock(menuHolder, swc.Dock.Top);
 			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
 			main.Children.Add(menuHolder);
