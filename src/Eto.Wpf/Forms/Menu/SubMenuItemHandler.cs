@@ -46,12 +46,14 @@ namespace Eto.Wpf.Forms.Menu
 
 		private void Control_SubmenuClosed(object sender, RoutedEventArgs e)
 		{
-			Callback.OnClosed(Widget, EventArgs.Empty);
+			if (e.OriginalSource == Control)
+				Callback.OnClosed(Widget, EventArgs.Empty);
 		}
 
 		protected override void HandleContextMenuOpening(object sender, RoutedEventArgs e)
 		{
-			Callback.OnOpening(Widget, EventArgs.Empty);
+			if (e.OriginalSource == Control)
+				Callback.OnOpening(Widget, EventArgs.Empty);
 			base.HandleContextMenuOpening(sender, e);
 		}
 
