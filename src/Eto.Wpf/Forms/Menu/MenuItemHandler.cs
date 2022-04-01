@@ -134,6 +134,9 @@ namespace Eto.Wpf.Forms.Menu
 
 		protected virtual void HandleContextMenuOpening(object sender, sw.RoutedEventArgs e)
 		{
+			if (e.OriginalSource != Control)
+				return;
+
 			var submenu = Widget as ISubmenu;
 			if (submenu != null)
 			{
