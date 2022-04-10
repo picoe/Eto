@@ -499,7 +499,8 @@ namespace Eto.Mac.Forms
 							handler.oldLocation = newLocation;
 						}
 						// check for mouse up event
-						tracking = NSApplication.SharedApplication.NextEventEx(NSEventMask.LeftMouseUp, null, NSRunLoop.NSRunLoopEventTracking, false) == null;
+
+						tracking = NSApplication.SharedApplication.NextEvent(NSEventMask.LeftMouseUp, null, NSRunLoopMode.EventTracking, false) == null;
 					});
 				}
 				handler.oldLocation = null;

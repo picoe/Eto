@@ -59,14 +59,10 @@ namespace Eto.Mac.Forms.ToolBar
 				View.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 				PaletteLabel = Application.Instance.Localize(this, "Divider");
 				MenuFormRepresentation = NSMenuItem.SeparatorItem;
-#if MONOMAC || XAMMAC2
 				if (supportsSeparatorColor)
-					_color = NSColor.SeparatorColor.ToEto();
+					_color = NSColor.Separator.ToEto();
 				else
 					_color = new Color(SystemColors.WindowBackground, 0.5f);
-#else
-				_color = new Color(SystemColors.WindowBackground, 0.5f);
-#endif
 			}
 
 			public override bool AllowsDuplicatesInToolbar => true;

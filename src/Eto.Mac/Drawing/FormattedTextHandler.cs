@@ -184,7 +184,11 @@ namespace Eto.iOS.Drawing
 			while (newlineIndex >= 0)
 			{
 				var glyphRange = new NSRange(startIndex, newlineIndex - startIndex);
+#if XAMMAC2 && NET6_0_OR_GREATER
+				var rect = Control.GetBoundingRect(glyphRange, container).Size.ToEto();
+#else
 				var rect = Control.BoundingRectForGlyphRange(glyphRange, container).Size.ToEto();
+#endif
 				maxWidth = Math.Max(maxWidth, rect.Width);
 				startIndex = newlineIndex + 1;
 				newlineIndex = _text.IndexOf(newline, startIndex);

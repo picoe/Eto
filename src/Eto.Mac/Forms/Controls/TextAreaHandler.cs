@@ -102,10 +102,17 @@ namespace Eto.Mac.Forms.Controls
 			set { WeakHandler = new WeakReference(value); }
 		}
 
+#if XAMMAC2 && NET6_0_OR_GREATER
+		public override void ChangeColor(NSColorPanel sender)
+		{
+			// ignore color changes
+		}
+#else
 		public override void ChangeColor(NSObject sender)
 		{
 			// ignore color changes
 		}
+#endif
 
 		public EtoTextView(ITextAreaHandler handler)
 		{

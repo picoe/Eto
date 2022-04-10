@@ -72,7 +72,11 @@ namespace Eto.iOS.Drawing
 		{
 			SetContainerSize(availableSize);
 			storage.SetString(str);
+#if MACOS
+			return layout.GetBoundingRect(new NSRange(0, (int)str.Length), container).Size.ToEto();
+#else
 			return layout.BoundingRectForGlyphRange(new NSRange(0, (int)str.Length), container).Size.ToEto();
+#endif
 		}
 
 		void SetContainerSize(SizeF? availableSize)

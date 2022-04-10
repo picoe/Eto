@@ -5,6 +5,10 @@ using System.Linq;
 using Eto.Mac.Forms.Cells;
 using Eto.Drawing;
 
+#if XAMMAC2 && NET6_0_OR_GREATER
+using NSDraggingInfo = AppKit.INSDraggingInfo;
+#endif
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -574,7 +578,19 @@ namespace Eto.Mac.Forms.Controls
 			{
 			}
 
-#if XAMMAC2
+#if XAMMAC2 && NET6_0_OR_GREATER
+			public override NSImage DragImageForRows(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
+			{
+				var dragInfo = Handler?.DragInfo;
+				var img = dragInfo?.DragImage;
+				if (img != null)
+				{
+					dragImageOffset = dragInfo.GetDragImageOffset();
+					return img;
+				}
+				return base.DragImageForRows(dragRows, tableColumns, dragEvent, ref dragImageOffset);
+			}
+#elif XAMMAC2
 			public override NSImage DragImageForRowsWithIndexestableColumnseventoffset(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
 			{
 				var dragInfo = Handler?.DragInfo;

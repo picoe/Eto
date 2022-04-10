@@ -1,21 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <UseXamarinMac>True</UseXamarinMac>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net48;xamarinmac20</TargetFrameworks>
+    <TargetFrameworks>net6.0-macos</TargetFrameworks>
+    <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
-    <DefineConstants>XAMMAC;XAMMAC2</DefineConstants>
+    <DefineConstants>XAMMAC;XAMMAC2;MACOS</DefineConstants>
     <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     <NoWarn>CA1416</NoWarn>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20' or $(TargetFramework) == 'net6.0-macos'">
+
     <LinkMode Condition="$(Configuration) == 'Release'">SdkOnly</LinkMode>
   </PropertyGroup>
   
@@ -23,7 +21,7 @@
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
     <ProjectReference Include="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
-    <ProjectReference Include="..\..\src\Eto.Mac\Eto.XamMac2.csproj" />
+    <ProjectReference Include="..\..\src\Eto.Mac\Eto.macOS.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.13.2" />
@@ -44,7 +42,5 @@
   <ItemGroup>
     <BundleResource Include="Assets\TestBundleResource.txt" />
   </ItemGroup>
-
-  <Import Project="..\..\build\Xamarin.Mac.targets" Condition="!$(TargetFramework.Contains('-macos'))" />
 
 </Project>

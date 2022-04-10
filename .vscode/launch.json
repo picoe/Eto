@@ -27,11 +27,11 @@
 			"justMyCode": false
         },
 		{
-            "name": "Eto.Test.XamMac2",
+            "name": "Eto.Test.macOS",
             "type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "build-xammac2",
-			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-macos/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
+			"preLaunchTask": "build-macos",
+			"program": "${workspaceFolder}/artifacts/test/${config:var.configuration}/net6.0-macos/osx-x64/Eto.Test.macOS.app/Contents/MacOS/Eto.Test.macOS",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart",

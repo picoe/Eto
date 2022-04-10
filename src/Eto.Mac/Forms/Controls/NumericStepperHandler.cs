@@ -457,7 +457,7 @@ namespace Eto.Mac.Forms.Controls
 				if (h != null && h.NeedsFormat)
 				{
 					double result;
-#if XAMMAC && NET6_0_OR_GREATER
+#if USE_CFSTRING
 					var str = CFString.FromHandle(strPtr);
 #else
 					var str = NSString.FromHandle(strPtr);

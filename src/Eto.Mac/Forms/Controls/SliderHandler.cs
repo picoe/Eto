@@ -54,7 +54,11 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
+#if XAMMAC2 && NET6_0_OR_GREATER
+			public override bool IsVertical => Handler?.Orientation == Orientation.Vertical;
+#else
 			public override nint IsVertical => Handler?.Orientation == Orientation.Vertical ? 1 : 0;
+#endif
 		}
 
 		protected override bool DefaultUseAlignmentFrame => true;

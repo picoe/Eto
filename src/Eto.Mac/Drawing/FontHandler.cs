@@ -271,7 +271,11 @@ namespace Eto.Mac.Drawing
 
 		public float Baseline => LineHeight - Leading - Descent;
 
+#if XAMMAC2 && NET6_0_OR_GREATER
+		public float LineHeight => (float)SharedLayoutManager.GetDefaultLineHeight(Control);
+#else
 		public float LineHeight => (float)SharedLayoutManager.DefaultLineHeightForFont(Control);
+#endif
 
 		public NSDictionary Attributes
 		{

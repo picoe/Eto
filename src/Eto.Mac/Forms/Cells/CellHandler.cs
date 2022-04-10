@@ -31,12 +31,6 @@ using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
-#if XAMMAC2
-using nnuint = System.nint;
-#else
-using nnuint = System.Int32;
-#endif
-
 namespace Eto.Mac.Forms.Cells
 {
 	public interface ICellHandler
@@ -176,7 +170,7 @@ namespace Eto.Mac.Forms.Cells
 			if (handler?.Loaded == true)
 			{
 				var column = handler.Widget.Columns.IndexOf(ColumnHandler.Widget);
-				var rows = NSIndexSet.FromNSRange(new NSRange(0, (nnuint)handler.Table.RowCount));
+				var rows = NSIndexSet.FromNSRange(new NSRange(0, handler.Table.RowCount));
 				handler.Table.ReloadData(rows, new NSIndexSet(column));
 			}
 		}

@@ -54,12 +54,6 @@ namespace Eto.Mac
 
 		static readonly IntPtr selNextEventMatchingMask = Selector.GetHandle("nextEventMatchingMask:untilDate:inMode:dequeue:");
 
-		// untilDate isn't allowed null
-		public static NSEvent NextEventEx(this NSApplication app, NSEventMask mask, NSDate untilDate, NSString mode, bool dequeue)
-		{
-			return Runtime.GetNSObject<NSEvent>(Messaging.IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (nuint)(uint)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
-		}
-
 
 		static readonly IntPtr selDrawGlyphs = Selector.GetHandle("drawGlyphsForGlyphRange:atPoint:");
 
@@ -87,7 +81,7 @@ namespace Eto.Mac
 		// replacementString should allow nulls
 		public static bool ShouldChangeTextNew(this NSTextView textView, NSRange affectedCharRange, string replacementString)
 		{
-#if XAMMAC && NET6_0_OR_GREATER
+#if USE_CFSTRING
 			IntPtr intPtr = replacementString != null ? CFString.CreateNative(replacementString) : IntPtr.Zero;
 			bool result;
 			result = Messaging.bool_objc_msgSend_NSRange_IntPtr(textView.Handle, selShouldChangeTextInRangeReplacementString_Handle, affectedCharRange, intPtr);

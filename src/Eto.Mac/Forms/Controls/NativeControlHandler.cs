@@ -9,7 +9,6 @@ using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
-using nnint = System.nint;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
