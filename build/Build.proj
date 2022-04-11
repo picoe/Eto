@@ -268,10 +268,10 @@
       <Config Include="debug" Value="-c Debug" />
 
       <Build Include="build-net4" Create="-f net48" Build="build" />
-      <Build Include="build-net5" Create="-f net5.0" Build="build" />
-      <Build Include="build-rid-net5" Create="-f net5.0" Build="build -r osx-x64" />
-      <Build Include="publish-net5" Create="-f net5.0" Build="publish" />
-      <Build Include="publish-rid-net5" Create="-f net5.0" Build="publish -r osx-x64" />
+      <Build Include="build-net5" Create="-f net6.0" Build="build" />
+      <Build Include="build-rid-net5" Create="-f net6.0" Build="build -r osx-x64" />
+      <Build Include="publish-net5" Create="-f net6.0" Build="publish" />
+      <Build Include="publish-rid-net5" Create="-f net6.0" Build="publish -r osx-x64" />
 
       <Combined Include="combined" Value="-c" />
       <Combined Include="separate" Value="" Build="**/*.Mac.csproj" />

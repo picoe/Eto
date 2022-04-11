@@ -4,14 +4,16 @@
     <BuildPlatform Condition="$(BuildPlatform) == 'WinForms'">Windows</BuildPlatform>
 
     <UseXamarinMac Condition="$(UseXamarinMac) == '' AND $(BuildPlatform) == 'XamMac2'">True</UseXamarinMac>
+    <UseMacOSWorkload Condition="$(UseMacOSWorkload) == '' AND $(BuildPlatform) == 'MacOS'">True</UseMacOSWorkload>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(BuildPlatform) == '' ">
     <!-- Detect the platform to build for based on current OS and runtime identifier, if not specified -->
     <BuildPlatform Condition="$(UseWinForms) != 'True' and (($([MSBuild]::IsOSPlatform(Windows)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('win')))">Wpf</BuildPlatform>
     <BuildPlatform Condition="$(UseWinForms) == 'True' and (($([MSBuild]::IsOSPlatform(Windows)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('win')))">Windows</BuildPlatform>
-    <BuildPlatform Condition="$(UseXamarinMac) != 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">Mac64</BuildPlatform>
+    <BuildPlatform Condition="$(UseXamarinMac) != 'True' and $(UseMacOSWorkload) != 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">Mac64</BuildPlatform>
     <BuildPlatform Condition="$(UseXamarinMac) == 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">XamMac2</BuildPlatform>
+    <BuildPlatform Condition="$(UseMacOSWorkload) == 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">MacOS</BuildPlatform>
     <BuildPlatform Condition="($([MSBuild]::IsOSPlatform(Linux)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('linux'))">Gtk</BuildPlatform>
   </PropertyGroup>
 
@@ -19,8 +21,8 @@
   <PropertyGroup>
     <!-- Windows requires windows TFM suffix -->
     <_TfmSuffix Condition="$(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows'">-windows</_TfmSuffix>
-    <!-- Xamarin.Mac requires macos TFM suffix -->
-    <_TfmSuffix Condition="$(BuildPlatform) == 'XamMac2'">-macos</_TfmSuffix>
+    <!-- MacOS requires macos TFM suffix -->
+    <_TfmSuffix Condition="$(BuildPlatform) == 'MacOS'">-macos</_TfmSuffix>
 
     <OutputType Condition="$(OutputType) == 'Exe' and ($(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows')">WinExe</OutputType>
   </PropertyGroup>
@@ -66,12 +68,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(RuntimeIdentifiers) == '' and !$(TargetFramework.Contains('-'))">
-    <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Mac64' OR $(BuildPlatform) == 'XamMac2'">osx-x64;osx-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Mac64' OR $(BuildPlatform) == 'MacOS'">osx-x64;osx-arm64</RuntimeIdentifiers>
     <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Wpf' OR $(BuildPlatform) == 'Windows' or $(BuildPlatform) == 'Direct2D'">win-x64</RuntimeIdentifiers>
     <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Gtk'">linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
-  <Import Project="Xamarin.Mac.targets" Condition="$(BuildPlatform) == 'XamMac2' and !$(TargetFramework.Contains('-macos'))" />
+  <Import Project="Xamarin.Mac.targets" Condition="$(BuildPlatform) == 'XamMac2'" />
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 

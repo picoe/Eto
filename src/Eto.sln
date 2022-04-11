@@ -68,6 +68,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "generator", "..\lib\monomac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Forms.Templates", "Eto.Forms.Templates\Eto.Forms.Templates.csproj", "{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.macOS", "Eto.Mac\Eto.macOS.csproj", "{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.macOS", "..\test\Eto.Test.Mac\Eto.Test.macOS.csproj", "{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Linux = Debug|Linux
@@ -330,11 +334,28 @@ Global
 		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Mac.Build.0 = Release|Any CPU
 		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Windows.ActiveCfg = Release|Any CPU
 		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Windows.Build.0 = Release|Any CPU
+		{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}.Debug|Mac.Build.0 = Debug|Any CPU
+		{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}.Release|Linux.ActiveCfg = Release|Any CPU
+		{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}.Release|Mac.ActiveCfg = Release|Any CPU
+		{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}.Release|Mac.Build.0 = Release|Any CPU
+		{0C899B62-5F6D-4B12-AA52-814AF3B69AF9}.Release|Windows.ActiveCfg = Release|Any CPU
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}.Debug|Mac.Build.0 = Debug|Any CPU
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}.Release|Linux.ActiveCfg = Release|Any CPU
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}.Release|Mac.ActiveCfg = Release|Any CPU
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}.Release|Mac.Build.0 = Release|Any CPU
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4}.Release|Windows.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{A5237C58-9EF0-4A34-A1F6-9D4C394A7EE4} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{DD0C2B40-CA55-11E3-9C1A-0800200C9A66} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{063AF7E7-18BD-488F-85BF-53B6E3D75685} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}

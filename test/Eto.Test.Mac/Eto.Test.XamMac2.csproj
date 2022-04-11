@@ -10,12 +10,13 @@
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
+    <MonoBundlingExtraArgs Condition="$(TargetFramework) == 'net48'">$(MonoBundlingExtraArgs) --registrar:dynamic</MonoBundlingExtraArgs>
     <DefineConstants>XAMMAC;XAMMAC2</DefineConstants>
     <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     <NoWarn>CA1416</NoWarn>
   </PropertyGroup>
   
-  <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20' or $(TargetFramework) == 'net6.0-macos'">
+  <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">
     <LinkMode Condition="$(Configuration) == 'Release'">SdkOnly</LinkMode>
   </PropertyGroup>
   
@@ -45,6 +46,6 @@
     <BundleResource Include="Assets\TestBundleResource.txt" />
   </ItemGroup>
 
-  <Import Project="..\..\build\Xamarin.Mac.targets" Condition="!$(TargetFramework.Contains('-macos'))" />
+  <Import Project="..\..\build\Xamarin.Mac.targets" />
 
 </Project>
