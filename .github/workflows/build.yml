@@ -91,7 +91,7 @@ jobs:
       uses: maxim-lobanov/setup-xamarin@v1
       with:
         mono-version: latest
-        xamarin-mac-version: latest
+        xamarin-mac-version: 8.6
         xcode-version: latest
     
     - name: Import code signing certificate

@@ -125,10 +125,10 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override SizeF GetPreferredSize(SizeF availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var borderSize = _borderSize ?? (_borderSize = CalculateBorderSize()) ?? SizeF.Empty;
-			return base.GetPreferredSize(availableSize - borderSize) + borderSize;
+			return base.GetNaturalSize(availableSize - borderSize) + borderSize;
 		}
 
 		SizeF CalculateBorderSize()
