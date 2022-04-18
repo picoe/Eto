@@ -109,6 +109,12 @@ namespace Eto.Wpf.Forms.Controls
 			};
 			Wrap = true;
 		}
+		
+		protected override void Initialize()
+		{
+			base.Initialize();
+			UserPreferredSize = DefaultSize; // otherwise it grows to the constraint, which we don't want.
+		}
 
 		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
 		{
