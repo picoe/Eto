@@ -169,13 +169,15 @@ namespace Eto.Wpf.Forms
 		/// For example, when the user types into a text box, it will grow to fit the content if it is auto sized.
 		/// This doesn't happen on any other platform, so we need to disable this behaviour on WPF.
 		/// </summary>
-		protected virtual bool PreventUserResize { get { return false; } }
+		protected virtual bool PreventUserResize => false;
 
 		public abstract Color BackgroundColor { get; set; }
 
-		public virtual bool UseMousePreview { get { return false; } }
+		public virtual bool UseMousePreview => false;
 
-		public virtual bool UseKeyPreview { get { return false; } }
+		public virtual bool UseKeyPreview => false;
+
+		public virtual bool UseDragDropPreview => UseMousePreview;
 
 		public sw.Size ParentMinimumSize
 		{
@@ -190,7 +192,7 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public virtual sw.FrameworkElement ContainerControl { get { return Control; } }
+		public virtual sw.FrameworkElement ContainerControl => Control;
 
 		public virtual Size Size
 		{
@@ -479,18 +481,30 @@ namespace Eto.Wpf.Forms
 					HandleEvent(Eto.Forms.Control.GotFocusEvent);
 					break;
 				case Eto.Forms.Control.DragDropEvent:
-					Control.Drop += Control_DragDrop;
+					if (UseDragDropPreview)
+						Control.PreviewDrop += Control_DragDrop;
+					else
+						Control.Drop += Control_DragDrop;
 					break;
 				case Eto.Forms.Control.DragOverEvent:
-					Control.DragOver += Control_DragOver;
+					if (UseDragDropPreview)
+						Control.PreviewDragOver += Control_DragOver;
+					else
+						Control.DragOver += Control_DragOver;
 					HandleEvent(Eto.Forms.Control.DragLeaveEvent);
 					break;
 				case Eto.Forms.Control.DragEnterEvent:
-					Control.DragEnter += Control_DragEnter;
+					if (UseDragDropPreview)
+						Control.PreviewDragEnter += Control_DragEnter;
+					else
+						Control.DragEnter += Control_DragEnter;
 					HandleEvent(Eto.Forms.Control.DragOverEvent);
 					break;
 				case Eto.Forms.Control.DragLeaveEvent:
-					Control.DragLeave += Control_DragLeave;
+					if (UseDragDropPreview)
+						Control.PreviewDragLeave += Control_DragLeave;
+					else
+						Control.DragLeave += Control_DragLeave;
 					HandleEvent(Eto.Forms.Control.DragEnterEvent); // need DragEnter so it doesn't get called when going over children
 					break;
 				case Eto.Forms.Control.EnabledChangedEvent:
