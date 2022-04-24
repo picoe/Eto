@@ -14,8 +14,7 @@
     <OutputType>Library</OutputType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
-    <!-- Suppress warning NU1701: Package 'Windows7APICodePack-Core 1.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v3.0'. This package may not be fully compatible with your project. -->
-    <NoWarn>NU1701;MSB4011;$(NoWarn)</NoWarn>
+    <NoWarn>MSB4011;$(NoWarn)</NoWarn>
     <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
   </PropertyGroup>
   
@@ -117,7 +116,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
   	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1020.30" PrivateAssets="all" />
   </ItemGroup>
 
