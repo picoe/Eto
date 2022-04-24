@@ -101,6 +101,26 @@ namespace Eto.GtkSharp.Forms.Controls
 			SetSelectedRows(selected);
 			SkipSelectedChange = false;
 		}
+		
+		protected (double? hscroll, double? vscroll) SaveScrollState()
+		{
+			var hscrollbar = Control.HScrollbar as Gtk.Scrollbar;
+			var vscrollbar = Control.VScrollbar as Gtk.Scrollbar;
+			var hscroll = hscrollbar?.Value;
+			var vscroll = vscrollbar?.Value;
+			return (hscroll, vscroll);
+		}
+		
+		protected void RestoreScrollState((double? hscroll, double? vscroll) state)
+		
+		{
+			var hscrollbar = Control.HScrollbar as Gtk.Scrollbar;
+			var vscrollbar = Control.VScrollbar as Gtk.Scrollbar;
+			if (state.hscroll != null)
+				hscrollbar.Value = state.hscroll.Value;
+			if (state.vscroll != null)
+				vscrollbar.Value = state.vscroll.Value;
+		}
 
 		protected override void Initialize()
 		{

@@ -168,7 +168,17 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void ReloadData(IEnumerable<int> rows)
 		{
-			UpdateModel();
+			if (rows != null)
+			{
+				foreach (var row in rows)
+				{
+					var iter = GetIterAtRow(row);
+					var path = GetPathAtRow(row);
+					Tree.Model.EmitRowChanged(path, iter);
+				}
+			}
+			else
+				UpdateModel();
 		}
 
 		public object GetCellAt(PointF location, out int column, out int row)
