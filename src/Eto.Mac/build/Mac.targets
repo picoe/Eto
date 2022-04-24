@@ -4,6 +4,7 @@
     <!-- Compute where the .app bundle should be created, if not specified -->
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(OutputPath) != ''">$(OutputPath)</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(TargetDir) != ''">$(TargetDir)</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) != ''">$([MSBuild]::EnsureTrailingSlash('$(BaseOutputAppPath)'))</BaseOutputAppPath>
   </PropertyGroup>
   
   <PropertyGroup Condition="$(BaseOutputAppPath) == ''">
@@ -14,6 +15,7 @@
     <BaseOutputAppPath>$(BaseOutputAppPath)$(Configuration)\</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(AppendTargetFrameworkToOutputPath) != 'False' AND $(TargetFramework) != ''">$(BaseOutputAppPath)$(TargetFramework)\</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(AppendRuntimeIdentifierToOutputPath) == 'True' AND $(RuntimeIdentifer) != ''">$(BaseOutputAppPath)$(RuntimeIdentifer)\</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) != ''">$([MSBuild]::EnsureTrailingSlash('$(BaseOutputAppPath)'))</BaseOutputAppPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -38,7 +40,7 @@
     
     <!-- Specifies the full output .app path.  When building for more than one runtime identifier, this is ignored. -->
     <OutputAppPath Condition="$(OutputAppPath) == '' AND $(BaseOutputAppPath) != ''">$(BaseOutputAppPath)$(MacBundleName).app\</OutputAppPath>
-    <OutputAppPath Condition="$(OutputAppPath.EndsWith('/')) == 'False' AND $(OutputAppPath.EndsWith('\')) == 'False'">$(OutputAppPath)\</OutputAppPath>
+    <OutputAppPath>$([MSBuild]::EnsureTrailingSlash('$(OutputAppPath)'))</OutputAppPath>
     
   </PropertyGroup>
 
