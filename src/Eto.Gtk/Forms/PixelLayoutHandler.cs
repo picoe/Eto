@@ -46,6 +46,18 @@ namespace Eto.GtkSharp.Forms
 			ctl.CurrentLocation = new Point(x, y);
 			InvalidateMeasure();
 		}
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+#if GTKCORE
+			if (Widget.Loaded)
+			{
+				// same as Control.ResizeChildren(), but non-obsolete.
+				Control.GetAllocatedSize(out var allocation, out var baseline);
+				Control.SizeAllocateWithBaseline(allocation, baseline);
+			}
+#endif
+		}
 
 		public void Move(Control child, int x, int y)
 		{
