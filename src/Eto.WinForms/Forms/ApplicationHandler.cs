@@ -84,7 +84,7 @@ namespace Eto.WinForms.Forms
 				{
 					if (!string.IsNullOrEmpty(badgeLabel))
 					{
-						var bmp = new sd.Bitmap(16, 16, sd.Imaging.PixelFormat.Format32bppArgb);
+						var bmp = new sd.Bitmap(14, 14, sd.Imaging.PixelFormat.Format32bppArgb);
 						using (var graphics = sd.Graphics.FromImage(bmp))
 						{
 							DrawBadgeLabel(bmp, graphics);
@@ -98,15 +98,15 @@ namespace Eto.WinForms.Forms
 				}
 			}
 		}
-
+		
 		protected virtual void DrawBadgeLabel(sd.Bitmap bmp, sd.Graphics graphics)
 		{
 			var font = new sd.Font(sd.FontFamily.GenericSansSerif, 9, sd.FontStyle.Bold, sd.GraphicsUnit.Pixel);
 
 			var size = graphics.MeasureString(badgeLabel, font, bmp.Size, sd.StringFormat.GenericTypographic);
 			graphics.SmoothingMode = sd.Drawing2D.SmoothingMode.AntiAlias;
-			graphics.FillEllipse(sd.Brushes.Red, new sd.Rectangle(0, 0, 16, 16));
-			graphics.DrawEllipse(new sd.Pen(sd.Brushes.White, 2), new sd.Rectangle(0, 0, 15, 15));
+			graphics.FillEllipse(sd.Brushes.Red, new sd.Rectangle(0, 0, bmp.Width - 1, bmp.Height - 1));
+			// graphics.DrawEllipse(new sd.Pen(sd.Brushes.White, 2), new sd.Rectangle(0, 0, 15, 15));
 			var pt = new sd.PointF((bmp.Width - size.Width - 0.5F) / 2, (bmp.Height - size.Height - 1) / 2);
 			graphics.DrawString(badgeLabel, font, sd.Brushes.White, pt, sd.StringFormat.GenericTypographic);
 		}
