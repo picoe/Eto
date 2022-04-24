@@ -497,24 +497,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			return collection == null ? -1 : collection.IndexOf(item);
 		}
 		
-		(double? hscroll, double? vscroll) SaveScrollState()
-		{
-			var hscrollbar = Control.HScrollbar as Gtk.HScrollbar;
-			var vscrollbar = Control.VScrollbar as Gtk.VScrollbar;
-			var hscroll = hscrollbar?.Value;
-			var vscroll = vscrollbar?.Value;
-			return (hscroll, vscroll);
-		}
-		
-		void RestoreScrollState((double? hscroll, double? vscroll) state)
-		{
-			var hscrollbar = Control.HScrollbar as Gtk.HScrollbar;
-			var vscrollbar = Control.VScrollbar as Gtk.VScrollbar;
-			if (state.hscroll != null)
-				hscrollbar.Value = state.hscroll.Value;
-			if (state.vscroll != null)
-				vscrollbar.Value = state.vscroll.Value;
-		}
 
 		public void ReloadData()
 		{
