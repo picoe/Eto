@@ -54,12 +54,12 @@ namespace Eto.GtkSharp.Forms.ToolBar
 
 			public void HandleToggled(object sender, EventArgs e)
 			{
-				Handler.Widget.OnCheckedChanged(EventArgs.Empty);
+				Handler?.Widget.OnCheckedChanged(EventArgs.Empty);
 			}
 			
 			public void HandleClicked(object sender, EventArgs e)
 			{
-				Handler.Widget.OnClick(EventArgs.Empty);
+				Handler?.Widget.OnClick(EventArgs.Empty);
 			}
 		}
 	}

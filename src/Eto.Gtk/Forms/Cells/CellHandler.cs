@@ -146,7 +146,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
 			{
-				Handler.Source.BeginCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+				Handler?.Source.BeginCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
 

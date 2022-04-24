@@ -76,6 +76,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleBufferChanged(object sender, EventArgs e)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.suppressSelectionAndTextChanged == 0)
 					handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
@@ -83,6 +85,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleSelectionChanged(object o, Gtk.MarkSetArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var selection = handler.Selection;
 				if (handler.suppressSelectionAndTextChanged == 0 && selection != lastSelection)
 				{
@@ -94,6 +98,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleCaretIndexChanged(object o, Gtk.MarkSetArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var caretIndex = handler.CaretIndex;
 				if (handler.suppressSelectionAndTextChanged == 0 && caretIndex != lastCaretIndex)
 				{
@@ -104,8 +110,11 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleApplyTag(object sender, EventArgs e)
 			{
-				var buffer = Handler.Control.Buffer;
-				var tag = Handler.tag;
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var buffer = handler.Control.Buffer;
+				var tag = handler.tag;
 				buffer.ApplyTag(tag, buffer.StartIter, buffer.EndIter);
 			}
 		}

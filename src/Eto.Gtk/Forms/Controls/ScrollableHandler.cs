@@ -127,9 +127,12 @@ namespace Eto.GtkSharp.Forms.Controls
 #if GTK2
 			public void HandleControlSizeRequested(object o, Gtk.SizeRequestedArgs args)
 			{
-				if (Handler.autoSize)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (handler.autoSize)
 				{
-					args.Requisition = Handler.vp.SizeRequest();
+					args.Requisition = handler.vp.SizeRequest();
 				}
 			}
 
@@ -150,12 +153,12 @@ namespace Eto.GtkSharp.Forms.Controls
 #endif
 			public void HandleScrollbarVisibilityChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleScrollableScrollEvent(object sender, EventArgs e)
 			{
-				Handler.Callback.OnScroll(Handler.Widget, new ScrollEventArgs(Handler.ScrollPosition));
+				Handler?.Callback.OnScroll(Handler.Widget, new ScrollEventArgs(Handler.ScrollPosition));
 			}
 		}
 

@@ -163,7 +163,10 @@ namespace Eto.GtkSharp.Forms.Controls
 #if GTK2
 			public override void HandleExposeEvent(object o, Gtk.ExposeEventArgs args)
 			{
-				if (args.Event.Window == Handler.Control.GdkWindow.Children[0]) // skip painting over up/down
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (args.Event.Window == handler.Control.GdkWindow.Children[0]) // skip painting over up/down
 					return;
 				base.HandleExposeEvent(o, args);
 			}

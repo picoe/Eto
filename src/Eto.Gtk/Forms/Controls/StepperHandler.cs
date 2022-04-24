@@ -157,7 +157,10 @@ namespace Eto.GtkSharp.Forms.Controls
 			[GLib.ConnectBefore]
 			public void HandleInput(object o, Gtk.InputArgs args)
 			{
-				args.NewValue = Handler.Control.Value;
+				var handler = Handler;
+				if (handler == null)
+					return;
+				args.NewValue = handler.Control.Value;
 				args.RetVal = 1;
 			}
 		}

@@ -53,7 +53,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleValueChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 	}

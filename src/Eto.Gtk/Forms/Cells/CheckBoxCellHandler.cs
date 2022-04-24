@@ -75,12 +75,12 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public void HandleToggled(object o, Gtk.ToggledArgs args)
 			{
-				Handler.SetValue(args.Path, !Handler.Control.Active);
+				Handler?.SetValue(args.Path, !Handler.Control.Active);
 			}
 
 			public void HandleEndCellEditing(object o, Gtk.ToggledArgs args)
 			{
-				Handler.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+				Handler?.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
 

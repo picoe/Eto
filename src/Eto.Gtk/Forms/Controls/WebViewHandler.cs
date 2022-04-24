@@ -94,6 +94,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandlePopulatePopup(object o, WebKit.PopulatePopupArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.BrowserContextMenuEnabled)
 					return;
 				// don't allow context menu by default
@@ -106,6 +108,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleLoadFinished(object o, WebKit.LoadFinishedArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var uri = args.Frame.Uri != null ? new Uri(args.Frame.Uri) : null;
 				var e = new WebViewLoadedEventArgs(uri);
 				if (args.Frame == handler.Control.MainFrame)
@@ -116,6 +120,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleNavigationRequested(object o, WebKit.NavigationRequestedArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (args.Request.Uri.StartsWith(EtoReturnPrefix, StringComparison.Ordinal))
 				{
 					// pass back the response to ExecuteScript()
@@ -135,6 +141,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleNavigationPolicyDecisitionRequested(object o, WebKit.NavigationPolicyDecisionRequestedArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (args.Request.Uri.StartsWith(EtoReturnPrefix, StringComparison.Ordinal))
 				{
 					// pass back the response to ExecuteScript()
@@ -157,6 +165,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleNewWindowPolicyDecisionRequested(object sender, NewWindowPolicyDecisionRequestedArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var e = new WebViewNewWindowEventArgs(new Uri(args.Request.Uri), args.Frame.Name);
 				handler.Callback.OnOpenNewWindow(handler.Widget, e);
 				#if GTK2
@@ -179,7 +189,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleTitleChanged(object o, WebKit.TitleChangedArgs args)
 			{
-				Handler.Callback.OnDocumentTitleChanged(Handler.Widget, new WebViewTitleEventArgs(args.Title));
+				Handler?.Callback.OnDocumentTitleChanged(Handler.Widget, new WebViewTitleEventArgs(args.Title));
 			}
 		}
 

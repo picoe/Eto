@@ -65,10 +65,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			public new RadioButtonHandler Handler { get { return (RadioButtonHandler)base.Handler; } }
 
-			public void HandleCheckedChanged(object sender, EventArgs e)
-			{
-				Handler.Callback.OnCheckedChanged(Handler.Widget, EventArgs.Empty);
-			}
+			public void HandleCheckedChanged(object sender, EventArgs e) => Handler?.Callback.OnCheckedChanged(Handler.Widget, EventArgs.Empty);
 
 			internal void Control_Realized(object sender, EventArgs e) => Handler?.Control_Realized(sender, e);
 		}
