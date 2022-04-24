@@ -40,7 +40,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

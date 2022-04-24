@@ -234,7 +234,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			public new DialogHandler Handler => (DialogHandler)base.Handler;
 
-			internal void Control_KeyPressEvent(object o, Gtk.KeyPressEventArgs args) => Handler.Control_KeyPressEvent(o, args);
+			internal void Control_KeyPressEvent(object o, Gtk.KeyPressEventArgs args) => Handler?.Control_KeyPressEvent(o, args);
 		}
 	}
 }

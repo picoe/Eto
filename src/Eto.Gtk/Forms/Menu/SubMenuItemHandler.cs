@@ -49,13 +49,13 @@ namespace Eto.GtkSharp.Forms.Menu
 
 			public void HandleMenuClosed(object sender, EventArgs e)
 			{
-				var h = Handler;
-				if (h == null)
+				var handler = Handler;
+				if (handler == null)
 					return;
 				// before menuitem click is processed
-				h.Callback.OnClosing(h.Widget, EventArgs.Empty);
+				handler.Callback.OnClosing(handler.Widget, EventArgs.Empty);
 				// call OnClosed after menuitem click is processed
-				Application.Instance.AsyncInvoke(() => h.Callback.OnClosed(h.Widget, EventArgs.Empty));
+				Application.Instance.AsyncInvoke(() => handler.Callback.OnClosed(handler.Widget, EventArgs.Empty));
 			}
 		}
 	}

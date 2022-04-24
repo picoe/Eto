@@ -192,73 +192,83 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleTestExpandRow(object o, Gtk.TestExpandRowArgs args)
 			{
-				var h = Handler;
-				if (h.suppressExpandCollapseEvents > 0)
+				var handler = Handler;
+				if (handler == null)
 					return;
-				var e = new TreeGridViewItemCancelEventArgs(h.GetItem(args.Path) as ITreeGridItem);
-				h.Callback.OnExpanding(h.Widget, e);
+				if (handler.suppressExpandCollapseEvents > 0)
+					return;
+				var e = new TreeGridViewItemCancelEventArgs(handler.GetItem(args.Path) as ITreeGridItem);
+				handler.Callback.OnExpanding(handler.Widget, e);
 				args.RetVal = e.Cancel;
 			}
 
 			public void HandleRowExpanded(object o, Gtk.RowExpandedArgs args)
 			{
-				var h = Handler;
-				if (h.suppressExpandCollapseEvents > 0)
+				var handler = Handler;
+				if (handler == null)
 					return;
-				var e = new TreeGridViewItemEventArgs(h.GetItem(args.Path) as ITreeGridItem);
+				if (handler.suppressExpandCollapseEvents > 0)
+					return;
+				var e = new TreeGridViewItemEventArgs(handler.GetItem(args.Path) as ITreeGridItem);
 				e.Item.Expanded = true;
-				h.suppressExpandCollapseEvents++;
-				h.collection.ExpandItems(e.Item as ITreeGridStore<ITreeGridItem>, args.Path);
-				h.suppressExpandCollapseEvents--;
-				h.Callback.OnExpanded(h.Widget, e);
+				handler.suppressExpandCollapseEvents++;
+				handler.collection.ExpandItems(e.Item as ITreeGridStore<ITreeGridItem>, args.Path);
+				handler.suppressExpandCollapseEvents--;
+				handler.Callback.OnExpanded(handler.Widget, e);
 			}
 
 			public void HandleTestCollapseRow(object o, Gtk.TestCollapseRowArgs args)
 			{
-				var h = Handler;
-				if (h.suppressExpandCollapseEvents > 0)
+				var handler = Handler;
+				if (handler == null)
 					return;
-				var e = new TreeGridViewItemCancelEventArgs(h.GetItem(args.Path) as ITreeGridItem);
-				h.Callback.OnCollapsing(h.Widget, e);
+				if (handler.suppressExpandCollapseEvents > 0)
+					return;
+				var e = new TreeGridViewItemCancelEventArgs(handler.GetItem(args.Path) as ITreeGridItem);
+				handler.Callback.OnCollapsing(handler.Widget, e);
 				args.RetVal = e.Cancel;
 				if (!e.Cancel)
 				{
-					h.selectCollapsingItem = !h.AllowMultipleSelection && h.ChildIsSelected(e.Item);
-					h.SkipSelectedChange = true;
+					handler.selectCollapsingItem = !handler.AllowMultipleSelection && handler.ChildIsSelected(e.Item);
+					handler.SkipSelectedChange = true;
 				}
 			}
 
 			public void HandleRowCollapsed(object o, Gtk.RowCollapsedArgs args)
 			{
-				var h = Handler;
-				if (h.suppressExpandCollapseEvents > 0)
+				var handler = Handler;
+				if (handler == null)
 					return;
-				var e = new TreeGridViewItemEventArgs(h.GetItem(args.Path) as ITreeGridItem);
+				if (handler.suppressExpandCollapseEvents > 0)
+					return;
+				var e = new TreeGridViewItemEventArgs(handler.GetItem(args.Path) as ITreeGridItem);
 				e.Item.Expanded = false;
-				h.Callback.OnCollapsed(h.Widget, e);
-				h.SkipSelectedChange = false;
-				if (h.selectCollapsingItem == true)
+				handler.Callback.OnCollapsed(handler.Widget, e);
+				handler.SkipSelectedChange = false;
+				if (handler.selectCollapsingItem == true)
 				{
-					h.Tree.Selection.UnselectAll();
-					h.Tree.Selection.SelectPath(args.Path);
-					h.selectCollapsingItem = null;
+					handler.Tree.Selection.UnselectAll();
+					handler.Tree.Selection.SelectPath(args.Path);
+					handler.selectCollapsingItem = null;
 				}
 			}
 
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
-				var h = Handler;
-				var item = h.SelectedItem;
-				if (!h.SkipSelectedChange && !object.ReferenceEquals(item, h.lastSelected))
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var item = handler.SelectedItem;
+				if (!handler.SkipSelectedChange && !object.ReferenceEquals(item, handler.lastSelected))
 				{
-					h.Callback.OnSelectedItemChanged(h.Widget, EventArgs.Empty);
-					h.lastSelected = item;
+					handler.Callback.OnSelectedItemChanged(handler.Widget, EventArgs.Empty);
+					handler.lastSelected = item;
 				}
 			}
 
 			public void HandleRowActivated(object o, Gtk.RowActivatedArgs args)
 			{
-				Handler.Callback.OnActivated(Handler.Widget, new TreeGridViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
+				Handler?.Callback.OnActivated(Handler.Widget, new TreeGridViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
 			}
 
 			protected override DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null)

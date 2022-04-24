@@ -167,6 +167,9 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 
 				var handler = Handler;
+				if (handler == null)
+					return;
+					
 				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
 				{
 					var menu = ((ContextMenuHandler)handler.contextMenu.Handler).Control;
@@ -199,12 +202,15 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleGridSelectionChanged(object sender, EventArgs e)
 			{
-				if (!Handler.SkipSelectedChange)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (!handler.SkipSelectedChange)
 				{
-					var selected = Handler.SelectedRows.ToArray();
+					var selected = handler.SelectedRows.ToArray();
 					if (!ArraysEqual(selectedRows, selected))
 					{
-						Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+						handler.Callback.OnSelectionChanged(handler.Widget, EventArgs.Empty);
 						selectedRows = selected;
 					}
 				}

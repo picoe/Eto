@@ -67,12 +67,16 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public virtual void HandleChanged(object sender, EventArgs e)
 			{
-				if (Handler.SuppressIndexChanged > 0)
+				var handler = Handler;
+				if (handler == null)
 					return;
-				var newIndex = Handler.SelectedIndex;
+					
+				if (handler.SuppressIndexChanged > 0)
+					return;
+				var newIndex = handler.SelectedIndex;
 				if (newIndex != lastIndex)
 				{
-					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+					handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 					lastIndex = newIndex;
 				}
 			}
@@ -80,21 +84,25 @@ namespace Eto.GtkSharp.Forms.Controls
 #if GTK2
 			internal void HandlePopupShownChanged(object o, GLib.NotifyArgs args)
 			{
-				if (Handler.Control.PopupShown)
-					Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				if (handler.Control.PopupShown)
+					handler.Callback.OnDropDownOpening(handler.Widget, EventArgs.Empty);
 				else
-					Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+					handler.Callback.OnDropDownClosed(handler.Widget, EventArgs.Empty);
 			}
 #elif GTK3
 			[GLib.ConnectBefore]
 			public virtual void HandlePoppedUp(object sender, EventArgs e)
 			{
-				Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
 			}
 
 			public virtual void HandlePoppedDown(object o, Gtk.PoppedDownArgs args)
 			{
-				Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
 			}
 #endif
 		}

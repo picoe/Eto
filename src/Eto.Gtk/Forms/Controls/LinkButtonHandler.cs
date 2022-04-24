@@ -79,7 +79,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleClicked(object sender, EventArgs e)
 			{
-				Handler.Callback.OnClick(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnClick(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

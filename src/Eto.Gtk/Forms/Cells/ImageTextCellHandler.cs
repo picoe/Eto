@@ -89,12 +89,12 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public void HandleEdited(object o, Gtk.EditedArgs args)
 			{
-				Handler.SetValue(args.Path, args.NewText);
+				Handler?.SetValue(args.Path, args.NewText);
 			}
 
 			public void HandleEndCellEditing(object o, Gtk.EditedArgs args)
 			{
-				Handler.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+				Handler?.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
 
