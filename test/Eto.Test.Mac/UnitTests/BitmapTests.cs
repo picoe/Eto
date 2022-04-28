@@ -41,7 +41,10 @@ namespace Eto.Test.Mac.UnitTests
 
 					g.DrawRectangle(Colors.Black, 0.5f, 0.5f, 199, 199);
 					g.FillRectangle(Colors.Black, 59, 59, 80, 80);
-					
+
+					var path = new GraphicsPath();
+					g.DrawPolygon(Colors.Black, new PointF(100, 20), new PointF(180, 180), new PointF(20, 180));
+
 				}
 				
 				var drawable = new Drawable { Size = bmp.Size };
