@@ -29,6 +29,8 @@ namespace Eto.WinForms.Forms
 		void SetScale(bool xscale, bool yscale);
 
 		bool ShouldCaptureMouse { get; }
+		
+		bool MouseCaptured { get; set; }
 
 		bool XScale { get; }
 
@@ -103,6 +105,7 @@ namespace Eto.WinForms.Forms
 		public static readonly object FontKey = new object();
 		public static readonly object Enabled_Key = new object();
 		public static readonly object UseShellDropManager_Key = new object();
+		public static readonly object MouseCaptured_Key = new object();
 
 		internal static Control DragSourceControl { get; set; }
 	}
@@ -271,12 +274,14 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public virtual bool ShouldCaptureMouse => false;
-
-		public virtual swf.Control ContainerControl
+		public virtual bool ShouldCaptureMouse => true;
+		public bool MouseCaptured
 		{
-			get { return Control; }
+			get => Widget.Properties.Get<bool>(WindowsControl.MouseCaptured_Key);
+			set => Widget.Properties.Set<bool>(WindowsControl.MouseCaptured_Key, value);
 		}
+
+		public virtual swf.Control ContainerControl => Control;
 
 		protected override void Initialize()
 		{
@@ -519,8 +524,11 @@ namespace Eto.WinForms.Forms
 
 		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
 		{
-			if (ShouldCaptureMouse)
+			if (MouseCaptured)
+			{
+				MouseCaptured = false;
 				Control.Capture = false;
+			}
 			Callback.OnMouseUp(Widget, e.ToEto(Control));
 		}
 
@@ -531,9 +539,13 @@ namespace Eto.WinForms.Forms
 
 		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
-			Callback.OnMouseDown(Widget, e.ToEto(Control));
-			if (ShouldCaptureMouse)
+			var ev = e.ToEto(Control);
+			Callback.OnMouseDown(Widget, ev);
+			if (ev.Handled && ShouldCaptureMouse)
+			{
 				Control.Capture = true;
+				MouseCaptured = true;
+			}
 		}
 
 		public virtual string Text
