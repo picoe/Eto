@@ -56,20 +56,23 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		sw.Size FindMaxSize(sw.Size constraint)
+		public double? FindMaxWidth()
 		{
-			var size = base.MeasureOverride(constraint);
 			var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
 			if (popup == null)
-				return size;
+				return null;
 
 			popup.Child.Measure(WpfConversions.PositiveInfinitySize); // force generating containers
 
 			if (ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
-				return size;
+				return null;
 
+			var count = Items.Count;
+			if (count == 0)
+				return null;
+				
 			double maxWidth = 0;
-			for (int i = 0; i < Items.Count; i++)
+			for (int i = 0; i < count; i++)
 			{
 				var item = Items[i];
 				var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
@@ -81,16 +84,12 @@ namespace Eto.Wpf.Forms.Controls
 
 			var toggle = GetTemplateChild("toggleButton") as sw.UIElement;
 			maxWidth += toggle?.DesiredSize.Width ?? 20;
-			size.Width = Math.Max(maxWidth, size.Width);
-			if (!double.IsNaN(constraint.Width))
-				size.Width = Math.Min(size.Width, constraint.Width);
-
-			return size;
+			return maxWidth;
 		}
 
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
-			return Handler?.MeasureOverride(constraint, FindMaxSize) ?? FindMaxSize(constraint);
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
 	}
 
@@ -178,7 +177,8 @@ namespace Eto.Wpf.Forms.Controls
 		private void Store_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (AllowVirtualization)
-				SetVirtualization();	
+				SetVirtualization();
+			maxWidthCache = null;
 		}
 
 		private void SetVirtualization()
@@ -244,6 +244,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		void CreateTemplate()
 		{
+			maxWidthCache = null;
 			var textBlock = new WpfImageTextBindingBlock(() => Widget.ItemTextBinding, () => Widget.ItemImageBinding, false);
 			if (IsEventHandled(DropDown.FormatItemEvent))
 			{
@@ -298,10 +299,33 @@ namespace Eto.Wpf.Forms.Controls
 					break;
 			}
 		}
-		public void AttachEvent(object widget, object id)
+
+		double? maxWidthCache;
+
+		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
 		{
-			
-			//if (id == )
+			// don't calculate max width if we have a specified width.
+			if (!double.IsNaN(UserPreferredSize.Width))
+				return base.MeasureOverride(constraint, measure);
+				
+			sw.Size MeasureMaxWidth(sw.Size constraint2)
+			{
+				var desired = measure(constraint2);
+				
+				if (maxWidthCache == null)
+					maxWidthCache = Control.FindMaxWidth();
+
+				if (maxWidthCache != null)
+					desired.Width = Math.Max(desired.Width, maxWidthCache.Value);
+					
+				if (!double.IsNaN(constraint2.Width))
+					desired.Width = Math.Min(constraint2.Width, desired.Width);
+					
+				return desired;
+			}
+
+			return base.MeasureOverride(constraint, MeasureMaxWidth);
 		}
+
 	}
 }
