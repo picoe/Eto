@@ -15,21 +15,8 @@
 			}
 		},
 		{
-			"label": "build-addins",
-			"command": "msbuild /t:BuildAddins ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
-			"windows": {
-				"command": "${workspaceFolder}/build/msbuild.cmd /t:BuildAddins ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj"
-			},
-			"type": "shell",
-			"problemMatcher": "$msCompile",
-			"group": "build",
-			"presentation": {
-				"clear": true
-			}
-		},
-		{
 			"label": "build-templates",
-			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/src/Addins/Eto.Forms.Templates/Eto.Forms.Templates.csproj",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/src/Eto.Forms.Templates/Eto.Forms.Templates.csproj",
 			"type": "shell",
 			"problemMatcher": "$msCompile",
 			"group": "build",

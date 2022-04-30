@@ -22,7 +22,7 @@
     <CopyOutputSymbolsToOutputDirectory>False</CopyOutputSymbolsToOutputDirectory>
 		<SuppressDependenciesWhenPacking>True</SuppressDependenciesWhenPacking>
     
-    <NoWarn>8021</NoWarn>
+    <NoWarn>8021;2008</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

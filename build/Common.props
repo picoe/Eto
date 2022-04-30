@@ -20,7 +20,6 @@
     <SourceDir Condition="$(SourceDir) == ''">$(BasePath)src\</SourceDir>
     <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
     <PackageOutputPath>$(ArtifactsDir)nuget\$(Configuration)\</PackageOutputPath>
-    <AddinDir>$(SourceDir)\Addins\</AddinDir>
     <BuildDir>$(MSBuildThisFileDirectory)</BuildDir>
     
   </PropertyGroup>
