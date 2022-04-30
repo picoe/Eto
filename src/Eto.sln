@@ -66,6 +66,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "core", "..\lib\monomac\src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "generator", "..\lib\monomac\src\generator.csproj", "{5A16F4FA-C960-46A2-875E-C6CE556F0C36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Forms.Templates", "Eto.Forms.Templates\Eto.Forms.Templates.csproj", "{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Linux = Debug|Linux
@@ -316,6 +318,18 @@ Global
 		{5A16F4FA-C960-46A2-875E-C6CE556F0C36}.Release|Mac.Build.0 = Release|Any CPU
 		{5A16F4FA-C960-46A2-875E-C6CE556F0C36}.Release|Windows.ActiveCfg = Release|Any CPU
 		{5A16F4FA-C960-46A2-875E-C6CE556F0C36}.Release|Windows.Build.0 = Release|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Debug|Linux.Build.0 = Debug|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Debug|Mac.Build.0 = Debug|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Debug|Windows.Build.0 = Debug|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Linux.ActiveCfg = Release|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Linux.Build.0 = Release|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Mac.ActiveCfg = Release|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Mac.Build.0 = Release|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Windows.ActiveCfg = Release|Any CPU
+		{AC238CEB-D54C-4DC5-A141-C3B8CC0E384D}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
