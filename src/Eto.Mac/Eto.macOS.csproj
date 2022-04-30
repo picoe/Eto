@@ -21,9 +21,9 @@ Include this along with your Eto.Forms application to provide an macOS interface
 
 When used in a desktop project, this package will automatically create a macOS application bundle to run on a Mac.
       
-You must build MacOS projects on macOS using dotnet command line or Visual Studio for Mac.
+You must build MacOS projects on a Mac using dotnet command line or Visual Studio for Mac.
 
-You do not need to use any of the classes of this assembly (unless customizing the Xamarin.Mac functionality of the platform), and should just use the UI controls from the Eto assembly.
+You do not need to use any of the classes of this assembly (unless customizing the macOS functionality of the platform), and should just use the UI controls from the Eto assembly.
     </PackageDescription>
   </PropertyGroup>
   
