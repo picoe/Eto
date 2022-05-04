@@ -75,7 +75,9 @@ namespace Eto.Mac.Drawing
 			var ctx = graphics.Control;
 			ctx.SaveState();
 
-			if (graphics.GraphicsContext.IsFlipped)
+			var image = GetImage();
+
+			if (!image.Flipped)
 			{
 				// draw flipped
 				ctx.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, graphics.ViewHeight));
@@ -96,7 +98,7 @@ namespace Eto.Mac.Drawing
 			}
 
 			var destRect = destination.ToNS();
-			var cgImage = GetImage().AsCGImage(ref destRect, graphics.GraphicsContext, null);
+			var cgImage = image.AsCGImage(ref destRect, graphics.GraphicsContext, null);
 
 			// clip to the image as a mask, using only alpha channel
 			ctx.ClipToMask(destMask.ToNS(), cgImage);
