@@ -3,6 +3,6 @@
   <Import Project="..\build\Common.Build.props" />
   <PropertyGroup>
     <Deterministic>false</Deterministic>
-    <BaseOutputPath>$(BasePath)artifacts\samples\</BaseOutputPath>
+    <BaseOutputPath>$(BasePath)artifacts\samples\$(MSBuildProjectName)\</BaseOutputPath>
   </PropertyGroup>
 </Project>

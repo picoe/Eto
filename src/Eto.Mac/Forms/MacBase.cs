@@ -3,23 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using Eto.Drawing;
 using Eto.Forms;
-#if IOS
-using NSView = UIKit.UIView;
-using ObjCRuntime;
-using Foundation;
-#elif XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 
 namespace Eto.Mac.Forms
 {

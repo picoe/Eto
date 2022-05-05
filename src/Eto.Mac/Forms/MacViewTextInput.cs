@@ -5,28 +5,6 @@ using System.Threading.Tasks;
 using Eto.Forms;
 using System.Diagnostics;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-using MobileCoreServices;
-#else
-using MonoMac;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-using MonoMac.MobileCoreServices;
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 namespace Eto.Mac.Forms
 {
 	class MacViewTextInput

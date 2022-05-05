@@ -74,7 +74,8 @@
 
     <Exec Command="sleep 2" />
 
-    <Exec Command="bless '$(_DmgVolume)/' --openfolder '$(_DmgVolume)'" />
+    <Exec Command="bless --folder '$(_DmgVolume)/'" />
+    <!-- <Exec Command="bless '$(_DmgVolume)/' -openfolder '$(_DmgVolume)'" /> -->
 
     <PropertyGroup>
       <DmgBackgroundImage Condition="$(DmgBackgroundImage) != '' AND !Exists($(DmgBackgroundImage)) AND Exists('$(MSBuildProjectDirectory)\$(DmgBackgroundImage)')">$(MSBuildProjectDirectory)\$(DmgBackgroundImage)</DmgBackgroundImage>

@@ -9,14 +9,14 @@ on:
     types: [ published ]
 
 env:
-  DotNetVersion: "6.0.100"
+  DotNetVersion: "6.0.202"
   BuildConfiguration: "Release"
   BuildParameters: "build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
 
 jobs:
   build-windows:
 
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v2
@@ -45,14 +45,14 @@ jobs:
       with:
         name: test
         path: |
-          artifacts/test/${{ env.BuildConfiguration }}/**/*
-          !artifacts/test/${{ env.BuildConfiguration }}/**/*Mac64.*
+          artifacts/test/*/${{ env.BuildConfiguration }}/**/*
+          !artifacts/test/Eto.Test.Mac64/**/*
 
     - name: Upload sample artifacts
       uses: actions/upload-artifact@v2
       with:
         name: samples
-        path: artifacts/samples/${{ env.BuildConfiguration }}/**/*
+        path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
 
     - name: Upload log files
       if: ${{ failure() }}
@@ -111,6 +111,7 @@ jobs:
         name: nuget
         path: |
           artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.XamMac2*.nupkg
+          artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.macOS*.nupkg
           artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.Gtk2*.nupkg
 
     - name: Upload test artifacts
@@ -118,9 +119,9 @@ jobs:
       with:
         name: test
         path: |
-          artifacts/test/${{ env.BuildConfiguration }}/**/*XamMac2.*
-          artifacts/test/${{ env.BuildConfiguration }}/**/*Mac64.*
-          artifacts/test/${{ env.BuildConfiguration }}/**/*Gtk2.*
+          artifacts/test/Eto.Test.Mac64/${{ env.BuildConfiguration }}/**/Eto.Test.Mac64.dmg
+          artifacts/test/Eto.Test.XamMac2/${{ env.BuildConfiguration }}/**/Eto.Test.XamMac2.app
+          artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/*/Eto.Test.macOS.app
 
     - name: Upload log files
       if: ${{ failure() }}

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <UseXamarinMac>True</UseXamarinMac>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net48</TargetFrameworks>
+    <TargetFrameworks>xamarinmac20</TargetFrameworks>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
@@ -11,6 +11,7 @@
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:5220</MonoBundlingExtraArgs>
     <SupportedOSPlatformVersion>10.14</SupportedOSPlatformVersion>
     <EnableDefaultImageAssets>False</EnableDefaultImageAssets>
+    <LinkMode Condition="$(Configuration) == 'Release'">SdkOnly</LinkMode>
   </PropertyGroup>
 
   <ItemGroup>

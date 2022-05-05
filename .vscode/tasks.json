@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"label": "build",
-			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${input:configuration} ${workspaceFolder}/build/Build.proj",
 			"type": "shell",
 			"problemMatcher": "$msCompile",
 			"group": {
@@ -81,6 +81,16 @@
 		{
 			"label": "build-mac64",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} \"${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj\"",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "build-macos",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.macOS.csproj",
 			"type": "shell",
 			"group": "build",
 			"problemMatcher": "$msCompile",
@@ -175,6 +185,15 @@
 			"options": [
 				"No",
 				"Yes"
+			]
+		},
+		{
+			"type": "pickString",
+			"id": "configuration",
+			"description": "Build Configuration",
+			"options": [
+				"Debug",
+				"Release"
 			]
 		},
 		{

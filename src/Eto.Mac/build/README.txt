@@ -1,9 +1,10 @@
 
-This package will create a macOS application that runs on OS X using Eto.Forms.
+This package will create a macOS application that runs on Mac using Eto.Forms.
 
-If you are using Xamarin Studio on OS X, you can use a Xamarin.Mac project to embed
-the mono runtime with your app.  This template creates an app that will require the user
-to install the mono runtime.
+If you are using Visual Studio for Mac, you can use a Xamarin.Mac or net6.0-macos
+project to embed the runtime with your app.
+
+This template creates an app that will require the user to install the mono runtime.
 
 The nuget package automatically adds a targets file to your project, which will
 package up your application into $(TargetName).app in the output directory.
@@ -27,5 +28,7 @@ Add Mac/Info.plist and set these properties:
 
 Notes:
 
-  - The MacOS/MyProject must have the executable bit set.  Simply zipping the .app folder
-    and unzipping on OS X will set things up properly.
+  - If you compile on Windows/Linux then download to a Mac, you must execute these commands to run the app:
+
+      xattr -c MyApp.app
+      chmod +x MyApp.app/Contents/MacOS/MyApp

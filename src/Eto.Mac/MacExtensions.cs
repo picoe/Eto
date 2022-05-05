@@ -1,35 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-using CoreFoundation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac
 {
@@ -53,12 +23,6 @@ namespace Eto.Mac
 		}
 
 		static readonly IntPtr selNextEventMatchingMask = Selector.GetHandle("nextEventMatchingMask:untilDate:inMode:dequeue:");
-
-		// untilDate isn't allowed null
-		public static NSEvent NextEventEx(this NSApplication app, NSEventMask mask, NSDate untilDate, NSString mode, bool dequeue)
-		{
-			return Runtime.GetNSObject<NSEvent>(Messaging.IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (nuint)(uint)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
-		}
 
 
 		static readonly IntPtr selDrawGlyphs = Selector.GetHandle("drawGlyphsForGlyphRange:atPoint:");
@@ -87,7 +51,7 @@ namespace Eto.Mac
 		// replacementString should allow nulls
 		public static bool ShouldChangeTextNew(this NSTextView textView, NSRange affectedCharRange, string replacementString)
 		{
-#if XAMMAC && NET6_0_OR_GREATER
+#if USE_CFSTRING
 			IntPtr intPtr = replacementString != null ? CFString.CreateNative(replacementString) : IntPtr.Zero;
 			bool result;
 			result = Messaging.bool_objc_msgSend_NSRange_IntPtr(textView.Handle, selShouldChangeTextInRangeReplacementString_Handle, affectedCharRange, intPtr);
@@ -128,7 +92,7 @@ namespace Eto.Mac
 		}
 
 
-#if !XAMMAC
+#if MONOMAC
 		public static void DangerousRetain(this NSObject obj)
 		{
 			obj.Retain();

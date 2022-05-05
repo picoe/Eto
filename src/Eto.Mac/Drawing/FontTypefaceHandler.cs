@@ -6,22 +6,6 @@ using System.Collections.Generic;
 using Eto.Forms;
 using System.IO;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreText;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreText;
-#endif
-
 namespace Eto.Mac.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<FontTypeface>, FontTypeface.IHandler

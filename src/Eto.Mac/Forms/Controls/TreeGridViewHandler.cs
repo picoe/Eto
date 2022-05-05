@@ -5,50 +5,8 @@ using System.Linq;
 using Eto.Mac.Forms.Cells;
 using Eto.Drawing;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-using nnint2 = System.Int32;
-#if XAMMAC2
-using nnuint = System.UInt32;
-#else
-using nnuint = System.Int32;
-#endif
-#elif Mac64
-using nnint = System.UInt64;
-using nnint2 = System.Int64;
-using nnuint = System.UInt64;
-#else
-using nnint = System.UInt32;
-using nnint2 = System.Int32;
-using nnuint = System.UInt32;
+#if MACOS_NET
+using NSDraggingInfo = AppKit.INSDraggingInfo;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -574,7 +532,19 @@ namespace Eto.Mac.Forms.Controls
 			{
 			}
 
-#if XAMMAC2
+#if MACOS_NET
+			public override NSImage DragImageForRows(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
+			{
+				var dragInfo = Handler?.DragInfo;
+				var img = dragInfo?.DragImage;
+				if (img != null)
+				{
+					dragImageOffset = dragInfo.GetDragImageOffset();
+					return img;
+				}
+				return base.DragImageForRows(dragRows, tableColumns, dragEvent, ref dragImageOffset);
+			}
+#elif XAMMAC2
 			public override NSImage DragImageForRowsWithIndexestableColumnseventoffset(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
 			{
 				var dragInfo = Handler?.DragInfo;
@@ -862,7 +832,7 @@ namespace Eto.Mac.Forms.Controls
 						var cachedRow = Control.RowForItem(myitem);
 						if (cachedRow >= 0)
 						{
-							Control.SelectRow((nnint)cachedRow, false);
+							Control.SelectRow((nint)cachedRow, false);
 							ScrollToRow((int)cachedRow);
 							return;
 						}
@@ -873,7 +843,7 @@ namespace Eto.Mac.Forms.Controls
 					Control.EndUpdates();
 					if (row != null)
 					{
-						Control.SelectRow((nnint)row.Value, false);
+						Control.SelectRow((nint)row.Value, false);
 						ScrollToRow((int)row.Value);
 					}
 				}
@@ -944,7 +914,7 @@ namespace Eto.Mac.Forms.Controls
 					continue;
 				var row = Control.RowForItem(cachedItem);
 				if (row >= 0)
-					Control.SelectRow((nnint)row, true);
+					Control.SelectRow((nint)row, true);
 				else
 					isSelectionChanged = true;
 			}
@@ -983,7 +953,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			foreach (var row in Control.SelectedRows)
 			{
-				var item = Control.ItemAtRow((nnint2)row) as EtoTreeItem;
+				var item = Control.ItemAtRow((nint)row) as EtoTreeItem;
 				if (item != null)
 					yield return item.Item;
 			}
@@ -1014,7 +984,7 @@ namespace Eto.Mac.Forms.Controls
 					{
 						row = Control.RowForItem(GetCachedItem(sel as ITreeGridItem));
 						if (row >= 0)
-							Control.SelectRow((nnint)row, true);
+							Control.SelectRow((nint)row, true);
 						else
 							isSelectionChanged = true;
 					}
@@ -1080,7 +1050,7 @@ namespace Eto.Mac.Forms.Controls
 
 		static IEnumerable<object> GetItems(NSArray items)
 		{
-			for (nnuint i = 0; i < items.Count; i++)
+			for (nuint i = 0; i < items.Count; i++)
 			{
 				var item = items.GetItem<EtoTreeItem>(i);
 				if (item != null)

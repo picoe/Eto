@@ -10,6 +10,7 @@
     <OutputType>WinExe</OutputType>
     
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+    <DefineConstants>MONOMAC</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
@@ -26,9 +27,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.13.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   
   <ItemGroup>

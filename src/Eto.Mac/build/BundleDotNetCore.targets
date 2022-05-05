@@ -1,6 +1,7 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacTouchApp">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" InitialTargets="MacTouchApp">
 
-  <Import Project="RunConfiguration.DotNetRun.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True'" />
+  <Import Project="RunConfiguration.Default.targets" Condition="$(MacSetDefaultRunConfiguration) == 'True'" />
+  <Import Project="RunConfiguration.Mac.targets" Condition="$(MacSetDefaultRunConfiguration) != 'True'" />
   
   <PropertyGroup>
     <!-- properties you can override in your project file -->
@@ -48,6 +49,9 @@
       <OutputAppPath Required="True" />
     </ParameterGroup>
     <Task>
+      <!-- <Reference Include="System"/>  These are needed in VS for Mac, but break command line.  Why?
+      <Reference Include="System.Core"/>
+      <Reference Include="System.Linq"/> -->
       <Using Namespace="System" />
       <Using Namespace="System.IO" />
       <Using Namespace="System.Diagnostics" />
@@ -62,6 +66,7 @@
         CreateNoWindow = true,
         RedirectStandardOutput = true,
         RedirectStandardError = true,
+        UseShellExecute = false,
         FileName = command,
         Arguments = args
       }

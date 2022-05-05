@@ -3,6 +3,6 @@
   <Import Project="..\build\Common.Build.props" />
   <PropertyGroup>
     <IsPackable>False</IsPackable>
-    <BaseOutputPath>$(BasePath)artifacts\test\</BaseOutputPath>
+    <BaseOutputPath>$(BasePath)artifacts\test\$(MSBuildProjectName)\</BaseOutputPath>
   </PropertyGroup>
 </Project>

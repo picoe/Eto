@@ -1,37 +1,6 @@
 ﻿using Eto.Drawing;
 using System;
 using System.Runtime.InteropServices;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-using CoreText;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-using MonoMac.CoreText;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 #if OSX
 namespace Eto.Mac.Drawing
@@ -184,7 +153,11 @@ namespace Eto.iOS.Drawing
 			while (newlineIndex >= 0)
 			{
 				var glyphRange = new NSRange(startIndex, newlineIndex - startIndex);
+#if MACOS_NET
+				var rect = Control.GetBoundingRect(glyphRange, container).Size.ToEto();
+#else
 				var rect = Control.BoundingRectForGlyphRange(glyphRange, container).Size.ToEto();
+#endif
 				maxWidth = Math.Max(maxWidth, rect.Width);
 				startIndex = newlineIndex + 1;
 				newlineIndex = _text.IndexOf(newline, startIndex);

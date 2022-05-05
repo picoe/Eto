@@ -7,38 +7,10 @@ using Eto.Mac.Forms.Printing;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-using MobileCoreServices;
-#else
-using MonoMac;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-using MonoMac.MobileCoreServices;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
+#if MACOS_NET
+using NSDraggingInfo = AppKit.INSDraggingInfo;
 #endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Forms
 {
@@ -350,7 +322,7 @@ namespace Eto.Mac.Forms
 		static bool TriggerPerformDragOperation(IntPtr sender, IntPtr sel, IntPtr draggingInfoPtr)
 		{
 			var handler = MacBase.GetHandler(Runtime.GetNSObject(sender)) as IMacViewHandler;
-			var e = handler?.GetDragEventArgs(Runtime.GetNSObject<NSDraggingInfo>(draggingInfoPtr), null);
+			var e = handler?.GetDragEventArgs(Runtime.GetINativeObject<NSDraggingInfo>(draggingInfoPtr, false), null);
 			if (e != null)
 			{
 				handler.Callback.OnDragLeave(handler.Widget, e);
@@ -366,7 +338,7 @@ namespace Eto.Mac.Forms
 			var obj = Runtime.GetNSObject(sender);
 			var effect = (NSDragOperation)Messaging.IntPtr_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, draggingInfoPtr);
 			var handler = MacBase.GetHandler(Runtime.GetNSObject(sender)) as IMacViewHandler;
-			var e = handler?.GetDragEventArgs(Runtime.GetNSObject<NSDraggingInfo>(draggingInfoPtr), null);
+			var e = handler?.GetDragEventArgs(Runtime.GetINativeObject<NSDraggingInfo>(draggingInfoPtr, false), null);
 			if (e != null)
 			{
 
@@ -384,7 +356,7 @@ namespace Eto.Mac.Forms
 			var obj = Runtime.GetNSObject(sender);
 			var effect = (NSDragOperation)Messaging.IntPtr_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, draggingInfoPtr);
 			var handler = MacBase.GetHandler(Runtime.GetNSObject(sender)) as IMacViewHandler;
-			var draggingInfo = Runtime.GetNSObject<NSDraggingInfo>(draggingInfoPtr);
+			var draggingInfo = Runtime.GetINativeObject<NSDraggingInfo>(draggingInfoPtr, false);
 			var e = handler?.GetDragEventArgs(draggingInfo, null);
 			if (e != null)
 			{
@@ -401,7 +373,7 @@ namespace Eto.Mac.Forms
 		{
 			var obj = Runtime.GetNSObject(sender);
 			var handler = MacBase.GetHandler(Runtime.GetNSObject(sender)) as IMacViewHandler;
-			var e = handler?.GetDragEventArgs(Runtime.GetNSObject<NSDraggingInfo>(draggingInfoPtr), null);
+			var e = handler?.GetDragEventArgs(Runtime.GetINativeObject<NSDraggingInfo>(draggingInfoPtr, false), null);
 			if (e != null)
 			{
 				handler.Callback.OnDragLeave(handler.Widget, e);
@@ -1300,11 +1272,11 @@ namespace Eto.Mac.Forms
 					s_etoDragImageType = UTType.CreatePreferredIdentifier(UTType.TagClassNSPboardType, "eto.dragimage", UTType.Image);
 
 				pasteboardItem.SetStringForType(string.Empty, s_etoDragImageType);
-#if XAMMAC2
-				var draggingItem = new NSDraggingItem(pasteboardItem);
-#else
+#if MONOMAC
 				var draggingItem = new NSDraggingItem(NSObjectFlag.Empty);
 				Messaging.bool_objc_msgSend_IntPtr(draggingItem.Handle, MacView.selInitWithPasteboardWriter_Handle, pasteboardItem.Handle);
+#else
+				var draggingItem = new NSDraggingItem(pasteboardItem);
 #endif
 
 				var mouseLocation = PointFromScreen(Mouse.Position);

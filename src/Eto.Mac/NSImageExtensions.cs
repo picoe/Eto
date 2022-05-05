@@ -1,34 +1,6 @@
 using System;
 using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac
 {
@@ -45,12 +17,12 @@ namespace Eto.Mac
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-			image.DrawInRect(new CGRect(CGPoint.Empty, newimage.Size), CGRect.Empty, NSCompositingOperation.SourceOver, 1f);
+			image.Draw(new CGRect(CGPoint.Empty, newimage.Size), CGRect.Empty, NSCompositingOperation.SourceOver, 1f);
 			NSGraphicsContext.GlobalRestoreGraphicsState();
 			return newimage;
 		}
 
-#if XAMMAC
+#if XAMMAC || MACOS_NET
 		static IntPtr selDrawInRect_FromRect_Operation_Fraction_RespectFlipped_Hints_Handle = Selector.GetHandle("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 #endif
 
@@ -63,7 +35,7 @@ namespace Eto.Mac
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-#if XAMMAC
+#if XAMMAC || MACOS_NET
 			// Xamarin.Mac doesn't allow null for hints, remove this when it does.
 			Messaging.bool_objc_msgSend_CGRect_CGRect_UIntPtr_nfloat_bool_IntPtr(image.Handle, selDrawInRect_FromRect_Operation_Fraction_RespectFlipped_Hints_Handle, new CGRect(CGPoint.Empty, newrep.Size), CGRect.Empty, (UIntPtr)(ulong)NSCompositingOperation.SourceOver, 1f, true, IntPtr.Zero);
 #else
@@ -80,10 +52,9 @@ namespace Eto.Mac
 				Color = CIColor.FromCGColor(tint.ToCG())
 			};
 
-#pragma warning disable CS0618 // Image => InputImage in Xamarin.Mac 6.6
 			var colorFilter = new CIColorControls
 			{
-				Image = (CIImage)colorGenerator.ValueForKey(CIFilterOutputKey.Image),
+				InputImage = (CIImage)colorGenerator.ValueForKey(CIFilterOutputKey.Image),
 				Saturation = 3f,
 				Brightness = 0.35f,
 				Contrast = 1f
@@ -91,17 +62,16 @@ namespace Eto.Mac
 
 			var monochromeFilter = new CIColorMonochrome
 			{
-				Image = CIImage.FromCGImage(image.CGImage),
+				InputImage = CIImage.FromCGImage(image.CGImage),
 				Color = CIColor.FromRgb(0.75f, 0.75f, 0.75f),
 				Intensity = 1f
 			};
 
 			var compositingFilter = new CIMultiplyCompositing
 			{
-				Image = (CIImage)colorFilter.ValueForKey(CIFilterOutputKey.Image),
+				InputImage = (CIImage)colorFilter.ValueForKey(CIFilterOutputKey.Image),
 				BackgroundImage = (CIImage)monochromeFilter.ValueForKey(CIFilterOutputKey.Image)
 			};
-#pragma warning restore CS0618
 
 			var outputImage = (CIImage)compositingFilter.ValueForKey(CIFilterOutputKey.Image);
 			var extent = outputImage.Extent;

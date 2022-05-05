@@ -6,33 +6,10 @@ using System.Collections;
 using System.Linq;
 using Eto.Mac.Forms.Cells;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
+#if MACOS_NET
+using NSDraggingInfo = AppKit.INSDraggingInfo;
 #endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -144,6 +121,18 @@ namespace Eto.Mac.Forms.Controls
 					return img;
 				}
 				return base.DragImageForRowsWithIndexestableColumnseventoffset(dragRows, tableColumns, dragEvent, ref dragImageOffset);
+			}
+#elif MACOS_NET
+			public override NSImage DragImageForRows(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
+			{
+				var dragInfo = Handler?.DragInfo;
+				var img = dragInfo?.DragImage;
+				if (img != null)
+				{
+					dragImageOffset = dragInfo.GetDragImageOffset();
+					return img;
+				}
+				return base.DragImageForRows(dragRows, tableColumns, dragEvent, ref dragImageOffset);
 			}
 #else
 

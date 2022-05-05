@@ -1,33 +1,5 @@
 ﻿using System;
 using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac
 {
@@ -84,17 +56,15 @@ namespace Eto.Mac
 			var cgImage = _image.CGImage;
 			var ciImage = CIImage.FromCGImage(cgImage);
 
-#pragma warning disable CS0618 // Image => InputImage in Xamarin.Mac 6.6
 			var filter2 = new CIColorControls();
 			filter2.SetDefaults();
-			filter2.Image = ciImage;
+			filter2.InputImage = ciImage;
 			filter2.Saturation = 0.0f;
 			ciImage = (CIImage)filter2.ValueForKey(CIOutputImage);
 			
 			var filter3 = new CIColorMatrix();
 			filter3.SetDefaults();
-			filter3.Image = ciImage;
-#pragma warning restore CS0618
+			filter3.InputImage = ciImage;
 
 			var cgColor = Color.ToCG();
 			var components = cgColor.Components;
