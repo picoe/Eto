@@ -17,35 +17,7 @@ using Eto.Mac.Forms.ToolBar;
 using Eto.Shared.Forms;
 using Eto.Forms.ThemedControls;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac
 {
@@ -59,7 +31,9 @@ namespace Eto.Mac
 
 		public override bool IsMac { get { return true; } }
 
-#if XAMMAC2
+#if MACOS_NET
+		public override string ID { get { return "macOS"; } }
+#elif XAMMAC2
 		public override string ID { get { return "XamMac2"; } }
 #elif XAMMAC1
 		public override string ID { get { return "XamMac"; } }

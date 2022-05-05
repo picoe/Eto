@@ -7,43 +7,6 @@ using Eto.Mac.Drawing;
 using System.Collections;
 using System.Linq;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class EtoScrollView : NSScrollView, IMacControl
@@ -302,7 +265,7 @@ namespace Eto.Mac.Forms.Controls
 					Control.DeselectAll(Control);
 				else
 				{
-					Control.SelectRow((nnint)value, false);
+					Control.SelectRow((nint)value, false);
 					Control.ScrollRowToVisible(value);
 				}
 			}

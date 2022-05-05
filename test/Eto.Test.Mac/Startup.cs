@@ -6,10 +6,10 @@ using Eto.Drawing;
 using Eto.Mac.Forms.ToolBar;
 using Eto.Forms;
 
-#if XAMMAC2
-using AppKit;
-#else
+#if MONOMAC
 using MonoMac.AppKit;
+#else
+using AppKit;
 #endif
 
 namespace Eto.Test.Mac

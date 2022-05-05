@@ -7,42 +7,6 @@ using Eto.Drawing;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Cells;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public interface IGridHandler : IMacViewHandler
@@ -506,7 +470,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void SelectRow(int row)
 		{
-			Control.SelectRow((nnint)row, AllowMultipleSelection);
+			Control.SelectRow(row, AllowMultipleSelection);
 		}
 
 		public void UnselectRow(int row)
@@ -523,7 +487,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (!Control.IsRowSelected(row))
 			{
-				Control.SelectRow((nnint)row, false);
+				Control.SelectRow((nint)row, false);
 			}
 			Control.EditColumn((nint)column, (nint)row, new NSEvent(), true);
 		}
@@ -671,7 +635,7 @@ namespace Eto.Mac.Forms.Controls
 			// reload this entire row
 			if (e.Row >= 0)
 			{
-				Control.ReloadData(NSIndexSet.FromIndex((nnint)e.Row), NSIndexSet.FromNSRange(new NSRange(0, Control.ColumnCount)));
+				Control.ReloadData(NSIndexSet.FromIndex((nint)e.Row), NSIndexSet.FromNSRange(new NSRange(0, Control.ColumnCount)));
 			}
 
 			if (e.GridColumn.AutoSize)

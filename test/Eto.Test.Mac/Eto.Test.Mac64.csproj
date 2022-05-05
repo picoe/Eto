@@ -10,6 +10,7 @@
     <OutputType>WinExe</OutputType>
     
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+    <DefineConstants>MONOMAC</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">

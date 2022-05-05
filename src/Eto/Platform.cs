@@ -393,14 +393,11 @@ namespace Eto
 			
 				if (EtoEnvironment.Platform.IsMac)
 				{
-					if (EtoEnvironment.Is64BitProcess)
-						detected = Get(Platforms.Mac64, true, errors);
+					detected = Get(Platforms.Mac64, true, errors);
+					if (detected == null)
+						detected = Get(Platforms.macOS, true, errors);
 					if (detected == null)
 						detected = Get(Platforms.XamMac2, true, errors);
-					if (detected == null)
-						detected = Get(Platforms.XamMac, true, errors);
-					if (detected == null)
-						detected = Get(Platforms.Mac, true, errors);
 				}
 				else if (EtoEnvironment.Platform.IsWindows)
 				{

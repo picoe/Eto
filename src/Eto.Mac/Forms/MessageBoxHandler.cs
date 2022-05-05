@@ -1,25 +1,6 @@
 using System;
 using Eto.Forms;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#endif
-
 namespace Eto.Mac.Forms
 {
 	public class MessageBoxHandler : MessageBox.IHandler

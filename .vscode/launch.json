@@ -31,7 +31,7 @@
             "type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-macos",
-			"program": "${workspaceFolder}/artifacts/test/Eto.Test.macOS/${config:var.configuration}/net6.0-macos/osx-x64/Eto.Test.macOS.app/Contents/MacOS/Eto.Test.macOS",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.macOS/${config:var.configuration}/net6.0-macos/Eto.Test.macOS.app/Contents/MacOS/Eto.Test.macOS",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart",

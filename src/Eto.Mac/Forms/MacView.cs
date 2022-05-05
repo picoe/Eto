@@ -7,42 +7,10 @@ using Eto.Mac.Forms.Printing;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-#if XAMMAC2 && NET6_0_OR_GREATER
+#if MACOS_NET
 using NSDraggingInfo = AppKit.INSDraggingInfo;
 #endif
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-using MobileCoreServices;
-#else
-using MonoMac;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-using MonoMac.MobileCoreServices;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac.Forms
 {
@@ -1304,11 +1272,11 @@ namespace Eto.Mac.Forms
 					s_etoDragImageType = UTType.CreatePreferredIdentifier(UTType.TagClassNSPboardType, "eto.dragimage", UTType.Image);
 
 				pasteboardItem.SetStringForType(string.Empty, s_etoDragImageType);
-#if XAMMAC2
-				var draggingItem = new NSDraggingItem(pasteboardItem);
-#else
+#if MONOMAC
 				var draggingItem = new NSDraggingItem(NSObjectFlag.Empty);
 				Messaging.bool_objc_msgSend_IntPtr(draggingItem.Handle, MacView.selInitWithPasteboardWriter_Handle, pasteboardItem.Handle);
+#else
+				var draggingItem = new NSDraggingItem(pasteboardItem);
 #endif
 
 				var mouseLocation = PointFromScreen(Mouse.Position);

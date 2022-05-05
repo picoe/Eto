@@ -1,34 +1,6 @@
 using System;
 using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac
 {
@@ -50,7 +22,7 @@ namespace Eto.Mac
 			return newimage;
 		}
 
-#if XAMMAC
+#if XAMMAC || MACOS_NET
 		static IntPtr selDrawInRect_FromRect_Operation_Fraction_RespectFlipped_Hints_Handle = Selector.GetHandle("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 #endif
 
@@ -63,7 +35,7 @@ namespace Eto.Mac
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-#if XAMMAC
+#if XAMMAC || MACOS_NET
 			// Xamarin.Mac doesn't allow null for hints, remove this when it does.
 			Messaging.bool_objc_msgSend_CGRect_CGRect_UIntPtr_nfloat_bool_IntPtr(image.Handle, selDrawInRect_FromRect_Operation_Fraction_RespectFlipped_Hints_Handle, new CGRect(CGPoint.Empty, newrep.Size), CGRect.Empty, (UIntPtr)(ulong)NSCompositingOperation.SourceOver, 1f, true, IntPtr.Zero);
 #else

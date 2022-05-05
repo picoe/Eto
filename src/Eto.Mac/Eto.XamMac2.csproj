@@ -3,12 +3,26 @@
   <PropertyGroup>
     <UseXamarinMac Condition="$(UseXamarinMac) == ''">True</UseXamarinMac>
     <TargetFrameworks>net462;xamarinmac20</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0')) AND $([MSBuild]::VersionLessThan($(NETCoreSdkVersion), '6.0.200'))">net6.0-macos10.15;$(TargetFrameworks)</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED;USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>build\*</DefaultItemExcludes>
     <NoWarn>CA1416</NoWarn>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Using Include="AppKit" />
+    <Using Include="Foundation" />
+    <Using Include="CoreGraphics" />
+    <Using Include="ObjCRuntime" />
+    <Using Include="CoreAnimation" />
+    <Using Include="CoreImage" />
+    <Using Include="MobileCoreServices" />
+    <Using Include="CoreFoundation" />
+    <Using Include="ImageIO" />
+    <Using Include="CoreText" />
+  </ItemGroup>
   
   <PropertyGroup>
     <PackageId>Eto.Platform.XamMac2</PackageId>
@@ -58,5 +72,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
   
   <Import Project="..\..\build\Xamarin.Mac.targets" Condition="!$(TargetFramework.Contains('-macos'))" />
+  
+  <Target Name="Blar" BeforeTargets="BeforeBuild">
+    <!-- <Error Text=".NET Core SDK Version: $(NETCoreSdkVersion)" /> -->
+  </Target>
 
 </Project>

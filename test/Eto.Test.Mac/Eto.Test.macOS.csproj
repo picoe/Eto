@@ -10,7 +10,7 @@
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
-    <DefineConstants>XAMMAC;XAMMAC2;MACOS</DefineConstants>
+    <DefineConstants>MACOS_NET</DefineConstants>
     <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     <NoWarn>CA1416</NoWarn>
 

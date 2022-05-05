@@ -6,6 +6,7 @@
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;MONOMAC;Mac64</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>build\*</DefaultItemExcludes>
+    <LangVersion>10.0</LangVersion>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 
   </PropertyGroup>
@@ -28,6 +29,24 @@ Use Eto.Platform.XamMac2 if you want to distribute your app to the Mac App Store
 You do not need to use any of the classes of this assembly (unless customizing the MonoMac functionality of the platform), and should just use the UI controls from the Eto assembly.
     </PackageDescription>
   </PropertyGroup>
+  <ItemGroup>
+    <Using Include="MonoMac.AppKit" />
+    <Using Include="MonoMac.Foundation" />
+    <Using Include="MonoMac.CoreGraphics" />
+    <Using Include="MonoMac.ObjCRuntime" />
+    <Using Include="MonoMac.CoreAnimation" />
+    <Using Include="MonoMac.CoreImage" />
+    <Using Include="MonoMac.MobileCoreServices" />
+    <Using Include="MonoMac.CoreFoundation" />
+    <Using Include="MonoMac.ImageIO" />
+    <Using Include="MonoMac.CoreText" />
+    <Using Include="MonoMac.Constants" Alias="Constants" />
+    <Using Include="MonoMac.AppKit.NSRectEdge" Alias="NSRectEdge" />
+    <Using Include="System.Double" Alias="nfloat" />
+    <Using Include="System.Int64" Alias="nint" />
+    <Using Include="System.UInt64" Alias="nuint" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>

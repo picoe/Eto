@@ -3,11 +3,23 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0-macos10.15</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
-    <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED;MACOS;USE_CFSTRING</DefineConstants>
+    <DefineConstants>$(DefineConstants);OSX;DESKTOP;UNIFIED;MACOS_NET;USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>build\*</DefaultItemExcludes>
     <NoWarn>CA1416</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <Using Include="AppKit" />
+    <Using Include="Foundation" />
+    <Using Include="CoreGraphics" />
+    <Using Include="ObjCRuntime" />
+    <Using Include="CoreAnimation" />
+    <Using Include="CoreImage" />
+    <Using Include="MobileCoreServices" />
+    <Using Include="CoreFoundation" />
+    <Using Include="ImageIO" />
+    <Using Include="CoreText" />
+  </ItemGroup>
   
   <PropertyGroup>
     <PackageId>Eto.Platform.macOS</PackageId>
@@ -55,5 +67,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <None Include="build\Mac.props" Pack="True" PackagePath="build\Eto.Platform.macOS.props" />
     <None Include="..\..\build\MSBuildTaskHelper.props" Pack="True" PackagePath="build" />
   </ItemGroup>
+  
+  <Target Name="CheckSDKVersion" BeforeTargets="BeforeBuild">
+    <Error Text="This project requires .NET SDK version 6.0.200 or later"
+      Condition="$([MSBuild]::VersionLessThan($(NETCoreSdkVersion), '6.0.200'))" />
+  </Target>
 
 </Project>

@@ -1,18 +1,5 @@
 using System;
 using Eto.Forms;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 
 namespace Eto.Mac.Forms
 {
@@ -112,7 +99,7 @@ namespace Eto.Mac.Forms
 			var result = (int)app.RunModalSession(Session);
 
 			// Give the main loop some time:
-#if XAMMAC2 && NET6_0_OR_GREATER
+#if MACOS_NET
 			NSRunLoop.Current.RunUntil(NSRunLoopMode.Default, NSDate.DistantFuture);
 #else
 			NSRunLoop.Current.RunUntil(NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);

@@ -7,35 +7,7 @@ using System.Linq;
 using Eto.Forms;
 using System.Runtime.InteropServices;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Drawing
 {
@@ -80,7 +52,7 @@ namespace Eto.Mac.Drawing
 				}
 			}
 
-#if XAMMAC && NET6_0_OR_GREATER
+#if MACOS_NET
 			// .NET 6 on ARM64 crashes when using the override in macos workload preview 11, remove this when fixed.
 			[Export("CGImageForProposedRect:context:hints:")]
 			public CGImage AsCGImage(IntPtr proposedDestRectPtr, NSGraphicsContext context, NSDictionary hints)

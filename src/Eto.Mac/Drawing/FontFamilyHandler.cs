@@ -3,22 +3,6 @@ using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreFoundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreText;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreText;
-#endif
 
 namespace Eto.Mac.Drawing
 {
@@ -40,7 +24,7 @@ namespace Eto.Mac.Drawing
 					return Name;
 					
 				var facePtr = IntPtr.Zero;
-#if XAMMAC && NET6_0_OR_GREATER
+#if USE_CFSTRING
 				var familyPtr = CFString.CreateNative(MacName);
 				var result = CFString.FromHandle(Messaging.IntPtr_objc_msgSend_IntPtr_IntPtr(NSFontManager.SharedFontManager.Handle, sel_LocalizedNameForFamilyFace, familyPtr, facePtr));
 				CFString.ReleaseNative(familyPtr);

@@ -3,19 +3,6 @@ using Eto.Forms;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
 using Eto.Mac.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 
 namespace Eto.Mac.Forms
 {
@@ -89,7 +76,7 @@ namespace Eto.Mac.Forms
 				var logicalRect = rect;
 				logicalRect.Size *= Widget.LogicalPixelSize;
 				var cgimagePtr = CGDisplayCreateImageForRect(id.UInt32Value, logicalRect.ToNS());
-#if XAMMAC
+#if XAMMAC || MACOS_NET
 				var cgimage = Runtime.GetINativeObject<CGImage>(cgimagePtr, true);
 #else
 				var cgimage = cgimagePtr == IntPtr.Zero ? null : new CGImage(cgimagePtr);

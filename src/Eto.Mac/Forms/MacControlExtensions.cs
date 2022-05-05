@@ -3,45 +3,6 @@ using Eto.Forms;
 using System;
 using System.Text.RegularExpressions;
 
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreText;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreText;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if IOS
-using NSView = UIKit.UIView;
-using NSControl = UIKit.UIControl;
-using Foundation;
-using CoreText;
-using CoreGraphics;
-using Eto.iOS;
-#endif
 namespace Eto.Mac.Forms
 {
 	public static class MacControlExtensions
