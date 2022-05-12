@@ -37,7 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 			accessText.TextDecorations = decorations;
 		}
 
-		public LabelHandler ()
+		public LabelHandler()
 		{
 			accessText = new swc.AccessText();
 			Control = new EtoLabel
@@ -55,6 +55,11 @@ namespace Eto.Wpf.Forms.Controls
 			// not loaded? don't worry about it.
 			if (!Control.IsLoaded)
 				return;
+
+			// if we have a set height or no wrapping, let's skip this
+			if (Wrap == WrapMode.None || !double.IsNaN(UserPreferredSize.Height))
+				return;
+
 			var newDesiredHeight = Control.DesiredSize.Height;
 			if (previousDesiredHeight == null)
 			{
@@ -65,18 +70,18 @@ namespace Eto.Wpf.Forms.Controls
 				previousDesiredHeight = newDesiredHeight;
 				return;
 			}
-			
-			// ignore tiny changes as in some scales (e.g. 150%, 175%) it can cause an endless update cycle
-			// Is this needed any more?  We are now only comparing desired size vs. actual, which doesn't 
-			// appear to have this problem
-			if (Math.Abs(previousDesiredHeight.Value - newDesiredHeight) < 1)
+
+			// Ignore any change that is less than half the line height of the current font
+			// as WPF will return inconsistent results for its DesiredSize.Height in
+			// odd scales to position on pixel boundaries (e.g. 150%, 175%), 
+			// causing an endless update cycle in some cases.
+			if (Math.Abs(previousDesiredHeight.Value - newDesiredHeight) < Control.FontSize / 2)
 				return;
-			
+
 			// update parents when the actual desired height has changed
 			// otherwise parent containers won't shrink vertically when it gets wider when wrapped
 			previousDesiredHeight = newDesiredHeight;
-			if (Wrap != WrapMode.None)
-                UpdatePreferredSize();
+			UpdatePreferredSize();
 		}
 
 		protected override void Initialize()
@@ -121,7 +126,8 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				switch (accessText.TextWrapping) {
+				switch (accessText.TextWrapping)
+				{
 					case sw.TextWrapping.NoWrap:
 						return WrapMode.None;
 					case sw.TextWrapping.Wrap:
@@ -129,7 +135,7 @@ namespace Eto.Wpf.Forms.Controls
 					case sw.TextWrapping.WrapWithOverflow:
 						return WrapMode.Word;
 					default:
-						throw new NotSupportedException ();
+						throw new NotSupportedException();
 				}
 			}
 			set
@@ -151,16 +157,16 @@ namespace Eto.Wpf.Forms.Controls
 							throw new NotSupportedException();
 					}
 					SetText();
-                    UpdatePreferredSize();
+					UpdatePreferredSize();
 				}
 			}
 		}
 
-        public override void UpdatePreferredSize()
-        {
-            ParentMinimumSize = WpfConversions.ZeroSize;
-            base.UpdatePreferredSize();
-        }
+		public override void UpdatePreferredSize()
+		{
+			ParentMinimumSize = WpfConversions.ZeroSize;
+			base.UpdatePreferredSize();
+		}
 
 		public override Color TextColor
 		{
