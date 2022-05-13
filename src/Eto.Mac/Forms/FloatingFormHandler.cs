@@ -40,6 +40,7 @@ namespace Eto.Mac.Forms
 			var panel = new EtoPanel(new CGRect(0, 0, 200, 200), 
 				NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Titled, 
 				NSBackingStore.Buffered, false);
+			panel.CanFocus = true;
 
 			panel.FloatingPanel = true;
 			panel.BecomesKeyOnlyIfNeeded = true;
