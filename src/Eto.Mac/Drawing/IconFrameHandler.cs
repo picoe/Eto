@@ -52,7 +52,7 @@ namespace Eto.Mac.Drawing
 				}
 			}
 
-#if MACOS_NET
+#if MACOS_NET || ( XAMMAC && NET6_0_OR_GREATER )
 			// .NET 6 on ARM64 crashes when using the override in macos workload preview 11, remove this when fixed.
 			[Export("CGImageForProposedRect:context:hints:")]
 			public CGImage AsCGImage(IntPtr proposedDestRectPtr, NSGraphicsContext context, NSDictionary hints)
