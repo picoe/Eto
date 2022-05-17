@@ -519,6 +519,13 @@ namespace Eto.Mac.Forms
 				&& Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
 		}
 
+		/// <summary>
+		/// Flag used to determine if we're in/going to use a mouse tracking event loop.
+		/// If during a MouseDown event we do something that buries the MouseUp event from happening,
+		/// such as showing a context menu or dialog, this must be set to false.
+		/// </summary>
+		public static bool InMouseTrackingLoop;
+
 	}
 
 	public abstract partial class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -567,11 +574,11 @@ namespace Eto.Mac.Forms
 			set
 			{
 				if (Widget.Properties.TrySet(MacView.UserPreferredSize_Key, value))
-					OnUserPrefferedSizeChanged();
+					OnUserPreferredSizeChanged();
 			}
 		}
 
-		protected virtual void OnUserPrefferedSizeChanged()
+		protected virtual void OnUserPreferredSizeChanged()
 		{
 		}
 
@@ -1038,6 +1045,7 @@ namespace Eto.Mac.Forms
 		
 		public void Print()
 		{
+			MacView.InMouseTrackingLoop = false;
 			PrintSettingsHandler.SetDefaults(NSPrintInfo.SharedPrintInfo);
 			ContainerControl.Print(ContainerControl);
 		}
@@ -1293,7 +1301,7 @@ namespace Eto.Mac.Forms
 				draggingItems = new NSDraggingItem[0];
 
 			// stop mouse capture, if any
-			InMouseTrackingLoop = false;
+			MacView.InMouseTrackingLoop = false;
 			
 			var session = ContainerControl.BeginDraggingSession(draggingItems, NSApplication.SharedApplication.CurrentEvent, source);
 			handler.Apply(session.DraggingPasteboard);
@@ -1326,9 +1334,6 @@ namespace Eto.Mac.Forms
 		}
 
 		public static bool SuppressMouseTriggerCallback { get; set; }
-
-		// used to determine if we're in a mouse tracking event loop
-		static bool InMouseTrackingLoop;
 		
 		/// <summary>
 		/// Value to indicate that a mouse tracking loop should be used when a MouseDown is handled by user code.
@@ -1431,6 +1436,12 @@ namespace Eto.Mac.Forms
 
 		public virtual MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent)
 		{
+			// Flag that we are going to use a mouse tracking loop
+			// if this is set to false during the OnMouseDown/OnMouseDoubleClick, then we won't
+			// do a mouse tracking loop.  This is needed since the mouse up event gets buried when 
+			// showing context menus, dialogs, etc.
+			MacView.InMouseTrackingLoop = true;
+			
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				Callback.OnMouseDoubleClick(Widget, args);
@@ -1450,14 +1461,13 @@ namespace Eto.Mac.Forms
 				if (!SuppressMouseTriggerCallback)
 					TriggerMouseCallback();
 			}
-			else if (UseMouseTrackingLoop)
+			else if (UseMouseTrackingLoop && MacView.InMouseTrackingLoop)
 			{
 				// do a mouse tracking loop to enforce capture always
 				// e.g. if a child control that you started to click + drag on is removed then all future events
 				// to the parent are no longer forwarded.
 				// See MouseTests.EventsFromParentShouldWorkWhenChildRemoved
 				var app = NSApplication.SharedApplication;
-				InMouseTrackingLoop = true;
 				// Console.WriteLine("Entered MouseTrackingLoop");
 				do
 				{
@@ -1475,7 +1485,7 @@ namespace Eto.Mac.Forms
 						case NSEventType.RightMouseUp:
 						case NSEventType.OtherMouseUp:
 							TriggerMouseCallback();
-							InMouseTrackingLoop = false;
+							MacView.InMouseTrackingLoop = false;
 							break;
 						default:
 							// not a mouse event, send it along.
@@ -1483,9 +1493,10 @@ namespace Eto.Mac.Forms
 							break;
 					}
 				}
-				while (InMouseTrackingLoop);
+				while (MacView.InMouseTrackingLoop);
 				// Console.WriteLine("Exited MouseTrackingLoop");
 			}
+			MacView.InMouseTrackingLoop = false;
 			return args;
 		}
 

@@ -85,6 +85,7 @@ namespace Eto.Mac.Forms.Menu
 		public void Show(Control relativeTo, PointF? location)
 		{
 			var view = relativeTo?.GetContainerView();
+			MacView.InMouseTrackingLoop = false;
 
 			if (location != null || view == null)
 			{
