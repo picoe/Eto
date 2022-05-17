@@ -159,6 +159,7 @@ namespace Eto.Mac.Forms
 		
 		public void RunIteration()
 		{
+			MacView.InMouseTrackingLoop = false;
 			// drain the event queue only for a short period of time so it doesn't lock up
 			var date = NSDate.FromTimeIntervalSinceNow(0.001);
 			for (;;)
