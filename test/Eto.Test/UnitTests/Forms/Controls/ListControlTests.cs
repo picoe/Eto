@@ -92,5 +92,26 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.AreEqual(2, changed, "3.1 - Setting selected index again should trigger event again");
 			Assert.AreEqual(1, list.SelectedIndex, "3.2");
 		}
+		
+		[Test, ManualTest]
+		public void ColorsShouldBeSet()
+		{
+			ManualForm("Control should have blue background with yellow text", form =>
+			{
+				return new TableLayout
+				{
+					Rows = {
+						new TableRow(new T { 
+							BackgroundColor = Colors.Blue, 
+							TextColor = Colors.Yellow,
+							DataStore = new[] { "Item 1", "Item 2", "Item 3" },
+							SelectedIndex = 0 
+						}, null),
+						null
+					}
+				};
+			});
+		}
+		
 	}
 }

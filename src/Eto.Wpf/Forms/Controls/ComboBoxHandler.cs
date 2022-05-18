@@ -120,6 +120,19 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public override Color TextColor
+		{
+			get => Control.TextBox?.Foreground.ToEtoColor() ?? base.TextColor;
+			set
+			{
+				var textBox = Control.TextBox;
+				if (textBox != null)
+					textBox.Foreground = value.ToWpfBrush();
+				else
+					PerformOnLoad(() => TextColor = value);
+			}
+		}
+
 		public bool ReadOnly
 		{
 			get { return Control.IsReadOnly; }

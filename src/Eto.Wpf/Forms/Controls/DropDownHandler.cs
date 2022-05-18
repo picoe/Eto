@@ -205,18 +205,18 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				var border = BorderControl;
 				if (border != null)
-				{
 					border.Background = value.ToWpfBrush(border.Background);
-				}
+				else
+					PerformOnLoad(() => BackgroundColor = value);
 			}
 		}
-
+		
 		public override Color TextColor
 		{
 			get
 			{
 				var block = Control.FindChild<swc.TextBlock>();
-				return block != null ? block.Foreground.ToEtoColor() : base.TextColor;
+				return block?.Foreground.ToEtoColor() ?? base.TextColor;
 			}
 			set
 			{
@@ -224,7 +224,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (block != null)
 					block.Foreground = value.ToWpfBrush();
 				else
-					base.TextColor = value;
+					PerformOnLoad(() => TextColor = value);
 			}
 		}
 

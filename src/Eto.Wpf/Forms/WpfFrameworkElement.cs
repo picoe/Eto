@@ -94,6 +94,8 @@ namespace Eto.Wpf.Forms
 		internal const string CustomCursor_DataKey = "Eto.CustomCursor";
 
 		internal static IWpfFrameworkElement LastDragTarget;
+		
+		internal static readonly object LoadActionList_Key = new object();
 	}
 
 	public abstract partial class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
@@ -1052,6 +1054,28 @@ namespace Eto.Wpf.Forms
 				dlg.PrintVisual(ContainerControl, string.Empty);
 			}
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+		}
+
+		internal bool PerformOnLoad(Action action)
+		{
+			if (Control.IsLoaded)
+				return false;
+			var actionList = Widget.Properties.Get<List<Action>>(WpfFrameworkElement.LoadActionList_Key);
+			if (actionList == null)
+			{
+				actionList = new List<Action>();
+				Control.Loaded += (sender, e) =>
+				{
+					for (int i = 0; i < actionList.Count; i++)
+					{
+						actionList[i]();
+					}
+					actionList.Clear();
+				};
+				Widget.Properties.Set(WpfFrameworkElement.LoadActionList_Key, actionList);
+			}
+			actionList.Add(action);
+			return true;
 		}
 	}
 }
