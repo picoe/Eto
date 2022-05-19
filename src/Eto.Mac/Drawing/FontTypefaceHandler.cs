@@ -13,15 +13,25 @@ namespace Eto.Mac.Drawing
 		NSFont _font;
 		CGFont _cgfont;
 		string _name;
+		NSFontTraitMask? _traits;
+		int? _weight;
 		static readonly object LocalizedName_Key = new object();
 
 		public NSFont Font => _font ?? (_font = CreateFont(10));
 
 		public string PostScriptName { get; private set; }
 
-		public int Weight { get; private set; }
+		public int Weight
+		{
+			get => _weight ?? (_weight = (int)NSFontManager.SharedFontManager.WeightOfFont(Font)).Value;
+			private set => _weight = value;
+		}
 
-		public NSFontTraitMask Traits { get; private set; }
+		public NSFontTraitMask Traits
+		{
+			get => _traits ?? (_traits = NSFontManager.SharedFontManager.TraitsOfFont(Font)).Value;
+			private set => _traits = value;
+		}
 
 		public FontTypefaceHandler(NSArray descriptor)
 		{
@@ -36,9 +46,6 @@ namespace Eto.Mac.Drawing
 			_font = font;
 			var descriptor = font.FontDescriptor;
 			PostScriptName = descriptor.PostscriptName;
-			var manager = NSFontManager.SharedFontManager;
-			Weight = (int)manager.WeightOfFont(font);
-			Traits = traits ?? manager.TraitsOfFont(font);
 		}
 
 		public FontTypefaceHandler(string postScriptName, string name, NSFontTraitMask traits, int weight)
@@ -139,7 +146,7 @@ namespace Eto.Mac.Drawing
 			}
 
 			var family = (FontFamilyHandler)Widget.Family.Handler;
-			return FontHandler.CreateFont(family.MacName, size, Traits, Weight);
+			return family.CreateFont(size, Traits, Weight);
 		}
 
 		public bool HasCharacterRanges(IEnumerable<Range<int>> ranges)
@@ -159,6 +166,7 @@ namespace Eto.Mac.Drawing
 
 		public void Create(Stream stream)
 		{
+			
 			using (var ms = new MemoryStream())
 			{
 				stream.CopyTo(ms);
