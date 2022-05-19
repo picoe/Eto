@@ -37,7 +37,7 @@ namespace Eto.Mac.Drawing
 			}
 		}
 
-		public NSFontTraitMask TraitMask { get; set; }
+		public NSFontTraitMask TraitMask { get; set; } = (NSFontTraitMask)int.MaxValue;
 
 		IList<FontTypeface> _typefaces;
 
@@ -53,7 +53,6 @@ namespace Eto.Mac.Drawing
 
 		public FontFamilyHandler()
 		{
-			TraitMask = (NSFontTraitMask)int.MaxValue;
 		}
 
 		public FontFamilyHandler(CGFont cgfont, FontTypefaceHandler typeface)
@@ -70,7 +69,6 @@ namespace Eto.Mac.Drawing
 		public void Create(string familyName)
 		{
 			Name = MacName = familyName;
-			TraitMask = (NSFontTraitMask)int.MaxValue;
 
 			switch (familyName.ToUpperInvariant())
 			{
@@ -117,6 +115,43 @@ namespace Eto.Mac.Drawing
 				}
 			}
 			_typefaces = typefaces.ToArray();
+		}
+
+		public NSFont CreateFont(float size, NSFontTraitMask traits, int weight = 5)
+		{
+			if (_typefaces != null && string.IsNullOrEmpty(MacName))
+			{
+				var style = traits.ToEto();
+				var typefaces = _typefaces.Select(r => r.Handler).OfType<FontTypefaceHandler>().ToList();
+				foreach (var typeface in typefaces)
+				{
+					if (typeface.FontStyle == style)
+						return typeface.CreateFont(size);
+				}
+				return typefaces[0].CreateFont(size);
+			}
+			
+			var font = NSFontManager.SharedFontManager.FontWithFamily(MacName, traits, weight, size);
+			if (font == null)
+			{
+				if (traits.HasFlag(NSFontTraitMask.Italic))
+				{
+					// fake italics by transforming the font
+					const float kRotationForItalicText = 14.0f;
+					var fontTransform = new NSAffineTransform();
+					fontTransform.Scale(size);
+					var italicTransform = new NSAffineTransform();
+					italicTransform.TransformStruct = Matrix.FromSkew(0, kRotationForItalicText).ToCG();
+					fontTransform.AppendTransform(italicTransform);
+					traits &= ~NSFontTraitMask.Italic;
+					font = NSFontManager.SharedFontManager.FontWithFamily(MacName, traits, 5, size);
+					if (font != null)
+					{
+						font = NSFont.FromDescription(font.FontDescriptor, fontTransform);
+					}
+				}
+			}
+			return font;
 		}
 
 		public void CreateFromStreams(IEnumerable<Stream> streams)

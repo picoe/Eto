@@ -83,8 +83,7 @@ namespace Eto.Test.Sections.Dialogs
 							else
 							{
 								var family = FontFamily.FromFiles(files);
-								var typeface = family.Typefaces.First();
-								font = new Font(typeface, selectedFont.Size, selectedFont.FontDecoration);
+								font = new Font(family, selectedFont.Size, selectedFont.FontStyle, selectedFont.FontDecoration);
 							}
 							UpdatePreview(font, true);
 						}
@@ -135,8 +134,8 @@ namespace Eto.Test.Sections.Dialogs
 								{
 									stream.Dispose();
 								}
-								var typeface = family.Typefaces.First();
-								font = new Font(typeface, selectedFont.Size, selectedFont.FontDecoration);
+								// create font from the current font style
+								font = new Font(family, selectedFont.Size, style: selectedFont.FontStyle, decoration: selectedFont.FontDecoration);
 							}
 							UpdatePreview(font, true);
 						}
