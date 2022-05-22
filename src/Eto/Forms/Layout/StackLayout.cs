@@ -33,7 +33,7 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
-	/// Horizontal alignment for controls
+	/// Vertical alignment for controls
 	/// </summary>
 	public enum VerticalAlignment
 	{
