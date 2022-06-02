@@ -1,6 +1,4 @@
 using System;
-using System.Windows;
-using System.Windows.Interop;
 using Eto.Forms;
 
 namespace Eto.Wpf.Forms
@@ -24,15 +22,15 @@ namespace Eto.Wpf.Forms
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			ApplicationHandler.Instance.IsActiveChanged += Application_IsActiveChanged;
-			if (!ApplicationHandler.Instance.IsActive)
+			Application.Instance.IsActiveChanged += Application_IsActiveChanged;
+			if (!Application.Instance.IsActive)
 				base.Visible = false;
 		}
 
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
-			ApplicationHandler.Instance.IsActiveChanged -= Application_IsActiveChanged;
+			Application.Instance.IsActiveChanged -= Application_IsActiveChanged;
 		}
 
 		private void Application_IsActiveChanged(object sender, EventArgs e)
@@ -59,7 +57,7 @@ namespace Eto.Wpf.Forms
 		void SetVisibility()
 		{
 			var currentlyVisible = base.Visible;
-			var isVisible = ApplicationHandler.Instance.IsActive && Visible;
+			var isVisible = Application.Instance.IsActive && Visible;
 			if (isVisible == currentlyVisible)
 				return;
 				

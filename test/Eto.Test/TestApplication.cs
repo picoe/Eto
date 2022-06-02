@@ -47,6 +47,12 @@ namespace Eto.Test
 			}
 		}
 
+		protected override void OnIsActiveChanged(EventArgs e)
+		{
+			base.OnIsActiveChanged(e);
+			Log.Write(this, $"IsActiveChanged: {IsActive}");
+		}
+
 		protected override void OnInitialized(EventArgs e)
 		{
 			MainForm = new MainForm(TestSections.Get(TestAssemblies));

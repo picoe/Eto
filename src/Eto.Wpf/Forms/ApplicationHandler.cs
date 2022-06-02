@@ -140,8 +140,6 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public event EventHandler IsActiveChanged;
-
 		bool _isActive;
 		public bool IsActive
 		{
@@ -151,7 +149,7 @@ namespace Eto.Wpf.Forms
 				if (_isActive != value)
 				{
 					_isActive = value;
-					IsActiveChanged?.Invoke(this, EventArgs.Empty);
+					Callback.OnIsActiveChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
@@ -306,6 +304,9 @@ namespace Eto.Wpf.Forms
 					break;
 				case Application.NotificationActivatedEvent:
 					// handled by NotificationHandler
+					break;
+				case Application.IsActiveChangedEvent:
+					// handled always
 					break;
 				default:
 					base.AttachEvent(id);
