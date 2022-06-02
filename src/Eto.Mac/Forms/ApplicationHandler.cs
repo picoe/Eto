@@ -275,11 +275,17 @@ namespace Eto.Mac.Forms
 						NSApplication.Notifications.ObserveDidFinishLaunching(DidFinishLaunching);
 					}
 					break;
+				case Application.IsActiveChangedEvent:
+					NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidBecomeActiveNotification, SharedApplication_ActiveChanged);
+					NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidResignActiveNotification, SharedApplication_ActiveChanged);
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
+
+		void SharedApplication_ActiveChanged(NSNotification obj) => Callback.OnIsActiveChanged(Widget, EventArgs.Empty);
 
 		void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)
 		{
@@ -321,5 +327,7 @@ namespace Eto.Mac.Forms
 		public Keys CommonModifier => Keys.Application;
 
 		public Keys AlternateModifier => Keys.Alt;
+
+		public bool IsActive => NSApplication.SharedApplication.Active;
 	}
 }

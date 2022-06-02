@@ -22,7 +22,6 @@ namespace Eto.WinForms.Forms
 
 		public static ApplicationHandler Instance => Eto.Forms.Application.Instance?.Handler as ApplicationHandler;
 
-		public event EventHandler IsActiveChanged;
 		bool _isActive;
 		public bool IsActive
 		{
@@ -32,7 +31,7 @@ namespace Eto.WinForms.Forms
 				if (_isActive != value)
 				{
 					_isActive = value;
-					IsActiveChanged?.Invoke(this, EventArgs.Empty);
+					Callback.OnIsActiveChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}

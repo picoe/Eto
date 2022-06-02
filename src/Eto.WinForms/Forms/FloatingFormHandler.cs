@@ -17,22 +17,22 @@ namespace Eto.WinForms.Forms
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			ApplicationHandler.Instance.IsActiveChanged += Application_IsActiveChanged;
-			if (!ApplicationHandler.Instance.IsActive)
+			Application.Instance.IsActiveChanged += Application_IsActiveChanged;
+			if (!Application.Instance.IsActive)
 				base.Visible = false;
 		}
 
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
-			ApplicationHandler.Instance.IsActiveChanged -= Application_IsActiveChanged;
+			Application.Instance.IsActiveChanged -= Application_IsActiveChanged;
 		}
 
 		private void Application_IsActiveChanged(object sender, EventArgs e)
 		{
 			var showActivated = ShowActivated;
 			ShowActivated = false;
-			base.Visible = ApplicationHandler.Instance.IsActive && _visible;
+			base.Visible = Application.Instance.IsActive && _visible;
 			ShowActivated = showActivated;
 		}
 
@@ -44,7 +44,7 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				_visible = value;
-				if (ApplicationHandler.Instance.IsActive)
+				if (Application.Instance.IsActive)
 					base.Visible = value;
 			}
 		}

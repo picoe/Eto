@@ -213,7 +213,27 @@ namespace Eto.Forms
 			Properties.TriggerEvent(NotificationActivatedEvent, this, e);
 		}
 
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="IsActiveChanged"/> event
+		/// </summary>
+		public const string IsActiveChangedEvent = "Application.IsActiveChanged";
+
+		/// <summary>
+		/// Occurs when the <see cref="IsActive"/> property is changed, which tracks whether the application is currently active or not.
+		/// </summary>
+		public event EventHandler<EventArgs> IsActiveChanged
+		{
+			add { Properties.AddHandlerEvent(IsActiveChangedEvent, value); }
+			remove { Properties.RemoveEvent(IsActiveChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="IsActiveChanged"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnIsActiveChanged(EventArgs e) => Properties.TriggerEvent(IsActiveChangedEvent, this, e);
+
+		new IHandler Handler => (IHandler)base.Handler;
 
 		Form mainForm;
 		/// <summary>
@@ -258,7 +278,7 @@ namespace Eto.Forms
 		/// Gets an enumeration of windows currently open in the application.
 		/// </summary>
 		/// <value>The enumeration of open windows.</value>
-		public IEnumerable<Window> Windows { get { return windows; } }
+		public IEnumerable<Window> Windows => windows;
 
 		/// <summary>
 		/// Gets or sets the name of your application
@@ -271,6 +291,7 @@ namespace Eto.Forms
 			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
 			EventLookup.Register<Application>(c => c.OnUnhandledException(null), Application.UnhandledExceptionEvent);
 			EventLookup.Register<Application>(c => c.OnNotificationActivated(null), Application.NotificationActivatedEvent);
+			EventLookup.Register<Application>(c => c.OnIsActiveChanged(null), Application.IsActiveChangedEvent);
 		}
 
 		/// <summary>
@@ -351,10 +372,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Runs the application and begins the main loop.
 		/// </summary>
-		public virtual void Run()
-		{
-			Handler.Run();
-		}
+		public virtual void Run() => Handler.Run();
 
 		/// <summary>
 		/// Runs the application with the specified <paramref name="mainForm"/> and begins the main loop.
@@ -406,10 +424,7 @@ namespace Eto.Forms
 		/// the changes are complete.
 		/// </remarks>
 		/// <param name="action">Action to invoke</param>
-		public virtual void Invoke(Action action)
-		{
-			Handler.Invoke(action);
-		}
+		public virtual void Invoke(Action action) => Handler.Invoke(action);
 
 		/// <summary>
 		/// Invoke the specified function on the UI thread returning its value after the execution is complete.
@@ -435,10 +450,7 @@ namespace Eto.Forms
 		/// the current thread is the UI thread.
 		/// </remarks>
 		/// <param name="action">Action to queue on the UI thread.</param>
-		public virtual void AsyncInvoke(Action action)
-		{
-			Handler.AsyncInvoke(action);
-		}
+		public virtual void AsyncInvoke(Action action) => Handler.AsyncInvoke(action);
 
 		/// <summary>
 		/// Invokes the specified function on the UI thread asynchronously and return the result in a Task.
@@ -493,28 +505,19 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This will call the <see cref="Terminating"/> event before terminating the application.
 		/// </remarks>
-		public void Quit()
-		{
-			Handler.Quit();
-		}
+		public void Quit() => Handler.Quit();
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Eto.Forms.Application"/> supports the <see cref="Quit"/> operation.
 		/// </summary>
 		/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
-		public bool QuitIsSupported
-		{
-			get { return Handler.QuitIsSupported; }
-		}
+		public bool QuitIsSupported => Handler.QuitIsSupported;
 
 		/// <summary>
 		/// Open the specified file or url with its associated application.
 		/// </summary>
 		/// <param name="url">url or file path to open</param>
-		public void Open(string url)
-		{
-			Handler.Open(url);
-		}
+		public void Open(string url) => Handler.Open(url);
 
 		/// <summary>
 		/// Gets the common modifier for shortcuts.
@@ -523,10 +526,7 @@ namespace Eto.Forms
 		/// On Windows/Linux, this will typically return <see cref="Keys.Control"/>, and on OS X this will be <see cref="Keys.Application"/> (the command key).
 		/// </remarks>
 		/// <value>The common modifier.</value>
-		public Keys CommonModifier
-		{
-			get { return Handler.CommonModifier; }
-		}
+		public Keys CommonModifier => Handler.CommonModifier;
 
 		/// <summary>
 		/// Gets the alternate modifier for shortcuts.
@@ -535,10 +535,7 @@ namespace Eto.Forms
 		/// This is usually the <see cref="Keys.Alt"/> key.
 		/// </remarks>
 		/// <value>The alternate modifier.</value>
-		public Keys AlternateModifier
-		{
-			get { return Handler.AlternateModifier; }
-		}
+		public Keys AlternateModifier => Handler.AlternateModifier;
 
 		/// <summary>
 		/// Gets or sets the badge label on the application icon in the dock, taskbar, etc.
@@ -553,6 +550,12 @@ namespace Eto.Forms
 			get { return Handler.BadgeLabel; }
 			set { Handler.BadgeLabel = value; }
 		}
+		
+		/// <summary>
+		/// Gets a value indicating that the application is currently the active application.
+		/// </summary>
+		/// <seealso cref="IsActiveChanged"/>
+		public bool IsActive => Handler.IsActive;
 
 		/// <summary>
 		/// Advanced. Runs an iteration of the main UI loop when you are blocking the UI thread with logic.
@@ -560,18 +563,12 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This is not recommended to use and you should use asynchronous calls instead via Task.Run or threads.
 		/// </remarks>
-		public void RunIteration()
-		{
-			Handler.RunIteration();
-		}
+		public void RunIteration() => Handler.RunIteration();
 
 		/// <summary>
 		/// Restarts the application
 		/// </summary>
-		public void Restart()
-		{
-			Handler.Restart();
-		}
+		public void Restart() => Handler.Restart();
 
 		/// <summary>
 		/// Localizes the specified text for the current locale, or provide alternative text for system supplied strings.
@@ -624,6 +621,11 @@ namespace Eto.Forms
 			/// Raises the notification activated event.
 			/// </summary>
 			void OnNotificationActivated(Application wiget, NotificationEventArgs e);
+			
+			/// <summary>
+			/// Raises the IsActiveChanged event.
+			/// </summary>
+			void OnIsActiveChanged(Application wiget, EventArgs e);
 		}
 
 		/// <summary>
@@ -664,6 +666,15 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnNotificationActivated(e);
+			}
+
+			/// <summary>
+			/// Raises the IsActiveChanged event.
+			/// </summary>
+			public void OnIsActiveChanged(Application widget, EventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnIsActiveChanged(e);
 			}
 		}
 
@@ -768,6 +779,11 @@ namespace Eto.Forms
 			/// This is not recommended to use and you should use asynchronous calls instead via Task.Run or threads.
 			/// </remarks>
 			void RunIteration();
+			
+			/// <summary>
+			/// Gets a value indicating that the application is currently the active application
+			/// </summary>
+			bool IsActive { get; }
 		}
 	}
 }

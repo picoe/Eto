@@ -172,15 +172,13 @@ namespace Eto.GtkSharp.Forms
 		}
 
 
-		protected virtual void OnIsActiveChanged(EventArgs e) => _IsActiveChanged?.Invoke(this, e);
-
 		UITimer _timer;
 		bool? _isActive;
 		bool _didGetFocus;
 		internal void TriggerIsActiveChanged(bool gotFocus)
 		{
 			// don't do anything until we really need to know.
-			if (_IsActiveChanged == null)
+			if (!IsEventHandled(Application.IsActiveChangedEvent))
 				return;
 
 			_didGetFocus |= gotFocus;
@@ -216,7 +214,7 @@ namespace Eto.GtkSharp.Forms
 					if (_isActive != isActive)
 					{
 						_isActive = isActive;
-						OnIsActiveChanged(EventArgs.Empty);
+						Callback.OnIsActiveChanged(Widget, EventArgs.Empty);
 					}
 				};
 			}
@@ -248,36 +246,6 @@ namespace Eto.GtkSharp.Forms
 		public void RegisterIsActiveChanged(Gtk.Window window)
 		{
 			new WindowActiveHelper(window);
-		}
-
-		EventHandler _IsActiveChanged;
-		public event EventHandler IsActiveChanged
-		{
-			add
-			{
-				if (_IsActiveChanged == null)
-				{
-					/*
-					foreach (var window in Application.Instance.Windows)
-					{
-						new WindowActiveHelper(window.ToGtk());
-					}*/
-
-					/* Does not work... Windows array is always empty.
-					Control.WindowAdded += (o, args) => new WindowActiveHelper(args.Window);
-					for (int i = 0; i < Control.Windows.Length; i++)
-					{
-						var window = Control.Windows[i];
-						new WindowActiveHelper(window);
-					}*/
-				}
-				_IsActiveChanged += value;
-
-			}
-			remove
-			{
-				_IsActiveChanged -= value;
-			}
 		}
 
 		class WindowActiveHelper
@@ -346,6 +314,8 @@ namespace Eto.GtkSharp.Forms
 					break;
 				case Eto.Forms.Application.NotificationActivatedEvent:
 					// handled by NotificationHandler
+					break;
+				case Eto.Forms.Application.IsActiveChangedEvent:
 					break;
 				default:
 					base.AttachEvent(id);
