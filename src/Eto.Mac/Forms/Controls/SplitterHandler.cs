@@ -343,6 +343,11 @@ namespace Eto.Mac.Forms.Controls
 				if (!MacView.NewLayout)
 					base.Layout();
 			}
+
+			public override bool AcceptsFirstMouse(NSEvent theEvent)
+			{
+				return Handler != null ? Handler.OnAcceptsFirstMouse(theEvent) : base.AcceptsFirstMouse(theEvent);
+			}
 		}
 		
 		bool changeStarted;

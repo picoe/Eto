@@ -37,8 +37,6 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool AcceptsFirstResponder() => CanFocus;
 
-			public override bool AcceptsFirstMouse(NSEvent theEvent) => CanFocus || base.AcceptsFirstMouse(theEvent);
-
 			public override NSView HitTest(CGPoint aPoint)
 			{
 				var view = base.HitTest(aPoint);
@@ -129,6 +127,13 @@ namespace Eto.Mac.Forms.Controls
 		public void Update(Rectangle rect)
 		{
 			Control.DisplayRect(rect.ToNS());
+		}
+
+		protected override bool OnAcceptsFirstMouse(NSEvent theEvent)
+		{
+			if (CanFocus)
+				return true;
+			return base.OnAcceptsFirstMouse(theEvent);
 		}
 	}
 }
