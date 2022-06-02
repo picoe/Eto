@@ -1419,20 +1419,21 @@ namespace Eto.Mac.Forms
 			remove => Widget.Properties.RemoveEvent(MacView.AcceptsFirstMouse_Key, value);
 		}
 
-		protected virtual void OnAcceptsFirstMouse(MouseEventArgs e)
-		{
-			Widget?.Properties.TriggerEvent(MacView.AcceptsFirstMouse_Key, this, e);
-		}
-
-		bool IMacViewHandler.OnAcceptsFirstMouse(NSEvent theEvent)
+		protected virtual bool OnAcceptsFirstMouse(NSEvent theEvent)
 		{
 			if (!Widget.Properties.ContainsKey(MacView.AcceptsFirstMouse_Key))
+			{
+				if (ContainerControl.Window is NSPanel)
+					return Application.Instance.IsActive;
 				return false;
+			}
 
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
-			OnAcceptsFirstMouse(args);
+			Widget.Properties.TriggerEvent(MacView.AcceptsFirstMouse_Key, this, args);
 			return args.Handled;
 		}
+
+		bool IMacViewHandler.OnAcceptsFirstMouse(NSEvent theEvent) => OnAcceptsFirstMouse(theEvent);
 
 		public virtual MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent)
 		{
