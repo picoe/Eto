@@ -36,10 +36,6 @@ namespace Eto.Mac.Forms
 		{
 			base.SetOwner(owner);
 
-			// When this is true, the NSPanel would hide the panel and owner if they aren't key.
-			// So, only hide on deactivate if it is an ownerless form.
-			Control.HidesOnDeactivate = owner == null;
-
 			SetLevelAdjustment();
 		}
 
@@ -130,7 +126,10 @@ namespace Eto.Mac.Forms
 		void SetAsTopmost()
 		{
 			Control.Level = TopmostWindowLevel;
-			Control.HidesOnDeactivate = true;
+
+			// When this is true, the NSPanel would hide the panel and owner if they aren't key.
+			// So, only hide on deactivate if it is an ownerless form.
+			Control.HidesOnDeactivate = Widget.Owner == null;
 		}
 
 		private void Owner_LostFocus(object sender, EventArgs e)

@@ -13,7 +13,7 @@ namespace Eto.Mac.Forms
 			var windowNumber = NSWindow.WindowNumberAtPoint(nspoint, 0);
 			foreach (var window in Application.Instance.Windows)
 			{
-				if (window.Handler is IMacWindow handler && handler.Control.WindowNumber == windowNumber)
+				if (!window.IsDisposed && window.Handler is IMacWindow handler && handler.Control.WindowNumber == windowNumber)
 				{
 					return window;
 				}

@@ -30,7 +30,7 @@ namespace Eto.Mac.Forms
 					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidBecomeKeyNotification, n => Callback.OnGotFocus(Widget, EventArgs.Empty));
 					break;
 				case Window.LostFocusEvent:
-					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidResignKeyNotification, n => Callback.OnGotFocus(Widget, EventArgs.Empty));
+					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidResignKeyNotification, n => Callback.OnLostFocus(Widget, EventArgs.Empty));
 					break;
 			}
 			return;
