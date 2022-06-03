@@ -32,17 +32,10 @@ namespace Eto.Mac.Forms
 
 		protected override NSWindowLevel TopmostWindowLevel => NSWindowLevel.Floating;
 
-		public override void SetOwner(Window owner)
-		{
-			base.SetOwner(owner);
-
-			SetLevelAdjustment();
-		}
-
 		void SetLevelAdjustment()
 		{
 			// only need to adjust level when window style is not utility and we actually want it to be topmost (default for FloatingForm).
-			var wantsTopmost = Widget.Properties.Get<bool>(Topmost_Key, true);
+			var wantsTopmost = WantsTopmost;
 			var owner = Widget.Owner;
 			var needsLevelAdjust = wantsTopmost && WindowStyle != WindowStyle.Utility && owner != null;
 
@@ -97,7 +90,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		static readonly object Topmost_Key = new object();
+		internal override bool DefaultTopmost => true;
 
 		public override bool Topmost
 		{
@@ -105,8 +98,6 @@ namespace Eto.Mac.Forms
 			set
 			{
 				base.Topmost = value;
-				// need to remember the preferred state as it can be changed on us when setting the owner
-				Widget.Properties.Set(Topmost_Key, value, true);
 				SetLevelAdjustment();
 			}
 		}
@@ -150,6 +141,12 @@ namespace Eto.Mac.Forms
 			panel.BecomesKeyOnlyIfNeeded = true;
 
 			return panel;
+		}
+
+		internal override void OnSetAsChildWindow()
+		{
+			// Don't call base, we do our own window level logic for FloatingForm.
+			SetLevelAdjustment();
 		}
 	}
 }
