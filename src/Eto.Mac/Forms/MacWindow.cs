@@ -196,6 +196,7 @@ namespace Eto.Mac.Forms
 		internal static readonly IntPtr selIsVisible_Handle = Selector.GetHandle("isVisible");
 		internal static readonly object AnimateSizeChanges_Key = new object();
 		internal static readonly object DisableAutoSize_Key = new object();
+		internal static readonly object Topmost_Key = new object();
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
@@ -604,11 +605,21 @@ namespace Eto.Mac.Forms
 			get => Control.Level >= NSWindowLevel.Floating;
 			set
 			{
-				if (Topmost != value)
+				// need to remember the preferred state as it can be changed on us when setting the owner
+				if (WantsTopmost != value)
 				{
+					WantsTopmost = value;
 					Control.Level = value ? TopmostWindowLevel : NSWindowLevel.Normal;
 				}
 			}
+		}
+		
+		internal virtual bool DefaultTopmost => false;
+		
+		internal bool WantsTopmost
+		{
+			get => Widget.Properties.Get(MacWindow.Topmost_Key, DefaultTopmost);
+			set => Widget.Properties.Set(MacWindow.Topmost_Key, value, DefaultTopmost);
 		}
 
 		public override Size Size
@@ -1212,7 +1223,10 @@ namespace Eto.Mac.Forms
 				{
 					var macWindow = owner.Handler as IMacWindow;
 					if (macWindow != null)
+					{
 						macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
+						OnSetAsChildWindow();
+					}
 				}
 				else
 				{
@@ -1221,6 +1235,12 @@ namespace Eto.Mac.Forms
 						parentWindow.RemoveChildWindow(Control);
 				}
 			}
+		}
+
+		internal virtual void OnSetAsChildWindow()
+		{
+			if (WantsTopmost && Control.Level != TopmostWindowLevel)
+				Control.Level = TopmostWindowLevel;
 		}
 
 		public float LogicalPixelSize => Screen?.LogicalPixelSize ?? 1f;

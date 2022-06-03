@@ -17,20 +17,20 @@ namespace Eto.Mac.Forms
 
 		public override void AttachEvent(string id)
 		{
-			// native window, so attach notifications instead of using the delegate so we don't clobber existing functionality
+			// native window, so attach observers instead of using the delegate so we don't clobber existing functionality
 			switch (id)
 			{
 				case Window.ClosedEvent:
-					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.WillCloseNotification, n => Callback.OnClosed(Widget, EventArgs.Empty));
+					AddObserver(NSWindow.WillCloseNotification, n => Callback.OnClosed(Widget, EventArgs.Empty));
 					break;
 				case Window.SizeChangedEvent:
-					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidResizeNotification, n => Callback.OnSizeChanged(Widget, EventArgs.Empty));
+					AddObserver(NSWindow.DidResizeNotification, n => Callback.OnSizeChanged(Widget, EventArgs.Empty));
 					break;
 				case Window.GotFocusEvent:
-					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidBecomeKeyNotification, n => Callback.OnGotFocus(Widget, EventArgs.Empty));
+					AddObserver(NSWindow.DidBecomeKeyNotification, n => Callback.OnGotFocus(Widget, EventArgs.Empty));
 					break;
 				case Window.LostFocusEvent:
-					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidResignKeyNotification, n => Callback.OnLostFocus(Widget, EventArgs.Empty));
+					AddObserver(NSWindow.DidResignKeyNotification, n => Callback.OnLostFocus(Widget, EventArgs.Empty));
 					break;
 			}
 			return;
