@@ -1211,7 +1211,7 @@ namespace Eto.Mac.Forms
 				if (owner != null)
 				{
 					var macWindow = owner.Handler as IMacWindow;
-					if (macWindow != null)
+					if (macWindow != null && macWindow.Control.TabbedWindows?.Contains(Control) != true)
 						macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
 				}
 				else
