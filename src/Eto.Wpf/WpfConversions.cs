@@ -521,6 +521,7 @@ namespace Eto.Wpf
 				case sw.WindowStyle.None:
 					return WindowStyle.None;
 				case sw.WindowStyle.ThreeDBorderWindow:
+				case sw.WindowStyle.SingleBorderWindow:
 					return WindowStyle.Default;
 				case sw.WindowStyle.ToolWindow:
 					return WindowStyle.Utility;

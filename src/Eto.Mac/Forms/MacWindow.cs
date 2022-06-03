@@ -599,7 +599,7 @@ namespace Eto.Mac.Forms
 
 		protected virtual NSWindowLevel TopmostWindowLevel => NSWindowLevel.PopUpMenu;
 
-		public bool Topmost
+		public virtual bool Topmost
 		{
 			get => Control.Level >= NSWindowLevel.Floating;
 			set
@@ -678,7 +678,7 @@ namespace Eto.Mac.Forms
 			}
 
 			var ret = AutoSize || setInitialSize;
-			
+
 			if (Widget.Loaded)
 			{
 				PerformAutoSize();
@@ -1122,7 +1122,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public WindowStyle WindowStyle
+		public virtual WindowStyle WindowStyle
 		{
 			get { return Control.StyleMask.ToEtoWindowStyle(); }
 			set

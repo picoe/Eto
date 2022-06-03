@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using Eto.Forms;
 
 namespace Eto.Mac.Forms
 {
@@ -16,7 +17,22 @@ namespace Eto.Mac.Forms
 
 		public override void AttachEvent(string id)
 		{
-			// can't attach any events, this is a native window!
+			// native window, so attach notifications instead of using the delegate so we don't clobber existing functionality
+			switch (id)
+			{
+				case Window.ClosedEvent:
+					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.WillCloseNotification, n => Callback.OnClosed(Widget, EventArgs.Empty));
+					break;
+				case Window.SizeChangedEvent:
+					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidResizeNotification, n => Callback.OnSizeChanged(Widget, EventArgs.Empty));
+					break;
+				case Window.GotFocusEvent:
+					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidBecomeKeyNotification, n => Callback.OnGotFocus(Widget, EventArgs.Empty));
+					break;
+				case Window.LostFocusEvent:
+					NSNotificationCenter.DefaultCenter.AddObserver(NSWindow.DidResignKeyNotification, n => Callback.OnGotFocus(Widget, EventArgs.Empty));
+					break;
+			}
 			return;
 		}
 
