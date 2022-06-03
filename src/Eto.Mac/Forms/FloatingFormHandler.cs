@@ -65,12 +65,16 @@ namespace Eto.Mac.Forms
 				{
 					lastOwner.GotFocus -= Owner_GotFocus;
 					lastOwner.LostFocus -= Owner_LostFocus;
+					Widget.GotFocus -= Owner_GotFocus;
+					Widget.LostFocus -= Owner_LostFocus;
 					Widget.Closed -= Widget_Closed;
 				}
 				if (owner != null)
 				{
 					owner.GotFocus += Owner_GotFocus;
 					owner.LostFocus += Owner_LostFocus;
+					Widget.GotFocus += Owner_GotFocus;
+					Widget.LostFocus += Owner_LostFocus;
 					Widget.Closed += Widget_Closed;
 				}
 			}
@@ -87,6 +91,8 @@ namespace Eto.Mac.Forms
 				// when closed we need to disconnect from owner to prevent leaks
 				lastOwner.GotFocus -= Owner_GotFocus;
 				lastOwner.LostFocus -= Owner_LostFocus;
+				Widget.GotFocus -= Owner_GotFocus;
+				Widget.LostFocus -= Owner_LostFocus;
 			}
 		}
 
@@ -125,9 +131,15 @@ namespace Eto.Mac.Forms
 
 		private void Owner_LostFocus(object sender, EventArgs e)
 		{
+			if (HasFocus || Widget.Owner.HasFocus)
+				return;
 			Control.Level = NSWindowLevel.Normal;
+			
+			// Window will still be topmost until we order the window explicitly.
+			// If there are multiple app windows, we use this instead of OrderFront otherwise 
+			// the original parent window steals focus again.
 			if (Control.IsVisible)
-				Control.OrderFront(Control);
+				Control.OrderWindow(NSWindowOrderingMode.Above, Control.ParentWindow?.WindowNumber ?? 0);
 		}
 
 		protected override NSPanel CreateControl()
