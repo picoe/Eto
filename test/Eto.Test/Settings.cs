@@ -28,13 +28,16 @@ namespace Eto.Test
 				_GridViewSection_SaveColumnDisplayIndexes = value;
 				if (!value)
 				{
+					GridViewSection_ColumnWidths = null;
+					GridViewSection_ColumnAutoSize = null;
 					GridViewSection_DisplayIndexes = null;
 					GridViewSection_VisibleIndexes = null;
 				}
 			}
 		}
+		public List<int> GridViewSection_ColumnWidths { get; set; }
+		public List<bool> GridViewSection_ColumnAutoSize { get; set; }
 		public List<int> GridViewSection_DisplayIndexes { get; set; }
-
 		public List<bool> GridViewSection_VisibleIndexes { get; set; }
 
 		public static Settings Load()

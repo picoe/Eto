@@ -17,6 +17,7 @@ namespace Eto.Wpf.Forms.Controls
 		sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent, swc.DataGridCell cell);
 		void FormatCell(IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem);
 		void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem);
+		void OnColumnWidthChanged(GridColumnHandler gridColumnHandler);
 	}
 
 	public interface IGridColumnHandler : GridColumn.IHandler
@@ -41,6 +42,11 @@ namespace Eto.Wpf.Forms.Controls
 			DataCell = new TextBoxCell();
 			Editable = false;
 			Sortable = false;
+		}
+
+		private void HandleWidthChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			GridHandler.OnColumnWidthChanged(this);
 		}
 
 		public string HeaderText

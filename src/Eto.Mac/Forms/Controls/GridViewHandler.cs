@@ -160,7 +160,7 @@ namespace Eto.Mac.Forms.Controls
 		public class EtoTableViewDataSource : NSTableViewDataSource
 		{
 			WeakReference handler;
-
+			
 			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 
 			public override nint GetRowCount(NSTableView tableView)
@@ -325,7 +325,7 @@ namespace Eto.Mac.Forms.Controls
 		public class EtoTableDelegate : NSTableViewDelegate
 		{
 			WeakReference handler;
-
+			
 			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 
 			public override bool ShouldEditTableColumn(NSTableView tableView, NSTableColumn tableColumn, nint row)
@@ -337,7 +337,7 @@ namespace Eto.Mac.Forms.Controls
 				Handler.SetIsEditing(true);
 				return true;
 			}
-
+			
 			NSIndexSet previouslySelected;
 			public override void SelectionDidChange(NSNotification notification)
 			{
@@ -367,7 +367,9 @@ namespace Eto.Mac.Forms.Controls
 				if (colHandler != null)
 				{
 					// turn on autosizing for this column again
-					Application.Instance.AsyncInvoke(() => colHandler.AutoSize = true);
+					colHandler.AutoSize = true;
+					Handler.DidSetAutoSizeColumn = true;
+					Application.Instance.AsyncInvoke(() => Handler.DidSetAutoSizeColumn = false);
 					return colHandler.GetPreferredWidth();
 				}
 				return 20;
@@ -594,7 +596,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public override object GetItem(int row)
 		{
-			if (collection == null || row >= collection.Count)
+			if (row == -1 || collection == null || row >= collection.Count)
 				return null;
 			return collection.ElementAt(row);
 		}
@@ -608,13 +610,52 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public object GetCellAt(PointF location, out int column, out int row)
+		public GridCell GetCellAt(PointF location)
 		{
-			location += ScrollView.ContentView.Bounds.Location.ToEto();
-			var nslocation = location.ToNS();
-			column = (int)Control.GetColumn(nslocation);
-			row = (int)Control.GetRow(nslocation);
-			return row >= 0 ? GetItem(row) : null;
+			int columnIndex;
+			int rowIndex;
+			object item;
+			bool isHeader;
+
+			if (ShowHeader)
+			{
+				// check if we're over header first, as data can be under the header
+				var headerBounds = Control.HeaderView.Bounds.ToEto();
+				var nslocation = (location + headerBounds.Location).ToNS();
+				columnIndex = (int)Control.HeaderView.GetColumn(nslocation);
+				isHeader = columnIndex != -1 || headerBounds.Contains(nslocation.ToEto());
+			}
+			else
+			{
+				columnIndex = -1;
+				isHeader = false;
+			}
+			
+			// not over header, check where we are in the data cells
+			if (!isHeader)
+			{
+				var nslocation = (location + ScrollView.ContentView.Bounds.Location.ToEto()).ToNS();
+				columnIndex = (int)Control.GetColumn(nslocation);
+				rowIndex = (int)Control.GetRow(nslocation);
+				item = GetItem(rowIndex);
+			}
+			else
+			{
+				rowIndex = -1;
+				item = null;
+			}
+			
+			GridCellType cellType;
+			if (isHeader)
+				cellType = GridCellType.ColumnHeader;
+			else if (columnIndex != -1 && rowIndex != -1)
+				cellType = GridCellType.Data;
+			else
+				cellType = GridCellType.None;
+
+			columnIndex = DisplayIndexToColumnIndex(columnIndex);
+			var column = columnIndex != -1 ? Widget.Columns[columnIndex] : null;
+			return new GridCell(column, columnIndex, rowIndex, cellType, item);
 		}
 
 		public GridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as GridViewDragInfo;
@@ -656,7 +697,7 @@ namespace Eto.Mac.Forms.Controls
 		void ContextMenu_Opening(object sender, EventArgs e)
 		{
 			var row = (int)Control.ClickedRow;
-			if (!SelectedRows.Contains(row))
+			if (row != -1 && !SelectedRows.Contains(row))
 			{
 				var menu = (ContextMenu)sender;
 				menu.Closed += ContextMenu_Closed;

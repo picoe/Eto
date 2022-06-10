@@ -153,14 +153,12 @@ namespace Eto.WinForms.Forms.Controls
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
 		}
 
-		public object GetCellAt(PointF location, out int column, out int row)
+		public GridCell GetCellAt(PointF location)
 		{
 			var result = Control.HitTest((int)location.X, (int)location.Y);
-			column = result.ColumnIndex;
-			row = result.RowIndex;
-			if (row == -1)
-				return null;
-			return GetItemAtRow(row);
+			var column = result.ColumnIndex != -1 ? Widget.Columns[result.ColumnIndex] : null;
+			var item = GetItemAtRow(result.RowIndex);
+			return new GridCell(column, result.ColumnIndex, result.RowIndex, result.Type.ToEto(), item);
 		}
 
 		public GridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as GridViewDragInfo;

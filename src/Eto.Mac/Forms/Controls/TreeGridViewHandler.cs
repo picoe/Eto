@@ -215,7 +215,9 @@ namespace Eto.Mac.Forms.Controls
 				if (colHandler != null)
 				{
 					// turn on autosizing for this column again
-					Application.Instance.AsyncInvoke(() => colHandler.AutoSize = true);
+					colHandler.AutoSize = true;
+					Handler.DidSetAutoSizeColumn = true;
+					Application.Instance.AsyncInvoke(() => Handler.DidSetAutoSizeColumn = false);
 					return colHandler.GetPreferredWidth();
 				}
 				return 20;
@@ -668,8 +670,8 @@ namespace Eto.Mac.Forms.Controls
 					};
 					Widget.MouseDoubleClick += (sender, e) =>
 					{
-						var cell = GetCellAt(e.Location, out var column);
-						if (cell != null)
+						var cell = GetCellAt(e.Location);
+						if (cell.Item != null)
 						{
 							Callback.OnActivated(Widget, new TreeGridViewItemEventArgs(SelectedItem));
 							e.Handled = true;
@@ -1019,22 +1021,53 @@ namespace Eto.Mac.Forms.Controls
 			}
 			suppressExpandCollapseEvents--;
 		}
-
-		public ITreeGridItem GetCellAt(PointF location, out int column)
+		
+		public TreeGridCell GetCellAt(PointF location)
 		{
-			location += ScrollView.ContentView.Bounds.Location.ToEto();
-			// this is the diplay index, we need the actual index
-			var displayColumnIndex = (int)Control.GetColumn(location.ToNS());
-			var col = Widget.Columns.FirstOrDefault(r => r.DisplayIndex == displayColumnIndex);
-			column = col != null ? Widget.Columns.IndexOf(col) : -1;
-			var row = Control.GetRow(location.ToNS());
-			if (row >= 0)
+			int columnIndex;
+			int rowIndex;
+			object item;
+			bool isHeader;
+
+			if (ShowHeader)
 			{
-				var item = Control.ItemAtRow(row) as EtoTreeItem;
-				if (item != null)
-					return item.Item;
+				// check if we're over header first, as data can be under the header
+				var headerBounds = Control.HeaderView.Bounds.ToEto();
+				var nslocation = (location + headerBounds.Location).ToNS();
+				columnIndex = (int)Control.HeaderView.GetColumn(nslocation);
+				isHeader = columnIndex != -1 || headerBounds.Contains(nslocation.ToEto());
 			}
-			return null;
+			else
+			{
+				columnIndex = -1;
+				isHeader = false;
+			}
+			
+			// not over header, check where we are in the data cells
+			if (!isHeader)
+			{
+				var nslocation = (location + ScrollView.ContentView.Bounds.Location.ToEto()).ToNS();
+				columnIndex = (int)Control.GetColumn(nslocation);
+				rowIndex = (int)Control.GetRow(nslocation);
+				item = GetItem(rowIndex);
+			}
+			else
+			{
+				rowIndex = -1;
+				item = null;
+			}
+			
+			GridCellType cellType;
+			if (isHeader)
+				cellType = GridCellType.ColumnHeader;
+			else if (columnIndex != -1 && rowIndex != -1)
+				cellType = GridCellType.Data;
+			else
+				cellType = GridCellType.None;
+
+			columnIndex = DisplayIndexToColumnIndex(columnIndex);
+			var column = columnIndex != -1 ? Widget.Columns[columnIndex] : null;
+			return new TreeGridCell(column, columnIndex, cellType, item);
 		}
 
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;

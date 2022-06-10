@@ -892,6 +892,19 @@ namespace Eto.WinForms
 				return new Bitmap(new BitmapHandler(bitmap));
 			throw new NotSupportedException();
 		}
+		
+		public static GridCellType ToEto(this swf.DataGridViewHitTestType type)
+		{
+			switch (type)
+			{
+				case swf.DataGridViewHitTestType.ColumnHeader:
+					return GridCellType.ColumnHeader;
+				case swf.DataGridViewHitTestType.Cell:
+					return GridCellType.Data;
+				default:
+					return GridCellType.None;
+			}
+		}
 
 	}
 }

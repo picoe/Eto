@@ -561,7 +561,9 @@ namespace Eto.GtkSharp.Forms
 					return;
 
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				p = handler.TranslatePoint(args.Event.Window, p);
 				Keys modifiers = args.Event.State.ToEtoKey();
+				
 				MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
 
 				handler.Callback.OnMouseMove(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
@@ -574,8 +576,8 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 
-				args.Event.ToEtoLocation();
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				p = handler.TranslatePoint(args.Event.Window, p);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 
@@ -592,6 +594,7 @@ namespace Eto.GtkSharp.Forms
 					return;
 
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				p = handler.TranslatePoint(args.Event.Window, p);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 				var mouseArgs = new MouseEventArgs(buttons, modifiers, p);
@@ -820,6 +823,25 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 #endif
+		}
+
+		public virtual bool ShouldTranslatePoints => false;
+
+		public virtual PointF TranslatePoint(Gdk.Window window, PointF p)
+		{
+			if (!ShouldTranslatePoints || window == null)
+				return p;
+			var eventWindow = EventControl.GetWindow();
+
+			if (!ReferenceEquals(window, eventWindow))
+			{
+				// adjust point!
+				eventWindow.GetOrigin(out var x, out var y);
+				window.GetOrigin(out var ex, out var ey);
+				p.X += ex - x;
+				p.Y += ey - y;
+			}
+			return p;
 		}
 
 		protected virtual Gtk.Widget FontControl
