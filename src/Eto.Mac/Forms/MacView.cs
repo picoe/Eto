@@ -1451,7 +1451,7 @@ namespace Eto.Mac.Forms
 			{
 				Callback.OnMouseDown(Widget, args);
 			}
-			if (!args.Handled)
+			if (!args.Handled && sel != IntPtr.Zero)
 			{
 				SuppressMouseTriggerCallback = false;
 				SuppressMouseEvents++;

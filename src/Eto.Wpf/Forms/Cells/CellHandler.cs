@@ -32,6 +32,8 @@ namespace Eto.Wpf.Forms.Cells
 	{
 		public ICellContainerHandler ContainerHandler { get; set; }
 
+		public Controls.IGridHandler GridHandler => ContainerHandler?.Grid?.Handler as Controls.IGridHandler;
+
 		public static bool IsControlInitialized(sw.DependencyObject obj) => (bool)obj.GetValue(CellProperties.ControlInitializedProperty);
 		public static void SetControlInitialized(sw.DependencyObject obj, bool value) => obj.SetValue(CellProperties.ControlInitializedProperty, value);
 		public static bool IsControlEditInitialized(sw.DependencyObject obj) => (bool)obj.GetValue(CellProperties.ControlEditInitializedProperty);
@@ -71,6 +73,17 @@ namespace Eto.Wpf.Forms.Cells
 
 		public virtual void OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
 		{
+		}
+		
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Widget.Properties.Set(swc.DataGridColumn.ActualWidthProperty, PropertyChangeNotifier.Register(swc.DataGridColumn.ActualWidthProperty, HandleWidthChanged, Control));
+		}
+
+		private void HandleWidthChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			GridHandler?.OnColumnWidthChanged(ContainerHandler as Controls.GridColumnHandler);
 		}
 	}
 }

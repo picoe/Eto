@@ -28,7 +28,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public GridColumnHandler()
 		{
-			Control = new EtoDataGridViewColumn { Handler = this };
+			Control = new EtoDataGridViewColumn
+			{
+				Handler = this,
+				AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.DisplayedCells
+			};
 			DataCell = new TextBoxCell();
 			Editable = false;
 			Resizable = true;
@@ -205,6 +209,11 @@ namespace Eto.WinForms.Forms.Controls
 		public bool MouseClick(swf.MouseEventArgs e, int rowIndex)
 		{
 			return GridHandler != null && GridHandler.CellMouseClick(this, e, rowIndex);
+		}
+
+		internal void UpdateAutoSize(bool value)
+		{
+			Widget.Properties.Set(AutoSize_Key, value, true);
 		}
 	}
 }

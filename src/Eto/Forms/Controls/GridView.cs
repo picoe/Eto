@@ -57,35 +57,50 @@ namespace Eto.Forms
 	public class GridCell
 	{
 		/// <summary>
-		/// Gets the item associated with the row of the cell.
+		/// Gets the item associated with the row of the cell, or null if there is no row.
 		/// </summary>
 		/// <value>The row item.</value>
 		public object Item { get; }
 
 		/// <summary>
-		/// Gets the index of the row.
+		/// Gets the index of the row, or -1 if there is no row at this location.
 		/// </summary>
 		/// <value>The index of the row.</value>
 		public int RowIndex { get; }
 
 		/// <summary>
-		/// Gets the column of the cell, or null
+		/// Gets the column of the cell, or null if there is no column at the specified location.
 		/// </summary>
 		/// <value>The column.</value>
 		public GridColumn Column { get; }
 
 		/// <summary>
-		/// Gets the index of the column.
+		/// Gets the index of the column, or -1 if there is no column at the specified location.
 		/// </summary>
 		/// <value>The index of the column.</value>
 		public int ColumnIndex { get; }
+		
+		/// <summary>
+		/// Gets the type of the cell
+		/// </summary>
+		/// <value>Type of the cell</value>
+		public GridCellType Type { get; }
 
-		internal GridCell(object item, GridColumn column, int columnIndex, int rowIndex)
+		/// <summary>
+		/// Initializes a new instance of the GridCell class
+		/// </summary>
+		/// <param name="column">Column instance, or null if no column (e.g. empty area to right of columns)</param>
+		/// <param name="columnIndex">Index of the column for this cell, or -1 if no column (e.g. empty area to right of columns)</param>
+		/// <param name="rowIndex">Index of the row at the cell, or -1 if no row (e.g. header or empty area)</param>
+		/// <param name="type">Type of the cell, e.g. header, data, none</param>
+		/// <param name="item">Item instance for this row</param>
+		public GridCell(GridColumn column, int columnIndex, int rowIndex, GridCellType type, object item)
 		{
 			Item = item;
 			Column = column;
 			ColumnIndex = columnIndex;
 			RowIndex = rowIndex;
+			Type = type;
 		}
 	}
 
@@ -399,20 +414,14 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the node at a specified location from the origin of the control
+		/// Gets the cell information at a specified location from the origin of the control
 		/// </summary>
 		/// <remarks>
-		/// Useful for determining which node is under the mouse cursor.
+		/// Useful for determining which cell is under the mouse cursor.
 		/// </remarks>
-		/// <returns>The item from the data store that is displayed at the specified location</returns>
+		/// <returns>The cell information at the specified location</returns>
 		/// <param name="location">Point to find the node</param>
-		public GridCell GetCellAt(PointF location)
-		{
-			int column;
-			int row;
-			var item = Handler.GetCellAt(location, out column, out row);
-			return new GridCell(item, column >= 0 ? Columns[column] : null, column, row);
-		}
+		public GridCell GetCellAt(PointF location) => Handler.GetCellAt(location);
 
 		/// <summary>
 		/// Gets a new selection preserver instance for the grid.
@@ -521,16 +530,14 @@ namespace Eto.Forms
 			void ReloadData(IEnumerable<int> rows);
 
 			/// <summary>
-			/// Gets the node at a specified point from the origin of the control
+			/// Gets the cell information at a specified location from the origin of the control
 			/// </summary>
 			/// <remarks>
-			/// Useful for determining which node is under the mouse cursor.
+			/// Useful for determining which cell is under the mouse cursor.
 			/// </remarks>
-			/// <returns>The item from the data store that is displayed at the specified location</returns>
+			/// <returns>The cell information at the specified location</returns>
 			/// <param name="location">Point to find the node</param>
-			/// <param name="row">Row under the specified location</param>
-			/// <param name="column">Column under the specified location</param>
-			object GetCellAt(PointF location, out int column, out int row);
+			GridCell GetCellAt(PointF location);
 
 			/// <summary>
 			/// Gets the grid drag info for the specified DragEventArgs.

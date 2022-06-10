@@ -565,11 +565,6 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public static PointF ToEtoLocation(this Gdk.EventButton e)
-		{
-			return new PointF((float)e.X, (float)e.Y);
-		}
-
 		public static CellStates ToEto(this Gtk.CellRendererState value)
 		{
 			if (value.HasFlag(Gtk.CellRendererState.Selected))
@@ -882,5 +877,15 @@ namespace Eto.GtkSharp
 		}
 
 		public static Gdk.Cursor ToGdk(this Cursor cursor) => CursorHandler.GetControl(cursor);
+		
+		public static Rectangle GetBounds(this Gdk.Window window)
+		{
+			window.GetPosition(out var x, out var y);
+#if GTK2
+			return new Rectangle(x, y, 0, 0); // who cares, need to drop support for GTK2 anyway
+#else
+			return new Rectangle(x, y, window.Width, window.Height);
+#endif
+		}
 	}
 }

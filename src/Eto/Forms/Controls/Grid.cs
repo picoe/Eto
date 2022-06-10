@@ -384,6 +384,29 @@ namespace Eto.Forms
 			Properties.TriggerEvent(ColumnOrderChangedEvent, this, e);
 		}
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.ColumnWidthChanged"/> event
+		/// </summary>
+		public const string ColumnWidthChangedEvent = "Grid.ColumnWidthChanged";
+		
+		/// <summary>
+		/// Event to handle when a column width has been changed.
+		/// </summary>
+		public event EventHandler<GridColumnEventArgs> ColumnWidthChanged
+		{
+			add { Properties.AddHandlerEvent(ColumnWidthChangedEvent, value); }
+			remove { Properties.RemoveEvent(ColumnWidthChangedEvent, value); }
+		}
+		
+		/// <summary>
+		/// Raises the <see cref="Grid.ColumnWidthChanged"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnColumnWidthChanged(GridColumnEventArgs e)
+		{
+			Properties.TriggerEvent(ColumnWidthChangedEvent, this, e);
+		}
+
 		#endregion
 
 		static Grid()
@@ -396,6 +419,7 @@ namespace Eto.Forms
 			EventLookup.Register<Grid>(c => c.OnSelectionChanged(null), Grid.SelectionChangedEvent);
 			EventLookup.Register<Grid>(c => c.OnColumnHeaderClick(null), Grid.ColumnHeaderClickEvent);
 			EventLookup.Register<Grid>(c => c.OnColumnOrderChanged(null), Grid.ColumnOrderChangedEvent);
+			EventLookup.Register<Grid>(c => c.OnColumnWidthChanged(null), Grid.ColumnWidthChangedEvent);
 		}
 
 		/// <summary>
@@ -695,6 +719,11 @@ namespace Eto.Forms
 			/// Raises the column display index changed event.
 			/// </summary>
 			void OnColumnOrderChanged(Grid widget, GridColumnEventArgs e);
+
+			/// <summary>
+			/// Raises the column width changed event.
+			/// </summary>
+			void OnColumnWidthChanged(Grid widget, GridColumnEventArgs e);
 		}
 
 		/// <summary>
@@ -775,6 +804,15 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnColumnOrderChanged(e);
+			}
+
+			/// <summary>
+			/// Raises the column width changed event.
+			/// </summary>
+			public void OnColumnWidthChanged(Grid widget, GridColumnEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnColumnWidthChanged(e);
 			}
 		}
 

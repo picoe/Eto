@@ -218,6 +218,14 @@ namespace Eto.WinForms.Forms.Controls
 			LeakHelper.UnhookObject(Control);
 		}
 
+		static readonly object DisableAutoSizeToggle_Key = new object();
+
+		int DisableAutoSizeToggle
+		{
+			get => Widget.Properties.Get<int>(DisableAutoSizeToggle_Key);
+			set => Widget.Properties.Set(DisableAutoSizeToggle_Key, value);
+		}
+		
 		bool handledAutoSize;
 
 		void HandleRowPostPaint(object sender, swf.DataGridViewRowPostPaintEventArgs e)
@@ -226,6 +234,7 @@ namespace Eto.WinForms.Forms.Controls
 				return;
 
 			handledAutoSize = true;
+			DisableAutoSizeToggle++;
 			int colNum = 0;
 			foreach (var col in Widget.Columns)
 			{
@@ -234,11 +243,12 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					Control.AutoResizeColumn(colNum, colHandler.Control.InheritedAutoSizeMode);
 					var width = colHandler.Control.Width;
-					colHandler.Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.None;
 					colHandler.Control.Width = width;
+					colHandler.Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.None;
 				}
 				colNum++;
 			}
+			DisableAutoSizeToggle--;
 		}
 
 		class FormattingArgs : GridCellFormatEventArgs
@@ -342,10 +352,24 @@ namespace Eto.WinForms.Forms.Controls
 					Control.ColumnDisplayIndexChanged += HandleColumnDisplayIndexChanged;
 					Control.MouseUp += HandleColumnOrderChangedOnMouseUp;
 					break;
+				case Grid.ColumnWidthChangedEvent:
+					Control.ColumnWidthChanged += HandleColumnWidthChanged;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		private void HandleColumnWidthChanged(object sender, swf.DataGridViewColumnEventArgs e)
+		{
+			var column = Widget.Columns[e.Column.Index];
+			if (handledAutoSize && DisableAutoSizeToggle == 0 && column.Handler is GridColumnHandler handler)
+			{
+				// turn off autosize, user (most likely?) resized this column
+				handler.UpdateAutoSize(false);
+			}
+			Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(column));
 		}
 
 		static readonly object ColumnOrderChanged_Key = new object();
@@ -379,6 +403,22 @@ namespace Eto.WinForms.Forms.Controls
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
 			Widget.MouseDown += Widget_MouseDown;
+			Control.ColumnDividerDoubleClick += Control_ColumnDividerDoubleClick;
+		}
+
+		private void Control_ColumnDividerDoubleClick(object sender, swf.DataGridViewColumnDividerDoubleClickEventArgs e)
+		{
+			if (e.Button == swf.MouseButtons.Left)
+			{
+				DisableAutoSizeToggle++;
+				if (Widget.Columns[e.ColumnIndex].Handler is GridColumnHandler handler)
+				{
+					handler.UpdateAutoSize(true);
+				}
+				Control.AutoResizeColumn(e.ColumnIndex, swf.DataGridViewAutoSizeColumnMode.DisplayedCells);
+				DisableAutoSizeToggle--;
+				e.Handled = true;			
+			}
 		}
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
