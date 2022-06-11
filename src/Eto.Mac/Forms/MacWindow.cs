@@ -421,7 +421,7 @@ namespace Eto.Mac.Forms
 						if (handler != null)
 						{
 							var args = new NSWindowBackingPropertiesEventArgs(e.Notification);
-							if (args.OldScaleFactor != handler.Control.BackingScaleFactor)
+							if ((nfloat)args.OldScaleFactor != handler.Control.BackingScaleFactor)
 								handler.Callback.OnLogicalPixelSizeChanged(handler.Widget, EventArgs.Empty);
 						}
 					});

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <UseXamarinMac Condition="$(UseXamarinMac) == ''">True</UseXamarinMac>
-    <TargetFrameworks>net462;xamarinmac20</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0')) AND $([MSBuild]::VersionLessThan($(NETCoreSdkVersion), '6.0.200'))">net6.0-macos10.15;$(TargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks Condition="$(OverrideTargetFrameworks) != 'True'">net462;xamarinmac20</TargetFrameworks>
+    <TargetFrameworks Condition="$(OverrideTargetFrameworks) != 'True' AND $([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0')) AND $([MSBuild]::VersionLessThan($(NETCoreSdkVersion), '6.0.200'))">net6.0-macos10.15;$(TargetFrameworks)</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <DefineConstants Condition="$(UseCFString) != 'False'">$(DefineConstants);USE_CFSTRING</DefineConstants>

@@ -66,7 +66,7 @@ namespace Eto.Mac.Forms.Controls
 			set { WeakHandler = new WeakReference(value); }
 		}
 
-#if MACOS_NET
+#if MACOS_NET && !VSMAC
 		public override void ChangeColor(NSColorPanel sender)
 		{
 			// ignore color changes

@@ -40,33 +40,38 @@ namespace Eto.iOS.Drawing
 		{
 			control = new CGAffineTransform (xx, yx, xy, yy, dx, dy);
 		}
-		
-		public float[] Elements
-		{
-			get
-			{
-				return new float[] {
+
+#if !VSMAC && (MONOMAC || XAMMAC)
+		public float[] Elements => new float[] {
 					(float)control.xx,
 					(float)control.yx,
 					(float)control.xy,
 					(float)control.yy,
 					(float)control.x0,
-					(float)control.y0
-				};
-			}
-		}
+					(float)control.y0 };
 		
 		public float X0 { get { return (float)control.x0; } set { control.x0 = value; } }
-		
 		public float Y0 { get { return (float)control.y0; } set { control.y0 = value; } }
-		
 		public float Xx { get { return (float)control.xx; } set { control.xx = value; } }
-		
 		public float Xy { get { return (float)control.xy; } set { control.xy = value; } }
-		
 		public float Yx { get { return (float)control.yx; } set { control.yx = value; } }
-		
 		public float Yy { get { return (float)control.yy; } set { control.yy = value; } }
+#else
+		public float[] Elements => new float[] {
+					(float)control.A,
+					(float)control.B,
+					(float)control.C,
+					(float)control.D,
+					(float)control.Tx,
+					(float)control.Ty };
+		
+		public float X0 { get { return (float)control.Tx; } set { control.Tx = value; } }
+		public float Y0 { get { return (float)control.Ty; } set { control.Ty = value; } }
+		public float Xx { get { return (float)control.A; } set { control.A = value; } }
+		public float Xy { get { return (float)control.C; } set { control.C = value; } }
+		public float Yx { get { return (float)control.B; } set { control.B = value; } }
+		public float Yy { get { return (float)control.D; } set { control.D = value; } }
+#endif
 		
 		public void Rotate (float angle)
 		{

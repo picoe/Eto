@@ -48,7 +48,11 @@ namespace Eto.iOS.Drawing
 
 				// what to do with the attributes?? needed?
 				var m = CTFontGetMatrix(font);
+#if !VSMAC && (MONOMAC || XAMMAC)
 				m.Translate(textMatrix.x0, textMatrix.y0);
+#else
+				m.Translate(textMatrix.Tx, textMatrix.Ty);
+#endif
 				m.Scale(1, -1);
 				ctx.TextMatrix = m;
 				CTFontDrawGlyphs(font, glyphs, positions, glyphCount, ctx.Handle);
