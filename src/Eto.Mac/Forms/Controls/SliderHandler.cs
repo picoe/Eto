@@ -26,7 +26,7 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
-#if MACOS_NET
+#if MACOS_NET && !VSMAC
 			public override bool IsVertical => Handler?.Orientation == Orientation.Vertical;
 #else
 			public override nint IsVertical => Handler?.Orientation == Orientation.Vertical ? 1 : 0;

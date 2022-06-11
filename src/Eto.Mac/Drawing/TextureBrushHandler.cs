@@ -53,7 +53,7 @@ namespace Eto.iOS.Drawing
 
 				context.SaveState();
 				context.ConcatCTM(transform);
-				context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, Image.Height));
+				context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, (nfloat)Image.Height));
 				//transform.ToEto().TransformRectangle(rect);
 
 				if (Opacity < 1f)

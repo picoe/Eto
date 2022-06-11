@@ -6,7 +6,7 @@ using System.Collections;
 using System.Linq;
 using Eto.Mac.Forms.Cells;
 
-#if MACOS_NET
+#if MACOS_NET && !VSMAC
 using NSDraggingInfo = AppKit.INSDraggingInfo;
 #endif
 
@@ -110,19 +110,7 @@ namespace Eto.Mac.Forms.Controls
 				return Handler?.ValidateProposedFirstResponder(responder, forEvent, valid) ?? valid;
 			}
 
-#if XAMMAC2
-			public override NSImage DragImageForRowsWithIndexestableColumnseventoffset(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
-			{
-				var dragInfo = Handler?.DragInfo;
-				var img = dragInfo?.DragImage;
-				if (img != null)
-				{
-					dragImageOffset = dragInfo.GetDragImageOffset();
-					return img;
-				}
-				return base.DragImageForRowsWithIndexestableColumnseventoffset(dragRows, tableColumns, dragEvent, ref dragImageOffset);
-			}
-#elif MACOS_NET
+#if MACOS_NET
 			public override NSImage DragImageForRows(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
 			{
 				var dragInfo = Handler?.DragInfo;
@@ -133,6 +121,18 @@ namespace Eto.Mac.Forms.Controls
 					return img;
 				}
 				return base.DragImageForRows(dragRows, tableColumns, dragEvent, ref dragImageOffset);
+			}
+#elif XAMMAC2
+			public override NSImage DragImageForRowsWithIndexestableColumnseventoffset(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
+			{
+				var dragInfo = Handler?.DragInfo;
+				var img = dragInfo?.DragImage;
+				if (img != null)
+				{
+					dragImageOffset = dragInfo.GetDragImageOffset();
+					return img;
+				}
+				return base.DragImageForRowsWithIndexestableColumnseventoffset(dragRows, tableColumns, dragEvent, ref dragImageOffset);
 			}
 #else
 
