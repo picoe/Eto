@@ -4,12 +4,12 @@ using NUnit.Framework;
 using Eto.Forms;
 using System.Threading;
 
-#if XAMMAC2
-using AppKit;
-using CoreGraphics;
-#else
+#if MONOMAC
 using MonoMac.AppKit;
 using MonoMac.CoreGraphics;
+#else
+using AppKit;
+using CoreGraphics;
 #endif
 
 namespace Eto.Test.Mac.UnitTests

@@ -63,7 +63,7 @@ namespace Eto.Forms
 		{
 			if (window == null)
 				return null;
-			return new Form(new FormHandler(window));
+			return new Form(new NativeFormHandler(window));
 		}
 
 		/// <summary>

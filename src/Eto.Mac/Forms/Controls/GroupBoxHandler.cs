@@ -3,40 +3,22 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Forms.Controls
 {
 	public class GroupBoxHandler : MacPanel<NSBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
+		SizeF? _borderSize;
+		
+		/// <summary>
+		/// Use a separate class so it doesn't get event methods added
+		/// </summary>
+		public class EtoContentView : MacPanelView
+		{
+			
+		}
+
 		public class EtoBox : NSBox, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -50,9 +32,12 @@ namespace Eto.Mac.Forms.Controls
 			public EtoBox(GroupBoxHandler handler)
 			{
 				Title = string.Empty;
-				ContentView = new MacPanelView { Handler = handler };
+				TitlePosition = NSTitlePosition.NoTitle;
+				ContentView = new EtoContentView { Handler = handler };
 			}
 		}
+
+		protected override bool DefaultUseAlignmentFrame => true;
 
 		protected override NSBox CreateControl() => new EtoBox(this);
 
@@ -65,8 +50,6 @@ namespace Eto.Mac.Forms.Controls
 		public override NSView ContainerControl => Control;
 
 		public override NSView ContentControl => (NSView)Control.ContentView;
-
-		public override bool Enabled { get; set; }
 
 		public override Size ClientSize
 		{
@@ -106,18 +89,37 @@ namespace Eto.Mac.Forms.Controls
 		public virtual string Text
 		{
 			get { return Control.Title; }
-			set { Control.Title = value; }
+			set 
+			{
+				Control.Title = value ?? string.Empty;
+				Control.TitlePosition = string.IsNullOrEmpty(value) ? NSTitlePosition.NoTitle : NSTitlePosition.AtTop;
+				InvalidateMeasure();
+			}
 		}
 
-		public override SizeF GetPreferredSize(SizeF availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var boundsSize = new SizeF(14, (float)TitleCell.CellSize.Height + 8);
-			availableSize -= boundsSize;
-
-			return base.GetPreferredSize(availableSize) + boundsSize;
+			var borderSize = _borderSize ?? (_borderSize = CalculateBorderSize()) ?? SizeF.Empty;
+			return base.GetNaturalSize(availableSize - borderSize) + borderSize;
 		}
 
-		NSTextFieldCell TitleCell { get { return (NSTextFieldCell)Control.TitleCell; } }
+		SizeF CalculateBorderSize()
+		{
+			var frame = Control.Frame;
+			var contentSize = ContentControl.Frame.Size;
+			if (contentSize.Width <= 10 || contentSize.Height <= 10)
+			{
+				contentSize = new CGSize(100, 100);
+				var oldFrame = Control.Frame;
+				Control.SetFrameFromContentFrame(new CGRect(CGPoint.Empty, contentSize));
+				frame = Control.Frame;
+				Control.Frame = oldFrame;
+			}
+			frame = Control.GetAlignmentRectForFrame(frame);
+			return (frame.Size - contentSize).ToEto();
+		}
+
+		NSTextFieldCell TitleCell => (NSTextFieldCell)Control.TitleCell;
 
 		public Color TextColor
 		{
@@ -128,5 +130,13 @@ namespace Eto.Mac.Forms.Controls
 				Control.SetNeedsDisplay();
 			}
 		}
+
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+			_borderSize = null;
+		}
+
+		protected override bool UseNSBoxBackgroundColor => false;
 	}
 }

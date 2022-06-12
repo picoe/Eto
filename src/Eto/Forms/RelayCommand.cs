@@ -33,7 +33,10 @@ namespace Eto.Forms
 		/// <param name="execute">Delegate to execute the command.</param>
 		/// <param name="canExecute">Delegate to determine the state of whether the command can be executed.</param>
 		public RelayCommand(Action execute, Func<bool> canExecute)
-			: base((obj) => execute(), (obj) => canExecute())
+			: base(
+				obj => execute(), 
+				canExecute != null ? (Predicate<object>)(obj => canExecute()) : null
+			)
 		{
 		}
 	}
@@ -57,8 +60,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected virtual void OnCanExecuteChanged(EventArgs e)
 		{
-			if (CanExecuteChanged != null)
-				CanExecuteChanged(this, e);
+			CanExecuteChanged?.Invoke(this, e);
 		}
 
 		/// <summary>
@@ -85,10 +87,7 @@ namespace Eto.Forms
 		/// <param name="canExecute">Delegate to determine the state of whether the command can be executed.</param>
 		public RelayCommand(Action<T> execute, Predicate<T> canExecute)
 		{
-			if (execute == null)
-				throw new ArgumentNullException("execute");
-
-			this.execute = execute;
+			this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
 			this.canExecute = canExecute;
 		}
 
@@ -99,7 +98,7 @@ namespace Eto.Forms
 		/// <param name="parameter">Command argument from the control.</param>
 		public bool CanExecute(object parameter)
 		{
-			return canExecute == null || canExecute((T)parameter);
+			return canExecute == null || canExecute(parameter is T tparam ? tparam : default(T));
 		}
 
 		/// <summary>
@@ -108,7 +107,7 @@ namespace Eto.Forms
 		/// <param name="parameter">Command argument from the control.</param>
 		public void Execute(object parameter)
 		{
-			execute((T)parameter);
+			execute?.Invoke(parameter is T tparam ? tparam : default(T));
 		}
 
 		/// <summary>

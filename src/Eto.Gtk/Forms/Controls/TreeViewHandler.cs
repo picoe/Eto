@@ -8,7 +8,7 @@ using Eto.GtkSharp.Forms.Menu;
 namespace Eto.GtkSharp.Forms.Controls
 {
 	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
-	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, TreeView.IHandler, IGtkListModelHandler<ITreeItem, ITreeStore>
+	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, TreeView.IHandler, IGtkTreeModelHandler<ITreeItem, ITreeStore>
 	{
 		GtkTreeModel<ITreeItem, ITreeStore> model;
 		CollectionHandler collection;
@@ -190,6 +190,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleTestExpandRow(object o, Gtk.TestExpandRowArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.cancelExpandCollapseEvents)
 					return;
 				var e = new TreeViewItemCancelEventArgs(handler.GetItem(args.Path) as ITreeItem);
@@ -200,6 +202,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleTestCollapseRow(object o, Gtk.TestCollapseRowArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.cancelExpandCollapseEvents)
 					return;
 				var e = new TreeViewItemCancelEventArgs(handler.GetItem(args.Path) as ITreeItem);
@@ -210,6 +214,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleRowExpanded(object o, Gtk.RowExpandedArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.cancelExpandCollapseEvents)
 					return;
 				var item = handler.GetItem(args.Path) as ITreeItem;
@@ -224,6 +230,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleRowCollapsed(object o, Gtk.RowCollapsedArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.cancelExpandCollapseEvents)
 					return;
 				var item = handler.GetItem(args.Path) as ITreeItem;
@@ -236,17 +244,19 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleRowActivated(object o, Gtk.RowActivatedArgs args)
 			{
-				Handler.Callback.OnActivated(Handler.Widget, new TreeViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
+				Handler?.Callback.OnActivated(Handler.Widget, new TreeViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
 			}
 
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var item = handler.model.GetItemAtPath(args.Path);
 				if (item != null)
 				{
@@ -259,6 +269,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleEdited(object o, Gtk.EditedArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var item = handler.model.GetItemAtPath(args.Path);
 				if (item != null)
 				{
@@ -271,6 +283,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
 				{
 					var menu = ((ContextMenuHandler)handler.contextMenu.Handler).Control;
@@ -326,7 +340,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public GLib.Value GetColumnValue(ITreeItem item, int column, int row)
+		public GLib.Value GetColumnValue(ITreeItem item, int column, int row, Gtk.TreeIter iter)
 		{
 			switch (column)
 			{
@@ -394,6 +408,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			return null;
 		}
 
+		public ITreeItem GetItem(int row) => DataStore?[row];
+
 		public bool LabelEdit
 		{
 			get { return textCell.Editable; }
@@ -405,6 +421,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return textCell.ForegroundGdk.ToEto(); }
 			set { textCell.ForegroundGdk = value.ToGdk(); }
 		}
+
+		public int Count => DataStore?.Count ?? 0;
 	}
 }
 

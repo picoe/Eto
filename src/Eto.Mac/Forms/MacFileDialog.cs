@@ -4,35 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Forms
 {
@@ -56,7 +28,8 @@ namespace Eto.Mac.Forms
 			if (Directory.Exists(url.Path))
 				return true;
 
-			var extension = Path.GetExtension(url.Path).TrimStart('.');
+			// Xamarin.Mac's version of mono has string.TrimStart(char), which is not in the .NET Framework!
+			var extension = Path.GetExtension(url.Path).TrimStart(new[] { '.' });
 			if (Handler.MacFilters == null || Handler.MacFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
 				return true;
 			return false;
@@ -197,8 +170,8 @@ namespace Eto.Mac.Forms
 
 		public string Title
 		{
-			get { return Control.Title; }
-			set { Control.Title = value ?? string.Empty; }
+			get { return Control.Message; }
+			set { Control.Message = value ?? string.Empty; }
 		}
 
 		public DialogResult ShowDialog(Window parent)

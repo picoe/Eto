@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
@@ -21,10 +21,15 @@ namespace Eto.GtkSharp.Forms.Controls
 		public CalendarHandler()
 		{
 			Control = new Gtk.Calendar { Date = DateTime.Today };
-			Control.DaySelected += HandleDaySelected;
 
 			align = new Gtk.EventBox();
 			align.Child = Control;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.DaySelected += Connector.HandleDaySelected;
 		}
 
 		void SetContent()
@@ -48,7 +53,7 @@ namespace Eto.GtkSharp.Forms.Controls
 						endCalendar.Day = 0;
 					else
 						endCalendar.Date = Control.Date;
-					endCalendar.DaySelected += HandleEndDaySelected;
+					endCalendar.DaySelected += Connector.HandleEndDaySelected;
 				}
 				if (Control.Day == 0)
 					endCalendar.Day = 0;
@@ -139,7 +144,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return minDate; }
 			set
-			{ 
+			{
 				if (minDate != value)
 				{
 					minDate = value;
@@ -212,10 +217,10 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Control.Date; }
 			set
-			{ 
+			{
 				if (value != SelectedDate)
 				{
-					Control.Date = value; 
+					Control.Date = value;
 					if (endCalendar != null)
 						endCalendar.Date = value;
 				}
@@ -237,6 +242,21 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 			}
 		}
+
+		protected new CalendarConnector Connector => (CalendarConnector)base.Connector;
+
+		protected override WeakConnector CreateConnector() => new CalendarConnector();
+
+		/// <summary>
+		/// Connector for events to keep a weak reference to allow gtk controls to be garbage collected when no longer referenced
+		/// </summary>
+		protected class CalendarConnector : GtkControlConnector
+		{
+			new CalendarHandler Handler => (CalendarHandler)base.Handler;
+
+			public virtual void HandleDaySelected(object sender, EventArgs e) => Handler?.HandleDaySelected(sender, e);
+
+			public virtual void HandleEndDaySelected(object sender, EventArgs e) => Handler?.HandleEndDaySelected(sender, e);
+		}
 	}
 }
-

@@ -1,39 +1,52 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors Condition="$(Configuration) == 'Release'">true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;DEBUG;PCL</DefineConstants>
-    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE;PCL</DefineConstants>
-    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
+  <PropertyGroup>
+    <PackageId>Eto.Forms</PackageId>
+    <Title>Eto.Forms</Title>
+    <Description>Eto.Forms UI Framework</Description>
+    <PackageTags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</PackageTags>
+    <PackageDescription>
+Eto.Forms is a cross platform desktop user interface framework.
+
+This framework is built so that you can target multiple platforms with one UI codebase.
+
+The goal of this framework is to expose a common API that can be used to build functional applications that run across platforms using their native toolkit. This will make your applications look and work as if it were a native application on all platforms.
+
+For advanced scenarios, you can take advantage of each platform's capabilities by wrapping your common UI in a larger application, or even create your own high-level controls with a custom implementations per platform.
+
+This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac, Xamarin.Mac, and GTK#.
+
+In order to run your Eto.Forms based application, you must also install one (or more) of the following packages:
+
+- Eto.Platform.Wpf
+- Eto.Platform.Windows
+- Eto.Platform.Direct2D
+- Eto.Platform.Gtk
+- Eto.Platform.Gtk2
+- Eto.Platform.Gtk3
+- Eto.Platform.Mac64
+- Eto.Platform.XamMac2
+
+To get more information about how to get started, read the wiki:
+
+https://github.com/picoe/Eto/wiki
+    </PackageDescription>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Shared\EnumerableExtensions.cs" />
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\LICENSE.txt">
-      <Link>LICENSE.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="sdk\*" Pack="True" PackagePath="sdk" />
+    <None Include="$(BuildDir)\Xamarin.Mac.targets" Pack="True" PackagePath="sdk" />
+    <None Remove="Eto.Forms.targets" />
+    <None Include="Eto.Forms.targets" Pack="true" PackagePath="build" />
+    <None Update="$(BasePath)LICENSE.txt" CopyToOutputDirectory="PreserveNewest" /> 
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Policies>
-          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentBlock="True" IndentBraces="False" IndentSwitchSection="True" IndentSwitchCaseSection="True" LabelPositioning="OneLess" NewLinesForBracesInTypes="True" NewLinesForBracesInMethods="True" NewLinesForBracesInProperties="True" NewLinesForBracesInAccessors="True" NewLinesForBracesInAnonymousMethods="True" NewLinesForBracesInControlBlocks="True" NewLinesForBracesInAnonymousTypes="True" NewLinesForBracesInObjectCollectionArrayInitializers="True" NewLinesForBracesInLambdaExpressionBody="True" NewLineForElse="True" NewLineForCatch="True" NewLineForFinally="True" NewLineForMembersInObjectInit="True" NewLineForMembersInAnonymousTypes="True" NewLineForClausesInQuery="True" SpacingAfterMethodDeclarationName="False" SpaceWithinMethodDeclarationParenthesis="False" SpaceBetweenEmptyMethodDeclarationParentheses="False" SpaceAfterMethodCallName="False" SpaceWithinMethodCallParentheses="False" SpaceBetweenEmptyMethodCallParentheses="False" SpaceAfterControlFlowStatementKeyword="True" SpaceWithinExpressionParentheses="False" SpaceWithinCastParentheses="False" SpaceWithinOtherParentheses="False" SpaceAfterCast="False" SpacesIgnoreAroundVariableDeclaration="False" SpaceBeforeOpenSquareBracket="False" SpaceBetweenEmptySquareBrackets="False" SpaceWithinSquareBrackets="False" SpaceAfterColonInBaseTypeDeclaration="True" SpaceAfterComma="True" SpaceAfterDot="False" SpaceAfterSemicolonsInForStatement="True" SpaceBeforeColonInBaseTypeDeclaration="True" SpaceBeforeComma="False" SpaceBeforeDot="False" SpaceBeforeSemicolonsInForStatement="False" SpacingAroundBinaryOperator="Single" WrappingPreserveSingleLine="True" WrappingKeepStatementsOnSingleLine="True" PlaceSystemDirectiveFirst="True" scope="text/x-csharp" />
-          <TextStylePolicy FileWidth="120" TabWidth="4" TabsToSpaces="False" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" scope="text/plain" />
-        </Policies>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

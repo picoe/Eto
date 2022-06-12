@@ -1,0 +1,22 @@
+﻿<Project Sdk="Eto.Forms/2.7.1-dev">
+
+  <!--
+    Set the BuildPlatform property to the Eto platform you wish to build for.
+    The default is the platform you are building on.
+    Valid values: Wpf, Windows, Mac64, XamMac2, Gtk, Direct2D
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+
+    <!-- <EnableDmgBuild>True</EnableDmgBuild> -->
+    <!-- <EnableCompressionInSingleFile>True</EnableCompressionInSingleFile> -->
+    <!-- <EnableCodeSigning>True</EnableCodeSigning> -->
+    <!-- <EnableNotarization>True</EnableNotarization>     -->
+    <!-- <PublishTrimmed>True</PublishTrimmed> -->
+    <!-- <MacBundleDotNet>False</MacBundleDotNet> -->
+    <!-- <PublishSingleFile>True</PublishSingleFile> -->
+    <!-- <IncludeAllContentForSelfExtract>False</IncludeAllContentForSelfExtract> -->
+  </PropertyGroup>
+  
+</Project>

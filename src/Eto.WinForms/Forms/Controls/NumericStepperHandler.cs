@@ -1,7 +1,8 @@
-﻿using System;
-using SD = System.Drawing;
+using System;
+using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
+using Eto.Drawing;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
@@ -119,6 +120,18 @@ namespace Eto.WinForms.Forms.Controls
 					return;
 				base.OnTextBoxKeyPress(source, e);
 			}
+
+			public override sd.Size GetPreferredSize(sd.Size proposedSize)
+			{
+				var size = Handler?.UserPreferredSize ?? new Eto.Drawing.Size(-1, -1);
+				var basePreferredSize = base.GetPreferredSize(proposedSize);
+				if (size.Width < 0)
+					size.Width = basePreferredSize.Width;
+
+				if (size.Height < 0)
+					size.Height = basePreferredSize.Height;
+				return size.ToSD();
+			}
 		}
 
 		public NumericStepperHandler()
@@ -126,15 +139,11 @@ namespace Eto.WinForms.Forms.Controls
 			Control = new EtoNumericUpDown
 			{
 				Handler = this,
-				Maximum = decimal.MaxValue,
-				Minimum = decimal.MinValue,
+				Maximum = DoubleToDecimal(double.MaxValue),
+				Minimum = DoubleToDecimal(double.MinValue),
 				Width = 80
 			};
-			Control.ValueChanged += (sender, e) =>
-			{
-				UpdateRequiredDigits();
-				Callback.OnValueChanged(Widget, EventArgs.Empty);
-			};
+			Control.ValueChanged += Control_ValueChanged;
 			Control.LostFocus += (sender, e) =>
 			{
 				// ensure value is always shown
@@ -144,6 +153,31 @@ namespace Eto.WinForms.Forms.Controls
 					Control.UpdateText();
 				}
 			};
+		}
+		
+		int valueChanging;
+		double? lastValue;
+
+		private void Control_ValueChanged(object sender, EventArgs e)
+		{
+			if (valueChanging > 0)
+				return;
+			valueChanging++;
+			var val = Value;
+			if (Wrap)
+			{
+				if (val < MinValue)
+					Value = val = MaxValue;
+				else if (val > MaxValue)
+					Value = val = MinValue;
+			}
+			UpdateRequiredDigits();
+			valueChanging--;
+			if (val != lastValue)
+			{
+				lastValue = val;
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
+			}
 		}
 
 		public override void OnUnLoad(EventArgs e)
@@ -163,27 +197,42 @@ namespace Eto.WinForms.Forms.Controls
 			get { return HasFormatString ? (double)Control.Value : Math.Round((double)Control.Value, MaximumDecimalPlaces); }
 			set
 			{
-				var val = Math.Max((double)Control.Minimum, Math.Min((double)Control.Maximum, value));
-				Control.Value = (decimal)val;
+				var val = Math.Max(MinValue, Math.Min(MaxValue, value));
+				Control.Value = DoubleToDecimal(val);
 			}
 		}
 
+		static readonly object MinValue_Key = new object();
+		static readonly object MaxValue_Key = new object();
+
 		public double MinValue
 		{
-			get { return Control.Minimum == decimal.MinValue ? double.NegativeInfinity : (double)Control.Minimum; }
-			set { Control.Minimum = double.IsNegativeInfinity(value) ? decimal.MinValue : (decimal)value; }
+			get => Widget.Properties.Get<double>(MinValue_Key, double.MinValue);
+			set
+			{
+				if (Widget.Properties.TrySet(MinValue_Key, value, double.MinValue))
+					SetMinMaxValues();
+			}
 		}
 
 		public double MaxValue
 		{
-			get { return Control.Maximum == decimal.MaxValue ? double.PositiveInfinity : (double)Control.Maximum; }
-			set { Control.Maximum = double.IsPositiveInfinity(value) ? decimal.MaxValue : (decimal)value; }
+			get => Widget.Properties.Get<double>(MaxValue_Key, double.MaxValue);
+			set
+			{
+				if (Widget.Properties.TrySet(MaxValue_Key, value, double.MaxValue))
+					SetMinMaxValues();
+			}
 		}
 
 		public double Increment
 		{
 			get { return (double)Control.Increment; }
-			set { Control.Increment = (decimal)value; }
+			set
+			{
+				Control.Increment = (decimal)value;
+				SetMinMaxValues();
+			}
 		}
 
 		static readonly object MaximumDecimalPlaces_Key = new object();
@@ -193,11 +242,11 @@ namespace Eto.WinForms.Forms.Controls
 			get { return Widget.Properties.Get<int>(MaximumDecimalPlaces_Key); }
 			set
 			{
-				Widget.Properties.Set(MaximumDecimalPlaces_Key, value, () =>
+				if (Widget.Properties.TrySet(MaximumDecimalPlaces_Key, value))
 				{
 					DecimalPlaces = Math.Min(DecimalPlaces, value);
 					UpdateRequiredDigits();
-				});
+				};
 			}
 		}
 
@@ -208,11 +257,11 @@ namespace Eto.WinForms.Forms.Controls
 			get { return Widget.Properties.Get<int>(DecimalPlaces_Key); }
 			set
 			{
-				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
+				if (Widget.Properties.TrySet(DecimalPlaces_Key, value))
 				{
 					MaximumDecimalPlaces = Math.Max(value, MaximumDecimalPlaces);
 					UpdateRequiredDigits();
-				});
+				};
 			}
 		}
 
@@ -267,6 +316,59 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		static readonly object Wrap_Key = new object();
+
+		public bool Wrap
+		{
+			get => Widget.Properties.Get<bool>(Wrap_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(Wrap_Key, value))
+					SetMinMaxValues();
+			}
+		}
+
+		void EnsureWithinRange()
+		{
+			var val = Value;
+			var newval = Math.Max(MinValue, Math.Min(MaxValue, val));
+			if (val != newval)
+				Control.Value = DoubleToDecimal(newval);
+		}
+
+		void SetMinMaxValues()
+		{
+			valueChanging++;
+			var val = Value;
+			var min = MinValue;
+			var max = MaxValue;
+			if (Wrap)
+			{
+				if (!double.IsNaN(min))
+					min -= Increment;
+				if (!double.IsNaN(max))
+					max += Increment;
+			}
+
+			Control.Minimum = DoubleToDecimal(min);
+			Control.Maximum = DoubleToDecimal(max);
+			UpdateRequiredDigits();
+			EnsureWithinRange();
+			if (val != Value)
+			{
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
+			}
+			valueChanging--;
+		}
+		
+		decimal DoubleToDecimal(double value)
+		{
+			if (double.IsNegativeInfinity(value) || value < (double)decimal.MinValue)
+				return decimal.MinValue;
+			if (double.IsPositiveInfinity(value) || value > (double)decimal.MaxValue)
+				return decimal.MaxValue;
+			return (decimal)value;
+		}
 
 		void UpdateFormat()
 		{

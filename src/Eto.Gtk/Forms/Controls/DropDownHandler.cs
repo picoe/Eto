@@ -4,6 +4,7 @@ using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 using System.Collections;
 using System.Collections.Generic;
+using GLib;
 using Gtk;
 
 namespace Eto.GtkSharp.Forms.Controls
@@ -12,34 +13,36 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		protected override void Create()
 		{
-			listStore = new Gtk.ListStore(typeof(string), typeof(Gdk.Pixbuf));
-			Control = new Gtk.ComboBox(listStore);
+			Control = new Gtk.ComboBox();
 			var imageCell = new Gtk.CellRendererPixbuf();
 			Control.PackStart(imageCell, false);
-			Control.SetAttributes(imageCell, "pixbuf", 1);
+			Control.AddAttribute(imageCell, "pixbuf", 1);
 			text = new Gtk.CellRendererText();
+
 			Control.PackStart(text, true);
-			Control.SetAttributes(text, "text", 0);
 			Control.Changed += Connector.HandleChanged;
 		}
 	}
 
-	public abstract class DropDownHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, DropDown.IHandler
+	public abstract class DropDownHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, DropDown.IHandler, IGtkListModelHandler<object>
 		where TControl : Gtk.ComboBox
 		where TWidget : DropDown
 		where TCallback : DropDown.ICallback
 	{
-		protected Font font;
+		IIndirectBinding<string> _itemTextBinding;
+		protected GtkListModel<object> model;
+		protected Eto.Drawing.Font font;
 		protected CollectionHandler collection;
-		protected Gtk.ListStore listStore;
 		protected Gtk.CellRendererText text;
 		protected Gtk.EventBox container;
 
 		protected override void Initialize()
 		{
 			Create();
+			UpdateModel();
 			container = new Gtk.EventBox();
 			container.Child = Control;
+			SetAttributes(false);
 			base.Initialize();
 		}
 
@@ -53,12 +56,9 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected abstract void Create();
 
-		protected new DropDownConnector Connector { get { return (DropDownConnector)base.Connector; } }
+		protected new DropDownConnector Connector => (DropDownConnector)base.Connector;
 
-		protected override WeakConnector CreateConnector()
-		{
-			return new DropDownConnector();
-		}
+		protected override WeakConnector CreateConnector() => new DropDownConnector();
 
 		protected class DropDownConnector : GtkControlConnector
 		{
@@ -67,12 +67,16 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public virtual void HandleChanged(object sender, EventArgs e)
 			{
-				if (Handler.SuppressIndexChanged > 0)
+				var handler = Handler;
+				if (handler == null)
 					return;
-				var newIndex = Handler.SelectedIndex;
+					
+				if (handler.SuppressIndexChanged > 0)
+					return;
+				var newIndex = handler.SelectedIndex;
 				if (newIndex != lastIndex)
 				{
-					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+					handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 					lastIndex = newIndex;
 				}
 			}
@@ -80,34 +84,44 @@ namespace Eto.GtkSharp.Forms.Controls
 #if GTK2
 			internal void HandlePopupShownChanged(object o, GLib.NotifyArgs args)
 			{
-				if (Handler.Control.PopupShown)
-					Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				if (handler.Control.PopupShown)
+					handler.Callback.OnDropDownOpening(handler.Widget, EventArgs.Empty);
 				else
-					Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+					handler.Callback.OnDropDownClosed(handler.Widget, EventArgs.Empty);
 			}
 #elif GTK3
 			[GLib.ConnectBefore]
 			public virtual void HandlePoppedUp(object sender, EventArgs e)
 			{
-				Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
 			}
 
-			public virtual void HandlePoppedDown(object o, PoppedDownArgs args)
+			public virtual void HandlePoppedDown(object o, Gtk.PoppedDownArgs args)
 			{
-				Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
 			}
 #endif
 		}
 
-		public override Size Size
+		public override Eto.Drawing.Size Size
 		{
 			get { return base.Size; }
 			set
 			{
 				if (value.Width == -1)
+				{
 					text.Ellipsize = Pango.EllipsizeMode.None;
+					text.Width = -1;
+				}
 				else
+				{
 					text.Ellipsize = Pango.EllipsizeMode.End;
+					text.Width = 1;
+				}
 
 				base.Size = value;
 			}
@@ -119,22 +133,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { Control.Active = value; }
 		}
 
-		public override Gtk.Widget ContainerControl
-		{
-			get { return container; }
-		}
+		public override Gtk.Widget ContainerControl => container;
 
-		public override Gtk.Widget EventControl
-		{
-			get { return container; }
-		}
+		public override Gtk.Widget EventControl => container;
 
-		public override Font Font
+		public override Eto.Drawing.Font Font
 		{
-			get
-			{
-				return font ?? (font = text.FontDesc.ToEto());
-			}
+			get => font ?? (font = text.FontDesc.ToEto());
 			set
 			{
 				font = value;
@@ -149,61 +154,65 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			public DropDownHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
-			public override void AddItem(object item)
+			public override void AddRange(IEnumerable<object> items)
 			{
-				Handler.listStore.AppendValues(GetValues(item));
+				Handler.UpdateModel();
 				Handler.Control.QueueResize();
 			}
 
-			object[] GetValues(object dataItem)
+			public override void AddItem(object item)
 			{
-				return new object[] {
-					Handler.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty,
-					Handler.Widget.ItemImageBinding?.GetValue(dataItem).ToGdk()
-				};
+				var iter = Handler.model.GetIterAtRow(Handler.Count);
+				var path = Handler.model.GetPathAtRow(Handler.Count);
+				Handler.Control.Model.EmitRowInserted(path, iter);
+				Handler.Control.QueueResize();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				Handler.listStore.InsertWithValues(index, GetValues(item));
+				var iter = Handler.model.GetIterAtRow(index);
+				var path = Handler.model.GetPathAtRow(index);
+				Handler.Control.Model.EmitRowInserted(path, iter);
 				Handler.Control.QueueResize();
 			}
 
 			public override void RemoveItem(int index)
 			{
-				Gtk.TreeIter iter;
-				if (Handler.listStore.IterNthChild(out iter, index))
-					Handler.listStore.Remove(ref iter);
+				var path = Handler.model.GetPathAtRow(index);
+				Handler.Control.Model.EmitRowDeleted(path);
 				Handler.Control.QueueResize();
 			}
 
 			public override void RemoveAllItems()
 			{
-				Handler.listStore.Clear();
+				Handler.UpdateModel();
 				Handler.Control.QueueResize();
 			}
 		}
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get => collection?.Collection;
 			set
 			{
 				SuppressIndexChanged++;
 				var selected = Widget.SelectedValue;
+				var selectedIndex = SelectedIndex;
 				collection?.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
 				if (!ReferenceEquals(selected, null))
 				{
-					SelectedIndex = collection.IndexOf(selected);
-					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+					var newIndex = collection.IndexOf(selected);
+					SelectedIndex = newIndex;
+					if (newIndex != selectedIndex)
+						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 				SuppressIndexChanged--;
 			}
 		}
 
-		public virtual Color TextColor
+		public virtual Eto.Drawing.Color TextColor
 		{
 			get { return text.ForegroundGdk.ToEto(); }
 			set
@@ -214,7 +223,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public override Color BackgroundColor
+		public override Eto.Drawing.Color BackgroundColor
 		{
 			get { return Control.Child.GetBackground(); }
 			set
@@ -227,6 +236,20 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.QueueDraw();
 			}
 		}
+
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => _itemTextBinding;
+			set
+			{
+				_itemTextBinding = value;
+				if (Widget.Loaded)
+					Control.QueueDraw();
+			}
+		}
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+		public int Count => collection?.Count ?? 0;
+		public int NumberOfColumns => 3;
 
 		public override void AttachEvent(string id)
 		{
@@ -250,11 +273,70 @@ namespace Eto.GtkSharp.Forms.Controls
 				case Eto.Forms.Control.ShownEvent:
 					Control.Mapped += Connector.MappedEvent;
 					break;
+				case DropDown.FormatItemEvent:
+					SetAttributes(true);
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
+
+		protected virtual void SetAttributes(bool useFormatting)
+		{
+			Control.ClearAttributes(text);
+			Control.AddAttribute(text, "text", 0);
+			if (useFormatting)
+			{
+				Control.AddAttribute(text, "font-desc", 2);
+			}
+		}
+
+		protected void UpdateModel()
+		{
+			model = new GtkListModel<object> { Handler = this };
+			Control.Model = new Gtk.TreeModelAdapter(model);
+		}
+
+		public object GetItem(int row) => collection?.ElementAt(row);
+
+		Bitmap DefaultImage => new Bitmap(1, 1, PixelFormat.Format32bppRgba);
+
+		public Value GetColumnValue(object item, int column, int row, TreeIter iter)
+		{
+			if (column == 0)
+			{
+				// text
+				var val = ItemTextBinding?.GetValue(item);
+				return new Value(val ?? string.Empty);
+			}
+			else if (column == 1)
+			{
+				// image
+				var val = Widget.ItemImageBinding?.GetValue(item);
+				// Value.Empty causes warnings.. hrm..
+				return val != null ? new Value(val.ToGdk()) : new Value((Gdk.Pixbuf)null);
+			}
+			else if (column == 2)
+			{
+				// font-desc
+				var currentFont = FontControl.GetFont();
+				var args = new DropDownFormatEventArgs(item, row, currentFont.ToEto());
+				Callback.OnFormatItem(Widget, args);
+
+				if (args.Font != null)
+				{
+					var val = args.Font.ToPango();
+					if (val != null)
+						return new Value(val);
+				}
+				return new Value(currentFont);
+			}
+
+			return Value.Empty;
+		}
+
+		public int GetRowOfItem(object item) => collection?.IndexOf(item) ?? -1;
 	}
 }
 

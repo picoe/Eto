@@ -17,6 +17,18 @@ namespace Eto.Wpf.Forms
 		readonly swc.Border border;
 		Size? clientSize;
 
+		public override bool Enabled
+		{
+			get => base.Enabled;
+			set
+			{
+				base.Enabled = value;
+
+				// some controls (Expander, GroupBox, Scrollable, etc) don't directly affect children for some (strange) reason.
+				border.IsEnabled = value;
+			}
+		}
+
 		public override Size ClientSize
 		{
 			get

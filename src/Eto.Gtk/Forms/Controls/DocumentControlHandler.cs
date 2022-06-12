@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Forms;
@@ -10,7 +10,6 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		List<DocumentPage> pages;
 		bool allowReorder;
-		bool enabled = true;
 
 		public DocumentControlHandler()
 		{
@@ -18,6 +17,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			Control = new Gtk.Notebook();
 			Control.Scrollable = true;
+		}
+
+		static readonly object HideTabsWithSinglePage_Key = new object();
+
+		public bool HideTabsWithSinglePage
+		{
+			get => Widget.Properties.Get<bool>(HideTabsWithSinglePage_Key);
+			set => Widget.Properties.Set(HideTabsWithSinglePage_Key, value);
 		}
 
 		protected override void Initialize()
@@ -92,6 +99,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		void UpdateReorder()
 		{
+			var enabled = Enabled;
 			foreach (var page in pages)
 			{
 				var pageHandler = (DocumentPageHandler)page.Handler;
@@ -111,7 +119,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				pageHandler.ContainerControl.ShowAll();
 			}
 
-			pageHandler.LabelControl.Sensitive = enabled;
+			pageHandler.LabelControl.Sensitive = Enabled;
 
 			if (index == -1)
 				Control.AppendPage(pageHandler.ContainerControl, pageHandler.LabelControl);
@@ -120,26 +128,34 @@ namespace Eto.GtkSharp.Forms.Controls
 
 
 			Control.SetTabReorderable(pageHandler.ContainerControl, allowReorder && Enabled);
-			Control.ShowTabs = Control.NPages > 1;
+			SetShowTabs();
 		}
 
 		public override bool Enabled
 		{
-			get { return enabled; }
+			get { return base.Enabled; }
 			set
 			{
-				if (enabled != value)
+				if (Enabled != value)
 				{
-					enabled = value;
+					base.Enabled = value;
 					UpdateReorder();
 				}
+			}
+		}
+
+		void SetShowTabs()
+		{
+			if (HideTabsWithSinglePage)
+			{
+				Control.ShowTabs = Control.NPages > 1;
 			}
 		}
 
 		internal void ClosePage(Gtk.Widget control, DocumentPage page)
 		{
 			Control.RemovePage(Control.PageNum(control));
-			Control.ShowTabs = Control.NPages > 1;
+			SetShowTabs();
 
 			if (Widget.Loaded)
 				Callback.OnPageClosed(Widget, new DocumentPageEventArgs(page));
@@ -153,7 +169,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (Widget.Loaded && Control.NPages == 0)
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 
-			Control.ShowTabs = Control.NPages > 1;
+			SetShowTabs();
 		}
 
 		public DocumentPage GetPage(int index)

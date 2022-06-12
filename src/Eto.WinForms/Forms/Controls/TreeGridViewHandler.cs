@@ -25,9 +25,9 @@ namespace Eto.WinForms.Forms.Controls
 
 		TreeController controller;
 
-		protected override object GetItemAtRow(int row)
+		public override object GetItemAtRow(int row)
 		{
-			if (row >= controller.Count)
+			if (row >= controller.Count || row < 0)
 				return null;
 			return controller[row];
 		}
@@ -35,7 +35,7 @@ namespace Eto.WinForms.Forms.Controls
 		public TreeGridViewHandler()
 		{
 			controller = new TreeController { Handler = this };
-			controller.CollectionChanged += (sender, e) => UpdateCollection();
+			controller.CollectionChanged += UpdateCollection;
 		}
 
 		public override void OnLoad(EventArgs e)
@@ -111,7 +111,9 @@ namespace Eto.WinForms.Forms.Controls
 			get { return controller.Store; }
 			set
 			{
+				UnselectAll();
 				controller.InitializeItems(value);
+				EnsureSelection();
 			}
 		}
 
@@ -120,18 +122,21 @@ namespace Eto.WinForms.Forms.Controls
 			base.Invalidate(invalidateChildren);
 			if (this.Widget.Loaded)
 			{
-				Control.Refresh();
-				AutoSizeColumns();
+				Control.Invalidate();
+				AutoSizeColumns(false);
 			}
 		}
 
-		void UpdateCollection()
+		void UpdateCollection(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			Control.RowCount = controller.Count;
 			if (Widget.Loaded)
 			{
-				Control.Refresh();
-				AutoSizeColumns();
+				Control.Invalidate();
+				if (e.Action == NotifyCollectionChangedAction.Add
+					|| e.Action == NotifyCollectionChangedAction.Reset
+					|| e.Action == NotifyCollectionChangedAction.Replace)
+					AutoSizeColumns(e.Action != NotifyCollectionChangedAction.Reset);
 			}
 		}
 
@@ -151,7 +156,7 @@ namespace Eto.WinForms.Forms.Controls
 					controller.ExpandToItem(value);
 					var index = controller.IndexOf(value);
 					if (index >= 0)
-						Control.Rows[index].Selected = true;
+						SelectRow(index);
 				}
 				else
 					Control.ClearSelection();
@@ -341,14 +346,15 @@ namespace Eto.WinForms.Forms.Controls
 			return false;
 		}
 
-		void AutoSizeColumns()
+		void AutoSizeColumns(bool displayedOnly)
 		{
-			foreach (var colHandler in Widget.Columns.Where (r => r.AutoSize).Select (r => r.Handler).OfType<GridColumnHandler> ())
+			foreach (var colHandler in Widget.Columns.Where(r => r.AutoSize).Select(r => r.Handler).OfType<GridColumnHandler>())
 			{
 				if (colHandler.AutoSize)
 				{
 					// expand this column to fit content width
-					var width = colHandler.Control.GetPreferredWidth(swf.DataGridViewAutoSizeColumnMode.AllCells, false);
+					var mode = displayedOnly ? swf.DataGridViewAutoSizeColumnMode.DisplayedCells : swf.DataGridViewAutoSizeColumnMode.AllCells;
+					var width = colHandler.Control.GetPreferredWidth(mode, false);
 					if (width > colHandler.Control.Width)
 						colHandler.Control.Width = width;
 				}
@@ -368,13 +374,13 @@ namespace Eto.WinForms.Forms.Controls
 			var selectedItems = SelectedItems.OfType<ITreeGridItem>().ToList();
 			SupressSelectionChanged++;
 			controller.ReloadData();
-			Control.ClearSelection();
+			UnselectAll();
 			bool selectionChanged = false;
 			foreach (var selectedItem in selectedItems)
 			{
 				var row = controller.IndexOf(selectedItem);
 				if (row >= 0)
-					Control.Rows[row].Selected = true;
+					SelectRow(row);
 				else
 					selectionChanged = true;
 			}
@@ -383,18 +389,20 @@ namespace Eto.WinForms.Forms.Controls
 			SupressSelectionChanged--;
 		}
 
-		public void ReloadItem(ITreeGridItem item)
+		public void ReloadItem(ITreeGridItem item, bool reloadChildren)
 		{
-			ReloadData();
+			if (reloadChildren)
+				ReloadData();
+			else
+				controller.ReloadItem(item);
 		}
 
-		public ITreeGridItem GetCellAt(PointF location, out int column)
+		public TreeGridCell GetCellAt(PointF location)
 		{
 			var result = Control.HitTest((int)location.X, (int)location.Y);
-			column = result.ColumnIndex;
-			if (result.RowIndex == -1)
-				return null;
-			return GetItemAtRow(result.RowIndex) as ITreeGridItem;
+			var column = result.ColumnIndex != -1 ? Widget.Columns[result.ColumnIndex] : null;
+			var item = GetItemAtRow(result.RowIndex);
+			return new TreeGridCell(column, result.ColumnIndex, result.Type.ToEto(), item);
 		}
 
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;

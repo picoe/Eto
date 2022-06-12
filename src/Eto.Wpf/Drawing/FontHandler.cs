@@ -23,7 +23,7 @@ namespace Eto.Wpf.Drawing
 			control.FontStyle = WpfFontStyle;
 			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
-			control.FontSize = PixelSize;
+			control.FontSize = WpfSize;
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
 				setDecorations(WpfTextDecorationsFrozen);
@@ -36,7 +36,7 @@ namespace Eto.Wpf.Drawing
 			control.FontStyle = WpfFontStyle;
 			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
-			control.FontSize = PixelSize;
+			control.FontSize = WpfSize;
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
 				setDecorations(WpfTextDecorationsFrozen);
@@ -49,7 +49,7 @@ namespace Eto.Wpf.Drawing
 			control.FontStyle = WpfFontStyle;
 			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
-			control.FontSize = PixelSize;
+			control.FontSize = WpfSize;
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
 				setDecorations(WpfTextDecorationsFrozen);
@@ -62,8 +62,18 @@ namespace Eto.Wpf.Drawing
 			control.ApplyPropertyValue(swd.TextElement.FontStyleProperty, WpfFontStyle);
 			control.ApplyPropertyValue(swd.TextElement.FontStretchProperty, WpfFontStretch);
 			control.ApplyPropertyValue(swd.TextElement.FontWeightProperty, WpfFontWeight);
-			control.ApplyPropertyValue(swd.TextElement.FontSizeProperty, PixelSize);
+			control.ApplyPropertyValue(swd.TextElement.FontSizeProperty, WpfSize);
 			control.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, WpfTextDecorationsFrozen);
+		}
+
+		public void Apply(swm.FormattedText control)
+		{
+			control.SetFontFamily(WpfFamily);
+			control.SetFontStyle(WpfFontStyle);
+			control.SetFontStretch(WpfFontStretch);
+			control.SetFontWeight(WpfFontWeight);
+			control.SetFontSize(WpfSize);
+			control.SetTextDecorations(WpfTextDecorationsFrozen);
 		}
 
 		sd.Font SDFont
@@ -83,7 +93,7 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
-		public double PixelSize
+		public double WpfSize
 		{
 			get
 			{
@@ -106,7 +116,7 @@ namespace Eto.Wpf.Drawing
 			return points * (96.0 / 72.0);
 		}
 
-		public static double PixelsToPoints(double points, sw.FrameworkElement control = null)
+		public static double PixelsToPoints(double pixels, sw.FrameworkElement control = null)
 		{
 			if (control != null)
 			{
@@ -114,10 +124,10 @@ namespace Eto.Wpf.Drawing
 				if (source != null)
 				{
 					var m = source.CompositionTarget.TransformToDevice;
-					points /= m.M22;
+					pixels /= m.M22;
 				}
 			}
-			return points * (72.0 / 96.0);
+			return pixels * (72.0 / 96.0);
 		}
 
 		public sw.FontStyle WpfFontStyle { get; private set; }
@@ -141,7 +151,7 @@ namespace Eto.Wpf.Drawing
 		public FontHandler(swc.Control control)
 		{
 			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
-			this.Size = PixelsToPoints(control.FontSize, control);
+			this.Size = PixelsToPoints(control.FontSize);
 			this.WpfFontStyle = control.FontStyle;
 			this.WpfFontStretch = control.FontStretch;
 			this.WpfFontWeight = control.FontWeight;
@@ -150,7 +160,7 @@ namespace Eto.Wpf.Drawing
 		public FontHandler(swc.TextBlock control)
 		{
 			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
-			this.Size = PixelsToPoints(control.FontSize, control);
+			this.Size = PixelsToPoints(control.FontSize);
 			this.WpfFontStyle = control.FontStyle;
 			this.WpfFontStretch = control.FontStretch;
 			this.WpfFontWeight = control.FontWeight;
@@ -232,6 +242,7 @@ namespace Eto.Wpf.Drawing
 			switch (systemFont)
 			{
 				case SystemFont.Label:
+				case SystemFont.User:
 				case SystemFont.Default:
 				case SystemFont.Message:
 				case SystemFont.Palette:
@@ -240,26 +251,26 @@ namespace Eto.Wpf.Drawing
 					Family = new FontFamily(new FontFamilyHandler(sw.SystemFonts.MessageFontFamily));
 					WpfFontStyle = sw.SystemFonts.MessageFontStyle;
 					WpfFontWeight = sw.SystemFonts.MessageFontWeight;
-					PixelSize = sw.SystemFonts.MessageFontSize;
+					WpfSize = sw.SystemFonts.MessageFontSize;
 					break;
 				case SystemFont.Bold:
 					Family = new FontFamily(new FontFamilyHandler(sw.SystemFonts.MessageFontFamily));
 					WpfFontStyle = sw.SystemFonts.MessageFontStyle;
 					WpfFontWeight = sw.FontWeights.Bold;
-					PixelSize = sw.SystemFonts.MessageFontSize;
+					WpfSize = sw.SystemFonts.MessageFontSize;
 					break;
 				case SystemFont.MenuBar:
 				case SystemFont.Menu:
 					Family = new FontFamily(new FontFamilyHandler(sw.SystemFonts.MenuFontFamily));
 					WpfFontStyle = sw.SystemFonts.MenuFontStyle;
 					WpfFontWeight = sw.SystemFonts.MenuFontWeight;
-					PixelSize = sw.SystemFonts.MenuFontSize;
+					WpfSize = sw.SystemFonts.MenuFontSize;
 					break;
 				case SystemFont.StatusBar:
 					Family = new FontFamily(new FontFamilyHandler(sw.SystemFonts.StatusFontFamily));
 					WpfFontStyle = sw.SystemFonts.StatusFontStyle;
 					WpfFontWeight = sw.SystemFonts.StatusFontWeight;
-					PixelSize = sw.SystemFonts.StatusFontSize;
+					WpfSize = sw.SystemFonts.StatusFontSize;
 					break;
 				default:
 					throw new NotSupportedException();
@@ -381,7 +392,9 @@ namespace Eto.Wpf.Drawing
 		{
 			if (measureBrush == null)
 				measureBrush = new swm.SolidColorBrush(swm.Colors.White);
-			var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, WpfTypeface, PixelSize, measureBrush);
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
+			var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, WpfTypeface, WpfSize, measureBrush);
+#pragma warning restore CS0618 // Type or member is obsolete
 			return new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 		}
 	}

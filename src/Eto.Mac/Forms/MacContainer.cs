@@ -4,35 +4,6 @@ using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 #if IOS
 using Foundation;
@@ -60,19 +31,24 @@ namespace Eto.Mac.Forms
 
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
-		public override bool Enabled { get; set; }
-
 		public override IEnumerable<Control> VisualControls => Widget.Controls;
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-			Enabled = true;
-		}
 
 		public virtual void Update()
 		{
 			InvalidateMeasure();
+		}
+
+		protected override bool ControlEnabled
+		{
+			get => base.ControlEnabled;
+			set
+			{
+				base.ControlEnabled = value;
+				foreach (var child in Widget.VisualControls)
+				{
+					child.GetMacViewHandler()?.SetEnabled(value);
+				}
+			}
 		}
 
 #if OSX

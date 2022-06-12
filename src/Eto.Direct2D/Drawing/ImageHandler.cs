@@ -10,9 +10,6 @@ using System.IO;
 using System.Diagnostics;
 #if WINFORMS
 using Eto.WinForms.Drawing;
-#elif WINRT
-using ws = Windows.Storage;
-using wss = Windows.Storage.Streams;
 #endif
 
 namespace Eto.Direct2D.Drawing
@@ -31,6 +28,24 @@ namespace Eto.Direct2D.Drawing
     {
 		sd.Bitmap targetBitmap;
 		public sw.Bitmap[] Frames { get; protected set; }
+		
+		public bool IsPremultiplied => Control.PixelFormat == s.WIC.PixelFormat.Format32bppPBGRA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppPBGRA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppPRGBAHalf
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format128bppPRGBAFloat;
+		
+		public bool HasAlpha => Control.PixelFormat == s.WIC.PixelFormat.Format32bppRGBA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppRGBA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format32bppRGBA1010102
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format32bppRGBA1010102XR
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppRGBAFixedPoint
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppRGBAHalf
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format128bppRGBAFixedPoint
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format128bppRGBAFloat
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format32bppBGRA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppBGRA
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format16bppBGRA5551
+				|| Control.PixelFormat == s.WIC.PixelFormat.Format64bppBGRAFixedPoint;
 		public sd.Bitmap GetBitmap(sd.RenderTarget target)
 		{
 			if (targetBitmap == null || !Equals(targetBitmap.Tag, target.NativePointer))
@@ -90,22 +105,6 @@ namespace Eto.Direct2D.Drawing
 			Create(width, height, PixelFormat.Format32bppRgba);
 		}
 
-#if WINRT
-		public async void Save(string fileName, ImageFormat format)
-		{
-			var dir = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(fileName)); // correct?
-			var file = await dir.CreateFileAsync(Path.GetFileName(fileName));
-			using (var fileStream = await file.OpenAsync(ws.FileAccessMode.ReadWrite))
-			{
-				using (var outputStream = fileStream.GetOutputStreamAt(0))
-				{
-					var stream = outputStream.AsStreamForWrite();
-					Save(stream, format);
-					await outputStream.FlushAsync();
-				}
-			}
-		}
-#else
 		public void Save(string fileName, ImageFormat format)
 		{
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
@@ -113,7 +112,6 @@ namespace Eto.Direct2D.Drawing
 				Save(stream, format);
 			}
 		}
-#endif
 
         public void Save(Stream stream, ImageFormat format)
         {
@@ -151,11 +149,13 @@ namespace Eto.Direct2D.Drawing
 			{
 				var output = new uint[1];
 				Control.CopyPixels(new s.Rectangle(x, y, 1, 1), output);
-				var eto = new s.Color4(new s.ColorBGRA(output[0]).ToRgba()).ToEto();
-				if (Control.PixelFormat == sw.PixelFormat.Format24bppBGR)
-					return Color.FromRgb(eto.ToArgb());
-				else
-					return eto;
+				var eto = new s.ColorBGRA(output[0]).ToEto();
+				if (IsPremultiplied)
+					eto = Color.FromPremultipliedArgb(eto.ToArgb());
+				else if (!HasAlpha)
+					eto.A = 1;
+					
+				return eto;
 			}
 			catch (s.SharpDXException ex)
 			{
@@ -164,10 +164,7 @@ namespace Eto.Direct2D.Drawing
 			}			
         }
 
-        public Size Size
-        {
-            get { return Control.Size.ToEto(); }
-        }
+        public Size Size => Control.Size.ToEto();
 
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{

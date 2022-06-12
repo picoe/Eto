@@ -1,19 +1,6 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -85,9 +72,9 @@ namespace Eto.Mac.Forms.Controls
 				Control.StopAnimation(Control);
 		}
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return enabled; }
+			get => enabled;
 			set
 			{
 				if (enabled != value)

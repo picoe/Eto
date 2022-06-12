@@ -9,9 +9,9 @@ namespace Eto.Forms
 	/// <summary>
 	/// Base class for controls that contain children controls
 	/// </summary>
-	public abstract class Container : Control
+	public abstract class Container : Control, IBindableWidgetContainer
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets or sets the size for the client area of the control
@@ -46,7 +46,14 @@ namespace Eto.Forms
 		/// <value>The logical controls.</value>
 		IEnumerable<Control> LogicalControls
 		{
-			get { return Controls.Where(r => ReferenceEquals(r.InternalLogicalParent, this)); }
+			get
+			{
+				foreach (var control in Controls)
+				{
+					if (ReferenceEquals(control.InternalLogicalParent, this))
+						yield return control;
+				}
+			}
 		}
 
 		/// <summary>
@@ -60,8 +67,7 @@ namespace Eto.Forms
 				foreach (var control in Controls)
 				{
 					yield return control;
-					var container = control as Container;
-					if (container != null)
+					if (control is Container container)
 					{
 						foreach (var child in container.Children)
 							yield return child;
@@ -81,8 +87,7 @@ namespace Eto.Forms
 				foreach (var control in VisualControls)
 				{
 					yield return control;
-					var container = control as Container;
-					if (container != null)
+					if (control is Container container)
 					{
 						foreach (var child in container.VisualChildren)
 							yield return child;
@@ -91,22 +96,74 @@ namespace Eto.Forms
 			}
 		}
 
+		static readonly object StyleProvider_Key = new object();
+		static readonly object DefaultStyleProvider_Key = new object();
+
 		/// <summary>
-		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
+		/// Gets or sets the style provider for this container.
 		/// </summary>
 		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
-		/// on one of the parent control(s).
+		/// The style provider is used to style this container and its children.
 		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected override void OnDataContextChanged(EventArgs e)
+		/// <value>The style provider.</value>
+		public IStyleProvider StyleProvider
 		{
-			base.OnDataContextChanged(e);
+			get => Properties.Get<IStyleProvider>(StyleProvider_Key) ?? Properties.Get<DefaultStyleProvider>(DefaultStyleProvider_Key);
+			set => Properties.Set(StyleProvider_Key, value);
+		}
 
-			foreach (var control in LogicalControls)
+		/// <summary>
+		/// Gets the default style provider for this container.
+		/// </summary>
+		/// <remarks>
+		/// Use this to apply styles to any child controls of this container.
+		/// By default, styles will apply to all children, including children of children unless
+		/// <see cref="DefaultStyleProvider.Inherit"/> is set to <c>false</c>.
+		/// 
+		/// Typically, you would set Inherit to false when creating composite controls
+		/// that already have all their styles applied and you don't want any other styles
+		/// to be inherited.
+		/// </remarks>
+		/// <value>The default style provider for this container.</value>
+		public DefaultStyleProvider Styles => Properties.Create<DefaultStyleProvider>(DefaultStyleProvider_Key);
+
+		IEnumerable<BindableWidget> IBindableWidgetContainer.Children => LogicalControls;
+
+		/// <inheritdoc />
+		protected override void ApplyStyles(object widget, string style)
+		{
+			var styleProvider = StyleProvider;
+
+			if (styleProvider == null)
 			{
-				control.TriggerDataContextChanged();
+				// no styles for this container, check the parent
+				Parent?.ApplyStyles(widget, style);
+				return;
+			}
+
+			// apply parent styles first, if this provider allows inheriting them
+			if (styleProvider.Inherit)
+				Parent?.ApplyStyles(widget, style);
+
+			// now apply any of this providers' styles, which may override parent styles
+			styleProvider.ApplyCascadingStyle(this, widget, style);
+		}
+
+		/// <summary>
+		/// Handles when the <see cref="Style"/> is changed.
+		/// </summary>
+		/// <remarks>
+		/// This applies the cascading styles to the control and any of its children.
+		/// </remarks>
+		protected override void OnStyleChanged(EventArgs e)
+		{
+			base.OnStyleChanged(e);
+			if (Loaded && Handler.RecurseToChildren)
+			{
+				foreach (Control control in VisualControls)
+				{
+					control.TriggerStyleChanged(EventArgs.Empty);
+				}
 			}
 		}
 
@@ -167,7 +224,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected override void OnUnLoad(EventArgs e)
 		{
-			if (Handler != null && Handler.RecurseToChildren)
+			if (!IsDisposed && Handler != null && Handler.RecurseToChildren)
 			{
 				foreach (Control control in VisualControls)
 				{
@@ -192,30 +249,6 @@ namespace Eto.Forms
 		protected Container(IHandler handler)
 			: base(handler)
 		{
-		}
-
-		/// <summary>
-		/// Unbinds any bindings in the <see cref="BindableWidget.Bindings"/> collection and removes the bindings, and recurses to this container's children
-		/// </summary>
-		public override void Unbind()
-		{
-			base.Unbind();
-			foreach (var control in LogicalControls)
-			{
-				control.Unbind();
-			}
-		}
-
-		/// <summary>
-		/// Updates all bindings in this widget, and recurses to this container's children
-		/// </summary>
-		public override void UpdateBindings(BindingUpdateMode mode = BindingUpdateMode.Source)
-		{
-			base.UpdateBindings(mode);
-			foreach (var control in LogicalControls)
-			{
-				control.UpdateBindings(mode);
-			}
 		}
 
 		/// <summary>
@@ -328,20 +361,27 @@ namespace Eto.Forms
 		/// <param name="previousChild">Previous child that the new child is replacing.</param>
 		protected void SetParent(Control child, Action assign = null, Control previousChild = null)
 		{
+			if (ReferenceEquals(child, this))
+			{
+				throw new InvalidOperationException("Cannot assign a control as a child of itself.");
+			}
+			SuspendLayout();
 			if (Handler is IThemedControlHandler)
 			{
 				if (!ReferenceEquals(previousChild, null))
 					RemoveLogicalParent(previousChild);
-				assign();
-				if (!ReferenceEquals(child, null))
+
+				if (!ReferenceEquals(child, null) && ReferenceEquals(child.LogicalParent, null))
 					SetLogicalParent(child);
+				assign();
+				ResumeLayout();
 				return;
 			}
 			if (!ReferenceEquals(previousChild, null) && !ReferenceEquals(previousChild, child))
 			{
 #if DEBUG
 				if (!ReferenceEquals(previousChild.VisualParent, this))
-					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The previous child control is not a child of this container. Ensure you only remove children that you own."));
+					throw new ArgumentException("The previous child control is not a child of this container. Ensure you only remove children that you own.");
 #endif
 
 				if (!ReferenceEquals(previousChild.VisualParent, null))
@@ -365,8 +405,8 @@ namespace Eto.Forms
 				// no-op if there is no parent (handled in detach)
 				child.Detach();
 
-				if (child.InternalLogicalParent == null)
-					child.InternalLogicalParent = this;
+				if (ReferenceEquals(child.InternalLogicalParent, null))
+					SetLogicalParent(child);
 				child.VisualParent = this;
 				if (Loaded && !child.Loaded)
 				{
@@ -377,10 +417,12 @@ namespace Eto.Forms
 						assign?.Invoke();
 						child.TriggerLoadComplete(EventArgs.Empty);
 					}
+					ResumeLayout();
 					return;
 				}
 			}
 			assign?.Invoke();
+			ResumeLayout();
 		}
 
 		/// <summary>
@@ -407,7 +449,7 @@ namespace Eto.Forms
 		public Control FindChild(Type type, string id = null)
 		{
 			if (id == null)
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			if (string.IsNullOrEmpty(id))
 				return Children.FirstOrDefault(r => type.IsInstanceOfType(r));
 			else
@@ -422,10 +464,18 @@ namespace Eto.Forms
 		public Control FindChild(string id)
 		{
 			if (id == null)
-				throw new ArgumentNullException("id");
+				throw new ArgumentNullException(nameof(id));
 			return Children.FirstOrDefault(r => r.ID == id);
 		}
 
+		internal override void InternalEnsureLayout()
+		{
+			foreach (var child in VisualControls)
+			{
+				child.InternalEnsureLayout();
+			}
+			base.InternalEnsureLayout();
+		}
 
 		/// <summary>
 		/// Handler interface for the <see cref="Container"/> control

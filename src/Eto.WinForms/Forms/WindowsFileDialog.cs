@@ -88,6 +88,9 @@ namespace Eto.WinForms.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			SetFilters();
 
 			swf.DialogResult dr;

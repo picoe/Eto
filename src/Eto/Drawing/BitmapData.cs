@@ -20,19 +20,17 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class BitmapData : IDisposable
 	{
-		readonly IntPtr data;
-		readonly int scanWidth;
-		readonly object controlObject;
-		readonly Image image;
-		readonly int bitsPerPixel;
-		readonly int bytesPerPixel;
+		readonly IntPtr _data;
+		readonly int _scanWidth;
+		readonly object _controlObject;
+		readonly Image _image;
+		readonly int _bitsPerPixel;
+		readonly int _bytesPerPixel;
+		readonly bool _premultipliedAlpha;
 
 		static object IsLocked_Key = new object();
 
-		internal static bool IsImageLocked(Image image)
-		{
-			return image.Properties.Get<bool>(IsLocked_Key);
-		}
+		internal static bool IsImageLocked(Image image) => image.Properties.Get<bool>(IsLocked_Key);
 
 		bool IsLocked
 		{
@@ -50,45 +48,51 @@ namespace Eto.Drawing
 		/// <param name="controlObject">Platform specific object for the bitmap data (if any)</param>
 		protected BitmapData(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 		{
-			this.image = image;
+			
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the BitmapData class
+		/// </summary>
+		/// <param name="image">Image this data is for</param>
+		/// <param name="data">Pointer to the bitmap data</param>
+		/// <param name="scanWidth">Width of each scan row, in bytes</param>
+		/// <param name="bitsPerPixel">Bits per pixel</param>
+		/// <param name="controlObject">Platform specific object for the bitmap data (if any)</param>
+		/// <param name="premultipliedAlpha"><c>true</c> to specify that the RGB components are premultiplied with the alpha component, <c>false</c> otherwise.</param>
+		protected BitmapData(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool premultipliedAlpha)
+		{
+			_image = image;
 
 			if (IsLocked)
 				throw new InvalidOperationException("Image is already locked. Ensure you dispose the BitmapData object explicitly or with a using() block.");
 
 			IsLocked = true;
-			this.data = data;
-			this.scanWidth = scanWidth;
-			this.bitsPerPixel = bitsPerPixel;
-			this.controlObject = controlObject;
-			this.bytesPerPixel = (bitsPerPixel + 7) / 8;
+			_data = data;
+			_scanWidth = scanWidth;
+			_bitsPerPixel = bitsPerPixel;
+			_controlObject = controlObject;
+			_bytesPerPixel = (bitsPerPixel + 7) / 8;
+			_premultipliedAlpha = premultipliedAlpha;
 		}
 
 		/// <summary>
 		/// Gets the image this data is for
 		/// </summary>
 		/// <value>The bitmap.</value>
-		public Image Image
-		{
-			get { return image; }
-		}
+		public Image Image => _image;
 
 		/// <summary>
 		/// Gets the bits per pixel
 		/// </summary>
 		/// <value>The bits per pixel</value>
-		public int BitsPerPixel
-		{
-			get { return bitsPerPixel; }
-		}
+		public int BitsPerPixel => _bitsPerPixel;
 
 		/// <summary>
 		/// Gets the bytes per pixel
 		/// </summary>
 		/// <value>The bytes per pixel</value>
-		public int BytesPerPixel
-		{
-			get { return bytesPerPixel; }
-		}
+		public int BytesPerPixel => _bytesPerPixel;
 
 		/// <summary>
 		/// Translates a 32-bit ARGB value to the platform specific pixel format value
@@ -100,7 +104,7 @@ namespace Eto.Drawing
 		/// Each platform can have a different pixel format, and this allows you to abstract 
 		/// setting the data directly.
 		/// 
-		/// The ARGB value can be easily retrieved using <see cref="Color.ToArgb"/>.
+		/// The ARGB value can be easily retrieved using <see cref="Color.ToArgb()"/>.
 		/// 
 		/// For non-alpha bitmaps, the alpha component will be ignored
 		/// </remarks>
@@ -134,10 +138,7 @@ namespace Eto.Drawing
 		/// Each row may not be on a pixel boundary, so to increment to the next row, use the <see cref="ScanWidth"/>
 		/// to increment the pointer to the next row.
 		/// </remarks>
-		public IntPtr Data
-		{
-			get { return data; }
-		}
+		public IntPtr Data => _data;
 		
 		/// <summary>
 		/// Gets a value indicating that the data is flipped (upside down)
@@ -148,20 +149,14 @@ namespace Eto.Drawing
 		/// 
 		/// If this is true, then the starting row of the data is the bottom row of the image.
 		/// </remarks>
-		public virtual bool Flipped
-		{
-			get { return false; }
-		}
+		public virtual bool Flipped => false;
 
 		/// <summary>
 		/// Gets the color of the pixel at the specified <paramref name="position"/>
 		/// </summary>
 		/// <returns>The color of the pixel.</returns>
 		/// <param name="position">Position to get the color of the pixel.</param>
-		public Color GetPixel(Point position)
-		{
-			return GetPixel(position.X, position.Y);
-		}
+		public Color GetPixel(Point position) => GetPixel(position.X, position.Y);
 
 		/// <summary>
 		/// Gets the color of the pixel at the specified coordinates.
@@ -196,18 +191,21 @@ namespace Eto.Drawing
 		/// When advancing to the next row, use this to increment the pointer.  The number of bytes
 		/// for each row might not be equivalent to the bytes per pixel multiplied by the width of the image.
 		/// </remarks>
-		public int ScanWidth
-		{
-			get { return scanWidth; }
-		}
+		public int ScanWidth => _scanWidth;
 
 		/// <summary>
 		/// Gets the platform-specific control object for the bitmap data
 		/// </summary>
-		public object ControlObject
-		{
-			get { return controlObject; }
-		}
+		public object ControlObject => _controlObject;
+		
+		/// <summary>
+		/// Gets a value indicating the RGB components are premultiplied with the alpha component
+		/// </summary>
+		/// <remarks>
+		/// Note that the <see cref="TranslateDataToArgb"/> and <see cref="TranslateArgbToData"/> take this into account when translating data.
+		/// Otherwise, you can use this value do determine how to do your own translation.
+		/// </remarks>
+		public bool PremultipliedAlpha => _premultipliedAlpha;
 
 		/// <summary>
 		/// Releases all resource used by the <see cref="Eto.Drawing.BitmapData"/> object.
@@ -230,7 +228,7 @@ namespace Eto.Drawing
 		{
 			if (disposing)
 			{
-				var handler = (ILockableImage)image.Handler;
+				var handler = (ILockableImage)_image.Handler;
 				handler.Unlock(this);
 				IsLocked = false;
 			}

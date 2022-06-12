@@ -6,7 +6,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
-using System.ComponentModel;
+using sc = System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Eto.Drawing
 {
@@ -26,7 +27,7 @@ namespace Eto.Drawing
 		Format32bppRgb,
 		
 		/// <summary>
-		/// 24-bits (4 bytes) per pixel, ordered by Red in the highest order, followed by Green, and Blue.
+		/// 24-bits (3 bytes) per pixel, ordered by Red in the highest order, followed by Green, and Blue.
 		/// </summary>
 		Format24bppRgb,
 
@@ -78,7 +79,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Bitmap.IHandler))]
-	[TypeConverter(typeof(BitmapConverter))]
+	[sc.TypeConverter(typeof(BitmapConverter))]
 	public class Bitmap : Image
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
@@ -89,14 +90,13 @@ namespace Eto.Drawing
 		/// <param name="resourceName">Name of the resource in the caller's assembly to load. E.g. "MyProject.SomeFolder.YourFile.extension"</param>
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static Bitmap FromResource(string resourceName, Assembly assembly = null)
 		{
 
 			if (assembly == null)
 			{
-#if PCL
-				if (TypeHelper.GetCallingAssembly == null)
-					throw new ArgumentNullException("assembly", string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
+#if NETSTANDARD1_0
 				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 #else
 				assembly = Assembly.GetCallingAssembly();

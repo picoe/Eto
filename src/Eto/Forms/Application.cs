@@ -2,10 +2,65 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// UI Thread check mode when <see cref="Application.EnsureUIThread"/> is called.
+	/// </summary>
+	public enum UIThreadCheckMode
+	{
+		/// <summary>
+		/// Do no checking
+		/// </summary>
+		None,
+		/// <summary>
+		/// Emit a warning with Trace.WriteLine()
+		/// </summary>
+		Warning,
+		/// <summary>
+		/// Throw an exception
+		/// </summary>
+		Error
+	}
+
+	/// <summary>
+	/// Exception thrown when a control method is accessed in a non-UI thread using <see cref="Application.EnsureUIThread"/>.
+	/// </summary>
+#if NETSTANDARD2_0_OR_GREATER
+	[System.Serializable]
+#endif
+	public class UIThreadAccessException : System.Exception
+	{
+		/// <summary>
+		/// Initializes a new instance of the UIThreadAccessException class
+		/// </summary>
+		public UIThreadAccessException() { }
+		/// <summary>
+		/// Initializes a new instance of the UIThreadAccessException class with the specified message
+		/// </summary>
+		/// <param name="message">Message for the exception</param>
+		public UIThreadAccessException(string message) : base(message) { }
+		/// <summary>
+		/// Initializes a new instance of the UIThreadAccessException class with the specified message and inner exception
+		/// </summary>
+		/// <param name="message">Message for the exception</param>
+		/// <param name="inner">Inner exception</param>
+		public UIThreadAccessException(string message, System.Exception inner) : base(message, inner) { }
+#if NETSTANDARD2_0_OR_GREATER
+		/// <summary>
+		/// Initializes a new instance of the UIThreadAccessException class from serialization
+		/// </summary>
+		/// <param name="info">Serialization info</param>
+		/// <param name="context">Streaming context</param>
+		protected UIThreadAccessException(
+			System.Runtime.Serialization.SerializationInfo info,
+			System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+#endif
+	}
+
 	/// <summary>
 	/// Starting point for any UI application
 	/// </summary>
@@ -17,6 +72,11 @@ namespace Eto.Forms
 	[Handler(typeof(Application.IHandler))]
 	public class Application : Widget
 	{
+#if NETSTANDARD2_0_OR_GREATER
+		Thread mainThread;
+#endif
+		LocalizeEventArgs localizeArgs;
+		readonly object localizeLock = new object();
 		static readonly object ApplicationKey = new object();
 
 		/// <summary>
@@ -26,12 +86,28 @@ namespace Eto.Forms
 		public static Application Instance
 		{
 			get
-			{ 
+			{
 				var platform = Platform.Instance;
 				return platform != null ? platform.GetSharedProperty<Application>(ApplicationKey, () => null) : null;
 			}
 			private set { Platform.Instance.SetSharedProperty(ApplicationKey, value); }
 		}
+
+		/// <summary>
+		/// Event to handle when a string needs to be localized
+		/// </summary>
+		/// <remarks>
+		/// This can be used by some controls (e.g. <see cref="AboutDialog"/> and <see cref="MenuBar"/> on some platforms.
+		/// You can use this event or override <see cref="OnLocalizeString(LocalizeEventArgs)"/> to provide your own implementation
+		/// for localizing system-supplied strings to other languages.
+		/// </remarks>
+		public event EventHandler<LocalizeEventArgs> LocalizeString;
+
+		/// <summary>
+		/// Triggers the <see cref="LocalizeString"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments for localization</param>
+		protected internal virtual void OnLocalizeString(LocalizeEventArgs e) => LocalizeString?.Invoke(this, e);
 
 		/// <summary>
 		/// Occurs when the application is initialized
@@ -137,7 +213,27 @@ namespace Eto.Forms
 			Properties.TriggerEvent(NotificationActivatedEvent, this, e);
 		}
 
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="IsActiveChanged"/> event
+		/// </summary>
+		public const string IsActiveChangedEvent = "Application.IsActiveChanged";
+
+		/// <summary>
+		/// Occurs when the <see cref="IsActive"/> property is changed, which tracks whether the application is currently active or not.
+		/// </summary>
+		public event EventHandler<EventArgs> IsActiveChanged
+		{
+			add { Properties.AddHandlerEvent(IsActiveChangedEvent, value); }
+			remove { Properties.RemoveEvent(IsActiveChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="IsActiveChanged"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnIsActiveChanged(EventArgs e) => Properties.TriggerEvent(IsActiveChangedEvent, this, e);
+
+		new IHandler Handler => (IHandler)base.Handler;
 
 		Form mainForm;
 		/// <summary>
@@ -182,7 +278,7 @@ namespace Eto.Forms
 		/// Gets an enumeration of windows currently open in the application.
 		/// </summary>
 		/// <value>The enumeration of open windows.</value>
-		public IEnumerable<Window> Windows { get { return windows; } }
+		public IEnumerable<Window> Windows => windows;
 
 		/// <summary>
 		/// Gets or sets the name of your application
@@ -195,6 +291,7 @@ namespace Eto.Forms
 			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
 			EventLookup.Register<Application>(c => c.OnUnhandledException(null), Application.UnhandledExceptionEvent);
 			EventLookup.Register<Application>(c => c.OnNotificationActivated(null), Application.NotificationActivatedEvent);
+			EventLookup.Register<Application>(c => c.OnIsActiveChanged(null), Application.IsActiveChangedEvent);
 		}
 
 		/// <summary>
@@ -211,7 +308,7 @@ namespace Eto.Forms
 		/// <seealso cref="Platforms"/>
 		/// <param name="platformType">Platform type to initialize this application with</param>
 		public Application(string platformType)
-			: this(Platform.Get(platformType, false))
+			: this(Platform.Get(platformType, false, null))
 		{
 		}
 
@@ -222,7 +319,10 @@ namespace Eto.Forms
 		public Application(Platform platform)
 			: this(InitializePlatform(platform))
 		{
-			Application.Instance = this;
+			Instance = this;
+#if NETSTANDARD2_0_OR_GREATER
+			mainThread = System.Threading.Thread.CurrentThread;
+#endif
 		}
 
 		Application(InitHelper init)
@@ -237,16 +337,42 @@ namespace Eto.Forms
 		static InitHelper InitializePlatform(Platform platform)
 		{
 			Platform.Initialize(platform);
+
+			if (!Platform.AllowReinitialize && Instance != null)
+				throw new InvalidOperationException("The Eto.Forms Application is already created.");
+
 			return null;
+		}
+
+
+		/// <summary>
+		/// Gets or sets the UI thread check mode which can be used to troubleshoot or ensure that all UI code is executed in the UI thread.
+		/// </summary>
+		/// <value>The current thread check mode</value>
+		[DefaultValue(UIThreadCheckMode.Warning)]
+		public UIThreadCheckMode UIThreadCheckMode { get; set; } = System.Diagnostics.Debugger.IsAttached ? UIThreadCheckMode.Error : UIThreadCheckMode.Warning;
+
+		/// <summary>
+		/// Ensures the current thread is the main/UI thread
+		/// </summary>
+		public void EnsureUIThread()
+		{
+#if NETSTANDARD2_0_OR_GREATER
+			if (UIThreadCheckMode == UIThreadCheckMode.None)
+				return;
+			if (mainThread == Thread.CurrentThread)
+				return;
+			if (UIThreadCheckMode == UIThreadCheckMode.Warning)
+				System.Diagnostics.Trace.WriteLine("Warning: Accessing UI object from a non-UI thread. UI objects can only be used from the main thread.");
+			else if (UIThreadCheckMode == UIThreadCheckMode.Error)
+				throw new UIThreadAccessException();
+#endif
 		}
 
 		/// <summary>
 		/// Runs the application and begins the main loop.
 		/// </summary>
-		public virtual void Run()
-		{
-			Handler.Run();
-		}
+		public virtual void Run() => Handler.Run();
 
 		/// <summary>
 		/// Runs the application with the specified <paramref name="mainForm"/> and begins the main loop.
@@ -298,10 +424,7 @@ namespace Eto.Forms
 		/// the changes are complete.
 		/// </remarks>
 		/// <param name="action">Action to invoke</param>
-		public virtual void Invoke(Action action)
-		{
-			Handler.Invoke(action);
-		}
+		public virtual void Invoke(Action action) => Handler.Invoke(action);
 
 		/// <summary>
 		/// Invoke the specified function on the UI thread returning its value after the execution is complete.
@@ -327,11 +450,7 @@ namespace Eto.Forms
 		/// the current thread is the UI thread.
 		/// </remarks>
 		/// <param name="action">Action to queue on the UI thread.</param>
-		public virtual void AsyncInvoke(Action action)
-		{
-			Handler.AsyncInvoke(action);
-		}
-
+		public virtual void AsyncInvoke(Action action) => Handler.AsyncInvoke(action);
 
 		/// <summary>
 		/// Invokes the specified function on the UI thread asynchronously and return the result in a Task.
@@ -386,28 +505,19 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This will call the <see cref="Terminating"/> event before terminating the application.
 		/// </remarks>
-		public void Quit()
-		{
-			Handler.Quit();
-		}
+		public void Quit() => Handler.Quit();
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Eto.Forms.Application"/> supports the <see cref="Quit"/> operation.
 		/// </summary>
 		/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
-		public bool QuitIsSupported
-		{
-			get { return Handler.QuitIsSupported; }
-		}
+		public bool QuitIsSupported => Handler.QuitIsSupported;
 
 		/// <summary>
 		/// Open the specified file or url with its associated application.
 		/// </summary>
 		/// <param name="url">url or file path to open</param>
-		public void Open(string url)
-		{
-			Handler.Open(url);
-		}
+		public void Open(string url) => Handler.Open(url);
 
 		/// <summary>
 		/// Gets the common modifier for shortcuts.
@@ -416,10 +526,7 @@ namespace Eto.Forms
 		/// On Windows/Linux, this will typically return <see cref="Keys.Control"/>, and on OS X this will be <see cref="Keys.Application"/> (the command key).
 		/// </remarks>
 		/// <value>The common modifier.</value>
-		public Keys CommonModifier
-		{
-			get { return Handler.CommonModifier; }
-		}
+		public Keys CommonModifier => Handler.CommonModifier;
 
 		/// <summary>
 		/// Gets the alternate modifier for shortcuts.
@@ -428,10 +535,7 @@ namespace Eto.Forms
 		/// This is usually the <see cref="Keys.Alt"/> key.
 		/// </remarks>
 		/// <value>The alternate modifier.</value>
-		public Keys AlternateModifier
-		{
-			get { return Handler.AlternateModifier; }
-		}
+		public Keys AlternateModifier => Handler.AlternateModifier;
 
 		/// <summary>
 		/// Gets or sets the badge label on the application icon in the dock, taskbar, etc.
@@ -446,6 +550,12 @@ namespace Eto.Forms
 			get { return Handler.BadgeLabel; }
 			set { Handler.BadgeLabel = value; }
 		}
+		
+		/// <summary>
+		/// Gets a value indicating that the application is currently the active application.
+		/// </summary>
+		/// <seealso cref="IsActiveChanged"/>
+		public bool IsActive => Handler.IsActive;
 
 		/// <summary>
 		/// Advanced. Runs an iteration of the main UI loop when you are blocking the UI thread with logic.
@@ -453,17 +563,32 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This is not recommended to use and you should use asynchronous calls instead via Task.Run or threads.
 		/// </remarks>
-		public void RunIteration()
-		{
-			Handler.RunIteration();
-		}
+		public void RunIteration() => Handler.RunIteration();
 
 		/// <summary>
 		/// Restarts the application
 		/// </summary>
-		public void Restart()
+		public void Restart() => Handler.Restart();
+
+		/// <summary>
+		/// Localizes the specified text for the current locale, or provide alternative text for system supplied strings.
+		/// </summary>
+		/// <remarks>
+		/// This depends on your custom implementation for the <see cref="LocalizeString"/> event.
+		/// You can provide your own localization for system-supplied strings or change the strings to your own liking.
+		/// </remarks>
+		/// <returns>The localized text.</returns>
+		/// <param name="source">Source widget to localize for.</param>
+		/// <param name="text">English text to localize.</param>
+		public string Localize(object source, string text)
 		{
-			Handler.Restart();
+			lock (localizeLock)
+			{
+				localizeArgs = localizeArgs ?? new LocalizeEventArgs();
+				localizeArgs.Initialize(source, text);
+				OnLocalizeString(localizeArgs);
+				return localizeArgs.GetResultAndReset();
+			}
 		}
 
 		static readonly object callback = new Callback();
@@ -496,6 +621,11 @@ namespace Eto.Forms
 			/// Raises the notification activated event.
 			/// </summary>
 			void OnNotificationActivated(Application wiget, NotificationEventArgs e);
+			
+			/// <summary>
+			/// Raises the IsActiveChanged event.
+			/// </summary>
+			void OnIsActiveChanged(Application wiget, EventArgs e);
 		}
 
 		/// <summary>
@@ -537,6 +667,15 @@ namespace Eto.Forms
 				using (widget.Platform.Context)
 					widget.OnNotificationActivated(e);
 			}
+
+			/// <summary>
+			/// Raises the IsActiveChanged event.
+			/// </summary>
+			public void OnIsActiveChanged(Application widget, EventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnIsActiveChanged(e);
+			}
 		}
 
 		/// <summary>
@@ -568,7 +707,7 @@ namespace Eto.Forms
 			/// Gets a value indicating whether the application supports the <see cref="Quit"/> operation.
 			/// </summary>
 			/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
-			bool QuitIsSupported { get ; }
+			bool QuitIsSupported { get; }
 
 			/// <summary>
 			/// Gets the common modifier for shortcuts.
@@ -640,6 +779,11 @@ namespace Eto.Forms
 			/// This is not recommended to use and you should use asynchronous calls instead via Task.Run or threads.
 			/// </remarks>
 			void RunIteration();
+			
+			/// <summary>
+			/// Gets a value indicating that the application is currently the active application
+			/// </summary>
+			bool IsActive { get; }
 		}
 	}
 }

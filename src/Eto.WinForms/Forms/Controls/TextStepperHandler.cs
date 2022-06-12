@@ -17,9 +17,16 @@ namespace Eto.WinForms.Forms.Controls
 			public event EventHandler DownButtonClicked;
 			public event EventHandler UpButtonClicked;
 
+#if NETCOREAPP
+			static FieldInfo DefaultButtonsWidthField = typeof(swf.UpDownBase).GetField("_defaultButtonsWidth", BindingFlags.Static | BindingFlags.NonPublic);
+			static FieldInfo TextBoxField = typeof(swf.UpDownBase).GetField("_upDownEdit", BindingFlags.Instance | BindingFlags.NonPublic);
+			static FieldInfo UpDownButtonsField = typeof(swf.UpDownBase).GetField("_upDownButtons", BindingFlags.Instance | BindingFlags.NonPublic);
+#else
 			static FieldInfo DefaultButtonsWidthField = typeof(swf.UpDownBase).GetField("defaultButtonsWidth", BindingFlags.Static | BindingFlags.NonPublic);
 			static FieldInfo TextBoxField = typeof(swf.UpDownBase).GetField("upDownEdit", BindingFlags.Instance | BindingFlags.NonPublic);
 			static FieldInfo UpDownButtonsField = typeof(swf.UpDownBase).GetField("upDownButtons", BindingFlags.Instance | BindingFlags.NonPublic);
+#endif
+
 
 			public swf.TextBox TextBox => TextBoxField?.GetValue(this) as swf.TextBox;
 
@@ -59,7 +66,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			protected override void OnLayout(swf.LayoutEventArgs e)
 			{
-				if (!UpDownButtons.Visible)
+				if (UpDownButtons != null && !UpDownButtons.Visible)
 				{
 					var oldVal = DefaultButtonsWidth;
 					DefaultButtonsWidth = 0;

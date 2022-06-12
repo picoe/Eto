@@ -1,18 +1,5 @@
 using System;
 using Eto.Forms;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 
 namespace Eto.Mac.Forms.Printing
 {
@@ -43,7 +30,21 @@ namespace Eto.Mac.Forms.Printing
 
 		protected override NSPrintInfo CreateControl()
 		{
-			return new NSPrintInfo();
+			var info = new NSPrintInfo();
+			SetDefaults(info);
+			return info;
+		}
+		
+		internal static void SetDefaults(NSPrintInfo info)
+		{
+			if (info == null)
+				return;
+			info.TopMargin = 0;
+			info.BottomMargin = 0;
+			info.LeftMargin = 0;
+			info.RightMargin = 0;
+			info.VerticallyCentered = false;
+			info.HorizontallyCentered = false;
 		}
 
 		public int Copies

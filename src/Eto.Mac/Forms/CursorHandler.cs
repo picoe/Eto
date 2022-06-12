@@ -1,23 +1,21 @@
 using System;
 using Eto.Forms;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
+using Eto.Drawing;
+using System.IO;
 
 namespace Eto.Mac.Forms
 {
 	public class CursorHandler : WidgetHandler<NSCursor, Cursor>, Cursor.IHandler
 	{
+		public CursorHandler()
+		{
+		}
+
+		public CursorHandler(NSCursor control)
+		{
+			Control = control;
+		}
+
 		public void Create(CursorType cursor)
 		{
 			switch (cursor)
@@ -46,9 +44,91 @@ namespace Eto.Mac.Forms
 				case CursorType.VerticalSplit:
 					Control = NSCursor.ResizeLeftRightCursor;
 					break;
+				case CursorType.SizeAll:
+					Control = GetHICursor("move") ?? NSCursor.ArrowCursor;
+					break;
+				case CursorType.SizeLeft:
+				case CursorType.SizeRight:
+					Control = GetHICursor("resizeeastwest") ?? GetNonStandardCursor("_windowResizeEastWestCursor") ?? NSCursor.ResizeLeftRightCursor;
+					break;
+				case CursorType.SizeTop:
+				case CursorType.SizeBottom:
+					Control = GetHICursor("resizenorthsouth") ?? GetNonStandardCursor("_windowResizeNorthSouthCursor") ?? NSCursor.ResizeUpDownCursor;
+					break;
+				case CursorType.SizeTopLeft:
+				case CursorType.SizeBottomRight:
+					Control = GetHICursor("resizenorthwestsoutheast") ?? GetNonStandardCursor("_windowResizeNorthWestSouthEastCursor") ?? NSCursor.ArrowCursor;
+					break;
+				case CursorType.SizeTopRight:
+				case CursorType.SizeBottomLeft:
+					Control = GetHICursor("resizenortheastsouthwest") ?? GetNonStandardCursor("_windowResizeNorthEastSouthWestCursor") ?? NSCursor.ArrowCursor;
+					break;
 				default:
 					throw new NotSupportedException();
 			}
+		}
+
+		static IntPtr cursorClassHandle = Class.GetHandle(typeof(NSCursor));
+
+		static NSCursor GetNonStandardCursor(string name)
+		{
+			// note, using private apis here so won't work on sandboxed apps.
+			try
+			{
+				var handle = Messaging.IntPtr_objc_msgSend(cursorClassHandle, Selector.GetHandle(name));
+				if (handle == IntPtr.Zero)
+					return null;
+				return Runtime.GetNSObject<NSCursor>(handle);
+			}
+			catch
+			{
+				return null;
+			}
+		}
+		
+		static NSCursor GetHICursor(string cursorName)
+		{
+			var cursorPath = Path.Combine("/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Resources/cursors", cursorName);
+			var pdfPath = Path.Combine(cursorPath, "cursor.pdf");
+			var infoPath = Path.Combine(cursorPath, "info.plist");
+			if (!File.Exists(pdfPath) || !File.Exists(infoPath))
+				return null;
+			var image = new NSImage(pdfPath);
+			var info = new NSDictionary(infoPath);
+			return new NSCursor(image, new CGPoint(((NSNumber)info.ValueForKey((NSString)"hotx")).DoubleValue, ((NSNumber)info.ValueForKey((NSString)"hoty")).DoubleValue));
+		}
+
+		public void Create(Image image, PointF hotspot)
+		{
+			var nsimage = image.ToNS();
+			Control = new NSCursor(nsimage, hotspot.ToNS());
+		}
+
+		public void Create(string fileName)
+		{
+			using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read))
+			{
+				Create(stream);
+			}
+		}
+
+		public void Create(Stream stream)
+		{
+			var data = NSData.FromStream(stream);
+			var imageSource = CGImageSource.FromData(data);
+			//var imageSource = CGImageSource.FromDataProvider(nsimage.CGImage.DataProvider);
+			// try go get hotspot
+			var properties = imageSource?.CopyProperties((NSDictionary)null, 0);
+
+			var hotspot = CGPoint.Empty;
+			if (properties != null)
+			{
+				hotspot.X = (properties["hotspotX"] as NSNumber)?.FloatValue ?? 0;
+				hotspot.Y = (properties["hotspotY"] as NSNumber)?.FloatValue ?? 0;
+			}
+
+			var nsimage = new NSImage(data);
+			Control = new NSCursor(nsimage, hotspot);
 		}
 	}
 }

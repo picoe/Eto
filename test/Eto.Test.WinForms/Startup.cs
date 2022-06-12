@@ -9,7 +9,7 @@ namespace Eto.Test.WinForms
 		[STAThread]
 		static void Main(string[] args)
 		{
-			var platform = Platform.Get(Platforms.WinForms);
+			var platform = new Eto.WinForms.Platform();
 			var app = new TestApplication(platform);
 			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();

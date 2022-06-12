@@ -80,8 +80,11 @@ namespace Eto.WinForms.Forms.Cells
 			{
 				var size = base.GetPreferredSize(graphics, cellStyle, rowIndex, constraintSize);
 				var val = GetValue(rowIndex) as object[];
-				var img = val[0] as sd.Image;
-				if (img != null) size.Width += IconSize + IconPadding * 2;
+				if (val != null)
+				{
+					var img = val[0] as sd.Image;
+					if (img != null) size.Width += IconSize + IconPadding * 2;
+				}
 				size.Width += Handler.GetRowOffset(rowIndex);
 				return size;
 			}

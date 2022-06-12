@@ -15,7 +15,7 @@ namespace Eto.WinForms.Forms
 
         public DialogHandler()
         {
-            Control = new swf.Form
+            Control = new EtoFormBase
 			{
 				StartPosition = swf.FormStartPosition.CenterParent,
 				AutoSize = true,
@@ -79,6 +79,9 @@ namespace Eto.WinForms.Forms
 		public void ShowModal()
         {
             ReloadButtons();
+			var owner = Widget.Owner;
+			if (owner != null && !owner.HasFocus)
+				owner.Focus();
 
             Control.ShowDialog();
 			Control.Owner = null; // without this, the dialog is still active as part of the owner form
@@ -150,7 +153,7 @@ namespace Eto.WinForms.Forms
             var native = button.ToNative();
             native.Margin = new swf.Padding(0, 6, 6, 3);
 
-            panelButtons.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.Absolute, button.Width > 0 ? button.Width : Controls.ButtonHandler.DefaultMinimumSize.Width));
+            panelButtons.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.AutoSize));
             panelButtons.Controls.Add(native, pos, 0);
         }
 

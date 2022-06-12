@@ -6,15 +6,24 @@ using System.Runtime.InteropServices;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
+	public interface IGtkTreeModelHandler<TItem, TStore> : IGtkListModelHandler<TItem>
+	{
+		TStore DataStore { get; }
+	}
+
 	public class GtkTreeModel<TItem, TStore> : GLib.Object, ITreeModelImplementor
 		where TStore: class, IDataStore<TItem>
 		where TItem: class, ITreeItem<TItem>
 	{
 		WeakReference handler;
 
-		public IGtkListModelHandler<TItem, TStore> Handler { get { return (IGtkListModelHandler<TItem, TStore>)handler.Target; } set { handler = new WeakReference(value); } }
+		public IGtkTreeModelHandler<TItem, TStore> Handler
+		{
+			get => (IGtkTreeModelHandler<TItem, TStore>)handler.Target;
+			set => handler = new WeakReference(value);
+		}
 
-		class Node
+		public class Node
 		{
 			public TItem Item { get; set; }
 
@@ -75,18 +84,27 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		IEnumerable<TStore> GetParents(TItem item)
 		{
-			var parent = item.Parent;
-			while (parent != null)
+			TStore store = null;
+			item = item.Parent;
+			while (item != null)
 			{
-				yield return parent as TStore;
-				parent = parent.Parent;
+				store = item as TStore;
+				if (store != null)
+					yield return store;
+				item = item.Parent;
 			}
-			if (!ReferenceEquals(parent, Handler.DataStore))
+			if (!ReferenceEquals(store, Handler.DataStore))
 			{
 				yield return Handler.DataStore;
 			}
 		}
 
+		public int GetRowIndexOfIter(Gtk.TreeIter iter)
+		{
+			var node = GetNodeAtIter(iter);
+			return Handler.DataStore.GetRowOfIndexPath(node.Indices);
+		}
+		
 		public Gtk.TreePath GetPathFromItem(TItem item)
 		{
 			var path = new Gtk.TreePath();
@@ -156,7 +174,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			return result;
 		}
 
-		static Node GetNodeAtIter(Gtk.TreeIter iter)
+		public Node GetNodeAtIter(Gtk.TreeIter iter)
 		{
 			if (iter.UserData == IntPtr.Zero)
 				return null;
@@ -224,15 +242,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			var node = GetNodeAtIter(iter);
 			if (node != null)
 			{
-				var row = node.Indices.Sum();
 				if (node.Item != null)
 				{
-					val = Handler.GetColumnValue(node.Item, col, row);
+					val = Handler.GetColumnValue(node.Item, col, -1, iter);
 					return;
 				}
 			}
 
-			val = Handler.GetColumnValue(null, col, -1);
+			val = Handler.GetColumnValue(null, col, -1, iter);
 
 		}
 

@@ -27,6 +27,17 @@ namespace Eto.Wpf.Forms
 		void Validate();
 	}
 
+	static class WpfWindow
+	{
+		internal static readonly object MovableByWindowBackground_Key = new object();
+		internal static EventInfo dpiChangedEvent = typeof(sw.Window).GetEvent("DpiChanged");
+		internal static readonly object LastPixelSize_Key = new object();
+		internal static readonly object IsClosing_Key = new object();
+		internal static readonly object LocationSet_Key = new object();
+
+
+	}
+
 	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
 		where TControl : sw.Window
 		where TWidget : Window
@@ -48,22 +59,58 @@ namespace Eto.Wpf.Forms
 
 		protected virtual bool IsAttached => false;
 
+		sw.Interop.WindowInteropHelper windowInterop;
+		
 		public override IntPtr NativeHandle
 		{
-			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
+			get
+			{
+				if (windowInterop == null)
+				{
+					windowInterop = new sw.Interop.WindowInteropHelper(Control);
+					windowInterop.EnsureHandle();
+				}
+				return windowInterop.Handle;
+			}
 		}
-
+		
 		public static bool EnablePerMonitorDpiSupport { get; set; } = true;
 
 		public swc.DockPanel ContentPanel { get { return content; } }
 
 		public swc.DockPanel MainPanel { get { return main; } }
 
+		public bool MovableByWindowBackground
+		{
+			get => Widget.Properties.Get<bool>(WpfWindow.MovableByWindowBackground_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(WpfWindow.MovableByWindowBackground_Key, value))
+				{
+					if (value)
+						content.MouseLeftButtonDown += Content_MouseLeftButtonDown;
+					else
+						content.MouseLeftButtonDown -= Content_MouseLeftButtonDown;
+				}
+			}
+		}
+
+		void Content_MouseLeftButtonDown(object sender, swi.MouseButtonEventArgs e)
+		{
+			// mouse could be captured by something else, so we release it here to ensure the DragMove works.
+			// we only get here if no control has handled the mouse down event.
+			swi.Mouse.Captured?.ReleaseMouseCapture();
+
+			Control.DragMove();
+			e.Handled = true;
+		}
+
 		protected override void Initialize()
 		{
 			if (IsAttached)
 				return;
 			content = new swc.DockPanel();
+			UseShellDropManager = true;
 
 			base.Initialize();
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
@@ -72,7 +119,7 @@ namespace Eto.Wpf.Forms
 			main = new swc.DockPanel();
 			menuHolder = new swc.ContentControl { IsTabStop = false };
 			toolBarHolder = new swc.ContentControl { IsTabStop = false };
-			content.Background = System.Windows.SystemColors.ControlBrush;
+			content.SetResourceReference(swc.Panel.BackgroundProperty, sw.SystemColors.ControlBrushKey);
 			swc.DockPanel.SetDock(menuHolder, swc.Dock.Top);
 			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
 			main.Children.Add(menuHolder);
@@ -89,7 +136,7 @@ namespace Eto.Wpf.Forms
 					SetContentSize();
 				}
 				// stop form from auto-sizing after it is shown
-				Control.SizeToContent = sw.SizeToContent.Manual;
+				SetSizeToContent();
 				if (Control.ShowActivated)
 					Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 			};
@@ -101,8 +148,34 @@ namespace Eto.Wpf.Forms
 					binding.Validate();
 				}
 			};
+			Control.SizeChanged += Control_SizeChanged;
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+		}
+
+		private void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
+		{
+			if (Widget.Loaded && Control.SizeToContent == sw.SizeToContent.Manual)
+				Widget.Properties.Set(AutoSize_Key, false);
+		}
+
+		public bool UseShellDropManager
+		{
+			get => Widget.Properties.Get<WpfShellDropBehavior>(typeof(WpfShellDropBehavior)) != null;
+			set
+			{
+				if (value != UseShellDropManager)
+				{
+					if (value)
+						Widget.Properties.TrySet(typeof(WpfShellDropBehavior), new WpfShellDropBehavior(Control));
+					else
+					{
+						var shellDrop = Widget.Properties.Get<WpfShellDropBehavior>(typeof(WpfShellDropBehavior));
+						shellDrop.Detatch();
+						Widget.Properties.Remove(typeof(WpfShellDropBehavior));
+					}
+				}
+			}
 		}
 
 		void SetupPerMonitorDpi()
@@ -120,8 +193,6 @@ namespace Eto.Wpf.Forms
 		{
 			base.SetContentScale(true, true);
 		}
-
-		static EventInfo dpiChangedEvent = typeof(sw.Window).GetEvent("DpiChanged");
 
 		public override void AttachEvent(string id)
 		{
@@ -147,21 +218,7 @@ namespace Eto.Wpf.Forms
 					};
 					break;
 				case Window.ClosingEvent:
-					Control.Closing += (sender, e) =>
-					{
-						var args = new CancelEventArgs { Cancel = e.Cancel };
-						Callback.OnClosing(Widget, args);
-						if (!args.Cancel && sw.Application.Current.Windows.Count == 1)
-						{
-							// last window closing, so call OnTerminating to let the app abort terminating
-							var app = ((ApplicationHandler)Application.Instance.Handler);
-							app.Callback.OnTerminating(app.Widget, args);
-						}
-						e.Cancel = args.Cancel;
-						IsApplicationClosing = !args.Cancel
-							&& sw.Application.Current.MainWindow == Control
-							&& sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose;
-					};
+					Control.Closing += Control_Closing;
 					break;
 				case Window.WindowStateChangedEvent:
 					Control.StateChanged += (sender, e) => Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
@@ -170,16 +227,18 @@ namespace Eto.Wpf.Forms
 					Control.Activated += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.Deactivated += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
+					// Use AsyncInvoke here otherwise calling Close() during LostFocus does not work as expected
+					// and can lead to the z-order of windows not being correct.
+					Control.Deactivated += (sender, e) => Application.Instance.AsyncInvoke(() => Callback.OnLostFocus(Widget, EventArgs.Empty));
 					break;
 				case Window.LocationChangedEvent:
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
 					break;
 				case Window.LogicalPixelSizeChangedEvent:
-					if (PerMonitorDpiHelper.BuiltInPerMonitorSupported && dpiChangedEvent != null) // .NET 4.6.2 support!
+					if (PerMonitorDpiHelper.BuiltInPerMonitorSupported && WpfWindow.dpiChangedEvent != null) // .NET 4.6.2 support!
 					{
 						var method = typeof(WpfWindow<TControl, TWidget, TCallback>).GetMethod(nameof(HandleLogicalPixelSizeChanged), BindingFlags.Instance | BindingFlags.NonPublic);
-						dpiChangedEvent.AddEventHandler(Control, Delegate.CreateDelegate(dpiChangedEvent.EventHandlerType, this, method));
+						WpfWindow.dpiChangedEvent.AddEventHandler(Control, Delegate.CreateDelegate(WpfWindow.dpiChangedEvent.EventHandlerType, this, method));
 						break;
 					}
 					SetupPerMonitorDpi();
@@ -192,12 +251,46 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		static readonly object LastPixelSize_Key = new object();
+		bool IsClosing
+		{
+			get => Widget.Properties.Get<bool>(WpfWindow.IsClosing_Key);
+			set => Widget.Properties.Set(WpfWindow.IsClosing_Key, value);
+		}
+
+		private void Control_Closing(object sender, CancelEventArgs e)
+		{
+			IsClosing = true;
+			var args = new CancelEventArgs { Cancel = e.Cancel };
+			Callback.OnClosing(Widget, args);
+			var willShutDown =
+				(
+					sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
+					&& sw.Application.Current.Windows.Count == 1
+				)
+				|| (
+					sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
+					&& sw.Application.Current.MainWindow == Control
+				);
+
+			if (!args.Cancel && willShutDown)
+			{
+				// last window closing, so call OnTerminating to let the app abort terminating
+				var app = ((ApplicationHandler)Application.Instance.Handler);
+				app.Callback.OnTerminating(app.Widget, args);
+			}
+			e.Cancel = args.Cancel;
+			IsApplicationClosing = !e.Cancel && willShutDown;
+			IsClosing = !e.Cancel;
+			if (!e.Cancel)
+			{
+				InternalClosing();
+			}
+		}
 
 		float LastPixelSize
 		{
-			get => Widget.Properties.Get<float>(LastPixelSize_Key);
-			set => Widget.Properties.Set(LastPixelSize_Key, value);
+			get => Widget.Properties.Get<float>(WpfWindow.LastPixelSize_Key);
+			set => Widget.Properties.Set(WpfWindow.LastPixelSize_Key, value);
 		}
 
 		void HandleLogicalPixelSizeChanged(object sender, EventArgs e)
@@ -235,10 +328,58 @@ namespace Eto.Wpf.Forms
 			if (IsAttached)
 				return;
 
+			SetSizeToContent();
+
+			var size = UserPreferredSize;
+
 			// don't set the minimum size of a window, just the preferred size
-			ContainerControl.Width = UserPreferredSize.Width;
-			ContainerControl.Height = UserPreferredSize.Height;
+			ContainerControl.Width = size.Width;
+			ContainerControl.Height = size.Height;
 			SetMinimumSize();
+		}
+
+		private void SetSizeToContent()
+		{
+			sw.SizeToContent sizing;
+			if (Widget.Loaded && !AutoSize)
+			{
+				sizing = sw.SizeToContent.Manual;
+			}
+			else if (Control.WindowState == sw.WindowState.Maximized)
+			{
+				sizing = sw.SizeToContent.Manual;
+			}
+			else
+			{
+				var size = UserPreferredSize;
+				if (double.IsNaN(size.Width) && double.IsNaN(size.Height))
+					sizing = sw.SizeToContent.WidthAndHeight;
+				else if (double.IsNaN(size.Width))
+					sizing = sw.SizeToContent.Width;
+				else if (double.IsNaN(size.Height))
+					sizing = sw.SizeToContent.Height;
+				else
+				{
+					Widget.Properties.Set(AutoSize_Key, false);
+					sizing = sw.SizeToContent.Manual;
+				}
+			}
+
+			Control.SizeToContent = sizing;
+		}
+
+		static readonly object AutoSize_Key = new object();
+
+		public virtual bool AutoSize
+		{
+			get => Widget.Properties.Get<bool>(AutoSize_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(AutoSize_Key, value))
+				{
+					SetSizeToContent();
+				}
+			}
 		}
 
 		void SetMinimumSize()
@@ -265,11 +406,21 @@ namespace Eto.Wpf.Forms
 				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
 			}
 		}
+		
+		protected virtual void InternalClosing()
+		{
+		}
 
 		public void Close()
 		{
 			if (!IsApplicationClosing)
-				Control.Close();
+			{
+				// prevent crash if we call this more than once..
+				if (!IsClosing)
+				{
+					Control.Close();
+				}
+			}
 			else
 				Visible = false;
 
@@ -358,40 +509,30 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		internal void SetStyle(Win32.WS_EX style, bool value)
+		internal void SetStyleEx(Win32.WS_EX style, bool value)
 		{
-			var styleInt = Win32.GetWindowLong(WindowHandle, Win32.GWL.EXSTYLE);
-			if (value)
-				styleInt |= (uint)style;
-			else
-				styleInt &= (uint)~style;
-
-			Win32.SetWindowLong(WindowHandle, Win32.GWL.EXSTYLE, styleInt);
+			SetStyleEx(value ? style : 0, value ? 0 : style);
+		}
+		
+		internal void SetStyleEx(Win32.WS_EX styleAdd, Win32.WS_EX styleRemove = 0)
+		{
+			var styleInt = Win32.GetWindowLong(NativeHandle, Win32.GWL.EXSTYLE);
+			styleInt |= (uint)styleAdd;
+			styleInt &= (uint)~styleRemove;
+			Win32.SetWindowLong(NativeHandle, Win32.GWL.EXSTYLE, styleInt);
 		}
 
 		internal void SetStyle(Win32.WS style, bool value)
 		{
-			var styleInt = Win32.GetWindowLong(WindowHandle, Win32.GWL.STYLE);
-			if (value)
-				styleInt |= (uint)style;
-			else
-				styleInt &= (uint)~style;
-
-			Win32.SetWindowLong(WindowHandle, Win32.GWL.STYLE, styleInt);
+			SetStyle(value ? style : 0, value ? 0 : style);
 		}
 
-		sw.Interop.WindowInteropHelper windowInterop;
-		IntPtr WindowHandle
+		internal void SetStyle(Win32.WS styleAdd, Win32.WS styleRemove = 0)
 		{
-			get
-			{
-				if (windowInterop == null)
-				{
-					windowInterop = new sw.Interop.WindowInteropHelper(Control);
-					windowInterop.EnsureHandle();
-				}
-				return windowInterop.Handle;
-			}
+			var styleInt = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
+			styleInt |= (uint)styleAdd;
+			styleInt &= (uint)~styleRemove;
+			Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, styleInt);
 		}
 
 		protected virtual void SetResizeMode()
@@ -470,7 +611,7 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				var handle = WindowHandle;
+				var handle = NativeHandle;
 				if (handle != IntPtr.Zero && Control.IsLoaded)
 				{
 					// WPF doesn't always report the correct size when maximized
@@ -491,7 +632,7 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 
-				Control.SizeToContent = sw.SizeToContent.Manual;
+
 				base.Size = value;
 				if (!Control.IsLoaded)
 				{
@@ -504,22 +645,20 @@ namespace Eto.Wpf.Forms
 		public string Title
 		{
 			get { return Control.Title; }
-			set { Control.Title = value; }
+			set { Control.Title = value ?? string.Empty; }
 		}
-
-		static readonly object LocationSet_Key = new object();
 
 		protected bool LocationSet
 		{
-			get { return Widget.Properties.Get<bool>(LocationSet_Key); }
-			set { Widget.Properties.Set(LocationSet_Key, value); }
+			get { return Widget.Properties.Get<bool>(WpfWindow.LocationSet_Key); }
+			set { Widget.Properties.Set(WpfWindow.LocationSet_Key, value); }
 		}
 
 		System.Windows.Forms.Screen SwfScreen
 		{
 			get
 			{
-				var handle = WindowHandle;
+				var handle = NativeHandle;
 				if (handle == IntPtr.Zero)
 					return System.Windows.Forms.Screen.PrimaryScreen;
 				return System.Windows.Forms.Screen.FromHandle(handle);
@@ -534,13 +673,26 @@ namespace Eto.Wpf.Forms
 			{
 				if (initialLocation != null)
 					return initialLocation.Value;
-				var handle = WindowHandle;
+				var handle = NativeHandle;
 				if (handle != IntPtr.Zero)
 				{
+					Point? location = null;
 					// Left/Top doesn't always report correct location when maximized, so use Win32 when we can.
-					Win32.RECT rect;
-					if (Win32.GetWindowRect(handle, out rect))
-						return Point.Round(new Point(rect.left, rect.top).ScreenToLogical(SwfScreen));
+					var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
+					try
+					{
+						Win32.RECT rect;
+						if (Win32.GetWindowRect(handle, out rect))
+							location = new Point(rect.left, rect.top);
+					}
+					finally
+					{
+						if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+							Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
+					}
+
+					if (location != null)
+						return Point.Round(location.Value.ScreenToLogical(SwfScreen));
 				}
 				// in WPF, left/top of a window is transformed by the (current) screen dpi, which makes absolutely no sense.
 				var left = Control.Left;
@@ -558,7 +710,7 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 
-				if (WindowHandle == IntPtr.Zero)
+				if (NativeHandle == IntPtr.Zero)
 				{
 					// set location when the source is initialized and we have a Win32 handle to move about
 					// using Left/Top doesn't work (properly) in a per-monitor dpi environment.
@@ -571,6 +723,7 @@ namespace Eto.Wpf.Forms
 				}
 				else
 				{
+					LocationSet = true;
 					SetLocation(value);
 				}
 			}
@@ -586,10 +739,13 @@ namespace Eto.Wpf.Forms
 
 		void SetLocation(PointF location)
 		{
-			var handle = WindowHandle;
+			var handle = NativeHandle;
 			var loc = location.LogicalToScreen();
 
-			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE);
+			var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
+			Win32.SetWindowPos(NativeHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE);
+			if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+				Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 		}
 
 		public WindowState WindowState
@@ -614,28 +770,33 @@ namespace Eto.Wpf.Forms
 				{
 					case WindowState.Maximized:
 						Control.WindowState = sw.WindowState.Maximized;
-						if (!Control.IsLoaded)
-							Control.SizeToContent = sw.SizeToContent.Manual;
 						break;
 					case WindowState.Minimized:
 						Control.WindowState = sw.WindowState.Minimized;
-						if (!Control.IsLoaded)
-							Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 						break;
 					case WindowState.Normal:
 						Control.WindowState = sw.WindowState.Normal;
-						if (!Control.IsLoaded)
-							Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 						break;
 					default:
 						throw new NotSupportedException();
 				}
+				SetSizeToContent();
 			}
 		}
 
 		public Rectangle RestoreBounds
 		{
-			get { return Control.WindowState == sw.WindowState.Normal || Control.RestoreBounds.IsEmpty ? Widget.Bounds : Control.RestoreBounds.ToEto(); }
+			get
+			{
+				if (Control.WindowState == sw.WindowState.Normal || Control.RestoreBounds.IsEmpty)
+					return Widget.Bounds;
+
+				var restoreBounds = Control.RestoreBounds.ToEto();
+				var scale = DpiScale;
+				var position = new Point((int)(restoreBounds.X / scale), (int)(restoreBounds.Y / scale));
+				restoreBounds.Location = Point.Truncate(position.ScreenToLogical(SwfScreen));
+				return restoreBounds;
+			}
 		}
 
 		sw.Window IWpfWindow.Control
@@ -691,7 +852,7 @@ namespace Eto.Wpf.Forms
 
 			if (!Control.Focusable)
 			{
-				var hWnd = WindowHandle;
+				var hWnd = NativeHandle;
 				if (hWnd != IntPtr.Zero)
 					Win32.SetWindowPos(hWnd, Win32.HWND_TOP, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE);
 			}
@@ -703,7 +864,7 @@ namespace Eto.Wpf.Forms
 		{
 			if (Topmost)
 				return;
-			var hWnd = WindowHandle;
+			var hWnd = NativeHandle;
 			if (hWnd != IntPtr.Zero)
 				Win32.SetWindowPos(hWnd, Win32.HWND_BOTTOM, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE | Win32.SWP.NOACTIVATE);
 			var window = sw.Application.Current.Windows.OfType<sw.Window>().FirstOrDefault(r => r != Control);
@@ -756,12 +917,34 @@ namespace Eto.Wpf.Forms
 
 		public float LogicalPixelSize
 		{
-			get {
+			get
+			{
 				var scale = (float)(dpiHelper?.Scale ?? sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformToDevice.M11 ?? 1.0);
 				// will be zero after the window is closed, but should always be a positive number
 				if (scale <= 0)
 					return 1f;
 				return scale;
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			// close the window when disposing from Eto explicitly
+			if (disposing)
+				Close();
+
+			base.Dispose(disposing);
+		}
+
+		public override bool Visible
+		{
+			get => Control.IsVisible;
+			set
+			{
+				if (value)
+					Control.Show();
+				else
+					Control.Hide();
 			}
 		}
 	}

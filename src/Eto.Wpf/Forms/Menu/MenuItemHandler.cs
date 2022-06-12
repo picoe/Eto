@@ -9,18 +9,23 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class MenuItemHandler<TControl, TWidget, TCallback> : MenuHandler<TControl, TWidget, TCallback>, MenuItem.IHandler, swi.ICommand, IWpfValidateBinding
+	interface IMenuItemHandler
+	{
+		void Validate();
+	}
+
+	public class MenuItemHandler<TControl, TWidget, TCallback> : MenuHandler<TControl, TWidget, TCallback>, MenuItem.IHandler, swi.ICommand, IWpfValidateBinding, IMenuItemHandler
 		where TControl : swc.MenuItem
 		where TWidget : MenuItem
 		where TCallback: MenuItem.ICallback
 	{
 		Image image;
-		bool openingHandled;
 
 		protected override void Initialize()
 		{
 			base.Initialize();
 			Control.Click += (sender, e) => OnClick();
+			Control.SubmenuOpened += HandleContextMenuOpening;
 		}
 
 		protected virtual void OnClick()
@@ -84,6 +89,12 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
+		public bool Visible
+		{
+			get => Control.Visibility == sw.Visibility.Visible;
+			set => Control.Visibility = value ? sw.Visibility.Visible : sw.Visibility.Collapsed;
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -97,24 +108,19 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
-		public void AddMenu(int index, MenuItem item)
+		public virtual void AddMenu(int index, MenuItem item)
 		{
 			Control.Items.Insert(index, item.ControlObject);
 			AddKeyBindings(item.ControlObject as sw.FrameworkElement);
-            if (!openingHandled)
-			{
-				Control.SubmenuOpened += HandleContextMenuOpening;
-				openingHandled = true;
-			}
 		}
 
-		public void RemoveMenu(MenuItem item)
+		public virtual void RemoveMenu(MenuItem item)
 		{
 			RemoveKeyBindings(item.ControlObject as sw.FrameworkElement);
 			Control.Items.Remove(item.ControlObject);
 		}
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			foreach (var item in Control.Items.OfType<sw.FrameworkElement>())
 				RemoveKeyBindings(item);
@@ -126,16 +132,18 @@ namespace Eto.Wpf.Forms.Menu
 			return Enabled;
 		}
 
-		void HandleContextMenuOpening(object sender, sw.RoutedEventArgs e)
+		protected virtual void HandleContextMenuOpening(object sender, sw.RoutedEventArgs e)
 		{
+			if (e.OriginalSource != Control)
+				return;
+
 			var submenu = Widget as ISubmenu;
 			if (submenu != null)
 			{
 				foreach (var item in submenu.Items)
 				{
-					var handler = item.Handler as MenuItemHandler<TControl, TWidget, TCallback>;
-					if (handler != null)
-						handler.Callback.OnValidate(handler.Widget, EventArgs.Empty);
+					var handler = item.Handler as IMenuItemHandler;
+					handler?.Validate();
 				}
 			}
 		}
@@ -168,7 +176,7 @@ namespace Eto.Wpf.Forms.Menu
 		{
 		}
 
-		public void Validate()
+		public virtual void Validate()
 		{
 			Callback.OnValidate(Widget, EventArgs.Empty);
 		}

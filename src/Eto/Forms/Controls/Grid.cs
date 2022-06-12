@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Eto.Drawing;
 
@@ -154,9 +155,9 @@ namespace Eto.Forms
 		/// <param name="row">Row number being formatted</param>
 		protected GridCellFormatEventArgs(GridColumn column, object item, int row)
 		{
-			this.Column = column;
-			this.Item = item;
-			this.Row = row;
+			Column = column;
+			Item = item;
+			Row = row;
 		}
 	}
 
@@ -359,6 +360,52 @@ namespace Eto.Forms
 			add { SelectionChanged += value; }
 			remove { SelectionChanged -= value; }
 		}
+		
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.ColumnOrderChanged"/> event
+		/// </summary>
+		public const string ColumnOrderChangedEvent = "Grid.ColumnOrderChanged";
+
+		/// <summary>
+		/// Event to handle when a column has been reordered by the user.
+		/// </summary>
+		public event EventHandler<GridColumnEventArgs> ColumnOrderChanged
+		{
+			add { Properties.AddHandlerEvent(ColumnOrderChangedEvent, value); }
+			remove { Properties.RemoveEvent(ColumnOrderChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="Grid.ColumnOrderChanged"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnColumnOrderChanged(GridColumnEventArgs e)
+		{
+			Properties.TriggerEvent(ColumnOrderChangedEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.ColumnWidthChanged"/> event
+		/// </summary>
+		public const string ColumnWidthChangedEvent = "Grid.ColumnWidthChanged";
+		
+		/// <summary>
+		/// Event to handle when a column width has been changed.
+		/// </summary>
+		public event EventHandler<GridColumnEventArgs> ColumnWidthChanged
+		{
+			add { Properties.AddHandlerEvent(ColumnWidthChangedEvent, value); }
+			remove { Properties.RemoveEvent(ColumnWidthChangedEvent, value); }
+		}
+		
+		/// <summary>
+		/// Raises the <see cref="Grid.ColumnWidthChanged"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnColumnWidthChanged(GridColumnEventArgs e)
+		{
+			Properties.TriggerEvent(ColumnWidthChangedEvent, this, e);
+		}
 
 		#endregion
 
@@ -371,6 +418,8 @@ namespace Eto.Forms
 			EventLookup.Register<Grid>(c => c.OnCellDoubleClick(null), Grid.CellDoubleClickEvent);
 			EventLookup.Register<Grid>(c => c.OnSelectionChanged(null), Grid.SelectionChangedEvent);
 			EventLookup.Register<Grid>(c => c.OnColumnHeaderClick(null), Grid.ColumnHeaderClickEvent);
+			EventLookup.Register<Grid>(c => c.OnColumnOrderChanged(null), Grid.ColumnOrderChangedEvent);
+			EventLookup.Register<Grid>(c => c.OnColumnWidthChanged(null), Grid.ColumnWidthChangedEvent);
 		}
 
 		/// <summary>
@@ -527,6 +576,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating that the user can clear the selection.
+		/// </summary>
+		/// <remarks>
+		/// When true, the user can deselect the item by cmd/ctrl+click the last selected row, or
+		/// by clicking on the empty space in the Grid. Some platforms may have empty space to the
+		/// right, and some only have space at the bottom.
+		/// When false, this setting will make it so the user cannot deselect the last selected item, and
+		/// the control will initially select the first item when setting the DataStore property.
+		/// This does not affect the ability to clear the selection programmatically.
+		/// </remarks>
+		[DefaultValue(true)]
+		public bool AllowEmptySelection
+		{
+			get => Handler.AllowEmptySelection;
+			set => Handler.AllowEmptySelection = value;
+		}
+
+		/// <summary>
 		/// Selects the row to the specified <paramref name="row"/>, clearing other selections
 		/// </summary>
 		/// <param name="row">Row to select</param>
@@ -647,6 +714,16 @@ namespace Eto.Forms
 			/// Raises the cell formatting event.
 			/// </summary>
 			void OnCellFormatting(Grid widget, GridCellFormatEventArgs e);
+			
+			/// <summary>
+			/// Raises the column display index changed event.
+			/// </summary>
+			void OnColumnOrderChanged(Grid widget, GridColumnEventArgs e);
+
+			/// <summary>
+			/// Raises the column width changed event.
+			/// </summary>
+			void OnColumnWidthChanged(Grid widget, GridColumnEventArgs e);
 		}
 
 		/// <summary>
@@ -718,6 +795,24 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnCellFormatting(e);
+			}
+
+			/// <summary>
+			/// Raises the column display index changed event.
+			/// </summary>
+			public void OnColumnOrderChanged(Grid widget, GridColumnEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnColumnOrderChanged(e);
+			}
+
+			/// <summary>
+			/// Raises the column width changed event.
+			/// </summary>
+			public void OnColumnWidthChanged(Grid widget, GridColumnEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnColumnWidthChanged(e);
 			}
 		}
 
@@ -818,6 +913,19 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if the current cell is in edit mode; otherwise, <c>false</c>.</value>
 			bool IsEditing { get; }
+
+			/// <summary>
+			/// Gets or sets a value indicating that the user can clear the selection.
+			/// </summary>
+			/// <remarks>
+			/// When true, the user can deselect the item by cmd/ctrl+click the last selected row, or
+			/// by clicking on the empty space in the Grid. Some platforms may have empty space to the
+			/// right, and some only have space at the bottom.
+			/// When false, this setting will make it so the user cannot deselect the last selected item, and
+			/// the control will initially select the first item when setting the DataStore property.
+			/// This does not affect the ability to clear the selection programmatically.
+			/// </remarks>
+			bool AllowEmptySelection { get; set; }
 
 			/// <summary>
 			/// Scrolls to show the specified row in the view

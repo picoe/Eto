@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using swf = System.Windows.Forms;
 
@@ -11,6 +11,8 @@ namespace Eto.WinForms.Forms
 		public void Initialize()
 		{
 		}
+
+		public void SetCursor(Cursor cursor) => swf.Cursor.Current = cursor.ToSwf();
 
 		public Eto.Platform Platform { get; set; }
 

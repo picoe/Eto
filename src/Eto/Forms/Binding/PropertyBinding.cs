@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Linq;
+using System.Diagnostics;
+using sc = System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -19,12 +21,11 @@ namespace Eto.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PropertyBinding<T> : IndirectBinding<T>
 	{
-#if PCL
-		PropertyInfo descriptor;
 		Type declaringType;
-#else
+#if !NETSTANDARD1_0
 		PropertyDescriptor descriptor;
 #endif
+		PropertyInfo propInfo;
 		string property;
 
 		/// <summary>
@@ -36,7 +37,7 @@ namespace Eto.Forms
 			set
 			{
 				property = value;
-				descriptor = null;
+				Reset();
 			}
 		}
 
@@ -62,38 +63,71 @@ namespace Eto.Forms
 			this.Property = property;
 			this.IgnoreCase = ignoreCase;
 		}
-
-		void EnsureProperty(object dataItem)
+		
+#if !NETSTANDARD1_0
+		bool IsValid => descriptor != null || propInfo != null;
+		bool CanRead => descriptor != null || propInfo?.CanRead == true;
+		bool CanWrite => descriptor?.IsReadOnly == false || propInfo?.CanWrite == true;
+		void Reset()
 		{
-#if PCL
-			if (dataItem != null 
-				&& (
-					// if not found previously, don't always try to find it if the declaring type is the same
-					(descriptor == null && declaringType == null)
-				    // found previously but incompatible type
-					|| !declaringType.IsInstanceOfType(dataItem))
-				)
-			{
-				var dataItemType = dataItem.GetType();
-				descriptor = null;
-				// iterate to find non-public properties or with different case
-				var comparison = IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-				foreach (var prop in dataItemType.GetRuntimeProperties())
-				{
-					if (string.Equals(prop.Name, Property, comparison))
-					{
-						descriptor = prop;
-						break;
-					}
-				}
-				declaringType = descriptor?.DeclaringType ?? dataItemType;
-			}
+			descriptor = null;
+			propInfo = null;
+			declaringType = null;
+		}
 #else
-			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsInstanceOfType(dataItem)))
+		bool IsValid => propInfo != null;
+		bool CanRead => propInfo?.CanRead == true;
+		bool CanWrite => propInfo?.CanWrite == true;
+		void Reset()
+		{
+			propInfo = null;
+			declaringType = null;
+		}
+#endif
+
+		bool EnsureProperty(object dataItem)
+		{
+			// no dataItem, so no way to get any value..
+			if (dataItem == null)
+				return false;
+
+			// ensure we are valid and the dataItem is an instance of the declaring type
+			if (IsValid && declaringType.IsInstanceOfType(dataItem))
+				return true;
+			
+			var dataItemType = dataItem.GetType();
+			
+			// if we tried with the same type last time, skip.
+			if (declaringType != null && declaringType == dataItemType)
+				return false;
+				
+
+#if !NETSTANDARD1_0
+			// use property descriptors first to support more scenarios
+			descriptor = sc.TypeDescriptor.GetProperties(dataItem).Find(Property, IgnoreCase);
+			if (descriptor != null)
 			{
-				descriptor = TypeDescriptor.GetProperties(dataItem).Find(Property, IgnoreCase);
+				declaringType = descriptor.ComponentType;
+				propInfo = null;
+				return true;
 			}
 #endif
+			
+			// iterate to find non-public properties or with different case
+			var comparison = IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+			foreach (var prop in dataItemType.GetRuntimeProperties())
+			{
+				if (string.Equals(prop.Name, Property, comparison))
+				{
+					propInfo = prop;
+					declaringType = propInfo.DeclaringType;
+					return true;
+				}
+			}
+			
+			// not valid, but we remember the declaring type so we don't keep checking for the same type
+			declaringType = dataItemType;
+			return false;
 		}
 
 		/// <summary>
@@ -103,8 +137,7 @@ namespace Eto.Forms
 		/// <param name="dataItem">Data item to find the property.</param>
 		protected bool HasProperty(object dataItem)
 		{
-			EnsureProperty(dataItem);
-			return descriptor != null;
+			return EnsureProperty(dataItem);
 		}
 
 
@@ -115,19 +148,26 @@ namespace Eto.Forms
 		/// <returns>value of the property from the specified dataItem object</returns>
 		protected override T InternalGetValue(object dataItem)
 		{
-			EnsureProperty(dataItem);
-			if (descriptor != null && dataItem != null
-				#if PCL
-				&& descriptor.CanRead
-				#endif
-				)
+			if (EnsureProperty(dataItem) && CanRead)
 			{
 				var propertyType = typeof(T);
-				object val = descriptor.GetValue(dataItem);
+#if !NETSTANDARD1_0
+				object val = descriptor != null ? descriptor.GetValue(dataItem) : propInfo.GetValue(dataItem);
+#else
+				object val = propInfo.GetValue(dataItem);
+#endif
 				if (val != null && !propertyType.IsInstanceOfType(val))
 				{
-					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-					val = System.Convert.ChangeType(val, propertyType, CultureInfo.InvariantCulture);
+					try
+					{
+						propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+						val = System.Convert.ChangeType(val, propertyType, CultureInfo.InvariantCulture);
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine($"Could not convert object of type {val.GetType()} to {propertyType}\n{ex}");
+						val = propertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyType) : null;
+					}
 				}
 				return (T)val;
 			}
@@ -141,25 +181,35 @@ namespace Eto.Forms
 		/// <param name="value">value to set to the property of the specified dataItem object</param>
 		protected override void InternalSetValue(object dataItem, T value)
 		{
-			EnsureProperty(dataItem);
-			if (descriptor != null && dataItem != null
-				#if PCL
-				&& descriptor.CanWrite
-				#else
-				&& !descriptor.IsReadOnly
-				#endif
-				)
+			if (EnsureProperty(dataItem) && CanWrite)
 			{
-				var propertyType = descriptor.PropertyType;
+#if !NETSTANDARD1_0
+				var propertyType = descriptor?.PropertyType ?? propInfo.PropertyType;
+#else
+				var propertyType = propInfo.PropertyType;
+#endif
 				object val = value;
 				if (val != null && !propertyType.IsInstanceOfType(val))
 				{
-					#if PCL
-					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-					#endif
-					val = System.Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
+					try
+					{
+						propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+						val = System.Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine($"Could not convert object of type {val.GetType()} to {propertyType}\n{ex}");
+						val = propertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyType) : null;
+					}
 				}
-				descriptor.SetValue(dataItem, val);
+#if !NETSTANDARD1_0
+				if (descriptor != null)
+					descriptor.SetValue(dataItem, val);
+				else if (propInfo != null)
+					propInfo.SetValue(dataItem, val);
+#else
+				propInfo.SetValue(dataItem, val);
+#endif
 			}
 		}
 

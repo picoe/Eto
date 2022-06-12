@@ -2,7 +2,7 @@ using System;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
 using System.Collections;
@@ -14,10 +14,36 @@ namespace Eto.Forms
 	/// Represents the contents of a row in a <see cref="TableLayout"/> 
 	/// </summary>
 	[ContentProperty("Cells")]
-	[TypeConverter(typeof(TableRowConverter))]
+	[sc.TypeConverter(typeof(TableRowConverter))]
 	public class TableRow
 	{
 		Collection<TableCell> cells;
+
+		/// <summary>
+		/// Creates a scaled table row with the specified <paramref name="cells"/>
+		/// </summary>
+		/// <remarks>
+		/// This is the same as creating a new TableRow and setting ScaleHeight = true.
+		/// </remarks>
+		/// <param name="cells">Cells for the table row</param>
+		/// <returns>A new scaled TableRow with the specified cells</returns>
+		public static TableRow Scaled(params TableCell[] cells)
+		{
+			return new TableRow(cells) { ScaleHeight = true };
+		}
+
+		/// <summary>
+		/// Creates a scaled table row with the specified <paramref name="cells"/>
+		/// </summary>
+		/// <remarks>
+		/// This is the same as creating a new TableRow and setting ScaleHeight = true.
+		/// </remarks>
+		/// <param name="cells">Cells for the table row</param>
+		/// <returns>A new scaled TableRow with the specified cells</returns>
+		public static TableRow Scaled(IEnumerable<TableCell> cells)
+		{
+			return new TableRow(cells) { ScaleHeight = true };
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TableCell"/> will scale its height
@@ -196,9 +222,10 @@ namespace Eto.Forms
 		int IList.Add(object value)
 		{
 			// allow adding a control directly from xaml
-			var control = value as Control;
-			if (control != null)
-				Add((TableRow)control);
+			if (value is Control control)
+				Add(control);
+			else if (value is string str)
+				Add(new Label { Text = str });
 			else
 				Add((TableRow)value);
 			return Count - 1;

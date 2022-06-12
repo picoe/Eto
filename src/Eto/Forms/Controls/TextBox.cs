@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 
 namespace Eto.Forms
@@ -38,6 +38,14 @@ namespace Eto.Forms
 	[Handler(typeof(TextBox.IHandler))]
 	public class TextBox : TextControl
 	{
+		static readonly object SuppressTextChanging_Key = new object();
+
+		int SuppressTextChanging
+		{
+			get => Properties.Get<int>(SuppressTextChanging_Key);
+			set => Properties.Set(SuppressTextChanging_Key, value);
+		}
+
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		#region Events
@@ -323,13 +331,22 @@ namespace Eto.Forms
 		/// </summary>
 		protected new class Callback : TextControl.Callback, ICallback
 		{
+
+			
 			/// <summary>
 			/// Raises the text changed event.
 			/// </summary>
 			public void OnTextChanging(TextBox widget, TextChangingEventArgs e)
 			{
-				using (widget.Platform.Context)
-					widget.OnTextChanging(e);
+				if (widget.SuppressTextChanging == 0)
+				{
+					widget.SuppressTextChanging++;
+					if (e.NeedsOldText)
+						e.SetOldText(widget.Text);
+					using (widget.Platform.Context)
+						widget.OnTextChanging(e);
+					widget.SuppressTextChanging--;
+				}
 			}
 		}
 

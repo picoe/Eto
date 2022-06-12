@@ -1,15 +1,18 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Text;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto
 {
 	static partial class Win32
 	{
-		#pragma warning disable 0649
+#pragma warning disable 0649
 		// Analysis disable InconsistentNaming
+		[StructLayout(LayoutKind.Sequential)]
 		public struct RECT
 		{
 			public int left;
@@ -18,8 +21,23 @@ namespace Eto
 			public int bottom;
 			public int width => right - left;
 			public int height => bottom - top;
+
+			public System.Drawing.Rectangle ToSD() => new System.Drawing.Rectangle(left, top, width, height);
+			public Eto.Drawing.Rectangle ToEto() => new Eto.Drawing.Rectangle(left, top, width, height);
 		}
-		#pragma warning restore 0649
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct POINT
+		{
+			public int x;
+			public int y;
+			public POINT(int x, int y)
+			{
+				this.x = x;
+				this.y = y;
+			}
+		}
+#pragma warning restore 0649
 
 		[Flags]
 		public enum SWP : uint
@@ -56,6 +74,16 @@ namespace Eto
 			RESTORE = 9,
 			SHOWDEFAULT = 10,
 			FORCEMINIMIZE = 11
+		}
+		
+		[Flags]
+		public enum PRF
+		{
+			CHECKVISIBLE = 0x00000001,
+        	NONCLIENT = 0x00000002,
+        	CLIENT = 0x00000004,
+        	ERASEBKGND = 0x00000008,
+        	CHILDREN = 0x00000010
 		}
 
 
@@ -109,7 +137,9 @@ namespace Eto
 		[Flags]
 		public enum WS_EX : uint
 		{
-			TOOLWINDOW = 0x80,
+			TOPMOST = 0x00000008,
+			TOOLWINDOW = 0x00000080,
+			APPWINDOW = 0x00040000,
 			NOACTIVATE = 0x08000000
 		}
 
@@ -154,7 +184,14 @@ namespace Eto
 			EM_SETCUEBANNER = ECM_FIRST + 1,
 
 			DPICHANGED = 0x02E0,
-			NCCREATE = 0x0081
+			NCCREATE = 0x0081,
+			NCLBUTTONDOWN = 0x00A1,
+			PRINT = 0x0317
+		}
+		
+		public enum HT
+		{
+			CAPTION = 0x2
 		}
 
 		public static ushort LOWORD(IntPtr word)
@@ -235,11 +272,33 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsIconic(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsZoomed(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool IsWindowVisible(IntPtr hWnd);
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool ShowWindow(IntPtr hWnd, SW nCmdShow);
+		
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetActiveWindow();
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr SetActiveWindow(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool EnableWindow(IntPtr hWnd, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsWindowEnabled(IntPtr hWnd);
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
@@ -337,5 +396,110 @@ namespace Eto
 				return null;
 			}
 		}
+
+		// for tray indicator
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+		public static extern int CallNextHookEx(int hookId, int code, int param, IntPtr dataPointer);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+		public static extern IntPtr GetModuleHandle(string moduleName);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+		public static extern int SetWindowsHookEx(int hookId, HookProc function, IntPtr instance, int threadId);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+		public static extern int UnhookWindowsHookEx(int hookId);
+
+		[DllImportAttribute("user32.dll")]
+		public static extern bool ReleaseCapture();
+
+		public delegate int HookProc(int code, int wParam, IntPtr structPointer);
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct MouseLowLevelHook
+		{
+			internal readonly int X;
+			internal readonly int Y;
+			internal readonly int MouseData;
+			internal readonly int Flags;
+			internal readonly int Time;
+			internal readonly int ExtraInfo;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct KeyboardLowLevelHook
+		{
+			internal readonly int VirtualKeyCode;
+			internal readonly int ScanCode;
+			internal readonly int Flags;
+			internal readonly int Time;
+			internal readonly int ExtraInfo;
+		}
+
+		public static bool ApplicationIsActivated()
+		{
+			var activatedHandle = GetForegroundWindow();
+			if (activatedHandle == IntPtr.Zero)
+			{
+				return false;       // No window is currently activated
+			}
+
+			var procId = Process.GetCurrentProcess().Id;
+			int activeProcId;
+			GetWindowThreadProcessId(activatedHandle, out activeProcId);
+
+			return activeProcId == procId;
+		}
+
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+		public static extern IntPtr GetForegroundWindow();
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool GetGUIThreadInfo(uint idThread, ref GUITHREADINFO lpgui);
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct GUITHREADINFO
+		{
+			public int cbSize;
+			public uint flags;
+			public IntPtr hwndActive;
+			public IntPtr hwndFocus;
+			public IntPtr hwndCapture;
+			public IntPtr hwndMenuOwner;
+			public IntPtr hwndMoveSize;
+			public IntPtr hwndCaret;
+			public RECT rcCaret;
+		}
+		
+		[DllImport("kernel32.dll")]
+		static extern uint GetCurrentThreadId();
+		
+		public static bool GetInfo(out GUITHREADINFO lpgui, uint? threadId = null)
+		{
+			lpgui = new GUITHREADINFO();
+			lpgui.cbSize = Marshal.SizeOf(lpgui);
+
+			return GetGUIThreadInfo(threadId ?? GetCurrentThreadId(), ref lpgui);
+		}
+		
+		public static IntPtr GetThreadFocusWindow(uint? threadId = null)
+		{
+			if (!GetInfo(out var info, threadId))
+				return IntPtr.Zero;
+				
+			return info.hwndFocus;
+		}
+		
+		[DllImport("gdi32.dll")]
+		public static extern bool OffsetWindowOrgEx(IntPtr hdc, int nXOffset, int nYOffset, ref POINT lpPoint);
+		
+		[DllImport("user32.dll")]
+		public static extern IntPtr WindowFromPoint(POINT lpPoint);
 	}
 }

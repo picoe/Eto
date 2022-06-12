@@ -5,20 +5,12 @@ using Eto.Mac.Forms;
 using Eto.Mac.Forms.Controls;
 using Eto.Drawing;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using ObjCRuntime;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
-#endif
-
 namespace Eto.Forms
 {
 	public static class
-#if XAMMAC2
+#if MACOS_NET
+	MacOSHelpers
+#elif XAMMAC2
 	XamMac2Helpers
 #elif XAMMAC
 	XamMacHelpers
@@ -49,9 +41,6 @@ namespace Eto.Forms
 			if (attach && !control.Loaded)
 			{
 				control.AttachNative();
-				var macControl = control.GetMacControl();
-				if (macControl != null && macControl.AutoSize)
-					macControl.ContainerControl.SetFrameSize(macControl.GetPreferredSize(SizeF.PositiveInfinity).ToNS());
 			}
 			return control.GetContainerView();
 		}
@@ -89,6 +78,10 @@ namespace Eto.Forms
 		{
 			if (window == null)
 				return null;
+
+			if (window is IMacControl macControl && macControl.WeakHandler?.Target is IMacWindow macWindow)
+				return macWindow.Widget;
+
 			return new Form(new NativeFormHandler(window));
 		}
 

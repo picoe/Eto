@@ -75,7 +75,7 @@ namespace Eto.Drawing
 		public LinearGradientBrush(Color startColor, Color endColor, PointF startPoint, PointF endPoint)
 		{
 			handler = Platform.Instance.LinearGradientBrushHandler;
-			ControlObject = handler.Create (startColor, endColor, startPoint, endPoint);
+			ControlObject = handler.Create(startColor, endColor, startPoint, endPoint);
 		}
 
 		/// <summary>
@@ -84,11 +84,11 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Rectangle to define the area of the gradient</param>
 		/// <param name="startColor">Start color for the gradient</param>
 		/// <param name="endColor">End color for the gradient</param>
-		/// <param name="angle">Angle of the gradient</param>
+		/// <param name="angle">Angle of the gradient, in degrees</param>
 		public LinearGradientBrush(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
 			handler = Platform.Instance.LinearGradientBrushHandler;
-			ControlObject = handler.Create (rectangle, startColor, endColor, angle);
+			ControlObject = handler.Create(rectangle, startColor, endColor, angle);
 		}
 
 		/// <summary>
@@ -97,8 +97,8 @@ namespace Eto.Drawing
 		/// <value>The transform to apply to the gradient</value>
 		public IMatrix Transform
 		{
-			get { return handler.GetTransform (this); }
-			set { handler.SetTransform (this, value); }
+			get { return handler.GetTransform(this); }
+			set { handler.SetTransform(this, value); }
 		}
 
 		/// <summary>
@@ -107,8 +107,8 @@ namespace Eto.Drawing
 		/// <value>The wrap mode for the gradient</value>
 		public GradientWrapMode Wrap
 		{
-			get { return handler.GetGradientWrap (this); }
-			set { handler.SetGradientWrap (this, value); }
+			get { return handler.GetGradientWrap(this); }
+			set { handler.SetGradientWrap(this, value); }
 		}
 
 		#region Handler
@@ -128,7 +128,7 @@ namespace Eto.Drawing
 			/// <param name="startPoint">Start point.</param>
 			/// <param name="endPoint">End point.</param>
 			/// <returns>ControlObject for the brush</returns>
-			object Create (Color startColor, Color endColor, PointF startPoint, PointF endPoint);
+			object Create(Color startColor, Color endColor, PointF startPoint, PointF endPoint);
 
 			/// <summary>
 			/// Create the specified rectangle, startColor, endColor and angle.
@@ -138,35 +138,35 @@ namespace Eto.Drawing
 			/// <param name="endColor">End color.</param>
 			/// <param name="angle">Angle.</param>
 			/// <returns>ControlObject for the brush</returns>
-			object Create (RectangleF rectangle, Color startColor, Color endColor, float angle);
+			object Create(RectangleF rectangle, Color startColor, Color endColor, float angle);
 
 			/// <summary>
 			/// Gets the transform for the specified brush
 			/// </summary>
 			/// <returns>The current transform for the specified brush</returns>
 			/// <param name="widget">Brush to get the transform</param>
-			IMatrix GetTransform (LinearGradientBrush widget);
+			IMatrix GetTransform(LinearGradientBrush widget);
 
 			/// <summary>
 			/// Sets the transform for the specified brush
 			/// </summary>
 			/// <param name="widget">Brush to set the transform</param>
 			/// <param name="transform">Transform to set to the brush</param>
-			void SetTransform (LinearGradientBrush widget, IMatrix transform);
+			void SetTransform(LinearGradientBrush widget, IMatrix transform);
 
 			/// <summary>
 			/// Gets the gradient wrap mode
 			/// </summary>
 			/// <returns>The gradient wrap mode for the brush</returns>
 			/// <param name="widget">Brush to get the gradient wrap mode</param>
-			GradientWrapMode GetGradientWrap (LinearGradientBrush widget);
+			GradientWrapMode GetGradientWrap(LinearGradientBrush widget);
 
 			/// <summary>
 			/// Sets the gradient wrap mode
 			/// </summary>
 			/// <param name="widget">Brush to set the wrap mode</param>
 			/// <param name="gradientWrap">Gradient wrap mode to set</param>
-			void SetGradientWrap (LinearGradientBrush widget, GradientWrapMode gradientWrap);
+			void SetGradientWrap(LinearGradientBrush widget, GradientWrapMode gradientWrap);
 		}
 
 		#endregion

@@ -12,6 +12,7 @@ using Eto.Forms.ThemedControls;
 using Eto.GtkSharp.Forms.Menu;
 using Eto.GtkSharp.Forms.ToolBar;
 using Eto.Shared.Forms;
+using System.Linq;
 
 namespace Eto.GtkSharp
 {
@@ -70,11 +71,38 @@ namespace Eto.GtkSharp
 			AddTo(this);
 		}
 
+#if GTK3
+		static Platform()
+		{
+			Style.Add<ThemedStepperHandler>(null, h =>
+			{
+				h.Orientation = Orientation.Horizontal;
+				h.Widget.Size = new Size(-1, -1);
+				h.Font = SystemFonts.Default();
+				if (h.Control.Content.Handler is TableLayoutHandler table)
+				{
+					table.Control.StyleContext.AddClass("linked");
+				}
+			});
+
+			Style.Add<ThemedSegmentedButtonHandler>(null, h =>
+			{
+				// show segmented buttons linked together
+				h.Control.Styles.Add<TableLayout>("buttons", table =>
+				{
+					var tableHandler = table.Handler as TableLayoutHandler;
+					tableHandler?.Control.StyleContext.AddClass("linked");
+				});
+			});
+		}
+#endif
+
 		public static void AddTo(Eto.Platform p)
 		{
 			// Drawing
 			p.Add<Bitmap.IHandler>(() => new BitmapHandler());
 			p.Add<FontFamily.IHandler>(() => new FontFamilyHandler());
+			p.Add<FontTypeface.IHandler>(() => new FontTypefaceHandler());
 			p.Add<Font.IHandler>(() => new FontHandler());
 			p.Add<Fonts.IHandler>(() => new FontsHandler());
 			p.Add<Graphics.IHandler>(() => new GraphicsHandler());
@@ -89,6 +117,7 @@ namespace Eto.GtkSharp
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
 			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 			p.Add<SystemColors.IHandler>(() => new SystemColorsHandler());
+			p.Add<FormattedText.IHandler>(() => new FormattedTextHandler());
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());
@@ -142,6 +171,12 @@ namespace Eto.GtkSharp
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
 			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
+			p.Add<ButtonSegmentedItem.IHandler>(() => new ThemedButtonSegmentedItemHandler());
+			p.Add<MenuSegmentedItem.IHandler>(() => new ThemedMenuSegmentedItemHandler());
+			p.Add<SegmentedButton.IHandler>(() => new ThemedSegmentedButtonHandler());
+			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
+			p.Add<PropertyGrid.IHandler>(() => new ThemedPropertyGridHandler());
+			p.Add<CollectionEditor.IHandler>(() => new ThemedCollectionEditorHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
@@ -150,9 +185,11 @@ namespace Eto.GtkSharp
 			p.Add<MenuBar.IHandler>(() => new MenuBarHandler());
 			p.Add<RadioMenuItem.IHandler>(() => new RadioMenuItemHandler());
 			p.Add<SeparatorMenuItem.IHandler>(() => new SeparatorMenuItemHandler());
+			p.Add<SubMenuItem.IHandler>(() => new SubMenuItemHandler());
 			
 			// Forms.Printing
 			p.Add<PrintDialog.IHandler>(() => new PrintDialogHandler());
+			p.Add<PrintPreviewDialog.IHandler>(() => new PrintPreviewDialogHandler());
 			p.Add<PrintDocument.IHandler>(() => new PrintDocumentHandler());
 			p.Add<PrintSettings.IHandler>(() => new PrintSettingsHandler());
 			
@@ -167,10 +204,10 @@ namespace Eto.GtkSharp
 			p.Add<AboutDialog.IHandler>(() => new AboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
-			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());
+			p.Add<FloatingForm.IHandler>(() => new FloatingFormHandler());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
@@ -185,12 +222,16 @@ namespace Eto.GtkSharp
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
 			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
+			p.Add<DataFormats.IHandler>(() => new DataFormatsHandler());
+			p.Add<Window.IWindowHandler>(() => new WindowHandler());
 			if (EtoEnvironment.Platform.IsLinux)
+			{
 				p.Add<TrayIndicator.IHandler>(() => new LinuxTrayIndicatorHandler());
+				p.Add<Notification.IHandler>(() => new LinuxNotificationHandler());
+				p.Add<Taskbar.IHandler>(() => new UnityTaskbarHandler());
+			}
             else
                 p.Add<TrayIndicator.IHandler>(() => new OtherTrayIndicatorHandler());
-			if (EtoEnvironment.Platform.IsLinux)
-				p.Add<Notification.IHandler>(() => new LinuxNotificationHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
@@ -203,7 +244,6 @@ namespace Eto.GtkSharp
 			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
 			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			#else
-			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());
 			#endif
 		}

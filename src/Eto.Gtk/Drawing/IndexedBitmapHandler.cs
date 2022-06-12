@@ -11,7 +11,7 @@ namespace Eto.GtkSharp.Drawing
 	public class IndexedBitmapDataHandler : BaseBitmapData
 	{
 		public IndexedBitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base(image, data, scanWidth, bitsPerPixel, controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, false)
 		{
 		}
 

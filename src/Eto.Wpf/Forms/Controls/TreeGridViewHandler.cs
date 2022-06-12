@@ -3,6 +3,7 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
+using swi = System.Windows.Input;
 using Eto.Forms;
 using Eto.CustomControls;
 using Eto.Wpf.CustomControls.TreeGridView;
@@ -26,7 +27,64 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.Initialize();
 			controller = new TreeController { Handler = this };
-			Control.Background = sw.SystemColors.WindowBrush;
+			Control.SetResourceReference(swc.Panel.BackgroundProperty, sw.SystemColors.WindowBrushKey);
+			Control.PreviewKeyDown += Control_PreviewKeyDown;
+		}
+
+		private void Control_PreviewKeyDown(object sender, sw.Input.KeyEventArgs e)
+		{
+			if (e.Handled || swi.Keyboard.Modifiers != swi.ModifierKeys.None)
+				return;
+
+			// handle expanding/collapsing via the keyboard
+			if (e.Key == swi.Key.Right)
+			{
+				var currentCell = Control.CurrentCell;
+				if (currentCell.Column != null 
+					&& Control.Columns.IndexOf(currentCell.Column) == 0
+					&& currentCell.Item is ITreeGridItem item
+					&& item.Expandable
+					&& !item.Expanded)
+				{
+					var index = controller.IndexOf(item);
+					if (index >= 0)
+					{
+						controller.ExpandRow(index);
+
+						e.Handled = true;
+					}
+				}
+			}
+			else if (e.Key == swi.Key.Left)
+			{
+				var currentCell = Control.CurrentCell;
+				if (currentCell.Column != null
+					&& Control.Columns.IndexOf(currentCell.Column) == 0
+					&& currentCell.Item is ITreeGridItem item)
+				{
+					if (!item.Expandable || !item.Expanded)
+					{
+						// select parent if not the top node
+						item = item.Parent;
+						if (item != null && !ReferenceEquals(item, DataStore))
+						{
+							Control.CurrentCell = new swc.DataGridCellInfo(item, currentCell.Column);
+							SelectedItem = item;
+							e.Handled = true;
+						}
+					}
+					else
+					{
+						var index = controller.IndexOf(item);
+						if (index >= 0)
+						{
+							controller.CollapseRow(index);
+
+							e.Handled = true;
+						}
+					}
+				}
+			}
 		}
 
 		public override void AttachEvent(string id)
@@ -103,6 +161,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				controller.InitializeItems(value);
 				Control.ItemsSource = controller;
+				EnsureSelection();
 			}
 		}
 
@@ -124,11 +183,21 @@ namespace Eto.Wpf.Forms.Controls
 
 		public IEnumerable<object> SelectedItems => Control.SelectedItems.OfType<object>();
 
-		public override sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent)
+		public override sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent, swc.DataGridCell cell)
 		{
-			if (object.ReferenceEquals(column, Columns.Collection[0].Handler))
-				return TreeToggleButton.Create(defaultContent, controller);
-			return defaultContent;
+			// only first column
+			if (!ReferenceEquals(column, Columns.Collection[0].Handler))
+				return defaultContent;
+
+			// already a toggle panel, reuse it and set new content (if needed)
+			if (cell.Content is TreeTogglePanel ttp)
+			{
+				ttp.SetContent(defaultContent);
+				return ttp;
+			}
+
+			// create a new toggle panel
+			return new TreeTogglePanel(defaultContent, controller);
 		}
 
 		void ITreeHandler.PreResetTree()
@@ -139,8 +208,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		void ITreeHandler.PostResetTree()
 		{
+			DisableAutoScrollToSelection = true;
 			RestoreFocus();
 			SkipSelectionChanged = false;
+			DisableAutoScrollToSelection = false;
 		}
 
 		public void ReloadData()
@@ -148,29 +219,18 @@ namespace Eto.Wpf.Forms.Controls
 			controller.ReloadData();
 		}
 
-		public void ReloadItem(ITreeGridItem item)
+		public void ReloadItem(ITreeGridItem item, bool reloadChildren)
 		{
-			controller.ReloadData();
+			if (!reloadChildren)
+				controller.ReloadItem(item);
+			else
+				controller.ReloadData();
 		}
 
-		public ITreeGridItem GetCellAt(PointF location, out int column)
+		public TreeGridCell GetCellAt(PointF location)
 		{
-			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, location.ToWpf())?.VisualHit;
-			if (hitTestResult == null)
-			{
-				column = -1;
-				return null;
-			}
-			var dataGridCell = hitTestResult.GetVisualParent<swc.DataGridCell>();
-			column = dataGridCell?.Column != null ? Control.Columns.IndexOf(dataGridCell.Column) : -1;
-
-			var dataGridRow = hitTestResult.GetVisualParent<swc.DataGridRow>();
-			if (dataGridRow != null)
-			{
-				int row = dataGridRow.GetIndex();
-				return GetItemAtRow(row) as ITreeGridItem;
-			}
-			return null;
+			var info = GetCellInfo(location);
+			return new TreeGridCell(info.Column, info.ColumnIndex, info.CellType, info.Item);
 		}
 
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;

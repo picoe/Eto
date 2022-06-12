@@ -5,44 +5,14 @@ using Eto.Drawing;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-using MonoMac;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 #if OSX
 using Eto.Mac.Forms;
 
-#if XAMMAC2
-using GraphicsBase = Eto.Mac.Forms.MacBase<CoreGraphics.CGContext, Eto.Drawing.Graphics, Eto.Drawing.Graphics.ICallback>;
-#else
+#if MONOMAC
 using GraphicsBase = Eto.Mac.Forms.MacBase<MonoMac.CoreGraphics.CGContext, Eto.Drawing.Graphics, Eto.Drawing.Graphics.ICallback>;
+#else
+using GraphicsBase = Eto.Mac.Forms.MacBase<CoreGraphics.CGContext, Eto.Drawing.Graphics, Eto.Drawing.Graphics.ICallback>;
 #endif
 
 namespace Eto.Mac.Drawing
@@ -85,10 +55,15 @@ namespace Eto.iOS.Drawing
 		readonly Stack<CGAffineTransform> transforms = new Stack<CGAffineTransform>();
 		CGAffineTransform currentTransform = CGAffineTransform.MakeIdentity();
 		static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern(null);
+		FormattedText _formattedText;
+
+		FormattedText SharedFormattedText => _formattedText ?? (_formattedText = new FormattedText());
 
 		public NSView DisplayView { get; private set; }
 
 		static readonly object PixelOffsetMode_Key = new object();
+		
+		public NSGraphicsContext GraphicsContext => graphicsContext;
 
 		public PixelOffsetMode PixelOffsetMode
 		{
@@ -98,7 +73,12 @@ namespace Eto.iOS.Drawing
 
 		void SetOffset(bool fill)
 		{
-			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			var currentMode = PixelOffsetMode;
+			var requiresOffset =
+				(
+					currentMode == PixelOffsetMode.Aligned
+					|| (!fill && currentMode == PixelOffsetMode.None)
+				);
 			if (requiresOffset != isOffset)
 			{
 				RewindAll();
@@ -240,13 +220,13 @@ namespace Eto.iOS.Drawing
 			var handler = image.Handler as BitmapHandler;
 			SourceImage = image;
 #if OSX
-			var rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+			var rep = handler.GetBitmapImageRep();
 			if (rep.BitsPerPixel != 32)
 			{
 				// CoreGraphics only supports drawing to 32bpp, create a new 32-bpp image and copy back when disposed or flushed.
 				DrawingImage = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppRgb);
 				handler = DrawingImage.Handler as BitmapHandler;
-				rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+				rep = handler.GetBitmapImageRep();
 			}
 			graphicsContext = NSGraphicsContext.FromBitmap(rep);
 			if (graphicsContext == null)
@@ -254,7 +234,7 @@ namespace Eto.iOS.Drawing
 				// invalid parameters for the rep
 				DrawingImage = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppRgba);
 				handler = DrawingImage.Handler as BitmapHandler;
-				rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+				rep = handler.GetBitmapImageRep();
 				graphicsContext = NSGraphicsContext.FromBitmap(rep);
 			}
 
@@ -469,7 +449,7 @@ namespace Eto.iOS.Drawing
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			SetOffset(true);
+			SetOffset(false);
 			StartDrawing();
 
 			var rect = new CGRect(x, y, width, height);
@@ -591,25 +571,33 @@ namespace Eto.iOS.Drawing
 			EndDrawing();
 		}
 
-		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
+		public void DrawText(Font font, Brush brush, float x, float y, string text)
 		{
-			SetOffset(true);
-			if (string.IsNullOrEmpty(text))
-				return;
+			var formattedText = SharedFormattedText;
+			formattedText.Text = text;
+			formattedText.Font = font;
+			formattedText.ForegroundBrush = brush;
+			DrawText(formattedText, new PointF(x, y));
+		}
 
+		public void DrawText(FormattedText formattedText, PointF location)
+		{
+			SetOffset(false);
 			StartDrawing();
-			FontExtensions.DrawString(text, new PointF(x, y), brush.Color, font);
+			if (formattedText.Handler is FormattedTextHandler handler)
+				handler.DrawText(this, location);
 			EndDrawing();
 		}
 
 		public SizeF MeasureString(Font font, string text)
 		{
-			StartDrawing();
-			var size = FontExtensions.MeasureString(text, font);
-			EndDrawing();
-			return size;
+			var formattedText = SharedFormattedText;
+			formattedText.Text = text;
+			formattedText.Font = font;
+			return formattedText.Measure();
 		}
-		#if OSX
+
+#if OSX
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)

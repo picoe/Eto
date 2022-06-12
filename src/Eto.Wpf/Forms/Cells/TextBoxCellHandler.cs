@@ -105,7 +105,7 @@ namespace Eto.Wpf.Forms.Cells
 					control.Text = Handler.GetValue(control.DataContext);
 					Handler.FormatCell(control, cell, control.DataContext);
 				};
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
@@ -130,7 +130,7 @@ namespace Eto.Wpf.Forms.Cells
 					control.Text = Handler.GetValue(control.DataContext);
 					Handler.FormatCell(control, cell, control.DataContext);
 				};
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			protected override object PrepareCellForEdit(sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)

@@ -3,19 +3,6 @@ using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.Generic;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -34,19 +21,18 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 
 			public object Handler
-			{ 
+			{
 				get { return WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 		}
 
 		// CWEN: should have some form of implementation here
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
-		protected override NSTabView CreateControl()
-		{
-			return new EtoTabView();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSTabView CreateControl() => new EtoTabView();
 
 		protected override void Initialize()
 		{
@@ -91,7 +77,18 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.SelectAt(value); }
 		}
 
-		public override bool Enabled { get; set; }
+		protected override bool ControlEnabled
+		{
+			get => base.ControlEnabled;
+			set
+			{
+				base.ControlEnabled = value;
+				foreach (var child in Widget.Controls)
+				{
+					child.GetMacViewHandler()?.SetEnabled(value);
+				}
+			}
+		}
 
 		public void InsertTab(int index, TabPage page)
 		{
@@ -131,7 +128,7 @@ namespace Eto.Mac.Forms.Controls
 			var naturalSize = NaturalSize;
 			if (naturalSize != null)
 				return naturalSize.Value;
-			
+
 			var size = base.GetNaturalSize(availableSize);
 			var borderSize = Control.Frame.Size.ToEto() - Control.ContentRect.Size.ToEto();
 

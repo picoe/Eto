@@ -43,6 +43,12 @@ namespace Eto.Forms
 		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		/// <summary>
+		/// Gets or sets the binding to get the tooltip text for each radio button.
+		/// </summary>
+		/// <value>The item tool tip binding.</value>
+		public IIndirectBinding<string> ItemToolTipBinding { get; set; }
+
+		/// <summary>
 		/// Gets or sets the binding to get the text for each radio button.
 		/// </summary>
 		/// <remarks>
@@ -196,7 +202,7 @@ namespace Eto.Forms
 			set
 			{
 				EnsureButtons();
-				SetSelected(buttons[value]);
+				SetSelected(value >= 0 && value < buttons.Count ? buttons[value] : null);
 			}
 		}
 
@@ -374,9 +380,9 @@ namespace Eto.Forms
 				DataStore = CreateDefaultItems();
 		}
 
-		void LayoutButtons()
+		void LayoutButtons(bool force = false)
 		{
-			if (!Loaded)
+			if (!Loaded && !force)
 				return;
 			SuspendLayout();
 			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = spacing };
@@ -443,11 +449,20 @@ namespace Eto.Forms
 				button.TextColor = TextColor;
 			button.CheckedChanged += HandleCheckedChanged;
 			button.Text = ItemTextBinding.GetValue(item);
+			if (ItemToolTipBinding != null)
+				button.ToolTip = ItemToolTipBinding.GetValue(item);
 			button.Tag = item;
 			button.Enabled = base.Enabled;
 			if (controller == null)
 				controller = button;
 			return button;
+		}
+
+		internal override void InternalEnsureLayout()
+		{
+			if (Content == null)
+				LayoutButtons(true);
+			base.InternalEnsureLayout();
 		}
 
 		void UnregisterButton(RadioButton button)

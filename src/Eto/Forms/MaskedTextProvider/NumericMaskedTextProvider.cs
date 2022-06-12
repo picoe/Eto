@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using System.Linq;
 using System.Globalization;
 using System.ComponentModel;
@@ -24,21 +23,27 @@ namespace Eto.Forms
 			public Func<object, string> ToText;
 		}
 
+		// do all conversions with invariant culture
+		static CultureInfo Inv => CultureInfo.InvariantCulture;
+
 		// use dictionary instead of reflection for Xamarin.Mac linking
-		Dictionary<Type, Info> numericTypes = new Dictionary<Type, Info>
+		static readonly Dictionary<Type, Info> numericTypes = new Dictionary<Type, Info>
 		{
-			{ typeof(decimal), new Info { Parse = s => { decimal d; return decimal.TryParse(s, out d) ? (object)d : null; }, AllowSign = true, AllowDecimal = true } },
-			{ typeof(double), new Info { Parse = s => { double d; return double.TryParse(s, out d) ? (object)d : null; }, ToText = v => ((double)v).ToString("F99").TrimEnd('0', '.'), AllowSign = true, AllowDecimal = true } },
-			{ typeof(float), new Info { Parse = s => { float d; return float.TryParse(s, out d) ? (object)d : null; }, ToText = v => ((float)v).ToString("F99").TrimEnd('0', '.'), AllowSign = true, AllowDecimal = true } },
-			{ typeof(int), new Info { Parse = s => { int d; return int.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
-			{ typeof(uint), new Info { Parse = s => { uint d; return uint.TryParse(s, out d) ? (object)d : null; } } },
-			{ typeof(long), new Info { Parse = s => { long d; return long.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
-			{ typeof(ulong), new Info { Parse = s => { ulong d; return ulong.TryParse(s, out d) ? (object)d : null; } } },
-			{ typeof(short), new Info { Parse = s => { short d; return short.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
-			{ typeof(ushort), new Info { Parse = s => { ushort d; return ushort.TryParse(s, out d) ? (object)d : null; } } },
-			{ typeof(byte), new Info { Parse = s => { byte d; return byte.TryParse(s, out d) ? (object)d : null; } } },
-			{ typeof(sbyte), new Info { Parse = s => { sbyte d; return sbyte.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } }
+			{ typeof(decimal), new Info { Parse = s => decimal.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true, AllowDecimal = true } },
+			{ typeof(double), new Info { Parse = s => double.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, ToText = DoubleToText, AllowSign = true, AllowDecimal = true } },
+			{ typeof(float), new Info { Parse = s => float.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, ToText = FloatToText, AllowSign = true, AllowDecimal = true } },
+			{ typeof(int), new Info { Parse = s => int.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true } },
+			{ typeof(uint), new Info { Parse = s => uint.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null } },
+			{ typeof(long), new Info { Parse = s => long.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true } },
+			{ typeof(ulong), new Info { Parse = s => ulong.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null } },
+			{ typeof(short), new Info { Parse = s => short.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true } },
+			{ typeof(ushort), new Info { Parse = s => ushort.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null } },
+			{ typeof(byte), new Info { Parse = s => byte.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null } },
+			{ typeof(sbyte), new Info { Parse = s => sbyte.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true } }
 		};
+
+		static string DoubleToText(object v) => ((double?)v)?.ToString("F99", Inv).TrimEnd('0').TrimEnd('.') ?? string.Empty;
+		static string FloatToText(object v) => ((float?)v)?.ToString("F99", Inv).TrimEnd('0').TrimEnd('.') ?? string.Empty;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.NumericMaskedTextProvider{T}"/> class.
@@ -47,21 +52,21 @@ namespace Eto.Forms
 		{
 			var type = typeof(T);
 			var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
-			Info info;
-			if (numericTypes.TryGetValue(underlyingType, out info))
+			if (numericTypes.TryGetValue(underlyingType, out Info info))
 			{
 				AllowSign = info.AllowSign;
 				AllowDecimal = info.AllowDecimal;
 				parse = text =>
 				{
 					var val = info.Parse(text);
-					return val == null ? default(T) : (T)val;
+					return val == null ? default : (T)val;
 				};
+
 				if (info.ToText != null)
 					toString = val => info.ToText(val);
 				else
-					toString = val => val.ToString();
-				Validate = text => info.Parse(text) != null;
+					toString = val => Convert.ToString(val, CultureInfo.InvariantCulture);
+				Validate = text => info.Parse(text?.Replace(DecimalCharacter, '.')) != null;
 			}
 			else
 			{
@@ -69,7 +74,7 @@ namespace Eto.Forms
 				AllowSign = Convert.ToBoolean(underlyingType.GetRuntimeField("MinValue").GetValue(null));
 				AllowDecimal = underlyingType == typeof(decimal) || underlyingType == typeof(double) || underlyingType == typeof(float);
 
-				var tryParseMethod = underlyingType.GetRuntimeMethod("TryParse", new [] { typeof(string), underlyingType.MakeByRefType() });
+				var tryParseMethod = underlyingType.GetRuntimeMethod("TryParse", new[] { typeof(string), underlyingType.MakeByRefType() });
 				if (tryParseMethod == null || tryParseMethod.ReturnType != typeof(bool))
 					throw new ArgumentException(string.Format("Type of T ({0}) must implement a static bool TryParse(string, out T) method", typeof(T)));
 
@@ -80,13 +85,13 @@ namespace Eto.Forms
 					{
 						return (T)parameters[1];
 					}
-					return default(T);
+					return default;
 				};
-				toString = val => val.ToString();
+				toString = val => Convert.ToString(val, CultureInfo.InvariantCulture);
 
 				Validate = text =>
 				{
-					var parameters = new object[] { text, null };
+					var parameters = new object[] { text?.Replace(DecimalCharacter, '.'), null };
 					return (bool)tryParseMethod.Invoke(null, parameters);
 				};
 			}
@@ -98,14 +103,15 @@ namespace Eto.Forms
 		/// <value>The value of the mask.</value>
 		public T Value
 		{
-			get
-			{
-				return parse(Text);
-			}
-			set
-			{
-				Text = toString(value);
-			}
+			get => parse(Text?.Replace(DecimalCharacter, '.'));
+			set => Text = toString(value)?.Replace('.', DecimalCharacter);
+		}
+
+		internal override void SetCulture()
+		{
+			var value = Value;
+			base.SetCulture();
+			Value = value;
 		}
 	}
 
@@ -114,6 +120,8 @@ namespace Eto.Forms
 	/// </summary>
 	public class NumericMaskedTextProvider : VariableMaskedTextProvider
 	{
+		CultureInfo _culture = CultureInfo.CurrentCulture;
+
 		/// <summary>
 		/// Gets or sets a value indicating that the mask can optionally include a decimal, as specified by the <see cref="DecimalCharacter"/>.
 		/// </summary>
@@ -146,12 +154,46 @@ namespace Eto.Forms
 		public char DecimalCharacter { get; set; }
 
 		/// <summary>
+		/// Gets or sets the alternate decimal character that can be accepted.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when the DecimalCharacter is localized but you still want to allow alternate characters
+		/// </remarks>
+		public char[] AltDecimalCharacters { get; set; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.NumericMaskedTextProvider"/> class.
 		/// </summary>
 		public NumericMaskedTextProvider()
 		{
-			DecimalCharacter = '.';
-			SignCharacters = new [] { '+', '-' };
+			SetCultureInternal();
+		}
+
+		/// <summary>
+		/// Gets or sets the culture of the <see cref="DecimalCharacter"/> and <see cref="SignCharacters"/> formatting characters.
+		/// </summary>
+		public CultureInfo Culture
+		{
+			get => _culture;
+			set
+			{
+				_culture = value ?? throw new ArgumentNullException(nameof(value));
+				SetCulture();
+			}
+		}
+
+		internal virtual void SetCulture() => SetCultureInternal();
+
+		void SetCultureInternal()
+		{
+			var format = _culture.NumberFormat;
+			// note: we do not support formats with multiple-characters
+			DecimalCharacter = format.NumberDecimalSeparator[0];
+			SignCharacters = new[] { format.PositiveSign[0], format.NegativeSign[0] };
+			if (DecimalCharacter != '.')
+				AltDecimalCharacters = new[] { '.' };
+			else
+				AltDecimalCharacters = null;
 		}
 
 		/// <summary>
@@ -171,34 +213,41 @@ namespace Eto.Forms
 		/// <returns><c>true</c> when the replacement was successful, or <c>false</c> if it failed.</returns>
 		public override bool Replace(char character, ref int position)
 		{
-			var allow = Allow(character, ref position);
+			var allow = Allow(ref character, ref position);
 			return allow && base.Replace(character, ref position);
 		}
 
-		bool Allow(char character, ref int position)
+		bool Allow(ref char character, ref int position)
 		{
 			bool allow = false;
-			if (!allow && AllowDecimal && character == DecimalCharacter)
+			if (!allow && AllowDecimal && (character == DecimalCharacter || AltDecimalCharacters?.Contains(character) == true))
 			{
-				var val = Text;
-				if (val.IndexOf(DecimalCharacter) == -1)
+				character = DecimalCharacter;
+				var decimalIndex = Text.IndexOf(DecimalCharacter);
+
+				if (decimalIndex >= 0)
 				{
-					allow = true;
-					if (position < val.Length && !char.IsDigit(val[position]))
-					{
-						// insert at correct location and move cursor
-						int idx;
-						for (idx = 0; idx < val.Length; idx++)
-						{
-							if (char.IsDigit(val[idx]))
-							{
-								break;
-							}
-						}
-						position = idx;
-						allow = true;
-					}
+					Builder.Remove(decimalIndex, 1);
+					if (position > decimalIndex)
+						position--;
 				}
+
+				allow = true;
+				if (position < Builder.Length && !char.IsDigit(Builder[position]))
+				{
+					// insert at correct location and move cursor
+					int idx;
+					for (idx = 0; idx < Builder.Length; idx++)
+					{
+						if (char.IsDigit(Builder[idx]))
+						{
+							break;
+						}
+					}
+					position = idx;
+					allow = true;
+				}
+				
 			}
 			if (!allow && AllowSign && SignCharacters.Contains(character))
 			{
@@ -228,7 +277,7 @@ namespace Eto.Forms
 		{
 			int pos = position;
 
-			var allow = Allow(character, ref position);
+			var allow = Allow(ref character, ref position);
 
 			var ret = allow && base.Insert(character, ref position);
 

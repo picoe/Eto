@@ -1,3 +1,4 @@
+#if GTKCORE
 using System;
 using Eto.Drawing;
 using Eto.Forms;
@@ -37,6 +38,7 @@ namespace Eto.GtkSharp.Forms
 			Control.ShowAll();
 			var response = (Gtk.ResponseType)Control.Run();
 			Control.Hide();
+			Control.Unrealize();
 
 			if (response == Gtk.ResponseType.Ok)
 				Callback.OnColorChanged(Widget, EventArgs.Empty);
@@ -45,3 +47,4 @@ namespace Eto.GtkSharp.Forms
 		}
 	}
 }
+#endif

@@ -2,14 +2,14 @@ using System;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Collections.Generic;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 namespace Eto.Serialization.Json.Converters
 {
 	public class TypeConverterConverter : JsonConverter
 	{
-		readonly Dictionary<Type, TypeConverter> converters = new Dictionary<Type, TypeConverter>();
+		readonly Dictionary<Type, sc.TypeConverter> converters = new Dictionary<Type, sc.TypeConverter>();
 
 		public override bool CanRead { get { return true; } }
 		public override bool CanWrite { get { return false; } }
@@ -54,12 +54,12 @@ namespace Eto.Serialization.Json.Converters
 			return reader.Value;
 		}
 
-		TypeConverter GetConverter(Type objectType, Type destinationType)
+		sc.TypeConverter GetConverter(Type objectType, Type destinationType)
 		{
-			TypeConverter converter;
+			sc.TypeConverter converter;
 			if (converters.TryGetValue(objectType, out converter))
 				return converter;
-			converter = TypeDescriptor.GetConverter(objectType);
+			converter = sc.TypeDescriptor.GetConverter(objectType);
 			if (converter != null && converter.CanConvertFrom(destinationType))
 			{
 				converters.Add(objectType, converter);

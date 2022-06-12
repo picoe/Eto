@@ -1,3 +1,4 @@
+#if GTK2
 using System;
 using WebKit;
 using GLib;
@@ -101,3 +102,4 @@ namespace Eto.GtkSharp
 	}
 }
 
+#endif

@@ -1,10 +1,59 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Eto
 {
+	/// <summary>
+	/// Interface for a style provider
+	/// </summary>
+	/// <remarks>
+	/// This can be used to create your own style engine to apply styles to widgets.
+	/// The <see cref="DefaultStyleProvider"/> is a good example of how to implement
+	/// a style provider.
+	/// </remarks>
+	public interface IStyleProvider
+	{
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:Eto.IStyleProvider"/> allows inheriting styles from the parent object.
+		/// </summary>
+		/// <remarks>
+		/// This is used when applying cascading styles, sometimes the user or the provider will not want
+		/// parent styles to be applicable.
+		/// </remarks>
+		/// <value><c>true</c> to inherit parent styles; otherwise, <c>false</c>.</value>
+		bool Inherit { get; }
+
+		/// <summary>
+		/// Applies cascading styles to the specified <paramref name="widget"/>.
+		/// </summary>
+		/// <remarks>
+		/// Cascading styles are applied on a widget when it is loaded onto a form, 
+		/// where styles are usually applied based on the container it is in.
+		/// </remarks>
+		/// <param name="container">Container that is applying styles. This can be the same as <paramref name="widget"/>.</param>
+		/// <param name="widget">Widget to apply the styles to.</param>
+		/// <param name="style">Style to apply to the widget, usually a space delimited list of styles.</param>
+		void ApplyCascadingStyle(object container, object widget, string style);
+
+		/// <summary>
+		/// Applies styles to the specified <paramref name="widget"/>
+		/// </summary>
+		/// <remarks>
+		/// This is used for global style providers when applying styles to a widget directly based on its style alone.
+		/// 
+		/// This is usually applied when the style itself is updated.
+		/// </remarks>
+		/// <param name="widget">Widget to apply the styles to.</param>
+		/// <param name="style">Style to apply to the widget, usually a space delimited list of styles.</param>
+		void ApplyStyle(object widget, string style);
+
+		/// <summary>
+		/// Applies default styling to the specified widget after creation.
+		/// </summary>
+		/// <param name="widget">Widget to apply default styles to.</param>
+		void ApplyDefault(object widget);
+	}
+
 	/// <summary>
 	/// Delegate to handle styling a widget
 	/// </summary>
@@ -68,8 +117,35 @@ namespace Eto
 	/// </example>
 	public static class Style
 	{
-		static readonly Dictionary<object, IList<Action<Widget>>> styleMap = new Dictionary<object, IList<Action<Widget>>>();
-		static readonly Dictionary<object, IList<Action<Widget>>> cascadingStyleMap = new Dictionary<object, IList<Action<Widget>>>();
+		static DefaultStyleProvider styles;
+
+		/// <summary>
+		/// Gets or sets the style provider.
+		/// </summary>
+		/// <remarks>
+		/// By default, this is an instance of <see cref="DefaultStyleProvider"/>.
+		/// If you set this value, any styles applied using <see cref="Add{THandler}(string, StyleHandler{THandler})"/> or
+		/// <see cref="Add{TWidget}(string, StyleWidgetHandler{TWidget})"/> will no longer be used.
+		/// </remarks>
+		/// <value>The provider.</value>
+		public static IStyleProvider Provider { get; set; }
+
+
+		static DefaultStyleProvider Styles => styles ?? CreateDefaultProvider();
+
+		static DefaultStyleProvider CreateDefaultProvider()
+		{
+			styles = new DefaultStyleProvider();
+			styles.StyleWidget += OnStyleWidget;
+			Provider = styles;
+			return styles;
+		}
+
+		static void OnStyleWidget(object obj)
+		{
+			if (obj is Widget w)
+				StyleWidget?.Invoke(w);
+		}
 
 		#region Events
 
@@ -77,65 +153,6 @@ namespace Eto
 		/// Event to handle when a widget has being styled
 		/// </summary>
 		public static event Action<Widget> StyleWidget;
-
-		internal static void OnStyleWidget(Widget widget)
-		{
-			if (widget != null && !string.IsNullOrEmpty(widget.Style))
-			{
-				var styles = widget.Style.Split(' ');
-				for (int i = 0; i < styles.Length; i++)
-				{
-					var style = styles[i];
-					var styleHandlers = GetStyleList(style);
-					if (styleHandlers != null)
-					{
-						for (int j = 0; j < styleHandlers.Count; j++)
-						{
-							var styleHandler = styleHandlers[j];
-							styleHandler(widget);
-						}
-					}
-				}
-			}
-			if (StyleWidget != null)
-				StyleWidget(widget);
-		}
-
-		internal static void OnStyleWidgetDefaults(Widget widget)
-		{
-			if (widget == null)
-				return;
-			
-			var styleHandlers = GetCascadingStyleList(widget.GetType());
-			if (styleHandlers == null)
-				return;
-			
-			for (int i = 0; i < styleHandlers.Count; i++)
-			{
-				var styleHandler = styleHandlers[i];
-				styleHandler(widget);
-			}
-		}
-
-		internal static void OnStyleWidgetDefaults(Widget.IHandler handler)
-		{
-			if (handler == null)
-				return;
-			
-			var widget = handler.Widget;
-			if (widget == null)
-				return;
-			
-			var styleHandlers = GetCascadingStyleList(handler.GetType());
-			if (styleHandlers == null)
-				return;
-			
-			for (int i = 0; i < styleHandlers.Count; i++)
-			{
-				var styleHandler = styleHandlers[i];
-				styleHandler(widget);
-			}
-		}
 
 		#endregion
 
@@ -154,14 +171,7 @@ namespace Eto
 		public static void Add<TWidget>(string style, StyleWidgetHandler<TWidget> handler)
 			where TWidget: Widget
 		{
-			var list = CreateStyleList((object)style ?? typeof(TWidget));
-			list.Add(widget =>
-			{
-				var control = widget as TWidget;
-				if (control != null)
-					handler(control);
-			});
-			cascadingStyleMap.Clear();
+			Styles.Add<TWidget>(style, w => handler(w));
 		}
 
 		/// <summary>
@@ -179,63 +189,8 @@ namespace Eto
 		public static void Add<THandler>(string style, StyleHandler<THandler> styleHandler)
 			where THandler: class, Widget.IHandler
 		{
-			var list = CreateStyleList((object)style ?? typeof(THandler));
-			list.Add(widget =>
-			{
-				var handler = widget.Handler as THandler;
-				if (handler != null)
-					styleHandler(handler);
-			});
-			cascadingStyleMap.Clear();
+			Styles.Add<THandler>(style, w => styleHandler(w));
 		}
-
-		static IList<Action<Widget>> CreateStyleList(object style)
-		{
-			IList<Action<Widget>> styleHandlers;
-			if (!styleMap.TryGetValue(style, out styleHandlers))
-			{
-				styleHandlers = new List<Action<Widget>>();
-				styleMap[style] = styleHandlers;
-			}
-			return styleHandlers;
-		}
-
-		static IList<Action<Widget>> GetStyleList(object style)
-		{
-			IList<Action<Widget>> styleHandlers;
-			return styleMap.TryGetValue(style, out styleHandlers) ? styleHandlers : null;
-		}
-
-		static IList<Action<Widget>> GetCascadingStyleList(Type type)
-		{
-			// get a cached list of cascading styles so we don't have to traverse each time
-			IList<Action<Widget>> childHandlers;
-			if (cascadingStyleMap.TryGetValue(type, out childHandlers))
-			{
-				return childHandlers;
-			}
-
-			// don't have a cascading style set, so build one
-			// styles are applied in order from superclass styles down to subclass styles.
-			IEnumerable<Action<Widget>> styleHandlers = Enumerable.Empty<Action<Widget>>();
-			Type currentType = type;
-			do
-			{
-				IList<Action<Widget>> typeStyles;
-				if (styleMap.TryGetValue(currentType, out typeStyles) && typeStyles != null)
-					styleHandlers = typeStyles.Concat(styleHandlers);
-			}
-			while ((currentType = currentType.GetBaseType()) != null);
-
-			// create a cached list, but if its empty don't store it
-			childHandlers = styleHandlers.ToList();
-			if (childHandlers.Count == 0)
-				childHandlers = null;
-			cascadingStyleMap.Add(type, childHandlers);
-
-			return childHandlers;
-		}
-
 	}
 }
 

@@ -1,3 +1,4 @@
+#if GTK3
 using System;
 using Eto.Forms;
 
@@ -27,7 +28,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override bool Enabled
 		{
-			get { return enabled; }
+			get { return enabled && base.Enabled; }
 			set
 			{
 				if (enabled != value)
@@ -40,9 +41,11 @@ namespace Eto.GtkSharp.Forms.Controls
 						else
 							Control.Stop();
 					}
+					Callback.OnEnabledChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
 	}
 }
 
+#endif

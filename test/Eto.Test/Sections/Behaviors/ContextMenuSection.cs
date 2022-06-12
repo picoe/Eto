@@ -19,6 +19,8 @@ namespace Eto.Test.Sections.Behaviors
 
 		ContextMenuSection(bool inDialog)
 		{
+			Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
+
 			var relativeToLabelCheckBox = new CheckBox { Text = "Relative to label" };
 			relativeToLabelCheckBox.CheckedBinding.Bind(this, c => c.RelativeToLabel);
 
@@ -84,7 +86,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			if (_menu != null)
 				return _menu;
-			
+
 			_menu = new ContextMenu();
 
 			_menu.Opening += (sender, e) => Log.Write(sender, "Opening");
@@ -101,6 +103,32 @@ namespace Eto.Test.Sections.Behaviors
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 5", Shortcut = Keys.Application | Keys.I });
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 6", Shortcut = Keys.I });
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Disabled Item 2", Enabled = false });
+
+
+			var dynamicSubMenu = new SubMenuItem { Text = "Dynamic Sub Menu" };
+			LogEvents(dynamicSubMenu);
+			dynamicSubMenu.Opening += (sender, e) =>
+			{
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 1" });
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 2" });
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 3", Enabled = false });
+				var dynamicSubMenu2 = new SubMenuItem { Text = "Dynamic Sub Menu2" };
+				LogEvents(dynamicSubMenu2);
+				dynamicSubMenu2.Opening += (s2, e2) =>
+				{
+					dynamicSubMenu2.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 1" });
+					dynamicSubMenu2.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 2" });
+					dynamicSubMenu2.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 3", Enabled = false });
+				};
+				dynamicSubMenu.Items.Add(dynamicSubMenu2);
+				LogEvents(dynamicSubMenu);
+			};
+			dynamicSubMenu.Closed += (sender, e) =>
+			{
+				dynamicSubMenu.Items.Clear();
+			};
+
+			_menu.Items.Add(dynamicSubMenu);
 
 			_menu.Items.AddSeparator();
 			RadioMenuItem radioController;
@@ -120,6 +148,13 @@ namespace Eto.Test.Sections.Behaviors
 			_menu.Items.Add(new CheckMenuItem { Text = "Check 7", Shortcut = Keys.Alt | Keys.Application | Keys.G });
 			_menu.Items.Add(new CheckMenuItem { Text = "Disabled Check", Checked = true, Enabled = false });
 
+			_menu.Items.AddSeparator();
+			var hiddenItem = new ButtonMenuItem { Text = "This button should not be visible!", Visible = false };
+			var toggleHiddenItem = new ButtonMenuItem { Text = "Toggle Hidden Item" };
+			toggleHiddenItem.Click += (sender, e) => hiddenItem.Visible = !hiddenItem.Visible;
+			_menu.Items.Add(hiddenItem);
+			_menu.Items.Add(toggleHiddenItem);
+
 			LogEvents(_menu);
 			return _menu;
 		}
@@ -132,7 +167,6 @@ namespace Eto.Test.Sections.Behaviors
 				BackgroundColor = Colors.Blue,
 				TextColor = Colors.White,
 				TextAlignment = TextAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
 				Text = "Click on me!"
 			};
 			label.MouseDown += (sender, e) =>
@@ -152,6 +186,23 @@ namespace Eto.Test.Sections.Behaviors
 					menu.Show();
 			};
 			return label;
+		}
+
+		void LogEvents(SubMenuItem subMenuItem)
+		{
+			subMenuItem.Closing += (s2, e2) =>
+			{
+				Log.Write(subMenuItem, $"Closing {subMenuItem.Text}");
+			};
+			subMenuItem.Closed += (s2, e2) =>
+			{
+				Log.Write(subMenuItem, $"Closed {subMenuItem.Text}");
+			};
+			subMenuItem.Opening += (s2, e2) =>
+			{
+				Log.Write(subMenuItem, $"Opening {subMenuItem.Text}");
+			};
+
 		}
 
 		void LogEvents(ISubmenu menu)

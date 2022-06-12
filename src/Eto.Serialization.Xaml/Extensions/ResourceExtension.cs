@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Linq;
@@ -91,7 +91,7 @@ namespace Eto.Serialization.Xaml.Extensions
 
 			if (propertyInfo != null && !propertyInfo.PropertyType.GetTypeInfo().IsAssignableFrom(typeof(Stream).GetTypeInfo()))
 			{
-				var converter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
+				var converter = sc.TypeDescriptor.GetConverter(propertyInfo.PropertyType);
 				if (converter != null)
 				{
 					if (converter.CanConvertFrom(typeof(NamespaceInfo)))
@@ -99,6 +99,17 @@ namespace Eto.Serialization.Xaml.Extensions
 					if (converter.CanConvertFrom(typeof(Stream)))
 						return converter.ConvertFrom(resource.FindResource());
 				}
+#pragma warning disable 618
+				var etoConverter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
+				if (etoConverter != null)
+				{
+					if (etoConverter.CanConvertFrom(typeof(NamespaceInfo)))
+						return etoConverter.ConvertFrom(resource);
+					if (etoConverter.CanConvertFrom(typeof(Stream)))
+						return etoConverter.ConvertFrom(resource.FindResource());
+				}
+#pragma warning restore 618
+
 				var streamArgs = new [] { typeof(Stream) };
 				var constructor = propertyInfo.PropertyType.GetConstructor(streamArgs);
 				if (constructor != null)

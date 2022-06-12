@@ -50,6 +50,8 @@ namespace Eto.WinForms.Forms.Controls
 		int? lastCaretIndex;
 		swf.TableLayoutPanel container;
 
+		internal override bool SetFontTwiceForSomeReason => true;
+		
 		public static Size DefaultMinimumSize = new Size(100, 60);
 
 		public override Size? GetDefaultSize(Size availableSize)
@@ -73,7 +75,8 @@ namespace Eto.WinForms.Forms.Controls
 				Dock = swf.DockStyle.Fill,
 				BorderStyle = swf.BorderStyle.None,
 				ScrollBars = swf.RichTextBoxScrollBars.Both,
-				LanguageOption = swf.RichTextBoxLanguageOptions.DualFont
+				LanguageOption = swf.RichTextBoxLanguageOptions.DualFont,
+				DetectUrls = false
 			};
 			container = new swf.TableLayoutPanel
 			{
@@ -147,7 +150,7 @@ namespace Eto.WinForms.Forms.Controls
 				base.Text = val;
 				if (!Control.IsHandleCreated) // correct??
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
-				Selection = Range.FromLength(val.Length, 0);
+				Selection = Eto.Forms.Range.FromLength(val.Length, 0); // Fully qualified because System.Range was introduced in .NET Core 3.0
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				SuppressSelectionChanged--;
 			}

@@ -9,6 +9,7 @@ using Eto.Wpf.Forms;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Eto.Wpf
 {
@@ -32,6 +33,16 @@ namespace Eto.Wpf
 					return tmp;
 			}
 			return null;
+		}
+
+		public static IEnumerable<sw.DependencyObject> GetVisualParents(this sw.DependencyObject control)
+		{
+			while (control != null)
+			{
+				yield return control;
+
+				control = control.GetVisualParent<sw.DependencyObject>();
+			}
 		}
 
 		public static T GetParent<T>(this sw.FrameworkElement control)
@@ -61,6 +72,34 @@ namespace Eto.Wpf
 			 where T : sw.DependencyObject
 		{
 			return FindVisualChildren<T>(parent, childName).FirstOrDefault();
+		}
+
+		public static void ApplyAllTemplates(this sw.FrameworkElement parent)
+		{
+			if (parent == null) return;
+
+			parent.ApplyTemplate();
+
+			foreach (var logicalChild in sw.LogicalTreeHelper.GetChildren(parent))
+			{
+				if (logicalChild is sw.FrameworkElement childElement)
+				{
+					// recursively apply
+					childElement.ApplyAllTemplates();
+				}
+			}
+			
+			int childrenCount = swm.VisualTreeHelper.GetChildrenCount(parent);
+			for (int i = 0; i < childrenCount; i++)
+			{
+				var child = swm.VisualTreeHelper.GetChild(parent, i);
+				// If the child is not of the request child type child
+				if (child is sw.FrameworkElement childElement)
+				{
+					// recursively apply
+					childElement.ApplyAllTemplates();
+				}
+			}
 		}
 
 		public static IEnumerable<T> FindVisualChildren<T>(this sw.DependencyObject parent, string childName = null)
@@ -158,6 +197,8 @@ namespace Eto.Wpf
 
 		public static void EnsureLoaded(this sw.FrameworkElement control)
 		{
+			if (control.IsLoaded)
+				return;
 			ApplicationHandler.InvokeIfNecessary(() =>
 			{
 				if (!control.IsLoaded)
@@ -275,6 +316,30 @@ namespace Eto.Wpf
 			return new sw.Size(Math.Max(0, size1.Width - size2.Width), Math.Max(0, size1.Height - size2.Height));
 		}
 
+		public static sw.Point Add(this sw.Point point, sw.Point point2)
+		{
+			return new sw.Point(point.X + point2.X, point.Y + point2.Y);
+		}
+		
+		public static sw.Point Add(this sw.Point point, sw.Size size2)
+		{
+			return new sw.Point(point.X + size2.Width, point.Y + size2.Height);
+		}
+
+		public static sw.Point Subtract(this sw.Point point, sw.Point point2)
+		{
+			return new sw.Point(point.X - point2.X, point.Y - point2.Y);
+		}
+		public static sw.Point Subtract(this sw.Point point, sw.Size size2)
+		{
+			return new sw.Point(point.X - size2.Width, point.Y - size2.Height);
+		}
+
+		public static sw.Point Divide(this sw.Point point, double factor)
+		{
+			return new sw.Point(point.X / factor, point.Y / factor);
+		}
+
 		public static void AddKeyBindings(this swi.InputBindingCollection bindings, swc.ItemCollection items)
 		{
 			foreach (var item in items.OfType<sw.UIElement>())
@@ -319,7 +384,46 @@ namespace Eto.Wpf
 			// fix memory leak with RenderTargetBitmap.  See http://stackoverflow.com/questions/14786490/wpf-memory-leak-using-rendertargetbitmap
 			// Reproducible with the 
 			// GC.Collect alone seems to fix the issue.  Adding GC.WaitForPendingFinalizers may impact performance.
-			GC.Collect();
+			
+			// Note: this may no longer be an issue with the latest version of .NET after some testing, however
+			// we keep it here to keep memory in check, but instead make it non-blocking so it doesn't cause a huge
+			// performance penalty creating many Bitmaps with a Graphics object.
+			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, false);
 		}
+
+
+		static Lazy<bool> s_SpellCheckCanBeEnabled = new Lazy<bool>(CheckIfSpellCheckCanBeEnabled);
+
+		public static bool SpellCheckCanBeEnabled => s_SpellCheckCanBeEnabled.Value;
+
+		private static bool CheckIfSpellCheckCanBeEnabled()
+		{
+			try
+			{
+				// check if we can create the spell checker com component
+				var spellCheckerFactory = new SpellCheckerFactoryCoClass();
+
+				if (Marshal.IsComObject(spellCheckerFactory))
+				{
+					Marshal.ReleaseComObject(spellCheckerFactory);
+					return true;
+				}
+				return false;
+			}
+			catch
+			{
+				// there was a problem!
+				return false;
+			}
+		}
+
+		[Guid("7AB36653-1796-484B-BDFA-E74F1DB7C1DC")]
+		[TypeLibType(TypeLibTypeFlags.FCanCreate)]
+		[ClassInterface(ClassInterfaceType.None)]
+		[ComImport]
+		private class SpellCheckerFactoryCoClass
+		{
+		}
+
 	}
 }

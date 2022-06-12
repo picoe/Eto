@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Eto
 {
@@ -38,6 +39,7 @@ namespace Eto
 		/// <param name="assembly">Assembly to load the embedded assemblies from, or null to use the calling assembly</param>
 		/// <param name="domain">Application domain to load the assemblies in, or null to use the current app domain</param>
 		/// <returns>A new instance of an EmbeddedAssemblyLoader, registered for the specified namespace and assembly</returns>
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static EmbeddedAssemblyLoader Register(string resourceNamespace, Assembly assembly = null, AppDomain domain = null)
 		{
 			assembly = assembly ?? Assembly.GetCallingAssembly();
@@ -51,6 +53,7 @@ namespace Eto
 		/// </summary>
 		/// <param name="resourceNamespace">Namespace of where the embedded assemblies should be loaded</param>
 		/// <param name="assembly">Assembly to load the embedded assemblies from, or null to use the calling assembly</param>
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public EmbeddedAssemblyLoader(string resourceNamespace, Assembly assembly = null)
 		{
 			Assembly = assembly ?? Assembly.GetCallingAssembly();

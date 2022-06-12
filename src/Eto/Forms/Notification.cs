@@ -41,6 +41,10 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// This is used to provide context to the user for what the notification is for.
+		/// Currently does nothing on WPF and WinForms. On these platforms set-up a global Style
+		/// Style.Add&lt;NotificationHandler&gt;("info", h =&gt; h.NotificationIcon = NotificationIcon.Info);
+		/// and the use it via
+		/// new Notification { Style = "info" }
 		/// </remarks>
 		public Image ContentImage
 		{

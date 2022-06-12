@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Eto.Threading;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -17,6 +16,7 @@ using System.ComponentModel;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal.Commands;
 using NUnit.Framework.Internal;
+using Container = Eto.Forms.Container;
 
 namespace Eto.Test.UnitTests
 {
@@ -31,8 +31,8 @@ namespace Eto.Test.UnitTests
 		}
 	}
 
-	[System.AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-	sealed class RunOnUIAttribute : Attribute, IWrapSetUpTearDown, IWrapTestMethod
+	[System.AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+	public sealed class InvokeOnUIAttribute : Attribute, IWrapSetUpTearDown
 	{
 		public TestCommand Wrap(TestCommand command) => new RunOnUICommand(command);
 
@@ -41,11 +41,32 @@ namespace Eto.Test.UnitTests
 			public RunOnUICommand(TestCommand innerCommand)
 				: base(innerCommand)
 			{
-
 			}
+
 			public override TestResult Execute(TestExecutionContext context)
 			{
-				return Application.Instance.Invoke(() => innerCommand.Execute(context));
+				Exception exception = null;
+
+				var result = Application.Instance.Invoke(() =>
+				{
+					try
+					{
+						context.EstablishExecutionEnvironment();
+						return innerCommand.Execute(context);
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+						return null;
+					}
+				});
+
+				if (exception != null)
+				{
+					ExceptionDispatchInfo.Capture(exception).Throw();
+				}
+
+				return result;
 			}
 		}
 	}
@@ -157,10 +178,12 @@ namespace Eto.Test.UnitTests
 			var application = Application;
 			Exception exception = null;
 			Action finished = () => ev.Set();
+			var context = TestExecutionContext.CurrentContext;
 			Action run = () =>
 			{
 				try
 				{
+					context.EstablishExecutionEnvironment();
 					test(application, finished);
 				}
 				catch (Exception ex)
@@ -182,6 +205,11 @@ namespace Eto.Test.UnitTests
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
 
+		/// <summary>
+		/// Test operations on the UI thread
+		/// </summary>
+		/// <param name="test">Delegate to execute on the UI thread</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Invoke(Action test, int timeout = DefaultTimeout)
 		{
 			Run((app, finished) =>
@@ -191,6 +219,11 @@ namespace Eto.Test.UnitTests
 			}, timeout);
 		}
 
+		/// <summary>
+		/// Test operations on a form
+		/// </summary>
+		/// <param name="test">Delegate to execute on the form</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Form(Action<Form> test, int timeout = DefaultTimeout)
 		{
 			Form<Form>(test, timeout);
@@ -200,7 +233,7 @@ namespace Eto.Test.UnitTests
 		/// Test operations on a form
 		/// </summary>
 		/// <param name="test">Delegate to execute on the form</param>
-		/// <param name="timeout">Timeout to wait for the operation to complete</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Form<T>(Action<T> test, int timeout = DefaultTimeout)
 			where T : Form, new()
 		{
@@ -245,13 +278,39 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
+		public static void Async(Func<Task> test)
+		{
+			Exception exception = null;
+			var mre = new ManualResetEvent(false);
+			Application.Instance.Invoke(async () =>
+			{
+				try
+				{
+					await test();
+				}
+				catch (Exception ex)
+				{
+					exception = ex;
+				}
+				finally
+				{
+					mre.Set();
+				}
+			});
+			mre.WaitOne();
+			if (exception != null)
+			{
+				ExceptionDispatchInfo.Capture(exception).Throw();
+			}
+		}
+
 		public static void Shown(Action<Form> init, Action test, bool replay = false, int timeout = DefaultTimeout)
 		{
 			Shown(form =>
-				{
-					init(form);
-					return null;
-				},
+			{
+				init(form);
+				return null;
+			},
 				(Control c) =>
 				{
 					test();
@@ -261,18 +320,138 @@ namespace Eto.Test.UnitTests
 			);
 		}
 
-		public static void ManualForm(string description, Func<Form, Control> init)
+		public static void ManualForm(string description, Func<Form, Control> init, bool allowPass = true, bool allowFail = true)
 		{
-			ManualForm(description, (form, Label) => init(form));
+			ManualForm(description, (form, Label) => init(form), allowPass, allowFail);
 		}
 
-		public static void ManualForm(string description, Func<Form, Label, Control> init)
+		public static void ManualForm(string description, Func<Form, Label, Control> init, bool allowPass = true, bool allowFail = true)
 		{
 			Exception exception = null;
 			Form(form =>
 			{
 				var label = new Label { Text = description };
 				var c = init(form, label);
+
+				var layout = new StackLayout
+				{
+					Spacing = 10,
+					Items =
+					{
+						new StackLayoutItem(c, HorizontalAlignment.Stretch, true),
+						label
+					}
+				};
+
+				if (allowFail || allowPass)
+				{
+					var table = new TableLayout { Spacing = new Size(2, 2) };
+					var row = new TableRow();
+					table.Rows.Add(row);
+
+					if (allowFail)
+					{
+						var failButton = new Button { Text = "Fail" };
+						failButton.Click += (sender, e) =>
+						{
+							try
+							{
+								Assert.Fail(description);
+							}
+							catch (Exception ex)
+							{
+								exception = ex;
+							}
+							finally
+							{
+								form.Close();
+							}
+						};
+						row.Cells.Add(failButton);
+					}
+
+					if (allowPass)
+					{
+						var passButton = new Button { Text = "Pass" };
+						passButton.Click += (sender, e) => form.Close();
+						row.Cells.Add(passButton);
+					}
+					layout.Items.Add(new StackLayoutItem(table, HorizontalAlignment.Center));
+				}
+
+				form.Content = layout;
+			}, timeout: -1);
+
+			if (exception != null)
+				ExceptionDispatchInfo.Capture(exception).Throw();
+		}
+
+		public static void Dialog(Action<Dialog> test, int timeout = DefaultTimeout)
+		{
+			Dialog<Dialog>(test, timeout);
+		}
+
+		/// <summary>
+		/// Test operations on a form
+		/// </summary>
+		/// <param name="test">Delegate to execute on the form</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete</param>
+		public static void Dialog<T>(Action<T> test, int timeout = DefaultTimeout)
+			where T : Dialog, new()
+		{
+			T dialog = null;
+			bool shown = false;
+			try
+			{
+				Run((app, finished) =>
+				{
+					if (!Platform.Instance.Supports<Dialog>())
+						Assert.Inconclusive("This platform does not support Dialog");
+
+					dialog = new T();
+
+					test(dialog);
+
+					dialog.Closed += (sender, e) =>
+					{
+						dialog = null;
+						finished();
+					};
+					shown = true;
+					dialog.ShowModal();
+
+				}, timeout);
+			}
+			catch
+			{
+				if (dialog != null && shown)
+				{
+					var application = Application;
+					if (application != null)
+						application.Invoke(() =>
+						{
+							if (dialog != null && dialog.Loaded)
+								dialog.Close();
+						});
+					else
+						dialog.Close();
+				}
+				throw;
+			}
+		}
+
+		public static void ManualDialog(string description, Func<Dialog, Control> init)
+		{
+			ManualDialog(description, (form, Label) => init(form));
+		}
+
+		public static void ManualDialog(string description, Func<Dialog, Label, Control> init)
+		{
+			Exception exception = null;
+			Dialog(dialog =>
+			{
+				var label = new Label { Text = description };
+				var c = init(dialog, label);
 
 				var failButton = new Button { Text = "Fail" };
 				failButton.Click += (sender, e) =>
@@ -287,14 +466,14 @@ namespace Eto.Test.UnitTests
 					}
 					finally
 					{
-						form.Close();
+						dialog.Close();
 					}
 				};
 
 				var passButton = new Button { Text = "Pass" };
-				passButton.Click += (sender, e) => form.Close();
+				passButton.Click += (sender, e) => dialog.Close();
 
-				form.Content = new StackLayout
+				dialog.Content = new StackLayout
 				{
 					Spacing = 10,
 					Items =
@@ -309,7 +488,6 @@ namespace Eto.Test.UnitTests
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
-
 		/// <summary>
 		/// Test operations on a form once it is shown
 		/// </summary>
@@ -487,9 +665,9 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
-		public static IEnumerable<Type> GetAllControlTypes()
+		public static IEnumerable<IControlTypeInfo<Control>> GetAllControlTypes()
 		{
-			return typeof(Control)
+			foreach (var type in typeof(Control)
 				.GetTypeInfo().Assembly.ExportedTypes
 				.Where(r =>
 				{
@@ -502,57 +680,248 @@ namespace Eto.Test.UnitTests
 						&& !ti.IsGenericType
 						&& ti.DeclaredConstructors.Any(c => c.GetParameters().Length == 0);
 				})
-				.OrderBy(r => r.FullName);
+					 .OrderBy(r => r.FullName))
+			{
+				yield return new ControlTypeInfo<Control>(type);
+			}
 		}
 
 
-		public static IEnumerable<Type> GetControlTypes()
+		public static IEnumerable<IControlTypeInfo<Control>> GetControlTypes()
 		{
 			return GetAllControlTypes()
 				.Where(r =>
 				{
-					var ti = r.GetTypeInfo();
+					var ti = r.Type.GetTypeInfo();
 					return !typeof(Window).GetTypeInfo().IsAssignableFrom(ti)
-						&& !typeof(TabPage).GetTypeInfo().IsAssignableFrom(ti);
+						&& !typeof(TabPage).GetTypeInfo().IsAssignableFrom(ti)
+						&& !typeof(DocumentPage).GetTypeInfo().IsAssignableFrom(ti);
 				});
 		}
 
-		public static IEnumerable<Type> GetPanelTypes()
+		public interface IControlTypeInfo<out T>
+			where T : Control
 		{
-			yield return typeof(Panel);
-			yield return typeof(Expander);
-			yield return typeof(GroupBox);
-			yield return typeof(TabPage);
-			yield return typeof(DocumentPage);
-			yield return typeof(Scrollable);
-			yield return typeof(Drawable);
+			Type Type { get; }
+			T CreateControl();
+			Container CreateContainer(Control control);
+			void PopulateControl(Control control);
+			T CreatePopulatedControl();
 		}
 
-		public static Panel CreatePanelType(Type panelType, out Control container)
+		public interface IContainerTypeInfo<out T> : IControlTypeInfo<T>
+			where T : Container
 		{
-			var panel = Activator.CreateInstance(panelType) as Panel;
-			container = panel;
-			if (panel is TabPage tabPage)
+			T CreateControl(Control content);
+			void SetContent(Container container, Control child);
+		}
+
+		public class ControlTypeInfo<T> : IControlTypeInfo<T>
+			where T : Control
+		{
+			Func<T> _createControl;
+			Type _type;
+			public ControlTypeInfo(Func<T> createControl)
 			{
-				tabPage.Text = "TabPage";
-				container = new TabControl { Pages = { tabPage } };
-			}
-			else if (panel is DocumentPage documentPage)
-			{
-				documentPage.Text = "DocumentPage";
-				container = new DocumentControl { Pages = { documentPage } };
-			}
-			else if (panel is GroupBox groupBox)
-			{
-				groupBox.Text = "GroupBox";
-			}
-			else if (panel is Expander expander)
-			{
-				expander.Header = "Expander";
-				expander.Expanded = true;
+				_createControl = createControl;
 			}
 
-			return panel;
+			public ControlTypeInfo(Type type)
+			{
+				_type = type;
+				_createControl = () => (T)Activator.CreateInstance(type);
+			}
+
+			public Type Type => _type ?? typeof(T);
+
+			public T CreateControl() => _createControl();
+
+			public virtual Container CreateContainer(Control control)
+			{
+				if (typeof(Container).GetTypeInfo().IsInstanceOfType(control))
+					return (Container)control;
+
+				return new Panel { Content = control };
+			}
+
+			public void PopulateControl(Control control)
+			{
+				if (control is TextControl textControl)
+					textControl.Text = "Some Text";
+				else if (control is ImageView imageView)
+					imageView.Image = TestIcons.Logo;
+				else if (control is ListControl listControl)
+				{
+					listControl.Items.Add("Item 1");
+					listControl.Items.Add("Item 2");
+					listControl.Items.Add("Item 3");
+				}
+				else if (control is NumericStepper numericStepper)
+					numericStepper.Value = 100;
+				else if (control is TabControl tabControl)
+				{
+					tabControl.Pages.Add(new TabPage { Text = "Tab 1", Content = new Panel { Size = new Size(100, 100), Content = "Hello" }  });
+					tabControl.Pages.Add(new TabPage { Text = "Tab 2" });
+					tabControl.Pages.Add(new TabPage { Text = "Tab 3" });
+				}
+				else if (control is DocumentControl documentControl)
+				{
+					documentControl.Pages.Add(new DocumentPage { Text = "Tab 1", Content = new Panel { Size = new Size(100, 100), Content = "Hello" } });
+					documentControl.Pages.Add(new DocumentPage { Text = "Tab 2" });
+					documentControl.Pages.Add(new DocumentPage { Text = "Tab 3" });
+				}
+				else if (control is Drawable drawable)
+				{
+					drawable.Size = new Size(100, 40);
+					drawable.Paint += (sender, e) =>
+					{
+						var c = drawable.BackgroundColor;
+						if (c.A == 0)
+							c = SystemColors.ControlText;
+						else
+							c.Invert();
+						e.Graphics.DrawText(SystemFonts.Default(), c, 0, 0, "Hello!");
+					};
+				}
+				else if (control is SegmentedButton segmented)
+				{
+					segmented.Items.Add("Segment 1");
+					segmented.Items.Add(TestIcons.Logo.WithSize(20, 20));
+					segmented.Items.Add("Segment 3");
+				}
+				else if (control is CheckBoxList checkBoxList)
+				{
+					checkBoxList.Items.Add("Item 1");
+					checkBoxList.Items.Add("Item 2");
+					checkBoxList.Items.Add("Item 3");
+				}
+				else if (control is RadioButtonList radioButtonList)
+				{
+					radioButtonList.Items.Add("Item 1");
+					radioButtonList.Items.Add("Item 2");
+					radioButtonList.Items.Add("Item 3");
+				}
+				else if (control is PixelLayout pixelLayout)
+				{
+					pixelLayout.Add("Hello", 0, 0);
+					pixelLayout.Add("World!", 24, 24);
+				}
+				else if (control is DynamicLayout dynamicLayout)
+				{
+					dynamicLayout.Add("Hello");
+					dynamicLayout.Add("World!");
+				}
+				else if (control is StackLayout stackLayout)
+				{
+					stackLayout.Items.Add("Hello");
+					stackLayout.Items.Add("World!");
+				}
+				else if (control is TableLayout tableLayout)
+				{
+					tableLayout.Rows.Add(new TableRow(new TableCell("Hello", true), new TableCell("World!", true)));
+					tableLayout.Rows.Add(new TableRow("Row", "2"));
+				}
+				else if (control is Panel panel && panel.Content == null)
+				{
+					panel.Content = "Hello, World!";
+				}
+				else if (control is Splitter splitter)
+				{
+					splitter.Panel1 = new TextArea { Text = "Hello" };
+					splitter.Panel2 = new Panel { Size = new Size(200, 200) };
+				}
+			}
+
+			public override string ToString() => Type.Name;
+
+			public T CreatePopulatedControl()
+			{
+				var c = CreateControl();
+				PopulateControl(c);
+				return c;
+			}
+		}
+
+		public static class ContainerTypeInfo
+		{
+			public static ContainerTypeInfo<T> New<T>(Action<T, Control> addChild, Func<T, Container> createContainer = null)
+				where T : Container, new()
+			{
+				return new ContainerTypeInfo<T>(() => new T(), addChild, createContainer);
+			}
+
+			public static ContainerTypeInfo<T> New<T>(Func<T> create, Action<T, Control> addChild, Func<T, Container> createContainer = null)
+				where T : Container
+			{
+				return new ContainerTypeInfo<T>(create, addChild, createContainer);
+			}
+		}
+
+		public class ContainerTypeInfo<T> : ControlTypeInfo<T>, IContainerTypeInfo<T>
+			where T : Container
+		{
+			Action<T, Control> _setContent;
+			Func<T, Container> _createContainer;
+
+			public ContainerTypeInfo(Func<T> create, Action<T, Control> setContent, Func<T, Container> createContainer = null)
+				: base(create)
+			{
+				_setContent = setContent;
+				_createContainer = createContainer;
+			}
+
+			public override Container CreateContainer(Control control)
+			{
+				if (_createContainer != null)
+					return _createContainer((T)control);
+				return base.CreateContainer(control);
+			}
+
+			public virtual T CreateControl(Control content)
+			{
+				var control = CreateControl();
+				SetContent(control, content);
+				return control;
+			}
+
+			public virtual void SetContent(Container container, Control child)
+			{
+				_setContent?.Invoke((T)container, child);
+			}
+		}
+
+		public static IEnumerable<IContainerTypeInfo<Container>> GetContainerTypes()
+		{
+			foreach (var type in GetPanelTypes())
+				yield return type;
+			yield return ContainerTypeInfo.New<TableLayout>((container, child) => container.Rows.Add(child));
+			yield return ContainerTypeInfo.New<StackLayout>((container, child) => container.Items.Add(child));
+			yield return ContainerTypeInfo.New<DynamicLayout>((container, child) => container.Add(child));
+		}
+
+		public static IEnumerable<IContainerTypeInfo<Panel>> GetPanelTypes()
+		{
+			yield return ContainerTypeInfo.New<Panel>((container, child) => container.Content = child);
+			yield return ContainerTypeInfo.New(
+				() => new Expander { Header = "Expander", Expanded = true },
+				(container, child) => container.Content = child
+			);
+			yield return ContainerTypeInfo.New(
+				() => new GroupBox { Text = "GroupBox" },
+				(container, child) => container.Content = child
+			);
+			yield return ContainerTypeInfo.New(
+				() => new TabPage { Text = "TabPage" },
+				(container, child) => container.Content = child,
+				container => new TabControl { Pages = { container } }
+			);
+			yield return ContainerTypeInfo.New(
+				() => new DocumentPage { Text = "DocumentPage" },
+				(container, child) => container.Content = child,
+				container => new DocumentControl { Pages = { container } }
+			);
+			yield return ContainerTypeInfo.New<Scrollable>((container, child) => container.Content = child);
+			yield return ContainerTypeInfo.New<Drawable>((container, child) => container.Content = child);
 		}
 	}
 }

@@ -3,6 +3,8 @@ using sd = System.Drawing;
 using Eto.Forms;
 using Eto.WinForms.Forms.Cells;
 using System;
+using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -10,52 +12,86 @@ namespace Eto.WinForms.Forms.Controls
 	public class GridColumnHandler : WidgetHandler<swf.DataGridViewColumn, GridColumn>, GridColumn.IHandler, ICellConfigHandler
 	{
 		Cell dataCell;
-		bool autosize;
+
+		class EtoDataGridViewColumn : swf.DataGridViewColumn
+		{
+			public GridColumnHandler Handler { get; set; }
+
+			public override int GetPreferredWidth(DataGridViewAutoSizeColumnMode autoSizeColumnMode, bool fixedHeight)
+			{
+				return Math.Min(Handler.MaxWidth, base.GetPreferredWidth(autoSizeColumnMode, fixedHeight));
+			}
+
+		}
 
 		public IGridHandler GridHandler { get; private set; }
 
-		public GridColumnHandler ()
+		public GridColumnHandler()
 		{
-			Control = new swf.DataGridViewColumn();
+			Control = new EtoDataGridViewColumn
+			{
+				Handler = this,
+				AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.DisplayedCells
+			};
 			DataCell = new TextBoxCell();
 			Editable = false;
-			AutoSize = true;
 			Resizable = true;
 		}
 
-		public string HeaderText {
+		protected override void Initialize()
+		{
+			base.Initialize();
+			SetAutoSizeMode();
+		}
+
+		public string HeaderText
+		{
 			get { return Control.HeaderText; }
 			set { Control.HeaderText = value; }
 		}
 
-		public bool Resizable {
+		public bool Resizable
+		{
 			get { return Control.Resizable == swf.DataGridViewTriState.True; }
 			set { Control.Resizable = value ? swf.DataGridViewTriState.True : swf.DataGridViewTriState.False; }
 		}
 
-		public bool Sortable {
+		public bool Sortable
+		{
 			get { return Control.SortMode == swf.DataGridViewColumnSortMode.Programmatic; }
 			set { Control.SortMode = (value) ? swf.DataGridViewColumnSortMode.Programmatic : swf.DataGridViewColumnSortMode.NotSortable; }
 		}
 
-		public bool AutoSize {
-			get { return autosize; }
-			set {
-				autosize = value;
-				Control.AutoSizeMode = (value) ? swf.DataGridViewAutoSizeColumnMode.NotSet : swf.DataGridViewAutoSizeColumnMode.None; 
+		static readonly object AutoSize_Key = new object();
+
+		public bool AutoSize
+		{
+			get => Widget.Properties.Get<bool>(AutoSize_Key, true);
+			set
+			{
+				if (Widget.Properties.TrySet(AutoSize_Key, value, true))
+					SetAutoSizeMode();
 			}
 		}
 
-		public int Width {
+		public int Width
+		{
 			get { return Control.Width; }
-			set { Control.Width = value; }
+			set
+			{
+				AutoSize = value == -1;
+				Control.Width = value;
+			}
 		}
 
-		public Cell DataCell {
+		public Cell DataCell
+		{
 			get { return dataCell; }
-			set {
+			set
+			{
 				dataCell = value;
-				if (dataCell != null) {
+				if (dataCell != null)
+				{
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					cellHandler.CellConfig = this;
 					Control.CellTemplate = cellHandler.Control;
@@ -65,54 +101,119 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public bool Editable {
+		public bool Editable
+		{
 			get { return !Control.ReadOnly; }
 			set { Control.ReadOnly = !value; }
 		}
 
-		public bool Visible {
+		public bool Visible
+		{
 			get { return Control.Visible; }
 			set { Control.Visible = value; }
 		}
 
 		public swf.DataGridViewColumn Column => Control;
 
-		public void SetCellValue (object dataItem, object value)
+		static readonly object Expand_Key = new object();
+
+		public bool Expand
 		{
-			if (dataCell != null) {
-				var cellHandler = (ICellHandler)dataCell.Handler;
-				cellHandler.SetCellValue (dataItem, value);
+			get => Widget.Properties.Get<bool>(Expand_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(Expand_Key, value))
+				{
+					SetAutoSizeMode();
+				}
 			}
 		}
 
-		public object GetCellValue (object dataItem)
+		void SetAutoSizeMode()
 		{
-			if (dataCell != null) {
+			if (Expand)
+				Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.Fill;
+			else if (AutoSize)
+				Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.DisplayedCells;
+			else
+				Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.None;
+		}
+
+		public TextAlignment HeaderTextAlignment
+		{
+			get => Control.HeaderCell.Style.Alignment.ToEtoTextAlignment();
+			set => Control.HeaderCell.Style.Alignment = value.ToSWFGridViewContentAlignment();
+		}
+		public int MinWidth { get => Control.MinimumWidth; set => Control.MinimumWidth = value; }
+
+		int maxWidth = int.MaxValue;
+		public int MaxWidth
+		{
+			get => maxWidth;
+			set
+			{
+				maxWidth = value;
+				if (AutoSize)
+				{
+					Control.DataGridView?.AutoResizeColumn(Control.Index);
+				}
+				else if (Control.Width > maxWidth)
+				{
+					Control.Width = maxWidth;
+				}
+
+			}
+		}
+
+		public int DisplayIndex
+		{
+			get => Control.DisplayIndex;
+			set => Control.DisplayIndex = value;
+		}
+
+		public void SetCellValue(object dataItem, object value)
+		{
+			if (dataCell != null)
+			{
+				var cellHandler = (ICellHandler)dataCell.Handler;
+				cellHandler.SetCellValue(dataItem, value);
+			}
+		}
+
+		public object GetCellValue(object dataItem)
+		{
+			if (dataCell != null)
+			{
 				var cellHandler = ((ICellHandler)dataCell.Handler);
-				return cellHandler.GetCellValue (dataItem);
+				return cellHandler.GetCellValue(dataItem);
 			}
 			return null;
 		}
 
-		public virtual void Setup (IGridHandler gridHandler)
+		public virtual void Setup(IGridHandler gridHandler)
 		{
 			GridHandler = gridHandler;
 		}
 
-		public void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)
+		public void Paint(sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)
 		{
 			if (GridHandler != null)
-				GridHandler.Paint (this, graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
+				GridHandler.Paint(this, graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
 		}
 
-		public int GetRowOffset (int rowIndex)
+		public int GetRowOffset(int rowIndex)
 		{
 			return GridHandler != null ? GridHandler.GetRowOffset(this, rowIndex) : 0;
 		}
 
-		public bool MouseClick (swf.MouseEventArgs e, int rowIndex)
+		public bool MouseClick(swf.MouseEventArgs e, int rowIndex)
 		{
 			return GridHandler != null && GridHandler.CellMouseClick(this, e, rowIndex);
+		}
+
+		internal void UpdateAutoSize(bool value)
+		{
+			Widget.Properties.Set(AutoSize_Key, value, true);
 		}
 	}
 }

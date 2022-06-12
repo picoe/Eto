@@ -13,6 +13,8 @@ using Eto.Wpf.Drawing;
 using System.Globalization;
 using System.Collections;
 using System.IO;
+using Eto.Wpf.CustomControls.FontDialog;
+using System.Text.RegularExpressions;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -202,10 +204,12 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (attributes == null)
 				return;
-			foreach (var attribute in attributes)
+			Control.BeginChange();
+			foreach (var attribute in attributes.ToList())
 			{
 				range.ApplyPropertyValue(attribute.Key, attribute.Value);
 			}
+			Control.EndChange();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -218,17 +222,18 @@ namespace Eto.Wpf.Forms.Controls
 			base.Dispose(disposing);
 		}
 
-		swd.TextRange ContentRange => new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd);
+		protected swd.TextRange ContentRange => new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd);
 
 		public override string Text
 		{
-			get { return ContentRange.Text; }
+			get { return ContentRange.Text.Replace("\r\n", "\n"); }
 			set
 			{
 				SuppressSelectionChanged++;
 				ContentRange.Text = value ?? string.Empty;
 				SuppressSelectionChanged--;
-				Selection = Range.FromLength(value?.Length ?? 0, 0);
+				var end = Control.Document.ContentEnd;
+				Control.Selection.Select(end, end);
 			}
 		}
 
@@ -374,12 +379,13 @@ namespace Eto.Wpf.Forms.Controls
 			get
 			{
 				var sel = Control.Selection;
-				return new Range<int>(sel.Start.GetTextOffset(), sel.End.GetTextOffset() - 1);
+				return Eto.Forms.Range.FromLength(sel.Start.GetTextOffset(), sel.GetLength()); // Fully qualified because System.Range was introduced in .NET Core 3.0
 			}
 			set
 			{
 				var contentStart = Control.Document.ContentStart;
-				Control.Selection.Select(contentStart.GetTextPositionAtOffset(value.Start), contentStart.GetTextPositionAtOffset(value.End + 1));
+				var start = contentStart.GetTextPositionAtOffset(value.Start);
+				Control.Selection.Select(start, start.GetTextPositionAtOffset(value.Length()));
 			}
 		}
 
@@ -393,66 +399,48 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.CaretPosition = Control.Document.ContentStart.GetTextPositionAtOffset(value); }
 		}
 
-		void ApplyFamilyAndWeight(swm.FontFamily family, swm.Typeface typeface, sw.FontWeight? weight)
+		void ApplyFont(swm.FontFamily family, swm.Typeface typeface, sw.FontWeight? weight, sw.FontStretch? stretch, sw.FontStyle? style)
 		{
-			if (typeface != null
-				&& weight != sw.FontWeights.Bold
-				&& weight != sw.FontWeights.Normal
-				&& weight != sw.FontWeights.Regular)
-			{
-				// RTF can only save bold or not, others weights we need to specify the face name as part of the family
-				// very odd, considering WPF's available font families only lists "Arial", you'd think this would be handled
-				// by the rtf processor.
-				var faceName = CustomControls.FontDialog.NameDictionaryHelper.GetEnglishName(typeface.FaceNames);
-				// special case, sometimes the weight of the "Regular" or "Normal" font is not exact
-				if (!string.Equals(faceName, "Regular", StringComparison.Ordinal)
-					&& !string.Equals(faceName, "Normal", StringComparison.Ordinal))
-				{
-					family = new swm.FontFamily(family.Source + " " + faceName);
-					weight = sw.FontWeights.Normal;
-				}
-			}
-
 			SetSelectionAttribute(swd.TextElement.FontFamilyProperty, family);
 			SetSelectionAttribute(swd.TextElement.FontWeightProperty, weight ?? sw.FontWeights.Normal);
+			SetSelectionAttribute(swd.TextElement.FontStyleProperty, style ?? sw.FontStyles.Normal);
+			SetSelectionAttribute(swd.TextElement.FontStretchProperty, stretch ?? sw.FontStretches.Normal);
 		}
 
-		public Font SelectionFont
+		public virtual Font SelectionFont
 		{
 			get { return new Font(new FontHandler(Control.Selection, Control)); }
 			set
 			{
 				var handler = ((FontHandler)value?.Handler);
-				ApplyFamilyAndWeight(handler?.WpfFamily, handler?.WpfTypeface, handler?.WpfFontWeight);
-				SetSelectionAttribute(swd.TextElement.FontStretchProperty, handler?.WpfFontStretch ?? sw.FontStretches.Normal);
-				SetSelectionAttribute(swd.TextElement.FontStyleProperty, handler?.WpfFontStyle ?? sw.FontStyles.Normal);
-				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.PixelSize);
+				ApplyFont(OnTranslateFamily(handler?.WpfFamily), OnTranslateTypeface(handler?.WpfTypeface), handler?.WpfFontWeight, handler?.WpfFontStretch, handler?.WpfFontStyle);
+				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.WpfSize);
 				SetSelectionAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorationsFrozen);
 			}
 		}
 
-		public FontFamily SelectionFamily
+		public virtual FontFamily SelectionFamily
 		{
 			get { return new FontFamily(new FontFamilyHandler(Control.Selection, Control)); }
 			set
 			{
-				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, ((FontFamilyHandler)value?.Handler)?.Control);
+				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, OnTranslateFamily(((FontFamilyHandler)value?.Handler)?.Control));
 			}
 		}
 
-		public FontTypeface SelectionTypeface
+		public virtual FontTypeface SelectionTypeface
 		{
 			get { return new FontTypeface(SelectionFamily, new FontTypefaceHandler(Control.Selection, Control)); }
 			set
 			{
 				var typeface = (value?.Handler as FontTypefaceHandler)?.Control;
-				ApplyFamilyAndWeight(typeface?.FontFamily ?? Control.FontFamily, typeface, typeface?.Weight);
-				SetSelectionAttribute(swd.TextElement.FontStyleProperty, typeface?.Style ?? sw.FontStyles.Normal);
-				SetSelectionAttribute(swd.TextElement.FontStretchProperty, typeface?.Stretch ?? sw.FontStretches.Normal);
+				if (typeface == null)
+					return;
+				ApplyFont(OnTranslateFamily(typeface?.FontFamily ?? Control.FontFamily), OnTranslateTypeface(typeface), typeface?.Weight, typeface?.Stretch, typeface?.Style);
 			}
 		}
 
-		public Color SelectionForeground
+		public virtual Color SelectionForeground
 		{
 			get
 			{
@@ -465,7 +453,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public Color SelectionBackground
+		public virtual Color SelectionBackground
 		{
 			get
 			{
@@ -481,7 +469,8 @@ namespace Eto.Wpf.Forms.Controls
 		swd.TextRange GetRange(Range<int> range)
 		{
 			var content = Control.Document.ContentStart;
-			return new swd.TextRange(content.GetTextPositionAtOffset(range.Start), content.GetTextPositionAtOffset(range.End + 1));
+			var start = content.GetTextPositionAtOffset(range.Start);
+			return new swd.TextRange(start, start.GetTextPositionAtOffset(range.Length()));
 		}
 
 		void SetRange(Range<int> range, Action<swd.TextRange> action)
@@ -489,37 +478,32 @@ namespace Eto.Wpf.Forms.Controls
 			action(GetRange(range));
 		}
 
-		public void SetFont(Range<int> range, Font font)
+		public virtual void SetFont(Range<int> range, Font font)
 		{
 			SetRange(range, tr => tr.SetEtoFont(font));
 		}
 
-		public void SetFamily(Range<int> range, FontFamily family)
+		public virtual void SetFamily(Range<int> range, FontFamily family)
 		{
 			SetRange(range, tr => tr.SetEtoFamily(family));
 		}
 
-		public void SetForeground(Range<int> range, Color color)
+		public virtual void SetForeground(Range<int> range, Color color)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.ForegroundProperty, color.ToWpfBrush()));
 		}
 
-		public void SetBackground(Range<int> range, Color color)
+		public virtual void SetBackground(Range<int> range, Color color)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.BackgroundProperty, color.ToWpfBrush()));
 		}
 
-		public bool SelectionBold
+		public virtual bool SelectionBold
 		{
 			get
 			{
-				
 				var fontWeight = Control.Selection.GetPropertyValue(swd.TextElement.FontWeightProperty) as sw.FontWeight? ?? sw.FontWeights.Normal;
-				return fontWeight == sw.FontWeights.Bold
-					|| fontWeight == sw.FontWeights.DemiBold
-					|| fontWeight == sw.FontWeights.ExtraBold
-					|| fontWeight == sw.FontWeights.SemiBold
-					|| fontWeight == sw.FontWeights.UltraBold;
+				return fontWeight >= sw.FontWeights.Bold;
 			}
 			set
 			{
@@ -527,13 +511,13 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void SetBold(Range<int> range, bool bold)
+		public virtual void SetBold(Range<int> range, bool bold)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.FontWeightProperty, bold ? sw.FontWeights.Bold : sw.FontWeights.Normal));
 		}
 
 
-		public bool SelectionItalic
+		public virtual bool SelectionItalic
 		{
 			get
 			{
@@ -603,7 +587,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public bool SelectionUnderline
+		public virtual bool SelectionUnderline
 		{
 			get
 			{
@@ -618,7 +602,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public bool SelectionStrikethrough
+		public virtual bool SelectionStrikethrough
 		{
 			get
 			{
@@ -633,22 +617,22 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void SetItalic(Range<int> range, bool italic)
+		public virtual void SetItalic(Range<int> range, bool italic)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.FontStyleProperty, italic ? sw.FontStyles.Italic : sw.FontStyles.Normal));
 		}
 
-		public void SetUnderline(Range<int> range, bool underline)
+		public virtual void SetUnderline(Range<int> range, bool underline)
 		{
 			SetRange(range, tr => SetDecorations(tr, sw.TextDecorations.Underline, underline));
 		}
 
-		public void SetStrikethrough(Range<int> range, bool strikethrough)
+		public virtual void SetStrikethrough(Range<int> range, bool strikethrough)
 		{
 			SetRange(range, tr => SetDecorations(tr, sw.TextDecorations.Strikethrough, strikethrough));
 		}
 
-		public IEnumerable<RichTextAreaFormat> SupportedFormats
+		public virtual IEnumerable<RichTextAreaFormat> SupportedFormats
 		{
 			get
 			{
@@ -657,15 +641,36 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void Load(Stream stream, RichTextAreaFormat format)
+		protected virtual swm.FontFamily OnTranslateFamily(swm.FontFamily family)
+		{
+			return family;
+		}
+
+		protected virtual swm.Typeface OnTranslateTypeface(swm.Typeface typeface)
+		{
+			return typeface;
+		}
+
+		public virtual void Load(Stream stream, RichTextAreaFormat format)
 		{
 			SuppressSelectionChanged++;
 			SuppressTextChanged++;
-			var range = ContentRange;
+			InnerLoad(stream, format, ContentRange);
+			SuppressTextChanged--;
+			SuppressSelectionChanged--;
+			Control.Selection.Select(Control.Document.ContentEnd, Control.Document.ContentEnd);
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
+		}
+
+		protected virtual void InnerLoad(Stream stream, RichTextAreaFormat format, swd.TextRange range)
+		{
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
-					range.Load(stream, sw.DataFormats.Rtf);
+					var ms = EncodeRtfFontNames(stream);
+
+					range.Load(ms, sw.DataFormats.Rtf);
+					UpdateFacesToFamilyVariant(range);
 					break;
 				case RichTextAreaFormat.PlainText:
 					range.Load(stream, sw.DataFormats.Text);
@@ -673,25 +678,293 @@ namespace Eto.Wpf.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
-			SuppressTextChanged--;
-			SuppressSelectionChanged--;
-			Callback.OnTextChanged(Widget, EventArgs.Empty);
-			Selection = Range.FromLength(ContentRange.GetLength(), 0);
 		}
 
-		public void Save(Stream stream, RichTextAreaFormat format)
+		const string AmpersandPlaceholder = "!!amp!!";
+
+		void UpdateFacesToFamilyVariant(swd.TextRange range)
+		{
+			foreach (var elem in range.GetInlineElements())
+			{
+				var family = swd.TextElement.GetFontFamily(elem);
+				if (family == null)
+					continue;
+
+				var newFamily = OnTranslateFamily(family);
+				if (!ReferenceEquals(newFamily, family))
+				{
+					family = newFamily;
+					swd.TextElement.SetFontFamily(elem, family);
+				}
+
+				// ampersands in the font name crash WPF, so we replace it in the RTF before loading, then fix it up here.
+				var ampPosition = family.Source.IndexOf(AmpersandPlaceholder, StringComparison.Ordinal);
+				if (ampPosition >= 0)
+				{
+					var src = family.Source.Replace(AmpersandPlaceholder, "&");
+					family = new swm.FontFamily(src);
+					swd.TextElement.SetFontFamily(elem, family);
+				}
+
+				var typeface = ResolveWpfTypeface(family);
+				if (typeface != null)
+				{
+					swd.TextElement.SetFontFamily(elem, typeface.FontFamily);
+					// not in RTF, so should never be set but do a check anyway.
+					// In some cases we need to set this anyway (e.g. Arial -> Arial Narrow), so we ensure it matches the current typeface
+					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontStretchProperty) 
+						|| (elem.GetValue(swd.TextElement.FontStretchProperty) as sw.FontStretch?) != typeface.Stretch)
+						swd.TextElement.SetFontStretch(elem, typeface.Stretch);
+					
+					// in RTF, can be set so only set it to the typeface if not specified in RTF
+					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontStyleProperty))
+						swd.TextElement.SetFontStyle(elem, typeface.Style);
+
+					// in RTF, we can have bold/normal, but the face could be Black, etc.
+					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontWeightProperty)
+						|| (
+							typeface.Weight != sw.FontWeights.Bold
+							&& typeface.Weight != sw.FontWeights.Normal
+						))
+						swd.TextElement.SetFontWeight(elem, typeface.Weight);
+				}
+			}
+		}
+
+		Dictionary<string, swm.Typeface> _cachedTypefaceMap;
+
+		/// <summary>
+		/// Finds the WPF typeface if the family is not known
+		/// </summary>
+		/// <param name="family">family to find the typeface for</param>
+		/// <returns>An instance of the typeface to use, or null if the font family is correct or could not be found</returns>
+		swm.Typeface ResolveWpfTypeface(swm.FontFamily family)
+		{
+			if (_cachedTypefaceMap != null && _cachedTypefaceMap.TryGetValue(family.Source, out var cachedTypeface))
+				return cachedTypeface;
+
+			var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
+
+			// if the resolved name is the same as the source, we're good
+			if (string.Equals(familyName, family.Source, StringComparison.OrdinalIgnoreCase))
+				return null;
+
+			if (_cachedTypefaceMap == null)
+				_cachedTypefaceMap = new Dictionary<string, swm.Typeface>(StringComparer.OrdinalIgnoreCase);
+
+			// can't find fonts where their Win32 name is different from the WPF name, so lookup based on the win32 name
+			foreach (var font in swm.Fonts.SystemFontFamilies)
+			{
+				foreach (var typeface in font.GetTypefaces())
+				{
+					if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
+					{
+						var win32Name = glyphTypeface.Win32FamilyNames.GetEnglishName();
+						
+						if (string.Equals(family.Source, win32Name, StringComparison.OrdinalIgnoreCase))
+						{
+							// found it!
+							_cachedTypefaceMap[family.Source] = typeface;
+							return typeface;
+						}
+					}
+				}
+			}
+
+			// old, probably not needed code, the above should theoretically handle everything now: 
+
+			var newFamily = new swm.FontFamily(familyName);
+			var typefaces = newFamily.GetTypefaces();
+
+			// find based on the win32 family name (which RTF typically uses)
+			foreach (var typeface in typefaces)
+			{
+				if (typeface.TryGetGlyphTypeface(out var glyphTypeface)
+					&& string.Equals(family.Source, glyphTypeface.Win32FamilyNames.GetEnglishName(), StringComparison.OrdinalIgnoreCase))
+				{
+					_cachedTypefaceMap[family.Source] = typeface;
+					return typeface;
+				}
+			}
+
+			// check if the resolved font name has the same family prefix
+			if (family.Source.Length <= familyName.Length + 1 || !family.Source.StartsWith(familyName, StringComparison.OrdinalIgnoreCase))
+			{
+				_cachedTypefaceMap[family.Source] = null;
+				return null;
+			}
+
+			// extract the face part of the source.  E.g. "Arial Narrow" will result in "Narrow".
+			var faceName = family.Source.Substring(familyName.Length + 1);
+
+			// find based on the non-localized face name
+			foreach (var typeface in typefaces)
+			{
+				var typefaceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
+				if (string.Equals(faceName, typefaceName, StringComparison.OrdinalIgnoreCase))
+				{
+					_cachedTypefaceMap[family.Source] = typeface;
+					return typeface;
+				}
+			}
+
+			_cachedTypefaceMap[family.Source] = null;
+			return null;
+		}
+
+		public virtual void Save(Stream stream, RichTextAreaFormat format)
 		{
 			var range = ContentRange;
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
-					range.Save(stream, sw.DataFormats.Rtf);
+					var fd = new swd.FlowDocument();
+
+					// use same base font for new document
+					fd.FontFamily = Control.FontFamily;
+					fd.FontSize = Control.FontSize;
+					fd.FontStyle = Control.FontStyle;
+					fd.FontWeight = Control.FontWeight;
+					fd.FontStretch = Control.FontStretch;
+
+					using (var ms = new MemoryStream())
+					{
+						range.Save(ms, sw.DataFormats.Xaml);
+						var fdr = new swd.TextRange(fd.ContentStart, fd.ContentEnd);
+						ms.Position = 0;
+						fdr.Load(ms, sw.DataFormats.Xaml);
+						UpdateFamilyVariantToFaces(fdr, out var needsEncodingFix);
+
+						if (needsEncodingFix)
+							UnencodeRtfFontNames(ms, stream, fdr);
+						else
+							fdr.Save(stream, sw.DataFormats.Rtf);
+					}
 					break;
 				case RichTextAreaFormat.PlainText:
-					range.Save(stream, sw.DataFormats.Rtf);
+					range.Save(stream, sw.DataFormats.Text);
 					break;
 				default:
 					throw new NotSupportedException();
+			}
+		}
+
+		static MemoryStream EncodeRtfFontNames(Stream stream)
+		{
+			var rtf = new StreamReader(stream).ReadToEnd();
+			const string regFonttbl = @"(?<={\\fonttbl(\s*))(({[^}]+)}(\s*?))+(?=\s*})";
+			var fontTblMatch = Regex.Match(rtf, regFonttbl, RegexOptions.Compiled);
+			if (fontTblMatch.Success)
+			{
+				// only replace ampersands in the fonttbl section, leave everything else
+				const string regExp = @"(?<={\\f\d+[^}]+?)&(?=[^}]+)";
+				var fontTbl = Regex.Replace(fontTblMatch.Value, regExp, AmpersandPlaceholder, RegexOptions.Compiled);
+				if (fontTbl.Length != fontTblMatch.Length)
+				{
+					// found ampersand in font name, replace fonttbl string
+					rtf = rtf.Remove(fontTblMatch.Index, fontTblMatch.Length);
+					rtf = rtf.Insert(fontTblMatch.Index, fontTbl);
+				}
+			}
+
+			var ms = new MemoryStream();
+			var writer = new StreamWriter(ms, Encoding.UTF8);
+			writer.Write(rtf);
+			writer.Flush();
+			ms.Position = 0;
+			return ms;
+		}
+
+		/// <summary>
+		/// work around WPF bug that writes xml encoded font names.
+		/// 
+		/// This unencodes any improperly xml-encoded characters in the font names of the RTF.
+		/// </summary>
+		static void UnencodeRtfFontNames(MemoryStream ms, Stream stream, swd.TextRange fdr)
+		{
+			// use existing memory stream to save on memory.
+			ms.SetLength(0);
+			ms.Position = 0;
+			fdr.Save(ms, sw.DataFormats.Rtf);
+			ms.Position = 0;
+
+			// use regex to replace the unencoded characters for fcharset's. not ideal.
+			var rtf = new StreamReader(ms).ReadToEnd();
+			var regExp = @"(?<={\\f\d+[^}]+?)&(amp|lt|gt|quot|apos);(?=[^}]+)";
+			rtf = Regex.Replace(rtf, regExp, ReplaceEncodedCharacter, RegexOptions.Compiled);
+			var writer = new StreamWriter(stream, Encoding.UTF8);
+			writer.Write(rtf);
+			writer.Flush();
+		}
+
+		static string ReplaceEncodedCharacter(Match match)
+		{
+			if (match.Value == "&amp;")
+				return "&";
+			if (match.Value == "&lt;")
+				return "<";
+			if (match.Value == "&gt;")
+				return ">";
+			if (match.Value == "&quot;")
+				return "\"";
+			if (match.Value == "&apos;")
+				return "'";
+			return match.Value;
+		}
+
+		static char[] s_encodedFontNameCharacters = { '&', '<', '>', '\'', '"' };
+
+		void UpdateFamilyVariantToFaces(swd.TextRange range, out bool needsEncodingFix)
+		{
+			needsEncodingFix = false;
+			foreach (var elem in range.GetInlineElements())
+			{
+				var family = swd.TextElement.GetFontFamily(elem);
+				if (family == null)
+					continue;
+
+
+				// rtf supports italic and bold, so ignore those variants
+				var style = swd.TextElement.GetFontStyle(elem);
+				if (style == sw.FontStyles.Italic || style == sw.FontStyles.Oblique)
+					style = sw.FontStyles.Normal;
+				var weight = swd.TextElement.GetFontWeight(elem);
+				var stretch = swd.TextElement.GetFontStretch(elem);
+
+				var typeface = new swm.Typeface(family, style, weight, stretch);
+				var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
+
+				// use the win32 family name first if one is mapped
+				if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
+				{
+					// use windows font name in RTF, same as how other apps (e.g. wordpad) does it
+					var win32FamilyName = glyphTypeface.Win32FamilyNames.GetEnglishName();
+					needsEncodingFix |= win32FamilyName.IndexOfAny(s_encodedFontNameCharacters) >= 0;
+
+					if (!string.Equals(win32FamilyName, familyName, StringComparison.OrdinalIgnoreCase))
+					{
+						family = new swm.FontFamily(win32FamilyName);
+						swd.TextElement.SetFontFamily(elem, family);
+						continue;
+					}
+				}
+				else if (stretch != sw.FontStretches.Normal
+					|| (weight != sw.FontWeights.Normal && weight != sw.FontWeights.Bold)
+					|| style != sw.FontStyles.Normal
+					)
+				{
+					// fallback to writing "<FamilyName> <FaceName>" if glyph typeface cannot be found
+					// ensure that the new family source is the same? Correct?
+					if (typeface != null && typeface.FontFamily.Source == familyName)
+					{
+						var faceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
+						var fullFontName = $"{familyName} {faceName}";
+						needsEncodingFix |= fullFontName.IndexOfAny(s_encodedFontNameCharacters) >= 0;
+
+						family = new swm.FontFamily(fullFontName);
+						swd.TextElement.SetFontFamily(elem, family);
+					}
+				}
 			}
 		}
 
@@ -703,7 +976,7 @@ namespace Eto.Wpf.Forms.Controls
 		public void Delete(Range<int> range)
 		{
 			var textRange = GetRange(range);
-			textRange.Text = null;
+			textRange.Text = string.Empty;
 		}
 
 		public void Insert(int position, string text)
@@ -746,7 +1019,18 @@ namespace Eto.Wpf.Forms.Controls
 		}
 		public static int GetLength(this swd.TextRange range)
 		{
-			return range.End.GetTextOffset() - range.Start.GetTextOffset() + 1;
+			var length = 0;
+			var position = range.Start;
+			var end = range.End;
+			while (position != null && position.CompareTo(end) != 0)
+			{
+				position = position.GetNextInsertionPosition(swd.LogicalDirection.Forward);
+				if (position == null)
+					break;
+				length++;
+			}
+
+			return length;
 		}
 
 		public static IEnumerable<swd.Inline> GetInlineElements(this swd.TextRange range)
@@ -778,6 +1062,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			
 			var runsAndParagraphs = GetRunsAndParagraphs(doc).ToList();
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 			var output = new swm.FormattedText(
 			  GetText(runsAndParagraphs),
 			  CultureInfo.CurrentCulture,
@@ -787,6 +1072,7 @@ namespace Eto.Wpf.Forms.Controls
 			  doc.Foreground,
 			  null,
 			  swm.TextOptions.GetTextFormattingMode(doc));
+#pragma warning restore CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 
 			int offset = 0;
 
@@ -809,7 +1095,7 @@ namespace Eto.Wpf.Forms.Controls
 					offset += count;
 					continue;
 				}
-				offset += Environment.NewLine.Length;
+				offset++; // newline
 			}
 
 			return output;
@@ -822,7 +1108,7 @@ namespace Eto.Wpf.Forms.Controls
 			foreach (var el in inlines)
 			{
 				var run = el as swd.Run;
-				sb.Append(run == null ? Environment.NewLine : run.Text);
+				sb.Append(run == null ? "\n" : run.Text);
 			}
 			return sb.ToString();
 		}
@@ -840,26 +1126,45 @@ namespace Eto.Wpf.Forms.Controls
 					continue;
 				}
 				if (el is swd.Paragraph || el is swd.LineBreak)
-					sb.AppendLine();
+					sb.Append('\n');
 			}
 			return sb.ToString();
 		}
 
 		public static int GetTextOffset(this swd.TextPointer position)
 		{
+			/*
+			System.Diagnostics.Debug.WriteLine($"Finding text offset");
+			var p = position;
+			while (p != null)
+			{
+				var ctx = p.GetPointerContext(swd.LogicalDirection.Backward);
+				var adj = p.GetAdjacentElement(swd.LogicalDirection.Backward);
+				var len = p.GetTextRunLength(swd.LogicalDirection.Backward);
+				var text = p.GetTextInRun(swd.LogicalDirection.Backward);
+				System.Diagnostics.Debug.WriteLine($"Context: {ctx}, Adjacent: {adj}, Length: {len}, Text: {text}");
+				p = p.GetNextContextPosition(swd.LogicalDirection.Backward);
+			}
+			*/ 
+
 			var offset = 0;
 			while (position != null)
 			{
-				if (position.GetPointerContext(swd.LogicalDirection.Backward) == swd.TextPointerContext.Text)
+				var ctx = position.GetPointerContext(swd.LogicalDirection.Backward);
+				if (ctx == swd.TextPointerContext.Text)
 				{
 					offset += position.GetTextRunLength(swd.LogicalDirection.Backward);
 				}
+				else if (ctx == swd.TextPointerContext.ElementEnd)
+				{
+					var adj = position.GetAdjacentElement(swd.LogicalDirection.Backward);
+					if (adj is swd.Paragraph)
+					{
+						offset++; // newline
+					}
+				}
 
-				var nextContextPosition = position.GetNextContextPosition(swd.LogicalDirection.Backward);
-				if (nextContextPosition == null)
-					return offset;
-
-				position = nextContextPosition;
+				position = position.GetNextContextPosition(swd.LogicalDirection.Backward);
 			}
 
 			return offset;
@@ -867,26 +1172,42 @@ namespace Eto.Wpf.Forms.Controls
 
 		public static swd.TextPointer GetTextPositionAtOffset(this swd.TextPointer position, int characterCount)
 		{
-			while (position != null)
+			/*
+			System.Diagnostics.Debug.WriteLine($"Finding position with {characterCount}");
+			var p = position;
+			while (p != null)
 			{
-				if (position.GetPointerContext(swd.LogicalDirection.Forward) == swd.TextPointerContext.Text)
+				var ctx = p.GetPointerContext(swd.LogicalDirection.Forward);
+				var adj = p.GetAdjacentElement(swd.LogicalDirection.Forward);
+				var len = p.GetTextRunLength(swd.LogicalDirection.Forward);
+				var text = p.GetTextInRun(swd.LogicalDirection.Forward);
+				System.Diagnostics.Debug.WriteLine($"Context: {ctx}, Adjacent: {adj}, Length: {len}, Text: {text}");
+				p = p.GetNextContextPosition(swd.LogicalDirection.Forward);
+			}
+			*/
+
+			while (position != null && characterCount > 0)
+			{
+				var ctx = position.GetPointerContext(swd.LogicalDirection.Forward);
+				if (ctx == swd.TextPointerContext.Text)
 				{
 					int count = position.GetTextRunLength(swd.LogicalDirection.Forward);
 					if (count >= characterCount)
-					{
 						return position.GetPositionAtOffset(characterCount);
-					}
 
 					characterCount -= count;
 				}
+				else if (ctx == swd.TextPointerContext.ElementEnd)
+				{
+					var adj = position.GetAdjacentElement(swd.LogicalDirection.Forward);
+					if (adj is swd.Paragraph)
+					{
+						characterCount--; // newline
+					}
+				}
 
-				var nextContextPosition = position.GetNextContextPosition(swd.LogicalDirection.Forward);
-				if (nextContextPosition == null)
-					return position;
-
-				position = nextContextPosition;
+				position = position.GetNextContextPosition(swd.LogicalDirection.Forward);
 			}
-
 			return position;
 		}
 
@@ -918,6 +1239,12 @@ namespace Eto.Wpf.Forms.Controls
                 }
             }
 			return value;
+		}
+
+		public static bool PropertyIsInheritedOrLocal(this sw.DependencyObject obj, sw.DependencyProperty prop)
+		{
+			var source = sw.DependencyPropertyHelper.GetValueSource(obj, prop);
+			return source.BaseValueSource == sw.BaseValueSource.Local || source.BaseValueSource == sw.BaseValueSource.Inherited;
 		}
 
 	}

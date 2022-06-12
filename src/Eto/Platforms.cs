@@ -30,31 +30,27 @@ namespace Eto
 		[Obsolete("Gtk3 platform is obsolete, please use Platforms.Gtk instead.")]
 		public static readonly string Gtk3 = "Eto.GtkSharp.Platform, Eto.Gtk3";
 		/// <summary>
-		/// Type of the Mac OS X platform
-		/// </summary>
-		public static readonly string Mac = "Eto.Mac.Platform, Eto.Mac";
-		/// <summary>
-		/// Type of the Mac OS X platform on 64-bit mono
+		/// Type of the macOS platform on .NET 6+ or mono
 		/// </summary>
 		public static readonly string Mac64 = "Eto.Mac.Platform, Eto.Mac64";
 		/// <summary>
-		/// Type of the Xamarin.Mac v1 OS X platform
-		/// </summary>
-		public static readonly string XamMac = "Eto.Mac.Platform, Eto.XamMac";
-		/// <summary>
-		/// Type of the Xamarin.Mac v2 OS X platform
+		/// Type of the Xamarin.Mac v2 macOS platform on mono
 		/// </summary>
 		public static readonly string XamMac2 = "Eto.Mac.Platform, Eto.XamMac2";
 		/// <summary>
-		/// Type of the Windows forms platform
+		/// Type of the macOS platform on .NET 6.0.2xx+ SDK
+		/// </summary>
+		public static readonly string macOS = "Eto.Mac.Platform, Eto.macOS";
+		/// <summary>
+		/// Type of the Windows Forms platform
 		/// </summary>
 		public static readonly string WinForms = "Eto.WinForms.Platform, Eto.WinForms";
 		/// <summary>
-		/// ID of the WPF platform
+		/// Type of the WPF platform
 		/// </summary>
 		public static readonly string Wpf = "Eto.Wpf.Platform, Eto.Wpf";
 		/// <summary>
-		/// ID of the Android platform
+		/// Type of the Android platform
 		/// </summary>
 		public static readonly string Android = "Eto.Android.Platform, Eto.Android";
 	}

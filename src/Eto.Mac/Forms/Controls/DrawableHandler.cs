@@ -1,33 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -62,14 +35,18 @@ namespace Eto.Mac.Forms.Controls
 
 			public bool CanFocus { get; set; }
 
-			public override bool AcceptsFirstResponder()
-			{
-				return CanFocus;
-			}
+			public override bool AcceptsFirstResponder() => CanFocus;
 
-			public override bool AcceptsFirstMouse(NSEvent theEvent)
+			public override NSView HitTest(CGPoint aPoint)
 			{
-				return CanFocus;
+				var view = base.HitTest(aPoint);
+				if (view == ContentView)
+				{
+					// forward all events to this view, not the content view (which covers the drawable)
+					// the properly enables AcceptsFirstMouse above, since the ContentView returns false
+					return this;
+				}
+				return view;
 			}
 		}
 
@@ -77,8 +54,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			return new Graphics(new GraphicsHandler(Control));
 		}
-
-		public override bool Enabled { get; set; }
 
 		public override Color BackgroundColor
 		{
@@ -152,6 +127,13 @@ namespace Eto.Mac.Forms.Controls
 		public void Update(Rectangle rect)
 		{
 			Control.DisplayRect(rect.ToNS());
+		}
+
+		protected override bool OnAcceptsFirstMouse(NSEvent theEvent)
+		{
+			if (CanFocus)
+				return true;
+			return base.OnAcceptsFirstMouse(theEvent);
 		}
 	}
 }

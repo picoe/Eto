@@ -6,44 +6,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class RichTextAreaHandler : TextAreaHandler<RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer
@@ -57,7 +19,7 @@ namespace Eto.Mac.Forms.Controls
 			where T: class
 		{
 			NSRange effectiveRange;
-			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange);
+			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange);
 			NSObject value;
 			return attrib.TryGetValue(attributeName, out value) ? value as T : null;
 		}
@@ -116,7 +78,7 @@ namespace Eto.Mac.Forms.Controls
 		bool HasFontAttribute(NSFontTraitMask traitMask)
 		{
 			NSRange effectiveRange;
-			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange, Control.SelectedRange);
+			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange, Control.SelectedRange);
 			NSObject value;
 			if (attrib.TryGetValue(NSStringAttributeKey.Font, out value))
 			{
@@ -173,17 +135,17 @@ namespace Eto.Mac.Forms.Controls
 				Control.TextStorage.BeginEditing();
 				var current = range;
 				var left = current.Length;
-				do
+				while (left > 0)
 				{
 					var attribs = Control.TextStorage.GetAttributes(current.Location, out effectiveRange, current);
 					attribs = UpdateFontAttributes(attribs, enabled, updateFont);
 					var span = effectiveRange.Location + effectiveRange.Length - current.Location;
-					var newRange = new NSRange(current.Location, (nnint)Math.Min(span, current.Length));
+					var newRange = new NSRange(current.Location, (nint)Math.Min(span, current.Length));
 					Control.TextStorage.AddAttributes(attribs, newRange);
 					current.Location += span;
 					current.Length -= span;
 					left -= span;
-				} while (left > 0);
+				}
 				Control.TextStorage.EndEditing();
 				Control.DidChangeText();
 			}
@@ -298,7 +260,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Insert(int position, string text)
 		{
-			Control.TextStorage.Insert(new NSAttributedString(text), (nnint)position);
+			Control.TextStorage.Insert(new NSAttributedString(text), (nint)position);
 		}
 
 		public IEnumerable<RichTextAreaFormat> SupportedFormats
@@ -312,15 +274,43 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Load(Stream stream, RichTextAreaFormat format)
 		{
+			var range = new NSRange(0, Control.TextStorage.Length);
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
-					var range = new NSRange(0, Control.TextStorage.Length);
-					Control.ReplaceWithRtf(range, NSData.FromStream(stream));
-					break;
+					{
+						var str = NSAttributedString.CreateWithRTF(NSData.FromStream(stream), out var docAttributes);
+						NSMutableAttributedString mut = null;
+						nint pos = 0;
+						// when encountering an RTF without a defined foreground, use the system foreground for dark mode
+						var textColor = TextColor.ToNSUI();
+						while (pos < str.Length)
+						{
+							var color = str.GetAttribute(NSStringAttributeKey.ForegroundColor, pos, out var effectiveRange);
+							pos = effectiveRange.Location + effectiveRange.Length;
+							if (color == null)
+							{
+								if (mut == null)
+									mut = new NSMutableAttributedString(str);
+
+								mut.AddAttribute(NSStringAttributeKey.ForegroundColor, textColor, effectiveRange);
+							}
+						}
+
+						if (mut != null)
+							str = mut;
+
+						Control.TextStorage.Replace(range, str);
+						break;
+					}
 				case RichTextAreaFormat.PlainText:
-					Control.TextStorage.SetString(new NSAttributedString(new StreamReader(stream).ReadToEnd()));
-					break;
+					{
+						var str = new NSMutableAttributedString(new StreamReader(stream).ReadToEnd());
+						Font.Apply(str);
+						str.AddAttribute(NSStringAttributeKey.ForegroundColor, TextColor.ToNSUI(), new NSRange(0, str.Length));
+						Control.TextStorage.Replace(range, str);
+						break;
+					}
 				default:
 					throw new NotSupportedException();
 			}

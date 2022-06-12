@@ -1,13 +1,15 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
+using System.Runtime.ExceptionServices;
+using System.Collections.Generic;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
-	public class TreeGridViewTests : TestBase
+	public class TreeGridViewTests : GridTests<TreeGridView>
 	{
 		[Test]
 		public void SelectedItemsShouldNotCrash()
@@ -100,6 +102,61 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				e.Graphics.DrawLine(Colors.Blue, rect.TopRight, rect.BottomLeft);
 				e.Graphics.DrawRectangle(Colors.Green, rect);
 			}
+		}
+
+		[Test, InvokeOnUI]
+		public void NullDataStoreShouldNotCrash()
+		{
+			var control = new TreeGridView();
+			control.DataStore = null; // when binding, this will be done so it should not crash!
+		}
+
+		[TestCase(true, true)]
+		[TestCase(true, false)]
+		[TestCase(false, true)]
+		[TestCase(false, false)]
+		public void ClickingWithEmptyDataShouldNotCrash(bool allowEmptySelection, bool allowMultipleSelection)
+		{
+			Exception exception = null;
+			Form(form =>
+			{
+				var dd = new TreeGridItemCollection();
+
+				dd.Add(new TreeGridItem { Values = new[] { "Hello" } });
+				var control = new TreeGridView();
+				control.AllowEmptySelection = allowEmptySelection;
+				control.AllowMultipleSelection = allowMultipleSelection;
+				control.Columns.Add(new GridColumn
+				{
+					DataCell = new TextBoxCell(0),
+					Width = 100,
+					HeaderText = "Text Cell"
+				});
+				control.DataStore = dd;
+				Application.Instance.AsyncInvoke(() => {
+					// can crash when had selection initially but no selection after.
+					try
+					{
+						control.DataStore = new TreeGridItemCollection();
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+					}
+				Application.Instance.AsyncInvoke(form.Close);
+				});
+
+				form.Content = control;
+			});
+
+			if (exception != null)
+				ExceptionDispatchInfo.Capture(exception).Throw();
+
+		}
+
+		protected override void SetDataStore(TreeGridView grid, IEnumerable<object> dataStore)
+		{
+			grid.DataStore = (ITreeGridStore<ITreeGridItem>)dataStore;
 		}
 	}
 }

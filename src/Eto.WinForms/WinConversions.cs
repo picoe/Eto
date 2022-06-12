@@ -211,7 +211,17 @@ namespace Eto.WinForms
 
 		public static sd.FontStyle ToSD(this FontTypeface typeface)
 		{
+			if (typeface == null)
+				return sd.FontStyle.Regular;
 			return FontTypefaceHandler.GetControl(typeface);
+		}
+
+		public static sd.Font ToSDFont(this FontTypeface typeface, float size)
+		{
+			var typefaceHandler = typeface?.Handler as FontTypefaceHandler;
+			if (typefaceHandler == null)
+				return null;
+			return new sd.Font(typefaceHandler.SDFontFamily, size, typeface.ToSD());
 		}
 
 		public static sd.Font ToSD(this SystemFont systemFont)
@@ -219,6 +229,8 @@ namespace Eto.WinForms
 			switch (systemFont)
 			{
 				case SystemFont.Default:
+					return sd.SystemFonts.DefaultFont;
+				case SystemFont.User:
 					return sd.SystemFonts.DefaultFont;
 				case SystemFont.Bold:
 					return new sd.Font(sd.SystemFonts.DefaultFont, sd.FontStyle.Bold);
@@ -272,6 +284,8 @@ namespace Eto.WinForms
 					return sd2.PixelOffsetMode.None;
 				case PixelOffsetMode.Half:
 					return sd2.PixelOffsetMode.Half;
+				case PixelOffsetMode.Aligned:
+					return sd2.PixelOffsetMode.None;
 				default:
 					throw new NotSupportedException();
 			}
@@ -494,9 +508,11 @@ namespace Eto.WinForms
 		{
 			switch (style)
 			{
+				case swf.FormBorderStyle.SizableToolWindow:
+				case swf.FormBorderStyle.FixedToolWindow:
+					return WindowStyle.Utility;
 				case swf.FormBorderStyle.Fixed3D:
 				case swf.FormBorderStyle.Sizable:
-				case swf.FormBorderStyle.SizableToolWindow:
 				case swf.FormBorderStyle.FixedDialog:
 					return WindowStyle.Default;
 				case swf.FormBorderStyle.None:
@@ -514,6 +530,8 @@ namespace Eto.WinForms
 					return resizable ? swf.FormBorderStyle.Sizable : defaultStyle;
 				case WindowStyle.None:
 					return swf.FormBorderStyle.None;
+				case WindowStyle.Utility:
+					return resizable ? swf.FormBorderStyle.SizableToolWindow : swf.FormBorderStyle.FixedToolWindow;
 				default:
 					throw new NotSupportedException();
 			}
@@ -587,6 +605,47 @@ namespace Eto.WinForms
 				case swf.DataGridViewContentAlignment.MiddleRight:
 				case swf.DataGridViewContentAlignment.BottomRight:
 					return TextAlignment.Right;
+			}
+		}
+
+		public static swf.DataGridViewContentAlignment ToSWFGridViewContentAlignment(this TextAlignment alignment, VerticalAlignment vertical = VerticalAlignment.Center)
+		{
+			switch (alignment)
+			{
+				default:
+				case TextAlignment.Left:
+					switch (vertical)
+					{
+						case VerticalAlignment.Top:
+							return swf.DataGridViewContentAlignment.TopLeft;	
+						default:
+						case VerticalAlignment.Center:
+							return swf.DataGridViewContentAlignment.MiddleLeft;	
+						case VerticalAlignment.Bottom:
+							return swf.DataGridViewContentAlignment.BottomLeft;	
+					}
+				case TextAlignment.Center:
+					switch (vertical)
+					{
+						case VerticalAlignment.Top:
+							return swf.DataGridViewContentAlignment.TopCenter;	
+						default:
+						case VerticalAlignment.Center:
+							return swf.DataGridViewContentAlignment.MiddleCenter;	
+						case VerticalAlignment.Bottom:
+							return swf.DataGridViewContentAlignment.BottomCenter;	
+					}
+				case TextAlignment.Right:
+					switch (vertical)
+					{
+						case VerticalAlignment.Top:
+							return swf.DataGridViewContentAlignment.TopRight;	
+						default:
+						case VerticalAlignment.Center:
+							return swf.DataGridViewContentAlignment.MiddleRight;	
+						case VerticalAlignment.Bottom:
+							return swf.DataGridViewContentAlignment.BottomRight;	
+					}
 			}
 		}
 
@@ -793,7 +852,7 @@ namespace Eto.WinForms
 		}
 		public static swf.DataObject ToSwf(this DataObject data) => DataObjectHandler.GetControl(data);
 
-		public static DataObject ToEto(this swf.IDataObject data) => new DataObject(new DataObjectHandler(new swf.DataObject(data)));
+		public static DataObject ToEto(this swf.IDataObject data) => new DataObject(new DataObjectHandler(data));
 
 		public static Keys GetEtoModifiers(this swf.DragEventArgs e)
 		{
@@ -817,6 +876,34 @@ namespace Eto.WinForms
 			if ((e.KeyState & 16) == 16)
 				buttons |= MouseButtons.Middle;
 			return buttons;
+		}
+
+		public static swf.Cursor ToSwf(this Cursor cursor) => CursorHandler.GetControl(cursor);
+		
+		public static bool IsPremultiplied(this sdi.PixelFormat format)
+		{
+			return format == sdi.PixelFormat.Format32bppPArgb
+				|| format == sdi.PixelFormat.Format64bppPArgb;
+		}
+		
+		public static Image ToEto(this sd.Image image)
+		{
+			if (image is sd.Bitmap bitmap)
+				return new Bitmap(new BitmapHandler(bitmap));
+			throw new NotSupportedException();
+		}
+		
+		public static GridCellType ToEto(this swf.DataGridViewHitTestType type)
+		{
+			switch (type)
+			{
+				case swf.DataGridViewHitTestType.ColumnHeader:
+					return GridCellType.ColumnHeader;
+				case swf.DataGridViewHitTestType.Cell:
+					return GridCellType.Data;
+				default:
+					return GridCellType.None;
+			}
 		}
 
 	}

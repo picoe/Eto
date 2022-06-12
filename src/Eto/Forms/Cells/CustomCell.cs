@@ -79,7 +79,7 @@ namespace Eto.Forms
 		/// Gets or sets the row for the cell.
 		/// </summary>
 		/// <value>The cell's row.</value>
-		public int Row
+		public virtual int Row
 		{
 			get { return row; }
 			protected set
@@ -91,6 +91,43 @@ namespace Eto.Forms
 				}
 			}
 		}
+
+		/// <summary>
+		/// Gets the column index for the cell.
+		/// </summary>
+		/// <value>The cell's column index.</value>
+		public virtual int Column { get; }
+
+		/// <summary>
+		/// Gets the column for the cell.
+		/// </summary>
+		/// <value>The cell's column.</value>
+		public GridColumn GridColumn => Column >= 0 ? Grid?.Columns[Column] : null;
+
+		/// <summary>
+		/// Gets the cell that triggered this event
+		/// </summary>
+		public Cell Cell { get; }
+
+		/// <summary>
+		/// Gets the grid that this event was triggered from
+		/// </summary>
+		public Grid Grid { get; }
+
+		/// <summary>
+		/// Gets the custom control associated with the cell (if any)
+		/// </summary>
+		/// <value>Instance of the control for the cell</value>
+		public Control Control { get; protected set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating that the default behavior should not be executed for the event, if supported.
+		/// </summary>
+		/// <remarks>
+		/// Note that not all events can be handled.
+		/// </remarks>
+		/// <value>True if the event is user-handled, false to use system behavior.</value>
+		public bool Handled { get; set; }
 
 		Color cellTextColor = SystemColors.ControlText;
         
@@ -117,11 +154,45 @@ namespace Eto.Forms
 		/// <param name="row">Row for the cell.</param>
 		/// <param name="item">Item the cell is displaying.</param>
 		/// <param name="cellState">State of the cell.</param>
+		[Obsolete("Use overload that passes the custom cell these arguments are for")]
 		public CellEventArgs(int row, object item, CellStates cellState)
+			: this(null, null, row, item, cellState)
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.CellEventArgs"/> class.
+		/// </summary>
+		/// <param name="grid">Grid the event is triggered for.</param>
+		/// <param name="cell">Cell the event is triggered for.</param>
+		/// <param name="row">Row for the cell.</param>
+		/// <param name="item">Item the cell is displaying.</param>
+		/// <param name="cellState">State of the cell.</param>
+		[Obsolete("Use constructor with column number and control")]
+		public CellEventArgs(Grid grid, Cell cell, int row, object item, CellStates cellState)
+			: this(grid, cell, row, -1, item, cellState, null)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.CellEventArgs"/> class.
+		/// </summary>
+		/// <param name="grid">Grid the event is triggered for.</param>
+		/// <param name="cell">Cell the event is triggered for.</param>
+		/// <param name="row">Row for the cell.</param>
+		/// <param name="column">Column for the cell.</param>
+		/// <param name="item">Item the cell is displaying.</param>
+		/// <param name="cellState">State of the cell.</param>
+		/// <param name="control">Control object for the cell (if any)</param>
+		public CellEventArgs(Grid grid, Cell cell, int row, int column, object item, CellStates cellState, Control control)
+		{
+			Grid = grid;
+			Cell = cell;
+			Column = column;
 			Row = row;
 			Item = item;
 			CellState = cellState;
+			Control = control;
 		}
 
 		/// <summary>
@@ -333,6 +404,37 @@ namespace Eto.Forms
 				control.DataContext = args.Item;
 		}
 
+		/// <summary>
+		/// Event to handle when the cell should begin editing.
+		/// </summary>
+		public event EventHandler<CellEventArgs> BeginEdit;
+		/// <summary>
+		/// Event to handle when the cell should cancel editing.
+		/// </summary>
+		public event EventHandler<CellEventArgs> CancelEdit;
+		/// <summary>
+		/// Event to handle when the cell should commit editing.
+		/// </summary>
+		public event EventHandler<CellEventArgs> CommitEdit;
+
+		/// <summary>
+		/// Triggers the <see cref="BeginEdit"/> event.
+		/// </summary>
+		/// <param name="e">Cell event arguments</param>
+		protected virtual void OnBeginEdit(CellEventArgs e) => BeginEdit?.Invoke(this, e);
+
+		/// <summary>
+		/// Triggers the <see cref="CancelEdit"/> event.
+		/// </summary>
+		/// <param name="e">Cell event arguments</param>
+		protected virtual void OnCancelEdit(CellEventArgs e) => CancelEdit?.Invoke(this, e);
+
+		/// <summary>
+		/// Triggers the <see cref="CommitEdit"/> event.
+		/// </summary>
+		/// <param name="e">Cell event arguments</param>
+		protected virtual void OnCommitEdit(CellEventArgs e) => CommitEdit?.Invoke(this, e);
+
 		static readonly object PaintEvent = new object();
 
 		/// <summary>
@@ -389,6 +491,21 @@ namespace Eto.Forms
 			/// Raises the paint event.
 			/// </summary>
 			void OnPaint(CustomCell widget, CellPaintEventArgs args);
+
+			/// <summary>
+			/// Raises the BeginEdit event.
+			/// </summary>
+			void OnBeginEdit(CustomCell widget, CellEventArgs args);
+
+			/// <summary>
+			/// Raises the CancelEdit event.
+			/// </summary>
+			void OnCancelEdit(CustomCell widget, CellEventArgs args);
+
+			/// <summary>
+			/// Raises the CommitEdit event.
+			/// </summary>
+			void OnCommitEdit(CustomCell widget, CellEventArgs args);
 		}
 
 		/// <summary>
@@ -440,6 +557,33 @@ namespace Eto.Forms
 				using (widget.Platform.Context)
 					widget.OnPaint(args);
 			}
+
+			/// <summary>
+			/// Raises the BeginEdit event.
+			/// </summary>
+			public void OnBeginEdit(CustomCell widget, CellEventArgs args)
+			{
+				using (widget.Platform.Context)
+					widget.OnBeginEdit(args);
+			}
+
+			/// <summary>
+			/// Raises the CancelEdit event.
+			/// </summary>
+			public void OnCancelEdit(CustomCell widget, CellEventArgs args)
+			{
+				using (widget.Platform.Context)
+					widget.OnCancelEdit(args);
+			}
+
+			/// <summary>
+			/// Raises the CommitEdit event.
+			/// </summary>
+			public void OnCommitEdit(CustomCell widget, CellEventArgs args)
+			{
+				using (widget.Platform.Context)
+					widget.OnCommitEdit(args);
+			}
 		}
 
 		static readonly object callback = new Callback();
@@ -448,10 +592,7 @@ namespace Eto.Forms
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
 		/// </summary>
 		/// <returns>The callback.</returns>
-		protected override object GetCallback()
-		{
-			return callback;
-		}
+		protected override object GetCallback() => callback;
 	}
 }
 

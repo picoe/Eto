@@ -3,42 +3,6 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>, TextArea.IHandler
@@ -59,6 +23,8 @@ namespace Eto.Mac.Forms.Controls
 
 		Range<int> lastSelection { get; set; }
 		int? lastCaretIndex { get; set; }
+
+		void PerformLayout();
 	}
 
 	public class EtoTextAreaDelegate : NSTextViewDelegate
@@ -95,15 +61,22 @@ namespace Eto.Mac.Forms.Controls
 		public WeakReference WeakHandler { get; set; }
 
 		public object Handler
-		{ 
+		{
 			get { return WeakHandler.Target; }
-			set { WeakHandler = new WeakReference(value); } 
+			set { WeakHandler = new WeakReference(value); }
 		}
 
+#if MACOS_NET && !VSMAC
+		public override void ChangeColor(NSColorPanel sender)
+		{
+			// ignore color changes
+		}
+#else
 		public override void ChangeColor(NSObject sender)
 		{
 			// ignore color changes
 		}
+#endif
 
 		public EtoTextView(ITextAreaHandler handler)
 		{
@@ -120,11 +93,20 @@ namespace Eto.Mac.Forms.Controls
 			MaxSize = new CGSize(float.MaxValue, float.MaxValue);
 			TextContainer.WidthTracksTextView = true;
 		}
+
+		public override void Layout()
+		{
+			if (MacView.NewLayout)
+				base.Layout();
+			(Handler as ITextAreaHandler)?.PerformLayout();
+			if (!MacView.NewLayout)
+				base.Layout();
+		}
 	}
 
 	public class TextAreaHandler<TControl, TCallback> : MacView<NSTextView, TControl, TCallback>, TextArea.IHandler, ITextAreaHandler
-		where TControl: TextArea
-		where TCallback: TextArea.ICallback
+		where TControl : TextArea
+		where TCallback : TextArea.ICallback
 	{
 		int suppressSelectionChanged;
 		int? ITextAreaHandler.lastCaretIndex { get; set; }
@@ -158,21 +140,19 @@ namespace Eto.Mac.Forms.Controls
 
 		public NSScrollView Scroll { get; private set; }
 
-		public override NSView ContainerControl
-		{
-			get { return Scroll; }
-		}
+		public override NSView ContainerControl => Scroll;
 
-		protected override NSTextView CreateControl()
-		{
-			return new EtoTextView(this);
-		}
+		public override NSView TextInputControl => Control;
+
+		protected override NSTextView CreateControl() => new EtoTextView(this);
 
 		protected override void Initialize()
 		{
+			// Control.BackgroundColor = Colors.Transparent.ToNSUI();
 			Scroll = new EtoScrollView
 			{
 				Handler = this,
+				DrawsBackground = false,
 				AutoresizesSubviews = true,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
@@ -193,27 +173,27 @@ namespace Eto.Mac.Forms.Controls
 			switch (id)
 			{
 				case TextControl.TextChangedEvent:
-				/*Control.TextDidChange += (sender, e) => {
-					Widget.OnTextChanged (EventArgs.Empty);
-				};*/
+					/*Control.TextDidChange += (sender, e) => {
+						Widget.OnTextChanged (EventArgs.Empty);
+					};*/
 					break;
 				case TextArea.SelectionChangedEvent:
-				/*Control.DidChangeSelection += (sender, e) => {
-					var selection = this.Selection;
-					if (selection != lastSelection) {
-						Widget.OnSelectionChanged (EventArgs.Empty);
-						lastSelection = selection;
-					}
-				};*/
+					/*Control.DidChangeSelection += (sender, e) => {
+						var selection = this.Selection;
+						if (selection != lastSelection) {
+							Widget.OnSelectionChanged (EventArgs.Empty);
+							lastSelection = selection;
+						}
+					};*/
 					break;
 				case TextArea.CaretIndexChangedEvent:
-				/*Control.DidChangeSelection += (sender, e) => {
-					var caretIndex = Handler.CaretIndex;
-					if (caretIndex != lastCaretIndex) {
-						Handler.Widget.OnCaretIndexChanged (EventArgs.Empty);
-						lastCaretIndex = caretIndex;
-					}
-				};*/
+					/*Control.DidChangeSelection += (sender, e) => {
+						var caretIndex = Handler.CaretIndex;
+						if (caretIndex != lastCaretIndex) {
+							Handler.Widget.OnCaretIndexChanged (EventArgs.Empty);
+							lastCaretIndex = caretIndex;
+						}
+					};*/
 					break;
 				default:
 					base.AttachEvent(id);
@@ -226,26 +206,31 @@ namespace Eto.Mac.Forms.Controls
 		public bool ReadOnly
 		{
 			get { return Widget.Properties.Get<bool>(ReadOnly_Key); }
-			set { Widget.Properties.Set(ReadOnly_Key, value, () => Control.Editable = !value); }
+			set
+			{
+				if (Widget.Properties.TrySet(ReadOnly_Key, value))
+				{
+					Control.Editable = !value;
+				}
+			}
 		}
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return Control.Selectable; }
+			get => Control.Selectable;
 			set
 			{
 				Control.Selectable = value;
 				if (!value)
 				{
 					Control.TextColor = NSColor.DisabledControlText;
-					Control.BackgroundColor = NSColor.ControlBackground;
 				}
 				else
 				{
 					Control.TextColor = TextColor.ToNSUI();
-					Control.BackgroundColor = BackgroundColor.ToNSUI();
 					Control.Editable = !ReadOnly; // this gets set to false when Selectable is set to false, so we need to re-enable it.
 				}
+				SetBackgroundColor();
 			}
 		}
 
@@ -270,25 +255,27 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get(TextColor_Key, () => NSColor.ControlText.ToEto()); }
 			set
 			{
-				Widget.Properties.Set(TextColor_Key, value, () =>
+				if (Widget.Properties.TrySet(TextColor_Key, value))
 				{
 					Control.TextColor = Control.InsertionPointColor = value.ToNSUI();
-				});
+				}
 			}
 		}
-
-		static readonly object BackgroundColor_Key = new object();
-
-		public override Color BackgroundColor
+		
+		static readonly object DisabledBackgroundColor_Key = new object();
+		
+		public virtual Color DisabledBackgroundColor
 		{
-			get { return Widget.Properties.Get<Color>(BackgroundColor_Key, () => NSColor.ControlBackground.ToEto()); }
-			set
-			{
-				Widget.Properties.Set(BackgroundColor_Key, value, () =>
-				{
-					Control.BackgroundColor = value.ToNSUI();
-				});
-			}
+			get => Widget.Properties.Get<Color?>(DisabledBackgroundColor_Key) ?? NSColor.WindowBackground.ToEto();
+			set => Widget.Properties.Set(DisabledBackgroundColor_Key, value);
+		}
+
+		protected override Color DefaultBackgroundColor => NSColor.ControlBackground.ToEto();
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			var c = color ?? (ControlEnabled ? DefaultBackgroundColor : DisabledBackgroundColor);
+			Control.BackgroundColor = c.ToNSUI();
 		}
 
 		static readonly object Font_Key = new object();
@@ -298,11 +285,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Create(Font_Key, () => new Font(new FontHandler(Control.Font))); }
 			set
 			{
-				Widget.Properties.Set(Font_Key, value, () =>
+				if (Widget.Properties.TrySet(Font_Key, value))
 				{
 					Control.Font = value.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					InvalidateMeasure();
-				});
+				}
 			}
 		}
 
@@ -317,7 +304,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value)
 				{
 					Control.TextContainer.WidthTracksTextView = true;
-					Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
+					Control.NeedsLayout = true;
 				}
 				else
 				{
@@ -342,7 +329,7 @@ namespace Eto.Mac.Forms.Controls
 				var newText = value ?? string.Empty;
 				var range = Control.SelectedRange;
 				Control.Replace(range, newText);
-				range.Length = (nnint)newText.Length;
+				range.Length = newText.Length;
 				suppressSelectionChanged--;
 				Control.SetSelectedRange(range);
 				Callback.OnTextChanged(Widget, EventArgs.Empty);
@@ -402,7 +389,7 @@ namespace Eto.Mac.Forms.Controls
 
 			var range = new NSRange(str != null ? str.Length : 0, 0);
 			Control.Replace(range, text);
-			range.Location += (nnint)text.Length;
+			range.Location += text.Length;
 			Control.SetSelectedRange(range);
 			if (scrollToCursor)
 				Control.ScrollRangeToVisible(range);
@@ -432,19 +419,19 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public void PerformLayout()
 		{
-			base.OnLoadComplete(e);
 			if (Wrap)
 			{
-				// set initial width of content to the size of the control
+				// set width of content to the size of the control when wrapping
 				Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
 			}
 		}
 
 		public TextReplacements TextReplacements
 		{
-			get { 
+			get
+			{
 				var replacements = TextReplacements.None;
 				if (Control.AutomaticTextReplacementEnabled)
 					replacements |= TextReplacements.Text;
@@ -457,7 +444,7 @@ namespace Eto.Mac.Forms.Controls
 				return replacements;
 			}
 			set
-			{ 
+			{
 				Control.AutomaticTextReplacementEnabled = value.HasFlag(TextReplacements.Text);
 				Control.AutomaticQuoteSubstitutionEnabled = value.HasFlag(TextReplacements.Quote);
 				Control.AutomaticDashSubstitutionEnabled = value.HasFlag(TextReplacements.Dash);

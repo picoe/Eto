@@ -2,35 +2,7 @@
 using Eto.Forms;
 using System.Diagnostics;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac
 {
@@ -41,11 +13,16 @@ namespace Eto.Mac
 		static Dictionary<ushort, Keys> Map => _map ?? (_map = GetMap());
 		static Dictionary<Keys, string> InverseMap = _inverseMap ?? (_inverseMap = GetInverseMap());
 
-		public static Keys MapKey(ushort key)
+		public static Keys MapKey(ushort key, NSEventModifierMask modifiers)
 		{
 			Keys value;
 			if (Map.TryGetValue(key, out value))
+			{
+				// special case, fn+return is usually interpreted as insert key on macOS, even though it is actually enter.
+				if (value == Keys.Enter && modifiers.HasFlag(NSEventModifierMask.FunctionKeyMask))
+					return Keys.Insert;
 				return value;
+			}
 			Debug.WriteLine($"Unknown key '{key}'");
 			return Keys.None;
 		}
@@ -160,6 +137,18 @@ namespace Eto.Mac
 			keymap.Add(109, Keys.F10);
 			keymap.Add(103, Keys.F11);
 			keymap.Add(111, Keys.F12);
+			keymap.Add(105, Keys.F13);
+			keymap.Add(107, Keys.F14);
+			keymap.Add(113, Keys.F15);
+			keymap.Add(106, Keys.F16);
+			keymap.Add(64, Keys.F17);
+			keymap.Add(79, Keys.F18);
+			keymap.Add(80, Keys.F19);
+			// keymap.Add(80, Keys.F20);
+			// keymap.Add(80, Keys.F21);
+			// keymap.Add(80, Keys.F22);
+			// keymap.Add(80, Keys.F23);
+			// keymap.Add(80, Keys.F24);
 			keymap.Add(18, Keys.D1);
 			keymap.Add(19, Keys.D2);
 			keymap.Add(20, Keys.D3);
@@ -172,7 +161,7 @@ namespace Eto.Mac
 			keymap.Add(29, Keys.D0);
 			keymap.Add(27, Keys.Minus);
 			keymap.Add(50, Keys.Grave);
-			keymap.Add(76, Keys.Insert);
+			keymap.Add(76, Keys.Enter); // numpad
 			keymap.Add(115, Keys.Home);
 			keymap.Add(121, Keys.PageDown);
 			keymap.Add(116, Keys.PageUp);
@@ -199,7 +188,7 @@ namespace Eto.Mac
 			keymap.Add(114, Keys.Help);
 			//keymap.Add(, Keys.Pause);
 			keymap.Add(71, Keys.Clear);
-			keymap.Add(81, Keys.KeypadEqual);
+			keymap.Add(81, Keys.Equal);
 			//keymap.Add(, Keys.Menu);
 			keymap.Add(42, Keys.Backslash);
 			keymap.Add(24, Keys.Equal);
@@ -263,18 +252,16 @@ namespace Eto.Mac
 			inverse.Add(Keys.Grave, "`");
 			inverse.Add(Keys.Minus, "-");
 			inverse.Add(Keys.Semicolon, ";");
-			inverse.Add(Keys.Up, ((char)NSKey.UpArrow).ToString());
-			inverse.Add(Keys.Down, ((char)NSKey.DownArrow).ToString());
-			inverse.Add(Keys.Right, ((char)NSKey.RightArrow).ToString());
-			inverse.Add(Keys.Left, ((char)NSKey.LeftArrow).ToString());
-			inverse.Add(Keys.Home, ((char)NSKey.Home).ToString());
-			inverse.Add(Keys.End, ((char)NSKey.End).ToString());
-			#if !UNIFIED
-			inverse.Add(Keys.Insert, ((char)NSKey.Insert).ToString());
-			#endif
-			inverse.Add(Keys.Delete, ((char)KeyCharacters.NSDeleteCharacter).ToString());
-			inverse.Add(Keys.Backspace, ((char)KeyCharacters.NSBackspaceCharacter).ToString());
-			inverse.Add(Keys.Tab, ((char)KeyCharacters.NSTabCharacter).ToString());
+			inverse.Add(Keys.Up, "\xF700");
+			inverse.Add(Keys.Down, "\xF701");
+			inverse.Add(Keys.Left, "\xF702");
+			inverse.Add(Keys.Right, "\xF703");
+			inverse.Add(Keys.Home, "\xF729");
+			inverse.Add(Keys.End, "\xF72B");
+			inverse.Add(Keys.Insert, "\xF727");
+			inverse.Add(Keys.Delete, "\x007f");
+			inverse.Add(Keys.Backspace, "\x0008");
+			inverse.Add(Keys.Tab, "\x0009");
 			inverse.Add(Keys.D0, "0");
 			inverse.Add(Keys.D1, "1");
 			inverse.Add(Keys.D2, "2");
@@ -285,18 +272,18 @@ namespace Eto.Mac
 			inverse.Add(Keys.D7, "7");
 			inverse.Add(Keys.D8, "8");
 			inverse.Add(Keys.D9, "9");
-			inverse.Add(Keys.F1, ((char)NSKey.F1).ToString());
-			inverse.Add(Keys.F2, ((char)NSKey.F2).ToString());
-			inverse.Add(Keys.F3, ((char)NSKey.F3).ToString());
-			inverse.Add(Keys.F4, ((char)NSKey.F4).ToString());
-			inverse.Add(Keys.F5, ((char)NSKey.F5).ToString());
-			inverse.Add(Keys.F6, ((char)NSKey.F6).ToString());
-			inverse.Add(Keys.F7, ((char)NSKey.F7).ToString());
-			inverse.Add(Keys.F8, ((char)NSKey.F8).ToString());
-			inverse.Add(Keys.F9, ((char)NSKey.F9).ToString());
-			inverse.Add(Keys.F10, ((char)NSKey.F10).ToString());
-			inverse.Add(Keys.F11, ((char)NSKey.F11).ToString());
-			inverse.Add(Keys.F12, ((char)NSKey.F12).ToString());
+			inverse.Add(Keys.F1, "\xF704");
+			inverse.Add(Keys.F2, "\xF705");
+			inverse.Add(Keys.F3, "\xF706");
+			inverse.Add(Keys.F4, "\xF707");
+			inverse.Add(Keys.F5, "\xF708");
+			inverse.Add(Keys.F6, "\xF709");
+			inverse.Add(Keys.F7, "\xF70A");
+			inverse.Add(Keys.F8, "\xF70B");
+			inverse.Add(Keys.F9, "\xF70C");
+			inverse.Add(Keys.F10, "\xF70D");
+			inverse.Add(Keys.F11, "\xF70E");
+			inverse.Add(Keys.F12, "\xF70F");
 			return inverse;
 		}
 	}

@@ -5,44 +5,6 @@ using Eto.Mac.Drawing;
 using System.Text.RegularExpressions;
 using System.Linq;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 
@@ -83,6 +45,7 @@ namespace Eto.Mac.Forms.Controls
 				var lineHeight = CellSizeForBounds(theRect).Height;
 				offset = (nfloat)Math.Round(theRect.Height - lineHeight);
 			}
+			offset = (nfloat)Math.Max(0, offset);
 			rect.Y += offset;
 			rect.Height -= offset;
 			return rect;
@@ -128,8 +91,6 @@ namespace Eto.Mac.Forms.Controls
 		public static readonly object FontKey = new object();
 
 		public static readonly object TextColorKey = new object();
-
-		public static readonly bool SupportsSingleLine = ObjCExtensions.ClassInstancesRespondToSelector(Class.GetHandle("NSTextFieldCell"), Selector.GetHandle("setUsesSingleLineMode:"));
 	}
 
 	public abstract class MacLabel<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
@@ -149,24 +110,28 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
+			// set attributes if it hasn't been loaded yet, so we get the correct size.
+			if (!Widget.Loaded)
+				SetAttributes(true);
+
 			if (float.IsPositiveInfinity(availableSize.Width))
 			{
 				if (naturalSizeInfinity != null)
 					return naturalSizeInfinity.Value;
 
-			    var width = PreferredSize?.Width ?? int.MaxValue;
+				var width = UserPreferredSize.Width;
 				if (width < 0) width = int.MaxValue;
 				var size = Control.Cell.CellSizeForBounds(new CGRect(0, 0, width, int.MaxValue)).ToEto();
 				naturalSizeInfinity = Size.Ceiling(size);
 				return naturalSizeInfinity.Value;
 			}
 
-			if (Widget.Loaded && Wrap != WrapMode.None && Size.Width > 0)
+			if (Widget.Loaded && Wrap != WrapMode.None && UserPreferredSize.Width > 0)
 			{
 				/*if (!float.IsPositiveInfinity(availableSize.Width))
 					availableSize.Width = Math.Max(Size.Width, availableSize.Width);
 				else*/
-					availableSize.Width = Size.Width;
+				availableSize.Width = UserPreferredSize.Width;
 				availableSize.Height = float.PositiveInfinity;
 			}
 
@@ -188,7 +153,7 @@ namespace Eto.Mac.Forms.Controls
 				return;
 			isSizing = true;
 			var size = Size;
-			if (Wrap != WrapMode.None && lastSize.Width != size.Width)
+			if (Wrap != WrapMode.None && lastSize.Width != size.Width && !Control.IsHiddenOrHasHiddenAncestor)
 			{
 				// when wrapping we use the current size, if it changes we check if we need another layout pass
 				// this is needed when resizing a form/label so it can wrap correctly as GetNaturalSize()
@@ -210,9 +175,6 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void Initialize()
 		{
-			if (MacLabel.SupportsSingleLine)
-				Control.Cell.UsesSingleLineMode = false;
-
 			base.Initialize();
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent);
 		}
@@ -224,14 +186,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Widget.Properties.Get<Color?>(MacLabel.TextColorKey) ?? NSColor.Text.ToEto(); }
+			get { return Widget.Properties.Get<Color?>(MacLabel.TextColorKey) ?? SystemColors.ControlText; }
 			set
 			{
-				if (value != TextColor)
-				{
-					Widget.Properties[MacLabel.TextColorKey] = value;
-					SetAttributes();
-				}
+				Widget.Properties[MacLabel.TextColorKey] = value;
+				SetAttributes();
 			}
 		}
 
@@ -251,7 +210,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				if (MacLabel.SupportsSingleLine && Control.Cell.UsesSingleLineMode)
+				if (paragraphStyle.LineBreakMode == NSLineBreakMode.Clipping)
 					return WrapMode.None;
 				if (paragraphStyle.LineBreakMode == NSLineBreakMode.ByWordWrapping)
 					return WrapMode.Word;
@@ -262,18 +221,12 @@ namespace Eto.Mac.Forms.Controls
 				switch (value)
 				{
 					case WrapMode.None:
-						if (MacLabel.SupportsSingleLine)
-							Control.Cell.UsesSingleLineMode = true;
 						paragraphStyle.LineBreakMode = NSLineBreakMode.Clipping;
 						break;
 					case WrapMode.Word:
-						if (MacLabel.SupportsSingleLine)
-							Control.Cell.UsesSingleLineMode = false;
 						paragraphStyle.LineBreakMode = NSLineBreakMode.ByWordWrapping;
 						break;
 					case WrapMode.Character:
-						if (MacLabel.SupportsSingleLine)
-							Control.Cell.UsesSingleLineMode = false;
 						paragraphStyle.LineBreakMode = NSLineBreakMode.CharWrapping;
 						break;
 					default:
@@ -283,8 +236,6 @@ namespace Eto.Mac.Forms.Controls
 				InvalidateMeasure();
 			}
 		}
-
-		public override bool Enabled { get; set; } = true;
 
 		public string Text
 		{
@@ -379,7 +330,7 @@ namespace Eto.Mac.Forms.Controls
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{
-						var num = (NSNumber)str.GetAttribute(NSStringAttributeKey.UnderlineStyle, (nnint)underlineIndex, out range);
+						var num = (NSNumber)str.GetAttribute(NSStringAttributeKey.UnderlineStyle, underlineIndex, out range);
 						var newStyle = (num != null && (NSUnderlineStyle)num.Int64Value == NSUnderlineStyle.Single) ? NSUnderlineStyle.Double : NSUnderlineStyle.Single;
 						str.AddAttribute(NSStringAttributeKey.UnderlineStyle, new NSNumber((int)newStyle), new NSRange(underlineIndex, 1));
 					}
@@ -408,6 +359,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.OnLoad(e);
 			SetAttributes(true);
+			InvalidateMeasure();
 		}
 
 		public override void AttachEvent(string id)

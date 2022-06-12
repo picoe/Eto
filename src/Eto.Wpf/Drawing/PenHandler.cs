@@ -25,8 +25,8 @@ namespace Eto.Wpf.Drawing
 
 		public Brush GetBrush (Pen widget)
 		{
-			var brush = ((swm.Pen)widget.ControlObject).Brush;
-			return brush.GetValue(brushProp) as Brush;
+			var pen = (swm.Pen)widget.ControlObject;
+			return pen.GetValue(brushProp) as Brush;
 		}
 
 		public float GetThickness (Pen widget)

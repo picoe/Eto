@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -15,7 +16,13 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Eto.Forms.AboutDialog"/> class.
 		/// </summary>
-		public AboutDialog() : this(TypeHelper.GetCallingAssembly?.Invoke(null, null) as Assembly)
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public AboutDialog() 
+#if NETSTANDARD1_0
+			: this(TypeHelper.GetCallingAssembly?.Invoke(null, null) as Assembly)
+#else
+			: this(Assembly.GetCallingAssembly())
+#endif
 		{
 		}
 
@@ -28,7 +35,7 @@ namespace Eto.Forms
 		/// </param>
 		public AboutDialog(Assembly assembly)
 		{
-			Title = "About";
+			Title = Application.Instance.Localize(this, "About");
 
 			if (assembly != null)
 			{

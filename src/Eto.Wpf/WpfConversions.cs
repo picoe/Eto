@@ -137,7 +137,10 @@ namespace Eto.Wpf
 
 		public static KeyEventArgs ToEto(this swi.KeyEventArgs e, KeyEventType keyType)
 		{
-			var key = e.Key.ToEtoWithModifier(swi.Keyboard.Modifiers);
+			var swkey = e.Key;
+			if (swkey == swi.Key.System)
+				swkey = e.SystemKey;
+			var key = swkey.ToEtoWithModifier(swi.Keyboard.Modifiers);
 			return new KeyEventArgs(key, keyType) { Handled = e.Handled };
 		}
 
@@ -355,6 +358,8 @@ namespace Eto.Wpf
 
 		public static Bitmap ToEto(this swmi.BitmapSource bitmap)
 		{
+			if (bitmap == null)
+				return null;
 			return new Bitmap(new BitmapHandler(bitmap));
 		}
 
@@ -516,7 +521,10 @@ namespace Eto.Wpf
 				case sw.WindowStyle.None:
 					return WindowStyle.None;
 				case sw.WindowStyle.ThreeDBorderWindow:
+				case sw.WindowStyle.SingleBorderWindow:
 					return WindowStyle.Default;
+				case sw.WindowStyle.ToolWindow:
+					return WindowStyle.Utility;
 				default:
 					throw new NotSupportedException();
 			}
@@ -530,6 +538,8 @@ namespace Eto.Wpf
 					return sw.WindowStyle.None;
 				case WindowStyle.Default:
 					return sw.WindowStyle.ThreeDBorderWindow;
+				case WindowStyle.Utility:
+					return sw.WindowStyle.ToolWindow;
 				default:
 					throw new NotSupportedException();
 			}
@@ -699,6 +709,16 @@ namespace Eto.Wpf
 			return font;
 		}
 
+		public static Font SetEtoFont(this swm.FormattedText control, Font font)
+		{
+			if (control == null) return font;
+			if (font != null)
+			{
+				((FontHandler)font.Handler).Apply(control);
+			}
+			return font;
+		}
+
 		public static FontFamily SetEtoFamily(this swd.TextRange control, FontFamily fontFamily)
 		{
 			if (control == null) return fontFamily;
@@ -728,6 +748,12 @@ namespace Eto.Wpf
 				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
 			}
 			return font;
+		}
+
+		public static swm.Typeface ToWpfTypeface(this Font font)
+		{
+			var handler = (FontHandler)font.Handler;
+			return handler.WpfTypeface;
 		}
 
 		public static swc.Dock ToWpf(this DockPosition position)
@@ -880,17 +906,45 @@ namespace Eto.Wpf
 
 		public static string GetEnglishName(this swm.LanguageSpecificStringDictionary nameDictionary)
 		{
-			return CustomControls.FontDialog.NameDictionaryHelper.GetEnglishName(nameDictionary);
+			return CustomControls.FontDialog.NameDictionaryExtensions.GetEnglishName(nameDictionary);
 		}
 
 		public static string GetDisplayName(this swm.LanguageSpecificStringDictionary nameDictionary)
 		{
-			return CustomControls.FontDialog.NameDictionaryHelper.GetDisplayName(nameDictionary);
+			return CustomControls.FontDialog.NameDictionaryExtensions.GetDisplayName(nameDictionary);
 		}
 
 		public static string GetName(this swm.LanguageSpecificStringDictionary nameDictionary, string ietfLanguageTag)
 		{
-			return CustomControls.FontDialog.NameDictionaryHelper.GetName(nameDictionary, ietfLanguageTag);
+			return CustomControls.FontDialog.NameDictionaryExtensions.GetName(nameDictionary, ietfLanguageTag);
+		}
+
+		public static swi.Cursor ToWpf(this Cursor cursor) => cursor?.ControlObject as swi.Cursor;
+
+		public static bool HasAlpha(this swm.PixelFormat format)
+		{
+			return format == swm.PixelFormats.Bgra32
+				|| format == swm.PixelFormats.Pbgra32
+				|| format == swm.PixelFormats.Prgba128Float
+				|| format == swm.PixelFormats.Prgba64
+				|| format == swm.PixelFormats.Rgba64
+				|| format == swm.PixelFormats.Rgba128Float;
+		}
+		public static bool IsPremultiplied(this swm.PixelFormat format)
+		{
+			return format == swm.PixelFormats.Pbgra32
+				|| format == swm.PixelFormats.Prgba128Float
+				|| format == swm.PixelFormats.Prgba64;
+		}
+		public static swm.PixelFormat GetNonPremultipliedFormat(this swm.PixelFormat format)
+		{
+			if (format == swm.PixelFormats.Pbgra32)
+				return swm.PixelFormats.Bgra32;
+			if (format == swm.PixelFormats.Prgba128Float)
+				return swm.PixelFormats.Rgba128Float;
+			if (format == swm.PixelFormats.Prgba64)
+				return swm.PixelFormats.Rgba64;
+			return format;
 		}
 	}
 }

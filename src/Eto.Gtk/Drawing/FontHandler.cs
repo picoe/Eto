@@ -68,6 +68,7 @@ namespace Eto.GtkSharp.Drawing
 
 		Dictionary<SystemFont, Gtk.Widget> fontMap = new Dictionary<SystemFont, Gtk.Widget> 
 		{
+			{ SystemFont.User, new Gtk.Entry() },
 			{ SystemFont.Default, new Gtk.Entry() },
 			{ SystemFont.Bold, new Gtk.Entry() },
 			{ SystemFont.Label, new Gtk.Label() },
@@ -191,7 +192,9 @@ namespace Eto.GtkSharp.Drawing
 
 			foreach (var face in family.Faces)
 			{
-				var faceDesc = face.Describe();
+				var faceDesc = face?.Describe();
+				if (faceDesc == null)
+					continue;
 				if (faceDesc.Weight == weight && faceDesc.Style == style && faceDesc.Stretch == stretch)
 				{
 					return face;

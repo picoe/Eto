@@ -9,39 +9,12 @@ namespace Eto.Test.Sections
 	{
 		UnitTestPanel unitTestPanel;
 		UnitTestRunner runner;
-		bool includeManualTests = true;
-		public bool IncludeManualTests
-		{
-			get => includeManualTests;
-			set
-			{
-				includeManualTests = value;
-				SetFilters();
-				unitTestPanel.Refresh();
-			}
-		}
-
-		void SetFilters()
-		{
-			unitTestPanel.ExcludeCategories.Clear();
-			if (!includeManualTests)
-				unitTestPanel.ExcludeCategories.Add(Eto.Test.UnitTests.TestBase.ManualTestCategory);
-		}
 
 		public UnitTestSection()
 		{
 			runner = new UnitTestRunner(((TestApplication)TestApplication.Instance).TestAssemblies);
-			runner.Log += (sender, e) => Application.Instance.Invoke(() => Log.Write(null, e.Message));
 			unitTestPanel = new UnitTestPanel(runner, false);
-			SetFilters();
-
-			var includeManualTestsCheckBox = new CheckBox { Text = "Include Manual Tests" };
-			includeManualTestsCheckBox.CheckedBinding.Bind(this, m => m.IncludeManualTests);
-
-			unitTestPanel.Content = new StackLayout
-			{
-				Items = { includeManualTestsCheckBox }
-			};
+			unitTestPanel.Log += (sender, e) => Log.Write(null, e.Message);
 
 			Content = unitTestPanel;
 		}

@@ -121,7 +121,7 @@ namespace Eto.Test.Sections.Drawing
 				m.Scale(0.4f);
 				m.Rotate(90);
 				g.MultiplyTransform(m);
-				PixelOffsetSection.Draw(g);
+				PixelOffsetModeSection.Draw(g);
 				g.RestoreTransform();
 			}
 		}
@@ -189,7 +189,7 @@ namespace Eto.Test.Sections.Drawing
 			g.TranslateTransform(480, 20);
 			g.ScaleTransform(0.4f);
 			g.RotateTransform(90);
-			PixelOffsetSection.Draw(g);
+			PixelOffsetModeSection.Draw(g);
 			g.RestoreTransform();
 		}
 

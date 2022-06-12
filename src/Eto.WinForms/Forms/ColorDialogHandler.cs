@@ -33,6 +33,9 @@ namespace Eto.WinForms.Forms
 			swf.DialogResult result;
 			if (customColors != null) Control.CustomColors = customColors;
 
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			if (parent != null)
 				result = Control.ShowDialog(parent.GetContainerControl());
 			else

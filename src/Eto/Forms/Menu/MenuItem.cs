@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -43,7 +43,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TypeConverter(typeof(MenuItemConverter))]
+	[sc.TypeConverter(typeof(MenuItemConverter))]
 	public abstract class MenuItem : Menu, ICommandItem
 	{
 		/// <summary>
@@ -69,8 +69,19 @@ namespace Eto.Forms
 		/// <value>The command to invoke.</value>
 		public ICommand Command
 		{
-			get { return Properties.GetCommand(Command_Key); }
-			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter); }
+			get => Properties.GetCommand(Command_Key);
+			set
+			{
+				var oldValue = Command;
+				if (!ReferenceEquals(oldValue, value))
+					SetCommand(oldValue, value);
+			}
+		}
+
+		internal virtual void SetCommand(ICommand oldValue, ICommand newValue)
+		{
+			Properties.SetCommand(Command_Key, newValue, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter);
+			HandleEvent(ValidateEvent);
 		}
 
 		static readonly object CommandParameter_Key = new object();
@@ -128,6 +139,10 @@ namespace Eto.Forms
 		protected virtual void OnValidate(EventArgs e)
 		{
 			Properties.TriggerEvent(ValidateEvent, this, e);
+
+			var command = Command;
+			if (command != null)
+				Handler.Enabled = command.CanExecute(CommandParameter);
 		}
 
 		/// <summary>
@@ -154,7 +169,6 @@ namespace Eto.Forms
 			Text = command.MenuText;
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
-			Validate += (sender, e) => Enabled = command.Enabled;
 			Command = command;
 		}
 
@@ -196,7 +210,15 @@ namespace Eto.Forms
 		public bool Enabled
 		{
 			get { return Handler.Enabled; }
-			set { Handler.Enabled = value; }
+			set
+			{
+				Handler.Enabled = value;
+				
+				if (Command is Command command)
+				{
+					command.Enabled = value;
+				}
+			}
 		}
 
 		/// <summary>
@@ -210,6 +232,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.MenuItem"/> is visible.
+		/// </summary>
+		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		public bool Visible
+		{
+			get { return Handler.Visible; }
+			set { Handler.Visible = value; }
+		}
+
+		/// <summary>
 		/// Performs the click handler for this item.
 		/// </summary>
 		/// <remarks>
@@ -218,6 +250,17 @@ namespace Eto.Forms
 		public virtual void PerformClick()
 		{
 			OnClick(EventArgs.Empty);
+		}
+		
+		/// <summary>
+		/// Executes the <see cref="OnValidate"/> for this item.
+		/// </summary>
+		/// <remarks>
+		/// This allows you to manually validate the menu item to determine its enabled state.
+		/// </remarks>
+		public virtual void PerformValidate()
+		{
+			OnValidate(EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -309,6 +352,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 			bool Enabled { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.MenuItem"/> is visible.
+			/// </summary>
+			/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+			bool Visible { get; set; }
 		}
 	}
 

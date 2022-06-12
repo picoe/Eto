@@ -11,6 +11,7 @@ using Eto.Forms;
 using System.Runtime.InteropServices;
 using Eto.CustomControls;
 using Eto.Drawing;
+using System.Threading.Tasks;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -123,7 +124,8 @@ namespace Eto.Wpf.Forms.Controls
 				case WebView.DocumentLoadedEvent:
 					this.Browser.DocumentCompleted += (sender, e) =>
 					{
-						Callback.OnDocumentLoaded(Widget, new WebViewLoadedEventArgs(e.Url));
+						var args = new WebViewLoadedEventArgs(e.Url);
+						Callback.OnDocumentLoaded(Widget, args);
 					};
 					break;
 				case WebView.DocumentLoadingEvent:
@@ -178,9 +180,12 @@ namespace Eto.Wpf.Forms.Controls
 
 		public string ExecuteScript(string script)
 		{
-			var fullScript = string.Format("var fn = function() {{ {0} }}; fn();", script);
-			return Convert.ToString(Browser.Document.InvokeScript("eval", new object[] { fullScript }));
+			var fullScript = string.Format("var _fn = function() {{ {0} }}; _fn();", script);
+			var result = Browser.Document.InvokeScript("eval", new object[] { fullScript });
+			return Convert.ToString(result);
 		}
+
+		public Task<string> ExecuteScriptAsync(string script) => Task.FromResult(ExecuteScript(script));
 
 		public void Stop()
 		{

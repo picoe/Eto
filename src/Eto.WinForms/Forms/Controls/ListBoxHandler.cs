@@ -11,7 +11,8 @@ namespace Eto.WinForms.Forms.Controls
 {
 	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
-		CollectionHandler collection;
+		IIndirectBinding<string> _itemTextBinding;
+		CollectionHandler _collection;
 
 		public static int ItemPadding = 2;
 
@@ -171,15 +172,27 @@ namespace Eto.WinForms.Forms.Controls
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get { return _collection != null ? _collection.Collection : null; }
 			set
 			{
-				if (collection != null)
-					collection.Unregister();
-				collection = new CollectionHandler { Handler = this };
-				collection.Register(value);
+				if (_collection != null)
+					_collection.Unregister();
+				_collection = new CollectionHandler { Handler = this };
+				_collection.Register(value);
 			}
 		}
+
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => _itemTextBinding;
+			set
+			{
+				_itemTextBinding = value;
+				Control.Invalidate();
+			}
+		}
+
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		static readonly Win32.WM[] intrinsicEvents = {
 														 Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK,

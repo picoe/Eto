@@ -28,7 +28,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <value><c>true</c> if this path is empty; otherwise, <c>false</c>.</value>
 		bool IsEmpty { get; }
-		
+
 		/// <summary>
 		/// Gets the current point
 		/// </summary>
@@ -50,7 +50,7 @@ namespace Eto.Drawing
 		/// <param name="startY">Y co-ordinate of the starting point</param>
 		/// <param name="endX">X co-ordinate of the end point</param>
 		/// <param name="endY">Y co-ordinate of the end point</param>
-		void AddLine (float startX, float startY, float endX, float endY);
+		void AddLine(float startX, float startY, float endX, float endY);
 
 		/// <summary>
 		/// Adds lines to each of the specified <paramref name="points"/> to the path 
@@ -60,21 +60,21 @@ namespace Eto.Drawing
 		/// The current position will be moved to the last point specified
 		/// </remarks>
 		/// <param name="points">Points for each part of the line</param>
-		void AddLines (IEnumerable<PointF> points);
+		void AddLines(IEnumerable<PointF> points);
 
 		/// <summary>
 		/// Adds a line from the current position to the specified location
 		/// </summary>
 		/// <param name="x">X co-ordinate to draw the line to</param>
 		/// <param name="y">Y co-ordinate to draw the line to</param>
-		void LineTo (float x, float y);
+		void LineTo(float x, float y);
 
 		/// <summary>
 		/// Moves the current position to the specified location without adding anything to the path
 		/// </summary>
 		/// <param name="x">X co-ordinate to move to</param>
 		/// <param name="y">Y co-ordinate to move to</param>
-		void MoveTo (float x, float y);
+		void MoveTo(float x, float y);
 
 		/// <summary>
 		/// Adds an arc into the specified rectangle
@@ -89,7 +89,7 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the rectangle containing the arc</param>
 		/// <param name="startAngle">Start angle to begin the arc, in degrees</param>
 		/// <param name="sweepAngle">Sweep angle (positive or negative) to specify how long the arc is, in degrees</param>
-		void AddArc (float x, float y, float width, float height, float startAngle, float sweepAngle);
+		void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle);
 
 		/// <summary>
 		/// Adds a bezier curve to the path with two control points
@@ -102,7 +102,7 @@ namespace Eto.Drawing
 		/// <param name="control1">First control point of the curve</param>
 		/// <param name="control2">Second control point of the curve</param>
 		/// <param name="end">Ending point of the bezier curve</param>
-		void AddBezier (PointF start, PointF control1, PointF control2, PointF end);
+		void AddBezier(PointF start, PointF control1, PointF control2, PointF end);
 
 		/// <summary>
 		/// Adds a curve that intersects with the specified <paramref name="points"/> to the path
@@ -112,7 +112,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="points">Points to calculate the curve</param>
 		/// <param name="tension">Tension between points in the curve.  Should be between 0 (no curve) and 1 (more curve)</param>
-		void AddCurve (IEnumerable<PointF> points, float tension = 0.5f);
+		void AddCurve(IEnumerable<PointF> points, float tension = 0.5f);
 
 		/// <summary>
 		/// Adds an ellipse to the path
@@ -125,7 +125,7 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of the top left of the ellipse's bounding rectangle</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		void AddEllipse (float x, float y, float width, float height);
+		void AddEllipse(float x, float y, float width, float height);
 
 		/// <summary>
 		/// Adds a rectangle to the path
@@ -138,7 +138,7 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of the top left of the rectangle</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		void AddRectangle (float x, float y, float width, float height);
+		void AddRectangle(float x, float y, float width, float height);
 
 		/// <summary>
 		/// Adds the specified <paramref name="path"/> to the current path, optionally connecting the current figure to the start of the path
@@ -150,13 +150,13 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="path">Child path to add to this instance</param>
 		/// <param name="connect">True to connect the current figure to the first figure of the specified path, if it is not closed</param>
-		void AddPath (IGraphicsPath path, bool connect = false);
-		
+		void AddPath(IGraphicsPath path, bool connect = false);
+
 		/// <summary>
 		/// Transforms the points in the path with the specified matrix
 		/// </summary>
 		/// <param name="matrix">Matrix to transform the path</param>
-		void Transform (IMatrix matrix);
+		void Transform(IMatrix matrix);
 
 		/// <summary>
 		/// Starts a new figure without closing the current figure
@@ -164,7 +164,7 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// This will make the next segment added to the path independent (unconnected) to the last segment.
 		/// </remarks>
-		void StartFigure ();
+		void StartFigure();
 
 		/// <summary>
 		/// Closes the current figure by connecting a line to the beginning of the figure
@@ -173,12 +173,27 @@ namespace Eto.Drawing
 		/// This will also make the next segment added to the path start independently from the last figure.
 		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
 		/// </remarks>
-		void CloseFigure ();
+		void CloseFigure();
 
 		/// <summary>
 		/// Creates a clone of the graphics path
 		/// </summary>
-		IGraphicsPath Clone ();
+		IGraphicsPath Clone();
+		
+		/// <summary>
+		/// Gets a value indicating that the specified <paramref name="point"/> is contained by the path when filled
+		/// </summary>
+		/// <param name="point">Point to test</param>
+		/// <returns><c>true</c> if the path contains the point when filled, <c>false</c> otherwise</returns>
+		bool FillContains(PointF point);
+		
+		/// <summary>
+		/// Gets a value indicating that the spedified <paramref name="point"/> is on the path when stroked with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="pen">Pen to test the stroke with</param>
+		/// <param name="point">Point to test</param>
+		/// <returns><c>true</c> if the point is on the path when stroked with the specified pen, <c>false</c> otherwise</returns>
+		bool StrokeContains(Pen pen, PointF point);
 	}
 
 	/// <summary>
@@ -193,9 +208,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="path">Path to move the current position</param>
 		/// <param name="point">Point to move to</param>
-		public static void MoveTo (this IGraphicsPath path, PointF point)
+		public static void MoveTo(this IGraphicsPath path, PointF point)
 		{
-			path.MoveTo (point.X, point.Y);
+			path.MoveTo(point.X, point.Y);
 		}
 
 		/// <summary>
@@ -203,9 +218,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="path">Path to add the line to</param>
 		/// <param name="point">Ending point for the line</param>
-		public static void LineTo (this IGraphicsPath path, PointF point)
+		public static void LineTo(this IGraphicsPath path, PointF point)
 		{
-			path.LineTo (point.X, point.Y);
+			path.LineTo(point.X, point.Y);
 		}
 
 		/// <summary>
@@ -213,9 +228,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="path">Path to add the lines to</param>
 		/// <param name="points">Points for each line</param>
-		public static void AddLines (this IGraphicsPath path, params PointF[] points)
+		public static void AddLines(this IGraphicsPath path, params PointF[] points)
 		{
-			path.AddLines (points);
+			path.AddLines(points);
 		}
 
 		/// <summary>
@@ -224,9 +239,9 @@ namespace Eto.Drawing
 		/// <param name="path">Path to add the line to</param>
 		/// <param name="start">Starting point for the line</param>
 		/// <param name="end">Ending point for the line</param>
-		public static void AddLine (this IGraphicsPath path, PointF start, PointF end)
+		public static void AddLine(this IGraphicsPath path, PointF start, PointF end)
 		{
-			path.AddLine (start.X, start.Y, end.X, end.Y);
+			path.AddLine(start.X, start.Y, end.X, end.Y);
 		}
 
 		/// <summary>
@@ -236,9 +251,9 @@ namespace Eto.Drawing
 		/// <param name="location">Location of the bounding rectangle of the arc</param>
 		/// <param name="startAngle">Start angle in degrees</param>
 		/// <param name="sweepAngle">Sweep angle (positive or negative) in degrees</param>
-		public static void AddArc (this IGraphicsPath path, RectangleF location, float startAngle, float sweepAngle)
+		public static void AddArc(this IGraphicsPath path, RectangleF location, float startAngle, float sweepAngle)
 		{
-			path.AddArc (location.X, location.Y, location.Width, location.Height, startAngle, sweepAngle);
+			path.AddArc(location.X, location.Y, location.Width, location.Height, startAngle, sweepAngle);
 		}
 
 		/// <summary>
@@ -246,9 +261,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="path">Path to add the curve to</param>
 		/// <param name="points">Points that define where the curve intersects</param>
-		public static void AddCurve (this IGraphicsPath path, params PointF[] points)
+		public static void AddCurve(this IGraphicsPath path, params PointF[] points)
 		{
-			path.AddCurve (points);
+			path.AddCurve(points);
 		}
 
 		/// <summary>
@@ -257,9 +272,9 @@ namespace Eto.Drawing
 		/// <param name="path">Path to add the curve to</param>
 		/// <param name="tension">Tension between points in the curve.  Should be between 0 (no curve) and 1 (more curve)</param>
 		/// <param name="points">Points that intersect with the curve</param>
-		public static void AddCurve (this IGraphicsPath path, float tension, params PointF[] points)
+		public static void AddCurve(this IGraphicsPath path, float tension, params PointF[] points)
 		{
-			path.AddCurve (points, tension);
+			path.AddCurve(points, tension);
 		}
 
 		/// <summary>
@@ -267,9 +282,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="path">Path to add the ellipse to</param>
 		/// <param name="location">Location of the bounding rectangle of the ellipse</param>
-		public static void AddEllipse (this IGraphicsPath path, RectangleF location)
+		public static void AddEllipse(this IGraphicsPath path, RectangleF location)
 		{
-			path.AddEllipse (location.X, location.Y, location.Width, location.Height);
+			path.AddEllipse(location.X, location.Y, location.Width, location.Height);
 		}
 
 		/// <summary>
@@ -277,12 +292,12 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="path">Path to add the rectangle to</param>
 		/// <param name="location">Location of the rectangle</param>
-		public static void AddRectangle (this IGraphicsPath path, RectangleF location)
+		public static void AddRectangle(this IGraphicsPath path, RectangleF location)
 		{
-			path.AddRectangle (location.X, location.Y, location.Width, location.Height);
+			path.AddRectangle(location.X, location.Y, location.Width, location.Height);
 		}
 	}
-	
+
 	/// <summary>
 	/// Defines primitives that can be used to draw or fill a path on a <see cref="Graphics"/> object
 	/// </summary>
@@ -322,7 +337,7 @@ namespace Eto.Drawing
 		{
 			get { return Handler.IsEmpty; }
 		}
-		
+
 		/// <summary>
 		/// Gets the current point
 		/// </summary>
@@ -347,7 +362,7 @@ namespace Eto.Drawing
 		{
 			get { return Platform.Instance.Find<IHandler>(); }
 		}
-		
+
 		/// <summary>
 		/// Creates a new instance of the IGraphicsPath for the specified generator
 		/// </summary>
@@ -368,7 +383,7 @@ namespace Eto.Drawing
 		/// Initializes a new instance of the <see cref="Eto.Drawing.GraphicsPath"/> class.
 		/// </summary>
 		/// <param name="handler">Handler for the graphics path</param>
-		public GraphicsPath (IGraphicsPath handler)
+		public GraphicsPath(IGraphicsPath handler)
 		{
 			Handler = handler;
 		}
@@ -384,11 +399,11 @@ namespace Eto.Drawing
 		/// <param name="startY">Y co-ordinate of the starting point</param>
 		/// <param name="endX">X co-ordinate of the end point</param>
 		/// <param name="endY">Y co-ordinate of the end point</param>
-		public void AddLine (float startX, float startY, float endX, float endY)
+		public void AddLine(float startX, float startY, float endX, float endY)
 		{
-			Handler.AddLine (startX, startY, endX, endY);
+			Handler.AddLine(startX, startY, endX, endY);
 		}
-		
+
 		/// <summary>
 		/// Adds lines to each of the specified <paramref name="points"/> to the path 
 		/// </summary>
@@ -397,9 +412,9 @@ namespace Eto.Drawing
 		/// The current position will be moved to the last point specified
 		/// </remarks>
 		/// <param name="points">Points for each part of the line</param>
-		public void AddLines (IEnumerable<PointF> points)
+		public void AddLines(IEnumerable<PointF> points)
 		{
-			Handler.AddLines (points);
+			Handler.AddLines(points);
 		}
 
 		/// <summary>
@@ -407,9 +422,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="x">X co-ordinate to draw the line to</param>
 		/// <param name="y">Y co-ordinate to draw the line to</param>
-		public void LineTo (float x, float y)
+		public void LineTo(float x, float y)
 		{
-			Handler.LineTo (x, y);
+			Handler.LineTo(x, y);
 		}
 
 		/// <summary>
@@ -417,9 +432,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="x">X co-ordinate to move to</param>
 		/// <param name="y">Y co-ordinate to move to</param>
-		public void MoveTo (float x, float y)
+		public void MoveTo(float x, float y)
 		{
-			Handler.MoveTo (x, y);
+			Handler.MoveTo(x, y);
 		}
 
 		/// <summary>
@@ -435,9 +450,9 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the rectangle containing the arc</param>
 		/// <param name="startAngle">Start angle to begin the arc, in degrees</param>
 		/// <param name="sweepAngle">Sweep angle (positive or negative) to specify how long the arc is, in degrees</param>
-		public void AddArc (float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			Handler.AddArc (x, y, width, height, startAngle, sweepAngle);
+			Handler.AddArc(x, y, width, height, startAngle, sweepAngle);
 		}
 
 		/// <summary>
@@ -451,9 +466,9 @@ namespace Eto.Drawing
 		/// <param name="control1">First control point of the curve</param>
 		/// <param name="control2">Second control point of the curve</param>
 		/// <param name="end">Ending point of the bezier curve</param>
-		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)
+		public void AddBezier(PointF start, PointF control1, PointF control2, PointF end)
 		{
-			Handler.AddBezier (start, control1, control2, end);
+			Handler.AddBezier(start, control1, control2, end);
 		}
 
 		/// <summary>
@@ -464,9 +479,9 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="points">Points to calculate the curve</param>
 		/// <param name="tension">Tension between points in the curve.  Should be between 0 (no curve) and 1 (more curve)</param>
-		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
+		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
 		{
-			Handler.AddCurve (points, tension);
+			Handler.AddCurve(points, tension);
 		}
 
 		/// <summary>
@@ -480,9 +495,9 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of the top left of the ellipse's bounding rectangle</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		public void AddEllipse (float x, float y, float width, float height)
+		public void AddEllipse(float x, float y, float width, float height)
 		{
-			Handler.AddEllipse (x, y, width, height);
+			Handler.AddEllipse(x, y, width, height);
 		}
 
 		/// <summary>
@@ -496,9 +511,9 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of the top left of the rectangle</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		public void AddRectangle (float x, float y, float width, float height)
+		public void AddRectangle(float x, float y, float width, float height)
 		{
-			Handler.AddRectangle (x, y, width, height);
+			Handler.AddRectangle(x, y, width, height);
 		}
 
 		/// <summary>
@@ -511,18 +526,33 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="path">Child path to add to this instance</param>
 		/// <param name="connect">True to connect the current figure to the first figure of the specified path, if it is not closed</param>
-		public void AddPath (IGraphicsPath path, bool connect = false)
+		public void AddPath(IGraphicsPath path, bool connect = false)
 		{
-			Handler.AddPath (path, connect);
+			Handler.AddPath(path, connect);
 		}
+		
+		/// <summary>
+		/// Gets a value indicating that the specified <paramref name="point"/> is contained by the path when filled
+		/// </summary>
+		/// <param name="point">Point to test</param>
+		/// <returns><c>true</c> if the path contains the point when filled, <c>false</c> otherwise</returns>
+		public bool FillContains(PointF point) => Handler.FillContains(point);
+
+		/// <summary>
+		/// Gets a value indicating that the spedified <paramref name="point"/> is on the path when stroked with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="pen">Pen to test the stroke with</param>
+		/// <param name="point">Point to test</param>
+		/// <returns><c>true</c> if the point is on the path when stroked with the specified pen, <c>false</c> otherwise</returns>
+		public bool StrokeContains(Pen pen, PointF point) => Handler.StrokeContains(pen, point);
 
 		/// <summary>
 		/// Transforms the points in the path with the specified matrix
 		/// </summary>
 		/// <param name="matrix">Matrix to transform the path</param>
-		public void Transform (IMatrix matrix)
+		public void Transform(IMatrix matrix)
 		{
-			Handler.Transform (matrix);
+			Handler.Transform(matrix);
 		}
 
 		/// <summary>
@@ -531,9 +561,9 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// This will make the next segment added to the path independent (unconnected) to the last segment.
 		/// </remarks>
-		public void StartFigure ()
+		public void StartFigure()
 		{
-			Handler.StartFigure ();
+			Handler.StartFigure();
 		}
 
 		/// <summary>
@@ -543,15 +573,15 @@ namespace Eto.Drawing
 		/// This will also make the next segment added to the path start independently from the last figure.
 		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
 		/// </remarks>
-		public void CloseFigure ()
+		public void CloseFigure()
 		{
-			Handler.CloseFigure ();
+			Handler.CloseFigure();
 		}
 
 		/// <summary>
 		/// Releases all resources used by the <see cref="Eto.Drawing.GraphicsPath"/> object
 		/// </summary>
-		public void Dispose ()
+		public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
@@ -570,9 +600,9 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Creates a clone of the graphics path
 		/// </summary>
-		public IGraphicsPath Clone ()
+		public IGraphicsPath Clone()
 		{
-			return new GraphicsPath (Handler.Clone ());
+			return new GraphicsPath(Handler.Clone());
 		}
 
 		/// <summary>
@@ -595,7 +625,7 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Rectangle to round</param>
 		/// <param name="radius">Radius for all corners</param>
 		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
-		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float radius)
+		public static IGraphicsPath GetRoundRect(RectangleF rectangle, float radius)
 		{
 			return GetRoundRect(rectangle, radius, radius, radius, radius);
 		}
@@ -609,7 +639,7 @@ namespace Eto.Drawing
 		/// <param name="seRadius">Radius of the south east corner</param>
 		/// <param name="swRadius">Radius of the south west corner</param>
 		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
-		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius)
+		public static IGraphicsPath GetRoundRect(RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius)
 		{
 			//  NW-----NE
 			//  |       |
@@ -618,52 +648,55 @@ namespace Eto.Drawing
 
 			var result = GraphicsPath.Create();
 
-			nwRadius *= 2;
-			neRadius *= 2;
-			seRadius *= 2;
-			swRadius *= 2;
-
 			//NW ---- NE
-			result.AddLine (new PointF (rectangle.X + nwRadius, rectangle.Y), new PointF (rectangle.Right - neRadius, rectangle.Y));
+			result.AddLine(new PointF(rectangle.X + nwRadius, rectangle.Y), new PointF(rectangle.Right - neRadius, rectangle.Y));
 
 			//NE Arc
-			if (neRadius > 0f) {
-				var rect = RectangleF.FromSides (rectangle.Right - neRadius, rectangle.Top, rectangle.Right, rectangle.Top + neRadius);
-				result.AddArc (rect, -90, 90);
+			if (neRadius > 0f)
+			{
+				var neRadius2 = neRadius * 2;
+				var rect = RectangleF.FromSides(rectangle.Right - neRadius2, rectangle.Top, rectangle.Right, rectangle.Top + neRadius2);
+				result.AddArc(rect, -90, 90);
 			}
 
 			// NE
 			//  |
 			// SE
-			result.AddLine (new PointF (rectangle.Right, rectangle.Top + neRadius), new PointF (rectangle.Right, rectangle.Bottom - seRadius));
+			result.AddLine(new PointF(rectangle.Right, rectangle.Top + neRadius), new PointF(rectangle.Right, rectangle.Bottom - seRadius));
 
 			//SE Arc
-			if (seRadius > 0f) {
-				var rect = RectangleF.FromSides (rectangle.Right - seRadius, rectangle.Bottom - seRadius, rectangle.Right, rectangle.Bottom);
-				result.AddArc (rect, 0, 90);
+			if (seRadius > 0f)
+			{
+				var seRadius2 = seRadius * 2;
+				var rect = RectangleF.FromSides(rectangle.Right - seRadius2, rectangle.Bottom - seRadius2, rectangle.Right, rectangle.Bottom);
+				result.AddArc(rect, 0, 90);
 			}
 
 			// SW --- SE
-			result.AddLine (new PointF (rectangle.Right - seRadius, rectangle.Bottom), new PointF (rectangle.Left + swRadius, rectangle.Bottom));
+			result.AddLine(new PointF(rectangle.Right - seRadius, rectangle.Bottom), new PointF(rectangle.Left + swRadius, rectangle.Bottom));
 
 			//SW Arc
-			if (swRadius > 0f) {
-				var rect = RectangleF.FromSides (rectangle.Left, rectangle.Bottom - swRadius, rectangle.Left + swRadius, rectangle.Bottom);
-				result.AddArc (rect, 90, 90);
+			if (swRadius > 0f)
+			{
+				var swRadius2 = swRadius * 2;
+				var rect = RectangleF.FromSides(rectangle.Left, rectangle.Bottom - swRadius2, rectangle.Left + swRadius2, rectangle.Bottom);
+				result.AddArc(rect, 90, 90);
 			}
 
 			// NW
 			// |
 			// SW
-			result.AddLine (new PointF (rectangle.Left, rectangle.Bottom - swRadius), new PointF (rectangle.Left, rectangle.Top + nwRadius));
+			result.AddLine(new PointF(rectangle.Left, rectangle.Bottom - swRadius), new PointF(rectangle.Left, rectangle.Top + nwRadius));
 
 			//NW Arc
-			if (nwRadius > 0f) {
-				var rect = RectangleF.FromSides (rectangle.Left, rectangle.Top, rectangle.Left + nwRadius, rectangle.Top + nwRadius);
-				result.AddArc (rect, 180, 90);
+			if (nwRadius > 0f)
+			{
+				var nwRadius2 = nwRadius * 2;
+				var rect = RectangleF.FromSides(rectangle.Left, rectangle.Top, rectangle.Left + nwRadius2, rectangle.Top + nwRadius2);
+				result.AddArc(rect, 180, 90);
 			}
 
-			result.CloseFigure ();
+			result.CloseFigure();
 
 			return result;
 		}

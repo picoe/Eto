@@ -3,35 +3,6 @@ using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 #if IOS
 using UIKit;
@@ -44,10 +15,10 @@ using BaseMacContainer = Eto.iOS.Forms.IosLayout<UIKit.UIView, Eto.Forms.TableLa
 #elif OSX
 using Eto.Mac.Forms.Controls;
 
-#if XAMMAC2
-using BaseMacContainer = Eto.Mac.Forms.MacContainer<AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
-#else
+#if MONOMAC
 using BaseMacContainer = Eto.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
+#else
+using BaseMacContainer = Eto.Mac.Forms.MacContainer<AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
 #endif
 
 #endif
@@ -72,10 +43,18 @@ namespace Eto.Mac.Forms
 		{
 			new TableLayoutHandler Handler => (TableLayoutHandler)base.Handler;
 
+			public EtoTableLayoutView()
+			{
+				AutoresizesSubviews = false;
+			}
+
 			public override void Layout()
 			{
-				base.Layout();
+				if (MacView.NewLayout)
+					base.Layout();
 				Handler?.PerformLayout();
+				if (!MacView.NewLayout)
+					base.Layout();
 			}
 		}
 
@@ -200,6 +179,9 @@ namespace Eto.Mac.Forms
 					if (!xscaled && !yscaled)
 						continue;
 
+					if (final && xscaled && yscaled)
+						continue;
+
 					availableControlSize.Width = xscaled ? remaining.Width : float.PositiveInfinity;
 
 					var view = views[y, x];
@@ -237,15 +219,24 @@ namespace Eto.Mac.Forms
 			if (final)
 			{
 				// we are laying out for display, so scaled columns are forced to share remaining size
-				remaining = SizeF.Max((availableSize - required) / (SizeF)numscaled, SizeF.Empty);
+				var scaledSpace = SizeF.Max(availableSize - required, SizeF.Empty);
+				remaining = Size.Truncate(scaledSpace / (SizeF)numscaled);
+				var roundingSpace = SizeF.Max(Size.Truncate(scaledSpace - (remaining * numscaled)), SizeF.Empty);
+
 				for (int y = 0; y < heights.Length; y++)
 				{
 					var yscaled = y == lastyscale || yscaling[y];
 					if (!yscaled)
 						continue;
 
-					heights[y] = remaining.Height;
+					var height = remaining.Height;
+					if (roundingSpace.Height > 0)
+					{
+						height++;
+						roundingSpace.Height--;
+					}
 
+					heights[y] = height;
 				}
 				for (int x = 0; x < widths.Length; x++)
 				{	
@@ -254,7 +245,15 @@ namespace Eto.Mac.Forms
 					if (!xscaled)
 						continue;
 
-					widths[x] = remaining.Width;
+					var width = remaining.Width;
+					if (roundingSpace.Width > 0)
+					{
+						width++;
+						roundingSpace.Width--;
+					}
+
+
+					widths[x] = width;
 				}
 				return availableSize;
 			}
@@ -287,18 +286,18 @@ namespace Eto.Mac.Forms
 					var view = views[y, x];
 					if (view != null && view.Visible)
 					{
-						var nsview = view.GetContainerView();
-						var frame = nsview.Frame;
+						var macView = view.GetMacViewHandler();
+						var frame = macView.GetAlignmentFrame();
 						var oldframe = frame;
 						frame.Width = final_widths[x];
 						frame.Height = final_heights[y];
 						frame.X = (nfloat)Math.Round(Math.Max(0, startx));
 						frame.Y = (nfloat)Math.Round(flipped ? starty : controlSize.Height - starty - frame.Height);
 						if (frame != oldframe)
-							nsview.Frame = frame;
+							macView.SetAlignmentFrame(frame);
 						else if (oldframe.Right > oldFrameSize.Width || oldframe.Bottom > oldFrameSize.Height
 							|| frame.Right > oldFrameSize.Width || frame.Bottom > oldFrameSize.Height)
-							nsview.SetNeedsDisplay();
+							macView.ContainerControl.SetNeedsDisplay();
 						//Console.WriteLine("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 					}
 					startx += final_widths[x] + Spacing.Width;

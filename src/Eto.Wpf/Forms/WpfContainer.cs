@@ -82,5 +82,7 @@ namespace Eto.Wpf.Forms
 		}
 
 		public override IEnumerable<Control> VisualControls => Widget.Controls;
+		
+		protected override void SetDefaultScale() => SetScale(true, true);
 	}
 }

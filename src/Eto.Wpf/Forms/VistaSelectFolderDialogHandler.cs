@@ -20,6 +20,9 @@ namespace Eto.Wpf.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+				
 #if WINFORMS
 			// use reflection since adding a parameter requires us to reference PresentationFramework which we don't want in winforms
 			cp.CommonFileDialogResult result;
@@ -34,8 +37,10 @@ namespace Eto.Wpf.Forms
 				result = (cp.CommonFileDialogResult)showDialogMethod.Invoke(Control, new object[] { handle.Value });
 			}
 #elif WPF
-			var wpfParent = parent.ToNative();
-			var result = wpfParent != null ? Control.ShowDialog(wpfParent) : Control.ShowDialog();
+			// don't use WPF window, parent might be a HwndFormHandler
+			var wpfParent = parent?.NativeHandle;
+			var result = wpfParent != null ? Control.ShowDialog(wpfParent.Value) : Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 #endif
 			switch (result)
 			{

@@ -3,6 +3,9 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
 using sw = System.Windows;
+using System.Windows;
+using System.Windows.Controls;
+using System.Linq;
 
 namespace Eto.Wpf.Forms.Cells
 {
@@ -34,7 +37,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var element = (swc.CheckBox)base.GenerateElement(cell, dataItem);
 				InitializeElement(element, cell, dataItem);
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			void InitializeElement(swc.CheckBox element, swc.DataGridCell cell, object dataItem)
@@ -50,6 +53,22 @@ namespace Eto.Wpf.Forms.Cells
 						enableEvents = true;
 						Handler.FormatCell(control, cell, control.DataContext);
 					};
+					element.Checked += (sender, e) =>
+					{
+						if (!enableEvents)
+							return;
+						var control = (swc.CheckBox)sender;
+						Handler.SetValue(control.DataContext, control.IsChecked);
+						Handler.ContainerHandler.CellEdited(Handler, control);
+					};
+					element.Unchecked += (sender, e) =>
+					{
+						if (!enableEvents)
+							return;
+						var control = (swc.CheckBox)sender;
+						Handler.SetValue(control.DataContext, control.IsChecked);
+						Handler.ContainerHandler.CellEdited(Handler, control);
+					};
 					SetControlInitialized(element, true);
 				}
 				else
@@ -63,29 +82,11 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var element = (swc.CheckBox)base.GenerateEditingElement(cell, dataItem);
 				InitializeElement(element, cell, dataItem);
-				if (!IsControlEditInitialized(element))
-				{
-					element.Checked += (sender, e) =>
-					{
-						if (!enableEvents)
-							return;
-						var control = (swc.CheckBox)sender;
-						Handler.SetValue(control.DataContext, control.IsChecked);
-					};
-					element.Unchecked += (sender, e) =>
-					{
-						if (!enableEvents)
-							return;
-						var control = (swc.CheckBox)sender;
-						Handler.SetValue(control.DataContext, control.IsChecked);
-					};
-					SetControlEditInitialized(element, true);
-				}
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
 			{
-				Handler.ContainerHandler.CellEdited(Handler, editingElement);
+				// does not get called when we set the checkbox value in OnMouseUp manually
 				return base.CommitCellEdit(editingElement);
 			}
 		}
@@ -93,6 +94,23 @@ namespace Eto.Wpf.Forms.Cells
 		public CheckBoxCellHandler()
 		{
 			Control = new Column { Handler = this };
+		}
+
+		public override void OnMouseUp(GridCellMouseEventArgs args, DependencyObject hitTestResult, DataGridCell cell)
+		{
+			// check/uncheck right away, otherwise it takes three clicks to change the value.. 
+			if (!cell.IsReadOnly)
+			{
+				var checkBox = hitTestResult.GetVisualParents().TakeWhile(r => !(r is swc.DataGridCell)).OfType<swc.CheckBox>().FirstOrDefault();
+				if (checkBox != null)
+				{
+					var value = checkBox.IsChecked ?? false;
+					checkBox.IsChecked = !value;
+
+					args.Handled = true;
+				}
+			}
+			base.OnMouseUp(args, hitTestResult, cell);
 		}
 	}
 }

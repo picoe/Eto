@@ -15,14 +15,14 @@ namespace Eto.Wpf
 	{
 		WeakReference _propertySource;
 		sw.PropertyPath _property;
-		public event EventHandler ValueChanged;
+		public event EventHandler<sw.DependencyPropertyChangedEventArgs> ValueChanged;
 
-		public static PropertyChangeNotifier Register(sw.DependencyProperty property, EventHandler handler, sw.DependencyObject propertySource = null)
+		public static PropertyChangeNotifier Register(sw.DependencyProperty property, EventHandler<sw.DependencyPropertyChangedEventArgs> handler, sw.DependencyObject propertySource = null)
 		{
 			var notifier = new PropertyChangeNotifier(property);
-			notifier.ValueChanged += handler;
 			if (propertySource != null)
 				notifier.PropertySource = propertySource;
+			notifier.ValueChanged += handler;
 			return notifier;
 		}
 
@@ -54,7 +54,6 @@ namespace Eto.Wpf
 				}
 			}
 		}
-
 		public static readonly sw.DependencyProperty ValueProperty = sw.DependencyProperty.Register(
 			"Value", typeof(object), typeof(PropertyChangeNotifier), 
 			new sw.FrameworkPropertyMetadata(null, new sw.PropertyChangedCallback(OnPropertyChanged)));
@@ -62,7 +61,7 @@ namespace Eto.Wpf
 		private static void OnPropertyChanged(sw.DependencyObject d, sw.DependencyPropertyChangedEventArgs e)
 		{
 			var notifier = (PropertyChangeNotifier)d;
-			notifier.ValueChanged?.Invoke(notifier, EventArgs.Empty);
+			notifier.ValueChanged?.Invoke(notifier, e);
 		}
 
 		public object Value

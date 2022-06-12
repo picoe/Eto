@@ -1,10 +1,12 @@
 using System;
 using NUnit.Framework;
 using Eto.Forms;
+using System.Collections.Generic;
+
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
-	public class DropDownTests : TestBase
+	public class DropDownTests : ListControlTests<DropDown>
 	{
 		static void TestDropDownSelection(DropDown dropDown, object item1, object item2, object item3, bool useIndex = false)
 		{
@@ -105,5 +107,89 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				TestDropDownSelection(dropDown, item1, item2, item3, true);
 			});
 		}
+
+		[Test]
+		public void SettingDataStoreToNullWithSelectedItemShouldNotCrash()
+		{
+			Invoke(() =>
+			{
+				var dropDown = new DropDown();
+
+				var items = new[] { "Item 1", "Item 2", "Item 3" };
+
+				dropDown.DataStore = items;
+				dropDown.SelectedIndex = 1;
+				// sanity check
+				Assert.AreEqual(items[1], dropDown.SelectedValue, "#1");
+
+				dropDown.DataStore = null;
+				Assert.AreEqual(-1, dropDown.SelectedIndex, "#2.1");
+				Assert.IsNull(dropDown.SelectedValue, "#2.2");
+			});
+		}
+
+		[Test, ManualTest]
+		public void DropDownShouldAlignWithTextBox()
+		{
+			ManualForm("DropDown should align to the left and right of the text box,\nwithout being clipped.", form =>
+			{
+				return new TableLayout
+				{
+					Rows =
+					{
+						new TableRow(new TableCell(new TextBox { Text = "TextBox"}, true), new TableCell(new DropDown { }, true)),
+						new TableRow(new DropDown { }),
+						null
+					}
+				};
+			});
+		}
+
+		[Test]
+		public void SelectedIndexShouldOnlyFireIfIndexChanges()
+		{
+			var list = new List<string> { "aaa", "bbb", "ccc" };
+			var selectedIndexChangedCount = 0;
+			Shown(form =>
+			{
+				var dropDown = new DropDown();
+				dropDown.SelectedIndexChanged += (sender, e) => selectedIndexChangedCount++;
+				dropDown.DataStore = list;
+				dropDown.SelectedIndex = 1;
+				Assert.AreEqual(1, selectedIndexChangedCount, "#1");
+				
+				form.Content = dropDown;
+				return dropDown;
+			}, dropDown =>
+			{
+				Assert.AreEqual(1, dropDown.SelectedIndex, "#2.1");
+				Assert.AreEqual("bbb", dropDown.SelectedValue, "#2.2");
+				Assert.AreEqual(1, selectedIndexChangedCount, "#2.3");
+				
+				// set to same list instance, should not fire a changed event
+				dropDown.DataStore = list;
+				Assert.AreEqual(1, dropDown.SelectedIndex, "#3.1");
+				Assert.AreEqual("bbb", dropDown.SelectedValue, "#3.2");
+				Assert.AreEqual(1, selectedIndexChangedCount, "#3.3");
+				
+				// set to new list instance with same index for selected item, should not fire a changed event
+				list = new List<string>(list);
+				list.Add("ddd");
+				Assert.AreEqual(1, dropDown.SelectedIndex, "#4.1");
+				Assert.AreEqual("bbb", dropDown.SelectedValue, "#4.2");
+				Assert.AreEqual(1, selectedIndexChangedCount, "#4.3");
+				
+				// create a copy and insert to make the index differnet, should now fire a changed event
+				list = new List<string>(list);
+				list.Insert(0, "ddd");
+				dropDown.DataStore = list;
+				
+				// now we should get a change event, since the index of the previously selected item is now different.
+				Assert.AreEqual(2, dropDown.SelectedIndex, "#5.1");
+				Assert.AreEqual("bbb", dropDown.SelectedValue, "#5.2");
+				Assert.AreEqual(2, selectedIndexChangedCount, "#5.3");
+			});
+		}
+
 	}
 }

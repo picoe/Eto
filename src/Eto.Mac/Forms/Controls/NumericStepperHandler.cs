@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
@@ -8,59 +8,30 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Reflection;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class NumericStepperHandler : MacView<NumericStepperHandler.EtoNumericStepperView, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 	{
 		Size? naturalSize;
 
-		public override NSView ContainerControl { get { return Control; } }
+		public override NSView ContainerControl => Control;
 
-		public override NSView FocusControl { get { return Control.TextField; } }
+		public override NSView FocusControl => Control.TextField;
 
-		public NSTextField TextField { get { return Control.TextField; } }
+		public NSTextField TextField => Control.TextField;
 
-		public NSStepper Stepper { get { return Control.Stepper; } }
+		public NSStepper Stepper => Control.Stepper;
 
 		public class EtoTextField : NSTextField, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
+			public EtoTextField(IntPtr handle) : base(handle)
+			{
+			}
+			public EtoTextField()
+			{
+				Cell = new EtoTextFieldCell();
+			}
 		}
 
 		public class EtoNumericStepperView : NSView, IMacControl
@@ -72,20 +43,32 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void SetFrameSize(CGSize newSize)
 			{
+				var spacing = 3;
+
 				base.SetFrameSize(newSize);
 				var views = Subviews;
 				var text = views[0];
-				var splitter = views[1];
-				var offset = (newSize.Height - text.Frame.Height) / 2;
-				text.SetFrameOrigin(new CGPoint(0, offset));
-				text.SetFrameSize(new CGSize((float)(newSize.Width - splitter.Frame.Width), (float)text.Frame.Height));
-				offset = (newSize.Height - splitter.Frame.Height) / 2;
-				splitter.SetFrameOrigin(new CGPoint(newSize.Width - splitter.Frame.Width, offset));
+				var stepper = views[1];
+
+				var stepperSize = stepper.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, stepper.FittingSize)).Size;
+				stepperSize.Height = (nfloat)Math.Min(newSize.Height, stepperSize.Height);
+
+				var stepperFrame = new CGRect();
+				stepperFrame.Size = stepperSize;
+				stepperFrame.X = newSize.Width - stepperFrame.Width;
+				stepperFrame.Y = (nfloat)Math.Truncate((newSize.Height - stepperSize.Height) / 2);
+				stepper.Frame = stepper.GetFrameForAlignmentRect(stepperFrame);
+
+				var textFrame = new CGRect();
+				textFrame.Height = newSize.Height;
+				textFrame.Width = newSize.Width - stepperFrame.Width - spacing;
+				text.Frame = textFrame;
+
 
 				var h = WeakHandler?.Target as IMacViewHandler;
 				if (h == null)
 					return;
-				
+
 				h.OnSizeChanged(EventArgs.Empty);
 				h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 			}
@@ -104,8 +87,9 @@ namespace Eto.Mac.Forms.Controls
 
 				Stepper = new EtoStepper();
 				Stepper.Activated += HandleStepperActivated;
-				Stepper.MinValue = double.NegativeInfinity;
-				Stepper.MaxValue = double.PositiveInfinity;
+				Stepper.MinValue = double.MinValue;
+				Stepper.MaxValue = double.MaxValue;
+				Stepper.ValueWraps = false;
 				TextField.DoubleValue = Stepper.DoubleValue = 0;
 
 				AddSubview(TextField);
@@ -121,23 +105,32 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override object EventObject
-		{
-			get { return Control.TextField; }
-		}
+		public override object EventObject => Control.TextField;
+
+		protected override IColorizeCell ColorizeCell => Control.TextField.Cell as IColorizeCell;
 
 		public static NSNumberFormatter DefaultFormatter = new NSNumberFormatter
-		{ 
-			NumberStyle = NSNumberFormatterStyle.Decimal, 
+		{
+			NumberStyle = NSNumberFormatterStyle.Decimal,
 			Lenient = true,
 			UsesGroupingSeparator = false,
 			MinimumFractionDigits = 0,
 			MaximumFractionDigits = 0
 		};
 
-		protected override EtoNumericStepperView CreateControl()
+		protected override EtoNumericStepperView CreateControl() => new EtoNumericStepperView(this);
+
+		static double GetPreciseValue(double value)
 		{
-			return new EtoNumericStepperView(this);
+			// prevent spinner from accumulating an inprecise value, which would eventually 
+			// show values like 1.0000000000001 or 1.999999999998
+
+			// note: some versions of mono can crash roundtripping via ToString() with MaxValue, so use TryParse
+			var str = value.ToString("G15");
+			if (double.TryParse(str, out var val))
+				return val;
+			else
+				return value;
 		}
 
 		static void HandleStepperActivated(object sender, EventArgs e)
@@ -145,17 +138,15 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(((NSView)sender).Superview) as NumericStepperHandler;
 			if (handler != null)
 			{
-				// prevent spinner from accumulating an inprecise value, which would eventually 
-				// show values like 1.0000000000001 or 1.999999999998
-				handler.Stepper.DoubleValue = double.Parse(handler.Stepper.DoubleValue.ToString());
-				var val = handler.Stepper.DoubleValue;
+				var val = GetPreciseValue(handler.Stepper.DoubleValue);
+
 				if (Math.Abs(val) < 1E-10)
 				{
 					handler.TextField.IntValue = 0;
 				}
 				else
 				{
-					handler.TextField.DoubleValue = handler.Stepper.DoubleValue;
+					handler.TextField.DoubleValue = val;
 				}
 				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 			}
@@ -246,24 +237,32 @@ namespace Eto.Mac.Forms.Controls
 			base.OnKeyDown(e);
 			if (e.Handled || ReadOnly)
 				return;
-			
+
 			if (e.KeyData == Keys.Down)
 			{
 				var val = Value;
-				var newval = Math.Max(val - Increment, MinValue);
-				if (newval < val)
+				var newval = val - Increment;
+				if (Wrap && newval < MinValue)
+					Value = MaxValue;
+				else
 				{
-					Value = newval;
+					newval = Math.Max(GetPreciseValue(newval), MinValue);
+					if (newval < val)
+						Value = newval;
 				}
 				e.Handled = true;
 			}
 			else if (e.KeyData == Keys.Up)
 			{
 				var val = Value;
-				var newval = Math.Min(val + Increment, MaxValue);
-				if (newval > val)
+				var newval = val + Increment;
+				if (Wrap && newval > MaxValue)
+					Value = MinValue;
+				else
 				{
-					Value = newval;
+					newval = Math.Min(GetPreciseValue(newval), MaxValue);
+					if (newval > val)
+						Value = newval;
 				}
 				e.Handled = true;
 			}
@@ -273,9 +272,10 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (naturalSize == null)
 			{
-				TextField.SizeToFit();
-				Stepper.SizeToFit();
-				var naturalHeight = Math.Max(TextField.Frame.Height, Stepper.Frame.Height);
+				var textSize = TextField.FittingSize;
+				var stepperSize = Stepper.FittingSize;
+				stepperSize = Stepper.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, stepperSize)).Size;
+				var naturalHeight = Math.Max(textSize.Height, stepperSize.Height);
 				naturalSize = new Size(80, (int)naturalHeight);
 			}
 			return naturalSize.Value;
@@ -285,7 +285,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return !TextField.Editable; }
 			set
-			{ 
+			{
 				TextField.Editable = !value;
 				Stepper.Enabled = TextField.Editable && TextField.Enabled;
 			}
@@ -294,7 +294,7 @@ namespace Eto.Mac.Forms.Controls
 		public double Value
 		{
 			get
-			{ 
+			{
 				var str = GetStringValue();
 				var nsval = ((NSNumberFormatter)TextField.Formatter).NumberFromString(str);
 				if (nsval == null)
@@ -350,9 +350,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override bool Enabled
+		protected override bool ControlEnabled
 		{
-			get { return TextField.Enabled; }
+			get => TextField.Enabled;
 			set
 			{
 				TextField.Enabled = value;
@@ -389,7 +389,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<int>(DecimalPlaces_Key); }
 			set
 			{
-				Widget.Properties.Set(DecimalPlaces_Key, value, () => 
+				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
 				{
 					MaximumDecimalPlaces = Math.Max(MaximumDecimalPlaces, DecimalPlaces);
 					SetFormatter();
@@ -417,10 +417,14 @@ namespace Eto.Mac.Forms.Controls
 			{
 				// monomac can't handle out params that pass a null pointer (errorDescription), so we marshal manually here
 				var h = Handler;
-				if (h.NeedsFormat)
+				if (h != null && h.NeedsFormat)
 				{
 					double result;
+#if USE_CFSTRING
+					var str = CFString.FromHandle(strPtr);
+#else
 					var str = NSString.FromHandle(strPtr);
+#endif
 					var text = str;
 					if (h.HasFormatString)
 						text = Regex.Replace(text, $@"(?!\d|{Regex.Escape(h.CultureInfo.NumberFormat.NumberDecimalSeparator)}|{Regex.Escape(h.CultureInfo.NumberFormat.NegativeSign)}).", ""); // strip any non-numeric value
@@ -429,7 +433,7 @@ namespace Eto.Mac.Forms.Controls
 						// test to see if it matches the negative string format
 						if (h.HasFormatString && result > 0 && NumberStringsMatch((-result).ToString(h.ComputedFormatString, h.CultureInfo), str))
 							result = -result;
-			
+
 						var nsresult = new NSNumber(result);
 						Marshal.WriteIntPtr(obj, 0, nsresult.Handle);
 						return true;
@@ -449,7 +453,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var h = Handler;
 				var number = value as NSNumber;
-				if (h.NeedsFormat && number != null)
+				if (h != null && h.NeedsFormat && number != null)
 				{
 					var format = h.ComputedFormatString;
 					return number.DoubleValue.ToString(format, h.CultureInfo);
@@ -463,11 +467,11 @@ namespace Eto.Mac.Forms.Controls
 			var formatter = new EtoNumberFormatter
 			{
 				Handler = this,
-				NumberStyle = NSNumberFormatterStyle.Decimal, 
+				NumberStyle = NSNumberFormatterStyle.Decimal,
 				Lenient = true,
 				UsesGroupingSeparator = false,
-				MinimumFractionDigits = (nnint)DecimalPlaces,
-				MaximumFractionDigits = (nnint)MaximumDecimalPlaces
+				MinimumFractionDigits = DecimalPlaces,
+				MaximumFractionDigits = MaximumDecimalPlaces
 			};
 
 			Stepper.Formatter = formatter;
@@ -489,10 +493,26 @@ namespace Eto.Mac.Forms.Controls
 			set { TextField.TextColor = value.ToNSUI(); }
 		}
 
+		protected override bool UseColorizeCellWithAlphaOnly => true;
+
 		protected override void SetBackgroundColor(Color? color)
 		{
-			if (color != null)
-				TextField.BackgroundColor = color.Value.ToNSUI();
+			base.SetBackgroundColor(color);
+			var textField = Control.TextField;
+			var c = color ?? Colors.Transparent;
+			textField.BackgroundColor = c.ToNSUI();
+			textField.DrawsBackground = c.A > 0;
+			textField.WantsLayer = c.A < 1;
+			if (Widget.Loaded && HasFocus)
+			{
+				var editor = textField.CurrentEditor;
+				if (editor != null)
+				{
+					var nscolor = c.ToNSUI();
+					editor.BackgroundColor = nscolor;
+					editor.DrawsBackground = c.A > 0;
+				}
+			}
 		}
 
 		public override void AttachEvent(string id)
@@ -582,6 +602,12 @@ namespace Eto.Mac.Forms.Controls
 					SetFormatter();
 				});
 			}
+		}
+
+		public bool Wrap
+		{
+			get => Stepper.ValueWraps;
+			set => Stepper.ValueWraps = value;
 		}
 	}
 }

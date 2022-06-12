@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Eto.GtkSharp.Drawing;
+using Gtk;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -29,7 +30,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.Buffer.InsertText += HandleInsertText;
+			Control.Buffer.InsertText += Connector.HandleInsertText;
 			Widget.SelectionChanged += HandleSelectionChanged;
 		}
 
@@ -598,6 +599,17 @@ namespace Eto.GtkSharp.Forms.Controls
 		public ITextBuffer Buffer
 		{
 			get { return this; }
+		}
+
+		protected new RichTextAreaConnector Connector => (RichTextAreaConnector)base.Connector;
+
+		protected override WeakConnector CreateConnector() => new RichTextAreaConnector();
+
+		protected class RichTextAreaConnector : TextAreaConnector
+		{
+			public new RichTextAreaHandler Handler => (RichTextAreaHandler)base.Handler;
+
+			public virtual void HandleInsertText(object o, InsertTextArgs args) => Handler?.HandleInsertText(o, args);
 		}
 	}
 }

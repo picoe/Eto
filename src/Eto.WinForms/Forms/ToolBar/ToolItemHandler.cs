@@ -54,6 +54,12 @@ namespace Eto.WinForms.Forms.ToolBar
 
 		public abstract bool Enabled { get; set; }
 
+		public bool Visible
+		{
+			get => Control.Available;
+			set => Control.Available = value;
+		}
+
 		public void CreateFromCommand(Command command)
 		{
 		}

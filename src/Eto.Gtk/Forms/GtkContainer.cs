@@ -34,6 +34,8 @@ namespace Eto.GtkSharp.Forms
 		IEnumerable<Gtk.Widget> GetOrderedWidgets()
 		{
 			var parent = Widget.IsVisualControl ? Widget.LogicalParent : Widget;
+			if (parent == null)
+				yield break;
 			foreach (var ctl in parent.Controls.OrderBy(r => r.TabIndex))
 			{
 				var widget = ctl.GetContainerWidget();
@@ -47,6 +49,16 @@ namespace Eto.GtkSharp.Forms
 		}
 
 #if GTK2
+		public override void TriggerEnabled(bool oldEnabled, bool newEnabled, bool force)
+		{
+			foreach (var child in Widget.VisualControls)
+			{
+				child.GetGtkControlHandler()?.TriggerEnabled(oldEnabled && child.Enabled, newEnabled);
+			}
+
+			base.TriggerEnabled(oldEnabled, newEnabled, force);
+		}
+
 		public override void SetBackgroundColor()
 		{
 			base.SetBackgroundColor();

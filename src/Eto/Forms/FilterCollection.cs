@@ -380,6 +380,25 @@ namespace Eto.Forms
 			RemoveSelectedItem(this[index]);
 			base.RemoveAt(index);
 		}
+
+		/// <inheritdoc/>
+		protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+		{
+			base.OnCollectionChanged(e);
+
+			if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null && selectedItems != null)
+			{
+				// removing an item from this collection directly, trigger selection changed if needed
+				foreach (var item in e.OldItems)
+				{
+					if (selectedItems.Contains((T)item))
+					{
+						OnSelectionChanged(EventArgs.Empty);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -1062,12 +1081,20 @@ namespace Eto.Forms
 
 		bool IList.Contains(object value)
 		{
-			return Contains((T)value);
+			if (value is T val)
+				return Contains(val);
+			if (value == null)
+				return Contains(default(T)); // null is valid
+			return false;
 		}
 
 		int IList.IndexOf(object value)
 		{
-			return IndexOf((T)value);
+			if (value is T val)
+				return IndexOf(val);
+			if (value == null)
+				return IndexOf(default(T)); // null is valid
+			return -1;
 		}
 
 		void IList.Insert(int index, object value)
@@ -1077,7 +1104,10 @@ namespace Eto.Forms
 
 		void IList.Remove(object value)
 		{
-			Remove((T)value);
+			if (value is T val)
+				Remove(val);
+			if (value == null)
+				Remove(default(T)); // null is valid
 		}
 
 		bool IList.IsFixedSize

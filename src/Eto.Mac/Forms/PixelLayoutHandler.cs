@@ -5,56 +5,49 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Mac.Forms.Controls;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Forms
 {
 	public class PixelLayoutHandler : MacContainer<NSView, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler
 	{
-		public override NSView ContainerControl { get { return Control; } }
+		MacEventView container;
+		public override NSView ContainerControl => container;
 
-		public class PixelLayoutView : MacEventView 
+		public class PixelLayoutView : NSView, IMacControl
 		{
-			new PixelLayoutHandler Handler => base.Handler as PixelLayoutHandler;
+			public WeakReference WeakHandler { get; set; }
+
+			public PixelLayoutHandler Handler
+			{
+				get { return (PixelLayoutHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); }
+			}
+
+			public PixelLayoutView()
+			{
+				AutoresizesSubviews = false;
+			}
 
 			public override bool IsFlipped => true;
 
 			public override void Layout()
 			{
-				base.Layout();
+				if (MacView.NewLayout)
+					base.Layout();
 				Handler?.PerformLayout();
+				if (!MacView.NewLayout)
+					base.Layout();
 			}
 		}
 
-		protected override NSView CreateControl() => new PixelLayoutView();
+		protected override NSView CreateControl()
+		{
+			container = new MacEventView { Handler = this };
+			var control = new PixelLayoutView { Handler = this };
+			container.ContentView = control;
+			return control;
+		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -73,10 +66,9 @@ namespace Eto.Mac.Forms
 
 		void SetPosition(Control control, PointF point)
 		{
-			var macControl = control.GetMacControl();
-			var childView = macControl.ContainerControl;
-			var availableSize = Widget.Loaded ? Size.MaxValue : Control.Frame.Size.ToEtoSize();
-			var preferredSize = macControl.GetPreferredSize(availableSize);
+			var macView = control.GetMacViewHandler();
+			var availableSize = Widget.Loaded ? Size.MaxValue : macView.GetAlignmentFrame().Size.ToEtoSize();
+			var preferredSize = control.GetPreferredSize(availableSize);
 
 			var origin = point.ToNS();
 			if (!Control.IsFlipped)
@@ -84,7 +76,7 @@ namespace Eto.Mac.Forms
 				origin.Y = Control.Frame.Height - origin.Y - preferredSize.Height;
 			}
 
-			childView.Frame = new CGRect(origin, preferredSize.ToNS());;
+			macView.SetAlignmentFrame(new CGRect(origin, preferredSize.ToNS()));
 		}
 
 		public override void InvalidateMeasure()
@@ -97,13 +89,14 @@ namespace Eto.Mac.Forms
 		{
 			// set sizes of controls when resizing since available size changes, 
 			// it may change the preferred size of the children.
-			foreach (var control in Widget.Controls.Select(r => r.GetMacControl()))
+			foreach (var control in Widget.Controls)
 			{
-				if (control == null)
+				var macView = control.GetMacViewHandler();
+				if (macView == null)
 					continue;
 
 				var preferredSize = control.GetPreferredSize(SizeF.PositiveInfinity);
-				control.ContainerControl.SetFrameSize(preferredSize.ToNS());
+				macView.SetAlignmentFrameSize(preferredSize.ToNS());
 			}
 		}
 

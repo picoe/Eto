@@ -10,6 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
+using static System.Windows.WpfDataObjectExtensions;
 
 namespace Eto.Wpf.Forms
 {
@@ -17,6 +18,7 @@ namespace Eto.Wpf.Forms
 	{
 		IWpfFrameworkElement Handler { get; set; }
 	}
+
 	public interface IWpfFrameworkElement
 	{
 		sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure);
@@ -24,6 +26,8 @@ namespace Eto.Wpf.Forms
 		sw.FrameworkElement ContainerControl { get; }
 		void SetScale(bool xscale, bool yscale);
 		sw.Size ParentMinimumSize { get; set; }
+		void DragLeave(sw.DragEventArgs e);
+
 	}
 
 	public static class ControlExtensions
@@ -65,7 +69,8 @@ namespace Eto.Wpf.Forms
 			return control.ControlObject as sw.FrameworkElement;
 		}
 
-		public static sw.Size GetPreferredSize(this Control control, sw.Size available)
+		[Obsolete("Use Control.GetPreferredSize instead")]
+		public static sw.Size GetPreferredSize(Control control, sw.Size available)
 		{
 			var handler = control.GetWpfFrameworkElement();
 			if (handler != null)
@@ -79,13 +84,26 @@ namespace Eto.Wpf.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
-	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
+	class WpfFrameworkElement
+	{
+		internal static readonly object Cursor_Key = new object();
+
+		// source Eto control for drag operations
+		internal static Control DragSourceControl { get; set; }
+
+		internal const string CustomCursor_DataKey = "Eto.CustomCursor";
+
+		internal static IWpfFrameworkElement LastDragTarget;
+		
+		internal static readonly object LoadActionList_Key = new object();
+	}
+
+	public abstract partial class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
 		where TControl : System.Windows.FrameworkElement
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
 		Size? newSize;
-		Cursor cursor;
 		sw.Size parentMinimumSize;
 		bool isMouseOver;
 		bool isMouseCaptured;
@@ -131,7 +149,18 @@ namespace Eto.Wpf.Forms
 			return size;
 		}
 
-		protected sw.Size UserPreferredSize { get; set; } = new sw.Size(double.NaN, double.NaN);
+		sw.Size _userPreferredSize = new sw.Size(double.NaN, double.NaN);
+		protected sw.Size UserPreferredSize
+		{
+			get => _userPreferredSize;
+			set
+			{
+				_userPreferredSize = value;
+				SetSize();
+				ContainerControl.InvalidateMeasure();
+				UpdatePreferredSize();
+			}
+		}
 
 		protected virtual sw.Size DefaultSize => new sw.Size(double.NaN, double.NaN);
 
@@ -142,13 +171,15 @@ namespace Eto.Wpf.Forms
 		/// For example, when the user types into a text box, it will grow to fit the content if it is auto sized.
 		/// This doesn't happen on any other platform, so we need to disable this behaviour on WPF.
 		/// </summary>
-		protected virtual bool PreventUserResize { get { return false; } }
+		protected virtual bool PreventUserResize => false;
 
 		public abstract Color BackgroundColor { get; set; }
 
-		public virtual bool UseMousePreview { get { return false; } }
+		public virtual bool UseMousePreview => false;
 
-		public virtual bool UseKeyPreview { get { return false; } }
+		public virtual bool UseKeyPreview => false;
+
+		public virtual bool UseDragDropPreview => UseMousePreview;
 
 		public sw.Size ParentMinimumSize
 		{
@@ -163,7 +194,7 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public virtual sw.FrameworkElement ContainerControl { get { return Control; } }
+		public virtual sw.FrameworkElement ContainerControl => Control;
 
 		public virtual Size Size
 		{
@@ -177,20 +208,46 @@ namespace Eto.Wpf.Forms
 			}
 			set
 			{
-				UserPreferredSize = value.ToWpf();
-				SetSize();
-				ContainerControl.InvalidateMeasure();
-				UpdatePreferredSize();
+				var newSize = value.ToWpf();
+				if (UserPreferredSize == newSize)
+					return;
+				UserPreferredSize = newSize;
 			}
 		}
 
-        public virtual void UpdatePreferredSize()
-        {
+		public virtual int Width
+		{
+			get => Size.Width;
+			set
+			{
+				var newWidth = value == -1 ? double.NaN : value;
+				var userPreferredSize = UserPreferredSize;
+				if (userPreferredSize.Width == newWidth)
+					return;
+				UserPreferredSize = new sw.Size(newWidth, userPreferredSize.Height);
+			}
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set
+			{
+				var newHeight = value == -1 ? double.NaN : value;
+				var userPreferredSize = UserPreferredSize;
+				if (userPreferredSize.Height == newHeight)
+					return;
+				UserPreferredSize = new sw.Size(userPreferredSize.Width, newHeight);
+			}
+		}
+
+		public virtual void UpdatePreferredSize()
+		{
 			if (Widget.Loaded)
 			{
 				Widget.VisualParent.GetWpfContainer()?.UpdatePreferredSize();
 			}
-        }
+		}
 
 		public virtual void SetScale(bool xscale, bool yscale)
 		{
@@ -207,7 +264,7 @@ namespace Eto.Wpf.Forms
 			// ideally, this should be removed, but may require overriding ArrangeOverride on all controls as well.
 			// see the ControlTests.ControlsShouldHaveSaneDefaultWidths unit test for repro of the issue.
 			var defaultSize = DefaultSize.ZeroIfNan();
-			if (XScale && Control.IsLoaded)
+			if (XScale && Widget.Loaded)
 			{
 				ContainerControl.Width = double.NaN;
 				ContainerControl.MinWidth = 0;
@@ -223,7 +280,7 @@ namespace Eto.Wpf.Forms
 				ContainerControl.MinWidth = Math.Max(0, double.IsNaN(UserPreferredSize.Width) ? defaultSize.Width : UserPreferredSize.Width);
 			}
 
-			if (YScale && Control.IsLoaded)
+			if (YScale && Widget.Loaded)
 			{
 				ContainerControl.Height = double.NaN;
 				ContainerControl.MinHeight = 0;
@@ -246,6 +303,23 @@ namespace Eto.Wpf.Forms
 			return ContainerControl.DesiredSize;
 		}
 
+		public SizeF GetPreferredSize(SizeF availableSize)
+		{
+			var size = availableSize.ToWpf();
+			if (ContainerControl.Parent == null && !(ContainerControl is swc.Panel) && !(ContainerControl is swc.Border))
+			{
+				// what the?!? some controls don't measure correctly when not in a container..
+				var p = new swc.Border();
+				p.Child = ContainerControl;
+				p.Measure(size);
+				var result = p.DesiredSize.ToEto();
+				p.Child = null;
+				return result;
+			}
+			ContainerControl.Measure(size);
+			return ContainerControl.DesiredSize.ToEto();
+		}
+
 		public virtual bool Enabled
 		{
 			get { return Control.IsEnabled; }
@@ -254,11 +328,13 @@ namespace Eto.Wpf.Forms
 
 		public virtual Cursor Cursor
 		{
-			get { return cursor; }
+			get => Widget.Properties.Get<Cursor>(WpfFrameworkElement.Cursor_Key);
 			set
 			{
-				cursor = value;
-				Control.Cursor = cursor != null ? ((CursorHandler)cursor.Handler).Control : null;
+				if (Widget.Properties.TrySet(WpfFrameworkElement.Cursor_Key, value))
+				{
+					ContainerControl.Cursor = (value?.Handler as CursorHandler)?.Control;
+				}
 			}
 		}
 
@@ -293,18 +369,20 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
+		protected virtual sw.FrameworkElement FocusControl => Control;
+
 		public virtual void Focus()
 		{
-			if (Control.IsLoaded)
-				Control.Focus();
+			if (FocusControl.IsLoaded)
+				FocusControl.Focus();
 			else
-				Control.Loaded += HandleFocus;
+				FocusControl.Loaded += HandleFocus;
 		}
 
 		void HandleFocus(object sender, sw.RoutedEventArgs e)
 		{
-			Control.Focus();
-			Control.Loaded -= HandleFocus;
+			FocusControl.Focus();
+			FocusControl.Loaded -= HandleFocus;
 		}
 
 		protected virtual void EnsureLoaded()
@@ -317,15 +395,18 @@ namespace Eto.Wpf.Forms
 			get { return Control.IsKeyboardFocusWithin; }
 		}
 
-		public bool Visible
+		public virtual bool Visible
 		{
-			get { return ContainerControl.Visibility != sw.Visibility.Collapsed; }
+			get { return ContainerControl.Visibility == sw.Visibility.Visible; }
 			set
 			{
-				ContainerControl.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
-                UpdatePreferredSize();
-            }
-        }
+				if (value != Visible)
+				{
+					ContainerControl.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
+					UpdatePreferredSize();
+				}
+			}
+		}
 
 		public override void AttachEvent(string id)
 		{
@@ -362,48 +443,17 @@ namespace Eto.Wpf.Forms
 					HandleEvent(Eto.Forms.Control.MouseDownEvent);
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
-					ContainerControl.MouseEnter += (sender, e) =>
-					{
-						if (isMouseOver != Control.IsMouseOver)
-						{
-							var args = e.ToEto(Control);
-							Callback.OnMouseEnter(Widget, args);
-							e.Handled = args.Handled;
-							isMouseOver = Control.IsMouseOver;
-						}
-					};
+					ContainerControl.MouseEnter += HandleMouseEnter;
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
 					HandleEvent(Eto.Forms.Control.MouseEnterEvent);
-					ContainerControl.MouseLeave += (sender, e) =>
-					{
-						if (isMouseOver != Control.IsMouseOver)
-						{
-							var args = e.ToEto(Control);
-							Callback.OnMouseLeave(Widget, args);
-							e.Handled = args.Handled;
-							isMouseOver = Control.IsMouseOver;
-						}
-					};
+					ContainerControl.MouseLeave += HandleMouseLeave;
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
-					ContainerControl.PreviewMouseWheel += (sender, e) =>
-					{
-						var args = e.ToEto(Control);
-						Callback.OnMouseWheel(Widget, args);
-						e.Handled = args.Handled;
-					};
+					ContainerControl.PreviewMouseWheel += HandlePreviewMouseWheel;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					ContainerControl.SizeChanged += (sender, e) =>
-					{
-						if (e.NewSize != e.PreviousSize) // WPF calls this event even if it hasn't changed
-						{
-							newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
-							Callback.OnSizeChanged(Widget, EventArgs.Empty);
-							newSize = null;
-						}
-					};
+					ContainerControl.SizeChanged += HandleSizeChanged;
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
 					if (UseKeyPreview)
@@ -421,67 +471,146 @@ namespace Eto.Wpf.Forms
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += (sender, e) =>
-					{
-						var args = e.ToEto(KeyEventType.KeyUp);
-						if (args.Key != Keys.None)
-						{
-							Callback.OnKeyUp(Widget, args);
-							e.Handled = args.Handled;
-						}
-					};
+					Control.KeyUp += HandleKeyUp;
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					ContainerControl.IsVisibleChanged += (sender, e) =>
-					{
-						if ((bool)e.NewValue)
-						{
-							Callback.OnShown(Widget, EventArgs.Empty);
-						}
-					};
+					ContainerControl.IsVisibleChanged += HandleIsVisibleChanged;
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.IsKeyboardFocusWithinChanged += (sender, e) =>
-					{
-						// sometimes this gets called after disposed? Happens with designer in VS 2017
-						if (Control == null)
-							return;
-						if (HasFocus)
-							Callback.OnGotFocus(Widget, EventArgs.Empty);
-						else
-							Callback.OnLostFocus(Widget, EventArgs.Empty);
-					};
+					Control.IsKeyboardFocusWithinChanged += HandleIsKeyboardFocusWithinChanged;
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					HandleEvent(Eto.Forms.Control.GotFocusEvent);
 					break;
 				case Eto.Forms.Control.DragDropEvent:
-					Control.Drop += (sender, e) => HandleDrop(e, GetDragEventArgs(e, null));
+					if (UseDragDropPreview)
+						Control.PreviewDrop += Control_DragDrop;
+					else
+						Control.Drop += Control_DragDrop;
 					break;
 				case Eto.Forms.Control.DragOverEvent:
-					Control.DragOver += (sender, e) => HandleDragOver(e, GetDragEventArgs(e, null));
+					if (UseDragDropPreview)
+						Control.PreviewDragOver += Control_DragOver;
+					else
+						Control.DragOver += Control_DragOver;
+					HandleEvent(Eto.Forms.Control.DragLeaveEvent);
 					break;
 				case Eto.Forms.Control.DragEnterEvent:
-					Control.DragEnter += Control_DragEnter;
+					if (UseDragDropPreview)
+						Control.PreviewDragEnter += Control_DragEnter;
+					else
+						Control.DragEnter += Control_DragEnter;
+					HandleEvent(Eto.Forms.Control.DragOverEvent);
 					break;
 				case Eto.Forms.Control.DragLeaveEvent:
-					Control.DragLeave += Control_DragLeave;
+					if (UseDragDropPreview)
+						Control.PreviewDragLeave += Control_DragLeave;
+					else
+						Control.DragLeave += Control_DragLeave;
 					HandleEvent(Eto.Forms.Control.DragEnterEvent); // need DragEnter so it doesn't get called when going over children
 					break;
-
+				case Eto.Forms.Control.EnabledChangedEvent:
+					Control.IsEnabledChanged += Control_IsEnabledChanged;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
 
+		private void HandleIsKeyboardFocusWithinChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			// sometimes this gets called after disposed? Happens with designer in VS 2017
+			if (Control == null)
+				return;
+			if (HasFocus)
+				Callback.OnGotFocus(Widget, EventArgs.Empty);
+			else
+				Callback.OnLostFocus(Widget, EventArgs.Empty);
+		}
+
+		private void HandlePreviewMouseWheel(object sender, swi.MouseWheelEventArgs e)
+		{
+			if (Control == null)
+				return;
+			var args = e.ToEto(Control);
+			Callback.OnMouseWheel(Widget, args);
+			e.Handled = args.Handled;
+		}
+
+		private void HandleIsVisibleChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			if ((bool)e.NewValue)
+			{
+				Callback.OnShown(Widget, EventArgs.Empty);
+			}
+		}
+
+		private void HandleSizeChanged(object sender, sw.SizeChangedEventArgs e)
+		{
+			if (Control == null)
+				return;
+			var size = e.NewSize.ToEtoSize();
+			var prev = e.PreviousSize.ToEtoSize();
+			if (size != prev) // WPF calls this event even if it hasn't changed
+			{
+				newSize = size; // so we can report this back in Control.Size
+				Callback.OnSizeChanged(Widget, EventArgs.Empty);
+				newSize = null;
+			}
+		}
+
+		private void HandleMouseLeave(object sender, swi.MouseEventArgs e)
+		{
+			if (Control == null || isMouseOver == Control.IsMouseOver)
+				return;
+
+			var args = e.ToEto(Control);
+			Callback.OnMouseLeave(Widget, args);
+			e.Handled = args.Handled;
+			isMouseOver = Control.IsMouseOver;
+		}
+
+		private void HandleMouseEnter(object sender, swi.MouseEventArgs e)
+		{
+			if (Control == null || isMouseOver == Control.IsMouseOver)
+				return;
+
+			var args = e.ToEto(Control);
+			Callback.OnMouseEnter(Widget, args);
+			e.Handled = args.Handled;
+			isMouseOver = Control.IsMouseOver;
+		}
+
+		private void Control_DragDrop(object sender, sw.DragEventArgs e)
+		{
+			var args = GetDragEventArgs(e, null);
+			HandleDrop(e, args);
+		}
+
+		private void Control_DragOver(object sender, sw.DragEventArgs e)
+		{
+			var args = GetDragEventArgs(e, null);
+			HandleDragOver(e, args);
+		}
+
+		private void Control_IsEnabledChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			if (Control == null)
+				return;
+			Callback.OnEnabledChanged(Widget, EventArgs.Empty);
+		}
+
 		private void Control_DragEnter(object sender, sw.DragEventArgs e)
 		{
 			IsDragLeaving = false;
 			var args = GetDragEventArgs(e, null);
+
 			if (!IsDragEntered)
 			{
 				IsDragEntered = true;
+				WpfFrameworkElement.LastDragTarget?.DragLeave(e);
+				WpfFrameworkElement.LastDragTarget = null;
 				HandleDragEnter(e, args);
 			}
 			else
@@ -491,20 +620,41 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		void IWpfFrameworkElement.DragLeave(sw.DragEventArgs e)
+		{
+			if (IsDragLeaving)
+			{
+				IsDragLeaving = false;
+				IsDragEntered = false;
+				if (_lastDragArgs != null)
+				{
+					HandleDragLeave(e, GetDragEventArgs(_lastDragArgs, null));
+					_lastDragArgs = null;
+				}
+			}
+		}
+
+		sw.DragEventArgs _lastDragArgs;
+
 		void Control_DragLeave(object sender, sw.DragEventArgs e)
 		{
 			if (IsDragEntered)
 			{
 				IsDragLeaving = true;
+				_lastDragArgs = e;
+				WpfFrameworkElement.LastDragTarget = this;
 				Control.Dispatcher.BeginInvoke(new Action(() =>
 				{
 					if (IsDragLeaving)
 					{
 						IsDragEntered = false;
+						IsDragLeaving = false;
+						WpfFrameworkElement.LastDragTarget = null;
+						_lastDragArgs = null;
 						HandleDragLeave(e, GetDragEventArgs(e, null));
 					}
 				}));
-				e.Handled = true;
+				//e.Handled = true;
 			}
 		}
 
@@ -527,38 +677,63 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void HandleDrop(sw.DragEventArgs e, DragEventArgs args)
 		{
+			if (e.Data.GetDataPresent(WpfFrameworkElement.CustomCursor_DataKey))
+				e.Data.SetDataEx(WpfFrameworkElement.CustomCursor_DataKey, false);
 			IsDragEntered = false;
+			if (dragEnterEffects != null)
+				args.Effects = dragEnterEffects.Value;
 			Callback.OnDragLeave(Widget, args);
 			Callback.OnDragDrop(Widget, args);
 			e.Effects = args.Effects.ToWpf();
 			e.Handled = true;
 		}
 
+		DragEffects? dragEnterEffects;
+
 		protected virtual void HandleDragEnter(sw.DragEventArgs e, DragEventArgs args)
 		{
+			var lastCursor = MouseHandler.s_CursorSetCount;
 			Callback.OnDragEnter(Widget, args);
 			e.Effects = args.Effects.ToWpf();
+			dragEnterEffects = args.Effects;
 			e.Handled = true;
+
+			if (lastCursor != MouseHandler.s_CursorSetCount)
+				e.Data.SetDataEx(WpfFrameworkElement.CustomCursor_DataKey, true);
 		}
 
 		protected virtual void HandleDragLeave(sw.DragEventArgs e, DragEventArgs args)
 		{
+			if (e.Data.GetDataPresent(WpfFrameworkElement.CustomCursor_DataKey))
+				e.Data.SetDataEx(WpfFrameworkElement.CustomCursor_DataKey, false);
+			dragEnterEffects = null;
 			Callback.OnDragLeave(Widget, args);
+			if (sw.DropTargetHelper.IsSupported(e.Data))
+			{
+				sw.WpfDataObjectExtensions.SetDropDescription(e.Data, sw.DropImageType.Invalid, null, null);
+				sw.DragSourceHelper.SetDropDescriptionIsDefault(e.Data, true);
+			}
 		}
 
 		protected virtual void HandleDragOver(sw.DragEventArgs e, DragEventArgs args)
 		{
+			var lastCursor = MouseHandler.s_CursorSetCount;
+			if (dragEnterEffects != null)
+				args.Effects = dragEnterEffects.Value;
 			Callback.OnDragOver(Widget, args);
 			e.Effects = args.Effects.ToWpf();
+
 			e.Handled = true;
+			if (lastCursor != MouseHandler.s_CursorSetCount)
+				e.Data.SetDataEx(WpfFrameworkElement.CustomCursor_DataKey, true);
 		}
 
-
 		protected virtual DragEventArgs GetDragEventArgs(sw.DragEventArgs data, object controlObject)
-        {
-            var dragData = (data.Data as sw.DataObject).ToEto();
-            var sourceWidget = data.Data.GetData("source");
-            var source = sourceWidget == null ? null : (Control)sourceWidget;
+		{
+			var dragData = (data.Data as sw.DataObject).ToEto();
+
+			Control source = WpfFrameworkElement.DragSourceControl;
+
 			var location = data.GetPosition(Control).ToEto();
 			var modifiers = Keys.None;
 			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.AltKey))
@@ -574,10 +749,10 @@ namespace Eto.Wpf.Forms
 				buttons |= MouseButtons.Alternate;
 			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.MiddleMouseButton))
 				buttons |= MouseButtons.Middle;
-			return new DragEventArgs(source, dragData, data.AllowedEffects.ToEto(), location, modifiers, buttons, controlObject);
-        }
+			return new WpfDragEventArgs(source, dragData, data.AllowedEffects.ToEto(), location, modifiers, buttons, controlObject);
+		}
 
-        void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
+		void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
 		{
 			var tiargs = new TextInputEventArgs(e.Text);
 			Callback.OnTextInput(Widget, tiargs);
@@ -599,42 +774,53 @@ namespace Eto.Wpf.Forms
 		void HandleKeyDown(object sender, swi.KeyEventArgs e)
 		{
 			var args = e.ToEto(KeyEventType.KeyDown);
-			if (args.Key != Keys.None)
+			if (args.KeyData != Keys.None)
 			{
 				Callback.OnKeyDown(Widget, args);
 				e.Handled = args.Handled;
 			}
 		}
 
+		void HandleKeyUp(object sender, swi.KeyEventArgs e)
+		{
+			var args = e.ToEto(KeyEventType.KeyUp);
+			if (args.KeyData != Keys.None)
+			{
+				Callback.OnKeyUp(Widget, args);
+				e.Handled = args.Handled;
+			}
+		}
+
 		void HandleMouseMove(object sender, swi.MouseEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			Callback.OnMouseMove(Widget, args);
 			e.Handled = args.Handled;
 		}
 
-		void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
+		protected virtual void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control, swi.MouseButtonState.Released);
-			Callback.OnMouseUp(Widget, args);
-			e.Handled = args.Handled;
+			var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
 			if (isMouseCaptured && Control.IsMouseCaptured)
 			{
 				Control.ReleaseMouseCapture();
 				isMouseCaptured = false;
 			}
+
+			Callback.OnMouseUp(Widget, args);
+			e.Handled = args.Handled;
 		}
 
 		void HandleMouseDoubleClick(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			Callback.OnMouseDoubleClick(Widget, args);
 			e.Handled = args.Handled;
 		}
 
-		void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
+		protected virtual void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(Control);
+			var args = e.ToEto(ContainerControl);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Callback.OnMouseDoubleClick(Widget, args);
 			if (!args.Handled)
@@ -660,7 +846,7 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-        protected override void Initialize()
+		protected override void Initialize()
 		{
 			base.Initialize();
 			Control.Tag = this;
@@ -671,7 +857,13 @@ namespace Eto.Wpf.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			if (Widget.IsAttached)
+			{
+				SetDefaultScale();
+			}
 		}
+		
+		protected virtual void SetDefaultScale() => SetScale(true, true);
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
@@ -718,8 +910,6 @@ namespace Eto.Wpf.Forms
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
-			SetScale(false, false);
-
 			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
 			{
 				var parent = Widget.ParentWindow;
@@ -728,10 +918,11 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public virtual void SetParent(Container parent)
+		public virtual void SetParent(Container oldParent, Container newParent)
 		{
-			if (parent == null && Widget.VisualParent != null)
+			if (newParent == null && Widget.VisualParent != null)
 			{
+				// don't use GetWpfContainer() extension as we don't want to traverse themed controls
 				var currentParent = Widget.VisualParent.Handler as IWpfContainer;
 				if (currentParent != null)
 					currentParent.Remove(ContainerControl);
@@ -782,14 +973,33 @@ namespace Eto.Wpf.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
-        public void DoDragDrop(DataObject data, DragEffects allowedAction)
-        {
+		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF offset)
+		{
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			var dataObject = data.ToWpf();
-            dataObject.SetData("source", Widget);
-            sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
-        }
 
+			WpfFrameworkElement.DragSourceControl = Widget;
+
+			sw.DragSourceHelper.RegisterDefaultDragSource(Control, dataObject);
+			sw.DragSourceHelper.AllowDropDescription(true);
+
+			sw.WpfDataObjectExtensions.SetDropDescription(dataObject, sw.DropImageType.Invalid, null, null);
+			if (image != null)
+			{
+				sw.WpfDataObjectExtensions.SetDragImage(dataObject, image.ToWpf(), offset.ToWpf());
+			}
+			else
+			{
+				// no image, but use new drag manager anyway because it's awesome
+				image = new Bitmap(1, 1, PixelFormat.Format32bppRgba);
+				sw.WpfDataObjectExtensions.SetDragImage(dataObject, image.ToWpf(), PointF.Empty.ToWpf());
+			}
+
+			sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
+
+			WpfFrameworkElement.DragSourceControl = null;
+			sw.DragSourceHelper.UnregisterDefaultDragSource(Control);
+		}
 
 
 		public virtual Window GetNativeParentWindow()
@@ -828,6 +1038,44 @@ namespace Eto.Wpf.Forms
 			// otherwise, we're hosted it something native like win32 or mfc.
 			// TODO: check if handle is a window?
 			return WinFormsHelpers.ToEtoWindow(handle);
+		}
+
+		protected void AttachPropertyChanged(sw.DependencyProperty property, EventHandler<sw.DependencyPropertyChangedEventArgs> handler, sw.DependencyObject control = null, object key = null)
+		{
+			control = control ?? Control;
+			Widget.Properties.Set(key ?? property, PropertyChangeNotifier.Register(property, handler, control));
+		}
+
+		public void Print()
+		{
+			var dlg = new swc.PrintDialog();
+			if (dlg.ShowDialog() == true)
+			{
+				dlg.PrintVisual(ContainerControl, string.Empty);
+			}
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+		}
+
+		internal bool PerformOnLoad(Action action)
+		{
+			if (Control.IsLoaded)
+				return false;
+			var actionList = Widget.Properties.Get<List<Action>>(WpfFrameworkElement.LoadActionList_Key);
+			if (actionList == null)
+			{
+				actionList = new List<Action>();
+				Control.Loaded += (sender, e) =>
+				{
+					for (int i = 0; i < actionList.Count; i++)
+					{
+						actionList[i]();
+					}
+					actionList.Clear();
+				};
+				Widget.Properties.Set(WpfFrameworkElement.LoadActionList_Key, actionList);
+			}
+			actionList.Add(action);
+			return true;
 		}
 	}
 }

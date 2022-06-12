@@ -55,6 +55,25 @@ namespace Eto.Forms
 			this.Item = item;
 		}
 	}
+	
+	/// <summary>
+	/// Enumeration of the types of grid cells
+	/// </summary>
+	public enum GridCellType
+	{
+		/// <summary>
+		/// Empty part of the grid
+		/// </summary>
+		None,
+		/// <summary>
+		/// Cell containing the data, that is when the row and column are a valid value.
+		/// </summary>
+		Data,
+		/// <summary>
+		/// Column header
+		/// </summary>
+		ColumnHeader
+	}
 
 	/// <summary>
 	/// Information of a cell in the <see cref="TreeGridView"/>
@@ -62,28 +81,42 @@ namespace Eto.Forms
 	public class TreeGridCell
 	{
 		/// <summary>
-		/// Gets the item associated with the row of the cell.
+		/// Gets the item associated with the row of the cell, or null if there is no item.
 		/// </summary>
 		/// <value>The row item.</value>
 		public object Item { get; }
 
 		/// <summary>
-		/// Gets the column of the cell, or null
+		/// Gets the column of the cell, or null if there is no column at the specified location.
 		/// </summary>
 		/// <value>The column.</value>
 		public GridColumn Column { get; }
 
 		/// <summary>
-		/// Gets the index of the column.
+		/// Gets the index of the column, or -1 if there is no column at the specified location.
 		/// </summary>
 		/// <value>The index of the column.</value>
 		public int ColumnIndex { get; }
+		
+		/// <summary>
+		/// Gets the type of the cell
+		/// </summary>
+		/// <value>Type of the cell</value>
+		public GridCellType Type { get; }
 
-		internal TreeGridCell(object item, GridColumn column, int columnIndex)
+		/// <summary>
+		/// Initializes a new instance of the TreeGridCell class
+		/// </summary>
+		/// <param name="column">Column instance, or null if no column (e.g. empty area to right of columns)</param>
+		/// <param name="columnIndex">Index of the column for this cell, or -1 if no column (e.g. empty area to right of columns)</param>
+		/// <param name="type">Type of the cell, e.g. header, data, none</param>
+		/// <param name="item">Item instance for this row</param>
+		public TreeGridCell(GridColumn column, int columnIndex, GridCellType type, object item)
 		{
 			Item = item;
 			Column = column;
 			ColumnIndex = columnIndex;
+			Type = type;
 		}
 	}
 
@@ -556,26 +589,25 @@ namespace Eto.Forms
 		/// <summary>
 		/// Refreshes the specified item and all its children, keeping the selection if not part of the refreshed nodes
 		/// </summary>
-		/// <param name="item">Item to refresh</param>
-		public void ReloadItem(ITreeGridItem item)
-		{
-			Handler.ReloadItem(item);
-		}
+		/// <param name="item">Item to refresh, including its children</param>
+		public void ReloadItem(ITreeGridItem item) => ReloadItem(item, true);
 
 		/// <summary>
-		/// Gets the node at a specified location from the origin of the control
+		/// Refreshes the specified item and optionally all of its children, keeping the selection if not part of the refreshed nodes
+		/// </summary>
+		/// <param name="item">Item to refresh</param>
+		/// <param name="reloadChildren">Reload children of the specified item</param>
+		public void ReloadItem(ITreeGridItem item, bool reloadChildren) => Handler.ReloadItem(item, reloadChildren);
+
+		/// <summary>
+		/// Gets the cell information at a specified location from the origin of the control
 		/// </summary>
 		/// <remarks>
 		/// Useful for determining which node is under the mouse cursor.
 		/// </remarks>
-		/// <returns>The item from the data store that is displayed at the specified location</returns>
+		/// <returns>The cell information at the specified location</returns>
 		/// <param name="location">Point to find the node</param>
-		public TreeGridCell GetCellAt(PointF location)
-		{
-			int column;
-			var item = Handler.GetCellAt(location, out column);
-			return new TreeGridCell(item, column >= 0 ? Columns[column] : null, column);
-		}
+		public TreeGridCell GetCellAt(PointF location) => Handler.GetCellAt(location);
 
 		/// <summary>
 		/// Gets the tree grid drag info for the specified DragEventArgs.
@@ -726,18 +758,18 @@ namespace Eto.Forms
 			void ReloadData();
 
 			/// <summary>
-			/// Refreshes the specified item and all its children, keeping the selection if not part of the refreshed nodes
+			/// Refreshes the specified item and optionally all of its children, keeping the selection if not part of the refreshed nodes
 			/// </summary>
 			/// <param name="item">Item to refresh</param>
-			void ReloadItem(ITreeGridItem item);
+			/// <param name="reloadChildren">Reload children of the specified item</param>
+			void ReloadItem(ITreeGridItem item, bool reloadChildren);
 
 			/// <summary>
-			/// Gets the item and column of a location in the control.
+			/// Gets the cell information at a specified location from the origin of the control
 			/// </summary>
-			/// <returns>The item from the data store that is displayed at the specified location</returns>
+			/// <returns>The cell information at the specified location</returns>
 			/// <param name="location">Point to find the node</param>
-			/// <param name="column">Column at the location, or -1 if no column (e.g. at the end of the row)</param>
-			ITreeGridItem GetCellAt(PointF location, out int column);
+			TreeGridCell GetCellAt(PointF location);
 
 			/// <summary>
 			/// Gets the tree grid drag info for the specified DragEventArgs.

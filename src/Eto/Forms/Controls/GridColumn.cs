@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -17,7 +18,7 @@ namespace Eto.Forms
 	[ContentProperty("DataCell")]
 	public class GridColumn : Widget
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets or sets the text to display in the header of the column.
@@ -104,6 +105,62 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this column should expand to fill the available space in the Grid
+		/// </summary>
+		/// <remarks>
+		/// If more than one column has this set, they will share the space evenly.
+		/// </remarks>
+		/// <value><c>true</c> to expand the column; otherwise, <c>false</c></value>
+		public bool Expand
+		{
+			get => Handler.Expand;
+			set => Handler.Expand = value;
+		}
+
+		/// <summary>
+		/// Gets or sets a value to specify the header text alignment for this column
+		/// </summary>
+		/// <value>TextAlignment for the column header</value>
+		public TextAlignment HeaderTextAlignment
+		{
+			get => Handler.HeaderTextAlignment;
+			set => Handler.HeaderTextAlignment = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the minimum width for the column
+		/// </summary>
+		/// <value>The column minimum width</value>
+		public int MinWidth
+		{
+			get => Handler.MinWidth;
+			set => Handler.MinWidth = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum width for the column
+		/// </summary>
+		/// <value>The column maximum width</value>
+		public int MaxWidth
+		{
+			get => Handler.MaxWidth;
+			set => Handler.MaxWidth = value;
+		}
+		
+		/// <summary>
+		/// Gets or sets the index of the column in display order, or -1 to use the order they are added.
+		/// </summary>
+		/// <remarks>
+		/// This value must be within the range of the total number of columns that are added.
+		/// </remarks>
+		[DefaultValue(-1)]
+		public int DisplayIndex
+		{
+			get => Handler.DisplayIndex;
+			set => Handler.DisplayIndex = value;
+		}
+
+		/// <summary>
 		/// Handler interface for the <see cref="GridColumn"/>.
 		/// </summary>
 		public new interface IHandler : Widget.IHandler
@@ -159,6 +216,41 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
 			bool Visible { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this column should expand to fill the available space in the Grid
+			/// </summary>
+			/// <remarks>
+			/// If more than one column has this set, they will share the space evenly.
+			/// </remarks>
+			/// <value><c>true</c> to expand the column; otherwise, <c>false</c></value>
+			bool Expand { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value to specify the header text alignment for this column
+			/// </summary>
+			/// <value>TextAlignment for the column header</value>
+			TextAlignment HeaderTextAlignment { get; set; }
+
+			/// <summary>
+			/// Gets or sets the minimum width for the column
+			/// </summary>
+			/// <value>The column minimum width</value>
+			int MinWidth { get; set; }
+
+			/// <summary>
+			/// Gets or sets the maximum width for the column
+			/// </summary>
+			/// <value>The column maximum width</value>
+			int MaxWidth { get; set; }
+			
+			/// <summary>
+			/// Gets or sets the index of the column in display order, or -1 to use the order they are added.
+			/// </summary>
+			/// <remarks>
+			/// This value must be within the range of the total number of columns that are added.
+			/// </remarks>
+			int DisplayIndex { get; set; }
 		}
 	}
 }

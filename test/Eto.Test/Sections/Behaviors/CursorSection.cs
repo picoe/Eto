@@ -1,43 +1,114 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", typeof(Cursor))]
-	public class CursorSection : Panel
+	public class CursorSection : Scrollable
 	{
-		public CursorSection()
+		class CursorRect
 		{
-			var layout = new TableLayout();
-			layout.Spacing = new Size(20, 20);
+			public Rectangle Rectangle { get; set; }
+			public Cursor Cursor { get; set; }
+			public string Text { get; set; }
+		}
 
-			TableRow row;
+		class CursorDrawable : Drawable
+		{
+			public List<CursorRect> Rects { get; } = new List<CursorRect>();
+			protected override void OnMouseMove(MouseEventArgs e)
+			{
+				base.OnMouseMove(e);
+				Cursor = Cursors.Default; // should be able to set more than once.
 
-			layout.Rows.Add(row = new TableRow());
+				var loc = Rects.FirstOrDefault(r => r.Rectangle.Contains(Point.Round(e.Location)));
+				var c = loc?.Cursor ?? Cursors.Default;
+				Cursor = c;
+			}
 
+			protected override void OnPaint(PaintEventArgs e)
+			{
+				base.OnPaint(e);
+				var g = e.Graphics;
+				foreach (var cursorRect in Rects)
+				{
+					var rect = cursorRect.Rectangle;
+					g.FillRectangle(Colors.Silver, rect);
+					var textSize = Size.Ceiling(g.MeasureString(SystemFonts.Default(), cursorRect.Text));
+
+					var textLocation = rect.Center - textSize / 2;
+					g.DrawText(SystemFonts.Default(), Colors.Black, textLocation, cursorRect.Text);
+				}
+			}
+		}
+
+		IEnumerable<(string name, Cursor cursor)> GetCursors()
+		{
 			foreach (var type in Enum.GetValues(typeof(CursorType)).OfType<CursorType?>())
 			{
+				yield return (type.ToString(), new Cursor(type.Value));
+			}
+
+			yield return ("Custom (.cur)", TestIcons.TestCursor);
+			yield return ("Custom (.png)", new Cursor(new Bitmap(TestIcons.Logo, 32, 32), new PointF(16, 16)));
+		}
+
+		public CursorSection()
+		{
+
+			var layout = new DynamicLayout();
+			layout.BeginCentered(spacing: new Size(10, 10), yscale: true);
+
+			var drawable = new CursorDrawable();
+
+			var rect = new Rectangle(0, 0, 100, 50);
+
+			layout.Add("Label");
+			layout.BeginVertical(spacing: new Size(5, 5));
+			layout.BeginHorizontal();
+			int count = 0;
+			foreach (var type in GetCursors())
+			{
+				var cursor = type.cursor;
+				var text = type.name;
+				drawable.Rects.Add(new CursorRect { Rectangle = rect, Cursor = cursor, Text = text });
+				rect.X += rect.Width + 5;
+
 				var label = new Label
 				{ 
 					Size = new Size(100, 50), 
-					Text = type.ToString(),
+					Text = text,
 					VerticalAlignment = VerticalAlignment.Center,
 					TextAlignment = TextAlignment.Center,
 					BackgroundColor = Colors.Silver
 				};
-				if (type == null)
+				if (cursor == null)
 					label.Cursor = null;
 				else
-					label.Cursor = new Cursor(type.Value);
-				row.Cells.Add(label);
+					label.Cursor = cursor;
+				layout.Add(label);
 
-				if (row.Cells.Count > 3)
-					layout.Rows.Add(row = new TableRow());
+				if (count++ > 3)
+				{
+					count = 0;
+					rect.X = 0;
+					rect.Y += rect.Height + 5;
+					layout.EndBeginHorizontal();
+				}
 			}
+			layout.EndHorizontal();
+			layout.EndVertical();
 
-			Content = TableLayout.AutoSized(layout, centered: true);
+			layout.Add("Drawable with MouseMove");
+			layout.Add(drawable);
+			layout.EndCentered();
+
+			drawable.Size = new Size(340, rect.Y + rect.Height + 20);
+
+			Content = layout;
 
 		}
 	}

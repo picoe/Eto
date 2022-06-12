@@ -40,7 +40,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var element = (swc.ComboBox)base.GenerateElement(cell, dataItem);
 				Initialize(cell, element, dataItem);
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			void Initialize(swc.DataGridCell cell, swc.ComboBox control, object dataItem)
@@ -72,7 +72,7 @@ namespace Eto.Wpf.Forms.Cells
 					};
 					SetControlEditInitialized(element, true);
 				}
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)

@@ -82,12 +82,12 @@ namespace Eto.GtkSharp.Forms.Menu
 
 		public ButtonMenuItem ApplicationMenu
 		{
-			get { return Widget.Items.GetSubmenu("&File", -100); }
+			get { return Widget.Items.GetSubmenu(Application.Instance.Localize(Widget, "&File"), -100); }
 		}
 
 		public ButtonMenuItem HelpMenu
 		{
-			get { return Widget.Items.GetSubmenu("&Help", 1000); }
+			get { return Widget.Items.GetSubmenu(Application.Instance.Localize(Widget, "&Help"), 1000); }
 		}
 	}
 }

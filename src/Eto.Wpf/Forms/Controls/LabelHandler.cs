@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using swc = System.Windows.Controls;
@@ -29,7 +29,7 @@ namespace Eto.Wpf.Forms.Controls
 	public class LabelHandler : WpfControl<swc.Label, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly swc.AccessText accessText;
-		sw.Size? previousRenderSize;
+		double? previousDesiredHeight;
 		string text;
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
@@ -37,7 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 			accessText.TextDecorations = decorations;
 		}
 
-		public LabelHandler ()
+		public LabelHandler()
 		{
 			accessText = new swc.AccessText();
 			Control = new EtoLabel
@@ -52,22 +52,36 @@ namespace Eto.Wpf.Forms.Controls
 
 		void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
 		{
-			if (previousRenderSize == null)
+			// not loaded? don't worry about it.
+			if (!Control.IsLoaded)
+				return;
+
+			// if we have a set height or no wrapping, let's skip this
+			if (Wrap == WrapMode.None || !double.IsNaN(UserPreferredSize.Height))
+				return;
+
+			var newDesiredHeight = Control.DesiredSize.Height;
+			if (previousDesiredHeight == null)
 			{
 				// don't update preferred sizes when called the first time.
 				// when there's many labels this causes a major slowdown
 				// the initial size should already have been taken care of by 
 				// the initial layout pass.
-				previousRenderSize = Control.RenderSize;
+				previousDesiredHeight = newDesiredHeight;
 				return;
 			}
 
-			if (previousRenderSize == Control.RenderSize)
+			// Ignore any change that is less than half the line height of the current font
+			// as WPF will return inconsistent results for its DesiredSize.Height in
+			// odd scales to position on pixel boundaries (e.g. 150%, 175%), 
+			// causing an endless update cycle in some cases.
+			if (Math.Abs(previousDesiredHeight.Value - newDesiredHeight) < Control.FontSize / 2)
 				return;
-			// update parents only when the render size has changed
-			previousRenderSize = Control.RenderSize;
-            if (Wrap != WrapMode.None)
-                UpdatePreferredSize();
+
+			// update parents when the actual desired height has changed
+			// otherwise parent containers won't shrink vertically when it gets wider when wrapped
+			previousDesiredHeight = newDesiredHeight;
+			UpdatePreferredSize();
 		}
 
 		protected override void Initialize()
@@ -112,7 +126,8 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				switch (accessText.TextWrapping) {
+				switch (accessText.TextWrapping)
+				{
 					case sw.TextWrapping.NoWrap:
 						return WrapMode.None;
 					case sw.TextWrapping.Wrap:
@@ -120,7 +135,7 @@ namespace Eto.Wpf.Forms.Controls
 					case sw.TextWrapping.WrapWithOverflow:
 						return WrapMode.Word;
 					default:
-						throw new NotSupportedException ();
+						throw new NotSupportedException();
 				}
 			}
 			set
@@ -142,16 +157,16 @@ namespace Eto.Wpf.Forms.Controls
 							throw new NotSupportedException();
 					}
 					SetText();
-                    UpdatePreferredSize();
+					UpdatePreferredSize();
 				}
 			}
 		}
 
-        public override void UpdatePreferredSize()
-        {
-            ParentMinimumSize = WpfConversions.ZeroSize;
-            base.UpdatePreferredSize();
-        }
+		public override void UpdatePreferredSize()
+		{
+			ParentMinimumSize = WpfConversions.ZeroSize;
+			base.UpdatePreferredSize();
+		}
 
 		public override Color TextColor
 		{

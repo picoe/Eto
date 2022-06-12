@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if GTKCORE
+using System;
 using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
@@ -47,6 +48,7 @@ namespace Eto.GtkSharp.Forms
 			Control.ShowAll();
 			var response = (Gtk.ResponseType)Control.Run();
 			Control.Hide();
+			Control.Unrealize();
 
 			if (response == Gtk.ResponseType.Ok)
 			{
@@ -58,3 +60,4 @@ namespace Eto.GtkSharp.Forms
 		}
 	}
 }
+#endif

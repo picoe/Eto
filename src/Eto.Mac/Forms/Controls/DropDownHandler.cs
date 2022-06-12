@@ -5,35 +5,7 @@ using System.Collections.Generic;
 using System.Collections;
 using Eto.Drawing;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -67,12 +39,16 @@ namespace Eto.Mac.Forms.Controls
 
 		CollectionHandler collection;
 
-		public class EtoPopUpButtonCell : NSPopUpButtonCell
+		public class EtoPopUpButtonCell : NSPopUpButtonCell, IColorizeCell
 		{
 			NSDictionary textAttributes;
 			Color? textColor;
-
-			public Color? Color { get; set; }
+			ColorizeView colorize;
+			public Color? Color
+			{
+				get => colorize?.Color;
+				set => ColorizeView.Create(ref colorize, value);
+			}
 
 			public Color? TextColor
 			{
@@ -86,25 +62,28 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
 			{
-				if (Color != null)
+				if (NSGraphicsContext.IsCurrentContextDrawingToScreen)
 				{
-					MacEventView.Colourize(controlView, Color.Value, delegate
-					{
-						base.DrawBezelWithFrame(frame, controlView);
-					});
-				}
-				else
+					colorize?.Begin(frame, controlView);
 					base.DrawBezelWithFrame(frame, controlView);
+					colorize?.End();
+				}
 			}
 
 			public override CGRect DrawTitle(NSAttributedString title, CGRect frame, NSView controlView)
 			{
+				var str = new NSMutableAttributedString(title);
+				var range = new NSRange(0, str.Length);
 				if (textAttributes != null)
 				{
-					var str = new NSMutableAttributedString(title);
-					str.AddAttributes(textAttributes, new NSRange(0, title.Length));
-					title = str;
+					str.AddAttributes(textAttributes, range);
 				}
+
+				// enforce the control font if it had been overridden for this item, macOS doesn't support non-standard fonts for its NSPopUpButton.
+				if (controlView is NSControl control)
+					str.AddAttribute(NSStringAttributeKey.Font, control.Font, range);
+
+				title = str;
 				return base.DrawTitle(title, frame, controlView);
 			}
 		}
@@ -118,17 +97,23 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); }
 			}
+			EtoPopUpButtonCell cell;
+
+			public EtoPopUpButton(IntPtr handle)
+				: base(handle)
+			{
+				Cell = cell = new EtoPopUpButtonCell();
+			}
 
 			public EtoPopUpButton()
 			{
-				Cell = new EtoPopUpButtonCell();
+				Cell = cell = new EtoPopUpButtonCell();
 			}
 		}
 
-		protected override NSPopUpButton CreateControl()
-		{
-			return new EtoPopUpButton();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSPopUpButton CreateControl() => new EtoPopUpButton();
 
 		protected override void Initialize()
 		{
@@ -141,16 +126,45 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var handler = GetHandler(sender) as DropDownHandler;
 			handler?.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
+
+			
+
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public DropDownHandler Handler { get; set; }
 
-			NSMenuItem CreateItem(object dataItem)
+			NSMenuItem CreateItem(object dataItem, int row)
 			{
-				var item = new NSMenuItem(Handler.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty);
-				item.Image = Handler.Widget.ItemImageBinding?.GetValue(dataItem).ToNS();
+				var h = Handler;
+
+				var item = new NSMenuItem();
+				var title = h.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty;
+				item.Image = h.Widget.ItemImageBinding?.GetValue(dataItem).ToNS();
+
+				if (h.IsEventHandled(DropDown.FormatItemEvent))
+				{
+					var args = new DropDownFormatEventArgs(dataItem, row, h.Font);
+					h.Callback.OnFormatItem(h.Widget, args);
+					if (args.IsFontSet && args.Font != null)
+					{
+						var attr = new NSMutableAttributedString(title);
+						var font = args.Font.ToNS();
+						var range = new NSRange(0, attr.Length);
+						attr.AddAttribute(NSStringAttributeKey.Font, font, range);
+						item.AttributedTitle = attr;
+					}
+					else
+					{
+						item.Title = title;
+					}
+				}
+				else
+				{
+					item.Title = title;
+				}
+
 				return item;
 			}
 
@@ -168,7 +182,7 @@ namespace Eto.Mac.Forms.Controls
 				var itemList = items.ToList();
 				for (int i = 0; i < itemList.Count; i++)
 				{
-					var menuItem = CreateItem(itemList[i]);
+					var menuItem = CreateItem(itemList[i], i);
 					if (i < itemList.Count - 1)
 						Messaging.void_objc_msgSend_IntPtr(menu.Handle, selAddItem_Handle, menuItem.Handle);
 					else
@@ -183,7 +197,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void AddItem(object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.Menu.AddItem(CreateItem(item));
+				Handler.Control.Menu.AddItem(CreateItem(item, Count));
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.InvalidateMeasure();
@@ -192,7 +206,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void InsertItem(int index, object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.Menu.InsertItem(CreateItem(item), index);
+				Handler.Control.Menu.InsertItem(CreateItem(item, index), index);
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.InvalidateMeasure();
@@ -221,23 +235,34 @@ namespace Eto.Mac.Forms.Controls
 					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 				}
 			}
+
+			public void Recreate()
+			{
+				Handler.Control.RemoveAllItems();
+				InitializeCollection();
+				Handler.InvalidateMeasure();
+			}
 		}
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection == null ? null : collection.Collection; }
+			get => collection?.Collection;
 			set
 			{
 				var selected = Widget.SelectedValue;
+				var selectedIndex = SelectedIndex;
 				Control.SelectItem(-1);
 				collection?.Unregister();
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
 				if (!ReferenceEquals(selected, null))
 				{
-					Control.SelectItem(collection.IndexOf(selected));
-					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+					var newIndex = collection.IndexOf(selected);
+					Control.SelectItem(newIndex);
+					if (selectedIndex != newIndex)
+						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
+				InvalidateMeasure();
 			}
 		}
 
@@ -250,19 +275,6 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Control.SelectItem(value);
 					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
-				}
-			}
-		}
-
-		public override Color BackgroundColor
-		{
-			get { return ((EtoPopUpButtonCell)Control.Cell).Color ?? Colors.Transparent; }
-			set
-			{
-				if (value != BackgroundColor)
-				{
-					((EtoPopUpButtonCell)Control.Cell).Color = value;
-					Control.SetNeedsDisplay();
 				}
 			}
 		}
@@ -283,8 +295,30 @@ namespace Eto.Mac.Forms.Controls
 		public bool ShowBorder
 		{
 			get { return Control.Bordered; }
-			set { Control.Bordered = value; }
+			set
+			{
+				Control.Bordered = value;
+				InvalidateMeasure();
+			}
 		}
+
+		IIndirectBinding<string> itemTextBinding;
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => itemTextBinding;
+			set
+			{
+				itemTextBinding = value;
+				var dataStore = DataStore;
+				if (dataStore != null)
+				{
+					// re-add all items
+					DataStore = dataStore;
+				}
+			}
+		}
+
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		void EnsureDelegate()
 		{
@@ -299,6 +333,9 @@ namespace Eto.Mac.Forms.Controls
 				case DropDown.DropDownOpeningEvent:
 				case DropDown.DropDownClosedEvent:
 					EnsureDelegate();
+					break;
+				case DropDown.FormatItemEvent:
+					collection?.Recreate();
 					break;
 				default:
 					base.AttachEvent(id);

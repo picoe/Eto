@@ -31,7 +31,8 @@ namespace Eto.Serialization.Xaml
 			return
 				GetStream(type, type.FullName + ".xeto")
 				?? GetStream(type, type.FullName + ".xaml")
-				?? GetStream(type, type.Name + ".xeto"); // for f# projects
+				?? GetStream(type, type.Name + ".xeto") // for F#/VB.NET projects
+				?? throw new InvalidOperationException($"Embedded resource '{type.FullName}.xeto' not found in assembly '{type.GetAssembly()}'");
 		}
 
 		static Stream GetStream(Type type, string resourceName)
@@ -89,6 +90,9 @@ namespace Eto.Serialization.Xaml
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static void Load<T>(T instance)
 		{
+			if (Equals(instance, null))
+				throw new ArgumentNullException(nameof(instance));
+
 			using (var stream = GetStream(typeof(T)))
 			{
 				Load<T>(stream, instance);
@@ -110,8 +114,14 @@ namespace Eto.Serialization.Xaml
 		/// <returns>An existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static void Load<T>(T instance, string resourceName)
 		{
+			if (Equals(instance, null))
+				throw new ArgumentNullException(nameof(instance));
+
 			using (var stream = GetStream(typeof(T), resourceName))
 			{
+				if (stream == null)
+					throw new ArgumentException(nameof(resourceName), $"Embedded resource '{resourceName}' not found in assembly '{typeof(T).GetAssembly()}'");
+
 				Load<T>(stream, instance);
 			}
 		}

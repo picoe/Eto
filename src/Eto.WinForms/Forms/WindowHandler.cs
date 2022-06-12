@@ -16,6 +16,30 @@ namespace Eto.WinForms.Forms
 		swf.IWin32Window Win32Window { get; }
 	}
 
+	public class WindowHandler : Window.IWindowHandler
+	{
+		internal static readonly object MovableByWindowBackground_Key = new object();
+		internal static readonly object IsClosing_Key = new object();
+
+		public Window FromPoint(PointF point)
+		{
+			var screenPoint = point.LogicalToScreen();
+			var windowHandle = Win32.WindowFromPoint(new Win32.POINT(screenPoint.X, screenPoint.Y));
+			if (windowHandle == IntPtr.Zero)
+				return null;
+			windowHandle = Win32.GetAncestor(windowHandle, Win32.GA.GA_ROOT);
+			
+			foreach (var window in Application.Instance.Windows)
+			{
+				if (window.NativeHandle == windowHandle)
+				{
+					return window;
+				}
+			}
+			return null;
+		}
+	}
+
 	public abstract class WindowHandler<TControl, TWidget, TCallback> : WindowsPanel<TControl, TWidget, TCallback>, Window.IHandler, IWindowHandler
 		where TControl : swf.Form
 		where TWidget : Window
@@ -32,6 +56,13 @@ namespace Eto.WinForms.Forms
 		bool clientWidthSet;
 		bool clientHeightSet;
 
+		public bool ShowShellDropForWindow
+		{
+			get => AllowDrop;
+			set => AllowDrop = value;
+		}
+
+		public virtual bool IsAttached => false;
 		public override swf.Control ContainerContentControl
 		{
 			get { return content; }
@@ -69,6 +100,31 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public bool MovableByWindowBackground
+		{
+			get => Widget.Properties.Get<bool>(WindowHandler.MovableByWindowBackground_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(WindowHandler.MovableByWindowBackground_Key, value))
+				{
+					if (value)
+						Widget.MouseDown += Content_MouseDown;
+					else
+						Widget.MouseDown -= Content_MouseDown;
+				}
+			}
+		}
+
+		private void Content_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Buttons == MouseButtons.Primary)
+			{
+				Win32.ReleaseCapture();
+				Win32.SendMessage(Control.Handle, Win32.WM.NCLBUTTONDOWN, (IntPtr)Win32.HT.CAPTION, IntPtr.Zero);
+				e.Handled = true;
+			}
+		}
+
 		protected override bool SetMinimumSize(Size size)
 		{
 			var sdsize = Size.Max(size, MinimumSize).ToSD();
@@ -82,6 +138,12 @@ namespace Eto.WinForms.Forms
 
 		protected override void Initialize()
 		{
+			if (IsAttached)
+				return;
+
+			// show shell drop images for the entire window
+			ShowShellDropForWindow = true;
+
 			Control.KeyPreview = !ApplicationHandler.BubbleKeyEvents;
 			Control.FormBorderStyle = DefaultWindowStyle;
 			resizable = Control.FormBorderStyle.IsResizable();
@@ -155,6 +217,8 @@ namespace Eto.WinForms.Forms
 
 		public override void OnLoadComplete(EventArgs e)
 		{
+			if (IsAttached)
+				return;
 			base.OnLoadComplete(e);
 
 			if ((!clientWidthSet || !clientHeightSet))// && Control.AutoSize)
@@ -164,7 +228,7 @@ namespace Eto.WinForms.Forms
 					availableSize.Width = 0;
 				if (!clientHeightSet)
 					availableSize.Height = 0;
-				contentSize = Content.GetPreferredSize(availableSize);
+				contentSize = Size.Ceiling(Content.GetPreferredSize(availableSize));
 			}
 		}
 		Size? contentSize;
@@ -183,21 +247,7 @@ namespace Eto.WinForms.Forms
 					Control.FormClosed += (sender, e) => Callback.OnClosed(Widget, EventArgs.Empty);
 					break;
 				case Window.ClosingEvent:
-					Control.FormClosing += delegate(object sender, swf.FormClosingEventArgs e)
-					{
-						var args = new CancelEventArgs(e.Cancel);
-						Callback.OnClosing(Widget, args);
-
-						if (!e.Cancel && swf.Application.OpenForms.Count <= 1
-						    || e.CloseReason == swf.CloseReason.ApplicationExitCall
-						    || e.CloseReason == swf.CloseReason.WindowsShutDown)
-						{
-							var app = ((ApplicationHandler)Application.Instance.Handler);
-							app.Callback.OnTerminating(app.Widget, args);
-						}
-
-						e.Cancel = args.Cancel;
-					};
+					Control.FormClosing += Control_FormClosing;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					Control.Shown += delegate
@@ -212,10 +262,7 @@ namespace Eto.WinForms.Forms
 					};
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.Deactivate += delegate
-					{
-						Callback.OnLostFocus(Widget, EventArgs.Empty);
-					};
+					Control.Deactivate += (sender, e) => Application.Instance.AsyncInvoke(() => Callback.OnLostFocus(Widget, EventArgs.Empty));
 					break;
 				case Window.WindowStateChangedEvent:
 					var oldState = Control.WindowState;
@@ -235,6 +282,39 @@ namespace Eto.WinForms.Forms
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		bool IsClosing
+		{
+			get => Widget.Properties.Get<bool>(WindowHandler.IsClosing_Key);
+			set => Widget.Properties.Set(WindowHandler.IsClosing_Key, value);
+		}
+
+		private void Control_FormClosing(object sender, swf.FormClosingEventArgs e)
+		{
+			IsClosing = true;
+			var args = new CancelEventArgs(e.Cancel);
+			Callback.OnClosing(Widget, args);
+
+			if (!e.Cancel && swf.Application.OpenForms.Count <= 1
+				|| e.CloseReason == swf.CloseReason.ApplicationExitCall
+				|| e.CloseReason == swf.CloseReason.WindowsShutDown)
+			{
+				var app = ((ApplicationHandler)Application.Instance.Handler);
+				app.Callback.OnTerminating(app.Widget, args);
+			}
+
+			e.Cancel = args.Cancel;
+			IsClosing = !e.Cancel;
+			
+			if (!e.Cancel)
+			{
+				InternalClosing();
+			}
+		}
+
+		internal virtual void InternalClosing()
+		{
 		}
 
 		public MenuBar Menu
@@ -309,10 +389,7 @@ namespace Eto.WinForms.Forms
 
 		public Eto.Forms.ToolBar ToolBar
 		{
-			get
-			{
-				return toolBar;
-			}
+			get => toolBar;
 			set
 			{
 				toolbarHolder.SuspendLayout();
@@ -329,33 +406,15 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public void AddToolbar(Eto.Forms.ToolBar toolBar)
-		{
-			Control.Controls.Add((swf.Control)toolBar.ControlObject);
-		}
-
-		public void RemoveToolbar(Eto.Forms.ToolBar toolBar)
-		{
-			Control.Controls.Remove((swf.Control)toolBar.ControlObject);
-		}
-
-		public void ClearToolbars()
-		{
-			foreach (swf.Control c in Control.Controls)
-			{
-				if (c is swf.ToolBar)
-					Control.Controls.Remove(c);
-			}
-		}
-
 		public void Close()
 		{
-			Control.Close();
+			if (!IsClosing)
+				Control.Close();
 		}
 
 		public Icon Icon
 		{
-			get { return icon; }
+			get => icon;
 			set
 			{
 				icon = value;
@@ -365,16 +424,13 @@ namespace Eto.WinForms.Forms
 
 		public string Title
 		{
-			get { return Control.Text; }
-			set { Control.Text = value; }
+			get => Control.Text;
+			set => Control.Text = value;
 		}
 
 		public new Point Location
 		{
-			get
-			{
-				return Control.Location.ToEto();
-			}
+			get => Control.Location.ToEto();
 			set
 			{
 				Control.Location = value.ToSD();
@@ -454,40 +510,39 @@ namespace Eto.WinForms.Forms
 			Control.Activate();
 		}
 
-		public void SendToBack()
-		{
-			Control.SendToBack();
-		}
+		public void SendToBack() => Control.SendToBack();
 
 		public virtual void SetOwner(Window owner)
 		{
 			Control.Owner = owner.ToSWF();
 		}
 
-		public Screen Screen
-		{
-			get { return swf.Screen.FromControl(Control).ToEto(); }
-		}
+		public Screen Screen => swf.Screen.FromControl(Control).ToEto();
 
 		public override bool Visible
 		{
-			get { return base.Visible; }
+			get { return Control.Visible; }
 			set
 			{
-				if (Visible != value)
+				//if (Visible != value)
 				{
-					base.Visible = value;
-					if (Widget.Loaded && value)
-						Callback.OnShown(Widget, EventArgs.Empty);
+					Control.Visible = value;
+				//	if (Widget.Loaded && value)
+				//		Callback.OnShown(Widget, EventArgs.Empty);
 				}
 			}
 		}
 
-		public float LogicalPixelSize
+		public float LogicalPixelSize => 1f;
+
+		public bool AutoSize
 		{
-			get
+			get => Control.AutoSize;
+			set
 			{
-				return 1f;
+				// TODO: not quite working as intended yet on winforms, user can't resize after this is turned on..
+				Control.AutoSizeMode = swf.AutoSizeMode.GrowAndShrink;
+				Control.AutoSize = value;
 			}
 		}
 	}

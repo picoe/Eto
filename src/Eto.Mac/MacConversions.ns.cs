@@ -1,17 +1,4 @@
 using System;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 
 namespace Eto.Mac
 {
@@ -43,11 +30,13 @@ namespace Eto.Mac
 
 		public static NSColor ToNS(this CGColor color)
 		{
-#if XAMMAC
-			return NSColor.FromCGColor(color);
-#else
-			return MacExtensions.NSColorFromCGColor(color);
-#endif
+			if (color == null)
+				return null;
+
+			if (MacVersion.IsAtLeast(10, 8))
+				return NSColor.FromCGColor(color);
+
+			return NSColor.FromColorSpace(new NSColorSpace(color.ColorSpace), color.Components);
 		}
 
 	}

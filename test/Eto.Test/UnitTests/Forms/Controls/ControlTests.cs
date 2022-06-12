@@ -6,6 +6,7 @@ using Eto.Drawing;
 using System.Threading;
 using System.Runtime.ExceptionServices;
 using System.Reflection;
+using System.Linq;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -13,9 +14,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	public class ControlTests : TestBase
 	{
 		[TestCaseSource(nameof(GetControlTypes))]
-		public void DefaultValuesShouldBeCorrect(Type controlType)
+		public void DefaultValuesShouldBeCorrect(IControlTypeInfo<Control> controlType)
 		{
-			TestProperties(f => (Control)Activator.CreateInstance(controlType),
+			TestProperties(f => controlType.CreateControl(),
 						   c => c.Enabled,
 						   c => c.ToolTip,
 						   c => c.TabIndex
@@ -23,12 +24,24 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
-		public void ControlShouldFireShownEvent(Type controlType)
+		public void ControlShouldFireShownEvent(IControlTypeInfo<Control> controlType)
 		{
 			int shownCount = 0;
+			int visualControlShownCount = 0;
+			int expectedVisualShown = 0;
 			Form(form =>
 			{
-				var ctl = (Control)Activator.CreateInstance(controlType);
+				var ctl = controlType.CreateControl();
+
+				// themed controls have visual controls!
+				foreach (var visualControl in ctl.VisualControls)
+				{
+					expectedVisualShown++;
+					visualControl.Shown += (sender, e) =>
+					{
+						visualControlShownCount++;
+					};
+				}
 				ctl.Shown += (sender, e) =>
 				{
 					shownCount++;
@@ -42,10 +55,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(0, shownCount);
 			});
 			Assert.AreEqual(1, shownCount);
+			Assert.AreEqual(expectedVisualShown, visualControlShownCount, "Visual controls didn't get Shown event triggered");
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
-		public void ControlShouldFireShownEventWhenAddedDynamically(Type controlType)
+		public void ControlShouldFireShownEventWhenAddedDynamically(IControlTypeInfo<Control> controlType)
 		{
 			Exception exception = null;
 			int shownCount = 0;
@@ -55,7 +69,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				{
 					try
 					{
-						var ctl = (Control)Activator.CreateInstance(controlType);
+						var ctl = controlType.CreateControl();
 						ctl.Shown += (sender2, e2) =>
 						{
 							shownCount++;
@@ -80,13 +94,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
-		public void ControlShouldFireShownEventWhenVisibleChanged(Type controlType)
+		public void ControlShouldFireShownEventWhenVisibleChanged(IControlTypeInfo<Control> controlType)
 		{
 			int shownCount = 0;
 			int? initialShownCount = null;
 			Form(form =>
 			{
-				var ctl = (Control)Activator.CreateInstance(controlType);
+				var ctl = controlType.CreateControl();
 				ctl.Shown += (sender2, e2) =>
 				{
 					shownCount++;
@@ -137,6 +151,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 								new FilePicker { FilePath = "/some/path/that/is/long/which/should/not/make/it/too/big" },
 								new GroupBox { Content = "Some content", Text = "Some text" },
 								new LinkButton {  Text = "LinkButton"},
+								new ListBox { Items = { "Item 1", "Item 2", "Item 3" } },
 								new NumericStepper(),
 								new PasswordBox(),
 								new ProgressBar { Value = 50 },
@@ -185,21 +200,21 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			// simply create all control types and ensure they can be GC'd without hooking up anything.
 			foreach (var type in GetAllControlTypes())
 			{
-				if (Platform.Instance.IsWpf)
+				if (Platform.Instance.IsWpf || Platform.Instance.IsMac)
 				{
-					// wpf has (known) problems GC'ing a Window right away, so let's not test it.
-					if (typeof(Window).GetTypeInfo().IsAssignableFrom(type))
+					// wpf and macos has (known) problems GC'ing a Window right away, so let's not test it.
+					if (typeof(Window).GetTypeInfo().IsAssignableFrom(type.Type))
 						continue;
 				}
 
 				if (Platform.Instance.IsWpf || Platform.Instance.IsWinForms)
 				{ 
 					// SWF.WebBrowser can't be GC'd for some reason either.  Not an Eto problem.
-					if (typeof(WebView).GetTypeInfo().IsAssignableFrom(type))
+					if (typeof(WebView).GetTypeInfo().IsAssignableFrom(type.Type))
 						continue;
 				}
 
-				yield return new ControlGCTest { ControlType = type };
+				yield return new ControlGCTest { ControlType = type.Type };
 			}
 
 			// extra tests for things that have known to cause a control not to be GC'd
@@ -244,5 +259,116 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.IsNull(reference.Target);
 			Assert.IsFalse(reference.IsAlive);
 		}
+
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlsShouldReturnAFont(IControlTypeInfo<Control> info)
+		{
+			Invoke(() =>
+			{
+				var control = info.CreateControl();
+				if (control is CommonControl commonControl)
+				{
+					Assert.IsNotNull(commonControl.Font);
+				}
+				else if (control is GroupBox groupBox)
+				{
+					Assert.IsNotNull(groupBox.Font);
+				}
+				else
+				{
+					Assert.Pass("Control does not have a font property");
+				}
+			});
+		}
+
+		[TestCaseSource(nameof(GetControlTypes)), ManualTest]
+		public void ControlsShouldNotHaveIntrinsicPadding(IControlTypeInfo<Control> info)
+		{
+			ManualForm("Controls should be touching horizontally and vertically,\nwithout being clipped.", form =>
+			{
+				return new TableLayout
+				{
+					Rows =
+					{
+						new TableRow(new TableCell(info.CreatePopulatedControl(), true), new TableCell(info.CreatePopulatedControl(), true)),
+						new TableRow(new Panel { Content = info.CreatePopulatedControl() }, info.CreatePopulatedControl()),
+						new TableRow(info.CreatePopulatedControl(), new Drawable { Content = info.CreatePopulatedControl() }),
+						null
+					}
+				};
+			});
+		}
+
+		[Test, ManualTest]
+		public void PointToScreenShouldWorkOnSecondaryScreen()
+		{
+			bool wasClicked = false;
+			Form childForm = null;
+			try
+			{
+				ManualForm("The Form with the button should be above the text box exactly.\nClick the button to pass the test, close the window to fail.", form =>
+				{
+					var screens = Screen.Screens.ToArray();
+					Assert.GreaterOrEqual(screens.Length, 2, "You must have a secondary monitor for this test");
+					form.Location = Point.Round(screens[1].Bounds.Location) + new Size(50, 50);
+					form.ClientSize = new Size(200, 200);
+
+					var textBox = new TextBox { Text = "You shouldn't see this" };
+
+					form.Shown += (sender, e) =>
+					{
+						childForm = new Form
+						{
+							WindowStyle = WindowStyle.None,
+							ShowInTaskbar = false,
+							Maximizable = false,
+							Resizable = false,
+							BackgroundColor = Colors.Red,
+							Topmost = true,
+							Location = Point.Round(textBox.PointToScreen(PointF.Empty)),
+							Size = textBox.Size
+						};
+						var b = new Button { Text = "Click Me!" };
+						b.Click += (sender2, e2) =>
+						{
+							wasClicked = true;
+							childForm.Close();
+							childForm = null;
+							form.Close();
+						};
+
+						childForm.Content = new TableLayout { Rows = { b } };
+						childForm.Show();
+					};
+
+					var layout = new DynamicLayout();
+					layout.AddCentered(textBox);
+
+					return layout;
+				}, allowPass: false, allowFail: false);
+			}
+			finally
+			{
+				if (childForm != null)
+					Application.Instance.Invoke(() => childForm.Close());
+			}
+			Assert.IsTrue(wasClicked, "The test completed without clicking the button");
+		}
+
+		[TestCaseSource(nameof(GetControlTypes)), InvokeOnUI]
+		public void ControlsShouldHavePreferredSize(IControlTypeInfo<Control> info)
+		{
+			var control = info.CreatePopulatedControl();
+			var size = control.GetPreferredSize();
+			Console.WriteLine($"PreferredSize for {info.Type}: {size}");
+			Assert.Greater(size.Width, 0, "#1.1 - Preferred width should be greater than zero");
+			Assert.Greater(size.Height, 0, "#1.2 - Preferred height should be greater than zero");
+			var padding = new Padding(10);
+			var container = new Panel { Content = control, Padding = padding };
+			var containerSize = container.GetPreferredSize();
+			Assert.That(containerSize.Width, Is.EqualTo(size.Width + padding.Horizontal).Within(0.1), "#2.1 - panel with padding should have correct width");
+			Assert.That(containerSize.Height, Is.EqualTo(size.Height + padding.Vertical).Within(0.1), "#2.2 - panel with padding should have correct height");
+		}
+
 	}
 }

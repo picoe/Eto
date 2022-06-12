@@ -33,7 +33,7 @@ namespace Eto.Wpf.Forms
 		public XceedColorDialog()
 		{
 			canvas = new xwt.ColorCanvas();
-			Background = sw.SystemColors.ControlBrush;
+			SetResourceReference(BackgroundProperty, sw.SystemColors.ControlBrushKey);
 
 			var doneButton = new swc.Button { Content = "OK", IsDefault = true, MinWidth = 80, Margin = new sw.Thickness(5) };
 			doneButton.Click += doneButton_Click;
@@ -91,11 +91,14 @@ namespace Eto.Wpf.Forms
 		{
 			if (parent != null)
 			{
+				if (!parent.HasFocus)
+					parent.Focus();
 				var owner = parent.ControlObject as sw.Window;
 				Control.Owner = owner;
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			}
 			var result = Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			if (result == true)
 			{
 				Callback.OnColorChanged(Widget, EventArgs.Empty);

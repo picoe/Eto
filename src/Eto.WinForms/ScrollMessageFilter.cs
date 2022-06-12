@@ -10,7 +10,9 @@ namespace Eto.WinForms
 			if (p != null)
 				return p.AutoScroll;
 			return control is DataGridView
+#if !NETCOREAPP3_1
 			|| control is DataGrid
+#endif
 			|| control is TreeView
 			|| control is ListControl
 			|| control is RichTextBox;

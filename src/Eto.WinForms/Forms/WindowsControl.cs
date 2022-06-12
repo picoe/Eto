@@ -7,10 +7,12 @@ using Eto.WinForms.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.WinForms.Forms.Menu;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace Eto.WinForms.Forms
 {
-	public interface IWindowsControl: Control.IHandler
+	public interface IWindowsControl : Control.IHandler
 	{
 		bool InternalVisible { get; }
 
@@ -27,6 +29,8 @@ namespace Eto.WinForms.Forms
 		void SetScale(bool xscale, bool yscale);
 
 		bool ShouldCaptureMouse { get; }
+		
+		bool MouseCaptured { get; set; }
 
 		bool XScale { get; }
 
@@ -39,6 +43,8 @@ namespace Eto.WinForms.Forms
 		void BeforeAddControl(bool top = true);
 
 		bool ShouldBubbleEvent(swf.Message msg);
+
+		bool UseShellDropManager { get; set; }
 	}
 
 	public static class WindowsControlExtensions
@@ -57,7 +63,8 @@ namespace Eto.WinForms.Forms
 
 		}
 
-		public static Size GetPreferredSize(this Control control, Size? availableSize = null)
+		[Obsolete("Use Control.GetPreferredSize instead")]
+		public static Size GetPreferredSize(Control control, Size? availableSize = null)
 		{
 			var handler = control.GetWindowsHandler();
 			return handler != null ? handler.GetPreferredSize(availableSize ?? Size.Empty) : Size.Empty;
@@ -88,6 +95,21 @@ namespace Eto.WinForms.Forms
 		}
 	}
 
+	static class WindowsControl
+	{
+		public static readonly object DesiredSizeKey = new object();
+		public static readonly object DesiredClientSizeKey = new object();
+		public static readonly object CursorKey = new object();
+		public static readonly object ToolTipKey = new object();
+		public static readonly object InternalVisibleKey = new object();
+		public static readonly object FontKey = new object();
+		public static readonly object Enabled_Key = new object();
+		public static readonly object UseShellDropManager_Key = new object();
+		public static readonly object MouseCaptured_Key = new object();
+
+		internal static Control DragSourceControl { get; set; }
+	}
+
 	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWindowsControl
 		where TControl : swf.Control
 		where TWidget : Control
@@ -96,11 +118,11 @@ namespace Eto.WinForms.Forms
 
 		// used in DrawableHandler
 		public class PanelBase<THandler> : swf.Panel
-			where THandler: WindowsControl<TControl, TWidget, TCallback>
+			where THandler : WindowsControl<TControl, TWidget, TCallback>
 		{
 			public THandler Handler { get; set; }
 
-			public PanelBase( THandler handler = null )
+			public PanelBase(THandler handler = null)
 			{
 				Handler = handler;
 				Size = sd.Size.Empty;
@@ -111,7 +133,7 @@ namespace Eto.WinForms.Forms
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var userSize = Handler.UserDesiredSize;
+				var userSize = Handler.UserPreferredSize;
 				var size = userSize.Width >= 0 && userSize.Height >= 0 ? sd.Size.Empty
 					: base.GetPreferredSize(proposedSize);
 				if (userSize.Width >= 0)
@@ -120,6 +142,7 @@ namespace Eto.WinForms.Forms
 					size.Height = Math.Max(userSize.Height, MinimumSize.Height);
 				return size;
 			}
+
 			// Need to override IsInputKey to capture 
 			// the arrow keys.
 			protected override bool IsInputKey(swf.Keys keyData)
@@ -142,26 +165,26 @@ namespace Eto.WinForms.Forms
 		public class EtoPanel<THandler> : PanelBase<THandler>
 			where THandler : WindowsControl<TControl, TWidget, TCallback>
 		{
-			public EtoPanel( THandler handler = null )
-				: base( handler )
+			public EtoPanel(THandler handler = null)
+				: base(handler)
 			{ }
 
 			// optimization especially for content on drawable
-			protected override void OnBackColorChanged( EventArgs e )
+			protected override void OnBackColorChanged(EventArgs e)
 			{
 				SetStyle
-					( swf.ControlStyles.AllPaintingInWmPaint
+					(swf.ControlStyles.AllPaintingInWmPaint
 					| swf.ControlStyles.DoubleBuffer
-					, BackColor.A != 255 );
-				base.OnBackColorChanged( e );
+					, BackColor.A != 255);
+				base.OnBackColorChanged(e);
 			}
-			protected override void OnParentBackColorChanged( EventArgs e )
+			protected override void OnParentBackColorChanged(EventArgs e)
 			{
 				SetStyle
-					( swf.ControlStyles.AllPaintingInWmPaint
+					(swf.ControlStyles.AllPaintingInWmPaint
 					| swf.ControlStyles.DoubleBuffer
-					, BackColor.A != 255 );
-				base.OnParentBackColorChanged( e );
+					, BackColor.A != 255);
+				base.OnParentBackColorChanged(e);
 			}
 		}
 
@@ -185,7 +208,7 @@ namespace Eto.WinForms.Forms
 		Size? cachedDefaultSize;
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
-			var size = UserDesiredSize;
+			var size = UserPreferredSize;
 			if (size.Width == -1 || size.Height == -1)
 			{
 				Size? defSize;
@@ -202,20 +225,40 @@ namespace Eto.WinForms.Forms
 			return Size.Max(parentMinimumSize, size);
 		}
 
-		static readonly object DesiredSizeKey = new object();
-
-		public Size UserDesiredSize
+		public SizeF GetPreferredSize(SizeF availableSize)
 		{
-			get { return Widget.Properties.Get<Size?>(DesiredSizeKey) ?? new Size(-1, -1); }
-			set { Widget.Properties.Set(DesiredSizeKey, value); }
+			if (!Widget.Loaded)
+				SetMinimumSizeInternal(false);
+			var size = Eto.Drawing.Size.Round(availableSize);
+			if (availableSize.Width >= float.MaxValue)
+			{
+				size.Width = int.MaxValue;
+			}
+			if (availableSize.Height >= float.MaxValue)
+			{
+				size.Height = int.MaxValue;
+			}
+			return GetPreferredSize(size, false);
 		}
 
-		static readonly object DesiredClientSizeKey = new object();
+		public Size UserPreferredSize
+		{
+			get { return Widget.Properties.Get<Size?>(WindowsControl.DesiredSizeKey) ?? new Size(-1, -1); }
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.DesiredSizeKey, value))
+					SetAutoSize();
+			}
+		}
 
 		public Size UserDesiredClientSize
 		{
-			get { return Widget.Properties.Get<Size?>(DesiredClientSizeKey) ?? new Size(-1, -1); }
-			set { Widget.Properties.Set(DesiredClientSizeKey, value); }
+			get { return Widget.Properties.Get<Size?>(WindowsControl.DesiredClientSizeKey) ?? new Size(-1, -1); }
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.DesiredClientSizeKey, value))
+					SetAutoSize();
+			}
 		}
 
 		public virtual Size ParentMinimumSize
@@ -231,12 +274,14 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public virtual bool ShouldCaptureMouse => false;
-
-		public virtual swf.Control ContainerControl
+		public virtual bool ShouldCaptureMouse => true;
+		public bool MouseCaptured
 		{
-			get { return Control; }
+			get => Widget.Properties.Get<bool>(WindowsControl.MouseCaptured_Key);
+			set => Widget.Properties.Set<bool>(WindowsControl.MouseCaptured_Key, value);
 		}
+
+		public virtual swf.Control ContainerControl => Control;
 
 		protected override void Initialize()
 		{
@@ -429,23 +474,29 @@ namespace Eto.WinForms.Forms
 						Callback.OnDragLeave(Widget, new DragEventArgs(null, new DataObject(), DragEffects.None, PointF.Empty, Keys.None, MouseButtons.None));
 					};
 					break;
+				case Eto.Forms.Control.EnabledChangedEvent:
+					Control.EnabledChanged += Control_EnabledChanged;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
 
-		const string SourceDataFormat = "eto.source.control";
+		private void Control_EnabledChanged(object sender, EventArgs e)
+		{
+			Callback.OnEnabledChanged(Widget, EventArgs.Empty);
+		}
+
 
 		DragEventArgs GetDragEventArgs(swf.DragEventArgs data)
 		{
-			var dragData = (data.Data as swf.DataObject).ToEto();
-			var sourceWidget = data.Data.GetData(SourceDataFormat);
-			var source = sourceWidget == null ? null : (Control)sourceWidget;
+			var dragData = data.Data.ToEto();
+			var source = WindowsControl.DragSourceControl;
 			var modifiers = data.GetEtoModifiers();
 			var buttons = data.GetEtoButtons();
 			var location = PointFromScreen(new PointF(data.X, data.Y));
-			return new DragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
+			return new SwfDragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
 		}
 
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
@@ -473,8 +524,11 @@ namespace Eto.WinForms.Forms
 
 		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
 		{
-			if (ShouldCaptureMouse)
+			if (MouseCaptured)
+			{
+				MouseCaptured = false;
 				Control.Capture = false;
+			}
 			Callback.OnMouseUp(Widget, e.ToEto(Control));
 		}
 
@@ -485,9 +539,13 @@ namespace Eto.WinForms.Forms
 
 		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
-			Callback.OnMouseDown(Widget, e.ToEto(Control));
-			if (ShouldCaptureMouse)
+			var ev = e.ToEto(Control);
+			Callback.OnMouseDown(Widget, ev);
+			if (ev.Handled && ShouldCaptureMouse)
+			{
 				Control.Capture = true;
+				MouseCaptured = true;
+			}
 		}
 
 		public virtual string Text
@@ -498,15 +556,17 @@ namespace Eto.WinForms.Forms
 
 		public virtual Size Size
 		{
-			get {
+			get
+			{
 				if (!Widget.Loaded)
-					return UserDesiredSize;
+					return UserPreferredSize;
 				return ContainerControl.Size.ToEto();
 			}
 			set
 			{
-				UserDesiredSize = value;
-				SetAutoSize();
+				if (UserPreferredSize == value)
+					return;
+				UserPreferredSize = value;
 				if (Widget.Loaded)
 					SetScale();
 				var minset = SetMinimumSize();
@@ -520,10 +580,22 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public virtual int Width
+		{
+			get => Size.Width;
+			set => Size = new Size(value, UserPreferredSize.Height);
+		}
+
+		public virtual int Height
+		{
+			get => Size.Height;
+			set => Size = new Size(UserPreferredSize.Width, value);
+		}
+
 		protected virtual void SetAutoSize()
 		{
-			ContainerControl.AutoSize = 
-				(UserDesiredSize.Width == -1 || UserDesiredSize.Height == -1)
+			ContainerControl.AutoSize =
+				(UserPreferredSize.Width == -1 || UserPreferredSize.Height == -1)
 				&& (UserDesiredClientSize.Width == -1 || UserDesiredClientSize.Height == -1);
 		}
 
@@ -538,7 +610,6 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				UserDesiredClientSize = value;
-				SetAutoSize();
 				Control.ClientSize = value.ToSD();
 			}
 		}
@@ -546,29 +617,32 @@ namespace Eto.WinForms.Forms
 		public bool Enabled
 		{
 			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
+			set
+			{
+				if (value != Widget.Properties.Get<bool?>(WindowsControl.Enabled_Key))
+				{
+					Widget.Properties.Set<bool?>(WindowsControl.Enabled_Key, value);
+					Control.Enabled = value;
+				}
+			}
 		}
-
-		static readonly object CursorKey = new object();
 
 		public Cursor Cursor
 		{
-			get { return Widget.Properties.Get<Cursor>(CursorKey); }
+			get { return Widget.Properties.Get<Cursor>(WindowsControl.CursorKey); }
 			set
 			{
-				Widget.Properties[CursorKey] = value;
+				Widget.Properties[WindowsControl.CursorKey] = value;
 				Control.Cursor = value != null ? value.ControlObject as swf.Cursor : null;
 			}
 		}
 
-		static readonly object ToolTipKey = new object();
-
 		public string ToolTip
 		{
-			get { return Widget.Properties.Get<string>(ToolTipKey); }
+			get { return Widget.Properties.Get<string>(WindowsControl.ToolTipKey); }
 			set
 			{
-				Widget.Properties[ToolTipKey] = value;
+				Widget.Properties[WindowsControl.ToolTipKey] = value;
 				SetToolTip();
 			}
 		}
@@ -586,14 +660,26 @@ namespace Eto.WinForms.Forms
 		public virtual Color BackgroundColor
 		{
 			get { return Control.BackColor.ToEto(); }
-			set { backgroundColorSet = true; Control.BackColor = value.ToSD(); }
-		}
-		bool backgroundColorSet;
-		public bool BackgroundColorSet {
-			get { return backgroundColorSet;  }
 			set
 			{
-				if (!( backgroundColorSet = value ))
+				backgroundColorSet = true;
+				try
+				{
+					Control.BackColor = value.ToSD();
+				}
+				catch
+				{
+					// some controls don't support transparent colors, ignore..
+				}
+			}
+		}
+		bool backgroundColorSet;
+		public bool BackgroundColorSet
+		{
+			get { return backgroundColorSet; }
+			set
+			{
+				if (!(backgroundColorSet = value))
 					Control.BackColor = sd.Color.Empty;
 			}
 		}
@@ -627,28 +713,40 @@ namespace Eto.WinForms.Forms
 			get { return Control.Focused; }
 		}
 
-		static readonly object InternalVisibleKey = new object();
-
 		bool IWindowsControl.InternalVisible
 		{
-			get { return Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
+			get { return Widget.Properties.Get<bool?>(WindowsControl.InternalVisibleKey) ?? true; }
+		}
+
+		static MethodInfo getStateMethod = typeof(swf.Control).GetMethod("GetState", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		bool WouldBeVisible
+		{
+			get
+			{
+				// use Control.GetState() to tell if the control should be visible
+				// see https://stackoverflow.com/a/5980637/981187
+				var ctl = ContainerControl;
+				if (getStateMethod == null) return ctl.Visible;
+				return (bool)(getStateMethod.Invoke(ctl, new object[] { 2 }));
+			}
 		}
 
 		public virtual bool Visible
 		{
-			get { return ContainerControl.IsHandleCreated ? ContainerControl.Visible : Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
+			get { return ContainerControl.IsHandleCreated ? WouldBeVisible : Widget.Properties.Get<bool?>(WindowsControl.InternalVisibleKey) ?? true; }
 			set
 			{
 				if (Visible != value)
 				{
-					Widget.Properties[InternalVisibleKey] = value;
+					Widget.Properties[WindowsControl.InternalVisibleKey] = value;
 					ContainerControl.Visible = value;
 					SetMinimumSize(updateParent: true);
 				}
 			}
 		}
 
-		public virtual void SetParent(Container parent)
+		public virtual void SetParent(Container oldParent, Container newParent)
 		{
 		}
 
@@ -791,18 +889,21 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		static readonly object FontKey = new object();
+		internal virtual bool SetFontTwiceForSomeReason => false;
 
 		public Font Font
 		{
 			get
 			{
-				return Widget.Properties.Create<Font>(FontKey, () => new Font(new FontHandler(Control.Font)));
+				return Widget.Properties.Create<Font>(WindowsControl.FontKey, () => new Font(new FontHandler(Control.Font)));
 			}
 			set
 			{
-				Widget.Properties[FontKey] = value;
-				Control.Font = value.ToSD();
+				Widget.Properties[WindowsControl.FontKey] = value;
+				var sdfont = value.ToSD();
+				Control.Font = sdfont;
+				if (SetFontTwiceForSomeReason)
+					Control.Font = sdfont;
 			}
 		}
 
@@ -850,19 +951,83 @@ namespace Eto.WinForms.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
+		/// <summary>
+		/// Gets or sets a value indicating that the shell drop manager should be used.
+		/// </summary>
+		public bool UseShellDropManager
+		{
+			get => Widget.Properties.Get(WindowsControl.UseShellDropManager_Key, true);
+			set
+			{
+				if (Widget.Properties.TrySet(WindowsControl.UseShellDropManager_Key, value, true))
+				{
+					if (value && Control.AllowDrop)
+					{
+						DropBehavior = new SwfShellDropBehavior(Control);
+					}
+					else
+					{
+						DropBehavior?.Detach();
+						DropBehavior = null;
+					}
+				}
+			}
+		}
+
 		public bool AllowDrop
 		{
 			get => Control.AllowDrop;
-			set => Control.AllowDrop = value;
+			set
+			{
+				Control.AllowDrop = value;
+				if (value && UseShellDropManager)
+					DropBehavior = new SwfShellDropBehavior(Control);
+				else
+				{
+					DropBehavior?.Detach();
+					DropBehavior = null;
+				}
+			}
 		}
 
-		public void DoDragDrop(DataObject data, DragEffects allowedEffects)
+		SwfShellDropBehavior DropBehavior
+		{
+			get => Widget.Properties.Get<SwfShellDropBehavior>(typeof(SwfShellDropBehavior));
+			set => Widget.Properties.Set(typeof(SwfShellDropBehavior), value);
+		}
+
+		public void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
 		{
 			var dataObject = data.ToSwf();
-			dataObject.SetData(SourceDataFormat, Widget);
-			Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+			WindowsControl.DragSourceControl = Widget;
+			if (UseShellDropManager)
+			{
+				swf.DragSourceHelper.AllowDropDescription(true);
+
+				swf.SwfDataObjectExtensions.SetDropDescription(dataObject, swf.DropImageType.Invalid, null, null);
+				if (image == null)
+					image = new Bitmap(1, 1, PixelFormat.Format32bppRgba);
+
+				swf.SwfDataObjectExtensions.SetDragImage(dataObject, image.ToSD(), cursorOffset.ToSDPoint());
+				swf.DragSourceHelper.RegisterDefaultDragSource(Control, dataObject);
+				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+				swf.DragSourceHelper.UnregisterDefaultDragSource(Control);
+			}
+			else
+			{
+				if (image != null)
+					Debug.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
+
+				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+			}
+			WindowsControl.DragSourceControl = null;
 		}
 
 		public Window GetNativeParentWindow() => ContainerControl.FindForm().ToEtoWindow();
+
+		public void Print()
+		{
+
+		}
 	}
 }

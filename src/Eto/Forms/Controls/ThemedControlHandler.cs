@@ -83,6 +83,31 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the preferred size of this control given the specified <paramref name="availableSize" />.
+		/// </summary>
+		/// <param name="availableSize">The available size to determine the preferred size</param>
+		/// <returns>The preferred size this control would like to be, which can be larger than the specified <paramref name="availableSize" />.</returns>
+		public virtual SizeF GetPreferredSize(SizeF availableSize) => Control.GetPreferredSize(availableSize);
+
+		/// <summary>
+		/// Gets or sets the width of the control size.
+		/// </summary>
+		public virtual int Width
+		{
+			get => Control.Width;
+			set => Control.Width = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the height of the control size.
+		/// </summary>
+		public virtual int Height
+		{
+			get => Control.Height;
+			set => Control.Height = value;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this control is enabled
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
@@ -151,8 +176,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets a value indicating whether this instance has the keyboard input focus.
 		/// </summary>
-		/// <value>true</value>
-		/// <c>false</c>
+		/// <value><c>true</c> if this instance has focus; otherwise, <c>false</c>.</value>
 		public virtual bool HasFocus
 		{
 			get { return Control.HasFocus; }
@@ -228,10 +252,11 @@ namespace Eto.Forms
 		/// <summary>
 		/// Called when the parent of the control has been set
 		/// </summary>
-		/// <param name="parent">New parent for the control, or null if the parent was removed</param>
-		public virtual void SetParent(Container parent)
+		/// <param name="oldParent">Old parent for the control, or null if the control is added</param>
+		/// <param name="newParent">New parent for the control, or null if the parent was removed</param>
+		public virtual void SetParent(Container oldParent, Container newParent)
 		{
-			Control.VisualParent = parent;
+			Control.VisualParent = newParent;
 		}
 
 		/// <summary>
@@ -362,9 +387,11 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="data">Drag data.</param>
 		/// <param name="allowedAction">Allowed action.</param>
-		public void DoDragDrop(DataObject data, DragEffects allowedAction)
+		/// <param name="image">Custom drag image</param>
+		/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF cursorOffset)
 		{
-			Control.DoDragDrop(data, allowedAction);
+			Control.DoDragDrop(data, allowedAction, image, cursorOffset);
 		}
 
 		#region Events
@@ -422,6 +449,9 @@ namespace Eto.Forms
 				case Eto.Forms.Control.ShownEvent:
 					Control.Shown += (s, e) => Callback.OnShown(Widget, e);
 					break;
+				case Eto.Forms.Control.EnabledChangedEvent:
+					Control.EnabledChanged += (s, e) => Callback.OnEnabledChanged(Widget, e);
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -433,6 +463,9 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The parent window, or null if it is not currently on a window</returns>
 		public Window GetNativeParentWindow() => Control.ParentWindow;
+
+		/// <inheritdoc />
+		public void Print() => Control.Print();
 
 		#endregion
 

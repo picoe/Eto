@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using Eto.Drawing;
 using System.Globalization;
 using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
-	/// Horizontal alignment for controls
+	/// Vertical alignment for controls
 	/// </summary>
 	public enum VerticalAlignment
 	{
@@ -59,7 +59,7 @@ namespace Eto.Forms
 	/// Item for a single control in a <see cref="StackLayout"/>.
 	/// </summary>
 	[ContentProperty("Control")]
-	[TypeConverter(typeof(StackLayoutItemConverter))]
+	[sc.TypeConverter(typeof(StackLayoutItemConverter))]
 	public class StackLayoutItem
 	{
 		/// <summary>
@@ -183,7 +183,7 @@ namespace Eto.Forms
 		/// horizontal alignment for child controls.
 		/// </remarks>
 		/// <value>The orientation of the controls.</value>
-		[DefaultValue(Orientation.Vertical)]
+		[sc.DefaultValue(Orientation.Vertical)]
 		public Orientation Orientation
 		{
 			get { return orientation; }
@@ -273,7 +273,7 @@ namespace Eto.Forms
 		/// <see cref="Label.TextAlignment"/> set to <see cref="TextAlignment.Center"/>.
 		/// </remarks>
 		/// <value><c>true</c> if to label alignment; otherwise, <c>false</c>.</value>
-		[DefaultValue(true)]
+		[sc.DefaultValue(true)]
 		public bool AlignLabels
 		{
 			get { return alignLabels; }
@@ -493,6 +493,7 @@ namespace Eto.Forms
 
 		void Create()
 		{
+			SuspendLayout();
 			var table = new TableLayout { IsVisualControl = true };
 			table.Spacing = new Size(Spacing, Spacing);
 
@@ -567,6 +568,15 @@ namespace Eto.Forms
 			}
 			Content = table;
 			isCreated = true;
+			ResumeLayout();
 		}
+
+		internal override void InternalEnsureLayout()
+		{
+			if (!isCreated)
+				Create();
+			base.InternalEnsureLayout();
+		}
+
 	}
 }

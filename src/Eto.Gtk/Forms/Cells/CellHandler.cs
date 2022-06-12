@@ -7,8 +7,6 @@ namespace Eto.GtkSharp.Forms.Cells
 {
 	public interface ICellDataSource
 	{
-		object GetItem(int row);
-
 		object GetItem(Gtk.TreePath path);
 
 		void EndCellEditing(Gtk.TreePath path, int column);
@@ -22,6 +20,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		void OnCellFormatting(GridCellFormatEventArgs args);
 
 		int RowDataColumn { get; }
+		int ItemDataColumn { get; }
 	}
 
 	public interface IEtoCellRenderer
@@ -102,6 +101,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			//if (FormattingEnabled)
 			{
 				Column.Control.AddAttribute(Control, "row", Source.RowDataColumn);
+				Column.Control.AddAttribute(Control, "item", Source.ItemDataColumn);
 			}
 		}
 
@@ -146,7 +146,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
 			{
-				Handler.Source.BeginCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+				Handler?.Source.BeginCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
 

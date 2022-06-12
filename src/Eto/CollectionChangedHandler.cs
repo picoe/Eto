@@ -51,7 +51,7 @@ namespace Eto
 		public virtual bool Register(TCollection collection)
 		{
 			if (Collection != null)
-				Unregister();
+				Unregister();				
 			Collection = collection;
 			
 			var notify = Collection as INotifyCollectionChanged;
@@ -101,9 +101,10 @@ namespace Eto
 		/// <param name="index">Index of the item to get.</param>
 		public virtual TItem ElementAt(int index)
 		{
-			var list = Collection as IList<TItem>;
-			if (list != null)
-				return list[index];
+			if (Collection is IList<TItem> listItem)
+				return listItem[index];
+			if (Collection is IList list)
+				return (TItem)list[index];
 			return InternalElementAt(index);
 		}
 
@@ -347,6 +348,9 @@ namespace Eto
 	public abstract class EnumerableChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>
 		where TCollection: class, IEnumerable<TItem>
 	{
+		IList<TItem> _lookup;
+		
+		IList<TItem> Lookup => _lookup ?? (_lookup = Collection?.ToList() ?? new List<TItem>());
 
 		/// <summary>
 		/// Implements the mechanism for finding the index of an item (the slow way)
@@ -359,7 +363,12 @@ namespace Eto
 		/// <returns>Index of the item, or -1 if not found</returns>
 		protected override int InternalIndexOf(TItem item)
 		{
-			return Collection.IndexOf(item);
+			if (Collection is IList<TItem> list)
+				return list.IndexOf(item);
+			if (Collection is IList list2)
+				return list2.IndexOf(item);
+
+			return Lookup.IndexOf(item);
 		}
 
 		/// <summary>
@@ -371,10 +380,11 @@ namespace Eto
 			get
 			{
 				// mono doesn't test for ICollection, causing performance issues
-				var coll = Collection as ICollection;
-				if (coll != null)
+				if (Collection is ICollection<TItem> coll)
 					return coll.Count;
-				return Collection != null ? Collection.Count() : 0;
+				if (Collection is ICollection coll2)
+					return coll2.Count;
+				return Lookup.Count;
 			}
 		}
 
@@ -386,13 +396,11 @@ namespace Eto
 		/// <param name="index">Index of the item to get.</param>
 		protected override TItem InternalElementAt(int index)
 		{
-			var list = Collection as IList<TItem>;
-			if (list != null)
-				return (TItem)list[index];
-			var list2 = Collection as IList;
-			if (list2 != null)
+			if (Collection is IList<TItem> list)
+				return list[index];
+			if (Collection is IList list2)
 				return (TItem)list2[index];
-			return Collection.ElementAt(index);
+			return Lookup[index];
 		}
 
 		/// <summary>
@@ -411,6 +419,7 @@ namespace Eto
 		{
 			if (Collection != null)
 				AddRange(Collection);
+			_lookup = null;
 		}
 	}
 

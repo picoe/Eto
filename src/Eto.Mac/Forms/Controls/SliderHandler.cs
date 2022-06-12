@@ -2,35 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -40,19 +12,30 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public WeakReference WeakHandler { get; set; }
 
+			public EtoSlider()
+			{
+			}
+
+			public EtoSlider(IntPtr handle) : base(handle)
+			{
+			}
+
 			public SliderHandler Handler
 			{ 
 				get { return (SliderHandler)WeakHandler?.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
+#if MACOS_NET && !VSMAC
+			public override bool IsVertical => Handler?.Orientation == Orientation.Vertical;
+#else
 			public override nint IsVertical => Handler?.Orientation == Orientation.Vertical ? 1 : 0;
+#endif
 		}
 
-		protected override NSSlider CreateControl()
-		{
-			return new EtoSlider();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSSlider CreateControl() => new EtoSlider();
 
 		protected override void Initialize()
 		{

@@ -85,16 +85,16 @@ namespace Eto
 		/// <param name="defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
 		public void HandleEvent(string id, bool defaultEvent = false)
 		{
+			var instanceId = id + InstanceEventSuffix;
+			if (Widget.Properties.ContainsKey(instanceId))
+				return;
+
 			if (defaultEvent)
 			{
-				if (!Widget.Properties.ContainsKey(id + InstanceEventSuffix))
-					AttachEvent(id);
+				AttachEvent(id);
 			}
-			else if (!Widget.Properties.ContainsKey(id) && !EventLookup.IsDefault(Widget, id))
+			else if (!EventLookup.IsDefault(Widget, id))
 			{
-				var instanceId = id + InstanceEventSuffix;
-				if (Widget.Properties.ContainsKey(instanceId))
-					return;
 				Widget.Properties.Add(instanceId, true);
 				AttachEvent(id);
 			}
@@ -124,12 +124,27 @@ namespace Eto
 		/// </remarks>
 		protected virtual void Initialize()
 		{
-			Style.OnStyleWidgetDefaults(this);
 		}
 
 		void Widget.IHandler.Initialize()
 		{
 			Initialize();
+			OnInitializeComplete();
+		}
+		
+		/// <summary>
+		/// Called after initialization is complete
+		/// </summary>
+		/// <remarks>
+		/// Override this to perform any logic after the handler is fully initialized, but before
+		/// returning from the construction of the widget.
+		/// 
+		/// This by default applies the any styles for the handler.
+		/// </remarks>
+		protected virtual void OnInitializeComplete()
+		{
+			// apply styles after the handler is fully initialized.
+			Style.Provider?.ApplyDefault(this);
 		}
 
 		/// <summary>

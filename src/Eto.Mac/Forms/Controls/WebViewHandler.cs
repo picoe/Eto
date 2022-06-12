@@ -2,20 +2,13 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using wk = WebKit;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
+using System.Threading.Tasks;
+#if MONOMAC
 using wk = MonoMac.WebKit;
+using IWebOpenPanelResultListener = MonoMac.WebKit.WebOpenPanelResultListener;
+#else
+using wk = WebKit;
+using IWebOpenPanelResultListener = WebKit.IWebOpenPanelResultListener;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -34,12 +27,74 @@ namespace Eto.Mac.Forms.Controls
 			return new EtoWebView(this);
 		}
 
+		public class EtoWebPolicyDelegate : wk.WebPolicyDelegate
+		{
+			WeakReference handler;
+			public WebViewHandler Handler { get => handler?.Target as WebViewHandler; set => handler = new WeakReference(value); }
+
+			public override void DecidePolicyForNavigation(wk.WebView webView, NSDictionary actionInformation, NSUrlRequest request, wk.WebFrame frame, NSObject decisionToken)
+			{
+				var h = Handler;
+				if (h != null)
+				{
+					var args = new WebViewLoadingEventArgs(new Uri(request.Url.AbsoluteString), frame == h.Control.MainFrame);
+					h.Callback.OnDocumentLoading(h.Widget, args);
+					if (args.Cancel)
+						decisionToken.PerformSelector(selIgnore, null, 0);
+					else
+						decisionToken.PerformSelector(selUse, null, 0);
+				}
+			}
+
+			public override void DecidePolicyForNewWindow(wk.WebView webView, NSDictionary actionInformation, NSUrlRequest request, string newFrameName, NSObject decisionToken)
+			{
+				var h = Handler;
+				if (h != null)
+				{
+					var args = new WebViewNewWindowEventArgs(new Uri(request.Url.AbsoluteString), newFrameName);
+					h.Callback.OnOpenNewWindow(h.Widget, args);
+					if (!args.Cancel)
+						NSWorkspace.SharedWorkspace.OpenUrl(request.Url);
+					decisionToken.PerformSelector(selIgnore, null, 0);
+				}
+			}
+
+		}
+
+		public class EtoWebFrameLoadDelegate : wk.WebFrameLoadDelegate
+		{
+			WeakReference handler;
+			public WebViewHandler Handler { get => handler?.Target as WebViewHandler; set => handler = new WeakReference(value); }
+
+			public override void FinishedLoad(wk.WebView sender, wk.WebFrame forFrame)
+			{
+				var h = Handler;
+				if (h != null)
+				{
+					var args = new WebViewLoadedEventArgs(h.Url);
+					if (forFrame == h.Control.MainFrame)
+						h.Callback.OnNavigated(h.Widget, args);
+					h.Callback.OnDocumentLoaded(h.Widget, args);
+				}
+			}
+
+			public override void ReceivedTitle(wk.WebView sender, string title, wk.WebFrame forFrame)
+			{
+				var h = Handler;
+				if (h != null)
+				{
+					h.Callback.OnDocumentTitleChanged(h.Widget, new WebViewTitleEventArgs(title));
+				}
+			}
+		}
+
 		protected override void Initialize()
 		{
 			Enabled = true;
 			base.Initialize();
-			HandleEvent(WebView.OpenNewWindowEvent); // needed to provide default implementation
-			HandleEvent(WebView.DocumentLoadingEvent);
+
+			Control.FrameLoadDelegate = new EtoWebFrameLoadDelegate { Handler = this };
+			Control.PolicyDelegate = new EtoWebPolicyDelegate { Handler = this };
 		}
 
 		public class EtoWebView : wk.WebView, IMacControl
@@ -57,13 +112,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public class NewWindowHandler : NSObject
 		{
-			public WebViewHandler Handler { get { return WebView.Handler; } set { WebView.Handler = value; } }
+			public WebViewHandler Handler => WebView.Handler;
 
 			public EtoWebView WebView { get; set; }
 
-			public NewWindowHandler()
+			public NewWindowHandler(WebViewHandler handler)
 			{
-				WebView = new EtoWebView(Handler);
+				WebView = new EtoWebView(handler);
 				WebView.WeakUIDelegate = this;
 				WebView.WeakPolicyDelegate = this;
 				WebView.WeakResourceLoadDelegate = this;
@@ -161,25 +216,18 @@ namespace Eto.Mac.Forms.Controls
 				return Handler.BrowserContextMenuEnabled ? defaultMenuItems : null;
 			}
 
-			#if XAMMAC2
-			public override void UIRunOpenPanelForFileButton(wk.WebView sender, wk.IWebOpenPanelResultListener resultListener)
+			public override void UIRunOpenPanelForFileButton(wk.WebView sender, IWebOpenPanelResultListener resultListener)
 			{
 				var openDlg = new OpenFileDialog();
 				if (openDlg.ShowDialog(Handler.Widget.ParentWindow) == DialogResult.Ok)
 				{
-					wk.WebOpenPanelResultListener_Extensions.ChooseFilenames(resultListener, openDlg.Filenames.ToArray());
-				}
-			}
-			#else
-			public override void UIRunOpenPanelForFileButton(wk.WebView sender, wk.WebOpenPanelResultListener resultListener)
-			{
-				var openDlg = new OpenFileDialog();
-				if (openDlg.ShowDialog(Handler.Widget.ParentWindow) == DialogResult.Ok)
-				{
+#if MACOS_NET || MONOMAC
 					resultListener.ChooseFilenames(openDlg.Filenames.ToArray());
+#else
+					wk.WebOpenPanelResultListener_Extensions.ChooseFilenames(resultListener, openDlg.Filenames.ToArray());
+#endif
 				}
 			}
-			#endif
 
 			public override void UIPrintFrameView(wk.WebView sender, wk.WebFrameView frameView)
 			{
@@ -206,7 +254,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override wk.WebView UICreateWebView(wk.WebView sender, NSUrlRequest request)
 			{
-				Handler.newWindowHandler = new NewWindowHandler { Handler = Handler };
+				Handler.newWindowHandler = new NewWindowHandler(Handler);
 				return Handler.newWindowHandler.WebView;
 			}
 		}
@@ -219,68 +267,14 @@ namespace Eto.Mac.Forms.Controls
 					HandleEvent(WebView.DocumentLoadedEvent);
 					break;
 				case WebView.DocumentLoadedEvent:
-					Control.FinishedLoad += HandleFinishedLoad;
-					break;
-				case WebView.DocumentLoadingEvent:
-					Control.DecidePolicyForNavigation += HandleDecidePolicyForNavigation;
-					break;
 				case WebView.OpenNewWindowEvent:
-					Control.DecidePolicyForNewWindow += HandleDecidePolicyForNewWindow;
-					break;
+				case WebView.DocumentLoadingEvent:
 				case WebView.DocumentTitleChangedEvent:
-					Control.ReceivedTitle += HandleReceivedTitle;
+					// handled by delegates
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
-			}
-		}
-
-		static void HandleReceivedTitle(object sender, wk.WebFrameTitleEventArgs e)
-		{
-			var handler = GetHandler(e.ForFrame.WebView) as WebViewHandler;
-			if (handler != null)
-			{
-				handler.Callback.OnDocumentTitleChanged(handler.Widget, new WebViewTitleEventArgs(e.Title));
-			}
-		}
-
-		static void HandleDecidePolicyForNewWindow(object sender, wk.WebNewWindowPolicyEventArgs e)
-		{
-			var handler = GetHandler(sender) as WebViewHandler;
-			if (handler != null)
-			{
-				var args = new WebViewNewWindowEventArgs(new Uri(e.Request.Url.AbsoluteString), e.NewFrameName);
-				handler.Callback.OnOpenNewWindow(handler.Widget, args);
-				if (!args.Cancel)
-					NSWorkspace.SharedWorkspace.OpenUrl(e.Request.Url);
-				e.DecisionToken.PerformSelector(selIgnore, null, 0);
-			}
-		}
-
-		static void HandleDecidePolicyForNavigation(object sender, wk.WebNavigationPolicyEventArgs e)
-		{
-			var handler = GetHandler(e.Frame.WebView) as WebViewHandler;
-			if (handler != null)
-			{
-				var args = new WebViewLoadingEventArgs(new Uri(e.Request.Url.AbsoluteString), e.Frame == handler.Control.MainFrame);
-				handler.Callback.OnDocumentLoading(handler.Widget, args);
-				if (args.Cancel)
-					e.DecisionToken.PerformSelector(selIgnore, null, 0);
-				else
-					e.DecisionToken.PerformSelector(selUse, null, 0);
-			}
-		}
-
-		static void HandleFinishedLoad(object sender, wk.WebFrameEventArgs e)
-		{
-			var handler = GetHandler(e.ForFrame.WebView) as WebViewHandler;
-			if (handler != null)
-			{
-				var args = new WebViewLoadedEventArgs(handler.Url);
-				if (e.ForFrame == handler.Control.MainFrame)
-					handler.Callback.OnNavigated(handler.Widget, args);
-				handler.Callback.OnDocumentLoaded(handler.Widget, args);
 			}
 		}
 
@@ -300,9 +294,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public string ExecuteScript(string script)
 		{
-			var fullScript = string.Format("var fn = function () {{ {0} }}; fn();", script);
+			var fullScript = string.Format("var _fn = function() {{ {0} }}; _fn();", script);
 			return Control.StringByEvaluatingJavaScriptFromString(fullScript);
 		}
+
+		public Task<string> ExecuteScriptAsync(string script) => Task.FromResult(ExecuteScript(script));
 
 		public void LoadHtml(string html, Uri baseUri)
 		{
@@ -328,8 +324,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			Control.GoForward();
 		}
-
-		public override bool Enabled { get; set; }
 
 		public bool CanGoBack
 		{

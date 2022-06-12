@@ -83,16 +83,19 @@ namespace Eto.Wpf.Forms.Controls
 
 			protected override sw.Size MeasureOverride(sw.Size constraint)
 			{
+				return Handler.MeasureOverride(constraint, ContentMeasureOverride);
+			}
+
+			private sw.Size ContentMeasureOverride(sw.Size constraint)
+			{
+				var size = base.MeasureOverride(constraint);
 				var content = Handler.content;
-				if (content != null)
-				{
-					content.Measure(constraint);
-					return Handler.MeasureOverride(constraint, c => {
-						base.MeasureOverride(c);
-						return content.DesiredSize;
-						});
-				}
-				return Handler.MeasureOverride(constraint, base.MeasureOverride);
+				if (content == null)
+					return size;
+			
+				// content should be used to measure, if present		
+				content.Measure(constraint);
+				return content.DesiredSize;
 			}
 
 			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
@@ -139,7 +142,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		protected override bool NeedsPixelSizeNotifications {  get { return true; } }
+		protected override bool NeedsPixelSizeNotifications { get { return true; } }
 
 		public override void OnLoadComplete(EventArgs e)
 		{
@@ -182,7 +185,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			UpdateTiles(true);
 			Control.Loaded -= Control_Loaded; // only perform once
-        }
+		}
 
 		public virtual Graphics CreateGraphics()
 		{

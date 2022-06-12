@@ -3,68 +3,16 @@ using Eto.Forms;
 using System;
 using System.Text.RegularExpressions;
 
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreText;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreText;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if IOS
-using NSView = UIKit.UIView;
-using NSControl = UIKit.UIControl;
-using Foundation;
-using CoreText;
-using CoreGraphics;
-using Eto.iOS;
-#endif
 namespace Eto.Mac.Forms
 {
 	public static class MacControlExtensions
 	{
-		public static SizeF GetPreferredSize(this Control control, SizeF availableSize)
+		[Obsolete("Use Control.GetPreferredSize")]
+		public static SizeF GetPreferredSize(Control control, SizeF availableSize)
 		{
 			if (control == null)
 				return Size.Empty;
-			var mh = control.GetMacControl();
-			if (mh != null)
-			{
-				return mh.GetPreferredSize(availableSize);
-			}
-			
-			var c = control.ControlObject as NSControl;
-			if (c != null)
-			{
-				c.SizeToFit();
-				return c.Frame.Size.ToEto();
-			}
-			var child = control.ControlObject as Control;
-			return child == null ? SizeF.Empty : child.GetPreferredSize(availableSize);
-
+			return control.GetPreferredSize(availableSize);
 		}
 
 		public static IMacViewHandler GetMacViewHandler(this Control control)
@@ -133,6 +81,21 @@ namespace Eto.Mac.Forms
 				var size = view.Frame.Size;
 				view.SetFrameOrigin(new CGPoint((nfloat)(superFrame.Width - size.Width) / 2, (nfloat)(superFrame.Height - size.Height) / 2));
 			}
+		}
+		
+		public static bool HasDarkTheme(this NSView view)
+		{
+			if (!MacVersion.IsAtLeast(10, 14))
+				return false;
+				
+			var appearance = view?.EffectiveAppearance ?? NSAppearance.CurrentAppearance;
+			
+			var name = appearance.Name;
+			
+			if (name == NSAppearance.NameDarkAqua || name == NSAppearance.NameAccessibilityHighContrastDarkAqua)
+				return true;
+				
+			return false;
 		}
 	}
 }

@@ -95,7 +95,7 @@ namespace Eto.GtkSharp.Forms
 			if (Control.WaitIsTargetAvailable(target))
 			{
 				var data = Control.WaitForContents(target);
-				if (data != null)
+				if (data != null && data.GetDataType() != null)
 					return data;
 			}
 			return null;
@@ -178,6 +178,23 @@ namespace Eto.GtkSharp.Forms
 			Update();
 		}
 
+		public bool Contains(string type)
+		{
+			return Control.WaitIsTargetAvailable(Gdk.Atom.Intern(type, false));
+		}
+
+		public bool TrySetObject(object value, string type) => false;
+
+		public bool TryGetObject(string type, out object value)
+		{
+			value = null;
+			return false;
+		}
+
+		public void SetObject(object value, string type) => Widget.SetObject(value, type);
+
+		public T GetObject<T>(string type) => Widget.GetObject<T>(type);
+
 		public string[] Types
 		{
 			get
@@ -208,11 +225,20 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+
+		public bool ContainsText => Control.WaitIsTextAvailable();
+
+		public bool ContainsHtml => Contains("text/html");
+
+		public bool ContainsImage => Control.WaitIsImageAvailable() || Contains("eto-icon");
+
+		public bool ContainsUris => Contains("text/uri-list");
+
 		public Uri[] Uris
 		{
 			set
 			{
-				var uris = value?.Select(r => r.AbsolutePath).ToArray();
+				var uris = value?.Select(r => r.AbsoluteUri).ToArray();
 				AddEntry("text/uri-list", value, (data, selection) => selection.SetSelectedUris2(uris));
 			}
 			get

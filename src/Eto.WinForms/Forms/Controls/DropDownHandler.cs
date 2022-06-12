@@ -94,6 +94,9 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		public event EventHandler<DropDownFormatEventArgs> FormatItem;
+
+
 		protected override void OnDrawItem(swf.DrawItemEventArgs e)
 		{
 			if (e.State.HasFlag(swf.DrawItemState.ComboBoxEdit))
@@ -112,7 +115,8 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				var item = Items[e.Index];
 				var bounds = e.Bounds;
-				var image = (item as EtoComboBoxItem)?.Image;
+				var etoitem = item as EtoComboBoxItem;
+				var image = etoitem?.Image;
 
 				if (image != null)
 				{
@@ -123,8 +127,16 @@ namespace Eto.WinForms.Forms.Controls
 
 				string text = item?.ToString();
 
+				var font = Font;
+				if (FormatItem != null)
+				{
+					var args = new DropDownFormatEventArgs(etoitem.Value, e.Index, font.ToEto());
+					FormatItem.Invoke(this, args);
+					font = args.Font.ToSD();
+				}
+
 				// Determine the forecolor based on whether or not the item is selected    
-				swf.TextRenderer.DrawText(e.Graphics, text, Font, bounds, ForeColor, swf.TextFormatFlags.Left);
+				swf.TextRenderer.DrawText(e.Graphics, text, font, bounds, ForeColor, swf.TextFormatFlags.Left);
 			}
 
 			e.DrawFocusRectangle();
@@ -171,7 +183,8 @@ namespace Eto.WinForms.Forms.Controls
 		where TWidget: DropDown
 		where TCallback: DropDown.ICallback
 	{
-		CollectionHandler collection;
+		IIndirectBinding<string> _itemTextBinding;
+		CollectionHandler _collection;
 
 		public bool ShowBorder
 		{
@@ -252,29 +265,45 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected virtual void UpdateSizes()
 		{
-			if (Widget.Loaded)
-				SetMinimumSize();
 			Control.ResetSize();
+			if (Widget.Loaded)
+				SetMinimumSize(true);
 		}
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get { return _collection != null ? _collection.Collection : null; }
 			set
 			{
 				var selected = Widget.SelectedValue;
-				collection?.Unregister();
-				collection = new CollectionHandler { Handler = this };
-				collection.Register(value);
+				_collection?.Unregister();
+				_collection = new CollectionHandler { Handler = this };
+				_collection.Register(value);
 				if (!ReferenceEquals(selected, null))
 				{
-					var newSelectedIndex = collection.IndexOf(selected);
+					var newSelectedIndex = _collection.IndexOf(selected);
 					SelectedIndex = newSelectedIndex;
 					if (newSelectedIndex == -1)
 						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
+
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => _itemTextBinding;
+			set
+			{
+				_itemTextBinding = value;
+				if (Widget.Loaded)
+				{
+					Control.Refresh();
+					UpdateSizes();
+				}
+			}
+
+		}
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 
 		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
 		public override bool ShouldBubbleEvent(swf.Message msg)
@@ -291,6 +320,9 @@ namespace Eto.WinForms.Forms.Controls
 					break;
 				case DropDown.DropDownOpeningEvent:
 					Control.DropDown += (sender, e) => Callback.OnDropDownOpening(Widget, EventArgs.Empty);
+					break;
+				case DropDown.FormatItemEvent:
+					Control.FormatItem += (sender, e) => Callback.OnFormatItem(Widget, e);
 					break;
 				default:
 					base.AttachEvent(id);

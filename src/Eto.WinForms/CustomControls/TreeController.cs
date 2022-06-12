@@ -330,6 +330,15 @@ namespace Eto.CustomControls
 				Handler.PostResetTree ();
 		}
 
+		public void ReloadItem(ITreeGridItem item)
+		{
+			var row = IndexOf(item);
+			if (row < 0)
+				return;
+			OnTriggerCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, row));
+			OnTriggerCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, row));
+		}
+
 		public bool CollapseRow (int row)
 		{
 			var args = new TreeGridViewItemCancelEventArgs (GetItemAtRow (row));
@@ -378,6 +387,8 @@ namespace Eto.CustomControls
 		{
 			get
 			{
+				if (Store == null)
+					return 0;
 				if (countCache != null)
 					return countCache.Value;
 				if (sections != null)

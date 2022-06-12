@@ -6,9 +6,34 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms
 {
+	public delegate void WndProcDelegate(ref swf.Message m);
+	public delegate void CustomWndProcDelegate(ref swf.Message m, WndProcDelegate baseImpl);
+
+	public class EtoFormBase : swf.Form
+	{
+		public CustomWndProcDelegate CustomWndProcHandler;
+		const int WM_ACTIVATEAPP = 0x1C;
+		protected override void WndProc(ref swf.Message m)
+		{
+			if (CustomWndProcHandler == null) WndProcImpl(ref m);
+			else CustomWndProcHandler(ref m, WndProcImpl);
+		}
+
+		private void WndProcImpl(ref swf.Message m)
+		{
+			base.WndProc(ref m);
+
+			if (m.Msg == WM_ACTIVATEAPP)
+			{
+				bool isActive = m.WParam != IntPtr.Zero;
+				ApplicationHandler.Instance.IsActive = isActive;
+			}
+		}
+	}
+
 	public class FormHandler : WindowHandler<swf.Form, Form, Form.ICallback>, Form.IHandler
 	{
-		public class EtoForm : swf.Form
+		public class EtoForm : EtoFormBase
 		{
 			bool hideFromAltTab;
 
@@ -113,21 +138,15 @@ namespace Eto.WinForms.Forms
 			Resizable = true;
 		}
 
+		internal override void InternalClosing()
+		{
+			base.InternalClosing();
+			SetOwner(null);
+		}
+
 		public void Show()
 		{
 			Control.Show();
-		}
-
-		public override bool ShowInTaskbar
-		{
-			get { return base.ShowInTaskbar; }
-			set
-			{
-				base.ShowInTaskbar = value;
-				var etoForm = Control as EtoForm;
-				if (etoForm != null)
-					etoForm.HideFromAltTab = !value;
-			}
 		}
 
 		public Color TransparencyKey

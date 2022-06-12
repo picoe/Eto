@@ -1,26 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>$(DefineConstants);PCL</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;DEBUG;PCL;PORTABLE</DefineConstants>
-    <OutputPath>..\..\artifacts\test\Debug\</OutputPath>
+  
+  <PropertyGroup>
+    <Title>Eto Test Application</Title>
+    <Description>An example application and Unit Tests for Eto.Forms.</Description>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE;PCL;PORTABLE</DefineConstants>
-    <OutputPath>..\..\artifacts\test\Release\</OutputPath>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="..\..\src\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\..\src\Eto\Helper.cs">
       <Link>Helper.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
+    <EmbeddedResource Include="Sections\Serialization\Json\Test.jeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xeto">
@@ -34,9 +30,10 @@
     <ProjectReference Include="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Sections\Serialization\Xaml\Test.xeto" />

@@ -124,5 +124,17 @@ namespace Eto.Wpf.Forms.Controls
 				Control.ContextMenu = contextMenu != null ? contextMenu.ControlObject as sw.Controls.ContextMenu : null;
 			}
 		}
+
+		IIndirectBinding<string> _itemTextBinding;
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => _itemTextBinding;
+			set
+			{
+				_itemTextBinding = value;
+				Control.InvalidateVisual();
+			}
+		}
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
 	}
 }

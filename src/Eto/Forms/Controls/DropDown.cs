@@ -5,12 +5,71 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
+	/// Arguments for formatting items in a DropDown using the <see cref="DropDown.FormatItem"/> event.
+	/// </summary>
+	public class DropDownFormatEventArgs : EventArgs
+	{
+		Font _font;
+
+		/// <summary>
+		/// Gets or sets the font to use for this item
+		/// </summary>
+		public virtual Font Font
+		{
+			get => _font;
+			set
+			{
+				_font = value;
+				IsFontSet = true;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating that the font was set during the FormatItem event.
+		/// </summary>
+		/// <remarks>
+		/// This is useful for handler implementations to determine if something needs to be done to format the item.
+		/// </remarks>
+		public bool IsFontSet { get; private set; }
+
+		/// <summary>
+		/// Item to specify the format for
+		/// </summary>
+		public object Item { get; }
+
+		/// <summary>
+		/// Row number in the list of items to format for
+		/// </summary>
+		public int Row { get; }
+
+		/// <summary>
+		/// Initializes a new instance of the DropDownFormatEventArgs class
+		/// </summary>
+		/// <param name="item">Item to format</param>
+		/// <param name="row">Row of the item to format</param>
+		/// <param name="font">Font to use if no other is specified</param>
+		public DropDownFormatEventArgs(object item, int row, Font font)
+		{
+			Item = item;
+			Row = row;
+			_font = font;
+		}
+	}
+
+	/// <summary>
 	/// Presents a drop down to select from a list of items
 	/// </summary>
 	[Handler(typeof(DropDown.IHandler))]
 	public class DropDown : ListControl
 	{
 		new IHandler Handler => (IHandler)base.Handler;
+
+		static DropDown()
+		{
+			EventLookup.Register<DropDown>(c => c.OnDropDownClosed(null), DropDownClosedEvent);
+			EventLookup.Register<DropDown>(c => c.OnDropDownOpening(null), DropDownOpeningEvent);
+			EventLookup.Register<DropDown>(c => c.OnFormatItem(null), FormatItemEvent);
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Eto.Forms.DropDown"/> class.
@@ -97,6 +156,26 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="FormatItem"/> event.
+		/// </summary>
+		public const string FormatItemEvent = "DropDown.FormatItem";
+
+		/// <summary>
+		/// Occurs for each item to provide formatting.
+		/// </summary>
+		public event EventHandler<DropDownFormatEventArgs> FormatItem
+		{
+			add => Properties.AddHandlerEvent(FormatItemEvent, value);
+			remove => Properties.RemoveEvent(FormatItemEvent, value);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="FormatItem"/> event.
+		/// </summary>
+		/// <param name="e">Event Arguments</param>
+		protected virtual void OnFormatItem(DropDownFormatEventArgs e) => Properties.TriggerEvent(FormatItemEvent, this, e);
+
+		/// <summary>
 		/// Gets the callback.
 		/// </summary>
 		/// <returns>The callback.</returns>
@@ -120,6 +199,13 @@ namespace Eto.Forms
 			/// <param name="widget">Widget to raise the event</param>
 			/// <param name="e">Event arguments</param>
 			void OnDropDownClosed(DropDown widget, EventArgs e);
+
+			/// <summary>
+			/// Raises the <see cref="FormatItem"/> event.
+			/// </summary>
+			/// <param name="widget">Widget to raise the event</param>
+			/// <param name="e">Event Arguments</param>
+			void OnFormatItem(DropDown widget, DropDownFormatEventArgs e);
 		}
 
 		/// <summary>
@@ -147,6 +233,17 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnDropDownClosed(e);
+			}
+
+			/// <summary>
+			/// Raises the <see cref="FormatItem"/> event.
+			/// </summary>
+			/// <param name="widget">Widget to raise the event</param>
+			/// <param name="e">Event Arguments</param>
+			public void OnFormatItem(DropDown widget, DropDownFormatEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnFormatItem(e);
 			}
 		}
 

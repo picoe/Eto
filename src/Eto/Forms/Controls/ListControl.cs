@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Eto.Drawing;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -120,19 +121,27 @@ namespace Eto.Forms
 	[ContentProperty("Items")]
 	public abstract class ListControl : CommonControl
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		/// <summary>
 		/// Gets or sets the binding for the text value of each item.
 		/// </summary>
 		/// <value>The text binding.</value>
-		public IIndirectBinding<string> ItemTextBinding { get; set; }
+		public IIndirectBinding<string> ItemTextBinding
+		{
+			get => Handler.ItemTextBinding;
+			set => Handler.ItemTextBinding = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the binding for the key value of each item.
 		/// </summary>
 		/// <value>The key binding.</value>
-		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+		public IIndirectBinding<string> ItemKeyBinding
+		{
+			get => Handler.ItemKeyBinding;
+			set => Handler.ItemKeyBinding = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the binding for the text value of each item.
@@ -473,6 +482,18 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The color of the text.</value>
 			Color TextColor { get; set; }
+
+			/// <summary>
+			/// Gets or sets the binding for the text value of each item.
+			/// </summary>
+			/// <value>The text binding.</value>
+			IIndirectBinding<string> ItemTextBinding { get; set; }
+
+			/// <summary>
+			/// Gets or sets the binding for the key value of each item.
+			/// </summary>
+			/// <value>The key binding.</value>
+			IIndirectBinding<string> ItemKeyBinding { get; set; }
 		}
 	}
 }

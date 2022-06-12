@@ -1,5 +1,7 @@
 using System;
+using System.Threading;
 using Eto.Forms;
+using Gdk;
 
 namespace Eto.GtkSharp.CustomControls
 {
@@ -13,7 +15,10 @@ namespace Eto.GtkSharp.CustomControls
 		Gtk.SpinButton secondsSpin;
 		
 		public event EventHandler<EventArgs> DateChanged;
+
+		public event EventHandler DialogClosed;
 		
+
 		protected virtual void OnDateChanged (EventArgs e)
 		{
 			if (DateChanged != null)
@@ -50,6 +55,7 @@ namespace Eto.GtkSharp.CustomControls
 		{
 			this.mode = mode;
 			this.CreateControls ();
+			
 
 			if (HasDate) {
 				calendar.Date = dateTime;
@@ -61,24 +67,33 @@ namespace Eto.GtkSharp.CustomControls
 				UpdateClock ();
 			}
 
+			
 			this.ButtonPressEvent += delegate(object o, Gtk.ButtonPressEventArgs args) {
+
 				if (args.Event.Type == Gdk.EventType.ButtonPress) {
-					// single click only!
-					Close ();
+						CloseDialog();
 				}
 			};
 			
+			
 		}
-		
+
 		public void ShowPopup (Gtk.Widget parent)
 		{
 			int x, y;
+
+
 			parent.ParentWindow.GetOrigin (out x, out y);
 			Move(x + parent.Allocation.Left, y + parent.Allocation.Top + parent.Allocation.Height);
 
 			ShowAll();
-			this.Grab ();
 		}
+
+		protected override bool OnFocusOutEvent(EventFocus evnt)
+		{
+			CloseDialog();
+			return base.OnFocusOutEvent(evnt);
+		}	
 
 #if GTK2
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -100,10 +115,22 @@ namespace Eto.GtkSharp.CustomControls
 		}
 #endif
 
-		void Close ()
+		public void CloseDialog ()
 		{
-			this.RemoveGrab ();
+			Hide();
+#if GTKCORE
+			Close();		
+#else
 			Destroy();
+#endif
+			DialogClosed?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected override bool OnDestroyEvent(Event evnt)
+		{
+			var result = base.OnDestroyEvent(evnt);
+			DialogClosed?.Invoke(this, EventArgs.Empty);
+			return result;
 		}
 
 		void UpdateClock ()
@@ -130,7 +157,7 @@ namespace Eto.GtkSharp.CustomControls
 			
 			calendar.DaySelectedDoubleClick += delegate {
 				OnDateChanged (EventArgs.Empty);
-				Close ();
+				CloseDialog ();
 			};
 
 			vbox.PackStart(calendar, false, false, 0);
@@ -152,7 +179,7 @@ namespace Eto.GtkSharp.CustomControls
 					UpdateClock ();
 				}
 				OnDateChanged (EventArgs.Empty);
-				Close ();
+				CloseDialog ();
 			};
 			
 			hbox.PackStart (todayButton, false, false, 0);
@@ -232,7 +259,7 @@ namespace Eto.GtkSharp.CustomControls
 		void CreateControls ()
 		{
 			TypeHint = Gdk.WindowTypeHint.Menu;
-			WindowPosition = Gtk.WindowPosition.CenterOnParent;
+			WindowPosition = Gtk.WindowPosition.None;
 			BorderWidth = 1;
 			Resizable = false;
 #if GTK2
@@ -241,7 +268,8 @@ namespace Eto.GtkSharp.CustomControls
 			Resizable = false;
 #endif
 			Decorated = false;
-			DestroyWithParent = true;
+			// DestroyWithParent = true;
+			Modal = true;
 			SkipPagerHint = true;
 			SkipTaskbarHint = true;
 

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Globalization;
 using Eto.Drawing;
 using System.Linq;
@@ -14,15 +14,26 @@ namespace Eto.Forms
 	/// All visual user interface elements should inherit from this class to provide common functionality like binding,
 	/// load/unload, and common events.
 	/// </remarks>
-	#if !PCL
+	#if !NETSTANDARD
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
-	[TypeConverter(typeof(ControlConverter))]
+	[sc.TypeConverter(typeof(ControlConverter))]
 	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		/// <summary>
+		/// Gets the handler for the widget, ensuring the current thread is the UI thread
+		/// </summary>
+		/// <value>The handler object for this control</value>
+		protected new IHandler Handler
+		{
+			get
+			{
+				Application.Instance?.EnsureUIThread();
+				return (IHandler)base.Handler;
+			}
+		}
 
 		/// <summary>
 		/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown
@@ -33,7 +44,11 @@ namespace Eto.Forms
 		/// 
 		/// The <see cref="OnUnLoad"/> method will set this value to <c>false</c> when the control is removed from its parent
 		/// </remarks>
-		public bool Loaded { get; private set; }
+		public bool Loaded
+		{
+			get => GetState(StateFlag.Loaded);
+			private set => SetState(StateFlag.Loaded, value);
+		}
 
 		/// <summary>
 		/// Gets an enumeration of controls that are in the visual tree.
@@ -75,7 +90,7 @@ namespace Eto.Forms
 					var foundVisual = false;
 					foreach (var parent in Parents.OfType<Container>())
 					{
-						if (!foundVisual && parent.Properties.Get<bool>(IsVisualControl_Key))
+						if (!foundVisual && parent.GetState(StateFlag.IsVisualControl))
 							foundVisual = true;
 						else
 							return parent;
@@ -85,20 +100,14 @@ namespace Eto.Forms
 			}
 		}
 
-		static object IsVisualControl_Key = new object();
-
 		/// <summary>
 		/// Gets a value indicating this <see cref="T:Eto.Forms.Control"/> is part of the visual tree.
 		/// </summary>
 		/// <value><c>true</c> if is visual control; otherwise, <c>false</c>.</value>
 		public bool IsVisualControl
 		{
-			get {
-				if (Properties.ContainsKey(IsVisualControl_Key))
-					return Properties.Get<bool>(IsVisualControl_Key);
-				return Parent?.IsVisualControl ?? false; // traverse up logical tree
-			}
-			internal set { Properties.Set(IsVisualControl_Key, value); }
+			get => GetState(StateFlag.IsVisualControl, StateFlag.IsVisualControlHasValue) ?? Parent?.IsVisualControl ?? false; // traverse up logical tree
+			internal set => SetState(StateFlag.IsVisualControl, StateFlag.IsVisualControlHasValue, value);
 		}
 
 		static readonly object TagKey = new object();
@@ -491,6 +500,8 @@ namespace Eto.Forms
 		{
 			Properties.TriggerEvent(PreLoadKey, this, e);
 			Handler.OnPreLoad(e);
+
+			OnApplyCascadingStyles();
 		}
 
 		static readonly object LoadKey = new object();
@@ -671,6 +682,26 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected virtual void OnDragLeave(DragEventArgs e) => Properties.TriggerEvent(DragLeaveEvent, this, e);
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="EnabledChanged"/> event
+		/// </summary>
+		public const string EnabledChangedEvent = "Control.EnabledChanged";
+
+		/// <summary>
+		/// Occurs when the <see cref="Enabled"/> value is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> EnabledChanged
+		{
+			add { Properties.AddHandlerEvent(EnabledChangedEvent, value); }
+			remove { Properties.RemoveEvent(EnabledChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="EnabledChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnEnabledChanged(EventArgs e) => Properties.TriggerEvent(EnabledChangedEvent, this, e);
+
 		#endregion
 
 		static Control()
@@ -693,6 +724,7 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnDragOver(null), Control.DragOverEvent);
 			EventLookup.Register<Control>(c => c.OnDragEnter(null), Control.DragEnterEvent);
 			EventLookup.Register<Control>(c => c.OnDragLeave(null), Control.DragLeaveEvent);
+			EventLookup.Register<Control>(c => c.OnEnabledChanged(null), Control.EnabledChangedEvent);
 		}
 
 		/// <summary>
@@ -778,12 +810,34 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the preferred size of this control given infinite space available.
+		/// </summary>
+		/// <returns>The size this control would prefer to be</returns>
+		public SizeF GetPreferredSize() => GetPreferredSize(SizeF.PositiveInfinity);
+
+		/// <summary>
+		/// Gets the preferred size of this control given the specified <paramref name="availableSize" />.
+		/// </summary>
+		/// <param name="availableSize">The available size to determine the preferred size</param>
+		/// <returns>The preferred size this control would like to be, which can be larger than the specified <paramref name="availableSize" />.</returns>
+		public SizeF GetPreferredSize(SizeF availableSize)
+		{
+			// hack for now for dynamic layouts.. this should be moved to the Measure infrastructure when implemented..
+			InternalEnsureLayout();
+			return Handler.GetPreferredSize(availableSize);
+		}
+
+		internal virtual void InternalEnsureLayout()
+		{
+		}
+
+		/// <summary>
 		/// Gets or sets the width of the control size.
 		/// </summary>
 		public virtual int Width
 		{
-			get { return Handler.Size.Width; }
-			set { Size = new Size(value, Size.Height); }
+			get => Handler.Width;
+			set => Handler.Width = value;
 		}
 
 		/// <summary>
@@ -791,63 +845,35 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual int Height
 		{
-			get { return Handler.Size.Height; }
-			set { Size = new Size(Size.Width, value); }
-		}
-
-		static readonly object EnabledChangedKey = new object();
-
-		/// <summary>
-		/// Occurs when the <see cref="Enabled"/> value is changed.
-		/// </summary>
-		public event EventHandler<EventArgs> EnabledChanged
-		{
-			add { Properties.AddEvent(EnabledChangedKey, value); }
-			remove { Properties.RemoveEvent(EnabledChangedKey, value); }
+			get => Handler.Height;
+			set => Handler.Height = value;
 		}
 
 		/// <summary>
-		/// Raises the <see cref="EnabledChanged"/> event.
-		/// </summary>
-		/// <param name="e">Event arguments</param>
-		protected virtual void OnEnabledChanged(EventArgs e)
-		{
-			Properties.TriggerEvent(EnabledChangedKey, this, e);
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> (or its children) are enabled and accept user input.
 		/// </summary>
 		/// <remarks>
-		/// Typically when a control is disabled, the user cannot do anything with the control (including for example, selecting
-		/// text in a text control).  Certain controls can have a 'Read Only' mode, such as <see cref="TextBox.ReadOnly"/> which
-		/// allows the user to select text, but not change its contents.
+		/// Typically when a control is disabled, the user cannot do anything with the control or any of its children.
+		/// Including for example, selecting text in a text control.
+		/// Certain controls can have a 'Read Only' mode, such as <see cref="TextBox.ReadOnly"/> which allow the user to 
+		/// select text, but not change its contents.
 		/// </remarks>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		[DefaultValue(true)]
+		[sc.DefaultValue(true)]
 		public virtual bool Enabled
 		{
-			get { return Handler.Enabled; }
-			set
-			{ 
-				if (value != Enabled)
-				{
-					Handler.Enabled = value;
-					OnEnabledChanged(EventArgs.Empty);
-				}
-			}
+			get => Handler.Enabled;
+			set => Handler.Enabled = value;
 		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is visible to the user.
 		/// </summary>
 		/// <remarks>
-		/// When the visibility of a control is set to false, it will still occupy space in the layout, but not be shown.
-		/// The only exception is for controls like the <see cref="Splitter"/>, which will hide a pane if the visibility
-		/// of one of the panels is changed.
+		/// When the visibility of a control is set to false, it will not occupy space in the layout.
 		/// </remarks>
 		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
-		[DefaultValue(true)]
+		[sc.DefaultValue(true)]
 		public virtual bool Visible
 		{
 			get { return Handler.Visible; }
@@ -889,8 +915,9 @@ namespace Eto.Forms
 			get { return Properties.Get<Container>(VisualParent_Key); }
 			internal set
 			{
+				var old = VisualParent;
 				Properties.Set(VisualParent_Key, value);
-				Handler.SetParent(value);
+				Handler.SetParent(old, value);
 			}
 		}
 
@@ -936,6 +963,18 @@ namespace Eto.Forms
 				VisualParent.Remove(this);
 		}
 
+		static readonly object IsAttached_Key = new object();
+
+		/// <summary>
+		/// Gets a value indicating this control has been attached to a native container
+		/// </summary>
+		/// <seealso cref="AttachNative"/>
+		public bool IsAttached
+		{
+			get => Properties.Get<bool>(IsAttached_Key);
+			private set => Properties.Set(IsAttached_Key, value);
+		}
+
 		/// <summary>
 		/// Attaches the control for direct use in a native application
 		/// </summary>
@@ -949,8 +988,12 @@ namespace Eto.Forms
 		public void AttachNative()
 		{
 			if (VisualParent != null)
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "You can only attach a parentless control"));
+				throw new InvalidOperationException("You can only attach a parentless control");
+			
+			if (IsAttached)
+				return;
 
+			IsAttached = true;
 			using (Platform.Context)
 			{
 				OnPreLoad(EventArgs.Empty);
@@ -962,7 +1005,7 @@ namespace Eto.Forms
 		void PostAttach()
 		{
 			// if the control is disposed before we get here Handler will be null, so omit calling OnLoadComplete
-			if (Handler != null)
+			if (!IsDisposed && Handler != null && Loaded)
 				OnLoadComplete(EventArgs.Empty);
 		}
 
@@ -975,6 +1018,10 @@ namespace Eto.Forms
 		/// </remarks>
 		public void DetachNative()
 		{
+			if (!IsAttached)
+				return;
+
+			IsAttached = false;
 			using (Platform.Context)
 			{
 				OnUnLoad(EventArgs.Empty);
@@ -1003,6 +1050,12 @@ namespace Eto.Forms
 		{
 			using (Platform.Context)
 				OnUnLoad(e);
+		}
+
+		internal void TriggerStyleChanged(EventArgs e)
+		{
+			using (Platform.Context)
+				OnStyleChanged(e);
 		}
 
 		/// <summary>
@@ -1098,7 +1151,7 @@ namespace Eto.Forms
 					var window = c as Window;
 					if (window != null)
 						return window;
-					c = c.Parent;
+					c = c.VisualParent;
 				}
 				return Handler.GetNativeParentWindow();
 			}
@@ -1241,7 +1294,7 @@ namespace Eto.Forms
 		/// <see cref="PlatformFeatures.TabIndexWithCustomContainers"/> flag to determine if it is supported.
 		/// </remarks>
 		/// <value>The index of the control in the tab order.</value>
-		[DefaultValue(int.MaxValue)]
+		[sc.DefaultValue(int.MaxValue)]
 		public virtual int TabIndex
 		{
 			get { return Handler.TabIndex; }
@@ -1264,8 +1317,71 @@ namespace Eto.Forms
 		/// <param name="allowedEffects">Allowed action.</param>
 		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects)
 		{
-			Handler.DoDragDrop(data, allowedEffects);
+			Handler.DoDragDrop(data, allowedEffects, null, PointF.Empty);
 		}
+
+		/// <summary>
+		/// Starts drag operation using this control as drag source.
+		/// </summary>
+		/// <param name="data">Drag data.</param>
+		/// <param name="allowedEffects">Allowed effects.</param>
+		/// <param name="image">Custom drag image</param>
+		/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
+		{
+			Handler.DoDragDrop(data, allowedEffects, image, cursorOffset);
+		}
+
+		/// <summary>
+		/// Handles when the <see cref="Style"/> is changed.
+		/// </summary>
+		/// <remarks>
+		/// This applies the cascading styles to the control and any of its children.
+		/// </remarks>
+		protected override void OnStyleChanged(EventArgs e)
+		{
+			base.OnStyleChanged(e);
+
+			// already loaded, re-apply styles as they have changed
+			if (Loaded)
+				OnApplyCascadingStyles();
+		}
+
+		/// <summary>
+		/// Called when cascading styles should be applied to this control.
+		/// </summary>
+		/// <remarks>
+		/// You don't typically have to call this directly, but override it to apply styles to any child item(s)
+		/// that may need styling at the same time.
+		/// 
+		/// This is automatically done for any Container based control and its child controls.
+		/// </remarks>
+		protected virtual void OnApplyCascadingStyles() => ApplyStyles(this, Style);
+
+		/// <summary>
+		/// Applies the styles to the specified <paramref name="widget"/> up the parent chain.
+		/// </summary>
+		/// <remarks>
+		/// This traverses up the parent chain to apply any cascading styles defined in parent container objects.
+		/// 
+		/// Call this method on any child widget of a control.
+		/// </remarks>
+		/// <param name="widget">Widget to style.</param>
+		/// <param name="style">Style of the widget to apply.</param>
+		protected virtual void ApplyStyles(object widget, string style) => Parent?.ApplyStyles(widget, Style);
+		
+		/// <summary>
+		/// Shows a print dialog to print the specified control
+		/// </summary>
+		public void Print()
+		{
+			using (var doc = new PrintDocument(this))
+			{
+				var dlg = new PrintDialog();
+				dlg.ShowDialog(this, doc);
+			}
+		}
+		
 
 		/// <summary>
 		/// Handles the disposal of this control
@@ -1276,6 +1392,8 @@ namespace Eto.Forms
 			if (disposing)
 			{
 				Unbind();
+				Detach();
+				DetachNative();
 			}
 
 			base.Dispose(disposing);
@@ -1391,6 +1509,10 @@ namespace Eto.Forms
 			/// Raises the DragLeave event.
 			/// </summary>
 			void OnDragLeave(Control widget, DragEventArgs e);
+			/// <summary>
+			/// Raises the EnabledChanged event.
+			/// </summary>
+			void OnEnabledChanged(Control widget, EventArgs e);
 		}
 
 		/// <summary>
@@ -1546,6 +1668,15 @@ namespace Eto.Forms
 				using (widget.Platform.Context)
 					widget.OnDragLeave(e);
 			}
+
+			/// <summary>
+			/// Raises the EnabledChanged event.
+			/// </summary>
+			public void OnEnabledChanged(Control widget, EventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnEnabledChanged(e);
+			}
 		}
 
 		#endregion
@@ -1581,6 +1712,16 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The current size of the control</value>
 			Size Size { get; set; }
+
+			/// <summary>
+			/// Gets or sets the width of the control size.
+			/// </summary>
+			int Width { get; set; }
+
+			/// <summary>
+			/// Gets or sets the height of the control size.
+			/// </summary>
+			int Height { get; set; }
 
 			/// <summary>
 			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
@@ -1692,8 +1833,9 @@ namespace Eto.Forms
 			/// <summary>
 			/// Called when the parent of the control has been set
 			/// </summary>
-			/// <param name="parent">New parent for the control, or null if the parent was removed</param>
-			void SetParent(Container parent);
+			/// <param name="oldParent">Old parent for the control, or null if the control is added</param>
+			/// <param name="newParent">New parent for the control, or null if the parent was removed</param>
+			void SetParent(Container oldParent, Container newParent);
 
 			/// <summary>
 			/// Gets the supported platform commands that can be used to hook up system functions to user defined logic
@@ -1802,13 +1944,22 @@ namespace Eto.Forms
 			/// </summary>
 			/// <param name="data">Drag data.</param>
 			/// <param name="allowedEffects">Allowed effects.</param>
-			void DoDragDrop(DataObject data, DragEffects allowedEffects);
+			/// <param name="image">Custom drag image</param>
+			/// <param name="cursorOffset">Offset of the cursor to the drag image</param>
+			void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset);
 
 			/// <summary>
 			/// Gets a parent window wrapper around the native window
 			/// </summary>
 			/// <returns>The parent window.</returns>
 			Window GetNativeParentWindow();
+
+			/// <summary>
+			/// Gets the preferred size of this control given the specified <paramref name="availableSize" />.
+			/// </summary>
+			/// <param name="availableSize">The available size to determine the preferred size</param>
+			/// <returns>The preferred size this control would like to be, which can be larger than the specified <paramref name="availableSize" />.</returns>
+			SizeF GetPreferredSize(SizeF availableSize);
 		}
 		#endregion
 	}

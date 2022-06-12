@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
@@ -11,6 +11,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			Control = new Gtk.Entry();
 			Control.WidthRequest = 100;
+			Control.WidthChars = 0;
 		}
 
 	}
@@ -95,7 +96,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			static Clipboard clipboard;
@@ -109,8 +110,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (!e.Cancel)
 				{
-					var tia = new TextChangingEventArgs(e.Text, Handler.Selection);
-					Handler.Callback.OnTextChanging(Handler.Widget, tia);
+					var h = Handler;
+					if (h == null)
+						return;
+					var tia = new TextChangingEventArgs(e.Text, h.Selection, true);
+					h.Callback.OnTextChanging(h.Widget, tia);
 					e.Cancel = tia.Cancel;
 				}
 			}
@@ -118,8 +122,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			[GLib.ConnectBefore]
 			public void HandleClipboardPasted(object sender, EventArgs e)
 			{
-				var tia = new TextChangingEventArgs(Clipboard.Text, Handler.Selection);
-				Handler.Callback.OnTextChanging(Handler.Widget, tia);
+				var h = Handler;
+				if (h == null)
+					return;
+				var tia = new TextChangingEventArgs(Clipboard.Text, h.Selection, true);
+				Handler.Callback.OnTextChanging(h.Widget, tia);
 				if (tia.Cancel)
 					NativeMethods.g_signal_stop_emission_by_name(Handler.Control.Handle, "paste-clipboard");
 			}
@@ -129,13 +136,16 @@ namespace Eto.GtkSharp.Forms.Controls
 			[GLib.ConnectBefore]
 			public void HandleTextDeleted(object o, Gtk.TextDeletedArgs args)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return;
 				if (!deleting)
 				{
 					deleting = true;
 					if (args.StartPos < args.EndPos)
 					{
-						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, Handler.Control.Text.Length - 1)));
-						Handler.Callback.OnTextChanging(Handler.Widget, tia);
+						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, handler.Control.Text.Length - 1)), true);
+						handler.Callback.OnTextChanging(handler.Widget, tia);
 						if (tia.Cancel)
 							args.RetVal = true;
 					}
@@ -161,22 +171,25 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public virtual void HandleExposeEvent(object o, Gtk.ExposeEventArgs args)
 			{
-				var control = Handler.Control;
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var control = handler.Control;
 				if (!string.IsNullOrEmpty(control.Text) || args.Event.Window == control.GdkWindow)
 					return;
 
-				if (Handler.placeholderLayout == null)
+				if (handler.placeholderLayout == null)
 				{
-					Handler.placeholderLayout = new Pango.Layout(control.PangoContext);
-					Handler.placeholderLayout.FontDescription = control.PangoContext.FontDescription.Copy();
+					handler.placeholderLayout = new Pango.Layout(control.PangoContext);
+					handler.placeholderLayout.FontDescription = control.PangoContext.FontDescription.Copy();
 				}
-				Handler.placeholderLayout.SetText(Handler.placeholderText);
+				handler.placeholderLayout.SetText(handler.placeholderText);
 
 				int currentHeight, currentWidth;
 				args.Event.Window.GetSize(out currentWidth, out currentHeight);
 
 				int width, height;
-				Handler.placeholderLayout.GetPixelSize(out width, out height);
+				handler.placeholderLayout.GetPixelSize(out width, out height);
 
 				var style = control.Style;
 				var bc = style.Base(Gtk.StateType.Normal);
@@ -188,13 +201,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 					gc.RgbFgColor = new Gdk.Color((byte)(((int)bc.Red + tc.Red) / 2 / 256), (byte)(((int)bc.Green + (int)tc.Green) / 2 / 256), (byte)((bc.Blue + tc.Blue) / 2 / 256));
 
-					args.Event.Window.DrawLayout(gc, 2, (currentHeight - height) / 2 + 1, Handler.placeholderLayout);
+					args.Event.Window.DrawLayout(gc, 2, (currentHeight - height) / 2 + 1, handler.placeholderLayout);
 				}
 			}
 
 #endif
 		}
-		#if GTK2
+#if GTK2
 		Pango.Layout placeholderLayout;
 
 		public override Eto.Drawing.Font Font
@@ -206,7 +219,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				placeholderLayout = null;
 			}
 		}
-		#else
+#else
 		protected override void SetBackgroundColor(Eto.Drawing.Color? color)
 		{
 		}
@@ -227,8 +240,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.Text; }
 			set
 			{
-				Control.Text = value ?? string.Empty;
-				lastSelection = null;
+				var oldText = Control.Text;
+				var newText = value ?? string.Empty;
+				if (newText != oldText)
+				{
+					var args = new TextChangingEventArgs(oldText, newText, false);
+					Callback.OnTextChanging(Widget, args);
+					if (args.Cancel)
+						return;
+					Control.Text = newText;
+					lastSelection = null;
+				}
 			}
 		}
 

@@ -1,3 +1,4 @@
+using System;
 using Eto.Drawing;
 using Eto.Forms;
 
@@ -9,6 +10,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox handleEvents;
 		CheckBox showParentEvents;
 		CheckBox showWindowEvents;
+		CheckBox cancelTextInput;
 
 		protected override void OnLoad(System.EventArgs e)
 		{
@@ -42,16 +44,30 @@ namespace Eto.Test.Sections.Behaviors
 			control.KeyDown += control_KeyDown;
 
 			control.KeyUp += control_KeyUp;
+			
+			// if (control is Drawable || control is Button)
+				control.TextInput += control_TextInput;
+		}
+
+		private void control_TextInput(object sender, TextInputEventArgs e)
+		{
+			Log.Write(sender, $"TextInput: {e.Text}");
+			if (cancelTextInput.Checked == true)
+				e.Cancel = true;
 		}
 
 		void control_KeyUp(object sender, KeyEventArgs e)
 		{
-			LogKeyEvent(sender, "KeyUp", e);
+			if (e.KeyEventType != KeyEventType.KeyUp)
+				Log.Write(sender, "INCORRECT: KeyUp event should always have a KeyEventType = KeyUp");
+			LogKeyEvent(sender, e.KeyEventType.ToString(), e);
 		}
 
 		void control_KeyDown(object sender, KeyEventArgs e)
 		{
-			LogKeyEvent(sender, "KeyDown", e);
+			if (e.KeyEventType != KeyEventType.KeyDown)
+				Log.Write(sender, "INCORRECT: KeyDown event should always have a KeyEventType = KeyDown");
+			LogKeyEvent(sender, e.KeyEventType.ToString(), e);
 		}
 
 		Control ShowParentEvents()
@@ -68,7 +84,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var layout = new DynamicLayout { Spacing = new Size(5, 5) };
 
-			layout.AddRow(null, Handled(), ShowParentEvents(), ShowWindowEvents(), null);
+			layout.AddRow(null, Handled(), CancelTextInput(), ShowParentEvents(), ShowWindowEvents(), null);
 			layout.Add(null);
 
 			return layout;
@@ -77,6 +93,10 @@ namespace Eto.Test.Sections.Behaviors
 		Control Handled()
 		{
 			return handleEvents = new CheckBox { Text = "Handle key events" };
+		}
+		Control CancelTextInput()
+		{
+			return cancelTextInput = new CheckBox { Text = "Cancel TextInput events" };
 		}
 	}
 }

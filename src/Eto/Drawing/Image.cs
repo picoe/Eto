@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 
 namespace Eto.Drawing
 {
@@ -42,7 +42,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TypeConverter(typeof(ImageConverter))]
+	[sc.TypeConverter(typeof(ImageConverterInternal))]
 	public abstract class Image : Widget
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }

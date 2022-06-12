@@ -10,7 +10,14 @@ namespace Eto.Wpf.Forms
 	{
 		public class EtoCanvas : swc.Canvas
 		{
+			public IWpfFrameworkElement Handler { get; set; }
+
 			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				return Handler?.MeasureOverride(constraint, MeasureChildren) ?? MeasureChildren(constraint);
+			}
+			
+			sw.Size MeasureChildren(sw.Size constraint)
 			{
 				var size = new sw.Size();
 				
@@ -23,7 +30,7 @@ namespace Eto.Wpf.Forms
 					if (size.Width < left) size.Width = left;
 					if (size.Height < top) size.Height = top;
 				}
-				return size;
+				return size.Min(constraint.InfinityIfNan());
 			}
 		}
 
@@ -31,7 +38,9 @@ namespace Eto.Wpf.Forms
 		{
 			Control = new EtoCanvas
 			{
-				SnapsToDevicePixels = true
+				Handler = this,
+				SnapsToDevicePixels = true,
+				ClipToBounds = true
 			};
 		}
 

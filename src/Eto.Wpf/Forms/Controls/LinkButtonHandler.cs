@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using Eto.Wpf.Drawing;
 using System;
@@ -79,12 +79,6 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Control.Background.ToEtoColor(); }
 			set { Control.Background = value.ToWpfBrush(); }
-		}
-
-		public override bool Enabled
-		{
-			get { return Hyperlink.IsEnabled; }
-			set { Hyperlink.IsEnabled = value; }
 		}
 
 		static readonly object FontKey = new object();

@@ -51,11 +51,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Gdk.EventExpose ev = args.Event;
 				var h = Handler;
+				if (h == null)
+					return;
 				var handler = new GraphicsHandler(h.Control, ev.Window);
 #else
 			public void HandleDrawn(object o, Gtk.DrawnArgs args)
 			{
 				var h = Handler;
+				if (h == null)
+					return;
 				var handler = new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false);
 #endif
 				if (h.image == null)

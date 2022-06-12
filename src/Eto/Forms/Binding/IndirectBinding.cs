@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
 
@@ -77,7 +78,7 @@ namespace Eto.Forms
 		/// <param name="dataItem">object to set the value to</param>
 		/// <param name="value">value to set to the object</param>
 		public void SetValue(object dataItem, T value)
-		{ 
+		{
 			var args = new BindingChangingEventArgs(value);
 			OnChanging(args);
 			if (!args.Cancel)
@@ -146,7 +147,7 @@ namespace Eto.Forms
 			return new DelegateBinding<object, TValue>(
 				m => toValue != null ? toValue(GetValue(m)) : default(TValue),
 				(m, val) => { if (fromValue != null) SetValue(m, fromValue(val)); },
-				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				addChangeEvent: AddValueChangedHandler,
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
@@ -191,9 +192,15 @@ namespace Eto.Forms
 		public IndirectBinding<TValue> Cast<TValue>()
 		{
 			return new DelegateBinding<object, TValue>(
-				m => (TValue)(object)GetValue(m),
+				m =>
+				{
+					var value = (object)GetValue(m);
+					if (value == null)
+						return default(TValue);
+					return (TValue)value;
+				},
 				(m, val) => SetValue(m, (T)(object)val),
-				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				addChangeEvent: AddValueChangedHandler,
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
@@ -219,6 +226,8 @@ namespace Eto.Forms
 		/// 	public class MyModel { public ChildObject { get; set; } }
 		/// 
 		/// 	Binding.Property((MyModel m) => m.ChildObject).Child(c => c.SomeChildProperty);
+		///		// or:
+		/// 	Binding.Property((MyModel m) => m.ChildObject.SomeChildProperty);
 		/// </code>
 		/// </example>
 		/// <returns>The binding to the child property accessed through the current binding.</returns>
@@ -250,33 +259,7 @@ namespace Eto.Forms
 		/// <typeparam name="TNewValue">The type of the child property value.</typeparam>
 		public IndirectBinding<TNewValue> Child<TNewValue>(IndirectBinding<TNewValue> binding)
 		{
-			object bindingReference = null;
-			object childBindingReference = null;
-			object context = null;
-			EventHandler<EventArgs> eventHandler = null;
-			EventHandler<EventArgs> valueChanged = (sender, e) =>
-			{
-				binding.RemoveValueChangedHandler(childBindingReference, eventHandler);
-				eventHandler?.Invoke(sender, e);
-				childBindingReference = binding.AddValueChangedHandler(GetValue(context), eventHandler);
-			};
-			return new DelegateBinding<object, TNewValue>(
-				c => binding.GetValue(GetValue(context = c)),
-				(c, v) => binding.SetValue(GetValue(context = c), v),
-				addChangeEvent: (c, ev) =>
-				{
-					context = c;
-					eventHandler = ev;
-					bindingReference = AddValueChangedHandler(c, valueChanged);
-
-					childBindingReference = binding.AddValueChangedHandler(GetValue(c), ev);
-				},
-				removeChangeEvent: (c, ev) =>
-				{
-					binding.RemoveValueChangedHandler(childBindingReference, ev);
-					RemoveValueChangedHandler(bindingReference, valueChanged);
-				}
-			);
+			return new IndirectChildBinding<T, TNewValue>(this, binding);
 		}
 
 		/// <summary>
@@ -289,10 +272,10 @@ namespace Eto.Forms
 				m =>
 				{
 					var val = GetValue(m);
-				return val is TValue ? (TValue)(object)val : defaultConvertedValue;
+					return val is TValue ? (TValue)(object)val : defaultConvertedValue;
 				},
 				(m, val) => SetValue(m, val is T ? (T)(object)val : defaultValue),
-				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				addChangeEvent: AddValueChangedHandler,
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
@@ -325,7 +308,7 @@ namespace Eto.Forms
 					var typedVal = val == true ? trueValue : val == false ? falseValue : nullValue;
 					SetValue(m, typedVal);
 				},
-				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				addChangeEvent: AddValueChangedHandler,
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
@@ -359,7 +342,7 @@ namespace Eto.Forms
 					else if (val == false)
 						SetValue(m, falseValue);
 				},
-				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				addChangeEvent: AddValueChangedHandler,
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
@@ -388,7 +371,7 @@ namespace Eto.Forms
 					if (val == true)
 						SetValue(m, trueValue);
 				},
-				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				addChangeEvent: AddValueChangedHandler,
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
@@ -407,12 +390,12 @@ namespace Eto.Forms
 				m => System.Convert.ToString(GetValue(m)),
 				(m, val) =>
 				{
-					var value = Enum.IsDefined(enumType, val)
+					var value = (!string.IsNullOrEmpty(val) && Enum.IsDefined(enumType, val))
 						? (T)Enum.Parse(enumType, val)
 						: defaultValue;
 					SetValue(m, value);
 				},
-				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				addChangeEvent: AddValueChangedHandler,
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
@@ -545,7 +528,8 @@ namespace Eto.Forms
 		{
 			return new DelegateBinding<object, T>(
 				m => GetValue(m),
-				(m, val) => {
+				(m, val) =>
+				{
 					try
 					{
 						SetValue(m, val);
@@ -557,10 +541,9 @@ namespace Eto.Forms
 							throw;
 					}
 				},
-				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				addChangeEvent: AddValueChangedHandler,
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
-
 	}
 }

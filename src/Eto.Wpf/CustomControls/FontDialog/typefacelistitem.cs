@@ -121,7 +121,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
 
         internal static string GetDisplayName(Typeface typeface)
         {
-            return NameDictionaryHelper.GetDisplayName(typeface.FaceNames);
+            return NameDictionaryExtensions.GetDisplayName(typeface.FaceNames);
         }
     }
 }

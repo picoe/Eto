@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using Eto.Drawing;
 
@@ -12,9 +13,12 @@ namespace Eto.GtkSharp.Drawing
 
 		public string LocalizedName => Control?.Name ?? Name;
 
-		public IEnumerable<FontTypeface> Typefaces
+		FontTypeface[] _typefaces;
+		public IEnumerable<FontTypeface> Typefaces => _typefaces ?? (_typefaces = GetTypefaces().ToArray());
+		
+		IEnumerable<FontTypeface> GetTypefaces()
 		{
-			get { return Control.Faces.Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r))); }
+			return Control.Faces.Where(r => r != null).Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r)));
 		}
 
 		public FontFamilyHandler()
@@ -25,6 +29,14 @@ namespace Eto.GtkSharp.Drawing
 		{
 			Control = pangoFamily;
 			Name = Control.Name;
+		}
+		
+		public FontFamilyHandler(string familyName, FontTypefaceHandler typeface)
+		{
+			Name = familyName;
+			_typefaces = new[] { typeface.Widget };
+			var fm = FontsHandler.Context.FontMap;
+			Control = FindCorrectedFamily(familyName);
 		}
 
 		public static Pango.FontFamily FindCorrectedFamily(string familyName)
@@ -64,13 +76,13 @@ namespace Eto.GtkSharp.Drawing
 			switch (familyName.ToUpperInvariant())
 			{
 				case FontFamilies.MonospaceFamilyName:
-					Control = GetFontFamily("monospace", "FreeMono", "Courier");
+					Control = GetFontFamily("monospace", "FreeMono", "Courier New", "Courier");
 					break;
 				case FontFamilies.SansFamilyName:
-					Control = GetFontFamily("sans", "FreeSans");
+					Control = GetFontFamily("sans", "FreeSans", "Arial", "Helvetica");
 					break;
 				case FontFamilies.SerifFamilyName:
-					Control = GetFontFamily("serif", "FreeSerif");
+					Control = GetFontFamily("serif", "FreeSerif", "Times New Roman", "Times");
 					break;
 				case FontFamilies.CursiveFamilyName:
 				// from http://www.codestyle.org/css/font-family/sampler-Cursive.shtml#cursive-linux
@@ -105,6 +117,38 @@ namespace Eto.GtkSharp.Drawing
 			if (string.IsNullOrEmpty(familyName))
 				return null;
 			return FontsHandler.Context.Families.FirstOrDefault(r => string.Equals(r.Name, familyName, StringComparison.InvariantCultureIgnoreCase));
+		}
+
+		public void CreateFromFiles(IEnumerable<string> fileNames)
+		{
+			foreach (var fileName in fileNames)
+			{
+				var familyName = FontTypefaceHandler.LoadFontFromFile(fileName);
+				if (Name == null)
+					Name = familyName;
+				else if (Name != familyName)
+					throw new InvalidOperationException($"Family name of the supplied font files do not match. '{Name}' and '{familyName}'");
+				
+			}
+
+			FontsHandler.ResetFontMap();
+			Control = FindCorrectedFamily(Name);
+		}
+
+		public void CreateFromStreams(IEnumerable<Stream> streams)
+		{
+			foreach (var stream in streams)
+			{
+				var familyName = FontTypefaceHandler.LoadFontFromStream(stream);
+				if (Name == null)
+					Name = familyName;
+				else if (Name != familyName)
+					throw new InvalidOperationException($"Family name of the supplied font files do not match. '{Name}' and '{familyName}'");
+				
+			}
+
+			FontsHandler.ResetFontMap();
+			Control = FindCorrectedFamily(Name);
 		}
 	}
 }

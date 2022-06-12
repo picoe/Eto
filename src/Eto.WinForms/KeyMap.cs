@@ -1,4 +1,4 @@
-﻿using swf = System.Windows.Forms;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -48,7 +48,8 @@ namespace Eto.WinForms
 			Keys mapped;
 			if (Map.TryGetValue(key, out mapped))
 				return mapped;
-			Debug.WriteLine($"Unknown key {key}");
+			if (key != swf.Keys.None)
+				Debug.WriteLine($"Unknown key {key}");
 			return Keys.None;
 		}
 		
@@ -121,6 +122,18 @@ namespace Eto.WinForms
 			keymap.Add(swf.Keys.F10, Keys.F10);
 			keymap.Add(swf.Keys.F11, Keys.F11);
 			keymap.Add(swf.Keys.F12, Keys.F12);
+			keymap.Add(swf.Keys.F13, Keys.F13);
+			keymap.Add(swf.Keys.F14, Keys.F14);
+			keymap.Add(swf.Keys.F15, Keys.F15);
+			keymap.Add(swf.Keys.F16, Keys.F16);
+			keymap.Add(swf.Keys.F17, Keys.F17);
+			keymap.Add(swf.Keys.F18, Keys.F18);
+			keymap.Add(swf.Keys.F19, Keys.F19);
+			keymap.Add(swf.Keys.F20, Keys.F20);
+			keymap.Add(swf.Keys.F21, Keys.F21);
+			keymap.Add(swf.Keys.F22, Keys.F22);
+			keymap.Add(swf.Keys.F23, Keys.F23);
+			keymap.Add(swf.Keys.F24, Keys.F24);
 			keymap.Add(swf.Keys.D0, Keys.D0);
 			keymap.Add(swf.Keys.D1, Keys.D1);
 			keymap.Add(swf.Keys.D2, Keys.D2);
@@ -161,7 +174,7 @@ namespace Eto.WinForms
 			keymap.Add(swf.Keys.Pause, Keys.Pause);
 			keymap.Add(swf.Keys.Clear, Keys.Clear);
 			//keymap.Add(swf.Keys., Keys.KeypadEqual);
-			keymap.Add(swf.Keys.Menu, Keys.Menu);
+			//keymap.Add(swf.Keys.Menu, Keys.Menu);
 			keymap.Add(swf.Keys.OemPipe, Keys.Backslash);
 			keymap.Add(swf.Keys.Oemplus, Keys.Equal);
 			keymap.Add(swf.Keys.OemSemicolon, Keys.Semicolon);
@@ -182,6 +195,17 @@ namespace Eto.WinForms
 			keymap.Add(swf.Keys.NumPad7, Keys.Keypad7);
 			keymap.Add(swf.Keys.NumPad8, Keys.Keypad8);
 			keymap.Add(swf.Keys.NumPad9, Keys.Keypad9);
+			keymap.Add(swf.Keys.ShiftKey, Keys.LeftShift);
+			keymap.Add(swf.Keys.LShiftKey, Keys.LeftShift);
+			keymap.Add(swf.Keys.RShiftKey, Keys.RightShift);
+			keymap.Add(swf.Keys.ControlKey, Keys.LeftControl);
+			keymap.Add(swf.Keys.LControlKey, Keys.LeftControl);
+			keymap.Add(swf.Keys.RControlKey, Keys.RightControl);
+			keymap.Add(swf.Keys.Menu, Keys.LeftAlt);
+			keymap.Add(swf.Keys.LMenu, Keys.LeftAlt);
+			keymap.Add(swf.Keys.RMenu, Keys.RightAlt);
+			keymap.Add(swf.Keys.LWin, Keys.LeftApplication);
+			keymap.Add(swf.Keys.RWin, Keys.RightApplication);
 			return keymap;
 		}
 

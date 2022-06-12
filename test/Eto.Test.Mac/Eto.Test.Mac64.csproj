@@ -1,44 +1,51 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  
+  <Import Project="..\..\build\MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'" />
+  <Import Project="..\..\src\Eto.Mac\build\Mac.props" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
+  
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net6.0;net48</TargetFrameworks>
     <OutputType>WinExe</OutputType>
-    <UseMacTemplate>True</UseMacTemplate>
+    
+    <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+    <DefineConstants>MONOMAC</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\artifacts\test\Debug\</OutputPath>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
+    <EnableDmgBuild>True</EnableDmgBuild>
+    <EnableCodeSigning Condition="$(EnableCodeSignBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableCodeSigning>
+    <EnableNotarization Condition="$(EnableNotarizationBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableNotarization>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\artifacts\test\Release\</OutputPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="MonoMac">
-      <HintPath>..\..\lib\MonoMac64\MonoMac.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\src\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestIcon.icns" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Info.plist" />
-    <None Remove="TestIcon.icns" />
-  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.Mac64.csproj" />
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\..\lib\monomac\src\MonoMac.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Assets\TestContent.txt" />
+    <None Remove="Assets\TestBundleResource.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    <None Update="Assets\TestCopyToOutput.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\TestContent.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Assets\TestBundleResource.txt" />
+  </ItemGroup>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  
+  <Import Project="..\..\src\Eto.Mac\build\Mac.targets" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
+  
 </Project>

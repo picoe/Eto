@@ -1,33 +1,6 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -40,33 +13,34 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public override void DrawRect(CGRect dirtyRect)
 			{
-				if (Handler.curValue != null)
+				var h = Handler;
+				if (h == null)
 				{
-					if (Cell.BackgroundStyle == NSBackgroundStyle.Dark && Cell.TextColor == NSColor.ControlText)
-					{
-						Cell.TextColor = NSColor.AlternateSelectedControlText;
-						base.DrawRect(dirtyRect);
-						Cell.TextColor = NSColor.ControlText;
-					}
-					else
-						base.DrawRect(dirtyRect);
+					base.DrawRect(dirtyRect);
+					return;
+				}
+
+				if (h.curValue != null)
+				{
+					base.DrawRect(dirtyRect);
 				}
 				else
 				{
 					// paint with no elements visible
-					var old = DatePickerElements;
-					DatePickerElements = 0;
+					// use transparent color so sizing is still correct.
+					var old = TextColor;
+					TextColor = NSColor.Clear;
 					base.DrawRect(dirtyRect);
-					DatePickerElements = old;
+					TextColor = old;
 				}
 			}
 
 			public WeakReference WeakHandler { get; set; }
 
 			public DateTimePickerHandler Handler
-			{ 
+			{
 				get { return (DateTimePickerHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 
 			public EtoDatePicker()
@@ -77,16 +51,28 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override NSDatePicker CreateControl()
-		{
-			return new EtoDatePicker();
-		}
+		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override NSDatePicker CreateControl() => new EtoDatePicker();
+
+
+		static IntPtr selSetPresentsCalendarOverlay_Handle = Selector.GetHandle("setPresentsCalendarOverlay:");
+		static bool SupportsCalendarOverlay => ObjCExtensions.InstancesRespondToSelector<NSDatePicker>("presentsCalendarOverlay");
+
 
 		protected override void Initialize()
 		{
 			this.Mode = DateTimePickerMode.Date;
 			// apple+backspace clears the value
 			Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
+
+			if (SupportsCalendarOverlay)
+			{
+				// 10.15+ supports having a calendar drop down! finally..
+				// no need for spinner as one is presented with the calendar
+				Control.DatePickerStyle = NSDatePickerStyle.TextField;
+				Messaging.void_objc_msgSend_bool(Control.Handle, selSetPresentsCalendarOverlay_Handle, true);
+			}
 
 			base.Initialize();
 			Widget.KeyDown += HandleKeyDown;
@@ -102,6 +88,14 @@ namespace Eto.Mac.Forms.Controls
 				if (e.KeyData == (Keys.Application | Keys.Backspace))
 				{
 					handler.curValue = null;
+					handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
+					handler.Control.NeedsDisplay = true;
+					e.Handled = true;
+				}
+				if (e.KeyData == Keys.Enter && handler.curValue == null)
+				{
+					// pressing enter will set the current value if null, and bring up calendar.
+					handler.curValue = handler.Control.DateValue.ToEto();
 					handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 					handler.Control.NeedsDisplay = true;
 				}
@@ -202,10 +196,12 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void SetBackgroundColor(Color? color)
 		{
+			// base.SetBackgroundColor(color);
 			if (color != null)
 			{
 				Control.BackgroundColor = color.Value.ToNSUI();
 				Control.DrawsBackground = color.Value.A > 0;
+				Control.WantsLayer = color.Value.A < 1;
 			}
 			else
 			{
@@ -218,10 +214,10 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.Bordered; }
 			set
-			{ 
-				Control.Bordered = value; 
+			{
+				Control.Bordered = value;
 
-				Control.DatePickerStyle = value ? NSDatePickerStyle.TextFieldAndStepper : NSDatePickerStyle.TextField;
+				Control.DatePickerStyle = value && !SupportsCalendarOverlay ? NSDatePickerStyle.TextFieldAndStepper : NSDatePickerStyle.TextField;
 			}
 		}
 	}

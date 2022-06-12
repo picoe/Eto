@@ -1,4 +1,4 @@
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System;
 using System.Collections.Generic;
 
@@ -7,7 +7,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Base item for the <see cref="DynamicLayout"/>
 	/// </summary>
-	[TypeConverter(typeof(DynamicItemConverter))]
+	[sc.TypeConverter(typeof(DynamicItemConverter))]
 	public abstract class DynamicItem
 	{
 		/// <summary>

@@ -14,6 +14,9 @@ namespace Eto.WinForms.Forms
 
 		public DialogResult ShowDialog (Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			SWF.DialogResult dr;
 			if (parent != null) dr = Control.ShowDialog((SWF.IWin32Window)parent.ControlObject);
 			else dr = Control.ShowDialog();

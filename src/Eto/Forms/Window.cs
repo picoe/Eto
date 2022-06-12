@@ -35,7 +35,15 @@ namespace Eto.Forms
 		/// <summary>
 		/// Window with no border
 		/// </summary>
-		None
+		None,
+		/// <summary>
+		/// Utility window, usually with a smaller border
+		/// </summary>
+		/// <remarks>
+		/// Note that this is only a hint; some platforms may show it as a default window.
+		/// E.g. on macOS, only a <see cref="FloatingForm"/> supports this mode.
+		/// </remarks>
+		Utility
 	}
 
 	/// <summary>
@@ -43,7 +51,7 @@ namespace Eto.Forms
 	/// </summary>
 	public abstract class Window : Panel
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
 
 		#region Events
 
@@ -196,6 +204,19 @@ namespace Eto.Forms
 			EventLookup.Register<Window>(c => c.OnWindowStateChanged(null), WindowStateChangedEvent);
 			EventLookup.Register<Window>(c => c.OnLogicalPixelSizeChanged(null), LogicalPixelSizeChangedEvent);
 		}
+		
+		/// <summary>
+		/// Gets the window at the specified logical screen point.
+		/// </summary>
+		/// <remarks>
+		/// This should get the first Eto window directly underneath the specified point.
+		/// </remarks>
+		/// <param name="point">Point to find the window at</param>
+		/// <returns>Instance of a Window (Form or Dialog) underneath the specified point, or null if none found</returns>
+		public static Window FromPoint(PointF point)
+		{
+			return Platform.Instance.CreateShared<IWindowHandler>().FromPoint(point);
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Window"/> class.
@@ -264,7 +285,7 @@ namespace Eto.Forms
 		{
 			get { return Handler.ToolBar; }
 			set
-			{ 
+			{
 				var toolbar = Handler.ToolBar;
 				if (toolbar != null)
 				{
@@ -300,6 +321,9 @@ namespace Eto.Forms
 		/// </remarks>
 		public virtual void Close()
 		{
+			// if we're already disposed, don't bother crashing.
+			if (IsDisposed)
+				return;
 			Handler.Close();
 		}
 
@@ -317,13 +341,14 @@ namespace Eto.Forms
 		/// <value>The owner of this window.</value>
 		public Window Owner
 		{
-			get { return Properties.Get<Window>(OwnerKey); }
-			set {
-				Properties.Set(OwnerKey, value, () =>
+			get => Properties.Get<Window>(OwnerKey);
+			set
+			{
+				if (Properties.TrySet(OwnerKey, value))
 				{
 					Handler.SetOwner(value);
 					OnOwnerChanged(EventArgs.Empty);
-				});
+				};
 			}
 		}
 
@@ -340,8 +365,8 @@ namespace Eto.Forms
 		/// Gets or sets the menu bar for this window
 		/// </summary>
 		/// <remarks>
-		/// Some platforms have a global menu bar (e.g. ubuntu, OS X).
-		/// When the winow is in focus, the global menu bar will be changed to reflect the menu assigned.
+		/// Some platforms have a global menu bar (e.g. Ubuntu, OS X).
+		/// When the window is in focus, the global menu bar will be changed to reflect the menu assigned.
 		/// </remarks>
 		/// <value>The menu.</value>
 		public virtual MenuBar Menu
@@ -540,9 +565,28 @@ namespace Eto.Forms
 		/// Use the <see cref="LogicalPixelSizeChanged"/> to detect when the window is moved to 
 		/// a display with a different DPI.
 		/// </remarks>
-		public float LogicalPixelSize
+		public float LogicalPixelSize => Handler.LogicalPixelSize;
+
+		/// <summary>
+		/// Gets or sets a value indicating that the window can be moved by click+dragging the window background
+		/// </summary>
+		public bool MovableByWindowBackground
 		{
-			get { return Handler.LogicalPixelSize; }
+			get => Handler.MovableByWindowBackground;
+			set => Handler.MovableByWindowBackground = value;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating that the window will automatically resize when its content changes
+		/// </summary>
+		/// <remarks>
+		/// Note that if you set both dimensions of the <see cref="Size"/> and/or <see cref="Container.ClientSize"/>, this will be set to false.
+		/// </remarks>
+		/// <value><c>true</c> to auto size the window when its content changes, <c>false</c> to only auto size when first created</value>
+		public bool AutoSize
+		{
+			get => Handler.AutoSize;
+			set => Handler.AutoSize = value;
 		}
 
 		#region Callback
@@ -800,6 +844,36 @@ namespace Eto.Forms
 			/// a display with a different DPI.
 			/// </remarks>
 			float LogicalPixelSize { get; }
+
+			/// <summary>
+			/// Gets or sets a value indicating that the window can be moved by click+dragging the window background
+			/// </summary>
+			bool MovableByWindowBackground { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating that the window will automatically resize when its content changes
+			/// </summary>
+			/// <remarks>
+			/// Note that if you set both dimensions of the <see cref="Size"/> and/or <see cref="Container.ClientSize"/>, this will be set to false.
+			/// </remarks>
+			/// <value><c>true</c> to auto size the window when its content changes, <c>false</c> to only auto size when first created</value>
+			bool AutoSize { get; set; }
+		}
+		
+		/// <summary>
+		/// Handler interface for static methods of <see cref="Window"/>
+		/// </summary>
+		public interface IWindowHandler
+		{
+			/// <summary>
+			/// Gets the window at the specified logical screen point.
+			/// </summary>
+			/// <remarks>
+			/// This should get the first Eto window directly underneath the specified point.
+			/// </remarks>
+			/// <param name="point">Point to find the window at</param>
+			/// <returns>Instance of a Window (Form or Dialog) underneath the specified point, or null if none found</returns>
+			Window FromPoint(PointF point);
 		}
 
 		#endregion

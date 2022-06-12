@@ -15,25 +15,23 @@ namespace Eto.Test.Sections.Behaviors
 				layout.Add(options);
 
 			layout.BeginVertical();
-			layout.AddRow(null, LabelControl(), ButtonControl(), LinkButtonControl(), new Panel(), null);
-			layout.AddRow(null, TextBoxControl(), PasswordBoxControl());
+			layout.AddRow(null, LabelControl(), ButtonControl(), ToggleButtonControl(), LinkButtonControl(), new Panel(), null);
+			layout.AddRow(null, TextBoxControl(), PasswordBoxControl(), SegmentedButtonControl());
 
 			layout.BeginHorizontal();
 			layout.Add(null);
 			layout.Add(TextAreaControl());
+			layout.Add(RichTextAreaControl());
 			if (Platform.Supports<ListBox>())
 				layout.Add(ListBoxControl());
+			layout.Add(PanelControl());
 			layout.EndHorizontal();
 
 			layout.AddRow(null, CheckBoxControl(), RadioButtonControl());
 			layout.AddRow(null, DateTimeControl(), DropDownControl(), ComboBoxControl());
-			layout.AddRow(null, NumericStepperControl(), TextStepperControl());
+			layout.AddRow(null, NumericStepperControl(), TextStepperControl(), StepperControl());
 
-			layout.BeginHorizontal();
-			layout.Add(null);
-			layout.Add(ColorPickerControl());
-			layout.Add(SliderControl());
-			layout.EndHorizontal();
+			layout.AddRow(null, ColorPickerControl(), SliderControl());
 
 			layout.BeginHorizontal();
 			layout.Add(null);
@@ -43,7 +41,16 @@ namespace Eto.Test.Sections.Behaviors
 				layout.Add(GroupBoxControl());
 			layout.Add(TableLayoutControl());
 			layout.EndHorizontal();
+
+			layout.BeginHorizontal();
+			layout.AddSpace();
+			layout.Add(ExpanderControl());
+			layout.EndHorizontal();
+
 			layout.EndVertical();
+
+
+
 			layout.Add(null);
 
 			Content = layout;
@@ -56,51 +63,86 @@ namespace Eto.Test.Sections.Behaviors
 			return null;
 		}
 
+		Control ExpanderControl()
+		{
+			var control = new Expander
+			{
+				Header = "Expander",
+				Expanded = true,
+				Content = new Panel
+				{
+					Size = new Size(100, 100),
+					Content = new Label
+					{
+						VerticalAlignment = VerticalAlignment.Center,
+						TextAlignment = TextAlignment.Center,
+						Text = "Content"
+					}
+				}
+			};
+			LogEvents(control);
+			return control;
+		}
+
 		Control LabelControl()
 		{
-			var control = new Label { Text = "Label Control" };
+			var control = new Label { Text = "Label" };
 			LogEvents(control);
 			return control;
 		}
 
 		Control ButtonControl()
 		{
-			var control = new Button { Text = "Button Control" };
+			var control = new Button { Text = "Button" };
+			LogEvents(control);
+			return control;
+		}
+
+		Control ToggleButtonControl()
+		{
+			var control = new ToggleButton { Text = "ToggleButton " };
 			LogEvents(control);
 			return control;
 		}
 
 		Control TextBoxControl()
 		{
-			var control = new TextBox { Text = "TextBox Control" };
+			var control = new TextBox { Text = "TextBox" };
 			LogEvents(control);
 			return control;
 		}
 
 		Control PasswordBoxControl()
 		{
-			var control = new PasswordBox { Text = "PasswordBox Control" };
+			var control = new PasswordBox { Text = "PasswordBox" };
 			LogEvents(control);
 			return control;
 		}
 
 		Control TextAreaControl()
 		{
-			var control = new TextArea { Text = "TextArea Control" };
+			var control = new TextArea { Text = "TextArea" };
+			LogEvents(control);
+			return control;
+		}
+
+		Control RichTextAreaControl()
+		{
+			var control = new RichTextArea { Text = "RichTextArea" };
 			LogEvents(control);
 			return control;
 		}
 
 		Control CheckBoxControl()
 		{
-			var control = new CheckBox { Text = "CheckBox Control" };
+			var control = new CheckBox { Text = "CheckBox" };
 			LogEvents(control);
 			return control;
 		}
 
 		Control RadioButtonControl()
 		{
-			var control = new RadioButton { Text = "RadioButton Control" };
+			var control = new RadioButton { Text = "RadioButton" };
 			LogEvents(control);
 			return control;
 		}
@@ -121,7 +163,14 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control TextStepperControl()
 		{
-			var control = new TextStepper();
+			var control = new TextStepper { Text = "TextStepper" };
+			LogEvents(control);
+			return control;
+		}
+
+		Control StepperControl()
+		{
+			var control = new Stepper();
 			LogEvents(control);
 			return control;
 		}
@@ -129,10 +178,10 @@ namespace Eto.Test.Sections.Behaviors
 		Control DropDownControl()
 		{
 			var control = new DropDown();
-			control.Items.Add(new ListItem { Text = "Item 1" });
+			control.Items.Add(new ListItem { Text = "DropDown" });
 			control.Items.Add(new ListItem { Text = "Item 2" });
 			control.Items.Add(new ListItem { Text = "Item 3" });
-			control.SelectedKey = "Item 1";
+			control.SelectedKey = "DropDown";
 			LogEvents(control);
 			return control;
 		}
@@ -140,10 +189,10 @@ namespace Eto.Test.Sections.Behaviors
 		Control ComboBoxControl()
 		{
 			var control = new ComboBox();
-			control.Items.Add(new ListItem { Text = "Item 1" });
+			control.Items.Add(new ListItem { Text = "ComboBox" });
 			control.Items.Add(new ListItem { Text = "Item 2" });
 			control.Items.Add(new ListItem { Text = "Item 3" });
-			control.SelectedKey = "Item 1";
+			control.SelectedKey = "ComboBox";
 			LogEvents(control);
 			return control;
 		}
@@ -151,7 +200,7 @@ namespace Eto.Test.Sections.Behaviors
 		Control ListBoxControl()
 		{
 			var control = new ListBox();
-			control.Items.Add(new ListItem { Text = "Item 1" });
+			control.Items.Add(new ListItem { Text = "ListBox" });
 			control.Items.Add(new ListItem { Text = "Item 2" });
 			control.Items.Add(new ListItem { Text = "Item 3" });
 			LogEvents(control);
@@ -177,11 +226,21 @@ namespace Eto.Test.Sections.Behaviors
 			return control;
 		}
 
+		Control PanelControl()
+		{
+			var control = new Panel();
+			control.Padding = 10;
+
+			LogEvents(control);
+			return new Panel { Content = control, BackgroundColor = Colors.Yellow };
+		}
+
+
 
 		Control DrawableControl()
 		{
 			var control = new Drawable { Size = new Size(100, 30), CanFocus = true };
-			control.Paint += delegate(object sender, PaintEventArgs pe)
+			control.Paint += delegate (object sender, PaintEventArgs pe)
 			{
 				pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
 				var size = pe.Graphics.MeasureString(SystemFonts.Label(), "Drawable");
@@ -193,7 +252,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control GroupBoxControl()
 		{
-			var control = new GroupBox { Text = "Some Group Box" };
+			var control = new GroupBox { Text = "GroupBox" };
 			control.Content = new Label { Text = "Content" };
 			LogEvents(control);
 			return control;
@@ -201,7 +260,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control LinkButtonControl()
 		{
-			var control = new LinkButton { Text = "Link Button" };
+			var control = new LinkButton { Text = "LinkButton" };
 			LogEvents(control);
 			return control;
 		}
@@ -224,6 +283,13 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var control = new ImageView();
 			control.Image = TestIcons.TestImage;
+			LogEvents(control);
+			return control;
+		}
+
+		Control SegmentedButtonControl()
+		{
+			var control = new SegmentedButton { Items = { "Item1", "Item2" } };
 			LogEvents(control);
 			return control;
 		}

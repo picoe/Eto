@@ -13,27 +13,35 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
-		public Eto.Platform Platform { get; set; }
-
 		public PointF Position
-		{
-			get { return swf.Control.MousePosition.ScreenToLogical(); }
-			set { swf.Cursor.Position = Point.Round(value.LogicalToScreen()).ToSD(); }
-		}
-
-		public MouseButtons Buttons
 		{
 			get
 			{
-				MouseButtons buttons = MouseButtons.None;
-				if (swi.Mouse.LeftButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Primary;
-				if (swi.Mouse.MiddleButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Middle;
-				if (swi.Mouse.RightButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Alternate;
-				return buttons;
+				var screen = swf.Screen.FromPoint(swf.Control.MousePosition);
+				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
+				var result = swf.Control.MousePosition;
+				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
+				return result.ScreenToLogical(screen);
+			}
+			set
+			{
+				var pos = value.LogicalToScreen();
+				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
+				swf.Cursor.Position = Point.Round(pos).ToSD();
+				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 			}
 		}
+
+		public static int s_CursorSetCount;
+
+		public void SetCursor(Cursor cursor)
+		{
+			swi.Mouse.SetCursor(cursor.ToWpf());
+			s_CursorSetCount++;
+		}
+
+		public MouseButtons Buttons => swf.Control.MouseButtons.ToEto();
 	}
 }

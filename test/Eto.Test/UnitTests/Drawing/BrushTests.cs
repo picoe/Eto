@@ -54,5 +54,35 @@ namespace Eto.Test.UnitTests.Drawing
 			});
 		}
 
+		[Test]
+		public void LinearGradientBrushShouldFillWithRectangleAndAngle()
+		{
+			var bmp = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
+			using (var g = new Graphics(bmp))
+			{
+				var brush = new LinearGradientBrush(
+					new Rectangle(0, 0, 100, 100),
+					Colors.Blue,
+					Colors.Green,
+					0);
+				GraphicsPath path = new GraphicsPath();
+				path.AddLines(new PointF(0, 0), new PointF(100, 100), new PointF(0, 100));
+				path.CloseFigure();
+				g.FillPath(brush, path);
+			}
+
+			// start out mostly blue
+			var startPixel = bmp.GetPixel(1, 2);
+			Assert.LessOrEqual(startPixel.Rb, 10, "#1.1");
+			Assert.LessOrEqual(startPixel.Gb, 10, "#1.2");
+			Assert.GreaterOrEqual(startPixel.Bb, 10, "#1.3");
+
+			// end mostly green
+			var endPixel = bmp.GetPixel(98, 99);
+			Assert.LessOrEqual(endPixel.Rb, 10, "#2.1");
+			Assert.GreaterOrEqual(endPixel.Gb, 80, "#2.2");
+			Assert.LessOrEqual(endPixel.Bb, 10, "#2.3");
+		}
+
 	}
 }

@@ -75,7 +75,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		void HandleIsExpandedChanged(object sender, EventArgs e)
+		void HandleIsExpandedChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			Callback.OnExpandedChanged(Widget, EventArgs.Empty);
 		}

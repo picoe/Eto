@@ -2,15 +2,155 @@
    "version": "0.2.0",
    "configurations": [
         {
-            "name": "Eto.Test.Gtk",
+            "name": "Eto.Test.Mac64",
             "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build_gtk",
-            "program": "${workspaceFolder}/artifacts/test/Debug/netcoreapp2.0/Eto.Test.Gtk.dll",
+			"request": "launch",
+			"preLaunchTask": "build-mac64",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Mac64/${config:var.configuration}/net6.0/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+			// "targetArchitecture": "x86_64", // uncomment to test intel on M1
             "args": [],
             "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+        },
+		{
+            "name": "Eto.Test.Mac64 - mono",
+            "type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-mac64",
+			"program": ".",
+			"runtimeExecutable": "${workspaceFolder}/artifacts/test/Eto.Test.Mac64/${config:var.configuration}/net48/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+			"passDebugOptionsViaEnvironmentVariable": true,
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+        },
+		{
+            "name": "Eto.Test.macOS",
+            "type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-macos",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.macOS/${config:var.configuration}/net6.0-macos/Eto.Test.macOS.app/Contents/MacOS/Eto.Test.macOS",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+        },
+		{
+            "name": "Eto.Test.XamMac2 - mono",
+            "type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-xammac2",
+			"program": ".",
+			"runtimeExecutable": "${workspaceFolder}/artifacts/test/Eto.Test.XamMac2/${config:var.configuration}/net48/Eto.Test.XamMac2.app/Contents/MacOS/Eto.Test.XamMac2",
+			"passDebugOptionsViaEnvironmentVariable": true,
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+        },
+        {
+            "name": "Eto.Test.Gtk",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-gtk",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk/${config:var.configuration}/net6.0/Eto.Test.Gtk.dll",
+            "args": [],
+			"osx": {
+				"env": {
+					"DYLD_FALLBACK_LIBRARY_PATH": "/opt/homebrew/lib"
+				}
+			},
+            "console": "internalConsole",
             "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart"
-        }
-    ]
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false,
+        },
+        {
+            "name": "Eto.Test.Gtk - mono",
+			"type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-gtk",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk/${config:var.configuration}/net48/Eto.Test.Gtk.exe",
+			"passDebugOptionsViaEnvironmentVariable": true,
+            "args": [],
+			"osx": {
+				"env": {
+					"DYLD_FALLBACK_LIBRARY_PATH": "/opt/homebrew/lib"
+				}
+			},
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+        },
+        {
+            "name": "Eto.Test.Gtk2",
+			"type": "mono",
+			"request": "launch",
+			"preLaunchTask": "build-gtk2",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk2/${config:var.configuration}/net48/Eto.Test.Gtk2.exe",
+			"passDebugOptionsViaEnvironmentVariable": true,
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+        },
+        {
+            "name": "Eto.Test.Wpf",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-wpf",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Wpf/${config:var.configuration}/net6.0-windows/Eto.Test.Wpf.exe",
+			"targetArchitecture": "x86_64",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+        },
+        {
+            "name": "Eto.Test.Wpf - .NET 4.8",
+			"type": "clr",
+			"request": "launch",
+			"preLaunchTask": "build-wpf",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Wpf/${config:var.configuration}/net48/Eto.Test.Wpf.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+        },
+        {
+            "name": "Eto.Test.WinForms",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-winforms",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.WinForms/${config:var.configuration}/net6.0-windows/Eto.Test.WinForms.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+		},
+        {
+            "name": "Eto.Test.WinForms - .NET 4.8",
+			"type": "clr",
+			"request": "launch",
+			"preLaunchTask": "build-winforms",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.WinForms/${config:var.configuration}/net48/Eto.Test.WinForms.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+		},
+        {
+            "name": "Eto.Test.Direct2D",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-direct2d",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Direct2D/${config:var.configuration}/net6.0-windows/Eto.Test.Direct2D.exe",
+            "args": [],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false
+		},
+	]
 }

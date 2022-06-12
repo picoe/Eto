@@ -79,9 +79,6 @@
     </Compile>
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="EtoAppDelegate.cs" />
-    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />

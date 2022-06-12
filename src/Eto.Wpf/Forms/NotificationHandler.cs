@@ -10,6 +10,21 @@ namespace Eto.Wpf.Forms
 namespace Eto.WinForms.Forms
 #endif
 {
+	 /// <summary>
+	 /// NotifyIcon defines a set of predefined system icons for WPF/WinForms balloon message.
+	 /// </summary>
+	 public enum NotificationIcon
+	 {
+		/// <summary>No icon.</summary>
+		None,
+		/// <summary>Information icon.</summary>
+		Info,
+		/// <summary>Warning icon.</summary>
+		Warning,
+		/// <summary>Error icon</summary>
+		Error,
+	 }
+
 	public class NotificationHandler : WidgetHandler<swf.Control, Notification, Notification.ICallback>, Notification.IHandler
 	{
 		public string Message { get; set; }
@@ -40,6 +55,8 @@ namespace Eto.WinForms.Forms
 			return s_sharedIndicator;
 		}
 
+		public NotificationIcon NotificationIcon { get; set; }
+
 		static readonly object NotificationHandler_Key = new object();
 
 		public void Show(TrayIndicator indicator = null)
@@ -54,7 +71,7 @@ namespace Eto.WinForms.Forms
 				indicator.Properties.Remove(NotificationHandler_Key);
 			}
 
-			notifyIcon.ShowBalloonTip(3000, Title, Message, swf.ToolTipIcon.Error);
+			notifyIcon.ShowBalloonTip(3000, Title, Message, (swf.ToolTipIcon)NotificationIcon);
 			notifyIcon.BalloonTipClicked += Tray_BalloonTipClicked;
 			notifyIcon.BalloonTipClosed += Tray_BalloonTipClosed;
 			indicator.Properties.Set(NotificationHandler_Key, this);

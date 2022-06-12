@@ -34,6 +34,12 @@ namespace Eto.GtkSharp.Drawing
 			this.widget = widget;
 			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
+
+		public GraphicsHandler(Gtk.Widget widget, Cairo.Context context)
+		{
+			this.widget = widget;
+			this.Control = context;
+		}
 #endif
 		public GraphicsHandler(Cairo.Context context, Pango.Context pangoContext, bool dispose = true)
 		{
@@ -58,7 +64,12 @@ namespace Eto.GtkSharp.Drawing
 
 		void SetOffset(bool fill)
 		{
-			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			var currentMode = PixelOffsetMode;
+			var requiresOffset =
+				(
+					currentMode == PixelOffsetMode.Aligned
+					|| (!fill && currentMode == PixelOffsetMode.None)
+				);
 			if (requiresOffset != isOffset)
 			{
 				ReverseAll();
@@ -113,6 +124,7 @@ namespace Eto.GtkSharp.Drawing
 			surface = handler.Surface;
 			if (surface == null)
 			{
+				handler.FixupAlpha();
 				var format = handler.Alpha ? Cairo.Format.Argb32 : Cairo.Format.Rgb24;
 				surface = new Cairo.ImageSurface(format, image.Size.Width, image.Size.Height);
 				Control = new Cairo.Context(surface);
@@ -368,22 +380,31 @@ namespace Eto.GtkSharp.Drawing
 			return PangoContext != null ? new Pango.Layout(PangoContext) : Pango.CairoHelper.CreateLayout(Control);
 		}
 
-		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
+		public void DrawText(Font font, Brush brush, float x, float y, string text)
 		{
 			var oldAA = AntiAlias;
 			AntiAlias = true;
-			SetOffset(true);
+			SetOffset(false);
 			using (var layout = CreateLayout())
 			{
 				font.Apply(layout);
 				layout.SetText(text);
 				Control.Save();
-				Control.SetSourceColor(brush.Color.ToCairo());
+				brush.Apply(this);
 				Control.MoveTo(x, y);
 				Pango.CairoHelper.LayoutPath(Control, layout);
 				Control.Fill();
 				Control.Restore();
 			}
+			AntiAlias = oldAA;
+		}
+		public void DrawText(FormattedText formattedText, PointF location)
+		{
+			var oldAA = AntiAlias;
+			AntiAlias = true;
+			SetOffset(false);
+			var handler = (FormattedTextHandler)formattedText.Handler;
+			handler.Draw(this, Control, location);
 			AntiAlias = oldAA;
 		}
 
@@ -532,20 +553,35 @@ namespace Eto.GtkSharp.Drawing
 			ApplyTransform();
 		}
 
+#if !GTK2
 		public static bool GetClipRectangle(Cairo.Context cr, ref Gdk.Rectangle rect)
 		{
+#if GTKCORE
+			return Gdk.CairoHelper.GetClipRectangle(cr, out rect);
+#else
 			IntPtr intPtr = Marshaller.StructureToPtrAlloc(rect);
 			bool flag = NativeMethods.gdk_cairo_get_clip_rectangle((cr != null) ? cr.Handle : IntPtr.Zero, intPtr);
 			bool result = flag;
 			rect = (Gdk.Rectangle)Marshal.PtrToStructure(intPtr, typeof(Gdk.Rectangle));
 			Marshal.FreeHGlobal(intPtr);
 			return result;
+#endif
 		}
+#endif
 
 		public RectangleF ClipBounds
 		{
 			get
 			{
+#if GTK2
+				var bounds = clipBounds ?? (widget != null ? (RectangleF)widget.Allocation.ToEto() : RectangleF.Empty);
+				var matrix = Control.Matrix;
+				if (matrix.IsIdentity())
+					return bounds;
+				var etoMatrix = matrix.ToEto();
+				etoMatrix.Invert();
+				return etoMatrix.TransformRectangle(bounds);
+#else
 				var bounds = clipBounds;
 				if (bounds == null)
 				{
@@ -561,6 +597,7 @@ namespace Eto.GtkSharp.Drawing
 				var etoMatrix = matrix.ToEto();
 				etoMatrix.Invert();
 				return etoMatrix.TransformRectangle(bounds.Value);
+#endif
 			}
 		}
 

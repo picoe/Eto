@@ -1,4 +1,18 @@
 {
+	"omnisharp.defaultLaunchSolution": "Eto.Core.sln",
     "editor.insertSpaces": false,
-    "editor.detectIndentation": false
+	"editor.detectIndentation": false,
+	"files.exclude": {
+		"**/.vs": true,
+		"**/*.user": true
+	},
+	"var": {
+		"configuration" : "Debug",
+		"buildProperties" : "/v:Minimal /p:GenerateFullPaths=True /consoleLoggerParameters:NoSummary"
+	},
+	"vssolution.altSolutionFolders": [
+		"src",
+		"samples"
+	]
+
 }

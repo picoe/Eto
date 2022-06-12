@@ -1,19 +1,6 @@
 using Eto.Drawing;
 
 #if OSX
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 
 namespace Eto.Mac.Drawing
 #elif IOS
@@ -29,33 +16,45 @@ namespace Eto.iOS.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
-		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode)
+		struct BrushData
 		{
+			public Color Color;
+			public NSColor NSColor;
+			public BrushData(Color color)
+			{
+				Color = color;
+				NSColor = color.ToNSUI();
+			}
+		}
+
+		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode, bool clip)
+		{
+			var nscolor = ((BrushData)control).NSColor;
 			if (stroke)
 			{
-				graphics.Control.SetStrokeColor((CGColor)control);
+				nscolor.SetStroke();
 				graphics.Control.StrokePath();
 			}
 			else
 			{
-				graphics.Control.SetFillColor((CGColor)control);
+				nscolor.SetFill();
 				graphics.Fill(fillMode);
 			}
 		}
 
 		public Color GetColor(SolidBrush widget)
 		{
-			return ((CGColor)widget.ControlObject).ToEto();
+			return ((BrushData)widget.ControlObject).Color;
 		}
 
 		public void SetColor(SolidBrush widget, Color color)
 		{
-			widget.ControlObject = color.ToCG();
+			widget.ControlObject = new BrushData(color);
 		}
 
 		object SolidBrush.IHandler.Create(Color color)
 		{
-			return color.ToCG();
+			return new BrushData(color);
 		}
 	}
 }

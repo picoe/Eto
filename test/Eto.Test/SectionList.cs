@@ -74,87 +74,19 @@ namespace Eto.Test
 	}
 
 	/// <summary>
-	/// Tests for dialogs and forms use this.
-	/// </summary>
-	public class WindowSection : Section, ISection
-	{
-		Func<Window> Func { get; set; }
-
-		public WindowSection(string text = null)
-		{
-			Text = text;
-		}
-
-		public WindowSection(string text, Func<Window> f)
-		{
-			Func = f;
-			Text = text;
-		}
-
-		protected virtual Window GetWindow()
-		{
-			return null;
-		}
-
-		public Control CreateContent()
-		{
-			var button = new Button { Text = string.Format("Show the {0} test", Text) };
-			var layout = new DynamicLayout();
-			layout.AddCentered(button);
-			button.Click += (sender, e) =>
-			{
-
-				try
-				{
-					var window = Func != null ? Func() : null ?? GetWindow();
-
-					if (window != null)
-					{
-						var dialog = window as Dialog;
-						if (dialog != null)
-						{
-							dialog.ShowModal(null);
-							return;
-						}
-						var form = window as Form;
-						if (form != null)
-						{
-							form.Show();
-							return;
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
-				}
-			};
-			return layout;
-		}
-	}
-
-	/// <summary>
 	/// The base class for views that display the set of tests.
 	/// </summary>
 	public abstract class SectionList
 	{
 		public abstract Control Control { get; }
-		public abstract ISection SelectedItem { get; }
+		public abstract ISection SelectedItem { get; set; }
 		public event EventHandler SelectedItemChanged;
 
-		public string SectionTitle
-		{
-			get
-			{
-				var section = SelectedItem as Section;
-				return section != null ? section.Text : null;
-			}
-		}
+		public string SectionTitle => SelectedItem?.Text;
 
-		protected void OnSelectedItemChanged(object sender, EventArgs e)
+		protected void OnSelectedItemChanged(EventArgs e)
 		{
-			if (this.SelectedItemChanged != null)
-				this.SelectedItemChanged(sender, e);
+			SelectedItemChanged?.Invoke(this, e);
 		}
 
 		public abstract void Focus();
@@ -173,8 +105,28 @@ namespace Eto.Test
 			get
 			{
 				var sectionTreeItem = treeView.SelectedItem as SectionTreeItem;
-				return sectionTreeItem.Section as ISection;
+				return sectionTreeItem?.Section as ISection;
 			}
+			set
+			{
+				treeView.SelectedItem = FindItem(treeView.DataStore as SectionTreeItem, value);
+			}
+		}
+
+		ITreeGridItem FindItem(SectionTreeItem node, ISection section)
+		{
+			foreach (var item in node)
+			{
+				if (ReferenceEquals(item.Section, section))
+					return item;
+				if (item.Count > 0)
+				{
+					var child = FindItem(item, section);
+					if (child != null)
+						return child;
+				}
+			}
+			return null;
 		}
 
 		public SectionListTreeGridView(IEnumerable<Section> topNodes)
@@ -182,14 +134,16 @@ namespace Eto.Test
 			this.treeView = new TreeGridView();
 			treeView.Style = "sectionList";
 			treeView.ShowHeader = false;
+			treeView.AllowEmptySelection = false;
 			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new DelegateBinding<SectionTreeItem, string>(r => r.Text) } });
+			treeView.SelectedItemChanged += (sender, e) => OnSelectedItemChanged(e);
 			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
-			treeView.SelectedItemChanged += OnSelectedItemChanged;
 		}
 	}
 
 	public class SectionListGridView : SectionList
 	{
+		FilterCollection<MyItem> items;
 		class MyItem
 		{
 			public string Name { get; set; }
@@ -209,6 +163,11 @@ namespace Eto.Test
 				var item = gridView.SelectedItem as MyItem;
 				return item != null ? item.Section as ISection : null;
 			}
+			set
+			{
+				var item = items.FirstOrDefault(r => ReferenceEquals(r.Section, value));
+				gridView.SelectedRow = items.IndexOf(item);
+			}
 		}
 
 		public override void Focus() { filterText.Focus(); }
@@ -218,7 +177,7 @@ namespace Eto.Test
 			gridView = new GridView { GridLines = GridLines.None };
 			gridView.Columns.Add(new GridColumn { HeaderText = "Name", Width = 100, AutoSize = false, DataCell = new TextBoxCell { Binding = new DelegateBinding<MyItem, string>(r => r.Name) }, Sortable = true });
 			gridView.Columns.Add(new GridColumn { HeaderText = "Section", DataCell = new TextBoxCell { Binding = new DelegateBinding<MyItem, string>(r => r.SectionName) }, Sortable = true });
-			var items = new FilterCollection<MyItem>();
+			items = new FilterCollection<MyItem>();
 			foreach (var section in topNodes)
 			{
 				foreach (var test in section)
@@ -232,7 +191,7 @@ namespace Eto.Test
 				}
 			}
 			gridView.DataStore = items;
-			gridView.SelectionChanged += OnSelectedItemChanged;
+			gridView.SelectionChanged += (sender, e) => OnSelectedItemChanged(e);
 
 			layout = new TableLayout(
 				filterText = new SearchBox { PlaceholderText = "Filter" },

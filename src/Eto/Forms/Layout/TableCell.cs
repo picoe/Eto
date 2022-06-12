@@ -2,7 +2,7 @@ using System;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
+using sc = System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
 using System.Collections;
@@ -13,7 +13,7 @@ namespace Eto.Forms
 	/// Represents a cell in a <see cref="TableRow"/>
 	/// </summary>
 	[ContentProperty("Control")]
-	[TypeConverter(typeof(TableCellConverter))]
+	[sc.TypeConverter(typeof(TableCellConverter))]
 	public class TableCell
 	{
 		Control control;
@@ -196,9 +196,10 @@ namespace Eto.Forms
 		int IList.Add(object value)
 		{
 			// allow adding a control directly from xaml
-			var control = value as Control;
-			if (control != null)
-				Add((TableCell)control);
+			if (value is Control control)
+				Add(control);
+			else if (value is string str)
+				Add(new Label { Text = str });
 			else
 				Add((TableCell)value);
 			return Count - 1;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
@@ -167,9 +168,8 @@ namespace Eto
 		/// <param name="e">Arguments for the event</param>
 		protected virtual void OnWidgetCreated(WidgetCreatedEventArgs e)
 		{
-			Eto.Style.OnStyleWidgetDefaults(e.Instance);
-			if (WidgetCreated != null)
-				WidgetCreated(this, e);
+			Eto.Style.Provider?.ApplyDefault(e.Instance);
+			WidgetCreated?.Invoke(this, e);
 		}
 
 		internal void TriggerWidgetCreated(WidgetCreatedEventArgs args)
@@ -388,44 +388,60 @@ namespace Eto
 				if (globalInstance != null)
 					return globalInstance;
 
+				var errors = new List<Exception>();
 				Platform detected = null;
 			
 				if (EtoEnvironment.Platform.IsMac)
 				{
-					if (EtoEnvironment.Is64BitProcess)
-						detected = Platform.Get(Platforms.Mac64, true);
+					detected = Get(Platforms.Mac64, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.XamMac2, true);
+						detected = Get(Platforms.macOS, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.XamMac, true);
-					if (detected == null)
-						detected = Platform.Get(Platforms.Mac, true);
+						detected = Get(Platforms.XamMac2, true, errors);
 				}
 				else if (EtoEnvironment.Platform.IsWindows)
 				{
-					detected = Platform.Get(Platforms.Wpf, true);
+					detected = Get(Platforms.Wpf, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.WinForms, true);
+						detected = Get(Platforms.WinForms, true, errors);
 				}
 
 				if (detected == null && EtoEnvironment.Platform.IsUnix)
 				{
-					detected = Platform.Get(Platforms.Gtk, true);
+					detected = Get(Platforms.Gtk, true, errors);
 #pragma warning disable CS0618
 					if (detected == null)
-						detected = Platform.Get(Platforms.Gtk3, true);
+						detected = Get(Platforms.Gtk3, true, errors);
 					if (detected == null)
-						detected = Platform.Get(Platforms.Gtk2, true);
+						detected = Get(Platforms.Gtk2, true, errors);
 #pragma warning restore CS0618
 				}
-				
+
 				if (detected == null)
-					throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Could not detect platform. Are you missing a platform assembly?"));
+				{
+					var message = "Could not detect platform. Are you missing a platform assembly?";
+					if (errors.Count > 1)
+						throw new AggregateException(message, errors);
+					if (errors.Count == 1)
+						throw new InvalidOperationException(message, errors[0]);
+					throw new InvalidOperationException(message);
+				}
 					
 				Initialize(detected);
 				return globalInstance;
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets a value indicating that the platform should allow reinitialization.
+		/// </summary>
+		/// <remarks>
+		/// When false, prevents incorrect logic that may create multiple instances of <see cref="Forms.Application"/>
+		/// or <see cref="Platform"/> in the same thread which can causes issues where handlers are no longer registered, etc.
+		/// 
+		/// Multiple instances should still be able to be created in separate threads (for platforms that support it) when this is false.
+		/// </remarks>
+		public static bool AllowReinitialize { get; set; }
 
 		/// <summary>
 		/// Initializes the specified <paramref name="platform"/> as the current generator, for the current thread
@@ -436,8 +452,17 @@ namespace Eto
 		/// <param name="platform">Generator to set as the current generator</param>
 		public static void Initialize(Platform platform)
 		{
+			if (!AllowReinitialize && instance.IsValueCreated && instance.Value != null && !ReferenceEquals(platform, instance.Value))
+				throw new InvalidOperationException("The Eto.Forms Platform is already initialized.");
+
 			if (globalInstance == null)
 				globalInstance = platform;
+
+			SetInstance(platform);
+		}
+
+		internal static void SetInstance(Platform platform)
+		{
 			instance.Value = platform;
 		}
 
@@ -457,38 +482,44 @@ namespace Eto
 		/// <returns>An instance of a Generator of the specified type, or null if it cannot be loaded</returns>
 		public static Platform Get(string generatorType)
 		{
-			return Get(generatorType, true);
+			return Get(generatorType, true, null);
 		}
 
-		internal static Platform Get(string platformType, bool allowNull)
+		internal static Platform Get(string platformType, bool allowNull, List<Exception> errors)
 		{
 			Type type = Type.GetType(platformType);
 			if (type == null)
 			{
 				if (allowNull)
 					return null;
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Platform not found. Are you missing the platform assembly?"));
+				throw new InvalidOperationException($"Platform type '{platformType}' was not found. Are you missing the platform assembly?");
 			}
 			try
 			{
 				var platform = (Platform)Activator.CreateInstance(type);
-				if (!platform.IsValid)
-				{
-					var message = string.Format("Platform type {0} was loaded but is not valid in the current context.  E.g. Mac platforms require to be in an .app bundle to run", platformType);
-					if (allowNull)
-						Debug.WriteLine(message);
-					else
-						throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, message));
-					return null;
-				}
-				return platform;
+				if (platform.IsValid)
+					return platform;
+
+				var message = $"Platform type '{platformType}' was loaded but is not valid in the current context.  E.g. Mac platforms require to be in an .app bundle to run";
+				var error = new InvalidOperationException(message);
+				errors?.Add(error);
+				if (!allowNull)
+					throw error;
+
+				Debug.WriteLine(message);
+				return null;
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine(string.Format("Error creating instance of platform type '{0}'\n{1}", platformType, ex));
-				if (allowNull)
-					return null;
-				throw;
+				var message = $"Error creating instance of platform type '{platformType}'";
+				var error = new InvalidOperationException(message, ex);
+				errors?.Add(error);
+				if (!allowNull)
+					throw error;
+
+				Debug.WriteLine(message);
+				Debug.WriteLine(ex);
+				return null;
 			}
 		}
 
@@ -514,6 +545,8 @@ namespace Eto
 			if (handler != null)
 				instantiatorMap[handler.Type] = instantiator; // for backward compatibility, for now
 			instantiatorMap[type] = instantiator;
+			// clear handler map so it can pick up the new instantiator next time it is created
+			handlerMap.Clear();
 		}
 
 		/// <summary>
@@ -522,10 +555,14 @@ namespace Eto
 		/// <param name="type">Type of the handler interface to get the instantiator for (usually derived from <see cref="Widget.IHandler"/> or another type)</param>
 		public Func<object> Find(Type type)
 		{
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
+
 			Func<object> activator;
 			if (instantiatorMap.TryGetValue(type, out activator))
 				return activator;
 
+			// the type is not mapped, try the type from the handler attribute
 			var handler = type.GetCustomAttribute<HandlerAttribute>(true);
 			if (handler != null && instantiatorMap.TryGetValue(handler.Type, out activator))
 			{
@@ -533,9 +570,20 @@ namespace Eto
 				return activator;
 			}
 
-			if (!loadedAssemblies.Contains(type.GetAssembly()))
+			// load the handler type assembly and try again (as type could be a derived class)
+			var handlerAssembly = handler?.Type.GetAssembly();
+			if (handlerAssembly != null && !loadedAssemblies.Contains(handlerAssembly))
 			{
-				LoadAssembly(type.GetAssembly());
+				LoadAssembly(handlerAssembly);
+				// since we recurse here it will fall to the next one if this fails.
+				return Find(type);
+			}
+
+			// finally, try the assembly of the current type if we still can't find it
+			var typeAssembly = type.GetAssembly();
+			if (!loadedAssemblies.Contains(typeAssembly))
+			{
+				LoadAssembly(typeAssembly);
 				return Find(type);
 			}
 
@@ -560,14 +608,24 @@ namespace Eto
 				return info;
 
 			var handler = type.GetCustomAttribute<HandlerAttribute>(true);
-			Func<object> activator;
-			if (handler != null && instantiatorMap.TryGetValue(handler.Type, out activator))
+			if (handler != null)
 			{
-				var autoInit = handler.Type.GetCustomAttribute<AutoInitializeAttribute>(true);
-				info = new HandlerInfo(autoInit == null || autoInit.Initialize, activator);
-				handlerMap.Add(type, info);
-				return info;
+				if (instantiatorMap.TryGetValue(handler.Type, out var activator))
+				{
+					var autoInit = handler.Type.GetCustomAttribute<AutoInitializeAttribute>(true);
+					info = new HandlerInfo(autoInit == null || autoInit.Initialize, activator);
+					handlerMap.Add(type, info);
+					return info;
+				}
+				// load the assembly of the handler type (needed when type is a subclass)
+				if (!loadedAssemblies.Contains(handler.Type.GetAssembly()))
+				{
+					LoadAssembly(handler.Type.GetAssembly());
+					return FindHandler(type);
+				}
 			}
+
+			// load the assembly of the target type (can be a subclass)
 			if (!loadedAssemblies.Contains(type.GetAssembly()))
 			{
 				LoadAssembly(type.GetAssembly());

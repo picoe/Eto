@@ -19,7 +19,11 @@ namespace Eto.WinForms.Forms
 
 		public DialogResult ShowDialog(Control parent)
 		{
-			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
+			var parentWindow = parent?.ParentWindow;
+			if (parentWindow?.HasFocus == false)
+				parentWindow.Focus();
+
+			var caption = Caption ?? parentWindow?.Title;
 			swf.Control c = (parent == null) ? null : (swf.Control)parent.ControlObject;
 			swf.DialogResult result = swf.MessageBox.Show(c, Text, caption, Convert(Buttons), Convert(Type), Convert(DefaultButton, Buttons));
 			return result.ToEto();

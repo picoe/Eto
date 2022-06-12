@@ -5,11 +5,9 @@ using System.Runtime.InteropServices;
 
 namespace Eto
 {
-	#if XAMMAC2
-	[Foundation.Preserve(AllMembers = true)]
-	#elif OSX
-	[MonoMac.Foundation.Preserve(AllMembers = true)]
-	#endif
+#if OSX
+	[Preserve(AllMembers = true)]
+#endif
 	static class PlatformDetect
 	{
 		[DllImport("libc")]

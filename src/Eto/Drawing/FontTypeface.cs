@@ -1,4 +1,9 @@
 
+using Eto.Forms;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
 namespace Eto.Drawing
 {
 	/// <summary>
@@ -12,6 +17,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(IHandler))]
 	public class FontTypeface : Widget
 	{
 		new IHandler Handler => (IHandler)base.Handler;
@@ -19,7 +25,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets the family of this typeface
 		/// </summary>
-		public FontFamily Family { get; private set; }
+		public FontFamily Family => Handler.Family;
 
 		/// <summary>
 		/// Gets the name of this typeface
@@ -70,7 +76,38 @@ namespace Eto.Drawing
 		public FontTypeface(FontFamily family, IHandler handler)
 			: base(handler)
 		{
-			this.Family = family;
+			Handler.Create(family);
+			Initialize();
+		}
+		
+		/// <summary>
+		/// Creates a new instance of the FontTypeface from the specified font file on disk.
+		/// </summary>
+		/// <remarks>
+		/// Note that calling this multiple times for the same file may cause additional overhead or unpredictable results, 
+		/// so you should keep a copy of it in memory when you want to use it.
+		/// </remarks>
+		/// <param name="fileName">Path to the font file to load</param>
+		/// <seealso cref="FontFamily.FromFiles(IEnumerable{string})"/>
+		public FontTypeface(string fileName)
+		{
+			Handler.Create(fileName);
+			Initialize();
+		}
+
+		/// <summary>
+		/// Creates a new instance of the FontTypeface from a font in the specified stream.
+		/// </summary>
+		/// <remarks>
+		/// Note that calling this multiple times for the same stream may cause additional overhead or unpredictable results, 
+		/// so you should keep a copy of it in memory when you want to use it.
+		/// </remarks>
+		/// <param name="stream">Stream to a font file to load</param>
+		/// <seealso cref="FontFamily.FromStreams(IEnumerable{Stream})"/>
+		public FontTypeface(Stream stream)
+		{
+			Handler.Create(stream);
+			Initialize();
 		}
 
 		/// <summary>
@@ -87,10 +124,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="other">Other font typeface to test</param>
 		/// <returns>True if the typefaces are equal, false otherwise</returns>
-		public bool Equals(FontTypeface other)
-		{
-			return other == this;
-		}
+		public bool Equals(FontTypeface other) => other == this;
 
 		/// <summary>
 		/// Tests two FontTypeface objects for equality
@@ -107,7 +141,7 @@ namespace Eto.Drawing
 				return true;
 			if (ReferenceEquals(value1, null) || ReferenceEquals(value2, null))
 				return false;
-			return value1.Name == value2.Name;
+			return value1.Family == value2.Family && value1.Name == value2.Name;
 		}
 
 		/// <summary>
@@ -116,10 +150,7 @@ namespace Eto.Drawing
 		/// <param name="value1">First font typeface to test</param>
 		/// <param name="value2">Second font typeface to test</param>
 		/// <returns>True if the font typefaces are not equal, false otherwise</returns>
-		public static bool operator !=(FontTypeface value1, FontTypeface value2)
-		{
-			return !(value1 == value2);
-		}
+		public static bool operator !=(FontTypeface value1, FontTypeface value2) => !(value1 == value2);
 
 		/// <summary>
 		/// Gets the hash code for this instance
@@ -138,14 +169,43 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="obj">Object to test with</param>
 		/// <returns>True if the specified object is a FontTypeface and is equal to this instance</returns>
-		public override bool Equals(object obj)
-		{
-			return this == obj as FontTypeface;
-		}
+		public override bool Equals(object obj) => this == obj as FontTypeface;
 
+		/// <summary>
+		/// Gets a value indicating that this font is a symbol font and not generally used for text
+		/// </summary>
+		/// <remarks>
+		/// Some platforms (e.g. Gtk) might not support this and simply return false for all fonts.
+		/// </remarks>
+		public bool IsSymbol => Handler.IsSymbol;
+
+		/// <summary>
+		/// Gets a value indicating that this font supports the character range specified
+		/// </summary>
+		/// <param name="start">Start of the range</param>
+		/// <param name="end">End of the range (inclusive)</param>
+		/// <returns>True if the font supports the characters in the specified range, false otherwise</returns>
+		public bool HasCharacterRange(int start, int end) => Handler.HasCharacterRanges(new[] { new Range<int>(start, end) });
+
+		/// <summary>
+		/// Gets a value indicating that this font supports the character range specified
+		/// </summary>
+		/// <param name="range">Range to test</param>
+		/// <returns>True if the font supports the characters in the specified range, false otherwise</returns>
+		public bool HasCharacterRange(Range<int> range) => Handler.HasCharacterRanges(new[] { range });
+
+		/// <summary>
+		/// Gets a value indicating that this font supports the character ranges specified
+		/// </summary>
+		/// <param name="ranges">Ranges to test</param>
+		/// <returns>True if the font supports all characters in the specified ranges, false otherwise</returns>
+		public bool HasCharacterRanges(IEnumerable<Range<int>> ranges) => Handler.HasCharacterRanges(ranges);
+		
+		
 		/// <summary>
 		/// Platform handler interface for the <see cref="FontTypeface"/> class
 		/// </summary>
+		[AutoInitialize(false)]
 		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
@@ -168,6 +228,47 @@ namespace Eto.Drawing
 			/// This style does not fully describe the characteristics of the typeface, just very broad characteristics.
 			/// </remarks>
 			FontStyle FontStyle { get; }
+
+			/// <summary>
+			/// Gets a value indicating that this font is a symbol font and not generally used for text
+			/// </summary>
+			bool IsSymbol { get; }
+			
+			/// <summary>
+			/// Gets the FontFamily associated with this typeface
+			/// </summary>
+			FontFamily Family { get; }
+
+			/// <summary>
+			/// Called when creating a FontTypeface for the specified FontFamily
+			/// </summary>
+			/// <param name="family">FontFamily this typeface was created for</param>
+			void Create(FontFamily family);
+
+			/// <summary>
+			/// Called when creating a FontTypeface for the specified font file stream.
+			/// </summary>
+			/// <remarks>
+			/// Note that the Family must not be null after this call.
+			/// </remarks>
+			/// <param name="stream">Stream of the font file to load in this typeface</param>
+			void Create(Stream stream);
+			
+			/// <summary>
+			/// Called when creating a FontTypeface for the specified font file name.
+			/// </summary>
+			/// <remarks>
+			/// Note that the Family must not be null after this call.
+			/// </remarks>
+			/// <param name="fileName">Path to the font file to load in this typeface</param>
+			void Create(string fileName);
+
+			/// <summary>
+			/// Gets a value indicating that this font supports the character ranges specified
+			/// </summary>
+			/// <param name="ranges">Ranges to test</param>
+			/// <returns>True if the font supports all characters in the specified ranges, false otherwise</returns>
+			bool HasCharacterRanges(IEnumerable<Range<int>> ranges);
 		}
 	}
 }

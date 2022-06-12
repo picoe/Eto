@@ -65,7 +65,37 @@ namespace Eto.Forms
 	public class ObjectBinding<T, TValue> : DirectBinding<TValue>
 	{
 		object dataValueChangedReference;
+		bool dataValueChangedHandled;
 		T dataItem;
+
+		class ObjectBindingChangingEventArgs : BindingChangingEventArgs
+		{
+			ObjectBinding<T, TValue> _parent;
+			public ObjectBindingChangingEventArgs(ObjectBinding<T, TValue> parent)
+			{
+				_parent = parent;
+			}
+
+			internal override object InternalValue
+			{
+				get => _parent.DataValue;
+				set => _parent.DataValue = (TValue)value;
+			}
+		}
+
+		class ObjectBindingChangedEventArgs : BindingChangedEventArgs
+		{
+			ObjectBinding<T, TValue> _parent;
+			public ObjectBindingChangedEventArgs(ObjectBinding<T, TValue> parent)
+			{
+				_parent = parent;
+			}
+
+			internal override object InternalValue
+			{
+				get => _parent.DataValue;
+			}
+		}
 
 		/// <summary>
 		/// Gets the binding used to get/set the values from the <see cref="DataItem"/>
@@ -80,12 +110,12 @@ namespace Eto.Forms
 			get { return dataItem; }
 			set
 			{
-				var updateEvent = dataValueChangedReference != null;
-				if (updateEvent)
+				var hasValueChanged = dataValueChangedHandled;
+				if (hasValueChanged)
 					RemoveEvent(DataValueChangedEvent);
 				dataItem = value;
 				OnDataValueChanged(EventArgs.Empty);
-				if (updateEvent)
+				if (hasValueChanged)
 					HandleEvent(DataValueChangedEvent);
 			}
 		}
@@ -143,18 +173,6 @@ namespace Eto.Forms
 		{
 			this.dataItem = dataItem;
 			InnerBinding = innerBinding;
-			InnerBinding.Changed += HandleInnerBindingChanged;
-			InnerBinding.Changing += HandleInnerBindingChanging;
-		}
-
-		void HandleInnerBindingChanging(object sender, BindingChangingEventArgs e)
-		{
-			OnChanging(e);
-		}
-
-		void HandleInnerBindingChanged(object sender, BindingChangedEventArgs e)
-		{
-			OnChanged(e);
 		}
 
 		/// <summary>
@@ -172,7 +190,12 @@ namespace Eto.Forms
 			}
 			set
 			{
+				var args = new ObjectBindingChangingEventArgs(this);
+				OnChanging(args);
+				if (args.Cancel)
+					return;
 				InnerBinding.SetValue(DataItem, Equals(value, default(T)) ? SettingNullValue : value);
+				OnChanged(new ObjectBindingChangedEventArgs(this));
 			}
 		}
 
@@ -184,11 +207,14 @@ namespace Eto.Forms
 			switch (id)
 			{
 				case DataValueChangedEvent:
-					if (dataValueChangedReference == null)
+					if (!dataValueChangedHandled)
+					{
 						dataValueChangedReference = InnerBinding.AddValueChangedHandler(
 							DataItem,
 							new EventHandler<EventArgs>(HandleChangedEvent)
 						);
+						dataValueChangedHandled = true;
+					}
 					break;
 				default:
 					base.HandleEvent(id);
@@ -204,13 +230,14 @@ namespace Eto.Forms
 			switch (id)
 			{
 				case DataValueChangedEvent:
-					if (dataValueChangedReference != null)
+					if (dataValueChangedHandled)
 					{
 						InnerBinding.RemoveValueChangedHandler(
 							dataValueChangedReference,
 							new EventHandler<EventArgs>(HandleChangedEvent)
 						);
 						dataValueChangedReference = null;
+						dataValueChangedHandled = false;
 					}
 					break;
 				default:

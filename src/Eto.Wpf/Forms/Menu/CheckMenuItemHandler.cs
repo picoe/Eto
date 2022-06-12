@@ -37,7 +37,7 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
-		void HandleIsCheckedChanged(object sender, EventArgs e)
+		void HandleIsCheckedChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
