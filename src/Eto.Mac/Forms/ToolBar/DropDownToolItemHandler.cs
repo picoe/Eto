@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Forms.ToolBar;
 using MonoMac.AppKit;
+using MonoMac.CoreGraphics;
 
 namespace Eto.Mac.Forms.ToolBar
 {
@@ -15,11 +16,10 @@ namespace Eto.Mac.Forms.ToolBar
 		{
 			Widget.OnClick(EventArgs.Empty);
 
-			var ctxMenu = contextMenu.ControlObject as NSMenu /* ??? */;
+			var ctxMenu = contextMenu.ControlObject as NSMenu;
 			if (ctxMenu != null)
 			{
-				// https://github.com/picoe/Eto/blob/1b4821b375827b8348969bf1684216e0a70131d1/src/Eto.Mac/Forms/Menu/ContextMenuHandler.cs
-				// ???
+				ctxMenu.PopUpMenu(null, Button.Frame.Location, Button.Superview);
 			}
 		}
 
@@ -27,6 +27,12 @@ namespace Eto.Mac.Forms.ToolBar
 		{
 			get { return contextMenu; }
 			set { contextMenu = value; }
+		}
+
+		public new string Text
+		{
+			get { return Button.Title; }
+			set { Button.Title = value; }
 		}
 	}
 }
