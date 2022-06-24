@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0-macos10.15</TargetFrameworks>
+    <TargetFramework>net6.0-macos10.15</TargetFramework>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;UNIFIED;MACOS_NET;USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
