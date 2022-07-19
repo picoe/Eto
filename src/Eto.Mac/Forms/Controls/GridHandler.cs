@@ -415,7 +415,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (value && Control.HeaderView == null)
 				{
-					Control.HeaderView = headerView = new EtoTableHeaderView { Handler = this };
+					Control.HeaderView = headerView = new EtoTableHeaderView { Handler = this, Menu = ContextMenu.ToNS() };
 				}
 				else if (!value && Control.HeaderView != null)
 				{
@@ -437,7 +437,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Widget.Properties.Set(GridHandler.ContextMenu_Key, value);
 				Control.Menu = value.ToNS();
-				Control.HeaderView.Menu = value.ToNS();
+				if (Control.HeaderView != null)
+					Control.HeaderView.Menu = value.ToNS();
 			}
 		}
 
