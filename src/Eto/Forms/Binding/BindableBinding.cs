@@ -78,13 +78,13 @@ namespace Eto.Forms
 			{
 				GettingNullValue = defaultControlValue,
 				SettingNullValue = defaultContextValue,
-				DataItem = contextBinding.DataValue
+				GetDataItem = () => contextBinding.DataValue // don't actually store the data context object in the binding
 			};
+			// don't trigger the value changes when we are currently changing the context
+			valueBinding.Changing += (sender, e) => e.Cancel = control.IsDataContextChanging;
+			contextBinding.DataValueChanged += (sender, e) => valueBinding.TriggerDataValueChanged();
+
 			DualBinding<TValue> binding = Bind(sourceBinding: valueBinding, mode: mode);
-			contextBinding.DataValueChanged += delegate
-			{
-				((ObjectBinding<object, TValue>)binding.Source).DataItem = contextBinding.DataValue;
-			};
 			control.Bindings.Add(contextBinding);
 			return binding;
 		}
