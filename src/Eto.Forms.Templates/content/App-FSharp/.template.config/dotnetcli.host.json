@@ -5,10 +5,6 @@
 			"longName": "mode",
 			"shortName": "m"
 		},
-		"GtkVersion": {
-			"longName": "gtk-version",
-			"shortName": "g"
-		},
 		"Combined": {
 			"longName": "combined",
 			"shortName": "c"
@@ -33,6 +29,10 @@
 		"IncludeWinForms": {
 			"longName": "include-winforms",
 			"shortName": "wf"
+		},
+		"IncludeMacOS": {
+			"longName": "include-macos",
+			"shortName": "macos"
 		}
 	}
 }

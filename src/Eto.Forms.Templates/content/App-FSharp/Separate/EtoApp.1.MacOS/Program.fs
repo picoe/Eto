@@ -1,4 +1,4 @@
-﻿namespace EtoApp._1.Wpf
+﻿namespace EtoApp._1.XamMac
 module Program =
 
     open System
@@ -7,6 +7,6 @@ module Program =
     [<EntryPoint>]
     [<STAThread>]
     let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platforms.Wpf)
+        let app = new Eto.Forms.Application(Eto.Platforms.macOS)
         app.Run(new MainForm())
         0
