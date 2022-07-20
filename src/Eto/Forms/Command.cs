@@ -10,7 +10,7 @@ namespace Eto.Forms
 	/// </summary>
 	public class CheckCommand : Command, IValueCommand<bool>
 	{
-#region Events
+		#region Events
 
 		/// <summary>
 		/// Occurs when the <see cref="Checked"/> value has changed.
@@ -27,9 +27,9 @@ namespace Eto.Forms
 				CheckedChanged(this, e);
 		}
 
-#endregion
+		#endregion
 
-#region Properties
+		#region Properties
 
 		bool ischecked;
 
@@ -50,7 +50,7 @@ namespace Eto.Forms
 			}
 		}
 
-#endregion
+		#endregion
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckCommand"/> class.
@@ -157,7 +157,7 @@ namespace Eto.Forms
 	/// </remarks>
 	public class Command : IBindable, ICommand
 	{
-#region Events
+		#region Events
 
 		/// <summary>
 		/// Occurs when the <see cref="Enabled"/> property is changed.
@@ -189,9 +189,9 @@ namespace Eto.Forms
 				Executed(this, e);
 		}
 
-#endregion
+		#endregion
 
-#region Properties
+		#region Properties
 
 		/// <summary>
 		/// Gets or sets the ID of the command
@@ -261,7 +261,7 @@ namespace Eto.Forms
 		/// <value>The command shortcut.</value>
 		public Keys Shortcut { get; set; }
 
-#endregion
+		#endregion
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Command"/> class.
@@ -329,8 +329,8 @@ namespace Eto.Forms
 		/// Gets the dictionary of properties for this widget
 		/// </summary>
 		public PropertyStore Properties
-		{ 
-			get { return properties ?? (properties = new PropertyStore(this)); } 
+		{
+			get { return properties ?? (properties = new PropertyStore(this)); }
 		}
 
 		static readonly object Command_Key = new object();
@@ -378,7 +378,7 @@ namespace Eto.Forms
 		}
 
 		bool ICommand.CanExecute(object parameter)
-		{ 
+		{
 			return Enabled;
 		}
 
@@ -387,7 +387,7 @@ namespace Eto.Forms
 			Execute();
 		}
 
-#region IBindable implementation
+		#region IBindable implementation
 
 		/// <summary>
 		/// Event to handle when the <see cref="DataContext"/> has changed
@@ -423,7 +423,7 @@ namespace Eto.Forms
 		{
 			get { return Properties.Get<IBindable>(Parent_Key); }
 			set
-			{ 
+			{
 				var old = Parent;
 				Properties.Set(Parent_Key, value, () =>
 				{
@@ -432,7 +432,11 @@ namespace Eto.Forms
 					if (value != null)
 						value.DataContextChanged += Value_DataContextChanged;
 					if (!Properties.ContainsKey(DataContext_Key))
+					{
+						IsDataContextChanging = true;
 						OnDataContextChanged(EventArgs.Empty);
+						IsDataContextChanging = false;
+					}
 				});
 			}
 		}
@@ -462,10 +466,36 @@ namespace Eto.Forms
 					return bindable != null ? bindable.DataContext : null;
 				});
 			}
-			set { Properties.Set(DataContext_Key, value, () => OnDataContextChanged(EventArgs.Empty)); }
+			set
+			{
+				if (Properties.TrySet(DataContext_Key, value))
+				{
+					IsDataContextChanging = true;
+					OnDataContextChanged(EventArgs.Empty);
+					IsDataContextChanging = false;
+				}
+			}
 		}
 
-		static readonly  object Bindings_Key = new object();
+		static readonly object IsDataContextChanging_Key = new object();
+
+		/// <summary>
+		/// Gets a value indicating that the <see cref="DataContext"/> property is changing.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to determine when to allow certain logic during the update of the data context.
+		/// 
+		/// It is used to disable binding setters on the model when the data context changes so that a binding
+		/// does not cause the view model to be updated when the state hasn't been fully set yet.
+		/// </remarks>
+		/// <value><c>true</c> if the DataContext is currently changing, <c>false</c> otherwise.</value>
+		public bool IsDataContextChanging
+		{
+			get => Properties.Get<bool?>(IsDataContextChanging_Key) ?? (Parent as IBindable)?.IsDataContextChanging ?? false;
+			set => Properties.Set(IsDataContextChanging_Key, value);
+		}
+
+		static readonly object Bindings_Key = new object();
 
 		/// <summary>
 		/// Gets the collection of bindings that are attached to this widget
@@ -475,6 +505,6 @@ namespace Eto.Forms
 			get { return Properties.Create(Bindings_Key, () => new BindingCollection()); }
 		}
 
-#endregion
+		#endregion
 	}
 }
