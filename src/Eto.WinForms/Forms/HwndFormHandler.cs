@@ -230,15 +230,30 @@ namespace Eto.WinForms.Forms
 			}
 			set
 			{
-				var styleInt = Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE);
+				var style = Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE);
 				if (value)
-					styleInt |= (uint)Win32.WS_EX.APPWINDOW;
+					style |= (uint)Win32.WS_EX.APPWINDOW;
 				else
-					styleInt &= (uint)~Win32.WS_EX.APPWINDOW;
+					style &= (uint)~Win32.WS_EX.APPWINDOW;
 
-				Win32.SetWindowLong(Control, Win32.GWL.EXSTYLE, styleInt);
+				Win32.SetWindowLong(Control, Win32.GWL.EXSTYLE, style);
 			}
 		}
+		
+		public virtual bool Closeable
+		{
+			get => ((Win32.WS)Win32.GetWindowLong(Control, Win32.GWL.STYLE)).HasFlag(Win32.WS.SYSMENU);
+			set
+			{
+				var style = Win32.GetWindowLong(Control, Win32.GWL.STYLE);
+				if (value)
+					style |= (uint)Win32.WS.SYSMENU;
+				else
+					style &= (uint)~Win32.WS.SYSMENU;
+				Win32.SetWindowLong(Control, Win32.GWL.STYLE, style);
+			}
+		}
+		
 
 		public bool Topmost
 		{

@@ -34,8 +34,10 @@ namespace Eto.Wpf.Forms
 		internal static readonly object LastPixelSize_Key = new object();
 		internal static readonly object IsClosing_Key = new object();
 		internal static readonly object LocationSet_Key = new object();
-
-
+		internal static readonly object Minimizable_Key = new object();
+		internal static readonly object Maximizable_Key = new object();
+		internal static readonly object Closeable_Key = new object();
+		internal static readonly object Resizable_Key = new object();
 	}
 
 	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
@@ -51,9 +53,6 @@ namespace Eto.Wpf.Forms
 		swc.ContentControl toolBarHolder;
 		protected swc.DockPanel content;
 		Size? initialClientSize;
-		bool resizable = true;
-		bool maximizable = true;
-		bool minimizable = true;
 		PerMonitorDpiHelper dpiHelper;
 		Point? initialLocation;
 
@@ -128,7 +127,6 @@ namespace Eto.Wpf.Forms
 			Control.Content = main;
 			Control.Loaded += delegate
 			{
-				SetResizeMode();
 				SetMinimumSize();
 				if (initialClientSize != null)
 				{
@@ -472,12 +470,11 @@ namespace Eto.Wpf.Forms
 
 		public virtual bool Resizable
 		{
-			get { return resizable; }
+			get => Widget.Properties.Get<bool>(WpfWindow.Resizable_Key, true);
 			set
 			{
-				if (resizable != value)
+				if (Widget.Properties.TrySet(WpfWindow.Resizable_Key, value, true))
 				{
-					resizable = value;
 					SetResizeMode();
 				}
 			}
@@ -485,29 +482,54 @@ namespace Eto.Wpf.Forms
 
 		public virtual bool Maximizable
 		{
-			get { return maximizable; }
+			get => Widget.Properties.Get<bool>(WpfWindow.Maximizable_Key, true);
 			set
 			{
-				if (maximizable != value)
+				if (Widget.Properties.TrySet(WpfWindow.Maximizable_Key, value, true))
 				{
-					maximizable = value;
 					SetResizeMode();
+					SetSystemMenu();
 				}
 			}
 		}
 
 		public virtual bool Minimizable
 		{
-			get { return minimizable; }
+			get => Widget.Properties.Get<bool>(WpfWindow.Minimizable_Key, true);
 			set
 			{
-				if (minimizable != value)
+				if (Widget.Properties.TrySet(WpfWindow.Minimizable_Key, value, true))
 				{
-					minimizable = value;
 					SetResizeMode();
+					SetSystemMenu();
 				}
 			}
 		}
+		
+		public virtual bool Closeable
+		{
+			get => Widget.Properties.Get<bool>(WpfWindow.Closeable_Key, true);
+			set
+			{
+				if (Widget.Properties.TrySet(WpfWindow.Closeable_Key, value, true))
+					SetSystemMenu();
+			}
+		}
+		
+		void SetSystemMenu()
+		{
+			// hide system menu (and close button) if all commands are disabled
+			var useSystemMenu = Closeable || Minimizable || Maximizable;
+			SetStyle(Win32.WS.SYSMENU, useSystemMenu);
+
+			// enable/disable the close button if shown (does not disable Alt+F4)
+			var sysMenu = Win32.GetSystemMenu(NativeHandle, false);
+			if (sysMenu != IntPtr.Zero)
+			{
+				var closeFlags = Closeable ? Win32.MF.BYCOMMAND : Win32.MF.GRAYED;
+				Win32.EnableMenuItem(sysMenu, Win32.SC.CLOSE, closeFlags);
+			}
+		}		
 
 		internal void SetStyleEx(Win32.WS_EX style, bool value)
 		{
@@ -537,15 +559,15 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void SetResizeMode()
 		{
-			if (resizable)
+			if (Resizable)
 				Control.ResizeMode = sw.ResizeMode.CanResize;
-			else if (minimizable)
+			else if (Minimizable)
 				Control.ResizeMode = sw.ResizeMode.CanMinimize;
 			else
 				Control.ResizeMode = sw.ResizeMode.NoResize;
 
-			SetStyle(Win32.WS.MAXIMIZEBOX, maximizable);
-			SetStyle(Win32.WS.MINIMIZEBOX, minimizable);
+			SetStyle(Win32.WS.MAXIMIZEBOX, Maximizable);
+			SetStyle(Win32.WS.MINIMIZEBOX, Minimizable);
 		}
 
 		public virtual bool ShowInTaskbar
@@ -553,7 +575,7 @@ namespace Eto.Wpf.Forms
 			get { return Control.ShowInTaskbar; }
 			set { Control.ShowInTaskbar = value; }
 		}
-
+		
 		public virtual bool Topmost
 		{
 			get { return Control.Topmost; }
