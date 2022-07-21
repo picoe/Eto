@@ -75,15 +75,15 @@ namespace Eto
 			SHOWDEFAULT = 10,
 			FORCEMINIMIZE = 11
 		}
-		
+
 		[Flags]
 		public enum PRF
 		{
 			CHECKVISIBLE = 0x00000001,
-        	NONCLIENT = 0x00000002,
-        	CLIENT = 0x00000004,
-        	ERASEBKGND = 0x00000008,
-        	CHILDREN = 0x00000010
+			NONCLIENT = 0x00000002,
+			CLIENT = 0x00000004,
+			ERASEBKGND = 0x00000008,
+			CHILDREN = 0x00000010
 		}
 
 
@@ -186,9 +186,10 @@ namespace Eto
 			DPICHANGED = 0x02E0,
 			NCCREATE = 0x0081,
 			NCLBUTTONDOWN = 0x00A1,
-			PRINT = 0x0317
+			PRINT = 0x0317,
+			SHOWWINDOW = 0x00000018
 		}
-		
+
 		public enum HT
 		{
 			CAPTION = 0x2
@@ -285,7 +286,7 @@ namespace Eto
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool ShowWindow(IntPtr hWnd, SW nCmdShow);
-		
+
 		[DllImport("user32.dll")]
 		public static extern IntPtr GetActiveWindow();
 
@@ -476,10 +477,10 @@ namespace Eto
 			public IntPtr hwndCaret;
 			public RECT rcCaret;
 		}
-		
+
 		[DllImport("kernel32.dll")]
 		static extern uint GetCurrentThreadId();
-		
+
 		public static bool GetInfo(out GUITHREADINFO lpgui, uint? threadId = null)
 		{
 			lpgui = new GUITHREADINFO();
@@ -487,19 +488,37 @@ namespace Eto
 
 			return GetGUIThreadInfo(threadId ?? GetCurrentThreadId(), ref lpgui);
 		}
-		
+
 		public static IntPtr GetThreadFocusWindow(uint? threadId = null)
 		{
 			if (!GetInfo(out var info, threadId))
 				return IntPtr.Zero;
-				
+
 			return info.hwndFocus;
 		}
-		
+
 		[DllImport("gdi32.dll")]
 		public static extern bool OffsetWindowOrgEx(IntPtr hdc, int nXOffset, int nYOffset, ref POINT lpPoint);
-		
+
 		[DllImport("user32.dll")]
 		public static extern IntPtr WindowFromPoint(POINT lpPoint);
+
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+		[DllImport("user32.dll")]
+		public static extern bool EnableMenuItem(IntPtr hMenu, SC uIDEnableItem, MF uEnable);
+		
+		[Flags]
+		public enum MF : uint
+		{
+			BYCOMMAND = 0x00000000,
+			GRAYED = 0x00000001
+		}
+		
+		public enum SC : uint
+		{
+			CLOSE = 0xF060
+		}
 	}
 }
