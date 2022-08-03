@@ -637,13 +637,13 @@ namespace Eto.Wpf.Forms
 				if (handle != IntPtr.Zero && Control.IsLoaded)
 				{
 					// WPF doesn't always report the correct size when maximized
-					Win32.RECT rect;
-					if (Win32.GetWindowRect(handle, out rect))
+					var rect = Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(handle, out var r) ? r : (Win32.RECT?)null);
+					if (rect != null)
 					{
 						var scale = DpiScale;
 						return new Size(
-							(int)Math.Round(rect.width * scale),
-							(int)Math.Round(rect.height * scale)
+							(int)Math.Round(rect.Value.width * scale),
+							(int)Math.Round(rect.Value.height * scale)
 							);
 					}
 				}
@@ -676,18 +676,26 @@ namespace Eto.Wpf.Forms
 			set { Widget.Properties.Set(WpfWindow.LocationSet_Key, value); }
 		}
 
-		System.Windows.Forms.Screen SwfScreen
+		System.Windows.Forms.Screen SwfScreen => Win32.GetScreenFromWindow(NativeHandle);
+
+		double DpiScale
 		{
 			get
 			{
-				var handle = NativeHandle;
-				if (handle == IntPtr.Zero)
-					return System.Windows.Forms.Screen.PrimaryScreen;
-				return System.Windows.Forms.Screen.FromHandle(handle);
+				var source = sw.PresentationSource.FromVisual(Control);
+				double scale;
+				if (source != null)
+				{
+					scale = source.CompositionTarget.TransformFromDevice.M22;
+					if (Win32.IsSystemDpiAware)
+					{
+						scale = scale * Win32.SystemDpi / SwfScreen.GetLogicalPixelSize();	
+					}
+				}
+				else scale = 1f / (Widget.Screen ?? Screen.PrimaryScreen).LogicalPixelSize;
+				return scale;
 			}
 		}
-
-		double DpiScale => sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformFromDevice.M22 ?? 1f / Screen.PrimaryScreen.LogicalPixelSize;
 
 		public new Point Location
 		{
@@ -698,23 +706,14 @@ namespace Eto.Wpf.Forms
 				var handle = NativeHandle;
 				if (handle != IntPtr.Zero)
 				{
-					Point? location = null;
 					// Left/Top doesn't always report correct location when maximized, so use Win32 when we can.
-					var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
-					try
-					{
-						Win32.RECT rect;
-						if (Win32.GetWindowRect(handle, out rect))
-							location = new Point(rect.left, rect.top);
-					}
-					finally
-					{
-						if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
-							Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
-					}
+					var rect = Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(handle, out var r) ? r : (Win32.RECT?)null);
 
-					if (location != null)
-						return Point.Round(location.Value.ScreenToLogical(SwfScreen));
+					if (rect != null)
+					{
+						var location = new Point(rect.Value.left, rect.Value.top);
+						return Point.Round(location.ScreenToLogical(SwfScreen));
+					}
 				}
 				// in WPF, left/top of a window is transformed by the (current) screen dpi, which makes absolutely no sense.
 				var left = Control.Left;
@@ -762,12 +761,9 @@ namespace Eto.Wpf.Forms
 		void SetLocation(PointF location)
 		{
 			var handle = NativeHandle;
-			var loc = location.LogicalToScreen();
 
-			var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
-			Win32.SetWindowPos(NativeHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE);
-			if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
-				Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
+			var loc = location.LogicalToScreen();
+			Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(NativeHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE));
 		}
 
 		public WindowState WindowState
