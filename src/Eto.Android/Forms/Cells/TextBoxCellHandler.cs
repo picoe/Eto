@@ -13,49 +13,30 @@ using ag = Android.Graphics;
 using Eto.Forms;
 
 namespace Eto.Android.Forms.Cells
-{
-	public interface ICellHandler
 	{
-		av.View CreateView(av.View view, object item);
-	}
-
-	public abstract class CellHandler<TWidget> : WidgetHandler<TWidget>, Cell.IHandler, ICellHandler
-		where TWidget: Cell
-	{
-		public abstract av.View CreateView(av.View view, object item);
-	}
-
 	public class TextBoxCellHandler : CellHandler<TextBoxCell>, TextBoxCell.IHandler
 	{
 		public TextAlignment TextAlignment
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public VerticalAlignment VerticalAlignment
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
+		}
 
-			set
-			{
-				throw new NotImplementedException();
-			}
+		public AutoSelectMode AutoSelectMode
+		{
+			get;
+			set;
 		}
 
 		public override av.View CreateView(av.View view, object item)
 		{
-			var tv = view as aw.TextView ?? new aw.TextView(aa.Application.Context);
+			var tv = view as aw.TextView ?? new aw.TextView(Platform.AppContextThemed);
 
 			tv.Text = Widget.Binding != null ? Widget.Binding.GetValue(item) : null;
 			return tv;

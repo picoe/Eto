@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Test.Android
 {
-	[Activity(Label = "Eto.Test.Android", MainLauncher = true)]
+	[Activity(Label = "Eto.Test.Android", MainLauncher = true, Theme = "@android:style/Theme.DeviceDefault")]
 	public class MainActivity : Activity
 	{
 		public class SimpleApplication : Forms.Application

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using aa = Android.App;
 using ac = Android.Content;
@@ -16,6 +16,8 @@ namespace Eto.Android.Forms.Controls
 	public class EtoNavigationActivity : aa.Activity
 	{
 		INavigationItem content;
+
+		public override ac.Res.Resources.Theme Theme => Platform.AppContextThemed.Theme;
 
 		protected override void OnCreate(ao.Bundle savedInstanceState)
 		{
@@ -46,19 +48,19 @@ namespace Eto.Android.Forms.Controls
 
 		public NavigationHandler()
 		{
-			Control = new aw.FrameLayout(aa.Application.Context);
+			Control = new aw.FrameLayout(Platform.AppContextThemed);
 		}
 
 		public void Push(INavigationItem item)
 		{
 			if (items.Count > 0)
 			{
-				var intent = new ac.Intent(Control.Context, typeof(EtoNavigationActivity));
+				var intent = new ac.Intent(Platform.AppContextThemed, typeof(EtoNavigationActivity));
 				var key = Guid.NewGuid().ToString();
 				itemsLookup.Add(key, item);
 				intent.PutExtra("item", key);
 				intent.SetFlags(ac.ActivityFlags.NewTask);
-				aa.Application.Context.StartActivity(intent);
+				Platform.AppContextThemed.StartActivity(intent);
 			}
 			else
 			{

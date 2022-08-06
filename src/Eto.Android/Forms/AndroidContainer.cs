@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
 using a = Android;
@@ -24,5 +25,13 @@ namespace Eto.Android.Forms
 		public virtual bool RecurseToChildren { get { return true; } }
 
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
+
+		public override IEnumerable<Control> VisualControls
+		{
+			get
+			{
+				return Widget.Controls;
+			}
+		}
 	}
 }

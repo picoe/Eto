@@ -18,7 +18,7 @@ namespace Eto.Android.Forms.Controls
 
 		public LabelHandler()
 		{
-			Control = new aw.TextView(a.App.Application.Context);
+			Control = new aw.TextView(Platform.AppContextThemed);
 		}
 
 		public TextAlignment TextAlignment
@@ -26,7 +26,7 @@ namespace Eto.Android.Forms.Controls
 			get { return Control.Gravity.ToEtoHorizontal(); }
 			set
 			{
-				var gravity = value.ToAndroid();
+				var gravity = value.ToAndroidGravity();
 				Control.Gravity = (Control.Gravity & ~av.GravityFlags.HorizontalGravityMask & AlignmentMask) | gravity;
 			}
 		}
@@ -46,32 +46,6 @@ namespace Eto.Android.Forms.Controls
 		{
 			get;
 			set;
-		}
-
-		Font font;
-		public override Font Font
-		{
-			get { return font ?? (font = Control.Typeface.ToEto()); }
-			set
-			{
-				if (font != value)
-				{
-					font = value;
-					Control.Typeface = font.ToAndroid();
-				}
-			}
-		}
-
-		public Color TextColor
-		{
-			get { return Color.FromArgb((int)Control.CurrentTextColor); }
-			set { Control.SetTextColor(value.ToAndroid()); }
-		}
-
-		public string Text
-		{
-			get { return Control.Text; }
-			set { Control.Text = value; }
 		}
 	}
 }

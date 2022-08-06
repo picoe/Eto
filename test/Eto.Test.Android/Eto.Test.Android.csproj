@@ -14,10 +14,9 @@
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AssemblyName>Eto.Test.Android</AssemblyName>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
     <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
     <MandroidI18n />
-    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,7 +29,12 @@
     <AndroidLinkMode>None</AndroidLinkMode>
     <ConsolePause>false</ConsolePause>
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
-    <AndroidSupportedAbis>armeabi;armeabi-v7a;x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>
+    </AndroidSupportedAbis>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <BundleAssemblies>false</BundleAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -57,7 +61,6 @@
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -88,5 +91,4 @@
       <Name>Eto.Serialization.Xaml</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\Shared\Common.targets" />
 </Project>

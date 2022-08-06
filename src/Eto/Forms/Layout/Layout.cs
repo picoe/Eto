@@ -4,6 +4,18 @@ using System.ComponentModel;
 
 namespace Eto.Forms
 {
+	public interface ILayout
+	{
+		/// <summary>
+		/// Re-calculates the layout of the controls and re-positions them, if necessary
+		/// </summary>
+		/// <remarks>
+		/// All layouts should theoretically work without having to manually update them, but in certain cases
+		/// this may be necessary to be called.
+		/// </remarks>
+		void Update();
+	}
+
 	/// <summary>
 	/// Base class for all layout-based containers
 	/// </summary>
@@ -11,7 +23,7 @@ namespace Eto.Forms
 	/// Layout based containers are used to position child controls, and provides extra functionality
 	/// to update the layout manually.
 	/// </remarks>
-	public abstract class Layout : Container, ISupportInitialize
+	public abstract class Layout : Container, ILayout, ISupportInitialize
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 

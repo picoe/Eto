@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using Eto.Drawing;
 
 using aa = Android.App;
 using ac = Android.Content;
@@ -11,59 +12,28 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using a = Android;
 
 namespace Eto.Android.Forms.Controls
 {
-	public class ComboBoxHandler : AndroidControl<aw.Spinner, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	// TODO: https://stackoverflow.com/a/28441563/55559
+	public class ComboBoxHandler : DropDownHandler<aw.Spinner, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		public override av.View ContainerControl { get { return Control; } }
 
 		public ComboBoxHandler()
 		{
-			Control = new aw.Spinner(aa.Application.Context);
-		}
-
-		public IEnumerable<object> DataStore
-		{
-			get;
-			set;
-		}
-
-		public int SelectedIndex { get; set; }
-
-		public Eto.Drawing.Font Font
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public Eto.Drawing.Color TextColor
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
 		}
 
 		public string Text
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return adapterSource[Control.SelectedItemPosition].ToString();
 			}
 			set
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 		}
 
@@ -71,24 +41,18 @@ namespace Eto.Android.Forms.Controls
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return false;
 			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			set { }
 		}
 
 		public bool AutoComplete
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return false;
 			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			set { }
 		}
 	}
 }

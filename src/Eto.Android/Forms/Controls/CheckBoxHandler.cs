@@ -18,7 +18,8 @@ namespace Eto.Android.Forms.Controls
 	{
 		public CheckBoxHandler()
 		{
-			Control = new aw.CheckBox(aa.Application.Context);
+			Control = new aw.CheckBox(Platform.AppContextThemed);
+			Control.CheckedChange += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
 
 		public bool? Checked
@@ -32,18 +33,6 @@ namespace Eto.Android.Forms.Controls
 		{
 			get;
 			set;
-		}
-
-		public string Text
-		{
-			get { return Control.Text; }
-			set { Control.Text = value; }
-		}
-
-		public Color TextColor
-		{
-			get { return Control.TextColors.ToEto(); }
-			set { Control.SetTextColor(value.ToAndroid()); }
 		}
 	}
 }

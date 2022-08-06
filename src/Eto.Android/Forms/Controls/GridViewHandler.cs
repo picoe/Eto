@@ -12,6 +12,7 @@ using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
 using Eto.Android.Forms.Cells;
+using Eto.Drawing;
 
 namespace Eto.Android.Forms.Controls
 {
@@ -123,7 +124,7 @@ namespace Eto.Android.Forms.Controls
 				var item = Handler.collection.ElementAt(row);
 				if (view == null || view.ChildCount != Handler.columns.Count)
 				{
-					view = new aw.LinearLayout(aa.Application.Context);
+					view = new aw.LinearLayout(Platform.AppContextThemed);
 
 					for (int i = 0; i < Handler.columns.Count; i++)
 					{
@@ -172,7 +173,7 @@ namespace Eto.Android.Forms.Controls
 			columns = new ColumnsChangedHandler { Handler = this };
 			collection = new DataStoreHandler { Handler = this };
 			adapter = new Adapter { Handler = this };
-			Control = new aw.ListView(aa.Application.Context)
+			Control = new aw.ListView(Platform.AppContextThemed)
 			{
 				Adapter = adapter,
 				ChoiceMode = aw.ChoiceMode.Single
@@ -300,18 +301,44 @@ namespace Eto.Android.Forms.Controls
 
 		public BorderType Border
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public void ReloadData(IEnumerable<int> rows)
+		{
+			//throw new NotImplementedException();
+		}
+
+		public Object GetCellAt(PointF location, out Int32 column, out Int32 row)
+		{
+			throw new NotImplementedException();
+		}
+
+		public GridViewDragInfo GetDragInfo(DragEventArgs args)
+		{
+			return new GridViewDragInfo(Widget, null, -1, GridDragPosition.Before);
+		}
+
+		public Boolean CommitEdit()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Boolean CancelEdit()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Boolean IsEditing => false;
+
+		public Boolean AllowEmptySelection
+		{
+			get;
+			set;
+		}
+
+		public GridCell GetCellAt(PointF location)
 		{
 			throw new NotImplementedException();
 		}

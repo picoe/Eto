@@ -23,6 +23,11 @@ namespace Eto.Android.Forms.Controls
 	{
 		public override av.View ContainerControl { get { return InnerFrame; } }
 
+		public PanelHandler()
+		{
+			Control = InnerFrame;
+		}
+
 		protected override void SetContent(av.View content)
 		{
 		}

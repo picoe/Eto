@@ -169,7 +169,7 @@ namespace Eto.Forms
 	/// of the layout.
 	/// </summary>
 	[ContentProperty("Items")]
-	public class StackLayout : Panel
+	public class StackLayout : Panel, ILayout
 	{
 		Orientation orientation = Orientation.Vertical;
 
@@ -286,6 +286,18 @@ namespace Eto.Forms
 				}
 			}
 		}
+
+		public override void Remove(Control child)
+			{
+			var table = Content as TableLayout;
+			table?.Remove(child);
+			}
+
+		public override void RemoveAll()
+			{
+			var table = Content as TableLayout;
+			table?.RemoveAll();
+			}
 
 		class StackLayoutItemCollection : Collection<StackLayoutItem>, IList
 		{
@@ -405,6 +417,10 @@ namespace Eto.Forms
 
 		VerticalAlignment GetVerticalAlign(StackLayoutItem item)
 		{
+			// Avoids creating a nested table for nothing
+			if (item.Control == null)
+				return VerticalAlignment.Stretch;
+
 			var align = item.VerticalAlignment ?? VerticalContentAlignment;
 			var label = item.Control as Label;
 			if (!AlignLabels || label == null)
@@ -415,6 +431,10 @@ namespace Eto.Forms
 
 		HorizontalAlignment GetHorizontalAlign(StackLayoutItem item)
 		{
+			// Avoids creating a nested table for nothing
+			if (item.Control == null)
+				return HorizontalAlignment.Stretch;
+
 			var align = item.HorizontalAlignment ?? HorizontalContentAlignment;
 			var label = item.Control as Label;
 			if (!AlignLabels || label == null)
@@ -479,6 +499,19 @@ namespace Eto.Forms
 			CreateIfNeeded();
 		}
 
+		/// <summary>
+		/// Re-calculates the layout of the controls and re-positions them, if necessary
+		/// </summary>
+		/// <remarks>
+		/// All layouts should theoretically work without having to manually update them, but in certain cases
+		/// this may be necessary to be called.
+		/// </remarks>
+		public virtual void Update()
+		{
+			if (Content is ILayout nestedLayout)
+				nestedLayout.Update();
+		}
+
 		void CreateIfNeeded(bool force = false)
 		{
 			if (suspended > 0 || !Loaded)
@@ -494,7 +527,7 @@ namespace Eto.Forms
 		void Create()
 		{
 			SuspendLayout();
-			var table = new TableLayout { IsVisualControl = true };
+			var table = new TableLayout { IsVisualControl = true, Tag = Tag };
 			table.Spacing = new Size(Spacing, Spacing);
 
 			bool filled = false;

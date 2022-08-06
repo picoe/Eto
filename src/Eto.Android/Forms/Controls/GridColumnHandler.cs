@@ -24,5 +24,10 @@ namespace Eto.Android.Forms.Controls
 		public Cell DataCell { get; set; }
 		public bool Editable { get; set; }
 		public bool Visible { get; set; }
+		public bool Expand { get; set; }
+		public TextAlignment HeaderTextAlignment { get; set; }
+		public int MinWidth { get; set; }
+		public int MaxWidth { get; set; }
+		public int DisplayIndex { get; set; }
 	}
 }

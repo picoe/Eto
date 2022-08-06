@@ -39,9 +39,24 @@ namespace Eto.Android.Drawing
 			return new BrushObject { Paint = paint }; // TODO: initial matrix
 		}
 
+		public const float DegreesToRadians = (float)(Math.PI / 180);
+
 		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			throw new NotImplementedException();
+			double angleInRadians = angle * DegreesToRadians;
+
+			double r = Math.Sqrt(Math.Pow(rectangle.Bottom- rectangle.Top, 2) + Math.Pow(rectangle.Right- rectangle.Left, 2)) / 2;
+
+			float centerX = rectangle.Left + (rectangle.Right - rectangle.Left) / 2;
+			float centerY = rectangle.Top + (rectangle.Bottom - rectangle.Top) / 2;
+
+			float startX = (float)Math.Max(rectangle.Left, Math.Min(rectangle.Right, centerX - r * Math.Cos(angleInRadians)));
+			float startY = (float)Math.Min(rectangle.Bottom, Math.Max(rectangle.Top, centerY - r * Math.Sin(angleInRadians)));
+
+			float endX = (float)Math.Max(rectangle.Left, Math.Min(rectangle.Right, centerX + r * Math.Cos(angleInRadians)));
+			float endY = (float)Math.Min(rectangle.Bottom, Math.Max(rectangle.Top, centerY + r * Math.Sin(angleInRadians)));
+
+			return Create(startColor, endColor, new PointF(startX, startY), new PointF(endX, endY));
 		}
 
 		public IMatrix GetTransform(LinearGradientBrush widget)

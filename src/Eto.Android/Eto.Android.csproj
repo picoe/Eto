@@ -12,8 +12,7 @@
     <AssemblyName>Eto.Android</AssemblyName>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
-    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,21 +32,36 @@
     <ConsolePause>false</ConsolePause>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
   </PropertyGroup>
-  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="AndroidHelpers.cs" />
+    <Compile Include="Forms\AndroidTextControl.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ICellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
+    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="Forms\Controls\FontPickerHandler.cs" />
+    <Compile Include="Forms\Controls\NumericStepperHandler.cs" />
+    <Compile Include="Forms\EtoEnvironmentHandler.cs" />
+    <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
+    <Compile Include="ContextMenuHandler.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Drawing\FormattedTextHandler.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
@@ -64,7 +78,6 @@
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
-    <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
@@ -84,7 +97,18 @@
     <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="Forms\DialogHandler.cs" />
+    <Compile Include="Forms\TableLayoutHandler.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
     <Compile Include="KeyMap.cs" />
+    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
+    <Compile Include="Forms\Menu\MenuItemHandler.cs" />
+    <Compile Include="MessageBoxHandler.cs" />
+    <Compile Include="PixelLayoutHandler.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Forms\AndroidWindow.cs" />
     <Compile Include="Conversions.cs" />
@@ -95,13 +119,17 @@
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\AndroidCommonControl.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
-    <Compile Include="Forms\TableLayoutHandler.cs" />
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
     <Compile Include="Forms\AndroidPanel.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Forms\Controls\NavigationHandler.cs" />
     <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\ScreenHandler.cs" />
+    <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
+    <Compile Include="Forms\UITimerHandler.cs" />
+    <Compile Include="Forms\Menu\SeparatorMenuItemHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -115,7 +143,6 @@
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\Shared\Common.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
