@@ -22,9 +22,7 @@ namespace Eto.Forms
 	public class PropertyBinding<T> : IndirectBinding<T>
 	{
 		Type declaringType;
-#if !NETSTANDARD1_0
 		PropertyDescriptor descriptor;
-#endif
 		PropertyInfo propInfo;
 		string property;
 
@@ -64,7 +62,6 @@ namespace Eto.Forms
 			this.IgnoreCase = ignoreCase;
 		}
 		
-#if !NETSTANDARD1_0
 		bool IsValid => descriptor != null || propInfo != null;
 		bool CanRead => descriptor != null || propInfo?.CanRead == true;
 		bool CanWrite => descriptor?.IsReadOnly == false || propInfo?.CanWrite == true;
@@ -74,16 +71,6 @@ namespace Eto.Forms
 			propInfo = null;
 			declaringType = null;
 		}
-#else
-		bool IsValid => propInfo != null;
-		bool CanRead => propInfo?.CanRead == true;
-		bool CanWrite => propInfo?.CanWrite == true;
-		void Reset()
-		{
-			propInfo = null;
-			declaringType = null;
-		}
-#endif
 
 		bool EnsureProperty(object dataItem)
 		{
@@ -102,7 +89,6 @@ namespace Eto.Forms
 				return false;
 				
 
-#if !NETSTANDARD1_0
 			// use property descriptors first to support more scenarios
 			descriptor = sc.TypeDescriptor.GetProperties(dataItem).Find(Property, IgnoreCase);
 			if (descriptor != null)
@@ -111,7 +97,6 @@ namespace Eto.Forms
 				propInfo = null;
 				return true;
 			}
-#endif
 			
 			// iterate to find non-public properties or with different case
 			var comparison = IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
@@ -151,11 +136,7 @@ namespace Eto.Forms
 			if (EnsureProperty(dataItem) && CanRead)
 			{
 				var propertyType = typeof(T);
-#if !NETSTANDARD1_0
 				object val = descriptor != null ? descriptor.GetValue(dataItem) : propInfo.GetValue(dataItem);
-#else
-				object val = propInfo.GetValue(dataItem);
-#endif
 				if (val != null && !propertyType.IsInstanceOfType(val))
 				{
 					try
@@ -183,11 +164,7 @@ namespace Eto.Forms
 		{
 			if (EnsureProperty(dataItem) && CanWrite)
 			{
-#if !NETSTANDARD1_0
 				var propertyType = descriptor?.PropertyType ?? propInfo.PropertyType;
-#else
-				var propertyType = propInfo.PropertyType;
-#endif
 				object val = value;
 				if (val != null && !propertyType.IsInstanceOfType(val))
 				{
@@ -202,14 +179,10 @@ namespace Eto.Forms
 						val = propertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyType) : null;
 					}
 				}
-#if !NETSTANDARD1_0
 				if (descriptor != null)
 					descriptor.SetValue(dataItem, val);
 				else if (propInfo != null)
 					propInfo.SetValue(dataItem, val);
-#else
-				propInfo.SetValue(dataItem, val);
-#endif
 			}
 		}
 

@@ -135,11 +135,7 @@ namespace Eto.Drawing
 		{
 			if (assembly == null)
 			{
-				#if NETSTANDARD1_0
-                assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
-				#else
 				assembly = Assembly.GetCallingAssembly();
-				#endif
 			}
 
 			return new IconFrame(scale, () =>

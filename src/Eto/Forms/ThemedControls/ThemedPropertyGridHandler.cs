@@ -9,9 +9,6 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
 using sc = System.ComponentModel;
-#if !NETSTANDARD1_0
-using System.ComponentModel.DataAnnotations;
-#endif
 
 namespace Eto.Forms.ThemedControls
 {
