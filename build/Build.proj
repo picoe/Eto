@@ -200,41 +200,75 @@
       <Framework Include="net48" Value="net48" />
 
       <OtherOptions Include="none" Value="" />
+      <OtherOptions Include="macos" Value="-macos" />
       <OtherOptions Include="wf" Value="-wf" />
+      <OtherOptions Include="wf_macos" Value="-wf -macos" />
       <OtherOptions Include="wf_xm" Value="-wf -xm" />
       <OtherOptions Include="xm" Value="-xm" />
 
       <CombinedProject1 Include="*" LanguageId="%(Language.Identity)" Language="%(Language.Value)" />
-      <CombinedProject2 Include="@(CombinedProject1)" ModeId="%(Mode.Identity)" Mode="%(Mode.Identity)" />
-      <CombinedProject3 Include="@(CombinedProject2)" CombinedId="%(Combined.Identity)" Combined="%(Combined.Value)" />
-      <CombinedProject4 Include="@(CombinedProject3)" FrameworkId="%(Framework.Identity)" Framework="%(Framework.Value)" />
-      <CombinedProject Include="@(CombinedProject4)" OtherId="%(OtherOptions.Identity)" Other="%(OtherOptions.Value)" />
+      <CombinedProject2 Include="@(CombinedProject1)" CombinedId="%(Combined.Identity)" Combined="%(Combined.Value)" />
+      <CombinedProject3 Include="@(CombinedProject2)" FrameworkId="%(Framework.Identity)" Framework="%(Framework.Value)" />
+      <CombinedProject4 Include="@(CombinedProject3)" OtherId="%(OtherOptions.Identity)" Other="%(OtherOptions.Value)" />
+      <CombinedProject Include="@(CombinedProject4)" ModeId="%(Mode.Identity)" Mode="%(Mode.Identity)" />
       <CombinedProject Update="@(CombinedProject)"
         OutputPath="$(ArtifactsDir)templates\App.%(LanguageId)-%(CombinedId)-%(OtherId)-%(ModeId)-%(FrameworkId)"
-        BuildCommand="&amp;&amp; dotnet build" />
+        ProjectName="App.%(LanguageId)-%(CombinedId)-%(OtherId)-%(ModeId)-%(FrameworkId)" />
 
-      <!-- Xamarin.Mac doesn't support VB -->
-      <CombinedProject Remove="@(CombinedProject)" Condition="%(CombinedId) == 'combined' and %(LanguageId) == 'vb' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm')" />
-      <!-- Wpf doesn't support F#  -->
-      <CombinedProject Remove="@(CombinedProject)" Condition="%(LanguageId) == 'fs' and (%(OtherId) == 'none' or %(OtherId) == 'xm')" />
+      <!-- Combined Rules -->
 
-
-      <!-- Can only build wpf/winforms .NET 5 projects on windows.. :( -->
+      <!-- By default, use dotnet build to build combined project-->
       <CombinedProject Update="@(CombinedProject)"
-        Condition="%(CombinedId) == 'separate' and !$([MSBuild]::IsOSPlatform(Windows))"
-        BuildCommand="&amp;&amp; dotnet build **/*.Mac.*proj &amp;&amp;dotnet build **/*.Gtk.*proj" />
+        Condition="%(CombinedId) == 'combined'"
+        BuildCommand="&amp;&amp; dotnet build" />
+      <!-- Xamarin.Mac doesn't support VB -->
+      <CombinedProject Remove="@(CombinedProject)"
+        Condition="%(CombinedId) == 'combined' and %(LanguageId) == 'vb' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm')" />
+      <!-- Xamarin.Mac only supports net4x -->
+      <CombinedProject Remove="@(CombinedProject)" 
+        Condition="$([MSBuild]::IsOSPlatform(osx)) and %(CombinedId) == 'combined' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm') and %(FrameworkId) != 'net48'" />
+      <!-- Xamarin.Mac can only use dotnet to build in C#, F# requires msbuild -->
+      <CombinedProject Update="@(CombinedProject)" 
+        Condition="$([MSBuild]::IsOSPlatform(osx)) and %(CombinedId) == 'combined' and (%(LanguageId) != 'cs' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm'))"
+        BuildCommand='&amp;&amp; env -i HOME="$HOME" bash -l -c "msbuild /restore /v:Minimal"' />
+      <!-- macos doesn't support VB -->
+      <CombinedProject Remove="@(CombinedProject)"
+        Condition="%(CombinedId) == 'combined' and %(LanguageId) == 'vb' and (%(OtherId) == 'macos' or %(OtherId) == 'wf_macos')" />
+      <!-- Wpf doesn't support F#  -->
+      <CombinedProject Remove="@(CombinedProject)"
+        Condition="$([MSBuild]::IsOSPlatform(Windows)) and %(CombinedId) == 'combined' and %(LanguageId) == 'fs' and (%(OtherId) != 'wf_macos' and %(OtherId) != 'wf' and %(OtherId) != 'wf_xm')" />
 
-      <!-- Xamarin.Mac separate projects require msbuild -->
-      <CombinedProject Update="@(CombinedProject)" Condition="%(CombinedId) == 'separate' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm')"
+      <!-- Separate Rules -->
+
+      <!-- Build Wpf on Windows -->
+      <CombinedProject Update="@(CombinedProject)"
+        Condition="%(CombinedId) == 'separate' and $([MSBuild]::IsOSPlatform(Windows))"
+        BuildCommand="&amp;&amp; cd %(ProjectName).Wpf &amp;&amp; dotnet build &amp;&amp; cd .." />
+
+      <!-- Build WinForms on Windows -->
+      <CombinedProject Update="@(CombinedProject)"
+        Condition="%(CombinedId) == 'separate' and $([MSBuild]::IsOSPlatform(Windows)) and ( %(OtherId) == 'wf_macos' or %(OtherId) == 'wf' or %(OtherId) == 'wf_xm' )"
+        BuildCommand="%(BuildCommand) &amp;&amp; cd %(ProjectName).WinForms &amp;&amp; dotnet build &amp;&amp; cd .." />
+
+      <!-- Build Mac -->
+      <CombinedProject Update="@(CombinedProject)"
+        Condition="%(CombinedId) == 'separate'"
+        BuildCommand="%(BuildCommand) &amp;&amp; cd %(ProjectName).Mac &amp;&amp; dotnet build &amp;&amp; cd .." />
+
+      <!-- Build Gtk -->
+      <CombinedProject Update="@(CombinedProject)"
+        Condition="%(CombinedId) == 'separate'"
+        BuildCommand="%(BuildCommand) &amp;&amp; cd %(ProjectName).Gtk &amp;&amp; dotnet build &amp;&amp; cd .." />
+
+      <!-- Build Xamarin.Mac with msbuild on Mac only -->
+      <CombinedProject Update="@(CombinedProject)"
+        Condition="$([MSBuild]::IsOSPlatform(osx)) and %(CombinedId) == 'separate' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm')"
         BuildCommand='%(BuildCommand) &amp;&amp;env -i HOME="$HOME" bash -l -c "msbuild /restore /v:Minimal **/*.XamMac.*proj"' />
 
-      <!-- Xamarin.Mac combined doesn't support building with dotnet other than csharp :( -->
-      <CombinedProject Update="@(CombinedProject)" Condition="%(CombinedId) == 'combined' and (%(LanguageId) != 'cs' and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm'))"
-        BuildCommand='&amp;&amp; env -i HOME="$HOME" bash -l -c "msbuild /restore /v:Minimal"' />
-
-      <!-- Only build Xamarin.Mac on Mac -->
-      <CombinedProject Update="@(CombinedProject)" Condition="!$([MSBuild]::IsOSPlatform(OSX)) and (%(OtherId) == 'xm' or %(OtherId) == 'wf_xm')"
-        BuildCommand="" />
+      <!-- Build MacOS on Mac only -->
+      <CombinedProject Update="@(CombinedProject)"
+        Condition="%(CombinedId) == 'separate' and $([MSBuild]::IsOSPlatform(osx)) and (%(OtherId) == 'macos' or %(OtherId) == 'wf_macos')"
+        BuildCommand="%(BuildCommand) &amp;&amp; dotnet build **/*.MacOS.*proj" />
 
     </ItemGroup>
 
@@ -260,6 +294,7 @@
     <RemoveDir Directories="$(ArtifactsDir)mac-publish"/>
 
     <!-- install the current version of the templates -->
+    <Exec Command="dotnet new -u Eto.Forms.Templates" />
     <Exec Command="dotnet new -i $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
 
     <!-- generate project templates -->

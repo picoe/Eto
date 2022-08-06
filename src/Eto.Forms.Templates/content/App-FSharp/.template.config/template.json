@@ -55,6 +55,12 @@
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
+		"IncludeMacOS": {
+			"type": "parameter",
+			"description": "Include a MacOS workload project when compiling on macOS",
+			"dataType": "bool",
+			"defaultValue": "false"
+		},
 		"IncludeWinForms": {
 			"type": "parameter",
 			"description": "Include Windows Forms as a target.",
@@ -151,7 +157,8 @@
 				{ "condition": "!UseCodePreview", "exclude": [ "**/*.eto.*" ] },
 				{ "condition": "!UseXeto", "exclude": [ "**/*.xeto", "**/*.xeto.*" ] },
 				{ "condition": "!UseJeto", "exclude": [ "**/*.jeto", "**/*.jeto.*" ] },
-				{ "condition": "!IncludeXamMac", "exclude": [ "**/EtoApp.1.XamMac.fsproj" ] }
+				{ "condition": "!IncludeXamMac", "exclude": [ "**/EtoApp.1.XamMac.fsproj" ] },
+				{ "condition": "!IncludeMacOS", "exclude": [ "**/EtoApp.1.MacOS.fsproj" ] }
 			]
 		},
 		{
@@ -170,7 +177,8 @@
 			"condition": "!Combined",
 			"modifiers": [
 				{ "condition": "!IncludeWinForms", "exclude": [ "**/EtoApp.1.WinForms/**/*" ] },
-				{ "condition": "!IncludeXamMac", "exclude": [ "**/EtoApp.1.XamMac/**/*" ] }
+				{ "condition": "!IncludeXamMac", "exclude": [ "**/EtoApp.1.XamMac/**/*" ] },
+				{ "condition": "!IncludeMacOS", "exclude": [ "**/EtoApp.1.MacOS/**/*" ] }
 			]
 		},
 		{
@@ -193,8 +201,9 @@
 		{ "path": "EtoApp.1.Gtk/EtoApp.1.Gtk.fsproj", "condition": "!Combined" },
 		{ "path": "EtoApp.1.Mac/EtoApp.1.Mac.fsproj", "condition": "!Combined" },
 		{ "path": "EtoApp.1.WinForms/EtoApp.1.WinForms.fsproj", "condition": "!Combined && IncludeWinForms" },
-		{ "path": "EtoApp.1.Wpf/EtoApp.1.Wpf.fsproj", "condition": "!Combined" },
-		{ "path": "EtoApp.1.XamMac/EtoApp.1.XamMac.fsproj", "condition": "IncludeXamMac" }
+		{ "path": "EtoApp.1.Wpf/EtoApp.1.Wpf.csproj", "condition": "!Combined" },
+		{ "path": "EtoApp.1.XamMac/EtoApp.1.XamMac.fsproj", "condition": "!Combined && IncludeXamMac" },
+		{ "path": "EtoApp.1.MacOS/EtoApp.1.MacOS.fsproj", "condition": "!Combined && IncludeMacOS" }
 	],
 	"guids": [
 		"4A7EEA91-18CE-4C33-8501-76049670866D",
@@ -203,7 +212,8 @@
 		"19712124-C53F-486F-9C88-2BA310B38BE2",
 		"05DB20E8-D401-4094-8096-88499C50E28A",
 		"BCAAFC40-AA8C-4D5A-8DD9-738E2A339097",
-		"7D9523D1-01EC-4E34-A559-03F332E64346"
+		"7D9523D1-01EC-4E34-A559-03F332E64346",
+		"D1C2E89F-8DF5-43F5-B07E-C91A5EDBF6C8"
 	],
 	"SpecialCustomOperations": {
 		"**/*.xeto": {

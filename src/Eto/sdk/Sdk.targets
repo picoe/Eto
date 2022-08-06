@@ -25,6 +25,10 @@
     <_TfmSuffix Condition="$(BuildPlatform) == 'MacOS'">-macos</_TfmSuffix>
 
     <OutputType Condition="$(OutputType) == 'Exe' and ($(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows')">WinExe</OutputType>
+    
+    <!-- Need to set this with the macos target if not specified -->
+    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND ( $(BuildPlatform) == 'macos' or $(BuildPlatform) == 'XamMac2' )">10.14</SupportedOSPlatformVersion>
+    <RuntimeIdentifiers Condition="$(BuildPlatform) == 'macos' AND $(RuntimeIdentifiers) == '' AND $(RuntimeIdentifier) == ''">osx-x64;osx-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) != '' and $(_TfmSuffix) != '' and !$(TargetFramework.Contains('-'))">
