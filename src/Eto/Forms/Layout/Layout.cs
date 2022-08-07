@@ -4,6 +4,13 @@ using System.ComponentModel;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Common interface for all layout-based containers.
+	/// </summary>
+	/// <remarks>
+	/// Layout based containers are used to position child controls, and provides extra functionality
+	/// to update the layout manually.
+	/// </remarks>
 	public interface ILayout
 	{
 		/// <summary>

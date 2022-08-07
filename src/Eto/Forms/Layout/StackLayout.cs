@@ -287,12 +287,19 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Remove the specified child control.
+		/// </summary>
+		/// <param name="child">Child control to remove.</param>
 		public override void Remove(Control child)
 			{
 			var table = Content as TableLayout;
 			table?.Remove(child);
 			}
 
+		/// <summary>
+		/// Removes all controls from this container
+		/// </summary>
 		public override void RemoveAll()
 			{
 			var table = Content as TableLayout;
