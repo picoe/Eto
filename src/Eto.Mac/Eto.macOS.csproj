@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0-macos10.15</TargetFrameworks>
+    <TargetFramework>net6.0-macos10.15</TargetFramework>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;UNIFIED;MACOS_NET;USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -40,9 +40,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
   
   <ItemGroup>
-    <Compile Include="..\Shared\PlatformDetect.cs">
-      <Link>PlatformDetect.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>

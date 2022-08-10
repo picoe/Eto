@@ -204,6 +204,13 @@ namespace Eto.Wpf.Forms
 					return newSize.Value;
 				if (!Widget.Loaded)
 					return UserPreferredSize.ToEtoSize();
+				// if (Win32.IsSystemDpiAware && !double.IsNaN(Control.ActualWidth) && !double.IsNaN(Control.ActualHeight))
+				// {
+				// 	// convert system dpi to logical
+				// 	var sizef = new SizeF((float)Control.ActualWidth, (float)Control.ActualHeight) / (Win32.GetDpiForSystem() / 96f) * SwfScreen.GetLogicalPixelSize();
+				// 	return Size.Round(sizef);
+				// }
+
 				return Control.GetSize();
 			}
 			set
@@ -938,20 +945,46 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
+		System.Windows.Forms.Screen SwfScreen => Win32.GetScreenFromWindow(Widget.ParentWindow?.NativeHandle ?? IntPtr.Zero);
+
 		public PointF PointFromScreen(PointF point)
 		{
 			if (!ContainerControl.IsLoaded)
 				return point;
 
-			point = point.LogicalToScreen();
-			return ContainerControl.PointFromScreen(point.ToWpf()).ToEto();
+			// ensure we're connected to a presentation source
+			var presentationSource = sw.PresentationSource.FromVisual(ContainerControl) as HwndSource;
+			if (presentationSource == null)
+				return point;
+
+			point = point.LogicalToScreen(Widget.ParentWindow?.Screen);
+			point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf())).ToEto();
+			
+			if (Win32.IsSystemDpiAware)
+			{
+				point = point * Win32.SystemDpi / Win32.GetLogicalPixelSize(SwfScreen);
+			}
+			return point;
+
 		}
 
 		public PointF PointToScreen(PointF point)
 		{
 			if (!ContainerControl.IsLoaded)
 				return point;
-			return ContainerControl.PointToScreen(point.ToWpf()).ToEtoPoint().ScreenToLogical();
+			
+			// ensure we're connected to a presentation source
+			var presentationSource = sw.PresentationSource.FromVisual(ContainerControl) as HwndSource;
+			if (presentationSource == null)
+				return point;
+
+			if (Win32.IsSystemDpiAware)
+			{
+				point = point / Win32.SystemDpi * Win32.GetLogicalPixelSize(SwfScreen);
+			}
+			var pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf()));
+				
+			return pt.ToEtoPoint().ScreenToLogical(SwfScreen);
 		}
 
 		public Point Location

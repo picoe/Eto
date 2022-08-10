@@ -480,6 +480,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		private void RunDelayedActions()
 		{
+			if (Widget.IsDisposed)
+				return;
+			
 			Control.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
 			Control.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
 			webView2Ready = true;
@@ -583,7 +586,11 @@ namespace Eto.Wpf.Forms.Controls
 		private void Control_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
 		{
 			var args = new WebViewLoadedEventArgs(Control.Source);
-			Application.Instance.AsyncInvoke(() => Callback.OnDocumentLoaded(Widget, args));
+			Application.Instance.AsyncInvoke(() => {
+				if (Widget.IsDisposed)
+					return;
+				Callback.OnDocumentLoaded(Widget, args);
+			});
 		}
 
 		public Uri Url

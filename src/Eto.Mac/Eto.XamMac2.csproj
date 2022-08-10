@@ -44,9 +44,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
   
   <ItemGroup>
-    <Compile Include="..\Shared\PlatformDetect.cs">
-      <Link>PlatformDetect.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>

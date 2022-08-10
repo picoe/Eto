@@ -29,6 +29,10 @@
 		"IncludeWinForms": {
 			"longName": "include-winforms",
 			"shortName": "wf"
+		},
+		"IncludeMacOS": {
+			"longName": "include-macos",
+			"shortName": "macos"
 		}
 	}
 }

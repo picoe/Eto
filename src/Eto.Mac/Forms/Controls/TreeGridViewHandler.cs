@@ -454,12 +454,7 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 
-			[Export("outlineView:draggingSession:endedAtPoint:operation:")]
-#if XAMMAC
-			public new void DraggingSessionEnded(NSOutlineView outlineView, NSDraggingSession session, CGPoint screenPoint, NSDragOperation operation)
-#else
-			public void DraggingSessionEnded(NSOutlineView outlineView, NSDraggingSession session, CGPoint screenPoint, NSDragOperation operation)
-#endif
+			public override void DraggingSessionEnded(NSOutlineView outlineView, NSDraggingSession session, CGPoint screenPoint, NSDragOperation operation)
 			{
 				var h = Handler;
 				if (h == null)

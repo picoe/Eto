@@ -67,76 +67,6 @@ namespace Eto
 		public void SetValue(object obj, object value) => _property.SetValue(obj, value);
 	}
 
-#if NETSTANDARD1_0
-	class PropertyDescriptorDescriptor : IPropertyDescriptor
-	{
-		object _propertyDescriptor;
-		static Type s_PropertyDescriptorType =
-			Type.GetType("System.ComponentModel.PropertyDescriptor, System")
-			?? Type.GetType("System.ComponentModel.PropertyDescriptor, System.ComponentModel.TypeConverter")
-			?? Type.GetType("System.ComponentModel.PropertyDescriptor, netstandard");
-
-		static PropertyInfo s_ComponentTypeProperty = s_PropertyDescriptorType?.GetRuntimeProperty("ComponentType");
-		static PropertyInfo s_PropertyTypeProperty = s_PropertyDescriptorType?.GetRuntimeProperty("PropertyType");
-		static PropertyInfo s_NameProperty = s_PropertyDescriptorType?.GetRuntimeProperty("Name");
-		static PropertyInfo s_DisplayNameProperty = s_PropertyDescriptorType?.GetRuntimeProperty("DisplayName");
-		static PropertyInfo s_ReadOnlyProperty = s_PropertyDescriptorType?.GetRuntimeProperty("IsReadOnly");
-		static PropertyInfo s_IsBrowsableProperty = s_PropertyDescriptorType?.GetRuntimeProperty("IsBrowsable");
-		static PropertyInfo s_ConverterProperty = s_PropertyDescriptorType?.GetRuntimeProperty("Converter");
-		static MethodInfo s_GetValueMethod = s_PropertyDescriptorType?.GetRuntimeMethod("GetValue", new Type[] { typeof(object) });
-		static MethodInfo s_SetValueMethod = s_PropertyDescriptorType?.GetRuntimeMethod("SetValue", new Type[] { typeof(object), typeof(object) });
-		static PropertyInfo s_AttributesProperty = s_PropertyDescriptorType?.GetRuntimeProperty("Attributes");
-
-		public static bool IsSupported => s_PropertyDescriptorType != null;
-
-		public static PropertyDescriptorDescriptor Get(object obj)
-		{
-			if (!IsSupported)
-				return null;
-			return new PropertyDescriptorDescriptor(obj);
-		}
-
-		public PropertyDescriptorDescriptor(object descriptor)
-		{
-			_propertyDescriptor = descriptor;
-		}
-
-		public Type ComponentType => s_ComponentTypeProperty?.GetValue(_propertyDescriptor) as Type;
-
-		public Type PropertyType => s_PropertyTypeProperty?.GetValue(_propertyDescriptor) as Type;
-
-		public string Name => s_NameProperty?.GetValue(_propertyDescriptor) as string;
-
-		public string DisplayName => s_DisplayNameProperty?.GetValue(_propertyDescriptor) as string;
-
-		public bool IsReadOnly => Equals(s_ReadOnlyProperty?.GetValue(_propertyDescriptor), true);
-
-		public bool CanRead => true;
-
-		public bool IsBrowsable => Equals(s_IsBrowsableProperty?.GetValue(_propertyDescriptor), true);
-
-		public sc.TypeConverter Converter => s_ConverterProperty?.GetValue(_propertyDescriptor) as sc.TypeConverter;
-
-		public object GetValue(object obj) => s_GetValueMethod?.Invoke(_propertyDescriptor, new object[] { obj });
-
-		public void SetValue(object obj, object value) => s_SetValueMethod?.Invoke(_propertyDescriptor, new object[] { obj, value });
-
-		ICollection Attributes
-		{
-			get => s_AttributesProperty?.GetValue(_propertyDescriptor) as ICollection;
-		}
-
-		public Attribute GetCustomAttribute(Type attributeType)
-		{
-			return Attributes.OfType<Attribute>().FirstOrDefault(r => r.GetType() == attributeType);
-		}
-
-		public T GetCustomAttribute<T>() where T : Attribute
-		{
-			return Attributes.OfType<T>().FirstOrDefault();
-		}
-	}
-#elif NETSTANDARD2_0
 	class PropertyDescriptorDescriptor : IPropertyDescriptor
 	{
 		PropertyDescriptor _propertyDescriptor;
@@ -188,9 +118,7 @@ namespace Eto
 			return Attributes.OfType<T>().FirstOrDefault();
 		}
 	}
-#else
-	Not Implemented.
-#endif
+
 	static class EtoTypeDescriptor
 	{
 		public static IPropertyDescriptor Get(object obj)

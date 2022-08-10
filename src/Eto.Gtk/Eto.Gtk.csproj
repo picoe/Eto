@@ -35,9 +35,6 @@ When building for the full framework, .NET Framework 4.6.1 or mono framework 5.1
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\PlatformDetect.cs">
-      <Link>PlatformDetect.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>

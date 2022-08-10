@@ -60,9 +60,6 @@ On Linux, mono-complete 5.10 or higher and gtk-sharp2 packages are required.
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\PlatformDetect.cs">
-      <Link>PlatformDetect.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>

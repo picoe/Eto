@@ -99,7 +99,11 @@ namespace Eto.Forms
 				if (Properties.TrySet(Parent_Key, value))
 				{
 					if (!HasDataContext && !(DataContext is null))
+					{
+						IsDataContextChanging = true;
 						OnDataContextChanged(EventArgs.Empty);
+						IsDataContextChanging = false;
+					}
 				}
 			}
 		}
@@ -193,12 +197,17 @@ namespace Eto.Forms
 			set
 			{
 				if (Properties.TrySet(DataContext_Key, value))
+				{
+					IsDataContextChanging = true;
 					OnDataContextChanged(EventArgs.Empty);
+					IsDataContextChanging = false;
+				}
 			}
 		}
 
 		internal bool HasDataContext => Properties.ContainsKey(DataContext_Key);
 
+		static readonly  object IsDataContextChanging_Key = new object();
 		static readonly  object Bindings_Key = new object();
 
 		/// <summary>
@@ -212,6 +221,22 @@ namespace Eto.Forms
 		{
 			if (!HasDataContext)
 				OnDataContextChanged(EventArgs.Empty);
+		}
+		
+		/// <summary>
+		/// Gets a value indicating that the <see cref="DataContext"/> property is changing.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to determine when to allow certain logic during the update of the data context.
+		/// 
+		/// It is used to disable binding setters on the model when the data context changes so that a binding
+		/// does not cause the view model to be updated when the state hasn't been fully set yet.
+		/// </remarks>
+		/// <value><c>true</c> if the DataContext is currently changing, <c>false</c> otherwise.</value>
+		public bool IsDataContextChanging
+		{
+			get => Properties.Get<bool?>(IsDataContextChanging_Key) ?? (Parent as IBindable)?.IsDataContextChanging ?? false;
+			set => Properties.Set(IsDataContextChanging_Key, value);
 		}
 
 		/// <summary>

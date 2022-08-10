@@ -103,21 +103,65 @@ namespace Eto.Forms
 		public IndirectBinding<TValue> InnerBinding { get; private set; }
 
 		/// <summary>
-		/// Gets the object to get/set the values using the <see cref="InnerBinding"/>
+		/// Gets or sets the object to get/set the values using the <see cref="InnerBinding"/>
 		/// </summary>
+		/// <remarks>
+		/// This uses <see cref="GetDataItem"/> if set, otherwise it will use the set value. 
+		/// Setting the value explicitly will set <see cref="GetDataItem"/> to null.
+		/// </remarks>
 		public T DataItem
 		{
-			get { return dataItem; }
+			get
+			{
+				if (GetDataItem != null)
+					return GetDataItem();
+				return dataItem;
+			}
 			set
 			{
 				var hasValueChanged = dataValueChangedHandled;
 				if (hasValueChanged)
 					RemoveEvent(DataValueChangedEvent);
 				dataItem = value;
+				GetDataItem = null;
 				OnDataValueChanged(EventArgs.Empty);
 				if (hasValueChanged)
 					HandleEvent(DataValueChangedEvent);
 			}
+		}
+		
+		/// <summary>
+		/// Gets or sets a delegate used to get the current <see cref="DataItem"/> value instead of storing the value in this binding.
+		/// </summary>
+		/// <remarks>
+		/// This is used so that all bindings using a DataContext will be updated with the correct value as soon as the DataContext is set.
+		/// For example, if updating one binding would trigger the setter of a secondary binding that hasn't been updated with the new value yet
+		/// it would inadvertently change the DataContext even though it is now actually null.
+		/// 
+		/// Use the <see cref="TriggerDataValueChanged"/> method to specify that the value returned by this delegate has changed,
+		/// which will cause the binding to update all of its dependants.
+		/// 
+		/// Note if this is set, then it will always be used to retrieve the DataItem. If you set the DataItem directly, this will be set to null
+		/// and will no longer be used..
+		/// </remarks>
+		/// <value>The delegate used to get the current data item</value>
+		public Func<T> GetDataItem { get; set; }
+
+		/// <summary>
+		/// Triggers the <see cref="DirectBinding{T}.DataValueChanged"/> event.
+		/// </summary>
+		/// <remarks>
+		/// When using the <see cref="GetDataItem"/> delegate to retrieve the value of the DataItem, you can call this method to trigger
+		/// that its value has been changed.
+		/// </remarks>
+		public void TriggerDataValueChanged()
+		{
+			var hasValueChanged = dataValueChangedHandled;
+			if (hasValueChanged)
+				RemoveEvent(DataValueChangedEvent);
+			OnDataValueChanged(EventArgs.Empty);
+			if (hasValueChanged)
+				HandleEvent(DataValueChangedEvent);
 		}
 
 		/// <summary>

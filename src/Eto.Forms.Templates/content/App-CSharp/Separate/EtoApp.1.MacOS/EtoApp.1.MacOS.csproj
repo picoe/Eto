@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0-macos</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace Condition="'$(name)' != '$(name{-VALUE-FORMS-}safe_namespace)'">EtoApp._1</RootNamespace>
+    <SupportedOSPlatformVersion>10.14</SupportedOSPlatformVersion>
+    <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\EtoApp.1\EtoApp.1.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Eto.Platform.macOS" Version="2.7.1-dev" />
+  </ItemGroup>
+</Project>
