@@ -1,10 +1,5 @@
 using System;
-using Eto;
 using Eto.Forms;
-using Eto.Drawing;
-using Eto.Mac.Forms.ToolBar;
-using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
 
 namespace Eto.Mac.Forms.ToolBar
 {

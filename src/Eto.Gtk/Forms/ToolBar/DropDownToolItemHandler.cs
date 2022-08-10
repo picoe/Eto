@@ -44,7 +44,14 @@ namespace Eto.GtkSharp.Forms.ToolBar
 				var ctxMenu = Handler.ContextMenu.ControlObject as Gtk.Menu;
 				if (ctxMenu != null)
 				{
-					var buttonRect = Handler.Control.Clip;
+					Gdk.Rectangle buttonRect;
+
+#if GTKCORE
+					buttonRect = Handler.Control.Clip;
+#else
+					buttonRect = Handler.Control.Allocation;
+#endif
+
 					var pt = new PointF(buttonRect.Left, buttonRect.Bottom);
 
 					var parentWindow = (Handler.Widget.Parent as Eto.Forms.ToolBar).Parent as Window;
