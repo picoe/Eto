@@ -18,11 +18,7 @@ namespace Eto.Forms
 		/// </summary>
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public AboutDialog() 
-#if NETSTANDARD1_0
-			: this(TypeHelper.GetCallingAssembly?.Invoke(null, null) as Assembly)
-#else
 			: this(Assembly.GetCallingAssembly())
-#endif
 		{
 		}
 

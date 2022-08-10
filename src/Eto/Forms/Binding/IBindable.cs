@@ -16,6 +16,18 @@ namespace Eto.Forms
 		/// For example, a Control may return the data context of a parent, if it is not set explicitly.
 		/// </remarks>
 		object DataContext { get; set; }
+		
+		/// <summary>
+		/// Gets a value indicating that the <see cref="DataContext"/> property is changing.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to determine when to allow certain logic during the update of the data context.
+		/// 
+		/// It is used to disable binding setters on the model when the data context changes so that a binding
+		/// does not cause the view model to be updated when the state hasn't been fully set yet.
+		/// </remarks>
+		/// <value><c>true</c> if the DataContext is currently changing, <c>false</c> otherwise.</value>
+		bool IsDataContextChanging { get; }
 
 		/// <summary>
 		/// Event to handle when the <see cref="DataContext"/> has changed

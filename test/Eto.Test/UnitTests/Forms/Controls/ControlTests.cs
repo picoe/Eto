@@ -303,6 +303,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		public void PointToScreenShouldWorkOnSecondaryScreen()
 		{
 			bool wasClicked = false;
+			PointF? controlPoint = null;
+			PointF? rountripPoint = null;
 			Form childForm = null;
 			try
 			{
@@ -317,6 +319,16 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 					form.Shown += (sender, e) =>
 					{
+						controlPoint = PointF.Empty;
+						var screenPoint = textBox.PointToScreen(PointF.Empty);
+						rountripPoint = Point.Truncate(textBox.PointFromScreen(screenPoint));
+						
+						if (controlPoint != rountripPoint)
+						{
+							form.Close();
+							return;
+						}
+						
 						childForm = new Form
 						{
 							WindowStyle = WindowStyle.None,
@@ -325,8 +337,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 							Resizable = false,
 							BackgroundColor = Colors.Red,
 							Topmost = true,
-							Location = Point.Round(textBox.PointToScreen(PointF.Empty)),
+							Location = Point.Round(screenPoint),
 							Size = textBox.Size
+						};
+						form.LocationChanged += (sender2, e2) =>
+						{
+							childForm.Location = Point.Round(textBox.PointToScreen(PointF.Empty));
+							childForm.Size = textBox.Size;
 						};
 						var b = new Button { Text = "Click Me!" };
 						b.Click += (sender2, e2) =>
@@ -352,6 +369,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				if (childForm != null)
 					Application.Instance.Invoke(() => childForm.Close());
 			}
+			Assert.AreEqual(controlPoint, rountripPoint, "Point could not round trip to screen then back");
 			Assert.IsTrue(wasClicked, "The test completed without clicking the button");
 		}
 

@@ -260,8 +260,7 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 
-			[Export("tableView:draggingSession:endedAtPoint:operation:")]
-			public new void DraggingSessionEnded(NSTableView tableView, NSDraggingSession draggingSession, CGPoint endedAtScreenPoint, NSDragOperation operation)
+			public override void DraggingSessionEnded(NSTableView tableView, NSDraggingSession draggingSession, CGPoint endedAtScreenPoint, NSDragOperation operation)
 			{
 				var h = Handler;
 				if (h == null)

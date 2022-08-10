@@ -444,6 +444,21 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the close button should be shown. Defaults to <c>true</c>
+		/// </summary>
+		/// <remarks>
+		/// Note that on some platforms (e.g. Windows) this also hides the system menu and minimize/maximize buttons.
+		/// Note that this does not prevent the window from being closed, to do that use the <see cref="Closing"/> event.
+		/// </remarks>
+		/// <value><c>true</c> to show the close button (and in some platforms the system menu), <c>false</c> to hide them.</value>
+		[DefaultValue(true)]
+		public bool Closeable
+		{
+			get => Handler.Closeable;
+			set => Handler.Closeable = value;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Window"/> will show in the taskbar.
 		/// </summary>
 		/// <remarks>
@@ -773,6 +788,16 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value><c>true</c> if minimizable; otherwise, <c>false</c>.</value>
 			bool Minimizable { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the close button should be shown. Defaults to <c>true</c>
+			/// </summary>
+			/// <remarks>
+			/// Note that on some platforms (e.g. Windows) this also hides the system menu if <see cref="Minimizable"/> and <see cref="Maximizable"/> are also false.
+			/// Note that this does not prevent the window from being closed, to do that use the <see cref="Closing"/> event.
+			/// </remarks>
+			/// <value><c>true</c> to show the close button (and in some platforms the system menu), <c>false</c> to hide them.</value>
+			bool Closeable { get; set; }
 
 			/// <summary>
 			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Window"/> will show in the taskbar.

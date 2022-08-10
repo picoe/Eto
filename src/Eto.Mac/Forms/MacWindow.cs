@@ -542,9 +542,27 @@ namespace Eto.Mac.Forms
 
 		void SetButtonStates()
 		{
-			var button = Control.StandardWindowButton(NSWindowButton.ZoomButton);
+			NSButton button;
+			bool hideButtons = !Maximizable && !Minimizable;
+			button = Control.StandardWindowButton(NSWindowButton.ZoomButton);
 			if (button != null)
+			{
+				button.Hidden = hideButtons;
 				button.Enabled = Maximizable && Resizable;
+			}
+			button = Control.StandardWindowButton(NSWindowButton.MiniaturizeButton);
+			if (button != null)
+			{
+				button.Hidden = hideButtons;
+				button.Enabled = Minimizable;
+			}
+			
+			button = Control.StandardWindowButton(NSWindowButton.CloseButton);
+			if (button != null)
+			{
+				button.Hidden = hideButtons && !Closeable;
+				button.Enabled = Closeable;
+			}
 		}
 
 		public bool Resizable
@@ -596,6 +614,22 @@ namespace Eto.Mac.Forms
 		{
 			get;
 			set;
+		}
+		
+		public bool Closeable
+		{
+			get { return Control.StyleMask.HasFlag(NSWindowStyle.Closable); }
+			set
+			{
+				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
+				{
+					if (value)
+						Control.StyleMask |= NSWindowStyle.Closable;
+					else
+						Control.StyleMask &= ~NSWindowStyle.Closable;
+					SetButtonStates();
+				}
+			}
 		}
 
 		protected virtual NSWindowLevel TopmostWindowLevel => NSWindowLevel.PopUpMenu;

@@ -52,36 +52,31 @@ namespace Eto
 		/// </summary>
 		public bool IsLinux { get; private set; }
 
-		#if NETSTANDARD
+		[DllImport("libc")]
+		static extern int uname(IntPtr buf);
 
 		static string GetUnixType()
 		{
-			// need at least one of these platforms if we're detecting the unix type (mac/linux) in PCL
-			var detectType = Type.GetType("Eto.PlatformDetect, Eto.XamMac2", false)
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac64", false)
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.XamMac", false)
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac", false)
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk", false)
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk2", false)
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk3", false);
-			if (detectType != null)
+			IntPtr buf = IntPtr.Zero;
+			string osName = "";
+			try
 			{
-				var getUnixTypeMethod = detectType.GetRuntimeMethod("GetUnixType", new Type[] { });
-				if (getUnixTypeMethod != null)
-					return (string)getUnixTypeMethod.Invoke(null, null);
+				buf = Marshal.AllocHGlobal(8192);
+				if (uname(buf) == 0)
+					osName = Marshal.PtrToStringAnsi(buf);
 			}
-			return string.Empty;
+			// Analysis disable once EmptyGeneralCatchClause
+			catch
+			{
+			}
+			finally
+			{
+				if (buf != IntPtr.Zero)
+					Marshal.FreeHGlobal(buf);
+			}
+			return osName;
 		}
-
-		#else
 		
-		static string GetUnixType()
-		{
-			return PlatformDetect.GetUnixType();
-		}
-
-		#endif
-
 		/// <summary>
 		/// Initializes a new instance of the OperatingSystemPlatform class
 		/// </summary>

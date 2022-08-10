@@ -12,6 +12,7 @@
     <TargetFramework Condition="$(TargetFrameworkOverride) != ''">TargetFrameworkOverride</TargetFramework>
     <RootNamespace Condition="'$(name)' != '$(name{-VALUE-FORMS-}safe_namespace)'">EtoApp._1</RootNamespace>
 
+    <UseMacOSWorkload Condition="$(IncludeMacOS) == 'True'">True</UseMacOSWorkload>
     <UseXamarinMac Condition="$(IncludeXamMac) == 'True'">True</UseXamarinMac>
     <UseWinForms Condition="$(IncludeWinForms) == 'True'">True</UseWinForms>
     <UseJeto Condition="$(UseJeto) == 'True'">True</UseJeto>

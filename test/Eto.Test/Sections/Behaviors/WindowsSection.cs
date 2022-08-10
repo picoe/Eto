@@ -20,6 +20,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox minimizableCheckBox;
 		CheckBox movableByWindowBackgroundCheckBox;
 		CheckBox showInTaskBarCheckBox;
+		CheckBox closeableCheckBox;
 		CheckBox topMostCheckBox;
 		CheckBox setOwnerCheckBox;
 		CheckBox visibleCheckBox;
@@ -43,7 +44,7 @@ namespace Eto.Test.Sections.Behaviors
 			var typeControls = CreateTypeControls();
 
 			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), MovableByWindowBackground(), null);
-			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
+			layout.AddSeparateRow(null, ShowInTaskBar(), CloseableCheckBox(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
 			layout.AddSeparateRow(null, "Type", typeControls, null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
@@ -79,6 +80,7 @@ namespace Eto.Test.Sections.Behaviors
 			public bool? CanFocus { get; set; }
 			public bool? Minimizable { get; set; }
 			public bool? Maximizable { get; set; }
+			public bool? Closeable { get; set; }
 			public bool? MovableByWindowBackground { get; set; }
 			public bool? ShowInTaskbar { get; set; }
 			public bool? ShowActivated { get; set; }
@@ -257,6 +259,14 @@ namespace Eto.Test.Sections.Behaviors
 			showInTaskBarCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
 			showInTaskBarCheckBox.CheckedBinding.BindDataContext((Window w) => w.ShowInTaskbar);
 			return showInTaskBarCheckBox;
+		}
+
+		Control CloseableCheckBox()
+		{
+			closeableCheckBox = new CheckBox { Text = "Closeable" };
+			closeableCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			closeableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Closeable);
+			return closeableCheckBox;
 		}
 
 		Control CreateCanFocus()
@@ -513,6 +523,8 @@ namespace Eto.Test.Sections.Behaviors
 				child.Minimizable = minimizableCheckBox.Checked ?? false;
 			if (showInTaskBarCheckBox.Checked != null)
 				child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
+			if (closeableCheckBox.Checked != null)
+				child.Closeable = closeableCheckBox.Checked ?? false;
 			if (movableByWindowBackgroundCheckBox.Checked != null)
 				child.MovableByWindowBackground = movableByWindowBackgroundCheckBox.Checked ?? false;
 			if (setInitialLocation)

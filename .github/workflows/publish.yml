@@ -16,7 +16,8 @@ jobs:
       - uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: ${{ steps.get_version.outputs.VERSION }}
-          file: "*.nupkg"
+          file: ".*\\.nupkg"
+          regex: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push packages to nuget.org
