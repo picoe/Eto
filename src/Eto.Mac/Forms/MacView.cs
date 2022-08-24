@@ -817,6 +817,9 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.DragLeaveEvent:
 					AddMethod(MacView.selDraggingExited, MacView.TriggerDraggingExited_Delegate, "v@:@", DragControl);
 					break;
+				case Eto.Forms.Control.DragEndEvent:
+					// handled in EtoDragSource, TreeGridViewHandler.EtoDragSource, and GridViewHandler.EtoDragSource
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -1268,7 +1271,7 @@ namespace Eto.Mac.Forms
 		{
 			var handler = data.Handler as IDataObjectHandler;
 
-			var source = new EtoDragSource { AllowedOperation = allowedAction.ToNS(), SourceView = ContainerControl };
+			var source = new EtoDragSource { AllowedOperation = allowedAction.ToNS(), SourceView = ContainerControl, Handler = this, Data = data };
 
 			NSDraggingItem[] draggingItems = null;
 			if (image != null)

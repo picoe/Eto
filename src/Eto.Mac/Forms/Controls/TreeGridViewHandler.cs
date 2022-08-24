@@ -465,6 +465,12 @@ namespace Eto.Mac.Forms.Controls
 					h.CustomSelectedItems = null;
 					h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
 				}
+				
+				var allowedOperation = h.DragInfo?.AllowedOperation ?? NSDragOperation.None;
+				var data = h.DragInfo?.Data;
+				var args = new DragEventArgs(h.Widget, data, allowedOperation.ToEto(), screenPoint.ToEto(h.ContainerControl), Keyboard.Modifiers, Mouse.Buttons);
+				args.Effects = operation.ToEto();
+				h.Callback.OnDragEnd(h.Widget, args);
 			}
 
 			public override bool OutlineViewwriteItemstoPasteboard(NSOutlineView outlineView, NSArray items, NSPasteboard pboard)

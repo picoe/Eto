@@ -271,6 +271,12 @@ namespace Eto.Mac.Forms.Controls
 					h.CustomSelectedRows = null;
 					h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
 				}
+
+				var allowedOperation = h.DragInfo?.AllowedOperation ?? NSDragOperation.None;
+				var data = h.DragInfo?.Data;
+				var args = new DragEventArgs(h.Widget, data, allowedOperation.ToEto(), endedAtScreenPoint.ToEto(h.ContainerControl), Keyboard.Modifiers, Mouse.Buttons);
+				args.Effects = operation.ToEto();
+				h.Callback.OnDragEnd(h.Widget, args);
 			}
 
 			public override bool WriteRows(NSTableView tableView, NSIndexSet rowIndexes, NSPasteboard pboard)
