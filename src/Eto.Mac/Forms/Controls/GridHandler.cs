@@ -124,6 +124,8 @@ namespace Eto.Mac.Forms.Controls
 		public NSDragOperation AllowedOperation { get; set; }
 		public NSImage DragImage { get; set; }
 		public PointF ImageOffset { get; set; }
+		
+		public DataObject Data { get; set; }
 
 		public CGPoint GetDragImageOffset()
 		{
@@ -722,7 +724,8 @@ namespace Eto.Mac.Forms.Controls
 				{
 					AllowedOperation = allowedAction.ToNS(),
 					DragImage = image.ToNS(),
-					ImageOffset = origin
+					ImageOffset = origin,
+					Data = data
 				};
 			}
 			else

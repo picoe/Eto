@@ -682,6 +682,31 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected virtual void OnDragLeave(DragEventArgs e) => Properties.TriggerEvent(DragLeaveEvent, this, e);
 
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="DragEnd"/> event
+		/// </summary>
+		public const string DragEndEvent = "Control.DragEnd";
+
+		/// <summary>
+		/// Occurs for a source control after a call to <see cref="DoDragDrop(DataObject, DragEffects, Image, PointF)"/> when the drag operation has ended.
+		/// The <see cref="DragEventArgs.Effects"/> is the final <see cref="DragEffects"/> used at the drop destination.
+		/// </summary>
+		/// <remarks>
+		/// For controls that you are dragging from this event is useful to know what to do with the dragged content after it is dropped in a different control or application.
+		/// </remarks>
+		public event EventHandler<DragEventArgs> DragEnd
+		{
+			add { Properties.AddHandlerEvent(DragEndEvent, value); }
+			remove { Properties.RemoveEvent(DragEndEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragEnd"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragEnd(DragEventArgs e) => Properties.TriggerEvent(DragEndEvent, this, e);
+
 		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="EnabledChanged"/> event
 		/// </summary>
@@ -724,6 +749,7 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnDragOver(null), Control.DragOverEvent);
 			EventLookup.Register<Control>(c => c.OnDragEnter(null), Control.DragEnterEvent);
 			EventLookup.Register<Control>(c => c.OnDragLeave(null), Control.DragLeaveEvent);
+			EventLookup.Register<Control>(c => c.OnDragEnd(null), Control.DragEndEvent);
 			EventLookup.Register<Control>(c => c.OnEnabledChanged(null), Control.EnabledChangedEvent);
 		}
 
@@ -1313,6 +1339,10 @@ namespace Eto.Forms
 		/// <summary>
 		/// Starts drag operation using this control as drag source.
 		/// </summary>
+		/// <remarks>
+		/// This method can be blocking on some platforms (Wpf, WinForms), and non-blocking on others (Mac, Gtk).
+		/// Use the <see cref="DragEnd"/> event to determine when the drag operation is completed and get its resulting DragEffects.
+		/// </remarks>
 		/// <param name="data">Drag data.</param>
 		/// <param name="allowedEffects">Allowed action.</param>
 		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects)
@@ -1323,6 +1353,10 @@ namespace Eto.Forms
 		/// <summary>
 		/// Starts drag operation using this control as drag source.
 		/// </summary>
+		/// <remarks>
+		/// This method can be blocking on some platforms (Wpf, WinForms), and non-blocking on others (Mac, Gtk).
+		/// Use the <see cref="DragEnd"/> event to determine when the drag operation is completed and get its resulting DragEffects.
+		/// </remarks>
 		/// <param name="data">Drag data.</param>
 		/// <param name="allowedEffects">Allowed effects.</param>
 		/// <param name="image">Custom drag image</param>
@@ -1510,6 +1544,10 @@ namespace Eto.Forms
 			/// </summary>
 			void OnDragLeave(Control widget, DragEventArgs e);
 			/// <summary>
+			/// Raises the DragEnd event.
+			/// </summary>
+			void OnDragEnd(Control widget, DragEventArgs e);
+			/// <summary>
 			/// Raises the EnabledChanged event.
 			/// </summary>
 			void OnEnabledChanged(Control widget, EventArgs e);
@@ -1667,6 +1705,15 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnDragLeave(e);
+			}
+
+			/// <summary>
+			/// Raises the DragEnd event.
+			/// </summary>
+			public void OnDragEnd(Control widget, DragEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnDragEnd(e);
 			}
 
 			/// <summary>

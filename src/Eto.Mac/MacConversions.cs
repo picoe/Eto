@@ -531,7 +531,12 @@ namespace Eto.Mac
 			}
 		}
 
-		public static DataObject ToEto(this NSPasteboard pasteboard) => new DataObject(new DataObjectHandler(pasteboard));
+		public static DataObject ToEto(this NSPasteboard pasteboard)
+		{
+			if (pasteboard == null)
+				return null;
+			return new DataObject(new DataObjectHandler(pasteboard));
+		}
 
 		public static NSPasteboard ToNS(this DataObject data) => DataObjectHandler.GetControl(data);
 

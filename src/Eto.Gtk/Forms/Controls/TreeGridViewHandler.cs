@@ -271,7 +271,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				Handler?.Callback.OnActivated(Handler.Widget, new TreeGridViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
 			}
 
-			protected override DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null)
+			protected override DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null, DataObject data = null)
 			{
 				var h = Handler;
 				var t = h?.Control;
@@ -298,7 +298,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					}
 				}
 
-				return base.GetDragEventArgs(context, location, time, dragInfo);
+				return base.GetDragEventArgs(context, location, time, dragInfo, data);
 			}
 
 			public override void HandleDragMotion(object o, Gtk.DragMotionArgs args)

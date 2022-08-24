@@ -516,6 +516,9 @@ namespace Eto.Wpf.Forms
 						Control.DragLeave += Control_DragLeave;
 					HandleEvent(Eto.Forms.Control.DragEnterEvent); // need DragEnter so it doesn't get called when going over children
 					break;
+				case Eto.Forms.Control.DragEndEvent:
+					// handled in DoDragDrop, as it is blocking on Windows
+					break;
 				case Eto.Forms.Control.EnabledChangedEvent:
 					Control.IsEnabledChanged += Control_IsEnabledChanged;
 					break;
@@ -1028,10 +1031,14 @@ namespace Eto.Wpf.Forms
 				sw.WpfDataObjectExtensions.SetDragImage(dataObject, image.ToWpf(), PointF.Empty.ToWpf());
 			}
 
-			sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
+			var effects = sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
 
 			WpfFrameworkElement.DragSourceControl = null;
 			sw.DragSourceHelper.UnregisterDefaultDragSource(Control);
+			
+			var args = new DragEventArgs(Widget, data, allowedAction, PointFromScreen(Mouse.Position), Keyboard.Modifiers, Mouse.Buttons);
+			args.Effects = effects.ToEto();
+			Callback.OnDragEnd(Widget, args);
 		}
 
 
