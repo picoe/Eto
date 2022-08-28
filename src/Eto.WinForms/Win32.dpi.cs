@@ -118,9 +118,14 @@ namespace Eto
 			return new Eto.Drawing.RectangleF(GetLogicalLocation(screen), GetLogicalSize(screen));
 		}
 		
-		public static bool IsSystemDpiAware => Win32.GetProcessDpiAwareness(IntPtr.Zero, out var awareness) == 0 && awareness == Win32.PROCESS_DPI_AWARENESS.SYSTEM_DPI_AWARE;
+		public static bool IsSystemDpiAware => PerMonitorDpiSupported ?
+			(Win32.GetProcessDpiAwareness(IntPtr.Zero, out var awareness) == 0 && awareness == Win32.PROCESS_DPI_AWARENESS.SYSTEM_DPI_AWARE) :
+			Win32.IsProcessDPIAware();
 
-		public static float SystemDpi => Win32.GetDpiForSystem() / 96f;
+		[DllImport("gdi32.dll")]
+		public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+		public static float SystemDpi => (PerMontiorThreadDpiSupported ? Win32.GetDpiForSystem() : (uint)Win32.GetDeviceCaps(IntPtr.Zero, 88 /*LOGPIXELSX*/)) / 96f;
 
 		class ScreenHelper : LogicalScreenHelper<swf.Screen>
 		{
@@ -222,6 +227,10 @@ namespace Eto
 
 		[DllImport("shcore.dll")]
 		public static extern uint GetProcessDpiAwareness(IntPtr handle, out PROCESS_DPI_AWARENESS awareness);
+
+		[DllImport("User32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsProcessDPIAware();
 
 		[DllImport("User32.dll")]
 		static extern DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT dpiContext);
