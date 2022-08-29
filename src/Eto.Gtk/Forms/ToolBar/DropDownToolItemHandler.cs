@@ -1,4 +1,5 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 using Gdk;
 
@@ -39,11 +40,33 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			Control.Clicked += HandleClicked;
 		}
 
+#if GTKCORE
 		private void HandleClicked(object sender, EventArgs e)
 		{
 			dropMenu.PopupAtWidget(Control, Gravity.SouthWest, Gravity.NorthWest, null);
 			Connector.HandleClicked(sender, e);
 		}
+#else
+		private void HandleClicked(object sender, EventArgs e)
+		{
+			var buttonRect = Control.Allocation;
+			var pt = new PointF(buttonRect.Left, buttonRect.Bottom);
+			var parentWindow = (Widget.Parent as Eto.Forms.ToolBar).Parent as Eto.Forms.Window;
+			showLocation = parentWindow.PointToScreen(pt);
+			dropMenu.Popup(null, null, PopupMenuPosition, 3u, Gtk.Global.CurrentEventTime);
+		
+			Connector.HandleClicked(sender, e);
+		}
+
+		PointF showLocation;
+
+		void PopupMenuPosition(Gtk.Menu menu, out int x, out int y, out bool push_in)
+		{
+			x = (int)showLocation.X;
+			y = (int)showLocation.Y;
+			push_in = false;
+		}
+#endif
 
 		protected new DropDownToolItemConnector Connector { get { return (DropDownToolItemConnector)base.Connector; } }
 
