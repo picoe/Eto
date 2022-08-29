@@ -333,6 +333,13 @@ namespace Eto.Test
 				ToolBar = new ToolBar();
 
 				ToolBar.Items.Add(about);
+				if (Platform.Supports<DropDownToolItem>())
+				{
+					var dropItem = new DropDownToolItem { Text = "Dropdown", Image = TestIcons.TestImage };
+					dropItem.Items.Add(new ButtonMenuItem { Text = "Subitem 1", Items = { new ButtonMenuItem { Text = "Nested subitem 1" } } });
+					dropItem.Items.Add(new ButtonMenuItem { Text = "Subitem 2", Image = TestIcons.TestIcon });
+					ToolBar.Items.Add(LogEvents(dropItem));
+				}
 				if (Platform.Supports<CheckToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
@@ -379,6 +386,11 @@ namespace Eto.Test
 			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
 			return item;
 		}
+		DropDownToolItem LogEvents(DropDownToolItem item)
+			{
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
+			}
 
 		protected override void OnWindowStateChanged(EventArgs e)
 		{

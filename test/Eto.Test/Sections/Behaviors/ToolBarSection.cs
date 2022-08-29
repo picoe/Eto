@@ -30,7 +30,7 @@ namespace Eto.Test.Sections.Behaviors
 			var indexStepper = new NumericStepper { MinValue = -1, MaxValue = -1, Value = -1 };
 			var typeDropDown = new DropDown
 			{
-				Items = { "Button", "Radio", "Check", "Separator:Divider", "Separator:Space", "Separator:FlexableSpace" },
+				Items = { "Button", "DropDown", "Radio", "Check", "Separator:Divider", "Separator:Space", "Separator:FlexableSpace" },
 				SelectedIndex = 0
 			};
 
@@ -62,6 +62,8 @@ namespace Eto.Test.Sections.Behaviors
 					default:
 					case "button":
 						return new ButtonToolItem { Text = $"Button{++count}", Image = GetImage() };
+					case "dropdown":
+						return new DropDownToolItem { Text = $"DropDown{++count}", Image = GetImage(), Items = { new ButtonMenuItem { Text = "Sub1" }, new ButtonMenuItem { Text = "Sub2" }, new ButtonMenuItem { Text = "Sub3" } } };
 					case "radio":
 						return new RadioToolItem { Text = $"Radio{++count}", Image = GetImage() };
 					case "check":
