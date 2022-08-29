@@ -6,7 +6,7 @@ using Gdk;
 namespace Eto.GtkSharp.Forms.ToolBar
 {
 
-	public class DropDownToolItemHandler : ToolItemHandler<Gtk.ToolButton, DropDownToolItem>, DropDownToolItem.IHandler
+	public class DropDownToolItemHandler : ToolItemHandler<Gtk.ToggleToolButton, DropDownToolItem>, DropDownToolItem.IHandler
 	{
 		// GTK3 MenuToolButton looks kind of horrible with a huge visually separate drop button, and forces
 		// the main button and drop button to function separately. So, use a normal ToolButton with a Menu, but
@@ -28,7 +28,10 @@ namespace Eto.GtkSharp.Forms.ToolBar
 		{
 			Gtk.Toolbar tb = handler.Control;
 
-			Control = new Gtk.ToolButton(GtkImage, Text + "  ▾");
+			var buttonText = ShowDropArrow ? Text + "  ▾" : Text;
+			Control = new Gtk.ToggleToolButton();
+			Control.Label = buttonText;
+			Control.IconWidget = GtkImage;
 			Control.IsImportant = true;
 			Control.Sensitive = Enabled;
 			Control.TooltipText = this.ToolTip;
@@ -38,17 +41,29 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			//control.CanFocus = false;			// why is this disabled and not true???
 			tb.Insert(Control, index);
 			Control.Clicked += HandleClicked;
+			dropMenu.Hidden += HandleMenuClosed;
 		}
+
+		/// <summary>
+		/// Gets or sets whether the drop arrow is shown on the button.
+		/// </summary>
+		public bool ShowDropArrow { get; set; } = true;
 
 #if GTKCORE
 		private void HandleClicked(object sender, EventArgs e)
 		{
+			if (!Control.Active)
+				return;
+
 			dropMenu.PopupAtWidget(Control, Gravity.SouthWest, Gravity.NorthWest, null);
 			Connector.HandleClicked(sender, e);
 		}
 #else
 		private void HandleClicked(object sender, EventArgs e)
 		{
+			if (!Control.Active)
+				return;
+				
 			var buttonRect = Control.Allocation;
 			var pt = new PointF(buttonRect.Left, buttonRect.Bottom);
 			var parentWindow = (Widget.Parent as Eto.Forms.ToolBar).Parent as Eto.Forms.Window;
@@ -67,6 +82,11 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			push_in = false;
 		}
 #endif
+
+		private void HandleMenuClosed(Object sender, EventArgs e)
+		{
+			Control.Active = false;
+		}
 
 		protected new DropDownToolItemConnector Connector { get { return (DropDownToolItemConnector)base.Connector; } }
 
