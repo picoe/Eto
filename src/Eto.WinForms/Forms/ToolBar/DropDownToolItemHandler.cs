@@ -37,6 +37,15 @@ namespace Eto.WinForms.Forms.ToolBar
 			set { Control.Enabled = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets whether the drop arrow is shown on the button.
+		/// </summary>
+		public bool ShowDropArrow
+		{
+			get { return Control.ShowDropDownArrow; }
+			set { Control.ShowDropDownArrow = value; }
+		}
+
 		public override void CreateControl(ToolBarHandler handler, int index)
 		{
 			handler.Control.Items.Insert(index, Control);

@@ -14,6 +14,7 @@ namespace Eto.Wpf.Forms.ToolBar
 		readonly swc.Image swcImage;
 		readonly swc.TextBlock label;
 		readonly swc.MenuItem root;
+		readonly sw.Shapes.Path arrow;
 
 		public DropDownToolItemHandler ()
 		{
@@ -22,7 +23,7 @@ namespace Eto.Wpf.Forms.ToolBar
 			Control.Items.Add(root);
 			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
 			label = new swc.TextBlock();
-			var arrow = new sw.Shapes.Path { Data = swm.Geometry.Parse("M 0 0 L 3 3 L 6 0 Z"), VerticalAlignment = sw.VerticalAlignment.Center, Margin = new Thickness(8, 2, 0, 0), Fill = swm.Brushes.Black };
+			arrow = new sw.Shapes.Path { Data = swm.Geometry.Parse("M 0 0 L 3 3 L 6 0 Z"), VerticalAlignment = sw.VerticalAlignment.Center, Margin = new Thickness(8, 2, 0, 0), Fill = swm.Brushes.Black };
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal, Children = { swcImage, label, arrow } };
 
 			root.Header = panel;
@@ -70,6 +71,15 @@ namespace Eto.Wpf.Forms.ToolBar
 				Control.IsEnabled = value;
 				swcImage.IsEnabled = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether the drop arrow is shown on the button.
+		/// </summary>
+		public bool ShowDropArrow
+		{
+			get { return arrow.Visibility == Visibility.Visible; }
+			set { arrow.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
 		}
 
 		public void AddMenu(int index, MenuItem item)
