@@ -95,6 +95,9 @@ namespace Eto.Mac.Forms.Controls
 				return Handler?.DragInfo?.AllowedOperation ?? NSDragOperation.None;
 			}
 
+			[Export("ignoreModifierKeysForDraggingSession:")]
+			public bool IgnoreModifierKeysForDraggingSession(NSDraggingSession session) => true;
+
 			public override void Layout()
 			{
 				if (MacView.NewLayout)

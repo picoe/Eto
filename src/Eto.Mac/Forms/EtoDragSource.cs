@@ -30,5 +30,8 @@ namespace Eto.Mac.Forms
 			args.Effects = operation.ToEto();
 			h.Callback.OnDragEnd(h.Widget, args);
 		}
+
+		[Export("ignoreModifierKeysForDraggingSession:")]
+		public bool IgnoreModifierKeysForDraggingSession(NSDraggingSession session) => true;
 	}
 }
