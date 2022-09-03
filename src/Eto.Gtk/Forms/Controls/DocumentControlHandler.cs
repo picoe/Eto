@@ -65,7 +65,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					handler.Control.Page = oldIndex;
 				}
 			}
-			 
+
 			public void HandlePageReordered(object o, Gtk.PageReorderedArgs args)
 			{
 				var handler = Handler;
@@ -150,6 +150,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Control.ShowTabs = Control.NPages > 1;
 			}
+		}
+
+		public void ClosePage(DocumentPage page)
+		{
+			ClosePage(ContainerControl, page);
 		}
 
 		internal void ClosePage(Gtk.Widget control, DocumentPage page)

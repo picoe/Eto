@@ -296,17 +296,22 @@ namespace Eto.Forms.ThemedControls
 					{
 						if (IsCloseSelected(tab))
 						{
-							var page = tab.Widget;
-							RemovePage(i);
-							Callback.OnPageClosed(Widget, new DocumentPageEventArgs(page));
+							ClosePage(tab.Widget);
 						}
 						else
 							SelectedIndex = i;
-						
+
 						break;
 					}
 				}
 			}
+		}
+
+		public void ClosePage(DocumentPage page)
+		{
+			int index = pages.IndexOf(page);
+			RemovePage(index);
+			Callback.OnPageClosed(Widget, new DocumentPageEventArgs(page));
 		}
 
 		void Drawable_MouseUp(object sender, Forms.MouseEventArgs e)
