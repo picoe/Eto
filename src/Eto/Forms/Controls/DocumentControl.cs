@@ -176,7 +176,7 @@ namespace Eto.Forms
 		public DocumentPage SelectedPage
 		{
 			get { return SelectedIndex < 0 ? null : Pages[SelectedIndex]; }
-			set 
+			set
 			{
 				if(value != null)
 					SelectedIndex = pages.IndexOf(value);
@@ -203,6 +203,13 @@ namespace Eto.Forms
 			get { return Handler.AllowReordering; }
 			set { Handler.AllowReordering = value; }
 		}
+
+
+		/// <summary>
+		/// Closes a given <see cref="DocumentPage"/>, as if the user had manually clicked the close button
+		/// </summary>
+		/// <param name="page">The <see cref="DocumentPage"/> to close</param>
+		public void ClosePage(DocumentPage page) => Handler.ClosePage(page);
 
 		/// <summary>
 		/// Remove the specified child from the container.
@@ -447,6 +454,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> to allow reordering; otherwise, <c>false</c>.</value>
 			bool AllowReordering { get; set; }
+
+			/// <summary>
+			/// Closes a given <see cref="DocumentPage"/>, as if the user had manually clicked the close button
+			/// </summary>
+			/// <param name="page">The <see cref="DocumentPage"/> to close</param>
+			void ClosePage(DocumentPage page);
 		}
 
 		#endregion
