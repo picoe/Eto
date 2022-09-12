@@ -47,6 +47,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="DotNetProjects.Wpf.Extended.Toolkit">
+      <HintPath>C:\Users\phils\.nuget\packages\dotnetprojects.extended.wpf.toolkit\5.0.103\lib\net40\DotNetProjects.Wpf.Extended.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\lib\SHDocVw\Interop.SHDocVw.dll</HintPath>
       <Private>False</Private>
@@ -151,7 +154,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.6.0" />
+    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.103" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
   	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1020.30" PrivateAssets="all" />
   </ItemGroup>
