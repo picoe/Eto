@@ -47,9 +47,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="DotNetProjects.Wpf.Extended.Toolkit">
-      <HintPath>C:\Users\phils\.nuget\packages\dotnetprojects.extended.wpf.toolkit\5.0.103\lib\net40\DotNetProjects.Wpf.Extended.Toolkit.dll</HintPath>
-    </Reference>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\lib\SHDocVw\Interop.SHDocVw.dll</HintPath>
       <Private>False</Private>
