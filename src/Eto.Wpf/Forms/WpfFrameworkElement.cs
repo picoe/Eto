@@ -431,6 +431,7 @@ namespace Eto.Wpf.Forms
 						ContainerControl.PreviewMouseDown += HandleMouseDown;
 					else
 						ContainerControl.MouseDown += HandleMouseDown;
+					ContainerControl.LostMouseCapture += HandleLostMouseCapture;
 					HandleEvent(Eto.Forms.Control.MouseUpEvent);
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
@@ -811,10 +812,11 @@ namespace Eto.Wpf.Forms
 		protected virtual void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
 			var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
-			if (isMouseCaptured && Control.IsMouseCaptured)
+			if (isMouseCaptured)
 			{
-				Control.ReleaseMouseCapture();
 				isMouseCaptured = false;
+				if (Control.IsMouseCaptured)
+					Control.ReleaseMouseCapture();
 			}
 
 			Callback.OnMouseUp(Widget, args);
@@ -826,6 +828,19 @@ namespace Eto.Wpf.Forms
 			var args = e.ToEto(ContainerControl);
 			Callback.OnMouseDoubleClick(Widget, args);
 			e.Handled = args.Handled;
+		}
+		
+		protected virtual void HandleLostMouseCapture(object sender, swi.MouseEventArgs e)
+		{
+			if (isMouseCaptured)
+			{
+				// lost mouse capture without a MouseUp event firing
+				// this can happen when something happens during the mouse dragging, such as showing a dialog.
+				isMouseCaptured = false;
+
+				var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
+				Callback.OnMouseUp(Widget, args);
+			}
 		}
 
 		protected virtual void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
