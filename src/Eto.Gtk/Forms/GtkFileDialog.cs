@@ -10,14 +10,30 @@ namespace Eto.GtkSharp.Forms
 		where TControl: Gtk.FileChooserDialog
 		where TWidget: FileDialog
 	{
-		public string FileName
+		public virtual string FileName
 		{
-			get { return Control.Filename; }
+#if GTKCORE
+			get => Control.Filename ?? Control.CurrentName;
+#else
+			get => Control.Filename;
+#endif
 			set
 			{
-				Control.SetCurrentFolder(Path.GetDirectoryName(value));
-				Control.SetFilename(value);
-				Control.CurrentName = Path.GetFileName(value);
+				if (string.IsNullOrEmpty(value))
+				{
+					Control.UnselectAll();
+					if (!string.IsNullOrEmpty(Control.Filename))
+						Control.UnselectFilename(Control.Filename);
+				}
+				else
+				{
+					var dir = Path.GetDirectoryName(value);
+					if (!string.IsNullOrEmpty(dir))
+						Control.SetCurrentFolder(dir);
+					if (File.Exists(value))
+						Control.SetFilename(value);
+				}
+				Control.CurrentName = Path.GetFileName(value) ?? string.Empty;
 			}
 		}
 		
@@ -79,7 +95,7 @@ namespace Eto.GtkSharp.Forms
 		}
 
 
-		public DialogResult ShowDialog(Window parent)
+		public virtual DialogResult ShowDialog(Window parent)
 		{
 			SetFilters();
 			if (parent != null) Control.TransientFor = (Gtk.Window)parent.ControlObject;
