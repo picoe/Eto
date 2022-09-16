@@ -168,48 +168,38 @@ namespace Eto.Mac.Forms
 
 		public static int Run(NSAlert view, Control parent)
 		{
-			int ret;
 			if (parent != null)
 			{
 				var window = parent.ControlObject as NSWindow;
 				if (window == null && parent.ControlObject is NSView)
 					window = ((NSView)parent.ControlObject).Window;
-				if (window == null || !view.RespondsToSelector(new Selector("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:")))
-					ret = (int)view.RunModal();
-				else
+				
+				if (window != null && view.RespondsToSelector(new Selector("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:")))
 				{
-					ret = 0;
-					NSApplication.SharedApplication.InvokeOnMainThread(delegate
-					{
-						view.BeginSheet(window, new MacModal(), new Selector("alertDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
-						ret = (int)NSApplication.SharedApplication.RunModalForWindow(window);
-					});
+					// show attached as a sheet
+					view.BeginSheet(window, new MacModal(), new Selector("alertDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
 				}
 			}
-			else
-				ret = (int)view.RunModal();
-			return ret;
+			
+			return (int)view.RunModal();
 		}
 
 		public static int Run(NSSavePanel panel, Control parent)
 		{
-			int ret;
 			if (parent != null)
 			{
 				var window = parent.ControlObject as NSWindow;
 				if (window == null && parent.ControlObject is NSView)
 					window = ((NSView)parent.ControlObject).Window;
-				if (window == null || !panel.RespondsToSelector(new Selector("beginSheetModalForWindow:completionHandler:")))
-					ret = (int)panel.RunModal();
-				else
+				
+				if (window != null && panel.RespondsToSelector(new Selector("beginSheetModalForWindow:completionHandler:")))
 				{
+					// show attached as a sheet
 					panel.BeginSheet(window, result => NSApplication.SharedApplication.StopModalWithCode(result));
-					ret = (int)NSApplication.SharedApplication.RunModalForWindow(window);
 				}
 			}
-			else
-				ret = (int)panel.RunModal();
-			return ret;
+
+			return (int)panel.RunModal();
 		}
 
 		public static void Run(Window window, NSWindow nativeWindow, out ModalEventArgs helper, bool isSheet = false)
