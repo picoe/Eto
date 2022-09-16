@@ -50,50 +50,90 @@ namespace Eto.Drawing
 		static Dictionary<string, Color> colormap;
 		static readonly object colormaplock = new object();
 		internal const float Epsilon = 1f / 256f;
+		static IHandler Handler => Platform.Instance.Supports<IHandler>() ? Platform.Instance.CreateShared<IHandler>() : null;
+
+		float _a, _r, _g, _b;
+		object _controlObject;
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity (0-1)
 		/// </summary>
-		public float A { get; set; }
+		public float A
+		{
+			get => _a;
+			set
+			{
+				_a = value;
+				if (_controlObject != null)
+					_controlObject = Handler?.ModifyComponent(_controlObject, null, null, null, _a);
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the red component (0-1)
 		/// </summary>
-		public float R { get; set; }
+		public float R
+		{
+			get => _r;
+			set
+			{
+				_r = value;
+				if (_controlObject != null)
+					_controlObject = Handler?.ModifyComponent(_controlObject, _r, null, null, null);
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the green (0-1)
 		/// </summary>
-		public float G { get; set; }
+		public float G
+		{
+			get => _g;
+			set
+			{
+				_g = value;
+				if (_controlObject != null)
+					_controlObject = Handler?.ModifyComponent(_controlObject, null, _g, null, null);
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the blue (0-1)
 		/// </summary>
-		public float B { get; set; }
+		public float B
+		{
+			get => _b;
+			set
+			{
+				_b = value;
+				if (_controlObject != null)
+					_controlObject = Handler?.ModifyComponent(_controlObject, null, null, _b, null);
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The alpha component</value>
-		public int Ab { get { return (int)((A * 255) + 0.5f); } set { A = value / 255f; } }
+		public int Ab { get => (int)((A * 255) + 0.5f); set => A = value / 255f; }
 
 		/// <summary>
 		/// Gets or sets the red component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The red component</value>
-		public int Rb { get { return (int)((R * 255) + 0.5f); } set { R = value / 255f; } }
+		public int Rb { get => (int)((R * 255) + 0.5f); set => R = value / 255f; }
 
 		/// <summary>
 		/// Gets or sets the green component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The green component</value>
-		public int Gb { get { return (int)((G * 255) + 0.5f); } set { G = value / 255f; } }
+		public int Gb { get => (int)((G * 255) + 0.5f); set => G = value / 255f; }
 
 		/// <summary>
 		/// Gets or sets the blue component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The blue component</value>
-		public int Bb { get { return (int)((B * 255) + 0.5f); } set { B = value / 255f; } }
+		public int Bb { get => (int)((B * 255) + 0.5f); set => B = value / 255f; }
 
 		/// <summary>
 		/// Gets the native color control object.
@@ -102,7 +142,7 @@ namespace Eto.Drawing
 		/// This can be null for platforms that do not have (or need) to store the native object.
 		/// </remarks>
 		/// <value>The native color control object.</value>
-		public object ControlObject { get; private set; }
+		public object ControlObject => _controlObject;
 
 		/// <summary>
 		/// The character to split up the string which will be converted
@@ -222,12 +262,22 @@ namespace Eto.Drawing
 		/// <param name="blendColor">Color to blend onto the base color</param>
 		public static Color Blend(Color baseColor, Color blendColor)
 		{
-			return Blend(baseColor, blendColor, blendColor.A);
+			var blendFactor = blendColor.A;
+			
+			if (blendFactor < Epsilon)
+				return baseColor;
+
+			if (Math.Abs(blendFactor - 1.0f) < Epsilon)
+				return blendColor;
+
+			var r = baseColor.R + blendFactor * (blendColor.R - baseColor.R);
+			var g = baseColor.G + blendFactor * (blendColor.G - baseColor.G);
+			var b = baseColor.B + blendFactor * (blendColor.B - baseColor.B);
+			return new Color(r, g, b, baseColor.A);
 		}
 
 		/// <summary>
-		/// Blends the <paramref name="blendColor"/> onto the specified <paramref name="baseColor"/>. Ignores the alpha component and uses
-		/// the provided blend factor.
+		/// Blends the <paramref name="blendColor"/> onto the specified <paramref name="baseColor"/>, including the Alpha component.
 		/// </summary>
 		/// <remarks>
 		/// This computes the blended value of two colors.
@@ -243,11 +293,11 @@ namespace Eto.Drawing
 			if (Math.Abs(blendFactor - 1.0f) < Epsilon)
 				return blendColor;
 
-			var inv = 1.0f - blendFactor;
-			baseColor.R = baseColor.R * inv + blendColor.R * blendFactor;
-			baseColor.G = baseColor.G * inv + blendColor.G * blendFactor;
-			baseColor.B = baseColor.B * inv + blendColor.B * blendFactor;
-			return baseColor;
+			var r = baseColor.R + blendFactor * (blendColor.R - baseColor.R);
+			var g = baseColor.G + blendFactor * (blendColor.G - baseColor.G);
+			var b = baseColor.B + blendFactor * (blendColor.B - baseColor.B);
+			var a = baseColor.A + blendFactor * (blendColor.A - baseColor.A);
+			return new Color(r, g, b, a);
 		}
 
 		/// <summary>
@@ -258,12 +308,12 @@ namespace Eto.Drawing
 		/// <param name="blue">Blue component (0-1)</param>
 		/// <param name="alpha">Alpha component (0-1)</param>
 		public Color(float red, float green, float blue, float alpha = 1f)
-			: this()
 		{
-			this.R = red;
-			this.G = green;
-			this.B = blue;
-			this.A = alpha;
+			_controlObject = null;
+			_r = red;
+			_g = green;
+			_b = blue;
+			_a = alpha;
 		}
 
 		/// <summary>
@@ -272,12 +322,15 @@ namespace Eto.Drawing
 		/// <param name="color">Color to copy</param>
 		/// <param name="alpha">Alpha to use for the new color, or null to use the alpha component from <paramref name="color"/></param>
 		public Color(Color color, float? alpha = null)
-			: this()
 		{
-			R = color.R;
-			G = color.G;
-			B = color.B;
-			A = alpha ?? color.A;
+			if (color.ControlObject != null)
+				_controlObject = Handler?.ModifyComponent(color.ControlObject, null, null, null, alpha) ?? color.ControlObject;
+			else
+				_controlObject = null;
+			_r = color.R;
+			_g = color.G;
+			_b = color.B;
+			_a = alpha ?? color.A;
 		}
 
 		/// <summary>
@@ -293,13 +346,12 @@ namespace Eto.Drawing
 		/// <param name="blue">Blue component (0-1)</param>
 		/// <param name="alpha">Alpha component (0-1)</param>
 		public Color(object controlObject, float red, float green, float blue, float alpha)
-			: this()
 		{
-			ControlObject = controlObject;
-			R = red;
-			G = green;
-			B = blue;
-			A = alpha;
+			_controlObject = controlObject;
+			_r = red;
+			_g = green;
+			_b = blue;
+			_a = alpha;
 		}
 
 		/// <summary>
@@ -855,5 +907,23 @@ namespace Eto.Drawing
 		{
 			return new ColorCMYK(this);
 		}
+
+		/// <summary>
+		/// Handler interface for <see cref="Color"/>
+		/// </summary>
+		public interface IHandler
+		{
+			/// <summary>
+			/// Returns a new ControlObject with the modified RGBA values.
+			/// </summary>
+			/// <param name="controlObject">Current ControlObject to modify</param>
+			/// <param name="r">Red component to set, or null to keep the same value</param>
+			/// <param name="g">Green component to set, or null to keep the same value</param>
+			/// <param name="b">Blue component to set, or null to keep the same value</param>
+			/// <param name="a">Alpha component to set, or null to keep the same value</param>
+			/// <returns></returns>
+			object ModifyComponent(object controlObject, float? r, float? g, float? b, float? a);
+		}
+
 	}
 }
