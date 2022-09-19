@@ -23,6 +23,7 @@
     <Using Include="CoreFoundation" />
     <Using Include="ImageIO" />
     <Using Include="CoreText" />
+    <Using Include="System.IntPtr" Alias="NativeHandle" />
   </ItemGroup>
   
   <PropertyGroup>

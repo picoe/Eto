@@ -24,6 +24,15 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="CheckMenuItem"/> class with the specified <paramref name="checkedChanged"/> handler.
+		/// </summary>
+		/// <param name="checkedChanged">Event handler to call when the <see cref="Checked"/> property changes.</param>
+		public CheckMenuItem(EventHandler<EventArgs> checkedChanged)
+		{
+			CheckedChanged += checkedChanged;
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckMenuItem"/> class with the specified command.
 		/// </summary>
 		/// <param name="command">Command to initialize the menu with.</param>

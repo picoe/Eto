@@ -31,7 +31,7 @@ namespace Eto.Wpf.Forms.ToolBar
 			root.SubmenuOpened += Control_Click;
 			sw.Automation.AutomationProperties.SetLabeledBy(Control, label);
 		}
-
+		
 		private void Control_Click(object sender, RoutedEventArgs e)
 		{
 			// WPF raises this event for all child items as well as the root menu, so check sender

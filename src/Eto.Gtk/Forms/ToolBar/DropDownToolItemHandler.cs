@@ -13,24 +13,23 @@ namespace Eto.GtkSharp.Forms.ToolBar
 		// add a drop arrow to the button text.
 
 		private Gtk.Menu dropMenu;
-		
+		bool showDropArrow = true;
+
 		public DropDownToolItemHandler()
 		{
 			dropMenu = new Gtk.Menu();
 		}
-		
+
 		#region IToolBarButton Members
 
-		
+
 		#endregion
 
 		public override void CreateControl(ToolBarHandler handler, int index)
 		{
 			Gtk.Toolbar tb = handler.Control;
 
-			var buttonText = ShowDropArrow ? Text + "  ▾" : Text;
 			Control = new Gtk.ToggleToolButton();
-			Control.Label = buttonText;
 			Control.IconWidget = GtkImage;
 			Control.IsImportant = true;
 			Control.Sensitive = Enabled;
@@ -42,12 +41,30 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			tb.Insert(Control, index);
 			Control.Clicked += HandleClicked;
 			dropMenu.Hidden += HandleMenuClosed;
+			SetText();
+		}
+
+		protected override void SetText()
+		{
+			if (Control != null)
+				Control.Label = ShowDropArrow ? Text + "  ▾" : Text;
 		}
 
 		/// <summary>
 		/// Gets or sets whether the drop arrow is shown on the button.
 		/// </summary>
-		public bool ShowDropArrow { get; set; } = true;
+		public bool ShowDropArrow
+		{
+			get => showDropArrow;
+			set
+			{
+				if (showDropArrow != value)
+				{
+					showDropArrow = value;
+					SetText();
+				}
+			}
+		}
 
 #if GTKCORE
 		private void HandleClicked(object sender, EventArgs e)
@@ -108,7 +125,7 @@ namespace Eto.GtkSharp.Forms.ToolBar
 		public void AddMenu(int index, MenuItem item)
 		{
 			dropMenu.Insert((Gtk.Widget)item.ControlObject, index);
-			var handler = item.Handler as Menu.IMenuHandler; 
+			var handler = item.Handler as Menu.IMenuHandler;
 			//SetChildAccelGroup(item);
 		}
 
