@@ -1261,13 +1261,30 @@ namespace Eto.Mac.Forms
 						macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
 						OnSetAsChildWindow();
 					}
+					Widget.GotFocus += HandleGotFocusAsChild;
 				}
 				else
 				{
+					Widget.GotFocus -= HandleGotFocusAsChild;
 					var parentWindow = Control.ParentWindow;
 					if (parentWindow != null)
 						parentWindow.RemoveChildWindow(Control);
 				}
+			}
+		}
+		
+		void HandleGotFocusAsChild(object sender, EventArgs e)
+		{
+			// When there are multiple modeless child windows, clicking on one doesn't bring it to front
+			// so, we remove then re-add the child window to get it to come above again.
+			var parentWindow = Control.ParentWindow;
+			var childWindows = parentWindow?.ChildWindows;
+			
+			// .. only if it isn't already the last child window
+			if (parentWindow != null && childWindows?.Length > 1 && !Equals(Control.Handle, childWindows[childWindows.Length -1].Handle))
+			{
+				parentWindow.RemoveChildWindow(Control);
+				parentWindow.AddChildWindow(Control, NSWindowOrderingMode.Above);
 			}
 		}
 
