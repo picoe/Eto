@@ -234,6 +234,10 @@ namespace Eto.Mac
 			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
+			if (MacVersion.IsAtLeast(10, 15))
+				p.Add<DropDownToolItem.IHandler>(() => new DropDownToolItemHandler());
+			else
+				p.Add<DropDownToolItem.IHandler>(() => new DropDownToolItemPreCatalinaHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 
 			// Forms

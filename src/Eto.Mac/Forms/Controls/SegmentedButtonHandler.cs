@@ -391,9 +391,9 @@ namespace Eto.Mac.Forms.Controls
 		static readonly IntPtr selSetShowsMenuIndicator = Selector.GetHandle("setShowsMenuIndicator:forSegment:");
 
 		// 10.13+
-		static readonly bool supportsTooltip = ObjCExtensions.InstancesRespondToSelector<NSSegmentedCell>(selSetToolTipForSegment);
-		static readonly bool supportsMenuIndicator = ObjCExtensions.InstancesRespondToSelector<NSSegmentedControl>(selSetShowsMenuIndicator);
-
+		internal static readonly bool supportsTooltip = ObjCExtensions.InstancesRespondToSelector<NSSegmentedCell>(selSetToolTipForSegment);
+		internal static readonly bool supportsMenuIndicator = ObjCExtensions.InstancesRespondToSelector<NSSegmentedControl>(selSetShowsMenuIndicator);
+		
 		public void SetItem(int index, SegmentedItem item)
 		{
 			Control.SetLabel(item.Text ?? string.Empty, index);

@@ -15,6 +15,15 @@ namespace Eto.Mac.Forms.Menu
 	public class EtoMenu : NSMenu
 	{
 		public bool WorksWhenModal { get; set; }
+		
+		public EtoMenu()
+		{
+		}
+
+		public EtoMenu(NativeHandle handle)
+			: base(handle)
+		{
+		}
 	}
 
 	static class MenuHandler
