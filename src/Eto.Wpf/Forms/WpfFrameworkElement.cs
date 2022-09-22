@@ -845,7 +845,8 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(ContainerControl);
+            isMouseCaptured = false;
+            var args = e.ToEto(ContainerControl);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Callback.OnMouseDoubleClick(Widget, args);
 			if (!args.Handled)
@@ -862,12 +863,8 @@ namespace Eto.Wpf.Forms
 					|| e.Handled
 				))
 			{
-				isMouseCaptured = true;
 				Control.CaptureMouse();
-			}
-			else
-			{
-				isMouseCaptured = false;
+				isMouseCaptured = true;
 			}
 		}
 
