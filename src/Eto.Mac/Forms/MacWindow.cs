@@ -556,7 +556,7 @@ namespace Eto.Mac.Forms
 				button.Hidden = hideButtons;
 				button.Enabled = Minimizable;
 			}
-			
+
 			button = Control.StandardWindowButton(NSWindowButton.CloseButton);
 			if (button != null)
 			{
@@ -615,7 +615,7 @@ namespace Eto.Mac.Forms
 			get;
 			set;
 		}
-		
+
 		public bool Closeable
 		{
 			get { return Control.StyleMask.HasFlag(NSWindowStyle.Closable); }
@@ -647,9 +647,9 @@ namespace Eto.Mac.Forms
 				}
 			}
 		}
-		
+
 		internal virtual bool DefaultTopmost => false;
-		
+
 		internal bool WantsTopmost
 		{
 			get => Widget.Properties.Get(MacWindow.Topmost_Key, DefaultTopmost);
@@ -1272,16 +1272,16 @@ namespace Eto.Mac.Forms
 				}
 			}
 		}
-		
+
 		void HandleGotFocusAsChild(object sender, EventArgs e)
 		{
 			// When there are multiple modeless child windows, clicking on one doesn't bring it to front
 			// so, we remove then re-add the child window to get it to come above again.
 			var parentWindow = Control.ParentWindow;
 			var childWindows = parentWindow?.ChildWindows;
-			
+
 			// .. only if it isn't already the last child window
-			if (parentWindow != null && childWindows?.Length > 1 && !Equals(Control.Handle, childWindows[childWindows.Length -1].Handle))
+			if (parentWindow != null && childWindows?.Length > 1 && !Equals(Control.Handle, childWindows[childWindows.Length - 1].Handle))
 			{
 				parentWindow.RemoveChildWindow(Control);
 				parentWindow.AddChildWindow(Control, NSWindowOrderingMode.Above);
@@ -1295,5 +1295,35 @@ namespace Eto.Mac.Forms
 		}
 
 		public float LogicalPixelSize => Screen?.LogicalPixelSize ?? 1f;
+
+		public bool FullSizeContentView
+		{
+			get => Control.StyleMask.HasFlag(NSWindowStyle.FullSizeContentView);
+			set
+			{
+				if (value)
+				{
+					Control.TitleVisibility = NSWindowTitleVisibility.Hidden;
+					Control.TitlebarAppearsTransparent = true;
+					Control.StyleMask |= NSWindowStyle.FullSizeContentView;
+				}
+				else
+				{
+					Control.TitleVisibility = NSWindowTitleVisibility.Visible;
+					Control.TitlebarAppearsTransparent = false;
+					Control.StyleMask &= ~NSWindowStyle.FullSizeContentView;
+				}
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && Widget.Loaded)
+			{
+				// we can't cancel closing in this case, so don't bother firing the closing event
+				Control.Close();
+			}
+			base.Dispose(disposing);
+		}
 	}
 }

@@ -37,7 +37,7 @@ namespace Eto.Mac.Forms
 			// only need to adjust level when window style is not utility and we actually want it to be topmost (default for FloatingForm).
 			var wantsTopmost = WantsTopmost;
 			var owner = Widget.Owner;
-			var needsLevelAdjust = wantsTopmost && WindowStyle != WindowStyle.Utility && owner != null;
+			var needsLevelAdjust = wantsTopmost && owner != null;
 
 			var lastOwner = Widget.Properties.Get<Window>(LastOwner_Key);
 
