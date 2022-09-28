@@ -301,11 +301,13 @@ namespace Eto.Mac.Forms.Controls
 					AddMethod(MacView.selMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", Control.HeaderView);
 					AddMethod(MacView.selRightMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", Control.HeaderView);
 					AddMethod(MacView.selOtherMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", Control.HeaderView);
+					base.AttachEvent(id);
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					AddMethod(MacView.selMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", Control.HeaderView);
 					AddMethod(MacView.selRightMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", Control.HeaderView);
 					AddMethod(MacView.selOtherMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", Control.HeaderView);
+					base.AttachEvent(id);
 					break;
 				default:
 					base.AttachEvent(id);
