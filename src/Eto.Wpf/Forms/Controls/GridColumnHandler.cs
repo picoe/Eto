@@ -204,6 +204,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void FormatCell(ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
 		{
+			if (Widget.CellToolTipBinding != null)
+			{
+				element.ToolTip = Widget.CellToolTipBinding.GetValue(dataItem);
+			}
 			if (GridHandler != null)
 				GridHandler.FormatCell(this, cell, element, gridcell, dataItem);
 		}
@@ -244,18 +248,27 @@ namespace Eto.Wpf.Forms.Controls
 
 		public virtual void SetHeaderStyle()
 		{
+			if (GridHandler == null)
+				return;
+
 			var alignment = HeaderTextAlignment;
-			if (alignment == TextAlignment.Left)
-			{
-				Control.ClearValue(swc.DataGridColumn.HeaderStyleProperty);
-			}
-			else if (GridHandler != null)
+			var toolTip = HeaderToolTip;
+			bool needsStyle = alignment != TextAlignment.Left || !string.IsNullOrEmpty(toolTip);
+
+			if (needsStyle)
 			{
 				var style = new sw.Style();
 				style.BasedOn = GridHandler.Control.ColumnHeaderStyle;
 				style.TargetType = typeof(swc.Primitives.DataGridColumnHeader);
-				style.Setters.Add(new sw.Setter(swc.Primitives.DataGridColumnHeader.HorizontalContentAlignmentProperty, alignment.ToWpf()));
+				if (alignment != TextAlignment.Left)
+					style.Setters.Add(new sw.Setter(swc.Primitives.DataGridColumnHeader.HorizontalContentAlignmentProperty, alignment.ToWpf()));
+				if (!string.IsNullOrEmpty(toolTip))
+					style.Setters.Add(new sw.Setter(swc.ToolTipService.ToolTipProperty, toolTip));
 				Control.HeaderStyle = style;
+			}
+			else
+			{
+				Control.ClearValue(swc.DataGridColumn.HeaderStyleProperty);
 			}
 		}
 
@@ -265,11 +278,33 @@ namespace Eto.Wpf.Forms.Controls
 			get => double.IsInfinity(Control.MaxWidth) ? int.MaxValue : (int)Control.MaxWidth;
 			set => Control.MaxWidth = value == int.MaxValue ? double.PositiveInfinity : value;
 		}
-		
+
 		public int DisplayIndex
 		{
 			get => Control.DisplayIndex;
 			set => Control.DisplayIndex = value;
+		}
+
+
+		static readonly object HeaderToolTip_Key = new object();
+
+		public string HeaderToolTip
+		{
+			get => Widget.Properties.Get<string>(HeaderToolTip_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(HeaderToolTip_Key, value))
+					SetHeaderStyle();
+			}
+		}
+
+
+		static readonly object CellToolTipBinding_Key = new object();
+		
+		public IIndirectBinding<string> CellToolTipBinding
+		{
+			get => Widget.Properties.Get<IIndirectBinding<string>>(CellToolTipBinding_Key);
+			set => Widget.Properties.Set(CellToolTipBinding_Key, value);
 		}
 
 		public void CellEdited(ICellHandler cell, sw.FrameworkElement element)

@@ -38,7 +38,7 @@ namespace Eto.Mac.Forms.Controls
 
 		void ResetAutoSizedColumns();
 		bool AutoSizeColumns(bool force, bool forceNewSize = false);
-		
+
 		int GetColumnDisplayIndex(GridColumn column);
 		void SetColumnDisplayIndex(GridColumn column, int index);
 	}
@@ -327,7 +327,7 @@ namespace Eto.Mac.Forms.Controls
 		public int MinWidth
 		{
 			get => (int)Control.MinWidth + IntercellSpacingWidth;
-			set 
+			set
 			{
 				if (value == MinWidth)
 					return;
@@ -399,8 +399,8 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public void SizeToFit() => Control.SizeToFit();
-		
-		
+
+
 		static readonly object DisplayIndex_Key = new object();
 		public int DisplayIndex
 		{
@@ -411,7 +411,21 @@ namespace Eto.Mac.Forms.Controls
 				DataViewHandler?.SetColumnDisplayIndex(Widget, value);
 			}
 		}
-		
+
+		public string HeaderToolTip
+		{
+			get => Control.HeaderToolTip;
+			set => Control.HeaderToolTip = value ?? string.Empty;
+		}
+
+		static readonly object CellToolTipBinding_Key = new object();
+
+		public IIndirectBinding<string> CellToolTipBinding
+		{
+			get => Widget.Properties.Get<IIndirectBinding<string>>(CellToolTipBinding_Key);
+			set => Widget.Properties.Set(CellToolTipBinding_Key, value);
+		}
+
 		public void SetupDisplayIndex()
 		{
 			var displayIndex = Widget.Properties.Get<int?>(DisplayIndex_Key) ?? -1;

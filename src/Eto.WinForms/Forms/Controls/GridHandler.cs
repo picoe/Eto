@@ -19,7 +19,9 @@ namespace Eto.WinForms.Forms.Controls
 		bool CellMouseClick(GridColumnHandler column, swf.MouseEventArgs e, int rowIndex);
 		object GetItemAtRow(int row);
 
-		Grid Grid { get; }		
+		Grid Grid { get; }
+
+		void HandleEvent(string id, bool defaultEvent = false);
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WindowsControl<swf.DataGridView, TWidget, TCallback>, Grid.IHandler, IGridHandler
@@ -341,12 +343,7 @@ namespace Eto.WinForms.Forms.Controls
 					// handled automatically
 					break;
 				case Grid.CellFormattingEvent:
-					Control.CellFormatting += (sender, e) =>
-					{
-						var column = Widget.Columns[e.ColumnIndex];
-						var item = GetItemAtRow(e.RowIndex);
-						Callback.OnCellFormatting(Widget, new FormattingArgs(e, column, item, e.RowIndex));
-					};
+					Control.CellFormatting += HandleCellFormatting;
 					break;
 				case Grid.ColumnOrderChangedEvent:
 					Control.ColumnDisplayIndexChanged += HandleColumnDisplayIndexChanged;
@@ -359,6 +356,21 @@ namespace Eto.WinForms.Forms.Controls
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		private void HandleCellFormatting(object sender, swf.DataGridViewCellFormattingEventArgs e)
+		{
+			var column = Widget.Columns[e.ColumnIndex];
+			var item = GetItemAtRow(e.RowIndex);
+			if (column.CellToolTipBinding != null)
+			{
+				var cell = Control.Rows[e.RowIndex].Cells[e.ColumnIndex];
+				if (cell != null)
+				{
+					cell.ToolTipText = column.CellToolTipBinding.GetValue(item);
+				}
+			}
+			Callback.OnCellFormatting(Widget, new FormattingArgs(e, column, item, e.RowIndex));
 		}
 
 		private void HandleColumnWidthChanged(object sender, swf.DataGridViewColumnEventArgs e)
