@@ -146,6 +146,38 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			Widget.MouseDown += Widget_MouseDown;
 
+			Control.QueryTooltip += Control_QueryTooltip;
+			Control.HasTooltip = true;
+
+
+		}
+
+		private void Control_QueryTooltip(object o, Gtk.QueryTooltipArgs args)
+		{
+			var offset = 0;
+			if (Control.HeadersVisible)
+			{
+				Control.BinWindow.GetPosition(out var bx, out offset);
+			}
+			var isData = Control.GetPathAtPos((int)args.X, (int)args.Y - offset, out var path, out var col);
+			
+			if (isData)
+			{
+				var columnIndex = GetColumnIndex(col);
+				if (columnIndex != -1)
+				{
+					var etoColumn = Widget.Columns[columnIndex];
+					if (etoColumn.CellToolTipBinding != null)
+					{
+						var item = GetItem(path);
+						var cellRect = Control.GetCellArea(path, col);
+						cellRect.Y += offset;
+						args.Tooltip.Text = etoColumn.CellToolTipBinding.GetValue(item);
+						args.Tooltip.TipArea = cellRect;
+						args.RetVal = true;
+					}
+				}
+			}
 		}
 
 		protected new GridConnector Connector => (GridConnector)base.Connector;
@@ -592,6 +624,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
+			// var tooltipBinding = args.Column?.CellToolTipBinding;
+			// if (tooltipBinding != null && args is GtkGridCellFormatEventArgs macargs && macargs.View != null)
+			// 	macargs.View.ToolTip = tooltipBinding.GetValue(args.Item) ?? string.Empty;
+			
 			Callback.OnCellFormatting(Widget, args);
 		}
 

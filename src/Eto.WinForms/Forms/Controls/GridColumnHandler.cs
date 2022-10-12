@@ -171,6 +171,26 @@ namespace Eto.WinForms.Forms.Controls
 			set => Control.DisplayIndex = value;
 		}
 
+		public string HeaderToolTip
+		{
+			get => Control.ToolTipText;
+			set => Control.ToolTipText = value;
+		}
+
+		static readonly object CellToolTipBinding_Key = new object();
+
+		public IIndirectBinding<string> CellToolTipBinding
+		{
+			get => Widget.Properties.Get<IIndirectBinding<string>>(CellToolTipBinding_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(CellToolTipBinding_Key, value))
+				{
+					GridHandler?.HandleEvent(GridView.CellFormattingEvent);
+				}
+			}
+		}
+
 		public void SetCellValue(object dataItem, object value)
 		{
 			if (dataCell != null)
@@ -193,6 +213,8 @@ namespace Eto.WinForms.Forms.Controls
 		public virtual void Setup(IGridHandler gridHandler)
 		{
 			GridHandler = gridHandler;
+			if (CellToolTipBinding != null)
+				GridHandler?.HandleEvent(GridView.CellFormattingEvent);
 		}
 
 		public void Paint(sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)

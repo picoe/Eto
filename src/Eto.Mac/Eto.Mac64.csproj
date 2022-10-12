@@ -5,7 +5,7 @@
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;MONOMAC;Mac64</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefaultItemExcludes>build\*</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
     <LangVersion>10.0</LangVersion>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 

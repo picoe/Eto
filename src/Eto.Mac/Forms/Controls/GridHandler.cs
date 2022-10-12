@@ -607,6 +607,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
+			var tooltipBinding = args.Column?.CellToolTipBinding;
+			if (tooltipBinding != null && args is MacCellFormatArgs macargs && macargs.View != null)
+				macargs.View.ToolTip = tooltipBinding.GetValue(args.Item) ?? string.Empty;
+			
 			Callback.OnCellFormatting(Widget, args);
 		}
 

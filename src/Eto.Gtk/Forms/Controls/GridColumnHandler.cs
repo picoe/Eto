@@ -228,6 +228,18 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+#if GTK3
+		public string HeaderToolTip
+		{
+			get => Control.Button.TooltipText;
+			set => Control.Button.TooltipText = value;
+		}
+#else
+		public string HeaderToolTip { get; set; }
+#endif
+
+		public IIndirectBinding<string> CellToolTipBinding { get; set; }
+
 		internal void SetDisplayIndex()
 		{
 			if (displayIndex != null && GridHandler != null)

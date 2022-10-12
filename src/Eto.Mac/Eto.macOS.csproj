@@ -5,7 +5,7 @@
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;UNIFIED;MACOS_NET;USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefaultItemExcludes>build\*</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
     <NoWarn>CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>

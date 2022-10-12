@@ -400,6 +400,7 @@ namespace Eto.Test.Sections.Controls
 				control.TextBinding.BindDataContext((MyGridItem m) => m.Text);
 				control.Bind(c => c.TextColor, args, a => a.CellTextColor);
 				control.BindDataContext(c => c.Command, (MyGridItem m) => m.Command);
+				control.BindDataContext(c => c.ToolTip, (MyGridItem m) => m.ToolTip);
 				//control.Click += (sender, e) => Log.Write(sender, "Clicked row button {0}", ((Button)sender).Text);
 				return new Panel { Content = control, Padding = 2 };
 			}
@@ -468,8 +469,8 @@ namespace Eto.Test.Sections.Controls
 			var dropDown = MyDropDown("DropDownKey");
 			grid.Columns.Add(SetColumnState(0, new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text") }));
 			grid.Columns.Add(SetColumnState(1, new GridColumn { DataCell = new CheckBoxCell("Check"), AutoSize = true, Resizable = false }));
-			grid.Columns.Add(SetColumnState(2, new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image"), Resizable = false }));
-			grid.Columns.Add(SetColumnState(3, new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true }));
+			grid.Columns.Add(SetColumnState(2, new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image"), Resizable = false, HeaderToolTip = null }));
+			grid.Columns.Add(SetColumnState(3, new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true, HeaderToolTip = "Some Tooltip", CellToolTipBinding = Binding.Property((MyGridItem i) => i.ToolTip) }));
 			grid.Columns.Add(SetColumnState(4, new GridColumn { HeaderText = "Progress", DataCell = new ProgressCell("Progress") }));
 			grid.Columns.Add(SetColumnState(5, new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Sortable = true }));
 			if (Platform.Supports<CustomCell>())
@@ -705,9 +706,12 @@ namespace Eto.Test.Sections.Controls
 				{
 					text = value;
 					OnPropertyChanged();
+					OnPropertyChanged(nameof(ToolTip));
 					Log("Text", value);
 				}
 			}
+
+			public string ToolTip => $"ToolTip For {Text}";
 
 			public Image Image
 			{
@@ -771,7 +775,7 @@ namespace Eto.Test.Sections.Controls
 				val = row % 2;
 				image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
 
-				text = $"Col 1 {name}";
+				text = name;
 
 				color = Color.FromElementId(row);
 
