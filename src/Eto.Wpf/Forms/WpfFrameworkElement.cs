@@ -973,11 +973,24 @@ namespace Eto.Wpf.Forms
 				return point;
 
 			point = point.LogicalToScreen(Widget.ParentWindow?.Screen);
-			point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf())).ToEto();
 			
 			if (Win32.IsSystemDpiAware)
 			{
-				point = point * Win32.SystemDpi / Win32.GetLogicalPixelSize(SwfScreen);
+				var logicalPixelSize = Win32.GetLogicalPixelSize(SwfScreen);
+				var systemDpi = Win32.SystemDpi;
+
+				// WPF does not take into account the location of the element in the form..
+				var rootVisual = ContainerControl.GetVisualParents().OfType<sw.UIElement>().Last();
+				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0), rootVisual).ToEto();
+				point -= (location * logicalPixelSize) - (location * systemDpi);
+
+				point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf())).ToEto();
+
+				point = point * systemDpi / logicalPixelSize;
+			}
+			else
+			{
+				point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf())).ToEto();
 			}
 			return point;
 
@@ -993,13 +1006,26 @@ namespace Eto.Wpf.Forms
 			if (presentationSource == null)
 				return point;
 
+			PointF pt;
 			if (Win32.IsSystemDpiAware)
 			{
-				point = point / Win32.SystemDpi * Win32.GetLogicalPixelSize(SwfScreen);
-			}
-			var pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf()));
+				var logicalPixelSize = Win32.GetLogicalPixelSize(SwfScreen);
+				var systemDpi = Win32.SystemDpi;
+				point = point / systemDpi * logicalPixelSize;
+
+				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf())).ToEto();
 				
-			return pt.ToEtoPoint().ScreenToLogical(SwfScreen);
+				// WPF does not take into account the location of the element in the form..
+				var rootVisual = ContainerControl.GetVisualParents().OfType<sw.UIElement>().Last();
+				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0), rootVisual).ToEto();
+				pt += (location * logicalPixelSize) - (location * systemDpi);
+			}
+			else
+			{
+				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf())).ToEto();
+			}
+
+			return Point.Truncate(pt).ScreenToLogical(SwfScreen);
 		}
 
 		public Point Location
