@@ -22,6 +22,7 @@ namespace Eto.Test.Sections.Behaviors
 		Label windowPositionLabel;
 		Label mousePositionLabel;
 		bool showScreenContent;
+		PointF? _mousePositionInWindow;
 
 		protected bool ShowScreenContent
 		{
@@ -159,9 +160,8 @@ namespace Eto.Test.Sections.Behaviors
 
 			var restoreForm = new Form {
 				Title = "RestoreForm",
-				Content = "This form should restore its size and position", 
 				Resizable = true,
-				ClientSize = new Size(450, 300),
+				Size = new Size(450, 300),
 				ShowActivated = false
 			};
 			var adjacentForm = new Form
@@ -173,20 +173,53 @@ namespace Eto.Test.Sections.Behaviors
 				Closeable = false,
 				Maximizable = false,
 				Minimizable = false,
-				Content = new Splitter { Panel1 = new Panel(), Panel2 = new Panel() }
+				Content = new Panel()
+			};
+			var dragPanel = new Drawable { BackgroundColor = Colors.Blue };
+			var restoreContent = new TableLayout(
+				new TableRow("This form should restore its size and position"),
+				new TableRow(
+					new TableLayout(
+						new TableRow(new Panel { Size = new Size(100, 100)}),
+						new TableRow(new Panel { Size = new Size(100, 100)}, dragPanel)
+					)
+				));
+			restoreForm.Content = restoreContent;
+
+			dragPanel.Paint += (_, e2) =>
+			{
+				var mousePt = dragPanel.PointFromScreen(Mouse.Position);
+				var mouseRect = new RectangleF(mousePt, SizeF.Empty);
+				mouseRect.Inflate(6, 6);
+				e2.Graphics.FillEllipse(Colors.Red, mouseRect);
+
+				if (_mousePositionInWindow != null)
+				{
+					var otherRect = new RectangleF(dragPanel.PointFromScreen(_mousePositionInWindow.Value), SizeF.Empty);
+					otherRect.Inflate(3, 3);
+					e2.Graphics.FillEllipse(Colors.Yellow, otherRect);
+				}
+			};
+			dragPanel.MouseDown += (_, e2) => e2.Handled = true;
+			dragPanel.MouseMove += (sender2, e2) =>
+			{
+				_mousePositionInWindow = dragPanel.PointToScreen(e2.Location);
+				dragPanel.Invalidate();
+				// adjacentForm.Location = Point.Round(_mousePositionInWindow.Value);
+				Invalidate();
 			};
 			
 			void SetAdjacentSize()
 			{
 				if (adjacentForm == null)
 					return;
-				adjacentForm.Location = Point.Round(restoreForm.Content.PointToScreen(restoreForm.Content.Bounds.TopRight));
+				adjacentForm.Location = Point.Round(restoreForm.Content.PointToScreen(restoreForm.Content.Bounds.BottomRight) - new Size(0, restoreForm.Content.Height));
 				adjacentForm.Size = new Size(100, restoreForm.Content.Height);
 			}
 
+			RestorePosition(restoreForm);
 			restoreForm.LocationChanged += (_, __) => { Invalidate(); SetAdjacentSize(); };
 			restoreForm.SizeChanged += (_, __) => { Invalidate(); SetAdjacentSize(); };
-			RestorePosition(restoreForm);
 			restoreForm.Closing += (_, __) => { SavePosition(restoreForm); adjacentForm.Close(); adjacentForm = null; };
 			restoreForm.Shown += (_, __) =>
 			{
@@ -194,10 +227,13 @@ namespace Eto.Test.Sections.Behaviors
 				adjacentForm?.Show();
 			};
 			restoreForm.Show();
+			// SetAdjacentSize();
 
 			cornerWindows.Add(restoreForm);
 
 			cornerWindows.Add(adjacentForm);
+
+			return;
 
 			int i = 0;
 			foreach (var screen in Screen.Screens)
@@ -344,11 +380,19 @@ namespace Eto.Test.Sections.Behaviors
 					}
 				}
 
-
 				var mousePosition = Mouse.Position * scale + offset;
 				var mouseRect = new RectangleF(mousePosition, SizeF.Empty);
-				mouseRect.Inflate(2, 2);
+				mouseRect.Inflate(3, 3);
 				pe.Graphics.FillEllipse(Colors.Red, mouseRect);
+				
+				if (_mousePositionInWindow != null)
+				{
+					var mousePositionInWindow = _mousePositionInWindow.Value * scale + offset;
+					var mouseInWindowRect = new RectangleF(mousePositionInWindow, SizeF.Empty);
+					mouseInWindowRect.Inflate(2, 2);
+					pe.Graphics.FillEllipse(Colors.Yellow, mouseInWindowRect);
+				}
+				
 			};
 			return screenLayoutDrawable;
 		}
