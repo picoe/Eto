@@ -125,19 +125,7 @@ namespace Eto.Wpf.Forms
 			main.Children.Add(toolBarHolder);
 			main.Children.Add(content);
 			Control.Content = main;
-			Control.Loaded += delegate
-			{
-				SetMinimumSize();
-				if (initialClientSize != null)
-				{
-					initialClientSize = null;
-					SetContentSize();
-				}
-				// stop form from auto-sizing after it is shown
-				SetSizeToContent();
-				if (Control.ShowActivated)
-					Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
-			};
+			Control.Loaded += Control_Loaded;
 			Control.PreviewKeyDown += (sender, e) =>
 			{
 				// need to call validate on the input bindings before trying to execute them
@@ -149,6 +137,31 @@ namespace Eto.Wpf.Forms
 			Control.SizeChanged += Control_SizeChanged;
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+		}
+
+		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			if (!Minimizable || !Maximizable)
+			{
+				SetResizeMode();
+			}
+
+			if (initialLocation != null)
+			{
+				SetLocation(initialLocation.Value);
+				initialLocation = null;
+			}
+
+			SetMinimumSize();
+			if (initialClientSize != null)
+			{
+				initialClientSize = null;
+				SetContentSize();
+			}
+			// stop form from auto-sizing after it is shown
+			SetSizeToContent();
+			if (Control.ShowActivated)
+				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 		}
 
 		private void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
@@ -566,8 +579,11 @@ namespace Eto.Wpf.Forms
 			else
 				Control.ResizeMode = sw.ResizeMode.NoResize;
 
-			SetStyle(Win32.WS.MAXIMIZEBOX, Maximizable);
-			SetStyle(Win32.WS.MINIMIZEBOX, Minimizable);
+			if (Control.IsLoaded)
+			{
+				SetStyle(Win32.WS.MAXIMIZEBOX, Maximizable);
+				SetStyle(Win32.WS.MINIMIZEBOX, Minimizable);
+			}
 		}
 
 		public virtual bool ShowInTaskbar
@@ -633,11 +649,10 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				var handle = NativeHandle;
-				if (handle != IntPtr.Zero && Control.IsLoaded)
+				if (Control.IsLoaded && NativeHandle != IntPtr.Zero)
 				{
 					// WPF doesn't always report the correct size when maximized
-					var rect = Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(handle, out var r) ? r : (Win32.RECT?)null);
+					var rect = Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(NativeHandle, out var r) ? r : (Win32.RECT?)null);
 					if (rect != null)
 					{
 						var scale = DpiScale;
@@ -731,16 +746,12 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 
-				if (NativeHandle == IntPtr.Zero)
+				if (!Control.IsLoaded)
 				{
 					// set location when the source is initialized and we have a Win32 handle to move about
 					// using Left/Top doesn't work (properly) in a per-monitor dpi environment.
 					initialLocation = value;
-					if (!LocationSet)
-					{
-						LocationSet = true;
-						Control.SourceInitialized += Control_SourceInitialized;
-					}
+					LocationSet = true;
 				}
 				else
 				{
@@ -750,18 +761,8 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		void Control_SourceInitialized(object sender, EventArgs e)
-		{
-			LocationSet = false;
-			SetLocation(initialLocation.Value);
-			initialLocation = null;
-			Control.SourceInitialized -= Control_SourceInitialized;
-		}
-
 		void SetLocation(PointF location)
 		{
-			var handle = NativeHandle;
-
 			var loc = location.LogicalToScreen();
 			Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(NativeHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE));
 		}
