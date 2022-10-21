@@ -178,6 +178,7 @@ namespace Eto.Mac.Forms
 		public static readonly object UseAlignmentFrame_Key = new object();
 		public static readonly object SuppressMouseEvents_Key = new object();
 		public static readonly object UseMouseTrackingLoop_Key = new object();
+		public static readonly object MouseTrackingRunLoopMode_Key = new object();
 		public static readonly IntPtr selSetDataProviderForTypes_Handle = Selector.GetHandle("setDataProvider:forTypes:");
 		public static readonly IntPtr selInitWithPasteboardWriter_Handle = Selector.GetHandle("initWithPasteboardWriter:");
 		public static readonly IntPtr selClass_Handle = Selector.GetHandle("class");
@@ -1348,6 +1349,12 @@ namespace Eto.Mac.Forms
 			set => Widget.Properties.Set<bool>(MacView.UseMouseTrackingLoop_Key, value, true);
 		}
 
+		public NSRunLoopMode MouseTrackingRunLoopMode
+		{
+			get => Widget.Properties.Get<NSRunLoopMode>(MacView.MouseTrackingRunLoopMode_Key, NSRunLoopMode.Default);
+			set => Widget.Properties.Set<NSRunLoopMode>(MacView.MouseTrackingRunLoopMode_Key, value, NSRunLoopMode.Default);
+		}
+
 		public void SetAlignmentFrameSize(CGSize size)
 		{
 			if (UseAlignmentFrame)
@@ -1475,7 +1482,7 @@ namespace Eto.Mac.Forms
 				// Console.WriteLine("Entered MouseTrackingLoop");
 				do
 				{
-					var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoopMode.EventTracking, true);
+					var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, MouseTrackingRunLoopMode, true);
 
 					var evtType = evt.Type;
 					switch (evt.Type)
