@@ -76,9 +76,9 @@ namespace Eto
 			{
 				notify.CollectionChanged -= CollectionChanged;
 			}
-			OnUnregisterCollection(EventArgs.Empty);
-			
 			Collection = null;
+			
+			OnUnregisterCollection(EventArgs.Empty);
 		}
 
 		/// <summary>
