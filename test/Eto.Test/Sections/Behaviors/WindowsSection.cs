@@ -107,6 +107,9 @@ namespace Eto.Test.Sections.Behaviors
 		MenuBar CreateMenuBar()
 		{
 			var menu = new MenuBar();
+			menu.Items.Add(new SubMenuItem { Text = "&File", Items = {
+				new ButtonMenuItem { Text = "Click Me" }
+			}});
 			if (systemMenuItems.SelectedValues.Any())
 				menu.IncludeSystemItems = GetMenuItems();
 			return menu;
