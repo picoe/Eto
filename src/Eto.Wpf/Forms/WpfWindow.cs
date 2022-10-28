@@ -141,6 +141,11 @@ namespace Eto.Wpf.Forms
 
 		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
+			if (WindowStyle == WindowStyle.None)
+			{
+				SetWindowChrome(true);
+			}
+			
 			if (!Minimizable || !Maximizable)
 			{
 				SetResizeMode();
@@ -861,7 +866,51 @@ namespace Eto.Wpf.Forms
 		public WindowStyle WindowStyle
 		{
 			get { return Control.WindowStyle.ToEto(); }
-			set { Control.WindowStyle = value.ToWpf(); }
+			set
+			{
+				if (WindowStyle != value)
+				{
+					Control.WindowStyle = value.ToWpf();
+					SetWindowChrome(value == WindowStyle.None);
+				}
+			}
+		}
+		
+		void SetWindowChrome(bool enabled)
+		{
+			if (!Control.IsLoaded)
+				return;
+			// Annoyingly, WPF gets an AritheticOverflow if the window style has WS_POPUP in it as it treats it as an int
+			// So, we remove that style then re-apply it after.
+			uint? oldStyle = null;
+			var style = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
+			if (style > (uint)Int32.MaxValue)
+			{
+				// style will overflow, so remove the last bit
+				oldStyle = style & (uint)(0x80000000);
+				Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style & 0x7FFFFFFF);
+			}
+			if (enabled)
+			{
+				var windowChrome = new sw.Shell.WindowChrome
+				{
+					CaptionHeight = 0,
+					ResizeBorderThickness = new sw.Thickness(4)
+				};
+				sw.Shell.WindowChrome.SetWindowChrome(Control, windowChrome);
+			}
+			else
+			{
+				Control.ClearValue(sw.Shell.WindowChrome.WindowChromeProperty);
+			}
+			
+			if (oldStyle != null)
+			{
+				// reapply the old style bit
+				style = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
+				style |= oldStyle.Value;
+				Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style);
+			}
 		}
 
 		public void BringToFront()
