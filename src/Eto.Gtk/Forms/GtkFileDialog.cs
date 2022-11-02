@@ -7,7 +7,7 @@ using System.Linq;
 namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
-		where TControl: Gtk.FileChooserDialog
+		where TControl: Gtk.FileChooserNative
 		where TWidget: FileDialog
 	{
 		public virtual string FileName
@@ -98,12 +98,10 @@ namespace Eto.GtkSharp.Forms
 		public virtual DialogResult ShowDialog(Window parent)
 		{
 			SetFilters();
-			if (parent != null) Control.TransientFor = (Gtk.Window)parent.ControlObject;
 
 			int result = Control.Run();
 
 			Control.Hide ();
-			Control.Unrealize();
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
 			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))

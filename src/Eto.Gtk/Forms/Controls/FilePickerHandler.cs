@@ -59,11 +59,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		private void Savebutton_Clicked(object sender, EventArgs e)
 		{
-			var savedialog = new Gtk.FileChooserDialog(string.Empty, null, Gtk.FileChooserAction.Save);
+			var savedialog = new Gtk.FileChooserNative(string.Empty, null, Gtk.FileChooserAction.Save, null, null);
 			savedialog.DoOverwriteConfirmation = true;
-			savedialog.AddButton(Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
-			savedialog.AddButton(Gtk.Stock.Save, Gtk.ResponseType.Ok);
-			savedialog.DefaultResponse = Gtk.ResponseType.Ok;
 
 			savedialog.Title = filebutton.Title;
 			foreach (var filter in filebutton.Filters)
@@ -72,7 +69,6 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			var result = savedialog.Run();
 			savedialog.Hide();
-			savedialog.Unrealize();
 
 			if (result == (int)Gtk.ResponseType.Ok)
 				saveentry.Text = savedialog.Filename;

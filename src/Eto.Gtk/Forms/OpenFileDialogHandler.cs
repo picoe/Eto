@@ -4,18 +4,14 @@ using System.IO;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class OpenFileDialogHandler : GtkFileDialog<Gtk.FileChooserDialog, OpenFileDialog>, OpenFileDialog.IHandler
+	public class OpenFileDialogHandler : GtkFileDialog<Gtk.FileChooserNative, OpenFileDialog>, OpenFileDialog.IHandler
 	{
 		string fileName;
-		
+
 		public OpenFileDialogHandler()
 		{
-			Control = new Gtk.FileChooserDialog(string.Empty, null, Gtk.FileChooserAction.Open);
+			Control = new Gtk.FileChooserNative(string.Empty, null, Gtk.FileChooserAction.Open, null, null);
 			Control.SetCurrentFolder(System.IO.Directory.GetCurrentDirectory());
-
-			Control.AddButton(Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
-			Control.AddButton(Gtk.Stock.Open, Gtk.ResponseType.Ok);
-			Control.DefaultResponse = Gtk.ResponseType.Ok;
 		}
 
 		public bool MultiSelect
