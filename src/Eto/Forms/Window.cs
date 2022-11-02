@@ -252,7 +252,8 @@ namespace Eto.Forms
 		/// Gets or sets the location of the window
 		/// </summary>
 		/// <remarks>
-		/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Eto.Forms.Screen.PrimaryScreen"/>
+		/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Eto.Forms.Screen.PrimaryScreen"/>. <br/>
+		/// Also note, that on Linux systems running GTK via Wayland, this will always point to <c>0, 0</c>, and setting it to different values will have no effect.
 		/// </remarks>
 		public new Point Location
 		{
@@ -717,7 +718,8 @@ namespace Eto.Forms
 			/// Gets or sets the location of the window
 			/// </summary>
 			/// <remarks>
-			/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Eto.Forms.Screen.PrimaryScreen"/>
+			/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Eto.Forms.Screen.PrimaryScreen"/> <br/>
+			/// Also note, that on Linux systems running GTK via Wayland, this will always point to <c>0, 0</c>, and setting it to different values will have no effect.
 			/// </remarks>
 			new Point Location { get; set; }
 
