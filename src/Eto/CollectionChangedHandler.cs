@@ -258,7 +258,7 @@ namespace Eto
 				AddRange(items);
 		}
 
-		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		private protected virtual void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
@@ -420,6 +420,12 @@ namespace Eto
 			if (Collection != null)
 				AddRange(Collection);
 			_lookup = null;
+		}
+
+		private protected override void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			_lookup = null;
+			base.CollectionChanged(sender, e);
 		}
 	}
 
