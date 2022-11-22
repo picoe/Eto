@@ -55,6 +55,7 @@ namespace Eto.Wpf.Forms
 		Size? initialClientSize;
 		PerMonitorDpiHelper dpiHelper;
 		Point? initialLocation;
+		bool isSourceInitialized;
 
 		protected virtual bool IsAttached => false;
 
@@ -125,6 +126,7 @@ namespace Eto.Wpf.Forms
 			main.Children.Add(toolBarHolder);
 			main.Children.Add(content);
 			Control.Content = main;
+			Control.SourceInitialized += Control_SourceInitialized;
 			Control.Loaded += Control_Loaded;
 			Control.PreviewKeyDown += (sender, e) =>
 			{
@@ -139,8 +141,10 @@ namespace Eto.Wpf.Forms
 			HandleEvent(Window.ClosingEvent);
 		}
 
-		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		private void Control_SourceInitialized(object sender, EventArgs e)
 		{
+			isSourceInitialized = true;
+			
 			if (WindowStyle == WindowStyle.None)
 			{
 				SetWindowChrome(true);
@@ -156,7 +160,12 @@ namespace Eto.Wpf.Forms
 				SetLocation(initialLocation.Value);
 				initialLocation = null;
 			}
+		}
 
+		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			// NOTE: If the window size is set, it will be made visible BEFORE this is called.
+			
 			SetMinimumSize();
 			if (initialClientSize != null)
 			{
@@ -332,11 +341,11 @@ namespace Eto.Wpf.Forms
 			if (IsAttached)
 				return;
 
+			Control.SizeToContent = sw.SizeToContent.Manual;
 			var xdiff = Control.ActualWidth - content.ActualWidth;
 			var ydiff = Control.ActualHeight - content.ActualHeight;
 			Control.Width = size.Width + xdiff;
 			Control.Height = size.Height + ydiff;
-			Control.SizeToContent = sw.SizeToContent.Manual;
 		}
 
 		protected override void SetSize()
@@ -584,7 +593,7 @@ namespace Eto.Wpf.Forms
 			else
 				Control.ResizeMode = sw.ResizeMode.NoResize;
 
-			if (Control.IsLoaded)
+			if (isSourceInitialized)
 			{
 				SetStyle(Win32.WS.MAXIMIZEBOX, Maximizable);
 				SetStyle(Win32.WS.MINIMIZEBOX, Minimizable);
@@ -751,7 +760,7 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 
-				if (!Control.IsLoaded)
+				if (!isSourceInitialized)
 				{
 					// set location when the source is initialized and we have a Win32 handle to move about
 					// using Left/Top doesn't work (properly) in a per-monitor dpi environment.
@@ -878,7 +887,7 @@ namespace Eto.Wpf.Forms
 		
 		void SetWindowChrome(bool enabled)
 		{
-			if (!Control.IsLoaded)
+			if (!isSourceInitialized)
 				return;
 			// Annoyingly, WPF gets an AritheticOverflow if the window style has WS_POPUP in it as it treats it as an int
 			// So, we remove that style then re-apply it after.
