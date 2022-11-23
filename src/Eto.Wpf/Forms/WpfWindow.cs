@@ -147,7 +147,7 @@ namespace Eto.Wpf.Forms
 			
 			if (WindowStyle == WindowStyle.None)
 			{
-				SetWindowChrome(true);
+				SetWindowChrome(Resizable);
 			}
 			
 			if (!Minimizable || !Maximizable)
@@ -503,6 +503,7 @@ namespace Eto.Wpf.Forms
 				if (Widget.Properties.TrySet(WpfWindow.Resizable_Key, value, true))
 				{
 					SetResizeMode();
+					SetWindowChrome(WindowStyle == WindowStyle.None && value);
 				}
 			}
 		}
@@ -880,7 +881,7 @@ namespace Eto.Wpf.Forms
 				if (WindowStyle != value)
 				{
 					Control.WindowStyle = value.ToWpf();
-					SetWindowChrome(value == WindowStyle.None);
+					SetWindowChrome(value == WindowStyle.None && Resizable);
 				}
 			}
 		}
