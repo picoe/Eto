@@ -112,7 +112,6 @@ jobs:
         path: |
           artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.XamMac2*.nupkg
           artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.macOS*.nupkg
-          artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.Gtk2*.nupkg
 
     - name: Upload test artifacts
       uses: actions/upload-artifact@v2
