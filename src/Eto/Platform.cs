@@ -409,12 +409,6 @@ namespace Eto
 				if (detected == null && EtoEnvironment.Platform.IsUnix)
 				{
 					detected = Get(Platforms.Gtk, true, errors);
-#pragma warning disable CS0618
-					if (detected == null)
-						detected = Get(Platforms.Gtk3, true, errors);
-					if (detected == null)
-						detected = Get(Platforms.Gtk2, true, errors);
-#pragma warning restore CS0618
 				}
 
 				if (detected == null)
