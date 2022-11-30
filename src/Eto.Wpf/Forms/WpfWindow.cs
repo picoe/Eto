@@ -38,6 +38,7 @@ namespace Eto.Wpf.Forms
 		internal static readonly object Maximizable_Key = new object();
 		internal static readonly object Closeable_Key = new object();
 		internal static readonly object Resizable_Key = new object();
+		internal static readonly object Icon_Key = new object();
 	}
 
 	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
@@ -45,7 +46,6 @@ namespace Eto.Wpf.Forms
 		where TWidget : Window
 		where TCallback : Window.ICallback
 	{
-		Icon icon;
 		MenuBar menu;
 		Eto.Forms.ToolBar toolBar;
 		swc.DockPanel main;
@@ -484,13 +484,18 @@ namespace Eto.Wpf.Forms
 
 		public Icon Icon
 		{
-			get { return icon ?? (icon = Control.Icon.ToEtoIcon()); }
+			get => Widget.Properties.Get<Icon>(WpfWindow.Icon_Key, () => {
+				var icon = Control.Icon.ToEtoIcon();
+				Widget.Properties.Set(WpfWindow.Icon_Key, icon);
+				return icon;
+			});
 			set
 			{
-				icon = value;
-				if (value != null)
+				if (Widget.Properties.TrySet<Icon>(WpfWindow.Icon_Key, value))
 				{
-					Control.Icon = (swm.ImageSource)icon.ControlObject;
+					var style = SaveWindowStyle();
+					Control.Icon = (swm.ImageSource)value?.ControlObject;
+					RestoreWindowStyle(style);
 				}
 			}
 		}
@@ -697,7 +702,12 @@ namespace Eto.Wpf.Forms
 		public string Title
 		{
 			get { return Control.Title; }
-			set { Control.Title = value ?? string.Empty; }
+			set
+			{
+				var style = SaveWindowStyle();
+				Control.Title = value ?? string.Empty;
+				RestoreWindowStyle(style);
+			}
 		}
 
 		protected bool LocationSet
@@ -886,10 +896,11 @@ namespace Eto.Wpf.Forms
 			}
 		}
 		
-		void SetWindowChrome(bool enabled)
+		uint? SaveWindowStyle()
 		{
 			if (!isSourceInitialized)
-				return;
+				return null;
+				
 			// Annoyingly, WPF gets an AritheticOverflow if the window style has WS_POPUP in it as it treats it as an int
 			// So, we remove that style then re-apply it after.
 			uint? oldStyle = null;
@@ -900,6 +911,26 @@ namespace Eto.Wpf.Forms
 				oldStyle = style & (uint)(0x80000000);
 				Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style & 0x7FFFFFFF);
 			}
+			return oldStyle;
+		}
+		
+		void RestoreWindowStyle(uint? oldStyle)
+		{
+			if (oldStyle == null)
+				return;
+				
+			// reapply the old style bit
+			var style = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
+			style |= oldStyle.Value;
+			Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style);
+		}
+		
+		void SetWindowChrome(bool enabled)
+		{
+			if (!isSourceInitialized)
+				return;
+			var oldStyle = SaveWindowStyle();
+
 			if (enabled)
 			{
 				var windowChrome = new sw.Shell.WindowChrome
@@ -913,14 +944,7 @@ namespace Eto.Wpf.Forms
 			{
 				Control.ClearValue(sw.Shell.WindowChrome.WindowChromeProperty);
 			}
-			
-			if (oldStyle != null)
-			{
-				// reapply the old style bit
-				style = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
-				style |= oldStyle.Value;
-				Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style);
-			}
+			RestoreWindowStyle(oldStyle);
 		}
 
 		public void BringToFront()
