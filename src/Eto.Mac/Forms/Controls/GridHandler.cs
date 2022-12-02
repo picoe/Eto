@@ -352,6 +352,33 @@ namespace Eto.Mac.Forms.Controls
 
 		NSRange autoSizeRange;
 
+		static Lazy<bool> supportsTableStyle = new Lazy<bool>(() => ObjCExtensions.InstancesRespondToSelector<NSTableView>(Selector.GetHandle("effectiveStyle")));
+		
+		nfloat GetTableRowInsets()
+		{
+			// oh I love magic numbers, but there doesn't seem to be any APIs that will return these..
+			// https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-12
+			if (supportsTableStyle.Value)
+			{
+				switch (Control.EffectiveStyle)
+				{
+					case NSTableViewStyle.Inset:
+						return 32; 
+					case NSTableViewStyle.FullWidth:
+						return 12;
+					case NSTableViewStyle.SourceList:
+						return 32;
+					case NSTableViewStyle.Plain:
+					default:
+						return Control.IntercellSpacing.Width;
+				}
+			}
+			else
+			{
+				return Control.IntercellSpacing.Width;
+			}
+		}
+
 		public bool AutoSizeColumns(bool force, bool forceNewSize = false)
 		{
 			if (Widget.Loaded)
@@ -363,37 +390,44 @@ namespace Eto.Mac.Forms.Controls
 					|| (autoSizeRange.Location != newRange.Value.Location || autoSizeRange.Length != newRange.Value.Length))
 				{
 					IsAutoSizingColumns = true;
+					
 					int expandCount = 0;
 					nfloat requiredWidth = 0;
 					nfloat expandedWidth = 0;
+					
+					// remove all spacing that isn't part of column widths
 					var intercellSpacingWidth = Table.IntercellSpacing.Width;
+					rect.Width -= intercellSpacingWidth * (Table.ColumnCount - 1);
+					rect.Width -= GetTableRowInsets();
+
 					foreach (var col in ColumnHandlers)
 					{
 						col.AutoSizeColumn(newRange, forceNewSize);
 						if (col.Expand)
 						{
 							expandCount++;
-							expandedWidth += col.Control.Width + intercellSpacingWidth;
+							expandedWidth += col.Control.Width;
 						}
 						else
 						{
-							requiredWidth += col.Control.Width + intercellSpacingWidth;
+							requiredWidth += col.Control.Width;
 						}
 					}
 					if (expandCount > 0 && !forceNewSize)
 					{
-						var remaining = (nfloat)Math.Max(0, rect.Width - requiredWidth + (int)Math.Round(intercellSpacingWidth / 3) - 1);
+						var remaining = (nfloat)Math.Max(0, rect.Width - requiredWidth);
 						// System.Diagnostics.Debug.WriteLine($"Remaining: {remaining}, Required: {requiredWidth}, Width: {rect.Width}");
 						if (remaining > 0)
 						{
-							var each = (nfloat)Math.Max(0, (remaining / expandCount) - intercellSpacingWidth);
+							var each = remaining / expandCount;
+							
 							foreach (var col in ColumnHandlers)
 							{
 								if (col.Expand)
 								{
-									var existingWidth = col.Control.Width + intercellSpacingWidth;
+									var existingWidth = col.Control.Width;
 									var weightedWidth = existingWidth / expandedWidth * remaining;
-									col.Control.Width = (nfloat)Math.Max(0, weightedWidth - intercellSpacingWidth);
+									col.Control.Width = weightedWidth;
 								}
 							}
 						}

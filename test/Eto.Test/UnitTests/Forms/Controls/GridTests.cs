@@ -11,6 +11,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		class GridTestItem : TreeGridItem
 		{
 			public string Text { get; set; }
+			
+			public Image Image { get; set; }
 
 			public override string ToString() => Text ?? base.ToString();
 		}
@@ -137,7 +139,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			var list = new TreeGridItemCollection();
 			for (int i = 0; i < rows; i++)
 			{
-				list.Add(new GridTestItem { Text = $"Item {i}", Values = new[] { $"col {i}.2", $"col {i}.3", $"col {i}.4" } });
+				Image image = i % 2 == 0 ? (Image)TestIcons.Logo : (Image)TestIcons.TestImage;
+				list.Add(new GridTestItem { Text = $"Item {i}", Image = image, Values = new[] { $"col {i}.2", $"col {i}.3", $"col {i}.4", $"col {i}.5" } });
 			}
 			return list;
 		}
@@ -154,11 +157,16 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			ManualForm("First Column should be expanded, and change size with the Grid", form =>
 			{
 				var grid = new T();
+				// grid.RowHeight = 48;
+				// grid.ShowHeader = false;
 				SetDataStore(grid, CreateDataStore());
 
+				// grid.Columns.Add(new GridColumn { DataCell = new ImageTextCell { TextBinding = Binding.Property((GridTestItem m) => m.Text), ImageBinding = Binding.Property((GridTestItem m) => m.Image) } });
 				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) } });
 				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0) });
 				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(1) });
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(2) });
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(3) });
 
 				var expandColumn = grid.Columns[columnToExpand];
 				expandColumn.HeaderText = "Expanded";

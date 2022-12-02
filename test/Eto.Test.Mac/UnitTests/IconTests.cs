@@ -5,14 +5,6 @@ using Eto.Test.UnitTests;
 using NUnit.Framework;
 using Eto.Mac;
 
-#if MONOMAC
-using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
-#else
-using AppKit;
-using CoreGraphics;
-#endif
-
 namespace Eto.Test.Mac64.UnitTests
 {
 	[TestFixture]
