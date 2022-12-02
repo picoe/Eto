@@ -8,13 +8,6 @@ using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Eto.Mac;
 
-#if MONOMAC
-using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
-#else
-using AppKit;
-using CoreGraphics;
-#endif
 namespace Eto.Test.Mac.UnitTests
 {
 	[TestFixture]

@@ -233,8 +233,6 @@ namespace Eto.Test.Sections.Behaviors
 
 			cornerWindows.Add(adjacentForm);
 
-			return;
-
 			int i = 0;
 			foreach (var screen in Screen.Screens)
 			{

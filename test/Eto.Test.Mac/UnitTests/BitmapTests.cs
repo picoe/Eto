@@ -3,14 +3,6 @@ using Eto.Forms;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
 
-#if MONOMAC
-using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
-#else
-using AppKit;
-using CoreGraphics;
-#endif
-
 namespace Eto.Test.Mac.UnitTests
 {
 	[TestFixture]
