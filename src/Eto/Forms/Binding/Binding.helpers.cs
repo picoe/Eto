@@ -240,7 +240,10 @@ namespace Eto.Forms
 		{
 			var helper = eh.Target as PropertyNotifyHelper;
 			if (helper != null)
+			{
+				helper.Changed -= eh;
 				helper.Unregister(obj);
+			}
 		}
 
 		/// <summary>
