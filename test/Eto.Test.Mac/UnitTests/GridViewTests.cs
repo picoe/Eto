@@ -27,9 +27,11 @@ namespace Eto.Test.Mac.UnitTests
 		public IEnumerable<object> CreateDataStore(int rows = 40)
 		{
 			var list = new TreeGridItemCollection();
+			Image logo = TestIcons.Logo;
+			Image testImage = TestIcons.TestImage;
 			for (int i = 0; i < rows; i++)
 			{
-				Image image = i % 2 == 0 ? (Image)TestIcons.Logo : (Image)TestIcons.TestImage;
+				Image image = i % 2 == 0 ? logo : testImage;
 				list.Add(new GridTestItem { Text = $"Item {i}", Image = image, Values = new[] { $"col {i}.2", $"col {i}.3", $"col {i}.4", $"col {i}.5" } });
 			}
 			return list;

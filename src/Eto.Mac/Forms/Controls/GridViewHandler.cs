@@ -100,11 +100,8 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Layout()
 			{
-				if (MacView.NewLayout)
-					base.Layout();
 				Handler?.PerformLayout();
-				if (!MacView.NewLayout)
-					base.Layout();
+				base.Layout();
 			}
 			
 			public override bool ValidateProposedFirstResponder(NSResponder responder, NSEvent forEvent)
