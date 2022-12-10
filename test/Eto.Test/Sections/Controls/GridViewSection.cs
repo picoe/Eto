@@ -467,7 +467,7 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(grid);
 
 			var dropDown = MyDropDown("DropDownKey");
-			grid.Columns.Add(SetColumnState(0, new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text") }));
+			grid.Columns.Add(SetColumnState(0, new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text"), Expand = true }));
 			grid.Columns.Add(SetColumnState(1, new GridColumn { DataCell = new CheckBoxCell("Check"), AutoSize = true, Resizable = false }));
 			grid.Columns.Add(SetColumnState(2, new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image"), Resizable = false, HeaderToolTip = null }));
 			grid.Columns.Add(SetColumnState(3, new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true, HeaderToolTip = "Some Tooltip", CellToolTipBinding = Binding.Property((MyGridItem i) => i.ToolTip) }));

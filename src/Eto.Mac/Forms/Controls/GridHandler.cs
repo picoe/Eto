@@ -331,19 +331,13 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+			ResetAutoSizedColumns();
 			UpdateColumns();
 		}
 
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-
-			if (Widget.Columns.Any(r => r.Expand))
-			{
-				// expanded columns need readjustment after initial size
-				AutoSizeColumns(true, false);
-				Control.SizeToFit();
-			}
 
 			var row = Widget.Properties.Get<int>(GridHandler.ScrolledToRow_Key, 0);
 			// Yosemite bug: hides first row when DataStore is set before control is visible, so we always call this
@@ -379,66 +373,92 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		int lastAutoSizeWidth;
+
 		public bool AutoSizeColumns(bool force, bool forceNewSize = false)
 		{
-			if (Widget.Loaded)
-			{
-				var rect = Table.VisibleRect();
-				var newRange = rect.IsEmpty ? null : (NSRange?)Table.RowsInRect(rect);
-				if (force 
-					|| newRange == null 
-					|| (autoSizeRange.Location != newRange.Value.Location || autoSizeRange.Length != newRange.Value.Length))
-				{
-					IsAutoSizingColumns = true;
-					
-					int expandCount = 0;
-					nfloat requiredWidth = 0;
-					nfloat expandedWidth = 0;
-					
-					// remove all spacing that isn't part of column widths
-					var intercellSpacingWidth = Table.IntercellSpacing.Width;
-					rect.Width -= intercellSpacingWidth * (Table.ColumnCount - 1);
-					rect.Width -= GetTableRowInsets();
+			if (!Widget.Loaded)
+				return false;
+				
+			var rect = Table.VisibleRect();
+			if (rect.Width <= 0)
+				return false;
 
-					foreach (var col in ColumnHandlers)
+			bool resizeExpanded = forceNewSize;
+			bool changed = false;
+			var newRange = rect.IsEmpty ? null : (NSRange?)Table.RowsInRect(rect);
+
+			if (lastAutoSizeWidth != (int)rect.Width)
+			{
+				resizeExpanded = true;
+				lastAutoSizeWidth = (int)rect.Width;
+			}
+			
+			if (force 
+				|| newRange == null 
+				|| (autoSizeRange.Location != newRange.Value.Location || autoSizeRange.Length != newRange.Value.Length))
+			{
+				IsAutoSizingColumns = true;
+				
+				int expandCount = 0;
+				nfloat requiredWidth = 0;
+				nfloat expandedWidth = 0;
+				
+				// remove all spacing that isn't part of column widths
+				var intercellSpacingWidth = Table.IntercellSpacing.Width;
+				rect.Width -= intercellSpacingWidth * (Table.ColumnCount - 1);
+				rect.Width -= GetTableRowInsets();
+
+				foreach (var col in ColumnHandlers)
+				{
+					changed |= col.AutoSizeColumn(newRange, forceNewSize && !col.Expand);
+
+					if (col.Expand)
 					{
-						col.AutoSizeColumn(newRange, forceNewSize);
-						if (col.Expand)
-						{
-							expandCount++;
-							expandedWidth += col.Control.Width;
-						}
-						else
-						{
-							requiredWidth += col.Control.Width;
-						}
+						expandCount++;
+						expandedWidth += col.Control.Width;
 					}
-					if (expandCount > 0 && !forceNewSize)
+					else
 					{
-						var remaining = (nfloat)Math.Max(0, rect.Width - requiredWidth);
-						// System.Diagnostics.Debug.WriteLine($"Remaining: {remaining}, Required: {requiredWidth}, Width: {rect.Width}");
-						if (remaining > 0)
+						requiredWidth += col.Control.Width;
+					}
+				}
+				
+				resizeExpanded |= changed;
+				
+				if (expandCount > 0 && resizeExpanded)
+				{
+					var remaining = (nfloat)Math.Max(0, rect.Width - requiredWidth);
+					// System.Diagnostics.Debug.WriteLine($"Remaining: {remaining}, Required: {requiredWidth}, Width: {rect.Width}");
+					if (remaining > 0)
+					{
+						var each = remaining / expandCount;
+						
+						foreach (var col in ColumnHandlers)
 						{
-							var each = remaining / expandCount;
-							
-							foreach (var col in ColumnHandlers)
+							if (col.Expand)
 							{
-								if (col.Expand)
-								{
-									var existingWidth = col.Control.Width;
-									var weightedWidth = existingWidth / expandedWidth * remaining;
-									col.Control.Width = weightedWidth;
-								}
+								var existingWidth = col.Control.Width;
+								var weightedWidth = expandedWidth > 0 ? existingWidth / expandedWidth * remaining : each;
+
+								changed |= existingWidth != weightedWidth;
+
+								col.Control.Width = weightedWidth;
 							}
 						}
 					}
-
-					if (newRange != null)
-						autoSizeRange = newRange.Value;
-					IsAutoSizingColumns = false;
-					InvalidateMeasure();
-					return true;
 				}
+
+				if (newRange != null)
+					autoSizeRange = newRange.Value;
+					
+				IsAutoSizingColumns = false;
+				
+				if (forceNewSize && changed)
+				{
+					InvalidateMeasure();
+				}
+				return true;
 			}
 			return false;
 		}
@@ -723,11 +743,8 @@ namespace Eto.Mac.Forms.Controls
 
 		void EnsureAutoSizedColumns()
 		{
-			if (hasAutoSizedColumns != true && !Table.VisibleRect().IsEmpty)
-			{
-				AutoSizeColumns(true, hasAutoSizedColumns == null);
-				hasAutoSizedColumns = true;
-			}
+			AutoSizeColumns(true, hasAutoSizedColumns == null);
+			hasAutoSizedColumns = true;
 		}
 
 		public void PerformLayout()
