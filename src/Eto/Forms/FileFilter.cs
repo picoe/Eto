@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 
 namespace Eto.Forms
@@ -73,7 +73,7 @@ namespace Eto.Forms
 		{
 			var parts = filter.Split('|');
 			if (parts.Length != 2)
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Filter must be in the form of '<name>|<ext>;<ext>;<ext>;"), nameof(filter));
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Filter must be in the form of '<name>|<ext>;<ext>;<ext>;'"), nameof(filter));
 
 			return new FileFilter
 			{
