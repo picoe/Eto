@@ -467,6 +467,9 @@ namespace Eto.Forms
 		/// <inheritdoc />
 		public void Print() => Control.Print();
 
+		/// <inheritdoc />
+		public void UpdateLayout() => Control.UpdateLayout();
+
 		#endregion
 
 	}

@@ -630,5 +630,7 @@ namespace Eto.WinForms.Forms
 		}
 
 		public void Print() => throw new NotImplementedException();
+
+		public void UpdateLayout() => throw new NotImplementedException();
 	}
 }

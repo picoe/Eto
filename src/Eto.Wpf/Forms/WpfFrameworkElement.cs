@@ -1155,5 +1155,14 @@ namespace Eto.Wpf.Forms
 			actionList.Add(action);
 			return true;
 		}
+
+		public void UpdateLayout()
+		{
+			// allow WPF controls to actually get their Loaded event fired.
+			ContainerControl.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ApplicationIdle, null);
+
+			// update the layout
+			ContainerControl.UpdateLayout();
+		}
 	}
 }

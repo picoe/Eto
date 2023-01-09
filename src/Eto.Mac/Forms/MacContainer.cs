@@ -36,6 +36,8 @@ namespace Eto.Mac.Forms
 		public virtual void Update()
 		{
 			InvalidateMeasure();
+			// ContainerControl.Superview?.LayoutSubtreeIfNeeded();
+			ContainerControl.Window?.LayoutIfNeeded();
 		}
 
 		protected override bool ControlEnabled
