@@ -70,14 +70,15 @@ namespace Eto.Mac.Forms
 					Control.MakeKeyWindow();
 				else
 					Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
+
+				// setting the owner shows the window, so we have to do this after making the window key
+				EnsureOwner();
 			}
-			else
+			else if (!EnsureOwner())
 			{
+				// only order front when there is no owner as it'll bring the owner above any existing non-child windows
 				Control.OrderFront(ApplicationHandler.Instance.AppDelegate);
 			}
-			
-			// setting the owner shows the window, so we have to do this here.
-			EnsureOwner();
 
 			if (!visible)
 			{

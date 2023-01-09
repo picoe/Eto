@@ -1247,10 +1247,13 @@ namespace Eto.Mac.Forms
 			set => Widget.Properties.Set(MacWindow.SetAsChildWindow_Key, value, DefaultSetAsChildWindow);
 		}
 
-		protected void EnsureOwner() => SetOwner(Widget.Owner);
+		protected bool EnsureOwner() => InternalSetOwner(Widget.Owner);
 
-		public virtual void SetOwner(Window owner)
+		public virtual void SetOwner(Window owner) => InternalSetOwner(owner);
+
+		bool InternalSetOwner(Window owner)
 		{
+			bool result = false;
 			if (SetAsChildWindow && Widget.Loaded)
 			{
 				if (owner != null)
@@ -1260,6 +1263,7 @@ namespace Eto.Mac.Forms
 					{
 						macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
 						OnSetAsChildWindow();
+						result = true;
 					}
 					Widget.GotFocus += HandleGotFocusAsChild;
 				}
@@ -1271,6 +1275,7 @@ namespace Eto.Mac.Forms
 						parentWindow.RemoveChildWindow(Control);
 				}
 			}
+			return result;
 		}
 
 		void HandleGotFocusAsChild(object sender, EventArgs e)
