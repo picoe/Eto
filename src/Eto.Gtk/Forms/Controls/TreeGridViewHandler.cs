@@ -442,11 +442,12 @@ namespace Eto.GtkSharp.Forms.Controls
 		
 		{
 			Control.Selection.UnselectAll();
-			if (value != null && collection != null)
+			var dataStore = DataStore;
+			if (value != null && dataStore != null)
 			{
 				int start = -1;
 				int end = -1;
-				var count = DataStore.GetExpandedRowCount();
+				var count = dataStore.GetExpandedRowCount();
 
 				foreach (var row in value.Where(r => r < count).OrderBy(r => r))
 				{
