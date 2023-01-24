@@ -1039,5 +1039,7 @@ namespace Eto.WinForms.Forms
 		{
 
 		}
+
+		public void UpdateLayout() => ContainerControl.PerformLayout();
 	}
 }

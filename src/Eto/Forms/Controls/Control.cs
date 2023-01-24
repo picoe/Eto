@@ -818,6 +818,19 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Updates the layout of this control if necessary.
+		/// </summary>
+		/// <remarks>
+		/// This will ensure the control has had all of its layout applied so you can use its position and size right after this call.
+		/// Most platforms (except WinForms) use a deferred layout system so that after adding your control to the form dynamically it won't
+		/// get laid out until the next idle loop.
+		/// This is useful when you need to know the dimensions of the control immediately.
+		/// Note that this can be an expensive operation, so it is recommended to only call this method when necessary and after all of the
+		/// controls have been added/updated.
+		/// </remarks>
+		public void UpdateLayout() => Handler.UpdateLayout();
+
+		/// <summary>
 		/// Gets or sets the size of the control. Use -1 to specify auto sizing for either the width and/or height.
 		/// </summary>
 		/// <remarks>
@@ -2007,6 +2020,17 @@ namespace Eto.Forms
 			/// <param name="availableSize">The available size to determine the preferred size</param>
 			/// <returns>The preferred size this control would like to be, which can be larger than the specified <paramref name="availableSize" />.</returns>
 			SizeF GetPreferredSize(SizeF availableSize);
+			
+			/// <summary>
+			/// Updates the layout of this control if necessary.
+			/// </summary>
+			/// <remarks>
+			/// This will ensure the control has had all of its layout applied so you can use its position and size right after this call.
+			/// Most platforms (except WinForms) use a deferred layout system so that after adding your control to the form dynamically it won't
+			/// get laid out until the next idle loop.
+			/// This is useful when you need to know the dimensions of the control immediately.
+			/// </remarks>
+			void UpdateLayout();
 		}
 		#endregion
 	}

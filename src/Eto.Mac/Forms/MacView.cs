@@ -1533,6 +1533,11 @@ namespace Eto.Mac.Forms
 			get => Widget.Properties.Get<bool>(MacView.TextInputImplemented_Key);
 			private set => Widget.Properties.Set(MacView.TextInputImplemented_Key, value);
 		}
+		
+		public virtual void UpdateLayout()
+		{
+			ContainerControl?.Window?.LayoutIfNeeded();
+		}
 	}
 }
 

@@ -939,7 +939,13 @@ namespace Eto.GtkSharp.Forms
 
 		public Point Location
 		{
-			get { return Control.Allocation.Location.ToEto(); }
+			get
+			{
+				var pt = Control.Allocation.Location.ToEto();
+				if (pt.X == -1 && pt.Y == -1)
+					return Point.Empty;
+				return pt;
+			}
 		}
 
 		public virtual bool ShowBorder
@@ -1083,6 +1089,12 @@ namespace Eto.GtkSharp.Forms
 		public void Print()
 		{
 			// ContainerControl.Print
+		}
+		
+		public virtual void UpdateLayout()
+		{
+			// is this the best way to force a layout pass?  I can't find anything else..
+			ContainerControl.Toplevel?.SizeAllocate(ContainerControl.Toplevel.Allocation);
 		}
 	}
 }
