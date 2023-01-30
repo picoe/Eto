@@ -1394,6 +1394,12 @@ namespace Eto.Forms
 				OnApplyCascadingStyles();
 		}
 
+
+		/// <summary>
+		/// Triggers the StyleChanged event and re-applies the styles to this control and its children.
+		/// </summary>
+		public void TriggerStyleChanged() => OnStyleChanged(EventArgs.Empty);
+
 		/// <summary>
 		/// Called when cascading styles should be applied to this control.
 		/// </summary>
