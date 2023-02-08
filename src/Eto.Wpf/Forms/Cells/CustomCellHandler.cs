@@ -131,6 +131,9 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var ctl = sender as sw.FrameworkElement;
 				var cell = ctl?.GetVisualParent<swc.DataGridCell>();
+				if (cell == null)
+					return;
+
 				if (!cell.IsKeyboardFocusWithin && !cell.Column.IsReadOnly)
 				{
 					cell.IsEditing = true;
