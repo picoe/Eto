@@ -195,7 +195,6 @@ namespace Eto.WinForms.Forms.Controls
 				switch (Wrap)
 				{
 					case WrapMode.None:
-						textFormat |= swf.TextFormatFlags.SingleLine;
 						break;
 					case WrapMode.Word:
 						textFormat |= swf.TextFormatFlags.WordBreak;

@@ -7,17 +7,37 @@ using System.Linq;
 namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
+#if GTKCORE
+		where TControl: Gtk.FileChooserNative
+#else
 		where TControl: Gtk.FileChooserDialog
+#endif
 		where TWidget: FileDialog
 	{
-		public string FileName
+		public virtual string FileName
 		{
-			get { return Control.Filename; }
+#if GTKCORE
+			get => Control.Filename ?? Control.CurrentName;
+#else
+			get => Control.Filename;
+#endif
 			set
 			{
-				Control.SetCurrentFolder(Path.GetDirectoryName(value));
-				Control.SetFilename(value);
-				Control.CurrentName = Path.GetFileName(value);
+				if (string.IsNullOrEmpty(value))
+				{
+					Control.UnselectAll();
+					if (!string.IsNullOrEmpty(Control.Filename))
+						Control.UnselectFilename(Control.Filename);
+				}
+				else
+				{
+					var dir = Path.GetDirectoryName(value);
+					if (!string.IsNullOrEmpty(dir))
+						Control.SetCurrentFolder(dir);
+					if (File.Exists(value))
+						Control.SetFilename(value);
+				}
+				Control.CurrentName = Path.GetFileName(value) ?? string.Empty;
 			}
 		}
 		
@@ -79,15 +99,19 @@ namespace Eto.GtkSharp.Forms
 		}
 
 
-		public DialogResult ShowDialog(Window parent)
+		public virtual DialogResult ShowDialog(Window parent)
 		{
 			SetFilters();
+#if !GTKCORE
 			if (parent != null) Control.TransientFor = (Gtk.Window)parent.ControlObject;
+#endif
 
 			int result = Control.Run();
 
-			Control.Hide ();
+			Control.Hide();
+#if !GTKCORE
 			Control.Unrealize();
+#endif
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
 			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))

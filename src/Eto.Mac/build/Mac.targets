@@ -251,6 +251,9 @@
     </UpdatePList>
 
     <!-- Copy default icon if it doesn't exist -->
+    <Warning
+      Text="The icon file ($(IconFile)) does not exist in the output directory. Make sure the file exists and specify &lt;Content Include=&quot;$(IconFile)&quot; /&gt; in your project file."
+      Condition="!Exists('$(OutputResourcesPath)$(IconFile)')" />
     <Copy SourceFiles="$(ReferenceFiles)Icon.icns" DestinationFiles="$(OutputResourcesPath)$(IconFile)" Condition="!Exists('$(OutputResourcesPath)$(IconFile)')" />
 
     <!-- Set executable bit on launcher if on *nix -->

@@ -152,21 +152,18 @@ namespace Eto.GtkSharp.Forms.Controls
 				case WrapMode.None:
 					Control.Wrap = false;
 					Control.LineWrap = false;
-					Control.SingleLineMode = true;
 					break;
 				case WrapMode.Word:
 					Control.Wrap = true;
 					Control.Layout.Wrap = Pango.WrapMode.WordChar;
 					Control.LineWrapMode = Pango.WrapMode.WordChar;
 					Control.LineWrap = true;
-					Control.SingleLineMode = false;
 					break;
 				case WrapMode.Character:
 					Control.Wrap = true;
 					Control.Layout.Wrap = Pango.WrapMode.Char;
 					Control.LineWrapMode = Pango.WrapMode.Char;
 					Control.LineWrap = true;
-					Control.SingleLineMode = false;
 					break;
 				default:
 					throw new NotSupportedException();

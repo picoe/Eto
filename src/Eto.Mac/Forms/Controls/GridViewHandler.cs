@@ -95,13 +95,13 @@ namespace Eto.Mac.Forms.Controls
 				return Handler?.DragInfo?.AllowedOperation ?? NSDragOperation.None;
 			}
 
+			[Export("ignoreModifierKeysForDraggingSession:")]
+			public bool IgnoreModifierKeysForDraggingSession(NSDraggingSession session) => true;
+
 			public override void Layout()
 			{
-				if (MacView.NewLayout)
-					base.Layout();
 				Handler?.PerformLayout();
-				if (!MacView.NewLayout)
-					base.Layout();
+				base.Layout();
 			}
 			
 			public override bool ValidateProposedFirstResponder(NSResponder responder, NSEvent forEvent)
@@ -161,32 +161,44 @@ namespace Eto.Mac.Forms.Controls
 		{
 			WeakReference handler;
 			
-			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
+			public GridViewHandler Handler { get => (GridViewHandler)handler?.Target; set => handler = new WeakReference(value); }
 
-			public override nint GetRowCount(NSTableView tableView)
-			{
-				return (Handler.collection != null && Handler.collection.Collection != null) ? Handler.collection.Count : 0;
-			}
+			public override nint GetRowCount(NSTableView tableView) => Handler?.collection?.Count ?? 0;
 
 			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
-				var item = Handler.collection.ElementAt((int)row);
-				var colHandler = Handler.GetColumn(tableColumn);
-				return colHandler == null ? null : colHandler.GetObjectValue(item);
+				var h = Handler;
+				if (h == null)
+					return null;
+					
+				if (row >= h.collection.Count)
+				{
+					// re-jig as we're off somehow.. usually because of some programming error, but let's be nice and not actually crash.
+					tableView.ReloadData();
+					return null;
+				}
+				var colHandler = h.GetColumn(tableColumn);
+				var item = h.collection.ElementAt((int)row);
+				return colHandler?.GetObjectValue(item);
 			}
 
 			public override void SetObjectValue(NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, nint row)
 			{
-				if (row >= Handler.collection.Count)
+				var h = Handler;
+				if (h == null)
 					return;
-				var item = Handler.collection.ElementAt((int)row);
-				var colHandler = Handler.GetColumn(tableColumn);
-				if (colHandler != null && Handler.SuppressUpdate == 0)
+
+				if (row >= h.collection.Count)
+					return;
+					
+				var item = h.collection.ElementAt((int)row);
+				var colHandler = h.GetColumn(tableColumn);
+				if (colHandler != null && h.SuppressUpdate == 0)
 				{
 					colHandler.SetObjectValue(item, theObject);
 
-					Handler.SetIsEditing(false);
-					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item));
+					h.SetIsEditing(false);
+					h.Callback.OnCellEdited(h.Widget, new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item));
 				}
 			}
 
@@ -271,6 +283,12 @@ namespace Eto.Mac.Forms.Controls
 					h.CustomSelectedRows = null;
 					h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
 				}
+
+				var allowedOperation = h.DragInfo?.AllowedOperation ?? NSDragOperation.None;
+				var data = h.DragInfo?.Data;
+				var args = new DragEventArgs(h.Widget, data, allowedOperation.ToEto(), endedAtScreenPoint.ToEto(h.ContainerControl), Keyboard.Modifiers, Mouse.Buttons);
+				args.Effects = operation.ToEto();
+				h.Callback.OnDragEnd(h.Widget, args);
 			}
 
 			public override bool WriteRows(NSTableView tableView, NSIndexSet rowIndexes, NSPasteboard pboard)
@@ -581,13 +599,19 @@ namespace Eto.Mac.Forms.Controls
 
 		public IEnumerable<object> DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get => collection?.Collection;
 			set
 			{
 				if (collection != null)
+				{
+					if (ReferenceEquals(collection.Collection, value))
+						return;
 					collection.Unregister();
+				}
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
+				Control.ReloadData();
+				AutoSizeColumns(true);
 				ResetAutoSizedColumns();
 				InvalidateMeasure();
 			}

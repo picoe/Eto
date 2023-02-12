@@ -63,6 +63,7 @@ namespace Eto.GtkSharp.Forms
 		public static readonly object ScrollAmount_Key = new object();
 		public static readonly object DragInfo_Key = new object();
 		public static readonly object DropSource_Key = new object();
+		public static readonly object DropSourceData_Key = new object();
 		public static readonly object Font_Key = new object();
 		public static readonly object TabIndex_Key = new object();
 		public static readonly object Cursor_Key = new object();
@@ -455,6 +456,9 @@ namespace Eto.GtkSharp.Forms
 					HandleEvent(Eto.Forms.Control.DragOverEvent);
 					DragControl.DragLeave += Connector.HandleDragLeave;
 					break;
+				case Eto.Forms.Control.DragEndEvent:
+					DragControl.DragEnd += Connector.HandleDragEnd;
+					break;
 				case Eto.Forms.Control.EnabledChangedEvent:
 #if GTK3
 					ContainerControl.StateFlagsChanged += Connector.HandleStateFlagsChangedForEnabled;
@@ -720,7 +724,7 @@ namespace Eto.GtkSharp.Forms
 				Handler?.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
 
-			protected virtual DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null)
+			protected virtual DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location = null, uint time = 0, object controlObject = null, DataObject data = null)
 			{
 				var widget = Gtk.Drag.GetSourceWidget(context);
 				var source = widget?.Data[GtkControl.DropSource_Key] as Eto.Forms.Control;
@@ -731,7 +735,7 @@ namespace Eto.GtkSharp.Forms
 				var action = context.SelectedAction;
 #endif
 
-				var data = new DataObject(new DataObjectHandler(Handler.DragControl, context, time));
+				data = data ?? new DataObject(new DataObjectHandler(Handler.DragControl, context, time));
 				if (location == null)
 					location = Handler.PointFromScreen(Mouse.Position);
 
@@ -807,6 +811,23 @@ namespace Eto.GtkSharp.Forms
 				handler.Callback.OnDragLeave(handler.Widget, DragArgs);
 				_dragEnterEffects = null;
 				Eto.Forms.Application.Instance.AsyncInvoke(() => DragArgs = null);
+			}
+
+			public virtual void HandleDragEnd(object o, Gtk.DragEndArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var data = handler.DragControl.Data[GtkControl.DropSourceData_Key] as DataObject;
+
+				var e = GetDragEventArgs(args.Context, data: data);
+#if GTK2
+				e.Effects = args.Context.Action.ToEto();
+#else
+				e.Effects = args.Context.SelectedAction.ToEto();
+#endif
+				handler.Callback.OnDragEnd(handler.Widget, e);
+				handler.DragControl.Data[GtkControl.DropSourceData_Key] = null;
 			}
 
 #if GTK3
@@ -918,7 +939,13 @@ namespace Eto.GtkSharp.Forms
 
 		public Point Location
 		{
-			get { return Control.Allocation.Location.ToEto(); }
+			get
+			{
+				var pt = Control.Allocation.Location.ToEto();
+				if (pt.X == -1 && pt.Y == -1)
+					return Point.Empty;
+				return pt;
+			}
 		}
 
 		public virtual bool ShowBorder
@@ -971,6 +998,10 @@ namespace Eto.GtkSharp.Forms
 			DragInfo = new DragInfoObject { Data = data, AllowedEffects = allowedEffects };
 
 			DragControl.Data[GtkControl.DropSource_Key] = Widget;
+			
+			// set data and ensure it gets cleared out.
+			DragControl.Data[GtkControl.DropSourceData_Key] = data;
+			HandleEvent(Eto.Forms.Control.DragEndEvent);
 
 #if GTKCORE
 			var context = Gtk.Drag.BeginWithCoordinates(DragControl, targets, allowedEffects.ToGdk(), 1, Gtk.Application.CurrentEvent, -1, -1);
@@ -1058,6 +1089,12 @@ namespace Eto.GtkSharp.Forms
 		public void Print()
 		{
 			// ContainerControl.Print
+		}
+		
+		public virtual void UpdateLayout()
+		{
+			// is this the best way to force a layout pass?  I can't find anything else..
+			ContainerControl.Toplevel?.SizeAllocate(ContainerControl.Toplevel.Allocation);
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Drawing;
@@ -9,9 +10,9 @@ namespace Eto.Mac.Forms.Controls
 		Brush backgroundBrush;
 		Color backgroundColor;
 
-		public bool SupportsCreateGraphics { get { return true; } }
+		public bool SupportsCreateGraphics => false;
 
-		public override NSView ContainerControl { get { return Control; } }
+		public override NSView ContainerControl => Control;
 
 		public class EtoDrawableView : MacPanelView
 		{
@@ -33,6 +34,8 @@ namespace Eto.Mac.Forms.Controls
 				ApplicationHandler.QueueResizing = false;
 			}
 
+			// public override bool IsFlipped => true;  // uncomment to test flipped views with GraphicsHandler.
+
 			public bool CanFocus { get; set; }
 
 			public override bool AcceptsFirstResponder() => CanFocus;
@@ -52,7 +55,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public Graphics CreateGraphics()
 		{
-			return new Graphics(new GraphicsHandler(Control));
+			throw new NotSupportedException();
 		}
 
 		public override Color BackgroundColor
@@ -111,7 +114,7 @@ namespace Eto.Mac.Forms.Controls
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null)
 			{
-				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height, Control.IsFlipped);
+				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height);
 				using (var graphics = new Graphics(handler))
 				{
 					if (backgroundBrush != null)

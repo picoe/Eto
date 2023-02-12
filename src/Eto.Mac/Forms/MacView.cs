@@ -178,6 +178,7 @@ namespace Eto.Mac.Forms
 		public static readonly object UseAlignmentFrame_Key = new object();
 		public static readonly object SuppressMouseEvents_Key = new object();
 		public static readonly object UseMouseTrackingLoop_Key = new object();
+		public static readonly object MouseTrackingRunLoopMode_Key = new object();
 		public static readonly IntPtr selSetDataProviderForTypes_Handle = Selector.GetHandle("setDataProvider:forTypes:");
 		public static readonly IntPtr selInitWithPasteboardWriter_Handle = Selector.GetHandle("initWithPasteboardWriter:");
 		public static readonly IntPtr selClass_Handle = Selector.GetHandle("class");
@@ -817,6 +818,9 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.DragLeaveEvent:
 					AddMethod(MacView.selDraggingExited, MacView.TriggerDraggingExited_Delegate, "v@:@", DragControl);
 					break;
+				case Eto.Forms.Control.DragEndEvent:
+					// handled in EtoDragSource, TreeGridViewHandler.EtoDragSource, and GridViewHandler.EtoDragSource
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -1268,7 +1272,7 @@ namespace Eto.Mac.Forms
 		{
 			var handler = data.Handler as IDataObjectHandler;
 
-			var source = new EtoDragSource { AllowedOperation = allowedAction.ToNS(), SourceView = ContainerControl };
+			var source = new EtoDragSource { AllowedOperation = allowedAction.ToNS(), SourceView = ContainerControl, Handler = this, Data = data };
 
 			NSDraggingItem[] draggingItems = null;
 			if (image != null)
@@ -1343,6 +1347,12 @@ namespace Eto.Mac.Forms
 		{
 			get => Widget.Properties.Get<bool>(MacView.UseMouseTrackingLoop_Key, true);
 			set => Widget.Properties.Set<bool>(MacView.UseMouseTrackingLoop_Key, value, true);
+		}
+
+		public NSRunLoopMode MouseTrackingRunLoopMode
+		{
+			get => Widget.Properties.Get<NSRunLoopMode>(MacView.MouseTrackingRunLoopMode_Key, NSRunLoopMode.Default);
+			set => Widget.Properties.Set<NSRunLoopMode>(MacView.MouseTrackingRunLoopMode_Key, value, NSRunLoopMode.Default);
 		}
 
 		public void SetAlignmentFrameSize(CGSize size)
@@ -1472,7 +1482,7 @@ namespace Eto.Mac.Forms
 				// Console.WriteLine("Entered MouseTrackingLoop");
 				do
 				{
-					var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoopMode.EventTracking, true);
+					var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, MouseTrackingRunLoopMode, true);
 
 					var evtType = evt.Type;
 					switch (evt.Type)
@@ -1522,6 +1532,11 @@ namespace Eto.Mac.Forms
 		{
 			get => Widget.Properties.Get<bool>(MacView.TextInputImplemented_Key);
 			private set => Widget.Properties.Set(MacView.TextInputImplemented_Key, value);
+		}
+		
+		public virtual void UpdateLayout()
+		{
+			ContainerControl?.Window?.LayoutIfNeeded();
 		}
 	}
 }

@@ -20,16 +20,6 @@ namespace Eto
 		/// </summary>
 		public static readonly string Gtk = "Eto.GtkSharp.Platform, Eto.Gtk";
 		/// <summary>
-		/// Type of the GTK 2 platform
-		/// </summary>
-		[Obsolete("Gtk2 platform is obsolete, please use Platforms.Gtk instead.")]
-		public static readonly string Gtk2 = "Eto.GtkSharp.Platform, Eto.Gtk2";
-		/// <summary>
-		/// Type of the GTK 3 platform
-		/// </summary>
-		[Obsolete("Gtk3 platform is obsolete, please use Platforms.Gtk instead.")]
-		public static readonly string Gtk3 = "Eto.GtkSharp.Platform, Eto.Gtk3";
-		/// <summary>
 		/// Type of the macOS platform on .NET 6+ or mono
 		/// </summary>
 		public static readonly string Mac64 = "Eto.Mac.Platform, Eto.Mac64";

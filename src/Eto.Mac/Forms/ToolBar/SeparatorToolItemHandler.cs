@@ -13,6 +13,8 @@ namespace Eto.Mac.Forms.ToolBar
 
 		protected override bool IsButton => false;
 
+		protected override bool UseButtonStyle => false;
+
 		public override string Identifier
 		{
 			get

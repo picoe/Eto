@@ -29,6 +29,26 @@ namespace Eto.Forms
 			get { return Handler.HeaderText; }
 			set { Handler.HeaderText = value; }
 		}
+		
+		/// <summary>
+		/// Gets or sets the tooltip to display when the user moves the cursor over the header of this column.
+		/// </summary>
+		/// <value>The tooltip for the header of this column</value>
+		public string HeaderToolTip
+		{
+			get => Handler.HeaderToolTip;
+			set => Handler.HeaderToolTip = value;
+		}
+		
+		/// <summary>
+		/// Gets or sets the binding to use to get the tooltip for each cell in this column.
+		/// </summary>
+		/// <value>The binding to get the tooltip for cells in this column</value>
+		public IIndirectBinding<string> CellToolTipBinding
+		{
+			get => Handler.CellToolTipBinding;
+			set => Handler.CellToolTipBinding = value;
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the column is resizable by the user.
@@ -251,7 +271,18 @@ namespace Eto.Forms
 			/// This value must be within the range of the total number of columns that are added.
 			/// </remarks>
 			int DisplayIndex { get; set; }
+
+			/// <summary>
+			/// Gets or sets the tooltip to display when the user moves the cursor over the header of this column.
+			/// </summary>
+			/// <value>The tooltip for the header of this column</value>
+			string HeaderToolTip { get; set; }
+
+			/// <summary>
+			/// Gets or sets the binding to use to get the tooltip for each cell in this column.
+			/// </summary>
+			/// <value>The binding to get the tooltip for cells in this column</value>
+			IIndirectBinding<string> CellToolTipBinding { get; set; }
 		}
 	}
 }
-

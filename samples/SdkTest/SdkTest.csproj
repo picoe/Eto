@@ -1,4 +1,4 @@
-﻿<Project Sdk="Eto.Forms/2.7.1-dev">
+﻿<Project Sdk="Eto.Forms/2.7.2-dev">
 
   <!--
     Set the BuildPlatform property to the Eto platform you wish to build for.

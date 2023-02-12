@@ -142,6 +142,7 @@ namespace Eto.WinForms
 			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolBarItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
+			p.Add<DropDownToolItem.IHandler>(() => new DropDownToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 			
 			// Forms

@@ -8,7 +8,7 @@
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <DefineConstants Condition="$(UseCFString) != 'False'">$(DefineConstants);USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefaultItemExcludes>build\*</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
     <NoWarn>CA1416</NoWarn>
     <LangVersion>10</LangVersion>
   </PropertyGroup>
@@ -23,6 +23,7 @@
     <Using Include="CoreFoundation" />
     <Using Include="ImageIO" />
     <Using Include="CoreText" />
+    <Using Include="System.IntPtr" Alias="NativeHandle" />
   </ItemGroup>
   
   <PropertyGroup>

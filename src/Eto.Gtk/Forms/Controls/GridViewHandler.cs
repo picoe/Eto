@@ -249,7 +249,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public new GridViewHandler Handler { get { return (GridViewHandler)base.Handler; } }
 
-			protected override DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null)
+			protected override DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null, DataObject data = null)
 			{
 				var t = Handler?.Control;
 				GridViewDragInfo dragInfo = _dragInfo;
@@ -264,7 +264,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					}
 				}
 
-				return base.GetDragEventArgs(context, location, time, dragInfo);
+				return base.GetDragEventArgs(context, location, time, dragInfo, data);
 			}
 
 			public override void HandleDragMotion(object o, Gtk.DragMotionArgs args)

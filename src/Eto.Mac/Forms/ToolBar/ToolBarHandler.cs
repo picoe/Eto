@@ -271,7 +271,7 @@ namespace Eto.Mac.Forms.ToolBar
 				else if (curitem.Visible)
 				{
 					var nativeItem = nativeItems[idx];
-					if (nativeItem.Identifier == GetIdentifier(curitem))
+					if (nativeItem.Identifier == GetIdentifier(curitem) || object.Equals(nativeItem, curitem.ControlObject))
 						idx++;
 				}
 			}

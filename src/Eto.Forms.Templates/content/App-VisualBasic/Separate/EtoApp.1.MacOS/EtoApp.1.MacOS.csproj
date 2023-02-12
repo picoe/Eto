@@ -12,6 +12,6 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.macOS" Version="2.7.1-dev" />
+    <PackageReference Include="Eto.Platform.macOS" Version="2.7.2-dev" />
   </ItemGroup>
 </Project>

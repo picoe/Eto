@@ -46,7 +46,6 @@ namespace Eto.iOS.Drawing
 		#if OSX
 		NSGraphicsContext graphicsContext;
 		bool disposeContext;
-		readonly NSView view;
 		#endif
 		float height;
 		bool isOffset;
@@ -92,55 +91,13 @@ namespace Eto.iOS.Drawing
 		}
 
 		#if OSX
-
-		public GraphicsHandler(NSView view)
-		{
-			this.view = view;
-			graphicsContext = NSGraphicsContext.FromWindow(view.Window);
-			graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
-			disposeContext = true;
-			Control = graphicsContext.GraphicsPort;
-
-			view.PostsFrameChangedNotifications = true;
-			AddObserver(NSView.FrameChangedNotification, FrameDidChange, view);
-
-			// if control is in a scrollview, we need to trap when it's scrolled as well
-			var parent = view.Superview;
-			while (parent != null)
-			{
-				var scroll = parent as NSScrollView;
-				if (scroll != null)
-				{
-					scroll.ContentView.PostsBoundsChangedNotifications = true;
-					AddObserver(NSView.BoundsChangedNotification, FrameDidChange, scroll.ContentView);
-				}
-				parent = parent.Superview;
-			}
-
-			SetDefaults();
-			InitializeContext(view.IsFlipped);
-		}
-
-		static void FrameDidChange(ObserverActionEventArgs e)
-		{
-			var h = e.Handler as GraphicsHandler;
-			if (h != null && h.Control != null)
-			{
-				h.RewindAll();
-				
-				h.Control.RestoreState();
-
-				h.InitializeContext(h.view.IsFlipped);
-			}
-		}
-
-		public GraphicsHandler(NSView view, NSGraphicsContext graphicsContext, float height, bool flipped)
+		public GraphicsHandler(NSView view, NSGraphicsContext graphicsContext, float height)
 		{
 			DisplayView = view;
 			this.height = height;
-			this.graphicsContext = flipped != graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
-			Control = this.graphicsContext.GraphicsPort;
-			SetDefaults();
+			var flipped = view?.IsFlipped ?? false;
+			this.graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromCGContext(graphicsContext.CGContext, true);
+			Control = this.graphicsContext.CGContext;
 			InitializeContext(!flipped);
 		}
 
@@ -152,8 +109,7 @@ namespace Eto.iOS.Drawing
 			this.height = (float)height;
 			this.Control = context;
 
-			SetDefaults();
-			InitializeContext(false);
+			InitializeContext(true);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -238,9 +194,9 @@ namespace Eto.iOS.Drawing
 				graphicsContext = NSGraphicsContext.FromBitmap(rep);
 			}
 
-			graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
+			graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromCGContext(graphicsContext.CGContext, true);
 			disposeContext = true;
-			Control = graphicsContext.GraphicsPort;
+			Control = graphicsContext.CGContext;
 			PointsPerPixel = (float)(rep.PixelsWide / handler.Control.Size.Width);
 #elif IOS
 			var cgimage = handler.Control.CGImage;
@@ -249,7 +205,6 @@ namespace Eto.iOS.Drawing
 #endif
 
 			height = image.Size.Height;
-			SetDefaults();
 			InitializeContext(true);
 			if (DrawingImage != null && SourceImage != null)
 			{
@@ -274,23 +229,7 @@ namespace Eto.iOS.Drawing
 #endif
 		}
 
-		#if OSX
-		public float ViewHeight
-		{
-			get { return (float)(view != null ? view.Bounds.Height : height); }
-		}
-		#elif IOS
-		public float ViewHeight
-		{
-			get { return height; }
-		}
-		#endif
-
-		void SetDefaults()
-		{
-			Control.InterpolationQuality = CGInterpolationQuality.Default;
-			Control.SetAllowsSubpixelPositioning(false);
-		}
+		public float ViewHeight => (float)height;
 
 		#if OSX
 		CGSize? phase;
@@ -316,36 +255,17 @@ namespace Eto.iOS.Drawing
 		}
 		#endif
 
-		void InitializeContext(bool viewFlipped)
+		void InitializeContext(bool flipCoordinates)
 		{
 			Control.SaveState();
+			Control.InterpolationQuality = CGInterpolationQuality.Default;
+			Control.SetAllowsSubpixelPositioning(false);
+
+			if (flipCoordinates)
+				Control.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
 
 			#if OSX
-			// os x has different flipped states (depending on layers, etc), so compensate to make 0,0 at the top-left
-			if (view != null)
-			{
-				// we have a view (drawing directly to the screen), so adjust to where it is
-				Control.ClipToRect(view.ConvertRectToView(view.VisibleRect(), null));
-				var pos = view.ConvertPointToView(CGPoint.Empty, null);
-				if (!viewFlipped)
-					pos.Y += view.Frame.Height;
-				Control.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, (float)pos.X, (float)pos.Y));
-			}
-			else
-			{
-				// drawing to a bitmap or during a drawRect operation
-				if (viewFlipped)
-					Control.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
-			}
-
 			phase = null;
-
-			#elif IOS
-			if (viewFlipped)
-			{
-				// on ios, we flip the context if we're drawing on a bitmap otherwise we don't need to
-				Control.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
-			}
 			#endif
 
 			ApplyAll();

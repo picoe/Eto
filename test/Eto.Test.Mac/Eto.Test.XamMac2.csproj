@@ -14,11 +14,26 @@
     <DefineConstants>XAMMAC;XAMMAC2</DefineConstants>
     <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     <NoWarn>CA1416</NoWarn>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   
   <PropertyGroup Condition="$(TargetFramework) == 'xamarinmac20'">
     <LinkMode Condition="$(Configuration) == 'Release'">SdkOnly</LinkMode>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Using Include="AppKit" />
+    <Using Include="Foundation" />
+    <Using Include="CoreGraphics" />
+    <Using Include="ObjCRuntime" />
+    <Using Include="CoreAnimation" />
+    <Using Include="CoreImage" />
+    <Using Include="MobileCoreServices" />
+    <Using Include="CoreFoundation" />
+    <Using Include="ImageIO" />
+    <Using Include="CoreText" />
+    <Using Include="System.IntPtr" Alias="NativeHandle" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />

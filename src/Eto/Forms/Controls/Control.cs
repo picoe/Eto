@@ -682,6 +682,31 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected virtual void OnDragLeave(DragEventArgs e) => Properties.TriggerEvent(DragLeaveEvent, this, e);
 
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="DragEnd"/> event
+		/// </summary>
+		public const string DragEndEvent = "Control.DragEnd";
+
+		/// <summary>
+		/// Occurs for a source control after a call to <see cref="DoDragDrop(DataObject, DragEffects, Image, PointF)"/> when the drag operation has ended.
+		/// The <see cref="DragEventArgs.Effects"/> is the final <see cref="DragEffects"/> used at the drop destination.
+		/// </summary>
+		/// <remarks>
+		/// For controls that you are dragging from this event is useful to know what to do with the dragged content after it is dropped in a different control or application.
+		/// </remarks>
+		public event EventHandler<DragEventArgs> DragEnd
+		{
+			add { Properties.AddHandlerEvent(DragEndEvent, value); }
+			remove { Properties.RemoveEvent(DragEndEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragEnd"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragEnd(DragEventArgs e) => Properties.TriggerEvent(DragEndEvent, this, e);
+
 		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="EnabledChanged"/> event
 		/// </summary>
@@ -724,6 +749,7 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnDragOver(null), Control.DragOverEvent);
 			EventLookup.Register<Control>(c => c.OnDragEnter(null), Control.DragEnterEvent);
 			EventLookup.Register<Control>(c => c.OnDragLeave(null), Control.DragLeaveEvent);
+			EventLookup.Register<Control>(c => c.OnDragEnd(null), Control.DragEndEvent);
 			EventLookup.Register<Control>(c => c.OnEnabledChanged(null), Control.EnabledChangedEvent);
 		}
 
@@ -790,6 +816,19 @@ namespace Eto.Forms
 		{
 			Handler.Invalidate(rect, invalidateChildren);
 		}
+
+		/// <summary>
+		/// Updates the layout of this control if necessary.
+		/// </summary>
+		/// <remarks>
+		/// This will ensure the control has had all of its layout applied so you can use its position and size right after this call.
+		/// Most platforms (except WinForms) use a deferred layout system so that after adding your control to the form dynamically it won't
+		/// get laid out until the next idle loop.
+		/// This is useful when you need to know the dimensions of the control immediately.
+		/// Note that this can be an expensive operation, so it is recommended to only call this method when necessary and after all of the
+		/// controls have been added/updated.
+		/// </remarks>
+		public void UpdateLayout() => Handler.UpdateLayout();
 
 		/// <summary>
 		/// Gets or sets the size of the control. Use -1 to specify auto sizing for either the width and/or height.
@@ -1313,6 +1352,10 @@ namespace Eto.Forms
 		/// <summary>
 		/// Starts drag operation using this control as drag source.
 		/// </summary>
+		/// <remarks>
+		/// This method can be blocking on some platforms (Wpf, WinForms), and non-blocking on others (Mac, Gtk).
+		/// Use the <see cref="DragEnd"/> event to determine when the drag operation is completed and get its resulting DragEffects.
+		/// </remarks>
 		/// <param name="data">Drag data.</param>
 		/// <param name="allowedEffects">Allowed action.</param>
 		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects)
@@ -1323,6 +1366,10 @@ namespace Eto.Forms
 		/// <summary>
 		/// Starts drag operation using this control as drag source.
 		/// </summary>
+		/// <remarks>
+		/// This method can be blocking on some platforms (Wpf, WinForms), and non-blocking on others (Mac, Gtk).
+		/// Use the <see cref="DragEnd"/> event to determine when the drag operation is completed and get its resulting DragEffects.
+		/// </remarks>
 		/// <param name="data">Drag data.</param>
 		/// <param name="allowedEffects">Allowed effects.</param>
 		/// <param name="image">Custom drag image</param>
@@ -1346,6 +1393,12 @@ namespace Eto.Forms
 			if (Loaded)
 				OnApplyCascadingStyles();
 		}
+
+
+		/// <summary>
+		/// Triggers the StyleChanged event and re-applies the styles to this control and its children.
+		/// </summary>
+		public void TriggerStyleChanged() => OnStyleChanged(EventArgs.Empty);
 
 		/// <summary>
 		/// Called when cascading styles should be applied to this control.
@@ -1510,6 +1563,10 @@ namespace Eto.Forms
 			/// </summary>
 			void OnDragLeave(Control widget, DragEventArgs e);
 			/// <summary>
+			/// Raises the DragEnd event.
+			/// </summary>
+			void OnDragEnd(Control widget, DragEventArgs e);
+			/// <summary>
 			/// Raises the EnabledChanged event.
 			/// </summary>
 			void OnEnabledChanged(Control widget, EventArgs e);
@@ -1667,6 +1724,15 @@ namespace Eto.Forms
 			{
 				using (widget.Platform.Context)
 					widget.OnDragLeave(e);
+			}
+
+			/// <summary>
+			/// Raises the DragEnd event.
+			/// </summary>
+			public void OnDragEnd(Control widget, DragEventArgs e)
+			{
+				using (widget.Platform.Context)
+					widget.OnDragEnd(e);
 			}
 
 			/// <summary>
@@ -1960,6 +2026,17 @@ namespace Eto.Forms
 			/// <param name="availableSize">The available size to determine the preferred size</param>
 			/// <returns>The preferred size this control would like to be, which can be larger than the specified <paramref name="availableSize" />.</returns>
 			SizeF GetPreferredSize(SizeF availableSize);
+			
+			/// <summary>
+			/// Updates the layout of this control if necessary.
+			/// </summary>
+			/// <remarks>
+			/// This will ensure the control has had all of its layout applied so you can use its position and size right after this call.
+			/// Most platforms (except WinForms) use a deferred layout system so that after adding your control to the form dynamically it won't
+			/// get laid out until the next idle loop.
+			/// This is useful when you need to know the dimensions of the control immediately.
+			/// </remarks>
+			void UpdateLayout();
 		}
 		#endregion
 	}

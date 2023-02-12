@@ -8,7 +8,7 @@ namespace Eto.Mac.Drawing
 		{
 		}
 
-		public EtoFontManager(IntPtr handle)
+		public EtoFontManager(NativeHandle handle)
 			: base(handle)
 		{
 		}

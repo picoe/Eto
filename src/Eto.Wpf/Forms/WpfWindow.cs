@@ -38,6 +38,7 @@ namespace Eto.Wpf.Forms
 		internal static readonly object Maximizable_Key = new object();
 		internal static readonly object Closeable_Key = new object();
 		internal static readonly object Resizable_Key = new object();
+		internal static readonly object Icon_Key = new object();
 	}
 
 	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
@@ -45,7 +46,6 @@ namespace Eto.Wpf.Forms
 		where TWidget : Window
 		where TCallback : Window.ICallback
 	{
-		Icon icon;
 		MenuBar menu;
 		Eto.Forms.ToolBar toolBar;
 		swc.DockPanel main;
@@ -55,6 +55,7 @@ namespace Eto.Wpf.Forms
 		Size? initialClientSize;
 		PerMonitorDpiHelper dpiHelper;
 		Point? initialLocation;
+		bool isSourceInitialized;
 
 		protected virtual bool IsAttached => false;
 
@@ -125,19 +126,8 @@ namespace Eto.Wpf.Forms
 			main.Children.Add(toolBarHolder);
 			main.Children.Add(content);
 			Control.Content = main;
-			Control.Loaded += delegate
-			{
-				SetMinimumSize();
-				if (initialClientSize != null)
-				{
-					initialClientSize = null;
-					SetContentSize();
-				}
-				// stop form from auto-sizing after it is shown
-				SetSizeToContent();
-				if (Control.ShowActivated)
-					Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
-			};
+			Control.SourceInitialized += Control_SourceInitialized;
+			Control.Loaded += Control_Loaded;
 			Control.PreviewKeyDown += (sender, e) =>
 			{
 				// need to call validate on the input bindings before trying to execute them
@@ -149,6 +139,43 @@ namespace Eto.Wpf.Forms
 			Control.SizeChanged += Control_SizeChanged;
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+		}
+
+		private void Control_SourceInitialized(object sender, EventArgs e)
+		{
+			isSourceInitialized = true;
+			
+			if (WindowStyle == WindowStyle.None)
+			{
+				SetWindowChrome(Resizable);
+			}
+			
+			if (!Minimizable || !Maximizable)
+			{
+				SetResizeMode();
+			}
+
+			if (initialLocation != null)
+			{
+				SetLocation(initialLocation.Value);
+				initialLocation = null;
+			}
+		}
+
+		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			// NOTE: If the window size is set, it will be made visible BEFORE this is called.
+			
+			SetMinimumSize();
+			if (initialClientSize != null)
+			{
+				initialClientSize = null;
+				SetContentSize();
+			}
+			// stop form from auto-sizing after it is shown
+			SetSizeToContent();
+			if (Control.ShowActivated)
+				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 		}
 
 		private void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
@@ -314,11 +341,11 @@ namespace Eto.Wpf.Forms
 			if (IsAttached)
 				return;
 
+			Control.SizeToContent = sw.SizeToContent.Manual;
 			var xdiff = Control.ActualWidth - content.ActualWidth;
 			var ydiff = Control.ActualHeight - content.ActualHeight;
 			Control.Width = size.Width + xdiff;
 			Control.Height = size.Height + ydiff;
-			Control.SizeToContent = sw.SizeToContent.Manual;
 		}
 
 		protected override void SetSize()
@@ -457,13 +484,18 @@ namespace Eto.Wpf.Forms
 
 		public Icon Icon
 		{
-			get { return icon ?? (icon = Control.Icon.ToEtoIcon()); }
+			get => Widget.Properties.Get<Icon>(WpfWindow.Icon_Key, () => {
+				var icon = Control.Icon.ToEtoIcon();
+				Widget.Properties.Set(WpfWindow.Icon_Key, icon);
+				return icon;
+			});
 			set
 			{
-				icon = value;
-				if (value != null)
+				if (Widget.Properties.TrySet<Icon>(WpfWindow.Icon_Key, value))
 				{
-					Control.Icon = (swm.ImageSource)icon.ControlObject;
+					var style = SaveWindowStyle();
+					Control.Icon = (swm.ImageSource)value?.ControlObject;
+					RestoreWindowStyle(style);
 				}
 			}
 		}
@@ -476,6 +508,7 @@ namespace Eto.Wpf.Forms
 				if (Widget.Properties.TrySet(WpfWindow.Resizable_Key, value, true))
 				{
 					SetResizeMode();
+					SetWindowChrome(WindowStyle == WindowStyle.None && value);
 				}
 			}
 		}
@@ -566,8 +599,11 @@ namespace Eto.Wpf.Forms
 			else
 				Control.ResizeMode = sw.ResizeMode.NoResize;
 
-			SetStyle(Win32.WS.MAXIMIZEBOX, Maximizable);
-			SetStyle(Win32.WS.MINIMIZEBOX, Minimizable);
+			if (isSourceInitialized)
+			{
+				SetStyle(Win32.WS.MAXIMIZEBOX, Maximizable);
+				SetStyle(Win32.WS.MINIMIZEBOX, Minimizable);
+			}
 		}
 
 		public virtual bool ShowInTaskbar
@@ -633,11 +669,10 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				var handle = NativeHandle;
-				if (handle != IntPtr.Zero && Control.IsLoaded)
+				if (Control.IsLoaded && NativeHandle != IntPtr.Zero)
 				{
 					// WPF doesn't always report the correct size when maximized
-					var rect = Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(handle, out var r) ? r : (Win32.RECT?)null);
+					var rect = Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(NativeHandle, out var r) ? r : (Win32.RECT?)null);
 					if (rect != null)
 					{
 						var scale = DpiScale;
@@ -667,7 +702,12 @@ namespace Eto.Wpf.Forms
 		public string Title
 		{
 			get { return Control.Title; }
-			set { Control.Title = value ?? string.Empty; }
+			set
+			{
+				var style = SaveWindowStyle();
+				Control.Title = value ?? string.Empty;
+				RestoreWindowStyle(style);
+			}
 		}
 
 		protected bool LocationSet
@@ -731,16 +771,12 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 
-				if (NativeHandle == IntPtr.Zero)
+				if (!isSourceInitialized)
 				{
 					// set location when the source is initialized and we have a Win32 handle to move about
 					// using Left/Top doesn't work (properly) in a per-monitor dpi environment.
 					initialLocation = value;
-					if (!LocationSet)
-					{
-						LocationSet = true;
-						Control.SourceInitialized += Control_SourceInitialized;
-					}
+					LocationSet = true;
 				}
 				else
 				{
@@ -750,18 +786,8 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		void Control_SourceInitialized(object sender, EventArgs e)
-		{
-			LocationSet = false;
-			SetLocation(initialLocation.Value);
-			initialLocation = null;
-			Control.SourceInitialized -= Control_SourceInitialized;
-		}
-
 		void SetLocation(PointF location)
 		{
-			var handle = NativeHandle;
-
 			var loc = location.LogicalToScreen();
 			Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(NativeHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE));
 		}
@@ -860,7 +886,65 @@ namespace Eto.Wpf.Forms
 		public WindowStyle WindowStyle
 		{
 			get { return Control.WindowStyle.ToEto(); }
-			set { Control.WindowStyle = value.ToWpf(); }
+			set
+			{
+				if (WindowStyle != value)
+				{
+					Control.WindowStyle = value.ToWpf();
+					SetWindowChrome(value == WindowStyle.None && Resizable);
+				}
+			}
+		}
+		
+		uint? SaveWindowStyle()
+		{
+			if (!isSourceInitialized)
+				return null;
+				
+			// Annoyingly, WPF gets an AritheticOverflow if the window style has WS_POPUP in it as it treats it as an int
+			// So, we remove that style then re-apply it after.
+			uint? oldStyle = null;
+			var style = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
+			if (style > (uint)Int32.MaxValue)
+			{
+				// style will overflow, so remove the last bit
+				oldStyle = style & (uint)(0x80000000);
+				Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style & 0x7FFFFFFF);
+			}
+			return oldStyle;
+		}
+		
+		void RestoreWindowStyle(uint? oldStyle)
+		{
+			if (oldStyle == null)
+				return;
+				
+			// reapply the old style bit
+			var style = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
+			style |= oldStyle.Value;
+			Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style);
+		}
+		
+		void SetWindowChrome(bool enabled)
+		{
+			if (!isSourceInitialized)
+				return;
+			var oldStyle = SaveWindowStyle();
+
+			if (enabled)
+			{
+				var windowChrome = new sw.Shell.WindowChrome
+				{
+					CaptionHeight = 0,
+					ResizeBorderThickness = new sw.Thickness(4)
+				};
+				sw.Shell.WindowChrome.SetWindowChrome(Control, windowChrome);
+			}
+			else
+			{
+				Control.ClearValue(sw.Shell.WindowChrome.WindowChromeProperty);
+			}
+			RestoreWindowStyle(oldStyle);
 		}
 
 		public void BringToFront()

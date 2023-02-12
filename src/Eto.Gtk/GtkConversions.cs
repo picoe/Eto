@@ -145,7 +145,6 @@ namespace Eto.GtkSharp
 				case Gtk.ResponseType.Reject:
 					return DialogResult.Abort;
 				case Gtk.ResponseType.Accept:
-					return DialogResult.Ignore;
 				case Gtk.ResponseType.Ok:
 					return DialogResult.Ok;
 				case Gtk.ResponseType.Cancel:
