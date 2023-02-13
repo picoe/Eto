@@ -169,7 +169,7 @@ namespace Eto.Forms
 	/// of the layout.
 	/// </summary>
 	[ContentProperty("Items")]
-	public class StackLayout : Panel, ILayout
+	public class StackLayout : Panel
 	{
 		Orientation orientation = Orientation.Vertical;
 
@@ -477,19 +477,6 @@ namespace Eto.Forms
 			suspended--;
 			base.ResumeLayout();
 			CreateIfNeeded();
-		}
-
-		/// <summary>
-		/// Re-calculates the layout of the controls and re-positions them, if necessary
-		/// </summary>
-		/// <remarks>
-		/// All layouts should theoretically work without having to manually update them, but in certain cases
-		/// this may be necessary to be called.
-		/// </remarks>
-		public virtual void Update()
-		{
-			if (Content is ILayout nestedLayout)
-				nestedLayout.Update();
 		}
 
 		void CreateIfNeeded(bool force = false)

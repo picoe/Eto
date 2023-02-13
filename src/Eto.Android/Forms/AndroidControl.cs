@@ -234,7 +234,24 @@ namespace Eto.Android.Forms
 
 				Control.Visibility = Requested;
 
-				(this.Widget as ILayout)?.Update();
+				// Layouts do not share common base class or interface, so need to check for each...
+				//(this.Widget as ILayout)?.Update();
+				if (Widget is Layout layout)
+					layout.Update();
+				else if (Widget is StackLayout stackLayout)
+					LayoutUpdateContainers(stackLayout);
+				// else other kinds of non-Layout layouts
+			}
+		}
+
+		/// <summary>
+		/// This is copied from <see cref="Layout.UpdateContainers"/>, but that is private and cannot be called from here
+		/// </summary>
+		private void LayoutUpdateContainers(Container container)
+		{
+			foreach (var c in container.VisualControls.OfType<Layout>())
+			{
+				c.Update();
 			}
 		}
 
@@ -291,6 +308,10 @@ namespace Eto.Android.Forms
 		public Window GetNativeParentWindow()
 		{
 			throw new NotImplementedException();
+		}
+
+		public virtual void UpdateLayout()
+		{
 		}
 	}
 }

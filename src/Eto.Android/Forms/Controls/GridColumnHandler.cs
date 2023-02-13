@@ -29,5 +29,7 @@ namespace Eto.Android.Forms.Controls
 		public int MinWidth { get; set; }
 		public int MaxWidth { get; set; }
 		public int DisplayIndex { get; set; }
+		public string HeaderToolTip { get; set; }
+		public IIndirectBinding<string> CellToolTipBinding { get; set; }
 	}
 }
