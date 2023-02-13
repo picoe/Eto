@@ -40,12 +40,13 @@ namespace Eto.Android.Drawing
 		{
 			get
 			{
+				// Extract values in the order Eto expects
 				var nineValues = NineValues;
 				var result = new float[6]
 				{
-					nineValues[0], nineValues[1],  // array[2] not copied as it is always 1
-					nineValues[3], nineValues[4],  // array[5] not copied as it is always 1
-					nineValues[6], nineValues[7]   // array[8] not copied as it is always 1
+					nineValues[0], nineValues[1],
+					nineValues[3], nineValues[4],
+					nineValues[2], nineValues[5]
 				};
 
 				return result;
@@ -78,14 +79,14 @@ namespace Eto.Android.Drawing
 
 		public float Xy
 		{
-			get { return NineValues[1]; }
-			set { SetValue(1, value); }
+			get { return NineValues[3]; }
+			set { SetValue(3, value); }
 		}
 
 		public float Yx
 		{
-			get { return NineValues[3]; }
-			set { SetValue(3, value); }
+			get { return NineValues[1]; }
+			set { SetValue(1, value); }
 		}
 
 		public float Yy
@@ -96,14 +97,14 @@ namespace Eto.Android.Drawing
 
 		public float X0
 		{
-			get { return NineValues[6]; }
-			set { SetValue(6, value); }
+			get { return NineValues[2]; }
+			set { SetValue(2, value); }
 		}
 
 		public float Y0
 		{
-			get { return NineValues[7]; }
-			set { SetValue(7, value); }
+			get { return NineValues[5]; }
+			set { SetValue(5, value); }
 		}
 
 		public void Rotate(float angle)
@@ -165,14 +166,16 @@ namespace Eto.Android.Drawing
 			control = new ag.Matrix();
 		}
 
-		public void Create(float xx, float yx, float xy, float yy, float dx, float dy)
+		public void Create(float xx, float yx, float xy, float yy, float x0, float y0)
 		{
 			control = new ag.Matrix();
+
+			// Put values in the order Android expects.
 			var values = new float[]
 			{
-				xx, yx, 1,
-				xy, yy, 1,
-				dx, dy, 1
+				xx, yx, x0,
+				xy, yy, y0,
+				0,  0,  1
 			};
 			control.SetValues(values);
 		}
@@ -186,29 +189,16 @@ namespace Eto.Android.Drawing
 
 		public PointF TransformPoint(Point p)
 		{
-			var px = new ag.Point[] { Conversions.ToAndroidPoint(p) };
-
-#if TODO
-			this.Control.TransformPoints(px);
-
-			return Platform.Conversions.ToEto(px[0]);
-#else 
-			throw new NotImplementedException();
-#endif
+			var px = new float[] { p.X, p.Y };
+			this.Control.MapPoints(px);
+			return new PointF(px[0], px[1]);
 		}
 
 		public PointF TransformPoint(PointF p)
 		{
-			var px = new ag.PointF[] { p.ToAndroid() };
-
-#if TODO
-			this.Control.TransformPoints(px);
-#else
-			throw new NotImplementedException();
-#endif
-
-
-			return px[0].ToEto();
+			var px = new float[] { p.X, p.Y };
+			this.Control.MapPoints(px);
+			return new PointF(px[0], px[1]);
 		}
 
 		public void Dispose()
@@ -222,11 +212,7 @@ namespace Eto.Android.Drawing
 
 		public IMatrix Clone()
 		{
-#if TODO
-			return new MatrixHandler(control.Clone());
-#else
-			throw new NotImplementedException();
-#endif
+			return new MatrixHandler(new ag.Matrix(control));
 		}
 	}
 }

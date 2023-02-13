@@ -21,7 +21,7 @@ namespace Eto.Android.Forms.Controls
 
 		public ImageViewHandler()
 		{
-			Control = new aw.ImageView(aa.Application.Context);
+			Control = new aw.ImageView(Platform.AppContextThemed);
 		}
 
 		Image image;

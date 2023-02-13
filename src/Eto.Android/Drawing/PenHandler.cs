@@ -84,6 +84,7 @@ namespace Eto.Android.Drawing
 				: base(brush.ToAndroid())
 			{
 				Brush = brush;
+				SetStyle(Style.Stroke);
 			}
 		}
 

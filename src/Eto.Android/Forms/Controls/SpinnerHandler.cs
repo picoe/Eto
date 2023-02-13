@@ -17,25 +17,27 @@ namespace Eto.Android.Forms.Controls
 
 		public override av.View ContainerControl { get { return Control; } }
 
-		public SpinnerHandler()
+		protected override aw.ProgressBar CreateControl()
 		{
-			Control = new aw.ProgressBar(aa.Application.Context);
-			Control.Indeterminate = true;
+			return new aw.ProgressBar(Platform.AppContextThemed)
+			{
+				Indeterminate = true,
+				Visibility = enabled ? av.ViewStates.Visible : av.ViewStates.Invisible
+			};
 		}
 
 		public override bool Enabled
 		{
 			get { return enabled; }
 			set
-			{
-				if (enabled != value)
 				{
-					enabled = value;
-					if (enabled)
-						Control.Visibility = av.ViewStates.Visible;
-					else
-						Control.Visibility = av.ViewStates.Invisible;
-				}
+				if (enabled == value)
+					return;
+
+				enabled = value;
+
+				if (HasControl)
+					Control.Visibility = enabled ? av.ViewStates.Visible : av.ViewStates.Invisible;
 			}
 		}
 	}

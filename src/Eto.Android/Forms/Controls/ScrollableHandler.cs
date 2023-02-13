@@ -23,7 +23,7 @@ namespace Eto.Android.Forms.Controls
 	{
 		public ScrollableHandler()
 		{
-			Control = new aw.ScrollView(aa.Application.Context);
+			Control = new aw.ScrollView(Platform.AppContextThemed);
 		}
 
 		public void UpdateScrollSizes()
@@ -64,17 +64,7 @@ namespace Eto.Android.Forms.Controls
 			}
 		}
 
-		public BorderType Border
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public BorderType Border { get; set; }
 
 		public Rectangle VisibleRect
 		{

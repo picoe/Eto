@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Test.Android
 {
-	[Activity(Label = "Eto.Test.Android", MainLauncher = true)]
+	[Activity(Label = "Eto.Test.Android", MainLauncher = true, Theme = "@android:style/Theme.DeviceDefault")]
 	public class MainActivity : Activity
 	{
 		public class SimpleApplication : Forms.Application
@@ -24,7 +24,7 @@ namespace Eto.Test.Android
 			protected override void OnInitialized(EventArgs e)
 			{
 				base.OnInitialized(e);
-				/**
+				/*
 				var layout = new DynamicLayout();
 				layout.Add(new Label { Text = "Hello world", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center });
 				layout.Add(new Label { Text = "Hello world2", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center });
@@ -41,17 +41,16 @@ namespace Eto.Test.Android
 
 				MainForm = new Form { Content = new Panel { Content = layout2 } };
 				MainForm.Show();
-				/**
+			
 				var gv = new Eto.Forms.GridView();
 				gv.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new DelegateBinding<string, string>(r => r) }, HeaderText = "Col 1" });
 				gv.DataStore = new ObservableCollection<string>(Enumerable.Range(0, 1000).Select(r => "Woo" + r));
 
 				MainForm = new Form { Content = gv };//new Eto.Test.Sections.Controls.ButtonSection() };
 				MainForm.Show();
-				/**/
+				*/
 				MainForm = new Form { Content = new Eto.Test.Sections.UnitTestSection() };
 				MainForm.Show();
-				/**/
 			}
 		}
 

@@ -1,40 +1,30 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Eto.Forms;
 
-using aa = Android.App;
-using ac = Android.Content;
-using ao = Android.OS;
-using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
-using ag = Android.Graphics;
 using at = Android.Text;
-using Eto.Drawing;
-using Eto.Forms;
 
 namespace Eto.Android.Forms.Controls
 {
-	public class TextBoxHandler : AndroidControl<aw.EditText, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class TextBoxHandler : AndroidTextControl<aw.EditText, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		public override av.View ContainerControl { get { return Control; } }
 
 		public TextBoxHandler()
 		{
-			Control = new aw.EditText(aa.Application.Context);
+		}
+
+		protected override aw.EditText CreateControl()
+		{
+			var C = new aw.EditText(Platform.AppContextThemed);
+			SetInputType(C);
+			return C;
 		}
 
 		public void SelectAll()
 		{
 			Control.SelectAll();
-		}
-
-		// TODO
-		public bool ReadOnly
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
 		}
 
 		public override void AttachEvent(string id)
@@ -65,29 +55,6 @@ namespace Eto.Android.Forms.Controls
 			get { return Control.Hint; }
 			set { Control.Hint = value; }
 		}
-		public string Text
-		{
-			get { return Control.Text; }
-			set { Control.Text = value; }
-		}
-
-		public Eto.Drawing.Font Font
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public Color TextColor
-		{
-			get { return Control.TextColors.ToEto(); }
-			set { Control.SetTextColor(value.ToAndroid()); }
-		}
 
 		public int CaretIndex
 		{
@@ -108,13 +75,23 @@ namespace Eto.Android.Forms.Controls
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return Control.TextAlignment.ToEto();
 			}
 
 			set
 			{
-				throw new NotImplementedException();
+				Control.TextAlignment = value.ToAndroid();
 			}
+		}
+
+		public AutoSelectMode AutoSelectMode
+		{
+			get
+			{
+				return AutoSelectMode.Never;
+			}
+
+			set { }
 		}
 	}
 }
