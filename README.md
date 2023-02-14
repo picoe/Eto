@@ -85,7 +85,7 @@ Applications
 ------------
 * [MonoGame Pipeline Tool](https://github.com/MonoGame/MonoGame) - Content manager for MonoGame
 * [Manager](http://www.manager.io) - Accounting Software
-* [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
+* [PabloDraw](http://picoe.ca/products/pablodraw) - Character based drawing application
 * [Notedown](https://github.com/cwensley/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/test/Eto.Test) - Application to test the functionality of each widget
 * [DWSIM](https://github.com/DanWBR/dwsim5) - Chemical Process Simulator
