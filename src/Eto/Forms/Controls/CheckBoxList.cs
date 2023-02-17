@@ -7,12 +7,25 @@ using System.Collections;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Shows a list of check boxes.
+	/// A control that shows a list of check boxes.
 	/// </summary>
 	/// <remarks>
-	/// The list of items can be added manually using <see cref="CheckBoxList.Items"/>, or 
-	/// use the <see cref="CheckBoxList.DataStore"/> to have a dynamic list of items controlled by a custom collection.
+	/// The list of items can be added manually by using <see cref="CheckBoxList.Items"/>. 
+	/// Use <see cref="CheckBoxList.DataStore"/> to have a dynamic list of items controlled by a custom collection.
 	/// </remarks>
+	/// <example>
+	/// This creates a list of check boxes and adds items manually:
+	/// <code>
+	/// var myCheckBoxList = new CheckBoxList();
+	/// myCheckBoxList.Items.Add(new ListItem { Text = "Item 1" });
+	/// myCheckBoxList.Items.Add(new ListItem { Text = "Item 2" });
+	/// </code>
+	/// This creates a list of check boxes and uses an external collection to control the items:
+	/// <code>
+	/// var myCustomList = new List&lt;string&gt;() { "Item 1", "Item 2" };
+	/// var myCheckboxList = new CheckBoxList() { DataStore = myCustomList };
+	/// </code>
+	/// </example>
 	[ContentProperty("Items")]
 	public class CheckBoxList : Panel
 	{
@@ -32,7 +45,7 @@ namespace Eto.Forms
 		public IIndirectBinding<string> ItemTextBinding { get; set; }
 
 		/// <summary>
-		/// Gets or sets the binding to get the tooltop for each check box.
+		/// Gets or sets the binding to get the tooltip for each check box.
 		/// </summary>
 		/// <value>The item tool tip binding.</value>
 		public IIndirectBinding<string> ItemToolTipBinding { get; set; }
@@ -85,7 +98,7 @@ namespace Eto.Forms
 		protected virtual void OnSelectedKeysChanged(EventArgs e) => Properties.TriggerEvent(SelectedKeysChangedKey, this, e);
 
 		/// <summary>
-		/// Gets or sets the selected key of the currently selected item using the <see cref="ItemKeyBinding"/>.
+		/// Gets or sets the selected key of the currently selected item using <see cref="ItemKeyBinding"/>.
 		/// </summary>
 		/// <value>The selected key.</value>
 		public IEnumerable<string> SelectedKeys
@@ -116,10 +129,10 @@ namespace Eto.Forms
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.CheckBoxList"/> is enabled.
 		/// </summary>
 		/// <remarks>
-		/// When the control is disabled, the user will not be able to change the selected radio button.
+		/// When the control is disabled, the user will not be able to change the selected check box.
 		/// However, you can still programatically change the selection.
 		/// </remarks>
-		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+		/// <value><see langword="true"/> if enabled; otherwise, <see langword="false"/>.</value>
 		public override bool Enabled
 		{
 			get { return base.Enabled; }
@@ -134,9 +147,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the selected value, which is the <see cref="ListItem"/> or object in your custom data store.
+		/// Gets or sets the selected values, which are <see cref="ListItem"/>s or objects in your custom data store.
 		/// </summary>
-		/// <value>The selected value.</value>
+		/// <value>The selected values.</value>
 		public IEnumerable<object> SelectedValues
 		{
 			get => buttons.Where(r => r.Checked == true).Select(r => r.Tag);
@@ -164,21 +177,20 @@ namespace Eto.Forms
 		static readonly object TextColor_Key = new object();
 
 		/// <summary>
-		/// Gets or sets the color of the radio button text.
+		/// Gets or sets the color of the check box text.
 		/// </summary>
-		/// <value>The color of the radio button text.</value>
+		/// <value>The color of the check box text.</value>
 		public Color TextColor
 		{
 			get { return Properties.Get(TextColor_Key, SystemColors.ControlText); }
 			set
 			{
-				if (value != TextColor)
+				if (value == TextColor) return;
+				
+				Properties.Set(TextColor_Key, value);
+				foreach (var button in buttons)
 				{
-					Properties.Set(TextColor_Key, value);
-					foreach (var button in buttons)
-					{
-						button.TextColor = value;
-					}
+					button.TextColor = value;
 				}
 			}
 		}
@@ -189,24 +201,24 @@ namespace Eto.Forms
 
 			public override void AddItem(object item)
 			{
-				var button = Handler.CreateButton(item);
+				var button = Handler.CreateCheckBox(item);
 				Handler.buttons.Add(button);
-				Handler.LayoutButtons();
+				Handler.LayoutCheckBoxes();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var button = Handler.CreateButton(item);
+				var button = Handler.CreateCheckBox(item);
 				Handler.buttons.Insert(index, button);
-				Handler.LayoutButtons();
+				Handler.LayoutCheckBoxes();
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var button = Handler.buttons[index];
 				Handler.buttons.RemoveAt(index);
-				Handler.UnregisterButton(button);
-				Handler.LayoutButtons();
+				Handler.UnregisterCheckBox(button);
+				Handler.LayoutCheckBoxes();
 				if (button.Checked == true)
 					Handler.TriggerSelectionChanged();
 			}
@@ -218,36 +230,34 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the orientation of the radio buttons.
+		/// Gets or sets the orientation of the check boxes.
 		/// </summary>
-		/// <value>The radio button orientation.</value>
+		/// <value>The check box orientation.</value>
 		public Orientation Orientation
 		{
 			get { return orientation; }
 			set
 			{
-				if (orientation != value)
-				{
-					orientation = value;
-					LayoutButtons();
-				}
+				if (orientation == value) return;
+				
+				orientation = value;
+				LayoutCheckBoxes();
 			}
 		}
 
 		/// <summary>
-		/// Gets or sets the spacing between each radio button.
+		/// Gets or sets the spacing between each check box.
 		/// </summary>
-		/// <value>The spacing between radio buttons.</value>
+		/// <value>The spacing between check boxes.</value>
 		public Size Spacing
 		{
 			get { return spacing; }
 			set
 			{
-				if (spacing != value)
-				{
-					spacing = value;
-					LayoutButtons();
-				}
+				if (spacing == value) return;
+				
+				spacing = value;
+				LayoutCheckBoxes();
 			}
 		}
 
@@ -255,7 +265,7 @@ namespace Eto.Forms
 		/// Gets the item collection, when adding items programatically.
 		/// </summary>
 		/// <remarks>
-		/// This is used when you want to add items manually.  Use the <see cref="DataStore"/>
+		/// This is used when you want to add items manually. Use <see cref="DataStore"/>
 		/// when you have an existing collection you want to bind to directly.
 		/// </remarks>
 		/// <value>The item collection.</value>
@@ -289,7 +299,7 @@ namespace Eto.Forms
 				buttons.Clear();
 				dataStore = new ItemDataStore { Handler = this };
 				dataStore.Register(value);
-				LayoutButtons();
+				LayoutCheckBoxes();
 			}
 		}
 
@@ -313,17 +323,17 @@ namespace Eto.Forms
 				DataStore = CreateDefaultItems();
 			else
 			{
-				LayoutButtons();
+				LayoutCheckBoxes();
 			}
 		}
 
-		void EnsureButtons()
+		void EnsureCheckBoxes()
 		{
 			if (DataStore == null)
 				DataStore = CreateDefaultItems();
 		}
 
-		void LayoutButtons(bool force = false)
+		void LayoutCheckBoxes(bool force = false)
 		{
 			if (!Loaded && !force)
 				return;
@@ -332,18 +342,18 @@ namespace Eto.Forms
 			if (orientation == Orientation.Horizontal)
 			{
 				var row = new TableRow();
-				foreach (var button in buttons)
+				foreach (var checkbox in buttons)
 				{
-					row.Cells.Add(button);
+					row.Cells.Add(checkbox);
 				}
 				row.Cells.Add(null);
 				layout.Rows.Add(row);
 			}
 			else
 			{
-				foreach (var button in buttons)
+				foreach (var checkbox in buttons)
 				{
-					layout.Rows.Add(button);
+					layout.Rows.Add(checkbox);
 				}
 				layout.Rows.Add(null);
 			}
@@ -353,10 +363,10 @@ namespace Eto.Forms
 
 		void Clear()
 		{
-			foreach (var b in buttons)
-				UnregisterButton(b);
+			foreach (var c in buttons)
+				UnregisterCheckBox(c);
 			buttons.Clear();
-			LayoutButtons();
+			LayoutCheckBoxes();
 		}
 
 		void TriggerSelectionChanged()
@@ -365,35 +375,35 @@ namespace Eto.Forms
 			OnSelectedKeysChanged(EventArgs.Empty);
 		}
 
-		CheckBox CreateButton(object item)
+		CheckBox CreateCheckBox(object item)
 		{
-			var button = new CheckBox();
+			var checkbox = new CheckBox();
 			if (Properties.ContainsKey(TextColor_Key))
-				button.TextColor = TextColor;
-			button.CheckedChanged += HandleCheckedChanged;
-			button.Text = ItemTextBinding.GetValue(item);
+				checkbox.TextColor = TextColor;
+			checkbox.CheckedChanged += HandleCheckedChanged;
+			checkbox.Text = ItemTextBinding.GetValue(item);
 			if (ItemToolTipBinding != null)
-				button.ToolTip = ItemToolTipBinding.GetValue(item);
-			button.Tag = item;
-			button.Enabled = base.Enabled;
-			return button;
+				checkbox.ToolTip = ItemToolTipBinding.GetValue(item);
+			checkbox.Tag = item;
+			checkbox.Enabled = base.Enabled;
+			return checkbox;
 		}
 
 		internal override void InternalEnsureLayout()
 		{
 			if (Content == null)
-				LayoutButtons(true);
+				LayoutCheckBoxes(true);
 			base.InternalEnsureLayout();
 		}
 
-		void UnregisterButton(CheckBox button)
+		void UnregisterCheckBox(CheckBox checkbox)
 		{
-			button.CheckedChanged -= HandleCheckedChanged;
+			checkbox.CheckedChanged -= HandleCheckedChanged;
 		}
 
 		void HandleCheckedChanged(object sender, EventArgs e)
 		{
-			var button = (CheckBox)sender;
+			var checkbox = (CheckBox)sender;
 			if (!settingChecked)
 			{
 				TriggerSelectionChanged();
