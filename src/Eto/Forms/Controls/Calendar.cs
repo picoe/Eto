@@ -1,28 +1,33 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Mode for the <see cref="Calendar"/> control
+	/// Possible modes for the <see cref="Calendar"/> control.
 	/// </summary>
 	public enum CalendarMode
 	{
 		/// <summary>
-		/// Calendar allows only a single date to be selected
+		/// Calendar allows only a single date to be selected.
 		/// </summary>
 		Single,
 
 		/// <summary>
-		/// Can select a range of dates. In some cases two calendars will be shown to select the start and end dates of the range.
+		/// Can select a range of dates. In some platforms, two calendars will be shown to select the start and end dates of the range.
 		/// </summary>
 		Range
 	}
 
 	/// <summary>
-	/// Control to show a calendar that the user can select either a single date or range of dates.
+	/// Control to show a Calendar, where the user can select either a single date or a range of dates.
 	/// </summary>
+	/// <example>
+	/// Here is an example for creating a single date calendar and a calendar with a range of dates.
+	/// <code>
+	/// var singleDateCalendar = new Calendar();
+	/// var rangeDateCalendar = new Calendar() { Mode = CalendarMode.Range };
+	/// </code>
+	/// </example>
 	[Handler(typeof(IHandler))]
 	public class Calendar : Control
 	{
@@ -79,7 +84,7 @@ namespace Eto.Forms
 		#endregion
 
 		/// <summary>
-		/// Gets or sets the minimum date entered
+		/// Gets or sets the minimum date entered.
 		/// </summary>
 		/// <value>The minimum date.</value>
 		public DateTime MinDate
@@ -89,7 +94,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the maximum date entered
+		/// Gets or sets the maximum date entered.
 		/// </summary>
 		/// <value>The maximum date.</value>
 		public DateTime MaxDate
@@ -101,6 +106,8 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets or sets the selected date.
 		/// </summary>
+		/// <remarks>If <see cref="Mode"/> is <see cref="CalendarMode.Range"/>, then this will be most recent date the user selected.
+		/// To get the selected range, use <see cref="SelectedRange"/> instead.</remarks>
 		/// <value>The selected date.</value>
 		public DateTime SelectedDate
 		{
@@ -112,7 +119,7 @@ namespace Eto.Forms
 		/// Gets or sets the selected range.
 		/// </summary>
 		/// <remarks>
-		/// The SelectedRange will have the same start/end dates when <see cref="Mode"/> is <see cref="CalendarMode.Single"/>.
+		/// The <see cref="SelectedRange"/> will have the same start/end dates when <see cref="Mode"/> is <see cref="CalendarMode.Single"/>.
 		/// </remarks>
 		/// <value>The selected range.</value>
 		public Range<DateTime> SelectedRange
@@ -122,9 +129,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the mode of the calendar.
+		/// Gets or sets the mode of the <see cref="Calendar"/>.
 		/// </summary>
-		/// <value>The calendar mode.</value>
+		/// <value>The mode of the <see cref="Calendar"/>.</value>
 		public CalendarMode Mode
 		{
 			get { return Handler.Mode; }
@@ -138,9 +145,7 @@ namespace Eto.Forms
 		{
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Calendar"/> class.
-		/// </summary>
+		/// <inheritdoc cref="Calendar()"/>
 		/// <param name="handler">Handler implementation to wrap.</param>
 		protected Calendar(IHandler handler)
 			: base(handler)
@@ -149,10 +154,7 @@ namespace Eto.Forms
 
 		static readonly object callback = new Callback();
 
-		/// <summary>
-		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
-		/// </summary>
-		/// <returns>The callback.</returns>
+		/// <inheritdoc/>
 		protected override object GetCallback()
 		{
 			return callback;
@@ -164,13 +166,15 @@ namespace Eto.Forms
 		public new interface ICallback : Control.ICallback
 		{
 			/// <summary>
-			/// Raises the selected date changed event.
+			/// Raises the <see cref="Calendar.SelectedDateChanged"/> event.
 			/// </summary>
+			// TODO: undocumented params
 			void OnSelectedDateChanged(Calendar widget, EventArgs e);
 
 			/// <summary>
-			/// Raises the selected range changed event.
+			/// Raises the <see cref="Calendar.SelectedRangeChanged"/> event.
 			/// </summary>
+			// TODO: undocumented params
 			void OnSelectedRangeChanged(Calendar widget, EventArgs e);
 		}
 
@@ -179,18 +183,14 @@ namespace Eto.Forms
 		/// </summary>
 		protected new class Callback : Control.Callback, ICallback
 		{
-			/// <summary>
-			/// Raises the selected date changed event.
-			/// </summary>
+			/// <inheritdoc cref="ICallback.OnSelectedDateChanged"/>
 			public void OnSelectedDateChanged(Calendar widget, EventArgs e)
 			{
 				using (widget.Platform.Context)
 					widget.OnSelectedDateChanged(e);
 			}
 
-			/// <summary>
-			/// Raises the selected range changed event.
-			/// </summary>
+			/// <inheritdoc cref="ICallback.OnSelectedRangeChanged"/>
 			public void OnSelectedRangeChanged(Calendar widget, EventArgs e)
 			{
 				using (widget.Platform.Context)
@@ -203,37 +203,19 @@ namespace Eto.Forms
 		/// </summary>
 		public new interface IHandler : Control.IHandler
 		{
-			/// <summary>
-			/// Gets or sets the minimum date entered
-			/// </summary>
-			/// <value>The minimum date.</value>
+			/// <inheritdoc cref="Calendar.MinDate"/>
 			DateTime MinDate { get; set; }
 
-			/// <summary>
-			/// Gets or sets the maximum date entered
-			/// </summary>
-			/// <value>The maximum date.</value>
+			/// <inheritdoc cref="Calendar.MaxDate"/>
 			DateTime MaxDate { get; set; }
 
-			/// <summary>
-			/// Gets or sets the selected range.
-			/// </summary>
-			/// <remarks>
-			/// The SelectedRange will have the same start/end dates when <see cref="Mode"/> is <see cref="CalendarMode.Single"/>.
-			/// </remarks>
-			/// <value>The selected range.</value>
+			/// <inheritdoc cref="Calendar.SelectedRange"/>
 			Range<DateTime> SelectedRange { get; set; }
 
-			/// <summary>
-			/// Gets or sets the selected date.
-			/// </summary>
-			/// <value>The selected date.</value>
+			/// <inheritdoc cref="Calendar.SelectedDate"/>
 			DateTime SelectedDate { get; set; }
 
-			/// <summary>
-			/// Gets or sets the mode of the calendar.
-			/// </summary>
-			/// <value>The calendar mode.</value>
+			/// <inheritdoc cref="Calendar.Mode"/>
 			CalendarMode Mode { get; set; }
 		}
 	}
