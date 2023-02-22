@@ -5,43 +5,48 @@ using System.Windows.Input;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Button image position
+	/// Possible values for how images can be positioned in <see cref="Button"/>s.
 	/// </summary>
-	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ButtonImagePosition
 	{
 		/// <summary>
-		/// Positions the image to the left of the text
+		/// Positions the image to the left of the text.
 		/// </summary>
 		Left,
 
 		/// <summary>
-		/// Positions the image to the right of the text
+		/// Positions the image to the right of the text.
 		/// </summary>
 		Right,
 
 		/// <summary>
-		/// Positions the image on top of the text
+		/// Positions the image above of the text.
 		/// </summary>
 		Above,
 
 		/// <summary>
-		/// Positions the image below the text
+		/// Positions the image below the text.
 		/// </summary>
 		Below,
 
 		/// <summary>
-		/// Positions the image behind the text
+		/// Positions the image behind the text.
 		/// </summary>
 		Overlay
 	}
 
 	/// <summary>
-	/// Button control
+	/// A standard button control.
 	/// </summary>
-	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
+	/// <example>
+	/// <code>
+	/// var myButton = new Button
+	/// {
+	///		Text = "This is my button!"
+	/// };
+	/// myButton.Clicked += (sender, e) => { Console.WriteLine("My button was clicked."); };
+	/// </code> 
+	/// </example>
 	[Handler(typeof(Button.IHandler))]
 	public class Button : TextControl
 	{
@@ -50,7 +55,7 @@ namespace Eto.Forms
 		static readonly object Click_Key = new object();
 
 		/// <summary>
-		/// Event to handle when the user clicks the button
+		/// Event to handle when the user clicks the button.
 		/// </summary>
 		public event EventHandler<EventArgs> Click
 		{
@@ -59,9 +64,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Raises the <see cref="Click"/> event
+		/// Raises the <see cref="Click"/> event.
 		/// </summary>
-		/// <param name="e">Event arguments</param>
+		/// <param name="e">Event arguments.</param>
 		protected virtual void OnClick(EventArgs e)
 		{
 			Properties.TriggerEvent(Click_Key, this, e);
@@ -74,7 +79,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// This will invoke the specified command when the button is pressed.
-		/// The <see cref="ICommand.CanExecute"/> will also used to set the enabled/disabled state of the button.
+		/// The <see cref="ICommand.CanExecute"/> will also be used to set the <see cref="Control.Enabled"/> state of the button.
 		/// </remarks>
 		/// <value>The command to invoke.</value>
 		public ICommand Command
@@ -86,7 +91,7 @@ namespace Eto.Forms
 		static readonly object CommandParameter_Key = new object();
 
 		/// <summary>
-		/// Gets or sets the parameter to pass to the <see cref="Command"/> when executing or determining its CanExecute state.
+		/// Gets or sets the parameter to pass to the <see cref="Command"/> when executing or determining its <see cref="ICommand.CanExecute"/> state.
 		/// </summary>
 		/// <value>The command parameter.</value>
 		public object CommandParameter
@@ -96,9 +101,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the image to display on the button
+		/// Gets or sets the image to display on the button.
 		/// </summary>
-		/// <value>The image to display</value>
+		/// <value>The image to display.</value>
 		public Image Image
 		{
 			get { return Handler.Image; }
@@ -106,9 +111,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the position of the image relative to the text
+		/// Gets or sets the position of the image relative to the text.
 		/// </summary>
-		/// <value>The image position</value>
+		/// <value>The image position on the <see cref="Button"/>.</value>
 		public ButtonImagePosition ImagePosition
 		{
 			get { return Handler.ImagePosition; }
@@ -120,7 +125,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
-		/// 
+		/// <br/>
 		/// Setting this to <see cref="Eto.Drawing.Size.Empty"/> is useful when you want the button to shrink to fit the size
 		/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
 		/// </remarks>
@@ -141,23 +146,20 @@ namespace Eto.Forms
 			{
 				base.Size = value;
 				// Ensure minimum size is at least as small as the desired explicit size
-				if (value.Width != -1 || value.Height != -1)
-				{
-					var min = MinimumSize;
-					var size = Size.Min(value, min);
-					if (size.Width == -1)
-						size.Width = min.Width;
-					if (size.Height == -1)
-						size.Height = min.Height;
-					if (size != min)
-						MinimumSize = size;
-				}
+				if (value.Width == -1 && value.Height == -1) return;
+				
+				var min = MinimumSize;
+				var size = Size.Min(value, min);
+				if (size.Width == -1)
+					size.Width = min.Width;
+				if (size.Height == -1)
+					size.Height = min.Height;
+				if (size != min)
+					MinimumSize = size;
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the width of the control size.
-		/// </summary>
+		/// <inheritdoc/>
 		public override int Width
 		{
 			get => base.Width;
@@ -171,9 +173,7 @@ namespace Eto.Forms
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the height of the control size.
-		/// </summary>
+		/// <inheritdoc/>
 		public override int Height
 		{
 			get => base.Height;
@@ -198,9 +198,21 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class with the specified <paramref name="click"/> handler.
 		/// </summary>
 		/// <remarks>
-		/// This is a convenience constructor to set up the click event.
+		/// This is a convenience constructor to set up the <see cref="Click"/> event.
 		/// </remarks>
-		/// <param name="click">Delegate to handle when the button is clicked.</param>
+		/// <param name="click">Delegate to invoke when the button is clicked.</param>
+		/// <example>
+		/// The following two snippets are identical. 
+		/// Without convenience constructor:
+		/// <code>
+		/// var myButton = new Button() { Text = "This is my button!" };
+		/// myButton.Clicked += (sender, e) => { Console.WriteLine("My button was clicked."); };
+		/// </code>
+		/// With convenience constructor:
+		/// <code>
+		/// var myButton = new Button((sender, e) => Console.WriteLine("My button was clicked.") { Text = "This is my button!" };
+		/// </code>
+		/// </example>
 		public Button(EventHandler<EventArgs> click)
 		{
 			Click += click;
@@ -216,31 +228,28 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
-		/// <summary>
-		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
-		/// </summary>
-		/// <returns>The callback instance to use for this widget</returns>
+		
+		/// <inheritdoc/>
 		protected override object GetCallback() { return callback; }
 
 		/// <summary>
-		/// Callback interface for <see cref="Button"/>
+		/// Callback interface for <see cref="Button"/>.
 		/// </summary>
 		public new interface ICallback : TextControl.ICallback
 		{
 			/// <summary>
-			/// Raises the click event.
+			/// Raises the <see cref="Button.Click"/> event.
 			/// </summary>
+			// TODO: parameters are undocumented.
 			void OnClick(Button widget, EventArgs e);
 		}
 
 		/// <summary>
-		/// Callback implementation for handlers of <see cref="Button"/>
+		/// Callback implementation for handlers of <see cref="Button"/>.
 		/// </summary>
 		protected new class Callback : TextControl.Callback, ICallback
 		{
-			/// <summary>
-			/// Raises the click event.
-			/// </summary>
+			/// <inheritdoc cref="ICallback.OnClick"/>.
 			public void OnClick(Button widget, EventArgs e)
 			{
 				using (widget.Platform.Context)
@@ -249,33 +258,17 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Handler interface for the <see cref="Button"/> control
+		/// Handler interface for the <see cref="Button"/> control.
 		/// </summary>
-		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
-		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public new interface IHandler : TextControl.IHandler
 		{
-			/// <summary>
-			/// Gets or sets the image to display on the button
-			/// </summary>
-			/// <value>The image to display</value>
+			/// <inheritdoc cref="Button.Image"/>
 			Image Image { get; set; }
 
-			/// <summary>
-			/// Gets or sets the image position
-			/// </summary>
-			/// <value>The image position</value>
+			/// <inheritdoc cref="Button.ImagePosition"/>
 			ButtonImagePosition ImagePosition { get; set; }
 
-			/// <summary>
-			/// Gets or sets the minimum size for the button.
-			/// </summary>
-			/// <remarks>
-			/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
-			/// 
-			/// Setting this to <see cref="Eto.Drawing.Size.Empty"/> is useful when you want the button to shrink to fit the size
-			/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
-			/// </remarks>
+			/// <inheritdoc cref="Button.MinimumSize"/>
 			Size MinimumSize { get; set;}
 		}
 	}
