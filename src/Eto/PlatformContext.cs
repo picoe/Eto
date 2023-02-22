@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Eto
+namespace Eto;
+
+/// <summary>
+/// Sets the current generator for a block of code
+/// </summary>
+class PlatformContext : IDisposable
 {
-	/// <summary>
-	/// Sets the current generator for a block of code
-	/// </summary>
-	class PlatformContext : IDisposable
+	readonly Platform previous;
+
+	public PlatformContext(Platform platform)
 	{
-		readonly Platform previous;
+		previous = Platform.Instance;
+		Platform.SetInstance(platform);
+	}
 
-		public PlatformContext(Platform platform)
-		{
-			previous = Platform.Instance;
-			Platform.SetInstance(platform);
-		}
-
-		public void Dispose()
-		{
-			Platform.SetInstance(previous);
-		}
+	public void Dispose()
+	{
+		Platform.SetInstance(previous);
 	}
 }
