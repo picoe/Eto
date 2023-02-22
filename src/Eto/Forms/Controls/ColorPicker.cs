@@ -5,8 +5,14 @@ using System.ComponentModel;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Control to show and pick a color.
+	/// A control to show and pick a color.
 	/// </summary>
+	/// <example>
+	/// An example to create a <see cref="ColorPicker"/> which supports selecting alpha colors:  
+	/// <code>
+	/// var colorPicker = new ColorPicker() { AllowAlpha = true };
+	/// </code>
+	/// </example>
 	[Handler(typeof(ColorPicker.IHandler))]
 	public class ColorPicker : Control
 	{
@@ -36,9 +42,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the selected color value.
+		/// Gets or sets the selected <see cref="Color"/> value.
 		/// </summary>
-		/// <value>The currently selected color value.</value>
+		/// <value>The currently selected <see cref="Color"/> value.</value>
 		public Color Value
 		{
 			get { return Handler.Color; }
@@ -46,13 +52,13 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the user can adjust the Alpha component of the Color.
+		/// Gets or sets a value indicating whether the user can adjust the Alpha component of the <see cref="Color"/>.
 		/// </summary>
 		/// <remarks>
 		/// This may or may not be supported in all platforms (e.g. WinForms).  
 		/// Use <see cref="SupportsAllowAlpha"/> to determine if the current platform supports this feature.
 		/// </remarks>
-		/// <value><c>true</c> to allow adjustment of alpha; otherwise, <c>false</c>.</value>
+		/// <value><see langword="true"/> to allow adjustment of Alpha; otherwise, <see langword="false"/>.</value>
 		/// <seealso cref="SupportsAllowAlpha"/>
 		public bool AllowAlpha
 		{
@@ -66,7 +72,7 @@ namespace Eto.Forms
 		/// <remarks>
 		/// If not supported, the setting will be ignored.
 		/// </remarks>
-		/// <value><c>true</c> AllowAlpha is supported; otherwise, <c>false</c>.</value>
+		/// <value><see langword="true"/> <see cref="AllowAlpha"/> is supported; otherwise, <see langword="false"/>.</value>
 		/// <seealso cref="AllowAlpha"/>
 		public bool SupportsAllowAlpha => Handler.SupportsAllowAlpha;
 
@@ -89,31 +95,31 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		
 		/// <summary>
-		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations.
 		/// </summary>
-		/// <returns>The callback instance to use for this widget</returns>
+		/// <returns>The callback instance to use for this widget.</returns>
 		protected override object GetCallback() { return callback; }
 
 		/// <summary>
-		/// Callback interface for <see cref="ColorPicker"/>
+		/// A callback interface for <see cref="ColorPicker"/>.
 		/// </summary>
 		public new interface ICallback : Control.ICallback
 		{
 			/// <summary>
 			/// Raises the color changed event.
 			/// </summary>
+			// TODO: is missing documentation for parameters
 			void OnColorChanged(ColorPicker widget, EventArgs e);
 		}
 
 		/// <summary>
-		/// Callback implementation for handlers of <see cref="ColorPicker"/>
+		/// A callback implementation for handlers of <see cref="ColorPicker"/>.
 		/// </summary>
 		protected new class Callback : Control.Callback, ICallback
 		{
-			/// <summary>
-			/// Raises the color changed event.
-			/// </summary>
+			/// <inheritdoc cref="ICallback.OnColorChanged"/>
 			public void OnColorChanged(ColorPicker widget, EventArgs e)
 			{
 				using (widget.Platform.Context)
@@ -122,37 +128,21 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Handler interface for the <see cref="ColorPicker"/> control
+		/// Handler interface for the <see cref="ColorPicker"/> control.
 		/// </summary>
-		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
-		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public new interface IHandler : Control.IHandler
 		{
 			/// <summary>
 			/// Gets or sets the selected color.
 			/// </summary>
 			/// <value>The selected color.</value>
+			// TODO: the variable name here clashes with the actual color property for the colorpicker "Value". should that be changed? 
 			Color Color { get; set; }
 
-			/// <summary>
-			/// Gets or sets a value indicating whether the user can adjust the Alpha component of the Color.
-			/// </summary>
-			/// <remarks>
-			/// This may or may not be supported in all platforms (e.g. WinForms).  
-			/// Use <see cref="SupportsAllowAlpha"/> to determine if the current platform supports this feature.
-			/// </remarks>
-			/// <value><c>true</c> to allow adjustment of alpha; otherwise, <c>false</c>.</value>
-			/// <seealso cref="SupportsAllowAlpha"/>
+			/// <inheritdoc cref="ColorPicker.AllowAlpha"/>
 			bool AllowAlpha { get; set; }
 
-			/// <summary>
-			/// Gets a value indicating that the current platform supports the <see cref="AllowAlpha"/> property.
-			/// </summary>
-			/// <remarks>
-			/// If not supported, the setting will be ignored.
-			/// </remarks>
-			/// <value><c>true</c> AllowAlpha is supported; otherwise, <c>false</c>.</value>
-			/// <seealso cref="AllowAlpha"/>
+			/// <inheritdoc cref="ColorPicker.SupportsAllowAlpha"/>
 			bool SupportsAllowAlpha { get; }
 		}
 	}
