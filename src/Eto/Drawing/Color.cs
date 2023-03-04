@@ -535,16 +535,16 @@ public struct Color : IEquatable<Color>, IComparable<Color>, IControlObjectSourc
 
 			if (alphaIsFloat && i == alphaIndex)
 			{
-				if (!double.TryParse(array[i], out fnum))
+				if (!double.TryParse(array[i], NumberStyles.Number, CultureInfo.InvariantCulture, out fnum))
 					goto invalid;
 				if (!isPercent)
 					fnum *= 255;
 			}
-			else if (uint.TryParse(array[i], out var num))
+			else if (uint.TryParse(array[i],NumberStyles.Number, CultureInfo.InvariantCulture, out var num))
 			{
 				fnum = num;
 			}
-			else if (double.TryParse(array[i], out fnum))
+			else if (double.TryParse(array[i], NumberStyles.Number, CultureInfo.InvariantCulture, out fnum))
 			{
 				if (!isPercent)
 					fnum *= 255;
