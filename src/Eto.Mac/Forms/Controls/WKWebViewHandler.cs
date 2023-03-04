@@ -290,7 +290,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public void LoadHtml(string html, Uri baseUri)
 		{
-			Control.LoadHtmlString(html, baseUri.ToNS());
+			var baseNSUrl = baseUri.ToNS();
+			if (baseNSUrl != null)
+				Control.LoadFileUrl(baseNSUrl, baseNSUrl);
+			Control.LoadHtmlString(html, baseNSUrl);
 		}
 
 		public void Stop() => Control.StopLoading();
