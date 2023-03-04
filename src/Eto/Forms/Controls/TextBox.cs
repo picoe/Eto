@@ -36,7 +36,7 @@ public enum AutoSelectMode
 /// </summary>
 /// <seealso cref="TextArea"/>
 [Handler(typeof(TextBox.IHandler))]
-public class TextBox : TextControl
+public class TextBox : TextControl, IHideControlBorder
 {
 	static readonly object SuppressTextChanging_Key = new object();
 
@@ -127,15 +127,7 @@ public class TextBox : TextControl
 		set { Handler.PlaceholderText = value; }
 	}
 
-	/// <summary>
-	/// Gets or sets a value indicating whether to show the control's border.
-	/// </summary>
-	/// <remarks>
-	/// This is a hint to omit the border of the control and show it as plainly as possible.
-	/// 
-	/// Typically used when you want to show the control within a cell of the <see cref="GridView"/>.
-	/// </remarks>
-	/// <value><c>true</c> to show the control border; otherwise, <c>false</c>.</value>
+	/// <inheritdoc/>
 	[DefaultValue(true)]
 	public bool ShowBorder
 	{

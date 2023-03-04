@@ -60,7 +60,7 @@ public class DropDownFormatEventArgs : EventArgs
 /// Presents a drop down to select from a list of items
 /// </summary>
 [Handler(typeof(DropDown.IHandler))]
-public class DropDown : ListControl
+public class DropDown : ListControl, IHideControlBorder
 {
 	new IHandler Handler => (IHandler)base.Handler;
 
@@ -90,15 +90,7 @@ public class DropDown : ListControl
 	/// <value>The binding to get the image for each item.</value>
 	public IIndirectBinding<Image> ItemImageBinding { get; set; }
 
-	/// <summary>
-	/// Gets or sets a value indicating whether to show the control's border.
-	/// </summary>
-	/// <remarks>
-	/// This is a hint to omit the border of the control and show it as plainly as possible.
-	/// 
-	/// Typically used when you want to show the control within a cell of the <see cref="GridView"/>.
-	/// </remarks>
-	/// <value><c>true</c> to show the control border; otherwise, <c>false</c>.</value>
+	/// <inheritdoc/>
 	[DefaultValue(true)]
 	public bool ShowBorder
 	{
