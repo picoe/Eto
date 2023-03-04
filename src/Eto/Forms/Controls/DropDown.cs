@@ -175,10 +175,7 @@ public class DropDown : ListControl
 	/// <param name="e">Event Arguments</param>
 	protected virtual void OnFormatItem(DropDownFormatEventArgs e) => Properties.TriggerEvent(FormatItemEvent, this, e);
 
-	/// <summary>
-	/// Gets the callback.
-	/// </summary>
-	/// <returns>The callback.</returns>
+	/// <inheritdoc/>
 	protected override object GetCallback() => new Callback();
 
 	/// <summary>
