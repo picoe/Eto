@@ -25,10 +25,10 @@ namespace Eto.Test.UnitTests.Forms
 				_ = new Application(Platform.Instance);
 			});
 		}
-
-		[TestCase(-1)]
-		[TestCase(10)]
-		[TestCase(1000)]
+		
+		[TestCase(-1), ManualTest]
+		[TestCase(10), ManualTest]
+		[TestCase(1000), ManualTest]
 		public void RunIterationShouldAllowBlocking(int delay)
 		{
 			int count = 0;
@@ -40,7 +40,7 @@ namespace Eto.Test.UnitTests.Forms
 			{
 				form = new Form();
 				form.Closed += (sender, e) => running = false;
-
+				form.Title = "RunIterationShouldAllowBlocking (" + nameof(delay) + ": " + delay + ")"; 
 				var stopButton = new Button { Text = "Stop" };
 				stopButton.Click += (sender, e) =>
 				{
@@ -61,7 +61,7 @@ namespace Eto.Test.UnitTests.Forms
 
 				layout.Padding = 10;
 				layout.DefaultSpacing = new Size(4, 4);
-				layout.Add(new Label { Text = "The controls in this form should\nbe functional while test is running,\nand count should increase without moving the mouse.", TextAlignment = TextAlignment.Center });
+				layout.Add(new Label { Text = "The controls in this form should\nbe functional while test is running,\nand count should increase without moving the mouse.\nControls should be non-interactable during the delay.", TextAlignment = TextAlignment.Center });
 				layout.Add(new DropDown { DataStore = new[] { "Item 1", "Item 2", "Item 3" } });
 				layout.Add(new TextBox());
 				layout.Add(new DateTimePicker());
