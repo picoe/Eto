@@ -591,6 +591,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[InvokeOnUI]
 		public void ItalicTypefaceShouldApply()
 		{
+			if (Platform.Instance.IsGtk)
+				Assert.Inconclusive("Gtk does not support RTF format");
+			
 			var richText = new RichTextArea();
 
 			var text = "Some Text";
@@ -606,9 +609,12 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[InvokeOnUI]
 		public void EmptyRtfShouldNotCrash()
 		{
+			if (Platform.Instance.IsGtk)
+				Assert.Inconclusive("Gtk does not support RTF format");
+			
 			var richText = new RichTextArea();
 
-			var rtf = @"{\rtf1\ansi\ansicpg1252{\fonttbl}{\colortbl;\red255\green255\blue255;}}";
+			const string rtf = @"{\rtf1\ansi\ansicpg1252{\fonttbl}{\colortbl;\red255\green255\blue255;}}";
 			richText.Rtf = rtf;
 
 			Assert.AreEqual(string.Empty, richText.Text);
