@@ -1480,7 +1480,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 
 	static readonly object callback = new Callback();
 	/// <summary>
-	/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+	/// Gets an instance of an object used to perform callbacks to the widget from handler implementations.
 	/// </summary>
 	/// <returns>The callback instance to use for this widget</returns>
 	protected override object GetCallback() { return callback; }

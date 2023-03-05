@@ -5,42 +5,48 @@ using Eto.Drawing;
 namespace Eto.Forms;
 
 /// <summary>
-/// Modes for the <see cref="DateTimePicker"/>
+/// Available modes for how a <see cref="DateTimePicker"/> can be displayed.
 /// </summary>
 [Flags]
 public enum DateTimePickerMode
 {
 	/// <summary>
-	/// Show only the date component
+	/// Only the date component will be shown.
 	/// </summary>
 	Date = 1,
 	/// <summary>
-	/// Show only the time component
+	/// Only the time component will be shown.
 	/// </summary>
 	Time = 2,
 	/// <summary>
-	/// Show both the date and time components
+	/// Both the date and time components will be shown.
 	/// </summary>
 	DateTime = Date | Time
 }
 
 /// <summary>
-/// Date/time picker control to enter a date and/or time value
+/// A control that allows the user to select a date and/or a time.
 /// </summary>
+/// <example>
+/// Here is an example that creates a date/time picker, where the user will only be able to choose between two dates:
+/// <code>
+/// var dateTimePicker = new DateTimePicker () { MinDate = DateTime.Now, MaxDate = DateTime.Now.AddYears(2) }; 
+/// </code>
+/// </example>
 [Handler(typeof(DateTimePicker.IHandler))]
 public class DateTimePicker : CommonControl
 {
 	new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 	/// <summary>
-	/// Occurs when the <see cref="DateTimePicker.Value"/> property has changed by the user
+	/// Occurs when the <see cref="DateTimePicker.Value"/> property has changed by the user.
 	/// </summary>
 	public event EventHandler<EventArgs> ValueChanged;
 
 	/// <summary>
 	/// Raises the <see cref="ValueChanged"/> event.
 	/// </summary>
-	/// <param name="e">Event arguments</param>
+	/// <param name="e">Event arguments.</param>
 	protected virtual void OnValueChanged(EventArgs e)
 	{
 		if (ValueChanged != null)
@@ -48,7 +54,7 @@ public class DateTimePicker : CommonControl
 	}
 
 	/// <summary>
-	/// Gets or sets the minimum date entered
+	/// Gets or sets the minimum date that is allowed to be entered.
 	/// </summary>
 	/// <value>The minimum date.</value>
 	public DateTime MinDate
@@ -58,7 +64,7 @@ public class DateTimePicker : CommonControl
 	}
 
 	/// <summary>
-	/// Gets or sets the maximum date entered
+	/// Gets or sets the maximum date that is allowed to be entered.
 	/// </summary>
 	/// <value>The maximum date.</value>
 	public DateTime MaxDate
@@ -68,7 +74,7 @@ public class DateTimePicker : CommonControl
 	}
 
 	/// <summary>
-	/// Gets or sets the value of the date/time picker. Null to display blank or with a unchecked checkbox.
+	/// Gets or sets the value of the date/time picker. <see langword="null"/> to display blank or with a unchecked checkbox.
 	/// </summary>
 	/// <value>The current value.</value>
 	public DateTime? Value
@@ -96,7 +102,7 @@ public class DateTimePicker : CommonControl
 	}
 
 	/// <summary>
-	/// Gets or sets the mode of the date/time picker.
+	/// Gets or sets the mode of how the date/time picker will be displayed.
 	/// </summary>
 	/// <value>The picker mode.</value>
 	[DefaultValue(DateTimePickerMode.Date)]
@@ -106,13 +112,7 @@ public class DateTimePicker : CommonControl
 		set { Handler.Mode = value; }
 	}
 
-	/// <summary>
-	/// Gets or sets the color of the text.
-	/// </summary>
-	/// <remarks>
-	/// By default, the text will get a color based on the user's theme. However, this is usually black.
-	/// </remarks>
-	/// <value>The color of the text.</value>
+	/// <inheritdoc cref="TextControl.TextColor"/>
 	public Color TextColor
 	{
 		get { return Handler.TextColor; }
@@ -124,10 +124,9 @@ public class DateTimePicker : CommonControl
 	/// </summary>
 	/// <remarks>
 	/// This is a hint to omit the border of the control and show it as plainly as possible.
-	/// 
 	/// Typically used when you want to show the control within a cell of the <see cref="GridView"/>.
 	/// </remarks>
-	/// <value><c>true</c> to show the control border; otherwise, <c>false</c>.</value>
+	/// <value><see langword="true"/> to show the control border; otherwise, <see langword="false"/>.</value>
 	[DefaultValue(true)]
 	public bool ShowBorder
 	{
@@ -136,10 +135,8 @@ public class DateTimePicker : CommonControl
 	}
 
 	static readonly object callback = new Callback();
-	/// <summary>
-	/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
-	/// </summary>
-	/// <returns>The callback instance to use for this widget</returns>
+	
+	/// <inheritdoc/>
 	protected override object GetCallback() { return callback; }
 
 	/// <summary>
@@ -147,9 +144,8 @@ public class DateTimePicker : CommonControl
 	/// </summary>
 	public new interface ICallback : CommonControl.ICallback
 	{
-		/// <summary>
-		/// Raises the value changed event.
-		/// </summary>
+		/// <summary><inheritdoc cref="DateTimePicker.OnValueChanged"/></summary>
+		// TODO: parameters
 		void OnValueChanged(DateTimePicker widget, EventArgs e);
 	}
 
@@ -158,9 +154,7 @@ public class DateTimePicker : CommonControl
 	/// </summary>
 	protected new class Callback : CommonControl.Callback, ICallback
 	{
-		/// <summary>
-		/// Raises the value changed event.
-		/// </summary>
+		/// <inheritdoc cref="ICallback.OnValueChanged"/>
 		public void OnValueChanged(DateTimePicker widget, EventArgs e)
 		{
 			using (widget.Platform.Context)
@@ -175,48 +169,22 @@ public class DateTimePicker : CommonControl
 	/// </summary>
 	public new interface IHandler : CommonControl.IHandler
 	{
-		/// <summary>
-		/// Gets or sets the value of the date/time picker
-		/// </summary>
-		/// <value>The current value.</value>
+		/// <inheritdoc cref="DateTimePicker.Value"/>
 		DateTime? Value { get; set; }
 
-		/// <summary>
-		/// Gets or sets the minimum date entered
-		/// </summary>
-		/// <value>The minimum date.</value>
+		/// <inheritdoc cref="DateTimePicker.MinDate"/>
 		DateTime MinDate { get; set; }
 
-		/// <summary>
-		/// Gets or sets the maximum date entered
-		/// </summary>
-		/// <value>The maximum date.</value>
+		/// <inheritdoc cref="DateTimePicker.MaxDate"/>
 		DateTime MaxDate { get; set; }
 
-		/// <summary>
-		/// Gets or sets the mode of the date/time picker.
-		/// </summary>
-		/// <value>The picker mode.</value>
+		/// <inheritdoc cref="DateTimePicker.Mode"/>
 		DateTimePickerMode Mode { get; set; }
 
-		/// <summary>
-		/// Gets or sets the color of the text.
-		/// </summary>
-		/// <remarks>
-		/// By default, the text will get a color based on the user's theme. However, this is usually black.
-		/// </remarks>
-		/// <value>The color of the text.</value>
+		/// <inheritdoc cref="DateTimePicker.TextColor"/>
 		Color TextColor { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to show the control's border.
-		/// </summary>
-		/// <remarks>
-		/// This is a hint to omit the border of the control and show it as plainly as possible.
-		/// 
-		/// Typically used when you want to show the control within a cell of the <see cref="GridView"/>.
-		/// </remarks>
-		/// <value><c>true</c> to show the control border; otherwise, <c>false</c>.</value>
+		/// <inheritdoc cref="DateTimePicker.ShowBorder"/>
 		bool ShowBorder { get; set; }
 	}
 
