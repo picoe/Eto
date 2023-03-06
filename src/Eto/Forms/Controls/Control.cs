@@ -15,9 +15,9 @@ namespace Eto.Forms;
 /// load/unload, and common events.
 /// </remarks>
 #if !NETSTANDARD
-	[ToolboxItem(true)]
-	[DesignTimeVisible(true)]
-	[DesignerCategory("Eto.Forms")]
+	[sc.ToolboxItem(true)]
+	[sc.DesignTimeVisible(true)]
+	[sc.DesignerCategory("Eto.Forms")]
 #endif
 [sc.TypeConverter(typeof(ControlConverter))]
 public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource

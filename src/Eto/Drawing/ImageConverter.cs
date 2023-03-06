@@ -130,7 +130,7 @@ class ImageConverterInternal : sc.TypeConverter
 /// <copyright>(c) 2014 by Curtis Wensley</copyright>
 /// <license type="BSD-3">See LICENSE for full terms</license>
 [Obsolete("Since 2.5. Use TypeDescriptor.GetConverter instead")]
-public class ImageConverter : TypeConverter
+public class ImageConverter : sc.TypeConverter
 {
 	/// <summary>
 	/// Prefix to use to load an image from a resource of an assembly
@@ -158,7 +158,7 @@ public class ImageConverter : TypeConverter
 	/// <param name="context">Conversion context</param>
 	/// <param name="sourceType">Type to convert from</param>
 	/// <returns>True if this converter can handle converting from the specified <paramref name="sourceType"/> to an image</returns>
-	public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+	public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 	{
 		return sourceType == typeof(string) || typeof(NamespaceInfo).IsAssignableFrom(sourceType) || typeof(Stream).IsAssignableFrom(sourceType);
 	}
@@ -169,7 +169,7 @@ public class ImageConverter : TypeConverter
 	/// <param name="context">Conversion context</param>
 	/// <param name="destinationType">Type to convert to</param>
 	/// <returns>True if this converter can convert to the specified <paramref name="destinationType"/>, otherwise false.</returns>
-	public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+	public override bool CanConvertTo(sc.ITypeDescriptorContext context, Type destinationType)
 	{
 		return false;
 	}
@@ -213,7 +213,7 @@ public class ImageConverter : TypeConverter
 	/// <param name="culture">Culture to perform the conversion</param>
 	/// <param name="value">Value to convert to an image</param>
 	/// <returns>A new instance of an image, or null if it cannot be converted</returns>
-	public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+	public override object ConvertFrom(sc.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 	{
 		if (value is NamespaceInfo ns)
 			return LoadImage(ns);
