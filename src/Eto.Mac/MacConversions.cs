@@ -426,28 +426,34 @@ namespace Eto.Mac
 
 		public static TextAlignment ToEto(this NSTextAlignment align)
 		{
+			// NSTextAlignment Right and Center are interchanged on Arm64 MacOS
+			// See https://github.com/picoe/Eto/issues/2250 
+			bool isArm = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture == System.Runtime.InteropServices.Architecture.Arm64;
 			switch (align)
 			{
 				default:
 				case NSTextAlignment.Left:
 					return TextAlignment.Left;
 				case NSTextAlignment.Right:
-					return TextAlignment.Right;
+					return isArm ? TextAlignment.Center : TextAlignment.Right;
 				case NSTextAlignment.Center:
-					return TextAlignment.Center;
+					return isArm ? TextAlignment.Right : TextAlignment.Center;
 			}
 		}
 
 		public static NSTextAlignment ToNS(this TextAlignment align)
 		{
+			// NSTextAlignment Right and Center are interchanged on Arm64 MacOS
+			// See https://github.com/picoe/Eto/issues/2250 
+			bool isArm = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture == System.Runtime.InteropServices.Architecture.Arm64;
 			switch (align)
 			{
 				case TextAlignment.Left:
 					return NSTextAlignment.Left;
 				case TextAlignment.Center:
-					return NSTextAlignment.Center;
+					return isArm ? NSTextAlignment.Right : NSTextAlignment.Center;
 				case TextAlignment.Right:
-					return NSTextAlignment.Right;
+					return isArm ? NSTextAlignment.Center : NSTextAlignment.Right;
 				default:
 					throw new NotSupportedException();
 			}
