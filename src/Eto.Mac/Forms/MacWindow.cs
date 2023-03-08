@@ -15,6 +15,11 @@ namespace Eto.Mac.Forms
 		public WeakReference WeakHandler { get; set; }
 
 		public IMacWindow Handler { get { return (IMacWindow)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
+		
+		public EtoWindow(NativeHandle handle)
+			: base(handle)
+		{
+		}
 
 		public EtoWindow(CGRect rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
@@ -59,7 +64,7 @@ namespace Eto.Mac.Forms
 				base.Zoom(sender ?? this); // null when double clicking the title bar, but xammac/monomac doesn't allow it
 				zoom = true;
 			}
-			Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
+			Handler?.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
 		}
 
 		public bool DisableSetOrigin { get; set; }

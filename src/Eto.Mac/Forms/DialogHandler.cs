@@ -37,6 +37,11 @@ namespace Eto.Mac.Forms
 				get { return base.Handler as DialogHandler; }
 				set { base.Handler = value; }
 			}
+			
+			public EtoDialogWindow(NativeHandle handle)
+				: base(handle)
+			{
+			}
 
 			public EtoDialogWindow()
 				: base(new CGRect(0, 0, 200, 200), NSWindowStyle.Closable | NSWindowStyle.Titled, NSBackingStore.Buffered, false)
@@ -46,15 +51,12 @@ namespace Eto.Mac.Forms
 			[Export("cancelOperation:")]
 			public void CancelOperation(IntPtr sender)
 			{
-				if (Handler.AbortButton != null)
+				var handler = Handler?.AbortButton?.Handler as IMacViewHandler;
+				if (handler != null)
 				{
-					var handler = Handler.AbortButton.Handler as IMacViewHandler;
-					if (handler != null)
-					{
-						var callback = handler.Callback as Button.ICallback;
-						if (callback != null)
-							callback.OnClick(Handler.AbortButton, EventArgs.Empty);
-					}
+					var callback = handler.Callback as Button.ICallback;
+					if (callback != null)
+						callback.OnClick(Handler.AbortButton, EventArgs.Empty);
 				}
 			}
 
