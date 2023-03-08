@@ -235,12 +235,18 @@ namespace Eto.Mac.Forms.Controls
 			/// </summary>
 			public override void DrawBackground(CGRect clipRect)
 			{
-				var backgroundColor = Handler.BackgroundColor;
-				if (backgroundColor != Colors.Transparent) {
-					backgroundColor.ToNSUI ().Set ();
-					NSGraphics.RectFill (clipRect);
-				} else
-					base.DrawBackground (clipRect);
+				var h = Handler;
+				if (h != null)
+				{
+					var backgroundColor = h.BackgroundColor;
+					if (backgroundColor != Colors.Transparent)
+					{
+						backgroundColor.ToNSUI().Set();
+						NSGraphics.RectFill(clipRect);
+						return;
+					}
+				}
+				base.DrawBackground (clipRect);
 			}
 
 			public EtoOutlineView()
