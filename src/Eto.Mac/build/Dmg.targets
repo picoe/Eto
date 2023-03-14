@@ -39,6 +39,10 @@
   <Target Name="MacCreateDmg" DependsOnTargets="MacBuildAppBundle">
     <Message Text="Creating $(DmgName).dmg" />
 
+    <!-- Create the output path where the dmg will go if it doesn't exist yet-->
+    <MakeDir Directories="$(DmgOutputPath)" />
+
+    <!-- Remove the old/current temp files and dmg -->
     <RemoveDir Directories="$(_MacDmgTempPath)" />
     <Delete Files="$(_DmgPath)" />
 
