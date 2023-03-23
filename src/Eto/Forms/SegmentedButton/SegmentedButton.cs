@@ -61,6 +61,7 @@ public class SegmentedButton : Control, IBindableWidgetContainer
 	public SegmentedButton()
 	{
 		Items = new SegmentedItemCollection(this);
+		Initialize();
 	}
 
 	/// <inheritdoc />
@@ -328,6 +329,7 @@ public class SegmentedButton : Control, IBindableWidgetContainer
 	/// <summary>
 	/// Handler interface for <see cref="SegmentedButton"/>.
 	/// </summary>
+	[AutoInitialize(false)]
 	public new interface IHandler : Control.IHandler
 	{
 		/// <summary>
