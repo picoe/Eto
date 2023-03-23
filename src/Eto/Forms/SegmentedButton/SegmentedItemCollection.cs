@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Eto.Forms;
 
 /// <summary>
 /// Collection of <see cref="SegmentedItem"/> objects for the <see cref="SegmentedButton"/>.
 /// </summary>
-public class SegmentedItemCollection : Collection<SegmentedItem>
+public class SegmentedItemCollection : ObservableCollection<SegmentedItem>
 {
 	SegmentedButton Parent { get; }
 	SegmentedButton.IHandler Handler => Parent.Handler as SegmentedButton.IHandler;
@@ -64,7 +65,8 @@ public class SegmentedItemCollection : Collection<SegmentedItem>
 	/// <param name="item">Item to replace with.</param>
 	protected override void SetItem(int index, SegmentedItem item)
 	{
-		this[index].Parent = null;
+		var oldItem = this[index];
+		oldItem.Parent = null;
 		base.SetItem(index, item);
 		Handler.SetItem(index, item);
 		item.Parent = Parent;

@@ -19,13 +19,13 @@ public class ThemedMenuSegmentedItemHandler : ThemedSegmentedItemHandler<MenuSeg
 	/// <summary>
 	/// Delay for the menu to show when the mouse is down and <see cref="CanSelect"/> is <c>true</c>.
 	/// </summary>
-	public TimeSpan MenuDelay { get; set; } = TimeSpan.FromSeconds(0.5);
+	public virtual TimeSpan MenuDelay { get; set; } = TimeSpan.FromSeconds(0.5);
 
 	/// <summary>
 	/// Gets or sets the indicator to show to the right of the text.
 	/// </summary>
 	/// <value>The menu indicator.</value>
-	public string MenuIndicator
+	public virtual string MenuIndicator
 	{
 		get => menuIndicator;
 		set
@@ -36,10 +36,10 @@ public class ThemedMenuSegmentedItemHandler : ThemedSegmentedItemHandler<MenuSeg
 	}
 
 	/// <inheritdoc/>
-	public ContextMenu Menu { get; set; }
+	public virtual ContextMenu Menu { get; set; }
 
 	/// <inheritdoc/>
-	public bool CanSelect { get; set; }
+	public virtual bool CanSelect { get; set; }
 
 	/// <inheritdoc/>
 	public override string Text
@@ -125,13 +125,13 @@ public abstract class ThemedSegmentedItemHandler<TWidget, TCallback> : WidgetHan
 	protected ThemedSegmentedButtonHandler ParentHandler => Widget.Parent?.Handler as ThemedSegmentedButtonHandler;
 
 	/// <inheritdoc/>
-	public bool Enabled { get => Control.Enabled; set => Control.Enabled = value; }
+	public virtual bool Enabled { get => Control.Enabled; set => Control.Enabled = value; }
 	/// <inheritdoc/>
-	public bool Visible { get => Control.Visible; set => Control.Visible = value; }
+	public virtual bool Visible { get => Control.Visible; set => Control.Visible = value; }
 	/// <inheritdoc/>
-	public string ToolTip { get => Control.ToolTip; set => Control.ToolTip = value; }
+	public virtual string ToolTip { get => Control.ToolTip; set => Control.ToolTip = value; }
 	/// <inheritdoc/>
-	public int Width { get => Control.Width; set => Control.Width = value; }
+	public virtual int Width { get => Control.Width; set => Control.Width = value; }
 	/// <inheritdoc/>
 	public virtual string Text
 	{
@@ -143,9 +143,9 @@ public abstract class ThemedSegmentedItemHandler<TWidget, TCallback> : WidgetHan
 		}
 	}
 	/// <inheritdoc/>
-	public Image Image { get => Control.Image; set => Control.Image = value; }
+	public virtual Image Image { get => Control.Image; set => Control.Image = value; }
 	/// <inheritdoc/>
-	public bool Selected
+	public virtual bool Selected
 	{
 		get => Control.Checked;
 		set
@@ -224,7 +224,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	protected override Panel CreateControl() => new Panel();
 
 	/// <inheritdoc/>
-	public SegmentedSelectionMode SelectionMode
+	public virtual SegmentedSelectionMode SelectionMode
 	{
 		get => selectionMode;
 		set
@@ -247,10 +247,10 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	/// Gets or sets the spacing between the buttons
 	/// </summary>
 	/// <value>The spacing between the buttons.</value>
-	public int Spacing { get; set; }
+	public virtual int Spacing { get; set; }
 
 	/// <inheritdoc/>
-	public int SelectedIndex
+	public virtual int SelectedIndex
 	{
 		get
 		{
@@ -273,7 +273,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	}
 
 	/// <inheritdoc/>
-	public IEnumerable<int> SelectedIndexes
+	public virtual IEnumerable<int> SelectedIndexes
 	{
 		get
 		{
@@ -309,7 +309,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	}
 
 	/// <inheritdoc/>
-	public void ClearItems()
+	public virtual void ClearItems()
 	{
 		var hasSelected = SelectedIndex != -1;
 		CreateTable(false);
@@ -322,7 +322,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	TableCell GetCell(SegmentedItem item) => new TableCell(GetControl(item));
 
 	/// <inheritdoc/>
-	public void ClearSelection()
+	public virtual void ClearSelection()
 	{
 		suppressSelectionChanged++;
 		var wasSelected = false;
@@ -338,7 +338,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	}
 
 	/// <inheritdoc/>
-	public void InsertItem(int index, SegmentedItem item)
+	public virtual void InsertItem(int index, SegmentedItem item)
 	{
 		var isSelected = item.Selected;
 		CreateTable(false);
@@ -354,7 +354,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	}
 
 	/// <inheritdoc/>
-	public void RemoveItem(int index, SegmentedItem item)
+	public virtual void RemoveItem(int index, SegmentedItem item)
 	{
 		var wasSelected = item.Selected;
 		CreateTable(false);
@@ -363,7 +363,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	}
 
 	/// <inheritdoc/>
-	public void SelectAll()
+	public virtual void SelectAll()
 	{
 		suppressSelectionChanged++;
 		bool wasChanged = false;
@@ -378,7 +378,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 	}
 
 	/// <inheritdoc/>
-	public void SetItem(int index, SegmentedItem item)
+	public virtual void SetItem(int index, SegmentedItem item)
 	{
 		var wasSelected = Widget.Items[index].Selected;
 		var isSelected = item.Selected;
