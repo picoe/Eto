@@ -100,48 +100,72 @@
 		<Setter Property="Padding" Value="2" />
 	</Style>
 
+    <SolidColorBrush x:Key="ToggleButton.Checked.Background" Color="#FFBBDDEE"/>
+    <SolidColorBrush x:Key="ToggleButton.Checked.Border" Color="#FF255A83"/>
+    <SolidColorBrush x:Key="ToggleButton.Static.Background" Color="#FFDDDDDD"/>
+    <SolidColorBrush x:Key="ToggleButton.Static.Border" Color="#FF707070"/>
+    <SolidColorBrush x:Key="ToggleButton.MouseOver.Background" Color="#FFBEE6FD"/>
+    <SolidColorBrush x:Key="ToggleButton.MouseOver.Border" Color="#FF3C7FB1"/>
+    <SolidColorBrush x:Key="ToggleButton.Pressed.Background" Color="#FFC4E5F6"/>
+    <SolidColorBrush x:Key="ToggleButton.Pressed.Border" Color="#FF2C628B"/>
+    <SolidColorBrush x:Key="ToggleButton.Disabled.Background" Color="#FFF4F4F4"/>
+    <SolidColorBrush x:Key="ToggleButton.Disabled.Border" Color="#FFADB2B5"/>
+    <SolidColorBrush x:Key="ToggleButton.Disabled.Foreground" Color="#FF838383"/>
+
     <Style TargetType="efc:EtoToggleButton">
 		<Setter Property="Padding" Value="2" />
-        <Style.Resources>
-            <Style TargetType="Border">
-                <Style.Triggers>
-                    <MultiDataTrigger>
-						<MultiDataTrigger.Conditions>
-							<Condition Binding="{Binding Path=(e:WpfProperties.EtoStyle), RelativeSource={RelativeSource AncestorType={x:Type efc:EtoToggleButton}}}" Value="SegmentedButton" />
-							<Condition Binding="{Binding Path=(e:WpfProperties.EtoModifier), RelativeSource={RelativeSource AncestorType={x:Type efc:EtoToggleButton}}}" Value="first" />
-						</MultiDataTrigger.Conditions>
-                        <Setter Property="CornerRadius" Value="4,0,0,4" />
-                    </MultiDataTrigger>
-                    <MultiDataTrigger>
-						<MultiDataTrigger.Conditions>
-							<Condition Binding="{Binding Path=(e:WpfProperties.EtoStyle), RelativeSource={RelativeSource AncestorType={x:Type efc:EtoToggleButton}}}" Value="SegmentedButton" />
-							<Condition Binding="{Binding Path=(e:WpfProperties.EtoModifier), RelativeSource={RelativeSource AncestorType={x:Type efc:EtoToggleButton}}}" Value="last" />
-						</MultiDataTrigger.Conditions>
-                        <Setter Property="CornerRadius" Value="0,4,4,0" />
-                    </MultiDataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Style.Resources>
         <Style.Triggers>
             <Trigger Property="e:WpfProperties.EtoStyle" Value="SegmentedButton">
-                <Setter Property="BorderThickness" Value=".5,1" />
                 <Setter Property="Padding" Value="4,2" />
-            </Trigger>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="e:WpfProperties.EtoStyle" Value="SegmentedButton"/>
-                    <Condition Property="e:WpfProperties.EtoModifier" Value="first"/>
-                </MultiTrigger.Conditions>
-                <Setter Property="BorderThickness" Value="1,1,.5,1" />
-            </MultiTrigger>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="e:WpfProperties.EtoStyle" Value="SegmentedButton"/>
-                    <Condition Property="e:WpfProperties.EtoModifier" Value="last"/>
-                </MultiTrigger.Conditions>
-                <Setter Property="BorderThickness" Value=".5,1,1,1" />
-            </MultiTrigger>
 
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true" Margin="-1,0,0,0">
+                                <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+
+                                <Trigger Property="e:WpfProperties.EtoModifier" Value="first">
+                                    <Setter TargetName="border" Property="Margin" Value="0" />
+                                    <Setter TargetName="border" Property="CornerRadius" Value="4,0,0,4" />
+                                </Trigger>
+                                <Trigger Property="e:WpfProperties.EtoModifier" Value="last">
+                                    <Setter TargetName="border" Property="CornerRadius" Value="0,4,4,0" />
+                                </Trigger>
+
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Background" TargetName="border" Value="{DynamicResource ToggleButton.Checked.Background}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ToggleButton.Checked.Border}"/>
+                                    <Setter Property="Panel.ZIndex" Value="900" />
+                                </Trigger>
+
+
+                                <!-- Defaults -->
+                                <Trigger Property="Button.IsDefaulted" Value="true">
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Background" TargetName="border" Value="{StaticResource ToggleButton.MouseOver.Background}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ToggleButton.MouseOver.Border}"/>
+                                    <Setter Property="Panel.ZIndex" Value="999" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="true">
+                                    <Setter Property="Background" TargetName="border" Value="{StaticResource ToggleButton.Pressed.Background}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ToggleButton.Pressed.Border}"/>
+                                    <Setter Property="Panel.ZIndex" Value="999" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Background" TargetName="border" Value="{StaticResource ToggleButton.Disabled.Background}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ToggleButton.Disabled.Border}"/>
+                                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ToggleButton.Disabled.Foreground}"/>
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
         </Style.Triggers>
     </Style>
 
