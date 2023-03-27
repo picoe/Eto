@@ -182,6 +182,7 @@ namespace Eto
 
 			ECM_FIRST = 0x1500,
 			EM_SETCUEBANNER = ECM_FIRST + 1,
+			EM_SETMARGINS = 0xd3,
 
 			DPICHANGED = 0x02E0,
 			NCCREATE = 0x0081,
@@ -499,6 +500,10 @@ namespace Eto
 
 		[DllImport("gdi32.dll")]
 		public static extern bool OffsetWindowOrgEx(IntPtr hdc, int nXOffset, int nYOffset, ref POINT lpPoint);
+
+		[DllImport("gdi32.dll")]
+		public static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nheightRect, int nweightRect);
+
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr WindowFromPoint(POINT lpPoint);
