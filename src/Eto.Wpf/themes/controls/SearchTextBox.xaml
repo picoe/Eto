@@ -1,0 +1,135 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:r="clr-namespace:Eto.Wpf.CustomControls.TreeGridView"
+    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls"
+    xmlns:e="clr-namespace:Eto.Wpf"
+    xmlns:s="clr-namespace:System;assembly=mscorlib"
+    xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
+    xmlns:local="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="WatermarkTextBox.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="efc:EtoSearchTextBox" BasedOn="{StaticResource WatermarkTextBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="efc:EtoSearchTextBox">
+                    <Grid>
+                        <Border x:Name="Border"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="11">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="14" />
+                                </Grid.ColumnDefinitions>
+                                <ScrollViewer x:Name="PART_ContentHost"
+                                    Grid.Column="1"
+                                    Margin="-2,0"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                <ContentPresenter x:Name="PART_WatermarkHost"
+                                    Grid.Column="1"
+                                    Content="{TemplateBinding Watermark}"
+                                    ContentTemplate="{Binding WatermarkTemplate, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={StaticResource DefaultWatermarkTemplate}}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    Margin="{TemplateBinding Padding}"
+                                    IsHitTestVisible="False"
+                                    Visibility="Collapsed" />
+
+                                <Border x:Name="PART_SearchIcon"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right">
+                                    <Path Margin="-2" Stroke="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" StrokeThickness="1" Data="M 0,4 5,4 A 4,4 0 1 0 13,4 A 4,4 0 1 0 5,4">
+                                        <Path.LayoutTransform>
+                                            <RotateTransform Angle="-135"/>
+                                        </Path.LayoutTransform>
+                                    </Path>
+                                </Border>
+                                <Button x:Name="PART_ClearButton"
+                                    Grid.Column="2"
+                                    Focusable="False"
+                                    Background="Transparent"
+                                    Command="{TemplateBinding ClearCommand}"
+                                    Visibility="Collapsed"
+                                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                    Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                    >
+                                    <Button.Template>
+                                        <ControlTemplate>
+                                            <Border Background="{TemplateBinding Background}">
+                                                <Path VerticalAlignment="Center" HorizontalAlignment="Left" Stroke="{TemplateBinding Foreground}" StrokeThickness="1" Data="M 0,0 7,7 M 7,0 0,7"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+                        </Border>
+                        <Border x:Name="MouseOverVisual"
+                            Opacity="0"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{StaticResource TextBox_MouseOver}"
+                            CornerRadius="1" />
+                        <Border x:Name="FocusVisual"
+                            Opacity="0"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{StaticResource TextBox_Focused}"
+                            CornerRadius="1" />
+
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="True"/>
+                                <Condition Property="IsEmpty" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            
+                            <Setter TargetName="PART_ClearButton" Property="Visibility" Value="Visible"/>
+                        </MultiTrigger>
+
+                        <Trigger SourceName="PART_ClearButton" Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_ClearButton" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                        </Trigger>
+
+                            <!-- Defaults -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="KeepWatermarkOnGotFocus" Value="False" />
+                                <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="Text" Value="" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Visibility" TargetName="PART_WatermarkHost" Value="Visible" />
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="KeepWatermarkOnGotFocus" Value="True" />
+                                <Condition Property="Text" Value="" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Visibility" TargetName="PART_WatermarkHost" Value="Visible" />
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlMouseOverBorderKey}}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlSelectedBorderKey}}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+</ResourceDictionary>
