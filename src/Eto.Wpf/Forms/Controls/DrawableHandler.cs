@@ -56,12 +56,9 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public class EtoMainCanvas<TTControl, TTWidget, TTCallback> : swc.Canvas
-			where TTControl : swc.Canvas
-			where TTWidget : Drawable
-			where TTCallback : Drawable.ICallback
+		public class EtoMainCanvas : swc.Canvas
 		{
-			public DrawableHandler<TTControl, TTWidget, TTCallback> Handler { get; set; }
+			public DrawableHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
 			protected override void OnMouseDown(sw.Input.MouseButtonEventArgs e)
 			{
@@ -173,7 +170,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override TControl CreateControl()
 		{
-			return new EtoMainCanvas<TControl, TWidget, TCallback>
+			return new EtoMainCanvas
 			{
 				Handler = this,
 				SnapsToDevicePixels = true,
