@@ -14,10 +14,10 @@ namespace Eto.Forms;
 /// All visual user interface elements should inherit from this class to provide common functionality like binding,
 /// load/unload, and common events.
 /// </remarks>
-#if !NETSTANDARD
-	[sc.ToolboxItem(true)]
-	[sc.DesignTimeVisible(true)]
-	[sc.DesignerCategory("Eto.Forms")]
+#if !NETSTANDARD && !NETCOREAPP
+	[ToolboxItem(true)]
+	[DesignTimeVisible(true)]
+	[DesignerCategory("Eto.Forms")]
 #endif
 [sc.TypeConverter(typeof(ControlConverter))]
 public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource

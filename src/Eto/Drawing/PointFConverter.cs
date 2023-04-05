@@ -71,7 +71,7 @@ class PointFConverterInternal : sc.TypeConverter
 /// <copyright>(c) 2014 by Curtis Wensley</copyright>
 /// <license type="BSD-3">See LICENSE for full terms</license>
 [Obsolete("Since 2.5. Use TypeDescriptor.GetConverter instead")]
-public class PointFConverter : sc.TypeConverter
+public class PointFConverter : TypeConverter
 {
 	/// <summary>
 	/// The character to split up the string which will be converted
@@ -84,7 +84,7 @@ public class PointFConverter : sc.TypeConverter
 	/// <param name="context">Conversion context</param>
 	/// <param name="sourceType">Type to convert from</param>
 	/// <returns>True if this converter can convert from the specified type, false otherwise</returns>
-	public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
+	public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 	{
 		return sourceType == typeof(string);
 	}
@@ -96,7 +96,7 @@ public class PointFConverter : sc.TypeConverter
 	/// <param name="culture">Culture to perform the conversion</param>
 	/// <param name="value">Value to convert</param>
 	/// <returns>A new instance of a <see cref="PointF"/> converted from the specified <paramref name="value"/></returns>
-	public override object ConvertFrom(sc.ITypeDescriptorContext context, CultureInfo culture, object value)
+	public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 	{
 		string text = value as string;
 		if (text != null)

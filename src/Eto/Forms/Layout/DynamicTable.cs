@@ -202,7 +202,7 @@ public class DynamicRow : Collection<DynamicItem>
 /// The maximum number of items in the <see cref="DynamicTable.Rows"/> determines the columns of the table.
 /// </remarks>
 [ContentProperty("Rows")]
-public class DynamicTable : DynamicItem, sc.ISupportInitialize
+public class DynamicTable : DynamicItem, ISupportInitialize
 {
 	internal DynamicLayout layout;
 	bool visible = true;
@@ -405,11 +405,11 @@ public class DynamicTable : DynamicItem, sc.ISupportInitialize
 		return table;
 	}
 
-	void sc.ISupportInitialize.BeginInit()
+	void ISupportInitialize.BeginInit()
 	{
 	}
 
-	void sc.ISupportInitialize.EndInit()
+	void ISupportInitialize.EndInit()
 	{
 	}
 
