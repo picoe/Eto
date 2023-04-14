@@ -186,10 +186,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Loaded += Control_Loaded;
 		}
 
-		public void Create()
-		{
-			CreateControl();
-		}
+		public void Create() { }
 
 		public void Create(bool largeCanvas)
 		{
