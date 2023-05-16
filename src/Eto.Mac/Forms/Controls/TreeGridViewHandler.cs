@@ -535,6 +535,12 @@ namespace Eto.Mac.Forms.Controls
 			{
 			}
 
+			public override CGRect FrameOfOutlineCellAtRow(nint row)
+			{
+				// this does "nothing" but it does make the outline cell center the disclosure triangle.
+				return base.FrameOfOutlineCellAtRow(row);
+			}
+
 #if MACOS_NET
 			public override NSImage DragImageForRows(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
 			{
