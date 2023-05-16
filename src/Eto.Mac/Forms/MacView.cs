@@ -83,6 +83,7 @@ namespace Eto.Mac.Forms
 		int SuppressMouseEvents { get; set; }
 		bool TextInputCancelled { get; set; }
 		bool TextInputImplemented { get; }
+		bool UseNSBoxBackgroundColor { get; set; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
 
@@ -179,6 +180,7 @@ namespace Eto.Mac.Forms
 		public static readonly object SuppressMouseEvents_Key = new object();
 		public static readonly object UseMouseTrackingLoop_Key = new object();
 		public static readonly object MouseTrackingRunLoopMode_Key = new object();
+		public static readonly object UseNSBoxBackgroundColor_Key = new object();
 		public static readonly IntPtr selSetDataProviderForTypes_Handle = Selector.GetHandle("setDataProvider:forTypes:");
 		public static readonly IntPtr selInitWithPasteboardWriter_Handle = Selector.GetHandle("initWithPasteboardWriter:");
 		public static readonly IntPtr selClass_Handle = Selector.GetHandle("class");
@@ -187,7 +189,6 @@ namespace Eto.Mac.Forms
 		// before 10.12, we have to call base.Layout() AFTER we do our layout otherwise it doesn't work correctly..
 		// however, that causes (temporary) glitches when resizing especially with Scrollable >= 10.12
 		public static readonly bool NewLayout = MacVersion.IsAtLeast(10, 12);
-
 		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr TriggerMouseDragged_Delegate = TriggerMouseDragged;
 		static void TriggerMouseDragged(IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -934,7 +935,13 @@ namespace Eto.Mac.Forms
 
 		bool drawRectAdded;
 
-		protected virtual bool UseNSBoxBackgroundColor => true;
+		public bool UseNSBoxBackgroundColor
+		{
+			get => Widget.Properties.Get<bool>(MacView.UseNSBoxBackgroundColor_Key, DefaultUseNSBoxBackgroundColor);
+			set => Widget.Properties.Set(MacView.UseNSBoxBackgroundColor_Key, value, DefaultUseNSBoxBackgroundColor);
+		}
+
+		protected virtual bool DefaultUseNSBoxBackgroundColor => true;
 		
 		protected virtual IColorizeCell ColorizeCell => null;
 		

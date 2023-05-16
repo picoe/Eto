@@ -137,6 +137,6 @@ namespace Eto.Mac.Forms.Controls
 			_borderSize = null;
 		}
 
-		protected override bool UseNSBoxBackgroundColor => false;
+		protected override bool DefaultUseNSBoxBackgroundColor => false;
 	}
 }
