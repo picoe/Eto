@@ -419,6 +419,18 @@ namespace Eto.Mac.Forms.Controls
 				return tableView.MakeView(tableColumn.Identifier, this);
 			}
 
+			public override void DidRemoveRowView(NSTableView tableView, NSTableRowView rowView, nint row)
+			{
+				foreach (var col in Handler.ColumnHandlers)
+				{
+					if (col.DisplayIndex != -1)
+					{
+						var view = rowView.ViewAtColumn(col.DisplayIndex);
+						col.DataCellHandler?.ViewRemoved(view);
+					}
+				}
+			}
+
 			public override void DidDragTableColumn(NSTableView tableView, NSTableColumn tableColumn)
 			{
 				var h = Handler;

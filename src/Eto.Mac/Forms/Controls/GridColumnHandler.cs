@@ -51,6 +51,7 @@ namespace Eto.Mac.Forms.Controls
 		void SetObjectValue(object dataItem, NSObject val);
 		new GridColumn Widget { get; }
 		IDataViewHandler DataViewHandler { get; }
+		ICellHandler DataCellHandler { get; }
 		bool AutoSizeColumn(NSRange? rowRange, bool force = false);
 		void EnabledChanged(bool value);
 		nfloat GetPreferredWidth(NSRange? range = null);

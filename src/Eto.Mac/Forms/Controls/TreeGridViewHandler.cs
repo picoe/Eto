@@ -255,6 +255,18 @@ namespace Eto.Mac.Forms.Controls
 				return outlineView.MakeView(tableColumn?.Identifier ?? string.Empty, this);
 			}
 
+			public override void DidRemoveRowView(NSOutlineView outlineView, NSTableRowView rowView, nint row)
+			{
+				foreach (var col in Handler.ColumnHandlers)
+				{
+					if (col.DisplayIndex != -1)
+					{
+						var view = rowView.ViewAtColumn(col.DisplayIndex);
+						col.DataCellHandler?.ViewRemoved(view);
+					}
+				}
+			}
+
 			public override void DidDragTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn)
 			{
 				var h = Handler;
