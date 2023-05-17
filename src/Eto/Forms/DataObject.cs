@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Xml.Serialization;
 
 namespace Eto.Forms;
 
@@ -262,8 +261,9 @@ public class DataObject : Widget, IDataObject
 		{
 			using (var ms = new MemoryStream())
 			{
-				var xmlFormatter = new XmlSerializer(value.GetType());
-				xmlFormatter.Serialize(ms, value);
+				var binaryFormatter = new BinaryFormatter();
+				binaryFormatter.Serialize(ms, value);
+				SetDataStream(ms, type);
 				return;
 			}
 		}
@@ -329,8 +329,8 @@ public class DataObject : Widget, IDataObject
 			return null;
 		try
 		{
-			var xmlFormatter = new XmlSerializer(new object().GetType());
-			return xmlFormatter.Deserialize(stream);
+			var binaryFormatter = new BinaryFormatter();
+			return binaryFormatter.Deserialize(stream);
 		}
 		catch (Exception ex)
 		{

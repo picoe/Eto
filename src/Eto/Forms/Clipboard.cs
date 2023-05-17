@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
 using System.Reflection;
-using System.Xml.Serialization;
 
 namespace Eto.Forms;
 
@@ -206,8 +205,8 @@ public class Clipboard : Widget, IDataObject
 		{
 			using (var ms = new MemoryStream())
 			{
-				var xmlFormatter = new XmlSerializer(value.GetType());
-				xmlFormatter.Serialize(ms, value);
+				var binaryFormatter = new BinaryFormatter();
+				binaryFormatter.Serialize(ms, value);
 				SetDataStream(ms, type);
 				return;
 			}
@@ -274,8 +273,8 @@ public class Clipboard : Widget, IDataObject
 			return null;
 		try
 		{
-			var xmlFormatter = new XmlSerializer(new object().GetType());
-			return xmlFormatter.Deserialize(stream);
+			var binaryFormatter = new BinaryFormatter();
+			return binaryFormatter.Deserialize(stream);
 		}
 		catch (Exception ex)
 		{
