@@ -193,6 +193,16 @@ namespace Eto.Mac.Forms.Cells
 			Callback.OnConfigureCell(Widget, view.Args, view.EtoControl);
 			return view;
 		}
+
+		public override void ViewRemoved(NSView view)
+		{
+			base.ViewRemoved(view);
+			if (view is EtoCustomCellView etoView)
+			{
+				etoView.Args.SetItem(null);
+				Callback.OnConfigureCell(Widget, etoView.Args, etoView.EtoControl);
+			}
+		}
 	}
 }
 
