@@ -31,11 +31,7 @@ namespace Eto.Wpf
 
 		public static swm.Brush ToWpfBrush(this Color value, swm.Brush brush = null)
 		{
-			var solidBrush = brush as swm.SolidColorBrush;
-			if (solidBrush == null || solidBrush.IsSealed)
-			{
-				solidBrush = new swm.SolidColorBrush();
-			}
+			var solidBrush = new swm.SolidColorBrush();
 			solidBrush.Color = value.ToWpf();
 			return solidBrush;
 		}
