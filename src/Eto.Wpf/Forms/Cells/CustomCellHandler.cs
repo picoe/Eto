@@ -45,7 +45,9 @@ namespace Eto.Wpf.Forms.Cells
 				var selected = cell.IsSelected;
 				IsSelected = selected;
 				var focused = grid?.IsKeyboardFocusWithin != false;
-				CellTextColor = selected && focused ? Eto.Drawing.SystemColors.HighlightText : Eto.Drawing.SystemColors.ControlText;
+				CellTextColor = selected && focused 
+					? (cell.GetResourceColor(sw.SystemColors.HighlightTextColorKey, sw.SystemColors.HighlightTextBrushKey) ?? Eto.Drawing.SystemColors.HighlightText) 
+					: (cell.GetResourceColor(sw.SystemColors.ControlTextColorKey, sw.SystemColors.ControlTextBrushKey) ?? Eto.Drawing.SystemColors.ControlText);
 			}
 			public void SetRow(sw.FrameworkElement element)
 			{
