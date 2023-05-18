@@ -942,5 +942,27 @@ namespace Eto.Wpf
 				return swm.PixelFormats.Rgba64;
 			return format;
 		}
+
+		public static Color? GetResourceColor(this sw.FrameworkElement cell, sw.ResourceKey key)
+		{
+			var res = cell.TryFindResource(key);
+			if (res is swm.SolidColorBrush brush)
+				return brush.ToEtoColor();
+			if (res is swm.Color color)
+				return color.ToEto();
+			return null;
+		}
+
+		public static Color? GetResourceColor(this sw.FrameworkElement cell, params sw.ResourceKey[] keys)
+		{
+			for (int i = 0; i < keys.Length; i++)
+			{
+				sw.ResourceKey key = keys[i];
+				var value = GetResourceColor(cell, key);
+				if (value != null)
+					return value;
+			}
+			return null;
+		}
 	}
 }
