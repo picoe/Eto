@@ -17,14 +17,24 @@ namespace Eto.Wpf.Forms.ToolBar
 		public ButtonToolItemHandler ()
 		{
 			Control = new swc.Button();
-			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
+			swcImage = new swc.Image();
 			label = new swc.TextBlock();
+			label.VerticalAlignment = sw.VerticalAlignment.Center;
+			label.Margin = new Thickness(2, 0, 2, 0);
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 			panel.Children.Add(swcImage);
 			panel.Children.Add(label);
 			Control.Content = panel;
 			Control.Click += Control_Click;
 			sw.Automation.AutomationProperties.SetLabeledBy(Control, label);
+		}
+
+		protected override void OnImageSizeChanged()
+		{
+			base.OnImageSizeChanged();
+			var size = ImageSize;
+			swcImage.MaxHeight = size?.Height ?? double.PositiveInfinity;
+			swcImage.MaxWidth = size?.Width ?? double.PositiveInfinity;
 		}
 
 		private void Control_Click(object sender, RoutedEventArgs e)
