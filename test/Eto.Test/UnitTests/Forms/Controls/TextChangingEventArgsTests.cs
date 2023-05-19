@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Eto.Forms;
 using NUnit.Framework;
+using Range = Eto.Forms.Range;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
