@@ -98,7 +98,7 @@
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
             "program": "${workspaceFolder}/artifacts/test/Eto.Test.Wpf/${config:var.configuration}/net6.0-windows/Eto.Test.Wpf.exe",
-			"targetArchitecture": "x86_64",
+			// "targetArchitecture": "x86_64",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart",

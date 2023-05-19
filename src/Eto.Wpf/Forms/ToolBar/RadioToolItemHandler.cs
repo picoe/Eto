@@ -22,8 +22,10 @@ namespace Eto.Wpf.Forms.ToolBar
 			{
 				IsThreeState = false
 			};
-			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
+			swcImage = new swc.Image();
 			label = new swc.TextBlock();
+			label.Margin = new Thickness(2, 0, 2, 0);
+			label.VerticalAlignment = sw.VerticalAlignment.Center;
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 			panel.Children.Add(swcImage);
 			panel.Children.Add(label);
@@ -36,6 +38,15 @@ namespace Eto.Wpf.Forms.ToolBar
 
 			sw.Automation.AutomationProperties.SetLabeledBy(Control, label);
 		}
+
+		protected override void OnImageSizeChanged()
+		{
+			base.OnImageSizeChanged();
+			var size = ImageSize;
+			swcImage.MaxHeight = size?.Height ?? double.PositiveInfinity;
+			swcImage.MaxWidth = size?.Width ?? double.PositiveInfinity;
+		}
+
 
 		private void Control_Click(object sender, RoutedEventArgs e)
 		{

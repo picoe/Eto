@@ -13,6 +13,13 @@ namespace Eto.Wpf.Forms.Menu
 	{
 		void Validate();
 	}
+	
+	public static class MenuItemHandler
+	{
+		// note this does not affect the main menu by default due to WPF hard coding a size of 16,16 in its styles.
+		public static Size? DefaultImageSize = new Size(16, 16);
+		internal static readonly object ImageSize_Key = new object();
+	}
 
 	public class MenuItemHandler<TControl, TWidget, TCallback> : MenuHandler<TControl, TWidget, TCallback>, MenuItem.IHandler, swi.ICommand, IWpfValidateBinding, IMenuItemHandler
 		where TControl : swc.MenuItem
@@ -32,14 +39,31 @@ namespace Eto.Wpf.Forms.Menu
 		{
 			Callback.OnClick(Widget, EventArgs.Empty);
 		}
+		
+		public Size? ImageSize
+		{
+			get => Widget.Properties.Get<Size?>(MenuItemHandler.ImageSize_Key, MenuItemHandler.DefaultImageSize);
+			set
+			{
+				if (Widget.Properties.TrySet(MenuItemHandler.ImageSize_Key, value, MenuItemHandler.DefaultImageSize))
+				{
+					OnImageSizeChanged();
+				}
+			}
+		}
+
+		protected virtual void OnImageSizeChanged()
+		{
+			Control.Icon = image.ToWpfImage(Screen.PrimaryScreen.LogicalPixelSize, ImageSize);
+		}
 
 		public Image Image
 		{
-			get { return image; }
+			get => image;
 			set
 			{
 				image = value;
-				Control.Icon = image.ToWpfImage(Screen.PrimaryScreen.LogicalPixelSize, new Size(16, 16));
+				OnImageSizeChanged();
 			}
 		}
 

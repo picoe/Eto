@@ -20,10 +20,13 @@ namespace Eto.Wpf.Forms.ToolBar
 		{
 			root = new swc.MenuItem();
 			Control = new swc.Menu();
+			Control.Background = swm.Brushes.Transparent;
 			Control.Items.Add(root);
-			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
+			swcImage = new swc.Image();
 			label = new swc.TextBlock();
-			arrow = new sw.Shapes.Path { Data = swm.Geometry.Parse("M 0 0 L 3 3 L 6 0 Z"), VerticalAlignment = sw.VerticalAlignment.Center, Margin = new Thickness(8, 2, 0, 0), Fill = swm.Brushes.Black };
+			label.Margin = new Thickness(2, 0, 2, 0);
+			label.VerticalAlignment = sw.VerticalAlignment.Center;
+			arrow = new sw.Shapes.Path { Data = swm.Geometry.Parse("M 0 0 L 3 3 L 6 0 Z"), VerticalAlignment = sw.VerticalAlignment.Center, Margin = new Thickness(2, 2, 0, 0), Fill = swm.Brushes.Black };
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal, Children = { swcImage, label, arrow } };
 
 			root.Header = panel;
@@ -31,7 +34,15 @@ namespace Eto.Wpf.Forms.ToolBar
 			root.SubmenuOpened += Control_Click;
 			sw.Automation.AutomationProperties.SetLabeledBy(Control, label);
 		}
-		
+
+		protected override void OnImageSizeChanged()
+		{
+			base.OnImageSizeChanged();
+			var size = ImageSize;
+			swcImage.MaxHeight = size?.Height ?? double.PositiveInfinity;
+			swcImage.MaxWidth = size?.Width ?? double.PositiveInfinity;
+		}
+
 		private void Control_Click(object sender, RoutedEventArgs e)
 		{
 			// WPF raises this event for all child items as well as the root menu, so check sender
