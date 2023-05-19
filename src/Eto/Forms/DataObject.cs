@@ -261,9 +261,11 @@ public class DataObject : Widget, IDataObject
 		{
 			using (var ms = new MemoryStream())
 			{
+#pragma warning disable SYSLIB0011
 				var binaryFormatter = new BinaryFormatter();
 				binaryFormatter.Serialize(ms, value);
 				SetDataStream(ms, type);
+#pragma warning restore SYSLIB0011
 				return;
 			}
 		}
@@ -329,8 +331,10 @@ public class DataObject : Widget, IDataObject
 			return null;
 		try
 		{
+#pragma warning disable SYSLIB0011
 			var binaryFormatter = new BinaryFormatter();
 			return binaryFormatter.Deserialize(stream);
+#pragma warning restore SYSLIB0011
 		}
 		catch (Exception ex)
 		{
