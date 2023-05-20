@@ -56,6 +56,24 @@ namespace Eto.GtkSharp.Forms
 
 		public LinuxTrayIndicatorHandler()
 		{
+#if NETCOREAPP
+			NativeLibrary.SetDllImportResolver(typeof(LinuxTrayIndicatorHandler).Assembly, (name, assembly, path) =>
+			{
+				// Use custom import resolver for libappindicator
+				// Try loading ayatana version first, if that fails, return to default handling
+				if (name == libappindicator) 
+				{
+					IntPtr result = IntPtr.Zero;
+					if (!NativeLibrary.TryLoad("libayatana-appindicator3.so.1", assembly, path, out result))
+					{
+						return IntPtr.Zero;
+					}
+					return result;
+				}
+				return IntPtr.Zero;
+			});
+#endif
+			
 			Control = GLib.Object.GetObject(app_indicator_new(Assembly.GetExecutingAssembly().FullName + Id, "", 0));
 			app_indicator_set_menu(Control.Handle, (new Gtk.Menu()).Handle);
 
