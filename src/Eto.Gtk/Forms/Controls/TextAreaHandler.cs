@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
+using Range = Eto.Forms.Range;
 
 namespace Eto.GtkSharp.Forms.Controls
 {

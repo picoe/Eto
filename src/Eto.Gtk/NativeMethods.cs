@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -32,6 +32,31 @@ namespace Eto.GtkSharp
 
 		static class NMWindows
 		{
+
+#if NETCOREAPP
+
+			static NMWindows()
+			{
+				NativeLibrary.SetDllImportResolver(typeof(NMWindows).Assembly, (name, assembly, path) =>
+				{
+					// Use custom import resolver for libwebkit2gtk
+					// Try loading 4.1 first, if that fails, return to default handling
+					if (name == libwebkit) 
+					{
+						IntPtr result = IntPtr.Zero;
+						if (!NativeLibrary.TryLoad("libwebkit2gtk-4.1.so.0", assembly, path, out result))
+						{
+							return IntPtr.Zero;
+						}
+
+						return result;
+					}
+
+					return IntPtr.Zero;
+				});
+			}
+#endif
+
 #if GTK2
 			const string plat = "win32-";
 #elif GTK3
@@ -226,6 +251,31 @@ namespace Eto.GtkSharp
 
 		static class NMLinux
 		{
+
+#if NETCOREAPP
+
+			static NMLinux()
+			{
+				NativeLibrary.SetDllImportResolver(typeof(NMLinux).Assembly, (name, assembly, path) =>
+				{
+					// Use custom import resolver for libwebkit2gtk
+					// Try loading 4.1 first, if that fails, return to default handling
+					if (name == libwebkit) 
+					{
+						IntPtr result = IntPtr.Zero;
+						if (!NativeLibrary.TryLoad("libwebkit2gtk-4.1.so.0", assembly, path, out result))
+						{
+							return IntPtr.Zero;
+						}
+
+						return result;
+					}
+
+					return IntPtr.Zero;
+				});
+			}
+#endif
+
 #if GTK2
 			const string plat = "x11-";
 #elif GTK3
@@ -420,6 +470,31 @@ namespace Eto.GtkSharp
 
 		static class NMMac
 		{
+
+#if NETCOREAPP
+
+			static NMMac()
+			{
+				NativeLibrary.SetDllImportResolver(typeof(NMMac).Assembly, (name, assembly, path) =>
+				{
+					// Use custom import resolver for libwebkit2gtk
+					// Try loading 4.1 first, if that fails, return to default handling
+					if (name == libwebkit) 
+					{
+						IntPtr result = IntPtr.Zero;
+						if (!NativeLibrary.TryLoad("libwebkit2gtk-4.1.so.0", assembly, path, out result))
+						{
+							return IntPtr.Zero;
+						}
+
+						return result;
+					}
+
+					return IntPtr.Zero;
+				});
+			}
+#endif
+
 #if GTK2
 			const string plat = "quartz-";
 #elif GTK3
