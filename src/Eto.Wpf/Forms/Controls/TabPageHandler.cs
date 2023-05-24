@@ -32,6 +32,7 @@ namespace Eto.Wpf.Forms.Controls
 			var header = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 			headerImage = new swc.Image();
 			headerText = new swc.TextBlock();
+			headerText.VerticalAlignment = sw.VerticalAlignment.Center;
 			header.Children.Add(headerImage);
 			header.Children.Add(headerText);
 			Control.Header = header;

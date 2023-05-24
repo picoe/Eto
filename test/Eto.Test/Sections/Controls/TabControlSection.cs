@@ -106,7 +106,7 @@ namespace Eto.Test.Sections.Controls
 			control.Pages.Add(new TabPage
 			{
 				Text = "Tab 2",
-				Image = TestIcons.TestIcon.WithSize(16, 16),
+				Image = TestIcons.TestIcon.WithSize(32, 32),
 				Content = TabTwo()
 			});
 
