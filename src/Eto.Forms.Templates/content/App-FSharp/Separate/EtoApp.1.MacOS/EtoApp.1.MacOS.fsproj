@@ -8,6 +8,10 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\EtoApp.1\EtoApp.1.fsproj" />
   </ItemGroup>
 	
