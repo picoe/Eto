@@ -110,9 +110,11 @@ namespace Eto.Wpf.Forms.Cells
 				ScalingMode = swm.BitmapScalingMode.HighQuality;
 			}
 
+			public sw.Thickness ImageMargin { get; set; } = new sw.Thickness(0, 2, 2, 2);
+
 			swc.Image CreateImage()
 			{
-				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness(0, 2, 2, 2) };
+				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = ImageMargin };
 				swm.RenderOptions.SetBitmapScalingMode(image, ScalingMode);
 				image.DataContextChanged += (sender, e) =>
 				{

@@ -44,9 +44,11 @@ namespace Eto.Wpf.Forms.Cells
 				ScalingMode = swm.BitmapScalingMode.HighQuality;
 			}
 
+			public sw.Thickness Margin { get; set; } = new sw.Thickness(0, 2, 2, 2);
+			
 			swc.Image Image (swc.DataGridCell cell)
 			{
-				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
+				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = Margin };
 				swm.RenderOptions.SetBitmapScalingMode(image, ScalingMode);
 				image.DataContextChanged += (sender, e) =>
 				{
