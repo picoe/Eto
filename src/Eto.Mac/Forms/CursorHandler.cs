@@ -27,7 +27,7 @@ namespace Eto.Mac.Forms
 					Control = NSCursor.CrosshairCursor;
 					break;
 				case CursorType.Default:
-					Control = NSCursor.CurrentSystemCursor;
+					Control = NSCursor.ArrowCursor;
 					break;
 				case CursorType.HorizontalSplit:
 					Control = NSCursor.ResizeUpDownCursor;
