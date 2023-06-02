@@ -517,5 +517,22 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.AreEqual(2, item2SelectedChanged, "#6.7.2");
 			Assert.AreEqual(2, item3SelectedChanged, "#6.7.3");
 		}
+		
+		[Test]
+		[InvokeOnUI]
+		public void InsertingItemsShouldWork()
+		{
+			var segmentedButton = new SegmentedButton();
+			segmentedButton.Items.Add(new ButtonSegmentedItem { Text = "Item 1" });
+			segmentedButton.Items.Add(new ButtonSegmentedItem { Text = "Item 2" });
+			segmentedButton.Items.Add(new ButtonSegmentedItem { Text = "Item 3" });
+
+			// insert at beginning
+			segmentedButton.Items.Insert(0, new ButtonSegmentedItem { Text = "Item Beginning" });
+			// insert at middle
+			segmentedButton.Items.Insert(1, new ButtonSegmentedItem { Text = "Item Middle" });
+			// insert at end
+			segmentedButton.Items.Insert(segmentedButton.Items.Count, new ButtonSegmentedItem { Text = "Item End" });
+		}
 	}
 }
