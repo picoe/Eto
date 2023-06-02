@@ -371,16 +371,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public void InsertItem(int index, SegmentedItem item)
 		{
-			var count = ++Control.SegmentCount;
+			var count = Control.SegmentCount++;
 
 			// need to copy items as we can't insert items
-			if (index < count - 1)
+			for (nint i = index; i < count; i++)
 			{
-				for (nint i = index; i < count; i++)
-				{
-					var next = i - 1;
-					CopyItem(i, next);
-				}
+				var next = i + 1;
+				CopyItem(i, next);
 			}
 			SetItem(index, item);
 			if (item.Selected)
