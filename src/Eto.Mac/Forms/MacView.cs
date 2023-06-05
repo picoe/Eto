@@ -24,7 +24,7 @@ namespace Eto.Mac.Forms
 		public void MouseMoved(NSEvent theEvent)
 		{
 			var h = Handler;
-			if (h == null) return;
+			if (h == null || !h.Enabled) return;
 			h.Callback.OnMouseMove(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
@@ -32,7 +32,7 @@ namespace Eto.Mac.Forms
 		public void MouseEntered(NSEvent theEvent)
 		{
 			var h = Handler;
-			if (h == null) return;
+			if (h == null || !h.Enabled) return;
 			h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
@@ -45,7 +45,7 @@ namespace Eto.Mac.Forms
 		public void MouseExited(NSEvent theEvent)
 		{
 			var h = Handler;
-			if (h == null) return;
+			if (h == null || !h.Enabled) return;
 			h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
@@ -84,6 +84,7 @@ namespace Eto.Mac.Forms
 		bool TextInputCancelled { get; set; }
 		bool TextInputImplemented { get; }
 		bool UseNSBoxBackgroundColor { get; set; }
+		bool Enabled { get; set; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
 
@@ -234,7 +235,7 @@ namespace Eto.Mac.Forms
 		{
 			var obj = Runtime.GetNSObject(sender);
 
-			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler && handler.Enabled)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				handler.TriggerMouseUp(obj, sel, theEvent);
@@ -245,7 +246,7 @@ namespace Eto.Mac.Forms
 		static void TriggerMouseWheel(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var obj = Runtime.GetNSObject(sender);
-			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler && handler.Enabled)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = MacConversions.GetMouseEvent(handler, theEvent, true);
@@ -1459,6 +1460,9 @@ namespace Eto.Mac.Forms
 			// do a mouse tracking loop.  This is needed since the mouse up event gets buried when 
 			// showing context menus, dialogs, etc.
 			MacView.InMouseTrackingLoop = true;
+			
+			if (!Enabled)
+				return null;
 			
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
 			if (theEvent.ClickCount >= 2)
