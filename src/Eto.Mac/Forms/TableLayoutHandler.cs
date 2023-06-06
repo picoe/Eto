@@ -401,5 +401,17 @@ namespace Eto.Mac.Forms
 		{
 			return yscaling[row];
 		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			HandleEvent(Eto.Forms.Control.SizeChangedEvent);
+		}
+
+		public override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+			Control.NeedsLayout = true;
+		}
 	}
 }
