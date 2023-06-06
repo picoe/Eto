@@ -38,7 +38,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public bool CanFocus { get; set; }
 
-			public override bool AcceptsFirstResponder() => CanFocus;
+			public override bool AcceptsFirstResponder() => CanFocus && Drawable?.Enabled == true;
 
 			public override NSView HitTest(CGPoint aPoint)
 			{

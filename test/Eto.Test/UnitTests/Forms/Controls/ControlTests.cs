@@ -388,5 +388,73 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.That(containerSize.Height, Is.EqualTo(size.Height + padding.Vertical).Within(0.1), "#2.2 - panel with padding should have correct height");
 		}
 
+		[ManualTest]
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlsShouldNotGetMouseOrFocusEventsWhenDisabled(IControlTypeInfo<Control> info)
+		{
+			ControlsShouldNotGetMouseOrFocusEventsWhenParentDisabled(info, false);
+		}
+		
+		[ManualTest]
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlsShouldNotGetMouseOrFocusEventsWhenParentDisabled(IControlTypeInfo<Control> info)
+		{
+			ControlsShouldNotGetMouseOrFocusEventsWhenParentDisabled(info, true);
+		}
+
+		public void ControlsShouldNotGetMouseOrFocusEventsWhenParentDisabled(IControlTypeInfo<Control> info, bool disableWithParent)
+		{
+			bool gotFocus = false;
+			bool gotMouseDown = false;
+			bool gotMouseUp = false;
+			bool gotMouseEnter = false;
+			bool gotMouseLeave = false;
+			ManualForm("Click on the Drawable, it should not get focus", form =>
+			{
+				var control = info.CreatePopulatedControl();
+				if (!disableWithParent)
+					control.Enabled = false;
+
+				control.GotFocus += (sender, e) =>
+				{
+					Console.WriteLine("GotFocus");
+					gotFocus = true;
+				};
+				control.LostFocus += (sender, e) =>
+				{
+					Console.WriteLine("LostFocus");
+				};
+				control.MouseDown += (sender, e) =>
+				{
+					Console.WriteLine("MouseDown");
+					gotMouseDown = true;
+				};
+				control.MouseUp += (sender, e) =>
+				{
+					Console.WriteLine("MouseUp");
+					gotMouseUp = true;
+				};
+				control.MouseEnter += (sender, e) =>
+				{
+					Console.WriteLine("MouseEnter");
+					gotMouseEnter = true;
+				};
+				control.MouseLeave += (sender, e) =>
+				{
+					Console.WriteLine("MouseLeave");
+					gotMouseLeave = true;
+				};
+
+				var panel = new Panel { Content = control };
+				if (disableWithParent)
+					panel.Enabled = false;
+				return panel;
+			});
+			Assert.IsFalse(gotFocus, "#1.1 - Control should not be able to get focus");
+			Assert.IsFalse(gotMouseEnter, "#1.2 - Got MouseEnter");
+			Assert.IsFalse(gotMouseLeave, "#1.3 - Got MouseLeave");
+			Assert.IsFalse(gotMouseDown, "#1.4 - Got MouseDown");
+			Assert.IsFalse(gotMouseUp, "#1.5 - Got MouseUp");
+		}
 	}
 }

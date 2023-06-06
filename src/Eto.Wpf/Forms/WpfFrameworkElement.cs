@@ -329,8 +329,8 @@ namespace Eto.Wpf.Forms
 
 		public virtual bool Enabled
 		{
-			get { return Control.IsEnabled; }
-			set { Control.IsEnabled = value; }
+			get { return ContainerControl.IsEnabled; }
+			set { ContainerControl.IsEnabled = value; }
 		}
 
 		public virtual Cursor Cursor
