@@ -534,7 +534,11 @@ namespace Eto.WinForms.Forms
 				MouseCaptured = false;
 				Control.Capture = false;
 			}
-			Callback.OnMouseUp(Widget, e.ToEto(Control));
+			var args = e.ToEto(Control);
+			Callback.OnMouseUp(Widget, args);
+			
+			if (args.Handled && Control.Capture)
+				Control.Capture = false;
 		}
 
 		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
