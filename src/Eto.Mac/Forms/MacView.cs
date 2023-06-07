@@ -17,6 +17,7 @@ namespace Eto.Mac.Forms
 	class MouseDelegate : NSObject
 	{
 		WeakReference widget;
+		bool entered;
 
 		public IMacViewHandler Handler { get { return (IMacViewHandler)widget.Target; } set { widget = new WeakReference(value); } }
 
@@ -31,6 +32,7 @@ namespace Eto.Mac.Forms
 		[Export("mouseEntered:")]
 		public void MouseEntered(NSEvent theEvent)
 		{
+			entered = true;
 			var h = Handler;
 			if (h == null || !h.Enabled) return;
 			h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
@@ -47,6 +49,7 @@ namespace Eto.Mac.Forms
 			var h = Handler;
 			if (h == null || !h.Enabled) return;
 			h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+			entered = false;
 		}
 
 		[Export("scrollWheel:")]
@@ -55,6 +58,21 @@ namespace Eto.Mac.Forms
 			var h = Handler;
 			if (h == null) return;
 			h.Callback.OnMouseWheel(h.Widget, MacConversions.GetMouseEvent(h, theEvent, true));
+		}
+		
+		public void FireMouseLeaveIfNeeded()
+		{
+			var h = Handler;
+			if (h == null || h.Enabled || !entered) return;
+			entered = false;
+			Application.Instance.AsyncInvoke(() =>
+			{
+				if (!h.Widget.IsDisposed)
+				{
+					var theEvent = NSApplication.SharedApplication.CurrentEvent;
+					h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+				}
+			});
 		}
 		
 	}
@@ -1017,6 +1035,9 @@ namespace Eto.Mac.Forms
 			{
 				ControlEnabled = newEnabled;
 				Callback.OnEnabledChanged(Widget, EventArgs.Empty);
+
+				if (!newEnabled)
+					mouseDelegate?.FireMouseLeaveIfNeeded();
 			}
 		}
 

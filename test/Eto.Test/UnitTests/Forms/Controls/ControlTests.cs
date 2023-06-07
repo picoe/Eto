@@ -409,7 +409,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			bool gotMouseUp = false;
 			bool gotMouseEnter = false;
 			bool gotMouseLeave = false;
-			ManualForm("Click on the Drawable, it should not get focus", form =>
+			ManualForm("Click on the control, it should not get focus", form =>
 			{
 				var control = info.CreatePopulatedControl();
 				if (!disableWithParent)
@@ -455,6 +455,46 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.IsFalse(gotMouseLeave, "#1.3 - Got MouseLeave");
 			Assert.IsFalse(gotMouseDown, "#1.4 - Got MouseDown");
 			Assert.IsFalse(gotMouseUp, "#1.5 - Got MouseUp");
+		}
+		
+		[ManualTest]
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlShouldFireMouseLeaveIfEnteredThenDisabled(IControlTypeInfo<Control> info)
+		{
+			bool mouseLeaveCalled = false;
+			bool mouseEnterCalled = false;
+			bool mouseLeaveCalledBeforeMouseDown = false;
+			bool mouseLeaveCalledAfterDisabled = false;
+			bool mouseDownCalled = false;
+			ManualForm("Click on the control", form =>
+			{
+
+				var control = info.CreatePopulatedControl();
+				control.MouseEnter += (sender, e) =>
+				{
+					mouseEnterCalled = true;
+				};
+				control.MouseLeave += (sender, e) =>
+				{
+					mouseLeaveCalled = true;
+					if (mouseDownCalled)
+						form.Close();
+				};
+				control.MouseDown += (sender, e) =>
+				{
+					mouseDownCalled = true;
+					mouseLeaveCalledBeforeMouseDown = mouseLeaveCalled;
+					control.Enabled = false;
+					mouseLeaveCalledAfterDisabled = mouseLeaveCalled;
+					e.Handled = true;
+				};
+				return control;
+			});
+			Assert.IsTrue(mouseEnterCalled, "#1.1 - MouseEnter did not get called");
+			Assert.IsTrue(mouseLeaveCalled, "#1.2 - MouseLeave did not get called");
+			Assert.IsFalse(mouseLeaveCalledBeforeMouseDown, "#1.3 - MouseLeave should not have been called before MouseDown");
+			Assert.IsFalse(mouseLeaveCalledAfterDisabled, "#1.4 - MouseLeave should not be called during Enabled=false, but sometime after the MouseDown completes");
+			Assert.IsTrue(mouseDownCalled, "#1.5 - MouseDown didn't get called.  Did you click the control?");
 		}
 	}
 }
