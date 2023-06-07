@@ -821,6 +821,11 @@ namespace Eto.Wpf.Forms
 
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
+			
+			// If the mouse was captured intrinsically we need to release capture otherwise it hangs the app
+			// since the caller is overriding default behaviour.
+			if (e.Handled && Control.IsMouseCaptured)
+				Control.ReleaseMouseCapture();
 		}
 
 		void HandleMouseDoubleClick(object sender, swi.MouseButtonEventArgs e)
