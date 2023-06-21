@@ -162,7 +162,14 @@ namespace Eto.Mac.Forms.Controls
 		public string HeaderText
 		{
 			get { return Control.HeaderCell.StringValue; }
-			set { Control.HeaderCell.StringValue = value; }
+			set
+			{
+				if (value != HeaderText)
+				{
+					Control.HeaderCell.StringValue = value;
+					Control.TableView?.HeaderView?.SetNeedsDisplay();
+				}
+			}
 		}
 
 		public bool Resizable
