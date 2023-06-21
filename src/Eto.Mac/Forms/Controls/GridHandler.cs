@@ -47,7 +47,7 @@ namespace Eto.Mac.Forms.Controls
 		public EtoTableHeaderView(IntPtr handle) : base(handle)
 		{
 		}
-
+		
 		public override void MouseDown(NSEvent theEvent)
 		{
 			var h = Handler;
@@ -73,6 +73,60 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 			h.TriggerMouseDown(this, sel, theEvent);
+		}
+	}
+	
+	class EtoTableHeaderViewWithBackground : EtoTableHeaderView
+	{
+		public NSColor BackgroundColor { get; set; }
+
+		public override void DrawRect(CGRect dirtyRect)
+		{
+			if (BackgroundColor == null)
+			{
+				base.DrawRect(dirtyRect);
+				return;
+			}
+			
+			// gotta draw header cells manually to get a custom background color without tinting...
+			var bounds = Bounds;
+			BackgroundColor.SetFill();
+			NSBezierPath.FillRect(bounds);
+
+			NSBezierPath path;
+			nfloat? position = null;
+			var dividerSize = ConvertSizeToBacking(new CGSize(1, 1));
+			var spacing = TableView.IntercellSpacing.Width;
+			var columns = TableView.TableColumns();
+			for (int i = 0; i < columns.Length; i++)
+			{
+				var cellFrame = GetHeaderRect(i);
+				var col = columns[i];
+				var cell = col.HeaderCell;
+				if (col.Hidden || cell == null)
+					continue;
+				cell.DrawWithFrame(cellFrame, this);
+				if (position == null)
+				{
+					// draw separator up to first column
+					NSColor.Separator.Set();
+					path = new NSBezierPath();
+					path.MoveTo(new CGPoint(bounds.X, bounds.Bottom));
+					path.LineTo(new CGPoint(cellFrame.X, bounds.Bottom));
+					path.LineWidth = dividerSize.Height;
+					path.Stroke();
+					path.Dispose();
+				}
+				position = cellFrame.Right;
+			}
+			// draw separator from last column
+			NSColor.Separator.Set();
+			path = new NSBezierPath();
+			path.MoveTo(new CGPoint(position ?? bounds.X, bounds.Bottom));
+			path.LineTo(new CGPoint(bounds.Right, bounds.Bottom));
+			path.LineWidth = dividerSize.Height;
+			path.Stroke();
+			path.Dispose();
 		}
 	}
 
@@ -298,15 +352,15 @@ namespace Eto.Mac.Forms.Controls
 					// handled in delegates
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
-					AddMethod(MacView.selMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", Control.HeaderView);
-					AddMethod(MacView.selRightMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", Control.HeaderView);
-					AddMethod(MacView.selOtherMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", Control.HeaderView);
+					AddMethod(MacView.selMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					AddMethod(MacView.selRightMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					AddMethod(MacView.selOtherMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", typeof(EtoTableHeaderView));
 					base.AttachEvent(id);
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
-					AddMethod(MacView.selMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", Control.HeaderView);
-					AddMethod(MacView.selRightMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", Control.HeaderView);
-					AddMethod(MacView.selOtherMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", Control.HeaderView);
+					AddMethod(MacView.selMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					AddMethod(MacView.selRightMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					AddMethod(MacView.selOtherMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", typeof(EtoTableHeaderView));
 					base.AttachEvent(id);
 					break;
 				default:
@@ -473,7 +527,11 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (value && Control.HeaderView == null)
 				{
-					Control.HeaderView = headerView = new EtoTableHeaderView { Handler = this, Menu = ContextMenu.ToNS() };
+					if (HasBackgroundColor && !UseNSBoxBackgroundColor)
+						headerView = new EtoTableHeaderViewWithBackground { Handler = this, BackgroundColor = BackgroundColor.ToNSUI(), Menu = ContextMenu.ToNS() };
+					else
+						headerView = new EtoTableHeaderView { Handler = this, Menu = ContextMenu.ToNS() };
+					Control.HeaderView = headerView;
 				}
 				else if (!value && Control.HeaderView != null)
 				{
@@ -897,6 +955,26 @@ namespace Eto.Mac.Forms.Controls
 			if (col == null)
 				return -1;
 			return Widget.Columns.IndexOf(col);
+		}
+		
+		protected override void SetBackgroundColor(Color? color)
+		{
+			var bg = color?.ToNSUI() ?? NSColor.ControlBackground;
+			Control.BackgroundColor = bg;
+			if (!UseNSBoxBackgroundColor)
+			{
+				var currentHeader = Control.HeaderView;
+				if (currentHeader is EtoTableHeaderViewWithBackground backgroundHeaderView)
+				{
+					backgroundHeaderView.BackgroundColor = bg;
+					backgroundHeaderView.SetNeedsDisplay();
+				}
+				else if (currentHeader != null)
+				{
+					headerView = new EtoTableHeaderViewWithBackground { Handler = this, BackgroundColor = bg, Menu = ContextMenu.ToNS() };
+					Control.HeaderView = headerView;
+				}
+			}
 		}
 
 	}
