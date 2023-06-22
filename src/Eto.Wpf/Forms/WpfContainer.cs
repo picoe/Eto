@@ -12,7 +12,7 @@ namespace Eto.Wpf.Forms
 	{
 		void Remove(sw.FrameworkElement child);
 
-		void UpdatePreferredSize();
+		void OnChildPreferredSizeUpdated();
 	}
 
 	public abstract class WpfContainer<TControl, TWidget, TCallback> : WpfFrameworkElement<TControl, TWidget, TCallback>, Container.IHandler, IWpfContainer
