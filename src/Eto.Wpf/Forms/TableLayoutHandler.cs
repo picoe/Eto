@@ -395,7 +395,7 @@ namespace Eto.Wpf.Forms
 				}
 				Control.Children.Add(control);
 			}
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public void Move(Control child, int x, int y)
@@ -420,7 +420,7 @@ namespace Eto.Wpf.Forms
 				SetScale(handler, x, y);
 			}
 			controls[x, y] = child;
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public void Remove(Control child)
@@ -434,7 +434,7 @@ namespace Eto.Wpf.Forms
 			var y = swc.Grid.GetRow(child);
 			Control.Children.Remove(child);
 			controls[x, y] = null;
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 	}
 }
