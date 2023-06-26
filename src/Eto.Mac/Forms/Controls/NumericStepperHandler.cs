@@ -94,6 +94,8 @@ namespace Eto.Mac.Forms.Controls
 
 				AddSubview(TextField);
 				AddSubview(Stepper);
+
+				this.SetClipsToBounds(false);
 			}
 		}
 
