@@ -23,14 +23,20 @@ namespace Eto.Mac.Forms.Controls
 				var drawable = Drawable;
 				if (drawable == null)
 					return;
+				// restrict drawing to the bounds of the drawable
+				// macOS can give us dirty rects outside this range
+				var bounds = Bounds.ToEto();
+				var dirty = dirtyRect.ToEto();
+				dirty.Restrict(bounds);
+				
 				if (!IsFlipped)
-					dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
-				if (dirtyRect.X % 1.0f > 0f)
-					dirtyRect.Width += 1;
-				if (dirtyRect.Y % 1.0f > 0f)
-					dirtyRect.Height += 1;
+					dirty.Y = bounds.Height - dirty.Y - dirty.Height;
+				if (dirty.X % 1.0f > 0f)
+					dirty.Width += 1;
+				if (dirty.Y % 1.0f > 0f)
+					dirty.Height += 1;
 				ApplicationHandler.QueueResizing = true;
-				drawable.DrawRegion(Rectangle.Ceiling(dirtyRect.ToEto()));
+				drawable.DrawRegion(Rectangle.Ceiling(dirty));
 				ApplicationHandler.QueueResizing = false;
 			}
 
