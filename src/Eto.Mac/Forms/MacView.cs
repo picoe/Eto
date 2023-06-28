@@ -118,6 +118,7 @@ namespace Eto.Mac.Forms
 		bool TriggerMouseCallback();
 		MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent);
 		MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent);
+		void UpdateTrackingAreas();
 	}
 
 	static partial class MacView
@@ -176,6 +177,7 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selPerformZoom = Selector.GetHandle("performZoom:");
 		public static readonly IntPtr selArrangeInFront = Selector.GetHandle("arrangeInFront:");
 		public static readonly IntPtr selPerformMiniaturize = Selector.GetHandle("performMiniaturize:");
+		public static readonly IntPtr selUpdateTrackingAreas = Selector.GetHandle("updateTrackingAreas");
 		public static readonly Dictionary<string, IntPtr> systemActionSelectors = new Dictionary<string, IntPtr>
 		{
 			{ "cut", selCut },
@@ -208,6 +210,20 @@ namespace Eto.Mac.Forms
 		// before 10.12, we have to call base.Layout() AFTER we do our layout otherwise it doesn't work correctly..
 		// however, that causes (temporary) glitches when resizing especially with Scrollable >= 10.12
 		public static readonly bool NewLayout = MacVersion.IsAtLeast(10, 12);
+		
+		internal static MarshalDelegates.Action_IntPtr_IntPtr TriggerUpdateTrackingAreas_Delegate = TriggerUpdateTrackingAreas;
+		static void TriggerUpdateTrackingAreas(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			
+			Messaging.void_objc_msgSendSuper(obj.SuperHandle, sel);
+			
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			{
+				handler.UpdateTrackingAreas();
+			}
+		}
+		
 		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr TriggerMouseDragged_Delegate = TriggerMouseDragged;
 		static void TriggerMouseDragged(IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -636,7 +652,6 @@ namespace Eto.Mac.Forms
 				if (oldFrame.Size != newFrame.Size)
 					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 
-				CreateTracking();
 				InvalidateMeasure();
 			}
 		}
@@ -722,8 +737,8 @@ namespace Eto.Mac.Forms
 
 			return size;
 		}
-
-		void CreateTracking()
+		
+		public virtual void UpdateTrackingAreas()
 		{
 			if (!mouseMove)
 				return;
@@ -742,8 +757,6 @@ namespace Eto.Mac.Forms
 				frame = GetAlignmentRectForFrame(frame);
 
 				var options = mouseOptions | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.EnabledDuringMouseDrag;
-				if (!UseAlignmentFrame)
-					options |= NSTrackingAreaOptions.InVisibleRect;
 
 				tracking = new NSTrackingArea(frame, options, mouseDelegate, null);
 				EventControl.AddTrackingArea(tracking);
@@ -768,14 +781,14 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.MouseLeaveEvent:
 					mouseOptions |= NSTrackingAreaOptions.MouseEnteredAndExited;
 					mouseMove = true;
-					HandleEvent(Eto.Forms.Control.SizeChangedEvent);
-					CreateTracking();
+					AddMethod(MacView.selUpdateTrackingAreas, MacView.TriggerUpdateTrackingAreas_Delegate, "v@:@", EventControl);
+					EventControl.UpdateTrackingAreas();
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
 					mouseOptions |= NSTrackingAreaOptions.MouseMoved;
 					mouseMove = true;
-					HandleEvent(Eto.Forms.Control.SizeChangedEvent);
-					CreateTracking();
+					AddMethod(MacView.selUpdateTrackingAreas, MacView.TriggerUpdateTrackingAreas_Delegate, "v@:@", EventControl);
+					EventControl.UpdateTrackingAreas();
 					AddMethod(MacView.selMouseDragged, MacView.TriggerMouseDragged_Delegate, "v@:@");
 					AddMethod(MacView.selRightMouseDragged, MacView.TriggerMouseDragged_Delegate, "v@:@");
 					AddMethod(MacView.selOtherMouseDragged, MacView.TriggerMouseDragged_Delegate, "v@:@");
@@ -896,7 +909,6 @@ namespace Eto.Mac.Forms
 		
 		public virtual void OnSizeChanged(EventArgs e)
 		{
-			CreateTracking();
 		}
 
 		public virtual void Invalidate(bool invalidateChildren)
