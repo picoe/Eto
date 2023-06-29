@@ -8,18 +8,11 @@ namespace Eto.Wpf.Forms
 	public class TrayIndicatorHandler : WidgetHandler<swf.NotifyIcon, TrayIndicator, TrayIndicator.ICallback>,
 		TrayIndicator.IHandler
 	{
-		private const int KeyEscape = 27;
-		private const int WhKeyboardLowLevel = 13;
-		private const int WhMouseLowLevel = 14;
-		private const int WmKeydown = 0x100;
-		private const int WmLeftButtonDown = 0x201;
-		private const int WmRightButtonDown = 0x204;
 		private Image _image;
-		private int _keyboardHookHandle;
+		private IntPtr _keyboardHookHandle;
 		private Win32.HookProc _keyboardHookProcRef;
-		private int _mouseHookHandle;
+		private IntPtr _mouseHookHandle;
 		private Win32.HookProc _mouseHookProcRef;
-
 
 		public TrayIndicatorHandler()
 		{
@@ -85,12 +78,12 @@ namespace Eto.Wpf.Forms
 
 		private void ContextMenuClosed(object sender, RoutedEventArgs e)
 		{
-			if (_mouseHookHandle != 0)
+			if (_mouseHookHandle != IntPtr.Zero)
 			{
 				Win32.UnhookWindowsHookEx(_mouseHookHandle);
 			}
 
-			if (_keyboardHookHandle != 0)
+			if (_keyboardHookHandle != IntPtr.Zero)
 			{
 				Win32.UnhookWindowsHookEx(_keyboardHookHandle);
 			}
@@ -135,7 +128,7 @@ namespace Eto.Wpf.Forms
 		private static int GetKeyCode(IntPtr structPointer)
 		{
 			var keyboardHook = (Win32.KeyboardLowLevelHook) Marshal.PtrToStructure(structPointer, typeof(Win32.KeyboardLowLevelHook));
-			return keyboardHook.VirtualKeyCode;
+			return (int)keyboardHook.VirtualKeyCode;
 		}
 
 		private void InitializeNativeHooks()
@@ -146,30 +139,24 @@ namespace Eto.Wpf.Forms
 
 		private void InstallHooks()
 		{
-			using (var process = Process.GetCurrentProcess())
-			using (var module = process.MainModule)
+			_mouseHookHandle = Win32.SetHook(Win32.WH.MOUSE_LL, _mouseHookProcRef);
+			if (_mouseHookHandle == IntPtr.Zero)
 			{
-				_mouseHookHandle = Win32.SetWindowsHookEx(WhMouseLowLevel, _mouseHookProcRef, Win32.GetModuleHandle(module.ModuleName), 0);
-				if (_mouseHookHandle == 0)
-				{
-					throw new Win32Exception(Marshal.GetLastWin32Error());
-				}
-
-				_keyboardHookHandle =
-					Win32.SetWindowsHookEx(WhKeyboardLowLevel, _keyboardHookProcRef, Win32.GetModuleHandle(module.ModuleName), 0);
-				if (_keyboardHookHandle == 0)
-				{
-					throw new Win32Exception(Marshal.GetLastWin32Error());
-				}
+				throw new Win32Exception(Marshal.GetLastWin32Error());
+			}
+			_keyboardHookHandle = Win32.SetHook(Win32.WH.KEYBOARD_LL, _keyboardHookProcRef);
+			if (_keyboardHookHandle == IntPtr.Zero)
+			{
+				throw new Win32Exception(Marshal.GetLastWin32Error());
 			}
 		}
 
-		private int KeyboardEventProc(int code, int wParam, IntPtr lParam)
+		private IntPtr KeyboardEventProc(int code, IntPtr wParam, IntPtr lParam)
 		{
-			if (code == 0 && wParam == WmKeydown)
+			if (code == 0 && wParam == (IntPtr)Win32.WM.KEYDOWN)
 			{
 				var key = GetKeyCode(lParam);
-				if (key == KeyEscape)
+				if (key == (int)Win32.VK.ESCAPE)
 				{
 					var menu = ContextMenuHandler.GetControl(Menu);
 					menu.IsOpen = false;
@@ -179,10 +166,10 @@ namespace Eto.Wpf.Forms
 			return Win32.CallNextHookEx(_keyboardHookHandle, code, wParam, lParam);
 		}
 
-		private int MouseEventProc(int code, int wParam, IntPtr lParam)
+		private IntPtr MouseEventProc(int code, IntPtr wParam, IntPtr lParam)
 		{
 			var menu = ContextMenuHandler.GetControl(Menu);
-			if (menu.IsVisible && code == 0 && (wParam == WmLeftButtonDown || wParam == WmRightButtonDown))
+			if (menu.IsVisible && code == 0 && (wParam == (IntPtr)Win32.WM.LBUTTONDOWN || wParam == (IntPtr)Win32.WM.RBUTTONDOWN))
 			{
 				swc.MenuItem subMenuItem = GetCurrentSubMenuItem(menu.Items);
 				var hitPoint = GetHitPoint(lParam);
