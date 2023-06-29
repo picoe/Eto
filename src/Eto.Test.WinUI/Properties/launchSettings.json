@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Eto.Test.WinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Eto.Test.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
