@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Shared
 {
 	public class MutableCellEventArgs : CellEventArgs

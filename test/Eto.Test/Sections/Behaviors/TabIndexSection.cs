@@ -1,6 +1,4 @@
-﻿using System;
-using Eto.Forms;
-namespace Eto.Test.Sections.Behaviors
+﻿namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "TabIndex")]
 	public class TabIndexSection : Panel

@@ -1,12 +1,5 @@
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Actions;
-using System.Linq;
 using Eto.Mac.Forms;
-using System.Collections.ObjectModel;
-using System;
-
-
 namespace Eto.Mac.Forms.Menu
 {
 	public class MenuBarHandler : WidgetHandler<NSMenu, MenuBar>, MenuBar.IHandler

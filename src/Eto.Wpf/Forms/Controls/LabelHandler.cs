@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using sw = System.Windows;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoLabel : swc.Label

@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using UIKit;
 using Eto.iOS.Drawing;
 

@@ -1,7 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public abstract class MacButton<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler

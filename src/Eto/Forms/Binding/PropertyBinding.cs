@@ -1,11 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Reflection;
-using System.Linq;
-using System.Diagnostics;
-using sc = System.ComponentModel;
-
 namespace Eto.Forms;
 
 /// <summary>

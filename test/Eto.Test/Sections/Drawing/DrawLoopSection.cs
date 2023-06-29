@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Eto.Drawing;
-using Eto.Forms;
-using System.Threading;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
 namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "Draw Loop")]

@@ -1,15 +1,10 @@
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-using System.Collections.Generic;
-
 namespace Eto.WinForms.Forms
 {
-	public class OpenFileDialogHandler : WindowsFileDialog<SWF.OpenFileDialog, OpenFileDialog>, OpenFileDialog.IHandler
+	public class OpenFileDialogHandler : WindowsFileDialog<swf.OpenFileDialog, OpenFileDialog>, OpenFileDialog.IHandler
 	{
 		public OpenFileDialogHandler()
 		{
-			Control = new SWF.OpenFileDialog();
+			Control = new swf.OpenFileDialog();
 		}
 
 		public bool MultiSelect

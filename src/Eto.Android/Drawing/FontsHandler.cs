@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -12,8 +6,6 @@ using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
 using System.Xml.Linq;
-using System.IO;
-
 namespace Eto.Android.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler

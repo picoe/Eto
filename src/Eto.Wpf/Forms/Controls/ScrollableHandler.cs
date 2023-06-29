@@ -1,10 +1,3 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable, Scrollable.ICallback>, Scrollable.IHandler

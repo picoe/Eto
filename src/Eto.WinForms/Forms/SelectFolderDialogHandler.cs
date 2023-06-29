@@ -1,14 +1,10 @@
-using SWF = System.Windows.Forms;
-using SD = System.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms
 {
-	public class SelectFolderDialogHandler : WidgetHandler<SWF.FolderBrowserDialog, SelectFolderDialog>, SelectFolderDialog.IHandler
+	public class SelectFolderDialogHandler : WidgetHandler<swf.FolderBrowserDialog, SelectFolderDialog>, SelectFolderDialog.IHandler
 	{
 		public SelectFolderDialogHandler ()
 		{
-			Control = new SWF.FolderBrowserDialog();
+			Control = new swf.FolderBrowserDialog();
 		}
 	
 
@@ -17,8 +13,8 @@ namespace Eto.WinForms.Forms
 			if (parent?.HasFocus == false)
 				parent.Focus();
 
-			SWF.DialogResult dr;
-			if (parent != null) dr = Control.ShowDialog((SWF.IWin32Window)parent.ControlObject);
+			swf.DialogResult dr;
+			if (parent != null) dr = Control.ShowDialog((swf.IWin32Window)parent.ControlObject);
 			else dr = Control.ShowDialog();
 			return dr.ToEto ();
 		}

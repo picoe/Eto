@@ -1,23 +1,10 @@
 
 // #define TEST_INSTALL // test installation without actually installing it.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Eto.Forms;
 using Eto.CustomControls;
-using Eto.Drawing;
-using System.Threading.Tasks;
 using Microsoft.Web.WebView2.Core;
-using System.Diagnostics;
 using Microsoft.Win32;
 using System.Net;
-using System.IO;
-using System.Runtime.Serialization;
-
-
 #if WINFORMS
 using WebView2Control = Microsoft.Web.WebView2.WinForms.WebView2;
 using BaseHandler = Eto.WinForms.Forms.WindowsControl<Microsoft.Web.WebView2.WinForms.WebView2, Eto.Forms.WebView, Eto.Forms.WebView.ICallback>;

@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 using av = Android.Views;
 
 namespace Eto.Android

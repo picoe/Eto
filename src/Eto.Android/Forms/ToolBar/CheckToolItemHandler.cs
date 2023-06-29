@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 using aw = Android.Widget;
 
 namespace Eto.Android.Forms.ToolBar

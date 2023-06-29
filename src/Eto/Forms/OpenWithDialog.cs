@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Dialog for a user to pick the default application for the given file.

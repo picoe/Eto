@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Presents a combination of an editable text box and drop down to select from a list of items and enter text.

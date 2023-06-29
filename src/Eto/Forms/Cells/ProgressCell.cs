@@ -1,6 +1,4 @@
-﻿using Eto.Forms;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Cell for <see cref="Grid"/> controls to show and bind a int value to a progress bar.

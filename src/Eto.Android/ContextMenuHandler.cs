@@ -1,5 +1,3 @@
-using Eto.Forms;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -7,11 +5,6 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
-using System.Collections.Generic;
-using System;
-using System.Linq;
-using Eto.Drawing;
-
 namespace Eto.Android
 {
 	internal class ContextMenuHandler : WidgetHandler<aw.PopupMenu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler

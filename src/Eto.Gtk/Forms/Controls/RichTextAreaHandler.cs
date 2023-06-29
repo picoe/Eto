@@ -1,10 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Eto.GtkSharp.Drawing;
 using Gtk;
 

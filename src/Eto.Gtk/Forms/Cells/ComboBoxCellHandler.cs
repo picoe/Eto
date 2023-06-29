@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Collections;
-
 namespace Eto.GtkSharp.Forms.Cells
 {
 	public class ComboBoxCellHandler : SingleCellHandler<Gtk.CellRendererCombo, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler

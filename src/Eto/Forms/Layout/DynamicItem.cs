@@ -1,7 +1,3 @@
-using sc = System.ComponentModel;
-using System;
-using System.Collections.Generic;
-
 namespace Eto.Forms;
 
 /// <summary>

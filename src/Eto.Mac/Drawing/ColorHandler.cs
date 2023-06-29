@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-
 namespace Eto.Mac.Drawing
 {
 	public class ColorHandler : Color.IHandler

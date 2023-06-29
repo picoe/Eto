@@ -1,9 +1,3 @@
-using System;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using Eto.Forms;
-using Eto.Drawing;
 using System.Windows;
 
 namespace Eto.Wpf.Forms.ToolBar

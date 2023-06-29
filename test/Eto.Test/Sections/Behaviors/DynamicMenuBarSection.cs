@@ -1,11 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-using System.ComponentModel;
-
-
-namespace Eto.Test.Sections.Behaviors
+﻿namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "Dynamic MenuBar")]
 	public class DynamicMenuBarSection : Panel, INotifyPropertyChanged

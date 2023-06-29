@@ -1,10 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Mac.Forms
 {
 	public class DialogHandler : MacWindow<EtoWindow, Dialog, Dialog.ICallback>, Dialog.IHandler

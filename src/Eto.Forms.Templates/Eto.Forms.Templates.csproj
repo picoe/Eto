@@ -26,6 +26,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+    <Using Remove="@(Using)" />
     <PackageReference Remove="Microsoft.NETCore.App" />
     
     <None Include="content\NuGet.Config" />

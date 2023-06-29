@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.IO;
-
 namespace Eto.Mac.Forms
 {
 	public class CursorHandler : WidgetHandler<NSCursor, Cursor>, Cursor.IHandler

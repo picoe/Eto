@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Gdk;
 
 namespace Eto.GtkSharp.Forms.ToolBar

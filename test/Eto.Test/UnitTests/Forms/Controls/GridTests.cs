@@ -1,8 +1,4 @@
 using NUnit.Framework;
-using Eto.Forms;
-using System.Collections.Generic;
-using Eto.Drawing;
-
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	public abstract class GridTests<T> : TestBase

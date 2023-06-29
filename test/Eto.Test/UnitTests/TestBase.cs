@@ -1,22 +1,8 @@
-using Eto.Drawing;
-using Eto.Forms;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Diagnostics;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
-using System.IO;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.ComponentModel;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal.Commands;
 using NUnit.Framework.Internal;
-using Container = Eto.Forms.Container;
 
 namespace Eto.Test.UnitTests
 {

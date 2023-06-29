@@ -1,13 +1,5 @@
-using System;
-using Eto.Forms;
 using NUnit.Framework;
-using System.Collections.Generic;
-using Eto.Drawing;
-using System.Threading;
 using System.Runtime.ExceptionServices;
-using System.Reflection;
-using System.Linq;
-
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]

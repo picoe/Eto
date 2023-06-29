@@ -1,7 +1,3 @@
-using System;
-using System.Diagnostics;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms
 {
 	public class TaskbarHandler : Taskbar.IHandler

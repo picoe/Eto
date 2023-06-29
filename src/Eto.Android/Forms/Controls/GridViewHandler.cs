@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Forms;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -12,8 +6,6 @@ using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
 using Eto.Android.Forms.Cells;
-using Eto.Drawing;
-
 namespace Eto.Android.Forms.Controls
 {
 	public class GridViewHandler : AndroidControl<aw.ListView, GridView, GridView.ICallback>, GridView.IHandler

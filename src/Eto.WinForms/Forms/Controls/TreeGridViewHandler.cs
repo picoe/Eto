@@ -1,14 +1,4 @@
-using System;
-using System.Linq;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using Eto.Drawing;
 using Eto.CustomControls;
-using System.Collections.Specialized;
-using System.Runtime.InteropServices;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ITreeHandler

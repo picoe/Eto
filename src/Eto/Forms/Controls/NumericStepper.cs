@@ -1,9 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using Eto.Drawing;
-using System.Globalization;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Control for the user to enter a numeric value (obsolete, use NumericStepper instead)

@@ -1,15 +1,4 @@
-using System;
-using Eto.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using System.Collections;
 using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
-using sc = System.ComponentModel;
-
 namespace Eto.Forms.ThemedControls;
 
 /// <summary>

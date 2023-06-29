@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using sw = System.Windows;
-
 namespace Eto.Wpf
 {
 	public static class WpfProperties

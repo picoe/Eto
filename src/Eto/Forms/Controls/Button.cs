@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Windows.Input;
-
 namespace Eto.Forms;
 
 /// <summary>

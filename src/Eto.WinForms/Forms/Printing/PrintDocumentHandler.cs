@@ -1,10 +1,4 @@
-using swf = System.Windows.Forms;
 using sdp = System.Drawing.Printing;
-using sd = System.Drawing;
-using Eto.Forms;
-using Eto.Drawing;
-using System;
-
 namespace Eto.WinForms.Forms.Printing
 {
 	public class PrintDocumentHandler : WidgetHandler<sdp.PrintDocument, PrintDocument, PrintDocument.ICallback>, PrintDocument.IHandler

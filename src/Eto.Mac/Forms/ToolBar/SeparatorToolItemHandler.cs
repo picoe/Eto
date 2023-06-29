@@ -1,6 +1,3 @@
-using Eto.Forms;
-using System;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms.ToolBar

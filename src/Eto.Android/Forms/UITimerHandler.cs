@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 using ao = Android.OS;
 
 namespace Eto.Android

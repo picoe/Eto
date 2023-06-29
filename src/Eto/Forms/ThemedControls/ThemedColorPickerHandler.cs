@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Forms.ThemedControls;
 
 /// <summary>

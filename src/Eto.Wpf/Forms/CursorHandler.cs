@@ -1,10 +1,3 @@
-using System;
-using System.IO;
-using Eto.Drawing;
-using Eto.Forms;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-
 namespace Eto.Wpf.Forms
 {
 	public class CursorHandler : WidgetHandler<swi.Cursor, Cursor>, Cursor.IHandler

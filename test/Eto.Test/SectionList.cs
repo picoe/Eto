@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
-
 namespace Eto.Test
 {
 	public interface ISectionName

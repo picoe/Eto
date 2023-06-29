@@ -7,9 +7,6 @@
     This is sample code and is freely distributable. 
 */ 
 
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace ImageManipulation
 {
@@ -29,7 +26,7 @@ namespace ImageManipulation
 		{
 			_colorMap = new Hashtable ( ) ;
 
-			_colors = new Color[palette.Count] ;
+			_colors = new sd.Color[palette.Count] ;
 			palette.CopyTo ( _colors ) ;
 		}
 
@@ -73,7 +70,7 @@ namespace ImageManipulation
 					// Loop through the entire palette, looking for the closest color match
 					for ( int index = 0 ; index < _colors.Length ; index++ )
 					{
-						Color	paletteColor = _colors[index];
+						sd.Color	paletteColor = _colors[index];
 						
 						int	redDistance = paletteColor.R - red ;
 						int	greenDistance = paletteColor.G - green ;
@@ -107,7 +104,7 @@ namespace ImageManipulation
 		/// </summary>
 		/// <param name="original">Any old palette, this is overrwritten</param>
 		/// <returns>The new color palette</returns>
-		protected override ColorPalette GetPalette ( ColorPalette original )
+		protected override sdi.ColorPalette GetPalette ( sdi.ColorPalette original )
 		{
 			for ( int index = 0 ; index < _colors.Length ; index++ )
 				original.Entries[index] = _colors[index] ;
@@ -123,6 +120,6 @@ namespace ImageManipulation
 		/// <summary>
 		/// List of all colors in the palette
 		/// </summary>
-		readonly Color[] _colors ;
+		readonly sd.Color[] _colors ;
 	}
 }

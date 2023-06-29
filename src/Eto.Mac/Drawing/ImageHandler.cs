@@ -1,4 +1,3 @@
-using Eto.Drawing;
 using Eto.Mac.Forms;
 
 

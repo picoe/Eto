@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace Eto.Forms;
 
 /// <summary>

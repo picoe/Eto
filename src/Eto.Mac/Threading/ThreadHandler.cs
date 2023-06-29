@@ -1,5 +1,5 @@
-using System;
 using Eto.Threading;
+using Thread = Eto.Threading.Thread;
 
 #if OSX
 

@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 #if OSX
 
 namespace Eto.Mac.Drawing

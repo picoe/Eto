@@ -1,12 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.IO;
-using Eto.Mac.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-
+﻿using Eto.Mac.Drawing;
 namespace Eto.Mac.Forms
 {
 	public class DataFormatsHandler : DataFormats.IHandler

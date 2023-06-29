@@ -6,12 +6,6 @@
   
     This is sample code and is freely distributable. 
 */ 
-using System;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Globalization;
-
 namespace ImageManipulation
 {
 	/// <summary>
@@ -77,17 +71,17 @@ namespace ImageManipulation
 		/// </summary>
 		/// <param name="original">Any old palette, this is overrwritten</param>
 		/// <returns>The new color palette</returns>
-		protected override ColorPalette GetPalette(ColorPalette original)
+		protected override sdi.ColorPalette GetPalette(sdi.ColorPalette original)
 		{
 			// First off convert the octree to _maxColors colors
 			ArrayList	palette = _octree.Palletize(_maxColors - 1);
 
 			// Then convert the palette based on those colors
 			for (int index = 0; index < palette.Count; index++)
-				original.Entries[index] = (Color)palette[index];
+				original.Entries[index] = (sd.Color)palette[index];
 
 			// Add the transparent color
-			original.Entries[_maxColors] = Color.FromArgb(0, 0, 0, 0);
+			original.Entries[_maxColors] = sd.Color.FromArgb(0, 0, 0, 0);
 
 			return original;
 		}
@@ -389,7 +383,7 @@ namespace ImageManipulation
 						_paletteIndex = paletteIndex++;
 
 						// And set the color of the palette entry
-						palette.Add(Color.FromArgb(_red / _pixelCount, _green / _pixelCount, _blue / _pixelCount));
+						palette.Add(sd.Color.FromArgb(_red / _pixelCount, _green / _pixelCount, _blue / _pixelCount));
 					}
 					else
 					{

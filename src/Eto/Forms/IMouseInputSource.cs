@@ -1,5 +1,3 @@
-using System;
-
 using MouseEventHandler = System.EventHandler<Eto.Forms.MouseEventArgs>;
 
 namespace Eto.Forms;

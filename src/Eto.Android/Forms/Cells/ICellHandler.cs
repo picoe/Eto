@@ -1,4 +1,3 @@
-using Eto.Forms;
 using av = Android.Views;
 
 namespace Eto.Android.Forms.Cells

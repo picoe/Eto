@@ -1,4 +1,3 @@
-using System;
 using Eto;
 using Eto.Test;
 

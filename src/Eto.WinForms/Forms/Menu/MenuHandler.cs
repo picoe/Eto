@@ -1,6 +1,3 @@
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Menu
 {
 	interface IMenuItemHandler
@@ -8,12 +5,12 @@ namespace Eto.WinForms.Forms.Menu
 		Keys Shortcut { get; }
 		bool Enabled { get; }
 		MenuItem Widget { get; }
-		SWF.ToolStripMenuItem Control { get; }
+		swf.ToolStripMenuItem Control { get; }
 		MenuItem.ICallback Callback { get; }
 	}
 
 	public abstract class MenuItemHandler<TControl, TWidget, TCallback> : MenuHandler<TControl, TWidget, TCallback>, Eto.Forms.MenuItem.IHandler, IMenuItemHandler
-		where TControl: SWF.ToolStripMenuItem
+		where TControl: swf.ToolStripMenuItem
 		where TCallback: MenuItem.ICallback
 		where TWidget: MenuItem
 	{
@@ -49,14 +46,14 @@ namespace Eto.WinForms.Forms.Menu
 			set
 			{
 				var key = value.ToSWF();
-				if (!value.HasFlag(Keys.Application) && SWF.ToolStripManager.IsValidShortcut(key))
+				if (!value.HasFlag(Keys.Application) && swf.ToolStripManager.IsValidShortcut(key))
 				{
 					Control.ShortcutKeys = key;
 					Widget.Properties.Set(CustomShortcutKey, default(Keys));
 				}
 				else
 				{
-					Control.ShortcutKeys = SWF.Keys.None;
+					Control.ShortcutKeys = swf.Keys.None;
 					Widget.Properties.Set(CustomShortcutKey, value);
 					if (value != Keys.None)
 						Control.ShortcutKeyDisplayString = value.ToShortcutString();
@@ -70,7 +67,7 @@ namespace Eto.WinForms.Forms.Menu
 			get { return Widget; }
 		}
 
-		SWF.ToolStripMenuItem IMenuItemHandler.Control
+		swf.ToolStripMenuItem IMenuItemHandler.Control
 		{
 			get { return Control; }
 		}
@@ -82,7 +79,7 @@ namespace Eto.WinForms.Forms.Menu
 	}
 
 	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Eto.Forms.Menu.IHandler
-		where TControl: SWF.ToolStripItem
+		where TControl: swf.ToolStripItem
 		where TWidget: Widget
 	{
 

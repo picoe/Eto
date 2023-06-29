@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class RadioButtonHandler : MacButton<NSButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler

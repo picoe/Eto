@@ -1,11 +1,4 @@
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.WinForms.Drawing;
-using System;
-using System.ComponentModel;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class ImageViewHandler : WindowsControl<swf.PictureBox, ImageView, ImageView.ICallback>, ImageView.IHandler

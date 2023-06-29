@@ -1,9 +1,3 @@
-using System;
-using System.ComponentModel;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Forms;
 using Eto.WinForms.Drawing;
 

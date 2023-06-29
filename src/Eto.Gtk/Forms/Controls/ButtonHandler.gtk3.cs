@@ -1,8 +1,4 @@
 #if GTK3
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	/// <summary>

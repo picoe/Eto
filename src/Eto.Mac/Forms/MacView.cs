@@ -1,12 +1,5 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Printing;
-using System.Linq;
-using System.Runtime.InteropServices;
-
 #if MACOS_NET
 using NSDraggingInfo = AppKit.INSDraggingInfo;
 #endif

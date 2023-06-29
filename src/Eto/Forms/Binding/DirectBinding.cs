@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Reflection;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Abstraction to get/set values from a provided object

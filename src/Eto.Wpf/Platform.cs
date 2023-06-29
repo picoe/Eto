@@ -1,10 +1,5 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Wpf.Forms.Cells;
 using Eto.Wpf.Forms.ToolBar;
-using swi = System.Windows.Input;
-using swm = System.Windows.Media;
-using sw = System.Windows;
 using Eto.Wpf.Drawing;
 using Eto.Wpf.Forms.Menu;
 using Eto.Wpf.Forms.Controls;
@@ -14,8 +9,6 @@ using Eto.IO;
 using Eto.Wpf.IO;
 using Eto.Forms.ThemedControls;
 using Eto.Shared.Forms;
-using System.Linq;
-using System.Diagnostics;
 namespace Eto.Wpf
 {
 	public class Platform : Eto.Platform

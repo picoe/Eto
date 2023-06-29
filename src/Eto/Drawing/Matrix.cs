@@ -1,7 +1,3 @@
-using System;
-using System.Globalization;
-using System.Linq;
-
 namespace Eto.Drawing;
 
 /// <summary>

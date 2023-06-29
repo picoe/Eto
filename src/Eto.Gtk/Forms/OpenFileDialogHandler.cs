@@ -1,7 +1,3 @@
-using Eto.Forms;
-using System.Collections.Generic;
-using System.IO;
-
 namespace Eto.GtkSharp.Forms
 {
 	#if GTKCORE

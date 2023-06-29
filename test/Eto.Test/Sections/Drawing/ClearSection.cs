@@ -1,8 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.ComponentModel;
-
 namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "Clear")]

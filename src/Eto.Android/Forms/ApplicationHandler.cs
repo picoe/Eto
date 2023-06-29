@@ -1,8 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Eto.Forms;
-
 using a = Android;
 using ao = Android.OS;
 

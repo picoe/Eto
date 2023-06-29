@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
 using Eto.Mac.Forms.Menu;
 

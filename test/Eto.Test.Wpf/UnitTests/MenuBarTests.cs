@@ -1,12 +1,6 @@
-﻿using Eto.Forms;
-using Eto.Test.UnitTests;
+﻿using Eto.Test.UnitTests;
 using Eto.Wpf.Forms.Menu;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using swi = System.Windows.Input;
 
 namespace Eto.Test.Wpf.UnitTests

@@ -1,9 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-
 namespace Eto.Mac.Drawing
 {
 	public class FontFamilyHandler : WidgetHandler<object, FontFamily>, FontFamily.IHandler

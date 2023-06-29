@@ -1,11 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-using Eto.Mac.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-
-
+﻿using Eto.Mac.Drawing;
 namespace Eto.Mac.Forms
 {
 	public class MemoryDataObjectHandler : WidgetHandler<Dictionary<string, MemoryDataObjectHandler.BaseItem>, DataObject, DataObject.ICallback>, DataObject.IHandler, IDataObject, IDataObjectHandler

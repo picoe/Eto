@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp
 {
 	static class GtkExtensions

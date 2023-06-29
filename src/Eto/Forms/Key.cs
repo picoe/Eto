@@ -1,9 +1,4 @@
-﻿﻿﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using sc = System.ComponentModel;
-using System.Diagnostics;
-
+﻿﻿
   namespace Eto.Forms; 
 
   /// <summary>

@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Diagnostics;
-using Eto.Drawing;
-using System.Linq;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(MaskedTextStepper))]

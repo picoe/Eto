@@ -1,20 +1,11 @@
-using System;
-using Eto.Drawing;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using Eto.Forms;
-using mwc = Xceed.Wpf.Toolkit;
-using System.Text;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class EtoDoubleUpDown : mwc.DoubleUpDown, IEtoWpfControl
+	public class EtoDoubleUpDown : xwt.DoubleUpDown, IEtoWpfControl
 	{
 		public new swc.TextBox TextBox { get { return base.TextBox; } }
-		public new mwc.Spinner Spinner { get { return base.Spinner; } }
+		public new xwt.Spinner Spinner { get { return base.Spinner; } }
 
 		public IWpfFrameworkElement Handler { get; set; }
 

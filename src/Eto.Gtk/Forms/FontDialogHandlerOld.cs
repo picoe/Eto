@@ -1,8 +1,4 @@
 #if !GTKCORE
-using System;
-using System.Text;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms

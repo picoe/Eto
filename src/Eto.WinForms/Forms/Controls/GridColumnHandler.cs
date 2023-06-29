@@ -1,9 +1,4 @@
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Forms.Cells;
-using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Eto.WinForms.Forms.Controls

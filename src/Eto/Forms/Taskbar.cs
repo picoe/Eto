@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Methods to interact with application taskbar button.

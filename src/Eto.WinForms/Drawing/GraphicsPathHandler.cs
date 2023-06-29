@@ -1,8 +1,3 @@
-using System.Linq;
-using Eto.Drawing;
-using sd = System.Drawing;
-using sd2 = System.Drawing.Drawing2D;
-using System.Collections.Generic;
 
 namespace Eto.WinForms.Drawing
 {

@@ -1,13 +1,3 @@
-using System;
-using System.Globalization;
-using System.IO;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Forms;
-
-
-
 namespace Eto.Mac.Drawing
 {
 	public class IconHandler : ImageHandler<NSImage, Icon>, Icon.IHandler

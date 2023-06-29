@@ -7,10 +7,7 @@
 
 namespace DragDropLib
 {
-	using System;
-	using System.Runtime.InteropServices;
-
-	[ComImport]
+		[ComImport]
 	[Guid("4657278A-411B-11d2-839A-00C04FD918D0")]
 	class DragDropHelper { }
 }
@@ -21,8 +18,6 @@ namespace DragDropLib
 
 namespace DragDropLib
 {
-	using System;
-	using System.Runtime.InteropServices;
 	using System.Runtime.InteropServices.ComTypes;
 
 	[ComVisible(true)]
@@ -67,8 +62,6 @@ namespace DragDropLib
 
 namespace DragDropLib
 {
-	using System;
-	using System.Runtime.InteropServices;
 	using System.Runtime.InteropServices.ComTypes;
 
 	[ComVisible(true)]
@@ -105,9 +98,6 @@ namespace DragDropLib
 
 namespace DragDropLib
 {
-	using System;
-	using System.Runtime.InteropServices;
-
 	[StructLayout(LayoutKind.Sequential)]
 	struct Win32Point
 	{
@@ -148,14 +138,8 @@ namespace DragDropLib
 
 namespace System.Runtime.InteropServices.ComTypes
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Runtime.InteropServices;
 	using System.Runtime.InteropServices.ComTypes;
-	using System.Text;
 	using DragDropLib;
-	using System.ComponentModel;
-	using System.IO;
 	using System.Runtime.Serialization.Formatters.Binary;
 
 	/// <summary>
@@ -545,10 +529,6 @@ namespace System.Runtime.InteropServices.ComTypes
 
 namespace DragDropLib
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Runtime.InteropServices;
 	using System.Runtime.InteropServices.ComTypes;
 
 	/// <summary>

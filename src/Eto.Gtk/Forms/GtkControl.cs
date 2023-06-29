@@ -1,12 +1,4 @@
-using System;
-using System.Text.RegularExpressions;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System.Text;
-using System.Linq;
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Eto.GtkSharp.Forms

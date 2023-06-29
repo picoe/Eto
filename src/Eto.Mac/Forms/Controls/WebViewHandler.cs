@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-using System.Threading.Tasks;
 #if MONOMAC
 using wk = MonoMac.WebKit;
 using IWebOpenPanelResultListener = MonoMac.WebKit.WebOpenPanelResultListener;

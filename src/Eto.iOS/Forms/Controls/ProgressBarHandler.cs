@@ -1,7 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class ProgressBarHandler : IosView<UIProgressView, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler

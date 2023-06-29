@@ -1,13 +1,5 @@
-using System;
-using System.Globalization;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Drawing;
-using sd = System.Drawing;
 using sdp = System.Drawing.Printing;
-using sd2 = System.Drawing.Drawing2D;
-using swf = System.Windows.Forms;
-using sdi = System.Drawing.Imaging;
 using Eto.WinForms.Forms.Printing;
 using Eto.WinForms.Forms;
 

@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using swf = System.Windows.Forms;
-
 namespace Eto.WinForms.Forms
 {
 	public class NativeFormHandler : WindowHandler<swf.Form, Form, Form.ICallback>, Form.IHandler

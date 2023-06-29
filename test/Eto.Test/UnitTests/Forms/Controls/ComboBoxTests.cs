@@ -1,4 +1,3 @@
-using Eto.Forms;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms.Controls

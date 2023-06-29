@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using swd = System.Windows.Data;
-using sw = System.Windows;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class ProgressCellHandler : CellHandler<ProgressCellHandler.DataGridProgressBarColumn, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler

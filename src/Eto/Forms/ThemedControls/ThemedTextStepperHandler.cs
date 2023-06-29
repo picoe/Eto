@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using Eto.Drawing;
-
-namespace Eto.Forms.ThemedControls;
+﻿namespace Eto.Forms.ThemedControls;
 
 /// <summary>
 /// Themed implementation of the <see cref="TextStepper"/> control composed of a <see cref="TextBox"/> and <see cref="Stepper"/>.

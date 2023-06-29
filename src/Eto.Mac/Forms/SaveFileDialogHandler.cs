@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms
 {
 	public class SaveFileDialogHandler : MacFileDialog<NSSavePanel, SaveFileDialog>, SaveFileDialog.IHandler

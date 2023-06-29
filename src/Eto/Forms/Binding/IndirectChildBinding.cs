@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reflection;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// An indirect binding class to provide a way to bind to a child object of a value.

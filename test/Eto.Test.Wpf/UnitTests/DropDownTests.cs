@@ -1,4 +1,3 @@
-using Eto.Forms;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
 

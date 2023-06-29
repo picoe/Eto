@@ -1,7 +1,3 @@
-using System;
-using System.Globalization;
-using System.Reflection;
-using Eto.Forms;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 

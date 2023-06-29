@@ -1,8 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Linq;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Eto.Test.Sections.Behaviors

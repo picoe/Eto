@@ -2,10 +2,6 @@
 // has something to do with using layers (background colors) at the same time
 //#define USE_FLIPPED
 
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ScrollableHandler : MacPanel<NSScrollView, Scrollable, Scrollable.ICallback>, Scrollable.IHandler

@@ -1,7 +1,3 @@
-using System;
-using System.Threading;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Android.Drawing;
 using Eto.Android.Forms.Controls;
 using Eto.Android.Forms;

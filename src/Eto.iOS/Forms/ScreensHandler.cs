@@ -1,8 +1,4 @@
-using System;
-using Eto.Forms;
 using UIKit;
-using System.Linq;
-
 namespace Eto.iOS.Forms
 {
 	public class ScreensHandler : Screen.IScreensHandler

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto;
+﻿namespace Eto;
 
 /// <summary>
 /// Provides data for the event that is raised when there is an exception that is not handled otherwise

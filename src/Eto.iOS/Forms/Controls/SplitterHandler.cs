@@ -1,9 +1,5 @@
-using System;
-using Eto.Forms;
 using UIKit;
-using System.Linq;
 using Foundation;
-using System.Diagnostics;
 using Eto.Mac.Forms;
 
 namespace Eto.iOS.Forms.Controls

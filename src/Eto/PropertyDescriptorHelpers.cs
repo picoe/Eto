@@ -1,11 +1,3 @@
-using System;
-using System.Reflection;
-using sc = System.ComponentModel;
-using System.ComponentModel;
-using System.Collections;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace Eto;
 
 // generic property descriptor wrapper needed to support using PropertyDescriptor in .NET Standard 1.0

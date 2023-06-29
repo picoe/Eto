@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Eto.Forms.ThemedControls;
+﻿namespace Eto.Forms.ThemedControls;
 
 /// <summary>
 /// A themed handler for the <see cref="FilePicker"/> control.

@@ -1,6 +1,3 @@
-using Eto.Forms;
-using System;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class FloatingFormHandler : FormHandler, FloatingForm.IHandler

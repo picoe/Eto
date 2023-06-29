@@ -1,8 +1,5 @@
-using System;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Threading;
 using g = Gtk;
 
 

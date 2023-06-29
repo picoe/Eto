@@ -1,10 +1,4 @@
-using System;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
-using Eto.Forms;
-using System.Collections;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public static class WpfTreeItemHelper

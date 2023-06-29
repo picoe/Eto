@@ -1,10 +1,3 @@
-using System;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler

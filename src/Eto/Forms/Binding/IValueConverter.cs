@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Interface for providing a reusable converter for binding values

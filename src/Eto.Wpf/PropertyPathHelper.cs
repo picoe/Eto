@@ -1,9 +1,3 @@
-using System;
-using swk = System.Windows.Markup;
-using sw = System.Windows;
-using System.Reflection;
-using System.ComponentModel;
-
 namespace Eto.Wpf
 {
     public static class PropertyPathHelper

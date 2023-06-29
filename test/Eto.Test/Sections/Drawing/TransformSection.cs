@@ -1,7 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-
 namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "Transforms")]

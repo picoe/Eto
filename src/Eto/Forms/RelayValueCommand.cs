@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// A <see cref="IValueCommand{T}"/> class that uses delegates for getting and setting the value of the command

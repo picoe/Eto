@@ -1,8 +1,3 @@
-using System;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms
 {
 	public class ColorDialogHandler : WidgetHandler<swf.ColorDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler

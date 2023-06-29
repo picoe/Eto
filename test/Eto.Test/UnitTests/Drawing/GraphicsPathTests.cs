@@ -1,5 +1,3 @@
-using System.IO;
-using Eto.Drawing;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Drawing

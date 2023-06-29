@@ -1,12 +1,4 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Eto.Test.Sections.Behaviors
+﻿namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "Dynamic Focus")]
 	public class DynamicFocusSection : Panel

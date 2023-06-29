@@ -1,8 +1,4 @@
-using Eto.Forms;
 using Eto.Mac.Forms.Actions;
-using System;
-
-
 namespace Eto.Mac.Forms.Menu
 {
 	public interface IMenuHandler

@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
 using Eto.Wpf.Forms.Controls;
-using System.Threading.Tasks;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class DialogHandler : WpfWindow<sw.Window, Dialog, Dialog.ICallback>, Dialog.IHandler

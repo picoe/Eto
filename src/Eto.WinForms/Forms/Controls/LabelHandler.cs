@@ -1,12 +1,3 @@
-using System;
-using System.IO;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Diagnostics;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class LabelHandler : WindowsControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler

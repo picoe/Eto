@@ -1,14 +1,7 @@
-using System;
 using System.Windows.Controls.Primitives;
 using System.Windows;
-using Eto.Forms;
 using System.Windows.Controls;
 using Eto.CustomControls;
-using swc = System.Windows.Controls;
-using swcp = System.Windows.Controls.Primitives;
-using swm = System.Windows.Media;
-using System.Windows.Input;
-
 namespace Eto.Wpf.CustomControls.TreeGridView
 {
 	public class TreeTogglePanel : DockPanel
@@ -94,7 +87,7 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 			DefaultStyleKeyProperty.OverrideMetadata (typeof (TreeToggleButton), new FrameworkPropertyMetadata (typeof (TreeToggleButton)));
 		}
 
-		protected override void OnPreviewMouseLeftButtonUp(MouseButtonEventArgs e)
+		protected override void OnPreviewMouseLeftButtonUp(swi.MouseButtonEventArgs e)
 		{
 			base.OnPreviewMouseLeftButtonUp(e);
 
@@ -107,7 +100,7 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 				e.Handled = true;
 			}
 		}
-		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+		protected override void OnPreviewMouseLeftButtonDown(swi.MouseButtonEventArgs e)
 		{
 			base.OnPreviewMouseLeftButtonDown(e);
 			e.Handled = true;

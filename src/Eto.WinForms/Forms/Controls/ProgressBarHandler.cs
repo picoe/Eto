@@ -1,27 +1,24 @@
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Controls
 {
-	public class ProgressBarHandler : WindowsControl<SWF.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
+	public class ProgressBarHandler : WindowsControl<swf.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
 		public ProgressBarHandler ()
 		{
-			this.Control = new SWF.ProgressBar {
+			this.Control = new swf.ProgressBar {
 				Maximum = 100,
-				Style = SWF.ProgressBarStyle.Blocks
+				Style = swf.ProgressBarStyle.Blocks
 			};
 		}
 
-		static SWF.ProgressBarStyle IndeterminateStyle
+		static swf.ProgressBarStyle IndeterminateStyle
 		{
-			get { return (SWF.Application.RenderWithVisualStyles) ? SWF.ProgressBarStyle.Marquee : SWF.ProgressBarStyle.Continuous; }
+			get { return (swf.Application.RenderWithVisualStyles) ? swf.ProgressBarStyle.Marquee : swf.ProgressBarStyle.Continuous; }
 		}
 
 		public bool Indeterminate {
-			get { return Control.Style == SWF.ProgressBarStyle.Continuous || Control.Style == SWF.ProgressBarStyle.Marquee; }
+			get { return Control.Style == swf.ProgressBarStyle.Continuous || Control.Style == swf.ProgressBarStyle.Marquee; }
 			set { 
-				Control.Style = value ? IndeterminateStyle : SWF.ProgressBarStyle.Blocks;
+				Control.Style = value ? IndeterminateStyle : swf.ProgressBarStyle.Blocks;
 			}
 		}
 

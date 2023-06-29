@@ -1,13 +1,3 @@
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Eto.Drawing;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class RichTextAreaHandler : TextAreaHandler<RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer

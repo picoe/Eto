@@ -1,7 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Linq;
-using Eto.Drawing;
 using UIKit;
 using Eto.Shared.Drawing;
 

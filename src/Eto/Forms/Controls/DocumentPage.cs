@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using System.Collections.ObjectModel;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Control for a page in a <see cref="DocumentControl"/>

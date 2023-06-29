@@ -1,18 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using swc = System.Windows.Controls;
-using swn = System.Windows.Navigation;
-using sw = System.Windows;
-using swf = System.Windows.Forms;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using System.Runtime.InteropServices;
 using Eto.CustomControls;
-using Eto.Drawing;
-using System.Threading.Tasks;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class SwfWebViewHandler : WpfFrameworkElement<swf.Integration.WindowsFormsHost, WebView, WebView.ICallback>, WebView.IHandler

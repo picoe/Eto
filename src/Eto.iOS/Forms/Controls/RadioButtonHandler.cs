@@ -1,9 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.iOS.Forms.Controls
 {
 	// TODO: use UISwitch instead with custom state images, better accessibility

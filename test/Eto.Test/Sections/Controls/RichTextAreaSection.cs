@@ -1,10 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.IO;
-using System.Text;
-using System.Linq;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(RichTextArea))]

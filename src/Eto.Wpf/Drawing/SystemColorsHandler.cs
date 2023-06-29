@@ -1,12 +1,3 @@
-using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-
 namespace Eto.Wpf.Drawing
 {
 	public class SystemColorsHandler : SystemColors.IHandler

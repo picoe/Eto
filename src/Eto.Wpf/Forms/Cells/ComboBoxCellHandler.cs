@@ -1,12 +1,3 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using swd = System.Windows.Data;
-using sw = System.Windows;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class ComboBoxCellHandler : CellHandler<swc.DataGridComboBoxColumn, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler

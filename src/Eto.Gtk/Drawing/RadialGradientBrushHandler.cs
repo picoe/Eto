@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>

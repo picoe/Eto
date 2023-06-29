@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Eto.Forms;
 using Eto.Mac.Forms;
 
 namespace Eto.Mac

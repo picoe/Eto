@@ -1,11 +1,4 @@
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.GtkSharp.Forms.Cells;
-using System.Collections;
-using System.Linq;
-using Eto.Drawing;
-using System;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler, ICellDataSource, IGtkEnumerableModelHandler<object>

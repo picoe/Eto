@@ -1,5 +1,3 @@
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Printing
 {
 	public class PrintPreviewDialogHandler : WidgetHandler<object, PrintPreviewDialog>, PrintPreviewDialog.IHandler

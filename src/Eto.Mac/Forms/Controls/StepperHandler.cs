@@ -1,9 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-
-namespace Eto.Mac.Forms.Controls
+﻿namespace Eto.Mac.Forms.Controls
 {
 	public class StepperHandler : MacControl<NSStepper, Stepper, Stepper.ICallback>, Stepper.IHandler
 	{

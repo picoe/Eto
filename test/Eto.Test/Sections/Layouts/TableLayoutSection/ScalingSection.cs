@@ -1,6 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
 	[Section("TableLayout", "Scaling")]

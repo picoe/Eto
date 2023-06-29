@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq.Expressions;
-
 namespace Eto.Forms;
 
 /// <summary>

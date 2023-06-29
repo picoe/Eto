@@ -1,14 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Runtime.InteropServices;
-
 namespace Eto.Test
 {
 	public class MainForm : Form

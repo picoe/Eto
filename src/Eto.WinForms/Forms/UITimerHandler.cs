@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms
 {
 	public class UITimerHandler : WidgetHandler<System.Windows.Forms.Timer, UITimer, UITimer.ICallback>, UITimer.IHandler

@@ -1,12 +1,4 @@
-using System;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.WinForms.Forms.Controls;
-using System.Collections.Generic;
-
 namespace Eto.WinForms.Forms
 {
 

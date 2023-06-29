@@ -1,7 +1,5 @@
-﻿using System;
-using Eto.Test.UnitTests;
+﻿using Eto.Test.UnitTests;
 using NUnit.Framework;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
 namespace Eto.Test.Mac.UnitTests
 {

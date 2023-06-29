@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
-using System.Globalization;
-using System.IO;
-
 namespace Eto.Direct2D.Drawing
 {
 	/// <summary>

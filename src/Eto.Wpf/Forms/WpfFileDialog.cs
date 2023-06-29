@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Eto.Forms;
 using mw = Microsoft.Win32;
-using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using System.Linq.Expressions;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Binding object to easily bind a property of a <see cref="IBindable"/> object, such as a <see cref="Eto.Forms.Control"/>.

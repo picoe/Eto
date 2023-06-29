@@ -1,16 +1,5 @@
-using System;
-using Eto.Forms;
-using System.Diagnostics;
-using System.Threading;
-using System.ComponentModel;
 using Eto.GtkSharp.Drawing;
-using Eto.Drawing;
-using System.Collections.Generic;
 using Eto.GtkSharp.Forms;
-using System.IO;
-using System.Reflection;
-using System.Linq;
-
 namespace Eto.GtkSharp.Forms
 {
 #if GTK3

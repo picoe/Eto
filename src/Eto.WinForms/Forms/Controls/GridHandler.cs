@@ -1,13 +1,4 @@
-using System;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
-using sd = System.Drawing;
-using Eto.Drawing;
 using Eto.WinForms.Drawing;
-using System.Diagnostics;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public interface IGridHandler

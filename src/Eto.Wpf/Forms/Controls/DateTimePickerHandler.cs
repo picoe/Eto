@@ -1,18 +1,11 @@
-using System;
-using Eto.Forms;
-using mwc = Xceed.Wpf.Toolkit;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using System.Globalization;
-using Eto.Drawing;
 using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
 	public class DateTimePickerHandler : WpfFrameworkElement<swc.Border, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
-		mwc.DateTimePicker dtp;
-		mwc.DateTimeUpDown dtud;
+		xwt.DateTimePicker dtp;
+		xwt.DateTimeUpDown dtud;
 		DateTime? last;
 
 		DateTimePickerMode mode;
@@ -27,7 +20,7 @@ namespace Eto.Wpf.Forms.Controls
 			Mode = DateTimePickerMode.Date;
 		}
 
-		static sw.Thickness DefaultBorderThickness = new mwc.DateTimePicker().BorderThickness;
+		static sw.Thickness DefaultBorderThickness = new xwt.DateTimePicker().BorderThickness;
 
 		public bool ShowBorder
 		{
@@ -39,7 +32,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (dtud == null)
 			{
-				dtud = new mwc.DateTimeUpDown
+				dtud = new xwt.DateTimeUpDown
 				{
 					Focusable = true,
 					IsTabStop = true,
@@ -61,7 +54,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (dtp == null)
 			{
-				dtp = new mwc.DateTimePicker
+				dtp = new xwt.DateTimePicker
 				{
 					ShowButtonSpinner = false,
 					AutoCloseCalendar = true,
@@ -80,7 +73,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Child = dtp;
 		}
 
-		void CopyValues(mwc.Primitives.UpDownBase<DateTime?> source, mwc.Primitives.UpDownBase<DateTime?> dest)
+		void CopyValues(xwt.Primitives.UpDownBase<DateTime?> source, xwt.Primitives.UpDownBase<DateTime?> dest)
 		{
 			dest.Minimum = source.Minimum;
 			dest.Maximum = source.Maximum;
@@ -122,7 +115,7 @@ namespace Eto.Wpf.Forms.Controls
 			set { UpDown.Value = value; }
 		}
 
-		mwc.Primitives.UpDownBase<DateTime?> UpDown
+		xwt.Primitives.UpDownBase<DateTime?> UpDown
 		{
 			get
 			{
@@ -153,18 +146,18 @@ namespace Eto.Wpf.Forms.Controls
 					case DateTimePickerMode.Date:
 						CreateDateTimePicker();
 						dtp.TimePickerVisibility = sw.Visibility.Collapsed;
-						dtp.Format = mwc.DateTimeFormat.ShortDate;
+						dtp.Format = xwt.DateTimeFormat.ShortDate;
 						break;
 					case DateTimePickerMode.DateTime:
 						CreateDateTimePicker();
 						dtp.TimePickerVisibility = sw.Visibility.Visible;
 						var format = CultureInfo.CurrentUICulture.DateTimeFormat;
-						dtp.Format = mwc.DateTimeFormat.Custom;
+						dtp.Format = xwt.DateTimeFormat.Custom;
 						dtp.FormatString = format.ShortDatePattern + " " + format.LongTimePattern;
 						break;
 					case DateTimePickerMode.Time:
 						CreateDateTimeUpDown();
-						dtud.Format = mwc.DateTimeFormat.LongTime;
+						dtud.Format = xwt.DateTimeFormat.LongTime;
 						break;
 					default:
 						throw new NotSupportedException();

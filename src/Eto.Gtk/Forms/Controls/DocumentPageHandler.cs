@@ -1,8 +1,4 @@
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class DocumentPageHandler : GtkPanel<Gtk.VBox, DocumentPage, DocumentPage.ICallback>, DocumentPage.IHandler

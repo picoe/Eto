@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Control for picking a file or folder.

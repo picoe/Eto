@@ -1,10 +1,3 @@
-using System;
-using System.Linq;
-using SD = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Menu
 {
 	public class ButtonMenuItemHandler : ButtonMenuItemHandler<ButtonMenuItem, ButtonMenuItem.ICallback>

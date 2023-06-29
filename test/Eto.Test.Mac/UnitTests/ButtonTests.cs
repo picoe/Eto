@@ -1,11 +1,7 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
 using Eto.Mac;
 
 namespace Eto.Test.Mac.UnitTests

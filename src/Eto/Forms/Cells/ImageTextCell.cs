@@ -1,9 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using Eto.Drawing;
-
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Cell for <see cref="Grid"/> controls to show image and text in one cell.

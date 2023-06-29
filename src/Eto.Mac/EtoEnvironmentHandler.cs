@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using System.IO;
-using System.Diagnostics;
-using System.Reflection;
-
 namespace Eto.Mac
 {
 	public class EtoEnvironmentHandler : WidgetHandler<Widget>, EtoEnvironment.IHandler

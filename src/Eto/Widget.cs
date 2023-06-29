@@ -2,11 +2,6 @@
 // uncomment to track garbage collection of widgets
 //#define TRACK_GC
 
-using System;
-using System.Globalization;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Eto;

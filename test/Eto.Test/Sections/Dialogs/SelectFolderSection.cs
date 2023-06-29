@@ -1,8 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System.IO;
-using System;
-
 namespace Eto.Test.Sections.Dialogs
 {
 	[Section("Dialogs", typeof(SelectFolderDialog))]

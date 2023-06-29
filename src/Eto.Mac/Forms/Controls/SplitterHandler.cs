@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class SplitterHandler : MacContainer<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler

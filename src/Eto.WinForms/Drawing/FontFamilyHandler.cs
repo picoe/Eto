@@ -1,10 +1,3 @@
-using Eto.Drawing;
-using System.Collections.Generic;
-using sd = System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.IO;
-using System;
 using Eto.Shared.Drawing;
 
 namespace Eto.WinForms.Drawing

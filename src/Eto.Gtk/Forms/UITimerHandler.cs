@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class UITimerHandler : WidgetHandler<object, UITimer, UITimer.ICallback>, UITimer.IHandler

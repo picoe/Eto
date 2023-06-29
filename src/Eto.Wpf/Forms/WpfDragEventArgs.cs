@@ -1,8 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-
 namespace Eto.Wpf.Forms
 {
 

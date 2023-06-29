@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Globalization;
-using System.ComponentModel;
 using Gtk;
-using System.Text.RegularExpressions;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class NumericStepperHandler : GtkControl<Gtk.SpinButton, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler

@@ -1,11 +1,7 @@
 using Eto.Mac.Forms.Controls;
 using Eto.Mac.Forms;
 using Eto.Mac;
-using System.Diagnostics;
-using Eto.Drawing;
 using Eto.Mac.Forms.ToolBar;
-using Eto.Forms;
-
 namespace Eto.Test.Mac
 {
 	class Startup

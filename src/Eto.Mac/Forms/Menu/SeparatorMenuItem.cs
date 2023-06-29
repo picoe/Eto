@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms.Menu
 {
 	public class SeparatorMenuItemHandler : MenuHandler<NSMenuItem, SeparatorMenuItem, SeparatorMenuItem.ICallback>, SeparatorMenuItem.IHandler

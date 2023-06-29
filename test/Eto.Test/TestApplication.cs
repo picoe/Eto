@@ -1,12 +1,3 @@
-using System;
-using Eto.Forms;
-using System.ComponentModel;
-using System.Diagnostics;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
 namespace Eto.Test
 {
 	public class TestApplication : Application

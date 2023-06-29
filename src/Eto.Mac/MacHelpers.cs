@@ -1,10 +1,6 @@
-using System;
-using Eto.Forms;
 using Eto.Mac;
 using Eto.Mac.Forms;
 using Eto.Mac.Forms.Controls;
-using Eto.Drawing;
-
 namespace Eto.Forms
 {
 	public static class

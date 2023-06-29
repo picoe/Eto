@@ -1,16 +1,5 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using Eto.Forms;
 using Eto.CustomControls;
 using Eto.Wpf.CustomControls.TreeGridView;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ITreeHandler

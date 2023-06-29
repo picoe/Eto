@@ -1,9 +1,4 @@
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
 using Eto.WinForms.CustomControls;
-using System;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class EtoSearchTextBox : EtoTextBox

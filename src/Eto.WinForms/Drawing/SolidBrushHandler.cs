@@ -1,6 +1,3 @@
-using Eto.Drawing;
-using sd = System.Drawing;
-
 namespace Eto.WinForms.Drawing
 {
 	/// <summary>

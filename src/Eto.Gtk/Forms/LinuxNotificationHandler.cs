@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-using Eto.Forms;
-using Eto.GtkSharp.Drawing;
+﻿using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {

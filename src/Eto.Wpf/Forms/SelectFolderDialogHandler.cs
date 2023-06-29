@@ -1,7 +1,3 @@
-using Eto.Forms;
-using sw = System.Windows;
-using swf = System.Windows.Forms;
-
 namespace Eto.Wpf.Forms
 {
 	public class SelectFolderDialogHandler : WidgetHandler<swf.FolderBrowserDialog, SelectFolderDialog>, SelectFolderDialog.IHandler

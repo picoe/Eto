@@ -1,8 +1,4 @@
-using System.Collections.Generic;
 using Android.Runtime;
-using Eto.Forms;
-using Eto.Drawing;
-
 using aa = Android.App;
 using ac = Android.Content;
 using av = Android.Views;

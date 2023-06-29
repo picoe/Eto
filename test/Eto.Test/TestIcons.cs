@@ -1,8 +1,3 @@
-using System;
-using System.Reflection;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Test
 {
 	public static class TestIcons

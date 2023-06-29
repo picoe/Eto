@@ -1,9 +1,3 @@
-using System;
-using System.IO;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.GtkSharp.Drawing
 {
 	public class IconFrameHandler : IconFrame.IHandler

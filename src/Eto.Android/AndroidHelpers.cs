@@ -1,9 +1,5 @@
-using System;
 using Android.Widget;
 using Eto.Android.Forms;
-using Eto.Drawing;
-using Eto.Forms;
-
 using av = Android.Views;
 using ag = Android.Graphics;
 using Android.Views;

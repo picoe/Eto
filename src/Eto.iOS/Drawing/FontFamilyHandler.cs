@@ -1,9 +1,4 @@
-using System;
-using Eto.Drawing;
-using System.Collections.Generic;
 using UIKit;
-using System.Linq;
-
 namespace Eto.iOS.Drawing
 {
 	public class FontFamilyHandler : WidgetHandler<object, FontFamily>, FontFamily.IHandler

@@ -1,9 +1,5 @@
-using System;
-using Eto.Forms;
 using UIKit;
 using NSCell = UIKit.UITableViewCell;
-using Eto.Drawing;
-
 namespace Eto.iOS.Forms.Cells
 {
 	public class ImageViewCellHandler : CellHandler<NSCell, ImageViewCell>, ImageViewCell.IHandler

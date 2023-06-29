@@ -1,12 +1,5 @@
-using System;
-using sd = System.Drawing;
-using Eto.Drawing;
 using Eto.IO;
 using Eto.Wpf.Drawing;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using swmi = System.Windows.Media.Imaging;
-using swi = System.Windows.Interop;
 
 namespace Eto.Wpf.IO
 {

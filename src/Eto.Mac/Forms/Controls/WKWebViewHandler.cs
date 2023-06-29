@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 #if MONOMAC
 using wk = MonoMac.WebKit;
 #else

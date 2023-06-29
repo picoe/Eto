@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Collections.ObjectModel;
-
 namespace Eto.Forms;
 
 /// <summary>

@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using mwc = Xceed.Wpf.Toolkit;
-using Eto.Forms;
-
-namespace Eto.Wpf.Forms.Controls
+﻿namespace Eto.Wpf.Forms.Controls
 {
-	public class StepperHandler : WpfControl<mwc.ButtonSpinner, Stepper, Stepper.ICallback>, Stepper.IHandler
+	public class StepperHandler : WpfControl<xwt.ButtonSpinner, Stepper, Stepper.ICallback>, Stepper.IHandler
 	{
 		double originalWidth;
 		swc.Grid gridContent;
 
 		public StepperHandler()
 		{
-			Control = new mwc.ButtonSpinner();
+			Control = new xwt.ButtonSpinner();
 			Control.BorderThickness = new sw.Thickness(0);
 			Control.Padding = new sw.Thickness(0);
 			Control.Loaded += Control_Loaded;

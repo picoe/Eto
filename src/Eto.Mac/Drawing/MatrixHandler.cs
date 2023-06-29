@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-
-
 #if OSX
 
 namespace Eto.Mac.Drawing
@@ -41,7 +37,7 @@ namespace Eto.iOS.Drawing
 			control = new CGAffineTransform (xx, yx, xy, yy, dx, dy);
 		}
 
-#if !VSMAC && (MONOMAC || XAMMAC)
+#if !VSMAC && (MONOMAC)
 		public float[] Elements => new float[] {
 					(float)control.xx,
 					(float)control.yx,

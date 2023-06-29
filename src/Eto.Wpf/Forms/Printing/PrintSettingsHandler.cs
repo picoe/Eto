@@ -1,8 +1,4 @@
-using swd = System.Windows.Documents;
-using swc = System.Windows.Controls;
 using sp = System.Printing;
-using Eto.Forms;
-
 namespace Eto.Wpf.Forms.Printing
 {
 	public static class PrintSettingsExtensions

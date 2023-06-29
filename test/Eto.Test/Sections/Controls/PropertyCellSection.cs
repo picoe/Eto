@@ -1,11 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using System.Windows.Input;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Eto.Drawing;
-using System.Diagnostics;
-
+﻿using System.Runtime.CompilerServices;
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", "PropertyCell")]

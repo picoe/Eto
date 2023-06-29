@@ -1,7 +1,3 @@
-using System;
-using sc = System.ComponentModel;
-using System.Globalization;
-
 namespace Eto.Drawing;
 
 /// <summary>

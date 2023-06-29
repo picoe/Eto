@@ -1,8 +1,3 @@
-using System;
-using System.Globalization;
-using System.Linq;
-using Eto.Forms;
-
 namespace Eto.Test
 {
 	public class CultureDropDown : DropDown

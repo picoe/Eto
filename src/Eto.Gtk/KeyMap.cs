@@ -1,7 +1,3 @@
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Diagnostics;
-
 namespace Eto.GtkSharp
 {
 	public static class KeyMap

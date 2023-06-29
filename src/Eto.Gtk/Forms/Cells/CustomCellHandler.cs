@@ -1,9 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System.Runtime.InteropServices;
-
 #if GTK2
 using IGtkCellEditable = Gtk.CellEditable;
 using IGtkCellEditableImplementor = Gtk.CellEditableImplementor;

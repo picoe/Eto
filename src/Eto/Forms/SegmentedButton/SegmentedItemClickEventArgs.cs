@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Event arguments when clicking a segment in the <see cref="SegmentedButton"/>.

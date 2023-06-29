@@ -1,11 +1,3 @@
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-
 namespace Eto.Wpf.Forms
 {
 	public interface IWpfContainer

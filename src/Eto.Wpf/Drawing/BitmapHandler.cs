@@ -1,16 +1,5 @@
-using System;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using swmi = System.Windows.Media.Imaging;
-using Eto.Drawing;
 using Eto.Wpf.Forms;
-using System.IO;
 using Eto.Shared.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using Eto.Forms;
-using System.Runtime.InteropServices;
-
 namespace Eto.Wpf.Drawing
 {
 	/// <summary>

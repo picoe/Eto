@@ -1,19 +1,7 @@
-using System;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
-using swi = System.Windows.Input;
-using swm = System.Windows.Media;
-using sw = System.Windows;
 using sp = System.Printing;
-using swc = System.Windows.Controls;
-using swmi = System.Windows.Media.Imaging;
 using swd = System.Windows.Documents;
-using xwt = Xceed.Wpf.Toolkit;
 using Eto.Wpf.Drawing;
 using System.Windows.Interop;
-using System.IO;
-
 namespace Eto.Wpf
 {
 	public static class WpfConversions

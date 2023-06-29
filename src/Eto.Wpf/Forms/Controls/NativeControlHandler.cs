@@ -1,9 +1,4 @@
-﻿using System;
-using System.Globalization;
-using Eto.Forms;
-using sw = System.Windows;
-
-namespace Eto.Wpf.Forms.Controls
+﻿namespace Eto.Wpf.Forms.Controls
 {
 	public class NativeControlHandler : WpfFrameworkElement<sw.FrameworkElement, Control, Control.ICallback>
 	{

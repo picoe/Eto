@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Eto.Forms;
-using Eto.Drawing;
-
-namespace Eto.Test.Sections.Drawing
+﻿namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "Bitmap GetPixel")]
 	public class GetPixelSection : Panel

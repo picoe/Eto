@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ProgressBarHandler : GtkControl<Gtk.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler

@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms
 {
 	public class SelectFolderDialogHandler : WidgetHandler<NSOpenPanel, SelectFolderDialog>, SelectFolderDialog.IHandler

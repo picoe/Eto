@@ -1,4 +1,3 @@
-using System;
 namespace Eto.GtkSharp
 {
 	static class GtkVersion

@@ -1,4 +1,3 @@
-using System;
 namespace Eto.Mac
 {
 		class InvokeHelper

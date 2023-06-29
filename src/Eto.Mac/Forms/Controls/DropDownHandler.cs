@@ -1,12 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections;
-using Eto.Drawing;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class DropDownHandler : MacControl<NSPopUpButton, DropDown, DropDown.ICallback>, DropDown.IHandler

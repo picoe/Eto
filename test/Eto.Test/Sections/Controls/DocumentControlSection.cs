@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using Eto.Forms;
-
-namespace Eto.Test.Sections.Controls
+﻿namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(DocumentControl))]
 	public class DocumentControlSection : Panel

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-using Eto.Forms;
-using Eto.GtkSharp.Drawing;
+﻿using Eto.GtkSharp.Drawing;
 using Eto.GtkSharp.Forms;
 using Eto.GtkSharp.Forms.Menu;
 

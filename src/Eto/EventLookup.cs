@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
-using System.Linq.Expressions;
-
 namespace Eto;
 
 static class EventLookup

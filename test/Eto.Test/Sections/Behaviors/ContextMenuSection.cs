@@ -1,8 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-using System;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "ContextMenu")]

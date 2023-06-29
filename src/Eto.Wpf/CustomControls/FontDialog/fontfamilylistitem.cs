@@ -1,17 +1,14 @@
-using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Globalization;
-
 namespace Eto.Wpf.CustomControls.FontDialog
 {
     class FontFamilyListItem : TextBlock, IComparable
     {
         readonly string _displayName;
 
-        public FontFamilyListItem(FontFamily fontFamily)
+        public FontFamilyListItem(swm.FontFamily fontFamily)
         {
             _displayName = GetDisplayName(fontFamily);
 
@@ -23,7 +20,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
             if (IsSymbolFont(fontFamily))
             {
                 var range = new TextRange(ContentStart, ContentEnd);
-                range.ApplyPropertyValue(TextBlock.FontFamilyProperty, SystemFonts.MessageFontFamily);
+                range.ApplyPropertyValue(TextBlock.FontFamilyProperty, sw.SystemFonts.MessageFontFamily);
             }
         }
 
@@ -37,11 +34,11 @@ namespace Eto.Wpf.CustomControls.FontDialog
             return string.Compare(_displayName, obj.ToString(), true, CultureInfo.CurrentCulture);
         }
 
-        internal static bool IsSymbolFont(FontFamily fontFamily)
+        internal static bool IsSymbolFont(swm.FontFamily fontFamily)
         {
-            foreach (Typeface typeface in fontFamily.GetTypefaces())
+            foreach (swm.Typeface typeface in fontFamily.GetTypefaces())
             {
-                GlyphTypeface face;
+                swm.GlyphTypeface face;
                 if (typeface.TryGetGlyphTypeface(out face))
                 {
                     return face.Symbol;
@@ -50,7 +47,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
             return false;
         }
 
-        internal static string GetDisplayName(FontFamily family)
+        internal static string GetDisplayName(swm.FontFamily family)
         {
             return NameDictionaryExtensions.GetDisplayName(family.FamilyNames);
         }

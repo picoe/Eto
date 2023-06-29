@@ -1,11 +1,6 @@
-﻿using System;
-using NUnit.Framework.Internal;
+﻿using NUnit.Framework.Internal;
 using Eto.Serialization.Xaml;
-using System.IO;
-using Eto.Forms;
 using NUnit.Framework;
-using Eto.Drawing;
-
 namespace Eto.Test.UnitTests.Forms
 {
 	[TestFixture]

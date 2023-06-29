@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using System.Collections.Generic;
-
-namespace Eto.Mac.Forms
+﻿namespace Eto.Mac.Forms
 {
 	public class KeyboardHandler : Keyboard.IHandler
 	{

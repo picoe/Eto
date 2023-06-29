@@ -1,8 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Text.RegularExpressions;
-
 namespace Eto.Mac.Forms
 {
 	public static class MacControlExtensions

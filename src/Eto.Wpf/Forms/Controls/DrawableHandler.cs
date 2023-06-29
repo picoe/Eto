@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
-using swi = System.Windows.Input;
 using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls

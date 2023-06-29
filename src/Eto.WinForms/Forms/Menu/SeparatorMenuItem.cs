@@ -1,16 +1,11 @@
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-using System;
-
 namespace Eto.WinForms.Forms.Menu
 {
-	public class SeparatorMenuItemHandler : MenuHandler<SWF.ToolStripSeparator, SeparatorMenuItem, SeparatorMenuItem.ICallback>, SeparatorMenuItem.IHandler
+	public class SeparatorMenuItemHandler : MenuHandler<swf.ToolStripSeparator, SeparatorMenuItem, SeparatorMenuItem.ICallback>, SeparatorMenuItem.IHandler
 	{
 		
 		public SeparatorMenuItemHandler()
 		{
-			Control = new SWF.ToolStripSeparator();
+			Control = new swf.ToolStripSeparator();
 		}
 
 		public string Text

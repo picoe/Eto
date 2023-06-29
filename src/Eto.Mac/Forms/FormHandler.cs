@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-
-
-
 namespace Eto.Mac.Forms
 {
 	public class FormHandler : FormHandler<NSWindow>

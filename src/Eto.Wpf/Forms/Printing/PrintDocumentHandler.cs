@@ -1,13 +1,5 @@
-using sw = System.Windows;
 using swd = System.Windows.Documents;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Wpf.Drawing;
-using System;
-using System.Collections;
-
 namespace Eto.Wpf.Forms.Printing
 {
 	public class PrintDocumentHandler : WidgetHandler<PrintDocumentHandler.Paginator, PrintDocument, PrintDocument.ICallback>, PrintDocument.IHandler

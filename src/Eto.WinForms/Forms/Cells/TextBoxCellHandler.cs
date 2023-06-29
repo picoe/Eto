@@ -1,9 +1,4 @@
-﻿using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System;
-
-namespace Eto.WinForms.Forms.Cells
+﻿namespace Eto.WinForms.Forms.Cells
 {
 	interface ITextCellHandler
 	{

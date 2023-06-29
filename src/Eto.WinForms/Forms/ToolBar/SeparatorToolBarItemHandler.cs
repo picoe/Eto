@@ -1,15 +1,10 @@
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-using System;
-
 namespace Eto.WinForms.Forms.ToolBar
 {
-	public class SeparatorToolBarItemHandler : ToolItemHandler<SWF.ToolStripSeparator, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarItemHandler
+	public class SeparatorToolBarItemHandler : ToolItemHandler<swf.ToolStripSeparator, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarItemHandler
 	{
 		public SeparatorToolBarItemHandler()
 		{
-			Control = new SWF.ToolStripSeparator();
+			Control = new swf.ToolStripSeparator();
 		}
 
 		public override void CreateControl(ToolBarHandler handler, int index)

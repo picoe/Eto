@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using Eto.Drawing;
-using System.ComponentModel;
 using System.Windows.Controls.Primitives;
 
 namespace Eto.Wpf.Forms.Controls

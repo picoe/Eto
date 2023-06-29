@@ -1,15 +1,5 @@
-using Eto.Forms;
-using System;
-using sc = System.ComponentModel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-using System.Collections.Specialized;
-using System.IO;
 #if WPF
 using static System.Windows.WpfDataObjectExtensions;
-using sw = System.Windows;
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
 
 namespace Eto.Wpf.Forms

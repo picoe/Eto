@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(DropDown))]

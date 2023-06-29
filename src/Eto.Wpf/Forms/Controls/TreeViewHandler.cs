@@ -1,18 +1,6 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
 using swd = System.Windows.Data;
-using swm = System.Windows.Media;
-using swk = System.Windows.Markup;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using System.Collections;
 using Eto.Wpf.Forms.Menu;
-using Eto.Drawing;
-using System.ComponentModel;
 using Eto.Wpf.CustomControls;
-using System.Threading.Tasks;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]

@@ -1,5 +1,4 @@
 ﻿using Eto.Wpf.Forms.Controls;
-using System;
 using System.Windows.Media;
 
 namespace Eto.Test.Wpf

@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using Eto.Drawing;
-using System.Collections.Generic;
 using Eto.Shared.Drawing;
 
 namespace Eto.GtkSharp.Drawing

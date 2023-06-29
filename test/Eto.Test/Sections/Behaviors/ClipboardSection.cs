@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Text;
-using Eto.Drawing;
-using System.Linq;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "Clipboard")]

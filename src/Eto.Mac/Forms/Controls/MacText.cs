@@ -1,10 +1,4 @@
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System;
-using System.Diagnostics;
-
-
 namespace Eto.Mac.Forms.Controls
 {
 

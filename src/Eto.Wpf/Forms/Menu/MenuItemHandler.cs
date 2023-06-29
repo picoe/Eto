@@ -1,12 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Menu
 {
 	interface IMenuItemHandler

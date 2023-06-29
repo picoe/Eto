@@ -1,9 +1,3 @@
-using SWF = System.Windows.Forms;
-using SD = System.Drawing;
-using Eto.Forms;
-using Eto.Drawing;
-using System;
-
 namespace Eto.WinForms.Forms.ToolBar
 {
 	public interface IToolBarItemHandler
@@ -12,7 +6,7 @@ namespace Eto.WinForms.Forms.ToolBar
 	}
 
 	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler, IToolBarItemHandler
-		where TControl : SWF.ToolStripItem
+		where TControl : swf.ToolStripItem
 		where TWidget : ToolItem
 	{
 		Image image;

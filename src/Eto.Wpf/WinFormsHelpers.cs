@@ -1,12 +1,4 @@
-using Eto.Forms;
 using Eto.Wpf.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using swf = System.Windows.Forms;
-
 namespace Eto.Wpf
 {
 	public static class WinFormsHelpers

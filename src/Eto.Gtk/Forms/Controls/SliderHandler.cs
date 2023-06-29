@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class SliderHandler : GtkControl<Gtk.EventBox, Slider, Slider.ICallback>, Slider.IHandler

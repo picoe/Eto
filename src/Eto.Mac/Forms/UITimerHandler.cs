@@ -1,5 +1,3 @@
-using System;
-using Eto.Forms;
 #if IOS
 using Foundation;
 #else

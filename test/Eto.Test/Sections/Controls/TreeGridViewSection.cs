@@ -1,11 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Threading.Tasks;
-using System.Linq;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(TreeGridView))]

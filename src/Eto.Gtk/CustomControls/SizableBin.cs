@@ -1,5 +1,7 @@
 using Gtk;
 using Gdk;
+using Rectangle = Gdk.Rectangle;
+using Orientation = Gtk.Orientation;
 
 namespace Eto.GtkSharp.CustomControls
 {

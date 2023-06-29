@@ -1,14 +1,8 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using a = Android;
 using av = Android.Views;
 using aw = Android.Widget;
 using aa = Android.App;
-using System.Threading.Tasks;
 using Android.Content;
-using System.Linq;
-
 namespace Eto.Android.Forms
 {
 	/// <summary>

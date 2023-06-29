@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Forms;
-
-namespace EtoApp._1.Mac
+﻿namespace EtoApp._1.Mac
 {
 	class Program
 	{

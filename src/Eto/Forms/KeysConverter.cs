@@ -1,8 +1,4 @@
-﻿using System;
-using sc = System.ComponentModel;
-using System.Linq;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 class KeysConverter : sc.TypeConverter
 {

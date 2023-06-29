@@ -1,8 +1,3 @@
-using System;
-using System.IO;
-using System.Reflection;
-using System.Linq;
-using System.Collections.Generic;
 
 #if PORTABLE
 using Portable.Xaml;

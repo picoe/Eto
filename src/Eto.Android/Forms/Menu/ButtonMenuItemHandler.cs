@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;

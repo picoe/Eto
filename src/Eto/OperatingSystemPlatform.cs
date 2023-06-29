@@ -1,9 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Reflection;
-using System.IO;
-using System.Linq;
-
 namespace Eto;
 
 /// <summary>

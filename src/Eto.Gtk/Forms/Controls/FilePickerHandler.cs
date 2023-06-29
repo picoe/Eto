@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class FilePickerHandler : GtkControl<Gtk.EventBox, FilePicker, FilePicker.ICallback>, FilePicker.IHandler

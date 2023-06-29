@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using FontCacheKey = System.Tuple<Eto.Drawing.SystemFont, float?, Eto.Drawing.FontDecoration>;
 
 namespace Eto.Drawing;

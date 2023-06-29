@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Diagnostics;
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class MacEventView : NSBox, IMacControl

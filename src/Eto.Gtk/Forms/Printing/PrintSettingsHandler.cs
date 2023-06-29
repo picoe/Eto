@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Printing
 {
 	public static class PrintSettingsExtensions

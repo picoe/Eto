@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Input;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Interface for a command that can provide a value

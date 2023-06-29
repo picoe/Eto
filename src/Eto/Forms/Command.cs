@@ -1,8 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Globalization;
-using System.Windows.Input;
-
 namespace Eto.Forms;
 
 /// <summary>

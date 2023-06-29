@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Drawing;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
 using Eto.Mac;

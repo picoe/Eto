@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-namespace EtoApp._1
+﻿namespace EtoApp._1
 {
 	class Program
 	{

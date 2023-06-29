@@ -1,11 +1,3 @@
-using System;
-using System.Globalization;
-using System.Linq;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
-
 #if OSX
 using Eto.Mac.Forms;
 

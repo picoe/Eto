@@ -1,14 +1,3 @@
-using System;
-using System.Globalization;
-using System.IO;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Forms;
-using System.Runtime.InteropServices;
-
-
-
 namespace Eto.Mac.Drawing
 {
 

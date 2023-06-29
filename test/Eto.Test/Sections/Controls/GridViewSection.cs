@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Eto.Test.Sections.Controls

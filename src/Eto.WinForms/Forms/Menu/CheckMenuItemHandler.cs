@@ -1,15 +1,10 @@
-using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Menu
 {
-	public class CheckMenuItemHandler : MenuItemHandler<SWF.ToolStripMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler
+	public class CheckMenuItemHandler : MenuItemHandler<swf.ToolStripMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler
 	{
 		public CheckMenuItemHandler()
 		{
-			Control = new SWF.ToolStripMenuItem();
+			Control = new swf.ToolStripMenuItem();
 			Control.Click += (sender, e) =>
 			{
 				Control.Checked = !Control.Checked;

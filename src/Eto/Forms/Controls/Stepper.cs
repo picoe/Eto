@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Direction of the stepper when it has been clicked

@@ -1,8 +1,3 @@
-using System;
-using System.Reflection;
-using System.IO;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.IO;
 using Eto.Mac.Drawing;
 using Eto.Mac.IO;
@@ -274,7 +269,7 @@ namespace Eto.Mac
 
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
-			p.Add<Thread.IHandler>(() => new ThreadHandler());
+			p.Add<Eto.Threading.Thread.IHandler>(() => new ThreadHandler());
 		}
 
 		public override IDisposable ThreadStart()

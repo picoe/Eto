@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using PenKey = System.Tuple<System.Int32, float, Eto.Drawing.DashStyle>;
 
 namespace Eto.Drawing;

@@ -1,9 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(ToggleButton))]

@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Text;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Collections.ObjectModel;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "Drag and Drop")]

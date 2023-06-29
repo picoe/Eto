@@ -1,6 +1,3 @@
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 #if WPF

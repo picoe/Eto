@@ -1,6 +1,3 @@
-using Eto.Drawing;
-using swm = System.Windows.Media;
-
 namespace Eto.Wpf.Drawing
 {
 	/// <summary>

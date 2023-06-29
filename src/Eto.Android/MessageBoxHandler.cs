@@ -1,5 +1,3 @@
-using System;
-using Eto.Forms;
 using Eto.Android.Forms;
 
 using aa = Android.App;

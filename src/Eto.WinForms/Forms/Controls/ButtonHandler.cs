@@ -1,10 +1,3 @@
-using System;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class ButtonHandler : ButtonHandler<ButtonHandler.EtoButton, Button, Button.ICallback>, Button.IHandler

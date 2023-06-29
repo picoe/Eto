@@ -1,9 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-
-namespace Eto.Mac.Forms
+﻿namespace Eto.Mac.Forms
 {
 	public class TrayIndicatorHandler : WidgetHandler<NSStatusItem, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
 	{

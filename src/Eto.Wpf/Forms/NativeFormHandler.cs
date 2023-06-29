@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sw = System.Windows;
-using Eto.Forms;
-
 namespace Eto.Wpf.Forms
 {
 	public class NativeFormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, Form.IHandler

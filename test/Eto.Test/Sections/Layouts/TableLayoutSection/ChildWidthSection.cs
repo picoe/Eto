@@ -1,5 +1,3 @@
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
 	/// <summary>

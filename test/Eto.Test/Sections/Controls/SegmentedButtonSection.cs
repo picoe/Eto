@@ -1,8 +1,3 @@
-using System;
-using System.Linq;
-using System.Windows.Input;
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(SegmentedButton))]

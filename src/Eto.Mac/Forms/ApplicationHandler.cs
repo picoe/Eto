@@ -1,13 +1,6 @@
-using System;
-using Eto.Forms;
 using Eto.Mac.Forms.Actions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using Eto.Mac.Drawing;
 using System.Runtime.CompilerServices;
-using System.Threading;
-
 namespace Eto.Mac.Forms
 {
 	public class ApplicationHandler : WidgetHandler<NSApplication, Application, Application.ICallback>, Application.IHandler

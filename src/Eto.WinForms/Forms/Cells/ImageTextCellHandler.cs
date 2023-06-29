@@ -1,9 +1,4 @@
-﻿using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using Eto.Drawing;
-using Eto.WinForms.Drawing;
+﻿using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Cells
 {

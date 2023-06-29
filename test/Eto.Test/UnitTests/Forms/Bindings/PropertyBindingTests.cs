@@ -1,11 +1,5 @@
-﻿using System;
-using NUnit.Framework;
-using Eto.Forms;
+﻿using NUnit.Framework;
 using System.Data;
-using System.ComponentModel;
-using System.Collections.Generic;
-using sc = System.ComponentModel;
-
 namespace Eto.Test.UnitTests.Forms.Bindings
 {
 	[TestFixture]

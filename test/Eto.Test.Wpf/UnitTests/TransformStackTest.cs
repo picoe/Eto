@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Eto.Drawing;
-using Eto.Wpf.Drawing;
+﻿using Eto.Wpf.Drawing;
 using Eto.Test.UnitTests.Drawing;
 using NUnit.Framework;
 

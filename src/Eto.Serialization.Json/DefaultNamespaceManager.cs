@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Eto.Serialization.Json
 {
 	public class DefaultNamespaceManager : NamespaceManager

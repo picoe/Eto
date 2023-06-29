@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms.Controls

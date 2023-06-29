@@ -1,11 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel;
-using System.Windows.Input;
-using System.Reflection;
-
 namespace Eto.Forms;
 
 /// <summary>

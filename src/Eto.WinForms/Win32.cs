@@ -1,11 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto
 {
 	static partial class Win32
@@ -254,21 +246,21 @@ namespace Eto
 			XBUTTON2 = 0x0040
 		}
 
-		public static MouseButtons GetMouseButtonWParam(IntPtr wParam)
+		public static swf.MouseButtons GetMouseButtonWParam(IntPtr wParam)
 		{
 			var mask = (MK)LOWORD(wParam);
-			var buttons = MouseButtons.None;
+			var buttons = swf.MouseButtons.None;
 
 			if (mask.HasFlag(MK.LBUTTON))
-				buttons |= MouseButtons.Left;
+				buttons |= swf.MouseButtons.Left;
 			if (mask.HasFlag(MK.RBUTTON))
-				buttons |= MouseButtons.Right;
+				buttons |= swf.MouseButtons.Right;
 			if (mask.HasFlag(MK.MBUTTON))
-				buttons |= MouseButtons.Middle;
+				buttons |= swf.MouseButtons.Middle;
 			if (mask.HasFlag(MK.XBUTTON1))
-				buttons |= MouseButtons.XButton1;
+				buttons |= swf.MouseButtons.XButton1;
 			if (mask.HasFlag(MK.XBUTTON2))
-				buttons |= MouseButtons.XButton2;
+				buttons |= swf.MouseButtons.XButton2;
 			return buttons;
 		}
 
@@ -323,13 +315,13 @@ namespace Eto
 
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern bool PeekMessage(ref Message wMsg, IntPtr hwnd, int msgMin, int msgMax, int remove);
+		public static extern bool PeekMessage(ref swf.Message wMsg, IntPtr hwnd, int msgMin, int msgMax, int remove);
 
 
-		public static Message? GetNextMessage(Control ctl, params WM[] wMsg)
+		public static swf.Message? GetNextMessage(swf.Control ctl, params WM[] wMsg)
 		{
-			Message? msg = null;
-			Message pmsg = default(Message);
+			swf.Message? msg = null;
+			swf.Message pmsg = default(swf.Message);
 			var ret = false;
 			do
 			{

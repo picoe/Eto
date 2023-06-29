@@ -1,10 +1,6 @@
-using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Reflection;
 using Newtonsoft.Json.Serialization;
-using System.Linq;
-
 namespace Eto.Serialization.Json.Converters
 {
 	public class NameConverter : JsonConverter

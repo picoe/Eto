@@ -1,14 +1,5 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
 using swd = System.Windows.Data;
-using swm = System.Windows.Media;
 using Eto.Wpf.Drawing;
-using Eto.Drawing;
-using System.ComponentModel;
-using System.Linq;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.Column, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
