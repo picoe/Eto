@@ -1,10 +1,3 @@
-using System;
-using System.Globalization;
-using System.IO;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-using sd = System.Drawing;
-using sdi = System.Drawing.Imaging;
 using ImageManipulation;
 using Eto.Shared.Drawing;
 
@@ -100,7 +93,7 @@ namespace Eto.WinForms.Drawing
 		public void Create(string fileName)
 		{
 			// We create a temp image from the file
-			// because SD.Bitmap(filename) locks the file
+			// because sd.Bitmap(filename) locks the file
 			// until the image is disposed.
 			// this is not the case in mono
 			if (EtoEnvironment.Platform.IsWindows)

@@ -1,11 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
-
-namespace Eto.Mac.Forms
+﻿namespace Eto.Mac.Forms
 {
 	public class NotificationHandler : WidgetHandler<NSUserNotification, Notification, Notification.ICallback>, Notification.IHandler
 	{

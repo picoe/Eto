@@ -1,10 +1,3 @@
-using System;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Collections.Generic;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class RadioButtonHandler : WindowsControl<swf.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler

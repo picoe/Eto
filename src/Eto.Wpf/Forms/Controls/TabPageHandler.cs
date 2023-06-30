@@ -1,9 +1,4 @@
-﻿using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
-using Eto.Wpf.Drawing;
+﻿using Eto.Wpf.Drawing;
 using Eto.Wpf.CustomControls;
 
 namespace Eto.Wpf.Forms.Controls
@@ -32,6 +27,7 @@ namespace Eto.Wpf.Forms.Controls
 			var header = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 			headerImage = new swc.Image();
 			headerText = new swc.TextBlock();
+			headerText.VerticalAlignment = sw.VerticalAlignment.Center;
 			header.Children.Add(headerImage);
 			header.Children.Add(headerText);
 			Control.Header = header;

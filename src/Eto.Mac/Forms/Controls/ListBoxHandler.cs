@@ -1,12 +1,5 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Controls;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System.Collections;
-using System.Linq;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class EtoScrollView : NSScrollView, IMacControl
@@ -69,8 +62,11 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
-				var w = Handler.Widget;
-				var item = Handler.collection.ElementAt((int)row);
+				var h = Handler;
+				if (h == null)
+					return null;
+				var w = h.Widget;
+				var item = h.collection.ElementAt((int)row);
 				return new MacImageData
 				{
 					Text = new NSString(Convert.ToString(w.ItemTextBinding.GetValue(item))),
@@ -80,7 +76,10 @@ namespace Eto.Mac.Forms.Controls
 
 			public override nint GetRowCount(NSTableView tableView)
 			{
-				return Handler.collection.Collection == null ? 0 : Handler.collection.Collection.Count();
+				var h = Handler;
+				if (h == null)
+					return 0;
+				return h.collection.Collection == null ? 0 : h.collection.Collection.Count();
 			}
 		}
 
@@ -97,12 +96,18 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void SelectionDidChange(NSNotification notification)
 			{
-				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+				var h = Handler;
+				if (h == null)
+					return;
+				h.Callback.OnSelectedIndexChanged(h.Widget, EventArgs.Empty);
 			}
 
 			public override nfloat GetRowHeight(NSTableView tableView, nint row)
 			{
-				return Handler.Control.GetCell(0, row).CellSize.Height;
+				var h = Handler;
+				if (h == null)
+					return tableView.RowHeight;
+				return h.Control.GetCell(0, row).CellSize.Height;
 			}
 		}
 
@@ -118,8 +123,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSMenu MenuForEvent(NSEvent theEvent)
 			{
-				if (Handler.ContextMenu != null)
-					return Handler.ContextMenu.ControlObject as NSMenu;
+				var h = Handler;
+				if (h?.ContextMenu != null)
+					return h.ContextMenu.ControlObject as NSMenu;
 				return base.MenuForEvent(theEvent);
 			}
 

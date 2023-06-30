@@ -1,11 +1,3 @@
-using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using Eto.Drawing;
-using System.IO;
-using System.Runtime.InteropServices;
-
 namespace Eto.WinForms.Forms
 {
 	public class CursorHandler : WidgetHandler<swf.Cursor, Cursor>, Cursor.IHandler

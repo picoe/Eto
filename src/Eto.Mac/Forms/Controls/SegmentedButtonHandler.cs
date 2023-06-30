@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using Eto.Drawing;
-using System.Linq;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	interface ISegmentedItemHandler
@@ -371,16 +363,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public void InsertItem(int index, SegmentedItem item)
 		{
-			var count = ++Control.SegmentCount;
+			var count = Control.SegmentCount++;
 
 			// need to copy items as we can't insert items
-			if (index < count - 1)
+			for (nint i = index; i < count; i++)
 			{
-				for (nint i = index; i < count; i++)
-				{
-					var next = i - 1;
-					CopyItem(i, next);
-				}
+				var next = i + 1;
+				CopyItem(i, next);
 			}
 			SetItem(index, item);
 			if (item.Selected)
@@ -391,9 +380,9 @@ namespace Eto.Mac.Forms.Controls
 		static readonly IntPtr selSetShowsMenuIndicator = Selector.GetHandle("setShowsMenuIndicator:forSegment:");
 
 		// 10.13+
-		static readonly bool supportsTooltip = ObjCExtensions.InstancesRespondToSelector<NSSegmentedCell>(selSetToolTipForSegment);
-		static readonly bool supportsMenuIndicator = ObjCExtensions.InstancesRespondToSelector<NSSegmentedControl>(selSetShowsMenuIndicator);
-
+		internal static readonly bool supportsTooltip = ObjCExtensions.InstancesRespondToSelector<NSSegmentedCell>(selSetToolTipForSegment);
+		internal static readonly bool supportsMenuIndicator = ObjCExtensions.InstancesRespondToSelector<NSSegmentedControl>(selSetShowsMenuIndicator);
+		
 		public void SetItem(int index, SegmentedItem item)
 		{
 			Control.SetLabel(item.Text ?? string.Empty, index);

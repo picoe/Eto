@@ -1,15 +1,5 @@
-using System;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.WinForms.Forms.Menu;
-using System.Reflection;
-using System.Diagnostics;
-
 namespace Eto.WinForms.Forms
 {
 	public interface IWindowsControl : Control.IHandler
@@ -474,6 +464,9 @@ namespace Eto.WinForms.Forms
 						Callback.OnDragLeave(Widget, new DragEventArgs(null, new DataObject(), DragEffects.None, PointF.Empty, Keys.None, MouseButtons.None));
 					};
 					break;
+				case Eto.Forms.Control.DragEndEvent:
+					// Handled in DoDragDrop as it is blocking on Windows.
+					break;
 				case Eto.Forms.Control.EnabledChangedEvent:
 					Control.EnabledChanged += Control_EnabledChanged;
 					break;
@@ -496,7 +489,9 @@ namespace Eto.WinForms.Forms
 			var modifiers = data.GetEtoModifiers();
 			var buttons = data.GetEtoButtons();
 			var location = PointFromScreen(new PointF(data.X, data.Y));
-			return new SwfDragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
+			var args = new SwfDragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
+			args.Effects = data.Effect.ToEto();
+			return args;
 		}
 
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
@@ -529,7 +524,11 @@ namespace Eto.WinForms.Forms
 				MouseCaptured = false;
 				Control.Capture = false;
 			}
-			Callback.OnMouseUp(Widget, e.ToEto(Control));
+			var args = e.ToEto(Control);
+			Callback.OnMouseUp(Widget, args);
+			
+			if (args.Handled && Control.Capture)
+				Control.Capture = false;
 		}
 
 		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
@@ -1000,6 +999,7 @@ namespace Eto.WinForms.Forms
 		{
 			var dataObject = data.ToSwf();
 			WindowsControl.DragSourceControl = Widget;
+			swf.DragDropEffects effects;
 			if (UseShellDropManager)
 			{
 				swf.DragSourceHelper.AllowDropDescription(true);
@@ -1010,7 +1010,7 @@ namespace Eto.WinForms.Forms
 
 				swf.SwfDataObjectExtensions.SetDragImage(dataObject, image.ToSD(), cursorOffset.ToSDPoint());
 				swf.DragSourceHelper.RegisterDefaultDragSource(Control, dataObject);
-				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+				effects = Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
 				swf.DragSourceHelper.UnregisterDefaultDragSource(Control);
 			}
 			else
@@ -1018,9 +1018,13 @@ namespace Eto.WinForms.Forms
 				if (image != null)
 					Debug.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
 
-				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+				effects = Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
 			}
 			WindowsControl.DragSourceControl = null;
+
+			var args = new DragEventArgs(Widget, data, allowedEffects, PointFromScreen(Mouse.Position), Keyboard.Modifiers, Mouse.Buttons);
+			args.Effects = effects.ToEto();
+			Callback.OnDragEnd(Widget, args);
 		}
 
 		public Window GetNativeParentWindow() => ContainerControl.FindForm().ToEtoWindow();
@@ -1029,5 +1033,7 @@ namespace Eto.WinForms.Forms
 		{
 
 		}
+
+		public void UpdateLayout() => ContainerControl.PerformLayout();
 	}
 }

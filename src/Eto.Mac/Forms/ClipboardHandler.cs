@@ -1,10 +1,4 @@
-using System;
-using Eto.Forms;
-using System.IO;
 using Eto.Mac.Drawing;
-using Eto.Drawing;
-
-
 namespace Eto.Mac.Forms
 {
 	public class ClipboardHandler : DataObjectHandler<Clipboard, Clipboard.ICallback>, Clipboard.IHandler

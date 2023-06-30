@@ -1,5 +1,3 @@
-using Eto.Forms;
-using System;
 using cp = Microsoft.WindowsAPICodePack.Dialogs;
 
 #if WINFORMS

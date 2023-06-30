@@ -1,7 +1,4 @@
-using System;
 using SD = System.Drawing;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.iOS.Drawing;
 using UIKit;
 using CoreAnimation;

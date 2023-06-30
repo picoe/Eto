@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using Eto.Forms;
-
-namespace Eto.WinForms.Forms
+﻿namespace Eto.WinForms.Forms
 {
 	public class OpenWithDialogHandler : WidgetHandler<System.Windows.Forms.CommonDialog, OpenWithDialog, OpenWithDialog.ICallback>, OpenWithDialog.IHandler
     {

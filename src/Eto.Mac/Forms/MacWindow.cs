@@ -1,10 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
-using System.Threading;
-
 namespace Eto.Mac.Forms
 {
 	public class EtoWindow : NSWindow, IMacControl
@@ -15,6 +8,11 @@ namespace Eto.Mac.Forms
 		public WeakReference WeakHandler { get; set; }
 
 		public IMacWindow Handler { get { return (IMacWindow)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
+		
+		public EtoWindow(NativeHandle handle)
+			: base(handle)
+		{
+		}
 
 		public EtoWindow(CGRect rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
@@ -59,7 +57,7 @@ namespace Eto.Mac.Forms
 				base.Zoom(sender ?? this); // null when double clicking the title bar, but xammac/monomac doesn't allow it
 				zoom = true;
 			}
-			Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
+			Handler?.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
 		}
 
 		public bool DisableSetOrigin { get; set; }
@@ -196,6 +194,7 @@ namespace Eto.Mac.Forms
 		internal static readonly IntPtr selIsVisible_Handle = Selector.GetHandle("isVisible");
 		internal static readonly object AnimateSizeChanges_Key = new object();
 		internal static readonly object DisableAutoSize_Key = new object();
+		internal static readonly object Topmost_Key = new object();
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacWindow
@@ -420,7 +419,7 @@ namespace Eto.Mac.Forms
 						if (handler != null)
 						{
 							var args = new NSWindowBackingPropertiesEventArgs(e.Notification);
-							if (args.OldScaleFactor != handler.Control.BackingScaleFactor)
+							if ((nfloat)args.OldScaleFactor != handler.Control.BackingScaleFactor)
 								handler.Callback.OnLogicalPixelSizeChanged(handler.Widget, EventArgs.Empty);
 						}
 					});
@@ -541,9 +540,27 @@ namespace Eto.Mac.Forms
 
 		void SetButtonStates()
 		{
-			var button = Control.StandardWindowButton(NSWindowButton.ZoomButton);
+			NSButton button;
+			bool hideButtons = !Maximizable && !Minimizable;
+			button = Control.StandardWindowButton(NSWindowButton.ZoomButton);
 			if (button != null)
+			{
+				button.Hidden = hideButtons;
 				button.Enabled = Maximizable && Resizable;
+			}
+			button = Control.StandardWindowButton(NSWindowButton.MiniaturizeButton);
+			if (button != null)
+			{
+				button.Hidden = hideButtons;
+				button.Enabled = Minimizable;
+			}
+
+			button = Control.StandardWindowButton(NSWindowButton.CloseButton);
+			if (button != null)
+			{
+				button.Hidden = hideButtons && !Closeable;
+				button.Enabled = Closeable;
+			}
 		}
 
 		public bool Resizable
@@ -597,18 +614,44 @@ namespace Eto.Mac.Forms
 			set;
 		}
 
+		public bool Closeable
+		{
+			get { return Control.StyleMask.HasFlag(NSWindowStyle.Closable); }
+			set
+			{
+				if (Control.RespondsToSelector(MacWindow.selSetStyleMask))
+				{
+					if (value)
+						Control.StyleMask |= NSWindowStyle.Closable;
+					else
+						Control.StyleMask &= ~NSWindowStyle.Closable;
+					SetButtonStates();
+				}
+			}
+		}
+
 		protected virtual NSWindowLevel TopmostWindowLevel => NSWindowLevel.PopUpMenu;
 
-		public bool Topmost
+		public virtual bool Topmost
 		{
 			get => Control.Level >= NSWindowLevel.Floating;
 			set
 			{
-				if (Topmost != value)
+				// need to remember the preferred state as it can be changed on us when setting the owner
+				if (WantsTopmost != value)
 				{
+					WantsTopmost = value;
 					Control.Level = value ? TopmostWindowLevel : NSWindowLevel.Normal;
 				}
 			}
+		}
+
+		internal virtual bool DefaultTopmost => false;
+
+		internal bool WantsTopmost
+		{
+			get => Widget.Properties.Get(MacWindow.Topmost_Key, DefaultTopmost);
+			set => Widget.Properties.Set(MacWindow.Topmost_Key, value, DefaultTopmost);
 		}
 
 		public override Size Size
@@ -678,7 +721,7 @@ namespace Eto.Mac.Forms
 			}
 
 			var ret = AutoSize || setInitialSize;
-			
+
 			if (Widget.Loaded)
 			{
 				PerformAutoSize();
@@ -1122,7 +1165,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public WindowStyle WindowStyle
+		public virtual WindowStyle WindowStyle
 		{
 			get { return Control.StyleMask.ToEtoWindowStyle(); }
 			set
@@ -1202,27 +1245,88 @@ namespace Eto.Mac.Forms
 			set => Widget.Properties.Set(MacWindow.SetAsChildWindow_Key, value, DefaultSetAsChildWindow);
 		}
 
-		protected void EnsureOwner() => SetOwner(Widget.Owner);
+		protected bool EnsureOwner() => InternalSetOwner(Widget.Owner);
 
-		public virtual void SetOwner(Window owner)
+		public virtual void SetOwner(Window owner) => InternalSetOwner(owner);
+
+		bool InternalSetOwner(Window owner)
 		{
+			bool result = false;
 			if (SetAsChildWindow && Widget.Loaded)
 			{
 				if (owner != null)
 				{
 					var macWindow = owner.Handler as IMacWindow;
 					if (macWindow != null && macWindow.Control.TabbedWindows?.Contains(Control) != true)
+					{
 						macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
+						OnSetAsChildWindow();
+						result = true;
+					}
+					Widget.GotFocus += HandleGotFocusAsChild;
 				}
 				else
 				{
+					Widget.GotFocus -= HandleGotFocusAsChild;
 					var parentWindow = Control.ParentWindow;
 					if (parentWindow != null)
 						parentWindow.RemoveChildWindow(Control);
 				}
 			}
+			return result;
+		}
+
+		void HandleGotFocusAsChild(object sender, EventArgs e)
+		{
+			// When there are multiple modeless child windows, clicking on one doesn't bring it to front
+			// so, we remove then re-add the child window to get it to come above again.
+			var parentWindow = Control.ParentWindow;
+			var childWindows = parentWindow?.ChildWindows;
+
+			// .. only if it isn't already the last child window
+			if (parentWindow != null && childWindows?.Length > 1 && !Equals(Control.Handle, childWindows[childWindows.Length - 1].Handle))
+			{
+				parentWindow.RemoveChildWindow(Control);
+				parentWindow.AddChildWindow(Control, NSWindowOrderingMode.Above);
+			}
+		}
+
+		internal virtual void OnSetAsChildWindow()
+		{
+			if (WantsTopmost && Control.Level != TopmostWindowLevel)
+				Control.Level = TopmostWindowLevel;
 		}
 
 		public float LogicalPixelSize => Screen?.LogicalPixelSize ?? 1f;
+
+		public bool FullSizeContentView
+		{
+			get => Control.StyleMask.HasFlag(NSWindowStyle.FullSizeContentView);
+			set
+			{
+				if (value)
+				{
+					Control.TitleVisibility = NSWindowTitleVisibility.Hidden;
+					Control.TitlebarAppearsTransparent = true;
+					Control.StyleMask |= NSWindowStyle.FullSizeContentView;
+				}
+				else
+				{
+					Control.TitleVisibility = NSWindowTitleVisibility.Visible;
+					Control.TitlebarAppearsTransparent = false;
+					Control.StyleMask &= ~NSWindowStyle.FullSizeContentView;
+				}
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && Widget.Loaded)
+			{
+				// we can't cancel closing in this case, so don't bother firing the closing event
+				Control.Close();
+			}
+			base.Dispose(disposing);
+		}
 	}
 }

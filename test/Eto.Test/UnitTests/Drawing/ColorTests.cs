@@ -1,6 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Drawing
 {
@@ -158,10 +156,31 @@ namespace Eto.Test.UnitTests.Drawing
 		[TestCase("4294967295", 255, 255, 255, 255, ColorStyles.AlphaLast)] // #FFFFFFFF
 		[TestCase("16777215", 255, 0, 255, 255, ColorStyles.AlphaLast)] // #FFFFFF
 		[TestCase("305419896", 120, 18, 52, 86, ColorStyles.AlphaLast)] // #12345678 A = 78
-		public void ColorShouldParse(string text, int a, int r, int g, int b, ColorStyles? style = null)
+		
+		[TestCase("#0000", 0, 0, 0, 0, ColorStyles.AlphaLast, true)]
+		[TestCase("#1234", 68, 17, 34, 51, ColorStyles.AlphaLast, true)]
+		[TestCase("#00000000", 0, 0, 0, 0, ColorStyles.AlphaLast, true)]
+		[TestCase("#12345678", 120, 18, 52, 86, ColorStyles.AlphaLast, true)]
+		[TestCase("0, 0, 0, 0", 0, 0, 0, 0, ColorStyles.AlphaLast, true)]
+		[TestCase("12, 34, 56, 78", 78, 12, 34, 56, ColorStyles.AlphaLast, true)]
+		[TestCase("255, 255, 255, 255", 255, 255, 255, 255, ColorStyles.AlphaLast, true)]
+		[TestCase("rgba(12,34,56,0.3)", 76, 12, 34, 56, ColorStyles.AlphaLast, true)]
+		[TestCase("rgba(50%,20%,100%,0.3)", 76, 127, 51, 255, ColorStyles.AlphaLast, true)]
+		[TestCase("rgba(50%,20.5%,100%,0.3)", 76, 127, 52, 255, ColorStyles.AlphaLast, true)]
+		[TestCase("0", 0, 0, 0, 0, ColorStyles.AlphaLast, true)]
+		[TestCase("4294967295", 255, 255, 255, 255, ColorStyles.AlphaLast, true)] // #FFFFFFFF
+		[TestCase("16777215", 255, 0, 255, 255, ColorStyles.AlphaLast, true)] // #FFFFFF
+		[TestCase("305419896", 120, 18, 52, 86, ColorStyles.AlphaLast, true)] // #12345678 A = 78
+		public void ColorShouldParse(string text, int a, int r, int g, int b, ColorStyles? style = null, bool? useDifferentCulture = null)
 		{
+			var systemCulture = CultureInfo.CurrentCulture;
+			bool shouldSwitchCulture = useDifferentCulture != null && useDifferentCulture.Value;
+			Thread.CurrentThread.CurrentCulture = new CultureInfo(shouldSwitchCulture ? "de-DE" : "en-US");
 			Color color;
 			var result = style == null ? Color.TryParse(text, out color) : Color.TryParse(text, out color, style.Value);
+
+			Thread.CurrentThread.CurrentCulture = systemCulture;
+			
 			Assert.IsTrue(result, "#1 - Color could not be parsed from text");
 
 			Assert.AreEqual(a, color.Ab, "#2.1 - Alpha component is incorrect");
@@ -169,7 +188,7 @@ namespace Eto.Test.UnitTests.Drawing
 			Assert.AreEqual(g, color.Gb, "#2.3 - Green component is incorrect");
 			Assert.AreEqual(b, color.Bb, "#2.4 - Blue component is incorrect");
 		}
-
+		
 		[TestCase("#0000", 0, 0, 0, 0, ColorStyles.ShortHex)]
 		[TestCase("#1234", 17, 34, 51, 68, ColorStyles.ShortHex)]
 		[TestCase("#FFFF", 255, 255, 255, 255, ColorStyles.ShortHex)]

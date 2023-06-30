@@ -1,8 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using Eto.Forms;
-using Eto.Drawing;
-
+﻿using NUnit.Framework;
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]

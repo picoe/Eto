@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.GtkSharp.Drawing;
-using Eto.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, ListBox.IHandler, IGtkEnumerableModelHandler<object>

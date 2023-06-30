@@ -1,13 +1,4 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Shared.Drawing;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using sd = System.Drawing;
 using sdt = System.Drawing.Text;
 
 namespace Eto.WinForms.Drawing

@@ -1,8 +1,5 @@
-using System;
 using UIKit;
-using Eto.Forms;
 using Eto.iOS.Forms.Controls;
-using Eto.Drawing;
 using Eto.Mac.Forms;
 using sd = System.Drawing;
 using Eto.iOS.Forms.Toolbar;

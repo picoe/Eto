@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto.Mac.Forms.Controls
+﻿namespace Eto.Mac.Forms.Controls
 {
     public class MacImageTextView : NSView
     {

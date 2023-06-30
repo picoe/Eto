@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.ToolBar
 {
 	public class SeparatorToolItemHandler : ToolItemHandler<swc.ContentControl, SeparatorToolItem>, SeparatorToolItem.IHandler
@@ -40,7 +34,7 @@ namespace Eto.Wpf.Forms.ToolBar
 				switch (value)
 				{
 					case SeparatorToolItemType.Divider:
-						control = new swc.Separator { LayoutTransform = new swm.RotateTransform(90) };
+						control = new swc.Separator { LayoutTransform = new swm.RotateTransform(90), Margin = new sw.Thickness(2, 0, 2, 0) };
 						break;
 					case SeparatorToolItemType.FlexibleSpace:
 					case SeparatorToolItemType.Space:

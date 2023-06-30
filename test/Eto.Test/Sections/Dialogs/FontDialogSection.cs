@@ -1,10 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-
 namespace Eto.Test.Sections.Dialogs
 {
 	[Section("Dialogs", typeof(FontDialog))]

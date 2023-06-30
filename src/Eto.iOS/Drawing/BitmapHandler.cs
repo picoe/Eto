@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
-using Eto.Drawing;
 using SD = System.Drawing;
 using UIKit;
 using Foundation;

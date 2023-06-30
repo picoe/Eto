@@ -1,13 +1,4 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-using Eto.Direct2D.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using swf = System.Windows.Forms;
-
+﻿using Eto.Direct2D.Drawing;
 namespace Eto.Direct2D.Forms.Controls
 {
 	public class DrawableHandler : Eto.WinForms.Forms.Controls.DrawableHandler

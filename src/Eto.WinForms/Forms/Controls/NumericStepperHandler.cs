@@ -1,12 +1,3 @@
-using System;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System.ComponentModel;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class NumericStepperHandler : WindowsControl<NumericStepperHandler.EtoNumericUpDown, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler

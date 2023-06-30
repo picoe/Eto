@@ -1,12 +1,4 @@
-using System;
-using System.Collections.Generic;
-using swc = System.Windows.Controls;
-using swn = System.Windows.Navigation;
-using Eto.Forms;
-using System.Runtime.InteropServices;
 using Eto.CustomControls;
-using System.Threading.Tasks;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class WpfWebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView, WebView.ICallback>, WebView.IHandler

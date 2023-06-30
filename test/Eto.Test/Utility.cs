@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace Eto.Test
 {
 	public static class Utility

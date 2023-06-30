@@ -1,7 +1,4 @@
-using System;
 using Newtonsoft.Json.Serialization;
-using System.Reflection;
-
 namespace Eto.Serialization.Json
 {
 	class EventValueProvider : IValueProvider

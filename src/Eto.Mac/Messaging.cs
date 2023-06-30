@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-#if IOS
+﻿#if IOS
 namespace Eto.iOS
 #else
 namespace Eto.Mac

@@ -1,8 +1,5 @@
 
-using System;
 using Eto;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms
 {
     public partial class EtoFixed : Gtk.Fixed

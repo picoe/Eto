@@ -1,10 +1,5 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using UIKit;
-using System.Collections.Generic;
 using sd = System.Drawing;
-using System.Linq;
 using Eto.Mac.Forms;
 
 namespace Eto.iOS.Forms

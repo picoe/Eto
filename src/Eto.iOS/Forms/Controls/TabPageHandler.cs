@@ -1,9 +1,4 @@
-using System;
-using System.Reflection;
-using Eto.Drawing;
-using Eto.Forms;
 using UIKit;
-using System.Linq;
 using Eto.Mac.Forms;
 
 namespace Eto.iOS.Forms.Controls

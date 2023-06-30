@@ -1,12 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Window = System.Windows.Window;
+using FontFamily = System.Windows.Media.FontFamily;
+using FontStyle = System.Windows.FontStyle;
+using Grid = System.Windows.Controls.Grid;
+using ListBox = System.Windows.Controls.ListBox;
+using TextBox = System.Windows.Controls.TextBox;
+using RadioButton = System.Windows.Controls.RadioButton;
+using Fonts = System.Windows.Media.Fonts;
+using Key = System.Windows.Input.Key;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace Eto.Wpf.CustomControls.FontDialog
 {
@@ -173,7 +179,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
 			// Hook up events for the font family list and associated text box.
 			fontFamilyTextBox.SelectionChanged += new RoutedEventHandler (fontFamilyTextBox_SelectionChanged);
 			fontFamilyTextBox.TextChanged += new TextChangedEventHandler (fontFamilyTextBox_TextChanged);
-			fontFamilyTextBox.PreviewKeyDown += new KeyEventHandler (fontFamilyTextBox_PreviewKeyDown);
+			fontFamilyTextBox.PreviewKeyDown += new swi.KeyEventHandler (fontFamilyTextBox_PreviewKeyDown);
 			fontFamilyList.SelectionChanged += new SelectionChangedEventHandler (fontFamilyList_SelectionChanged);
 
 			// Hook up events for the typeface list.
@@ -181,7 +187,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
 
 			// Hook up events for the font size list and associated text box.
 			sizeTextBox.TextChanged += new TextChangedEventHandler (sizeTextBox_TextChanged);
-			sizeTextBox.PreviewKeyDown += new KeyEventHandler (sizeTextBox_PreviewKeyDown);
+			sizeTextBox.PreviewKeyDown += new swi.KeyEventHandler (sizeTextBox_PreviewKeyDown);
 			sizeList.SelectionChanged += new SelectionChangedEventHandler (sizeList_SelectionChanged);
 
 			// Hook up events for text decoration check boxes.
@@ -1474,7 +1480,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
                         radioButton.Name = tag;
                         radioButton.Content = radioContent;
                         radioButton.Margin = new Thickness(5.0, 0.0, 0.0, 0.0);
-                        radioButton.VerticalAlignment = VerticalAlignment.Center;
+                        radioButton.VerticalAlignment = sw.VerticalAlignment.Center;
                         Grid.SetRow(radioButton, i);
                         grid.Children.Add(radioButton);
 
@@ -1503,7 +1509,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
                     {
                         var border = new Border();
                         border.BorderThickness = new Thickness(0.0, 0.0, 0.0, 1.0);
-                        border.BorderBrush = SystemColors.ControlLightBrush;
+                        border.BorderBrush = sw.SystemColors.ControlLightBrush;
                         Grid.SetRow(border, i);
                         Grid.SetColumnSpan(border, 2);
                         grid.Children.Add(border);
@@ -1533,10 +1539,10 @@ namespace Eto.Wpf.CustomControls.FontDialog
 
         static void AddTableRow(TableRowGroup rowGroup, string leftText, string rightText)
         {
-            var row = new TableRow();
+            var row = new swdoc.TableRow();
 
-            row.Cells.Add(new TableCell(new Paragraph(new Run(leftText))));
-            row.Cells.Add(new TableCell(new Paragraph(new Run(rightText))));
+            row.Cells.Add(new swdoc.TableCell(new Paragraph(new Run(leftText))));
+            row.Cells.Add(new swdoc.TableCell(new Paragraph(new Run(rightText))));
 
             rowGroup.Rows.Add(row);
         }

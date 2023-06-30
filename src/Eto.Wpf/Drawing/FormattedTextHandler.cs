@@ -1,15 +1,3 @@
-using Eto.Drawing;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using swmt = System.Windows.Media.TextFormatting;
-
 namespace Eto.Wpf.Drawing
 {
 	public class FormattedTextHandler : WidgetHandler<swm.FormattedText, FormattedText, FormattedText.ICallback>, FormattedText.IHandler

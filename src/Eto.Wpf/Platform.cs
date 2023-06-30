@@ -1,10 +1,5 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Wpf.Forms.Cells;
 using Eto.Wpf.Forms.ToolBar;
-using swi = System.Windows.Input;
-using swm = System.Windows.Media;
-using sw = System.Windows;
 using Eto.Wpf.Drawing;
 using Eto.Wpf.Forms.Menu;
 using Eto.Wpf.Forms.Controls;
@@ -14,9 +9,6 @@ using Eto.IO;
 using Eto.Wpf.IO;
 using Eto.Forms.ThemedControls;
 using Eto.Shared.Forms;
-using System.Linq;
-using System.Diagnostics;
-
 namespace Eto.Wpf
 {
 	public class Platform : Eto.Platform
@@ -38,16 +30,28 @@ namespace Eto.Wpf
 
 			Style.Add<ThemedSegmentedButtonHandler>(null, h =>
 			{
-				h.Control.Styles.Add<ToggleButtonHandler>(null, tb =>
+				h.Widget.Items.CollectionChanged += (sender, e) =>
 				{
-					if (tb.Widget.Parent is TableLayout tl && tl.Rows.Count > 0 && tl.Spacing.Width == 0)
+					for (int i = 0; i < h.Widget.Items.Count; i++)
 					{
-						var isFirst = ReferenceEquals(tl.Rows[0].Cells[0].Control, tb.Widget);
-						var thickness = tb.Control.BorderThickness;
-						thickness.Left = isFirst ? thickness.Right : 0;
-						tb.Control.BorderThickness = thickness;
+						SegmentedItem item = h.Widget.Items[i];
+						if (item.ControlObject is Control control)
+						{
+							var native = control.ToNative();
+							if (native != null)
+							{
+								WpfProperties.SetEtoStyle(native, "SegmentedButton");
+								if (i == 0)
+									WpfProperties.SetEtoModifier(native, "first");
+								else if (i == h.Widget.Items.Count - 1)
+									WpfProperties.SetEtoModifier(native, "last");
+								else
+									native.ClearValue(WpfProperties.EtoModifierProperty);
+							}
+						}
+
 					}
-				});
+				};
 			});
 		}
 
@@ -161,6 +165,7 @@ namespace Eto.Wpf
 			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
+			p.Add<DropDownToolItem.IHandler>(() => new DropDownToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 
 			// Forms

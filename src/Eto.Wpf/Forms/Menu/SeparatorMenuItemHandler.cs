@@ -1,8 +1,3 @@
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using Eto.Forms;
-using System;
-
 namespace Eto.Wpf.Forms.Menu
 {
 	public class SeparatorMenuItemHandler : WidgetHandler<swc.Separator, SeparatorMenuItem>, SeparatorMenuItem.IHandler

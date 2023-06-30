@@ -1,5 +1,3 @@
-using System;
-using sw = System.Windows;
 using swd = System.Windows.Data;
 
 namespace Eto.Wpf

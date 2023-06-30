@@ -1,13 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System.Linq;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
-using System.Reflection;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class NumericStepperHandler : MacView<NumericStepperHandler.EtoNumericStepperView, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
@@ -94,6 +85,8 @@ namespace Eto.Mac.Forms.Controls
 
 				AddSubview(TextField);
 				AddSubview(Stepper);
+
+				this.SetClipsToBounds(false);
 			}
 		}
 

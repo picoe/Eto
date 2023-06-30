@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
 using Eto.Wpf.Forms.Controls;
-using System.Threading.Tasks;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class DialogHandler : WpfWindow<sw.Window, Dialog, Dialog.ICallback>, Dialog.IHandler
@@ -21,9 +14,6 @@ namespace Eto.Wpf.Forms
 		{
 			Control = window;
 			Control.ShowInTaskbar = false;
-			Resizable = false;
-			Minimizable = false;
-			Maximizable = false;
 			Control.PreviewKeyDown += Control_PreviewKeyDown;
 
 			dockMain = new swc.DockPanel();
@@ -32,6 +22,15 @@ namespace Eto.Wpf.Forms
 			gridButtons.RowDefinitions.Add(new swc.RowDefinition());
 			gridButtons.Visibility = System.Windows.Visibility.Hidden;
 			gridButtons.Margin = new sw.Thickness();
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			
+			Resizable = false;
+			Minimizable = false;
+			Maximizable = false;
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)

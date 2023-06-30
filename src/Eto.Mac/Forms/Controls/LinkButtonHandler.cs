@@ -1,10 +1,4 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Drawing;
-using System.Runtime.InteropServices;
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	/// <summary>

@@ -1,17 +1,7 @@
 using Eto.Mac.Forms.Controls;
 using Eto.Mac.Forms;
 using Eto.Mac;
-using System.Diagnostics;
-using Eto.Drawing;
 using Eto.Mac.Forms.ToolBar;
-using Eto.Forms;
-
-#if MONOMAC
-using MonoMac.AppKit;
-#else
-using AppKit;
-#endif
-
 namespace Eto.Test.Mac
 {
 	class Startup
@@ -77,7 +67,16 @@ namespace Eto.Test.Mac
 					//handler.Control.DisplayMode = NSToolbarDisplayMode.Icon;
 				});
 
+      		Style.Add<TreeGridViewHandler>(null, c => StyleGrid(c.Control));
+      		Style.Add<GridViewHandler>(null, c => StyleGrid(c.Control));
 		}
+		
+		private static void StyleGrid(NSTableView control)
+		{
+		// macOS Big Sur changed default from 3,2 to 17,0.  This appears to be more sane for our purposes.
+		// control.IntercellSpacing = new CGSize(3, 2);
+		}
+		
 	}
 }
 

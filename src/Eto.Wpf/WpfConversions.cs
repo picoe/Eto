@@ -1,19 +1,7 @@
-using System;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
-using swi = System.Windows.Input;
-using swm = System.Windows.Media;
-using sw = System.Windows;
 using sp = System.Printing;
-using swc = System.Windows.Controls;
-using swmi = System.Windows.Media.Imaging;
 using swd = System.Windows.Documents;
-using xwt = Xceed.Wpf.Toolkit;
 using Eto.Wpf.Drawing;
 using System.Windows.Interop;
-using System.IO;
-
 namespace Eto.Wpf
 {
 	public static class WpfConversions
@@ -31,11 +19,7 @@ namespace Eto.Wpf
 
 		public static swm.Brush ToWpfBrush(this Color value, swm.Brush brush = null)
 		{
-			var solidBrush = brush as swm.SolidColorBrush;
-			if (solidBrush == null || solidBrush.IsSealed)
-			{
-				solidBrush = new swm.SolidColorBrush();
-			}
+			var solidBrush = new swm.SolidColorBrush();
 			solidBrush.Color = value.ToWpf();
 			return solidBrush;
 		}
@@ -521,6 +505,7 @@ namespace Eto.Wpf
 				case sw.WindowStyle.None:
 					return WindowStyle.None;
 				case sw.WindowStyle.ThreeDBorderWindow:
+				case sw.WindowStyle.SingleBorderWindow:
 					return WindowStyle.Default;
 				case sw.WindowStyle.ToolWindow:
 					return WindowStyle.Utility;
@@ -944,6 +929,28 @@ namespace Eto.Wpf
 			if (format == swm.PixelFormats.Prgba64)
 				return swm.PixelFormats.Rgba64;
 			return format;
+		}
+
+		public static Color? GetResourceColor(this sw.FrameworkElement cell, sw.ResourceKey key)
+		{
+			var res = cell.TryFindResource(key);
+			if (res is swm.SolidColorBrush brush)
+				return brush.ToEtoColor();
+			if (res is swm.Color color)
+				return color.ToEto();
+			return null;
+		}
+
+		public static Color? GetResourceColor(this sw.FrameworkElement cell, params sw.ResourceKey[] keys)
+		{
+			for (int i = 0; i < keys.Length; i++)
+			{
+				sw.ResourceKey key = keys[i];
+				var value = GetResourceColor(cell, key);
+				if (value != null)
+					return value;
+			}
+			return null;
 		}
 	}
 }

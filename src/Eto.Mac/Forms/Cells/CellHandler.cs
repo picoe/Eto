@@ -1,6 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System;
 using Eto.Mac.Forms.Controls;
 
 
@@ -37,6 +34,8 @@ namespace Eto.Mac.Forms.Cells
 		void EnabledChanged(bool value);
 
 		NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem);
+
+		void ViewRemoved(NSView view);
 	}
 
 	public class EtoCellTextField : EtoTextField
@@ -134,6 +133,10 @@ namespace Eto.Mac.Forms.Cells
 		}
 
 		public virtual void SetForegroundColor(NSView view, Color color)
+		{
+		}
+		
+		public virtual void ViewRemoved(NSView view)
 		{
 		}
 

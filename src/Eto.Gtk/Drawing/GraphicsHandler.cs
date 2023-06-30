@@ -1,9 +1,4 @@
-using System;
-using Eto.Drawing;
-using System.Collections.Generic;
 using GLib;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Drawing
 {
 	public class GraphicsHandler : WidgetHandler<Cairo.Context, Graphics>, Graphics.IHandler

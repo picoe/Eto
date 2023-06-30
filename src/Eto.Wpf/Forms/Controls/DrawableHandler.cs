@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
-using swi = System.Windows.Input;
 using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable, Drawable.ICallback>, Drawable.IHandler
+	public class DrawableHandler : DrawableHandler<swc.Canvas, Drawable, Drawable.ICallback> { }
+
+	public class DrawableHandler<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Drawable.IHandler
+		where TControl : swc.Canvas
+		where TWidget : Drawable
+		where TCallback : Drawable.ICallback
 	{
 		bool tiled;
 		sw.FrameworkElement content;
@@ -51,9 +47,9 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		class EtoMainCanvas : swc.Canvas
+		public class EtoMainCanvas : swc.Canvas
 		{
-			public DrawableHandler Handler { get; set; }
+			public DrawableHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
 			protected override void OnMouseDown(sw.Input.MouseButtonEventArgs e)
 			{
@@ -111,7 +107,7 @@ namespace Eto.Wpf.Forms.Controls
 		class EtoTile : sw.FrameworkElement
 		{
 			Rectangle bounds;
-			public DrawableHandler Handler { get; set; }
+			public DrawableHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
 			public Rectangle Bounds
 			{
@@ -163,17 +159,25 @@ namespace Eto.Wpf.Forms.Controls
 			UnRegisterScrollable();
 		}
 
-		public void Create()
+		protected override TControl CreateControl()
 		{
-			Control = new EtoMainCanvas
+			return new EtoMainCanvas
 			{
 				Handler = this,
 				SnapsToDevicePixels = true,
 				FocusVisualStyle = null,
 				Background = swm.Brushes.Transparent
-			};
+			} as TControl;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+
 			Control.Loaded += Control_Loaded;
 		}
+
+		public void Create() { }
 
 		public void Create(bool largeCanvas)
 		{

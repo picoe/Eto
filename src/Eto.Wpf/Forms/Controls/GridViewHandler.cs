@@ -1,15 +1,3 @@
-using swc = System.Windows.Controls;
-using Eto.Forms;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using Eto.Drawing;
-using System;
-using swm = System.Windows.Media;
-using System.Collections;
-using sw = System.Windows;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler
@@ -35,27 +23,11 @@ namespace Eto.Wpf.Forms.Controls
 					break;
 			}
 		}
-
-		public object GetCellAt(PointF location, out int column, out int row)
+		
+		public GridCell GetCellAt(PointF location)
 		{
-			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, location.ToWpf())?.VisualHit;
-			if (hitTestResult == null)
-			{
-				column = -1;
-				row = -1;
-				return null;
-			}
-			var dataGridCell = hitTestResult.GetVisualParent<swc.DataGridCell>();
-			column = dataGridCell?.Column != null ? Control.Columns.IndexOf(dataGridCell.Column) : -1;
-
-			var dataGridRow = hitTestResult.GetVisualParent<swc.DataGridRow>();
-			if (dataGridRow != null)
-			{
-				row = dataGridRow.GetIndex();
-				return GetItemAtRow(row);
-			}
-			row = -1;
-			return null;
+			var info = GetCellInfo(location);
+			return new GridCell(info.Column, info.ColumnIndex, info.RowIndex, info.CellType, info.Item);
 		}
 
 

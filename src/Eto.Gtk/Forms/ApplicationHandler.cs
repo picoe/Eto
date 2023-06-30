@@ -1,16 +1,5 @@
-using System;
-using Eto.Forms;
-using System.Diagnostics;
-using System.Threading;
-using System.ComponentModel;
 using Eto.GtkSharp.Drawing;
-using Eto.Drawing;
-using System.Collections.Generic;
 using Eto.GtkSharp.Forms;
-using System.IO;
-using System.Reflection;
-using System.Linq;
-
 namespace Eto.GtkSharp.Forms
 {
 #if GTK3
@@ -87,13 +76,21 @@ namespace Eto.GtkSharp.Forms
 								form.BringToFront();
 						};
 					}
-					var bmp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
-					using (var graphics = new Graphics(new Bitmap(new BitmapHandler(bmp))))
+
+					var pixbuf = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
+					using(var bmpHandler = new BitmapHandler(pixbuf))
 					{
-						graphics.Clear();
-						DrawBadgeLabel(graphics, new Size(bmp.Width, bmp.Height), badgeLabel);
+						using(var bitmap     = new Bitmap(bmpHandler))
+						{
+							using (var graphics = new Graphics(bitmap))
+							{
+								graphics.Clear();
+								DrawBadgeLabel(graphics, new Size(pixbuf.Width, pixbuf.Height), badgeLabel);
+							}
+						}
 					}
-					statusIcon.Pixbuf = bmp;
+
+					statusIcon.Pixbuf = pixbuf;
 					statusIcon.Visible = true;
 				}
 				else if (statusIcon != null)
@@ -106,11 +103,17 @@ namespace Eto.GtkSharp.Forms
 			var rect = new Rectangle(size);
 			rect.Inflate(-2, -2);
 			graphics.FillEllipse(Brushes.Red, rect);
-			graphics.DrawEllipse(new Pen(Colors.White, 2), rect);
-			var font = new Font(SystemFont.Bold, 10);
-			var labelSize = graphics.MeasureString(font, badgeLabel);
-			var labelPosition = ((PointF)(rect.Size - labelSize) / 2) + rect.Location;
-			graphics.DrawText(font, Colors.White, labelPosition, badgeLabel);
+			using (var pen = new Pen(Colors.White, 2))
+			{
+				graphics.DrawEllipse(pen, rect);
+			}
+			using (var font = new Font(SystemFont.Bold, 10))
+			{
+				var labelSize     = graphics.MeasureString(font, badgeLabel);
+				var labelPosition = ((PointF)(rect.Size - labelSize) / 2) + rect.Location;
+				graphics.DrawText(font, Colors.White, labelPosition, badgeLabel);
+			}
+
 			graphics.Flush();
 		}
 

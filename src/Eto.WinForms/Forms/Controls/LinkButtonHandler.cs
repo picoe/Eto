@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-
-namespace Eto.WinForms.Forms.Controls
+﻿namespace Eto.WinForms.Forms.Controls
 {
 	public class LinkButtonHandler : WindowsControl<swf.LinkLabel, LinkButton, LinkButton.ICallback>, LinkButton.IHandler
 	{
@@ -48,7 +41,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var bordersAndPadding = Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
+				var bordersAndPadding = Margin.Size; // this.SizeFromClientSize (sd.Size.Empty);
 				if( proposedSize.Width <= 1 )
 					proposedSize.Width = int.MaxValue;
 

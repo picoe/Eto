@@ -1,10 +1,3 @@
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System;
-using System.Threading.Tasks;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms
 {
     public class DialogHandler : WindowHandler<swf.Form, Dialog, Dialog.ICallback>, Dialog.IHandler

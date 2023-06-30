@@ -1,8 +1,5 @@
-using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Globalization;
-
 namespace Eto.Wpf.CustomControls.FontDialog
 {
     class TypographicFeatureListItem : TextBlock, IComparable

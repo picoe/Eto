@@ -1,15 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swf = System.Windows.Forms;
-using System.Linq;
-using System.Collections.Generic;
 using System.Windows.Interop;
-using System.Runtime.InteropServices;
 using static System.Windows.WpfDataObjectExtensions;
 
 namespace Eto.Wpf.Forms
@@ -204,6 +193,13 @@ namespace Eto.Wpf.Forms
 					return newSize.Value;
 				if (!Widget.Loaded)
 					return UserPreferredSize.ToEtoSize();
+				// if (Win32.IsSystemDpiAware && !double.IsNaN(Control.ActualWidth) && !double.IsNaN(Control.ActualHeight))
+				// {
+				// 	// convert system dpi to logical
+				// 	var sizef = new SizeF((float)Control.ActualWidth, (float)Control.ActualHeight) / (Win32.GetDpiForSystem() / 96f) * SwfScreen.GetLogicalPixelSize();
+				// 	return Size.Round(sizef);
+				// }
+
 				return Control.GetSize();
 			}
 			set
@@ -245,8 +241,14 @@ namespace Eto.Wpf.Forms
 		{
 			if (Widget.Loaded)
 			{
-				Widget.VisualParent.GetWpfContainer()?.UpdatePreferredSize();
+				Widget.VisualParent.GetWpfContainer()?.OnChildPreferredSizeUpdated();
 			}
+		}
+
+		public virtual void OnChildPreferredSizeUpdated()
+		{
+			if (double.IsNaN(UserPreferredSize.Width) || double.IsNaN(UserPreferredSize.Height))
+				UpdatePreferredSize();
 		}
 
 		public virtual void SetScale(bool xscale, bool yscale)
@@ -322,8 +324,8 @@ namespace Eto.Wpf.Forms
 
 		public virtual bool Enabled
 		{
-			get { return Control.IsEnabled; }
-			set { Control.IsEnabled = value; }
+			get { return ContainerControl.IsEnabled; }
+			set { ContainerControl.IsEnabled = value; }
 		}
 
 		public virtual Cursor Cursor
@@ -424,6 +426,7 @@ namespace Eto.Wpf.Forms
 						ContainerControl.PreviewMouseDown += HandleMouseDown;
 					else
 						ContainerControl.MouseDown += HandleMouseDown;
+					ContainerControl.LostMouseCapture += HandleLostMouseCapture;
 					HandleEvent(Eto.Forms.Control.MouseUpEvent);
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
@@ -508,6 +511,9 @@ namespace Eto.Wpf.Forms
 					else
 						Control.DragLeave += Control_DragLeave;
 					HandleEvent(Eto.Forms.Control.DragEnterEvent); // need DragEnter so it doesn't get called when going over children
+					break;
+				case Eto.Forms.Control.DragEndEvent:
+					// handled in DoDragDrop, as it is blocking on Windows
 					break;
 				case Eto.Forms.Control.EnabledChangedEvent:
 					Control.IsEnabledChanged += Control_IsEnabledChanged;
@@ -801,14 +807,20 @@ namespace Eto.Wpf.Forms
 		protected virtual void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
 			var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
-			if (isMouseCaptured && Control.IsMouseCaptured)
+			if (isMouseCaptured)
 			{
-				Control.ReleaseMouseCapture();
 				isMouseCaptured = false;
+				if (Control.IsMouseCaptured)
+					Control.ReleaseMouseCapture();
 			}
 
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
+			
+			// If the mouse was captured intrinsically we need to release capture otherwise it hangs the app
+			// since the caller is overriding default behaviour.
+			if (e.Handled && Control.IsMouseCaptured)
+				Control.ReleaseMouseCapture();
 		}
 
 		void HandleMouseDoubleClick(object sender, swi.MouseButtonEventArgs e)
@@ -817,10 +829,24 @@ namespace Eto.Wpf.Forms
 			Callback.OnMouseDoubleClick(Widget, args);
 			e.Handled = args.Handled;
 		}
+		
+		protected virtual void HandleLostMouseCapture(object sender, swi.MouseEventArgs e)
+		{
+			if (isMouseCaptured)
+			{
+				// lost mouse capture without a MouseUp event firing
+				// this can happen when something happens during the mouse dragging, such as showing a dialog.
+				isMouseCaptured = false;
+
+				var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
+				Callback.OnMouseUp(Widget, args);
+			}
+		}
 
 		protected virtual void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			var args = e.ToEto(ContainerControl);
+            isMouseCaptured = false;
+            var args = e.ToEto(ContainerControl);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Callback.OnMouseDoubleClick(Widget, args);
 			if (!args.Handled)
@@ -837,12 +863,8 @@ namespace Eto.Wpf.Forms
 					|| e.Handled
 				))
 			{
-				isMouseCaptured = true;
 				Control.CaptureMouse();
-			}
-			else
-			{
-				isMouseCaptured = false;
+				isMouseCaptured = true;
 			}
 		}
 
@@ -938,20 +960,72 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
+		System.Windows.Forms.Screen SwfScreen => Win32.GetScreenFromWindow(Widget.ParentWindow?.NativeHandle ?? IntPtr.Zero);
+
 		public PointF PointFromScreen(PointF point)
 		{
 			if (!ContainerControl.IsLoaded)
 				return point;
 
-			point = point.LogicalToScreen();
-			return ContainerControl.PointFromScreen(point.ToWpf()).ToEto();
+			// ensure we're connected to a presentation source
+			var presentationSource = sw.PresentationSource.FromVisual(ContainerControl) as HwndSource;
+			if (presentationSource == null)
+				return point;
+
+			point = point.LogicalToScreen(Widget.ParentWindow?.Screen);
+			
+			if (Win32.IsSystemDpiAware)
+			{
+				var logicalPixelSize = Win32.GetLogicalPixelSize(SwfScreen);
+				var systemDpi = Win32.SystemDpi;
+
+				// WPF does not take into account the location of the element in the form..
+				var rootVisual = ContainerControl.GetVisualParents().OfType<sw.UIElement>().Last();
+				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0), rootVisual).ToEto();
+				point -= (location * logicalPixelSize) - (location * systemDpi);
+
+				point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf())).ToEto();
+
+				point = point * systemDpi / logicalPixelSize;
+			}
+			else
+			{
+				point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf())).ToEto();
+			}
+			return point;
+
 		}
 
 		public PointF PointToScreen(PointF point)
 		{
 			if (!ContainerControl.IsLoaded)
 				return point;
-			return ContainerControl.PointToScreen(point.ToWpf()).ToEtoPoint().ScreenToLogical();
+			
+			// ensure we're connected to a presentation source
+			var presentationSource = sw.PresentationSource.FromVisual(ContainerControl) as HwndSource;
+			if (presentationSource == null)
+				return point;
+
+			PointF pt;
+			if (Win32.IsSystemDpiAware)
+			{
+				var logicalPixelSize = Win32.GetLogicalPixelSize(SwfScreen);
+				var systemDpi = Win32.SystemDpi;
+				point = point / systemDpi * logicalPixelSize;
+
+				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf())).ToEto();
+				
+				// WPF does not take into account the location of the element in the form..
+				var rootVisual = ContainerControl.GetVisualParents().OfType<sw.UIElement>().Last();
+				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0), rootVisual).ToEto();
+				pt += (location * logicalPixelSize) - (location * systemDpi);
+			}
+			else
+			{
+				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf())).ToEto();
+			}
+
+			return Point.Truncate(pt).ScreenToLogical(SwfScreen);
 		}
 
 		public Point Location
@@ -995,10 +1069,14 @@ namespace Eto.Wpf.Forms
 				sw.WpfDataObjectExtensions.SetDragImage(dataObject, image.ToWpf(), PointF.Empty.ToWpf());
 			}
 
-			sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
+			var effects = sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToWpf());
 
 			WpfFrameworkElement.DragSourceControl = null;
 			sw.DragSourceHelper.UnregisterDefaultDragSource(Control);
+			
+			var args = new DragEventArgs(Widget, data, allowedAction, PointFromScreen(Mouse.Position), Keyboard.Modifiers, Mouse.Buttons);
+			args.Effects = effects.ToEto();
+			Callback.OnDragEnd(Widget, args);
 		}
 
 
@@ -1076,6 +1154,15 @@ namespace Eto.Wpf.Forms
 			}
 			actionList.Add(action);
 			return true;
+		}
+
+		public void UpdateLayout()
+		{
+			// allow WPF controls to actually get their Loaded event fired.
+			ContainerControl.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ApplicationIdle, null);
+
+			// update the layout
+			ContainerControl.UpdateLayout();
 		}
 	}
 }

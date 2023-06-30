@@ -1,8 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.GtkSharp.Drawing;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ImageViewHandler : GtkControl<Gtk.DrawingArea, ImageView, ImageView.ICallback>, ImageView.IHandler

@@ -1,5 +1,3 @@
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "Focus Events")]

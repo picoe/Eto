@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class TabControlHandler : MacView<NSTabView, TabControl, TabControl.ICallback>, TabControl.IHandler

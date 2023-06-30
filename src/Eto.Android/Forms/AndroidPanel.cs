@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using a = Android;
 using av = Android.Views;
 using aw = Android.Widget;
@@ -25,7 +22,12 @@ namespace Eto.Android.Forms
 
 		protected AndroidPanel()
 		{
-			frame = new aw.FrameLayout(a.App.Application.Context);
+			frame = CreateFrame();
+		}
+
+		protected virtual aw.FrameLayout CreateFrame()
+		{
+			return new aw.FrameLayout(Platform.AppContextThemed) { LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent) };
 		}
 
 		protected override void Initialize()
@@ -56,6 +58,24 @@ namespace Eto.Android.Forms
 
 		protected abstract void SetContent(av.View content);
 
+		public override Size Size
+		{
+			get
+			{
+				return base.Size;
+			}
+
+			set
+			{
+				base.Size = value;
+
+				var pxw = value.Width >= 0 ? Platform.DpToPx(value.Width) : av.ViewGroup.LayoutParams.WrapContent;
+				var pxh = value.Height >= 0 ? Platform.DpToPx(value.Height) : av.ViewGroup.LayoutParams.WrapContent;
+
+				InnerFrame.LayoutParameters = AndroidHelpers.CreateOrAdjustLayoutParameters(InnerFrame.LayoutParameters, pxw, pxh);
+			}
+		}
+
 		public Padding Padding
 		{
 			get { return frame.GetPadding(); }
@@ -67,6 +87,7 @@ namespace Eto.Android.Forms
 			get { return minimumSize; }
 			set
 			{
+				value = Platform.DpToPx(value);
 				minimumSize = value;
 				ContainerControl.SetMinimumWidth(value.Width);
 				ContainerControl.SetMinimumHeight(value.Height);

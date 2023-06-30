@@ -1,8 +1,4 @@
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.IO;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
 using Eto.WinForms.Drawing;
 using Eto.WinForms.Forms;
 using Eto.WinForms.Forms.Printing;
@@ -13,8 +9,6 @@ using Eto.WinForms.Forms.Cells;
 using Eto.WinForms.Forms.Menu;
 using Eto.WinForms.Forms.ToolBar;
 using Eto.Shared.Forms;
-using System.Diagnostics;
-
 namespace Eto.WinForms
 {
 	public class Platform : Eto.Platform
@@ -142,6 +136,7 @@ namespace Eto.WinForms
 			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolBarItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
+			p.Add<DropDownToolItem.IHandler>(() => new DropDownToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 			
 			// Forms

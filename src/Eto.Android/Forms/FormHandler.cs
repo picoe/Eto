@@ -1,10 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using a = Android;
-using av = Android.Views;
-using aw = Android.Widget;
-
 namespace Eto.Android.Forms
 {
 	/// <summary>
@@ -14,15 +7,24 @@ namespace Eto.Android.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class FormHandler : AndroidWindow<Form, Form.ICallback>, Form.IHandler
 	{
+		public FormHandler()
+		{
+		}
+
 		public void Show()
 		{
-			// TODO: create activity if it doesn't exist
-			Activity.SetContentView(ContainerControl);
+			var ParentActivity = (Activity ?? ApplicationHandler.Instance.TopActivity);
+			Activity = ParentActivity;
+			ParentActivity.SetContentView(ContainerControl);
+			
+			Callback.OnShown(Widget, EventArgs.Empty);
 		}
 
 		public bool ShowActivated { get; set; }
 
 		public bool CanFocus { get; set; }
+
+		// Ignore setting size for forms - they must fill the activity exactly.
+		public override Size Size { get => base.Size; set { } }
 	}
 }
-

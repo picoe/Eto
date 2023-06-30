@@ -1,5 +1,3 @@
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.ToolBar
 {
 	public class ToolBarHandler : WidgetHandler<Gtk.Toolbar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler

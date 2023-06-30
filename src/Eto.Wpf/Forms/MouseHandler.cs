@@ -1,8 +1,3 @@
-using swi = System.Windows.Input;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class MouseHandler : Mouse.IHandler
@@ -18,19 +13,13 @@ namespace Eto.Wpf.Forms
 			get
 			{
 				var screen = swf.Screen.FromPoint(swf.Control.MousePosition);
-				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
-				var result = swf.Control.MousePosition;
-				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
-					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
+				var result = Win32.ExecuteInDpiAwarenessContext(() => swf.Control.MousePosition);
 				return result.ScreenToLogical(screen);
 			}
 			set
 			{
 				var pos = value.LogicalToScreen();
-				var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
-				swf.Cursor.Position = Point.Round(pos).ToSD();
-				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
-					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
+				Win32.ExecuteInDpiAwarenessContext(() => swf.Cursor.Position = Point.Round(pos).ToSD());
 			}
 		}
 

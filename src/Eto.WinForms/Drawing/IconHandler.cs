@@ -1,11 +1,3 @@
-using System;
-using System.IO;
-using Eto.Drawing;
-using sd = System.Drawing;
-using SWF = System.Windows.Forms;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.WinForms.Drawing
 {
 	public interface IWindowsIconSource

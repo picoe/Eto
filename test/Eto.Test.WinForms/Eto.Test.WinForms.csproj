@@ -17,6 +17,13 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Using Include="System.Windows.Forms" Alias="swf" />
+    <Using Include="System.Drawing" Alias="sd" />
+    <Using Include="System.Drawing.Imaging" Alias="sdi" />
+    <Using Include="System.Drawing.Drawing2D" Alias="sd2" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net48'">
     <Reference Include="System" />

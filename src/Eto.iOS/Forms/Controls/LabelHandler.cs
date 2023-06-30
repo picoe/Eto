@@ -1,9 +1,5 @@
-using System;
 using UIKit;
-using Eto.Forms;
 using Eto.iOS.Drawing;
-using Eto.Drawing;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class LabelHandler : IosView<UILabel, Label, Label.ICallback>, Label.IHandler

@@ -1,12 +1,4 @@
-using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System.Diagnostics;
-using System.Threading;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using System.Collections.Generic;
-
 namespace Eto.WinForms.Forms
 {
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
@@ -172,12 +164,16 @@ namespace Eto.WinForms.Forms
 				}, null, Win32.WM.LBUTTONDBLCLK, Win32.WM.RBUTTONDBLCLK, Win32.WM.MBUTTONDBLCLK);
 				void OnMouseUpHandler(Control c, Control.ICallback cb, MouseEventArgs e)
 				{
-					if (c.Handler is IWindowsControl handler && handler.MouseCaptured)
+					var handler = c.Handler as IWindowsControl;
+					if (handler != null && handler.MouseCaptured)
 					{
 						handler.MouseCaptured = false;
 						handler.ContainerControl.Capture = false;
 					}
 					cb.OnMouseUp(c, e);
+
+					if (handler != null && e.Handled && handler.ContainerControl.Capture)
+						handler.ContainerControl.Capture = false;
 				}
 				
 				bubble.AddBubbleMouseEvent(OnMouseUpHandler, false, Win32.WM.LBUTTONUP, b => MouseButtons.Primary);

@@ -1,10 +1,4 @@
-using System;
-using System.Linq;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Reflection;
-
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]

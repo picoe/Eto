@@ -1,6 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using Eto.Forms;
+﻿using NUnit.Framework;
 namespace Eto.Test.UnitTests.Forms
 {
 	/// <summary>
@@ -285,7 +283,7 @@ namespace Eto.Test.UnitTests.Forms
 			Shown(form =>
 			{
 				c = new Panel();
-				c.DataContextChanged += (sender, e) => 
+				c.DataContextChanged += (sender, e) =>
 					dataContextChanged++;
 
 				form.Content = new StackLayout
@@ -400,6 +398,44 @@ namespace Eto.Test.UnitTests.Forms
 				Assert.AreEqual(3, changed);
 			});
 		}
+
+		class DropDownViewModel
+		{
+			public string[] DataSource { get; set; }
+
+			public int SelectedIndex { get; set; }
+		}
+
+		[Test]
+		public void ChangingDataContextShouldNotSetValues() => Shown(
+			form =>
+			{
+				var dropDown = new DropDown();
+				dropDown.BindDataContext(c => c.DataStore, (DropDownViewModel m) => m.DataSource);
+				dropDown.BindDataContext(c => c.SelectedIndex, (DropDownViewModel m) => m.SelectedIndex);
+				return dropDown;
+			},
+			dropDown =>
+			{
+				var model1 = new DropDownViewModel
+				{
+					DataSource = new string[] { "Item 1", "Item 2", "Item 3" },
+					SelectedIndex = 0
+				};
+				dropDown.DataContext = model1;
+				Assert.AreEqual(0, dropDown.SelectedIndex, "#1");
+
+				var model2 = new DropDownViewModel
+				{
+					DataSource = new string[] { "Item 4", "Item 5", "Item 6" },
+					SelectedIndex = 1
+				};
+				dropDown.DataContext = model2;
+				Assert.AreEqual(1, dropDown.SelectedIndex, "#2");
+
+				Assert.AreEqual(0, model1.SelectedIndex, "#3 - Model 1 was changed");
+				Assert.AreEqual(1, model2.SelectedIndex, "#4 - Model 2 was changed");
+			});
 	}
 }
 

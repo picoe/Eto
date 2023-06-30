@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -22,6 +19,11 @@ namespace Eto.Android
 		public static void SetPadding(this av.View view, Padding padding)
 		{
 			view.SetPadding(padding.Left, padding.Top, padding.Right, padding.Bottom);
+		}
+		
+		public static void SetPadding(this av.View view, Int32 padding)
+		{
+			view.SetPadding(padding, padding, padding, padding);
 		}
 
 		public static Color ToEto(this global::Android.Content.Res.ColorStateList colors)
@@ -47,17 +49,6 @@ namespace Eto.Android
 		public static ag.Paint ToAndroid(this Brush brush)
 		{
 			return ((BrushHandler)brush.Handler).GetPaint(brush);
-		}
-
-		public static MouseEventArgs ToEto(av.MotionEvent e)
-		{
-			if (e.Action == av.MotionEventActions.Down)
-			{
-				return new MouseEventArgs(MouseButtons.Primary, Keys.None, new PointF(e.GetX(), e.GetY()));
-			}
-			// Is this correct? It generates a mouse event for pointer-up and cancel actions
-			// See the iOS handler as well, which does something similar
-			return new MouseEventArgs(MouseButtons.Primary, Keys.None, Point.Empty);
 		}
 
 		public static ag.Paint.Join ToAndroid(this PenLineJoin value)
@@ -154,17 +145,17 @@ namespace Eto.Android
 
 		public static ag.Rect ToAndroid(this Rectangle rect)
 		{
-			return new ag.Rect(rect.X, rect.Y, rect.Width, rect.Height);
+			return new ag.Rect(rect.X, rect.Y, rect.Right, rect.Bottom);
 		}
 
 		public static ag.RectF ToAndroid(this RectangleF rect)
 		{
-			return new ag.RectF(rect.X, rect.Y, rect.Width, rect.Height);
+			return new ag.RectF(rect.X, rect.Y, rect.Right, rect.Bottom);
 		}
 
 		public static ag.Rect ToAndroidRectangle(this RectangleF rect)
 		{
-			return new ag.Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+			return new ag.Rect((int)rect.X, (int)rect.Y, (int)rect.Right, (int)rect.Bottom);
 		}
 
 		internal static ag.Point[] ToAndroid(this Point[] points)
@@ -265,7 +256,7 @@ namespace Eto.Android
 			}
 		}
 
-		public static av.GravityFlags ToAndroid(this TextAlignment value)
+		public static av.GravityFlags ToAndroidGravity(this TextAlignment value)
 		{
 			switch (value)
 			{
@@ -277,6 +268,35 @@ namespace Eto.Android
 					return av.GravityFlags.Left;
 				default:
 					throw new NotSupportedException();
+			}
+		}
+
+		public static av.TextAlignment ToAndroid(this TextAlignment value)
+		{
+			switch (value)
+			{
+				case TextAlignment.Center:
+					return av.TextAlignment.Center;
+				case TextAlignment.Right:
+					return av.TextAlignment.TextEnd;
+				case TextAlignment.Left:
+					return av.TextAlignment.TextStart;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static TextAlignment ToEto(this av.TextAlignment value)
+		{
+			switch (value)
+			{
+				case av.TextAlignment.Center:
+					return TextAlignment.Center;
+				case av.TextAlignment.TextEnd:
+				case av.TextAlignment.ViewEnd:
+					return TextAlignment.Right;
+				default:
+					return TextAlignment.Left;
 			}
 		}
 
@@ -317,22 +337,65 @@ namespace Eto.Android
 		public static ag.Bitmap ToAndroid(this Image image)
 		{
 			var handler = (IAndroidImage)image.Handler;
-			return handler.GetImageWithSize(null);
+			return handler.GetImageWithDensity(null);
 		}
-		public static ag.Drawables.BitmapDrawable ToAndroidDrawable(this Image image)
+
+		public static ag.Drawables.BitmapDrawable ToAndroidDrawable(this Image image, Size? size = null)
 		{
 			var bmp = image.ToAndroid();
-			return bmp != null ? new ag.Drawables.BitmapDrawable(aa.Application.Context.Resources, bmp) : null;
+			var draw = bmp != null ? new ag.Drawables.BitmapDrawable(aa.Application.Context.Resources, bmp) : null;
+
+			if(draw != null && size != null)
+            {
+				var Size = Platform.DpToPx(size.Value);
+				draw.SetBounds(0, 0, Size.Width, Size.Height);
+			}
+
+			return draw;
 		}
+
+		public static Bitmap ToEto(this ag.Bitmap bitmap)
+		{
+			return new Bitmap(new BitmapHandler(bitmap));
+		}
+
 
 		public static ag.Typeface ToAndroid(this Font font)
 		{
 			return FontHandler.GetControl(font);
 		}
 
-		public static Font ToEto(this ag.Typeface typeface)
+		public static Font ToEto(this ag.Typeface typeface, float size)
 		{
-			return new Font(new FontHandler(typeface));
+			return new Font(new FontHandler(typeface, size));
+		}
+
+		public static MouseEventArgs ToEto(this av.MotionEvent mevent)
+		{
+			if(mevent.ActionMasked == av.MotionEventActions.Down || mevent.ActionMasked == av.MotionEventActions.Up)
+				return new MouseEventArgs(mevent.ButtonState.ToEto(), Keys.None, new PointF(mevent.GetX(), mevent.GetY()), null, mevent.Pressure);
+
+			return new MouseEventArgs(mevent.ButtonState.ToEto(), Keys.None, PointF.Empty);
+		}
+
+		public static MouseButtons ToEto(this av.MotionEventButtonState buttons, Boolean nothingIsPrimary = true)
+		{
+			// A finger touch doesn't count as a 'button' so just act like a primary click.
+			if (buttons == 0 && nothingIsPrimary)
+				return MouseButtons.Primary;
+
+			MouseButtons Result = MouseButtons.None;
+
+			if ((buttons & av.MotionEventButtonState.Primary) > 0)
+				Result |= MouseButtons.Primary;
+
+			if ((buttons & av.MotionEventButtonState.Secondary) > 0)
+				Result |= MouseButtons.Alternate;
+
+			if ((buttons & av.MotionEventButtonState.Tertiary) > 0)
+				Result |= MouseButtons.Middle;
+
+			return Result;
 		}
 	}
 }

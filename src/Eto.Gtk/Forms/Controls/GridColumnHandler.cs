@@ -1,7 +1,4 @@
-using Eto.Forms;
 using Eto.GtkSharp.Forms.Cells;
-using System;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public interface IGridHandler
@@ -13,6 +10,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		void ColumnClicked(GridColumnHandler column);
 		int GetColumnDisplayIndex(GridColumnHandler column);
 		void SetColumnDisplayIndex(GridColumnHandler column, int index);
+		void ColumnWidthChanged(GridColumnHandler h);
 	}
 
 	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, GridColumn.IHandler
@@ -31,32 +29,32 @@ namespace Eto.GtkSharp.Forms.Controls
 			AutoSize = true;
 			Resizable = true;
 			DataCell = new TextBoxCell();
+			Control.Clickable = true;
 		}
 
 		public string HeaderText
 		{
-			get { return Control.Title; }
-			set { Control.Title = value; }
+			get => Control.Title;
+			set => Control.Title = value;
 		}
 
 		public bool Resizable
 		{
-			get { return Control.Resizable; }
-			set { Control.Resizable = value; }
+			get => Control.Resizable;
+			set => Control.Resizable = value;
 		}
+
+		static readonly object Sortable_Key = new object();
 
 		public bool Sortable
 		{
-			get { return Control.Clickable; }
-			set { Control.Clickable = value; }
+			get => Widget.Properties.Get<bool>(Sortable_Key);
+			set => Widget.Properties.Set(Sortable_Key, value);
 		}
 
 		public bool AutoSize
 		{
-			get
-			{
-				return autoSize;
-			}
+			get => Control.Sizing == Gtk.TreeViewColumnSizing.Fixed ? false : true;
 			set
 			{
 				autoSize = value;
@@ -90,7 +88,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public int Width
 		{
-			get { return Control.Width; }
+			get => Control.Width;
 			set
 			{
 				autoSize = value == -1;
@@ -101,20 +99,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Cell DataCell
 		{
-			get
-			{
-				return dataCell;
-			}
-			set
-			{
-				dataCell = value;
-			}
+			get => dataCell;
+			set => dataCell = value;
 		}
 
 		public bool Visible
 		{
-			get { return Control.Visible; }
-			set { Control.Visible = value; }
+			get => Control.Visible;
+			set => Control.Visible = value;
 		}
 
 		public void SetupCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex)
@@ -146,6 +138,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				HandleEvent(Grid.ColumnHeaderClickEvent);
 			if (grid.IsEventHandled(Grid.CellFormattingEvent))
 				HandleEvent(Grid.CellFormattingEvent);
+			if (grid.IsEventHandled(Grid.ColumnWidthChangedEvent))
+				HandleEvent(Grid.ColumnWidthChangedEvent);
 		}
 
 		public override void AttachEvent(string id)
@@ -157,9 +151,23 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.Clicked += (sender, e) =>
 					{
 						var h = ((GridColumnHandler)handler.Target);
-						if (h != null && h.grid != null)
+						if (h != null && h.grid != null && h.Sortable)
 							h.grid.ColumnClicked(h);
 					};
+					break;
+				case Grid.ColumnWidthChangedEvent:
+					var handler2 = new WeakReference(this);
+					var lastWidth = -1;
+					Control.AddNotification("width", (o, args) =>
+					{
+						var h = (GridColumnHandler)handler2.Target;
+						if (h == null)
+							return;
+						if (lastWidth == h.Width)
+							return;
+						lastWidth = h.Width;
+						h.grid?.ColumnWidthChanged(h);
+					});
 					break;
 				default:
 					((ICellHandler)dataCell.Handler).HandleEvent(id);
@@ -202,7 +210,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				GridHandler?.Tree?.ColumnsAutosize();
 			}
 		}
-		
+
 		int? displayIndex;
 
 		public int DisplayIndex
@@ -216,6 +224,18 @@ namespace Eto.GtkSharp.Forms.Controls
 					displayIndex = value;
 			}
 		}
+
+#if GTK3
+		public string HeaderToolTip
+		{
+			get => Control.Button.TooltipText;
+			set => Control.Button.TooltipText = value;
+		}
+#else
+		public string HeaderToolTip { get; set; }
+#endif
+
+		public IIndirectBinding<string> CellToolTipBinding { get; set; }
 
 		internal void SetDisplayIndex()
 		{

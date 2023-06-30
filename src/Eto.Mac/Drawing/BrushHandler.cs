@@ -1,5 +1,3 @@
-using Eto.Drawing;
-
 #if OSX
 
 namespace Eto.Mac.Drawing

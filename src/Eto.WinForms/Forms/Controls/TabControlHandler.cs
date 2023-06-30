@@ -1,8 +1,3 @@
-using System;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class TabControlHandler : WindowsContainer<swf.TabControl, TabControl, TabControl.ICallback>, TabControl.IHandler

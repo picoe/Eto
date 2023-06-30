@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class DocumentControlHandler : GtkContainer<Gtk.Notebook, DocumentControl, DocumentControl.ICallback>, DocumentControl.IHandler

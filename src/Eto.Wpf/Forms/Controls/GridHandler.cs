@@ -1,21 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Wpf.Forms.Cells;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using System.Collections;
-using System.ComponentModel;
 using Eto.Wpf.Forms.Menu;
-using Eto.Drawing;
 using Eto.Wpf.Drawing;
 using Eto.Wpf.CustomControls.TreeGridView;
 using System.Windows;
-using System.Windows.Input;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoDataGrid : swc.DataGrid
@@ -216,6 +203,8 @@ namespace Eto.Wpf.Forms.Controls
 				case Grid.ColumnOrderChangedEvent:
 					Control.ColumnReordered += HandleColumnReordered;
 					break;
+				case Grid.ColumnWidthChangedEvent:
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -232,11 +221,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea, out bool isValid)
 		{
-			swc.DataGridCell cell;
-			var row = GetRowOfElement(originalSource, out cell, out isValid);
+			var row = GetRowOfElement(originalSource, out var dataGridColumn, out isValid);
 
 			int rowIndex = row?.GetIndex() ?? -1;
-			var column = GetColumn(cell?.Column);
+			var column = GetColumn(dataGridColumn);
 			var columnIndex = column != null ? Widget.Columns.IndexOf(column) : -1;
 
 			var item = row?.Item;
@@ -247,27 +235,36 @@ namespace Eto.Wpf.Forms.Controls
 			return new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, buttons, modifiers, location);
 		}
 
-		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell, out bool isValid)
+		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridColumn column, out bool isValid)
 		{
 			// when clicking on labels, etc this will be a content element
 			while (source is sw.FrameworkContentElement)
 				source = ((sw.FrameworkContentElement)source).Parent;
 
 			// VisualTreeHelper will throw if not a Visual, we can return null here
+			column = null;
 			var dep = source as swm.Visual;
-			while (dep != null && !(dep is swc.DataGridCell))
+			while (dep != null)
 			{
+				if (dep is swc.DataGridCell cell)
+				{
+					column = cell.Column;
+					break;
+				}
+				if (dep is swc.Primitives.DataGridColumnHeader header)
+				{
+					column = header.Column;
+					break;
+				}
 				if (ReferenceEquals(dep, Control))
 				{
 					// found the grid, it's a valid click.. but no row or cell.
 					isValid = true;
-					cell = null;
 					return null;
 				}
 				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
 			}
 
-			cell = dep as swc.DataGridCell;
 			while (dep != null && !(dep is swc.DataGridRow))
 				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
 
@@ -509,7 +506,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 		
-		private void HandleOutsideMouseDown(object sender, MouseButtonEventArgs e)
+		private void HandleOutsideMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
 			if (!e.Handled)
 			{
@@ -954,6 +951,47 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public void OnColumnWidthChanged(GridColumnHandler gridColumnHandler)
+		{
+			Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(gridColumnHandler.Widget));
+		}
+		
+		internal (swc.DataGridColumn Column, swc.DataGridRow Row, bool IsHeader) GetCellInfoForElement(sw.DependencyObject element)
+		{
+			swc.DataGridColumn column = null;
+			bool isHeader = false;
+			var cell = element.GetVisualParent<swc.DataGridCell>();
+			if (cell != null)
+				column = cell.Column;
+			else
+			{
+				var header = element.GetVisualParent<swc.Primitives.DataGridColumnHeader>();
+				if (header != null)
+				{
+					column = header.Column;
+					isHeader = true;
+				}
+			}
 
+			var dataGridRow = element.GetVisualParent<swc.DataGridRow>();
+			return (column, dataGridRow, isHeader);
+		}
+		
+		internal (GridColumn Column, int ColumnIndex, int RowIndex, GridCellType CellType, object Item) GetCellInfo(PointF location)
+		{
+			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, location.ToWpf())?.VisualHit;
+			var cellInfo = GetCellInfoForElement(hitTestResult);
+			var columnIndex = cellInfo.Column != null ? Control.Columns.IndexOf(cellInfo.Column) : -1;
+			var column = columnIndex != -1 ? Widget.Columns[columnIndex] : null;
+			int rowIndex = -1;
+			object item = null;
+			if (cellInfo.Row != null)
+			{
+				rowIndex = cellInfo.Row.GetIndex();
+				item = GetItemAtRow(rowIndex);
+			}
+			var cellType = cellInfo.IsHeader ? GridCellType.ColumnHeader : rowIndex != -1 && columnIndex != -1 ? GridCellType.Data : GridCellType.None;
+			return (column, columnIndex, rowIndex, cellType, item);
+		}
 	}
 }

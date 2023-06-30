@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Eto.Forms;
-
-#if WPF
+﻿#if WPF
 namespace Eto.Wpf.Forms
 #elif WINFORMS
 namespace Eto.WinForms.Forms

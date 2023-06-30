@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.IO;
-
 namespace Eto.Mac.Forms
 {
 	public class CursorHandler : WidgetHandler<NSCursor, Cursor>, Cursor.IHandler
@@ -27,7 +22,7 @@ namespace Eto.Mac.Forms
 					Control = NSCursor.CrosshairCursor;
 					break;
 				case CursorType.Default:
-					Control = NSCursor.CurrentSystemCursor;
+					Control = NSCursor.ArrowCursor;
 					break;
 				case CursorType.HorizontalSplit:
 					Control = NSCursor.ResizeUpDownCursor;

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Forms;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public interface IGtkTreeModelHandler<TItem, TStore> : IGtkListModelHandler<TItem>

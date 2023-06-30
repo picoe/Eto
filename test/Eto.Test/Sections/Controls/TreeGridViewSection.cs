@@ -1,11 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Threading.Tasks;
-using System.Linq;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(TreeGridView))]
@@ -18,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 		protected override string GetCellInfo(TreeGridView grid, PointF location)
 		{
 			var cell = grid.GetCellAt(location);
-			return $"Column: {cell?.ColumnIndex} ({cell?.Column?.HeaderText}), Item: {cell?.Item}";
+			return $"Column: {cell?.ColumnIndex} ({cell?.Column?.HeaderText}), Type: {cell?.Type}, Item: {cell?.Item}";
 		}
 
 		protected override int GetRowCount(TreeGridView grid) => grid.DataStore.Count;

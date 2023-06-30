@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Text;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Collections.ObjectModel;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "Drag and Drop")]
@@ -76,6 +68,7 @@ namespace Eto.Test.Sections.Behaviors
 			// sources
 
 			var buttonSource = new Button { Text = "Source" };
+			LogSourceEvents(buttonSource);
 			buttonSource.MouseDown += (sender, e) =>
 			{
 				if (e.Buttons != MouseButtons.None)
@@ -86,6 +79,7 @@ namespace Eto.Test.Sections.Behaviors
 			};
 
 			var panelSource = new Panel { BackgroundColor = Colors.Red, Size = new Size(50, 50) };
+			LogSourceEvents(panelSource);
 			panelSource.MouseMove += (sender, e) =>
 			{
 				if (e.Buttons != MouseButtons.None)
@@ -96,6 +90,7 @@ namespace Eto.Test.Sections.Behaviors
 			};
 
 			var treeSource = new TreeGridView { Size = new Size(200, 200) };
+			LogSourceEvents(treeSource);
 			treeSource.SelectedItemsChanged += (sender, e) => Log.Write(treeSource, $"TreeGridView.SelectedItemsChanged (source) Rows: {string.Join(", ", treeSource.SelectedRows.Select(r => r.ToString()))}");
 			treeSource.DataStore = CreateTreeData();
 			SetupTreeColumns(treeSource);
@@ -116,6 +111,7 @@ namespace Eto.Test.Sections.Behaviors
 			};
 
 			var gridSource = new GridView {  };
+			LogSourceEvents(gridSource);
 			gridSource.SelectedRowsChanged += (sender, e) => Log.Write(gridSource, $"GridView.SelectedItemsChanged (source): {string.Join(", ", gridSource.SelectedRows.Select(r => r.ToString()))}");
 			SetupGridColumns(gridSource);
 			gridSource.DataStore = CreateGridData();
@@ -380,6 +376,14 @@ namespace Eto.Test.Sections.Behaviors
 			if (uris != null)
 				sb.Append($"\n\tUris: {string.Join(", ", uris.Select(r => r.IsFile ? r.LocalPath : r.AbsoluteUri))})");
 			return sb.ToString();
+		}
+		
+		void LogSourceEvents(Control control)
+		{
+			control.DragEnd += (sender, e) =>
+			{
+				Log.Write(sender, $"DragEnd: Effects: {e.Effects}, {WriteDragInfo(sender, e)}");
+			};
 		}
 
 		void LogEvents(Control control)

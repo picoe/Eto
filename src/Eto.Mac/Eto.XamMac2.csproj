@@ -2,15 +2,14 @@
 
   <PropertyGroup>
     <UseXamarinMac Condition="$(UseXamarinMac) == ''">True</UseXamarinMac>
-    <TargetFrameworks>net462;xamarinmac20</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0')) AND $([MSBuild]::VersionLessThan($(NETCoreSdkVersion), '6.0.200'))">net6.0-macos10.15;$(TargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks Condition="$(OverrideTargetFrameworks) != 'True'">net462;xamarinmac20</TargetFrameworks>
+    <TargetFrameworks Condition="$(OverrideTargetFrameworks) != 'True' AND $([MSBuild]::VersionGreaterThanOrEquals($(NETCoreSdkVersion), '6.0')) AND $([MSBuild]::VersionLessThan($(NETCoreSdkVersion), '6.0.200'))">net6.0-macos10.15;$(TargetFrameworks)</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <DefineConstants Condition="$(UseCFString) != 'False'">$(DefineConstants);USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefaultItemExcludes>build\*</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
     <NoWarn>CA1416</NoWarn>
-    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="AppKit" />
@@ -23,6 +22,7 @@
     <Using Include="CoreFoundation" />
     <Using Include="ImageIO" />
     <Using Include="CoreText" />
+    <Using Include="System.IntPtr" Alias="NativeHandle" />
   </ItemGroup>
   
   <PropertyGroup>
@@ -44,9 +44,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
   
   <ItemGroup>
-    <Compile Include="..\Shared\PlatformDetect.cs">
-      <Link>PlatformDetect.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>

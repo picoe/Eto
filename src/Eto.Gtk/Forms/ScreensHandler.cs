@@ -1,6 +1,3 @@
-using Eto.Forms;
-using System.Collections.Generic;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class ScreensHandler : Screen.IScreensHandler

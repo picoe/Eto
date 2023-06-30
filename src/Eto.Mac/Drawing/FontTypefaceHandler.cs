@@ -1,11 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using Eto.Forms;
-using System.IO;
-
 namespace Eto.Mac.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<FontTypeface>, FontTypeface.IHandler

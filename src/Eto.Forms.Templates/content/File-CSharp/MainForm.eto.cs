@@ -1,8 +1,4 @@
 #if (UseCodePreview)
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace EtoApp._1
 {
 	partial class MainForm : Form

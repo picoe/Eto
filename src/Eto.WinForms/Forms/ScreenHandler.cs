@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
 using Eto.WinForms.Drawing;
-using System.Runtime.InteropServices;
-
 namespace Eto.WinForms.Forms
 {
 	public class ScreenHandler : WidgetHandler<swf.Screen, Screen>, Screen.IHandler

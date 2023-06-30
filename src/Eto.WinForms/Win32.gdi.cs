@@ -1,13 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Drawing;
 #if WPF
 using Eto.Wpf.Forms;
 #elif WINFORMS

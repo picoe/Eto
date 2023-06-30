@@ -1,21 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
 using swd = System.Windows.Documents;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Wpf.Drawing;
-using System.Globalization;
-using System.Collections;
-using System.IO;
 using Eto.Wpf.CustomControls.FontDialog;
-using System.Text.RegularExpressions;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoRichTextBox : swc.RichTextBox, IEtoWpfControl

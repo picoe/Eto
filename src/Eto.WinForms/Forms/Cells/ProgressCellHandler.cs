@@ -1,9 +1,4 @@
-﻿using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-
-namespace Eto.WinForms.Forms.Cells
+﻿namespace Eto.WinForms.Forms.Cells
 {
     public class ProgressCellHandler : CellHandler<ProgressCellHandler.EtoCell, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
     {

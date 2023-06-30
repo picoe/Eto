@@ -1,20 +1,12 @@
-using System;
-using System.Collections;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.WinForms.Forms.Menu
 {
-	public class RadioMenuItemHandler : MenuItemHandler<SWF.ToolStripMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
+	public class RadioMenuItemHandler : MenuItemHandler<swf.ToolStripMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
 	{
 		List<RadioMenuItem> group;
 
 		public RadioMenuItemHandler()
 		{
-			Control = new SWF.ToolStripMenuItem();
+			Control = new swf.ToolStripMenuItem();
 			Control.Click += control_Click;
 		}
 

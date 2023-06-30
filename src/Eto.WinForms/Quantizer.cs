@@ -7,11 +7,6 @@
     This is sample code and is freely distributable. 
 */ 
 
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
-
 namespace ImageManipulation
 {
 	/// <summary>
@@ -38,25 +33,25 @@ namespace ImageManipulation
 		/// </summary>
 		/// <param name="source">The image to quantize</param>
 		/// <returns>A quantized version of the image</returns>
-		public Bitmap Quantize(Image source)
+		public sd.Bitmap Quantize(sd.Image source)
 		{
 			// Get the size of the source image
 			int	height = source.Height;
 			int width = source.Width;
 
 			// And construct a rectangle from these dimensions
-			var bounds = new Rectangle(0, 0, width, height);
+			var bounds = new sd.Rectangle(0, 0, width, height);
 
 			// First off take a 32bpp copy of the image
-			var copy = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+			var copy = new sd.Bitmap(width, height, sdi.PixelFormat.Format32bppArgb);
 
 			// And construct an 8bpp version
-			var output = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+			var output = new sd.Bitmap(width, height, sdi.PixelFormat.Format8bppIndexed);
 
 			// Now lock the bitmap into memory
-			using (Graphics g = Graphics.FromImage(copy))
+			using (var g = sd.Graphics.FromImage(copy))
 			{
-				g.PageUnit = GraphicsUnit.Pixel;
+				g.PageUnit = sd.GraphicsUnit.Pixel;
 
 				// Draw the source image onto the copy bitmap,
 				// which will effect a widening as appropriate.
@@ -64,12 +59,12 @@ namespace ImageManipulation
 			}
 
 			// Define a pointer to the bitmap data
-			BitmapData	sourceData = null;
+			sdi.BitmapData	sourceData = null;
 
 			try
 			{
 				// Get the source image bits and lock into memory
-				sourceData = copy.LockBits(bounds, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+				sourceData = copy.LockBits(bounds, sdi.ImageLockMode.ReadOnly, sdi.PixelFormat.Format32bppArgb);
 
 				// Call the FirstPass function if not a single pass algorithm.
 				// For something like an octree quantizer, this will run through
@@ -100,7 +95,7 @@ namespace ImageManipulation
 		/// <param name="sourceData">The source data</param>
 		/// <param name="width">The width in pixels of the image</param>
 		/// <param name="height">The height in pixels of the image</param>
-		protected virtual void FirstPass(BitmapData sourceData, int width, int height)
+		protected virtual void FirstPass(sdi.BitmapData sourceData, int width, int height)
 		{
 			// Define the source data pointers. The source row is a byte to
 			// keep addition of the stride value easier (as this is in bytes)
@@ -131,14 +126,14 @@ namespace ImageManipulation
 		/// <param name="width">The width in pixels of the image</param>
 		/// <param name="height">The height in pixels of the image</param>
 		/// <param name="bounds">The bounding rectangle</param>
-		protected virtual void SecondPass(BitmapData sourceData, Bitmap output, int width, int height, Rectangle bounds)
+		protected virtual void SecondPass(sdi.BitmapData sourceData, sd.Bitmap output, int width, int height, sd.Rectangle bounds)
 		{
-			BitmapData	outputData = null;
+			sdi.BitmapData	outputData = null;
 
 			try
 			{
 				// Lock the output bitmap into memory
-				outputData = output.LockBits(bounds, ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+				outputData = output.LockBits(bounds, sdi.ImageLockMode.WriteOnly, sdi.PixelFormat.Format8bppIndexed);
 
 				// Define the source data pointers. The source row is a byte to
 				// keep addition of the stride value easier (as this is in bytes)
@@ -221,7 +216,7 @@ namespace ImageManipulation
 		/// </summary>
 		/// <param name="original">Any old palette, this is overrwritten</param>
 		/// <returns>The new color palette</returns>
-		protected abstract ColorPalette GetPalette(ColorPalette original) ;
+		protected abstract sdi.ColorPalette GetPalette(sdi.ColorPalette original) ;
 
 		/// <summary>
 		/// Flag used to indicate whether a single pass or two passes are needed for quantization.
@@ -268,9 +263,9 @@ namespace ImageManipulation
 			/// <summary>
 			/// Return the color for this Color32 object
 			/// </summary>
-			public Color Color
+			public sd.Color Color
 			{
-				get	{ return Color.FromArgb(Alpha, Red, Green, Blue); }
+				get	{ return sd.Color.FromArgb(Alpha, Red, Green, Blue); }
 			}
 		}
 	}

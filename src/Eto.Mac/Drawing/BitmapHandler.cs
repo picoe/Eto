@@ -1,15 +1,5 @@
-using System;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using Eto.Drawing;
 using Eto.Mac.Forms;
 using Eto.Shared.Drawing;
-using System.Collections.Generic;
-using Eto.Forms;
-
-
-
 namespace Eto.Mac.Drawing
 {
 	/// <summary>

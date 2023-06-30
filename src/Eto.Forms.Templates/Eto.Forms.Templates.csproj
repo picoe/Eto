@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<PackageType>Template</PackageType>
 		<PackageId>Eto.Forms.Templates</PackageId>
-		<PackageVersion>2.7.1-dev</PackageVersion>
+		<PackageVersion>2.7.2-dev</PackageVersion>
 		<Authors>Curtis Wensley</Authors>
 		<Description>Project and File templates for Eto.Forms</Description>
 		<Tags>cross-platform;gui;ui-framework;desktop;winforms;wpf;mac;osx;gtk;eto;eto.forms;dotnet-new</Tags>
@@ -26,6 +26,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+    <Using Remove="@(Using)" />
     <PackageReference Remove="Microsoft.NETCore.App" />
     
     <None Include="content\NuGet.Config" />

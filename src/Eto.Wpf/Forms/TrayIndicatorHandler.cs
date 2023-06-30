@@ -1,18 +1,9 @@
-using swf = System.Windows.Forms;
-using swc = System.Windows.Controls;
+using System.Windows;
+using Eto.Wpf.Forms.Menu;
+using Point = System.Windows.Point;
 
 namespace Eto.Wpf.Forms
 {
-	using System;
-	using System.ComponentModel;
-	using System.Diagnostics;
-	using System.Reflection;
-	using System.Runtime.InteropServices;
-	using System.Windows;
-	using Eto.Drawing;
-	using Eto.Forms;
-	using Menu;
-	using Point = System.Windows.Point;
 
 	public class TrayIndicatorHandler : WidgetHandler<swf.NotifyIcon, TrayIndicator, TrayIndicator.ICallback>,
 		TrayIndicator.IHandler

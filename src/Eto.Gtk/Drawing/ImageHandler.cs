@@ -1,5 +1,3 @@
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Drawing
 {
 	public interface IGtkPixbuf

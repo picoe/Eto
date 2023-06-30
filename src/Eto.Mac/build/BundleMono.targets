@@ -147,8 +147,6 @@
       <MacExecutableFiles Remove="@(MacExecutableFiles)" Condition="
         (%(Filename) == 'Eto' and %(Extension) == '.xml')
         or %(Filename) == 'Eto.Direct2D'
-        or %(Filename) == 'Eto.Gtk2'
-        or %(Filename) == 'Eto.Gtk3'
         or %(Filename) == 'Eto.Gtk'
         or %(Filename) == 'GLibSharp'
         or %(Filename) == 'GtkSharp'

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Eto.Drawing;
-using Eto.Forms;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms.Controls

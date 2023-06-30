@@ -1,5 +1,3 @@
-using Eto.Forms;
-
 namespace Eto.Mac.Forms.Actions
 {
 	public class MacCommand : Command

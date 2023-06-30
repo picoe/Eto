@@ -1,11 +1,4 @@
 ﻿﻿using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
-using System.Linq;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(NumericStepper))]

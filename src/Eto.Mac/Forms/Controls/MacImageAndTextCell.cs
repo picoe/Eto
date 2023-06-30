@@ -1,8 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.Mac.Drawing;
-using Eto.Drawing;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class MacImageData : NSObject, ICloneable

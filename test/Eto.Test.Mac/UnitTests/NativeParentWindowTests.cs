@@ -1,17 +1,5 @@
-using System;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Threading;
-
-#if MONOMAC
-using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
-#else
-using AppKit;
-using CoreGraphics;
-#endif
-
 namespace Eto.Test.Mac.UnitTests
 {
 	[TestFixture]

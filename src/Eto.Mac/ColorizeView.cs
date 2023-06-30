@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-
-namespace Eto.Mac
+﻿namespace Eto.Mac
 {
 	class ColorizeView : IDisposable
 	{

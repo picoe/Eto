@@ -1,8 +1,4 @@
-using System;
-using System.Linq;
 using UIKit;
-using Eto.Forms;
-using System.Threading.Tasks;
 using ObjCRuntime;
 
 namespace Eto.iOS.Forms

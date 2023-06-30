@@ -1,8 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
-using Eto.Drawing;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public interface ITextBoxWithMaxLength

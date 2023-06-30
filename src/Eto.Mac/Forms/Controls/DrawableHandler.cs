@@ -1,5 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms.Controls
@@ -9,9 +7,9 @@ namespace Eto.Mac.Forms.Controls
 		Brush backgroundBrush;
 		Color backgroundColor;
 
-		public bool SupportsCreateGraphics { get { return true; } }
+		public bool SupportsCreateGraphics => false;
 
-		public override NSView ContainerControl { get { return Control; } }
+		public override NSView ContainerControl => Control;
 
 		public class EtoDrawableView : MacPanelView
 		{
@@ -22,20 +20,28 @@ namespace Eto.Mac.Forms.Controls
 				var drawable = Drawable;
 				if (drawable == null)
 					return;
+				// restrict drawing to the bounds of the drawable
+				// macOS can give us dirty rects outside this range
+				var bounds = Bounds.ToEto();
+				var dirty = dirtyRect.ToEto();
+				dirty.Restrict(bounds);
+				
 				if (!IsFlipped)
-					dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
-				if (dirtyRect.X % 1.0f > 0f)
-					dirtyRect.Width += 1;
-				if (dirtyRect.Y % 1.0f > 0f)
-					dirtyRect.Height += 1;
+					dirty.Y = bounds.Height - dirty.Y - dirty.Height;
+				if (dirty.X % 1.0f > 0f)
+					dirty.Width += 1;
+				if (dirty.Y % 1.0f > 0f)
+					dirty.Height += 1;
 				ApplicationHandler.QueueResizing = true;
-				drawable.DrawRegion(Rectangle.Ceiling(dirtyRect.ToEto()));
+				drawable.DrawRegion(Rectangle.Ceiling(dirty));
 				ApplicationHandler.QueueResizing = false;
 			}
 
+			// public override bool IsFlipped => true;  // uncomment to test flipped views with GraphicsHandler.
+
 			public bool CanFocus { get; set; }
 
-			public override bool AcceptsFirstResponder() => CanFocus;
+			public override bool AcceptsFirstResponder() => CanFocus && Drawable?.Enabled == true;
 
 			public override NSView HitTest(CGPoint aPoint)
 			{
@@ -52,7 +58,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public Graphics CreateGraphics()
 		{
-			return new Graphics(new GraphicsHandler(Control));
+			throw new NotSupportedException();
 		}
 
 		public override Color BackgroundColor
@@ -111,7 +117,7 @@ namespace Eto.Mac.Forms.Controls
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null)
 			{
-				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height, Control.IsFlipped);
+				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height);
 				using (var graphics = new Graphics(handler))
 				{
 					if (backgroundBrush != null)

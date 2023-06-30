@@ -1,11 +1,4 @@
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swm = System.Windows.Media;
 using Eto.Wpf.Drawing;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class DrawableCellHandler : CellHandler<swc.DataGridColumn, DrawableCell, DrawableCell.ICallback>, DrawableCell.IHandler

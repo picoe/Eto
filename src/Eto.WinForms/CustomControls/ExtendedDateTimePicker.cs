@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using System.Reflection;
-using System.Globalization;
-using System.ComponentModel;
-
 namespace Eto.WinForms.CustomControls
 {
 	/// <summary>

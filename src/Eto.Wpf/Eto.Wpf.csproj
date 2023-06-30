@@ -53,6 +53,22 @@ You do not need to use any of the classes of this assembly (unless customizing t
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Windows" Alias="sw" />
+    <Using Include="System.Windows.Controls" Alias="swc" />
+    <Using Include="System.Windows.Controls.Primitives" Alias="swcp" />
+    <Using Include="System.Windows.Documents" Alias="swdoc" />
+    <Using Include="System.Windows.Input" Alias="swi" />
+    <Using Include="System.Windows.Interop" Alias="swin" />
+    <Using Include="System.Windows.Threading" Alias="swt" />
+    <Using Include="System.Windows.Markup" Alias="swk" />
+    <Using Include="System.Windows.Media" Alias="swm" />
+    <Using Include="System.Windows.Media.Imaging" Alias="swmi" />
+    <Using Include="System.Drawing" Alias="sd" />
+    <Using Include="System.Windows.Forms" Alias="swf" />
+    <Using Include="Xceed.Wpf.Toolkit" Alias="xwt" />
+  </ItemGroup>
   
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) == 'true'">
     <Reference Include="System" Pack="False" />

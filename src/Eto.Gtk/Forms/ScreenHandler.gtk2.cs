@@ -1,9 +1,5 @@
 #if !GTKCORE
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class ScreenHandler : WidgetHandler<Gdk.Screen, Screen>, Screen.IHandler

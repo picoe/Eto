@@ -1,6 +1,5 @@
-using System;
-using Eto.Forms;
 using NUnit.Framework;
+using Range = Eto.Forms.Range;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {

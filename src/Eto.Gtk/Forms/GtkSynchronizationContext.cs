@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using GLib;
+﻿using GLib;
 
 namespace Eto.GtkSharp.Forms
 {

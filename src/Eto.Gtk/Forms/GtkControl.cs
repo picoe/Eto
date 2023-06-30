@@ -1,12 +1,4 @@
-using System;
-using System.Text.RegularExpressions;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System.Text;
-using System.Linq;
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Eto.GtkSharp.Forms
@@ -63,6 +55,7 @@ namespace Eto.GtkSharp.Forms
 		public static readonly object ScrollAmount_Key = new object();
 		public static readonly object DragInfo_Key = new object();
 		public static readonly object DropSource_Key = new object();
+		public static readonly object DropSourceData_Key = new object();
 		public static readonly object Font_Key = new object();
 		public static readonly object TabIndex_Key = new object();
 		public static readonly object Cursor_Key = new object();
@@ -455,6 +448,9 @@ namespace Eto.GtkSharp.Forms
 					HandleEvent(Eto.Forms.Control.DragOverEvent);
 					DragControl.DragLeave += Connector.HandleDragLeave;
 					break;
+				case Eto.Forms.Control.DragEndEvent:
+					DragControl.DragEnd += Connector.HandleDragEnd;
+					break;
 				case Eto.Forms.Control.EnabledChangedEvent:
 #if GTK3
 					ContainerControl.StateFlagsChanged += Connector.HandleStateFlagsChangedForEnabled;
@@ -561,7 +557,9 @@ namespace Eto.GtkSharp.Forms
 					return;
 
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				p = handler.TranslatePoint(args.Event.Window, p);
 				Keys modifiers = args.Event.State.ToEtoKey();
+				
 				MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
 
 				handler.Callback.OnMouseMove(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
@@ -574,8 +572,8 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 
-				args.Event.ToEtoLocation();
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				p = handler.TranslatePoint(args.Event.Window, p);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 
@@ -592,6 +590,7 @@ namespace Eto.GtkSharp.Forms
 					return;
 
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				p = handler.TranslatePoint(args.Event.Window, p);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 				var mouseArgs = new MouseEventArgs(buttons, modifiers, p);
@@ -717,7 +716,7 @@ namespace Eto.GtkSharp.Forms
 				Handler?.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
 
-			protected virtual DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location, uint time = 0, object controlObject = null)
+			protected virtual DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location = null, uint time = 0, object controlObject = null, DataObject data = null)
 			{
 				var widget = Gtk.Drag.GetSourceWidget(context);
 				var source = widget?.Data[GtkControl.DropSource_Key] as Eto.Forms.Control;
@@ -728,7 +727,7 @@ namespace Eto.GtkSharp.Forms
 				var action = context.SelectedAction;
 #endif
 
-				var data = new DataObject(new DataObjectHandler(Handler.DragControl, context, time));
+				data = data ?? new DataObject(new DataObjectHandler(Handler.DragControl, context, time));
 				if (location == null)
 					location = Handler.PointFromScreen(Mouse.Position);
 
@@ -806,6 +805,23 @@ namespace Eto.GtkSharp.Forms
 				Eto.Forms.Application.Instance.AsyncInvoke(() => DragArgs = null);
 			}
 
+			public virtual void HandleDragEnd(object o, Gtk.DragEndArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var data = handler.DragControl.Data[GtkControl.DropSourceData_Key] as DataObject;
+
+				var e = GetDragEventArgs(args.Context, data: data);
+#if GTK2
+				e.Effects = args.Context.Action.ToEto();
+#else
+				e.Effects = args.Context.SelectedAction.ToEto();
+#endif
+				handler.Callback.OnDragEnd(handler.Widget, e);
+				handler.DragControl.Data[GtkControl.DropSourceData_Key] = null;
+			}
+
 #if GTK3
 			public virtual void HandleStateFlagsChangedForEnabled(object o, Gtk.StateFlagsChangedArgs args)
 			{
@@ -820,6 +836,25 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 #endif
+		}
+
+		public virtual bool ShouldTranslatePoints => false;
+
+		public virtual PointF TranslatePoint(Gdk.Window window, PointF p)
+		{
+			if (!ShouldTranslatePoints || window == null)
+				return p;
+			var eventWindow = EventControl.GetWindow();
+
+			if (!ReferenceEquals(window, eventWindow))
+			{
+				// adjust point!
+				eventWindow.GetOrigin(out var x, out var y);
+				window.GetOrigin(out var ex, out var ey);
+				p.X += ex - x;
+				p.Y += ey - y;
+			}
+			return p;
 		}
 
 		protected virtual Gtk.Widget FontControl
@@ -896,7 +931,13 @@ namespace Eto.GtkSharp.Forms
 
 		public Point Location
 		{
-			get { return Control.Allocation.Location.ToEto(); }
+			get
+			{
+				var pt = Control.Allocation.Location.ToEto();
+				if (pt.X == -1 && pt.Y == -1)
+					return Point.Empty;
+				return pt;
+			}
 		}
 
 		public virtual bool ShowBorder
@@ -949,6 +990,10 @@ namespace Eto.GtkSharp.Forms
 			DragInfo = new DragInfoObject { Data = data, AllowedEffects = allowedEffects };
 
 			DragControl.Data[GtkControl.DropSource_Key] = Widget;
+			
+			// set data and ensure it gets cleared out.
+			DragControl.Data[GtkControl.DropSourceData_Key] = data;
+			HandleEvent(Eto.Forms.Control.DragEndEvent);
 
 #if GTKCORE
 			var context = Gtk.Drag.BeginWithCoordinates(DragControl, targets, allowedEffects.ToGdk(), 1, Gtk.Application.CurrentEvent, -1, -1);
@@ -1036,6 +1081,12 @@ namespace Eto.GtkSharp.Forms
 		public void Print()
 		{
 			// ContainerControl.Print
+		}
+		
+		public virtual void UpdateLayout()
+		{
+			// is this the best way to force a layout pass?  I can't find anything else..
+			ContainerControl.Toplevel?.SizeAllocate(ContainerControl.Toplevel.Allocation);
 		}
 	}
 }

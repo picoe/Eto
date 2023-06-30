@@ -18,6 +18,19 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Using Include="AppKit" />
+    <Using Include="Foundation" />
+    <Using Include="CoreGraphics" />
+    <Using Include="ObjCRuntime" />
+    <Using Include="CoreAnimation" />
+    <Using Include="CoreImage" />
+    <Using Include="MobileCoreServices" />
+    <Using Include="CoreFoundation" />
+    <Using Include="ImageIO" />
+    <Using Include="CoreText" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
     <ProjectReference Include="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />

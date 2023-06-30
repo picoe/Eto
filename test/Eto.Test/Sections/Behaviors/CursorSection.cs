@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-using System.Collections.Generic;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", typeof(Cursor))]

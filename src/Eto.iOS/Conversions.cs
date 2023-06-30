@@ -1,10 +1,6 @@
-using System;
 using UIKit;
-using Eto.Drawing;
 using Eto.iOS.Drawing;
-using Eto.Forms;
 using Foundation;
-using System.Linq;
 using CoreGraphics;
 using ImageIO;
 

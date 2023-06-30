@@ -1,23 +1,10 @@
 
 // #define TEST_INSTALL // test installation without actually installing it.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Eto.Forms;
 using Eto.CustomControls;
-using Eto.Drawing;
-using System.Threading.Tasks;
 using Microsoft.Web.WebView2.Core;
-using System.Diagnostics;
 using Microsoft.Win32;
 using System.Net;
-using System.IO;
-using System.Runtime.Serialization;
-
-
 #if WINFORMS
 using WebView2Control = Microsoft.Web.WebView2.WinForms.WebView2;
 using BaseHandler = Eto.WinForms.Forms.WindowsControl<Microsoft.Web.WebView2.WinForms.WebView2, Eto.Forms.WebView, Eto.Forms.WebView.ICallback>;
@@ -457,6 +444,11 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.Initialize();
 			Size = new Size(100, 100);
+#if WPF
+			// We need these for HasFocus to return a proper value
+			HandleEvent(Eto.Forms.Control.GotFocusEvent);
+			HandleEvent(Eto.Forms.Control.LostFocusEvent);
+#endif
 		}
 
 		protected override void OnInitializeComplete()
@@ -480,6 +472,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		private void RunDelayedActions()
 		{
+			if (Widget.IsDisposed)
+				return;
+			
 			Control.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
 			Control.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
 			webView2Ready = true;
@@ -560,12 +555,43 @@ namespace Eto.Wpf.Forms.Controls
 					break;
 				case WebView.DocumentTitleChangedEvent:
 					break;
+#if WPF
+				case Eto.Forms.Control.GotFocusEvent:
+					Control.GotFocus += Control_GotFocus;
+					break;
+				case Eto.Forms.Control.LostFocusEvent:
+					Control.LostFocus += Control_LostFocus;
+					break;
+#endif
 				default:
 					base.AttachEvent(handler);
 					break;
 			}
 
 		}
+
+#if WPF
+		static readonly object HasFocus_Key = new object();
+
+		public override bool HasFocus => Widget.Properties.Get<bool>(HasFocus_Key);
+
+		private void Control_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+		{
+			if (Widget.Properties.TrySet(HasFocus_Key, false))
+			{
+				Callback.OnLostFocus(Widget, EventArgs.Empty);
+			}
+		}
+
+		private void Control_GotFocus(object sender, System.Windows.RoutedEventArgs e)
+		{
+			// IsFocused/IsKeyboardFocused/IsKeyboardFocusWithin doesn't appear to work with WebView2
+			if (Widget.Properties.TrySet(HasFocus_Key, true))
+			{
+				Callback.OnGotFocus(Widget, EventArgs.Empty);
+			}
+		}
+#endif
 
 		private void Control_ContentLoading(object sender, CoreWebView2ContentLoadingEventArgs e)
 		{
@@ -583,7 +609,11 @@ namespace Eto.Wpf.Forms.Controls
 		private void Control_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
 		{
 			var args = new WebViewLoadedEventArgs(Control.Source);
-			Application.Instance.AsyncInvoke(() => Callback.OnDocumentLoaded(Widget, args));
+			Application.Instance.AsyncInvoke(() => {
+				if (Widget.IsDisposed)
+					return;
+				Callback.OnDocumentLoaded(Widget, args);
+			});
 		}
 
 		public Uri Url

@@ -1,11 +1,4 @@
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using Eto.Forms;
-using Eto.Drawing;
 using System.Windows;
-using System;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class ImageViewHandler : WpfFrameworkElement<CustomControls.MultiSizeImage, ImageView, ImageView.ICallback>, ImageView.IHandler

@@ -1,8 +1,3 @@
-using SD = System.Drawing;
-using swf = System.Windows.Forms;
-using System.Linq;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class PasswordBoxHandler : WindowsControl<swf.TextBox, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler

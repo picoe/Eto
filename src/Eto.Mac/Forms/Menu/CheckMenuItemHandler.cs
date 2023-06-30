@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms.Menu
 {
 	public class CheckMenuItemHandler : MenuHandler<NSMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler, IMenuActionHandler

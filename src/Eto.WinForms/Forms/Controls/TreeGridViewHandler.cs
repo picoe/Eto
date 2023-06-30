@@ -1,14 +1,4 @@
-using System;
-using System.Linq;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using Eto.Drawing;
 using Eto.CustomControls;
-using System.Collections.Specialized;
-using System.Runtime.InteropServices;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ITreeHandler
@@ -397,13 +387,12 @@ namespace Eto.WinForms.Forms.Controls
 				controller.ReloadItem(item);
 		}
 
-		public ITreeGridItem GetCellAt(PointF location, out int column)
+		public TreeGridCell GetCellAt(PointF location)
 		{
 			var result = Control.HitTest((int)location.X, (int)location.Y);
-			column = result.ColumnIndex;
-			if (result.RowIndex == -1)
-				return null;
-			return GetItemAtRow(result.RowIndex) as ITreeGridItem;
+			var column = result.ColumnIndex != -1 ? Widget.Columns[result.ColumnIndex] : null;
+			var item = GetItemAtRow(result.RowIndex);
+			return new TreeGridCell(column, result.ColumnIndex, result.Type.ToEto(), item);
 		}
 
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;

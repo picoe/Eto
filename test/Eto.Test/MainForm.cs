@@ -1,14 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Runtime.InteropServices;
-
 namespace Eto.Test
 {
 	public class MainForm : Form
@@ -359,6 +348,19 @@ namespace Eto.Test
 					invisibleButton.Visible = !invisibleButton.Visible;
 					sep.Visible = invisibleButton.Visible;
 				};
+				
+				if (Platform.Supports<DropDownToolItem>())
+				{
+					var dropItem = new DropDownToolItem { Text = "Dropdown", Image = TestIcons.TestImage };
+					dropItem.Items.Add(new SubMenuItem { Text = "Subitem 1", Items = { new ButtonMenuItem { Text = "Nested subitem 1" } } });
+					dropItem.Items.Add(new ButtonMenuItem { Text = "Button 2", Image = TestIcons.TestIcon });
+					dropItem.Items.Add(new CheckMenuItem { Text = "Check 3" });
+					dropItem.Items.Add(new ButtonMenuItem { Text = "Disabled Button", Image = TestIcons.TestIcon, Enabled = false });
+					dropItem.Items.Add(new CheckMenuItem((sender, e) => {
+						dropItem.ShowDropArrow = ((CheckMenuItem)sender).Checked == true;
+					}) { Text = "Toggle ShowDropArrow", Checked = dropItem.ShowDropArrow });
+					ToolBar.Items.Add(LogEvents(dropItem));
+				}
 			}
 		}
 
@@ -379,6 +381,11 @@ namespace Eto.Test
 			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
 			return item;
 		}
+		DropDownToolItem LogEvents(DropDownToolItem item)
+			{
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
+			}
 
 		protected override void OnWindowStateChanged(EventArgs e)
 		{

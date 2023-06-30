@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-
 #if IOS
 using NSResponder = UIKit.UIResponder;
 using NSView = UIKit.UIView;

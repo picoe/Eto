@@ -1,11 +1,3 @@
-using System;
-using System.Reflection;
-using System.Linq;
-using System.Collections.Generic;
-using System.Globalization;
-using Eto.Forms;
-
-
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Schema;

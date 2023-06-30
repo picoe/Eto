@@ -1,9 +1,3 @@
-using System;
-using System.Threading;
-using Eto.Forms;
-using Eto.Drawing;
-
-using System.Globalization;
 using Eto.GtkSharp.Forms;
 
 namespace Eto.GtkSharp.CustomControls

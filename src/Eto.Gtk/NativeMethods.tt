@@ -115,9 +115,6 @@ var methods = giomethods
 	.ToArray();
 
 #>
-using System;
-using System.Runtime.InteropServices;
-using System.Text;
 using GLib;
 using Gdk;
 
@@ -152,6 +149,31 @@ namespace Eto.GtkSharp
 
 		static class <#= pclass[i] #>
 		{
+
+#if NETCOREAPP
+
+			static <#= pclass[i] #>()
+			{
+				NativeLibrary.SetDllImportResolver(typeof(<#= pclass[i] #>).Assembly, (name, assembly, path) =>
+				{
+					// Use custom import resolver for libwebkit2gtk
+					// Try loading 4.1 first, if that fails, return to default handling
+					if (name == libwebkit) 
+					{
+						IntPtr result = IntPtr.Zero;
+						if (!NativeLibrary.TryLoad("libwebkit2gtk-4.1.so.0", assembly, path, out result))
+						{
+							return IntPtr.Zero;
+						}
+
+						return result;
+					}
+
+					return IntPtr.Zero;
+				});
+			}
+#endif
+
 #if GTK2
 			const string plat = "<#= plat[i] #>";
 #elif GTK3

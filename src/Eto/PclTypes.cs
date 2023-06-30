@@ -1,14 +1,4 @@
-#if NETSTANDARD
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
-using System.Runtime.Serialization;
-using System.Reflection;
-
+#if NETSTANDARD || NETCOREAPP
 // This file contains type definitions currently needed to compile Eto
 // as a Portable Class Library, in the project Eto.Pcl.csproj.
 namespace Eto

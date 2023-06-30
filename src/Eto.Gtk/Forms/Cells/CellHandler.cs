@@ -1,8 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.GtkSharp.Forms.Controls;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Forms.Cells
 {
 	public interface ICellDataSource

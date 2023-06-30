@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms.Printing
 {
 	public class PrintSettingsHandler : WidgetHandler<NSPrintInfo, PrintSettings>, PrintSettings.IHandler

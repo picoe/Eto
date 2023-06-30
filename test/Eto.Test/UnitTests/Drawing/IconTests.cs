@@ -1,10 +1,4 @@
-using System;
 using NUnit.Framework;
-using Eto.Drawing;
-using System.Linq;
-using Eto.Forms;
-using System.IO;
-
 namespace Eto.Test.UnitTests.Drawing
 {
 	[TestFixture]

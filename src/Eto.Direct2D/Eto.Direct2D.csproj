@@ -33,6 +33,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
     </PackageDescription>
   </PropertyGroup>
   
+  <ItemGroup>
+    <Using Include="System.Windows.Forms" Alias="swf" />
+  </ItemGroup>
+  
   <ItemGroup Condition="$(TargetFramework) == 'net462'">
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -45,7 +49,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
     <Compile Include="..\Shared\GradientHelper.cs" />
-    <Compile Include="..\Eto.WinForms\Win32.gdi.cs" Link="Win32.gdi.cs" />
   </ItemGroup>
   
   <ItemGroup>

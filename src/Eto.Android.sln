@@ -1,17 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2043
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Android", "..\test\Eto.Test.Android\Eto.Test.Android.csproj", "{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Android", "Eto.Android\Eto.Android.csproj", "{7A02E771-D30B-41A1-8A35-C78D3940FC33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto", "Eto\Eto.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json", "Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Json", "Eto.Serialization.Json\Eto.Serialization.Json.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test", "..\test\Eto.Test\Eto.Test.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Test", "..\test\Eto.Test\Eto.Test.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Serialization.Xaml", "Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,7 @@ Global
 		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,11 +47,15 @@ Global
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B4ADB519-295A-4B18-B15C-56ACFDE21A14}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
-		$0.TextStylePolicy = $1
+		$0.TextStylePolicy = $3
 		$1.inheritsSet = VisualStudio
 		$1.scope = text/plain
 		$1.FileWidth = 120
@@ -99,14 +106,10 @@ Global
 		$2.SpacingAfterMethodDeclarationName = False
 		$2.SpaceAfterMethodCallName = False
 		$2.SpaceBeforeOpenSquareBracket = False
-		$0.TextStylePolicy = $3
 		$3.FileWidth = 120
 		$3.TabsToSpaces = False
 		$3.inheritsSet = VisualStudio
 		$3.inheritsScope = text/plain
 		$3.scope = text/plain
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

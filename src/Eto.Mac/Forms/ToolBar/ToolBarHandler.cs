@@ -1,10 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
-using Eto.Drawing;
-
-
 namespace Eto.Mac.Forms.ToolBar
 {
 	public class ToolBarHandler : WidgetHandler<NSToolbar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
@@ -33,11 +26,7 @@ namespace Eto.Mac.Forms.ToolBar
 				PaletteLabel = Application.Instance.Localize(this, "Divider");
 				MenuFormRepresentation = NSMenuItem.SeparatorItem;
 				if (supportsSeparatorColor)
-#if XAMMAC2
-					_color = NSColor.SeparatorColor.ToEto();
-#else
 					_color = NSColor.Separator.ToEto();
-#endif
 				else
 					_color = new Color(SystemColors.WindowBackground, 0.5f);
 			}
@@ -271,7 +260,7 @@ namespace Eto.Mac.Forms.ToolBar
 				else if (curitem.Visible)
 				{
 					var nativeItem = nativeItems[idx];
-					if (nativeItem.Identifier == GetIdentifier(curitem))
+					if (nativeItem.Identifier == GetIdentifier(curitem) || object.Equals(nativeItem, curitem.ControlObject))
 						idx++;
 				}
 			}

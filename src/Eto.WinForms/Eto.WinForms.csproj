@@ -4,7 +4,7 @@
   <PropertyGroup>
     <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT'">true</HaveWindowsDesktopSdk>
     
-    <TargetFrameworks>netcoreapp3.1;net462</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net461</TargetFrameworks>
   </PropertyGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
@@ -16,6 +16,7 @@
     <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
     <NoWarn>MSB4011;$(NoWarn)</NoWarn>
     <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
+    <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -41,6 +42,13 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Using Include="System.Windows.Forms" Alias="swf" />
+    <Using Include="System.Drawing" Alias="sd" />
+    <Using Include="System.Drawing.Imaging" Alias="sdi" />
+    <Using Include="System.Drawing.Drawing2D" Alias="sd2" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="..\..\lib\SHDocVw\Interop.SHDocVw.dll" EmbedInteropTypes="False" Private="False" />
@@ -118,9 +126,24 @@ You do not need to use any of the classes of this assembly (unless customizing t
   <ItemGroup>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
   	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1020.30" PrivateAssets="all" />
+    <PackageReference Include="System.Resources.Extensions" Version="7.0.0" />
   </ItemGroup>
 
   <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
   <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
 </Project>

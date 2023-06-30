@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Controls;
 using Eto.Shared;
 
@@ -192,6 +188,16 @@ namespace Eto.Mac.Forms.Cells
 			ColumnHandler.DataViewHandler.OnCellFormatting(formatArgs);
 			Callback.OnConfigureCell(Widget, view.Args, view.EtoControl);
 			return view;
+		}
+
+		public override void ViewRemoved(NSView view)
+		{
+			base.ViewRemoved(view);
+			if (view is EtoCustomCellView etoView)
+			{
+				etoView.Args.SetItem(null);
+				Callback.OnConfigureCell(Widget, etoView.Args, etoView.EtoControl);
+			}
 		}
 	}
 }

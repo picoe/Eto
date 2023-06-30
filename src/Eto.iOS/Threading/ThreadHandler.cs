@@ -1,4 +1,3 @@
-using System;
 using Foundation;
 using Eto.Threading;
 using ObjCRuntime;

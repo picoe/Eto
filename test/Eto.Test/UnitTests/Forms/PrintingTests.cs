@@ -1,5 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms
@@ -7,8 +5,8 @@ namespace Eto.Test.UnitTests.Forms
 	[TestFixture]
 	public class PrintingTests : TestBase
 	{
-		[TestCase(10)]
-		[TestCase(1000)]
+		[TestCase(10), ManualTest]
+		[TestCase(1000), ManualTest]
 		[InvokeOnUI]
 		public void PrintControl(int count)
 		{
@@ -31,8 +29,8 @@ namespace Eto.Test.UnitTests.Forms
 			ctl.Print();
 		}
 
-		[TestCase(10)]
-		[TestCase(1000)]
+		[TestCase(10), ManualTest]
+		[TestCase(1000), ManualTest]
 		[InvokeOnUI]
 		public void PrintControlPreview(int count)
 		{
@@ -67,7 +65,7 @@ namespace Eto.Test.UnitTests.Forms
 			doc.Dispose();
 		}
 		
-		[Test]
+		[Test, ManualTest]
 		[InvokeOnUI]
 		public void PrintPreviewWithGraphics()
 		{
@@ -78,7 +76,7 @@ namespace Eto.Test.UnitTests.Forms
 			doc.Dispose();
 		}
 		
-		[Test]
+		[Test, ManualTest]
 		[InvokeOnUI]
 		public void PrintWithGraphics()
 		{
@@ -89,7 +87,7 @@ namespace Eto.Test.UnitTests.Forms
 			doc.Dispose();
 		}
 		
-		[Test]
+		[Test, ManualTest]
 		[InvokeOnUI]
 		public void PrintDialogWithoutDocument()
 		{

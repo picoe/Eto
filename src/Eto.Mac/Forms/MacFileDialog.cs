@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-
-
 namespace Eto.Mac.Forms
 {
 	interface IMacFileDialog
@@ -92,25 +84,18 @@ namespace Eto.Mac.Forms
 				Control.AccessoryView = null;
 		}
 
+		string fileName;
+
 		public virtual string FileName
 		{
-			get
-			{ 
-				return Control.Url.Path;
-			}
-			set { }
+			get => Control.Url?.Path ?? fileName;
+			set => fileName = value;
 		}
 
 		public Uri Directory
 		{
-			get
-			{
-				return new Uri(Control.DirectoryUrl.AbsoluteString);
-			}
-			set
-			{
-				Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
-			}
+			get => new Uri(Control.DirectoryUrl.AbsoluteString);
+			set => Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
 		}
 
 		public string GetDefaultExtension()
@@ -173,15 +158,18 @@ namespace Eto.Mac.Forms
 			get { return Control.Message; }
 			set { Control.Message = value ?? string.Empty; }
 		}
-
-		public DialogResult ShowDialog(Window parent)
+		
+		public virtual DialogResult ShowDialog(Window parent)
 		{
 			//Control.AllowsOtherFileTypes = false;
 			Control.Delegate = new SavePanelDelegate{ Handler = this };
 			Create();
 
 			int ret = MacModal.Run(Control, parent);
-            
+			
+			if (ret == 1)
+				fileName = null;
+
 			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
 		}
 

@@ -1,8 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using System.ComponentModel;
-using Eto.Forms;
-
+﻿using NUnit.Framework;
 namespace Eto.Test.UnitTests.Forms.Bindings
 {
 	class BindObject : INotifyPropertyChanged

@@ -1,11 +1,6 @@
-using System;
-using Eto.Forms;
 using UIKit;
 using Foundation;
 using SD = System.Drawing;
-using System.Diagnostics;
-using System.Collections.Generic;
-
 namespace Eto.iOS.Forms
 {
 	public class ApplicationHandler : WidgetHandler<UIApplication, Application, Application.ICallback>, Application.IHandler

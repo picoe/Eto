@@ -1,9 +1,4 @@
-using System;
-using System.Linq;
 using UIKit;
-using Eto.Forms;
-using System.Threading.Tasks;
-
 namespace Eto.iOS.Forms
 {
 	public class DialogHandler<TWidget, TCallback> : IosWindow<UIView, TWidget, TCallback>, Dialog.IHandler, Form.IHandler

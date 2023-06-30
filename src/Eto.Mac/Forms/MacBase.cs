@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms
 {
 	public interface IMacControlHandler
@@ -176,13 +170,22 @@ namespace Eto.Mac.Forms
 
 		public bool AddMethod(IntPtr selector, Delegate action, string arguments, object control)
 		{
-			var type = control.GetType();
-#if OSX
-			if (!typeof(IMacControl).IsAssignableFrom(type))
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
-			if (((IMacControl)control).WeakHandler?.Target == null)
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' has a null handler", type));
-#endif
+			if (control is Type type)
+			{
+				if (!typeof(IMacControl).IsAssignableFrom(type))
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
+			}
+			else
+			{
+				type = control.GetType();
+				
+				if (!typeof(IMacControl).IsAssignableFrom(type))
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
+				if (((IMacControl)control).WeakHandler?.Target == null)
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' has a null handler", type));
+			}
+
+				
 			var classHandle = Class.GetHandle(type);
 
 			return ObjCExtensions.AddMethod(classHandle, selector, action, arguments);

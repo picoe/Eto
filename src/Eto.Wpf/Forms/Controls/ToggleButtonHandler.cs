@@ -1,14 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using swcp = System.Windows.Controls.Primitives;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoToggleButton : swcp.ToggleButton, IEtoWpfControl

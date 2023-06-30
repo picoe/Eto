@@ -85,7 +85,7 @@ Applications
 ------------
 * [MonoGame Pipeline Tool](https://github.com/MonoGame/MonoGame) - Content manager for MonoGame
 * [Manager](http://www.manager.io) - Accounting Software
-* [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
+* [PabloDraw](http://picoe.ca/products/pablodraw) - Character based drawing application
 * [Notedown](https://github.com/cwensley/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/test/Eto.Test) - Application to test the functionality of each widget
 * [DWSIM](https://github.com/DanWBR/dwsim5) - Chemical Process Simulator
@@ -123,24 +123,21 @@ Assemblies
 Your project only needs to reference Eto.dll, and include the corresponding platform assembly that you wish to target. To run on a Mac platform, you need to [bundle your app](https://github.com/picoe/Eto/wiki/Running-your-application).
 
 * Eto.dll - Eto.Forms (UI), Eto.Drawing (Graphics), and platform loading
-* Eto.Mac.dll - MonoMac platform for OS X using 32-bit mono
 * Eto.Mac64.dll - MonoMac platform for OS X using 64-bit mono
-* Eto.XamMac.dll - Xamarin.Mac Classic platform for OS X to embed mono
 * Eto.XamMac2.dll - Xamarin.Mac Unified platform for OS X to embed mono
+* Eto.macOS.dll - .NET 6 platform for OS X (for use with the net6.0-macos target)
 * Eto.WinForms.dll - Windows Forms platform using GDI+ for graphics
 * Eto.Direct2D.dll - Windows Forms platform using Direct2D for graphics
 * Eto.Wpf.dll - Windows Presentation Foundation platform
 * Eto.Gtk.dll - Gtk+3 platform for Mac, Windows, and Linux.
-* Eto.Gtk2.dll - Gtk2 platform using gtk-sharp2 on Mac, Windows, and Linux.
-* Eto.Gtk3.dll - [deprecated] Gtk3 platform for running on Linux with gtk-sharp3 package
 * Eto.iOS.dll - Xamarin.iOS platform
 * Eto.Android.dll - Xamarin.Android platform
 
 Currently supported targets
 ---------------------------
 
-* OS X: MonoMac or Xamarin.Mac
-* Linux: GTK# 2 or 3
+* OS X: MonoMac, Xamarin.Mac, or net6.0-macos
+* Linux: GTK+ 3
 * Windows: Windows Forms (using GDI or Direct2D) or WPF
 	
 Under development

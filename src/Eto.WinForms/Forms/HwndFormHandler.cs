@@ -1,13 +1,4 @@
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-
 #if WPF
-using swi = System.Windows.Interop;
 
 namespace Eto.Wpf.Forms
 #elif WINFORMS
@@ -29,7 +20,7 @@ namespace Eto.WinForms.Forms
 		}
 		public void SetOwnerFor(System.Windows.Window child)
 		{
-			new swi.WindowInteropHelper(child).Owner = Control;
+			new swin.WindowInteropHelper(child).Owner = Control;
 		}
 #elif WINFORMS
 
@@ -230,15 +221,30 @@ namespace Eto.WinForms.Forms
 			}
 			set
 			{
-				var styleInt = Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE);
+				var style = Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE);
 				if (value)
-					styleInt |= (uint)Win32.WS_EX.APPWINDOW;
+					style |= (uint)Win32.WS_EX.APPWINDOW;
 				else
-					styleInt &= (uint)~Win32.WS_EX.APPWINDOW;
+					style &= (uint)~Win32.WS_EX.APPWINDOW;
 
-				Win32.SetWindowLong(Control, Win32.GWL.EXSTYLE, styleInt);
+				Win32.SetWindowLong(Control, Win32.GWL.EXSTYLE, style);
 			}
 		}
+		
+		public virtual bool Closeable
+		{
+			get => ((Win32.WS)Win32.GetWindowLong(Control, Win32.GWL.STYLE)).HasFlag(Win32.WS.SYSMENU);
+			set
+			{
+				var style = Win32.GetWindowLong(Control, Win32.GWL.STYLE);
+				if (value)
+					style |= (uint)Win32.WS.SYSMENU;
+				else
+					style &= (uint)~Win32.WS.SYSMENU;
+				Win32.SetWindowLong(Control, Win32.GWL.STYLE, style);
+			}
+		}
+		
 
 		public bool Topmost
 		{
@@ -615,5 +621,7 @@ namespace Eto.WinForms.Forms
 		}
 
 		public void Print() => throw new NotImplementedException();
+
+		public void UpdateLayout() => throw new NotImplementedException();
 	}
 }

@@ -1,8 +1,4 @@
 #if !UNIFIED
-using System;
-using sd = System.Drawing;
-using Eto.Drawing;
-
 namespace Eto
 {
 	public static partial class Conversions

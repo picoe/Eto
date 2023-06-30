@@ -1,16 +1,5 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using Eto.Forms;
 using Eto.CustomControls;
 using Eto.Wpf.CustomControls.TreeGridView;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ITreeHandler
@@ -227,24 +216,10 @@ namespace Eto.Wpf.Forms.Controls
 				controller.ReloadData();
 		}
 
-		public ITreeGridItem GetCellAt(PointF location, out int column)
+		public TreeGridCell GetCellAt(PointF location)
 		{
-			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, location.ToWpf())?.VisualHit;
-			if (hitTestResult == null)
-			{
-				column = -1;
-				return null;
-			}
-			var dataGridCell = hitTestResult.GetVisualParent<swc.DataGridCell>();
-			column = dataGridCell?.Column != null ? Control.Columns.IndexOf(dataGridCell.Column) : -1;
-
-			var dataGridRow = hitTestResult.GetVisualParent<swc.DataGridRow>();
-			if (dataGridRow != null)
-			{
-				int row = dataGridRow.GetIndex();
-				return GetItemAtRow(row) as ITreeGridItem;
-			}
-			return null;
+			var info = GetCellInfo(location);
+			return new TreeGridCell(info.Column, info.ColumnIndex, info.CellType, info.Item);
 		}
 
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;

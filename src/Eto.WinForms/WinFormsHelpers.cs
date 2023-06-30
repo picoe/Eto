@@ -1,7 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.WinForms;
-using swf = System.Windows.Forms;
 using Eto.WinForms.Forms.Controls;
 using Eto.WinForms.Forms;
 

@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-
-
 #if IOS
 using UIKit;
 using CoreGraphics;
@@ -400,6 +394,18 @@ namespace Eto.Mac.Forms
 		public bool GetRowScale(int row)
 		{
 			return yscaling[row];
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			HandleEvent(Eto.Forms.Control.SizeChangedEvent);
+		}
+
+		public override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+			Control.NeedsLayout = true;
 		}
 	}
 }

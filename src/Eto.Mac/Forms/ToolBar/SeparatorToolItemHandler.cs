@@ -1,6 +1,3 @@
-using Eto.Forms;
-using System;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms.ToolBar
@@ -12,6 +9,8 @@ namespace Eto.Mac.Forms.ToolBar
 		ToolBarHandler ParentHandler => Widget.Parent?.Handler as ToolBarHandler;
 
 		protected override bool IsButton => false;
+
+		protected override bool UseButtonStyle => false;
 
 		public override string Identifier
 		{

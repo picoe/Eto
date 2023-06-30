@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Eto.Forms;
-using Eto.Drawing;
-using Eto.Test.UnitTests;
+﻿using Eto.Test.UnitTests;
 using NUnit.Framework;
 using static Eto.Test.UnitTests.Forms.DataContextTests;
 

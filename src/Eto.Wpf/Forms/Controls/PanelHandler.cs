@@ -1,9 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class PanelHandler : WpfPanel<swc.Border, Panel, Panel.ICallback>, Panel.IHandler

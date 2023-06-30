@@ -1,10 +1,6 @@
-using System;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Threading;
 using sw = System.Windows;
-using swf = System.Windows.Forms;
 using Eto.WinForms.Forms;
 
 namespace Eto.Test.WinForms.UnitTests

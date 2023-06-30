@@ -1,5 +1,3 @@
-using System;
-using Eto.Drawing;
 using UIKit;
 
 namespace Eto.iOS.Drawing

@@ -1,14 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoListBox : swc.ListBox, IEtoWpfControl

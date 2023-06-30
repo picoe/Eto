@@ -1,9 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Eto.Forms;
-
-namespace Eto.GtkSharp
+﻿namespace Eto.GtkSharp
 {
 	public class UnityTaskbarHandler : Taskbar.IHandler
 	{

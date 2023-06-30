@@ -1,9 +1,5 @@
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Forms.Controls;
 using Gtk;
-using System;
-
 namespace Eto.GtkSharp.Forms
 {
 

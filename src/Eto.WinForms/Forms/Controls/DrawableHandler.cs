@@ -1,8 +1,3 @@
-using System;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Controls

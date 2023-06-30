@@ -2,10 +2,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:r="clr-namespace:Eto.Wpf.CustomControls.TreeGridView"
     xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls"
+    xmlns:e="clr-namespace:Eto.Wpf"
     xmlns:s="clr-namespace:System;assembly=mscorlib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/wpftoolkit/ButtonSpinner.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/controls/WatermarkTextBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/controls/SearchTextBox.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type r:TreeToggleButton}">
@@ -94,5 +97,11 @@
             </Setter>
         </Style.Setters>
     </Style>
+	
+	<Style TargetType="efc:EtoButton">
+		<Setter Property="Padding" Value="2" />
+	</Style>
+
+
 
 </ResourceDictionary>

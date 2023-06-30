@@ -2,10 +2,6 @@
 // has something to do with using layers (background colors) at the same time
 //#define USE_FLIPPED
 
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ScrollableHandler : MacPanel<NSScrollView, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
@@ -30,7 +26,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void ResetCursorRects()
 			{
-				var cursor = Handler.Cursor;
+				var cursor = Handler?.Cursor;
 				if (cursor != null)
 					AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}

@@ -1,7 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class WebViewHandler : IosView<UIWebView, WebView, WebView.ICallback>, WebView.IHandler

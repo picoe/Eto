@@ -1,9 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System.Runtime.InteropServices;
-
 #if GTK2
 using IGtkCellEditable = Gtk.CellEditable;
 using IGtkCellEditableImplementor = Gtk.CellEditableImplementor;
@@ -64,19 +59,22 @@ namespace Eto.GtkSharp.Forms.Cells
 		{
 			WeakReference handler;
 			int editingRow = -1;
+			object editingItem;
 
 			public CustomCellHandler Handler { get { return (CustomCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			protected override void OnEditingStarted(IGtkCellEditable editable, string path)
 			{
-				//base.OnEditingStarted(editable, path);
+				// base.OnEditingStarted(editable, path);
 				editable.EditingDone += Editable_EditingDone;
 				editingRow = row;
+				editingItem = Item;
 			}
 
 			private void Editable_EditingDone(object sender, EventArgs e)
 			{
 				editingRow = -1;
+				editingItem = null;
 				var editable = sender as IGtkCellEditable;
 				if (editable == null)
 					return;
@@ -87,6 +85,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			{
 				//base.OnEditingCanceled();
 				editingRow = -1;
+				editingItem = null;
 			}
 
 			int row;
@@ -154,7 +153,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				if (h == null)
 					return;
 
-				if (editingRow == row)
+				if ((row != -1 && editingRow == row) || ReferenceEquals(editingItem, Item))
 				{
 					return;
 				}
@@ -220,7 +219,8 @@ namespace Eto.GtkSharp.Forms.Cells
 				}
 #endif
 
-				if (editingRow == row)
+
+				if ((row != -1 && editingRow == row) || ReferenceEquals(editingItem, Item))
 				{
 					return;
 				}

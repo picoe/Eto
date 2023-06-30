@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Diagnostics;
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class MacEventView : NSBox, IMacControl
@@ -15,6 +9,10 @@ namespace Eto.Mac.Forms.Controls
 			BorderWidth = 0;
 			BorderType = NSBorderType.NoBorder;
 			ContentViewMargins = CGSize.Empty;
+			
+			// disable clipping to bounds so buttons/etc aren't clipped, 10.9+
+			this.SetClipsToBounds(false);
+			(ContentView as NSView)?.SetClipsToBounds(false);
 		}
 
 		public MacEventView(IntPtr handle)

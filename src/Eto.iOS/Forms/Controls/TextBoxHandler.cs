@@ -1,8 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class TextBoxHandler : IosControl<UITextField, TextBox, TextBox.ICallback>, TextBox.IHandler

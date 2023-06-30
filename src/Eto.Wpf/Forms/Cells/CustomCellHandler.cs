@@ -1,15 +1,5 @@
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
 using Eto.Wpf.Drawing;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System;
 using System.Windows;
-using System.Windows.Input;
 using Eto.Wpf.Forms.Controls;
 
 namespace Eto.Wpf.Forms.Cells
@@ -45,7 +35,9 @@ namespace Eto.Wpf.Forms.Cells
 				var selected = cell.IsSelected;
 				IsSelected = selected;
 				var focused = grid?.IsKeyboardFocusWithin != false;
-				CellTextColor = selected && focused ? Eto.Drawing.SystemColors.HighlightText : Eto.Drawing.SystemColors.ControlText;
+				CellTextColor = selected && focused 
+					? (cell.GetResourceColor(sw.SystemColors.HighlightTextColorKey, sw.SystemColors.HighlightTextBrushKey) ?? Eto.Drawing.SystemColors.HighlightText) 
+					: (cell.GetResourceColor(sw.SystemColors.ControlTextColorKey, sw.SystemColors.ControlTextBrushKey) ?? Eto.Drawing.SystemColors.ControlText);
 			}
 			public void SetRow(sw.FrameworkElement element)
 			{
@@ -127,10 +119,13 @@ namespace Eto.Wpf.Forms.Cells
 				return control;
 			}
 
-			static void HandlePreviewMouseDown(object sender, MouseButtonEventArgs e)
+			static void HandlePreviewMouseDown(object sender, swi.MouseButtonEventArgs e)
 			{
 				var ctl = sender as sw.FrameworkElement;
 				var cell = ctl?.GetVisualParent<swc.DataGridCell>();
+				if (cell == null)
+					return;
+
 				if (!cell.IsKeyboardFocusWithin && !cell.Column.IsReadOnly)
 				{
 					cell.IsEditing = true;

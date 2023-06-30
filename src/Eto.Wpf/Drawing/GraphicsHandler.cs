@@ -1,13 +1,3 @@
-using System;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using swmi = System.Windows.Media.Imaging;
-using Eto.Drawing;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.Wpf.Drawing
 {
     /// <summary>

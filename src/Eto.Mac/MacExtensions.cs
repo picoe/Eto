@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-
 namespace Eto.Mac
 {
 	/// <summary>
@@ -132,6 +129,16 @@ namespace Eto.Mac
 			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(scrollView.ClassHandle, selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)scrollView.BorderType, (ulong)scrollView.VerticalScroller.ControlSize, (long)scrollView.VerticalScroller.ScrollerStyle);
 		}
 
+
+		static readonly IntPtr selSetClipsToBounds = Selector.GetHandle("setClipsToBounds:");
+		static readonly bool supportsClipsToBounds = ObjCExtensions.InstancesRespondToSelector<NSView>(selSetClipsToBounds);
+
+		public static void SetClipsToBounds(this NSView view, bool clipsToBounds)
+		{
+			if (!supportsClipsToBounds)
+				return;
+			Messaging.void_objc_msgSend_bool(view.Handle, selSetClipsToBounds, clipsToBounds);
+		}
 	}
 }
 

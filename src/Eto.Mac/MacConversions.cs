@@ -1,10 +1,6 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Forms;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Printing;
-using System.Linq;
 using Eto.Mac.Forms.Menu;
 
 
@@ -531,7 +527,12 @@ namespace Eto.Mac
 			}
 		}
 
-		public static DataObject ToEto(this NSPasteboard pasteboard) => new DataObject(new DataObjectHandler(pasteboard));
+		public static DataObject ToEto(this NSPasteboard pasteboard)
+		{
+			if (pasteboard == null)
+				return null;
+			return new DataObject(new DataObjectHandler(pasteboard));
+		}
 
 		public static NSPasteboard ToNS(this DataObject data) => DataObjectHandler.GetControl(data);
 

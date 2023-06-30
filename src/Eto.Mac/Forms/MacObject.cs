@@ -1,5 +1,3 @@
-using System;
-
 
 #if IOS
 using Foundation;

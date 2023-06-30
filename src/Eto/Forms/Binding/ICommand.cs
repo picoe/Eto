@@ -1,6 +1,4 @@
-﻿#if !NETSTANDARD
-using System;
-
+﻿#if !NETSTANDARD && !NETCOREAPP
 namespace System.Windows.Input
 {
 }

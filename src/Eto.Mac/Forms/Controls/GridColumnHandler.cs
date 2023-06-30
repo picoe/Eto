@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Cells;
 
@@ -38,7 +35,7 @@ namespace Eto.Mac.Forms.Controls
 
 		void ResetAutoSizedColumns();
 		bool AutoSizeColumns(bool force, bool forceNewSize = false);
-		
+
 		int GetColumnDisplayIndex(GridColumn column);
 		void SetColumnDisplayIndex(GridColumn column, int index);
 	}
@@ -51,7 +48,8 @@ namespace Eto.Mac.Forms.Controls
 		void SetObjectValue(object dataItem, NSObject val);
 		new GridColumn Widget { get; }
 		IDataViewHandler DataViewHandler { get; }
-		void AutoSizeColumn(NSRange? rowRange, bool force = false);
+		ICellHandler DataCellHandler { get; }
+		bool AutoSizeColumn(NSRange? rowRange, bool force = false);
 		void EnabledChanged(bool value);
 		nfloat GetPreferredWidth(NSRange? range = null);
 		void SizeToFit();
@@ -93,18 +91,22 @@ namespace Eto.Mac.Forms.Controls
 			base.Initialize();
 		}
 
-		public void AutoSizeColumn(NSRange? rowRange, bool force = false)
+		public bool AutoSizeColumn(NSRange? rowRange, bool force = false)
 		{
 			var handler = DataViewHandler;
 			if (handler == null)
-				return;
+				return false;
 
 			if (AutoSize)
 			{
 				var width = GetPreferredWidth(rowRange);
 				if (force || width > Control.Width)
+				{
 					Control.Width = (nfloat)Math.Ceiling(width);
+					return true;
+				}
 			}
+			return false;
 		}
 
 		public nfloat GetPreferredWidth(NSRange? range = null)
@@ -157,7 +159,14 @@ namespace Eto.Mac.Forms.Controls
 		public string HeaderText
 		{
 			get { return Control.HeaderCell.StringValue; }
-			set { Control.HeaderCell.StringValue = value; }
+			set
+			{
+				if (value != HeaderText)
+				{
+					Control.HeaderCell.StringValue = value;
+					Control.TableView?.HeaderView?.SetNeedsDisplay();
+				}
+			}
 		}
 
 		public bool Resizable
@@ -327,7 +336,7 @@ namespace Eto.Mac.Forms.Controls
 		public int MinWidth
 		{
 			get => (int)Control.MinWidth + IntercellSpacingWidth;
-			set 
+			set
 			{
 				if (value == MinWidth)
 					return;
@@ -399,8 +408,8 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public void SizeToFit() => Control.SizeToFit();
-		
-		
+
+
 		static readonly object DisplayIndex_Key = new object();
 		public int DisplayIndex
 		{
@@ -411,7 +420,21 @@ namespace Eto.Mac.Forms.Controls
 				DataViewHandler?.SetColumnDisplayIndex(Widget, value);
 			}
 		}
-		
+
+		public string HeaderToolTip
+		{
+			get => Control.HeaderToolTip;
+			set => Control.HeaderToolTip = value ?? string.Empty;
+		}
+
+		static readonly object CellToolTipBinding_Key = new object();
+
+		public IIndirectBinding<string> CellToolTipBinding
+		{
+			get => Widget.Properties.Get<IIndirectBinding<string>>(CellToolTipBinding_Key);
+			set => Widget.Properties.Set(CellToolTipBinding_Key, value);
+		}
+
 		public void SetupDisplayIndex()
 		{
 			var displayIndex = Widget.Properties.Get<int?>(DisplayIndex_Key) ?? -1;

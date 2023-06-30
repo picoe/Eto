@@ -1,7 +1,3 @@
-using System.IO;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class CursorHandler : WidgetHandler<Gdk.Cursor, Cursor>, Cursor.IHandler

@@ -1,8 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System.Runtime.InteropServices;
 using Eto.Mac.Forms.Controls;
 
 
@@ -67,13 +63,13 @@ namespace Eto.Mac.Forms.Cells
 
 				if (DrawsBackground)
 				{
-					var context = nscontext.GraphicsPort;
+					var context = nscontext.CGContext;
 					context.SetFillColor(BackgroundColor.ToCG());
 					context.FillRect(cellFrame);
 				}
 
 				var handler = Handler;
-				var graphicsHandler = new GraphicsHandler(null, nscontext, (float)cellFrame.Height, flipped: true);
+				var graphicsHandler = new GraphicsHandler(inView, nscontext, (float)cellFrame.Height);
 				using (var graphics = new Graphics(graphicsHandler))
 				{
 					var state = Highlighted ? CellStates.Selected : CellStates.None;
@@ -162,7 +158,7 @@ namespace Eto.Mac.Forms.Cells
 
 				if (DrawsBackground)
 				{
-					var context = nscontext.GraphicsPort;
+					var context = nscontext.CGContext;
 					context.SetFillColor(BackgroundColor.ToCG());
 					context.FillRect(dirtyRect);
 				}
@@ -171,7 +167,7 @@ namespace Eto.Mac.Forms.Cells
 				var handler = Handler;
 				if (handler == null)
 					return;
-				var graphicsHandler = new GraphicsHandler(null, nscontext, (float)cellFrame.Height, flipped: true);
+				var graphicsHandler = new GraphicsHandler(this, nscontext, (float)cellFrame.Height);
 				using (var graphics = new Graphics(graphicsHandler))
 				{
 					var rowView = this.Superview as NSTableRowView;

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Eto.Forms;
-using System.Collections.ObjectModel;
-
-namespace Eto.Test.UnitTests.Forms
+﻿namespace Eto.Test.UnitTests.Forms
 {
 	class DataItem
 	{

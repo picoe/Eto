@@ -1,14 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Eto.Forms;
-using System.Diagnostics;
-using System.Reflection;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using System.Threading;
 using System.Windows.Threading;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class ApplicationHandler : WidgetHandler<sw.Application, Application, Application.ICallback>, Application.IHandler

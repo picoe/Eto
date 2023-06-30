@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Eto.Forms - iOS Platform")]

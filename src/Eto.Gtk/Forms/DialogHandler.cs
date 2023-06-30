@@ -1,7 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, Dialog.IHandler
@@ -16,6 +12,8 @@ namespace Eto.GtkSharp.Forms
 
 			Resizable = false;
 		}
+		
+		protected override Gdk.WindowTypeHint DefaultTypeHint => Gdk.WindowTypeHint.Dialog;
 
 		protected override void Initialize()
 		{

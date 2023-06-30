@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Forms;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -22,6 +16,11 @@ namespace Eto.Android.Forms.Controls
 	public class PanelHandler : AndroidPanel<av.View, Panel, Panel.ICallback>, Panel.IHandler
 	{
 		public override av.View ContainerControl { get { return InnerFrame; } }
+
+		public PanelHandler()
+		{
+			Control = InnerFrame;
+		}
 
 		protected override void SetContent(av.View content)
 		{

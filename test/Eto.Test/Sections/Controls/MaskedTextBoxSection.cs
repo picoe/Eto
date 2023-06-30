@@ -1,10 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Diagnostics;
-using Eto.Drawing;
-using System.Linq;
-using System.Globalization;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(MaskedTextBox))]

@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Forms;
-
-namespace Eto.GtkSharp.Forms.Controls
+﻿namespace Eto.GtkSharp.Forms.Controls
 {
 	public class NativeControlHandler : GtkControl<Gtk.Widget, Control, Control.ICallback>
 	{

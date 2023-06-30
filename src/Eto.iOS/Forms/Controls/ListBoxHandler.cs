@@ -1,13 +1,6 @@
-using System;
-using System.Reflection;
-using Eto.Forms;
-using System.Collections.Generic;
 using UIKit;
 using Foundation;
-using System.Linq;
 using Eto.iOS.Drawing;
-using Eto.Drawing;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class ListBoxHandler : IosView<UITableView, ListBox, ListBox.ICallback>, ListBox.IHandler

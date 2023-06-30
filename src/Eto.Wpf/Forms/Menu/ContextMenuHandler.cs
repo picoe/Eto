@@ -1,11 +1,3 @@
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using System;
-using System.Linq;
-using System.ComponentModel;
-using Eto.Drawing;
 using System.Windows.Controls.Primitives;
 
 namespace Eto.Wpf.Forms.Menu

@@ -1,18 +1,5 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
 using swd = System.Windows.Data;
-using swa = System.Windows.Automation;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using System.Collections;
-using System.Collections.Generic;
-using Eto.Drawing;
-using System.Globalization;
 using Eto.Wpf.Drawing;
-using System.Linq;
-using System.Collections.Specialized;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	

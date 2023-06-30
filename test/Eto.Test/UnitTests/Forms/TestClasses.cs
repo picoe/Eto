@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Forms;
-
-namespace Eto.Test.UnitTests.Forms
+﻿namespace Eto.Test.UnitTests.Forms
 {
 	public class TestXamlChild : Panel
 	{

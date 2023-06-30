@@ -1,19 +1,10 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using wf = System.Windows;
-
-using WpfLabel = System.Windows.Controls.Label;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoButton : swc.Button, IEtoWpfControl
 	{
 		public IWpfFrameworkElement Handler { get; set; }
 
-		protected override wf.Size MeasureOverride(wf.Size constraint)
+		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
@@ -43,7 +34,7 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		public swc.Image ImagePart { get; private set; }
 
-		public WpfLabel LabelPart { get; private set; }
+		public swc.Label LabelPart { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the spacing between the image and the label when both are present
@@ -60,15 +51,14 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		protected override wf.Size DefaultSize => MinimumSize.ToWpf();
+		protected override sw.Size DefaultSize => MinimumSize.ToWpf();
 
 		protected virtual Size GetDefaultMinimumSize() => Size.Empty;
 
 		protected override void Initialize()
 		{
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
-			Control.Padding = new sw.Thickness(2);
-			LabelPart = new WpfLabel
+			LabelPart = new swc.Label
 			{
 				IsHitTestVisible = false,
 				VerticalAlignment = sw.VerticalAlignment.Center,

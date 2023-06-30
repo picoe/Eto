@@ -1,8 +1,3 @@
-using System;
-using System.Reflection;
-using System.IO;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.IO;
 using Eto.Mac.Drawing;
 using Eto.Mac.IO;
@@ -150,6 +145,7 @@ namespace Eto.Mac
 			p.Add<TextureBrush.IHandler>(() => new TextureBrushHandler());
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
 			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
+			p.Add<Color.IHandler>(() => new ColorHandler());
 			p.Add<SystemColors.IHandler>(() => new SystemColorsHandler());
 			p.Add<FormattedText.IHandler>(() => new FormattedTextHandler());
 
@@ -233,6 +229,10 @@ namespace Eto.Mac
 			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
+			if (MacVersion.IsAtLeast(10, 15))
+				p.Add<DropDownToolItem.IHandler>(() => new DropDownToolItemHandler());
+			else
+				p.Add<DropDownToolItem.IHandler>(() => new DropDownToolItemPreCatalinaHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 
 			// Forms
@@ -269,7 +269,7 @@ namespace Eto.Mac
 
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
-			p.Add<Thread.IHandler>(() => new ThreadHandler());
+			p.Add<Eto.Threading.Thread.IHandler>(() => new ThreadHandler());
 		}
 
 		public override IDisposable ThreadStart()

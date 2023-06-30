@@ -1,10 +1,5 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Wpf.CustomControls.FontDialog;
 using Eto.Wpf.Drawing;
-using System;
-
-using sw = System.Windows;
 namespace Eto.Wpf.Forms
 {
 	public class FontDialogHandler : WidgetHandler<FontChooser, FontDialog, FontDialog.ICallback>, FontDialog.IHandler

@@ -1,11 +1,4 @@
-﻿using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using swf = System.Windows.Forms;
-
-namespace Eto.WinForms.Forms.Controls
+﻿namespace Eto.WinForms.Forms.Controls
 {
 	public class CalendarHandler : WindowsControl<swf.MonthCalendar, Calendar, Calendar.ICallback>, Calendar.IHandler
 	{

@@ -1,7 +1,4 @@
-using swf = System.Windows.Forms;
 using sdp = System.Drawing.Printing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Printing
 {
 	public class PrintDialogHandler : WidgetHandler<swf.PrintDialog, PrintDialog>, PrintDialog.IHandler

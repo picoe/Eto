@@ -1,8 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Collections;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(ListBox))]

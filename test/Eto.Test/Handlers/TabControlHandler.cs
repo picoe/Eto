@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Test.Handlers
 {
 	public class TabControlHandler : ThemedContainerHandler<Container, TabControl, TabControl.ICallback>, TabControl.IHandler

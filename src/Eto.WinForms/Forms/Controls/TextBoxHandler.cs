@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Runtime.InteropServices;
-using System.ComponentModel;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	[DesignerCategory("Code")]

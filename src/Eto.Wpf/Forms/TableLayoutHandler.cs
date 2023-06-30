@@ -1,12 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swm = System.Windows.Media;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class EtoGrid : swc.Grid
@@ -395,7 +386,7 @@ namespace Eto.Wpf.Forms
 				}
 				Control.Children.Add(control);
 			}
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public void Move(Control child, int x, int y)
@@ -420,7 +411,7 @@ namespace Eto.Wpf.Forms
 				SetScale(handler, x, y);
 			}
 			controls[x, y] = child;
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public void Remove(Control child)
@@ -434,7 +425,7 @@ namespace Eto.Wpf.Forms
 			var y = swc.Grid.GetRow(child);
 			Control.Children.Remove(child);
 			controls[x, y] = null;
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 	}
 }

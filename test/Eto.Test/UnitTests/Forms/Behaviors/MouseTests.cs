@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms.Behaviors
@@ -86,9 +83,41 @@ namespace Eto.Test.UnitTests.Forms.Behaviors
 			Assert.IsTrue(mouseDownInChild, "#3 - MouseUp should NOT be called on child even though it was removed");
 			Assert.IsFalse(mouseMovedEvenAfterRemoved, "#4 - MouseMoved should NOT be called on child after it was removed");
 		}
-		
-		
+
+		[Test, ManualTest]
+		public void MouseDownHandledInPanelWithChildShouldReleaseMouseCapture() => ManualForm("Click once on both blue squares,\nthey should both turn green.", form =>
+		{
+			StackLayout CreateClickableBox()
+			{
+				var child = new Panel
+				{
+					BackgroundColor = Colors.Blue,
+					Size = new Size(40, 40)
+				};
+
+				var parent = new Panel();
+				parent.Content = child;
+
+				parent.MouseDown += (sender, e) =>
+				{
+					child.BackgroundColor = child.BackgroundColor == Colors.Blue ? Colors.Green : Colors.Blue;
+					e.Handled = true;
+				};
+				
+				return new StackLayout(parent);
+			}
+			
+			var section1 = CreateClickableBox();
+
+			var section2 = CreateClickableBox();
+
+			return new TableLayout
+			{
+				Rows = { section1, section2, null },
+				Size = new Size(200, 200),
+				Spacing = new Size(4, 4),
+				Padding = 8
+			};
+		});
 	}
-	
-	
 }

@@ -1,12 +1,5 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using swd = System.Windows.Data;
-using sw = System.Windows;
 using System.Windows;
 using System.Windows.Controls;
-using System.Linq;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class CheckBoxCellHandler : CellHandler<swc.DataGridCheckBoxColumn, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler

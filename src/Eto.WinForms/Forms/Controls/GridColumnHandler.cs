@@ -1,9 +1,4 @@
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Forms.Cells;
-using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Eto.WinForms.Forms.Controls
@@ -28,7 +23,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public GridColumnHandler()
 		{
-			Control = new EtoDataGridViewColumn { Handler = this };
+			Control = new EtoDataGridViewColumn
+			{
+				Handler = this,
+				AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.DisplayedCells
+			};
 			DataCell = new TextBoxCell();
 			Editable = false;
 			Resizable = true;
@@ -167,6 +166,26 @@ namespace Eto.WinForms.Forms.Controls
 			set => Control.DisplayIndex = value;
 		}
 
+		public string HeaderToolTip
+		{
+			get => Control.ToolTipText;
+			set => Control.ToolTipText = value;
+		}
+
+		static readonly object CellToolTipBinding_Key = new object();
+
+		public IIndirectBinding<string> CellToolTipBinding
+		{
+			get => Widget.Properties.Get<IIndirectBinding<string>>(CellToolTipBinding_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(CellToolTipBinding_Key, value))
+				{
+					GridHandler?.HandleEvent(GridView.CellFormattingEvent);
+				}
+			}
+		}
+
 		public void SetCellValue(object dataItem, object value)
 		{
 			if (dataCell != null)
@@ -189,6 +208,8 @@ namespace Eto.WinForms.Forms.Controls
 		public virtual void Setup(IGridHandler gridHandler)
 		{
 			GridHandler = gridHandler;
+			if (CellToolTipBinding != null)
+				GridHandler?.HandleEvent(GridView.CellFormattingEvent);
 		}
 
 		public void Paint(sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)
@@ -205,6 +226,11 @@ namespace Eto.WinForms.Forms.Controls
 		public bool MouseClick(swf.MouseEventArgs e, int rowIndex)
 		{
 			return GridHandler != null && GridHandler.CellMouseClick(this, e, rowIndex);
+		}
+
+		internal void UpdateAutoSize(bool value)
+		{
+			Widget.Properties.Set(AutoSize_Key, value, true);
 		}
 	}
 }

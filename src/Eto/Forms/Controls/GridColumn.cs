@@ -1,44 +1,204 @@
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+namespace Eto.Forms;
 
-namespace Eto.Forms
+/// <summary>
+/// Column collection for the <see cref="Grid"/>
+/// </summary>
+public class GridColumnCollection : ObservableCollection<GridColumn>
 {
+}
+
+/// <summary>
+/// Grid column definition for a <see cref="Grid"/>
+/// </summary>
+[Handler(typeof(GridColumn.IHandler))]
+[ContentProperty("DataCell")]
+public class GridColumn : Widget
+{
+	new IHandler Handler => (IHandler)base.Handler;
+
 	/// <summary>
-	/// Column collection for the <see cref="Grid"/>
+	/// Gets or sets the text to display in the header of the column.
 	/// </summary>
-	public class GridColumnCollection : ObservableCollection<GridColumn>
+	/// <value>The header text.</value>
+	public string HeaderText
 	{
+		get { return Handler.HeaderText; }
+		set { Handler.HeaderText = value; }
+	}
+		
+	/// <summary>
+	/// Gets or sets the tooltip to display when the user moves the cursor over the header of this column.
+	/// </summary>
+	/// <value>The tooltip for the header of this column</value>
+	public string HeaderToolTip
+	{
+		get => Handler.HeaderToolTip;
+		set => Handler.HeaderToolTip = value;
+	}
+		
+	/// <summary>
+	/// Gets or sets the binding to use to get the tooltip for each cell in this column.
+	/// </summary>
+	/// <value>The binding to get the tooltip for cells in this column</value>
+	public IIndirectBinding<string> CellToolTipBinding
+	{
+		get => Handler.CellToolTipBinding;
+		set => Handler.CellToolTipBinding = value;
 	}
 
 	/// <summary>
-	/// Grid column definition for a <see cref="Grid"/>
+	/// Gets or sets a value indicating whether the column is resizable by the user.
 	/// </summary>
-	[Handler(typeof(GridColumn.IHandler))]
-	[ContentProperty("DataCell")]
-	public class GridColumn : Widget
+	/// <value><c>true</c> if resizable; otherwise, <c>false</c>.</value>
+	public bool Resizable
 	{
-		new IHandler Handler => (IHandler)base.Handler;
+		get { return Handler.Resizable; }
+		set { Handler.Resizable = value; }
+	}
 
+	/// <summary>
+	/// Gets or sets a value indicating whether this column will auto size to the content of the grid.
+	/// </summary>
+	/// <remarks>
+	/// This usually will only auto size based on the visible content to be as performant as possible.
+	/// </remarks>
+	/// <value><c>true</c> to auto size the column; otherwise, <c>false</c>.</value>
+	public bool AutoSize
+	{
+		get { return Handler.AutoSize; }
+		set { Handler.AutoSize = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets a value indicating whether the user can click on the header.
+	/// </summary>
+	/// <seealso cref="Grid.ColumnHeaderClick"/>
+	/// <value><c>true</c> if the user can click the header; otherwise, <c>false</c>.</value>
+	public bool Sortable
+	{
+		get { return Handler.Sortable; }
+		set { Handler.Sortable = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets the initial width of the column.
+	/// </summary>
+	/// <value>The width of the column.</value>
+	public int Width
+	{
+		get { return Handler.Width; }
+		set { Handler.Width = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets the cell for the content of the column.
+	/// </summary>
+	/// <value>The column data cell.</value>
+	public Cell DataCell
+	{
+		get { return Handler.DataCell; }
+		set { Handler.DataCell = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets a value indicating whether the user can edit the contents of the cells, if the <see cref="DataCell"/> allows it.
+	/// </summary>
+	/// <value><c>true</c> if the data cell is editable; otherwise, <c>false</c>.</value>
+	public bool Editable
+	{
+		get { return Handler.Editable; }
+		set { Handler.Editable = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets a value indicating whether this column is visible.
+	/// </summary>
+	/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+	public bool Visible
+	{
+		get { return Handler.Visible; }
+		set { Handler.Visible = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets a value indicating whether this column should expand to fill the available space in the Grid
+	/// </summary>
+	/// <remarks>
+	/// If more than one column has this set, they will share the space evenly.
+	/// </remarks>
+	/// <value><c>true</c> to expand the column; otherwise, <c>false</c></value>
+	public bool Expand
+	{
+		get => Handler.Expand;
+		set => Handler.Expand = value;
+	}
+
+	/// <summary>
+	/// Gets or sets a value to specify the header text alignment for this column
+	/// </summary>
+	/// <value>TextAlignment for the column header</value>
+	public TextAlignment HeaderTextAlignment
+	{
+		get => Handler.HeaderTextAlignment;
+		set => Handler.HeaderTextAlignment = value;
+	}
+
+	/// <summary>
+	/// Gets or sets the minimum width for the column
+	/// </summary>
+	/// <value>The column minimum width</value>
+	public int MinWidth
+	{
+		get => Handler.MinWidth;
+		set => Handler.MinWidth = value;
+	}
+
+	/// <summary>
+	/// Gets or sets the maximum width for the column
+	/// </summary>
+	/// <value>The column maximum width</value>
+	public int MaxWidth
+	{
+		get => Handler.MaxWidth;
+		set => Handler.MaxWidth = value;
+	}
+		
+	/// <summary>
+	/// Gets or sets the index of the column in display order, or -1 to use the order they are added.
+	/// </summary>
+	/// <remarks>
+	/// This value must be within the range of the total number of columns that are added.
+	/// </remarks>
+	[DefaultValue(-1)]
+	public int DisplayIndex
+	{
+		get => Handler.DisplayIndex;
+		set => Handler.DisplayIndex = value;
+	}
+
+	/// <summary>
+	/// Handler interface for the <see cref="GridColumn"/>.
+	/// </summary>
+	public new interface IHandler : Widget.IHandler
+	{
 		/// <summary>
 		/// Gets or sets the text to display in the header of the column.
 		/// </summary>
 		/// <value>The header text.</value>
-		public string HeaderText
-		{
-			get { return Handler.HeaderText; }
-			set { Handler.HeaderText = value; }
-		}
+		string HeaderText { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the column is resizable by the user.
 		/// </summary>
 		/// <value><c>true</c> if resizable; otherwise, <c>false</c>.</value>
-		public bool Resizable
-		{
-			get { return Handler.Resizable; }
-			set { Handler.Resizable = value; }
-		}
+		bool Resizable { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the user can click on the header.
+		/// </summary>
+		/// <seealso cref="Grid.ColumnHeaderClick"/>
+		/// <value><c>true</c> if the user can click the header; otherwise, <c>false</c>.</value>
+		bool Sortable { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this column will auto size to the content of the grid.
@@ -47,62 +207,31 @@ namespace Eto.Forms
 		/// This usually will only auto size based on the visible content to be as performant as possible.
 		/// </remarks>
 		/// <value><c>true</c> to auto size the column; otherwise, <c>false</c>.</value>
-		public bool AutoSize
-		{
-			get { return Handler.AutoSize; }
-			set { Handler.AutoSize = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the user can click on the header.
-		/// </summary>
-		/// <seealso cref="Grid.ColumnHeaderClick"/>
-		/// <value><c>true</c> if the user can click the header; otherwise, <c>false</c>.</value>
-		public bool Sortable
-		{
-			get { return Handler.Sortable; }
-			set { Handler.Sortable = value; }
-		}
+		bool AutoSize { get; set; }
 
 		/// <summary>
 		/// Gets or sets the initial width of the column.
 		/// </summary>
 		/// <value>The width of the column.</value>
-		public int Width
-		{
-			get { return Handler.Width; }
-			set { Handler.Width = value; }
-		}
+		int Width { get; set; }
 
 		/// <summary>
 		/// Gets or sets the cell for the content of the column.
 		/// </summary>
 		/// <value>The column data cell.</value>
-		public Cell DataCell
-		{
-			get { return Handler.DataCell; }
-			set { Handler.DataCell = value; }
-		}
+		Cell DataCell { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the user can edit the contents of the cells, if the <see cref="DataCell"/> allows it.
 		/// </summary>
 		/// <value><c>true</c> if the data cell is editable; otherwise, <c>false</c>.</value>
-		public bool Editable
-		{
-			get { return Handler.Editable; }
-			set { Handler.Editable = value; }
-		}
+		bool Editable { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this column is visible.
 		/// </summary>
 		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
-		public bool Visible
-		{
-			get { return Handler.Visible; }
-			set { Handler.Visible = value; }
-		}
+		bool Visible { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this column should expand to fill the available space in the Grid
@@ -111,147 +240,44 @@ namespace Eto.Forms
 		/// If more than one column has this set, they will share the space evenly.
 		/// </remarks>
 		/// <value><c>true</c> to expand the column; otherwise, <c>false</c></value>
-		public bool Expand
-		{
-			get => Handler.Expand;
-			set => Handler.Expand = value;
-		}
+		bool Expand { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value to specify the header text alignment for this column
 		/// </summary>
 		/// <value>TextAlignment for the column header</value>
-		public TextAlignment HeaderTextAlignment
-		{
-			get => Handler.HeaderTextAlignment;
-			set => Handler.HeaderTextAlignment = value;
-		}
+		TextAlignment HeaderTextAlignment { get; set; }
 
 		/// <summary>
 		/// Gets or sets the minimum width for the column
 		/// </summary>
 		/// <value>The column minimum width</value>
-		public int MinWidth
-		{
-			get => Handler.MinWidth;
-			set => Handler.MinWidth = value;
-		}
+		int MinWidth { get; set; }
 
 		/// <summary>
 		/// Gets or sets the maximum width for the column
 		/// </summary>
 		/// <value>The column maximum width</value>
-		public int MaxWidth
-		{
-			get => Handler.MaxWidth;
-			set => Handler.MaxWidth = value;
-		}
-		
+		int MaxWidth { get; set; }
+			
 		/// <summary>
 		/// Gets or sets the index of the column in display order, or -1 to use the order they are added.
 		/// </summary>
 		/// <remarks>
 		/// This value must be within the range of the total number of columns that are added.
 		/// </remarks>
-		[DefaultValue(-1)]
-		public int DisplayIndex
-		{
-			get => Handler.DisplayIndex;
-			set => Handler.DisplayIndex = value;
-		}
+		int DisplayIndex { get; set; }
 
 		/// <summary>
-		/// Handler interface for the <see cref="GridColumn"/>.
+		/// Gets or sets the tooltip to display when the user moves the cursor over the header of this column.
 		/// </summary>
-		public new interface IHandler : Widget.IHandler
-		{
-			/// <summary>
-			/// Gets or sets the text to display in the header of the column.
-			/// </summary>
-			/// <value>The header text.</value>
-			string HeaderText { get; set; }
+		/// <value>The tooltip for the header of this column</value>
+		string HeaderToolTip { get; set; }
 
-			/// <summary>
-			/// Gets or sets a value indicating whether the column is resizable by the user.
-			/// </summary>
-			/// <value><c>true</c> if resizable; otherwise, <c>false</c>.</value>
-			bool Resizable { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value indicating whether the user can click on the header.
-			/// </summary>
-			/// <seealso cref="Grid.ColumnHeaderClick"/>
-			/// <value><c>true</c> if the user can click the header; otherwise, <c>false</c>.</value>
-			bool Sortable { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value indicating whether this column will auto size to the content of the grid.
-			/// </summary>
-			/// <remarks>
-			/// This usually will only auto size based on the visible content to be as performant as possible.
-			/// </remarks>
-			/// <value><c>true</c> to auto size the column; otherwise, <c>false</c>.</value>
-			bool AutoSize { get; set; }
-
-			/// <summary>
-			/// Gets or sets the initial width of the column.
-			/// </summary>
-			/// <value>The width of the column.</value>
-			int Width { get; set; }
-
-			/// <summary>
-			/// Gets or sets the cell for the content of the column.
-			/// </summary>
-			/// <value>The column data cell.</value>
-			Cell DataCell { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value indicating whether the user can edit the contents of the cells, if the <see cref="DataCell"/> allows it.
-			/// </summary>
-			/// <value><c>true</c> if the data cell is editable; otherwise, <c>false</c>.</value>
-			bool Editable { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value indicating whether this column is visible.
-			/// </summary>
-			/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
-			bool Visible { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value indicating whether this column should expand to fill the available space in the Grid
-			/// </summary>
-			/// <remarks>
-			/// If more than one column has this set, they will share the space evenly.
-			/// </remarks>
-			/// <value><c>true</c> to expand the column; otherwise, <c>false</c></value>
-			bool Expand { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value to specify the header text alignment for this column
-			/// </summary>
-			/// <value>TextAlignment for the column header</value>
-			TextAlignment HeaderTextAlignment { get; set; }
-
-			/// <summary>
-			/// Gets or sets the minimum width for the column
-			/// </summary>
-			/// <value>The column minimum width</value>
-			int MinWidth { get; set; }
-
-			/// <summary>
-			/// Gets or sets the maximum width for the column
-			/// </summary>
-			/// <value>The column maximum width</value>
-			int MaxWidth { get; set; }
-			
-			/// <summary>
-			/// Gets or sets the index of the column in display order, or -1 to use the order they are added.
-			/// </summary>
-			/// <remarks>
-			/// This value must be within the range of the total number of columns that are added.
-			/// </remarks>
-			int DisplayIndex { get; set; }
-		}
+		/// <summary>
+		/// Gets or sets the binding to use to get the tooltip for each cell in this column.
+		/// </summary>
+		/// <value>The binding to get the tooltip for cells in this column</value>
+		IIndirectBinding<string> CellToolTipBinding { get; set; }
 	}
 }
-

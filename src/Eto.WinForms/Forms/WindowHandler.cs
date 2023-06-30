@@ -1,9 +1,3 @@
-using System;
-using System.ComponentModel;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Forms;
 using Eto.WinForms.Drawing;
 
@@ -20,6 +14,7 @@ namespace Eto.WinForms.Forms
 	{
 		internal static readonly object MovableByWindowBackground_Key = new object();
 		internal static readonly object IsClosing_Key = new object();
+		internal static readonly object Closeable_Key = new object();
 
 		public Window FromPoint(PointF point)
 		{
@@ -272,6 +267,8 @@ namespace Eto.WinForms.Forms
 						{
 							oldState = Control.WindowState;
 							Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
+							if (!Closeable)
+								SetSystemMenu();
 						}
 					};
 					break;
@@ -365,14 +362,55 @@ namespace Eto.WinForms.Forms
 
 		public virtual bool Maximizable
 		{
-			get { return Control.MaximizeBox; }
-			set { Control.MaximizeBox = value; }
+			get => Control.MaximizeBox;
+			set
+			{
+				if (Maximizable != value)
+				{
+					Control.MaximizeBox = value;
+					SetSystemMenu();
+				}
+			}
 		}
 
 		public virtual bool Minimizable
 		{
-			get { return Control.MinimizeBox; }
-			set { Control.MinimizeBox = value; }
+			get => Control.MinimizeBox;
+			set
+			{
+				if (Minimizable != value)
+				{
+					Control.MinimizeBox = value;
+					SetSystemMenu();
+				}
+			}
+		}
+
+		public virtual bool Closeable
+		{
+			get => Widget.Properties.Get<bool>(WindowHandler.Closeable_Key, true);
+			set
+			{
+				if (Widget.Properties.TrySet(WindowHandler.Closeable_Key, value, true))
+				{
+					// when the window is maximized/minimized the state of the close button is lost.
+					HandleEvent(Window.WindowStateChangedEvent);
+					SetSystemMenu();
+				}
+			}
+		}
+
+		void SetSystemMenu()
+		{
+			var useSystemMenu = Closeable || Minimizable || Maximizable;
+			Control.ControlBox = useSystemMenu;
+			
+			var sysMenu = Win32.GetSystemMenu(NativeHandle, false);
+			if (sysMenu != IntPtr.Zero)
+			{
+				var closeFlags = Closeable ? Win32.MF.BYCOMMAND : Win32.MF.GRAYED;
+				Win32.EnableMenuItem(sysMenu, Win32.SC.CLOSE, closeFlags);
+			}
 		}
 
 		public virtual bool ShowInTaskbar

@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	/// <summary>
@@ -22,6 +16,7 @@ namespace Eto.Test.Sections.Behaviors
 		Label windowPositionLabel;
 		Label mousePositionLabel;
 		bool showScreenContent;
+		PointF? _mousePositionInWindow;
 
 		protected bool ShowScreenContent
 		{
@@ -132,10 +127,11 @@ namespace Eto.Test.Sections.Behaviors
 		private void showWindowsAtCorners_CheckedChanged(object sender, EventArgs e)
 		{
 			CloseCornerWindows();
-			Form CreateWindow()
+			Form CreateWindow(string title)
 			{
 				var form = new Form
 				{
+					Title = title,
 					WindowStyle = WindowStyle.None,
 					Resizable = false,
 					Size = new Size(100, 100),
@@ -157,41 +153,103 @@ namespace Eto.Test.Sections.Behaviors
 				return;
 
 			var restoreForm = new Form {
-				Content = "This form should restore its size and position", 
+				Title = "RestoreForm",
 				Resizable = true,
-				ClientSize = new Size(450, 300),
+				Size = new Size(450, 300),
 				ShowActivated = false
 			};
-			restoreForm.LocationChanged += (_, __) => Invalidate();
-			restoreForm.SizeChanged += (_, __) => Invalidate();
+			var adjacentForm = new Form
+			{
+				Title = "AdjacentForm",
+				ShowActivated = false,
+				Resizable = false,
+				WindowStyle = WindowStyle.Utility,
+				Closeable = false,
+				Maximizable = false,
+				Minimizable = false,
+				Content = new Panel()
+			};
+			var dragPanel = new Drawable { BackgroundColor = Colors.Blue };
+			var restoreContent = new TableLayout(
+				new TableRow("This form should restore its size and position"),
+				new TableRow(
+					new TableLayout(
+						new TableRow(new Panel { Size = new Size(100, 100)}),
+						new TableRow(new Panel { Size = new Size(100, 100)}, dragPanel)
+					)
+				));
+			restoreForm.Content = restoreContent;
+
+			dragPanel.Paint += (_, e2) =>
+			{
+				var mousePt = dragPanel.PointFromScreen(Mouse.Position);
+				var mouseRect = new RectangleF(mousePt, SizeF.Empty);
+				mouseRect.Inflate(6, 6);
+				e2.Graphics.FillEllipse(Colors.Red, mouseRect);
+
+				if (_mousePositionInWindow != null)
+				{
+					var otherRect = new RectangleF(dragPanel.PointFromScreen(_mousePositionInWindow.Value), SizeF.Empty);
+					otherRect.Inflate(3, 3);
+					e2.Graphics.FillEllipse(Colors.Yellow, otherRect);
+				}
+			};
+			dragPanel.MouseDown += (_, e2) => e2.Handled = true;
+			dragPanel.MouseMove += (sender2, e2) =>
+			{
+				_mousePositionInWindow = dragPanel.PointToScreen(e2.Location);
+				dragPanel.Invalidate();
+				// adjacentForm.Location = Point.Round(_mousePositionInWindow.Value);
+				Invalidate();
+			};
+			
+			void SetAdjacentSize()
+			{
+				if (adjacentForm == null)
+					return;
+				adjacentForm.Location = Point.Round(restoreForm.Content.PointToScreen(restoreForm.Content.Bounds.BottomRight) - new Size(0, restoreForm.Content.Height));
+				adjacentForm.Size = new Size(100, restoreForm.Content.Height);
+			}
+
 			RestorePosition(restoreForm);
-			restoreForm.Closing += (_, __) => SavePosition(restoreForm);
+			restoreForm.LocationChanged += (_, __) => { Invalidate(); SetAdjacentSize(); };
+			restoreForm.SizeChanged += (_, __) => { Invalidate(); SetAdjacentSize(); };
+			restoreForm.Closing += (_, __) => { SavePosition(restoreForm); adjacentForm.Close(); adjacentForm = null; };
+			restoreForm.Shown += (_, __) =>
+			{
+				SetAdjacentSize();
+				adjacentForm?.Show();
+			};
 			restoreForm.Show();
+			// SetAdjacentSize();
 
 			cornerWindows.Add(restoreForm);
 
+			cornerWindows.Add(adjacentForm);
 
+			int i = 0;
 			foreach (var screen in Screen.Screens)
 			{
-				var topLeft = CreateWindow();
+				var topLeft = CreateWindow($"TL{i}");
 				topLeft.Location = Point.Truncate(screen.Bounds.TopLeft);
 				topLeft.Show();
 				cornerWindows.Add(topLeft);
 
-				var topRight = CreateWindow();
+				var topRight = CreateWindow($"TR{i}");
 				topRight.Location = Point.Truncate(screen.Bounds.TopRight - new Size(topRight.Width, 0));
 				topRight.Show();
 				cornerWindows.Add(topRight);
 
-				var bottomLeft = CreateWindow();
+				var bottomLeft = CreateWindow($"BL{i}");
 				bottomLeft.Location = Point.Truncate(screen.Bounds.BottomLeft - new Size(0, bottomLeft.Height));
 				bottomLeft.Show();
 				cornerWindows.Add(bottomLeft);
 
-				var bottomRight = CreateWindow();
+				var bottomRight = CreateWindow($"BR{i}");
 				bottomRight.Location = Point.Truncate(screen.Bounds.BottomRight - bottomLeft.Size);
 				bottomRight.Show();
 				cornerWindows.Add(bottomRight);
+				i++;
 			}
 		}
 
@@ -275,6 +333,33 @@ namespace Eto.Test.Sections.Behaviors
 						pe.Graphics.FillRectangle(new Color(Colors.LightSkyBlue, 0.8f), windowBounds);
 					}
 					pe.Graphics.DrawRectangle(Colors.White, windowBounds);
+
+					if (window.Content != null)
+					{
+						// Console.Write($"Window: {window.Title}, Content.Size: {window.Content.Size}, ");
+						var contentRect = new RectangleF(window.Content.Size);
+						var contentRectScreen = window.Content.RectangleToScreen(contentRect);
+						
+						var roundTripRect = window.Content.RectangleFromScreen(contentRectScreen);
+						var roundTripRectScreen = window.Content.RectangleToScreen(roundTripRect);
+
+						pe.Graphics.DrawRectangle(Colors.Gray, (contentRectScreen * scale) + offset);
+
+						if (roundTripRect != contentRect)
+						{
+							// note: this can be off by a small amount due to window's dpi scaling
+							if (Math.Abs(roundTripRect.X - contentRect.X) >= 1
+								|| Math.Abs(roundTripRect.Y - contentRect.Y) >= 1
+								|| Math.Abs(roundTripRect.Width - contentRect.Width) >= 1
+								|| Math.Abs(roundTripRect.Height - contentRect.Height) >= 1)
+							{
+								
+								// round tripping to screen/from screen didn't work!
+								pe.Graphics.DrawRectangle(Colors.Red, (roundTripRectScreen * scale) + offset);
+							}
+						}
+					}
+
 				}
 
 				DrawWindow(ParentWindow);
@@ -287,11 +372,19 @@ namespace Eto.Test.Sections.Behaviors
 					}
 				}
 
-
 				var mousePosition = Mouse.Position * scale + offset;
 				var mouseRect = new RectangleF(mousePosition, SizeF.Empty);
-				mouseRect.Inflate(2, 2);
+				mouseRect.Inflate(3, 3);
 				pe.Graphics.FillEllipse(Colors.Red, mouseRect);
+				
+				if (_mousePositionInWindow != null)
+				{
+					var mousePositionInWindow = _mousePositionInWindow.Value * scale + offset;
+					var mouseInWindowRect = new RectangleF(mousePositionInWindow, SizeF.Empty);
+					mouseInWindowRect.Inflate(2, 2);
+					pe.Graphics.FillEllipse(Colors.Yellow, mouseInWindowRect);
+				}
+				
 			};
 			return screenLayoutDrawable;
 		}

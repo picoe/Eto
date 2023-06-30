@@ -1,8 +1,5 @@
-using System;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using Range = Eto.Forms.Range;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {

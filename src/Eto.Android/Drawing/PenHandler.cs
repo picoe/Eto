@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -84,6 +78,7 @@ namespace Eto.Android.Drawing
 				: base(brush.ToAndroid())
 			{
 				Brush = brush;
+				SetStyle(Style.Stroke);
 			}
 		}
 

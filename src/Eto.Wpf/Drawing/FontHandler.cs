@@ -1,12 +1,4 @@
-using System;
-using Eto.Drawing;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using sd = System.Drawing;
 using swd = System.Windows.Documents;
-using System.Globalization;
-
 namespace Eto.Wpf.Drawing
 {
 	public class FontHandler : WidgetHandler<object, Font>, Font.IHandler

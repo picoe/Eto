@@ -1,5 +1,3 @@
-using System;
-
 namespace Eto.Mac.Drawing
 {
 	public class EtoFontManager : NSFontManager
@@ -8,7 +6,7 @@ namespace Eto.Mac.Drawing
 		{
 		}
 
-		public EtoFontManager(IntPtr handle)
+		public EtoFontManager(NativeHandle handle)
 			: base(handle)
 		{
 		}

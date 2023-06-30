@@ -11,6 +11,7 @@
     
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
     <DefineConstants>MONOMAC</DefineConstants>
+    <LangVersion>10.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
@@ -18,6 +19,25 @@
     <EnableCodeSigning Condition="$(EnableCodeSignBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableCodeSigning>
     <EnableNotarization Condition="$(EnableNotarizationBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableNotarization>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Using Include="MonoMac.AppKit" />
+    <Using Include="MonoMac.Foundation" />
+    <Using Include="MonoMac.CoreGraphics" />
+    <Using Include="MonoMac.ObjCRuntime" />
+    <Using Include="MonoMac.CoreAnimation" />
+    <Using Include="MonoMac.CoreImage" />
+    <Using Include="MonoMac.MobileCoreServices" />
+    <Using Include="MonoMac.CoreFoundation" />
+    <Using Include="MonoMac.ImageIO" />
+    <Using Include="MonoMac.CoreText" />
+    <Using Include="MonoMac.Constants" Alias="Constants" />
+    <Using Include="MonoMac.AppKit.NSRectEdge" Alias="NSRectEdge" />
+    <Using Include="System.Double" Alias="nfloat" />
+    <Using Include="System.Int64" Alias="nint" />
+    <Using Include="System.UInt64" Alias="nuint" />
+    <Using Include="System.IntPtr" Alias="NativeHandle" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
@@ -40,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\TestContent.txt" />
+    <Content Include="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Assets\TestBundleResource.txt" />

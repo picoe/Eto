@@ -1,35 +1,33 @@
-using System.Windows.Forms;
-
 namespace Eto.WinForms
 {
-	class ScrollMessageFilter : IMessageFilter
+	class ScrollMessageFilter : swf.IMessageFilter
 	{
-		public static bool IsScrollable(Control control)
+		public static bool IsScrollable(swf.Control control)
 		{
-			var p = control as ScrollableControl;
+			var p = control as swf.ScrollableControl;
 			if (p != null)
 				return p.AutoScroll;
-			return control is DataGridView
+			return control is swf.DataGridView
 #if !NETCOREAPP3_1
-			|| control is DataGrid
+			|| control is swf.DataGrid
 #endif
-			|| control is TreeView
-			|| control is ListControl
-			|| control is RichTextBox;
+			|| control is swf.TreeView
+			|| control is swf.ListControl
+			|| control is swf.RichTextBox;
 		}
 
-		public bool PreFilterMessage(ref Message m)
+		public bool PreFilterMessage(ref swf.Message m)
 		{
 			if (m.Msg == (int)Win32.WM.MOUSEWHEEL)
 			{
-				var c = Control.FromHandle(m.HWnd);
+				var c = swf.Control.FromHandle(m.HWnd);
 				if (c == null)
 					return false;
 				while (c.Parent != null)
 					c = c.Parent;
 
-				var cp = Cursor.Position;
-				Control scrollChild = null;
+				var cp = swf.Cursor.Position;
+				swf.Control scrollChild = null;
 				while (c != null)
 				{
 					if (IsScrollable(c))
@@ -38,7 +36,7 @@ namespace Eto.WinForms
 					if (!c.HasChildren)
 						break;
 
-					c = c.GetChildAtPoint(c.PointToClient(cp), GetChildAtPointSkip.Invisible);
+					c = c.GetChildAtPoint(c.PointToClient(cp), swf.GetChildAtPointSkip.Invisible);
 				}
 
 				if (scrollChild == null)

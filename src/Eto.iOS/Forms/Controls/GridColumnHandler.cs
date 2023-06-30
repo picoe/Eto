@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class GridColumnHandler : WidgetHandler<object, GridColumn>, GridColumn.IHandler

@@ -1,7 +1,3 @@
-using System;
-using sc = System.ComponentModel;
-using System.IO;
-using System.Reflection;
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;

@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-
 namespace Eto.Mac
 {
 	static class MacVersion

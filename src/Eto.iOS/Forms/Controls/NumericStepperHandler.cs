@@ -1,10 +1,5 @@
-using System;
-using System.Reflection;
 using SD = System.Drawing;
-using Eto.Forms;
 using UIKit;
-using Eto.Drawing;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class NumericStepperHandler : IosControl<UITextField, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler

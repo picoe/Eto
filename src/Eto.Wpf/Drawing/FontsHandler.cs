@@ -1,9 +1,3 @@
-using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using swm = System.Windows.Media;
-
 namespace Eto.Wpf.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler

@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Eto.Test.Sections.Controls
@@ -18,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 		protected override string GetCellInfo(GridView grid, PointF location)
 		{
 			var cell = grid.GetCellAt(location);
-			return $"Row: {cell?.RowIndex}, Column: {cell?.ColumnIndex} ({cell?.Column?.HeaderText}), Item: {cell?.Item}";
+			return $"Row: {cell?.RowIndex}, Column: {cell?.ColumnIndex} ({cell?.Column?.HeaderText}), Type: {cell?.Type}, Item: {cell?.Item}";
 		}
 
 		protected override int GetRowCount(GridView grid) => ((ICollection)grid.DataStore).Count;
@@ -135,7 +127,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
 
-			grid = CreateGrid();
+			CreateGrid();
 
 			SetDataStore(grid);
 
@@ -274,24 +266,10 @@ namespace Eto.Test.Sections.Controls
 		}
 
 
-		bool orderEventAdded;
 		Control AllowColumnReorderingCheckBox(T grid)
 		{
 			var control = new CheckBox { Text = "AllowColumnReordering" };
 			control.CheckedBinding.Bind(grid, g => g.AllowColumnReordering);
-			control.CheckedChanged += (sender1, e1) =>
-			{
-				if (!orderEventAdded && grid.AllowColumnReordering)
-				{
-					orderEventAdded = true;
-					grid.ColumnOrderChanged += (sender, e) =>
-					{
-						SaveColumnOrder();
-						Log.Write(grid, $"ColumnDisplayIndexChanged, Column: {e.Column}, DisplayIndex: {e.Column.DisplayIndex}, Indexes: {GetDisplayIndexString(grid)}");
-					};
-				}
-			};
-
 			return control;
 		}
 
@@ -303,6 +281,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				SaveColumnOrder();
 				SaveColumnVisibility();
+				SaveColumnWidths();
 			};
 
 			return control;
@@ -413,6 +392,7 @@ namespace Eto.Test.Sections.Controls
 				control.TextBinding.BindDataContext((MyGridItem m) => m.Text);
 				control.Bind(c => c.TextColor, args, a => a.CellTextColor);
 				control.BindDataContext(c => c.Command, (MyGridItem m) => m.Command);
+				control.BindDataContext(c => c.ToolTip, (MyGridItem m) => m.ToolTip);
 				//control.Click += (sender, e) => Log.Write(sender, "Clicked row button {0}", ((Button)sender).Text);
 				return new Panel { Content = control, Padding = 2 };
 			}
@@ -458,27 +438,37 @@ namespace Eto.Test.Sections.Controls
 			{
 				column.Visible = visibleIndexes[index];
 			}
+			var widths = TestApplication.Settings.GridViewSection_ColumnWidths;
+			if (widths != null && index < widths.Count)
+			{
+				column.Width = widths[index];
+			}
+			var autoSize = TestApplication.Settings.GridViewSection_ColumnAutoSize;
+			if (autoSize != null && index < autoSize.Count)
+			{
+				column.AutoSize = autoSize[index];
+			}
 
 			return column;
 		}
 
 
-		T CreateGrid()
+		void CreateGrid()
 		{
-			var control = new T();
-			LogEvents(control);
+			grid = new T();
+			LogEvents(grid);
 
 			var dropDown = MyDropDown("DropDownKey");
-			control.Columns.Add(SetColumnState(0, new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text") }));
-			control.Columns.Add(SetColumnState(1, new GridColumn { DataCell = new CheckBoxCell("Check"), AutoSize = true, Resizable = false }));
-			control.Columns.Add(SetColumnState(2, new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image"), Resizable = false }));
-			control.Columns.Add(SetColumnState(3, new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true }));
-			control.Columns.Add(SetColumnState(4, new GridColumn { HeaderText = "Progress", DataCell = new ProgressCell("Progress") }));
-			control.Columns.Add(SetColumnState(5, new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Sortable = true }));
+			grid.Columns.Add(SetColumnState(0, new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text"), Expand = true }));
+			grid.Columns.Add(SetColumnState(1, new GridColumn { DataCell = new CheckBoxCell("Check"), AutoSize = true, Resizable = false }));
+			grid.Columns.Add(SetColumnState(2, new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image"), Resizable = false, HeaderToolTip = null }));
+			grid.Columns.Add(SetColumnState(3, new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true, HeaderToolTip = "Some Tooltip", CellToolTipBinding = Binding.Property((MyGridItem i) => i.ToolTip) }));
+			grid.Columns.Add(SetColumnState(4, new GridColumn { HeaderText = "Progress", DataCell = new ProgressCell("Progress") }));
+			grid.Columns.Add(SetColumnState(5, new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Sortable = true }));
 			if (Platform.Supports<CustomCell>())
 			{
 				var col = SetColumnState(6, new GridColumn { HeaderText = "Custom", Sortable = true, DataCell = new MyCustomCell() });
-				control.Columns.Add(col);
+				grid.Columns.Add(col);
 			}
 
 			if (Platform.Supports<DrawableCell>())
@@ -502,14 +492,13 @@ namespace Eto.Test.Sections.Controls
 						e.Graphics.DrawLine(color, rect.Right, rect.Bottom, rect.MiddleX, rect.Top);
 					}
 				};
-				control.Columns.Add(SetColumnState(7, new GridColumn
+				grid.Columns.Add(SetColumnState(7, new GridColumn
 				{
 					HeaderText = "Drawable",
 					DataCell = drawableCell
 				}));
 			}
 
-			return control;
 		}
 
 		ContextMenu CreateContextMenu(T grid)
@@ -578,6 +567,14 @@ namespace Eto.Test.Sections.Controls
 
 			return menu;
 		}
+
+		private void SaveColumnWidths()
+		{
+			if (!TestApplication.Settings.GridViewSection_SaveColumnDisplayIndexes)
+				return;
+			TestApplication.Settings.GridViewSection_ColumnWidths = grid.Columns.Select(r => r.Width).ToList();			
+			TestApplication.Settings.GridViewSection_ColumnAutoSize = grid.Columns.Select(r => r.AutoSize).ToList();			
+		}
 		
 		private void SaveColumnOrder()
 		{
@@ -611,8 +608,19 @@ namespace Eto.Test.Sections.Controls
 			control.ColumnHeaderClick += (sender, e) => Log.Write(control, $"ColumnHeaderClick: {e.Column.HeaderText}");
 			control.CellClick += (sender, e) => Log.Write(control, $"CellClick, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
 			control.CellDoubleClick += (sender, e) => Log.Write(control, $"CellDoubleClick, Row: {e.Row}, Column: {e.Column}, Item: {e.Item}, GridColumn: {e.GridColumn}, IsEditing: {control.IsEditing}");
+			control.ColumnOrderChanged += (sender, e) =>
+			{
+				SaveColumnOrder();
+				Log.Write(grid, $"ColumnDisplayIndexChanged, Column: {e.Column}, DisplayIndex: {e.Column.DisplayIndex}, Indexes: {GetDisplayIndexString(grid)}");
+			};
+			control.ColumnWidthChanged += (sender, e) =>
+			{
+				SaveColumnWidths();
+				Log.Write(control, $"ColumnWidthChanged, Column: {e.Column.HeaderText}, Width: {e.Column.Width}, AutoSize: {e.Column.AutoSize}");				
+			};
 
 			control.MouseDown += (sender, e) => Log.Write(control, $"MouseDown, Buttons: {e.Buttons}, Location: {e.Location}");
+			control.MouseUp += (sender, e) => Log.Write(control, $"MouseUp, Buttons: {e.Buttons}, Location: {e.Location}");
 			control.MouseDoubleClick += (sender, e) => Log.Write(control, $"MouseDoubleClick, Buttons: {e.Buttons}, Location: {e.Location}");
 		}
 
@@ -690,9 +698,12 @@ namespace Eto.Test.Sections.Controls
 				{
 					text = value;
 					OnPropertyChanged();
+					OnPropertyChanged(nameof(ToolTip));
 					Log("Text", value);
 				}
 			}
+
+			public string ToolTip => $"ToolTip For {Text}";
 
 			public Image Image
 			{
@@ -756,7 +767,7 @@ namespace Eto.Test.Sections.Controls
 				val = row % 2;
 				image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
 
-				text = $"Col 1 {name}";
+				text = name;
 
 				color = Color.FromElementId(row);
 

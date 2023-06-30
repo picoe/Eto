@@ -1,9 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System.Collections;
-using System.Collections.Generic;
 using GLib;
 using Gtk;
 

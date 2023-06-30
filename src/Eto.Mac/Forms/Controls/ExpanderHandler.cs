@@ -1,10 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-using System.Linq;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ExpanderHandler : MacPanel<NSView, Expander, Expander.ICallback>, Expander.IHandler
@@ -138,6 +131,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					ctx.Duration = 0;
 					((NSView)content.Animator).Frame = startFrame;
+					content.SetClipsToBounds(true);
 				}, () => NSAnimationContext.RunAnimation(ctx =>
 					{
 						ctx.Duration = AnimationDuration;
@@ -147,6 +141,7 @@ namespace Eto.Mac.Forms.Controls
 						suspendContentSizing--;
 						content.Hidden = !Expanded;
 						Callback.OnExpandedChanged(Widget, EventArgs.Empty);
+						content.SetClipsToBounds(false);
 						InvalidateMeasure();
 					}
 					)

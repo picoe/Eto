@@ -1,9 +1,3 @@
-using System;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-
 namespace Eto.Wpf.CustomControls
 {
 	/// <summary>

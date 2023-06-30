@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors Condition="$(Configuration) == 'Release'">true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -26,8 +26,6 @@ In order to run your Eto.Forms based application, you must also install one (or 
 - Eto.Platform.Windows
 - Eto.Platform.Direct2D
 - Eto.Platform.Gtk
-- Eto.Platform.Gtk2
-- Eto.Platform.Gtk3
 - Eto.Platform.Mac64
 - Eto.Platform.XamMac2
 

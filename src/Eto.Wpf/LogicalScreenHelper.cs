@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using sd = System.Drawing;
 #if WPF
 #elif WINFORMS
 using Eto.WinForms.Forms;
@@ -19,9 +16,17 @@ namespace Eto
 
 		public abstract Eto.Drawing.SizeF GetLogicalSize(T screen);
 
-		public abstract float GetLogicalPixelSize(T screen);
+		public abstract float GetLogicalPixelSize(T screen, bool usePerMonitor = true);
 
-		public virtual float GetMaxLogicalPixelSize() => AllScreens.Max((Func<T, float>)GetLogicalPixelSize);
+		public virtual float GetMaxLogicalPixelSize()
+		{
+			float logicalPixelSize = 0;
+			foreach (var screen in AllScreens)
+			{
+				logicalPixelSize = Math.Max(logicalPixelSize, GetLogicalPixelSize(screen));
+			}
+			return logicalPixelSize;
+		}
 
 		public Eto.Drawing.PointF GetLogicalLocation(T screen)
 		{

@@ -1,10 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-using System.Collections.Generic;
-
-
 #if IOS
 using Foundation;
 using CoreGraphics;
@@ -36,6 +29,8 @@ namespace Eto.Mac.Forms
 		public virtual void Update()
 		{
 			InvalidateMeasure();
+			// ContainerControl.Superview?.LayoutSubtreeIfNeeded();
+			ContainerControl.Window?.LayoutIfNeeded();
 		}
 
 		protected override bool ControlEnabled

@@ -1,14 +1,4 @@
-using System;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Collections.Specialized;
-using Eto.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Eto.Test.UnitTests.Forms
 {
 	[TestFixture]
@@ -306,6 +296,55 @@ namespace Eto.Test.UnitTests.Forms
 			}
 			);
 		}
+
+		// Hm, this seems useful.. should it be added as an extension method somewhere?
+		static Task EventAsync<TWidget, TEvent>(TWidget control, Action<TWidget, EventHandler<TEvent>> addHandler, Action<TWidget, EventHandler<TEvent>> removeHandler = null)
+			where TWidget : Widget
+		{
+			var mre = new TaskCompletionSource<bool>();
+			void EventTriggered(object sender, TEvent e)
+			{
+				removeHandler?.Invoke(control, EventTriggered);
+				mre.TrySetResult(true);
+			}
+
+			addHandler(control, EventTriggered);
+			return mre.Task;
+		}
+
+		[Test, ManualTest]
+		public void MultipleChildWindowsShouldGetFocusWhenClicked() => Async(async () =>
+		{
+			var form1 = new Form { ClientSize = new Size(200, 200), Location = new Point(300, 300) };
+			form1.Owner = Application.Instance.MainForm;
+			form1.Title = "Form1";
+			form1.Content = new Label
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				TextAlignment = TextAlignment.Center,
+				Text = "Click on Form2, it should then get focus and be on top of this form."
+			};
+			// var form1ClosedTask = EventTask<EventArgs>(h => form1.Closed += h);
+			var form1ClosedTask = EventAsync<Form, EventArgs>(form1, (c, h) => c.Closed += h);
+
+			var form2 = new Form { ClientSize = new Size(200, 200), Location = new Point(400, 400) };
+			form2.Owner = Application.Instance.MainForm;
+			form2.Title = "Form2";
+			form2.Content = new Label
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				TextAlignment = TextAlignment.Center,
+				Text = "Click on Form1, it should then get focus and be on top of this form."
+			};
+			var form2ClosedTask = EventAsync<Form, EventArgs>(form2, (c, h) => c.Closed += h);
+
+			form1.Show();
+
+			form2.Show();
+
+			// wait till both forms are closed..
+			await Task.WhenAll(form1ClosedTask, form2ClosedTask);
+		});
 	}
 }
 

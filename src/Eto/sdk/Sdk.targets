@@ -25,6 +25,10 @@
     <_TfmSuffix Condition="$(BuildPlatform) == 'MacOS'">-macos</_TfmSuffix>
 
     <OutputType Condition="$(OutputType) == 'Exe' and ($(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows')">WinExe</OutputType>
+    
+    <!-- Need to set this with the macos target if not specified -->
+    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND ( $(BuildPlatform) == 'macos' or $(BuildPlatform) == 'XamMac2' )">10.14</SupportedOSPlatformVersion>
+    <RuntimeIdentifiers Condition="$(BuildPlatform) == 'macos' AND $(RuntimeIdentifiers) == '' AND $(RuntimeIdentifier) == ''">osx-x64;osx-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) != '' and $(_TfmSuffix) != '' and !$(TargetFramework.Contains('-'))">
@@ -49,10 +53,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Forms" Version="2.7.1-dev" />
-    <PackageReference Include="Eto.Platform.$(BuildPlatform)" Version="2.7.1-dev" />
-    <PackageReference Include="Eto.Serialization.Json" Version="2.7.1-dev" Condition="$(UseJeto) == 'True'" />
-    <PackageReference Include="Eto.Serialization.Xaml" Version="2.7.1-dev" Condition="$(UseXeto) == 'True'" />
+    <PackageReference Include="Eto.Forms" Version="2.7.2-dev" />
+    <PackageReference Include="Eto.Platform.$(BuildPlatform)" Version="2.7.2-dev" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.7.2-dev" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.7.2-dev" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
 
   <PropertyGroup>

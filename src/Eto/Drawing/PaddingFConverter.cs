@@ -1,75 +1,69 @@
-using System;
-using sc = System.ComponentModel;
-using System.Globalization;
+namespace Eto.Drawing;
 
-namespace Eto.Drawing
+/// <summary>
+/// Converter for the <see cref="PaddingF"/> class
+/// </summary>
+class PaddingFConverterInternal : sc.TypeConverter
 {
 	/// <summary>
-	/// Converter for the <see cref="PaddingF"/> class
+	/// The character to split up the string which will be converted
 	/// </summary>
-	class PaddingFConverterInternal : sc.TypeConverter
+	static readonly char[] DimensionSplitter = new char[1] { ',' };
+
+	/// <summary>
+	/// Determines if the specified <paramref name="sourceType"/> can be converted to a <see cref="PaddingF"/> object
+	/// </summary>
+	/// <param name="context">Conversion context</param>
+	/// <param name="sourceType">Type to convert from</param>
+	/// <returns>True if this converter can convert from the specified type, false otherwise</returns>
+	public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 	{
-		/// <summary>
-		/// The character to split up the string which will be converted
-		/// </summary>
-		static readonly char[] DimensionSplitter = new char[1] { ',' };
+		return sourceType == typeof(string);
+	}
 
-		/// <summary>
-		/// Determines if the specified <paramref name="sourceType"/> can be converted to a <see cref="PaddingF"/> object
-		/// </summary>
-		/// <param name="context">Conversion context</param>
-		/// <param name="sourceType">Type to convert from</param>
-		/// <returns>True if this converter can convert from the specified type, false otherwise</returns>
-		public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
+	/// <summary>
+	/// Converts the specified value to a <see cref="PaddingF"/> object
+	/// </summary>
+	/// <param name="context">Conversion context</param>
+	/// <param name="culture">Culture to perform the conversion for</param>
+	/// <param name="value">Value to convert</param>
+	/// <returns>A new instance of the <see cref="PaddingF"/> object with the value represented by <paramref name="value"/></returns>
+	public override object ConvertFrom(sc.ITypeDescriptorContext context, CultureInfo culture, object value)
+	{
+		string text = value as string;
+		if (text != null)
 		{
-			return sourceType == typeof(string);
-		}
+			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
 
-		/// <summary>
-		/// Converts the specified value to a <see cref="PaddingF"/> object
-		/// </summary>
-		/// <param name="context">Conversion context</param>
-		/// <param name="culture">Culture to perform the conversion for</param>
-		/// <param name="value">Value to convert</param>
-		/// <returns>A new instance of the <see cref="PaddingF"/> object with the value represented by <paramref name="value"/></returns>
-		public override object ConvertFrom(sc.ITypeDescriptorContext context, CultureInfo culture, object value)
-		{
-			string text = value as string;
-			if (text != null)
+			try
 			{
-				string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
-
-				try
+				switch (parts.Length)
 				{
-					switch (parts.Length)
-					{
-						case 1:
-							return new PaddingF(
-								float.Parse(parts[0])
-							);
-						case 2:
-							return new PaddingF(
-								float.Parse(parts[0]),
-								float.Parse(parts[1])
-							);
-						case 4:
-							return new PaddingF(
-								float.Parse(parts[0]),
-								float.Parse(parts[1]),
-								float.Parse(parts[2]),
-								float.Parse(parts[3])
-							);
-						default:
-							throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as PaddingF. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));
-					}
-				}
-				catch
-				{
-					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as PaddingF. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));
+					case 1:
+						return new PaddingF(
+							float.Parse(parts[0])
+						);
+					case 2:
+						return new PaddingF(
+							float.Parse(parts[0]),
+							float.Parse(parts[1])
+						);
+					case 4:
+						return new PaddingF(
+							float.Parse(parts[0]),
+							float.Parse(parts[1]),
+							float.Parse(parts[2]),
+							float.Parse(parts[3])
+						);
+					default:
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as PaddingF. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));
 				}
 			}
-			return base.ConvertFrom(context, culture, value);
+			catch
+			{
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as PaddingF. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));
+			}
 		}
+		return base.ConvertFrom(context, culture, value);
 	}
 }
-

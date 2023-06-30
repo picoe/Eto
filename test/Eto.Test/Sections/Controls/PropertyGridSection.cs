@@ -1,12 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.ComponentModel;
-using System.Collections.Generic;
-using Eto.Drawing;
-using Eto.Forms;
-using System.Linq;
-using sc = System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Eto.Test.Sections.Controls
 {

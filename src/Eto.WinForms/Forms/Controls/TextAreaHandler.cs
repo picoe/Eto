@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>

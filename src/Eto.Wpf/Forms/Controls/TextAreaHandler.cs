@@ -1,9 +1,3 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoTextBox : swc.TextBox, IEtoWpfControl

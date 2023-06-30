@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\build\Common.Build.props" />
   <PropertyGroup>
     <IsPackable>False</IsPackable>
-    <BaseOutputPath>$(BasePath)artifacts\test\$(MSBuildProjectName)\</BaseOutputPath>
+    <UseGlobalUsings>true</UseGlobalUsings>
+  </PropertyGroup>
+  <Import Project="..\build\Common.Build.props" />
+  <PropertyGroup>
+    <BaseOutputPath>$(ArtifactsDir)test\$(MSBuildProjectName)\</BaseOutputPath>
   </PropertyGroup>
 </Project>

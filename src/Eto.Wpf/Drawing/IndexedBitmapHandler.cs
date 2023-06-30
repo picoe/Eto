@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using swmi = System.Windows.Media.Imaging;
-using Eto.Drawing;
 using Eto.Wpf.Forms;
 
 namespace Eto.Wpf.Drawing

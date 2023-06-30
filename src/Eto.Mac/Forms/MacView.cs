@@ -1,12 +1,5 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Printing;
-using System.Linq;
-using System.Runtime.InteropServices;
-
 #if MACOS_NET
 using NSDraggingInfo = AppKit.INSDraggingInfo;
 #endif
@@ -17,6 +10,7 @@ namespace Eto.Mac.Forms
 	class MouseDelegate : NSObject
 	{
 		WeakReference widget;
+		bool entered;
 
 		public IMacViewHandler Handler { get { return (IMacViewHandler)widget.Target; } set { widget = new WeakReference(value); } }
 
@@ -24,15 +18,16 @@ namespace Eto.Mac.Forms
 		public void MouseMoved(NSEvent theEvent)
 		{
 			var h = Handler;
-			if (h == null) return;
+			if (h == null || !h.Enabled) return;
 			h.Callback.OnMouseMove(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
 		[Export("mouseEntered:")]
 		public void MouseEntered(NSEvent theEvent)
 		{
+			entered = true;
 			var h = Handler;
-			if (h == null) return;
+			if (h == null || !h.Enabled) return;
 			h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
@@ -45,8 +40,9 @@ namespace Eto.Mac.Forms
 		public void MouseExited(NSEvent theEvent)
 		{
 			var h = Handler;
-			if (h == null) return;
+			if (h == null || !h.Enabled) return;
 			h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+			entered = false;
 		}
 
 		[Export("scrollWheel:")]
@@ -55,6 +51,21 @@ namespace Eto.Mac.Forms
 			var h = Handler;
 			if (h == null) return;
 			h.Callback.OnMouseWheel(h.Widget, MacConversions.GetMouseEvent(h, theEvent, true));
+		}
+		
+		public void FireMouseLeaveIfNeeded()
+		{
+			var h = Handler;
+			if (h == null || h.Enabled || !entered) return;
+			entered = false;
+			Application.Instance.AsyncInvoke(() =>
+			{
+				if (!h.Widget.IsDisposed)
+				{
+					var theEvent = NSApplication.SharedApplication.CurrentEvent;
+					h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+				}
+			});
 		}
 		
 	}
@@ -83,6 +94,8 @@ namespace Eto.Mac.Forms
 		int SuppressMouseEvents { get; set; }
 		bool TextInputCancelled { get; set; }
 		bool TextInputImplemented { get; }
+		bool UseNSBoxBackgroundColor { get; set; }
+		bool Enabled { get; set; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
 
@@ -98,6 +111,7 @@ namespace Eto.Mac.Forms
 		bool TriggerMouseCallback();
 		MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent);
 		MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent);
+		void UpdateTrackingAreas();
 	}
 
 	static partial class MacView
@@ -156,6 +170,7 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selPerformZoom = Selector.GetHandle("performZoom:");
 		public static readonly IntPtr selArrangeInFront = Selector.GetHandle("arrangeInFront:");
 		public static readonly IntPtr selPerformMiniaturize = Selector.GetHandle("performMiniaturize:");
+		public static readonly IntPtr selUpdateTrackingAreas = Selector.GetHandle("updateTrackingAreas");
 		public static readonly Dictionary<string, IntPtr> systemActionSelectors = new Dictionary<string, IntPtr>
 		{
 			{ "cut", selCut },
@@ -178,6 +193,8 @@ namespace Eto.Mac.Forms
 		public static readonly object UseAlignmentFrame_Key = new object();
 		public static readonly object SuppressMouseEvents_Key = new object();
 		public static readonly object UseMouseTrackingLoop_Key = new object();
+		public static readonly object MouseTrackingRunLoopMode_Key = new object();
+		public static readonly object UseNSBoxBackgroundColor_Key = new object();
 		public static readonly IntPtr selSetDataProviderForTypes_Handle = Selector.GetHandle("setDataProvider:forTypes:");
 		public static readonly IntPtr selInitWithPasteboardWriter_Handle = Selector.GetHandle("initWithPasteboardWriter:");
 		public static readonly IntPtr selClass_Handle = Selector.GetHandle("class");
@@ -186,7 +203,20 @@ namespace Eto.Mac.Forms
 		// before 10.12, we have to call base.Layout() AFTER we do our layout otherwise it doesn't work correctly..
 		// however, that causes (temporary) glitches when resizing especially with Scrollable >= 10.12
 		public static readonly bool NewLayout = MacVersion.IsAtLeast(10, 12);
-
+		
+		internal static MarshalDelegates.Action_IntPtr_IntPtr TriggerUpdateTrackingAreas_Delegate = TriggerUpdateTrackingAreas;
+		static void TriggerUpdateTrackingAreas(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			
+			Messaging.void_objc_msgSendSuper(obj.SuperHandle, sel);
+			
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			{
+				handler.UpdateTrackingAreas();
+			}
+		}
+		
 		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr TriggerMouseDragged_Delegate = TriggerMouseDragged;
 		static void TriggerMouseDragged(IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -232,7 +262,7 @@ namespace Eto.Mac.Forms
 		{
 			var obj = Runtime.GetNSObject(sender);
 
-			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler && handler.Enabled)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				handler.TriggerMouseUp(obj, sel, theEvent);
@@ -243,7 +273,7 @@ namespace Eto.Mac.Forms
 		static void TriggerMouseWheel(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var obj = Runtime.GetNSObject(sender);
-			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler && handler.Enabled)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = MacConversions.GetMouseEvent(handler, theEvent, true);
@@ -615,7 +645,6 @@ namespace Eto.Mac.Forms
 				if (oldFrame.Size != newFrame.Size)
 					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 
-				CreateTracking();
 				InvalidateMeasure();
 			}
 		}
@@ -701,8 +730,8 @@ namespace Eto.Mac.Forms
 
 			return size;
 		}
-
-		void CreateTracking()
+		
+		public virtual void UpdateTrackingAreas()
 		{
 			if (!mouseMove)
 				return;
@@ -721,8 +750,6 @@ namespace Eto.Mac.Forms
 				frame = GetAlignmentRectForFrame(frame);
 
 				var options = mouseOptions | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.EnabledDuringMouseDrag;
-				if (!UseAlignmentFrame)
-					options |= NSTrackingAreaOptions.InVisibleRect;
 
 				tracking = new NSTrackingArea(frame, options, mouseDelegate, null);
 				EventControl.AddTrackingArea(tracking);
@@ -747,14 +774,14 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.MouseLeaveEvent:
 					mouseOptions |= NSTrackingAreaOptions.MouseEnteredAndExited;
 					mouseMove = true;
-					HandleEvent(Eto.Forms.Control.SizeChangedEvent);
-					CreateTracking();
+					AddMethod(MacView.selUpdateTrackingAreas, MacView.TriggerUpdateTrackingAreas_Delegate, "v@:@", EventControl);
+					EventControl.UpdateTrackingAreas();
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
 					mouseOptions |= NSTrackingAreaOptions.MouseMoved;
 					mouseMove = true;
-					HandleEvent(Eto.Forms.Control.SizeChangedEvent);
-					CreateTracking();
+					AddMethod(MacView.selUpdateTrackingAreas, MacView.TriggerUpdateTrackingAreas_Delegate, "v@:@", EventControl);
+					EventControl.UpdateTrackingAreas();
 					AddMethod(MacView.selMouseDragged, MacView.TriggerMouseDragged_Delegate, "v@:@");
 					AddMethod(MacView.selRightMouseDragged, MacView.TriggerMouseDragged_Delegate, "v@:@");
 					AddMethod(MacView.selOtherMouseDragged, MacView.TriggerMouseDragged_Delegate, "v@:@");
@@ -817,6 +844,9 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.DragLeaveEvent:
 					AddMethod(MacView.selDraggingExited, MacView.TriggerDraggingExited_Delegate, "v@:@", DragControl);
 					break;
+				case Eto.Forms.Control.DragEndEvent:
+					// handled in EtoDragSource, TreeGridViewHandler.EtoDragSource, and GridViewHandler.EtoDragSource
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -872,7 +902,6 @@ namespace Eto.Mac.Forms
 		
 		public virtual void OnSizeChanged(EventArgs e)
 		{
-			CreateTracking();
 		}
 
 		public virtual void Invalidate(bool invalidateChildren)
@@ -930,7 +959,13 @@ namespace Eto.Mac.Forms
 
 		bool drawRectAdded;
 
-		protected virtual bool UseNSBoxBackgroundColor => true;
+		public bool UseNSBoxBackgroundColor
+		{
+			get => Widget.Properties.Get<bool>(MacView.UseNSBoxBackgroundColor_Key, DefaultUseNSBoxBackgroundColor);
+			set => Widget.Properties.Set(MacView.UseNSBoxBackgroundColor_Key, value, DefaultUseNSBoxBackgroundColor);
+		}
+
+		protected virtual bool DefaultUseNSBoxBackgroundColor => true;
 		
 		protected virtual IColorizeCell ColorizeCell => null;
 		
@@ -1005,6 +1040,9 @@ namespace Eto.Mac.Forms
 			{
 				ControlEnabled = newEnabled;
 				Callback.OnEnabledChanged(Widget, EventArgs.Empty);
+
+				if (!newEnabled)
+					mouseDelegate?.FireMouseLeaveIfNeeded();
 			}
 		}
 
@@ -1268,7 +1306,7 @@ namespace Eto.Mac.Forms
 		{
 			var handler = data.Handler as IDataObjectHandler;
 
-			var source = new EtoDragSource { AllowedOperation = allowedAction.ToNS(), SourceView = ContainerControl };
+			var source = new EtoDragSource { AllowedOperation = allowedAction.ToNS(), SourceView = ContainerControl, Handler = this, Data = data };
 
 			NSDraggingItem[] draggingItems = null;
 			if (image != null)
@@ -1343,6 +1381,12 @@ namespace Eto.Mac.Forms
 		{
 			get => Widget.Properties.Get<bool>(MacView.UseMouseTrackingLoop_Key, true);
 			set => Widget.Properties.Set<bool>(MacView.UseMouseTrackingLoop_Key, value, true);
+		}
+
+		public NSRunLoopMode MouseTrackingRunLoopMode
+		{
+			get => Widget.Properties.Get<NSRunLoopMode>(MacView.MouseTrackingRunLoopMode_Key, NSRunLoopMode.Default);
+			set => Widget.Properties.Set<NSRunLoopMode>(MacView.MouseTrackingRunLoopMode_Key, value, NSRunLoopMode.Default);
 		}
 
 		public void SetAlignmentFrameSize(CGSize size)
@@ -1443,6 +1487,9 @@ namespace Eto.Mac.Forms
 			// showing context menus, dialogs, etc.
 			MacView.InMouseTrackingLoop = true;
 			
+			if (!Enabled)
+				return null;
+			
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				Callback.OnMouseDoubleClick(Widget, args);
@@ -1451,7 +1498,7 @@ namespace Eto.Mac.Forms
 			{
 				Callback.OnMouseDown(Widget, args);
 			}
-			if (!args.Handled)
+			if (!args.Handled && sel != IntPtr.Zero)
 			{
 				SuppressMouseTriggerCallback = false;
 				SuppressMouseEvents++;
@@ -1472,7 +1519,7 @@ namespace Eto.Mac.Forms
 				// Console.WriteLine("Entered MouseTrackingLoop");
 				do
 				{
-					var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoopMode.EventTracking, true);
+					var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, MouseTrackingRunLoopMode, true);
 
 					var evtType = evt.Type;
 					switch (evt.Type)
@@ -1522,6 +1569,11 @@ namespace Eto.Mac.Forms
 		{
 			get => Widget.Properties.Get<bool>(MacView.TextInputImplemented_Key);
 			private set => Widget.Properties.Set(MacView.TextInputImplemented_Key, value);
+		}
+		
+		public virtual void UpdateLayout()
+		{
+			ContainerControl?.Window?.LayoutIfNeeded();
 		}
 	}
 }

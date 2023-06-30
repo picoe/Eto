@@ -1,9 +1,4 @@
 #define GTK_2_6
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
 using Eto.Shared.Drawing;
 
 namespace Eto.GtkSharp.Drawing

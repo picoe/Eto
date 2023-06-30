@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-
 namespace Eto.GtkSharp.Forms.Menu
 {
 	public interface IMenuHandler

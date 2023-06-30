@@ -1,14 +1,5 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
 using swd = System.Windows.Data;
-using swm = System.Windows.Media;
 using Eto.Wpf.Drawing;
-using Eto.Drawing;
-using System.ComponentModel;
-using System.Linq;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.Column, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
@@ -110,9 +101,11 @@ namespace Eto.Wpf.Forms.Cells
 				ScalingMode = swm.BitmapScalingMode.HighQuality;
 			}
 
+			public sw.Thickness ImageMargin { get; set; } = new sw.Thickness(0, 2, 2, 2);
+
 			swc.Image CreateImage()
 			{
-				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness(0, 2, 2, 2) };
+				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = ImageMargin };
 				swm.RenderOptions.SetBitmapScalingMode(image, ScalingMode);
 				image.DataContextChanged += (sender, e) =>
 				{
