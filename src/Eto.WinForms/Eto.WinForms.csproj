@@ -113,6 +113,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Eto.Wpf\Forms\DataObjectHandler.cs">
       <Link>Forms\DataObjectHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\Forms\KeyboardHandler.cs">
+      <Link>Forms\KeyboardHandler.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

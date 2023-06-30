@@ -6,13 +6,13 @@
 [Handler(typeof(IHandler))]
 public static class Keyboard
 {
-	static IHandler Handler { get { return Platform.Instance.CreateShared<IHandler>(); } }
+	static IHandler Handler => Platform.Instance.CreateShared<IHandler>();
 
 	/// <summary>
 	/// Gets an enumeration of all keys supported by the <see cref="IsKeyLocked"/> method.
 	/// </summary>
 	/// <value>The supported lock keys.</value>
-	public static IEnumerable<Keys> SupportedLockKeys { get { return Handler.SupportedLockKeys; } }
+	public static IEnumerable<Keys> SupportedLockKeys => Handler.SupportedLockKeys;
 
 	/// <summary>
 	/// Determines if the specified <paramref name="key"/> is in a locked state, such as the <see cref="Keys.CapsLock"/>, 
@@ -20,10 +20,7 @@ public static class Keyboard
 	/// </summary>
 	/// <returns><c>true</c> if the specified key is locked; otherwise, <c>false</c>.</returns>
 	/// <param name="key">Key to determine the state.</param>
-	public static bool IsKeyLocked(Keys key)
-	{
-		return Handler.IsKeyLocked(key);
-	}
+	public static bool IsKeyLocked(Keys key) => Handler.IsKeyLocked(key);
 
 	/// <summary>
 	/// Gets the current modifier state for keys such as <see cref="Keys.Control"/>, <see cref="Keys.Alt"/> and <see cref="Keys.Shift"/>.
@@ -31,9 +28,19 @@ public static class Keyboard
 	/// <remarks>
 	/// This typically will only return a value for the current event, such as during a mouse or keyboard event.
 	/// </remarks>
-	public static Keys Modifiers
+	public static Keys Modifiers => Handler.Modifiers;
+	
+	/// <summary>
+	/// Event to handle when the <see cref="Modifiers"/> or <see cref="SupportedLockKeys"/> state has changed
+	/// </summary>
+	/// <remarks>
+	/// Note that this event is long-lived, so if you subscribe to this event to an instance method of a control or 
+	/// short-lived object be sure to unsubscribe it otherwise that object will never be garbage collected.
+	/// </remarks>
+	public static event EventHandler<EventArgs> ModifiersChanged
 	{
-		get { return Handler.Modifiers; }
+		add => Handler.ModifiersChanged += value;
+		remove => Handler.ModifiersChanged -= value;
 	}
 
 	/// <summary>
@@ -62,5 +69,14 @@ public static class Keyboard
 		/// This typically will only return a value for the current event, such as during a mouse or keyboard event.
 		/// </remarks>
 		Keys Modifiers { get; }
+		
+		/// <summary>
+		/// Event to handle when the <see cref="Modifiers"/> or <see cref="SupportedLockKeys"/> state has changed
+		/// </summary>
+		/// <remarks>
+		/// Note that this event is long-lived, so if you subscribe to this event to an instance method of a control or 
+		/// short-lived object be sure to unsubscribe it otherwise that object will never be garbage collected.
+		/// </remarks>
+		event EventHandler<EventArgs> ModifiersChanged;
 	}
 }

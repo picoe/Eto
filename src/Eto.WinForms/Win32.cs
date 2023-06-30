@@ -182,6 +182,25 @@ namespace Eto
 			PRINT = 0x0317,
 			SHOWWINDOW = 0x00000018
 		}
+		
+		public enum VK : long
+		{
+			SHIFT = 0x10,
+			CONTROL = 0x11,
+			MENU = 0x12,
+			CAPSLOCK = 0x14,
+			ESCAPE = 0x1B,
+			NUMLOCK = 0x90,
+			SCROLL = 0x91,
+			LSHIFT = 0xA0,
+			RSHIFT = 0xA1,
+			LCONTROL = 0xA2,
+			RCONTROL = 0xA3,
+			LMENU = 0xA4,
+			RMENU = 0xA5,
+			LWIN = 0x5B,
+			RWIN = 0x5C
+		}
 
 		public enum HT
 		{
@@ -392,23 +411,41 @@ namespace Eto
 		}
 
 		// for tray indicator
+		
+		public enum WH
+		{
+			KEYBOARD = 2,
+			KEYBOARD_LL = 13,
+			MOUSE_LL = 14
+		}
+
+		
+        public static IntPtr SetHook(WH hookId, HookProc proc)
+        {
+			using (Process curProcess = Process.GetCurrentProcess())
+			using (ProcessModule curModule = curProcess.MainModule)
+			{
+				return SetWindowsHookEx((IntPtr)hookId, proc, GetModuleHandle(curModule.ModuleName), 0);
+			}
+		}
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-		public static extern int CallNextHookEx(int hookId, int code, int param, IntPtr dataPointer);
+		public static extern IntPtr CallNextHookEx(IntPtr hookId, int code, IntPtr wParam, IntPtr lParam);
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
 		public static extern IntPtr GetModuleHandle(string moduleName);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-		public static extern int SetWindowsHookEx(int hookId, HookProc function, IntPtr instance, int threadId);
+		public static extern IntPtr SetWindowsHookEx(IntPtr hookId, HookProc function, IntPtr instance, int threadId);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-		public static extern int UnhookWindowsHookEx(int hookId);
+        [return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool UnhookWindowsHookEx(IntPtr hookId);
 
 		[DllImportAttribute("user32.dll")]
 		public static extern bool ReleaseCapture();
 
-		public delegate int HookProc(int code, int wParam, IntPtr structPointer);
+		public delegate IntPtr HookProc(int code, IntPtr wParam, IntPtr lParam);
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct MouseLowLevelHook
