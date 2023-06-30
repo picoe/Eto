@@ -3,12 +3,21 @@
     <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);PCL</DefineConstants>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   
   <PropertyGroup>
     <Title>Eto Test Application</Title>
     <Description>An example application and Unit Tests for Eto.Forms.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Linq" />
+    <Using Include="System.IO" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\..\src\Eto\Helper.cs">

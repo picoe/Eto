@@ -1,15 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Eto.Drawing;
-using System.IO;
-using sw = System.Windows;
-using swi = System.Windows.Interop;
-using swm = System.Windows.Media;
-using swmi = System.Windows.Media.Imaging;
-using sd = System.Drawing;
-using System.Linq;
-
 namespace Eto.Wpf.Drawing
 {
 

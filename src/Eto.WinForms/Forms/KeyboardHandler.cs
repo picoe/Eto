@@ -1,9 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using swf = System.Windows.Forms;
-using System.Collections.Generic;
-
-namespace Eto.WinForms.Forms
+﻿namespace Eto.WinForms.Forms
 {
 	public class KeyboardHandler : Keyboard.IHandler
 	{

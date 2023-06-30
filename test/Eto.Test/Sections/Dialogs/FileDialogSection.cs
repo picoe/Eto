@@ -1,9 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using System;
-
 namespace Eto.Test.Sections.Dialogs
 {
 	[Section("Dialogs", "File Dialog")]

@@ -1,11 +1,5 @@
 using Eto.IO;
-using Eto.Drawing;
-using System.IO;
 using Eto.Mac.Drawing;
-using System;
-
-
-
 namespace Eto.Mac.IO
 {
 	public class SystemIconsHandler : SystemIcons.IHandler

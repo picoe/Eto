@@ -1,9 +1,4 @@
-﻿using System;
-using System.Globalization;
-using Eto.Drawing;
-using sc = System.ComponentModel;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 internal class SegmentedItemConverter : sc.TypeConverter
 {

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms
 {
 	public interface IMacControlHandler

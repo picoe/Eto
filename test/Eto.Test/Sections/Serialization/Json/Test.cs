@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Diagnostics;
 using Eto.Serialization.Json;
 
 namespace Eto.Test.Sections.Serialization.Json

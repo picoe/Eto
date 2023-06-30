@@ -1,13 +1,4 @@
-using System;
-using System.Linq;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using Eto.Forms;
-using Eto.Drawing;
 using System.Windows;
-using System.Windows.Input;
-
 namespace Eto.Wpf.Forms.ToolBar
 {
 	public class RadioToolItemHandler : ToolItemHandler<swc.Primitives.ToggleButton, RadioToolItem>, RadioToolItem.IHandler
@@ -35,7 +26,7 @@ namespace Eto.Wpf.Forms.ToolBar
 			Widget.OnClick(EventArgs.Empty);
 		}
 
-		private void Control_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+		private void Control_PreviewMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
 			if (Checked)
 			{

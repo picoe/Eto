@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-
 namespace Eto.Mac.Forms.ToolBar
 {
 	public class RadioToolItemHandler : ToolItemHandler<NSToolbarItem, RadioToolItem>, RadioToolItem.IHandler

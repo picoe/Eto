@@ -1,12 +1,3 @@
-using System;
-using System.Text;
-using System.Linq;
-using System.Globalization;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Reflection;
-
-
 namespace Eto.Forms;
 
 /// <summary>

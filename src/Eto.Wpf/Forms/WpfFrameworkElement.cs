@@ -1,15 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swf = System.Windows.Forms;
-using System.Linq;
-using System.Collections.Generic;
 using System.Windows.Interop;
-using System.Runtime.InteropServices;
 using static System.Windows.WpfDataObjectExtensions;
 
 namespace Eto.Wpf.Forms

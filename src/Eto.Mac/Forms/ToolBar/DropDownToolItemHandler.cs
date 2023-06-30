@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms.ToolBar
 {
 	public class DropDownToolItemHandler : ToolItemHandler<NSMenuToolbarItem, DropDownToolItem>, DropDownToolItem.IHandler

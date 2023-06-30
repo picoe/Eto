@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// General keyboard methods

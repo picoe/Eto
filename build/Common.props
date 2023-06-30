@@ -16,7 +16,7 @@
     <HasXamarinMac Condition="$(HasXamarinMac) == ''">True</HasXamarinMac> <!-- VS for Mac needs this, Exists isn't evaluated -->
     
     <ArtifactsDir Condition="$(BuildOutoutDir) == ''">$(BasePath)artifacts\</ArtifactsDir>
-    <BaseIntermediateOutputPath Condition="$(BaseIntermediateOutputPath) == ''">$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition="$(BaseIntermediateOutputPath) == ''">$(ArtifactsDir)obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <SourceDir Condition="$(SourceDir) == ''">$(BasePath)src\</SourceDir>
     <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
     <PackageOutputPath>$(ArtifactsDir)nuget\$(Configuration)\</PackageOutputPath>

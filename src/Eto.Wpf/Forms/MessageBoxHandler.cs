@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using sw = System.Windows;
 //using WpfMessageBox = Xceed.Wpf.Toolkit.MessageBox;
 using WpfMessageBox = System.Windows.MessageBox;
 

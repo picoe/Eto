@@ -1,10 +1,4 @@
-﻿using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using swc = System.Windows.Controls;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -12,7 +6,7 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		public IWpfFrameworkElement Handler { get; set; }
 
-		protected override Size MeasureOverride(Size constraint)
+		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}

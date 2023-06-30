@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-namespace Eto.Test.Sections.Controls
+﻿namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(TextStepper))]
 	public class TextStepperSection : Scrollable

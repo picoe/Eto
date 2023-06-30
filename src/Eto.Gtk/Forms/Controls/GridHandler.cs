@@ -1,11 +1,5 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
 using Eto.GtkSharp.Forms.Cells;
 using Eto.GtkSharp.Forms.Menu;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	class GridHandler

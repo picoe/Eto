@@ -1,4 +1,3 @@
-using Eto.Drawing;
 using Eto.IO;
 
 namespace Eto.GtkSharp.IO

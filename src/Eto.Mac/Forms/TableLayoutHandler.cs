@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-
-
 #if IOS
 using UIKit;
 using CoreGraphics;

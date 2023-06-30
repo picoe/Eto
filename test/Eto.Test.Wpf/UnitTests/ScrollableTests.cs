@@ -1,6 +1,4 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-using Eto.Test.UnitTests;
+﻿using Eto.Test.UnitTests;
 using NUnit.Framework;
 
 namespace Eto.Test.Wpf.UnitTests

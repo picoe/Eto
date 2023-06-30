@@ -1,12 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.ObjectModel;
-using sc = System.ComponentModel;
-using Eto.Drawing;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.Forms;
 
 /// <summary>

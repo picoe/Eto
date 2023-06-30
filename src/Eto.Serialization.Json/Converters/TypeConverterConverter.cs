@@ -1,8 +1,4 @@
-using System;
 using Newtonsoft.Json;
-using System.Reflection;
-using System.Collections.Generic;
-using sc = System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 namespace Eto.Serialization.Json.Converters

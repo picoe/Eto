@@ -1,7 +1,4 @@
 using sdp = System.Drawing.Printing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Printing
 {
 	public class PrintSettingsHandler : WidgetHandler<sdp.PrinterSettings, PrintSettings>, PrintSettings.IHandler

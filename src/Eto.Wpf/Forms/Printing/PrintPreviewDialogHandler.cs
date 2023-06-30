@@ -1,9 +1,3 @@
-using System;
-using System.IO;
-using Eto.Forms;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-
 namespace Eto.Wpf.Forms.Printing
 {
 	public class EtoPrintPreviewDialog : sw.Window

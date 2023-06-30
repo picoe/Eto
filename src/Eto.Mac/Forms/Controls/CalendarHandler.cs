@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Forms;
-
-namespace Eto.Mac.Forms.Controls
+﻿namespace Eto.Mac.Forms.Controls
 {
 	public class CalendarHandler : MacControl<NSDatePicker, Calendar, Calendar.ICallback>, Calendar.IHandler
 	{

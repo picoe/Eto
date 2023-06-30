@@ -1,5 +1,3 @@
-using System;
-
 namespace Eto.Mac
 {
 	public static partial class MacConversions

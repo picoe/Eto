@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ButtonHandler : ButtonHandler<Gtk.Button, Button, Button.ICallback>

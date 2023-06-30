@@ -1,13 +1,8 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-using System;
-using Sd = System.Drawing;
-using Swf = System.Windows.Forms;
-using Eto.WinForms.Forms.Menu;
+﻿using Eto.WinForms.Forms.Menu;
 
 namespace Eto.WinForms.Forms
 {
-    public class TrayIndicatorHandler : WidgetHandler<Swf.NotifyIcon, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
+    public class TrayIndicatorHandler : WidgetHandler<swf.NotifyIcon, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
     {
 		Image _image;
 		ContextMenu _menu;
@@ -33,8 +28,8 @@ namespace Eto.WinForms.Forms
 					Control.Icon = null;
 				else
 				{
-					var bitmap = new Sd.Bitmap(_image.ToSD());
-					Control.Icon = Sd.Icon.FromHandle(bitmap.GetHicon());
+					var bitmap = new sd.Bitmap(_image.ToSD());
+					Control.Icon = sd.Icon.FromHandle(bitmap.GetHicon());
 				}
 			}
 		}
@@ -51,7 +46,7 @@ namespace Eto.WinForms.Forms
 
 		public TrayIndicatorHandler()
         {
-            Control = new Swf.NotifyIcon();
+            Control = new swf.NotifyIcon();
         }
 
         public override void AttachEvent(string id)
@@ -61,7 +56,7 @@ namespace Eto.WinForms.Forms
                 case TrayIndicator.ActivatedEvent:
                     Control.MouseClick += (sender, e) =>
                     {
-                        if (e.Button.HasFlag(Swf.MouseButtons.Left))
+                        if (e.Button.HasFlag(swf.MouseButtons.Left))
                             Callback.OnActivated(Widget, EventArgs.Empty);
                     };
                     break;

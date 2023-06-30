@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class SliderHandler : MacControl<NSSlider, Slider, Slider.ICallback>, Slider.IHandler

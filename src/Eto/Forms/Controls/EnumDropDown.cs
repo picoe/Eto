@@ -1,8 +1,3 @@
-using System;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Reflection;
-
 namespace Eto.Forms;
 
 /// <summary>

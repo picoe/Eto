@@ -1,6 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
 using CoreGraphics;
 
 namespace Eto.iOS.Forms.Controls

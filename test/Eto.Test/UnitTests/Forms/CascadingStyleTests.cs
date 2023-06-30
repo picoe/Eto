@@ -1,5 +1,4 @@
-﻿using Eto.Forms;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms
 {

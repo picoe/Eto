@@ -1,15 +1,5 @@
-using System;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.WinForms.Forms.Menu;
-using System.Reflection;
-using System.Diagnostics;
-
 namespace Eto.WinForms.Forms
 {
 	public interface IWindowsControl : Control.IHandler

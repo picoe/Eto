@@ -1,22 +1,7 @@
-using System;
-using System.Reflection;
-using Eto.Forms;
-using System.Collections.Generic;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Api;
-using System.Threading.Tasks;
-using Eto.Drawing;
-using System.Linq;
 using NUnit.Framework.Interfaces;
-using System.IO;
-using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
-using System.Text;
 using System.Collections.Concurrent;
-using System.Collections;
-using System.ComponentModel;
-using System.Threading;
 using Eto.Test.UnitTests;
 
 namespace Eto.Test.Sections

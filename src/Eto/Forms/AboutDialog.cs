@@ -1,8 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Eto.Drawing;
-
+﻿using System.Runtime.CompilerServices;
 namespace Eto.Forms;
 
 /// <summary>

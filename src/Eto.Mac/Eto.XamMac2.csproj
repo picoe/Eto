@@ -10,7 +10,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
     <NoWarn>CA1416</NoWarn>
-    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="AppKit" />

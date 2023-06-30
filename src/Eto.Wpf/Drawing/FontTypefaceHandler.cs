@@ -1,15 +1,5 @@
-using Eto.Drawing;
-using System.Globalization;
-using System.Linq;
-using swm = System.Windows.Media;
-using sw = System.Windows;
 using swd = System.Windows.Documents;
 using Eto.Wpf.CustomControls.FontDialog;
-using System.Collections.Generic;
-using Eto.Forms;
-using System.IO;
-using System.Runtime.InteropServices;
-using System;
 using Eto.Shared.Drawing;
 
 namespace Eto.Wpf.Drawing

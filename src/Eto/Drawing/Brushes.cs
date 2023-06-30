@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using BrushKey = System.Tuple<System.Int32>;
 
 namespace Eto.Drawing;

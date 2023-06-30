@@ -1,8 +1,4 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-using System.ComponentModel;
-
-namespace Eto.Test.Sections.Controls
+﻿namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(Button))]
 	public class ButtonSection : Scrollable, INotifyPropertyChanged

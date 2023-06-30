@@ -1,12 +1,6 @@
-using System;
-using System.Reflection;
 using SD = System.Drawing;
-using Eto.Forms;
 using UIKit;
-using Eto.Drawing;
 using Foundation;
-using System.Collections.Generic;
-using System.Linq;
 using ObjCRuntime;
 
 namespace Eto.iOS.Forms.Controls

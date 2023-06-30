@@ -1,8 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 using Eto.GtkSharp.Forms;
 using Eto.GtkSharp.Forms.Menu;

@@ -1,13 +1,4 @@
-using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-
 namespace Eto.Forms;
 
 /// <summary>

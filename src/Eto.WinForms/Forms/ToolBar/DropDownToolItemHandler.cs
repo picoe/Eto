@@ -1,17 +1,12 @@
-using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.ToolBar
 {
-	public class DropDownToolItemHandler : ToolItemHandler<SWF.ToolStripDropDownButton, DropDownToolItem>, DropDownToolItem.IHandler
+	public class DropDownToolItemHandler : ToolItemHandler<swf.ToolStripDropDownButton, DropDownToolItem>, DropDownToolItem.IHandler
 	{
 		bool openedHandled;
 
 		public DropDownToolItemHandler()
 		{
-			Control = new SWF.ToolStripDropDownButton();
+			Control = new swf.ToolStripDropDownButton();
 			Control.Tag = this;
 			Control.Click += control_Click;
 		}
@@ -53,7 +48,7 @@ namespace Eto.WinForms.Forms.ToolBar
 		
 		public void AddMenu(int index, MenuItem item)
 		{
-			Control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
+			Control.DropDownItems.Insert(index, (swf.ToolStripItem)item.ControlObject);
 			if (!openedHandled)
 			{
 				Control.DropDownOpening += HandleDropDownOpened;
@@ -63,7 +58,7 @@ namespace Eto.WinForms.Forms.ToolBar
 
 		public void RemoveMenu(MenuItem item)
 		{
-			Control.DropDownItems.Remove((SWF.ToolStripItem)item.ControlObject);
+			Control.DropDownItems.Remove((swf.ToolStripItem)item.ControlObject);
 		}
 
 		public void Clear()

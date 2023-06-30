@@ -1,7 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using swf = System.Windows.Forms;
-
 namespace Eto.WinForms.Forms
 {
 	public class MouseHandler : Mouse.IHandler

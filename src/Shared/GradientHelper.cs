@@ -1,10 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Eto
+﻿namespace Eto
 {
 	static class GradientHelper
 	{

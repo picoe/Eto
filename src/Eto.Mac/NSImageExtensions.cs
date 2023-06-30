@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-
-
 namespace Eto.Mac
 {
 	public static class NSImageExtensions

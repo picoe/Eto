@@ -5,10 +5,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 
-using System;
 using Eto;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms
 {
 <#

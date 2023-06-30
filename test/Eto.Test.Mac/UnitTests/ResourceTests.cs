@@ -1,6 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.IO;
 using NUnit.Framework;
 
 namespace Eto.Test.Mac64.UnitTests

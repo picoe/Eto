@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-namespace Eto.Test.Sections.Drawing
+﻿namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "Clip Transforms")]
 	public class ClipTransformSection : Panel

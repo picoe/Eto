@@ -1,7 +1,3 @@
-using System;
-using System.Globalization;
-using Eto.Drawing;
-
 #if IOS
 
 using UIKit;

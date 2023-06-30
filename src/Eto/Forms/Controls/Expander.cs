@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// A control with a panel that can be expanded or collapsed with a header and button.

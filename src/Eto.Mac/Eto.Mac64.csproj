@@ -46,6 +46,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Using Include="System.Int64" Alias="nint" />
     <Using Include="System.UInt64" Alias="nuint" />
     <Using Include="System.IntPtr" Alias="NativeHandle" />
+    <Using Include="System.Drawing" Alias="sd" />
   </ItemGroup>
   
   <ItemGroup>

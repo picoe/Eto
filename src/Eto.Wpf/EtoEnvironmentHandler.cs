@@ -1,8 +1,4 @@
-using System;
 using Eto;
-using System.Reflection;
-using System.IO;
-
 namespace Eto.Wpf
 {
 	public class EtoEnvironmentHandler : WidgetHandler<Widget>, EtoEnvironment.IHandler

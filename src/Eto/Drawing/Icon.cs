@@ -1,11 +1,3 @@
-using System;
-using System.Globalization;
-using System.Reflection;
-using System.IO;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using sc = System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Eto.Drawing;

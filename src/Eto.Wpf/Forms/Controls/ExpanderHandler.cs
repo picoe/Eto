@@ -1,10 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using System.ComponentModel;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoExpander : swc.Expander, IEtoWpfControl

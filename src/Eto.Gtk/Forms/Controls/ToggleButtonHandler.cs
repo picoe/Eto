@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ToggleButtonHandler : ButtonHandler<Gtk.ToggleButton, ToggleButton, ToggleButton.ICallback>, ToggleButton.IHandler

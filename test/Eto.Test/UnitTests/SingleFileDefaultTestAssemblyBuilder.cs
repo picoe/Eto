@@ -1,11 +1,6 @@
 // Copyright (c) Charlie Poole, Rob Prouse and Contributors. MIT License - see LICENSE.txt
 // modified to remove use of CodeBase which is unsupported in single file applications
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using System.Security;
 using NUnit;
 using NUnit.Framework;

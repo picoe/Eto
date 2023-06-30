@@ -1,10 +1,5 @@
-using System;
-using System.Text;
 using System.Net;
-using System.Diagnostics;
 using System.Net.Mime;
-using System.IO;
-
 namespace Eto.CustomControls
 {
 	public class HttpServer : IDisposable

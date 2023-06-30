@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.IO;
 using Eto.GtkSharp.Drawing;
 using Eto.GtkSharp.Forms.Cells;
@@ -12,8 +9,6 @@ using Eto.Forms.ThemedControls;
 using Eto.GtkSharp.Forms.Menu;
 using Eto.GtkSharp.Forms.ToolBar;
 using Eto.Shared.Forms;
-using System.Linq;
-
 namespace Eto.GtkSharp
 {
 	static class Helper

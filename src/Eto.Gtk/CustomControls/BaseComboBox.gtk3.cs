@@ -1,5 +1,4 @@
 #if GTK3
-using System;
 using Gtk;
 
 namespace Eto.GtkSharp.CustomControls

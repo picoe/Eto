@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using Eto.Drawing;
-
-namespace Eto.Test
+﻿namespace Eto.Test
 {
 	public class Settings
 	{

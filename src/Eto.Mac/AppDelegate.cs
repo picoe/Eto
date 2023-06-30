@@ -1,5 +1,3 @@
-using Eto.Forms;
-using System.ComponentModel;
 using Eto.Mac.Forms;
 
 

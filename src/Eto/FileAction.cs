@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto;
+﻿namespace Eto;
 
 /// <summary>
 /// File action.

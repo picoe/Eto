@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using Eto.Forms;
-
-namespace Eto.GtkSharp.Forms
+﻿namespace Eto.GtkSharp.Forms
 {
 	public class AboutDialogHandler : WidgetHandler<Gtk.AboutDialog, AboutDialog, AboutDialog.ICallback>, AboutDialog.IHandler
 	{

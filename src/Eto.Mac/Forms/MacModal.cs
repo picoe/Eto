@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms
 {
 	public class ModalEventArgs : EventArgs
@@ -99,7 +96,7 @@ namespace Eto.Mac.Forms
 			var result = (int)app.RunModalSession(Session);
 
 			// Give the main loop some time:
-#if MACOS_NET
+#if MACOS_NET || XAMMAC
 			NSRunLoop.Current.RunUntil(NSRunLoopMode.Default, NSDate.DistantFuture);
 #else
 			NSRunLoop.Current.RunUntil(NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);

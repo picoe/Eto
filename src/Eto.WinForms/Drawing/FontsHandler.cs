@@ -1,12 +1,5 @@
-using Eto.Drawing;
 using Eto.Shared.Drawing;
 using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using sd = System.Drawing;
-
 namespace Eto.WinForms.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler

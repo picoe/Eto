@@ -42,6 +42,13 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Using Include="System.Windows.Forms" Alias="swf" />
+    <Using Include="System.Drawing" Alias="sd" />
+    <Using Include="System.Drawing.Imaging" Alias="sdi" />
+    <Using Include="System.Drawing.Drawing2D" Alias="sd2" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="..\..\lib\SHDocVw\Interop.SHDocVw.dll" EmbedInteropTypes="False" Private="False" />

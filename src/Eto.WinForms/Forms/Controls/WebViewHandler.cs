@@ -1,14 +1,5 @@
-using System;
-using System.Linq;
 using SHDocVw;
-using swf = System.Windows.Forms;
-using Eto.Forms;
 using Eto.CustomControls;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class WebViewHandler : WindowsControl<swf.WebBrowser, WebView, WebView.ICallback>, WebView.IHandler

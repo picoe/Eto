@@ -1,10 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using Eto.Forms;
-
-
-
-namespace Eto.Mac.Forms
+﻿namespace Eto.Mac.Forms
 {
 	public class OpenWithDialogHandler : WidgetHandler<NSOpenPanel, OpenWithDialog, OpenWithDialog.ICallback>, OpenWithDialog.IHandler
 	{

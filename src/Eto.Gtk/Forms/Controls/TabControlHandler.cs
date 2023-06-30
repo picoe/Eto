@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TabControlHandler : GtkContainer<Gtk.Notebook, TabControl, TabControl.ICallback>, TabControl.IHandler

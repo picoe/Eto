@@ -1,7 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System.Linq;
-
 namespace Eto.Mac.Forms
 {
 	public class WindowHandler : Window.IWindowHandler

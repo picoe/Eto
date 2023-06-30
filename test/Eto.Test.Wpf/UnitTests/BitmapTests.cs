@@ -1,6 +1,3 @@
-using System;
-using System.Diagnostics;
-using Eto.Drawing;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
 

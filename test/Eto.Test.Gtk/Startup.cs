@@ -1,8 +1,5 @@
 using Eto;
 using Eto.Test;
-using System;
-using System.Diagnostics;
-
 namespace Eto.Test.Gtk
 {
 	class Startup

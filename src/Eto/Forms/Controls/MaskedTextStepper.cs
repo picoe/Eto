@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using System.ComponentModel;
-using System.Globalization;
-using System.Text;
-
 namespace Eto.Forms;
 
 /// <summary>

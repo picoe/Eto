@@ -1,9 +1,3 @@
-using System;
-using System.Windows.Input;
-using Eto.Forms;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-
 namespace Eto.Wpf.Forms
 {
 	public class FormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, Form.IHandler
@@ -23,7 +17,7 @@ namespace Eto.Wpf.Forms
 				base.OnActivated(e);
 			}
 
-			protected override void OnPreviewGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+			protected override void OnPreviewGotKeyboardFocus(swi.KeyboardFocusChangedEventArgs e)
 			{
 				if (!Focusable)
 				{

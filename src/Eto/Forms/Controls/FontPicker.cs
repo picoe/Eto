@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Control to show and pick a font.

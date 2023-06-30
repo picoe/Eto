@@ -1,9 +1,3 @@
-using System;
-using System.Diagnostics;
-using Eto.Forms;
-using System.ComponentModel;
-using System.Linq.Expressions;
-
 namespace Eto.Forms;
 
 /// <summary>

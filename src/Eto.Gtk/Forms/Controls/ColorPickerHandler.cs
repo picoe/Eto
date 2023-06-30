@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-namespace Eto.GtkSharp.Forms.Controls
+﻿namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ColorPickerHandler : GtkControl<Gtk.ColorButton, ColorPicker, ColorPicker.ICallback>, ColorPicker.IHandler
 	{

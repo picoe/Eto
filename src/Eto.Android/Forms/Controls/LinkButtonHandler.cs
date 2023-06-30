@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Android.Forms.Controls;
 
 using aa = Android.App;

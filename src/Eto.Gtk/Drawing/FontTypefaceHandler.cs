@@ -1,11 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<Pango.FontFace, FontTypeface>, FontTypeface.IHandler

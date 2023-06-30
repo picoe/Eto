@@ -1,9 +1,6 @@
-using System;
 using Foundation;
 using UIKit;
 using Eto.iOS.Forms;
-using Eto.Forms;
-
 namespace Eto.iOS
 {
 	[Foundation.Register("EtoAppDelegate")]

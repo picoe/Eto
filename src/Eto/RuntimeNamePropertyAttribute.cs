@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Eto;
+﻿namespace Eto;
 
 /// <summary>
 /// Attribute to specify the name property of a control for serialization

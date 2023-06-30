@@ -1,7 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Forms;
 using sd = System.Drawing;
 

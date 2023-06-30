@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using System.ComponentModel;
-
-namespace Eto.Forms.ThemedControls;
+﻿namespace Eto.Forms.ThemedControls;
 
 /// <summary>
 /// Themed version of the <see cref="Stepper"/> control for platforms that have no support for such a control.

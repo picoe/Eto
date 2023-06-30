@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using Eto.Drawing;
-using System.Linq;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	interface ISegmentedItemHandler

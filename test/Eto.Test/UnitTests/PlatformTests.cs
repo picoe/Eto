@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests

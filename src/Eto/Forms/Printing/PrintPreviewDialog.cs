@@ -1,6 +1,3 @@
-using System.ComponentModel;
-using System;
-
 namespace Eto.Forms;
 
 /// <summary>

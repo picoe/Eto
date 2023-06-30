@@ -1,9 +1,3 @@
-using System;
-using System.IO;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler

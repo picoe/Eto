@@ -1,9 +1,3 @@
-using System.Linq;
-using Eto.Forms;
-using System.Collections.Generic;
-
-
-
 namespace Eto.Mac.Forms
 {
 	public class OpenFileDialogHandler : MacFileDialog<NSOpenPanel, OpenFileDialog>, OpenFileDialog.IHandler

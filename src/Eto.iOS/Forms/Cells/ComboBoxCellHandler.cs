@@ -1,9 +1,5 @@
-using System;
-using Eto.Forms;
 using UIKit;
 using NSCell = UIKit.UITableViewCell;
-using System.Collections.Generic;
-
 namespace Eto.iOS.Forms.Cells
 {
 	public class ComboBoxCellHandler : CellHandler<NSCell, ComboBoxCell>, ComboBoxCell.IHandler

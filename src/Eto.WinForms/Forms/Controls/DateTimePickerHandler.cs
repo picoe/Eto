@@ -1,8 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using System.Globalization;
-using swf = System.Windows.Forms;
 using Eto.WinForms.CustomControls;
 
 namespace Eto.WinForms.Forms.Controls

@@ -1,9 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-
-namespace Eto.GtkSharp.Forms.Controls
+﻿namespace Eto.GtkSharp.Forms.Controls
 {
 	public class LinkButtonHandler : GtkControl<Gtk.LinkButton, LinkButton, LinkButton.ICallback>, LinkButton.IHandler
 	{

@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using System.ComponentModel;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class TextBoxCellHandler : CellHandler<TextBoxCellHandler.Column, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler

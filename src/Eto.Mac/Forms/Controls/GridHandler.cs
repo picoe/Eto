@@ -1,9 +1,4 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Menu;
-using System.Linq;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Cells;
 

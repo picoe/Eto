@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-
 #if OSX
 using Eto.Mac.Drawing;
 

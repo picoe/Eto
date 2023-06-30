@@ -1,15 +1,10 @@
-using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.ToolBar
 {
-	public class CheckToolItemHandler : ToolItemHandler<SWF.ToolStripButton, CheckToolItem>, CheckToolItem.IHandler
+	public class CheckToolItemHandler : ToolItemHandler<swf.ToolStripButton, CheckToolItem>, CheckToolItem.IHandler
 	{
 		public CheckToolItemHandler()
 		{
-			Control = new SWF.ToolStripButton();
+			Control = new swf.ToolStripButton();
 			Control.Tag = this;
 			Control.Click += control_Click;
 		}

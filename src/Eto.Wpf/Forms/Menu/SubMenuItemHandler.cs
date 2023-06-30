@@ -1,10 +1,4 @@
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
 using System.Windows;
-using System;
-
 namespace Eto.Wpf.Forms.Menu
 {
 	public class SubMenuItemHandler : MenuItemHandler<swc.MenuItem, SubMenuItem, SubMenuItem.ICallback>, SubMenuItem.IHandler

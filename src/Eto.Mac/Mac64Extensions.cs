@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Runtime.InteropServices;
-
 #if IOS
 namespace Eto.iOS
 #else

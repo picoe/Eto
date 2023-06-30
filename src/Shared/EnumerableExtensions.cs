@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections;
-using Eto.Forms;
-using System.Linq;
-
 namespace Eto;
 
 static class EnumerableExtensions

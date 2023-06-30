@@ -1,12 +1,4 @@
-using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System.Diagnostics;
-using System.Threading;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using System.Collections.Generic;
-
 namespace Eto.WinForms.Forms
 {
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler

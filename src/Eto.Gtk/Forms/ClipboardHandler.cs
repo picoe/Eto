@@ -1,12 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
 using Eto.GtkSharp.Drawing;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class ClipboardHandler : WidgetHandler<Gtk.Clipboard, Clipboard>, Clipboard.IHandler

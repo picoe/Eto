@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-#if PORTABLE
+﻿#if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;
 #else

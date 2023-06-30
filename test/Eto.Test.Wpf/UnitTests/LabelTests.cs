@@ -1,13 +1,5 @@
 using Eto.Test.UnitTests;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Test.Wpf.UnitTests
 {
 	[TestFixture]

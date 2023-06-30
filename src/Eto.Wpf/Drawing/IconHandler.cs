@@ -1,15 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Eto.Drawing;
-using System.IO;
-using sw = System.Windows;
-using swi = System.Windows.Interop;
-using swm = System.Windows.Media;
-using swmi = System.Windows.Media.Imaging;
-using sd = System.Drawing;
-using System.Linq;
-
 namespace Eto.Wpf.Drawing
 {
 	public interface IWpfImage
@@ -29,7 +17,7 @@ namespace Eto.Wpf.Drawing
 		public IconHandler(sd.Icon icon)
 		{
 			var rect = new sw.Int32Rect(0, 0, icon.Width, icon.Height);
-			var img = swi.Imaging.CreateBitmapSourceFromHIcon(icon.Handle, rect, swmi.BitmapSizeOptions.FromEmptyOptions());
+			var img = swin.Imaging.CreateBitmapSourceFromHIcon(icon.Handle, rect, swmi.BitmapSizeOptions.FromEmptyOptions());
 			Control = swmi.BitmapFrame.Create(img);
 		}
 

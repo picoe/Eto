@@ -1,6 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class MouseHandler : Mouse.IHandler

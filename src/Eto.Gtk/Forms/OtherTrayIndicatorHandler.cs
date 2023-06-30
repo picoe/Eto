@@ -1,8 +1,5 @@
 ﻿// status icon is obsolete, but we still want to use it.
 #pragma warning disable 612, 618
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms

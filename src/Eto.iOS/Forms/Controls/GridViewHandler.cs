@@ -1,14 +1,8 @@
-using System;
 using UIKit;
-using Eto.Forms;
-using System.Linq;
 using Eto.iOS.Forms.Cells;
 using Foundation;
-using Eto.Drawing;
 using Eto.iOS.Drawing;
 using NSCell = UIKit.UITableViewCell;
-using System.Collections.Generic;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<UITableView, GridView, GridView.ICallback>, GridView.IHandler

@@ -1,9 +1,3 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Wpf.Forms.Menu;
 
 namespace Eto.Wpf.Forms

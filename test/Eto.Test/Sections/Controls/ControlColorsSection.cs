@@ -1,9 +1,4 @@
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Test.Sections.Behaviors;
-using System.Collections.Generic;
-using System;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", "Control Font & Colors")]

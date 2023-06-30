@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-
-namespace Eto.Forms.ThemedControls;
+﻿namespace Eto.Forms.ThemedControls;
 
 /// <summary>
 /// A themed handler for the <see cref="Expander"/> control.

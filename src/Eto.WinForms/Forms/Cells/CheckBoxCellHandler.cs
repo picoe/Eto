@@ -1,7 +1,3 @@
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Cells
 {
 	public class CheckBoxCellHandler : CellHandler<swf.DataGridViewCheckBoxCell, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler

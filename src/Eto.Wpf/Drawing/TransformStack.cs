@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Drawing
 {
 	/// <summary>

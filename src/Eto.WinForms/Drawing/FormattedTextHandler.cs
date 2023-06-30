@@ -1,11 +1,3 @@
-using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sd = System.Drawing;
-
 namespace Eto.WinForms.Drawing
 {
 	public class FormattedTextHandler : WidgetHandler<sd.StringFormat, FormattedText, FormattedText.ICallback>, FormattedText.IHandler

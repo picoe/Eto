@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using sw = System.Windows;
-using sd = System.Drawing;
-using swm = System.Windows.Media;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using System.Linq;
 using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms

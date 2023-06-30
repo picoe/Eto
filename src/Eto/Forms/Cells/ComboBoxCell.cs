@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections;
-
-
 namespace Eto.Forms;
 
 /// <summary>

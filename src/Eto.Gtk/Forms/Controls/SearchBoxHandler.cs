@@ -1,5 +1,3 @@
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 #if GTKCORE

@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	/// <summary>

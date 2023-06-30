@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Forms;
-
-namespace Eto.GtkSharp.Forms.Cells
+﻿namespace Eto.GtkSharp.Forms.Cells
 {
 	public class ProgressCellHandler : SingleCellHandler<Gtk.CellRendererProgress, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
 	{

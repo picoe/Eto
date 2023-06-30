@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ProgressBarHandler : MacView<NSProgressIndicator, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler

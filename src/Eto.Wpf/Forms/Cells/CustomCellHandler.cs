@@ -1,15 +1,5 @@
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
 using Eto.Wpf.Drawing;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System;
 using System.Windows;
-using System.Windows.Input;
 using Eto.Wpf.Forms.Controls;
 
 namespace Eto.Wpf.Forms.Cells
@@ -129,7 +119,7 @@ namespace Eto.Wpf.Forms.Cells
 				return control;
 			}
 
-			static void HandlePreviewMouseDown(object sender, MouseButtonEventArgs e)
+			static void HandlePreviewMouseDown(object sender, swi.MouseButtonEventArgs e)
 			{
 				var ctl = sender as sw.FrameworkElement;
 				var cell = ctl?.GetVisualParent<swc.DataGridCell>();

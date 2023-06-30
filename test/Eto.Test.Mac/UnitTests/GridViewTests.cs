@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac;
 using Eto.Test.UnitTests;
 using NUnit.Framework;

@@ -1,6 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
 	[Section("TableLayout", "Runtime Creation")]

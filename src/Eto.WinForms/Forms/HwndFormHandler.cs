@@ -1,13 +1,4 @@
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-
 #if WPF
-using swi = System.Windows.Interop;
 
 namespace Eto.Wpf.Forms
 #elif WINFORMS
@@ -29,7 +20,7 @@ namespace Eto.WinForms.Forms
 		}
 		public void SetOwnerFor(System.Windows.Window child)
 		{
-			new swi.WindowInteropHelper(child).Owner = Control;
+			new swin.WindowInteropHelper(child).Owner = Control;
 		}
 #elif WINFORMS
 

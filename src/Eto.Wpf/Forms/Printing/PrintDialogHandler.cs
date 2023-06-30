@@ -1,7 +1,3 @@
-using Eto.Forms;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-
 namespace Eto.Wpf.Forms.Printing
 {
 	public class PrintDialogHandler : WidgetHandler<swc.PrintDialog, PrintDialog>, PrintDialog.IHandler

@@ -1,10 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-using System.Linq;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ExpanderHandler : MacPanel<NSView, Expander, Expander.ICallback>, Expander.IHandler

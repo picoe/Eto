@@ -1,9 +1,4 @@
-using System;
 using Eto;
-using System.Reflection;
-using System.IO;
-using System.Diagnostics;
-
 namespace Eto.WinForms
 {
 	public class EtoEnvironmentHandler : WidgetHandler<Widget>, EtoEnvironment.IHandler

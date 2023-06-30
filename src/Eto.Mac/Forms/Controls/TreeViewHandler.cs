@@ -1,10 +1,4 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Menu;
-using System.Linq;
-using Eto.Drawing;
-
 namespace Eto.Mac.Forms.Controls
 {
 	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]

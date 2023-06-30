@@ -1,21 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Wpf.Forms.Cells;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using System.Collections;
-using System.ComponentModel;
 using Eto.Wpf.Forms.Menu;
-using Eto.Drawing;
 using Eto.Wpf.Drawing;
 using Eto.Wpf.CustomControls.TreeGridView;
 using System.Windows;
-using System.Windows.Input;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoDataGrid : swc.DataGrid
@@ -519,7 +506,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 		
-		private void HandleOutsideMouseDown(object sender, MouseButtonEventArgs e)
+		private void HandleOutsideMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
 			if (!e.Handled)
 			{

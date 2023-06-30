@@ -1,9 +1,6 @@
 #if GTK2
-using System;
 using WebKit;
 using GLib;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp
 {
 	#if GTK2

@@ -1,12 +1,6 @@
-using System;
 using UIKit;
-using Eto.Forms;
-using System.Linq;
 using Eto.iOS.Forms.Cells;
 using Foundation;
-using Eto.Drawing;
-using System.Collections.Generic;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class TreeGridViewHandler : GridHandler<UITableView, TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler

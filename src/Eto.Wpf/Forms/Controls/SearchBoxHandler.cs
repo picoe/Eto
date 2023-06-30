@@ -1,12 +1,5 @@
-using Eto.Forms;
 using Xceed.Wpf.Toolkit;
 using static Eto.Win32;
-using mwc = Xceed.Wpf.Toolkit;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using System.Windows.Input;
-using System;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoSearchTextBox : EtoWatermarkTextBox
@@ -40,7 +33,7 @@ namespace Eto.Wpf.Forms.Controls
 
 	}
 
-	public class SearchBoxHandler : TextBoxHandler<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, SearchBox.IHandler
+	public class SearchBoxHandler : TextBoxHandler<xwt.WatermarkTextBox, TextBox, TextBox.ICallback>, SearchBox.IHandler
 	{
 		internal static object CurrentText_Key = new object();
 		internal static object CurrentSelection_Key = new object();

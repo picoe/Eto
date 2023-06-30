@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Drawing
 {
 	/// <summary>

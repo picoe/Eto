@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-namespace Eto.Forms.ThemedControls;
+﻿namespace Eto.Forms.ThemedControls;
 
 /// <summary>
 /// ! UNDER CONSTRUCTION !

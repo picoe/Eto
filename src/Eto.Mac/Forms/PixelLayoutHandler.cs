@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Mac.Forms.Controls;
 
 

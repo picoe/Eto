@@ -1,8 +1,3 @@
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Diagnostics;
-using swi = System.Windows.Input;
-
 namespace Eto.Wpf
 {
 	public static class KeyMap

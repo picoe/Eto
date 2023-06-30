@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class TabPageHandler : MacPanel<NSTabViewItem, TabPage, TabPage.ICallback>, TabPage.IHandler

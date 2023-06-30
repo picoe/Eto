@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using Eto.Forms;
-using System.Windows.Input;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 partial class Binding
 {

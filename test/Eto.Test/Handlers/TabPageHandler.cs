@@ -1,7 +1,4 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-
-namespace Eto.Test.Handlers
+﻿namespace Eto.Test.Handlers
 {
 	class TabPageHandler : ThemedContainerHandler<Panel, TabPage, TabPage.ICallback>, TabPage.IHandler
     {

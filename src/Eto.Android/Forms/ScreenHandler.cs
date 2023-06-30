@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Android.Forms
 {
 	internal class ScreenHandler : WidgetHandler<Object, Screen>, Screen.IHandler

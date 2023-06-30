@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Cell for a text box in a <see cref="Grid"/>.

@@ -1,8 +1,3 @@
-using System;
-using sc = System.ComponentModel;
-using System.IO;
-using System.Linq;
-
 namespace Eto.Drawing;
 
 /// <summary>

@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Menu
 {
 	public class ContextMenuHandler : MenuHandler<Gtk.Menu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler

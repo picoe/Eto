@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using sd = System.Drawing;
 #if WPF
 #elif WINFORMS
 using Eto.WinForms.Forms;

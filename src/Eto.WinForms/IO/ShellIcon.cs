@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-
 #if WINFORMS
 namespace Eto.WinForms.IO
 #elif WPF

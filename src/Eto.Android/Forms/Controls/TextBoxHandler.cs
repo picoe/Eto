@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 using av = Android.Views;
 using aw = Android.Widget;
 using at = Android.Text;

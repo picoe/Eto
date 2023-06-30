@@ -1,7 +1,4 @@
-﻿using System;
-using sc = System.ComponentModel;
-
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 class ToolItemConverter : sc.TypeConverter
 {

@@ -1,7 +1,5 @@
-using System;
 using UIKit;
 using CoreGraphics;
-using Eto.Forms;
 using Eto.iOS.Forms;
 using Foundation;
 using ObjCRuntime;

@@ -1,10 +1,7 @@
 ﻿#if blah
-using System;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
-using Eto.Drawing;
 namespace Eto.Test.Mac.UnitTests
 {
 	[TestFixture]

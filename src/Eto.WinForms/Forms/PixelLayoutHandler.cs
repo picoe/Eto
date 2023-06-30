@@ -1,8 +1,3 @@
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms
 {
 	public class PixelLayoutHandler : WindowsContainer<PixelLayoutHandler.Panel, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler

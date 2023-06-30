@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Eto.Serialization.Json
 {
 	public class NamespaceManager

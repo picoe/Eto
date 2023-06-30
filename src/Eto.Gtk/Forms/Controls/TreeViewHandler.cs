@@ -1,8 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System.Collections.Generic;
 using Eto.GtkSharp.Forms.Menu;
 
 namespace Eto.GtkSharp.Forms.Controls

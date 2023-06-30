@@ -1,11 +1,5 @@
 //#define BUTTON_DEBUG
 
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
-
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ButtonHandler : ButtonHandler<Button, Button.ICallback>, Button.IHandler

@@ -1,9 +1,4 @@
-﻿using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
-using Eto.Wpf.Drawing;
+﻿using Eto.Wpf.Drawing;
 using Eto.Wpf.CustomControls;
 
 namespace Eto.Wpf.Forms.Controls

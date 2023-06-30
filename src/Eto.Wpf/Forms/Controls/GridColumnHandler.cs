@@ -1,11 +1,4 @@
 using Eto.Wpf.Forms.Cells;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using Eto.Forms;
-using System.Globalization;
-using System;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public interface IGridHandler

@@ -1,7 +1,3 @@
-using swc = System.Windows.Controls;
-using swi = System.Windows.Input;
-using Eto.Forms;
-
 namespace Eto.Wpf.Forms.ToolBar
 {
 	public class ToolBarHandler : WidgetHandler<swc.ToolBar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler

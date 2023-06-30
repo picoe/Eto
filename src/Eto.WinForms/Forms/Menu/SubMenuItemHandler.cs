@@ -1,7 +1,3 @@
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System;
-
 namespace Eto.WinForms.Forms.Menu
 {
 	public class SubMenuItemHandler : ButtonMenuItemHandler<SubMenuItem, SubMenuItem.ICallback>, SubMenuItem.IHandler

@@ -1,12 +1,5 @@
-using System;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
-using Eto.Forms;
 using Eto.Wpf.CustomControls;
-using Eto.Drawing;
-using System.Globalization;
-
 namespace Eto.Wpf.Forms.Controls
 {
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Globalization;
-using Eto.Forms;
-using Eto.Drawing;
-
-
-namespace Eto.Mac.Forms.Controls
+﻿namespace Eto.Mac.Forms.Controls
 {
 	public class NativeControlHandler : MacView<NSView, Control, Control.ICallback>
 	{

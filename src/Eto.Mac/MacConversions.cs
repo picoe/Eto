@@ -1,10 +1,6 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Forms;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Printing;
-using System.Linq;
 using Eto.Mac.Forms.Menu;
 
 

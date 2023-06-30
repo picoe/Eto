@@ -1,7 +1,3 @@
-using System;
-using sc = System.ComponentModel;
-using System.IO;
-
 namespace Eto.Drawing;
 
 class IconConverter : ImageConverterInternal

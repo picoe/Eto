@@ -1,10 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
-using System.Threading;
-
 namespace Eto.Mac.Forms
 {
 	public class EtoWindow : NSWindow, IMacControl

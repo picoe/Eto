@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]

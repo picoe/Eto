@@ -1,11 +1,5 @@
-using System;
 using UIKit;
-using Eto.Forms;
 using ObjCRuntime;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.iOS.Forms.Controls
 {
 	internal class RotatableNavigationController : UINavigationController

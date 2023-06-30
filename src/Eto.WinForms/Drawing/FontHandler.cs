@@ -1,9 +1,3 @@
-using System;
-using Eto.Drawing;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using System.ComponentModel;
-
 namespace Eto.WinForms.Drawing
 {
 	public interface IWindowsFontSource

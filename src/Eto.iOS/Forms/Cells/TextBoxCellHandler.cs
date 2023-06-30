@@ -1,5 +1,3 @@
-using System;
-using Eto.Forms;
 using UIKit;
 using NSCell = UIKit.UITableViewCell;
 

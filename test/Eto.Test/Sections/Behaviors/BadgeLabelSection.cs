@@ -1,6 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "Badge Label")]

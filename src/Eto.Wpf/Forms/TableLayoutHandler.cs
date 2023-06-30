@@ -1,12 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swm = System.Windows.Media;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class EtoGrid : swc.Grid

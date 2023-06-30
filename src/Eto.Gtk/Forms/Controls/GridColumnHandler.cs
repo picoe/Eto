@@ -1,7 +1,4 @@
-using Eto.Forms;
 using Eto.GtkSharp.Forms.Cells;
-using System;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public interface IGridHandler

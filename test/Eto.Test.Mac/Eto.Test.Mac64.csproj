@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\TestContent.txt" />
+    <Content Include="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Assets\TestBundleResource.txt" />

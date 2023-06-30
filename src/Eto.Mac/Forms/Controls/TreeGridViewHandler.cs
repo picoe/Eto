@@ -1,10 +1,4 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Mac.Forms.Cells;
-using Eto.Drawing;
-
 #if MACOS_NET && !VSMAC
 using NSDraggingInfo = AppKit.INSDraggingInfo;
 #endif

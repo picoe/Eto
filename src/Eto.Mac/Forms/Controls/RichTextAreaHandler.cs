@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System.IO;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class RichTextAreaHandler : TextAreaHandler<RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer

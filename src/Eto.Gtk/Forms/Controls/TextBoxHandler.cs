@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TextBoxHandler : TextBoxHandler<Gtk.Entry, TextBox, TextBox.ICallback>

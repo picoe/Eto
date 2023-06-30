@@ -1,8 +1,3 @@
-using System.Collections.Generic;
-using Eto.Forms;
-using Eto.Drawing;
-using System;
-
 namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "DrawText")]

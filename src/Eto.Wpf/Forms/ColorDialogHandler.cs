@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using swc = System.Windows.Controls;
-using xwt = Xceed.Wpf.Toolkit;
-
 namespace Eto.Wpf.Forms
 {
 	public class XceedColorDialog : sw.Window

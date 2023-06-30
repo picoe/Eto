@@ -1,15 +1,7 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using mwc = Xceed.Wpf.Toolkit;
-using swi = System.Windows.Input;
 using swd = System.Windows.Documents;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Controls
 {
-	public class EtoWatermarkTextBox : mwc.WatermarkTextBox, IEtoWpfControl
+	public class EtoWatermarkTextBox : xwt.WatermarkTextBox, IEtoWpfControl
 	{
 		public IWpfFrameworkElement Handler { get; set; }
 
@@ -19,7 +11,7 @@ namespace Eto.Wpf.Forms.Controls
 		}
 	}
 
-	public class TextBoxHandler : TextBoxHandler<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class TextBoxHandler : TextBoxHandler<xwt.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		internal static object CurrentText_Key = new object();
 		internal static object CurrentSelection_Key = new object();

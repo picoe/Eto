@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using Eto.Forms;
-using System.Diagnostics;
-
-
-
-namespace Eto.Mac
+﻿namespace Eto.Mac
 {
 	public static class KeyMap
 	{

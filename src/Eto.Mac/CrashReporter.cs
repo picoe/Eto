@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-namespace Eto.Mac
+﻿namespace Eto.Mac
 {
 	public static class CrashReporter
 	{

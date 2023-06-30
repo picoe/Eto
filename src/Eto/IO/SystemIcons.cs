@@ -1,9 +1,3 @@
-using System.IO;
-using System.Collections;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System;
-
 namespace Eto.IO;
 
 /// <summary>

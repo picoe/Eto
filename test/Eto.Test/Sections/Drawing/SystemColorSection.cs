@@ -1,11 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-using System.Reflection;
-using System.Collections.Generic;
-using System.ComponentModel;
-
 namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", typeof(SystemColors))]

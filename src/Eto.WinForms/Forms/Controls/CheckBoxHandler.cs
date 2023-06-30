@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class CheckBoxHandler : WindowsControl<swf.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler

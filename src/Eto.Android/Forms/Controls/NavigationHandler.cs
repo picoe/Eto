@@ -1,5 +1,3 @@
-using System;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -7,9 +5,6 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
-using Eto.Forms;
-using System.Collections.Generic;
-
 namespace Eto.Android.Forms.Controls
 {
 	[aa.Activity]

@@ -1,5 +1,3 @@
-using System;
-
 namespace Eto.Mac.Drawing
 {
 	public class EtoFontManager : NSFontManager

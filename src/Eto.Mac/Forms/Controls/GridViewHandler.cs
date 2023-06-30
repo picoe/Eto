@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using Eto.Drawing;
-using System.Collections;
-using System.Linq;
 using Eto.Mac.Forms.Cells;
 
 #if MACOS_NET && !VSMAC

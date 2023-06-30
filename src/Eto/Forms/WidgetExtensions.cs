@@ -1,5 +1,4 @@
-﻿using System;
-namespace Eto.Forms;
+﻿namespace Eto.Forms;
 
 /// <summary>
 /// Extensions for widget objects

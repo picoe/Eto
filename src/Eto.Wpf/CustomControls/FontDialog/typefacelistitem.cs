@@ -1,10 +1,7 @@
-using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Globalization;
-
 namespace Eto.Wpf.CustomControls.FontDialog
 {
     class TypefaceListItem : TextBlock, IComparable
@@ -40,7 +37,7 @@ namespace Eto.Wpf.CustomControls.FontDialog
             if (FontFamilyListItem.IsSymbolFont(typeface.FontFamily))
             {
                 var range = new TextRange(ContentStart, ContentEnd);
-                range.ApplyPropertyValue(TextBlock.FontFamilyProperty, SystemFonts.MessageFontFamily);
+                range.ApplyPropertyValue(TextBlock.FontFamilyProperty, sw.SystemFonts.MessageFontFamily);
             }
         }
 
@@ -76,8 +73,8 @@ namespace Eto.Wpf.CustomControls.FontDialog
             }
 
             // If style differs then sort based on style (Normal, Italic, then Oblique).
-            FontStyle thisStyle = FontStyle;
-            FontStyle otherStyle = item.FontStyle;
+            sw.FontStyle thisStyle = FontStyle;
+            sw.FontStyle otherStyle = item.FontStyle;
 
             if (thisStyle != otherStyle)
 			{

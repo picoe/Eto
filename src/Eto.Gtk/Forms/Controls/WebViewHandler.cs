@@ -1,11 +1,6 @@
-using System;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 
 #if GTK2
-using Eto.Forms;
 #if GTK3
 using NewWindowPolicyDecisionRequestedArgs = WebKit.NewWindowPolicyDecisionRequestedArgs;
 #endif

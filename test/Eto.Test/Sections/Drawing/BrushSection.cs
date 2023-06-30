@@ -1,8 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Test.Sections.Drawing
 {
 	/// <summary>

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-
 using a = Android;
 using av = Android.Views;
 

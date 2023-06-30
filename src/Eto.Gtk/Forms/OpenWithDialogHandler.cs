@@ -1,8 +1,4 @@
 ﻿#if GTK3
-using System;
-using System.Diagnostics;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class OpenWithDialogHandler : WidgetHandler<Gtk.Dialog, OpenWithDialog, OpenWithDialog.ICallback>, OpenWithDialog.IHandler

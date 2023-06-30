@@ -1,10 +1,3 @@
-using System;
-using sc = System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Collections.Generic;
-using System.Reflection;
-
 namespace Eto.Drawing;
 
 /// <summary>

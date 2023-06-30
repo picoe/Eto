@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Forms;
-
-namespace Eto.Mac.Forms
+﻿namespace Eto.Mac.Forms
 {
 	class EtoDragSource : NSDraggingSource
 	{

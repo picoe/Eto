@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Wpf.Forms
 {
 	public class FloatingFormHandler : FormHandler, FloatingForm.IHandler

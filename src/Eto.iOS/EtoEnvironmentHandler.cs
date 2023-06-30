@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Linq;
 using Foundation;
 
 namespace Eto.iOS

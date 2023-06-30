@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Mac.Forms.ToolBar
 {
 	public class CheckToolItemHandler : ToolItemHandler<NSToolbarItem, CheckToolItem>, CheckToolItem.IHandler

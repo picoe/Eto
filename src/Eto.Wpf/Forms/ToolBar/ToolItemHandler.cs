@@ -1,9 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-
 namespace Eto.Wpf.Forms.ToolBar
 {
 	public static class ToolItemHandler

@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-
-namespace Eto;
+﻿namespace Eto;
 
 /// <summary>
 /// Attribute to specify the interface type to use for the handler of a <see cref="Widget"/>

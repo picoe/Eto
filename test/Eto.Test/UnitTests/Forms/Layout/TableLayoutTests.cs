@@ -1,9 +1,4 @@
-using System;
 using NUnit.Framework;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-
 namespace Eto.Test.UnitTests.Forms.Layout
 {
 	[TestFixture]

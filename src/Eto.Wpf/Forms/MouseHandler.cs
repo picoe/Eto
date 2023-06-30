@@ -1,8 +1,3 @@
-using swi = System.Windows.Input;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class MouseHandler : Mouse.IHandler

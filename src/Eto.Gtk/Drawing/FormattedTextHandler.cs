@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Drawing
 {
 	public class FormattedTextHandler : WidgetHandler<object, FormattedText, FormattedText.ICallback>, FormattedText.IHandler

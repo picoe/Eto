@@ -1,10 +1,4 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.GtkSharp.Forms.Cells;
-using System.Linq;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ICellDataSource, IGtkTreeModelHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>

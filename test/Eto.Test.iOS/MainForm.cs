@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Test.iOS
 {
 	public class MainForm : Form

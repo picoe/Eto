@@ -1,9 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
-namespace Eto.GtkSharp.Forms
+﻿namespace Eto.GtkSharp.Forms
 {
 	public class KeyboardHandler : Keyboard.IHandler
 	{

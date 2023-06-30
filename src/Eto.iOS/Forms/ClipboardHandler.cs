@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using System.IO;
-using Eto.Drawing;
-using UIKit;
+﻿using UIKit;
 using Foundation;
 using MobileCoreServices;
 using Eto.iOS.Drawing;

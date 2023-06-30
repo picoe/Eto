@@ -1,9 +1,5 @@
-using SD = System.Drawing;
-using Eto.Drawing;
 using Eto.IO;
 using Eto.WinForms.Drawing;
-using System;
-
 namespace Eto.WinForms.IO
 {
 	public class SystemIconsHandler : SystemIcons.IHandler
@@ -23,7 +19,7 @@ namespace Eto.WinForms.IO
 					throw new NotSupportedException();
 			}
 
-			SD.Icon icon = ShellIcon.GetFileIcon(fileName, iconSize, false);
+			sd.Icon icon = ShellIcon.GetFileIcon(fileName, iconSize, false);
 			return new Icon(new IconHandler(icon));
 		}
 
@@ -55,7 +51,7 @@ namespace Eto.WinForms.IO
 					throw new NotSupportedException();
 			}
 			
-			SD.Icon icon = ShellIcon.GetFolderIcon(iconSize, folderType);
+			sd.Icon icon = ShellIcon.GetFolderIcon(iconSize, folderType);
 			return new Icon(new IconHandler(icon));
 		}
 	}

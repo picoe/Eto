@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Forms;
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -10,8 +5,6 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
-using Eto.Drawing;
-
 namespace Eto.Android.Forms.Controls
 {
 	public class CheckBoxHandler : AndroidCommonControl<aw.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler

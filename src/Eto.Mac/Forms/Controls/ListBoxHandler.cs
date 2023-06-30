@@ -1,12 +1,5 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Controls;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System.Collections;
-using System.Linq;
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class EtoScrollView : NSScrollView, IMacControl

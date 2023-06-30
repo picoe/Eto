@@ -1,16 +1,10 @@
-using System;
-using System.Linq;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.ToolBar
 {
-	public class RadioToolItemHandler : ToolItemHandler<SWF.ToolStripButton, RadioToolItem>, RadioToolItem.IHandler
+	public class RadioToolItemHandler : ToolItemHandler<swf.ToolStripButton, RadioToolItem>, RadioToolItem.IHandler
 	{
 		public RadioToolItemHandler()
 		{
-			Control = new SWF.ToolStripButton();
+			Control = new swf.ToolStripButton();
 			Control.Tag = this;
 			Control.Click += control_Click;
 		}
@@ -20,7 +14,7 @@ namespace Eto.WinForms.Forms.ToolBar
 			var parent = Control.GetCurrentParent();
 			if (parent != null)
 			{
-				foreach (var button in parent.Items.OfType<SWF.ToolStripButton>().Select(r => r.Tag).OfType<RadioToolItemHandler>().Where(r => r != this))
+				foreach (var button in parent.Items.OfType<swf.ToolStripButton>().Select(r => r.Tag).OfType<RadioToolItemHandler>().Where(r => r != this))
 				{
 					button.Checked = false;
 				}

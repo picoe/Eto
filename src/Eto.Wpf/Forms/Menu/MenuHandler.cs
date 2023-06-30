@@ -1,9 +1,3 @@
-using Eto.Forms;
-using System.Collections.Generic;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using System.Linq;
-
 namespace Eto.Wpf.Forms.Menu
 {
 	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>

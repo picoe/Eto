@@ -1,10 +1,4 @@
-using System;
 using Eto;
-using System.Linq;
-using System.Reflection;
-using System.IO;
-using System.Diagnostics;
-
 namespace Eto.GtkSharp
 {
 	public class EtoEnvironmentHandler : WidgetHandler<Widget>, EtoEnvironment.IHandler

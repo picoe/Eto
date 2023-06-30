@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
 using Portable.Xaml.Markup;
 using Portable.Xaml;
 

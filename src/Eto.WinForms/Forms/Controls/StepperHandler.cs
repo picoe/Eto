@@ -1,14 +1,4 @@
-﻿using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using swf = System.Windows.Forms;
-using System.Drawing;
-using System.Reflection;
-
-namespace Eto.WinForms.Forms.Controls
+﻿namespace Eto.WinForms.Forms.Controls
 {
 	public class StepperHandler : WindowsControl<StepperHandler.EtoUpDown, Stepper, Stepper.ICallback>, Stepper.IHandler
 	{
@@ -27,7 +17,7 @@ namespace Eto.WinForms.Forms.Controls
 				UpButtonClicked?.Invoke(this, EventArgs.Empty);
 			}
 
-			protected override Size DefaultSize => new Size(18, base.DefaultSize.Height);
+			protected override sd.Size DefaultSize => new sd.Size(18, base.DefaultSize.Height);
 
 			protected override void UpdateEditText()
 			{
