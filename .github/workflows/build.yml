@@ -9,7 +9,7 @@ on:
     types: [ published ]
 
 env:
-  DotNetVersion: "6.0.202"
+  DotNetVersion: "7.0.108"
   BuildConfiguration: "Release"
   BuildParameters: "build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
 
@@ -24,7 +24,7 @@ jobs:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
@@ -71,12 +71,15 @@ jobs:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
+    - name: Create global.json for the version we are using
+      run: del global.json || echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
+
     - name: Install macos workload
-      run: sudo dotnet workload install macos
+      run: sudo dotnet workload install macos --from-rollback-file dotnet-workloads.json
         
     - name: Setup Xamarin and XCode
       uses: maxim-lobanov/setup-xamarin@v1

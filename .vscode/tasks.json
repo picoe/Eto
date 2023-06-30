@@ -175,7 +175,17 @@
 			"presentation": {
 				"clear": true
 			}
-		}
+		},
+		{
+			"label": "install-macos-workload",
+			"type": "shell",
+			"command": "sudo dotnet workload install macos --from-rollback-file dotnet-workloads.json",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+			  "clear": true,
+			  "focus": true
+			}
+		  }
 	],
 	"inputs": [
 		{
