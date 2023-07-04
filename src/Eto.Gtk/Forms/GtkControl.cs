@@ -293,7 +293,7 @@ namespace Eto.GtkSharp.Forms
 			Eto.Forms.Application.Instance.AsyncInvoke(GrabFocus);
 		}
 
-		public bool HasFocus
+		public virtual bool HasFocus
 		{
 			get { return Control.HasFocus; }
 		}
@@ -691,7 +691,7 @@ namespace Eto.GtkSharp.Forms
 				var handler = Handler;
 				if (handler == null)
 					return;
-				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
+				Application.Instance.AsyncInvoke(() => handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty));
 			}
 
 			public virtual void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)

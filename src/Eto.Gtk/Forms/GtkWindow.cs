@@ -128,6 +128,8 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		public override bool HasFocus => Control.HasToplevelFocus;
+
 		public Gtk.Widget WindowContentControl
 		{
 			get { return vbox; }
