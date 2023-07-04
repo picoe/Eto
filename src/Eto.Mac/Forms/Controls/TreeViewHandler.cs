@@ -68,15 +68,18 @@ namespace Eto.Mac.Forms.Controls
 		public class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
 			WeakReference handler;
-			public TreeViewHandler Handler { get { return (TreeViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
+			public TreeViewHandler Handler { get => (TreeViewHandler)handler?.Target; set => handler = new WeakReference(value); }
 
 			public override bool ShouldEditTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return false;
 				var myitem = item as EtoTreeItem;
 				if (myitem != null)
 				{
 					var args = new TreeViewItemCancelEventArgs(myitem.Item);
-					Handler.Callback.OnLabelEditing(Handler.Widget, args);
+					handler.Callback.OnLabelEditing(handler.Widget, args);
 					return !args.Cancel;
 				}
 				return true;
@@ -84,40 +87,52 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void WillDisplayCell(NSOutlineView outlineView, NSObject cell, NSTableColumn tableColumn, NSObject item)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return;
 				var c = cell as NSTextFieldCell;
 				if (c != null &&
-					Handler.textColor != null)
-					c.TextColor = Handler.textColor.Value.ToNSUI();				
+					handler.textColor != null)
+					c.TextColor = handler.textColor.Value.ToNSUI();				
 			}
 
 			public override void SelectionDidChange(NSNotification notification)
 			{
-				if (!Handler.selectionChanging)
-					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (!handler.selectionChanging)
+					handler.Callback.OnSelectionChanged(handler.Widget, EventArgs.Empty);
 			}
 
 			public override void ItemDidCollapse(NSNotification notification)
 			{
-				if (Handler.raiseExpandEvents)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (handler.raiseExpandEvents)
 				{
 					var myitem = notification.UserInfo[(NSString)"NSObject"] as EtoTreeItem;
 					if (myitem != null && myitem.Item.Expanded)
 					{
 						myitem.Item.Expanded = false;
-						Handler.Callback.OnCollapsed(Handler.Widget, new TreeViewItemEventArgs(myitem.Item));
+						handler.Callback.OnCollapsed(handler.Widget, new TreeViewItemEventArgs(myitem.Item));
 					}
 				}
 			}
 
 			public override bool ShouldExpandItem(NSOutlineView outlineView, NSObject item)
 			{
-				if (Handler.raiseExpandEvents)
+				var handler = Handler;
+				if (handler == null)
+					return true;
+				if (handler.raiseExpandEvents)
 				{
 					var myitem = item as EtoTreeItem;
 					if (myitem != null && !myitem.Item.Expanded)
 					{
 						var args = new TreeViewItemCancelEventArgs(myitem.Item);
-						Handler.Callback.OnExpanding(Handler.Widget, args);
+						handler.Callback.OnExpanding(handler.Widget, args);
 						return !args.Cancel;
 					}
 				}
@@ -126,13 +141,16 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool ShouldCollapseItem(NSOutlineView outlineView, NSObject item)
 			{
-				if (Handler.raiseExpandEvents)
+				var handler = Handler;
+				if (handler == null)
+					return true;
+				if (handler.raiseExpandEvents)
 				{
 					var myitem = item as EtoTreeItem;
 					if (myitem != null && myitem.Item.Expanded)
 					{
 						var args = new TreeViewItemCancelEventArgs(myitem.Item);
-						Handler.Callback.OnCollapsing(Handler.Widget, args);
+						handler.Callback.OnCollapsing(handler.Widget, args);
 						return !args.Cancel;
 					}
 				}
@@ -141,14 +159,17 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void ItemDidExpand(NSNotification notification)
 			{
-				if (Handler.raiseExpandEvents)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (handler.raiseExpandEvents)
 				{
 					var myitem = notification.UserInfo[(NSString)"NSObject"] as EtoTreeItem;
 					if (myitem != null && !myitem.Item.Expanded)
 					{
 						myitem.Item.Expanded = true;
-						Handler.Callback.OnExpanded(Handler.Widget, new TreeViewItemEventArgs(myitem.Item));
-						Handler.ExpandItems(myitem);
+						handler.Callback.OnExpanded(handler.Widget, new TreeViewItemEventArgs(myitem.Item));
+						handler.ExpandItems(myitem);
 					}
 				}
 			}
@@ -157,7 +178,7 @@ namespace Eto.Mac.Forms.Controls
 		public class EtoDataSource : NSOutlineViewDataSource
 		{
 			WeakReference handler;
-			public TreeViewHandler Handler { get { return (TreeViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
+			public TreeViewHandler Handler { get => (TreeViewHandler)handler.Target; set => handler = new WeakReference(value); }
 
 			public override NSObject GetObjectValue(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
@@ -173,16 +194,20 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSObject GetChild(NSOutlineView outlineView, nint childIndex, NSObject item)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return null;
+
 				Dictionary<int, EtoTreeItem> items;
 				var myitem = item as EtoTreeItem;
-				items = myitem == null ? Handler.topitems : myitem.Items;
+				items = myitem == null ? handler.topitems : myitem.Items;
 				
 				EtoTreeItem etoItem;
 				if (!items.TryGetValue((int)childIndex, out etoItem))
 				{
-					var parentItem = myitem != null ? myitem.Item : Handler.top;
+					var parentItem = myitem != null ? myitem.Item : handler.top;
 					etoItem = new EtoTreeItem { Item = parentItem [(int)childIndex] };
-					Handler.cachedItems[etoItem.Item] = etoItem;
+					handler.cachedItems[etoItem.Item] = etoItem;
 					items[(int)childIndex] = etoItem;
 				}
 				return etoItem;
@@ -190,11 +215,15 @@ namespace Eto.Mac.Forms.Controls
 
 			public override nint GetChildrenCount(NSOutlineView outlineView, NSObject item)
 			{
-				if (Handler.top == null)
+				var handler = Handler;
+				if (handler == null)
+					return 0;
+					
+				if (handler.top == null)
 					return 0;
 
 				if (item == null)
-					return Handler.top.Count;
+					return handler.top.Count;
 
 				var myitem = item as EtoTreeItem;
 				return myitem.Item.Count;
@@ -202,11 +231,15 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void SetObjectValue(NSOutlineView outlineView, NSObject theObject, NSTableColumn tableColumn, NSObject item)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
 				var myitem = item as EtoTreeItem;
 				if (myitem != null)
 				{
 					var args = new TreeViewItemEditEventArgs(myitem.Item, (string)(NSString)theObject);
-					Handler.Callback.OnLabelEdited(Handler.Widget, args);
+					handler.Callback.OnLabelEdited(handler.Widget, args);
 					if (!args.Cancel)
 						myitem.Item.Text = args.Label;
 				}
