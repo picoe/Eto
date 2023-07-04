@@ -1,4 +1,3 @@
-using Eto.GtkSharp.Drawing;
 namespace Eto.GtkSharp.Forms
 {
 	public class DataFormatsHandler : DataFormats.IHandler
@@ -28,31 +27,26 @@ namespace Eto.GtkSharp.Forms
 	public class DataObjectHandler : WidgetHandler<Dictionary<string, DataObjectData>, DataObject, DataObject.ICallback>, DataObject.IHandler
 	{
 
-		Gdk.DragContext _dragContext;
-		Gtk.Widget _sourceWidget;
-		uint _dragTime;
-		Action<Gtk.SelectionData> _getData;
-
-		public Gdk.DragContext DragContext => _dragContext;
+		readonly Gdk.DragContext _dragContext;
+		readonly Dictionary<Gdk.Atom, CachedSelection> _dragData = new Dictionary<Gdk.Atom, CachedSelection>();
 
 		public DataObjectHandler()
 		{
 			Control = new Dictionary<string, DataObjectData>();
 		}
 
-		public DataObjectHandler(Gtk.Widget widget, Gdk.DragContext context, uint time)
+		public DataObjectHandler(Gdk.DragContext context)
 			: this()
 		{
-			_sourceWidget = widget;
 			_dragContext = context;
-			_dragTime = time;
 		}
 
 		internal void SetDataReceived(Gtk.DragDataReceivedArgs args)
 		{
-			// return the data!
-			_getData?.Invoke(args.SelectionData);
+			_dragData[args.SelectionData.Target] = new CachedSelection(args.SelectionData);
 		}
+
+		internal bool AllDataReceived => _dragData.Count == _dragContext?.ListTargets().Length;
 
 		public Gtk.TargetList GetTargets()
 		{
@@ -83,37 +77,12 @@ namespace Eto.GtkSharp.Forms
 			};
 		}
 
-		T GetSelectionData<T>(string type, Func<Gtk.SelectionData, T> getData)
+		T GetSelectionData<T>(string type, Func<CachedSelection, T> getData)
 		{
-			if (_dragContext != null)
+			var target = _dragContext?.ListTargets().FirstOrDefault(r => r.Name == type);
+			if (target != null && _dragData.TryGetValue(target, out var selectionData))
 			{
-				var target = _dragContext.ListTargets().FirstOrDefault(r => r.Name == type);
-				if (target != null)
-				{
-					object data = null;
-					var sem = new ManualResetEventSlim(false);
-					_getData = selection =>
-					{
-						data = (object)getData(selection);
-						sem.Set();
-					};
-					Gtk.Drag.GetData(_sourceWidget, _dragContext, target, _dragTime);
-					if (!sem.IsSet)
-					{
-						// sometimes data gets passed back at the next run loop, so we pump the loop here
-						// is there a better way to wait for the data to arrive?
-						for (int i = 0; i < 2; i++)
-						{
-							Gtk.Application.RunIteration();
-							if (sem.Wait(100))
-								break;
-						}
-					}
-
-
-					_getData = null;
-					return (T)data;
-				}
+				return getData(selectionData);
 			}
 			return default(T);
 		}
@@ -204,7 +173,7 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				return GetControlData("image/png", d => d.Data as Bitmap)
-					?? GetSelectionData("image/pixbuf", selection => selection.Pixbuf.ToEto())
+					?? GetSelectionData("image/pixbuf", selection => selection.Pixbuf)
 					?? GetSelectionData("image/png", selection => new Bitmap(selection.Data))
 					?? GetSelectionData("image/tiff", selection => new Bitmap(selection.Data))
 					?? GetSelectionData("image/bmp", selection => new Bitmap(selection.Data))
@@ -273,7 +242,7 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				var urls = GetControlData("text/uri-list", d => d.Data as Uri[])
-					?? GetSelectionData("text/uri-list", selection => selection.GetSelectedUris())?.Select(r => new Uri(r)).ToArray();
+					?? GetSelectionData("text/uri-list", selection => selection.Uris);
 				return urls;
 			}
 		}
@@ -285,5 +254,30 @@ namespace Eto.GtkSharp.Forms
 		public bool ContainsImage => Contains("image/pixbuf", "image/png", "image/tiff", "image/bmp", "image/jpeg");
 
 		public bool ContainsUris => Contains("text/uri-list");
+
+		class CachedSelection
+		{
+			public CachedSelection(Gtk.SelectionData selection)
+			{
+				Data = selection.Data;
+
+				switch (selection.Target.Name)
+				{
+					case "image/pixbuf":
+						Pixbuf = selection.Pixbuf?.ToEto();
+						break;
+
+					case "text/uri-list":
+						Uris = selection.GetSelectedUris().Select(r => new Uri(r)).ToArray();
+						break;
+				}
+			}
+
+			public byte[] Data { get; }
+
+			public Image Pixbuf { get; }
+
+			public Uri[] Uris { get; }
+		}
 	}
 }

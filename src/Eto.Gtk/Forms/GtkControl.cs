@@ -1,6 +1,3 @@
-using Eto.GtkSharp.Drawing;
-using System.Runtime.Serialization.Formatters.Binary;
-
 namespace Eto.GtkSharp.Forms
 {
 	public interface IGtkControl
@@ -474,7 +471,9 @@ namespace Eto.GtkSharp.Forms
 		/// </summary>
 		protected class GtkControlConnector : WeakConnector
 		{
-			DragEffects? _dragEnterEffects;
+			DragEffects _dragEffects;
+			DataObject _dragData;
+			bool _isDrop;
 			protected DragEventArgs DragArgs { get; private set; }
 
 			new GtkControl<TControl, TWidget, TCallback> Handler { get { return (GtkControl<TControl, TWidget, TCallback>)base.Handler; } }
@@ -727,18 +726,61 @@ namespace Eto.GtkSharp.Forms
 				var action = context.SelectedAction;
 #endif
 
-				data = data ?? new DataObject(new DataObjectHandler(Handler.DragControl, context, time));
+				data = data ?? new DataObject(new DataObjectHandler(context));
 				if (location == null)
 					location = Handler.PointFromScreen(Mouse.Position);
 
-				return new DragEventArgs(source, data, action.ToEto(), location.Value, Keyboard.Modifiers, Mouse.Buttons, controlObject);
+				return new DragEventArgs(source, data, action.ToEto(), location.Value, Keyboard.Modifiers, Mouse.Buttons, controlObject)
+				{
+					Effects = _dragEffects,
+				};
 			}
 
 			[GLib.ConnectBefore]
 			public virtual void HandleDragDataReceived(object o, Gtk.DragDataReceivedArgs args)
 			{
-				var h = DragArgs?.Data.Handler as DataObjectHandler;
-				h?.SetDataReceived(args);
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				if (_dragData?.Handler is DataObjectHandler dataHandler)
+				{
+					try
+					{
+						_ = args.SelectionData.Data;
+					}
+					catch (OverflowException)
+					{
+						// Workaround: sometimes the received SelectionData is broken and does not contain any data.
+						// If that happens, reset the drag operation and try again.
+						Gtk.Drag.Finish(args.Context, false, false, args.Time);
+						_dragData = null;
+						DragArgs = null;
+						args.RetVal = true;
+						return;
+					}
+
+					dataHandler.SetDataReceived(args);
+
+					if (dataHandler.AllDataReceived)
+					{
+						DragArgs = GetDragEventArgs(args.Context, new PointF(args.X, args.Y), args.Time, data: _dragData);
+
+						if (_isDrop)
+						{
+							handler.Callback.OnDragDrop(handler.Widget, DragArgs);
+							Gtk.Drag.Finish(args.Context, true, DragArgs.Effects.HasFlag(DragEffects.Move), args.Time);
+							_dragData = null;
+							DragArgs = null;
+							args.RetVal = true;
+							return;
+						}
+
+						handler.Callback.OnDragEnter(handler.Widget, DragArgs);
+						_dragEffects = DragArgs.Effects;
+						Gdk.Drag.Status(args.Context, _dragEffects.ToGdk(), args.Time);
+					}
+				}
 
 				args.RetVal = true;
 			}
@@ -760,14 +802,16 @@ namespace Eto.GtkSharp.Forms
 				var handler = Handler;
 				if (handler == null)
 					return;
-				DragArgs = GetDragEventArgs(args.Context, new PointF(args.X, args.Y), args.Time);
-				handler.Callback.OnDragDrop(handler.Widget, DragArgs);
-				Gtk.Drag.Finish(args.Context, true, DragArgs.Effects.HasFlag(DragEffects.Move), args.Time);
-				DragArgs = null;
+
+				// The preceding drag-leave cleared the drag data. Request it again.
+				_isDrop = true;
+				_dragData = new DataObject(new DataObjectHandler(args.Context));
+				foreach (var target in args.Context.ListTargets())
+				{
+					Gtk.Drag.GetData(Handler.DragControl, args.Context, target, args.Time);
+				}
 				args.RetVal = true;
 			}
-
-
 
 			[GLib.ConnectBefore]
 			public virtual void HandleDragMotion(object o, Gtk.DragMotionArgs args)
@@ -775,20 +819,35 @@ namespace Eto.GtkSharp.Forms
 				var handler = Handler;
 				if (handler == null)
 					return;
-				DragArgs = GetDragEventArgs(args.Context, new PointF(args.X, args.Y), args.Time);
 
-				if (_dragEnterEffects == null)
+				if (_dragData == null)
 				{
-					handler.Callback.OnDragEnter(handler.Widget, DragArgs);
-					_dragEnterEffects = DragArgs.Effects;
-				}
-				else
-				{
-					DragArgs.Effects = _dragEnterEffects.Value;
-					handler.Callback.OnDragOver(handler.Widget, DragArgs);
+					// First motion of the drag. Create the data object, request all available data, and delay OnDragEnter until all data is received.
+					_dragEffects = 0;
+					_isDrop = false;
+					_dragData = new DataObject(new DataObjectHandler(args.Context));
+					foreach (var target in args.Context.ListTargets())
+					{
+						Gtk.Drag.GetData(Handler.DragControl, args.Context, target, args.Time);
+					}
+					Gdk.Drag.Status(args.Context, 0, args.Time);
+					args.RetVal = true;
+					return;
 				}
 
-				Gdk.Drag.Status(args.Context, DragArgs.Effects.ToGdk(), args.Time);
+				var dataHandler = _dragData.Handler as DataObjectHandler;
+				if (dataHandler?.AllDataReceived != true)
+				{
+					// Data not ready. Delay OnDragOver events until all data is received.
+					args.RetVal = true;
+					return;
+				}
+
+				DragArgs = GetDragEventArgs(args.Context, new PointF(args.X, args.Y), args.Time, data: _dragData);
+				handler.Callback.OnDragOver(handler.Widget, DragArgs);
+				_dragEffects = DragArgs.Effects;
+
+				Gdk.Drag.Status(args.Context, _dragEffects.ToGdk(), args.Time);
 
 				args.RetVal = true;
 			}
@@ -798,11 +857,15 @@ namespace Eto.GtkSharp.Forms
 				var handler = Handler;
 				if (handler == null)
 					return;
-				// use old args in case of a drop so we use the last motion args to determine position of drop for TreeGridView/GridView.
-				DragArgs = DragArgs ?? GetDragEventArgs(args.Context, Handler.PointFromScreen(Mouse.Position), args.Time);
+				DragArgs = GetDragEventArgs(args.Context, Handler.PointFromScreen(Mouse.Position), args.Time, data: _dragData);
 				handler.Callback.OnDragLeave(handler.Widget, DragArgs);
-				_dragEnterEffects = null;
-				Eto.Forms.Application.Instance.AsyncInvoke(() => DragArgs = null);
+				_dragEffects = DragArgs.Effects;
+				Gdk.Drag.Status(args.Context, _dragEffects.ToGdk(), args.Time);
+
+				// Drag-leave always precedes drag-drop. It is not known at this point if the actual drop will happen.
+				// So clear the cached drag data to avoid wasting memory. If the drop happens, we'll request it again.
+				_dragData = null;
+				DragArgs = null;
 			}
 
 			public virtual void HandleDragEnd(object o, Gtk.DragEndArgs args)
