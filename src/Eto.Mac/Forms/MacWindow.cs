@@ -339,6 +339,10 @@ namespace Eto.Mac.Forms
 			if (handler == null)
 				return;
 			handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
+			if (GetHandler(handler.Control.FirstResponder) is IMacViewHandler ctlHandler)
+			{
+				ctlHandler.Callback.OnGotFocus(ctlHandler.Widget, EventArgs.Empty);
+			}
 		}
 
 		static void HandleLostFocus(object sender, EventArgs e)
@@ -346,6 +350,12 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
 			if (handler == null)
 				return;
+
+			if (GetHandler(handler.Control.FirstResponder) is IMacViewHandler ctlHandler)
+			{
+				ctlHandler.Callback.OnLostFocus(ctlHandler.Widget, EventArgs.Empty);
+			}
+			
 			handler.Callback.OnLostFocus(handler.Widget, EventArgs.Empty);
 		}
 
@@ -1043,6 +1053,14 @@ namespace Eto.Mac.Forms
 			set => Widget.Properties.Set(MacWindow.AnimateSizeChanges_Key, value);
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+
+			// need to send Got/LostFocus to child when window Got/LostFocus is called
+			HandleEvent(Window.LostFocusEvent);
+			HandleEvent(Window.GotFocusEvent);
+		}
 
 		public override void OnLoad(EventArgs e)
 		{

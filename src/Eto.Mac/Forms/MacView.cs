@@ -1062,7 +1062,7 @@ namespace Eto.Mac.Forms
 		{
 			get
 			{
-				return ShouldHaveFocus ?? (FocusControl.Window != null && FocusControl.Window.FirstResponder == Control);
+				return ShouldHaveFocus ?? (FocusControl.Window?.FirstResponder == Control && FocusControl.Window?.IsKeyWindow == true);
 			}
 		}
 
