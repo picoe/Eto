@@ -128,7 +128,20 @@ public class PropertyBinding<T> : IndirectBinding<T>
 		if (EnsureProperty(dataItem) && CanRead)
 		{
 			var propertyType = typeof(T);
-			object val = descriptor != null ? descriptor.GetValue(dataItem) : propInfo.GetValue(dataItem);
+			object val;
+			try
+			{
+				if (descriptor != null)
+					val = descriptor.GetValue(dataItem);
+				else if (propInfo != null)
+					val = propInfo.GetValue(dataItem);
+				else
+					return default(T);
+			}
+			catch (Exception ex)
+			{
+				throw new PropertyBindingException($"Could not get property '{Property}' on '{dataItem?.GetType()}'", ex);
+			}
 			if (val != null && !propertyType.IsInstanceOfType(val))
 			{
 				try
@@ -171,10 +184,17 @@ public class PropertyBinding<T> : IndirectBinding<T>
 					val = propertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyType) : null;
 				}
 			}
-			if (descriptor != null)
-				descriptor.SetValue(dataItem, val);
-			else if (propInfo != null)
-				propInfo.SetValue(dataItem, val);
+			try
+			{
+				if (descriptor != null)
+					descriptor.SetValue(dataItem, val);
+				else if (propInfo != null)
+					propInfo.SetValue(dataItem, val);
+			}
+			catch (Exception ex)
+			{
+				throw new PropertyBindingException($"Could not set property '{Property}' on '{dataItem?.GetType()}'", ex);
+			}
 		}
 	}
 
