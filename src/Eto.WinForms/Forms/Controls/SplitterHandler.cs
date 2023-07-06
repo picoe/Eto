@@ -161,6 +161,9 @@ namespace Eto.WinForms.Forms.Controls
 				newPosition = lastPosition;
 			}
 
+			// always set splitter distance 
+			Control.SplitterDistance = newPosition;
+
 			if (lastPosition != newPosition)
 			{
 				if (Control.IsHandleCreated)
@@ -170,9 +173,9 @@ namespace Eto.WinForms.Forms.Controls
 					position = newPosition;
 					Callback.OnPositionChanged(Widget, EventArgs.Empty);
 				}
-
-				Control.SplitterDistance = newPosition;
 			}
+			
+			
 			lastPosition = newPosition;
 			
 			if (userMoved)
