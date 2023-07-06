@@ -440,6 +440,34 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.IsNull(outOfBounds, $"#1 - Position went out of bounds 100-200, was {outOfBounds}");
 		}
 
+		[Test, ManualTest]
+		public void SplitterShouldNotMoveWhenChangingCancelled()
+		{
+			int positionChanged = 0;
+			ManualForm("Splitter should not be able to move", form =>
+			{
+				form.ClientSize = new Size(600, 300);
+				var splitter = new Splitter
+				{
+
+					Panel1 = new Panel { BackgroundColor = Colors.Blue, Size = new Size(300, 200) },
+					Panel2 = new Panel { BackgroundColor = Colors.Red, Size = new Size(300, 200) }
+				};
+
+				splitter.PositionChanging += (sender, e) =>
+				{
+					System.Diagnostics.Debug.WriteLine($"PositionChanging, Position {splitter.Position}, NewPosition: {e.NewPosition}");
+					e.Cancel = true;
+				};
+				splitter.PositionChanged += (sender, e) =>
+				{
+					positionChanged++;
+				};
+				return splitter;
+			});
+			Assert.AreEqual(0, positionChanged, $"#1 - PositionChanged should not fire");
+		}
+
 		[TestCase(Orientation.Horizontal)]
 		[TestCase(Orientation.Vertical)]
 		public void ZeroRelativePositionShouldNotCrash(Orientation orientation)

@@ -296,9 +296,13 @@ namespace Eto.Mac.Forms.Controls
 					var mainFrame = h.Control.Frame;
 					if (mainFrame.Width <= 1 || mainFrame.Height <= 1)
 						return;
-					h.position = h.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
+					var newPosition = h.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
 					h.TriggerChangeStarted();
-					h.Callback.OnPositionChanged(h.Widget, EventArgs.Empty);
+					if (newPosition != h.position)
+					{
+						h.position = newPosition;
+						h.Callback.OnPositionChanged(h.Widget, EventArgs.Empty);
+					}
 				}
 			}
 

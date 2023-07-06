@@ -170,8 +170,8 @@ public class Splitter : Container
 	{
 		EventLookup.Register<Splitter>(c => c.OnPositionChanged(null), Splitter.PositionChangedEvent);
 		EventLookup.Register<Splitter>(c => c.OnPositionChanging(null), Splitter.PositionChangingEvent);
-		EventLookup.Register<Splitter>(c => c.OnPositionChangeStarted(null), Splitter.PositionChangingEvent);
-		EventLookup.Register<Splitter>(c => c.OnPositionChangeCompleted(null), Splitter.PositionChangingEvent);
+		EventLookup.Register<Splitter>(c => c.OnPositionChangeStarted(null), Splitter.PositionChangeStartedEvent);
+		EventLookup.Register<Splitter>(c => c.OnPositionChangeCompleted(null), Splitter.PositionChangeCompletedEvent);
 	}
 
 	/// <summary>
