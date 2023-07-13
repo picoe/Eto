@@ -114,6 +114,12 @@ namespace Eto.Wpf.Forms.Controls
 		where TWidget : Grid
 		where TCallback : Grid.ICallback
 	{
+		DateTime? startDragOverTime;
+		const int DragScrollSize = 12;
+		const int DragScrollFastSize = 6;
+		const double DragScrollDelay = 0.1;
+		const double DragScrollFastDelay = 0.01;
+		
 		ContextMenu contextMenu;
 		bool hasFocus;
 		protected bool SkipSelectionChanged { get; set; }
@@ -992,6 +998,64 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			var cellType = cellInfo.IsHeader ? GridCellType.ColumnHeader : rowIndex != -1 && columnIndex != -1 ? GridCellType.Data : GridCellType.None;
 			return (column, columnIndex, rowIndex, cellType, item);
+		}
+
+		swc.ScrollViewer ScrollViewer => Control.FindChild<swc.ScrollViewer>();
+
+		protected override void HandleDragOver(sw.DragEventArgs e, Eto.Forms.DragEventArgs args)
+		{
+			base.HandleDragOver(e, args);
+
+			var scrollViewer = ScrollViewer;
+			if (scrollViewer == null)
+				return;
+				
+			void ScrollWithIncrement(bool fast, double increment)
+			{
+				var now = DateTime.Now;
+				if (startDragOverTime == null)
+				{
+					startDragOverTime = now;
+					return;
+				}
+				
+				var diff = now - startDragOverTime;
+				if (diff > TimeSpan.FromSeconds(fast ? DragScrollFastDelay : DragScrollDelay))
+				{
+					startDragOverTime = now;
+					var oldOffset = scrollViewer.VerticalOffset;
+					var maxHeight = scrollViewer.ScrollableHeight;
+					var newOffset = Math.Min(maxHeight, Math.Max(0, oldOffset + increment));
+					if (newOffset != oldOffset)
+						scrollViewer.ScrollToVerticalOffset(newOffset);
+				}
+			}
+
+			var headerPart = ShowHeader ? Control.FindChild<swcp.DataGridColumnHeadersPresenter>("PART_ColumnHeadersPresenter") : null;
+			var headerHeight = headerPart?.ActualHeight ?? 0;
+
+			// scroll up or down when the user drags close to the edge
+			if (args.Location.Y < headerHeight + DragScrollSize)
+			{
+				ScrollWithIncrement(args.Location.Y < headerHeight + DragScrollFastSize, -1);
+				return;
+			}
+
+			var height = Control.ActualHeight;
+			if (scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Visible)
+			{
+				var child = scrollViewer.FindChild<swcp.ScrollBar>("PART_HorizontalScrollBar");
+				height -= child.ActualHeight;
+			}
+			
+			if (args.Location.Y > height - DragScrollSize)
+			{
+				ScrollWithIncrement(args.Location.Y > height - DragScrollFastSize, 1);
+				return;
+			}
+
+			// not in a drag scroll area, reset
+			startDragOverTime = null;
 		}
 	}
 }
