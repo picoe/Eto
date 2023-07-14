@@ -13,7 +13,13 @@ namespace Eto.Mac.Forms.Controls
 		/// </summary>
 		public class EtoContentView : MacPanelView
 		{
-			
+			public EtoContentView()
+			{
+			}
+
+			public EtoContentView(NativeHandle handle) : base(handle)
+			{
+			}
 		}
 
 		public class EtoBox : NSBox, IMacControl

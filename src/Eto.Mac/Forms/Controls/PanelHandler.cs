@@ -4,6 +4,12 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public class EtoPanelView : MacPanelView
 		{
+			public EtoPanelView()
+			{
+			}
+			public EtoPanelView(NativeHandle handle) : base(handle)
+			{
+			}
 		}
 		
 		protected override NSView CreateControl() => new EtoPanelView();
