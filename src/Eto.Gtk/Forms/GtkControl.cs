@@ -57,6 +57,7 @@ namespace Eto.GtkSharp.Forms
 		public static readonly object TabIndex_Key = new object();
 		public static readonly object Cursor_Key = new object();
 		public static readonly object AllowDrop_Key = new object();
+		public static readonly object DeferMouseLeave_Key = new object();
 		public static uint? DefaultBorderWidth;
 	}
 
@@ -141,6 +142,12 @@ namespace Eto.GtkSharp.Forms
 			ContainerControl.SetSizeRequest(size.Width, size.Height);
 			InvalidateMeasure();
 		}
+		
+		internal bool DeferMouseLeave
+		{
+			get => Widget.Properties.Get<bool>(GtkControl.DeferMouseLeave_Key);
+			set => Widget.Properties.Set(GtkControl.DeferMouseLeave_Key, value);
+		}
 
 		public virtual bool Enabled
 		{
@@ -154,11 +161,13 @@ namespace Eto.GtkSharp.Forms
 			}
 			set
 			{
+				DeferMouseLeave = true;
 #if GTK3
 				ContainerControl.Sensitive = value;
 #else
 				TriggerEnabled(Enabled, value, true);
 #endif
+				DeferMouseLeave = false;
 			}
 		}
 
@@ -358,6 +367,7 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
+			Connector.TriggerMouseLeaveIfNeeded();
 		}
 
 		protected virtual void RealizedSetup()
@@ -407,6 +417,7 @@ namespace Eto.GtkSharp.Forms
 				case Eto.Forms.Control.MouseLeaveEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.LeaveNotifyMask);
 					EventControl.LeaveNotifyEvent += Connector.HandleControlLeaveNotifyEvent;
+					HandleEvent(Eto.Forms.Control.MouseEnterEvent);
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.ButtonMotionMask);
@@ -474,6 +485,8 @@ namespace Eto.GtkSharp.Forms
 			DragEffects _dragEffects;
 			DataObject _dragData;
 			bool _isDrop;
+			bool _mouseEntered;
+			
 			protected DragEventArgs DragArgs { get; private set; }
 
 			new GtkControl<TControl, TWidget, TCallback> Handler { get { return (GtkControl<TControl, TWidget, TCallback>)base.Handler; } }
@@ -527,7 +540,30 @@ namespace Eto.GtkSharp.Forms
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
-
+				_mouseEntered = false;
+				if (handler.DeferMouseLeave)
+				{
+					Application.Instance.AsyncInvoke(() =>
+					{
+						if (!handler.Widget.IsDisposed)
+							handler.Callback.OnMouseLeave(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+					});
+				}
+				else
+				{
+					handler.Callback.OnMouseLeave(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+				}
+			}
+			
+			public void TriggerMouseLeaveIfNeeded()
+			{
+				var handler = Handler;
+				if (handler == null || !_mouseEntered)
+					return;
+				_mouseEntered = false;
+				var p = handler.Widget.PointFromScreen(Mouse.Position);
+				Keys modifiers = Keyboard.Modifiers;
+				MouseButtons buttons = MouseButtons.None;
 				handler.Callback.OnMouseLeave(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
@@ -544,7 +580,7 @@ namespace Eto.GtkSharp.Forms
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
-
+				_mouseEntered = true;
 				handler.Callback.OnMouseEnter(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 

@@ -41,8 +41,8 @@ namespace Eto.Mac.Forms
 		{
 			var h = Handler;
 			if (h == null || !h.Enabled) return;
-			h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 			entered = false;
+			h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
 		[Export("scrollWheel:")]
@@ -53,19 +53,26 @@ namespace Eto.Mac.Forms
 			h.Callback.OnMouseWheel(h.Widget, MacConversions.GetMouseEvent(h, theEvent, true));
 		}
 		
-		public void FireMouseLeaveIfNeeded()
+		public void FireMouseLeaveIfNeeded(bool async)
 		{
 			var h = Handler;
-			if (h == null || h.Enabled || !entered) return;
+			if (h == null || !entered) return;
 			entered = false;
-			Application.Instance.AsyncInvoke(() =>
+			if (async)
 			{
-				if (!h.Widget.IsDisposed)
+				Application.Instance.AsyncInvoke(() =>
 				{
+					if (h.Widget.IsDisposed)
+						return;
 					var theEvent = NSApplication.SharedApplication.CurrentEvent;
 					h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
-				}
-			});
+				});
+			}
+			else
+			{
+				var theEvent = NSApplication.SharedApplication.CurrentEvent;
+				h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+			}
 		}
 		
 	}
@@ -1042,7 +1049,7 @@ namespace Eto.Mac.Forms
 				Callback.OnEnabledChanged(Widget, EventArgs.Empty);
 
 				if (!newEnabled)
-					mouseDelegate?.FireMouseLeaveIfNeeded();
+					mouseDelegate?.FireMouseLeaveIfNeeded(true);
 			}
 		}
 
@@ -1144,6 +1151,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
+			mouseDelegate?.FireMouseLeaveIfNeeded(false);
 		}
 
 		public virtual void OnKeyDown(KeyEventArgs e) => Callback.OnKeyDown(Widget, e);
