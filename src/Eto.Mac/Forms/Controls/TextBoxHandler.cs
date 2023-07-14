@@ -91,9 +91,9 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public WeakReference WeakHandler { get; set; }
 
-		IMacViewHandler Handler => WeakHandler.Target as IMacViewHandler;
-		IMacText TextHandler => WeakHandler.Target as IMacText;
-		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler.Target as ITextBoxWithMaxLength;
+		IMacViewHandler Handler => WeakHandler?.Target as IMacViewHandler;
+		IMacText TextHandler => WeakHandler?.Target as IMacText;
+		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler?.Target as ITextBoxWithMaxLength;
 
 		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? 0; } }
 		

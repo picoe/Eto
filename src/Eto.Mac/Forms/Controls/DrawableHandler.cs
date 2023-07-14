@@ -14,6 +14,14 @@ namespace Eto.Mac.Forms.Controls
 		public class EtoDrawableView : MacPanelView
 		{
 			DrawableHandler Drawable => Handler as DrawableHandler;
+			
+			public EtoDrawableView()
+			{
+			}
+
+			public EtoDrawableView(NativeHandle handle) : base(handle)
+			{
+			}
 
 			public override void DrawRect(CGRect dirtyRect)
 			{

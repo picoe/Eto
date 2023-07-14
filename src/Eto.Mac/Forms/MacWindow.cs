@@ -155,7 +155,7 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public EtoContentView(IntPtr handle) : base(handle)
+		public EtoContentView(NativeHandle handle) : base(handle)
 		{
 		}
 	}

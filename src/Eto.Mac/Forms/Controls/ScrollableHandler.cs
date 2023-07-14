@@ -61,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 			}
 
-			public EtoDocumentView(IntPtr handle)
+			public EtoDocumentView(NativeHandle handle)
 				: base(handle)
 			{
 				

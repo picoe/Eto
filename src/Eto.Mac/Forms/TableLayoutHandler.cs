@@ -37,6 +37,10 @@ namespace Eto.Mac.Forms
 		{
 			new TableLayoutHandler Handler => (TableLayoutHandler)base.Handler;
 
+			public EtoTableLayoutView(NativeHandle handle) : base(handle)
+			{
+			}
+
 			public EtoTableLayoutView()
 			{
 				AutoresizesSubviews = false;
