@@ -112,6 +112,8 @@ namespace Eto.Mac.Forms
 		MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent);
 		MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent);
 		void UpdateTrackingAreas();
+		void OnViewDidMoveToWindow();
+		bool AutoAttachNative { get; set; }
 	}
 
 	static partial class MacView
@@ -128,6 +130,7 @@ namespace Eto.Mac.Forms
 		public static readonly object AcceptsFirstMouse_Key = new object();
 		public static readonly object TextInputCancelled_Key = new object();
 		public static readonly object TextInputImplemented_Key = new object();
+		public static readonly object AutoAttachNative_Key = new object();
 		public static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
 		public static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
 		public static readonly IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
@@ -556,6 +559,20 @@ namespace Eto.Mac.Forms
 		/// </summary>
 		public static bool InMouseTrackingLoop;
 
+		public static IntPtr selViewDidMoveToWindow = Selector.GetHandle("viewDidMoveToWindow");
+
+		internal static MarshalDelegates.Action_IntPtr_IntPtr TriggerViewDidMoveToWindow_Delegate = TriggerViewDidMoveToWindow;
+		static void TriggerViewDidMoveToWindow(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			
+			Messaging.void_objc_msgSendSuper(obj.SuperHandle, sel);
+			
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			{
+				handler.OnViewDidMoveToWindow();
+			}
+		}
 	}
 
 	public abstract partial class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -1574,6 +1591,31 @@ namespace Eto.Mac.Forms
 		public virtual void UpdateLayout()
 		{
 			ContainerControl?.Window?.LayoutIfNeeded();
+		}
+		
+		public bool AutoAttachNative
+		{
+			get => Widget.Properties.Get<bool>(MacView.AutoAttachNative_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(MacView.AutoAttachNative_Key, value) && value)
+				{
+					// ensure method is added to the container control's class
+					AddMethod(MacView.selViewDidMoveToWindow, MacView.TriggerViewDidMoveToWindow_Delegate, "v@:@", ContainerControl);
+				}
+			}
+		}
+
+		public virtual void OnViewDidMoveToWindow()
+		{
+			if (!AutoAttachNative)
+				return;
+
+			// ensure load/unload get called appropriately.
+			if (ContainerControl.Window == null)
+				Widget.DetachNative();
+			else
+				Widget.AttachNative();
 		}
 	}
 }
