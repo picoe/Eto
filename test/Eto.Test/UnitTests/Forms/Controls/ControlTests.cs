@@ -453,40 +453,104 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCaseSource(nameof(GetControlTypes))]
 		public void ControlShouldFireMouseLeaveIfEnteredThenDisabled(IControlTypeInfo<Control> info)
 		{
-			bool mouseLeaveCalled = false;
-			bool mouseEnterCalled = false;
+			int mouseLeaveCalled = 0;
+			int mouseEnterCalled = 0;
 			bool mouseLeaveCalledBeforeMouseDown = false;
 			bool mouseLeaveCalledAfterDisabled = false;
-			bool mouseDownCalled = false;
+			int mouseDownCalled = 0;
+			bool formClosing = false;
+			bool mouseLeaveCalledAfterFormClosed = false;
+			int enabledChanged = 0;
+			bool enabledChangedFiredAfterMouseLeave = false;
 			ManualForm("Click on the control", form =>
 			{
+				form.Closing += (sender, e) =>
+				{
+					formClosing = true;
+				};
 
 				var control = info.CreatePopulatedControl();
 				control.MouseEnter += (sender, e) =>
 				{
-					mouseEnterCalled = true;
+					mouseEnterCalled++;
 				};
 				control.MouseLeave += (sender, e) =>
 				{
-					mouseLeaveCalled = true;
-					if (mouseDownCalled)
-						form.Close();
+					mouseLeaveCalled++;
+					mouseLeaveCalledAfterFormClosed |= formClosing;
+					if (mouseDownCalled > 0)
+						Application.Instance.AsyncInvoke(form.Close);
 				};
 				control.MouseDown += (sender, e) =>
 				{
-					mouseDownCalled = true;
-					mouseLeaveCalledBeforeMouseDown = mouseLeaveCalled;
+					mouseDownCalled++;
+					mouseLeaveCalledBeforeMouseDown = mouseLeaveCalled > 0;
 					control.Enabled = false;
-					mouseLeaveCalledAfterDisabled = mouseLeaveCalled;
+					mouseLeaveCalledAfterDisabled = mouseLeaveCalled > 0;
 					e.Handled = true;
+				};
+				control.EnabledChanged += (sender, e) =>
+				{
+					enabledChanged++;
+					enabledChangedFiredAfterMouseLeave = mouseLeaveCalled > 0;
+
 				};
 				return control;
 			});
-			Assert.IsTrue(mouseEnterCalled, "#1.1 - MouseEnter did not get called");
-			Assert.IsTrue(mouseLeaveCalled, "#1.2 - MouseLeave did not get called");
+			Assert.AreEqual(1, mouseEnterCalled, "#1.1 - MouseEnter should be called exactly once");
+			Assert.AreEqual(1, mouseLeaveCalled, "#1.2 - MouseLeave should be called exactly once");
 			Assert.IsFalse(mouseLeaveCalledBeforeMouseDown, "#1.3 - MouseLeave should not have been called before MouseDown");
 			Assert.IsFalse(mouseLeaveCalledAfterDisabled, "#1.4 - MouseLeave should not be called during Enabled=false, but sometime after the MouseDown completes");
-			Assert.IsTrue(mouseDownCalled, "#1.5 - MouseDown didn't get called.  Did you click the control?");
+			Assert.AreEqual(1, mouseDownCalled, "#1.5 - MouseDown should get called exactly once.  Did you click the control?");
+			Assert.IsFalse(mouseLeaveCalledAfterFormClosed, "#1.6 - MouseLeave should be called immediately when clicked, not when the form is closed");
+			Assert.AreEqual(1, enabledChanged, "#1.7 - EnabledChanged should be called exactly once");
+			Assert.IsFalse(enabledChangedFiredAfterMouseLeave, "#1.8 - MouseLeave should be fired after EnabledChanged event");
+		}
+
+		[ManualTest]
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlShouldFireMouseLeaveWhenUnloaded(IControlTypeInfo<Control> info)
+		{
+			int mouseLeaveCalled = 0;
+			int mouseEnterCalled = 0;
+			bool mouseLeaveCalledBeforeMouseDown = false;
+			int mouseDownCalled = 0;
+			bool formClosing = false;
+			bool mouseLeaveCalledAfterFormClosed = false;
+			ManualForm("Click on the control", form =>
+			{
+				form.Closing += (sender, e) =>
+				{
+					formClosing = true;
+				};
+
+				var control = info.CreatePopulatedControl();
+				control.MouseEnter += (sender, e) =>
+				{
+					mouseEnterCalled++;
+				};
+				control.MouseLeave += (sender, e) =>
+				{
+					mouseLeaveCalled++;
+					mouseLeaveCalledAfterFormClosed |= formClosing;
+					if (mouseDownCalled > 0)
+						Application.Instance.AsyncInvoke(form.Close);
+				};
+				control.MouseDown += (sender, e) =>
+				{
+					mouseDownCalled++;
+					mouseLeaveCalledBeforeMouseDown = mouseLeaveCalled > 0;
+					e.Handled = true;
+
+					control.VisualParent.Remove(control);
+				};
+				return control;
+			});
+			Assert.AreEqual(1, mouseEnterCalled, "#1.1 - MouseEnter should be called exactly once");
+			Assert.AreEqual(1, mouseLeaveCalled, "#1.2 - MouseLeave should be called exactly once");
+			Assert.IsFalse(mouseLeaveCalledBeforeMouseDown, "#1.3 - MouseLeave should not have been called before MouseDown");
+			Assert.AreEqual(1, mouseDownCalled, "#1.5 - MouseDown should get called exactly once.  Did you click the control?");
+			Assert.IsFalse(mouseLeaveCalledAfterFormClosed, "#1.6 - MouseLeave should be called immediately when clicked, not when the form is closed");
 		}
 	}
 }
