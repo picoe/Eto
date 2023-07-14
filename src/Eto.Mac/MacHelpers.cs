@@ -40,6 +40,22 @@ namespace Eto.Forms
 			}
 			return control.GetContainerView();
 		}
+		
+		/// <summary>
+		/// Sets a value indicating that the control should auto attach/detach when added to a native window.
+		/// </summary>
+		/// <remarks>
+		/// This is an alternative to using AttachNative/DetachNative manually, and will automatically be called when the view
+		/// is added/removed to/from a native Window.  This ensures that both Load and UnLoad are triggered on the Eto control(s).
+		/// </remarks>
+		/// <param name="control">Control to auto attach</param>
+		/// <param name="autoAttach"><c>true</c> to auto attach, <c>false</c> otherwise.</param>
+		public static void SetAutoAttach(this Control control, bool autoAttach)
+		{
+			var handler = control.GetMacViewHandler();
+			if (handler != null)
+				handler.AutoAttachNative = true;
+		}
 
 		/// <summary>
 		/// Wraps the specified <paramref name="view"/> to an Eto control that can be used directly in Eto.Forms code.
