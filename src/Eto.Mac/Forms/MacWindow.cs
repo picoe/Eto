@@ -186,6 +186,7 @@ namespace Eto.Mac.Forms
 		internal static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
 		internal static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
 		internal static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
+		internal static readonly object IsClosing_Key = new object();
 		internal static readonly object SetAsChildWindow_Key = new object();
 		internal static readonly IntPtr selWindows_Handle = Selector.GetHandle("windows");
 		internal static readonly IntPtr selCount_Handle = Selector.GetHandle("count");
@@ -310,8 +311,10 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
 			if (handler == null || !handler.Widget.Loaded) // could already be closed
 				return;
+			handler.IsClosing = true;
 			if (ApplicationHandler.Instance.ShouldCloseForm(handler.Widget, true))
 				handler.Callback.OnClosed(handler.Widget, EventArgs.Empty);
+			handler.IsClosing = false;
 		}
 
 		static bool HandleWindowShouldClose(NSObject sender)
@@ -842,6 +845,7 @@ namespace Eto.Mac.Forms
 			if (!Widget.Loaded)
 				return true;
 
+			IsClosing = true;
 			var args = new CancelEventArgs();
 			Callback.OnClosing(Widget, args);
 			if (!args.Cancel && closing != null)
@@ -850,11 +854,21 @@ namespace Eto.Mac.Forms
 			{
 				Callback.OnClosed(Widget, EventArgs.Empty);
 			}
+			IsClosing = false;
 			return !args.Cancel;
+		}
+
+		bool IsClosing
+		{
+			get => Widget.Properties.Get<bool>(MacWindow.IsClosing_Key);
+			set => Widget.Properties.Set(MacWindow.IsClosing_Key, value);
 		}
 
 		public virtual void Close()
 		{
+			// already closing, let's not cause problems by trying to close twice.
+			if (IsClosing)
+				return;
 			var args = new CancelEventArgs();
 			Callback.OnClosing(Widget, args);
 			if (!args.Cancel)
