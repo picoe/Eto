@@ -76,7 +76,7 @@ namespace Eto.CustomControls
 				for (int row = 0; row < Store.Count; row++)
 				{
 					var item = Store[row];
-					if (item.Expanded)
+					if (item.Expandable && item.Expanded)
 					{
 						var children = (ITreeGridStore<ITreeGridItem>)item;
 						var section = new TreeController { StartRow = row, Handler = Handler, parent = this };
