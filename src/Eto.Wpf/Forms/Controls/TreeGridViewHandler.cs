@@ -240,7 +240,7 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					position = GridDragPosition.After;
 					var treeGridItem = item as ITreeGridItem;
-					if (treeGridItem?.Expanded == true)
+					if (treeGridItem?.Expandable == true && treeGridItem?.Expanded == true)
 					{
 						// insert as a child of the parent
 						parent = item;
