@@ -94,6 +94,7 @@ Applications
 * [RegexFileSearcher](https://github.com/CommonLoon102/RegexFileSearcher) - Cross-platform regex file searching tool in .NET 5
 * [RegexTestBench](https://github.com/CommonLoon102/RegexTestBench) - Cross-platform regex testing tool in .NET 5
 * [GEDKeeper (v3)](https://github.com/Serg-Norseman/GEDKeeper) - Cross-platform application for working with personal genealogical databases
+* [Rhinoceros 3D](https://www.rhino3d.com) - 3D computer graphics and computer-aided design (CAD) application
 
 Third party libraries
 ----------
