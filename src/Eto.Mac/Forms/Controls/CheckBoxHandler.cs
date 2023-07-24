@@ -178,10 +178,5 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.AllowsMixedState = value; }
 		}
 
-		protected override void SetBackgroundColor(Color? color)
-		{
-			base.SetBackgroundColor(color);
-			InvalidateMeasure();
-		}
 	}
 }
