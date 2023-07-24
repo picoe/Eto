@@ -74,6 +74,28 @@ namespace Eto.Mac.Forms
 				h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 			}
 		}
+
+		public void FireMouseEnterIfNeeded(bool async)
+		{
+			var h = Handler;
+			if (h == null || entered) return;
+			entered = true;
+			if (async)
+			{
+				Application.Instance.AsyncInvoke(() =>
+				{
+					if (h.Widget.IsDisposed)
+						return;
+					var theEvent = NSApplication.SharedApplication.CurrentEvent;
+					h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+				});
+			}
+			else
+			{
+				var theEvent = NSApplication.SharedApplication.CurrentEvent;
+				h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+			}
+		}
 		
 	}
 
@@ -777,6 +799,16 @@ namespace Eto.Mac.Forms
 
 				tracking = new NSTrackingArea(frame, options, mouseDelegate, null);
 				EventControl.AddTrackingArea(tracking);
+
+				// when scrolling we need to fire the events manually
+				if (Widget.Loaded)
+				{
+					var mousePosition = PointFromScreen(Mouse.Position);
+					if (frame.Contains(mousePosition.ToNS()))
+						mouseDelegate.FireMouseEnterIfNeeded(false);
+					else
+						mouseDelegate.FireMouseLeaveIfNeeded(false);
+				}
 			}
 		}
 
