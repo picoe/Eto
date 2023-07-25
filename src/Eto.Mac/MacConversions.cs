@@ -187,15 +187,28 @@ namespace Eto.Mac
 
 		public static MouseEventArgs GetMouseEvent(IMacViewHandler handler, NSEvent theEvent, bool includeWheel)
 		{
-			var view = handler.ContainerControl;
-			var pt = theEvent.LocationInWindow;
-			pt = handler.GetAlignmentPointForFramePoint(pt);
-			Keys modifiers = theEvent.ModifierFlags.ToEto();
-			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
-			if (includeWheel)
-				delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
-			return new MouseEventArgs(buttons, modifiers, pt.ToEto(view), delta);
+			PointF point;
+			Keys modifiers;
+			MouseButtons buttons;
+			if (theEvent != null)
+			{
+				var view = handler.ContainerControl;
+				var pt = theEvent.LocationInWindow;
+				pt = handler.GetAlignmentPointForFramePoint(pt);
+				point = pt.ToEto(view);
+				if (includeWheel)
+					delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
+				modifiers = theEvent.ModifierFlags.ToEto();
+				buttons = theEvent.GetMouseButtons();
+			}
+			else
+			{
+				point = handler.Widget.PointFromScreen(Mouse.Position);
+				modifiers = Keyboard.Modifiers;
+				buttons = Mouse.Buttons;
+			}
+			return new MouseEventArgs(buttons, modifiers, point, delta);
 		}
 
 		public static MouseButtons GetMouseButtons(this NSEvent theEvent)

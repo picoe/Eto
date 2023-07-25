@@ -58,20 +58,20 @@ namespace Eto.Mac.Forms
 			var h = Handler;
 			if (h == null || !entered) return;
 			entered = false;
+			var theEvent = NSApplication.SharedApplication.CurrentEvent;
+			var args = MacConversions.GetMouseEvent(h, theEvent, false);
 			if (async)
 			{
 				Application.Instance.AsyncInvoke(() =>
 				{
 					if (h.Widget.IsDisposed)
 						return;
-					var theEvent = NSApplication.SharedApplication.CurrentEvent;
-					h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+					h.Callback.OnMouseLeave(h.Widget, args);
 				});
 			}
 			else
 			{
-				var theEvent = NSApplication.SharedApplication.CurrentEvent;
-				h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+				h.Callback.OnMouseLeave(h.Widget, args);
 			}
 		}
 
@@ -80,20 +80,20 @@ namespace Eto.Mac.Forms
 			var h = Handler;
 			if (h == null || entered) return;
 			entered = true;
+			var theEvent = NSApplication.SharedApplication.CurrentEvent;
+			var args = MacConversions.GetMouseEvent(h, theEvent, false);
 			if (async)
 			{
 				Application.Instance.AsyncInvoke(() =>
 				{
 					if (h.Widget.IsDisposed)
 						return;
-					var theEvent = NSApplication.SharedApplication.CurrentEvent;
-					h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+					h.Callback.OnMouseEnter(h.Widget, args);
 				});
 			}
 			else
 			{
-				var theEvent = NSApplication.SharedApplication.CurrentEvent;
-				h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+				h.Callback.OnMouseEnter(h.Widget, args);
 			}
 		}
 		
