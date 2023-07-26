@@ -192,6 +192,55 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.AreEqual(text, args.Text, "#2.4");
 			Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#2.5");
 		}
+		
+		[Test, ManualTest]
+		public void ManyUpdatesShouldNotCauseHangs()
+		{	
+			TimeSpan maxElapsed = TimeSpan.MinValue;
+			ManualForm(
+			"There should not be any pausing",
+			form =>
+			{
+				var textBoxes = new List<T>();
+				var layout = new DynamicLayout();
+				for (int x = 0; x < 10; x++)
+				{
+					layout.BeginHorizontal();
+					for (int y = 0; y < 10; y++)
+					{
+						var textBox = new T();
+						textBoxes.Add(textBox);
+						layout.Add(textBox, true);
+					}
+					layout.EndHorizontal();
+				}
+				var sw = new Stopwatch();
+				var timer = new UITimer { Interval = 0.01 };
+				timer.Elapsed += (sender, e) =>
+				{
+					var elapsed = sw.Elapsed;
+					if (elapsed > maxElapsed)
+					{
+						maxElapsed = elapsed;
+					}
+					sw.Restart();
+					var rnd = new Random();
+					foreach (var tb in textBoxes)
+					{
+						tb.Text = rnd.Next(int.MaxValue).ToString();
+					}
+				};
+				form.Shown += (sender, e) =>
+				{
+					timer.Start();
+					sw.Start();
+				};
+				form.Closed += (sender, e) => timer.Stop();
+
+				return layout;
+			});
+			Assert.Less(maxElapsed, TimeSpan.FromSeconds(1), "There were long pauses in the UI");
+		}
 	}
 
 
