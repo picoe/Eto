@@ -1,3 +1,4 @@
+using System.Runtime;
 using swd = System.Windows.Documents;
 namespace Eto.Wpf.Forms.Controls
 {
@@ -16,6 +17,14 @@ namespace Eto.Wpf.Forms.Controls
 		internal static object CurrentText_Key = new object();
 		internal static object CurrentSelection_Key = new object();
 		internal static object DisableTextChanged_Key = new object();
+		internal static object EnableNoGCRegion_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the default value indicating to use GC.TryStartNoGCRegion() when setting TextBox.Text
+		/// to avoid performance issues with WPF.
+		/// See https://github.com/dotnet/wpf/issues/5887
+		/// </summary>
+		public static bool EnableNoGCRegionDefault = true;
 
 		protected override swc.TextBox TextBox => Control;
 
@@ -56,6 +65,18 @@ namespace Eto.Wpf.Forms.Controls
 				else
 					BorderControl.BorderThickness = new sw.Thickness(0);
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating to use GC.TryStartNoGCRegion() when setting TextBox.Text
+		/// to avoid performance issues with WPF.
+		/// See https://github.com/dotnet/wpf/issues/5887
+		/// </summary>
+		/// <seealso cref="TextBoxHandler.EnableNoGCRegionDefault" />
+		public bool EnableNoGCRegion
+		{
+			get => Widget.Properties.Get<bool?>(TextBoxHandler.EnableNoGCRegion_Key) ?? TextBoxHandler.EnableNoGCRegionDefault;
+			set => Widget.Properties.Set(TextBoxHandler.EnableNoGCRegion_Key, value);
 		}
 
 		public TextAlignment TextAlignment
@@ -285,7 +306,17 @@ namespace Eto.Wpf.Forms.Controls
 					if (args.Cancel)
 						return;
 					var needsTextChanged = TextBox.Text == newText;
+
+					// Improve performance when setting text often
+					// See https://github.com/dotnet/wpf/issues/5887#issuecomment-1604577981
+					if (EnableNoGCRegion)
+						GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
+
 					TextBox.Text = newText;
+
+					if (EnableNoGCRegion && GCSettings.LatencyMode == GCLatencyMode.NoGCRegion)
+						GC.EndNoGCRegion();
+
 					if (needsTextChanged)
 					{
 						Callback.OnTextChanged(Widget, EventArgs.Empty);
