@@ -1538,16 +1538,21 @@ namespace Eto.Mac.Forms
 
 		public virtual MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent)
 		{
+			if (!Enabled)
+				return null;
+
+			var args = MacConversions.GetMouseEvent(this, theEvent, false);
+
+			// ensure we're actually in the control's bounds
+			if (!new RectangleF(Size).Contains(args.Location))
+				return null;
+
 			// Flag that we are going to use a mouse tracking loop
 			// if this is set to false during the OnMouseDown/OnMouseDoubleClick, then we won't
 			// do a mouse tracking loop.  This is needed since the mouse up event gets buried when 
 			// showing context menus, dialogs, etc.
 			MacView.InMouseTrackingLoop = true;
-			
-			if (!Enabled)
-				return null;
-			
-			var args = MacConversions.GetMouseEvent(this, theEvent, false);
+				
 			if (theEvent.ClickCount >= 2)
 				Callback.OnMouseDoubleClick(Widget, args);
 			
