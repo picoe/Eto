@@ -303,7 +303,7 @@ namespace Eto.WinForms.Forms
 			catch
 			{
 			}
-			
+
 			return null;
 			
 		}
@@ -329,7 +329,7 @@ namespace Eto.WinForms.Forms
 					}
 				}
 
-				return GetAsData(GetObjectData(type));
+				return GetAsData(GetObjectData(type)) ?? GetAsData(GetStream(type));
 			}
 			return null;
 		}
