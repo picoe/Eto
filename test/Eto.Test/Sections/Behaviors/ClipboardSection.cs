@@ -32,6 +32,12 @@ namespace Eto.Test.Sections.Behaviors
 				clipboard.SetString("my value", "my.custom.type");
 				Update();
 			};
+			var copyObjectButton = new Button { Text = "Copy Object" };
+			copyObjectButton.Click += (sender, e) =>
+			{
+				clipboard.SetObject(new DragDropSection.CustomSerializableType { Name = "Woot" }, "my.custom.object");
+				Update();
+			};
 
 			var pasteTextButton = new Button { Text = "Paste" };
 			pasteTextButton.Click += (sender, e) => Update();
@@ -54,7 +60,7 @@ namespace Eto.Test.Sections.Behaviors
 						Orientation = Orientation.Horizontal, 
 						Spacing = 5,
 						Padding = new Padding(10),
-						Items = { copyTextButton, copyHtmlButton, copyImageButton, copyCustomButton, pasteTextButton, clearButton }
+						Items = { copyTextButton, copyHtmlButton, copyImageButton, copyCustomButton, copyObjectButton, pasteTextButton, clearButton }
 					},
 					new StackLayoutItem(pasteData, expand: true)
 				}
@@ -98,15 +104,20 @@ namespace Eto.Test.Sections.Behaviors
 					var data = clipboard.GetData(type);
 					if (data != null)
 					{
-						panel.Items.Add(string.Format("- Data, Length: {0}", data.Length));
+						panel.Items.Add($"- Data, Length: {data.Length}");
 						var hexString = BitConverter.ToString(data);
 						panel.Items.Add(hexString.Substring(0, Math.Min(hexString.Length, 1000)));
 					}
 					var str = clipboard.GetString(type);
 					if (str != null)
 					{
-						panel.Items.Add(string.Format("- String, Length: {0}", str.Length));
+						panel.Items.Add($"- String, Length: {str.Length}");
 						panel.Items.Add(str);
+					}
+					var obj = clipboard.GetObject(type);
+					if (obj != null)
+					{
+						panel.Items.Add($"- Object, Type: {obj.GetType()}: {obj}");
 					}
 				}
 			}

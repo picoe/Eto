@@ -1,14 +1,20 @@
 #if WPF
+using System.Runtime.InteropServices.ComTypes;
 using static System.Windows.WpfDataObjectExtensions;
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
+using IDataObject = Eto.Forms.IDataObject;
+using STATSTG = System.Runtime.InteropServices.ComTypes.STATSTG;
 
 namespace Eto.Wpf.Forms
 {
 
 #elif WINFORMS
+using System.Runtime.InteropServices.ComTypes;
 using static System.Windows.Forms.SwfDataObjectExtensions;
 using sw = System.Windows.Forms;
 using BitmapSource = System.Drawing.Image;
+using IDataObject = Eto.Forms.IDataObject;
+using STATSTG = System.Runtime.InteropServices.ComTypes.STATSTG;
 
 namespace Eto.WinForms.Forms
 {
@@ -49,7 +55,30 @@ namespace Eto.WinForms.Forms
 		{
 		}
 
-		protected override object InnerGetData(string type) => Control.GetData(type);
+		protected override object InnerGetData(string type)
+		{
+			try
+			{
+				// WPF can throw exceptions here for FileContents, maybe others.
+				var data = Control.GetData(type);
+				if (data != null)
+					return data;
+			}
+			catch
+			{
+			}
+
+			try
+			{
+				// fallback to native stream reading
+				return GetStream(type, -1);
+			}
+			catch
+			{
+			}
+			
+			return null;
+		}
 
 		public override void Clear()
 		{
@@ -73,6 +102,8 @@ namespace Eto.WinForms.Forms
 		protected bool IsExtended { get; set; }
 		public const string UniformResourceLocatorW_Format = "UniformResourceLocatorW";
 		public const string UniformResourceLocator_Format = "UniformResourceLocator";
+
+		public virtual sw.IDataObject ReadingDataObject => Control;
 
 		public DataObjectHandler()
 		{
@@ -141,7 +172,7 @@ namespace Eto.WinForms.Forms
 					if (img != null)
 						return img;
 				}
-				if (Contains(sw.DataFormats.Dib) && InnerGetData(sw.DataFormats.Dib) is Stream stream)
+				if (Contains(sw.DataFormats.Dib) && GetObjectData(sw.DataFormats.Dib) is Stream stream)
 					return Win32.FromDIB(stream);
 				return null;
 			}
@@ -250,12 +281,55 @@ namespace Eto.WinForms.Forms
 		public abstract bool Contains(string type);
 
 		protected abstract object InnerGetData(string type);
+		
+		object GetObjectData(string type)
+		{
+			try
+			{
+				// WPF can throw exceptions here for FileContents, maybe others.
+				var data = InnerGetData(type);
+				if (data != null)
+					return data;
+			}
+			catch
+			{
+			}
+
+			try
+			{
+				// fallback to native stream reading
+				return GetStream(type, -1);
+			}
+			catch
+			{
+			}
+			
+			return null;
+			
+		}
 
 		public byte[] GetData(string type)
 		{
 			if (Contains(type))
 			{
-				return GetAsData(InnerGetData(type));
+				if (type == "FileContents")
+				{
+					// special case for FileContents, it needs an index.
+					var fileDescriptorStream = GetStream("FileGroupDescriptorW");
+					if (fileDescriptorStream != null)
+					{
+						var reader = new BinaryReader(fileDescriptorStream);
+						// get count of number of files
+						var count = reader.ReadUInt32();
+						if (count == 1)
+						{
+							// Get the contents of the first file only. One should use GetObject() to get an array of memory streams.
+							return GetAsData(GetStream(type, 0));
+						}
+					}
+				}
+
+				return GetAsData(GetObjectData(type));
 			}
 			return null;
 		}
@@ -303,7 +377,7 @@ namespace Eto.WinForms.Forms
 				return Text;
 			if (!Contains(type))
 				return null;
-			return GetAsString(InnerGetData(type), encoding);
+			return GetAsString(GetObjectData(type), encoding);
 		}
 
 		protected string GetAsString(object data, Encoding encoding)
@@ -367,14 +441,128 @@ namespace Eto.WinForms.Forms
 			return false;
 		}
 
-		public bool TryGetObject(string type, out object value)
+		public bool TryGetObject(string type, Type objectType, out object value)
 		{
+			try
+			{
+				if (type == "FileContents")
+				{
+					// special case for FileContents, it needs an index.
+					var fileDescriptorStream = GetStream("FileGroupDescriptorW");
+					if (fileDescriptorStream != null)
+					{
+						var reader = new BinaryReader(fileDescriptorStream);
+						// get count of number of files
+						var count = reader.ReadUInt32();
+						var contents = new MemoryStream[count];
+						for (int i = 0; i < count; i++)
+						{
+							var stream = GetStream(type, i);
+							contents[i] = stream;
+						}
+						value = contents;
+						return true;
+					}
+				}
+			}
+			catch
+			{
+				// ignore errors
+			}
+
+			try
+			{
+				var obj = ReadingDataObject.GetData(type, true);
+				if (obj != null && (objectType == null || objectType.IsAssignableFrom(obj.GetType())))
+				{
+					value = obj;
+					return true;
+				}
+			}
+			catch
+			{
+				// ignore errors
+			}
+			
 			value = null;
 			return false;
 		}
 
 		public void SetObject(object value, string type) => Widget.SetObject(value, type);
-
 		public T GetObject<T>(string type) => Widget.GetObject<T>(type);
+		public object GetObject(string type) => Widget.GetObject(type);
+		public object GetObject(string type, Type objectType) => Widget.GetObject(type, objectType);
+		
+		internal MemoryStream GetStream(string format, int index = -1)
+		{
+			var comDataObject = ReadingDataObject as System.Runtime.InteropServices.ComTypes.IDataObject;
+			if (comDataObject == null)
+				return null;
+
+#if WPF
+			var dataFormat = sw.DataFormats.GetDataFormat(format);
+#elif WINFORMS
+			var dataFormat = sw.DataFormats.GetFormat(format);
+#endif
+			if (dataFormat == null)
+				return null;
+
+			var formatetc = new FORMATETC();
+			formatetc.cfFormat = (short)dataFormat.Id;
+			formatetc.dwAspect = DVASPECT.DVASPECT_CONTENT;
+			formatetc.lindex = index;
+			formatetc.tymed = TYMED.TYMED_ISTREAM | TYMED.TYMED_HGLOBAL;
+
+
+			var medium = new STGMEDIUM();
+
+			//using the com IDataObject interface get the data using the defined FORMATETC
+			comDataObject.GetData(ref formatetc, out medium);
+
+			if (medium.tymed == TYMED.TYMED_ISTREAM)
+				return ReadIStream(medium);
+
+			if (medium.tymed == TYMED.TYMED_HGLOBAL)
+				return ReadHGlobal(medium);
+
+			return null;
+		}
+
+
+		MemoryStream ReadHGlobal(STGMEDIUM medium)
+		{
+			IntPtr source = Win32.GlobalLock(medium.unionmember);
+			
+			// can't lock? Abort
+			if (source == IntPtr.Zero)
+				return null;
+
+			try
+			{
+				int length = Win32.GlobalSize(medium.unionmember);
+
+				byte[] bytes = new byte[length];
+				Marshal.Copy(source, bytes, 0, length);
+				return new MemoryStream(bytes);
+			}
+			finally
+			{
+				Win32.GlobalUnlock(medium.unionmember);
+			}
+		}
+
+		MemoryStream ReadIStream(STGMEDIUM medium)
+		{
+			var istream = (IStream)Marshal.GetObjectForIUnknown(medium.unionmember);
+			Marshal.Release(medium.unionmember);
+
+			var stat = new STATSTG();
+			istream.Stat(out stat, 0);
+			
+			var bytes = new byte[stat.cbSize];
+			istream.Read(bytes, bytes.Length, IntPtr.Zero);
+
+			return new MemoryStream(bytes);
+		}
 	}
 }

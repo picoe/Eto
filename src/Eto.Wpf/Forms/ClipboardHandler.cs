@@ -8,6 +8,8 @@ namespace Eto.Wpf.Forms
 			Control = new sw.DataObject();
 		}
 
+		public override sw.IDataObject ReadingDataObject => sw.Clipboard.GetDataObject();
+
 		public override string[] Types => sw.Clipboard.GetDataObject()?.GetFormats();
 
 		protected override void Update()
