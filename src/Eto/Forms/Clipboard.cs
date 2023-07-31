@@ -195,15 +195,12 @@ public class Clipboard : Widget, IDataObject
 		var baseType = value.GetType();
 		baseType = Nullable.GetUnderlyingType(baseType) ?? baseType;
 
-		if (baseType.GetTypeInfo().IsSerializable)
+		if (baseType.IsSerializable || baseType.GetCustomAttribute<DataContractAttribute>() != null)
 		{
-			using (var ms = new MemoryStream())
+			var data = ObjectData.Serialize(value, baseType);
+			if (data != null)
 			{
-#pragma warning disable SYSLIB0011
-				var binaryFormatter = new BinaryFormatter();
-				binaryFormatter.Serialize(ms, value);
-				SetDataStream(ms, type);
-#pragma warning restore SYSLIB0011
+				SetData(data, type);
 				return;
 			}
 		}
@@ -228,29 +225,9 @@ public class Clipboard : Widget, IDataObject
 	/// <returns>An instance of the object to recieve, or the default value.</returns>
 	public T GetObject<T>(string type)
 	{
-		if (Handler.TryGetObject(type, out var obj) && obj is T handlerValue)
-			return handlerValue;
-
-		var baseType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
-
-		try
-		{
-			if (baseType.GetTypeInfo().IsSerializable && GetObject(type) is T value)
-			{
-				return value;
-			}
-
-			var converter = System.ComponentModel.TypeDescriptor.GetConverter(baseType);
-			if (converter?.CanConvertFrom(typeof(string)) == true)
-			{
-				return (T)converter.ConvertFromString(GetString(type));
-			}
-		}
-		catch (Exception ex)
-		{
-			// log error in debug
-			Debug.WriteLine(ex);
-		}
+		var val = GetObject(type, typeof(T));
+		if (val is T output)
+			return output;
 		return default;
 	}
 
@@ -259,27 +236,60 @@ public class Clipboard : Widget, IDataObject
 	/// </summary>
 	/// <param name="type">type identifier to get the value for.</param>
 	/// <returns>Value of the object if deserializable, otherwise null.</returns>
-	public object GetObject(string type)
+	public object GetObject(string type) => GetObject(type, null);
+
+	/// <summary>
+	/// Gets an object from the data object with the specified type
+	/// </summary>
+	/// <remarks>
+	/// This is useful when you know the type of object, and it is serializable or has a type converter to convert from string.
+	/// If it cannot be converted it will return the default value.
+	/// </remarks>
+	/// <param name="type">Type identifier to get from the data object</param>
+	/// <param name="objectType">Type of the object to get, or null to detect type</param>
+	/// <returns>An instance of the object to recieve, or the default value.</returns>
+	public object GetObject(string type, Type objectType)
 	{
-		if (Handler.TryGetObject(type, out var value))
+		if (objectType != null)
+			objectType = Nullable.GetUnderlyingType(objectType) ?? objectType;
+
+		if (Handler.TryGetObject(type, objectType, out var value) && !(value is Stream || value is byte[]))
 			return value;
 
-		var stream = GetDataStream(type);
-		if (stream == null)
-			return null;
 		try
 		{
-#pragma warning disable SYSLIB0011
-			var binaryFormatter = new BinaryFormatter();
-			return binaryFormatter.Deserialize(stream);
-#pragma warning restore SYSLIB0011
+			if (ObjectData.CanSerialize(objectType))
+			{
+				var stream = value switch
+				{
+					Stream s => s,
+					byte[] bytes => new MemoryStream(bytes),
+					_ => GetDataStream(type)
+				};
+
+				if (stream != null)
+				{
+					value = ObjectData.Deserialize(stream, objectType);
+					if (value != null)
+						return value;
+				}
+			}
+
+			if (objectType != null)
+			{
+				var converter = System.ComponentModel.TypeDescriptor.GetConverter(objectType);
+				if (converter?.CanConvertFrom(typeof(string)) == true)
+				{
+					return converter.ConvertFromString(GetString(type));
+				}
+			}
 		}
 		catch (Exception ex)
 		{
 			// log error in debug
 			Debug.WriteLine(ex);
-			return null;
 		}
+		return default;
 	}
 
 	/// <summary>
@@ -303,8 +313,9 @@ public class Clipboard : Widget, IDataObject
 		/// Attempts to get the specified value from the clipboard in a native-supplied way
 		/// </summary>
 		/// <param name="type">Data format type to get the value</param>
+		/// <param name="objectType">Type that is requested</param>
 		/// <param name="value">Value returned</param>
 		/// <returns>True if the value was returned, false otherwise</returns>
-		bool TryGetObject(string type, out object value);
+		bool TryGetObject(string type, Type objectType, out object value);
 	}
 }

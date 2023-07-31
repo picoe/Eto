@@ -177,15 +177,34 @@ namespace Eto.GtkSharp.Forms
 
 		public bool TrySetObject(object value, string type) => false;
 
-		public bool TryGetObject(string type, out object value)
+		public bool TryGetObject(string type, Type objectType, out object value)
 		{
+			if (objectType == null || objectType == typeof(string))
+			{
+				if (DataObjectHandler.string_types.Contains(type, StringComparer.OrdinalIgnoreCase))
+				{
+					value = GetString(type);
+					if (value != null)
+						return true;
+				}
+			}
+			if (objectType == null || objectType == typeof(Bitmap))
+			{
+				if (DataObjectHandler.image_types.Contains(type, StringComparer.OrdinalIgnoreCase))
+				{
+					value = new Bitmap(GetData(type));
+					return true;
+				}
+			}
+
 			value = null;
 			return false;
 		}
 
 		public void SetObject(object value, string type) => Widget.SetObject(value, type);
-
 		public T GetObject<T>(string type) => Widget.GetObject<T>(type);
+		public object GetObject(string type, Type objectType) => Widget.GetObject(type, objectType);
+		public object GetObject(string type) => Widget.GetObject(type);
 
 		public string[] Types
 		{

@@ -12,6 +12,23 @@ namespace Eto.Test.Sections.Behaviors
 		TextBox innerTextBox;
 		CheckBox writeDataCheckBox;
 		EnumDropDown<DragEffects> allowedEffectDropDown;
+		
+		[DataContract]
+		public class CustomDataContractType
+		{
+			[DataMember]
+			public string Name { get; set; }
+
+			public override string ToString() => Name;
+		}
+		
+		[Serializable]
+		public class CustomSerializableType
+		{
+			public string Name { get; set; }
+
+			public override string ToString() => Name;
+		}
 
 		public DragDropSection()
 		{
@@ -61,6 +78,9 @@ namespace Eto.Test.Sections.Behaviors
 					data.Html = htmlTextArea.Text;
 				if (includeImageCheck.Checked == true)
 					data.Image = TestIcons.Logo;
+					
+				data.SetObject(new CustomDataContractType { Name = "Hello Data Contract!" }, "my.custom.datacontract.type");
+				data.SetObject(new CustomSerializableType { Name = "Hello Serializable!" }, "my.custom.serializable.type");
 
 				return data;
 			}
@@ -445,15 +465,33 @@ namespace Eto.Test.Sections.Behaviors
 					var d = data.GetData(format);
 					if (d != null)
 					{
-						var s = string.Join(",", d.Select(r => r.ToString()).Take(1000));
-						Log.Write(null, $"\t{format}: {s}");
+						var s = string.Join(",", d.Select(r => r.ToString()).Take(10));
+						Log.Write(null, $"\t{format}: data: {d.Length} bytes ({s})");
 					}
 					else
-						Log.Write(null, $"\t{format}: {d}");
+						Log.Write(null, $"\t{format}: data: <null>");
 				}
-				catch
+				catch (Exception ex)
 				{
-
+					Log.Write(null, $"Error getting data for {format}, {ex.Message}");
+				}
+				
+				try
+				{
+					var obj = data.GetObject(format);
+					if (obj != null)
+					{
+						object val = null;
+						if (obj.ToString() != obj.GetType().ToString())
+							val = obj;
+						Log.Write(null, $"\t{format}: object: {obj.GetType()} {val}");
+						if (obj is string[] strings)
+							Log.Write(null, $"\t\tvalues: {string.Join(";", strings)}");
+					}
+				}
+				catch (Exception ex)
+				{
+					Log.Write(null, $"Error getting object for {format}, {ex.Message}");
 				}
 			}
 		}

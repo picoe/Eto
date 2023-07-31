@@ -554,5 +554,14 @@ namespace Eto
 		{
 			CLOSE = 0xF060
 		}
+		
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+		public static extern IntPtr GlobalLock(IntPtr handle);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+		public static extern bool GlobalUnlock(IntPtr handle);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+		public static extern int GlobalSize(IntPtr handle);
 	}
 }

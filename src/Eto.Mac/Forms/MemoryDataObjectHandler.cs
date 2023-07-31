@@ -193,14 +193,40 @@ namespace Eto.Mac.Forms
 			return false;
 		}
 
-		public bool TryGetObject(string type, out object value)
+		public bool TryGetObject(string type, Type objectType, out object value)
 		{
-			var colorItem = GetDataItem<ColorItem>(type);
-			if (colorItem != null)
+			if (objectType == null || objectType == typeof(Color))
 			{
-				value = colorItem.Value.ToEto();
-				return true;
+				var colorItem = GetDataItem<ColorItem>(type);
+				if (colorItem != null)
+				{
+					value = colorItem.Value.ToEto();
+					return true;
+				}
 			}
+			if (objectType == null || objectType == typeof(string))
+			{
+				if (type == NSPasteboard.NSPasteboardTypeString
+					|| type == NSPasteboard.NSPasteboardTypeTabularText
+					|| type == NSPasteboard.NSPasteboardTypeUrl
+					|| type == NSPasteboard.NSPasteboardTypeFileUrl
+					|| type == NSPasteboard.NSPasteboardTypeRTF
+					|| type == NSPasteboard.NSPasteboardTypeHTML)
+				{
+					value = GetString(type);
+					return true;
+				}
+			}
+			if (objectType == null || objectType == typeof(Bitmap))
+			{
+				if (type == NSPasteboard.NSPasteboardTypeTIFF
+					|| type == NSPasteboard.NSPasteboardTypePNG)
+				{
+					value = new Bitmap(new MemoryStream(GetData(type)));
+					return true;
+				}
+			}
+			
 			value = null;
 			return false;
 		}
@@ -208,5 +234,7 @@ namespace Eto.Mac.Forms
 		public void SetObject(object value, string type) => Widget.SetObject(value, type);
 
 		public T GetObject<T>(string type) => Widget.GetObject<T>(type);
+		public object GetObject(string type, Type objectType) => Widget.GetObject(type, objectType);
+		public object GetObject(string type) => Widget.GetObject(type);
 	}
 }
