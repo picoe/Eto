@@ -61,6 +61,7 @@ namespace Eto.Test.UnitTests.Forms
 		{
 			
 			public string SomeValue { get; set; }
+			public ChildObject ChildObject { get; set; } = new ChildObject();
 			public SerializableObject()
 			{
 			}
@@ -68,11 +69,13 @@ namespace Eto.Test.UnitTests.Forms
 			public SerializableObject(SerializationInfo info, StreamingContext context)
 			{
 				SomeValue = info.GetString("SomeValue");
+				ChildObject = info.GetValue("Child", typeof(ChildObject)) as ChildObject;
 			}
 			
 			public void GetObjectData(SerializationInfo info, StreamingContext context)
 			{
 				info.AddValue("SomeValue", SomeValue);
+				info.AddValue("Child", ChildObject);
 			}
 		}
 		
@@ -80,6 +83,13 @@ namespace Eto.Test.UnitTests.Forms
 		public class SomeOtherObject
 		{
 			public string SomeValue { get; set; }
+
+			public ChildObject ChildObject { get; set; } = new ChildObject();
+		}
+		
+		public class ChildObject
+		{
+			public bool SomeProperty { get; set; } = new Random().Next() % 2 == 0;
 		}
 
 		static byte[] SampleByteData => new byte[] { 10, 20, 30 };
