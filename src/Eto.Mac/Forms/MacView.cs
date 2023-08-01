@@ -224,6 +224,7 @@ namespace Eto.Mac.Forms
 		public static readonly bool supportsCanDrawSubviewsIntoLayer = ObjCExtensions.InstancesRespondToSelector<NSView>("setCanDrawSubviewsIntoLayer:");
 		public static readonly object UseAlignmentFrame_Key = new object();
 		public static readonly object SuppressMouseEvents_Key = new object();
+		public static readonly object SuppressMouseUp_Key = new object();
 		public static readonly object UseMouseTrackingLoop_Key = new object();
 		public static readonly object MouseTrackingRunLoopMode_Key = new object();
 		public static readonly object UseNSBoxBackgroundColor_Key = new object();
@@ -1428,6 +1429,12 @@ namespace Eto.Mac.Forms
 			set => Widget.Properties.Set<int>(MacView.SuppressMouseEvents_Key, value);
 		}
 
+		bool SuppressMouseUp
+		{
+			get => Widget.Properties.Get<bool>(MacView.SuppressMouseUp_Key);
+			set => Widget.Properties.Set<bool>(MacView.SuppressMouseUp_Key, value);
+		}
+
 		public static bool SuppressMouseTriggerCallback { get; set; }
 		
 		/// <summary>
@@ -1543,9 +1550,16 @@ namespace Eto.Mac.Forms
 
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
 
-			// ensure we're actually in the control's bounds
+			// Ensure we're actually in the control's bounds
 			if (!new RectangleF(Size).Contains(args.Location))
+			{
+				// This can happen e.g. when double clicking outside of the control after a ContextMenu is shown during MouseUp.
+				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, theEvent.Handle);
+				SuppressMouseUp = true;
 				return null;
+			}
+
+			SuppressMouseUp = false; // MouseDown is called, so we are expecting a MouseUp
 
 			// Flag that we are going to use a mouse tracking loop
 			// if this is set to false during the OnMouseDown/OnMouseDoubleClick, then we won't
@@ -1613,7 +1627,12 @@ namespace Eto.Mac.Forms
 		public virtual MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent)
 		{
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
-			Callback.OnMouseUp(Widget, args);
+			if (!SuppressMouseUp)
+			{
+				Callback.OnMouseUp(Widget, args);
+				SuppressMouseUp = false;
+			}
+
 			if (!args.Handled)
 			{
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, theEvent.Handle);
