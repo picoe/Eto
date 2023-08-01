@@ -26,7 +26,7 @@ class ObjectData
 
 		using (var ms = new MemoryStream())
 		{
-			var serializer = new DataContractSerializer(typeof(ObjectData), new [] { baseType });
+			var serializer = new DataContractSerializer(typeof(ObjectData), GetKnownTypes(baseType));
 			serializer.WriteObject(ms, data);
 			
 			// for debugging
@@ -35,6 +35,34 @@ class ObjectData
 			return ms.ToArray();
 		}
 	}
+	
+	static IEnumerable<Type> GetKnownTypes(Type baseType)
+	{
+		yield return baseType;
+		
+		// DataContracts must specify their types explicitly using the KnownTypeAttribute
+		var isDataContract = baseType.GetCustomAttribute<DataContractAttribute>() != null;
+		if (isDataContract)
+			yield break;
+			
+		var knownTypes = new HashSet<Type>();
+		
+		foreach (var field in FormatterServices.GetSerializableMembers(baseType))
+		{
+			var type = field switch
+			{
+				PropertyInfo pi => pi.PropertyType,
+				FieldInfo fi => fi.FieldType,
+				_ => null
+			};
+			if (!knownTypes.Contains(type))
+			{
+				yield return type;
+				knownTypes.Add(type);
+			}
+		}
+	}
+	
 
 	internal static object Deserialize(Stream stream, Type objectType)
 	{
@@ -73,7 +101,8 @@ class ObjectData
 		{
 			// read again, but with known type populated
 			stream.Position = 0;
-			var serializer = new DataContractSerializer(typeof(ObjectData), new[] { objectType });
+			
+			var serializer = new DataContractSerializer(typeof(ObjectData), GetKnownTypes(objectType));
 			var data = serializer.ReadObject(stream) as ObjectData;
 
 			ms?.Dispose();
