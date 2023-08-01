@@ -126,6 +126,9 @@ namespace Eto.Mac.Forms.Controls
 			if (context != null)
 			{
 				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height);
+				// macOS Sonoma can draw outside the bounds of the NSView, so clip to the drawing rectangle
+				handler.Control.ClipToRect(rect.ToNS());
+				
 				using (var graphics = new Graphics(handler))
 				{
 					if (backgroundBrush != null)
