@@ -109,24 +109,32 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 
+			NSIndexSet previouslySelected;
 			public override void SelectionDidChange(NSNotification notification)
 			{
 				var h = Handler;
+				if (h == null)
+					return;
+
 				if (h.skipSelectionChanged > 0)
 					return;
 
 				// didn't start a drag (when this was set), so clear this out when the selection changes
 				h.CustomSelectedItems = null;
 
-				h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
-				var item = h.SelectedItem;
-				if (!ReferenceEquals(item, lastSelected))
+				if (h.SuppressSelectionChanged == 0)
 				{
-					h.Callback.OnSelectedItemChanged(h.Widget, EventArgs.Empty);
-					lastSelected = item;
+					h.Callback.OnSelectionChanged(h.Widget, EventArgs.Empty);
+					var columns = NSIndexSet.FromNSRange(new NSRange(0, h.Control.TableColumns().Length));
+					if (previouslySelected?.Count > 0)
+						h.Control.ReloadData(previouslySelected, columns);
+					var selected = h.Control.SelectedRows;
+					if (selected?.Count > 0)
+						h.Control.ReloadData(selected, columns);
+					previouslySelected = selected;
 				}
 			}
-
+			
 			public override void ItemDidCollapse(NSNotification notification)
 			{
 				var h = Handler;
@@ -243,7 +251,8 @@ namespace Eto.Mac.Forms.Controls
 					var cellHandler = colHandler.DataCell.Handler as ICellHandler;
 					if (cellHandler != null)
 					{
-						return cellHandler.GetViewForItem(outlineView, tableColumn, -1, item, (obj, row) => obj != null ? ((EtoTreeItem)obj).Item : null);
+						var row = (int)outlineView.RowForItem(item);
+						return cellHandler.GetViewForItem(outlineView, tableColumn, row, item, (obj, row) => obj != null ? ((EtoTreeItem)obj).Item : null);
 					}
 				}
 				return outlineView.MakeView(tableColumn?.Identifier ?? string.Empty, this);
