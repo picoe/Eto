@@ -137,7 +137,7 @@ namespace Eto.Mac.Forms
 					return false;
 
 				// if the owner can't become main (e.g. NSPanel), show as attached
-				return !owner.CanBecomeMainWindow;
+				return !owner.CanBecomeMainWindow && owner is not NSPanel;
 			}
 		}
 
