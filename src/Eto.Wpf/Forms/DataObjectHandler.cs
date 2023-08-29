@@ -105,6 +105,8 @@ namespace Eto.WinForms.Forms
 
 		public virtual sw.IDataObject ReadingDataObject => Control;
 
+		public override IntPtr NativeHandle => Marshal.GetComInterfaceForObject(Control, typeof(System.Runtime.InteropServices.ComTypes.IDataObject));
+
 		public DataObjectHandler()
 		{
 		}

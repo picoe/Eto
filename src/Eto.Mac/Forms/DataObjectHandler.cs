@@ -33,6 +33,8 @@ namespace Eto.Mac.Forms
 	{
 		nint _changeCount;
 
+		public override IntPtr NativeHandle => Control.Handle;
+
 		void ClearIfNeeded()
 		{
 			if (Control.ChangeCount != _changeCount)
