@@ -133,6 +133,14 @@ namespace Eto.Mac.Forms.Controls
 						h.Control.ReloadData(selected, columns);
 					previouslySelected = selected;
 				}
+				
+				// trigger when the selected item changes
+				var item = h.SelectedItem;
+				if (!ReferenceEquals(item, lastSelected))
+				{
+					h.Callback.OnSelectedItemChanged(h.Widget, EventArgs.Empty);
+					lastSelected = item;
+				}				
 			}
 			
 			public override void ItemDidCollapse(NSNotification notification)
