@@ -13,6 +13,7 @@
 	"vssolution.altSolutionFolders": [
 		"src",
 		"samples"
-	]
+	],
+	"dotnet.defaultSolution": "Eto.Core.sln"
 
 }
