@@ -119,8 +119,14 @@ namespace Eto.Wpf.Drawing
 				drawingContext.DrawDrawing(group);
 
 			var resizedImage = new swmi.RenderTargetBitmap(width, height, source.DpiX, source.DpiY, swm.PixelFormats.Default);
-			resizedImage.RenderWithCollect(drawingVisual);
-			Control = resizedImage;
+			resizedImage.Render(drawingVisual);
+
+			// Don't use RenderTargetBitmap directly, it can run out of GDI handles when you have many bitmaps.
+			var writable = new swmi.WriteableBitmap(resizedImage);
+			Control = writable;
+
+			// collect immediately to get rid of the handle use
+			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, false);
 		}
 
 		protected override void Initialize()
