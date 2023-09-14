@@ -38,10 +38,11 @@ namespace Eto.Wpf.Drawing
 			// There's no way to get around it other than just not creating that many and using GC.Collect/WaitForPendingFinalizers.
 			// we can't do it in Eto as it'd be a serious performance hit.
 			var target = new swmi.RenderTargetBitmap(scaledwidth, scaledheight, 96 * scale, 96 * scale, swm.PixelFormats.Default);
-			target.Render(targetVisual);
-			target.Freeze();
+			target.RenderWithCollect(targetVisual);
+			
+			var writable = new swmi.WriteableBitmap(target);
 
-			_cachedFrame = swmi.BitmapFrame.Create(target);
+			_cachedFrame = swmi.BitmapFrame.Create(writable);
 			_cachedFrame.Freeze();
 			_scale = scale;
 			_width = width;

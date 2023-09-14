@@ -137,6 +137,8 @@ namespace Eto.Wpf.Drawing
 
 		public void SetBitmap(swmi.BitmapSource bitmap)
 		{
+			if (bitmap is swmi.RenderTargetBitmap)
+				bitmap = new swmi.WriteableBitmap(bitmap);
 			Control = bitmap;
 			SetFrozen();
 		}
