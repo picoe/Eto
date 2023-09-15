@@ -92,10 +92,15 @@ namespace Eto.Mac.Forms
 					{
 						Control.OrderFront(ApplicationHandler.Instance.AppDelegate);
 						FireOnShown();
+						EnsureOwner();
 					}
 				}
 				else
+				{
 					base.Visible = value;
+					if (value)
+						EnsureOwner();
+				}
 			}
 		}
 
