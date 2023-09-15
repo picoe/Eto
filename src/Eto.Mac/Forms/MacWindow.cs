@@ -1286,6 +1286,10 @@ namespace Eto.Mac.Forms
 			bool result = false;
 			if (SetAsChildWindow && Widget.Loaded)
 			{
+				// ensure we don't double subscribe to this event
+				// since this can get called multiple times
+				Widget.GotFocus -= HandleGotFocusAsChild;
+				
 				if (owner != null)
 				{
 					var macWindow = owner.Handler as IMacWindow;
@@ -1299,7 +1303,6 @@ namespace Eto.Mac.Forms
 				}
 				else
 				{
-					Widget.GotFocus -= HandleGotFocusAsChild;
 					var parentWindow = Control.ParentWindow;
 					if (parentWindow != null)
 						parentWindow.RemoveChildWindow(Control);
