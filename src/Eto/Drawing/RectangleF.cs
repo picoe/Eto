@@ -149,7 +149,7 @@ public struct RectangleF : IEquatable<RectangleF>
 	{
 		if (Width == 0 || Height == 0)
 			return false;
-		return (x >= Left && x <= InnerRight && y >= Top && y <= InnerBottom);
+		return x >= Left && x < Right && y >= Top && y < Bottom;
 	}
 
 	/// <summary>
