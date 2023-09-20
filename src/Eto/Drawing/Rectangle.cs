@@ -184,7 +184,7 @@ public struct Rectangle : IEquatable<Rectangle>
 	{
 		if (Width == 0 || Height == 0)
 			return false;
-		return (x >= Left && x <= InnerRight && y >= Top && y <= InnerBottom);
+		return x >= Left && x < Right && y >= Top && y < Bottom;
 	}
 
 	/// <summary>
