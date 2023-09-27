@@ -124,9 +124,9 @@ Assemblies
 Your project only needs to reference Eto.dll, and include the corresponding platform assembly that you wish to target. To run on a Mac platform, you need to [bundle your app](https://github.com/picoe/Eto/wiki/Running-your-application).
 
 * Eto.dll - Eto.Forms (UI), Eto.Drawing (Graphics), and platform loading
-* Eto.Mac64.dll - MonoMac platform for OS X using 64-bit mono
-* Eto.XamMac2.dll - Xamarin.Mac Unified platform for OS X to embed mono
-* Eto.macOS.dll - .NET 6 platform for OS X (for use with the net6.0-macos target)
+* Eto.Mac64.dll - Lightweight Mac platform using .NET 6+ or mono
+* Eto.XamMac2.dll - Xamarin.Mac Unified platform for Mac to embed mono
+* Eto.macOS.dll - .NET 6+ platform for Mac (for use with the net6.0-macos target)
 * Eto.WinForms.dll - Windows Forms platform using GDI+ for graphics
 * Eto.Direct2D.dll - Windows Forms platform using Direct2D for graphics
 * Eto.Wpf.dll - Windows Presentation Foundation platform
