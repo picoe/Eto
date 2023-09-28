@@ -36,12 +36,8 @@ namespace Eto.Mac.Forms.Controls
 				
 				if (!IsFlipped)
 					dirty.Y = bounds.Height - dirty.Y - dirty.Height;
-				if (dirty.X % 1.0f > 0f)
-					dirty.Width += 1;
-				if (dirty.Y % 1.0f > 0f)
-					dirty.Height += 1;
 				ApplicationHandler.QueueResizing = true;
-				drawable.DrawRegion(Rectangle.Ceiling(dirty));
+				drawable.DrawRegion(dirty);
 				ApplicationHandler.QueueResizing = false;
 			}
 
@@ -120,14 +116,12 @@ namespace Eto.Mac.Forms.Controls
 			base.Invalidate(rect, invalidateChildren);
 		}
 
-		void DrawRegion(Rectangle rect)
+		void DrawRegion(RectangleF rect)
 		{
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null)
 			{
-				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height);
-				// macOS Sonoma can draw outside the bounds of the NSView, so clip to the drawing rectangle
-				handler.Control.ClipToRect(rect.ToNS());
+				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height, rect.ToNS());
 				
 				using (var graphics = new Graphics(handler))
 				{
