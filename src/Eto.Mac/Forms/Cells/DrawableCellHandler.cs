@@ -69,7 +69,7 @@ namespace Eto.Mac.Forms.Cells
 				}
 
 				var handler = Handler;
-				var graphicsHandler = new GraphicsHandler(inView, nscontext, (float)cellFrame.Height);
+				var graphicsHandler = new GraphicsHandler(inView, nscontext, (float)cellFrame.Height, cellFrame);
 				using (var graphics = new Graphics(graphicsHandler))
 				{
 					var state = Highlighted ? CellStates.Selected : CellStates.None;
@@ -167,7 +167,7 @@ namespace Eto.Mac.Forms.Cells
 				var handler = Handler;
 				if (handler == null)
 					return;
-				var graphicsHandler = new GraphicsHandler(this, nscontext, (float)cellFrame.Height);
+				var graphicsHandler = new GraphicsHandler(this, nscontext, (float)cellFrame.Height, cellFrame);
 				using (var graphics = new Graphics(graphicsHandler))
 				{
 					var rowView = this.Superview as NSTableRowView;

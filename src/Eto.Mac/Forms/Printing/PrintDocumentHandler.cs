@@ -67,7 +67,7 @@ namespace Eto.Mac.Forms.Printing
 				var height = Frame.Height;
 				var pageRect = RectForPage(operation.CurrentPage);
 
-				using (var graphics = new Graphics(new GraphicsHandler(this, context, (float)height)))
+				using (var graphics = new Graphics(new GraphicsHandler(this, context, (float)height, pageRect)))
 				{
 					graphics.TranslateTransform((float)pageRect.X, (float)(height-pageRect.Y-pageRect.Height));
 					Handler.Callback.OnPrintPage(Handler.Widget, new PrintPageEventArgs(graphics, operation.PrintInfo.ImageablePageBounds.Size.ToEto(), (int)operation.CurrentPage - 1));
