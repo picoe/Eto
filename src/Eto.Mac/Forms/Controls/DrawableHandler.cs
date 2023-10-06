@@ -28,16 +28,9 @@ namespace Eto.Mac.Forms.Controls
 				var drawable = Drawable;
 				if (drawable == null)
 					return;
-				// restrict drawing to the bounds of the drawable
-				// macOS can give us dirty rects outside this range
-				var bounds = Bounds.ToEto();
-				var dirty = dirtyRect.ToEto();
-				dirty.Restrict(bounds);
-				
-				if (!IsFlipped)
-					dirty.Y = bounds.Height - dirty.Y - dirty.Height;
+
 				ApplicationHandler.QueueResizing = true;
-				drawable.DrawRegion(dirty);
+				drawable.DrawRegion(dirtyRect);
 				ApplicationHandler.QueueResizing = false;
 			}
 
@@ -116,22 +109,33 @@ namespace Eto.Mac.Forms.Controls
 			base.Invalidate(rect, invalidateChildren);
 		}
 
-		void DrawRegion(RectangleF rect)
+		void DrawRegion(CGRect dirtyRect)
 		{
 			var context = NSGraphicsContext.CurrentContext;
-			if (context != null)
-			{
-				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height, rect.ToNS());
+			if (context == null)
+				return;
 				
-				using (var graphics = new Graphics(handler))
-				{
-					if (backgroundBrush != null)
-						graphics.FillRectangle(backgroundBrush, rect);
+			var bounds = Control.Bounds;
 
-					var widget = Widget;
-					if (widget != null)
-						Callback.OnPaint(widget, new PaintEventArgs(graphics, rect));
-				}
+			// restrict dirty rect to the bounds of the drawable
+			// macOS can give us dirty rects outside this range
+			var dirty = dirtyRect.ToEto();
+			dirty.Restrict(bounds.ToEto());
+
+			var handler = new GraphicsHandler(Control, context, (float)bounds.Height, dirty.ToNS());
+
+			// dirty rect should be flipped when passed to Drawabe.Paint event
+			if (!Control.IsFlipped)
+				dirty.Y = (float)(bounds.Height - dirty.Y - dirty.Height);
+			
+			using (var graphics = new Graphics(handler))
+			{
+				if (backgroundBrush != null)
+					graphics.FillRectangle(backgroundBrush, dirty);
+
+				var widget = Widget;
+				if (widget != null)
+					Callback.OnPaint(widget, new PaintEventArgs(graphics, dirty));
 			}
 		}
 

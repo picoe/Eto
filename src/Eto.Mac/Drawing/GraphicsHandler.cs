@@ -83,7 +83,7 @@ namespace Eto.iOS.Drawing
 		}
 
 		#if OSX
-		public GraphicsHandler(NSView view, NSGraphicsContext graphicsContext, float height, CGRect? dirtyRect)
+		public GraphicsHandler(NSView view, NSGraphicsContext graphicsContext, float height, CGRect? clipRect)
 		{
 			DisplayView = view;
 			this.height = height;
@@ -92,8 +92,8 @@ namespace Eto.iOS.Drawing
 			Control = this.graphicsContext.CGContext;
 			
 			// Clip to bounds otherwise you can draw outside the control on macOS Sonoma
-			if (dirtyRect != null)
-				Control.ClipToRect(dirtyRect.Value);
+			if (clipRect != null)
+				Control.ClipToRect(clipRect.Value);
 				
 			InitializeContext(!flipped);
 		}
