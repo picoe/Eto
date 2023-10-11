@@ -59,6 +59,7 @@ namespace Eto.Mac.Forms.Controls
 	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn, GridColumn.ICallback>, GridColumn.IHandler, IDataColumnHandler
 	{
 		Cell dataCell;
+		bool autoSize;
 
 		static readonly object Font_Key = new object();
 		static readonly object WidthAdjust_Key = new object();
@@ -120,11 +121,10 @@ namespace Eto.Mac.Forms.Controls
 			var outlineView = handler.Table as NSOutlineView;
 			bool isOutlineColumn = outlineView != null && Column == 0;
 			if (handler.ShowHeader)
-			{
 				width = (nfloat)Math.Max(Control.HeaderCell.CellSizeForBounds(new CGRect(0, 0, int.MaxValue, int.MaxValue)).Width, width);
-				if (isOutlineColumn)
-					width += (float)outlineView.IndentationPerLevel;
-			}
+			
+			if (isOutlineColumn)
+				width += (float)outlineView.IndentationPerLevel;
 
 			if (dataCell != null)
 			{
@@ -186,8 +186,16 @@ namespace Eto.Mac.Forms.Controls
 
 		public bool AutoSize
 		{
-			get;
-			set;
+			get => autoSize;
+			set
+			{
+				if (autoSize != value)
+				{
+					autoSize = value;
+					if (autoSize && !IsLoaded)
+						Control.Width = Control.MinWidth;
+				}
+			}
 		}
 
 		public bool Sortable { get; set; }

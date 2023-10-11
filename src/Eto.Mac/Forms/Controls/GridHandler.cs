@@ -189,6 +189,7 @@ namespace Eto.Mac.Forms.Controls
 		where TCallback : Grid.ICallback
 	{
 		ColumnCollection columns;
+		bool loadComplete;
 
 		public override NSView DragControl => Control;
 
@@ -391,6 +392,13 @@ namespace Eto.Mac.Forms.Controls
 			var row = Widget.Properties.Get<int>(GridHandler.ScrolledToRow_Key, 0);
 			// Yosemite bug: hides first row when DataStore is set before control is visible, so we always call this
 			Control.ScrollRowToVisible(row);
+			loadComplete = true;
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			loadComplete = false;
 		}
 
 		NSRange autoSizeRange;
@@ -692,21 +700,24 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			EnsureAutoSizedColumns();
-			var width = ColumnHandlers.Sum(r => r.Control.Width);
+			var rowCount = RowCount;
+			var range = new NSRange(0, rowCount);
+			var loaded = loadComplete;
+			var width = ColumnHandlers.Sum(r => loaded ? r.Control.Width : r.GetPreferredWidth(range));
 			if (width == 0)
 				width = 100;
 
 			if (Border != BorderType.None)
-				width += 2;
+				width += ScrollView.FrameSizeForContentSize(new CGSize(0, 0), false, false).Width;
 
 			var intercellSpacing = Control.IntercellSpacing;
-			width += Control.ColumnCount * intercellSpacing.Width;
+			width += (Control.ColumnCount - 1) * intercellSpacing.Width;
+			width += GetTableRowInsets();
 
-			// it's okay to the hide last divider, it won't cause the control to scroll horizontally
-			width -= (int)Math.Round(intercellSpacing.Width / 3) - 1; 
+			if (ScrollView.HasVerticalScroller && ScrollView.VerticalScroller.ScrollerStyle == NSScrollerStyle.Legacy)
+				width += NSScroller.GetScrollerWidth(ScrollView.VerticalScroller.ControlSize, ScrollView.VerticalScroller.ScrollerStyle);
 
-			var height = (int)((RowHeight + intercellSpacing.Height) * RowCount);
+			var height = (int)((RowHeight + intercellSpacing.Height) * rowCount);
 			if (ShowHeader)
 				height += 2 + (int)Control.HeaderView.Frame.Height;
 			return new SizeF((float)width, height);

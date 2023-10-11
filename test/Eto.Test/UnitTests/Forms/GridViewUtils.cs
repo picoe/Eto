@@ -1,10 +1,15 @@
 ﻿namespace Eto.Test.UnitTests.Forms
 {
-	class DataItem
+	class DataItem : ITreeGridItem
 	{
 		public string TextValue { get; set; }
 
 		public int Id { get; private set; }
+		public bool Expanded { get; set; }
+
+		public bool Expandable => false;
+
+		public ITreeGridItem Parent { get; set; }
 
 		public DataItem()
 		{
