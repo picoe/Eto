@@ -395,5 +395,67 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.AreEqual(4, mode, "Mode should be 4 after going through all steps");
 		}
 
+		[ManualTest]
+		[TestCase("Some Text", 1)]
+		[TestCase("Some Text", 100)]
+		[TestCase("Some Much Longer Text That Should Still Work", 1)]
+		[TestCase("Some Much Longer Text That Should Still Work", 100)]
+		[TestCase("Short", 1)]
+		[TestCase("Short", 100)]
+		public void AutoSizedColumnShouldChangeSizeOfControl(string text, int rows) => AutoSizedColumnShouldChangeSizeOfControl(text, rows, null);
+		
+		public void AutoSizedColumnShouldChangeSizeOfControl(string text, int rows, Action<T> customize)
+		{
+			ManualForm("GridView should auto size to the\ncolumn content and not scroll horizontally", form =>
+			{
+				var gridView = new T
+				{
+					Height = 180,
+				};
+				customize?.Invoke(gridView);
+				gridView.Columns.Add(new GridColumn
+				{
+					AutoSize = true,
+					DataCell = new TextBoxCell { Binding = Binding.Property((DataItem m) => m.TextValue) }
+				});
+				
+				var collection = new TreeGridItemCollection();
+				SetDataStore(gridView, collection);
+				DataItem mainItem = null;
+				for (int i = 0; i < rows; i++)
+				{
+					var item = new DataItem { TextValue = text };
+					collection.Add(item);
+					if (mainItem == null)
+						mainItem = item;
+				}
+
+				var textBox = new TextBox();
+				textBox.Focus();
+				textBox.TextBinding.Bind(mainItem, i => i.TextValue);
+				textBox.TextChanged += (sender, e) =>
+				{
+					if (gridView is GridView gv)
+						gv.ReloadData(0);
+					else if (gridView is TreeGridView tgv)
+						tgv.ReloadItem(mainItem);
+				};
+
+				var layout = new DynamicLayout();
+				layout.BeginVertical(yscale: true);
+				layout.AddRow(gridView, null); // gridView is auto sized
+				layout.EndVertical();
+
+				layout.AddSeparateRow("Text:", textBox);
+
+				return layout;
+			});
+		}
+
+		[Test, ManualTest]
+		public void AutoSizedColumnShouldReportCorrectPreferredSize()
+		{
+		}
+
 	}
 }

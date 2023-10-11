@@ -1,5 +1,4 @@
 {
-	"omnisharp.defaultLaunchSolution": "Eto.Core.sln",
     "editor.insertSpaces": false,
 	"editor.detectIndentation": false,
 	"files.exclude": {
@@ -14,6 +13,6 @@
 		"src",
 		"samples"
 	],
-	"dotnet.defaultSolution": "Eto.Core.sln"
+	"dotnet.defaultSolution": "src/Eto.sln"
 
 }
