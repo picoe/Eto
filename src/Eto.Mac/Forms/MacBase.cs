@@ -57,7 +57,6 @@ namespace Eto.Mac.Forms
 			if (!isNotification && c != null)
 			{
 				NSNotificationCenter.DefaultCenter.AddObserver(this, selPerformAction, KeyPath, c);
-				c.DangerousRetain();
 				isNotification = true;
 			}
 		}
@@ -69,12 +68,10 @@ namespace Eto.Mac.Forms
 			{
 				//Console.WriteLine ("{0}: 3. Adding observer! {1}, {2}", ((IRef)this.Handler).WidgetID, this.GetType (), Control.GetHashCode ());
 				c.AddObserver(this, KeyPath, NSKeyValueObservingOptions.New, IntPtr.Zero);
-				c.DangerousRetain();
 				isControl = true;
 			}
 		}
 
-		static readonly IntPtr selRelease_Handle = Selector.GetHandle("release");
 		static readonly IntPtr selRemoveObserverForKeyPath_Handle = Selector.GetHandle("removeObserver:forKeyPath:");
 
 		public void Remove()
@@ -83,7 +80,6 @@ namespace Eto.Mac.Forms
 			if (isNotification)
 			{
 				NSNotificationCenter.DefaultCenter.RemoveObserver(this);
-				Messaging.void_objc_msgSend(ControlHandle, selRelease_Handle);
 
 				isNotification = false;
 			}
@@ -91,7 +87,6 @@ namespace Eto.Mac.Forms
 			{
 				//Console.WriteLine ("{0}: 4. Removing observer! {1}, {2}", ((IRef)this.Handler).WidgetID, Handler.GetType (), Control.GetHashCode ());
 				Messaging.void_objc_msgSend_IntPtr_IntPtr(ControlHandle, selRemoveObserverForKeyPath_Handle, Handle, KeyPath.Handle);
-				Messaging.void_objc_msgSend(ControlHandle, selRelease_Handle);
 				isControl = false;
 			}
 		}

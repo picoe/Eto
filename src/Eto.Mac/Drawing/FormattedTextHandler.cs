@@ -13,9 +13,13 @@ namespace Eto.iOS.Drawing
 {
 	public class EtoLayoutManager : NSLayoutManager
 	{
-		public Brush ForegroundBrush { get; set; } = new SolidBrush(SystemColors.ControlText);
-
-		internal GraphicsHandler CurrentGraphics { get; set; }
+		WeakReference WeakHandler { get; set; }
+		
+		public FormattedTextHandler Handler
+		{ 
+			get => WeakHandler.Target as FormattedTextHandler;
+			set => WeakHandler = new WeakReference(value);
+		}
 
 		static IntPtr selShowCGGlyphs_Positions_Count_Font_Matrix_Attributes_InContext_Handle = Selector.GetHandle("showCGGlyphs:positions:count:font:matrix:attributes:inContext:");
 
@@ -29,13 +33,17 @@ namespace Eto.iOS.Drawing
 		[Export("showCGGlyphs:positions:count:font:matrix:attributes:inContext:")]
 		protected void ShowGlyphs(IntPtr glyphs, IntPtr positions, nuint glyphCount, IntPtr font, CGAffineTransform textMatrix, IntPtr attributes, IntPtr graphicsContext)
 		{
-			if (ForegroundBrush is SolidBrush)
+			var h = Handler;
+			if (h == null)
+				return;
+			var foregroundBrush = h.ForegroundBrush;
+			if (foregroundBrush is SolidBrush)
 			{
 				// attributes can be null, Xamarin.Mac doesn't allow that when calling base. ugh.
 				Messaging.void_objc_msgSendSuper_IntPtr_IntPtr_nuint_IntPtr_CGAffineTransform_IntPtr_IntPtr(SuperHandle, selShowCGGlyphs_Positions_Count_Font_Matrix_Attributes_InContext_Handle, glyphs, positions, glyphCount, font, textMatrix, attributes, graphicsContext);
 				//base.ShowGlyphs(glyphs, positions, glyphCount, font, textMatrix, attributes, graphicsContext);
 			}
-			else if (glyphCount > 0)
+			else if (glyphCount > 0 && h.CurrentGraphics != null)
 			{
 				// draw manually so we can use a custom brush/fill.
 				var ctx = NSGraphicsContext.CurrentContext.GraphicsPort;
@@ -53,7 +61,7 @@ namespace Eto.iOS.Drawing
 				ctx.TextMatrix = m;
 				CTFontDrawGlyphs(font, glyphs, positions, glyphCount, ctx.Handle);
 
-				ForegroundBrush.Draw(CurrentGraphics, false, FillMode.Winding, false);
+				foregroundBrush.Draw(h.CurrentGraphics, false, FillMode.Winding, false);
 				ctx.RestoreState();
 			}
 		}
@@ -77,6 +85,9 @@ namespace Eto.iOS.Drawing
 		FormattedTextWrapMode _wrap;
 		FormattedTextAlignment _alignment;
 		SizeF _maximumSize = SizeF.MaxValue;
+		Brush _foregroundBrush = new SolidBrush(SystemColors.ControlText);
+
+		internal GraphicsHandler CurrentGraphics { get; set; }
 
 		public FormattedTextAlignment Alignment
 		{
@@ -177,10 +188,10 @@ namespace Eto.iOS.Drawing
 
 		public Brush ForegroundBrush
 		{
-			get => Control.ForegroundBrush;
+			get => _foregroundBrush;
 			set
 			{
-				Control.ForegroundBrush = value;
+				_foregroundBrush = value;
 				Invalidate();
 			}
 		}
@@ -253,9 +264,9 @@ namespace Eto.iOS.Drawing
 		public void DrawText(GraphicsHandler graphics, PointF location)
 		{
 			EnsureString();
-			Control.CurrentGraphics = graphics;
-			var ctx = graphics.Control;
+			CurrentGraphics = graphics;
 			storage.DrawString(new CGRect(location.ToNS(), container.Size), NSStringDrawingOptions.UsesLineFragmentOrigin | NSStringDrawingOptions.TruncatesLastVisibleLine);
+			CurrentGraphics = null;
 			// Control.DrawGlyphs(new NSRange(0, (int)_text.Length), location.ToNS());
 		}
 	}

@@ -36,6 +36,39 @@ namespace Eto.Mac.Forms
 		{
 		}
 
+		internal static Window CreateWrapper(NSWindowController windowController, NSWindow nswindow)
+		{
+			var handle = windowController?.Handle ?? nswindow.Handle;
+			
+			s_cachedWindows ??= new Dictionary<NativeHandle, WeakReference>();
+			
+			if (s_cachedWindows.TryGetValue(handle, out var windowReference) && windowReference.Target is Window window)
+				return window;
+				
+			var handler = windowController != null ? new NativeFormHandler(windowController) : new NativeFormHandler(nswindow);
+ 			window = new Form(handler);
+			s_cachedWindows.Add(handle, new WeakReference(window));
+			List<NativeHandle> toRemove = null;
+			foreach (var entry in s_cachedWindows)
+			{
+				if (!entry.Value.IsAlive)
+				{
+					toRemove ??= new List<NativeHandle>();
+					toRemove.Add(entry.Key);
+				}
+			}
+			if (toRemove != null)
+			{
+				foreach	(var entry in toRemove)
+				{
+					s_cachedWindows.Remove(entry);
+				}
+			}
+			return window;
+		}
+
+		static Dictionary<NativeHandle, WeakReference> s_cachedWindows;
+
 		public override Size Size
 		{
 			get => Control.Frame.Size.ToEtoSize();

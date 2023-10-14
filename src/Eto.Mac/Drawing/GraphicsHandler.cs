@@ -111,6 +111,11 @@ namespace Eto.iOS.Drawing
 
 		protected override void Dispose(bool disposing)
 		{
+			if (disposing)
+			{
+				_formattedText?.Dispose();
+				_formattedText = null;
+			}
 			base.Dispose(disposing);
 		}
 
