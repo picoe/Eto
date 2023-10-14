@@ -47,7 +47,7 @@ namespace Eto.Mac.Forms
 				
 			var handler = windowController != null ? new NativeFormHandler(windowController) : new NativeFormHandler(nswindow);
  			window = new Form(handler);
-			s_cachedWindows.Add(handle, new WeakReference(window));
+			s_cachedWindows[handle] = new WeakReference(window);
 			List<NativeHandle> toRemove = null;
 			foreach (var entry in s_cachedWindows)
 			{
