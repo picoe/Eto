@@ -1071,15 +1071,21 @@ namespace Eto.Mac.Forms
 		{
 			base.Initialize();
 
-			// need to send Got/LostFocus to child when window Got/LostFocus is called
-			HandleEvent(Window.LostFocusEvent);
-			HandleEvent(Window.GotFocusEvent);
+			if (!Widget.IsAttached)
+			{
+				// need to send Got/LostFocus to child when window Got/LostFocus is called
+				HandleEvent(Window.LostFocusEvent);
+				HandleEvent(Window.GotFocusEvent);
+			}
 		}
 
 		public override void OnLoad(EventArgs e)
 		{
-			PerformAutoSize();
-			PositionWindow();
+			if (!Widget.IsAttached)
+			{
+				PerformAutoSize();
+				PositionWindow();
+			}
 			base.OnLoad(e);
 		}
 
@@ -1097,14 +1103,17 @@ namespace Eto.Mac.Forms
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			if (initialState != null)
+			if (!Widget.IsAttached)
 			{
-				WindowState = initialState.Value;
-				initialState = null;
-				Callback.OnSizeChanged(Widget, EventArgs.Empty);
+				if (initialState != null)
+				{
+					WindowState = initialState.Value;
+					initialState = null;
+					Callback.OnSizeChanged(Widget, EventArgs.Empty);
+				}
+				else if (!setInitialSize)
+					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 			}
-			else if (!setInitialSize)
-				Callback.OnSizeChanged(Widget, EventArgs.Empty);
 		}
 
 		protected virtual void PositionWindow()
