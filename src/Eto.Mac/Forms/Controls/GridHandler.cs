@@ -703,24 +703,30 @@ namespace Eto.Mac.Forms.Controls
 			var rowCount = RowCount;
 			var range = new NSRange(0, rowCount);
 			var loaded = loadComplete;
-			var width = ColumnHandlers.Sum(r => loaded ? r.Control.Width : r.GetPreferredWidth(range));
-			if (width == 0)
-				width = 100;
+			var size = new SizeF();
+			size.Width = (float)ColumnHandlers.Sum(r => loaded ? r.Control.Width : r.GetPreferredWidth(range));
+			if (size.Width == 0)
+				size.Width = 100;
 
 			if (Border != BorderType.None)
-				width += ScrollView.FrameSizeForContentSize(new CGSize(0, 0), false, false).Width;
+				size += ScrollView.FrameSizeForContentSize(new CGSize(0, 0), false, false).ToEto();
 
 			var intercellSpacing = Control.IntercellSpacing;
-			width += (Control.ColumnCount - 1) * intercellSpacing.Width;
-			width += GetTableRowInsets();
+			size.Width += (Control.ColumnCount - 1) * (float)intercellSpacing.Width;
+			size.Width += (float)GetTableRowInsets();
 
+			var contentHeight = (float)((RowHeight + intercellSpacing.Height) * rowCount);
 			if (ScrollView.HasVerticalScroller && ScrollView.VerticalScroller.ScrollerStyle == NSScrollerStyle.Legacy)
-				width += NSScroller.GetScrollerWidth(ScrollView.VerticalScroller.ControlSize, ScrollView.VerticalScroller.ScrollerStyle);
+			{
+				if (!float.IsNaN(availableSize.Height) && contentHeight > availableSize.Height)
+					size.Width += (float)NSScroller.GetScrollerWidth(ScrollView.VerticalScroller.ControlSize, ScrollView.VerticalScroller.ScrollerStyle);
+			}
 
-			var height = (int)((RowHeight + intercellSpacing.Height) * rowCount);
+			size.Height += contentHeight;
+
 			if (ShowHeader)
-				height += 2 + (int)Control.HeaderView.Frame.Height;
-			return new SizeF((float)width, height);
+				size.Height += 2 + (int)Control.HeaderView.Frame.Height;
+			return size;
 		}
 
 		public void OnCellFormatting(GridCellFormatEventArgs args)

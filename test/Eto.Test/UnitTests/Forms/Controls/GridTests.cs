@@ -396,22 +396,27 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[ManualTest]
-		[TestCase("Some Text", 1)]
-		[TestCase("Some Text", 100)]
-		[TestCase("Some Much Longer Text That Should Still Work", 1)]
-		[TestCase("Some Much Longer Text That Should Still Work", 100)]
-		[TestCase("Short", 1)]
-		[TestCase("Short", 100)]
-		public void AutoSizedColumnShouldChangeSizeOfControl(string text, int rows) => AutoSizedColumnShouldChangeSizeOfControl(text, rows, null);
+		[TestCase("Some Text", 1, 180)]
+		[TestCase("Some Text", 15, -1)]
+		[TestCase("Some Text", 100, 180)]
+		[TestCase("Some Much Longer Text That Should Still Work", 1, 180)]
+		[TestCase("Some Much Longer Text That Should Still Work", 15, -1)]
+		[TestCase("Some Much Longer Text That Should Still Work", 100, 180)]
+		[TestCase("Short", 1, 180)]
+		[TestCase("Short", 15, -1)]
+		[TestCase("Short", 100, 180)]
+		public void AutoSizedColumnShouldChangeSizeOfControl(string text, int rows, int height) => AutoSizedColumnShouldChangeSizeOfControl(text, rows, height, null);
 		
-		public void AutoSizedColumnShouldChangeSizeOfControl(string text, int rows, Action<T> customize)
+		public void AutoSizedColumnShouldChangeSizeOfControl(string text, int rows, int height, Action<T> customize)
 		{
-			ManualForm("GridView should auto size to the\ncolumn content and not scroll horizontally", form =>
+			ManualForm($"GridView should auto size to the\ncolumn content and not scroll horizontally{(height == -1 ? " or vertically" : "")}", form =>
 			{
-				var gridView = new T
-				{
-					Height = 180,
-				};
+				var gridView = new T();
+				if (height > 0)
+					gridView.Height = height;
+
+				gridView.ShowHeader = false;
+					
 				customize?.Invoke(gridView);
 				gridView.Columns.Add(new GridColumn
 				{
@@ -420,7 +425,6 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				});
 				
 				var collection = new TreeGridItemCollection();
-				SetDataStore(gridView, collection);
 				DataItem mainItem = null;
 				for (int i = 0; i < rows; i++)
 				{
@@ -429,6 +433,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					if (mainItem == null)
 						mainItem = item;
 				}
+				SetDataStore(gridView, collection);
 
 				var textBox = new TextBox();
 				textBox.Focus();
@@ -451,11 +456,5 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				return layout;
 			});
 		}
-
-		[Test, ManualTest]
-		public void AutoSizedColumnShouldReportCorrectPreferredSize()
-		{
-		}
-
 	}
 }
