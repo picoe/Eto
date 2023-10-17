@@ -269,7 +269,7 @@ namespace Eto.Mac.Forms.Controls
 					if (backgroundColor != Colors.Transparent)
 					{
 						backgroundColor.ToNSUI().Set();
-						NSGraphics.RectFill(clipRect);
+						NSGraphics.RectFill(Bounds);
 						return;
 					}
 				}
