@@ -156,13 +156,13 @@ namespace Eto.Mac.Forms.Cells
 				var nscontext = NSGraphicsContext.CurrentContext;
 				var isFirstResponder = Window?.FirstResponder == this;
 
+				var cellFrame = Bounds;
 				if (DrawsBackground)
 				{
 					var context = nscontext.CGContext;
 					context.SetFillColor(BackgroundColor.ToCG());
-					context.FillRect(dirtyRect);
+					context.FillRect(cellFrame);
 				}
-				var cellFrame = Bounds;
 
 				var handler = Handler;
 				if (handler == null)

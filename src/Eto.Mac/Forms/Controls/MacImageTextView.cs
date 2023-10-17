@@ -78,16 +78,16 @@
 
         public override void DrawRect(CGRect dirtyRect)
 		{
+			var bounds = Bounds;
             if (BetterBackgroundColor != null)
             {
                 BetterBackgroundColor.SetFill();
-                NSGraphics.RectFill(dirtyRect);
+                NSGraphics.RectFill(bounds);
             }
 
             if (_image != null)
             {
                 var context = NSGraphicsContext.CurrentContext;
-                var bounds = Bounds;
 
                 var imageRect = new CGRect(0, bounds.Y, _imageSize.Width, _imageSize.Height);
                 imageRect.Y += (bounds.Height - _imageSize.Height) / 2;

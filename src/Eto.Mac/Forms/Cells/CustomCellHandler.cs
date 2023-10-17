@@ -59,7 +59,7 @@ namespace Eto.Mac.Forms.Cells
 				if (DrawsBackground && BackgroundColor != null && BackgroundColor.AlphaComponent > 0)
 				{
 					BackgroundColor.Set();
-					NSGraphics.RectFill(dirtyRect);
+					NSGraphics.RectFill(Bounds);
 				}
 				base.DrawRect(dirtyRect);
 			}
