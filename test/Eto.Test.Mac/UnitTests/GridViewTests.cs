@@ -92,20 +92,26 @@ namespace Eto.Test.Mac.UnitTests
 		}
 
 		[ManualTest]
-		[TestCase(NSTableViewStyle.FullWidth, -1, "Some Text", 100)]
-		[TestCase(NSTableViewStyle.FullWidth, -1, "Some Much Longer Text That Should Still Work", 100)]
-		[TestCase(NSTableViewStyle.Inset, -1, "Some Text", 100)]
-		[TestCase(NSTableViewStyle.Inset, -1, "Some Much Longer Text That Should Still Work", 100)]
-		[TestCase(NSTableViewStyle.SourceList, -1, "Some Text", 100)]
-		[TestCase(NSTableViewStyle.SourceList, -1, "Some Much Longer Text That Should Still Work", 100)]
-		[TestCase(NSTableViewStyle.Plain, -1, "Some Text", 100)]
-		[TestCase(NSTableViewStyle.Plain, -1, "Some Much Longer Text That Should Still Work", 100)]
+		[TestCase(NSTableViewStyle.FullWidth, -1, "Some Text", 100, 180)]
+		[TestCase(NSTableViewStyle.FullWidth, -1, "Some Text", 15, -1)]
+		[TestCase(NSTableViewStyle.FullWidth, -1, "Some Much Longer Text That Should Still Work", 100, 180)]
+		[TestCase(NSTableViewStyle.Inset, -1, "Some Text", 100, 180)]
+		[TestCase(NSTableViewStyle.Inset, -1, "Some Text", 15, -1)]
+		[TestCase(NSTableViewStyle.Inset, -1, "Some Much Longer Text That Should Still Work", 100, 180)]
+		[TestCase(NSTableViewStyle.SourceList, -1, "Some Text", 100, 180)]
+		[TestCase(NSTableViewStyle.SourceList, -1, "Some Text", 15, -1)]
+		[TestCase(NSTableViewStyle.SourceList, -1, "Some Much Longer Text That Should Still Work", 100, 180)]
+		[TestCase(NSTableViewStyle.Plain, -1, "Some Text", 100, 180)]
+		[TestCase(NSTableViewStyle.Plain, -1, "Some Text", 15, -1)]
+		[TestCase(NSTableViewStyle.Plain, -1, "Some Much Longer Text That Should Still Work", 100, 180)]
 		[TestCase(NSTableViewStyle.Plain, 20, "Some Text", 100)]
-		[TestCase(NSTableViewStyle.Plain, 3, "Some Text", 100)]
-		[TestCase(NSTableViewStyle.Plain, 0, "Some Much Longer Text That Should Still Work", 100)]
-		public void AutoSizedColumnShouldChangeSizeOfControl(NSTableViewStyle style, int intercellSpacing, string text, int rows)
+		[TestCase(NSTableViewStyle.Plain, 20, "Some Text", 15, -1)]
+		[TestCase(NSTableViewStyle.Plain, 3, "Some Text", 100, 180)]
+		[TestCase(NSTableViewStyle.Plain, 3, "Some Text", 15, -1)]
+		[TestCase(NSTableViewStyle.Plain, 0, "Some Much Longer Text That Should Still Work", 100, 180)]
+		public void AutoSizedColumnShouldChangeSizeOfControl(NSTableViewStyle style, int intercellSpacing, string text, int rows, int height)
 		{
-			BaseGridTests.AutoSizedColumnShouldChangeSizeOfControl(text, rows, grid => {
+			BaseGridTests.AutoSizedColumnShouldChangeSizeOfControl(text, rows, height, grid => {
 				SetParameters(style, intercellSpacing, grid);
 			});
 		}
