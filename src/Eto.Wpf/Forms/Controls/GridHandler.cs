@@ -121,7 +121,7 @@ namespace Eto.Wpf.Forms.Controls
 		const double DragScrollFastDelay = 0.01;
 		
 		ContextMenu contextMenu;
-		bool hasFocus;
+		bool hadFocus;
 		protected bool SkipSelectionChanged { get; set; }
 		protected swc.DataGridColumn CurrentColumn { get; set; }
 
@@ -824,16 +824,16 @@ namespace Eto.Wpf.Forms.Controls
 		protected void SaveFocus()
 		{
 			SaveColumnFocus();
-			hasFocus = HasFocus;
+			hadFocus = HasFocus && Widget.ParentWindow?.HasFocus == true;
 		}
 
 		protected void RestoreFocus()
 		{
-			if (hasFocus)
-			{
+			if (hadFocus)
 				Focus();
+
+			if (CurrentColumn != null)
 				RestoreColumnFocus();
-			}
 		}
 		
 		GridColumn GetColumn(swc.DataGridColumn dataGridColumn)
