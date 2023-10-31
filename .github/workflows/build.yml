@@ -102,7 +102,7 @@ jobs:
     - name: Set notarization credentials
       if: startsWith(github.ref, 'refs/tags/')
       run: |
-        xcrun altool --store-password-in-keychain-item "AC_PASSWORD" -u "${{ secrets.AC_USERNAME }}" -p "${{ secrets.AC_PASSWORD }}"
+        xcrun notarytool store-credentials "AC_PASSWORD" --apple-id "${{ secrets.AC_USERNAME }}" --team-id "${{ secrets.AC_TEAMID }}" --password "${{ secrets.AC_PASSWORD }}"
         echo "BuildParameters=${{ env.BuildParameters }} /p:EnableNotarizationBuild=True" >> $GITHUB_ENV
 
     - name: Build
