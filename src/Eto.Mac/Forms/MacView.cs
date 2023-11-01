@@ -1213,15 +1213,15 @@ namespace Eto.Mac.Forms
 		{
 			var pt = point.ToNS();
 			var view = ContainerControl;
-			var window = view.Window;
+			
+			// macOS has flipped co-ordinates starting at the bottom left of the main screen,
+			// so we flip to make 0,0 top left
+			var mainFrame = NSScreen.Screens[0].Frame;
+			pt.Y = mainFrame.Height - pt.Y;
+			var window = view.Window ?? NSApplication.SharedApplication.CurrentEvent?.Window;
 			if (window != null)
-			{
-				// macOS has flipped co-ordinates starting at the bottom left of the main screen,
-				// so we flip to make 0,0 top left
-				var mainFrame = NSScreen.Screens[0].Frame;
-				pt.Y = mainFrame.Height - pt.Y;
 				pt = window.ConvertScreenToBase(pt);
-			}
+
 			pt = view.ConvertPointFromView(pt, null);
 			if (!view.IsFlipped)
 				pt.Y = view.Frame.Height - pt.Y;
@@ -1237,15 +1237,12 @@ namespace Eto.Mac.Forms
 			if (!view.IsFlipped)
 				pt.Y = view.Frame.Height - pt.Y;
 			pt = view.ConvertPointToView(pt, null);
-			var window = view.Window;
+			var window = view.Window ?? NSApplication.SharedApplication.CurrentEvent?.Window;
 			if (window != null)
-			{
 				pt = window.ConvertBaseToScreen(pt);
-				// macOS has flipped co-ordinates starting at the bottom left of the main screen,
-				// so we flip to make 0,0 top left
-				var mainFrame = NSScreen.Screens[0].Frame;
-				pt.Y = mainFrame.Height - pt.Y;
-			}
+
+			var mainFrame = NSScreen.Screens[0].Frame;
+			pt.Y = mainFrame.Height - pt.Y;
 			return pt.ToEto();
 		}
 
