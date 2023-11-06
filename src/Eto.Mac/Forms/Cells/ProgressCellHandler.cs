@@ -41,10 +41,7 @@ namespace Eto.Mac.Forms.Cells
 			return field.Cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
 		}
 
-		public override Color GetBackgroundColor(NSView view)
-		{
-			return ((EtoCell)((NSLevelIndicator)view).Cell).BackgroundColor.ToEto();
-		}
+		public override Color GetBackgroundColor(NSView view) => ((EtoCell)((NSLevelIndicator)view).Cell).BackgroundColor.ToEto();
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
@@ -53,26 +50,20 @@ namespace Eto.Mac.Forms.Cells
 			field.DrawsBackground = color.A > 0;
 		}
 
-		public override Color GetForegroundColor(NSView view)
-		{
-			return ((EtoCell)((NSLevelIndicator)view).Cell).TextColor.ToEto();
-		}
+		public override Color GetForegroundColor(NSView view) => ((EtoCell)((NSLevelIndicator)view).Cell).TextColor.ToEto();
+		public override void SetForegroundColor(NSView view, Color color) => ((EtoCell)((NSLevelIndicator)view).Cell).TextColor = color.ToNSUI();
 
-		public override void SetForegroundColor(NSView view, Color color)
-		{
-			((EtoCell)((NSLevelIndicator)view).Cell).TextColor = color.ToNSUI();
-		}
+		public override Font GetFont(NSView view) => ((NSLevelIndicator)view).Font.ToEto();
+		public override void SetFont(NSView view, Font font) => ((NSLevelIndicator)view).Font = font.ToNS();
 
-		public override Font GetFont(NSView view)
+		private void SetDefaults(NSLevelIndicator view)
 		{
-			return ((NSLevelIndicator)view).Font.ToEto();
+			if (view.Cell is EtoCell cell)
+			{
+				cell.TextColor = NSColor.ControlText;
+				cell.DrawsBackground = false;
+			}
 		}
-
-		public override void SetFont(NSView view, Font font)
-		{
-			((NSLevelIndicator)view).Font = font.ToNS();
-		}
-
 
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
@@ -85,6 +76,8 @@ namespace Eto.Mac.Forms.Cells
 				view.Enabled = false;
 				view.Cell.LevelIndicatorStyle = NSLevelIndicatorStyle.ContinuousCapacity;
 			}
+			
+			SetDefaults(view);
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;

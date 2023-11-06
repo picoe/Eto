@@ -473,7 +473,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			// yes, we can get the row.. but it slows down the TreeGridView too much when there are many items
 			// This is only used when formatting the cell, and all other platforms return row=-1 with TreeGridView
 			if (dataColumn == RowDataColumn)
-				return new GLib.Value(row); //model.GetRowIndexOfIter(iter));
+				return new GLib.Value(row); 
+				// return new GLib.Value(model.GetRowIndexOfIter(iter));
 
 			if (dataColumn == ItemDataColumn)
 				return new GLib.Value(item);
@@ -487,9 +488,16 @@ namespace Eto.GtkSharp.Forms.Controls
 			return new GLib.Value((string)null);
 		}
 
-		public int GetRowOfItem(ITreeGridItem item)
+		public override int GetRowOfItem(object item)
 		{
-			return collection == null ? -1 : collection.IndexOf(item);
+			if (item is ITreeGridItem tgitem)
+			{
+				var iter = model.GetIterFromItem(tgitem, true);
+				if (iter == null)
+					return -1;
+				return model.GetRowIndexOfIter(iter.Value);
+			}
+			return -1;
 		}
 		
 

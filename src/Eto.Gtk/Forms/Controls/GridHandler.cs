@@ -142,7 +142,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			Control.QueryTooltip += Control_QueryTooltip;
 			Control.HasTooltip = true;
-
+			
 
 		}
 
@@ -326,6 +326,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				case Grid.CellEditingEvent:
 				case Grid.CellEditedEvent:
 				case Grid.CellFormattingEvent:
+				case Grid.RowFormattingEvent:
 				case Grid.ColumnWidthChangedEvent:
 					SetupColumnEvents();
 					break;
@@ -625,6 +626,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			Callback.OnCellFormatting(Widget, args);
 		}
 
+		public void OnRowFormatting(GridRowFormatEventArgs args) => Callback.OnRowFormatting(Widget, args);
+
 		public void ScrollToRow(int row)
 		{
 			var path = this.GetPathAtRow(row);
@@ -761,6 +764,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(h.Widget));
 		}
+
+		public abstract int GetRowOfItem(object item);
 	}
 }
 

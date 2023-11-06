@@ -87,16 +87,18 @@ namespace Eto.Mac.Forms.Cells
 			return -1; // TODO: Add ability for DrawableCell to provide a preferred width for a specific item.
 		}
 
-		public override Color GetBackgroundColor(NSView view)
-		{
-			return ((EtoCellView)view).BackgroundColor;
-		}
+		public override Color GetBackgroundColor(NSView view) => ((EtoCellView)view).BackgroundColor;
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
 			var field = ((EtoCellView)view);
 			field.BackgroundColor = color;
 			field.DrawsBackground = color.A > 0;
+		}
+
+		private void SetDefaults(EtoCellView view)
+		{
+			view.DrawsBackground = false;
 		}
 
 		public override NSObject GetObjectValue(object dataItem)
@@ -202,6 +204,7 @@ namespace Eto.Mac.Forms.Cells
 				view = new EtoCellView { Handler = this, Identifier = tableColumn.Identifier, FocusRingType = NSFocusRingType.Exterior };
 				view.Bind(enabledBinding, tableColumn, "editable", null);
 			}
+			SetDefaults(view);
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;

@@ -31,8 +31,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				set
 				{
 					item = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<ImageRenderer>(this, Handler.Column.Widget, item, Row));
+					Handler.Format(this, item, Row);
 				}
 			}
 		}
@@ -111,7 +110,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			Column.Control.AddAttribute(Control, "text", dataIndex++);
 			base.BindCell(ref dataIndex);
 
-			if (FormattingEnabled)
+			if (CellFormattingEnabled)
 			{
 				Column.Control.AddAttribute(imageCell, "row", Source.RowDataColumn);
 				Column.Control.AddAttribute(imageCell, "item", Source.ItemDataColumn);

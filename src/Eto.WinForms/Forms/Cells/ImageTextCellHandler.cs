@@ -104,7 +104,7 @@ namespace Eto.WinForms.Forms.Cells
 						using (var background = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor))
 							graphics.FillRectangle(background, cellBounds);
 					graphics.InterpolationMode = InterpolationMode;
-					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + IconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(img.Height, cellBounds.Height)) / 2, IconSize, IconSize));
+					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + IconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(IconSize, cellBounds.Height)) / 2, IconSize, IconSize));
 					graphics.EndContainer(container);
 					cellBounds.X += IconSize + IconPadding * 2;
 					cellBounds.Width -= IconSize + IconPadding * 2;

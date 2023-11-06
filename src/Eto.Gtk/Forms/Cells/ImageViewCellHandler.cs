@@ -27,8 +27,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				set
 				{
 					item = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, item, Row));
+					Handler.Format(this, item, Row);
 				}
 			}
 

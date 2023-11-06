@@ -989,6 +989,26 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		class RowFormatEventArgs : GridRowFormatEventArgs
+		{
+			NSTableRowView _rowView;
+			public RowFormatEventArgs(NSTableRowView rowView, object item, int row) : base(item, row)
+			{
+				_rowView = rowView;
+			}
+
+			public override Color BackgroundColor
+			{
+				get => _rowView.BackgroundColor.ToEto();
+				set => _rowView.BackgroundColor = value.ToNSUI();
+			}
+		}
+
+		protected virtual void OnDidAddRowView(NSTableRowView rowView, nint row)
+		{
+			var item = GetItem((int)row);
+			Callback.OnRowFormatting(Widget, new RowFormatEventArgs(rowView, item, (int)row));
+		}
 	}
 }
 

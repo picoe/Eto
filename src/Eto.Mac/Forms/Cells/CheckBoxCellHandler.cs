@@ -6,6 +6,8 @@ namespace Eto.Mac.Forms.Cells
 	public class CheckBoxCellHandler : CellHandler<CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
 	{
 
+		static readonly NSColor defaultColor = new CellView().Cell.BackgroundColor;
+
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
 			if (Widget.Binding != null && !ColumnHandler.DataViewHandler.SuppressUpdate)
@@ -64,16 +66,23 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
-		public override Color GetBackgroundColor(NSView view)
-		{
-			return ((CellView)view).Cell.BackgroundColor.ToEto();
-		}
+		public override Color GetBackgroundColor(NSView view) => ((CellView)view).Cell.BackgroundColor.ToEto();
 
-		public override void SetBackgroundColor(NSView view, Color color)
+		public override void SetBackgroundColor(NSView view, Color color) => ((CellView)view).Cell.BackgroundColor = color.ToNSUI();
+#if __MACOS__
+		static IntPtr selBackgroundColor_Handle = Selector.GetHandle("setBackgroundColor:");
+#endif
+		
+		private void SetDefaults(CellView view)
 		{
-			var field = ((CellView)view).Cell;
-			field.BackgroundColor = color.ToNSUI();
+#if __MACOS__
+			// doesn't support null currently..
+			Messaging.void_objc_msgSend_IntPtr(view.Cell.Handle, selBackgroundColor_Handle, defaultColor?.Handle ?? IntPtr.Zero);
+#elif MONOMAC
+			view.Cell.BackgroundColor = defaultColor;
+#endif
 		}
+		
 
 		class CellView : NSButton
 		{
@@ -111,6 +120,7 @@ namespace Eto.Mac.Forms.Cells
 			}
 			view.Tag = row;
 			view.Item = obj;
+			SetDefaults(view);
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;

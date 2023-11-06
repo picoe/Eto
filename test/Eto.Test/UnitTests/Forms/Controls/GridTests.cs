@@ -7,6 +7,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		class GridTestItem : TreeGridItem
 		{
 			public string Text { get; set; }
+			public bool? BooleanValue { get; set; }
 			
 			public Image Image { get; set; }
 
@@ -136,7 +137,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			for (int i = 0; i < rows; i++)
 			{
 				Image image = i % 2 == 0 ? (Image)TestIcons.Logo : (Image)TestIcons.TestImage;
-				list.Add(new GridTestItem { Text = $"Item {i}", Image = image, Values = new[] { $"col {i}.2", $"col {i}.3", $"col {i}.4", $"col {i}.5" } });
+				bool? boolValue = i % 3 == 0 ? true : i % 3 == 1 ? false : null;
+				list.Add(new GridTestItem { Text = $"Item {i}", BooleanValue = boolValue, Image = image, Values = new[] { $"col {i}.2", $"col {i}.3", $"col {i}.4", $"col {i}.5" } });
 			}
 			return list;
 		}
@@ -301,6 +303,39 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 			return grid;
 		});
+
+		[Test, ManualTest]
+		public void RowFormattingShouldWork() => ManualDialog(
+			"Should be background",
+			dlg => {
+				
+				dlg.Resizable = true;
+				
+				var grid = new T();
+				grid.Height = 500;
+				grid.RowHeight = 32;
+				grid.CellFormatting += (sender, e) =>
+				{
+					if (e.Row % 4 == 0)
+						e.BackgroundColor = Colors.Green;
+				};
+				grid.RowFormatting += (sender, e) =>
+				{
+					if (e.Row % 3 == 0)
+						e.BackgroundColor = Colors.Blue;
+				};
+				grid.Columns.Add(new GridColumn { DataCell = new ImageTextCell { TextBinding = Binding.Property((GridTestItem m) => m.Text), ImageBinding = Binding.Property((GridTestItem m) => m.Image) } });
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(1) });
+				grid.Columns.Add(new GridColumn { DataCell = new CheckBoxCell { Binding = Binding.Property((GridTestItem m) => m.BooleanValue) } });
+				grid.Columns.Add(new GridColumn { DataCell = new DrawableCell { }, Width = 20 });
+				grid.Columns.Add(new GridColumn { DataCell = new CustomCell { CreateCell = d => new Panel() }, Width = 20 });
+				grid.Columns.Add(new GridColumn { DataCell = new ImageViewCell { Binding = Binding.Property((GridTestItem m) => m.Image) }});
+				
+				SetDataStore(grid, CreateDataStore(500));
+
+				return grid;
+			}
+		);
 
 		[Test, ManualTest]
 		public void CustomCellShouldGetMouseEvents()

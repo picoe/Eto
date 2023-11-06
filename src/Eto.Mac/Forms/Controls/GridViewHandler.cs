@@ -413,6 +413,11 @@ namespace Eto.Mac.Forms.Controls
 				return tableView.MakeView(tableColumn.Identifier, this);
 			}
 
+			public override void DidAddRowView(NSTableView tableView, NSTableRowView rowView, nint row)
+			{
+				Handler?.OnDidAddRowView(rowView, row);
+			}
+
 			public override void DidRemoveRowView(NSTableView tableView, NSTableRowView rowView, nint row)
 			{
 				foreach (var col in Handler.ColumnHandlers)
@@ -472,6 +477,8 @@ namespace Eto.Mac.Forms.Controls
 					// Handled in EtoTableView
 					break;
 				case Grid.CellFormattingEvent:
+					break;
+				case Grid.RowFormattingEvent:
 					break;
 				case Eto.Forms.Control.DragOverEvent:
 				case Eto.Forms.Control.DragDropEvent:

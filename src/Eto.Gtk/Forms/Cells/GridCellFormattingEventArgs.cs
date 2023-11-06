@@ -2,56 +2,85 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
-	public class GtkGridCellFormatEventArgs<T> : GridCellFormatEventArgs
-			where T: Gtk.CellRenderer
+	public class GtkGridCellFormatEventArgs : GridCellFormatEventArgs
 	{
-		public T Renderer { get; private set; }
+		ICellDataSource _source;
+		Font font;
+		public Gtk.CellRenderer Renderer { get; private set; }
+		public Gtk.CellRendererText TextRenderer => Renderer as Gtk.CellRendererText;
 
-		public GtkGridCellFormatEventArgs (T renderer, GridColumn column, object item, int row)
+		public GtkGridCellFormatEventArgs(ICellDataSource source, Gtk.CellRenderer renderer, GridColumn column, object item, int row)
 				: base(column, item, row)
 		{
-			this.Renderer = renderer;
+			Renderer = renderer;
+			_source = source;
 		}
 
-		public override Font Font {
-			get;
-			set;
+		public override Font Font
+		{
+			get => font ??= TextRenderer?.FontDesc.ToEto();
+			set
+			{
+				font = value;
+				if (TextRenderer != null)
+					TextRenderer.FontDesc = font.ToPango();
+			}
 		}
 
-		public override Color BackgroundColor {
-			get { return Renderer.CellBackgroundGdk.ToEto (); }
-			set { Renderer.CellBackgroundGdk = value.ToGdk (); }
+		public override Color BackgroundColor
+		{
+			get => Renderer.CellBackgroundRgba.ToEto();
+			set => Renderer.CellBackgroundRgba = value.ToRGBA();
 		}
 
-		public override Color ForegroundColor {
-			get;
-			set;
+		public override Color ForegroundColor
+		{
+			get => TextRenderer?.ForegroundRgba.ToEto() ?? Colors.Transparent;
+			set
+			{
+				if (TextRenderer != null)
+					TextRenderer.ForegroundRgba = value.ToRGBA();
+			}
+		}
+
+		protected override int GetRow()
+		{
+			var row = base.GetRow();
+			if (row == -1)
+			{
+				row = _source.GetRowOfItem(Item);
+			}
+			return row;
 		}
 	}
-
-	public class GtkTextCellFormatEventArgs<T> : GtkGridCellFormatEventArgs<T>
-		where T: Gtk.CellRendererText
+	public class GtkGridRowFormatEventArgs : GridRowFormatEventArgs
 	{
-		public GtkTextCellFormatEventArgs (T renderer, GridColumn column, object item, int row)
-					: base(renderer, column, item, row)
+		ICellDataSource _source;
+		public Gtk.CellRenderer Renderer { get; private set; }
+		public Gtk.CellRendererText TextRenderer => Renderer as Gtk.CellRendererText;
+
+		public GtkGridRowFormatEventArgs(ICellDataSource source, Gtk.CellRenderer renderer, object item, int row)
+				: base(item, row)
 		{
+			Renderer = renderer;
+			_source = source;
 		}
 
-		public override Color ForegroundColor {
-			get { return Renderer.ForegroundGdk.ToEto (); }
-			set { Renderer.ForegroundGdk = value.ToGdk (); }
+		public override Color BackgroundColor
+		{
+			get => Renderer.CellBackgroundRgba.ToEto();
+			set => Renderer.CellBackgroundRgba = value.ToRGBA();
 		}
 
-		public override Font Font {
-			get {
-				return base.Font ?? (base.Font = Renderer.FontDesc.ToEto());
+		protected override int GetRow()
+		{
+			var row = base.GetRow();
+			if (row == -1)
+			{
+				row = _source.GetRowOfItem(Item);
 			}
-			set {
-				base.Font = value;
-				Renderer.FontDesc = value.ToPango();
-			}
+			return row;
 		}
-
 	}
 }
 

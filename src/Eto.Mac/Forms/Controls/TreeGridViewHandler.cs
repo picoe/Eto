@@ -266,6 +266,11 @@ namespace Eto.Mac.Forms.Controls
 				return outlineView.MakeView(tableColumn?.Identifier ?? string.Empty, this);
 			}
 
+			public override void DidAddRowView(NSOutlineView outlineView, NSTableRowView rowView, nint row)
+			{
+				Handler?.OnDidAddRowView(rowView, row);
+			}
+
 			public override void DidRemoveRowView(NSOutlineView outlineView, NSTableRowView rowView, nint row)
 			{
 				foreach (var col in Handler.ColumnHandlers)
@@ -725,6 +730,10 @@ namespace Eto.Mac.Forms.Controls
 				case Grid.CellClickEvent:
 					// Handled in EtoOutlineView
 					break;
+				case Grid.CellFormattingEvent:
+					break;
+				case Grid.RowFormattingEvent:
+					break;
 				case Eto.Forms.Control.DragOverEvent:
 				case Eto.Forms.Control.DragDropEvent:
 					// handled in EtoDataSource
@@ -973,14 +982,23 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var items = CustomSelectedItems;
 				if (items != null)
-				{
-					return CustomSelectedItems.Select(r => (int)Control.RowForItem(GetCachedItem(r)));
-				}
+					return GetRowsForItems(items);
+					
 				return base.SelectedRows;
 			}
 			set
 			{
 				base.SelectedRows = value;
+			}
+		}
+
+		private IEnumerable<int> GetRowsForItems(IEnumerable<object> items)
+		{
+			foreach (var item in items)
+			{
+				var cachedItem = GetCachedItem(item);
+				if (cachedItem != null)
+					yield return (int)Control.RowForItem(cachedItem);
 			}
 		}
 
