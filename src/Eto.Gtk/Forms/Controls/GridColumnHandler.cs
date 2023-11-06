@@ -138,6 +138,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				HandleEvent(Grid.ColumnHeaderClickEvent);
 			if (grid.IsEventHandled(Grid.CellFormattingEvent))
 				HandleEvent(Grid.CellFormattingEvent);
+			if (grid.IsEventHandled(Grid.RowFormattingEvent))
+				HandleEvent(Grid.RowFormattingEvent);
 			if (grid.IsEventHandled(Grid.ColumnWidthChangedEvent))
 				HandleEvent(Grid.ColumnWidthChangedEvent);
 		}

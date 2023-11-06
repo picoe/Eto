@@ -108,8 +108,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				set
 				{
 					item = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, item, Row));
+					Handler.Format(this, item, Row);
 				}
 			}
 
@@ -244,6 +243,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			}*/
 #endif
 		}
+
 
 		private int OnGetPreferredWidth(CellEventArgs args)
 		{

@@ -150,10 +150,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			return new GLib.Value((string)null);
 		}
 
-		public int GetRowOfItem(object item)
-		{
-			return collection != null ? collection.IndexOf(item) : -1;
-		}
+		public override int GetRowOfItem(object item) =>collection?.IndexOf(item) ?? -1;
 
 		public EnumerableChangedHandler<object> Collection
 		{

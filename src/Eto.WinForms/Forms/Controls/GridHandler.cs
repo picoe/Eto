@@ -244,11 +244,11 @@ namespace Eto.WinForms.Forms.Controls
 			DisableAutoSizeToggle--;
 		}
 
-		class FormattingArgs : GridCellFormatEventArgs
+		class CellFormattingArgs : GridCellFormatEventArgs
 		{
 			public swf.DataGridViewCellFormattingEventArgs Args { get; private set; }
 
-			public FormattingArgs(swf.DataGridViewCellFormattingEventArgs args, GridColumn column, object item, int row)
+			public CellFormattingArgs(swf.DataGridViewCellFormattingEventArgs args, GridColumn column, object item, int row)
 				: base(column, item, row)
 			{
 				this.Args = args;
@@ -258,10 +258,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			public override Font Font
 			{
-				get
-				{
-					return font ?? (font = new Font(new FontHandler(Args.CellStyle.Font)));
-				}
+				get => font ?? (font = new Font(new FontHandler(Args.CellStyle.Font)));
 				set
 				{
 					font = value;
@@ -280,6 +277,22 @@ namespace Eto.WinForms.Forms.Controls
 				get { return Args.CellStyle.ForeColor.ToEto(); }
 				set { Args.CellStyle.ForeColor = value.ToSD(); }
 			}
+		}
+
+		class RowFormattingArgs : GridRowFormatEventArgs
+		{
+			swf.DataGridViewCellFormattingEventArgs _args;
+			public RowFormattingArgs(swf.DataGridViewCellFormattingEventArgs args, object item, int row) : base(item, row)
+			{
+				_args = args;
+			}
+
+			public override Color BackgroundColor
+			{
+				get => _args.CellStyle.BackColor.ToEto();
+				set => _args.CellStyle.BackColor = value.ToSD();
+			}
+
 		}
 
 		public override void AttachEvent(string id)
@@ -333,6 +346,9 @@ namespace Eto.WinForms.Forms.Controls
 				case Grid.SelectionChangedEvent:
 					// handled automatically
 					break;
+				case Grid.RowFormattingEvent:
+					HandleEvent(Grid.CellFormattingEvent);
+					break;
 				case Grid.CellFormattingEvent:
 					Control.CellFormatting += HandleCellFormatting;
 					break;
@@ -361,7 +377,8 @@ namespace Eto.WinForms.Forms.Controls
 					cell.ToolTipText = column.CellToolTipBinding.GetValue(item);
 				}
 			}
-			Callback.OnCellFormatting(Widget, new FormattingArgs(e, column, item, e.RowIndex));
+			Callback.OnRowFormatting(Widget, new RowFormattingArgs(e, item, e.RowIndex));
+			Callback.OnCellFormatting(Widget, new CellFormattingArgs(e, column, item, e.RowIndex));
 		}
 
 		private void HandleColumnWidthChanged(object sender, swf.DataGridViewColumnEventArgs e)

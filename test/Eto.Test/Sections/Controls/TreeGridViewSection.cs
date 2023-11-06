@@ -21,7 +21,7 @@ namespace Eto.Test.Sections.Controls
 
 		protected override void SetDataStore(TreeGridView grid)
 		{
-			var item = CreateItem(4, "Item", 0, 100);
+			var item = CreateItem(4, "Item", 0, 1000);
 			// var item = await Task.Run(() => CreateItem(0, "Item", 0, 1000));
 			grid.DataStore = item;
 		}

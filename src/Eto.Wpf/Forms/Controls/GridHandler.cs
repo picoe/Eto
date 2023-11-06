@@ -206,6 +206,9 @@ namespace Eto.Wpf.Forms.Controls
 				case Grid.CellFormattingEvent:
 					// handled by FormatCell method
 					break;
+				case Grid.RowFormattingEvent:
+					Control.LoadingRow += HandleLoadingRow;
+					break;
 				case Grid.ColumnOrderChangedEvent:
 					Control.ColumnReordered += HandleColumnReordered;
 					break;
@@ -216,6 +219,17 @@ namespace Eto.Wpf.Forms.Controls
 					break;
 			}
 		}
+
+		private void HandleLoadingRow(object sender, swc.DataGridRowEventArgs e)
+		{
+			var row = e.Row;
+			if (row == null)
+				return;
+			row.ClearValue(swc.Control.BackgroundProperty);
+
+			Callback.OnRowFormatting(Widget, new RowFormatEventArgs(row, row.Item, row.GetIndex()));
+		}
+
 
 		private void HandleColumnReordered(object sender, swc.DataGridColumnEventArgs e)
 		{
@@ -713,14 +727,14 @@ namespace Eto.Wpf.Forms.Controls
 			return defaultContent;
 		}
 
-		class FormatEventArgs : GridCellFormatEventArgs
+		class CellFormatEventArgs : GridCellFormatEventArgs
 		{
 			public sw.FrameworkElement Element { get; private set; }
 
 			public swc.DataGridCell Cell { get; private set; }
 			Font font;
 
-			public FormatEventArgs(GridColumn column, swc.DataGridCell gridcell, object item, int row, sw.FrameworkElement element)
+			public CellFormatEventArgs(GridColumn column, swc.DataGridCell gridcell, object item, int row, sw.FrameworkElement element)
 				: base(column, item, row)
 			{
 				this.Element = element;
@@ -729,10 +743,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			public override Font Font
 			{
-				get
-				{
-					return font ?? (font = Cell.GetEtoFont());
-				}
+				get => font ?? (font = Cell.GetEtoFont());
 				set
 				{
 					font = value;
@@ -742,27 +753,32 @@ namespace Eto.Wpf.Forms.Controls
 
 			public override Color BackgroundColor
 			{
-				get
-				{
-					return Cell.Background.ToEtoColor();
-				}
-				set
-				{
-					Cell.Background = value.ToWpfBrush(Cell.Background);
-				}
+				get => Cell.Background.ToEtoColor();
+				set => Cell.Background = value.ToWpfBrush();
 			}
 
 			public override Color ForegroundColor
 			{
-				get
-				{
-					return Cell.Foreground.ToEtoColor();
-				}
-				set
-				{
-					Cell.Foreground = value.ToWpfBrush(Cell.Foreground);
-				}
+				get => Cell.Foreground.ToEtoColor();
+				set => Cell.Foreground = value.ToWpfBrush();
 			}
+		}
+
+
+		class RowFormatEventArgs : GridRowFormatEventArgs
+		{
+			swc.DataGridRow _gridrow;
+			public RowFormatEventArgs(swc.DataGridRow gridrow, object item, int row) : base(item, row)
+			{
+				_gridrow = gridrow;
+			}
+
+			public override Color BackgroundColor
+			{
+				get => _gridrow.Background.ToEtoColor();
+				set => _gridrow.Background = value.ToWpfBrush();
+			}
+
 		}
 
 		public override bool HasFocus
@@ -804,7 +820,14 @@ namespace Eto.Wpf.Forms.Controls
 			if (IsEventHandled(Grid.CellFormattingEvent))
 			{
 				var row = Control.Items.IndexOf(dataItem);
-				Callback.OnCellFormatting(Widget, new FormatEventArgs(column.Widget as GridColumn, gridcell, dataItem, row, element));
+				// we always reset values
+				gridcell.ClearValue(swc.Control.ForegroundProperty);
+				gridcell.ClearValue(swc.Control.BackgroundProperty);
+				gridcell.ClearValue(swc.Control.FontFamilyProperty);
+				gridcell.ClearValue(swc.Control.FontStyleProperty);
+				gridcell.ClearValue(swc.Control.FontWeightProperty);
+				gridcell.ClearValue(swc.Control.FontSizeProperty);
+				Callback.OnCellFormatting(Widget, new CellFormatEventArgs(column.Widget as GridColumn, gridcell, dataItem, row, element));
 			}
 		}
 

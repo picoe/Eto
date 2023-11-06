@@ -129,16 +129,18 @@ namespace Eto.Mac.Forms.Cells
 
 		}
 
-		public override Color GetBackgroundColor(NSView view)
-		{
-			return ((EtoCustomCellView)view).BackgroundColor.ToEto();
-		}
+		public override Color GetBackgroundColor(NSView view) => ((EtoCustomCellView)view).BackgroundColor.ToEto();
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
 			var field = ((EtoCustomCellView)view);
 			field.BackgroundColor = color.ToNSUI();
 			field.DrawsBackground = color.A > 0;
+		}
+
+		private void SetDefaults(EtoCustomCellView view)
+		{
+			view.DrawsBackground = false;
 		}
 
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
@@ -184,6 +186,7 @@ namespace Eto.Mac.Forms.Cells
 				view.Args.SetItem(args.Item);
 			}
 
+			SetDefaults(view);
 			var formatArgs = new MacCellFormatArgs(ColumnHandler.Widget, item, row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(formatArgs);
 			Callback.OnConfigureCell(Widget, view.Args, view.EtoControl);

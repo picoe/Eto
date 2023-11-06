@@ -359,9 +359,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return 2; }
 		}
 
-		public int GetRowOfItem(ITreeItem item)
+		public int GetRowOfItem(object item)
 		{
-			return collection != null ? collection.IndexOf(item) : -1;
+			if (item is ITreeItem ti)
+				return collection?.IndexOf(ti) ?? -1;
+			return -1;
 		}
 
 		public void RefreshData()

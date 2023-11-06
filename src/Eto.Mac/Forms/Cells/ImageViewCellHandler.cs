@@ -82,16 +82,14 @@ namespace Eto.Mac.Forms.Cells
 
 		public ImageInterpolation ImageInterpolation { get; set; }
 
-		public override Color GetBackgroundColor(NSView view)
+		public override Color GetBackgroundColor(NSView view) => ((EtoImageView)view).BackgroundColor.ToEto();
+		public override void SetBackgroundColor(NSView view, Color color) => ((EtoImageView)view).BackgroundColor = color.ToNSUI();
+		
+		private void SetDefaults(EtoImageView view)
 		{
-			return ((EtoImageView)view).BackgroundColor.ToEto();
+			view.BackgroundColor = null;
 		}
-
-		public override void SetBackgroundColor(NSView view, Color color)
-		{
-			var field = ((EtoImageView)view);
-			field.BackgroundColor = color.ToNSUI();
-		}
+		
 
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
@@ -100,6 +98,7 @@ namespace Eto.Mac.Forms.Cells
 			{
 				view = new EtoImageView { Identifier = tableColumn.Identifier };
 			}
+			SetDefaults(view);
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;

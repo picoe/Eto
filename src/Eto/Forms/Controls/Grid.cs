@@ -105,6 +105,8 @@ public enum GridLines
 /// <license type="BSD-3">See LICENSE for full terms</license>
 public abstract class GridCellFormatEventArgs : EventArgs
 {
+	int _row;
+	
 	/// <summary>
 	/// Gets the column to format
 	/// </summary>
@@ -121,7 +123,7 @@ public abstract class GridCellFormatEventArgs : EventArgs
 	/// Gets the row number in the data source
 	/// </summary>
 	/// <value>The row.</value>
-	public int Row { get; private set; }
+	public int Row => GetRow();
 
 	/// <summary>
 	/// Gets or sets the font to use for the cell, or null to use the default font
@@ -151,8 +153,63 @@ public abstract class GridCellFormatEventArgs : EventArgs
 	{
 		Column = column;
 		Item = item;
-		Row = row;
+		_row = row;
 	}
+
+	/// <summary>
+	/// Overridable method to get the row number for this event.
+	/// </summary>
+	/// <remarks>
+	/// This is used for situations when getting the row might be computationally expensive on certain platforms, 
+	/// e.g. with the TreeGridView on Gtk.
+	/// </remarks>
+	/// <returns>The row for the item to format</returns>
+	protected virtual int GetRow() => _row;
+}
+
+/// <summary>
+/// Event arguments for formatting a row in a <see cref="Grid"/> using the <see cref="Grid.RowFormatting"/> event.
+/// </summary>
+public abstract class GridRowFormatEventArgs : EventArgs
+{
+	int _row;
+	
+	/// <summary>
+	/// Gets or sets the background color for the cell
+	/// </summary>
+	/// <value>The color of the background.</value>
+	public abstract Color BackgroundColor { get; set; }
+	/// <summary>
+	/// Gets the item that is associated with the row being formatted
+	/// </summary>
+	/// <value>The item.</value>
+	public object Item { get; }
+	/// <summary>
+	/// Gets the row number in the data source
+	/// </summary>
+	/// <value>The row.</value>
+	public int Row => GetRow();
+
+	/// <summary>
+	/// Initializes a new instance of the GridRowFormatEventArgs class.
+	/// </summary>
+	/// <param name="item">Item for the row being formatted</param>
+	/// <param name="row">Row number being formatted</param>
+	public GridRowFormatEventArgs(object item, int row)
+	{
+		Item = item;
+		_row = row;
+	}
+
+	/// <summary>
+	/// Overridable method to get the row number for this event.
+	/// </summary>
+	/// <remarks>
+	/// This is used for situations when getting the row might be computationally expensive on certain platforms, 
+	/// e.g. with the TreeGridView on Gtk.
+	/// </remarks>
+	/// <returns>The row for the item to format</returns>
+	protected virtual int GetRow() => _row;
 }
 
 /// <summary>
@@ -338,6 +395,29 @@ public abstract class Grid : Control, ISelectable<object>
 	}
 
 	/// <summary>
+	/// Event identifier for handlers when attaching the <see cref="Grid.RowFormatting"/> event
+	/// </summary>
+	public const string RowFormattingEvent = "Grid.RowFormattingEvent";
+
+	/// <summary>
+	/// Occurs when each cell is being formatted for font and color
+	/// </summary>
+	public event EventHandler<GridRowFormatEventArgs> RowFormatting
+	{
+		add { Properties.AddHandlerEvent(RowFormattingEvent, value); }
+		remove { Properties.RemoveEvent(RowFormattingEvent, value); }
+	}
+
+	/// <summary>
+	/// Raises the <see cref="Grid.CellFormatting"/> event
+	/// </summary>
+	/// <param name="e">Event arguments</param>
+	protected virtual void OnRowFormatting(GridRowFormatEventArgs e)
+	{
+		Properties.TriggerEvent(RowFormattingEvent, this, e);
+	}
+
+	/// <summary>
 	/// Occurs when the <see cref="SelectedItems"/> is changed.
 	/// </summary>
 	public event EventHandler<EventArgs> SelectedItemsChanged
@@ -408,6 +488,7 @@ public abstract class Grid : Control, ISelectable<object>
 		EventLookup.Register<Grid>(c => c.OnCellEdited(null), Grid.CellEditedEvent);
 		EventLookup.Register<Grid>(c => c.OnCellEditing(null), Grid.CellEditingEvent);
 		EventLookup.Register<Grid>(c => c.OnCellFormatting(null), Grid.CellFormattingEvent);
+		EventLookup.Register<Grid>(c => c.OnRowFormatting(null), Grid.RowFormattingEvent);
 		EventLookup.Register<Grid>(c => c.OnCellClick(null), Grid.CellClickEvent);
 		EventLookup.Register<Grid>(c => c.OnCellDoubleClick(null), Grid.CellDoubleClickEvent);
 		EventLookup.Register<Grid>(c => c.OnSelectionChanged(null), Grid.SelectionChangedEvent);
@@ -708,6 +789,11 @@ public abstract class Grid : Control, ISelectable<object>
 		/// Raises the cell formatting event.
 		/// </summary>
 		void OnCellFormatting(Grid widget, GridCellFormatEventArgs e);
+		
+		/// <summary>
+		/// Raises the row formatting event.
+		/// </summary>
+		void OnRowFormatting(Grid widget, GridRowFormatEventArgs e);
 			
 		/// <summary>
 		/// Raises the column display index changed event.
@@ -791,6 +877,15 @@ public abstract class Grid : Control, ISelectable<object>
 				widget.OnCellFormatting(e);
 		}
 
+		/// <summary>
+		/// Raises the cell formatting event.
+		/// </summary>
+		public void OnRowFormatting(Grid widget, GridRowFormatEventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnRowFormatting(e);
+		}
+		
 		/// <summary>
 		/// Raises the column display index changed event.
 		/// </summary>

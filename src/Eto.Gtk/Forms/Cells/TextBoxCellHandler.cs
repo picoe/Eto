@@ -4,8 +4,8 @@ namespace Eto.GtkSharp.Forms.Cells
 {
 	interface ITextBoxCellHandler
 	{
-		bool FormattingEnabled { get; }
-		void Format(GridCellFormatEventArgs args);
+		bool CellFormattingEnabled { get; }
+		void Format(Gtk.CellRenderer renderer, object item, int row);
 		AutoSelectMode AutoSelectMode { get; }
 		GridColumnHandler Column { get; }
 		ICellDataSource Source { get; }
@@ -23,16 +23,8 @@ namespace Eto.GtkSharp.Forms.Cells
 			public bool Editing => (bool)GetProperty("editing").Val;
 #endif
 
-			int row;
 			[GLib.Property("row")]
-			public int Row
-			{
-				get { return row; }
-				set
-				{
-					row = value;
-				}
-			}
+			public int Row { get; set; }
 			
 			object item;
 			[GLib.Property("item")]
@@ -42,8 +34,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				set
 				{
 					item = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, item, Row));
+					Handler.Format(this, item, Row);
 				}
 			}
 
