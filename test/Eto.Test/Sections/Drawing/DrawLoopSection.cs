@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "Draw Loop")]
@@ -14,6 +16,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			public bool Stop { get; set; }
 		}
+		ManualResetEvent mre = new ManualResetEvent(false);
 
 		public DrawLoopSection()
 		{
@@ -22,25 +25,40 @@ namespace Eto.Test.Sections.Drawing
 				Style = "direct",
 				BackgroundColor = Colors.Black
 			};
-			drawable.Paint += (sender, e) => renderer.DrawFrame(e.Graphics, drawable.Size);
+			drawable.Paint += (sender, e) =>
+			{
+				renderer.DrawFrame(e.Graphics, drawable.Size);
+				Application.Instance.AsyncInvoke(() => mre.Set());
+			};
 			renderer = new DirectDrawingRenderer();
 
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
-			layout.AddSeparateRow(UseTexturesAndGradients(), UseTextCoordinates(), UseCreateGraphics());
+			layout.AddSeparateRow(UseTexturesAndGradients(), UseTextCoordinates(), UseCreateGraphics(), NumberOfElements());
 			layout.Add(content = new Panel { Content = drawable });
 			this.Content = layout;
 		}
+		
+		Control NumberOfElements()
+		{
+			var control = new Slider { MinValue = 2, MaxValue = 300 };
+			control.ValueBinding.Bind(renderer, r => r.NumberOfElements);
 
-		async void DrawLoop(object data)
+			var amount = new Label();
+			amount.TextBinding.Bind(renderer, Binding.Property((DirectDrawingRenderer r) => r.NumberOfElements).Convert(r => $"({r})"));
+			return new TableLayout(new TableRow(new TableCell(control, true), amount));
+		}
+
+		void DrawLoop(object data)
 		{
 			var currentStatus = (Status)data;
 			renderer.RestartFPS();
 			while (!currentStatus.Stop)
 			{
+				mre.Reset();
 				var draw = drawFrame;
 				if (draw != null)
-					Application.Instance.Invoke(draw);
-				await Task.Delay(0);
+					Application.Instance.AsyncInvoke(draw);
+				mre.WaitOne(1000);
 			}
 		}
 
@@ -162,20 +180,51 @@ namespace Eto.Test.Sections.Drawing
 		}
 	}
 
-	public class DirectDrawingRenderer
+	public class DirectDrawingRenderer : INotifyPropertyChanged
 	{
 		readonly Image texture;
 		readonly Font font;
 		readonly SolidBrush textBrush;
 		readonly SolidBrush eraseBrush;
+		int _NumberOfElements = 20;
+		Size? _canvasSize;
 
 		public readonly Stopwatch Watch = new Stopwatch();
 		public int TotalFrames { get; set; }
 		public long PreviousFrameStartTicks { get; set; }
 		public readonly List<Box> Boxes = new List<Box>();
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+
 		public bool UseTexturesAndGradients { get; set; }
 		public bool ShowTextCoordinates { get; set; }
 		public bool EraseBoxes { get; set; }
+		public int NumberOfElements
+		{
+			get => _NumberOfElements;
+			set
+			{
+				_NumberOfElements = value;
+				if (_canvasSize != null)
+				{
+					if (Boxes.Count > _NumberOfElements)
+					{
+						var diff = Boxes.Count - _NumberOfElements;
+						Boxes.RemoveRange(Boxes.Count - diff - 1, diff);
+					}
+					if (Boxes.Count < _NumberOfElements)
+					{
+						InitializeBoxes(_canvasSize.Value, _NumberOfElements - Boxes.Count);
+					}
+				}
+				OnPropertyChanged();
+				RestartFPS();
+			}
+		}
+
+		private void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
 
 		public DirectDrawingRenderer()
 		{
@@ -355,9 +404,9 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		void InitializeBoxes(Size canvasSize)
+		void InitializeBoxes(Size canvasSize, int count)
 		{
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < count; i++)
 				Boxes.Add(new Box(canvasSize, UseTexturesAndGradients, ShowTextCoordinates, this));
 		}
 
@@ -367,8 +416,9 @@ namespace Eto.Test.Sections.Drawing
 				return;
 			lock (Boxes)
 			{
+				_canvasSize = canvasSize;
 				if (Boxes.Count == 0 && canvasSize.Width > 1 && canvasSize.Height > 1)
-					InitializeBoxes(canvasSize);
+					InitializeBoxes(canvasSize, NumberOfElements);
 
 				var fps = TotalFrames / Watch.Elapsed.TotalSeconds;
 				// The frames per second as determined by the last frame. Measuring a single frame
@@ -376,11 +426,6 @@ namespace Eto.Test.Sections.Drawing
 				var frameTicks = Watch.ElapsedTicks - PreviousFrameStartTicks;
 				var lastFrameFps = Stopwatch.Frequency / Math.Max(frameTicks, 1);
 				PreviousFrameStartTicks = Watch.ElapsedTicks;
-				var fpsText = string.Format("Frames per second since start: {0:0.00}, last: {1:0.00}", fps, lastFrameFps);
-				var start = Watch.ElapsedTicks;
-				if (EraseBoxes)
-					graphics.FillRectangle(Colors.Black, new RectangleF(graphics.MeasureString(font, fpsText)));
-				graphics.DrawText(font, textBrush, 0, 0, fpsText);
 
 				var bounds = canvasSize;
 				graphics.AntiAlias = false;
@@ -395,6 +440,12 @@ namespace Eto.Test.Sections.Drawing
 					box.Draw(graphics);
 					box.CoordianateDisplay(graphics, font, textBrush);
 				}
+				
+				var fpsText = string.Format("Frames per second since start: {0:0.00}, last: {1:0.00}", fps, lastFrameFps);
+				if (EraseBoxes)
+					graphics.FillRectangle(Colors.Black, new RectangleF(graphics.MeasureString(font, fpsText)));
+				graphics.DrawText(font, textBrush, 0, 0, fpsText);
+				
 				TotalFrames++;
 			}
 		}
