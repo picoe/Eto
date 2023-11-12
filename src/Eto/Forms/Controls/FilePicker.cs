@@ -1,8 +1,22 @@
 ﻿namespace Eto.Forms;
 
 /// <summary>
-/// Control for picking a file or folder.
+/// A control that allows the user to interact with files and folders.
+/// It can be used to save files, select files or select directories.
 /// </summary>
+/// <example>
+/// <code>
+/// var myFilePicker = new FilePicker
+/// {
+///		FileAction = FileAction.OpenFile
+/// }
+///
+/// var myFolderPicker = new FilePicker
+/// {
+///		FileAction = FileAction.SelectFolder
+/// }
+/// </code>
+/// </example>
 [Handler(typeof(FilePicker.IHandler))]
 public class FilePicker : Control
 {
@@ -12,18 +26,15 @@ public class FilePicker : Control
 
 	static readonly object callback = new Callback();
 
-	/// <summary>
-	/// Gets an instance of an object used to perform callbacks to the widget from handler implementations.
-	/// </summary>
-	/// <returns>The callback instance to use for this widget.</returns>
+	/// <inheritdoc/>
 	protected override object GetCallback() { return callback; }
 
 	/// <summary>
-	/// Gets or sets the index of the current filter in the <see cref="Filters"/> collection
+	/// Gets or sets the index of the current filter in the <see cref="Filters"/> collection.
 	/// </summary>
 	/// <seealso cref="Filters"/>
 	/// <seealso cref="CurrentFilter"/>
-	/// <value>The index of the current filter, or -1 if none is selected.</value>
+	/// <value>The index of the current filter, or <c>-1</c> if none is selected.</value>
 	public int CurrentFilterIndex
 	{
 		get { return Handler.CurrentFilterIndex; }
@@ -31,11 +42,11 @@ public class FilePicker : Control
 	}
 
 	/// <summary>
-	/// Gets or sets the currently selected filter from the <see cref="Filters"/> collection.
+	/// Gets or sets the currently selected filter from the <see cref="Filters"/> collection. Also updates <see cref="CurrentFilterIndex"/> accordingly.
 	/// </summary>
 	/// <remarks>
-	/// This should always match an instance of a filter in the <see cref="Filters"/> collection, otherwise
-	/// the current filter will be set to null.
+	/// This can return <see langword="null"/> if either the <see cref="Filters"/> collection is <see langword="null"/>,
+	/// or if the current filter is not in the <see cref="Filters"/> collection.
 	/// </remarks>
 	/// <seealso cref="Filters"/>
 	/// <value>The current filter.</value>
@@ -61,16 +72,23 @@ public class FilePicker : Control
 	/// 
 	/// Some platforms may either disable (OS X) or hide (GTK/WinForms/WPF) files that do not match the currently selected filter.
 	/// </remarks>
+	/// <example>
+	/// This is an example that would let the user select either PNG images, or all files.
+	/// <code>
+	/// myFilePicker.Filters.Add(new FileFilter("PNG Images", "png"));
+	/// myFilePicker.Filters.Add(new FileFilter("All Files", "*"));
+	/// </code>
+	/// </example>
 	/// <seealso cref="CurrentFilterIndex"/>
 	/// <seealso cref="CurrentFilter"/>
 	/// <value>The filters that the user can select.</value>
 	public Collection<FileFilter> Filters
 	{
-		get { return filters ?? (filters = new FilterCollection { Picker = this }); }
+		get { return filters ??= new FilterCollection { Picker = this }; }
 	}
 
 	/// <summary>
-	/// Gets or sets <see cref="FileAction"/> that is used when the user is selecting the file.
+	/// Gets or sets the <see cref="FileAction"/>, which indicates how the file picker should behave.
 	/// </summary>
 	/// <value>The file action.</value>
 	public FileAction FileAction
@@ -80,7 +98,8 @@ public class FilePicker : Control
 	}
 
 	/// <summary>
-	/// Gets or sets the full path of the file that is selected.
+	/// Gets or sets the full path of the file that was selected,
+	/// or should be selected by default when opening the picker.
 	/// </summary>
 	/// <value>The path of the file.</value>
 	public string FilePath
@@ -90,7 +109,7 @@ public class FilePicker : Control
 	}
 
 	/// <summary>
-	/// Gets or sets the title of the dialog that the control will show.
+	/// Gets or sets the title of the dialog that the file picker will show.
 	/// </summary>
 	/// <value>The title of the dialog.</value>
 	public string Title
@@ -100,50 +119,29 @@ public class FilePicker : Control
 	}
 
 	/// <summary>
-	/// Handler interface for the <see cref="FilePicker"/> control
+	/// Handler interface for the <see cref="FilePicker"/> control.
 	/// </summary>
 	public new interface IHandler : Control.IHandler
 	{
-		/// <summary>
-		/// Gets or sets <see cref="FileAction"/> that is used when the user is selecting the file.
-		/// </summary>
-		/// <value>The file action.</value>
+		/// <inheritdoc cref="FileAction"/>
 		FileAction FileAction { get; set; }
 
-		/// <summary>
-		/// Gets or sets the full path of the file that is selected
-		/// </summary>
-		/// <value>The path of the file.</value>
+		/// <inheritdoc cref="FilePath"/>
 		string FilePath { get; set; }
 
-		/// <summary>
-		/// Gets or sets the index of the current filter in the <see cref="Filters"/> collection
-		/// </summary>
-		/// <value>The index of the current filter.</value>
+		/// <inheritdoc cref="CurrentFilterIndex"/>
 		int CurrentFilterIndex { get; set; }
 
-		/// <summary>
-		/// Gets or sets the title of the dialog that the control will show.
-		/// </summary>
-		/// <value>The title of the dialog.</value>
+		/// <inheritdoc cref="Title"/>
 		string Title { get; set; }
 
-		/// <summary>
-		/// Clears all filters
-		/// </summary>
+		/// <inheritdoc cref="FilterCollection.ClearItems"/>
 		void ClearFilters();
-
-		/// <summary>
-		/// Inserts a filter at the specified index
-		/// </summary>
-		/// <param name="index">Index to insert the filter</param>
-		/// <param name="filter">Filter to insert</param>
+		
+		/// <inheritdoc cref="FilterCollection.InsertItem"/>
 		void InsertFilter(int index, FileFilter filter);
 
-		/// <summary>
-		/// Removes a filter at the specified index
-		/// </summary>
-		/// <param name="index">Index of the filter to remove</param>
+		/// <inheritdoc cref="FilterCollection.RemoveItem"/>
 		void RemoveFilter(int index);
 	}
 
@@ -151,18 +149,32 @@ public class FilePicker : Control
 	{
 		public FilePicker Picker { get; set; }
 
+		/// <summary>
+		/// Inserts a filter at the specified index.
+		/// </summary>
+		/// <param name="index">Index to insert the filter.</param>
+		/// <param name="item">Filter to insert.</param>
 		protected override void InsertItem(int index, FileFilter item)
 		{
 			base.InsertItem(index, item);
 			Picker.Handler.InsertFilter(index, item);
 		}
 
+		/// <summary>
+		/// Removes a filter at the specified index.
+		/// </summary>
+		/// <param name="index">Index of the filter to remove.</param>
 		protected override void RemoveItem(int index)
 		{
 			base.RemoveItem(index);
 			Picker.Handler.RemoveFilter(index);
 		}
 
+		/// <summary>
+		/// Sets a filter at a specified index to be the provided one.
+		/// </summary>
+		/// <param name="index">The index whose filter should be changed.</param>
+		/// <param name="item">The filter which should be set.</param>
 		protected override void SetItem(int index, FileFilter item)
 		{
 			Picker.Handler.RemoveFilter(index);
@@ -170,6 +182,9 @@ public class FilePicker : Control
 			Picker.Handler.InsertFilter(index, item);
 		}
 
+		/// <summary>
+		/// Clears all filters.
+		/// </summary>
 		protected override void ClearItems()
 		{
 			base.ClearItems();
@@ -194,7 +209,7 @@ public class FilePicker : Control
 	}
 
 	/// <summary>
-	/// Raises the <see cref="FilePathChanged"/> event
+	/// Raises the <see cref="FilePathChanged"/> event.
 	/// </summary>
 	/// <param name="e">Event arguments.</param>
 	protected virtual void OnFilePathChanged(EventArgs e)
@@ -205,24 +220,20 @@ public class FilePicker : Control
 	// Events
 
 	/// <summary>
-	/// Callback interface for <see cref="FilePicker"/>
+	/// Callback interface for <see cref="FilePicker"/>.
 	/// </summary>
 	public new interface ICallback : Control.ICallback
 	{
-		/// <summary>
-		/// Raises file path changed event.
-		/// </summary>
+		/// <inheritdoc cref="FilePicker.OnFilePathChanged"/>
 		void OnFilePathChanged(FilePicker widget, EventArgs e);
 	}
 
 	/// <summary>
-	/// Callback implementation for handlers of <see cref="FilePicker"/>
+	/// Callback implementation for handlers of <see cref="FilePicker"/>.
 	/// </summary>
 	protected new class Callback : Control.Callback, ICallback
 	{
-		/// <summary>
-		/// Raises file path changed event.
-		/// </summary>
+		/// <inheritdoc cref="FilePicker.OnFilePathChanged"/>
 		public void OnFilePathChanged(FilePicker widget, EventArgs e)
 		{
 			using (widget.Platform.Context)
