@@ -1,8 +1,23 @@
 ﻿namespace Eto.Forms;
 
 /// <summary>
-/// A control with a panel that can be expanded or collapsed with a header and button.
+/// A control that provides a way to expand or collapse a panel. It includes a header and button.
 /// </summary>
+/// <example>
+/// <code>
+/// var myClosedExpander = new Expander
+/// {
+///		Header = "This is closed by default",
+///		Content = "Content 1"
+/// }
+/// var myOpenExpander = new Expander
+/// {
+///		Header = "This is opened by default",
+///		Expanded = true,
+///		Content = "Content 2"
+/// }
+/// </code>
+/// </example>
 [Handler(typeof(IHandler))]
 public class Expander : Panel
 {
@@ -14,7 +29,7 @@ public class Expander : Panel
 	public const string ExpandedChangedEvent = "Expander.ExpandedChanged";
 
 	/// <summary>
-	/// Occurs when the <see cref="Expanded"/> property changes.
+	/// Event that occurs when the <see cref="Expanded"/> property changes.
 	/// </summary>
 	public event EventHandler<EventArgs> ExpandedChanged
 	{
@@ -25,21 +40,21 @@ public class Expander : Panel
 	/// <summary>
 	/// Raises the <see cref="ExpandedChanged"/> event.
 	/// </summary>
-	/// <param name="e">Event arguments</param>
+	/// <param name="e">Event arguments.</param>
 	protected virtual void OnExpandedChanged(EventArgs e)
 	{
 		Properties.TriggerEvent(ExpandedChangedEvent, this, e);
 	}
 
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Expander"/> class.
+	/// </summary>
 	static Expander()
 	{
 		EventLookup.Register<Expander>(c => c.OnExpandedChanged(null), Expander.ExpandedChangedEvent);
 	}
 
-	/// <summary>
-	/// Gets an enumeration of controls that are directly contained by this container
-	/// </summary>
-	/// <value>The contained controls.</value>
+	/// <inheritdoc/>
 	public override System.Collections.Generic.IEnumerable<Control> Controls
 	{
 		get
@@ -53,19 +68,16 @@ public class Expander : Panel
 
 	static Callback callback = new Callback();
 
-	/// <summary>
-	/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
-	/// </summary>
-	/// <returns>The callback.</returns>
+	/// <inheritdoc/>
 	protected override object GetCallback()
 	{
 		return callback;
 	}
 
 	/// <summary>
-	/// Gets or sets a value indicating whether the <see cref="Panel.Content"/> is expanded/visible.
+	/// Gets or sets a value indicating whether <see cref="Panel.Content"/> is currently expanded/visible.
 	/// </summary>
-	/// <value><c>true</c> if expanded; otherwise, <c>false</c>.</value>
+	/// <value><see langword="true"/> if expanded; otherwise, <see langword="false"/>.</value>
 	public bool Expanded
 	{
 		get { return Handler.Expanded; }
@@ -76,6 +88,7 @@ public class Expander : Panel
 	/// Gets or sets the header control.
 	/// </summary>
 	/// <value>The header control.</value>
+	/// <remarks>Note, that there will always be a small button appearing in the header.</remarks>
 	public Control Header
 	{
 		get { return Handler.Header; }
@@ -86,12 +99,12 @@ public class Expander : Panel
 	}
 
 	/// <summary>
-	/// Callback interface for the <see cref="Expander"/>
+	/// Callback interface for <see cref="Expander"/>.
 	/// </summary>
 	public new interface ICallback : Panel.ICallback
 	{
 		/// <summary>
-		/// Raises the expanded changed event.
+		/// Raises the <see cref="Expander.ExpandedChanged"/> event.
 		/// </summary>
 		/// <param name="widget">Widget to raise the event.</param>
 		/// <param name="e">Event arguments.</param>
@@ -99,15 +112,11 @@ public class Expander : Panel
 	}
 
 	/// <summary>
-	/// Callback implementation for the <see cref="Expander"/>
+	/// Callback implementation for handlers of <see cref="Expander"/>.
 	/// </summary>
 	protected new class Callback : Panel.Callback, ICallback
 	{
-		/// <summary>
-		/// Raises the expanded changed event.
-		/// </summary>
-		/// <param name="widget">Widget to raise the event.</param>
-		/// <param name="e">Event arguments.</param>
+		/// <inheritdoc cref="ICallback.OnExpandedChanged"/>
 		public void OnExpandedChanged(Expander widget, EventArgs e)
 		{
 			using (widget.Platform.Context)
@@ -116,20 +125,14 @@ public class Expander : Panel
 	}
 
 	/// <summary>
-	/// Handler interface for platform implementations of the <see cref="Expander"/>.
+	/// Handler interface for platform implementations of <see cref="Expander"/>.
 	/// </summary>
 	public new interface IHandler : Panel.IHandler
 	{
-		/// <summary>
-		/// Gets or sets a value indicating whether the <see cref="Panel.IHandler.Content"/> is expanded/visible.
-		/// </summary>
-		/// <value><c>true</c> if expanded; otherwise, <c>false</c>.</value>
+		/// <inheritdoc cref="Expander.Expanded"/>
 		bool Expanded { get; set; }
 
-		/// <summary>
-		/// Gets or sets the header control.
-		/// </summary>
-		/// <value>The header control.</value>
+		/// <inheritdoc cref="Expander.Header"/>
 		Control Header { get; set; }
 	}
 }
