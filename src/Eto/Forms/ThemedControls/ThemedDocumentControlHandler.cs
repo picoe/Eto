@@ -8,6 +8,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	List<DocumentPage> pages = new List<DocumentPage>();
 	ThemedDocumentPageHandler tabPrev, tabNext;
 
+	bool allowNavigationButtons;
 	PointF mousePos;
 	int selectedIndex;
 	float nextPrevWidth;
@@ -41,6 +42,21 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	{
 		get => Widget.Properties.Get<Padding?>(TabPadding_Key) ?? DefaultTabPadding;
 		set => Widget.Properties.Set(TabPadding_Key, value, DefaultTabPadding);
+	}
+
+	/// <summary>
+	/// Gets or sets a value indicating the tabs can be navigated by next and previous buttons.
+	/// </summary>
+	/// <value><c>true</c> if can be navigated by next and previous buttons; otherwise, <c>false</c>.</value>
+	public bool AllowNavigationButtons
+	{
+		get { return allowNavigationButtons; }
+		set
+		{
+			allowNavigationButtons = value;
+			Calculate();
+			tabDrawable.Invalidate();
+		}
 	}
 
 	/// <summary>
@@ -206,6 +222,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	{
 		mousePos = new PointF(-1, -1);
 		selectedIndex = -1;
+		allowNavigationButtons = true;
 		nextPrevWidth = 0;
 		startx = 0;
 		font = SystemFonts.Default();
@@ -541,7 +558,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		if (!force && !Widget.Loaded)
 			return;
 		var posx = 0f;
-		if (nextPrevWidth == 0f)
+		if (allowNavigationButtons && nextPrevWidth == 0f)
 		{
 			CalculateTab(tabPrev, -1, ref posx);
 			CalculateTab(tabNext, -1, ref posx);
@@ -578,8 +595,11 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		posx = 0;
 
-		DrawTab(g, tabPrev, -1);
-		DrawTab(g, tabNext, -1);
+		if (allowNavigationButtons)
+		{
+			DrawTab(g, tabPrev, -1);
+			DrawTab(g, tabNext, -1);
+		}
 	}
 
 	void CalculateTab(ThemedDocumentPageHandler tab, int i, ref float posx)

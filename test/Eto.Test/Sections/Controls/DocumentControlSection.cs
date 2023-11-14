@@ -1,4 +1,6 @@
-﻿namespace Eto.Test.Sections.Controls
+﻿using Eto.Forms.ThemedControls;
+
+namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(DocumentControl))]
 	public class DocumentControlSection : Panel
@@ -29,7 +31,14 @@
 					new StackLayout
 					{
 						Orientation = Orientation.Horizontal,
-						Items = { AddPage(), RemovePage(), SelectPage(), allowReorder, enabled, null }
+						Items = {
+							AddPage(),
+							RemovePage(),
+							SelectPage(),
+							tabControl.Handler is ThemedDocumentControlHandler ? HasNavigationButtonsCheckBox() : null,
+							allowReorder,
+							enabled,
+							null }
 					},
 					new StackLayoutItem(tabControl, expand: true)
 				}
@@ -74,6 +83,15 @@
 				if (tabControl.Pages.Count > 0)
 					tabControl.SelectedIndex = rnd.Next(tabControl.Pages.Count);
 			};
+			return control;
+		}
+
+		Control HasNavigationButtonsCheckBox()
+		{
+			var control = new CheckBox { Text = "Has navigation buttons" };
+			control.Checked = ((ThemedDocumentControlHandler)tabControl.Handler).AllowNavigationButtons;
+			control.CheckedChanged += (sender, args) => ((ThemedDocumentControlHandler)tabControl.Handler).AllowNavigationButtons =
+				((CheckBox)sender).Checked ?? false;
 			return control;
 		}
 
