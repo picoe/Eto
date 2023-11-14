@@ -19,6 +19,16 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Panel contentPanel;
 	Font font;
 
+	Color disabledForegroundColor;
+	Color closeBackgroundColor;
+	Color closeHighlightBackgroundColor;
+	Color closeForegroundColor;
+	Color closeHighlightForegroundColor;
+	Color tabBackgroundColor;
+	Color tabHighlightBackgroundColor;
+	Color tabForegroundColor;
+	Color tabHighlightForegroundColor;
+
 	static Padding DefaultTabPadding = 6;
 
 	static readonly object TabPadding_Key = new object();
@@ -48,6 +58,148 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
+	/// Gets or sets the disabled foreground color.
+	/// </summary>
+	/// <value>The disabled foreground color.</value>
+	public Color DisabledForegroundColor
+	{
+		get { return disabledForegroundColor; }
+		set
+		{
+			disabledForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the background color for the close button.
+	/// </summary>
+	/// <value>The background color for the close button.</value>
+	public Color CloseBackgroundColor
+	{
+		get { return closeBackgroundColor; }
+		set
+		{
+			closeBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the highlight background color for the close button.
+	/// </summary>
+	/// <value>The highlight background color for the close button.</value>
+	public Color CloseHighlightBackgroundColor
+	{
+		get { return closeHighlightBackgroundColor; }
+		set
+		{
+			closeHighlightBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the foreground color for the close button.
+	/// </summary>
+	/// <value>The foreground color for the close button.</value>
+	public Color CloseForegroundColor
+	{
+		get { return closeForegroundColor; }
+		set
+		{
+			closeForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the highlight foreground color for the close button.
+	/// </summary>
+	/// <value>The highlight foreground color for the close button.</value>
+	public Color CloseHighlightForegroundColor
+	{
+		get { return closeHighlightForegroundColor; }
+		set
+		{
+			closeHighlightForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the background color for the tab.
+	/// </summary>
+	/// <value>The background color for the tab.</value>
+	public Color TabBackgroundColor
+	{
+		get { return tabBackgroundColor; }
+		set
+		{
+			tabBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the highlight background color for the highlighted  tab.
+	/// </summary>
+	/// <value>The highlight background color for the close highlighted tab.</value>
+	public Color TabHighlightBackgroundColor
+	{
+		get { return tabHighlightBackgroundColor; }
+		set
+		{
+			tabHighlightBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the foreground color for the tab.
+	/// </summary>
+	/// <value>The foreground color for the tab.</value>
+	public Color TabForegroundColor
+	{
+		get { return tabForegroundColor; }
+		set
+		{
+			tabForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the highlight foreground color for the close button.
+	/// </summary>
+	/// <value>The highlight foreground color for the close button.</value>
+	public Color TabHighlightForegroundColor
+	{
+		get { return tabHighlightForegroundColor; }
+		set
+		{
+			tabHighlightForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+
+	/// <summary>
+	/// Gets or sets a value indicating whether to use a fixed tab height.
+	/// </summary>
+	/// <value><c>true</c> to use a fixed tab height.</value>
+	public bool UseFixedTabHeight
+	{
+		get { return useFixedTabHeight; }
+		set
+		{
+			useFixedTabHeight = value;
+			Calculate();
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
 	/// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedDocumentControlHandler"/> class.
 	/// </summary>
 	public ThemedDocumentControlHandler()
@@ -57,6 +209,15 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		nextPrevWidth = 0;
 		startx = 0;
 		font = SystemFonts.Default();
+		disabledForegroundColor = SystemColors.DisabledText;
+		closeBackgroundColor = SystemColors.Control;
+		closeHighlightBackgroundColor = SystemColors.Highlight;
+		closeForegroundColor = SystemColors.ControlText;
+		closeHighlightForegroundColor = SystemColors.HighlightText;
+		tabBackgroundColor = SystemColors.Control;
+		tabHighlightBackgroundColor = SystemColors.Highlight;
+		tabForegroundColor = SystemColors.ControlText;
+		tabHighlightForegroundColor = SystemColors.HighlightText;
 
 		tabDrawable = new Drawable();
 
@@ -466,19 +627,19 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		var closemargin =  closerect.Height / 3;
 		var size = tabRect.Size;
 
-		var textcolor = Enabled ? SystemColors.ControlText : SystemColors.DisabledText;
-		var backcolor = SystemColors.Control;
+		var textcolor = Enabled ? TabForegroundColor : DisabledForegroundColor;
+		var backcolor = TabBackgroundColor;
 		if (selectedIndex >= 0 && i == selectedIndex)
 		{
-			textcolor = Enabled ? SystemColors.HighlightText : SystemColors.DisabledText;
-			backcolor = SystemColors.Highlight;
+			textcolor = Enabled ? TabHighlightForegroundColor : DisabledForegroundColor;
+			backcolor = TabHighlightBackgroundColor;
 			backcolor.A *= 0.8f;
 		}
 
 		if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && !closeSelected && Enabled)
 		{
-			textcolor = SystemColors.HighlightText;
-			backcolor = SystemColors.Highlight;
+			textcolor = TabHighlightForegroundColor;
+			backcolor = TabHighlightBackgroundColor;
 		}
 
 		g.FillRectangle(backcolor, tabRect);
@@ -491,8 +652,8 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		if (tab.Closable)
 		{
-			g.FillRectangle(closeSelected ? SystemColors.Highlight : SystemColors.Control, closerect);
-			var closeForeground = Enabled ? closeSelected ? SystemColors.HighlightText : SystemColors.ControlText : SystemColors.DisabledText;
+			g.FillRectangle(closeSelected ? CloseHighlightBackgroundColor : CloseBackgroundColor, closerect);
+			var closeForeground = Enabled ? closeSelected ? CloseHighlightForegroundColor : CloseForegroundColor : DisabledForegroundColor;
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closerect.Height - 1 - closemargin);
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closerect.Height - 1 - closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closemargin);
 		}
