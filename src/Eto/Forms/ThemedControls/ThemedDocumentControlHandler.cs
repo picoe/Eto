@@ -15,6 +15,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	float startx;
 	Size maxImageSize;
 	PointF? draggingLocation;
+	bool useFixedTabHeight;
 
 	Drawable tabDrawable;
 	Panel contentPanel;
@@ -223,6 +224,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		mousePos = new PointF(-1, -1);
 		selectedIndex = -1;
 		allowNavigationButtons = true;
+		useFixedTabHeight = false;
 		nextPrevWidth = 0;
 		startx = 0;
 		font = SystemFonts.Default();
@@ -411,18 +413,29 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	{
 		if (!force && !Widget.Loaded)
 			return;
-		var scale = Widget.ParentWindow?.Screen?.Scale ?? 1f;
-		var fontHeight = (int)Math.Ceiling(Font.Ascent * scale);
+		var fontHeight = CalculateFontHeight();
 
-		var height = Math.Max(maxImageSize.Height, fontHeight);
+		var height = useFixedTabHeight ? fontHeight : Math.Max(maxImageSize.Height, fontHeight);
 		tabDrawable.Height = height + TabPadding.Vertical; // 2 px padding at top and bottom
+	}
+
+	private int CalculateFontHeight()
+	{
+		var scale = Widget.ParentWindow?.Screen?.Scale ?? 1f;
+		return (int)Math.Ceiling(Font.Ascent * scale);
 	}
 
 	void CalculateImageSizes(bool force = false)
 	{
 		if (!force && !Widget.Loaded)
 			return;
-		maxImageSize = Size.Empty;
+
+		var fontHeight = CalculateFontHeight();
+		maxImageSize = new Size(fontHeight, fontHeight);
+
+		if(UseFixedTabHeight)
+			return;
+
 		for (int i = 0; i < pages.Count; i++)
 		{
 			var img = pages[i].Image;
@@ -617,7 +630,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		var textoffset = 0;
 		if (tab.Image != null)
 		{
-			textoffset = tab.Image.Size.Width + tabPadding.Left;
+			textoffset = maxImageSize.Width + tabPadding.Left;
 			size.Width += textoffset;
 		}
 
@@ -631,7 +644,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		tab.Rect = tabRect;
 
-		tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabDrawable.Height / 4 - closesize, tabDrawable.Height / 4, closesize, closesize);
+		tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabPadding.Right - closesize, tabDrawable.Height / 4, closesize, closesize);
 		tab.TextRect = new RectangleF(tabRect.X + tabPadding.Left + textoffset, (tabDrawable.Height - size.Height) / 2, textSize.Width, textSize.Height);
 
 		posx += tab.Rect.Width;
@@ -671,8 +684,10 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		g.FillRectangle(backcolor, tabRect);
 		if (tab.Image != null)
 		{
-			var imageSize = tab.Image.Size;
-			g.DrawImage(tab.Image, tabRect.X + TabPadding.Left + (maxImageSize.Width - imageSize.Width) / 2, (tabDrawable.Height - imageSize.Height) / 2);
+			g.SaveTransform();
+			g.ImageInterpolation = ImageInterpolation.High;
+			g.DrawImage(tab.Image, tabRect.X + TabPadding.Left, (tabDrawable.Height - maxImageSize.Height) / 2, maxImageSize.Width, maxImageSize.Height);
+			g.RestoreTransform();
 		}
 		g.DrawText(Font, textcolor, textRect.Location, tab.Text);
 

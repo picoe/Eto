@@ -36,6 +36,7 @@ namespace Eto.Test.Sections.Controls
 							RemovePage(),
 							SelectPage(),
 							tabControl.Handler is ThemedDocumentControlHandler ? HasNavigationButtonsCheckBox() : null,
+							tabControl.Handler is ThemedDocumentControlHandler ? UseFixedTabHeightCheckBox() : null,
 							allowReorder,
 							enabled,
 							null }
@@ -91,6 +92,14 @@ namespace Eto.Test.Sections.Controls
 			var control = new CheckBox { Text = "Has navigation buttons" };
 			control.Checked = ((ThemedDocumentControlHandler)tabControl.Handler).AllowNavigationButtons;
 			control.CheckedChanged += (sender, args) => ((ThemedDocumentControlHandler)tabControl.Handler).AllowNavigationButtons =
+				((CheckBox)sender).Checked ?? false;
+			return control;
+		}
+
+		Control UseFixedTabHeightCheckBox()
+		{
+			var control = new CheckBox { Text = "Use fixed Tab height" };
+			control.CheckedChanged += (sender, args) => ((ThemedDocumentControlHandler)tabControl.Handler).UseFixedTabHeight =
 				((CheckBox)sender).Checked ?? false;
 			return control;
 		}
