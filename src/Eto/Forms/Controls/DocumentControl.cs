@@ -22,6 +22,27 @@ public class DocumentPageEventArgs : EventArgs
 }
 
 /// <summary>
+/// Arguments for the <see cref="DocumentControl"/> to get the current page.
+/// </summary>
+public class DocumentPageClosingEventArgs : CancelEventArgs
+{
+	/// <summary>
+	/// Gets the document page.
+	/// </summary>
+	/// <value>The document page.</value>
+	public DocumentPage Page { get; private set; }
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="T:Eto.Forms.DocumentPageClosingEventArgs"/> class.
+	/// </summary>
+	/// <param name="page">Page.</param>
+	public DocumentPageClosingEventArgs(DocumentPage page)
+	{
+		Page = page;
+	}
+}
+
+/// <summary>
 /// Arguments for the <see cref="DocumentControl"/> when reordering pages.
 /// </summary>
 public sealed class DocumentPageReorderEventArgs : DocumentPageEventArgs
@@ -70,6 +91,7 @@ public class DocumentControl : Container
 	public override IEnumerable<Control> Controls => pages ?? Enumerable.Empty<Control>();
 
 	static readonly object PageClosedEvent = new object();
+	static readonly object PageClosingEvent = new object();
 	static readonly object SelectedIndexChangedEvent = new object();
 
 	/// <summary>
@@ -84,6 +106,15 @@ public class DocumentControl : Container
 	{
 		add { Properties.AddEvent(PageClosedEvent, value); }
 		remove { Properties.RemoveEvent(PageClosedEvent, value); }
+	}
+
+	/// <summary>
+	/// Occurs when the <see cref="DocumentPage"/> is closing.
+	/// </summary>
+	public event EventHandler<DocumentPageClosingEventArgs> PageClosing
+	{
+		add { Properties.AddEvent(PageClosingEvent, value); }
+		remove { Properties.RemoveEvent(PageClosingEvent, value); }
 	}
 
 	/// <summary>
@@ -114,6 +145,15 @@ public class DocumentControl : Container
 		var page = e.Page;
 		if (page != null)
 			page.TriggerClose(e);
+	}
+
+	/// <summary>
+	/// Raises the <see cref="PageClosing"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments.</param>
+	protected virtual void OnPageClosing(DocumentPageClosingEventArgs e)
+	{
+		Properties.TriggerEvent(PageClosingEvent, this, e);
 	}
 
 	/// <summary>
@@ -351,6 +391,11 @@ public class DocumentControl : Container
 		void OnPageClosed(DocumentControl widget, DocumentPageEventArgs e);
 
 		/// <summary>
+		/// Raises the page closing event.
+		/// </summary>
+		void OnPageClosing(DocumentControl widget, DocumentPageClosingEventArgs e);
+
+		/// <summary>
 		/// Raises the selected index changed event.
 		/// </summary>
 		void OnSelectedIndexChanged(DocumentControl widget, EventArgs e);
@@ -373,6 +418,15 @@ public class DocumentControl : Container
 		{
 			using (widget.Platform.Context)
 				widget.OnPageClosed(e);
+		}
+
+		/// <summary>
+		/// Raises the page closing event.
+		/// </summary>
+		public void OnPageClosing(DocumentControl widget, DocumentPageClosingEventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnPageClosing(e);
 		}
 
 		/// <summary>

@@ -471,6 +471,12 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 					if (IsCloseSelected(tab))
 					{
 						var page = tab.Widget;
+						var args = new DocumentPageClosingEventArgs(page);
+						Callback.OnPageClosing(Widget, args);
+
+						if (args.Cancel)
+							break;
+
 						RemovePage(i);
 						Callback.OnPageClosed(Widget, new DocumentPageEventArgs(page));
 					}
