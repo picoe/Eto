@@ -71,57 +71,23 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 	
-	class EtoTableHeaderViewWithBackground : EtoTableHeaderView
+	class EtoBackgroundView : NSView
 	{
+		[Export("backgroundColor")]
 		public NSColor BackgroundColor { get; set; }
+		
+		public EtoBackgroundView()
+		{
+		}
+		
+		public EtoBackgroundView(NativeHandle handle) : base(handle)
+		{
+		}
 
 		public override void DrawRect(CGRect dirtyRect)
 		{
-			if (BackgroundColor == null)
-			{
-				base.DrawRect(dirtyRect);
-				return;
-			}
-			
-			// gotta draw header cells manually to get a custom background color without tinting...
-			var bounds = Bounds;
 			BackgroundColor.SetFill();
-			NSBezierPath.FillRect(bounds);
-
-			NSBezierPath path;
-			nfloat? position = null;
-			var dividerSize = ConvertSizeToBacking(new CGSize(1, 1));
-			var spacing = TableView.IntercellSpacing.Width;
-			var columns = TableView.TableColumns();
-			for (int i = 0; i < columns.Length; i++)
-			{
-				var cellFrame = GetHeaderRect(i);
-				var col = columns[i];
-				var cell = col.HeaderCell;
-				if (col.Hidden || cell == null)
-					continue;
-				cell.DrawWithFrame(cellFrame, this);
-				if (position == null)
-				{
-					// draw separator up to first column
-					NSColor.Separator.Set();
-					path = new NSBezierPath();
-					path.MoveTo(new CGPoint(bounds.X, bounds.Bottom));
-					path.LineTo(new CGPoint(cellFrame.X, bounds.Bottom));
-					path.LineWidth = dividerSize.Height;
-					path.Stroke();
-					path.Dispose();
-				}
-				position = cellFrame.Right;
-			}
-			// draw separator from last column
-			NSColor.Separator.Set();
-			path = new NSBezierPath();
-			path.MoveTo(new CGPoint(position ?? bounds.X, bounds.Bottom));
-			path.LineTo(new CGPoint(bounds.Right, bounds.Bottom));
-			path.LineWidth = dividerSize.Height;
-			path.Stroke();
-			path.Dispose();
+			NSBezierPath.FillRect(Bounds);
 		}
 	}
 
@@ -530,10 +496,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (value && Control.HeaderView == null)
 				{
-					if (HasBackgroundColor && !UseNSBoxBackgroundColor)
-						headerView = new EtoTableHeaderViewWithBackground { Handler = this, BackgroundColor = BackgroundColor.ToNSUI(), Menu = ContextMenu.ToNS() };
-					else
-						headerView = new EtoTableHeaderView { Handler = this, Menu = ContextMenu.ToNS() };
+					headerView = new EtoTableHeaderView { Handler = this, Menu = ContextMenu.ToNS() };
 					Control.HeaderView = headerView;
 				}
 				else if (!value && Control.HeaderView != null)
@@ -975,17 +938,27 @@ namespace Eto.Mac.Forms.Controls
 			Control.BackgroundColor = bg;
 			if (!UseNSBoxBackgroundColor)
 			{
-				var currentHeader = Control.HeaderView;
-				if (currentHeader is EtoTableHeaderViewWithBackground backgroundHeaderView)
+				var clip = ScrollView.Subviews.OfType<NSClipView>().FirstOrDefault(r => r.DocumentView == headerView);
+				var banner = clip?.Subviews.FirstOrDefault(r =>  r.Class.Name == "NSBannerView");
+				var effectView = banner?.Subviews.OfType<NSVisualEffectView>().FirstOrDefault();
+				if (effectView == null || banner == null)
+					return;
+
+				// inject a view above the effectView with our desired background color
+				var backgroundView = banner.Subviews.OfType<EtoBackgroundView>().FirstOrDefault();
+				if (backgroundView == null)
 				{
-					backgroundHeaderView.BackgroundColor = bg;
-					backgroundHeaderView.SetNeedsDisplay();
+					backgroundView = new EtoBackgroundView
+					{
+						Frame = banner.Bounds,
+						AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
+						TranslatesAutoresizingMaskIntoConstraints = true
+					};
+					banner.AddSubview(backgroundView, NSWindowOrderingMode.Above, effectView);
 				}
-				else if (currentHeader != null)
-				{
-					headerView = new EtoTableHeaderViewWithBackground { Handler = this, BackgroundColor = bg, Menu = ContextMenu.ToNS() };
-					Control.HeaderView = headerView;
-				}
+				
+				backgroundView.BackgroundColor = bg;
+				backgroundView.SetNeedsDisplay();
 			}
 		}
 
