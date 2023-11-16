@@ -34,6 +34,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	static Padding DefaultTabPadding = 6;
 
 	static readonly object TabPadding_Key = new object();
+	private int minImageSquareSide = 16;
 
 	/// <summary>
 	/// Gets or sets the padding inside each tab around the text.
@@ -413,10 +414,9 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	{
 		if (!force && !Widget.Loaded)
 			return;
-		var fontHeight = CalculateFontHeight();
 
-		var height = useFixedTabHeight ? fontHeight : Math.Max(maxImageSize.Height, fontHeight);
-		tabDrawable.Height = height + TabPadding.Vertical; // 2 px padding at top and bottom
+		var tabContentHeight = useFixedTabHeight ? minImageSquareSide : Math.Max(maxImageSize.Height, CalculateFontHeight());
+		tabDrawable.Height = tabContentHeight + TabPadding.Vertical; // 2 px padding at top and bottom
 	}
 
 	private int CalculateFontHeight()
@@ -430,10 +430,9 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		if (!force && !Widget.Loaded)
 			return;
 
-		var fontHeight = CalculateFontHeight();
-		maxImageSize = new Size(fontHeight, fontHeight);
+		maxImageSize = new Size(minImageSquareSide, minImageSquareSide);
 
-		if(UseFixedTabHeight)
+		if (UseFixedTabHeight)
 			return;
 
 		for (int i = 0; i < pages.Count; i++)
