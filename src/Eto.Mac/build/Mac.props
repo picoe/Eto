@@ -19,8 +19,6 @@
     <DebugType Condition="$(MacDebugEmbedded) == 'True'">embedded</DebugType>
   </PropertyGroup>
   
-  <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
-
   <PropertyGroup Condition="$(IsMac) == 'True'">
     <MacBuildDmgDependsOnTargets>MacCreateDmg;MacBeautifyDmg</MacBuildDmgDependsOnTargets>
     <MacCodeSignDependsOnTargets>MacCodeSignApp;MacCodeSignDmg</MacCodeSignDependsOnTargets>

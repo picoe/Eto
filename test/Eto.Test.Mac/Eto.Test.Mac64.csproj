@@ -2,7 +2,6 @@
   
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
   
-  <Import Project="..\..\build\MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'" />
   <Import Project="..\..\src\Eto.Mac\build\Mac.props" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
   
   <PropertyGroup>

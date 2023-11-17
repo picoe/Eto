@@ -66,7 +66,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <None Include="build\*" Exclude="build\Mac.*" Pack="True" PackagePath="build" />
     <None Include="build\Mac.targets" Pack="True" PackagePath="build\Eto.Platform.XamMac2.targets" />
     <None Include="build\Mac.props" Pack="True" PackagePath="build\Eto.Platform.XamMac2.props" />
-    <None Include="..\..\build\MSBuildTaskHelper.props" Pack="True" PackagePath="build" />
   </ItemGroup>
   
   <Import Project="..\..\build\Xamarin.Mac.targets" Condition="!$(TargetFramework.Contains('-macos'))" />
