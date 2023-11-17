@@ -8,20 +8,33 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	List<DocumentPage> pages = new List<DocumentPage>();
 	ThemedDocumentPageHandler tabPrev, tabNext;
 
+	bool allowNavigationButtons;
 	PointF mousePos;
 	int selectedIndex;
 	float nextPrevWidth;
 	float startx;
 	Size maxImageSize;
 	PointF? draggingLocation;
+	bool useFixedTabHeight;
 
 	Drawable tabDrawable;
 	Panel contentPanel;
 	Font font;
 
+	Color disabledForegroundColor;
+	Color closeBackgroundColor;
+	Color closeHighlightBackgroundColor;
+	Color closeForegroundColor;
+	Color closeHighlightForegroundColor;
+	Color tabBackgroundColor;
+	Color tabHighlightBackgroundColor;
+	Color tabForegroundColor;
+	Color tabHighlightForegroundColor;
+
 	static Padding DefaultTabPadding = 6;
 
 	static readonly object TabPadding_Key = new object();
+	private int minImageSquareSide = 16;
 
 	/// <summary>
 	/// Gets or sets the padding inside each tab around the text.
@@ -31,6 +44,21 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	{
 		get => Widget.Properties.Get<Padding?>(TabPadding_Key) ?? DefaultTabPadding;
 		set => Widget.Properties.Set(TabPadding_Key, value, DefaultTabPadding);
+	}
+
+	/// <summary>
+	/// Gets or sets a value indicating the tabs can be navigated by next and previous buttons.
+	/// </summary>
+	/// <value><c>true</c> if can be navigated by next and previous buttons; otherwise, <c>false</c>.</value>
+	public bool AllowNavigationButtons
+	{
+		get { return allowNavigationButtons; }
+		set
+		{
+			allowNavigationButtons = value;
+			Calculate();
+			tabDrawable.Invalidate();
+		}
 	}
 
 	/// <summary>
@@ -48,15 +76,168 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
+	/// Gets or sets the disabled foreground color.
+	/// </summary>
+	/// <value>The disabled foreground color.</value>
+	public Color DisabledForegroundColor
+	{
+		get { return disabledForegroundColor; }
+		set
+		{
+			disabledForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the background color for the close button.
+	/// </summary>
+	/// <value>The background color for the close button.</value>
+	public Color CloseBackgroundColor
+	{
+		get { return closeBackgroundColor; }
+		set
+		{
+			closeBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the highlight background color for the close button.
+	/// </summary>
+	/// <value>The highlight background color for the close button.</value>
+	public Color CloseHighlightBackgroundColor
+	{
+		get { return closeHighlightBackgroundColor; }
+		set
+		{
+			closeHighlightBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the foreground color for the close button.
+	/// </summary>
+	/// <value>The foreground color for the close button.</value>
+	public Color CloseForegroundColor
+	{
+		get { return closeForegroundColor; }
+		set
+		{
+			closeForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the highlight foreground color for the close button.
+	/// </summary>
+	/// <value>The highlight foreground color for the close button.</value>
+	public Color CloseHighlightForegroundColor
+	{
+		get { return closeHighlightForegroundColor; }
+		set
+		{
+			closeHighlightForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the background color for the tab.
+	/// </summary>
+	/// <value>The background color for the tab.</value>
+	public Color TabBackgroundColor
+	{
+		get { return tabBackgroundColor; }
+		set
+		{
+			tabBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the highlight background color for the highlighted  tab.
+	/// </summary>
+	/// <value>The highlight background color for the close highlighted tab.</value>
+	public Color TabHighlightBackgroundColor
+	{
+		get { return tabHighlightBackgroundColor; }
+		set
+		{
+			tabHighlightBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the foreground color for the tab.
+	/// </summary>
+	/// <value>The foreground color for the tab.</value>
+	public Color TabForegroundColor
+	{
+		get { return tabForegroundColor; }
+		set
+		{
+			tabForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the highlight foreground color for the close button.
+	/// </summary>
+	/// <value>The highlight foreground color for the close button.</value>
+	public Color TabHighlightForegroundColor
+	{
+		get { return tabHighlightForegroundColor; }
+		set
+		{
+			tabHighlightForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+
+	/// <summary>
+	/// Gets or sets a value indicating whether to use a fixed tab height.
+	/// </summary>
+	/// <value><c>true</c> to use a fixed tab height.</value>
+	public bool UseFixedTabHeight
+	{
+		get { return useFixedTabHeight; }
+		set
+		{
+			useFixedTabHeight = value;
+			Calculate();
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
 	/// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedDocumentControlHandler"/> class.
 	/// </summary>
 	public ThemedDocumentControlHandler()
 	{
 		mousePos = new PointF(-1, -1);
 		selectedIndex = -1;
+		allowNavigationButtons = true;
+		useFixedTabHeight = false;
 		nextPrevWidth = 0;
 		startx = 0;
 		font = SystemFonts.Default();
+		disabledForegroundColor = SystemColors.DisabledText;
+		closeBackgroundColor = SystemColors.Control;
+		closeHighlightBackgroundColor = SystemColors.Highlight;
+		closeForegroundColor = SystemColors.ControlText;
+		closeHighlightForegroundColor = SystemColors.HighlightText;
+		tabBackgroundColor = SystemColors.Control;
+		tabHighlightBackgroundColor = SystemColors.Highlight;
+		tabForegroundColor = SystemColors.ControlText;
+		tabHighlightForegroundColor = SystemColors.HighlightText;
 
 		tabDrawable = new Drawable();
 
@@ -233,18 +414,27 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	{
 		if (!force && !Widget.Loaded)
 			return;
-		var scale = Widget.ParentWindow?.Screen?.Scale ?? 1f;
-		var fontHeight = (int)Math.Ceiling(Font.Ascent * scale);
 
-		var height = Math.Max(maxImageSize.Height, fontHeight);
-		tabDrawable.Height = height + TabPadding.Vertical; // 2 px padding at top and bottom
+		var tabContentHeight = useFixedTabHeight ? minImageSquareSide : Math.Max(maxImageSize.Height, CalculateFontHeight());
+		tabDrawable.Height = tabContentHeight + TabPadding.Vertical; // 2 px padding at top and bottom
+	}
+
+	private int CalculateFontHeight()
+	{
+		var scale = Widget.ParentWindow?.Screen?.Scale ?? 1f;
+		return (int)Math.Ceiling(Font.Ascent * scale);
 	}
 
 	void CalculateImageSizes(bool force = false)
 	{
 		if (!force && !Widget.Loaded)
 			return;
-		maxImageSize = Size.Empty;
+
+		maxImageSize = new Size(minImageSquareSide, minImageSquareSide);
+
+		if (UseFixedTabHeight)
+			return;
+
 		for (int i = 0; i < pages.Count; i++)
 		{
 			var img = pages[i].Image;
@@ -293,6 +483,12 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 					if (IsCloseSelected(tab))
 					{
 						var page = tab.Widget;
+						var args = new DocumentPageClosingEventArgs(page);
+						Callback.OnPageClosing(Widget, args);
+
+						if (args.Cancel)
+							break;
+
 						RemovePage(i);
 						Callback.OnPageClosed(Widget, new DocumentPageEventArgs(page));
 					}
@@ -380,7 +576,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		if (!force && !Widget.Loaded)
 			return;
 		var posx = 0f;
-		if (nextPrevWidth == 0f)
+		if (allowNavigationButtons && nextPrevWidth == 0f)
 		{
 			CalculateTab(tabPrev, -1, ref posx);
 			CalculateTab(tabNext, -1, ref posx);
@@ -417,8 +613,11 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		posx = 0;
 
-		DrawTab(g, tabPrev, -1);
-		DrawTab(g, tabNext, -1);
+		if (allowNavigationButtons)
+		{
+			DrawTab(g, tabPrev, -1);
+			DrawTab(g, tabNext, -1);
+		}
 	}
 
 	void CalculateTab(ThemedDocumentPageHandler tab, int i, ref float posx)
@@ -430,7 +629,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		var textoffset = 0;
 		if (tab.Image != null)
 		{
-			textoffset = tab.Image.Size.Width + tabPadding.Left;
+			textoffset = maxImageSize.Width + tabPadding.Left;
 			size.Width += textoffset;
 		}
 
@@ -444,7 +643,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		tab.Rect = tabRect;
 
-		tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabDrawable.Height / 4 - closesize, tabDrawable.Height / 4, closesize, closesize);
+		tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabPadding.Right - closesize, tabDrawable.Height / 4, closesize, closesize);
 		tab.TextRect = new RectangleF(tabRect.X + tabPadding.Left + textoffset, (tabDrawable.Height - size.Height) / 2, textSize.Width, textSize.Height);
 
 		posx += tab.Rect.Width;
@@ -466,33 +665,35 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		var closemargin =  closerect.Height / 3;
 		var size = tabRect.Size;
 
-		var textcolor = Enabled ? SystemColors.ControlText : SystemColors.DisabledText;
-		var backcolor = SystemColors.Control;
+		var textcolor = Enabled ? TabForegroundColor : DisabledForegroundColor;
+		var backcolor = TabBackgroundColor;
 		if (selectedIndex >= 0 && i == selectedIndex)
 		{
-			textcolor = Enabled ? SystemColors.HighlightText : SystemColors.DisabledText;
-			backcolor = SystemColors.Highlight;
+			textcolor = Enabled ? TabHighlightForegroundColor : DisabledForegroundColor;
+			backcolor = TabHighlightBackgroundColor;
 			backcolor.A *= 0.8f;
 		}
 
 		if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && !closeSelected && Enabled)
 		{
-			textcolor = SystemColors.HighlightText;
-			backcolor = SystemColors.Highlight;
+			textcolor = TabHighlightForegroundColor;
+			backcolor = TabHighlightBackgroundColor;
 		}
 
 		g.FillRectangle(backcolor, tabRect);
 		if (tab.Image != null)
 		{
-			var imageSize = tab.Image.Size;
-			g.DrawImage(tab.Image, tabRect.X + TabPadding.Left + (maxImageSize.Width - imageSize.Width) / 2, (tabDrawable.Height - imageSize.Height) / 2);
+			g.SaveTransform();
+			g.ImageInterpolation = ImageInterpolation.High;
+			g.DrawImage(tab.Image, tabRect.X + TabPadding.Left, (tabDrawable.Height - maxImageSize.Height) / 2, maxImageSize.Width, maxImageSize.Height);
+			g.RestoreTransform();
 		}
 		g.DrawText(Font, textcolor, textRect.Location, tab.Text);
 
 		if (tab.Closable)
 		{
-			g.FillRectangle(closeSelected ? SystemColors.Highlight : SystemColors.Control, closerect);
-			var closeForeground = Enabled ? closeSelected ? SystemColors.HighlightText : SystemColors.ControlText : SystemColors.DisabledText;
+			g.FillRectangle(closeSelected ? CloseHighlightBackgroundColor : CloseBackgroundColor, closerect);
+			var closeForeground = Enabled ? closeSelected ? CloseHighlightForegroundColor : CloseForegroundColor : DisabledForegroundColor;
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closerect.Height - 1 - closemargin);
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closerect.Height - 1 - closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closemargin);
 		}

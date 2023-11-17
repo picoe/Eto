@@ -148,6 +148,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		internal void ClosePage(Gtk.Widget control, DocumentPage page)
 		{
+			var args = new DocumentPageClosingEventArgs(page);
+			Callback.OnPageClosing(Widget, args);
+
+			if (args.Cancel)
+				return;
+
 			Control.RemovePage(Control.PageNum(control));
 			SetShowTabs();
 
