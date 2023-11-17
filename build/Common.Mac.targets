@@ -3,7 +3,6 @@
 
   <!-- Include this file if you want to reference Eto.Mac64.csproj directly vs. using the nuget package -->
 
-  <Import Project="$(MSBuildThisFileDirectory)MSBuildTaskHelper.props" Condition="'$(MSBuildTaskHelpersImported)'!='true'"/>
   <Import Project="$(MSBuildThisFileDirectory)..\src\Eto.Mac\build\Mac.props" />
   <Import Project="$(MSBuildThisFileDirectory)..\src\Eto.Mac\build\Mac.targets" />
 
