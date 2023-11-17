@@ -32,7 +32,17 @@ namespace Eto.Mac.Forms
 		public string Directory
 		{
 			get => Control.Url?.Path ?? Control.DirectoryUrl.Path;
-			set => Control.DirectoryUrl = NSUrl.FromFilename(value);
+			set
+			{
+				try
+				{
+					Control.DirectoryUrl = new NSUrl(value, true);
+				}
+				catch
+				{
+					// ignore errors, can crash depending on the value when [NSUrl initFileURLWithPath:isDirectory:] returns nil
+				}
+			}
 		}
 
 	}
