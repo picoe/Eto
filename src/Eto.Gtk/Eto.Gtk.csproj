@@ -23,7 +23,7 @@ When building for the full framework, .NET Framework 4.6.1 or mono framework 5.1
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GtkSharp" Version="3.24.24.38" />
+    <PackageReference Include="GtkSharp" Version="3.24.24.95" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
