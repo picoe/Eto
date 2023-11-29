@@ -304,7 +304,11 @@ namespace Eto.Wpf.Forms.Controls
 					var args = new TextChangingEventArgs(oldText, newText, false);
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
+					{
+						TextBox.EndChange();
 						return;
+					}
+
 					var needsTextChanged = TextBox.Text == newText;
 
 					// Improve performance when setting text often
