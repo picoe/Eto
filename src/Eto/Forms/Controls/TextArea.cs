@@ -279,6 +279,24 @@ public class TextArea : TextControl
 	{
 		get { return Handler.SupportedTextReplacements; }
 	}
+	
+	/// <summary>
+	/// Gets or sets the border type
+	/// </summary>
+	/// <value>The border.</value>
+	public BorderType Border
+	{
+		get => Handler.Border;
+		set => Handler.Border = value;
+	}
+
+	/// <summary>
+	/// Gets the current length of the text
+	/// </summary>
+	/// <remarks>
+	/// When there is lots of text, this can be more performant than using Text.Length.
+	/// </remarks>
+	public int TextLength => Handler.TextLength;
 
 	/// <summary>
 	/// Append the specified text to the control and optionally scrolls to make the inserted text visible.
@@ -292,6 +310,25 @@ public class TextArea : TextControl
 	{
 		Handler.Append(text, scrollToCursor);
 	}
+	
+	/// <summary>
+	/// Scrolls the specified range into view.
+	/// </summary>
+	/// <remarks>
+	/// On some platforms, this may just scroll to the end of the range.
+	/// </remarks>
+	public void ScrollTo(Range<int> range) => Handler.ScrollTo(range);
+
+	/// <summary>
+	/// Scrolls to the start of the text in the text area.
+	/// </summary>
+	public void ScrollToStart() => Handler.ScrollToStart();
+
+	/// <summary>
+	/// Scrolls to the end of the text in the text area.
+	/// </summary>
+	public void ScrollToEnd() => Handler.ScrollToEnd();
+
 
 	static readonly object callback = new Callback();
 
@@ -403,6 +440,24 @@ public class TextArea : TextControl
 		/// When setting the selection, the control will be focussed and the associated keyboard may appear on mobile platforms.
 		/// </remarks>
 		void SelectAll();
+		
+		/// <summary>
+		/// Scrolls the specified range into view.
+		/// </summary>
+		/// <remarks>
+		/// On some platforms, this may just scroll to the end of the range.
+		/// </remarks>
+		void ScrollTo(Range<int> range);
+		
+		/// <summary>
+		/// Scrolls to the start of the text in the text area.
+		/// </summary>
+		void ScrollToStart();
+		
+		/// <summary>
+		/// Scrolls to the end of the text in the text area.
+		/// </summary>
+		void ScrollToEnd();
 
 		/// <summary>
 		/// Gets or sets the index of the insertion caret.
@@ -469,5 +524,16 @@ public class TextArea : TextControl
 		/// </summary>
 		/// <value><c>true</c> if spell check is supported; otherwise, <c>false</c>.</value>
 		bool SpellCheckIsSupported { get; }
+		
+		/// <summary>
+		/// Gets or sets the border type
+		/// </summary>
+		/// <value>The border.</value>
+		BorderType Border { get; set; }
+		
+		/// <summary>
+		/// Gets the current length of the text
+		/// </summary>
+		int TextLength { get; }
 	}
 }
