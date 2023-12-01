@@ -212,6 +212,7 @@ namespace Eto.Test.Sections.Controls
 					TextAreaSection.TextAreaOptions(richText),
 					TextAreaSection.TextAreaOptions2(richText),
 					TextAreaSection.TextAreaOptions3(richText),
+					TextAreaSection.TextAreaOptions4(richText),
 					formatting1,
 					formatting2,
 					formatting3,

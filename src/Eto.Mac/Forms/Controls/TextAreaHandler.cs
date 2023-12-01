@@ -1,10 +1,12 @@
 using Eto.Mac.Drawing;
+using Range = Eto.Forms.Range;
 
 namespace Eto.Mac.Forms.Controls
 {
 	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
-	}
+		internal static readonly IntPtr selString = Selector.GetHandle("string");
+		internal static readonly IntPtr selLength = Selector.GetHandle("length");	}
 
 	public interface ITextAreaHandler
 	{
@@ -258,9 +260,9 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 		}
-		
+
 		static readonly object DisabledBackgroundColor_Key = new object();
-		
+
 		public virtual Color DisabledBackgroundColor
 		{
 			get => Widget.Properties.Get<Color?>(DisabledBackgroundColor_Key) ?? NSColor.WindowBackground.ToEto();
@@ -380,11 +382,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Append(string text, bool scrollToCursor)
 		{
-			// get NSString object so we don't have to marshal the entire string to get its length
-			var stringValuePtr = Messaging.IntPtr_objc_msgSend(Control.Handle, selGetString);
-			var str = Runtime.GetNSObject<NSString>(stringValuePtr);
-
-			var range = new NSRange(str != null ? str.Length : 0, 0);
+			var range = new NSRange(TextLength, 0);
 			Control.Replace(range, text);
 			range.Location += text.Length;
 			Control.SetSelectedRange(range);
@@ -453,5 +451,19 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return TextReplacements.Quote | TextReplacements.Text | TextReplacements.Dash | TextReplacements.Spelling; }
 		}
+
+		public BorderType Border
+		{
+			get => Scroll.BorderType.ToEto();
+			set => Scroll.BorderType = value.ToNS();
+		}
+
+		public int TextLength => (int)Control.TextStorage.Length;
+		
+		public void ScrollTo(Range<int> range) => Control.ScrollRangeToVisible(range.ToNS());
+
+		public void ScrollToStart() => ScrollTo(new Range<int>(0));
+
+		public void ScrollToEnd() => ScrollTo(Range.FromLength(TextLength, 0));
 	}
 }

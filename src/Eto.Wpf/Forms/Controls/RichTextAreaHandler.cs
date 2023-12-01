@@ -984,6 +984,17 @@ namespace Eto.Wpf.Forms.Controls
 				ContentRange.ApplyPropertyValue(swd.Block.TextAlignmentProperty, value.ToWpfTextAlignment());
 			}
 		}
+
+		public override void ScrollTo(Range<int> range)
+		{
+			var textRange = GetRange(range);
+			var rect = textRange.End.GetCharacterRect(swd.LogicalDirection.Backward);
+			Control.ScrollToVerticalOffset(rect.Top);
+			Control.ScrollToHorizontalOffset(rect.Left);
+		}
+
+		public override int TextLength => ContentRange.GetLength();
+
 	}
 
 	static class FlowDocumentExtensions

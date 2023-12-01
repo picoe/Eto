@@ -135,6 +135,15 @@ namespace Eto
 			NOACTIVATE = 0x08000000
 		}
 
+		public enum SB
+		{
+			THUMBTRACK = 5,
+			TOP = 6,
+			LEFT = 6,
+			BOTTOM = 7,
+			RIGHT = 7
+		}
+
 		public enum WM
 		{
 			SETREDRAW = 0xB,
@@ -180,9 +189,14 @@ namespace Eto
 			NCCREATE = 0x0081,
 			NCLBUTTONDOWN = 0x00A1,
 			PRINT = 0x0317,
-			SHOWWINDOW = 0x00000018
+			SHOWWINDOW = 0x00000018,
+			HSCROLL = 0x114,
+			VSCROLL = 0x115,
+			USER = 0x400,
+			EM_GETSCROLLPOS = USER + 221,
+			EM_SETSCROLLPOS = USER + 222,
 		}
-		
+
 		public enum VK : long
 		{
 			SHIFT = 0x10,
@@ -332,6 +346,9 @@ namespace Eto
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
 
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, ref sd.Point lParam);
+
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		public static extern bool PeekMessage(ref swf.Message wMsg, IntPtr hwnd, int msgMin, int msgMax, int remove);
@@ -411,7 +428,7 @@ namespace Eto
 		}
 
 		// for tray indicator
-		
+
 		public enum WH
 		{
 			KEYBOARD = 2,
@@ -419,9 +436,9 @@ namespace Eto
 			MOUSE_LL = 14
 		}
 
-		
-        public static IntPtr SetHook(WH hookId, HookProc proc)
-        {
+
+		public static IntPtr SetHook(WH hookId, HookProc proc)
+		{
 			using (Process curProcess = Process.GetCurrentProcess())
 			using (ProcessModule curModule = curProcess.MainModule)
 			{
@@ -439,7 +456,7 @@ namespace Eto
 		public static extern IntPtr SetWindowsHookEx(IntPtr hookId, HookProc function, IntPtr instance, int threadId);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool UnhookWindowsHookEx(IntPtr hookId);
 
 		[DllImportAttribute("user32.dll")]
@@ -542,19 +559,19 @@ namespace Eto
 		public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 		[DllImport("user32.dll")]
 		public static extern bool EnableMenuItem(IntPtr hMenu, SC uIDEnableItem, MF uEnable);
-		
+
 		[Flags]
 		public enum MF : uint
 		{
 			BYCOMMAND = 0x00000000,
 			GRAYED = 0x00000001
 		}
-		
+
 		public enum SC : uint
 		{
 			CLOSE = 0xF060
 		}
-		
+
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
 		public static extern IntPtr GlobalLock(IntPtr handle);
 
@@ -563,5 +580,45 @@ namespace Eto
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
 		public static extern int GlobalSize(IntPtr handle);
+
+
+		public enum SBB
+		{
+			HORZ = 0,
+			VERT = 1
+		}
+
+		public enum ScrollInfoMask : uint
+		{
+			SIF_RANGE = 0x1,
+			SIF_PAGE = 0x2,
+			SIF_POS = 0x4,
+			SIF_DISABLENOSCROLL = 0x8,
+			SIF_TRACKPOS = 0x10,
+			SIF_ALL = (SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS),
+		}
+		public enum SBOrientation : int
+		{
+			SB_HORZ = 0x0,
+			SB_VERT = 0x1,
+			SB_CTL = 0x2,
+			SB_BOTH = 0x3
+		}
+		
+		[Serializable, StructLayout(LayoutKind.Sequential)]
+		public struct SCROLLINFO
+		{
+			public int cbSize; // (uint) int is because of Marshal.SizeOf
+			public uint fMask;
+			public int nMin;
+			public int nMax;
+			public int nPage;
+			public int nPos;
+			public int nTrackPos;
+		}
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
 	}
 }

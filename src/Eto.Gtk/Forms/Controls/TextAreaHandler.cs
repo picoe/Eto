@@ -15,6 +15,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		int suppressSelectionAndTextChanged;
 		readonly Gtk.ScrolledWindow scroll;
 		Gtk.TextTag tag;
+		BorderType border = BorderType.Bezel;
 
 		public override Gtk.Widget ContainerControl
 		{
@@ -332,13 +333,58 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public TextReplacements TextReplacements
 		{
-			get { return TextReplacements.None; }
+			get => TextReplacements.None;
 			set { }
 		}
 
-		public TextReplacements SupportedTextReplacements
+		public TextReplacements SupportedTextReplacements => TextReplacements.None;
+		
+		public virtual BorderType Border
 		{
-			get { return TextReplacements.None; }
+			get => border;
+			set
+			{
+				border = value;
+				switch (border)
+				{
+					case BorderType.Bezel:
+						scroll.ShadowType = Gtk.ShadowType.In;
+						break;
+					case BorderType.Line:
+						scroll.ShadowType = Gtk.ShadowType.In;
+						break;
+					case BorderType.None:
+						scroll.ShadowType = Gtk.ShadowType.None;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+			}
 		}
+		
+		public virtual int TextLength => Control.Buffer.CharCount;
+
+		public virtual void ScrollTo(Range<int> range)
+		{
+			var iter = Control.Buffer.GetIterAtOffset(range.Start + range.Length());
+			var mark = Control.Buffer.CreateMark(null, iter, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
+		public virtual void ScrollToEnd()
+		{
+			var end = Control.Buffer.EndIter;
+			var mark = Control.Buffer.CreateMark(null, end, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
+		public virtual void ScrollToStart()
+		{
+			var end = Control.Buffer.StartIter;
+			var mark = Control.Buffer.CreateMark(null, end, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
+		
 	}
 }
