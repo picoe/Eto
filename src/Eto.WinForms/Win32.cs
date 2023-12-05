@@ -620,5 +620,17 @@ namespace Eto
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr CreateWindowEx(uint dwExStyle, string lpClassName, string lpWindowName, uint dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
+
+		[DllImport("user32.dll")]
+		public static extern bool DestroyWindow(IntPtr hWnd);
+		
+		[DllImport("User32.dll", SetLastError = true)]
+    	public static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
 	}
 }
