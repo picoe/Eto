@@ -9,6 +9,7 @@ namespace Eto.Test.Wpf
 		static void Main(string[] args)
 		{
 			var platform = new Eto.Wpf.Platform();
+			platform.Add<INativeHostControls>(() => new NativeHostControls());
 
 			// optional - enables GDI text display mode
 			/**

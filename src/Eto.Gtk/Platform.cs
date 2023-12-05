@@ -220,6 +220,7 @@ namespace Eto.GtkSharp
 			p.Add<DataObject.IHandler>(() => new DataObjectHandler());
 			p.Add<DataFormats.IHandler>(() => new DataFormatsHandler());
 			p.Add<Window.IWindowHandler>(() => new WindowHandler());
+			p.Add<NativeControlHost.IHandler>(() => new NativeControlHandler());
 			if (EtoEnvironment.Platform.IsLinux)
 			{
 				p.Add<TrayIndicator.IHandler>(() => new LinuxTrayIndicatorHandler());

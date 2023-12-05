@@ -208,6 +208,7 @@ namespace Eto.Mac
 			p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
 			p.Add<PropertyGrid.IHandler>(() => new ThemedPropertyGridHandler());
 			p.Add<CollectionEditor.IHandler>(() => new ThemedCollectionEditorHandler());
+			p.Add<NativeControlHost.IHandler>(() => new NativeControlHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

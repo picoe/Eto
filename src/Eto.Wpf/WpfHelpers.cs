@@ -54,7 +54,7 @@ namespace Eto.Forms
 		{
 			if (nativeControl == null)
 				return null;
-			return new Control(new NativeControlHandler(nativeControl));
+			return new NativeControlHost(nativeControl);
 		}
 
 		/// <summary>
