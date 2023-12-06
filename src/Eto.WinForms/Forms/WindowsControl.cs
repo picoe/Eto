@@ -184,9 +184,9 @@ namespace Eto.WinForms.Forms
 
 		Control.ICallback IWindowsControl.Callback { get { return Callback; } }
 
-		public bool XScale { get; set; }
+		public bool XScale { get; set; } = true;
 
-		public bool YScale { get; set; }
+		public bool YScale { get; set; } = true;
 
 		public virtual Size? GetDefaultSize(Size availableSize) { return null; }// Control.GetPreferredSize(availableSize.ToSD()).ToEto(); }
 
@@ -276,8 +276,6 @@ namespace Eto.WinForms.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			XScale = true;
-			YScale = true;
 			Control.Margin = swf.Padding.Empty;
 			Control.Tag = this;
 		}

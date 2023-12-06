@@ -16,27 +16,46 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 		}
 
-		public void Create(object controlObject)
+		protected override void Initialize()
 		{
-			if (controlObject == null)
+			// don't call any initialize routines as we are hosting a native control
+			// base.Initialize();
+		}
+
+		protected override Gtk.Widget CreateControl()
+		{
+			if (Widget is NativeControlHost host && Callback is NativeControlHost.ICallback callback)
 			{
-				Control = _eventBox;
+				var args = new CreateNativeControlArgs();
+				callback.OnCreateNativeControl(host, args);
+				return CreateHost(args.NativeControl);
 			}
-			else if (controlObject is Gtk.Widget widget)
+			return base.CreateControl();
+		}
+
+		public void Create(object nativeControl) => CreateHost(nativeControl);
+
+		Gtk.Widget CreateHost(object nativeControl)
+		{
+			if (nativeControl == null)
 			{
-				Control = widget;
+				return _eventBox;
+			}
+			else if (nativeControl is Gtk.Widget widget)
+			{
 				_eventBox.Child = widget;
+				return _eventBox;
 			}
-			else if (controlObject is IntPtr handle)
+			else if (nativeControl is IntPtr handle)
 			{
 				widget = GLib.Object.GetObject(handle) as Gtk.Widget;
 				if (widget == null)
 					throw new InvalidOperationException("Could not convert handle to Gtk.Widget");
-				Control = widget;
 				_eventBox.Child = widget;
+				return _eventBox;
 			}
 			else
-				throw new NotSupportedException($"controlObject of type {controlObject.GetType()} is not supported by this platform");
+				throw new NotSupportedException($"Native control of type {nativeControl.GetType()} is not supported by this platform");
 		}
 	}
 }

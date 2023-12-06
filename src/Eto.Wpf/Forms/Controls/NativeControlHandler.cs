@@ -25,44 +25,66 @@ public class NativeControlHandler : WpfFrameworkElement<sw.FrameworkElement, Con
 		Control = nativeControl;
 	}
 
+	protected override void Initialize()
+	{
+		// don't call any initialize routines as we are hosting a native control
+		// base.Initialize();
+	}
+
+	protected override sw.FrameworkElement CreateControl()
+	{
+		if (Widget is NativeControlHost host && Callback is NativeControlHost.ICallback callback)
+		{
+			var args = new CreateNativeControlArgs();
+			callback.OnCreateNativeControl(host, args);
+			return CreateHost(args.NativeControl);
+		}
+		return base.CreateControl();
+	}
+
 	public override Color BackgroundColor
 	{
 		get => throw new NotSupportedException("You cannot get this property for native controls");
 		set => throw new NotSupportedException("You cannot set this property for native controls");
 	}
 
-	public void Create(object controlObject)
+	public void Create(object nativeControl)
 	{
-		if (controlObject == null)
+		Control = CreateHost(nativeControl);
+	}
+	
+	public sw.FrameworkElement CreateHost(object nativeControl)
+	{
+		if (nativeControl == null)
 		{
 			var host = new EtoHwndHost(null);
 			host.GetPreferredSize += () => Size.Round(UserPreferredSize.ToEto() * (Widget.ParentWindow?.Screen?.LogicalPixelSize ?? 1));
-			Control = host;
+			return host;
 		}
-		else if (controlObject is sw.FrameworkElement element)
+		else if (nativeControl is sw.FrameworkElement element)
 		{
-			Control = element;
+			return element;
 		}
-		else if (controlObject is IntPtr handle)
+		else if (nativeControl is IntPtr handle)
 		{
-			Control = new EtoHwndHost(new HandleRef(this, handle));
+			return new EtoHwndHost(new HandleRef(this, handle));
 		}
-		else if (controlObject is IWin32WindowWinForms win32Window)
+		else if (nativeControl is IWin32WindowWinForms win32Window)
 		{
 			// keep a reference to the win32window object
 			var host = new EtoHwndHost(new HandleRef(win32Window, win32Window.Handle));
 			host.GetPreferredSize += () => Size.Round(UserPreferredSize.ToEto() * (Widget.ParentWindow?.Screen?.LogicalPixelSize ?? 1));
-			Control = host;
+			return host;
 		}
-		else if (controlObject is IWin32WindowInterop win32WindowWpf)
+		else if (nativeControl is IWin32WindowInterop win32WindowWpf)
 		{
 			// keep a reference to the win32window object
 			var host = new EtoHwndHost(new HandleRef(win32WindowWpf, win32WindowWpf.Handle));
 			host.GetPreferredSize += () => Size.Round(UserPreferredSize.ToEto() * (Widget.ParentWindow?.Screen?.LogicalPixelSize ?? 1));
-			Control = host;
+			return host;
 		}
 		else
-			throw new NotSupportedException($"controlObject of type {controlObject.GetType()} is not supported by this platform");
+			throw new NotSupportedException($"Native control of type {nativeControl.GetType()} is not supported by this platform");
 	}
 }
 
