@@ -152,6 +152,9 @@ namespace Eto.GtkSharp.Forms
 
 		public void Remove(Control child)
 		{
+			if (controls == null)
+				return;
+				
 			for (int y = 0; y < controls.GetLength(0); y++)
 			{
 				for (int x = 0; x < controls.GetLength(1); x++)

@@ -991,8 +991,8 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// </remarks>
 	public void Detach()
 	{
-		if (VisualParent != null)
-			VisualParent.Remove(this);
+		VisualParent?.Remove(this);
+		Parent?.Remove(this);
 	}
 
 	static readonly object IsAttached_Key = new object();
