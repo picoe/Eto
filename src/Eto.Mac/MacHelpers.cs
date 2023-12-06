@@ -66,7 +66,7 @@ namespace Eto.Forms
 		{
 			if (view == null)
 				return null;
-			return new Control(new NativeControlHandler(view));
+			return new NativeControlHost(view);
 		}
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace Eto.Forms
 		{
 			if (viewController == null)
 				return null;
-			return new Control(new NativeControlHandler(viewController));
+			return new NativeControlHost(viewController);
 		}
 
 		/// <summary>

@@ -14,42 +14,64 @@ namespace Eto.WinForms.Forms.Controls
 		{
 		}
 		
-
-		public void Create(object controlObject)
+		protected override void Initialize()
 		{
-			if (controlObject == null)
+			// don't call any initialize routines as we are hosting a native control
+			//base.Initialize();
+		}
+		
+		protected override swf.Control CreateControl()
+		{
+			if (Widget is NativeControlHost host && Callback is NativeControlHost.ICallback callback)
 			{
-				Control = new swf.UserControl();
+				var args = new CreateNativeControlArgs();
+				callback.OnCreateNativeControl(host, args);
+				return CreateHost(args.NativeControl);
 			}
-			else if (controlObject is swf.Control control)
+			return base.CreateControl();
+		}
+		
+
+		public void Create(object nativeControl)
+		{
+			Control = CreateHost(nativeControl);
+		}
+		swf.Control CreateHost(object nativeControl)
+		{
+			if (nativeControl == null)
 			{
-				Control = control;
+				return new swf.UserControl();
 			}
-			else if (controlObject is IntPtr handle)
+			else if (nativeControl is swf.Control control)
 			{
-				CreateWithHandle(handle);
+				return control;
 			}
-			else if (controlObject is swf.IWin32Window win32Window)
+			else if (nativeControl is IntPtr handle)
+			{
+				return CreateWithHandle(handle);
+			}
+			else if (nativeControl is swf.IWin32Window win32Window)
 			{
 				// keep a reference so it doesn't get GC'd
 				_win32Window = win32Window;
-				CreateWithHandle(win32Window.Handle);
+				return CreateWithHandle(win32Window.Handle);
 			}
 			else
-				throw new NotSupportedException($"controlObject of type {controlObject.GetType()} is not supported by this platform");
+				throw new NotSupportedException($"Native control of type {nativeControl.GetType()} is not supported by this platform");
 		}
 
-		private void CreateWithHandle(IntPtr handle)
+		private swf.Control CreateWithHandle(IntPtr handle)
 		{
-			Control = new swf.Control();
+			var control = new swf.Control();
 			Win32.GetWindowRect(handle, out var rect);
-			Win32.SetParent(handle, Control.Handle);
-			Control.Size = rect.ToSD().Size;
+			Win32.SetParent(handle, control.Handle);
+			control.Size = rect.ToSD().Size;
 			Widget.SizeChanged += (sender, e) =>
 			{
-				var size = Control.Size;
+				var size = control.Size;
 				Win32.SetWindowPos(handle, IntPtr.Zero, 0, 0, size.Width, size.Height, Win32.SWP.NOZORDER);
 			};
+			return control;
 		}
 	}
 }

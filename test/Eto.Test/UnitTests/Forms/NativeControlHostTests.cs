@@ -45,5 +45,29 @@ namespace Eto.Test.UnitTests.Forms
 				return scrollable;
 			});
 		}
+		
+		class MyControl : NativeControlHost
+		{
+			public NativeHostTest Test { get; set; }
+
+			protected override void OnCreateNativeControl(CreateNativeControlArgs e)
+			{
+				base.OnCreateNativeControl(e);
+				e.NativeControl = Test.CreateControl();
+			}
+		}
+		
+		[ManualTest]
+		[TestCaseSource(typeof(NativeHostControls), nameof(NativeHostControls.GetNativeHostTests))]
+		public void NetiveHostInSubclassShouldWork(NativeHostTest test)
+		{
+			ManualForm("Control should show something", form =>
+			{
+				form.Resizable = true;
+				var control = new MyControl { Test = test };
+				control.Size = new Size(100, 20);
+				return control;
+			});
+		}
     }
 }
