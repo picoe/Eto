@@ -361,6 +361,8 @@ namespace Eto.Wpf.Forms
 
 		void Remove(int x, int y)
 		{
+			if (controls == null)
+				return;
 			var control = controls[x, y];
 			if (control != null)
 			{
