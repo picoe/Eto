@@ -423,10 +423,20 @@ namespace Eto.Wpf.Forms
 
 		public override void Remove(sw.FrameworkElement child)
 		{
+			// ensure this is actually a child of this table
+			if (child.Parent != Control)
+				return;
+
+			// row and column could be for a different table
 			var x = swc.Grid.GetColumn(child);
 			var y = swc.Grid.GetRow(child);
 			Control.Children.Remove(child);
-			controls[x, y] = null;
+			if (controls != null
+				&& x >= 0 && x < controls.GetLength(0)
+				&& y >= 0 && y < controls.GetLength(1)
+				&& ReferenceEquals(controls[x,y]?.GetContainerControl(), child)
+				)
+				controls[x, y] = null;
 			OnChildPreferredSizeUpdated();
 		}
 	}
