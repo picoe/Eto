@@ -972,6 +972,8 @@ namespace Eto.Mac.Forms
 			{
 				if (oldLocation != null)
 					return oldLocation.Value;
+				if (!Widget.Loaded && InitialLocation != null)
+					return InitialLocation.Value;
 				// translate location relative to the top left corner of main screen
 				var mainFrame = NSScreen.Screens[0].Frame;
 				var frame = Control.Frame;
