@@ -34,7 +34,8 @@ namespace Eto.Mac.Forms.Menu
 		{
 			Enabled = true;
 			Control.Target = new MenuActionHandler{ Handler = this };
-			Control.Action = MenuActionHandler.selActivate;
+			if (Widget is not SubMenuItem)
+				Control.Action = MenuActionHandler.selActivate;
 			base.Initialize();
 		}
 
