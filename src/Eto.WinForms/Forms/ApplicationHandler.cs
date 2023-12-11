@@ -8,6 +8,7 @@ namespace Eto.WinForms.Forms
 		bool quitting;
 		readonly Thread mainThread;
 		SynchronizationContext context;
+		swf.ApplicationContext applicationContext = new swf.ApplicationContext();
 		public static bool EnableScrollingUnderMouse = true;
 		public static bool BubbleMouseEvents = true;
 		public static bool BubbleKeyEvents = true;
@@ -115,10 +116,7 @@ namespace Eto.WinForms.Forms
 
 				if (!quitting)
 				{
-					if (Widget.MainForm != null && Widget.MainForm.Loaded)
-						swf.Application.Run((swf.Form)Widget.MainForm.ControlObject);
-					else
-						swf.Application.Run();
+					swf.Application.Run(applicationContext);
 				}
 			}
 			else
@@ -230,6 +228,7 @@ namespace Eto.WinForms.Forms
 
 		public void OnMainFormChanged()
 		{
+			applicationContext.MainForm = (swf.Form)Widget.MainForm.ControlObject;
 		}
 
 		public void Quit()
