@@ -124,12 +124,12 @@ namespace Eto.Mac.Forms
 			if (NSThread.IsMain)
 				action();
 			else
-				DispatchQueue.MainQueue.DispatchSync(action);
+				Control.InvokeOnMainThread(action);
 		}
 		
 		public void AsyncInvoke(Action action)
 		{
-			DispatchQueue.MainQueue.DispatchAsync(action);
+			Control.BeginInvokeOnMainThread(action);
 		}
 
 		public void Restart()
