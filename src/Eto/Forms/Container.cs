@@ -295,9 +295,10 @@ public abstract class Container : Control, IBindableWidgetContainer
 				child.TriggerUnLoad(EventArgs.Empty);
 			}
 			child.VisualParent = null;
-			if (ReferenceEquals(child.InternalLogicalParent, this))
-				child.InternalLogicalParent = null;
 		}
+		
+		if (ReferenceEquals(child.InternalLogicalParent, this))
+			child.InternalLogicalParent = null;
 	}
 
 	/// <summary>
@@ -397,7 +398,7 @@ public abstract class Container : Control, IBindableWidgetContainer
 			// Detach so parent can remove from controls collection if necessary.
 			// prevents UnLoad from being called more than once when containers think a control is still a child
 			// no-op if there is no parent (handled in detach)
-			child.Detach();
+			child.Detach(); //.VisualParent?.Remove(child);
 
 			if (ReferenceEquals(child.InternalLogicalParent, null))
 				SetLogicalParent(child);

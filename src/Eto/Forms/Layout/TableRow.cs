@@ -155,39 +155,46 @@ public class TableRow
 		return new TableCell(new TableLayout(row));
 	}
 
-	internal void SetLayout(TableLayout layout)
+	internal void SetLayout(TableLayout layout, bool shouldRemove)
 	{
-		((TableCellCollection)Cells).SetLayout(layout);
+		((TableCellCollection)Cells).SetLayout(this, layout, shouldRemove);
 	}
 }
 
 class TableRowCollection : Collection<TableRow>, IList
 {
-	TableLayout layout;
+	internal TableLayout _layout;
 	public TableRowCollection(TableLayout layout)
 	{
-		this.layout = layout;
+		_layout = layout;
 	}
 
 	public TableRowCollection(TableLayout layout, IEnumerable<TableRow> list)
 		: base(list.Select(r => r ?? new TableRow { ScaleHeight = true }).ToList())
 	{
-		this.layout = layout;
+		_layout = layout;
 		foreach (var item in this)
-			item?.SetLayout(layout);
+			item?.SetLayout(layout, true);
+	}
+	
+	internal void RemoveItemWithoutLayoutUpdate(TableRow row)
+	{
+		var index = IndexOf(row);
+		if (index >= 0)
+			base.RemoveItem(index);
 	}
 
 	protected override void RemoveItem(int index)
 	{
 		var item = this[index];
-		item?.SetLayout(null);
+		item?.SetLayout(null, false);
 		base.RemoveItem(index);
 	}
 
 	protected override void ClearItems()
 	{
 		foreach (var item in this)
-			item?.SetLayout(null);
+			item?.SetLayout(null, false);
 		base.ClearItems();
 	}
 
@@ -195,17 +202,17 @@ class TableRowCollection : Collection<TableRow>, IList
 	{
 		if (item == null)
 			item = new TableRow { ScaleHeight = true };
-		item?.SetLayout(layout);
+		item?.SetLayout(_layout, true);
 		base.InsertItem(index, item);
 	}
 
 	protected override void SetItem(int index, TableRow item)
 	{
 		var old = this[index];
-		old?.SetLayout(null);
+		old?.SetLayout(null, false);
 		if (item == null)
 			item = new TableRow { ScaleHeight = true };
-		item?.SetLayout(layout);
+		item?.SetLayout(_layout, true);
 		base.SetItem(index, item);
 	}
 
