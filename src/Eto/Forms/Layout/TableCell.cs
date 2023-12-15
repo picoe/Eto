@@ -7,8 +7,10 @@ namespace Eto.Forms;
 [sc.TypeConverter(typeof(TableCellConverter))]
 public class TableCell
 {
-	Control control;
-	TableLayout layout;
+	Control _control;
+	TableCellCollection _cells;
+
+	TableLayout ParentTable => _cells?._layout;
 
 	/// <summary>
 	/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TableCell"/> will scale its width
@@ -31,23 +33,24 @@ public class TableCell
 	/// <value>The control.</value>
 	public Control Control
 	{
-		get { return control; }
+		get { return _control; }
 		set
 		{
-			if (control != value)
+			if (_control != value)
 			{
 				value?.Detach();
-				control?.Detach();
-				layout?.InternalRemoveLogicalParent(control);
-				control = value;
-				layout?.InternalSetLogicalParent(control);
+				_control?.Detach();
+				var layout = ParentTable;
+				layout?.InternalRemoveLogicalParent(_control);
+				_control = value;
+				layout?.InternalSetLogicalParent(_control);
 			}
 		}
 	}
 
 	internal void SetControl(Control control)
 	{
-		this.control = control;
+		_control = control;
 	}
 
 	/// <summary>
@@ -119,20 +122,29 @@ public class TableCell
 		return new TableCell(new ImageView { Image = image });
 	}
 
-	internal void SetLayout(TableLayout layout)
+	internal void SetLayout(TableCellCollection cells, bool shouldRemove, TableLayout oldLayout = null)
 	{
-		if (!ReferenceEquals(this.layout, layout))
+		if (!ReferenceEquals(_cells, cells))
 		{
-			this.layout?.InternalRemoveLogicalParent(control);
-			this.layout = layout;
-			layout?.InternalSetLogicalParent(control);
+			// remove from old cells collection
+			if (shouldRemove)
+				_cells?.RemoveItemWithoutLayoutUpdate(this);
+				
+			ParentTable?.InternalRemoveLogicalParent(_control);
+			_cells = cells;
+			ParentTable?.InternalSetLogicalParent(_control);
+		}
+		else if (!ReferenceEquals(oldLayout, ParentTable))
+		{
+			oldLayout?.InternalRemoveLogicalParent(_control);
+			ParentTable?.InternalSetLogicalParent(_control);
 		}
 	}
 }
 
 class TableCellCollection : Collection<TableCell>, IList
 {
-	TableLayout layout;
+	internal TableLayout _layout;
 
 	public TableCellCollection()
 	{
@@ -142,18 +154,37 @@ class TableCellCollection : Collection<TableCell>, IList
 		: base(list.Select(r => r ?? new TableCell { ScaleWidth = true }).ToList())
 	{
 	}
-
-	internal void SetLayout(TableLayout layout)
+	
+	internal void SetLayout(TableRow row, TableLayout layout, bool shouldRemove)
 	{
-		this.layout = layout;
+		if (ReferenceEquals(layout, _layout))
+			return;
+
+		var oldLayout = _layout;
+		if (shouldRemove && _layout?.Rows is TableRowCollection oldLayoutRows)
+		{
+			// switching layouts, remove from old layout without triggering a new SetLayout
+			// This really shouldn't be done and should throw an exception
+			oldLayoutRows.RemoveItemWithoutLayoutUpdate(row);
+		}
+		_layout = layout;
+		
 		foreach (var cell in this)
-			cell.SetLayout(layout);
+			cell.SetLayout(this, true, oldLayout);
 	}
+	
+	internal void RemoveItemWithoutLayoutUpdate(TableCell cell)
+	{
+		var index = IndexOf(cell);
+		if (index >= 0)
+			base.RemoveItem(index);
+	}
+
 
 	protected override void RemoveItem(int index)
 	{
 		var item = this[index];
-		item?.SetLayout(null);
+		item?.SetLayout(null, false);
 		base.RemoveItem(index);
 	}
 
@@ -161,7 +192,7 @@ class TableCellCollection : Collection<TableCell>, IList
 	{
 		foreach (var item in this)
 		{
-			item?.SetLayout(null);
+			item?.SetLayout(null, false);
 		}
 		base.ClearItems();
 	}
@@ -170,17 +201,17 @@ class TableCellCollection : Collection<TableCell>, IList
 	{
 		if (item == null)
 			item = new TableCell { ScaleWidth = true };
-		item.SetLayout(layout);
+		item.SetLayout(this, true);
 		base.InsertItem(index, item);
 	}
 
 	protected override void SetItem(int index, TableCell item)
 	{
 		var old = this[index];
-		old?.SetLayout(null);
+		old?.SetLayout(null, false);
 		if (item == null)
 			item = new TableCell { ScaleWidth = true };
-		item.SetLayout(layout);
+		item.SetLayout(this, true);
 		base.SetItem(index, item);
 	}
 
