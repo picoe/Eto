@@ -457,6 +457,11 @@ namespace Eto.WinForms.Forms
 			{
 				icon = value;
 				Control.Icon = ((IWindowsIconSource)icon.Handler).GetIcon();
+				if (!Control.ShowIcon)
+				{
+					// For dialogs we don't show an icon by default and need to enable it here
+					Control.ShowIcon = true;
+				}
 			}
 		}
 
