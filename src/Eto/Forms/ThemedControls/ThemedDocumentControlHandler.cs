@@ -523,7 +523,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 					}
 					else
 						SelectedIndex = i;
-						
+
 					break;
 				}
 			}
@@ -691,8 +691,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		var tabRect = tab.Rect;
 		var textRect = tab.TextRect;
 		var closerect = tab.CloseRect;
-		var closemargin =  closerect.Height / 3;
-		var size = tabRect.Size;
+		var closemargin = closerect.Height / 3;
 
 		var textcolor = Enabled ? TabForegroundColor : DisabledForegroundColor;
 		var backcolor = TabBackgroundColor;
@@ -725,7 +724,6 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closerect.Height - 1 - closemargin);
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closerect.Height - 1 - closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closemargin);
 		}
-
 	}
 
 	/// <summary>
