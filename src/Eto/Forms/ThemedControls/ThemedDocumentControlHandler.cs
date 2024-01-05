@@ -677,7 +677,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 			size.Width += textoffset;
 		}
 
-		var closesize = tabDrawable.Height / 2;
+		var closesize = UseFixedTabHeight ? minImageSquareSide : tabDrawable.Height / 2;
 		var tabRect = new RectangleF(posx, 0, size.Width + (tab.Closable ? closesize + tabPadding.Horizontal + tabPadding.Right : tabPadding.Horizontal), tabDrawable.Height);
 
 		if (i == selectedIndex && draggingLocation != null)
@@ -706,7 +706,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		var tabRect = tab.Rect;
 		var textRect = tab.TextRect;
 		var closerect = tab.CloseRect;
-		var closemargin = closerect.Height / 3;
+		var closemargin = UseFixedTabHeight ? 3 : closerect.Height / 3;
 
 		var textcolor = Enabled ? TabForegroundColor : DisabledForegroundColor;
 		var backcolor = TabBackgroundColor;
