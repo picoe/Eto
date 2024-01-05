@@ -32,6 +32,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Color tabHoverBackgroundColor;
 	Color tabForegroundColor;
 	Color tabHighlightForegroundColor;
+	Color tabHoverForegroundColor;
 
 	static Padding DefaultTabPadding = 6;
 
@@ -215,9 +216,9 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
-	/// Gets or sets the highlight foreground color for the close button.
+	/// Gets or sets the highlight foreground color for the highlighted (or active) tab.
 	/// </summary>
-	/// <value>The highlight foreground color for the close button.</value>
+	/// <value>The foreground color for the highlighted (or active) tab.</value>
 	public Color TabHighlightForegroundColor
 	{
 		get { return tabHighlightForegroundColor; }
@@ -228,6 +229,19 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		}
 	}
 
+	/// <summary>
+	/// Gets or sets the foreground color for the tab under mouse.
+	/// </summary>
+	/// <value>The foreground color for the tab under mouse.</value>
+	public Color TabHoverForegroundColor
+	{
+		get { return tabHoverForegroundColor; }
+		set
+		{
+			tabHoverForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
 
 	/// <summary>
 	/// Gets or sets a value indicating whether to use a fixed tab height.
@@ -267,6 +281,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		tabHoverBackgroundColor = new Color(SystemColors.Highlight, 0.8f);
 		tabForegroundColor = SystemColors.ControlText;
 		tabHighlightForegroundColor = SystemColors.HighlightText;
+		tabHoverForegroundColor = SystemColors.HighlightText;
 
 		tabDrawable = new Drawable();
 
@@ -703,7 +718,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && !closeSelected && Enabled)
 		{
-			textcolor = TabHighlightForegroundColor;
+			textcolor = TabHoverForegroundColor;
 			backcolor = TabHoverBackgroundColor;
 		}
 
