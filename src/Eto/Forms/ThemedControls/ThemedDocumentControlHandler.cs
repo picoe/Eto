@@ -715,8 +715,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 			textcolor = Enabled ? TabHighlightForegroundColor : DisabledForegroundColor;
 			backcolor = TabHighlightBackgroundColor;
 		}
-
-		if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && !closeSelected && Enabled)
+		else if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && Enabled)
 		{
 			textcolor = TabHoverForegroundColor;
 			backcolor = TabHoverBackgroundColor;
