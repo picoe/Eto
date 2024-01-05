@@ -21,6 +21,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Panel contentPanel;
 	Font font;
 
+	Color backgroundColor;
 	Color disabledForegroundColor;
 	Color closeBackgroundColor;
 	Color closeHighlightBackgroundColor;
@@ -72,6 +73,17 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		{
 			font = value;
 			Calculate();
+		}
+	}
+
+	/// <inheritdoc />
+	public override Color BackgroundColor
+	{
+		get => backgroundColor;
+		set
+		{
+			backgroundColor = value;
+			tabDrawable.Invalidate();
 		}
 	}
 
@@ -229,6 +241,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		nextPrevWidth = 0;
 		startx = 0;
 		font = SystemFonts.Default();
+		backgroundColor = SystemColors.Control;
 		disabledForegroundColor = SystemColors.DisabledText;
 		closeBackgroundColor = SystemColors.Control;
 		closeHighlightBackgroundColor = SystemColors.Highlight;
@@ -596,7 +609,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	{
 		var g = e.Graphics;
 
-		g.Clear(SystemColors.Control);
+		g.Clear(BackgroundColor);
 
 		var posx = nextPrevWidth + startx;
 
