@@ -34,10 +34,12 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Color tabHighlightForegroundColor;
 	Color tabHoverForegroundColor;
 
+	int closeCornerRadius;
+
 	static Padding DefaultTabPadding = 6;
 
 	static readonly object TabPadding_Key = new object();
-	private int minImageSquareSide = 16;
+	int minImageSquareSide = 16;
 
 	/// <summary>
 	/// Gets or sets the padding inside each tab around the text.
@@ -127,6 +129,20 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		set
 		{
 			closeHighlightBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the corner radius of the close button.
+	/// </summary>
+	/// <value>The corner radius of the close button.</value>
+	public int CloseCornerRadius
+	{
+		get { return closeCornerRadius; }
+		set
+		{
+			closeCornerRadius = value;
 			tabDrawable.Invalidate();
 		}
 	}
@@ -733,7 +749,12 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		if (tab.Closable)
 		{
-			g.FillRectangle(closeSelected ? CloseHighlightBackgroundColor : CloseBackgroundColor, closerect);
+			var closeBackground = closeSelected ? CloseHighlightBackgroundColor : CloseBackgroundColor;
+			if (closeCornerRadius > 0)
+				g.FillPath(closeBackground, GraphicsPath.GetRoundRect(closerect, closeCornerRadius));
+			else
+				g.FillRectangle(closeBackground, closerect);
+
 			var closeForeground = Enabled ? closeSelected ? CloseHighlightForegroundColor : CloseForegroundColor : DisabledForegroundColor;
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closerect.Height - 1 - closemargin);
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closerect.Height - 1 - closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closemargin);
