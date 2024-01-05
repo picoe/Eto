@@ -29,6 +29,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Color closeHighlightForegroundColor;
 	Color tabBackgroundColor;
 	Color tabHighlightBackgroundColor;
+	Color tabHoverBackgroundColor;
 	Color tabForegroundColor;
 	Color tabHighlightForegroundColor;
 
@@ -172,15 +173,29 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
-	/// Gets or sets the highlight background color for the highlighted  tab.
+	/// Gets or sets the highlight background color for the highlighted (or active) tab.
 	/// </summary>
-	/// <value>The highlight background color for the close highlighted tab.</value>
+	/// <value>The highlight background color for the highlighted (or active) tab.</value>
 	public Color TabHighlightBackgroundColor
 	{
 		get { return tabHighlightBackgroundColor; }
 		set
 		{
 			tabHighlightBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the background color for the tab under mouse.
+	/// </summary>
+	/// <value>The background color for the tab under mouse.</value>
+	public Color TabHoverBackgroundColor
+	{
+		get { return tabHoverBackgroundColor; }
+		set
+		{
+			tabHoverBackgroundColor = value;
 			tabDrawable.Invalidate();
 		}
 	}
@@ -249,6 +264,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		closeHighlightForegroundColor = SystemColors.HighlightText;
 		tabBackgroundColor = SystemColors.Control;
 		tabHighlightBackgroundColor = SystemColors.Highlight;
+		tabHoverBackgroundColor = new Color(SystemColors.Highlight, 0.8f);
 		tabForegroundColor = SystemColors.ControlText;
 		tabHighlightForegroundColor = SystemColors.HighlightText;
 
@@ -684,13 +700,12 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		{
 			textcolor = Enabled ? TabHighlightForegroundColor : DisabledForegroundColor;
 			backcolor = TabHighlightBackgroundColor;
-			backcolor.A *= 0.8f;
 		}
 
 		if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && !closeSelected && Enabled)
 		{
 			textcolor = TabHighlightForegroundColor;
-			backcolor = TabHighlightBackgroundColor;
+			backcolor = TabHoverBackgroundColor;
 		}
 
 		g.FillRectangle(backcolor, tabRect);
