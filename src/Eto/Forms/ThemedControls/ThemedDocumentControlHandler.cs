@@ -190,9 +190,9 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
-	/// Gets or sets the highlight background color for the highlighted (or active) tab.
+	/// Gets or sets the highlight background color for the highlighted or selected tab.
 	/// </summary>
-	/// <value>The highlight background color for the highlighted (or active) tab.</value>
+	/// <value>The highlight background color for the highlighted or selected tab.</value>
 	public Color TabHighlightBackgroundColor
 	{
 		get { return tabHighlightBackgroundColor; }
@@ -232,9 +232,9 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
-	/// Gets or sets the highlight foreground color for the highlighted (or active) tab.
+	/// Gets or sets the highlight foreground color for the highlighted or selected tab.
 	/// </summary>
-	/// <value>The foreground color for the highlighted (or active) tab.</value>
+	/// <value>The foreground color for the highlighted or selected tab.</value>
 	public Color TabHighlightForegroundColor
 	{
 		get { return tabHighlightForegroundColor; }
