@@ -382,9 +382,10 @@ namespace System.Runtime.InteropServices.ComTypes
 					if (ManagedDataStamp.Equals(guid))
 					{
 						// Stamp matched, so deserialize
-						BinaryFormatter formatter = new BinaryFormatter();
-						Type dataType = (Type)formatter.Deserialize(dataStream);
-						object data2 = formatter.Deserialize(dataStream);
+						DataContractSerializer typeSerializer = new DataContractSerializer(typeof(Type));
+						Type dataType = (Type)typeSerializer.ReadObject(dataStream);
+						DataContractSerializer objectSerializer = new DataContractSerializer(dataType);
+						object data2 = objectSerializer.ReadObject(dataStream);
 						if (data2.GetType() == dataType)
 							return data2;
 						else if (data2 is string)
@@ -442,9 +443,10 @@ namespace System.Runtime.InteropServices.ComTypes
 			// we'll try type conversion. Also, we serialize the type. That way,
 			// during deserialization, we know which type to convert back to, if
 			// appropriate.
-			BinaryFormatter formatter = new BinaryFormatter();
-			formatter.Serialize(stream, data.GetType());
-			formatter.Serialize(stream, GetAsSerializable(data));
+			DataContractSerializer typeSerializer = new DataContractSerializer(typeof(Type));
+			typeSerializer.WriteObject(stream, data.GetType());
+			DataContractSerializer objectSerializer = new DataContractSerializer(data.GetType());
+			objectSerializer.WriteObject(stream, GetAsSerializable(data));
 
 			// Now copy to an HGLOBAL
 			byte[] bytes = stream.GetBuffer();
