@@ -129,9 +129,13 @@ public class ThemedDocumentPageHandler : ThemedContainerHandler<Panel, DocumentP
 
 	internal RectangleF Rect { get; set; }
 
+	internal RectangleF UnsavedRect { get; set; }
+
 	internal RectangleF CloseRect { get; set; }
 
 	internal RectangleF TextRect { get; set; }
+
+	internal RectangleF ImageRect { get; set; }
 
 	void Update() => DocControl?.Update(this);
 }

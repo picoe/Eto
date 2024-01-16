@@ -89,6 +89,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { closeButton.Visible = value; }
 		}
 
+		public bool HasUnsavedChanges { get; set; }
+
 		public Image Image
 		{
 			get { return image; }
