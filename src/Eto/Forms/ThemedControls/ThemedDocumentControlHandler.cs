@@ -33,6 +33,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Color tabForegroundColor;
 	Color tabHighlightForegroundColor;
 	Color tabHoverForegroundColor;
+	Color unsavedBackgroundColor;
 
 	int closeCornerRadius;
 
@@ -260,6 +261,20 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
+	/// Gets or sets the background color for the unsaved changes indicator.
+	/// </summary>
+	/// <value>The background color for the unsaved changes indicator.</value>
+	public Color UnsavedBackgroundColor
+	{
+		get { return unsavedBackgroundColor; }
+		set
+		{
+			unsavedBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
 	/// Gets or sets a value indicating whether to use a fixed tab height.
 	/// </summary>
 	/// <value><c>true</c> to use a fixed tab height.</value>
@@ -298,6 +313,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		tabForegroundColor = SystemColors.ControlText;
 		tabHighlightForegroundColor = SystemColors.HighlightText;
 		tabHoverForegroundColor = SystemColors.HighlightText;
+		unsavedBackgroundColor = SystemColors.ControlText;
 
 		tabDrawable = new Drawable();
 
