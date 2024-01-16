@@ -1,4 +1,4 @@
-﻿namespace Eto.Forms;
+namespace Eto.Forms;
 
 /// <summary>
 /// Control for a page in a <see cref="DocumentControl"/>
@@ -78,6 +78,16 @@ public class DocumentPage : Panel
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.DocumentPage"/> has unsaved changes.
+	/// </summary>
+	/// <value><c>true</c> if page has unsaved changes; otherwise, <c>false</c>.</value>
+	public bool HasUnsavedChanges
+	{
+		get { return Handler.HasUnsavedChanges; }
+		set { Handler.HasUnsavedChanges = value; }
+	}
+
+	/// <summary>
 	/// Gets or sets the image of the page.
 	/// </summary>
 	/// <remarks>
@@ -112,6 +122,12 @@ public class DocumentPage : Panel
 		/// </summary>
 		/// <value><c>true</c> if closable; otherwise, <c>false</c>.</value>
 		bool Closable { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.DocumentPage"/> has unsaved changes.
+		/// </summary>
+		/// <value><c>true</c> if page has unsaved changes; otherwise, <c>false</c>.</value>
+		bool HasUnsavedChanges { get; set; }
 
 		/// <summary>
 		/// Gets or sets the image of the page.

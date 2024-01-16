@@ -9,6 +9,7 @@ public class ThemedDocumentPageHandler : ThemedContainerHandler<Panel, DocumentP
 	bool closable;
 	string text;
 	Image image;
+	bool hasUnsavedChanges;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedDocumentPageHandler"/> class.
@@ -101,6 +102,21 @@ public class ThemedDocumentPageHandler : ThemedContainerHandler<Panel, DocumentP
 		set
 		{
 			text = value;
+			Update();
+		}
+	}
+
+
+	/// <summary>
+	/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.ThemedControls.ThemedDocumentPageHandler"/> has unsaved changes.
+	/// </summary>
+	/// <value><c>true</c> if page has unsaved changes; otherwise, <c>false</c>.</value>
+	public bool HasUnsavedChanges
+	{
+		get { return hasUnsavedChanges; }
+		set
+		{
+			hasUnsavedChanges = value;
 			Update();
 		}
 	}
