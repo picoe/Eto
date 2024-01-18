@@ -864,6 +864,31 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	}
 
 	/// <summary>
+	/// Gets a value indicating this control currently has mouse capture
+	/// </summary>
+	/// <remarks>
+	/// Mouse capture can happen during a handled MouseDown event until MouseUp,
+	/// or it can be captured explicitly via <see cref="CaptureMouse"/>.
+	/// </remarks>
+	public bool IsMouseCaptured => Handler.IsMouseCaptured;
+	
+	/// <summary>
+	/// Captures all mouse events to this control.
+	/// </summary>
+	/// <remarks>
+	/// This captures all mouse events until <see cref="ReleaseMouseCapture"/> is called.
+	/// 
+	/// Note that not all platforms will allow a mouse capture unless the mouse is currently down.
+	/// </remarks>
+	/// <returns><c>true</c> if the mouse was captured, false otherwise.</returns>
+	public bool CaptureMouse() => Handler.CaptureMouse();
+	
+	/// <summary>
+	/// Releases the mouse capture after a call to <see cref="CaptureMouse"/>.
+	/// </summary>
+	public void ReleaseMouseCapture() => Handler.ReleaseMouseCapture();
+
+	/// <summary>
 	/// Gets or sets the width of the control size.
 	/// </summary>
 	public virtual int Width
@@ -2030,6 +2055,31 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// This is useful when you need to know the dimensions of the control immediately.
 		/// </remarks>
 		void UpdateLayout();
+		
+		/// <summary>
+		/// Gets a value indicating this control currently has mouse capture
+		/// </summary>
+		/// <remarks>
+		/// Mouse capture can happen during a handled MouseDown event until MouseUp,
+		/// or it can be captured explicitly via <see cref="CaptureMouse"/>.
+		/// </remarks>
+		bool IsMouseCaptured { get; }
+
+		/// <summary>
+		/// Captures all mouse events to this control.
+		/// </summary>
+		/// <remarks>
+		/// This captures all mouse events until <see cref="ReleaseMouseCapture"/> is called.
+		/// 
+		/// Note that not all platforms will allow a mouse capture unless the mouse is currently down.
+		/// </remarks>
+		/// <returns><c>true</c> if the mouse was captured, false otherwise.</returns>
+		bool CaptureMouse();
+		
+		/// <summary>
+		/// Releases the mouse capture after a call to <see cref="CaptureMouse"/>.
+		/// </summary>
+		void ReleaseMouseCapture();
 	}
 	#endregion
 }

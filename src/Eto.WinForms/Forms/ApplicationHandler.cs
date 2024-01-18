@@ -147,8 +147,9 @@ namespace Eto.WinForms.Forms
 				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseMove(c, e), null, Win32.WM.MOUSEMOVE);
 				bubble.AddBubbleMouseEvents((c, cb, e) => 
 				{
+					WindowsControl.SkipMouseCapture = false;
 					cb.OnMouseDown(c, e);
-					if (e.Handled && c.Handler is IWindowsControl handler && handler.ShouldCaptureMouse)
+					if (e.Handled && c.Handler is IWindowsControl handler && handler.ShouldCaptureMouse && !WindowsControl.SkipMouseCapture)
 					{
 						handler.ContainerControl.Capture = true;
 						handler.MouseCaptured = true;

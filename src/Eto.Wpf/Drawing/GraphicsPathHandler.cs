@@ -64,6 +64,8 @@ namespace Eto.Wpf.Drawing
 		public void AddLines(IEnumerable<PointF> points)
 		{
 			var pointsList = points as IList<PointF> ?? points.ToArray();
+			if (pointsList.Count == 0)
+				return;
 			ConnectTo(pointsList.First().ToWpf());
 
 			var wpfPoints = from p in pointsList select p.ToWpf();

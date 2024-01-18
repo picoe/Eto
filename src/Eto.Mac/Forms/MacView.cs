@@ -9,10 +9,12 @@ namespace Eto.Mac.Forms
 {
 	class MouseDelegate : NSObject
 	{
-		WeakReference widget;
-		bool entered;
+		WeakReference _widget;
+		bool _entered;
 
-		public IMacViewHandler Handler { get { return (IMacViewHandler)widget.Target; } set { widget = new WeakReference(value); } }
+		public IMacViewHandler Handler { get => (IMacViewHandler)_widget.Target; set => _widget = new WeakReference(value); }
+
+		public static HashSet<MouseDelegate> EnteredControls = new HashSet<MouseDelegate>();
 
 		[Export("mouseMoved:")]
 		public void MouseMoved(NSEvent theEvent)
@@ -25,10 +27,13 @@ namespace Eto.Mac.Forms
 		[Export("mouseEntered:")]
 		public void MouseEntered(NSEvent theEvent)
 		{
-			entered = true;
+			// we could be entered already after using CaptureMouse()
 			var h = Handler;
-			if (h == null || !h.Enabled) return;
+			if (h == null || !h.Enabled || _entered) return;
+			_entered = true;
+			// Debug.WriteLine($"MouseEnter: {h.Widget.GetType()}");
 			h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+			EnteredControls.Add(this);
 		}
 
 		[Export("cursorUpdate:")]
@@ -40,9 +45,11 @@ namespace Eto.Mac.Forms
 		public void MouseExited(NSEvent theEvent)
 		{
 			var h = Handler;
-			if (h == null || !h.Enabled) return;
-			entered = false;
+			if (h == null || !h.Enabled || !_entered) return;
+			_entered = false;
+			// Debug.WriteLine($"MouseLeave: {h.Widget.GetType()}");
 			h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
+			EnteredControls.Remove(this);
 		}
 
 		[Export("scrollWheel:")]
@@ -56,8 +63,8 @@ namespace Eto.Mac.Forms
 		public void FireMouseLeaveIfNeeded(bool async)
 		{
 			var h = Handler;
-			if (h == null || !entered) return;
-			entered = false;
+			if (h == null || !_entered) return;
+			_entered = false;
 			var theEvent = NSApplication.SharedApplication.CurrentEvent;
 			var args = MacConversions.GetMouseEvent(h, theEvent, false);
 			if (async)
@@ -78,8 +85,8 @@ namespace Eto.Mac.Forms
 		public void FireMouseEnterIfNeeded(bool async)
 		{
 			var h = Handler;
-			if (h == null || entered) return;
-			entered = true;
+			if (h == null || _entered) return;
+			_entered = true;
 			var theEvent = NSApplication.SharedApplication.CurrentEvent;
 			var args = MacConversions.GetMouseEvent(h, theEvent, false);
 			if (async)
@@ -137,12 +144,14 @@ namespace Eto.Mac.Forms
 		CGPoint GetAlignmentPointForFramePoint(CGPoint point);
 		CGRect GetAlignmentRectForFrame(CGRect frame);
 		bool OnAcceptsFirstMouse(NSEvent theEvent);
-		bool TriggerMouseCallback();
+		bool TriggerMouseCallback(NSEvent theEvent = null, bool includeMouseDown = true);
 		MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent);
 		MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent);
 		void UpdateTrackingAreas();
 		void OnViewDidMoveToWindow();
 		bool AutoAttachNative { get; set; }
+		void FireMouseEnterIfNeeded();
+		void FireMouseLeaveIfNeeded();
 	}
 
 	static partial class MacView
@@ -589,6 +598,8 @@ namespace Eto.Mac.Forms
 		/// </summary>
 		public static bool InMouseTrackingLoop;
 
+		public static IMacViewHandler CapturedControl;
+
 		public static IntPtr selViewDidMoveToWindow = Selector.GetHandle("viewDidMoveToWindow");
 
 		internal static MarshalDelegates.Action_IntPtr_IntPtr TriggerViewDidMoveToWindow_Delegate = TriggerViewDidMoveToWindow;
@@ -927,14 +938,24 @@ namespace Eto.Mac.Forms
 		/// Triggers a mouse callback from a different event. 
 		/// e.g. when an NSButton is clicked it is triggered from a mouse up event.
 		/// </summary>
-		public bool TriggerMouseCallback()
+		public bool TriggerMouseCallback(NSEvent evt = null, bool includeMouseDown = true)
 		{
 			// trigger mouse up event since it's buried by cocoa
-			var evt = NSApplication.SharedApplication.CurrentEvent;
+			evt ??= NSApplication.SharedApplication.CurrentEvent;
 			if (evt == null)
 				return false;
 			switch (evt.Type)
 			{
+				case NSEventType.LeftMouseDown:
+				case NSEventType.RightMouseDown:
+				case NSEventType.OtherMouseDown:
+				{
+					if (!includeMouseDown)
+						return false;
+					var args = MacConversions.GetMouseEvent(this, evt, false);
+					Callback.OnMouseDown(Widget, args);
+					return args.Handled;
+				}
 				case NSEventType.LeftMouseUp:
 				case NSEventType.RightMouseUp:
 				case NSEventType.OtherMouseUp:
@@ -942,6 +963,7 @@ namespace Eto.Mac.Forms
 					var args = MacConversions.GetMouseEvent(this, evt, false);
 					Callback.OnMouseUp(Widget, args);
 					SuppressMouseTriggerCallback = true;
+					MacView.CapturedControl = null;
 					return args.Handled;
 				}
 				case NSEventType.LeftMouseDragged:
@@ -1580,7 +1602,7 @@ namespace Eto.Mac.Forms
 				
 				// some controls use event loops until mouse up, so we need to trigger the mouse up here.
 				if (!SuppressMouseTriggerCallback)
-					TriggerMouseCallback();
+					TriggerMouseCallback(theEvent, includeMouseDown: false);
 			}
 			else if (UseMouseTrackingLoop && MacView.InMouseTrackingLoop)
 			{
@@ -1588,37 +1610,51 @@ namespace Eto.Mac.Forms
 				// e.g. if a child control that you started to click + drag on is removed then all future events
 				// to the parent are no longer forwarded.
 				// See MouseTests.EventsFromParentShouldWorkWhenChildRemoved
-				var app = NSApplication.SharedApplication;
-				// Console.WriteLine("Entered MouseTrackingLoop");
-				do
-				{
-					var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, MouseTrackingRunLoopMode, true);
-
-					var evtType = evt.Type;
-					switch (evt.Type)
-					{
-						case NSEventType.LeftMouseDragged:
-						case NSEventType.RightMouseDragged:
-						case NSEventType.OtherMouseDragged:
-							TriggerMouseCallback();
-							break;
-						case NSEventType.LeftMouseUp:
-						case NSEventType.RightMouseUp:
-						case NSEventType.OtherMouseUp:
-							TriggerMouseCallback();
-							MacView.InMouseTrackingLoop = false;
-							break;
-						default:
-							// not a mouse event, send it along.
-							app.SendEvent(evt);
-							break;
-					}
-				}
-				while (MacView.InMouseTrackingLoop);
-				// Console.WriteLine("Exited MouseTrackingLoop");
+				DoMouseTrackingLoop(true);
 			}
 			MacView.InMouseTrackingLoop = false;
 			return args;
+		}
+
+		private void DoMouseTrackingLoop(bool autoRelease)
+		{
+			var app = NSApplication.SharedApplication;
+			MacView.CapturedControl = this;
+			bool continueLoop;
+			// Console.WriteLine("Entered MouseTrackingLoop");
+			do
+			{
+				var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, MouseTrackingRunLoopMode, true);
+
+				switch (evt.Type)
+				{
+					case NSEventType.LeftMouseUp:
+					case NSEventType.RightMouseUp:
+					case NSEventType.OtherMouseUp:
+						TriggerMouseCallback(evt);
+						if (autoRelease)
+						{
+							MacView.InMouseTrackingLoop = false;
+							MacView.CapturedControl = null;
+						}
+						break;
+					case NSEventType.LeftMouseDragged:
+					case NSEventType.RightMouseDragged:
+					case NSEventType.OtherMouseDragged:
+					case NSEventType.LeftMouseDown:
+					case NSEventType.RightMouseDown:
+					case NSEventType.OtherMouseDown:
+						TriggerMouseCallback(evt);
+						break;
+					default:
+						// not a mouse event, send it along.
+						app.SendEvent(evt);
+						break;
+				}
+				continueLoop = autoRelease ? MacView.InMouseTrackingLoop : CaptureLoopEnabled;
+			}
+			while (continueLoop);
+			// Console.WriteLine("Exited MouseTrackingLoop");
 		}
 
 		public virtual MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent)
@@ -1677,6 +1713,78 @@ namespace Eto.Mac.Forms
 				Widget.DetachNative();
 			else
 				Widget.AttachNative();
+		}
+
+		public bool IsMouseCaptured => MacView.CapturedControl == this;
+
+		public bool CaptureMouse()
+		{
+			if (!Widget.Loaded || !Widget.Visible)
+				return false;
+
+			// already captured?
+			if (MacView.CapturedControl == this && CaptureLoopEnabled)
+				return true;
+			
+			// ensure we release capture of any previous control
+			if (MacView.CapturedControl != this)
+				MacView.CapturedControl?.Widget.ReleaseMouseCapture();
+
+			MacView.CapturedControl = this;
+			MacView.InMouseTrackingLoop = false;
+			// Do this asynchronously as this is not a blocking API
+			Application.Instance.AsyncInvoke(DoMouseCaptureLoop);
+			return true;
+		}
+
+		public void FireMouseEnterIfNeeded() => mouseDelegate?.FireMouseEnterIfNeeded(false);
+		public void FireMouseLeaveIfNeeded() => mouseDelegate?.FireMouseLeaveIfNeeded(false);
+
+		private void DoMouseCaptureLoop()
+		{
+			// fire mouse leave of current control(s)
+			var enteredControls = MouseDelegate.EnteredControls.ToList();
+			var parentControls = Widget.Parents.Select(r => r.Handler).OfType<IMacViewHandler>().ToList();
+			foreach (var ctl in enteredControls)
+			{
+				if (ctl.Handler == this || parentControls.Contains(ctl.Handler))
+					continue;
+				ctl.FireMouseLeaveIfNeeded(false);
+			}
+			foreach (var parent in parentControls)
+			{
+				parent.FireMouseEnterIfNeeded();
+			}
+			FireMouseEnterIfNeeded();
+			CaptureLoopEnabled = true;
+			DoMouseTrackingLoop(false);
+			var mousePosition = Mouse.Position;
+
+			if (!Widget.RectangleToScreen(new RectangleF(Widget.Size)).Contains(mousePosition))
+				FireMouseLeaveIfNeeded();
+				
+			foreach (var parent in parentControls)
+			{
+				if (!parent.Widget.RectangleToScreen(new RectangleF(parent.Widget.Size)).Contains(mousePosition))
+					parent.FireMouseLeaveIfNeeded();
+			}
+			// fire mouse enter of previous control if still in bounds
+			foreach (var ctl in enteredControls)
+			{
+				if (ctl.Handler == this)
+					continue;
+				var widget = ctl.Handler?.Widget;
+				if (widget != null && widget.RectangleToScreen(new RectangleF(widget.Size)).Contains(mousePosition))
+					ctl.FireMouseEnterIfNeeded(false);
+			}
+		}
+
+		bool CaptureLoopEnabled;
+
+		public void ReleaseMouseCapture()
+		{
+			CaptureLoopEnabled = false;
+			MacView.CapturedControl = null;
 		}
 	}
 }

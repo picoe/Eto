@@ -196,7 +196,23 @@ namespace Eto.Mac
 				var view = handler.ContainerControl;
 				var pt = theEvent.LocationInWindow;
 				pt = handler.GetAlignmentPointForFramePoint(pt);
-				point = pt.ToEto(view);
+				if (theEvent.Window == null)
+				{
+					// flip to top down first
+					pt.Y = NSScreen.Screens[0].Frame.Height - pt.Y;
+					point = handler.Widget.PointFromScreen(pt.ToEto());
+				}
+				else if (view.Window != theEvent.Window)
+				{
+					var loc = theEvent.Window.Frame.Location.ToEto();
+					pt.X += loc.X;
+					pt.Y += loc.Y;
+					pt.Y = NSScreen.Screens[0].Frame.Height - pt.Y;
+					point = handler.Widget.PointFromScreen(pt.ToEto());
+				}
+				else
+					point = pt.ToEto(view);
+					
 				if (includeWheel)
 					delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
 				modifiers = theEvent.ModifierFlags.ToEto();

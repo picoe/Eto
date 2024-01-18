@@ -70,7 +70,9 @@ var gtkmethods = new[]
     "IntPtr gtk_button_get_event_window(IntPtr button)",
     "uint gtk_get_major_version()",
     "uint gtk_get_minor_version()",
-    "uint gtk_get_micro_version()"
+    "uint gtk_get_micro_version()",
+	"void gtk_grab_add(IntPtr widget)",
+	"void gtk_grab_remove(IntPtr widget)",
 };
 
 var gdkmethods = new[]

@@ -466,6 +466,13 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 	/// <inheritdoc />
 	public void UpdateLayout() => Control.UpdateLayout();
 
+	/// <inheritdoc />
+	public bool IsMouseCaptured => Control.IsMouseCaptured;
+	/// <inheritdoc />
+	public bool CaptureMouse() => Control.CaptureMouse();
+	/// <inheritdoc />
+	public void ReleaseMouseCapture() => Control.ReleaseMouseCapture();
+
 	#endregion
 
 }
