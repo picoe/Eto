@@ -816,7 +816,7 @@ namespace Eto.Wpf.Forms
 
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
-			
+
 			// If the mouse was captured intrinsically we need to release capture otherwise it hangs the app
 			// since the caller is overriding default behaviour.
 			if (e.Handled && Control.IsMouseCaptured)
@@ -829,7 +829,7 @@ namespace Eto.Wpf.Forms
 			Callback.OnMouseDoubleClick(Widget, args);
 			e.Handled = args.Handled;
 		}
-		
+
 		protected virtual void HandleLostMouseCapture(object sender, swi.MouseEventArgs e)
 		{
 			if (isMouseCaptured)
@@ -845,8 +845,8 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-            isMouseCaptured = false;
-            var args = e.ToEto(ContainerControl);
+			isMouseCaptured = false;
+			var args = e.ToEto(ContainerControl);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Callback.OnMouseDoubleClick(Widget, args);
 			if (!args.Handled)
@@ -884,7 +884,7 @@ namespace Eto.Wpf.Forms
 				SetDefaultScale();
 			}
 		}
-		
+
 		protected virtual void SetDefaultScale() => SetScale(true, true);
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
@@ -973,7 +973,7 @@ namespace Eto.Wpf.Forms
 				return point;
 
 			point = point.LogicalToScreen(Widget.ParentWindow?.Screen);
-			
+
 			if (Win32.IsSystemDpiAware)
 			{
 				var logicalPixelSize = Win32.GetLogicalPixelSize(SwfScreen);
@@ -1000,7 +1000,7 @@ namespace Eto.Wpf.Forms
 		{
 			if (!ContainerControl.IsLoaded)
 				return point;
-			
+
 			// ensure we're connected to a presentation source
 			var presentationSource = sw.PresentationSource.FromVisual(ContainerControl) as HwndSource;
 			if (presentationSource == null)
@@ -1014,7 +1014,7 @@ namespace Eto.Wpf.Forms
 				point = point / systemDpi * logicalPixelSize;
 
 				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf())).ToEto();
-				
+
 				// WPF does not take into account the location of the element in the form..
 				var rootVisual = ContainerControl.GetVisualParents().OfType<sw.UIElement>().Last();
 				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0), rootVisual).ToEto();
@@ -1073,7 +1073,7 @@ namespace Eto.Wpf.Forms
 
 			WpfFrameworkElement.DragSourceControl = null;
 			sw.DragSourceHelper.UnregisterDefaultDragSource(Control);
-			
+
 			var args = new DragEventArgs(Widget, data, allowedAction, PointFromScreen(Mouse.Position), Keyboard.Modifiers, Mouse.Buttons);
 			args.Effects = effects.ToEto();
 			Callback.OnDragEnd(Widget, args);
@@ -1164,5 +1164,13 @@ namespace Eto.Wpf.Forms
 			// update the layout
 			ContainerControl.UpdateLayout();
 		}
+
+		public bool IsMouseCaptured => ContainerControl.IsMouseCaptured;
+		public bool CaptureMouse()
+		{
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+			return ContainerControl.CaptureMouse();
+		}
+		public void ReleaseMouseCapture() => ContainerControl.ReleaseMouseCapture();
 	}
 }

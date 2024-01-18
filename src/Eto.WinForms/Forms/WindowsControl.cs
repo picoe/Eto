@@ -97,6 +97,7 @@ namespace Eto.WinForms.Forms
 		public static readonly object UseShellDropManager_Key = new object();
 		public static readonly object MouseCaptured_Key = new object();
 
+		public static bool SkipMouseCapture { get; set; }
 		internal static Control DragSourceControl { get; set; }
 	}
 
@@ -520,13 +521,13 @@ namespace Eto.WinForms.Forms
 			if (MouseCaptured)
 			{
 				MouseCaptured = false;
-				Control.Capture = false;
+				ContainerControl.Capture = false;
 			}
 			var args = e.ToEto(Control);
 			Callback.OnMouseUp(Widget, args);
 			
-			if (args.Handled && Control.Capture)
-				Control.Capture = false;
+			if (args.Handled && ContainerControl.Capture)
+				ContainerControl.Capture = false;
 		}
 
 		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
@@ -537,10 +538,11 @@ namespace Eto.WinForms.Forms
 		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
 			var ev = e.ToEto(Control);
+			WindowsControl.SkipMouseCapture = false;
 			Callback.OnMouseDown(Widget, ev);
-			if (ev.Handled && ShouldCaptureMouse)
+			if (ev.Handled && ShouldCaptureMouse && !WindowsControl.SkipMouseCapture)
 			{
-				Control.Capture = true;
+				ContainerControl.Capture = true;
 				MouseCaptured = true;
 			}
 		}
@@ -992,7 +994,6 @@ namespace Eto.WinForms.Forms
 			get => Widget.Properties.Get<SwfShellDropBehavior>(typeof(SwfShellDropBehavior));
 			set => Widget.Properties.Set(typeof(SwfShellDropBehavior), value);
 		}
-
 		public void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
 		{
 			var dataObject = data.ToSwf();
@@ -1033,5 +1034,25 @@ namespace Eto.WinForms.Forms
 		}
 
 		public void UpdateLayout() => ContainerControl.PerformLayout();
+
+		public bool IsMouseCaptured => ContainerControl.Capture;
+		public bool CaptureMouse()
+		{
+			ContainerControl.Capture = true;
+			var ret = MouseCaptured = IsMouseCaptured;
+			if (ret)
+			{
+				// fire mouse enter for parents
+				// var parentControls = Widget.Parents.Select(r => r.Handler).OfType<IWindowsControl>().ToList();
+				WindowsControl.SkipMouseCapture = true;
+			}
+			return ret;
+		}
+		public void ReleaseMouseCapture()
+		{
+			ContainerControl.Capture = false;
+			MouseCaptured = false;
+		}
+
 	}
 }

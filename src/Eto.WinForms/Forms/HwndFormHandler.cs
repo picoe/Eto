@@ -623,5 +623,9 @@ namespace Eto.WinForms.Forms
 		public void Print() => throw new NotImplementedException();
 
 		public void UpdateLayout() => throw new NotImplementedException();
+
+		public bool IsMouseCaptured => throw new NotImplementedException();
+		public bool CaptureMouse() => throw new NotImplementedException();
+		public void ReleaseMouseCapture() => throw new NotImplementedException();
 	}
 }

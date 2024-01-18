@@ -220,6 +220,12 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static uint gtk_get_micro_version();
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_grab_add(IntPtr widget);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_grab_remove(IntPtr widget);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 
@@ -439,6 +445,12 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static uint gtk_get_micro_version();
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_grab_add(IntPtr widget);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_grab_remove(IntPtr widget);
+
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 
@@ -657,6 +669,12 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static uint gtk_get_micro_version();
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_grab_add(IntPtr widget);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_grab_remove(IntPtr widget);
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
@@ -986,6 +1004,26 @@ namespace Eto.GtkSharp
 				return NMMac.gtk_get_micro_version();
 			else
 				return NMWindows.gtk_get_micro_version();
+		}
+
+		public static void gtk_grab_add(IntPtr widget)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_grab_add(widget);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_grab_add(widget);
+			else
+				NMWindows.gtk_grab_add(widget);
+		}
+
+		public static void gtk_grab_remove(IntPtr widget)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_grab_remove(widget);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_grab_remove(widget);
+			else
+				NMWindows.gtk_grab_remove(widget);
 		}
 
 		public static IntPtr webkit_web_view_new()

@@ -2,6 +2,7 @@ namespace Eto.GtkSharp.Forms
 {
 	public interface IGtkControl
 	{
+		Control Widget { get; }
 		Point CurrentLocation { get; set; }
 
 		Size UserPreferredSize { get; }
@@ -17,6 +18,9 @@ namespace Eto.GtkSharp.Forms
 #if GTK2
 		void TriggerEnabled(bool oldEnabled, bool newEnabled, bool force = false);
 #endif
+
+		void TriggerMouseEnterIfNeeded();
+		void TriggerMouseLeaveIfNeeded();
 	}
 
 	public static class GtkControlExtensions
@@ -58,7 +62,13 @@ namespace Eto.GtkSharp.Forms
 		public static readonly object Cursor_Key = new object();
 		public static readonly object AllowDrop_Key = new object();
 		public static readonly object DeferMouseLeave_Key = new object();
+		public static readonly object IsMouseCaptured_Key = new object();
+		public static readonly object LastEnteredControls_Key = new object();
+		public static readonly object ShouldTranslatePoints_Key = new object();
 		public static uint? DefaultBorderWidth;
+		
+		public static HashSet<IGtkControl> EnteredControls = new HashSet<IGtkControl>();
+		public static bool ShouldCaptureMouse;
 	}
 
 	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IGtkControl
@@ -535,7 +545,7 @@ namespace Eto.GtkSharp.Forms
 					return;
 
 				// ignore child events
-				if (args.Event.Detail == Gdk.NotifyType.Inferior)
+				if (args.Event.Detail == Gdk.NotifyType.Inferior || !_mouseEntered || args.Event.Window != handler.EventControl.GetWindow())
 					return;
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
@@ -546,25 +556,42 @@ namespace Eto.GtkSharp.Forms
 					Application.Instance.AsyncInvoke(() =>
 					{
 						if (!handler.Widget.IsDisposed)
+						{
+							GtkControl.EnteredControls.Remove(handler);
 							handler.Callback.OnMouseLeave(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+						}
 					});
 				}
 				else
 				{
+					GtkControl.EnteredControls.Remove(handler);
 					handler.Callback.OnMouseLeave(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 				}
 			}
-			
+
 			public void TriggerMouseLeaveIfNeeded()
 			{
 				var handler = Handler;
 				if (handler == null || !_mouseEntered)
 					return;
 				_mouseEntered = false;
+				GtkControl.EnteredControls.Remove(handler);
 				var p = handler.Widget.PointFromScreen(Mouse.Position);
 				Keys modifiers = Keyboard.Modifiers;
 				MouseButtons buttons = MouseButtons.None;
 				handler.Callback.OnMouseLeave(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+			}
+			public void TriggerMouseEnterIfNeeded()
+			{
+				var handler = Handler;
+				if (handler == null || _mouseEntered)
+					return;
+				_mouseEntered = true;
+				GtkControl.EnteredControls.Add(handler);
+				var p = handler.Widget.PointFromScreen(Mouse.Position);
+				Keys modifiers = Keyboard.Modifiers;
+				MouseButtons buttons = MouseButtons.None;
+				handler.Callback.OnMouseEnter(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
 			[GLib.ConnectBefore]
@@ -575,12 +602,13 @@ namespace Eto.GtkSharp.Forms
 					return;
 
 				// ignore child events
-				if (args.Event.Detail == Gdk.NotifyType.Inferior)
+				if (args.Event.Detail == Gdk.NotifyType.Inferior || _mouseEntered || args.Event.Window != handler.EventControl.GetWindow())
 					return;
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
 				_mouseEntered = true;
+				GtkControl.EnteredControls.Add(handler);
 				handler.Callback.OnMouseEnter(handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
@@ -607,6 +635,7 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 
+				handler.IsMouseCaptured = false;
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				p = handler.TranslatePoint(args.Event.Window, p);
 				Keys modifiers = args.Event.State.ToEtoKey();
@@ -624,6 +653,8 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 
+				handler.IsMouseCaptured = false;
+				GtkControl.ShouldCaptureMouse = true;
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				p = handler.TranslatePoint(args.Event.Window, p);
 				Keys modifiers = args.Event.State.ToEtoKey();
@@ -641,6 +672,8 @@ namespace Eto.GtkSharp.Forms
 					handler.EventControl.GrabFocus();
 				if (args.RetVal != null && (bool)args.RetVal == true)
 					return;
+				if (mouseArgs.Handled && GtkControl.ShouldCaptureMouse)
+					handler.IsMouseCaptured = true;
 				args.RetVal = mouseArgs.Handled;
 			}
 
@@ -936,8 +969,13 @@ namespace Eto.GtkSharp.Forms
 			}
 #endif
 		}
+		
 
-		public virtual bool ShouldTranslatePoints => false;
+		public virtual bool ShouldTranslatePoints
+		{
+			get => Widget.Properties.Get<bool>(GtkControl.ShouldTranslatePoints_Key);
+			private set => Widget.Properties.Set(GtkControl.ShouldTranslatePoints_Key, value);
+		}
 
 		public virtual PointF TranslatePoint(Gdk.Window window, PointF p)
 		{
@@ -1186,6 +1224,74 @@ namespace Eto.GtkSharp.Forms
 		{
 			// is this the best way to force a layout pass?  I can't find anything else..
 			ContainerControl.Toplevel?.SizeAllocate(ContainerControl.Toplevel.Allocation);
+		}
+
+		public bool IsMouseCaptured
+		{
+			get => Widget.Properties.Get(GtkControl.IsMouseCaptured_Key, false) || EventControl.HasGrab;
+			private set => Widget.Properties.Set(GtkControl.IsMouseCaptured_Key, value);
+		}
+
+		Control IGtkControl.Widget => Widget;
+
+		public void TriggerMouseEnterIfNeeded() => Connector.TriggerMouseEnterIfNeeded();
+		public void TriggerMouseLeaveIfNeeded() => Connector.TriggerMouseLeaveIfNeeded();
+
+		public bool CaptureMouse()
+		{
+			NativeMethods.gtk_grab_add(EventControl.Handle);
+			var ret = EventControl.HasGrab;
+			
+			// var status = Gdk.Display.Default.DefaultSeat.Grab(EventControl.GetWindow(), Gdk.SeatCapabilities.Pointer, false, null, null, null);
+			// var ret = status == Gdk.GrabStatus.Success || status == Gdk.GrabStatus.AlreadyGrabbed;
+			IsMouseCaptured = ret;
+			if (ret)
+			{
+				GtkControl.ShouldCaptureMouse = false;
+				ShouldTranslatePoints = true;
+				var lastEntered = Widget.Properties.Create<List<IGtkControl>>(GtkControl.LastEnteredControls_Key);
+				lastEntered.Clear();
+				var parents = Widget.Parents.Select(r => r.Handler).OfType<IGtkControl>().ToList();
+				foreach (var entered in GtkControl.EnteredControls)
+				{
+					if (parents.Contains(entered))
+						continue;
+					entered.TriggerMouseLeaveIfNeeded();
+					lastEntered.Add(entered);
+				}
+				foreach (var parent in parents)
+					parent.TriggerMouseEnterIfNeeded();
+				TriggerMouseEnterIfNeeded();
+			}
+
+			return ret;
+		}
+
+		public void ReleaseMouseCapture()
+		{
+			if (IsMouseCaptured)
+			{
+				ShouldTranslatePoints = false;
+				NativeMethods.gtk_grab_remove(EventControl.Handle);
+				// Gdk.Display.Default.DefaultSeat.Ungrab(); // doesn't work?!
+				IsMouseCaptured = false;
+				var lastEntered = Widget.Properties.Create<List<IGtkControl>>(GtkControl.LastEnteredControls_Key);
+				var mouseLocation = Mouse.Position;
+				if (!Widget.RectangleToScreen(new Rectangle(Widget.Size)).Contains(mouseLocation))
+					TriggerMouseLeaveIfNeeded();
+				var parents = Widget.Parents.Select(r => r.Handler).OfType<IGtkControl>().ToList();
+				foreach (var parent in parents)
+				{
+					if (!parent.Widget.RectangleToScreen(new Rectangle(parent.Widget.Size)).Contains(mouseLocation))
+						parent.TriggerMouseLeaveIfNeeded();
+				}
+				
+				foreach (var last in lastEntered)
+				{
+					if (last.Widget.RectangleToScreen(new Rectangle(last.Widget.Size)).Contains(mouseLocation))
+						last.TriggerMouseEnterIfNeeded();
+				}
+			}
 		}
 	}
 }
