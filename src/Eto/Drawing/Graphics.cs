@@ -36,6 +36,9 @@ public class Graphics : Widget
 	/// <summary>
 	/// Initializes a new instance of the Generator class to draw on the given <paramref name="image"/>
 	/// </summary>
+	/// <remarks>
+	/// To commit the changes to the Bitmap, the Graphics object must be disposed or used with a using block.
+	/// </remarks>
 	/// <param name="image">Image to draw on using this graphics context</param>
 	public Graphics(Bitmap image)
 	{
