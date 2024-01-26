@@ -81,25 +81,26 @@ namespace Eto.WinForms.Forms
 			{
 				if (Win32.PerMonitorDpiSupported)
 					return Win32.GetWindowDpi(Control) / 96.0f;
-				var screen = swf.Screen.FromHandle(Control);
-				if (screen == null)
-					return 1;
-				return screen.GetLogicalPixelSize();
+				return SwfScreen?.GetLogicalPixelSize() ?? 1;
 			}
 		}
+
+		swf.Screen SwfScreen => swf.Screen.FromHandle(Control);
 
 		public Eto.Drawing.Point Location
 		{
 			get
 			{
-				Win32.RECT rect;
-				Win32.GetWindowRect(Control, out rect);
-				var location = new PointF(rect.left, rect.top);
-				return Point.Round(location / (float)LogicalPixelSize);
+				var rect = new Win32.RECT();
+				Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(Control, out rect));
+
+				var location = new Point(rect.left, rect.top);
+				return Point.Round(location.ScreenToLogical(SwfScreen));
 			}
 			set
 			{
-				throw new NotImplementedException();
+				var loc = ((PointF)value).LogicalToScreen();
+				Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(Control, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE));
 			}
 		}
 
