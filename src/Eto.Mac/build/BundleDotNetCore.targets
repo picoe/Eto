@@ -30,7 +30,7 @@
     
     <ItemGroup>
       <UnifiedFiles Include="$(BaseOutputAppPath)%(MacBundleRuntimeIdentifiers.Identity)\$(MacBundleName).app\**" RuntimeIdentifier="%(MacBundleRuntimeIdentifiers.Identity)" BasePath="$(BaseOutputAppPath)%(MacBundleRuntimeIdentifiers.Identity)\$(MacBundleName).app\" />
-      <UnifiedFiles TargetPath="$([System.String]::Copy('%(Identity)').TrimStart('%(BasePath)'))" />
+      <UnifiedFiles TargetPath="$([System.String]::Copy('^%(Identity)').Replace('^%(BasePath)', '').TrimStart('^'))" />
     </ItemGroup>
     
     <!-- <Message Importance="high" Text="%(UnifiedFiles.RelativeDir)%(UnifiedFiles.FileName)%(UnifiedFiles.Extension) > %(UnifiedFiles.TargetPath)" /> -->
