@@ -22,7 +22,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		private void Control_PreviewKeyDown(object sender, sw.Input.KeyEventArgs e)
 		{
-			if (e.Handled || swi.Keyboard.Modifiers != swi.ModifierKeys.None)
+			if (e.Handled || swi.Keyboard.Modifiers != swi.ModifierKeys.None || IsEditing)
 				return;
 
 			// handle expanding/collapsing via the keyboard
