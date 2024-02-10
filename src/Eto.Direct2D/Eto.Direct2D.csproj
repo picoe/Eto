@@ -1,19 +1,12 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT'">true</HaveWindowsDesktopSdk>
-
-    <TargetFrameworks>netcoreapp3.1;net462</TargetFrameworks>
-  </PropertyGroup>
-
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
-
-  <PropertyGroup>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net6.0-windows;net462</TargetFrameworks>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
-    <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -60,8 +53,5 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
-  
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
 
 </Project>

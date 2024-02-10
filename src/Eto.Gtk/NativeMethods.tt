@@ -152,7 +152,7 @@ namespace Eto.GtkSharp
 		static class <#= pclass[i] #>
 		{
 
-#if NETCOREAPP
+#if NET
 
 			static <#= pclass[i] #>()
 			{

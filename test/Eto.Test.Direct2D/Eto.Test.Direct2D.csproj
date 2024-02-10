@@ -1,11 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform(Windows))">net6.0-windows;$(TargetFrameworks)</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <TargetFrameworks>net6.0-windows;net48</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ApplicationIcon>..\Eto.Test\Images\TestIcon.ico</ApplicationIcon>

@@ -78,20 +78,20 @@
 			"type": "parameter",
 			"description": "Specify the framework(s) to support",
 			"dataType": "choice",
-			"defaultValue": "net6.0",
+			"defaultValue": "net8.0",
 			"replaces": "net6.0",
 			"choices": [
 				{
+					"choice": "net8.0",
+					"description": ".NET 8.0"
+				},
+				{
+					"choice": "net7.0",
+					"description": ".NET 7.0"
+				},
+				{
 					"choice": "net6.0",
 					"description": ".NET 6.0"
-				},
-				{
-					"choice": "net5.0",
-					"description": ".NET 5.0"
-				},
-				{
-					"choice": "netcoreapp3.1",
-					"description": ".NET Core 3.1"
 				},
 				{
 					"choice": "net48",
