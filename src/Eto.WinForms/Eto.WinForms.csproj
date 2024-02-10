@@ -1,21 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT'">true</HaveWindowsDesktopSdk>
-    
-    <TargetFrameworks>netcoreapp3.1;net461</TargetFrameworks>
-  </PropertyGroup>
-
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
-
-  <PropertyGroup>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net6.0-windows;net461</TargetFrameworks>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
     <NoWarn>MSB4011;$(NoWarn)</NoWarn>
-    <UseWindowsForms Condition="$(HaveWindowsDesktopSdk) == 'True'">true</UseWindowsForms>
+    <UseWindowsForms>true</UseWindowsForms>
     <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
   
@@ -116,6 +108,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Eto.Wpf\Forms\KeyboardHandler.cs">
       <Link>Forms\KeyboardHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\HttpClientExtensions.cs">
+      <Link>HttpClientExtensions.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -132,8 +127,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <PackageReference Include="System.Resources.Extensions" Version="7.0.0" />
   </ItemGroup>
 
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">
       <DesignTime>True</DesignTime>

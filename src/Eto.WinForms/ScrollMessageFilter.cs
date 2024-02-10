@@ -8,7 +8,7 @@ namespace Eto.WinForms
 			if (p != null)
 				return p.AutoScroll;
 			return control is swf.DataGridView
-#if !NETCOREAPP3_1
+#if NETFRAMEWORK
 			|| control is swf.DataGrid
 #endif
 			|| control is swf.TreeView

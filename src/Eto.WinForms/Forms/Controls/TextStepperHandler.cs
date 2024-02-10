@@ -7,7 +7,7 @@
 			public event EventHandler DownButtonClicked;
 			public event EventHandler UpButtonClicked;
 
-#if NETCOREAPP
+#if NET
 			static FieldInfo DefaultButtonsWidthField = typeof(swf.UpDownBase).GetField("_defaultButtonsWidth", BindingFlags.Static | BindingFlags.NonPublic);
 			static FieldInfo TextBoxField = typeof(swf.UpDownBase).GetField("_upDownEdit", BindingFlags.Instance | BindingFlags.NonPublic);
 			static FieldInfo UpDownButtonsField = typeof(swf.UpDownBase).GetField("_upDownButtons", BindingFlags.Instance | BindingFlags.NonPublic);

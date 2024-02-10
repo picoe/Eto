@@ -72,7 +72,7 @@ namespace Eto.Wpf.Forms.Controls
 				var currentMonth = Control.DisplayDate;
 				Control.DisplayDateStart = value == DateTime.MinValue ? (DateTime?)null : value;
 				Control.DisplayDate = currentMonth;
-				if (SelectedDate != null && SelectedDate < value)
+				if (SelectedDate < value)
 					SelectedDate = value;
 			}
 		}
@@ -83,7 +83,7 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				Control.DisplayDateEnd = value == DateTime.MaxValue ? (DateTime?)null : value;
-				if (SelectedDate != null && SelectedDate > value)
+				if (SelectedDate > value)
 					SelectedDate = value;
 			}
 		}

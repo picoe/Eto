@@ -50,7 +50,7 @@ namespace Eto.GtkSharp.Forms
 
 		public LinuxTrayIndicatorHandler()
 		{
-#if NETCOREAPP
+#if NET
 			NativeLibrary.SetDllImportResolver(typeof(LinuxTrayIndicatorHandler).Assembly, (name, assembly, path) =>
 			{
 				// Use custom import resolver for libappindicator

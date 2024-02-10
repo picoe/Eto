@@ -1,13 +1,8 @@
-<Project>
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <HaveWindowsDesktopSdk Condition="$(HaveWindowsDesktopSdk) == '' and $(OS) == 'Windows_NT'">true</HaveWindowsDesktopSdk>
-
     <TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
   </PropertyGroup>
-
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -36,20 +31,9 @@
     </Compile>
   </ItemGroup>
   
-  <!-- Automatically added by WindowsDesktop SDK -->
-  <ItemGroup Condition="$(HaveWindowsDesktopSdk) == 'False'">
-    <Page Include="MyNativeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Eto.Wpf\Eto.Wpf.csproj" />
     <ProjectReference Include="..\..\..\src\Eto\Eto.csproj" />
   </ItemGroup>
-
-  <Import Condition="'$(HaveWindowsDesktopSdk)' != 'true'" Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-  <Import Condition="'$(HaveWindowsDesktopSdk)' == 'true'" Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
 
 </Project>

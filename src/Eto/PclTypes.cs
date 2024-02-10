@@ -1,4 +1,4 @@
-#if NETSTANDARD || NETCOREAPP
+#if NETSTANDARD || NET
 // This file contains type definitions currently needed to compile Eto
 // as a Portable Class Library, in the project Eto.Pcl.csproj.
 namespace Eto
