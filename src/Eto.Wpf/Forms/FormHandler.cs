@@ -1,33 +1,32 @@
 namespace Eto.Wpf.Forms
 {
-	public class FormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, Form.IHandler
+	public class EtoFormWindow : EtoWindow
 	{
-		public class EtoWindow : sw.Window
+		public EtoFormWindow()
 		{
-
-			public EtoWindow()
-			{
-				AllowDrop = true;
-			}
-
-			protected override void OnActivated(EventArgs e)
-			{
-				if (!Focusable)
-					return;
-				base.OnActivated(e);
-			}
-
-			protected override void OnPreviewGotKeyboardFocus(swi.KeyboardFocusChangedEventArgs e)
-			{
-				if (!Focusable)
-				{
-					e.Handled = true;
-					return;
-				}
-				base.OnPreviewGotKeyboardFocus(e);
-			}
+			AllowDrop = true;
 		}
 
+		protected override void OnActivated(EventArgs e)
+		{
+			if (!Focusable)
+				return;
+			base.OnActivated(e);
+		}
+
+		protected override void OnPreviewGotKeyboardFocus(swi.KeyboardFocusChangedEventArgs e)
+		{
+			if (!Focusable)
+			{
+				e.Handled = true;
+				return;
+			}
+			base.OnPreviewGotKeyboardFocus(e);
+		}
+	}
+	
+	public class FormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, Form.IHandler
+	{
 		public FormHandler(sw.Window window)
 		{
 			Control = window;
@@ -35,7 +34,7 @@ namespace Eto.Wpf.Forms
 
 		public FormHandler()
 		{
-			Control = new EtoWindow();
+			Control = new EtoFormWindow();
 		}
 
 		public virtual void Show()

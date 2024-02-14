@@ -1,6 +1,43 @@
+using System.Windows.Automation.Peers;
 using Eto.Wpf.Forms.Controls;
 namespace Eto.Wpf.Forms
 {
+	class EtoWindowAutomationPeer : WindowAutomationPeer
+	{
+		public EtoWindowAutomationPeer(sw.Window owner) : base(owner)
+		{
+		}
+
+		protected override string GetNameCore()
+		{
+			try
+			{
+				// due to windows message hooks, we can already be in error state which causes exceptions here.
+#if NET
+				Marshal.SetLastSystemError(0);
+#else
+				Win32.SetLastError(0);
+#endif
+				return base.GetNameCore();
+			}
+			catch (Win32Exception)
+			{
+				// See https://github.com/dotnet/wpf/issues/4181 and https://github.com/dotnet/wpf/pull/7345
+				// Until that fix is in, we fix it ourselves to avoid random crashes
+				return (Owner as sw.Window)?.Title ?? string.Empty;
+			}
+		}
+	}
+
+
+	public class EtoWindow : sw.Window
+	{
+		protected override AutomationPeer OnCreateAutomationPeer()
+		{
+			return new EtoWindowAutomationPeer(this);
+		}
+	}
+	
 	public class DialogHandler : WpfWindow<sw.Window, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button defaultButton;
@@ -8,7 +45,7 @@ namespace Eto.Wpf.Forms
 		swc.DockPanel dockMain;
 		swc.Grid gridButtons;
 
-		public DialogHandler() : this(new sw.Window()) { }
+		public DialogHandler() : this(new EtoWindow()) { }
 
 		public DialogHandler(sw.Window window)
 		{
