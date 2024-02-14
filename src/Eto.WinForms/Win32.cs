@@ -632,5 +632,8 @@ namespace Eto
 		
 		[DllImport("User32.dll", SetLastError = true)]
     	public static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
+
+		[DllImport("kernel32.dll")]
+		public static extern void SetLastError(uint dwErrCode);
 	}
 }
