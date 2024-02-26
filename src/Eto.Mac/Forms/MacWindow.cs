@@ -401,6 +401,14 @@ namespace Eto.Mac.Forms
 								handler.Callback.OnSizeChanged(handler.Widget, EventArgs.Empty);
 								oldSize = newSize;
 							}
+							var old = handler.oldLocation;
+							handler.oldLocation = null;
+							var newLocation = handler.Location;
+							if (old != newLocation)
+							{
+								handler.oldLocation = newLocation;
+								handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
+							}
 						});
 					}
 					break;
