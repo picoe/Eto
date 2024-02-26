@@ -21,6 +21,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Panel contentPanel;
 	Font font;
 
+	Color backgroundColor;
 	Color disabledForegroundColor;
 	Color closeBackgroundColor;
 	Color closeHighlightBackgroundColor;
@@ -28,13 +29,17 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Color closeHighlightForegroundColor;
 	Color tabBackgroundColor;
 	Color tabHighlightBackgroundColor;
+	Color tabHoverBackgroundColor;
 	Color tabForegroundColor;
 	Color tabHighlightForegroundColor;
+	Color tabHoverForegroundColor;
+
+	int closeCornerRadius;
 
 	static Padding DefaultTabPadding = 6;
 
 	static readonly object TabPadding_Key = new object();
-	private int minImageSquareSide = 16;
+	int minImageSquareSide = 16;
 
 	/// <summary>
 	/// Gets or sets the padding inside each tab around the text.
@@ -72,6 +77,17 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		{
 			font = value;
 			Calculate();
+		}
+	}
+
+	/// <inheritdoc />
+	public override Color BackgroundColor
+	{
+		get => backgroundColor;
+		set
+		{
+			backgroundColor = value;
+			tabDrawable.Invalidate();
 		}
 	}
 
@@ -113,6 +129,20 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		set
 		{
 			closeHighlightBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the corner radius of the close button.
+	/// </summary>
+	/// <value>The corner radius of the close button.</value>
+	public int CloseCornerRadius
+	{
+		get { return closeCornerRadius; }
+		set
+		{
+			closeCornerRadius = value;
 			tabDrawable.Invalidate();
 		}
 	}
@@ -160,15 +190,29 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
-	/// Gets or sets the highlight background color for the highlighted  tab.
+	/// Gets or sets the highlight background color for the highlighted or selected tab.
 	/// </summary>
-	/// <value>The highlight background color for the close highlighted tab.</value>
+	/// <value>The highlight background color for the highlighted or selected tab.</value>
 	public Color TabHighlightBackgroundColor
 	{
 		get { return tabHighlightBackgroundColor; }
 		set
 		{
 			tabHighlightBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the background color for the tab under mouse.
+	/// </summary>
+	/// <value>The background color for the tab under mouse.</value>
+	public Color TabHoverBackgroundColor
+	{
+		get { return tabHoverBackgroundColor; }
+		set
+		{
+			tabHoverBackgroundColor = value;
 			tabDrawable.Invalidate();
 		}
 	}
@@ -188,9 +232,9 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
-	/// Gets or sets the highlight foreground color for the close button.
+	/// Gets or sets the highlight foreground color for the highlighted or selected tab.
 	/// </summary>
-	/// <value>The highlight foreground color for the close button.</value>
+	/// <value>The foreground color for the highlighted or selected tab.</value>
 	public Color TabHighlightForegroundColor
 	{
 		get { return tabHighlightForegroundColor; }
@@ -201,6 +245,19 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		}
 	}
 
+	/// <summary>
+	/// Gets or sets the foreground color for the tab under mouse.
+	/// </summary>
+	/// <value>The foreground color for the tab under mouse.</value>
+	public Color TabHoverForegroundColor
+	{
+		get { return tabHoverForegroundColor; }
+		set
+		{
+			tabHoverForegroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
 
 	/// <summary>
 	/// Gets or sets a value indicating whether to use a fixed tab height.
@@ -229,6 +286,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		nextPrevWidth = 0;
 		startx = 0;
 		font = SystemFonts.Default();
+		backgroundColor = SystemColors.Control;
 		disabledForegroundColor = SystemColors.DisabledText;
 		closeBackgroundColor = SystemColors.Control;
 		closeHighlightBackgroundColor = SystemColors.Highlight;
@@ -236,8 +294,10 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		closeHighlightForegroundColor = SystemColors.HighlightText;
 		tabBackgroundColor = SystemColors.Control;
 		tabHighlightBackgroundColor = SystemColors.Highlight;
+		tabHoverBackgroundColor = new Color(SystemColors.Highlight, 0.8f);
 		tabForegroundColor = SystemColors.ControlText;
 		tabHighlightForegroundColor = SystemColors.HighlightText;
+		tabHoverForegroundColor = SystemColors.HighlightText;
 
 		tabDrawable = new Drawable();
 
@@ -494,7 +554,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 					}
 					else
 						SelectedIndex = i;
-						
+
 					break;
 				}
 			}
@@ -596,7 +656,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	{
 		var g = e.Graphics;
 
-		g.Clear(SystemColors.Control);
+		g.Clear(BackgroundColor);
 
 		var posx = nextPrevWidth + startx;
 
@@ -633,7 +693,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 			size.Width += textoffset;
 		}
 
-		var closesize = tabDrawable.Height / 2;
+		var closesize = (int)Math.Floor(tabDrawable.Height * 0.6);
 		var tabRect = new RectangleF(posx, 0, size.Width + (tab.Closable ? closesize + tabPadding.Horizontal + tabPadding.Right : tabPadding.Horizontal), tabDrawable.Height);
 
 		if (i == selectedIndex && draggingLocation != null)
@@ -643,7 +703,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		tab.Rect = tabRect;
 
-		tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabPadding.Right - closesize, tabDrawable.Height / 4, closesize, closesize);
+		tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabPadding.Right - closesize, (tabDrawable.Height - closesize) / 2, closesize, closesize);
 		tab.TextRect = new RectangleF(tabRect.X + tabPadding.Left + textoffset, (tabDrawable.Height - size.Height) / 2, textSize.Width, textSize.Height);
 
 		posx += tab.Rect.Width;
@@ -662,8 +722,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		var tabRect = tab.Rect;
 		var textRect = tab.TextRect;
 		var closerect = tab.CloseRect;
-		var closemargin =  closerect.Height / 3;
-		var size = tabRect.Size;
+		var closemargin = closerect.Height / 4;
 
 		var textcolor = Enabled ? TabForegroundColor : DisabledForegroundColor;
 		var backcolor = TabBackgroundColor;
@@ -671,13 +730,11 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		{
 			textcolor = Enabled ? TabHighlightForegroundColor : DisabledForegroundColor;
 			backcolor = TabHighlightBackgroundColor;
-			backcolor.A *= 0.8f;
 		}
-
-		if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && !closeSelected && Enabled)
+		else if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && Enabled)
 		{
-			textcolor = TabHighlightForegroundColor;
-			backcolor = TabHighlightBackgroundColor;
+			textcolor = TabHoverForegroundColor;
+			backcolor = TabHoverBackgroundColor;
 		}
 
 		g.FillRectangle(backcolor, tabRect);
@@ -692,12 +749,16 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 		if (tab.Closable)
 		{
-			g.FillRectangle(closeSelected ? CloseHighlightBackgroundColor : CloseBackgroundColor, closerect);
+			var closeBackground = closeSelected ? CloseHighlightBackgroundColor : CloseBackgroundColor;
+			if (closeCornerRadius > 0)
+				g.FillPath(closeBackground, GraphicsPath.GetRoundRect(closerect, closeCornerRadius));
+			else
+				g.FillRectangle(closeBackground, closerect);
+
 			var closeForeground = Enabled ? closeSelected ? CloseHighlightForegroundColor : CloseForegroundColor : DisabledForegroundColor;
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closerect.Height - 1 - closemargin);
 			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closerect.Height - 1 - closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closemargin);
 		}
-
 	}
 
 	/// <summary>
