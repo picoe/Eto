@@ -642,7 +642,12 @@ namespace Eto.Wpf.Forms.Controls
 						Control.SelectedItems.Clear();
 						foreach (int row in value)
 						{
-							Control.SelectedItems.Add(list[row]);
+							// protect against any incorrect info
+							if (row >= list.Count)
+								continue;
+							var item = list[row];
+							if (item != null)
+								Control.SelectedItems.Add(item);
 						}
 
 						Control.EndUpdateSelectedItems();
