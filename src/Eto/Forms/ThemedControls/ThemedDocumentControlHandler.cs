@@ -779,8 +779,12 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 			var closeMargin = (int)tab.CloseRect.Height / 4;
 			var closeForegroundRect = RectangleF.Inset(tab.CloseRect, new PaddingF(closeMargin));
 			var closeForeground = Enabled ? closeSelected ? CloseHighlightForegroundColor : CloseForegroundColor : DisabledForegroundColor;
+
+			g.SaveTransform();
+			g.PixelOffsetMode = PixelOffsetMode.Half;
 			g.DrawLine(closeForeground, closeForegroundRect.TopLeft, closeForegroundRect.BottomRight);
 			g.DrawLine(closeForeground, closeForegroundRect.TopRight, closeForegroundRect.BottomLeft);
+			g.RestoreTransform();
 		}
 	}
 
