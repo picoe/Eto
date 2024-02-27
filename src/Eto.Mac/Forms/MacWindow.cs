@@ -401,13 +401,14 @@ namespace Eto.Mac.Forms
 								handler.Callback.OnSizeChanged(handler.Widget, EventArgs.Empty);
 								oldSize = newSize;
 							}
-							var old = handler.oldLocation;
-							handler.oldLocation = null;
-							var newLocation = handler.Location;
-							if (old != newLocation)
+							if (handler.Widget.Loaded)
 							{
-								handler.oldLocation = newLocation;
-								handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
+								var newLocation = handler.GetLocation();
+								if (handler.oldLocation != newLocation)
+								{
+									handler.oldLocation = newLocation;
+									handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
+								}
 							}
 						});
 					}
@@ -419,10 +420,8 @@ namespace Eto.Mac.Forms
 							var handler = e.Handler as MacWindow<TControl, TWidget, TCallback>;
 							if (handler != null)
 							{
-								var old = handler.oldLocation;
-								handler.oldLocation = null;
-								var newLocation = handler.Location;
-								if (old != newLocation)
+								var newLocation = handler.GetLocation();
+								if (handler.oldLocation != newLocation)
 								{
 									handler.oldLocation = newLocation;
 									handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
@@ -982,10 +981,7 @@ namespace Eto.Mac.Forms
 					return oldLocation.Value;
 				if (!Widget.Loaded && InitialLocation != null)
 					return InitialLocation.Value;
-				// translate location relative to the top left corner of main screen
-				var mainFrame = NSScreen.Screens[0].Frame;
-				var frame = Control.Frame;
-				return new Point((int)frame.X, (int)(mainFrame.Height - frame.Y - frame.Height));
+				return GetLocation();
 			}
 			set
 			{
@@ -997,6 +993,14 @@ namespace Eto.Mac.Forms
 				if (etoWindow != null)
 					etoWindow.DisableCenterParent = true;
 			}
+		}
+
+		private Point GetLocation()
+		{
+			// translate location relative to the top left corner of main screen
+			var mainFrame = NSScreen.Screens[0].Frame;
+			var frame = Control.Frame;
+			return new Point((int)frame.X, (int)(mainFrame.Height - frame.Y - frame.Height));
 		}
 
 		void SetLocation(Point value)
