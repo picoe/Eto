@@ -9,6 +9,7 @@ public class ThemedDocumentPageHandler : ThemedContainerHandler<Panel, DocumentP
 	bool closable;
 	string text;
 	Image image;
+	bool hasUnsavedChanges;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedDocumentPageHandler"/> class.
@@ -105,6 +106,21 @@ public class ThemedDocumentPageHandler : ThemedContainerHandler<Panel, DocumentP
 		}
 	}
 
+
+	/// <summary>
+	/// Gets or sets a value indicating whether this <see cref="T:Eto.Forms.ThemedControls.ThemedDocumentPageHandler"/> has unsaved changes.
+	/// </summary>
+	/// <value><c>true</c> if page has unsaved changes; otherwise, <c>false</c>.</value>
+	public bool HasUnsavedChanges
+	{
+		get { return hasUnsavedChanges; }
+		set
+		{
+			hasUnsavedChanges = value;
+			Update();
+		}
+	}
+
 	/// <summary>
 	/// Gets a value indicating whether <see cref="Control.PreLoad"/>/<see cref="Control.Load"/>/<see cref="Control.LoadComplete"/>/<see cref="Control.UnLoad"/>
 	/// events are propagated to the inner control
@@ -113,9 +129,13 @@ public class ThemedDocumentPageHandler : ThemedContainerHandler<Panel, DocumentP
 
 	internal RectangleF Rect { get; set; }
 
+	internal RectangleF UnsavedRect { get; set; }
+
 	internal RectangleF CloseRect { get; set; }
 
 	internal RectangleF TextRect { get; set; }
+
+	internal RectangleF ImageRect { get; set; }
 
 	void Update() => DocControl?.Update(this);
 }

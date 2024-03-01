@@ -33,6 +33,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	Color tabForegroundColor;
 	Color tabHighlightForegroundColor;
 	Color tabHoverForegroundColor;
+	Color unsavedBackgroundColor;
 
 	int closeCornerRadius;
 
@@ -260,6 +261,20 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	}
 
 	/// <summary>
+	/// Gets or sets the background color for the unsaved changes indicator.
+	/// </summary>
+	/// <value>The background color for the unsaved changes indicator.</value>
+	public Color UnsavedBackgroundColor
+	{
+		get { return unsavedBackgroundColor; }
+		set
+		{
+			unsavedBackgroundColor = value;
+			tabDrawable.Invalidate();
+		}
+	}
+
+	/// <summary>
 	/// Gets or sets a value indicating whether to use a fixed tab height.
 	/// </summary>
 	/// <value><c>true</c> to use a fixed tab height.</value>
@@ -298,6 +313,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		tabForegroundColor = SystemColors.ControlText;
 		tabHighlightForegroundColor = SystemColors.HighlightText;
 		tabHoverForegroundColor = SystemColors.HighlightText;
+		unsavedBackgroundColor = SystemColors.ControlText;
 
 		tabDrawable = new Drawable();
 
@@ -680,33 +696,35 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		}
 	}
 
-	void CalculateTab(ThemedDocumentPageHandler tab, int i, ref float posx)
+	void CalculateTab(ThemedDocumentPageHandler tab, int i, ref float posX)
 	{
-		var tabPadding = TabPadding;
-		var textSize = string.IsNullOrEmpty(tab.Text) ? Size.Empty : Size.Ceiling(Font.MeasureString(tab.Text));
-		var size = textSize;
-		var prevnextsel = mousePos.X > nextPrevWidth || i == -1;
-		var textoffset = 0;
-		if (tab.Image != null)
-		{
-			textoffset = maxImageSize.Width + tabPadding.Left;
-			size.Width += textoffset;
-		}
-
-		var closesize = (int)Math.Floor(tabDrawable.Height * 0.6);
-		var tabRect = new RectangleF(posx, 0, size.Width + (tab.Closable ? closesize + tabPadding.Horizontal + tabPadding.Right : tabPadding.Horizontal), tabDrawable.Height);
-
+		var tabLocation = new PointF(posX, 0);
 		if (i == selectedIndex && draggingLocation != null)
 		{
-			tabRect.Offset(mousePos.X - draggingLocation.Value.X, 0);
+			tabLocation.Offset(mousePos.X - draggingLocation.Value.X, 0);
 		}
 
-		tab.Rect = tabRect;
+		var imageLocation = new PointF(tabLocation.X + TabPadding.Left, (tabDrawable.Height - maxImageSize.Height) / 2f);
+		var imageSize = tab.Image is null ? Size.Empty : maxImageSize;
+		tab.ImageRect = new RectangleF(imageLocation, imageSize);
 
-		tab.CloseRect = new RectangleF(tabRect.X + tab.Rect.Width - tabPadding.Right - closesize, (tabDrawable.Height - closesize) / 2, closesize, closesize);
-		tab.TextRect = new RectangleF(tabRect.X + tabPadding.Left + textoffset, (tabDrawable.Height - size.Height) / 2, textSize.Width, textSize.Height);
+		var textSize = string.IsNullOrEmpty(tab.Text) ? Size.Empty : Size.Ceiling(Font.MeasureString(tab.Text));
+		var textLocation = new PointF(tab.ImageRect.Right + (imageSize.IsEmpty ? 0 : TabPadding.Left), (tabDrawable.Height - textSize.Height) / 2);
+		tab.TextRect = new RectangleF(textLocation, textSize);
 
-		posx += tab.Rect.Width;
+		var unsavedSize = tab.HasUnsavedChanges ? new Size(6, 6) : Size.Empty;
+		var unsavedLocation = new PointF(tab.TextRect.Right + (tab.HasUnsavedChanges ? TabPadding.Right : 0), (tabDrawable.Height - unsavedSize.Height) / 2);
+		tab.UnsavedRect = new RectangleF(unsavedLocation, unsavedSize);
+
+		var closeSize = tab.Closable
+			? (int)Math.Floor(tabDrawable.Height * 0.6)
+			: 0;
+		var closeLocation = new PointF(tab.UnsavedRect.Right + (tab.Closable ? TabPadding.Right : 0), (tabDrawable.Height - closeSize) / 2);
+		tab.CloseRect = new RectangleF(closeLocation, new SizeF(closeSize, closeSize));
+
+		tab.Rect = new RectangleF(tabLocation, new SizeF(tab.CloseRect.Right + TabPadding.Right - tabLocation.X, tabDrawable.Height));
+
+		posX += tab.Rect.Width;
 	}
 
 	bool IsCloseSelected(ThemedDocumentPageHandler tab)
@@ -718,11 +736,6 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 	void DrawTab(Graphics g, ThemedDocumentPageHandler tab, int i)
 	{
 		var prevnextsel = mousePos.X > nextPrevWidth || i == -1;
-		var closeSelected = IsCloseSelected(tab);
-		var tabRect = tab.Rect;
-		var textRect = tab.TextRect;
-		var closerect = tab.CloseRect;
-		var closemargin = closerect.Height / 4;
 
 		var textcolor = Enabled ? TabForegroundColor : DisabledForegroundColor;
 		var backcolor = TabBackgroundColor;
@@ -731,33 +744,47 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 			textcolor = Enabled ? TabHighlightForegroundColor : DisabledForegroundColor;
 			backcolor = TabHighlightBackgroundColor;
 		}
-		else if (draggingLocation == null && tabRect.Contains(mousePos) && prevnextsel && Enabled)
+		else if (draggingLocation == null && tab.Rect.Contains(mousePos) && prevnextsel && Enabled)
 		{
 			textcolor = TabHoverForegroundColor;
 			backcolor = TabHoverBackgroundColor;
 		}
 
-		g.FillRectangle(backcolor, tabRect);
-		if (tab.Image != null)
+		g.FillRectangle(backcolor, tab.Rect);
+		g.DrawText(Font, textcolor, tab.TextRect.Location, tab.Text);
+
+		if (tab.Image is not null)
 		{
 			g.SaveTransform();
 			g.ImageInterpolation = ImageInterpolation.High;
-			g.DrawImage(tab.Image, tabRect.X + TabPadding.Left, (tabDrawable.Height - maxImageSize.Height) / 2, maxImageSize.Width, maxImageSize.Height);
+			g.DrawImage(tab.Image, tab.ImageRect);
 			g.RestoreTransform();
 		}
-		g.DrawText(Font, textcolor, textRect.Location, tab.Text);
+
+		if (tab.HasUnsavedChanges)
+		{
+			g.FillEllipse(UnsavedBackgroundColor, tab.UnsavedRect);
+		}
 
 		if (tab.Closable)
 		{
+			var closeSelected = IsCloseSelected(tab);
+
 			var closeBackground = closeSelected ? CloseHighlightBackgroundColor : CloseBackgroundColor;
 			if (closeCornerRadius > 0)
-				g.FillPath(closeBackground, GraphicsPath.GetRoundRect(closerect, closeCornerRadius));
+				g.FillPath(closeBackground, GraphicsPath.GetRoundRect(tab.CloseRect, closeCornerRadius));
 			else
-				g.FillRectangle(closeBackground, closerect);
+				g.FillRectangle(closeBackground, tab.CloseRect);
 
+			var closeMargin = (int)tab.CloseRect.Height / 4;
+			var closeForegroundRect = RectangleF.Inset(tab.CloseRect, new PaddingF(closeMargin));
 			var closeForeground = Enabled ? closeSelected ? CloseHighlightForegroundColor : CloseForegroundColor : DisabledForegroundColor;
-			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closerect.Height - 1 - closemargin);
-			g.DrawLine(closeForeground, closerect.X + closemargin, closerect.Y + closerect.Height - 1 - closemargin, closerect.X + closerect.Width - 1 - closemargin, closerect.Y + closemargin);
+
+			g.SaveTransform();
+			g.PixelOffsetMode = PixelOffsetMode.Half;
+			g.DrawLine(closeForeground, closeForegroundRect.TopLeft, closeForegroundRect.BottomRight);
+			g.DrawLine(closeForeground, closeForegroundRect.TopRight, closeForegroundRect.BottomLeft);
+			g.RestoreTransform();
 		}
 	}
 
