@@ -658,5 +658,13 @@ namespace Eto.Mac
 					throw new NotSupportedException();
 			}
 		}
+		
+		public static Image ToEto(this NSImage image)
+		{
+			if (image.Representations().Length == 1)
+				return new Bitmap(new BitmapHandler(image));
+			else
+				return new Icon(new IconHandler(image));
+		}
 	}
 }

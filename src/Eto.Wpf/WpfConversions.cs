@@ -838,13 +838,9 @@ namespace Eto.Wpf
 			}
 		}
 
-		public static Image ToEto(this System.Drawing.Icon icon)
+		public static Icon ToEto(this System.Drawing.Icon icon)
 		{
-			var imageSource = Imaging.CreateBitmapSourceFromHIcon(
-						icon.Handle,
-						sw.Int32Rect.Empty,
-						swmi.BitmapSizeOptions.FromEmptyOptions());
-			return imageSource.ToEto();
+			return new Icon(new IconHandler(icon));
 		}
 
 		public static Icon ToEtoIcon(this swm.ImageSource bitmap)

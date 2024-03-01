@@ -24,35 +24,80 @@ namespace Eto.Forms.ThemedControls
 		public DialogResult ShowDialog(Control parent)
 		{
 			var dlg = new ThemedMessageBox();
-			dlg.Title = Caption;
+			dlg.Title = Caption ?? parent?.ParentWindow?.Title ?? Application.Instance.Localize(Widget, "Error");
 			dlg.Text = Text;
 			// todo: add ability to get icons needed from SystemIcons
-			//dlg.Image = GetImage();
+			dlg.Image = GetImage();
+
+			var defaultButton = DefaultButton;
+			if (defaultButton == MessageBoxDefaultButton.Default)
+			{
+				switch (Buttons)
+				{
+					case MessageBoxButtons.OK:
+						defaultButton = MessageBoxDefaultButton.OK;
+						break;
+					case MessageBoxButtons.OKCancel:
+						defaultButton = MessageBoxDefaultButton.Cancel;
+						break;
+					case MessageBoxButtons.YesNo:
+						defaultButton = MessageBoxDefaultButton.No;
+						break;
+					case MessageBoxButtons.YesNoCancel:
+						defaultButton = MessageBoxDefaultButton.Cancel;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+
 
 			var app = Application.Instance;
 			switch (Buttons)
 			{
 				case MessageBoxButtons.OK:
-					dlg.AddButton(app.Localize(Widget, "OK"), DialogResult.Ok, DefaultButton == MessageBoxDefaultButton.OK);
+					dlg.AddButton(app.Localize(Widget, "OK"), DialogResult.Ok, defaultButton == MessageBoxDefaultButton.OK, defaultButton == MessageBoxDefaultButton.OK);
 					break;
 				case MessageBoxButtons.OKCancel:
-					dlg.AddButton(app.Localize(Widget, "OK"), DialogResult.Ok, DefaultButton == MessageBoxDefaultButton.OK);
-					dlg.AddButton(app.Localize(Widget, "Cancel"), DialogResult.Cancel, DefaultButton == MessageBoxDefaultButton.Cancel, true);
+					dlg.AddButton(app.Localize(Widget, "OK"), DialogResult.Ok, defaultButton == MessageBoxDefaultButton.OK);
+					dlg.AddButton(app.Localize(Widget, "Cancel"), DialogResult.Cancel, defaultButton == MessageBoxDefaultButton.Cancel, true);
 					break;
 				case MessageBoxButtons.YesNo:
-					dlg.AddButton(app.Localize(Widget, "&Yes"), DialogResult.Yes, DefaultButton == MessageBoxDefaultButton.Yes);
-					dlg.AddButton(app.Localize(Widget, "&No"), DialogResult.No, DefaultButton == MessageBoxDefaultButton.No);
+					dlg.AddButton(app.Localize(Widget, "&Yes"), DialogResult.Yes, defaultButton == MessageBoxDefaultButton.Yes);
+					dlg.AddButton(app.Localize(Widget, "&No"), DialogResult.No, defaultButton == MessageBoxDefaultButton.No);
 					break;
 				case MessageBoxButtons.YesNoCancel:
-					dlg.AddButton(app.Localize(Widget, "Cancel"), DialogResult.Cancel, DefaultButton == MessageBoxDefaultButton.Cancel, true);
-					dlg.AddButton(app.Localize(Widget, "&No"), DialogResult.No, DefaultButton == MessageBoxDefaultButton.No);
-					dlg.AddButton(app.Localize(Widget, "&Yes"), DialogResult.Yes, DefaultButton == MessageBoxDefaultButton.Yes);
+					dlg.AddButton(app.Localize(Widget, "Cancel"), DialogResult.Cancel, defaultButton == MessageBoxDefaultButton.Cancel, true);
+					dlg.AddButton(app.Localize(Widget, "&No"), DialogResult.No, defaultButton == MessageBoxDefaultButton.No);
+					dlg.AddButton(app.Localize(Widget, "&Yes"), DialogResult.Yes, defaultButton == MessageBoxDefaultButton.Yes);
 					break;
 			}
 
 			dlg.ShowModal(parent);
 
 			return dlg.Result as DialogResult? ?? DialogResult.Cancel;
+		}
+
+		private Image GetImage()
+		{
+			SystemIconType icon = SystemIconType.Error;
+			switch (Type)
+			{
+				case MessageBoxType.Information:
+					icon = SystemIconType.Information;
+					break;
+				case MessageBoxType.Warning:
+					icon = SystemIconType.Warning;
+					break;
+				case MessageBoxType.Error:
+					icon = SystemIconType.Error;
+					break;
+				case MessageBoxType.Question:
+					icon = SystemIconType.Question;
+					break;
+
+			}
+			return SystemIcons.Get(icon, SystemIconSize.Large)?.WithSize(32, 32);
 		}
 	}
 
@@ -64,8 +109,7 @@ namespace Eto.Forms.ThemedControls
 	{
 		readonly Label textLabel = new Label();
 		readonly ImageView image = new ImageView();
-
-
+		
 		/// <summary>
 		/// Gets or sets the result of the dialog
 		/// </summary>
@@ -76,20 +120,59 @@ namespace Eto.Forms.ThemedControls
 		/// </summary>
 		public ThemedMessageBox()
 		{
-			Closeable = false;
 			ShowInTaskbar = false;
 			Resizable = false;
+			Closeable = false;
 
+			textLabel.VerticalAlignment = VerticalAlignment.Center;
 			var layout = new DynamicLayout();
 			layout.Padding = new Padding(22, 28);
 			layout.DefaultSpacing = new Size(8, 8);
 
-			layout.AddRow(TableLayout.AutoSized(image, centered: true), textLabel);
+			layout.AddRow(new TableLayout(image, null), textLabel);
 
 			Content = layout;
 
+
 			HandleEvent(KeyDownEvent);
 		}
+
+		/// <inheritdoc/>
+		protected override void OnPreLoad(EventArgs e)
+		{
+			base.OnPreLoad(e);
+			CalculateSize();
+		}
+
+		private void CalculateSize()
+		{
+			const int minWidth = 340;
+			const float maxRatio = 1000f;
+			const float idealRatio = 2f;
+			const int increment = 2;
+			var screen = Screen ?? Screen.PrimaryScreen;
+			var workingArea = screen.WorkingArea;
+			SizeF? lastGoodSize = null;
+			SizeF available = new SizeF(workingArea.Width * .7f, float.PositiveInfinity);
+			SizeF size;
+			do
+			{
+				size = textLabel.GetPreferredSize(available);
+				var ratio = size.Width / size.Height;
+				if (ratio <= maxRatio && size.Width >= minWidth)
+				{
+					lastGoodSize = size;
+					// we're at an ideal ratio of width to height, let's use it.
+					if (ratio <= idealRatio)
+						break;
+				}
+				available.Width = (int)Math.Floor(Math.Min(available.Width, size.Width) - increment);
+			} while (available.Width >= minWidth + increment);
+
+			if (lastGoodSize != null)
+				textLabel.Size = (Size)lastGoodSize.Value;
+		}
+
 
 		/// <inheritdoc/>
 		protected override void OnKeyDown(KeyEventArgs e)
@@ -121,7 +204,10 @@ namespace Eto.Forms.ThemedControls
 				Result = result;
 				Close();
 			};
-			PositiveButtons.Add(button);
+			if (isAbort && !isDefault)
+				NegativeButtons.Add(button);
+			else
+				PositiveButtons.Add(button);
 
 			if (isDefault)
 			{
@@ -142,7 +228,10 @@ namespace Eto.Forms.ThemedControls
 		public string Text
 		{
 			get => textLabel.Text;
-			set => textLabel.Text = value;
+			set
+			{
+				textLabel.Text = value;
+			}
 		}
 
 		/// <summary>

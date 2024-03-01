@@ -66,7 +66,7 @@ namespace Eto.Wpf.Drawing
 		}
 		public Brush ForegroundBrush
 		{
-			get => _foregroundBrush;
+			get => _foregroundBrush ?? Brushes.Black;
 			set
 			{
 				_foregroundBrush = value;

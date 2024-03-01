@@ -1,10 +1,8 @@
-using Eto.IO;
 using Eto.GtkSharp.Drawing;
 using Eto.GtkSharp.Forms.Cells;
 using Eto.GtkSharp.Forms.Controls;
 using Eto.GtkSharp.Forms.Printing;
 using Eto.GtkSharp.Forms;
-using Eto.GtkSharp.IO;
 using Eto.Forms.ThemedControls;
 using Eto.GtkSharp.Forms.Menu;
 using Eto.GtkSharp.Forms.ToolBar;

@@ -30,7 +30,7 @@ namespace Eto.GtkSharp
 		static class NMWindows
 		{
 
-#if NETCOREAPP
+#if NET
 
 			static NMWindows()
 			{
@@ -255,7 +255,7 @@ namespace Eto.GtkSharp
 		static class NMLinux
 		{
 
-#if NETCOREAPP
+#if NET
 
 			static NMLinux()
 			{
@@ -480,7 +480,7 @@ namespace Eto.GtkSharp
 		static class NMMac
 		{
 
-#if NETCOREAPP
+#if NET
 
 			static NMMac()
 			{

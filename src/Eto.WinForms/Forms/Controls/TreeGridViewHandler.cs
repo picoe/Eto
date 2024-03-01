@@ -346,7 +346,7 @@ namespace Eto.WinForms.Forms.Controls
 					var mode = displayedOnly ? swf.DataGridViewAutoSizeColumnMode.DisplayedCells : swf.DataGridViewAutoSizeColumnMode.AllCells;
 					var width = colHandler.Control.GetPreferredWidth(mode, false);
 					if (width > colHandler.Control.Width)
-						colHandler.Control.Width = width;
+						colHandler.Control.Width = Math.Min(ushort.MaxValue, width);
 				}
 			}
 		}

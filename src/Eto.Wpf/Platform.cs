@@ -5,8 +5,6 @@ using Eto.Wpf.Forms.Menu;
 using Eto.Wpf.Forms.Controls;
 using Eto.Wpf.Forms.Printing;
 using Eto.Wpf.Forms;
-using Eto.IO;
-using Eto.Wpf.IO;
 using Eto.Forms.ThemedControls;
 using Eto.Shared.Forms;
 namespace Eto.Wpf
@@ -50,6 +48,17 @@ namespace Eto.Wpf
 							}
 						}
 
+					}
+				};
+			});
+
+			Style.Add<ThemedMessageBox>(null, c =>
+			{
+				c.Load += (sender, e) =>
+				{
+					if (c.ControlObject is sw.Window window)
+					{
+						window.WindowStartupLocation = sw.WindowStartupLocation.CenterScreen;
 					}
 				};
 			});

@@ -1,6 +1,4 @@
-using Eto.IO;
 using Eto.Mac.Drawing;
-using Eto.Mac.IO;
 using Eto.Mac.Forms.Controls;
 using Eto.Mac.Forms.Printing;
 using Eto.Mac.Forms;
