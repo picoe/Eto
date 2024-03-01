@@ -28,6 +28,7 @@ namespace Eto.Wpf.Forms
 		internal static readonly object Closeable_Key = new object();
 		internal static readonly object Resizable_Key = new object();
 		internal static readonly object Icon_Key = new object();
+		internal static readonly object ShowSystemMenu_Key = new object();
 	}
 
 	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
@@ -471,6 +472,25 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		public override SizeF GetPreferredSize(SizeF availableSize)
+		{
+			var _ = NativeHandle;
+			var old = Control.SizeToContent;
+			if (!Control.IsLoaded)
+				Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+			var available = availableSize.ToWpf();
+			var preferred = UserPreferredSize;
+			if (!double.IsNaN(preferred.Width))
+				available.Width = preferred.Width;
+			if (!double.IsNaN(preferred.Height))
+				available.Width = preferred.Height;
+			Control.ApplyAllTemplates();
+			Control.Measure(available);
+			var desired = SizeF.Max(MinimumSize, Control.DesiredSize.ToEto());
+			Control.SizeToContent = old;
+			return desired;
+		}
+		
 		public Icon Icon
 		{
 			get => Widget.Properties.Get<Icon>(WpfWindow.Icon_Key, () => {
@@ -538,10 +558,21 @@ namespace Eto.Wpf.Forms
 			}
 		}
 		
+		public bool? ShowSystemMenu
+		{
+			get => Widget.Properties.Get<bool?>(WpfWindow.ShowSystemMenu_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(WpfWindow.ShowSystemMenu_Key, value))
+					SetSystemMenu();
+			}
+		}
+		
+		
 		void SetSystemMenu()
 		{
 			// hide system menu (and close button) if all commands are disabled
-			var useSystemMenu = Closeable || Minimizable || Maximizable;
+			var useSystemMenu = ShowSystemMenu ?? (Closeable || Minimizable || Maximizable);
 			SetStyle(Win32.WS.SYSMENU, useSystemMenu);
 
 			// enable/disable the close button if shown (does not disable Alt+F4)

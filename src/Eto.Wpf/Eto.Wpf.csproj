@@ -118,9 +118,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
       <DesignTime>True</DesignTime>
       <DependentUpon>FontDialogResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="..\Eto.WinForms\IO\ShellIcon.cs">
-      <Link>IO\ShellIcon.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\EmbeddedAssemblyLoader.cs">
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>

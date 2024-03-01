@@ -111,6 +111,12 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\HttpClientExtensions.cs">
       <Link>HttpClientExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\Drawing\SystemIconsHandler.cs">
+      <Link>Drawing\SystemIconsHandler</Link>
+    </Compile>
+    <Compile Include="..\Eto.Wpf\ShellIcon.cs">
+      <Link>ShellIcon.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

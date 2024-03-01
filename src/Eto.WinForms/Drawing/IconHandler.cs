@@ -1,3 +1,5 @@
+using System.Windows.Controls;
+
 namespace Eto.WinForms.Drawing
 {
 	public interface IWindowsIconSource
@@ -7,13 +9,19 @@ namespace Eto.WinForms.Drawing
 
 	public class IconHandler : WidgetHandler<sd.Icon, Icon>, Icon.IHandler, IWindowsImage, IWindowsIconSource
 	{
-		Dictionary<int, sd.Image> cachedImages;
-		List<IconFrame> frames;
-		IconFrame idealFrame;
+		Dictionary<int, sd.Image> _cachedImages;
+		List<IconFrame> _frames;
+		IconFrame _idealFrame;
+		bool _destroyIcon;
 
 		public IconHandler(sd.Icon control)
 		{
 			this.Control = control;
+		}
+		public IconHandler(sd.Icon control, bool destroyIcon)
+		{
+			this.Control = control;
+			_destroyIcon = destroyIcon;
 		}
 
 		public IconHandler()
@@ -33,7 +41,7 @@ namespace Eto.WinForms.Drawing
 		{
 			get
 			{
-				return frames ?? SplitIcon(Control);
+				return _frames ?? SplitIcon(Control);
 			}
 		}
 
@@ -49,11 +57,11 @@ namespace Eto.WinForms.Drawing
 
 		public IconFrame GetIdealIcon()
 		{
-			if (idealFrame != null)
-				return idealFrame;
+			if (_idealFrame != null)
+				return _idealFrame;
 			var orderedFrames = SplitIcon(Control).OrderByDescending(r => r.PixelSize.Width * r.PixelSize.Height);
-			idealFrame = orderedFrames.FirstOrDefault(r => r.Scale == 1) ?? orderedFrames.First();
-			return idealFrame;
+			_idealFrame = orderedFrames.FirstOrDefault(r => r.Scale == 1) ?? orderedFrames.First();
+			return _idealFrame;
 		}
 
 		public sd.Icon GetIconClosestToSize(int width)
@@ -75,8 +83,8 @@ namespace Eto.WinForms.Drawing
 
 		public List<IconFrame> SplitIcon(sd.Icon icon)
 		{
-			if (frames != null)
-				return frames;
+			if (_frames != null)
+				return _frames;
 			if (icon == null)
 			{
 				throw new ArgumentNullException("icon");
@@ -94,54 +102,65 @@ namespace Eto.WinForms.Drawing
 			var splitIcons = new List<sd.Icon>();
 			int count = BitConverter.ToInt16(srcBuf, 4); // ICONDIR.idCount
 
-			for (int i = 0; i < count; i++)
+			if (count == 1)
 			{
-				using (var destStream = new MemoryStream())
-				using (var writer = new BinaryWriter(destStream))
+				splitIcons.Add(icon);
+			}
+			else
+			{
+				for (int i = 0; i < count; i++)
 				{
-					// Copy ICONDIR and ICONDIRENTRY.
-					int pos = 0;
-					writer.Write(srcBuf, pos, sICONDIR - 2);
-					writer.Write((short)1);    // ICONDIR.idCount == 1;
+					using (var destStream = new MemoryStream())
+					using (var writer = new BinaryWriter(destStream))
+					{
+						// Copy ICONDIR and ICONDIRENTRY.
+						int pos = 0;
+						writer.Write(srcBuf, pos, sICONDIR - 2);
+						writer.Write((short)1);    // ICONDIR.idCount == 1;
 
-					pos += sICONDIR;
-					pos += sICONDIRENTRY * i;
+						pos += sICONDIR;
+						pos += sICONDIRENTRY * i;
 
-					writer.Write(srcBuf, pos, sICONDIRENTRY - 4); // write out icon info (minus old offset)
-					writer.Write(sICONDIR + sICONDIRENTRY);    // write offset of icon data
-					pos += 8;
+						writer.Write(srcBuf, pos, sICONDIRENTRY - 4); // write out icon info (minus old offset)
+						writer.Write(sICONDIR + sICONDIRENTRY);    // write offset of icon data
+						pos += 8;
 
-					// Copy picture and mask data.
-					int imgSize = BitConverter.ToInt32(srcBuf, pos);       // ICONDIRENTRY.dwBytesInRes
-					pos += 4;
-					int imgOffset = BitConverter.ToInt32(srcBuf, pos);    // ICONDIRENTRY.dwImageOffset
-					if (imgOffset + imgSize > srcBuf.Length)
-						throw new ArgumentException("ugh");
-					writer.Write(srcBuf, imgOffset, imgSize);
-					writer.Flush();
+						// Copy picture and mask data.
+						int imgSize = BitConverter.ToInt32(srcBuf, pos);       // ICONDIRENTRY.dwBytesInRes
+						pos += 4;
+						int imgOffset = BitConverter.ToInt32(srcBuf, pos);    // ICONDIRENTRY.dwImageOffset
+						if (imgOffset + imgSize > srcBuf.Length)
+							throw new ArgumentException("ugh");
+						writer.Write(srcBuf, imgOffset, imgSize);
+						writer.Flush();
 
-					// Create new icon.
-					destStream.Seek(0, SeekOrigin.Begin);
-					splitIcons.Add(new sd.Icon(destStream));
+						// Create new icon.
+						destStream.Seek(0, SeekOrigin.Begin);
+						splitIcons.Add(new sd.Icon(destStream));
+					}
 				}
 			}
 
-			frames = splitIcons.Select(r => IconFrame.FromControlObject(1, r)).ToList();
-			return frames;
+			_frames = splitIcons.Select(r => IconFrame.FromControlObject(1, r)).ToList();
+			return _frames;
 		}
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_destroyIcon && Control != null)
+			{
+				Win32.DestroyIcon(Control.Handle);
+			}
 			base.Dispose(disposing);
 			if (disposing)
 			{
-				if (frames != null)
+				if (_frames != null)
 				{
-					foreach (var frame in frames)
+					foreach (var frame in _frames)
 					{
 						((sd.Icon)frame.ControlObject).Dispose();
 					}
-					frames = null;
+					_frames = null;
 				}
 			}
 		}
@@ -150,15 +169,15 @@ namespace Eto.WinForms.Drawing
 		{
 			if (size != null)
 			{
-				if (cachedImages == null)
-					cachedImages = new Dictionary<int, sd.Image>();
+				if (_cachedImages == null)
+					_cachedImages = new Dictionary<int, sd.Image>();
 
-				if (cachedImages.TryGetValue(size.Value, out var bmp))
+				if (_cachedImages.TryGetValue(size.Value, out var bmp))
 					return bmp;
 
 				var icon = GetIconClosestToSize(size.Value);
 				bmp = icon.ToBitmap();
-				cachedImages[size.Value] = bmp;
+				_cachedImages[size.Value] = bmp;
 				return bmp;
 			}
 			return GetIdealIcon().Bitmap.ToSD();
@@ -203,7 +222,7 @@ namespace Eto.WinForms.Drawing
 
 		public void Create(IEnumerable<IconFrame> frames)
 		{
-			this.frames = frames.ToList();
+			this._frames = frames.ToList();
 			var frame = GetIdealIcon();
 			size = frame.Size;
 			Control = (sd.Icon)frame.ControlObject;

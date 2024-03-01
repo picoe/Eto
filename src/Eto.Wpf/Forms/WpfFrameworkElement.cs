@@ -305,7 +305,7 @@ namespace Eto.Wpf.Forms
 			return ContainerControl.DesiredSize;
 		}
 
-		public SizeF GetPreferredSize(SizeF availableSize)
+		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
 			var size = availableSize.ToWpf();
 			if (ContainerControl.Parent == null && !(ContainerControl is swc.Panel) && !(ContainerControl is swc.Border))
