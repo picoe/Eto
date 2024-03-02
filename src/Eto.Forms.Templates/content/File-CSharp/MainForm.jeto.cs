@@ -1,4 +1,8 @@
 ﻿#if (UseJeto)
+using System;
+using System.Collections.Generic;
+using Eto.Forms;
+using Eto.Drawing;
 using Eto.Serialization.Json;
 
 namespace EtoApp._1

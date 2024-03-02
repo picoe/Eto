@@ -1,4 +1,7 @@
-﻿namespace EtoApp._1.Gtk
+﻿using System;
+using Eto.Forms;
+
+namespace EtoApp._1.Gtk
 {
 	class Program
 	{
