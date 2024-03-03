@@ -1,4 +1,7 @@
-﻿namespace EtoApp._1.Wpf
+﻿using System;
+using Eto.Forms;
+
+namespace EtoApp._1.Wpf
 {
 	class Program
 	{

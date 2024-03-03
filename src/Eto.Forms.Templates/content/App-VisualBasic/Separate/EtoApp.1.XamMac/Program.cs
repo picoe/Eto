@@ -1,4 +1,6 @@
 ﻿using AppKit;
+using Eto.Forms;
+
 namespace EtoApp._1.XamMac
 {
 	class Program
