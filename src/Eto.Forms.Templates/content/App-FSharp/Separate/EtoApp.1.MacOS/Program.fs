@@ -1,4 +1,4 @@
-﻿namespace EtoApp._1.XamMac
+﻿namespace EtoApp._1.macOS
 module Program =
 
     open System

@@ -22,10 +22,6 @@ public static class Platforms
 	/// </summary>
 	public static readonly string Mac64 = "Eto.Mac.Platform, Eto.Mac64";
 	/// <summary>
-	/// Type of the Xamarin.Mac v2 macOS platform on mono
-	/// </summary>
-	public static readonly string XamMac2 = "Eto.Mac.Platform, Eto.XamMac2";
-	/// <summary>
 	/// Type of the macOS platform on .NET 6.0.2xx+ SDK
 	/// </summary>
 	public static readonly string macOS = "Eto.Mac.Platform, Eto.macOS";

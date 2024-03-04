@@ -5,13 +5,24 @@
   <Import Project="..\..\src\Eto.Mac\build\Mac.props" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
   
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net48</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
     <DefineConstants>MONOMAC</DefineConstants>
     <LangVersion>10.0</LangVersion>
+    <DebugType>embedded</DebugType>
+    
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <TrimmerRootAssembly Include="Eto" />
+    <TrimmerRootAssembly Include="Eto.Test" />
+    <TrimmerRootAssembly Include="Eto.Mac64" />
+    <TrimmerRootAssembly Include="MonoMac" />
+    <TrimmerRootAssembly Include="Portable.Xaml" />
+  </ItemGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
     <EnableDmgBuild>True</EnableDmgBuild>

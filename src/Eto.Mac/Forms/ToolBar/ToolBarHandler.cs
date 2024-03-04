@@ -198,7 +198,7 @@ namespace Eto.Mac.Forms.ToolBar
 
 		void OnControlItemsChanged()
 		{
-#if !XAMMAC2
+#if MAC64
 			// re-retrieve items so they aren't GC'd (only needed in MonoMac)
 			var newitems = Control.Items;
 #endif

@@ -3,7 +3,6 @@
   <PropertyGroup>
     <BuildPlatform Condition="$(BuildPlatform) == 'WinForms'">Windows</BuildPlatform>
 
-    <UseXamarinMac Condition="$(UseXamarinMac) == '' AND $(BuildPlatform) == 'XamMac2'">True</UseXamarinMac>
     <UseMacOSWorkload Condition="$(UseMacOSWorkload) == '' AND $(BuildPlatform) == 'MacOS'">True</UseMacOSWorkload>
   </PropertyGroup>
 
@@ -11,8 +10,7 @@
     <!-- Detect the platform to build for based on current OS and runtime identifier, if not specified -->
     <BuildPlatform Condition="$(UseWinForms) != 'True' and (($([MSBuild]::IsOSPlatform(Windows)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('win')))">Wpf</BuildPlatform>
     <BuildPlatform Condition="$(UseWinForms) == 'True' and (($([MSBuild]::IsOSPlatform(Windows)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('win')))">Windows</BuildPlatform>
-    <BuildPlatform Condition="$(UseXamarinMac) != 'True' and $(UseMacOSWorkload) != 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">Mac64</BuildPlatform>
-    <BuildPlatform Condition="$(UseXamarinMac) == 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">XamMac2</BuildPlatform>
+    <BuildPlatform Condition="$(UseMacOSWorkload) != 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">Mac64</BuildPlatform>
     <BuildPlatform Condition="$(UseMacOSWorkload) == 'True' and (($([MSBuild]::IsOSPlatform(OSX)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('osx')))">MacOS</BuildPlatform>
     <BuildPlatform Condition="($([MSBuild]::IsOSPlatform(Linux)) and $(RuntimeIdentifier) == '') or $(RuntimeIdentifier.StartsWith('linux'))">Gtk</BuildPlatform>
   </PropertyGroup>
@@ -27,15 +25,13 @@
     <OutputType Condition="$(OutputType) == 'Exe' and ($(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows')">WinExe</OutputType>
     
     <!-- Need to set this with the macos target if not specified -->
-    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND ( $(BuildPlatform) == 'macos' or $(BuildPlatform) == 'XamMac2' )">10.14</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND ( $(BuildPlatform) == 'macos' )">10.14</SupportedOSPlatformVersion>
     <RuntimeIdentifiers Condition="$(BuildPlatform) == 'macos' AND $(RuntimeIdentifiers) == '' AND $(RuntimeIdentifier) == ''">osx-x64;osx-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) != '' and $(_TfmSuffix) != '' and !$(TargetFramework.Contains('-'))">
     <!-- Add proper TargetFramework suffix -->
     <TargetFramework Condition="!$(TargetFramework.StartsWith('net4')) and !$(TargetFramework.Contains($(_TfmSuffix)))">$(TargetFramework)$(_TfmSuffix)</TargetFramework>
-    <!-- Special case for Xamarin.Mac.  net5.0 is treated as xamarinmac20 -->
-    <TargetFramework Condition="$(BuildPlatform) == 'XamMac2' and $(TargetFramework) == 'net5.0-macos'">xamarinmac20</TargetFramework>
   </PropertyGroup>
 
   <!-- Fix up target frameworks for platform-specific tfm's -->
@@ -46,10 +42,9 @@
          Is there a better way? -->
     <TargetFrameworks></TargetFrameworks>
     <TargetFrameworks Condition="$(_CurrentFrameworks.Contains('net4'))">$(TargetFrameworks);$([System.Text.RegularExpressions.Regex]::Match($(_CurrentFrameworks), '(?&lt;=;|^)?(net4\d+)(?=;|$)'))</TargetFrameworks>
-    <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net5\.\d)(?=;|$)')) AND $(BuildPlatform) != 'XamMac2'">$(TargetFrameworks);net5.0$(_TfmSuffix)</TargetFrameworks>
-    <!-- Special case for Xamarin.Mac.  net5.0 is treated as xamarinmac20 -->
-    <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net5\.\d)(?=;|$)')) AND $(BuildPlatform) == 'XamMac2'">$(TargetFrameworks);xamarinmac20</TargetFrameworks>
     <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net6\.\d)(?=;|$)'))">$(TargetFrameworks);net6.0$(_TfmSuffix)</TargetFrameworks>
+    <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net7\.\d)(?=;|$)'))">$(TargetFrameworks);net7.0$(_TfmSuffix)</TargetFrameworks>
+    <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net8\.\d)(?=;|$)'))">$(TargetFrameworks);net8.0$(_TfmSuffix)</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -76,8 +71,6 @@
     <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Wpf' OR $(BuildPlatform) == 'Windows' or $(BuildPlatform) == 'Direct2D'">win-x64</RuntimeIdentifiers>
     <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Gtk'">linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
-
-  <Import Project="Xamarin.Mac.targets" Condition="$(BuildPlatform) == 'XamMac2'" />
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 

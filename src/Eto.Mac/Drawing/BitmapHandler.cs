@@ -330,7 +330,7 @@ namespace Eto.Mac.Drawing
 				return;
 
 			// go through concrete representations as we might have a proxy (Big Sur)
-			// this is fixed with MonoMac, but not Xamarin.Mac.
+			// this is fixed with MonoMac, but not MacOS
 			var representations = Control.Representations();
 			for (int i = 0; i < representations.Length; i++)
 			{

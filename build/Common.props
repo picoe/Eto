@@ -9,12 +9,6 @@
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</OSPlatform>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' != 'Unix'">Windows</OSPlatform>
     
-    <XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\</XamarinMacPath>
-    <XamarinMacLibPath>$(XamarinMacPath)lib\mono\</XamarinMacLibPath>
-    <XamarinMacTargetsPath>$(XamarinMacPath)lib\msbuild\</XamarinMacTargetsPath>
-    <HasXamarinMac Condition="!Exists('$(XamarinMacTargetsPath)Xamarin.Mac.CSharp.targets')">False</HasXamarinMac>
-    <HasXamarinMac Condition="$(HasXamarinMac) == ''">True</HasXamarinMac> <!-- VS for Mac needs this, Exists isn't evaluated -->
-    
     <ArtifactsDir Condition="$(BuildOutoutDir) == ''">$(BasePath)artifacts\</ArtifactsDir>
     <BaseIntermediateOutputPath Condition="$(BaseIntermediateOutputPath) == ''">$(ArtifactsDir)obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <SourceDir Condition="$(SourceDir) == ''">$(BasePath)src\</SourceDir>

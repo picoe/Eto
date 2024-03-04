@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0-macos</TargetFrameworks>
+    <TargetFrameworks>net7.0-macos</TargetFrameworks>
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
@@ -14,7 +14,7 @@
     <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     <NoWarn>CA1416</NoWarn>
 
-    <LinkMode Condition="$(Configuration) == 'Release'">SdkOnly</LinkMode>
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
   
   <ItemGroup>

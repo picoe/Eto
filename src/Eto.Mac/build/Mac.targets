@@ -22,7 +22,7 @@
     <!-- properties you can override in your project file -->
 
     <!-- Specify that the bundle should be created during build -->
-    <!-- Enabled by default only for exe's and if not using a specific project type (e.g. Xamarin.Mac, -macos tfm's) -->
+    <!-- Enabled by default only for exe's and if not using a specific project type (e.g. -macos tfm's) -->
     <MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == '' and ( $(OutputType) == 'Exe' Or $(OutputType) == 'WinExe' ) and !$(TargetFramework.Contains('-macos'))">True</MacBuildBundle>
 
     <!-- Specifies the name of the .app bundle, usually the same as the project -->
@@ -199,7 +199,6 @@
     <!-- Initialize properties then create the app bundle and .plist -->
   <Target Name="MacInitializeBundle">
     <PropertyGroup>
-      <HasXamMac>@(ReferenceCopyLocalPaths->AnyHaveMetadataValue('Filename', 'Eto.XamMac2'))</HasXamMac>
       <MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == '' AND $(Configuration) == 'Release'">false</MacIncludeSymbols>
       <MacIncludeSymbols Condition="'$(MacIncludeSymbols)' == ''">true</MacIncludeSymbols>
       <MacArch Condition="'$(MacArch)'==''">x86_64</MacArch>

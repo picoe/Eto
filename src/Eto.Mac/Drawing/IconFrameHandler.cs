@@ -26,7 +26,7 @@ namespace Eto.Mac.Drawing
 					if (rep != null)
 						return rep;
 
-					// fatal flaw in Xamarin.Mac/MonoMac here, so we can't use this constructor directly
+					// fatal flaw in MacOS/MonoMac here, so we can't use this constructor directly
 					// see https://github.com/xamarin/xamarin-macios/issues/9478
 					var data = NSData.FromStream(Load());
 					var ptr = Messaging.IntPtr_objc_msgSend(s_bitmapImageRepClass, s_selAlloc_Handle);
@@ -41,7 +41,7 @@ namespace Eto.Mac.Drawing
 				}
 			}
 
-#if MACOS_NET || ( XAMMAC && NET6_0_OR_GREATER )
+#if MACOS_NET || NET6_0_OR_GREATER
 			// .NET 6 on ARM64 crashes when using the override in macos workload preview 11, remove this when fixed.
 			[Export("CGImageForProposedRect:context:hints:")]
 			public CGImage AsCGImage(IntPtr proposedDestRectPtr, NSGraphicsContext context, NSDictionary hints)
@@ -133,10 +133,6 @@ namespace Eto.Mac.Drawing
 
 			public override bool DrawInRect(CGRect dstSpacePortionRect, CGRect srcSpacePortionRect, NSCompositingOperation op, nfloat requestedAlpha, bool respectContextIsFlipped, NSDictionary hints)
 			{
-#if XAMMAC
-				// bug in Xamarin.Mac, hints can't be null when calling base..
-				hints = hints ?? new NSDictionary();
-#endif
 				return Rep.DrawInRect(dstSpacePortionRect, srcSpacePortionRect, op, requestedAlpha, respectContextIsFlipped, hints);
 			}
 

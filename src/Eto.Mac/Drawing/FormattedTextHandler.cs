@@ -39,7 +39,7 @@ namespace Eto.iOS.Drawing
 			var foregroundBrush = h.ForegroundBrush;
 			if (foregroundBrush is SolidBrush)
 			{
-				// attributes can be null, Xamarin.Mac doesn't allow that when calling base. ugh.
+				// attributes can be null, MacOS doesn't allow that when calling base. ugh.
 				Messaging.void_objc_msgSendSuper_IntPtr_IntPtr_nuint_IntPtr_CGAffineTransform_IntPtr_IntPtr(SuperHandle, selShowCGGlyphs_Positions_Count_Font_Matrix_Attributes_InContext_Handle, glyphs, positions, glyphCount, font, textMatrix, attributes, graphicsContext);
 				//base.ShowGlyphs(glyphs, positions, glyphCount, font, textMatrix, attributes, graphicsContext);
 			}

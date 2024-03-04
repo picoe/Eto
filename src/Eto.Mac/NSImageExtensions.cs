@@ -18,7 +18,7 @@ namespace Eto.Mac
 			return newimage;
 		}
 
-#if XAMMAC || MACOS_NET
+#if MACOS_NET
 		static IntPtr selDrawInRect_FromRect_Operation_Fraction_RespectFlipped_Hints_Handle = Selector.GetHandle("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 #endif
 
@@ -31,8 +31,8 @@ namespace Eto.Mac
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-#if XAMMAC || MACOS_NET
-			// Xamarin.Mac doesn't allow null for hints, remove this when it does.
+#if MACOS_NET
+			// MacOS doesn't allow null for hints, remove this when it does.
 			Messaging.bool_objc_msgSend_CGRect_CGRect_UIntPtr_nfloat_bool_IntPtr(image.Handle, selDrawInRect_FromRect_Operation_Fraction_RespectFlipped_Hints_Handle, new CGRect(CGPoint.Empty, newrep.Size), CGRect.Empty, (UIntPtr)(ulong)NSCompositingOperation.SourceOver, 1f, true, IntPtr.Zero);
 #else
 			image.DrawInRect(new CGRect(CGPoint.Empty, newrep.Size), CGRect.Empty, NSCompositingOperation.SourceOver, 1f, true, null);

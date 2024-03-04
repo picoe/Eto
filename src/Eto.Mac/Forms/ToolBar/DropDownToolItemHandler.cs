@@ -7,7 +7,7 @@ namespace Eto.Mac.Forms.ToolBar
 		protected override bool UseButtonStyle => false;
 		protected override bool UseAction => false;
 
-#if MACOS || XAMMAC2
+#if MACOS
 		static readonly IntPtr selInitWithItemIdentifier_Handle = Selector.GetHandle("initWithItemIdentifier:");
 
 		// constructor with identifier isn't available in the version of macOS workload we need yet..

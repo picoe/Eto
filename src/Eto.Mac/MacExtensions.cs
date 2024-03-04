@@ -1,7 +1,7 @@
 namespace Eto.Mac
 {
 	/// <summary>
-	/// These are extensions for missing methods in monomac/xamarin.mac, incorrectly bound, or bad performance.
+	/// These are extensions for missing methods in monomac, incorrectly bound, or bad performance.
 	/// </summary>
 	/// <remarks>
 	/// Once monomac/xam.mac supports these methods or are implemented properly, then remove from here.
@@ -117,7 +117,7 @@ namespace Eto.Mac
 		{
 			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
 			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
-			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
+			// 10.7+, use MacOS api when it supports null scroller class parameters
 			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(scrollView.ClassHandle, selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)scrollView.BorderType, (ulong)scrollView.VerticalScroller.ControlSize, (long)scrollView.VerticalScroller.ScrollerStyle);
 		}
 
@@ -125,7 +125,7 @@ namespace Eto.Mac
 		{
 			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
 			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
-			// 10.7+, use Xamarin.Mac api when it supports null scroller class parameters
+			// 10.7+, use MacOS api when it supports null scroller class parameters
 			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(scrollView.ClassHandle, selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)scrollView.BorderType, (ulong)scrollView.VerticalScroller.ControlSize, (long)scrollView.VerticalScroller.ScrollerStyle);
 		}
 

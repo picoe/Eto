@@ -14,7 +14,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public class EtoScrollView : NSScrollView, IMacControl
 		{
-			EtoDocumentView documentView; // keep reference as it can be GC'd in some circumstances (in Xamarin.Mac)
+			EtoDocumentView documentView; // keep reference as it can be GC'd in some circumstances
 
 			public WeakReference WeakHandler { get; set; }
 

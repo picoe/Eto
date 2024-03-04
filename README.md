@@ -125,7 +125,6 @@ Your project only needs to reference Eto.dll, and include the corresponding plat
 
 * Eto.dll - Eto.Forms (UI), Eto.Drawing (Graphics), and platform loading
 * Eto.Mac64.dll - Lightweight Mac platform using .NET 6+ or mono
-* Eto.XamMac2.dll - Xamarin.Mac Unified platform for Mac to embed mono
 * Eto.macOS.dll - .NET 6+ platform for Mac (for use with the net6.0-macos target)
 * Eto.WinForms.dll - Windows Forms platform using GDI+ for graphics
 * Eto.Direct2D.dll - Windows Forms platform using Direct2D for graphics
@@ -137,7 +136,7 @@ Your project only needs to reference Eto.dll, and include the corresponding plat
 Currently supported targets
 ---------------------------
 
-* OS X: MonoMac, Xamarin.Mac, or net6.0-macos
+* OS X: MonoMac or net6.0-macos
 * Linux: GTK+ 3
 * Windows: Windows Forms (using GDI or Direct2D) or WPF
 	

@@ -167,9 +167,9 @@ namespace Eto.Mac.Forms.Controls
 				var oldIndex = control.IndexOfSelectedItem;
 				NSMenu menu = control.Menu;
 
-				// xamarin.mac 2 goes really slow when adding directly.  See https://github.com/xamarin/xamarin-macios/issues/3488
+				// MacOS goes really slow when adding directly.  See https://github.com/xamarin/xamarin-macios/issues/3488
 				// also, this does improve performance normally, so let's keep the hack
-				// until Xamarin.Mac supports an NSMenu.AddRange() of some sort
+				// until MacOS supports an NSMenu.AddRange() of some sort
 				var itemList = items.ToList();
 				for (int i = 0; i < itemList.Count; i++)
 				{
