@@ -581,18 +581,6 @@ namespace Eto.Mac.Forms.Controls
 				}
 				return base.DragImageForRows(dragRows, tableColumns, dragEvent, ref dragImageOffset);
 			}
-#elif XAMMAC2
-			public override NSImage DragImageForRowsWithIndexestableColumnseventoffset(NSIndexSet dragRows, NSTableColumn[] tableColumns, NSEvent dragEvent, ref CGPoint dragImageOffset)
-			{
-				var dragInfo = Handler?.DragInfo;
-				var img = dragInfo?.DragImage;
-				if (img != null)
-				{
-					dragImageOffset = dragInfo.GetDragImageOffset();
-					return img;
-				}
-				return base.DragImageForRowsWithIndexestableColumnseventoffset(dragRows, tableColumns, dragEvent, ref dragImageOffset);
-			}
 #else
 			static readonly IntPtr selDragImageForRowsWithIndexes_TableColumns_Event_Offset_Handle = Selector.GetHandle("dragImageForRowsWithIndexes:tableColumns:event:offset:");
 

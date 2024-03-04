@@ -20,7 +20,6 @@ namespace Eto.Mac.Forms
 			if (Directory.Exists(url.Path))
 				return true;
 
-			// Xamarin.Mac's version of mono has string.TrimStart(char), which is not in the .NET Framework!
 			var extension = Path.GetExtension(url.Path).TrimStart(new[] { '.' });
 			if (Handler.MacFilters == null || Handler.MacFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
 				return true;
@@ -124,7 +123,7 @@ namespace Eto.Mac.Forms
 			if (macfilters == null || macfilters.Count == 0 || macfilters.Contains(""))
 			{
 				macfilters = null;
-				// Xamarin.Mac throws exception when setting to null (ugh)
+				// MacOS throws exception when setting to null (ugh)
 				Messaging.void_objc_msgSend_IntPtr(Control.Handle, Selector.GetHandle("setAllowedFileTypes:"), IntPtr.Zero);
 			}
 			else

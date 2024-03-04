@@ -1,8 +1,7 @@
 
 This package will create a macOS application that runs on Mac using Eto.Forms.
 
-If you are using Visual Studio for Mac, you can use a Xamarin.Mac or net6.0-macos
-project to embed the runtime with your app.
+If you are using on a Mac, you can use a net6.0-macos project to embed the runtime with your app.
 
 This template creates an app that will require the user to install the mono runtime.
 

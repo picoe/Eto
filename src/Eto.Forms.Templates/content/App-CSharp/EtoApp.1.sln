@@ -18,10 +18,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtoApp.1.Mac", "EtoApp.1.Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtoApp.1.Wpf", "EtoApp.1.Wpf\EtoApp.1.Wpf.csproj", "{7D9523D1-01EC-4E34-A559-03F332E64346}"
 EndProject
-#if IncludeXamMac
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtoApp.1.XamMac", "EtoApp.1.XamMac\EtoApp.1.XamMac.csproj", "{05DB20E8-D401-4094-8096-88499C50E28A}"
-EndProject
-#endif
 #if IncludeMacOS
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtoApp.1.MacOS", "EtoApp.1.MacOS\EtoApp.1.MacOS.csproj", "{D1C2E89F-8DF5-43F5-B07E-C91A5EDBF6C8}"
 EndProject
@@ -56,12 +52,6 @@ Global
 		{7D9523D1-01EC-4E34-A559-03F332E64346}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D9523D1-01EC-4E34-A559-03F332E64346}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D9523D1-01EC-4E34-A559-03F332E64346}.Release|Any CPU.Build.0 = Release|Any CPU
-#if IncludeXamMac
-		{05DB20E8-D401-4094-8096-88499C50E28A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05DB20E8-D401-4094-8096-88499C50E28A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05DB20E8-D401-4094-8096-88499C50E28A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05DB20E8-D401-4094-8096-88499C50E28A}.Release|Any CPU.Build.0 = Release|Any CPU
-#endif
 #if IncludeMacOS
 		{D1C2E89F-8DF5-43F5-B07E-C91A5EDBF6C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D1C2E89F-8DF5-43F5-B07E-C91A5EDBF6C8}.Debug|Any CPU.Build.0 = Debug|Any CPU

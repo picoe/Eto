@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XamarinMac", "XamarinMac", "{F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MacOS", "MacOS", "{F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}"
 	ProjectSection(MonoDevelopProperties) = preProject
-		BaseDirectory = XamarinMac
+		BaseDirectory = MacOS
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Eto", "Eto", "{19A4EA01-CA9E-4390-B448-974152AB5706}"
@@ -61,17 +61,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.Tutorial3.TableLayout", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.Tutorial4.Binding", "Tutorials\CSharp\Tutorial4\CS.Tutorial4.Binding.csproj", "{DDC8A290-2F20-11E4-8C21-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedEtoInXamarinMac", "XamarinMac\EmbedEtoInXamarinMac\EmbedEtoInXamarinMac.csproj", "{BD58EE60-9197-4C28-87C7-85AA13E02332}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedEtoInMacOS", "MacOS\EmbedEtoInMacOS\EmbedEtoInMacOS.csproj", "{BD58EE60-9197-4C28-87C7-85AA13E02332}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedXamarinMacInEto", "XamarinMac\EmbedXamarinMacInEto\EmbedXamarinMacInEto.csproj", "{41266591-508F-40B6-9360-AFECE6FBFC27}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbedMacOSInEto", "MacOS\EmbedMacOSInEto\EmbedMacOSInEto.csproj", "{41266591-508F-40B6-9360-AFECE6FBFC27}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{212A0614-C2B8-4BA8-9EA6-3CD26A5629D2}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "..\src\Eto.Mac\Eto.XamMac2.csproj", "{6C147DFC-0EC3-4B94-8239-D0A47A035739}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.Gtk", "..\src\Eto.Gtk\Eto.Gtk.csproj", "{800E0242-6368-4F10-AE85-1B218C08463C}"
 EndProject
@@ -82,6 +80,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "monomac", "monomac", "{028C71AC-ACDF-48D3-B2AC-811FC787C70F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "generator", "..\lib\monomac\src\generator.csproj", "{5124D2E8-236E-4CB6-9065-5E44DCE3B636}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.macOS", "..\src\Eto.Mac\Eto.macOS.csproj", "{92EFB481-2B2D-4491-9523-4FB7F442509C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -301,14 +301,6 @@ Global
 		{41266591-508F-40B6-9360-AFECE6FBFC27}.Release|Mac.ActiveCfg = Release|Any CPU
 		{41266591-508F-40B6-9360-AFECE6FBFC27}.Release|Mac.Build.0 = Release|Any CPU
 		{41266591-508F-40B6-9360-AFECE6FBFC27}.Release|Windows.ActiveCfg = Release|Any CPU
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Debug|Mac.Build.0 = Debug|Any CPU
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Release|Linux.ActiveCfg = Release|Any CPU
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Release|Mac.ActiveCfg = Release|Any CPU
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Release|Mac.Build.0 = Release|Any CPU
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739}.Release|Windows.ActiveCfg = Release|Any CPU
 		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Linux.Build.0 = Debug|Any CPU
 		{800E0242-6368-4F10-AE85-1B218C08463C}.Debug|Mac.ActiveCfg = Debug|Any CPU
@@ -357,6 +349,14 @@ Global
 		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Mac.Build.0 = Release|Any CPU
 		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Windows.ActiveCfg = Release|Any CPU
 		{5124D2E8-236E-4CB6-9065-5E44DCE3B636}.Release|Windows.Build.0 = Release|Any CPU
+		{92EFB481-2B2D-4491-9523-4FB7F442509C}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{92EFB481-2B2D-4491-9523-4FB7F442509C}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{92EFB481-2B2D-4491-9523-4FB7F442509C}.Debug|Mac.Build.0 = Debug|Any CPU
+		{92EFB481-2B2D-4491-9523-4FB7F442509C}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{92EFB481-2B2D-4491-9523-4FB7F442509C}.Release|Linux.ActiveCfg = Release|Any CPU
+		{92EFB481-2B2D-4491-9523-4FB7F442509C}.Release|Mac.ActiveCfg = Release|Any CPU
+		{92EFB481-2B2D-4491-9523-4FB7F442509C}.Release|Mac.Build.0 = Release|Any CPU
+		{92EFB481-2B2D-4491-9523-4FB7F442509C}.Release|Windows.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -384,12 +384,12 @@ Global
 		{DDC8A290-2F20-11E4-8C21-0800200C9A66} = {C1F05813-B09E-4946-808C-42D46BF999A3}
 		{BD58EE60-9197-4C28-87C7-85AA13E02332} = {F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}
 		{41266591-508F-40B6-9360-AFECE6FBFC27} = {F65C2B2B-BE0E-4AF5-B65B-3F770F8D54CF}
-		{6C147DFC-0EC3-4B94-8239-D0A47A035739} = {19A4EA01-CA9E-4390-B448-974152AB5706}
 		{800E0242-6368-4F10-AE85-1B218C08463C} = {19A4EA01-CA9E-4390-B448-974152AB5706}
 		{23244704-480A-4158-9823-532F67AAEBD2} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
 		{E8BF4713-68B0-452A-A798-B448FC07CA0C} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
 		{028C71AC-ACDF-48D3-B2AC-811FC787C70F} = {19A4EA01-CA9E-4390-B448-974152AB5706}
 		{5124D2E8-236E-4CB6-9065-5E44DCE3B636} = {028C71AC-ACDF-48D3-B2AC-811FC787C70F}
+		{92EFB481-2B2D-4491-9523-4FB7F442509C} = {19A4EA01-CA9E-4390-B448-974152AB5706}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C5EE3ED5-BFCC-4709-9FC2-0053C18D5883}

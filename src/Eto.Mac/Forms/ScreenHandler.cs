@@ -72,7 +72,7 @@ namespace Eto.Mac.Forms
 				var logicalRect = rect;
 				logicalRect.Size *= Widget.LogicalPixelSize;
 				var cgimagePtr = CGDisplayCreateImageForRect(id.UInt32Value, logicalRect.ToNS());
-#if XAMMAC || MACOS_NET
+#if MACOS_NET
 				var cgimage = Runtime.GetINativeObject<CGImage>(cgimagePtr, true);
 #else
 				var cgimage = cgimagePtr == IntPtr.Zero ? null : new CGImage(cgimagePtr);

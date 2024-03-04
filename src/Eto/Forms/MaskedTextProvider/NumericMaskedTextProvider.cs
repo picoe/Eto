@@ -19,7 +19,7 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 	// do all conversions with invariant culture
 	static CultureInfo Inv => CultureInfo.InvariantCulture;
 
-	// use dictionary instead of reflection for Xamarin.Mac linking
+	// use dictionary instead of reflection for linking
 	static readonly Dictionary<Type, Info> numericTypes = new Dictionary<Type, Info>
 	{
 		{ typeof(decimal), new Info { Parse = s => decimal.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true, AllowDecimal = true } },

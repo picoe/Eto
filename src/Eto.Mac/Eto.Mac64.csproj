@@ -23,9 +23,9 @@ Eto.Platform.Mac64 uses a modified version of the open source MonoMac for 64-bit
       
 This package creates an .app bundle to run your app on macOS, even on Windows or Linux.
       
-By default, the mono or .NET Core runtime will be bundled in Release configuration so your app won't require extra dependencies. To bundle mono, it must be installed on the development machine.
+By default, the .NET Core runtime will be bundled in Release configuration so your app won't require extra dependencies.
 
-Use Eto.Platform.XamMac2 if you want to distribute your app to the Mac App Store, though it requires VS for Mac.
+Use Eto.Platform.macOS if you want to distribute your app to the Mac App Store.
 
 You do not need to use any of the classes of this assembly (unless customizing the MonoMac functionality of the platform), and should just use the UI controls from the Eto assembly.
     </PackageDescription>

@@ -6,10 +6,6 @@ namespace Eto.Forms
 	public static class
 #if MACOS_NET
 	MacOSHelpers
-#elif XAMMAC2
-	XamMac2Helpers
-#elif XAMMAC
-	XamMacHelpers
 #elif Mac64
 	MonoMac64Helpers
 #elif MONOMAC

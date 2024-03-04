@@ -3,7 +3,7 @@
     <TargetFramework>net6.0-macos</TargetFramework>
     <OutputType>Exe</OutputType>
     <RootNamespace Condition="'$(name)' != '$(name{-VALUE-FORMS-}safe_namespace)'">EtoApp._1</RootNamespace>
-    <SupportedOSPlatformVersion>10.14</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
   </PropertyGroup>
   

@@ -4,7 +4,7 @@
   <!--
     Set the BuildPlatform property to the Eto platform you wish to build for.
     The default is the platform you are building on.
-    Valid values: Wpf, Windows, Mac64, XamMac2, Gtk, Direct2D
+    Valid values: Wpf, Windows, Mac64, MacOS, Gtk, Direct2D
   -->
 
   <PropertyGroup>
@@ -13,7 +13,6 @@
     <RootNamespace Condition="'$(name)' != '$(name{-VALUE-FORMS-}safe_namespace)'">EtoApp._1</RootNamespace>
 
     <UseMacOSWorkload Condition="$(IncludeMacOS) == 'True'">True</UseMacOSWorkload>
-    <UseXamarinMac Condition="$(IncludeXamMac) == 'True'">True</UseXamarinMac>
     <UseWinForms Condition="$(IncludeWinForms) == 'True'">True</UseWinForms>
     <UseJeto Condition="$(UseJeto) == 'True'">True</UseJeto>
     <UseXeto Condition="$(UseXeto) == 'True'">True</UseXeto>

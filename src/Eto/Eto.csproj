@@ -18,7 +18,7 @@ The goal of this framework is to expose a common API that can be used to build f
 
 For advanced scenarios, you can take advantage of each platform's capabilities by wrapping your common UI in a larger application, or even create your own high-level controls with a custom implementations per platform.
 
-This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac, Xamarin.Mac, and GTK#.
+This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac, MacOS, and GTK#.
 
 In order to run your Eto.Forms based application, you must also install one (or more) of the following packages:
 
@@ -27,7 +27,7 @@ In order to run your Eto.Forms based application, you must also install one (or 
 - Eto.Platform.Direct2D
 - Eto.Platform.Gtk
 - Eto.Platform.Mac64
-- Eto.Platform.XamMac2
+- Eto.Platform.MacOS
 
 To get more information about how to get started, read the wiki:
 
@@ -39,7 +39,6 @@ https://github.com/picoe/Eto/wiki
   </ItemGroup>
   <ItemGroup>
     <None Include="sdk\*" Pack="True" PackagePath="sdk" />
-    <None Include="$(BuildDir)\Xamarin.Mac.targets" Pack="True" PackagePath="sdk" />
     <None Remove="Eto.Forms.targets" />
     <None Include="Eto.Forms.targets" Pack="true" PackagePath="build" />
     <None Update="$(BasePath)LICENSE.txt" CopyToOutputDirectory="PreserveNewest" /> 

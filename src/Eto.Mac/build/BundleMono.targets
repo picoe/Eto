@@ -133,16 +133,11 @@
     <PropertyGroup>
       <OutputMonoBundlePath>$(OutputContents)MonoBundle\</OutputMonoBundlePath>
       <LauncherExecutable Condition="'$(LauncherExecutable)' == '' AND $(MacArch)=='x86_64'">$(ReferenceFiles)Launcher64</LauncherExecutable>
-
-      <XamarinMacAssembly Condition="$(XamarinMacAssembly) == '' AND Exists('$(ReferenceFiles)Xamarin.Mac.dll')">$(ReferenceFiles)Xamarin.Mac.dll</XamarinMacAssembly>
-      <XamarinMacAssembly Condition="$(XamarinMacAssembly) == '' AND Exists('\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll')">\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll</XamarinMacAssembly>
     </PropertyGroup>
     
     <Copy SourceFiles="$(LauncherExecutable)" DestinationFiles="$(LauncherFileWithPath)" SkipUnchangedFiles="true" />
     
     <ItemGroup>
-      <MacExecutableFiles Include="$(XamarinMacAssembly)" Condition="$(HasXamMac) == 'True'" />
-
       <!-- For combined projects, remove any non-mac assemblies if referenced -->
       <MacExecutableFiles Remove="@(MacExecutableFiles)" Condition="
         (%(Filename) == 'Eto' and %(Extension) == '.xml')
@@ -160,8 +155,6 @@
         or %(Filename) == 'Eto.iOS'
         or %(Filename) == 'Eto.WinRT'
         or %(Filename) == 'Eto.Android'
-        or ($(HasXamMac) == 'True' and %(Filename) == 'Eto.Mac64')
-        or ($(HasXamMac) != 'True' and %(Filename) == 'Eto.XamMac2')
         " />
     </ItemGroup>
 

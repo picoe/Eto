@@ -3,7 +3,7 @@
   <!--
     Set the BuildPlatform property to the Eto platform you wish to build for.
     The default is the platform you are building on.
-    Valid values: Wpf, Windows, Mac64, XamMac2, Gtk, Direct2D
+    Valid values: Wpf, Windows, Mac64, MacOS, Gtk, Direct2D
   -->
 
   <PropertyGroup>

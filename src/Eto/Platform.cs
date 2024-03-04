@@ -181,7 +181,7 @@ public abstract class Platform
 	public abstract string ID { get; }
 
 	/// <summary>
-	/// Gets a value indicating whether this platform is a mac based platform (MonoMac/XamMac)
+	/// Gets a value indicating whether this platform is a mac based platform (MonoMac/MacOS)
 	/// </summary>
 	/// <value><c>true</c> if this platform is mac; otherwise, <c>false</c>.</value>
 	public virtual bool IsMac { get { return false; } }
@@ -292,7 +292,7 @@ public abstract class Platform
 	/// It will also be called for the same assembly with the prefix of the platform ID.
 	/// 
 	/// For example, if <c>MyControl</c> was declared in <c>MyControls.dll</c>, then Eto will automatically also
-	/// load <c>MyControls.Wpf.dll</c> for the Wpf platform, and <c>MyControls.XamMac2.dll</c> for the XamMac2 platform, etc.
+	/// load <c>MyControls.Wpf.dll</c> for the Wpf platform, and <c>MyControls.MacOS.dll</c> for the MacOS platform, etc.
 	/// 
 	/// Use <see cref="ExportHandlerAttribute"/> and <see cref="ExportInitializerAttribute"/> to register
 	/// handlers with the platform when the assembly is loaded or perform other logic.
@@ -387,8 +387,6 @@ public abstract class Platform
 				detected = Get(Platforms.Mac64, true, errors);
 				if (detected == null)
 					detected = Get(Platforms.macOS, true, errors);
-				if (detected == null)
-					detected = Get(Platforms.XamMac2, true, errors);
 			}
 			else if (EtoEnvironment.Platform.IsWindows)
 			{

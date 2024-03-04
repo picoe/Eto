@@ -22,10 +22,6 @@
 			"longName": "include-solution",
 			"shortName": "sln"
 		},
-		"IncludeXamMac": {
-			"longName": "include-xammac",
-			"shortName": "xm"
-		},
 		"IncludeWinForms": {
 			"longName": "include-winforms",
 			"shortName": "wf"

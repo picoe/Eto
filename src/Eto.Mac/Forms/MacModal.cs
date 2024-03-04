@@ -96,7 +96,7 @@ namespace Eto.Mac.Forms
 			var result = (int)app.RunModalSession(Session);
 
 			// Give the main loop some time:
-#if MACOS_NET || XAMMAC
+#if MACOS_NET
 			NSRunLoop.Current.RunUntil(NSRunLoopMode.Default, NSDate.DistantFuture);
 #else
 			NSRunLoop.Current.RunUntil(NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);

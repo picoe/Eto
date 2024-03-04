@@ -24,11 +24,6 @@ namespace Eto.Test.Mac64.UnitTests
 		[Test]
 		public void CopyToOutputShouldBeInExecutablePath()
 		{
-			if (Platform.Instance.ID == "XamMac2")
-			{
-				Assert.Ignore("Xamarin.Mac projects do not copy these files");
-			}
-
 			// getting the location of the assembly can be null when using mkbundle, so we use this instead.
 			var path = EtoEnvironment.GetFolderPath(EtoSpecialFolder.EntryExecutable);
 

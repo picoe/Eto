@@ -12,7 +12,7 @@ namespace Eto.Mac.Drawing
 		{
 			get
 			{
-				// faceName cannot be null.  Use this when it is fixed in xammac/monomac:
+				// faceName cannot be null.  Use this when it is fixed in macos:
 				// return NSFontManager.SharedFontManager.LocalizedNameForFamily(MacName, null);
 				if (MacName == null)
 					return Name;

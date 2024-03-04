@@ -49,12 +49,6 @@
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
-		"IncludeXamMac": {
-			"type": "parameter",
-			"description": "Include a Xamarin.Mac project to embed mono when\ncompiling on macOS",
-			"dataType": "bool",
-			"defaultValue": "false"
-		},
 		"IncludeMacOS": {
 			"type": "parameter",
 			"description": "Include a MacOS workload project when compiling on macOS",
@@ -157,7 +151,6 @@
 				{ "condition": "!UseCodePreview", "exclude": [ "**/*.eto.*" ] },
 				{ "condition": "!UseXeto", "exclude": [ "**/*.xeto", "**/*.xeto.*" ] },
 				{ "condition": "!UseJeto", "exclude": [ "**/*.jeto", "**/*.jeto.*" ] },
-				{ "condition": "!IncludeXamMac", "exclude": [ "**/EtoApp.1.XamMac.fsproj" ] },
 				{ "condition": "!IncludeMacOS", "exclude": [ "**/EtoApp.1.MacOS.fsproj" ] }
 			]
 		},
@@ -177,7 +170,6 @@
 			"condition": "!Combined",
 			"modifiers": [
 				{ "condition": "!IncludeWinForms", "exclude": [ "**/EtoApp.1.WinForms/**/*" ] },
-				{ "condition": "!IncludeXamMac", "exclude": [ "**/EtoApp.1.XamMac/**/*" ] },
 				{ "condition": "!IncludeMacOS", "exclude": [ "**/EtoApp.1.MacOS/**/*" ] }
 			]
 		},
@@ -202,7 +194,6 @@
 		{ "path": "EtoApp.1.Mac/EtoApp.1.Mac.fsproj", "condition": "!Combined" },
 		{ "path": "EtoApp.1.WinForms/EtoApp.1.WinForms.fsproj", "condition": "!Combined && IncludeWinForms" },
 		{ "path": "EtoApp.1.Wpf/EtoApp.1.Wpf.csproj", "condition": "!Combined" },
-		{ "path": "EtoApp.1.XamMac/EtoApp.1.XamMac.fsproj", "condition": "!Combined && IncludeXamMac" },
 		{ "path": "EtoApp.1.MacOS/EtoApp.1.MacOS.fsproj", "condition": "!Combined && IncludeMacOS" }
 	],
 	"guids": [

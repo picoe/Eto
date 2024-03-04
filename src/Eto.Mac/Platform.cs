@@ -26,10 +26,6 @@ namespace Eto.Mac
 
 #if MACOS_NET
 		public override string ID { get { return "macOS"; } }
-#elif XAMMAC2
-		public override string ID { get { return "XamMac2"; } }
-#elif XAMMAC1
-		public override string ID { get { return "XamMac"; } }
 #elif Mac64
 		public override string ID { get { return "Mac64"; } }
 #else
@@ -68,7 +64,7 @@ namespace Eto.Mac
 			{
 				c.Styles.Add<SegmentedButtonHandler>(null, sbh =>
 				{
-#if XAMMAC2
+#if MACOS_NET
 					sbh.Control.ControlSize = NSControlSize.Small;
 #else
 					Messaging.void_objc_msgSend_IntPtr(sbh.Control.Handle, Selector.GetHandle("setControlSize:"), (IntPtr)NSControlSize.Small);
