@@ -22,8 +22,6 @@ namespace Eto.Mac.Forms.Controls
 
 		Range<int> lastSelection { get; set; }
 		int? lastCaretIndex { get; set; }
-
-		void PerformLayout();
 	}
 
 	public class EtoTextAreaDelegate : NSTextViewDelegate
@@ -81,7 +79,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			Delegate = new EtoTextAreaDelegate { Handler = handler };
 			AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-			HorizontallyResizable = true;
+			HorizontallyResizable = false;
 			VerticallyResizable = true;
 			Editable = true;
 			RichText = false;
@@ -91,15 +89,6 @@ namespace Eto.Mac.Forms.Controls
 			MinSize = CGSize.Empty;
 			MaxSize = new CGSize(float.MaxValue, float.MaxValue);
 			TextContainer.WidthTracksTextView = true;
-		}
-
-		public override void Layout()
-		{
-			if (MacView.NewLayout)
-				base.Layout();
-			(Handler as ITextAreaHandler)?.PerformLayout();
-			if (!MacView.NewLayout)
-				base.Layout();
 		}
 	}
 
@@ -294,19 +283,28 @@ namespace Eto.Mac.Forms.Controls
 
 		public bool Wrap
 		{
-			get
-			{
-				return Control.TextContainer.WidthTracksTextView;
-			}
+			get => Control.TextContainer.WidthTracksTextView;
 			set
 			{
+				if (value == Wrap)
+					return;
+					
 				if (value)
 				{
+					Control.HorizontallyResizable = false;
 					Control.TextContainer.WidthTracksTextView = true;
-					Control.NeedsLayout = true;
+					if (Widget.Loaded)
+					{
+						// shrink the control and text container to the current width of the visible rectangle
+						var width = Scroll.DocumentVisibleRect.Size.Width;
+						Control.SetFrameSize(new CGSize(width, Control.Frame.Height));
+						Control.TextContainer.Size = new CGSize(width, float.MaxValue);
+						Control.NeedsLayout = true;
+					}
 				}
 				else
 				{
+					Control.HorizontallyResizable = true;
 					Control.TextContainer.WidthTracksTextView = false;
 					Control.TextContainer.ContainerSize = new CGSize(float.MaxValue, float.MaxValue);
 				}
@@ -412,15 +410,6 @@ namespace Eto.Mac.Forms.Controls
 		TextArea ITextAreaHandler.Widget
 		{
 			get { return Widget; }
-		}
-
-		public void PerformLayout()
-		{
-			if (Wrap)
-			{
-				// set width of content to the size of the control when wrapping
-				Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
-			}
 		}
 
 		public TextReplacements TextReplacements
