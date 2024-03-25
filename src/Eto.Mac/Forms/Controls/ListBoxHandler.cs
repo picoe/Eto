@@ -334,28 +334,20 @@ namespace Eto.Mac.Forms.Controls
 
 			var intercellSpacing = Control.IntercellSpacing;
 			var count = Control.RowCount;
-			var height = (int)((Control.RowHeight + intercellSpacing.Height) * count);
 
 			// we need to go through each item to calculate its preferred size
-			var size = new CGSize(0, height);
-			var cell = new MacImageTextView();
-			var font = Font.ToNS();
-			if (font != null)
-				cell.TextField.Font = font;
-			var dataSource = Control.DataSource;
-			var column = Control.TableColumns()[0];
+			var size = new CGSize(0, intercellSpacing.Height * count);
 			for (nint i = 0; i < count; i++)
 			{
-				var data = dataSource.GetObjectValue(Control, column, i) as MacImageData;
-				if (data != null)
-				{
-					cell.TextField.ObjectValue = data.Text;
-					cell.Image = data.Image;
-					size.Width = (nfloat)Math.Max(size.Width, cell.FittingSize.Width);
-				}
+				var fittingSize = Control.GetCell(0, i).CellSize;
+				size.Width = (nfloat)Math.Max(size.Width, fittingSize.Width);
+				size.Height += fittingSize.Height;
 			}
 
-			var frameSize = scroll.FrameSizeForContentSize(size, false, false);
+			var hbar = size.Width > availableSize.Width;
+			var vbar = size.Height > availableSize.Height;
+
+			var frameSize = scroll.FrameSizeForContentSize(size, hbar, vbar);
 
 			var etoFrameSize = frameSize.ToEto();
 
