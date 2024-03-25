@@ -32,7 +32,7 @@ namespace Eto.Wpf.Forms
 
 		private void Application_IsActiveChanged(object sender, EventArgs e)
 		{
-			SetVisibility();
+			SetVisibility(true);
 		}
 		
 		public override bool Visible
@@ -41,7 +41,7 @@ namespace Eto.Wpf.Forms
 			set
 			{
 				Widget.Properties.Set(Visible_Key, value, true);
-				SetVisibility();
+				SetVisibility(false);
 			}
 		}
 		
@@ -51,7 +51,7 @@ namespace Eto.Wpf.Forms
 			base.Show();
 		}
 		
-		void SetVisibility()
+		void SetVisibility(bool setActive)
 		{
 			var currentlyVisible = base.Visible;
 			var isVisible = Application.Instance.IsActive && Visible;
@@ -66,13 +66,15 @@ namespace Eto.Wpf.Forms
 				}
 				base.Visible = isVisible;
 			}
-			else
+			else if (setActive)
 			{
 				var oldShowActivated = Control.ShowActivated;
 				Control.ShowActivated = _wasActive;
 				base.Visible = isVisible;
 				Control.ShowActivated = oldShowActivated;
 			}
+			else
+				base.Visible = isVisible;
 		}
 	}
 }
