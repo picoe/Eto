@@ -189,13 +189,16 @@ namespace Eto.Wpf.Forms.Controls
 			return new TreeTogglePanel(defaultContent, controller);
 		}
 
-		void ITreeHandler.PreResetTree()
+		bool ITreeHandler.PreResetTree(object item, int row)
 		{
+			if (item != null && Control.CurrentItem != item)
+				return false;
 			SkipSelectionChanged = true;
 			SaveFocus();
+			return true;
 		}
 
-		void ITreeHandler.PostResetTree()
+		void ITreeHandler.PostResetTree(object item, int row)
 		{
 			DisableAutoScrollToSelection = true;
 			RestoreFocus();
