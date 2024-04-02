@@ -491,5 +491,90 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				return layout;
 			});
 		}
+		
+		[Test]
+		public void ReloadingFocusedItemShouldKeepFocus()
+		{
+			bool? hasFocusBefore = null;
+			bool? hasFocusAfter = null;
+			Form(form => {
+				var grid = new T();
+				grid.ShowHeader = false;
+				grid.Size = new Size(200, 200);
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) } });
+				var dataStore = CreateDataStore();
+				var list = (IList)dataStore;
+				SetDataStore(grid, dataStore);
+				grid.SelectedRow = 1;
+
+				form.Content = grid;
+				var gv = grid as GridView;
+				var tgv = grid as TreeGridView;
+				
+				form.Shown += async (s, e) =>
+				{
+					grid.Focus();
+					await Task.Delay(TimeSpan.FromSeconds(0.1));
+					// first, reload an row that doesn't have focus
+					gv?.ReloadData(0);
+					tgv?.ReloadItem((ITreeGridItem)list[0]);
+
+					await Task.Delay(TimeSpan.FromSeconds(0.1));
+					
+					// We should still have focus, then reload the item that does have focus
+					hasFocusBefore = grid.HasFocus; 
+					gv?.ReloadData(1);
+					tgv?.ReloadItem((ITreeGridItem)list[1]);
+					
+					await Task.Delay(TimeSpan.FromSeconds(0.1));
+					
+					// Focus should still be kept
+					hasFocusAfter = grid.HasFocus;
+					form.Close();
+				};
+			});
+			Assert.IsTrue(hasFocusBefore, "Grid did not have focus before reloading");
+			Assert.IsTrue(hasFocusAfter, "Grid did not have focus after reloading");
+		}
+		
+		[Test]
+		public void ReloadingDataShouldKeepFocus()
+		{
+			bool? hasFocusBefore = null;
+			bool? hasFocusAfter = null;
+			Form(form => {
+				var grid = new T();
+				grid.ShowHeader = false;
+				grid.Size = new Size(200, 200);
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) } });
+				var dataStore = CreateDataStore();
+				var list = (IList)dataStore;
+				SetDataStore(grid, dataStore);
+				grid.SelectedRow = 1;
+				
+				form.Content = grid;
+				var gv = grid as GridView;
+				var tgv = grid as TreeGridView;
+				
+				form.Shown += async (s, e) =>
+				{
+					grid.Focus();
+					await Task.Delay(TimeSpan.FromSeconds(0.1));
+					
+					// We should still have focus, then reload the data
+					hasFocusBefore = grid.HasFocus; 
+					gv?.ReloadData(Enumerable.Range(0, list.Count));
+					tgv?.ReloadData();
+					
+					await Task.Delay(TimeSpan.FromSeconds(0.1));
+					
+					// Focus should still be kept
+					hasFocusAfter = grid.HasFocus;
+					form.Close();
+				};
+			});
+			Assert.IsTrue(hasFocusBefore, "Grid did not have focus before reloading");
+			Assert.IsTrue(hasFocusAfter, "Grid did not have focus after reloading");
+		}
 	}
 }

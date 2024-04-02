@@ -939,7 +939,15 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void ReloadData(IEnumerable<int> rows)
 		{
+			SkipSelectionChanged = true;
+			SaveFocus();
+
 			Control.Items.Refresh();
+			
+			DisableAutoScrollToSelection = true;
+			RestoreFocus();
+			SkipSelectionChanged = false;
+			DisableAutoScrollToSelection = false;
 		}
 
 		swc.DataGridRow GetCurrentRow()

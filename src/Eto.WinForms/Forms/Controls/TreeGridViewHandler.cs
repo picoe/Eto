@@ -351,11 +351,12 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		void ITreeHandler.PreResetTree()
+		bool ITreeHandler.PreResetTree(object item, int row)
 		{
+			return false;
 		}
 
-		void ITreeHandler.PostResetTree()
+		void ITreeHandler.PostResetTree(object item, int row)
 		{
 		}
 
