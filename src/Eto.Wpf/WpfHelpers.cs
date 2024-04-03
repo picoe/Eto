@@ -83,5 +83,33 @@ namespace Eto.Forms
 				return null;
 			return new Form(new HwndFormHandler(windowHandle));
 		}
+
+		/// <summary>
+		/// Converts a System.Drawing.Point in screen coordinates to an Eto point in screen coordinates.
+		/// </summary>
+		/// <param name="point">A point in Windows Forms/win32 screen coordinates.</param>
+		/// <returns>A point in Eto screen coordinates.</returns>
+		public static PointF ToEtoScreen(this sd.Point point, swf.Screen sdscreen = null, bool perMonitor = false) => Win32.ScreenToLogical(point, sdscreen, perMonitor);
+
+		public static RectangleF ToEtoScreen(this sd.Rectangle rect, swf.Screen sdscreen = null, bool perMonitor = false)
+		{
+			var topLeft = ToEtoScreen(rect.Location, sdscreen, perMonitor);
+			var bottomRight = ToEtoScreen(new sd.Point(rect.X + rect.Width, rect.Y + rect.Height), sdscreen, perMonitor);
+			return new RectangleF(topLeft, new SizeF(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
+		}
+
+		/// <summary>
+		/// Converts a point in Eto screen coordinates to a point in Windows Forms/win32 screen coordinates.
+		/// </summary>
+		/// <param name="point">A point in Eto screen coordinates.</param>
+		/// <returns>A point in Windows Forms/win32 screen coordinates.</returns>
+		public static Point ToNativeScreen(this PointF point, Screen screen = null, bool perMonitor = false) => Win32.LogicalToScreen(point, screen, perMonitor);
+		public static Rectangle ToNativeScreen(this RectangleF rect, Screen screen = null, bool perMonitor = false)
+		{
+			var topLeft = rect.TopLeft.ToNativeScreen(screen, perMonitor);
+			var bottomRight = rect.BottomRight.ToNativeScreen(screen, perMonitor);
+			return new Rectangle(topLeft, new Size(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
+		}
+
 	}
 }

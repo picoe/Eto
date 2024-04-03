@@ -99,6 +99,11 @@ namespace Eto
 			return new sd.PointF (point.X, point.Y);
 		}
 
+		public static sd.Point ToSDPoint (this PointF point)
+		{
+			return new sd.Point ((int)point.X, (int)point.Y);
+		}
+
 		internal static sd.PointF[] ToSD (this PointF[] points)
 		{
 			var result = new sd.PointF[points.Length];
