@@ -59,12 +59,12 @@ namespace Eto
 		{
 			screen = screen ?? Eto.Forms.Screen.FromPoint(point);
 			var sdscreen = ScreenHandler.GetControl(screen);
+			var location = sdscreen.GetLogicalLocation();
 			var pixelSize = sdscreen.GetLogicalPixelSize(usePerMonitor);
-			var location = sdscreen.GetBounds().Location;
-			var screenBounds = screen.Bounds;
+			var sdscreenBounds = usePerMonitor ? sdscreen.GetBounds() : sdscreen.Bounds.ToEto();
 
-			var x = location.X + (point.X - screenBounds.X) * pixelSize;
-			var y = location.Y + (point.Y - screenBounds.Y) * pixelSize;
+			var x = sdscreenBounds.X + (point.X - location.X) * pixelSize;
+			var y = sdscreenBounds.Y + (point.Y - location.Y) * pixelSize;
 
 			return Drawing.Point.Round(new Drawing.PointF(x, y));
 		}
@@ -76,10 +76,10 @@ namespace Eto
 
 		public static Eto.Drawing.PointF ScreenToLogical(this sd.Point point, swf.Screen sdscreen = null, bool usePerMonitor = true)
 		{
-			sdscreen = sdscreen ?? swf.Screen.FromPoint(point);
+			sdscreen ??= swf.Screen.FromPoint(point);
 			var location = sdscreen.GetLogicalLocation();
 			var pixelSize = sdscreen.GetLogicalPixelSize(usePerMonitor);
-			var sdscreenBounds = sdscreen.GetBounds();
+			var sdscreenBounds = usePerMonitor ? sdscreen.GetBounds() : sdscreen.Bounds.ToEto();
 
 			var x = location.X + (point.X - sdscreenBounds.X) / pixelSize;
 			var y = location.Y + (point.Y - sdscreenBounds.Y) / pixelSize;
@@ -93,10 +93,10 @@ namespace Eto
 			sdscreen = sdscreen ?? swf.Screen.FromPoint(rect.Location.ToSD());
 			var location = sdscreen.GetLogicalLocation();
 			var pixelSize = sdscreen.GetLogicalPixelSize(usePerMonitor);
-			var screenBounds = sdscreen.GetBounds();
+			var sdscreenBounds = usePerMonitor ? sdscreen.GetBounds() : sdscreen.Bounds.ToEto();
 			return new Eto.Drawing.RectangleF(
-				location.X + (rect.X - screenBounds.X) / pixelSize,
-				location.Y + (rect.Y - screenBounds.Y) / pixelSize,
+				location.X + (rect.X - sdscreenBounds.X) / pixelSize,
+				location.Y + (rect.Y - sdscreenBounds.Y) / pixelSize,
 				rect.Width / pixelSize,
 				rect.Height / pixelSize
 				);
