@@ -6,6 +6,7 @@ using Eto.Test.UnitTests;
 using NUnit.Framework;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
+using Eto.Wpf.Forms;
 
 namespace Eto.Test.Wpf.UnitTests
 {
@@ -53,7 +54,7 @@ namespace Eto.Test.Wpf.UnitTests
 					window.Show();
 					windows.Add(window);
 
-					bool perMonitor = true;
+					bool perMonitor = false;
 
 					var sdrect = WpfHelpers.ToNativeScreen(rect, window.Screen, perMonitor: perMonitor).ToSD();
 
@@ -70,12 +71,12 @@ namespace Eto.Test.Wpf.UnitTests
 					wfwindow.LocationChanged += (sender, e) =>
 					{
 						var loc = wfwindow.RectangleToScreen(wfwindow.ClientRectangle);
-						window.Bounds = (Rectangle)WpfHelpers.ToEtoScreen(loc, swf.Screen.FromControl(wfwindow), perMonitor: perMonitor);
+						window.Bounds = (Rectangle)WpfHelpers.ToEtoScreen(loc.ToEto(), window.Screen, perMonitor: perMonitor);
 					};
 					wfwindow.SizeChanged += (sender, e) =>
 					{
 						var loc = wfwindow.RectangleToScreen(wfwindow.ClientRectangle);
-						window.Bounds = (Rectangle)WpfHelpers.ToEtoScreen(loc, swf.Screen.FromControl(wfwindow), perMonitor: perMonitor);
+						window.Bounds = (Rectangle)WpfHelpers.ToEtoScreen(loc.ToEto(), window.Screen, perMonitor: perMonitor);
 					};
 					wfwindow.Show();
 					wfwindows.Add(wfwindow);
