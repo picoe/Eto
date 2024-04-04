@@ -85,25 +85,44 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Converts a System.Drawing.Point in screen coordinates to an Eto point in screen coordinates.
+		/// Converts a point in native (Windows Forms/Win32) screen coordinates to a point in Eto logical screen coordinates.
 		/// </summary>
 		/// <param name="point">A point in Windows Forms/win32 screen coordinates.</param>
+		/// <param name="screen">The screen to translate to, if known.</param>
+		/// <param name="perMonitor">True to get screen bounds/location in per monitor mode, false to remain in current mode.</param>
 		/// <returns>A point in Eto screen coordinates.</returns>
-		public static PointF ToEtoScreen(this sd.Point point, swf.Screen sdscreen = null, bool perMonitor = false) => Win32.ScreenToLogical(point, sdscreen, perMonitor);
+		public static PointF ToEtoScreen(this Point point, Screen screen = null, bool perMonitor = false) => Win32.ScreenToLogical(point, ScreenHandler.GetControl(screen), perMonitor);
 
-		public static RectangleF ToEtoScreen(this sd.Rectangle rect, swf.Screen sdscreen = null, bool perMonitor = false)
+		/// <summary>
+		/// Converts a rectangle in native (Windows Forms/Win32) screen coordinates to an rectangle in Eto logical screen coordinates.
+		/// </summary>
+		/// <param name="rect">A rectangle in Windows Forms/win32 screen coordinates.</param>
+		/// <param name="screen">The screen to translate to, if known.</param>
+		/// <param name="perMonitor">True to get screen bounds/location in per monitor mode, false to remain in current mode.</param>
+		/// <returns>A point in Eto screen coordinates.</returns>
+		public static RectangleF ToEtoScreen(this Rectangle rect, Screen screen = null, bool perMonitor = false)
 		{
-			var topLeft = ToEtoScreen(rect.Location, sdscreen, perMonitor);
-			var bottomRight = ToEtoScreen(new sd.Point(rect.X + rect.Width, rect.Y + rect.Height), sdscreen, perMonitor);
+			var topLeft = ToEtoScreen(rect.Location, screen, perMonitor);
+			var bottomRight = ToEtoScreen(new Point(rect.X + rect.Width, rect.Y + rect.Height), screen, perMonitor);
 			return new RectangleF(topLeft, new SizeF(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
 		}
 
 		/// <summary>
-		/// Converts a point in Eto screen coordinates to a point in Windows Forms/win32 screen coordinates.
+		/// Converts a point in Eto logical screen coordinates to a point in native (Windows Forms/win32) screen coordinates.
 		/// </summary>
 		/// <param name="point">A point in Eto screen coordinates.</param>
+		/// <param name="screen">The screen to translate to, if known.</param>
+		/// <param name="perMonitor">True to get screen bounds/location in per monitor mode, false to remain in current mode.</param>
 		/// <returns>A point in Windows Forms/win32 screen coordinates.</returns>
 		public static Point ToNativeScreen(this PointF point, Screen screen = null, bool perMonitor = false) => Win32.LogicalToScreen(point, screen, perMonitor);
+
+		/// <summary>
+		/// Converts a rectangle in Eto logical screen coordinates to a rectangle in native (Windows Forms/win32) screen coordinates.
+		/// </summary>
+		/// <param name="rectangle">A rectangle in Eto screen coordinates.</param>
+		/// <param name="screen">The screen to translate to, if known.</param>
+		/// <param name="perMonitor">True to get screen bounds/location in per monitor mode, false to remain in current mode.</param>
+		/// <returns>A rectangle in Windows Forms/win32 screen coordinates.</returns>
 		public static Rectangle ToNativeScreen(this RectangleF rect, Screen screen = null, bool perMonitor = false)
 		{
 			var topLeft = rect.TopLeft.ToNativeScreen(screen, perMonitor);
