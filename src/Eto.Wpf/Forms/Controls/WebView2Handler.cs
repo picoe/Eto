@@ -477,7 +477,7 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 	{
 		if (!e.IsSuccess)
 		{
-			throw new WebView2InitializationException("Failed to initialze WebView2", e.InitializationException);
+			throw new WebView2InitializationException("Failed to initialize WebView2", e.InitializationException);
 		}
 
 		// can't actually do anything here, so execute them in the main loop
