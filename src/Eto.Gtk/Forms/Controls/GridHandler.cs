@@ -534,7 +534,20 @@ namespace Eto.GtkSharp.Forms.Controls
 		public bool AllowMultipleSelection
 		{
 			get { return Control.Selection.Mode == Gtk.SelectionMode.Multiple; }
-			set { Control.Selection.Mode = value ? Gtk.SelectionMode.Multiple : Gtk.SelectionMode.Browse; }
+			set
+			{
+				if (value)
+				{
+					Control.Selection.Mode = Gtk.SelectionMode.Multiple;
+				}
+				else
+				{
+					Control.GetCursor(out var cursorRow, out _);
+					Control.Selection.Mode = Gtk.SelectionMode.None;
+					Control.Selection.Mode = Gtk.SelectionMode.Single;
+					Control.Selection.SelectPath(cursorRow);
+				}
+			}
 		}
 
 		public virtual IEnumerable<int> SelectedRows

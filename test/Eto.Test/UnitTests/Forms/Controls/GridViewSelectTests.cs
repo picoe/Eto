@@ -124,5 +124,36 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(initialCount / 4, selectionChangedCount, "SelectionChanged event should fire for each selected item removed");
 			});
 		}
+
+		[Test]
+		public void UnselectingInMultipleModeThenSwitchingToSingleModeShouldNotBreakSelection()
+		{
+			TestBase.Shown(form =>
+			{
+				form.Content = grid;
+			}, () =>
+			{
+				grid.AllowEmptySelection = true;
+				grid.AllowMultipleSelection = true;
+				grid.UnselectAll();
+				grid.AllowMultipleSelection = false;
+				grid.SelectRow(1);
+				Assert.AreEqual(1, grid.SelectedRow);
+			});
+		}
+
+		[Test]
+		public void SwitchingToSingleModeDoesNotBreakUnselecting()
+		{
+			TestBase.Invoke(() =>
+			{
+				grid.AllowEmptySelection = true;
+				grid.AllowMultipleSelection = true;
+				grid.SelectRow(1);
+				grid.AllowMultipleSelection = false;
+				grid.UnselectAll();
+				Assert.AreEqual(-1, grid.SelectedRow);
+			});
+		}
 	}
 }
