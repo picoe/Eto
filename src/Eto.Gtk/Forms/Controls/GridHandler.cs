@@ -719,11 +719,34 @@ namespace Eto.GtkSharp.Forms.Controls
 			set => Widget.Properties.TrySet(GridHandler.AllowEmptySelection_Key, value, true);
 		}
 
+#if !GTK2
+		private int GetHeaderHeight()
+		{
+			if (!ShowHeader)
+			{
+				return 0;
+			}
+
+			int headerHeight = 0;
+			foreach (var col in Control.Columns)
+			{
+				var boundsHeight = col.Button?.GetWindow()?.GetBounds().Height ?? 0;
+				headerHeight = Math.Max(headerHeight, boundsHeight);
+			}
+
+			return headerHeight;
+		}
+#endif
+
 		private void Widget_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (!e.Handled && e.Buttons == MouseButtons.Primary)
 			{
 				var location = e.Location;
+#if !GTK2
+				location.Y -= GetHeaderHeight();
+#endif
+
 				if (AllowEmptySelection)
 				{
 					// clicked on an empty area
@@ -736,12 +759,12 @@ namespace Eto.GtkSharp.Forms.Controls
 				else
 				{
 					// cancel ctrl+clicking to remove last selected item
-					if (Control.GetPathAtPos((int)location.X, (int)location.Y, out var path, out _))
+					if (e.Modifiers == Keys.Control && Control.GetPathAtPos((int)location.X, (int)location.Y, out var path, out _))
 					{
 						if (Control.Model.GetIter(out var iter, path))
 						{
 							var isSelected = Control.Selection.IterIsSelected(iter);
-							if (e.Modifiers == Keys.Control && isSelected && Control.Selection.CountSelectedRows() == 1)
+							if (isSelected && Control.Selection.CountSelectedRows() == 1)
 							{
 								e.Handled = true;
 							}
