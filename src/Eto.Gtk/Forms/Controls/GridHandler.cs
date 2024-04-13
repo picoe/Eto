@@ -1,5 +1,9 @@
 using Eto.GtkSharp.Forms.Cells;
 using Eto.GtkSharp.Forms.Menu;
+using Gtk;
+using Grid = Eto.Forms.Grid;
+using GridLines = Eto.Forms.GridLines;
+
 namespace Eto.GtkSharp.Forms.Controls
 {
 	class GridHandler
@@ -89,6 +93,26 @@ namespace Eto.GtkSharp.Forms.Controls
 			// ScrolledWindow.Add(Box);
 		}
 
+		/*protected override TreeView CreateControl()
+		{
+			var control = base.CreateControl();
+			control.Selection.SelectFunction = SelectFunction;
+			return control;
+		}*/
+
+
+		private bool SelectFunction(Gtk.TreeSelection selection, Gtk.ITreeModel model, Gtk.TreePath path, bool pathCurrentlySelected)
+		{
+			// Cancel removing last selected item
+			var rows = selection.GetSelectedRows().Select(r => r.Indices[0]);
+			if (!AllowEmptySelection && AllowMultipleSelection && pathCurrentlySelected && selection.CountSelectedRows() == 1)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		protected abstract ITreeModelImplementor CreateModelImplementor();
 
 		protected void UpdateModel()
@@ -138,12 +162,23 @@ namespace Eto.GtkSharp.Forms.Controls
 			columns.Register(Widget.Columns);
 			base.Initialize();
 
-			Widget.MouseDown += Widget_MouseDown;
+			//Widget.MouseDown += Widget_MouseDown;
 
 			Control.QueryTooltip += Control_QueryTooltip;
 			Control.HasTooltip = true;
-			
 
+			//Control.Selection.SelectFunction = SelectFunction;
+			Control.Selection.Changed += (sender, args) =>
+			{
+				//if (!AllowEmptySelection && AllowMultipleSelection)
+				{
+					if (!AllowEmptySelection && Control.Selection.CountSelectedRows() == 0)
+					{
+						Control.GetCursor(out var cursorRow, out _);
+						Control.Selection.SelectPath(cursorRow);
+					}
+				}
+			};
 		}
 
 		private void Control_QueryTooltip(object o, Gtk.QueryTooltipArgs args)
@@ -536,17 +571,20 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.Selection.Mode == Gtk.SelectionMode.Multiple; }
 			set
 			{
-				if (value)
+				SetSelectionMode(AllowEmptySelection, value);
+				/*if (value)
 				{
 					Control.Selection.Mode = Gtk.SelectionMode.Multiple;
 				}
 				else
 				{
+					// Workaround to not lose the ability to select after switching to Multi then back to Single.
 					Control.GetCursor(out var cursorRow, out _);
 					Control.Selection.Mode = Gtk.SelectionMode.None;
 					Control.Selection.Mode = Gtk.SelectionMode.Single;
 					Control.Selection.SelectPath(cursorRow);
 				}
+				SetSelectionMode();*/
 			}
 		}
 
@@ -716,7 +754,47 @@ namespace Eto.GtkSharp.Forms.Controls
 		public bool AllowEmptySelection
 		{
 			get => Widget.Properties.Get<bool>(GridHandler.AllowEmptySelection_Key, true);
-			set => Widget.Properties.TrySet(GridHandler.AllowEmptySelection_Key, value, true);
+			set
+			{
+				Widget.Properties.TrySet(GridHandler.AllowEmptySelection_Key, value, true);
+				SetSelectionMode(value, AllowMultipleSelection);
+			}
+		}
+
+		private void SetSelectionMode(bool allowEmptySelection, bool allowMultipleSelection)
+		{
+			var currentMode = Control.Selection.Mode;
+			var newMode =
+				(allowEmptySelection, allowMultipleSelection) switch
+				{
+					(true, true) => SelectionMode.Multiple,
+					(true, false) => SelectionMode.Single,
+					(false, true) => SelectionMode.Multiple, // Handled by SelectFunction
+					(false, false) => SelectionMode.Browse
+				};
+
+			if (newMode != currentMode)
+			{
+				if (currentMode == SelectionMode.Multiple && newMode != SelectionMode.Multiple)
+				{
+					// Workaround to not lose the ability to select after switching to Multi then back to Single or Browse.
+					Control.Selection.Mode = Gtk.SelectionMode.None;
+					Control.Selection.Mode = newMode;
+					//if (Control.Selection.CountSelectedRows() == 0)
+					{
+						Control.GetCursor(out var cursorRow, out _);
+						Control.Selection.SelectPath(cursorRow);
+					}
+				}
+				Control.Selection.Mode = newMode;
+			}
+			if (!allowEmptySelection && Control.Selection.CountSelectedRows() == 0)
+			{
+				Control.GetCursor(out var cursorRow, out _);
+				Control.Selection.SelectPath(cursorRow);
+			}
+
+			//EnsureSelection();
 		}
 
 #if !GTK2
