@@ -725,7 +725,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					(true, true) => Gtk.SelectionMode.Multiple,
 					(true, false) => Gtk.SelectionMode.Single,
-					(false, true) => Gtk.SelectionMode.Multiple, // Handled by SelectFunction
+					(false, true) => Gtk.SelectionMode.Multiple, // Handled by Selection Changed event in Initialize().
 					(false, false) => Gtk.SelectionMode.Browse
 				};
 
@@ -733,16 +733,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				// Workaround to not lose the ability to select after switching to Multi, unselecting everything,
 				// then switching back to Single or Browse. Cause unknown but reproduced in GtkSharp.
-				if (currentMode == Gtk.SelectionMode.Multiple && newMode != Gtk.SelectionMode.Multiple)
+				if (currentMode == Gtk.SelectionMode.Multiple
+				    && newMode is Gtk.SelectionMode.Single or Gtk.SelectionMode.Browse)
 				{
-					var anyWereSelected = Control.Selection.CountSelectedRows() > 0;
+					Control.GetCursor(out var cursorRowPath, out _);
+					var cursorWasSelected = Control.Selection.PathIsSelected(cursorRowPath);
 
 					Control.Selection.Mode = Gtk.SelectionMode.None;
 					Control.Selection.Mode = newMode;
-					if (anyWereSelected)
+					if (cursorWasSelected)
 					{
-						Control.GetCursor(out var cursorRow, out _);
-						Control.Selection.SelectPath(cursorRow);
+						Control.Selection.SelectPath(cursorRowPath);
 					}
 				}
 				Control.Selection.Mode = newMode;
