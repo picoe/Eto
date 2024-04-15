@@ -168,7 +168,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.HasTooltip = true;
 
 			//Control.Selection.SelectFunction = SelectFunction;
-			Control.Selection.Changed += (sender, args) =>
+			/*Control.Selection.Changed += (sender, args) =>
 			{
 				//if (!AllowEmptySelection && AllowMultipleSelection)
 				{
@@ -178,7 +178,7 @@ namespace Eto.GtkSharp.Forms.Controls
 						Control.Selection.SelectPath(cursorRow);
 					}
 				}
-			};
+			};*/
 		}
 
 		private void Control_QueryTooltip(object o, Gtk.QueryTooltipArgs args)
@@ -778,21 +778,26 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (currentMode == SelectionMode.Multiple && newMode != SelectionMode.Multiple)
 				{
 					// Workaround to not lose the ability to select after switching to Multi then back to Single or Browse.
+					//var firstSelectedRow = Control.Selection.GetSelectedRows().FirstOrDefault();//Control.Selection.CountSelectedRows() > 0 ? Control.Selection.GetSelectedRows()[0] : null;
+					var anyWereSelected = Control.Selection.CountSelectedRows() > 0;
+
 					Control.Selection.Mode = Gtk.SelectionMode.None;
 					Control.Selection.Mode = newMode;
-					//if (Control.Selection.CountSelectedRows() == 0)
+					if (anyWereSelected)
 					{
+						//SkipSelectedChange = true;
 						Control.GetCursor(out var cursorRow, out _);
 						Control.Selection.SelectPath(cursorRow);
+						//SkipSelectedChange = false;
 					}
 				}
 				Control.Selection.Mode = newMode;
 			}
-			if (!allowEmptySelection && Control.Selection.CountSelectedRows() == 0)
+			/*if (!allowEmptySelection && Control.Selection.CountSelectedRows() == 0)
 			{
 				Control.GetCursor(out var cursorRow, out _);
 				Control.Selection.SelectPath(cursorRow);
-			}
+			}*/
 
 			//EnsureSelection();
 		}
