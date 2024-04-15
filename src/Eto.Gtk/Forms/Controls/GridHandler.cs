@@ -1,8 +1,5 @@
 using Eto.GtkSharp.Forms.Cells;
 using Eto.GtkSharp.Forms.Menu;
-using Gtk;
-using Grid = Eto.Forms.Grid;
-using GridLines = Eto.Forms.GridLines;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -93,26 +90,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			// ScrolledWindow.Add(Box);
 		}
 
-		/*protected override TreeView CreateControl()
-		{
-			var control = base.CreateControl();
-			control.Selection.SelectFunction = SelectFunction;
-			return control;
-		}*/
-
-
-		private bool SelectFunction(Gtk.TreeSelection selection, Gtk.ITreeModel model, Gtk.TreePath path, bool pathCurrentlySelected)
-		{
-			// Cancel removing last selected item
-			var rows = selection.GetSelectedRows().Select(r => r.Indices[0]);
-			if (!AllowEmptySelection && AllowMultipleSelection && pathCurrentlySelected && selection.CountSelectedRows() == 1)
-			{
-				return false;
-			}
-
-			return true;
-		}
-
 		protected abstract ITreeModelImplementor CreateModelImplementor();
 
 		protected void UpdateModel()
@@ -162,23 +139,18 @@ namespace Eto.GtkSharp.Forms.Controls
 			columns.Register(Widget.Columns);
 			base.Initialize();
 
-			//Widget.MouseDown += Widget_MouseDown;
+			Control.Selection.Changed += (sender, args) =>
+			{
+				// Prevent unselecting last selected item.
+				if (!AllowEmptySelection && AllowMultipleSelection && Control.Selection.CountSelectedRows() == 0)
+				{
+					Control.GetCursor(out var cursorRow, out _);
+					Control.Selection.SelectPath(cursorRow);
+				}
+			};
 
 			Control.QueryTooltip += Control_QueryTooltip;
 			Control.HasTooltip = true;
-
-			//Control.Selection.SelectFunction = SelectFunction;
-			/*Control.Selection.Changed += (sender, args) =>
-			{
-				//if (!AllowEmptySelection && AllowMultipleSelection)
-				{
-					if (!AllowEmptySelection && Control.Selection.CountSelectedRows() == 0)
-					{
-						Control.GetCursor(out var cursorRow, out _);
-						Control.Selection.SelectPath(cursorRow);
-					}
-				}
-			};*/
 		}
 
 		private void Control_QueryTooltip(object o, Gtk.QueryTooltipArgs args)
@@ -569,23 +541,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public bool AllowMultipleSelection
 		{
 			get { return Control.Selection.Mode == Gtk.SelectionMode.Multiple; }
-			set
-			{
-				SetSelectionMode(AllowEmptySelection, value);
-				/*if (value)
-				{
-					Control.Selection.Mode = Gtk.SelectionMode.Multiple;
-				}
-				else
-				{
-					// Workaround to not lose the ability to select after switching to Multi then back to Single.
-					Control.GetCursor(out var cursorRow, out _);
-					Control.Selection.Mode = Gtk.SelectionMode.None;
-					Control.Selection.Mode = Gtk.SelectionMode.Single;
-					Control.Selection.SelectPath(cursorRow);
-				}
-				SetSelectionMode();*/
-			}
+			set => SetSelectionMode(AllowEmptySelection, value);
 		}
 
 		public virtual IEnumerable<int> SelectedRows
@@ -767,93 +723,29 @@ namespace Eto.GtkSharp.Forms.Controls
 			var newMode =
 				(allowEmptySelection, allowMultipleSelection) switch
 				{
-					(true, true) => SelectionMode.Multiple,
-					(true, false) => SelectionMode.Single,
-					(false, true) => SelectionMode.Multiple, // Handled by SelectFunction
-					(false, false) => SelectionMode.Browse
+					(true, true) => Gtk.SelectionMode.Multiple,
+					(true, false) => Gtk.SelectionMode.Single,
+					(false, true) => Gtk.SelectionMode.Multiple, // Handled by SelectFunction
+					(false, false) => Gtk.SelectionMode.Browse
 				};
 
 			if (newMode != currentMode)
 			{
-				if (currentMode == SelectionMode.Multiple && newMode != SelectionMode.Multiple)
+				// Workaround to not lose the ability to select after switching to Multi, unselecting everything,
+				// then switching back to Single or Browse. Cause unknown but reproduced in GtkSharp.
+				if (currentMode == Gtk.SelectionMode.Multiple && newMode != Gtk.SelectionMode.Multiple)
 				{
-					// Workaround to not lose the ability to select after switching to Multi then back to Single or Browse.
-					//var firstSelectedRow = Control.Selection.GetSelectedRows().FirstOrDefault();//Control.Selection.CountSelectedRows() > 0 ? Control.Selection.GetSelectedRows()[0] : null;
 					var anyWereSelected = Control.Selection.CountSelectedRows() > 0;
 
 					Control.Selection.Mode = Gtk.SelectionMode.None;
 					Control.Selection.Mode = newMode;
 					if (anyWereSelected)
 					{
-						//SkipSelectedChange = true;
 						Control.GetCursor(out var cursorRow, out _);
 						Control.Selection.SelectPath(cursorRow);
-						//SkipSelectedChange = false;
 					}
 				}
 				Control.Selection.Mode = newMode;
-			}
-			/*if (!allowEmptySelection && Control.Selection.CountSelectedRows() == 0)
-			{
-				Control.GetCursor(out var cursorRow, out _);
-				Control.Selection.SelectPath(cursorRow);
-			}*/
-
-			//EnsureSelection();
-		}
-
-#if !GTK2
-		private int GetHeaderHeight()
-		{
-			if (!ShowHeader)
-			{
-				return 0;
-			}
-
-			int headerHeight = 0;
-			foreach (var col in Control.Columns)
-			{
-				var boundsHeight = col.Button?.GetWindow()?.GetBounds().Height ?? 0;
-				headerHeight = Math.Max(headerHeight, boundsHeight);
-			}
-
-			return headerHeight;
-		}
-#endif
-
-		private void Widget_MouseDown(object sender, MouseEventArgs e)
-		{
-			if (!e.Handled && e.Buttons == MouseButtons.Primary)
-			{
-				var location = e.Location;
-#if !GTK2
-				location.Y -= GetHeaderHeight();
-#endif
-
-				if (AllowEmptySelection)
-				{
-					// clicked on an empty area
-					if (!Control.GetPathAtPos((int)location.X, (int)location.Y, out _, out _))
-					{
-						UnselectAll();
-						e.Handled = true;
-					}
-				}
-				else
-				{
-					// cancel ctrl+clicking to remove last selected item
-					if (e.Modifiers == Keys.Control && Control.GetPathAtPos((int)location.X, (int)location.Y, out var path, out _))
-					{
-						if (Control.Model.GetIter(out var iter, path))
-						{
-							var isSelected = Control.Selection.IterIsSelected(iter);
-							if (isSelected && Control.Selection.CountSelectedRows() == 1)
-							{
-								e.Handled = true;
-							}
-						}
-					}
-				}
 			}
 		}
 
