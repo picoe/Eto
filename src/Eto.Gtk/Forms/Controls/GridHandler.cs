@@ -145,7 +145,10 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (!AllowEmptySelection && AllowMultipleSelection && Control.Selection.CountSelectedRows() == 0)
 				{
 					Control.GetCursor(out var cursorRow, out _);
-					Control.Selection.SelectPath(cursorRow);
+					if (cursorRow != null)
+					{
+						Control.Selection.SelectPath(cursorRow);
+					}
 				}
 			};
 
@@ -737,11 +740,12 @@ namespace Eto.GtkSharp.Forms.Controls
 				    && newMode is Gtk.SelectionMode.Single or Gtk.SelectionMode.Browse)
 				{
 					Control.GetCursor(out var cursorRowPath, out _);
-					var cursorWasSelected = Control.Selection.PathIsSelected(cursorRowPath);
+					var mustReselectCursor = cursorRowPath != null && Control.Selection.PathIsSelected(cursorRowPath);
 
 					Control.Selection.Mode = Gtk.SelectionMode.None;
 					Control.Selection.Mode = newMode;
-					if (cursorWasSelected)
+
+					if (mustReselectCursor)
 					{
 						Control.Selection.SelectPath(cursorRowPath);
 					}
