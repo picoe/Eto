@@ -746,7 +746,10 @@ namespace Eto.GtkSharp.Forms.Controls
 						Control.Selection.SelectPath(cursorRowPath);
 					}
 				}
-				Control.Selection.Mode = newMode;
+				else
+				{
+					Control.Selection.Mode = newMode;
+				}
 			}
 		}
 
