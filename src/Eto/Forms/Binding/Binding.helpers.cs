@@ -192,9 +192,10 @@ partial class Binding
 	/// <seealso cref="RemovePropertyEvent"/>
 	public static void AddPropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
 	{
-		var notifyObject = obj as INotifyPropertyChanged;
-		if (notifyObject != null)
-			new PropertyNotifyHelper(notifyObject, propertyName).Changed += eh;
+		if (obj is not INotifyPropertyChanged notifyObject)
+			return;
+
+		notifyObject.PropertyChanged += (s, e) => OnPropertyChanged(s, e, propertyName, eh);
 	}
 
 	/// <summary>
@@ -211,13 +212,11 @@ partial class Binding
 	/// <seealso cref="RemovePropertyEvent"/>
 	public static void AddPropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
 	{
-		var notifyObject = obj as INotifyPropertyChanged;
-		if (notifyObject != null)
-		{
-			var propertyInfo = propertyExpression.GetMemberInfo();
-			if (propertyInfo != null)
-				new PropertyNotifyHelper(notifyObject, propertyInfo.Member.Name).Changed += eh;
-		}
+		var propertyInfo = propertyExpression.GetMemberInfo();
+		if (propertyInfo == null)
+			return;
+
+		AddPropertyEvent(obj, propertyInfo.Member.Name, eh);
 	}
 
 	/// <summary>
@@ -228,12 +227,39 @@ partial class Binding
 	/// <seealso cref="AddPropertyEvent(object,string,EventHandler{EventArgs})"/>
 	public static void RemovePropertyEvent(object obj, EventHandler<EventArgs> eh)
 	{
-		var helper = eh.Target as PropertyNotifyHelper;
-		if (helper != null)
+		if (obj is not INotifyPropertyChanged notifyObject)
+			return;
+
+		var propertyChangedField = GetPropertyChangedField(notifyObject);
+		if (propertyChangedField == null)
+			return;
+
+		var propertyChangedDelegates = ((Delegate)propertyChangedField.GetValue(notifyObject))?.GetInvocationList().OfType<PropertyChangedEventHandler>() ?? Enumerable.Empty<PropertyChangedEventHandler>();
+		var delegateToRemove = propertyChangedDelegates.FirstOrDefault(d => d.Target?.GetType().GetField("eh")?.GetValue(d.Target)?.Equals(eh) ?? false);
+		if (delegateToRemove == null)
+			return;
+
+		notifyObject.PropertyChanged -= delegateToRemove;
+	}
+
+	static void OnPropertyChanged(object sender, PropertyChangedEventArgs args, string propertyName, EventHandler<EventArgs> handler)
+	{
+		if (args.PropertyName != propertyName)
+			return;
+
+		handler?.Invoke(sender, EventArgs.Empty);
+	}
+
+	static FieldInfo GetPropertyChangedField(object obj)
+	{
+		FieldInfo field = null;
+		var type = obj?.GetType();
+		while (field == null && type != null)
 		{
-			helper.Changed -= eh;
-			helper.Unregister(obj);
+			field = type.GetField(nameof(INotifyPropertyChanged.PropertyChanged), BindingFlags.Instance | BindingFlags.NonPublic);
+			type = type.BaseType;
 		}
+		return field;
 	}
 
 	/// <summary>
