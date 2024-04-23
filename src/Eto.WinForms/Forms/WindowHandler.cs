@@ -549,8 +549,10 @@ namespace Eto.WinForms.Forms
 		{
 			if (Control.WindowState == swf.FormWindowState.Minimized)
 				Control.WindowState = swf.FormWindowState.Normal;
-			Control.BringToFront();
-			Control.Activate();
+
+			var hWnd = NativeHandle;
+			if (hWnd != IntPtr.Zero)
+				Win32.SetWindowPos(hWnd, Win32.HWND_TOP, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE | Win32.SWP.NOACTIVATE);
 		}
 
 		public void SendToBack() => Control.SendToBack();

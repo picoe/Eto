@@ -905,10 +905,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public override void Focus()
-		{
-			Control.BecomeFirstResponder();
-		}
+		public override void Focus() => Control.MakeKeyAndOrderFront(Control);
 
 		public string Id { get; set; }
 
@@ -1243,7 +1240,6 @@ namespace Eto.Mac.Forms
 		public void BringToFront()
 		{
 			Control.OrderFront(Control);
-			Control.MakeKeyWindow();
 		}
 
 		public void SendToBack()

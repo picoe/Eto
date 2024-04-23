@@ -781,17 +781,11 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public void BringToFront()
-		{
-			Control.Present();
-		}
+		protected override void GrabFocus() => Control.Present();
 
-		public void SendToBack()
-		{
-			var gdkWindow = Control.GetWindow();
-			if (gdkWindow != null)
-				gdkWindow.Lower();
-		}
+		public void BringToFront() => Control.GetWindow()?.Raise();
+
+		public void SendToBack() => Control.GetWindow()?.Lower();
 
 		public virtual void SetOwner(Window owner)
 		{

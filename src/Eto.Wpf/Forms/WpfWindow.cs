@@ -972,14 +972,9 @@ namespace Eto.Wpf.Forms
 			if (Control.WindowState == sw.WindowState.Minimized)
 				Control.WindowState = sw.WindowState.Normal;
 
-			if (!Control.Focusable)
-			{
-				var hWnd = NativeHandle;
-				if (hWnd != IntPtr.Zero)
-					Win32.SetWindowPos(hWnd, Win32.HWND_TOP, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE);
-			}
-			else
-				Control.Activate();
+			var hWnd = NativeHandle;
+			if (hWnd != IntPtr.Zero)
+				Win32.SetWindowPos(hWnd, Win32.HWND_TOP, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE | Win32.SWP.NOACTIVATE);
 		}
 
 		public void SendToBack()

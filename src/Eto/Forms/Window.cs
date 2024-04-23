@@ -533,20 +533,14 @@ public abstract class Window : Panel
 	}
 
 	/// <summary>
-	/// Brings the window in front of all other windows in the z-order.
+	/// Brings the window in front of all other windows in the z-order.  This should not activate/focus the window.
 	/// </summary>
-	public void BringToFront()
-	{
-		Handler.BringToFront();
-	}
+	public void BringToFront() => Handler.BringToFront();
 
 	/// <summary>
-	/// Sends the window behind all other windows in the z-order.
+	/// Sends the window behind all other windows in the z-order, and will remain active if it has focus.
 	/// </summary>
-	public void SendToBack()
-	{
-		Handler.SendToBack();
-	}
+	public void SendToBack() => Handler.SendToBack();
 
 	/// <summary>
 	/// Raises the <see cref="BindableWidget.DataContextChanged"/> event

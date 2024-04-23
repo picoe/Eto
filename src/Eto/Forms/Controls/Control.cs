@@ -866,7 +866,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// or it can be captured explicitly via <see cref="CaptureMouse"/>.
 	/// </remarks>
 	public bool IsMouseCaptured => Handler.IsMouseCaptured;
-	
+
 	/// <summary>
 	/// Captures all mouse events to this control.
 	/// </summary>
@@ -877,7 +877,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// </remarks>
 	/// <returns><c>true</c> if the mouse was captured, false otherwise.</returns>
 	public bool CaptureMouse() => Handler.CaptureMouse();
-	
+
 	/// <summary>
 	/// Releases the mouse capture after a call to <see cref="CaptureMouse"/>.
 	/// </summary>
@@ -998,10 +998,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// </summary>
 	/// <returns>The parent if found, or null if not found.</returns>
 	/// <param name="id">Identifier of the parent control to find.</param>
-	public new Container FindParent(string id)
-	{
-		return FindParent(null, id);
-	}
+	public new Container FindParent(string id) => FindParent(null, id);
 
 	/// <summary>
 	/// Detaches the control by removing it from its parent
@@ -1041,7 +1038,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	{
 		if (VisualParent != null)
 			throw new InvalidOperationException("You can only attach a parentless control");
-			
+
 		if (IsAttached)
 			return;
 
@@ -1128,18 +1125,13 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// Gets a value indicating whether this instance has the keyboard input focus.
 	/// </summary>
 	/// <value><c>true</c> if this instance has focus; otherwise, <c>false</c>.</value>
-	public virtual bool HasFocus
-	{
-		get { return Handler.HasFocus; }
-	}
+	public virtual bool HasFocus => Handler.HasFocus;
 
 	/// <summary>
-	/// Attempts to set the keyboard input focus to this control, or the first child that accepts focus
+	/// Attempts to set the keyboard input focus to this control, or the first child that accepts focus.
+	/// For Windows, this will bring it to front and activate it.
 	/// </summary>
-	public virtual void Focus()
-	{
-		Handler.Focus();
-	}
+	public virtual void Focus() => Handler.Focus();
 
 
 	static readonly object SuspendCount_Key = new object();
@@ -1156,7 +1148,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <seealso cref="SuspendLayout"/>
 	/// <seealso cref="ResumeLayout"/>
 	/// <value><c>true</c> if this instance is suspended; otherwise, <c>false</c>.</value>
-	public bool IsSuspended { get { return SuspendCount > 0; } }
+	public bool IsSuspended => SuspendCount > 0;
 
 	/// <summary>
 	/// Suspends the layout of child controls
@@ -1218,10 +1210,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// </remarks>
 	/// <value>The supported platform commands.</value>
 	/// <seealso cref="MapPlatformCommand"/>
-	public IEnumerable<string> SupportedPlatformCommands
-	{
-		get { return Handler.SupportedPlatformCommands; }
-	}
+	public IEnumerable<string> SupportedPlatformCommands => Handler.SupportedPlatformCommands;
 
 	/// <summary>
 	/// Specifies a command to execute for a platform-specific command
@@ -1248,59 +1237,41 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <param name="systemCommand">System command</param>
 	/// <param name="command">Command to execute, or null to restore to the default behavior</param>
 	/// <seealso cref="SupportedPlatformCommands"/>
-	public void MapPlatformCommand(string systemCommand, Command command)
-	{
-		Handler.MapPlatformCommand(systemCommand, command);
-	}
+	public void MapPlatformCommand(string systemCommand, Command command) => Handler.MapPlatformCommand(systemCommand, command);
 
 	/// <summary>
 	/// Converts a point from screen space to control space.
 	/// </summary>
 	/// <returns>The point in control space</returns>
 	/// <param name="point">Point in screen space</param>
-	public PointF PointFromScreen(PointF point)
-	{
-		return Handler.PointFromScreen(point);
-	}
+	public PointF PointFromScreen(PointF point) => Handler.PointFromScreen(point);
 
 	/// <summary>
 	/// Converts a point from control space to screen space
 	/// </summary>
 	/// <returns>The point in screen space</returns>
 	/// <param name="point">Point in control space</param>
-	public PointF PointToScreen(PointF point)
-	{
-		return Handler.PointToScreen(point);
-	}
+	public PointF PointToScreen(PointF point) => Handler.PointToScreen(point);
 
 	/// <summary>
 	/// Converts a rectangle from screen space to control space.
 	/// </summary>
 	/// <returns>The rectangle in control space</returns>
 	/// <param name="rect">Rectangle in screen space</param>
-	public RectangleF RectangleToScreen(RectangleF rect)
-	{
-		return new RectangleF(PointToScreen(rect.Location), PointToScreen(rect.EndLocation));
-	}
+	public RectangleF RectangleToScreen(RectangleF rect) => new RectangleF(PointToScreen(rect.Location), PointToScreen(rect.EndLocation));
 
 	/// <summary>
 	/// Converts a rectangle from control space to screen space
 	/// </summary>
 	/// <returns>The rectangle in screen space</returns>
 	/// <param name="rect">Rectangle in control space</param>
-	public RectangleF RectangleFromScreen(RectangleF rect)
-	{
-		return new RectangleF(PointFromScreen(rect.Location), PointFromScreen(rect.EndLocation));
-	}
+	public RectangleF RectangleFromScreen(RectangleF rect) => new RectangleF(PointFromScreen(rect.Location), PointFromScreen(rect.EndLocation));
 
 	/// <summary>
 	/// Gets the bounding rectangle of this control relative to its container
 	/// </summary>
 	/// <value>The bounding rectangle of the control</value>
-	public Rectangle Bounds
-	{
-		get { return new Rectangle(Location, Size); }
-	}
+	public Rectangle Bounds => new Rectangle(Location, Size);
 
 	/// <summary>
 	/// Gets the location of the control as positioned by the container
@@ -1310,10 +1281,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// This can be used to determine where the control is for overlaying floating windows, menus, etc.
 	/// </remarks>
 	/// <value>The current location of the control</value>
-	public Point Location
-	{
-		get { return Handler.Location; }
-	}
+	public Point Location => Handler.Location;
 
 	/// <summary>
 	/// Gets or sets the type of cursor to use when the mouse is hovering over the control
@@ -1435,7 +1403,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <param name="widget">Widget to style.</param>
 	/// <param name="style">Style of the widget to apply.</param>
 	protected virtual void ApplyStyles(object widget, string style) => Parent?.ApplyStyles(widget, Style);
-		
+
 	/// <summary>
 	/// Shows a print dialog to print the specified control
 	/// </summary>
@@ -1447,7 +1415,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 			dlg.ShowDialog(this, doc);
 		}
 	}
-		
+
 
 	/// <summary>
 	/// Handles the disposal of this control
@@ -2039,7 +2007,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// <param name="availableSize">The available size to determine the preferred size</param>
 		/// <returns>The preferred size this control would like to be, which can be larger than the specified <paramref name="availableSize" />.</returns>
 		SizeF GetPreferredSize(SizeF availableSize);
-			
+
 		/// <summary>
 		/// Updates the layout of this control if necessary.
 		/// </summary>
@@ -2050,7 +2018,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// This is useful when you need to know the dimensions of the control immediately.
 		/// </remarks>
 		void UpdateLayout();
-		
+
 		/// <summary>
 		/// Gets a value indicating this control currently has mouse capture
 		/// </summary>
@@ -2070,7 +2038,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// </remarks>
 		/// <returns><c>true</c> if the mouse was captured, false otherwise.</returns>
 		bool CaptureMouse();
-		
+
 		/// <summary>
 		/// Releases the mouse capture after a call to <see cref="CaptureMouse"/>.
 		/// </summary>
