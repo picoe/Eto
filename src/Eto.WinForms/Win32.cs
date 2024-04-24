@@ -768,5 +768,29 @@ namespace Eto
 		/// <returns>N/A</returns>
 		[DllImport("User32.dll")]
 		public static extern int DestroyIcon(IntPtr hIcon);
+		
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+
+		[Flags]
+		public enum WPF : int
+		{
+			SETMINPOSITION = 0x01,
+			RESTORETOMAXIMIZED = 0x02,
+			ASYNCWINDOWPLACEMENT = 0x04
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct WINDOWPLACEMENT
+		{
+			public int length;
+			public WPF flags;
+			public int showCmd;
+			public System.Drawing.Point ptMinPosition;
+			public System.Drawing.Point ptMaxPosition;
+			public System.Drawing.Rectangle rcNormalPosition;
+		}
+		
 	}
 }
