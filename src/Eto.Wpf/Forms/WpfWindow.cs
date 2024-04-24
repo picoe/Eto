@@ -967,6 +967,13 @@ namespace Eto.Wpf.Forms
 			RestoreWindowStyle(oldStyle);
 		}
 
+		public override void Focus()
+		{
+			if (Control.WindowState == sw.WindowState.Minimized)
+				Control.WindowState = sw.WindowState.Normal;
+			base.Focus();
+		}
+
 		public void BringToFront()
 		{
 			if (Control.WindowState == sw.WindowState.Minimized)
