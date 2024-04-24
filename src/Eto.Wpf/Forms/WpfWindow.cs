@@ -152,6 +152,25 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		private IntPtr HookProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+		{
+			if (msg == 0x0084 /*WM_NCHITTEST*/ )
+			{
+				// This prevents a crash in WindowChromeWorker._HandleNCHitTest with some mouse drivers
+				// See https://github.com/dotnet/wpf/issues/6777 for more information
+				// This was fixed in .NET 8 but this is here to avoid the crash in .NET Framework 4.8 and .NET 7.
+				try
+				{
+					lParam.ToInt32();
+				}
+				catch (OverflowException)
+				{
+					handled = true;
+				}
+			}
+			return IntPtr.Zero;
+		}
+
 		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			// NOTE: If the window size is set, it will be made visible BEFORE this is called.
@@ -166,6 +185,8 @@ namespace Eto.Wpf.Forms
 			SetSizeToContent();
 			if (Control.ShowActivated)
 				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+
+			((swin.HwndSource)sw.PresentationSource.FromVisual(Control))?.AddHook(HookProc);
 		}
 
 		private void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
