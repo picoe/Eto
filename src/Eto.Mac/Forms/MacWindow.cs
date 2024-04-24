@@ -342,7 +342,7 @@ namespace Eto.Mac.Forms
 			if (handler == null)
 				return;
 			handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
-			if (GetHandler(handler.Control.FirstResponder) is IMacViewHandler ctlHandler)
+			if (GetHandler(handler.Control.FirstResponder) is IMacViewHandler ctlHandler && ctlHandler != handler)
 			{
 				ctlHandler.Callback.OnGotFocus(ctlHandler.Widget, EventArgs.Empty);
 			}
@@ -354,7 +354,7 @@ namespace Eto.Mac.Forms
 			if (handler == null)
 				return;
 
-			if (GetHandler(handler.Control.FirstResponder) is IMacViewHandler ctlHandler)
+			if (GetHandler(handler.Control.FirstResponder) is IMacViewHandler ctlHandler && ctlHandler != handler)
 			{
 				ctlHandler.Callback.OnLostFocus(ctlHandler.Widget, EventArgs.Empty);
 			}
@@ -905,10 +905,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public override void Focus()
-		{
-			Control.BecomeFirstResponder();
-		}
+		public override void Focus() => Control.MakeKeyAndOrderFront(Control);
 
 		public string Id { get; set; }
 
@@ -1243,7 +1240,6 @@ namespace Eto.Mac.Forms
 		public void BringToFront()
 		{
 			Control.OrderFront(Control);
-			Control.MakeKeyWindow();
 		}
 
 		public void SendToBack()

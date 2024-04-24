@@ -7,6 +7,7 @@ namespace Eto.Test.Sections.Behaviors
 	{
 		Window child;
 		Button bringToFrontButton;
+		Button focusButton;
 		EnumRadioButtonList<WindowStyle> styleCombo;
 		EnumRadioButtonList<WindowState> stateCombo;
 		EnumRadioButtonList<WindowType> typeRadio;
@@ -41,7 +42,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow(null, CreateMinimumSizeControls(), null);
 			layout.AddSeparateRow(null, CreateCancelClose(), null);
 			layout.AddSeparateRow(null, CreateChildWindowButton(), null);
-			layout.AddSeparateRow(null, BringToFrontButton(), null);
+			layout.AddSeparateRow(null, BringToFrontButton(), SetFocusButton(), null);
 			layout.Add(null);
 
 			Content = layout;
@@ -527,7 +528,7 @@ namespace Eto.Test.Sections.Behaviors
 				child.Owner = ParentWindow;
 			if (createMenuBar.Checked ?? false)
 				child.Menu = CreateMenuBar();
-			bringToFrontButton.Enabled = true;
+			bringToFrontButton.Enabled = focusButton.Enabled = true;
 			DataContext = child;
 			show();
 			//visibleCheckBox.Checked = child?.Visible == true; // child will be null after it is shown
@@ -548,7 +549,7 @@ namespace Eto.Test.Sections.Behaviors
 			child.LostFocus -= child_LostFocus;
 			child.LocationChanged -= child_LocationChanged;
 			child.SizeChanged -= child_SizeChanged;
-			bringToFrontButton.Enabled = false;
+			bringToFrontButton.Enabled = focusButton.Enabled = false;
 			child.Unbind();
 			child = null;
 			// write out number of open windows after the closed event is called
@@ -616,37 +617,32 @@ namespace Eto.Test.Sections.Behaviors
 			control.Click += (sender, e) => CreateChild();
 			return control;
 		}
+		
+		Control SetFocusButton()
+		{
+			var control = focusButton = new Button { Text = "Focus", Enabled = false };
+			control.Click += (sender, e) => child?.Focus();
+			return control;
+		}
 
 		Control BringToFrontButton()
 		{
-			var control = bringToFrontButton = new Button { Text = "Bring to Front", Enabled = false };
-			control.Click += (sender, e) =>
-			{
-				if (child != null)
-					child.BringToFront();
-			};
+			var control = bringToFrontButton = new Button { Text = "BringToFront", Enabled = false };
+			control.Click += (sender, e) => child?.BringToFront();
 			return control;
 		}
 
 		Control CloseButton()
 		{
 			var control = new Button { Text = "Close Window" };
-			control.Click += (sender, e) =>
-			{
-				if (child != null)
-					child.Close();
-			};
+			control.Click += (sender, e) => child?.Close();
 			return control;
 		}
 
 		Control SendToBackButton()
 		{
-			var control = new Button { Text = "Send to Back" };
-			control.Click += (sender, e) =>
-			{
-				if (child != null)
-					child.SendToBack();
-			};
+			var control = new Button { Text = "SendToBack" };
+			control.Click += (sender, e) => child?.SendToBack();
 			return control;
 		}
 

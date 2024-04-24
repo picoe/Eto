@@ -693,7 +693,7 @@ namespace Eto.WinForms.Forms
 			Control.ResumeLayout();
 		}
 
-		public void Focus()
+		public virtual void Focus()
 		{
 			if (Widget.Loaded && Control.IsHandleCreated)
 				Control.Focus();

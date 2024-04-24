@@ -177,6 +177,14 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public override void Focus()
+		{
+			if (!CanFocus)
+				BringToFront();
+			else
+				base.Focus();
+		}
+
 		EtoForm EtoFormControl => Control as EtoForm;
 	}
 }

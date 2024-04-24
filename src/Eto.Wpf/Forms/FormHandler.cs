@@ -71,5 +71,15 @@ namespace Eto.Wpf.Forms
 				SetStyle(Win32.WS.CHILD, !value);
 			}
 		}
+		
+		public override void Focus()
+		{
+			if (!Control.Focusable)
+				BringToFront();
+			else
+				base.Focus();
+		}
+
+		
 	}
 }
