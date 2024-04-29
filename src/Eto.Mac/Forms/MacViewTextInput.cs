@@ -48,7 +48,7 @@ namespace Eto.Mac.Forms
 			if (obj is NSView ctl && MacBase.GetHandler(obj) is IMacViewHandler handler)
 			{
 				var rect = ctl.ConvertRectToView(ctl.Bounds, null);
-				return ctl.Window.ConvertRectToScreen(rect);
+				return ctl.Window?.ConvertRectToScreen(rect) ?? CGRect.Empty;
 			}
 			return CGRect.Empty;
 		}
