@@ -1218,11 +1218,11 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	public IEnumerable<string> SupportedPlatformCommands => Handler.SupportedPlatformCommands;
 
 	/// <summary>
-	/// Specifies a command to execute for a platform-specific command
+	/// Specifies a command to execute for a Mac platform-specific command
 	/// </summary>
 	/// <remarks>
-	/// Some platforms have specific system-defined commands that can be associated with a control.
-	/// For example, the Mac platform's cut/copy/paste functionality is defined by the system, and if you want to
+	/// Mac has specific system-defined commands that can be associated with a control.
+	/// For example, cut/copy/paste functionality is defined by the system, and if you want to
 	/// hook into it, you can use this to map it to your own defined logic.
 	/// The valid values of the <paramref name="systemCommand"/> parameter are defined by each platform, and a list can be
 	/// retrieved using <see cref="Control.SupportedPlatformCommands"/>
