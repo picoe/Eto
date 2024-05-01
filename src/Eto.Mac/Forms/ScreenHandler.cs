@@ -1,19 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
+using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms
 {
@@ -74,6 +59,29 @@ namespace Eto.Mac.Forms
 		public bool IsPrimary
 		{
 			get { return Control == NSScreen.Screens[0]; }
+		}
+
+		[DllImport("/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/CoreGraphics")]
+		private static extern IntPtr CGDisplayCreateImageForRect(uint display, CGRect rect);
+
+		public Image GetImage(RectangleF rect)
+		{
+			if (Control.DeviceDescription["NSScreenNumber"] is NSNumber id)
+			{
+				// needs screen recording permission on Catalina
+				var logicalRect = rect;
+				logicalRect.Size *= Widget.LogicalPixelSize;
+				var cgimagePtr = CGDisplayCreateImageForRect(id.UInt32Value, logicalRect.ToNS());
+#if MACOS_NET
+				var cgimage = Runtime.GetINativeObject<CGImage>(cgimagePtr, true);
+#else
+				var cgimage = cgimagePtr == IntPtr.Zero ? null : new CGImage(cgimagePtr);
+#endif
+				if (cgimage != null)
+					return new Icon(new IconHandler(new NSImage(cgimage, rect.Size.ToNS())));
+			}
+
+			return null;
 		}
 	}
 }

@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class PanelHandler : GtkPanel<Gtk.EventBox, Panel, Panel.ICallback>, Panel.IHandler

@@ -1,8 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class SearchBoxHandler : IosView<UISearchBar, SearchBox, SearchBox.ICallback>, SearchBox.IHandler

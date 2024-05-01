@@ -1,8 +1,3 @@
-using System;
-using System.Text;
-using Eto.Forms;
-using System.Diagnostics;
-
 namespace Eto.Test
 {
 	public static class Log

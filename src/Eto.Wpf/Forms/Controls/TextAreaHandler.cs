@@ -1,9 +1,3 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoTextBox : swc.TextBox, IEtoWpfControl
@@ -84,6 +78,15 @@ namespace Eto.Wpf.Forms.Controls
 					break;
 			}
 		}
+
+		public override void ScrollTo(Range<int> range)
+		{
+			var rect = Control.GetRectFromCharacterIndex(range.End);
+			Control.ScrollToVerticalOffset(rect.Top);
+			Control.ScrollToHorizontalOffset(rect.Left);
+		}
+
+		public override int TextLength => Control.Text.Length;
 	}
 
 	public abstract class TextAreaHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextArea.IHandler
@@ -108,6 +111,12 @@ namespace Eto.Wpf.Forms.Controls
 				Handler = this
 			};
 			Wrap = true;
+		}
+		
+		protected override void Initialize()
+		{
+			base.Initialize();
+			UserPreferredSize = DefaultSize; // otherwise it grows to the constraint, which we don't want.
 		}
 
 		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
@@ -174,10 +183,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public abstract int CaretIndex { get; set; }
 
-		public void SelectAll()
-		{
-			Control.SelectAll();
-		}
+		public void SelectAll() => Control.SelectAll();
 
 		static readonly object AcceptsTabKey = new object();
 
@@ -236,13 +242,27 @@ namespace Eto.Wpf.Forms.Controls
 
 		public TextReplacements TextReplacements
 		{
-			get { return TextReplacements.None; }
+			get => TextReplacements.None;
 			set { }
 		}
 
-		public TextReplacements SupportedTextReplacements
+		public TextReplacements SupportedTextReplacements => TextReplacements.None;
+		
+		static readonly object Border_Key = new object();
+
+		public virtual BorderType Border
 		{
-			get { return TextReplacements.None; }
+			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
+			set { Widget.Properties.Set(Border_Key, value, () => Control.SetEtoBorderType(value)); }
 		}
+
+		public abstract void ScrollTo(Range<int> range);
+
+		public virtual void ScrollToEnd() => Control.ScrollToEnd();
+
+		public virtual void ScrollToStart() => Control.ScrollToHome();
+
+		public abstract int TextLength { get; }
+
 	}
 }

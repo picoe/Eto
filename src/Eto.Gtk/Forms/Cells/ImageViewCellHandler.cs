@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Cells
@@ -19,8 +16,18 @@ namespace Eto.GtkSharp.Forms.Cells
 				get { return row; }
 				set {
 					row = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
+			}
+
+			object item;
+			[GLib.Property("item")]
+			public object Item
+			{
+				get { return item; }
+				set
+				{
+					item = value;
+					Handler.Format(this, item, Row);
 				}
 			}
 

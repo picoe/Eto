@@ -7,7 +7,6 @@
 
 namespace DragDropLib
 {
-	using System;
 	using System.Windows;
 
 	static class WpfDragDropLibExtensions
@@ -33,12 +32,7 @@ namespace DragDropLib
 
 namespace System.Windows
 {
-	using System;
 	using System.Collections.Generic;
-	using System.IO;
-	using System.Linq;
-	using System.Runtime.InteropServices;
-	using System.Windows.Input;
 	using System.Windows.Media.Imaging;
 	using DragDropLib;
 	using ComTypes = System.Runtime.InteropServices.ComTypes;
@@ -664,7 +658,6 @@ namespace System.Windows
 
 namespace System.Windows
 {
-	using System;
 	using System.Windows;
 	using System.Windows.Interop;
 	using ComIDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
@@ -793,13 +786,7 @@ namespace System.Windows
 
 namespace System.Windows
 {
-	using System;
-	using System.Collections.Generic;
-	using System.ComponentModel;
 	using System.Drawing.Imaging;
-	using System.IO;
-	using System.Runtime.InteropServices;
-	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 	using System.Windows.Media;
 	using System.Windows.Media.Imaging;
@@ -1044,24 +1031,32 @@ namespace System.Windows
 			{
 				formatETC.tymed = tymed;
 
-				// Set data on an empty DataObject instance
-				DataObject conv = new DataObject();
-				conv.SetData(format, data, true);
-
-				// Now retrieve the data, using the COM interface.
-				// This will perform a managed to unmanaged conversion for us.
-				ComTypes.STGMEDIUM medium;
-				((ComTypes.IDataObject)conv).GetData(ref formatETC, out medium);
-				try
+				if (data is byte[] bytes)
 				{
-					// Now set the data on our data object
-					((ComTypes.IDataObject)dataObject).SetData(ref formatETC, ref medium, true);
+					// don't convert byte array as it adds extra data
+					ComTypes.ComDataObjectExtensions.SetByteData((ComTypes.IDataObject)dataObject, format, bytes);
 				}
-				catch
+				else
 				{
-					// On exceptions, release the medium
-					ReleaseStgMedium(ref medium);
-					throw;
+					// Set data on an empty DataObject instance
+					DataObject conv = new DataObject();
+					conv.SetData(format, data, true);
+
+					// Now retrieve the data, using the COM interface.
+					// This will perform a managed to unmanaged conversion for us.
+					ComTypes.STGMEDIUM medium;
+					((ComTypes.IDataObject)conv).GetData(ref formatETC, out medium);
+					try
+					{
+						// Now set the data on our data object
+						((ComTypes.IDataObject)dataObject).SetData(ref formatETC, ref medium, true);
+					}
+					catch
+					{
+						// On exceptions, release the medium
+						ReleaseStgMedium(ref medium);
+						throw;
+					}
 				}
 			}
 			else

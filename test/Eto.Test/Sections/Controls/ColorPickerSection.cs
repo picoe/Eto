@@ -1,7 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System.ComponentModel;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(ColorPicker))]

@@ -1,7 +1,4 @@
 using sdp = System.Drawing.Printing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Printing
 {
 	public class PrintSettingsHandler : WidgetHandler<sdp.PrinterSettings, PrintSettings>, PrintSettings.IHandler
@@ -13,7 +10,9 @@ namespace Eto.WinForms.Forms.Printing
 
 		public static sdp.PrinterSettings DefaultSettings()
 		{
-			return new sdp.PrinterSettings { MinimumPage = 1, MaximumPage = 1, FromPage = 1, ToPage = 1, Copies = 1, Collate = true };
+			var settings = new sdp.PrinterSettings { MinimumPage = 1, MaximumPage = 1, FromPage = 1, ToPage = 1, Copies = 1, Collate = true };
+			settings.DefaultPageSettings.Margins = new sdp.Margins(0, 0, 0, 0);
+			return settings;
 		}
 
 		public PrintSettingsHandler()

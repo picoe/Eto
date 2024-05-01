@@ -1,8 +1,4 @@
-using System;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Linq;
-
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
@@ -282,7 +278,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					Application.Instance.AsyncInvoke(form.Close);
 				};
 				return control;
-			}, false);
+			}, allowPass: false);
 
 			Assert.AreEqual(1, itemClickWasRaised, "#1.1"); // ensure user actually clicked an item.
 			Assert.AreEqual(0, selectedIndexesChangedCount, "#1.2");
@@ -377,7 +373,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					Application.Instance.AsyncInvoke(form.Close);
 				};
 				return control;
-			}, false);
+			}, allowPass: false);
 
 			Assert.Multiple(() =>
 			{
@@ -516,6 +512,23 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.AreEqual(2, item1SelectedChanged, "#6.7.1");
 			Assert.AreEqual(2, item2SelectedChanged, "#6.7.2");
 			Assert.AreEqual(2, item3SelectedChanged, "#6.7.3");
+		}
+		
+		[Test]
+		[InvokeOnUI]
+		public void InsertingItemsShouldWork()
+		{
+			var segmentedButton = new SegmentedButton();
+			segmentedButton.Items.Add(new ButtonSegmentedItem { Text = "Item 1" });
+			segmentedButton.Items.Add(new ButtonSegmentedItem { Text = "Item 2" });
+			segmentedButton.Items.Add(new ButtonSegmentedItem { Text = "Item 3" });
+
+			// insert at beginning
+			segmentedButton.Items.Insert(0, new ButtonSegmentedItem { Text = "Item Beginning" });
+			// insert at middle
+			segmentedButton.Items.Insert(1, new ButtonSegmentedItem { Text = "Item Middle" });
+			// insert at end
+			segmentedButton.Items.Insert(segmentedButton.Items.Count, new ButtonSegmentedItem { Text = "Item End" });
 		}
 	}
 }

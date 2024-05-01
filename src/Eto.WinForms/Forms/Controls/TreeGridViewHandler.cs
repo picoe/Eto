@@ -1,14 +1,4 @@
-using System;
-using System.Linq;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using Eto.Drawing;
 using Eto.CustomControls;
-using System.Collections.Specialized;
-using System.Runtime.InteropServices;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ITreeHandler
@@ -25,9 +15,9 @@ namespace Eto.WinForms.Forms.Controls
 
 		TreeController controller;
 
-		protected override object GetItemAtRow(int row)
+		public override object GetItemAtRow(int row)
 		{
-			if (row >= controller.Count)
+			if (row >= controller.Count || row < 0)
 				return null;
 			return controller[row];
 		}
@@ -111,7 +101,9 @@ namespace Eto.WinForms.Forms.Controls
 			get { return controller.Store; }
 			set
 			{
+				UnselectAll();
 				controller.InitializeItems(value);
+				EnsureSelection();
 			}
 		}
 
@@ -154,7 +146,7 @@ namespace Eto.WinForms.Forms.Controls
 					controller.ExpandToItem(value);
 					var index = controller.IndexOf(value);
 					if (index >= 0)
-						Control.Rows[index].Selected = true;
+						SelectRow(index);
 				}
 				else
 					Control.ClearSelection();
@@ -354,16 +346,17 @@ namespace Eto.WinForms.Forms.Controls
 					var mode = displayedOnly ? swf.DataGridViewAutoSizeColumnMode.DisplayedCells : swf.DataGridViewAutoSizeColumnMode.AllCells;
 					var width = colHandler.Control.GetPreferredWidth(mode, false);
 					if (width > colHandler.Control.Width)
-						colHandler.Control.Width = width;
+						colHandler.Control.Width = Math.Min(ushort.MaxValue, width);
 				}
 			}
 		}
 
-		void ITreeHandler.PreResetTree()
+		bool ITreeHandler.PreResetTree(object item, int row)
 		{
+			return false;
 		}
 
-		void ITreeHandler.PostResetTree()
+		void ITreeHandler.PostResetTree(object item, int row)
 		{
 		}
 
@@ -372,13 +365,13 @@ namespace Eto.WinForms.Forms.Controls
 			var selectedItems = SelectedItems.OfType<ITreeGridItem>().ToList();
 			SupressSelectionChanged++;
 			controller.ReloadData();
-			Control.ClearSelection();
+			UnselectAll();
 			bool selectionChanged = false;
 			foreach (var selectedItem in selectedItems)
 			{
 				var row = controller.IndexOf(selectedItem);
 				if (row >= 0)
-					Control.Rows[row].Selected = true;
+					SelectRow(row);
 				else
 					selectionChanged = true;
 			}
@@ -395,13 +388,12 @@ namespace Eto.WinForms.Forms.Controls
 				controller.ReloadItem(item);
 		}
 
-		public ITreeGridItem GetCellAt(PointF location, out int column)
+		public TreeGridCell GetCellAt(PointF location)
 		{
 			var result = Control.HitTest((int)location.X, (int)location.Y);
-			column = result.ColumnIndex;
-			if (result.RowIndex == -1)
-				return null;
-			return GetItemAtRow(result.RowIndex) as ITreeGridItem;
+			var column = result.ColumnIndex != -1 ? Widget.Columns[result.ColumnIndex] : null;
+			var item = GetItemAtRow(result.RowIndex);
+			return new TreeGridCell(column, result.ColumnIndex, result.Type.ToEto(), item);
 		}
 
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;

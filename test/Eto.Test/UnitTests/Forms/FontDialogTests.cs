@@ -1,7 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Eto.Drawing;
-using Eto.Forms;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms

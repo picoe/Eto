@@ -1,11 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Collections.Generic;
-
 namespace Eto.WinForms.Forms
 {
 	public abstract class WindowsFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
@@ -88,6 +80,9 @@ namespace Eto.WinForms.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			SetFilters();
 
 			swf.DialogResult dr;

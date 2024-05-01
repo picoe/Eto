@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.Test.Commands
 {
 	public class About : Command

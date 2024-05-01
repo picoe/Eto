@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>
@@ -105,12 +101,12 @@ namespace Eto.GtkSharp.Drawing
 			gradient.Extend = gradientWrap.ToCairo();
 		}
 
-		public override void Apply(object control, GraphicsHandler graphics)
+		public override void Apply(object control, Cairo.Context context)
 		{
 			var gradient = ((EtoGradient)control);
-			graphics.Control.Transform(gradient.RenderTransform);
-			graphics.Control.SetSource(gradient);
-			graphics.Control.Transform(gradient.RenderTransformInverse);
+			context.Transform(gradient.RenderTransform);
+			context.SetSource(gradient);
+			context.Transform(gradient.RenderTransformInverse);
 		}
 	}
 }

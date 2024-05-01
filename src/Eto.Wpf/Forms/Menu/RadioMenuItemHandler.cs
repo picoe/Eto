@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using System.Linq;
-using System.ComponentModel;
-
 namespace Eto.Wpf.Forms.Menu
 {
 	public class RadioMenuItemHandler : MenuItemHandler<swc.MenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
@@ -77,7 +68,7 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
-		void HandleIsCheckedChanged(object sender, EventArgs e)
+		void HandleIsCheckedChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}

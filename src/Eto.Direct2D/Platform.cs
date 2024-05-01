@@ -1,5 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Direct2D.Drawing;
 using Eto.Direct2D.Forms.Controls;
 using Eto.Direct2D.Forms.Printing;

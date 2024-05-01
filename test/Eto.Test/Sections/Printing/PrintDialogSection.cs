@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Test.Sections.Printing
 {
 	[Section("Printing", "Print Dialog")]
@@ -87,10 +83,11 @@ namespace Eto.Test.Sections.Printing
 			return control;
 		}
 
-		PrintDocument GetPrintDocument()
+		public static PrintDocument GetPrintDocument(PrintSettings settings)
 		{
 			var document = new PrintDocument();
-			document.PrintSettings = settings;
+			if (settings != null)
+				document.PrintSettings = settings;
 			var font = Fonts.Serif(16);
 			var printTime = DateTime.Now;
 			document.PrintPage += (sender, e) =>
@@ -99,7 +96,7 @@ namespace Eto.Test.Sections.Printing
 
 				// draw a border around the printable area
 				var rect = new Rectangle(pageSize);
-				rect.Inflate(-1, -1);
+				// rect.Inflate(-1, -1);
 				e.Graphics.DrawRectangle(Pens.Silver, rect);
 
 				// draw title
@@ -139,7 +136,7 @@ namespace Eto.Test.Sections.Printing
 
 			control.Click += delegate
 			{
-				var document = GetPrintDocument();
+				var document = GetPrintDocument(settings);
 				document.Print();
 			};
 
@@ -152,7 +149,7 @@ namespace Eto.Test.Sections.Printing
 
 			control.Click += delegate
 			{
-				var document = GetPrintDocument();
+				var document = GetPrintDocument(settings);
 				var dialog = CreatePrintDialog();
 				dialog.ShowDialog(this, document);
 				DataContext = settings = document.PrintSettings;

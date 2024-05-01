@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
@@ -15,15 +9,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected override void Create()
 		{
-			listStore = new Gtk.ListStore(typeof(string));
 #if GTK2
-			Control = new Gtk.ComboBoxEntry(listStore, 0);
+			Control = new Gtk.ComboBoxEntry();
 #else
-			Control = Gtk.ComboBox.NewWithModelAndEntry(listStore);
+			Control = Gtk.ComboBox.NewWithEntry();
 			Control.EntryTextColumn = 0;
 #endif
 			text = Control.Cells[0] as Gtk.CellRendererText;
-			Control.SetAttributes(text, "text", 0);
 			entry = (Gtk.Entry)Control.Child;
 			entry.IsEditable = true;
 			Control.Changed += Connector.HandleChanged;
@@ -143,7 +135,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					if (value)
 					{
 						completion = new Gtk.EntryCompletion();
-						completion.Model = listStore;
+						completion.Model = Control.Model;
 						completion.MinimumKeyLength = 1;
 						completion.TextColumn = 0;
 						entry.Completion = completion;

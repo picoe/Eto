@@ -2,8 +2,8 @@ using Eto.Wpf.Forms.Controls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
-using System;
+using TextBox = System.Windows.Controls.TextBox;
+using Control = System.Windows.Controls.Control;
 
 namespace Eto.Wpf.CustomControls
 {
@@ -17,7 +17,7 @@ namespace Eto.Wpf.CustomControls
 			var textBox = new FrameworkElementFactory(typeof(TextBox));
 			textBox.SetValue(Control.PaddingProperty, new Thickness(1)); // 1px for border
 			textBox.AddHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler(TextBox_Loaded));
-			textBox.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(TextBox_KeyDown));
+			textBox.AddHandler(UIElement.KeyDownEvent, new swi.KeyEventHandler(TextBox_KeyDown));
 			textBox.AddHandler(UIElement.LostFocusEvent, new RoutedEventHandler(TextBox_LostFocus));
 			textBox.AddHandler(UIElement.GotFocusEvent, new RoutedEventHandler(TextBox_GotFocus));
 			textBox.SetBinding(TextBox.TextProperty, new System.Windows.Data.Binding("Text") { Source = this, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
@@ -25,7 +25,7 @@ namespace Eto.Wpf.CustomControls
 
 			var textBlock = new FrameworkElementFactory(typeof(TextBlock));
 			textBlock.SetValue(FrameworkElement.MarginProperty, new Thickness(2));
-			textBlock.AddHandler(UIElement.MouseDownEvent, new MouseButtonEventHandler(TextBlock_MouseDown));
+			textBlock.AddHandler(UIElement.MouseDownEvent, new swi.MouseButtonEventHandler(TextBlock_MouseDown));
 			textBlock.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding("Text") { Source = this });
 			var viewTemplate = new DataTemplate { VisualTree = textBlock };
 
@@ -130,15 +130,15 @@ namespace Eto.Wpf.CustomControls
 		}
 
 
-		void TextBox_KeyDown(object sender, KeyEventArgs e)
+		void TextBox_KeyDown(object sender, swi.KeyEventArgs e)
 		{
-			if (e.Key == Key.Enter)
+			if (e.Key == swi.Key.Enter)
 			{
 				if (!SetParentFocus())
 					IsInEditMode = false;
 				e.Handled = true;
 			}
-			else if (e.Key == Key.Escape)
+			else if (e.Key == swi.Key.Escape)
 			{
 				var prev = Text;
 				Text = oldText;
@@ -150,9 +150,9 @@ namespace Eto.Wpf.CustomControls
 			}
 		}
 
-		void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+		void TextBlock_MouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			if (e.ButtonState == MouseButtonState.Pressed && e.ClickCount >= 2 && e.ChangedButton == MouseButton.Left)
+			if (e.ButtonState == swi.MouseButtonState.Pressed && e.ClickCount >= 2 && e.ChangedButton == swi.MouseButton.Left)
 			{
 				IsInEditMode = true;
 				e.Handled = true;

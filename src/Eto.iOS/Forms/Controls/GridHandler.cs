@@ -1,8 +1,5 @@
-using System;
 using MonoTouch;
 using UIKit;
-using Eto.Forms;
-using System.Collections.Generic;
 using Foundation;
 
 namespace Eto.iOS.Forms.Controls

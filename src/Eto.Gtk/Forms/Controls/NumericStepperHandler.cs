@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Globalization;
-using System.ComponentModel;
 using Gtk;
-using System.Text.RegularExpressions;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class NumericStepperHandler : GtkControl<Gtk.SpinButton, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
@@ -13,9 +6,15 @@ namespace Eto.GtkSharp.Forms.Controls
 		public NumericStepperHandler()
 		{
 			Control = new Gtk.SpinButton(double.MinValue, double.MaxValue, 1);
-			Control.WidthRequest = 120;
-			Control.Wrap = true;
+			Control.WidthChars = 5; // default to show 5 characters
 			Value = 0;
+		}
+
+		protected override void SetSize(Size size)
+		{
+			// if a width is set, we allow it to shrink as small as possible..
+			Control.WidthChars = size.Width > 0 ? 0 : 5;
+			base.SetSize(size);
 		}
 
 		static readonly object SuppressValueChanged_Key = new object();
@@ -47,10 +46,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleValueChanged(object sender, EventArgs e)
 			{
-				if (Handler.SuppressValueChanged <= 0)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (handler.SuppressValueChanged <= 0)
 				{
-					Handler.UpdateRequiredDigits();
-					Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
+					handler.UpdateRequiredDigits();
+					handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 				}
 			}
 
@@ -61,17 +63,19 @@ namespace Eto.GtkSharp.Forms.Controls
 			[GLib.ConnectBefore]
 			public void HandleInput(object o, InputArgs args)
 			{
-				var h = Handler;
-				if (h.NeedsFormat)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (handler.NeedsFormat)
 				{
-					var text = h.Text;
-					if (h.HasFormatString)
-						text = Regex.Replace(text, $@"(?!\d|{Regex.Escape(h.CultureInfo.NumberFormat.NumberDecimalSeparator)}|{Regex.Escape(h.CultureInfo.NumberFormat.NegativeSign)}).", ""); // strip any non-numeric value
+					var text = handler.Text;
+					if (handler.HasFormatString)
+						text = Regex.Replace(text, $@"(?!\d|{Regex.Escape(handler.CultureInfo.NumberFormat.NumberDecimalSeparator)}|{Regex.Escape(handler.CultureInfo.NumberFormat.NegativeSign)}).", ""); // strip any non-numeric value
 
 					double result;
-					if (double.TryParse(text, NumberStyles.Any, h.CultureInfo, out result))
+					if (double.TryParse(text, NumberStyles.Any, handler.CultureInfo, out result))
 					{
-						if (h.HasFormatString && result > 0 && NumberStringsMatch((-result).ToString(h.FormatString, h.CultureInfo), h.Text))
+						if (handler.HasFormatString && result > 0 && NumberStringsMatch((-result).ToString(handler.FormatString, handler.CultureInfo), handler.Text))
 							result = -result;
 
 						args.NewValue = result;
@@ -79,20 +83,22 @@ namespace Eto.GtkSharp.Forms.Controls
 						return;
 					}
 				}
-				args.NewValue = h.Control.Adjustment.Value;
+				args.NewValue = handler.Control.Adjustment.Value;
 				args.RetVal = 0;
 			}
 
 			[GLib.ConnectBefore]
 			public void HandleOutput(object o, OutputArgs args)
 			{
-				var h = Handler;
-				if (h.NeedsFormat)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (handler.NeedsFormat)
 				{
-					var val = h.Control.Adjustment.Value;
-					var format = h.CurrentFormatString;
-					var text = format == null ? val.ToString(h.CultureInfo) : val.ToString(format, h.CultureInfo);
-					h.Control.Text = text;
+					var val = handler.Control.Adjustment.Value;
+					var format = handler.CurrentFormatString;
+					var text = format == null ? val.ToString(handler.CultureInfo) : val.ToString(format, handler.CultureInfo);
+					handler.Control.Text = text;
 					args.RetVal = 1;
 					return;
 				}
@@ -111,7 +117,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return !Control.IsEditable; }
 			set
 			{
-				Control.IsEditable = !value; 
+				Control.IsEditable = !value;
 				SetIncrement();
 			}
 		}
@@ -124,20 +130,20 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public double MaxValue
 		{
-			get { return Control.Adjustment.Upper == double.MaxValue ? double.PositiveInfinity : Control.Adjustment.Upper; }
+			get => Control.Adjustment.Upper;
 			set
-			{ 
-				Control.Adjustment.Upper = double.IsPositiveInfinity(value) ? double.MaxValue : value; 
+			{
+				Control.Adjustment.Upper = double.IsPositiveInfinity(value) ? double.MaxValue : value;
 				Value = Value;
 			}
 		}
 
 		public double MinValue
 		{
-			get { return Control.Adjustment.Lower == double.MinValue ? double.NegativeInfinity : Control.Adjustment.Lower; }
+			get => Control.Adjustment.Lower;
 			set
 			{
-				Control.Adjustment.Lower = double.IsNegativeInfinity(value) ? double.MinValue : value; 
+				Control.Adjustment.Lower = double.IsNegativeInfinity(value) ? double.MinValue : value;
 				Value = Value;
 			}
 		}
@@ -164,7 +170,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Widget.Properties.Get<int>(DecimalPlaces_Key); }
 			set
-			{ 
+			{
 				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
 				{
 					MaximumDecimalPlaces = Math.Max(value, MaximumDecimalPlaces);
@@ -218,7 +224,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					DecimalPlaces = Math.Min(value, DecimalPlaces);
 					UpdateRequiredDigits();
-				}); 
+				});
 			}
 		}
 
@@ -249,12 +255,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public string FormatString
 		{
-			get { return Widget.Properties.Get<string>(FormatString_Key); }
-			set {
+			get => Widget.Properties.Get<string>(FormatString_Key);
+			set
+			{
 				// ensure format is valid first, GTK crashes if the formating throws in the Output event, even if caught while setting this
 				if (!string.IsNullOrEmpty(value))
 					0.0.ToString(value);
-				Widget.Properties.Set(FormatString_Key, value, UpdateFormat);
+				if (Widget.Properties.TrySet(FormatString_Key, value))
+					UpdateFormat();
 			}
 		}
 
@@ -262,7 +270,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			_formatString = null;
 			// GTK doesn't remember the value if the format changes as it tries to parse the old text with the new format
-			Control.Value = Control.Value; 
+			Control.Value = Control.Value;
 
 			// update to the new text
 			Control.Update();
@@ -272,8 +280,18 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public CultureInfo CultureInfo
 		{
-			get { return Widget.Properties.Get(CultureInfo_Key, CultureInfo.CurrentCulture); }
-			set { Widget.Properties.Set(CultureInfo_Key, value, UpdateFormat, CultureInfo.CurrentCulture); }
+			get => Widget.Properties.Get(CultureInfo_Key, CultureInfo.CurrentCulture);
+			set
+			{
+				if (Widget.Properties.TrySet(CultureInfo_Key, value, CultureInfo.CurrentCulture))
+					UpdateFormat();
+			}
+		}
+
+		public bool Wrap
+		{
+			get => Control.Wrap;
+			set => Control.Wrap = value;
 		}
 	}
 }

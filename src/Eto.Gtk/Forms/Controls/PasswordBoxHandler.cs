@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class PasswordBoxHandler : GtkControl<Gtk.Entry, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler
@@ -40,7 +36,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

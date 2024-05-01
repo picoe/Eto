@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.ToolBar
 {
 
@@ -41,7 +38,7 @@ namespace Eto.GtkSharp.Forms.ToolBar
 
 			public void HandleClicked(object sender, EventArgs e)
 			{
-				Handler.Widget.OnClick(e);
+				Handler?.Widget.OnClick(e);
 			}
 		}
 	}

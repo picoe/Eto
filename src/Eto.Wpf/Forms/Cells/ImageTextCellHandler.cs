@@ -1,13 +1,5 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
 using swd = System.Windows.Data;
-using swm = System.Windows.Media;
 using Eto.Wpf.Drawing;
-using Eto.Drawing;
-using System.ComponentModel;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.Column, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
@@ -109,9 +101,11 @@ namespace Eto.Wpf.Forms.Cells
 				ScalingMode = swm.BitmapScalingMode.HighQuality;
 			}
 
+			public sw.Thickness ImageMargin { get; set; } = new sw.Thickness(0, 2, 2, 2);
+
 			swc.Image CreateImage()
 			{
-				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness(0, 2, 2, 2) };
+				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = ImageMargin };
 				swm.RenderOptions.SetBitmapScalingMode(image, ScalingMode);
 				image.DataContextChanged += (sender, e) =>
 				{
@@ -121,13 +115,13 @@ namespace Eto.Wpf.Forms.Cells
 				return image;
 			}
 
-			sw.FrameworkElement SetupCell(sw.FrameworkElement element)
+			sw.FrameworkElement SetupCell(sw.FrameworkElement element, swc.DataGridCell cell)
 			{
 				element.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
 				var container = new swc.DockPanel();
 				container.Children.Add(CreateImage());
 				container.Children.Add(element);
-				return Handler.SetupCell(container);
+				return Handler.SetupCell(container, cell);
 			}
 
 			swd.Binding CreateBinding(string property)
@@ -153,7 +147,7 @@ namespace Eto.Wpf.Forms.Cells
 					control.Text = Handler.GetTextValue(control.DataContext);
 					Handler.FormatCell(control, cell, control.DataContext);
 				};
-				return SetupCell(element);
+				return SetupCell(element, cell);
 			}
 
 			protected override object PrepareCellForEdit(sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
@@ -202,7 +196,7 @@ namespace Eto.Wpf.Forms.Cells
 					control.Text = Handler.GetTextValue(control.DataContext);
 					Handler.FormatCell(control, cell, control.DataContext);
 				};
-				return SetupCell(element);
+				return SetupCell(element, cell);
 			}
 
 
@@ -227,5 +221,26 @@ namespace Eto.Wpf.Forms.Cells
 		}
 
 		public AutoSelectMode AutoSelectMode { get; set; } = AutoSelectMode.OnFocus;
+
+		public override void OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+			if (cell?.IsEditing == true && !hitTestResult.GetVisualParents().TakeWhile(r => !(r is swc.DataGridCell)).OfType<swc.TextBox>().Any())
+			{
+				// commit editing when clicking on anything other than the text box
+				ContainerHandler?.Grid.CommitEdit();
+				args.Handled = true;
+			}
+
+			base.OnMouseDown(args, hitTestResult, cell);
+		}
+		public override void OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+			if (cell?.IsEditing == false && !Control.IsReadOnly && !hitTestResult.GetVisualParents().TakeWhile(r => !(r is swc.DataGridCell)).OfType<swc.TextBlock>().Any())
+			{
+				// prevent default behaviour of editing unless we click on the text
+				args.Handled = true;
+			}
+			base.OnMouseUp(args, hitTestResult, cell);
+		}
 	}
 }

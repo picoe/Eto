@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Cells
@@ -20,8 +17,18 @@ namespace Eto.GtkSharp.Forms.Cells
 				get { return row; }
 				set {
 					row = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
+			}
+
+			object item;
+			[GLib.Property("item")]
+			public object Item
+			{
+				get { return item; }
+				set
+				{
+					item = value;
+					Handler.Format(this, item, Row);
 				}
 			}
 
@@ -36,7 +43,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			{
 				using (var graphics = new Graphics(new GraphicsHandler(widget, window)))
 				{
-					var item = Handler.Source.GetItem(Row);
+					var item = Item;
 #pragma warning disable 618
 					var args = new DrawableCellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
 					Handler.Callback.OnPaint(Handler.Widget, args);
@@ -54,7 +61,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			{
 				using (var graphics = new Graphics(new GraphicsHandler(cr, null, false)))
 				{
-					var item = Handler.Source.GetItem(Row);
+					var item = Item;
 #pragma warning disable 618
 					var args = new DrawableCellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
 					Handler.Callback.OnPaint(Handler.Widget, args);

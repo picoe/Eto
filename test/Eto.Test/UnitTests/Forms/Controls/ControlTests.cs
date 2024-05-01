@@ -1,13 +1,5 @@
-using System;
-using Eto.Forms;
 using NUnit.Framework;
-using System.Collections.Generic;
-using Eto.Drawing;
-using System.Threading;
 using System.Runtime.ExceptionServices;
-using System.Reflection;
-using System.Linq;
-
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
@@ -151,6 +143,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 								new FilePicker { FilePath = "/some/path/that/is/long/which/should/not/make/it/too/big" },
 								new GroupBox { Content = "Some content", Text = "Some text" },
 								new LinkButton {  Text = "LinkButton"},
+								new ListBox { Items = { "Item 1", "Item 2", "Item 3" } },
 								new NumericStepper(),
 								new PasswordBox(),
 								new ProgressBar { Value = 50 },
@@ -199,9 +192,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			// simply create all control types and ensure they can be GC'd without hooking up anything.
 			foreach (var type in GetAllControlTypes())
 			{
-				if (Platform.Instance.IsWpf)
+				if (Platform.Instance.IsWpf || Platform.Instance.IsMac)
 				{
-					// wpf has (known) problems GC'ing a Window right away, so let's not test it.
+					// wpf and macos has (known) problems GC'ing a Window right away, so let's not test it.
 					if (typeof(Window).GetTypeInfo().IsAssignableFrom(type.Type))
 						continue;
 				}
@@ -302,6 +295,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		public void PointToScreenShouldWorkOnSecondaryScreen()
 		{
 			bool wasClicked = false;
+			PointF? controlPoint = null;
+			PointF? rountripPoint = null;
 			Form childForm = null;
 			try
 			{
@@ -316,6 +311,16 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 					form.Shown += (sender, e) =>
 					{
+						controlPoint = PointF.Empty;
+						var screenPoint = textBox.PointToScreen(PointF.Empty);
+						rountripPoint = Point.Truncate(textBox.PointFromScreen(screenPoint));
+						
+						if (controlPoint != rountripPoint)
+						{
+							form.Close();
+							return;
+						}
+						
 						childForm = new Form
 						{
 							WindowStyle = WindowStyle.None,
@@ -324,8 +329,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 							Resizable = false,
 							BackgroundColor = Colors.Red,
 							Topmost = true,
-							Location = Point.Round(textBox.PointToScreen(PointF.Empty)),
+							Location = Point.Round(screenPoint),
 							Size = textBox.Size
+						};
+						form.LocationChanged += (sender2, e2) =>
+						{
+							childForm.Location = Point.Round(textBox.PointToScreen(PointF.Empty));
+							childForm.Size = textBox.Size;
 						};
 						var b = new Button { Text = "Click Me!" };
 						b.Click += (sender2, e2) =>
@@ -344,15 +354,203 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					layout.AddCentered(textBox);
 
 					return layout;
-				}, allowPassFail: false);
+				}, allowPass: false, allowFail: false);
 			}
 			finally
 			{
 				if (childForm != null)
 					Application.Instance.Invoke(() => childForm.Close());
 			}
+			Assert.AreEqual(controlPoint, rountripPoint, "Point could not round trip to screen then back");
 			Assert.IsTrue(wasClicked, "The test completed without clicking the button");
 		}
 
+		[TestCaseSource(nameof(GetControlTypes)), InvokeOnUI]
+		public void ControlsShouldHavePreferredSize(IControlTypeInfo<Control> info)
+		{
+			var control = info.CreatePopulatedControl();
+			var size = control.GetPreferredSize();
+			Console.WriteLine($"PreferredSize for {info.Type}: {size}");
+			Assert.Greater(size.Width, 0, "#1.1 - Preferred width should be greater than zero");
+			Assert.Greater(size.Height, 0, "#1.2 - Preferred height should be greater than zero");
+			var padding = new Padding(10);
+			var container = new Panel { Content = control, Padding = padding };
+			var containerSize = container.GetPreferredSize();
+			Assert.That(containerSize.Width, Is.EqualTo(size.Width + padding.Horizontal).Within(0.1), "#2.1 - panel with padding should have correct width");
+			Assert.That(containerSize.Height, Is.EqualTo(size.Height + padding.Vertical).Within(0.1), "#2.2 - panel with padding should have correct height");
+		}
+
+		[ManualTest]
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlsShouldNotGetMouseOrFocusEventsWhenDisabled(IControlTypeInfo<Control> info)
+		{
+			ControlsShouldNotGetMouseOrFocusEventsWhenParentDisabled(info, false);
+		}
+		
+		[ManualTest]
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlsShouldNotGetMouseOrFocusEventsWhenParentDisabled(IControlTypeInfo<Control> info)
+		{
+			ControlsShouldNotGetMouseOrFocusEventsWhenParentDisabled(info, true);
+		}
+
+		public void ControlsShouldNotGetMouseOrFocusEventsWhenParentDisabled(IControlTypeInfo<Control> info, bool disableWithParent)
+		{
+			bool gotFocus = false;
+			bool gotMouseDown = false;
+			bool gotMouseUp = false;
+			bool gotMouseEnter = false;
+			bool gotMouseLeave = false;
+			ManualForm("Click on the control, it should not get focus", form =>
+			{
+				var control = info.CreatePopulatedControl();
+				if (!disableWithParent)
+					control.Enabled = false;
+
+				control.GotFocus += (sender, e) =>
+				{
+					Console.WriteLine("GotFocus");
+					gotFocus = true;
+				};
+				control.LostFocus += (sender, e) =>
+				{
+					Console.WriteLine("LostFocus");
+				};
+				control.MouseDown += (sender, e) =>
+				{
+					Console.WriteLine("MouseDown");
+					gotMouseDown = true;
+				};
+				control.MouseUp += (sender, e) =>
+				{
+					Console.WriteLine("MouseUp");
+					gotMouseUp = true;
+				};
+				control.MouseEnter += (sender, e) =>
+				{
+					Console.WriteLine("MouseEnter");
+					gotMouseEnter = true;
+				};
+				control.MouseLeave += (sender, e) =>
+				{
+					Console.WriteLine("MouseLeave");
+					gotMouseLeave = true;
+				};
+
+				var panel = new Panel { Content = control };
+				if (disableWithParent)
+					panel.Enabled = false;
+				return panel;
+			});
+			Assert.IsFalse(gotFocus, "#1.1 - Control should not be able to get focus");
+			Assert.IsFalse(gotMouseEnter, "#1.2 - Got MouseEnter");
+			Assert.IsFalse(gotMouseLeave, "#1.3 - Got MouseLeave");
+			Assert.IsFalse(gotMouseDown, "#1.4 - Got MouseDown");
+			Assert.IsFalse(gotMouseUp, "#1.5 - Got MouseUp");
+		}
+		
+		[ManualTest]
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlShouldFireMouseLeaveIfEnteredThenDisabled(IControlTypeInfo<Control> info)
+		{
+			int mouseLeaveCalled = 0;
+			int mouseEnterCalled = 0;
+			bool mouseLeaveCalledBeforeMouseDown = false;
+			bool mouseLeaveCalledAfterDisabled = false;
+			int mouseDownCalled = 0;
+			bool formClosing = false;
+			bool mouseLeaveCalledAfterFormClosed = false;
+			int enabledChanged = 0;
+			bool enabledChangedFiredAfterMouseLeave = false;
+			ManualForm("Click on the control", form =>
+			{
+				form.Closing += (sender, e) =>
+				{
+					formClosing = true;
+				};
+
+				var control = info.CreatePopulatedControl();
+				control.MouseEnter += (sender, e) =>
+				{
+					mouseEnterCalled++;
+				};
+				control.MouseLeave += (sender, e) =>
+				{
+					mouseLeaveCalled++;
+					mouseLeaveCalledAfterFormClosed |= formClosing;
+					if (mouseDownCalled > 0)
+						Application.Instance.AsyncInvoke(form.Close);
+				};
+				control.MouseDown += (sender, e) =>
+				{
+					mouseDownCalled++;
+					mouseLeaveCalledBeforeMouseDown = mouseLeaveCalled > 0;
+					control.Enabled = false;
+					mouseLeaveCalledAfterDisabled = mouseLeaveCalled > 0;
+					e.Handled = true;
+				};
+				control.EnabledChanged += (sender, e) =>
+				{
+					enabledChanged++;
+					enabledChangedFiredAfterMouseLeave = mouseLeaveCalled > 0;
+
+				};
+				return control;
+			});
+			Assert.AreEqual(1, mouseEnterCalled, "#1.1 - MouseEnter should be called exactly once");
+			Assert.AreEqual(1, mouseLeaveCalled, "#1.2 - MouseLeave should be called exactly once");
+			Assert.IsFalse(mouseLeaveCalledBeforeMouseDown, "#1.3 - MouseLeave should not have been called before MouseDown");
+			Assert.IsFalse(mouseLeaveCalledAfterDisabled, "#1.4 - MouseLeave should not be called during Enabled=false, but sometime after the MouseDown completes");
+			Assert.AreEqual(1, mouseDownCalled, "#1.5 - MouseDown should get called exactly once.  Did you click the control?");
+			Assert.IsFalse(mouseLeaveCalledAfterFormClosed, "#1.6 - MouseLeave should be called immediately when clicked, not when the form is closed");
+			Assert.AreEqual(1, enabledChanged, "#1.7 - EnabledChanged should be called exactly once");
+			Assert.IsFalse(enabledChangedFiredAfterMouseLeave, "#1.8 - MouseLeave should be fired after EnabledChanged event");
+		}
+
+		[ManualTest]
+		[TestCaseSource(nameof(GetControlTypes))]
+		public void ControlShouldFireMouseLeaveWhenUnloaded(IControlTypeInfo<Control> info)
+		{
+			int mouseLeaveCalled = 0;
+			int mouseEnterCalled = 0;
+			bool mouseLeaveCalledBeforeMouseDown = false;
+			int mouseDownCalled = 0;
+			bool formClosing = false;
+			bool mouseLeaveCalledAfterFormClosed = false;
+			ManualForm("Click on the control", form =>
+			{
+				form.Closing += (sender, e) =>
+				{
+					formClosing = true;
+				};
+
+				var control = info.CreatePopulatedControl();
+				control.MouseEnter += (sender, e) =>
+				{
+					mouseEnterCalled++;
+				};
+				control.MouseLeave += (sender, e) =>
+				{
+					mouseLeaveCalled++;
+					mouseLeaveCalledAfterFormClosed |= formClosing;
+					if (mouseDownCalled > 0)
+						Application.Instance.AsyncInvoke(form.Close);
+				};
+				control.MouseDown += (sender, e) =>
+				{
+					mouseDownCalled++;
+					mouseLeaveCalledBeforeMouseDown = mouseLeaveCalled > 0;
+					e.Handled = true;
+
+					control.VisualParent.Remove(control);
+				};
+				return control;
+			});
+			Assert.AreEqual(1, mouseEnterCalled, "#1.1 - MouseEnter should be called exactly once");
+			Assert.AreEqual(1, mouseLeaveCalled, "#1.2 - MouseLeave should be called exactly once");
+			Assert.IsFalse(mouseLeaveCalledBeforeMouseDown, "#1.3 - MouseLeave should not have been called before MouseDown");
+			Assert.AreEqual(1, mouseDownCalled, "#1.5 - MouseDown should get called exactly once.  Did you click the control?");
+			Assert.IsFalse(mouseLeaveCalledAfterFormClosed, "#1.6 - MouseLeave should be called immediately when clicked, not when the form is closed");
+		}
 	}
 }

@@ -1,11 +1,3 @@
-using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class DropDownHandler : DropDownHandler<EtoComboBox, DropDown, DropDown.ICallback>, DropDown.IHandler
@@ -94,6 +86,9 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		public event EventHandler<DropDownFormatEventArgs> FormatItem;
+
+
 		protected override void OnDrawItem(swf.DrawItemEventArgs e)
 		{
 			if (e.State.HasFlag(swf.DrawItemState.ComboBoxEdit))
@@ -112,7 +107,8 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				var item = Items[e.Index];
 				var bounds = e.Bounds;
-				var image = (item as EtoComboBoxItem)?.Image;
+				var etoitem = item as EtoComboBoxItem;
+				var image = etoitem?.Image;
 
 				if (image != null)
 				{
@@ -123,8 +119,16 @@ namespace Eto.WinForms.Forms.Controls
 
 				string text = item?.ToString();
 
+				var font = Font;
+				if (FormatItem != null)
+				{
+					var args = new DropDownFormatEventArgs(etoitem.Value, e.Index, font.ToEto());
+					FormatItem.Invoke(this, args);
+					font = args.Font.ToSD();
+				}
+
 				// Determine the forecolor based on whether or not the item is selected    
-				swf.TextRenderer.DrawText(e.Graphics, text, Font, bounds, ForeColor, swf.TextFormatFlags.Left);
+				swf.TextRenderer.DrawText(e.Graphics, text, font, bounds, ForeColor, swf.TextFormatFlags.Left);
 			}
 
 			e.DrawFocusRectangle();
@@ -308,6 +312,9 @@ namespace Eto.WinForms.Forms.Controls
 					break;
 				case DropDown.DropDownOpeningEvent:
 					Control.DropDown += (sender, e) => Callback.OnDropDownOpening(Widget, EventArgs.Empty);
+					break;
+				case DropDown.FormatItemEvent:
+					Control.FormatItem += (sender, e) => Callback.OnFormatItem(Widget, e);
 					break;
 				default:
 					base.AttachEvent(id);

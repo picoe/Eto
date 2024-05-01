@@ -1,32 +1,27 @@
-using System;
-using Eto.Forms;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
-
 namespace Eto.Mac.Forms
 {
 	public class SaveFileDialogHandler : MacFileDialog<NSSavePanel, SaveFileDialog>, SaveFileDialog.IHandler
 	{
+		bool hasShown;
+		string selectedFileName;
+
+
 		public override string FileName
 		{
-			get
-			{
-				return base.FileName;
-			}
+			get => hasShown ? base.FileName : selectedFileName;
 			set
 			{
-				Control.NameFieldStringValue = value;
+				selectedFileName = value;
+				var name = value;
+				if (!string.IsNullOrEmpty(name))
+				{
+					var dir = Path.GetDirectoryName(name);
+					if (!string.IsNullOrEmpty(dir) && System.IO.Directory.Exists(dir))
+						Directory = new Uri(dir);
+					name = Path.GetFileName(name);
+				}
+				Control.NameFieldStringValue = name ?? string.Empty;
+				hasShown = false;
 			}
 		}
 
@@ -42,6 +37,18 @@ namespace Eto.Mac.Forms
 			Control.AllowsOtherFileTypes = true;
 			Control.CanSelectHiddenExtension = true;
 			base.Initialize();
+		}
+
+		public override DialogResult ShowDialog(Window parent)
+		{
+			var result = base.ShowDialog(parent);
+			if (result == DialogResult.Ok)
+			{
+				selectedFileName = null;
+				hasShown = true;
+			}
+
+			return result;
 		}
 	}
 }

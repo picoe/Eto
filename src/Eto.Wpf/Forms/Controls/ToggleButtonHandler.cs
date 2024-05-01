@@ -1,21 +1,10 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using wf = System.Windows;
-using swc = System.Windows.Controls;
-using swcp = System.Windows.Controls.Primitives;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoToggleButton : swcp.ToggleButton, IEtoWpfControl
 	{
 		public IWpfFrameworkElement Handler { get; set; }
 
-		protected override wf.Size MeasureOverride(wf.Size constraint)
+		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
@@ -46,7 +35,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		private void OnCheckedChanged(object sender, EventArgs e)
+		private void OnCheckedChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}

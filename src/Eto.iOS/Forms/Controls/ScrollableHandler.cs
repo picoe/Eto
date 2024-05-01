@@ -1,11 +1,6 @@
-using System;
-using Eto.Forms;
 using UIKit;
 using sd = System.Drawing;
-using Eto.Drawing;
 using Eto.Mac.Forms;
-using System.ComponentModel;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class ScrollableHandler : MacPanel<UIScrollView, Scrollable, Scrollable.ICallback>, Scrollable.IHandler

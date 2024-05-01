@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class CalendarHandler : GtkControl<Gtk.Calendar, Calendar, Calendar.ICallback>, Calendar.IHandler

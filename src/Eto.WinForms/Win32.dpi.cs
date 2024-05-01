@@ -1,13 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Drawing;
 #if WPF
 using Eto.Wpf.Forms;
 #elif WINFORMS
@@ -18,18 +9,14 @@ namespace Eto
 {
 	static partial class Win32
 	{
+		static Lazy<bool> perMonitorThreadDpiSupported = new Lazy<bool>(() => MethodExists("User32.dll", "SetThreadDpiAwarenessContext"));
 		static Lazy<bool> perMonitorDpiSupported = new Lazy<bool>(() => MethodExists("shcore.dll", "SetProcessDpiAwareness"));
 		static Lazy<bool> monitorDpiSupported = new Lazy<bool>(() => MethodExists("shcore.dll", "GetDpiForMonitor"));
 
-		public static bool PerMonitorDpiSupported
-		{
-			get { return perMonitorDpiSupported.Value; }
-		}
+		public static bool PerMontiorThreadDpiSupported => perMonitorThreadDpiSupported.Value;
+		public static bool PerMonitorDpiSupported => perMonitorDpiSupported.Value;
 
-		public static bool MonitorDpiSupported
-		{
-			get { return monitorDpiSupported.Value; }
-		}
+		public static bool MonitorDpiSupported => monitorDpiSupported.Value;
 
 		public enum PROCESS_DPI_AWARENESS : uint
 		{
@@ -68,47 +55,48 @@ namespace Eto
 			return dpiX;
 		}
 
-		public static Eto.Drawing.Point LogicalToScreen(this Eto.Drawing.PointF point)
+		public static Eto.Drawing.Point LogicalToScreen(this Eto.Drawing.PointF point, Eto.Forms.Screen screen = null, bool usePerMonitor = true)
 		{
-			var screen = Eto.Forms.Screen.FromPoint(point);
+			screen = screen ?? Eto.Forms.Screen.FromPoint(point);
 			var sdscreen = ScreenHandler.GetControl(screen);
-			var pixelSize = sdscreen.GetLogicalPixelSize();
-			var location = sdscreen.Bounds.Location;
-			var screenBounds = screen.Bounds;
+			var location = sdscreen.GetLogicalLocation();
+			var pixelSize = sdscreen.GetLogicalPixelSize(usePerMonitor);
+			var sdscreenBounds = usePerMonitor ? sdscreen.GetBounds() : sdscreen.Bounds.ToEto();
 
-			var x = location.X + (point.X - screenBounds.X) * pixelSize;
-			var y = location.Y + (point.Y - screenBounds.Y) * pixelSize;
+			var x = sdscreenBounds.X + (point.X - location.X) * pixelSize;
+			var y = sdscreenBounds.Y + (point.Y - location.Y) * pixelSize;
 
 			return Drawing.Point.Round(new Drawing.PointF(x, y));
 		}
 
-		public static Eto.Drawing.PointF ScreenToLogical(this Eto.Drawing.Point point, swf.Screen sdscreen = null)
+		public static Eto.Drawing.PointF ScreenToLogical(this Eto.Drawing.Point point, swf.Screen sdscreen = null, bool usePerMonitor = true)
 		{
-			return ScreenToLogical(point.ToSD(), sdscreen);
+			return ScreenToLogical(point.ToSD(), sdscreen, usePerMonitor);
 		}
 
-		public static Eto.Drawing.PointF ScreenToLogical(this sd.Point point, swf.Screen sdscreen = null)
+		public static Eto.Drawing.PointF ScreenToLogical(this sd.Point point, swf.Screen sdscreen = null, bool usePerMonitor = true)
 		{
-			sdscreen = sdscreen ?? swf.Screen.FromPoint(point);
+			sdscreen ??= swf.Screen.FromPoint(point);
 			var location = sdscreen.GetLogicalLocation();
-			var pixelSize = sdscreen.GetLogicalPixelSize();
+			var pixelSize = sdscreen.GetLogicalPixelSize(usePerMonitor);
+			var sdscreenBounds = usePerMonitor ? sdscreen.GetBounds() : sdscreen.Bounds.ToEto();
 
-			var x = location.X + (point.X - sdscreen.Bounds.X) / pixelSize;
-			var y = location.Y + (point.Y - sdscreen.Bounds.Y) / pixelSize;
+			var x = location.X + (point.X - sdscreenBounds.X) / pixelSize;
+			var y = location.Y + (point.Y - sdscreenBounds.Y) / pixelSize;
 
+			// Console.WriteLine($"In: {point}, out: {x},{y}");
 			return new Drawing.PointF(x, y);
 		}
 
-		public static Eto.Drawing.RectangleF ScreenToLogical(this Eto.Drawing.Rectangle rect) => ScreenToLogical(rect.ToSD());
-
-		public static Eto.Drawing.RectangleF ScreenToLogical(this sd.Rectangle rect)
+		public static Eto.Drawing.RectangleF ScreenToLogical(this Eto.Drawing.Rectangle rect, swf.Screen sdscreen, bool usePerMonitor = true)
 		{
-			var screen = swf.Screen.FromPoint(new sd.Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2));
-			var location = screen.GetLogicalLocation();
-			var pixelSize = screen.GetLogicalPixelSize();
+			sdscreen = sdscreen ?? swf.Screen.FromPoint(rect.Location.ToSD());
+			var location = sdscreen.GetLogicalLocation();
+			var pixelSize = sdscreen.GetLogicalPixelSize(usePerMonitor);
+			var sdscreenBounds = usePerMonitor ? sdscreen.GetBounds() : sdscreen.Bounds.ToEto();
 			return new Eto.Drawing.RectangleF(
-				location.X + (rect.X - screen.Bounds.X) / pixelSize,
-				location.Y + (rect.Y - screen.Bounds.Y) / pixelSize,
+				location.X + (rect.X - sdscreenBounds.X) / pixelSize,
+				location.Y + (rect.Y - sdscreenBounds.Y) / pixelSize,
 				rect.Width / pixelSize,
 				rect.Height / pixelSize
 				);
@@ -120,6 +108,15 @@ namespace Eto
 		{
 			return new Eto.Drawing.RectangleF(GetLogicalLocation(screen), GetLogicalSize(screen));
 		}
+		
+		public static bool IsSystemDpiAware => PerMonitorDpiSupported ?
+			(Win32.GetProcessDpiAwareness(IntPtr.Zero, out var awareness) == 0 && awareness == Win32.PROCESS_DPI_AWARENESS.SYSTEM_DPI_AWARE) :
+			Win32.IsProcessDPIAware();
+
+		[DllImport("gdi32.dll")]
+		public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+		public static float SystemDpi => (PerMontiorThreadDpiSupported ? Win32.GetDpiForSystem() : (uint)Win32.GetDeviceCaps(IntPtr.Zero, 88 /*LOGPIXELSX*/)) / 96f;
 
 		class ScreenHelper : LogicalScreenHelper<swf.Screen>
 		{
@@ -127,9 +124,30 @@ namespace Eto
 
 			public override swf.Screen PrimaryScreen => swf.Screen.PrimaryScreen;
 
-			public override sd.Rectangle GetBounds(swf.Screen screen) => screen.Bounds;
+			public override sd.Rectangle GetBounds(swf.Screen screen)
+			{
+				if (!PerMonitorDpiSupported)
+					return screen.Bounds;
 
-			public override float GetLogicalPixelSize(swf.Screen screen)
+				var info = new MONITORINFOEX();
+				GetMonitorInfo(screen, ref info);
+
+				return info.rcMonitor.ToSD();
+			}
+
+			public sd.Rectangle GetWorkingArea(swf.Screen screen)
+			{
+				if (!PerMonitorDpiSupported)
+					return screen.WorkingArea;
+
+				var info = new MONITORINFOEX();
+				GetMonitorInfo(screen, ref info);
+				
+				return info.rcWork.ToSD();
+			}
+
+
+			public override float GetLogicalPixelSize(swf.Screen screen, bool usePerMonitor = true)
 			{
 				if (!MonitorDpiSupported)
 				{
@@ -140,24 +158,45 @@ namespace Eto
 						return (uint)graphics.DpiY / 96f;
 					}
 				}
+				var mon = MonitorFromPoint(screen.Bounds.Location, MONITOR.DEFAULTTONEAREST);
 
-				var pnt = new System.Drawing.Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1);
-				var mon = MonitorFromPoint(pnt, MONITOR.DEFAULTTONEAREST);
+				// use per-monitor aware dpi awareness to get ACTUAL dpi here
+				var oldDpiAwareness = usePerMonitor ? SetThreadDpiAwarenessContextSafe(DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2) : DPI_AWARENESS_CONTEXT.NONE;
+
 				uint dpiX, dpiY;
 				GetDpiForMonitor(mon, MDT.EFFECTIVE_DPI, out dpiX, out dpiY);
+
+				if (oldDpiAwareness != DPI_AWARENESS_CONTEXT.NONE)
+					SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
 				return dpiX / 96f;
 			}
 
-			public override SizeF GetLogicalSize(swf.Screen screen) => (SizeF)screen.Bounds.Size.ToEto() / screen.GetLogicalPixelSize();
+			public override SizeF GetLogicalSize(swf.Screen screen) => (SizeF)GetBounds(screen).Size.ToEto() / screen.GetLogicalPixelSize();
 		}
 
 		static ScreenHelper locationHelper = new ScreenHelper();
+
+		public static Eto.Drawing.Rectangle GetBounds(this swf.Screen screen) => locationHelper.GetBounds(screen).ToEto();
+		public static Eto.Drawing.Rectangle GetWorkingArea(this swf.Screen screen) => locationHelper.GetWorkingArea(screen).ToEto();
 
 		public static Eto.Drawing.PointF GetLogicalLocation(this swf.Screen screen) => locationHelper.GetLogicalLocation(screen);
 
 		public static Eto.Drawing.SizeF GetLogicalSize(this swf.Screen screen) => locationHelper.GetLogicalSize(screen);
 
-		public static float GetLogicalPixelSize(this swf.Screen screen) => locationHelper.GetLogicalPixelSize(screen);
+		public static float GetLogicalPixelSize(this swf.Screen screen, bool usePerMonitor = true) => locationHelper.GetLogicalPixelSize(screen, usePerMonitor);
+
+		public static void GetMonitorInfo(this swf.Screen screen, ref MONITORINFOEX info)
+		{
+			var hmonitor = MonitorFromPoint(screen.Bounds.Location, 0);
+
+			var oldDpiAwareness = SetThreadDpiAwarenessContextSafe(DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
+
+			GetMonitorInfo(new HandleRef(null, hmonitor), info);
+
+			if (oldDpiAwareness != DPI_AWARENESS_CONTEXT.NONE)
+				SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
+		}
+
 
 		[DllImport("User32.dll")]
 		public static extern IntPtr MonitorFromPoint(System.Drawing.Point pt, MONITOR dwFlags);
@@ -180,7 +219,87 @@ namespace Eto
 		[DllImport("shcore.dll")]
 		public static extern uint GetProcessDpiAwareness(IntPtr handle, out PROCESS_DPI_AWARENESS awareness);
 
+		[DllImport("User32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsProcessDPIAware();
+
+		[DllImport("User32.dll")]
+		static extern DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT dpiContext);
+
+		public static DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContextSafe(DPI_AWARENESS_CONTEXT dpiContext)
+		{
+			if (!PerMontiorThreadDpiSupported)
+				return DPI_AWARENESS_CONTEXT.NONE;
+			return SetThreadDpiAwarenessContext(dpiContext);
+		}
+		
+		public static swf.Screen GetScreenFromWindow(IntPtr nativeHandle)
+		{
+			if (nativeHandle == IntPtr.Zero)
+				return swf.Screen.PrimaryScreen;
+
+			return swf.Screen.FromHandle(nativeHandle);
+
+			// var monitorPtr = Win32.MonitorFromWindow(nativeHandle, MONITOR.DEFAULTTONEAREST);
+			// var info = new MONITORINFOEX();
+			// Win32.GetMonitorInfo(new HandleRef(null, monitorPtr), info);
+			// var monitorBounds = info.rcMonitor.ToSD();
+			// foreach (var screen in swf.Screen.AllScreens)
+			// {
+			// 	if (screen.Bounds == monitorBounds)
+			// 		return screen;
+			// }
+			// return swf.Screen.PrimaryScreen;
+		}
+
+		
+		public static T ExecuteInDpiAwarenessContext<T>(Func<T> func)
+		{
+			var oldDpiAwareness = Win32.SetThreadDpiAwarenessContextSafe(Win32.DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_v2);
+			try
+			{
+				return func();
+			}
+			finally
+			{
+				if (oldDpiAwareness != Win32.DPI_AWARENESS_CONTEXT.NONE)
+					Win32.SetThreadDpiAwarenessContextSafe(oldDpiAwareness);
+			}
+		}
+
+		[DllImport("User32.dll")]
+		public static extern DPI_AWARENESS_CONTEXT GetThreadDpiAwarenessContext();
+
 		[DllImport("User32.dll")]
 		public static extern bool EnableNonClientDpiScaling(IntPtr hwnd);
+
+		[DllImport("User32.dll", CharSet = CharSet.Auto)]
+		public static extern bool GetMonitorInfo(HandleRef hmonitor, [In, Out] MONITORINFOEX info);
+		[DllImport("User32.dll", ExactSpelling = true)]
+		public static extern IntPtr MonitorFromPoint(POINT pt, int flags);
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 4)]
+		public class MONITORINFOEX
+		{
+			public int cbSize = Marshal.SizeOf(typeof(MONITORINFOEX));
+			public RECT rcMonitor = new RECT();
+			public RECT rcWork = new RECT();
+			public int dwFlags = 0;
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+			public char[] szDevice = new char[32];
+		}
+
+		public enum DPI_AWARENESS_CONTEXT
+		{
+			NONE = 0,
+			UNAWARE = -1,
+			SYSTEM_AWARE = -2,
+			PER_MONITOR_AWARE = -3,
+			PER_MONITOR_AWARE_v2 = -4,
+			UNAWARE_GDISCALED = -5
+		}
 	}
 }

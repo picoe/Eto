@@ -1,11 +1,3 @@
-using System;
-using System.ComponentModel;
-using Eto.Drawing;
-using sd = System.Drawing;
-using sdd = System.Drawing.Drawing2D;
-using swf = System.Windows.Forms;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Eto.WinForms.Drawing
 {
@@ -40,11 +32,11 @@ namespace Eto.WinForms.Drawing
 		static GraphicsHandler()
 		{
 			DefaultTextFormat = swf.TextFormatFlags.Left
-			                    | swf.TextFormatFlags.NoPadding
-			                    | swf.TextFormatFlags.NoClipping
-			                    | swf.TextFormatFlags.PreserveGraphicsClipping
-			                    | swf.TextFormatFlags.PreserveGraphicsTranslateTransform
-			                    | swf.TextFormatFlags.NoPrefix;
+								| swf.TextFormatFlags.NoPadding
+								| swf.TextFormatFlags.NoClipping
+								| swf.TextFormatFlags.PreserveGraphicsClipping
+								| swf.TextFormatFlags.PreserveGraphicsTranslateTransform
+								| swf.TextFormatFlags.NoPrefix;
 
 			// Set the StringFormat
 			DefaultStringFormat = new sd.StringFormat(sd.StringFormat.GenericTypographic);
@@ -113,14 +105,27 @@ namespace Eto.WinForms.Drawing
 		public PixelOffsetMode PixelOffsetMode
 		{
 			get { return Widget.Properties.Get<PixelOffsetMode>(PixelOffsetMode_Key); }
-			set { Widget.Properties.Set(PixelOffsetMode_Key, value); }
+			set
+			{
+				if (Widget.Properties.TrySet(PixelOffsetMode_Key, value))
+				{
+					if (value == PixelOffsetMode.Aligned)
+						Control.PixelOffsetMode = sd2.PixelOffsetMode.None;
+				}
+			}
 		}
 
 		void SetOffset(bool fill)
 		{
-			var mode = sdd.PixelOffsetMode.Half;
-			if (!fill && PixelOffsetMode == PixelOffsetMode.None)
-				mode = sdd.PixelOffsetMode.None;
+			var currentMode = PixelOffsetMode;
+			if (currentMode == PixelOffsetMode.Aligned)
+				return;
+
+			sd2.PixelOffsetMode mode;
+			if (!fill && currentMode == PixelOffsetMode.None)
+				mode = sd2.PixelOffsetMode.None;
+			else
+				mode = sd2.PixelOffsetMode.Half;
 			Control.PixelOffsetMode = mode;
 		}
 
@@ -142,9 +147,9 @@ namespace Eto.WinForms.Drawing
 
 		public void SetInitialState()
 		{
-			Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
-			Control.SmoothingMode = sdd.SmoothingMode.AntiAlias;
-			Control.InterpolationMode = sdd.InterpolationMode.HighQualityBilinear;
+			Control.PixelOffsetMode = sd2.PixelOffsetMode.None;
+			Control.SmoothingMode = sd2.SmoothingMode.AntiAlias;
+			Control.InterpolationMode = sd2.InterpolationMode.HighQualityBilinear;
 		}
 
 		public void Commit()
@@ -154,7 +159,7 @@ namespace Eto.WinForms.Drawing
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
 			SetOffset(false);
-            Control.DrawLine(pen.ToSD(new RectangleF(startx, starty, endx, endy)), startx, starty, endx, endy);
+			Control.DrawLine(pen.ToSD(new RectangleF(startx, starty, endx, endy)), startx, starty, endx, endy);
 		}
 
 		public void DrawLines(Pen pen, IEnumerable<PointF> points)
@@ -435,7 +440,7 @@ namespace Eto.WinForms.Drawing
 			get
 			{
 				var oldValue = this.Control.PixelOffsetMode;
-				this.Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
+				this.Control.PixelOffsetMode = sd2.PixelOffsetMode.None;
 				var result = this.Control.ClipBounds.ToEto();
 				this.Control.PixelOffsetMode = oldValue;
 				return result;

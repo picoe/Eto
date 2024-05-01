@@ -1,6 +1,3 @@
-using Eto.Drawing;
-using swm = System.Windows.Media;
-
 namespace Eto.Wpf.Drawing
 {
 	/// <summary>
@@ -25,15 +22,8 @@ namespace Eto.Wpf.Drawing
 
 		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			var matrix = swm.Matrix.Identity;
-			var startPoint = rectangle.Location.ToWpf();
-			matrix.RotateAtPrepend(angle - 45, startPoint.X, startPoint.Y);
-			var endPoint = matrix.Transform(rectangle.EndLocation.ToWpf());
-			return new FrozenBrushWrapper(new swm.LinearGradientBrush(startColor.ToWpf(), endColor.ToWpf(), startPoint, endPoint)
-			{
-				MappingMode = swm.BrushMappingMode.Absolute,
-				SpreadMethod = swm.GradientSpreadMethod.Pad
-			});
+			GradientHelper.GetLinearFromRectangle(rectangle, angle, out var startPoint, out var endPoint);
+			return Create(startColor, endColor, startPoint, endPoint);
 		}
 
 		public IMatrix GetTransform(LinearGradientBrush widget)

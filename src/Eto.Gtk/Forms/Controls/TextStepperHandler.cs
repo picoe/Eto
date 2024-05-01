@@ -1,21 +1,9 @@
-﻿using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
-
-namespace Eto.GtkSharp.Forms.Controls
+﻿namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TextStepperHandler : TextBoxHandler<Gtk.SpinButton, TextStepper, TextStepper.ICallback>, TextStepper.IHandler
 	{
-		#if GTK2
 		static Gtk.Adjustment DefaultAdjustment = new Gtk.Adjustment(0, 0, 2, 1, 1, 0);
-		#else
-		// in gtk3 the upper adjustment is not inclusive?? ugh
-		static Gtk.Adjustment DefaultAdjustment = new Gtk.Adjustment(0, 0, 3, 1, 1, 0);
-		#endif
+
 		int disableNotification;
 
 		public TextStepperHandler()
@@ -167,7 +155,10 @@ namespace Eto.GtkSharp.Forms.Controls
 #if GTK2
 			public override void HandleExposeEvent(object o, Gtk.ExposeEventArgs args)
 			{
-				if (args.Event.Window == Handler.Control.GdkWindow.Children[0]) // skip painting over up/down
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (args.Event.Window == handler.Control.GdkWindow.Children[0]) // skip painting over up/down
 					return;
 				base.HandleExposeEvent(o, args);
 			}

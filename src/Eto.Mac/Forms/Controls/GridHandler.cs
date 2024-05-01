@@ -1,58 +1,16 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.Mac.Forms.Menu;
-using System.Linq;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Cells;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
 
 namespace Eto.Mac.Forms.Controls
 {
 	public interface IGridHandler : IMacViewHandler
 	{
 		new Grid Widget { get; }
-
 		NSTableView Table { get; }
-
-		bool AutoSizeColumns(bool force);
+		bool AutoSizeColumns(bool force, bool forceNewSize = false);
 		void PerformLayout();
+		void ResetAutoSizedColumns();
 	}
 
 	class EtoGridScrollView : NSScrollView, IMacControl
@@ -60,23 +18,6 @@ namespace Eto.Mac.Forms.Controls
 		public IGridHandler Handler { get { return (IGridHandler)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
 		public WeakReference WeakHandler { get; set; }
-
-		bool autoSized;
-
-		public override void SetFrameSize(CGSize newSize)
-		{
-			base.SetFrameSize(newSize);
-			var h = Handler;
-			if (h == null)
-				return;
-
-			if (!autoSized)
-			{
-				autoSized = h.AutoSizeColumns(false);
-			}
-			h.OnSizeChanged(EventArgs.Empty);
-			h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
-		}
 	}
 
 	static class GridHandler
@@ -85,31 +26,68 @@ namespace Eto.Mac.Forms.Controls
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object IsMouseDragging_Key = new object();
 		public static readonly object ContextMenu_Key = new object();
+		public static readonly object IsCancelEdit_Key = new object();
 	}
 
-	class EtoTableHeaderView : NSTableHeaderView
+	class EtoTableHeaderView : NSTableHeaderView, IMacControl
 	{
-		WeakReference handler;
+		public IGridHandler Handler { get { return (IGridHandler)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
-		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
+		public WeakReference WeakHandler { get; set; }
 
+		public EtoTableHeaderView()
+		{
+		}
 
+		public EtoTableHeaderView(IntPtr handle) : base(handle)
+		{
+		}
+		
 		public override void MouseDown(NSEvent theEvent)
 		{
-			if (!Handler.Table.AllowsColumnReordering)
+			var h = Handler;
+			if (h == null)
+			{
+				base.MouseDown(theEvent);
+				return;
+			}
+
+			var sel = MacView.selMouseDown;
+			if (!h.Table.AllowsColumnReordering)
 			{
 				var point = ConvertPointFromView(theEvent.LocationInWindow, null);
 
 				var col = GetColumn(point);
 				if (col >= 0)
 				{
-					var column = Handler.Widget.Columns[(int)col];
-					var rect = Handler.Table.RectForColumn(col);
+					var column = h.Widget.Columns[(int)col];
+					var rect = h.Table.RectForColumn(col);
+					// don't show any feedback to user when they click
 					if (!column.Sortable && point.X < rect.Right - 4 && point.X > rect.Left + 2)
-						return;
+						sel = IntPtr.Zero;
 				}
 			}
-			base.MouseDown(theEvent);
+			h.TriggerMouseDown(this, sel, theEvent);
+		}
+	}
+	
+	class EtoBackgroundView : NSView
+	{
+		[Export("backgroundColor")]
+		public NSColor BackgroundColor { get; set; }
+		
+		public EtoBackgroundView()
+		{
+		}
+		
+		public EtoBackgroundView(NativeHandle handle) : base(handle)
+		{
+		}
+
+		public override void DrawRect(CGRect dirtyRect)
+		{
+			BackgroundColor.SetFill();
+			NSBezierPath.FillRect(Bounds);
 		}
 	}
 
@@ -161,6 +139,8 @@ namespace Eto.Mac.Forms.Controls
 		public NSDragOperation AllowedOperation { get; set; }
 		public NSImage DragImage { get; set; }
 		public PointF ImageOffset { get; set; }
+		
+		public DataObject Data { get; set; }
 
 		public CGPoint GetDragImageOffset()
 		{
@@ -175,8 +155,15 @@ namespace Eto.Mac.Forms.Controls
 		where TCallback : Grid.ICallback
 	{
 		ColumnCollection columns;
+		bool loadComplete;
 
 		public override NSView DragControl => Control;
+
+		public bool AllowEmptySelection
+		{
+			get => Control.AllowsEmptySelection;
+			set => Control.AllowsEmptySelection = value;
+		}
 
 		protected int SuppressUpdate { get; set; }
 
@@ -202,6 +189,10 @@ namespace Eto.Mac.Forms.Controls
 
 		protected virtual void UpdateColumns()
 		{
+			foreach (var col in ColumnHandlers)
+			{
+				col.SetupDisplayIndex();
+			}
 		}
 
 		public GridColumnHandler GetColumn(NSTableColumn tableColumn)
@@ -309,18 +300,38 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleScrolled(ObserverActionEventArgs e)
 		{
 			var handler = (GridHandler<TControl, TWidget, TCallback>)e.Handler;
-			handler.AutoSizeColumns(false);
+			if (handler == null)
+				return;
+			if (handler.hasAutoSizedColumns == true)
+				handler.AutoSizeColumns(false);
 		}
 
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
+				case Grid.ColumnWidthChangedEvent:
+					// handled in delegates
+					break;
+				case Eto.Forms.Control.MouseDownEvent:
+					AddMethod(MacView.selMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					AddMethod(MacView.selRightMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					AddMethod(MacView.selOtherMouseDown, MacView.TriggerMouseDown_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					base.AttachEvent(id);
+					break;
+				case Eto.Forms.Control.MouseUpEvent:
+					AddMethod(MacView.selMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					AddMethod(MacView.selRightMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					AddMethod(MacView.selOtherMouseUp, MacView.TriggerMouseUp_Delegate, "v@:@", typeof(EtoTableHeaderView));
+					base.AttachEvent(id);
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
+
+		EtoTableHeaderView headerView;
 
 		protected override void Initialize()
 		{
@@ -329,44 +340,148 @@ namespace Eto.Mac.Forms.Controls
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
 
-			Control.HeaderView = new EtoTableHeaderView { Handler = this };
+			Control.HeaderView = headerView = new EtoTableHeaderView { Handler = this };
 			ScrollView.DocumentView = Control;
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			ResetAutoSizedColumns();
+			UpdateColumns();
 		}
 
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			UpdateColumns();
 
-			if (!Widget.Properties.Get<bool>(GridHandler.ScrolledToRow_Key))
-				// Yosemite bug: hides first row when DataStore is set before control is visible
-				Control.ScrollRowToVisible(0);
-			else
-				Widget.Properties.Remove(GridHandler.ScrolledToRow_Key);
+			var row = Widget.Properties.Get<int>(GridHandler.ScrolledToRow_Key, 0);
+			// Yosemite bug: hides first row when DataStore is set before control is visible, so we always call this
+			Control.ScrollRowToVisible(row);
+			loadComplete = true;
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			loadComplete = false;
 		}
 
 		NSRange autoSizeRange;
 
-		public bool AutoSizeColumns(bool force) => AutoSizeColumns(force, false);
-
-		public bool AutoSizeColumns(bool force, bool forceNewSize)
+		static Lazy<bool> supportsTableStyle = new Lazy<bool>(() => ObjCExtensions.InstancesRespondToSelector<NSTableView>(Selector.GetHandle("effectiveStyle")));
+		
+		nfloat GetTableRowInsets()
 		{
-			if (Widget.Loaded)
+			// oh I love magic numbers, but there doesn't seem to be any APIs that will return these..
+			// https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-12
+			if (supportsTableStyle.Value)
 			{
-				var rect = Table.VisibleRect();
-				var newRange = Table.RowsInRect(rect);
-				if (force || autoSizeRange.Location != newRange.Location || autoSizeRange.Length != newRange.Length)
+				switch (Control.EffectiveStyle)
 				{
-					IsAutoSizingColumns = true;
-					foreach (var col in ColumnHandlers)
-					{
-						col.AutoSizeColumn(newRange, forceNewSize);
-					}
-					autoSizeRange = newRange;
-					IsAutoSizingColumns = false;
-					InvalidateMeasure();
-					return true;
+					case NSTableViewStyle.Inset:
+						return 32; 
+					case NSTableViewStyle.FullWidth:
+						return 12;
+					case NSTableViewStyle.SourceList:
+						return 32;
+					case NSTableViewStyle.Plain:
+					default:
+						return Control.IntercellSpacing.Width;
 				}
+			}
+			else
+			{
+				return Control.IntercellSpacing.Width;
+			}
+		}
+
+		int lastAutoSizeWidth;
+
+		public bool AutoSizeColumns(bool force, bool forceNewSize = false)
+		{
+			if (!Widget.Loaded)
+				return false;
+				
+			var rect = Table.VisibleRect();
+			if (rect.Width <= 0)
+				return false;
+
+			bool resizeExpanded = forceNewSize;
+			bool changed = false;
+			var newRange = rect.IsEmpty ? null : (NSRange?)Table.RowsInRect(rect);
+
+			if (lastAutoSizeWidth != (int)rect.Width)
+			{
+				resizeExpanded = true;
+				lastAutoSizeWidth = (int)rect.Width;
+			}
+			
+			if (force 
+				|| newRange == null 
+				|| (autoSizeRange.Location != newRange.Value.Location || autoSizeRange.Length != newRange.Value.Length))
+			{
+				IsAutoSizingColumns = true;
+				
+				int expandCount = 0;
+				nfloat requiredWidth = 0;
+				nfloat expandedWidth = 0;
+				
+				// remove all spacing that isn't part of column widths
+				var intercellSpacingWidth = Table.IntercellSpacing.Width;
+				rect.Width -= intercellSpacingWidth * (Table.ColumnCount - 1);
+				rect.Width -= GetTableRowInsets();
+
+				foreach (var col in ColumnHandlers)
+				{
+					changed |= col.AutoSizeColumn(newRange, forceNewSize && !col.Expand);
+
+					if (col.Expand)
+					{
+						expandCount++;
+						expandedWidth += col.Control.Width;
+					}
+					else
+					{
+						requiredWidth += col.Control.Width;
+					}
+				}
+				
+				resizeExpanded |= changed;
+				
+				if (expandCount > 0 && resizeExpanded)
+				{
+					var remaining = (nfloat)Math.Max(0, rect.Width - requiredWidth);
+					// System.Diagnostics.Debug.WriteLine($"Remaining: {remaining}, Required: {requiredWidth}, Width: {rect.Width}");
+					if (remaining > 0)
+					{
+						var each = remaining / expandCount;
+						
+						foreach (var col in ColumnHandlers)
+						{
+							if (col.Expand)
+							{
+								var existingWidth = col.Control.Width;
+								var weightedWidth = expandedWidth > 0 ? existingWidth / expandedWidth * remaining : each;
+
+								changed |= existingWidth != weightedWidth;
+
+								col.Control.Width = weightedWidth;
+							}
+						}
+					}
+				}
+
+				if (newRange != null)
+					autoSizeRange = newRange.Value;
+					
+				IsAutoSizingColumns = false;
+				
+				if (forceNewSize && changed)
+				{
+					InvalidateMeasure();
+				}
+				return true;
 			}
 			return false;
 		}
@@ -381,11 +496,12 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (value && Control.HeaderView == null)
 				{
-					Control.HeaderView = new EtoTableHeaderView { Handler = this };
+					headerView = new EtoTableHeaderView { Handler = this, Menu = ContextMenu.ToNS() };
+					Control.HeaderView = headerView;
 				}
 				else if (!value && Control.HeaderView != null)
 				{
-					Control.HeaderView = null;
+					Control.HeaderView = headerView = null;
 				}
 			}
 		}
@@ -403,6 +519,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Widget.Properties.Set(GridHandler.ContextMenu_Key, value);
 				Control.Menu = value.ToNS();
+				if (Control.HeaderView != null)
+					Control.HeaderView.Menu = value.ToNS();
 			}
 		}
 
@@ -427,8 +545,13 @@ namespace Eto.Mac.Forms.Controls
 				UnselectAll();
 				if (value != null)
 				{
-					var indexes = NSIndexSet.FromArray(value.ToArray());
-					Control.SelectRows(indexes, AllowMultipleSelection);
+					var rows = value.ToArray();
+					if (rows.Length > 0)
+					{
+						var indexes = NSIndexSet.FromArray(rows);
+						Control.SelectRows(indexes, AllowMultipleSelection);
+						ScrollToRow(rows[0]);
+					}
 				}
 				SuppressSelectionChanged--;
 				if (SuppressSelectionChanged == 0)
@@ -453,7 +576,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void SelectRow(int row)
 		{
-			Control.SelectRow((nnint)row, AllowMultipleSelection);
+			Control.SelectRow(row, AllowMultipleSelection);
 		}
 
 		public void UnselectRow(int row)
@@ -468,7 +591,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public void BeginEdit(int row, int column)
 		{
-			Control.SelectRow((nnint)row, false);
+			if (!Control.IsRowSelected(row))
+			{
+				Control.SelectRow((nint)row, false);
+			}
 			Control.EditColumn((nint)column, (nint)row, new NSEvent(), true);
 		}
 
@@ -476,10 +602,16 @@ namespace Eto.Mac.Forms.Controls
 
 		public bool CancelEdit()
 		{
-			SuppressUpdate++;
-			var ret = SetFocusToControl();
-			SuppressUpdate--;
-			return ret;
+			if (IsEditing)
+			{
+				SuppressUpdate++;
+				IsCancellingEdit = true;
+				var ret = SetFocusToControl();
+				IsCancellingEdit = false;
+				SuppressUpdate--;
+				return ret;
+			}
+			return true;
 		}
 
 		bool SetFocusToControl()
@@ -505,10 +637,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public abstract object GetItem(int row);
 
-		public virtual int RowCount
-		{
-			get { return (int)Control.RowCount; }
-		}
+		public virtual int RowCount => (int)Control.RowCount;
 
 		protected override bool ControlEnabled
 		{
@@ -534,31 +663,53 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var width = Widget.Columns.Sum(r => r.Width);
-			if (width == 0)
-				width = 100;
-			var height = RowHeight * 4;
+			var rowCount = RowCount;
+			var range = new NSRange(0, rowCount);
+			var loaded = loadComplete;
+			var size = new SizeF();
+			size.Width = (float)ColumnHandlers.Sum(r => loaded ? r.Control.Width : r.GetPreferredWidth(range));
+			if (size.Width == 0)
+				size.Width = 100;
+
 			if (Border != BorderType.None)
-				width += 4;
-			return new Size(width, height);
+				size += ScrollView.FrameSizeForContentSize(new CGSize(0, 0), false, false).ToEto();
+
+			var intercellSpacing = Control.IntercellSpacing;
+			size.Width += (Control.ColumnCount - 1) * (float)intercellSpacing.Width;
+			size.Width += (float)GetTableRowInsets();
+
+			var contentHeight = (float)((RowHeight + intercellSpacing.Height) * rowCount);
+			if (ScrollView.HasVerticalScroller && ScrollView.VerticalScroller.ScrollerStyle == NSScrollerStyle.Legacy)
+			{
+				if (!float.IsNaN(availableSize.Height) && contentHeight > availableSize.Height)
+					size.Width += (float)NSScroller.GetScrollerWidth(ScrollView.VerticalScroller.ControlSize, ScrollView.VerticalScroller.ScrollerStyle);
+			}
+
+			size.Height += contentHeight;
+
+			if (ShowHeader)
+				size.Height += 2 + (int)Control.HeaderView.Frame.Height;
+			return size;
 		}
 
 		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
+			var tooltipBinding = args.Column?.CellToolTipBinding;
+			if (tooltipBinding != null && args is MacCellFormatArgs macargs && macargs.View != null)
+				macargs.View.ToolTip = tooltipBinding.GetValue(args.Item) ?? string.Empty;
+			
 			Callback.OnCellFormatting(Widget, args);
 		}
 
 		public void ScrollToRow(int row)
 		{
-			Control.ScrollRowToVisible(row);
 			if (!Widget.Loaded)
-				Widget.Properties[GridHandler.ScrolledToRow_Key] = true;
+				Widget.Properties[GridHandler.ScrolledToRow_Key] = row;
+			else
+				Control.ScrollRowToVisible(row);
 		}
 
-		public bool Loaded
-		{
-			get { return Widget.Loaded; }
-		}
+		public bool Loaded => Widget.Loaded;
 
 		public GridLines GridLines
 		{
@@ -588,31 +739,50 @@ namespace Eto.Mac.Forms.Controls
 			SetIsEditing(true);
 		}
 
+		public bool IsCancellingEdit
+		{
+			get => Widget.Properties.Get<bool>(GridHandler.IsCancelEdit_Key);
+			set => Widget.Properties.Set(GridHandler.IsCancelEdit_Key, value);
+		}
+
 		void IDataViewHandler.OnCellEdited(GridViewCellEventArgs e)
 		{
 			SetIsEditing(false);
-			if (e.Item != null)
+			if (e.Item != null && !IsCancellingEdit)
 				Callback.OnCellEdited(Widget, e);
+
+			// reload this entire row
+			if (e.Row >= 0)
+			{
+				Control.ReloadData(NSIndexSet.FromIndex((nint)e.Row), NSIndexSet.FromNSRange(new NSRange(0, Control.ColumnCount)));
+			}
+
+			if (e.GridColumn.AutoSize)
+			{
+				AutoSizeColumns(true);
+			}
 		}
 
-		Grid IDataViewHandler.Widget
-		{
-			get { return Widget; }
-		}
+		Grid IDataViewHandler.Widget => Widget;
 
 		protected void SetIsEditing(bool value) => Widget.Properties.Set(GridHandler.IsEditing_Key, value, false);
 
-		bool hasAutoSizedColumns;
-		protected void ResetAutoSizedColumns() => hasAutoSizedColumns = false;
+		bool? hasAutoSizedColumns;
+		public void ResetAutoSizedColumns()
+		{
+			if (hasAutoSizedColumns != null)
+				hasAutoSizedColumns = false;
+		}
+
+		void EnsureAutoSizedColumns()
+		{
+			AutoSizeColumns(true, hasAutoSizedColumns == null);
+			hasAutoSizedColumns = true;
+		}
 
 		public void PerformLayout()
 		{
-			if (!hasAutoSizedColumns && Widget.Loaded && !Table.VisibleRect().IsNull())
-			{
-				AutoSizeColumns(true, true);
-				hasAutoSizedColumns = true;
-			}
-
+			EnsureAutoSizedColumns();
 		}
 
 		public bool IsEditing => Widget.Properties.Get(GridHandler.IsEditing_Key, Control.EditedRow != -1 && Control.EditedColumn != -1);
@@ -621,6 +791,196 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Widget.Properties.Get(GridHandler.IsMouseDragging_Key, false); }
 			set { Widget.Properties.Set(GridHandler.IsMouseDragging_Key, value, false); }
+		}
+
+		static readonly object DragPasteboard_Key = new object();
+
+		protected NSPasteboard DragPasteboard
+		{
+			get { return Widget.Properties.Get<NSPasteboard>(DragPasteboard_Key); }
+			set { Widget.Properties.Set(DragPasteboard_Key, value); }
+		}
+
+		internal GridDragInfo DragInfo { get; set; }
+
+		public override void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF origin)
+		{
+			if (DragPasteboard != null)
+			{
+				var handler = data.Handler as IDataObjectHandler;
+				handler?.Apply(DragPasteboard);
+				SetupDragPasteboard(DragPasteboard);
+				DragInfo = new GridDragInfo
+				{
+					AllowedOperation = allowedAction.ToNS(),
+					DragImage = image.ToNS(),
+					ImageOffset = origin,
+					Data = data
+				};
+			}
+			else
+			{
+				base.DoDragDrop(data, allowedAction, image, origin);
+			}
+		}
+
+		static readonly object DidSetAutoSizeColumn_Key = new object();
+
+		internal bool DidSetAutoSizeColumn
+		{
+			get => Widget.Properties.Get<bool>(DidSetAutoSizeColumn_Key);
+			set => Widget.Properties.Set(DidSetAutoSizeColumn_Key, value);
+		}
+
+		protected void ColumnDidResize(NSNotification notification)
+		{
+			var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
+			var colHandler = GetColumn(column);
+			if (!IsAutoSizingColumns && Widget.Loaded && hasAutoSizedColumns == true)
+			{
+				// when the user resizes the column, don't autosize anymore when data/scroll changes
+				if (column != null)
+				{
+					if (!DidSetAutoSizeColumn)
+						colHandler.AutoSize = false;
+					InvalidateMeasure();
+				}
+			}
+			if (colHandler != null)
+				Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(colHandler.Widget));
+		}
+		
+		protected virtual bool HandleMouseEvent(NSEvent theEvent)
+		{
+			var args = MacConversions.GetMouseEvent(this, theEvent, false);
+			if (theEvent.ClickCount >= 2)
+			{
+				Callback.OnMouseDoubleClick(Widget, args);
+				if (args.Handled)
+					return false;
+			}
+			else
+			{
+				Callback.OnMouseDown(Widget, args);
+				if (args.Handled)
+					return true;
+			}
+
+			var point = Control.ConvertPointFromView(theEvent.LocationInWindow, null);
+
+			var rowIndex = (int)Control.GetRow(point);
+			if (rowIndex >= 0)
+			{
+				var columnIndex = (int)Control.GetColumn(point);
+				var item = GetItem(rowIndex);
+				var column = columnIndex == -1 || columnIndex > Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+				var cellArgs = MacConversions.CreateCellMouseEventArgs(column, ContainerControl, rowIndex, columnIndex, item, theEvent);
+				if (theEvent.ClickCount >= 2)
+					Callback.OnCellDoubleClick(Widget, cellArgs);
+				else
+					Callback.OnCellClick(Widget, cellArgs);
+				
+				return cellArgs.Handled;
+			}
+			return false;
+		}
+		
+		protected virtual bool ValidateProposedFirstResponder(NSResponder responder, NSEvent forEvent, bool valid)
+		{
+			if (valid || responder == null || forEvent == null)
+				return valid;
+				
+			if (responder is NSView view)
+			{
+				// forward events for controls in custom cells, as long as it can't be a first responder, like a text box.
+				var parentView = view;
+				while (parentView != null && !(parentView is NSTableRowView))
+				{
+					if (parentView is CustomCellHandler.EtoCustomCellView)
+					{
+						return !view.AcceptsFirstResponder();
+					}
+					parentView = parentView.Superview;
+				};
+			}
+			
+			return false;
+		}
+
+		public int GetColumnDisplayIndex(GridColumn column)
+		{
+			if (column.Handler is GridColumnHandler handler)
+				return (int)Control.FindColumn(new NSString(handler.Control.Identifier));
+			return -1;
+		}
+
+		public void SetColumnDisplayIndex(GridColumn column, int index)
+		{
+			if (column.Handler is GridColumnHandler handler)
+			{
+				var fromIndex = Control.FindColumn(new NSString(handler.Control.Identifier));
+				if (fromIndex != index)
+					Control.MoveColumn(fromIndex, index);
+			}
+		}
+		
+		internal int DisplayIndexToColumnIndex(int displayIndex)
+		{
+			var col = Widget.Columns.FirstOrDefault(r => r.DisplayIndex == displayIndex);
+			if (col == null)
+				return -1;
+			return Widget.Columns.IndexOf(col);
+		}
+		
+		protected override void SetBackgroundColor(Color? color)
+		{
+			var bg = color?.ToNSUI() ?? NSColor.ControlBackground;
+			Control.BackgroundColor = bg;
+			if (!UseNSBoxBackgroundColor)
+			{
+				var clip = ScrollView.Subviews.OfType<NSClipView>().FirstOrDefault(r => r.DocumentView == headerView);
+				var banner = clip?.Subviews.FirstOrDefault(r =>  r.Class.Name == "NSBannerView");
+				var effectView = banner?.Subviews.OfType<NSVisualEffectView>().FirstOrDefault();
+				if (effectView == null || banner == null)
+					return;
+
+				// inject a view above the effectView with our desired background color
+				var backgroundView = banner.Subviews.OfType<EtoBackgroundView>().FirstOrDefault();
+				if (backgroundView == null)
+				{
+					backgroundView = new EtoBackgroundView
+					{
+						Frame = banner.Bounds,
+						AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
+						TranslatesAutoresizingMaskIntoConstraints = true
+					};
+					banner.AddSubview(backgroundView, NSWindowOrderingMode.Above, effectView);
+				}
+				
+				backgroundView.BackgroundColor = bg;
+				backgroundView.SetNeedsDisplay();
+			}
+		}
+
+		class RowFormatEventArgs : GridRowFormatEventArgs
+		{
+			NSTableRowView _rowView;
+			public RowFormatEventArgs(NSTableRowView rowView, object item, int row) : base(item, row)
+			{
+				_rowView = rowView;
+			}
+
+			public override Color BackgroundColor
+			{
+				get => _rowView.BackgroundColor.ToEto();
+				set => _rowView.BackgroundColor = value.ToNSUI();
+			}
+		}
+
+		protected virtual void OnDidAddRowView(NSTableRowView rowView, nint row)
+		{
+			var item = GetItem((int)row);
+			Callback.OnRowFormatting(Widget, new RowFormatEventArgs(rowView, item, (int)row));
 		}
 	}
 }

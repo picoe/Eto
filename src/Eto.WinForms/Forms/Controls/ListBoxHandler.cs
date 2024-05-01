@@ -1,12 +1,4 @@
-using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.WinForms.Drawing;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler

@@ -1,8 +1,5 @@
 using Eto;
 using Eto.Test;
-using System;
-using System.Diagnostics;
-
 namespace Eto.Test.Gtk
 {
 	class Startup
@@ -10,9 +7,10 @@ namespace Eto.Test.Gtk
 		[STAThread]
 		static void Main(string[] args)
 		{
-			var generator = new Eto.GtkSharp.Platform();
+			var platform = new Eto.GtkSharp.Platform();
+			platform.Add<INativeHostControls>(() => new NativeHostControls());
 			
-			var app = new TestApplication(generator);
+			var app = new TestApplication(platform);
 			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}

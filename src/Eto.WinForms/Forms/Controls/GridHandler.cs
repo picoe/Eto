@@ -1,13 +1,4 @@
-using System;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
-using sd = System.Drawing;
-using Eto.Drawing;
 using Eto.WinForms.Drawing;
-using System.Diagnostics;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public interface IGridHandler
@@ -17,11 +8,16 @@ namespace Eto.WinForms.Forms.Controls
 		int GetRowOffset(GridColumnHandler column, int rowIndex);
 
 		bool CellMouseClick(GridColumnHandler column, swf.MouseEventArgs e, int rowIndex);
+		object GetItemAtRow(int row);
+
+		Grid Grid { get; }
+
+		void HandleEvent(string id, bool defaultEvent = false);
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WindowsControl<swf.DataGridView, TWidget, TCallback>, Grid.IHandler, IGridHandler
-		where TWidget: Grid
-		where TCallback: Grid.ICallback
+		where TWidget : Grid
+		where TCallback : Grid.ICallback
 	{
 		ColumnCollection columns;
 		bool isFirstSelection = true;
@@ -30,11 +26,13 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected void ResetSelection()
 		{
-			if (!SelectedRows.Any())
+			if (!SelectedRows.Any() && AllowEmptySelection)
 				isFirstSelection = true;
 		}
 
-		protected abstract object GetItemAtRow(int row);
+		public abstract object GetItemAtRow(int row);
+
+		Grid IGridHandler.Grid => Widget;
 
 		class EtoDataGridView : swf.DataGridView
 		{
@@ -42,16 +40,51 @@ namespace Eto.WinForms.Forms.Controls
 
 			public EtoDataGridView() { DoubleBuffered = true; }
 
+			sd.Size GetSizeWithData(sd.Size proposedSize)
+			{
+				int width = RowHeadersWidth;
+				int height = 0;
+				if (ColumnHeadersVisible)
+					height += ColumnHeadersHeight;
+
+				if (BorderStyle == swf.BorderStyle.Fixed3D)
+				{
+					width += 4;
+					height += 4;
+				}
+				else if (BorderStyle == swf.BorderStyle.FixedSingle)
+				{
+					width += 2;
+					height += 2;
+				}
+
+				height += RowCount * (RowTemplate.Height + RowTemplate.DividerHeight);
+
+				for (int i = 0; i < ColumnCount; i++)
+				{
+					var col = Columns[i];
+					if (col.Visible)
+					{
+						width += col.GetPreferredWidth(swf.DataGridViewAutoSizeColumnMode.DisplayedCells, true);
+					}
+				}
+
+				if (proposedSize.Height > 0 && proposedSize.Height < height)
+					width += swf.SystemInformation.VerticalScrollBarWidth;
+
+				return new sd.Size(width, height);
+			}
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var size = base.GetPreferredSize(proposedSize);
+				var size = GetSizeWithData(proposedSize);
+
 				var def = Handler.UserPreferredSize;
 				if (def.Width >= 0)
 					size.Width = def.Width;
 				if (def.Height >= 0)
 					size.Height = def.Height;
-				else
-					size.Height = Math.Min(size.Height, 100);
+
 				return size;
 			}
 
@@ -119,6 +152,31 @@ namespace Eto.WinForms.Forms.Controls
 			Control.DataError += HandleDataError;
 		}
 
+		private void Widget_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (!e.Handled && e.Buttons == MouseButtons.Primary)
+			{
+				var hitTest = Control.HitTest((int)e.Location.X, (int)e.Location.Y);
+				if (AllowEmptySelection)
+				{
+					if (hitTest.Type == swf.DataGridViewHitTestType.None)
+					{
+						if (IsEditing)
+							CancelEdit();
+						UnselectAll();
+					}
+				}
+				else if (e.Modifiers == Keys.Control
+					&& hitTest.RowIndex >= 0
+					&& Control.SelectedRows.Count == 1
+					&& Control.SelectedRows[0].Index == hitTest.RowIndex)
+				{
+					// don't allow user to deselect all items
+					e.Handled = true;
+				}
+			}
+		}
+
 		void HandleDataError(object sender, swf.DataGridViewDataErrorEventArgs e)
 		{
 			// ignore errors to prevent ugly popup when clearing data
@@ -153,6 +211,14 @@ namespace Eto.WinForms.Forms.Controls
 			LeakHelper.UnhookObject(Control);
 		}
 
+		static readonly object DisableAutoSizeToggle_Key = new object();
+
+		int DisableAutoSizeToggle
+		{
+			get => Widget.Properties.Get<int>(DisableAutoSizeToggle_Key);
+			set => Widget.Properties.Set(DisableAutoSizeToggle_Key, value);
+		}
+		
 		bool handledAutoSize;
 
 		void HandleRowPostPaint(object sender, swf.DataGridViewRowPostPaintEventArgs e)
@@ -161,6 +227,7 @@ namespace Eto.WinForms.Forms.Controls
 				return;
 
 			handledAutoSize = true;
+			DisableAutoSizeToggle++;
 			int colNum = 0;
 			foreach (var col in Widget.Columns)
 			{
@@ -168,19 +235,20 @@ namespace Eto.WinForms.Forms.Controls
 				if (col.AutoSize)
 				{
 					Control.AutoResizeColumn(colNum, colHandler.Control.InheritedAutoSizeMode);
-					var width = col.Width;
+					var width = colHandler.Control.Width;
+					colHandler.Control.Width = width;
 					colHandler.Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.None;
-					col.Width = width;
 				}
 				colNum++;
 			}
+			DisableAutoSizeToggle--;
 		}
 
-		class FormattingArgs : GridCellFormatEventArgs
+		class CellFormattingArgs : GridCellFormatEventArgs
 		{
 			public swf.DataGridViewCellFormattingEventArgs Args { get; private set; }
 
-			public FormattingArgs(swf.DataGridViewCellFormattingEventArgs args, GridColumn column, object item, int row)
+			public CellFormattingArgs(swf.DataGridViewCellFormattingEventArgs args, GridColumn column, object item, int row)
 				: base(column, item, row)
 			{
 				this.Args = args;
@@ -190,10 +258,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			public override Font Font
 			{
-				get
-				{
-					return font ?? (font = new Font(new FontHandler(Args.CellStyle.Font)));
-				}
+				get => font ?? (font = new Font(new FontHandler(Args.CellStyle.Font)));
 				set
 				{
 					font = value;
@@ -212,6 +277,22 @@ namespace Eto.WinForms.Forms.Controls
 				get { return Args.CellStyle.ForeColor.ToEto(); }
 				set { Args.CellStyle.ForeColor = value.ToSD(); }
 			}
+		}
+
+		class RowFormattingArgs : GridRowFormatEventArgs
+		{
+			swf.DataGridViewCellFormattingEventArgs _args;
+			public RowFormattingArgs(swf.DataGridViewCellFormattingEventArgs args, object item, int row) : base(item, row)
+			{
+				_args = args;
+			}
+
+			public override Color BackgroundColor
+			{
+				get => _args.CellStyle.BackColor.ToEto();
+				set => _args.CellStyle.BackColor = value.ToSD();
+			}
+
 		}
 
 		public override void AttachEvent(string id)
@@ -265,13 +346,18 @@ namespace Eto.WinForms.Forms.Controls
 				case Grid.SelectionChangedEvent:
 					// handled automatically
 					break;
+				case Grid.RowFormattingEvent:
+					HandleEvent(Grid.CellFormattingEvent);
+					break;
 				case Grid.CellFormattingEvent:
-					Control.CellFormatting += (sender, e) =>
-					{
-						var column = Widget.Columns[e.ColumnIndex];
-						var item = GetItemAtRow(e.RowIndex);
-						Callback.OnCellFormatting(Widget, new FormattingArgs(e, column, item, e.RowIndex));
-					};
+					Control.CellFormatting += HandleCellFormatting;
+					break;
+				case Grid.ColumnOrderChangedEvent:
+					Control.ColumnDisplayIndexChanged += HandleColumnDisplayIndexChanged;
+					Control.MouseUp += HandleColumnOrderChangedOnMouseUp;
+					break;
+				case Grid.ColumnWidthChangedEvent:
+					Control.ColumnWidthChanged += HandleColumnWidthChanged;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -279,11 +365,80 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		private void HandleCellFormatting(object sender, swf.DataGridViewCellFormattingEventArgs e)
+		{
+			var column = Widget.Columns[e.ColumnIndex];
+			var item = GetItemAtRow(e.RowIndex);
+			if (column.CellToolTipBinding != null)
+			{
+				var cell = Control.Rows[e.RowIndex].Cells[e.ColumnIndex];
+				if (cell != null)
+				{
+					cell.ToolTipText = column.CellToolTipBinding.GetValue(item);
+				}
+			}
+			Callback.OnRowFormatting(Widget, new RowFormattingArgs(e, item, e.RowIndex));
+			Callback.OnCellFormatting(Widget, new CellFormattingArgs(e, column, item, e.RowIndex));
+		}
+
+		private void HandleColumnWidthChanged(object sender, swf.DataGridViewColumnEventArgs e)
+		{
+			var column = Widget.Columns[e.Column.Index];
+			if (handledAutoSize && DisableAutoSizeToggle == 0 && column.Handler is GridColumnHandler handler)
+			{
+				// turn off autosize, user (most likely?) resized this column
+				handler.UpdateAutoSize(false);
+			}
+			Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(column));
+		}
+
+		static readonly object ColumnOrderChanged_Key = new object();
+		int? ColumnOrderChangedIndex
+		{
+			get => Widget.Properties.Get<int?>(ColumnOrderChanged_Key);
+			set => Widget.Properties.Set(ColumnOrderChanged_Key, value);
+		}
+
+		private void HandleColumnOrderChangedOnMouseUp(object sender, swf.MouseEventArgs e)
+		{
+			if (ColumnOrderChangedIndex != null)
+			{
+				var column = Widget.Columns[ColumnOrderChangedIndex.Value];
+				Callback.OnColumnOrderChanged(Widget, new GridColumnEventArgs(column));
+				ColumnOrderChangedIndex = null;
+			}
+		}
+
+		private void HandleColumnDisplayIndexChanged(object sender, swf.DataGridViewColumnEventArgs e)
+		{
+			// only store the first one (which is the one being dragged)
+			// we fire the event on the mouse up so it only happens once.
+			if (ColumnOrderChangedIndex == null)
+				ColumnOrderChangedIndex = e.Column.Index;
+		}
+
 		protected override void Initialize()
 		{
 			base.Initialize();
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
+			Widget.MouseDown += Widget_MouseDown;
+			Control.ColumnDividerDoubleClick += Control_ColumnDividerDoubleClick;
+		}
+
+		private void Control_ColumnDividerDoubleClick(object sender, swf.DataGridViewColumnDividerDoubleClickEventArgs e)
+		{
+			if (e.Button == swf.MouseButtons.Left)
+			{
+				DisableAutoSizeToggle++;
+				if (Widget.Columns[e.ColumnIndex].Handler is GridColumnHandler handler)
+				{
+					handler.UpdateAutoSize(true);
+				}
+				Control.AutoResizeColumn(e.ColumnIndex, swf.DataGridViewAutoSizeColumnMode.DisplayedCells);
+				DisableAutoSizeToggle--;
+				e.Handled = true;			
+			}
 		}
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
@@ -364,7 +519,7 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			get { return Control.RowTemplate.Height; }
 			set
-			{ 
+			{
 				Control.RowTemplate.Height = value;
 				foreach (swf.DataGridViewRow row in Control.Rows)
 				{
@@ -376,11 +531,16 @@ namespace Eto.WinForms.Forms.Controls
 		public void SelectAll()
 		{
 			Control.SelectAll();
+			isFirstSelection = false;
 		}
 
 		public void SelectRow(int row)
 		{
-			Control.Rows[row].Selected = true;
+			if (!AllowMultipleSelection)
+				Control.CurrentCell = Control.Rows[row].Cells[0];
+			else
+				Control.Rows[row].Selected = true;
+			isFirstSelection = false;
 		}
 
 		public void UnselectRow(int row)
@@ -490,6 +650,16 @@ namespace Eto.WinForms.Forms.Controls
 		}
 
 		public bool IsEditing => Control.IsCurrentCellInEditMode;
+
+		public bool AllowEmptySelection { get; set; } = true;
+
+		protected void EnsureSelection()
+		{
+			if (!AllowEmptySelection && Control.RowCount > 0 && Control.SelectedRows.Count == 0)
+			{
+				SelectRow(0);
+			}
+		}
 	}
 }
 

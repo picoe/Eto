@@ -1,7 +1,4 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-
-namespace Eto.Test.Sections.Controls
+﻿namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(FilePicker))]
 	public class FilePickerSection : Panel

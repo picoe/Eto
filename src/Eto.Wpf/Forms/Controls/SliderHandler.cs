@@ -1,9 +1,4 @@
-﻿using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using Eto.Forms;
-
-namespace Eto.Wpf.Forms.Controls
+﻿namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoSlider : swc.Slider, IEtoWpfControl
 	{

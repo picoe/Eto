@@ -1,8 +1,4 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Linq;
-using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Eto.Test.Sections.Behaviors
 {
@@ -11,18 +7,11 @@ namespace Eto.Test.Sections.Behaviors
 	{
 		Window child;
 		Button bringToFrontButton;
+		Button focusButton;
 		EnumRadioButtonList<WindowStyle> styleCombo;
 		EnumRadioButtonList<WindowState> stateCombo;
-		RadioButtonList typeRadio;
-		CheckBox resizableCheckBox;
-		CheckBox maximizableCheckBox;
-		CheckBox minimizableCheckBox;
-		CheckBox showInTaskBarCheckBox;
-		CheckBox topMostCheckBox;
+		EnumRadioButtonList<WindowType> typeRadio;
 		CheckBox setOwnerCheckBox;
-		CheckBox visibleCheckBox;
-		CheckBox showActivatedCheckBox;
-		CheckBox canFocusCheckBox;
 		CheckBox createMenuBar;
 		EnumCheckBoxList<MenuBarSystemItems> systemMenuItems;
 		EnumDropDown<DialogDisplayMode?> dialogDisplayModeDropDown;
@@ -38,9 +27,11 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), CreateCancelClose(), null);
-			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
-			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
+			var typeControls = CreateTypeControls();
+
+			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), MovableByWindowBackground(), null);
+			layout.AddSeparateRow(null, ShowInTaskBar(), CloseableCheckBox(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
+			layout.AddSeparateRow(null, "Type", typeControls, null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
 			layout.AddSeparateRow(null, "Dialog Display Mode", DisplayModeDropDown(), null);
@@ -49,11 +40,57 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow(null, CreateSizeControls(), null);
 			layout.AddSeparateRow(null, CreateClientSizeControls(), null);
 			layout.AddSeparateRow(null, CreateMinimumSizeControls(), null);
+			layout.AddSeparateRow(null, CreateCancelClose(), null);
 			layout.AddSeparateRow(null, CreateChildWindowButton(), null);
-			layout.AddSeparateRow(null, BringToFrontButton(), null);
+			layout.AddSeparateRow(null, BringToFrontButton(), SetFocusButton(), null);
 			layout.Add(null);
 
 			Content = layout;
+
+			DataContext = settings = new SettingsWindow();
+		}
+
+		SettingsWindow settings;
+
+		enum WindowType
+		{
+			Form,
+			FloatingForm,
+			Dialog
+		}
+
+		class SettingsWindow : INotifyPropertyChanged
+		{
+			public bool ThreeState => true; // enable three state for these settings
+			public bool? Resizable { get; set; }
+			public bool? CanFocus { get; set; }
+			public bool? Minimizable { get; set; }
+			public bool? Maximizable { get; set; }
+			public bool? Closeable { get; set; }
+			public bool? MovableByWindowBackground { get; set; }
+			public bool? ShowInTaskbar { get; set; }
+			public bool? ShowActivated { get; set; }
+			public bool? Topmost { get; set; }
+			public WindowStyle WindowStyle { get; set; }
+			public WindowType WindowType { get; set; }
+
+			bool windowStyleEnabled;
+			public bool WindowStyleEnabled
+			{
+				get => windowStyleEnabled;
+				set => Set(ref windowStyleEnabled, value);
+			}
+
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			void Set<T>(ref T prop, T value, [CallerMemberName] string propertyName = null)
+			{
+				if (!Equals(prop, value))
+				{
+					prop = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+				}
+			}
 		}
 
 		protected override void OnUnLoad(EventArgs e)
@@ -66,6 +103,9 @@ namespace Eto.Test.Sections.Behaviors
 		MenuBar CreateMenuBar()
 		{
 			var menu = new MenuBar();
+			menu.Items.Add(new SubMenuItem { Text = "&File", Items = {
+				new ButtonMenuItem { Text = "Click Me" }
+			}});
 			if (systemMenuItems.SelectedValues.Any())
 				menu.IncludeSystemItems = GetMenuItems();
 			return menu;
@@ -109,18 +149,13 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control CreateTypeControls()
 		{
-			typeRadio = new RadioButtonList
-			{
-				Items =
-				{ 
-					new ListItem { Text = "Form (modeless)", Key = "form" },
-					new ListItem { Text = "Dialog (modal)", Key = "dialog" }
-				},
-				SelectedKey = "form"
-			};
+			typeRadio = new EnumRadioButtonList<WindowType>();
 
-			setOwnerCheckBox = new CheckBox { Text = "Set Owner", Checked = false };
-			setOwnerCheckBox.CheckedChanged += (sender, e) => 
+			typeRadio.SelectedValueBinding.BindDataContext((SettingsWindow m) => m.WindowType);
+			typeRadio.BindDataContext(c => c.Enabled, Binding.Delegate((object m) => m is SettingsWindow));
+
+			setOwnerCheckBox = new CheckBox { Text = "Set Owner" };
+			setOwnerCheckBox.CheckedChanged += (sender, e) =>
 			{
 				if (child != null)
 					child.Owner = setOwnerCheckBox.Checked ?? false ? ParentWindow : null;
@@ -135,16 +170,18 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control WindowStyle()
 		{
-			styleCombo = new EnumRadioButtonList<WindowStyle>
-			{
-				SelectedValue = Forms.WindowStyle.Default
-			};
-			styleCombo.SelectedIndexChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.WindowStyle = styleCombo.SelectedValue;
-			};
-			return styleCombo;
+			var enableStyle = new CheckBox { Checked = false };
+			styleCombo = new EnumRadioButtonList<WindowStyle>();
+			styleCombo.SelectedValueBinding.BindDataContext((SettingsWindow w) => w.WindowStyle);
+
+			var enabledBinding = Binding.Property<SettingsWindow, bool?>(w => w.WindowStyleEnabled);
+			var enabledBindingElseTrue = enabledBinding.Convert<bool?>(r => r ?? true, r => r);
+			var enabledBindingCanToggle = enabledBinding.Convert<bool?>(r => r != null);
+
+			styleCombo.BindDataContext(c => c.Enabled, enabledBindingElseTrue);
+			enableStyle.CheckedBinding.BindDataContext(enabledBindingElseTrue);
+			enableStyle.BindDataContext(c => c.Enabled, enabledBindingCanToggle);
+			return new TableLayout(new TableRow(enableStyle, styleCombo));
 		}
 
 		Control DisplayModeDropDown()
@@ -175,121 +212,82 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control Resizable()
 		{
-			resizableCheckBox = new CheckBox
-			{
-				Text = "Resizable",
-				Checked = true
-			};
-			resizableCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Resizable = resizableCheckBox.Checked ?? false;
-			};
+			var resizableCheckBox = new CheckBox { Text = "Resizable" };
+			resizableCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			resizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Resizable);
 			return resizableCheckBox;
 		}
 
 		Control Maximizable()
 		{
-			maximizableCheckBox = new CheckBox
-			{
-				Text = "Maximizable",
-				Checked = true
-			};
-			maximizableCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Maximizable = maximizableCheckBox.Checked ?? false;
-			};
+			var maximizableCheckBox = new CheckBox { Text = "Maximizable" };
+			maximizableCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			maximizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Maximizable);
 			return maximizableCheckBox;
 		}
 
+		Control MovableByWindowBackground()
+		{
+			var movableByWindowBackgroundCheckBox = new CheckBox { Text = "MovableByWindowBackground" };
+			movableByWindowBackgroundCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			movableByWindowBackgroundCheckBox.CheckedBinding.BindDataContext((Window w) => w.MovableByWindowBackground);
+			return movableByWindowBackgroundCheckBox;
+		}
+		
 		Control Minimizable()
 		{
-			minimizableCheckBox = new CheckBox
-			{
-				Text = "Minimizable",
-				Checked = true
-			};
-			minimizableCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Minimizable = minimizableCheckBox.Checked ?? false;
-			};
+			var minimizableCheckBox = new CheckBox { Text = "Minimizable" };
+			minimizableCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			minimizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Minimizable);
 			return minimizableCheckBox;
 		}
 
 		Control ShowInTaskBar()
 		{
-			showInTaskBarCheckBox = new CheckBox
-			{
-				Text = "Show In TaskBar",
-				Checked = true
-			};
-			showInTaskBarCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
-			};
+			var showInTaskBarCheckBox = new CheckBox { Text = "Show In TaskBar" };
+			showInTaskBarCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			showInTaskBarCheckBox.CheckedBinding.BindDataContext((Window w) => w.ShowInTaskbar);
 			return showInTaskBarCheckBox;
+		}
+
+		Control CloseableCheckBox()
+		{
+			var closeableCheckBox = new CheckBox { Text = "Closeable" };
+			closeableCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			closeableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Closeable);
+			return closeableCheckBox;
 		}
 
 		Control CreateCanFocus()
 		{
-			canFocusCheckBox = new CheckBox {
-				Text = "CanFocus",
-				Checked = true
-			};
-			canFocusCheckBox.CheckedChanged += (sender, e) => {
-				var form = child as Form;
-				if (form != null)
-					form.CanFocus = canFocusCheckBox.Checked ?? false;
-			};
+			var canFocusCheckBox = new CheckBox { Text = "CanFocus" };
+			canFocusCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			canFocusCheckBox.CheckedBinding.BindDataContext((Form w) => w.CanFocus);
 			return canFocusCheckBox;
 		}
 
 		Control TopMost()
 		{
-			topMostCheckBox = new CheckBox
-			{
-				Text = "Top Most",
-				Checked = false
-			};
-			topMostCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Topmost = topMostCheckBox.Checked ?? false;
-			};
+			var topMostCheckBox = new CheckBox { Text = "Top Most" };
+			topMostCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			topMostCheckBox.CheckedBinding.BindDataContext((Window w) => w.Topmost);
 			return topMostCheckBox;
 		}
 
 		Control VisibleCheckbox()
 		{
-			visibleCheckBox = new CheckBox
-			{
-				Text = "Visible",
-				Checked = true
-			};
-			visibleCheckBox.CheckedChanged += (sender, e) =>
-			{
-				if (child != null)
-					child.Visible = visibleCheckBox.Checked ?? false;
-			};
+			var visibleCheckBox = new CheckBox { Text = "Visible" };
+			visibleCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			visibleCheckBox.CheckedBinding.BindDataContext((Window w) => w.Visible);
 			return visibleCheckBox;
 		}
 
 		Control CreateShowActivatedCheckbox()
 		{
-			showActivatedCheckBox = new CheckBox
-			{
-				Text = "Show Activated",
-				Checked = true
-			};
-			showActivatedCheckBox.CheckedChanged += (sender, e) =>
-			{
-				var form = child as Form;
-				if (form != null)
-					form.ShowActivated = showActivatedCheckBox.Checked ?? false;
-			};
+			var showActivatedCheckBox = new CheckBox { Text = "ShowActivated" };
+			showActivatedCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow s) => s.ThreeState);
+			showActivatedCheckBox.CheckedBinding.BindDataContext((Form w) => w.ShowActivated);
+			showActivatedCheckBox.Bind(c => c.Enabled, typeRadio, Binding.Property((RadioButtonList t) => t.SelectedKey).ToBool("dialog").Convert(v => !v));
 			return showActivatedCheckBox;
 
 		}
@@ -320,7 +318,7 @@ namespace Eto.Test.Sections.Behaviors
 			return new StackLayout
 			{
 				Orientation = Orientation.Horizontal,
-				Items = 
+				Items =
 				{
 					setLocationCheckBox,
 					left,
@@ -377,7 +375,7 @@ namespace Eto.Test.Sections.Behaviors
 			return new StackLayout
 			{
 				Orientation = Orientation.Horizontal,
-				Items = 
+				Items =
 				{
 					setClientSize,
 					left,
@@ -416,7 +414,7 @@ namespace Eto.Test.Sections.Behaviors
 			return new StackLayout
 			{
 				Orientation = Orientation.Horizontal,
-				Items = 
+				Items =
 				{
 					setMinimumSize,
 					width,
@@ -440,30 +438,50 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddCentered(CreateCancelClose());
 			layout.AddCentered(CloseButton());
 
-			if (typeRadio.SelectedKey == "form")
+			switch (settings.WindowType)
 			{
-				var form = new Form();
-				child = form;
-				show = form.Show;
-				form.ShowActivated = showActivatedCheckBox.Checked == true;
-				form.CanFocus = canFocusCheckBox.Checked == true;
-			}
-			else
-			{
-				var dialog = new Dialog();
+				default:
+				case WindowType.Form:
+					{
+						var form = new Form();
+						child = form;
+						show = form.Show;
+						if (settings.ShowActivated != null)
+							form.ShowActivated = settings.ShowActivated == true;
+						if (settings.CanFocus != null)
+							form.CanFocus = settings.CanFocus == true;
+					}
+					break;
+				case WindowType.FloatingForm:
+					{
+						var form = new FloatingForm();
+						child = form;
+						show = form.Show;
+						if (settings.ShowActivated != null)
+							form.ShowActivated = settings.ShowActivated == true;
+						if (settings.CanFocus != null)
+							form.CanFocus = settings.CanFocus == true;
+					}
+					break;
+				case WindowType.Dialog:
+					{
+						var dialog = new Dialog();
 
-				dialog.DefaultButton = new Button { Text = "Default" };
-				dialog.DefaultButton.Click += (sender, e) => Log.Write(dialog, "Default button clicked");
+						dialog.DefaultButton = new Button { Text = "Default" };
+						dialog.DefaultButton.Click += (sender, e) => Log.Write(dialog, "Default button clicked");
 
-				dialog.AbortButton = new Button { Text = "Abort" };
-				dialog.AbortButton.Click += (sender, e) => Log.Write(dialog, "Abort button clicked");
+						dialog.AbortButton = new Button { Text = "Abort" };
+						dialog.AbortButton.Click += (sender, e) => Log.Write(dialog, "Abort button clicked");
 
-				layout.AddSeparateRow(null, dialog.DefaultButton, dialog.AbortButton, null);
+						layout.AddSeparateRow(null, dialog.DefaultButton, dialog.AbortButton, null);
 
-				child = dialog;
-				show = dialog.ShowModal;
+						child = dialog;
+						show = dialog.ShowModal;
 
-				dialog.DisplayMode = dialogDisplayModeDropDown.SelectedValue ?? DialogDisplayMode.Default;
+						if (dialogDisplayModeDropDown.SelectedValue != null)
+							dialog.DisplayMode = dialogDisplayModeDropDown.SelectedValue ?? DialogDisplayMode.Default;
+					}
+					break;
 			}
 
 			layout.Add(null);
@@ -481,13 +499,23 @@ namespace Eto.Test.Sections.Behaviors
 			child.SizeChanged += child_SizeChanged;
 
 			child.Title = "Child Window";
-			child.WindowStyle = styleCombo.SelectedValue;
+			if (styleCombo.Enabled)
+				child.WindowStyle = styleCombo.SelectedValue;
 			child.WindowState = stateCombo.SelectedValue;
-			child.Topmost = topMostCheckBox.Checked ?? false;
-			child.Resizable = resizableCheckBox.Checked ?? false;
-			child.Maximizable = maximizableCheckBox.Checked ?? false;
-			child.Minimizable = minimizableCheckBox.Checked ?? false;
-			child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
+			if (settings.Topmost != null)
+				child.Topmost = settings.Topmost ?? false;
+			if (settings.Resizable != null)
+				child.Resizable = settings.Resizable ?? false;
+			if (settings.Maximizable != null)
+				child.Maximizable = settings.Maximizable ?? false;
+			if (settings.Minimizable != null)
+				child.Minimizable = settings.Minimizable ?? false;
+			if (settings.ShowInTaskbar != null)
+				child.ShowInTaskbar = settings.ShowInTaskbar ?? false;
+			if (settings.Closeable != null)
+				child.Closeable = settings.Closeable ?? false;
+			if (settings.MovableByWindowBackground != null)
+				child.MovableByWindowBackground = settings.MovableByWindowBackground ?? false;
 			if (setInitialLocation)
 				child.Location = initialLocation;
 			if (setInitialClientSize)
@@ -500,7 +528,8 @@ namespace Eto.Test.Sections.Behaviors
 				child.Owner = ParentWindow;
 			if (createMenuBar.Checked ?? false)
 				child.Menu = CreateMenuBar();
-			bringToFrontButton.Enabled = true;
+			bringToFrontButton.Enabled = focusButton.Enabled = true;
+			DataContext = child;
 			show();
 			//visibleCheckBox.Checked = child?.Visible == true; // child will be null after it is shown
 			// show that the child is now referenced
@@ -510,6 +539,7 @@ namespace Eto.Test.Sections.Behaviors
 		void child_Closed(object sender, EventArgs e)
 		{
 			Log.Write(child, "Closed");
+			DataContext = settings;
 			child.OwnerChanged -= child_OwnerChanged;
 			child.WindowStateChanged -= child_WindowStateChanged;
 			child.Closed -= child_Closed;
@@ -519,7 +549,7 @@ namespace Eto.Test.Sections.Behaviors
 			child.LostFocus -= child_LostFocus;
 			child.LocationChanged -= child_LocationChanged;
 			child.SizeChanged -= child_SizeChanged;
-			bringToFrontButton.Enabled = false;
+			bringToFrontButton.Enabled = focusButton.Enabled = false;
 			child.Unbind();
 			child = null;
 			// write out number of open windows after the closed event is called
@@ -562,10 +592,11 @@ namespace Eto.Test.Sections.Behaviors
 			Log.Write(child, "GotFocus");
 		}
 
-		static void child_Shown(object sender, EventArgs e)
+		void child_Shown(object sender, EventArgs e)
 		{
 			var child = (Window)sender;
 			Log.Write(child, "Shown");
+			OnDataContextChanged(EventArgs.Empty);
 		}
 
 		static void child_OwnerChanged(object sender, EventArgs e)
@@ -587,37 +618,32 @@ namespace Eto.Test.Sections.Behaviors
 			control.Click += (sender, e) => CreateChild();
 			return control;
 		}
+		
+		Control SetFocusButton()
+		{
+			var control = focusButton = new Button { Text = "Focus", Enabled = false };
+			control.Click += (sender, e) => child?.Focus();
+			return control;
+		}
 
 		Control BringToFrontButton()
 		{
-			var control = bringToFrontButton = new Button { Text = "Bring to Front", Enabled = false };
-			control.Click += (sender, e) =>
-			{
-				if (child != null)
-					child.BringToFront();
-			};
+			var control = bringToFrontButton = new Button { Text = "BringToFront", Enabled = false };
+			control.Click += (sender, e) => child?.BringToFront();
 			return control;
 		}
 
 		Control CloseButton()
 		{
 			var control = new Button { Text = "Close Window" };
-			control.Click += (sender, e) =>
-			{
-				if (child != null)
-					child.Close();
-			};
+			control.Click += (sender, e) => child?.Close();
 			return control;
 		}
 
 		Control SendToBackButton()
 		{
-			var control = new Button { Text = "Send to Back" };
-			control.Click += (sender, e) =>
-			{
-				if (child != null)
-					child.SendToBack();
-			};
+			var control = new Button { Text = "SendToBack" };
+			control.Click += (sender, e) => child?.SendToBack();
 			return control;
 		}
 

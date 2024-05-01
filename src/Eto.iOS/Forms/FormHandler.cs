@@ -1,7 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-using System.Linq;
 using Eto.iOS.Forms.Controls;
 using sd = System.Drawing;
 using Eto.iOS.Forms.Toolbar;

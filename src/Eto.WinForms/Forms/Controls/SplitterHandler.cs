@@ -1,16 +1,9 @@
-using System;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class SplitterHandler : WindowsControl<swf.SplitContainer, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
 		Control panel1, panel2;
-        int panel1MinimumSize, panel2MinimumSize;
+		int panel1MinimumSize, panel2MinimumSize;
 		int? position;
 		double relative = double.NaN;
 		int suppressSplitterMoved;
@@ -75,14 +68,14 @@ namespace Eto.WinForms.Forms.Controls
 					else
 					{
 						// both get at least the preferred size
-						size1.Width = (int)Math.Round(Math.Max(size1.Width/relative, size2.Width/(1-relative)));
+						size1.Width = (int)Math.Round(Math.Max(size1.Width / relative, size2.Width / (1 - relative)));
 						if (Widget.Loaded && Control.IsHandleCreated)
 							size1.Width = Math.Min(Control.Width - SplitterWidth, size1.Width);
 						size2.Width = 0;
 					}
 				}
-				size.Width = size1.Width + size2.Width + SplitterWidth;
-				size.Height = Math.Max(size1.Height, size2.Height);
+				size.Width = (int)(size1.Width + size2.Width + SplitterWidth);
+				size.Height = (int)Math.Max(size1.Height, size2.Height);
 			}
 			else
 			{
@@ -101,21 +94,22 @@ namespace Eto.WinForms.Forms.Controls
 					else
 					{
 						// both get at least the preferred size
-						size1.Height = (int)Math.Round(Math.Max(size1.Height/relative, size2.Height/(1-relative)));
+						size1.Height = (int)Math.Round(Math.Max(size1.Height / relative, size2.Height / (1 - relative)));
 						if (Widget.Loaded && Control.IsHandleCreated)
 							size1.Height = Math.Min(Control.Height - SplitterWidth, size1.Height);
 						size2.Height = 0;
 					}
 				}
-				size.Height = size1.Height + size2.Height + SplitterWidth;
-				size.Width = Math.Max(size1.Width, size2.Width);
+				size.Height = (int)(size1.Height + size2.Height + SplitterWidth);
+				size.Width = (int)Math.Max(size1.Width, size2.Width);
 			}
 			return size;
 		}
 
 		public SplitterHandler()
 		{
-			Control = new EtoSplitContainer {
+			Control = new EtoSplitContainer
+			{
 				Handler = this,
 				AutoSize = true,
 				FixedPanel = swf.FixedPanel.Panel1,
@@ -125,36 +119,69 @@ namespace Eto.WinForms.Forms.Controls
 			Control.HandleCreated += (sender, e) =>
 			{
 				SetInitialPosition();
-				HookEvents();
 				SetFixedPanel();
 			};
-            Control.SplitterMoved += (sender, e) => CheckSplitterPos();
-        }
+			Control.SplitterMoved += (sender, e) => CheckSplitterPos(true);
+		}
 
-        private void CheckSplitterPos()
-        {
-            var controlsize = (Orientation == Orientation.Horizontal) ? Control.Width : Control.Height;
-
-            if (controlsize <= panel1MinimumSize)
-                return;
-
-            if (Control.SplitterDistance > controlsize - panel2MinimumSize)
-                Control.SplitterDistance = controlsize - panel2MinimumSize;
-
-            if (Control.SplitterDistance < panel1MinimumSize)
-                Control.SplitterDistance = panel1MinimumSize;
-        }
-
-        void HookEvents()
+		int splitterMoving;
+		int lastPosition;
+		
+		private void CheckSplitterPos(bool userMoved)
 		{
-			Control.SplitterMoved += (sender, e) =>
+			if (splitterMoving > 0)
+				return;
+
+			var controlsize = (Orientation == Orientation.Horizontal) ? Control.Width : Control.Height;
+			if (controlsize <= panel1MinimumSize)
+				return;
+
+			if (Widget.ParentWindow == null || !Widget.Loaded || suppressSplitterMoved > 0)
+				return;
+
+			splitterMoving++;
+			var originalPosition = Control.SplitterDistance;
+			var newPosition = originalPosition;
+			if (newPosition > controlsize - panel2MinimumSize)
+				newPosition = controlsize - panel2MinimumSize;
+
+			if (newPosition < panel1MinimumSize)
+				newPosition = panel1MinimumSize;
+			
+			position = lastPosition;
+			
+			if (userMoved)
+				Callback.OnPositionChangeStarted(Widget, EventArgs.Empty);
+			
+			var args = new SplitterPositionChangingEventArgs(newPosition);
+			Callback.OnPositionChanging(Widget, args);
+			position = null;
+			if (args.Cancel)
 			{
-				if (Widget.ParentWindow == null || !Widget.Loaded || suppressSplitterMoved > 0)
-					return;
-				// keep track of the desired position (for removing/re-adding/resizing the control)
-				UpdateRelative();
-				Callback.OnPositionChanged(Widget, EventArgs.Empty);
-			};
+				newPosition = lastPosition;
+			}
+
+			// always set splitter distance 
+			Control.SplitterDistance = newPosition;
+
+			if (lastPosition != newPosition)
+			{
+				if (Control.IsHandleCreated)
+				{
+					// keep track of the desired position (for removing/re-adding/resizing the control)
+					UpdateRelative();
+					position = newPosition;
+					Callback.OnPositionChanged(Widget, EventArgs.Empty);
+				}
+			}
+			
+			
+			lastPosition = newPosition;
+			
+			if (userMoved)
+				Callback.OnPositionChangeCompleted(Widget, EventArgs.Empty);
+				
+			splitterMoving--;
 		}
 
 		public override void AttachEvent(string id)
@@ -162,6 +189,9 @@ namespace Eto.WinForms.Forms.Controls
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
+				case Splitter.PositionChangingEvent:
+				case Splitter.PositionChangeStartedEvent:
+				case Splitter.PositionChangeCompletedEvent:
 					break;
 				default:
 					base.AttachEvent(id);
@@ -171,7 +201,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int Position
 		{
-			get { return Control.SplitterDistance; }
+			get { return position ?? Control.SplitterDistance; }
 			set
 			{
 				if (value != position)
@@ -251,7 +281,7 @@ namespace Eto.WinForms.Forms.Controls
 				: fixedPanel == SplitterFixedPanel.Panel2 ? Math.Max(0, size - newPosition)
 				: size <= 0 ? 0.5 : Math.Max(0.0, Math.Min(1.0, newPosition / (double)size));
 			if (size > 0)
-				Control.SplitterDistance = Math.Max(0, Math.Min(size, newPosition));
+				Control.SplitterDistance = lastPosition = Math.Max(0, Math.Min(size, newPosition));
 		}
 		void SetRelative(double newRelative)
 		{
@@ -260,17 +290,25 @@ namespace Eto.WinForms.Forms.Controls
 			var size = GetAvailableSize();
 			if (size <= 0)
 				return;
-			switch (fixedPanel)
+			try
 			{
-				case SplitterFixedPanel.Panel1:
-					Control.SplitterDistance = Math.Max(0, Math.Min(size, (int)Math.Round(relative)));
-					break;
-				case SplitterFixedPanel.Panel2:
-					Control.SplitterDistance = Math.Max(0, Math.Min(size, size - (int)Math.Round(relative)));
-					break;
-				case SplitterFixedPanel.None:
-					Control.SplitterDistance = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
-					break;
+				switch (fixedPanel)
+				{
+					case SplitterFixedPanel.Panel1:
+						lastPosition = Math.Max(0, Math.Min(size, (int)Math.Round(relative)));
+						break;
+					case SplitterFixedPanel.Panel2:
+						lastPosition = Math.Max(0, Math.Min(size, size - (int)Math.Round(relative)));
+						break;
+					case SplitterFixedPanel.None:
+						lastPosition = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
+						break;
+				}
+				Control.SplitterDistance = lastPosition;
+			}
+			catch
+			{
+				// ignore
 			}
 		}
 
@@ -491,27 +529,27 @@ namespace Eto.WinForms.Forms.Controls
 			get { return panel2 != null && panel2.GetWindowsHandler().InternalVisible; }
 		}
 
-        public int Panel1MinimumSize
-        {
-            get { return panel1MinimumSize; }
-            set
-            {
-                panel1MinimumSize = value;
-                CheckSplitterPos();
-            }
-        }
+		public int Panel1MinimumSize
+		{
+			get { return panel1MinimumSize; }
+			set
+			{
+				panel1MinimumSize = value;
+				CheckSplitterPos(false);
+			}
+		}
 
-        public int Panel2MinimumSize
-        {
-            get { return panel2MinimumSize; }
-            set
-            {
-                panel2MinimumSize = value;
-                CheckSplitterPos();
-            }
-        }
+		public int Panel2MinimumSize
+		{
+			get { return panel2MinimumSize; }
+			set
+			{
+				panel2MinimumSize = value;
+				CheckSplitterPos(false);
+			}
+		}
 
-        void c1_VisibleChanged(object sender, EventArgs e)
+		void c1_VisibleChanged(object sender, EventArgs e)
 		{
 			VisibleChanged(Panel1Visible);
 		}

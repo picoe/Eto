@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Collections;
-
 namespace Eto.GtkSharp.Forms.Cells
 {
 	public class ComboBoxCellHandler : SingleCellHandler<Gtk.CellRendererCombo, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
@@ -26,10 +21,21 @@ namespace Eto.GtkSharp.Forms.Cells
 				get { return row; }
 				set {
 					row = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
 				}
 			}
+			
+			object item;
+			[GLib.Property("item")]
+			public object Item
+			{
+				get { return item; }
+				set
+				{
+					item = value;
+					Handler.Format(this, item, Row);
+				}
+			}
+			
 
 #if GTK2
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
@@ -77,12 +83,12 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public void HandleEdited(object o, Gtk.EditedArgs args)
 			{
-				Handler.SetValue(args.Path, args.NewText);
+				Handler?.SetValue(args.Path, args.NewText);
 			}
 
 			public void HandleEndEditing(object o, Gtk.EditedArgs args)
 			{
-				Handler.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+				Handler?.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
 

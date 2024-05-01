@@ -1,7 +1,3 @@
-using Eto.Forms;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-
 namespace Eto.Wpf.Forms.Printing
 {
 	public class PrintDialogHandler : WidgetHandler<swc.PrintDialog, PrintDialog>, PrintDialog.IHandler
@@ -19,11 +15,16 @@ namespace Eto.Wpf.Forms.Printing
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			Control.SetEtoSettings(settings);
 			var result = Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			if (result == true)
 			{
 				settings.SetFromDialog(Control);
+				Document?.Print();
 				return DialogResult.Ok;
 			}
 			return DialogResult.Cancel;

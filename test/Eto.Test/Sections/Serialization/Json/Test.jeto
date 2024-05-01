@@ -5,6 +5,12 @@
 		Pages: [
 			{
 				Text: "Table Layout",
+				ContextMenu: {
+					$type: "ContextMenu",
+					Items: [
+						{ "$type": "ButtonMenuItem", "Text": "Some Item", "Shortcut": "CommonModifier+P", "Click": "HandleButtonClick" }
+					]
+				},
 				Content: {
 					$type: "TableLayout",
 					Padding: "10",

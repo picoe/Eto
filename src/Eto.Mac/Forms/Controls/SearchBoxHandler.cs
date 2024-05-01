@@ -1,37 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	/// <summary>
@@ -50,6 +16,10 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
+			public EtoTextField(IntPtr handle) : base(handle)
+			{
+			}
+
 			public EtoTextField()
 			{
 				Bezeled = true;
@@ -59,6 +29,18 @@ namespace Eto.Mac.Forms.Controls
 				Cell.Wraps = false;
 				Cell.UsesSingleLineMode = true;
 			}
+			
+			[Export("textViewDidChangeSelection:")]
+			public void TextViewDidChangeSelection(NSNotification notification)
+			{
+				var h = Handler;
+				if (h != null)
+				{
+					var textView = (NSTextView)notification.Object;
+					h.SetLastSelection(textView.SelectedRange.ToEto());
+				}
+			}
+			
 		}
 
 		public override bool HasFocus
@@ -76,11 +58,13 @@ namespace Eto.Mac.Forms.Controls
 			return new EtoTextField();
 		}
 
+		EtoFormatter formatter;
+
 		protected override void Initialize()
 		{
 			var control = Control;
 
-			control.Formatter = new EtoFormatter { Handler = this };
+			control.Formatter = formatter = new EtoFormatter { Handler = this };
 
 			MaxLength = -1;
 
@@ -114,6 +98,14 @@ namespace Eto.Mac.Forms.Controls
 			{
 				handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty);
 			}
+		}
+		
+		protected override bool SelectAllOnMouseDown(MouseEventArgs e)
+		{
+			var cancelRect = Control.Cell.CancelButtonRectForBounds(Control.Bounds).ToEto();
+			if (!cancelRect.Contains(e.Location))
+				return base.SelectAllOnMouseDown(e);
+			return false;
 		}
 
 		public bool ReadOnly

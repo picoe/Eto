@@ -1,37 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
-#if XAMMAC2
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 #if OSX
 
 namespace Eto.Mac.Drawing
@@ -144,13 +110,8 @@ namespace Eto.iOS.Drawing
 
 		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			return new BrushObject
-			{
-				StartColor = startColor.ToCG(),
-				EndColor = endColor.ToCG(),
-				StartPoint = rectangle.TopLeft,
-				EndPoint = rectangle.TopRight // TODO
-			};
+			GradientHelper.GetLinearFromRectangle(rectangle, angle, out var startPoint, out var endPoint);
+			return Create(startColor, endColor, startPoint, endPoint);
 		}
 
 		public IMatrix GetTransform(LinearGradientBrush widget)

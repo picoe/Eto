@@ -1,6 +1,3 @@
-using Eto.Drawing;
-using System;
-
 namespace Eto.GtkSharp
 {
 #if GTK2

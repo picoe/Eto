@@ -1,14 +1,6 @@
-using System;
-using System.Reflection;
-using Eto.Drawing;
-using Eto.Forms;
 using UIKit;
-using System.Linq;
 using Eto.Mac.Forms;
-using System.Collections.Generic;
 using sd = System.Drawing;
-using System.Diagnostics;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class TabControlHandler : MacContainer<UITabBarController, TabControl, TabControl.ICallback>, TabControl.IHandler

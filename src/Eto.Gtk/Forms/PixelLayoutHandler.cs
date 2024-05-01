@@ -1,9 +1,5 @@
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Forms.Controls;
 using Gtk;
-using System;
-
 namespace Eto.GtkSharp.Forms
 {
 
@@ -44,6 +40,19 @@ namespace Eto.GtkSharp.Forms
 #endif
 			Control.Put(widget, x, y);
 			ctl.CurrentLocation = new Point(x, y);
+			InvalidateMeasure();
+		}
+		public override void InvalidateMeasure()
+		{
+			base.InvalidateMeasure();
+#if GTKCORE
+			if (Widget.Loaded)
+			{
+				// same as Control.ResizeChildren(), but non-obsolete.
+				Control.GetAllocatedSize(out var allocation, out var baseline);
+				Control.SizeAllocateWithBaseline(allocation, baseline);
+			}
+#endif
 		}
 
 		public void Move(Control child, int x, int y)
@@ -60,6 +69,7 @@ namespace Eto.GtkSharp.Forms
 
 				ctl.CurrentLocation = new Point(x, y);
 			}
+			InvalidateMeasure();
 		}
 
 		public void Remove(Control child)
@@ -69,6 +79,7 @@ namespace Eto.GtkSharp.Forms
 #else
 			Control.Remove(child.GetContainerWidget());
 #endif
+			InvalidateMeasure();
 		}
 
 		public void Update()

@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms
 {
 	static class GtkPanel
@@ -83,6 +79,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				Widget.Properties.Set(GtkPanel.MinimumSize_Key, value);
 				ContainerControl.QueueResize();
+				SetSize(UserPreferredSize);
 			}
 		}
 
@@ -114,7 +111,7 @@ namespace Eto.GtkSharp.Forms
 			get { return content; }
 			set
 			{
-				if (content != value)
+				if (!ReferenceEquals(content, value))
 				{
 					if (content != null)
 						alignment.Remove(content.GetContainerWidget());
@@ -127,6 +124,7 @@ namespace Eto.GtkSharp.Forms
 						widget.ShowAll();
 						alignment.Child = widget;
 					}
+					InvalidateMeasure();					
 				}
 			}
 		}

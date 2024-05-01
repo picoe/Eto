@@ -1,13 +1,4 @@
-using Eto.Forms;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Eto.Drawing;
-using System.IO;
-
 namespace Eto.Test.UnitTests.Forms
 {
 	[TestFixture]
@@ -52,12 +43,54 @@ namespace Eto.Test.UnitTests.Forms
 			String,
 			Data,
 			Uris,
+			SerializableObject,
+			NormalObject,
+			UnsafeObject
 		}
 
 		const string SampleText = "Hello";
 		const string SampleStringType = "eto-string";
 		const string SampleDataType = "eto-data";
+		const string SampleSerializableObjectType = "eto-serializable-object";
+		const string SampleObjectType = "eto-object";
+		const string SampleUnsafeObjectType = "eto-unsafe-object";
 		const string SampleHtml = "<strong>Some Html</strong>";
+
+		[Serializable]
+		public class SerializableObject : ISerializable
+		{
+			
+			public string SomeValue { get; set; }
+			public ChildObject ChildObject { get; set; } = new ChildObject();
+			public SerializableObject()
+			{
+			}
+			
+			public SerializableObject(SerializationInfo info, StreamingContext context)
+			{
+				SomeValue = info.GetString("SomeValue");
+				ChildObject = info.GetValue("Child", typeof(ChildObject)) as ChildObject;
+			}
+			
+			public void GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+				info.AddValue("SomeValue", SomeValue);
+				info.AddValue("Child", ChildObject);
+			}
+		}
+		
+		[Serializable]
+		public class SomeOtherObject
+		{
+			public string SomeValue { get; set; }
+
+			public ChildObject ChildObject { get; set; } = new ChildObject();
+		}
+		
+		public class ChildObject
+		{
+			public bool SomeProperty { get; set; } = new Random().Next() % 2 == 0;
+		}
 
 		static byte[] SampleByteData => new byte[] { 10, 20, 30 };
 
@@ -114,6 +147,18 @@ namespace Eto.Test.UnitTests.Forms
 					Assert.IsFalse(dataObject.ContainsUris);
 					Assert.IsNull(dataObject.Uris);
 					break;
+				case DataType.SerializableObject:
+					CollectionAssert.DoesNotContain(SampleSerializableObjectType, dataObject.Types);
+					Assert.IsNull(dataObject.GetObject<SerializableObject>(SampleSerializableObjectType));
+					break;
+				case DataType.NormalObject:
+					CollectionAssert.DoesNotContain(SampleObjectType, dataObject.Types);
+					Assert.IsNull(dataObject.GetObject<SomeOtherObject>(SampleObjectType));
+					break;
+				case DataType.UnsafeObject:
+					CollectionAssert.DoesNotContain(SampleUnsafeObjectType, dataObject.Types);
+					Assert.IsNull(dataObject.GetObject(SampleUnsafeObjectType));
+					break;
 				default:
 					throw new NotSupportedException();
 			}
@@ -164,6 +209,24 @@ namespace Eto.Test.UnitTests.Forms
 					else
 						CollectionAssert.AreEquivalent(SampleBothUris, dataObject.Uris);
 					break;
+				case DataType.SerializableObject:
+					Assert.Contains(SampleSerializableObjectType, dataObject.Types);
+					var obj = dataObject.GetObject<SerializableObject>(SampleSerializableObjectType);
+					Assert.IsNotNull(obj);
+					Assert.AreEqual(obj.SomeValue, SampleText);
+					break;
+				case DataType.NormalObject:
+					Assert.Contains(SampleObjectType, dataObject.Types);
+					var obj2 = dataObject.GetObject<SomeOtherObject>(SampleObjectType);
+					Assert.IsNotNull(obj2);
+					Assert.AreEqual(obj2.SomeValue, SampleText);
+					break;
+				case DataType.UnsafeObject:
+					Assert.Contains(SampleUnsafeObjectType, dataObject.Types);
+					var obj3 = dataObject.GetObject(SampleUnsafeObjectType) as SomeOtherObject;
+					Assert.IsNotNull(obj3);
+					Assert.AreEqual(obj3.SomeValue, SampleText);
+					break;
 				default:
 					throw new NotSupportedException();
 			}
@@ -200,6 +263,15 @@ namespace Eto.Test.UnitTests.Forms
 				case DataType.Uris:
 					dataObject.Uris = SampleBothUris;
 					break;
+				case DataType.SerializableObject:
+					dataObject.SetObject(new SerializableObject { SomeValue = SampleText }, SampleSerializableObjectType);
+					break;
+				case DataType.NormalObject:
+					dataObject.SetObject(new SomeOtherObject { SomeValue = SampleText }, SampleObjectType);
+					break;
+				case DataType.UnsafeObject:
+					dataObject.SetObject(new SomeOtherObject { SomeValue = SampleText }, SampleUnsafeObjectType);
+					break;
 				default:
 					throw new NotSupportedException();
 			}
@@ -208,8 +280,6 @@ namespace Eto.Test.UnitTests.Forms
 		[TestCaseSource(nameof(GetDataTypes))]
 		public void IndividualValuesShouldBeIndependent(DataType property)
 		{
-			var byteData = new byte[] { 10, 20, 30 };
-
 			Invoke(() =>
 			{
 				using (var clipboard = new T())
@@ -232,6 +302,33 @@ namespace Eto.Test.UnitTests.Forms
 			});
 		}
 
+		[TestCaseSource(nameof(GetDataTypes))]
+		public void ClearingBeforeSettingShouldNotCrash(DataType property)
+		{
+			Invoke(() =>
+			{
+				using (var clipboard = new T())
+				{
+					clipboard.Clear();
+					SetValue(clipboard, property);
+					TestValue(clipboard, property);
+					// test all other entries are blank!
+					TestIsNullExcept(clipboard, property);
+				}
+			});
+			// if it's a clipboard, test a new instance of the clipboard has the same values that we set.
+			if (IsClipboard)
+				Invoke(() =>
+				{
+					using (var clipboard = new T())
+					{
+						TestValue(clipboard, property);
+						TestIsNullExcept(clipboard, property);
+					}
+				});
+		}
+
+
 		[Test]
 		public void SettingMultipleFormatsShouldWork()
 		{
@@ -240,7 +337,10 @@ namespace Eto.Test.UnitTests.Forms
 				DataType.Text,
 				DataType.Html,
 				DataType.String,
-				DataType.Data
+				DataType.Data,
+				DataType.SerializableObject,
+				DataType.NormalObject,
+				DataType.UnsafeObject
 			};
 
 			Invoke(() =>

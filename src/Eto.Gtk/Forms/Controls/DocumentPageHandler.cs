@@ -1,8 +1,4 @@
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class DocumentPageHandler : GtkPanel<Gtk.VBox, DocumentPage, DocumentPage.ICallback>, DocumentPage.IHandler
@@ -92,6 +88,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return closeButton.Visible; }
 			set { closeButton.Visible = value; }
 		}
+
+		public bool HasUnsavedChanges { get; set; }
 
 		public Image Image
 		{

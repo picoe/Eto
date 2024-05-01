@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Forms;
-using Eto.Drawing;
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -21,34 +15,44 @@ namespace Eto.Android.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class TableLayoutHandler : AndroidContainer<aw.TableLayout, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
-		int lastColumnScale;
+		private const Boolean DebugCellBoundaries = false;
+
 		bool[] columnScale;
-		int lastRowScale;
 		bool[] rowScale;
+		private bool isCreated;
+		private Size spacing;
 
 		public override av.View ContainerControl { get { return Control; } }
 
 		public TableLayoutHandler()
 		{
-			Control = new aw.TableLayout(aa.Application.Context);
+			Control = new aw.TableLayout(Platform.AppContextThemed);
 		}
 
 		public void CreateControl(int cols, int rows)
 		{
-			lastColumnScale = cols - 1;
 			columnScale = new bool[cols];
-			lastRowScale = rows - 1;
 			rowScale = new bool[rows];
+			
+			
 			for (int y = 0; y < rows; y++)
 			{
-				var row = new aw.TableRow(aa.Application.Context);
+				var row = new aw.TableRow(Platform.AppContextThemed);
+
 				for (int x = 0; x < cols; x++)
-				{
-					row.AddView(new aw.FrameLayout(aa.Application.Context), new aw.TableRow.LayoutParams(x));
-				}
-				Control.AddView(row, new aw.TableLayout.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent, y == lastRowScale ? 1f : 0f));
+					{
+					var cell = new aw.FrameLayout(Platform.AppContextThemed);
+#if DEBUG
+					if(DebugCellBoundaries)
+						cell.SetBackgroundColor( (((y % 2) + (x % 2)) %2 == 0) ? ag.Color.DarkTurquoise : ag.Color.LightBlue);
+#endif
+					row.AddView(cell, new aw.TableRow.LayoutParams(0,0) { Column = x });
+					}
+				
+				Control.AddView(row, new aw.TableLayout.LayoutParams());
 			}
-			Control.SetColumnStretchable(cols - 1, true);
+
+			isCreated = true;
 		}
 
 		public bool GetColumnScale(int column)
@@ -57,15 +61,101 @@ namespace Eto.Android.Forms
 		}
 
 		public void SetColumnScale(int column, bool scale)
-		{
-			var lastScale = lastColumnScale;
+		{			
 			columnScale[column] = scale;
-			Control.SetColumnStretchable(column, scale);
-			lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
-			if (lastScale != lastColumnScale)
+			ApplyScaling();
+		}
+
+		private void ApplyScaling()
+		{
+			var HaveScaledColumn2 = false;
+
+			for (var x = 0; x < columnScale.Length; x++)
 			{
-				Control.SetColumnStretchable(columnScale.Length - 1, column == lastColumnScale || columnScale[columnScale.Length - 1]);
+				var ShouldScaleColumn2 = columnScale[x];
+				if (ShouldScaleColumn2) HaveScaledColumn2 = true;
+
+				Control.SetColumnShrinkable(x, true);
+				Control.SetColumnStretchable(x, ShouldScaleColumn2);
 			}
+
+			if (!HaveScaledColumn2)
+				Control.SetColumnStretchable(columnScale.Length - 1, true);
+
+			var HaveScaledRow = false;
+
+			for (var y = 0; y < rowScale.Length; y++)
+			{
+				var ShouldScaleRow = (!HaveScaledRow && y == rowScale.Length - 1) || rowScale[y];
+				if (ShouldScaleRow) HaveScaledRow = true;
+
+				var row = (aw.TableRow)Control.GetChildAt(y);
+				row.LayoutParameters = new aw.TableLayout.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.WrapContent, ShouldScaleRow ? 1 : 0);
+
+				var HaveScaledColumn = false;
+
+				var InSpanFor = 1;
+				var ThisSpan = 1;
+
+				for (var x = 0; x < columnScale.Length; x++)
+				{
+					InSpanFor--;
+
+					var ShouldScaleColumn = (!HaveScaledColumn && x == columnScale.Length - 1) || columnScale[x];
+					if (ShouldScaleColumn) HaveScaledColumn = true;
+
+					if (InSpanFor > 0)
+						ThisSpan = 0;
+
+					else
+					{
+						var WidgetRow = Widget.Rows[y];
+						InSpanFor = ThisSpan = (WidgetRow.Cells.Any() ? /*WidgetRow.Cells[x].ColumnSpan*/ 1 : 1);
+					}
+
+					var cell = row.GetChildAt(x);
+					var child = GetChildControl(x, y);
+
+					var hasWidth = child != null && child.Visible && child.Width > 0;
+					var glw = (ShouldScaleColumn || ThisSpan > 1) ? av.ViewGroup.LayoutParams.MatchParent : av.ViewGroup.LayoutParams.WrapContent;
+					var lw = hasWidth ? Platform.DpToPx(child.Width) : glw;
+					var lh = child != null && child.Visible && child.Height > 0 ? Platform.DpToPx(child.Height) : av.ViewGroup.LayoutParams.WrapContent;
+
+					cell.LayoutParameters = new aw.TableRow.LayoutParams(lw, lh, hasWidth ? 0 : (ShouldScaleColumn ? 1 : 0)) { Column = x, Span = ThisSpan };
+
+					var childControl = child?.GetContainerView();
+					
+					if (childControl != null)
+					{
+						lw = child.Visible && child.Width > 0 ? av.ViewGroup.LayoutParams.MatchParent : glw;
+						lh = av.ViewGroup.LayoutParams.MatchParent;
+
+						childControl.LayoutParameters = new aw.FrameLayout.LayoutParams(lw, lh)
+						{
+							LeftMargin = spacing.Width,
+							RightMargin = spacing.Width,
+							TopMargin = spacing.Height,
+							BottomMargin = spacing.Height
+						};
+					}
+				}
+			}
+		}
+
+		private Control GetChildControl(Int32 x, Int32 y)
+		{
+			if (Widget == null)
+				return null;
+
+			if (Widget.Rows.Count <= y)
+				return null;
+
+			var Row = Widget.Rows[y];
+
+			if (Row.Cells.Count <= x)
+				return null;
+
+			return Row.Cells[x].Control;
 		}
 
 		public bool GetRowScale(int row)
@@ -75,19 +165,24 @@ namespace Eto.Android.Forms
 
 		public void SetRowScale(int row, bool scale)
 		{
-			var lastScale = lastRowScale;
 			rowScale[row] = scale;
-			var layout = Control.GetChildAt(row).LayoutParameters as aw.TableLayout.LayoutParams;
-			layout.Weight = scale ? 1f : 0f;
-			lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
-			if (lastScale != lastRowScale)
-			{
-				layout = Control.GetChildAt(rowScale.Length - 1).LayoutParameters as aw.TableLayout.LayoutParams;
-				layout.Weight = row == lastRowScale || rowScale[rowScale.Length - 1] ? 1f : 0f;
-			}
+			ApplyScaling();
 		}
 
-		public Size Spacing { get; set; }
+		public Size Spacing
+		{
+			get
+			{
+				return spacing;
+			}
+			set
+			{
+				spacing = value;
+				
+				if(isCreated)
+					ApplyScaling();
+			}
+		}
 
 		public Padding Padding
 		{
@@ -98,14 +193,15 @@ namespace Eto.Android.Forms
 		public void Add(Control child, int x, int y)
 		{
 			var row = (aw.TableRow)Control.GetChildAt(y);
-
 			var cell = (aw.FrameLayout)row.GetChildAt(x);
+
 			cell.RemoveAllViews();
+			
 			var control = child.GetContainerView();
 			if (control != null)
 			{
-				control.LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent);
 				cell.AddView(control);
+				ApplyScaling();
 			}
 		}
 
@@ -118,19 +214,15 @@ namespace Eto.Android.Forms
 		public void Remove(Control child)
 		{
 			var control = child.GetContainerView();
-			var row = control.Parent as aw.TableRow;
-			if (row != null && object.ReferenceEquals(row.Parent, Control))
-			{
-				var x = row.IndexOfChild(control);
-				row.RemoveView(control);
-				row.AddView(new av.View(aa.Application.Context), new aw.TableRow.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent) { Column = x });
-			}
+			var cell = control.Parent as aw.FrameLayout;
+			cell?.RemoveAllViews();
+			ApplyScaling();
 		}
 
 		public void Update()
 		{
+			ApplyScaling();
 			Control.ForceLayout();
 		}
 	}
 }
-

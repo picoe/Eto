@@ -1,16 +1,11 @@
-using System;
-using Eto.Forms;
-using System.ComponentModel;
-using System.Diagnostics;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
 namespace Eto.Test
 {
 	public class TestApplication : Application
 	{
+		static Settings settings;
+
+		public static Settings Settings => settings ?? (settings = Settings.Load());
+
 		public static IEnumerable<Assembly> DefaultTestAssemblies()
 		{
 #if PCL
@@ -33,6 +28,7 @@ namespace Eto.Test
 			: base(platform)
 		{
 			TestAssemblies = DefaultTestAssemblies().ToList();
+			UIThreadCheckMode = UIThreadCheckMode.Error;
 			this.Name = "Test Application";
 			this.Style = "application";
 
@@ -40,6 +36,12 @@ namespace Eto.Test
 			{
 				NotificationActivated += (sender, e) => Log.Write(this, $"Notification: {e.ID}, userData: {e.UserData}");
 			}
+		}
+
+		protected override void OnIsActiveChanged(EventArgs e)
+		{
+			base.OnIsActiveChanged(e);
+			Log.Write(this, $"IsActiveChanged: {IsActive}");
 		}
 
 		protected override void OnInitialized(EventArgs e)
@@ -69,16 +71,18 @@ namespace Eto.Test
 #endif
 		}
 
-		/*
 		protected override void OnTerminating(CancelEventArgs e)
 		{
 			base.OnTerminating(e);
 			Log.Write(this, "Terminating");
+			Settings.Save();
 
+			/*
 			var result = MessageBox.Show(MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
 			if (result == DialogResult.No)
 				e.Cancel = true;
-		}*/
+			*/
+		}
 	}
 }
 

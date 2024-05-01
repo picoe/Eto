@@ -1,6 +1,7 @@
 
 *       text=auto
 *.sh    eol=lf
+*.entitlements eol=lf
 *.sln   eol=crlf
 *.cmd   eol=crlf
 *.csproj text

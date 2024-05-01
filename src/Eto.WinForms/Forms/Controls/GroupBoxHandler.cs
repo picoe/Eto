@@ -1,9 +1,3 @@
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-using System;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class GroupBoxHandler : WindowsPanel<GroupBoxHandler.EtoGroupBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler

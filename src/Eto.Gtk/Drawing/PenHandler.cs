@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>
@@ -20,9 +17,10 @@ namespace Eto.GtkSharp.Drawing
 			public float Thickness
 			{
 				get { return thickness; }
-				set {
+				set
+				{
 					thickness = value;
-					SetDashStyle ();
+					SetDashStyle();
 				}
 			}
 
@@ -40,115 +38,123 @@ namespace Eto.GtkSharp.Drawing
 				set
 				{
 					dashStyle = value;
-					SetDashStyle ();
+					SetDashStyle();
 				}
 			}
 
-			void SetDashStyle ()
+			void SetDashStyle()
 			{
 				if (dashStyle == null || dashStyle.IsSolid)
 					cairodashes = null;
-				else {
+				else
+				{
 					var dashes = DashStyle.Dashes;
 					cairooffset = DashStyle.Offset * Thickness;
 
-					if (LineCap == Cairo.LineCap.Butt) {
-						cairodashes = Array.ConvertAll (dashes, x => (double)x * Thickness);
+					if (LineCap == Cairo.LineCap.Butt)
+					{
+						cairodashes = Array.ConvertAll(dashes, x => (double)x * Thickness);
 					}
-					else {
+					else
+					{
 						if (Math.Abs(Thickness - 1) < 0.01f)
 							cairooffset += Thickness / 2;
 						cairodashes = new double[dashes.Length];
-						for (int i = 0; i < cairodashes.Length; i++) {
-							var dash = dashes [i] * Thickness;
-							if ((i % 2) == 1) {
+						for (int i = 0; i < cairodashes.Length; i++)
+						{
+							var dash = dashes[i] * Thickness;
+							if ((i % 2) == 1)
+							{
 								// gap must include square/round thickness
 								dash += Thickness;
-							} else {
+							}
+							else
+							{
 								// dash must exclude square/round thickness
 								dash -= Thickness;
 							}
-							cairodashes [i] = dash;
+							cairodashes[i] = dash;
 						}
 					}
 				}
 			}
 
-			public void Apply (GraphicsHandler graphics)
+			public void Apply(Cairo.Context context)
 			{
-				graphics.Control.LineWidth = Thickness;
-				graphics.Control.LineCap = LineCap;
-				graphics.Control.LineJoin = LineJoin;
+				context.LineWidth = Thickness;
+				context.LineCap = LineCap;
+				context.LineJoin = LineJoin;
 				if (cairodashes != null)
-					graphics.Control.SetDash (cairodashes, cairooffset);
-				graphics.Control.MiterLimit = MiterLimit;
-				Brush.Apply(graphics);
+					context.SetDash(cairodashes, cairooffset);
+				context.MiterLimit = MiterLimit;
+				Brush.Apply(context);
 			}
 		}
 
-		public object Create (Brush brush, float thickness)
+		public object Create(Brush brush, float thickness)
 		{
-			return new PenObject {
+			return new PenObject
+			{
 				Brush = brush,
 				Thickness = thickness,
 				MiterLimit = 10f,
-				LineCap = PenLineCap.Square.ToCairo ()
+				LineCap = PenLineCap.Square.ToCairo()
 			};
 		}
 
-		public Brush GetBrush (Pen widget)
+		public Brush GetBrush(Pen widget)
 		{
 			return ((PenObject)widget.ControlObject).Brush;
 		}
 
-		public float GetThickness (Pen widget)
+		public float GetThickness(Pen widget)
 		{
 			return ((PenObject)widget.ControlObject).Thickness;
 		}
 
-		public void SetThickness (Pen widget, float thickness)
+		public void SetThickness(Pen widget, float thickness)
 		{
 			((PenObject)widget.ControlObject).Thickness = thickness;
 		}
 
-		public PenLineJoin GetLineJoin (Pen widget)
+		public PenLineJoin GetLineJoin(Pen widget)
 		{
-			return ((PenObject)widget.ControlObject).LineJoin.ToEto ();
+			return ((PenObject)widget.ControlObject).LineJoin.ToEto();
 		}
 
-		public void SetLineJoin (Pen widget, PenLineJoin lineJoin)
+		public void SetLineJoin(Pen widget, PenLineJoin lineJoin)
 		{
-			((PenObject)widget.ControlObject).LineJoin = lineJoin.ToCairo ();
+			((PenObject)widget.ControlObject).LineJoin = lineJoin.ToCairo();
 		}
 
-		public PenLineCap GetLineCap (Pen widget)
+		public PenLineCap GetLineCap(Pen widget)
 		{
-			return ((PenObject)widget.ControlObject).LineCap.ToEto ();
+			return ((PenObject)widget.ControlObject).LineCap.ToEto();
 		}
 
-		public void SetLineCap (Pen widget, PenLineCap lineCap)
+		public void SetLineCap(Pen widget, PenLineCap lineCap)
 		{
-			((PenObject)widget.ControlObject).LineCap = lineCap.ToCairo ();
+			((PenObject)widget.ControlObject).LineCap = lineCap.ToCairo();
 		}
 
-		public float GetMiterLimit (Pen widget)
+		public float GetMiterLimit(Pen widget)
 		{
 			return ((PenObject)widget.ControlObject).MiterLimit;
 		}
 
-		public void SetMiterLimit (Pen widget, float miterLimit)
+		public void SetMiterLimit(Pen widget, float miterLimit)
 		{
 			((PenObject)widget.ControlObject).MiterLimit = miterLimit;
 		}
 
-		public void SetDashStyle (Pen widget, DashStyle dashStyle)
+		public void SetDashStyle(Pen widget, DashStyle dashStyle)
 		{
 			((PenObject)widget.ControlObject).DashStyle = dashStyle;
 		}
 
-		public void Apply (Pen widget, GraphicsHandler graphics)
+		public void Apply(Pen widget, Cairo.Context context)
 		{
-			((PenObject)widget.ControlObject).Apply (graphics);
+			((PenObject)widget.ControlObject).Apply(context);
 		}
 	}
 }

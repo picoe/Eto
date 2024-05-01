@@ -1,23 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System.Text.RegularExpressions;
-using System.Linq;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ColorPickerHandler : MacControl<NSColorWell, ColorPicker, ColorPicker.ICallback>, ColorPicker.IHandler
@@ -35,17 +16,6 @@ namespace Eto.Mac.Forms.Controls
 				if (handler != null)
 				{
 					NSColorPanel.SharedColorPanel.ShowsAlpha = handler.AllowAlpha;
-					handler.TriggerMouseCallback();
-				}
-			}
-
-			public override void Deactivate()
-			{
-				base.Deactivate();
-				var handler = Handler;
-				if (handler != null)
-				{
-					handler.TriggerMouseCallback();
 				}
 			}
 

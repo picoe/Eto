@@ -1,5 +1,3 @@
-using SD = System.Drawing;
-using Eto.Drawing;
 using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms
@@ -14,12 +12,12 @@ namespace Eto.WinForms.Forms
 				return;
 			}
 
-			var sdimage = image.ControlObject as SD.Image;
+			var sdimage = image.ControlObject as sd.Image;
 			if (sdimage != null) {
 				list.Images.Add (key, sdimage);
 				return;
 			}
-			var icon = image.ControlObject as SD.Icon;
+			var icon = image.ControlObject as sd.Icon;
 			if (icon != null) {
 				list.Images.Add (key, icon);
 				return;

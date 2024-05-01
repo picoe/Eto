@@ -1,17 +1,4 @@
-using System;
-using Eto.Forms;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using sdi = System.Drawing.Imaging;
 using Eto.WinForms.Drawing;
-using Eto.Drawing;
-using System.Runtime.InteropServices;
-using System.IO;
-using sc = System.ComponentModel;
-using System.Text;
-using System.Collections.Specialized;
-using System.Linq;
-
 namespace Eto.WinForms.Forms
 {
 	public class ClipboardHandler : DataObjectHandler<Clipboard, Clipboard.ICallback>, Clipboard.IHandler
@@ -24,8 +11,6 @@ namespace Eto.WinForms.Forms
 		protected override bool InnerContainsFileDropList => swf.Clipboard.ContainsFileDropList();
 
 		protected override StringCollection InnerGetFileDropList() => swf.Clipboard.GetFileDropList();
-
-		protected override swf.IDataObject InnerDataObject => swf.Clipboard.GetDataObject();
 
 		public override bool ContainsText => swf.Clipboard.ContainsText();
 

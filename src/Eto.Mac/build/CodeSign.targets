@@ -1,0 +1,74 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
+
+  <PropertyGroup>
+    <!-- Search key for the code signing identity for the .app (partial strings match)
+         If empty, this will use the code signing identity if only a single identity is installed.
+     -->
+    <CodeSigningKey Condition="$(CodeSigningKey) == ''"></CodeSigningKey>
+    <!-- Search key for the code signing identity for the .dmg (partial strings match) -->
+    <DmgCodeSigningKey Condition="$(DmgCodeSigningKey) == ''">$(CodeSigningKey)</DmgCodeSigningKey>
+    <!-- Code signing entitlements to use -->
+    <CodeSignEntitlements Condition="$(CodeSignEntitlements) == ''">$(MSBuildThisFileDirectory)CodeSign.entitlements</CodeSignEntitlements>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <MacBuildDmgDependsOnTargets>MacCodeSignApp;$(MacBuildDmgDependsOnTargets)</MacBuildDmgDependsOnTargets>
+  </PropertyGroup>
+
+  <Target Name="MacCodeSign" AfterTargets="MacBuildAppBundle" DependsOnTargets="$(MacCodeSignDependsOnTargets)">
+  </Target>
+
+  <Target Name="MacCodeSignApp" DependsOnTargets="MacBuildAppBundle">
+
+    <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_MacResolveCodeSignIdentity" Properties="CodeSignSearchKey=$(CodeSigningKey)" >
+      <Output TaskParameter="TargetOutputs" PropertyName="ResolvedCodeSigningKey" />
+    </MSBuild>
+
+    <PropertyGroup>
+      <CodeSignEntitlements Condition="$(CodeSignEntitlements) != '' AND !Exists($(CodeSignEntitlements)) AND Exists('$(MSBuildProjectDirectory)\$(CodeSignEntitlements)')">$(MSBuildProjectDirectory)\$(CodeSignEntitlements)</CodeSignEntitlements>
+
+      <_CodeSignOptions Condition="$(CodeSignEntitlements) != ''">--entitlements "$(CodeSignEntitlements)"</_CodeSignOptions>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_CodeSignFiles Include="$(OutputAppPath)" CodeSignOptions="--deep --options runtime $(_CodeSignOptions)" />
+    </ItemGroup>
+
+    <Exec Command='codesign --force %(_CodeSignFiles.CodeSignOptions) --sign "$(ResolvedCodeSigningKey)" "@(_CodeSignFiles)"' />
+
+    <Message Text="Code signed $(OutputAppPath)" Importance="high" />
+  </Target>
+
+  <Target Name="MacCodeSignDmg" DependsOnTargets="MacBuildDmg" Condition="$(EnableDmgBuild) == 'True'">
+
+    <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_MacResolveCodeSignIdentity" Properties="CodeSignSearchKey=$(DmgCodeSigningKey)" >
+      <Output TaskParameter="TargetOutputs" PropertyName="ResolvedDmgCodeSigningKey" />
+    </MSBuild>
+
+    <Exec Command='codesign --force --sign "$(ResolvedDmgCodeSigningKey)" "$(_DmgPath)"' />
+    
+    <Message Text="Code signed $(_DmgPath)" Importance="high" />
+  </Target>
+
+  <!-- Resolve a code sign identity.  Parameters: CodeSignSearchKey -->
+  <Target Name="_MacResolveCodeSignIdentity" Outputs="$(ResolvedCodeSignIdentity)">
+
+    <!-- get valid identities that match -->
+    <Exec Command="security find-identity -v -p codesigning | grep -v 'valid identities found' | grep '$(CodeSignSearchKey)' | awk '{print $2}'"
+          ConsoleToMSBuild="True"
+          StandardOutputImportance="normal">
+        <Output TaskParameter="ConsoleOutput" ItemName="MatchingIdentities"/>
+    </Exec>
+
+    <Error Text="Could not find code sign key matching '$(CodeSignSearchKey)'. Ensure you have installed your code sign certificate."
+           Condition="@(MatchingIdentities->Count()) == '0'" />
+
+    <Error Text="More than one valid code signing certificate matches '$(CodeSignSearchKey)'. Enter a more specific key for the certificate."
+           Condition="@(MatchingIdentities->Count()) > '1'" />
+
+    <PropertyGroup>
+      <ResolvedCodeSignIdentity>@(MatchingIdentities)</ResolvedCodeSignIdentity>
+    </PropertyGroup>
+  </Target>
+
+</Project>

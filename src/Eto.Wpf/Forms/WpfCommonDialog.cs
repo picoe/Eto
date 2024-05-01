@@ -1,6 +1,4 @@
-using Eto.Forms;
 using mw = Microsoft.Win32;
-using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {
@@ -18,6 +16,7 @@ namespace Eto.Wpf.Forms
 			else {
 				result = Control.ShowDialog ();
 			}
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			return result != null && result.Value ? DialogResult.Ok : DialogResult.Cancel;
 		}
 	}

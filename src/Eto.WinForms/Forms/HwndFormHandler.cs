@@ -1,13 +1,4 @@
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-
 #if WPF
-using swi = System.Windows.Interop;
 
 namespace Eto.Wpf.Forms
 #elif WINFORMS
@@ -29,7 +20,7 @@ namespace Eto.WinForms.Forms
 		}
 		public void SetOwnerFor(System.Windows.Window child)
 		{
-			new swi.WindowInteropHelper(child).Owner = Control;
+			new swin.WindowInteropHelper(child).Owner = Control;
 		}
 #elif WINFORMS
 
@@ -90,25 +81,26 @@ namespace Eto.WinForms.Forms
 			{
 				if (Win32.PerMonitorDpiSupported)
 					return Win32.GetWindowDpi(Control) / 96.0f;
-				var screen = swf.Screen.FromHandle(Control);
-				if (screen == null)
-					return 1;
-				return screen.GetLogicalPixelSize();
+				return SwfScreen?.GetLogicalPixelSize() ?? 1;
 			}
 		}
+
+		swf.Screen SwfScreen => swf.Screen.FromHandle(Control);
 
 		public Eto.Drawing.Point Location
 		{
 			get
 			{
-				Win32.RECT rect;
-				Win32.GetWindowRect(Control, out rect);
-				var location = new PointF(rect.left, rect.top);
-				return Point.Round(location / (float)LogicalPixelSize);
+				var rect = new Win32.RECT();
+				Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(Control, out rect));
+
+				var location = new Point(rect.left, rect.top);
+				return Point.Round(location.ScreenToLogical(SwfScreen));
 			}
 			set
 			{
-				throw new NotImplementedException();
+				var loc = ((PointF)value).LogicalToScreen();
+				Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(Control, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE));
 			}
 		}
 
@@ -230,15 +222,30 @@ namespace Eto.WinForms.Forms
 			}
 			set
 			{
-				var styleInt = Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE);
+				var style = Win32.GetWindowLong(Control, Win32.GWL.EXSTYLE);
 				if (value)
-					styleInt |= (uint)Win32.WS_EX.APPWINDOW;
+					style |= (uint)Win32.WS_EX.APPWINDOW;
 				else
-					styleInt &= (uint)~Win32.WS_EX.APPWINDOW;
+					style &= (uint)~Win32.WS_EX.APPWINDOW;
 
-				Win32.SetWindowLong(Control, Win32.GWL.EXSTYLE, styleInt);
+				Win32.SetWindowLong(Control, Win32.GWL.EXSTYLE, style);
 			}
 		}
+		
+		public virtual bool Closeable
+		{
+			get => ((Win32.WS)Win32.GetWindowLong(Control, Win32.GWL.STYLE)).HasFlag(Win32.WS.SYSMENU);
+			set
+			{
+				var style = Win32.GetWindowLong(Control, Win32.GWL.STYLE);
+				if (value)
+					style |= (uint)Win32.WS.SYSMENU;
+				else
+					style &= (uint)~Win32.WS.SYSMENU;
+				Win32.SetWindowLong(Control, Win32.GWL.STYLE, style);
+			}
+		}
+		
 
 		public bool Topmost
 		{
@@ -442,35 +449,20 @@ namespace Eto.WinForms.Forms
 
 		public void SuspendLayout()
 		{
-			throw new NotImplementedException();
 		}
 
 		public void ResumeLayout()
 		{
-			throw new NotImplementedException();
 		}
 
-		public void Focus()
-		{
-			throw new NotImplementedException();
-		}
+		public void Focus() => Win32.SetActiveWindow(Control);
 
-		public bool HasFocus
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public bool HasFocus => Win32.GetActiveWindow() == Control;
 
 		public bool Visible
 		{
-			get
-			{
-				return Win32.IsWindowVisible(Control);
-			}
-			set
-			{
-				Win32.ShowWindow(Control, value ? Win32.SW.SHOWNA : Win32.SW.HIDE);
-			}
-
+			get => Win32.IsWindowVisible(Control);
+			set => Win32.ShowWindow(Control, value ? Win32.SW.SHOWNA : Win32.SW.HIDE);
 		}
 
 		public void OnPreLoad(EventArgs e)
@@ -597,6 +589,9 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public bool MovableByWindowBackground { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public bool AutoSize { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
 		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF offset)
 		{
 			throw new NotImplementedException();
@@ -606,5 +601,32 @@ namespace Eto.WinForms.Forms
 		{
 			throw new NotImplementedException();
 		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Window.LogicalPixelSizeChangedEvent:
+					// don't spam the output with warnings for this, many controls use it internally
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+
+		}
+
+		public SizeF GetPreferredSize(SizeF availableSize)
+		{
+			return Size;
+		}
+
+		public void Print() => throw new NotImplementedException();
+
+		public void UpdateLayout() => throw new NotImplementedException();
+
+		public bool IsMouseCaptured => throw new NotImplementedException();
+		public bool CaptureMouse() => throw new NotImplementedException();
+		public void ReleaseMouseCapture() => throw new NotImplementedException();
 	}
 }

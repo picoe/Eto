@@ -1,37 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Diagnostics;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class MacEventView : NSBox, IMacControl
@@ -43,6 +9,10 @@ namespace Eto.Mac.Forms.Controls
 			BorderWidth = 0;
 			BorderType = NSBorderType.NoBorder;
 			ContentViewMargins = CGSize.Empty;
+			
+			// disable clipping to bounds so buttons/etc aren't clipped, 10.9+
+			this.SetClipsToBounds(false);
+			(ContentView as NSView)?.SetClipsToBounds(false);
 		}
 
 		public MacEventView(IntPtr handle)
@@ -54,7 +24,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public IMacViewHandler Handler
 		{ 
-			get { return (IMacViewHandler)WeakHandler.Target; }
+			get { return WeakHandler?.Target as IMacViewHandler; }
 			set { WeakHandler = new WeakReference(value); } 
 		}
 
@@ -157,6 +127,12 @@ namespace Eto.Mac.Forms.Controls
 				AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
+
+		public override bool AcceptsFirstMouse(NSEvent theEvent)
+		{
+			return Handler?.OnAcceptsFirstMouse(theEvent) ?? base.AcceptsFirstMouse(theEvent);
+		}
+
 	}
 }
 

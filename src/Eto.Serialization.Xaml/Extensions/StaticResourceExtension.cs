@@ -1,12 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Reflection;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
-
-
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;

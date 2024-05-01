@@ -1,7 +1,3 @@
-using Eto.Forms;
-using sw = System.Windows;
-using swf = System.Windows.Forms;
-
 namespace Eto.Wpf.Forms
 {
 	public class SelectFolderDialogHandler : WidgetHandler<swf.FolderBrowserDialog, SelectFolderDialog>, SelectFolderDialog.IHandler
@@ -13,7 +9,11 @@ namespace Eto.Wpf.Forms
 
 		public DialogResult ShowDialog (Window parent)
 		{
-			var dr = Control.ShowDialog ();
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
+			var dr = Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 			return dr == swf.DialogResult.OK ? DialogResult.Ok : DialogResult.Cancel;
 		}
 

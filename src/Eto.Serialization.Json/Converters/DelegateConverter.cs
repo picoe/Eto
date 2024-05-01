@@ -1,10 +1,5 @@
-using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Linq;
-
 namespace Eto.Serialization.Json.Converters
 {
 	public class DelegateConverter : JsonConverter

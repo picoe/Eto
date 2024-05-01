@@ -1,9 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
-using System.Runtime.InteropServices;
-
 #if GTK2
 using IGtkCellEditable = Gtk.CellEditable;
 using IGtkCellEditableImplementor = Gtk.CellEditableImplementor;
@@ -64,19 +59,22 @@ namespace Eto.GtkSharp.Forms.Cells
 		{
 			WeakReference handler;
 			int editingRow = -1;
+			object editingItem;
 
 			public CustomCellHandler Handler { get { return (CustomCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			protected override void OnEditingStarted(IGtkCellEditable editable, string path)
 			{
-				//base.OnEditingStarted(editable, path);
+				// base.OnEditingStarted(editable, path);
 				editable.EditingDone += Editable_EditingDone;
 				editingRow = row;
+				editingItem = Item;
 			}
 
 			private void Editable_EditingDone(object sender, EventArgs e)
 			{
 				editingRow = -1;
+				editingItem = null;
 				var editable = sender as IGtkCellEditable;
 				if (editable == null)
 					return;
@@ -87,6 +85,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			{
 				//base.OnEditingCanceled();
 				editingRow = -1;
+				editingItem = null;
 			}
 
 			int row;
@@ -98,15 +97,26 @@ namespace Eto.GtkSharp.Forms.Cells
 				set
 				{
 					row = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
+			}
+
+			object item;
+			[GLib.Property("item")]
+			public object Item
+			{
+				get { return item; }
+				set
+				{
+					item = value;
+					Handler.Format(this, item, Row);
 				}
 			}
 
 			IGtkCellEditable CreateEditable(Gdk.Rectangle cellArea)
 			{
-				var item = Handler.Source.GetItem(Row);
-				var args = new CellEventArgs(null, Handler.Widget, Row, item, CellStates.Editing);
+				var item = Item;
+				int column = -1;
+				var args = new CellEventArgs(null, Handler.Widget, Row, column, item, CellStates.Editing, null);
 
 				var ed = new EtoCellEditable();
 				ed.Content = Handler.Callback.OnCreateCell(Handler.Widget, args);
@@ -125,7 +135,10 @@ namespace Eto.GtkSharp.Forms.Cells
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				height = Math.Max(height, Handler.Source.RowHeight);
+				var h = Handler;
+				if (h == null)
+					return;
+				height = Math.Max(height, h.Source.RowHeight);
 			}
 
 			public override Gtk.CellEditable StartEditing(Gdk.Event evnt, Gtk.Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
@@ -135,22 +148,52 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
-				if (editingRow == row)
+				var h = Handler;
+				if (h == null)
+					return;
+
+				if ((row != -1 && editingRow == row) || ReferenceEquals(editingItem, Item))
 				{
 					return;
 				}
 				using (var graphics = new Graphics(new GraphicsHandler(widget, window)))
 				{
-					var item = Handler.Source.GetItem(Row);
+					var item = Item;
 					var args = new CellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
-					Handler.Callback.OnPaint(Handler.Widget, args);
+					h.Callback.OnPaint(h.Widget, args);
 				}
 			}
 #else
 			protected override void OnGetPreferredHeight(Gtk.Widget widget, out int minimum_size, out int natural_size)
 			{
 				base.OnGetPreferredHeight(widget, out minimum_size, out natural_size);
-				natural_size = Handler.Source.RowHeight;
+				var h = Handler;
+				if (h == null)
+					return;
+				natural_size = h.Source.RowHeight;
+			}
+
+			protected override void OnGetPreferredWidth(Gtk.Widget widget, out int minimum_size, out int natural_size)
+			{
+				base.OnGetPreferredWidth(widget, out minimum_size, out natural_size);
+				var h = Handler;
+				if (h == null)
+					return;
+				var item = Item;
+				int column = -1;
+				var args = new CellEventArgs(null, h.Widget, Row, column, item, CellStates.Editing, null);
+
+				natural_size = (int)h.OnGetPreferredWidth(args);
+				
+				// this crashes sometimes.. ???  looks like minimum_size gets a null pointer
+				try
+				{
+					minimum_size = natural_size;
+				}
+				catch
+				{
+
+				}
 			}
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -175,13 +218,14 @@ namespace Eto.GtkSharp.Forms.Cells
 				}
 #endif
 
-				if (editingRow == row)
+
+				if ((row != -1 && editingRow == row) || ReferenceEquals(editingItem, Item))
 				{
 					return;
 				}
 				using (var graphics = new Graphics(new GraphicsHandler(widget, cr)))
 				{
-					var item = Handler.Source.GetItem(Row);
+					var item = Item;
 					var args = new CellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
 					Handler.Callback.OnPaint(Handler.Widget, args);
 				}
@@ -201,9 +245,27 @@ namespace Eto.GtkSharp.Forms.Cells
 		}
 
 
+		private int OnGetPreferredWidth(CellEventArgs args)
+		{
+			var column = Column;
+			if (column != null)
+			{
+				if (!column.AutoSize)
+					return column.Width;
+
+				var width = Callback.OnGetPreferredWidth(Widget, args);
+				width = Math.Max(column.MinWidth, Math.Min(column.MaxWidth, width));
+				return (int)width;
+			}
+			else
+			{
+				return (int)Callback.OnGetPreferredWidth(Widget, args);
+			}
+		}
+
 		public CustomCellHandler()
 		{
-			Control = new Renderer { Handler = this, Mode = Gtk.CellRendererMode.Editable };
+			Control = new Renderer { Handler = this, Mode = Gtk.CellRendererMode.Inert };
 		}
 
 		protected override void BindCell(ref int dataIndex)
@@ -214,6 +276,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		public override void SetEditable(Gtk.TreeViewColumn column, bool editable)
 		{
+			Control.Mode = editable ? Gtk.CellRendererMode.Editable : Gtk.CellRendererMode.Inert;
 		}
 
 		public override void SetValue(object dataItem, object value)

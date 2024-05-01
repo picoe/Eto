@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(DropDown))]
@@ -18,6 +14,14 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow("Set Initial Value", TableLayout.AutoSized(SetInitialValue()));
 
 			layout.AddRow("EnumDropDown<Key>", TableLayout.AutoSized(EnumCombo()));
+
+			layout.AddRow("FormatItem", TableLayout.AutoSized(DropDownWithFonts()));
+			
+			// TODO: get this working on Gtk as it is unusably slow and WinForms is a wee slow.
+			if (!Platform.IsGtk)
+			{
+			layout.AddRow("LotsOfItems", TableLayout.AutoSized(LotsOfItems()));
+			}
 
 			layout.Add(null, null, true);
 
@@ -124,12 +128,42 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		DropDown Disabled()
+		Control DropDownWithFonts()
 		{
-			var control = Items();
-			control.Enabled = false;
-			return control;
+			var fontCache = new Dictionary<FontFamily, Font>();
+			var dropDown = new DropDown();
+			dropDown.DataStore = Fonts.AvailableFontFamilies.OrderBy(r => r.LocalizedName).ToList();
+			dropDown.ItemTextBinding = Binding.Property((FontFamily f) => f.LocalizedName);
+			dropDown.FormatItem += (sender, e) =>
+			{
+				if (e.Item is FontFamily family)
+				{
+					if (!fontCache.TryGetValue(family, out var font))
+					{
+						if (Platform.IsGtk && !EtoEnvironment.Platform.IsLinux)
+						{
+							// gtksharp has issues getting font faces on !linux
+							font = new Font(family, e.Font?.Size ?? SystemFonts.Default().Size);
+						}
+						else
+						{
+							var typeface = family.Typefaces.FirstOrDefault();
+							if (typeface != null && !typeface.IsSymbol && typeface.HasCharacterRange(32, 126))
+							{
+								font = new Font(family, e.Font?.Size ?? SystemFonts.Default().Size);
+							}
+							else
+								font = SystemFonts.Default();
+						}
+						fontCache[family] = font;
+					}
+					e.Font = font;
+				}
+			};
+
+			return dropDown;
 		}
+
 
 		DropDown SetInitialValue()
 		{
@@ -141,8 +175,17 @@ namespace Eto.Test.Sections.Controls
 		Control EnumCombo()
 		{
 			var control = new EnumDropDown<Keys>();
+			control.Width = 100;
 			LogEvents(control);
 			control.SelectedKey = ((int)Keys.E).ToString();
+			return control;
+		}
+
+		Control LotsOfItems()
+		{
+			var control = new DropDown();
+			LogEvents(control);
+			control.DataStore = Enumerable.Range(0, 5000).Select(r => $"Item {r}").ToList();
 			return control;
 		}
 

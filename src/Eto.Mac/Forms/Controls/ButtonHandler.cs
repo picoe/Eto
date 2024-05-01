@@ -1,39 +1,5 @@
 //#define BUTTON_DEBUG
 
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ButtonHandler : ButtonHandler<Button, Button.ICallback>, Button.IHandler
@@ -48,6 +14,8 @@ namespace Eto.Mac.Forms.Controls
 		protected override NSButtonType DefaultButtonType => NSButtonType.MomentaryPushIn;
 
 		protected override Size DefaultMinimumSize => new Size(MinimumWidth, originalSize.Height);
+		
+		public static Size DefaultButtonSize => originalSize;
 
 		static ButtonHandler()
 		{
@@ -57,7 +25,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	public class EtoButtonCell : NSButtonCell
+	public class EtoButtonCell : NSButtonCell, IColorizeCell
 	{
 		ColorizeView colorize;
 		public Color? Color
@@ -68,6 +36,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
 		{
+			if (!NSGraphicsContext.IsCurrentContextDrawingToScreen)
+				return;
 			colorize?.Begin(frame, controlView);
 			base.DrawBezelWithFrame(frame, controlView);
 			colorize?.End();
@@ -86,7 +56,7 @@ namespace Eto.Mac.Forms.Controls
 	public interface IButtonHandler
 	{
 		bool SetBezel(Size size);
-		bool AutoSize { get; }
+		bool IsAutoSized { get; }
 		Size MinimumSize { get; }
 		int DisableSetBezel { get; set; }
 		void TriggerSizeChanged();
@@ -113,7 +83,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			h.DisableSetBezel++;
 			base.SizeToFit();
-			if (h.AutoSize)
+			if (h.IsAutoSized)
 			{
 				var size = Frame.Size;
 				var minSize = h.MinimumSize;
@@ -205,19 +175,13 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override Color BackgroundColor
+		protected override Color DefaultBackgroundColor => ((EtoButtonCell)Control.Cell).Color ?? Control.Cell.BackgroundColor.ToEto();
+		
+		protected override void SetBackgroundColor(Color? color)
 		{
-			get
-			{
-				var cell = (EtoButtonCell)Control.Cell;
-				return cell.Color ?? Colors.Transparent;
-			}
-			set
-			{
-				var cell = (EtoButtonCell)Control.Cell;
-				cell.Color = value.A > 0 ? (Color?)value : null;
-				Control.SetNeedsDisplay();
-			}
+			var cell = (EtoButtonCell)Control.Cell;
+			cell.Color = color;
+			Control.SetNeedsDisplay();
 		}
 
 		public Image Image
@@ -389,6 +353,8 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public int DisableSetBezel { get; set; }
+
+		public bool IsAutoSized => UserPreferredSize.Width == -1 || UserPreferredSize.Height == -1;
 
 		public void TriggerSizeChanged()
 		{

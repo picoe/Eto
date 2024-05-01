@@ -1,19 +1,7 @@
-using System;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
-using swi = System.Windows.Input;
-using swm = System.Windows.Media;
-using sw = System.Windows;
 using sp = System.Printing;
-using swc = System.Windows.Controls;
-using swmi = System.Windows.Media.Imaging;
 using swd = System.Windows.Documents;
-using xwt = Xceed.Wpf.Toolkit;
 using Eto.Wpf.Drawing;
 using System.Windows.Interop;
-using System.IO;
-
 namespace Eto.Wpf
 {
 	public static class WpfConversions
@@ -31,11 +19,7 @@ namespace Eto.Wpf
 
 		public static swm.Brush ToWpfBrush(this Color value, swm.Brush brush = null)
 		{
-			var solidBrush = brush as swm.SolidColorBrush;
-			if (solidBrush == null || solidBrush.IsSealed)
-			{
-				solidBrush = new swm.SolidColorBrush();
-			}
+			var solidBrush = new swm.SolidColorBrush();
 			solidBrush.Color = value.ToWpf();
 			return solidBrush;
 		}
@@ -358,6 +342,8 @@ namespace Eto.Wpf
 
 		public static Bitmap ToEto(this swmi.BitmapSource bitmap)
 		{
+			if (bitmap == null)
+				return null;
 			return new Bitmap(new BitmapHandler(bitmap));
 		}
 
@@ -519,7 +505,10 @@ namespace Eto.Wpf
 				case sw.WindowStyle.None:
 					return WindowStyle.None;
 				case sw.WindowStyle.ThreeDBorderWindow:
+				case sw.WindowStyle.SingleBorderWindow:
 					return WindowStyle.Default;
+				case sw.WindowStyle.ToolWindow:
+					return WindowStyle.Utility;
 				default:
 					throw new NotSupportedException();
 			}
@@ -533,6 +522,8 @@ namespace Eto.Wpf
 					return sw.WindowStyle.None;
 				case WindowStyle.Default:
 					return sw.WindowStyle.ThreeDBorderWindow;
+				case WindowStyle.Utility:
+					return sw.WindowStyle.ToolWindow;
 				default:
 					throw new NotSupportedException();
 			}
@@ -847,13 +838,9 @@ namespace Eto.Wpf
 			}
 		}
 
-		public static Image ToEto(this System.Drawing.Icon icon)
+		public static Icon ToEto(this System.Drawing.Icon icon)
 		{
-			var imageSource = Imaging.CreateBitmapSourceFromHIcon(
-						icon.Handle,
-						sw.Int32Rect.Empty,
-						swmi.BitmapSizeOptions.FromEmptyOptions());
-			return imageSource.ToEto();
+			return new Icon(new IconHandler(icon));
 		}
 
 		public static Icon ToEtoIcon(this swm.ImageSource bitmap)
@@ -913,5 +900,53 @@ namespace Eto.Wpf
 		}
 
 		public static swi.Cursor ToWpf(this Cursor cursor) => cursor?.ControlObject as swi.Cursor;
+
+		public static bool HasAlpha(this swm.PixelFormat format)
+		{
+			return format == swm.PixelFormats.Bgra32
+				|| format == swm.PixelFormats.Pbgra32
+				|| format == swm.PixelFormats.Prgba128Float
+				|| format == swm.PixelFormats.Prgba64
+				|| format == swm.PixelFormats.Rgba64
+				|| format == swm.PixelFormats.Rgba128Float;
+		}
+		public static bool IsPremultiplied(this swm.PixelFormat format)
+		{
+			return format == swm.PixelFormats.Pbgra32
+				|| format == swm.PixelFormats.Prgba128Float
+				|| format == swm.PixelFormats.Prgba64;
+		}
+		public static swm.PixelFormat GetNonPremultipliedFormat(this swm.PixelFormat format)
+		{
+			if (format == swm.PixelFormats.Pbgra32)
+				return swm.PixelFormats.Bgra32;
+			if (format == swm.PixelFormats.Prgba128Float)
+				return swm.PixelFormats.Rgba128Float;
+			if (format == swm.PixelFormats.Prgba64)
+				return swm.PixelFormats.Rgba64;
+			return format;
+		}
+
+		public static Color? GetResourceColor(this sw.FrameworkElement cell, sw.ResourceKey key)
+		{
+			var res = cell.TryFindResource(key);
+			if (res is swm.SolidColorBrush brush)
+				return brush.ToEtoColor();
+			if (res is swm.Color color)
+				return color.ToEto();
+			return null;
+		}
+
+		public static Color? GetResourceColor(this sw.FrameworkElement cell, params sw.ResourceKey[] keys)
+		{
+			for (int i = 0; i < keys.Length; i++)
+			{
+				sw.ResourceKey key = keys[i];
+				var value = GetResourceColor(cell, key);
+				if (value != null)
+					return value;
+			}
+			return null;
+		}
 	}
 }

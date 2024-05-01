@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security;
+﻿using System.Security;
 using System.Security.Permissions;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Eto.Wpf.Forms
@@ -28,7 +22,7 @@ namespace Eto.Wpf.Forms
 		IntPtr cookie;
 		static ACTCTX enableThemingActivationContext;
 		static IntPtr hActCtx;
-		static bool contextCreationSucceeded = false;
+		static bool? contextCreationSucceeded;
 
 		public EnableThemingInScope(bool enable)
 		{
@@ -72,47 +66,27 @@ namespace Eto.Wpf.Forms
 		{
 			lock (typeof(EnableThemingInScope))
 			{
-				if (!contextCreationSucceeded)
+				if (contextCreationSucceeded != null)
+					return contextCreationSucceeded.Value;
+					
+				// Use a custom manifest from resources and write it to a temp file
+				var manifestLoc = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+				try
 				{
-					// Pull manifest from the .NET Framework install
-					// directory
-
-					string assemblyLoc = null;
-
-					FileIOPermission fiop = new FileIOPermission(PermissionState.None);
-					fiop.AllFiles = FileIOPermissionAccess.PathDiscovery;
-					fiop.Assert();
-					try
+					var stream = typeof(EnableThemingInScope).Assembly.GetManifestResourceStream("Eto.Wpf.XPThemes.manifest");
+					if (stream == null)
+						return false;
+						
+					using (var fs = File.Create(manifestLoc))
 					{
-						assemblyLoc = typeof(Object).Assembly.Location;
-					}
-					finally
-					{
-						CodeAccessPermission.RevertAssert();
+						stream.CopyTo(fs);
 					}
 
-					string manifestLoc = null;
-					string installDir = null;
-					if (assemblyLoc != null)
-					{
-						installDir = Path.GetDirectoryName(assemblyLoc);
-						const string manifestName = "XPThemes.manifest";
-						manifestLoc = Path.Combine(installDir, manifestName);
-					}
-
-					if (manifestLoc != null && installDir != null)
+					if (manifestLoc != null)
 					{
 						enableThemingActivationContext = new ACTCTX();
 						enableThemingActivationContext.cbSize = Marshal.SizeOf(typeof(ACTCTX));
 						enableThemingActivationContext.lpSource = manifestLoc;
-
-						// Set the lpAssemblyDirectory to the install
-						// directory to prevent Win32 Side by Side from
-						// looking for comctl32 in the application
-						// directory, which could cause a bogus dll to be
-						// placed there and open a security hole.
-						enableThemingActivationContext.lpAssemblyDirectory = installDir;
-						enableThemingActivationContext.dwFlags = ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID;
 
 						// Note this will fail gracefully if file specified
 						// by manifestLoc doesn't exist.
@@ -120,10 +94,13 @@ namespace Eto.Wpf.Forms
 						contextCreationSucceeded = (hActCtx != new IntPtr(-1));
 					}
 				}
+				finally
+				{
+					if (File.Exists(manifestLoc))
+						File.Delete(manifestLoc);
+				}
 
-				// If we return false, we'll try again on the next call into
-				// EnsureActivateContextCreated(), which is fine.
-				return contextCreationSucceeded;
+				return contextCreationSucceeded.Value;
 			}
 		}
 

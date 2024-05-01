@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class ComboBoxHandler : DropDownHandler<EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler

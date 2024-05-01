@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class SliderHandler : WindowsControl<swf.TrackBar, Slider, Slider.ICallback>, Slider.IHandler

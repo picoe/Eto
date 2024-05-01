@@ -1,12 +1,6 @@
-using Eto.Forms;
-using System.Collections.Generic;
 using Eto.Test.Sections.Controls;
 using Eto.Test.Sections.Drawing;
 using Eto.Test.Sections;
-using System.Linq;
-using System;
-using System.Reflection;
-
 namespace Eto.Test
 {
 	[System.AttributeUsage(System.AttributeTargets.Class, Inherited = false, AllowMultiple = true)]

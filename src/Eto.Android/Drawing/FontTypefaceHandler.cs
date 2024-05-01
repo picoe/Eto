@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -27,6 +21,31 @@ namespace Eto.Android.Drawing
 		public FontStyle FontStyle
 		{
 			get { return Control.ToEto(); }
+		}
+
+		public String LocalizedName => Name;
+
+		// TODO: Eto.Android.Drawing.FontTypeFaceHandler.IsSymbol not implemented
+		public Boolean IsSymbol => false;
+
+		// TODO: Eto.Android.Drawing.FontTypeFaceHandler.HasCharacterRanges not implemented
+		public Boolean HasCharacterRanges(IEnumerable<Range<Int32>> ranges) => false;
+
+		public FontFamily Family { get; private set; }
+
+		public void Create(FontFamily family)
+		{
+			Family = family;
+		}
+
+		public void Create(Stream stream)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Create(string fileName)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

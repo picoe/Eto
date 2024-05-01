@@ -1,10 +1,4 @@
 #if GTK3
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class TableLayoutHandler : GtkContainer<Gtk.Grid, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
@@ -51,6 +45,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				var widget = child.GetContainerWidget();
 				widget.ShowAll();
+				InvalidateMeasure();
 			}
 		}
 
@@ -137,6 +132,7 @@ namespace Eto.GtkSharp.Forms
 				SetExpand(widget, x, y);
 				Control.Attach(widget, x, y, 1, 1);
 				widget.ShowAll();
+				InvalidateMeasure();
 				return true;
 			}
 			else
@@ -150,11 +146,15 @@ namespace Eto.GtkSharp.Forms
 				SetExpand(blankWidget, x, y);
 				Control.Attach(blankWidget, x, y, 1, 1);
 			}
+			InvalidateMeasure();
 			return false;
 		}
 
 		public void Remove(Control child)
 		{
+			if (controls == null)
+				return;
+				
 			for (int y = 0; y < controls.GetLength(0); y++)
 			{
 				for (int x = 0; x < controls.GetLength(1); x++)
@@ -168,6 +168,8 @@ namespace Eto.GtkSharp.Forms
 						var blankWidget = blank[y, x] = new Gtk.VBox();
 						SetExpand(blankWidget, x, y);
 						Control.Attach(blankWidget, x, y, 1, 1);
+
+						InvalidateMeasure();
 						return;
 					}
 				}
@@ -190,6 +192,7 @@ namespace Eto.GtkSharp.Forms
 			}
 			widget.Hexpand = columnScale[x] || x == lastColumnScale;
 			widget.Vexpand = rowScale[y] || y == lastRowScale;
+			InvalidateMeasure();
 		}
 
 		public void SetRowScale(int row, bool scale)
@@ -202,6 +205,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				SetExpandRow(rowScale.Length - 1);
 			}
+			InvalidateMeasure();
 		}
 
 		public bool GetRowScale(int row) => rowScale[row];

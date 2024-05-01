@@ -1,43 +1,5 @@
-using System;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using Eto.Drawing;
 using Eto.Mac.Forms;
 using Eto.Shared.Drawing;
-using System.Collections.Generic;
-using Eto.Forms;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Drawing
 {
 	/// <summary>
@@ -47,8 +9,8 @@ namespace Eto.Mac.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BaseBitmapData
 	{
-		public BitmapDataHandler(Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base(bitmap, data, scanWidth, bitsPerPixel, controlObject)
+		public BitmapDataHandler(Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool isPremultiplied)
+			: base(bitmap, data, scanWidth, bitsPerPixel, controlObject, isPremultiplied)
 		{
 		}
 
@@ -64,12 +26,32 @@ namespace Eto.Mac.Drawing
 
 		public override int TranslateArgbToData(int argb)
 		{
-			return unchecked((int)(((uint)argb & 0xFF00FF00) | (((uint)argb & 0xFF) << 16) | (((uint)argb & 0xFF0000) >> 16)));
+			var a = (uint)(byte)(argb >> 24);
+			var r = (uint)(byte)(argb >> 16);
+			var g = (uint)(byte)(argb >> 8);
+			var b = (uint)(byte)(argb);
+			if (PremultipliedAlpha)
+			{
+				r = r * a / 255;
+				g = g * a / 255;
+				b = b * a / 255;
+			}
+			return unchecked((int)((a << 24) | (b << 16) | (g << 8) | (r)));
 		}
 
 		public override int TranslateDataToArgb(int bitmapData)
 		{
-			return unchecked((int)(((uint)bitmapData & 0xFF00FF00) | (((uint)bitmapData & 0xFF) << 16) | (((uint)bitmapData & 0xFF0000) >> 16)));
+			var a = (uint)(byte)(bitmapData >> 24);
+			var b = (uint)(byte)(bitmapData >> 16);
+			var g = (uint)(byte)(bitmapData >> 8);
+			var r = (uint)(byte)(bitmapData);
+			if (a > 0 && PremultipliedAlpha)
+			{
+				b = b * 255 / a;
+				g = g * 255 / a;
+				r = r * 255 / a;
+			}
+			return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
 		}
 
 		public override bool Flipped { get { return false; } }
@@ -93,8 +75,9 @@ namespace Eto.Mac.Drawing
 		public BitmapHandler(NSImage image)
 		{
 			Control = image;
-			rep = Control.BestRepresentationForDevice(null);
+			rep = GetBestRepresentation();
 			bmprep = rep as NSBitmapImageRep;
+			alpha = rep.HasAlpha;
 		}
 
 		public void Create(string fileName)
@@ -102,17 +85,19 @@ namespace Eto.Mac.Drawing
 			if (!File.Exists(fileName))
 				throw new FileNotFoundException("Icon not found", fileName);
 			Control = new NSImage(fileName);
-			rep = Control.BestRepresentationForDevice(null);
+			rep = GetBestRepresentation();
 			bmprep = rep as NSBitmapImageRep;
 			Control.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh);
+			alpha = rep.HasAlpha;
 		}
 
 		public void Create(Stream stream)
 		{
 			Control = new NSImage(NSData.FromStream(stream));
-			rep = Control.BestRepresentationForDevice(null);
+			rep = GetBestRepresentation();
 			bmprep = rep as NSBitmapImageRep;
 			Control.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh);
+			alpha = rep.HasAlpha;
 		}
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
@@ -233,24 +218,16 @@ namespace Eto.Mac.Drawing
 			datastream.Dispose();
 		}
 
-		public override Size Size
-		{
-			get
-			{
-				/*
-				NSImageRep rep = this.rep;
-				if (rep == null)
-					rep = Control.BestRepresentationForDevice (null);
-				if (rep != null)
-					return new Size(rep.PixelsWide, rep.PixelsHigh);
-				else
-				*/
-				return Control.Size.ToEtoSize();
-			}
-		}
+		public override Size Size => Control.Size.ToEtoSize();
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
+			if (Control.Template)
+			{
+				DrawTemplateImage(graphics, source, destination);
+				return;
+			}
+			
 			var sourceRect = new CGRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
 			var destRect = destination.ToNS();
 			if (alpha)
@@ -279,7 +256,15 @@ namespace Eto.Mac.Drawing
 			if (bmprep == null)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep?.GetType()));
 
-			return bmprep.ColorAt(x, y).ToEto(false);
+			// don't convert colorspace here otherwise we get incorrect data.. why?
+			var nscolor = bmprep.ColorAt(x, y);
+			if (nscolor.ComponentCount >= 3)
+			{
+				nscolor.GetRgba(out var red, out var green, out var blue, out var alpha);
+				return new Color(nscolor, (float)red, (float)green, (float)blue, (float)alpha);
+			}
+			
+			return nscolor.ToEto();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -298,33 +283,88 @@ namespace Eto.Mac.Drawing
 		public BitmapData Lock()
 		{
 			EnsureRep();
-			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control);
+			if (bmprep == null)
+				return null;
+			
+			bool isPremultiplied = alpha && !bmprep.BitmapFormat.HasFlag(NSBitmapFormat.AlphaNonpremultiplied);
+			return new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control, isPremultiplied);
 		}
 
 		public void Unlock(BitmapData bitmapData)
 		{
 		}
 
+		public NSBitmapImageRep GetBitmapImageRep()
+		{
+			EnsureRep();
+			return bmprep;
+		}
+		
+		NSImageRep GetBestRepresentation()
+		{
+			// Control.BestRepresentationForDevice() is deprecated
+			return Control.BestRepresentation(new CGRect(CGPoint.Empty, Control.Size), null, null);
+		}
+
 
 		protected void EnsureRep()
 		{
 			if (rep == null)
-				rep = Control.BestRepresentationForDevice(null);
-			if (bmprep == null)
+				rep = GetBestRepresentation();
+
+			// on Big Sur, rep is usually going to be a proxy, so let's find the concrete NSBitmapImageRep class the slow way..
+
+			if (bmprep != null)
+				return;
+
+			if (rep is IconFrameHandler.LazyImageRep lazyRep)
 			{
-				var lazyRep = rep as IconFrameHandler.LazyImageRep;
-				if (lazyRep != null)
-					bmprep = lazyRep.Rep;
-				else
+				bmprep = lazyRep.Rep;
+			}
+			else
+			{
+				bmprep = rep as NSBitmapImageRep ?? GetBestRepresentation() as NSBitmapImageRep;
+			}
+
+			if (bmprep != null)
+				return;
+
+			// go through concrete representations as we might have a proxy (Big Sur)
+			// this is fixed with MonoMac, but not MacOS
+			var representations = Control.Representations();
+			for (int i = 0; i < representations.Length; i++)
+			{
+				NSImageRep rep = representations[i];
+				if (rep is NSBitmapImageRep brep)
 				{
-					bmprep = rep as NSBitmapImageRep;
-					if (bmprep == null)
-					{
-						rep = Control.BestRepresentationForDevice(null);
-						bmprep = rep as NSBitmapImageRep;
-					}
+					bmprep = brep;
+					return;
 				}
-			}				
+			}
+
+			// create a new bitmap rep and copy the contents
+			var size = Size;
+			int numComponents = rep.HasAlpha ? 4 : 3;
+			int bitsPerComponent = 8;
+			int bitsPerPixel = numComponents * bitsPerComponent;
+			int bytesPerPixel = bitsPerPixel / 8;
+			int bytesPerRow = bytesPerPixel * size.Width;
+			bmprep = new NSBitmapImageRep(IntPtr.Zero, size.Width, size.Height, bitsPerComponent, numComponents, rep.HasAlpha, false, rep.ColorSpaceName, bytesPerRow, bitsPerPixel);
+			var graphicsContext = NSGraphicsContext.FromBitmap(bmprep);
+			NSGraphicsContext.GlobalSaveGraphicsState();
+			NSGraphicsContext.CurrentContext = graphicsContext;
+			Control.Draw(CGPoint.Empty, new CGRect(CGPoint.Empty, size.ToNS()), NSCompositingOperation.Copy, 1);
+			NSGraphicsContext.GlobalRestoreGraphicsState();
+			
+			// remove all existing representations
+			for (int i = 0; i < representations.Length; i++)
+			{
+				NSImageRep rep = representations[i];
+				Control.RemoveRepresentation(rep);
+			}
+
+			// add the new one back
+			Control.AddRepresentation(bmprep);
 		}
 	}
 }

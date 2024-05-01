@@ -1,20 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
-
 namespace Eto.Mac.Forms.ToolBar
 {
 	public class RadioToolItemHandler : ToolItemHandler<NSToolbarItem, RadioToolItem>, RadioToolItem.IHandler
@@ -49,6 +32,7 @@ namespace Eto.Mac.Forms.ToolBar
 		
 		public override void InvokeButton()
 		{
+			var wasChecked = isChecked;
 			if (toolbarHandler != null && toolbarHandler.Control != null)
 			{
 				isChecked = toolbarHandler.Control.SelectedItemIdentifier == Identifier;
@@ -62,7 +46,8 @@ namespace Eto.Mac.Forms.ToolBar
 				}
 			}
 			Widget.OnClick(EventArgs.Empty);
-			Widget.OnCheckedChanged(EventArgs.Empty);
+			if (wasChecked != isChecked)
+				Widget.OnCheckedChanged(EventArgs.Empty);
 		}
 	}
 }

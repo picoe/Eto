@@ -8,12 +8,7 @@
 
 namespace System.Windows.Forms
 {
-	using System;
-	using System.ComponentModel;
 	using System.Drawing;
-	using System.IO;
-	using System.Runtime.InteropServices;
-	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 	using DragDropLib;
 	using ComIDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
@@ -217,24 +212,32 @@ namespace System.Windows.Forms
 			{
 				formatETC.tymed = tymed;
 
-				// Set data on an empty DataObject instance
-				DataObject conv = new DataObject();
-				conv.SetData(format, true, data);
-
-				// Now retrieve the data, using the COM interface.
-				// This will perform a managed to unmanaged conversion for us.
-				ComTypes.STGMEDIUM medium;
-				((ComTypes.IDataObject)conv).GetData(ref formatETC, out medium);
-				try
+				if (data is byte[] bytes)
 				{
-					// Now set the data on our data object
-					((ComTypes.IDataObject)dataObject).SetData(ref formatETC, ref medium, true);
+					// don't convert byte array as it adds extra data
+					ComTypes.ComDataObjectExtensions.SetByteData((ComTypes.IDataObject)dataObject, format, bytes);
 				}
-				catch
+				else
 				{
-					// On exceptions, release the medium
-					ReleaseStgMedium(ref medium);
-					throw;
+					// Set data on an empty DataObject instance
+					DataObject conv = new DataObject();
+					conv.SetData(format, true, data);
+
+					// Now retrieve the data, using the COM interface.
+					// This will perform a managed to unmanaged conversion for us.
+					ComTypes.STGMEDIUM medium;
+					((ComTypes.IDataObject)conv).GetData(ref formatETC, out medium);
+					try
+					{
+						// Now set the data on our data object
+						((ComTypes.IDataObject)dataObject).SetData(ref formatETC, ref medium, true);
+					}
+					catch
+					{
+						// On exceptions, release the medium
+						ReleaseStgMedium(ref medium);
+						throw;
+					}
 				}
 			}
 			else
@@ -325,10 +328,7 @@ namespace System.Windows.Forms
 
 namespace DragDropLib
 {
-	using System;
-	using System.Collections.Generic;
 	using System.Drawing;
-	using System.Text;
 
 	static class SwfDragDropLibExtensions
 	{
@@ -353,8 +353,6 @@ namespace DragDropLib
 
 namespace System.Windows.Forms
 {
-	using System;
-	using System.Collections.Generic;
 	using System.Drawing;
 	using System.Windows.Forms;
 	using DragDropLib;
@@ -520,12 +518,8 @@ namespace System.Windows.Forms
 
 namespace System.Windows.Forms
 {
-	using System;
-	using System.Collections.Generic;
 	using System.Drawing;
-	using System.IO;
-	using System.Runtime.InteropServices;
-	using DragDropLib;
+		using DragDropLib;
 	using ComTypes = System.Runtime.InteropServices.ComTypes;
 
 	/// <summary>

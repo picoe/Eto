@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(Splitter))]
@@ -130,17 +126,19 @@ namespace Eto.Test.Sections.Controls
 				{
 					using (Context)
 					{
+						var splitter = new Splitter
+						{
+							Panel1 = new TreeGridView { Size = new Size(100, 100) },
+							Panel2 = new GridView(),
+							Orientation = Orientation.Horizontal,
+							FixedPanel = SplitterFixedPanel.Panel1,
+							Position = 100,
+						};
+						LogEvents(splitter);
 						var newTabpage = new TabPage
 						{
 							Text = "test",
-							Content = new Splitter
-							{
-								Panel1 = new TreeGridView { Size = new Size(100, 100) },
-								Panel2 = new GridView(),
-								Orientation = Orientation.Horizontal,
-								FixedPanel = SplitterFixedPanel.Panel1,
-								Position = 100,
-							}
+							Content = splitter
 						};
 						tabcontrol.Pages.Add(newTabpage);
 						tabcontrol.SelectedPage = newTabpage;
@@ -216,7 +214,7 @@ namespace Eto.Test.Sections.Controls
 
 			public SplitLayout(Panel[] panels = null)
 			{
-				Panels = panels ?? new []
+				Panels = panels ?? new[]
 				{
 					new Panel(), new Panel(), new Panel(), new Panel(), new Panel(), new Panel()
 				};
@@ -248,6 +246,7 @@ namespace Eto.Test.Sections.Controls
 						Orientation = Orientation.Vertical,
 						Position = 200
 					};
+					LogEvents(p0_1);
 					// absolute position with height and second panel fixed (issue #309)
 					var p2_3 = new Splitter
 					{
@@ -258,6 +257,7 @@ namespace Eto.Test.Sections.Controls
 						//Position = 0,
 						Height = 205 // ~ RelativePosition=200
 					};
+					LogEvents(p2_3);
 					// ratio mode (60%)
 					var p4_5 = new Splitter
 					{
@@ -267,6 +267,7 @@ namespace Eto.Test.Sections.Controls
 						FixedPanel = SplitterFixedPanel.None,
 						RelativePosition = .6
 					};
+					LogEvents(p4_5);
 					// auto-size test
 					var p01_23 = new Splitter
 					{
@@ -274,6 +275,7 @@ namespace Eto.Test.Sections.Controls
 						Panel2 = p2_3,
 						Orientation = Orientation.Horizontal,
 					};
+					LogEvents(p01_23);
 					// relative position with second panel fixed
 					var p0123_45 = new Splitter
 					{
@@ -283,6 +285,7 @@ namespace Eto.Test.Sections.Controls
 						FixedPanel = SplitterFixedPanel.Panel2,
 						RelativePosition = 150
 					};
+					LogEvents(p0123_45);
 					return Root = p0123_45;
 				}
 			}
@@ -317,19 +320,23 @@ namespace Eto.Test.Sections.Controls
 					Panel2 = rightBottom,
 					Position = 200,
 				};
+				LogEvents(rightPane);
+
+				var mainPane = new Splitter
+				{
+					Orientation = Orientation.Horizontal,
+					FixedPanel = SplitterFixedPanel.Panel1,
+					BackgroundColor = Colors.Gray,
+					Position = 200,
+					Panel1 = leftPane,
+					Panel2 = rightPane
+				};
+				LogEvents(mainPane);
 
 				var form = new Form
 				{
 					Padding = new Padding(5),
-					Content = new Splitter
-					{
-						Orientation = Orientation.Horizontal,
-						FixedPanel = SplitterFixedPanel.Panel1,
-						BackgroundColor = Colors.Gray,
-						Position = 200,
-						Panel1 = leftPane,
-						Panel2 = rightPane
-					}
+					Content = mainPane
 				};
 				if (setSize)
 					form.Size = new Size(600, 400);
@@ -356,11 +363,12 @@ namespace Eto.Test.Sections.Controls
 						size.Height -= split.SplitterWidth;
 					if (size.Width <= 0 || size.Height <= 0)
 						return;
-					app.AsyncInvoke(() => {
-					area.Text = string.Format(
-						"W:{0} ({1}%)\r\nH:{2} ({3}%)",
-						area.Width, (area.Width * 200 + size.Width) / (size.Width + size.Width),
-						area.Height, (area.Height * 200 + size.Height) / (size.Height + size.Height));
+					app.AsyncInvoke(() =>
+					{
+						area.Text = string.Format(
+							"W:{0} ({1}%)\r\nH:{2} ({3}%)",
+							area.Width, (area.Width * 200 + size.Width) / (size.Width + size.Width),
+							area.Height, (area.Height * 200 + size.Height) / (size.Height + size.Height));
 					});
 				};
 				return area;
@@ -383,23 +391,27 @@ namespace Eto.Test.Sections.Controls
 					{
 						Position = 80
 					};
+					LogEvents(main);
 					var middle = new Splitter
 					{
 						FixedPanel = SplitterFixedPanel.Panel2,
 						Width = 200,
 						Position = 120 - main.SplitterWidth
 					};
+					LogEvents(middle);
 					var ltop = new Splitter
 					{
 						Orientation = Orientation.Vertical,
 						Position = 80
 					};
+					LogEvents(ltop);
 					var lbottom = new Splitter
 					{
 						Orientation = Orientation.Vertical,
 						FixedPanel = SplitterFixedPanel.Panel2,
 						RelativePosition = 80
 					};
+					LogEvents(lbottom);
 					var right = new Splitter
 					{
 						Orientation = Orientation.Vertical,
@@ -407,11 +419,13 @@ namespace Eto.Test.Sections.Controls
 						Height = 300 + main.SplitterWidth,
 						Position = 100 // ~33%
 					};
+					LogEvents(right);
 					var center = new Splitter
 					{
 						FixedPanel = SplitterFixedPanel.None,
 						RelativePosition = .4
 					};
+					LogEvents(center);
 					main.Panel1 = ltop;
 					main.Panel2 = middle;
 					ltop.Panel1 = makebox(ltop);
@@ -449,6 +463,30 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+		enum PanelVisible
+		{
+			Visible,
+			Invisible,
+			Null
+		}
+
+		// should support all transitions
+		// Visible > Invisible
+		// Invisible > Null
+		// Null > Visible
+		// Visible > Null
+		// Null > Invisible
+		// Invisible > Visible
+		static PanelVisible[] modes = {
+			PanelVisible.Visible,
+			PanelVisible.Invisible,
+			PanelVisible.Null,
+			PanelVisible.Visible,
+			PanelVisible.Null,
+			PanelVisible.Invisible,
+		};
+
+
 		Button TestHiding()
 		{
 			var control = new Button { Text = "Test Hiding" };
@@ -466,6 +504,7 @@ namespace Eto.Test.Sections.Controls
 						Panel1 = new Panel { Padding = 20, BackgroundColor = Colors.Red, Content = new Panel { BackgroundColor = Colors.White, Size = new Size(200, 400) } },
 						Panel2 = new Panel { Padding = 20, BackgroundColor = Colors.Blue, Content = new Panel { BackgroundColor = Colors.White, Size = new Size(200, 400) } }
 					};
+					LogEvents(splitter);
 
 					var showPanel1 = new CheckBox { Text = "Panel1.Visible" };
 					showPanel1.CheckedBinding.Bind(splitter.Panel1, r => r.Visible);
@@ -479,40 +518,41 @@ namespace Eto.Test.Sections.Controls
 					var orientation = new EnumDropDown<Orientation>();
 					orientation.SelectedValueBinding.Bind(splitter, r => r.Orientation);
 
+
 					int count = 0;
+					Control CreatePanel(string desc, ref int mode, Color color)
+					{
+						mode++;
+						if (mode >= modes.Length)
+							mode = 0;
+						var vis = modes[mode];
+						switch (vis)
+						{
+							case PanelVisible.Visible:
+							case PanelVisible.Invisible:
+								bool isVisible = vis == PanelVisible.Visible;
+								Log.Write(this, $"Replacing {desc} to a control with Visible = {isVisible} (mode {mode})");
+								return new Panel { Padding = 20, BackgroundColor = color, Visible = isVisible, Content = new Panel { BackgroundColor = Colors.White, Content = $"Count: {count++}" } };
+							default:
+								Log.Write(this, $"Replacing {desc} with null (mode {mode})");
+								return null;
+						}
+					}
+					int panel1Mode = 0;
+					int panel2Mode = 0;
 					var replacePanel1Button = new Button { Text = "Replace Panel1" };
 					replacePanel1Button.Click += (s, ee) =>
 					{
-						bool isVisible = rnd.Next(2) == 1;
 						showPanel1.Unbind();
-						if (isVisible || rnd.Next(2) == 1)
-						{
-							Log.Write(this, $"Replacing Panel1 to a control with Visible = {isVisible}");
-							splitter.Panel1 = new Panel { Padding = 20, BackgroundColor = Colors.Red, Visible = isVisible, Content = new Panel { BackgroundColor = Colors.White, Content = $"Count: {count++}" } };
-						}
-						else
-						{
-							Log.Write(this, "Replacing Panel1 with null");
-							splitter.Panel1 = null;
-						}
+						splitter.Panel1 = CreatePanel("Panel1", ref panel1Mode, Colors.Red);
 						showPanel1.CheckedBinding.Bind(splitter.Panel1, r => r.Visible);
 					};
 
 					var replacePanel2Button = new Button { Text = "Replace Panel2" };
 					replacePanel2Button.Click += (s, ee) =>
 					{
-						bool isVisible = rnd.Next(2) == 1;
 						showPanel2.Unbind();
-						if (isVisible || rnd.Next(2) == 1)
-						{
-							Log.Write(this, $"Replacing Panel2 to a control with Visible = {isVisible}");
-							splitter.Panel2 = new Panel { Padding = 20, BackgroundColor = Colors.Blue, Visible = isVisible, Content = new Panel { BackgroundColor = Colors.White, Content = $"Count: {count++}" } };
-						}
-						else
-						{
-							Log.Write(this, "Replacing Panel2 with null");
-							splitter.Panel2 = null;
-						}
+						splitter.Panel2 = CreatePanel("Panel2", ref panel2Mode, Colors.Blue);
 						showPanel2.CheckedBinding.Bind(splitter.Panel2, r => r.Visible);
 					};
 
@@ -520,7 +560,8 @@ namespace Eto.Test.Sections.Controls
 					var splitPanel = new Panel { Content = splitter };
 
 					var showSplitter = new CheckBox { Text = "Show Splitter", Checked = true };
-					showSplitter.CheckedChanged += (sender2, e2) => {
+					showSplitter.CheckedChanged += (sender2, e2) =>
+					{
 						if (showSplitter.Checked == true)
 							splitPanel.Content = splitter;
 						else
@@ -529,7 +570,7 @@ namespace Eto.Test.Sections.Controls
 
 					var buttons1 = TableLayout.Horizontal(null, showSplitter, showPanel1, showPanel2, fixedPanel, orientation, null);
 					var buttons2 = TableLayout.Horizontal(null, replacePanel1Button, replacePanel2Button, null);
-				
+
 					form.Content = new StackLayout
 					{
 						HorizontalContentAlignment = HorizontalAlignment.Stretch,
@@ -545,6 +586,14 @@ namespace Eto.Test.Sections.Controls
 			};
 
 			return control;
+		}
+
+		static void LogEvents(Splitter splitter)
+		{
+			splitter.PositionChanged += (sender, e) => Log.Write(sender, $"PositionChanged: {splitter.Position}");
+			splitter.PositionChanging += (sender, e) => Log.Write(sender, $"PositionChanging: New: {e.NewPosition}, Current: {splitter.Position}");
+			splitter.PositionChangeStarted += (sender, e) => Log.Write(sender, $"PositionChangeStarted");
+			splitter.PositionChangeCompleted += (sender, e) => Log.Write(sender, $"PositionChangeCompleted");
 		}
 	}
 }

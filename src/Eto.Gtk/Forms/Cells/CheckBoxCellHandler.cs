@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Cells
 {
 	public class CheckBoxCellHandler : SingleCellHandler<Gtk.CellRendererToggle, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
@@ -21,8 +18,17 @@ namespace Eto.GtkSharp.Forms.Cells
 				get { return row; }
 				set {
 					row = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
+			}
+
+			object item;
+			[GLib.Property("item")]
+			public object Item
+			{
+				get { return item; }
+				set {
+					item = value;
+					Handler.Format(this, item, Row);
 				}
 			}
 
@@ -65,12 +71,12 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public void HandleToggled(object o, Gtk.ToggledArgs args)
 			{
-				Handler.SetValue(args.Path, !Handler.Control.Active);
+				Handler?.SetValue(args.Path, !Handler.Control.Active);
 			}
 
 			public void HandleEndCellEditing(object o, Gtk.ToggledArgs args)
 			{
-				Handler.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+				Handler?.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
 

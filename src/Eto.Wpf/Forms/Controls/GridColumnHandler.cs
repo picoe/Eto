@@ -1,22 +1,25 @@
 using Eto.Wpf.Forms.Cells;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using Eto.Forms;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public interface IGridHandler
 	{
+		EtoDataGrid Control { get; }
 		Grid Widget { get; }
 		bool Loaded { get; }
-		sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent);
-		void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem);
+		bool DisableAutoScrollToSelection { get; }
+		sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent, swc.DataGridCell cell);
+		void FormatCell(IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem);
 		void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem);
+		void OnColumnWidthChanged(GridColumnHandler gridColumnHandler);
 	}
 
 	public interface IGridColumnHandler : GridColumn.IHandler
 	{
 		swc.DataGridColumn Control { get; }
+
+		void OnLoad();
+
+		void SetHeaderStyle();
 	}
 
 
@@ -24,7 +27,7 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		Cell dataCell;
 
-		public IGridHandler GridHandler { get; set; }
+		public IGridHandler GridHandler { get; private set; }
 
 		protected override void Initialize()
 		{
@@ -34,10 +37,15 @@ namespace Eto.Wpf.Forms.Controls
 			Sortable = false;
 		}
 
+		private void HandleWidthChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			GridHandler.OnColumnWidthChanged(this);
+		}
+
 		public string HeaderText
 		{
 			get { return Control.Header as string; }
-			set { Control.Header = value;  }
+			set { Control.Header = value; }
 		}
 
 		public bool Resizable
@@ -52,27 +60,90 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.CanUserSort = value; }
 		}
 
+		static readonly object AutoSize_Key = new object();
+		static readonly object Expand_Key = new object();
+		static readonly object Width_Key = new object();
+
+		bool IsGridLoaded => GridHandler?.Loaded == true;
+
 		public bool AutoSize
 		{
-			get { return Control.Width.IsAuto; }
-			set { Control.Width = value ? new swc.DataGridLength(1, swc.DataGridLengthUnitType.Auto) : new swc.DataGridLength(100); }
+			get
+			{
+				if (IsGridLoaded)
+					return Expand ? Widget.Properties.Get<bool>(AutoSize_Key, true) : Control.Width.IsAuto;
+				return Widget.Properties.Get<bool>(AutoSize_Key, true);
+			}
+			set
+			{
+				if (value && IsGridLoaded && !Expand)
+				{
+					Control.Width = new swc.DataGridLength(1, swc.DataGridLengthUnitType.Auto);
+					Widget.Properties.Set(AutoSize_Key, value, true);
+				}
+				else if (Widget.Properties.TrySet(AutoSize_Key, value, true))
+					SetWidth();
+			}
+		}
+
+		public bool Expand
+		{
+			get => Widget.Properties.Get<bool>(Expand_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(Expand_Key, value))
+					SetWidth();
+			}
 		}
 
 		public int Width
 		{
 			get
 			{
-				if (GridHandler?.Loaded == true)
+				if (IsGridLoaded)
 					return (int)Control.ActualWidth;
-				return (int)Control.Width.Value;
+				return Widget.Properties.Get(Width_Key, -1);
 			}
 			set
 			{
-				Control.Width = new swc.DataGridLength (value);
+				if (value == -1)
+				{
+					Widget.Properties.Set(Width_Key, value, -1);
+					AutoSize = true;
+					return;
+				}
+
+				Widget.Properties.Set(AutoSize_Key, false, true);
+				if (IsGridLoaded)
+				{
+					Control.Width = new swc.DataGridLength(value);
+					Widget.Properties.Set(Width_Key, value, -1);
+				}
+				else if (Widget.Properties.TrySet(Width_Key, value, -1))
+					SetWidth();
 			}
 		}
 
-		void CopyValues (Cell oldCell)
+		void SetWidth()
+		{
+			if (Expand)
+			{
+				if (AutoSize && !IsGridLoaded)
+					Control.Width = new swc.DataGridLength(1.0, swc.DataGridLengthUnitType.Auto);
+				else
+					Control.Width = new swc.DataGridLength(1.0, swc.DataGridLengthUnitType.Star);
+			}
+			else if (AutoSize)
+			{
+				Control.Width = new swc.DataGridLength(1.0, swc.DataGridLengthUnitType.Auto);
+			}
+			else
+			{
+				Control.Width = Width;
+			}
+		}
+
+		void CopyValues(Cell oldCell)
 		{
 			if (oldCell == null) return;
 			var handler = (ICellHandler)oldCell.Handler;
@@ -97,7 +168,7 @@ namespace Eto.Wpf.Forms.Controls
 				var cellHandler = (ICellHandler)dataCell.Handler;
 				cellHandler.ContainerHandler = this;
 				Control = cellHandler.Control;
-				CopyValues (oldCell);
+				CopyValues(oldCell);
 			}
 		}
 
@@ -113,25 +184,121 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Hidden; }
 		}
 
-		public void Setup (IGridHandler gridHandler)
+		public void Setup(IGridHandler gridHandler)
 		{
 			GridHandler = gridHandler;
+			SetHeaderStyle();
 		}
 
-		public sw.FrameworkElement SetupCell (ICellHandler cell, sw.FrameworkElement defaultContent)
+		public sw.FrameworkElement SetupCell(ICellHandler handler, sw.FrameworkElement defaultContent, swc.DataGridCell cell)
 		{
-			return GridHandler != null ? GridHandler.SetupCell(this, defaultContent) : defaultContent;
+			return GridHandler != null ? GridHandler.SetupCell(this, defaultContent, cell) : defaultContent;
 		}
 
-		public void FormatCell (ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
+		public void FormatCell(ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
 		{
+			if (Widget.CellToolTipBinding != null)
+			{
+				element.ToolTip = Widget.CellToolTipBinding.GetValue(dataItem);
+			}
 			if (GridHandler != null)
-				GridHandler.FormatCell (this, cell, element, gridcell, dataItem);
+				GridHandler.FormatCell(this, cell, element, gridcell, dataItem);
+		}
+
+		internal ICellHandler DataCellHandler => DataCell?.Handler as ICellHandler;
+
+		internal void OnMouseDown(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+			DataCellHandler?.OnMouseDown(args, hitTestResult, cell);
+		}
+
+		internal void OnMouseUp(GridCellMouseEventArgs args, sw.DependencyObject hitTestResult, swc.DataGridCell cell)
+		{
+			DataCellHandler?.OnMouseUp(args, hitTestResult, cell);
 		}
 
 		swc.DataGridColumn IGridColumnHandler.Control => Control;
 
 		public Grid Grid => GridHandler?.Widget;
+
+		void IGridColumnHandler.OnLoad()
+		{
+			if (Expand && AutoSize)
+				SetWidth();
+		}
+
+		static readonly object HeaderTextAlignment_Key = new object();
+
+		public TextAlignment HeaderTextAlignment
+		{
+			get => Widget.Properties.Get<TextAlignment>(HeaderTextAlignment_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(HeaderTextAlignment_Key, value))
+					SetHeaderStyle();
+			}
+		}
+
+		public virtual void SetHeaderStyle()
+		{
+			if (GridHandler == null)
+				return;
+
+			var alignment = HeaderTextAlignment;
+			var toolTip = HeaderToolTip;
+			bool needsStyle = alignment != TextAlignment.Left || !string.IsNullOrEmpty(toolTip);
+
+			if (needsStyle)
+			{
+				var style = new sw.Style();
+				style.BasedOn = GridHandler.Control.ColumnHeaderStyle;
+				style.TargetType = typeof(swc.Primitives.DataGridColumnHeader);
+				if (alignment != TextAlignment.Left)
+					style.Setters.Add(new sw.Setter(swc.Primitives.DataGridColumnHeader.HorizontalContentAlignmentProperty, alignment.ToWpf()));
+				if (!string.IsNullOrEmpty(toolTip))
+					style.Setters.Add(new sw.Setter(swc.ToolTipService.ToolTipProperty, toolTip));
+				Control.HeaderStyle = style;
+			}
+			else
+			{
+				Control.ClearValue(swc.DataGridColumn.HeaderStyleProperty);
+			}
+		}
+
+		public int MinWidth { get => (int)Control.MinWidth; set => Control.MinWidth = value; }
+		public int MaxWidth
+		{
+			get => double.IsInfinity(Control.MaxWidth) ? int.MaxValue : (int)Control.MaxWidth;
+			set => Control.MaxWidth = value == int.MaxValue ? double.PositiveInfinity : value;
+		}
+
+		public int DisplayIndex
+		{
+			get => Control.DisplayIndex;
+			set => Control.DisplayIndex = value;
+		}
+
+
+		static readonly object HeaderToolTip_Key = new object();
+
+		public string HeaderToolTip
+		{
+			get => Widget.Properties.Get<string>(HeaderToolTip_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(HeaderToolTip_Key, value))
+					SetHeaderStyle();
+			}
+		}
+
+
+		static readonly object CellToolTipBinding_Key = new object();
+		
+		public IIndirectBinding<string> CellToolTipBinding
+		{
+			get => Widget.Properties.Get<IIndirectBinding<string>>(CellToolTipBinding_Key);
+			set => Widget.Properties.Set(CellToolTipBinding_Key, value);
+		}
 
 		public void CellEdited(ICellHandler cell, sw.FrameworkElement element)
 		{

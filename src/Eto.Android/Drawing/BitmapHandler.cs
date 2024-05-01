@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -11,8 +5,6 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
-using System.IO;
-
 namespace Eto.Android.Drawing
 {
 	/// <summary>
@@ -22,7 +14,7 @@ namespace Eto.Android.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IAndroidImage
 	{
-		ag.Bitmap GetImageWithSize(int? size);
+		ag.Bitmap GetImageWithDensity(int? size);
 
 		void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination);
 
@@ -51,11 +43,15 @@ namespace Eto.Android.Drawing
 		public void Create(string fileName)
 		{
 			Control = ag.BitmapFactory.DecodeFile(fileName);
+			if (Control == null)
+				throw new Exception("Couldn't read image file");
 		}
 
 		public void Create(System.IO.Stream stream)
 		{
 			Control = ag.BitmapFactory.DecodeStream(stream);
+			if (Control == null)
+				throw new Exception("Couldn't read image stream");
 		}
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
@@ -63,9 +59,9 @@ namespace Eto.Android.Drawing
 			ag.Bitmap.Config config = ag.Bitmap.Config.Argb8888;
 			switch(pixelFormat)
 			{
-				/*case PixelFormat.Format24bppRgb:
+				case PixelFormat.Format24bppRgb:
 					config = ag.Bitmap.Config.Argb8888;
-					break;*/
+					break;
 				case PixelFormat.Format32bppRgb:
 				case PixelFormat.Format32bppRgba:
 					config = ag.Bitmap.Config.Argb8888;
@@ -139,8 +135,11 @@ namespace Eto.Android.Drawing
 			throw new NotImplementedException();
 		}
 
-		public ag.Bitmap GetImageWithSize(int? size)
+		public ag.Bitmap GetImageWithDensity(int? density)
 		{
+			if(density.HasValue)
+				Control.Density = density.Value;
+
 			return Control;
 		}
 

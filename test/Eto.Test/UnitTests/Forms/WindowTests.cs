@@ -1,17 +1,139 @@
-using System;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Collections.Specialized;
-using Eto.Drawing;
-
 namespace Eto.Test.UnitTests.Forms
 {
 	[TestFixture]
 	public class WindowTests : TestBase
 	{
+		[TestCase(true)]
+		[TestCase(false)]
+		[ManualTest]
+		public void WindowShouldAutoSize(bool useForm)
+		{
+			void DoTest(Window window)
+			{
+				window.AutoSize = true;
+				window.MinimumSize = Size.Empty;
+
+				var bottomPanel = new StackLayout();
+				var rightPanel = new StackLayout { Orientation = Orientation.Horizontal };
+
+				var autoSize = new CheckBox { Text = "AutoSize", Checked = window.AutoSize };
+				autoSize.CheckedChanged += (sender, e) =>
+				{
+					window.AutoSize = autoSize.Checked == true;
+				};
+
+				var addBottomButton = new Button { Text = "Add bottom control" };
+				addBottomButton.Click += (sender, e) =>
+				{
+					bottomPanel.Items.Add(new Panel { Size = new Size(20, 20) });
+					autoSize.Checked = window.AutoSize;
+				};
+
+				var addRightButton = new Button { Text = "Add right control" };
+				addRightButton.Click += (sender, e) =>
+				{
+					rightPanel.Items.Add(new Panel { Size = new Size(20, 20) });
+					autoSize.Checked = window.AutoSize;
+				};
+
+				var resetButton = new Button { Text = "Reset" };
+				resetButton.Click += (sender, e) =>
+				{
+					window.SuspendLayout();
+					bottomPanel.Items.Clear();
+					rightPanel.Items.Clear();
+					window.ResumeLayout();
+					autoSize.Checked = window.AutoSize;
+				};
+
+				window.SizeChanged += (sender, e) => autoSize.Checked = window.AutoSize;
+
+				var layout = new DynamicLayout();
+				layout.BeginHorizontal();
+				layout.BeginCentered();
+				layout.Add(addRightButton);
+				layout.Add(addBottomButton);
+				layout.Add(resetButton);
+				layout.Add(autoSize);
+				layout.EndCentered();
+				layout.Add(rightPanel);
+				layout.EndHorizontal();
+				layout.Add(bottomPanel);
+
+				window.Content = layout;
+			}
+			if (useForm) Form(DoTest, -1); else Dialog(DoTest, -1);
+
+		}
+
+
+		[ManualTest]
+		[TestCase(true, true, true, false)]
+		[TestCase(true, true, false, true)]
+		[TestCase(true, false, true, false)]
+		[TestCase(true, false, false, true)]
+		[TestCase(false, true, true, false)]
+		[TestCase(false, true, false, true)]
+		[TestCase(false, false, true, false)]
+		[TestCase(false, false, false, true)]
+		public void WindowShouldHaveCorrectInitialSizeWithWrappedLabel(bool useForm, bool useSize, bool setWidth, bool setHeight)
+		{
+			bool wasClosed = false;
+			var mre = new ManualResetEvent(false);
+			Application.Instance.Invoke(() =>
+			{
+				const string infoText = "Click to change text.\n";
+				var label = new Label();
+				label.TextColor = Colors.White;
+				label.Text = infoText + Utility.LoremTextWithTwoParagraphs;
+
+				Window window = useForm ? (Window)new Form { ShowActivated = false } : new Dialog();
+				window.AutoSize = true;
+				window.BackgroundColor = Colors.Blue;
+				window.Resizable = false;
+				window.Content = label;
+
+				if (useSize)
+				{
+					if (setWidth && setHeight)
+						window.Size = new Size(150, 150);
+					else if (setWidth)
+						window.Size = new Size(150, -1);
+					else if (setHeight)
+						window.Size = new Size(-1, 150);
+				}
+				else
+				{
+					if (setWidth && setHeight)
+						window.Width = window.Height = 150;
+					else if (setWidth)
+						window.Width = 150;
+					else if (setHeight)
+						window.Height = 150;
+				}
+
+				label.MouseDown += (sender, e) =>
+				{
+					label.Text = infoText + Utility.GenerateLoremText(new Random().Next(200));
+				};
+
+				window.Closed += (sender, e) =>
+				{
+					mre.Set();
+					wasClosed = true;
+				};
+
+				window.Owner = Application.Instance.MainForm;
+				if (window is Form f)
+					f.Show();
+				else if (window is Dialog d)
+					d.ShowModal();
+			});
+			mre.WaitOne(-1);
+			Assert.IsTrue(wasClosed, "#1 Form was not closed.  You need to click on it to confirm it is sized correctly");
+		}
+
 		[Test]
 		public void WindowShouldReportInitialSize()
 		{
@@ -21,10 +143,11 @@ namespace Eto.Test.UnitTests.Forms
 				form.Content = new Panel { Size = new Size(300, 300) };
 				form.SizeChanged += (sender, e) => size = form.Size;
 
-				form.Shown += (sender, e) => {
+				form.Shown += (sender, e) =>
+				{
 					Assert.IsNotNull(size, "#1");
 					Assert.IsTrue(size.Value.Width >= 300, "#2");
-					Assert.IsTrue(size.Value.Height>= 300, "#3");
+					Assert.IsTrue(size.Value.Height >= 300, "#3");
 					form.Close();
 				};
 			});
@@ -97,6 +220,131 @@ namespace Eto.Test.UnitTests.Forms
 				return new Panel { Size = new Size(200, 200) };
 			});
 		}
+
+		[TestCase(-1)]
+		[TestCase(100)] // fails on Mac and Wpf currently, due to the bottom label being wider than this size...
+		[TestCase(250)]
+		[ManualTest]
+		public void SizeOfFormShouldWorkWithLabels(int width)
+		{
+			ManualForm("Form should not have large space at\nthe bottom or between labels", form =>
+			{
+				Label CreateLabel()
+				{
+					var label = new Label { Text = Utility.GenerateLoremText(20) };
+					if (width > 0)
+						label.Width = width;
+					return label;
+				}
+
+				var layout = new TableLayout();
+				layout.Rows.Add(CreateLabel());
+				layout.Rows.Add(CreateLabel());
+				layout.Rows.Add(CreateLabel());
+				layout.Rows.Add(CreateLabel());
+
+				return layout;
+			});
+		}
+
+		[Test, ManualTest]
+		public void WindowFromPointShouldReturnWindowUnderPoint()
+		{
+			ManualForm("Move your mouse, it should show the title of the window under the mouse pointer",
+			form =>
+			{
+				var content = new Panel { MinimumSize = new Size(100, 100) };
+				var timer = new UITimer { Interval = 0.5 };
+				timer.Elapsed += (sender, e) =>
+				{
+					var window = Window.FromPoint(Mouse.Position);
+					content.Content = $"Window: {window?.Title}";
+				};
+				timer.Start();
+				form.Closed += (sender, e) =>
+				{
+					timer.Stop();
+				};
+				form.Title = "Test Form";
+				return content;
+			}
+			);
+		}
+
+		[Test, ManualTest]
+		public void WindowShouldCloseOnLostFocusWithoutHidingParent()
+		{
+			ManualForm("Click on this window after the child is shown,\nthe form and the main form should not go behind other windows",
+			form =>
+			{
+				var content = new Panel { MinimumSize = new Size(100, 100) };
+				form.Shown += (sender, e) =>
+				{
+					var childForm = new Form
+					{
+						Title = "Child Form",
+						ClientSize = new Size(100, 100),
+						Owner = form
+					};
+					childForm.MouseDown += (s2, e2) => childForm.Close();
+					childForm.LostFocus += (s2, e2) => childForm.Close();
+					childForm.Show();
+				};
+				form.Title = "Test Form";
+				form.Owner = Application.Instance.MainForm;
+				return content;
+			}
+			);
+		}
+
+		// Hm, this seems useful.. should it be added as an extension method somewhere?
+		static Task EventAsync<TWidget, TEvent>(TWidget control, Action<TWidget, EventHandler<TEvent>> addHandler, Action<TWidget, EventHandler<TEvent>> removeHandler = null)
+			where TWidget : Widget
+		{
+			var mre = new TaskCompletionSource<bool>();
+			void EventTriggered(object sender, TEvent e)
+			{
+				removeHandler?.Invoke(control, EventTriggered);
+				mre.TrySetResult(true);
+			}
+
+			addHandler(control, EventTriggered);
+			return mre.Task;
+		}
+
+		[Test, ManualTest]
+		public void MultipleChildWindowsShouldGetFocusWhenClicked() => Async(async () =>
+		{
+			var form1 = new Form { ClientSize = new Size(200, 200), Location = new Point(300, 300) };
+			form1.Owner = Application.Instance.MainForm;
+			form1.Title = "Form1";
+			form1.Content = new Label
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				TextAlignment = TextAlignment.Center,
+				Text = "Click on Form2, it should then get focus and be on top of this form."
+			};
+			// var form1ClosedTask = EventTask<EventArgs>(h => form1.Closed += h);
+			var form1ClosedTask = EventAsync<Form, EventArgs>(form1, (c, h) => c.Closed += h);
+
+			var form2 = new Form { ClientSize = new Size(200, 200), Location = new Point(400, 400) };
+			form2.Owner = Application.Instance.MainForm;
+			form2.Title = "Form2";
+			form2.Content = new Label
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				TextAlignment = TextAlignment.Center,
+				Text = "Click on Form1, it should then get focus and be on top of this form."
+			};
+			var form2ClosedTask = EventAsync<Form, EventArgs>(form2, (c, h) => c.Closed += h);
+
+			form1.Show();
+
+			form2.Show();
+
+			// wait till both forms are closed..
+			await Task.WhenAll(form1ClosedTask, form2ClosedTask);
+		});
 	}
 }
 

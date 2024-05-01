@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	public class AllControlsBase : Panel
@@ -21,8 +17,10 @@ namespace Eto.Test.Sections.Behaviors
 			layout.BeginHorizontal();
 			layout.Add(null);
 			layout.Add(TextAreaControl());
+			layout.Add(RichTextAreaControl());
 			if (Platform.Supports<ListBox>())
 				layout.Add(ListBoxControl());
+			layout.Add(PanelControl());
 			layout.EndHorizontal();
 
 			layout.AddRow(null, CheckBoxControl(), RadioButtonControl());
@@ -39,7 +37,16 @@ namespace Eto.Test.Sections.Behaviors
 				layout.Add(GroupBoxControl());
 			layout.Add(TableLayoutControl());
 			layout.EndHorizontal();
+
+			layout.BeginHorizontal();
+			layout.AddSpace();
+			layout.Add(ExpanderControl());
+			layout.EndHorizontal();
+
 			layout.EndVertical();
+
+
+
 			layout.Add(null);
 
 			Content = layout;
@@ -50,6 +57,27 @@ namespace Eto.Test.Sections.Behaviors
 		protected virtual Control CreateOptions()
 		{
 			return null;
+		}
+
+		Control ExpanderControl()
+		{
+			var control = new Expander
+			{
+				Header = "Expander",
+				Expanded = true,
+				Content = new Panel
+				{
+					Size = new Size(100, 100),
+					Content = new Label
+					{
+						VerticalAlignment = VerticalAlignment.Center,
+						TextAlignment = TextAlignment.Center,
+						Text = "Content"
+					}
+				}
+			};
+			LogEvents(control);
+			return control;
 		}
 
 		Control LabelControl()
@@ -90,6 +118,13 @@ namespace Eto.Test.Sections.Behaviors
 		Control TextAreaControl()
 		{
 			var control = new TextArea { Text = "TextArea" };
+			LogEvents(control);
+			return control;
+		}
+
+		Control RichTextAreaControl()
+		{
+			var control = new RichTextArea { Text = "RichTextArea" };
 			LogEvents(control);
 			return control;
 		}
@@ -187,14 +222,23 @@ namespace Eto.Test.Sections.Behaviors
 			return control;
 		}
 
+		Control PanelControl()
+		{
+			var control = new Panel();
+			control.Padding = 10;
+
+			LogEvents(control);
+			return new Panel { Content = control, BackgroundColor = Colors.Yellow };
+		}
+
+
 
 		Control DrawableControl()
 		{
 			var control = new Drawable { Size = new Size(100, 30), CanFocus = true };
-			control.Paint += delegate(object sender, PaintEventArgs pe)
+			control.Paint += delegate (object sender, PaintEventArgs pe)
 			{
-				if (control.BackgroundColor.A <= 0)
-					pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
+				pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
 				var size = pe.Graphics.MeasureString(SystemFonts.Label(), "Drawable");
 				pe.Graphics.DrawText(SystemFonts.Label(), Brushes.White, (PointF)((control.Size - size) / 2), "Drawable");
 			};

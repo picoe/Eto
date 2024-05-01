@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using Eto.Forms;
-
-namespace Eto.Test.Sections.Dialogs
+﻿namespace Eto.Test.Sections.Dialogs
 {
 	[Section("Dialogs", typeof(OpenWithDialog))]
 	public class OpenWithDialogSection : Panel

@@ -1,17 +1,10 @@
-using System;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class ButtonHandler : ButtonHandler<ButtonHandler.EtoButton, Button, Button.ICallback>, Button.IHandler
 	{
 
 		// windows guidelines specify default height of 23
-		public static Size DefaultMinimumSize = new Size(80, 23);
+		public static Size DefaultMinimumSize = new Size(80, 25);
 
 		protected override Size GetDefaultMinimumSize() => DefaultMinimumSize;
 

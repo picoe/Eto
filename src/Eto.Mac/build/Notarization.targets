@@ -1,0 +1,64 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
+
+  <PropertyGroup>
+    <!--
+      Wait for notarization to complete and staple the DMG.
+      Note that this can make the build take a long time waiting for your app to be notarized.
+      -->
+    <EnableNotarizationStapler Condition="$(EnableNotarizationStapler) == ''">True</EnableNotarizationStapler>
+
+    <!-- Identifier for the notarization, which is returned in the notarization email to identify what has been notarized -->
+    <NotarizationBundleIdentifier Condition="$(NotarizationBundleIdentifier) == ''">$(DmgName).dmg</NotarizationBundleIdentifier>
+
+    <!-- The notarization user name / apple id. The username can be inferred from the password keychain entry if not specified. -->
+    <NotarizationUserName Condition="$(NotarizationUserName) == ''"></NotarizationUserName>
+
+    <!-- The notarization team id, from apple connect.  Required if specifying the username/password. -->
+    <NotarizationTeamID Condition="$(NotarizationTeamID) == ''"></NotarizationTeamID>
+
+    <!-- The notarization password. Required if specifying the username. -->
+    <NotarizationPassword Condition="$(NotarizationPassword) == ''"></NotarizationPassword>
+    
+    <!-- The keychain profile to get the notarization credentials from.
+    
+    To store the credentials, use the following command:
+    
+    xcrun notarytool store-credentials "AC_PASSWORD" - -apple-id "<UserName>" - -team-id "<Team ID>" - -password "<Password>"
+    -->
+    <NotarizationKeychainProfile Condition="$(NotarizationKeychainProfile) == ''">AC_PASSWORD</NotarizationKeychainProfile>
+  </PropertyGroup>
+
+  <Target Name="MacNotarize" AfterTargets="MacCodeSignDmg" DependsOnTargets="$(MacNotarizeDependsOnTargets)" Condition="$(EnableDmgBuild) == 'True'">
+  </Target>
+
+  <Target Name="MacNotarizeDmg" DependsOnTargets="MacBuildDmg">
+    <PropertyGroup>
+      <_DmgZipPath>$(_MacDmgTempPath)$(DmgName).zip</_DmgZipPath>
+
+      <_NotarizationParameters>'$(_DmgZipPath)'</_NotarizationParameters>
+      <_NotarizationParameters>$(_NotarizationParameters) --wait</_NotarizationParameters>
+      <_NotarizationParameters Condition="$(NotarizationUserName) != ''">$(_NotarizationParameters) --apple-id "$(NotarizationUserName)"</_NotarizationParameters>
+      <_NotarizationParameters Condition="$(NotarizationPassword) != ''">$(_NotarizationParameters) --password "$(NotarizationPassword)"</_NotarizationParameters>
+      <_NotarizationParameters Condition="$(NotarizationTeamID) != ''">$(_NotarizationParameters) --team-id "$(NotarizationTeamID)"</_NotarizationParameters>
+      <_NotarizationParameters Condition="$(NotarizationKeychainProfile) != ''">$(_NotarizationParameters) --keychain-profile "$(NotarizationKeychainProfile)"</_NotarizationParameters>
+    </PropertyGroup>
+
+    <!-- Notarization could take a while, so always show this message -->
+    <Message Text="Notarizing $(_DmgPath)" Importance="high" />
+
+    <Exec Command='/usr/bin/ditto -c -k --keepParent "$(_DmgPath)" "$(_DmgZipPath)"' />
+
+    <Message Text="Sending $(DmgName).dmg for Notarization" />
+    <Exec Command="xcrun notarytool submit $(_NotarizationParameters)" />
+    
+    <Delete Files="$(_DmgZipPath)" />
+  </Target>
+
+  <Target Name="MacStapleDmg" DependsOnTargets="MacNotarizeDmg" Condition="$(EnableNotarizationStapler) == 'True'">
+    <Exec Command='xcrun stapler staple "$(_DmgPath)"' />
+
+    <Message Text="Stapled notarization ticket to $(_DmgPath)" Importance="high" />
+
+  </Target>
+
+</Project>

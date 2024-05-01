@@ -1,7 +1,5 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
+using Range = Eto.Forms.Range;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -17,6 +15,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		int suppressSelectionAndTextChanged;
 		readonly Gtk.ScrolledWindow scroll;
 		Gtk.TextTag tag;
+		BorderType border = BorderType.Bezel;
 
 		public override Gtk.Widget ContainerControl
 		{
@@ -76,6 +75,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleBufferChanged(object sender, EventArgs e)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.suppressSelectionAndTextChanged == 0)
 					handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
@@ -83,6 +84,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleSelectionChanged(object o, Gtk.MarkSetArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var selection = handler.Selection;
 				if (handler.suppressSelectionAndTextChanged == 0 && selection != lastSelection)
 				{
@@ -94,6 +97,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleCaretIndexChanged(object o, Gtk.MarkSetArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var caretIndex = handler.CaretIndex;
 				if (handler.suppressSelectionAndTextChanged == 0 && caretIndex != lastCaretIndex)
 				{
@@ -104,8 +109,11 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleApplyTag(object sender, EventArgs e)
 			{
-				var buffer = Handler.Control.Buffer;
-				var tag = Handler.tag;
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var buffer = handler.Control.Buffer;
+				var tag = handler.tag;
 				buffer.ApplyTag(tag, buffer.StartIter, buffer.EndIter);
 			}
 		}
@@ -325,13 +333,58 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public TextReplacements TextReplacements
 		{
-			get { return TextReplacements.None; }
+			get => TextReplacements.None;
 			set { }
 		}
 
-		public TextReplacements SupportedTextReplacements
+		public TextReplacements SupportedTextReplacements => TextReplacements.None;
+		
+		public virtual BorderType Border
 		{
-			get { return TextReplacements.None; }
+			get => border;
+			set
+			{
+				border = value;
+				switch (border)
+				{
+					case BorderType.Bezel:
+						scroll.ShadowType = Gtk.ShadowType.In;
+						break;
+					case BorderType.Line:
+						scroll.ShadowType = Gtk.ShadowType.In;
+						break;
+					case BorderType.None:
+						scroll.ShadowType = Gtk.ShadowType.None;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+			}
 		}
+		
+		public virtual int TextLength => Control.Buffer.CharCount;
+
+		public virtual void ScrollTo(Range<int> range)
+		{
+			var iter = Control.Buffer.GetIterAtOffset(range.Start + range.Length());
+			var mark = Control.Buffer.CreateMark(null, iter, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
+		public virtual void ScrollToEnd()
+		{
+			var end = Control.Buffer.EndIter;
+			var mark = Control.Buffer.CreateMark(null, end, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
+		public virtual void ScrollToStart()
+		{
+			var end = Control.Buffer.StartIter;
+			var mark = Control.Buffer.CreateMark(null, end, false);
+			Control.ScrollToMark(mark, 0, false, 0, 0);
+		}
+
+		
 	}
 }

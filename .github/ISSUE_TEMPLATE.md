@@ -29,6 +29,6 @@
 ## Specifications
 
   - Version:
-  - Platform(s): <!-- WPF, WinForms, Gtk2, Gtk3, Mac, XamMac, etc -->
+  - Platform(s): <!-- WPF, WinForms, Gtk, Mac64, macOS, etc -->
   - Operating System(s): <!-- E.g. Windows 10, macOS 10.13, Ubuntu 18.04, etc -->
   

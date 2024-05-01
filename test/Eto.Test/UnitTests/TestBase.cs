@@ -1,23 +1,8 @@
-using Eto.Drawing;
-using Eto.Forms;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Eto.Threading;
-using System.Diagnostics;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
-using System.IO;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.ComponentModel;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal.Commands;
 using NUnit.Framework.Internal;
-using Container = Eto.Forms.Container;
 
 namespace Eto.Test.UnitTests
 {
@@ -206,6 +191,11 @@ namespace Eto.Test.UnitTests
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
 
+		/// <summary>
+		/// Test operations on the UI thread
+		/// </summary>
+		/// <param name="test">Delegate to execute on the UI thread</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Invoke(Action test, int timeout = DefaultTimeout)
 		{
 			Run((app, finished) =>
@@ -215,6 +205,11 @@ namespace Eto.Test.UnitTests
 			}, timeout);
 		}
 
+		/// <summary>
+		/// Test operations on a form
+		/// </summary>
+		/// <param name="test">Delegate to execute on the form</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Form(Action<Form> test, int timeout = DefaultTimeout)
 		{
 			Form<Form>(test, timeout);
@@ -224,7 +219,7 @@ namespace Eto.Test.UnitTests
 		/// Test operations on a form
 		/// </summary>
 		/// <param name="test">Delegate to execute on the form</param>
-		/// <param name="timeout">Timeout to wait for the operation to complete</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete, -1 to wait indefinitely</param>
 		public static void Form<T>(Action<T> test, int timeout = DefaultTimeout)
 			where T : Form, new()
 		{
@@ -269,13 +264,39 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
+		public static void Async(Func<Task> test)
+		{
+			Exception exception = null;
+			var mre = new ManualResetEvent(false);
+			Application.Instance.Invoke(async () =>
+			{
+				try
+				{
+					await test();
+				}
+				catch (Exception ex)
+				{
+					exception = ex;
+				}
+				finally
+				{
+					mre.Set();
+				}
+			});
+			mre.WaitOne();
+			if (exception != null)
+			{
+				ExceptionDispatchInfo.Capture(exception).Throw();
+			}
+		}
+
 		public static void Shown(Action<Form> init, Action test, bool replay = false, int timeout = DefaultTimeout)
 		{
 			Shown(form =>
-				{
-					init(form);
-					return null;
-				},
+			{
+				init(form);
+				return null;
+			},
 				(Control c) =>
 				{
 					test();
@@ -285,12 +306,12 @@ namespace Eto.Test.UnitTests
 			);
 		}
 
-		public static void ManualForm(string description, Func<Form, Control> init, bool allowPassFail = true)
+		public static void ManualForm(string description, Func<Form, Control> init, bool allowPass = true, bool allowFail = true)
 		{
-			ManualForm(description, (form, Label) => init(form), allowPassFail);
+			ManualForm(description, (form, Label) => init(form), allowPass, allowFail);
 		}
 
-		public static void ManualForm(string description, Func<Form, Label, Control> init, bool allowPassFail = true)
+		public static void ManualForm(string description, Func<Form, Label, Control> init, bool allowPass = true, bool allowFail = true)
 		{
 			Exception exception = null;
 			Form(form =>
@@ -308,28 +329,40 @@ namespace Eto.Test.UnitTests
 					}
 				};
 
-				if (allowPassFail)
+				if (allowFail || allowPass)
 				{
-					var failButton = new Button { Text = "Fail" };
-					failButton.Click += (sender, e) =>
-					{
-						try
-						{
-							Assert.Fail(description);
-						}
-						catch (Exception ex)
-						{
-							exception = ex;
-						}
-						finally
-						{
-							form.Close();
-						}
-					};
+					var table = new TableLayout { Spacing = new Size(2, 2) };
+					var row = new TableRow();
+					table.Rows.Add(row);
 
-					var passButton = new Button { Text = "Pass" };
-					passButton.Click += (sender, e) => form.Close();
-					layout.Items.Add(new StackLayoutItem(TableLayout.Horizontal(2, failButton, passButton), HorizontalAlignment.Center));
+					if (allowFail)
+					{
+						var failButton = new Button { Text = "Fail" };
+						failButton.Click += (sender, e) =>
+						{
+							try
+							{
+								Assert.Fail(description);
+							}
+							catch (Exception ex)
+							{
+								exception = ex;
+							}
+							finally
+							{
+								form.Close();
+							}
+						};
+						row.Cells.Add(failButton);
+					}
+
+					if (allowPass)
+					{
+						var passButton = new Button { Text = "Pass" };
+						passButton.Click += (sender, e) => form.Close();
+						row.Cells.Add(passButton);
+					}
+					layout.Items.Add(new StackLayoutItem(table, HorizontalAlignment.Center));
 				}
 
 				form.Content = layout;
@@ -777,6 +810,11 @@ namespace Eto.Test.UnitTests
 				else if (control is Panel panel && panel.Content == null)
 				{
 					panel.Content = "Hello, World!";
+				}
+				else if (control is Splitter splitter)
+				{
+					splitter.Panel1 = new TextArea { Text = "Hello" };
+					splitter.Panel2 = new Panel { Size = new Size(200, 200) };
 				}
 			}
 

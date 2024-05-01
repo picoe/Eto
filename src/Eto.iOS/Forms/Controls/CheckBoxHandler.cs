@@ -1,8 +1,4 @@
-using System;
-using System.Reflection;
-using Eto.Forms;
 using UIKit;
-using Eto.Drawing;
 using sd = System.Drawing;
 
 namespace Eto.iOS.Forms.Controls

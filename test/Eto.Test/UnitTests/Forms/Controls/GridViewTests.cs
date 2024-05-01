@@ -1,20 +1,15 @@
-using System;
 using NUnit.Framework;
-using Eto.Forms;
-using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
-using Eto.Drawing;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
-
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
-	public class GridViewTests : TestBase
+	public class GridViewTests : GridTests<GridView>
 	{
+		protected override void SetDataStore(GridView grid, IEnumerable<object> dataStore)
+		{
+			grid.DataStore = dataStore;
+		}
+
 		[Test, ManualTest]
 		public void CellClickShouldHaveMouseInformation()
 		{
@@ -147,43 +142,6 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 		}
 
-		[Test, ManualTest]
-		public void AutoSizedColumnShouldChangeSizeOfControl()
-		{
-			ManualForm("GridView should auto size to content", form =>
-			{
-				var collection = new ObservableCollection<DataItem>();
-				var gridView = new GridView
-				{
-					Height = 180,
-					DataStore = collection,
-					Columns =
-					{
-						new GridColumn
-						{
-							AutoSize = true,
-							DataCell = new TextBoxCell { Binding = Binding.Property((DataItem m) => m.TextValue) }
-						}
-					}
-				};
-				var item = new DataItem { TextValue = "Some Text" };
-				collection.Add(item);
-
-				var textBox = new TextBox();
-				textBox.Focus();
-				textBox.TextBinding.Bind(item, i => i.TextValue);
-				textBox.TextChanged += (sender, e) => gridView.ReloadData(0);
-
-				var layout = new DynamicLayout();
-				layout.BeginVertical(yscale: true);
-				layout.AddRow(gridView, null); // gridView is auto sized
-				layout.EndVertical();
-
-				layout.AddSeparateRow("Text:", textBox);
-
-				return layout;
-			});
-		}
 
 
 		class CustomCellWithTableLayout : CustomCell
@@ -191,7 +149,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			protected override Control OnCreateCell(CellEventArgs args)
 			{
 				var label = new Label { Text = "Hello" };
-				
+
 				var button = new Button { MinimumSize = Size.Empty, Text = "..." };
 				button.Bind(c => c.Visible, args, a => a.IsSelected); // kaboom when reloading!
 
@@ -237,6 +195,49 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			{
 				Application.Instance.Invoke(() => f?.Close());
 			}
+		}
+
+		[TestCase(true, true)]
+		[TestCase(true, false)]
+		[TestCase(false, true)]
+		[TestCase(false, false)]
+		public void ClickingWithEmptyDataShouldNotCrash(bool allowEmptySelection, bool allowMultipleSelection)
+		{
+			Exception exception = null;
+			Form(form =>
+			{
+				var dd = new List<GridItem>();
+
+				dd.Add(new GridItem { Values = new[] { "Hello" } });
+				var control = new GridView();
+				control.AllowEmptySelection = allowEmptySelection;
+				control.AllowMultipleSelection = allowMultipleSelection;
+				control.Columns.Add(new GridColumn
+				{
+					DataCell = new TextBoxCell(0),
+					Width = 100,
+					HeaderText = "Text Cell"
+				});
+				control.DataStore = dd;
+				Application.Instance.AsyncInvoke(() =>
+				{
+					// can crash when had selection initially but no selection after.
+					try
+					{
+						control.DataStore = new List<GridItem>();
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+					}
+					Application.Instance.AsyncInvoke(form.Close);
+				});
+
+				form.Content = control;
+			});
+
+			if (exception != null)
+				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
 	}
 }

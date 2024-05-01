@@ -7,16 +7,15 @@ root = true
 [*.cs]
 indent_style = tab
 indent_size = 4
-tab_size = 4
 charset=utf-8
 csharp_new_line_before_open_brace = all
+csharp_indent_braces=false
 
-# packages.config uses spaces
-[**\packages.config]
-indent_style = space
-indent_size = 2
-
-[*.{csproj,vbproj,proj,targets,props}]
+[*.{csproj,vbproj,fsproj,proj,targets,props}]
 indent_style = space
 indent_size = 2
 tab_size = 2
+
+[*.yml]
+intent_style = space
+indent_size = 2

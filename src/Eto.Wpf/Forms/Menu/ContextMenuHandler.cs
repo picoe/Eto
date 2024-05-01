@@ -1,11 +1,3 @@
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using System;
-using System.Linq;
-using System.ComponentModel;
-using Eto.Drawing;
 using System.Windows.Controls.Primitives;
 
 namespace Eto.Wpf.Forms.Menu
@@ -50,7 +42,7 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
-		void HandleIsOpenChanged(object sender, EventArgs e)
+		void HandleIsOpenChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			if (!Control.IsOpen)
 				Callback.OnClosing(Widget, EventArgs.Empty);

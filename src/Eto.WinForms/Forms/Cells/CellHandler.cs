@@ -1,12 +1,8 @@
-using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Cells
 {
 	public interface ICellConfigHandler
 	{
+		Controls.IGridHandler GridHandler { get; }
 		swf.DataGridViewColumn Column { get; }
 
 		void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts);
@@ -42,6 +38,8 @@ namespace Eto.WinForms.Forms.Cells
 				InitializeColumn();
 			}
 		}
+
+		public Controls.IGridHandler GridHandler => CellConfig?.GridHandler;
 
 		public swf.DataGridViewColumn Column => CellConfig?.Column;
 

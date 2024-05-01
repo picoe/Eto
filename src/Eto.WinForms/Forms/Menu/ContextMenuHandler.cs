@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Menu
 {
 	public class ContextMenuHandler : WidgetHandler<swf.ContextMenuStrip, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler

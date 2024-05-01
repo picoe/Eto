@@ -1,8 +1,4 @@
 #if !UNIFIED
-using System;
-using sd = System.Drawing;
-using Eto.Drawing;
-
 namespace Eto
 {
 	public static partial class Conversions
@@ -101,6 +97,11 @@ namespace Eto
 		public static sd.PointF ToSD (this PointF point)
 		{
 			return new sd.PointF (point.X, point.Y);
+		}
+
+		public static sd.Point ToSDPoint (this PointF point)
+		{
+			return new sd.Point ((int)point.X, (int)point.Y);
 		}
 
 		internal static sd.PointF[] ToSD (this PointF[] points)

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-
 using aa = Android.App;
 using ac = Android.Content;
 using ao = Android.OS;
@@ -11,31 +5,33 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
-using Eto.Forms;
-
 namespace Eto.Android.Drawing
 {
 	class IconFrameHandler : IconFrame.IHandler
 	{
 		public object Create(IconFrame frame, System.IO.Stream stream)
 		{
+			return ag.BitmapFactory.DecodeStream(stream);
 			throw new NotImplementedException();
 		}
 		public object Create(IconFrame frame, Func<System.IO.Stream> load)
 		{
+			return ag.BitmapFactory.DecodeStream(load());
 			throw new NotImplementedException();
 		}
 		public object Create(IconFrame frame, Bitmap bitmap)
 		{
+			return bitmap.ToAndroid();
 			throw new NotImplementedException();
 		}
 		public Bitmap GetBitmap(IconFrame frame)
 		{
-			throw new NotImplementedException();
-		}
+			return new Bitmap(new BitmapHandler(((ag.Bitmap)frame.ControlObject)));
+			}
 		public Size GetPixelSize(IconFrame frame)
 		{
-			throw new NotImplementedException();
+			var agbitmap = (ag.Bitmap)frame.ControlObject;
+			return new Size(agbitmap.Width, agbitmap.Height);
 		}
 	}
 
@@ -55,9 +51,12 @@ namespace Eto.Android.Drawing
 			get { return new Size(Control.Width, Control.Height); }
 		}
 
-		public ag.Bitmap GetImageWithSize(int? size)
+		public ag.Bitmap GetImageWithDensity(int? density)
 		{
-			throw new NotImplementedException();
+			if (density.HasValue)
+				Control.Density = density.Value;
+
+			return Control;
 		}
 
 		public void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
@@ -77,9 +76,13 @@ namespace Eto.Android.Drawing
 
 		public void Create(IEnumerable<IconFrame> frames)
 		{
+			//Control = Widget.GetFrame(1f).Bitmap.ToAndroid();
 			this.frames = frames.ToList();
-			Control = Widget.GetFrame(1f).Bitmap.ToAndroid();
+			var frame = GetIdealIcon();
+//			size = frame.Size;
+			Control = (ag.Bitmap)frame.ControlObject;
 		}
+
 		List<IconFrame> frames;
 
 		public IEnumerable<IconFrame> Frames
@@ -90,6 +93,18 @@ namespace Eto.Android.Drawing
 					frames = new List<IconFrame> { new IconFrame(1f, new Bitmap(new BitmapHandler(Control))) };
 				return frames;
 			}
+		}
+
+		public IconFrame GetIdealIcon()
+		{
+			IconFrame idealFrame = null;
+
+			if (idealFrame != null)
+				return idealFrame;
+
+			var orderedFrames = frames.OrderByDescending(r => r.PixelSize.Width * r.PixelSize.Height);
+			idealFrame = orderedFrames.FirstOrDefault(r => r.Scale == 1) ?? orderedFrames.First();
+			return idealFrame;
 		}
 	}
 }

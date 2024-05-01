@@ -1,36 +1,6 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Controls;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac.Forms.Cells
 {
@@ -112,16 +82,14 @@ namespace Eto.Mac.Forms.Cells
 
 		public ImageInterpolation ImageInterpolation { get; set; }
 
-		public override Color GetBackgroundColor(NSView view)
+		public override Color GetBackgroundColor(NSView view) => ((EtoImageView)view).BackgroundColor.ToEto();
+		public override void SetBackgroundColor(NSView view, Color color) => ((EtoImageView)view).BackgroundColor = color.ToNSUI();
+		
+		private void SetDefaults(EtoImageView view)
 		{
-			return ((EtoImageView)view).BackgroundColor.ToEto();
+			view.BackgroundColor = null;
 		}
-
-		public override void SetBackgroundColor(NSView view, Color color)
-		{
-			var field = ((EtoImageView)view);
-			field.BackgroundColor = color.ToNSUI();
-		}
+		
 
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
 		{
@@ -130,6 +98,7 @@ namespace Eto.Mac.Forms.Cells
 			{
 				view = new EtoImageView { Identifier = tableColumn.Identifier };
 			}
+			SetDefaults(view);
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;
@@ -152,7 +121,7 @@ namespace Eto.Mac.Forms.Cells
 				if (BackgroundColor != null && BackgroundColor.AlphaComponent > 0)
 				{
 					BackgroundColor.Set();
-					NSGraphics.RectFill(dirtyRect);
+					NSGraphics.RectFill(Bounds);
 				}
 				base.DrawRect(dirtyRect);
 			}

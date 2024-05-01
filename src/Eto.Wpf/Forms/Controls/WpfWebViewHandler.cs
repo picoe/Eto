@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using swc = System.Windows.Controls;
-using swn = System.Windows.Navigation;
-using Eto.Forms;
-using System.Runtime.InteropServices;
 using Eto.CustomControls;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class WpfWebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView, WebView.ICallback>, WebView.IHandler
@@ -52,6 +45,12 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				WebBrowser2.Silent = true;
 			};
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Size = new Eto.Drawing.Size(100, 100);
 		}
 
 		void RemoveEvent(SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
@@ -230,6 +229,11 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			var fullScript = string.Format("var fn = function() {{ {0} }}; fn();", script);
 			return Convert.ToString(Control.InvokeScript("eval", fullScript));
+		}
+
+		public Task<string> ExecuteScriptAsync(string script)
+		{
+			return Task.FromResult(ExecuteScript(script));
 		}
 
 		protected override void Dispose(bool disposing)

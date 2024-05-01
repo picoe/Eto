@@ -1,6 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(RadioButtonList))]
@@ -34,11 +31,20 @@ namespace Eto.Test.Sections.Controls
 
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(TableLayout.AutoSized(control));
-			layout.BeginVertical();
-			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), OrientationDropDown(control), TextColorControl(control), null);
-			layout.EndVertical();
+			layout.AddSeparateRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), OrientationDropDown(control), TextColorControl(control), null);
+			layout.AddSeparateRow(null, UnselectButton(control), null);
 
 			return layout;
+		}
+
+		Control UnselectButton(RadioButtonList list)
+		{
+			var control = new Button { Text = "Set SelectedIndex=-1" };
+			control.Click += delegate
+			{
+				list.SelectedIndex = -1;
+			};
+			return control;
 		}
 
 		Control AddRowsButton(RadioButtonList list)

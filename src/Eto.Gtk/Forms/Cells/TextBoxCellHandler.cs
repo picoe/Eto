@@ -1,13 +1,11 @@
-using System;
-using Eto.Forms;
 using Eto.GtkSharp.Forms.Controls;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
 	interface ITextBoxCellHandler
 	{
-		bool FormattingEnabled { get; }
-		void Format(GridCellFormatEventArgs args);
+		bool CellFormattingEnabled { get; }
+		void Format(Gtk.CellRenderer renderer, object item, int row);
 		AutoSelectMode AutoSelectMode { get; }
 		GridColumnHandler Column { get; }
 		ICellDataSource Source { get; }
@@ -25,16 +23,18 @@ namespace Eto.GtkSharp.Forms.Cells
 			public bool Editing => (bool)GetProperty("editing").Val;
 #endif
 
-			int row;
 			[GLib.Property("row")]
-			public int Row
+			public int Row { get; set; }
+			
+			object item;
+			[GLib.Property("item")]
+			public object Item
 			{
-				get { return row; }
+				get { return item; }
 				set
 				{
-					row = value;
-					if (Handler.FormattingEnabled)
-						Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+					item = value;
+					Handler.Format(this, item, Row);
 				}
 			}
 
@@ -152,12 +152,12 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public void HandleEdited(object o, Gtk.EditedArgs args)
 			{
-				Handler.SetValue(args.Path, args.NewText);
+				Handler?.SetValue(args.Path, args.NewText);
 			}
 
 			public void HandleEndEditing(object o, Gtk.EditedArgs args)
 			{
-				Handler.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+				Handler?.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
 

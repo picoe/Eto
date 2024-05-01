@@ -1,18 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Wpf.Forms.Cells;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using System.Collections;
-using System.ComponentModel;
 using Eto.Wpf.Forms.Menu;
-using Eto.Drawing;
 using Eto.Wpf.Drawing;
-
+using Eto.Wpf.CustomControls.TreeGridView;
+using System.Windows;
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoDataGrid : swc.DataGrid
@@ -52,6 +42,24 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public EtoDataGrid()
+		{
+			Loaded += EtoDataGrid_Loaded;
+		}
+
+		private void EtoDataGrid_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			var scp = this.FindChild<swc.ScrollContentPresenter>();
+			if (scp != null) scp.RequestBringIntoView += OnRequestBringIntoView;
+		}
+
+		private void OnRequestBringIntoView(object sender, sw.RequestBringIntoViewEventArgs e)
+		{
+			var h = Handler as IGridHandler;
+			if (h == null)
+				return;
+			e.Handled = h.DisableAutoScrollToSelection;
+		}
 	}
 
 	class GridDragRowState
@@ -98,14 +106,22 @@ namespace Eto.Wpf.Forms.Controls
 		public static readonly object LastDragRow_Key = new object();
 		public static readonly object Border_Key = new object();
 		public static readonly object MultipleSelectionInfo_Key = new object();
+		public static readonly object AllowEmptySelection_Key = new object();
+		public static readonly object OutsideMouseDown_Key = new object();
 	}
 
 	public abstract class GridHandler<TWidget, TCallback> : WpfControl<EtoDataGrid, TWidget, TCallback>, Grid.IHandler, IGridHandler
 		where TWidget : Grid
 		where TCallback : Grid.ICallback
 	{
+		DateTime? startDragOverTime;
+		const int DragScrollSize = 12;
+		const int DragScrollFastSize = 6;
+		const double DragScrollDelay = 0.1;
+		const double DragScrollFastDelay = 0.01;
+		
 		ContextMenu contextMenu;
-		bool hasFocus;
+		bool hadFocus;
 		protected bool SkipSelectionChanged { get; set; }
 		protected swc.DataGridColumn CurrentColumn { get; set; }
 
@@ -123,11 +139,12 @@ namespace Eto.Wpf.Forms.Controls
 				CanUserDeleteRows = false,
 				CanUserResizeRows = false,
 				CanUserAddRows = false,
+				CanUserReorderColumns = false,
 				RowHeaderWidth = 0,
 				SelectionMode = swc.DataGridSelectionMode.Single,
 				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
-				Background = sw.SystemColors.WindowBrush
 			};
+			Control.SetResourceReference(swc.Control.BackgroundProperty, sw.SystemColors.WindowBrushKey);
 		}
 
 		protected ColumnCollection Columns { get; private set; }
@@ -151,18 +168,33 @@ namespace Eto.Wpf.Forms.Controls
 					{
 						var row = e.Row.GetIndex();
 						var item = GetItemAtRow(row);
-						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-						Callback.OnCellEditing(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
+						var gridColumn = GetColumn(e.Column);
+						Callback.OnCellEditing(Widget, new GridViewCellEventArgs(gridColumn, row, Widget.Columns.IndexOf(gridColumn), item));
 					};
 					break;
 				case Grid.CellEditedEvent:
 					// handled by each cell after value is set with the CellEdited method
 					break;
 				case Grid.CellClickEvent:
-					Control.PreviewMouseDown += (sender, e) => Callback.OnCellClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
+					Control.PreviewMouseDown += (sender, e) => {
+						var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+						if (!TreeTogglePanel.IsOverExpander(hitTestResult))
+						{
+							var args = CreateCellMouseArgs(e.OriginalSource, e, out var isValid);
+							if (isValid)
+							{
+								Callback.OnCellClick(Widget, args);
+								e.Handled = args.Handled;
+							}
+						}
+					};
 					break;
 				case Grid.CellDoubleClickEvent:
-					Control.MouseDoubleClick += (sender, e) => Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(e.OriginalSource, e));
+					Control.MouseDoubleClick += (sender, e) => {
+						var args = CreateCellMouseArgs(e.OriginalSource, e, out var isValid);
+						if (isValid)
+							Callback.OnCellDoubleClick(Widget, args);
+					};
 					break;
 				case Grid.SelectionChangedEvent:
 					Control.SelectedCellsChanged += (sender, e) =>
@@ -174,22 +206,48 @@ namespace Eto.Wpf.Forms.Controls
 				case Grid.CellFormattingEvent:
 					// handled by FormatCell method
 					break;
+				case Grid.RowFormattingEvent:
+					Control.LoadingRow += HandleLoadingRow;
+					break;
+				case Grid.ColumnOrderChangedEvent:
+					Control.ColumnReordered += HandleColumnReordered;
+					break;
+				case Grid.ColumnWidthChangedEvent:
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
 
-		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea)
+		private void HandleLoadingRow(object sender, swc.DataGridRowEventArgs e)
 		{
-			swc.DataGridCell cell;
-			var row = GetRowOfElement(originalSource, out cell);
+			var row = e.Row;
+			if (row == null)
+				return;
+			row.ClearValue(swc.Control.BackgroundProperty);
+
+			Callback.OnRowFormatting(Widget, new RowFormatEventArgs(row, row.Item, row.GetIndex()));
+		}
+
+
+		private void HandleColumnReordered(object sender, swc.DataGridColumnEventArgs e)
+		{
+			var column = GetColumn(e.Column);
+			Callback.OnColumnOrderChanged(Widget, new GridColumnEventArgs(column));
+		}
+
+		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea) => CreateCellMouseArgs(originalSource, ea, out _);
+
+		GridCellMouseEventArgs CreateCellMouseArgs(object originalSource, swi.MouseButtonEventArgs ea, out bool isValid)
+		{
+			var row = GetRowOfElement(originalSource, out var dataGridColumn, out isValid);
 
 			int rowIndex = row?.GetIndex() ?? -1;
-			var columnIndex = cell?.Column?.DisplayIndex ?? -1;
+			var column = GetColumn(dataGridColumn);
+			var columnIndex = column != null ? Widget.Columns.IndexOf(column) : -1;
 
 			var item = row?.Item;
-			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
 
 			var buttons = ea.GetEtoButtons();
 			var modifiers = swi.Keyboard.Modifiers.ToEto();
@@ -197,22 +255,49 @@ namespace Eto.Wpf.Forms.Controls
 			return new GridCellMouseEventArgs(column, rowIndex, columnIndex, item, buttons, modifiers, location);
 		}
 
-		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridCell cell)
+		swc.DataGridRow GetRowOfElement(object source, out swc.DataGridColumn column, out bool isValid)
 		{
 			// when clicking on labels, etc this will be a content element
 			while (source is sw.FrameworkContentElement)
 				source = ((sw.FrameworkContentElement)source).Parent;
 
 			// VisualTreeHelper will throw if not a Visual, we can return null here
+			column = null;
 			var dep = source as swm.Visual;
-			while (dep != null && !(dep is swc.DataGridCell))
+			while (dep != null)
+			{
+				if (dep is swc.DataGridCell cell)
+				{
+					column = cell.Column;
+					break;
+				}
+				if (dep is swc.Primitives.DataGridColumnHeader header)
+				{
+					column = header.Column;
+					break;
+				}
+				if (ReferenceEquals(dep, Control))
+				{
+					// found the grid, it's a valid click.. but no row or cell.
+					isValid = true;
+					return null;
+				}
 				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
+			}
 
-			cell = dep as swc.DataGridCell;
 			while (dep != null && !(dep is swc.DataGridRow))
 				dep = swm.VisualTreeHelper.GetParent(dep) as swm.Visual;
 
-			return dep as swc.DataGridRow;
+			if (dep is swc.DataGridRow row)
+			{
+				isValid = true;
+				return row;
+			}
+
+			// we didn't find the DataGrid (e.g. clicking on a drop down menu, etc)
+			// so don't fire the event
+			isValid = false;
+			return null;
 		}
 
 		public bool ShowHeader
@@ -248,6 +333,34 @@ namespace Eto.Wpf.Forms.Controls
 			//    the cell is selected.
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);
+
+			Control.Loaded += Control_Loaded;
+
+			// Listen to changes of the column header style so we can apply column styles appropriately for alignment
+			AttachPropertyChanged(swc.DataGrid.ColumnHeaderStyleProperty, Control_ColumnHeaderStyleChanged, Control);
+		}
+
+		private void Control_ColumnHeaderStyleChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			foreach (var col in Widget.Columns)
+			{
+				if (col.Handler is IGridColumnHandler columnHandler)
+				{
+					columnHandler.SetHeaderStyle();
+				}
+			}
+		}
+
+		private void Control_Loaded(object sender, RoutedEventArgs e)
+		{
+			// expanded columns don't get autosized, so we flip to star width after they are auto sized.
+			foreach (var col in Widget.Columns)
+			{
+				if (col.Handler is IGridColumnHandler columnHandler)
+				{
+					columnHandler.OnLoad();
+				}
+			}
 		}
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
@@ -257,14 +370,14 @@ namespace Eto.Wpf.Forms.Controls
 			public override void AddItem(GridColumn item)
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
-				colhandler.GridHandler = Handler;
+				colhandler.Setup(Handler);
 				Handler.Control.Columns.Add(colhandler.Control);
 			}
 
 			public override void InsertItem(int index, GridColumn item)
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
-				colhandler.GridHandler = Handler;
+				colhandler.Setup(Handler);
 				Handler.Control.Columns.Insert(index, colhandler.Control);
 			}
 
@@ -317,56 +430,141 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.HandleMouseUp(sender, e);
 
+			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+			var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+			var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+
 			var info = MultipleSelectionInfo;
 			if (!e.Handled && info != null)
 			{
-				// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
-				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
-				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
 				if (ReferenceEquals(row, info.Row))
 				{
+					// in multiple selection, only set selection to current row if the mouse hasn't moved to a different row
 					bool hadMultipleSelection = Control.SelectedItems.Count > 1;
 					Control.SelectedItem = row.Item;
-					var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
 					if (cell != null)
 					{
-						Callback.OnCellClick(Widget, CreateCellMouseArgs(cell, e));
-						cell.Focus();
-						if (!hadMultipleSelection && !cell.Column.IsReadOnly && ReferenceEquals(info.Cell, cell))
+						var args = CreateCellMouseArgs(cell, e);
+						if (!TreeTogglePanel.IsOverExpander(hitTestResult))
+							Callback.OnCellClick(Widget, args);
+
+						if (!args.Handled)
 						{
-							Control.BeginEdit();
-							// we double clicked to fire this event, so trigger a double click event
-							if (info.ClickCount >= 2)
-								Callback.OnCellDoubleClick(Widget, CreateCellMouseArgs(cell, e));
+							if (!hadMultipleSelection && ReferenceEquals(info.Cell, cell))
+							{
+								// we double clicked to fire this event, so trigger a double click event
+								if (info.ClickCount >= 2)
+									Callback.OnCellDoubleClick(Widget, args);
+								if (!args.Handled)
+								{
+									if (TreeTogglePanel.IsOverContent(hitTestResult) != false)
+									{
+										// let the column handler perform something specific if needed
+										var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+										columnHandler?.OnMouseUp(args, hitTestResult, cell);
+
+										if (!args.Handled && !cell.Column.IsReadOnly)
+										{
+											cell.Focus();
+											Control.BeginEdit();
+										}
+
+										e.Handled = true; // prevent default behaviour
+									}
+								}
+							}
+							else
+								cell.Focus();
+						}
+						else
+						{
+							row.Focus();
+							e.Handled = true;
 						}
 					}
-					else
-						row.Focus();
-					e.Handled = true;
 				}
 
 				MultipleSelectionInfo = null;
+			}			
+
+			if (!e.Handled && cell != null && TreeTogglePanel.IsOverContent(hitTestResult) != false)
+			{
+				var args = CreateCellMouseArgs(cell, e);
+				// let the column handler perform something specific if needed
+				var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+				columnHandler?.OnMouseUp(args, hitTestResult, cell);
+				e.Handled = args.Handled;
 			}
+			
+			HandleOutsideMouseUp(sender, e);
+		}
+
+
+		private void HandleOutsideMouseUp(object sender, swi.MouseButtonEventArgs e)
+		{
+			if (!Widget.Properties.Get<bool>(GridHandler.OutsideMouseDown_Key))
+				return;
+			Widget.Properties.Set(GridHandler.OutsideMouseDown_Key, false);
+			
+			if (e.Handled)
+				return;
+			
+			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+			if (hitTestResult != null
+				&& (
+					hitTestResult is swc.ScrollViewer // below rows
+					|| swm.VisualTreeHelper.GetParent(hitTestResult) is swc.DataGridRow // right of rows
+					)
+				)
+			{
+				CommitEdit();
+				if (AllowEmptySelection)
+				{
+					UnselectAll();
+					e.Handled = true;
+				}
+			}
+		}
+		
+		private void HandleOutsideMouseDown(object sender, swi.MouseButtonEventArgs e)
+		{
+			if (!e.Handled)
+			{
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				if (hitTestResult != null
+					&& (
+						hitTestResult is swc.ScrollViewer // below rows
+						|| swm.VisualTreeHelper.GetParent(hitTestResult) is swc.DataGridRow // right of rows
+						)
+					)
+				{
+					Widget.Properties.Set(GridHandler.OutsideMouseDown_Key, true);
+					return;
+				}
+			}
+			
+			Widget.Properties.Set(GridHandler.OutsideMouseDown_Key, false);
 		}
 
 		protected override void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
 			base.HandleMouseDown(sender, e);
 			MultipleSelectionInfo = null;
-			if (!e.Handled 
-				&& e.LeftButton == swi.MouseButtonState.Pressed 
+			if (!e.Handled
+				&& e.LeftButton == swi.MouseButtonState.Pressed
 				&& swi.Keyboard.Modifiers == swi.ModifierKeys.None)
 			{
 				// prevent WPF from deselecting other rows until mouse up.
 				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
 				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
 				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
-				
-				if (row != null && row.IsSelected 
+
+				if (row != null && row.IsSelected
 					&& (
 						(cell?.Column.IsReadOnly == false && !cell.IsEditing && cell.IsFocused)
 						|| Control.SelectedItems.Count > 1
-					))
+					)
+				)
 				{
 					MultipleSelectionInfo = new SelectionInfo
 					{
@@ -379,8 +577,44 @@ namespace Eto.Wpf.Forms.Controls
 					else
 						row.Focus();
 					e.Handled = true;
+				} 
+				else if (cell?.IsEditing == true)
+				{
+					// allow clicking on the image of an ImageTextCell to commit editing.
+					var args = CreateCellMouseArgs(cell, e); 
+					var columnHandler = args.GridColumn?.Handler as GridColumnHandler;
+					columnHandler?.OnMouseDown(args, hitTestResult, cell);
+					e.Handled = args.Handled;
+
+					if (!args.Handled && TreeTogglePanel.IsOverContent(hitTestResult) == false)
+					{
+						// clicked outside of content area in TreeGridView, so we should commit editing.
+						CommitEdit();
+						e.Handled = true;
+					}
 				}
 			}
+			else if (!e.Handled
+				&& !AllowEmptySelection
+				&& e.LeftButton == swi.MouseButtonState.Pressed
+				&& swi.Keyboard.Modifiers == swi.ModifierKeys.Control)
+			{
+				// prevent deselecting the last selected item
+				var hitTestResult = swm.VisualTreeHelper.HitTest(Control, e.GetPosition(Control))?.VisualHit;
+				var row = hitTestResult?.GetVisualParent<swc.DataGridRow>();
+				var cell = hitTestResult?.GetVisualParent<swc.DataGridCell>();
+
+				if (row != null && row.IsSelected
+					&& cell != null
+					&& Control.SelectedItems.Count == 1
+					)
+				{
+					e.Handled = true;
+				}
+			}
+			
+			// test if we clicked on an empty area to unselect all when mouse up is called
+			HandleOutsideMouseDown(sender, e);
 		}
 
 		public IEnumerable<int> SelectedRows
@@ -408,7 +642,12 @@ namespace Eto.Wpf.Forms.Controls
 						Control.SelectedItems.Clear();
 						foreach (int row in value)
 						{
-							Control.SelectedItems.Add(list[row]);
+							// protect against any incorrect info
+							if (row >= list.Count)
+								continue;
+							var item = list[row];
+							if (item != null)
+								Control.SelectedItems.Add(item);
 						}
 
 						Control.EndUpdateSelectedItems();
@@ -470,10 +709,15 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void BeginEdit(int row, int column)
 		{
-			Control.UnselectAll();
+			CommitEdit();
 			//sometimes couldn't focus to cell, so use ScrollIntoView
 			Control.ScrollIntoView(Control.Items[row]);
-			//set current cell
+			//set current cell and select its row.
+			if (!SelectedRows.Contains(row))
+			{
+				Control.UnselectAll();
+				Control.SelectedIndex = row;
+			}
 			Control.CurrentCell = new swc.DataGridCellInfo(Control.Items[row], Control.Columns[column]);	
 			Control.Focus();
 			Control.BeginEdit();
@@ -483,19 +727,19 @@ namespace Eto.Wpf.Forms.Controls
 
 		public bool CancelEdit() => Control.CancelEdit();
 
-		public virtual sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent)
+		public virtual sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent, swc.DataGridCell cell)
 		{
 			return defaultContent;
 		}
 
-		class FormatEventArgs : GridCellFormatEventArgs
+		class CellFormatEventArgs : GridCellFormatEventArgs
 		{
 			public sw.FrameworkElement Element { get; private set; }
 
 			public swc.DataGridCell Cell { get; private set; }
 			Font font;
 
-			public FormatEventArgs(GridColumn column, swc.DataGridCell gridcell, object item, int row, sw.FrameworkElement element)
+			public CellFormatEventArgs(GridColumn column, swc.DataGridCell gridcell, object item, int row, sw.FrameworkElement element)
 				: base(column, item, row)
 			{
 				this.Element = element;
@@ -504,10 +748,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			public override Font Font
 			{
-				get
-				{
-					return font ?? (font = Cell.GetEtoFont());
-				}
+				get => font ?? (font = Cell.GetEtoFont());
 				set
 				{
 					font = value;
@@ -517,27 +758,32 @@ namespace Eto.Wpf.Forms.Controls
 
 			public override Color BackgroundColor
 			{
-				get
-				{
-					return Cell.Background.ToEtoColor();
-				}
-				set
-				{
-					Cell.Background = value.ToWpfBrush(Cell.Background);
-				}
+				get => Cell.Background.ToEtoColor();
+				set => Cell.Background = value.ToWpfBrush();
 			}
 
 			public override Color ForegroundColor
 			{
-				get
-				{
-					return Cell.Foreground.ToEtoColor();
-				}
-				set
-				{
-					Cell.Foreground = value.ToWpfBrush(Cell.Foreground);
-				}
+				get => Cell.Foreground.ToEtoColor();
+				set => Cell.Foreground = value.ToWpfBrush();
 			}
+		}
+
+
+		class RowFormatEventArgs : GridRowFormatEventArgs
+		{
+			swc.DataGridRow _gridrow;
+			public RowFormatEventArgs(swc.DataGridRow gridrow, object item, int row) : base(item, row)
+			{
+				_gridrow = gridrow;
+			}
+
+			public override Color BackgroundColor
+			{
+				get => _gridrow.Background.ToEtoColor();
+				set => _gridrow.Background = value.ToWpfBrush();
+			}
+
 		}
 
 		public override bool HasFocus
@@ -579,7 +825,14 @@ namespace Eto.Wpf.Forms.Controls
 			if (IsEventHandled(Grid.CellFormattingEvent))
 			{
 				var row = Control.Items.IndexOf(dataItem);
-				Callback.OnCellFormatting(Widget, new FormatEventArgs(column.Widget as GridColumn, gridcell, dataItem, row, element));
+				// we always reset values
+				gridcell.ClearValue(swc.Control.ForegroundProperty);
+				gridcell.ClearValue(swc.Control.BackgroundProperty);
+				gridcell.ClearValue(swc.Control.FontFamilyProperty);
+				gridcell.ClearValue(swc.Control.FontStyleProperty);
+				gridcell.ClearValue(swc.Control.FontWeightProperty);
+				gridcell.ClearValue(swc.Control.FontSizeProperty);
+				Callback.OnCellFormatting(Widget, new CellFormatEventArgs(column.Widget as GridColumn, gridcell, dataItem, row, element));
 			}
 		}
 
@@ -599,23 +852,37 @@ namespace Eto.Wpf.Forms.Controls
 		protected void SaveFocus()
 		{
 			SaveColumnFocus();
-			hasFocus = HasFocus;
+			hadFocus = HasFocus && Widget.ParentWindow?.HasFocus == true;
 		}
 
 		protected void RestoreFocus()
 		{
-			if (hasFocus)
-			{
+			if (hadFocus)
 				Focus();
+
+			if (CurrentColumn != null)
 				RestoreColumnFocus();
+		}
+		
+		GridColumn GetColumn(swc.DataGridColumn dataGridColumn)
+		{
+			if (dataGridColumn == null)
+				return null;
+			var columns = Widget.Columns;
+			foreach (var col in columns)
+			{
+				if (col.Handler is IGridColumnHandler handler && ReferenceEquals(handler.Control, dataGridColumn))
+					return col;
 			}
+			return null;
 		}
 
 		public void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem)
 		{
-			var gridColumn = Widget.Columns[dataGridColumn.DisplayIndex];
+			var gridColumn = GetColumn(dataGridColumn);
+			var columnIndex = gridColumn != null ? Widget.Columns.IndexOf(gridColumn) : -1;
 			SetIsEditing(false);
-			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, dataGridColumn.DisplayIndex, dataItem));
+			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, columnIndex, dataItem));
 			SetIsEditing(null);
 		}
 
@@ -672,7 +939,15 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void ReloadData(IEnumerable<int> rows)
 		{
+			SkipSelectionChanged = true;
+			SaveFocus();
+
 			Control.Items.Refresh();
+			
+			DisableAutoScrollToSelection = true;
+			RestoreFocus();
+			SkipSelectionChanged = false;
+			DisableAutoScrollToSelection = false;
 		}
 
 		swc.DataGridRow GetCurrentRow()
@@ -700,5 +975,123 @@ namespace Eto.Wpf.Forms.Controls
 		bool IGridHandler.Loaded => Widget.Loaded;
 
 		Grid IGridHandler.Widget => Widget;
+
+		public bool AllowEmptySelection
+		{
+			get => Widget.Properties.Get<bool>(GridHandler.AllowEmptySelection_Key, true);
+			set => Widget.Properties.Set(GridHandler.AllowEmptySelection_Key, value, true);
+		}
+		public bool DisableAutoScrollToSelection { get; set; }
+
+		protected void EnsureSelection()
+		{
+			if (!AllowEmptySelection 
+				&& (Control.SelectedItems?.Count ?? 0) == 0
+				&& (Control.ItemsSource as IList)?.Count > 0)
+			{
+				SelectRow(0);
+			}
+		}
+
+		public void OnColumnWidthChanged(GridColumnHandler gridColumnHandler)
+		{
+			Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(gridColumnHandler.Widget));
+		}
+		
+		internal (swc.DataGridColumn Column, swc.DataGridRow Row, bool IsHeader) GetCellInfoForElement(sw.DependencyObject element)
+		{
+			swc.DataGridColumn column = null;
+			bool isHeader = false;
+			var cell = element.GetVisualParent<swc.DataGridCell>();
+			if (cell != null)
+				column = cell.Column;
+			else
+			{
+				var header = element.GetVisualParent<swc.Primitives.DataGridColumnHeader>();
+				if (header != null)
+				{
+					column = header.Column;
+					isHeader = true;
+				}
+			}
+
+			var dataGridRow = element.GetVisualParent<swc.DataGridRow>();
+			return (column, dataGridRow, isHeader);
+		}
+		
+		internal (GridColumn Column, int ColumnIndex, int RowIndex, GridCellType CellType, object Item) GetCellInfo(PointF location)
+		{
+			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, location.ToWpf())?.VisualHit;
+			var cellInfo = GetCellInfoForElement(hitTestResult);
+			var columnIndex = cellInfo.Column != null ? Control.Columns.IndexOf(cellInfo.Column) : -1;
+			var column = columnIndex != -1 ? Widget.Columns[columnIndex] : null;
+			int rowIndex = -1;
+			object item = null;
+			if (cellInfo.Row != null)
+			{
+				rowIndex = cellInfo.Row.GetIndex();
+				item = GetItemAtRow(rowIndex);
+			}
+			var cellType = cellInfo.IsHeader ? GridCellType.ColumnHeader : rowIndex != -1 && columnIndex != -1 ? GridCellType.Data : GridCellType.None;
+			return (column, columnIndex, rowIndex, cellType, item);
+		}
+
+		swc.ScrollViewer ScrollViewer => Control.FindChild<swc.ScrollViewer>();
+
+		protected override void HandleDragOver(sw.DragEventArgs e, Eto.Forms.DragEventArgs args)
+		{
+			base.HandleDragOver(e, args);
+
+			var scrollViewer = ScrollViewer;
+			if (scrollViewer == null)
+				return;
+				
+			void ScrollWithIncrement(bool fast, double increment)
+			{
+				var now = DateTime.Now;
+				if (startDragOverTime == null)
+				{
+					startDragOverTime = now;
+					return;
+				}
+				
+				var diff = now - startDragOverTime;
+				if (diff > TimeSpan.FromSeconds(fast ? DragScrollFastDelay : DragScrollDelay))
+				{
+					startDragOverTime = now;
+					var oldOffset = scrollViewer.VerticalOffset;
+					var maxHeight = scrollViewer.ScrollableHeight;
+					var newOffset = Math.Min(maxHeight, Math.Max(0, oldOffset + increment));
+					if (newOffset != oldOffset)
+						scrollViewer.ScrollToVerticalOffset(newOffset);
+				}
+			}
+
+			var headerPart = ShowHeader ? Control.FindChild<swcp.DataGridColumnHeadersPresenter>("PART_ColumnHeadersPresenter") : null;
+			var headerHeight = headerPart?.ActualHeight ?? 0;
+
+			// scroll up or down when the user drags close to the edge
+			if (args.Location.Y < headerHeight + DragScrollSize)
+			{
+				ScrollWithIncrement(args.Location.Y < headerHeight + DragScrollFastSize, -1);
+				return;
+			}
+
+			var height = Control.ActualHeight;
+			if (scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Visible)
+			{
+				var child = scrollViewer.FindChild<swcp.ScrollBar>("PART_HorizontalScrollBar");
+				height -= child.ActualHeight;
+			}
+			
+			if (args.Location.Y > height - DragScrollSize)
+			{
+				ScrollWithIncrement(args.Location.Y > height - DragScrollFastSize, 1);
+				return;
+			}
+
+			// not in a drag scroll area, reset
+			startDragOverTime = null;
+		}
 	}
 }

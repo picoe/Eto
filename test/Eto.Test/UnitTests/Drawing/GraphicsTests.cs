@@ -1,11 +1,4 @@
-using Eto.Drawing;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Eto.Test.UnitTests.Drawing
 {
 	[TestFixture]
@@ -87,6 +80,14 @@ namespace Eto.Test.UnitTests.Drawing
 				g.DrawImage(bmp, 100, 100, 100, 100);
 			}
 
+			/* Show output for debugging: *
+			Application.Instance.Invoke(() =>
+			{
+				var dlg = new Dialog { Content = new ImageView { Image = bmp2 } };
+				dlg.ShowModal();
+			});
+			/**/
+
 			void hasBlue(Color c)
 			{
 				Assert.Greater(c.B, 0);
@@ -115,7 +116,7 @@ namespace Eto.Test.UnitTests.Drawing
 				hasBlue(bd.GetPixel(x + 99, y + 0));
 
 				// check the middle (ish) of the lower left corner which should both red and blue components
-				hasRedAndBlue(bd.GetPixel(x + 25, y + 75));
+				hasRedAndBlue(bd.GetPixel(x + 25, y + 50));
 
 				hasRed(bd.GetPixel(x + 0, y + 99));
 			}

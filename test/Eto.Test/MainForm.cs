@@ -1,13 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Threading.Tasks;
-using System.Linq;
-
 namespace Eto.Test
 {
 	public class MainForm : Form
@@ -33,21 +23,24 @@ namespace Eto.Test
 			}
 		}
 
-		string initialSection; // set to initial section to select for easier debugging
+		/// <summary>
+		/// Set to initial section name to select for easier debugging
+		/// </summary>
+		public string InitialSection { get; set; }
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
-			Title = string.Format("Test Application [{0}, {1} {2}, {3}]",
-				Platform.ID,
-				EtoEnvironment.Is64BitProcess ? "64bit" : "32bit",
-				EtoEnvironment.Platform.IsMono ? "Mono" : ".NET",
-				EtoEnvironment.Platform.IsWindows ? EtoEnvironment.Platform.IsWinRT
+			var bitness = EtoEnvironment.Is64BitProcess ? "64bit" : "32bit";
+			var runtime = RuntimeInformation.FrameworkDescription ?? (EtoEnvironment.Platform.IsMono ? "Mono" : EtoEnvironment.Platform.IsNetCore ? ".NET Core" : ".NET");
+			var platform = EtoEnvironment.Platform.IsWindows ? EtoEnvironment.Platform.IsWinRT
 				? "WinRT" : "Windows" : EtoEnvironment.Platform.IsMac
 				? "Mac" : EtoEnvironment.Platform.IsLinux
 				? "Linux" : EtoEnvironment.Platform.IsUnix
-				? "Unix" : "Unknown");
+				? "Unix" : "Unknown";
+
+			Title = $"Test Application [{Platform.ID}, {bitness}, {runtime}, {platform}]";
 			Style = "main";
-			MinimumSize = new Size(400, 400);
+			MinimumSize = new Size(600, 500);
 			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());
 
 			var nodes = topNodes.ToList();
@@ -56,55 +49,63 @@ namespace Eto.Test
 			else
 				SectionList = new SectionListTreeGridView(nodes);
 
-			SectionList.SelectedItemChanged += (sender, e) =>
-			{
-				Control content = null;
-				var item = SectionList.SelectedItem;
-
-				try
-				{
-					content = item?.CreateContent();
-				}
-				catch (Exception ex)
-				{
-					Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
-					contentContainer.Content = null;
-				}
-				finally
-				{
-					if (navigation != null)
-					{
-						if (content != null)
-							navigation.Push(content, item?.Text);
-					}
-					else
-					{
-						contentContainer.Content = content;
-					}
-				}
-
-#if DEBUG
-				GC.Collect();
-				GC.WaitForPendingFinalizers();
-#endif
-			};
+			SectionList.SelectedItemChanged += SectionList_SelectedItemChanged;
 
 
 			this.Icon = TestIcons.TestIcon;
 
 			if (Platform.IsDesktop)
-				ClientSize = new Size(900, 650);
+				ClientSize = new Size(1024, 700);
 			//Opacity = 0.5;
 
 			Content = MainContent();
 
 			CreateMenuToolBar();
 
-			if (initialSection != null)
+			if (TestApplication.Settings.SaveInitialSection && InitialSection == null)
+				InitialSection = TestApplication.Settings.InitialSection;
+
+			if (InitialSection != null)
 			{
-				SectionList.SelectedItem = nodes.SelectMany(r => r).OfType<ISection>().FirstOrDefault(r => r.Text == initialSection);
+				SectionList.SelectedItem = nodes.SelectMany(r => r).OfType<ISection>().FirstOrDefault(r => r.Text == InitialSection);
 			}
 
+		}
+
+		private void SectionList_SelectedItemChanged(object sender, EventArgs e)
+		{
+			Control content = null;
+			var item = SectionList.SelectedItem;
+
+			try
+			{
+				content = item?.CreateContent();
+			}
+			catch (Exception ex)
+			{
+				Log.Write(this, "Error loading section: {0}", ex.ToString());
+				contentContainer.Content = null;
+			}
+			finally
+			{
+				if (navigation != null)
+				{
+					if (content != null)
+						navigation.Push(content, item?.Text);
+				}
+				else
+				{
+					contentContainer.Content = content;
+				}
+			}
+
+			// save the initial section
+			TestApplication.Settings.InitialSection = item?.Text;
+
+#if DEBUG
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+#endif
 		}
 
 		public SectionList SectionList { get; set; }
@@ -113,11 +114,7 @@ namespace Eto.Test
 		{
 			contentContainer = new Panel();
 
-			// set focus when the form is shown
-			Shown += delegate
-			{
-				SectionList.Focus();
-			};
+			SectionList.Focus();
 			if (Splitter.IsSupported)
 			{
 				var splitter = new Splitter
@@ -203,6 +200,9 @@ namespace Eto.Test
 
 			if (Platform.Supports<MenuBar>())
 			{
+				var saveSettingsItem = new CheckMenuItem { Text = "Save Selected Section" };
+				saveSettingsItem.Bind(c => c.Checked, TestApplication.Settings, s => s.SaveInitialSection);
+
 				var fileCommand = new Command { MenuText = "File Command", Shortcut = Application.Instance.CommonModifier | Keys.F };
 				fileCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
 				var editCommand = new Command { MenuText = "Edit Command", Shortcut = Keys.Shift | Keys.E };
@@ -218,15 +218,15 @@ namespace Eto.Test
 					throw new InvalidOperationException("This is the exception message");
 				};
 
-				var subMenu = new ButtonMenuItem { Text = "Sub Menu" };
+				var subMenu = new SubMenuItem { Text = "Sub Menu" };
 				subMenu.Items.Add(new ButtonMenuItem { Text = "Item 1" });
 				subMenu.Items.Add(new ButtonMenuItem { Text = "Item 2" });
 				subMenu.Items.Add(new ButtonMenuItem { Text = "Item 3" });
 
-				var file = new ButtonMenuItem { Text = "&File", Items = { fileCommand, crashCommand } };
-				var edit = new ButtonMenuItem { Text = "&Edit", Items = { editCommand, subMenu } };
-                var view = new ButtonMenuItem { Text = "&View", Items = { viewCommand } };
-				var window = new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { windowCommand } };
+				var file = new SubMenuItem { Text = "&File", Items = { saveSettingsItem, fileCommand, crashCommand } };
+				var edit = new SubMenuItem { Text = "&Edit", Items = { editCommand, subMenu } };
+                var view = new SubMenuItem { Text = "&View", Items = { viewCommand } };
+				var window = new SubMenuItem { Text = "&Window", Order = 1000, Items = { windowCommand } };
 
 				if (Platform.Supports<CheckMenuItem>())
 				{
@@ -325,21 +325,21 @@ namespace Eto.Test
 				if (Platform.Supports<CheckToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
-					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
+					ToolBar.Items.Add(LogEvents(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage }));
 				}
 				ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Space });
-				ButtonToolItem clickButton = new ButtonToolItem { Text = "Click Me", Image = TestIcons.Logo };
+				ButtonToolItem clickButton = LogEvents(new ButtonToolItem { Text = "Click Me", Image = TestIcons.Logo });
 				ToolBar.Items.Add(clickButton);
 				if (Platform.Supports<RadioToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.Logo, Checked = true });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio3 (Disabled)", Image = TestIcons.TestImage, Enabled = false });
+					ToolBar.Items.Add(LogEvents(new RadioToolItem { Text = "Radio1", Image = TestIcons.Logo, Checked = true }));
+					ToolBar.Items.Add(LogEvents(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage }));
+					ToolBar.Items.Add(LogEvents(new RadioToolItem { Text = "Radio3 (Disabled)", Image = TestIcons.TestImage, Enabled = false }));
 				}
 
 				// add an invisible button and separator and allow them to be toggled.
-				var invisibleButton = new ButtonToolItem { Text = "Invisible", Visible = false };
+				var invisibleButton = LogEvents(new ButtonToolItem { Text = "Invisible", Visible = false });
 				var sep = new SeparatorToolItem { Type = SeparatorToolItemType.Divider, Visible = false };
 				ToolBar.Items.Add(sep);
 				ToolBar.Items.Add(invisibleButton);
@@ -348,8 +348,44 @@ namespace Eto.Test
 					invisibleButton.Visible = !invisibleButton.Visible;
 					sep.Visible = invisibleButton.Visible;
 				};
+				
+				if (Platform.Supports<DropDownToolItem>())
+				{
+					var dropItem = new DropDownToolItem { Text = "Dropdown", Image = TestIcons.TestImage };
+					dropItem.Items.Add(new SubMenuItem { Text = "Subitem 1", Items = { new ButtonMenuItem { Text = "Nested subitem 1" } } });
+					dropItem.Items.Add(new ButtonMenuItem { Text = "Button 2", Image = TestIcons.TestIcon });
+					dropItem.Items.Add(new CheckMenuItem { Text = "Check 3" });
+					dropItem.Items.Add(new ButtonMenuItem { Text = "Disabled Button", Image = TestIcons.TestIcon, Enabled = false });
+					dropItem.Items.Add(new CheckMenuItem((sender, e) => {
+						dropItem.ShowDropArrow = ((CheckMenuItem)sender).Checked == true;
+					}) { Text = "Toggle ShowDropArrow", Checked = dropItem.ShowDropArrow });
+					ToolBar.Items.Add(LogEvents(dropItem));
+				}
 			}
 		}
+
+		RadioToolItem LogEvents(RadioToolItem item)
+		{
+			item.CheckedChanged += (sender, e) => Log.Write(sender, $"CheckedChanged: {item.Text}");
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
+		}
+		CheckToolItem LogEvents(CheckToolItem item)
+		{
+			item.CheckedChanged += (sender, e) => Log.Write(sender, $"CheckedChanged: {item.Text}");
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
+		}
+		ButtonToolItem LogEvents(ButtonToolItem item)
+		{
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
+		}
+		DropDownToolItem LogEvents(DropDownToolItem item)
+			{
+			item.Click += (sender, e) => Log.Write(sender, $"Click: {item.Text}");
+			return item;
+			}
 
 		protected override void OnWindowStateChanged(EventArgs e)
 		{

@@ -1,13 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-#if XAMMAC2
-using Foundation;
-using ObjCRuntime;
-#else
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
-#endif
-
 namespace Eto.Mac
 {
 	static class MacVersion
@@ -39,7 +29,7 @@ namespace Eto.Mac
 
 		static MacVersion()
 		{
-#if XAMMAC
+#if !MONOMAC
 			// TODO: Can't use IsOperatingSystemAtLeastVersion in monomac yet, it's not mapped.
 			if (NSProcessInfo.ProcessInfo.RespondsToSelector(new Selector("operatingSystemVersion")))
 			{

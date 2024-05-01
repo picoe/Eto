@@ -1,38 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 #if IOS
 using UIKit;
 using CoreGraphics;
@@ -44,10 +9,10 @@ using BaseMacContainer = Eto.iOS.Forms.IosLayout<UIKit.UIView, Eto.Forms.TableLa
 #elif OSX
 using Eto.Mac.Forms.Controls;
 
-#if XAMMAC2
-using BaseMacContainer = Eto.Mac.Forms.MacContainer<AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
-#else
+#if MONOMAC
 using BaseMacContainer = Eto.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
+#else
+using BaseMacContainer = Eto.Mac.Forms.MacContainer<AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
 #endif
 
 #endif
@@ -72,6 +37,10 @@ namespace Eto.Mac.Forms
 		{
 			new TableLayoutHandler Handler => (TableLayoutHandler)base.Handler;
 
+			public EtoTableLayoutView(NativeHandle handle) : base(handle)
+			{
+			}
+
 			public EtoTableLayoutView()
 			{
 				AutoresizesSubviews = false;
@@ -79,8 +48,11 @@ namespace Eto.Mac.Forms
 
 			public override void Layout()
 			{
+				if (MacView.NewLayout)
+					base.Layout();
 				Handler?.PerformLayout();
-				base.Layout();
+				if (!MacView.NewLayout)
+					base.Layout();
 			}
 		}
 
@@ -375,6 +347,8 @@ namespace Eto.Mac.Forms
 
 		public void Remove(Control child)
 		{
+			if (views == null)
+				return;
 			for (int y = 0; y < views.GetLength(0); y++)
 				for (int x = 0; x < views.GetLength(1); x++)
 				{
@@ -426,6 +400,18 @@ namespace Eto.Mac.Forms
 		public bool GetRowScale(int row)
 		{
 			return yscaling[row];
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			HandleEvent(Eto.Forms.Control.SizeChangedEvent);
+		}
+
+		public override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+			Control.NeedsLayout = true;
 		}
 	}
 }

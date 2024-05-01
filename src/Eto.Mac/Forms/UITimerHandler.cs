@@ -1,21 +1,6 @@
-using System;
-using Eto.Forms;
 #if IOS
 using Foundation;
 #else
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
 #endif
 
 #if IOS
@@ -34,10 +19,10 @@ namespace Eto.Mac.Forms
 			WeakReference handler;
 			public UITimerHandler Handler { get { return (UITimerHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			#if XAMMAC2 || IOS
-			public void Elapsed(NSTimer timer)
-			#else
+			#if MONOMAC
 			public void Elapsed()
+			#else
+			public void Elapsed(NSTimer timer)
 			#endif
 			{
 				var h = Handler;

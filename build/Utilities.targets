@@ -1,101 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask TaskName="GetAssemblyInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <AssemblyFileName ParameterType="System.String" Required="true" />
-      <AssemblyInformationalVersion ParameterType="System.String" Output="true" />
-      <AssemblyTitle ParameterType="System.String" Output="true" />
-      <AssemblyDescription ParameterType="System.String" Output="true" />
-      <AssemblyCopyright ParameterType="System.String" Output="true" />
-      <AssemblyCompany ParameterType="System.String" Output="true" />
-      <AssemblyName ParameterType="System.String" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Reference Include="System.Xml" />
-      <Code Type="Class" Language="cs"><![CDATA[
-using System;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Reflection;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
-public static class Extensions
-{
-  public static T GetAssemblyAttribute<T>(this System.Reflection.Assembly ass) where T :  Attribute
-  {
-    object[] attributes = ass.GetCustomAttributes(typeof(T), false);
-    if (attributes == null || attributes.Length == 0)
-      return null;
-    return attributes.OfType<T>().SingleOrDefault();
-  }
-}
-
-public class GetAssemblyInfo : AppDomainIsolatedTask
-{
-  public string AssemblyFileName { get; set; }
-
-  [Output]
-  public string AssemblyInformationalVersion { get; set; }
-
-  [Output]
-  public string AssemblyTitle { get; set; }
-
-  [Output]
-  public string AssemblyDescription { get; set; }
-
-  [Output]
-  public string AssemblyCopyright { get; set; }
-
-  [Output]
-  public string AssemblyCompany { get; set; }
-
-  [Output]
-  public string AssemblyName { get; set; }
-
-
-  public override bool Execute()
-  {
-    try
-    {
-      AssemblyFileName = Path.GetFullPath(AssemblyFileName);
-
-      Log.LogMessage("Getting assembly info...", null);
-      AssemblyInformationalVersion = FileVersionInfo.GetVersionInfo(AssemblyFileName).ProductVersion;
-
-        var assembly = Assembly.LoadFrom(AssemblyFileName);
-      var informationalVersion = assembly.GetAssemblyAttribute<AssemblyInformationalVersionAttribute>();
-      if (informationalVersion != null)
-        AssemblyInformationalVersion = informationalVersion.InformationalVersion;
-      var title = assembly.GetAssemblyAttribute<AssemblyTitleAttribute>();
-      if (title != null)
-        AssemblyTitle = title.Title;
-      var description = assembly.GetAssemblyAttribute<AssemblyDescriptionAttribute>();
-      if (description != null)
-        AssemblyDescription = description.Description;
-      var copyright = assembly.GetAssemblyAttribute<AssemblyCopyrightAttribute>();
-      if (copyright != null)
-        AssemblyCopyright = copyright.Copyright;
-      var company = assembly.GetAssemblyAttribute<AssemblyCompanyAttribute>();
-      if (company != null)
-        AssemblyCompany = company.Company;
-      AssemblyName = assembly.GetName().Name;
-      return true;
-    }
-    catch (Exception ex)
-    {
-      Log.LogErrorFromException(ex);
-      return false;
-    }
-  }
-}
-]]></Code>
-    </Task>
-  </UsingTask>
-  <UsingTask TaskName="FileUpdate" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  <UsingTask TaskName="FileUpdate" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
       <Pattern ParameterType="System.String" Required="true" />
@@ -105,7 +11,6 @@ public class GetAssemblyInfo : AppDomainIsolatedTask
       <MultiLine ParameterType="System.Boolean" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Xml" />
       <Code Type="Class" Language="cs"><![CDATA[
 using System;
 using System.IO;
@@ -119,17 +24,9 @@ using Microsoft.Build.Utilities;
 
 public static class Extensions
 {
-  public static bool IsMono
-  {
-    get { return Type.GetType("Mono.Runtime", false) != null; }
-  }
-  
   public static string FixParameter(string value)
   {
-    if (IsMono)
-      return value.Replace("//", @"\");
-    else
-      return value.Replace(@"\\", @"\");
+    return value.Replace(@"\\", @"\").Replace(@"//", @"\");
   }
 }
 
@@ -191,7 +88,7 @@ public class FileUpdate : Task
         if (!regex.IsMatch(text))
         {
           if (WarnOnNoUpdate)
-            Log.LogWarning("File '{0}' not updated. Pattern: '{1}'", fileName, pattern);
+            Log.LogWarning("File '{0}' not updated. Pattern: '{1}', Replacement: '{2}'", fileName, pattern, Replacement);
           continue;
         }
         else
@@ -210,10 +107,10 @@ public class FileUpdate : Task
     return true;    
   }
 }
-]]></Code>
+]]>      </Code>
     </Task>
   </UsingTask>
-  <UsingTask TaskName="IncrementVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  <UsingTask TaskName="IncrementVersion" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <Version ParameterType="System.String" Required="true" />
       <Increment ParameterType="System.String" />
@@ -224,7 +121,6 @@ public class FileUpdate : Task
       <AssemblyVersionBeforeRelease ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Xml" />
       <Code Type="Class" Language="cs"><![CDATA[
 using System;
 using System.IO;
@@ -287,6 +183,8 @@ public class IncrementVersion : Task
       Version beforeVersion;
       if (!hasSuffix)
         beforeVersion = version;
+      else if (version.Build > 0)
+        beforeVersion = new Version(version.Major, version.Minor, version.Build - 1, 9999);
       else if (version.Minor > 0)
         beforeVersion = new Version(version.Major, version.Minor - 1, 9999, 0);
       else {
@@ -323,80 +221,7 @@ public class IncrementVersion : Task
     return true;
   }
 }
-]]></Code>
-    </Task>
-  </UsingTask>
-  <UsingTask TaskName="FileExtract" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <File ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
-      <Pattern ParameterType="System.String" Required="true" />
-      <Output ParameterType="System.String" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Reference Include="System.Xml" />
-      <Code Type="Class" Language="cs"><![CDATA[
-using System;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Reflection;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-
-public static class Extensions
-{
-  public static bool IsMono
-  {
-    get { return Type.GetType("Mono.Runtime", false) != null; }
-  }
-  
-  public static string FixParameter(string value)
-  {
-    if (IsMono)
-      return value.Replace("//", @"\");
-    else
-      return value.Replace(@"\\", @"\");
-  }
-}
-
-public class FileExtract : Task
-{
-  public ITaskItem File { get; set; }
-
-  public string Pattern { get; set; }
-  
-  [Output]
-  public string Output { get; set; }
-
-  public override bool Execute()
-  {
-    try
-    {
-      var regex = new Regex(Extensions.FixParameter(Pattern), RegexOptions.None);
-
-      var fileName = File.ItemSpec;
-
-      var text = System.IO.File.ReadAllText(fileName);
-
-      var match = regex.Match (text);
-      if (match.Success) {
-        Output = match.Value;
-        return true;
-      }
-      
-      Log.LogError("Could not extract from '{0}'", fileName);
-    }
-    catch (Exception ex)
-    {
-      Log.LogErrorFromException(ex);
-      return false;
-    }
-    return false;
-  }
-}
-]]></Code>
+]]>      </Code>
     </Task>
   </UsingTask>
 </Project>

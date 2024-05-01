@@ -1,8 +1,6 @@
-using System;
-using System.Linq.Expressions;
-
 namespace Eto
 {
+
 	/// <summary>
 	/// Helper functions specific to Eto
 	/// </summary>
@@ -13,7 +11,7 @@ namespace Eto
 		/// </summary>
 		public const float DegreesToRadians = (float)(Math.PI / 180);
 
-		public static Tuple<int,int> IndexOf(this object[,] target, object value)
+		public static Tuple<int, int> IndexOf(this object[,] target, object value)
 		{
 			var rowLowerLimit = target.GetLowerBound(0);
 			var rowUpperLimit = target.GetUpperBound(0);
@@ -43,6 +41,7 @@ namespace Eto
 			{
 				return ((UnaryExpression)lambda.Body).Operand as MemberExpression;
 			}
+
 			if (lambda.Body.NodeType == ExpressionType.MemberAccess)
 			{
 				return lambda.Body as MemberExpression;

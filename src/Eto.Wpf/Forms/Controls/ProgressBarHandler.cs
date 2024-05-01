@@ -1,9 +1,3 @@
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using Eto.Forms;
-using Eto.Drawing;
-using System;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoProgressBar : swc.ProgressBar, IEtoWpfControl

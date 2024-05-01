@@ -1,8 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using Eto.Drawing;
-
 namespace Eto.Shared.Drawing
 {
 	/// <summary>
@@ -27,8 +22,9 @@ namespace Eto.Shared.Drawing
 		/// <param name="scanWidth">Width of each scan row, in bytes</param>
 		/// <param name="bitsPerPixel">Bits per pixel</param>
 		/// <param name="controlObject">Platform specific object for the bitmap data (if any)</param>
-		protected BaseBitmapData(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base(image, data, scanWidth, bitsPerPixel, controlObject)
+		/// <param name="premultipliedAlpha"><c>true</c> to specify that the RGB components are premultiplied with the alpha component, <c>false</c> otherwise.</param>
+		protected BaseBitmapData(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool premultipliedAlpha)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, premultipliedAlpha)
 		{
 		}
 

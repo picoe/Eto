@@ -1,9 +1,5 @@
-using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Serialization.Json.Converters;
 
 namespace Eto.Serialization.Json
@@ -65,14 +61,14 @@ namespace Eto.Serialization.Json
 					var prop = CreateProperty(propertyInfo, memberSerialization);
 					prop.PropertyName = "$name";
 					prop.PropertyType = typeof(NameConverter.Info);
-					prop.MemberConverter = new NameConverter();
+					prop.Converter = new NameConverter();
 					prop.ValueProvider = new NameConverter.ValueProvider();
 					list.Add(prop);
 
 					prop = CreateProperty(propertyInfo, memberSerialization);
 					prop.PropertyName = "ID";
 					prop.PropertyType = typeof(NameConverter.Info);
-					prop.MemberConverter = new NameConverter();
+					prop.Converter = new NameConverter();
 					prop.ValueProvider = new NameConverter.ValueProvider();
 					list.Add(prop);
 				}

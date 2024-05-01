@@ -1,39 +1,6 @@
-using System;
-using Eto.Forms;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Forms
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
+	public class MessageBoxHandler : MessageBox.IHandler
 	{
 		public string Text { get; set; }
 
@@ -47,6 +14,7 @@ namespace Eto.Mac.Forms
 
 		public DialogResult ShowDialog(Control parent)
 		{
+			MacView.InMouseTrackingLoop = false;
 			var alert = new NSAlert();
 
 			AddButtons(alert);
@@ -68,13 +36,33 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		class CancelView : NSView
+		{
+			public int Code { get; set; }
+
+			public override bool PerformKeyEquivalent(NSEvent theEvent)
+			{
+				var typed = theEvent.CharactersIgnoringModifiers;
+				var mods = theEvent.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask;
+				var isCmdDown = mods.HasFlag(NSEventModifierMask.CommandKeyMask);
+				if ((mods == 0 && theEvent.KeyCode == 53) || (isCmdDown && typed == "."))
+				{
+					if (Window.IsSheet)
+						NSApplication.SharedApplication.EndSheet(Window, Code);
+					else
+						NSApplication.SharedApplication.StopModalWithCode(Code);
+				}
+				return base.PerformKeyEquivalent(theEvent);
+			}
+		}
+
+		string OkButton => Application.Instance.Localize(this, "OK");
+		string CancelButton => Application.Instance.Localize(this, "Cancel");
+		string YesButton => Application.Instance.Localize(this, "Yes");
+		string NoButton => Application.Instance.Localize(this, "No");
+
 		void AddButtons(NSAlert alert)
 		{
-			var OkButton = "OK";
-			var CancelButton = "Cancel";
-			var YesButton = "Yes";
-			var NoButton = "No";
-
 			switch (Buttons)
 			{
 				case MessageBoxButtons.OK:
@@ -86,12 +74,12 @@ namespace Eto.Mac.Forms
 						var cancel = alert.AddButton(CancelButton);
 						switch (DefaultButton)
 						{
-							case MessageBoxDefaultButton.OK:
-								ok.BecomeFirstResponder();
-								break;
 							case MessageBoxDefaultButton.Cancel:
 							case MessageBoxDefaultButton.Default:
-								cancel.BecomeFirstResponder();
+								ok.KeyEquivalent = string.Empty;
+								cancel.KeyEquivalent = "\r";
+								SetResponder(alert, ok);
+								SetCancelCode(alert, 1001);
 								break;
 						}
 					}
@@ -102,12 +90,12 @@ namespace Eto.Mac.Forms
 						var no = alert.AddButton(NoButton);
 						switch (DefaultButton)
 						{
-							case MessageBoxDefaultButton.Yes:
-								yes.BecomeFirstResponder();
-								break;
 							case MessageBoxDefaultButton.No:
 							case MessageBoxDefaultButton.Default:
-								no.BecomeFirstResponder();
+								yes.KeyEquivalent = string.Empty;
+								no.KeyEquivalent = "\r";
+								SetResponder(alert, yes);
+								SetCancelCode(alert, 1001);
 								break;
 						}
 					}
@@ -120,19 +108,36 @@ namespace Eto.Mac.Forms
 						switch (DefaultButton)
 						{
 							case MessageBoxDefaultButton.Yes:
-								yes.BecomeFirstResponder();
 								break;
 							case MessageBoxDefaultButton.No:
-								no.BecomeFirstResponder();
+								yes.KeyEquivalent = string.Empty;
+								no.KeyEquivalent = "\r";
+								SetResponder(alert, yes);
 								break;
 							case MessageBoxDefaultButton.Cancel:
 							case MessageBoxDefaultButton.Default:
-								cancel.BecomeFirstResponder();
+								yes.KeyEquivalent = string.Empty;
+								cancel.KeyEquivalent = "\r";
+								SetResponder(alert, yes);
+								SetCancelCode(alert, 1001);
 								break;
 						}
 					}
 					break;
 			}
+		}
+
+		private static void SetResponder(NSAlert alert, NSButton button)
+		{
+			// make the specified button the first responder for the window
+			// so the user can press space to select it
+			alert.Window.MakeFirstResponder(button);
+		}
+
+		private static void SetCancelCode(NSAlert alert, int code)
+		{
+			// set an accessory view to listen for escape key and cmd+.
+			alert.AccessoryView = new CancelView { Code = code };
 		}
 
 		static NSAlertStyle Convert(MessageBoxType type)

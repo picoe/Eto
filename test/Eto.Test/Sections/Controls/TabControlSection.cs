@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using Eto.Forms;
-
-namespace Eto.Test.Sections.Controls
+﻿namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(TabControl))]
 	public class TabControlSection : Panel
@@ -106,7 +102,7 @@ namespace Eto.Test.Sections.Controls
 			control.Pages.Add(new TabPage
 			{
 				Text = "Tab 2",
-				Image = TestIcons.TestIcon.WithSize(16, 16),
+				Image = TestIcons.TestIcon.WithSize(32, 32),
 				Content = TabTwo()
 			});
 

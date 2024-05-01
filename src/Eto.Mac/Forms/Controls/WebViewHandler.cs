@@ -1,21 +1,9 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using wk = WebKit;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
+#if MONOMAC
 using wk = MonoMac.WebKit;
+using IWebOpenPanelResultListener = MonoMac.WebKit.WebOpenPanelResultListener;
+#else
+using wk = WebKit;
+using IWebOpenPanelResultListener = WebKit.IWebOpenPanelResultListener;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -223,25 +211,18 @@ namespace Eto.Mac.Forms.Controls
 				return Handler.BrowserContextMenuEnabled ? defaultMenuItems : null;
 			}
 
-			#if XAMMAC2
-			public override void UIRunOpenPanelForFileButton(wk.WebView sender, wk.IWebOpenPanelResultListener resultListener)
+			public override void UIRunOpenPanelForFileButton(wk.WebView sender, IWebOpenPanelResultListener resultListener)
 			{
 				var openDlg = new OpenFileDialog();
 				if (openDlg.ShowDialog(Handler.Widget.ParentWindow) == DialogResult.Ok)
 				{
-					wk.WebOpenPanelResultListener_Extensions.ChooseFilenames(resultListener, openDlg.Filenames.ToArray());
-				}
-			}
-			#else
-			public override void UIRunOpenPanelForFileButton(wk.WebView sender, wk.WebOpenPanelResultListener resultListener)
-			{
-				var openDlg = new OpenFileDialog();
-				if (openDlg.ShowDialog(Handler.Widget.ParentWindow) == DialogResult.Ok)
-				{
+#if MACOS_NET || MONOMAC
 					resultListener.ChooseFilenames(openDlg.Filenames.ToArray());
+#else
+					wk.WebOpenPanelResultListener_Extensions.ChooseFilenames(resultListener, openDlg.Filenames.ToArray());
+#endif
 				}
 			}
-			#endif
 
 			public override void UIPrintFrameView(wk.WebView sender, wk.WebFrameView frameView)
 			{
@@ -308,9 +289,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public string ExecuteScript(string script)
 		{
-			var fullScript = string.Format("var fn = function () {{ {0} }}; fn();", script);
+			var fullScript = string.Format("var _fn = function() {{ {0} }}; _fn();", script);
 			return Control.StringByEvaluatingJavaScriptFromString(fullScript);
 		}
+
+		public Task<string> ExecuteScriptAsync(string script) => Task.FromResult(ExecuteScript(script));
 
 		public void LoadHtml(string html, Uri baseUri)
 		{

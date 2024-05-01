@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-
-namespace Eto.Wpf.Forms
+﻿namespace Eto.Wpf.Forms
 {
 	/// <summary>
 	/// Shared class to use as a container that properly handles measurement for Eto sizing rules

@@ -1,11 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.GtkSharp.Drawing;
-using Eto.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, ListBox.IHandler, IGtkEnumerableModelHandler<object>
@@ -63,9 +56,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			[GLib.ConnectBefore]
 			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
 			{
-				if (Handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
 				{
-					var menu = (Gtk.Menu)Handler.contextMenu.ControlObject;
+					var menu = (Gtk.Menu)handler.contextMenu.ControlObject;
 					menu.Popup();
 					menu.ShowAll();
 				}
@@ -73,12 +69,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleTreeRowActivated(object o, Gtk.RowActivatedArgs args)
 			{
-				Handler.Callback.OnActivated(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnActivated(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

@@ -1,7 +1,3 @@
-using System.IO;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class CursorHandler : WidgetHandler<Gdk.Cursor, Cursor>, Cursor.IHandler
@@ -20,6 +16,11 @@ namespace Eto.GtkSharp.Forms
 		public void Create(string fileName) => Create(new Gdk.Pixbuf(fileName));
 
 		public void Create(Stream stream) => Create(new Gdk.Pixbuf(stream));
+
+		public void Create(Image image, PointF hotspot)
+		{
+			Control = new Gdk.Cursor(Gdk.Display.Default, image.ToGdk(), (int)hotspot.X, (int)hotspot.Y);
+		}
 
 		void Create(Gdk.Pixbuf pixbuf)
 		{

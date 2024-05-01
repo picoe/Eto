@@ -1,7 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class DateTimePickerHandler : GtkControl<CustomControls.DateComboBox, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
@@ -31,7 +27,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleDateChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

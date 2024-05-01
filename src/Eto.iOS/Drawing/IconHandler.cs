@@ -1,13 +1,7 @@
-using System;
-using System.IO;
-using Eto.Drawing;
 using UIKit;
 using Foundation;
 using SD = System.Drawing;
 using CoreGraphics;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.iOS.Drawing
 {
 	public class IconFrameHandler : IconFrame.IHandler

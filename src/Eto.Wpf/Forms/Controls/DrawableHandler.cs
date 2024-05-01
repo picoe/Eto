@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
-using swi = System.Windows.Input;
 using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable, Drawable.ICallback>, Drawable.IHandler
+	public class DrawableHandler : DrawableHandler<swc.Canvas, Drawable, Drawable.ICallback> { }
+
+	public class DrawableHandler<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Drawable.IHandler
+		where TControl : swc.Canvas
+		where TWidget : Drawable
+		where TCallback : Drawable.ICallback
 	{
 		bool tiled;
 		sw.FrameworkElement content;
@@ -51,9 +47,9 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		class EtoMainCanvas : swc.Canvas
+		public class EtoMainCanvas : swc.Canvas
 		{
-			public DrawableHandler Handler { get; set; }
+			public DrawableHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
 			protected override void OnMouseDown(sw.Input.MouseButtonEventArgs e)
 			{
@@ -83,16 +79,19 @@ namespace Eto.Wpf.Forms.Controls
 
 			protected override sw.Size MeasureOverride(sw.Size constraint)
 			{
+				return Handler.MeasureOverride(constraint, ContentMeasureOverride);
+			}
+
+			private sw.Size ContentMeasureOverride(sw.Size constraint)
+			{
+				var size = base.MeasureOverride(constraint);
 				var content = Handler.content;
-				if (content != null)
-				{
-					content.Measure(constraint);
-					return Handler.MeasureOverride(constraint, c => {
-						base.MeasureOverride(c);
-						return content.DesiredSize;
-						});
-				}
-				return Handler.MeasureOverride(constraint, base.MeasureOverride);
+				if (content == null)
+					return size;
+			
+				// content should be used to measure, if present		
+				content.Measure(constraint);
+				return content.DesiredSize;
 			}
 
 			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
@@ -108,7 +107,7 @@ namespace Eto.Wpf.Forms.Controls
 		class EtoTile : sw.FrameworkElement
 		{
 			Rectangle bounds;
-			public DrawableHandler Handler { get; set; }
+			public DrawableHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
 			public Rectangle Bounds
 			{
@@ -139,7 +138,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		protected override bool NeedsPixelSizeNotifications {  get { return true; } }
+		protected override bool NeedsPixelSizeNotifications { get { return true; } }
 
 		public override void OnLoadComplete(EventArgs e)
 		{
@@ -160,17 +159,25 @@ namespace Eto.Wpf.Forms.Controls
 			UnRegisterScrollable();
 		}
 
-		public void Create()
+		protected override TControl CreateControl()
 		{
-			Control = new EtoMainCanvas
+			return new EtoMainCanvas
 			{
 				Handler = this,
 				SnapsToDevicePixels = true,
 				FocusVisualStyle = null,
 				Background = swm.Brushes.Transparent
-			};
+			} as TControl;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+
 			Control.Loaded += Control_Loaded;
 		}
+
+		public void Create() { }
 
 		public void Create(bool largeCanvas)
 		{
@@ -182,7 +189,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			UpdateTiles(true);
 			Control.Loaded -= Control_Loaded; // only perform once
-        }
+		}
 
 		public virtual Graphics CreateGraphics()
 		{

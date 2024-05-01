@@ -1,35 +1,10 @@
-﻿using System;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-namespace Eto.Mac.Forms
+﻿namespace Eto.Mac.Forms
 {
 	class EtoDragSource : NSDraggingSource
 	{
+		public DataObject Data { get; set; }
+		public IMacViewHandler Handler { get; set; }
+
 		[Export("sourceView")]
 		public NSView SourceView { get; set; }
 
@@ -41,5 +16,19 @@ namespace Eto.Mac.Forms
 		{
 			return AllowedOperation;
 		}
+		
+		[Export("draggingSession:endedAtPoint:operation:")]
+		public void DraggingSessionEnded(NSDraggingSession session, CGPoint point, NSDragOperation operation)
+		{
+			var h = Handler;
+			if (h == null)
+				return;
+			var args = new DragEventArgs(h.Widget, Data, AllowedOperation.ToEto(), point.ToEto(), Keyboard.Modifiers, Mouse.Buttons, this);
+			args.Effects = operation.ToEto();
+			h.Callback.OnDragEnd(h.Widget, args);
+		}
+
+		[Export("ignoreModifierKeysForDraggingSession:")]
+		public bool IgnoreModifierKeysForDraggingSession(NSDraggingSession session) => true;
 	}
 }

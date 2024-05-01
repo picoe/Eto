@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(TextArea))]
@@ -15,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Default()
 		{
-			var text = new TextArea { Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." };
+			var text = new TextArea { Text = Utility.LoremTextWithTwoParagraphs };
 			LogEvents(text);
 
 			return new TableLayout
@@ -83,10 +78,66 @@ namespace Eto.Test.Sections.Controls
 				{
 					null,
 					TextReplacementsDropDown(text),
+					ScrollToDropDown(text),
+					ShowTextLength(text),
+					SetBorderType(text),
 					null
 				}
 				};
 		}
+
+		private static Control SetBorderType(TextArea text)
+		{
+			var dropDown = new EnumDropDown<BorderType>();
+			dropDown.SelectedValueBinding.Bind(text, t => t.Border);
+			return dropDown;
+		}
+
+		private static Control ShowTextLength(TextArea text)
+		{
+			var button = new Button { Text = "Show TextLength" };
+			button.Click += (sender, e) => Log.Write(text, $"TextLength: {text.TextLength}");
+			return button;
+		}
+
+		private static Control ScrollToDropDown(TextArea text)
+		{
+			var button = new SegmentedButton { SelectionMode = SegmentedSelectionMode.None };
+			
+			void ScrollToRange(object sender, EventArgs e)
+			{
+				var dlg = new Dialog<bool> { Title = "Select Range" };
+
+				var start = new NumericStepper { MinValue = 0, MaxValue = text.TextLength, Value = 10 };
+				var end = new NumericStepper { MinValue = 0, MaxValue = text.TextLength, Value = 20 };
+
+				var layout = new TableLayout { Spacing = new Size(5, 5), Padding = 10 };
+				layout.Rows.Add(new TableRow("Start:", start));
+				layout.Rows.Add(new TableRow("End:", end));
+				dlg.Content = layout;
+
+				var done = new Button { Text = "Done" };
+				done.Click += (sender, e) => dlg.Close(true);
+
+				dlg.PositiveButtons.Add(done);
+				dlg.DefaultButton = done;
+				
+				if (dlg.ShowModal())
+				{
+					text.ScrollTo(new Range<int>((int)start.Value, (int)end.Value));
+				}
+			}
+			
+			
+			var contextMenu = new ContextMenu();
+			contextMenu.Items.Add(new ButtonMenuItem((sender, e) => text.ScrollToStart()) { Text = "ScrollToStart" });
+			contextMenu.Items.Add(new ButtonMenuItem((sender, e) => text.ScrollToEnd()) { Text = "ScrollToEnd" });
+			contextMenu.Items.Add(new ButtonMenuItem(ScrollToRange) { Text = "ScrollTo(Range<int>)" });
+			button.Items.Add(new MenuSegmentedItem { Text = "ScrollTo", Menu = contextMenu });
+
+			return button;
+		}
+
 
 		static Control WrapCheckBox(TextArea text)
 		{

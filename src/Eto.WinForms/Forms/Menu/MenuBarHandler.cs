@@ -1,27 +1,23 @@
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-using System.Collections.Generic;
-
 namespace Eto.WinForms.Forms.Menu
 {
-	public class MenuBarHandler : WidgetHandler<SWF.MenuStrip, MenuBar>, MenuBar.IHandler
+	public class MenuBarHandler : WidgetHandler<swf.MenuStrip, MenuBar>, MenuBar.IHandler
 	{
 		public MenuBarHandler()
 		{
-			Control = new SWF.MenuStrip { Visible = false };
+			Control = new swf.MenuStrip { Visible = false };
 		}
 
 		#region IMenu Members
 
 		public void AddMenu(int index, MenuItem item)
 		{
-			Control.Items.Insert(index, (SWF.ToolStripItem)item.ControlObject);
+			Control.Items.Insert(index, (swf.ToolStripItem)item.ControlObject);
 			Control.Visible = true;
 		}
 
 		public void RemoveMenu(MenuItem item)
 		{
-			Control.Items.Remove((SWF.ToolStripItem)item.ControlObject);
+			Control.Items.Remove((swf.ToolStripItem)item.ControlObject);
 			Control.Visible = Control.Items.Count > 0;
 		}
 
@@ -73,12 +69,12 @@ namespace Eto.WinForms.Forms.Menu
 
 		public ButtonMenuItem ApplicationMenu
 		{
-			get { return Widget.Items.GetSubmenu("&File", -100); }
+			get { return Widget.Items.GetSubmenu(Application.Instance.Localize(Widget, "&File"), -100); }
 		}
 
 		public ButtonMenuItem HelpMenu
 		{
-			get { return Widget.Items.GetSubmenu("&Help", 1000); }
+			get { return Widget.Items.GetSubmenu(Application.Instance.Localize(Widget, "&Help"), 1000); }
 		}
 	}
 }

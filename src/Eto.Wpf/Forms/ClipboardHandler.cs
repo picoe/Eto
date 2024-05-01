@@ -1,22 +1,15 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Wpf.Drawing;
-using System;
-using sc = System.ComponentModel;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Linq;
-using System.Threading;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using swmi = System.Windows.Media.Imaging;
-using System.Collections.Specialized;
-
 namespace Eto.Wpf.Forms
 {
 	public class ClipboardHandler : DataObjectHandler<Clipboard, Clipboard.ICallback>, Clipboard.IHandler
 	{
+		public ClipboardHandler()
+		{
+			Control = new sw.DataObject();
+		}
+
+		public override sw.IDataObject ReadingDataObject => sw.Clipboard.GetDataObject();
+
 		public override string[] Types => sw.Clipboard.GetDataObject()?.GetFormats();
 
 		protected override void Update()

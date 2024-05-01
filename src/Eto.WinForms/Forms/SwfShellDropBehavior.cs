@@ -1,7 +1,3 @@
-using System;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-
 namespace Eto.WinForms.Forms
 {
 	public class SwfShellDropBehavior

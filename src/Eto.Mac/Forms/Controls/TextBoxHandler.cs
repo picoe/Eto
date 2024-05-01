@@ -1,21 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
-using Eto.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public interface ITextBoxWithMaxLength
@@ -51,10 +34,13 @@ namespace Eto.Mac.Forms.Controls
 		[Export("isPartialStringValid:proposedSelectedRange:originalString:originalSelectedRange:errorDescription:")]
 		public bool IsPartialStringValid(ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
 		{
-			if (Handler.MaxLength > 0)
+			var h = Handler;
+			if (h == null)
+				return true;
+			if (h.MaxLength > 0)
 			{
 				int size = (int)value.Length;
-				if (size > Handler.MaxLength)
+				if (size > h.MaxLength)
 				{
 					return false;
 				}
@@ -68,27 +54,63 @@ namespace Eto.Mac.Forms.Controls
 			return null;
 		}
 	}
+	
+	public interface IColorizeCell
+	{
+		Color? Color { get; set; }
+	}
+	
+	public class EtoTextFieldCell : NSTextFieldCell, IColorizeCell
+	{
+		ColorizeView colorize;
+
+		public EtoTextFieldCell()
+		{
+			StringValue = string.Empty;
+		}
+
+		public Color? Color 
+		{ 
+			get => colorize?.Color;
+			set => ColorizeView.Create(ref colorize, value);
+		}
+
+		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
+		{
+			colorize?.End();
+			base.DrawInteriorWithFrame(cellFrame, inView);
+		}
+		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
+		{
+			colorize?.Begin(cellFrame, inView);
+			base.DrawWithFrame(cellFrame, inView);
+		}
+	}
 
 	public class EtoTextField : NSTextField, IMacControl, ITextBoxWithMaxLength
 	{
 		public WeakReference WeakHandler { get; set; }
 
-		IMacText TextHandler => WeakHandler.Target as IMacText;
-		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler.Target as ITextBoxWithMaxLength;
+		IMacViewHandler Handler => WeakHandler?.Target as IMacViewHandler;
+		IMacText TextHandler => WeakHandler?.Target as IMacText;
+		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler?.Target as ITextBoxWithMaxLength;
 
 		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? 0; } }
-
+		
 		public EtoTextField(IntPtr handle)
 			: base(handle)	
 		{
 		}
 
+		EtoFormatter formatter;
+
 		public EtoTextField()
 		{
+			Cell = new EtoTextFieldCell();
 			Bezeled = true;
 			Editable = true;
 			Selectable = true;
-			Formatter = new EtoFormatter { Handler = this };
+			Formatter = formatter = new EtoFormatter { Handler = this };
 			Cell.Scrollable = true;
 			Cell.Wraps = false;
 			Cell.UsesSingleLineMode = true;
@@ -107,11 +129,31 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void MouseDown(NSEvent theEvent)
 		{
-			base.MouseDown(theEvent);
 			var h = TextHandler;
 			if (h != null && h.AutoSelectMode == AutoSelectMode.Always && CurrentEditor?.SelectedRange.Length == 0)
 			{
 				CurrentEditor?.SelectAll(this);
+			}
+			
+			var handler = Handler;
+			if (handler == null)
+				return;
+			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
+			if (theEvent.ClickCount >= 2)
+				handler.Callback.OnMouseDoubleClick(handler.Widget, args);
+			
+			if (!args.Handled)
+			{
+				handler.Callback.OnMouseDown(handler.Widget, args);
+			}
+			if (!args.Handled)
+			{
+				handler.SuppressMouseEvents++;
+				base.MouseDown(theEvent);
+				handler.SuppressMouseEvents--;
+				
+				// some controls use event loops until mouse up, so we need to trigger the mouse up here.
+				handler.TriggerMouseCallback();
 			}
 		}
 	}

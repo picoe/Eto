@@ -1,31 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+
     <BasePath>$(MSBuildThisFileDirectory)..\</BasePath>
+    <BasePath>$([System.IO.Path]::GetFullPath($(BasePath)))</BasePath>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</OSPlatform>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</OSPlatform>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' != 'Unix'">Windows</OSPlatform>
     
-    <XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\</XamarinMacPath>
-    <XamarinMacLibPath>$(XamarinMacPath)lib\mono\</XamarinMacLibPath>
-    <ReferencePath Condition="$(ReferencePath) == '' and Exists('$(XamarinMacLibPath)')">$(XamarinMacLibPath)</ReferencePath>
-    
     <ArtifactsDir Condition="$(BuildOutoutDir) == ''">$(BasePath)artifacts\</ArtifactsDir>
-    <ArtifactsNet45Dir Condition="$(ArtifactsNet45Dir) == ''">$(ArtifactsDir)core\$(Configuration)\net45\</ArtifactsNet45Dir>
-    <ArtifactsNetStandard10Dir Condition="$(ArtifactsNetStandard10Dir) == ''">$(ArtifactsDir)core\$(Configuration)\netstandard1.0\</ArtifactsNetStandard10Dir>
-    <ArtifactsNetStandard20Dir Condition="$(ArtifactsNetStandard20Dir) == ''">$(ArtifactsDir)core\$(Configuration)\netstandard2.0\</ArtifactsNetStandard20Dir>
-    <ArtifactsModernDir Condition="$(ArtifactsModernDir) == ''">$(ArtifactsDir)core\$(Configuration)\modern\</ArtifactsModernDir>
-    <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition="$(BaseIntermediateOutputPath) == ''">$(ArtifactsDir)obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <SourceDir Condition="$(SourceDir) == ''">$(BasePath)src\</SourceDir>
     <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
-    <NugetOutputDir Condition="$(NugetOutputDir) == ''">$(ArtifactsDir)nuget\$(Configuration)\</NugetOutputDir>
-    <AddinDir>$(SourceDir)\Addins\</AddinDir>
-    <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Linux'">"mdtool"</mdtool>
-    <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
-    <mdtool Condition="$(mdtool) == '' and $(OSPlatform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
-    <UtilitiesBasePath>$(ArtifactsDir)obj</UtilitiesBasePath>
-    
-    <VersionInfoPropsFile>$(ArtifactsDir)obj\VersionInfo.props</VersionInfoPropsFile>
+    <PackageOutputPath>$(ArtifactsDir)nuget\$(Configuration)\</PackageOutputPath>
+    <BuildDir>$(MSBuildThisFileDirectory)</BuildDir>
     
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <!-- global nuget/assembly properties -->
+
+    <DevVersion>2.8.4</DevVersion>
+
+    <Version Condition="$(Version) == ''">2.8.0.0</Version>
+
+    <InformationalVersion Condition="$(SetVersion) != ''">$(SetVersion)</InformationalVersion>
+    <!-- set version from tag -->
+    <InformationalVersion Condition="$(InformationalVersion) == '' AND $(BuildBranch.StartsWith('refs/tags/'))">$(BuildBranch.Substring(10))</InformationalVersion>
+    <!-- set version for CI build -->
+    <InformationalVersion Condition="$(InformationalVersion) == '' AND $(BuildVersion) != ''">$(DevVersion)-ci-$([System.DateTime]::Now.ToString('yyyyMMdd')).$(BuildVersion)</InformationalVersion>
+    <!-- set version for development -->
+    <InformationalVersion Condition="$(InformationalVersion) == ''">$(DevVersion)-dev</InformationalVersion>
+
+    <Company>Picoe Software Solutions</Company>
+    <Copyright>(c) 2010-2021 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
+    
+    <PackageVersion>$(InformationalVersion)</PackageVersion>
+    <PackageLicenseFile>Eto-LICENSE.txt</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+    <AssemblyVersionMajorMinor>$([System.Version]::Parse($([System.String]::Copy('$(Version)').Replace('.*', ''))).ToString(2))</AssemblyVersionMajorMinor>
+    <DaysSince2000>$([System.DateTime]::Today.Subtract($([System.DateTime]::Parse('2000-01-01T00:00:00Z'))).TotalDays.ToString('0'))</DaysSince2000>
+    <SecondsOfTodayHalved>$([MSBuild]::Divide($([System.DateTime]::Now.Subtract($([System.DateTime]::Today)).TotalSeconds), 2).ToString('0'))</SecondsOfTodayHalved>
+    <FileVersion>$(AssemblyVersionMajorMinor).$(DaysSince2000).$(SecondsOfTodayHalved)</FileVersion>
+    
+    <PackageProjectUrl>https://github.com/picoe/Eto</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
+
+    <!-- add git sha to informational version, after package version is set -->
+    <InformationalVersion Condition="$(GITHUB_SHA) != ''">$(InformationalVersion)+$(GITHUB_SHA)</InformationalVersion>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(BasePath)LICENSE.txt" PackageCopyToOutput="False" Pack="True" PackagePath="$(PackageLicenseFile)">
+      <Link>Eto-LICENSE.txt</Link>
+    </None>
+  </ItemGroup>
+
+
 </Project>

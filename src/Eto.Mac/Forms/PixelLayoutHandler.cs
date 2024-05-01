@@ -1,39 +1,6 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Mac.Forms.Controls;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 namespace Eto.Mac.Forms
 {
@@ -61,8 +28,11 @@ namespace Eto.Mac.Forms
 
 			public override void Layout()
 			{
+				if (MacView.NewLayout)
+					base.Layout();
 				Handler?.PerformLayout();
-				base.Layout();
+				if (!MacView.NewLayout)
+					base.Layout();
 			}
 		}
 
@@ -93,7 +63,7 @@ namespace Eto.Mac.Forms
 		{
 			var macView = control.GetMacViewHandler();
 			var availableSize = Widget.Loaded ? Size.MaxValue : macView.GetAlignmentFrame().Size.ToEtoSize();
-			var preferredSize = macView.GetPreferredSize(availableSize);
+			var preferredSize = control.GetPreferredSize(availableSize);
 
 			var origin = point.ToNS();
 			if (!Control.IsFlipped)
@@ -120,7 +90,7 @@ namespace Eto.Mac.Forms
 				if (macView == null)
 					continue;
 
-				var preferredSize = macView.GetPreferredSize(SizeF.PositiveInfinity);
+				var preferredSize = control.GetPreferredSize(SizeF.PositiveInfinity);
 				macView.SetAlignmentFrameSize(preferredSize.ToNS());
 			}
 		}

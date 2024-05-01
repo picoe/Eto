@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>
@@ -50,6 +42,8 @@ namespace Eto.WinForms.Forms.Controls
 		int? lastCaretIndex;
 		swf.TableLayoutPanel container;
 
+		internal override bool SetFontTwiceForSomeReason => true;
+
 		public static Size DefaultMinimumSize = new Size(100, 60);
 
 		public override Size? GetDefaultSize(Size availableSize)
@@ -73,7 +67,8 @@ namespace Eto.WinForms.Forms.Controls
 				Dock = swf.DockStyle.Fill,
 				BorderStyle = swf.BorderStyle.None,
 				ScrollBars = swf.RichTextBoxScrollBars.Both,
-				LanguageOption = swf.RichTextBoxLanguageOptions.DualFont
+				LanguageOption = swf.RichTextBoxLanguageOptions.DualFont,
+				DetectUrls = false
 			};
 			container = new swf.TableLayoutPanel
 			{
@@ -147,7 +142,7 @@ namespace Eto.WinForms.Forms.Controls
 				base.Text = val;
 				if (!Control.IsHandleCreated) // correct??
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
-				Selection = Range.FromLength(val.Length, 0);
+				Selection = Eto.Forms.Range.FromLength(val.Length, 0); // Fully qualified because System.Range was introduced in .NET Core 3.0
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				SuppressSelectionChanged--;
 			}
@@ -250,5 +245,50 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			get { return TextReplacements.None; }
 		}
+
+		public BorderType Border
+		{
+			get => container.BorderStyle.ToEto();
+			set => container.BorderStyle = value.ToSWF();
+		}
+
+		public int TextLength => Control.TextLength;
+
+		public void ScrollTo(Range<int> range)
+		{
+			var pos = Control.GetPositionFromCharIndex(range.End);
+			sd.Point scrollPosition = sd.Point.Empty;
+			Win32.SendMessage(Control.Handle, Win32.WM.EM_GETSCROLLPOS, IntPtr.Zero, ref scrollPosition);
+			
+			var si = new Win32.SCROLLINFO();
+			si.cbSize = Marshal.SizeOf(si);
+      		si.fMask = (int)Win32.ScrollInfoMask.SIF_ALL;
+			Win32.GetScrollInfo(Control.Handle, (int)Win32.SBOrientation.SB_VERT, ref si);
+
+			if (si.nPage > 0)
+				scrollPosition.Y = Math.Min(si.nMax - si.nPage, Math.Max(si.nMin, scrollPosition.Y + pos.Y));
+
+			Win32.GetScrollInfo(Control.Handle, (int)Win32.SBOrientation.SB_HORZ, ref si);
+			
+			// only scroll X if not in view already
+			if (si.nPage > 0 && (pos.X < si.nPos || pos.X > si.nPos + si.nPage))
+				scrollPosition.X = Math.Min(si.nMax - si.nPage, Math.Max(si.nMin, scrollPosition.X + pos.X));
+			
+			Win32.SendMessage(Control.Handle, Win32.WM.EM_SETSCROLLPOS, IntPtr.Zero, ref scrollPosition);
+		}
+
+		public void ScrollToStart()
+		{
+			Win32.SendMessage(Control.Handle, Win32.WM.VSCROLL, (IntPtr)Win32.SB.TOP, IntPtr.Zero);
+			Win32.SendMessage(Control.Handle, Win32.WM.HSCROLL, (IntPtr)Win32.SB.LEFT, IntPtr.Zero);
+		}
+
+		public void ScrollToEnd()
+		{
+			Win32.SendMessage(Control.Handle, Win32.WM.VSCROLL, (IntPtr)Win32.SB.BOTTOM, IntPtr.Zero);
+			Win32.SendMessage(Control.Handle, Win32.WM.HSCROLL, (IntPtr)Win32.SB.LEFT, IntPtr.Zero);
+		}
+
+
 	}
 }

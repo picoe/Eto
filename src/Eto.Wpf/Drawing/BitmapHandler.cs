@@ -1,15 +1,5 @@
-using System;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using swmi = System.Windows.Media.Imaging;
-using Eto.Drawing;
 using Eto.Wpf.Forms;
-using System.IO;
 using Eto.Shared.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using Eto.Forms;
-
 namespace Eto.Wpf.Drawing
 {
 	/// <summary>
@@ -19,18 +9,43 @@ namespace Eto.Wpf.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BaseBitmapData
 	{
-		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base(image, data, scanWidth, bitsPerPixel, controlObject)
+		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool isPremultiplied)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, isPremultiplied)
 		{
 		}
 
 		public override int TranslateArgbToData(int argb)
 		{
+			if (PremultipliedAlpha)
+			{
+				var a = (uint)(byte)(argb >> 24);
+				var r = (uint)(byte)(argb >> 16);
+				var g = (uint)(byte)(argb >> 8);
+				var b = (uint)(byte)(argb);
+				r = r * a / 255;
+				g = g * a / 255;
+				b = b * a / 255;
+				return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
+			}
 			return argb;
 		}
 
 		public override int TranslateDataToArgb(int bitmapData)
 		{
+			if (PremultipliedAlpha)
+			{
+				var a = (uint)(byte)(bitmapData >> 24);
+				var r = (uint)(byte)(bitmapData >> 16);
+				var g = (uint)(byte)(bitmapData >> 8);
+				var b = (uint)(byte)(bitmapData);
+				if (a > 0)
+				{
+					b = b * 255 / a;
+					g = g * 255 / a;
+					r = r * 255 / a;
+				}
+				return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
+			}
 			return bitmapData;
 		}
 	}
@@ -76,7 +91,7 @@ namespace Eto.Wpf.Drawing
 					format = swm.PixelFormats.Bgr32;
 					break;
 				case PixelFormat.Format32bppRgba:
-					format = swm.PixelFormats.Pbgra32;
+					format = swm.PixelFormats.Bgra32;
 					break;
 				default:
 					throw new NotSupportedException();
@@ -85,7 +100,7 @@ namespace Eto.Wpf.Drawing
 			Control = bf;
 
 		}
-
+		
 		public void Create(int width, int height, Graphics graphics)
 		{
 			Create(width, height, PixelFormat.Format32bppRgba);
@@ -104,8 +119,14 @@ namespace Eto.Wpf.Drawing
 				drawingContext.DrawDrawing(group);
 
 			var resizedImage = new swmi.RenderTargetBitmap(width, height, source.DpiX, source.DpiY, swm.PixelFormats.Default);
-			resizedImage.RenderWithCollect(drawingVisual);
-			Control = resizedImage;
+			resizedImage.Render(drawingVisual);
+
+			// Don't use RenderTargetBitmap directly, it can run out of GDI handles when you have many bitmaps.
+			var writable = new swmi.WriteableBitmap(resizedImage);
+			Control = writable;
+
+			// collect immediately to get rid of the handle use
+			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, false);
 		}
 
 		protected override void Initialize()
@@ -116,6 +137,8 @@ namespace Eto.Wpf.Drawing
 
 		public void SetBitmap(swmi.BitmapSource bitmap)
 		{
+			if (bitmap is swmi.RenderTargetBitmap)
+				bitmap = new swmi.WriteableBitmap(bitmap);
 			Control = bitmap;
 			SetFrozen();
 		}
@@ -140,7 +163,7 @@ namespace Eto.Wpf.Drawing
 			if (control.Format == swm.PixelFormats.Bgra32)
 				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
 			if (control.Format == swm.PixelFormats.Pbgra32)
-				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
+				return Color.FromPremultipliedArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
 			throw new NotSupportedException();
 		}
 
@@ -153,7 +176,7 @@ namespace Eto.Wpf.Drawing
 				SetBitmap(wb);
 			}
 			wb.Lock();
-			return new BitmapDataHandler(Widget, wb.BackBuffer, wb.BackBufferStride, wb.Format.BitsPerPixel, wb);
+			return new BitmapDataHandler(Widget, wb.BackBuffer, wb.BackBufferStride, wb.Format.BitsPerPixel, wb, wb.Format.IsPremultiplied());
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -161,7 +184,7 @@ namespace Eto.Wpf.Drawing
 			var wb = Control as swmi.WriteableBitmap;
 			if (wb != null)
 			{
-				wb.AddDirtyRect(new sw.Int32Rect(0, 0, Size.Width, Size.Height));
+				wb.AddDirtyRect(new sw.Int32Rect(0, 0, wb.PixelWidth, wb.PixelHeight));
 				wb.Unlock();
 				SetFrozen();
 			}
@@ -198,7 +221,7 @@ namespace Eto.Wpf.Drawing
 				default:
 					throw new NotSupportedException();
 			}
-			encoder.Frames.Add(swmi.BitmapFrame.Create(Control));
+			encoder.Frames.Add(swmi.BitmapFrame.Create(FrozenControl));
 			encoder.Save(stream);
 		}
 

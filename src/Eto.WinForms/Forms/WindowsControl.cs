@@ -1,18 +1,8 @@
-using System;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.WinForms.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.WinForms.Forms.Menu;
-using System.Reflection;
-using System.Diagnostics;
-
 namespace Eto.WinForms.Forms
 {
-	public interface IWindowsControl: Control.IHandler
+	public interface IWindowsControl : Control.IHandler
 	{
 		bool InternalVisible { get; }
 
@@ -29,6 +19,8 @@ namespace Eto.WinForms.Forms
 		void SetScale(bool xscale, bool yscale);
 
 		bool ShouldCaptureMouse { get; }
+		
+		bool MouseCaptured { get; set; }
 
 		bool XScale { get; }
 
@@ -61,7 +53,8 @@ namespace Eto.WinForms.Forms
 
 		}
 
-		public static Size GetPreferredSize(this Control control, Size? availableSize = null)
+		[Obsolete("Use Control.GetPreferredSize instead")]
+		public static Size GetPreferredSize(Control control, Size? availableSize = null)
 		{
 			var handler = control.GetWindowsHandler();
 			return handler != null ? handler.GetPreferredSize(availableSize ?? Size.Empty) : Size.Empty;
@@ -102,6 +95,10 @@ namespace Eto.WinForms.Forms
 		public static readonly object FontKey = new object();
 		public static readonly object Enabled_Key = new object();
 		public static readonly object UseShellDropManager_Key = new object();
+		public static readonly object MouseCaptured_Key = new object();
+
+		public static bool SkipMouseCapture { get; set; }
+		internal static Control DragSourceControl { get; set; }
 	}
 
 	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWindowsControl
@@ -112,11 +109,11 @@ namespace Eto.WinForms.Forms
 
 		// used in DrawableHandler
 		public class PanelBase<THandler> : swf.Panel
-			where THandler: WindowsControl<TControl, TWidget, TCallback>
+			where THandler : WindowsControl<TControl, TWidget, TCallback>
 		{
 			public THandler Handler { get; set; }
 
-			public PanelBase( THandler handler = null )
+			public PanelBase(THandler handler = null)
 			{
 				Handler = handler;
 				Size = sd.Size.Empty;
@@ -136,6 +133,7 @@ namespace Eto.WinForms.Forms
 					size.Height = Math.Max(userSize.Height, MinimumSize.Height);
 				return size;
 			}
+
 			// Need to override IsInputKey to capture 
 			// the arrow keys.
 			protected override bool IsInputKey(swf.Keys keyData)
@@ -158,26 +156,26 @@ namespace Eto.WinForms.Forms
 		public class EtoPanel<THandler> : PanelBase<THandler>
 			where THandler : WindowsControl<TControl, TWidget, TCallback>
 		{
-			public EtoPanel( THandler handler = null )
-				: base( handler )
+			public EtoPanel(THandler handler = null)
+				: base(handler)
 			{ }
 
 			// optimization especially for content on drawable
-			protected override void OnBackColorChanged( EventArgs e )
+			protected override void OnBackColorChanged(EventArgs e)
 			{
 				SetStyle
-					( swf.ControlStyles.AllPaintingInWmPaint
+					(swf.ControlStyles.AllPaintingInWmPaint
 					| swf.ControlStyles.DoubleBuffer
-					, BackColor.A != 255 );
-				base.OnBackColorChanged( e );
+					, BackColor.A != 255);
+				base.OnBackColorChanged(e);
 			}
-			protected override void OnParentBackColorChanged( EventArgs e )
+			protected override void OnParentBackColorChanged(EventArgs e)
 			{
 				SetStyle
-					( swf.ControlStyles.AllPaintingInWmPaint
+					(swf.ControlStyles.AllPaintingInWmPaint
 					| swf.ControlStyles.DoubleBuffer
-					, BackColor.A != 255 );
-				base.OnParentBackColorChanged( e );
+					, BackColor.A != 255);
+				base.OnParentBackColorChanged(e);
 			}
 		}
 
@@ -187,9 +185,9 @@ namespace Eto.WinForms.Forms
 
 		Control.ICallback IWindowsControl.Callback { get { return Callback; } }
 
-		public bool XScale { get; set; }
+		public bool XScale { get; set; } = true;
 
-		public bool YScale { get; set; }
+		public bool YScale { get; set; } = true;
 
 		public virtual Size? GetDefaultSize(Size availableSize) { return null; }// Control.GetPreferredSize(availableSize.ToSD()).ToEto(); }
 
@@ -216,6 +214,22 @@ namespace Eto.WinForms.Forms
 				}
 			}
 			return Size.Max(parentMinimumSize, size);
+		}
+
+		public SizeF GetPreferredSize(SizeF availableSize)
+		{
+			if (!Widget.Loaded)
+				SetMinimumSizeInternal(false);
+			var size = Eto.Drawing.Size.Round(availableSize);
+			if (availableSize.Width >= float.MaxValue)
+			{
+				size.Width = int.MaxValue;
+			}
+			if (availableSize.Height >= float.MaxValue)
+			{
+				size.Height = int.MaxValue;
+			}
+			return GetPreferredSize(size, false);
 		}
 
 		public Size UserPreferredSize
@@ -251,18 +265,18 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public virtual bool ShouldCaptureMouse => false;
-
-		public virtual swf.Control ContainerControl
+		public virtual bool ShouldCaptureMouse => true;
+		public bool MouseCaptured
 		{
-			get { return Control; }
+			get => Widget.Properties.Get<bool>(WindowsControl.MouseCaptured_Key);
+			set => Widget.Properties.Set<bool>(WindowsControl.MouseCaptured_Key, value);
 		}
+
+		public virtual swf.Control ContainerControl => Control;
 
 		protected override void Initialize()
 		{
 			base.Initialize();
-			XScale = true;
-			YScale = true;
 			Control.Margin = swf.Padding.Empty;
 			Control.Tag = this;
 		}
@@ -449,6 +463,9 @@ namespace Eto.WinForms.Forms
 						Callback.OnDragLeave(Widget, new DragEventArgs(null, new DataObject(), DragEffects.None, PointF.Empty, Keys.None, MouseButtons.None));
 					};
 					break;
+				case Eto.Forms.Control.DragEndEvent:
+					// Handled in DoDragDrop as it is blocking on Windows.
+					break;
 				case Eto.Forms.Control.EnabledChangedEvent:
 					Control.EnabledChanged += Control_EnabledChanged;
 					break;
@@ -463,18 +480,17 @@ namespace Eto.WinForms.Forms
 			Callback.OnEnabledChanged(Widget, EventArgs.Empty);
 		}
 
-		const string SourceDataFormat = "eto.source.control";
-
 
 		DragEventArgs GetDragEventArgs(swf.DragEventArgs data)
 		{
 			var dragData = data.Data.ToEto();
-			var sourceWidget = data.Data.GetData(SourceDataFormat);
-			var source = sourceWidget == null ? null : (Control)sourceWidget;
+			var source = WindowsControl.DragSourceControl;
 			var modifiers = data.GetEtoModifiers();
 			var buttons = data.GetEtoButtons();
 			var location = PointFromScreen(new PointF(data.X, data.Y));
-			return new SwfDragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
+			var args = new SwfDragEventArgs(source, dragData, data.AllowedEffect.ToEto(), location, modifiers, buttons);
+			args.Effects = data.Effect.ToEto();
+			return args;
 		}
 
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
@@ -502,9 +518,16 @@ namespace Eto.WinForms.Forms
 
 		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
 		{
-			if (ShouldCaptureMouse)
-				Control.Capture = false;
-			Callback.OnMouseUp(Widget, e.ToEto(Control));
+			if (MouseCaptured)
+			{
+				MouseCaptured = false;
+				ContainerControl.Capture = false;
+			}
+			var args = e.ToEto(Control);
+			Callback.OnMouseUp(Widget, args);
+			
+			if (args.Handled && ContainerControl.Capture)
+				ContainerControl.Capture = false;
 		}
 
 		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
@@ -514,9 +537,14 @@ namespace Eto.WinForms.Forms
 
 		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
-			Callback.OnMouseDown(Widget, e.ToEto(Control));
-			if (ShouldCaptureMouse)
-				Control.Capture = true;
+			var ev = e.ToEto(Control);
+			WindowsControl.SkipMouseCapture = false;
+			Callback.OnMouseDown(Widget, ev);
+			if (ev.Handled && ShouldCaptureMouse && !WindowsControl.SkipMouseCapture)
+			{
+				ContainerControl.Capture = true;
+				MouseCaptured = true;
+			}
 		}
 
 		public virtual string Text
@@ -527,7 +555,8 @@ namespace Eto.WinForms.Forms
 
 		public virtual Size Size
 		{
-			get {
+			get
+			{
 				if (!Widget.Loaded)
 					return UserPreferredSize;
 				return ContainerControl.Size.ToEto();
@@ -564,7 +593,7 @@ namespace Eto.WinForms.Forms
 
 		protected virtual void SetAutoSize()
 		{
-			ContainerControl.AutoSize = 
+			ContainerControl.AutoSize =
 				(UserPreferredSize.Width == -1 || UserPreferredSize.Height == -1)
 				&& (UserDesiredClientSize.Width == -1 || UserDesiredClientSize.Height == -1);
 		}
@@ -630,14 +659,26 @@ namespace Eto.WinForms.Forms
 		public virtual Color BackgroundColor
 		{
 			get { return Control.BackColor.ToEto(); }
-			set { backgroundColorSet = true; Control.BackColor = value.ToSD(); }
-		}
-		bool backgroundColorSet;
-		public bool BackgroundColorSet {
-			get { return backgroundColorSet;  }
 			set
 			{
-				if (!( backgroundColorSet = value ))
+				backgroundColorSet = true;
+				try
+				{
+					Control.BackColor = value.ToSD();
+				}
+				catch
+				{
+					// some controls don't support transparent colors, ignore..
+				}
+			}
+		}
+		bool backgroundColorSet;
+		public bool BackgroundColorSet
+		{
+			get { return backgroundColorSet; }
+			set
+			{
+				if (!(backgroundColorSet = value))
 					Control.BackColor = sd.Color.Empty;
 			}
 		}
@@ -652,7 +693,7 @@ namespace Eto.WinForms.Forms
 			Control.ResumeLayout();
 		}
 
-		public void Focus()
+		public virtual void Focus()
 		{
 			if (Widget.Loaded && Control.IsHandleCreated)
 				Control.Focus();
@@ -847,6 +888,8 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		internal virtual bool SetFontTwiceForSomeReason => false;
+
 		public Font Font
 		{
 			get
@@ -856,7 +899,10 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				Widget.Properties[WindowsControl.FontKey] = value;
-				Control.Font = value.ToSD();
+				var sdfont = value.ToSD();
+				Control.Font = sdfont;
+				if (SetFontTwiceForSomeReason)
+					Control.Font = sdfont;
 			}
 		}
 
@@ -948,11 +994,11 @@ namespace Eto.WinForms.Forms
 			get => Widget.Properties.Get<SwfShellDropBehavior>(typeof(SwfShellDropBehavior));
 			set => Widget.Properties.Set(typeof(SwfShellDropBehavior), value);
 		}
-
 		public void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
 		{
 			var dataObject = data.ToSwf();
-			dataObject.SetData(SourceDataFormat, Widget);
+			WindowsControl.DragSourceControl = Widget;
+			swf.DragDropEffects effects;
 			if (UseShellDropManager)
 			{
 				swf.DragSourceHelper.AllowDropDescription(true);
@@ -963,7 +1009,7 @@ namespace Eto.WinForms.Forms
 
 				swf.SwfDataObjectExtensions.SetDragImage(dataObject, image.ToSD(), cursorOffset.ToSDPoint());
 				swf.DragSourceHelper.RegisterDefaultDragSource(Control, dataObject);
-				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+				effects = Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
 				swf.DragSourceHelper.UnregisterDefaultDragSource(Control);
 			}
 			else
@@ -971,10 +1017,42 @@ namespace Eto.WinForms.Forms
 				if (image != null)
 					Debug.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
 
-				Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
+				effects = Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
 			}
+			WindowsControl.DragSourceControl = null;
+
+			var args = new DragEventArgs(Widget, data, allowedEffects, PointFromScreen(Mouse.Position), Keyboard.Modifiers, Mouse.Buttons);
+			args.Effects = effects.ToEto();
+			Callback.OnDragEnd(Widget, args);
 		}
 
 		public Window GetNativeParentWindow() => ContainerControl.FindForm().ToEtoWindow();
+
+		public void Print()
+		{
+
+		}
+
+		public void UpdateLayout() => ContainerControl.PerformLayout();
+
+		public bool IsMouseCaptured => ContainerControl.Capture;
+		public bool CaptureMouse()
+		{
+			ContainerControl.Capture = true;
+			var ret = MouseCaptured = IsMouseCaptured;
+			if (ret)
+			{
+				// fire mouse enter for parents
+				// var parentControls = Widget.Parents.Select(r => r.Handler).OfType<IWindowsControl>().ToList();
+				WindowsControl.SkipMouseCapture = true;
+			}
+			return ret;
+		}
+		public void ReleaseMouseCapture()
+		{
+			ContainerControl.Capture = false;
+			MouseCaptured = false;
+		}
+
 	}
 }

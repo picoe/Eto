@@ -1,33 +1,4 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Drawing;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -36,46 +7,55 @@ namespace Eto.Mac.Forms.Controls
 		Brush backgroundBrush;
 		Color backgroundColor;
 
-		public bool SupportsCreateGraphics { get { return true; } }
+		public bool SupportsCreateGraphics => false;
 
-		public override NSView ContainerControl { get { return Control; } }
+		public override NSView ContainerControl => Control;
 
 		public class EtoDrawableView : MacPanelView
 		{
 			DrawableHandler Drawable => Handler as DrawableHandler;
+			
+			public EtoDrawableView()
+			{
+			}
+
+			public EtoDrawableView(NativeHandle handle) : base(handle)
+			{
+			}
 
 			public override void DrawRect(CGRect dirtyRect)
 			{
 				var drawable = Drawable;
 				if (drawable == null)
 					return;
-				if (!IsFlipped)
-					dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
-				if (dirtyRect.X % 1.0f > 0f)
-					dirtyRect.Width += 1;
-				if (dirtyRect.Y % 1.0f > 0f)
-					dirtyRect.Height += 1;
+
 				ApplicationHandler.QueueResizing = true;
-				drawable.DrawRegion(Rectangle.Ceiling(dirtyRect.ToEto()));
+				drawable.DrawRegion(dirtyRect);
 				ApplicationHandler.QueueResizing = false;
 			}
 
+			// public override bool IsFlipped => true;  // uncomment to test flipped views with GraphicsHandler.
+
 			public bool CanFocus { get; set; }
 
-			public override bool AcceptsFirstResponder()
-			{
-				return CanFocus;
-			}
+			public override bool AcceptsFirstResponder() => CanFocus && Drawable?.Enabled == true;
 
-			public override bool AcceptsFirstMouse(NSEvent theEvent)
+			public override NSView HitTest(CGPoint aPoint)
 			{
-				return CanFocus;
+				var view = base.HitTest(aPoint);
+				if (view == ContentView)
+				{
+					// forward all events to this view, not the content view (which covers the drawable)
+					// the properly enables AcceptsFirstMouse above, since the ContentView returns false
+					return this;
+				}
+				return view;
 			}
 		}
 
 		public Graphics CreateGraphics()
 		{
-			return new Graphics(new GraphicsHandler(Control));
+			throw new NotSupportedException();
 		}
 
 		public override Color BackgroundColor
@@ -129,27 +109,46 @@ namespace Eto.Mac.Forms.Controls
 			base.Invalidate(rect, invalidateChildren);
 		}
 
-		void DrawRegion(Rectangle rect)
+		void DrawRegion(CGRect dirtyRect)
 		{
 			var context = NSGraphicsContext.CurrentContext;
-			if (context != null)
-			{
-				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height, Control.IsFlipped);
-				using (var graphics = new Graphics(handler))
-				{
-					if (backgroundBrush != null)
-						graphics.FillRectangle(backgroundBrush, rect);
+			if (context == null)
+				return;
+				
+			var bounds = Control.Bounds;
 
-					var widget = Widget;
-					if (widget != null)
-						Callback.OnPaint(widget, new PaintEventArgs(graphics, rect));
-				}
+			// restrict dirty rect to the bounds of the drawable
+			// macOS can give us dirty rects outside this range
+			var dirty = dirtyRect.ToEto();
+			dirty.Restrict(bounds.ToEto());
+
+			var handler = new GraphicsHandler(Control, context, (float)bounds.Height, dirty.ToNS());
+
+			// dirty rect should be flipped when passed to Drawabe.Paint event
+			if (!Control.IsFlipped)
+				dirty.Y = (float)(bounds.Height - dirty.Y - dirty.Height);
+			
+			using (var graphics = new Graphics(handler))
+			{
+				if (backgroundBrush != null)
+					graphics.FillRectangle(backgroundBrush, dirty);
+
+				var widget = Widget;
+				if (widget != null)
+					Callback.OnPaint(widget, new PaintEventArgs(graphics, dirty));
 			}
 		}
 
 		public void Update(Rectangle rect)
 		{
 			Control.DisplayRect(rect.ToNS());
+		}
+
+		protected override bool OnAcceptsFirstMouse(NSEvent theEvent)
+		{
+			if (CanFocus)
+				return true;
+			return base.OnAcceptsFirstMouse(theEvent);
 		}
 	}
 }

@@ -1,7 +1,4 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-
-namespace Eto.Test.Sections.Controls
+﻿namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(RadioButton))]
 	public class RadioButtonSection : Panel
@@ -20,6 +17,8 @@ namespace Eto.Test.Sections.Controls
 
 			layout.Add(new RadioButton { Text = "With Larger Font", Font = SystemFonts.Label(40) });
 			layout.Add(new RadioButton { Text = "With Smaller Font", Font = SystemFonts.Label(6) });
+
+			layout.AddSeparateRow(new RadioButton { Text = "Should be aligned with text" }, new Panel { Size = new Size(50, 50), BackgroundColor = Colors.Green });
 
 			layout.Add(null, null, true);
 

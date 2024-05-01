@@ -1,16 +1,17 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class PixelLayoutHandler : WpfLayout<swc.Canvas, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler
 	{
 		public class EtoCanvas : swc.Canvas
 		{
+			public IWpfFrameworkElement Handler { get; set; }
+
 			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				return Handler?.MeasureOverride(constraint, MeasureChildren) ?? MeasureChildren(constraint);
+			}
+			
+			sw.Size MeasureChildren(sw.Size constraint)
 			{
 				var size = new sw.Size();
 				
@@ -23,7 +24,7 @@ namespace Eto.Wpf.Forms
 					if (size.Width < left) size.Width = left;
 					if (size.Height < top) size.Height = top;
 				}
-				return size;
+				return size.Min(constraint.InfinityIfNan());
 			}
 		}
 
@@ -31,7 +32,9 @@ namespace Eto.Wpf.Forms
 		{
 			Control = new EtoCanvas
 			{
-				SnapsToDevicePixels = true
+				Handler = this,
+				SnapsToDevicePixels = true,
+				ClipToBounds = true
 			};
 		}
 
@@ -47,7 +50,7 @@ namespace Eto.Wpf.Forms
 			swc.Canvas.SetLeft(element, x);
 			swc.Canvas.SetTop(element, y);
 			Control.Children.Add(element);
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public void Move(Control child, int x, int y)
@@ -55,20 +58,20 @@ namespace Eto.Wpf.Forms
 			var element = child.GetContainerControl();
 			swc.Canvas.SetLeft(element, x);
 			swc.Canvas.SetTop(element, y);
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public void Remove(Control child)
 		{
 			var element = child.GetContainerControl();
 			Control.Children.Remove(element);
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public override void Remove(sw.FrameworkElement child)
 		{
 			Control.Children.Remove(child);
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		int suspended;

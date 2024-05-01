@@ -1,7 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.WinForms;
-using swf = System.Windows.Forms;
 using Eto.WinForms.Forms.Controls;
 using Eto.WinForms.Forms;
 
@@ -51,7 +48,7 @@ namespace Eto.Forms
 		{
 			if (nativeControl == null)
 				return null;
-			return new Control(new NativeControlHandler(nativeControl));
+			return new NativeControlHost(nativeControl);
 		}
 
 		/// <summary>

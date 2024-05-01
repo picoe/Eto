@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using Eto.Drawing;
-using System.Collections.Generic;
 using Eto.Shared.Drawing;
 
 namespace Eto.GtkSharp.Drawing
@@ -13,8 +9,8 @@ namespace Eto.GtkSharp.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BaseBitmapData
 	{
-		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base(image, data, scanWidth, bitsPerPixel, controlObject)
+		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool premultipliedAlpha)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, premultipliedAlpha)
 		{
 		}
 
@@ -30,6 +26,46 @@ namespace Eto.GtkSharp.Drawing
 	}
 
 	/// <summary>
+	/// Bitmap data handler for surface data, which is always premultiplied
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class SurfaceBitmapDataHandler : BaseBitmapData
+	{
+		public SurfaceBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool premultipliedAlpha)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, premultipliedAlpha)
+		{
+		}
+
+		public override int TranslateArgbToData(int argb)
+		{
+			var a = (uint)(byte)(argb >> 24);
+			var r = (uint)(byte)(argb >> 16);
+			var g = (uint)(byte)(argb >> 8);
+			var b = (uint)(byte)(argb);
+			r = r * a / 255;
+			g = g * a / 255;
+			b = b * a / 255;
+			return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
+		}
+
+		public override int TranslateDataToArgb(int bitmapData)
+		{
+			var a = (uint)(byte)(bitmapData >> 24);
+			var r = (uint)(byte)(bitmapData >> 16);
+			var g = (uint)(byte)(bitmapData >> 8);
+			var b = (uint)(byte)(bitmapData);
+			if (a > 0)
+			{
+				b = b * 255 / a;
+				g = g * 255 / a;
+				r = r * 255 / a;
+			}
+			return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
+		}
+	}
+
+	/// <summary>
 	/// Bitmap handler.
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
@@ -41,6 +77,9 @@ namespace Eto.GtkSharp.Drawing
 		public Cairo.ImageSurface Surface { get; set; }
 
 		public bool Alpha { get; set; }
+
+		bool _isAlphaDirty;
+		bool _needsAlphaFixup;
 
 		public BitmapHandler()
 		{
@@ -81,14 +120,15 @@ namespace Eto.GtkSharp.Drawing
 				case PixelFormat.Format32bppRgb:
 					Control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, width, height);
 					Control.Fill(0x000000FF);
+					_needsAlphaFixup = true;
 					break;
 				case PixelFormat.Format24bppRgb:
 					Control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, width, height);
 					Control.Fill(0);
 					break;
-			/*case PixelFormat.Format16bppRgb555:
-						control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
-						break;*/
+				/*case PixelFormat.Format16bppRgb555:
+							control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
+							break;*/
 				default:
 					throw new NotSupportedException();
 			}
@@ -107,18 +147,22 @@ namespace Eto.GtkSharp.Drawing
 
 		public BitmapData Lock()
 		{
-			EnsureData();
+			if (Surface != null)
+			{
+				return new SurfaceBitmapDataHandler(Widget, Surface.DataPtr, Surface.Stride, 32, null, true);
+			}
 			return InnerLock();
 		}
 
 		BitmapData InnerLock()
 		{
-			return new BitmapDataHandler(Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null);
+			return new BitmapDataHandler(Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null, false);
 		}
 
 		public void Unlock(BitmapData bitmapData)
 		{
 			sizes.Clear();
+			SetAlphaDirty();
 		}
 
 		public void Save(string fileName, ImageFormat format)
@@ -162,8 +206,11 @@ namespace Eto.GtkSharp.Drawing
 				imageView.Pixbuf = Control;
 		}
 
+		public void SetAlphaDirty() => _isAlphaDirty = _needsAlphaFixup;
+
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
+			FixupAlpha();
 			var context = graphics.Control;
 			context.Save();
 			context.Rectangle(destination.ToCairo());
@@ -233,6 +280,7 @@ namespace Eto.GtkSharp.Drawing
 			get
 			{
 				EnsureData();
+				FixupAlpha();
 				return Control;
 			}
 		}
@@ -240,6 +288,7 @@ namespace Eto.GtkSharp.Drawing
 		public Gdk.Pixbuf GetPixbuf(Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear, bool shrink = false)
 		{
 			EnsureData();
+			FixupAlpha();
 			Gdk.Pixbuf pixbuf = Control;
 			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height
 				|| (shrink && (maxSize.Width < pixbuf.Width || maxSize.Height < pixbuf.Height)))
@@ -257,6 +306,7 @@ namespace Eto.GtkSharp.Drawing
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			EnsureData();
+			FixupAlpha();
 			if (rectangle == null)
 				return new Bitmap(new BitmapHandler(Control.Copy()));
 			else
@@ -279,85 +329,148 @@ namespace Eto.GtkSharp.Drawing
 		{
 			using (var data = Lock())
 			{
-				unsafe
+				return data.GetPixel(x, y);
+			}
+		}
+		
+		public unsafe void FixupAlpha()
+		{
+			if (_isAlphaDirty)
+			{
+				if (Surface != null)
 				{
-					var srcrow = (byte*)data.Data;
-					srcrow += y * data.ScanWidth;
-					srcrow += x * data.BytesPerPixel;
-					if (data.BytesPerPixel == 4)
+					var size = Size;
+					var ptr = (byte*)Surface.DataPtr;
+					ptr += 3; // alpha is the last byte of four
+					for (int y = 0; y < size.Height; y++)
 					{
-						return Color.FromArgb(data.TranslateDataToArgb(*(int*)srcrow));
+						var rowptr = (byte*)ptr;
+						for (int x = 0; x < size.Width; x++)
+						{
+							*rowptr = 255;
+							rowptr += 4;
+						}
+						ptr += Surface.Stride;
 					}
-					if (data.BytesPerPixel == 3)
-					{
-						return Color.FromRgb(data.TranslateDataToArgb(*(int*)srcrow));
-					}
-					throw new NotSupportedException();
 				}
+				else
+				{
+					using (var bd = Lock())
+					{
+						var size = Size;
+						var ptr = (byte*)bd.Data;
+						ptr += 3; // alpha is the last byte of four
+						for (int y = 0; y < size.Height; y++)
+						{
+							var rowptr = (byte*)ptr;
+							for (int x = 0; x < size.Width; x++)
+							{
+								*rowptr = 255;
+								rowptr += 4;
+							}
+							ptr += bd.ScanWidth;
+						}
+					}
+				}
+				_isAlphaDirty = false;
 			}
 		}
 
-		void EnsureData()
+		static int UnmultiplyAlpha(int argb)
+		{
+			var a = (uint)(byte)(argb >> 24);
+			var b = (uint)(byte)(argb >> 16);
+			var g = (uint)(byte)(argb >> 8);
+			var r = (uint)(byte)(argb);
+			if (a > 0)
+			{
+				b = b * 255 / a;
+				g = g * 255 / a;
+				r = r * 255 / a;
+			}
+			return unchecked((int)((a << 24) | (b << 16) | (g << 8) | (r)));
+		}
+
+		unsafe void EnsureData()
 		{
 			if (Surface == null)
 				return;
 			using (var bd = InnerLock())
-				unsafe
+			{
+				var size = Size;
+				var srcrow = (byte*)Surface.DataPtr;
+				if (bd.BytesPerPixel == 4 && _isAlphaDirty)
 				{
-					var size = Size;
-					var srcrow = (byte*)Surface.DataPtr;
-					if (bd.BytesPerPixel == 4)
+					var destrow = (byte*)bd.Data;
+					for (int y = 0; y < size.Height; y++)
 					{
-						var destrow = (byte*)bd.Data;
-						for (int y = 0; y < size.Height; y++)
+						var src = (int*)srcrow;
+						var dest = (int*)destrow;
+						for (int x = 0; x < size.Width; x++)
 						{
-							var src = (int*)srcrow;
-							var dest = (int*)destrow;
-							for (int x = 0; x < size.Width; x++)
-							{
-								*dest = bd.TranslateArgbToData(*src);
-								src++;
-								dest++;
-							}
-							srcrow += Surface.Stride;
-							destrow += bd.ScanWidth;
+							var argb = bd.TranslateArgbToData(*src);
+							argb = unchecked(argb | (int)0xFF000000);
+							*dest = argb;
+							src++;
+							dest++;
 						}
+						srcrow += Surface.Stride;
+						destrow += bd.ScanWidth;
 					}
-					else if (bd.BytesPerPixel == 3)
+					_isAlphaDirty = false;
+				}
+				if (bd.BytesPerPixel == 4)
+				{
+					var destrow = (byte*)bd.Data;
+					for (int y = 0; y < size.Height; y++)
 					{
-						var destrow = (byte*)bd.Data;
-						for (int y = 0; y < size.Height; y++)
+						var src = (int*)srcrow;
+						var dest = (int*)destrow;
+						for (int x = 0; x < size.Width; x++)
 						{
-							var src = (int*)srcrow;
-							var dest = (byte*)destrow;
-							for (int x = 0; x < size.Width; x++)
-							{
-								var data = bd.TranslateArgbToData(*src);
-								*(dest++) = (byte)data;
-								data >>= 8;
-								*(dest++) = (byte)data;
-								data >>= 8;
-								*(dest++) = (byte)data;
-								src++;
-							}
-							srcrow += Surface.Stride;
-							destrow += bd.ScanWidth;
+							*dest = UnmultiplyAlpha(bd.TranslateArgbToData(*src));
+							src++;
+							dest++;
 						}
-					}
-					else
-					{
-						for (int y = 0; y < size.Height; y++)
-						{
-							var src = (int*)srcrow;
-							for (int x = 0; x < size.Width; x++)
-							{
-								bd.SetPixel(x, y, Color.FromArgb(*src));
-								src++;
-							}
-							srcrow += Surface.Stride;
-						}
+						srcrow += Surface.Stride;
+						destrow += bd.ScanWidth;
 					}
 				}
+				else if (bd.BytesPerPixel == 3)
+				{
+					var destrow = (byte*)bd.Data;
+					for (int y = 0; y < size.Height; y++)
+					{
+						var src = (int*)srcrow;
+						var dest = (byte*)destrow;
+						for (int x = 0; x < size.Width; x++)
+						{
+							var data = bd.TranslateArgbToData(*src);
+							*(dest++) = (byte)data;
+							data >>= 8;
+							*(dest++) = (byte)data;
+							data >>= 8;
+							*(dest++) = (byte)data;
+							src++;
+						}
+						srcrow += Surface.Stride;
+						destrow += bd.ScanWidth;
+					}
+				}
+				else
+				{
+					for (int y = 0; y < size.Height; y++)
+					{
+						var src = (int*)srcrow;
+						for (int x = 0; x < size.Width; x++)
+						{
+							bd.SetPixel(x, y, Color.FromArgb(*src));
+							src++;
+						}
+						srcrow += Surface.Stride;
+					}
+				}
+			}
 			((IDisposable)Surface).Dispose();
 			Surface = null;
 		}

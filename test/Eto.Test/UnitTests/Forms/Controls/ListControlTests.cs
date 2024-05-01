@@ -1,6 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms.Controls
@@ -13,7 +10,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	}
 
 	public class ListControlTests<T> : TestBase
-		where T: ListControl, new()
+		where T : ListControl, new()
 	{
 		[ManualTest]
 		[TestCase(SetBindingMode.Before)]
@@ -50,5 +47,68 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					return dropDown;
 			});
 		}
+
+		[Test]
+		public void SettingDataStoreToNullAfterPopulatedShouldNotCrash()
+		{
+			Form(form =>
+			{
+				var list = new T();
+
+				list.DataStore = new[] { "Item 1", "Item 2", "Item 3" };
+				form.Content = list;
+
+				form.Shown += (sender, e) =>
+				{
+					Application.Instance.AsyncInvoke(() =>
+					{
+						list.DataStore = null;
+						list.Invalidate();
+						new UITimer((sender2, e2) => { form.Close(); }) { Interval = 1 }.Start();
+					});
+				};
+			});
+		}
+		
+		[Test, InvokeOnUI]
+		public void ChangingSelectedIndexMultipleTimesBeforeLoadShouldTriggerChanged()
+		{
+			var list = new T();
+			int changed = 0;
+			list.SelectedIndexChanged += (sender, e) => changed++;
+			list.DataStore = new [] { "Item 1", "Item 2", "Item 3" };
+			
+			Assert.AreEqual(0, changed, "1.1 - Setting data store should not fire selected index");
+			Assert.AreEqual(-1, list.SelectedIndex, "1.2");
+			
+			list.SelectedIndex = 0;
+			Assert.AreEqual(1, changed, "2.1 - Setting selected index should trigger event");
+			Assert.AreEqual(0, list.SelectedIndex, "2.2");
+			
+			list.SelectedIndex = 1;
+			Assert.AreEqual(2, changed, "3.1 - Setting selected index again should trigger event again");
+			Assert.AreEqual(1, list.SelectedIndex, "3.2");
+		}
+		
+		[Test, ManualTest]
+		public void ColorsShouldBeSet()
+		{
+			ManualForm("Control should have blue background with yellow text", form =>
+			{
+				return new TableLayout
+				{
+					Rows = {
+						new TableRow(new T { 
+							BackgroundColor = Colors.Blue, 
+							TextColor = Colors.Yellow,
+							DataStore = new[] { "Item 1", "Item 2", "Item 3" },
+							SelectedIndex = 0 
+						}, null),
+						null
+					}
+				};
+			});
+		}
+		
 	}
 }

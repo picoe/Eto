@@ -1,7 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-
 namespace Eto.iOS.Forms
 {
 	public class ScreenHandler : WidgetHandler<UIScreen, Screen, Screen.ICallback>, Screen.IHandler

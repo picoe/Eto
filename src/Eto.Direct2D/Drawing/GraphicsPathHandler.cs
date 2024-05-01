@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
-using Eto.Drawing;
-
 namespace Eto.Direct2D.Drawing
 {
 	/// <summary>
@@ -236,6 +230,15 @@ namespace Eto.Direct2D.Drawing
 		public void Dispose()
 		{
 			Control.Dispose();
+		}
+		
+		public bool FillContains(PointF point) => Control.FillContainsPoint(point.ToDx());
+
+		public bool StrokeContains(Pen pen, PointF point)
+		{
+			var penData = pen.ToPenData();
+			
+			return Control.StrokeContainsPoint(point.ToDx(), penData.Width, penData.StrokeStyle);
 		}
 	}
 }

@@ -1,8 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.GtkSharp.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler
@@ -21,6 +16,15 @@ namespace Eto.GtkSharp.Drawing
 				return context;
 			}
 		}
+		
+		public static void ResetFontMap()
+		{
+			IntPtr fontMapPtr = NativeMethods.pango_cairo_font_map_new();
+			NativeMethods.pango_cairo_font_map_set_default(fontMapPtr);
+			ResetContext();
+		}
+
+		public static void ResetContext() => context = null;
 
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{

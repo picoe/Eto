@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -14,7 +6,7 @@ namespace Eto.Wpf.Forms
 {
 	public class PerMonitorDpiHelper
 	{
-		Window window;
+		sw.Window window;
 		IntPtr hwnd;
 		HwndSource hwndSource;
 
@@ -34,7 +26,7 @@ namespace Eto.Wpf.Forms
 				return false;
 			if (awareness != Win32.PROCESS_DPI_AWARENESS.PER_MONITOR_DPI_AWARE)
 				return false;
-			if (typeof(Window).GetEvent("DpiChanged") == null) // .NET 4.6.2
+			if (typeof(sw.Window).GetEvent("DpiChanged") == null) // .NET 4.6.2
 				return false;
 
 			// now check if it was disabled specifically (more .NET 4.6 apis)
@@ -103,7 +95,7 @@ namespace Eto.Wpf.Forms
 
 		static bool? dpiEventEnabled;
 
-		public PerMonitorDpiHelper(Window window)
+		public PerMonitorDpiHelper(sw.Window window)
 		{
 			this.window = window;
 			if (!Win32.PerMonitorDpiSupported)

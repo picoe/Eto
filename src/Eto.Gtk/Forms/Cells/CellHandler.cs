@@ -1,14 +1,8 @@
-using System;
-using Eto.Forms;
 using Eto.GtkSharp.Forms.Controls;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Forms.Cells
 {
 	public interface ICellDataSource
 	{
-		object GetItem(int row);
-
 		object GetItem(Gtk.TreePath path);
 
 		void EndCellEditing(Gtk.TreePath path, int column);
@@ -20,8 +14,11 @@ namespace Eto.GtkSharp.Forms.Cells
 		int RowHeight { get; set; }
 
 		void OnCellFormatting(GridCellFormatEventArgs args);
+		void OnRowFormatting(GridRowFormatEventArgs args);
+		int GetRowOfItem(object item);
 
 		int RowDataColumn { get; }
+		int ItemDataColumn { get; }
 	}
 
 	public interface IEtoCellRenderer
@@ -70,7 +67,8 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		public ICellDataSource Source { get; private set; }
 
-		public bool FormattingEnabled { get; protected set; }
+		public bool CellFormattingEnabled { get; protected set; }
+		public bool RowFormattingEnabled { get; protected set; }
 
 		public abstract void AddCells(Gtk.TreeViewColumn column);
 
@@ -92,9 +90,24 @@ namespace Eto.GtkSharp.Forms.Cells
 			}
 		}
 
-		public void Format(GridCellFormatEventArgs args)
+		public void Format(Gtk.CellRenderer renderer, object item, int row)
 		{
-			Source.OnCellFormatting(args);
+			if (!RowFormattingEnabled && !CellFormattingEnabled)
+				return;
+
+			// reset values to default
+			renderer.CellBackgroundRgba = Colors.Transparent.ToRGBA();
+			
+			if (renderer is Gtk.CellRendererText textRenderer)
+			{
+				textRenderer.FontDesc = SystemFonts.Default().ToPango();
+				textRenderer.ForegroundRgba = SystemColors.ControlText.ToRGBA();
+			}
+			
+			if (RowFormattingEnabled)
+				Source.OnRowFormatting(new GtkGridRowFormatEventArgs(Source, renderer, item, row));
+			if (CellFormattingEnabled)
+				Source.OnCellFormatting(new GtkGridCellFormatEventArgs(Source, renderer, Column.Widget, item, row));
 		}
 
 		protected virtual void BindCell(ref int dataIndex)
@@ -102,6 +115,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			//if (FormattingEnabled)
 			{
 				Column.Control.AddAttribute(Control, "row", Source.RowDataColumn);
+				Column.Control.AddAttribute(Control, "item", Source.ItemDataColumn);
 			}
 		}
 
@@ -146,7 +160,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
 			{
-				Handler.Source.BeginCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+				Handler?.Source.BeginCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
 
@@ -155,7 +169,11 @@ namespace Eto.GtkSharp.Forms.Cells
 			switch (id)
 			{
 				case Grid.CellFormattingEvent:
-					FormattingEnabled = true;
+					CellFormattingEnabled = true;
+					ReBind();
+					break;
+				case Grid.RowFormattingEvent:
+					RowFormattingEnabled = true;
 					ReBind();
 					break;
 				case Grid.CellEditingEvent:

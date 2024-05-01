@@ -1,12 +1,3 @@
-using System;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using swd = System.Windows.Data;
-using sw = System.Windows;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
 namespace Eto.Wpf.Forms.Cells
 {
 	public class ComboBoxCellHandler : CellHandler<swc.DataGridComboBoxColumn, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
@@ -40,7 +31,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var element = (swc.ComboBox)base.GenerateElement(cell, dataItem);
 				Initialize(cell, element, dataItem);
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			void Initialize(swc.DataGridCell cell, swc.ComboBox control, object dataItem)
@@ -72,7 +63,7 @@ namespace Eto.Wpf.Forms.Cells
 					};
 					SetControlEditInitialized(element, true);
 				}
-				return Handler.SetupCell(element);
+				return Handler.SetupCell(element, cell);
 			}
 
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)

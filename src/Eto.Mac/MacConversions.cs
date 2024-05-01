@@ -1,43 +1,8 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Forms;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Printing;
-using System.Linq;
 using Eto.Mac.Forms.Menu;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-using ImageIO;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-using MonoMac.ImageIO;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac
 {
@@ -222,15 +187,44 @@ namespace Eto.Mac
 
 		public static MouseEventArgs GetMouseEvent(IMacViewHandler handler, NSEvent theEvent, bool includeWheel)
 		{
-			var view = handler.ContainerControl;
-			var pt = theEvent.LocationInWindow;
-			pt = handler.GetAlignmentPointForFramePoint(pt);
-			Keys modifiers = theEvent.ModifierFlags.ToEto();
-			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
-			if (includeWheel)
-				delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
-			return new MouseEventArgs(buttons, modifiers, pt.ToEto(view), delta);
+			PointF point;
+			Keys modifiers;
+			MouseButtons buttons;
+			if (theEvent != null)
+			{
+				var view = handler.ContainerControl;
+				var pt = theEvent.LocationInWindow;
+				pt = handler.GetAlignmentPointForFramePoint(pt);
+				if (theEvent.Window == null)
+				{
+					// flip to top down first
+					pt.Y = NSScreen.Screens[0].Frame.Height - pt.Y;
+					point = handler.Widget.PointFromScreen(pt.ToEto());
+				}
+				else if (view.Window != theEvent.Window)
+				{
+					var loc = theEvent.Window.Frame.Location.ToEto();
+					pt.X += loc.X;
+					pt.Y += loc.Y;
+					pt.Y = NSScreen.Screens[0].Frame.Height - pt.Y;
+					point = handler.Widget.PointFromScreen(pt.ToEto());
+				}
+				else
+					point = pt.ToEto(view);
+					
+				if (includeWheel)
+					delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
+				modifiers = theEvent.ModifierFlags.ToEto();
+				buttons = theEvent.GetMouseButtons();
+			}
+			else
+			{
+				point = handler.Widget.PointFromScreen(Mouse.Position);
+				modifiers = Keyboard.Modifiers;
+				buttons = Mouse.Buttons;
+			}
+			return new MouseEventArgs(buttons, modifiers, point, delta);
 		}
 
 		public static MouseButtons GetMouseButtons(this NSEvent theEvent)
@@ -293,7 +287,6 @@ namespace Eto.Mac
 				var mainScale = Screen.PrimaryScreen.RealScale;
 				var scales = new[] { 1f, 2f }; // generate both retina and non-retina representations
 				var sz = (float)Math.Ceiling(size.Value / mainScale);
-				var rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
 				sz = size.Value;
 				var imgsize = image.Size;
 				var max = Math.Max(imgsize.Width, imgsize.Height);
@@ -303,11 +296,20 @@ namespace Eto.Mac
 				foreach (var scale in scales)
 				{
 					sz = (float)Math.Ceiling(size.Value * scale / mainScale);
-					rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
+					var rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
 					max = (int)Math.Max(rep.PixelsWide, rep.PixelsHigh);
 					sz = (float)Math.Ceiling(size.Value * scale);
-					var newsize = new CGSize((nint)(sz * rep.PixelsWide / max), (nint)(sz * rep.PixelsHigh / max));
-					newimage.AddRepresentation(rep.Resize(newsize, imageSize: newimagesize));
+					if (rep is NSCustomImageRep custom)
+					{
+						rep = custom.Copy() as NSImageRep;
+						rep.Size = newimagesize;
+						newimage.AddRepresentation(rep);
+					}
+					else
+					{
+						var newsize = new CGSize((nint)(sz * rep.PixelsWide / max), (nint)(sz * rep.PixelsHigh / max));
+						newimage.AddRepresentation(rep.Resize(newsize, imageSize: newimagesize));
+					}
 				}
 				nsimage = newimage;
 			}
@@ -354,19 +356,24 @@ namespace Eto.Mac
 
 		public static WindowStyle ToEtoWindowStyle(this NSWindowStyle style)
 		{
-			return style.HasFlag(NSWindowStyle.Titled) ? WindowStyle.Default : WindowStyle.None;
+			return style.HasFlag(NSWindowStyle.Utility) 
+				? WindowStyle.Utility
+				: style.HasFlag(NSWindowStyle.Titled) 
+				? WindowStyle.Default 
+				: WindowStyle.None;
 		}
 
 		public static NSWindowStyle ToNS(this WindowStyle style, NSWindowStyle existing)
 		{
-			const NSWindowStyle NONE_STYLE = NSWindowStyle.Borderless;
-			const NSWindowStyle DEFAULT_STYLE = NSWindowStyle.Titled;
+			existing &= ~(NSWindowStyle.Utility | NSWindowStyle.Titled | NSWindowStyle.Borderless);
 			switch (style)
 			{
 				case WindowStyle.Default:
-					return (existing & ~NONE_STYLE) | DEFAULT_STYLE;
+					return existing | NSWindowStyle.Titled;
 				case WindowStyle.None:
-					return (existing & ~DEFAULT_STYLE) | NONE_STYLE;
+					return existing | NSWindowStyle.Borderless;
+				case WindowStyle.Utility:
+					return existing | NSWindowStyle.Utility | NSWindowStyle.Titled;
 				default:
 					throw new NotSupportedException();
 			}
@@ -375,7 +382,7 @@ namespace Eto.Mac
 		public static KeyEventArgs ToEtoKeyEventArgs(this NSEvent theEvent)
 		{
 			char keyChar = !string.IsNullOrEmpty(theEvent.Characters) ? theEvent.Characters[0] : '\0';
-			Keys key = KeyMap.MapKey(theEvent.KeyCode);
+			Keys key = KeyMap.MapKey(theEvent.KeyCode, theEvent.ModifierFlags);
 			KeyEventArgs kpea;
 			Keys modifiers = theEvent.ModifierFlags.ToEto();
 			key |= modifiers;
@@ -549,7 +556,12 @@ namespace Eto.Mac
 			}
 		}
 
-		public static DataObject ToEto(this NSPasteboard pasteboard) => new DataObject(new DataObjectHandler(pasteboard));
+		public static DataObject ToEto(this NSPasteboard pasteboard)
+		{
+			if (pasteboard == null)
+				return null;
+			return new DataObject(new DataObjectHandler(pasteboard));
+		}
 
 		public static NSPasteboard ToNS(this DataObject data) => DataObjectHandler.GetControl(data);
 
@@ -645,6 +657,14 @@ namespace Eto.Mac
 				default:
 					throw new NotSupportedException();
 			}
+		}
+		
+		public static Image ToEto(this NSImage image)
+		{
+			if (image.Representations().Length == 1)
+				return new Bitmap(new BitmapHandler(image));
+			else
+				return new Icon(new IconHandler(image));
 		}
 	}
 }

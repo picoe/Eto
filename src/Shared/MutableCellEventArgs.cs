@@ -1,13 +1,9 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Shared
 {
 	public class MutableCellEventArgs : CellEventArgs
 	{
-		public MutableCellEventArgs(Grid grid, Cell cell, int row, object item, CellStates cellState)
-			: base(grid, cell, row, item, cellState)
+		public MutableCellEventArgs(Grid grid, Cell cell, int row, int column, object item, CellStates cellState, Control control)
+			: base(grid, cell, row, column, item, cellState, control)
 		{
 		}
 
@@ -29,6 +25,11 @@ namespace Eto.Shared
 		public void SetItem(object item)
 		{
 			Item = item;
+		}
+
+		public void SetControl(Control control)
+		{
+			Control = control;
 		}
 	}
 	

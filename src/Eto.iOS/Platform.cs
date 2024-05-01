@@ -1,10 +1,6 @@
-using System;
 using UIKit;
 using Foundation;
-using System.Linq;
-using Eto.Drawing;
 using CoreGraphics;
-using Eto.Forms;
 using Eto.iOS.Drawing;
 using Eto.iOS.Forms.Cells;
 using Eto.iOS.Forms.Controls;
@@ -13,8 +9,6 @@ using Eto.Mac.Forms;
 using Eto.Threading;
 using Eto.iOS.Threading;
 using Eto.iOS.Forms.Toolbar;
-using System.Reflection;
-
 namespace Eto.iOS
 {
 	[Preserve]

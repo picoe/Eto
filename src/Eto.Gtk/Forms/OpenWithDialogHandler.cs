@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using Eto.Forms;
-
+﻿#if GTK3
 namespace Eto.GtkSharp.Forms
 {
 	public class OpenWithDialogHandler : WidgetHandler<Gtk.Dialog, OpenWithDialog, OpenWithDialog.ICallback>, OpenWithDialog.IHandler
@@ -24,9 +21,14 @@ namespace Eto.GtkSharp.Forms
 
 			if (adialog.Run() == (int)Gtk.ResponseType.Ok)
 				Process.Start(adialog.AppInfo.Executable, "\"" + FilePath + "\"");
+#if GTKCORE
+			adialog.Dispose();
+#else
 			adialog.Destroy();
+#endif
 
 			return DialogResult.Ok;
 		}
 	}
 }
+#endif

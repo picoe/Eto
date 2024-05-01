@@ -1,17 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using mwc = Xceed.Wpf.Toolkit;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Controls
 {
-	public class EtoButtonSpinner : mwc.ButtonSpinner, IEtoWpfControl
+	public class EtoButtonSpinner : xwt.ButtonSpinner, IEtoWpfControl
 	{
 		swc.TextBox TextBox => Content as swc.TextBox;
 
@@ -25,24 +14,24 @@ namespace Eto.Wpf.Forms.Controls
 		/// <summary>
 		/// Identifies the MouseWheelActiveTrigger dependency property
 		/// </summary>
-		public static readonly sw.DependencyProperty MouseWheelActiveTriggerProperty = sw.DependencyProperty.Register("MouseWheelActiveTrigger", typeof(mwc.Primitives.MouseWheelActiveTrigger), typeof(EtoButtonSpinner), new sw.UIPropertyMetadata(mwc.Primitives.MouseWheelActiveTrigger.FocusedMouseOver));
+		public static readonly sw.DependencyProperty MouseWheelActiveTriggerProperty = sw.DependencyProperty.Register("MouseWheelActiveTrigger", typeof(xwt.Primitives.MouseWheelActiveTrigger), typeof(EtoButtonSpinner), new sw.UIPropertyMetadata(xwt.Primitives.MouseWheelActiveTrigger.FocusedMouseOver));
 
 		/// <summary>
 		/// Get or set when the mouse wheel event should affect the value.
 		/// </summary>
-		public mwc.Primitives.MouseWheelActiveTrigger MouseWheelActiveTrigger
+		public xwt.Primitives.MouseWheelActiveTrigger MouseWheelActiveTrigger
 		{
-			get => (mwc.Primitives.MouseWheelActiveTrigger)GetValue(MouseWheelActiveTriggerProperty);
+			get => (xwt.Primitives.MouseWheelActiveTrigger)GetValue(MouseWheelActiveTriggerProperty);
 			set => SetValue(MouseWheelActiveTriggerProperty, value);
 		}
 
-		protected override void OnSpin(mwc.SpinEventArgs e)
+		protected override void OnSpin(xwt.SpinEventArgs e)
 		{
 			var activeTrigger = this.MouseWheelActiveTrigger;
 			bool spin = !e.UsingMouseWheel;
-			spin |= (activeTrigger == mwc.Primitives.MouseWheelActiveTrigger.MouseOver);
-			spin |= ((TextBox != null) && TextBox.IsFocused && (activeTrigger == mwc.Primitives.MouseWheelActiveTrigger.FocusedMouseOver));
-			spin |= ((TextBox != null) && TextBox.IsFocused && (activeTrigger == mwc.Primitives.MouseWheelActiveTrigger.Focused) && (sw.Input.Mouse.Captured is Spinner));
+			spin |= (activeTrigger == xwt.Primitives.MouseWheelActiveTrigger.MouseOver);
+			spin |= ((TextBox != null) && TextBox.IsFocused && (activeTrigger == xwt.Primitives.MouseWheelActiveTrigger.FocusedMouseOver));
+			spin |= ((TextBox != null) && TextBox.IsFocused && (activeTrigger == xwt.Primitives.MouseWheelActiveTrigger.Focused) && (sw.Input.Mouse.Captured is Spinner));
 
 			if (spin)
 			{
@@ -51,7 +40,7 @@ namespace Eto.Wpf.Forms.Controls
 		}
 	}
 
-	public class TextStepperHandler : TextBoxHandler<mwc.ButtonSpinner, TextStepper, TextStepper.ICallback>, TextStepper.IHandler
+	public class TextStepperHandler : TextBoxHandler<xwt.ButtonSpinner, TextStepper, TextStepper.ICallback>, TextStepper.IHandler
 	{
 		public TextStepperHandler()
 		{
@@ -61,7 +50,7 @@ namespace Eto.Wpf.Forms.Controls
 				IsTabStop = false,
 				Focusable = false,
 
-				Content = new mwc.WatermarkTextBox
+				Content = new xwt.WatermarkTextBox
 				{
 					KeepWatermarkOnGotFocus = true,
 					BorderThickness = new sw.Thickness(0),
@@ -98,11 +87,13 @@ namespace Eto.Wpf.Forms.Controls
 			set { TextBox.Foreground = value.ToWpfBrush(TextBox.Foreground); }
 		}
 
-		mwc.WatermarkTextBox WatermarkTextBox => (mwc.WatermarkTextBox)Control.Content;
+		xwt.WatermarkTextBox WatermarkTextBox => (xwt.WatermarkTextBox)Control.Content;
 
 		protected override swc.TextBox TextBox => (swc.TextBox)Control.Content;
 
 		protected override swc.Control BorderControl => Control;
+
+		protected override sw.FrameworkElement FocusControl => TextBox;
 
 		public override void AttachEvent(string id)
 		{

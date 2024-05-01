@@ -1,35 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 #if IOS
 using NSResponder = UIKit.UIResponder;
 using NSView = UIKit.UIView;
@@ -64,8 +32,11 @@ namespace Eto.Mac.Forms
 
 		public override void Layout()
 		{
+			if (MacView.NewLayout)
+				base.Layout();
 			Handler?.PerformContentLayout();
-			base.Layout();
+			if (!MacView.NewLayout)
+				base.Layout();
 		}
 	}
 
@@ -160,9 +131,8 @@ namespace Eto.Mac.Forms
 #endif
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var contentControl = content.GetMacControl();
-			if (contentControl != null && content.Visible)
-				return contentControl.GetPreferredSize(SizeF.Max(SizeF.Empty, availableSize - Padding.Size)) + Padding.Size;
+			if (content != null && content.Visible)
+				return content.GetPreferredSize(SizeF.Max(SizeF.Empty, availableSize - Padding.Size)) + Padding.Size;
 			
 			return Padding.Size;
 		}

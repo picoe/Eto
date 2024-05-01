@@ -1,8 +1,4 @@
-﻿using Eto.Forms;
-using Eto.Drawing;
-using Eto.Wpf.Drawing;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
+﻿using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms
 {

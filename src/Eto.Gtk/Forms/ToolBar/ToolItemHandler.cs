@@ -1,6 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.ToolBar
 {
 	public interface IToolBarItemHandler
@@ -10,20 +7,56 @@ namespace Eto.GtkSharp.Forms.ToolBar
 	}
 
 	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler, IToolBarItemHandler
-		where TControl: Gtk.Widget
+		where TControl: Gtk.ToolItem
 		where TWidget: ToolItem
 	{
 		bool enabled = true;
 		bool visible = true;
+		string text;
+		string toolTip;
 		Image image;
 
 		protected Gtk.Image GtkImage { get; set; }
 
 		public abstract void CreateControl(ToolBarHandler handler, int index);
 		
-		public string Text { get; set; }
+		public string Text
+		{
+			get => text;
+			set
+			{
+				if (text != value)
+				{
+					text = value;
+					SetText();
+				}
+			}
+		}
+
+		public virtual string ToolTip
+		{
+			get => toolTip;
+			set 
+			{
+				if (toolTip != value)
+				{
+					toolTip = value;
+					SetToolTip();
+				}
+			}
+		}
+
+		protected virtual void SetText()
+		{
+			if (Control is Gtk.ToolButton button)
+				button.Label = Text;
+		}
 		
-		public string ToolTip { get; set; }
+		protected virtual void SetToolTip()
+		{
+			if (Control is Gtk.ToolButton button)
+				button.TooltipText = ToolTip;
+		}
 
 		public Image Image
 		{

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
 using Portable.Xaml.Markup;
 using Portable.Xaml;
 
@@ -23,6 +17,8 @@ namespace Eto.Serialization.Xaml
 			get { return label.ToolTip; }
 			set { label.ToolTip = value; }
 		}
+
+		public object GenericProperty { get; set; }
 
 		public DesignerUserControl()
 		{
@@ -69,7 +65,7 @@ namespace Eto.Serialization.Xaml
 				if (coltype != null)
 				{
 					var ct = sc.GetXamlType(typeof(Control));
-					if (ct.CanConvertTo(coltype.ItemType))
+					if (ct.CanConvertTo(coltype.ItemType) || coltype.ItemType.CanConvertFrom(ct))
 					{
 						return new DesignerUserControl { Text = Text, ToolTip = ToolTip };
 					}

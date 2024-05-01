@@ -1,48 +1,4 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System.Text.RegularExpressions;
-using System.Linq;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 
@@ -140,33 +96,37 @@ namespace Eto.Mac.Forms.Controls
 		readonly NSMutableParagraphStyle paragraphStyle;
 		int underlineIndex;
 		Size availableSizeCached;
-		SizeF? naturalSizeInfinity;
-		SizeF lastSize;
-		bool isSizing;
 
 		public override NSView ContainerControl => Control;
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
+			// set attributes if it hasn't been loaded yet, so we get the correct size.
+			if (!Widget.Loaded)
+				SetAttributes(true);
+
 			if (float.IsPositiveInfinity(availableSize.Width))
 			{
-				if (naturalSizeInfinity != null)
-					return naturalSizeInfinity.Value;
+				if (NaturalSizeInfinity != null)
+					return NaturalSizeInfinity.Value;
 
 				var width = UserPreferredSize.Width;
 				if (width < 0) width = int.MaxValue;
 				var size = Control.Cell.CellSizeForBounds(new CGRect(0, 0, width, int.MaxValue)).ToEto();
-				naturalSizeInfinity = Size.Ceiling(size);
-				return naturalSizeInfinity.Value;
+				NaturalSizeInfinity = Size.Ceiling(size);
+				return NaturalSizeInfinity.Value;
 			}
 
-			if (Widget.Loaded && Wrap != WrapMode.None && UserPreferredSize.Width > 0)
+			if (Widget.Loaded && Wrap != WrapMode.None)
 			{
-				/*if (!float.IsPositiveInfinity(availableSize.Width))
-					availableSize.Width = Math.Max(Size.Width, availableSize.Width);
-				else*/
-				availableSize.Width = UserPreferredSize.Width;
-				availableSize.Height = float.PositiveInfinity;
+				if (UserPreferredSize.Width > 0)
+				{
+					/*if (!float.IsPositiveInfinity(availableSize.Width))
+						availableSize.Width = Math.Max(Size.Width, availableSize.Width);
+					else*/
+					availableSize.Width = UserPreferredSize.Width;
+					availableSize.Height = float.PositiveInfinity;
+				}
 			}
 
 			var availableSizeTruncated = availableSize.TruncateInfinity();
@@ -178,24 +138,6 @@ namespace Eto.Mac.Forms.Controls
 			}
 
 			return NaturalSize.Value;
-		}
-
-		public override void OnSizeChanged(EventArgs e)
-		{
-			base.OnSizeChanged(e);
-			if (isSizing)
-				return;
-			isSizing = true;
-			var size = Size;
-			if (Wrap != WrapMode.None && lastSize.Width != size.Width && !Control.IsHiddenOrHasHiddenAncestor)
-			{
-				// when wrapping we use the current size, if it changes we check if we need another layout pass
-				// this is needed when resizing a form/label so it can wrap correctly as GetNaturalSize()
-				// will use the old size first, and won't necessarily know the final size of the label.
-				lastSize = size;
-				InvalidateMeasure();
-			}
-			isSizing = false;
 		}
 
 		protected MacLabel()
@@ -383,16 +325,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override void InvalidateMeasure()
-		{
-			base.InvalidateMeasure();
-			naturalSizeInfinity = null;
-		}
-
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
 			SetAttributes(true);
+			InvalidateMeasure();
 		}
 
 		public override void AttachEvent(string id)

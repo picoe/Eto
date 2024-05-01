@@ -1,6 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
 	[Section("TableLayout", "Scaling")]
@@ -50,7 +47,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 			tableLayout.SetColumnScale(2);
 			tableLayout.SetRowScale(0);
 			tableLayout.SetRowScale(2);
-			tableLayout.Add(new Label { Text = "2x2, should not scale and be centered", BackgroundColor = Colors.Red }, 1, 1);
+			tableLayout.Add(new Label { Text = "3x3, should not scale and be centered", BackgroundColor = Colors.Red }, 1, 1);
 			layout.Add(tableLayout, yscale: true);
 
 			Content = layout;

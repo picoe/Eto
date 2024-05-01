@@ -1,12 +1,34 @@
-﻿using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
-namespace Eto.GtkSharp.Forms
+﻿namespace Eto.GtkSharp.Forms
 {
 	public class KeyboardHandler : Keyboard.IHandler
 	{
+		EventHandler<EventArgs> _modifiersChanged;
+
+		public event EventHandler<EventArgs> ModifiersChanged
+		{
+			add
+			{
+				if (_modifiersChanged == null)
+				{
+					Gdk.Keymap.Default.StateChanged += Keymap_StateChanged;
+				}
+				_modifiersChanged += value;
+			}
+			remove
+			{
+				_modifiersChanged -= value;
+				if (_modifiersChanged == null)
+				{
+					Gdk.Keymap.Default.StateChanged -= Keymap_StateChanged;
+				}
+			}
+		}
+		
+		private void Keymap_StateChanged(object sender, EventArgs e)
+		{
+			_modifiersChanged?.Invoke(null, EventArgs.Empty);
+		}
+
 		public bool IsKeyLocked(Keys key)
 		{
 			#if GTK3
@@ -28,6 +50,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
+				
 				var ev = Gtk.Application.CurrentEvent;
 				if (ev != null)
 				{
@@ -37,7 +60,7 @@ namespace Eto.GtkSharp.Forms
 						return state.ToEtoKey();
 					}
 				}
-				return Keys.None;
+				return ((Gdk.ModifierType)Gdk.Keymap.Default.ModifierState).ToEtoKey();
 			}
 		}
 

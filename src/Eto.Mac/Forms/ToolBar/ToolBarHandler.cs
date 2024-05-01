@@ -1,37 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
-using Eto.Drawing;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Forms.ToolBar
 {
 	public class ToolBarHandler : WidgetHandler<NSToolbar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
@@ -59,14 +25,10 @@ namespace Eto.Mac.Forms.ToolBar
 				View.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 				PaletteLabel = Application.Instance.Localize(this, "Divider");
 				MenuFormRepresentation = NSMenuItem.SeparatorItem;
-#if MONOMAC || XAMMAC2
 				if (supportsSeparatorColor)
-					_color = NSColor.SeparatorColor.ToEto();
+					_color = NSColor.Separator.ToEto();
 				else
 					_color = new Color(SystemColors.WindowBackground, 0.5f);
-#else
-				_color = new Color(SystemColors.WindowBackground, 0.5f);
-#endif
 			}
 
 			public override bool AllowsDuplicatesInToolbar => true;
@@ -236,7 +198,7 @@ namespace Eto.Mac.Forms.ToolBar
 
 		void OnControlItemsChanged()
 		{
-#if !XAMMAC2
+#if MAC64
 			// re-retrieve items so they aren't GC'd (only needed in MonoMac)
 			var newitems = Control.Items;
 #endif
@@ -298,7 +260,7 @@ namespace Eto.Mac.Forms.ToolBar
 				else if (curitem.Visible)
 				{
 					var nativeItem = nativeItems[idx];
-					if (nativeItem.Identifier == GetIdentifier(curitem))
+					if (nativeItem.Identifier == GetIdentifier(curitem) || object.Equals(nativeItem, curitem.ControlObject))
 						idx++;
 				}
 			}

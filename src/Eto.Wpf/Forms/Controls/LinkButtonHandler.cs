@@ -1,14 +1,5 @@
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Wpf.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
 using swd = System.Windows.Documents;
-using swm = System.Windows.Media;
 
 namespace Eto.Wpf.Forms.Controls
 {

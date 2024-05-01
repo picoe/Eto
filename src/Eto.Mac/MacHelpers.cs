@@ -1,27 +1,11 @@
-using System;
-using Eto.Forms;
 using Eto.Mac;
 using Eto.Mac.Forms;
 using Eto.Mac.Forms.Controls;
-using Eto.Drawing;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using ObjCRuntime;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
-#endif
-
 namespace Eto.Forms
 {
 	public static class
-#if XAMMAC2
-	XamMac2Helpers
-#elif XAMMAC
-	XamMacHelpers
+#if MACOS_NET
+	MacOSHelpers
 #elif Mac64
 	MonoMac64Helpers
 #elif MONOMAC
@@ -49,11 +33,24 @@ namespace Eto.Forms
 			if (attach && !control.Loaded)
 			{
 				control.AttachNative();
-				var macView = control.GetMacViewHandler();
-
-				macView?.SetAlignmentFrameSize(macView.GetPreferredSize(SizeF.PositiveInfinity).ToNS());
 			}
 			return control.GetContainerView();
+		}
+		
+		/// <summary>
+		/// Sets a value indicating that the control should auto attach/detach when added to a native window.
+		/// </summary>
+		/// <remarks>
+		/// This is an alternative to using AttachNative/DetachNative manually, and will automatically be called when the view
+		/// is added/removed to/from a native Window.  This ensures that both Load and UnLoad are triggered on the Eto control(s).
+		/// </remarks>
+		/// <param name="control">Control to auto attach</param>
+		/// <param name="autoAttach"><c>true</c> to auto attach, <c>false</c> otherwise.</param>
+		public static void SetAutoAttach(this Control control, bool autoAttach)
+		{
+			var handler = control.GetMacViewHandler();
+			if (handler != null)
+				handler.AutoAttachNative = true;
 		}
 
 		/// <summary>
@@ -65,7 +62,7 @@ namespace Eto.Forms
 		{
 			if (view == null)
 				return null;
-			return new Control(new NativeControlHandler(view));
+			return new NativeControlHost(view);
 		}
 
 		/// <summary>
@@ -77,7 +74,7 @@ namespace Eto.Forms
 		{
 			if (viewController == null)
 				return null;
-			return new Control(new NativeControlHandler(viewController));
+			return new NativeControlHost(viewController);
 		}
 
 		/// <summary>
@@ -93,7 +90,7 @@ namespace Eto.Forms
 			if (window is IMacControl macControl && macControl.WeakHandler?.Target is IMacWindow macWindow)
 				return macWindow.Widget;
 
-			return new Form(new NativeFormHandler(window));
+			return NativeFormHandler.CreateWrapper(null, window);
 		}
 
 		/// <summary>
@@ -105,7 +102,7 @@ namespace Eto.Forms
 		{
 			if (windowController == null)
 				return null;
-			return new Form(new NativeFormHandler(windowController));
+			return NativeFormHandler.CreateWrapper(windowController, null);
 		}
 
 		/// <summary>

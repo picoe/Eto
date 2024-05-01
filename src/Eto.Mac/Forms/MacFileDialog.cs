@@ -1,39 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Forms
 {
 	interface IMacFileDialog
@@ -56,7 +20,6 @@ namespace Eto.Mac.Forms
 			if (Directory.Exists(url.Path))
 				return true;
 
-			// Xamarin.Mac's version of mono has string.TrimStart(char), which is not in the .NET Framework!
 			var extension = Path.GetExtension(url.Path).TrimStart(new[] { '.' });
 			if (Handler.MacFilters == null || Handler.MacFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
 				return true;
@@ -120,25 +83,18 @@ namespace Eto.Mac.Forms
 				Control.AccessoryView = null;
 		}
 
+		string fileName;
+
 		public virtual string FileName
 		{
-			get
-			{ 
-				return Control.Url.Path;
-			}
-			set { }
+			get => Control.Url?.Path ?? fileName;
+			set => fileName = value;
 		}
 
 		public Uri Directory
 		{
-			get
-			{
-				return new Uri(Control.DirectoryUrl.AbsoluteString);
-			}
-			set
-			{
-				Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
-			}
+			get => new Uri(Control.DirectoryUrl.AbsoluteString);
+			set => Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
 		}
 
 		public string GetDefaultExtension()
@@ -167,7 +123,7 @@ namespace Eto.Mac.Forms
 			if (macfilters == null || macfilters.Count == 0 || macfilters.Contains(""))
 			{
 				macfilters = null;
-				// Xamarin.Mac throws exception when setting to null (ugh)
+				// MacOS throws exception when setting to null (ugh)
 				Messaging.void_objc_msgSend_IntPtr(Control.Handle, Selector.GetHandle("setAllowedFileTypes:"), IntPtr.Zero);
 			}
 			else
@@ -201,15 +157,18 @@ namespace Eto.Mac.Forms
 			get { return Control.Message; }
 			set { Control.Message = value ?? string.Empty; }
 		}
-
-		public DialogResult ShowDialog(Window parent)
+		
+		public virtual DialogResult ShowDialog(Window parent)
 		{
 			//Control.AllowsOtherFileTypes = false;
 			Control.Delegate = new SavePanelDelegate{ Handler = this };
 			Create();
 
 			int ret = MacModal.Run(Control, parent);
-            
+			
+			if (ret == 1)
+				fileName = null;
+
 			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
 		}
 

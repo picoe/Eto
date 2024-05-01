@@ -1,7 +1,3 @@
-using Eto.Drawing;
-using sd = System.Drawing;
-using sd2 = System.Drawing.Drawing2D;
-using sdi = System.Drawing.Imaging;
 
 namespace Eto.WinForms.Drawing
 {

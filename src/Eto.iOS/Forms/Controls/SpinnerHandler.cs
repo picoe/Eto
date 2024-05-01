@@ -1,8 +1,4 @@
-using System;
 using UIKit;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class SpinnerHandler : IosView<UIActivityIndicatorView, Spinner, Spinner.ICallback>, Spinner.IHandler

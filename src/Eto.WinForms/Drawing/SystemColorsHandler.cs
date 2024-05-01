@@ -1,7 +1,3 @@
-using Eto.Drawing;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-
 namespace Eto.WinForms.Drawing
 {
 	public class SystemColorsHandler : SystemColors.IHandler

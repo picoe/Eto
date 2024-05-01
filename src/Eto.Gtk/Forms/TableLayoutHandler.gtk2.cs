@@ -1,10 +1,4 @@
 #if GTK2
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace Eto.GtkSharp.Forms
 {
 	public class TableLayoutHandler : GtkContainer<Gtk.Table, TableLayout, TableLayout.ICallback>, TableLayout.IHandler

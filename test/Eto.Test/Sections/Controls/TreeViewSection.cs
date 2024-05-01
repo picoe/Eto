@@ -1,8 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-
 namespace Eto.Test.Sections.Controls
 {
 	[Obsolete("Since 2.4")]

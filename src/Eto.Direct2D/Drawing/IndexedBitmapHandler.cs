@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.WIC;
-using System.IO;
-
 namespace Eto.Direct2D.Drawing
 {
 	public class IndexedBitmapHandler : ImageHandler<IndexedBitmap>, IndexedBitmap.IHandler
@@ -47,7 +40,7 @@ namespace Eto.Direct2D.Drawing
 		public BitmapData Lock()
         {
 			var data = Control.Lock(sw.BitmapLockFlags.Write);
-			return new WicBitmapData(Widget, data, Widget.BitsPerPixel);
+			return new WicBitmapData(Widget, data, Widget.BitsPerPixel, false);
         }
 
         public void Unlock(BitmapData bitmapData)

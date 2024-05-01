@@ -1,311 +1,112 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{543B2F90-CA56-11E3-9C1A-0800200C9A66}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Eto.Gtk3</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <AssemblyName>Eto.Gtk3</AssemblyName>
+    <TargetFrameworks>net462</TargetFrameworks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>Eto.GtkSharp</RootNamespace>
+    <DefineConstants>$(DefineConstants);CAIRO;GTK3</DefineConstants>
     <FixGtkReferences Condition="$(FixGtkReferences)==''">true</FixGtkReferences>
   </PropertyGroup>
+  
   <PropertyGroup>
-    <FileAlignment>512</FileAlignment>
-    <DebugSymbols>True</DebugSymbols>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DefineConstants>CAIRO;TRACE;GTK3</DefineConstants>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <PackageId>Eto.Platform.Gtk3</PackageId>
+    <Title>Eto.Forms - GTK#3 Platform</Title>
+    <Description>GTK#3 Platform for the Eto.Forms UI Framework</Description>
+    <PackageTags>cross platform gui ui framework desktop gtk eto.forms</PackageTags>
+    <PackageDescription>
+This package is deprecated and should not be used in new projects, please use Eto.Platform.Gtk instead.
+
+This is the GTK3 platform for Eto.Forms UI Framework.
+      
+Include this along with your Eto.Forms application to provide a GTK3 interface, typically for Linux users.
+      
+You do not need to use any of the classes of this assembly (unless customizing the GTK functionality of the platform), and should just use the UI controls from the Eto assembly.
+      
+On Linux, mono framework 5.10 or higher and gtk-sharp3 are required.
+    </PackageDescription>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\artifacts\core\Debug\net45\</OutputPath>
-    <DefineConstants>CAIRO;DEBUG;TRACE;GTK3</DefineConstants>
-    <Optimize>false</Optimize>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\artifacts\core\Release\net45\</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="atk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Name>atk-sharp</Name>
       <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\atk-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="cairo-sharp, Version=1.10.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <Name>cairo-sharp</Name>
       <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\cairo-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="gdk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Name>gdk-sharp</Name>
       <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\gdk-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="gio-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Name>gio-sharp</Name>
       <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\gio-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="glib-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Name>glib-sharp</Name>
       <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\glib-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="gtk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Name>gtk-sharp</Name>
       <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\gtk-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="pango-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Name>pango-sharp</Name>
       <PackageVersion>3.0</PackageVersion>
       <HintPath>..\..\lib\GtkSharp3\pango-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
     </Compile>
-    <Compile Include="Forms\Controls\DropDownHandler.cs" />
-    <Compile Include="Forms\Controls\GridHandler.cs" />
-    <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
-    <Compile Include="Forms\Controls\TreeViewHandler.cs" />
-    <Compile Include="Forms\FontDialogHandlerOld.cs" />
-    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
-    <Compile Include="Drawing\BitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\FontHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\GraphicsHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\IconHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\ImageHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\IndexedBitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ApplicationHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\DialogHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\FormHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\GtkContainer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\GtkFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\MessageBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\OpenFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\PixelLayoutHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\SaveFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\TableLayoutHandler.gtk2.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="GtkConversions.cs" />
-    <Compile Include="IO\SystemIcons.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\GtkWindow.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="KeyMap.cs" />
-    <Compile Include="Forms\Controls\ButtonHandler.cs" />
-    <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
-    <Compile Include="Forms\Controls\DrawableHandler.cs" />
-    <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ImageViewHandler.cs" />
-    <Compile Include="Forms\Controls\LabelHandler.cs" />
-    <Compile Include="Forms\Controls\ListBoxHandler.cs" />
-    <Compile Include="Forms\Controls\NumericStepperHandler.cs" />
-    <Compile Include="Forms\Controls\PanelHandler.cs" />
-    <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
-    <Compile Include="Forms\Controls\ScrollableHandler.cs" />
-    <Compile Include="Forms\Controls\SplitterHandler.cs" />
-    <Compile Include="Forms\Controls\TabControlHandler.cs" />
-    <Compile Include="Forms\Controls\TabPageHandler.cs" />
-    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
-    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
-    <Compile Include="EtoEnvironmentHandler.cs" />
-    <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\SeparatorMenuItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\RadioMenuItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\MenuHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Menu\MenuBarHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\SelectFolderDialogHandler.cs" />
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
-    <Compile Include="Forms\UITimerHandler.cs" />
-    <Compile Include="Forms\ClipboardHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandlerOld.cs" />
-    <Compile Include="Drawing\GraphicsPathHandler.cs" />
-    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
-    <Compile Include="CustomControls\DateComboBox.cs" />
-    <Compile Include="CustomControls\DateComboBoxDialog.cs" />
-    <Compile Include="CustomControls\AnalogClock.cs" />
-    <Compile Include="CustomControls\SizableBin.cs" />
-    <Compile Include="CustomControls\WindowExtensions.cs" />
-    <Compile Include="Forms\Menu\ContextMenuHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
-    <Compile Include="Forms\Controls\SliderHandler.cs" />
-    <Compile Include="Forms\CursorHandler.cs" />
-    <Compile Include="Forms\Controls\GridViewHandler.cs" />
-    <Compile Include="Forms\Controls\GtkListModel.cs" />
-    <Compile Include="Forms\Cells\CellHandler.cs" />
-    <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
-    <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
-    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
-    <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
-    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
-    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
-    <Compile Include="Forms\Controls\GtkTreeModel.cs" />
-    <Compile Include="MenuActionItemHandler.cs" />
-    <Compile Include="Forms\Cells\GridCellFormattingEventArgs.cs" />
-    <Compile Include="Drawing\FontsHandler.cs" />
-    <Compile Include="Drawing\FontFamilyHandler.cs" />
-    <Compile Include="Drawing\FontTypefaceHandler.cs" />
-    <Compile Include="Drawing\BrushHandler.cs" />
-    <Compile Include="Drawing\MatrixHandler.cs" />
-    <Compile Include="Drawing\PenHandler.cs" />
-    <Compile Include="Drawing\SolidBrushHandler.cs" />
-    <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
-    <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
-    <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
-    <Compile Include="Gtk3Compatibility.cs" />
-    <Compile Include="Forms\ScreenHandler.cs" />
-    <Compile Include="Forms\ScreensHandler.cs" />
-    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
-    <Compile Include="Drawing\TextureBrushHandler.cs" />
-    <Compile Include="Forms\MouseHandler.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
-    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
-    <Compile Include="Forms\GtkPanel.cs" />
-    <Compile Include="Platform.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\GtkEnumerableModel.cs" />
-    <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
-    <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
-    <Compile Include="Forms\Controls\CalendarHandler.cs" />
-    <Compile Include="..\Shared\PlatformDetect.cs">
-      <Link>PlatformDetect.cs</Link>
-    </Compile>
-    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
-    <Compile Include="Forms\GtkSynchronizationContext.cs" />
-    <Compile Include="GtkHelpers.cs" />
-    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
-    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
-    <Compile Include="Forms\GtkControl.cs" />
-    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
-    <Compile Include="Forms\KeyboardHandler.cs" />
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
-    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
-    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
-    <Compile Include="Forms\Controls\ExpanderHandler.cs" />
-    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
-    <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
-    <Compile Include="Drawing\IconFrameHandler.cs" />
-    <Compile Include="Forms\AboutDialogHandler.cs" />
-    <Compile Include="Forms\Controls\StepperHandler.cs" />
-    <Compile Include="Forms\Controls\TextStepperHandler.cs" />
-    <Compile Include="Forms\Controls\FilePickerHandler.cs" />
-    <Compile Include="Forms\Controls\FontPickerHandler.cs" />
-    <Compile Include="Forms\OpenWithDialogHandler.cs" />
-    <Compile Include="Forms\Controls\DocumentControlHandler.cs" />
-    <Compile Include="Forms\Controls\DocumentPageHandler.cs" />
-    <Compile Include="NativeMethods.cs">
-      <DependentUpon>NativeMethods.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\LinuxTrayIndicatorHandler.cs" />
-    <Compile Include="Forms\OtherTrayIndicatorHandler.cs" />
-    <Compile Include="Forms\LinuxNotificationHandler.cs" />
-    <Compile Include="Forms\Controls\WebKit2WebViewHandler.cs" />
-    <Compile Include="Forms\DataObjectHandler.cs" />
-    <Compile Include="Forms\TableLayoutHandler.gtk3.cs" />
-    <Compile Include="CustomControls\BaseComboBox.gtk2.cs" />
-    <Compile Include="CustomControls\BaseComboBox.gtk3.cs" />
-    <Compile Include="Forms\Controls\ToggleButtonHandler.cs" />
-    <Compile Include="Drawing\FormattedTextHandler.cs" />
-    <Compile Include="Forms\EtoControls.cs">
-      <DependentUpon>EtoControls.tt</DependentUpon>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>GradientHelper.cs</Link>
     </Compile>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NativeMethods.tt">
+    <None Update="NativeMethods.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>NativeMethods.cs</LastGenOutput>
     </None>
-    <None Include="Forms\EtoControls.tt">
+    <None Update="Forms\EtoControls.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>EtoControls.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="NativeMethods.cs">
+      <DependentUpon>NativeMethods.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="Forms\EtoControls.cs">
+      <DependentUpon>EtoControls.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 </Project>

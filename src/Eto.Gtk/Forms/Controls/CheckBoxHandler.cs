@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 using Gtk;
 
@@ -41,6 +38,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleToggled(object sender, EventArgs e)
 			{
 				var h = Handler;
+				if (h == null)
+					return;
 				var c = h.Control;
 				if (toggling)
 					return;

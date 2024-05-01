@@ -1,38 +1,29 @@
-using System;
-using Eto.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreText;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreText;
-#endif
-
 namespace Eto.Mac.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<FontTypeface>, FontTypeface.IHandler
 	{
 		NSFont _font;
+		CGFont _cgfont;
 		string _name;
+		NSFontTraitMask? _traits;
+		int? _weight;
 		static readonly object LocalizedName_Key = new object();
+
+		public NSFont Font => _font ?? (_font = CreateFont(10));
 
 		public string PostScriptName { get; private set; }
 
-		public int Weight { get; private set; }
+		public int Weight
+		{
+			get => _weight ?? (_weight = (int)NSFontManager.SharedFontManager.WeightOfFont(Font)).Value;
+			private set => _weight = value;
+		}
 
-		public NSFontTraitMask Traits { get; private set; }
+		public NSFontTraitMask Traits
+		{
+			get => _traits ?? (_traits = NSFontManager.SharedFontManager.TraitsOfFont(Font)).Value;
+			private set => _traits = value;
+		}
 
 		public FontTypefaceHandler(NSArray descriptor)
 		{
@@ -44,20 +35,27 @@ namespace Eto.Mac.Drawing
 
 		public FontTypefaceHandler(NSFont font, NSFontTraitMask? traits = null)
 		{
-			this._font = font;
+			_font = font;
 			var descriptor = font.FontDescriptor;
 			PostScriptName = descriptor.PostscriptName;
-			var manager = NSFontManager.SharedFontManager;
-			Weight = (int)manager.WeightOfFont(font);
-			Traits = traits ?? manager.TraitsOfFont(font);
 		}
 
 		public FontTypefaceHandler(string postScriptName, string name, NSFontTraitMask traits, int weight)
 		{
 			PostScriptName = postScriptName;
-			this._name = name;
+			_name = name;
 			Weight = weight;
 			Traits = traits;
+		}
+
+		public FontTypefaceHandler()
+		{
+		}
+
+		public FontTypefaceHandler(CGFont cgfont, string faceName)
+		{
+			_cgfont = cgfont;
+			_name = faceName;
 		}
 
 		internal static NSString GetName(IntPtr fontHandle)
@@ -72,9 +70,7 @@ namespace Eto.Mac.Drawing
 			{
 				if (_name == null)
 				{
-					if (_font == null)
-						_font = CreateFont(10);
-					_name = GetName(_font.Handle);
+					_name = GetName(Font.Handle);
 
 					/*
 					var manager = NSFontManager.SharedFontManager;
@@ -91,7 +87,7 @@ namespace Eto.Mac.Drawing
 		}
 
 		[DllImport("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText")]
-		static extern IntPtr CTFontCopyName(IntPtr font, IntPtr nameKey);
+		internal static extern IntPtr CTFontCopyName(IntPtr font, IntPtr nameKey);
 
 		[DllImport("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreText.framework/CoreText")]
 		static extern IntPtr CTFontCopyLocalizedName(IntPtr font, IntPtr nameKey, out IntPtr actualLanguage);
@@ -103,11 +99,8 @@ namespace Eto.Mac.Drawing
 
 		string GetLocalizedName()
 		{
-			if (_font == null)
-				_font = CreateFont(10);
-
 			// no (easy) way to get a CTFont from an NSFont
-			var localizedNamePtr = CTFontCopyLocalizedName(_font.Handle, CTFontNameKeySubFamily.Handle, out var actualLanguagePtr);
+			var localizedNamePtr = CTFontCopyLocalizedName(Font.Handle, CTFontNameKeySubFamily.Handle, out var actualLanguagePtr);
 			var actualLanguage = Runtime.GetNSObject<NSString>(actualLanguagePtr);
 			var localizedName = Runtime.GetNSObject<NSString>(localizedNamePtr);
 
@@ -116,31 +109,80 @@ namespace Eto.Mac.Drawing
 
 		public FontStyle FontStyle => Traits.ToEto();
 
+		static string SystemFontName => NSFont.SystemFontOfSize(NSFont.SystemFontSize).FontDescriptor.PostscriptName;
+		static string BoldSystemFontName => NSFont.BoldSystemFontOfSize(NSFont.SystemFontSize).FontDescriptor.PostscriptName;
+
+		public bool IsSymbol => Font.FontDescriptor.SymbolicTraits.HasFlag(NSFontSymbolicTraits.SymbolicClass);
+
+		public FontFamily Family { get; private set; }
+
 		public NSFont CreateFont(float size)
 		{
-
+			if (_cgfont != null)
+			{
+				var ctfont = new CTFont(_cgfont, size, null);
+				return Runtime.GetNSObject<NSFont>(ctfont.Handle);
+			}
 			// we have a postcript name, use that to create the font
 			if (!string.IsNullOrEmpty(PostScriptName))
 			{
-				var font = NSFont.FromFontName(PostScriptName, size);
-				if (font == null)
-				{
-					// macOS 10.15 returns null for the above API for system fonts (when compiled using xcode 11).
-					font = NSFont.SystemFontOfSize(size);
-					if (font.FontDescriptor.PostscriptName == PostScriptName)
-						return font;
-					font = NSFont.BoldSystemFontOfSize(size);
-					if (font.FontDescriptor.PostscriptName == PostScriptName)
-						return font;
+				// if we try to get a system font by name we get errors now..
+				if (PostScriptName == SystemFontName)
+					return NSFont.SystemFontOfSize(size);
+				if (PostScriptName == BoldSystemFontName)
+					return NSFont.BoldSystemFontOfSize(size);
 
-					// always return something..?
-					return NSFont.UserFontOfSize(size);
-				}
+				// always return something...
+				var font = NSFont.FromFontName(PostScriptName, size) ?? NSFont.UserFontOfSize(size);
 				return font;
 			}
 
 			var family = (FontFamilyHandler)Widget.Family.Handler;
-			return FontHandler.CreateFont(family.MacName, size, Traits, Weight);
+			return family.CreateFont(size, Traits, Weight);
+		}
+
+		public bool HasCharacterRanges(IEnumerable<Range<int>> ranges)
+		{
+			var charSet = Font.CoveredCharacterSet;
+
+			foreach (var range in ranges)
+			{
+				for (int i = range.Start; i <= range.End; i++)
+				{
+					if (!charSet.Contains((char)i))
+						return false;
+				}
+			}
+			return true;
+		}
+
+		public void Create(Stream stream)
+		{
+			
+			using (var ms = new MemoryStream())
+			{
+				stream.CopyTo(ms);
+				var bytes = ms.ToArray();
+				using (var dataProvider = new CGDataProvider(bytes, 0, bytes.Length))
+				{
+					_cgfont = CGFont.CreateFromProvider(dataProvider);
+				}
+			}
+			Family = new FontFamily(new FontFamilyHandler(_cgfont, this));
+		}
+
+		public void Create(string fileName)
+		{
+			using (var dataProvider = new CGDataProvider(fileName))
+			{
+				_cgfont = CGFont.CreateFromProvider(dataProvider);
+			}
+			Family = new FontFamily( new FontFamilyHandler(_cgfont, this));
+		}
+
+		public void Create(FontFamily family)
+		{
+			Family = family;
 		}
 	}
 }

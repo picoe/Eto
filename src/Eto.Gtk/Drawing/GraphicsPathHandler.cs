@@ -1,8 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>
@@ -623,7 +618,7 @@ namespace Eto.GtkSharp.Drawing
 
 		Cairo.Context Playback()
 		{
-			using (var surface = new Cairo.ImageSurface(Cairo.Format.ARGB32, 10, 10))
+			using (var surface = new Cairo.ImageSurface(Cairo.Format.ARGB32, 1, 1))
 			{
 				var context = new Cairo.Context(surface);
 				Apply(context);
@@ -645,6 +640,23 @@ namespace Eto.GtkSharp.Drawing
 			handler._firstFigureClosed = _firstFigureClosed;
 			handler._isFirstFigure = _isFirstFigure;
 			return handler;
+		}
+
+		public bool FillContains(PointF point)
+		{
+			using (var context = Playback())
+			{
+				return context.InFill(point.X, point.Y);
+			}
+		}
+
+		public bool StrokeContains(Pen pen, PointF point)
+		{
+			using (var context = Playback())
+			{
+				pen.Apply(context);
+				return context.InStroke(point.X, point.Y);
+			}
 		}
 
 		public FillMode FillMode

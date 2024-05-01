@@ -1,30 +1,20 @@
-using System;
-using Eto.Forms;
-using System.Diagnostics;
-using System.Threading;
-using System.ComponentModel;
 using Eto.GtkSharp.Drawing;
-using Eto.Drawing;
-using System.Collections.Generic;
 using Eto.GtkSharp.Forms;
-using System.IO;
-using System.Reflection;
-
 namespace Eto.GtkSharp.Forms
 {
-#if GTKCORE
-	public class ApplicationHandler : WidgetHandler<Gtk.Application, Application, Application.ICallback>, Application.IHandler
+#if GTK3
+	public class ApplicationHandler : WidgetHandler<Gtk.Application, Eto.Forms.Application, Eto.Forms.Application.ICallback>, Eto.Forms.Application.IHandler
 #else
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
 #endif
 	{
-		internal static List<string> TempFiles = new List<string>(); 
+		internal static List<string> TempFiles = new List<string>();
 
 		bool attached;
 		Gtk.StatusIcon statusIcon;
 		readonly List<ManualResetEvent> invokeResetEvents = new List<ManualResetEvent>();
 
-		public static ApplicationHandler Instance => Application.Instance?.Handler as ApplicationHandler;
+		public static ApplicationHandler Instance => Eto.Forms.Application.Instance?.Handler as ApplicationHandler;
 
 		protected override void Initialize()
 		{
@@ -34,7 +24,7 @@ namespace Eto.GtkSharp.Forms
 			if (SynchronizationContext.Current == null)
 				SynchronizationContext.SetSynchronizationContext(new GtkSynchronizationContext());
 
-#if GTKCORE
+#if GTK3
 			Control = new Gtk.Application(null, GLib.ApplicationFlags.None);
 			Control.Register(GLib.Cancellable.Current);
 			Helper.UseHeaderBar = true;
@@ -53,7 +43,9 @@ namespace Eto.GtkSharp.Forms
 
 		public void RunIteration()
 		{
-			Gtk.Application.RunIteration();
+			var start = DateTime.Now;
+		    while (Gtk.Application.EventsPending() && (DateTime.Now - start).TotalMilliseconds < 100)
+				Gtk.Application.RunIteration();
 		}
 
 		public void Restart()
@@ -61,7 +53,7 @@ namespace Eto.GtkSharp.Forms
 			GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 			Gtk.Application.Quit();
 
-			RestartInternal();			
+			RestartInternal();
 		}
 
 		string badgeLabel;
@@ -79,18 +71,26 @@ namespace Eto.GtkSharp.Forms
 						statusIcon = new Gtk.StatusIcon();
 						statusIcon.Activate += delegate
 						{
-							var form = Application.Instance.MainForm;
+							var form = Eto.Forms.Application.Instance.MainForm;
 							if (form != null)
 								form.BringToFront();
 						};
 					}
-					var bmp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
-					using (var graphics = new Graphics(new Bitmap(new BitmapHandler(bmp))))
+
+					var pixbuf = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
+					using(var bmpHandler = new BitmapHandler(pixbuf))
 					{
-						graphics.Clear();
-						DrawBadgeLabel(graphics, new Size(bmp.Width, bmp.Height), badgeLabel);
+						using(var bitmap     = new Bitmap(bmpHandler))
+						{
+							using (var graphics = new Graphics(bitmap))
+							{
+								graphics.Clear();
+								DrawBadgeLabel(graphics, new Size(pixbuf.Width, pixbuf.Height), badgeLabel);
+							}
+						}
 					}
-					statusIcon.Pixbuf = bmp;
+
+					statusIcon.Pixbuf = pixbuf;
 					statusIcon.Visible = true;
 				}
 				else if (statusIcon != null)
@@ -103,15 +103,21 @@ namespace Eto.GtkSharp.Forms
 			var rect = new Rectangle(size);
 			rect.Inflate(-2, -2);
 			graphics.FillEllipse(Brushes.Red, rect);
-			graphics.DrawEllipse(new Pen(Colors.White, 2), rect);
-			var font = new Font(SystemFont.Bold, 10);
-			var labelSize = graphics.MeasureString(font, badgeLabel);
-			var labelPosition = ((PointF)(rect.Size - labelSize) / 2) + rect.Location;
-			graphics.DrawText(font, Colors.White, labelPosition, badgeLabel);
+			using (var pen = new Pen(Colors.White, 2))
+			{
+				graphics.DrawEllipse(pen, rect);
+			}
+			using (var font = new Font(SystemFont.Bold, 10))
+			{
+				var labelSize     = graphics.MeasureString(font, badgeLabel);
+				var labelPosition = ((PointF)(rect.Size - labelSize) / 2) + rect.Location;
+				graphics.DrawText(font, Colors.White, labelPosition, badgeLabel);
+			}
+
 			graphics.Flush();
 		}
 
-		public void Invoke(Action action)
+		public void Invoke(System.Action action)
 		{
 			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
 				action();
@@ -138,7 +144,7 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public void AsyncInvoke(Action action)
+		public void AsyncInvoke(System.Action action)
 		{
 			Gtk.Application.Invoke(delegate
 			{
@@ -149,10 +155,126 @@ namespace Eto.GtkSharp.Forms
 		public void Attach(object context)
 		{
 			attached = true;
+			Control = context as Gtk.Application;
 		}
 
 		public void OnMainFormChanged()
 		{
+		}
+
+		public bool IsActive
+		{
+			get
+			{
+				if (_isActive != null)
+					return _isActive.Value;
+
+				var windows = Gtk.Window.ListToplevels();
+				return windows.Any(r => r.HasFocus | r.HasToplevelFocus) | AnyIsActiveWindow(windows);
+			}
+		}
+
+
+		UITimer _timer;
+		bool? _isActive;
+		bool _didGetFocus;
+		internal void TriggerIsActiveChanged(bool gotFocus)
+		{
+			// don't do anything until we really need to know.
+			if (!IsEventHandled(Application.IsActiveChangedEvent))
+				return;
+
+			_didGetFocus |= gotFocus;
+
+			if (_timer == null)
+			{
+				// use a timer as the active window does not get updated immediately or when showing the task switcher
+				// not sure if there's a platform-specific way to do this that would work better...
+				_timer = new UITimer();
+				_timer.Elapsed += (sender, e) =>
+				{
+					var windows = Gtk.Window.ListToplevels();
+					// first, check if any window has focus.. then yes, we are the active application.
+					bool isActive = _didGetFocus | windows.Any(r => r.HasFocus | r.HasToplevelFocus);
+					if (!isActive)
+					{
+						// no windows have focus, so check the active window
+						isActive = AnyIsActiveWindow(windows);
+
+						// we are "active" but not really as there's no top level window with focus.
+						// so keep checking until one of the top levels actually has focus or the active window changes.
+						if (isActive || _didGetFocus)
+							_timer.Interval = 0.5;
+						else
+							_timer.Stop();
+
+					}
+					else
+						_timer.Stop();
+
+					_didGetFocus = false;
+
+					if (_isActive != isActive)
+					{
+						_isActive = isActive;
+						Callback.OnIsActiveChanged(Widget, EventArgs.Empty);
+					}
+				};
+			}
+			_timer.Interval = 0.2;
+			_timer.Start();
+		}
+
+		private static bool AnyIsActiveWindow(Gtk.Window[] windows)
+		{
+			var activeWindow = Gdk.Screen.Default.ActiveWindow;
+			if (activeWindow != null)
+			{
+				var activeWindowHandle = activeWindow.Handle;
+				for (int i = 0; i < windows.Length; i++)
+				{
+					Gtk.Window window = windows[i];
+					var gdkwindow = window.GetWindow();
+					if (gdkwindow != null && gdkwindow.Handle == activeWindowHandle)
+					{
+						return true;
+					}
+				}
+				activeWindow.Dispose();
+			}
+
+			return false;
+		}
+
+		public void RegisterIsActiveChanged(Gtk.Window window)
+		{
+			new WindowActiveHelper(window);
+		}
+
+		class WindowActiveHelper
+		{
+			Gtk.Window _window;
+
+			public WindowActiveHelper(Gtk.Window window)
+			{
+				if (window == null)
+					return;
+				_window = window;
+				_window.AddEvents((int)Gdk.EventMask.FocusChangeMask);
+				_window.FocusInEvent += _window_FocusInEvent;
+				_window.FocusOutEvent += _window_FocusOutEvent;
+			}
+
+			private void _window_FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
+			{
+				Instance.TriggerIsActiveChanged(false);
+			}
+
+			private void _window_FocusInEvent(object o, Gtk.FocusInEventArgs args)
+			{
+				Instance.TriggerIsActiveChanged(true);
+			}
+
 		}
 
 		public void Run()
@@ -187,14 +309,16 @@ namespace Eto.GtkSharp.Forms
 		{
 			switch (id)
 			{
-				case Application.TerminatingEvent:
+				case Eto.Forms.Application.TerminatingEvent:
 					// called automatically
 					break;
-				case Application.UnhandledExceptionEvent:
+				case Eto.Forms.Application.UnhandledExceptionEvent:
 					GLib.ExceptionManager.UnhandledException += OnUnhandledException;
 					break;
-				case Application.NotificationActivatedEvent:
+				case Eto.Forms.Application.NotificationActivatedEvent:
 					// handled by NotificationHandler
+					break;
+				case Eto.Forms.Application.IsActiveChangedEvent:
 					break;
 				default:
 					base.AttachEvent(id);
@@ -222,8 +346,16 @@ namespace Eto.GtkSharp.Forms
 
 		public void Open(string url)
 		{
-			var info = new ProcessStartInfo(url);
-			Process.Start(info);
+			try
+			{
+				Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+			}
+			catch
+			{
+				// Use fallback for recent mono versions that do not support UseShellExecute.
+				url = Uri.EscapeUriString(url);
+				Process.Start("xdg-open", url);
+			}
 		}
 
 		public Keys CommonModifier { get { return Keys.Control; } }

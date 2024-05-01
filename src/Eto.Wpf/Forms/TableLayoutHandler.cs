@@ -1,12 +1,3 @@
-using System;
-using System.Linq;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swm = System.Windows.Media;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class EtoGrid : swc.Grid
@@ -142,10 +133,7 @@ namespace Eto.Wpf.Forms
 			if (Widget.Loaded)
 			{
 				// happens with a blank TableLayout, or if populated during Load event.
-				InitializeSizes();
-				SetScale(true);
-				SetMargins(true);
-				SetChildrenSizes(true);
+				SetupGrid();
 			}
 
 			Control.LayoutUpdated += Control_LayoutUpdated;
@@ -180,12 +168,25 @@ namespace Eto.Wpf.Forms
 			if (IsCreated)
 			{
 				// won't be created yet if populated on Load event or if empty.
-
-				InitializeSizes();
-				SetScale(true);
-				SetMargins(true);
-				SetChildrenSizes(true);
+				SetupGrid();
 			}
+		}
+
+		private void SetupGrid()
+		{
+			InitializeSizes();
+			SetScale(true);
+			SetMargins(true);
+			SetChildrenSizes(true);
+		}
+
+		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
+		{
+			if (IsCreated && !Widget.Loaded)
+			{
+				SetupGrid();
+			}
+			return base.MeasureOverride(constraint, measure);
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
@@ -360,6 +361,8 @@ namespace Eto.Wpf.Forms
 
 		void Remove(int x, int y)
 		{
+			if (controls == null)
+				return;
 			var control = controls[x, y];
 			if (control != null)
 			{
@@ -385,7 +388,7 @@ namespace Eto.Wpf.Forms
 				}
 				Control.Children.Add(control);
 			}
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public void Move(Control child, int x, int y)
@@ -410,7 +413,7 @@ namespace Eto.Wpf.Forms
 				SetScale(handler, x, y);
 			}
 			controls[x, y] = child;
-			UpdatePreferredSize();
+			OnChildPreferredSizeUpdated();
 		}
 
 		public void Remove(Control child)
@@ -420,11 +423,21 @@ namespace Eto.Wpf.Forms
 
 		public override void Remove(sw.FrameworkElement child)
 		{
+			// ensure this is actually a child of this table
+			if (child.Parent != Control)
+				return;
+
+			// row and column could be for a different table
 			var x = swc.Grid.GetColumn(child);
 			var y = swc.Grid.GetRow(child);
 			Control.Children.Remove(child);
-			controls[x, y] = null;
-			UpdatePreferredSize();
+			if (controls != null
+				&& x >= 0 && x < controls.GetLength(0)
+				&& y >= 0 && y < controls.GetLength(1)
+				&& ReferenceEquals(controls[x,y]?.GetContainerControl(), child)
+				)
+				controls[x, y] = null;
+			OnChildPreferredSizeUpdated();
 		}
 	}
 }

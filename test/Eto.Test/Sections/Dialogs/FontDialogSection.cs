@@ -1,9 +1,3 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.Test.Sections.Dialogs
 {
 	[Section("Dialogs", typeof(FontDialog))]
@@ -11,6 +5,8 @@ namespace Eto.Test.Sections.Dialogs
 	{
 		Font selectedFont;
 		TextArea preview;
+		Label labelPreview;
+		TextBox textBoxPreview;
 		ListBox fontList;
 		ListBox fontStyles;
 		ListBox fontSizes;
@@ -21,20 +17,130 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddSeparateRow(null, PickFont(), PickFontWithStartingFont(), SetToFontFamily(), null);
+			layout.BeginVertical();
+			layout.BeginHorizontal();
+			layout.AddSpace();
+			layout.Add(PickFont());
+			layout.Add(PickFontWithStartingFont());
+			layout.Add(SetToFontFamily());
+			if (Platform.Supports<FontTypeface>())
+			{
+				layout.Add(FromFilesButton());
+				layout.Add(FromStreamsButton());
+			}
+			layout.AddSpace();
+			layout.EndHorizontal();
+			layout.EndVertical();
 			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlignment = VerticalAlignment.Center }, PickFontFamily(), null);
 
 			layout.AddSeparateRow(null, FontList(), FontStyles(), FontSizes(), null);
 			layout.AddSeparateRow(null, "Style:", BoldFont(), ItalicFont(), UnderlineFont(), StrikeoutFont(), null);
 
 			var tabs = new TabControl();
-			tabs.Pages.Add(new TabPage { Text = "Preview", Content = Preview() });
+			tabs.Pages.Add(new TabPage { Text = "TextArea Preview", Content = Preview() });
+			tabs.Pages.Add(new TabPage { Text = "TextBox Preview", Content = TextBoxPreview() });
+			tabs.Pages.Add(new TabPage { Text = "Label Preview", Content = LabelPreview() });
 			tabs.Pages.Add(new TabPage { Text = "Metrics", Content = Metrics() });
 
 			layout.Add(new Panel { MinimumSize = new Size(100, 150), Content = tabs }, yscale: true);
 			UpdatePreview(Fonts.Serif(18, FontStyle.Bold));
 
 			Content = layout;
+		}
+
+		Control FromFilesButton()
+		{
+			var button = new Button { Text = "FromFile(s)" };
+			button.Click += (sender, e) =>
+			{
+				var ofd = new OpenFileDialog
+				{
+					CheckFileExists = true,
+					MultiSelect = true,
+					Filters = {
+						new FileFilter("Font File", ".ttf", ".otf")
+					}
+				};
+				if (ofd.ShowDialog(this) == DialogResult.Ok)
+				{
+					Application.Instance.AsyncInvoke(() =>
+					{
+						try
+						{
+							var files = ofd.Filenames.ToArray();
+							Font font;
+							if (files.Length == 1)
+							{
+								font = Font.FromFile(ofd.FileName, selectedFont.Size, selectedFont.FontDecoration);
+							}
+							else
+							{
+								var family = FontFamily.FromFiles(files);
+								font = new Font(family, selectedFont.Size, selectedFont.FontStyle, selectedFont.FontDecoration);
+							}
+							UpdatePreview(font, true);
+						}
+						catch (Exception ex)
+						{
+							Log.Write(this, $"Could not load font: {ex}");
+						}
+					});
+				}
+			};
+
+			return button;
+		}
+
+		Control FromStreamsButton()
+		{
+			var button = new Button { Text = "FromStreams(s)" };
+			button.Click += (sender, e) =>
+			{
+				var ofd = new OpenFileDialog
+				{
+					CheckFileExists = true,
+					MultiSelect = true,
+					Filters = {
+						new FileFilter("Font File", ".ttf", ".otf")
+					}
+				};
+				if (ofd.ShowDialog(this) == DialogResult.Ok)
+				{
+					Application.Instance.AsyncInvoke(() =>
+					{
+						try
+						{
+							Font font;
+							var files = ofd.Filenames.ToArray();
+							if (files.Length == 1)
+							{
+								using (var stream = File.OpenRead(ofd.FileName))
+								{
+									font = Font.FromStream(stream, selectedFont.Size, selectedFont.FontDecoration);
+								}
+							}
+							else
+							{
+								var streams = files.Select(File.OpenRead).ToArray();
+								var family = FontFamily.FromStreams(streams);
+								foreach (var stream in streams)
+								{
+									stream.Dispose();
+								}
+								// create font from the current font style
+								font = new Font(family, selectedFont.Size, style: selectedFont.FontStyle, decoration: selectedFont.FontDecoration);
+							}
+							UpdatePreview(font, true);
+						}
+						catch (Exception ex)
+						{
+							Log.Write(this, $"Could not load font: {ex}");
+						}
+					});
+				}
+			};
+
+			return button;
 		}
 
 		Control PickFontFamily()
@@ -153,7 +259,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control SetToFontFamily()
 		{
-			var button = new Button { Text = "Set to a specific font family (Times New Roman 20pt)" };
+			var button = new Button { Text = "Set to Times New Roman, 20pt" };
 			button.Click += delegate
 			{
 				var family = new FontFamily("Times New Roman");
@@ -270,7 +376,7 @@ namespace Eto.Test.Sections.Dialogs
 			return control;
 		}
 
-		void UpdatePreview(Font font)
+		void UpdatePreview(Font font, bool forceNewFamily = false)
 		{
 			if (updating)
 				return;
@@ -279,21 +385,24 @@ namespace Eto.Test.Sections.Dialogs
 			selectedFont = font;
 			DataContext = selectedFont;
 			preview.Font = selectedFont;
+			labelPreview.Font = selectedFont;
+			textBoxPreview.Font = selectedFont;
 			preview.Invalidate();
 
 			var family = selectedFont.Family;
-			if (newFamily)
+			if (newFamily || forceNewFamily)
 			{
 				fontStyles.Items.Clear();
-				Func<FontTypeface, string> getFaceName = (FontTypeface ft) =>
+				string getFaceName(FontTypeface ft)
 				{
 					var name = ft.Name;
 					if (ft.LocalizedName != name)
 						name += $" ({ft.LocalizedName})";
 					return name;
-				};
+				}
 
 				fontStyles.Items.AddRange(family.Typefaces.Select(r => new ListItem { Text = getFaceName(r), Key = r.Name }).OfType<IListItem>());
+				Log.Write(null, $"New Family: {family.Name}, Typefaces: {string.Join(", ", family.Typefaces.Select(getFaceName))}");
 			}
 			fontStyles.SelectedKey = selectedFont.Typeface.Name;
 			fontList.SelectedKey = family.Name;
@@ -372,6 +481,20 @@ namespace Eto.Test.Sections.Dialogs
 			preview.Text = "The quick brown fox jumps over the lazy dog";
 
 			return preview;
+		}
+		Control TextBoxPreview()
+		{
+			textBoxPreview = new TextBox();
+			textBoxPreview.Text = "The quick brown fox jumps over the lazy dog";
+
+			return new TableLayout(textBoxPreview, null);
+		}
+		Control LabelPreview()
+		{
+			labelPreview = new Label { Width = 100 };
+			labelPreview.Text = "The quick brown fox jumps over the lazy dog";
+
+			return labelPreview;
 		}
 	}
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Eto.Forms;
-using Eto.Drawing;
 using a = Android;
 using av = Android.Views;
 using aw = Android.Widget;
@@ -26,7 +22,11 @@ namespace Eto.Android.Forms
 		public a.App.Activity Activity
 		{
 			get { return activity ?? (activity = CreateActivity()); }
-			set { activity = value; }
+			set 
+			{
+				activity = value;
+				ToolBar = ToolBar;
+			}
 		}
 
 		protected virtual a.App.Activity CreateActivity()
@@ -36,14 +36,42 @@ namespace Eto.Android.Forms
 
 		protected AndroidWindow()
 		{
+			Control = InnerFrame;
+		}
+
+		private aw.FrameLayout toolBarContainer;
+		private aw.LinearLayout Lin;
+
+		protected override aw.FrameLayout CreateFrame()
+		{
+			var Frame = base.CreateFrame();
+
+			Lin = new aw.LinearLayout(Platform.AppContextThemed)
+			{
+				Orientation = aw.Orientation.Vertical,
+				LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent)
+			};
+
+			toolBarContainer = new aw.FrameLayout(Platform.AppContextThemed);
+
+			Lin.AddView(toolBarContainer);
+			Lin.AddView(Frame);
+
+			return Frame;
 		}
 
 		public override av.View ContainerControl
 		{
-			get { return InnerFrame; }
+			get { return Lin; }
 		}
 
-		public void Close()
+		public bool Closeable
+		{
+			get { return false; }
+			set { }
+		}
+
+		public virtual void Close()
 		{
 			//a.App.Application.Context.Start
 		}
@@ -52,20 +80,33 @@ namespace Eto.Android.Forms
 		{
 		}
 
-		public ToolBar ToolBar { get; set; }
+		public Eto.Forms.ToolBar ToolBar
+		{
+			get
+			{
+				return toolBar;
+			}
+			set
+			{
+				toolBar = value;
+				toolBarContainer.RemoveAllViews();
+
+				if (Activity != null && toolBar != null)
+				{
+					var tb = (aw.Toolbar)toolBar.ControlObject;
+
+					toolBarContainer.AddView(tb);
+				}
+			}
+		}
+
+		private Eto.Forms.ToolBar toolBar;
 
 		public double Opacity { get; set; }
 
 		public string Title { get; set; }
 
-		public Screen Screen
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
-
+		public Screen Screen => Screen.PrimaryScreen;
 
 		public MenuBar Menu
 		{
@@ -83,74 +124,38 @@ namespace Eto.Android.Forms
 
 		public bool Resizable
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public bool Maximizable
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public bool Minimizable
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public bool ShowInTaskbar
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public bool Topmost
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public WindowState WindowState
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public Rectangle RestoreBounds
@@ -160,24 +165,18 @@ namespace Eto.Android.Forms
 
 		public WindowStyle WindowStyle
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public void BringToFront()
 		{
-			throw new NotImplementedException();
+			
 		}
 
 		public void SendToBack()
 		{
-			throw new NotImplementedException();
+			
 		}
 
 		public void SetOwner(Window owner)
@@ -191,5 +190,14 @@ namespace Eto.Android.Forms
 				throw new NotImplementedException();
 			}
 		}
+
+		public Boolean MovableByWindowBackground
+		{
+			get;
+			set;
+		}
+
+		public Size MaximumSize { get; set; }
+		public bool AutoSize { get; set; }
 	}
 }

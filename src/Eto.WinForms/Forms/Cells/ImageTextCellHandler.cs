@@ -1,9 +1,4 @@
-﻿using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-using Eto.Forms;
-using Eto.Drawing;
-using Eto.WinForms.Drawing;
+﻿using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Cells
 {
@@ -80,8 +75,11 @@ namespace Eto.WinForms.Forms.Cells
 			{
 				var size = base.GetPreferredSize(graphics, cellStyle, rowIndex, constraintSize);
 				var val = GetValue(rowIndex) as object[];
-				var img = val[0] as sd.Image;
-				if (img != null) size.Width += IconSize + IconPadding * 2;
+				if (val != null)
+				{
+					var img = val[0] as sd.Image;
+					if (img != null) size.Width += IconSize + IconPadding * 2;
+				}
 				size.Width += Handler.GetRowOffset(rowIndex);
 				return size;
 			}
@@ -106,7 +104,7 @@ namespace Eto.WinForms.Forms.Cells
 						using (var background = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor))
 							graphics.FillRectangle(background, cellBounds);
 					graphics.InterpolationMode = InterpolationMode;
-					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + IconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(img.Height, cellBounds.Height)) / 2, IconSize, IconSize));
+					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + IconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(IconSize, cellBounds.Height)) / 2, IconSize, IconSize));
 					graphics.EndContainer(container);
 					cellBounds.X += IconSize + IconPadding * 2;
 					cellBounds.Width -= IconSize + IconPadding * 2;

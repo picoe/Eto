@@ -1,26 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Eto.Drawing;
-using Eto.Forms;
-#if IOS
-using NSView = UIKit.UIView;
-using ObjCRuntime;
-using Foundation;
-#elif XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
-
 namespace Eto.Mac.Forms
 {
 	public interface IMacControlHandler
@@ -32,14 +9,9 @@ namespace Eto.Mac.Forms
 		bool IsEventHandled(string eventName);
 
 		NSView ContentControl { get; }
-
 		NSView EventControl { get; }
-
 		NSView FocusControl { get; }
-
-		bool AutoSize { get; }
-
-		SizeF GetPreferredSize(SizeF availableSize);
+		NSView TextInputControl { get; }
 
 		void RecalculateKeyViewLoop(ref NSView last);
 
@@ -56,17 +28,15 @@ namespace Eto.Mac.Forms
 
 		public NSString KeyPath { get; set; }
 
-		WeakReference control;
+		public IntPtr ControlHandle { get; set; }
 
-		public NSObject Control { get { return (NSObject)(control != null ? control.Target : null); } set { control = new WeakReference(value); } }
-
-		WeakReference widget;
-
-		public Widget Widget { get { return (Widget)(widget != null ? widget.Target : null); } set { widget = new WeakReference(value); } }
+		public NSObject Control => Runtime.TryGetNSObject(ControlHandle);
 
 		WeakReference handler;
 
-		public object Handler { get { return handler != null ? handler.Target : null; } set { handler = new WeakReference(value); } }
+		public object Handler { get => handler?.Target; set => handler = new WeakReference(value); }
+		
+		public Widget Widget => (Handler as Widget.IHandler)?.Widget;
 
 		static readonly Selector selPerformAction = new Selector("performAction:");
 
@@ -87,7 +57,6 @@ namespace Eto.Mac.Forms
 			if (!isNotification && c != null)
 			{
 				NSNotificationCenter.DefaultCenter.AddObserver(this, selPerformAction, KeyPath, c);
-				c.DangerousRetain();
 				isNotification = true;
 			}
 		}
@@ -99,32 +68,32 @@ namespace Eto.Mac.Forms
 			{
 				//Console.WriteLine ("{0}: 3. Adding observer! {1}, {2}", ((IRef)this.Handler).WidgetID, this.GetType (), Control.GetHashCode ());
 				c.AddObserver(this, KeyPath, NSKeyValueObservingOptions.New, IntPtr.Zero);
-				c.DangerousRetain();
 				isControl = true;
 			}
 		}
 
+		static readonly IntPtr selRemoveObserverForKeyPath_Handle = Selector.GetHandle("removeObserver:forKeyPath:");
+
 		public void Remove()
 		{
-			var c = Control;
+			// we use the handle here to remove as it may have been GC'd but we still need to remove it!
 			if (isNotification)
 			{
 				NSNotificationCenter.DefaultCenter.RemoveObserver(this);
-				if (c != null)
-					c.DangerousRelease();
+
 				isNotification = false;
 			}
-			if (isControl && c != null && KeyPath != null)
+			if (isControl)
 			{
 				//Console.WriteLine ("{0}: 4. Removing observer! {1}, {2}", ((IRef)this.Handler).WidgetID, Handler.GetType (), Control.GetHashCode ());
-				c.RemoveObserver(this, KeyPath);
-				c.DangerousRelease();
+				Messaging.void_objc_msgSend_IntPtr_IntPtr(ControlHandle, selRemoveObserverForKeyPath_Handle, Handle, KeyPath.Handle);
 				isControl = false;
 			}
 		}
 
 		protected override void Dispose(bool disposing)
 		{
+			// this object has a finalizer so let's unsubscribe here
 			Remove();
 			base.Dispose(disposing);
 		}
@@ -139,16 +108,16 @@ namespace Eto.Mac.Forms
 			this.observer = observer;
 			this.Notification = notification;
 		}
+		
+		public Widget Widget => observer.Widget;
 
-		public Widget Widget { get { return observer.Widget; } }
+		public object Handler => observer.Handler;
+		
+		public object Control => observer.Control;
 
-		public object Handler { get { return observer.Handler; } }
+		public NSString KeyPath => observer.KeyPath;
 
-		public object Control { get { return observer.Control; } }
-
-		public NSString KeyPath { get { return observer.KeyPath; } }
-
-		public NSNotification Notification { get; private set; }
+		public NSNotification Notification { get; }
 	}
 
 	public interface IMacControl
@@ -156,22 +125,8 @@ namespace Eto.Mac.Forms
 		WeakReference WeakHandler { get; set; }
 	}
 
-	public abstract class MacBase<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>
-		where TControl: class
-		where TWidget: Widget
+	static class MacBase
 	{
-		protected override void Initialize()
-		{
-			base.Initialize();
-
-			var control = Control as IMacControl;
-			if (control != null)
-				control.WeakHandler = new WeakReference(this);
-		}
-
-
-		List<ObserverHelper> observers;
-
 		public static object GetHandler(IntPtr sender) => GetHandler(Runtime.GetNSObject(sender));
 
 		public static object GetHandler(object control)
@@ -186,16 +141,48 @@ namespace Eto.Mac.Forms
 			return macControl.WeakHandler.Target;
 		}
 
+	}
+
+	public abstract class MacBase<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>
+		where TControl : class
+		where TWidget : Widget
+	{
+		protected override void Initialize()
+		{
+			base.Initialize();
+
+			var control = Control as IMacControl;
+			if (control != null)
+				control.WeakHandler = new WeakReference(this);
+		}
+
+
+		List<ObserverHelper> observers;
+
+		public static object GetHandler(IntPtr sender) => MacBase.GetHandler(Runtime.GetNSObject(sender));
+
+		public static object GetHandler(object control) => MacBase.GetHandler(control);
+
 		public bool AddMethod(IntPtr selector, Delegate action, string arguments, object control)
 		{
-			var type = control.GetType();
-			#if OSX
-			if (!typeof(IMacControl).IsAssignableFrom(type))
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
-			if (((IMacControl)control).WeakHandler?.Target == null)
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' has a null handler", type));
-			#endif
+			if (control is Type type)
+			{
+				if (!typeof(IMacControl).IsAssignableFrom(type))
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
+			}
+			else
+			{
+				type = control.GetType();
+				
+				if (!typeof(IMacControl).IsAssignableFrom(type))
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
+				if (((IMacControl)control).WeakHandler?.Target == null)
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' has a null handler", type));
+			}
+
+				
 			var classHandle = Class.GetHandle(type);
+
 			return ObjCExtensions.AddMethod(classHandle, selector, action, arguments);
 		}
 
@@ -212,15 +199,12 @@ namespace Eto.Mac.Forms
 			if (observers == null)
 			{
 				observers = new List<ObserverHelper>();
-				// ensure we finalize to clean this up later
-				GC.ReRegisterForFinalize(this);
 			}
 			var observer = new ObserverHelper
 			{
 				Action = action,
 				KeyPath = key,
-				Control = control,
-				Widget = Widget,
+				ControlHandle = control.Handle,
 				Handler = this
 			};
 			observer.AddToNotificationCenter();
@@ -233,40 +217,25 @@ namespace Eto.Mac.Forms
 			if (observers == null)
 			{
 				observers = new List<ObserverHelper>();
-				// ensure we finalize to clean this up later
-				GC.ReRegisterForFinalize(this);
 			}
 			var observer = new ObserverHelper
 			{
 				Action = action,
 				KeyPath = key,
-				Control = control,
-				Widget = Widget,
+				ControlHandle = control.Handle,
 				Handler = this
 			};
 			observer.AddToControl();
 			observers.Add(observer);
 		}
 
-		~MacBase()
-		{
-			//Console.WriteLine("Finalizing {0}", GetType());
-			// need to remove observers so we can GC the native object
-			Dispose(false);
-		}
-
-		public MacBase()
-		{
-			// finalizer is not actually needed until we add an observer.
-			GC.SuppressFinalize(this);
-		}
-
 		protected override void Dispose(bool disposing)
 		{
 			if (observers != null)
 			{
-				foreach (var observer in observers)
+				for (int i = 0; i < observers.Count; i++)
 				{
+					var observer = observers[i];
 					observer.Remove();
 				}
 				observers = null;

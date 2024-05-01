@@ -1,10 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-
-namespace Eto.Shared.Forms
+﻿namespace Eto.Shared.Forms
 {
 	public class FixedMaskedTextProviderHandler : FixedMaskedTextProvider.IHandler
 	{

@@ -1,21 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
 using swd = System.Windows.Documents;
-using swm = System.Windows.Media;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Wpf.Drawing;
-using System.Globalization;
-using System.Collections;
-using System.IO;
 using Eto.Wpf.CustomControls.FontDialog;
-using System.Text.RegularExpressions;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoRichTextBox : swc.RichTextBox, IEtoWpfControl
@@ -379,7 +364,7 @@ namespace Eto.Wpf.Forms.Controls
 			get
 			{
 				var sel = Control.Selection;
-				return Range.FromLength(sel.Start.GetTextOffset(), sel.GetLength());
+				return Eto.Forms.Range.FromLength(sel.Start.GetTextOffset(), sel.GetLength()); // Fully qualified because System.Range was introduced in .NET Core 3.0
 			}
 			set
 			{
@@ -434,6 +419,8 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				var typeface = (value?.Handler as FontTypefaceHandler)?.Control;
+				if (typeface == null)
+					return;
 				ApplyFont(OnTranslateFamily(typeface?.FontFamily ?? Control.FontFamily), OnTranslateTypeface(typeface), typeface?.Weight, typeface?.Stretch, typeface?.Style);
 			}
 		}
@@ -709,7 +696,9 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					swd.TextElement.SetFontFamily(elem, typeface.FontFamily);
 					// not in RTF, so should never be set but do a check anyway.
-					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontStretchProperty))
+					// In some cases we need to set this anyway (e.g. Arial -> Arial Narrow), so we ensure it matches the current typeface
+					if (!elem.PropertyIsInheritedOrLocal(swd.TextElement.FontStretchProperty) 
+						|| (elem.GetValue(swd.TextElement.FontStretchProperty) as sw.FontStretch?) != typeface.Stretch)
 						swd.TextElement.SetFontStretch(elem, typeface.Stretch);
 					
 					// in RTF, can be set so only set it to the typeface if not specified in RTF
@@ -727,6 +716,8 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		Dictionary<string, swm.Typeface> _cachedTypefaceMap;
+
 		/// <summary>
 		/// Finds the WPF typeface if the family is not known
 		/// </summary>
@@ -734,23 +725,31 @@ namespace Eto.Wpf.Forms.Controls
 		/// <returns>An instance of the typeface to use, or null if the font family is correct or could not be found</returns>
 		swm.Typeface ResolveWpfTypeface(swm.FontFamily family)
 		{
+			if (_cachedTypefaceMap != null && _cachedTypefaceMap.TryGetValue(family.Source, out var cachedTypeface))
+				return cachedTypeface;
+
 			var familyName = NameDictionaryExtensions.GetEnglishName(family.FamilyNames);
 
 			// if the resolved name is the same as the source, we're good
 			if (string.Equals(familyName, family.Source, StringComparison.OrdinalIgnoreCase))
 				return null;
 
+			if (_cachedTypefaceMap == null)
+				_cachedTypefaceMap = new Dictionary<string, swm.Typeface>(StringComparer.OrdinalIgnoreCase);
+
 			// can't find fonts where their Win32 name is different from the WPF name, so lookup based on the win32 name
-			// do we need to cache this, or is it fast enough?
 			foreach (var font in swm.Fonts.SystemFontFamilies)
 			{
 				foreach (var typeface in font.GetTypefaces())
 				{
 					if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
 					{
-						if (string.Equals(family.Source, glyphTypeface.Win32FamilyNames.GetEnglishName(), StringComparison.OrdinalIgnoreCase))
+						var win32Name = glyphTypeface.Win32FamilyNames.GetEnglishName();
+						
+						if (string.Equals(family.Source, win32Name, StringComparison.OrdinalIgnoreCase))
 						{
 							// found it!
+							_cachedTypefaceMap[family.Source] = typeface;
 							return typeface;
 						}
 					}
@@ -768,13 +767,17 @@ namespace Eto.Wpf.Forms.Controls
 				if (typeface.TryGetGlyphTypeface(out var glyphTypeface)
 					&& string.Equals(family.Source, glyphTypeface.Win32FamilyNames.GetEnglishName(), StringComparison.OrdinalIgnoreCase))
 				{
+					_cachedTypefaceMap[family.Source] = typeface;
 					return typeface;
 				}
 			}
 
 			// check if the resolved font name has the same family prefix
 			if (family.Source.Length <= familyName.Length + 1 || !family.Source.StartsWith(familyName, StringComparison.OrdinalIgnoreCase))
+			{
+				_cachedTypefaceMap[family.Source] = null;
 				return null;
+			}
 
 			// extract the face part of the source.  E.g. "Arial Narrow" will result in "Narrow".
 			var faceName = family.Source.Substring(familyName.Length + 1);
@@ -783,10 +786,14 @@ namespace Eto.Wpf.Forms.Controls
 			foreach (var typeface in typefaces)
 			{
 				var typefaceName = NameDictionaryExtensions.GetEnglishName(typeface.FaceNames);
-				if (faceName == typefaceName)
+				if (string.Equals(faceName, typefaceName, StringComparison.OrdinalIgnoreCase))
+				{
+					_cachedTypefaceMap[family.Source] = typeface;
 					return typeface;
+				}
 			}
 
+			_cachedTypefaceMap[family.Source] = null;
 			return null;
 		}
 
@@ -954,7 +961,7 @@ namespace Eto.Wpf.Forms.Controls
 		public void Delete(Range<int> range)
 		{
 			var textRange = GetRange(range);
-			textRange.Text = null;
+			textRange.Text = string.Empty;
 		}
 
 		public void Insert(int position, string text)
@@ -977,6 +984,17 @@ namespace Eto.Wpf.Forms.Controls
 				ContentRange.ApplyPropertyValue(swd.Block.TextAlignmentProperty, value.ToWpfTextAlignment());
 			}
 		}
+
+		public override void ScrollTo(Range<int> range)
+		{
+			var textRange = GetRange(range);
+			var rect = textRange.End.GetCharacterRect(swd.LogicalDirection.Backward);
+			Control.ScrollToVerticalOffset(rect.Top);
+			Control.ScrollToHorizontalOffset(rect.Left);
+		}
+
+		public override int TextLength => ContentRange.GetLength();
+
 	}
 
 	static class FlowDocumentExtensions
@@ -1040,6 +1058,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			
 			var runsAndParagraphs = GetRunsAndParagraphs(doc).ToList();
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 			var output = new swm.FormattedText(
 			  GetText(runsAndParagraphs),
 			  CultureInfo.CurrentCulture,
@@ -1049,6 +1068,7 @@ namespace Eto.Wpf.Forms.Controls
 			  doc.Foreground,
 			  null,
 			  swm.TextOptions.GetTextFormattingMode(doc));
+#pragma warning restore CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 
 			int offset = 0;
 

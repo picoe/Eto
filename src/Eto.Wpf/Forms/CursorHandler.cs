@@ -1,17 +1,11 @@
-using System;
-using System.IO;
-using Eto.Drawing;
-using Eto.Forms;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-
 namespace Eto.Wpf.Forms
 {
 	public class CursorHandler : WidgetHandler<swi.Cursor, Cursor>, Cursor.IHandler
 	{
-		public void Create (CursorType cursor)
+		public void Create(CursorType cursor)
 		{
-			switch (cursor) {
+			switch (cursor)
+			{
 				case CursorType.Arrow:
 					Control = swi.Cursors.Arrow;
 					break;
@@ -36,12 +30,50 @@ namespace Eto.Wpf.Forms
 				case CursorType.VerticalSplit:
 					Control = swi.Cursors.SizeWE;
 					break;
+				case CursorType.SizeAll:
+					Control = swi.Cursors.SizeAll;
+					break;
+				case CursorType.SizeLeft:
+					Control = swi.Cursors.SizeWE;
+					break;
+				case CursorType.SizeTop:
+					Control = swi.Cursors.SizeNS;
+					break;
+				case CursorType.SizeRight:
+					Control = swi.Cursors.SizeWE;
+					break;
+				case CursorType.SizeBottom:
+					Control = swi.Cursors.SizeNS;
+					break;
+				case CursorType.SizeTopLeft:
+					Control = swi.Cursors.SizeNWSE;
+					break;
+				case CursorType.SizeTopRight:
+					Control = swi.Cursors.SizeNESW;
+					break;
+				case CursorType.SizeBottomLeft:
+					Control = swi.Cursors.SizeNESW;
+					break;
+				case CursorType.SizeBottomRight:
+					Control = swi.Cursors.SizeNWSE;
+					break;
 				default:
-					throw new NotSupportedException ();
+					throw new NotSupportedException();
 			}
 		}
 
-		public void Create(Bitmap image, PointF hotspot)
+		public void Create(Image image, PointF hotspot)
+		{
+			if (image is Bitmap bitmap)
+				CreateBitmap(bitmap, hotspot);
+			else if (image is Icon icon)
+			{
+				var frame = icon.GetFrame(Screen.PrimaryScreen.LogicalPixelSize);
+				CreateBitmap(frame.Bitmap, hotspot * frame.Scale);
+			}
+		}
+
+		void CreateBitmap(Bitmap image, PointF hotspot)
 		{
 			using (var pngStream = new MemoryStream())
 			{

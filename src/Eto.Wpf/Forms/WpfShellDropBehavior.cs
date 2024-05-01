@@ -1,6 +1,4 @@
-using System;
 using System.Windows;
-using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {

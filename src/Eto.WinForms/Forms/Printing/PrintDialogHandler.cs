@@ -1,50 +1,52 @@
-using swf = System.Windows.Forms;
 using sdp = System.Drawing.Printing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms.Printing
 {
 	public class PrintDialogHandler : WidgetHandler<swf.PrintDialog, PrintDialog>, PrintDialog.IHandler
 	{
-		PrintSettings printSettings;
+		PrintSettings _printSettings;
 
-		public PrintDialogHandler ()
+		public PrintDialogHandler()
 		{
-			Control = new swf.PrintDialog {
+			Control = new swf.PrintDialog
+			{
 				UseEXDialog = true,
 				AllowSomePages = true,
-				PrinterSettings = PrintSettingsHandler.DefaultSettings ()
+				PrinterSettings = PrintSettingsHandler.DefaultSettings()
 			};
 		}
 
 		public PrintDocument Document { get; set; }
 
-		public DialogResult ShowDialog (Window parent)
+		public DialogResult ShowDialog(Window parent)
 		{
+			if (parent?.HasFocus == false)
+				parent.Focus();
+
 			swf.DialogResult result;
 
-			Control.PrinterSettings = printSettings.ToSD ();
+			Control.PrinterSettings = _printSettings.ToSD();
 
 			if (parent != null)
-				result = Control.ShowDialog (((IWindowHandler)parent.Handler).Win32Window);
+				result = Control.ShowDialog(((IWindowHandler)parent.Handler).Win32Window);
 			else
-				result = Control.ShowDialog ();
+				result = Control.ShowDialog();
 
-			return result.ToEto ();
+			if (result == swf.DialogResult.OK && Document != null)
+			{
+				Document.PrintSettings = _printSettings;
+				Document.Print();
+			}
+
+			return result.ToEto();
 		}
 
 		public PrintSettings PrintSettings
 		{
-			get
-			{
-				if (printSettings == null)
-					printSettings = Control.PrinterSettings.ToEto();
-				return printSettings;
-			}
+			get => _printSettings ?? (_printSettings = Control.PrinterSettings.ToEto());
 			set
 			{
-				printSettings = value;
-				Control.PrinterSettings = value.ToSD ();
+				_printSettings = value;
+				Control.PrinterSettings = value.ToSD();
 			}
 		}
 

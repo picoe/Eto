@@ -1,10 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Eto
+﻿namespace Eto
 {
 	static class GradientHelper
 	{
@@ -35,6 +29,39 @@ namespace Eto
 			endPoint = startPoint + diff * scale;
 
 			return scale;
+		}
+
+		public static void GetLinearFromRectangle(RectangleF rectangle, float angle, out PointF min, out PointF max)
+		{
+			PointF startPoint;
+			PointF endPoint;
+			if (angle >= 0 && angle < 90)
+			{
+				startPoint = rectangle.TopLeft;
+				endPoint = rectangle.TopRight;
+			}
+			else if (angle >= 90 && angle < 180)
+			{
+				startPoint = rectangle.TopRight;
+				endPoint = rectangle.BottomRight;
+				angle -= 90;
+			}
+			else if (angle >= 180 && angle < 270)
+			{
+				startPoint = rectangle.BottomRight;
+				endPoint = rectangle.BottomLeft;
+				angle -= 180;
+			}
+			else
+			{
+				startPoint = rectangle.BottomLeft;
+				endPoint = rectangle.TopLeft;
+				angle -= 270;
+			}
+			var matrix = Matrix.Create();
+			matrix.RotateAt(angle, startPoint);
+			endPoint = matrix.TransformPoint(endPoint);
+			GradientHelper.GetLinearMinMax(startPoint, endPoint, rectangle, out min, out max);
 		}
 
 		public static void GetLinearMinMax(PointF startPoint, PointF endPoint, RectangleF rect, out PointF min, out PointF max, bool includeStartEnd = false)

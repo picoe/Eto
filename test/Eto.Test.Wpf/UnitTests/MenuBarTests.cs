@@ -1,12 +1,6 @@
-﻿using Eto.Forms;
-using Eto.Test.UnitTests;
+﻿using Eto.Test.UnitTests;
 using Eto.Wpf.Forms.Menu;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using swi = System.Windows.Input;
 
 namespace Eto.Test.Wpf.UnitTests
@@ -22,7 +16,7 @@ namespace Eto.Test.Wpf.UnitTests
 				var form = new Form();
 				form.Menu = new MenuBar();
 
-				var file = new ButtonMenuItem { Text = "File" };
+				var file = new SubMenuItem { Text = "File" };
 
 				var command = new Command { MenuText = "Click Me!" };
 				command.Shortcut = Keys.Control | Keys.N;

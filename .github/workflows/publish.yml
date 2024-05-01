@@ -1,0 +1,24 @@
+name: Release
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'release' && github.event.action == 'released' && startsWith(github.ref, 'refs/tags/'))
+    steps:
+      - name: Get the version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/}" >> $GITHUB_OUTPUT
+
+      - uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: ${{ steps.get_version.outputs.VERSION }}
+          file: ".*\\.nupkg"
+          regex: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push packages to nuget.org
+        run: dotnet nuget push '*.nupkg' --skip-duplicate -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}}

@@ -1,7 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Runtime.InteropServices;
-
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>
@@ -33,7 +29,8 @@ namespace Eto.GtkSharp.Drawing
 
 		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			throw new NotImplementedException();
+			GradientHelper.GetLinearFromRectangle(rectangle, angle, out var startPoint, out var endPoint);
+			return Create(startColor, endColor, startPoint, endPoint);
 		}
 
 		public IMatrix GetTransform(LinearGradientBrush widget)
@@ -58,14 +55,14 @@ namespace Eto.GtkSharp.Drawing
 			gradient.Extend = gradientWrap.ToCairo();
 		}
 
-		public override void Apply(object control, GraphicsHandler graphics)
+		public override void Apply(object control, Cairo.Context context)
 		{
 			var gradient = ((EtoGradient)control);
 			if (!ReferenceEquals(gradient.Transform, null))
-				graphics.Control.Transform(gradient.Transform);
-			graphics.Control.SetSource(gradient);
+				context.Transform(gradient.Transform);
+			context.SetSource(gradient);
 			if (!ReferenceEquals(gradient.TransformInverse, null))
-				graphics.Control.Transform(gradient.TransformInverse);
+				context.Transform(gradient.TransformInverse);
 		}
 	}
 }

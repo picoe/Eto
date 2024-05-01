@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Menu
 {
 	public class ContextMenuHandler : MenuHandler<Gtk.Menu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
@@ -63,29 +57,34 @@ namespace Eto.GtkSharp.Forms.Menu
 
 			public void HandleMenuOpening(object sender, EventArgs e)
 			{
-				Handler.Callback.OnOpening(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnOpening(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleMenuClosed(object sender, EventArgs e)
 			{
-				var h = Handler;
+				var handler = Handler;
+				if (handler == null)
+					return;
 				// before menuitem click is processed
-				h.Callback.OnClosing(h.Widget, EventArgs.Empty);
+				handler.Callback.OnClosing(handler.Widget, EventArgs.Empty);
 				// call OnClosed after menuitem click is processed
-				Application.Instance.AsyncInvoke(() => h.Callback.OnClosed(h.Widget, EventArgs.Empty));
+				Application.Instance.AsyncInvoke(() => handler.Callback.OnClosed(handler.Widget, EventArgs.Empty));
 			}
 
 			[GLib.ConnectBefore]
 			public void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return;
 				// Handle pressing shortcut keys when the context menu is open
 				var shortcut = args.Event.Key.ToEto() | args.Event.State.ToEtoKey();
 				if (shortcut == Keys.None)
 					return;
-				var item = Handler.Widget.GetChildren().FirstOrDefault(r => r.Shortcut == shortcut);
+				var item = handler.Widget.GetChildren().FirstOrDefault(r => r.Shortcut == shortcut);
 				if (item != null)
 				{
-					Handler.Control.Hide();
+					handler.Control.Hide();
 					item.PerformClick();
 				}
 			}

@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-
 namespace Eto.GtkSharp.Forms.Menu
 {
 	/// <summary>
@@ -59,6 +56,8 @@ namespace Eto.GtkSharp.Forms.Menu
 			public void HandleActivated(object sender, EventArgs e)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				if (handler.SuppressClick > 0 || !handler.Control.Active)
 					return;
 				handler.Callback.OnClick(handler.Widget, e);
@@ -67,6 +66,8 @@ namespace Eto.GtkSharp.Forms.Menu
 			public void HandleToggled(object sender, EventArgs e)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				handler.Callback.OnCheckedChanged(handler.Widget, e);
 			}
 		}

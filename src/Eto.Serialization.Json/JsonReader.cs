@@ -1,8 +1,4 @@
-using System;
-using System.IO;
 using Newtonsoft.Json;
-using System.Runtime.Serialization;
-using System.Reflection;
 using Eto.Serialization.Json.Converters;
 
 namespace Eto.Serialization.Json

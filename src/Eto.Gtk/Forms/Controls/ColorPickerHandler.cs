@@ -1,8 +1,4 @@
-﻿using System;
-using Eto.Forms;
-using Eto.Drawing;
-
-namespace Eto.GtkSharp.Forms.Controls
+﻿namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ColorPickerHandler : GtkControl<Gtk.ColorButton, ColorPicker, ColorPicker.ICallback>, ColorPicker.IHandler
 	{
@@ -37,7 +33,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleSelectedColorChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnColorChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnColorChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 #if GTK3

@@ -1,22 +1,6 @@
-using System;
-using Eto.Forms;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
-
 namespace Eto.Mac.Forms.Printing
 {
-	public class PrintDialogHandler : WidgetHandler<NSPrintPanel, PrintDialog>, PrintDialog.IHandler
+	public class PrintDialogHandler : WidgetHandler<NSPrintPanel, CommonDialog>, PrintDialog.IHandler, PrintPreviewDialog.IHandler
 	{
 		PrintSettings settings;
 
@@ -38,6 +22,7 @@ namespace Eto.Mac.Forms.Printing
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			MacView.InMouseTrackingLoop = false;
 			int ret;
 			var docHandler = Document != null ? Document.Handler as PrintDocumentHandler : null;
 
@@ -48,7 +33,7 @@ namespace Eto.Mac.Forms.Printing
 			}
 			else
 			{
-				var printInfo = settings.ToNS();
+				var printInfo = PrintSettings.ToNS();
 				if (parent != null)
 				{
 					var parentHandler = (IMacWindow)parent.Handler;
@@ -65,16 +50,8 @@ namespace Eto.Mac.Forms.Printing
 
 		public PrintSettings PrintSettings
 		{
-			get
-			{
-				if (settings == null)
-					settings = Control.PrintInfo.ToEto();
-				return settings;
-			}
-			set
-			{
-				settings = value;
-			}
+			get => settings ?? (settings = Control.PrintInfo.ToEto() ?? new PrintSettings());
+			set => settings = value;
 		}
 
 		public bool AllowCopies

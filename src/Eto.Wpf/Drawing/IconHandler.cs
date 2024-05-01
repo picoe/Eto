@@ -1,15 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Eto.Drawing;
-using System.IO;
-using sw = System.Windows;
-using swi = System.Windows.Interop;
-using swm = System.Windows.Media;
-using swmi = System.Windows.Media.Imaging;
-using sd = System.Drawing;
-using System.Linq;
-
 namespace Eto.Wpf.Drawing
 {
 	public interface IWpfImage
@@ -19,7 +7,7 @@ namespace Eto.Wpf.Drawing
 
 	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, Icon.IHandler, IWpfImage
 	{
-		List<IconFrame> frames;
+		List<IconFrame> _frames;
 		CachedBitmapFrame _cached;
 
 		public IconHandler()
@@ -29,14 +17,8 @@ namespace Eto.Wpf.Drawing
 		public IconHandler(sd.Icon icon)
 		{
 			var rect = new sw.Int32Rect(0, 0, icon.Width, icon.Height);
-			var img = swi.Imaging.CreateBitmapSourceFromHIcon(icon.Handle, rect, swmi.BitmapSizeOptions.FromEmptyOptions());
+			var img = swin.Imaging.CreateBitmapSourceFromHIcon(icon.Handle, rect, swmi.BitmapSizeOptions.FromEmptyOptions());
 			Control = swmi.BitmapFrame.Create(img);
-			using (var ms = new MemoryStream())
-			{
-				icon.Save(ms);
-				ms.Position = 0;
-				SetFrames(ms);
-			}
 		}
 
 		public IconHandler(swmi.BitmapFrame control)
@@ -44,50 +26,40 @@ namespace Eto.Wpf.Drawing
 			this.Control = control;
 		}
 
-		public static void CopyStream(Stream input, Stream output)
-		{
-			var buffer = new byte[32768];
-			int read;
-			while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-			{
-				output.Write(buffer, 0, read);
-			}
-		}
-
-		public static MemoryStream CreateStream(Stream input)
-		{
-			var ms = new MemoryStream();
-			CopyStream(input, ms);
-			ms.Position = 0;
-			return ms;
-		}
-
 		public void Create(Stream stream)
 		{
-			var ms = CreateStream(stream);
-			Control = swmi.BitmapFrame.Create(ms);
-			ms.Position = 0;
-			SetFrames(ms);
+			Control = swmi.BitmapFrame.Create(stream, swmi.BitmapCreateOptions.None, swmi.BitmapCacheOption.OnLoad);
 		}
 
 		public void Create(string fileName)
 		{
 			using (var stream = File.OpenRead(fileName))
 			{
-				var ms = CreateStream(stream);
-				Control = swmi.BitmapFrame.Create(ms);
-				ms.Position = 0;
-				SetFrames(ms);
+				Create(stream);
 			}
 		}
 
-		void SetFrames(MemoryStream ms)
+		protected override void Initialize()
 		{
-			var icons = SplitIcon(Control, ms);
-			frames = new List<IconFrame>();
+			base.Initialize();
+			if (_frames == null)
+				_frames = GetFrames().ToList();
+		}
+
+		IEnumerable<IconFrame> GetFrames()
+		{
+			var icons = Control?.Decoder?.Frames;
+			if (icons == null)
+			{
+				yield return IconFrame.FromControlObject(1f, new Bitmap(new BitmapHandler(Control)));
+				yield break;
+			}
 			foreach (var icon in icons)
 			{
-				frames.Add(IconFrame.FromControlObject(1f, new Bitmap(new BitmapHandler(icon))));
+				// this is needed to actually load the icon so it can then be used in other threads.
+				// even though we freeze it, it delays the creation until something like this is called..
+				_ = icon.PixelWidth;
+				yield return IconFrame.FromControlObject(1f, new Bitmap(new BitmapHandler(icon)));
 			}
 		}
 		Size? size;
@@ -102,14 +74,14 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
-		public IEnumerable<IconFrame> Frames => frames;
+		public IEnumerable<IconFrame> Frames => _frames ?? (_frames = GetFrames().ToList());
 
 		IconFrame GetLargestIcon()
 		{
-			var curicon = frames[0];
-			foreach (var icon in frames)
+			IconFrame curicon = null;
+			foreach (var icon in Frames)
 			{
-				if (icon.PixelSize.Width > curicon.PixelSize.Width)
+				if (curicon == null || icon.PixelSize.Width > curicon.PixelSize.Width)
 					curicon = icon;
 			}
 			return curicon;
@@ -132,10 +104,11 @@ namespace Eto.Wpf.Drawing
 			return _cached.Get(wpfBitmap, scale, size.Width, size.Height, swm.BitmapScalingMode.Linear) ?? wpfBitmap;
 		}
 
+		/*
 		const int sICONDIR = 6;            // sizeof(ICONDIR) 
 		const int sICONDIRENTRY = 16;      // sizeof(ICONDIRENTRY)
 
-		public swmi.BitmapSource[] SplitIcon(swmi.BitmapFrame icon, MemoryStream input)
+		public IEnumerable<swmi.BitmapFrame> SplitIcon(swmi.BitmapFrame icon, MemoryStream input)
 		{
 			if (icon == null)
 			{
@@ -145,7 +118,7 @@ namespace Eto.Wpf.Drawing
 			// Get multiple .ico file image.
 			byte[] srcBuf = input.ToArray();
 
-			var splitIcons = new List<swmi.BitmapSource>();
+			var splitIcons = new List<swmi.BitmapFrame>();
 			int count = BitConverter.ToInt16(srcBuf, 4); // ICONDIR.idCount
 
 			for (int i = 0; i < count; i++)
@@ -182,12 +155,13 @@ namespace Eto.Wpf.Drawing
 
 			return splitIcons.ToArray();
 		}
+		*/
 
 		public void Create(IEnumerable<IconFrame> frames)
 		{
-			this.frames = new List<IconFrame>(frames);
+			_frames = new List<IconFrame>(frames);
 			var scale = 1;
-			var largest = this.frames.OrderBy(r => r.PixelSize.Width * r.PixelSize.Height).LastOrDefault(r => r.Scale == scale);
+			var largest = _frames.OrderBy(r => r.PixelSize.Width * r.PixelSize.Height).LastOrDefault(r => r.Scale == scale);
 			if (largest == null)
 				largest = GetLargestIcon();
 			size = Size.Ceiling((SizeF)largest.PixelSize / largest.Scale);

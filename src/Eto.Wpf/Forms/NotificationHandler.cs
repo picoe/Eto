@@ -1,8 +1,4 @@
-using Eto.Drawing;
-using Eto.Forms;
 using System;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
 
 #if WPF
 namespace Eto.Wpf.Forms

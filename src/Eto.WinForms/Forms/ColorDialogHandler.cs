@@ -1,8 +1,3 @@
-using System;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.WinForms.Forms
 {
 	public class ColorDialogHandler : WidgetHandler<swf.ColorDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
@@ -32,6 +27,9 @@ namespace Eto.WinForms.Forms
 		{
 			swf.DialogResult result;
 			if (customColors != null) Control.CustomColors = customColors;
+
+			if (parent?.HasFocus == false)
+				parent.Focus();
 
 			if (parent != null)
 				result = Control.ShowDialog(parent.GetContainerControl());

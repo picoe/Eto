@@ -1,10 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using System.ComponentModel;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoExpander : swc.Expander, IEtoWpfControl
@@ -75,7 +68,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		void HandleIsExpandedChanged(object sender, EventArgs e)
+		void HandleIsExpandedChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
 			Callback.OnExpandedChanged(Widget, EventArgs.Empty);
 		}

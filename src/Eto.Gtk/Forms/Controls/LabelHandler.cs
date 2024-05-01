@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
@@ -95,6 +92,22 @@ namespace Eto.GtkSharp.Forms.Controls
 				// label should allow shrinking, natural width is used instead
 				minimum_width = 0;
 			}
+
+			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
+			{
+				if (width == 0)
+					width = int.MaxValue;
+				base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
+			}
+
+#if GTKCORE
+			protected override void OnGetPreferredHeightAndBaselineForWidth(int width, out int minimum_height, out int natural_height, out int minimum_baseline, out int natural_baseline)
+			{
+				if (width == 0)
+					width = int.MaxValue;
+				base.OnGetPreferredHeightAndBaselineForWidth(width, out minimum_height, out natural_height, out minimum_baseline, out natural_baseline);
+			}
+#endif
 #endif
 
 		}
@@ -136,21 +149,18 @@ namespace Eto.GtkSharp.Forms.Controls
 				case WrapMode.None:
 					Control.Wrap = false;
 					Control.LineWrap = false;
-					Control.SingleLineMode = true;
 					break;
 				case WrapMode.Word:
 					Control.Wrap = true;
 					Control.Layout.Wrap = Pango.WrapMode.WordChar;
 					Control.LineWrapMode = Pango.WrapMode.WordChar;
 					Control.LineWrap = true;
-					Control.SingleLineMode = false;
 					break;
 				case WrapMode.Character:
 					Control.Wrap = true;
 					Control.Layout.Wrap = Pango.WrapMode.Char;
 					Control.LineWrapMode = Pango.WrapMode.Char;
 					Control.LineWrap = true;
-					Control.SingleLineMode = false;
 					break;
 				default:
 					throw new NotSupportedException();
@@ -183,6 +193,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Control.ResetWidth();
 				Control.TextWithMnemonic = value.ToPlatformMnemonic();
+				InvalidateMeasure();
 			}
 		}
 

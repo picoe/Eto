@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
@@ -25,7 +22,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleActivated(object sender, EventArgs e)
 			{
-				Handler.Callback.OnExpandedChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnExpandedChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

@@ -1,21 +1,4 @@
-using Eto.Forms;
 using Eto.Mac.Forms.Actions;
-using System;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#endif
-
 namespace Eto.Mac.Forms.Menu
 {
 	public interface IMenuHandler
@@ -28,6 +11,15 @@ namespace Eto.Mac.Forms.Menu
 	public class EtoMenu : NSMenu
 	{
 		public bool WorksWhenModal { get; set; }
+		
+		public EtoMenu()
+		{
+		}
+
+		public EtoMenu(NativeHandle handle)
+			: base(handle)
+		{
+		}
 	}
 
 	static class MenuHandler
@@ -42,7 +34,7 @@ namespace Eto.Mac.Forms.Menu
 		where TCallback : Eto.Forms.Menu.ICallback
 	{
 
-		public void EnsureSubMenu()
+		public virtual void EnsureSubMenu()
 		{
 			if (!Control.HasSubmenu)
 			{

@@ -1,49 +1,12 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC
-using nnint = System.Int32;
-#elif Mac64
-using nnint = System.UInt64;
-#else
-using nnint = System.UInt32;
-#endif
+using Range = Eto.Forms.Range;
 
 namespace Eto.Mac.Forms.Controls
 {
 	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
-	}
+		internal static readonly IntPtr selString = Selector.GetHandle("string");
+		internal static readonly IntPtr selLength = Selector.GetHandle("length");	}
 
 	public interface ITextAreaHandler
 	{
@@ -59,8 +22,6 @@ namespace Eto.Mac.Forms.Controls
 
 		Range<int> lastSelection { get; set; }
 		int? lastCaretIndex { get; set; }
-
-		void PerformLayout();
 	}
 
 	public class EtoTextAreaDelegate : NSTextViewDelegate
@@ -102,16 +63,23 @@ namespace Eto.Mac.Forms.Controls
 			set { WeakHandler = new WeakReference(value); }
 		}
 
+#if MACOS_NET && !VSMAC
+		public override void ChangeColor(NSColorPanel sender)
+		{
+			// ignore color changes
+		}
+#else
 		public override void ChangeColor(NSObject sender)
 		{
 			// ignore color changes
 		}
+#endif
 
 		public EtoTextView(ITextAreaHandler handler)
 		{
 			Delegate = new EtoTextAreaDelegate { Handler = handler };
 			AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-			HorizontallyResizable = true;
+			HorizontallyResizable = false;
 			VerticallyResizable = true;
 			Editable = true;
 			RichText = false;
@@ -121,12 +89,6 @@ namespace Eto.Mac.Forms.Controls
 			MinSize = CGSize.Empty;
 			MaxSize = new CGSize(float.MaxValue, float.MaxValue);
 			TextContainer.WidthTracksTextView = true;
-		}
-
-		public override void Layout()
-		{
-			(Handler as ITextAreaHandler)?.PerformLayout();
-			base.Layout();
 		}
 	}
 
@@ -166,21 +128,19 @@ namespace Eto.Mac.Forms.Controls
 
 		public NSScrollView Scroll { get; private set; }
 
-		public override NSView ContainerControl
-		{
-			get { return Scroll; }
-		}
+		public override NSView ContainerControl => Scroll;
 
-		protected override NSTextView CreateControl()
-		{
-			return new EtoTextView(this);
-		}
+		public override NSView TextInputControl => Control;
+
+		protected override NSTextView CreateControl() => new EtoTextView(this);
 
 		protected override void Initialize()
 		{
+			// Control.BackgroundColor = Colors.Transparent.ToNSUI();
 			Scroll = new EtoScrollView
 			{
 				Handler = this,
+				DrawsBackground = false,
 				AutoresizesSubviews = true,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
@@ -234,7 +194,13 @@ namespace Eto.Mac.Forms.Controls
 		public bool ReadOnly
 		{
 			get { return Widget.Properties.Get<bool>(ReadOnly_Key); }
-			set { Widget.Properties.Set(ReadOnly_Key, value, () => Control.Editable = !value); }
+			set
+			{
+				if (Widget.Properties.TrySet(ReadOnly_Key, value))
+				{
+					Control.Editable = !value;
+				}
+			}
 		}
 
 		protected override bool ControlEnabled
@@ -246,14 +212,13 @@ namespace Eto.Mac.Forms.Controls
 				if (!value)
 				{
 					Control.TextColor = NSColor.DisabledControlText;
-					Control.BackgroundColor = NSColor.ControlBackground;
 				}
 				else
 				{
 					Control.TextColor = TextColor.ToNSUI();
-					Control.BackgroundColor = BackgroundColor.ToNSUI();
 					Control.Editable = !ReadOnly; // this gets set to false when Selectable is set to false, so we need to re-enable it.
 				}
+				SetBackgroundColor();
 			}
 		}
 
@@ -278,25 +243,27 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get(TextColor_Key, () => NSColor.ControlText.ToEto()); }
 			set
 			{
-				Widget.Properties.Set(TextColor_Key, value, () =>
+				if (Widget.Properties.TrySet(TextColor_Key, value))
 				{
 					Control.TextColor = Control.InsertionPointColor = value.ToNSUI();
-				});
+				}
 			}
 		}
 
-		static readonly object BackgroundColor_Key = new object();
+		static readonly object DisabledBackgroundColor_Key = new object();
 
-		public override Color BackgroundColor
+		public virtual Color DisabledBackgroundColor
 		{
-			get { return Widget.Properties.Get<Color>(BackgroundColor_Key, () => NSColor.ControlBackground.ToEto()); }
-			set
-			{
-				Widget.Properties.Set(BackgroundColor_Key, value, () =>
-				{
-					Control.BackgroundColor = value.ToNSUI();
-				});
-			}
+			get => Widget.Properties.Get<Color?>(DisabledBackgroundColor_Key) ?? NSColor.WindowBackground.ToEto();
+			set => Widget.Properties.Set(DisabledBackgroundColor_Key, value);
+		}
+
+		protected override Color DefaultBackgroundColor => NSColor.ControlBackground.ToEto();
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			var c = color ?? (ControlEnabled ? DefaultBackgroundColor : DisabledBackgroundColor);
+			Control.BackgroundColor = c.ToNSUI();
 		}
 
 		static readonly object Font_Key = new object();
@@ -306,29 +273,38 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Create(Font_Key, () => new Font(new FontHandler(Control.Font))); }
 			set
 			{
-				Widget.Properties.Set(Font_Key, value, () =>
+				if (Widget.Properties.TrySet(Font_Key, value))
 				{
 					Control.Font = value.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					InvalidateMeasure();
-				});
+				}
 			}
 		}
 
 		public bool Wrap
 		{
-			get
-			{
-				return Control.TextContainer.WidthTracksTextView;
-			}
+			get => Control.TextContainer.WidthTracksTextView;
 			set
 			{
+				if (value == Wrap)
+					return;
+					
 				if (value)
 				{
+					Control.HorizontallyResizable = false;
 					Control.TextContainer.WidthTracksTextView = true;
-					Control.NeedsLayout = true;
+					if (Widget.Loaded)
+					{
+						// shrink the control and text container to the current width of the visible rectangle
+						var width = Scroll.DocumentVisibleRect.Size.Width;
+						Control.SetFrameSize(new CGSize(width, Control.Frame.Height));
+						Control.TextContainer.Size = new CGSize(width, float.MaxValue);
+						Control.NeedsLayout = true;
+					}
 				}
 				else
 				{
+					Control.HorizontallyResizable = true;
 					Control.TextContainer.WidthTracksTextView = false;
 					Control.TextContainer.ContainerSize = new CGSize(float.MaxValue, float.MaxValue);
 				}
@@ -404,11 +380,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Append(string text, bool scrollToCursor)
 		{
-			// get NSString object so we don't have to marshal the entire string to get its length
-			var stringValuePtr = Messaging.IntPtr_objc_msgSend(Control.Handle, selGetString);
-			var str = Runtime.GetNSObject<NSString>(stringValuePtr);
-
-			var range = new NSRange(str != null ? str.Length : 0, 0);
+			var range = new NSRange(TextLength, 0);
 			Control.Replace(range, text);
 			range.Location += text.Length;
 			Control.SetSelectedRange(range);
@@ -440,15 +412,6 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		public void PerformLayout()
-		{
-			if (Wrap)
-			{
-				// set width of content to the size of the control when wrapping
-				Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
-			}
-		}
-
 		public TextReplacements TextReplacements
 		{
 			get
@@ -477,5 +440,19 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return TextReplacements.Quote | TextReplacements.Text | TextReplacements.Dash | TextReplacements.Spelling; }
 		}
+
+		public BorderType Border
+		{
+			get => Scroll.BorderType.ToEto();
+			set => Scroll.BorderType = value.ToNS();
+		}
+
+		public int TextLength => (int)Control.TextStorage.Length;
+		
+		public void ScrollTo(Range<int> range) => Control.ScrollRangeToVisible(range.ToNS());
+
+		public void ScrollToStart() => ScrollTo(new Range<int>(0));
+
+		public void ScrollToEnd() => ScrollTo(Range.FromLength(TextLength, 0));
 	}
 }

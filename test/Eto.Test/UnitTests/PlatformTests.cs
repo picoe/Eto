@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 
 namespace Eto.Test.UnitTests
@@ -6,7 +5,7 @@ namespace Eto.Test.UnitTests
 	[TestFixture]
 	public class PlatformTests : TestBase
 	{
-		[Test]
+		[Test, InvokeOnUI]
 		public void ReinitializingPlatformShouldThrowException()
 		{
 			Assert.Throws<InvalidOperationException>(() =>
@@ -15,7 +14,7 @@ namespace Eto.Test.UnitTests
 			});
 		}
 
-		[Test]
+		[Test, InvokeOnUI]
 		public void ReinitializingPlatformWithCurrentInstanceShouldNotThrowException()
 		{
 			Platform.Initialize(Platform.Instance);

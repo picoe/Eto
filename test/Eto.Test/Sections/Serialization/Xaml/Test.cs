@@ -1,8 +1,4 @@
-using System;
-using Eto.Forms;
 using Eto.Serialization.Xaml;
-using System.Windows.Input;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 

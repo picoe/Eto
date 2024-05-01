@@ -1,41 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Eto.Forms;
-using Eto.Drawing;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-using NSRectEdge = MonoMac.AppKit.NSRectEdge;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Forms
 {
 	public class DialogHandler : MacWindow<EtoWindow, Dialog, Dialog.ICallback>, Dialog.IHandler
@@ -68,6 +30,11 @@ namespace Eto.Mac.Forms
 				get { return base.Handler as DialogHandler; }
 				set { base.Handler = value; }
 			}
+			
+			public EtoDialogWindow(NativeHandle handle)
+				: base(handle)
+			{
+			}
 
 			public EtoDialogWindow()
 				: base(new CGRect(0, 0, 200, 200), NSWindowStyle.Closable | NSWindowStyle.Titled, NSBackingStore.Buffered, false)
@@ -77,15 +44,12 @@ namespace Eto.Mac.Forms
 			[Export("cancelOperation:")]
 			public void CancelOperation(IntPtr sender)
 			{
-				if (Handler.AbortButton != null)
+				var handler = Handler?.AbortButton?.Handler as IMacViewHandler;
+				if (handler != null)
 				{
-					var handler = Handler.AbortButton.Handler as IMacViewHandler;
-					if (handler != null)
-					{
-						var callback = handler.Callback as Button.ICallback;
-						if (callback != null)
-							callback.OnClick(Handler.AbortButton, EventArgs.Empty);
-					}
+					var callback = handler.Callback as Button.ICallback;
+					if (callback != null)
+						callback.OnClick(Handler.AbortButton, EventArgs.Empty);
 				}
 			}
 
@@ -173,13 +137,15 @@ namespace Eto.Mac.Forms
 					return false;
 
 				// if the owner can't become main (e.g. NSPanel), show as attached
-				return !owner.CanBecomeMainWindow;
+				return !owner.CanBecomeMainWindow && owner is not NSPanel;
 			}
 		}
 
 		public virtual void ShowModal()
 		{
+			MacView.InMouseTrackingLoop = false;
 			session = null;
+			EnsureOwner();
 			Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 
 			Widget.Closed += HandleClosed;
@@ -194,8 +160,10 @@ namespace Eto.Mac.Forms
 
 		public virtual Task ShowModalAsync()
 		{
+			MacView.InMouseTrackingLoop = false;
 			var tcs = new TaskCompletionSource<bool>();
 			session = null;
+			EnsureOwner();
 
 			Widget.Closed += HandleClosed;
 			if (ShowAttached)
@@ -234,7 +202,7 @@ namespace Eto.Mac.Forms
 				if (!args.Cancel)
 				{
 					session.Stop();
-					Callback.OnClosed(Widget, args);
+					Control.Close();
 				}
 			}
 			else
@@ -288,7 +256,7 @@ namespace Eto.Mac.Forms
 			foreach (var button in Widget.PositiveButtons.Reverse().Concat(Widget.NegativeButtons))
 			{
 				var ctl = button.GetMacViewHandler();
-				var size = ctl.GetPreferredSize(availableSize);
+				var size = button.GetPreferredSize(availableSize);
 				point.X -= size.Width;
 				ctl.SetAlignmentFrame(new CGRect(point.ToNS(), size.ToNS()));
 				ctl.ContentControl.AutoresizingMask = NSViewResizingMask.MinXMargin;

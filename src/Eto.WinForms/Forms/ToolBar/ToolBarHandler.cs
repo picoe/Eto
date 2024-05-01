@@ -1,8 +1,3 @@
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-using System;
-
 namespace Eto.WinForms.Forms.ToolBar
 {
 	public class ToolBarHandler : WidgetHandler<ToolStripEx, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
@@ -29,7 +24,7 @@ namespace Eto.WinForms.Forms.ToolBar
 
 		public void RemoveButton(ToolItem item, int index)
 		{
-			Control.Items.Remove((SWF.ToolStripItem)item.ControlObject);
+			Control.Items.Remove((swf.ToolStripItem)item.ControlObject);
 		}
 
 		public ToolBarTextAlign TextAlign
@@ -38,10 +33,10 @@ namespace Eto.WinForms.Forms.ToolBar
 			{
 				/*switch (control.TextAlign)
 				{
-					case SWF.ToolBarTextAlign.Right:
+					case swf.ToolBarTextAlign.Right:
 						return ToolBarTextAlign.Right;
 					default:
-					case SWF.ToolBarTextAlign.Underneath:
+					case swf.ToolBarTextAlign.Underneath:
 						return ToolBarTextAlign.Underneath;
 				}
 				 */
@@ -52,10 +47,10 @@ namespace Eto.WinForms.Forms.ToolBar
 				switch (value)
 				{
 					case ToolBarTextAlign.Right:
-						//control.TextAlign = SWF.ToolBarTextAlign.Right;
+						//control.TextAlign = swf.ToolBarTextAlign.Right;
 						break;
 					case ToolBarTextAlign.Underneath:
-						//control.TextAlign = SWF.ToolBarTextAlign.Underneath;
+						//control.TextAlign = swf.ToolBarTextAlign.Underneath;
 						break;
 					default:
 						throw new NotSupportedException();
@@ -74,7 +69,7 @@ namespace Eto.WinForms.Forms.ToolBar
 	/// <see cref="http://blogs.msdn.com/b/rickbrew/archive/2006/01/09/511003.aspx"/>
 	/// </summary>
 	public class ToolStripEx
-		: SWF.ToolStrip
+		: swf.ToolStrip
 	{
 		/// <summary>
 		/// Gets or sets whether the ToolStripEx honors item clicks when its containing form does
@@ -85,7 +80,7 @@ namespace Eto.WinForms.Forms.ToolBar
 		/// </remarks>
 		public bool ClickThrough { get; set; }
 
-		protected override void WndProc(ref SWF.Message m)
+		protected override void WndProc(ref swf.Message m)
 		{
 			base.WndProc(ref m);
 			if (this.ClickThrough &&

@@ -1,8 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-
 namespace Eto.Test.Sections.Drawing
 {
 	/// <summary>
@@ -84,17 +79,20 @@ namespace Eto.Test.Sections.Drawing
 			return new DrawableImageView { Image = image };
 		}
 
-		void DrawTest(Bitmap image)
+		void DrawTest(Bitmap image, bool clearAlpha)
 		{
 			// should always ensure .Dispose() is called when you are done with a Graphics or BitmapData object.
+
+			Color Fix(Color color) => clearAlpha ? new Color(color, 0) : color;
 
 			// Test setting pixels directly
 			using (var bd = image.Lock())
 			{
+				var color = Fix(Colors.Green);
 				var sz = image.Size / 5;
 				for (int x = sz.Width; x < sz.Width * 2; x++)
 					for (int y = sz.Height; y < sz.Height * 2; y++)
-						bd.SetPixel(x, y, Colors.Green);
+						bd.SetPixel(x, y, color);
 			}
 
 			// Test using Graphics object
@@ -108,39 +106,40 @@ namespace Eto.Test.Sections.Drawing
 			using (var bd = image.Lock())
 			{
 				var sz = image.Size / 5;
+				var color = Fix(Colors.Red);
 				for (int x = sz.Width * 3; x < sz.Width * 4; x++)
 					for (int y = sz.Height * 3; y < sz.Height * 4; y++)
-						bd.SetPixel(x, y, Colors.Red);
+						bd.SetPixel(x, y, color);
 			}
 
 		}
 
 		Control CreateCustom24()
 		{
-			var size = new Size(100, 100) * (int)Screen.PrimaryScreen.LogicalPixelSize;
+			var size = Size.Round(new SizeF(100, 100) * Screen.PrimaryScreen.LogicalPixelSize);
 			var image = new Bitmap(size, PixelFormat.Format24bppRgb);
 
-			DrawTest(image);
+			DrawTest(image, true);
 
 			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, image) };
 		}
 
 		Control CreateCustom32()
 		{
-			var size = new Size(100, 100) * (int)Screen.PrimaryScreen.LogicalPixelSize;
+			var size = Size.Round(new SizeF(100, 100) * Screen.PrimaryScreen.LogicalPixelSize);
 			var image = new Bitmap(size, PixelFormat.Format32bppRgb);
 
-			DrawTest(image);
+			DrawTest(image, true);
 
 			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, image) };
 		}
 
 		Control CreateCustom32Alpha()
 		{
-			var size = new Size(100, 100) * (int)Screen.PrimaryScreen.LogicalPixelSize;
+			var size = Size.Round(new SizeF(100, 100) * Screen.PrimaryScreen.LogicalPixelSize);
 			var image = new Bitmap(size, PixelFormat.Format32bppRgba);
 
-			DrawTest(image);
+			DrawTest(image, false);
 			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, image) };
 		}
 
@@ -180,7 +179,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var image64 = TestIcons.Textures;
 
-			var size = new Size(105, 105) * (int)Screen.PrimaryScreen.LogicalPixelSize;
+			var size = Size.Round(new SizeF(105, 105) * Screen.PrimaryScreen.LogicalPixelSize);
 			var bitmap = new Bitmap(size, PixelFormat.Format32bppRgba);
 			using (var g = new Graphics(bitmap))
 			{

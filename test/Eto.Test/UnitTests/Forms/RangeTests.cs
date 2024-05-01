@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Forms;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms
 {

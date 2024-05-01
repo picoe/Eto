@@ -1,6 +1,4 @@
-using System;
-using Eto.Forms;
-
+#if GTK3
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class SpinnerHandler : GtkControl<Gtk.Spinner, Spinner, Spinner.ICallback>, Spinner.IHandler
@@ -47,3 +45,4 @@ namespace Eto.GtkSharp.Forms.Controls
 	}
 }
 
+#endif

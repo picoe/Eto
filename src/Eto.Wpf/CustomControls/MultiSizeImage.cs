@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Eto.Wpf.Forms;
+using Image = System.Windows.Controls.Image;
+using Size = System.Windows.Size;
+using Brush = System.Windows.Media.Brush;
 
 namespace Eto.Wpf.CustomControls
 {
@@ -176,6 +176,8 @@ namespace Eto.Wpf.CustomControls
 			var first = _availableFrames.LastOrDefault();
 			var size = PreferredSize ?? GetSize(first ?? Source);
 
+			inputSize = inputSize.Min(size);
+
 			Size scale = ComputeScaleFactor(inputSize, size, Stretch, StretchDirection);
 			if (UseSmallestSpace)
 			{
@@ -240,7 +242,7 @@ namespace Eto.Wpf.CustomControls
 				if (frame.PixelWidth * frame.PixelHeight >= ourSize)
 					break;
 			}
-			dc.DrawImage(src, new Rect(new Point(0, 0), RenderSize));
+			dc.DrawImage(src, new sw.Rect(new sw.Point(0, 0), RenderSize));
 		}
 	}
 }

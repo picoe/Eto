@@ -1,6 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using Eto.Forms;
+﻿using Eto.Forms.ThemedControls;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -33,7 +31,15 @@ namespace Eto.Test.Sections.Controls
 					new StackLayout
 					{
 						Orientation = Orientation.Horizontal,
-						Items = { AddPage(), RemovePage(), SelectPage(), allowReorder, enabled, null }
+						Items = {
+							AddPage(),
+							RemovePage(),
+							SelectPage(),
+							tabControl.Handler is ThemedDocumentControlHandler ? HasNavigationButtonsCheckBox() : null,
+							tabControl.Handler is ThemedDocumentControlHandler ? UseFixedTabHeightCheckBox() : null,
+							allowReorder,
+							enabled,
+							null }
 					},
 					new StackLayoutItem(tabControl, expand: true)
 				}
@@ -78,6 +84,23 @@ namespace Eto.Test.Sections.Controls
 				if (tabControl.Pages.Count > 0)
 					tabControl.SelectedIndex = rnd.Next(tabControl.Pages.Count);
 			};
+			return control;
+		}
+
+		Control HasNavigationButtonsCheckBox()
+		{
+			var control = new CheckBox { Text = "Has navigation buttons" };
+			control.Checked = ((ThemedDocumentControlHandler)tabControl.Handler).AllowNavigationButtons;
+			control.CheckedChanged += (sender, args) => ((ThemedDocumentControlHandler)tabControl.Handler).AllowNavigationButtons =
+				((CheckBox)sender).Checked ?? false;
+			return control;
+		}
+
+		Control UseFixedTabHeightCheckBox()
+		{
+			var control = new CheckBox { Text = "Use fixed Tab height" };
+			control.CheckedChanged += (sender, args) => ((ThemedDocumentControlHandler)tabControl.Handler).UseFixedTabHeight =
+				((CheckBox)sender).Checked ?? false;
 			return control;
 		}
 

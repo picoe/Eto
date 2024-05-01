@@ -1,5 +1,4 @@
-﻿using Eto.Drawing;
-using sd = SharpDX.Direct2D1;
+﻿using sd = SharpDX.Direct2D1;
 using s = SharpDX;
 
 namespace Eto.Direct2D.Drawing
@@ -44,17 +43,8 @@ namespace Eto.Direct2D.Drawing
 
 		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			var matrix = new MatrixHandler();
-			var startPoint = rectangle.Location;
-			matrix.RotateAt(angle - 45, startPoint.X, startPoint.Y);
-			var endPoint = matrix.TransformPoint(rectangle.EndLocation);
-			return new LinearBrushData
-			{
-				StartColor = startColor,
-				EndColor = endColor,
-				StartPoint = startPoint,
-				EndPoint = endPoint
-			};
+			GradientHelper.GetLinearFromRectangle(rectangle, angle, out var startPoint, out var endPoint);
+			return Create(startColor, endColor, startPoint, endPoint);
 		}
 
 		public IMatrix GetTransform(LinearGradientBrush widget)

@@ -1,10 +1,6 @@
-using System;
 using UIKit;
-using Eto.Forms;
 using Foundation;
 using Eto.iOS.Drawing;
-using Eto.Drawing;
-
 namespace Eto.iOS.Forms.Controls
 {
 	public class TextAreaHandler : IosView<UITextView, TextArea, TextArea.ICallback>, TextArea.IHandler

@@ -1,15 +1,8 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using mwc = Xceed.Wpf.Toolkit;
-using swi = System.Windows.Input;
+using System.Runtime;
 using swd = System.Windows.Documents;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms.Controls
 {
-	public class EtoWatermarkTextBox : mwc.WatermarkTextBox, IEtoWpfControl
+	public class EtoWatermarkTextBox : xwt.WatermarkTextBox, IEtoWpfControl
 	{
 		public IWpfFrameworkElement Handler { get; set; }
 
@@ -19,8 +12,20 @@ namespace Eto.Wpf.Forms.Controls
 		}
 	}
 
-	public class TextBoxHandler : TextBoxHandler<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class TextBoxHandler : TextBoxHandler<xwt.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
+		internal static object CurrentText_Key = new object();
+		internal static object CurrentSelection_Key = new object();
+		internal static object DisableTextChanged_Key = new object();
+		internal static object EnableNoGCRegion_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the default value indicating to use GC.TryStartNoGCRegion() when setting TextBox.Text
+		/// to avoid performance issues with WPF.
+		/// See https://github.com/dotnet/wpf/issues/5887
+		/// </summary>
+		public static bool EnableNoGCRegionDefault = true;
+
 		protected override swc.TextBox TextBox => Control;
 
 		public TextBoxHandler()
@@ -62,6 +67,18 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating to use GC.TryStartNoGCRegion() when setting TextBox.Text
+		/// to avoid performance issues with WPF.
+		/// See https://github.com/dotnet/wpf/issues/5887
+		/// </summary>
+		/// <seealso cref="TextBoxHandler.EnableNoGCRegionDefault" />
+		public bool EnableNoGCRegion
+		{
+			get => Widget.Properties.Get<bool?>(TextBoxHandler.EnableNoGCRegion_Key) ?? TextBoxHandler.EnableNoGCRegionDefault;
+			set => Widget.Properties.Set(TextBoxHandler.EnableNoGCRegion_Key, value);
+		}
+
 		public TextAlignment TextAlignment
 		{
 			get { return TextBox.TextAlignment.ToEto(); }
@@ -100,7 +117,7 @@ namespace Eto.Wpf.Forms.Controls
 				initialSelection = false;
 				return;
 			}
-			if (AutoSelectMode == AutoSelectMode.OnFocus)
+			if (AutoSelectMode == AutoSelectMode.OnFocus || AutoSelectMode == AutoSelectMode.Always)
 				TextBox.SelectAll();
 		}
 
@@ -116,17 +133,48 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			switch (id) {
 				case TextControl.TextChangedEvent:
-					TextBox.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
+					TextBox.TextChanged += TextBox_TextChanged;
 					break;
 				case Eto.Forms.TextBox.TextChangingEvent:
 					if (clipboard == null)
 						clipboard = new Clipboard();
-					TextBox.PreviewTextInput += (sender, e) =>
+					bool didUpdate = false;
+
+					swi.TextCompositionManager.AddPreviewTextInputStartHandler(TextBox, (sender, e) =>
 					{
-						var tia = new TextChangingEventArgs(e.Text, Selection, true);
-						Callback.OnTextChanging(Widget, tia);
-						e.Handled = tia.Cancel;
-					};
+						// ensure we only fire TextChanging after any IME composition is completed
+						DisableTextChanged++;
+						didUpdate = false;
+						// keep selection/text as they change during composition
+						CurrentSelection = Selection;
+						CurrentText = Text;
+					});
+					swi.TextCompositionManager.AddPreviewTextInputUpdateHandler(TextBox, (sender, e) =>
+					{
+						didUpdate = true;
+					});
+					swi.TextCompositionManager.AddPreviewTextInputHandler(TextBox, (sender, e) =>
+					{
+						// composition is finished, fire textchanging event unless it was cancelled
+						DisableTextChanged--;
+						if (!string.IsNullOrEmpty(e.Text) || Selection.Length() > 0)
+						{
+							var tia = new TextChangingEventArgs(e.Text, Selection, Text, true);
+							Callback.OnTextChanging(Widget, tia);
+							e.Handled = tia.Cancel;
+							if (didUpdate && tia.Cancel && CurrentText != null)
+							{
+								// restore last text value if the event was cancelled and the text wasn't changed manually.
+								DisableTextChanged++;
+								Text = CurrentText;
+								DisableTextChanged--;
+							}
+						}
+
+						CurrentText = null;
+						CurrentSelection = null;
+						didUpdate = false;
+					});
 					TextBox.AddHandler(swi.CommandManager.PreviewExecutedEvent, new swi.ExecutedRoutedEventHandler((sender, e) =>
 					{
 						var command = e.Command as swi.RoutedUICommand;
@@ -218,6 +266,12 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		private void TextBox_TextChanged(object sender, swc.TextChangedEventArgs e)
+		{
+			if (DisableTextChanged == 0)
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
+		}
+
 		public bool ReadOnly
 		{
 			get { return TextBox.IsReadOnly; }
@@ -230,26 +284,54 @@ namespace Eto.Wpf.Forms.Controls
 			set { TextBox.MaxLength = value; }
 		}
 
+		string CurrentText
+		{
+			get => Widget.Properties.Get<string>(TextBoxHandler.CurrentText_Key);
+			set => Widget.Properties.Set(TextBoxHandler.CurrentText_Key, value);
+		}
+
 		public string Text
 		{
-			get { return TextBox.Text; }
+			get => CurrentText ?? TextBox.Text;
 			set
 			{
-				var oldText = TextBox.Text;
+				var oldText = Text;
+				CurrentText = null;
 				var newText = value ?? string.Empty;
+				TextBox.BeginChange();
 				if (newText != oldText)
 				{
 					var args = new TextChangingEventArgs(oldText, newText, false);
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
+					{
+						TextBox.EndChange();
 						return;
+					}
+
+					var needsTextChanged = TextBox.Text == newText;
+
+					// Improve performance when setting text often
+					// See https://github.com/dotnet/wpf/issues/5887#issuecomment-1604577981
+					if (EnableNoGCRegion)
+						GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
+
 					TextBox.Text = newText;
+
+					if (EnableNoGCRegion && GCSettings.LatencyMode == GCLatencyMode.NoGCRegion)
+						GC.EndNoGCRegion();
+
+					if (needsTextChanged)
+					{
+						Callback.OnTextChanged(Widget, EventArgs.Empty);
+					}
 				}
 				if (value != null && AutoSelectMode == AutoSelectMode.Never && !HasFocus)
 				{
 					TextBox.SelectionStart = value.Length;
 					TextBox.SelectionLength = 0;
 				}
+				TextBox.EndChange();
 			}
 		}
 
@@ -257,9 +339,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		public int CaretIndex
 		{
-			get { return TextBox.CaretIndex; }
+			get => CurrentSelection?.Start ?? TextBox.CaretIndex;
 			set
 			{
+				CurrentSelection = null;
 				TextBox.CaretIndex = value;
 				if (!HasFocus)
 					initialSelection = true;
@@ -273,13 +356,28 @@ namespace Eto.Wpf.Forms.Controls
 				initialSelection = true;
 		}
 
+		int DisableTextChanged
+		{
+			get => Widget.Properties.Get<int>(TextBoxHandler.DisableTextChanged_Key);
+			set => Widget.Properties.Set(TextBoxHandler.DisableTextChanged_Key, value);
+		}
+
+		Range<int>? CurrentSelection
+		{
+			get => Widget.Properties.Get<Range<int>?>(TextBoxHandler.CurrentSelection_Key);
+			set => Widget.Properties.Set(TextBoxHandler.CurrentSelection_Key, value);
+		}
+
 		public Range<int> Selection
 		{
-			get { return new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1); }
+			get => CurrentSelection ??　new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1);
 			set
 			{
+				CurrentSelection = null;
+				TextBox.BeginChange();
 				TextBox.SelectionStart = value.Start;
 				TextBox.SelectionLength = value.Length();
+				TextBox.EndChange();
 				if (!HasFocus)
 					initialSelection = true;
 			}

@@ -1,7 +1,3 @@
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.WinForms.Forms
 {
 	class SwfDragEventArgs : DragEventArgs

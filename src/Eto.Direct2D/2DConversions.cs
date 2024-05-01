@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
 using Eto.Direct2D.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
@@ -28,6 +23,11 @@ namespace Eto.Direct2D
 		public static s.Color ToDxColor(this Color color)
 		{
 			return new s.Color(color.R, color.G, color.B, color.A);
+		}
+
+		public static Color ToEto(this s.ColorBGRA value)
+		{
+			return Color.FromArgb(value.R, value.G, value.B, value.A);
 		}
 
 		public static Color ToEto(this s.Color4 value)

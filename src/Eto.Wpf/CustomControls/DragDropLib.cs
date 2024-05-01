@@ -7,10 +7,7 @@
 
 namespace DragDropLib
 {
-	using System;
-	using System.Runtime.InteropServices;
-
-	[ComImport]
+		[ComImport]
 	[Guid("4657278A-411B-11d2-839A-00C04FD918D0")]
 	class DragDropHelper { }
 }
@@ -21,8 +18,6 @@ namespace DragDropLib
 
 namespace DragDropLib
 {
-	using System;
-	using System.Runtime.InteropServices;
 	using System.Runtime.InteropServices.ComTypes;
 
 	[ComVisible(true)]
@@ -67,8 +62,6 @@ namespace DragDropLib
 
 namespace DragDropLib
 {
-	using System;
-	using System.Runtime.InteropServices;
 	using System.Runtime.InteropServices.ComTypes;
 
 	[ComVisible(true)]
@@ -105,9 +98,6 @@ namespace DragDropLib
 
 namespace DragDropLib
 {
-	using System;
-	using System.Runtime.InteropServices;
-
 	[StructLayout(LayoutKind.Sequential)]
 	struct Win32Point
 	{
@@ -148,14 +138,8 @@ namespace DragDropLib
 
 namespace System.Runtime.InteropServices.ComTypes
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Runtime.InteropServices;
 	using System.Runtime.InteropServices.ComTypes;
-	using System.Text;
 	using DragDropLib;
-	using System.ComponentModel;
-	using System.IO;
 	using System.Runtime.Serialization.Formatters.Binary;
 
 	/// <summary>
@@ -295,6 +279,27 @@ namespace System.Runtime.InteropServices.ComTypes
 		// Identifies data that we need to do custom marshaling on
 		private static readonly Guid ManagedDataStamp = new Guid("D98D9FD6-FA46-4716-A769-F3451DFBE4B4");
 
+		public static void SetByteData(this IDataObject dataObject, string format, byte[] data)
+		{
+			// Initialize the format structure
+			ComTypes.FORMATETC formatETC;
+			FillFormatETC(format, TYMED.TYMED_HGLOBAL, out formatETC);
+
+			ComTypes.STGMEDIUM medium;
+			GetMediumFromByteArray(data, out medium);
+			try
+			{
+				// Set the data on our data object
+				dataObject.SetData(ref formatETC, ref medium, true);
+			}
+			catch
+			{
+				// On exceptions, release the medium
+				ReleaseStgMedium(ref medium);
+				throw;
+			}
+		}
+
 		/// <summary>
 		/// Sets managed data to a clipboard DataObject.
 		/// </summary>
@@ -377,9 +382,10 @@ namespace System.Runtime.InteropServices.ComTypes
 					if (ManagedDataStamp.Equals(guid))
 					{
 						// Stamp matched, so deserialize
-						BinaryFormatter formatter = new BinaryFormatter();
-						Type dataType = (Type)formatter.Deserialize(dataStream);
-						object data2 = formatter.Deserialize(dataStream);
+						DataContractSerializer typeSerializer = new DataContractSerializer(typeof(Type));
+						Type dataType = (Type)typeSerializer.ReadObject(dataStream);
+						DataContractSerializer objectSerializer = new DataContractSerializer(dataType);
+						object data2 = objectSerializer.ReadObject(dataStream);
 						if (data2.GetType() == dataType)
 							return data2;
 						else if (data2 is string)
@@ -397,6 +403,27 @@ namespace System.Runtime.InteropServices.ComTypes
 		}
 
 		#region Helper methods
+
+		private static void GetMediumFromByteArray(byte[] bytes, out STGMEDIUM medium)
+		{
+			// Now copy to an HGLOBAL
+			IntPtr p = Marshal.AllocHGlobal(bytes.Length);
+			try
+			{
+				Marshal.Copy(bytes, 0, p, bytes.Length);
+			}
+			catch
+			{
+				// Make sure to free the memory on exceptions
+				Marshal.FreeHGlobal(p);
+				throw;
+			}
+
+			// Now allocate an STGMEDIUM to wrap the HGLOBAL
+			medium.unionmember = p;
+			medium.tymed = ComTypes.TYMED.TYMED_HGLOBAL;
+			medium.pUnkForRelease = null;
+		}
 
 		/// <summary>
 		/// Serializes managed data to an HGLOBAL.
@@ -416,9 +443,10 @@ namespace System.Runtime.InteropServices.ComTypes
 			// we'll try type conversion. Also, we serialize the type. That way,
 			// during deserialization, we know which type to convert back to, if
 			// appropriate.
-			BinaryFormatter formatter = new BinaryFormatter();
-			formatter.Serialize(stream, data.GetType());
-			formatter.Serialize(stream, GetAsSerializable(data));
+			DataContractSerializer typeSerializer = new DataContractSerializer(typeof(Type));
+			typeSerializer.WriteObject(stream, data.GetType());
+			DataContractSerializer objectSerializer = new DataContractSerializer(data.GetType());
+			objectSerializer.WriteObject(stream, GetAsSerializable(data));
 
 			// Now copy to an HGLOBAL
 			byte[] bytes = stream.GetBuffer();
@@ -503,10 +531,6 @@ namespace System.Runtime.InteropServices.ComTypes
 
 namespace DragDropLib
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Runtime.InteropServices;
 	using System.Runtime.InteropServices.ComTypes;
 
 	/// <summary>

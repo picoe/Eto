@@ -1,35 +1,3 @@
-using System;
-using Eto.Drawing;
-
-#if XAMMAC2
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#elif OSX
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 #if OSX
 
 namespace Eto.Mac.Drawing
@@ -81,7 +49,7 @@ namespace Eto.iOS.Drawing
 
 				context.SaveState();
 				context.ConcatCTM(transform);
-				context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, Image.Height));
+				context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, (nfloat)Image.Height));
 				//transform.ToEto().TransformRectangle(rect);
 
 				if (Opacity < 1f)

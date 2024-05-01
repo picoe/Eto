@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Eto.Drawing;
 using NUnit.Framework;
 using sd = System.Drawing;
 
@@ -33,7 +27,7 @@ namespace Eto.Test.Wpf.UnitTests
 
 			public override sd.Rectangle GetBounds(TestScreen screen) => screen.Bounds;
 
-			public override float GetLogicalPixelSize(TestScreen screen) => screen.LogicalPixelSize;
+			public override float GetLogicalPixelSize(TestScreen screen, bool usePerMonitor = true) => screen.LogicalPixelSize;
 
 			public override SizeF GetLogicalSize(TestScreen screen) => screen.LogicalSize.ToEto();
 		}

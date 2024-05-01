@@ -1,9 +1,4 @@
-using System;
 using NUnit.Framework;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-
 namespace Eto.Test.UnitTests.Forms.Layout
 {
 	[TestFixture]
@@ -192,6 +187,88 @@ namespace Eto.Test.UnitTests.Forms.Layout
 			{
 				Assert.Greater(label.Width, 0, "Label didn't get correct width!");
 				Assert.Greater(label.Height, 0, "Label didn't get correct height!");
+			});
+		}
+
+		[Test]
+		public void DestroyingChildShouldRemoveFromParent()
+		{
+			TableLayout layout = null;
+			Label child = null;
+			Shown(form =>
+			{
+				child = new Label { Text = "I should not be shown" };
+				layout = new TableLayout
+				{
+					Rows = {
+						new TableRow(child)
+					}
+				};
+				child.Dispose();
+				form.Content = layout;
+			}, () =>
+			{
+				Assert.IsTrue(child.IsDisposed);
+				Assert.IsNull(child.Parent);
+				CollectionAssert.DoesNotContain(layout.Children, child);
+			});
+		}
+
+		[Test, ManualTest]
+		public void CopyingRowsShouldReparentChildren()
+		{
+			ManualForm("Label above should show", form =>
+			{
+				var child = new Label { Text = "I should be shown!" };
+
+				var layout1 = new TableLayout { ID = "layout1" };
+				layout1.Rows.Add(child);
+				Assert.AreEqual(child.Parent, layout1, "#1.1 Child's parent should now be the 2nd table");
+				Assert.AreEqual(child.LogicalParent, layout1, "#1.2 Child's logical parent should now be the 2nd table");
+
+				// copy rows to a new layout
+				var layout2 = new TableLayout { ID = "layout2" };
+				foreach (var row in layout1.Rows.ToList())
+					layout2.Rows.Add(row);
+
+				Assert.AreEqual(0, layout1.Rows.Count, "#2.1 All rows should now be in the 2nd table");
+				Assert.AreEqual(child.Parent, layout2, "#2.2 Child's parent should now be the 2nd table");
+				Assert.AreEqual(child.LogicalParent, layout2, "#2.3 Child's logical parent should now be the 2nd table");
+				return layout2;
+			});
+		}
+
+		[Test, ManualTest]
+		public void CopyingCellsShouldReparentChildren()
+		{
+			ManualForm("Label above should show", form =>
+			{
+				var child = new Label { Text = "I should be shown!" };
+
+				var layout1 = new TableLayout { ID = "layout1" };
+				var cell1 = new TableCell(child);
+				var row1 = new TableRow(child);
+				layout1.Rows.Add(row1);
+				Assert.AreEqual(child.Parent, layout1, "#1.1 Child's parent should now be the 2nd table");
+				Assert.AreEqual(child.LogicalParent, layout1, "#1.2 Child's logical parent should now be the 2nd table");
+
+				// copy rows to a new layout
+				var layout2 = new TableLayout { ID = "layout2" };
+				var row2 = new TableRow();
+				foreach (var row in layout1.Rows.ToList())
+				{
+					foreach (var cell in row.Cells.ToList())
+						row2.Cells.Add(cell);
+				}
+				layout2.Rows.Add(row2);
+
+				Assert.AreEqual(1, layout1.Rows.Count, "#2.1 Should still have a single row");
+				Assert.AreEqual(0, layout1.Rows[0].Cells.Count, "#2.2 Cells should be removed from old table");
+				Assert.AreEqual(1, layout2.Rows.Count, "#2.3 2nd table should have a single row");
+				Assert.AreEqual(1, layout2.Rows[0].Cells.Count, "#2.4 All cells should now be in the 2nd table");
+				Assert.AreEqual(child.Parent, layout2, "#2.5 Child's parent should now be the 2nd table");
+				Assert.AreEqual(child.LogicalParent, layout2, "#2.6 Child's logical parent should now be the 2nd table");
+				return layout2;
 			});
 		}
 	}

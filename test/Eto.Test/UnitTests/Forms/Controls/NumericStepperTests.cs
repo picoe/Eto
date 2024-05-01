@@ -1,12 +1,5 @@
-﻿using Eto.Forms;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using NUnit.Framework;
 using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture]
@@ -21,8 +14,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				int valueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
-				Assert.AreEqual(double.NegativeInfinity, numeric.MinValue, "MinValue should be double.NegativeInfinity");
-				Assert.AreEqual(double.PositiveInfinity, numeric.MaxValue, "MaxValue should be double.PositiveInfinity");
+				Assert.AreEqual(double.MinValue, numeric.MinValue, "MinValue should be double.MinValue");
+				Assert.AreEqual(double.MaxValue, numeric.MaxValue, "MaxValue should be double.MaxValue");
 				Assert.AreEqual(0, numeric.Value, "initial value should be 0");
 
 				Assert.AreEqual(0, valueChanged, "ValueChanged event should not fire when setting to default values");
@@ -45,12 +38,12 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(1000, numeric.MaxValue, "MaxValue should return the same value as set");
 				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event should fire when changing the MinValue");
 
-				numeric.MinValue = double.NegativeInfinity;
-				numeric.MaxValue = double.PositiveInfinity;
+				numeric.MinValue = double.MinValue;
+				numeric.MaxValue = double.MaxValue;
 				numeric.Value = 0;
 
-				Assert.AreEqual(double.NegativeInfinity, numeric.MinValue, "MinValue should be double.NegativeInfinity");
-				Assert.AreEqual(double.PositiveInfinity, numeric.MaxValue, "MaxValue should be double.PositiveInfinity");
+				Assert.AreEqual(double.MinValue, numeric.MinValue, "MinValue should be double.MinValue");
+				Assert.AreEqual(double.MaxValue, numeric.MaxValue, "MaxValue should be double.MaxValue");
 				Assert.AreEqual(0, numeric.Value, "Value should be back to 0");
 
 				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event should fire when changing the MinValue");

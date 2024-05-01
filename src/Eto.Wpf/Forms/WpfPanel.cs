@@ -1,9 +1,3 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Wpf.Forms.Menu;
 
 namespace Eto.Wpf.Forms
@@ -113,7 +107,7 @@ namespace Eto.Wpf.Forms
 				else
 					border.Child = null;
 				Control.InvalidateMeasure();
-				UpdatePreferredSize();
+				OnChildPreferredSizeUpdated();
 			}
 		}
 
@@ -125,7 +119,7 @@ namespace Eto.Wpf.Forms
 			{
 				content = null;
 				border.Child = null;
-				UpdatePreferredSize();
+				OnChildPreferredSizeUpdated();
 			}
 		}
 	}

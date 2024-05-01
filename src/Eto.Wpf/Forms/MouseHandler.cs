@@ -1,8 +1,3 @@
-using swi = System.Windows.Input;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
 	public class MouseHandler : Mouse.IHandler
@@ -15,8 +10,17 @@ namespace Eto.Wpf.Forms
 
 		public PointF Position
 		{
-			get => swf.Control.MousePosition.ScreenToLogical();
-			set => swf.Cursor.Position = Point.Round(value.LogicalToScreen()).ToSD();
+			get
+			{
+				var screen = swf.Screen.FromPoint(swf.Control.MousePosition);
+				var result = Win32.ExecuteInDpiAwarenessContext(() => swf.Control.MousePosition);
+				return result.ScreenToLogical(screen);
+			}
+			set
+			{
+				var pos = value.LogicalToScreen();
+				Win32.ExecuteInDpiAwarenessContext(() => swf.Cursor.Position = Point.Round(pos).ToSD());
+			}
 		}
 
 		public static int s_CursorSetCount;
@@ -27,19 +31,6 @@ namespace Eto.Wpf.Forms
 			s_CursorSetCount++;
 		}
 
-		public MouseButtons Buttons
-		{
-			get
-			{
-				MouseButtons buttons = MouseButtons.None;
-				if (swi.Mouse.LeftButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Primary;
-				if (swi.Mouse.MiddleButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Middle;
-				if (swi.Mouse.RightButton == swi.MouseButtonState.Pressed)
-					buttons |= MouseButtons.Alternate;
-				return buttons;
-			}
-		}
+		public MouseButtons Buttons => swf.Control.MouseButtons.ToEto();
 	}
 }

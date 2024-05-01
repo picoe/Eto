@@ -1,39 +1,33 @@
-using System;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
-
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
+	public class EtoSecureTextFieldCell : NSSecureTextFieldCell, IColorizeCell
+	{
+		ColorizeView colorize;
+
+		public EtoSecureTextFieldCell()
+		{
+			StringValue = string.Empty;
+		}
+
+		public Color? Color 
+		{ 
+			get => colorize?.Color;
+			set => ColorizeView.Create(ref colorize, value);
+		}
+
+		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
+		{
+			colorize?.End();
+			base.DrawInteriorWithFrame(cellFrame, inView);
+		}
+		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
+		{
+			colorize?.Begin(cellFrame, inView);
+			base.DrawWithFrame(cellFrame, inView);
+		}
+	}
+
 	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler, ITextBoxWithMaxLength
 	{
 		public class EtoSecureTextField : NSSecureTextField, IMacControl, ITextBoxWithMaxLength
@@ -46,20 +40,25 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); }
 			}
 
-			public int MaxLength
+			public int MaxLength => Handler.MaxLength;
+
+			EtoFormatter formatter;
+
+			public EtoSecureTextField(IntPtr handle)
+				: base(handle)
 			{
-				get { return Handler.MaxLength; }
 			}
 
 			public EtoSecureTextField()
 			{
+				Cell = new EtoSecureTextFieldCell();
 				Bezeled = true;
 				Editable = true;
 				Selectable = true;
 				Cell.Scrollable = true;
 				Cell.Wraps = false;
 				Cell.UsesSingleLineMode = true;
-				Formatter = new EtoFormatter { Handler = this };
+				Formatter = formatter = new EtoFormatter { Handler = this };
 			}
 		}
 
@@ -71,6 +70,13 @@ namespace Eto.Mac.Forms.Controls
 					return false;
 				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorClient == Control;
 			}
+		}
+
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			var size = base.GetNaturalSize(availableSize);
+			size.Width = Math.Max(100, size.Height);
+			return size;
 		}
 
 		protected override NSTextField CreateControl()

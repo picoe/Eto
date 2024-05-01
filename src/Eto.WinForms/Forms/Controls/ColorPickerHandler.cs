@@ -1,13 +1,4 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using swf = System.Windows.Forms;
-using sd = System.Drawing;
-
-namespace Eto.WinForms.Forms.Controls
+﻿namespace Eto.WinForms.Forms.Controls
 {
 	public class ColorPickerHandler : WindowsControl<swf.Button, ColorPicker, ColorPicker.ICallback>, ColorPicker.IHandler
 	{

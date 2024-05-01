@@ -1,5 +1,3 @@
-using System;
-using Eto.Drawing;
 using s = SharpDX;
 
 namespace Eto.Direct2D.Drawing

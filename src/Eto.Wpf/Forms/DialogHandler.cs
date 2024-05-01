@@ -1,29 +1,56 @@
-using System;
-using Eto.Forms;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
+using System.Windows.Automation.Peers;
 using Eto.Wpf.Forms.Controls;
-using System.Threading.Tasks;
-using Eto.Drawing;
-
 namespace Eto.Wpf.Forms
 {
+	class EtoWindowAutomationPeer : WindowAutomationPeer
+	{
+		public EtoWindowAutomationPeer(sw.Window owner) : base(owner)
+		{
+		}
+
+		protected override string GetNameCore()
+		{
+			try
+			{
+				// due to windows message hooks, we can already be in error state which causes exceptions here.
+#if NET
+				Marshal.SetLastSystemError(0);
+#else
+				Win32.SetLastError(0);
+#endif
+				return base.GetNameCore();
+			}
+			catch (Win32Exception)
+			{
+				// See https://github.com/dotnet/wpf/issues/4181 and https://github.com/dotnet/wpf/pull/7345
+				// Until that fix is in, we fix it ourselves to avoid random crashes
+				return (Owner as sw.Window)?.Title ?? string.Empty;
+			}
+		}
+	}
+
+
+	public class EtoWindow : sw.Window
+	{
+		protected override AutomationPeer OnCreateAutomationPeer()
+		{
+			return new EtoWindowAutomationPeer(this);
+		}
+	}
+	
 	public class DialogHandler : WpfWindow<sw.Window, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button defaultButton;
 		Rectangle? parentWindowBounds;
-        swc.DockPanel dockMain;
-        swc.Grid gridButtons;
+		swc.DockPanel dockMain;
+		swc.Grid gridButtons;
 
-		public DialogHandler() : this(new sw.Window()) { }
+		public DialogHandler() : this(new EtoWindow()) { }
 
 		public DialogHandler(sw.Window window)
 		{
 			Control = window;
 			Control.ShowInTaskbar = false;
-			Resizable = false;
-			Minimizable = false;
-			Maximizable = false;
 			Control.PreviewKeyDown += Control_PreviewKeyDown;
 
 			dockMain = new swc.DockPanel();
@@ -34,35 +61,51 @@ namespace Eto.Wpf.Forms
 			gridButtons.Margin = new sw.Thickness();
 		}
 
-        public override void SetContainerContent(sw.FrameworkElement content)
-        {
-            this.content.Children.Add(dockMain);
-            swc.DockPanel.SetDock(gridButtons, swc.Dock.Bottom);
-            dockMain.Children.Add(gridButtons);
-            dockMain.Children.Add(content);
-        }
+		protected override void Initialize()
+		{
+			base.Initialize();
+			
+			Resizable = false;
+			Minimizable = false;
+			Maximizable = false;
+		}
 
-        public DialogDisplayMode DisplayMode { get; set; }
+		public override void SetContainerContent(sw.FrameworkElement content)
+		{
+			this.content.Children.Add(dockMain);
+			swc.DockPanel.SetDock(gridButtons, swc.Dock.Bottom);
+			dockMain.Children.Add(gridButtons);
+			dockMain.Children.Add(content);
+		}
+
+		public DialogDisplayMode DisplayMode { get; set; }
 
 		public void ShowModal()
 		{
-            ReloadButtons();
+			ReloadButtons();
 
+			var owner = Widget.Owner;
+			
 			if (LocationSet)
 			{
 				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
 			}
-			else if (Widget.Owner != null)
+			else if (owner != null)
 			{
 				// CenterOwner does not work in certain cases (e.g. with autosizing)
 				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
-				parentWindowBounds = Widget.Owner.Bounds;
+				parentWindowBounds = owner.Bounds;
 				Control.Loaded += HandleLoaded;
 			}
+			
+			// if the owner doesn't have focus, windows changes the owner's z-order after the dialog closes.
+			if (owner != null && !owner.HasFocus)
+				owner.Focus();
+
 			Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 
-            ClearButtons();
+			ClearButtons();
 		}
 
 		void Control_PreviewKeyDown(object sender, sw.Input.KeyEventArgs e)
@@ -99,59 +142,59 @@ namespace Eto.Wpf.Forms
 		}
 
 		private void ClearButtons()
-        {
-            gridButtons.ColumnDefinitions.Clear();
-            gridButtons.Children.Clear();
-        }
+		{
+			gridButtons.ColumnDefinitions.Clear();
+			gridButtons.Children.Clear();
+		}
 
-        private void ReloadButtons()
-        {
-            gridButtons.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(100, sw.GridUnitType.Star) });
-            
-            var negativeButtons = Widget.NegativeButtons;
-            var positiveButtons = Widget.PositiveButtons;
-            var hasButtons = negativeButtons.Count + positiveButtons.Count > 0;
+		private void ReloadButtons()
+		{
+			gridButtons.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(100, sw.GridUnitType.Star) });
 
-            for (int i = positiveButtons.Count - 1; i >= 0; i--)
-                AddButton(positiveButtons.Count - i, positiveButtons[i]);
+			var negativeButtons = Widget.NegativeButtons;
+			var positiveButtons = Widget.PositiveButtons;
+			var hasButtons = negativeButtons.Count + positiveButtons.Count > 0;
 
-            for (int i = 0;i < negativeButtons.Count;i++)
-                AddButton(positiveButtons.Count + 1 + i, negativeButtons[i]);
-            
-            gridButtons.Visibility = hasButtons ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
-            gridButtons.Margin = new sw.Thickness(hasButtons ? 8 : 0);
-        }
+			for (int i = positiveButtons.Count - 1; i >= 0; i--)
+				AddButton(positiveButtons.Count - i, positiveButtons[i]);
 
-        private void AddButton(int pos, Button button)
-        {
-            var native = button.ToNative();
-            native.Margin = new sw.Thickness(6, 0, 0, 0);
+			for (int i = 0; i < negativeButtons.Count; i++)
+				AddButton(positiveButtons.Count + 1 + i, negativeButtons[i]);
 
-            swc.Grid.SetColumn(native, pos);
+			gridButtons.Visibility = hasButtons ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+			gridButtons.Margin = new sw.Thickness(hasButtons ? 8 : 0);
+		}
 
-            gridButtons.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Auto) });
-            gridButtons.Children.Add(native);
-        }
+		private void AddButton(int pos, Button button)
+		{
+			var native = button.ToNative();
+			native.Margin = new sw.Thickness(6, 0, 0, 0);
 
-        public void InsertDialogButton(bool positive, int index, Button item)
-        {
-            if(Widget.Visible)
-            {
-                ClearButtons();
-                ReloadButtons();
-            }
-        }
+			swc.Grid.SetColumn(native, pos);
 
-        public void RemoveDialogButton(bool positive, int index, Button item)
-        {
-            if (Widget.Visible)
-            {
-                ClearButtons();
-                ReloadButtons();
-            }
-        }
+			gridButtons.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Auto) });
+			gridButtons.Children.Add(native);
+		}
 
-        public Button DefaultButton
+		public void InsertDialogButton(bool positive, int index, Button item)
+		{
+			if (Widget.Visible)
+			{
+				ClearButtons();
+				ReloadButtons();
+			}
+		}
+
+		public void RemoveDialogButton(bool positive, int index, Button item)
+		{
+			if (Widget.Visible)
+			{
+				ClearButtons();
+				ReloadButtons();
+			}
+		}
+
+		public Button DefaultButton
 		{
 			get { return defaultButton; }
 			set

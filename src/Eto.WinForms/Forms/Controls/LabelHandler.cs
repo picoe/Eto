@@ -1,12 +1,3 @@
-using System;
-using System.IO;
-using sd = System.Drawing;
-using swf = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
-using System.Diagnostics;
-
 namespace Eto.WinForms.Forms.Controls
 {
 	public class LabelHandler : WindowsControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler
@@ -111,7 +102,7 @@ namespace Eto.WinForms.Forms.Controls
 				var bordersAndPadding = Padding.Size;
 				if (proposedSize.Width <= 1)
 					proposedSize.Width = int.MaxValue;
-				else if (Width > 1)
+				else if (IsHandleCreated && Width > 1)
 					proposedSize.Width = Width;
 
 				sd.SizeF size;
@@ -195,7 +186,6 @@ namespace Eto.WinForms.Forms.Controls
 				switch (Wrap)
 				{
 					case WrapMode.None:
-						textFormat |= swf.TextFormatFlags.SingleLine;
 						break;
 					case WrapMode.Word:
 						textFormat |= swf.TextFormatFlags.WordBreak;

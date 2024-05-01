@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net7.0-macos</TargetFrameworks>
+    <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+    <RootNamespace>Eto.Test.Mac</RootNamespace>
+    <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
+    <EnableDefaultContentItems>False</EnableDefaultContentItems>
+    <CodeSigningKey>Mac Developer</CodeSigningKey>
+    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
+    <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
+    <DefineConstants>MACOS_NET</DefineConstants>
+    <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
+    <NoWarn>CA1416</NoWarn>
+
+    <TrimMode>partial</TrimMode>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Using Include="AppKit" />
+    <Using Include="Foundation" />
+    <Using Include="CoreGraphics" />
+    <Using Include="ObjCRuntime" />
+    <Using Include="CoreAnimation" />
+    <Using Include="CoreImage" />
+    <Using Include="MobileCoreServices" />
+    <Using Include="CoreFoundation" />
+    <Using Include="ImageIO" />
+    <Using Include="CoreText" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
+    <ProjectReference Include="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\src\Eto.Mac\Eto.macOS.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.13.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestIcon.icns" />
+    <None Include="Info.plist" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Assets\TestCopyToOutput.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\TestContent.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Assets\TestBundleResource.txt" />
+  </ItemGroup>
+
+</Project>

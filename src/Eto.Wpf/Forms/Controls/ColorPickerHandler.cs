@@ -1,15 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Eto.Drawing;
-using xwt = Xceed.Wpf.Toolkit;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using System.ComponentModel;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoColorPicker : xwt.ColorPicker, IEtoWpfControl

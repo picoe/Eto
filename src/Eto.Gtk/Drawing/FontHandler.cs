@@ -1,9 +1,3 @@
-using System;
-using Eto.Drawing;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
 namespace Eto.GtkSharp.Drawing
 {
 	public static class FontHandlerExtensions

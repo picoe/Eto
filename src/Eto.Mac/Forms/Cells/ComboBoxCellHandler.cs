@@ -1,38 +1,6 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
 using Eto.Mac.Forms.Controls;
 
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac.Forms.Cells
 {
@@ -221,10 +189,7 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
-		public override Color GetBackgroundColor(NSView view)
-		{
-			return ((EtoPopUpButton)view).Cell.BackgroundColor.ToEto();
-		}
+		public override Color GetBackgroundColor(NSView view) => ((EtoPopUpButton)view).Cell.BackgroundColor.ToEto();
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
@@ -233,24 +198,20 @@ namespace Eto.Mac.Forms.Cells
 			field.DrawsBackground = color.A > 0;
 		}
 
-		public override Color GetForegroundColor(NSView view)
-		{
-			return ((EtoCell)((EtoPopUpButton)view).Cell).TextColor.ToEto();
-		}
+		public override Color GetForegroundColor(NSView view) => ((EtoCell)((EtoPopUpButton)view).Cell).TextColor.ToEto();
+		public override void SetForegroundColor(NSView view, Color color) => ((EtoCell)((EtoPopUpButton)view).Cell).TextColor = color.ToNSUI();
 
-		public override void SetForegroundColor(NSView view, Color color)
-		{
-			((EtoCell)((EtoPopUpButton)view).Cell).TextColor = color.ToNSUI();
-		}
+		public override Font GetFont(NSView view) => ((EtoPopUpButton)view).Font.ToEto();
+		public override void SetFont(NSView view, Font font) => ((EtoPopUpButton)view).Font = font.ToNS();
 
-		public override Font GetFont(NSView view)
+		private void SetDefaults(CellView view)
 		{
-			return ((EtoPopUpButton)view).Font.ToEto();
-		}
-
-		public override void SetFont(NSView view, Font font)
-		{
-			((EtoPopUpButton)view).Font = font.ToNS();
+			if (view.Cell is EtoCell cell)
+			{
+				cell.DrawsBackground = false;
+				cell.TextColor = NSColor.ControlText;
+				cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+			}
 		}
 
 		class CellView : EtoPopUpButton
@@ -289,7 +250,6 @@ namespace Eto.Mac.Forms.Cells
 
 					ColumnHandler.DataViewHandler.OnCellEdited(cellArgs);
 					control.ObjectValue = GetObjectValue(item);
-
 				};
 				view.Bind(enabledBinding, tableColumn, "editable", null);
 				view.Menu = menu.Copy() as NSMenu;
@@ -299,6 +259,7 @@ namespace Eto.Mac.Forms.Cells
 
 			view.Tag = row;
 			view.Item = obj;
+			SetDefaults(view);
 			var formatArgs = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(formatArgs);
 			return view;

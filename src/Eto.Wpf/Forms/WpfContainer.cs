@@ -1,18 +1,10 @@
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swi = System.Windows.Input;
-using Eto.Forms;
-using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-
 namespace Eto.Wpf.Forms
 {
 	public interface IWpfContainer
 	{
 		void Remove(sw.FrameworkElement child);
 
-		void UpdatePreferredSize();
+		void OnChildPreferredSizeUpdated();
 	}
 
 	public abstract class WpfContainer<TControl, TWidget, TCallback> : WpfFrameworkElement<TControl, TWidget, TCallback>, Container.IHandler, IWpfContainer
@@ -82,5 +74,7 @@ namespace Eto.Wpf.Forms
 		}
 
 		public override IEnumerable<Control> VisualControls => Widget.Controls;
+		
+		protected override void SetDefaultScale() => SetScale(true, true);
 	}
 }

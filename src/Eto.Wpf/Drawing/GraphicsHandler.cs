@@ -1,13 +1,3 @@
-using System;
-using swm = System.Windows.Media;
-using sw = System.Windows;
-using swmi = System.Windows.Media.Imaging;
-using Eto.Drawing;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Eto.Wpf.Drawing
 {
     /// <summary>
@@ -44,7 +34,12 @@ namespace Eto.Wpf.Drawing
 
 		void SetOffset(bool fill)
 		{
-			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			var currentMode = PixelOffsetMode;
+			var requiresOffset =
+				(
+					currentMode == PixelOffsetMode.Aligned
+					|| (!fill && currentMode == PixelOffsetMode.None)
+				);
 			if (requiresOffset != isOffset)
 			{
 				RewindAll();
@@ -302,7 +297,7 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawText(FormattedText formattedText, PointF location)
 		{
-			SetOffset(true);
+			SetOffset(false);
 			if (formattedText.Handler is FormattedTextHandler handler)
 			{
 				handler.DrawText(this, location);
@@ -311,12 +306,14 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawText(Font font, Brush b, float x, float y, string text)
 		{
-			SetOffset(true);
+			SetOffset(false);
 			var fontHandler = font.Handler as FontHandler;
 			if (fontHandler != null)
 			{
 				var brush = b.ToWpf();
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
+#pragma warning restore CS0618 // Type or member is obsolete
 				if (fontHandler.WpfTextDecorationsFrozen != null)
 					formattedText.SetTextDecorations(fontHandler.WpfTextDecorationsFrozen, 0, text.Length);
 				Control.DrawText(formattedText, new sw.Point(x, y));
@@ -331,7 +328,9 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = new swm.SolidColorBrush(swm.Colors.White);
+#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
 				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
+#pragma warning restore CS0618 // Type or member is obsolete
 				result = new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 			}
 
@@ -346,7 +345,7 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
-		bool Close()
+		unsafe bool Close()
 		{
 			CloseGroup();
 			if (image != null)
@@ -356,7 +355,26 @@ namespace Eto.Wpf.Drawing
 				var bmp = image.ToWpf();
 				var newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
 				newbmp.RenderWithCollect(visual);
-				handler.SetBitmap(newbmp);
+				if (!bmp.Format.HasAlpha())
+				{
+					// convert to non-alpha, as RenderTargetBitmap does not support anything other than Pbgra32
+					var converted = new swmi.FormatConvertedBitmap(newbmp, swm.PixelFormats.Bgr32, null, 0);
+					handler.SetBitmap(converted);
+
+					// var wb = new swmi.WriteableBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Bgr32, null);
+					// var rect = new sw.Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
+					// var pixels = new byte[bmp.PixelHeight * wb.BackBufferStride];
+					// newbmp.CopyPixels(rect, pixels, wb.BackBufferStride, 0);
+					// fixed (byte* ptr = pixels)
+					// {
+					// 	wb.WritePixels(rect, (IntPtr)ptr, pixels.Length, wb.BackBufferStride, 0, 0);
+					// }
+					// handler.SetBitmap(wb);
+				}
+				else
+				{
+					handler.SetBitmap(newbmp);
+				}
 				return true;
 			}
 			return false;
@@ -488,7 +506,7 @@ namespace Eto.Wpf.Drawing
 
 		public IMatrix CurrentTransform
 		{
-			get { return transforms.Current != null ? transforms.Current.Clone() : Matrix.Create(); }
+			get { return transforms?.Current?.Clone() ?? Matrix.Create(); }
 		}
 
 		void RewindOffset()
@@ -591,11 +609,13 @@ namespace Eto.Wpf.Drawing
 
 		public void ResetClip()
 		{
-			if (clipBounds != null)
+			if (clipBounds != null || clipPath != null)
 			{
-				Control.Pop();
+				RewindTransform();
+				RewindClip();
 				clipBounds = null;
 				clipPath = null;
+				ApplyTransform();
 			}
 		}
 

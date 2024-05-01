@@ -1,21 +1,6 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
-#if XAMMAC2
-using AppKit;
-using CoreGraphics;
-#else
-using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Test.Mac.UnitTests
 {

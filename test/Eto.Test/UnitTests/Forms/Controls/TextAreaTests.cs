@@ -1,6 +1,5 @@
-using System;
-using Eto.Forms;
 using NUnit.Framework;
+using Range = Eto.Forms.Range;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
@@ -10,7 +9,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	}
 
 	public class TextAreaTests<T> : TestBase
-		where T: TextArea, new()
+		where T : TextArea, new()
 	{
 		[Test]
 		public void CheckSelectionTextCaretAfterSettingText()
@@ -117,5 +116,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(string.Empty, textArea.SelectedText, "SelectedText should *still* be empty not null after setting text");
 			});
 		}
+
+		[Test]
+		[ManualTest]
+		public void ScaledShouldNotGrowDialog() => Invoke(() =>
+		{
+			var dlg = new Dialog();
+			dlg.Content = new T() { Text = "Hello!  The dialog should not grow too large or anything, and should make this text wrap." };
+			dlg.ShowModal();
+		}, -1);
 	}
 }

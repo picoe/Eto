@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Forms;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-
-namespace Eto.Wpf.Forms.Controls
+﻿namespace Eto.Wpf.Forms.Controls
 {
 	public class ComboBoxHandler : DropDownHandler<EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
@@ -117,6 +110,19 @@ namespace Eto.Wpf.Forms.Controls
 				var tb = DropDownButton;
 				if (tb != null)
 					tb.Background = value.ToWpfBrush(tb.Background);
+			}
+		}
+
+		public override Color TextColor
+		{
+			get => Control.TextBox?.Foreground.ToEtoColor() ?? base.TextColor;
+			set
+			{
+				var textBox = Control.TextBox;
+				if (textBox != null)
+					textBox.Foreground = value.ToWpfBrush();
+				else
+					PerformOnLoad(() => TextColor = value);
 			}
 		}
 

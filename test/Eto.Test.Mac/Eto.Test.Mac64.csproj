@@ -1,39 +1,82 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  
+  <Import Project="..\..\src\Eto.Mac\build\Mac.props" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
+  
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net7.0</TargetFrameworks>
     <OutputType>WinExe</OutputType>
-    <UseMacTemplate>True</UseMacTemplate>
+    
+    <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+    <DefineConstants>MONOMAC</DefineConstants>
+    <LangVersion>10.0</LangVersion>
+    <DebugType>embedded</DebugType>
+    
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\artifacts\test\Debug\</OutputPath>
+  
+  <ItemGroup>
+    <TrimmerRootAssembly Include="Eto" />
+    <TrimmerRootAssembly Include="Eto.Test" />
+    <TrimmerRootAssembly Include="Eto.Mac64" />
+    <TrimmerRootAssembly Include="MonoMac" />
+    <TrimmerRootAssembly Include="Portable.Xaml" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
+    <EnableDmgBuild>True</EnableDmgBuild>
+    <EnableCodeSigning Condition="$(EnableCodeSignBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableCodeSigning>
+    <EnableNotarization Condition="$(EnableNotarizationBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableNotarization>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\artifacts\test\Release\</OutputPath>
-  </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="MonoMac">
-      <HintPath>..\..\lib\MonoMac64\MonoMac.dll</HintPath>
-    </Reference>
+    <Using Include="MonoMac.AppKit" />
+    <Using Include="MonoMac.Foundation" />
+    <Using Include="MonoMac.CoreGraphics" />
+    <Using Include="MonoMac.ObjCRuntime" />
+    <Using Include="MonoMac.CoreAnimation" />
+    <Using Include="MonoMac.CoreImage" />
+    <Using Include="MonoMac.MobileCoreServices" />
+    <Using Include="MonoMac.CoreFoundation" />
+    <Using Include="MonoMac.ImageIO" />
+    <Using Include="MonoMac.CoreText" />
+    <Using Include="MonoMac.Constants" Alias="Constants" />
+    <Using Include="MonoMac.AppKit.NSRectEdge" Alias="NSRectEdge" />
+    <Using Include="System.Double" Alias="nfloat" />
+    <Using Include="System.Int64" Alias="nint" />
+    <Using Include="System.UInt64" Alias="nuint" />
+    <Using Include="System.IntPtr" Alias="NativeHandle" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestIcon.icns" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Info.plist" />
-    <None Remove="TestIcon.icns" />
-  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.Mac64.csproj" />
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\..\lib\monomac\src\MonoMac.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Assets\TestContent.txt" />
+    <None Remove="Assets\TestBundleResource.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    <None Update="Assets\TestCopyToOutput.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\TestContent.txt" />
+    <Content Include="TestIcon.icns" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Assets\TestBundleResource.txt" />
+  </ItemGroup>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  
+  <Import Project="..\..\src\Eto.Mac\build\Mac.targets" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
+  
 </Project>

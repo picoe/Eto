@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using sd = System.Drawing;
 #if WPF
 #elif WINFORMS
 using Eto.WinForms.Forms;
@@ -19,33 +16,17 @@ namespace Eto
 
 		public abstract Eto.Drawing.SizeF GetLogicalSize(T screen);
 
-		public abstract float GetLogicalPixelSize(T screen);
+		public abstract float GetLogicalPixelSize(T screen, bool usePerMonitor = true);
 
-		public virtual float GetMaxLogicalPixelSize() => AllScreens.Max((Func<T, float>)GetLogicalPixelSize);
-
-		T FindLeftScreen(T screen) =>
-			AllScreens
-			.Where(r => GetBounds(r).X >= 0 && GetBounds(r).Right == GetBounds(screen).X)
-			.OrderBy(r => GetLogicalPixelSize(r))
-			.FirstOrDefault();
-
-		T FindRightScreen(T screen) =>
-			AllScreens
-			.Where(r => GetBounds(r).X < 0 && GetBounds(r).X == GetBounds(screen).Right)
-			.OrderBy(r => GetLogicalPixelSize(r))
-			.FirstOrDefault();
-
-		T FindTopScreen(T screen) =>
-			AllScreens
-			.Where(r => GetBounds(r).Y >= 0 && GetBounds(r).Bottom == GetBounds(screen).Y)
-			.OrderBy(r => GetLogicalPixelSize(r))
-			.FirstOrDefault();
-
-		T FindBottomScreen(T screen) =>
-			AllScreens
-			.Where(r => GetBounds(r).Y < 0 && GetBounds(r).Y == GetBounds(screen).Bottom)
-			.OrderBy(r => GetLogicalPixelSize(r))
-			.FirstOrDefault();
+		public virtual float GetMaxLogicalPixelSize()
+		{
+			float logicalPixelSize = 0;
+			foreach (var screen in AllScreens)
+			{
+				logicalPixelSize = Math.Max(logicalPixelSize, GetLogicalPixelSize(screen));
+			}
+			return logicalPixelSize;
+		}
 
 		public Eto.Drawing.PointF GetLogicalLocation(T screen)
 		{
@@ -61,11 +42,14 @@ namespace Eto
 			// to calculate it's logical position
 
 			// if it is not adjacent, we use the maximum pixel size to figure out its position.
+			var allScreens = AllScreens.ToList();
+
+			var maxLogicalPixelSize = GetMaxLogicalPixelSize();
 
 			if (bounds.X < primaryBounds.X)
 			{
 				var adjacentScreen = primaryScreen;
-				foreach (var scn in AllScreens.OrderByDescending(s => GetBounds(s).X))
+				foreach (var scn in allScreens.OrderByDescending(s => GetBounds(s).X))
 				{
 					var scnBounds = GetBounds(scn);
 					if (scnBounds.X > primaryBounds.X || (!scn.Equals(screen) && bounds.Right > scnBounds.X))
@@ -83,13 +67,13 @@ namespace Eto
 				}
 				if (!adjacentScreen.Equals(screen))
 				{
-					location.X = bounds.X / GetMaxLogicalPixelSize();
+					location.X = bounds.X / maxLogicalPixelSize;
 				}
 			}
 			else if (bounds.X > primaryBounds.X)
 			{
 				var adjacentScreen = primaryScreen;
-				foreach (var scn in AllScreens.OrderBy(s => GetBounds(s).X))
+				foreach (var scn in allScreens.OrderBy(s => GetBounds(s).X))
 				{
 					var scnBounds = GetBounds(scn);
 					if (scnBounds.X < primaryBounds.X || (!scn.Equals(screen) && bounds.X < scnBounds.Right))
@@ -107,14 +91,14 @@ namespace Eto
 				}
 				if (!adjacentScreen.Equals(screen))
 				{
-					location.X = bounds.X / GetMaxLogicalPixelSize();
+					location.X = bounds.X / maxLogicalPixelSize;
 				}
 			}
 
 			if (bounds.Y < primaryBounds.Y)
 			{
 				var adjacentScreen = primaryScreen;
-				foreach (var scn in AllScreens.OrderByDescending(s => GetBounds(s).Y))
+				foreach (var scn in allScreens.OrderByDescending(s => GetBounds(s).Y))
 				{
 					var scnBounds = GetBounds(scn);
 					if (scnBounds.Y > primaryBounds.Y || (!scn.Equals(screen) && bounds.Bottom > scnBounds.Y))
@@ -132,13 +116,13 @@ namespace Eto
 				}
 				if (!adjacentScreen.Equals(screen))
 				{
-					location.Y = bounds.Y / GetMaxLogicalPixelSize();
+					location.Y = bounds.Y / maxLogicalPixelSize;
 				}
 			}
 			else if (bounds.Y > primaryBounds.Y)
 			{
 				var adjacentScreen = primaryScreen;
-				foreach (var scn in AllScreens.OrderBy(s => GetBounds(s).Y))
+				foreach (var scn in allScreens.OrderBy(s => GetBounds(s).Y))
 				{
 					var scnBounds = GetBounds(scn);
 					if (scnBounds.Y < primaryBounds.Y || (!scn.Equals(screen) && bounds.Y < scnBounds.Bottom))
@@ -156,51 +140,11 @@ namespace Eto
 				}
 				if (!adjacentScreen.Equals(screen))
 				{
-					location.Y = bounds.Y / GetMaxLogicalPixelSize();
+					location.Y = bounds.Y / maxLogicalPixelSize;
 				}
 			}
 
 			return location;
-			/**
-
-			var bounds = GetBounds(screen);
-			float x, y;
-			if (bounds.X > 0)
-			{
-				var left = FindLeftScreen(screen);
-				if (left != null)
-					x = GetLogicalLocation(left).X + GetLogicalSize(left).Width;
-				else
-					x = bounds.X / GetMaxLogicalPixelSize();
-			}
-			else if (bounds.X < 0)
-			{
-				var right = FindRightScreen(screen);
-				if (right != null)
-					x = GetLogicalLocation(right).X - GetLogicalSize(screen).Width;
-				else
-					x = bounds.X / GetLogicalPixelSize(screen);
-			}
-			else x = bounds.X;
-			if (bounds.Y > 0)
-			{
-				var top = FindTopScreen(screen);
-				if (top != null)
-					y = GetLogicalLocation(top).Y + GetLogicalSize(top).Height;
-				else
-					y = bounds.Y / GetMaxLogicalPixelSize();
-			}
-			else if (bounds.Y < 0)
-			{
-				var bottom = FindBottomScreen(screen);
-				if (bottom != null)
-					y = GetLogicalLocation(bottom).Y - GetLogicalSize(screen).Height;
-				else
-					y = bounds.Y / GetLogicalPixelSize(screen);
-			}
-			else y = bounds.Y;
-			return new Eto.Drawing.PointF(x, y);
-			/**/
 		}
 	}
 }

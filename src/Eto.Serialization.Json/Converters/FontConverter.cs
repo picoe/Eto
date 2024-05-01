@@ -1,10 +1,5 @@
-﻿using System;
-using System.Globalization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Eto.Drawing;
-using System.Linq;
-
 namespace Eto.Serialization.Json.Converters
 {
 	public class FontConverter : TypeConverterConverter

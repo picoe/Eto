@@ -1,13 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Eto.Forms;
-using System.Diagnostics;
-using System.Reflection;
-using sw = System.Windows;
-using swm = System.Windows.Media;
-using System.Threading;
 using System.Windows.Threading;
-
 namespace Eto.Wpf.Forms
 {
 	public class ApplicationHandler : WidgetHandler<sw.Application, Application, Application.ICallback>, Application.IHandler
@@ -76,6 +67,12 @@ namespace Eto.Wpf.Forms
 			if (!EnableCustomThemes)
 				return;
 
+			// ensure the Xceed.Wpf.Toolkit assembly is loaded here.
+			// kind of pointless, but adding the resource dictionary below fails unless this assembly is loaded..
+			var xceedWpfToolkit = typeof(Xceed.Wpf.Toolkit.ButtonSpinner).Assembly;
+			if (xceedWpfToolkit == null)
+				throw new InvalidOperationException("Could not load Xceed.Wpf.Toolkit");
+
 			// Add themes to our controls
 			var assemblyName = typeof(ApplicationHandler).Assembly.GetName().Name;
 			Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = new Uri($"pack://application:,,,/{assemblyName};component/themes/generic.xaml", UriKind.RelativeOrAbsolute) });
@@ -119,8 +116,8 @@ namespace Eto.Wpf.Forms
 
 		void HandleStartup(object sender, sw.StartupEventArgs e)
 		{
-			IsActive = true;
 			IsStarted = true;
+			IsActive = Win32.ApplicationIsActivated();
 			Control.Activated += (sender2, e2) => IsActive = true;
 			Control.Deactivated += (sender2, e2) => IsActive = false;
 			if (delayShownWindows != null)
@@ -133,7 +130,19 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public bool IsActive { get; private set; }
+		bool _isActive;
+		public bool IsActive
+		{
+			get => _isActive;
+			set
+			{
+				if (_isActive != value)
+				{
+					_isActive = value;
+					Callback.OnIsActiveChanged(Widget, EventArgs.Empty);
+				}
+			}
+		}
 
 		public string BadgeLabel
 		{
@@ -148,16 +157,11 @@ namespace Eto.Wpf.Forms
 						mainWindow.TaskbarItemInfo = new sw.Shell.TaskbarItemInfo();
 					if (!string.IsNullOrEmpty(badgeLabel))
 					{
-						var ctl = new CustomControls.OverlayIcon();
-						ctl.Content = badgeLabel;
-						ctl.Measure(new sw.Size(16, 16));
-						var size = ctl.DesiredSize;
-
+						// scale by the current pixel size
 						var m = sw.PresentationSource.FromVisual(mainWindow).CompositionTarget.TransformToDevice;
+						var scale = (float)m.M22;
 
-						var bmp = new swm.Imaging.RenderTargetBitmap((int)size.Width, (int)size.Height, m.M22 * 96, m.M22 * 96, swm.PixelFormats.Default);
-						ctl.Arrange(new sw.Rect(size));
-						bmp.RenderWithCollect(ctl);
+						var bmp = GenerateBadge(scale, badgeLabel);
 						mainWindow.TaskbarItemInfo.Overlay = bmp;
 					}
 					else
@@ -166,9 +170,37 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		protected virtual swm.Imaging.BitmapSource GenerateBadge(float scale, string label)
+		{
+			var size = Size.Round(new SizeF(14, 14) * scale);
+			var bmp = new Bitmap(size, PixelFormat.Format32bppRgba);
+			
+			using (var graphics = new Graphics(bmp))
+			{
+				var font = SystemFonts.Bold(6 * scale);
+
+				var textSize = graphics.MeasureString(font, label);
+				graphics.FillEllipse(Brushes.Red, new Rectangle(size));
+
+				var pt = new PointF((bmp.Width - textSize.Width) / 2, (bmp.Height - textSize.Height - scale) / 2);
+				graphics.DrawText(font, Brushes.White, pt, label);
+			}
+
+			return bmp.ToWpf();
+		}
 
 		public void RunIteration()
 		{
+			var frame = new DispatcherFrame();
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+			Dispatcher.PushFrame(frame);
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+		}
+
+		static object ExitFrame(object f)
+		{
+			((DispatcherFrame)f).Continue = false;
+			return null;
 		}
 
 		public void Quit()
@@ -210,7 +242,7 @@ namespace Eto.Wpf.Forms
 
 		public void Open(string url)
 		{
-			Process.Start(url);
+			Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 		}
 
 		public void Run()
@@ -245,7 +277,7 @@ namespace Eto.Wpf.Forms
 
 		public void Restart()
 		{
-			Process.Start(sw.Application.ResourceAssembly.Location);
+			System.Windows.Forms.Application.Restart();
 			sw.Application.Current.Shutdown();
 		}
 
@@ -262,6 +294,9 @@ namespace Eto.Wpf.Forms
 					break;
 				case Application.NotificationActivatedEvent:
 					// handled by NotificationHandler
+					break;
+				case Application.IsActiveChangedEvent:
+					// handled always
 					break;
 				default:
 					base.AttachEvent(id);

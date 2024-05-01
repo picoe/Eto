@@ -1,5 +1,4 @@
-﻿using Eto.Drawing;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Drawing
 {

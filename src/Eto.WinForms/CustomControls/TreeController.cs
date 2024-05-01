@@ -1,20 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Collections.Specialized;
-using Eto.Forms;
-using System.Collections;
-
 namespace Eto.CustomControls
 {
 	public interface ITreeHandler
 	{
 		ITreeGridItem SelectedItem { get; }
-		void SelectRow (int row);
+		void SelectRow(int row);
 		bool AllowMultipleSelection { get; }
 
-		void PreResetTree ();
-		void PostResetTree ();
+		bool PreResetTree(object item = null, int row = -1);
+		void PostResetTree(object item = null, int row = -1);
 	}
 
 	public class TreeController : ITreeGridStore<ITreeGridItem>, IList, INotifyCollectionChanged
@@ -83,7 +76,7 @@ namespace Eto.CustomControls
 				for (int row = 0; row < Store.Count; row++)
 				{
 					var item = Store[row];
-					if (item.Expanded)
+					if (item.Expandable && item.Expanded)
 					{
 						var children = (ITreeGridStore<ITreeGridItem>)item;
 						var section = new TreeController { StartRow = row, Handler = Handler, parent = this };
@@ -323,11 +316,9 @@ namespace Eto.CustomControls
 
 		void ResetCollection ()
 		{
-			if (parent == null)
-				Handler.PreResetTree ();
-			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
-			if (parent == null)
-				Handler.PostResetTree ();
+			var doPost = parent == null && Handler.PreResetTree();
+			OnTriggerCollectionChanged(new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			if (doPost) Handler.PostResetTree ();
 		}
 
 		public void ReloadItem(ITreeGridItem item)
@@ -335,8 +326,10 @@ namespace Eto.CustomControls
 			var row = IndexOf(item);
 			if (row < 0)
 				return;
+			var doPost = parent == null && Handler.PreResetTree(item, row);
 			OnTriggerCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, row));
 			OnTriggerCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, row));
+			if (doPost) Handler.PostResetTree(item, row);
 		}
 
 		public bool CollapseRow (int row)

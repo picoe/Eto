@@ -1,10 +1,3 @@
-using System;
-using System.Globalization;
-using System.IO;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-using sd = System.Drawing;
-using sdi = System.Drawing.Imaging;
 using ImageManipulation;
 using Eto.Shared.Drawing;
 
@@ -40,18 +33,43 @@ namespace Eto.WinForms.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BaseBitmapData
 	{
-		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base(image, data, scanWidth, bitsPerPixel, controlObject)
+		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject, bool premultipliedAlpha)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, premultipliedAlpha)
 		{
 		}
 
 		public override int TranslateArgbToData(int argb)
 		{
+			if (PremultipliedAlpha)
+			{
+				var a = (uint)(byte)(argb >> 24);
+				var r = (uint)(byte)(argb >> 16);
+				var g = (uint)(byte)(argb >> 8);
+				var b = (uint)(byte)(argb);
+				r = r * a / 255;
+				g = g * a / 255;
+				b = b * a / 255;
+				return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
+			}
 			return argb;
 		}
 
 		public override int TranslateDataToArgb(int bitmapData)
 		{
+			if (PremultipliedAlpha)
+			{
+				var a = (uint)(byte)(bitmapData >> 24);
+				var r = (uint)(byte)(bitmapData >> 16);
+				var g = (uint)(byte)(bitmapData >> 8);
+				var b = (uint)(byte)(bitmapData);
+				if (a > 0)
+				{
+					b = b * 255 / a;
+					g = g * 255 / a;
+					r = r * 255 / a;
+				}
+				return unchecked((int)((a << 24) | (r << 16) | (g << 8) | (b)));
+			}
 			return bitmapData;
 		}
 	}
@@ -75,7 +93,7 @@ namespace Eto.WinForms.Drawing
 		public void Create(string fileName)
 		{
 			// We create a temp image from the file
-			// because SD.Bitmap(filename) locks the file
+			// because sd.Bitmap(filename) locks the file
 			// until the image is disposed.
 			// this is not the case in mono
 			if (EtoEnvironment.Platform.IsWindows)
@@ -153,7 +171,7 @@ namespace Eto.WinForms.Drawing
 		public BitmapData Lock()
 		{
 			sdi.BitmapData bd = Control.LockBits(new sd.Rectangle(0, 0, Control.Width, Control.Height), sdi.ImageLockMode.ReadWrite, Control.PixelFormat);
-			return new BitmapDataHandler(Widget, bd.Scan0, bd.Stride, bd.PixelFormat.BitsPerPixel(), bd);
+			return new BitmapDataHandler(Widget, bd.Scan0, bd.Stride, bd.PixelFormat.BitsPerPixel(), bd, bd.PixelFormat.IsPremultiplied());
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -249,7 +267,8 @@ namespace Eto.WinForms.Drawing
 
 		public Color GetPixel(int x, int y)
 		{
-			return Control.GetPixel(x, y).ToEto();
+			var color = Control.GetPixel(x, y);
+			return color.ToEto();
 		}
 
 		public void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)

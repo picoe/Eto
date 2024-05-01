@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
-using Eto.Forms;
 using System.Diagnostics;
 #if WINFORMS
 using Eto.WinForms.Forms.Controls;

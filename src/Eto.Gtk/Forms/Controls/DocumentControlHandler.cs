@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Forms;
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class DocumentControlHandler : GtkContainer<Gtk.Notebook, DocumentControl, DocumentControl.ICallback>, DocumentControl.IHandler
@@ -17,6 +11,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			Control = new Gtk.Notebook();
 			Control.Scrollable = true;
+		}
+
+		static readonly object HideTabsWithSinglePage_Key = new object();
+
+		public bool HideTabsWithSinglePage
+		{
+			get => Widget.Properties.Get<bool>(HideTabsWithSinglePage_Key);
+			set => Widget.Properties.Set(HideTabsWithSinglePage_Key, value);
 		}
 
 		protected override void Initialize()
@@ -120,7 +122,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 
 			Control.SetTabReorderable(pageHandler.ContainerControl, allowReorder && Enabled);
-			Control.ShowTabs = Control.NPages > 1;
+			SetShowTabs();
 		}
 
 		public override bool Enabled
@@ -136,10 +138,24 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		void SetShowTabs()
+		{
+			if (HideTabsWithSinglePage)
+			{
+				Control.ShowTabs = Control.NPages > 1;
+			}
+		}
+
 		internal void ClosePage(Gtk.Widget control, DocumentPage page)
 		{
+			var args = new DocumentPageClosingEventArgs(page);
+			Callback.OnPageClosing(Widget, args);
+
+			if (args.Cancel)
+				return;
+
 			Control.RemovePage(Control.PageNum(control));
-			Control.ShowTabs = Control.NPages > 1;
+			SetShowTabs();
 
 			if (Widget.Loaded)
 				Callback.OnPageClosed(Widget, new DocumentPageEventArgs(page));
@@ -153,7 +169,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (Widget.Loaded && Control.NPages == 0)
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 
-			Control.ShowTabs = Control.NPages > 1;
+			SetShowTabs();
 		}
 
 		public DocumentPage GetPage(int index)

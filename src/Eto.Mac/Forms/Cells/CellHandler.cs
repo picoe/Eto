@@ -1,41 +1,5 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System;
 using Eto.Mac.Forms.Controls;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
-#if XAMMAC2
-using nnuint = System.nint;
-#else
-using nnuint = System.Int32;
-#endif
 
 namespace Eto.Mac.Forms.Cells
 {
@@ -70,6 +34,8 @@ namespace Eto.Mac.Forms.Cells
 		void EnabledChanged(bool value);
 
 		NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem);
+
+		void ViewRemoved(NSView view);
 	}
 
 	public class EtoCellTextField : EtoTextField
@@ -169,6 +135,10 @@ namespace Eto.Mac.Forms.Cells
 		public virtual void SetForegroundColor(NSView view, Color color)
 		{
 		}
+		
+		public virtual void ViewRemoved(NSView view)
+		{
+		}
 
 		protected virtual void ReloadColumnData()
 		{
@@ -176,7 +146,7 @@ namespace Eto.Mac.Forms.Cells
 			if (handler?.Loaded == true)
 			{
 				var column = handler.Widget.Columns.IndexOf(ColumnHandler.Widget);
-				var rows = NSIndexSet.FromNSRange(new NSRange(0, (nnuint)handler.Table.RowCount));
+				var rows = NSIndexSet.FromNSRange(new NSRange(0, handler.Table.RowCount));
 				handler.Table.ReloadData(rows, new NSIndexSet(column));
 			}
 		}

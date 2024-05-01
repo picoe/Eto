@@ -3,89 +3,204 @@
 	"tasks": [
 		{
 			"label": "build",
-			"command": "msbuild",
-			"windows": { "command": "build/msbuild.cmd" },
-			"type": "process",
-			"args": [
-				"/t:Build",
-				"/p:Configuration=${input:configuration}",
-				"${workspaceFolder}/build/Build.proj"
-			],
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${input:configuration} ${workspaceFolder}/build/Build.proj",
+			"type": "shell",
 			"problemMatcher": "$msCompile",
 			"group": {
 				"kind": "build",
 				"isDefault": true
+			},
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "build-templates",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/src/Eto.Forms.Templates/Eto.Forms.Templates.csproj",
+			"type": "shell",
+			"problemMatcher": "$msCompile",
+			"group": "build",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "generate-templates",
+			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:GenerateTemplates",
+			"type": "shell",
+			"dependsOn": [ "build-templates" ],
+			"problemMatcher": "$msCompile",
+			"group": "build",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "test-mac-publishing",
+			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:TestMacPublishing",
+			"type": "shell",
+			"problemMatcher": "$msCompile",
+			"group": "build",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "build-packages",
+			"command": "dotnet msbuild /t:Package ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/build/Build.proj",
+			"type": "shell",
+			"problemMatcher": "$msCompile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"clear": true
 			}
 		},
 		{
 			"label": "build-gtk",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"/p:Configuration=Debug",
-				"${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj"
-			],
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj",
+			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "build-gtk2",
-			"command": "msbuild",
-			"windows": { "command": "build/msbuild.cmd" },
-			"type": "process",
-			"args": [
-				"/p:Configuration=Debug",
-				"${workspaceFolder}/test/Eto.Test.Gtk2/Eto.Test.Gtk2.csproj"
-			],
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk2.csproj",
+			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "build-mac64",
-			"command": "msbuild",
-			"windows": { "command": "build/msbuild.cmd" },
-			"type": "process",
-			"args": [
-				"/p:Configuration=Debug",
-				"${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj"
-			],
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} \"${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.Mac64.csproj\"",
+			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "build-macos",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Mac/Eto.Test.macOS.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "build-wpf",
-			"command": "msbuild",
-			"windows": { "command": "build/msbuild.cmd" },
-			"type": "process",
-			"args": [
-				"/p:Configuration=Debug",
-				"${workspaceFolder}/test/Eto.Test.Wpf/Eto.Test.Wpf.csproj"
-			],
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Wpf/Eto.Test.Wpf.csproj",
+			"type": "shell",
 			"group": "build",
-			"problemMatcher": "$msCompile"
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "build-winforms",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.WinForms/Eto.Test.WinForms.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "build-direct2d",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Direct2D/Eto.Test.Direct2D.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "build-sdk-test",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/samples/SdkTest/SdkTest.csproj",
+			"type": "shell",
+			"group": "build",
+			"dependsOn": "build-packages",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
 		},
 		{
 			"label": "restore",
-			"command": "nuget",
-			"type": "process",
-			"args": [
-				"restore",
-				"${workspaceFolder}/src/Eto.sln"
-			],
+			"command": "dotnet restore /v:Minimal ${workspaceFolder}/src/Eto.sln",
+			"type": "shell",
 			"problemMatcher": "$msCompile"
-		}
+		},
+        {
+            "label": "Git clean + submodule init (DANGEROUS!)",
+			"type": "shell",
+			"command": "[ '${input:confirm}' = 'Yes' ] && git clean -dxff && git submodule foreach git clean -dxff && git submodule update --init --recursive",
+			"windows": {
+				"command": "IF ('${input:confirm}' -ne 'Yes')  { exit 1 }; git clean -dxff ; git submodule foreach git clean -dxff ; git submodule update --init --recursive"
+			},
+			"problemMatcher": [],
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "Set Eto version",
+			"type": "shell",
+			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:UpdateVersion /p:SetVersion=${input:version}",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "install-macos-workload",
+			"type": "shell",
+			"command": "sudo dotnet workload install macos --from-rollback-file dotnet-workloads.json",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+			  "clear": true,
+			  "focus": true
+			}
+		  }
 	],
 	"inputs": [
 		{
-			"id": "configuration",
 			"type": "pickString",
-			"default": "Debug",
+			"id": "confirm",
+			"description": "Confirm?",
+			"options": [
+				"No",
+				"Yes"
+			]
+		},
+		{
+			"type": "pickString",
+			"id": "configuration",
 			"description": "Build Configuration",
 			"options": [
 				"Debug",
 				"Release"
 			]
+		},
+		{
+			"type": "promptString",
+			"id": "version",
+			"description": "Enter the version to update to",
+			"default": "2.5.x-dev"
 		}
 	]
 }

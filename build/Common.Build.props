@@ -3,21 +3,61 @@
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <PropertyGroup>
     
-    <AssemblyVersion Condition="$(AssemblyVersion) == ''">2.5.0.0</AssemblyVersion>
-    <AssemblyInformationalVersion Condition="$(AssemblyInformationalVersion) == ''">2.5.0-dev</AssemblyInformationalVersion>
-    
-    <XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current</XamarinMacPath>
-    <XamarinMacLibPath>$(XamarinMacPath)\lib\mono</XamarinMacLibPath>
-    <ReferencePath Condition="$(ReferencePath) == '' and Exists('$(XamarinMacLibPath)')">$(XamarinMacLibPath)</ReferencePath>
     <!-- Prevent VS2015 from copying files from the GAC to the output folder -->
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
     <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateAssemblyVersion Condition="$(GenerateAssemblyVersion) == ''">True</GenerateAssemblyVersion>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <Deterministic Condition="$(Deterministic) == '' and $(GenerateAssemblyVersion) == 'True'">True</Deterministic>
     <Deterministic Condition="$(Deterministic) == ''">False</Deterministic>
     <!-- RestoreProjectStyle will be supported in VS for Mac 7.4 -->
     <RestoreProjectStyle Condition="'$(RestoreProjectStyle)' == '' AND $(UsePackagesConfig) != 'True'">PackageReference</RestoreProjectStyle>
+    
+    <DefaultItemExcludes>$(DefaultItemExcludes);**\.DS_Store</DefaultItemExcludes>
+    
+    <!-- we add this manually in .targets so it doesn't trigger a rebuild each time -->
+    <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
+    
+    <!-- GtkSharp package likes to install things during package restore, we don't want that -->
+    <SkipGtkInstall>True</SkipGtkInstall>
+
+    <!-- Ignore errors/warnings about semver 2.0 when packing CI builds and lowercase aliases -->
+    <NoWarn>$(NoWarn);NU5105;CS8981</NoWarn>
+    <LangVersion Condition="$(MSBuildProjectExtension) == '.csproj'">10</LangVersion>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
+
+  <!-- support t4 templates in projects -->
+  <ItemGroup>
+    <TextTemplate Include="**\*.tt" />
+    <AvailableItemName Include="TextTemplate" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="$(UseGlobalUsings) == 'true'">
+    <Using Include="System" />
+    <Using Include="System.Collections" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Collections.ObjectModel" />
+    <Using Include="System.Collections.Specialized" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Globalization" />
+    <Using Include="System.IO" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="System.Reflection" />
+    <Using Include="System.Runtime.InteropServices" />
+    <Using Include="System.Runtime.Serialization" />
+    <Using Include="System.Text" />
+    <Using Include="System.Text.RegularExpressions" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="Eto.Forms" />
+    <Using Include="Eto.Drawing" />
+    <Using Include="Eto.Forms.Container" Alias="Container" />
+    <Using Include="Eto.Forms.Calendar" Alias="Calendar" />
+    <Using Include="System.ComponentModel" Alias="sc" />
+    <Using Include="System.Windows.Input.ICommand" Alias="ICommand" />
+  </ItemGroup>
+
   <Import Condition="Exists('$(BasePath)..\Eto.Common.props')" Project="$(BasePath)..\Eto.Common.props" />
 </Project>

@@ -1,7 +1,4 @@
-using System;
-using Eto.Drawing;
-using Eto.Forms;
-
+#if !GTKCORE
 namespace Eto.GtkSharp.Forms
 {
 	public class ColorDialogHandler : WidgetHandler<Gtk.ColorSelectionDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
@@ -52,3 +49,4 @@ namespace Eto.GtkSharp.Forms
 	}
 }
 
+#endif

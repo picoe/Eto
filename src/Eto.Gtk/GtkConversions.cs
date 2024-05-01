@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-using Eto.Forms;
-using Eto.GtkSharp.Drawing;
+﻿using Eto.GtkSharp.Drawing;
 using Eto.GtkSharp.Forms;
 using Eto.GtkSharp.Forms.Menu;
 
@@ -145,7 +138,6 @@ namespace Eto.GtkSharp
 				case Gtk.ResponseType.Reject:
 					return DialogResult.Abort;
 				case Gtk.ResponseType.Accept:
-					return DialogResult.Ignore;
 				case Gtk.ResponseType.Ok:
 					return DialogResult.Ok;
 				case Gtk.ResponseType.Cancel:
@@ -198,6 +190,24 @@ namespace Eto.GtkSharp
 					return Gdk.CursorType.Fleur;
 				case CursorType.Pointer:
 					return Gdk.CursorType.Hand2;
+				case CursorType.SizeAll:
+					return Gdk.CursorType.Fleur;
+				case CursorType.SizeLeft:
+					return Gdk.CursorType.LeftSide;
+				case CursorType.SizeTop:
+					return Gdk.CursorType.TopSide;
+				case CursorType.SizeRight:
+					return Gdk.CursorType.RightSide;
+				case CursorType.SizeBottom:
+					return Gdk.CursorType.BottomSide;
+				case CursorType.SizeTopLeft:
+					return Gdk.CursorType.TopLeftCorner;
+				case CursorType.SizeTopRight:
+					return Gdk.CursorType.TopRightCorner;
+				case CursorType.SizeBottomLeft:
+					return Gdk.CursorType.BottomLeftCorner;
+				case CursorType.SizeBottomRight:
+					return Gdk.CursorType.BottomRightCorner;
 				default:
 					throw new NotSupportedException();
 			}
@@ -327,15 +337,11 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public static void Apply(this Pen pen, GraphicsHandler graphics)
-		{
-			((PenHandler)pen.Handler).Apply(pen, graphics);
-		}
+		public static void Apply(this Pen pen, GraphicsHandler graphics) => pen.Apply(graphics.Control);
+		public static void Apply(this Pen pen, Cairo.Context context) => ((PenHandler)pen.Handler).Apply(pen, context);
 
-		public static void Apply(this Brush brush, GraphicsHandler graphics)
-		{
-			((BrushHandler)brush.Handler).Apply(brush.ControlObject, graphics);
-		}
+		public static void Apply(this Brush brush, GraphicsHandler graphics) => brush.Apply(graphics.Control);
+		public static void Apply(this Brush brush, Cairo.Context context) => ((BrushHandler)brush.Handler).Apply(brush.ControlObject, context);
 
 		public static Cairo.LineJoin ToCairo(this PenLineJoin value)
 		{
@@ -551,11 +557,6 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public static PointF ToEtoLocation(this Gdk.EventButton e)
-		{
-			return new PointF((float)e.X, (float)e.Y);
-		}
-
 		public static CellStates ToEto(this Gtk.CellRendererState value)
 		{
 			if (value.HasFlag(Gtk.CellRendererState.Selected))
@@ -689,6 +690,17 @@ namespace Eto.GtkSharp
 				default:
 					throw new NotSupportedException();
 			}
+		}
+
+		public static TextAlignment ToEtoAlignment(float align)
+		{
+			if (align == 0f)
+				return TextAlignment.Left;
+			else if (align == 0.5f)
+				return TextAlignment.Center;
+			else if (align == 1f)
+				return TextAlignment.Right;
+			return TextAlignment.Left;
 		}
 
 		public static float ToAlignment(this TextAlignment alignment)
@@ -857,5 +869,15 @@ namespace Eto.GtkSharp
 		}
 
 		public static Gdk.Cursor ToGdk(this Cursor cursor) => CursorHandler.GetControl(cursor);
+		
+		public static Rectangle GetBounds(this Gdk.Window window)
+		{
+			window.GetPosition(out var x, out var y);
+#if GTK2
+			return new Rectangle(x, y, 0, 0); // who cares, need to drop support for GTK2 anyway
+#else
+			return new Rectangle(x, y, window.Width, window.Height);
+#endif
+		}
 	}
 }

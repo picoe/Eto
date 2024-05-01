@@ -1,8 +1,3 @@
-using Eto.Forms;
-using Eto.Drawing;
-using System.Linq;
-using System;
-
 namespace Eto.Test.Sections.Behaviors
 {
 	[Section("Behaviors", "ContextMenu")]
@@ -86,7 +81,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			if (_menu != null)
 				return _menu;
-			
+
 			_menu = new ContextMenu();
 
 			_menu.Opening += (sender, e) => Log.Write(sender, "Opening");
@@ -103,6 +98,32 @@ namespace Eto.Test.Sections.Behaviors
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 5", Shortcut = Keys.Application | Keys.I });
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 6", Shortcut = Keys.I });
 			subMenu.Items.Add(new ButtonMenuItem { Text = "Disabled Item 2", Enabled = false });
+
+
+			var dynamicSubMenu = new SubMenuItem { Text = "Dynamic Sub Menu" };
+			LogEvents(dynamicSubMenu);
+			dynamicSubMenu.Opening += (sender, e) =>
+			{
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 1" });
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 2" });
+				dynamicSubMenu.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 3", Enabled = false });
+				var dynamicSubMenu2 = new SubMenuItem { Text = "Dynamic Sub Menu2" };
+				LogEvents(dynamicSubMenu2);
+				dynamicSubMenu2.Opening += (s2, e2) =>
+				{
+					dynamicSubMenu2.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 1" });
+					dynamicSubMenu2.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 2" });
+					dynamicSubMenu2.Items.Add(new ButtonMenuItem { Text = "Dynamic Item 3", Enabled = false });
+				};
+				dynamicSubMenu.Items.Add(dynamicSubMenu2);
+				LogEvents(dynamicSubMenu);
+			};
+			dynamicSubMenu.Closed += (sender, e) =>
+			{
+				dynamicSubMenu.Items.Clear();
+			};
+
+			_menu.Items.Add(dynamicSubMenu);
 
 			_menu.Items.AddSeparator();
 			RadioMenuItem radioController;
@@ -160,6 +181,23 @@ namespace Eto.Test.Sections.Behaviors
 					menu.Show();
 			};
 			return label;
+		}
+
+		void LogEvents(SubMenuItem subMenuItem)
+		{
+			subMenuItem.Closing += (s2, e2) =>
+			{
+				Log.Write(subMenuItem, $"Closing {subMenuItem.Text}");
+			};
+			subMenuItem.Closed += (s2, e2) =>
+			{
+				Log.Write(subMenuItem, $"Closed {subMenuItem.Text}");
+			};
+			subMenuItem.Opening += (s2, e2) =>
+			{
+				Log.Write(subMenuItem, $"Opening {subMenuItem.Text}");
+			};
+
 		}
 
 		void LogEvents(ISubmenu menu)

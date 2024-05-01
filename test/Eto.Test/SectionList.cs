@@ -1,9 +1,3 @@
-using System;
-using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using Eto.Drawing;
-
 namespace Eto.Test
 {
 	public interface ISectionName
@@ -74,66 +68,6 @@ namespace Eto.Test
 	}
 
 	/// <summary>
-	/// Tests for dialogs and forms use this.
-	/// </summary>
-	public class WindowSection : Section, ISection
-	{
-		Func<Window> Func { get; set; }
-
-		public WindowSection(string text = null)
-		{
-			Text = text;
-		}
-
-		public WindowSection(string text, Func<Window> f)
-		{
-			Func = f;
-			Text = text;
-		}
-
-		protected virtual Window GetWindow()
-		{
-			return null;
-		}
-
-		public Control CreateContent()
-		{
-			var button = new Button { Text = string.Format("Show the {0} test", Text) };
-			var layout = new DynamicLayout();
-			layout.AddCentered(button);
-			button.Click += (sender, e) =>
-			{
-
-				try
-				{
-					var window = Func != null ? Func() : null ?? GetWindow();
-
-					if (window != null)
-					{
-						var dialog = window as Dialog;
-						if (dialog != null)
-						{
-							dialog.ShowModal(null);
-							return;
-						}
-						var form = window as Form;
-						if (form != null)
-						{
-							form.Show();
-							return;
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
-				}
-			};
-			return layout;
-		}
-	}
-
-	/// <summary>
 	/// The base class for views that display the set of tests.
 	/// </summary>
 	public abstract class SectionList
@@ -142,14 +76,7 @@ namespace Eto.Test
 		public abstract ISection SelectedItem { get; set; }
 		public event EventHandler SelectedItemChanged;
 
-		public string SectionTitle
-		{
-			get
-			{
-				var section = SelectedItem as Section;
-				return section != null ? section.Text : null;
-			}
-		}
+		public string SectionTitle => SelectedItem?.Text;
 
 		protected void OnSelectedItemChanged(EventArgs e)
 		{
@@ -201,9 +128,10 @@ namespace Eto.Test
 			this.treeView = new TreeGridView();
 			treeView.Style = "sectionList";
 			treeView.ShowHeader = false;
+			treeView.AllowEmptySelection = false;
 			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new DelegateBinding<SectionTreeItem, string>(r => r.Text) } });
-			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
 			treeView.SelectedItemChanged += (sender, e) => OnSelectedItemChanged(e);
+			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
 		}
 	}
 

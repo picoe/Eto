@@ -1,6 +1,3 @@
-using System;
-using Eto.Forms;
-using sw = System.Windows;
 //using WpfMessageBox = Xceed.Wpf.Toolkit.MessageBox;
 using WpfMessageBox = System.Windows.MessageBox;
 
@@ -22,15 +19,20 @@ namespace Eto.Wpf.Forms
 		{
 			using (var visualStyles = new EnableThemingInScope(ApplicationHandler.EnableVisualStyles))
 			{
+				var parentWindow = parent?.ParentWindow;
+				if (parentWindow?.HasFocus == false)
+					parentWindow.Focus();
+
 				var element = parent == null ? null : parent.GetContainerControl();
 				var window = element == null ? null : element.GetVisualParent<sw.Window>();
 				sw.MessageBoxResult result;
 				var buttons = Convert(Buttons);
 				var defaultButton = Convert(DefaultButton, Buttons);
 				var icon = Convert(Type);
-				var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
+				var caption = Caption ?? parentWindow?.Title;
 				if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
 				else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
+				WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 				return Convert(result);
 			}
 		}

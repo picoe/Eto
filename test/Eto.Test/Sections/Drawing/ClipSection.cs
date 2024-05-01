@@ -1,7 +1,3 @@
-using Eto.Drawing;
-using Eto.Forms;
-using System.ComponentModel;
-
 namespace Eto.Test.Sections.Drawing
 {
 	[Section("Drawing", "Clip")]

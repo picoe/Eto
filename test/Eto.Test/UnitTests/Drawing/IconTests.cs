@@ -1,12 +1,8 @@
-using System;
 using NUnit.Framework;
-using Eto.Drawing;
-using System.Linq;
-
 namespace Eto.Test.UnitTests.Drawing
 {
 	[TestFixture]
-	public class IconTests
+	public class IconTests : TestBase
 	{
 		[TestCase(.25f, .5f)]
 		[TestCase(1f, 1f)]
@@ -107,6 +103,51 @@ namespace Eto.Test.UnitTests.Drawing
 				Assert.AreEqual(width, frame.Size.Width, $"Frame #{i} with scale {frame.Scale} does not match icon width");
 				Assert.AreEqual(height, frame.Size.Height, $"Frame #{i} with scale {frame.Scale} does not match icon height");
 			}
+		}
+
+		[Test]
+		public void BitmapToIconShouldNotChangeBitmapSize()
+		{
+			var bmp = TestIcons.LogoBitmap;
+			var oldSize = bmp.Size;
+
+			var icon = bmp.WithSize(32, 32);
+
+			Assert.AreEqual(bmp.Size, oldSize, "#1");
+			Assert.AreEqual(new Size(32, 32), icon.Size, "#2");
+			Assert.AreEqual(bmp.Size, icon.Frames.First().PixelSize, "#3");
+		}
+
+		[Test]
+		public void IconFromBackgroundThreadShouldBeUsable()
+		{
+			// we are running tests in a background thread already, just generate it there.
+			var icon = TestIcons.TestIcon;
+
+			// test showing it on a form
+			Shown(f => new ImageView { Image = icon });
+		}
+
+		[Test, ManualTest]
+		public void UsingDisposedMemoryStreamShouldNotCrashAndShowImage()
+		{
+			ManualForm("Image should be shown, and the window icon\nshould also be set (for platforms that support it)", form => {
+				Icon icon;
+				using (var ms = new MemoryStream())
+				{
+					// use a seperate memory stream that we dispose
+					GetType().Assembly.GetManifestResourceStream("Eto.Test.Images.TestIcon.ico").CopyTo(ms);
+					ms.Position = 0;
+					icon = new Icon(ms);
+				}
+				var imageView = new ImageView();
+
+				imageView.Image = icon;
+
+				form.Icon = icon;
+
+				return imageView;
+			});
 		}
 	}
 }

@@ -1,39 +1,7 @@
-using System;
-using System.Runtime.InteropServices;
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
-
 namespace Eto.Mac
 {
 	/// <summary>
-	/// These are extensions for missing methods in monomac/xamarin.mac, incorrectly bound, or bad performance.
+	/// These are extensions for missing methods in monomac, incorrectly bound, or bad performance.
 	/// </summary>
 	/// <remarks>
 	/// Once monomac/xam.mac supports these methods or are implemented properly, then remove from here.
@@ -52,12 +20,6 @@ namespace Eto.Mac
 		}
 
 		static readonly IntPtr selNextEventMatchingMask = Selector.GetHandle("nextEventMatchingMask:untilDate:inMode:dequeue:");
-
-		// untilDate isn't allowed null
-		public static NSEvent NextEventEx(this NSApplication app, NSEventMask mask, NSDate untilDate, NSString mode, bool dequeue)
-		{
-			return Runtime.GetNSObject<NSEvent>(Messaging.IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (nuint)(uint)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
-		}
 
 
 		static readonly IntPtr selDrawGlyphs = Selector.GetHandle("drawGlyphsForGlyphRange:atPoint:");
@@ -86,11 +48,19 @@ namespace Eto.Mac
 		// replacementString should allow nulls
 		public static bool ShouldChangeTextNew(this NSTextView textView, NSRange affectedCharRange, string replacementString)
 		{
+#if USE_CFSTRING
+			IntPtr intPtr = replacementString != null ? CFString.CreateNative(replacementString) : IntPtr.Zero;
+			bool result;
+			result = Messaging.bool_objc_msgSend_NSRange_IntPtr(textView.Handle, selShouldChangeTextInRangeReplacementString_Handle, affectedCharRange, intPtr);
+			if (intPtr != IntPtr.Zero)
+				CFString.ReleaseNative(intPtr);
+#else
 			IntPtr intPtr = replacementString != null ? NSString.CreateNative(replacementString) : IntPtr.Zero;
 			bool result;
 			result = Messaging.bool_objc_msgSend_NSRange_IntPtr(textView.Handle, selShouldChangeTextInRangeReplacementString_Handle, affectedCharRange, intPtr);
 			if (intPtr != IntPtr.Zero)
 				NSString.ReleaseNative(intPtr);
+#endif
 			return result;
 		}
 
@@ -119,7 +89,7 @@ namespace Eto.Mac
 		}
 
 
-#if !XAMMAC
+#if MONOMAC
 		public static void DangerousRetain(this NSObject obj)
 		{
 			obj.Retain();
@@ -138,6 +108,37 @@ namespace Eto.Mac
 			return Messaging.GetNSObject<NSColor>(Messaging.IntPtr_objc_msgSend_IntPtr(NSColorClassPtr, selColorWithCGColor, cgColor.Handle));
 		}
 #endif
+
+		static readonly IntPtr selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+		static readonly IntPtr selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle = Selector.GetHandle("contentSizeForFrameSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+		static readonly IntPtr classScroller_Handle = Class.GetHandle(typeof(NSScroller));
+
+		public static CGSize FrameSizeForContentSize(this NSScrollView scrollView, CGSize size, bool hbar, bool vbar)
+		{
+			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
+			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
+			// 10.7+, use MacOS api when it supports null scroller class parameters
+			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(scrollView.ClassHandle, selFrameSizeForContentSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)scrollView.BorderType, (ulong)scrollView.VerticalScroller.ControlSize, (long)scrollView.VerticalScroller.ScrollerStyle);
+		}
+
+		public static CGSize ContentSizeForFrame(this NSScrollView scrollView, CGSize size, bool hbar, bool vbar)
+		{
+			var hbarPtr = hbar ? classScroller_Handle : IntPtr.Zero;
+			var vbarPtr = vbar ? classScroller_Handle : IntPtr.Zero;
+			// 10.7+, use MacOS api when it supports null scroller class parameters
+			return Messaging.CGSize_objc_msgSend_CGSize_IntPtr_IntPtr_UInt64_UInt64_Int64(scrollView.ClassHandle, selContentSizeForFrameSize_HorizontalScrollerClass_VerticalScrollerClass_BorderType_ControlSize_ScrollerStyle_Handle, size, hbarPtr, vbarPtr, (ulong)scrollView.BorderType, (ulong)scrollView.VerticalScroller.ControlSize, (long)scrollView.VerticalScroller.ScrollerStyle);
+		}
+
+
+		static readonly IntPtr selSetClipsToBounds = Selector.GetHandle("setClipsToBounds:");
+		static readonly bool supportsClipsToBounds = ObjCExtensions.InstancesRespondToSelector<NSView>(selSetClipsToBounds);
+
+		public static void SetClipsToBounds(this NSView view, bool clipsToBounds)
+		{
+			if (!supportsClipsToBounds)
+				return;
+			Messaging.void_objc_msgSend_bool(view.Handle, selSetClipsToBounds, clipsToBounds);
+		}
 	}
 }
 

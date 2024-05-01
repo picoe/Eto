@@ -1,7 +1,4 @@
-﻿using System;
-using Eto.Drawing;
-using Eto.Forms;
-using Eto.GtkSharp.Drawing;
+﻿using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -53,7 +50,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleValueChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
+				Handler?.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 	}

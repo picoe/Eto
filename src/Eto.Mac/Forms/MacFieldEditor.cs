@@ -1,32 +1,5 @@
-using System;
-using Eto.Forms;
 using Eto.Mac.Forms.Controls;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
 
 namespace Eto.Mac.Forms
 {
@@ -44,6 +17,8 @@ namespace Eto.Mac.Forms
 
 		public IMacControl MacControl => WeakDelegate as IMacControl;
 		public object Handler => MacControl?.WeakHandler?.Target;
+		
+		public IMacViewHandler MacViewHandler => Handler as IMacViewHandler;
 
 		WeakReference IMacControl.WeakHandler
 		{
@@ -69,12 +44,19 @@ namespace Eto.Mac.Forms
 			base.FlagsChanged(theEvent);
 		}
 
-		bool MouseDownEvent(NSEvent theEvent)
+		void MouseDownEvent(NSEvent theEvent, Action<NSEvent> baseMethod)
 		{
 			var handler = Handler as IMacViewHandler;
 			if (handler == null)
-				return false;
+				return;
 
+			if (handler.SuppressMouseEvents > 0)
+			{
+				// we can get called from a MouseDown from the owning object
+				baseMethod(theEvent);
+				return;
+			}
+			
 			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				handler.Callback.OnMouseDoubleClick(handler.Widget, args);
@@ -83,8 +65,14 @@ namespace Eto.Mac.Forms
 			{
 				handler.Callback.OnMouseDown(handler.Widget, args);
 			}
+			
+			if (!args.Handled)
+			{
+				baseMethod(theEvent);
 
-			return args.Handled;
+				// trigger mouse up here, if needed				
+				handler.TriggerMouseCallback();
+			}
 		}
 
 		bool MouseUpEvent(NSEvent theEvent)
@@ -100,8 +88,7 @@ namespace Eto.Mac.Forms
 
 		public override void MouseDown(NSEvent theEvent)
 		{
-			if (!MouseDownEvent(theEvent))
-				base.MouseDown(theEvent);
+			MouseDownEvent(theEvent, base.MouseDown);
 		}
 
 		public override void MouseUp(NSEvent theEvent)
@@ -109,11 +96,10 @@ namespace Eto.Mac.Forms
 			if (!MouseUpEvent(theEvent))
 				base.MouseUp(theEvent);
 		}
-
+		
 		public override void RightMouseDown(NSEvent theEvent)
 		{
-			if (!MouseDownEvent(theEvent))
-				base.RightMouseDown(theEvent);
+			MouseDownEvent(theEvent, base.RightMouseDown);
 		}
 
 		public override void RightMouseUp(NSEvent theEvent)
@@ -124,8 +110,7 @@ namespace Eto.Mac.Forms
 
 		public override void OtherMouseDown(NSEvent theEvent)
 		{
-			if (!MouseDownEvent(theEvent))
-				base.OtherMouseDown(theEvent);
+			MouseDownEvent(theEvent, base.OtherMouseDown);
 		}
 
 		public override void OtherMouseUp(NSEvent theEvent)

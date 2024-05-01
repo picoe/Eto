@@ -1,8 +1,3 @@
-using System;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
-using Eto.Forms;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class CheckBoxHandler : WpfControl<swc.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler

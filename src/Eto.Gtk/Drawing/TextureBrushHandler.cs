@@ -1,5 +1,3 @@
-using Eto.Drawing;
-
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>
@@ -26,10 +24,10 @@ namespace Eto.GtkSharp.Drawing
 				}
 			}
 
-			public void Apply(GraphicsHandler graphics)
+			public void Apply(Cairo.Context context)
 			{
 				if (!ReferenceEquals(Transform, null))
-					graphics.Control.Transform(Transform);
+					context.Transform(Transform);
 
 				if (opacityImage == null)
 				{
@@ -49,16 +47,16 @@ namespace Eto.GtkSharp.Drawing
 					}
 				}
 				var img = opacityImage ?? Image;
-				Gdk.CairoHelper.SetSourcePixbuf(graphics.Control, img.ToGdk(), 0, 0);
+				Gdk.CairoHelper.SetSourcePixbuf(context, img.ToGdk(), 0, 0);
 
-				var pattern = graphics.Control.GetSource();
+				var pattern = context.GetSource();
 				var surfacePattern = pattern as Cairo.SurfacePattern;
 				if (surfacePattern != null)
 				{
 					surfacePattern.Extend = Cairo.Extend.Repeat;
 				}
 				if (!ReferenceEquals(InverseTransform, null))
-					graphics.Control.Transform(InverseTransform);
+					context.Transform(InverseTransform);
 
 				pattern.Dispose();
 			}
@@ -84,9 +82,9 @@ namespace Eto.GtkSharp.Drawing
 			};
 		}
 
-		public override void Apply(object control, GraphicsHandler graphics)
+		public override void Apply(object control, Cairo.Context context)
 		{
-			((TextureBrushObject)control).Apply(graphics);
+			((TextureBrushObject)control).Apply(context);
 		}
 
 		public float GetOpacity(TextureBrush widget)

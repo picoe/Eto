@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Eto.Forms;
-
+﻿#if GTKCORE || GTK3
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class WebViewHandler : GtkControl<Gtk.Widget, WebView, WebView.ICallback>, WebView.IHandler
@@ -42,8 +39,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		EventHandler<WebViewNewWindowEventArgs> openNewWindow;
 
 		readonly Gtk.ScrolledWindow scroll;
-		string jsreturn;
-		bool jsrunning;
+		Queue<TaskCompletionSource<string>> jscs;
+		
 
 		public WebViewHandler()
 		{
@@ -160,20 +157,34 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public string ExecuteScript(string script)
 		{
-			jsrunning = true;
-			jsreturn = "";
+			var task = ExecuteScriptAsync(script);
 
-			NativeMethods.webkit_web_view_run_javascript(Control.Handle, "function EtOrEtFuN() {" + script + " } EtOrEtFuN();", IntPtr.Zero, (Action<IntPtr, IntPtr, IntPtr>)FinishScriptExecution, IntPtr.Zero);
-
-			while (jsrunning)
+			while (!task.IsCompleted)
+			{
 				Gtk.Application.RunIteration();
+			}
 
-			return jsreturn;
+			return task.Result;
 		}
+
+		public Task<string> ExecuteScriptAsync(string script)
+		{
+			TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+			if (jscs == null)
+				jscs = new Queue<TaskCompletionSource<string>>();
+			jscs.Enqueue(tcs);
+
+			NativeMethods.webkit_web_view_run_javascript(Control.Handle, $"function _fn() {{{script}}} _fn();", IntPtr.Zero, (FinishScriptExecutionDelegate)FinishScriptExecution, IntPtr.Zero);
+
+			return tcs.Task;
+		}
+
+		delegate void FinishScriptExecutionDelegate(IntPtr webview, IntPtr result, IntPtr error);
 
 		private void FinishScriptExecution(IntPtr webview, IntPtr result, IntPtr error)
 		{
 			var jsresult = NativeMethods.webkit_web_view_run_javascript_finish(Control.Handle, result, IntPtr.Zero);
+			var tcs = jscs?.Count > 0 ? jscs?.Dequeue() : null;
 			if (jsresult != IntPtr.Zero)
 			{
 				var context = NativeMethods.webkit_javascript_result_get_global_context(jsresult);
@@ -183,13 +194,16 @@ namespace Eto.GtkSharp.Forms.Controls
 				var strlen = NativeMethods.JSStringGetMaximumUTF8CStringSize(strvalue);
 				var utfvalue = Marshal.AllocHGlobal(strlen);
 				NativeMethods.JSStringGetUTF8CString(strvalue, utfvalue, strlen);
-				jsreturn = NativeMethods.GetString(utfvalue);
+				var jsreturn = NativeMethods.GetString(utfvalue);
 
 				Marshal.FreeHGlobal(utfvalue);
 				NativeMethods.JSStringRelease(strvalue);
+				tcs?.SetResult(jsreturn);
 			}
-
-			jsrunning = false;
+			else
+			{
+				tcs?.SetResult(null);
+			}
 		}
 
 		public void LoadHtml(string html, Uri baseUri)
@@ -233,3 +247,4 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 	}
 }
+#endif

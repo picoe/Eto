@@ -1,39 +1,7 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
 using Eto.Mac.Drawing;
-using System.Runtime.InteropServices;
 using Eto.Mac.Forms.Controls;
 
-#if XAMMAC2
-using AppKit;
-using Foundation;
-using CoreGraphics;
-using ObjCRuntime;
-using CoreAnimation;
-using CoreImage;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreAnimation;
-using MonoMac.CoreImage;
-#if Mac64
-using nfloat = System.Double;
-using nint = System.Int64;
-using nuint = System.UInt64;
-#else
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
-#if SDCOMPAT
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-#endif
-#endif
+
 
 
 namespace Eto.Mac.Forms.Cells
@@ -95,13 +63,13 @@ namespace Eto.Mac.Forms.Cells
 
 				if (DrawsBackground)
 				{
-					var context = nscontext.GraphicsPort;
+					var context = nscontext.CGContext;
 					context.SetFillColor(BackgroundColor.ToCG());
 					context.FillRect(cellFrame);
 				}
 
 				var handler = Handler;
-				var graphicsHandler = new GraphicsHandler(null, nscontext, (float)cellFrame.Height, flipped: true);
+				var graphicsHandler = new GraphicsHandler(inView, nscontext, (float)cellFrame.Height, cellFrame);
 				using (var graphics = new Graphics(graphicsHandler))
 				{
 					var state = Highlighted ? CellStates.Selected : CellStates.None;
@@ -114,16 +82,23 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
-		public override Color GetBackgroundColor(NSView view)
+		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
-			return ((EtoCellView)view).BackgroundColor;
+			return -1; // TODO: Add ability for DrawableCell to provide a preferred width for a specific item.
 		}
+
+		public override Color GetBackgroundColor(NSView view) => ((EtoCellView)view).BackgroundColor;
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
 			var field = ((EtoCellView)view);
 			field.BackgroundColor = color;
 			field.DrawsBackground = color.A > 0;
+		}
+
+		private void SetDefaults(EtoCellView view)
+		{
+			view.DrawsBackground = false;
 		}
 
 		public override NSObject GetObjectValue(object dataItem)
@@ -181,20 +156,20 @@ namespace Eto.Mac.Forms.Cells
 			public override void DrawRect(CGRect dirtyRect)
 			{
 				var nscontext = NSGraphicsContext.CurrentContext;
-				var isFirstResponder = Window.FirstResponder == this;
+				var isFirstResponder = Window?.FirstResponder == this;
 
+				var cellFrame = Bounds;
 				if (DrawsBackground)
 				{
-					var context = nscontext.GraphicsPort;
+					var context = nscontext.CGContext;
 					context.SetFillColor(BackgroundColor.ToCG());
-					context.FillRect(dirtyRect);
+					context.FillRect(cellFrame);
 				}
-				var cellFrame = Bounds;
 
 				var handler = Handler;
 				if (handler == null)
 					return;
-				var graphicsHandler = new GraphicsHandler(null, nscontext, (float)cellFrame.Height, flipped: true);
+				var graphicsHandler = new GraphicsHandler(this, nscontext, (float)cellFrame.Height, cellFrame);
 				using (var graphics = new Graphics(graphicsHandler))
 				{
 					var rowView = this.Superview as NSTableRowView;
@@ -229,6 +204,7 @@ namespace Eto.Mac.Forms.Cells
 				view = new EtoCellView { Handler = this, Identifier = tableColumn.Identifier, FocusRingType = NSFocusRingType.Exterior };
 				view.Bind(enabledBinding, tableColumn, "editable", null);
 			}
+			SetDefaults(view);
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;

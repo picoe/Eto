@@ -1,13 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms.Integration;
-using swf = System.Windows.Forms;
-using Eto.Drawing;
-using Eto.Forms;
-
 namespace Eto.Wpf.Forms
 {
 	public class WindowsFormsHostHandler<TControl, TWidget, TCallback> : WpfFrameworkElement<WindowsFormsHost, TWidget, TCallback>
