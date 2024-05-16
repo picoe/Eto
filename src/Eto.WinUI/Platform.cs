@@ -3,6 +3,7 @@ using Eto.Forms;
 using Eto.IO;
 using Eto.Forms.ThemedControls;
 using Eto.WinUI.Forms;
+using Eto.WinUI.Forms.Controls;
 
 namespace Eto.WinUI
 {
@@ -77,7 +78,7 @@ namespace Eto.WinUI
 			//p.Add<GridView.IHandler>(() => new GridViewHandler());
 			//p.Add<GroupBox.IHandler>(() => new GroupBoxHandler());
 			//p.Add<ImageView.IHandler>(() => new ImageViewHandler());
-			//p.Add<Label.IHandler>(() => new LabelHandler());
+			p.Add<Label.IHandler>(() => new LabelHandler());
 			//p.Add<LinkButton.IHandler>(() => new LinkButtonHandler());
 			//p.Add<ListBox.IHandler>(() => new ListBoxHandler());
 			//p.Add<NumericStepper.IHandler>(() => new NumericStepperHandler());

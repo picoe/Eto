@@ -8,6 +8,8 @@ namespace Eto.WinUI.Forms
 
 	public class FormHandler : WinUIWindow<mui.Window, Form, Form.ICallback>, Form.IHandler
 	{
+		protected override mui.Window CreateControl() => new mui.Window();
+
 		public bool ShowActivated { get; set; }
 		public bool CanFocus { get; set; }
 
@@ -18,7 +20,12 @@ namespace Eto.WinUI.Forms
 		}
 	}
 
-	public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TWidget, TCallback>, Window.IHandler //, IWpfWindow, IInputBindingHost
+	public interface IWinUIWindow
+	{
+		mui.Window Control { get; }
+	}
+
+	public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TWidget, TCallback>, Window.IHandler, IWinUIWindow//, IInputBindingHost
 		where TControl : mui.Window
 		where TWidget : Window
 		where TCallback : Window.ICallback
@@ -76,6 +83,8 @@ namespace Eto.WinUI.Forms
 			set {  }
 			//set => Control..CoreWindow..Visible = value;
 		}
+
+		mui.Window IWinUIWindow.Control => Control;
 
 		protected override void Initialize()
 		{

@@ -20,7 +20,7 @@ namespace Eto.Test.WinUI
 	/// <summary>
 	/// Provides application-specific behavior to supplement the default Application class.
 	/// </summary>
-	public partial class App : Application
+	public partial class App : Microsoft.UI.Xaml.Application
 	{
 		/// <summary>
 		/// Initializes the singleton application object.  This is the first line of authored code
@@ -39,6 +39,7 @@ namespace Eto.Test.WinUI
 		protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
 		{
 			m_window = new MainWindow();
+			m_window.Content = new Label { Text = "This is an Eto.Forms Label" };
 			m_window.Show();
 		}
 

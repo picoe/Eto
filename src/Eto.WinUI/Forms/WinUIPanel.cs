@@ -17,7 +17,7 @@ namespace Eto.WinUI.Forms
 				if (_content != value)
 				{
 					_content = value;
-					_border.Child = _content.ToWinUI();
+					_border.Child = _content.ToNative();
 				}
 			}
 		}

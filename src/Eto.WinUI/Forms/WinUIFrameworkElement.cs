@@ -2,14 +2,20 @@ using Eto.Drawing;
 using Eto.Forms;
 namespace Eto.WinUI.Forms
 {
-	public abstract partial class WinUIFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler
+	public interface IWinUIFrameworkElement
+	{
+		mux.FrameworkElement ContainerControl { get; }
+	}
+
+	public abstract partial class WinUIFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWinUIFrameworkElement
 		where TControl : class
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
 
 		public abstract mux.FrameworkElement ContainerControl { get; }
-		public abstract mux.FrameworkElement FocusControl { get; }
+		public virtual mux.FrameworkElement FocusControl => ContainerControl;
+
 
 		public Color BackgroundColor { get; set; }
 		public Size Size
@@ -49,6 +55,12 @@ namespace Eto.WinUI.Forms
 		{
 			get => ContainerControl.AllowDrop;
 			set => ContainerControl.AllowDrop = value;
+		}
+		public bool IsMouseCaptured { get; }
+
+		public bool CaptureMouse()
+		{
+			throw new NotImplementedException();
 		}
 
 		public virtual void DoDragDrop(DataObject data, DragEffects allowedEffects, Image image, PointF cursorOffset)
@@ -108,6 +120,11 @@ namespace Eto.WinUI.Forms
 		{
 			throw new NotImplementedException();
 			//ContainerControl.TransformToVisual()
+		}
+
+		public void ReleaseMouseCapture()
+		{
+			throw new NotImplementedException();
 		}
 
 		public virtual void ResumeLayout()

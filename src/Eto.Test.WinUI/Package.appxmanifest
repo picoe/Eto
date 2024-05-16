@@ -9,7 +9,7 @@
 
   <Identity
     Name="dd3f09a5-312c-4ed9-abe8-c10fbddb0b38"
-    Publisher="CN=curti"
+    Publisher="CN=curtis"
     Version="1.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="dd3f09a5-312c-4ed9-abe8-c10fbddb0b38" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
