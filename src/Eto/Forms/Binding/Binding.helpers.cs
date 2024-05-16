@@ -189,13 +189,18 @@ partial class Binding
 	/// <param name="obj">INotifyPropertyChanged object to attach the event handler to</param>
 	/// <param name="propertyName">Name of the property to trigger the changed event.</param>
 	/// <param name="eh">Event handler delegate to trigger when the specified property changes</param>
-	/// <seealso cref="RemovePropertyEvent"/>
-	public static void AddPropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
+	/// <returns>Object to pass to RemovePropertyEvent to unregister the event</returns>
+	/// <seealso cref="RemovePropertyEvent(object,EventHandler{EventArgs})"/>
+	/// <seealso cref="RemovePropertyEvent(object,string,EventHandler{EventArgs})"/>
+	public static object AddPropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
 	{
-		if (obj is not INotifyPropertyChanged notifyObject)
-			return;
-
-		notifyObject.PropertyChanged += (s, e) => OnPropertyChanged(s, e, propertyName, eh);
+		if (obj is INotifyPropertyChanged notifyObject)
+		{
+			var helper = new PropertyNotifyHelper(notifyObject, propertyName);
+			helper.Changed += eh;
+			return helper;
+		}
+		return null;
 	}
 
 	/// <summary>
@@ -209,45 +214,99 @@ partial class Binding
 	/// <param name="obj">INotifyPropertyChanged object to attach the event handler to</param>
 	/// <param name="propertyExpression">Expression to the property to trigger the changed event.</param>
 	/// <param name="eh">Event handler delegate to trigger when the specified property changes</param>
-	/// <seealso cref="RemovePropertyEvent"/>
-	public static void AddPropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
+	/// <returns>Object to pass to RemovePropertyEvent to unregister the event</returns>
+	/// <seealso cref="RemovePropertyEvent(object,EventHandler{EventArgs})"/>
+	/// <seealso cref="RemovePropertyEvent{T,TProperty}(T,Expression{Func{T, TProperty}},EventHandler{EventArgs})"/>
+	public static object AddPropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
 	{
 		var propertyInfo = propertyExpression.GetMemberInfo();
-		if (propertyInfo == null)
-			return;
-
-		AddPropertyEvent(obj, propertyInfo.Member.Name, eh);
+		if (propertyInfo != null)
+		{
+			return AddPropertyEvent(obj, propertyInfo.Member.Name, eh);
+		}
+		return null;
 	}
 
 	/// <summary>
 	/// Removes an event handler previously attached with the AddPropertyEvent method.
 	/// </summary>
-	/// <param name="obj">INotifyPropertyChanged object to remove the event handler from</param>
+	/// <remarks>
+	/// Note that if you pass the object that the event is attached to instea of the object returned from AddPropertyEvent,
+	/// then this will unsubscribe from all property handlers that point to the same delegate specified by <paramref name="eh"/>
+	/// </remarks>
+	/// <param name="obj">Object returned from AddPropertyEvent to unsubscribe, or the object the event is subscribed to</param>
 	/// <param name="eh">Event handler delegate to remove</param>
 	/// <seealso cref="AddPropertyEvent(object,string,EventHandler{EventArgs})"/>
 	public static void RemovePropertyEvent(object obj, EventHandler<EventArgs> eh)
 	{
-		if (obj is not INotifyPropertyChanged notifyObject)
-			return;
+		if (obj is PropertyNotifyHelper helper)
+		{
+			helper.Changed -= eh;
+			helper.Unregister(obj);
+		}
+		else if (obj is INotifyPropertyChanged notifyObject)
+		{
+			var propertyChangedField = GetPropertyChangedField(notifyObject);
+			if (propertyChangedField == null)
+				return;
 
-		var propertyChangedField = GetPropertyChangedField(notifyObject);
-		if (propertyChangedField == null)
-			return;
-
-		var propertyChangedDelegates = ((Delegate)propertyChangedField.GetValue(notifyObject))?.GetInvocationList().OfType<PropertyChangedEventHandler>() ?? Enumerable.Empty<PropertyChangedEventHandler>();
-		var delegateToRemove = propertyChangedDelegates.FirstOrDefault(d => d.Target?.GetType().GetField("eh")?.GetValue(d.Target)?.Equals(eh) ?? false);
-		if (delegateToRemove == null)
-			return;
-
-		notifyObject.PropertyChanged -= delegateToRemove;
+			var propertyChangedDelegates = ((Delegate)propertyChangedField.GetValue(notifyObject))?.GetInvocationList().OfType<PropertyChangedEventHandler>() ?? Enumerable.Empty<PropertyChangedEventHandler>();
+			foreach (var del in propertyChangedDelegates)
+			{
+				// find ones hooked up to the PropertyNotifyHelper, regardless of property
+				if (del.Target is PropertyNotifyHelper h && h.IsHookedTo(eh))
+				{
+					h.Changed -= eh;
+					h.Unregister(obj);
+				}
+			}
+		}
 	}
-
-	static void OnPropertyChanged(object sender, PropertyChangedEventArgs args, string propertyName, EventHandler<EventArgs> handler)
+	
+	/// <summary>
+	/// Removes an event handler previously attached with the AddPropertyEvent method.
+	/// </summary>
+	/// <param name="obj">Object returned from AddPropertyEvent to unsubscribe</param>
+	/// <param name="propertyExpression">Expression for the property to remove the event handler for</param>
+	/// <param name="eh">Event handler delegate to remove</param>
+	/// <seealso cref="AddPropertyEvent{T,TProperty}(T,Expression{Func{T, TProperty}},EventHandler{EventArgs})"/>
+	public static void RemovePropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
 	{
-		if (args.PropertyName != propertyName)
-			return;
+		var propertyInfo = propertyExpression.GetMemberInfo();
+		if (propertyInfo != null)
+		{
+			RemovePropertyEvent(obj, propertyInfo.Member.Name, eh);
+		}
+	}
+	
+	/// <summary>
+	/// Removes an event handler previously attached with the AddPropertyEvent method.
+	/// </summary>
+	/// <param name="obj">Object returned from AddPropertyEvent to unsubscribe</param>
+	/// <param name="propertyName">Name of the property to remove the event handler for</param>
+	/// <param name="eh">Event handler delegate to remove</param>
+	/// <seealso cref="AddPropertyEvent(object,string,EventHandler{EventArgs})"/>
+	public static void RemovePropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
+	{
+		if (obj is INotifyPropertyChanged notifyObject)
+		{
+			// this only works when PropertyChanged is a simple public event
+			// if it is implemented explicitly via the interface this won't work
+			var propertyChangedField = GetPropertyChangedField(notifyObject);
+			if (propertyChangedField == null)
+				return;
 
-		handler?.Invoke(sender, EventArgs.Empty);
+			var propertyChangedDelegates = ((Delegate)propertyChangedField.GetValue(notifyObject))?.GetInvocationList().OfType<PropertyChangedEventHandler>() ?? Enumerable.Empty<PropertyChangedEventHandler>();
+			foreach (var del in propertyChangedDelegates)
+			{
+				// find ones hooked up to the PropertyNotifyHelper
+				if (del.Target is PropertyNotifyHelper h && h.PropertyName == propertyName && h.IsHookedTo(eh))
+				{
+					h.Changed -= eh;
+					h.Unregister(obj);
+				}
+			}
+		}
 	}
 
 	static FieldInfo GetPropertyChangedField(object obj)
