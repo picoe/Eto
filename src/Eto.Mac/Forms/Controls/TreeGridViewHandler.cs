@@ -646,8 +646,8 @@ namespace Eto.Mac.Forms.Controls
 
 			public EtoOutlineView(TreeGridViewHandler handler)
 			{
-				Delegate = new EtoOutlineDelegate { Handler = handler };
-				DataSource = new EtoDataSource { Handler = handler };
+				WeakDelegate = new EtoOutlineDelegate { Handler = handler };
+				WeakDataSource = new EtoDataSource { Handler = handler };
 				//HeaderView = null,
 				AutoresizesOutlineColumn = false;
 				//AllowsColumnResizing = false,

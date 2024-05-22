@@ -17,12 +17,20 @@ namespace Eto.Mac.Forms
 
 		void InvalidateMeasure();
 	}
+	
+	public enum ObserverType
+	{
+		Control,
+		NotificationCenter
+	}
 
 	[Register("ObserverHelper")]
 	public class ObserverHelper : NSObject
 	{
-		bool isNotification;
-		bool isControl;
+		bool hasNotification;
+		bool hasControl;
+		
+		public ObserverType Type { get; set; }
 
 		public Action<ObserverActionEventArgs> Action { get; set; }
 
@@ -50,25 +58,33 @@ namespace Eto.Mac.Forms
 		{
 			Action(new ObserverActionEventArgs(this, null));
 		}
-
-		public void AddToNotificationCenter()
+		
+		public void Register()
+		{
+			if (Type == ObserverType.NotificationCenter)
+				AddToNotificationCenter();
+			else
+				AddToControl();
+		}
+		
+		void AddToNotificationCenter()
 		{
 			var c = Control;
-			if (!isNotification && c != null)
+			if (!hasNotification && c != null)
 			{
 				NSNotificationCenter.DefaultCenter.AddObserver(this, selPerformAction, KeyPath, c);
-				isNotification = true;
+				hasNotification = true;
 			}
 		}
 
-		public void AddToControl()
+		void AddToControl()
 		{
 			var c = Control;
-			if (!isControl && c != null)
+			if (!hasControl && c != null)
 			{
 				//Console.WriteLine ("{0}: 3. Adding observer! {1}, {2}", ((IRef)this.Handler).WidgetID, this.GetType (), Control.GetHashCode ());
 				c.AddObserver(this, KeyPath, NSKeyValueObservingOptions.New, IntPtr.Zero);
-				isControl = true;
+				hasControl = true;
 			}
 		}
 
@@ -77,17 +93,17 @@ namespace Eto.Mac.Forms
 		public void Remove()
 		{
 			// we use the handle here to remove as it may have been GC'd but we still need to remove it!
-			if (isNotification)
+			if (hasNotification)
 			{
 				NSNotificationCenter.DefaultCenter.RemoveObserver(this);
 
-				isNotification = false;
+				hasNotification = false;
 			}
-			if (isControl)
+			if (hasControl)
 			{
 				//Console.WriteLine ("{0}: 4. Removing observer! {1}, {2}", ((IRef)this.Handler).WidgetID, Handler.GetType (), Control.GetHashCode ());
 				Messaging.void_objc_msgSend_IntPtr_IntPtr(ControlHandle, selRemoveObserverForKeyPath_Handle, Handle, KeyPath.Handle);
-				isControl = false;
+				hasControl = false;
 			}
 		}
 
@@ -147,6 +163,12 @@ namespace Eto.Mac.Forms
 		where TControl : class
 		where TWidget : Widget
 	{
+		/// <summary>
+		/// Return true to delay notification center observers, then use <see cref="RegisterDelayedNotifications"/>
+		/// when appropriate to register them, and <see cref="RemoveNotificationCenterObservers"/> when removed (usually on OnUnload).
+		/// </summary>
+		internal virtual bool DelayRegisterNotificationCenter => false;
+
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -193,7 +215,6 @@ namespace Eto.Mac.Forms
 			return ObjCExtensions.GetInstanceMethod(classHandle, selector) != IntPtr.Zero;
 		}
 
-
 		public NSObject AddObserver(NSString key, Action<ObserverActionEventArgs> action, NSObject control)
 		{
 			if (observers == null)
@@ -202,12 +223,14 @@ namespace Eto.Mac.Forms
 			}
 			var observer = new ObserverHelper
 			{
+				Type = ObserverType.NotificationCenter,
 				Action = action,
 				KeyPath = key,
 				ControlHandle = control.Handle,
 				Handler = this
 			};
-			observer.AddToNotificationCenter();
+			if (!DelayRegisterNotificationCenter)
+				observer.Register();
 			observers.Add(observer);
 			return observer;
 		}
@@ -220,16 +243,50 @@ namespace Eto.Mac.Forms
 			}
 			var observer = new ObserverHelper
 			{
+				Type = ObserverType.Control,
 				Action = action,
 				KeyPath = key,
 				ControlHandle = control.Handle,
 				Handler = this
 			};
-			observer.AddToControl();
+			observer.Register();
 			observers.Add(observer);
 		}
 
 		protected override void Dispose(bool disposing)
+		{
+			RemoveAllObservers();
+
+			base.Dispose(disposing);
+		}
+		
+		internal void RegisterDelayedNotifications()
+		{
+			if (observers != null)
+			{
+				for (int i = 0; i < observers.Count; i++)
+				{
+					var observer = observers[i];
+					// this will only register if not already
+					observer.Register();
+				}
+			}
+		}
+		
+		internal void RemoveNotificationCenterObservers()
+		{
+			if (observers != null)
+			{
+				for (int i = 0; i < observers.Count; i++)
+				{
+					var observer = observers[i];
+					if (observer.Type == ObserverType.NotificationCenter)
+						observer.Remove();
+				}
+			}
+		}
+
+		internal void RemoveAllObservers()
 		{
 			if (observers != null)
 			{
@@ -240,8 +297,6 @@ namespace Eto.Mac.Forms
 				}
 				observers = null;
 			}
-
-			base.Dispose(disposing);
 		}
 	}
 }

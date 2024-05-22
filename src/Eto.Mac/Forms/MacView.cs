@@ -642,6 +642,8 @@ namespace Eto.Mac.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
+		internal override bool DelayRegisterNotificationCenter => true;
+
 		protected virtual Size DefaultMinimumSize => Size.Empty;
 
 		public virtual Size MinimumSize
@@ -1201,6 +1203,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			RegisterDelayedNotifications();
 			if (Widget.VisualParent?.Loaded != false && !(Widget is Window))
 			{
 				// adding dynamically or loading without a parent (e.g. embedding into a native app)
@@ -1224,6 +1227,7 @@ namespace Eto.Mac.Forms
 		public virtual void OnUnLoad(EventArgs e)
 		{
 			mouseDelegate?.FireMouseLeaveIfNeeded(false);
+			RemoveNotificationCenterObservers();
 		}
 
 		public virtual void OnKeyDown(KeyEventArgs e) => Callback.OnKeyDown(Widget, e);
