@@ -787,6 +787,9 @@ namespace Eto.Mac.Forms
 				if (oldMenu == IntPtr.Zero)
 				{
 					oldMenu = Messaging.IntPtr_objc_msgSend(NSApplication.SharedApplication.Handle, MacWindow.selMainMenu);
+					// don't save the initial menu which macOS creates on startup
+					if (oldMenu == ApplicationHandler.Instance.InitialMenu)
+						oldMenu = IntPtr.Zero;
 					if (oldMenu != IntPtr.Zero)
 					{
 						// remember old native menu so we can restore it later

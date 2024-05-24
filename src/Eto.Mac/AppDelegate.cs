@@ -29,7 +29,10 @@ namespace Eto.Mac
 		{
 			var handler = Application.Instance.Handler as ApplicationHandler;
 			if (handler != null)
+			{
+				handler.InitialMenu = Messaging.IntPtr_objc_msgSend(NSApplication.SharedApplication.Handle, MacWindow.selMainMenu);
 				handler.Initialize(this);
+			}
 		}
 
 		public override NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)

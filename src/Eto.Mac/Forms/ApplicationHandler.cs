@@ -15,6 +15,9 @@ namespace Eto.Mac.Forms
 
 		public bool AllowClosingMainForm { get; set; }
 
+		// pointer to the initial menu so we know whether we want to keep it or not for the main form
+		internal IntPtr InitialMenu { get; set; }
+
 		/// <summary>
 		/// Gets or sets a value indicating whether native macOS crash reports are generated for uncaught .NET exceptions.
 		/// </summary>
@@ -193,7 +196,7 @@ namespace Eto.Mac.Forms
 
 
 				EtoBundle.Init();
-
+				
 				EtoFontManager.Install();
 
 				if (Control.Delegate == null)
