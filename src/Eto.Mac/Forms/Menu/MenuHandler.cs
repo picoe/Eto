@@ -109,15 +109,28 @@ namespace Eto.Mac.Forms.Menu
 				var worksWhenModal = Widget.Properties.Get<bool?>(MenuHandler.WorksWhenModal_Key);
 				if (worksWhenModal == null)
 				{
-					// find top level menu
+					// traverse menu tree to find any parent that specifies it should work when modal
 					var menu = Control.Menu;
-					while (menu.Supermenu != null)
-						menu = menu.Supermenu;
+					do
+					{
+						if (menu is EtoMenu etoMenu && etoMenu.WorksWhenModal)
+							return true;
 
-					worksWhenModal = (menu as EtoMenu)?.WorksWhenModal ?? false;
-					Widget.Properties.Set(MenuHandler.WorksWhenModal_Key, worksWhenModal);
+						menu = menu.Supermenu;
+					} while (menu.Supermenu != null);
+					
+					// check the top menu (e.g. context menu or menu bar)
+					if (menu is EtoMenu topEtoMenu && topEtoMenu.WorksWhenModal)
+						return true;
+					
+					// allow all items if it is in current dialog's menu.
+					if (NSApplication.SharedApplication.KeyWindow is EtoWindow window && window.Handler?.Widget is Dialog dialog)
+					{
+						var currentMenu = MenuBarHandler.GetControl(dialog.Menu);
+						return currentMenu == menu;
+					}
 				}
-				return worksWhenModal.Value;
+				return worksWhenModal ?? false;
 			}
 			set => Widget.Properties.Set(MenuHandler.WorksWhenModal_Key, value);
 		}
