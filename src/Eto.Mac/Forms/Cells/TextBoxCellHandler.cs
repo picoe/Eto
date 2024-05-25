@@ -129,28 +129,46 @@ namespace Eto.Mac.Forms.Cells
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
 				view.BecameFirstResponder += (sender, e) =>
 				{
+					var colHandler = ColumnHandler;
+					if (colHandler == null)
+						return;
+					var table = colHandler.DataViewHandler?.Table;
+					if (table == null)
+						return;
 					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.OnCellEditing(ee);
+					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, table, r, col, item);
+					colHandler.DataViewHandler?.OnCellEditing(ee);
 				};
 				view.EditingEnded += (sender, e) =>
 				{
+					var colHandler = ColumnHandler;
+					if (colHandler == null)
+						return;
+					var table = colHandler.DataViewHandler?.Table;
+					if (table == null)
+						return;
 					var notification = (NSNotification)sender;
 					var control = (CellView)notification.Object;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
 					SetObjectValue(item, control.ObjectValue);
 
-					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.OnCellEdited(ee);
+					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, table, r, col, item);
+					colHandler.DataViewHandler?.OnCellEdited(ee);
 					control.ObjectValue = GetObjectValue(item) ?? new NSString(string.Empty);
 				};
 				bool isResigning = false;
 				view.ResignedFirstResponder += (sender, e) =>
 				{
+					var colHandler = ColumnHandler;
+					if (colHandler == null)
+						return;
 					if (isResigning)
+						return;
+					var table = colHandler.DataViewHandler?.Table;
+					if (table == null)
 						return;
 					isResigning = true;
 					var control = (CellView)sender;
@@ -158,8 +176,8 @@ namespace Eto.Mac.Forms.Cells
 					var item = getItem(control.Item, r);
 					SetObjectValue(item, control.ObjectValue);
 
-					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.OnCellEdited(ee);
+					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, table, r, col, item);
+					colHandler.DataViewHandler?.OnCellEdited(ee);
 					isResigning = false;
 				};
 				view.Bind(editableBinding, tableColumn, "editable", null);

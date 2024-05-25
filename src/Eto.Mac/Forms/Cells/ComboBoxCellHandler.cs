@@ -241,14 +241,17 @@ namespace Eto.Mac.Forms.Cells
 				};
 				view.Activated += (sender, e) =>
 				{
+					var colHandler = ColumnHandler;
+					if (colHandler == null)
+						return;
 					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					var cellArgs = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.OnCellEditing(cellArgs);
+					var cellArgs = MacConversions.CreateCellEventArgs(colHandler.Widget, tableView, r, col, item);
+					colHandler.DataViewHandler?.OnCellEditing(cellArgs);
 					SetObjectValue(item, control.ObjectValue);
 
-					ColumnHandler.DataViewHandler.OnCellEdited(cellArgs);
+					colHandler.DataViewHandler?.OnCellEdited(cellArgs);
 					control.ObjectValue = GetObjectValue(item);
 				};
 				view.Bind(enabledBinding, tableColumn, "editable", null);

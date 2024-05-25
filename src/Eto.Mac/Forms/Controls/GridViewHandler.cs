@@ -76,8 +76,8 @@ namespace Eto.Mac.Forms.Controls
 			public EtoTableView(GridViewHandler handler)
 			{
 				FocusRingType = NSFocusRingType.None;
-				DataSource = new EtoTableViewDataSource { Handler = handler };
-				Delegate = new EtoTableDelegate { Handler = handler };
+				WeakDataSource = new EtoTableViewDataSource { Handler = handler };
+				WeakDelegate = new EtoTableDelegate { Handler = handler };
 				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform;
 				SetDraggingSourceOperationMask(NSDragOperation.All, true);
 				SetDraggingSourceOperationMask(NSDragOperation.All, false);

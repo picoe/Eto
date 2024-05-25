@@ -84,7 +84,12 @@ namespace Eto.Mac.Forms.Cells
 	public abstract class CellHandler<TWidget, TCallback> : MacObject<NSObject, TWidget, TCallback>, Cell.IHandler, ICellHandler
 		where TWidget: Cell
 	{
-		public IDataColumnHandler ColumnHandler { get; set; }
+		WeakReference _columnHandler;
+		public IDataColumnHandler ColumnHandler
+		{
+			get => _columnHandler?.Target as IDataColumnHandler;
+			set => _columnHandler = new WeakReference(value);
+		}
 
 		public virtual bool Editable { get; set; }
 

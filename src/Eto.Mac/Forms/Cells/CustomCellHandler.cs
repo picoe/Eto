@@ -45,10 +45,16 @@ namespace Eto.Mac.Forms.Cells
 
 		public class EtoCustomCellView : NSTableCellView
 		{
-			public CustomCellHandler Handler { get; set;}
+			WeakReference _handler;
+			public CustomCellHandler Handler
+			{
+				get => _handler?.Target as CustomCellHandler;
+				set => _handler = new WeakReference(value);
+			}
+
 			public MutableCellEventArgs Args { get; set; }
 
-			public Control EtoControl { get; set; }
+			public Control EtoControl => Args.Control;
 
 			public bool DrawsBackground { get; set; }
 
@@ -93,13 +99,16 @@ namespace Eto.Mac.Forms.Cells
 				if (losingFocus)
 					return;
 
-				losingFocus = true;
 				var h = Handler;
+				if (h == null)
+					return;
+
+				losingFocus = true;
 				var ee = MacConversions.CreateCellEventArgs(h.ColumnHandler.Widget, null, Args.Row, Args.Column, Args.Item);
-				if (!h.ColumnHandler.DataViewHandler.IsCancellingEdit)
+				if (h.ColumnHandler.DataViewHandler?.IsCancellingEdit == false)
 				{
 					h.Callback.OnCommitEdit(h.Widget, Args);
-					h.ColumnHandler.DataViewHandler.OnCellEdited(ee);
+					h.ColumnHandler.DataViewHandler?.OnCellEdited(ee);
 				}
 				else
 				{
@@ -111,9 +120,11 @@ namespace Eto.Mac.Forms.Cells
 			private void ControlGotFocus(object sender, EventArgs e)
 			{
 				var h = Handler;
+				if (h == null)
+					return;
 				h.Callback.OnBeginEdit(h.Widget, Args);
 				var ee = MacConversions.CreateCellEventArgs(h.ColumnHandler.Widget, null, Args.Row, Args.Column, Args.Item);
-				h.ColumnHandler.DataViewHandler.OnCellEditing(ee);
+				h.ColumnHandler.DataViewHandler?.OnCellEditing(ee);
 			}
 
 			public override void Layout()
@@ -168,7 +179,6 @@ namespace Eto.Mac.Forms.Cells
 				{ 
 					Handler = this,
 					Args = args,
-					EtoControl = control,
 					Identifier = identifier,
 					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable
 				};
