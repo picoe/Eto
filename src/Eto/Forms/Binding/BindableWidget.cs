@@ -93,9 +93,10 @@ public abstract class BindableWidget : Widget, IBindable
 		get => Properties.Get<Widget>(Parent_Key);
 		internal protected set
 		{
+			var dataContext = DataContext;
 			if (Properties.TrySet(Parent_Key, value))
 			{
-				if (!HasDataContext && !(DataContext is null))
+				if (!HasDataContext && !ReferenceEquals(DataContext, dataContext))
 				{
 					IsDataContextChanging = true;
 					OnDataContextChanged(EventArgs.Empty);

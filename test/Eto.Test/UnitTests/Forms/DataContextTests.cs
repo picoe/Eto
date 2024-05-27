@@ -436,6 +436,30 @@ namespace Eto.Test.UnitTests.Forms
 				Assert.AreEqual(0, model1.SelectedIndex, "#3 - Model 1 was changed");
 				Assert.AreEqual(1, model2.SelectedIndex, "#4 - Model 2 was changed");
 			});
+			
+		[Test]
+		public void RemovingFromParentShouldTriggerBindingChanged() => Invoke(() =>
+		{
+			int parentDataContextChanged = 0;
+			int childDataContextChanged = 0;
+			var panel = new Panel();
+			panel.DataContextChanged += (sender, e) => parentDataContextChanged++;
+
+			panel.DataContext = new MyViewModelWithEquals { ID = 10 };
+			Assert.AreEqual(1, parentDataContextChanged);
+
+			var child = new Panel();
+			child.DataContextChanged += (sender, e) => childDataContextChanged++;
+
+			panel.Content = child;
+			Assert.AreEqual(1, childDataContextChanged);
+			Assert.AreSame(child.DataContext, panel.DataContext);
+
+			panel.Content = null;
+			Assert.AreEqual(2, childDataContextChanged);
+			Assert.AreEqual(1, parentDataContextChanged);
+			Assert.IsNull(child.DataContext);
+		});
 	}
 }
 
