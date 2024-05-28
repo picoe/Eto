@@ -75,6 +75,16 @@ namespace Eto.Mac.Forms
 			NSView last = null;
 			Handler?.RecalculateKeyViewLoop(ref last);
 		}
+		
+#if MONOMAC
+		protected override void Dispose(bool disposing)
+		{
+			// See HandleWillClose for details of this
+			// This is needed in addition when a window is created but not ever shown.
+			Delegate = null;
+			base.Dispose(disposing);
+		}
+#endif
 	}
 
 	public class EtoPanel : NSPanel, IMacControl
@@ -147,6 +157,16 @@ namespace Eto.Mac.Forms
 			NSView last = null;
 			Handler?.RecalculateKeyViewLoop(ref last);
 		}
+
+#if MONOMAC
+		protected override void Dispose(bool disposing)
+		{
+			// See HandleWillClose for details of this
+			// This is needed in addition when a window is created but not ever shown.
+			Delegate = null;
+			base.Dispose(disposing);
+		}
+#endif
 	}
 
 	class EtoContentView : MacPanelView
@@ -313,7 +333,17 @@ namespace Eto.Mac.Forms
 				return;
 			handler.IsClosing = true;
 			if (ApplicationHandler.Instance.ShouldCloseForm(handler.Widget, true))
+			{
 				handler.Callback.OnClosed(handler.Widget, EventArgs.Empty);
+#if MONOMAC
+				// AppKit still calls some delegate methods on the window after closing a form (e.g. WillReturnFieldEditor),
+				// causing exceptions trying to recreate the delegate if it has been garbage collected.
+				// This is because MonoMac doesn't use ref counting to determine when objects can be GC'd like MacOS.
+				// We avoid this problem by clearing out the delegate after the window is disposed.
+				// In Eto, we don't expect any events to be called after that point anyway.
+				handler.Control.Delegate = null;
+#endif
+			}
 			handler.IsClosing = false;
 		}
 
@@ -411,6 +441,7 @@ namespace Eto.Mac.Forms
 								}
 							}
 						});
+						HandleEvent(Window.LocationChangedEvent);
 					}
 					break;
 				case Window.LocationChangedEvent:
@@ -483,8 +514,8 @@ namespace Eto.Mac.Forms
 						var newLocation = Point.Round(Mouse.Position - moveOffset);
 						if (handler.oldLocation != newLocation)
 						{
-							handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
 							handler.oldLocation = newLocation;
+							handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
 						}
 						// check for mouse up event
 
@@ -522,13 +553,9 @@ namespace Eto.Mac.Forms
 			Control.ShouldZoom = HandleShouldZoom;
 			Control.WillMiniaturize += HandleWillMiniaturize;
 			Control.WillResize = HandleWillResize;
+
 #if MONOMAC
-			// AppKit still calls some delegate methods on the window after closing a form (e.g. WillReturnFieldEditor),
-			// causing exceptions trying to recreate the delegate if it has been garbage collected.
-			// This is because MonoMac doesn't use ref counting to determine when objects can be GC'd like MacOS.
-			// We avoid this problem by clearing out the delegate after the window is closed.
-			// In Eto, we don't expect any events to be called after that point anyway.
-			Widget.Closed += (sender, e) => Application.Instance.AsyncInvoke(() => Control.Delegate = null);
+			HandleEvent(Window.ClosedEvent);
 #endif
 		}
 
