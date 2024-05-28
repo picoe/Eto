@@ -52,7 +52,7 @@
 		{
 			if (nativeControl == null)
 			{
-				return new NSView();
+				return new MacPanelView();
 			}
 			else if (nativeControl is NSView view)
 			{

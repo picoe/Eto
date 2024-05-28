@@ -353,6 +353,14 @@ namespace Eto.Test.UnitTests
 								form.Close();
 							}
 						};
+						form.KeyDown += (sender, e) =>
+						{
+							if (e.KeyData == Keys.Escape)
+							{
+								failButton.PerformClick();
+								e.Handled = true;
+							}
+						};
 						row.Cells.Add(failButton);
 					}
 
@@ -361,6 +369,15 @@ namespace Eto.Test.UnitTests
 						var passButton = new Button { Text = "Pass" };
 						passButton.Click += (sender, e) => form.Close();
 						row.Cells.Add(passButton);
+						
+						form.KeyDown += (sender, e) =>
+						{
+							if (e.KeyData == Keys.Enter)
+							{
+								passButton.PerformClick();
+								e.Handled = true;
+							}
+						};
 					}
 					layout.Items.Add(new StackLayoutItem(table, HorizontalAlignment.Center));
 				}
@@ -458,6 +475,8 @@ namespace Eto.Test.UnitTests
 
 				var passButton = new Button { Text = "Pass" };
 				passButton.Click += (sender, e) => dialog.Close();
+				dialog.DefaultButton = passButton;
+				dialog.AbortButton = failButton;
 
 				dialog.Content = new StackLayout
 				{
