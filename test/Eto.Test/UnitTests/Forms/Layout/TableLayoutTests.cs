@@ -271,6 +271,32 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				return layout2;
 			});
 		}
+		
+		[Test]
+		public void AddingChildToAnotherPanelShouldRemoveFromTableLayout()
+		{
+			Invoke(() =>
+			{
+				var child = new Label { Text = "I should be shown!" };
+
+				var layout1 = new TableLayout { ID = "layout1" };
+				layout1.Rows.Add(child);
+				Assert.AreEqual(child.Parent, layout1, "#1.1 Child's parent should now be layout1");
+				Assert.AreEqual(child.LogicalParent, layout1, "#1.2 Child's logical parent should now be layout1");
+
+				// use the child somewheres else
+				var panel = new Panel { ID = "panel" };
+				panel.Content = child;
+
+				Assert.AreEqual(1, layout1.Rows.Count, "#2.1 layout1 should still have a row");
+				CollectionAssert.DoesNotContain(layout1.Children, child, "#2.2 Child should no longer be in layout1");
+
+				Assert.AreEqual(child.Parent, panel, "#2.3 Child's parent should now be panel");
+				Assert.AreEqual(child.LogicalParent, panel, "#2.4 Child's logical parent should now be panel");
+				CollectionAssert.Contains(panel.Children, child, "#2.5 Child should be in panel");
+			});
+		}
+		
 	}
 }
 

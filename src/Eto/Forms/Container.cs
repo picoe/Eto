@@ -363,23 +363,23 @@ public abstract class Container : Control, IBindableWidgetContainer
 		SuspendLayout();
 		if (Handler is IThemedControlHandler)
 		{
-			if (!ReferenceEquals(previousChild, null))
+			if (previousChild is not null)
 				RemoveLogicalParent(previousChild);
 
-			if (!ReferenceEquals(child, null) && ReferenceEquals(child.LogicalParent, null))
+			if (child is not null && child.LogicalParent is null)
 				SetLogicalParent(child);
 			assign();
 			ResumeLayout();
 			return;
 		}
-		if (!ReferenceEquals(previousChild, null) && !ReferenceEquals(previousChild, child))
+		if (previousChild is not null && !ReferenceEquals(previousChild, child))
 		{
 #if DEBUG
 			if (!ReferenceEquals(previousChild.VisualParent, this))
 				throw new ArgumentException("The previous child control is not a child of this container. Ensure you only remove children that you own.");
 #endif
 
-			if (!ReferenceEquals(previousChild.VisualParent, null))
+			if (previousChild.VisualParent is not null)
 			{
 				if (previousChild.Loaded)
 				{
@@ -393,15 +393,21 @@ public abstract class Container : Control, IBindableWidgetContainer
 				previousChild.InternalLogicalParent = null;
 			}
 		}
-		if (!ReferenceEquals(child, null) && !ReferenceEquals(child.VisualParent, this))
+		if (child is not null && !ReferenceEquals(child.VisualParent, this))
 		{
 			// Detach so parent can remove from controls collection if necessary.
 			// prevents UnLoad from being called more than once when containers think a control is still a child
 			// no-op if there is no parent (handled in detach)
-			child.Detach(); //.VisualParent?.Remove(child);
+			child.VisualParent?.Remove(child);
 
-			if (ReferenceEquals(child.InternalLogicalParent, null))
+			// Remove from previous parent only if it differs
+			if (child.InternalLogicalParent is not null && !ReferenceEquals(child.InternalLogicalParent, this))
+				child.InternalLogicalParent?.Remove(child);
+
+			// Set new logical parent
+			if (child.InternalLogicalParent is null)
 				SetLogicalParent(child);
+				
 			child.VisualParent = this;
 			if (Loaded && !child.Loaded)
 			{
