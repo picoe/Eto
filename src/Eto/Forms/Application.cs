@@ -22,9 +22,7 @@ public enum UIThreadCheckMode
 /// <summary>
 /// Exception thrown when a control method is accessed in a non-UI thread using <see cref="Application.EnsureUIThread"/>.
 /// </summary>
-#if NETSTANDARD2_0_OR_GREATER
 [System.Serializable]
-#endif
 public class UIThreadAccessException : System.Exception
 {
 	/// <summary>
@@ -42,7 +40,6 @@ public class UIThreadAccessException : System.Exception
 	/// <param name="message">Message for the exception</param>
 	/// <param name="inner">Inner exception</param>
 	public UIThreadAccessException(string message, System.Exception inner) : base(message, inner) { }
-#if NETSTANDARD2_0_OR_GREATER
 	/// <summary>
 	/// Initializes a new instance of the UIThreadAccessException class from serialization
 	/// </summary>
@@ -51,7 +48,6 @@ public class UIThreadAccessException : System.Exception
 	protected UIThreadAccessException(
 		System.Runtime.Serialization.SerializationInfo info,
 		System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-#endif
 }
 
 /// <summary>
@@ -65,9 +61,7 @@ public class UIThreadAccessException : System.Exception
 [Handler(typeof(Application.IHandler))]
 public class Application : Widget
 {
-#if NETSTANDARD2_0_OR_GREATER
 	Thread mainThread;
-#endif
 	LocalizeEventArgs localizeArgs;
 	readonly object localizeLock = new object();
 	static readonly object ApplicationKey = new object();
@@ -313,9 +307,7 @@ public class Application : Widget
 		: this(InitializePlatform(platform))
 	{
 		Instance = this;
-#if NETSTANDARD2_0_OR_GREATER
 		mainThread = System.Threading.Thread.CurrentThread;
-#endif
 	}
 
 	Application(InitHelper init)
@@ -350,7 +342,6 @@ public class Application : Widget
 	/// </summary>
 	public void EnsureUIThread()
 	{
-#if NETSTANDARD2_0_OR_GREATER
 		if (UIThreadCheckMode == UIThreadCheckMode.None)
 			return;
 		if (mainThread == Thread.CurrentThread)
@@ -359,7 +350,6 @@ public class Application : Widget
 			System.Diagnostics.Trace.WriteLine("Warning: Accessing UI object from a non-UI thread. UI objects can only be used from the main thread.");
 		else if (UIThreadCheckMode == UIThreadCheckMode.Error)
 			throw new UIThreadAccessException();
-#endif
 	}
 
 	/// <summary>

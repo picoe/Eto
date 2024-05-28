@@ -30,7 +30,7 @@ namespace Eto.Test.Mac.UnitTests
 				
 				var b = new EtoButton(NSButtonType.MomentaryPushIn);
 				var originalSize = b.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, b.FittingSize)).Size;
-				Assert.AreEqual(defaultButtonHeight, originalSize.Height, "#2.1");
+				Assert.AreEqual((nfloat)defaultButtonHeight, originalSize.Height, "#2.1");
 
 				var preferred = handler.GetPreferredSize(SizeF.PositiveInfinity);
 				Assert.AreEqual(originalSize.Height, preferred.Height, "#2.1");
