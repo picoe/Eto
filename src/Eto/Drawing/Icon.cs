@@ -176,7 +176,7 @@ public class Icon : Image
 	{
 		if (type == null)
 			throw new ArgumentNullException("type");
-		return FromResource(resourceName, type.GetAssembly());
+		return FromResource(resourceName, type.Assembly);
 	}
 
 	/// <summary>

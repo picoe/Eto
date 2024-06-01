@@ -154,7 +154,7 @@ public abstract class PlatformExtensionAttribute : Attribute
 		{
 			if (type.AssemblyQualifiedName == PlatformID)
 				return true;
-			type = type.GetBaseType();
+			type = type.BaseType;
 		}
 		return false;
 	}

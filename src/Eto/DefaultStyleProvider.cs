@@ -114,7 +114,7 @@ public class DefaultStyleProvider : IStyleProvider
 			if (styleMap.TryGetValue(currentType, out var typeStyles) && typeStyles != null)
 				styleHandlers = typeStyles.Concat(styleHandlers);
 		}
-		while ((currentType = currentType.GetBaseType()) != null);
+		while ((currentType = currentType.BaseType) != null);
 
 		// create a cached list, but if its empty don't store it
 		childHandlers = styleHandlers.ToList();

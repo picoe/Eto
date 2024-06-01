@@ -24,7 +24,7 @@ static class BindingExtensionsNonGeneric
 			var property = type.GetTypeInfo().GetDeclaredProperty(propertyName);
 			if (property != null)
 				return property;
-			type = type.GetBaseType();
+			type = type.BaseType;
 		}
 		return null;
 	}

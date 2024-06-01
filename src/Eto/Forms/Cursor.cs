@@ -167,7 +167,7 @@ public class Cursor : Widget
 	{
 		if (type == null)
 			throw new ArgumentNullException(nameof(type));
-		return FromResource(resourceName, type.GetAssembly());
+		return FromResource(resourceName, type.Assembly);
 	}
 
 	/// <summary>

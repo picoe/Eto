@@ -79,7 +79,7 @@ public class EnumCheckBoxList<T> : CheckBoxList
 	protected override ListItemCollection CreateDefaultItems()
 	{
 		var type = typeof(T);
-		if (!type.IsEnum())
+		if (!type.IsEnum)
 			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "T must be an enumeration"));
 
 		var items = new ListItemCollection();
