@@ -499,15 +499,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			return null;
 		}
 
-		static MethodInfo s_GetPropertiesSupportedMethod = typeof(sc.TypeConverter).GetRuntimeMethod("GetPropertiesSupported", new Type[0]);
-		static MethodInfo s_GetPropertiesMethod = typeof(sc.TypeConverter).GetRuntimeMethod("GetProperties", new Type[] { typeof(object) });
-
-		public bool GetIsExpandable()
-		{
-			if (s_GetPropertiesSupportedMethod == null || Converter == null)
-				return false;
-			return (bool)s_GetPropertiesSupportedMethod.Invoke(Converter, null);
-		}
+		public bool GetIsExpandable() => Converter?.GetPropertiesSupported() == true;
 
 		public bool CanSetCollection
 		{
@@ -654,12 +646,12 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 
 		void EnsureChildren()
 		{
-			if (_childrenInitialized || s_GetPropertiesMethod == null || Converter == null || !HasValue || !PropertyDescriptorDescriptor.IsSupported)
+			if (_childrenInitialized || Converter == null || !HasValue || !PropertyDescriptorDescriptor.IsSupported)
 				return;
 
 			_childrenInitialized = true;
 			Children.Clear();
-			var properties = (IList)s_GetPropertiesMethod.Invoke(Converter, new object[] { Value });
+			var properties = Converter.GetProperties(Value);
 			if (properties == null)
 				return;
 
