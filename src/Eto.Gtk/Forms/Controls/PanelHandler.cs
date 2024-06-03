@@ -18,7 +18,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public PanelHandler()
 		{
 			Control = new Gtk.EventBox();
-			box = new Gtk.VBox();
+			box = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 			Control.Add(box);
 		}
 

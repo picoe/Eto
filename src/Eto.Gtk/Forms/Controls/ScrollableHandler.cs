@@ -3,8 +3,8 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class ScrollableHandler : GtkPanel<Gtk.ScrolledWindow, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{
 		readonly Gtk.Viewport vp;
-		readonly Gtk.HBox hbox;
-		readonly Gtk.VBox vbox;
+		readonly Gtk.Box hbox;
+		readonly Gtk.Box vbox;
 		BorderType border;
 		bool expandWidth = true;
 		bool expandHeight = true;
@@ -64,8 +64,11 @@ namespace Eto.GtkSharp.Forms.Controls
 #endif
 		}
 
-		public class EtoVBox : Gtk.VBox
+		public class EtoVBox : Gtk.Box
 		{
+			public EtoVBox() : base(Gtk.Orientation.Vertical, 0)
+			{
+			}
 #if GTK3
 			protected override void OnAdjustSizeRequest(Gtk.Orientation orientation, out int minimum_size, out int natural_size)
 			{
@@ -86,7 +89,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.SetSizeRequest(10, 10);
 #endif
 			// ensure things are top-left and not centered
-			hbox = new Gtk.HBox();
+			hbox = new Gtk.Box(Gtk.Orientation.Horizontal, 0);
 
 			vbox = new EtoVBox();
 			vbox.PackStart(hbox, true, true, 0);

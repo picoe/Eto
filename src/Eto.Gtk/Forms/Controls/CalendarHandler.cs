@@ -57,7 +57,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				suppressRangeChanged--;
 
 				if (box == null)
-					box = new Gtk.HBox();
+					box = new Gtk.Box(Gtk.Orientation.Horizontal, 0);
 				else
 					box.Remove(endCalendar);
 				box.PackStart(Control, true, true, 0);

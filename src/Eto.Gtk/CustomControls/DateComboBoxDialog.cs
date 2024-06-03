@@ -138,9 +138,7 @@ namespace Eto.GtkSharp.CustomControls
 
 		Gtk.Widget CalendarControls ()
 		{
-			var vbox = new Gtk.VBox { 
-				Spacing = 5
-			};
+			var vbox = new Gtk.Box(Gtk.Orientation.Vertical, 5);
 
 			calendar = new Gtk.Calendar
 			{
@@ -158,8 +156,8 @@ namespace Eto.GtkSharp.CustomControls
 			};
 
 			vbox.PackStart(calendar, false, false, 0);
-			
-			var hbox = new Gtk.HBox (true, 6);
+
+			var hbox = new Gtk.Box(Gtk.Orientation.Horizontal, 6) { Homogeneous = true };
 
 			var todayButton = new Gtk.Button {
 				CanFocus = true,
@@ -217,13 +215,12 @@ namespace Eto.GtkSharp.CustomControls
 		
 		Gtk.Widget ClockControls ()
 		{
-
 #if GTK2
 			var vbox = new Gtk.VBox ();
 			var spinners = new Gtk.HBox ();
 #else
-			var vbox = new Gtk.HBox ();
-			var spinners = new Gtk.VBox ();
+			var vbox = new Gtk.Box(Gtk.Orientation.Vertical, 0);
+			var spinners = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 #endif
 			vbox.Spacing = 6;
 			spinners.Spacing = 6;
@@ -270,8 +267,7 @@ namespace Eto.GtkSharp.CustomControls
 			SkipPagerHint = true;
 			SkipTaskbarHint = true;
 
-			var hbox = new Gtk.HBox {
-				Spacing = 5,
+			var hbox = new Gtk.Box(Gtk.Orientation.Horizontal, 5) {
 				BorderWidth = 3
 			};
 			

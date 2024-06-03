@@ -3,7 +3,7 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class DrawableHandler : GtkPanel<Gtk.EventBox, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{
-		Gtk.VBox content;
+		Gtk.Box content;
 
 		public bool SupportsCreateGraphics { get { return true; } }
 
@@ -17,7 +17,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.CanDefault = true;
 			Control.Events |= Gdk.EventMask.ButtonPressMask;
 
-			content = new Gtk.VBox();
+			content = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 
 			Control.Add(content);
 		}

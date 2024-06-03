@@ -11,8 +11,12 @@ namespace Eto.GtkSharp.Forms
 		}
 
 #if GTK3
-		class EtoVBox : Gtk.VBox
+		class EtoVBox : Gtk.Box
 		{
+			public EtoVBox() : base(Gtk.Orientation.Vertical, 0)
+			{
+			}
+			
 			protected override void OnAdjustSizeRequest(Gtk.Orientation orientation, out int minimum_size, out int natural_size)
 			{
 				base.OnAdjustSizeRequest(orientation, out minimum_size, out natural_size);

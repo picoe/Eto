@@ -4,7 +4,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		FileAction action;
 		Gtk.FileChooserButton filebutton;
-		Gtk.HBox savebox;
+		Gtk.Box savebox;
 		Gtk.Entry saveentry;
 		Gtk.Button savebutton;
 
@@ -17,7 +17,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			// Save is not a valid option for FileChooserButton, therefore
 			// we need to create our own, or use the ThemedFilePickerHandler
-			savebox = new Gtk.HBox();
+			savebox = new Gtk.Box(Gtk.Orientation.Horizontal, 0);
 			saveentry = new Gtk.Entry();
 			savebox.PackStart(saveentry, true, true, 0);
 			savebutton = new Gtk.Button();

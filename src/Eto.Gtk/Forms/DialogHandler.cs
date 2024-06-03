@@ -20,7 +20,7 @@ namespace Eto.GtkSharp.Forms
 			base.Initialize();
 			Control.KeyPressEvent += Connector.Control_KeyPressEvent;
 
-			var vbox = new EtoVBox { Handler = this };
+			var vbox = new EtoBox(Gtk.Orientation.Vertical, 0) { Handler = this };
 			vbox.PackStart(WindowActionControl, false, true, 0);
 			vbox.PackStart(WindowContentControl, true, true, 0);
 

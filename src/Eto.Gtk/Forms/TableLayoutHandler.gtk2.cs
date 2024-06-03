@@ -164,7 +164,7 @@ namespace Eto.GtkSharp.Forms
 				controls[y, x] = null;
 				var blankWidget = blank[y, x];
 				if (blankWidget == null)
-					blankWidget = blank[y, x] = new Gtk.VBox();
+					blankWidget = blank[y, x] = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 				else if (blankWidget.Parent != null)
 					Control.Remove(blankWidget);
 				Control.Attach(blankWidget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions(x), GetRowOptions(y), 0, 0);
@@ -184,7 +184,7 @@ namespace Eto.GtkSharp.Forms
 						var widget = child.GetContainerWidget();
 						Control.Remove(widget);
 
-						var blankWidget = blank[y, x] = new Gtk.VBox();
+						var blankWidget = blank[y, x] = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 						Control.Attach(blankWidget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions(x), GetRowOptions(y), 0, 0);
 						return;
 					}

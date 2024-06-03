@@ -39,9 +39,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			return width1 + width2 + SplitterWidth;
 		}
 
-		class EtoHPaned : Gtk.HPaned
+		class EtoHPaned : Gtk.Paned
 		{
 			WeakReference handler;
+
+			public EtoHPaned() : base(Gtk.Orientation.Horizontal)
+			{
+			}
 
 			public SplitterHandler Handler
 			{
@@ -98,9 +102,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		class EtoVPaned : Gtk.VPaned
+		class EtoVPaned : Gtk.Paned
 		{
 			WeakReference handler;
+
+			public EtoVPaned() : base(Gtk.Orientation.Vertical)
+			{
+			}
 
 			public SplitterHandler Handler
 			{
@@ -551,7 +559,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		static Gtk.Widget EmptyContainer()
 		{
-			var bin = new Gtk.VBox();
+			var bin = new Gtk.Box(Gtk.Orientation.Horizontal, 0);
 			bin.Visible = false;
 			bin.NoShowAll = true;
 			return bin;
