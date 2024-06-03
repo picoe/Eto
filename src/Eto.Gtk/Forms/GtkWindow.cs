@@ -13,11 +13,12 @@ namespace Eto.GtkSharp.Forms
 		Size UserPreferredSize { get; }
 	}
 
-	public class GtkShrinkableVBox : Gtk.VBox
+	public class GtkShrinkableVBox : Gtk.Box
 	{
 		public bool Resizable { get; set; }
 
 		public GtkShrinkableVBox()
+			: base(Gtk.Orientation.Vertical, 0)
 		{
 		}
 
@@ -69,8 +70,8 @@ namespace Eto.GtkSharp.Forms
 		where TWidget : Window
 		where TCallback : Window.ICallback
 	{
-		Gtk.VBox vbox;
-		readonly Gtk.VBox actionvbox;
+		Gtk.Box vbox;
+		readonly Gtk.Box actionvbox;
 		readonly Gtk.Box topToolbarBox;
 		Gtk.Box menuBox;
 		GtkShrinkableVBox containerBox;
@@ -90,17 +91,17 @@ namespace Eto.GtkSharp.Forms
 
 		protected GtkWindow()
 		{
-			vbox = new Gtk.VBox();
-			actionvbox = new Gtk.VBox();
+			vbox = new Gtk.Box(Gtk.Orientation.Vertical, 0);
+			actionvbox = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 
-			menuBox = new Gtk.HBox();
-			topToolbarBox = new Gtk.VBox();
+			menuBox = new Gtk.Box(Gtk.Orientation.Horizontal, 0);
+			topToolbarBox = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 
 			containerBox = new GtkShrinkableVBox();
 			containerBox.Resizable = true;
 			containerBox.Visible = true;
 
-			bottomToolbarBox = new Gtk.VBox();
+			bottomToolbarBox = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 
 			actionvbox.PackStart(menuBox, false, false, 0);
 			actionvbox.PackStart(topToolbarBox, false, false, 0);

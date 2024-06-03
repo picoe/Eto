@@ -6,13 +6,12 @@ namespace Eto.GtkSharp.Forms.Printing
 
 		public PrintDocument Document { get; set; }
 
-		public class CustomOptions : Gtk.VBox
+		public class CustomOptions : Gtk.Box
 		{
 			public Gtk.CheckButton SelectionOnly { get; private set; }
 
-			public CustomOptions()
+			public CustomOptions() : base(Gtk.Orientation.Vertical, 10)
 			{
-				this.Spacing = 10;
 				SelectionOnly = new Gtk.CheckButton { Label = "Selection Only" };
 				this.PackStart(SelectionOnly, false, false, 10);
 			}

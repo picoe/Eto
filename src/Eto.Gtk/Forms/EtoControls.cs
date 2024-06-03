@@ -200,7 +200,7 @@ namespace Eto.GtkSharp.Forms
 
     }
     
-    public partial class EtoVBox : Gtk.VBox
+    public partial class EtoBox : Gtk.Box
     {
         WeakReference _handler;
         public IGtkControl Handler
@@ -208,6 +208,11 @@ namespace Eto.GtkSharp.Forms
             get => _handler?.Target as IGtkControl;
             set => _handler = new WeakReference(value);
         }
+	public EtoBox(Gtk.Orientation orientation, int spacing)
+		: base(orientation, spacing)
+	{
+		
+	}
         
 #if GTK3        
         protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)

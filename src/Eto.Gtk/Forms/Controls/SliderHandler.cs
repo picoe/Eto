@@ -6,12 +6,13 @@ namespace Eto.GtkSharp.Forms.Controls
 		int max = 100;
 		int tick = 1;
 		Gtk.Scale scale;
+		Orientation orientation;
 
 		public SliderHandler()
 		{
 			this.Control = new Gtk.EventBox();
 			//Control.VisibleWindow = false;
-			scale = new Gtk.HScale(min, max, 1);
+			scale = new Gtk.Scale(Gtk.Orientation.Horizontal, min, max, 1);
 			this.Control.Child = scale;
 		}
 
@@ -107,14 +108,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Orientation Orientation
 		{
-			get
-			{
-				return (scale is Gtk.HScale) ? Orientation.Horizontal : Orientation.Vertical;
-			}
+			get => orientation;
 			set
 			{
 				if (Orientation != value)
 				{
+					orientation = value;
 					scale.ValueChanged -= Connector.HandleScaleValueChanged;
 					Control.Remove(scale);
 #if !GTKCORE
@@ -122,9 +121,9 @@ namespace Eto.GtkSharp.Forms.Controls
 #endif
 					scale.Dispose();
 					if (value == Orientation.Horizontal)
-						scale = new Gtk.HScale(min, max, 1);
+						scale = new Gtk.Scale(Gtk.Orientation.Horizontal, min, max, 1);
 					else
-						scale = new Gtk.VScale(min, max, 1);
+						scale = new Gtk.Scale(Gtk.Orientation.Vertical, min, max, 1);
 					scale.ValueChanged += Connector.HandleScaleValueChanged;
 					Control.Child = scale;
 					scale.ShowAll();

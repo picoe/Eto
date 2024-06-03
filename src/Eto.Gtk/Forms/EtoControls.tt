@@ -9,7 +9,7 @@ using Eto;
 namespace Eto.GtkSharp.Forms
 {
 <#
-var controls = new[] { "Fixed", "EventBox", "VBox", "ScrolledWindow" };
+var controls = new[] { "Fixed", "EventBox", "Box", "ScrolledWindow" };
 
 foreach (var control in controls)
 {
@@ -22,6 +22,18 @@ foreach (var control in controls)
             get => _handler?.Target as IGtkControl;
             set => _handler = new WeakReference(value);
         }
+<#
+	if (control == "Box")
+	{
+#>
+	public EtoBox(Gtk.Orientation orientation, int spacing)
+		: base(orientation, spacing)
+	{
+		
+	}
+<#
+	}
+#>
         
 #if GTK3        
         protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)

@@ -5,7 +5,7 @@ namespace Eto.GtkSharp.Forms
 
 		public void Create(CursorType cursor)
 		{
-			Control = new Gdk.Cursor(cursor.ToGdk());
+			Control = new Gdk.Cursor(Gdk.Display.Default, cursor.ToGdk());
 		}
 
 		public void Create(Bitmap image, PointF hotspot)

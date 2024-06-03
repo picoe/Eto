@@ -89,29 +89,28 @@ namespace Eto.GtkSharp.Forms.Controls
 			var showLabel = !string.IsNullOrEmpty(label.Text);
 			if (showImage && showLabel)
 			{
-				Gtk.VBox vbox;
-				Gtk.HBox hbox;
+				Gtk.Box box;
 				switch (ImagePosition)
 				{
 					case ButtonImagePosition.Above:
-						child = vbox = new Gtk.VBox(false, 2);
-						vbox.PackStart(gtkimage, true, true, 0);
-						vbox.PackEnd(label, false, true, 0);
+						child = box = new Gtk.Box(Gtk.Orientation.Vertical, 2);
+						box.PackStart(gtkimage, true, true, 0);
+						box.PackEnd(label, false, true, 0);
 						break;
 					case ButtonImagePosition.Below:
-						child = vbox = new Gtk.VBox(false, 2);
-						vbox.PackStart(label, false, true, 0);
-						vbox.PackEnd(gtkimage, true, true, 0);
+						child = box = new Gtk.Box(Gtk.Orientation.Vertical, 2);
+						box.PackStart(label, false, true, 0);
+						box.PackEnd(gtkimage, true, true, 0);
 						break;
 					case ButtonImagePosition.Left:
-						child = hbox = new Gtk.HBox(false, 2);
-						hbox.PackStart(gtkimage, false, true, 0);
-						hbox.PackStart(label, true, true, 0);
+						child = box = new Gtk.Box(Gtk.Orientation.Horizontal, 2);
+						box.PackStart(gtkimage, false, true, 0);
+						box.PackStart(label, true, true, 0);
 						break;
 					case ButtonImagePosition.Right:
-						child = hbox = new Gtk.HBox(false, 2);
-						hbox.PackStart(label, true, true, 0);
-						hbox.PackEnd(gtkimage, false, true, 0);
+						child = box = new Gtk.Box(Gtk.Orientation.Horizontal, 2);
+						box.PackStart(label, true, true, 0);
+						box.PackEnd(gtkimage, false, true, 0);
 						break;
 					case ButtonImagePosition.Overlay:
 #if GTK2

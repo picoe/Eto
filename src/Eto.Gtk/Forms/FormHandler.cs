@@ -16,7 +16,7 @@ namespace Eto.GtkSharp.Forms
 			Resizable = true;
 			Control.SetPosition(Gtk.WindowPosition.Center);
 
-			var vbox = new EtoVBox { Handler = this };
+			var vbox = new EtoBox(Gtk.Orientation.Vertical, 0) { Handler = this };
 			vbox.PackStart(WindowActionControl, false, true, 0);
 			vbox.PackStart(WindowContentControl, true, true, 0);
 			Control.Child = vbox;
