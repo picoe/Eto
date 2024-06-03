@@ -27,12 +27,12 @@ namespace Eto.Serialization.Xaml
 				GetStream(type, type.FullName + ".xeto")
 				?? GetStream(type, type.FullName + ".xaml")
 				?? GetStream(type, type.Name + ".xeto") // for F#/VB.NET projects
-				?? throw new InvalidOperationException($"Embedded resource '{type.FullName}.xeto' not found in assembly '{type.GetAssembly()}'");
+				?? throw new InvalidOperationException($"Embedded resource '{type.FullName}.xeto' not found in assembly '{type.Assembly}'");
 		}
 
 		static Stream GetStream(Type type, string resourceName)
 		{
-			return type.GetAssembly().GetManifestResourceStream(resourceName);
+			return type.Assembly.GetManifestResourceStream(resourceName);
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace Eto.Serialization.Xaml
 			using (var stream = GetStream(typeof(T), resourceName))
 			{
 				if (stream == null)
-					throw new ArgumentException(nameof(resourceName), $"Embedded resource '{resourceName}' not found in assembly '{typeof(T).GetAssembly()}'");
+					throw new ArgumentException(nameof(resourceName), $"Embedded resource '{resourceName}' not found in assembly '{typeof(T).Assembly}'");
 
 				Load<T>(stream, instance);
 			}
@@ -146,7 +146,7 @@ namespace Eto.Serialization.Xaml
 		{
 			var readerSettings = new XamlXmlReaderSettings();
 			if (!DesignMode)
-				readerSettings.LocalAssembly = typeof(T).GetAssembly();
+				readerSettings.LocalAssembly = typeof(T).Assembly;
 			return Load<T>(new XamlXmlReader(stream, context, readerSettings), instance);
 		}
 
@@ -161,7 +161,7 @@ namespace Eto.Serialization.Xaml
 		{
 			var readerSettings = new XamlXmlReaderSettings();
 			if (!DesignMode)
-				readerSettings.LocalAssembly = typeof(T).GetAssembly();
+				readerSettings.LocalAssembly = typeof(T).Assembly;
 			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 
@@ -176,7 +176,7 @@ namespace Eto.Serialization.Xaml
 		{
 			var readerSettings = new XamlXmlReaderSettings();
 			if (!DesignMode)
-				readerSettings.LocalAssembly = typeof(T).GetAssembly();
+				readerSettings.LocalAssembly = typeof(T).Assembly;
 			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 

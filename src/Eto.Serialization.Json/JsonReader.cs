@@ -11,7 +11,7 @@ namespace Eto.Serialization.Json
 				GetStream(type, type.FullName + ".jeto")
 				?? GetStream(type, type.FullName + ".json")
 				?? GetStream(type, type.Name + ".jeto") // for f# projects
-				?? throw new InvalidOperationException($"Embedded resource '{type.FullName}.jeto' not found in assembly '{type.GetAssembly()}'");
+				?? throw new InvalidOperationException($"Embedded resource '{type.FullName}.jeto' not found in assembly '{type.Assembly}'");
 		}
 
 		static Stream GetStream(Type type, string resourceName)
@@ -106,7 +106,7 @@ namespace Eto.Serialization.Json
 			using (var stream = GetStream(typeof(T), resourceName))
 			{
 				if (stream == null)
-					throw new ArgumentException(nameof(resourceName), $"Embedded resource '{resourceName}' not found in assembly '{typeof(T).GetAssembly()}'");
+					throw new ArgumentException(nameof(resourceName), $"Embedded resource '{resourceName}' not found in assembly '{typeof(T).Assembly}'");
 
 				Load<T>(stream, instance, namespaceManager);
 			}

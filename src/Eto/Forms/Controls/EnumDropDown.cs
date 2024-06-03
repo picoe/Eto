@@ -102,7 +102,7 @@ public class EnumDropDown<T> : DropDown
 	protected override IEnumerable<object> CreateDefaultDataStore()
 	{
 		var type = EnumType;
-		if (!type.IsEnum())
+		if (!type.IsEnum)
 			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "T must be an enumeration"));
 
 		var items = new ListItemCollection();

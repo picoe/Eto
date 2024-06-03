@@ -554,7 +554,7 @@ public abstract class Platform
 		}
 
 		// load the handler type assembly and try again (as type could be a derived class)
-		var handlerAssembly = handler?.Type.GetAssembly();
+		var handlerAssembly = handler?.Type.Assembly;
 		if (handlerAssembly != null && !loadedAssemblies.Contains(handlerAssembly))
 		{
 			LoadAssembly(handlerAssembly);
@@ -563,7 +563,7 @@ public abstract class Platform
 		}
 
 		// finally, try the assembly of the current type if we still can't find it
-		var typeAssembly = type.GetAssembly();
+		var typeAssembly = type.Assembly;
 		if (!loadedAssemblies.Contains(typeAssembly))
 		{
 			LoadAssembly(typeAssembly);
@@ -601,17 +601,17 @@ public abstract class Platform
 				return info;
 			}
 			// load the assembly of the handler type (needed when type is a subclass)
-			if (!loadedAssemblies.Contains(handler.Type.GetAssembly()))
+			if (!loadedAssemblies.Contains(handler.Type.Assembly))
 			{
-				LoadAssembly(handler.Type.GetAssembly());
+				LoadAssembly(handler.Type.Assembly);
 				return FindHandler(type);
 			}
 		}
 
 		// load the assembly of the target type (can be a subclass)
-		if (!loadedAssemblies.Contains(type.GetAssembly()))
+		if (!loadedAssemblies.Contains(type.Assembly))
 		{
-			LoadAssembly(type.GetAssembly());
+			LoadAssembly(type.Assembly);
 			return FindHandler(type);
 		}
 		return null;

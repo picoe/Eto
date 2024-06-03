@@ -379,7 +379,7 @@ public abstract class IndirectBinding<T> : Binding, IIndirectBinding<T>
 	public IndirectBinding<string> EnumToString(T defaultValue = default(T))
 	{
 		var enumType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
-		if (!enumType.IsEnum())
+		if (!enumType.IsEnum)
 			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Type of T ({0}) must be an enumeration type", typeof(T)));
 		return new DelegateBinding<object, string>(
 			m => System.Convert.ToString(GetValue(m)),

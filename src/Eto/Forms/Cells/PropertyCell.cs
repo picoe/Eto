@@ -676,7 +676,7 @@ public class PropertyCellTypeEnum : PropertyCellType<object>
 	/// <param name="itemType">Item type.</param>
 	public override bool CanDisplay(object itemType)
 	{
-		return (itemType as Type)?.IsEnum() == true;
+		return (itemType as Type)?.IsEnum == true;
 	}
 
 	/// <summary>
@@ -720,7 +720,7 @@ public class PropertyCellTypeEnum : PropertyCellType<object>
 	Control CreateDropDown(CellEventArgs args, Control current)
 	{
 		var type = ItemTypeBinding?.GetValue(args.Item) ?? ItemBinding?.GetValue(args.Item).GetType();
-		if (type == null || !type.IsEnum())
+		if (type == null || !type.IsEnum)
 			return null;
 		var enumType = typeof(EnumDropDown<>).MakeGenericType(type);
 		if (enumType.IsInstanceOfType(current))

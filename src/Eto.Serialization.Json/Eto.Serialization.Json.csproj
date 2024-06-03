@@ -19,7 +19,6 @@ https://github.com/picoe/Eto/wiki
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Eto\TypeHelper.cs" />
     <None Remove="Eto.Serialization.Json.targets" />
     <None Include="Eto.Serialization.Json.targets" Pack="true" PackagePath="build" />
   </ItemGroup>
