@@ -148,8 +148,12 @@ namespace Eto.Wpf.Forms.Controls
 			get { return controller.Store; }
 			set
 			{
+				if (Control.ItemsSource is EtoGridCollectionView collectionView)
+					collectionView.Unregister();
+
 				controller.InitializeItems(value);
-				Control.ItemsSource = controller;
+
+				Control.ItemsSource = EtoGridCollectionView.Create(controller, Control);
 				EnsureSelection();
 			}
 		}

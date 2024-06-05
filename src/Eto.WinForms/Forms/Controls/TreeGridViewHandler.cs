@@ -126,7 +126,7 @@ namespace Eto.WinForms.Forms.Controls
 				if (e.Action == NotifyCollectionChangedAction.Add
 					|| e.Action == NotifyCollectionChangedAction.Reset
 					|| e.Action == NotifyCollectionChangedAction.Replace)
-					AutoSizeColumns(e.Action != NotifyCollectionChangedAction.Reset);
+					AutoSizeColumns(true);
 			}
 		}
 
