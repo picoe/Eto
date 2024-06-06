@@ -169,10 +169,13 @@ namespace Eto.Wpf.Forms.Controls
 			get { return store; }
 			set
 			{
+				if (store is EtoGridCollectionView coll)
+					coll.Unregister();
+
 				store = value;
 				// must use observable collection for editing and collection update notifications
 				if (store is INotifyCollectionChanged)
-					Control.ItemsSource = store;
+					Control.ItemsSource = EtoGridCollectionView.Create(store, Control);
 				else
 					Control.ItemsSource = store != null ? new ObservableCollection<object>(store) : null;
 				EnsureSelection();

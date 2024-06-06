@@ -2,7 +2,7 @@ using Eto.Wpf.Forms.Cells;
 using Eto.Wpf.Forms.Menu;
 using Eto.Wpf.Drawing;
 using Eto.Wpf.CustomControls.TreeGridView;
-using System.Windows;
+
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoDataGrid : swc.DataGrid
@@ -143,6 +143,8 @@ namespace Eto.Wpf.Forms.Controls
 				RowHeaderWidth = 0,
 				SelectionMode = swc.DataGridSelectionMode.Single,
 				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
+				EnableColumnVirtualization = true,
+				EnableRowVirtualization = true,
 			};
 			Control.SetResourceReference(swc.Control.BackgroundProperty, sw.SystemColors.WindowBrushKey);
 		}
@@ -351,7 +353,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		private void Control_Loaded(object sender, RoutedEventArgs e)
+		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			// expanded columns don't get autosized, so we flip to star width after they are auto sized.
 			foreach (var col in Widget.Columns)
@@ -1078,7 +1080,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 
 			var height = Control.ActualHeight;
-			if (scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Visible)
+			if (scrollViewer.ComputedHorizontalScrollBarVisibility == sw.Visibility.Visible)
 			{
 				var child = scrollViewer.FindChild<swcp.ScrollBar>("PART_HorizontalScrollBar");
 				height -= child.ActualHeight;
