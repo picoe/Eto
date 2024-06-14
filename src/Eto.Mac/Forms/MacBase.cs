@@ -38,7 +38,7 @@ namespace Eto.Mac.Forms
 
 		public IntPtr ControlHandle { get; set; }
 
-		public NSObject Control => Runtime.TryGetNSObject(ControlHandle);
+		public NSObject Control => Runtime.GetNSObject(ControlHandle);
 
 		WeakReference handler;
 
@@ -72,9 +72,15 @@ namespace Eto.Mac.Forms
 			var c = Control;
 			if (!hasNotification && c != null)
 			{
+				// Console.WriteLine($"Adding notification center observer for {KeyPath}, Handler: {Handler?.GetType()}, Control: {c.GetType()}");
 				NSNotificationCenter.DefaultCenter.AddObserver(this, selPerformAction, KeyPath, c);
 				hasNotification = true;
 			}
+			else if (!hasNotification)
+			{
+				Debug.WriteLine($"WARNING: Could not add notification center observer for {KeyPath}, Handler: {Handler?.GetType()}. {ControlHandle} points to a null object");
+			}
+			
 		}
 
 		void AddToControl()
@@ -82,9 +88,13 @@ namespace Eto.Mac.Forms
 			var c = Control;
 			if (!hasControl && c != null)
 			{
-				//Console.WriteLine ("{0}: 3. Adding observer! {1}, {2}", ((IRef)this.Handler).WidgetID, this.GetType (), Control.GetHashCode ());
+				// Console.WriteLine($"Adding control observer for {KeyPath}, Handler: {Handler?.GetType()}, Control: {c.GetType()}");
 				c.AddObserver(this, KeyPath, NSKeyValueObservingOptions.New, IntPtr.Zero);
 				hasControl = true;
+			}
+			else if (!hasNotification)
+			{
+				Debug.WriteLine($"WARNING: Could not add control observer for {KeyPath}, Handler: {Handler?.GetType()}. {ControlHandle} points to a null object");
 			}
 		}
 
