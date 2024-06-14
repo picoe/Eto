@@ -642,7 +642,7 @@ namespace Eto.Mac.Forms
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
-		internal override bool DelayRegisterNotificationCenter => true;
+		internal override bool DelayRegisterNotificationCenter => Widget?.Loaded != true;
 
 		protected virtual Size DefaultMinimumSize => Size.Empty;
 
