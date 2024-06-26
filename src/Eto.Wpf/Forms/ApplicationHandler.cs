@@ -88,6 +88,11 @@ namespace Eto.Wpf.Forms
 			{
 				Control = new sw.Application { ShutdownMode = sw.ShutdownMode.OnExplicitShutdown };
 				sw.Forms.Application.EnableVisualStyles();
+				Control.Startup += (s, e) => HandleStartup();
+			}
+			else
+			{
+				HandleStartup();
 			}
 
 			// Prevent race condition with volatile font collection field in WPF when measuring a window the first time
@@ -97,7 +102,6 @@ namespace Eto.Wpf.Forms
 
 			dispatcher = sw.Application.Current.Dispatcher ?? Dispatcher.CurrentDispatcher;
 			instance = this;
-			Control.Startup += HandleStartup;
 			ApplyThemes();
 			base.Initialize();
 		}
@@ -114,7 +118,7 @@ namespace Eto.Wpf.Forms
 			Callback.OnUnhandledException(Widget, unhandledExceptionArgs);
 		}
 
-		void HandleStartup(object sender, sw.StartupEventArgs e)
+		void HandleStartup()
 		{
 			IsStarted = true;
 			IsActive = Win32.ApplicationIsActivated();
