@@ -39,7 +39,6 @@ namespace Eto.Test.WinUI
 		protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
 		{
 			m_window = new MainWindow();
-			m_window.Content = new Label { Text = "This is an Eto.Forms Label" };
 			m_window.Show();
 		}
 

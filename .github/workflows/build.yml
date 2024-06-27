@@ -28,6 +28,9 @@ jobs:
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
+    - name: Create global.json
+      run: echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
+
     - name: Build
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Build /bl:artifacts/log/Build.Windows.binlog
 
@@ -72,7 +75,7 @@ jobs:
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
-    - name: Create global.json for the version we are using
+    - name: Create global.json
       run: del global.json || echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
 
     - name: Install macos workload

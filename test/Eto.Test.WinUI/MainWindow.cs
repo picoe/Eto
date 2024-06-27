@@ -13,6 +13,14 @@ namespace Eto.Test.WinUI
 	{
 		public MainWindow()
 		{
+			Content = new TableLayout
+			{
+				Rows = {
+					new TableRow(new Label { Text = "This is an Eto.Forms Label" }, new Label { Text = "Second Column" }),
+					new Label { Text = "Second Row" }
+				}
+			};
+
 		}
 	}
 }

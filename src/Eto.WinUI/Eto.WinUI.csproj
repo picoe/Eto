@@ -5,12 +5,19 @@
     <RootNamespace>Eto.WinUI</RootNamespace>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <PackageId>Eto.Platform.WinUI</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
     <Using Include="Microsoft.UI.Xaml" Alias="mux" />
+    <Using Include="Microsoft.UI.Xaml.Media" Alias="muxm" />
     <Using Include="Microsoft.UI.Dispatching" Alias="mud" />
     <Using Include="Microsoft.UI.Xaml.Controls" Alias="muc" />
+    <Using Include="Windows.Foundation" Alias="sw" />
+    <Using Include="Windows.Foundation" Alias="wf" />
+    <Using Include="Windows.UI" Alias="wu" />
   </ItemGroup>
 
   <ItemGroup>

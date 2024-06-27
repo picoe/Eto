@@ -155,7 +155,7 @@ namespace Eto.WinUI
 			//	p.Add<SelectFolderDialog.IHandler>(() => new VistaSelectFolderDialogHandler());
 			//else
 			//	p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
-			//p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
+			p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 			//p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			//p.Add<Mouse.IHandler>(() => new MouseHandler());
 			//p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
