@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework Condition="$(TargetFrameworkOverride) == ''">net6.0-macos10.15</TargetFramework>
+    <TargetFramework Condition="$(TargetFrameworkOverride) == ''">net7.0-macos10.15</TargetFramework>
     <TargetFramework Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFramework>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;UNIFIED;MACOS_NET;USE_CFSTRING</DefineConstants>
