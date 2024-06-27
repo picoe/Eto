@@ -9,7 +9,7 @@ on:
     types: [ published ]
 
 env:
-  DotNetVersion: "7.0.116"
+  DotNetVersion: "8.0.106"
   BuildConfiguration: "Release"
   BuildParameters: "build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
 
