@@ -516,7 +516,15 @@ namespace Eto.GtkSharp
 
 		public static KeyEventArgs ToEto(this Gdk.EventKey args)
 		{
-			Keys key = args.Key.ToEto() | args.State.ToEtoKey();
+			Keys key;
+
+			// Try to use the base key without modifiers already being applied.
+			// For example: Shift+Semicolon would then actually report that in the key event, instead of Shift+None (technically 'colon', but that isn't mapped)
+			Gdk.Keymap.Default.GetEntriesForKeycode(args.HardwareKeycode, out _, out uint[] keyvals);
+			if (keyvals.Length != 0)
+				key = ((Gdk.Key)keyvals[0]).ToEto() | args.State.ToEtoKey();
+			else
+				key = args.Key.ToEto() | args.State.ToEtoKey();
 
 			KeyEventType keyEventType = args.Type == Gdk.EventType.KeyRelease ? KeyEventType.KeyUp : KeyEventType.KeyDown;
 
