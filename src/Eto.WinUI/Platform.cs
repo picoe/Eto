@@ -64,10 +64,10 @@ namespace Eto.WinUI
 			//p.Add<CustomCell.IHandler>(() => new CustomCellHandler());
 
 			// Forms.Controls
-			//p.Add<Button.IHandler>(() => new ButtonHandler());
+			p.Add<Button.IHandler>(() => new ButtonHandler());
 			//p.Add<Calendar.IHandler>(() => new CalendarHandler());
-			//p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
-			//p.Add<DropDown.IHandler>(() => new DropDownHandler());
+			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			//p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			//p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			//p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
@@ -80,21 +80,21 @@ namespace Eto.WinUI
 			//p.Add<ImageView.IHandler>(() => new ImageViewHandler());
 			p.Add<Label.IHandler>(() => new LabelHandler());
 			//p.Add<LinkButton.IHandler>(() => new LinkButtonHandler());
-			//p.Add<ListBox.IHandler>(() => new ListBoxHandler());
+			p.Add<ListBox.IHandler>(() => new ListBoxHandler());
 			//p.Add<NumericStepper.IHandler>(() => new NumericStepperHandler());
-			//p.Add<Panel.IHandler>(() => new PanelHandler());
+			p.Add<Panel.IHandler>(() => new PanelHandler());
 			//p.Add<PasswordBox.IHandler>(() => new PasswordBoxHandler());
 			//p.Add<ProgressBar.IHandler>(() => new ProgressBarHandler());
 			//p.Add<RadioButton.IHandler>(() => new RadioButtonHandler());
-			//p.Add<SearchBox.IHandler>(() => new SearchBoxHandler());
-			//p.Add<Scrollable.IHandler>(() => new ScrollableHandler());
+			p.Add<SearchBox.IHandler>(() => new TextBoxHandler());
+			p.Add<Scrollable.IHandler>(() => new ScrollableHandler());
 			//p.Add<Slider.IHandler>(() => new SliderHandler());
 			p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());
-			//p.Add<Splitter.IHandler>(() => new SplitterHandler());
+			p.Add<Splitter.IHandler>(() => new SplitterHandler());
 			//p.Add<TabControl.IHandler>(() => new TabControlHandler());
 			//p.Add<TabPage.IHandler>(() => new TabPageHandler());
-			//p.Add<TextArea.IHandler>(() => new TextAreaHandler());
-			//p.Add<TextBox.IHandler>(() => new TextBoxHandler());
+			p.Add<TextArea.IHandler>(() => new TextAreaHandler());
+			p.Add<TextBox.IHandler>(() => new TextBoxHandler());
 			//p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
 #pragma warning disable CS0618 // Type or member is obsolete
 			//p.Add<TreeView.IHandler>(() => new TreeViewHandler());

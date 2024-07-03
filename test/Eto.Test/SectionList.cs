@@ -215,5 +215,84 @@ namespace Eto.Test
 			};
 		}
 	}
+	public class SectionListListBox : SectionList
+	{
+		FilterCollection<MyItem> items;
+		class MyItem
+		{
+			public string Name { get; set; }
+			public string SectionName { get; set; }
+			public Section Section { get; set; }
+			public override string ToString() => Name;
+		}
+
+		TableLayout layout;
+		ListBox listBox;
+		SearchBox filterText;
+
+		public override Control Control { get { return layout; } }
+		public override ISection SelectedItem
+		{
+			get
+			{
+				var item = listBox.SelectedValue as MyItem;
+				return item != null ? item.Section as ISection : null;
+			}
+			set
+			{
+				var item = items.FirstOrDefault(r => ReferenceEquals(r.Section, value));
+				listBox.SelectedIndex = items.IndexOf(item);
+			}
+		}
+
+		public override void Focus() { filterText.Focus(); }
+
+		public SectionListListBox(IEnumerable<Section> topNodes)
+		{
+			listBox = new ListBox();
+			items = new FilterCollection<MyItem>();
+			foreach (var section in topNodes)
+			{
+				foreach (var test in section)
+				{
+					items.Add(new MyItem
+					{
+						Name = test.Text,
+						SectionName = section.Text,
+						Section = test,
+					});
+				}
+			}
+			listBox.DataStore = items;
+			listBox.SelectedValueChanged += (sender, e) => OnSelectedItemChanged(e);
+
+			layout = new TableLayout(
+				filterText = new SearchBox { PlaceholderText = "Filter" },
+				listBox
+			);
+
+			// Filter
+			filterText.TextChanged += (s, e) =>
+			{
+				var filterItems = (filterText.Text ?? "").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+				if (filterItems.Length == 0)
+					items.Filter = null;
+				else
+					items.Filter = i =>
+					{
+						// Every item in the split filter string should be within the Text property
+						foreach (var filterItem in filterItems)
+							if (i.Name.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1 &&
+								i.SectionName.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
+							{
+								return false;
+							}
+
+						return true;
+					};
+			};
+		}
+	}
 }
 

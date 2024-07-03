@@ -5,7 +5,8 @@ namespace Eto.Test.Commands
 		public About()
 		{
 			ID = "about";
-			Image = TestIcons.TestIcon;
+			if (Platform.Instance.Supports<Icon>())
+				Image = TestIcons.TestIcon;
 			MenuText = "About Test Application";
 			ToolBarText = "About";
 			Shortcut = Keys.F11;
