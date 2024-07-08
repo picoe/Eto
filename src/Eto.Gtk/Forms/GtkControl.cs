@@ -534,7 +534,9 @@ namespace Eto.GtkSharp.Forms
 						throw new NotSupportedException();
 				}
 
-				handler.Callback.OnMouseWheel(handler.Widget, new MouseEventArgs(buttons, modifiers, p, delta));
+				var mouseArgs = new MouseEventArgs(buttons, modifiers, p, delta);
+				handler.Callback.OnMouseWheel(handler.Widget, mouseArgs);
+				args.RetVal = mouseArgs.Handled;
 			}
 
 			[GLib.ConnectBefore]
