@@ -37,7 +37,7 @@
 
 		public static Keys Convert(string keyEquivalent, NSEventModifierMask modifier)
 		{
-			return Keys.None;
+			return InverseMap.FirstOrDefault(pair => pair.Value == keyEquivalent).Key | modifier.ToEto();
 		}
 
 		public static string KeyEquivalent(Keys key)
