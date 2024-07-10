@@ -313,14 +313,20 @@ namespace Eto.Wpf.Forms.Controls
 
 					// Improve performance when setting text often
 					// See https://github.com/dotnet/wpf/issues/5887#issuecomment-1604577981
-					if (EnableNoGCRegion)
-						GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
+					var endNoGCRegion = EnableNoGCRegion
+						&& GCSettings.LatencyMode != GCLatencyMode.NoGCRegion
+						&& GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
 
-					TextBox.Text = newText;
-
-					if (EnableNoGCRegion && GCSettings.LatencyMode == GCLatencyMode.NoGCRegion)
-						GC.EndNoGCRegion();
-
+					try 
+					{
+						TextBox.Text = newText; 
+					}
+					finally
+					{
+						if (endNoGCRegion && GCSettings.LatencyMode == GCLatencyMode.NoGCRegion)
+							GC.EndNoGCRegion();
+					}
+					
 					if (needsTextChanged)
 					{
 						Callback.OnTextChanged(Widget, EventArgs.Empty);
