@@ -490,7 +490,6 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void SetBackgroundColor(Color? color)
 		{
-			base.SetBackgroundColor(color);
 			var textField = Control.TextField;
 			var c = color ?? Colors.Transparent;
 			textField.BackgroundColor = c.ToNSUI();

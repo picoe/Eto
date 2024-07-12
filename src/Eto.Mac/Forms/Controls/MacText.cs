@@ -32,7 +32,6 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void SetBackgroundColor(Color? color)
 		{
-			base.SetBackgroundColor(color);
 			var c = color ?? Colors.Transparent;
 			Control.BackgroundColor = c.ToNSUI();
 			Control.DrawsBackground = c.A > 0;

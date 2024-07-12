@@ -60,30 +60,18 @@ namespace Eto.Mac.Forms.Controls
 		Color? Color { get; set; }
 	}
 	
-	public class EtoTextFieldCell : NSTextFieldCell, IColorizeCell
+	public class EtoTextFieldCell : NSTextFieldCell
 	{
-		ColorizeView colorize;
-
 		public EtoTextFieldCell()
 		{
 			StringValue = string.Empty;
 		}
 
-		public Color? Color 
-		{ 
-			get => colorize?.Color;
-			set => ColorizeView.Create(ref colorize, value);
-		}
-
 		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 		{
-			colorize?.End();
+			// This doesn't "do" anything, but is needed for macOS to draw the 
+			// background color within the frame instead of behind the frame.
 			base.DrawInteriorWithFrame(cellFrame, inView);
-		}
-		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
-		{
-			colorize?.Begin(cellFrame, inView);
-			base.DrawWithFrame(cellFrame, inView);
 		}
 	}
 
@@ -126,7 +114,7 @@ namespace Eto.Mac.Forms.Controls
 				h.SetLastSelection(textView.SelectedRange.ToEto());
 			}
 		}
-
+		
 		public override void MouseDown(NSEvent theEvent)
 		{
 			var h = TextHandler;
@@ -225,6 +213,11 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
 			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
+		}
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			base.SetBackgroundColor(color);
 		}
 
 		TextBox.ICallback IMacTextBoxHandler.Callback => Callback;
