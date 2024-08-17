@@ -10,8 +10,6 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public override NSView ContainerControl { get { return Control; } }
 
-		public wk.WKWebViewConfiguration Configuration { get; set; } = new wk.WKWebViewConfiguration();
-
 		protected override wk.WKWebView CreateControl()
 		{
 			return new EtoWebView(this);
@@ -82,7 +80,6 @@ namespace Eto.Mac.Forms.Controls
 
 		}
 		
-
 		protected override void Initialize()
 		{
 			Enabled = true;
@@ -91,14 +88,14 @@ namespace Eto.Mac.Forms.Controls
 			Control.NavigationDelegate = new EtoNavigationDelegate { Handler = this };
 		}
 
-		public class EtoWebView : wk.WKWebView, IMacControl
+		public class EtoWebView : wk.WKWebView, IMacControl, wk.IWKScriptMessageHandler
 		{
 			public WeakReference WeakHandler { get; set; }
 
 			public WKWebViewHandler Handler { get { return (WKWebViewHandler)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
 			public EtoWebView(WKWebViewHandler handler)
-				: base(new CGRect(0, 0, 200, 200), handler.Configuration)
+				: base(new CGRect(0, 0, 200, 200), handler.CreateConfiguration())
 			{
 				Handler = handler;
 				UIDelegate = new EtoUIDelegate { Handler = handler };
@@ -108,6 +105,15 @@ namespace Eto.Mac.Forms.Controls
 				: base(handle)
 			{
 			}
+
+			/// <summary>
+			/// Raised when JS calls window.eto.postMessage (window.webkit.messageHandlers.__eto__.postMessage)
+			/// </summary>
+			void wk.IWKScriptMessageHandler.DidReceiveScriptMessage(wk.WKUserContentController userContentController, wk.WKScriptMessage message)
+			{
+				Handler.Callback.OnMessageReceived(Handler.Widget, new WebViewMessageEventArgs(message.Body.ToString()));
+			}
+
 		}
 
 		class PromptDialog : Dialog<bool>
@@ -241,10 +247,30 @@ namespace Eto.Mac.Forms.Controls
 					AddControlObserver(s_titleKey, TitleChangedObserver);
 					// todo. need to observe the Title property.
 					break;
+				case WebView.MessageReceivedEvent:
+					// Handled in constructor
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		private wk.WKWebViewConfiguration CreateConfiguration()
+		{
+			wk.WKUserContentController contentController = new();
+
+			// Handle messages sent from JS window.webkit.messageHandlers.__eto__.postMessage
+			contentController.AddScriptMessageHandler((EtoWebView) Control, "__eto__");
+
+			// Wrap the handler for x-plat consistency as window.eto.postMessage
+			const string wrapper = @"window.eto = { postMessage: function(message) { window.webkit.messageHandlers.__eto__.postMessage(message); } };";
+			contentController.AddUserScript(new wk.WKUserScript(new NSString(wrapper), wk.WKUserScriptInjectionTime.AtDocumentStart, false));
+
+			return new wk.WKWebViewConfiguration()
+			{
+				UserContentController = contentController
+			};
 		}
 
 		static void TitleChangedObserver(ObserverActionEventArgs obj)

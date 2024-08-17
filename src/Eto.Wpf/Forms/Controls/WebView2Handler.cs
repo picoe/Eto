@@ -479,6 +479,7 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		{
 			throw new WebView2InitializationException("Failed to initialize WebView2", e.InitializationException);
 		}
+		InjectScripts();
 
 		// can't actually do anything here, so execute them in the main loop
 		Application.Instance.AsyncInvoke(RunDelayedActions);
@@ -577,6 +578,9 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 				Control.LostFocus += Control_LostFocus;
 				break;
 #endif
+			case WebView.MessageReceivedEvent:
+				Control.WebMessageReceived += Control_WebMessageReceived;
+				break;
 			default:
 				base.AttachEvent(handler);
 				break;
@@ -629,6 +633,40 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 				return;
 			Callback.OnDocumentLoaded(Widget, args);
 		});
+	}
+
+
+	/// <summary>
+	/// Called from JavaScript via window.eto.postMessage (window.chrome.webview.postMessage)
+	/// </summary>
+	private void Control_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
+	{
+		string content = null;
+		if (!string.IsNullOrEmpty(e.WebMessageAsJson))
+		{
+			content = e.WebMessageAsJson;
+		}
+		else if (e.TryGetWebMessageAsString() is string str && !string.IsNullOrEmpty(str))
+		{
+			content = str;
+		}
+		if (content != null)
+		{
+			Application.Instance.AsyncInvoke(() =>
+			{
+				if (Widget.IsDisposed)
+					return;
+				Callback.OnMessageReceived(Widget, new WebViewMessageEventArgs(content));
+			});
+		}
+	}
+
+	/// <summary>
+	/// Wraps window.chrome.webview.postMessage to window.eto.postMessage for platform consistency
+	/// </summary>
+	private void InjectScripts()
+	{
+		CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("window.eto = { postMessage: function(message) { window.chrome.webview.postMessage(message); } };");
 	}
 
 	public Uri Url

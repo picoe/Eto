@@ -95,6 +95,27 @@ public class WebViewNewWindowEventArgs : WebViewLoadingEventArgs
 }
 
 /// <summary>
+/// Event arguments for when a message is sent via javascript in the <see cref="WebView"/>
+/// </summary>
+public class WebViewMessageEventArgs : EventArgs
+{
+	/// <summary>
+	/// Gets the received message.
+	/// </summary>
+	/// <value>The message.</value>
+	public string Message { get; private set; }
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.WebViewMessageEventArgs"/> class.
+	/// </summary>
+	/// <param name="message">The message.</param>
+	public WebViewMessageEventArgs(string message)
+	{
+		this.Message = message;
+	}
+}
+
+/// <summary>
 /// Control to show a browser control that can display html and execute javascript.
 /// </summary>
 /// <remarks>
@@ -246,6 +267,30 @@ public class WebView : Control
 		Properties.TriggerEvent(DocumentTitleChangedEvent, this, e);
 	}
 
+
+	/// <summary>
+	/// Identifier for handlers when attaching the <see cref="MessageReceived"/> event.
+	/// </summary>
+	public const string MessageReceivedEvent = "WebView.MessageReceived";
+
+	/// <summary>
+	/// Occurs when the title of the page has change either through navigation or a script.
+	/// </summary>
+	public event EventHandler<WebViewMessageEventArgs> MessageReceived
+	{
+		add { Properties.AddHandlerEvent(MessageReceivedEvent, value); }
+		remove { Properties.RemoveEvent(MessageReceivedEvent, value); }
+	}
+
+	/// <summary>
+	/// Raises the <see cref="DocumentTitleChanged"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments.</param>
+	protected virtual void OnMessageReceived(WebViewMessageEventArgs e)
+	{
+		Properties.TriggerEvent(MessageReceivedEvent, this, e);
+	}
+
 	#endregion
 
 	static WebView()
@@ -255,6 +300,7 @@ public class WebView : Control
 		EventLookup.Register<WebView>(c => c.OnDocumentLoading(null), WebView.DocumentLoadingEvent);
 		EventLookup.Register<WebView>(c => c.OnDocumentTitleChanged(null), WebView.DocumentTitleChangedEvent);
 		EventLookup.Register<WebView>(c => c.OnOpenNewWindow(null), WebView.OpenNewWindowEvent);
+		EventLookup.Register<WebView>(c => c.OnMessageReceived(null), WebView.MessageReceivedEvent);
 	}
 
 	/// <summary>
@@ -414,6 +460,11 @@ public class WebView : Control
 		/// Raises the document title changed event.
 		/// </summary>
 		void OnDocumentTitleChanged(WebView widget, WebViewTitleEventArgs e);
+
+		/// <summary>
+		/// Raises the message received event.
+		/// </summary>
+		void OnMessageReceived(WebView widget, WebViewMessageEventArgs e);
 	}
 
 	static readonly object callback = new Callback();
@@ -475,6 +526,15 @@ public class WebView : Control
 		{
 			using (widget.Platform.Context)
 				widget.OnDocumentTitleChanged(e);
+		}
+
+		/// <summary>
+		/// Raises the message received event.
+		/// </summary>
+		public void OnMessageReceived(WebView widget, WebViewMessageEventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnMessageReceived(e);
 		}
 	}
 
