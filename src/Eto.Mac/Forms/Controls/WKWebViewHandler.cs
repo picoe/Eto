@@ -90,7 +90,7 @@ namespace Eto.Mac.Forms.Controls
 			Control.NavigationDelegate = new EtoNavigationDelegate { Handler = this };
 		}
 
-		public class EtoWebView : wk.WKWebView, IMacControl, wk.IWKScriptMessageHandler
+		public class EtoWebView : wk.WKWebView, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -107,15 +107,19 @@ namespace Eto.Mac.Forms.Controls
 				: base(handle)
 			{
 			}
+		}
 
-			/// <summary>
-			/// Raised when JS calls window.eto.postMessage (window.webkit.messageHandlers.__eto__.postMessage)
-			/// </summary>
-			void wk.IWKScriptMessageHandler.DidReceiveScriptMessage(wk.WKUserContentController userContentController, wk.WKScriptMessage message)
+		class ScriptMessageHandler : wk.WKScriptMessageHandler
+		{
+			private readonly WKWebViewHandler Handler;
+			public ScriptMessageHandler(WKWebViewHandler handler)
+			{
+				Handler = handler;
+			}
+			public override void DidReceiveScriptMessage(wk.WKUserContentController userContentController, wk.WKScriptMessage message)
 			{
 				Handler.Callback.OnMessageReceived(Handler.Widget, new WebViewMessageEventArgs(message.Body.ToString()));
 			}
-
 		}
 
 		class PromptDialog : Dialog<bool>
@@ -263,7 +267,7 @@ namespace Eto.Mac.Forms.Controls
 			wk.WKUserContentController contentController = new();
 
 			// Handle messages sent from JS window.webkit.messageHandlers.__eto__.postMessage
-			contentController.AddScriptMessageHandler((EtoWebView) Control, "__eto__");
+			contentController.AddScriptMessageHandler(new ScriptMessageHandler(this), "__eto__");
 
 			// Wrap the handler for x-plat consistency as window.eto.postMessage
 			const string wrapper = @"window.eto = { postMessage: function(message) { window.webkit.messageHandlers.__eto__.postMessage(message); } };";
