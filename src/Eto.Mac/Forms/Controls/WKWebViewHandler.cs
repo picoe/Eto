@@ -10,6 +10,8 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public override NSView ContainerControl { get { return Control; } }
 
+		public wk.WKWebViewConfiguration Configuration { get => Control.Configuration; }
+
 		protected override wk.WKWebView CreateControl()
 		{
 			return new EtoWebView(this);
