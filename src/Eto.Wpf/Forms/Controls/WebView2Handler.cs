@@ -479,7 +479,6 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		{
 			throw new WebView2InitializationException("Failed to initialize WebView2", e.InitializationException);
 		}
-		InjectScripts();
 
 		// can't actually do anything here, so execute them in the main loop
 		Application.Instance.AsyncInvoke(RunDelayedActions);
@@ -492,6 +491,7 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 
 		Control.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
 		Control.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+		Control.CoreWebView2.DOMContentLoaded += CoreWebView2_DOMContentLoadedInjectScripts;
 		webView2Ready = true;
 
 		if (delayedActions != null)
@@ -664,9 +664,9 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 	/// <summary>
 	/// Wraps window.chrome.webview.postMessage to window.eto.postMessage for platform consistency
 	/// </summary>
-	private void InjectScripts()
+	private void CoreWebView2_DOMContentLoadedInjectScripts(object sender, CoreWebView2DOMContentLoadedEventArgs e)
 	{
-		CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("window.eto = { postMessage: function(message) { window.chrome.webview.postMessage(message); } };");
+		CoreWebView2.ExecuteScriptAsync("window.eto = { postMessage: function(message) { window.chrome.webview.postMessage(message); } };");
 	}
 
 	public Uri Url
