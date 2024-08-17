@@ -112,7 +112,7 @@ namespace Eto.Mac.Forms.Controls
 		class ScriptMessageHandler : wk.WKScriptMessageHandler
 		{
 			private readonly WKWebViewHandler Handler;
-			public ScriptMessageHandler(WKWebViewHandler handler)
+			public ScriptMessageHandler(WKWebViewHandler handler) : base()
 			{
 				Handler = handler;
 			}
