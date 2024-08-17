@@ -45,6 +45,8 @@ namespace Eto.Wpf.Forms.Controls
 			};
 			Browser.HandleCreated += (sender, e) => HookDocumentEvents();
 
+			Browser.ObjectForScripting = new ScriptingObject(this);
+
 			Control = new swf.Integration.WindowsFormsHost
 			{
 				Child = Browser
@@ -131,6 +133,9 @@ namespace Eto.Wpf.Forms.Controls
 						Callback.OnDocumentTitleChanged(Widget, new WebViewTitleEventArgs(Browser.DocumentTitle));
 					};
 					break;
+				case WebView.MessageReceivedEvent:
+					this.Browser.DocumentCompleted += OnDocumentLoadedInjectScript;
+					break;
 				default:
 					base.AttachEvent(handler);
 					break;
@@ -162,6 +167,37 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				return this.Browser.DocumentTitle;
 			}
+		}
+
+		/// <summary>
+		/// Object exposed to JavaScript via window.external
+		/// </summary>
+		[ComVisible(true)]
+		public class ScriptingObject
+		{
+			private readonly SwfWebViewHandler Owner;
+			public ScriptingObject(SwfWebViewHandler owner)
+			{
+				Owner = owner;
+			}
+
+			/// <summary>
+			/// Called from JS via window.eto.postMessage (window.external.postMessage)
+			/// </summary>
+			public void postMessage(string message)
+			{
+				Owner.Callback.OnMessageReceived(Owner.Widget, new WebViewMessageEventArgs(message));
+
+			}
+		}
+
+		/// <summary>
+		/// Called on document load.
+		/// Wraps calls from window.external.postMessage to window.eto.postMessage
+		/// </summary>
+		private void OnDocumentLoadedInjectScript(object sender, EventArgs args)
+		{
+			ExecuteScript(@"window.eto = window.eto || {}; window.eto.postMessage = function(message) { window.external.postMessage(message); };");
 		}
 
 		public string ExecuteScript(string script)
