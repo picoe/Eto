@@ -197,7 +197,7 @@ namespace Eto.Wpf.Forms.Controls
 		/// </summary>
 		private void OnDocumentLoadedInjectScript(object sender, EventArgs args)
 		{
-			ExecuteScript(@"window.eto = window.eto || {}; window.eto.postMessage = function(message) { window.external.postMessage(message); };");
+			ExecuteScript(@"window.eto = { postMessage: function(message) { window.external.postMessage(message); } };");
 		}
 
 		public string ExecuteScript(string script)
