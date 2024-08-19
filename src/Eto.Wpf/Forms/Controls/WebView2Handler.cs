@@ -642,13 +642,13 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 	private void Control_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
 	{
 		string content = null;
-		if (!string.IsNullOrEmpty(e.WebMessageAsJson))
-		{
-			content = e.WebMessageAsJson;
-		}
-		else if (e.TryGetWebMessageAsString() is string str && !string.IsNullOrEmpty(str))
+		if (e.TryGetWebMessageAsString() is string str && !string.IsNullOrEmpty(str))
 		{
 			content = str;
+		}
+		else
+		{
+			content = e.WebMessageAsJson;
 		}
 		if (content != null)
 		{
