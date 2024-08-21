@@ -10,7 +10,12 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public override NSView ContainerControl { get { return Control; } }
 
-		public wk.WKWebViewConfiguration Configuration { get => Control.Configuration; }
+		public wk.WKWebViewConfiguration Configuration { get; set; }
+
+		public WKWebViewHandler()
+		{
+			Configuration = CreateConfiguration();
+		}
 
 		protected override wk.WKWebView CreateControl()
 		{
@@ -97,7 +102,7 @@ namespace Eto.Mac.Forms.Controls
 			public WKWebViewHandler Handler { get { return (WKWebViewHandler)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
 			public EtoWebView(WKWebViewHandler handler)
-				: base(new CGRect(0, 0, 200, 200), handler.CreateConfiguration())
+				: base(new CGRect(0, 0, 200, 200), handler.Configuration)
 			{
 				Handler = handler;
 				UIDelegate = new EtoUIDelegate { Handler = handler };
@@ -262,7 +267,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		private wk.WKWebViewConfiguration CreateConfiguration()
+		protected wk.WKWebViewConfiguration CreateConfiguration()
 		{
 			wk.WKUserContentController contentController = new();
 
