@@ -274,7 +274,7 @@ public class WebView : Control
 	public const string MessageReceivedEvent = "WebView.MessageReceived";
 
 	/// <summary>
-	/// Occurs when the title of the page has change either through navigation or a script.
+	/// Occurs when a message is received from a JS call to window.eto.postMessage(string).
 	/// </summary>
 	public event EventHandler<WebViewMessageEventArgs> MessageReceived
 	{
@@ -283,7 +283,7 @@ public class WebView : Control
 	}
 
 	/// <summary>
-	/// Raises the <see cref="DocumentTitleChanged"/> event.
+	/// Raises the <see cref="MessageReceived"/> event.
 	/// </summary>
 	/// <param name="e">Event arguments.</param>
 	protected virtual void OnMessageReceived(WebViewMessageEventArgs e)
