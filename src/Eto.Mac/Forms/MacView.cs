@@ -281,7 +281,7 @@ namespace Eto.Mac.Forms
 			var obj = Runtime.GetNSObject(sender);
 			Messaging.void_objc_msgSendSuper_SizeF(obj.SuperHandle, sel, size);
 
-			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler && !handler.Widget.IsDisposed)
 			{
 				handler.OnSizeChanged(EventArgs.Empty);
 				handler.Callback.OnSizeChanged(handler.Widget, EventArgs.Empty);
