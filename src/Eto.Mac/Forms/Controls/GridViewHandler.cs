@@ -329,11 +329,15 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool ShouldEditTableColumn(NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
-				var colHandler = Handler.GetColumn(tableColumn);
-				var item = Handler.collection.ElementAt((int)row);
+				var h = Handler;
+				if (h == null)
+					return false;
+					
+				var colHandler = h.GetColumn(tableColumn);
+				var item = h.collection.ElementAt((int)row);
 				var args = new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item);
-				Handler.Callback.OnCellEditing(Handler.Widget, args);
-				Handler.SetIsEditing(true);
+				h.Callback.OnCellEditing(h.Widget, args);
+				h.SetIsEditing(true);
 				return true;
 			}
 			
@@ -362,13 +366,19 @@ namespace Eto.Mac.Forms.Controls
 
 			public override nfloat GetSizeToFitColumnWidth(NSTableView tableView, nint column)
 			{
-				var colHandler = Handler.GetColumn(tableView.TableColumns()[column]);
+				var h = Handler;
+				if (h == null)
+					return 20;
+				var columns = tableView.TableColumns();
+				if (column >= (int)columns.Length)
+					return 20;
+				var colHandler = h.GetColumn(columns[column]);
 				if (colHandler != null)
 				{
 					// turn on autosizing for this column again
 					colHandler.AutoSize = true;
-					Handler.DidSetAutoSizeColumn = true;
-					Application.Instance.AsyncInvoke(() => Handler.DidSetAutoSizeColumn = false);
+					h.DidSetAutoSizeColumn = true;
+					Application.Instance.AsyncInvoke(() => h.DidSetAutoSizeColumn = false);
 					return colHandler.GetPreferredWidth();
 				}
 				return 20;
@@ -376,9 +386,12 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn)
 			{
-				var colHandler = Handler.GetColumn(tableColumn);
+				var h = Handler;
+				if (h == null)
+					return;
+				var colHandler = h.GetColumn(tableColumn);
 				if (colHandler.Sortable)
-					Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(colHandler.Widget));
+					h.Callback.OnColumnHeaderClick(h.Widget, new GridColumnEventArgs(colHandler.Widget));
 			}
 
 			public override void ColumnDidResize(NSNotification notification)
@@ -388,17 +401,17 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
-				var colHandler = Handler.GetColumn(tableColumn);
-				if (colHandler != null)
+				var h = Handler;
+				if (h != null)
 				{
-					var cellHandler = colHandler.DataCellHandler;
+					var cellHandler = h.GetColumn(tableColumn)?.DataCellHandler;
 					if (cellHandler != null)
 					{
-						return cellHandler.GetViewForItem(tableView, tableColumn, (int)row, null, (obj, r) => Handler.GetItem(r));
+						return cellHandler.GetViewForItem(tableView, tableColumn, (int)row, null, (obj, r) => h.GetItem(r));
 					}
 				}
 
-				return tableView.MakeView(tableColumn.Identifier, this);
+				return tableView.MakeView(tableColumn?.Identifier ?? string.Empty, this);
 			}
 
 			public override void DidAddRowView(NSTableView tableView, NSTableRowView rowView, nint row)
@@ -408,7 +421,10 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DidRemoveRowView(NSTableView tableView, NSTableRowView rowView, nint row)
 			{
-				foreach (var col in Handler.ColumnHandlers)
+				var h = Handler;
+				if (h == null)
+					return;
+				foreach (var col in h.ColumnHandlers)
 				{
 					if (col.DisplayIndex != -1)
 					{
