@@ -86,12 +86,12 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool IsGroupItem(NSOutlineView outlineView, NSObject item)
 			{
-				return Handler.ShowGroups && item != null && outlineView.LevelForItem(item) == 0;
+				return Handler?.ShowGroups == true && item != null && outlineView.LevelForItem(item) == 0;
 			}
 
 			public override bool ShouldSelectItem(NSOutlineView outlineView, NSObject item)
 			{
-				return Handler.AllowGroupSelection || !IsGroupItem(outlineView, item);
+				return Handler?.AllowGroupSelection == true || !IsGroupItem(outlineView, item);
 			}
 
 			public override bool ShouldEditTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
@@ -146,7 +146,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void ItemDidCollapse(NSNotification notification)
 			{
 				var h = Handler;
-				if (h.suppressExpandCollapseEvents > 0)
+				if (h == null || h.suppressExpandCollapseEvents > 0)
 					return;
 				var myitem = h.GetEtoItem(notification.UserInfo[(NSString)"NSObject"]);
 				if (myitem != null)
@@ -165,7 +165,7 @@ namespace Eto.Mac.Forms.Controls
 			public override bool ShouldExpandItem(NSOutlineView outlineView, NSObject item)
 			{
 				var h = Handler;
-				if (h.suppressExpandCollapseEvents > 0)
+				if (h == null || h.suppressExpandCollapseEvents > 0)
 					return true;
 				var myitem = h.GetEtoItem(item);
 				if (myitem != null)
@@ -180,7 +180,7 @@ namespace Eto.Mac.Forms.Controls
 			public override bool ShouldCollapseItem(NSOutlineView outlineView, NSObject item)
 			{
 				var h = Handler;
-				if (h.suppressExpandCollapseEvents > 0)
+				if (h == null || h.suppressExpandCollapseEvents > 0)
 					return true;
 				var myitem = h.GetEtoItem(item);
 				if (myitem != null)
@@ -204,7 +204,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void ItemDidExpand(NSNotification notification)
 			{
 				var h = Handler;
-				if (h.suppressExpandCollapseEvents > 0)
+				if (h == null || h.suppressExpandCollapseEvents > 0)
 					return;
 				var item = notification.UserInfo[(NSString)"NSObject"];
 				var myitem = h.GetEtoItem(item);
@@ -221,13 +221,19 @@ namespace Eto.Mac.Forms.Controls
 
 			public override nfloat GetSizeToFitColumnWidth(NSOutlineView outlineView, nint column)
 			{
-				var colHandler = Handler.GetColumn(outlineView.TableColumns()[column]);
+				var h = Handler;
+				if (h == null)
+					return 20;
+				var columns = outlineView.TableColumns();
+				if (column >= (int)columns.Length)
+					return 20;
+				var colHandler = h.GetColumn(columns[column]);
 				if (colHandler != null)
 				{
 					// turn on autosizing for this column again
 					colHandler.AutoSize = true;
 					Handler.DidSetAutoSizeColumn = true;
-					Application.Instance.AsyncInvoke(() => Handler.DidSetAutoSizeColumn = false);
+					Application.Instance.AsyncInvoke(() => h.DidSetAutoSizeColumn = false);
 					return colHandler.GetPreferredWidth();
 				}
 				return 20;
@@ -235,11 +241,14 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DidClickTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn)
 			{
-				var column = Handler.GetColumn(tableColumn);
+				var h = Handler;
+				if (h == null)
+					return;
+				var column = h.GetColumn(tableColumn);
 				if (column.Sortable)
 				{
 					var args = new GridColumnEventArgs(column.Widget);
-					Handler.Callback.OnColumnHeaderClick(Handler.Widget, args);
+					h.Callback.OnColumnHeaderClick(h.Widget, args);
 				}
 			}
 
@@ -250,14 +259,14 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
-				if (tableColumn == null && Handler.ShowGroups)
-					tableColumn = outlineView.TableColumns()[0];
-
-				var colHandler = Handler.GetColumn(tableColumn);
-				if (colHandler != null && colHandler.DataCell != null)
+				var h = Handler;
+				if (h != null)
 				{
-					var cellHandler = colHandler.DataCell.Handler as ICellHandler;
-					if (cellHandler != null)
+					if (tableColumn == null && h.ShowGroups)
+						tableColumn = outlineView.TableColumns()[0];
+
+					var colHandler = h.GetColumn(tableColumn);
+					if (colHandler?.DataCell?.Handler is ICellHandler cellHandler)
 					{
 						var row = (int)outlineView.RowForItem(item);
 						return cellHandler.GetViewForItem(outlineView, tableColumn, row, item, (obj, row) => obj != null ? ((EtoTreeItem)obj).Item : null);
@@ -273,7 +282,10 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DidRemoveRowView(NSOutlineView outlineView, NSTableRowView rowView, nint row)
 			{
-				foreach (var col in Handler.ColumnHandlers)
+				var h = Handler;
+				if (h == null)
+					return;
+				foreach (var col in h.ColumnHandlers)
 				{
 					if (col.DisplayIndex != -1)
 					{
@@ -402,6 +414,8 @@ namespace Eto.Mac.Forms.Controls
 			TreeGridViewDragInfo GetDragInfo(NSDraggingInfo info, NSObject item, nint index)
 			{
 				var h = Handler;
+				if (h == null)
+					return null;
 				var outlineView = h.Control;
 				var position = GridDragPosition.Over;
 				int? childIndex;
