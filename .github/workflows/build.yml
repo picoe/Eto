@@ -19,12 +19,12 @@ jobs:
     runs-on: windows-2022
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
@@ -35,30 +35,30 @@ jobs:
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Build /bl:artifacts/log/Build.Windows.binlog
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: nuget
+        name: nuget-win
         path: artifacts/nuget/${{ env.BuildConfiguration }}/*.nupkg
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: test
+        name: test-win
         path: |
           artifacts/test/*/${{ env.BuildConfiguration }}/**/*
           !artifacts/test/Eto.Test.Mac64/**/*
 
     - name: Upload sample artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: samples
+        name: samples-win
         path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
 
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: log
+        name: log-win
         path: artifacts/log/**/*
 
   build-mac:
@@ -66,12 +66,12 @@ jobs:
     runs-on: macos-14
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
@@ -107,44 +107,45 @@ jobs:
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Build /bl:artifacts/log/Build.Mac.binlog
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: nuget
+        name: nuget-mac
         path: |
           artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.macOS*.nupkg
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: test
+        name: test-mac
         path: |
           artifacts/test/Eto.Test.Mac64/${{ env.BuildConfiguration }}/**/Eto.Test.Mac64.dmg
           artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/*/Eto.Test.macOS.app
 
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: log
+        name: log-mac
         path: |
           artifacts/log/**/*
           lib/monomac/artifacts/generated/**/*.binlog
-
+  
   publish:
     needs: [ build-windows, build-mac ]
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && github.ref == 'refs/heads/develop') || (github.event_name == 'release' && github.event.action == 'published' && startsWith(github.ref, 'refs/tags/'))
     steps:
       - name: Download nuget artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: nuget
+          pattern: nuget-*
+          merge-multiple: true
 
       - name: Push packages to myget.org
         run: dotnet nuget push '*.nupkg' --skip-duplicate -s https://www.myget.org/F/eto/api/v2/package -k ${{secrets.MYGET_API_KEY}}
 
       - name: Add nuget packages to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: (github.event_name == 'release' && github.event.action == 'published' && startsWith(github.ref, 'refs/tags/'))
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
