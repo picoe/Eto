@@ -314,8 +314,17 @@ namespace Eto.Wpf.Forms.Controls
 					// Improve performance when setting text often
 					// See https://github.com/dotnet/wpf/issues/5887#issuecomment-1604577981
 					var endNoGCRegion = EnableNoGCRegion
-						&& GCSettings.LatencyMode != GCLatencyMode.NoGCRegion
-						&& GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
+						&& GCSettings.LatencyMode != GCLatencyMode.NoGCRegion;
+
+					try
+					{
+						endNoGCRegion &= GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
+					}
+					catch
+					{
+						// Ignore any exceptions, they can apparently still happen even though we check the LatencyMode above
+						endNoGCRegion = false;
+					}
 
 					try 
 					{
