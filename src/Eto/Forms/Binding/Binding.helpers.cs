@@ -189,18 +189,15 @@ partial class Binding
 	/// <param name="obj">INotifyPropertyChanged object to attach the event handler to</param>
 	/// <param name="propertyName">Name of the property to trigger the changed event.</param>
 	/// <param name="eh">Event handler delegate to trigger when the specified property changes</param>
-	/// <returns>Object to pass to RemovePropertyEvent to unregister the event</returns>
 	/// <seealso cref="RemovePropertyEvent(object,EventHandler{EventArgs})"/>
 	/// <seealso cref="RemovePropertyEvent(object,string,EventHandler{EventArgs})"/>
-	public static object AddPropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
+	public static void AddPropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
 	{
 		if (obj is INotifyPropertyChanged notifyObject)
 		{
 			var helper = new PropertyNotifyHelper(notifyObject, propertyName);
 			helper.Changed += eh;
-			return helper;
 		}
-		return null;
 	}
 
 	/// <summary>
@@ -214,27 +211,25 @@ partial class Binding
 	/// <param name="obj">INotifyPropertyChanged object to attach the event handler to</param>
 	/// <param name="propertyExpression">Expression to the property to trigger the changed event.</param>
 	/// <param name="eh">Event handler delegate to trigger when the specified property changes</param>
-	/// <returns>Object to pass to RemovePropertyEvent to unregister the event</returns>
 	/// <seealso cref="RemovePropertyEvent(object,EventHandler{EventArgs})"/>
 	/// <seealso cref="RemovePropertyEvent{T,TProperty}(T,Expression{Func{T, TProperty}},EventHandler{EventArgs})"/>
-	public static object AddPropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
+	public static void AddPropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
 	{
 		var propertyInfo = propertyExpression.GetMemberInfo();
 		if (propertyInfo != null)
 		{
-			return AddPropertyEvent(obj, propertyInfo.Member.Name, eh);
+			AddPropertyEvent(obj, propertyInfo.Member.Name, eh);
 		}
-		return null;
 	}
 
 	/// <summary>
 	/// Removes an event handler previously attached with the AddPropertyEvent method.
 	/// </summary>
 	/// <remarks>
-	/// Note that if you pass the object that the event is attached to instea of the object returned from AddPropertyEvent,
-	/// then this will unsubscribe from all property handlers that point to the same delegate specified by <paramref name="eh"/>
+	/// Note that this will unsubscribe from all property handlers that point to the same delegate specified by <paramref name="eh"/>.
+	/// Use <see cref="RemovePropertyEvent(object, string, EventHandler{EventArgs})"/> to only unsubscribe for a single property.
 	/// </remarks>
-	/// <param name="obj">Object returned from AddPropertyEvent to unsubscribe, or the object the event is subscribed to</param>
+	/// <param name="obj">Object the event is subscribed to</param>
 	/// <param name="eh">Event handler delegate to remove</param>
 	/// <seealso cref="AddPropertyEvent(object,string,EventHandler{EventArgs})"/>
 	public static void RemovePropertyEvent(object obj, EventHandler<EventArgs> eh)
@@ -266,7 +261,7 @@ partial class Binding
 	/// <summary>
 	/// Removes an event handler previously attached with the AddPropertyEvent method.
 	/// </summary>
-	/// <param name="obj">Object returned from AddPropertyEvent to unsubscribe</param>
+	/// <param name="obj">INotifyPropertyChanged object to unsubscribe from</param>
 	/// <param name="propertyExpression">Expression for the property to remove the event handler for</param>
 	/// <param name="eh">Event handler delegate to remove</param>
 	/// <seealso cref="AddPropertyEvent{T,TProperty}(T,Expression{Func{T, TProperty}},EventHandler{EventArgs})"/>
@@ -282,7 +277,7 @@ partial class Binding
 	/// <summary>
 	/// Removes an event handler previously attached with the AddPropertyEvent method.
 	/// </summary>
-	/// <param name="obj">Object returned from AddPropertyEvent to unsubscribe</param>
+	/// <param name="obj">INotifyPropertyChanged object to unsubscribe from</param>
 	/// <param name="propertyName">Name of the property to remove the event handler for</param>
 	/// <param name="eh">Event handler delegate to remove</param>
 	/// <seealso cref="AddPropertyEvent(object,string,EventHandler{EventArgs})"/>

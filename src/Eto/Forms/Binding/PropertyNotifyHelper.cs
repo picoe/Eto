@@ -5,7 +5,7 @@ namespace Eto.Forms;
 /// </summary>
 /// <remarks>
 /// Use <see cref="Binding.AddPropertyEvent"/> and <see cref="Binding.RemovePropertyEvent(object,string,EventHandler{EventArgs})"/> to access
-/// this functionality.
+/// this functionality, or better yet use the <see cref="PropertyBinding{T}"/> class.
 /// </remarks>
 class PropertyNotifyHelper
 {
