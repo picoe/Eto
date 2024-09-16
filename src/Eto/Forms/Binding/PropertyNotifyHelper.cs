@@ -4,15 +4,15 @@ namespace Eto.Forms;
 /// Helper to turn a property changed event to an EventHandler for binding
 /// </summary>
 /// <remarks>
-/// Use <see cref="Binding.AddPropertyEvent"/> and <see cref="Binding.RemovePropertyEvent"/> to access
-/// this functionality.
+/// Use <see cref="Binding.AddPropertyEvent"/> and <see cref="Binding.RemovePropertyEvent(object,string,EventHandler{EventArgs})"/> to access
+/// this functionality, or better yet use the <see cref="PropertyBinding{T}"/> class.
 /// </remarks>
 class PropertyNotifyHelper
 {
 	public string PropertyName { get; private set; }
 
 	public event EventHandler<EventArgs> Changed;
-
+	
 	public PropertyNotifyHelper(INotifyPropertyChanged obj, string propertyName)
 	{
 		PropertyName = propertyName;
@@ -35,4 +35,15 @@ class PropertyNotifyHelper
 		}
 	}
 
+	public bool IsHookedTo(EventHandler<EventArgs> eh)
+	{
+		foreach (var invocation in Changed.GetInvocationList())
+		{
+			if (invocation == (Delegate)eh)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 }
