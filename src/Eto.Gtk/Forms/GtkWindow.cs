@@ -11,6 +11,8 @@ namespace Eto.GtkSharp.Forms
 		Gtk.Window Control { get; }
 
 		Size UserPreferredSize { get; }
+
+		Window.ICallback Callback { get; }
 	}
 
 	public class GtkShrinkableVBox : Gtk.Box
@@ -188,7 +190,7 @@ namespace Eto.GtkSharp.Forms
 #endif
 			Control.SetGeometryHints(Control, geom, Gdk.WindowHints.MinSize);
 		}
-		
+
 
 		public bool Minimizable
 		{
@@ -215,7 +217,7 @@ namespace Eto.GtkSharp.Forms
 			get { return !Control.SkipTaskbarHint; }
 			set { Control.SkipTaskbarHint = !value; }
 		}
-		
+
 		public bool Closeable
 		{
 			get => Control.Deletable;
@@ -262,9 +264,9 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 		}
-		
+
 		protected virtual Gdk.WindowTypeHint DefaultTypeHint => Gdk.WindowTypeHint.Normal;
-		
+
 		void SetTypeHint()
 		{
 			if (WindowStyle == WindowStyle.Default && (Minimizable || Maximizable))
@@ -284,7 +286,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				DisableAutoSizeUpdate++;
 				UserPreferredSize = value;
-					
+
 				if (Widget.Loaded)
 				{
 					var diff = WindowDecorationSize;
@@ -447,7 +449,10 @@ namespace Eto.GtkSharp.Forms
 
 			public void HandleShownEvent(object sender, EventArgs e)
 			{
-				Handler?.Callback.OnShown(Handler.Widget, EventArgs.Empty);
+				var h = Handler;
+				if (h == null || h.WasClosed)
+					return;
+				Application.Instance.AsyncInvoke(() => h.Callback.OnShown(Handler.Widget, EventArgs.Empty));
 			}
 
 			public void HandleWindowStateEvent(object o, Gtk.WindowStateEventArgs args)
@@ -615,12 +620,22 @@ namespace Eto.GtkSharp.Forms
 			return !args.Cancel;
 		}
 
+		static readonly object WasClosedKey = new object();
+
+		protected bool WasClosed
+		{
+			get { return Widget.Properties.Get<bool>(WasClosedKey); }
+			set { Widget.Properties.Set(WasClosedKey, value); }
+		}
+
+
 		public virtual void Close()
 		{
 			if (Widget.Loaded && CloseWindow())
 			{
 				Control.Hide();
 				Control.Unrealize();
+				WasClosed = true;
 			}
 		}
 
@@ -797,7 +812,7 @@ namespace Eto.GtkSharp.Forms
 				if (WindowState == WindowState.Minimized)
 					Control.Present();
 			}
-			
+
 			Control.GetWindow()?.Raise();
 		}
 
@@ -868,12 +883,20 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
+				if (!Control.IsRealized)
+				{
+					Control.Child?.ShowAll();
+					Control.Realize();
+				}
+					
 				var window = Control.GetWindow();
 				if (window == null)
 					return Size.Empty;
 				return window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
 			}
 		}
+
+		Window.ICallback IGtkWindow.Callback => Callback;
 
 		bool isInvalidated;
 

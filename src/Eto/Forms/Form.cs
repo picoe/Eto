@@ -88,8 +88,6 @@ public class Form : Window
 		{
 			OnPreLoad(EventArgs.Empty);
 			OnLoad(EventArgs.Empty);
-			OnLoadComplete(EventArgs.Empty);
-
 			Application.Instance.AddWindow(this);
 		}
 

@@ -529,8 +529,11 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	static readonly object LoadCompleteKey = new object();
 
 	/// <summary>
-	/// Occurs when the load is complete, which happens after the <see cref="Load"/> event
+	/// Occurs when the load is complete, which happens after the <see cref="Load"/> event and before the window/control is shown.
 	/// </summary>
+	/// <remarks>
+	/// This is a good place to reposition a Window before it is shown.
+	/// </remarks>
 	/// <seealso cref="Load"/>
 	/// <seealso cref="PreLoad"/>
 	/// <seealso cref="UnLoad"/>

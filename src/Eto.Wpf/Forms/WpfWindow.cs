@@ -135,15 +135,17 @@ namespace Eto.Wpf.Forms
 		{
 			isSourceInitialized = true;
 			
-			if (WindowStyle == WindowStyle.None)
+			if (Resizable && WindowStyle == WindowStyle.None)
 			{
-				SetWindowChrome(Resizable);
+				SetWindowChrome();
 			}
 			
 			if (!Minimizable || !Maximizable)
 			{
 				SetResizeMode();
 			}
+			
+			SetSystemMenu();
 
 			if (initialLocation != null)
 			{
@@ -182,12 +184,18 @@ namespace Eto.Wpf.Forms
 				SetContentSize();
 			}
 			// stop form from auto-sizing after it is shown
+			Control.SizeToContent = sw.SizeToContent.Manual;
 			SetSizeToContent();
 			if (Control.ShowActivated)
 				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 
 			((swin.HwndSource)sw.PresentationSource.FromVisual(Control))?.AddHook(HookProc);
+
+			if (FireOnLoadComplete)
+				Callback.OnLoadComplete(Widget, EventArgs.Empty);
 		}
+
+		protected bool FireOnLoadComplete { get; set; }
 
 		private void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
 		{
@@ -495,20 +503,32 @@ namespace Eto.Wpf.Forms
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			var _ = NativeHandle;
-			var old = Control.SizeToContent;
-			if (!Control.IsLoaded)
-				Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
-			var available = availableSize.ToWpf();
 			var preferred = UserPreferredSize;
+			var available = preferred.IfNaN(availableSize.ToWpf());
+
+			SizeF desired;
+			if (!Control.IsLoaded)
+			{
+				var oldSizeToContent = Control.SizeToContent;
+				var oldVisibility = Control.Visibility;
+				var _ = NativeHandle; // Ensure SourceInitialized is triggered
+				Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+				Control.Visibility = sw.Visibility.Hidden; // Set to hidden (instead of Collapsed)
+				Control.Measure(available);
+				desired = Control.DesiredSize.ToEto();
+				Control.Visibility = oldVisibility;
+				Control.SizeToContent = oldSizeToContent;
+			}
+			else
+			{
+				Control.Measure(available);
+				desired = Control.DesiredSize.ToEto();
+			}
+			desired = SizeF.Max(MinimumSize, desired);
 			if (!double.IsNaN(preferred.Width))
-				available.Width = preferred.Width;
+				desired.Width = (float)preferred.Width;
 			if (!double.IsNaN(preferred.Height))
-				available.Width = preferred.Height;
-			Control.ApplyAllTemplates();
-			Control.Measure(available);
-			var desired = SizeF.Max(MinimumSize, Control.DesiredSize.ToEto());
-			Control.SizeToContent = old;
+				desired.Height = (float)preferred.Height;
 			return desired;
 		}
 		
@@ -538,7 +558,7 @@ namespace Eto.Wpf.Forms
 				if (Widget.Properties.TrySet(WpfWindow.Resizable_Key, value, true))
 				{
 					SetResizeMode();
-					SetWindowChrome(WindowStyle == WindowStyle.None && value);
+					SetWindowChrome();
 				}
 			}
 		}
@@ -592,6 +612,9 @@ namespace Eto.Wpf.Forms
 		
 		void SetSystemMenu()
 		{
+			if (!isSourceInitialized)
+				return;
+				
 			// hide system menu (and close button) if all commands are disabled
 			var useSystemMenu = ShowSystemMenu ?? (Closeable || Minimizable || Maximizable);
 			SetStyle(Win32.WS.SYSMENU, useSystemMenu);
@@ -932,7 +955,7 @@ namespace Eto.Wpf.Forms
 				if (WindowStyle != value)
 				{
 					Control.WindowStyle = value.ToWpf();
-					SetWindowChrome(value == WindowStyle.None && Resizable);
+					SetWindowChrome();
 				}
 			}
 		}
@@ -966,13 +989,14 @@ namespace Eto.Wpf.Forms
 			Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style);
 		}
 		
-		void SetWindowChrome(bool enabled)
+		void SetWindowChrome()
 		{
 			if (!isSourceInitialized)
 				return;
 			var oldStyle = SaveWindowStyle();
+			var needsCustomWindowChrome = Resizable && WindowStyle == WindowStyle.None;
 
-			if (enabled)
+			if (needsCustomWindowChrome)
 			{
 				var windowChrome = new sw.Shell.WindowChrome
 				{

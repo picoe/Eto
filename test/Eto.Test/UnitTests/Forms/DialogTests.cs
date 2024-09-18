@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace Eto.Test.UnitTests.Forms
 {
 	[TestFixture]
-	public class DialogTests : TestBase
+	public class DialogTests : WindowTests<Dialog>
 	{
 		[Test, ManualTest]
 		public void DialogShouldShowContent()
@@ -212,5 +212,12 @@ namespace Eto.Test.UnitTests.Forms
 			);
 		}
 
+		protected override void Test(Action<Dialog> test, int timeout = 4000) => Dialog(test, timeout);
+
+		protected override void ManualTest(string message, Func<Dialog, Control> test) => ManualDialog(message, test);
+
+		protected override void Show(Dialog window) => window.ShowModal();
+
+		protected override Task ShowAsync(Dialog window) => window.ShowModalAsync();
 	}
 }

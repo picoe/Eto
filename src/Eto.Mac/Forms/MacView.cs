@@ -1343,12 +1343,20 @@ namespace Eto.Mac.Forms
 			// don't use GetMacViewHandler() extension, as that will trigger OnShown for themed controls, which will
 			// trigger Shown multiple times for the same themed control
 			var handler = control.Handler as IMacViewHandler;
-			handler?.Callback.OnShown(control, EventArgs.Empty);
+			var isWindow = control is Window;
+			
+			// Parent controls get shown event first, then children
+			if (!isWindow)
+				handler?.Callback.OnShown(control, EventArgs.Empty);
 
 			foreach (var ctl in control.VisualControls)
 			{
 				FireOnShown(ctl);
 			}
+
+			// Window fires shown after all child controls
+			if (isWindow)
+				handler?.Callback.OnShown(control, EventArgs.Empty);
 		}
 
 		protected virtual void FireOnShown() => FireOnShown(Widget);
