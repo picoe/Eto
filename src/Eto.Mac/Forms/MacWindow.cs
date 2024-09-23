@@ -281,7 +281,9 @@ namespace Eto.Mac.Forms
 					naturalSize.Height = preferredClientSize.Value.Height;
 			}
 
-			return naturalSize;
+			var frame = Control.FrameRectFor(new RectangleF(naturalSize).ToNS());
+
+			return frame.Size.ToEto();
 		}
 
 		public NSMenu MenuBar
@@ -788,7 +790,7 @@ namespace Eto.Mac.Forms
 				if (UserPreferredSize.Height != -1)
 					availableSize.Height = UserPreferredSize.Height - borderSize.Height;
 				var size = GetPreferredSize(availableSize);
-				SetContentSize(size.ToNS());
+				SetSize(size.ToNS());
 			}
 		}
 
@@ -1170,33 +1172,17 @@ namespace Eto.Mac.Forms
 
 		#region IMacContainer implementation
 
-		void SetContentSize(CGSize contentSize)
+		void SetSize(CGSize newSize)
 		{
 			if (MinimumSize != Size.Empty)
 			{
-				contentSize.Width = (nfloat)Math.Max(contentSize.Width, MinimumSize.Width);
-				contentSize.Height = (nfloat)Math.Max(contentSize.Height, MinimumSize.Height);
+				newSize.Width = (nfloat)Math.Max(newSize.Width, MinimumSize.Width);
+				newSize.Height = (nfloat)Math.Max(newSize.Height, MinimumSize.Height);
 			}
 
-			if (Widget.Loaded)
-			{
-				var clientSize = ClientSize;
-				var diffy = clientSize.Height - (int)contentSize.Height;
-				var diffx = clientSize.Width - (int)contentSize.Width;
-				var frame = Control.Frame;
-				if (diffx != 0 || setInitialSize)
-				{
-					frame.Width -= diffx;
-				}
-				if (diffy != 0 || setInitialSize)
-				{
-					frame.Y += diffy;
-					frame.Height -= diffy;
-				}
-				Control.SetFrame(frame, true, AnimateSizeChanges);
-			}
-			else
-				Control.SetContentSize(contentSize);
+			var frame = Control.Frame;
+			frame.Size = newSize;
+			Control.SetFrame(frame, Widget.Loaded, AnimateSizeChanges);
 		}
 
 		#endregion

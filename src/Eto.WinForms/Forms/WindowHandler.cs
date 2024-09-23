@@ -194,6 +194,8 @@ namespace Eto.WinForms.Forms
 			Control.Size = size;
 			content.MinimumSize = content.MaximumSize = sd.Size.Empty;
 			ContainerContentControl.MinimumSize = sd.Size.Empty;
+
+			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 		}
 
 		public override Size Size

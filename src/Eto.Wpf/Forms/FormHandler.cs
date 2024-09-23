@@ -40,10 +40,21 @@ namespace Eto.Wpf.Forms
 		public virtual void Show()
 		{
 			Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
-			if (ApplicationHandler.Instance.IsStarted)
+			if (Control.IsLoaded)
 			{
-				Control.Show();
+				Callback.OnLoadComplete(Widget, EventArgs.Empty);
+				FireOnLoadComplete = false;
 			}
+			else
+			{
+				// We should trigger during the Control.Loaded event
+				FireOnLoadComplete = true;
+			}
+			
+			var _ = NativeHandle; // ensure SourceInitialized is called to get right size based on style flags
+			
+			if (ApplicationHandler.Instance.IsStarted)
+				Control.Show();
 			else
 				ApplicationHandler.Instance.DelayShownWindows.Add(Control);
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;

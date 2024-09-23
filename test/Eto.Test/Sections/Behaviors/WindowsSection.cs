@@ -493,6 +493,10 @@ namespace Eto.Test.Sections.Behaviors
 			child.Closed += child_Closed;
 			child.Closing += child_Closing;
 			child.Shown += child_Shown;
+			child.Load += child_Load;
+			child.UnLoad += child_UnLoad;
+			child.LoadComplete += child_LoadComplete;
+			child.LogicalPixelSizeChanged += child_LogicalPixelSizeChanged;
 			child.GotFocus += child_GotFocus;
 			child.LostFocus += child_LostFocus;
 			child.LocationChanged += child_LocationChanged;
@@ -598,6 +602,28 @@ namespace Eto.Test.Sections.Behaviors
 			Log.Write(child, "Shown");
 			OnDataContextChanged(EventArgs.Empty);
 		}
+		
+		void child_Load(object sender, EventArgs e)
+		{
+			Log.Write(sender, "Load");
+		}
+		
+		void child_LoadComplete(object sender, EventArgs e)
+		{
+			Log.Write(sender, "LoadComplete");
+		}
+
+		void child_UnLoad(object sender, EventArgs e)
+		{
+			Log.Write(sender, "UnLoad");
+		}
+
+		void child_LogicalPixelSizeChanged(object sender, EventArgs e)
+		{
+			var window = sender as Window;
+			Log.Write(sender, $"LogicalPixelSizeChanged: {window?.LogicalPixelSize}");
+		}
+
 
 		static void child_OwnerChanged(object sender, EventArgs e)
 		{

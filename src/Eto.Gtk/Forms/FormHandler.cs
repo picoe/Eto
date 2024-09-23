@@ -26,6 +26,8 @@ namespace Eto.GtkSharp.Forms
 		{
 			DisableAutoSizeUpdate++;
 			Control.Child.ShowAll();
+			Control.Realize();
+			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			if (ShowActivated || !Control.AcceptFocus)
 				Control.Show();
 			else

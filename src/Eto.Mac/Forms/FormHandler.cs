@@ -58,6 +58,8 @@ namespace Eto.Mac.Forms
 
 		public virtual void Show()
 		{
+			Control.LayoutIfNeeded();
+			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			var visible = Control.IsVisible;
 			if (ShowActivated)
 			{

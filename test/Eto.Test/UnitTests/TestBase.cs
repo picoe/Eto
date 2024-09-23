@@ -76,12 +76,12 @@ namespace Eto.Test.UnitTests
 		/// <summary>
 		/// Default timeout for form operations
 		/// </summary>
-		const int DefaultTimeout = 4000;
+		protected const int DefaultTimeout = 4000;
 
 		/// <summary>
 		/// Timeout for application initialization
 		/// </summary>
-		const int ApplicationTimeout = 10000;
+		protected const int ApplicationTimeout = 10000;
 
 		/// <summary>
 		/// initializes the application when running unit tests directly through the IDE or NUnit gui.

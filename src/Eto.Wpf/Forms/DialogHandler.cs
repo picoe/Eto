@@ -102,6 +102,18 @@ namespace Eto.Wpf.Forms
 			if (owner != null && !owner.HasFocus)
 				owner.Focus();
 
+			if (Control.IsLoaded)
+			{
+				Callback.OnLoadComplete(Widget, EventArgs.Empty);
+				FireOnLoadComplete = false;
+			}
+			else
+			{
+				FireOnLoadComplete = true;
+			}
+
+			var _ = NativeHandle; // ensure SourceInitialized is called to get right size based on style flags
+
 			Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 
