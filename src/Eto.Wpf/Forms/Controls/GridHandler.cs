@@ -47,7 +47,7 @@ namespace Eto.Wpf.Forms.Controls
 			Loaded += EtoDataGrid_Loaded;
 		}
 
-		private void EtoDataGrid_Loaded(object sender, sw.RoutedEventArgs e)
+				private void EtoDataGrid_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			var scp = this.FindChild<swc.ScrollContentPresenter>();
 			if (scp != null) scp.RequestBringIntoView += OnRequestBringIntoView;
@@ -146,7 +146,6 @@ namespace Eto.Wpf.Forms.Controls
 				EnableColumnVirtualization = true,
 				EnableRowVirtualization = true,
 			};
-			Control.SetResourceReference(swc.Control.BackgroundProperty, sw.SystemColors.WindowBrushKey);
 		}
 
 		protected ColumnCollection Columns { get; private set; }

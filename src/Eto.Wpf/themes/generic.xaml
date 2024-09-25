@@ -6,9 +6,13 @@
     xmlns:s="clr-namespace:System;assembly=mscorlib">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/wpftoolkit/ButtonSpinner.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/controls/WatermarkTextBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/controls/DataGrid.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/controls/SearchTextBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/controls/WatermarkTextBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/controls/Window.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/controls/XceedColorDialog.xaml" />
+		
+        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;Component/themes/wpftoolkit/ButtonSpinner.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type r:TreeToggleButton}">
