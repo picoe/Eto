@@ -30,6 +30,11 @@ namespace Eto.Wpf.Forms
 		internal static readonly object Icon_Key = new object();
 		internal static readonly object ShowSystemMenu_Key = new object();
 	}
+	
+	public class EtoWindowContent : swc.DockPanel
+	{
+		
+	}
 
 	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
 		where TControl : sw.Window
@@ -99,7 +104,7 @@ namespace Eto.Wpf.Forms
 		{
 			if (IsAttached)
 				return;
-			content = new swc.DockPanel();
+			content = new EtoWindowContent();
 			UseShellDropManager = true;
 
 			base.Initialize();
@@ -109,7 +114,6 @@ namespace Eto.Wpf.Forms
 			main = new swc.DockPanel();
 			menuHolder = new swc.ContentControl { IsTabStop = false };
 			toolBarHolder = new swc.ContentControl { IsTabStop = false };
-			content.SetResourceReference(swc.Panel.BackgroundProperty, sw.SystemColors.ControlBrushKey);
 			swc.DockPanel.SetDock(menuHolder, swc.Dock.Top);
 			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
 			main.Children.Add(menuHolder);
