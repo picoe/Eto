@@ -14,3 +14,4 @@ AppPackages
 /artifacts
 packages/
 .store
+.DS_Store
