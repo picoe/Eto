@@ -29,7 +29,7 @@ namespace Eto.Test.Sections.Behaviors
 
 			var typeControls = CreateTypeControls();
 
-			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), MovableByWindowBackground(), null);
+			layout.AddSeparateRow(null, Resizable(), AutoSize(), Minimizable(), Maximizable(), MovableByWindowBackground(), null);
 			layout.AddSeparateRow(null, ShowInTaskBar(), CloseableCheckBox(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
 			layout.AddSeparateRow(null, "Type", typeControls, null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
@@ -62,6 +62,7 @@ namespace Eto.Test.Sections.Behaviors
 		class SettingsWindow : INotifyPropertyChanged
 		{
 			public bool ThreeState => true; // enable three state for these settings
+			public bool? AutoSize { get; set; }
 			public bool? Resizable { get; set; }
 			public bool? CanFocus { get; set; }
 			public bool? Minimizable { get; set; }
@@ -187,7 +188,7 @@ namespace Eto.Test.Sections.Behaviors
 		Control DisplayModeDropDown()
 		{
 			dialogDisplayModeDropDown = new EnumDropDown<DialogDisplayMode?>();
-			dialogDisplayModeDropDown.Bind(c => c.Enabled, typeRadio, Binding.Property((RadioButtonList t) => t.SelectedKey).ToBool("dialog"));
+			dialogDisplayModeDropDown.Bind(c => c.Enabled, typeRadio, Binding.Property((EnumRadioButtonList<WindowType> t) => t.SelectedValue).ToBool(WindowType.Dialog));
 			dialogDisplayModeDropDown.SelectedValueChanged += (sender, e) =>
 			{
 				if (child is Dialog dlg)
@@ -215,6 +216,13 @@ namespace Eto.Test.Sections.Behaviors
 			var resizableCheckBox = new CheckBox { Text = "Resizable" };
 			resizableCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
 			resizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Resizable);
+			return resizableCheckBox;
+		}
+		Control AutoSize()
+		{
+			var resizableCheckBox = new CheckBox { Text = "AutoSize" };
+			resizableCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			resizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.AutoSize);
 			return resizableCheckBox;
 		}
 
@@ -510,6 +518,8 @@ namespace Eto.Test.Sections.Behaviors
 				child.Topmost = settings.Topmost ?? false;
 			if (settings.Resizable != null)
 				child.Resizable = settings.Resizable ?? false;
+			if (settings.AutoSize != null)
+				child.AutoSize = settings.AutoSize ?? false;
 			if (settings.Maximizable != null)
 				child.Maximizable = settings.Maximizable ?? false;
 			if (settings.Minimizable != null)

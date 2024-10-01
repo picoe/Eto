@@ -1,7 +1,5 @@
 using Eto.Test.UnitTests;
 using NUnit.Framework;
-using sw = System.Windows;
-using swc = System.Windows.Controls;
 using swf = System.Windows.Forms;
 
 
