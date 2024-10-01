@@ -952,13 +952,6 @@ namespace Eto.Mac.Forms
 			get { return Control.ContentView.Frame.Size.ToEtoSize(); }
 			set
 			{
-				if (value.Height != -1)
-				{
-					var oldFrame = Control.Frame;
-					var oldSize = Control.ContentView.Frame;
-					Control.SetFrameOrigin(new CGPoint(oldFrame.X, (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldSize.Height))));
-				}
-
 				PreferredClientSize = value;
 				if (value.Width != -1 && value.Height != -1)
 					UserPreferredSize = new Size(-1, -1);
@@ -1181,6 +1174,7 @@ namespace Eto.Mac.Forms
 			}
 
 			var frame = Control.Frame;
+			frame.Y += frame.Height - newSize.Height;
 			frame.Size = newSize;
 			Control.SetFrame(frame, Widget.Loaded, AnimateSizeChanges);
 		}
