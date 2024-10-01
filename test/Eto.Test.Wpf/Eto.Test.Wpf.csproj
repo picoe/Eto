@@ -37,6 +37,11 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Using Include="System.Windows" Alias="sw" />
+    <Using Include="System.Windows.Controls" Alias="swc" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj" />
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />

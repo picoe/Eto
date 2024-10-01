@@ -801,7 +801,7 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		protected override void GrabFocus() => Control.Present();
+		protected override void GrabFocus() => Control.GetWindow().Focus(0);
 
 		public void BringToFront()
 		{

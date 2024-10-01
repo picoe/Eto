@@ -138,7 +138,7 @@ namespace Eto.Wpf.Forms
 		private void Control_SourceInitialized(object sender, EventArgs e)
 		{
 			isSourceInitialized = true;
-			
+
 			if (Resizable && WindowStyle == WindowStyle.None)
 			{
 				SetWindowChrome();
@@ -179,16 +179,15 @@ namespace Eto.Wpf.Forms
 
 		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
-			// NOTE: If the window size is set, it will be made visible BEFORE this is called.
-			
 			SetMinimumSize();
 			if (initialClientSize != null)
 			{
 				initialClientSize = null;
 				SetContentSize();
 			}
-			// stop form from auto-sizing after it is shown
-			Control.SizeToContent = sw.SizeToContent.Manual;
+
+			// Set sizing mode - if it is set to manual before here it will be visible before it is loaded
+			// which we do not want.
 			SetSizeToContent();
 			if (Control.ShowActivated)
 				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
@@ -389,7 +388,7 @@ namespace Eto.Wpf.Forms
 		private void SetSizeToContent()
 		{
 			sw.SizeToContent sizing;
-			if (Widget.Loaded && !AutoSize)
+			if (Control.IsLoaded && !AutoSize)
 			{
 				sizing = sw.SizeToContent.Manual;
 			}
@@ -412,6 +411,11 @@ namespace Eto.Wpf.Forms
 					sizing = sw.SizeToContent.Manual;
 				}
 			}
+
+			// If we set it to manual before loaded, it gets shown before Loaded event fires,
+			// which we do not want.
+			if (sizing == sw.SizeToContent.Manual && !Control.IsLoaded)
+				return;
 
 			Control.SizeToContent = sizing;
 		}

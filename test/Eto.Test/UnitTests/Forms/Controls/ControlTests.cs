@@ -57,6 +57,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			int shownCount = 0;
 			Form(form =>
 			{
+				form.Size = new Size(200, 200);
 				form.Shown += (sender, e) => Application.Instance.AsyncInvoke(() =>
 				{
 					try

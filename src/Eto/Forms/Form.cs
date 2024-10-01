@@ -79,7 +79,7 @@ public class Form : Window
 	}
 
 	/// <summary>
-	/// Show the form
+	/// Show the form, and make it the active window if <see cref="ShowActivated"/> is <c>true</c>
 	/// </summary>
 	public void Show()
 	{
@@ -89,9 +89,13 @@ public class Form : Window
 			OnPreLoad(EventArgs.Empty);
 			OnLoad(EventArgs.Empty);
 			Application.Instance.AddWindow(this);
+			Handler.Show();
 		}
-
-		Handler.Show();
+		else
+		{
+			// Already shown, make it visible
+			base.Visible = true;
+		}
 	}
 
 	/// <summary>
