@@ -225,7 +225,7 @@ namespace Eto.WinForms.Forms
 					availableSize.Width = 0;
 				if (!clientHeightSet)
 					availableSize.Height = 0;
-				contentSize = Size.Ceiling(Content.GetPreferredSize(availableSize));
+				contentSize = Size.Ceiling(Content?.GetPreferredSize(availableSize) ?? Size.Empty);
 			}
 		}
 		Size? contentSize;
