@@ -1079,18 +1079,21 @@ namespace Eto.Wpf.Forms
 		{
 			if (owner == null)
 			{
+				// Clear out WPF owner
 				Control.Owner = null;
-				return;
+
+				// If the owner was set to an HWND clear that out too.
+				var interop = windowInterop ?? new sw.Interop.WindowInteropHelper(Control);
+				interop.Owner = IntPtr.Zero;
 			}
-			var wpfWindow = owner.Handler as IWpfWindow;
-			if (wpfWindow != null)
+			else if (owner.Handler is IWpfWindow wpfWindow)
+			{
+				// Owner could be an HwndWindowHandler (or other) which sets owner differently
 				wpfWindow.SetOwnerFor(Control);
+			}
 		}
 
-		public double WpfScale
-		{
-			get { return dpiHelper?.WpfScale ?? 1f; }
-		}
+		public double WpfScale => dpiHelper?.WpfScale ?? 1f;
 
 		public float LogicalPixelSize
 		{
@@ -1119,10 +1122,18 @@ namespace Eto.Wpf.Forms
 			set
 			{
 				if (value)
+				{
+					// set owner back if we weren't visible beforehand
+					SetOwner(Widget.Owner);
 					Control.Show();
+				}
 				else
+				{
+					// hiding will hide entire owner chain, so clear that out before making it invisible.
+					SetOwner(null);
 					Control.Hide();
 			}
 		}
 	}
+}
 }
