@@ -7,6 +7,13 @@
     xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
     xmlns:local="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit">
 
+    <Style TargetType="DataGridRowsPresenter">
+        <!-- Avoid endless loop in WPF due to the following:
+        https://github.com/dotnet/wpf/issues/9944
+        -->
+        <Setter Property="UseLayoutRounding" Value="False"/>
+    </Style>
+
     <Style TargetType="efc:EtoDataGrid">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
     </Style>
