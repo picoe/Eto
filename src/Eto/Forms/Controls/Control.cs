@@ -131,7 +131,9 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	public const string KeyDownEvent = "Control.KeyDown";
 
 	/// <summary>
-	/// Occurs when a key has been pressed and is down
+	/// Occurs when a key has been pressed and is down.
+	/// Focus is required for this event to be raised. Ensure CanFocus is set to true.
+	/// If <see cref="KeyEventArgs.Handled"/> is set to false (default is false), <see cref="KeyUp"/> will not subsequently raise.
 	/// </summary>
 	/// <seealso cref="KeyUp"/>
 	public event EventHandler<KeyEventArgs> KeyDown
@@ -156,6 +158,8 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 
 	/// <summary>
 	/// Occurs when a key was released
+	/// Focus is required for this event to be raised. Ensure CanFocus is set to true.
+	/// <see cref="KeyUp"/> requires <see cref="KeyEventArgs.Handled"/> to be set to true in the <see cref="KeyDown"/> event to raise.
 	/// </summary>
 	/// <seealso cref="KeyDown"/>
 	public event EventHandler<KeyEventArgs> KeyUp
@@ -589,6 +593,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 
 	/// <summary>
 	/// Occurs when a drag operation is dropped onto the control.
+	/// Requires <see cref="DragOver"/> to set <see cref="DragEventArgs.Effects"/> to something other than <see cref="DragEffects.None"/> or this event will not raise.
 	/// </summary>
 	/// <remarks>
 	/// This should perform any of the actual drop logic and update the control state to reflect the dropped data.
@@ -1216,11 +1221,11 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	public IEnumerable<string> SupportedPlatformCommands => Handler.SupportedPlatformCommands;
 
 	/// <summary>
-	/// Specifies a command to execute for a platform-specific command
+	/// Specifies a command to execute for a Mac platform-specific command
 	/// </summary>
 	/// <remarks>
-	/// Some platforms have specific system-defined commands that can be associated with a control.
-	/// For example, the Mac platform's cut/copy/paste functionality is defined by the system, and if you want to
+	/// Mac has specific system-defined commands that can be associated with a control.
+	/// For example, cut/copy/paste functionality is defined by the system, and if you want to
 	/// hook into it, you can use this to map it to your own defined logic.
 	/// The valid values of the <paramref name="systemCommand"/> parameter are defined by each platform, and a list can be
 	/// retrieved using <see cref="Control.SupportedPlatformCommands"/>
