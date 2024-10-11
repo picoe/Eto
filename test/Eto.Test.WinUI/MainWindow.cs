@@ -13,11 +13,16 @@ namespace Eto.Test.WinUI
 	{
 		public MainWindow()
 		{
-			Content = new TableLayout
+			Content = new Splitter
 			{
-				Rows = {
-					new TableRow(new Label { Text = "This is an Eto.Forms Label" }, new Label { Text = "Second Column" }),
-					new Label { Text = "Second Row" }
+				Panel1 = new Label { Text = "Hi" },
+				Panel2 = new TableLayout
+				{
+					Rows = {
+					new TableRow(new Label { Text = "This is an Eto.Forms Label" }, new Label { Text = "Second Column", TextAlignment = TextAlignment.Center }),
+					new Button {Text = "Some Button"},
+					new Label { Text = "Second Row", VerticalAlignment = VerticalAlignment.Center }
+				}
 				}
 			};
 

@@ -29,7 +29,8 @@ namespace Eto.Test.WinUI
 		public App()
 		{
 			this.InitializeComponent();
-			new Eto.Forms.Application(new Eto.WinUI.Platform()).Attach(this);
+			var app = new Eto.Forms.Application(new Eto.WinUI.Platform());
+			app.Attach(this);
 		}
 
 		/// <summary>
@@ -38,10 +39,8 @@ namespace Eto.Test.WinUI
 		/// <param name="args">Details about the launch request and process.</param>
 		protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
 		{
-			m_window = new MainWindow();
-			m_window.Show();
+			Eto.Forms.Application.Instance.MainForm = new MainForm();
+			Eto.Forms.Application.Instance.MainForm?.Show();
 		}
-
-		private MainWindow m_window;
 	}
 }

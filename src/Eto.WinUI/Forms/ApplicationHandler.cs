@@ -24,6 +24,7 @@ public class ApplicationHandler : WidgetHandler<mux.Application, Application, Ap
 	public void Attach(object context)
 	{
 		Control = context as mux.Application;
+		Callback.OnInitialized(Widget, EventArgs.Empty);
 	}
 
 	protected override void Initialize()

@@ -56,6 +56,7 @@ public abstract partial class WinUIFrameworkElement<TControl, TWidget, TCallback
 
 
 	public virtual Color BackgroundColor { get; set; }
+
 	public Size Size
 	{
 		get => new Size(Width, Height);

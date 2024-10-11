@@ -8,9 +8,11 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.Add(NormalLabel());
-			layout.Add(FontLabel());
+			if (Platform.Supports<Font>())
+				layout.Add(FontLabel());
 			layout.Add(WrapLabel());
-			layout.AddSeparateRow(null, UnderlineLabel(), HotkeyLabel(), HotkeyUnderlineLabel(), null);
+			if (Platform.Supports<Font>())
+				layout.AddSeparateRow(null, UnderlineLabel(), HotkeyLabel(), HotkeyUnderlineLabel(), null);
 			layout.AddSeparateRow(null, ColorLabel(), BackgroundColorLabel(), null);
 			layout.Add(CenterLabel());
 			layout.Add(RightLabel());

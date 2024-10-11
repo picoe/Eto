@@ -1,4 +1,4 @@
-﻿namespace Eto.Test.Sections.Controls
+namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(CheckBox))]
 	public class CheckBoxSection : Scrollable
@@ -17,8 +17,11 @@
 
 			layout.Add(ThreeStateInitialValue());
 
-			layout.Add(new CheckBox { Text = "With Larger Font", Font = SystemFonts.Label(40) });
-			layout.Add(new CheckBox { Text = "With Smaller Font", Font = SystemFonts.Label(6) });
+			if (Platform.Supports<Font>())
+			{
+				layout.Add(new CheckBox { Text = "With Larger Font", Font = SystemFonts.Label(40) });
+				layout.Add(new CheckBox { Text = "With Smaller Font", Font = SystemFonts.Label(6) });
+			}
 
 			layout.AddSeparateRow(new CheckBox { Text = "Should be aligned with text" }, new Panel { Size = new Size(50, 50), BackgroundColor = Colors.Green });
 
