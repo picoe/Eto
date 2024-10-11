@@ -716,11 +716,11 @@ namespace Eto.GtkSharp.Forms
 				if (gdkWindow == null)
 					return state;
 
+				if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
+					return WindowState.FullScreen;
 				if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
 					return WindowState.Minimized;
 				if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
-					return WindowState.Maximized;
-				if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
 					return WindowState.Maximized;
 				return WindowState.Normal;
 			}
@@ -732,6 +732,14 @@ namespace Eto.GtkSharp.Forms
 					var gdkWindow = Control.GetWindow();
 					switch (value)
 					{
+						case WindowState.FullScreen:
+							if (gdkWindow != null)
+							{
+								if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
+									Control.Deiconify();
+							}
+							Control.Fullscreen();
+							break;
 						case WindowState.Maximized:
 							if (gdkWindow != null)
 							{
