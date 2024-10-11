@@ -491,6 +491,7 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 
 		Control.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
 		Control.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+		Control.CoreWebView2.DOMContentLoaded += CoreWebView2_DOMContentLoadedInjectScripts;
 		webView2Ready = true;
 
 		if (delayedActions != null)
@@ -577,6 +578,9 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 				Control.LostFocus += Control_LostFocus;
 				break;
 #endif
+			case WebView.MessageReceivedEvent:
+				Control.WebMessageReceived += Control_WebMessageReceived;
+				break;
 			default:
 				base.AttachEvent(handler);
 				break;
@@ -629,6 +633,40 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 				return;
 			Callback.OnDocumentLoaded(Widget, args);
 		});
+	}
+
+
+	/// <summary>
+	/// Called from JavaScript via window.eto.postMessage (window.chrome.webview.postMessage)
+	/// </summary>
+	private void Control_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
+	{
+		string content = null;
+		if (e.TryGetWebMessageAsString() is string str && !string.IsNullOrEmpty(str))
+		{
+			content = str;
+		}
+		else
+		{
+			content = e.WebMessageAsJson;
+		}
+		if (content != null)
+		{
+			Application.Instance.AsyncInvoke(() =>
+			{
+				if (Widget.IsDisposed)
+					return;
+				Callback.OnMessageReceived(Widget, new WebViewMessageEventArgs(content));
+			});
+		}
+	}
+
+	/// <summary>
+	/// Wraps window.chrome.webview.postMessage to window.eto.postMessage for platform consistency
+	/// </summary>
+	private void CoreWebView2_DOMContentLoadedInjectScripts(object sender, CoreWebView2DOMContentLoadedEventArgs e)
+	{
+		CoreWebView2.ExecuteScriptAsync("window.eto = { postMessage: function(message) { window.chrome.webview.postMessage(message); } };");
 	}
 
 	public Uri Url
