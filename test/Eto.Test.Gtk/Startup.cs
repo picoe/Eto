@@ -11,6 +11,7 @@ namespace Eto.Test.Gtk
 			platform.Add<INativeHostControls>(() => new NativeHostControls());
 			
 			var app = new TestApplication(platform);
+			global::Gtk.Widget.DefaultDirection = global::Gtk.TextDirection.Rtl;
 			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}

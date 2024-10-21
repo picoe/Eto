@@ -1,6 +1,21 @@
 namespace Eto.Forms;
 
 /// <summary>
+/// Specifies the layout direction of the user interface.
+/// </summary>
+public enum LayoutDirection
+{
+	/// <summary>
+	/// Indicates the user interface should be laid out from left to right
+	/// </summary>
+	LeftToRight,
+	/// <summary>
+	/// Indicates the user interface should be laid out from right to left
+	/// </summary>
+	RightToLeft
+}
+
+/// <summary>
 /// Base for all visual UI elements
 /// </summary>
 /// <remarks>
@@ -885,6 +900,18 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// Releases the mouse capture after a call to <see cref="CaptureMouse"/>.
 	/// </summary>
 	public void ReleaseMouseCapture() => Handler.ReleaseMouseCapture();
+	
+	/// <summary>
+	/// Gets or sets the layout direction for this control explicitly.
+	/// </summary>
+	/// <remarks>
+	/// The default layout direction of a control is based on the <see cref="Application.LayoutDirection"/>.
+	/// </remarks>
+	public LayoutDirection LayoutDirection
+	{
+		get => Handler.LayoutDirection;
+		set => Handler.LayoutDirection = value;
+	}
 
 	/// <summary>
 	/// Gets or sets the width of the control size.
@@ -2030,6 +2057,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// or it can be captured explicitly via <see cref="CaptureMouse"/>.
 		/// </remarks>
 		bool IsMouseCaptured { get; }
+		LayoutDirection LayoutDirection { get; set; }
 
 		/// <summary>
 		/// Captures all mouse events to this control.

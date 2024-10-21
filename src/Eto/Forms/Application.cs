@@ -539,6 +539,19 @@ public class Application : Widget
 	/// </summary>
 	/// <seealso cref="IsActiveChanged"/>
 	public bool IsActive => Handler.IsActive;
+	
+	
+	/// <summary>
+	/// Gets or sets the default layout direction for the user interface of the application.
+	/// </summary>
+	/// <remarks>
+	/// 
+	/// </remarks>
+	public LayoutDirection DefaultLayoutDirection
+	{
+		get => Handler.DefaultLayoutDirection;
+		set => Handler.DefaultLayoutDirection = value;
+	}
 
 	/// <summary>
 	/// Advanced. Runs an iteration of the main UI loop when you are blocking the UI thread with logic.
@@ -767,5 +780,6 @@ public class Application : Widget
 		/// Gets a value indicating that the application is currently the active application
 		/// </summary>
 		bool IsActive { get; }
+		LayoutDirection DefaultLayoutDirection { get; set; }
 	}
 }

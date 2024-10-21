@@ -32,6 +32,8 @@ namespace Eto.Test
 			this.Name = "Test Application";
 			this.Style = "application";
 
+			this.DefaultLayoutDirection = LayoutDirection.RightToLeft;
+
 			if (Platform.Supports<Notification>())
 			{
 				NotificationActivated += (sender, e) => Log.Write(this, $"Notification: {e.ID}, userData: {e.UserData}");

@@ -33,7 +33,8 @@
                 var scaledHeight = Math.Min(imageSize.Height, bounds.Height);
                 var scaledWidth = imageSize.Width * scaledHeight / imageSize.Height;
                 _imageSize = new CGSize(scaledWidth, scaledHeight);
-                TextField.Frame = new CGRect(scaledWidth + ImagePadding, 0, bounds.Width - scaledWidth - ImagePadding, bounds.Height);
+				var isrtl = UserInterfaceLayoutDirection == NSUserInterfaceLayoutDirection.RightToLeft;
+				TextField.Frame = new CGRect(isrtl ? 0 : scaledWidth + ImagePadding, 0, bounds.Width - scaledWidth - ImagePadding, bounds.Height);
             }
         }
 
@@ -91,6 +92,9 @@
 
                 var imageRect = new CGRect(0, bounds.Y, _imageSize.Width, _imageSize.Height);
                 imageRect.Y += (bounds.Height - _imageSize.Height) / 2;
+				var isrtl = UserInterfaceLayoutDirection == NSUserInterfaceLayoutDirection.RightToLeft;
+				if (isrtl)
+					imageRect.X += bounds.Width - _imageSize.Width;
 
                 const float alpha = 1; //Enabled ? 1 : (nfloat)0.5;
 

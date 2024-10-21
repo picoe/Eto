@@ -115,7 +115,7 @@ namespace Eto.Mac.Forms
 			var args = new string[]
 			{
 				"-c",
-				"open \"$1\"", 
+				"open \"$1\"",
 				string.Empty,
 				NSBundle.MainBundle.BundlePath
 			};
@@ -129,7 +129,7 @@ namespace Eto.Mac.Forms
 			else
 				Control.InvokeOnMainThread(action);
 		}
-		
+
 		public void AsyncInvoke(Action action)
 		{
 			Control.BeginInvokeOnMainThread(action);
@@ -150,23 +150,23 @@ namespace Eto.Mac.Forms
 			Control.Delegate = oldDelegate;
 		}
 
-		static readonly IntPtr selNextEventMatchingMaskUntilDateInModeDequeue_Handle = Selector.GetHandle ("nextEventMatchingMask:untilDate:inMode:dequeue:");
-		static readonly IntPtr selSendEvent_Handle = Selector.GetHandle ("sendEvent:");
-		
+		static readonly IntPtr selNextEventMatchingMaskUntilDateInModeDequeue_Handle = Selector.GetHandle("nextEventMatchingMask:untilDate:inMode:dequeue:");
+		static readonly IntPtr selSendEvent_Handle = Selector.GetHandle("sendEvent:");
+
 		public void RunIteration()
 		{
 			MacView.InMouseTrackingLoop = false;
 			// drain the event queue only for a short period of time so it doesn't lock up
 			var date = NSDate.FromTimeIntervalSinceNow(0.001);
-			for (;;)
+			for (; ; )
 			{
 				// dequeue the event
 				var evt = Control.NextEvent(NSEventMask.AnyEvent, date, NSRunLoopMode.Default, true);
-				
+
 				// no event? cool, let's get out of here
 				if (evt == null)
 					break;
-				
+
 				// dispatch the event
 				Control.SendEvent(evt);
 			}
@@ -196,7 +196,7 @@ namespace Eto.Mac.Forms
 
 
 				EtoBundle.Init();
-				
+
 				EtoFontManager.Install();
 
 				if (Control.Delegate == null)
@@ -227,7 +227,7 @@ namespace Eto.Mac.Forms
 
 #if Mac64
 		delegate void UncaughtExceptionHandlerDelegate(IntPtr nsexceptionPtr);
-		
+
 		[DllImport(Constants.FoundationLibrary)]
 		static extern void NSSetUncaughtExceptionHandler(UncaughtExceptionHandlerDelegate handler);
 
@@ -325,5 +325,44 @@ namespace Eto.Mac.Forms
 		public Keys AlternateModifier => Keys.Alt;
 
 		public bool IsActive => NSApplication.SharedApplication.Active;
+
+		public LayoutDirection DefaultLayoutDirection
+		{
+			get => NSApplication.SharedApplication.UserInterfaceLayoutDirection switch
+			{
+				NSApplicationLayoutDirection.LeftToRight => LayoutDirection.LeftToRight,
+				NSApplicationLayoutDirection.RightToLeft => LayoutDirection.RightToLeft,
+				_ => LayoutDirection.LeftToRight
+			};
+			set
+			{
+				var rtl = value == LayoutDirection.RightToLeft;
+				// NSUserDefaults.StandardUserDefaults.RegisterDefaults(NSDictionary.FromObjectsAndKeys(
+				// 	new NSObject[] { NSNumber.FromBoolean(rtl), NSNumber.FromBoolean(rtl) },
+				// 	new NSObject[] { new NSString("NSForceRightToLeftWritingDirection"), new NSString("AppleTextDirection") }
+				// ));
+				// Environment.SetEnvironmentVariable("NSForceRightToLeftWritingDirection", "YES");
+				// Environment.SetEnvironmentVariable("AppleTextDirection", "YES");
+				// Control.WillTerminate -= ResetRtlPreference;
+				if (rtl)
+				{
+					NSUserDefaults.StandardUserDefaults.SetValueForKey(NSNumber.FromBoolean(rtl), new NSString("NSForceRightToLeftWritingDirection"));
+					NSUserDefaults.StandardUserDefaults.SetValueForKey(NSNumber.FromBoolean(rtl), new NSString("AppleTextDirection"));
+				}
+				else
+				{
+					NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("NSForceRightToLeftWritingDirection"));
+					NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("AppleTextDirection"));
+				}
+				NSUserDefaults.StandardUserDefaults.Synchronize();
+			}
+		}
+
+		internal static void ResetRtlPreference()
+		{
+			// don't actually save these
+			NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("NSForceRightToLeftWritingDirection"));
+			NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("AppleTextDirection"));
+		}
 	}
 }
