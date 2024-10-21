@@ -400,5 +400,44 @@ namespace Eto.Mac.Forms
 				Control.Appearance = ThemeHandler.GetControl(value);
 			}
 		}
+
+		public LayoutDirection DefaultLayoutDirection
+		{
+			get => NSApplication.SharedApplication.UserInterfaceLayoutDirection switch
+			{
+				NSApplicationLayoutDirection.LeftToRight => LayoutDirection.LeftToRight,
+				NSApplicationLayoutDirection.RightToLeft => LayoutDirection.RightToLeft,
+				_ => LayoutDirection.LeftToRight
+			};
+			set
+			{
+				var rtl = value == LayoutDirection.RightToLeft;
+				// NSUserDefaults.StandardUserDefaults.RegisterDefaults(NSDictionary.FromObjectsAndKeys(
+				// 	new NSObject[] { NSNumber.FromBoolean(rtl), NSNumber.FromBoolean(rtl) },
+				// 	new NSObject[] { new NSString("NSForceRightToLeftWritingDirection"), new NSString("AppleTextDirection") }
+				// ));
+				// Environment.SetEnvironmentVariable("NSForceRightToLeftWritingDirection", "YES");
+				// Environment.SetEnvironmentVariable("AppleTextDirection", "YES");
+				// Control.WillTerminate -= ResetRtlPreference;
+				if (rtl)
+				{
+					NSUserDefaults.StandardUserDefaults.SetValueForKey(NSNumber.FromBoolean(rtl), new NSString("NSForceRightToLeftWritingDirection"));
+					NSUserDefaults.StandardUserDefaults.SetValueForKey(NSNumber.FromBoolean(rtl), new NSString("AppleTextDirection"));
+				}
+				else
+				{
+					NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("NSForceRightToLeftWritingDirection"));
+					NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("AppleTextDirection"));
+				}
+				NSUserDefaults.StandardUserDefaults.Synchronize();
+			}
+		}
+
+		internal static void ResetRtlPreference()
+		{
+			// don't actually save these
+			NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("NSForceRightToLeftWritingDirection"));
+			NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("AppleTextDirection"));
+		}
 	}
 }

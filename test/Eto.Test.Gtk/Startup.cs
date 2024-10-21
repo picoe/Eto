@@ -15,6 +15,7 @@ namespace Eto.Test.Gtk
 			platform.Add<Eto.Test.UnitTests.ITestInput>(() => new TestInput());
 			
 			var app = new TestApplication(platform);
+			global::Gtk.Widget.DefaultDirection = global::Gtk.TextDirection.Rtl;
 			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}

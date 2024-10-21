@@ -229,6 +229,12 @@ namespace Eto.Mac.Forms.Controls
 				panel1Rect.Width = panel1Rect.X = panel2Rect.Width = panel2Rect.X = 0;
 			if (newFrame.Height <= 0)
 				panel1Rect.Height = panel1Rect.Y = panel2Rect.Height = panel2Rect.Y = 0;
+				
+			if (splitView.IsVertical && splitView.UserInterfaceLayoutDirection == NSUserInterfaceLayoutDirection.RightToLeft)
+			{
+				panel1Rect.X = panel2Rect.Width + dividerThickness;
+				panel2Rect.X = 0;
+			}
 
 			splitView.Subviews[0].Frame = panel1Rect;
 			splitView.Subviews[1].Frame = panel2Rect;

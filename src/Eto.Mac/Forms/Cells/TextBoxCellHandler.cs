@@ -102,12 +102,13 @@ namespace Eto.Mac.Forms.Cells
 				{
 					Wraps = false,
 					Scrollable = true,
-					UsesSingleLineMode = false // true prevents proper vertical alignment 
+					UsesSingleLineMode = false, // true prevents proper vertical alignment 
 				};
 				Selectable = false;
 				DrawsBackground = false;
 				Bezeled = false;
 				Bordered = false;
+				Alignment = NSTextAlignment.Right;
 				AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			}
 			public CellView(IntPtr handle) : base(handle) { }
