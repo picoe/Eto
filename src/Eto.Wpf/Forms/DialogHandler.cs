@@ -37,7 +37,7 @@ namespace Eto.Wpf.Forms
 			return new EtoWindowAutomationPeer(this);
 		}
 	}
-	
+
 	public class DialogHandler : WpfWindow<sw.Window, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button defaultButton;
@@ -64,7 +64,7 @@ namespace Eto.Wpf.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			
+
 			Resizable = false;
 			Minimizable = false;
 			Maximizable = false;
@@ -85,7 +85,7 @@ namespace Eto.Wpf.Forms
 			ReloadButtons();
 
 			var owner = Widget.Owner;
-			
+
 			if (LocationSet)
 			{
 				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
@@ -97,7 +97,7 @@ namespace Eto.Wpf.Forms
 				parentWindowBounds = owner.Bounds;
 				Control.Loaded += HandleLoaded;
 			}
-			
+
 			// if the owner doesn't have focus, windows changes the owner's z-order after the dialog closes.
 			if (owner != null && !owner.HasFocus)
 				owner.Focus();
@@ -118,6 +118,13 @@ namespace Eto.Wpf.Forms
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 
 			ClearButtons();
+		}
+
+		public override void SetOwner(Window owner)
+		{
+			// Dialogs can not change owner after shown
+			if (!Widget.Loaded)
+				base.SetOwner(owner);
 		}
 
 		void Control_PreviewKeyDown(object sender, sw.Input.KeyEventArgs e)

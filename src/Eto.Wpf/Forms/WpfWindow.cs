@@ -1075,7 +1075,7 @@ namespace Eto.Wpf.Forms
 			child.Owner = Control;
 		}
 
-		public void SetOwner(Window owner)
+		public virtual void SetOwner(Window owner)
 		{
 			if (owner == null)
 			{
