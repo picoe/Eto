@@ -79,9 +79,9 @@ namespace Eto.Mac.Forms.Menu
 			yield return new Command((sender, e) => NSApplication.SharedApplication.Hide(NSApplication.SharedApplication))
 			{ 
 				ID = "mac_hide", 
-				MenuText = Application.Instance.Localize(Widget, string.Format("Hide {0}", appName)),
+				MenuText = string.Format(Application.Instance.Localize(Widget, "Hide {0}"), appName),
 				ToolBarText = Application.Instance.Localize(Widget, "Hide"),
-				ToolTip = Application.Instance.Localize(Widget, string.Format("Hides the main {0} window", appName)), 
+				ToolTip = string.Format(Application.Instance.Localize(Widget, "Hides the main {0} window"), appName), 
 				Shortcut = Keys.H | Keys.Application
 			};
 

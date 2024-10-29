@@ -752,9 +752,9 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			if (s_defaultSize != null)
 				Size = s_defaultSize.Value;
 
-			var cancelButton = new Button { Text = Application.Instance.Localize(this, "Cancel") };
+			var cancelButton = new Button { Text = Application.Instance.Localize(editor, "Cancel") };
 			cancelButton.Click += CancelButton_Click;
-			var okButton = new Button { Text = Application.Instance.Localize(this, Platform.IsMac ? "Apply" : "OK") };
+			var okButton = new Button { Text = Application.Instance.Localize(editor, Platform.IsMac ? "Apply" : "OK") };
 			okButton.Click += OkButton_Click;
 			DefaultButton = okButton;
 			AbortButton = cancelButton;
@@ -869,9 +869,9 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			if (s_defaultSize != null)
 				Size = s_defaultSize.Value;
 
-			var cancelButton = new Button { Text = Application.Instance.Localize(this, "Cancel") };
+			var cancelButton = new Button { Text = Application.Instance.Localize(editor, "Cancel") };
 			cancelButton.Click += CancelButton_Click;
-			var okButton = new Button { Text = Application.Instance.Localize(this, Platform.IsMac ? "Apply" : "OK") };
+			var okButton = new Button { Text = Application.Instance.Localize(editor, Platform.IsMac ? "Apply" : "OK") };
 			okButton.Click += OkButton_Click;
 			DefaultButton = okButton;
 			AbortButton = cancelButton;
