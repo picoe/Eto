@@ -343,16 +343,17 @@
 	  {
 		  var sb = new StringBuilder();
 		  if (key.HasFlag(Keys.Application))
-			  AppendSeparator(sb, separator, 
+			  AppendSeparator(sb, separator,
+			  	Application.Instance.Localize(key, 
 				  EtoEnvironment.Platform.IsMac ? "\x2318" : 
 				  EtoEnvironment.Platform.IsWindows ? "Win" :
-				  "App");
+				  "App"));
 		  if (key.HasFlag(Keys.Control))
-			  AppendSeparator(sb, separator, EtoEnvironment.Platform.IsMac ? "^" : "Ctrl");
+			  AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "^" : "Ctrl"));
 		  if (key.HasFlag(Keys.Shift))
-			  AppendSeparator(sb, separator, EtoEnvironment.Platform.IsMac ? "\x21e7" : "Shift");
+			  AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "\x21e7" : "Shift"));
 		  if (key.HasFlag(Keys.Alt))
-			  AppendSeparator(sb, separator, EtoEnvironment.Platform.IsMac ? "\x2325" : "Alt");
+			  AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "\x2325" : "Alt"));
 
 		  var mainKey = key & Keys.KeyMask;
 		  string val;
