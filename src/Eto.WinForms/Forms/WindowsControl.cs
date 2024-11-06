@@ -662,13 +662,15 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				backgroundColorSet = true;
+				var color = value.ToSD();
 				try
 				{
-					Control.BackColor = value.ToSD();
+					Control.BackColor = color;
 				}
 				catch
 				{
-					// some controls don't support transparent colors, ignore..
+					// some controls don't support transparent colors, set only RGB..
+					Control.BackColor = sd.Color.FromArgb(255, color);
 				}
 			}
 		}
