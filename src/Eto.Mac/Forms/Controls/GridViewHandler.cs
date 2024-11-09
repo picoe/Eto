@@ -533,84 +533,47 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public GridViewHandler Handler { get; set; }
 
+			protected override void BeginUpdates()
+			{
+				base.BeginUpdates();
+				Handler.Control.BeginUpdates();
+			}
+
+			protected override void EndUpdates()
+			{
+				base.EndUpdates();
+				Handler.Control.EndUpdates();
+				Handler.AutoSizeColumns(true);
+			}
+
 			public override void AddRange(IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData();
-				Handler.AutoSizeColumns(true);
 			}
-
-			static Selector selInsertRowsWithAnimation = new Selector("insertRowsAtIndexes:withAnimation:");
-			static Selector selRemoveRowsWithAnimation = new Selector("removeRowsAtIndexes:withAnimation:");
 
 			public override void AddItem(object item)
 			{
-				if (Handler.Control.RespondsToSelector(selInsertRowsWithAnimation))
-				{
-					Handler.Control.BeginUpdates();
-					Handler.Control.InsertRows(new NSIndexSet(Count), NSTableViewAnimation.SlideDown);
-					Handler.Control.EndUpdates();
-				}
-				else
-					Handler.Control.ReloadData();
-
-				Handler.AutoSizeColumns(true);
+				Handler.Control.InsertRows(new NSIndexSet(Count), NSTableViewAnimation.SlideDown);
 			}
 
+			public override void ReplaceItem(int index, object newItem)
+			{
+				Handler.Control.ReloadData(NSIndexSet.FromIndex((nint)index), NSIndexSet.FromNSRange(new NSRange(0, Handler.Control.TableColumns().Length)));
+			}
+			
 			public override void InsertItem(int index, object item)
 			{
-				if (Handler.Control.RespondsToSelector(selInsertRowsWithAnimation))
-				{
-					Handler.Control.BeginUpdates();
-					Handler.Control.InsertRows(new NSIndexSet(index), NSTableViewAnimation.SlideDown);
-					Handler.Control.EndUpdates();
-				}
-				else
-				{
-					var rows = Handler.SelectedRows.Select(r => r >= index ? r + 1 : r).ToArray();
-					Handler.SuppressSelectionChanged++;
-					Handler.Control.ReloadData();
-					Handler.SelectedRows = rows;
-					Handler.SuppressSelectionChanged--;
-				}
-
-				Handler.AutoSizeColumns(true);
+				Handler.Control.InsertRows(new NSIndexSet(index), NSTableViewAnimation.SlideDown);
 			}
 
 			public override void RemoveItem(int index)
 			{
-				if (Handler.Control.RespondsToSelector(selRemoveRowsWithAnimation))
-				{
-					Handler.Control.BeginUpdates();
-					Handler.Control.RemoveRows(new NSIndexSet(index), NSTableViewAnimation.SlideUp);
-					Handler.Control.EndUpdates();
-				}
-				else
-				{
-					// need to adjust selected rows to shift them up
-					bool isSelected = false;
-					var rows = Handler.SelectedRows.Where(r =>
-					{
-						if (r != index)
-							return true;
-						isSelected = true;
-						return false;
-					}).Select(r => r > index ? r - 1 : r).ToArray();
-					Handler.SuppressSelectionChanged++;
-					Handler.Control.ReloadData();
-					Handler.SelectedRows = rows;
-					Handler.SuppressSelectionChanged--;
-					// item being removed was selected, so trigger change
-					if (isSelected)
-						Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
-				}
-
-				Handler.AutoSizeColumns(true);
+				Handler.Control.RemoveRows(new NSIndexSet(index), NSTableViewAnimation.SlideUp);
 			}
 
 			public override void RemoveAllItems()
 			{
 				Handler.Control.ReloadData();
-				Handler.AutoSizeColumns(true);
 			}
 		}
 

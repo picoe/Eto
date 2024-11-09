@@ -250,9 +250,33 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 		if (items != null)
 			AddRange(items);
 	}
+	
+	/// <summary>
+	/// Called before any methods to change the collection have been called.
+	/// </summary>
+	/// <remarks>
+	/// There may be multiple methods called when the collection changes, such as RemoveRange then AddRange or
+	/// RemoveItem then InsertItem.  When this happens, some platforms may need to know all of the changes before
+	/// refreshing the view.  After all of the update methods, <see cref="EndUpdates"/> is called to signal that they are done.
+	/// </remarks>
+	/// <seealso cref="EndUpdates"/>
+	protected virtual void BeginUpdates()
+	{
+	}
+	
+	/// <summary>
+	/// Called after any methods to change the collection have been called.
+	/// </summary>
+	/// <remarks>
+	/// See <see cref="BeginUpdates"/> for details.
+	/// </remarks>
+	protected virtual void EndUpdates()
+	{
+	}
 
 	private protected virtual void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 	{
+		BeginUpdates();
 		switch (e.Action)
 		{
 			case NotifyCollectionChangedAction.Add:
@@ -287,22 +311,59 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 			case NotifyCollectionChangedAction.Replace:
 				if (e.OldStartingIndex != -1)
 				{
-					RemoveRange(e.OldStartingIndex, e.OldItems.Count);
-					InsertRange(e.OldStartingIndex, e.NewItems.Cast<TItem>());
+					if (e.OldItems.Count == e.NewItems.Count && e.OldStartingIndex == e.NewStartingIndex)
+					{
+						ReplaceRange(e.OldStartingIndex, e.NewItems.Cast<TItem>());
+					}
+					else
+					{
+						RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+						InsertRange(e.NewStartingIndex, e.NewItems.Cast<TItem>());
+					}
 				}
 				else
 				{
 					for (int i = 0; i < e.OldItems.Count; i++)
 					{
 						var index = IndexOf((TItem)e.OldItems[i]);
-						RemoveItem(index);
-						InsertItem(index, (TItem)e.NewItems[i]);
+						ReplaceItem(index, (TItem)e.NewItems[i]);
 					}
 				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				Reset();
 				break;
+		}
+		EndUpdates();
+	}
+	
+	/// <summary>
+	/// Replaces the item at the specified index
+	/// </summary>
+	/// <remarks>
+	/// This by default will remove then insert the item at the specified index.
+	/// </remarks>
+	/// <param name="index">Index of the item to replace</param>
+	/// <param name="newItem">New item</param>
+	public virtual void ReplaceItem(int index, TItem newItem)
+	{
+		RemoveItem(index);
+		InsertItem(index, newItem);
+	}
+	
+	/// <summary>
+	/// Replaces a range of items starting at the specified index.
+	/// </summary>
+	/// <remarks>
+	/// By default this calls <see cref="ReplaceItem"/> for each item.
+	/// </remarks>
+	/// <param name="index">Index of the start of the range</param>
+	/// <param name="newItems">New items to replace the existing items at the same indexes</param>
+	public virtual void ReplaceRange(int index, IEnumerable<TItem> newItems)
+	{
+		foreach (var item in newItems)
+		{
+			ReplaceItem(index++, item);
 		}
 	}
 }
