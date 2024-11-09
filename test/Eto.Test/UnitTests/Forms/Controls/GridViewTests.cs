@@ -11,6 +11,42 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[Test, ManualTest]
+		public void MultipleChangesShouldWork() => ManualForm(
+			"Scroll while the collection is updated,\nand ensure all items are correct and not duplicated.",
+			form =>
+			{
+
+				var collection = new ObservableCollection<GridItem>();
+				for (int i = 0; i < 20; i++)
+				{
+					collection.Add(new GridItem(true, $"Item {i}"));
+				}
+
+				var gv = new GridView
+				{
+					DataStore = collection,
+					Size = new Size(200, 200),
+					Columns = {
+						new GridColumn { HeaderText = "Check", DataCell = new CheckBoxCell(0) },
+						new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell(1) }
+					},
+				};
+
+				Application.Instance.AsyncInvoke(async () =>
+				{
+					for (int i = 0; i < collection.Count; i++)
+					{
+						if (!form.Loaded)
+							return;
+						// gv.SelectedRow = i;
+						await Task.Delay(1000);
+						collection[i] = new GridItem(true, $"Changed {i}");
+					}
+				});
+				return gv;
+			});
+
+		[Test, ManualTest]
 		public void CellClickShouldHaveMouseInformation()
 		{
 			Exception exception = null;
