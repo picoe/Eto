@@ -94,6 +94,7 @@ namespace Eto.Wpf.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
+		bool _needsThemeChanged;
 		Size? newSize;
 		sw.Size parentMinimumSize;
 		bool isMouseOver;
@@ -527,10 +528,24 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.EnabledChangedEvent:
 					Control.IsEnabledChanged += Control_IsEnabledChanged;
 					break;
+				case Eto.Forms.Control.ThemeChangedEvent:
+					if (_needsThemeChanged)
+						return;
+					_needsThemeChanged = true;
+					if (Widget.Loaded)
+					{
+						Application.Instance.ThemeChanged += HandleThemeChanged;
+					}
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		private void HandleThemeChanged(object sender, EventArgs e)
+		{
+			Callback.OnThemeChanged(Widget, EventArgs.Empty);
 		}
 
 		private void HandleIsKeyboardFocusWithinChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
@@ -892,6 +907,11 @@ namespace Eto.Wpf.Forms
 			{
 				SetDefaultScale();
 			}
+			
+			if (_needsThemeChanged)
+			{
+				Application.Instance.ThemeChanged += HandleThemeChanged;
+			}
 		}
 
 		protected virtual void SetDefaultScale() => SetScale(true, true);
@@ -948,6 +968,11 @@ namespace Eto.Wpf.Forms
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
+			if (_needsThemeChanged)
+			{
+				Application.Instance.ThemeChanged -= HandleThemeChanged;
+			}
+			
 			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
 			{
 				var parent = ParentWindow;

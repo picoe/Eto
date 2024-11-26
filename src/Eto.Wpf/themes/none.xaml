@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:r="clr-namespace:Eto.Wpf.CustomControls.TreeGridView"
+    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls"
+    xmlns:e="clr-namespace:Eto.Wpf"
+    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+    <ResourceDictionary.MergedDictionaries>
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/generic.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/none/Window.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+
+</ResourceDictionary>

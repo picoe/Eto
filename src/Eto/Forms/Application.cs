@@ -273,12 +273,49 @@ public class Application : Widget
 	/// <value>The name.</value>
 	public string Name { get; set; }
 
+	/// <summary>
+	/// Gets or sets the current visual theme of the application.
+	/// </summary>
+	/// <remarks>
+	/// Changing this value will update the application's visual appearance and raise the <see cref="ThemeChanged"/> event.
+	/// Use <see cref="Themes.AllThemes"/> to get available themes.
+	/// 
+	/// Note that not all platforms fully support changing themes at runtime, in particular WinForms.
+	/// In this case, you need to set the theme before creating any controls.
+	/// </remarks>
+	public Theme Theme
+	{
+		get => Handler.Theme;
+		set => Handler.Theme = value;
+	}
+
+	/// <summary>
+	/// Identifier for the <see cref="ThemeChanged"/> event.
+	/// </summary>
+	public const string ThemeChangedEvent = "Application.ThemeChanged";
+
+	/// <summary>
+	/// Occurs when the <see cref="Theme"/> has changed.
+	/// </summary>
+	public event EventHandler<EventArgs> ThemeChanged
+	{
+		add { Properties.AddHandlerEvent(ThemeChangedEvent, value); }
+		remove { Properties.RemoveEvent(ThemeChangedEvent, value); }
+	}
+
+	/// <summary>
+	/// Raises the <see cref="ThemeChanged"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments.</param>
+	protected virtual void OnThemeChanged(EventArgs e) => Properties.TriggerEvent(ThemeChangedEvent, this, e);
+
 	static Application()
 	{
 		EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
 		EventLookup.Register<Application>(c => c.OnUnhandledException(null), Application.UnhandledExceptionEvent);
 		EventLookup.Register<Application>(c => c.OnNotificationActivated(null), Application.NotificationActivatedEvent);
 		EventLookup.Register<Application>(c => c.OnIsActiveChanged(null), Application.IsActiveChangedEvent);
+		EventLookup.Register<Application>(c => c.OnThemeChanged(null), Application.ThemeChangedEvent);
 	}
 
 	/// <summary>
@@ -614,6 +651,11 @@ public class Application : Widget
 		/// Raises the IsActiveChanged event.
 		/// </summary>
 		void OnIsActiveChanged(Application wiget, EventArgs e);
+		/// <summary>
+		/// Raises the <see cref="Application.ThemeChanged"/> event.
+		/// </summary>
+		void OnThemeChanged(Application widget, EventArgs e);
+
 	}
 
 	/// <summary>
@@ -663,6 +705,15 @@ public class Application : Widget
 		{
 			using (widget.Platform.Context)
 				widget.OnIsActiveChanged(e);
+		}
+		
+		/// <summary>
+		/// Raises the <see cref="Application.ThemeChanged"/> event.
+		/// </summary>
+		public void OnThemeChanged(Application widget, EventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnThemeChanged(e);
 		}
 	}
 
@@ -772,5 +823,9 @@ public class Application : Widget
 		/// Gets a value indicating that the application is currently the active application
 		/// </summary>
 		bool IsActive { get; }
+		/// <summary>
+		/// Gets or sets the current visual theme of the application.
+		/// </summary>
+		Theme Theme { get; set; }
 	}
 }

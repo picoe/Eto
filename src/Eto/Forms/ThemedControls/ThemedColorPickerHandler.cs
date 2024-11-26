@@ -15,7 +15,7 @@ public class ThemedColorPickerHandler : ThemedControlHandler<Control, ColorPicke
 	static Color DisabledBorderColor = new Color(Colors.Gray, 0.3f);
 	static Color InnerColorBorder = new Color(Colors.Gray, 0.8f);
 
-	Color _color;
+	Color _color = Colors.Black;
 	bool _isActive;
 
 	/// <summary>
@@ -53,6 +53,23 @@ public class ThemedColorPickerHandler : ThemedControlHandler<Control, ColorPicke
 		var innerSpacing = Math.Max(0, Math.Min(6, (Math.Min(rect.Width, rect.Height) - 6) / 2));
 
 		rectInner.Inflate(-innerSpacing, -innerSpacing);
+
+		// draw checkerboard behind color to show transparency
+		if (Color.A < 1f)
+		{
+			int checkSize = 4;
+			for (int cy = rectInner.Top; cy < rectInner.Bottom; cy += checkSize)
+			{
+				for (int cx = rectInner.Left; cx < rectInner.Right; cx += checkSize)
+				{
+					bool dark = (((cx - rectInner.Left) / checkSize) + ((cy - rectInner.Top) / checkSize)) % 2 == 1;
+					g.FillRectangle(dark ? Colors.LightGrey : Colors.White,
+						cx, cy,
+						Math.Min(checkSize, rectInner.Right - cx),
+						Math.Min(checkSize, rectInner.Bottom - cy));
+				}
+			}
+		}
 
 		g.FillRectangle(Color, rectInner);
 

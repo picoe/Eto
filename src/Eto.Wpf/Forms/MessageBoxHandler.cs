@@ -1,4 +1,3 @@
-//using WpfMessageBox = Xceed.Wpf.Toolkit.MessageBox;
 using WpfMessageBox = System.Windows.MessageBox;
 
 namespace Eto.Wpf.Forms

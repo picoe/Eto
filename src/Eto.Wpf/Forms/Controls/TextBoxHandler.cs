@@ -2,7 +2,7 @@ using System.Runtime;
 using swd = System.Windows.Documents;
 namespace Eto.Wpf.Forms.Controls
 {
-	public class EtoWatermarkTextBox : xwt.WatermarkTextBox, IEtoWpfControl
+	public class EtoWatermarkTextBox : Eto.Wpf.CustomControls.WatermarkTextBox, IEtoWpfControl
 	{
 		public IWpfFrameworkElement Handler { get; set; }
 
@@ -12,7 +12,7 @@ namespace Eto.Wpf.Forms.Controls
 		}
 	}
 
-	public class TextBoxHandler : TextBoxHandler<xwt.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class TextBoxHandler : TextBoxHandler<Eto.Wpf.CustomControls.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		internal static object CurrentText_Key = new object();
 		internal static object CurrentSelection_Key = new object();

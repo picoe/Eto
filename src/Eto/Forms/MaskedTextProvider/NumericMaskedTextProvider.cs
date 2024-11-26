@@ -35,8 +35,28 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 		{ typeof(sbyte), new Info { Parse = s => sbyte.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true } }
 	};
 
-	static string DoubleToText(object v) => ((double?)v)?.ToString("F99", Inv).TrimEnd('0').TrimEnd('.') ?? string.Empty;
-	static string FloatToText(object v) => ((float?)v)?.ToString("F99", Inv).TrimEnd('0').TrimEnd('.') ?? string.Empty;
+	static string DoubleToText(object v)
+	{
+		var d = (double?)v;
+		if (d == null) return string.Empty;
+		// Ensure we don't have imprecise values with too many decimals
+		var str = d.Value.ToString("G15", Inv);
+		// Also ensure we don't lose precision with scientific notation
+		if (str.IndexOfAny(new[] { 'E', 'e' }) >= 0 && double.TryParse(str, NumberStyles.Any, Inv, out var parsed))
+			return parsed.ToString("F99", Inv).TrimEnd('0').TrimEnd('.');
+		return str;
+	}
+	static string FloatToText(object v)
+	{
+		var f = (float?)v;
+		if (f == null) return string.Empty;
+		// Ensure we don't have imprecise values with too many decimals
+		var str = f.Value.ToString("G7", Inv);
+		// Also ensure we don't lose precision with scientific notation
+		if (str.IndexOfAny(new[] { 'E', 'e' }) >= 0 && float.TryParse(str, NumberStyles.Any, Inv, out var parsed))
+			return parsed.ToString("F99", Inv).TrimEnd('0').TrimEnd('.');
+		return str;
+	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Eto.Forms.NumericMaskedTextProvider{T}"/> class.

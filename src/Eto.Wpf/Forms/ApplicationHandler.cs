@@ -1,6 +1,8 @@
 using System.Windows.Threading;
+using Microsoft.Win32;
 
 namespace Eto.Wpf.Forms;
+
 public class ApplicationHandler : WidgetHandler<sw.Application, Application, Application.ICallback>, Application.IHandler
 {
 	bool _attached;
@@ -9,6 +11,7 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 	List<FormHandler> _delayShownWindows;
 	Dispatcher _dispatcher;
 	bool? _isActive;
+	ThemeStyle? _lastDetectedTheme;
 
 	public static ApplicationHandler Instance => Application.Instance?.Handler as ApplicationHandler;
 
@@ -26,20 +29,18 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 
 	public bool IsStarted { get; private set; }
 
+	sw.ResourceDictionary _themeResources;
+
 	void ApplyThemes()
 	{
 		if (!EnableCustomThemes)
 			return;
 
-		// ensure the Xceed.Wpf.Toolkit assembly is loaded here.
-		// kind of pointless, but adding the resource dictionary below fails unless this assembly is loaded..
-		var xceedWpfToolkit = typeof(Xceed.Wpf.Toolkit.ButtonSpinner).Assembly;
-		if (xceedWpfToolkit == null)
-			throw new InvalidOperationException("Could not load Xceed.Wpf.Toolkit");
-
-		// Add themes to our controls
-		var uri = AssemblyAbsoluteResourceDictionary.GetAbsolutePackUri("themes/generic.xaml");
-		Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = uri });
+		if (_currentTheme == null)
+		{
+			_currentTheme = ThemesHandler.GetNone();
+			ApplyTheme(_currentTheme);
+		}
 	}
 
 	protected override void Initialize()
@@ -94,6 +95,76 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 			}
 			_delayShownWindows = null;
 		}
+
+		// Set up system theme change detection
+		SetupSystemThemeChangeListener();
+	}
+
+	private void SetupSystemThemeChangeListener()
+	{
+		try
+		{
+			// Register for system theme change notifications via registry
+			SystemEvents.UserPreferenceChanged += OnSystemThemeChanged;
+		}
+		catch
+		{
+			// If system event registration fails, theme changes won't be detected
+			// but the app will still work with the theme set at startup
+		}
+	}
+
+	private void OnSystemThemeChanged(object sender, UserPreferenceChangedEventArgs e)
+	{
+		if (e.Category == UserPreferenceCategory.General)
+		{
+			CheckAndUpdateSystemTheme();
+		}
+	}
+
+	private void CheckAndUpdateSystemTheme()
+	{
+		try
+		{
+			// Only trigger theme change if we're using System theme
+#if NET9_0_OR_GREATER
+			if (Control.ThemeMode != sw.ThemeMode.System)
+				return;
+#endif
+
+			var nowDetectedTheme = GetSystemThemeStyle();
+			if (_lastDetectedTheme != nowDetectedTheme)
+			{
+				_lastDetectedTheme = nowDetectedTheme;
+				// Trigger the CurrentThemeChanged event
+				// This will refresh the theme resources
+				Callback.OnThemeChanged(Widget, EventArgs.Empty);
+			}
+		}
+		catch
+		{
+			// Silently handle any errors in theme detection
+		}
+	}
+
+	internal static ThemeStyle GetSystemThemeStyle()
+	{
+		try
+		{
+			using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+			{
+				if (key?.GetValue("AppsUseLightTheme") is int value)
+				{
+					return value == 1 ? ThemeStyle.Light : ThemeStyle.Dark;
+				}
+			}
+		}
+		catch
+		{
+			// If reading registry fails, default to light
+		}
+		
+		return ThemeStyle.Light;
 	}
 
 	public bool IsActive
@@ -170,6 +241,16 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 
 	public void Quit()
 	{
+		// Clean up system theme change listener
+		try
+		{
+			SystemEvents.UserPreferenceChanged -= OnSystemThemeChanged;
+		}
+		catch
+		{
+			// Ignore any errors during cleanup
+		}
+
 		bool cancel = false;
 		foreach (sw.Window window in Control.Windows)
 		{
@@ -210,6 +291,54 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 		get { return Keys.Alt; }
 	}
 
+	Theme _currentTheme;
+	public Theme Theme
+	{
+		get
+		{
+#if NET9_0_OR_GREATER
+			return _currentTheme ??= Control.ThemeMode != sw.ThemeMode.None ? new Theme(new FluentThemeHandler(Control.ThemeMode)) : null;
+#else
+			return _currentTheme ??= ThemesHandler.GetNone();
+#endif
+		}
+		set
+		{
+			_currentTheme = value;
+			ApplyTheme(value);
+
+			Callback.OnThemeChanged(Widget, EventArgs.Empty);
+		}
+	}
+
+	private void ApplyTheme(Theme value)
+	{
+		var mergedDicts = Control.Resources.MergedDictionaries;
+		if (_themeResources != null)
+		{
+			mergedDicts.Remove(_themeResources);
+			_themeResources = null;
+		}
+
+		if (value?.Handler is IThemeHandler handler)
+		{
+			handler.SetTheme();
+			var uris = handler.GetResourceUris()?.ToList();
+			if (uris != null)
+			{
+				_themeResources = new sw.ResourceDictionary();
+				foreach (var uri in uris)
+				{
+					var resource = new sw.ResourceDictionary { Source = uri };
+					_themeResources.MergedDictionaries.Add(resource);
+				}
+				mergedDicts.Add(_themeResources);
+			}
+
+		}
+
+	}
+
 	public void Open(string url)
 	{
 		Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
@@ -217,6 +346,9 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 
 	public void Run()
 	{
+#if NET9_0_OR_GREATER
+		//		Control.ThemeMode = sw.ThemeMode.System;
+#endif
 		Callback.OnInitialized(Widget, EventArgs.Empty);
 		if (!_attached)
 		{
@@ -267,6 +399,9 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 				break;
 			case Application.IsActiveChangedEvent:
 				// handled always
+				break;
+			case Application.ThemeChangedEvent:
+				
 				break;
 			default:
 				base.AttachEvent(id);

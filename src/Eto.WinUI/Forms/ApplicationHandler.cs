@@ -90,4 +90,6 @@ public class ApplicationHandler : WidgetHandler<mux.Application, Application, Ap
 		//Dispatcher.PushFrame(frame);
 		//WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 	}
+	
+	public Theme Theme { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 }

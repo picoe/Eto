@@ -174,9 +174,14 @@ namespace Eto.WinForms
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
-			
+
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
+
+#if NET9_0_OR_GREATER
+			p.Add<Theme.IHandler>(() => throw new InvalidOperationException());
+			p.Add<Themes.IHandler>(() => new ThemesHandler());
+#endif
 		}
 
 		/// <summary>

@@ -30,6 +30,8 @@ public class ThemedFontPickerHandler : ThemedControlHandler<Button, FontPicker, 
 			font = value;
 			Callback.OnValueChanged(Widget, EventArgs.Empty);
 			Refresh();
+			if (dialog != null)
+				dialog.Font = value;
 		}
 	}
 
@@ -64,7 +66,11 @@ public class ThemedFontPickerHandler : ThemedControlHandler<Button, FontPicker, 
 		dialog.Font = font;
 		dialog.FontChanged += Dialog_FontChanged;
 
-		dialog.ShowDialog(Widget);
+		var result = dialog.ShowDialog(Widget);
+		if (result != DialogResult.None)
+		{
+			dialog = null;
+		}
 	}
 
 	void Dialog_FontChanged(object sender, EventArgs e)

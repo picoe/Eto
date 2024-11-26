@@ -6,8 +6,11 @@
     xmlns:ef="clr-namespace:Eto.Wpf.Forms"
     xmlns:s="clr-namespace:System;assembly=mscorlib">
 
-    <Style TargetType="ef:XceedColorDialog">
+    <Style TargetType="ef:EtoFormWindow">
+        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>	
+    </Style>
+    <Style TargetType="ef:EtoWindow">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
     </Style>
-
+	
 </ResourceDictionary>

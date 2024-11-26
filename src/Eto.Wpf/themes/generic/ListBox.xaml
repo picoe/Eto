@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:r="clr-namespace:Eto.Wpf.CustomControls.TreeGridView"
+    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls"
+    xmlns:e="clr-namespace:Eto.Wpf"
+    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+	<!-- Value Converters for ListBox item template -->
+	<efc:ListBoxItemTextConverter x:Key="ListBoxItemTextConverter" />
+	<efc:ListBoxItemImageConverter x:Key="ListBoxItemImageConverter" />
+
+	<!-- ListBox Item Template -->
+	<DataTemplate x:Key="EtoListBoxItemTemplate">
+		<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+			<Image Margin="0,0,2,0"
+				   StretchDirection="DownOnly">
+				<Image.Source>
+					<MultiBinding Converter="{StaticResource ListBoxItemImageConverter}">
+						<Binding Path="." />
+						<Binding RelativeSource="{RelativeSource AncestorType=efc:EtoListBox}" Path="ImageBinding" />
+					</MultiBinding>
+				</Image.Source>
+			</Image>
+			<TextBlock Margin="2,0,2,0"
+					   VerticalAlignment="Center">
+				<TextBlock.Text>
+					<MultiBinding Converter="{StaticResource ListBoxItemTextConverter}">
+						<Binding Path="." />
+						<Binding RelativeSource="{RelativeSource AncestorType=efc:EtoListBox}" Path="TextBinding" />
+					</MultiBinding>
+				</TextBlock.Text>
+			</TextBlock>
+		</StackPanel>
+	</DataTemplate>
+
+</ResourceDictionary>

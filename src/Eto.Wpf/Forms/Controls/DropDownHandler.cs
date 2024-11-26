@@ -232,7 +232,7 @@ namespace Eto.Wpf.Forms.Controls
 		void CreateTemplate()
 		{
 			maxWidthCache = null;
-			var textBlock = new WpfImageTextBindingBlock(() => Widget.ItemTextBinding, () => Widget.ItemImageBinding, false);
+			var textBlock = new WpfImageTextBindingBlock(() => Widget.ItemTextBinding, () => Widget.ItemImageBinding);
 			if (IsEventHandled(DropDown.FormatItemEvent))
 			{
 				var fontConverter = new WpfActionValueConverter(ConvertFontFamily);

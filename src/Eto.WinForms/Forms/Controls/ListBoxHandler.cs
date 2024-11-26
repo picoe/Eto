@@ -200,5 +200,8 @@ namespace Eto.WinForms.Forms.Controls
 			get { return Control.BorderStyle.ToEto(); }
 			set { Control.BorderStyle = value.ToSWF(); }
 		}
+
+		public IIndirectBinding<Image> ItemImageBinding { get; set; }
+
 	}
 }

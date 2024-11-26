@@ -1,11 +1,11 @@
 using Eto.Wpf.Drawing;
+using Eto.Wpf.CustomControls;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class DateTimePickerHandler : WpfFrameworkElement<swc.Border, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
+	public class DateTimePickerHandler : WpfFrameworkElement<EtoBorder, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
-		xwt.DateTimePicker dtp;
-		xwt.DateTimeUpDown dtud;
+		DateTimePickerControl _picker;
 		DateTime? last;
 
 		DateTimePickerMode mode;
@@ -16,88 +16,23 @@ namespace Eto.Wpf.Forms.Controls
 
 		public DateTimePickerHandler()
 		{
+			_picker = new DateTimePickerControl();
+			_picker.ValueChanged += Picker_ValueChanged;
+
 			Control = new EtoBorder { Handler = this, Focusable = false };
+			Control.Child = _picker;
 			Mode = DateTimePickerMode.Date;
 		}
 
-		static sw.Thickness DefaultBorderThickness = new xwt.DateTimePicker().BorderThickness;
-
 		public bool ShowBorder
 		{
-			get { return !dtp.BorderThickness.ToEto().IsZero; }
-			set { dtp.BorderThickness = value ? DefaultBorderThickness : new sw.Thickness(0); }
+			get { return !Control.BorderThickness.ToEto().IsZero; }
+			set { Control.BorderThickness = value ? new sw.Thickness(1) : new sw.Thickness(0); }
 		}
 
-		void CreateDateTimeUpDown()
+		void Picker_ValueChanged(object sender, EventArgs e)
 		{
-			if (dtud == null)
-			{
-				dtud = new xwt.DateTimeUpDown
-				{
-					Focusable = true,
-					IsTabStop = true,
-					ClipValueToMinMax = true,
-					ShowButtonSpinner = true
-				};
-				dtud.ValueChanged += UpDown_ValueChanged;
-			}
-			if (dtp != null)
-			{
-				CopyValues(dtp, dtud);
-				dtp.ValueChanged -= UpDown_ValueChanged;
-				dtp = null;
-			}
-			Control.Child = dtud;
-		}
-
-		void CreateDateTimePicker()
-		{
-			if (dtp == null)
-			{
-				dtp = new xwt.DateTimePicker
-				{
-					ShowButtonSpinner = false,
-					AutoCloseCalendar = true,
-					ClipValueToMinMax = true,
-					Focusable = true,
-					IsTabStop = true
-				};
-				dtp.ValueChanged += UpDown_ValueChanged;
-			}
-			if (dtud != null)
-			{
-				CopyValues(dtud, dtp);
-				dtud.ValueChanged -= UpDown_ValueChanged;
-				dtud = null;
-			}
-			Control.Child = dtp;
-		}
-
-		void CopyValues(xwt.Primitives.UpDownBase<DateTime?> source, xwt.Primitives.UpDownBase<DateTime?> dest)
-		{
-			dest.Minimum = source.Minimum;
-			dest.Maximum = source.Maximum;
-			dest.Value = source.Value;
-			dest.Background = source.Background;
-			dest.Foreground = source.Foreground;
-			var font = Widget.Properties.Get<Font>(FontKey);
-			if (font != null)
-				dest.SetEtoFont(font, SetDecorations);
-		}
-
-		void UpDown_ValueChanged(object sender, sw.RoutedPropertyChangedEventArgs<object> e)
-		{
-			var ctl = UpDown;
 			var val = Value;
-			if (val != null)
-			{
-				// still need to do this as the popup doesn't limit the value when using the calendar
-				if (ctl.Minimum != null && val.Value < ctl.Minimum)
-					val = Value = ctl.Minimum.Value;
-				else if (ctl.Maximum != null && val.Value > ctl.Maximum)
-					val = Value = ctl.Maximum.Value;
-			}
-
 			if (last != val && (last == null || val == null || Math.Abs((last.Value - val.Value).TotalSeconds) >= 1))
 			{
 				Callback.OnValueChanged(Widget, EventArgs.Empty);
@@ -111,28 +46,20 @@ namespace Eto.Wpf.Forms.Controls
 
 		public DateTime? Value
 		{
-			get { return UpDown.Value; }
-			set { UpDown.Value = value; }
-		}
-
-		xwt.Primitives.UpDownBase<DateTime?> UpDown
-		{
-			get
-			{
-				return dtp ?? dtud;
-			}
+			get { return _picker.Value; }
+			set { _picker.Value = value; }
 		}
 
 		public DateTime MinDate
 		{
-			get { return UpDown.Minimum ?? DateTime.MinValue; }
-			set { UpDown.Minimum = value == DateTime.MinValue ? null : (DateTime?)value; }
+			get { return _picker.Minimum ?? DateTime.MinValue; }
+			set { _picker.Minimum = value == DateTime.MinValue ? null : (DateTime?)value; }
 		}
 
 		public DateTime MaxDate
 		{
-			get { return UpDown.Maximum ?? DateTime.MaxValue; }
-			set { UpDown.Maximum = value == DateTime.MaxValue ? null : (DateTime?)value; }
+			get { return _picker.Maximum ?? DateTime.MaxValue; }
+			set { _picker.Maximum = value == DateTime.MaxValue ? null : (DateTime?)value; }
 		}
 
 		public DateTimePickerMode Mode
@@ -141,35 +68,15 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				mode = value;
-				switch (mode)
-				{
-					case DateTimePickerMode.Date:
-						CreateDateTimePicker();
-						dtp.TimePickerVisibility = sw.Visibility.Collapsed;
-						dtp.Format = xwt.DateTimeFormat.ShortDate;
-						break;
-					case DateTimePickerMode.DateTime:
-						CreateDateTimePicker();
-						dtp.TimePickerVisibility = sw.Visibility.Visible;
-						var format = CultureInfo.CurrentUICulture.DateTimeFormat;
-						dtp.Format = xwt.DateTimeFormat.Custom;
-						dtp.FormatString = format.ShortDatePattern + " " + format.LongTimePattern;
-						break;
-					case DateTimePickerMode.Time:
-						CreateDateTimeUpDown();
-						dtud.Format = xwt.DateTimeFormat.LongTime;
-						break;
-					default:
-						throw new NotSupportedException();
-				}
+				_picker.Mode = value;
 				SetSize();
 			}
 		}
 
 		public override Color BackgroundColor
 		{
-			get { return UpDown.Background.ToEtoColor(); }
-			set { UpDown.Background = value.ToWpfBrush(Control.Background); }
+			get { return _picker.Background.ToEtoColor(); }
+			set { _picker.Background = value.ToWpfBrush(_picker.Background); }
 		}
 
 		protected virtual void SetDecorations(sw.TextDecorationCollection decorations)
@@ -180,21 +87,21 @@ namespace Eto.Wpf.Forms.Controls
 
 		public Font Font
 		{
-			get { return Widget.Properties.Create<Font>(FontKey, () => new Font(new FontHandler(UpDown))); }
+			get { return Widget.Properties.Create<Font>(FontKey, () => new Font(new FontHandler(_picker.FocusableControl))); }
 			set
 			{
 				if (Widget.Properties.Get<Font>(FontKey) != value)
 				{
 					Widget.Properties[FontKey] = value;
-					UpDown.SetEtoFont(value, SetDecorations);
+					_picker.FocusableControl.SetEtoFont(value, SetDecorations);
 				}
 			}
 		}
 
 		public Color TextColor
 		{
-			get { return UpDown.Foreground.ToEtoColor(); }
-			set { UpDown.Foreground = value.ToWpfBrush(UpDown.Foreground); }
+			get { return _picker.Foreground.ToEtoColor(); }
+			set { _picker.Foreground = value.ToWpfBrush(_picker.Foreground); }
 		}
 	}
 }
