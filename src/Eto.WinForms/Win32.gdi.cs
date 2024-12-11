@@ -86,5 +86,8 @@ namespace Eto
 			g.Dispose();
 			return fontRanges;
 		}
+		
+		[DllImport("gdi32.dll")]
+		public static extern bool DeleteObject(IntPtr hObject);
 	}
 }

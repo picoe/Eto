@@ -30,7 +30,7 @@ namespace Eto.Test.Handlers
 				},
 			};
 
-			ContentPanel = new Panel { BackgroundColor = Colors.White };
+			ContentPanel = new Panel { BackgroundColor = SystemColors.ControlBackground };
 			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = Size.Empty };
 			layout.BeginHorizontal();
 			layout.Add(tabs);

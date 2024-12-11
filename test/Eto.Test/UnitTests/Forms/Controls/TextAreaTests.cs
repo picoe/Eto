@@ -12,6 +12,28 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		where T : TextArea, new()
 	{
 		[Test]
+		[ManualTest]
+		public void ScrollToEndShouldHaveValidStateAfterTextIsInserted() => ManualForm(
+			"TextArea should scroll to the end after each time text is inserted,\nand should be fully visible",
+			(form, label) =>
+		{
+			var textArea = new T { Size = new Size(400, 300) };
+
+			form.Shown += async (sender, e) =>
+			{
+				for (int i = 0; i < 20; i++)
+				{
+					textArea.Text += LoremGenerator.GenerateLines(10, 100);
+					textArea.ScrollToEnd();
+					await Task.Delay(200);
+				}
+			};
+
+			return textArea;
+		});
+		
+		
+		[Test]
 		public void CheckSelectionTextCaretAfterSettingText()
 		{
 			Invoke(() =>

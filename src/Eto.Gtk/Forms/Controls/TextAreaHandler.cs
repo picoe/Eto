@@ -371,20 +371,32 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.ScrollToMark(mark, 0, false, 0, 0);
 		}
 
+		double GetScrollX() => Control.Direction switch
+		{
+			Gtk.TextDirection.Rtl => Control.Justification switch
+			{
+				Gtk.Justification.Right => scroll.Hadjustment.Lower,
+				Gtk.Justification.Center => (scroll.Hadjustment.Upper - scroll.Hadjustment.Lower - scroll.Hadjustment.PageSize) / 2,
+				_ => scroll.Hadjustment.Upper,
+			},
+			_ => Control.Justification switch
+			{
+				Gtk.Justification.Right => scroll.Hadjustment.Upper,
+				Gtk.Justification.Center => (scroll.Hadjustment.Upper - scroll.Hadjustment.Lower - scroll.Hadjustment.PageSize) / 2,
+				_ => scroll.Hadjustment.Lower,
+			},
+		};
+
 		public virtual void ScrollToEnd()
 		{
-			var end = Control.Buffer.EndIter;
-			var mark = Control.Buffer.CreateMark(null, end, false);
-			Control.ScrollToMark(mark, 0, false, 0, 0);
+			scroll.Vadjustment.Value = scroll.Vadjustment.Upper - scroll.Vadjustment.PageSize;
+			scroll.Hadjustment.Value = GetScrollX();
 		}
 
 		public virtual void ScrollToStart()
 		{
-			var end = Control.Buffer.StartIter;
-			var mark = Control.Buffer.CreateMark(null, end, false);
-			Control.ScrollToMark(mark, 0, false, 0, 0);
-		}
-
-		
+			scroll.Vadjustment.Value = scroll.Vadjustment.Lower;
+			scroll.Hadjustment.Value = GetScrollX();
+		}		
 	}
 }
