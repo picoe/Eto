@@ -109,7 +109,6 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				EnsureLoaded();
 				return new Point((int)scroller.HorizontalOffset, (int)scroller.VerticalOffset);
 			}
 			set
@@ -124,7 +123,6 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				EnsureLoaded();
 				return new Size((int)scroller.ExtentWidth, (int)scroller.ExtentHeight);
 			}
 			set
@@ -149,7 +147,6 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				if (!Widget.Loaded)
 					return Size;
-				EnsureLoaded();
 				var info = scroller.GetScrollInfo();
 				return info != null ? new Size((int)info.ViewportWidth, (int)info.ViewportHeight) : Size.Empty;
 			}
@@ -220,5 +217,11 @@ namespace Eto.Wpf.Forms.Controls
 		public float MinimumZoom { get { return 1f; } set { } }
 
 		public float Zoom { get { return 1f; } set { } }
+
+		public override void OnChildPreferredSizeUpdated()
+		{
+			base.OnChildPreferredSizeUpdated();
+			UpdateScrollSizes();
+		}
 	}
 }

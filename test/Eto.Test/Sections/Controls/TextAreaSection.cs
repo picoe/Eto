@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Default()
 		{
-			var text = new TextArea { Text = Utility.LoremTextWithTwoParagraphs };
+			var text = new TextArea { Text = LoremGenerator.GenerateLines(3, 100) };
 			LogEvents(text);
 
 			return new TableLayout

@@ -97,6 +97,18 @@ public class Form : Window
 			base.Visible = true;
 		}
 	}
+	
+	/// <summary>
+	/// Shows the form with a task that can be awaited until it is closed
+	/// </summary>
+	/// <returns>Task that completes when the form is closed.</returns>
+	public Task ShowAsync()
+	{
+		var tcs = new TaskCompletionSource<bool>();
+		Closed += (sender, e) => tcs.TrySetResult(true);
+		Show();
+		return tcs.Task;
+	}
 
 	/// <summary>
 	/// Interface handler for the <see cref="Form"/> control

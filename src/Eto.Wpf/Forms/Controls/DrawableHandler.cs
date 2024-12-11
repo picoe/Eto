@@ -5,9 +5,9 @@ namespace Eto.Wpf.Forms.Controls
 	public class DrawableHandler : DrawableHandler<swc.Canvas, Drawable, Drawable.ICallback> { }
 
 	public class DrawableHandler<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Drawable.IHandler
-		where TControl : swc.Canvas
-		where TWidget : Drawable
-		where TCallback : Drawable.ICallback
+	where TControl : swc.Canvas
+	where TWidget : Drawable
+	where TCallback : Drawable.ICallback
 	{
 		bool tiled;
 		sw.FrameworkElement content;
@@ -26,6 +26,8 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 		public bool AllowTiling { get; set; }
+
+		public bool PartialInvalidate { get; set; }
 
 		public bool SupportsCreateGraphics { get { return false; } }
 
@@ -66,13 +68,9 @@ namespace Eto.Wpf.Forms.Controls
 				if (!Handler.tiled)
 				{
 					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
-					var cliprect = rect.ToEto();
-					if (!cliprect.IsEmpty)
+					if (!rect.IsEmpty)
 					{
-						using (var graphics = new Graphics(new GraphicsHandler(this, dc, rect, new RectangleF(Handler.ClientSize), false)))
-						{
-							Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, cliprect));
-						}
+						Handler.Render(this, dc, rect);
 					}
 				}
 			}
@@ -88,7 +86,7 @@ namespace Eto.Wpf.Forms.Controls
 				var content = Handler.content;
 				if (content == null)
 					return size;
-			
+
 				// content should be used to measure, if present		
 				content.Measure(constraint);
 				return content.DesiredSize;
@@ -101,6 +99,22 @@ namespace Eto.Wpf.Forms.Controls
 				if (content != null)
 					content.Arrange(new sw.Rect(arrangeSize));
 				return arrangeSize;
+			}
+		}
+
+		private void Render(swm.Visual canvas, swm.DrawingContext dc, sw.Rect rect)
+		{
+			var cliprect = rect.ToEtoF();
+			if (PartialInvalidate && scrollable != null)
+			{
+				var visibleRect = new RectangleF(scrollable.VisibleRect.Size);
+				visibleRect = scrollable.RectangleToScreen(visibleRect);
+				visibleRect = Widget.RectangleFromScreen(visibleRect);
+				cliprect.Intersect(visibleRect);
+			}
+			using (var graphics = new Graphics(new GraphicsHandler(canvas, dc, rect, cliprect, false)))
+			{
+				Callback.OnPaint(Widget, new PaintEventArgs(graphics, cliprect));
 			}
 		}
 
@@ -181,7 +195,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void Create(bool largeCanvas)
 		{
-			AllowTiling = largeCanvas;
+			// AllowTiling = largeCanvas;
+			PartialInvalidate = largeCanvas;
 			Create();
 		}
 
@@ -237,12 +252,14 @@ namespace Eto.Wpf.Forms.Controls
 		void RegisterScrollable()
 		{
 			UnRegisterScrollable();
-			if (AllowTiling)
+			if (AllowTiling || PartialInvalidate)
 			{
 				scrollable = Widget.FindParent<Scrollable>();
 				if (scrollable != null)
 					scrollable.Scroll += scrollable_Scroll;
-
+			}
+			if (AllowTiling)
+			{
 				Control.SizeChanged += Control_SizeChanged;
 				SetMaxTiles();
 				tiled = true;
@@ -274,7 +291,7 @@ namespace Eto.Wpf.Forms.Controls
 			if (scroll != null)
 			{
 				// only show tiles in the visible rect of the scrollable
-				var visibleRect = new Rectangle(scroll.ClientSize);
+				var visibleRect = new Rectangle(scroll.VisibleRect.Size);
 				var scrollableHandler = (ScrollableHandler)scroll.Handler;
 				visibleRect.Offset(-Control.TranslatePoint(new sw.Point(), scrollableHandler.ContentControl).ToEtoPoint());
 				rect.Intersect(visibleRect);
@@ -365,6 +382,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		void scrollable_Scroll(object sender, ScrollEventArgs e)
 		{
+			if (PartialInvalidate)
+			{
+				Invalidate(false);
+			}
 			UpdateTiles();
 		}
 

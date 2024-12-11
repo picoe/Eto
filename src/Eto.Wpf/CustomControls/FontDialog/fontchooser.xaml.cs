@@ -226,6 +226,12 @@ namespace Eto.Wpf.CustomControls.FontDialog
 			// Schedule background updates.
 			_populated = true;
 			ScheduleUpdate ();
+
+			// Make using the keyboard easier by setting focus initially and selecting all
+			sizeTextBox.GotFocus += (sender, e) => sizeTextBox.SelectAll();
+			fontFamilyTextBox.GotFocus += (sender, e) => fontFamilyTextBox.SelectAll();
+
+			fontFamilyTextBox.Focus();
 		}
 
         #endregion

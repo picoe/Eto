@@ -7,13 +7,7 @@ public class FormTests : WindowTests<Form>
 	protected override void Test(Action<Form> test, int timeout = 4000) => Form(test, timeout);
 	protected override void ManualTest(string message, Func<Form, Control> test) => ManualForm(message, test);
 	protected override void Show(Form window) => window.Show();
-	protected override Task ShowAsync(Form window)
-	{
-		var tcs = new TaskCompletionSource<bool>();
-		window.Closed += (sender, e) => tcs.TrySetResult(true);
-		window.Show();
-		return tcs.Task;
-	}
+	protected override Task ShowAsync(Form window) => window.ShowAsync();
 
 	[Test, ManualTest]
 	public void WindowShouldCloseOnLostFocusWithoutHidingParent()

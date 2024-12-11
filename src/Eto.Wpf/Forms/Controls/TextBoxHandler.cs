@@ -298,55 +298,53 @@ namespace Eto.Wpf.Forms.Controls
 				var oldText = Text;
 				CurrentText = null;
 				var newText = value ?? string.Empty;
-				TextBox.BeginChange();
-				if (newText != oldText)
+				if (newText == oldText)
+					return;
+
+				var args = new TextChangingEventArgs(oldText, newText, false);
+				Callback.OnTextChanging(Widget, args);
+				if (args.Cancel)
+					return;
+
+				var needsTextChanged = TextBox.Text == newText;
+
+				// Improve performance when setting text often
+				// See https://github.com/dotnet/wpf/issues/5887#issuecomment-1604577981
+				var endNoGCRegion = EnableNoGCRegion
+					&& GCSettings.LatencyMode != GCLatencyMode.NoGCRegion;
+
+				try
 				{
-					var args = new TextChangingEventArgs(oldText, newText, false);
-					Callback.OnTextChanging(Widget, args);
-					if (args.Cancel)
-					{
-						TextBox.EndChange();
-						return;
-					}
-
-					var needsTextChanged = TextBox.Text == newText;
-
-					// Improve performance when setting text often
-					// See https://github.com/dotnet/wpf/issues/5887#issuecomment-1604577981
-					var endNoGCRegion = EnableNoGCRegion
-						&& GCSettings.LatencyMode != GCLatencyMode.NoGCRegion;
-
-					try
-					{
-						endNoGCRegion &= GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
-					}
-					catch
-					{
-						// Ignore any exceptions, they can apparently still happen even though we check the LatencyMode above
-						endNoGCRegion = false;
-					}
-
-					try 
-					{
-						TextBox.Text = newText; 
-					}
-					finally
-					{
-						if (endNoGCRegion && GCSettings.LatencyMode == GCLatencyMode.NoGCRegion)
-							GC.EndNoGCRegion();
-					}
-					
-					if (needsTextChanged)
-					{
-						Callback.OnTextChanged(Widget, EventArgs.Empty);
-					}
+					endNoGCRegion &= GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
 				}
+				catch
+				{
+					// Ignore any exceptions, they can apparently still happen even though we check the LatencyMode above
+					endNoGCRegion = false;
+				}
+
+				try 
+				{
+					TextBox.Text = newText; 
+				}
+				finally
+				{
+					if (endNoGCRegion && GCSettings.LatencyMode == GCLatencyMode.NoGCRegion)
+						GC.EndNoGCRegion();
+				}
+				
 				if (value != null && AutoSelectMode == AutoSelectMode.Never && !HasFocus)
 				{
+					TextBox.BeginChange();
 					TextBox.SelectionStart = value.Length;
 					TextBox.SelectionLength = 0;
+					TextBox.EndChange();
 				}
-				TextBox.EndChange();
+				
+				if (needsTextChanged)
+				{
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
+				}
 			}
 		}
 

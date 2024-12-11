@@ -81,7 +81,7 @@ public abstract class WindowTests<T> : TestBase
 		const string infoText = "Click to change text.\n";
 		var label = new Label();
 		label.TextColor = Colors.White;
-		label.Text = infoText + Utility.LoremTextWithTwoParagraphs;
+		label.Text = infoText + LoremGenerator.GenerateLines(2, 100);
 
 		T window = new T();
 		if (window is Form form)
@@ -112,7 +112,8 @@ public abstract class WindowTests<T> : TestBase
 
 		label.MouseDown += (sender, e) =>
 	  {
-		  label.Text = infoText + Utility.GenerateLoremText(new Random().Next(200));
+		  var rnd = new Random();
+		  label.Text = infoText + LoremGenerator.GenerateLines(rnd.Next(1, 10), rnd.Next(200));
 		  wasClicked = true;
 	  };
 
@@ -173,7 +174,7 @@ public abstract class WindowTests<T> : TestBase
 		{
 			Label CreateLabel()
 			{
-				var label = new Label { Text = Utility.GenerateLoremText(20) };
+				var label = new Label { Text = LoremGenerator.Generate(20) };
 				if (width > 0)
 					label.Width = width;
 				return label;

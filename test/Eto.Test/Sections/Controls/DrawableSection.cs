@@ -92,9 +92,9 @@ namespace Eto.Test.Sections.Controls
 
 		Control LargeCanvas()
 		{
-			var control = new Drawable
+			var control = new Drawable(true)
 			{
-				Size = new Size(1000, 1000),
+				Size = new Size(2000, 2000),
 				BackgroundColor = Colors.Blue
 			};
 			var image = TestIcons.TestImage;

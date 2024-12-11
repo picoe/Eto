@@ -7,6 +7,34 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		where T: TextBox, new()
 	{
 		[Test, ManualTest]
+		public void SettingTextShouldClearUndoBuffer()
+		{
+			ManualForm("Try typing and undo/redo, then press the button to reset. After reset, it should not undo to previous values", form =>
+			{
+				var textBox = new T();
+				textBox.Text = "Hello";
+				textBox.SelectAll();
+
+				var button = new Button { Text = "Click Me" };
+				button.Click += (sender, e) =>
+				{
+					textBox.Text = "Thanks, now try to undo";
+					textBox.Focus();
+				};
+				
+				return new TableLayout
+				{
+					Spacing = new Size(5, 5),
+					Padding = 10,
+					Rows = {
+						textBox,
+						button
+					}
+				};
+			});
+		}
+		
+		[Test, ManualTest]
 		public void CaretIndexShouldStartInInitialPosition()
 		{
 			ManualForm("Caret should be at index 2, between the 'e' and 'l'.", form =>
