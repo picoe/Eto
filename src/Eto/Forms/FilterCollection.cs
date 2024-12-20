@@ -173,15 +173,20 @@ public class SelectableFilterCollection<T> : FilterCollection<T>, ISelectable<T>
 			viewToModel = new Dictionary<T, int>(Count);
 			for (int i = 0; i < Count; i++)
 			{
+				// used for lookup below, this index is not correct yet
 				viewToModel.Add(this[i], i);
 			}
 
 			modelToView = new Dictionary<int, int>(Count);
-			for (int i = 0; i < Items.Count; i++)
+			for (int j = 0; j < Items.Count; j++)
 			{
 				int index;
-				if (viewToModel.TryGetValue(Items[i], out index))
-					modelToView.Add(i, index);
+				if (viewToModel.TryGetValue(Items[j], out index))
+				{
+					modelToView.Add(j, index);
+					// update index with real index in model
+					viewToModel[Items[j]] = j;
+				}
 			}
 		}
 		else
