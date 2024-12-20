@@ -67,8 +67,8 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 			throw new InvalidOperationException("Could not load Xceed.Wpf.Toolkit");
 
 		// Add themes to our controls
-		var assemblyName = typeof(ApplicationHandler).Assembly.GetName().Name;
-		Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = new Uri($"pack://application:,,,/{assemblyName};component/themes/generic.xaml", UriKind.RelativeOrAbsolute) });
+		var uri = AssemblyAbsoluteResourceDictionary.GetAbsolutePackUri("themes/generic.xaml");
+		Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = uri });
 	}
 
 	protected override void Initialize()
@@ -169,7 +169,7 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 	{
 		var size = Size.Round(new SizeF(14, 14) * scale);
 		var bmp = new Bitmap(size, PixelFormat.Format32bppRgba);
-		
+
 		using (var graphics = new Graphics(bmp))
 		{
 			var font = SystemFonts.Bold(6 * scale);

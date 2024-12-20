@@ -73,6 +73,11 @@
   <Target Name="CleanAppBundle" AfterTargets="BeforeClean" Condition="$(MacBuildBundle) == 'True'">
     <RemoveDir Directories="$(OutputAppPath)"/>
   </Target>
+  
+  <PropertyGroup>
+    <_UpdatePListReference Condition="$(MSBuildRuntimeType) == 'Mono'">System.Xml</_UpdatePListReference>
+    <_UpdatePListReference Condition="$(MSBuildRuntimeType) != 'Mono'">netstandard</_UpdatePListReference>
+  </PropertyGroup>
 
   <!-- Task to update the plist file with new values -->
   <UsingTask TaskName="UpdatePList" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
@@ -85,7 +90,7 @@
       <IconFile ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
-      <Reference Include="netstandard"/>
+      <Reference Include="$(_UpdatePListReference)"/>
       <Code Type="Class" Language="cs"><![CDATA[
     using System;
     using System.IO;

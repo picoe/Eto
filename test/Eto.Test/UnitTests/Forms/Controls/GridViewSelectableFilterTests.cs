@@ -8,7 +8,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TestFixture]
-	public class GridViewSelectableFilterTests
+	public class GridViewSelectableFilterTests : TestBase
 	{
 		GridView grid;
 		ObservableCollection<DataItem> model;
@@ -21,7 +21,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				grid = new GridView();
 				// Some platforms need at least one column for selection to work
@@ -40,7 +40,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void InsertItemShouldNotChangeSelection()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				grid.SelectRow(0);
 				var selectedItem = grid.SelectedItem;
@@ -52,7 +52,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void DeleteSelectedItemsShouldRemoveSelectedItems()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				grid.AllowMultipleSelection = true;
 
@@ -88,7 +88,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(2)]
 		public void SortItemsShouldNotChangeSelection(int rowToSelect)
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				filtered.Sort = GridViewUtils.SortItemsAscending;
 				grid.SelectRow(rowToSelect);
@@ -111,7 +111,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void FilterItemsShouldNotChangeSelection()
 		{
-			TestBase.Invoke(() =>
+			Invoke(() =>
 			{
 				grid.AllowMultipleSelection = true;
 
@@ -137,5 +137,47 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(0, modelSelectionChangedCount, "Model SelectionChanged event should not fire when changing filter");
 			});
 		}
+		
+		[Test]
+		public void SortedCollectionShouldGetCorrectRow()
+		{
+			GridView grid = null;
+			Shown(form =>
+			{
+				grid = new GridView { Size = new Size(200, 200) };
+				var collection = new SelectableFilterCollection<GridItem>(grid)
+				{
+					new("Hello"),
+					new("There"),
+					new("Fine"),
+					new("World"),
+					new("Of"),
+					new("Eto")
+				};
+				
+				grid.Columns.Add(new GridColumn
+				{
+					DataCell = new TextBoxCell(0)
+				});
+				grid.DataStore = collection;
+				collection.Sort = (x, y) => string.Compare((string)x.Values[0], (string)y.Values[0], StringComparison.Ordinal);
+				// goes to this order:
+				// Eto
+				// Fine
+				// Hello
+				// Of
+				// There
+				// World
+
+				collection.SelectRow(4);
+				form.Content = grid;
+			}, () => {
+				
+				Assert.AreEqual(3, grid.SelectedRow, "#1");
+				Assert.NotNull(grid.SelectedItem, "#2");
+				Assert.AreEqual("Of", ((GridItem)grid.SelectedItem).Values[0], "#3");
+			});
+		}
+		
 	}
 }

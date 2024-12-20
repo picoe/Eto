@@ -4,9 +4,7 @@
     xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls"
     xmlns:e="clr-namespace:Eto.Wpf"
     xmlns:ef="clr-namespace:Eto.Wpf.Forms"
-    xmlns:s="clr-namespace:System;assembly=mscorlib"
-    xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
-    xmlns:local="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit">
+    xmlns:s="clr-namespace:System;assembly=mscorlib">
 
     <Style TargetType="ef:XceedColorDialog">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>

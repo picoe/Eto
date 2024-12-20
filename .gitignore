@@ -16,3 +16,4 @@ packages/
 .store
 .DS_Store
 *.proj.Backup.tmp
+._.*

@@ -221,7 +221,8 @@ namespace Eto.Wpf.Forms.Controls
 		public override void OnChildPreferredSizeUpdated()
 		{
 			base.OnChildPreferredSizeUpdated();
-			UpdateScrollSizes();
+			if (ExpandContentWidth || ExpandContentHeight)
+				UpdateSizes();
 		}
 	}
 }
