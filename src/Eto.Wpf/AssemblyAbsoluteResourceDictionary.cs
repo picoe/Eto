@@ -19,7 +19,7 @@ namespace Eto.Wpf
 
 			var version = "v" + name.Version.ToString() + ";";
 
-			var publicKey = name.GetPublicKey();
+			var publicKey = name.GetPublicKeyToken();
 			var publicKeyString = publicKey?.Length > 0 ? BitConverter.ToString(publicKey).Replace("-", "") + ";" : null;
 
 			return new Uri($"pack://application:,,,/{name.Name};{version}{publicKeyString}component/{path}", UriKind.Absolute);
