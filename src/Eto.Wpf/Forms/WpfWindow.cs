@@ -478,16 +478,6 @@ namespace Eto.Wpf.Forms
 
 		}
 
-		void CopyKeyBindings(swc.ItemCollection items)
-		{
-			foreach (var item in items.OfType<swc.MenuItem>())
-			{
-				Control.InputBindings.AddRange(item.InputBindings);
-				if (item.HasItems)
-					CopyKeyBindings(item.Items);
-			}
-		}
-
 		public MenuBar Menu
 		{
 			get { return menu; }
@@ -496,6 +486,7 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 				menu = value;
+				Control.InputBindings.Clear();
 				if (menu != null)
 				{
 					var handler = (MenuBarHandler)menu.Handler;

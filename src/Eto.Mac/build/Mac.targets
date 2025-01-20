@@ -182,7 +182,7 @@
         AddStringProperty("NSPrincipalClass", "NSApplication");
         AddStringProperty("CFBundleName", MacBundleName);
         AddStringProperty("CFBundleExecutable", LauncherFile, true);
-        AddStringProperty("LSMinimumSystemVersion", "10.14");
+        AddStringProperty("LSMinimumSystemVersion", "10.15");
         if (!string.IsNullOrEmpty(MonoMinimumVersion)) {
           AddStringProperty("MonoMinimumVersion", MonoMinimumVersion);
         }
