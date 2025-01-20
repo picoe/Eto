@@ -179,8 +179,8 @@
     <RemoveDir Directories="$(ArtifactsDir)templates"/>
 
     <!-- install the current version of the templates -->
-    <Exec Command="dotnet new -u Eto.Forms.Templates" />
-    <Exec Command="dotnet new -i $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
+    <Exec Command="dotnet new uninstall Eto.Forms.Templates" IgnoreExitCode="True" />
+    <Exec Command="dotnet new install $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
   
     <!-- generate project templates -->
     <ItemGroup>
@@ -196,7 +196,7 @@
       <Combined Include="combined" Value="-c" />
       <Combined Include="separate" Value="" />
 
-      <Framework Include="net60" Value="net6.0" />
+      <Framework Include="net80" Value="net8.0" />
       <Framework Include="net48" Value="net48" />
 
       <OtherOptions Include="none" Value="" />
@@ -231,12 +231,12 @@
       <!-- Build Wpf on Windows -->
       <CombinedProject Update="@(CombinedProject)"
         Condition="%(CombinedId) == 'separate'"
-        BuildCommand="&amp;&amp; cd %(ProjectName).Wpf &amp;&amp; dotnet build &amp;&amp; cd .." />
+        BuildCommand="&amp;&amp; cd %(ProjectName).Wpf &amp;&amp; dotnet build /p:EnableWindowsTargeting=true &amp;&amp; cd .." />
 
       <!-- Build WinForms on Windows -->
       <CombinedProject Update="@(CombinedProject)"
         Condition="%(CombinedId) == 'separate' and ( %(OtherId) == 'wf_macos' or %(OtherId) == 'wf' )"
-        BuildCommand="%(BuildCommand) &amp;&amp; cd %(ProjectName).WinForms &amp;&amp; dotnet build &amp;&amp; cd .." />
+        BuildCommand="%(BuildCommand) &amp;&amp; cd %(ProjectName).WinForms &amp;&amp; dotnet build /p:EnableWindowsTargeting=true &amp;&amp; cd .." />
 
       <!-- Build Mac -->
       <CombinedProject Update="@(CombinedProject)"
@@ -277,8 +277,8 @@
     <RemoveDir Directories="$(ArtifactsDir)mac-publish"/>
 
     <!-- install the current version of the templates -->
-    <Exec Command="dotnet new -u Eto.Forms.Templates" />
-    <Exec Command="dotnet new -i $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
+    <Exec Command="dotnet new uninstall Eto.Forms.Templates" IgnoreExitCode="True" />
+    <Exec Command="dotnet new install $(PackageOutputPath)Eto.Forms.Templates.$(InformationalVersion).nupkg" />
 
     <!-- generate project templates -->
     <ItemGroup>

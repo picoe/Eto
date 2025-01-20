@@ -88,7 +88,7 @@ jobs:
 
     - name: Import code signing certificate
       if: github.event_name != 'pull_request'
-      uses: apple-actions/import-codesign-certs@v1
+      uses: apple-actions/import-codesign-certs@v3
       with:
         p12-file-base64: ${{ secrets.DEVID_CERTIFICATE_P12 }}
         p12-password: ${{ secrets.DEVID_CERTIFICATE_P12_PASSWORD }}

@@ -70,11 +70,42 @@ namespace Eto.Wpf.Forms.Menu
 			set { Control.ToolTip = value; }
 		}
 
+
+		class EtoKeyGesture : swi.InputGesture
+		{
+			public EtoKeyGesture(MenuItemHandler<TControl, TWidget, TCallback> menuItemHandler, swi.Key key, swi.ModifierKeys modifiers)
+			{
+				MenuItemHandler = menuItemHandler;
+				Key = key;
+				Modifiers = modifiers;
+			}
+
+			public MenuItemHandler<TControl, TWidget, TCallback> MenuItemHandler { get; }
+			
+			public swi.Key Key { get; }
+			public swi.ModifierKeys Modifiers { get; }
+
+			public override bool Matches(object targetElement, swi.InputEventArgs inputEventArgs)
+			{
+				// only match if enabled, which is different from WPF's default behavior
+				// this allows specific keys to be used in the application when the menu item is disabled
+				if (!MenuItemHandler.Enabled)
+					return false;
+				if (inputEventArgs is swi.KeyEventArgs args && IsDefinedKey(args.Key))
+				{
+					return ( (int)Key == (int)args.Key ) && ( Modifiers == swi.Keyboard.Modifiers );
+				}
+				return false;
+			}
+			
+			internal static bool IsDefinedKey(swi.Key key) => key >= swi.Key.None && key <= swi.Key.OemClear;			
+		}
+
 		public Keys Shortcut
 		{
 			get
 			{
-				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding>().FirstOrDefault();
+				var keyBinding = Control.InputBindings.OfType<EtoKeyGesture>().FirstOrDefault();
 				return keyBinding == null ? Keys.None : keyBinding.Key.ToEtoWithModifier(keyBinding.Modifiers);
 			}
 			set
@@ -85,7 +116,8 @@ namespace Eto.Wpf.Forms.Menu
 				{
 					var key = value.ToWpfKey();
 					var modifier = value.ToWpfModifier();
-                    Control.InputBindings.Add(new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
+					var gesture = new EtoKeyGesture(this, key, modifier);
+					Control.InputBindings.Add(new swi.InputBinding(this, gesture));
 					Control.InputGestureText = value.ToShortcutString();
 					AddKeyBindings(Control);
 				}
@@ -93,14 +125,17 @@ namespace Eto.Wpf.Forms.Menu
 					Control.InputGestureText = null;
 			}
 		}
-
+		
 		public bool Enabled
 		{
-			get { return Control.IsEnabled; }
+			get => Control.IsEnabled;
 			set
 			{
-				Control.IsEnabled = value;
-				OnCanExecuteChanged(EventArgs.Empty);
+				if (Control.IsEnabled != value)
+				{
+					Control.IsEnabled = value;
+					OnCanExecuteChanged(EventArgs.Empty);
+				}
 			}
 		}
 
