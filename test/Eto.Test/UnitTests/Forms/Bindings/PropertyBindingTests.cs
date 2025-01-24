@@ -14,16 +14,16 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			int changed = 0;
 			binding.AddValueChangedHandler(item, (sender, e) => changed++);
 
-			Assert.AreEqual(0, changed);
-			Assert.AreEqual(0, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(0));
+			Assert.That(binding.GetValue(item), Is.EqualTo(0));
 
 			item.IntProperty = 2;
-			Assert.AreEqual(1, changed);
-			Assert.AreEqual(2, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(1));
+			Assert.That(binding.GetValue(item), Is.EqualTo(2));
 
 			item.IntProperty = 4;
-			Assert.AreEqual(2, changed);
-			Assert.AreEqual(4, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(2));
+			Assert.That(binding.GetValue(item), Is.EqualTo(4));
 		}
 
 		[Test]
@@ -38,20 +38,20 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			BindObject oldChild;
 
 			item.ChildBindObject = oldChild = new BindObject();
-			Assert.AreEqual(1, changed);
-			Assert.AreEqual(0, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(1));
+			Assert.That(binding.GetValue(item), Is.EqualTo(0));
 
 			item.ChildBindObject.IntProperty = 2;
-			Assert.AreEqual(2, changed);
-			Assert.AreEqual(2, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(2));
+			Assert.That(binding.GetValue(item), Is.EqualTo(2));
 
 			item.ChildBindObject = new BindObject { IntProperty = 3 };
-			Assert.AreEqual(3, changed);
-			Assert.AreEqual(3, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(3));
+			Assert.That(binding.GetValue(item), Is.EqualTo(3));
 
 			oldChild.IntProperty = 4; // we should not be hooked into change events of the old child, since we have a new one now!
-			Assert.AreEqual(3, changed);
-			Assert.AreEqual(3, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(3));
+			Assert.That(binding.GetValue(item), Is.EqualTo(3));
 		}
 
 		[Test]
@@ -66,20 +66,20 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			BindObject oldChild;
 
 			item.ChildBindObject = oldChild = new BindObject();
-			Assert.AreEqual(1, changed);
-			Assert.AreEqual(0, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(1));
+			Assert.That(binding.GetValue(item), Is.EqualTo(0));
 
 			item.ChildBindObject.IntProperty = 2;
-			Assert.AreEqual(2, changed);
-			Assert.AreEqual(2, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(2));
+			Assert.That(binding.GetValue(item), Is.EqualTo(2));
 
 			item.ChildBindObject = new BindObject { IntProperty = 3 };
-			Assert.AreEqual(3, changed);
-			Assert.AreEqual(3, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(3));
+			Assert.That(binding.GetValue(item), Is.EqualTo(3));
 
 			oldChild.IntProperty = 4; // we should not be hooked into change events of the old child, since we have a new one now!
-			Assert.AreEqual(3, changed);
-			Assert.AreEqual(3, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(3));
+			Assert.That(binding.GetValue(item), Is.EqualTo(3));
 		}
 
 		[Test]
@@ -94,20 +94,20 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			BindObject oldChild;
 
 			item.ChildBindObject = oldChild = new BindObject();
-			Assert.AreEqual(1, changed);
-			Assert.AreEqual(0, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(1));
+			Assert.That(binding.GetValue(item), Is.EqualTo(0));
 
 			item.ChildBindObject.IntProperty = 2;
-			Assert.AreEqual(2, changed);
-			Assert.AreEqual(2, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(2));
+			Assert.That(binding.GetValue(item), Is.EqualTo(2));
 
 			item.ChildBindObject = new BindObject { IntProperty = 3 };
-			Assert.AreEqual(3, changed);
-			Assert.AreEqual(3, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(3));
+			Assert.That(binding.GetValue(item), Is.EqualTo(3));
 
 			oldChild.IntProperty = 4; // we should not be hooked into change events of the old child, since we have a new one now!
-			Assert.AreEqual(3, changed);
-			Assert.AreEqual(3, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(3));
+			Assert.That(binding.GetValue(item), Is.EqualTo(3));
 		}
 
 		[Test]
@@ -120,8 +120,8 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			EventHandler<EventArgs> valueChanged = (sender, e) => changed++;
 			var changeReference = binding.AddValueChangedHandler(item, valueChanged);
 
-			Assert.AreEqual(0, changed);
-			Assert.AreEqual(null, binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(0));
+			Assert.That(binding.GetValue(item), Is.EqualTo(null));
 			Assert.DoesNotThrow(() => binding.SetValue(item, 123));
 			binding.RemoveValueChangedHandler(changeReference, valueChanged);
 		}
@@ -136,11 +136,11 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			EventHandler<EventArgs> valueChanged = (sender, e) => changed++;
 			var changeReference = binding.AddValueChangedHandler(item, valueChanged);
 
-			Assert.AreEqual(0, changed);
-			Assert.AreEqual("some value", binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(0));
+			Assert.That(binding.GetValue(item), Is.EqualTo("some value"));
 			Assert.DoesNotThrow(() => binding.SetValue(item, "some other value"));
-			Assert.AreEqual(1, changed);
-			Assert.AreEqual("some other value", binding.GetValue(item));
+			Assert.That(changed, Is.EqualTo(1));
+			Assert.That(binding.GetValue(item), Is.EqualTo("some other value"));
 			binding.RemoveValueChangedHandler(changeReference, valueChanged);
 		}
 
@@ -228,22 +228,22 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			var invalidBinding = Eto.Forms.Binding.Property<string>("ThirdInvalidProperty");
 			var propertyInfoBinding = Eto.Forms.Binding.Property<string>("NonTypeDescriptorProperty");
 			
-			Assert.AreEqual("Initial Value", stringBinding.GetValue(item));
+			Assert.That(stringBinding.GetValue(item), Is.EqualTo("Initial Value"));
 			stringBinding.SetValue(item, "Some Value");
-			Assert.AreEqual("Some Value", stringBinding.GetValue(item));
+			Assert.That(stringBinding.GetValue(item), Is.EqualTo("Some Value"));
 
-			Assert.AreEqual(true, boolBinding.GetValue(item));
+			Assert.That(boolBinding.GetValue(item), Is.EqualTo(true));
 			boolBinding.SetValue(item, false);
-			Assert.AreEqual(false, boolBinding.GetValue(item));
+			Assert.That(boolBinding.GetValue(item), Is.EqualTo(false));
 			
-			Assert.IsNull(invalidBinding.GetValue(item));
+			Assert.That(invalidBinding.GetValue(item), Is.Null);
 			invalidBinding.SetValue(item, "something");
-			Assert.IsNull(invalidBinding.GetValue(item));
+			Assert.That(invalidBinding.GetValue(item), Is.Null);
 			
 			// ensure properties can also be accessed without descriptors
-			Assert.AreEqual("Initial Other Value", propertyInfoBinding.GetValue(item));
+			Assert.That(propertyInfoBinding.GetValue(item), Is.EqualTo("Initial Other Value"));
 			propertyInfoBinding.SetValue(item, "Some Other Value");
-			Assert.AreEqual("Some Other Value", propertyInfoBinding.GetValue(item));
+			Assert.That(propertyInfoBinding.GetValue(item), Is.EqualTo("Some Other Value"));
 		}
 	}
 }

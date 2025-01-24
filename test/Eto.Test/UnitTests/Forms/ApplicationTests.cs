@@ -84,7 +84,7 @@ namespace Eto.Test.UnitTests.Forms
 				form.Close();
 			});
 			
-			Assert.IsTrue(stopClicked, "#1 - Must press the stop button to close the form");
+			Assert.That(stopClicked, Is.True, "#1 - Must press the stop button to close the form");
 		}
 		
 		[Test]

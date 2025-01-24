@@ -15,8 +15,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				tree.DataStore = new TreeGridItemCollection();
 
 				var items = tree.SelectedItems.ToList();
-				Assert.IsNotNull(items);
-				Assert.AreEqual(0, items.Count);
+				Assert.That(items, Is.Not.Null);
+				Assert.That(items.Count, Is.EqualTo(0));
 			});
 		}
 

@@ -78,16 +78,16 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			list.SelectedIndexChanged += (sender, e) => changed++;
 			list.DataStore = new [] { "Item 1", "Item 2", "Item 3" };
 			
-			Assert.AreEqual(0, changed, "1.1 - Setting data store should not fire selected index");
-			Assert.AreEqual(-1, list.SelectedIndex, "1.2");
+			Assert.That(changed, Is.EqualTo(0), "1.1 - Setting data store should not fire selected index");
+			Assert.That(list.SelectedIndex, Is.EqualTo(-1), "1.2");
 			
 			list.SelectedIndex = 0;
-			Assert.AreEqual(1, changed, "2.1 - Setting selected index should trigger event");
-			Assert.AreEqual(0, list.SelectedIndex, "2.2");
+			Assert.That(changed, Is.EqualTo(1), "2.1 - Setting selected index should trigger event");
+			Assert.That(list.SelectedIndex, Is.EqualTo(0), "2.2");
 			
 			list.SelectedIndex = 1;
-			Assert.AreEqual(2, changed, "3.1 - Setting selected index again should trigger event again");
-			Assert.AreEqual(1, list.SelectedIndex, "3.2");
+			Assert.That(changed, Is.EqualTo(2), "3.1 - Setting selected index again should trigger event again");
+			Assert.That(list.SelectedIndex, Is.EqualTo(1), "3.2");
 		}
 		
 		[Test, ManualTest]

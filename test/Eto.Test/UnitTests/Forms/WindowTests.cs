@@ -119,7 +119,7 @@ public abstract class WindowTests<T> : TestBase
 
 		window.Owner = Application.Instance.MainForm;
 		await ShowAsync(window);
-		Assert.IsTrue(wasClicked, "#1 You need to click on it to confirm it is resized correctly");
+		Assert.That(wasClicked, Is.True, "#1 You need to click on it to confirm it is resized correctly");
 	});
 
 	[Test]
@@ -133,9 +133,9 @@ public abstract class WindowTests<T> : TestBase
 		},
 		() =>
 		{
-			Assert.IsNotNull(size, "#1");
-			Assert.IsTrue(size.Value.Width >= 300, "#2");
-			Assert.IsTrue(size.Value.Height >= 300, "#3");
+			Assert.That(size, Is.Not.Null, "#1");
+			Assert.That(size.Value.Width >= 300, Is.True, "#2");
+			Assert.That(size.Value.Height >= 300, Is.True, "#3");
 		});
 	}
 
@@ -303,22 +303,22 @@ public abstract class WindowTests<T> : TestBase
 		Assert.That(loadCompleteChildSize, Is.Not.Null, "#1.1 Child Size should be set on LoadComplete");
 		Assert.That(loadCompleteChildSize.Value, Is.EqualTo(new Size(width, height)), "#1.2 Child Size should be set on LoadComplete");
 
-		Assert.NotNull(preferredSize, "#2.1 preferredSize not set (LoadComplete not called)");
+		Assert.That(preferredSize, Is.Not.Null, "#2.1 preferredSize not set (LoadComplete not called)");
 
 		// Preferred size will include window decorations
 		Assert.That(preferredSize.Value.Width, Is.GreaterThanOrEqualTo(width + padding.Horizontal), "#2.2 Preferred width is not in range");
 		Assert.That(preferredSize.Value.Height, Is.GreaterThanOrEqualTo(height + padding.Vertical), "#2.3 Preferred height is not in range");
 
-		Assert.NotNull(shownSize, "#3.1 Actual size not set (Shown not called)");
+		Assert.That(shownSize, Is.Not.Null, "#3.1 Actual size not set (Shown not called)");
 
 		Assert.That(shownSize.Value, Is.EqualTo(Size.Round(preferredSize.Value)), "#3.2 Shown size should match preferred size");
 
-		Assert.NotNull(loadCompleteSize, "#3.3 Size not set in LoadComplete");
+		Assert.That(loadCompleteSize, Is.Not.Null, "#3.3 Size not set in LoadComplete");
 		Assert.That(shownSize.Value, Is.EqualTo(loadCompleteSize.Value), "#3.4 Window size should be the same in both LoadComplete and Shown events");
 
-		Assert.NotNull(visibleAfterShown, "#4.1 VisibleWhenShown not set");
-		Assert.IsTrue(visibleAfterShown, "#4.2 Window was not visible when shown");
-		Assert.IsFalse(visibleBeforeShown, "#4.3 Visible should not be true before shown");
+		Assert.That(visibleAfterShown, Is.Not.Null, "#4.1 VisibleWhenShown not set");
+		Assert.That(visibleAfterShown, Is.True, "#4.2 Window was not visible when shown");
+		Assert.That(visibleBeforeShown, Is.False, "#4.3 Visible should not be true before shown");
 	});
 
 	[Test]
@@ -355,11 +355,11 @@ public abstract class WindowTests<T> : TestBase
 
 		await ShowAsync(window);
 
-		Assert.NotNull(parentShown, "#1.1");
-		Assert.NotNull(childShown, "#1.2");
-		Assert.NotNull(windowShown, "#1.3");
-		Assert.NotNull(parentShownBeforeOtherChild, "#1.4");
-		Assert.NotNull(windowShownBeforeChild, "#1.5");
+		Assert.That(parentShown, Is.Not.Null, "#1.1");
+		Assert.That(childShown, Is.Not.Null, "#1.2");
+		Assert.That(windowShown, Is.Not.Null, "#1.3");
+		Assert.That(parentShownBeforeOtherChild, Is.Not.Null, "#1.4");
+		Assert.That(windowShownBeforeChild, Is.Not.Null, "#1.5");
 
 		Assert.That(parentShown, Is.True, "#2.1 - Shown was not triggered for parent control");
 		Assert.That(childShown, Is.True, "#2.2 - Shown was not triggered for child control");

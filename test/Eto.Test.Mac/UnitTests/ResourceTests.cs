@@ -10,7 +10,7 @@ namespace Eto.Test.Mac64.UnitTests
 		{
 			var path = EtoEnvironment.GetFolderPath(EtoSpecialFolder.ApplicationResources);
 			var file = Path.Combine(path, "Assets", "TestContent.txt");
-			Assert.IsTrue(File.Exists(file));
+			Assert.That(File.Exists(file), Is.True);
 		}
 
 		[Test]
@@ -18,7 +18,7 @@ namespace Eto.Test.Mac64.UnitTests
 		{
 			var path = EtoEnvironment.GetFolderPath(EtoSpecialFolder.ApplicationResources);
 			var file = Path.Combine(path, "Assets", "TestBundleResource.txt");
-			Assert.IsTrue(File.Exists(file));
+			Assert.That(File.Exists(file), Is.True);
 		}
 
 		[Test]
@@ -27,10 +27,10 @@ namespace Eto.Test.Mac64.UnitTests
 			// getting the location of the assembly can be null when using mkbundle, so we use this instead.
 			var path = EtoEnvironment.GetFolderPath(EtoSpecialFolder.EntryExecutable);
 
-			Assert.IsNotEmpty(path, "#1");
+			Assert.That(path, Is.Not.Empty, "#1");
 			var file = Path.Combine(path, "Assets", "TestCopyToOutput.txt");
 			Console.WriteLine($"Looking for file '{file}'");
-			Assert.IsTrue(File.Exists(file), "#2");
+			Assert.That(File.Exists(file), Is.True, "#2");
 		}
 	}
 }

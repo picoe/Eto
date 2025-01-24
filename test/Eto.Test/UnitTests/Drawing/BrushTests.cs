@@ -66,15 +66,15 @@ namespace Eto.Test.UnitTests.Drawing
 
 			// start out mostly blue
 			var startPixel = bmp.GetPixel(1, 2);
-			Assert.LessOrEqual(startPixel.Rb, 10, "#1.1");
-			Assert.LessOrEqual(startPixel.Gb, 10, "#1.2");
-			Assert.GreaterOrEqual(startPixel.Bb, 10, "#1.3");
+			Assert.That(startPixel.Rb, Is.LessThanOrEqualTo(10), "#1.1");
+			Assert.That(startPixel.Gb, Is.LessThanOrEqualTo(10), "#1.2");
+			Assert.That(startPixel.Bb, Is.GreaterThanOrEqualTo(10), "#1.3");
 
 			// end mostly green
 			var endPixel = bmp.GetPixel(98, 99);
-			Assert.LessOrEqual(endPixel.Rb, 10, "#2.1");
-			Assert.GreaterOrEqual(endPixel.Gb, 80, "#2.2");
-			Assert.LessOrEqual(endPixel.Bb, 10, "#2.3");
+			Assert.That(endPixel.Rb, Is.LessThanOrEqualTo(10), "#2.1");
+			Assert.That(endPixel.Gb, Is.GreaterThanOrEqualTo(80), "#2.2");
+			Assert.That(endPixel.Bb, Is.LessThanOrEqualTo(10), "#2.3");
 		}
 
 	}

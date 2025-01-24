@@ -78,10 +78,10 @@ namespace Eto.Test.UnitTests.Forms.Behaviors
 
 			}, allowPass: false);
 
-			Assert.IsTrue(mouseUpCalled, "#1 - MouseUp was not called on top control");
-			Assert.IsTrue(contentRemoved, "#2 - Content (blue square) was not removed");
-			Assert.IsTrue(mouseDownInChild, "#3 - MouseUp should NOT be called on child even though it was removed");
-			Assert.IsFalse(mouseMovedEvenAfterRemoved, "#4 - MouseMoved should NOT be called on child after it was removed");
+			Assert.That(mouseUpCalled, Is.True, "#1 - MouseUp was not called on top control");
+			Assert.That(contentRemoved, Is.True, "#2 - Content (blue square) was not removed");
+			Assert.That(mouseDownInChild, Is.True, "#3 - MouseUp should NOT be called on child even though it was removed");
+			Assert.That(mouseMovedEvenAfterRemoved, Is.False, "#4 - MouseMoved should NOT be called on child after it was removed");
 		}
 
 		[Test, ManualTest]
@@ -277,12 +277,12 @@ namespace Eto.Test.UnitTests.Forms.Behaviors
 				form.Shown += (sender, e) => panel1.Focus();
 				return layout;
 			});
-			Assert.IsTrue(wasCaptured, "#1 - Mouse was not able to be captured");
-			Assert.IsTrue(isMouseCaptured, "#2 - Control.IsMouseCaptured should be true after CaptureMouse() is successful");
-			Assert.IsTrue(parent2ShouldBeEntered, "#3 - Parent2 should be entered when mouse is captured on Panel2");
-			Assert.IsTrue(parent1ShouldNotBeEntered, "#4 - Parent1 should not be entered when mouse is captured on Panel2");
-			Assert.IsFalse(panel1ShouldNeverBeCaptured, "#5 - Panel2 should never be captured");
-			Assert.IsFalse(panel2ShouldNeverHaveMouseMoveWithoutCapturing, "#6 - Panel2 should not have a MouseMove with a button down without being captured");
+			Assert.That(wasCaptured, Is.True, "#1 - Mouse was not able to be captured");
+			Assert.That(isMouseCaptured, Is.True, "#2 - Control.IsMouseCaptured should be true after CaptureMouse() is successful");
+			Assert.That(parent2ShouldBeEntered, Is.True, "#3 - Parent2 should be entered when mouse is captured on Panel2");
+			Assert.That(parent1ShouldNotBeEntered, Is.True, "#4 - Parent1 should not be entered when mouse is captured on Panel2");
+			Assert.That(panel1ShouldNeverBeCaptured, Is.False, "#5 - Panel2 should never be captured");
+			Assert.That(panel2ShouldNeverHaveMouseMoveWithoutCapturing, Is.False, "#6 - Panel2 should not have a MouseMove with a button down without being captured");
 		}
 	}
 }

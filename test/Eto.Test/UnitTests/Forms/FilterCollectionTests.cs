@@ -15,9 +15,9 @@ namespace Eto.Test.UnitTests.Forms
 		{
 			var model = GridViewUtils.CreateModel();
 			var filtered = new FilterCollection<DataItem>(model);
-			Assert.AreEqual(model.Count, filtered.Count);
+			Assert.That(filtered.Count, Is.EqualTo(model.Count));
 			for (var i = 0; i < model.Count; ++i)
-				Assert.AreSame(model[i], filtered[i]);
+				Assert.That(model[i], Is.SameAs(filtered[i]));
 		}
 
 		[Test]
@@ -26,9 +26,9 @@ namespace Eto.Test.UnitTests.Forms
 			var model = GridViewUtils.CreateModel();
 			var filtered = new FilterCollection<DataItem>(model);
 			filtered.Filter = GridViewUtils.KeepOddItemsFilter;
-			Assert.AreEqual(model.Count / 2, filtered.Count);
+			Assert.That(filtered.Count, Is.EqualTo(model.Count / 2));
 			for (var i = 0; i < model.Count / 2; ++i)
-				Assert.AreSame(model[i * 2 + 1], filtered[i]);
+				Assert.That(model[i * 2 + 1], Is.SameAs(filtered[i]));
 		}
 
 		[Test]
@@ -37,11 +37,11 @@ namespace Eto.Test.UnitTests.Forms
 			var model = GridViewUtils.CreateModel();
 			var filtered = new FilterCollection<DataItem>(model);
 			filtered.Sort = GridViewUtils.SortEvenItemsBeforeOdd;
-			Assert.AreEqual(model.Count, filtered.Count);
+			Assert.That(filtered.Count, Is.EqualTo(model.Count));
 			for (var i = 0; i < model.Count / 2; ++i)
-				Assert.AreSame(model[i * 2], filtered[i]);
+				Assert.That(model[i * 2], Is.SameAs(filtered[i]));
 			for (var i = 0; i < model.Count / 2; ++i)
-				Assert.AreSame(model[i * 2 + 1], filtered[model.Count / 2 + i]);
+				Assert.That(model[i * 2 + 1], Is.SameAs(filtered[model.Count / 2 + i]));
 		}
 
 		[Test]
@@ -50,9 +50,9 @@ namespace Eto.Test.UnitTests.Forms
 			var model = GridViewUtils.CreateModel();
 			var filtered = new FilterCollection<DataItem>(model);
 			filtered.Sort = GridViewUtils.SortItemsAscending;
-			Assert.AreEqual(model.Count, filtered.Count);
+			Assert.That(filtered.Count, Is.EqualTo(model.Count));
 			for (var i = 0; i < model.Count; ++i)
-				Assert.AreSame(model[i], filtered[i]);
+				Assert.That(model[i], Is.SameAs(filtered[i]));
 		}
 
 		[Test]
@@ -61,9 +61,9 @@ namespace Eto.Test.UnitTests.Forms
 			var model = GridViewUtils.CreateModel();
 			var filtered = new FilterCollection<DataItem>(model);
 			filtered.Sort = GridViewUtils.SortItemsDescending;
-			Assert.AreEqual(model.Count, filtered.Count);
+			Assert.That(filtered.Count, Is.EqualTo(model.Count));
 			for (var i = 0; i < model.Count; ++i)
-				Assert.AreSame(model[model.Count - 1 - i], filtered[i]);
+				Assert.That(model[model.Count - 1 - i], Is.SameAs(filtered[i]));
 		}
 
 		[Test]
@@ -73,11 +73,11 @@ namespace Eto.Test.UnitTests.Forms
 			var filtered = new FilterCollection<DataItem>(model);
 			filtered.Sort = GridViewUtils.SortEvenItemsBeforeOdd;
 			filtered.Filter = GridViewUtils.KeepFirstHalfOfItemsFilter;
-			Assert.AreEqual(model.Count / 2, filtered.Count);
+			Assert.That(filtered.Count, Is.EqualTo(model.Count / 2));
 			for (var i = 0; i < model.Count / 4; ++i)
-				Assert.AreSame(model[i * 2], filtered[i]);
+				Assert.That(model[i * 2], Is.SameAs(filtered[i]));
 			for (var i = 0; i < model.Count / 4; ++i)
-				Assert.AreSame(model[i * 2 + 1], filtered[model.Count / 4 + i]);
+				Assert.That(model[i * 2 + 1], Is.SameAs(filtered[model.Count / 4 + i]));
 		}
 
 		[Test]
@@ -90,18 +90,18 @@ namespace Eto.Test.UnitTests.Forms
 
 			// test removing from the filtered collection
 			filtered.RemoveAt(80);
-			Assert.IsFalse(filtered.Any(r => r.Id == 19), "Removing the 80th filtered row should remove item #19");
-			Assert.IsFalse(model.Any(r => r.Id == 19), "Removing the 80th filtered row should remove item #19 from the model");
+			Assert.That(filtered.Any(r => r.Id == 19), Is.False, "Removing the 80th filtered row should remove item #19");
+			Assert.That(model.Any(r => r.Id == 19), Is.False, "Removing the 80th filtered row should remove item #19 from the model");
 
 			// test removing from the model
 			model.Remove(model.First(r => r.Id == 20));
-			Assert.IsFalse(filtered.Any(r => r.Id == 20), "Removing Item #20 should no longer show up in the filtered collection");
-			Assert.IsFalse(model.Any(r => r.Id == 20), "Removing Item #20 should no longer be in the model");
+			Assert.That(filtered.Any(r => r.Id == 20), Is.False, "Removing Item #20 should no longer show up in the filtered collection");
+			Assert.That(model.Any(r => r.Id == 20), Is.False, "Removing Item #20 should no longer be in the model");
 
 			// ensure they are not in the filter collection after removing the sort
 			filtered.Sort = null;
-			Assert.IsFalse(filtered.Any(r => r.Id == 19), "Item #19 should not be in the list");
-			Assert.IsFalse(filtered.Any(r => r.Id == 20), "Item #20 should not be in the list");
+			Assert.That(filtered.Any(r => r.Id == 19), Is.False, "Item #19 should not be in the list");
+			Assert.That(filtered.Any(r => r.Id == 20), Is.False, "Item #20 should not be in the list");
 		}
 
 		[Test]
@@ -113,31 +113,31 @@ namespace Eto.Test.UnitTests.Forms
 			filtered.Filter = item => item.Id <= 50;
 
 			// test removing from the filtered collection
-			Assert.IsTrue(filtered.Any(r => r.Id == 20), "Item #20 should appear in the filtered list");
-			Assert.IsTrue(model.Any(r => r.Id == 20), "Item #20 should be in the model");
+			Assert.That(filtered.Any(r => r.Id == 20), Is.True, "Item #20 should appear in the filtered list");
+			Assert.That(model.Any(r => r.Id == 20), Is.True, "Item #20 should be in the model");
 			filtered.Remove(filtered.First(r => r.Id == 20));
-			Assert.IsFalse(filtered.Any(r => r.Id == 20), "Removing Item #20 should no longer show up in the filtered collection");
-			Assert.IsFalse(model.Any(r => r.Id == 20), "Removing Item #20 should no longer be in the model");
+			Assert.That(filtered.Any(r => r.Id == 20), Is.False, "Removing Item #20 should no longer show up in the filtered collection");
+			Assert.That(model.Any(r => r.Id == 20), Is.False, "Removing Item #20 should no longer be in the model");
 
 			// test removing an item from the model that also shows in the filter
-			Assert.IsTrue(filtered.Any(r => r.Id == 30), "Item #30 should appear in the filtered list");
-			Assert.IsTrue(model.Any(r => r.Id == 30), "Item #30 should be in the model");
+			Assert.That(filtered.Any(r => r.Id == 30), Is.True, "Item #30 should appear in the filtered list");
+			Assert.That(model.Any(r => r.Id == 30), Is.True, "Item #30 should be in the model");
 			model.Remove(model.First(r => r.Id == 30));
-			Assert.IsFalse(filtered.Any(r => r.Id == 30), "Removing Item #30 should no longer show up in the filtered collection");
-			Assert.IsFalse(model.Any(r => r.Id == 30), "Removing Item #30 should no longer be in the model");
+			Assert.That(filtered.Any(r => r.Id == 30), Is.False, "Removing Item #30 should no longer show up in the filtered collection");
+			Assert.That(model.Any(r => r.Id == 30), Is.False, "Removing Item #30 should no longer be in the model");
 
 			// test removing an item from the model that isn't in the filtered collection
-			Assert.IsFalse(filtered.Any(r => r.Id == 60), "Item #60 should NOT appear in the filtered list");
-			Assert.IsTrue(model.Any(r => r.Id == 60), "Item #60 should be in the model");
+			Assert.That(filtered.Any(r => r.Id == 60), Is.False, "Item #60 should NOT appear in the filtered list");
+			Assert.That(model.Any(r => r.Id == 60), Is.True, "Item #60 should be in the model");
 			model.Remove(model.First(r => r.Id == 60));
-			Assert.IsFalse(filtered.Any(r => r.Id == 60), "Removing Item #60 should no longer show up in the filtered collection");
-			Assert.IsFalse(model.Any(r => r.Id == 60), "Removing Item #60 should no longer be in the model");
+			Assert.That(filtered.Any(r => r.Id == 60), Is.False, "Removing Item #60 should no longer show up in the filtered collection");
+			Assert.That(model.Any(r => r.Id == 60), Is.False, "Removing Item #60 should no longer be in the model");
 
 			// ensure they are not in the filter collection after removing the filter
 			filtered.Filter = null;
-			Assert.IsFalse(filtered.Any(r => r.Id == 20), "Item #20 should not be in the list");
-			Assert.IsFalse(filtered.Any(r => r.Id == 30), "Item #30 should not be in the list");
-			Assert.IsFalse(filtered.Any(r => r.Id == 60), "Item #60 should not be in the list");
+			Assert.That(filtered.Any(r => r.Id == 20), Is.False, "Item #20 should not be in the list");
+			Assert.That(filtered.Any(r => r.Id == 30), Is.False, "Item #30 should not be in the list");
+			Assert.That(filtered.Any(r => r.Id == 60), Is.False, "Item #60 should not be in the list");
 		}
 
 		[Test]
@@ -150,16 +150,16 @@ namespace Eto.Test.UnitTests.Forms
 			int newIndex = -1;
 			filtered.CollectionChanged += (sender, e) =>
 			{
-				Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action, "Action should be add");
+				Assert.That(e.Action, Is.EqualTo(NotifyCollectionChangedAction.Add), "Action should be add");
 				newIndex = e.NewStartingIndex;
 			};
 			var item = new DataItem(1000);
 			filtered.Add(item);
 
 			var index = filtered.IndexOf(item);
-			Assert.AreEqual(filtered[index].Id, item.Id, "Index reported does not have correct item");
-			Assert.AreEqual(index, newIndex, "Triggered event should have correct index");
-			Assert.AreEqual(model.Count - 1, model.IndexOf(item), "Item should be added to the end of the model");
+			Assert.That(item.Id, Is.EqualTo(filtered[index].Id), "Index reported does not have correct item");
+			Assert.That(newIndex, Is.EqualTo(index), "Triggered event should have correct index");
+			Assert.That(model.IndexOf(item), Is.EqualTo(model.Count - 1), "Item should be added to the end of the model");
 		}
 
 		[Test]
@@ -172,7 +172,7 @@ namespace Eto.Test.UnitTests.Forms
 			int newIndex = -1;
 			filtered.CollectionChanged += (sender, e) =>
 			{
-				Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action, "Action should be add");
+				Assert.That(e.Action, Is.EqualTo(NotifyCollectionChangedAction.Add), "Action should be add");
 				newIndex = e.NewStartingIndex;
 			};
 			var item = new DataItem(1000);
@@ -180,9 +180,9 @@ namespace Eto.Test.UnitTests.Forms
 			filtered.Insert(insertIndex, item);
 
 			var index = filtered.IndexOf(item);
-			Assert.AreEqual(filtered[index].Id, item.Id, "Index reported does not have correct item");
-			Assert.AreEqual(index, newIndex, "Triggered event should have correct index");
-			Assert.AreEqual(insertIndex, index, "Index of item should be the inserted index");
+			Assert.That(item.Id, Is.EqualTo(filtered[index].Id), "Index reported does not have correct item");
+			Assert.That(newIndex, Is.EqualTo(index), "Triggered event should have correct index");
+			Assert.That(index, Is.EqualTo(insertIndex), "Index of item should be the inserted index");
 		}
 
 		[Test]
@@ -196,29 +196,29 @@ namespace Eto.Test.UnitTests.Forms
 
 			var item = new DataItem(1000);
 			filtered.Insert(filterInsertIndex, item);
-			Assert.AreEqual(filtered[filterInsertIndex].Id, 21, "#1 Item should NOT be inserted at the specified index, since it is an even number");
-			Assert.AreEqual(filtered.IndexOf(item), -1, "#2 Item should NOT be in the filtered list");
-			Assert.AreEqual(model.IndexOf(filtered[filterInsertIndex]) - 1, model.IndexOf(item), "#3 Item should be inserted right before item at filter location");
+			Assert.That(21, Is.EqualTo(filtered[filterInsertIndex].Id), "#1 Item should NOT be inserted at the specified index, since it is an even number");
+			Assert.That(-1, Is.EqualTo(filtered.IndexOf(item)), "#2 Item should NOT be in the filtered list");
+			Assert.That(model.IndexOf(item), Is.EqualTo(model.IndexOf(filtered[filterInsertIndex]) - 1), "#3 Item should be inserted right before item at filter location");
 
 
 			item = new DataItem(1001);
 			filtered.Insert(filterInsertIndex, item);
-			Assert.AreEqual(filtered[filterInsertIndex].Id, 1001, "#4 Item with odd number should be inserted at the specified index");
-			Assert.AreEqual(filtered.IndexOf(item), filterInsertIndex, "#5 Item should be in the filtered list at the insert location");
-			Assert.AreEqual(model.IndexOf(filtered[filterInsertIndex + 1]) - 1, model.IndexOf(item), "#6 Item should be inserted right before item at filter location");
+			Assert.That(1001, Is.EqualTo(filtered[filterInsertIndex].Id), "#4 Item with odd number should be inserted at the specified index");
+			Assert.That(filterInsertIndex, Is.EqualTo(filtered.IndexOf(item)), "#5 Item should be in the filtered list at the insert location");
+			Assert.That(model.IndexOf(item), Is.EqualTo(model.IndexOf(filtered[filterInsertIndex + 1]) - 1), "#6 Item should be inserted right before item at filter location");
 
 			// refresh the list
 			filtered.Refresh();
 
 			// re-test inserted item, it should be at the same index.
-			Assert.AreEqual(filtered[filterInsertIndex].Id, 1001, "#7 Item with odd number should be inserted at the specified index");
-			Assert.AreEqual(filtered.IndexOf(item), filterInsertIndex, "#8 Item should be in the filtered list at the insert location");
-			Assert.AreEqual(model.IndexOf(filtered[filterInsertIndex + 1]) - 1, model.IndexOf(item), "#9 Item should be inserted right before item at filter location");
+			Assert.That(1001, Is.EqualTo(filtered[filterInsertIndex].Id), "#7 Item with odd number should be inserted at the specified index");
+			Assert.That(filterInsertIndex, Is.EqualTo(filtered.IndexOf(item)), "#8 Item should be in the filtered list at the insert location");
+			Assert.That(model.IndexOf(item), Is.EqualTo(model.IndexOf(filtered[filterInsertIndex + 1]) - 1), "#9 Item should be inserted right before item at filter location");
 
 			// ensure they are in the filter collection after the filter changes.
 			filtered.Filter = null;
-			Assert.IsTrue(filtered.Any(r => r.Id == 1000), "Item #1000 should be in the list");
-			Assert.IsTrue(filtered.Any(r => r.Id == 1001), "Item #1001 should be in the list");
+			Assert.That(filtered.Any(r => r.Id == 1000), Is.True, "Item #1000 should be in the list");
+			Assert.That(filtered.Any(r => r.Id == 1001), Is.True, "Item #1001 should be in the list");
 		}
 
 		[Test]
@@ -236,27 +236,27 @@ namespace Eto.Test.UnitTests.Forms
 			changeArgs = null;
 			model.Insert(10, item);
 			// should not exist in filtered
-			Assert.AreEqual(-1, filtered.IndexOf(item), "#1-1 Item should NOT be in the filtered collection");
-			Assert.IsNull(changeArgs, "#1-2 Inserting an item that doesn't match the filter shouldn't raise a change notification");
+			Assert.That(filtered.IndexOf(item), Is.EqualTo(-1), "#1-1 Item should NOT be in the filtered collection");
+			Assert.That(changeArgs, Is.Null, "#1-2 Inserting an item that doesn't match the filter shouldn't raise a change notification");
 
 			item = new DataItem(1001);
 			changeArgs = null;
 			model.Insert(11, item);
-			Assert.AreEqual(0, filtered.IndexOf(item), "#2-1 Item should be in the filtered collection");
+			Assert.That(filtered.IndexOf(item), Is.EqualTo(0), "#2-1 Item should be in the filtered collection");
 
-			Assert.IsNotNull(changeArgs, "#3-1 Change should have been triggered");
-			Assert.AreEqual(NotifyCollectionChangedAction.Add, changeArgs.Action, "#3-2 Item should have triggered an add notification");
-			Assert.AreEqual(0, changeArgs.NewStartingIndex, "#3-3 Index of add notification is incorrect");
-			Assert.IsNotEmpty(changeArgs.NewItems, "#3-4 New items of change event should not be empty");
-			Assert.AreEqual(1001, ((DataItem)changeArgs.NewItems[0]).Id, "#3-5 New item of notification is not correct");
+			Assert.That(changeArgs, Is.Not.Null, "#3-1 Change should have been triggered");
+			Assert.That(changeArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Add), "#3-2 Item should have triggered an add notification");
+			Assert.That(changeArgs.NewStartingIndex, Is.EqualTo(0), "#3-3 Index of add notification is incorrect");
+			Assert.That(changeArgs.NewItems, Is.Not.Empty, "#3-4 New items of change event should not be empty");
+			Assert.That(((DataItem)changeArgs.NewItems[0]).Id, Is.EqualTo(1001), "#3-5 New item of notification is not correct");
 
 			filtered.Filter = null;
 			filtered.Sort = null;
 
 			// should be in the same inserted position in the source model
-			Assert.AreEqual(1000, filtered[10].Id, "#4-1 Item 1000 was not inserted in the correct location");
-			Assert.AreEqual(1001, filtered[11].Id, "#4-2 Item 1001 was not inserted in the correct location");
-			Assert.AreEqual(model.Count, filtered.Count, "#4-3 Count in filtered does not match model");
+			Assert.That(filtered[10].Id, Is.EqualTo(1000), "#4-1 Item 1000 was not inserted in the correct location");
+			Assert.That(filtered[11].Id, Is.EqualTo(1001), "#4-2 Item 1001 was not inserted in the correct location");
+			Assert.That(filtered.Count, Is.EqualTo(model.Count), "#4-3 Count in filtered does not match model");
 		}
 
 		[Test]
@@ -272,34 +272,34 @@ namespace Eto.Test.UnitTests.Forms
 			filtered.CollectionChanged += (sender, e) => changeArgs = e;
 
 			var itemToRemove1 = model[10];
-			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove1), "#1-1 Item should NOT be in the filtered collection");
+			Assert.That(filtered.IndexOf(itemToRemove1), Is.EqualTo(-1), "#1-1 Item should NOT be in the filtered collection");
 			changeArgs = null;
 			model.RemoveAt(10);
-			Assert.IsNull(changeArgs, "#1-2 Change should not have been triggered");
-			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove1), "#1-3 Item should NOT be in the filtered collection");
+			Assert.That(changeArgs, Is.Null, "#1-2 Change should not have been triggered");
+			Assert.That(filtered.IndexOf(itemToRemove1), Is.EqualTo(-1), "#1-3 Item should NOT be in the filtered collection");
 
 			var itemToRemove2 = model[10];
-			Assert.AreEqual(44, filtered.IndexOf(itemToRemove2), "#2-1 Item should be in the filtered collection");
+			Assert.That(filtered.IndexOf(itemToRemove2), Is.EqualTo(44), "#2-1 Item should be in the filtered collection");
 			changeArgs = null;
 			model.Remove(itemToRemove2);
-			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove2), "#2-2 Item should NOT be in the filtered collection");
+			Assert.That(filtered.IndexOf(itemToRemove2), Is.EqualTo(-1), "#2-2 Item should NOT be in the filtered collection");
 
 			// verify change notification
-			Assert.IsNotNull(changeArgs, "#3-1 Change should have been triggered");
-			Assert.AreEqual(NotifyCollectionChangedAction.Remove, changeArgs.Action, "#3-2 Item should have triggered a remove notification");
-			Assert.AreEqual(44, changeArgs.OldStartingIndex, "#3-3 Index of remove notification is incorrect");
-			Assert.IsNotEmpty(changeArgs.OldItems, "#3-4 Old items of change event should not be empty");
-			Assert.AreEqual(11, ((DataItem)changeArgs.OldItems[0]).Id, "#3-5 Old item of notification is not correct");
+			Assert.That(changeArgs, Is.Not.Null, "#3-1 Change should have been triggered");
+			Assert.That(changeArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Remove), "#3-2 Item should have triggered a remove notification");
+			Assert.That(changeArgs.OldStartingIndex, Is.EqualTo(44), "#3-3 Index of remove notification is incorrect");
+			Assert.That(changeArgs.OldItems, Is.Not.Empty, "#3-4 Old items of change event should not be empty");
+			Assert.That(((DataItem)changeArgs.OldItems[0]).Id, Is.EqualTo(11), "#3-5 Old item of notification is not correct");
 
 
 			filtered.Filter = null;
-			Assert.AreEqual(NotifyCollectionChangedAction.Reset, changeArgs.Action, "#4 Changing filter should send a reset notification");
+			Assert.That(changeArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Reset), "#4 Changing filter should send a reset notification");
 			filtered.Sort = null;
 
 			// should be in the same inserted position in the source model
-			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove1), "#5-1 Item should NOT be in the filtered collection");
-			Assert.AreEqual(-1, filtered.IndexOf(itemToRemove2), "#5-2 Item should NOT be in the filtered collection");
-			Assert.AreEqual(model.Count, filtered.Count, "#5-3 Count in filtered does not match model");
+			Assert.That(filtered.IndexOf(itemToRemove1), Is.EqualTo(-1), "#5-1 Item should NOT be in the filtered collection");
+			Assert.That(filtered.IndexOf(itemToRemove2), Is.EqualTo(-1), "#5-2 Item should NOT be in the filtered collection");
+			Assert.That(filtered.Count, Is.EqualTo(model.Count), "#5-3 Count in filtered does not match model");
 		}
 
 		[Test]
@@ -317,27 +317,27 @@ namespace Eto.Test.UnitTests.Forms
 			changeArgs = null;
 			model.Add(item);
 			// should not exist in filtered
-			Assert.AreEqual(-1, filtered.IndexOf(item), "#1-1 Item should NOT be in the filtered collection");
-			Assert.IsNull(changeArgs, "#1-2 Inserting an item that doesn't match the filter shouldn't raise a change notification");
+			Assert.That(filtered.IndexOf(item), Is.EqualTo(-1), "#1-1 Item should NOT be in the filtered collection");
+			Assert.That(changeArgs, Is.Null, "#1-2 Inserting an item that doesn't match the filter shouldn't raise a change notification");
 
 			item = new DataItem(1001);
 			changeArgs = null;
 			model.Add(item);
-			Assert.AreEqual(0, filtered.IndexOf(item), "#2-1 Item should be in the filtered collection");
+			Assert.That(filtered.IndexOf(item), Is.EqualTo(0), "#2-1 Item should be in the filtered collection");
 
-			Assert.IsNotNull(changeArgs, "#3-1 Change should have been triggered");
-			Assert.AreEqual(NotifyCollectionChangedAction.Add, changeArgs.Action, "#3-2 Item should have triggered an add notification");
-			Assert.AreEqual(0, changeArgs.NewStartingIndex, "#3-3 Index of add notification is incorrect");
-			Assert.IsNotEmpty(changeArgs.NewItems, "#3-4 New items of change event should not be empty");
-			Assert.AreEqual(1001, ((DataItem)changeArgs.NewItems[0]).Id, "#3-5 New item of notification is not correct");
+			Assert.That(changeArgs, Is.Not.Null, "#3-1 Change should have been triggered");
+			Assert.That(changeArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Add), "#3-2 Item should have triggered an add notification");
+			Assert.That(changeArgs.NewStartingIndex, Is.EqualTo(0), "#3-3 Index of add notification is incorrect");
+			Assert.That(changeArgs.NewItems, Is.Not.Empty, "#3-4 New items of change event should not be empty");
+			Assert.That(((DataItem)changeArgs.NewItems[0]).Id, Is.EqualTo(1001), "#3-5 New item of notification is not correct");
 
 			filtered.Filter = null;
 			filtered.Sort = null;
 
 			// should be in the same inserted position in the source model
-			Assert.AreEqual(model.Count, filtered.Count, "#4-3 Count in filtered does not match model");
-			Assert.AreEqual(1000, filtered[filtered.Count - 2].Id, "#4-1 Item 1000 was not added in the correct location");
-			Assert.AreEqual(1001, filtered[filtered.Count - 1].Id, "#4-2 Item 1001 was not added in the correct location");
+			Assert.That(filtered.Count, Is.EqualTo(model.Count), "#4-3 Count in filtered does not match model");
+			Assert.That(filtered[filtered.Count - 2].Id, Is.EqualTo(1000), "#4-1 Item 1000 was not added in the correct location");
+			Assert.That(filtered[filtered.Count - 1].Id, Is.EqualTo(1001), "#4-2 Item 1001 was not added in the correct location");
 		}
 
 		class MyCollection : ObservableCollection<DataItem>
@@ -359,11 +359,11 @@ namespace Eto.Test.UnitTests.Forms
 
 			collection.AddRange(Enumerable.Range(1, 10).Select(r => new DataItem(r)));
 
-			Assert.AreEqual(10, filterCollection.Count, "FilterCollection.Count should be equal to 10 after adding items in bulk");
+			Assert.That(filterCollection.Count, Is.EqualTo(10), "FilterCollection.Count should be equal to 10 after adding items in bulk");
 
 			collection.AddRange(Enumerable.Range(1, 10).Select(r => new DataItem(r)));
 
-			Assert.AreEqual(20, filterCollection.Count, "FilterCollection.Count should be equal to 20 after adding more items in bulk");
+			Assert.That(filterCollection.Count, Is.EqualTo(20), "FilterCollection.Count should be equal to 20 after adding more items in bulk");
 		}
 	}
 }

@@ -24,10 +24,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			var args = new TextChangingEventArgs(oldText, newText, false);
 
-			Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#1");
-			Assert.AreEqual(newText ?? string.Empty, args.NewText, "#2");
-			Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#3");
-			Assert.AreEqual(text, args.Text, "#4");
+			Assert.That(args.OldText, Is.EqualTo(oldText ?? string.Empty), "#1");
+			Assert.That(args.NewText, Is.EqualTo(newText ?? string.Empty), "#2");
+			Assert.That(args.Range, Is.EqualTo(Range.FromLength(rangeStart, rangeLength)), "#3");
+			Assert.That(args.Text, Is.EqualTo(text), "#4");
 		}
 
 		[TestCaseSource(nameof(GetTextChangingCases))]
@@ -35,10 +35,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			var args = new TextChangingEventArgs(text, Range.FromLength(rangeStart, rangeLength), oldText, false);
 
-			Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#1");
-			Assert.AreEqual(newText ?? string.Empty, args.NewText, "#2");
-			Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#3");
-			Assert.AreEqual(text, args.Text, "#4");
+			Assert.That(args.OldText, Is.EqualTo(oldText ?? string.Empty), "#1");
+			Assert.That(args.NewText, Is.EqualTo(newText ?? string.Empty), "#2");
+			Assert.That(args.Range, Is.EqualTo(Range.FromLength(rangeStart, rangeLength)), "#3");
+			Assert.That(args.Text, Is.EqualTo(text), "#4");
 		}
 	}
 }

@@ -365,18 +365,18 @@ namespace Eto.WinForms.Forms.Controls
 				}
 				else if (fixedPanel == SplitterFixedPanel.Panel1)
 				{
-					var size1 = panel1.GetPreferredSize();
+					var size1 = panel1?.GetPreferredSize() ?? Size.Empty;
 					SetRelative(Control.Orientation == swf.Orientation.Vertical ? size1.Width : size1.Height);
 				}
 				else if (fixedPanel == SplitterFixedPanel.Panel2)
 				{
-					var size2 = panel2.GetPreferredSize();
+					var size2 = panel2?.GetPreferredSize() ?? Size.Empty;
 					SetRelative(Control.Orientation == swf.Orientation.Vertical ? size2.Width : size2.Height);
 				}
 				else
 				{
-					var size1 = panel1.GetPreferredSize();
-					var size2 = panel2.GetPreferredSize();
+					var size1 = panel1?.GetPreferredSize() ?? Size.Empty;
+					var size2 = panel2?.GetPreferredSize() ?? Size.Empty;
 					SetRelative(Control.Orientation == swf.Orientation.Vertical
 						? size1.Width / (double)(size1.Width + size2.Width)
 						: size1.Height / (double)(size1.Height + size2.Height));

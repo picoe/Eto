@@ -18,9 +18,9 @@ namespace Eto.Test.UnitTests.Forms
 
 				var table = XamlReader.Load<DynamicTable>(new StringReader(xaml), null);
 
-				Assert.IsNotNull(table, "#1");
-				Assert.AreEqual(table.Padding, new Padding(10), "#2");
-				Assert.AreEqual(table.Spacing, new Size(5, 5), "#3");
+				Assert.That(table, Is.Not.Null, "#1");
+				Assert.That(new Padding(10), Is.EqualTo(table.Padding), "#2");
+				Assert.That(new Size(5, 5), Is.EqualTo(table.Spacing), "#3");
 			});
 		}
 
@@ -47,15 +47,15 @@ namespace Eto.Test.UnitTests.Forms
 				var parent = XamlReader.Load(new StringReader(xaml), new TestXamlParent());
 
 				// sanity check with parent and eto controls
-				Assert.IsNotNull(parent, "#1");
-				Assert.IsNotNull(parent.panel1, "#6 - field should have been set from ID");
-				Assert.IsNotNull(parent.panel2, "#7 - field should have been set from x:Name");
+				Assert.That(parent, Is.Not.Null, "#1");
+				Assert.That(parent.panel1, Is.Not.Null, "#6 - field should have been set from ID");
+				Assert.That(parent.panel2, Is.Not.Null, "#7 - field should have been set from x:Name");
 
 				// test subclass is also set
-				Assert.IsNotNull(parent.myControl1, "#2 - field should have been set from ID");
-				Assert.IsNotNull(parent.myControl2, "#3 - field should have been set from x:Name");
-				Assert.IsNotNull(parent.MyControlProperty1, "#4 - property should have been set from ID");
-				Assert.IsNotNull(parent.MyControlProperty2, "#5 - property should have been set from x:Name");
+				Assert.That(parent.myControl1, Is.Not.Null, "#2 - field should have been set from ID");
+				Assert.That(parent.myControl2, Is.Not.Null, "#3 - field should have been set from x:Name");
+				Assert.That(parent.MyControlProperty1, Is.Not.Null, "#4 - property should have been set from ID");
+				Assert.That(parent.MyControlProperty2, Is.Not.Null, "#5 - property should have been set from x:Name");
 			});
 		}
 
@@ -77,15 +77,15 @@ namespace Eto.Test.UnitTests.Forms
 
 				var parent = XamlReader.Load(new StringReader(xaml), new TestXamlParent());
 				// sanity check with parent and eto controls
-				Assert.IsNotNull(parent, "#1");
-				Assert.IsNotNull(parent.panel1, "#6 - field should have been set from ID");
-				Assert.IsNotNull(parent.panel2, "#7 - field should have been set from x:Name");
+				Assert.That(parent, Is.Not.Null, "#1");
+				Assert.That(parent.panel1, Is.Not.Null, "#6 - field should have been set from ID");
+				Assert.That(parent.panel2, Is.Not.Null, "#7 - field should have been set from x:Name");
 
 				// test subclass is also set
-				Assert.IsNotNull(parent.myControl1, "#2 - field should have been set from ID");
-				Assert.IsNotNull(parent.myControl2, "#3 - field should have been set from x:Name");
-				Assert.IsNotNull(parent.MyControlProperty1, "#4 - property should have been set from ID");
-				Assert.IsNotNull(parent.MyControlProperty2, "#5 - property should have been set from x:Name");
+				Assert.That(parent.myControl1, Is.Not.Null, "#2 - field should have been set from ID");
+				Assert.That(parent.myControl2, Is.Not.Null, "#3 - field should have been set from x:Name");
+				Assert.That(parent.MyControlProperty1, Is.Not.Null, "#4 - property should have been set from ID");
+				Assert.That(parent.MyControlProperty2, Is.Not.Null, "#5 - property should have been set from x:Name");
 			});
 		}
 	}

@@ -14,11 +14,11 @@ namespace Eto.Test.UnitTests.Forms
 
             var child = new Label();
             container.Content = child;
-            Assert.IsTrue(child.Visible);
+            Assert.That(child.Visible, Is.True);
 
             container.AttachNative(); // trigger load to apply styles
 
-            Assert.IsFalse(child.Visible);
+            Assert.That(child.Visible, Is.False);
         }
 
         [Test, InvokeOnUI]
@@ -30,14 +30,14 @@ namespace Eto.Test.UnitTests.Forms
 
             var child = new Label();
             container.Content = child;
-            Assert.IsTrue(child.Visible);
+            Assert.That(child.Visible, Is.True);
 
             container.AttachNative(); // trigger load to apply styles
-            Assert.IsTrue(child.Visible);
+            Assert.That(child.Visible, Is.True);
 
             child.Style = "style";
 
-            Assert.IsFalse(child.Visible);
+            Assert.That(child.Visible, Is.False);
         }
 
         [Test, InvokeOnUI]
@@ -52,22 +52,22 @@ namespace Eto.Test.UnitTests.Forms
 
             var child = new Label();
             container2.Content = child;
-            Assert.AreEqual(VerticalAlignment.Top, child.VerticalAlignment);
+            Assert.That(child.VerticalAlignment, Is.EqualTo(VerticalAlignment.Top));
 
             container1.AttachNative(); // trigger load to apply styles
 
             // container1 style applies
-            Assert.AreEqual(VerticalAlignment.Bottom, child.VerticalAlignment);
+            Assert.That(child.VerticalAlignment, Is.EqualTo(VerticalAlignment.Bottom));
 
             child.Style = "style";
 
             // container2 style now applies
-            Assert.AreEqual(VerticalAlignment.Center, child.VerticalAlignment);
+            Assert.That(child.VerticalAlignment, Is.EqualTo(VerticalAlignment.Center));
 
             child.Style = null;
 
             // container1 style now applies again
-            Assert.AreEqual(VerticalAlignment.Bottom, child.VerticalAlignment);
+            Assert.That(child.VerticalAlignment, Is.EqualTo(VerticalAlignment.Bottom));
         }
 
 		[Test, InvokeOnUI]
@@ -81,11 +81,11 @@ namespace Eto.Test.UnitTests.Forms
 
 			var child = new Label();
 			child.Style = "style";
-			Assert.IsTrue(child.Visible);
+			Assert.That(child.Visible, Is.True);
 
 			container.Content = child; // styles apply now that it is a child of the container
 
-			Assert.IsFalse(child.Visible);
+			Assert.That(child.Visible, Is.False);
 		}
 
 		[Test, InvokeOnUI]
@@ -98,11 +98,11 @@ namespace Eto.Test.UnitTests.Forms
 			container.AttachNative();
 
 			var child = new Label();
-			Assert.IsTrue(child.Visible);
+			Assert.That(child.Visible, Is.True);
 
 			container.Content = child; // styles apply now that it is a child of the container
 
-			Assert.IsFalse(child.Visible);
+			Assert.That(child.Visible, Is.False);
 		}
 	}
 }
