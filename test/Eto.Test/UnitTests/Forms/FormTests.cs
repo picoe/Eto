@@ -110,7 +110,7 @@ public class FormTests : WindowTests<Form>
 			form.Closed += (sender, e) => closed++;
 			form.Shown += (sender, e) => form.Close();
 		});
-		Assert.AreEqual(1, closed, "Closed event should only fire once");
+		Assert.That(closed, Is.EqualTo(1), "Closed event should only fire once");
 	}
 
 	[TestCase(true)]

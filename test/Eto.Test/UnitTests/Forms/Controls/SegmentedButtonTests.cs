@@ -36,7 +36,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					Application.Instance.AsyncInvoke(form.Close);
 				};
 
-				Assert.IsTrue(itemExpected.Selected, "#1.1");
+				Assert.That(itemExpected.Selected, Is.True, "#1.1");
 
 				form.Content = new StackLayout
 				{
@@ -50,13 +50,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 			}, -1);
 
-			Assert.AreEqual(0, selectedIndexesChangedCount, "#2.1");
-			Assert.AreEqual(1, itemClickCount, "#2.2");
-			Assert.AreEqual(1, clickCount, "#2.3");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(0), "#2.1");
+			Assert.That(itemClickCount, Is.EqualTo(1), "#2.2");
+			Assert.That(clickCount, Is.EqualTo(1), "#2.3");
 
-			Assert.IsNotNull(itemExpected, "#3.1");
-			Assert.AreSame(itemExpected, itemClicked, "#3.2");
-			Assert.AreSame(itemExpected, itemItemClicked, "#3.3");
+			Assert.That(itemExpected, Is.Not.Null, "#3.1");
+			Assert.That(itemExpected, Is.SameAs(itemClicked), "#3.2");
+			Assert.That(itemExpected, Is.SameAs(itemItemClicked), "#3.3");
 		}
 
 		[Test, InvokeOnUI]
@@ -89,33 +89,33 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			segmentedButton.SelectedIndexesChanged += (sender, e) => selectedIndexesChangedCount++;
 
 			segmentedButton.Items.Add(item1);
-			Assert.AreEqual(1, selectedIndexesChangedCount, "#1.1");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#1.1");
 			segmentedButton.Items.Add(item2);
-			Assert.AreEqual(2, selectedIndexesChangedCount, "#1.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(2), "#1.2");
 			segmentedButton.Items.Add(item3);
-			Assert.AreEqual(3, selectedIndexesChangedCount, "#1.3");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(3), "#1.3");
 
-			Assert.AreEqual(2, segmentedButton.SelectedIndex, "#2.1");
-			Assert.AreSame(item3, segmentedButton.SelectedItem, "#2.2");
-			CollectionAssert.AreEqual(new[] { item3 }, segmentedButton.SelectedItems, "#2.3");
-			CollectionAssert.AreEqual(new[] { 2 }, segmentedButton.SelectedIndexes, "#2.4");
-			Assert.AreEqual(3, selectedIndexesChangedCount, "#2.5");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(2), "#2.1");
+			Assert.That(item3, Is.SameAs(segmentedButton.SelectedItem), "#2.2");
+			Assert.That(segmentedButton.SelectedItems, Is.EqualTo(new[] { item3 }), "#2.3");
+			Assert.That(segmentedButton.SelectedIndexes, Is.EqualTo(new[] { 2 }), "#2.4");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(3), "#2.5");
 
 			item1.Selected = true;
 
-			Assert.AreEqual(0, segmentedButton.SelectedIndex, "#3.1");
-			Assert.AreSame(item1, segmentedButton.SelectedItem, "#3.2");
-			CollectionAssert.AreEqual(new[] { item1 }, segmentedButton.SelectedItems, "#3.3");
-			CollectionAssert.AreEqual(new[] { 0 }, segmentedButton.SelectedIndexes, "#3.4");
-			Assert.AreEqual(4, selectedIndexesChangedCount, "#3.5");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(0), "#3.1");
+			Assert.That(item1, Is.SameAs(segmentedButton.SelectedItem), "#3.2");
+			Assert.That(segmentedButton.SelectedItems, Is.EqualTo(new[] { item1 }), "#3.3");
+			Assert.That(segmentedButton.SelectedIndexes, Is.EqualTo(new[] { 0 }), "#3.4");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(4), "#3.5");
 
 			item1.Selected = false;
 
-			Assert.AreEqual(-1, segmentedButton.SelectedIndex, "#4.1");
-			Assert.IsNull(segmentedButton.SelectedItem, "#4.2");
-			CollectionAssert.AreEqual(new SegmentedItem[0], segmentedButton.SelectedItems, "#4.3");
-			CollectionAssert.AreEqual(new int[0], segmentedButton.SelectedIndexes, "#4.4");
-			Assert.AreEqual(5, selectedIndexesChangedCount, "#4.5");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(-1), "#4.1");
+			Assert.That(segmentedButton.SelectedItem, Is.Null, "#4.2");
+			Assert.That(segmentedButton.SelectedItems, Is.EqualTo(new SegmentedItem[0]), "#4.3");
+			Assert.That(segmentedButton.SelectedIndexes, Is.EqualTo(new int[0]), "#4.4");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(5), "#4.5");
 		}
 
 		[Test, InvokeOnUI]
@@ -134,28 +134,28 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 			// add non-selected item
 			segmentedButton.Items.Add(item1);
-			Assert.AreEqual(0, selectedIndexesChangedCount, "#1.1");
-			Assert.AreEqual(-1, segmentedButton.SelectedIndex, "#1.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(0), "#1.1");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(-1), "#1.2");
 
 			// add item that was selected (selection now changed to that item!)
 			segmentedButton.Items.Add(item2);
-			Assert.AreEqual(1, selectedIndexesChangedCount, "#2.1");
-			Assert.AreEqual(1, segmentedButton.SelectedIndex, "#2.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#2.1");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(1), "#2.2");
 
 			// add another item (no change)
 			segmentedButton.Items.Add(item3);
-			Assert.AreEqual(1, selectedIndexesChangedCount, "#3.1");
-			Assert.AreEqual(1, segmentedButton.SelectedIndex, "#3.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#3.1");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(1), "#3.2");
 
 			// remove a non-selected item (no change)
 			segmentedButton.Items.Remove(item3);
-			Assert.AreEqual(1, selectedIndexesChangedCount, "#4.1");
-			Assert.AreEqual(1, segmentedButton.SelectedIndex, "#4.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#4.1");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(1), "#4.2");
 
 			// remove the selected item (change!)
 			segmentedButton.Items.Remove(item2);
-			Assert.AreEqual(2, selectedIndexesChangedCount, "#5.1");
-			Assert.AreEqual(-1, segmentedButton.SelectedIndex, "#5.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(2), "#5.1");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(-1), "#5.2");
 		}
 
 		[Test, InvokeOnUI]
@@ -175,29 +175,29 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			segmentedButton.SelectedIndexesChanged += (sender, e) => selectedIndexesChangedCount++;
 
 			// sanity check, in multiple selection last selected is returned
-			Assert.AreEqual(0, segmentedButton.SelectedIndex, "#1.1");
-			Assert.AreEqual(item1, segmentedButton.SelectedItem, "#1.2");
-			CollectionAssert.AreEquivalent(new[] { 0, 1, 2 }, segmentedButton.SelectedIndexes, "#1.3");
-			CollectionAssert.AreEquivalent(new[] { item1, item2, item3 }, segmentedButton.SelectedItems, "#1.4");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(0), "#1.1");
+			Assert.That(segmentedButton.SelectedItem, Is.EqualTo(item1), "#1.2");
+			Assert.That(segmentedButton.SelectedIndexes, Is.EquivalentTo(new[] { 0, 1, 2 }), "#1.3");
+			Assert.That(segmentedButton.SelectedItems, Is.EquivalentTo(new[] { item1, item2, item3 }), "#1.4");
 
 			// change mode to single
 			segmentedButton.SelectionMode = SegmentedSelectionMode.Single;
-			Assert.AreEqual(1, selectedIndexesChangedCount, "#2.1");
-			Assert.AreEqual(0, segmentedButton.SelectedIndex, "#2.2");
-			Assert.AreEqual(item1, segmentedButton.SelectedItem, "#2.3");
-			CollectionAssert.AreEquivalent(new[] { 0 }, segmentedButton.SelectedIndexes, "#2.4");
-			CollectionAssert.AreEquivalent(new[] { item1 }, segmentedButton.SelectedItems, "#2.5");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#2.1");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(0), "#2.2");
+			Assert.That(segmentedButton.SelectedItem, Is.EqualTo(item1), "#2.3");
+			Assert.That(segmentedButton.SelectedIndexes, Is.EquivalentTo(new[] { 0 }), "#2.4");
+			Assert.That(segmentedButton.SelectedItems, Is.EquivalentTo(new[] { item1 }), "#2.5");
 
 			// accessing selected items shouldn't trigger anything
-			Assert.AreEqual(1, selectedIndexesChangedCount, "#3.1");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#3.1");
 
 			// change mode to none
 			segmentedButton.SelectionMode = SegmentedSelectionMode.None;
-			Assert.AreEqual(2, selectedIndexesChangedCount, "#4.1");
-			Assert.AreEqual(-1, segmentedButton.SelectedIndex, "#4.2");
-			Assert.AreEqual(null, segmentedButton.SelectedItem, "#4.3");
-			CollectionAssert.IsEmpty(segmentedButton.SelectedIndexes, "#4.4");
-			CollectionAssert.IsEmpty(segmentedButton.SelectedItems, "#4.5");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(2), "#4.1");
+			Assert.That(segmentedButton.SelectedIndex, Is.EqualTo(-1), "#4.2");
+			Assert.That(segmentedButton.SelectedItem, Is.EqualTo(null), "#4.3");
+			Assert.That(segmentedButton.SelectedIndexes, Is.Empty, "#4.4");
+			Assert.That(segmentedButton.SelectedItems, Is.Empty, "#4.5");
 		}
 
 		class SegmentedButtonSubclass : SegmentedButton
@@ -216,11 +216,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			var control = new SegmentedButtonSubclass { Items = { "Item1", "Item2", "Item3" }, SelectionMode = SegmentedSelectionMode.Single };
 
-			Assert.AreEqual(0, control.SelectedIndexChangedCount, "#1");
+			Assert.That(control.SelectedIndexChangedCount, Is.EqualTo(0), "#1");
 
 			control.SelectedIndex = 0;
 
-			Assert.AreEqual(1, control.SelectedIndexChangedCount, "#2");
+			Assert.That(control.SelectedIndexChangedCount, Is.EqualTo(1), "#2");
 		}
 
 		[Test, InvokeOnUI]
@@ -233,17 +233,17 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			control.Items.Add("Item2");
 			control.Items.Add("Item3");
 
-			Assert.AreEqual(0, selectedIndexesChangedCount, "#1");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(0), "#1");
 
 			control.SelectedIndex = 0;
-			Assert.AreEqual(-1, control.SelectedIndex, "#2.1");
-			Assert.AreEqual(0, selectedIndexesChangedCount, "#2.2");
-			CollectionAssert.IsEmpty(control.SelectedIndexes, "#2.3");
+			Assert.That(control.SelectedIndex, Is.EqualTo(-1), "#2.1");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(0), "#2.2");
+			Assert.That(control.SelectedIndexes, Is.Empty, "#2.3");
 
 			control.SelectedIndexes = new[] { 1, 2 };
-			Assert.AreEqual(-1, control.SelectedIndex, "#3.1");
-			Assert.AreEqual(0, selectedIndexesChangedCount, "#3.2");
-			CollectionAssert.IsEmpty(control.SelectedIndexes, "#3.3");
+			Assert.That(control.SelectedIndex, Is.EqualTo(-1), "#3.1");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(0), "#3.2");
+			Assert.That(control.SelectedIndexes, Is.Empty, "#3.3");
 		}
 
 		[Test, ManualTest]
@@ -280,15 +280,15 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				return control;
 			}, allowPass: false);
 
-			Assert.AreEqual(1, itemClickWasRaised, "#1.1"); // ensure user actually clicked an item.
-			Assert.AreEqual(0, selectedIndexesChangedCount, "#1.2");
-			CollectionAssert.IsEmpty(selectedItems, "#1.3");
-			Assert.AreEqual(-1, selectedIndex, "#1.4");
+			Assert.That(itemClickWasRaised, Is.EqualTo(1), "#1.1"); // ensure user actually clicked an item.
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(0), "#1.2");
+			Assert.That(selectedItems, Is.Empty, "#1.3");
+			Assert.That(selectedIndex, Is.EqualTo(-1), "#1.4");
 
 			// check item events
-			Assert.AreEqual(1, itemWasClicked, "#2.1");
-			Assert.AreEqual(0, itemSelectedWasChanged, "#2.2");
-			Assert.IsFalse(itemIsSelected, "#2.3");
+			Assert.That(itemWasClicked, Is.EqualTo(1), "#2.1");
+			Assert.That(itemSelectedWasChanged, Is.EqualTo(0), "#2.2");
+			Assert.That(itemIsSelected, Is.False, "#2.3");
 		}
 
 		class SegmentedModel
@@ -344,14 +344,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				control.SelectionMode = selectionMode;
 
 				control.BindDataContext(c => c.SelectedIndex, (SegmentedModel m) => m.SelectedIndex, DualBindingMode.OneWayToSource);
-				Assert.AreEqual(1, model.SelectedIndexChangedCount, "#1.1"); // set when binding
+				Assert.That(model.SelectedIndexChangedCount, Is.EqualTo(1), "#1.1"); // set when binding
 
 				control.SelectedIndexesChanged += (sender, e) => selectedIndexesChangedCount++;
 				control.SelectedIndexChanged += (sender, e) => selectedIndexChangedCount++;
 				control.Items.Add("Item1");
 				var item2 = new ButtonSegmentedItem { Text = "Click Me" };
 				item2.BindDataContext(r => r.Selected, (SegmentedModel m) => m.ItemIsSelected, DualBindingMode.OneWayToSource);
-				Assert.AreEqual(0, model.ItemIsSelectedChangedCount, "#1.2");
+				Assert.That(model.ItemIsSelectedChangedCount, Is.EqualTo(0), "#1.2");
 				item2.Selected = initiallySelected;
 				item2.Click += (sender, e) =>
 				{
@@ -378,51 +378,51 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.Multiple(() =>
 			{
 				// check events on the segmented button control
-				Assert.AreEqual(1, itemClickWasRaised, "#2.1"); // ensure user actually clicked an item.
-				Assert.AreEqual(selectedIndex, model.SelectedIndex, "#2.2");
+				Assert.That(itemClickWasRaised, Is.EqualTo(1), "#2.1"); // ensure user actually clicked an item.
+				Assert.That(model.SelectedIndex, Is.EqualTo(selectedIndex), "#2.2");
 
 				// check events on the item itself
-				Assert.AreEqual(1, itemWasClicked, "#2.3");
+				Assert.That(itemWasClicked, Is.EqualTo(1), "#2.3");
 
 				if (selectionMode == SegmentedSelectionMode.Multiple)
 				{
 					if (initiallySelected)
 					{
-						Assert.AreEqual(2, selectedIndexChangedCount, "#3.1.1");
-						Assert.AreEqual(2, selectedIndexesChangedCount, "#3.1.2");
-						Assert.IsFalse(selectedIndex >= 0, "#3.1.3");
-						Assert.AreEqual(3, model.SelectedIndexChangedCount, "#3.1.4"); // one for binding, one when item is added, and one when it actually changes.
-						Assert.IsFalse(model.ItemIsSelected, "#3.1.5");
-						Assert.AreEqual(3, model.ItemIsSelectedChangedCount, "#3.1.6"); // one for binding, one when it is set, and one when it actually changes.
+						Assert.That(selectedIndexChangedCount, Is.EqualTo(2), "#3.1.1");
+						Assert.That(selectedIndexesChangedCount, Is.EqualTo(2), "#3.1.2");
+						Assert.That(selectedIndex >= 0, Is.False, "#3.1.3");
+						Assert.That(model.SelectedIndexChangedCount, Is.EqualTo(3), "#3.1.4"); // one for binding, one when item is added, and one when it actually changes.
+						Assert.That(model.ItemIsSelected, Is.False, "#3.1.5");
+						Assert.That(model.ItemIsSelectedChangedCount, Is.EqualTo(3), "#3.1.6"); // one for binding, one when it is set, and one when it actually changes.
 					}
 					else
 					{
-						Assert.AreEqual(1, selectedIndexChangedCount, "#3.2.1");
-						Assert.AreEqual(1, selectedIndexesChangedCount, "#3.2.2");
-						Assert.IsTrue(selectedIndex >= 0, "#3.2.3");
-						Assert.AreEqual(2, model.SelectedIndexChangedCount, "#3.2.4"); // one for binding, one when it actually changes.
-						Assert.IsTrue(model.ItemIsSelected, "#3.2.5");
-						Assert.AreEqual(2, model.ItemIsSelectedChangedCount, "#3.2.6"); // one for binding, and one when it actually changes.
+						Assert.That(selectedIndexChangedCount, Is.EqualTo(1), "#3.2.1");
+						Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#3.2.2");
+						Assert.That(selectedIndex >= 0, Is.True, "#3.2.3");
+						Assert.That(model.SelectedIndexChangedCount, Is.EqualTo(2), "#3.2.4"); // one for binding, one when it actually changes.
+						Assert.That(model.ItemIsSelected, Is.True, "#3.2.5");
+						Assert.That(model.ItemIsSelectedChangedCount, Is.EqualTo(2), "#3.2.6"); // one for binding, and one when it actually changes.
 					}
 
-					Assert.AreEqual(1, itemSelectedWasChanged, "#3.3.1");
-					Assert.AreNotEqual(itemIsSelected, initiallySelected, "#3.3.2");
+					Assert.That(itemSelectedWasChanged, Is.EqualTo(1), "#3.3.1");
+					Assert.That(itemIsSelected, Is.Not.EqualTo(initiallySelected), "#3.3.2");
 				}
 				else
 				{
-					Assert.AreEqual(1, selectedIndexChangedCount, "#4.1.1");
-					Assert.AreEqual(1, selectedIndexesChangedCount, "#4.1.2");
-					Assert.IsTrue(selectedIndex >= 0, "#4.1.3");
-					Assert.AreEqual(2, model.SelectedIndexChangedCount, "#4.1.4"); // one for binding, one when it actually changes.
-					Assert.IsTrue(model.ItemIsSelected, "#4.1.5");
-					Assert.AreEqual(2, model.ItemIsSelectedChangedCount, "#4.1.6"); // set when binding
+					Assert.That(selectedIndexChangedCount, Is.EqualTo(1), "#4.1.1");
+					Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#4.1.2");
+					Assert.That(selectedIndex >= 0, Is.True, "#4.1.3");
+					Assert.That(model.SelectedIndexChangedCount, Is.EqualTo(2), "#4.1.4"); // one for binding, one when it actually changes.
+					Assert.That(model.ItemIsSelected, Is.True, "#4.1.5");
+					Assert.That(model.ItemIsSelectedChangedCount, Is.EqualTo(2), "#4.1.6"); // set when binding
 
 					if (initiallySelected)
-						Assert.AreEqual(0, itemSelectedWasChanged, "#4.2.1");
+						Assert.That(itemSelectedWasChanged, Is.EqualTo(0), "#4.2.1");
 					else
-						Assert.AreEqual(1, itemSelectedWasChanged, "#4.2.2");
+						Assert.That(itemSelectedWasChanged, Is.EqualTo(1), "#4.2.2");
 
-					Assert.IsTrue(itemIsSelected, "#4.2.3");
+					Assert.That(itemIsSelected, Is.True, "#4.2.3");
 				}
 			});
 		}
@@ -446,72 +446,72 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			item2.Selected = true;
 			var item3 = new ButtonSegmentedItem { Text = "Item3" };
 			item3.SelectedChanged += (sender, e) => item3SelectedChanged++;
-			CollectionAssert.IsEmpty(control.SelectedIndexes, "#1.1");
-			Assert.AreEqual(-1, control.SelectedIndex, "#1.2");
-			Assert.AreEqual(0, selectedIndexesChangedCount, "#1.3");
-			Assert.IsFalse(item1.Selected, "#1.4");
-			Assert.IsTrue(item2.Selected, "#1.5");
-			Assert.IsFalse(item3.Selected, "#1.6");
-			Assert.AreEqual(0, item1SelectedChanged, "#1.7.1");
-			Assert.AreEqual(1, item2SelectedChanged, "#1.7.2");
-			Assert.AreEqual(0, item3SelectedChanged, "#1.7.3");
+			Assert.That(control.SelectedIndexes, Is.Empty, "#1.1");
+			Assert.That(control.SelectedIndex, Is.EqualTo(-1), "#1.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(0), "#1.3");
+			Assert.That(item1.Selected, Is.False, "#1.4");
+			Assert.That(item2.Selected, Is.True, "#1.5");
+			Assert.That(item3.Selected, Is.False, "#1.6");
+			Assert.That(item1SelectedChanged, Is.EqualTo(0), "#1.7.1");
+			Assert.That(item2SelectedChanged, Is.EqualTo(1), "#1.7.2");
+			Assert.That(item3SelectedChanged, Is.EqualTo(0), "#1.7.3");
 
 			control.Items.Add(item1);
-			CollectionAssert.IsEmpty(control.SelectedIndexes, "#2.1");
-			Assert.AreEqual(-1, control.SelectedIndex, "#2.2");
-			Assert.AreEqual(0, selectedIndexesChangedCount, "#2.3");
-			Assert.IsFalse(item1.Selected, "#2.4");
-			Assert.IsTrue(item2.Selected, "#2.5");
-			Assert.IsFalse(item3.Selected, "#2.6");
-			Assert.AreEqual(0, item1SelectedChanged, "#2.7.1");
-			Assert.AreEqual(1, item2SelectedChanged, "#2.7.2");
-			Assert.AreEqual(0, item3SelectedChanged, "#2.7.3");
+			Assert.That(control.SelectedIndexes, Is.Empty, "#2.1");
+			Assert.That(control.SelectedIndex, Is.EqualTo(-1), "#2.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(0), "#2.3");
+			Assert.That(item1.Selected, Is.False, "#2.4");
+			Assert.That(item2.Selected, Is.True, "#2.5");
+			Assert.That(item3.Selected, Is.False, "#2.6");
+			Assert.That(item1SelectedChanged, Is.EqualTo(0), "#2.7.1");
+			Assert.That(item2SelectedChanged, Is.EqualTo(1), "#2.7.2");
+			Assert.That(item3SelectedChanged, Is.EqualTo(0), "#2.7.3");
 
 			control.Items.Add(item2);
-			CollectionAssert.AreEqual(new[] { 1 }, control.SelectedIndexes, "#3.1");
-			Assert.AreEqual(1, control.SelectedIndex, "#3.2");
-			Assert.AreEqual(1, selectedIndexesChangedCount, "#3.3");
-			Assert.IsFalse(item1.Selected, "#3.4");
-			Assert.IsTrue(item2.Selected, "#3.5");
-			Assert.IsFalse(item3.Selected, "#3.6");
-			Assert.AreEqual(0, item1SelectedChanged, "#3.7.1");
-			Assert.AreEqual(1, item2SelectedChanged, "#3.7.2");
-			Assert.AreEqual(0, item3SelectedChanged, "#3.7.3");
+			Assert.That(control.SelectedIndexes, Is.EqualTo(new[] { 1 }), "#3.1");
+			Assert.That(control.SelectedIndex, Is.EqualTo(1), "#3.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#3.3");
+			Assert.That(item1.Selected, Is.False, "#3.4");
+			Assert.That(item2.Selected, Is.True, "#3.5");
+			Assert.That(item3.Selected, Is.False, "#3.6");
+			Assert.That(item1SelectedChanged, Is.EqualTo(0), "#3.7.1");
+			Assert.That(item2SelectedChanged, Is.EqualTo(1), "#3.7.2");
+			Assert.That(item3SelectedChanged, Is.EqualTo(0), "#3.7.3");
 
 			control.Items.Add(item3);
 			// no change
-			CollectionAssert.AreEqual(new[] { 1 }, control.SelectedIndexes, "#4.1");
-			Assert.AreEqual(1, control.SelectedIndex, "#4.2");
-			Assert.AreEqual(1, selectedIndexesChangedCount, "#4.3");
-			Assert.IsFalse(item1.Selected, "#4.4");
-			Assert.IsTrue(item2.Selected, "#4.5");
-			Assert.IsFalse(item3.Selected, "#4.6");
-			Assert.AreEqual(0, item1SelectedChanged, "#4.7.1");
-			Assert.AreEqual(1, item2SelectedChanged, "#4.7.2");
-			Assert.AreEqual(0, item3SelectedChanged, "#4.7.3");
+			Assert.That(control.SelectedIndexes, Is.EqualTo(new[] { 1 }), "#4.1");
+			Assert.That(control.SelectedIndex, Is.EqualTo(1), "#4.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(1), "#4.3");
+			Assert.That(item1.Selected, Is.False, "#4.4");
+			Assert.That(item2.Selected, Is.True, "#4.5");
+			Assert.That(item3.Selected, Is.False, "#4.6");
+			Assert.That(item1SelectedChanged, Is.EqualTo(0), "#4.7.1");
+			Assert.That(item2SelectedChanged, Is.EqualTo(1), "#4.7.2");
+			Assert.That(item3SelectedChanged, Is.EqualTo(0), "#4.7.3");
 
 			control.SelectAll();
-			CollectionAssert.AreEquivalent(new[] { 0, 1, 2 }, control.SelectedIndexes, "#5.1");
-			Assert.AreEqual(0, control.SelectedIndex, "#5.2");
-			Assert.AreEqual(2, selectedIndexesChangedCount, "#5.3");
-			Assert.IsTrue(item1.Selected, "#5.4");
-			Assert.IsTrue(item2.Selected, "#5.5");
-			Assert.IsTrue(item3.Selected, "#5.6");
-			Assert.AreEqual(1, item1SelectedChanged, "#5.7.1");
-			Assert.AreEqual(1, item2SelectedChanged, "#5.7.2");
-			Assert.AreEqual(1, item3SelectedChanged, "#5.7.3");
+			Assert.That(control.SelectedIndexes, Is.EquivalentTo(new[] { 0, 1, 2 }), "#5.1");
+			Assert.That(control.SelectedIndex, Is.EqualTo(0), "#5.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(2), "#5.3");
+			Assert.That(item1.Selected, Is.True, "#5.4");
+			Assert.That(item2.Selected, Is.True, "#5.5");
+			Assert.That(item3.Selected, Is.True, "#5.6");
+			Assert.That(item1SelectedChanged, Is.EqualTo(1), "#5.7.1");
+			Assert.That(item2SelectedChanged, Is.EqualTo(1), "#5.7.2");
+			Assert.That(item3SelectedChanged, Is.EqualTo(1), "#5.7.3");
 
 
 			control.ClearSelection();
-			CollectionAssert.IsEmpty(control.SelectedIndexes, "#6.1");
-			Assert.AreEqual(-1, control.SelectedIndex, "#6.2");
-			Assert.AreEqual(3, selectedIndexesChangedCount, "#6.3");
-			Assert.IsFalse(item1.Selected, "#6.4");
-			Assert.IsFalse(item2.Selected, "#6.5");
-			Assert.IsFalse(item3.Selected, "#6.6");
-			Assert.AreEqual(2, item1SelectedChanged, "#6.7.1");
-			Assert.AreEqual(2, item2SelectedChanged, "#6.7.2");
-			Assert.AreEqual(2, item3SelectedChanged, "#6.7.3");
+			Assert.That(control.SelectedIndexes, Is.Empty, "#6.1");
+			Assert.That(control.SelectedIndex, Is.EqualTo(-1), "#6.2");
+			Assert.That(selectedIndexesChangedCount, Is.EqualTo(3), "#6.3");
+			Assert.That(item1.Selected, Is.False, "#6.4");
+			Assert.That(item2.Selected, Is.False, "#6.5");
+			Assert.That(item3.Selected, Is.False, "#6.6");
+			Assert.That(item1SelectedChanged, Is.EqualTo(2), "#6.7.1");
+			Assert.That(item2SelectedChanged, Is.EqualTo(2), "#6.7.2");
+			Assert.That(item3SelectedChanged, Is.EqualTo(2), "#6.7.3");
 		}
 		
 		[Test]

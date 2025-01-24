@@ -11,9 +11,9 @@ namespace Eto.Test.UnitTests.Drawing
 			{
 				var graphics = e.Graphics;
 
-				Assert.AreEqual(PixelOffsetMode.None, graphics.PixelOffsetMode, "PixelOffsetMode should default to None");
-				Assert.AreEqual(true, graphics.AntiAlias, "AntiAlias should be true");
-				Assert.AreEqual(ImageInterpolation.Default, graphics.ImageInterpolation, "ImageInterpolation should be default");
+				Assert.That(graphics.PixelOffsetMode, Is.EqualTo(PixelOffsetMode.None), "PixelOffsetMode should default to None");
+				Assert.That(graphics.AntiAlias, Is.EqualTo(true), "AntiAlias should be true");
+				Assert.That(graphics.ImageInterpolation, Is.EqualTo(ImageInterpolation.Default), "ImageInterpolation should be default");
 			});
 		}
 
@@ -40,10 +40,10 @@ namespace Eto.Test.UnitTests.Drawing
 			}
 			using (var bd = bmp.Lock())
 			{
-				Assert.AreEqual(Colors.Red, bd.GetPixel(0, 0), "#1");
-				Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#2");
-				Assert.AreEqual(Colors.Blue, bd.GetPixel(20, 0), "#3");
-				Assert.AreEqual(Colors.Yellow, bd.GetPixel(30, 0), "#4");
+				Assert.That(bd.GetPixel(0, 0), Is.EqualTo(Colors.Red), "#1");
+				Assert.That(bd.GetPixel(10, 0), Is.EqualTo(Colors.Green), "#2");
+				Assert.That(bd.GetPixel(20, 0), Is.EqualTo(Colors.Blue), "#3");
+				Assert.That(bd.GetPixel(30, 0), Is.EqualTo(Colors.Yellow), "#4");
 			}
 		}
 
@@ -90,23 +90,23 @@ namespace Eto.Test.UnitTests.Drawing
 
 			void hasBlue(Color c)
 			{
-				Assert.Greater(c.B, 0);
-				Assert.AreEqual(0, c.G);
-				Assert.AreEqual(0, c.R);
+				Assert.That(c.B, Is.GreaterThan(0));
+				Assert.That(c.G, Is.EqualTo(0));
+				Assert.That(c.R, Is.EqualTo(0));
 			}
 
 			void hasRed(Color c)
 			{
-				Assert.AreEqual(0, c.B);
-				Assert.AreEqual(0, c.G);
-				Assert.Greater(c.R, 0);
+				Assert.That(c.B, Is.EqualTo(0));
+				Assert.That(c.G, Is.EqualTo(0));
+				Assert.That(c.R, Is.GreaterThan(0));
 			}
 
 			void hasRedAndBlue(Color c)
 			{
-				Assert.Greater(c.B, 0);
-				Assert.AreEqual(0, c.G);
-				Assert.Greater(c.R, 0);
+				Assert.That(c.B, Is.GreaterThan(0));
+				Assert.That(c.G, Is.EqualTo(0));
+				Assert.That(c.R, Is.GreaterThan(0));
 			}
 
 			void checkInterpolated(BitmapData bd, int x, int y)
@@ -123,13 +123,13 @@ namespace Eto.Test.UnitTests.Drawing
 
 			void checkNonInterpolated(BitmapData bd, int x, int y)
 			{
-				Assert.AreEqual(Colors.Blue, bd.GetPixel(x + 0, y + 0));
-				Assert.AreEqual(Colors.Blue, bd.GetPixel(x + 99, y + 0));
-				Assert.AreEqual(Colors.Blue, bd.GetPixel(x + 50, y + 50));
-				Assert.AreEqual(Colors.Blue, bd.GetPixel(x + 50, y + 49));
-				Assert.AreEqual(Colors.Blue, bd.GetPixel(x + 49, y + 49));
-				Assert.AreEqual(Colors.Red, bd.GetPixel(x + 49, y + 51));
-				Assert.AreEqual(Colors.Red, bd.GetPixel(x + 0, y + 99));
+				Assert.That(bd.GetPixel(x + 0, y + 0), Is.EqualTo(Colors.Blue));
+				Assert.That(bd.GetPixel(x + 99, y + 0), Is.EqualTo(Colors.Blue));
+				Assert.That(bd.GetPixel(x + 50, y + 50), Is.EqualTo(Colors.Blue));
+				Assert.That(bd.GetPixel(x + 50, y + 49), Is.EqualTo(Colors.Blue));
+				Assert.That(bd.GetPixel(x + 49, y + 49), Is.EqualTo(Colors.Blue));
+				Assert.That(bd.GetPixel(x + 49, y + 51), Is.EqualTo(Colors.Red));
+				Assert.That(bd.GetPixel(x + 0, y + 99), Is.EqualTo(Colors.Red));
 			}
 
 			using (var bd = bmp2.Lock())

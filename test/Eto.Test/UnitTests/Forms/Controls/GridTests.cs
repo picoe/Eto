@@ -273,7 +273,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 				control.Columns.Add(column);
 
-				Assert.IsFalse(column.AutoSize, "#1");
+				Assert.That(column.AutoSize, Is.False, "#1");
 
 				var dd = new TreeGridItemCollection();
 				for (int i = 0; i < 1000; i++)
@@ -426,8 +426,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				window.Content = grid;
 			}, -1);
-			Assert.NotZero(mouseMoved, "MouseMove was never fired!");
-			Assert.AreEqual(4, mode, "Mode should be 4 after going through all steps");
+			Assert.That(mouseMoved, Is.Not.Zero, "MouseMove was never fired!");
+			Assert.That(mode, Is.EqualTo(4), "Mode should be 4 after going through all steps");
 		}
 
 		[ManualTest]
@@ -533,8 +533,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					form.Close();
 				};
 			});
-			Assert.IsTrue(hasFocusBefore, "Grid did not have focus before reloading");
-			Assert.IsTrue(hasFocusAfter, "Grid did not have focus after reloading");
+			Assert.That(hasFocusBefore, Is.True, "Grid did not have focus before reloading");
+			Assert.That(hasFocusAfter, Is.True, "Grid did not have focus after reloading");
 		}
 		
 		[Test]
@@ -573,8 +573,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					form.Close();
 				};
 			});
-			Assert.IsTrue(hasFocusBefore, "Grid did not have focus before reloading");
-			Assert.IsTrue(hasFocusAfter, "Grid did not have focus after reloading");
+			Assert.That(hasFocusBefore, Is.True, "Grid did not have focus before reloading");
+			Assert.That(hasFocusAfter, Is.True, "Grid did not have focus after reloading");
 		}
 	}
 }

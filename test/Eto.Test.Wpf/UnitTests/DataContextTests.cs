@@ -24,7 +24,7 @@ namespace Eto.Test.Wpf.UnitTests
 
 				var content = new Panel { Content = expander };
 
-				Assert.AreEqual(0, dataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(0));
 
 				// embed the expander natively, so it is 'disconnected' from eto
 				var holder = new Panel();
@@ -34,10 +34,10 @@ namespace Eto.Test.Wpf.UnitTests
 				form.Content = holder;
 				content.DataContext = new MyViewModel();
 
-				Assert.AreEqual(1, dataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
 			}, () =>
 			{
-				Assert.AreEqual(1, dataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
 			});
 		}
 	}

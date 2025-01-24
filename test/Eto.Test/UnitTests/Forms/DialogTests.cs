@@ -39,7 +39,7 @@ namespace Eto.Test.UnitTests.Forms
 
 				var result = dlg.ShowModal();
 
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
 			}, timeout: -1);
 		}
 
@@ -70,7 +70,7 @@ namespace Eto.Test.UnitTests.Forms
 				if (Platform.Instance.IsWpf)
 				{
 					AppContext.TryGetSwitch("Switch.System.Windows.DoNotScaleForDpiChanges", out bool isEnabled);
-					Assert.IsTrue(isEnabled, "Set Switch.System.Windows.DoNotScaleForDpiChanges=true in app.config");
+					Assert.That(isEnabled, Is.True, "Set Switch.System.Windows.DoNotScaleForDpiChanges=true in app.config");
 				}
 				dlg.Content = new StackLayout
 				{
@@ -97,8 +97,8 @@ namespace Eto.Test.UnitTests.Forms
 
 				var result = dlg.ShowModal();
 
-				Assert.AreEqual(new Size(400, 400), sizeAfterSetting, "Size after setting is incorrect!");
-				Assert.IsTrue(result);
+				Assert.That(sizeAfterSetting, Is.EqualTo(new Size(400, 400)), "Size after setting is incorrect!");
+				Assert.That(result, Is.True);
 			}, timeout: -1);
 		}
 
@@ -165,11 +165,11 @@ namespace Eto.Test.UnitTests.Forms
 			else
 				modal1.ShowModal(parentForm);
 
-			Assert.AreNotEqual(0, firstClosedCount, "Modal 1 was not closed");
-			Assert.AreNotEqual(0, secondClosedCount, "Modal 2 was not closed");
-			Assert.AreEqual(1, firstClosedCount, "Modal 1 must trigger Closed only once");
-			Assert.AreEqual(1, secondClosedCount, "Modal 2 must trigger Closed only once");
-			Assert.IsTrue(firstWasClosedFirst, "Modal 1 did not close before Modal 2");
+			Assert.That(firstClosedCount, Is.Not.EqualTo(0), "Modal 1 was not closed");
+			Assert.That(secondClosedCount, Is.Not.EqualTo(0), "Modal 2 was not closed");
+			Assert.That(firstClosedCount, Is.EqualTo(1), "Modal 1 must trigger Closed only once");
+			Assert.That(secondClosedCount, Is.EqualTo(1), "Modal 2 must trigger Closed only once");
+			Assert.That(firstWasClosedFirst, Is.True, "Modal 1 did not close before Modal 2");
 		}
 
 		[Test]

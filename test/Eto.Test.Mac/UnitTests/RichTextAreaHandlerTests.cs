@@ -18,50 +18,50 @@ namespace Eto.Test.Mac.UnitTests
 				var richTextArea = new RichTextArea();
 				var handler = richTextArea.Handler as RichTextAreaHandler;
 
-				Assert.IsTrue(richTextArea.Enabled, "#1");
-				Assert.IsFalse(richTextArea.ReadOnly, "#2");
-				Assert.IsTrue(handler.Control.Selectable, "#3");
-				Assert.IsTrue(handler.Control.Editable, "#4");
+				Assert.That(richTextArea.Enabled, Is.True, "#1");
+				Assert.That(richTextArea.ReadOnly, Is.False, "#2");
+				Assert.That(handler.Control.Selectable, Is.True, "#3");
+				Assert.That(handler.Control.Editable, Is.True, "#4");
 				richTextArea.Enabled = false;
 
-				Assert.IsFalse(handler.Control.Selectable, "#5");
-				Assert.IsFalse(handler.Control.Editable, "#6");
+				Assert.That(handler.Control.Selectable, Is.False, "#5");
+				Assert.That(handler.Control.Editable, Is.False, "#6");
 				richTextArea.Enabled = true;
 
-				Assert.IsTrue(handler.Control.Selectable, "#7");
-				Assert.IsTrue(handler.Control.Editable, "#8");
+				Assert.That(handler.Control.Selectable, Is.True, "#7");
+				Assert.That(handler.Control.Editable, Is.True, "#8");
 
 				richTextArea.ReadOnly = true;
-				Assert.IsTrue(handler.Control.Selectable, "#9");
-				Assert.IsFalse(handler.Control.Editable, "#10");
+				Assert.That(handler.Control.Selectable, Is.True, "#9");
+				Assert.That(handler.Control.Editable, Is.False, "#10");
 
 				richTextArea.Enabled = false;
-				Assert.IsFalse(handler.Control.Selectable, "#11");
-				Assert.IsFalse(handler.Control.Editable, "#12");
+				Assert.That(handler.Control.Selectable, Is.False, "#11");
+				Assert.That(handler.Control.Editable, Is.False, "#12");
 
 				richTextArea.Enabled = true;
-				Assert.IsTrue(handler.Control.Selectable, "#13");
-				Assert.IsFalse(handler.Control.Editable, "#14");
+				Assert.That(handler.Control.Selectable, Is.True, "#13");
+				Assert.That(handler.Control.Editable, Is.False, "#14");
 
 				richTextArea.ReadOnly = false;
-				Assert.IsTrue(handler.Control.Selectable, "#15");
-				Assert.IsTrue(handler.Control.Editable, "#16");
+				Assert.That(handler.Control.Selectable, Is.True, "#15");
+				Assert.That(handler.Control.Editable, Is.True, "#16");
 
 				richTextArea.Enabled = false;
-				Assert.IsFalse(handler.Control.Selectable, "#17");
-				Assert.IsFalse(handler.Control.Editable, "#18");
+				Assert.That(handler.Control.Selectable, Is.False, "#17");
+				Assert.That(handler.Control.Editable, Is.False, "#18");
 
 				richTextArea.ReadOnly = true;
-				Assert.IsFalse(handler.Control.Selectable, "#19");
-				Assert.IsFalse(handler.Control.Editable, "#20");
+				Assert.That(handler.Control.Selectable, Is.False, "#19");
+				Assert.That(handler.Control.Editable, Is.False, "#20");
 
 				richTextArea.Enabled = true;
-				Assert.IsTrue(handler.Control.Selectable, "#21");
-				Assert.IsFalse(handler.Control.Editable, "#22");
+				Assert.That(handler.Control.Selectable, Is.True, "#21");
+				Assert.That(handler.Control.Editable, Is.False, "#22");
 
 				richTextArea.ReadOnly = false;
-				Assert.IsTrue(handler.Control.Selectable, "#23");
-				Assert.IsTrue(handler.Control.Editable, "#24");
+				Assert.That(handler.Control.Selectable, Is.True, "#23");
+				Assert.That(handler.Control.Editable, Is.True, "#24");
 			});
 		}
 	}

@@ -90,12 +90,7 @@ namespace Eto.Test.Sections.Dialogs
 				var dialog = new OpenFileDialog();
 				SetAttributes(dialog);
 				var result = dialog.ShowDialog(ParentWindow);
-				if (result == DialogResult.Ok)
-				{
-					Log.Write(dialog, "Result: {0}, FileName: {1}\nFiles: {2}", result, dialog.FileName, string.Join(", ", dialog.Filenames));
-				}
-				else
-					Log.Write(dialog, "Result: {0}", result);
+				Log.Write(dialog, "Result: {0}, FileName: {1}\nFiles: {2}", result, dialog.FileName, string.Join(", ", dialog.Filenames));
 			};
 			return button;
 		}
@@ -120,12 +115,7 @@ namespace Eto.Test.Sections.Dialogs
 				SetAttributes(dialog);
 
 				var result = dialog.ShowDialog(ParentWindow);
-				if (result == DialogResult.Ok)
-				{
-					Log.Write(dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}\nFiles: {3}", result, dialog.CurrentFilter, dialog.FileName, string.Join(", ", dialog.Filenames));
-				}
-				else
-					Log.Write(dialog, "Result: {0}", result);
+				Log.Write(dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}\nFiles: {3}", result, dialog.CurrentFilter, dialog.FileName, string.Join(", ", dialog.Filenames));
 			};
 			return button;
 		}

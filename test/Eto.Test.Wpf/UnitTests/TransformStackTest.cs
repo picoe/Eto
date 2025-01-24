@@ -28,23 +28,23 @@ namespace Eto.Test.Wpf.UnitTests
 
 				var target = new TransformStack(push, pop);
 
-				Assert.IsTrue(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 0f, 0f));
+				Assert.That(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 0f, 0f), Is.True);
 
 				target.SaveTransform(); // Save
 
 				target.TranslateTransform(5f, 5f);
-				Assert.IsTrue(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 5f, 5f));
+				Assert.That(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 5f, 5f), Is.True);
 
 				target.SaveTransform();
 
 				target.TranslateTransform(10f, 10f);
-				Assert.IsTrue(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 15f, 15f));
+				Assert.That(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 15f, 15f), Is.True);
 
 				target.RestoreTransform();
-				Assert.IsTrue(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 5f, 5f));
+				Assert.That(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 5f, 5f), Is.True);
 
 				target.RestoreTransform();
-				Assert.IsTrue(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 0f, 0f));
+				Assert.That(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 0f, 0f), Is.True);
 			}
         }
     }

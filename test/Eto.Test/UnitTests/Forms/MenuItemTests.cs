@@ -85,25 +85,25 @@ namespace Eto.Test.UnitTests.Forms
 				return new Panel { Size = new Size(200, 50), Content = TableLayout.AutoSized(showContextMenuButton, centered: true) };
 			});
 
-			Assert.IsFalse(disabledWasClicked, "#1 - Disabled item should not be clickable");
-			Assert.Greater(validateWasCalled, 0, "#2 - Validate was never called!");
+			Assert.That(disabledWasClicked, Is.False, "#1 - Disabled item should not be clickable");
+			Assert.That(validateWasCalled, Is.GreaterThan(0), "#2 - Validate was never called!");
 		}
 		
 		[Test, InvokeOnUI]
 		public void MenuItemEnabledShouldUpdateCommandIfSpecified()
 		{
 			var command = new Command { MenuText = "Hello" };
-			Assert.IsTrue(command.Enabled, "#1");
+			Assert.That(command.Enabled, Is.True, "#1");
 			
 			var item = new ButtonMenuItem(command);
-			Assert.AreEqual(item.Text, command.MenuText, "#2.1");
-			Assert.AreEqual(item.Enabled, command.Enabled, "#2.2");
-			Assert.IsTrue(item.Enabled, "#2.3");
+			Assert.That(command.MenuText, Is.EqualTo(item.Text), "#2.1");
+			Assert.That(command.Enabled, Is.EqualTo(item.Enabled), "#2.2");
+			Assert.That(item.Enabled, Is.True, "#2.3");
 			
 			item.Enabled = false;
 			
-			Assert.IsFalse(command.Enabled, "#3.1");
-			Assert.AreEqual(item.Enabled, command.Enabled, "#3.2");
+			Assert.That(command.Enabled, Is.False, "#3.1");
+			Assert.That(command.Enabled, Is.EqualTo(item.Enabled), "#3.2");
 		}
 
 		[TestCase(true, Keys.E, false, true)] // Fails in Gtk, Wpf (shortcut takes precedence over intrinsic behaviour)
@@ -169,14 +169,14 @@ namespace Eto.Test.UnitTests.Forms
 
 			if (!enabled || handleKey || shouldBeIntrinsic)
 			{
-				Assert.IsFalse(itemWasClicked, "#1 - ButtonMenuItem was triggered, but should not have been");
+				Assert.That(itemWasClicked, Is.False, "#1 - ButtonMenuItem was triggered, but should not have been");
 			}
 			else
 			{
-				Assert.IsTrue(itemWasClicked, "#1 - ButtonMenuItem was not triggered");
+				Assert.That(itemWasClicked, Is.True, "#1 - ButtonMenuItem was not triggered");
 			}
 
-			Assert.IsTrue(keyWasPressed, "#2 - Key was not pressed");
+			Assert.That(keyWasPressed, Is.True, "#2 - Key was not pressed");
 		}
 
 	}

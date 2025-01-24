@@ -8,11 +8,7 @@ namespace Eto.Test
 
 		public static IEnumerable<Assembly> DefaultTestAssemblies()
 		{
-#if PCL
-			yield return typeof(TestApplication).GetTypeInfo().Assembly;
-#else
 			yield return typeof(TestApplication).Assembly;
-#endif
 		}
 
 		public List<Assembly> TestAssemblies { get; private set; }

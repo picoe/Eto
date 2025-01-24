@@ -28,18 +28,18 @@ namespace Eto.Test.UnitTests.Forms
 
 			fd.FileName = "SomeFile.txt";
 
-			Assert.AreEqual("SomeFile.txt", Path.GetFileName(fd.FileName), "#3");
+			Assert.That(Path.GetFileName(fd.FileName), Is.EqualTo("SomeFile.txt"), "#3");
 
 			var result = fd.ShowDialog(null);
 
 			if (result == DialogResult.Cancel || typeof(T) == typeof(SaveFileDialog))
-				Assert.AreEqual("SomeFile.txt", Path.GetFileName(fd.FileName), "#4");
+				Assert.That(Path.GetFileName(fd.FileName), Is.EqualTo("SomeFile.txt"), "#4");
 
 			if (result == DialogResult.Ok)
 			{
 				var directoryName = Path.GetDirectoryName(fd.FileName);
-				Assert.IsNotNull(directoryName, "#5.1");
-				Assert.IsNotEmpty(directoryName, "#5.2");
+				Assert.That(directoryName, Is.Not.Null, "#5.1");
+				Assert.That(directoryName, Is.Not.Empty, "#5.2");
 				Console.WriteLine($"Directory: {directoryName}");
 			}
 

@@ -12,8 +12,8 @@ namespace Eto.Test.UnitTests.Drawing
 			TestBase.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
-				Assert.AreEqual(size, drawable.ClientSize, "Drawable client size should be 300x300");
-				Assert.AreEqual(Size.Round(drawable.ClientSize), Size.Round(graphics.ClipBounds.Size), "Clip bounds should match drawable client size");
+				Assert.That(drawable.ClientSize, Is.EqualTo(size), "Drawable client size should be 300x300");
+				Assert.That(Size.Round(graphics.ClipBounds.Size), Is.EqualTo(Size.Round(drawable.ClientSize)), "Clip bounds should match drawable client size");
 			}, size);
 		}
 
@@ -33,7 +33,7 @@ namespace Eto.Test.UnitTests.Drawing
 				// Check that the clip region was correctly translated
 				var clip = graphics.ClipBounds;
 				var expectedClip = new RectangleF(-new Point(clipTo), clipTo);
-				Assert.AreEqual(Rectangle.Round(expectedClip), Rectangle.Round(clip), "Clip rectangle wasn't translated properly");
+				Assert.That(Rectangle.Round(clip), Is.EqualTo(Rectangle.Round(expectedClip)), "Clip rectangle wasn't translated properly");
 			});
 		}
 	}

@@ -12,8 +12,8 @@ namespace Eto.Test.UnitTests.Forms
 		{
 			var r1 = new Range<int>(s1, e1);
 			var r2 = new Range<int>(s2, e2);
-			Assert.AreEqual(touches, r1.Touches(r2, i => i + 1));
-			Assert.AreEqual(touches, r2.Touches(r1, i => i + 1));
+			Assert.That(touches, Is.EqualTo(r1.Touches(r2, i => i + 1)));
+			Assert.That(r2.Touches(r1, i => i + 1), Is.EqualTo(touches));
 		}
 
 		[TestCase(100, 200, 300, 400, false)]
@@ -24,8 +24,8 @@ namespace Eto.Test.UnitTests.Forms
 		{
 			var r1 = new Range<int>(s1, e1);
 			var r2 = new Range<int>(s2, e2);
-			Assert.AreEqual(intersects, r1.Intersects(r2));
-			Assert.AreEqual(intersects, r2.Intersects(r1));
+			Assert.That(r1.Intersects(r2), Is.EqualTo(intersects));
+			Assert.That(r2.Intersects(r1), Is.EqualTo(intersects));
 		}
 
 		[TestCase(100, 200, 150, 300, 100, 300)]
@@ -37,8 +37,8 @@ namespace Eto.Test.UnitTests.Forms
 			var r1 = new Range<int>(s1, e1);
 			var r2 = new Range<int>(s2, e2);
 			var r = e >= 0 ? (Range<int>?)new Range<int>(s, e) : null;
-			Assert.AreEqual(r, r1.Union(r2));
-			Assert.AreEqual(r, r2.Union(r1));
+			Assert.That(r1.Union(r2), Is.EqualTo(r));
+			Assert.That(r2.Union(r1), Is.EqualTo(r));
 		}
 
 		[TestCase(100, 200, 150, 300, 100, 300)]
@@ -51,8 +51,8 @@ namespace Eto.Test.UnitTests.Forms
 			var r1 = new Range<int>(s1, e1);
 			var r2 = new Range<int>(s2, e2);
 			var r = e >= 0 ? (Range<int>?)new Range<int>(s, e) : null;
-			Assert.AreEqual(r, r1.Union(r2, i => i + 1));
-			Assert.AreEqual(r, r2.Union(r1, i => i + 1));
+			Assert.That(r1.Union(r2, i => i + 1), Is.EqualTo(r));
+			Assert.That(r2.Union(r1, i => i + 1), Is.EqualTo(r));
 		}
 
 		[TestCase(100, 200, 150, 300, 150, 200)]
@@ -64,8 +64,8 @@ namespace Eto.Test.UnitTests.Forms
 			var r1 = new Range<int>(s1, e1);
 			var r2 = new Range<int>(s2, e2);
 			var r = e >= 0 ? (Range<int>?)new Range<int>(s, e) : null;
-			Assert.AreEqual(r, r1.Intersect(r2));
-			Assert.AreEqual(r, r2.Intersect(r1));
+			Assert.That(r1.Intersect(r2), Is.EqualTo(r));
+			Assert.That(r2.Intersect(r1), Is.EqualTo(r));
 		}
 
 		[TestCase(100, 200, 4, false)]
@@ -78,7 +78,7 @@ namespace Eto.Test.UnitTests.Forms
 		public void ContainsShouldContain(int s, int e, int value, bool contains)
 		{
 			var r = new Range<int>(s, e);
-			Assert.AreEqual(contains, r.Contains(value));
+			Assert.That(r.Contains(value), Is.EqualTo(contains));
 		}
 	}
 }

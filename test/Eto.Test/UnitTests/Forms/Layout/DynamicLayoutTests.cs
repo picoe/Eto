@@ -16,16 +16,16 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				foreach (var item in items)
 					layout.Add(item);
 
-				CollectionAssert.AreEqual(items, layout.Children, "#1. Items do not match");
+				Assert.That(layout.Children, Is.EqualTo(items), "#1. Items do not match");
 
 				foreach (var item in items)
-					Assert.AreEqual(layout, item.Parent, "#2. Items should have parent set to dynamic layout");
+					Assert.That(item.Parent, Is.EqualTo(layout), "#2. Items should have parent set to dynamic layout");
 
-				Assert.AreSame(layout.FindChild<Label>("label"), items[0], "#3. FindChild should work without loading the dynamic layout");
+				Assert.That(layout.FindChild<Label>("label"), Is.SameAs(items[0]), "#3. FindChild should work without loading the dynamic layout");
 
 				layout.Clear();
 				foreach (var item in items)
-					Assert.IsNull(item.Parent, "#4. Items should have parent removed when removed from dynamic layout");
+					Assert.That(item.Parent, Is.Null, "#4. Items should have parent removed when removed from dynamic layout");
 			});
 		}
 		[Test]
@@ -56,14 +56,14 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				items.Add(ctl);
 				layout.Add(ctl);
 
-				CollectionAssert.AreEqual(items, layout.Children, "#1. Items do not match");
+				Assert.That(layout.Children, Is.EqualTo(items), "#1. Items do not match");
 
 				foreach (var item in items)
-					Assert.AreEqual(layout, item.Parent, "#2. Items should have parent set to dynamic layout");
+					Assert.That(item.Parent, Is.EqualTo(layout), "#2. Items should have parent set to dynamic layout");
 
 				layout.Clear();
 				foreach (var item in items)
-					Assert.IsNull(item.Parent, "#3. Items should have parent removed when removed from dynamic layout");
+					Assert.That(item.Parent, Is.Null, "#3. Items should have parent removed when removed from dynamic layout");
 			});
 		}
 
@@ -79,18 +79,18 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				foreach (var item in items)
 					layout.Add(item);
 
-				CollectionAssert.AreEqual(items, layout.Children, "#1. Items do not match");
+				Assert.That(layout.Children, Is.EqualTo(items), "#1. Items do not match");
 
 				foreach (var item in items)
-					Assert.AreEqual(layout, item.Parent, "#2. Items should have parent set to dynamic layout");
+					Assert.That(item.Parent, Is.EqualTo(layout), "#2. Items should have parent set to dynamic layout");
 
 				layout.Rows.RemoveAt(0);
-				Assert.IsNull(items[0].Parent, "#3. Item should have parent cleared when removed from dynamic layout");
+				Assert.That(items[0].Parent, Is.Null, "#3. Item should have parent cleared when removed from dynamic layout");
 
 				layout.Rows[0] = new Button();
-				Assert.IsNull(items[1].Parent, "#4. Item should have parent cleared when replaced with another item in the dynamic layout");
+				Assert.That(items[1].Parent, Is.Null, "#4. Item should have parent cleared when replaced with another item in the dynamic layout");
 
-				Assert.AreEqual(layout, items[2].Parent, "#5. Item should not have changed parent as it is still in the dynamic layout");
+				Assert.That(items[2].Parent, Is.EqualTo(layout), "#5. Item should not have changed parent as it is still in the dynamic layout");
 			});
 		}
 	}

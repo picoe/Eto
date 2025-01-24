@@ -47,7 +47,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				}
 			});
 
-			Assert.IsTrue(success, "Checked values are incorrect");
+			Assert.That(success, Is.True, "Checked values are incorrect");
 		}
 
 		[Test, ManualTest]
@@ -122,30 +122,30 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			}, () =>
 			{
 				// none checked is valid
-				Assert.IsFalse(rb1.Checked, "#1.1");
-				Assert.IsFalse(rb2.Checked, "#1.2");
-				Assert.IsFalse(rb3.Checked, "#1.3");
-				Assert.AreEqual(0, rb1changed, "#1.4");
-				Assert.AreEqual(0, rb2changed, "#1.5");
-				Assert.AreEqual(0, rb3changed, "#1.6");
+				Assert.That(rb1.Checked, Is.False, "#1.1");
+				Assert.That(rb2.Checked, Is.False, "#1.2");
+				Assert.That(rb3.Checked, Is.False, "#1.3");
+				Assert.That(rb1changed, Is.EqualTo(0), "#1.4");
+				Assert.That(rb2changed, Is.EqualTo(0), "#1.5");
+				Assert.That(rb3changed, Is.EqualTo(0), "#1.6");
 
 				rb2.Checked = true;
 
-				Assert.IsFalse(rb1.Checked, "#2.1");
-				Assert.IsTrue(rb2.Checked, "#2.2");
-				Assert.IsFalse(rb3.Checked, "#2.3");
-				Assert.AreEqual(0, rb1changed, "#2.4");
-				Assert.AreEqual(1, rb2changed, "#2.5");
-				Assert.AreEqual(0, rb3changed, "#2.6");
+				Assert.That(rb1.Checked, Is.False, "#2.1");
+				Assert.That(rb2.Checked, Is.True, "#2.2");
+				Assert.That(rb3.Checked, Is.False, "#2.3");
+				Assert.That(rb1changed, Is.EqualTo(0), "#2.4");
+				Assert.That(rb2changed, Is.EqualTo(1), "#2.5");
+				Assert.That(rb3changed, Is.EqualTo(0), "#2.6");
 
 				rb3.Checked = true;
 
-				Assert.IsFalse(rb1.Checked, "#3.1");
-				Assert.IsFalse(rb2.Checked, "#3.2");
-				Assert.IsTrue(rb3.Checked, "#3.3");
-				Assert.AreEqual(0, rb1changed, "#3.4");
-				Assert.AreEqual(2, rb2changed, "#3.5");
-				Assert.AreEqual(1, rb3changed, "#3.6");
+				Assert.That(rb1.Checked, Is.False, "#3.1");
+				Assert.That(rb2.Checked, Is.False, "#3.2");
+				Assert.That(rb3.Checked, Is.True, "#3.3");
+				Assert.That(rb1changed, Is.EqualTo(0), "#3.4");
+				Assert.That(rb2changed, Is.EqualTo(2), "#3.5");
+				Assert.That(rb3changed, Is.EqualTo(1), "#3.6");
 			});
 		}
 

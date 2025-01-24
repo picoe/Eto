@@ -44,10 +44,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					});
 				};
 				form.Content = TableLayout.AutoSized(ctl);
-				Assert.AreEqual(0, shownCount);
+				Assert.That(shownCount, Is.EqualTo(0));
 			});
-			Assert.AreEqual(1, shownCount);
-			Assert.AreEqual(expectedVisualShown, visualControlShownCount, "Visual controls didn't get Shown event triggered");
+			Assert.That(shownCount, Is.EqualTo(1));
+			Assert.That(visualControlShownCount, Is.EqualTo(expectedVisualShown), "Visual controls didn't get Shown event triggered");
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
@@ -83,7 +83,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 
-			Assert.AreEqual(1, shownCount);
+			Assert.That(shownCount, Is.EqualTo(1));
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
@@ -104,9 +104,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					});
 				};
 				ctl.Visible = false;
-				Assert.AreEqual(0, shownCount);
+				Assert.That(shownCount, Is.EqualTo(0));
 				form.Content = TableLayout.AutoSized(ctl);
-				Assert.AreEqual(0, shownCount);
+				Assert.That(shownCount, Is.EqualTo(0));
 				form.Shown += (sender, e) => Application.Instance.AsyncInvoke(() =>
 				{
 					initialShownCount = shownCount;
@@ -114,8 +114,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				});
 			});
 
-			Assert.AreEqual(0, initialShownCount, "#1"); // should not be initially called
-			Assert.AreEqual(1, shownCount, "#2");
+			Assert.That(initialShownCount, Is.EqualTo(0), "#1"); // should not be initially called
+			Assert.That(shownCount, Is.EqualTo(1), "#2");
 		}
 
 		[ManualTest, Test]
@@ -248,9 +248,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Thread.Sleep(100);
 			GC.Collect();
 			GC.WaitForPendingFinalizers();
-			Assert.IsNotNull(reference);
-			Assert.IsNull(reference.Target);
-			Assert.IsFalse(reference.IsAlive);
+			Assert.That(reference, Is.Not.Null);
+			Assert.That(reference.Target, Is.Null);
+			Assert.That(reference.IsAlive, Is.False);
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
@@ -261,11 +261,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var control = info.CreateControl();
 				if (control is CommonControl commonControl)
 				{
-					Assert.IsNotNull(commonControl.Font);
+					Assert.That(commonControl.Font, Is.Not.Null);
 				}
 				else if (control is GroupBox groupBox)
 				{
-					Assert.IsNotNull(groupBox.Font);
+					Assert.That(groupBox.Font, Is.Not.Null);
 				}
 				else
 				{
@@ -304,7 +304,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				ManualForm("The Form with the button should be above the text box exactly.\nClick the button to pass the test, close the window to fail.", form =>
 				{
 					var screens = Screen.Screens.ToArray();
-					Assert.GreaterOrEqual(screens.Length, 2, "You must have a secondary monitor for this test");
+					Assert.That(screens.Length, Is.GreaterThanOrEqualTo(2), "You must have a secondary monitor for this test");
 					form.Location = Point.Round(screens[1].Bounds.Location) + new Size(50, 50);
 					form.ClientSize = new Size(200, 200);
 
@@ -362,8 +362,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				if (childForm != null)
 					Application.Instance.Invoke(() => childForm.Close());
 			}
-			Assert.AreEqual(controlPoint, rountripPoint, "Point could not round trip to screen then back");
-			Assert.IsTrue(wasClicked, "The test completed without clicking the button");
+			Assert.That(rountripPoint, Is.EqualTo(controlPoint), "Point could not round trip to screen then back");
+			Assert.That(wasClicked, Is.True, "The test completed without clicking the button");
 		}
 
 		[TestCaseSource(nameof(GetControlTypes)), InvokeOnUI]
@@ -372,8 +372,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			var control = info.CreatePopulatedControl();
 			var size = control.GetPreferredSize();
 			Console.WriteLine($"PreferredSize for {info.Type}: {size}");
-			Assert.Greater(size.Width, 0, "#1.1 - Preferred width should be greater than zero");
-			Assert.Greater(size.Height, 0, "#1.2 - Preferred height should be greater than zero");
+			Assert.That(size.Width, Is.GreaterThan(0), "#1.1 - Preferred width should be greater than zero");
+			Assert.That(size.Height, Is.GreaterThan(0), "#1.2 - Preferred height should be greater than zero");
 			var padding = new Padding(10);
 			var container = new Panel { Content = control, Padding = padding };
 			var containerSize = container.GetPreferredSize();
@@ -443,11 +443,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					panel.Enabled = false;
 				return panel;
 			});
-			Assert.IsFalse(gotFocus, "#1.1 - Control should not be able to get focus");
-			Assert.IsFalse(gotMouseEnter, "#1.2 - Got MouseEnter");
-			Assert.IsFalse(gotMouseLeave, "#1.3 - Got MouseLeave");
-			Assert.IsFalse(gotMouseDown, "#1.4 - Got MouseDown");
-			Assert.IsFalse(gotMouseUp, "#1.5 - Got MouseUp");
+			Assert.That(gotFocus, Is.False, "#1.1 - Control should not be able to get focus");
+			Assert.That(gotMouseEnter, Is.False, "#1.2 - Got MouseEnter");
+			Assert.That(gotMouseLeave, Is.False, "#1.3 - Got MouseLeave");
+			Assert.That(gotMouseDown, Is.False, "#1.4 - Got MouseDown");
+			Assert.That(gotMouseUp, Is.False, "#1.5 - Got MouseUp");
 		}
 		
 		[ManualTest]
@@ -498,14 +498,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 				return control;
 			});
-			Assert.AreEqual(1, mouseEnterCalled, "#1.1 - MouseEnter should be called exactly once");
-			Assert.AreEqual(1, mouseLeaveCalled, "#1.2 - MouseLeave should be called exactly once");
-			Assert.IsFalse(mouseLeaveCalledBeforeMouseDown, "#1.3 - MouseLeave should not have been called before MouseDown");
-			Assert.IsFalse(mouseLeaveCalledAfterDisabled, "#1.4 - MouseLeave should not be called during Enabled=false, but sometime after the MouseDown completes");
-			Assert.AreEqual(1, mouseDownCalled, "#1.5 - MouseDown should get called exactly once.  Did you click the control?");
-			Assert.IsFalse(mouseLeaveCalledAfterFormClosed, "#1.6 - MouseLeave should be called immediately when clicked, not when the form is closed");
-			Assert.AreEqual(1, enabledChanged, "#1.7 - EnabledChanged should be called exactly once");
-			Assert.IsFalse(enabledChangedFiredAfterMouseLeave, "#1.8 - MouseLeave should be fired after EnabledChanged event");
+			Assert.That(mouseEnterCalled, Is.EqualTo(1), "#1.1 - MouseEnter should be called exactly once");
+			Assert.That(mouseLeaveCalled, Is.EqualTo(1), "#1.2 - MouseLeave should be called exactly once");
+			Assert.That(mouseLeaveCalledBeforeMouseDown, Is.False, "#1.3 - MouseLeave should not have been called before MouseDown");
+			Assert.That(mouseLeaveCalledAfterDisabled, Is.False, "#1.4 - MouseLeave should not be called during Enabled=false, but sometime after the MouseDown completes");
+			Assert.That(mouseDownCalled, Is.EqualTo(1), "#1.5 - MouseDown should get called exactly once.  Did you click the control?");
+			Assert.That(mouseLeaveCalledAfterFormClosed, Is.False, "#1.6 - MouseLeave should be called immediately when clicked, not when the form is closed");
+			Assert.That(enabledChanged, Is.EqualTo(1), "#1.7 - EnabledChanged should be called exactly once");
+			Assert.That(enabledChangedFiredAfterMouseLeave, Is.False, "#1.8 - MouseLeave should be fired after EnabledChanged event");
 		}
 
 		[ManualTest]
@@ -547,11 +547,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 				return control;
 			});
-			Assert.AreEqual(1, mouseEnterCalled, "#1.1 - MouseEnter should be called exactly once");
-			Assert.AreEqual(1, mouseLeaveCalled, "#1.2 - MouseLeave should be called exactly once");
-			Assert.IsFalse(mouseLeaveCalledBeforeMouseDown, "#1.3 - MouseLeave should not have been called before MouseDown");
-			Assert.AreEqual(1, mouseDownCalled, "#1.5 - MouseDown should get called exactly once.  Did you click the control?");
-			Assert.IsFalse(mouseLeaveCalledAfterFormClosed, "#1.6 - MouseLeave should be called immediately when clicked, not when the form is closed");
+			Assert.That(mouseEnterCalled, Is.EqualTo(1), "#1.1 - MouseEnter should be called exactly once");
+			Assert.That(mouseLeaveCalled, Is.EqualTo(1), "#1.2 - MouseLeave should be called exactly once");
+			Assert.That(mouseLeaveCalledBeforeMouseDown, Is.False, "#1.3 - MouseLeave should not have been called before MouseDown");
+			Assert.That(mouseDownCalled, Is.EqualTo(1), "#1.5 - MouseDown should get called exactly once.  Did you click the control?");
+			Assert.That(mouseLeaveCalledAfterFormClosed, Is.False, "#1.6 - MouseLeave should be called immediately when clicked, not when the form is closed");
 		}
 	}
 }

@@ -82,38 +82,38 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						switch (step)
 						{
 							case 0:
-								Assert.AreEqual(0, e.Column);
-								Assert.AreEqual(0, e.Row);
-								Assert.AreEqual(MouseButtons.Primary, e.Buttons);
-								Assert.AreEqual(Keys.None, e.Modifiers);
-								Assert.AreEqual(Point.Round(Mouse.Position / 4f), Point.Round(gv.PointToScreen(e.Location) / 4f));
+								Assert.That(e.Column, Is.EqualTo(0));
+								Assert.That(e.Row, Is.EqualTo(0));
+								Assert.That(e.Buttons, Is.EqualTo(MouseButtons.Primary));
+								Assert.That(e.Modifiers, Is.EqualTo(Keys.None));
+								Assert.That(Point.Round(gv.PointToScreen(e.Location) / 4f), Is.EqualTo(Point.Round(Mouse.Position / 4f)));
 								label.Text = "Now, left click on 1, 0";
 								step = 1;
 								break;
 							case 1:
-								Assert.AreEqual(1, e.Column);
-								Assert.AreEqual(0, e.Row);
-								Assert.AreEqual(MouseButtons.Primary, e.Buttons);
-								Assert.AreEqual(Keys.None, e.Modifiers);
-								Assert.AreEqual(Mouse.Position, gv.PointToScreen(e.Location));
+								Assert.That(e.Column, Is.EqualTo(1));
+								Assert.That(e.Row, Is.EqualTo(0));
+								Assert.That(e.Buttons, Is.EqualTo(MouseButtons.Primary));
+								Assert.That(e.Modifiers, Is.EqualTo(Keys.None));
+								Assert.That(gv.PointToScreen(e.Location), Is.EqualTo(Mouse.Position));
 								label.Text = "Now, right click on 1, 1";
 								step = 2;
 								break;
 							case 2:
-								Assert.AreEqual(1, e.Column);
-								Assert.AreEqual(1, e.Row);
-								Assert.AreEqual(MouseButtons.Alternate, e.Buttons);
-								Assert.AreEqual(Keys.None, e.Modifiers);
-								Assert.AreEqual(Mouse.Position, gv.PointToScreen(e.Location));
+								Assert.That(e.Column, Is.EqualTo(1));
+								Assert.That(e.Row, Is.EqualTo(1));
+								Assert.That(e.Buttons, Is.EqualTo(MouseButtons.Alternate));
+								Assert.That(e.Modifiers, Is.EqualTo(Keys.None));
+								Assert.That(gv.PointToScreen(e.Location), Is.EqualTo(Mouse.Position));
 								label.Text = "Now, right click on 1, 2 with the shift key pressed";
 								step = 3;
 								break;
 							case 3:
-								Assert.AreEqual(1, e.Column);
-								Assert.AreEqual(2, e.Row);
-								Assert.AreEqual(MouseButtons.Alternate, e.Buttons);
-								Assert.AreEqual(Keys.Shift, e.Modifiers);
-								Assert.AreEqual(Mouse.Position, gv.PointToScreen(e.Location));
+								Assert.That(e.Column, Is.EqualTo(1));
+								Assert.That(e.Row, Is.EqualTo(2));
+								Assert.That(e.Buttons, Is.EqualTo(MouseButtons.Alternate));
+								Assert.That(e.Modifiers, Is.EqualTo(Keys.Shift));
+								Assert.That(gv.PointToScreen(e.Location), Is.EqualTo(Mouse.Position));
 								step = 4;
 								form.Close();
 								break;

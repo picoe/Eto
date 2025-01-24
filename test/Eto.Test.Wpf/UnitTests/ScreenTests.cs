@@ -66,9 +66,9 @@ namespace Eto.Test.Wpf.UnitTests
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(-1000, 10, 1000, 1000), LogicalPixelSize = pixelSize3 });
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(-500, 1010, 500, 500), LogicalPixelSize = pixelSize2 });
 
-			Assert.AreEqual(new PointF(0, 0), helper.GetLogicalLocation(helper.Screens[0]));
-			Assert.AreEqual(new PointF(-1000 / pixelSize3, 10 / helper.GetMaxLogicalPixelSize()), helper.GetLogicalLocation(helper.Screens[1]));
-			Assert.AreEqual(new PointF(-500 / pixelSize2, 1010 / helper.GetMaxLogicalPixelSize()), helper.GetLogicalLocation(helper.Screens[2]));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[0]), Is.EqualTo(new PointF(0, 0)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[1]), Is.EqualTo(new PointF(-1000 / pixelSize3, 10 / helper.GetMaxLogicalPixelSize())));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[2]), Is.EqualTo(new PointF(-500 / pixelSize2, 1010 / helper.GetMaxLogicalPixelSize())));
 		}
 
 		[TestCaseSource(nameof(ThreeMonitorSource))]
@@ -89,9 +89,9 @@ namespace Eto.Test.Wpf.UnitTests
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(-500, 1000, 500, 500), LogicalPixelSize = pixelSize2 });
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(-1000, 0, 1000, 1000), LogicalPixelSize = pixelSize3 });
 
-			Assert.AreEqual(new PointF(0, 0), helper.GetLogicalLocation(helper.Screens[0]));
-			Assert.AreEqual(new PointF(-500 / pixelSize2, 1000 / pixelSize1), helper.GetLogicalLocation(helper.Screens[1]));
-			Assert.AreEqual(new PointF(-1000 / pixelSize3, 0), helper.GetLogicalLocation(helper.Screens[2]));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[0]), Is.EqualTo(new PointF(0, 0)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[1]), Is.EqualTo(new PointF(-500 / pixelSize2, 1000 / pixelSize1)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[2]), Is.EqualTo(new PointF(-1000 / pixelSize3, 0)));
 		}
 
 		[TestCaseSource(nameof(ThreeMonitorSource))]
@@ -112,9 +112,9 @@ namespace Eto.Test.Wpf.UnitTests
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(0, -500, 500, 500), LogicalPixelSize = pixelSize2 });
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(1000, -1000, 1000, 1000), LogicalPixelSize = pixelSize3 });
 
-			Assert.AreEqual(new PointF(0, 0), helper.GetLogicalLocation(helper.Screens[0]));
-			Assert.AreEqual(new PointF(0, -500 / pixelSize2), helper.GetLogicalLocation(helper.Screens[1]));
-			Assert.AreEqual(new PointF(1000 / pixelSize1, -1000 / pixelSize3), helper.GetLogicalLocation(helper.Screens[2]));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[0]), Is.EqualTo(new PointF(0, 0)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[1]), Is.EqualTo(new PointF(0, -500 / pixelSize2)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[2]), Is.EqualTo(new PointF(1000 / pixelSize1, -1000 / pixelSize3)));
 		}
 
 		[TestCaseSource(nameof(ThreeMonitorSource))]
@@ -135,9 +135,9 @@ namespace Eto.Test.Wpf.UnitTests
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(0, 1000, 500, 500), LogicalPixelSize = pixelSize2 });
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(1000, 1000, 1000, 1000), LogicalPixelSize = pixelSize3 });
 
-			Assert.AreEqual(new PointF(0, 0), helper.GetLogicalLocation(helper.Screens[0]));
-			Assert.AreEqual(new PointF(0, 1000 / pixelSize1), helper.GetLogicalLocation(helper.Screens[1]));
-			Assert.AreEqual(new PointF(1000 / pixelSize1, 1000 / pixelSize1), helper.GetLogicalLocation(helper.Screens[2]));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[0]), Is.EqualTo(new PointF(0, 0)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[1]), Is.EqualTo(new PointF(0, 1000 / pixelSize1)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[2]), Is.EqualTo(new PointF(1000 / pixelSize1, 1000 / pixelSize1)));
 		}
 
 
@@ -154,8 +154,8 @@ namespace Eto.Test.Wpf.UnitTests
 			helper.Screens.Add(helper.Primary = new TestScreen { Bounds = new sd.Rectangle(0, 0, 1000, 1000), LogicalPixelSize = pixelSize1 });
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(1000, 0, 1000, 1000), LogicalPixelSize = pixelSize2 });
 
-			Assert.AreEqual(new PointF(0, 0), helper.GetLogicalLocation(helper.Screens[0]));
-			Assert.AreEqual(new PointF(1000 / pixelSize1, 0), helper.GetLogicalLocation(helper.Screens[1]));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[0]), Is.EqualTo(new PointF(0, 0)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[1]), Is.EqualTo(new PointF(1000 / pixelSize1, 0)));
 		}
 
 		[TestCaseSource(nameof(TwoMonitorSource))]
@@ -171,8 +171,8 @@ namespace Eto.Test.Wpf.UnitTests
 			helper.Screens.Add(helper.Primary = new TestScreen { Bounds = new sd.Rectangle(0, 0, 1000, 1000), LogicalPixelSize = pixelSize1 });
 			helper.Screens.Add(new TestScreen { Bounds = new sd.Rectangle(-1000, 0, 1000, 1000), LogicalPixelSize = pixelSize2 });
 
-			Assert.AreEqual(new PointF(0, 0), helper.GetLogicalLocation(helper.Screens[0]));
-			Assert.AreEqual(new PointF(-1000 / pixelSize2, 0), helper.GetLogicalLocation(helper.Screens[1]));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[0]), Is.EqualTo(new PointF(0, 0)));
+			Assert.That(helper.GetLogicalLocation(helper.Screens[1]), Is.EqualTo(new PointF(-1000 / pixelSize2, 0)));
 		}
 	}
 }

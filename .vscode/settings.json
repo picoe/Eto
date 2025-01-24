@@ -7,7 +7,7 @@
 	},
 	"var": {
 		"configuration" : "Debug",
-		"buildProperties" : "/v:Minimal /p:GenerateFullPaths=True /consoleLoggerParameters:NoSummary"
+		"buildProperties" : "/v:Minimal /p:GenerateFullPaths=True /consoleloggerparameters:'ForceNoAlign;NoSummary'"
 	},
 	"vssolution.altSolutionFolders": [
 		"src",

@@ -4,6 +4,36 @@ namespace Eto.Wpf.Forms.Menu
 	{
 		void Validate();
 	}
+
+	public class EtoKeyGesture : swi.InputGesture
+	{
+		public EtoKeyGesture(Func<bool> isEnabled, swi.Key key, swi.ModifierKeys modifiers)
+		{
+			_isEnabled = isEnabled ?? throw new ArgumentNullException(nameof(isEnabled));
+			Key = key;
+			Modifiers = modifiers;
+		}
+
+		Func<bool> _isEnabled;
+
+		public swi.Key Key { get; }
+		public swi.ModifierKeys Modifiers { get; }
+
+		public override bool Matches(object targetElement, swi.InputEventArgs inputEventArgs)
+		{
+			// only match if enabled, which is different from WPF's default behavior
+			// this allows specific keys to be used in the application when the menu item is disabled
+			if (!_isEnabled())
+				return false;
+			if (inputEventArgs is swi.KeyEventArgs args && IsDefinedKey(args.Key))
+			{
+				return ((int)Key == (int)args.Key) && (Modifiers == swi.Keyboard.Modifiers);
+			}
+			return false;
+		}
+
+		internal static bool IsDefinedKey(swi.Key key) => key >= swi.Key.None && key <= swi.Key.OemClear;
+	}
 	
 	public static class MenuItemHandler
 	{
@@ -70,37 +100,6 @@ namespace Eto.Wpf.Forms.Menu
 			set { Control.ToolTip = value; }
 		}
 
-
-		class EtoKeyGesture : swi.InputGesture
-		{
-			public EtoKeyGesture(MenuItemHandler<TControl, TWidget, TCallback> menuItemHandler, swi.Key key, swi.ModifierKeys modifiers)
-			{
-				MenuItemHandler = menuItemHandler;
-				Key = key;
-				Modifiers = modifiers;
-			}
-
-			public MenuItemHandler<TControl, TWidget, TCallback> MenuItemHandler { get; }
-			
-			public swi.Key Key { get; }
-			public swi.ModifierKeys Modifiers { get; }
-
-			public override bool Matches(object targetElement, swi.InputEventArgs inputEventArgs)
-			{
-				// only match if enabled, which is different from WPF's default behavior
-				// this allows specific keys to be used in the application when the menu item is disabled
-				if (!MenuItemHandler.Enabled)
-					return false;
-				if (inputEventArgs is swi.KeyEventArgs args && IsDefinedKey(args.Key))
-				{
-					return ( (int)Key == (int)args.Key ) && ( Modifiers == swi.Keyboard.Modifiers );
-				}
-				return false;
-			}
-			
-			internal static bool IsDefinedKey(swi.Key key) => key >= swi.Key.None && key <= swi.Key.OemClear;			
-		}
-
 		public Keys Shortcut
 		{
 			get
@@ -116,7 +115,7 @@ namespace Eto.Wpf.Forms.Menu
 				{
 					var key = value.ToWpfKey();
 					var modifier = value.ToWpfModifier();
-					var gesture = new EtoKeyGesture(this, key, modifier);
+					var gesture = new EtoKeyGesture(() => Enabled, key, modifier);
 					Control.InputBindings.Add(new swi.InputBinding(this, gesture));
 					Control.InputGestureText = value.ToShortcutString();
 					AddKeyBindings(Control);

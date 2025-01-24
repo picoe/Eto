@@ -41,33 +41,33 @@ namespace Eto.Test.UnitTests.Forms
 
 				base.Content = content;
 
-				Assert.AreEqual(0, dataContextChanged);
-				Assert.AreEqual(0, contentDataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(0));
+				Assert.That(contentDataContextChanged, Is.EqualTo(0));
 				Control.DataContext = new MyViewModel2(); // this shouldn't fire data context changes for logical children
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.AreEqual(1, contentDataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(contentDataContextChanged, Is.EqualTo(1));
 			}
 
 			public override void OnLoad(EventArgs e)
 			{
 				base.OnLoad(e);
-				Assert.IsInstanceOf<MyViewModel2>(Control.DataContext);
-				Assert.IsInstanceOf<MyViewModel2>(content.DataContext);
+				Assert.That(Control.DataContext, Is.InstanceOf<MyViewModel2>());
+				Assert.That(content.DataContext, Is.InstanceOf<MyViewModel2>());
 
 				Control.DataContext = new MyViewModel2(); // this shouldn't fire data context changes for logical children
-				Assert.AreEqual(2, dataContextChanged);
-				Assert.AreEqual(2, contentDataContextChanged);
-				Assert.IsInstanceOf<MyViewModel2>(Control.DataContext);
-				Assert.IsInstanceOf<MyViewModel2>(content.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(2));
+				Assert.That(contentDataContextChanged, Is.EqualTo(2));
+				Assert.That(Control.DataContext, Is.InstanceOf<MyViewModel2>());
+				Assert.That(content.DataContext, Is.InstanceOf<MyViewModel2>());
 			}
 
 			public override void OnLoadComplete(EventArgs e)
 			{
 				base.OnLoadComplete(e);
-				Assert.AreEqual(2, dataContextChanged);
-				Assert.AreEqual(2, contentDataContextChanged);
-				Assert.IsInstanceOf<MyViewModel2>(Control.DataContext);
-				Assert.IsInstanceOf<MyViewModel2>(content.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(2));
+				Assert.That(contentDataContextChanged, Is.EqualTo(2));
+				Assert.That(Control.DataContext, Is.InstanceOf<MyViewModel2>());
+				Assert.That(content.DataContext, Is.InstanceOf<MyViewModel2>());
 			}
 		}
 
@@ -110,12 +110,12 @@ namespace Eto.Test.UnitTests.Forms
 				var c = new Panel();
 				c.DataContextChanged += (sender, e) => dataContextChanged++;
 				form.Content = c;
-				Assert.AreEqual(0, dataContextChanged);
-				Assert.IsNull(form.DataContext);
-				Assert.IsNull(c.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(0));
+				Assert.That(form.DataContext, Is.Null);
+				Assert.That(c.DataContext, Is.Null);
 			}, () =>
 			{
-				Assert.AreEqual(0, dataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(0));
 			});
 		}
 
@@ -129,20 +129,20 @@ namespace Eto.Test.UnitTests.Forms
 				var c = new Panel();
 				c.DataContextChanged += (sender, e) => dataContextChanged++;
 				c.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsInstanceOf<MyViewModel>(c.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(c.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
 
 				c.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(2, dataContextChanged);
-				Assert.IsInstanceOf<MyViewModel>(c.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(2));
+				Assert.That(c.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
 
 				form.Content = c;
-				Assert.AreEqual(2, dataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(2));
 			}, () =>
 			{
-				Assert.AreEqual(2, dataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(2));
 			});
 		}
 
@@ -160,21 +160,21 @@ namespace Eto.Test.UnitTests.Forms
 				expander.Content = c;
 				form.Content = expander;
 				form.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsInstanceOf<MyViewModel>(c.DataContext);
-				Assert.IsInstanceOf<MyViewModel>(form.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
-				Assert.AreSame(dataContext, form.Content.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(c.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(form.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.Content.DataContext));
 				return form;
 			}, form =>
 			{
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsInstanceOf<MyViewModel>(c?.DataContext);
-				Assert.IsInstanceOf<MyViewModel>(form.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
-				Assert.AreSame(dataContext, form.Content.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(c?.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(form.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.Content.DataContext));
 			});
 		}
 
@@ -188,27 +188,27 @@ namespace Eto.Test.UnitTests.Forms
 			{
 				form.DataContextChanged += (sender, e) => dataContextChanged++;
 				form.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsInstanceOf<MyViewModel>(form.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(form.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 				return form;
 			}, form =>
 			{
 				var c = new Panel();
 				c.DataContextChanged += (sender, e) => contentDataContextChanged++;
 				form.Content = c;
-				Assert.AreEqual(1, contentDataContextChanged);
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsInstanceOf<MyViewModel>(c.DataContext);
-				Assert.IsInstanceOf<MyViewModel>(form.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(contentDataContextChanged, Is.EqualTo(1));
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(c.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(form.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 
 				form.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(2, contentDataContextChanged);
-				Assert.AreEqual(2, dataContextChanged);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(contentDataContextChanged, Is.EqualTo(2));
+				Assert.That(dataContextChanged, Is.EqualTo(2));
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 			});
 		}
 
@@ -222,24 +222,24 @@ namespace Eto.Test.UnitTests.Forms
 			{
 				form.DataContextChanged += (sender, e) => dataContextChanged++;
 				form.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 				return form;
 			}, form =>
 			{
 				var c = new Panel();
 				c.DataContextChanged += (sender, e) => contentDataContextChanged++;
 				form.Content = new CustomExpander { Content = c };
-				Assert.AreEqual(1, contentDataContextChanged);
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(contentDataContextChanged, Is.EqualTo(1));
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 
 				form.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(2, contentDataContextChanged);
-				Assert.AreEqual(2, dataContextChanged);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(contentDataContextChanged, Is.EqualTo(2));
+				Assert.That(dataContextChanged, Is.EqualTo(2));
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 			});
 		}
 
@@ -255,8 +255,8 @@ namespace Eto.Test.UnitTests.Forms
 				var container = new Panel();
 				container.DataContextChanged += (sender, e) => dataContextChanged++;
 				container.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.AreSame(dataContext, container.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(dataContext, Is.SameAs(container.DataContext));
 
 				var child = new Panel();
 				child.DataContextChanged += (sender, e) => childDataContextChanged++;
@@ -264,13 +264,13 @@ namespace Eto.Test.UnitTests.Forms
 				container.Content = child;
 				form.Content = container;
 
-				Assert.AreEqual(1, childDataContextChanged);
-				Assert.AreSame(dataContext, container.DataContext);
-				Assert.AreSame(childDataContext, child.DataContext);
+				Assert.That(childDataContextChanged, Is.EqualTo(1));
+				Assert.That(dataContext, Is.SameAs(container.DataContext));
+				Assert.That(childDataContext, Is.SameAs(child.DataContext));
 			}, () =>
 			{
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.AreEqual(1, childDataContextChanged);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(childDataContextChanged, Is.EqualTo(1));
 			});
 		}
 
@@ -291,17 +291,17 @@ namespace Eto.Test.UnitTests.Forms
 					Items = { c }
 				};
 				form.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsNotNull(c.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(c.DataContext, Is.Not.Null);
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 				return form;
 			}, form =>
 			{
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsNotNull(c.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(c.DataContext, Is.Not.Null);
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 			});
 		}
 
@@ -321,17 +321,17 @@ namespace Eto.Test.UnitTests.Forms
 					Rows = { c }
 				};
 				form.DataContext = dataContext = new MyViewModel();
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsNotNull(c.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(c.DataContext, Is.Not.Null);
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 				return form;
 			}, form =>
 			{
-				Assert.AreEqual(1, dataContextChanged);
-				Assert.IsNotNull(c.DataContext);
-				Assert.AreSame(dataContext, c.DataContext);
-				Assert.AreSame(dataContext, form.DataContext);
+				Assert.That(dataContextChanged, Is.EqualTo(1));
+				Assert.That(c.DataContext, Is.Not.Null);
+				Assert.That(dataContext, Is.SameAs(c.DataContext));
+				Assert.That(dataContext, Is.SameAs(form.DataContext));
 			});
 		}
 
@@ -350,31 +350,32 @@ namespace Eto.Test.UnitTests.Forms
 				var parent = new Panel();
 				parent.DataContextChanged += (sender, e) => parentChanged++;
 				parent.DataContext = new MyViewModel { ID = 1 };
-				Assert.AreEqual(1, parentChanged);
+				Assert.That(parentChanged, Is.EqualTo(1));
 
 				var subChild = new Panel();
 				subChild.DataContextChanged += (sender, e) => subChildChanged++;
 				subChild.DataContext = new MyViewModel { ID = 2 };
-				Assert.AreEqual(1, subChildChanged);
+				Assert.That(subChildChanged, Is.EqualTo(1));
 
 				var child = new Panel();
 				child.DataContextChanged += (sender, e) => childChanged++;
-				Assert.AreEqual(0, childChanged);
+				Assert.That(childChanged, Is.EqualTo(0));
 				child.Content = subChild;
-				Assert.AreEqual(1, subChildChanged);
-				Assert.AreEqual(0, childChanged);
+				Assert.That(subChildChanged, Is.EqualTo(1));
+				Assert.That(childChanged, Is.EqualTo(0));
 
 				parent.Content = child;
-				Assert.AreEqual(1, childChanged);
-				Assert.AreEqual(1, subChildChanged);
-				Assert.AreEqual(1, parentChanged);
+				Assert.That(childChanged, Is.EqualTo(1));
+				Assert.That(subChildChanged, Is.EqualTo(1));
+				Assert.That(parentChanged, Is.EqualTo(1));
 
-				Assert.IsInstanceOf<MyViewModel>(parent.DataContext);
-				Assert.AreEqual(1, ((MyViewModel)parent.DataContext).ID);
-				Assert.IsInstanceOf<MyViewModel>(child.DataContext);
-				Assert.AreEqual(1, ((MyViewModel)child.DataContext).ID);
-				Assert.IsInstanceOf<MyViewModel>(subChild.DataContext);
-				Assert.AreEqual(2, ((MyViewModel)subChild.DataContext).ID);
+				Assert.That(parent.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(parent.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(((MyViewModel)parent.DataContext).ID, Is.EqualTo(1));
+				Assert.That(child.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(((MyViewModel)child.DataContext).ID, Is.EqualTo(1));
+				Assert.That(subChild.DataContext, Is.InstanceOf<MyViewModel>());
+				Assert.That(((MyViewModel)subChild.DataContext).ID, Is.EqualTo(2));
 			});
 		}
 
@@ -388,14 +389,14 @@ namespace Eto.Test.UnitTests.Forms
 				panel.DataContextChanged += (sender, e) => changed++;
 
 				panel.DataContext = new MyViewModelWithEquals { ID = 10 };
-				Assert.AreEqual(1, changed);
+				Assert.That(changed, Is.EqualTo(1));
 
 				// should be set again, even though they are equal
 				panel.DataContext = new MyViewModelWithEquals { ID = 10 };
-				Assert.AreEqual(2, changed);
+				Assert.That(changed, Is.EqualTo(2));
 
 				panel.DataContext = new MyViewModelWithEquals { ID = 20 };
-				Assert.AreEqual(3, changed);
+				Assert.That(changed, Is.EqualTo(3));
 			});
 		}
 
@@ -423,7 +424,7 @@ namespace Eto.Test.UnitTests.Forms
 					SelectedIndex = 0
 				};
 				dropDown.DataContext = model1;
-				Assert.AreEqual(0, dropDown.SelectedIndex, "#1");
+				Assert.That(dropDown.SelectedIndex, Is.EqualTo(0), "#1");
 
 				var model2 = new DropDownViewModel
 				{
@@ -431,10 +432,10 @@ namespace Eto.Test.UnitTests.Forms
 					SelectedIndex = 1
 				};
 				dropDown.DataContext = model2;
-				Assert.AreEqual(1, dropDown.SelectedIndex, "#2");
+				Assert.That(dropDown.SelectedIndex, Is.EqualTo(1), "#2");
 
-				Assert.AreEqual(0, model1.SelectedIndex, "#3 - Model 1 was changed");
-				Assert.AreEqual(1, model2.SelectedIndex, "#4 - Model 2 was changed");
+				Assert.That(model1.SelectedIndex, Is.EqualTo(0), "#3 - Model 1 was changed");
+				Assert.That(model2.SelectedIndex, Is.EqualTo(1), "#4 - Model 2 was changed");
 			});
 			
 		[Test]
@@ -446,19 +447,19 @@ namespace Eto.Test.UnitTests.Forms
 			panel.DataContextChanged += (sender, e) => parentDataContextChanged++;
 
 			panel.DataContext = new MyViewModelWithEquals { ID = 10 };
-			Assert.AreEqual(1, parentDataContextChanged);
+			Assert.That(parentDataContextChanged, Is.EqualTo(1));
 
 			var child = new Panel();
 			child.DataContextChanged += (sender, e) => childDataContextChanged++;
 
 			panel.Content = child;
-			Assert.AreEqual(1, childDataContextChanged);
-			Assert.AreSame(child.DataContext, panel.DataContext);
+			Assert.That(childDataContextChanged, Is.EqualTo(1));
+			Assert.That(child.DataContext, Is.SameAs(panel.DataContext));
 
 			panel.Content = null;
-			Assert.AreEqual(2, childDataContextChanged);
-			Assert.AreEqual(1, parentDataContextChanged);
-			Assert.IsNull(child.DataContext);
+			Assert.That(childDataContextChanged, Is.EqualTo(2));
+			Assert.That(parentDataContextChanged, Is.EqualTo(1));
+			Assert.That(child.DataContext, Is.Null);
 		});
 	}
 }

@@ -4,12 +4,6 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class BitmapTests : TestBase
 	{
-		public BitmapTests()
-		{
-			// initialize test generator if running through IDE or nunit-gui
-			TestBase.Initialize();
-		}
-
 		[Test]
 		public void TestClone32Bit()
 		{
@@ -73,7 +67,7 @@ namespace Eto.Test.UnitTests.Drawing
 
 				if (colorSet != colorGet)
 				{
-					Assert.Fail("Pixels are not the same (SetPixel: {0}, GetPixel: {1})", colorSet, colorGet);
+					Assert.Fail($"Pixels are not the same (SetPixel: {colorSet}, GetPixel: {colorGet})");
 				}
 			}
 		}
@@ -95,7 +89,7 @@ namespace Eto.Test.UnitTests.Drawing
 
 			if (colorSet != colorGet)
 			{
-				Assert.Fail("Pixels are not the same (SetPixel: {0}, GetPixel: {1})", colorSet, colorGet);
+				Assert.Fail($"Pixels are not the same (SetPixel: {colorSet}, GetPixel: {colorGet})");
 			}
 		}
 
@@ -118,7 +112,7 @@ namespace Eto.Test.UnitTests.Drawing
 
 				if (colorSet != colorGet)
 				{
-					Assert.Fail("Pixels are not the same (SetPixel: {0}, GetPixel: {1})", colorSet, colorGet);
+					Assert.Fail($"Pixels are not the same (SetPixel: {colorSet}, GetPixel: {colorGet})");
 				}
 			}
 		}
@@ -140,7 +134,7 @@ namespace Eto.Test.UnitTests.Drawing
 
 			if (colorSet != colorGet)
 			{
-				Assert.Fail("Pixels are not the same (SetPixel: {0}, GetPixel: {1})", colorSet, colorGet);
+				Assert.Fail($"Pixels are not the same (SetPixel: {colorSet}, GetPixel: {colorGet})");
 			}
 		}
 
@@ -168,7 +162,7 @@ namespace Eto.Test.UnitTests.Drawing
 								var clonePixel = *(clonerow++);
 								if (imagePixel != clonePixel)
 								{
-									Assert.Fail("Image pixels are not the same at position {0},{1} (source: {2}, clone: {3})", x, y, imagePixel, clonePixel);
+									Assert.Fail($"Image pixels are not the same at position {x},{y} (source: {imagePixel}, clone: {clonePixel})");
 								}
 							}
 							imageptr += imageData.ScanWidth;
@@ -183,7 +177,7 @@ namespace Eto.Test.UnitTests.Drawing
 							var imagePixel = imageData.GetPixel(x + testRect.Left, y + testRect.Top);
 							var clonePixel = cloneData.GetPixel(x, y);
 							if (imagePixel != clonePixel)
-								Assert.Fail("Image pixels are not the same at position {0},{1} (source: {2}, clone: {3})", x, y, imagePixel, clonePixel);
+								Assert.Fail($"Image pixels are not the same at position {x},{y} (source: {imagePixel}, clone: {clonePixel})");
 						}
 			}
 		}
@@ -259,15 +253,15 @@ namespace Eto.Test.UnitTests.Drawing
 			// });
 
 			// test output in test thread
-			Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0), "#1");
-			Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0), "#2");
-			Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0), "#3");
+			Assert.That(bmp.GetPixel(0, 0), Is.EqualTo(Colors.Blue), "#1");
+			Assert.That(bmp.GetPixel(10, 0), Is.EqualTo(Colors.Green), "#2");
+			Assert.That(bmp.GetPixel(20, 0), Is.EqualTo(Colors.Red), "#3");
 
 			using (var bd = bmp.Lock())
 			{
-				Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0), "#4");
-				Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#5");
-				Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#6");
+				Assert.That(bd.GetPixel(0, 0), Is.EqualTo(Colors.Blue), "#4");
+				Assert.That(bd.GetPixel(10, 0), Is.EqualTo(Colors.Green), "#5");
+				Assert.That(bd.GetPixel(20, 0), Is.EqualTo(Colors.Red), "#6");
 			}
 
 			await Task.Run(() => Shown(f => new ImageView { Image = bmp },
@@ -275,15 +269,15 @@ namespace Eto.Test.UnitTests.Drawing
 				{
 
 					// also test in UI thread
-					Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0), "#7");
-					Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0), "#8");
-					Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0), "#9");
+					Assert.That(bmp.GetPixel(0, 0), Is.EqualTo(Colors.Blue), "#7");
+					Assert.That(bmp.GetPixel(10, 0), Is.EqualTo(Colors.Green), "#8");
+					Assert.That(bmp.GetPixel(20, 0), Is.EqualTo(Colors.Red), "#9");
 
 					using (var bd = bmp.Lock())
 					{
-						Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0), "#10");
-						Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#11");
-						Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#12");
+						Assert.That(bd.GetPixel(0, 0), Is.EqualTo(Colors.Blue), "#10");
+						Assert.That(bd.GetPixel(10, 0), Is.EqualTo(Colors.Green), "#11");
+						Assert.That(bd.GetPixel(20, 0), Is.EqualTo(Colors.Red), "#12");
 					}
 				}));
 		}
@@ -324,8 +318,8 @@ namespace Eto.Test.UnitTests.Drawing
 				}
 
 				// sanity check
-				Assert.AreEqual(Colors.Red, bmp.GetPixel(0, 0));
-				Assert.AreEqual(Colors.Blue, bmp.GetPixel(10, 0));
+				Assert.That(bmp.GetPixel(0, 0), Is.EqualTo(Colors.Red));
+				Assert.That(bmp.GetPixel(10, 0), Is.EqualTo(Colors.Blue));
 			});
 		}
 
@@ -359,7 +353,7 @@ namespace Eto.Test.UnitTests.Drawing
 					for (int j = 0; j < height; ++j)
 					{
 						var c = j < height / 2 ? Colors.Red : Colors.Green;
-						Assert.AreEqual(c, bitmap.GetPixel(i, j), $"Pixel at {i},{j} is incorrect");
+						Assert.That(bitmap.GetPixel(i, j), Is.EqualTo(c), $"Pixel at {i},{j} is incorrect");
 					}
 				}
 			});
@@ -392,7 +386,7 @@ namespace Eto.Test.UnitTests.Drawing
 						for (int j = 0; j < height; ++j)
 						{
 							var c = j < height / 2 ? Colors.Red : Colors.Green;
-							Assert.AreEqual(c, bd.GetPixel(i, j), $"Pixel at {i},{j} is incorrect");
+							Assert.That(bd.GetPixel(i, j), Is.EqualTo(c), $"Pixel at {i},{j} is incorrect");
 						}
 					}
 				}
@@ -404,9 +398,9 @@ namespace Eto.Test.UnitTests.Drawing
 		{
 			Invoke(() =>
 			{
-				Assert.AreEqual(new Size(128, 128), TestIcons.Logo288Bitmap.Size);
+				Assert.That(TestIcons.Logo288Bitmap.Size, Is.EqualTo(new Size(128, 128)));
 
-				Assert.AreEqual(new Size(128, 128), TestIcons.LogoBitmap.Size);
+				Assert.That(TestIcons.LogoBitmap.Size, Is.EqualTo(new Size(128, 128)));
 			});
 		}
 
@@ -486,32 +480,32 @@ namespace Eto.Test.UnitTests.Drawing
 
 			void TestPixels(Color topLeft, Color topRight, Color bottomLeft, Color bottomRight, string test)
 			{
-				Assert.IsNotNull(bmp);
-				Assert.IsNotNull(savedBitmap);
+				Assert.That(bmp, Is.Not.Null);
+				Assert.That(savedBitmap, Is.Not.Null);
 				
-				Assert.AreEqual(topLeft, bmp.GetPixel(0, 0), test + ".1.1");
-				Assert.AreEqual(topRight, bmp.GetPixel(halfSize, 0), test + ".1.2");
-				Assert.AreEqual(bottomLeft, bmp.GetPixel(0, halfSize), test + ".1.3");
-				Assert.AreEqual(bottomRight, bmp.GetPixel(halfSize, halfSize), test + ".1.4");
+				Assert.That(bmp.GetPixel(0, 0), Is.EqualTo(topLeft), test + ".1.1");
+				Assert.That(bmp.GetPixel(halfSize, 0), Is.EqualTo(topRight), test + ".1.2");
+				Assert.That(bmp.GetPixel(0, halfSize), Is.EqualTo(bottomLeft), test + ".1.3");
+				Assert.That(bmp.GetPixel(halfSize, halfSize), Is.EqualTo(bottomRight), test + ".1.4");
 
-				Assert.AreEqual(topLeft, savedBitmap.GetPixel(0, 0), test + ".2.1");
-				Assert.AreEqual(topRight, savedBitmap.GetPixel(halfSize, 0), test + ".2.2");
-				Assert.AreEqual(bottomLeft, savedBitmap.GetPixel(0, halfSize), test + ".2.3");
-				Assert.AreEqual(bottomRight, savedBitmap.GetPixel(halfSize, halfSize), test + ".2.4");
+				Assert.That(savedBitmap.GetPixel(0, 0), Is.EqualTo(topLeft), test + ".2.1");
+				Assert.That(savedBitmap.GetPixel(halfSize, 0), Is.EqualTo(topRight), test + ".2.2");
+				Assert.That(savedBitmap.GetPixel(0, halfSize), Is.EqualTo(bottomLeft), test + ".2.3");
+				Assert.That(savedBitmap.GetPixel(halfSize, halfSize), Is.EqualTo(bottomRight), test + ".2.4");
 
 				using (var bd = bmp.Lock())
 				{
-					Assert.AreEqual(topLeft, bd.GetPixel(0, 0), test + ".3.1");
-					Assert.AreEqual(topRight, bd.GetPixel(halfSize, 0), test + ".3.2");
-					Assert.AreEqual(bottomLeft, bd.GetPixel(0, halfSize), test + ".3.3");
-					Assert.AreEqual(bottomRight, bd.GetPixel(halfSize, halfSize), test + ".3.4");
+					Assert.That(bd.GetPixel(0, 0), Is.EqualTo(topLeft), test + ".3.1");
+					Assert.That(bd.GetPixel(halfSize, 0), Is.EqualTo(topRight), test + ".3.2");
+					Assert.That(bd.GetPixel(0, halfSize), Is.EqualTo(bottomLeft), test + ".3.3");
+					Assert.That(bd.GetPixel(halfSize, halfSize), Is.EqualTo(bottomRight), test + ".3.4");
 				}
 				using (var bd = savedBitmap.Lock())
 				{
-					Assert.AreEqual(topLeft, bd.GetPixel(0, 0), test + ".4.1");
-					Assert.AreEqual(topRight, bd.GetPixel(halfSize, 0), test + ".4.2");
-					Assert.AreEqual(bottomLeft, bd.GetPixel(0, halfSize), test + ".4.3");
-					Assert.AreEqual(bottomRight, bd.GetPixel(halfSize, halfSize), test + ".4.4");
+					Assert.That(bd.GetPixel(0, 0), Is.EqualTo(topLeft), test + ".4.1");
+					Assert.That(bd.GetPixel(halfSize, 0), Is.EqualTo(topRight), test + ".4.2");
+					Assert.That(bd.GetPixel(0, halfSize), Is.EqualTo(bottomLeft), test + ".4.3");
+					Assert.That(bd.GetPixel(halfSize, halfSize), Is.EqualTo(bottomRight), test + ".4.4");
 				}
 			}
 

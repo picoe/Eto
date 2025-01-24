@@ -19,8 +19,8 @@ namespace Eto.Test.Wpf.UnitTests
 				nativeWindow.Content = panel.ToNative(true);
 
 				var parentWindow = panel.ParentWindow;
-				Assert.IsNotNull(parentWindow, "#1");
-				Assert.AreSame(nativeWindow, parentWindow.ControlObject, "#2");
+				Assert.That(parentWindow, Is.Not.Null, "#1");
+				Assert.That(nativeWindow, Is.SameAs(parentWindow.ControlObject), "#2");
 			});
 		}
 
@@ -44,8 +44,8 @@ namespace Eto.Test.Wpf.UnitTests
 				// get the parent window
 				var parentWindow = panel.ParentWindow;
 
-				Assert.IsNotNull(parentWindow, "#1");
-				Assert.AreEqual(windowhandle, parentWindow.NativeHandle, "#2");
+				Assert.That(parentWindow, Is.Not.Null, "#1");
+				Assert.That(parentWindow.NativeHandle, Is.EqualTo(windowhandle), "#2");
 			});
 		}
 
@@ -116,7 +116,7 @@ namespace Eto.Test.Wpf.UnitTests
 				nativeWindow.Show();
 			});
 			ev.WaitOne();
-			Assert.IsTrue(passed);
+			Assert.That(passed, Is.True);
 		}
 
 		[Test, ManualTest]
@@ -192,7 +192,7 @@ namespace Eto.Test.Wpf.UnitTests
 				nativeWindow.Show();
 			});
 			ev.WaitOne();
-			Assert.IsTrue(passed);
+			Assert.That(passed, Is.True);
 		}
 
 	}

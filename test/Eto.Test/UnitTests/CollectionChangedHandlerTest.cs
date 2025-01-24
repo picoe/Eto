@@ -59,9 +59,9 @@ namespace Eto.Test.UnitTests
 			var handler = new CollectionHandler();
 			var collection = new Collection(new[] {"1"});
 			handler.Register(collection);
-			Assert.AreEqual(1, handler.Count);
+			Assert.That(handler.Count, Is.EqualTo(1));
 			collection.Update(new[] { "1", "2" });
-			Assert.AreEqual(2, handler.Count);
+			Assert.That(handler.Count, Is.EqualTo(2));
 		}
 	}
 }

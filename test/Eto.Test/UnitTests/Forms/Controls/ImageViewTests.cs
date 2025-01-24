@@ -109,7 +109,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			{
 				var imageView = new ImageView();
 				imageView.Image = imageInfo.StartImage?.Invoke();
-				Assert.AreEqual(new Size(-1, -1), imageView.Size, "#1");
+				Assert.That(imageView.Size, Is.EqualTo(new Size(-1, -1)), "#1");
 				form.ClientSize = new Size(200, 200);
 				form.Content = new StackLayout { Items = { imageView } };
 
@@ -121,7 +121,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						{
 							try
 							{
-								Assert.AreEqual(imageInfo.UpdateSize(), imageView.Size);
+								Assert.That(imageView.Size, Is.EqualTo(imageInfo.UpdateSize()));
 								form.Close();
 							}
 							catch (Exception ex)
@@ -131,7 +131,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 							}
 						};
 
-						Assert.AreEqual(imageInfo.StartSize(), imageView.Size);
+						Assert.That(imageView.Size, Is.EqualTo(imageInfo.StartSize()));
 						imageView.Image = imageInfo.UpdateImage?.Invoke();
 					}
 					catch (Exception ex)

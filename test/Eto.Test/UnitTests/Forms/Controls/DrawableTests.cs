@@ -41,8 +41,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				form.Owner = Application.Instance.MainForm;
 			}, -1);
 
-			Assert.IsTrue(wasClicked, "#1 Drawable didn't get clicked");
-			Assert.IsFalse(gotFocusBeforeClick, "#2 Form should not have got focus before MouseDown event");
+			Assert.That(wasClicked, Is.True, "#1 Drawable didn't get clicked");
+			Assert.That(gotFocusBeforeClick, Is.False, "#2 Form should not have got focus before MouseDown event");
 		}
 
 		[Test]
@@ -69,9 +69,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			},
 			() =>
 			{
-				Assert.GreaterOrEqual(labelThatShouldWrap.Height, 20, "#1 - Label should have wrapped!");
+				Assert.That(labelThatShouldWrap.Height, Is.GreaterThanOrEqualTo(20), "#1 - Label should have wrapped!");
 
-				Assert.AreEqual(100, form.Width, "#2 - Form width should be 100");
+				Assert.That(form.Width, Is.EqualTo(100), "#2 - Form width should be 100");
 			}
 			);
 		}

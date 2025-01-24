@@ -16,8 +16,8 @@ namespace Eto.Test.Mac.UnitTests
 				nswindow.ContentView = panel.ToNative(true);
 
 				var parentWindow = panel.ParentWindow;
-				Assert.IsNotNull(parentWindow, "#1");
-				Assert.AreSame(nswindow, parentWindow.ControlObject, "#2");
+				Assert.That(parentWindow, Is.Not.Null, "#1");
+				Assert.That(nswindow, Is.SameAs(parentWindow.ControlObject), "#2");
 			});
 		}
 
@@ -83,7 +83,7 @@ namespace Eto.Test.Mac.UnitTests
 				nswindow.MakeKeyAndOrderFront(nswindow);
 			});
 			ev.WaitOne();
-			Assert.IsTrue(passed);
+			Assert.That(passed, Is.True);
 		}
 	}
 }

@@ -33,7 +33,7 @@ namespace Eto.Test.Wpf.UnitTests
 			};
 			dlg.ShowModal(Application.Instance.MainForm);
 			
-			Assert.AreEqual(1, dropDownIndex);
+			Assert.That(dropDownIndex, Is.EqualTo(1));
 		}
         
     }

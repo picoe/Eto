@@ -48,7 +48,7 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 				Color = Colors.White
 			};
 			binding.SetValue(item, 0.5f);
-			Assert.AreEqual(0.5f, item.Color.B, "Struct property value was not set");
+			Assert.That(item.Color.B, Is.EqualTo(0.5f), "Struct property value was not set");
 		}
 
 		[Test]
@@ -63,7 +63,7 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 
 			var childBinding = binding.Child(Binding.Property((Color c) => c.B));
 			childBinding.DataValue = 0.5f;
-			Assert.AreEqual(0.5f, item.Color.B, "Struct property value was not set");
+			Assert.That(item.Color.B, Is.EqualTo(0.5f), "Struct property value was not set");
 		}
 
 		[Test]
@@ -83,15 +83,15 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 
 			item.Child.Color = Colors.Green;
 
-			Assert.AreEqual(1, valueChange1Count, "#1.1");
-			Assert.AreEqual(1, valueChange2Count, "#1.2");
+			Assert.That(valueChange1Count, Is.EqualTo(1), "#1.1");
+			Assert.That(valueChange2Count, Is.EqualTo(1), "#1.2");
 
 			// setting the child to something else should re-wire all the value changed bindings to the new instance
 			// .. and trigger the value changed
 			item.Child = new TestObject { Color = Colors.Blue };
 
-			Assert.AreEqual(2, valueChange1Count, "#2.1");
-			Assert.AreEqual(2, valueChange2Count, "#2.2");
+			Assert.That(valueChange1Count, Is.EqualTo(2), "#2.1");
+			Assert.That(valueChange2Count, Is.EqualTo(2), "#2.2");
 
 			// remove the first handler and ensure the second one is still active
 			childBinding.RemoveValueChangedHandler(changed1, ValueChanged1);
@@ -99,13 +99,13 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			item.Child.Color = Colors.Yellow;
 
 			// only hooked up to the second handler
-			Assert.AreEqual(2, valueChange1Count, "#3.1");
-			Assert.AreEqual(3, valueChange2Count, "#3.2");
+			Assert.That(valueChange1Count, Is.EqualTo(2), "#3.1");
+			Assert.That(valueChange2Count, Is.EqualTo(3), "#3.2");
 
 			item.Child = new TestObject { Color = Colors.White };
 
-			Assert.AreEqual(2, valueChange1Count, "#4.1");
-			Assert.AreEqual(4, valueChange2Count, "#4.2");
+			Assert.That(valueChange1Count, Is.EqualTo(2), "#4.1");
+			Assert.That(valueChange2Count, Is.EqualTo(4), "#4.2");
 
 			childBinding.RemoveValueChangedHandler(changed2, ValueChanged2);
 
@@ -113,8 +113,8 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			item.Child = new TestObject { Color = Colors.Wheat };
 
 			// no changes as nothing should be hooked up
-			Assert.AreEqual(2, valueChange1Count, "#5.1");
-			Assert.AreEqual(4, valueChange2Count, "#5.2");
+			Assert.That(valueChange1Count, Is.EqualTo(2), "#5.1");
+			Assert.That(valueChange2Count, Is.EqualTo(4), "#5.2");
 
 		}
 
@@ -135,15 +135,15 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 
 			item.Child.Color = Colors.Green;
 
-			Assert.AreEqual(1, valueChange1Count, "#1.1");
-			Assert.AreEqual(1, valueChange2Count, "#1.2");
+			Assert.That(valueChange1Count, Is.EqualTo(1), "#1.1");
+			Assert.That(valueChange2Count, Is.EqualTo(1), "#1.2");
 
 			// setting the child to something else should re-wire all the value changed bindings to the new instance
 			// .. and trigger the value changed
 			item.Child = new TestObject { Color = Colors.Blue };
 
-			Assert.AreEqual(2, valueChange1Count, "#2.1");
-			Assert.AreEqual(2, valueChange2Count, "#2.2");
+			Assert.That(valueChange1Count, Is.EqualTo(2), "#2.1");
+			Assert.That(valueChange2Count, Is.EqualTo(2), "#2.2");
 
 			// remove the first handler and ensure the second one is still active
 			childBinding.DataValueChanged -= ValueChanged1;
@@ -151,13 +151,13 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			item.Child.Color = Colors.Yellow;
 
 			// only hooked up to the second handler
-			Assert.AreEqual(2, valueChange1Count, "#3.1");
-			Assert.AreEqual(3, valueChange2Count, "#3.2");
+			Assert.That(valueChange1Count, Is.EqualTo(2), "#3.1");
+			Assert.That(valueChange2Count, Is.EqualTo(3), "#3.2");
 
 			item.Child = new TestObject { Color = Colors.White };
 
-			Assert.AreEqual(2, valueChange1Count, "#4.1");
-			Assert.AreEqual(4, valueChange2Count, "#4.2");
+			Assert.That(valueChange1Count, Is.EqualTo(2), "#4.1");
+			Assert.That(valueChange2Count, Is.EqualTo(4), "#4.2");
 
 			childBinding.DataValueChanged -= ValueChanged2;
 
@@ -165,8 +165,8 @@ namespace Eto.Test.UnitTests.Forms.Bindings
 			item.Child = new TestObject { Color = Colors.Wheat };
 
 			// no changes as nothing should be hooked up
-			Assert.AreEqual(2, valueChange1Count, "#5.1");
-			Assert.AreEqual(4, valueChange2Count, "#5.2");
+			Assert.That(valueChange1Count, Is.EqualTo(2), "#5.1");
+			Assert.That(valueChange2Count, Is.EqualTo(4), "#5.2");
 
 		}
 	}
