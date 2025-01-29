@@ -152,5 +152,39 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			grid.DataStore = (ITreeGridStore<ITreeGridItem>)dataStore;
 		}
+
+		[Test, CancelAfter(3000)]
+		public void AddingMultipleItemsShouldNotCrash(CancellationToken token) => Async(async () =>
+		{
+			var tree = new TreeGridView { Size = new Size(200, 400) };
+			
+			tree.Columns.Add(new GridColumn { HeaderText = "Column 1", DataCell = new TextBoxCell(0) });
+			var items = new TreeGridItemCollection
+			{
+				// important to have a row first so it can get row/column focus
+				new TreeGridItem { Values = new[] { "Item" } }
+			};
+			
+			tree.DataStore = items;
+			
+			var form = new Form { Content = tree };
+			form.Shown += (sender, e) => tree.Focus();
+			form.Show();
+			
+			for (int i = 0; i < 1000; i++)
+			{
+				if (token.IsCancellationRequested)
+					break;
+				items.Clear();
+				for (int j = 0; j < i; j++)
+				{
+					items.Add(new TreeGridItem { Values = new[] { "Item " + j } });
+				}
+				tree.DataStore = items;
+			}
+			await Task.Delay(1000);
+			form.Close();
+
+		});
 	}
 }
