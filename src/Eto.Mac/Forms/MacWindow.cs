@@ -978,9 +978,15 @@ namespace Eto.Mac.Forms
 			{
 				if (Visible != value)
 				{
+					if (!value)
+						InternalSetOwner(null);
+						
 					Control.IsVisible = value;
 					if (Widget.Loaded && value)
+					{
+						EnsureOwner();
 						FireOnShown();
+					}
 				}
 			}
 		}
@@ -1319,7 +1325,7 @@ namespace Eto.Mac.Forms
 				// since this can get called multiple times
 				Widget.GotFocus -= HandleGotFocusAsChild;
 				
-				if (owner != null)
+				if (owner != null && Visible)
 				{
 					var macWindow = owner.Handler as IMacWindow;
 					if (macWindow != null && macWindow.Control.TabbedWindows?.Contains(Control) != true)

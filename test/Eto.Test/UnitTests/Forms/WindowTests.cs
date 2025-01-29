@@ -74,7 +74,7 @@ public abstract class WindowTests<T> : TestBase
 	[TestCase(true, false, true)]
 	[TestCase(false, true, false)]
 	[TestCase(false, false, true)]
-	public void WindowShouldHaveCorrectInitialSizeWithWrappedLabel(bool useSize, bool setWidth, bool setHeight) => Async(async () =>
+	public void WindowShouldHaveCorrectInitialSizeWithWrappedLabel(bool useSize, bool setWidth, bool setHeight) => Async(-1, async () =>
 	{
 		bool wasClicked = false;
 
@@ -371,7 +371,7 @@ public abstract class WindowTests<T> : TestBase
 
 	[Test]
 	[ManualTest]
-	public void WindowShouldNotBeShowingDuringLoadComplete() => Async(async () =>
+	public void WindowShouldNotBeShowingDuringLoadComplete() => Async(-1, async () =>
 	{
 		bool? loadComplete = null;
 		bool? shown = null;

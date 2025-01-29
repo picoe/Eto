@@ -148,7 +148,10 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				if (Control.ItemsSource is EtoGridCollectionView collectionView)
+				{
 					collectionView.Unregister();
+					Control.ItemsSource = null;
+				}
 
 				controller.InitializeItems(value);
 

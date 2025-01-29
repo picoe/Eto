@@ -60,12 +60,13 @@ namespace Eto.Test.UnitTests
     [SetUpFixture]
     public class EtoTestSetup
     {
-		static bool _quit;
+		static bool _initialized;
+		static bool _appWasCreated;
 		
 		/// <summary>
 		/// Timeout for application initialization
 		/// </summary>
-		protected const int ApplicationTimeout = 10000;
+		protected const int ApplicationTimeout = 2000;
 
 		/// <summary>
 		/// initializes the application when running unit tests directly through the IDE or NUnit gui.
@@ -73,6 +74,8 @@ namespace Eto.Test.UnitTests
 		/// </summary>
 		public static void Initialize()
 		{
+			if (_initialized)
+				return;
 			var platform = Platform.Instance;
 			if (platform == null)
 			{
@@ -129,7 +132,7 @@ namespace Eto.Test.UnitTests
 				{
 					var ev = new ManualResetEvent(false);
 					Exception exception = null;
-					var thread = new Thread(() => 
+					var thread = new Thread(() =>
 					{
 						try
 						{
@@ -149,18 +152,24 @@ namespace Eto.Test.UnitTests
 							exception = ex;
 							ev.Set();
 						}
-					});
-#if WINDOWS
+					}
+					);
+
+#pragma warning disable CA1416 // Validate platform compatibility
 					if (EtoEnvironment.Platform.IsWindows)
 						thread.SetApartmentState(ApartmentState.STA);
-#endif
+#pragma warning restore CA1416 // Validate platform compatibility
+
 					thread.Start();
 					if (!ev.WaitOne(ApplicationTimeout))
 						Assert.Fail("Could not initialize application");
+
+					_appWasCreated = true;
 					if (exception != null)
 						ExceptionDispatchInfo.Capture(exception).Throw();
 				}
 			}
+			_initialized = true;
 		}
 		
         [OneTimeSetUp]
@@ -172,7 +181,8 @@ namespace Eto.Test.UnitTests
         [OneTimeTearDown]
         public void GlobalTeardown()
         {
-			_quit = true;
+			if (!_appWasCreated)
+				return;
 			Application.Instance?.AsyncInvoke(() =>
 			{
 				Application.Instance?.Quit();
@@ -220,13 +230,17 @@ namespace Eto.Test.UnitTests
 		/// <param name="timeout">Timeout to wait for the operation to complete</param>
 		public static void Run(Action<Application, Action> test, int timeout = DefaultTimeout)
 		{
+			var evStart = new ManualResetEvent(false);
 			var ev = new ManualResetEvent(false);
 			var application = Application;
 			Exception exception = null;
-			Action finished = () => ev.Set();
 			var context = TestExecutionContext.CurrentContext;
-			Action run = () =>
+			
+			void finished() => ev.Set();
+			
+			void run()
 			{
+				evStart.Set();
 				try
 				{
 					context.EstablishExecutionEnvironment();
@@ -237,16 +251,19 @@ namespace Eto.Test.UnitTests
 					exception = ex;
 					ev.Set();
 				}
-			};
+			}
+
 			if (application != null)
 				application.AsyncInvoke(run);
 			else
 				run();
+				
+			if (!evStart.WaitOne(DefaultTimeout))
+				Assert.Fail("Could not start test in time");
 
 			if (!ev.WaitOne(timeout))
-			{
 				Assert.Fail("Test did not complete in time");
-			}
+
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
@@ -324,12 +341,16 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
-		public static void Async(Func<Task> test)
+		public static void Async(Func<Task> test) => Async(DefaultTimeout, test);
+		
+		public static void Async(int timeout, Func<Task> test)
 		{
 			Exception exception = null;
+			var mreStart = new ManualResetEvent(false);
 			var mre = new ManualResetEvent(false);
-			Application.Instance.Invoke(async () =>
+			Application.Instance.AsyncInvoke(async () =>
 			{
+				mreStart.Set();
 				try
 				{
 					await test();
@@ -343,7 +364,16 @@ namespace Eto.Test.UnitTests
 					mre.Set();
 				}
 			});
-			mre.WaitOne();
+			if (!mreStart.WaitOne(DefaultTimeout))
+			{
+				Assert.Fail("Could not start test in time");
+				return;
+			}
+			if (!mre.WaitOne(timeout))
+			{
+				Assert.Fail("Test did not complete in time");
+				return;
+			}
 			if (exception != null)
 			{
 				ExceptionDispatchInfo.Capture(exception).Throw();
