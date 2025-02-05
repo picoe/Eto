@@ -33,54 +33,36 @@ namespace Eto.Mac.Forms
      where TWidget: FileDialog
 	{
 		List<string> macfilters;
-		readonly NSPopUpButton fileTypes;
+		readonly DropDown fileTypes;
 
 		protected MacFileDialog()
 		{
-			fileTypes = new NSPopUpButton();
+			fileTypes = new DropDown();
+			fileTypes.SelectedIndexChanged += (sender, e) => OnFileTypeChanged();
 		}
 
 		void Create()
 		{
-			if (Control.AccessoryView != null)
-				return;
-
-			var fileTypeView = new NSView();
-			fileTypeView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-			
-			const int padding = 15;
-			
 			if (Widget.Filters.Count > 0)
 			{
-				var label = new NSTextField();
-				label.StringValue = "Format";
-				label.DrawsBackground = false;
-				label.Bordered = false;
-				label.Bezeled = false;
-				label.Editable = false;
-				label.Selectable = false;
-				label.SizeToFit();
-				fileTypeView.AddSubview(label);
+				if (Control.AccessoryView != null)
+					return;
 
-				fileTypes.SizeToFit();
-				fileTypes.Activated += (sender, e) =>
-				{
-					SetCurrentItem();
-					Control.ValidateVisibleColumns();
-					Control.Update();
-				};
-				fileTypeView.AddSubview(fileTypes);
-				fileTypes.SetFrameOrigin(new CGPoint((nfloat)label.Frame.Width + 10, padding));
-	
-				label.SetFrameOrigin(new CGPoint(0, (nfloat)(padding + (fileTypes.Frame.Height - label.Frame.Height) / 2)));
-				
-				fileTypeView.Frame = new CGRect(0, 0, (nfloat)(fileTypes.Frame.Width + label.Frame.Width + 10), (nfloat)(fileTypes.Frame.Height + padding * 2));
-				
-				Control.AccessoryView = fileTypeView;
-				SetCurrentItem();
+				var layout = new TableLayout { Padding = 15, Spacing = new Size(2, 2) };
+				layout.Rows.Add(new TableRow(null, fileTypes, null));
+
+				Control.AccessoryView = layout.ToNative(true);
+				SetAllowedFileTypes();
 			}
 			else
 				Control.AccessoryView = null;
+		}
+
+		protected virtual void OnFileTypeChanged()
+		{
+			SetAllowedFileTypes();
+			Control.ValidateVisibleColumns();
+			Control.Update();
 		}
 
 		string fileName;
@@ -93,7 +75,7 @@ namespace Eto.Mac.Forms
 
 		public Uri Directory
 		{
-			get => new Uri(Control.DirectoryUrl.AbsoluteString);
+			get => (Uri)Control.DirectoryUrl;
 			set => Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
 		}
 
@@ -111,44 +93,38 @@ namespace Eto.Mac.Forms
 			return null;
 		}
 
-		public List<string> MacFilters
-		{
-			get { return macfilters; }
-		}
+		public List<string> MacFilters => macfilters;
 
-		public void SetCurrentItem()
+		internal void SetAllowedFileTypes()
 		{
-			macfilters = Widget.CurrentFilter.Extensions?.Select(r => r.TrimStart('*', '.')).ToList();
-
-			if (macfilters == null || macfilters.Count == 0 || macfilters.Contains(""))
+			var filters = Widget.CurrentFilter?.Extensions?.Select(r => r.TrimStart('*', '.')).ToList();
+			if (filters != null && (filters.Count == 0 || filters.Contains("")))
 			{
-				macfilters = null;
-				// MacOS throws exception when setting to null (ugh)
-				Messaging.void_objc_msgSend_IntPtr(Control.Handle, Selector.GetHandle("setAllowedFileTypes:"), IntPtr.Zero);
+				filters = null;
 			}
-			else
-				Control.AllowedFileTypes = macfilters.Distinct().ToArray();
+			
+			if (macfilters == filters)
+				return;
+			macfilters = filters;
+
+#if MACOS_NET
+			Control.AllowedContentTypes = macfilters.Distinct().Select(UniformTypeIdentifiers.UTType.CreateFromExtension).ToArray()
+				?? Array.Empty<UniformTypeIdentifiers.UTType>();
+#else			
+
+			Control.AllowedFileTypes = macfilters?.Distinct().ToArray();
+#endif
 		}
 
 		public int CurrentFilterIndex
 		{
-			get
-			{ 
-				var title = fileTypes.TitleOfSelectedItem;
-				var item = Widget.Filters.FirstOrDefault(r => r.Name == title);
-				if (item == null)
-					return -1;
-				return Widget.Filters.IndexOf(item);
-			}
-			set
-			{ 
-				fileTypes.SelectItem(Widget.Filters[value].Name);
-			}
+			get => fileTypes.SelectedIndex;
+			set => fileTypes.SelectedIndex = value;
 		}
 
 		public bool CheckFileExists
 		{
-			get { return false; }
+			get { return true; }
 			set { }
 		}
 
@@ -172,24 +148,21 @@ namespace Eto.Mac.Forms
 			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
 		}
 
-		protected override void Dispose(bool disposing)
-		{
-			//base.Dispose (disposing);
-		}
-
 		public void InsertFilter(int index, FileFilter filter)
 		{
-			fileTypes.InsertItem(filter.Name, index);
+			fileTypes.Items.Insert(index, new ListItem { Text = filter.Name } );
+			if (fileTypes.SelectedIndex == -1)
+				fileTypes.SelectedIndex = index;
 		}
 
 		public void RemoveFilter(int index)
 		{
-			fileTypes.RemoveItem(index);
+			fileTypes.Items.RemoveAt(index);
 		}
 
 		public void ClearFilters()
 		{
-			fileTypes.RemoveAllItems();
+			fileTypes.Items.Clear();
 		}
 	}
 }

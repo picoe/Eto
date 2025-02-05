@@ -6,11 +6,14 @@
 
 		public DialogResult ShowDialog(Window parent)
 		{
-			Control = new NSOpenPanel();
-			Control.ReleasedWhenClosed = true;
-			Control.DirectoryUrl = new NSUrl("/Applications");
-			Control.Prompt = "Choose Application";
+			Control = NSOpenPanel.OpenPanel;
+			Control.DirectoryUrl = NSUrl.FromFilename("/Applications");
+			Control.Prompt = Application.Instance.Localize(Widget, "Choose Application");
+#if MACOS_NET
+			Control.AllowedContentTypes = new [] { UniformTypeIdentifiers.UTTypes.Application };
+#else
 			Control.AllowedFileTypes = new[] { "app" };
+#endif
 
 			if (Control.RunModal() == 1)
 				Process.Start("open", "-a \"" + Control.Url.Path +  "\" \"" + FilePath + "\"");

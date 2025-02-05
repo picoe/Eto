@@ -8,8 +8,6 @@ namespace Eto.Mac.Forms
 			return NSOpenPanel.OpenPanel;
 		}
 
-		protected override bool DisposeControl { get { return false; } }
-
 		public bool MultiSelect
 		{
 			get { return Control.AllowsMultipleSelection; }

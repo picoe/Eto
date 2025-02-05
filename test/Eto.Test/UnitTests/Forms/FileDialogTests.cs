@@ -10,6 +10,19 @@ namespace Eto.Test.UnitTests.Forms
 	[TestFixture]
 	public class SaveFileDialogTests : FileDialogTests<SaveFileDialog>
 	{
+		[Test, ManualTest, InvokeOnUI]
+		public void FileNameShouldNotHaveDoubleExtension()
+		{
+			// this can only be replicated on macOS when the extension is unknown
+			// and we set the filename first
+			var fd = new SaveFileDialog();
+			fd.FileName = "NoDoubleExt.eto";
+			fd.Directory = new Uri(EtoEnvironment.GetFolderPath(EtoSpecialFolder.Downloads));
+			fd.Filters.Clear();
+			fd.Filters.Add(new FileFilter("ETO Files", ".eto"));
+			fd.Filters.Add(new FileFilter("Text Files", ".txt"));
+			fd.ShowDialog(null);
+		}
 	}
 
 	public class FileDialogTests<T> : TestBase
