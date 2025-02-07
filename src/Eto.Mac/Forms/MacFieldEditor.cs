@@ -148,18 +148,17 @@ namespace Eto.Mac.Forms
 			return base.ResignFirstResponder();
 		}
 
-		public override void InsertText(NSObject insertString)
+		public override void InsertText(NSObject text, NSRange replacementRange)
 		{
 			var handler = Handler as IMacViewHandler;
-			if (handler != null && insertString is NSString text)
+			if (handler != null && text is NSString str)
 			{
-				var args = new TextInputEventArgs(text);
+				var args = new TextInputEventArgs(str);
 				handler.Callback.OnTextInput(handler.Widget, args);
 				if (args.Cancel)
 					return;
 			}
-
-			base.InsertText(insertString);
+			base.InsertText(text, replacementRange);
 		}
 	}
 }

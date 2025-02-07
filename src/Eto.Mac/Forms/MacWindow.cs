@@ -259,7 +259,7 @@ namespace Eto.Mac.Forms
 			set => Control.MovableByWindowBackground = value;
 		}
 
-		protected override Color DefaultBackgroundColor => NSColor.WindowBackground.ToEtoWithAppearance(false);
+		protected override Color DefaultBackgroundColor => NSColor.WindowBackground.ToEtoWithAppearance();
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -545,7 +545,9 @@ namespace Eto.Mac.Forms
 				Control.ContentView.AddConstraint(NSLayoutConstraint.Create(Control.ContentView, NSLayoutAttribute.Leading, NSLayoutRelation.Equal, Control.ContentView, NSLayoutAttribute.Leading, 1, 0));
 			}
 
+#if Mac64
 			Control.ReleasedWhenClosed = false;
+#endif
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
 			Control.AutorecalculatesKeyViewLoop = true;

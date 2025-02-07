@@ -176,7 +176,7 @@ namespace Eto.Mac.Forms.Controls
 			if (cell != null)
 			{
 				cell.BetterBackgroundColor = color?.ToNSUI();
-				Control.SetNeedsDisplay();
+				Control.NeedsDisplay = true;
 			}
 			else
 				base.SetBackgroundColor(color);
@@ -280,7 +280,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				((EtoLabelFieldCell)Control.Cell).VerticalAlignment = value;
-				Control.SetNeedsDisplay();
+				Control.NeedsDisplay = true;
 			}
 		}
 

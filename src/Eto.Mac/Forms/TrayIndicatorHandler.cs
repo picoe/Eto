@@ -13,7 +13,7 @@
 			{
 				title = value;
 				if (Control != null)
-					Control.ToolTip = value ?? string.Empty;
+					Control.Button.ToolTip = value ?? string.Empty;
 			}
 		}
 
@@ -24,7 +24,6 @@
 			[Export("activate")]
 			public void Activate() => Handler?.Callback.OnActivated(Handler.Widget, EventArgs.Empty);
 		}
-		static Selector s_ButtonSelector = new Selector("button");
 
 		public bool Visible
 		{
@@ -38,18 +37,8 @@
 						Control = NSStatusBar.SystemStatusBar.CreateStatusItem(NSStatusItemLength.Variable);
 						Control.Menu = menu.ToNS();
 
-						if (Control.RespondsToSelector(s_ButtonSelector))
-						{
-							Control.Button.Image = image.ToNS((int)Math.Ceiling(NSStatusBar.SystemStatusBar.Thickness));
-							Control.Button.Activated += Button_Activated;
-						}
-						else
-						{
-							Control.Image = image.ToNS((int)Math.Ceiling(NSStatusBar.SystemStatusBar.Thickness));
-							Control.Action = new Selector("activate");
-							Control.Target = new TrayAction { Handler = this };
-						}
-						Control.ToolTip = title ?? string.Empty; // deprecated in 10.10.  Move to Button when we remove support for < 10.10
+						Control.Button.Image = image.ToNS((int)Math.Ceiling(NSStatusBar.SystemStatusBar.Thickness));
+						Control.Button.Activated += Button_Activated;
 
 					}
 				}
@@ -69,10 +58,7 @@
 				image = value;
 				if (Control != null)
 				{
-					if (Control.RespondsToSelector(s_ButtonSelector))
-						Control.Button.Image = value.ToNS((int)Math.Ceiling(NSStatusBar.SystemStatusBar.Thickness));
-					else 
-						Control.Image = value.ToNS((int)Math.Ceiling(NSStatusBar.SystemStatusBar.Thickness));
+					Control.Button.Image = value.ToNS((int)Math.Ceiling(NSStatusBar.SystemStatusBar.Thickness));
 				}
 			}
 		}

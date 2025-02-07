@@ -197,7 +197,7 @@ namespace Eto.Mac.Forms.Cells
 			}
 
 			SetDefaults(view);
-			var formatArgs = new MacCellFormatArgs(ColumnHandler.Widget, item, row, view);
+			var formatArgs = new MacGridCellFormatEventArgs(ColumnHandler.Widget, item, row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(formatArgs);
 			Callback.OnConfigureCell(Widget, view.Args, view.EtoControl);
 			return view;

@@ -205,7 +205,7 @@ namespace Eto.Mac.Forms.Cells
 				view.Bind(enabledBinding, tableColumn, "editable", null);
 			}
 			SetDefaults(view);
-			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			var args = new MacGridCellFormatEventArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;
 		}

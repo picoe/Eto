@@ -1246,7 +1246,7 @@ namespace Eto.Mac.Forms
 			pt.Y = mainFrame.Height - pt.Y;
 			var window = view.Window ?? NSApplication.SharedApplication.CurrentEvent?.Window;
 			if (window != null)
-				pt = window.ConvertScreenToBase(pt);
+				pt = window.ConvertPointFromScreen(pt);
 
 			pt = view.ConvertPointFromView(pt, null);
 			if (!view.IsFlipped)
@@ -1265,7 +1265,7 @@ namespace Eto.Mac.Forms
 			pt = view.ConvertPointToView(pt, null);
 			var window = view.Window ?? NSApplication.SharedApplication.CurrentEvent?.Window;
 			if (window != null)
-				pt = window.ConvertBaseToScreen(pt);
+				pt = window.ConvertPointToScreen(pt);
 
 			var mainFrame = NSScreen.Screens[0].Frame;
 			pt.Y = mainFrame.Height - pt.Y;

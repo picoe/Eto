@@ -112,14 +112,6 @@ namespace Eto.Mac
 			AddTo(this);
 		}
 
-		/// <summary>
-		/// Use the older WebView handler. Useful if you need it for compatibility.
-		/// </summary>
-		public void UseWebView()
-		{
-			Add<WebView.IHandler>(() => new WebViewHandler());
-		}
-
 		public static void AddTo(Eto.Platform p)
 		{
 			// Drawing

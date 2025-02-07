@@ -91,19 +91,19 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	class MacCellFormatArgs : GridCellFormatEventArgs
+	public class MacGridCellFormatEventArgs : GridCellFormatEventArgs
 	{
 		public ICellHandler CellHandler { get { return Column.DataCell.Handler as ICellHandler; } }
 
 		public NSView View { get; private set; }
 
-		public MacCellFormatArgs(GridColumn column, object item, int row, NSView view)
+		public MacGridCellFormatEventArgs(GridColumn column, object item, int row, NSView view)
 			: base(column, item, row)
 		{
 			View = view;
 		}
 
-		public bool FontSet { get; set; }
+		public bool FontSet { get; private set; }
 
 		Font font;
 
@@ -121,25 +121,58 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public bool BackgroundColorSet { get; private set; }
+
 		public override Color BackgroundColor
 		{
 			get { return CellHandler.GetBackgroundColor(View); }
-			set { CellHandler.SetBackgroundColor(View, value); }
+			set
+			{
+				CellHandler.SetBackgroundColor(View, value);
+				BackgroundColorSet = true;
+			}
 		}
+		
+		public bool ForegroundColorSet { get; private set; }
 
 		public override Color ForegroundColor
 		{
 			get { return CellHandler.GetForegroundColor(View); }
-			set { CellHandler.SetForegroundColor(View, value); }
+			set
+			{
+				CellHandler.SetForegroundColor(View, value);
+				ForegroundColorSet = true;
+			}
 		}
 	}
 
+	public class MacGridRowFormatEventArgs : GridRowFormatEventArgs
+	{
+		NSTableRowView _rowView;
+		public MacGridRowFormatEventArgs(NSTableRowView rowView, object item, int row) : base(item, row)
+		{
+			_rowView = rowView;
+		}
+		
+		public bool BackgroundColorSet { get; private set; }
+
+		public override Color BackgroundColor
+		{
+			get => _rowView.BackgroundColor.ToEto();
+			set
+			{
+				_rowView.BackgroundColor = value.ToNSUI();
+				BackgroundColorSet = true;
+			}
+		}
+	}
+	
 	class GridDragInfo
 	{
 		public NSDragOperation AllowedOperation { get; set; }
 		public NSImage DragImage { get; set; }
 		public PointF ImageOffset { get; set; }
-		
+
 		public DataObject Data { get; set; }
 
 		public CGPoint GetDragImageOffset()
@@ -695,7 +728,7 @@ namespace Eto.Mac.Forms.Controls
 		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
 			var tooltipBinding = args.Column?.CellToolTipBinding;
-			if (tooltipBinding != null && args is MacCellFormatArgs macargs && macargs.View != null)
+			if (tooltipBinding != null && args is MacGridCellFormatEventArgs macargs && macargs.View != null)
 				macargs.View.ToolTip = tooltipBinding.GetValue(args.Item) ?? string.Empty;
 			
 			Callback.OnCellFormatting(Widget, args);
@@ -962,25 +995,10 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class RowFormatEventArgs : GridRowFormatEventArgs
-		{
-			NSTableRowView _rowView;
-			public RowFormatEventArgs(NSTableRowView rowView, object item, int row) : base(item, row)
-			{
-				_rowView = rowView;
-			}
-
-			public override Color BackgroundColor
-			{
-				get => _rowView.BackgroundColor.ToEto();
-				set => _rowView.BackgroundColor = value.ToNSUI();
-			}
-		}
-
 		protected virtual void OnDidAddRowView(NSTableRowView rowView, nint row)
 		{
 			var item = GetItem((int)row);
-			Callback.OnRowFormatting(Widget, new RowFormatEventArgs(rowView, item, (int)row));
+			Callback.OnRowFormatting(Widget, new MacGridRowFormatEventArgs(rowView, item, (int)row));
 		}
 	}
 }

@@ -78,14 +78,7 @@ namespace Eto.Test.Mac.UnitTests
 		{
 			if (grid.ControlObject is NSTableView tableView)
 			{
-				if (ObjCExtensions.InstancesRespondToSelector<NSTableView>(Selector.GetHandle("style")))
-					tableView.Style = style;
-				else
-				{
-					// macos 10.15 and older
-					if (style == NSTableViewStyle.SourceList)
-						tableView.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
-				}
+				tableView.Style = style;
 				if (intercellSpacing >= 0)
 					tableView.IntercellSpacing = new CGSize(intercellSpacing, 2);
 			}

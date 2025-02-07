@@ -516,7 +516,7 @@ namespace Eto.Mac.Forms.Controls
 			if (Control.Cell is EtoSegmentedCell cell)
 			{
 				cell.BackgroundColor = color;
-				Control.SetNeedsDisplay();
+				Control.NeedsDisplay = true;
 			}
 		}
 	}

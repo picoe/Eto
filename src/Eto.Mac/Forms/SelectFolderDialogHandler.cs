@@ -4,7 +4,7 @@ namespace Eto.Mac.Forms
 	{
 		protected override NSOpenPanel CreateControl()
 		{
-			return new NSOpenPanel();
+			return NSOpenPanel.OpenPanel;
 		}
 
 		protected override void Initialize()

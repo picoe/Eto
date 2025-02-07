@@ -107,7 +107,7 @@ namespace Eto.Mac.Forms.Menu
 				{
 					var keyWindow = NSApplication.SharedApplication.KeyWindow;
 					var mouseLocation = NSEvent.CurrentMouseLocation;
-					mouseLocation = keyWindow.ConvertScreenToBase(mouseLocation);
+					mouseLocation = keyWindow.ConvertPointFromScreen(mouseLocation);
 
 					var time = DateTime.Now.ToOADate();
 					var windowNumber = keyWindow.WindowNumber;

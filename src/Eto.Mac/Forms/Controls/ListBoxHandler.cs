@@ -297,7 +297,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{ 
 				cell.TextColor = value.ToNSUI();
-				Control.SetNeedsDisplay();
+				Control.NeedsDisplay = true;
 			}
 		}
 

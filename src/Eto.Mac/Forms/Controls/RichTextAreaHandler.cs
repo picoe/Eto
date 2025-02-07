@@ -175,13 +175,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color SelectionForeground
 		{
-			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.ForegroundColor).ToEto(false); }
+			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.ForegroundColor).ToEto(); }
 			set { SetSelectedAttribute(NSStringAttributeKey.ForegroundColor, value.ToNSUI()); }
 		}
 
 		public Color SelectionBackground
 		{
-			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.BackgroundColor).ToEto(false); }
+			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.BackgroundColor).ToEto(); }
 			set { SetSelectedAttribute(NSStringAttributeKey.BackgroundColor, value.ToNSUI()); }
 		}
 

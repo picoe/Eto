@@ -28,12 +28,12 @@ namespace Eto.Mac
 				: NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
 		}
 
-		public static Color ToEtoWithAppearance(this NSColor color, bool calibrated = true)
+		public static Color ToEtoWithAppearance(this NSColor color)
 		{
 			if (color == null)
 				return Colors.Transparent;
 			if (!MacVersion.IsAtLeast(10, 9))
-				return color.ToEto(calibrated);
+				return color.ToEto();
 
 			// use the current appearance to get the proper RGB values (it can be different than when the application started).
 			NSAppearance saved = NSAppearance.CurrentAppearance;
@@ -41,22 +41,23 @@ namespace Eto.Mac
 			if (appearance != null)
 				NSAppearance.CurrentAppearance = appearance;
 
-			var result = color.ToEto(calibrated);
+			var result = color.ToEto();
 			NSAppearance.CurrentAppearance = saved;
 			return result;
 		}
 
-		public static Color ToEto(this NSColor color, bool calibrated = false)
+		public static Color ToEto(this NSColor color)
 		{
 			if (color == null)
 				return Colors.Transparent;
 
-			var colorspace = calibrated ? NSColorSpace.CalibratedRGB : NSColorSpace.DeviceRGB;
-			var converted = color.UsingColorSpaceFast(colorspace);
+			var colorspace = NSColorSpace.DeviceRGBColorSpace;
+			
+			var converted = color.UsingColorSpace(colorspace);
 			if (converted == null)
 			{
 				// Convert named (e.g. system) colors to RGB using its CGColor
-				converted = color.ToCG().ToNS().UsingColorSpaceFast(colorspace);
+				converted = color.ToCG().ToNS().UsingColorSpace(colorspace);
 
 				if (converted == null)
 					return new Color(color, 0, 0, 0, 1f);

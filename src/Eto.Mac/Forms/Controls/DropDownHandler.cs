@@ -278,7 +278,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value != TextColor)
 				{
 					((EtoPopUpButtonCell)Control.Cell).TextColor = value;
-					Control.SetNeedsDisplay();
+					Control.NeedsDisplay = true;
 				}
 			}
 		}
