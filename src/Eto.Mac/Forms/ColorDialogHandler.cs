@@ -152,7 +152,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void OnColorChanged()
 		{
-			_color = Control.Color.UsingColorSpace(NSColorSpace.DeviceRGB).ToEto(false);
+			_color = Control.Color.UsingColorSpace(NSColorSpace.DeviceRGB).ToEto();
 			if (_color == _lastColor)
 				return;
 			_lastColor = _color;

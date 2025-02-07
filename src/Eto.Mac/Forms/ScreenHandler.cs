@@ -9,24 +9,9 @@ namespace Eto.Mac.Forms
 			this.Control = screen;
 		}
 
-		static readonly Selector selBackingScaleFactor = new Selector ("backingScaleFactor");
+		public float RealScale => (float)Control.BackingScaleFactor;
 
-#pragma warning disable 612, 618
-		public float RealScale
-		{
-			get
-			{
-				if (Control.RespondsToSelector(selBackingScaleFactor))
-					return (float)Control.BackingScaleFactor;
-				return (float)Control.UserSpaceScaleFactor;
-			}
-		}
-#pragma warning restore 612, 618
-
-		public float Scale
-		{
-			get { return 1f; }
-		}
+		public float Scale => 1f;
 
 		public RectangleF Bounds
 		{

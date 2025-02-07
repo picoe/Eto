@@ -48,21 +48,12 @@ namespace Eto.Mac.Forms.Cells
 
 		public class EtoButton : NSButton
 		{
-			public event EventHandler Focussed;
-
 			public EtoButton()
 			{
 			}
 			public EtoButton(IntPtr handle)
 				: base(handle)
 			{
-			}
-
-			public override void LockFocus()
-			{
-				base.LockFocus();
-				if (Focussed != null)
-					Focussed(this, EventArgs.Empty);
 			}
 		}
 
@@ -124,7 +115,7 @@ namespace Eto.Mac.Forms.Cells
 			view.Tag = row;
 			view.Item = obj;
 			SetDefaults(view);
-			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			var args = new MacGridCellFormatEventArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;
 		}

@@ -59,7 +59,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color Color
 		{
-			get { return Control.Color.ToEto(false); }
+			get { return Control.Color.ToEto(); }
 			set { Control.Color = value.ToNSUI(); }
 		}
 

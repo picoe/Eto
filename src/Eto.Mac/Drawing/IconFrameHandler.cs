@@ -71,6 +71,7 @@ namespace Eto.Mac.Drawing
 				}
 			}
 
+#pragma warning disable CA1422 // Validate platform compatibility
 			public override string ColorSpaceName
 			{
 				get
@@ -82,6 +83,7 @@ namespace Eto.Mac.Drawing
 					Rep.ColorSpaceName = value;
 				}
 			}
+#pragma warning restore CA1422 // Validate platform compatibility
 
 			public override CGSize Size
 			{

@@ -115,11 +115,15 @@ namespace Eto.Mac.Forms
 			var args = new string[]
 			{
 				"-c",
-				"open \"$1\"", 
+				"open \"$1\"",
 				string.Empty,
 				NSBundle.MainBundle.BundlePath
 			};
+#if ( MACOS10_15_OR_GREATER && NET8_0_OR_GREATER ) || MONOMAC
+			NSTask.LaunchFromUrl(NSUrl.FromFilename("/bin/sh"), args, out var error, null);
+#else
 			NSTask.LaunchFromPath("/bin/sh", args);
+#endif
 		}
 
 		public void Invoke(Action action)

@@ -29,7 +29,9 @@ namespace Eto.Test.Mac.UnitTests
 			Invoke(() =>
 			{
 				var nswindow = new NSWindow(new CGRect(100, 100, 300, 300), NSWindowStyle.Titled, NSBackingStore.Buffered, false);
+#if Mac64
 				nswindow.ReleasedWhenClosed = false;
+#endif
 
 				var showDialog = new Button { Text = "Show Attached Dialog" };
 				showDialog.Click += (sender, e) =>

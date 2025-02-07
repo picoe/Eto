@@ -99,7 +99,7 @@ namespace Eto.Mac.Forms.Cells
 				view = new EtoImageView { Identifier = tableColumn.Identifier };
 			}
 			SetDefaults(view);
-			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			var args = new MacGridCellFormatEventArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;
 		}

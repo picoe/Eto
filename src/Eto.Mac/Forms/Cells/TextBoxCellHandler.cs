@@ -14,7 +14,7 @@ namespace Eto.Mac.Forms.Cells
 			field.ObjectValue = value as NSObject ?? new NSString(string.Empty);
 			
 			SetDefaults(field);
-			var args = new MacCellFormatArgs(ColumnHandler.Widget, dataItem, row, field);
+			var args = new MacGridCellFormatEventArgs(ColumnHandler.Widget, dataItem, row, field);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 
 			return field.Cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
@@ -190,7 +190,7 @@ namespace Eto.Mac.Forms.Cells
 			view.Item = obj;
 			view.Tag = row;
 			SetDefaults(view);
-			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			var args = new MacGridCellFormatEventArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;
 		}
