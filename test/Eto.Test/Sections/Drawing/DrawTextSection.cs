@@ -19,7 +19,9 @@ namespace Eto.Test.Sections.Drawing
 
 		Control Default()
 		{
-			var control = new Drawable { Size = new Size(400, 500), BackgroundColor = Colors.Black };
+			var control = new Drawable { Width = 400, BackgroundColor = Colors.Black };
+			var height = GetDrawInfo().Sum(r => r.Font.MeasureString(r.Text).Height);
+			control.Height = (int)height;
 			control.Paint += (sender, e) => DrawFrame(e.Graphics);
 			return control;
 		}
