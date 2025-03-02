@@ -127,7 +127,11 @@ namespace Eto.Mac.Forms
 
 				RunSession();
 
+#if MACOS_NET
+				parent.EndSheet(NativeWindow);
+#else
 				NSApplication.SharedApplication.EndSheet(NativeWindow);
+#endif
 				NativeWindow.OrderOut(NativeWindow);
 			}
 			while (ShouldRestart());
@@ -171,10 +175,12 @@ namespace Eto.Mac.Forms
 				if (window == null && parent.ControlObject is NSView)
 					window = ((NSView)parent.ControlObject).Window;
 				
-				if (window != null && view.RespondsToSelector(new Selector("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:")))
+				if (window != null)
 				{
-					// show attached as a sheet
-					view.BeginSheet(window, new MacModal(), new Selector("alertDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
+					view.BeginSheet(window, response =>
+					{
+						NSApplication.SharedApplication.StopModalWithCode((nint)response);
+					});
 				}
 			}
 			
@@ -219,7 +225,7 @@ namespace Eto.Mac.Forms
 			helper = new ModalEventArgs(window, theWindow, isSheet: true);
 			helper.StopAction = e =>
 			{
-				NSApplication.SharedApplication.EndSheet(e.NativeWindow);
+				parent.EndSheet(e.NativeWindow);
 				e.NativeWindow.OrderOut(e.NativeWindow);
 				NSApplication.SharedApplication.StopModal();
 				completed?.Invoke();

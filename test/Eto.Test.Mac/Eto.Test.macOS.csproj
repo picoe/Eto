@@ -12,7 +12,7 @@
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
     <DefineConstants>MACOS_NET</DefineConstants>
     <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
-    <NoWarn>CA1416</NoWarn>
+    <NoWarn>CA1416;CS8981</NoWarn>
 
     <TrimMode>partial</TrimMode>
   </PropertyGroup>
@@ -37,7 +37,7 @@
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.macOS.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit" Version="4.3.2" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestIcon.icns" />

@@ -1239,7 +1239,6 @@ namespace Eto.Test.Sections
 
 			if (showLog)
 			{
-				Size = new Size(950, 600);
 				log = new TextArea { Size = new Size(400, 300), ReadOnly = true, Wrap = false };
 
 				base.Content = new Splitter
@@ -1559,6 +1558,7 @@ namespace Eto.Test.Sections
 			public ITest Test { get; set; }
 			public Image Image { get; set; }
 			public ITestFilter Filter { get; set; }
+			public ITestResult Result { get; set; }
 		}
 
 		TreeGridItem ToTree(Assembly assembly, ITest test, ITestFilter filter, IDictionary<object, UnitTestItem> map)
@@ -1588,6 +1588,7 @@ namespace Eto.Test.Sections
 			{
 				Text = name,
 				Test = test,
+				Result = result,
 				Image = GetStateImage(result),
 				Filter = new SingleTestFilter { Test = test, Assembly = assembly }
 			};

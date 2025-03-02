@@ -152,7 +152,7 @@ public abstract class Container : Control, IBindableWidgetContainer
 	protected override void OnStyleChanged(EventArgs e)
 	{
 		base.OnStyleChanged(e);
-		if (Loaded && Handler.RecurseToChildren)
+		if (Loaded)
 		{
 			foreach (Control control in VisualControls)
 			{

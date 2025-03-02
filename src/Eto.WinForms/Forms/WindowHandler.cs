@@ -194,6 +194,8 @@ namespace Eto.WinForms.Forms
 			Control.Size = size;
 			content.MinimumSize = content.MaximumSize = sd.Size.Empty;
 			ContainerContentControl.MinimumSize = sd.Size.Empty;
+
+			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 		}
 
 		public override Size Size
@@ -223,7 +225,7 @@ namespace Eto.WinForms.Forms
 					availableSize.Width = 0;
 				if (!clientHeightSet)
 					availableSize.Height = 0;
-				contentSize = Size.Ceiling(Content.GetPreferredSize(availableSize));
+				contentSize = Size.Ceiling(Content?.GetPreferredSize(availableSize) ?? Size.Empty);
 			}
 		}
 		Size? contentSize;

@@ -15,7 +15,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				return TableLayout.AutoSized(groupBox);
 			}, c =>
 			{
-				Assert.AreEqual(new Size(200, 200), groupBox.Content.Size, "#1 Content Size should auto size to its desired size");
+				Assert.That(groupBox.Content.Size, Is.EqualTo(new Size(200, 200)), "#1 Content Size should auto size to its desired size");
 			});
 		}
 	}

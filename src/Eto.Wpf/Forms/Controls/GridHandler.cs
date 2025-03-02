@@ -47,7 +47,7 @@ namespace Eto.Wpf.Forms.Controls
 			Loaded += EtoDataGrid_Loaded;
 		}
 
-		private void EtoDataGrid_Loaded(object sender, sw.RoutedEventArgs e)
+				private void EtoDataGrid_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			var scp = this.FindChild<swc.ScrollContentPresenter>();
 			if (scp != null) scp.RequestBringIntoView += OnRequestBringIntoView;
@@ -146,7 +146,6 @@ namespace Eto.Wpf.Forms.Controls
 				EnableColumnVirtualization = true,
 				EnableRowVirtualization = true,
 			};
-			Control.SetResourceReference(swc.Control.BackgroundProperty, sw.SystemColors.WindowBrushKey);
 		}
 
 		protected ColumnCollection Columns { get; private set; }
@@ -847,7 +846,13 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control.CurrentColumn = null;
 			if (Control.Columns.Count > 0)
-				Control.CurrentCell = new swc.DataGridCellInfo(Control.SelectedItem, CurrentColumn ?? Control.CurrentColumn ?? Control.Columns[0]);
+			{
+				// ensure the saved column still exists in the grid, it could be removed by user logic
+				if (CurrentColumn != null && Control.Columns.Contains(CurrentColumn))
+					Control.CurrentCell = new swc.DataGridCellInfo(Control.SelectedItem, CurrentColumn);
+				else
+					Control.CurrentCell = new swc.DataGridCellInfo(Control.SelectedItem, Control.CurrentColumn ?? Control.Columns[0]);
+			}
 			CurrentColumn = null;
 		}
 

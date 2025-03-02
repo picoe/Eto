@@ -12,13 +12,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var ctl = new DocumentControl();
 				var child = new Panel { Size = new Size(100, 100) };
 				var page = new DocumentPage(child);
-				Assert.AreEqual(page, child.Parent, "#1");
+				Assert.That(child.Parent, Is.EqualTo(page), "#1");
 				ctl.Pages.Add(page);
-				Assert.AreEqual(page.Parent, ctl, "#2");
+				Assert.That(ctl, Is.EqualTo(page.Parent), "#2");
 				ctl.Pages.RemoveAt(0);
-				Assert.IsNull(page.Parent, "#3");
+				Assert.That(page.Parent, Is.Null, "#3");
 				page.Content = null;
-				Assert.IsNull(child.Parent, "#4");
+				Assert.That(child.Parent, Is.Null, "#4");
 			});
 		}
 
@@ -37,25 +37,25 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				child1 = new Panel { Size = new Size(100, 100) };
 				ctl.Pages.Add(page1 = new DocumentPage(child1) { Text = "Page 1" });
 
-				Assert.IsFalse(child1.Loaded, "#1");
+				Assert.That(child1.Loaded, Is.False, "#1");
 
 				child2 = new Panel { Size = new Size(100, 100) };
 				ctl.Pages.Add(page2 = new DocumentPage(child2));
 
-				Assert.IsFalse(child2.Loaded, "#2");
+				Assert.That(child2.Loaded, Is.False, "#2");
 				return ctl;
 			}, ctl =>
 			{
-				Assert.IsTrue(child1.Loaded, "#3");
+				Assert.That(child1.Loaded, Is.True, "#3");
 				page1.Content = new Panel();
-				Assert.IsFalse(child1.Loaded, "#4");
+				Assert.That(child1.Loaded, Is.False, "#4");
 
 				ctl.SelectedIndex = 1;
 
-				Assert.IsTrue(child2.Loaded, "#5");
+				Assert.That(child2.Loaded, Is.True, "#5");
 				ctl.Pages.RemoveAt(1);
-				Assert.IsFalse(child2.Loaded, "#6");
-				Assert.IsFalse(page2.Loaded, "#7");
+				Assert.That(child2.Loaded, Is.False, "#6");
+				Assert.That(page2.Loaded, Is.False, "#7");
 			});
 		}
 	}

@@ -33,7 +33,7 @@ namespace Eto.Mac.Forms.Cells
 
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
-			var args = new MacCellFormatArgs(ColumnHandler.Widget, dataItem, row, field);
+			var args = new MacGridCellFormatEventArgs(ColumnHandler.Widget, dataItem, row, field);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 
 			field.Font = args.Font.ToNS() ?? NSFont.BoldSystemFontOfSize(NSFont.SystemFontSize);
@@ -78,7 +78,7 @@ namespace Eto.Mac.Forms.Cells
 			}
 			
 			SetDefaults(view);
-			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			var args = new MacGridCellFormatEventArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;
 		}

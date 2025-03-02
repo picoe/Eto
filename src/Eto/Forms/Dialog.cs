@@ -213,10 +213,8 @@ public class Dialog : Window
 		{
 			OnPreLoad(EventArgs.Empty);
 			OnLoad(EventArgs.Empty);
-			OnLoadComplete(EventArgs.Empty);
+			Application.Instance.AddWindow(this);
 		}
-
-		Application.Instance.AddWindow(this);
 
 		Handler.ShowModal();
 	}
@@ -246,10 +244,8 @@ public class Dialog : Window
 		{
 			OnPreLoad(EventArgs.Empty);
 			OnLoad(EventArgs.Empty);
-			OnLoadComplete(EventArgs.Empty);
+			Application.Instance.AddWindow(this);
 		}
-
-		Application.Instance.AddWindow(this);
 
 		return Handler.ShowModalAsync();
 	}

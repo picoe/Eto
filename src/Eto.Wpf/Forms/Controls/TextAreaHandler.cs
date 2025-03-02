@@ -258,9 +258,33 @@ namespace Eto.Wpf.Forms.Controls
 
 		public abstract void ScrollTo(Range<int> range);
 
-		public virtual void ScrollToEnd() => Control.ScrollToEnd();
+		double GetScrollX() => Control.FlowDirection switch
+		{
+			sw.FlowDirection.RightToLeft => Control.HorizontalContentAlignment switch
+			{
+				sw.HorizontalAlignment.Right => 0,
+				sw.HorizontalAlignment.Center => (Control.ExtentWidth - Control.ViewportWidth) / 2,
+				_ => Control.ExtentWidth,
+			},
+			_ => Control.HorizontalContentAlignment switch
+			{
+				sw.HorizontalAlignment.Right => Control.ExtentWidth,
+				sw.HorizontalAlignment.Center => (Control.ExtentWidth - Control.ViewportWidth) / 2,
+				_ => 0,
+			},
+		};
 
-		public virtual void ScrollToStart() => Control.ScrollToHome();
+		public virtual void ScrollToEnd()
+		{
+			Control.ScrollToVerticalOffset(Control.ExtentHeight);
+			Control.ScrollToHorizontalOffset(GetScrollX());
+		}
+
+		public virtual void ScrollToStart()
+		{
+			Control.ScrollToVerticalOffset(0);
+			Control.ScrollToHorizontalOffset(GetScrollX());
+		}
 
 		public abstract int TextLength { get; }
 

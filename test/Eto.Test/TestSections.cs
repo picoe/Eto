@@ -35,11 +35,7 @@ namespace Eto.Test
 			{
 				foreach (var type in asm.ExportedTypes)
 				{
-					#if PCL
-					var section = type.GetTypeInfo().GetCustomAttribute<SectionAttribute>(false);
-					#else
 					var section = type.GetCustomAttribute<SectionAttribute>(false);
-					#endif
 					if (section != null)
 					{
 						if (section.Requires != null && !Platform.Instance.Supports(section.Requires))

@@ -22,38 +22,38 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			textArea.TextChanged += (sender, e) => textChanged++;
 			textArea.SelectionChanged += (sender, e) => selectionChanged++;
 			textArea.CaretIndexChanged += (sender, e) => caretChanged++;
-			Assert.AreEqual(Range.FromLength(0, 0), textArea.Selection, "#1");
+			Assert.That(textArea.Selection, Is.EqualTo(Range.FromLength(0, 0)), "#1");
 
 			textArea.Rtf = @"{\rtf1\ansi {Hello \ul Underline \i Italic \b Bold \strike Strike}}";
-			Assert.AreEqual(val = "Hello Underline Italic Bold Strike", textArea.Text.TrimEnd(), "#2-1");
-			Assert.AreEqual(Range.FromLength(val.Length, 0), textArea.Selection, "#2-2");
-			Assert.AreEqual(val.Length, textArea.CaretIndex, "#2-3");
-			Assert.AreEqual(1, textChanged, "#2-4");
-			Assert.AreEqual(1, selectionChanged, "#2-5");
-			Assert.AreEqual(1, caretChanged, "#2-6");
+			Assert.That(textArea.Text.TrimEnd(), Is.EqualTo(val = "Hello Underline Italic Bold Strike"), "#2-1");
+			Assert.That(textArea.Selection, Is.EqualTo(Range.FromLength(val.Length, 0)), "#2-2");
+			Assert.That(textArea.CaretIndex, Is.EqualTo(val.Length), "#2-3");
+			Assert.That(textChanged, Is.EqualTo(1), "#2-4");
+			Assert.That(selectionChanged, Is.EqualTo(1), "#2-5");
+			Assert.That(caretChanged, Is.EqualTo(1), "#2-6");
 
 			textArea.Selection = Range.FromLength(6, 5);
-			Assert.AreEqual(Range.FromLength(6, 5), textArea.Selection, "#3-1");
-			Assert.AreEqual(6, textArea.CaretIndex, "#3-2");
-			Assert.AreEqual(1, textChanged, "#3-3");
-			Assert.AreEqual(2, selectionChanged, "#3-4");
-			Assert.AreEqual(2, caretChanged, "#3-5");
+			Assert.That(textArea.Selection, Is.EqualTo(Range.FromLength(6, 5)), "#3-1");
+			Assert.That(textArea.CaretIndex, Is.EqualTo(6), "#3-2");
+			Assert.That(textChanged, Is.EqualTo(1), "#3-3");
+			Assert.That(selectionChanged, Is.EqualTo(2), "#3-4");
+			Assert.That(caretChanged, Is.EqualTo(2), "#3-5");
 
 			textArea.Rtf = @"{\rtf1\ansi {Some \b other \i text}}";
-			Assert.AreEqual(val = "Some other text", textArea.Text.TrimEnd(), "#4-1");
-			Assert.AreEqual(Range.FromLength(val.Length, 0), textArea.Selection, "#4-2");
-			Assert.AreEqual(val.Length, textArea.CaretIndex, "#4-3");
-			Assert.AreEqual(2, textChanged, "#4-4");
-			Assert.AreEqual(3, selectionChanged, "#4-5");
-			Assert.AreEqual(3, caretChanged, "#4-6");
+			Assert.That(textArea.Text.TrimEnd(), Is.EqualTo(val = "Some other text"), "#4-1");
+			Assert.That(textArea.Selection, Is.EqualTo(Range.FromLength(val.Length, 0)), "#4-2");
+			Assert.That(textArea.CaretIndex, Is.EqualTo(val.Length), "#4-3");
+			Assert.That(textChanged, Is.EqualTo(2), "#4-4");
+			Assert.That(selectionChanged, Is.EqualTo(3), "#4-5");
+			Assert.That(caretChanged, Is.EqualTo(3), "#4-6");
 		}
 
 		public static void TestSelectionAttributes(RichTextArea richText, string tag, bool italic = false, bool underline = false, bool bold = false, bool strikethrough = false)
 		{
-			Assert.AreEqual(italic, richText.SelectionItalic, tag + "-1");
-			Assert.AreEqual(underline, richText.SelectionUnderline, tag + "-2");
-			Assert.AreEqual(bold, richText.SelectionBold, tag + "-3");
-			Assert.AreEqual(strikethrough, richText.SelectionStrikethrough, tag + "-4");
+			Assert.That(richText.SelectionItalic, Is.EqualTo(italic), tag + "-1");
+			Assert.That(richText.SelectionUnderline, Is.EqualTo(underline), tag + "-2");
+			Assert.That(richText.SelectionBold, Is.EqualTo(bold), tag + "-3");
+			Assert.That(richText.SelectionStrikethrough, Is.EqualTo(strikethrough), tag + "-4");
 		}
 
 		[Test]
@@ -66,7 +66,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 			var richText = new RichTextArea();
 			richText.Rtf = @"{\rtf1\ansi {Hello \ul Underline \i Italic \b Bold \strike Strike}}";
-			Assert.AreEqual("Hello Underline Italic Bold Strike", richText.Text.TrimEnd(), "#1");
+			Assert.That(richText.Text.TrimEnd(), Is.EqualTo("Hello Underline Italic Bold Strike"), "#1");
 			richText.CaretIndex = 5;
 			TestSelectionAttributes(richText, "#2");
 			richText.CaretIndex = 7;
@@ -91,11 +91,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			{
 				// why does WPF always add a newline even when the content doesn't have a newline?
 				richText.Text = val = $"This is{nl}some text";
-				Assert.AreEqual(val, richText.Text, "#1");
+				Assert.That(richText.Text, Is.EqualTo(val), "#1");
 			}
 
 			richText.Text = val = $"This is{nl}some text{nl}";
-			Assert.AreEqual(val, richText.Text, "#2");
+			Assert.That(richText.Text, Is.EqualTo(val), "#2");
 		}
 
 		[Test]
@@ -108,15 +108,15 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			var text = "Hello\nThere\nThis is some text";
 
 			richText.Text = text;
-			Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+			Assert.That(richText.Text.TrimEnd(), Is.EqualTo(text), "#1");
 
 			richText.Selection = range = GetRange(text, "There");
-			Assert.AreEqual("There", richText.SelectedText, "#2.2");
-			Assert.AreEqual(range, richText.Selection, "#2.1");
+			Assert.That(richText.SelectedText, Is.EqualTo("There"), "#2.2");
+			Assert.That(richText.Selection, Is.EqualTo(range), "#2.1");
 
 			richText.Selection = range = GetRange(text, "is some text");
-			Assert.AreEqual("is some text", richText.SelectedText, "#3.2");
-			Assert.AreEqual(range, richText.Selection, "#3.1");
+			Assert.That(richText.SelectedText, Is.EqualTo("is some text"), "#3.2");
+			Assert.That(richText.Selection, Is.EqualTo(range), "#3.1");
 		}
 
 		public class FontVariantInfo
@@ -418,24 +418,24 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 			var richText = new RichTextArea();
 			richText.Text = text;
-			Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+			Assert.That(richText.Text.TrimEnd(), Is.EqualTo(text), "#1");
 
 			richText.Selection = GetRange(text, "Font Variant");
-			Assert.AreEqual("Font Variant", richText.SelectedText, "#2");
+			Assert.That(richText.SelectedText, Is.EqualTo("Font Variant"), "#2");
 
 			if (info.BaseTypeface != null)
 			{
 				// test base typeface (non-bold/italic)
 				richText.SelectionTypeface = info.BaseTypeface;
-				Assert.AreEqual(info.BaseTypeface.Name, richText.SelectionTypeface.Name, "#3.1");
-				Assert.AreEqual(info.BaseTypeface.Name, richText.SelectionFont.Typeface.Name, "#3.2");
+				Assert.That(richText.SelectionTypeface.Name, Is.EqualTo(info.BaseTypeface.Name), "#3.1");
+				Assert.That(richText.SelectionFont.Typeface.Name, Is.EqualTo(info.BaseTypeface.Name), "#3.2");
 			}
 			else
 			{
 				richText.SelectionTypeface = info.Typeface;
 			}
-			Assert.AreEqual(info.Family.Name, richText.SelectionFamily.Name, "#3.3");
-			Assert.AreEqual(info.Family.Name, richText.SelectionFont.FamilyName, "#3.4");
+			Assert.That(richText.SelectionFamily.Name, Is.EqualTo(info.Family.Name), "#3.3");
+			Assert.That(richText.SelectionFont.FamilyName, Is.EqualTo(info.Family.Name), "#3.4");
 
 			// setting these should not affect font name in RTF as it uses \b and \i to specify that
 			if (info.WithBold)
@@ -445,15 +445,15 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				richText.SelectionItalic = true;
 
 			// test it is using the right typeface
-			Assert.AreEqual(info.Typeface.Name, richText.SelectionTypeface.Name, "#4.1");
-			Assert.AreEqual(info.Typeface.Name, richText.SelectionFont.Typeface.Name, "#4.2");
+			Assert.That(richText.SelectionTypeface.Name, Is.EqualTo(info.Typeface.Name), "#4.1");
+			Assert.That(richText.SelectionFont.Typeface.Name, Is.EqualTo(info.Typeface.Name), "#4.2");
 
 			// ensure the generated RTF contains the correct font variant name
 			var rtf = richText.Rtf;
 			Console.WriteLine($"Generated RTF:");
 			Console.WriteLine(rtf);
 			var reg = $@"(?<={{\\fonttbl.*)\\f\d+[^}};]* ({info.RegexFontName});";
-			Assert.IsTrue(Regex.IsMatch(rtf, reg), $"#5 - Variant '{info}' does not exist in RTF:\n{rtf}");
+			Assert.That(Regex.IsMatch(rtf, reg), Is.True, $"#5 - Variant '{info}' does not exist in RTF:\n{rtf}");
 		}
 
 		/// <summary>
@@ -486,16 +486,16 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			var richText = new RichTextArea();
 			richText.Rtf = rtf;
 
-			Assert.AreEqual(text, richText.Text.TrimEnd(), "#1");
+			Assert.That(richText.Text.TrimEnd(), Is.EqualTo(text), "#1");
 
 			// select Font Variant text and ensure it is correctly set
 			richText.Selection = GetRange(text, "Font Variant");
-			Assert.AreEqual("Font Variant", richText.SelectedText, "#2");
+			Assert.That(richText.SelectedText, Is.EqualTo("Font Variant"), "#2");
 
-			Assert.AreEqual(info.Family.Name, richText.SelectionFamily.Name, "#3.1");
-			Assert.AreEqual(info.Family.Name, richText.SelectionFont.FamilyName, "#3.2");
-			Assert.AreEqual(info.Typeface.Name, richText.SelectionTypeface.Name, "#3.3");
-			Assert.AreEqual(info.Typeface.Name, richText.SelectionFont.Typeface.Name, "#3.4");
+			Assert.That(richText.SelectionFamily.Name, Is.EqualTo(info.Family.Name), "#3.1");
+			Assert.That(richText.SelectionFont.FamilyName, Is.EqualTo(info.Family.Name), "#3.2");
+			Assert.That(richText.SelectionTypeface.Name, Is.EqualTo(info.Typeface.Name), "#3.3");
+			Assert.That(richText.SelectionFont.Typeface.Name, Is.EqualTo(info.Typeface.Name), "#3.4");
 		}
 
 		[Test]
@@ -509,49 +509,49 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			string text = "This is some underline, strikethrough, bold, and italic text. This is green, background blue text.";
 
 			richText.Text = text;
-			Assert.AreEqual(1, textChangedCount);
+			Assert.That(textChangedCount, Is.EqualTo(1));
 
 			richText.Selection = GetRange(text, "underline");
 			richText.SelectionUnderline = true;
-			Assert.AreEqual(2, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionUnderline");
-			Assert.AreEqual(true, richText.SelectionUnderline);
-			Assert.AreEqual(false, richText.SelectionStrikethrough);
-			Assert.AreEqual(false, richText.SelectionBold);
-			Assert.AreEqual(false, richText.SelectionItalic);
+			Assert.That(textChangedCount, Is.EqualTo(2), "RichTextArea.TextChanged did not fire when setting SelectionUnderline");
+			Assert.That(richText.SelectionUnderline, Is.EqualTo(true));
+			Assert.That(richText.SelectionStrikethrough, Is.EqualTo(false));
+			Assert.That(richText.SelectionBold, Is.EqualTo(false));
+			Assert.That(richText.SelectionItalic, Is.EqualTo(false));
 
 			richText.Selection = GetRange(text, "strikethrough");
 			richText.SelectionStrikethrough = true;
-			Assert.AreEqual(3, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionStrikethrough");
-			Assert.AreEqual(false, richText.SelectionUnderline);
-			Assert.AreEqual(true, richText.SelectionStrikethrough);
-			Assert.AreEqual(false, richText.SelectionBold);
-			Assert.AreEqual(false, richText.SelectionItalic);
+			Assert.That(textChangedCount, Is.EqualTo(3), "RichTextArea.TextChanged did not fire when setting SelectionStrikethrough");
+			Assert.That(richText.SelectionUnderline, Is.EqualTo(false));
+			Assert.That(richText.SelectionStrikethrough, Is.EqualTo(true));
+			Assert.That(richText.SelectionBold, Is.EqualTo(false));
+			Assert.That(richText.SelectionItalic, Is.EqualTo(false));
 
 			richText.Selection = GetRange(text, "bold");
 			richText.SelectionBold = true;
-			Assert.AreEqual(4, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBold");
-			Assert.AreEqual(false, richText.SelectionUnderline);
-			Assert.AreEqual(false, richText.SelectionStrikethrough);
-			Assert.AreEqual(true, richText.SelectionBold);
-			Assert.AreEqual(false, richText.SelectionItalic);
+			Assert.That(textChangedCount, Is.EqualTo(4), "RichTextArea.TextChanged did not fire when setting SelectionBold");
+			Assert.That(richText.SelectionUnderline, Is.EqualTo(false));
+			Assert.That(richText.SelectionStrikethrough, Is.EqualTo(false));
+			Assert.That(richText.SelectionBold, Is.EqualTo(true));
+			Assert.That(richText.SelectionItalic, Is.EqualTo(false));
 
 			richText.Selection = GetRange(text, "italic");
 			richText.SelectionItalic = true;
-			Assert.AreEqual(5, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionItalic");
-			Assert.AreEqual(false, richText.SelectionUnderline);
-			Assert.AreEqual(false, richText.SelectionStrikethrough);
-			Assert.AreEqual(false, richText.SelectionBold);
-			Assert.AreEqual(true, richText.SelectionItalic);
+			Assert.That(textChangedCount, Is.EqualTo(5), "RichTextArea.TextChanged did not fire when setting SelectionItalic");
+			Assert.That(richText.SelectionUnderline, Is.EqualTo(false));
+			Assert.That(richText.SelectionStrikethrough, Is.EqualTo(false));
+			Assert.That(richText.SelectionBold, Is.EqualTo(false));
+			Assert.That(richText.SelectionItalic, Is.EqualTo(true));
 
 			richText.Selection = GetRange(text, "green");
 			richText.SelectionForeground = Colors.Green;
-			Assert.AreEqual(6, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionForeground");
-			Assert.AreEqual(Colors.Green, richText.SelectionForeground);
+			Assert.That(textChangedCount, Is.EqualTo(6), "RichTextArea.TextChanged did not fire when setting SelectionForeground");
+			Assert.That(richText.SelectionForeground, Is.EqualTo(Colors.Green));
 
 			richText.Selection = GetRange(text, "green");
 			richText.SelectionBackground = Colors.Blue;
-			Assert.AreEqual(7, textChangedCount, "RichTextArea.TextChanged did not fire when setting SelectionBackground");
-			Assert.AreEqual(Colors.Blue, richText.SelectionBackground);
+			Assert.That(textChangedCount, Is.EqualTo(7), "RichTextArea.TextChanged did not fire when setting SelectionBackground");
+			Assert.That(richText.SelectionBackground, Is.EqualTo(Colors.Blue));
 		}
 
 		[TestCase(true)]
@@ -575,7 +575,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 
 			richText.Selection = GetRange(text, "Hello");
-			Assert.AreEqual(expectedFontSize, richText.SelectionFont.Size);
+			Assert.That(richText.SelectionFont.Size, Is.EqualTo(expectedFontSize));
 		}
 
 		static Range<int> GetRange(string text, string s) => Range.FromLength(text.IndexOf(s, StringComparison.Ordinal), s.Length);
@@ -593,9 +593,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			var rtf = @"{\rtf1\deff0{\fonttbl{\f0 Arial;}{\f1 Arial Black;}}\fs40 {\f1\i Some Text}\par}";
 			richText.Rtf = rtf;
 			richText.Selection = GetRange(text, "Text");
-			Assert.IsTrue(richText.SelectionItalic, "#1");
-			Assert.AreEqual("Arial", richText.SelectionFamily.Name, "#2");
-			Assert.AreEqual("Black Oblique", richText.SelectionTypeface.Name, "#3");
+			Assert.That(richText.SelectionItalic, Is.True, "#1");
+			Assert.That(richText.SelectionFamily.Name, Is.EqualTo("Arial"), "#2");
+			Assert.That(richText.SelectionTypeface.Name, Is.EqualTo("Black Oblique"), "#3");
 		}
 
 		[Test]
@@ -610,7 +610,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			const string rtf = @"{\rtf1\ansi\ansicpg1252{\fonttbl}{\colortbl;\red255\green255\blue255;}}";
 			richText.Rtf = rtf;
 
-			Assert.AreEqual(string.Empty, richText.Text);
+			Assert.That(richText.Text, Is.EqualTo(string.Empty));
 		}
 	}
 }

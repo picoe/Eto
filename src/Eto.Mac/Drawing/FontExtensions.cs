@@ -51,7 +51,7 @@ namespace Eto.iOS.Drawing
 		void SetContainerSize(SizeF? availableSize)
 		{
 #if OSX
-			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToNS();
+			container.Size = (availableSize ?? SizeF.MaxValue).ToNS();
 #elif IOS
 			if (container.RespondsToSelector(selSetSize))
 				container.Size = (availableSize ?? SizeF.MaxValue).ToNS();

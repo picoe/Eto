@@ -415,7 +415,7 @@ namespace Eto.iOS.Drawing
 			Control.BeginPath();
 			Control.AddPath(path.ToCG());
 			Control.ClosePath();
-			brush.Draw(this, false, FillMode.Winding);
+			brush.Draw(this, false, path.FillMode);
 			EndDrawing();
 		}
 

@@ -189,12 +189,15 @@ partial class Binding
 	/// <param name="obj">INotifyPropertyChanged object to attach the event handler to</param>
 	/// <param name="propertyName">Name of the property to trigger the changed event.</param>
 	/// <param name="eh">Event handler delegate to trigger when the specified property changes</param>
-	/// <seealso cref="RemovePropertyEvent"/>
+	/// <seealso cref="RemovePropertyEvent(object,EventHandler{EventArgs})"/>
+	/// <seealso cref="RemovePropertyEvent(object,string,EventHandler{EventArgs})"/>
 	public static void AddPropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
 	{
-		var notifyObject = obj as INotifyPropertyChanged;
-		if (notifyObject != null)
-			new PropertyNotifyHelper(notifyObject, propertyName).Changed += eh;
+		if (obj is INotifyPropertyChanged notifyObject)
+		{
+			var helper = new PropertyNotifyHelper(notifyObject, propertyName);
+			helper.Changed += eh;
+		}
 	}
 
 	/// <summary>
@@ -208,32 +211,109 @@ partial class Binding
 	/// <param name="obj">INotifyPropertyChanged object to attach the event handler to</param>
 	/// <param name="propertyExpression">Expression to the property to trigger the changed event.</param>
 	/// <param name="eh">Event handler delegate to trigger when the specified property changes</param>
-	/// <seealso cref="RemovePropertyEvent"/>
+	/// <seealso cref="RemovePropertyEvent(object,EventHandler{EventArgs})"/>
+	/// <seealso cref="RemovePropertyEvent{T,TProperty}(T,Expression{Func{T, TProperty}},EventHandler{EventArgs})"/>
 	public static void AddPropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
 	{
-		var notifyObject = obj as INotifyPropertyChanged;
-		if (notifyObject != null)
+		var propertyInfo = propertyExpression.GetMemberInfo();
+		if (propertyInfo != null)
 		{
-			var propertyInfo = propertyExpression.GetMemberInfo();
-			if (propertyInfo != null)
-				new PropertyNotifyHelper(notifyObject, propertyInfo.Member.Name).Changed += eh;
+			AddPropertyEvent(obj, propertyInfo.Member.Name, eh);
 		}
 	}
 
 	/// <summary>
 	/// Removes an event handler previously attached with the AddPropertyEvent method.
 	/// </summary>
-	/// <param name="obj">INotifyPropertyChanged object to remove the event handler from</param>
+	/// <remarks>
+	/// Note that this will unsubscribe from all property handlers that point to the same delegate specified by <paramref name="eh"/>.
+	/// Use <see cref="RemovePropertyEvent(object, string, EventHandler{EventArgs})"/> to only unsubscribe for a single property.
+	/// </remarks>
+	/// <param name="obj">Object the event is subscribed to</param>
 	/// <param name="eh">Event handler delegate to remove</param>
 	/// <seealso cref="AddPropertyEvent(object,string,EventHandler{EventArgs})"/>
 	public static void RemovePropertyEvent(object obj, EventHandler<EventArgs> eh)
 	{
-		var helper = eh.Target as PropertyNotifyHelper;
-		if (helper != null)
+		if (obj is PropertyNotifyHelper helper)
 		{
 			helper.Changed -= eh;
 			helper.Unregister(obj);
 		}
+		else if (obj is INotifyPropertyChanged notifyObject)
+		{
+			var propertyChangedField = GetPropertyChangedField(notifyObject);
+			if (propertyChangedField == null)
+				return;
+
+			var propertyChangedDelegates = ((Delegate)propertyChangedField.GetValue(notifyObject))?.GetInvocationList().OfType<PropertyChangedEventHandler>() ?? Enumerable.Empty<PropertyChangedEventHandler>();
+			foreach (var del in propertyChangedDelegates)
+			{
+				// find ones hooked up to the PropertyNotifyHelper, regardless of property
+				if (del.Target is PropertyNotifyHelper h && h.IsHookedTo(eh))
+				{
+					h.Changed -= eh;
+					h.Unregister(obj);
+				}
+			}
+		}
+	}
+	
+	/// <summary>
+	/// Removes an event handler previously attached with the AddPropertyEvent method.
+	/// </summary>
+	/// <param name="obj">INotifyPropertyChanged object to unsubscribe from</param>
+	/// <param name="propertyExpression">Expression for the property to remove the event handler for</param>
+	/// <param name="eh">Event handler delegate to remove</param>
+	/// <seealso cref="AddPropertyEvent{T,TProperty}(T,Expression{Func{T, TProperty}},EventHandler{EventArgs})"/>
+	public static void RemovePropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
+	{
+		var propertyInfo = propertyExpression.GetMemberInfo();
+		if (propertyInfo != null)
+		{
+			RemovePropertyEvent(obj, propertyInfo.Member.Name, eh);
+		}
+	}
+	
+	/// <summary>
+	/// Removes an event handler previously attached with the AddPropertyEvent method.
+	/// </summary>
+	/// <param name="obj">INotifyPropertyChanged object to unsubscribe from</param>
+	/// <param name="propertyName">Name of the property to remove the event handler for</param>
+	/// <param name="eh">Event handler delegate to remove</param>
+	/// <seealso cref="AddPropertyEvent(object,string,EventHandler{EventArgs})"/>
+	public static void RemovePropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
+	{
+		if (obj is INotifyPropertyChanged notifyObject)
+		{
+			// this only works when PropertyChanged is a simple public event
+			// if it is implemented explicitly via the interface this won't work
+			var propertyChangedField = GetPropertyChangedField(notifyObject);
+			if (propertyChangedField == null)
+				return;
+
+			var propertyChangedDelegates = ((Delegate)propertyChangedField.GetValue(notifyObject))?.GetInvocationList().OfType<PropertyChangedEventHandler>() ?? Enumerable.Empty<PropertyChangedEventHandler>();
+			foreach (var del in propertyChangedDelegates)
+			{
+				// find ones hooked up to the PropertyNotifyHelper
+				if (del.Target is PropertyNotifyHelper h && h.PropertyName == propertyName && h.IsHookedTo(eh))
+				{
+					h.Changed -= eh;
+					h.Unregister(obj);
+				}
+			}
+		}
+	}
+
+	static FieldInfo GetPropertyChangedField(object obj)
+	{
+		FieldInfo field = null;
+		var type = obj?.GetType();
+		while (field == null && type != null)
+		{
+			field = type.GetField(nameof(INotifyPropertyChanged.PropertyChanged), BindingFlags.Instance | BindingFlags.NonPublic);
+			type = type.BaseType;
+		}
+		return field;
 	}
 
 	/// <summary>

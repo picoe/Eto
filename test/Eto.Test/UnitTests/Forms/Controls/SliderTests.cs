@@ -11,11 +11,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			{
 				var slider = new Slider();
 				slider.TickFrequency = 0;
-				Assert.AreEqual(0, slider.TickFrequency);
+				Assert.That(slider.TickFrequency, Is.EqualTo(0));
 				slider.Value = 10;
 				slider.TickFrequency = 20;
-				Assert.AreEqual(20, slider.TickFrequency);
-				Assert.AreEqual(10, slider.Value);
+				Assert.That(slider.TickFrequency, Is.EqualTo(20));
+				Assert.That(slider.Value, Is.EqualTo(10));
 			});
 		}
 	}

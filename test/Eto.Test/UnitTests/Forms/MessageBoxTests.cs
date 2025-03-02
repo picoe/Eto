@@ -7,14 +7,14 @@ public class MessageBoxTests : TestBase
 {
 	public static IEnumerable<string> GetMessages()
 	{
-		yield return Utility.GenerateLoremText(2);
-		yield return Utility.GenerateLoremText(10);
-		yield return Utility.GenerateLoremText(20);
-		yield return Utility.GenerateLoremText(100, true);
-		yield return Utility.GenerateLoremText(1000, true);
-		yield return Utility.GenerateLoremText(1000, false);
-		yield return Utility.GenerateLoremText(3000, true);
-		yield return Utility.GenerateLoremText(3000, false);
+		yield return LoremGenerator.Generate(2);
+		yield return LoremGenerator.Generate(10);
+		yield return LoremGenerator.Generate(20);
+		yield return LoremGenerator.GenerateLines(2, 100);
+		yield return LoremGenerator.GenerateLines(4, 1000);
+		yield return LoremGenerator.Generate(1000);
+		yield return LoremGenerator.GenerateLines(20, 300);
+		yield return LoremGenerator.Generate(3000);
 	}
 
 	[TestCaseSource(nameof(GetMessages))]

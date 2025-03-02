@@ -37,6 +37,11 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Using Include="System.Windows" Alias="sw" />
+    <Using Include="System.Windows.Controls" Alias="swc" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj" />
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
@@ -52,7 +57,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit" Version="4.3.2" />
   	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" />
   </ItemGroup>
   <ItemGroup>

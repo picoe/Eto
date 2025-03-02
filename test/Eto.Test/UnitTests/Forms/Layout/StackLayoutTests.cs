@@ -16,16 +16,16 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				foreach (var item in items)
 					stackLayout.Items.Add(item);
 
-				CollectionAssert.AreEqual(items, stackLayout.Children, "#1. Items do not match");
+				Assert.That(stackLayout.Children, Is.EqualTo(items), "#1. Items do not match");
 
 				foreach (var item in items)
-					Assert.AreEqual(stackLayout, item.Parent, "#2. Items should have parent set to stack layout");
+					Assert.That(item.Parent, Is.EqualTo(stackLayout), "#2. Items should have parent set to stack layout");
 
-				Assert.AreSame(stackLayout.FindChild<Label>("label"), items[0], "#3. FindChild should work without loading the stack layout");
+				Assert.That(stackLayout.FindChild<Label>("label"), Is.SameAs(items[0]), "#3. FindChild should work without loading the stack layout");
 
 				stackLayout.Items.Clear();
 				foreach (var item in items)
-					Assert.IsNull(item.Parent, "#4. Items should have parent cleared when removed from stack layout");
+					Assert.That(item.Parent, Is.Null, "#4. Items should have parent cleared when removed from stack layout");
 
 			});
 		}
@@ -42,18 +42,18 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				foreach (var item in items)
 					stackLayout.Items.Add(item);
 
-				CollectionAssert.AreEqual(items, stackLayout.Children, "#1. Items do not match");
+				Assert.That(stackLayout.Children, Is.EqualTo(items), "#1. Items do not match");
 
 				foreach (var item in items)
-					Assert.AreEqual(stackLayout, item.Parent, "#2. Items should have parent set to stack layout");
+					Assert.That(item.Parent, Is.EqualTo(stackLayout), "#2. Items should have parent set to stack layout");
 
 				stackLayout.Items.RemoveAt(0);
-				Assert.IsNull(items[0].Parent, "#3. Item should have parent cleared when removed from stack layout");
+				Assert.That(items[0].Parent, Is.Null, "#3. Item should have parent cleared when removed from stack layout");
 
 				stackLayout.Items[0] = new Button();
-				Assert.IsNull(items[1].Parent, "#4. Item should have parent cleared when replaced with another item in the stack layout");
+				Assert.That(items[1].Parent, Is.Null, "#4. Item should have parent cleared when replaced with another item in the stack layout");
 
-				Assert.AreEqual(stackLayout, items[2].Parent, "#5. Item should not have changed parent as it is still in the stack layout");
+				Assert.That(items[2].Parent, Is.EqualTo(stackLayout), "#5. Item should not have changed parent as it is still in the stack layout");
 			});
 		}
 
@@ -69,17 +69,17 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				{
 					Items = { child }
 				};
-				Assert.AreSame(stack, child.Parent);
-				Assert.IsNull(child.VisualParent);
+				Assert.That(stack, Is.SameAs(child.Parent));
+				Assert.That(child.VisualParent, Is.Null);
 				form.Content = stack;
 			}, () =>
 			{
-				Assert.AreSame(stack, child?.Parent);
-				Assert.IsNotNull(child.VisualParent);
+				Assert.That(stack, Is.SameAs(child?.Parent));
+				Assert.That(child.VisualParent, Is.Not.Null);
 				// StackLayout uses TableLayout internally to align controls
 				// this will be changed when StackLayout does not depend on TableLayout
-				Assert.AreNotSame(stack, child.VisualParent);
-				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
+				Assert.That(stack, Is.Not.SameAs(child.VisualParent));
+				Assert.That(child.VisualParent, Is.InstanceOf<TableLayout>());
 			});
 		}
 
@@ -91,17 +91,17 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				var child = new Panel();
 				var stack = new StackLayout();
 				stack.Items.Add(child);
-				Assert.AreSame(stack, child.Parent);
+				Assert.That(stack, Is.SameAs(child.Parent));
 				stack.Items.Clear();
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 				stack.Items.Add(child);
-				Assert.AreSame(stack, child.Parent);
+				Assert.That(stack, Is.SameAs(child.Parent));
 				stack.Items.RemoveAt(0);
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 				stack.Items.Insert(0, child);
-				Assert.AreSame(stack, child.Parent);
+				Assert.That(stack, Is.SameAs(child.Parent));
 				stack.Items[0] = new StackLayoutItem();
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 			});
 		}
 
@@ -112,26 +112,26 @@ namespace Eto.Test.UnitTests.Forms.Layout
 			{
 				var child = new Panel();
 				stack.Items.Add(child);
-				Assert.IsNotNull(child.VisualParent);
-				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
-				Assert.AreSame(stack, child.Parent);
+				Assert.That(child.VisualParent, Is.Not.Null);
+				Assert.That(child.VisualParent, Is.InstanceOf<TableLayout>());
+				Assert.That(stack, Is.SameAs(child.Parent));
 				stack.Items.Clear();
-				Assert.IsNull(child.VisualParent);
-				Assert.IsNull(child.Parent);
+				Assert.That(child.VisualParent, Is.Null);
+				Assert.That(child.Parent, Is.Null);
 				stack.Items.Add(child);
-				Assert.IsNotNull(child.VisualParent);
-				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
-				Assert.AreSame(stack, child.Parent);
+				Assert.That(child.VisualParent, Is.Not.Null);
+				Assert.That(child.VisualParent, Is.InstanceOf<TableLayout>());
+				Assert.That(stack, Is.SameAs(child.Parent));
 				stack.Items.RemoveAt(0);
-				Assert.IsNull(child.VisualParent);
-				Assert.IsNull(child.Parent);
+				Assert.That(child.VisualParent, Is.Null);
+				Assert.That(child.Parent, Is.Null);
 				stack.Items.Insert(0, child);
-				Assert.IsNotNull(child.VisualParent);
-				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
-				Assert.AreSame(stack, child.Parent);
+				Assert.That(child.VisualParent, Is.Not.Null);
+				Assert.That(child.VisualParent, Is.InstanceOf<TableLayout>());
+				Assert.That(stack, Is.SameAs(child.Parent));
 				stack.Items[0] = new StackLayoutItem();
-				Assert.IsNull(child.VisualParent);
-				Assert.IsNull(child.Parent);
+				Assert.That(child.VisualParent, Is.Null);
+				Assert.That(child.Parent, Is.Null);
 			});
 		}
 

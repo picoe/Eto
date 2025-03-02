@@ -10,6 +10,19 @@ namespace Eto.Test.UnitTests.Forms
 	[TestFixture]
 	public class SaveFileDialogTests : FileDialogTests<SaveFileDialog>
 	{
+		[Test, ManualTest, InvokeOnUI]
+		public void FileNameShouldNotHaveDoubleExtension()
+		{
+			// this can only be replicated on macOS when the extension is unknown
+			// and we set the filename first
+			var fd = new SaveFileDialog();
+			fd.FileName = "NoDoubleExt.eto";
+			fd.Directory = new Uri(EtoEnvironment.GetFolderPath(EtoSpecialFolder.Downloads));
+			fd.Filters.Clear();
+			fd.Filters.Add(new FileFilter("ETO Files", ".eto"));
+			fd.Filters.Add(new FileFilter("Text Files", ".txt"));
+			fd.ShowDialog(null);
+		}
 	}
 
 	public class FileDialogTests<T> : TestBase
@@ -28,18 +41,18 @@ namespace Eto.Test.UnitTests.Forms
 
 			fd.FileName = "SomeFile.txt";
 
-			Assert.AreEqual("SomeFile.txt", Path.GetFileName(fd.FileName), "#3");
+			Assert.That(Path.GetFileName(fd.FileName), Is.EqualTo("SomeFile.txt"), "#3");
 
 			var result = fd.ShowDialog(null);
 
 			if (result == DialogResult.Cancel || typeof(T) == typeof(SaveFileDialog))
-				Assert.AreEqual("SomeFile.txt", Path.GetFileName(fd.FileName), "#4");
+				Assert.That(Path.GetFileName(fd.FileName), Is.EqualTo("SomeFile.txt"), "#4");
 
 			if (result == DialogResult.Ok)
 			{
 				var directoryName = Path.GetDirectoryName(fd.FileName);
-				Assert.IsNotNull(directoryName, "#5.1");
-				Assert.IsNotEmpty(directoryName, "#5.2");
+				Assert.That(directoryName, Is.Not.Null, "#5.1");
+				Assert.That(directoryName, Is.Not.Empty, "#5.2");
 				Console.WriteLine($"Directory: {directoryName}");
 			}
 

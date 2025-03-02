@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Controls
 				Text = "Middle Center Align",
 				TextAlignment = TextAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center,
-				BackgroundColor = Colors.AliceBlue
+				BackgroundColor = Colors.Gray
 			};
 		}
 
@@ -73,7 +73,7 @@ namespace Eto.Test.Sections.Controls
 				Text = "Bottom Center Align",
 				TextAlignment = TextAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Bottom,
-				BackgroundColor = Colors.AliceBlue
+				BackgroundColor = Colors.Gray
 			};
 		}
 
@@ -125,7 +125,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var label = new Label
 			{
-				Text = Utility.LoremTextWithTwoParagraphs
+				Text = LoremGenerator.GenerateLines(2, 50, 100)
 			};
 
 			var wrapDropDown = new EnumDropDown<WrapMode>();

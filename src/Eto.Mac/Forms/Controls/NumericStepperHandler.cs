@@ -471,7 +471,7 @@ namespace Eto.Mac.Forms.Controls
 			TextField.Formatter = formatter;
 			if (Widget.Loaded)
 			{
-				TextField.SetNeedsDisplay();
+				TextField.NeedsDisplay = true;
 				var currentEditor = TextField.CurrentEditor;
 				if (currentEditor != null)
 				{

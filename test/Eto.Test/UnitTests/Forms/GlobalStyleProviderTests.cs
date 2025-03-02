@@ -16,7 +16,7 @@ namespace Eto.Test.UnitTests.Forms
             try
             {
                 var styledWidget = new StyledWidget();
-                Assert.IsTrue(styledWidget.SomeProperty);
+                Assert.That(styledWidget.SomeProperty, Is.True);
             }
             finally
             {
@@ -35,9 +35,9 @@ namespace Eto.Test.UnitTests.Forms
             try
             {
                 var styledWidget = new StyledWidget();
-                Assert.IsFalse(styledWidget.SomeProperty);
+                Assert.That(styledWidget.SomeProperty, Is.False);
                 styledWidget.Style = "style";
-                Assert.IsTrue(styledWidget.SomeProperty);
+                Assert.That(styledWidget.SomeProperty, Is.True);
             }
             finally
             {
@@ -56,7 +56,7 @@ namespace Eto.Test.UnitTests.Forms
             try
             {
                 var styledWidget = new StyledWidget();
-                Assert.IsTrue(styledWidget.SomeProperty);
+                Assert.That(styledWidget.SomeProperty, Is.True);
             }
             finally
             {
@@ -75,9 +75,9 @@ namespace Eto.Test.UnitTests.Forms
             try
             {
                 var styledWidget = new StyledWidget();
-                Assert.IsFalse(styledWidget.SomeProperty);
+                Assert.That(styledWidget.SomeProperty, Is.False);
                 styledWidget.Style = "style";
-                Assert.IsTrue(styledWidget.SomeProperty);
+                Assert.That(styledWidget.SomeProperty, Is.True);
             }
             finally
             {

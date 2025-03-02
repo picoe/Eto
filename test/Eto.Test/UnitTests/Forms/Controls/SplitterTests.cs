@@ -39,7 +39,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				},
 				it =>
 				{
-					Assert.AreEqual(50, it.Position, "Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+					Assert.That(it.Position, Is.EqualTo(50), $"Fix: {fix}; {orient} [replay={replay}]");
 					if (ReplayTests)
 						replay = !replay;
 				}, replay: ReplayTests);
@@ -68,7 +68,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				},
 				it =>
 				{
-					Assert.AreEqual(pos, it.RelativePosition, 1e-2, "Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+					Assert.That(it.RelativePosition, Is.EqualTo(pos).Within(1e-2), $"Fix: {fix}; {orient} [replay={replay}]");
 					if (ReplayTests)
 						replay = !replay;
 				},
@@ -99,36 +99,36 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				it =>
 				{
 					if (orient == Orientation.Horizontal)
-						Assert.AreEqual(it.Panel1.Height, it.Panel2.Height,
-							"Height! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+						Assert.That(it.Panel1.Height, Is.EqualTo(it.Panel2.Height),
+							$"Height! Fix: {fix}; {orient} [replay={replay}]");
 					else
-						Assert.AreEqual(it.Panel1.Width, it.Panel2.Width,
-							"Width! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+						Assert.That(it.Panel1.Width, Is.EqualTo(it.Panel2.Width),
+							$"Width! Fix: {fix}; {orient} [replay={replay}]");
 					switch (fix)
 					{
 						case SplitterFixedPanel.Panel1:
 							if (orient == Orientation.Horizontal)
-								Assert.AreEqual(sz.Width, it.Panel1.Width,
-									"P1.Width! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+								Assert.That(sz.Width, Is.EqualTo(it.Panel1.Width),
+									$"P1.Width! Fix: {fix}; {orient} [replay={replay}]");
 							else
-								Assert.AreEqual(sz.Height, it.Panel1.Height,
-									"P1.Height! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+								Assert.That(sz.Height, Is.EqualTo(it.Panel1.Height),
+									$"P1.Height! Fix: {fix}; {orient} [replay={replay}]");
 							break;
 						case SplitterFixedPanel.Panel2:
 							if (orient == Orientation.Horizontal)
-								Assert.AreEqual(sz.Width, it.Panel2.Width,
-									"P2.Width! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+								Assert.That(sz.Width, Is.EqualTo(it.Panel2.Width),
+									$"P2.Width! Fix: {fix}; {orient} [replay={replay}]");
 							else
-								Assert.AreEqual(sz.Height, it.Panel2.Height,
-									"P2.Height! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+								Assert.That(sz.Height, Is.EqualTo(it.Panel2.Height),
+									$"P2.Height! Fix: {fix}; {orient} [replay={replay}]");
 							break;
 						case SplitterFixedPanel.None:
 							if (orient == Orientation.Horizontal)
-								Assert.AreEqual(it.Panel1.Width, it.Panel2.Width, 1,
-									"Width! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+								Assert.That(it.Panel1.Width, Is.EqualTo(it.Panel2.Width).Within(1),
+									$"Width! Fix: {fix}; {orient} [replay={replay}]");
 							else
-								Assert.AreEqual(it.Panel1.Height, it.Panel2.Height, 1,
-									"Height! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+								Assert.That(it.Panel1.Height, Is.EqualTo(it.Panel2.Height).Within(1),
+									$"Height! Fix: {fix}; {orient} [replay={replay}]");
 							break;
 					}
 					if (ReplayTests)
@@ -184,10 +184,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				}, 
 				it =>
 				{
-					Assert.AreEqual(40, it.Position, $"#1 {fix}; {orient}; Replay:{replay}");
-					Assert.AreEqual(fix == SplitterFixedPanel.Panel1 ? 40 : fix == SplitterFixedPanel.Panel2 ? 60 : 0.4, it.RelativePosition, "{0}; {1}", $"#2 {fix}; {orient}; Replay:{replay}");
+					Assert.That(it.Position, Is.EqualTo(40), $"#1 {fix}; {orient}; Replay:{replay}");
+					Assert.That(it.RelativePosition, Is.EqualTo(fix == SplitterFixedPanel.Panel1 ? 40 : fix == SplitterFixedPanel.Panel2 ? 60 : 0.4), "{0}; {1}", $"#2 {fix}; {orient}; Replay:{replay}");
 					var sz = orient == Orientation.Horizontal ? new Size(100 + it.SplitterWidth, 60) : new Size(60, 100 + it.SplitterWidth);
-					Assert.AreEqual(sz, it.Size, $"#3 {fix}; {orient}; Replay:{replay}");
+					Assert.That(it.Size, Is.EqualTo(sz), $"#3 {fix}; {orient}; Replay:{replay}");
 					if (ReplayTests)
 						replay = !replay;
 				}, replay: ReplayTests);
@@ -237,10 +237,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				},
 				it =>
 				{
-					Assert.AreEqual(40, it.Position, "{0}; {1}", fix, orient);
-					Assert.AreEqual(fix == SplitterFixedPanel.Panel1 ? 40 : fix == SplitterFixedPanel.Panel2 ? 60 : 0.4, it.RelativePosition, "{0}; {1}", fix, orient);
+					Assert.That(it.Position, Is.EqualTo(40), $"{fix}; {orient}");
+					Assert.That(it.RelativePosition, Is.EqualTo(fix == SplitterFixedPanel.Panel1 ? 40 : fix == SplitterFixedPanel.Panel2 ? 60 : 0.4), $"{fix}; {orient}");
 					var sz = orient == Orientation.Horizontal ? new Size(100 + it.SplitterWidth, 60) : new Size(60, 100 + it.SplitterWidth);
-					Assert.AreEqual(sz, it.Size, "{0}; {1}", fix, orient);
+					Assert.That(it.Size, Is.EqualTo(sz), $"{fix}; {orient}");
 				}, replay: ReplayTests);
 		}
 
@@ -273,7 +273,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				it =>
 				{
 					double pos = fix == SplitterFixedPanel.None ? 0.5 : 50.0;
-					Assert.AreEqual(pos, it.RelativePosition, 1e-2, "Fix: {0}; {1} [replay={2}]", fix, orient, replay);
+					Assert.That(it.RelativePosition, Is.EqualTo(pos).Within(1e-2), $"Fix: {fix}; {orient} [replay={replay}]");
 					if (ReplayTests)
 						replay = !replay;
 				},
@@ -368,7 +368,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					}
 				};
 			}, -1);
-			Assert.IsTrue(success, message);
+			Assert.That(success, Is.True, message);
 		}
 
 		[Test, ManualTest]
@@ -437,7 +437,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				return splitter;
 			});
-			Assert.IsNull(outOfBounds, $"#1 - Position went out of bounds 100-200, was {outOfBounds}");
+			Assert.That(outOfBounds, Is.Null, $"#1 - Position went out of bounds 100-200, was {outOfBounds}");
 		}
 
 		[Test, ManualTest]
@@ -465,7 +465,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 				return splitter;
 			});
-			Assert.AreEqual(0, positionChanged, $"#1 - PositionChanged should not fire");
+			Assert.That(positionChanged, Is.EqualTo(0), $"#1 - PositionChanged should not fire");
 		}
 
 		[TestCase(Orientation.Horizontal)]

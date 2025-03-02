@@ -85,26 +85,99 @@ namespace Eto.Test.UnitTests.Forms
 				return new Panel { Size = new Size(200, 50), Content = TableLayout.AutoSized(showContextMenuButton, centered: true) };
 			});
 
-			Assert.IsFalse(disabledWasClicked, "#1 - Disabled item should not be clickable");
-			Assert.Greater(validateWasCalled, 0, "#2 - Validate was never called!");
+			Assert.That(disabledWasClicked, Is.False, "#1 - Disabled item should not be clickable");
+			Assert.That(validateWasCalled, Is.GreaterThan(0), "#2 - Validate was never called!");
 		}
 		
 		[Test, InvokeOnUI]
 		public void MenuItemEnabledShouldUpdateCommandIfSpecified()
 		{
 			var command = new Command { MenuText = "Hello" };
-			Assert.IsTrue(command.Enabled, "#1");
+			Assert.That(command.Enabled, Is.True, "#1");
 			
 			var item = new ButtonMenuItem(command);
-			Assert.AreEqual(item.Text, command.MenuText, "#2.1");
-			Assert.AreEqual(item.Enabled, command.Enabled, "#2.2");
-			Assert.IsTrue(item.Enabled, "#2.3");
+			Assert.That(command.MenuText, Is.EqualTo(item.Text), "#2.1");
+			Assert.That(command.Enabled, Is.EqualTo(item.Enabled), "#2.2");
+			Assert.That(item.Enabled, Is.True, "#2.3");
 			
 			item.Enabled = false;
 			
-			Assert.IsFalse(command.Enabled, "#3.1");
-			Assert.AreEqual(item.Enabled, command.Enabled, "#3.2");
+			Assert.That(command.Enabled, Is.False, "#3.1");
+			Assert.That(command.Enabled, Is.EqualTo(item.Enabled), "#3.2");
+		}
+
+		[TestCase(true, Keys.E, false, true)] // Fails in Gtk, Wpf (shortcut takes precedence over intrinsic behaviour)
+		[TestCase(false, Keys.E, false, true)]
+		[TestCase(true, Keys.E | Keys.Control, false, false)] // Fails in Gtk, Mac (menu shortcuts always takes precedence)
+		[TestCase(true, Keys.E | Keys.Control, true, false)] // Fails in Gtk, Mac (menu shortcuts always takes precedence)
+		[TestCase(false, Keys.E | Keys.Control, true, false)]
+		[TestCase(false, Keys.E | Keys.Control, false, false)]
+		[ManualTest]
+		public void TextBoxShouldAcceptInputEvenWhenShortcutDefined(bool enabled, Keys key, bool handleKey, bool shouldBeIntrinsic)
+		{
+			ControlShouldAcceptInputEvenWhenShortcutDefined<TextBox>(enabled, key, handleKey, shouldBeIntrinsic);
+		}
+
+		[TestCase(true, Keys.E, false, false)]
+		[TestCase(false, Keys.E, false, false)]
+		[TestCase(true, Keys.E, true, false)]
+		[TestCase(false, Keys.E, true, false)]
+		[TestCase(true, Keys.E | Keys.Control, false, false)] // Fails in Gtk, Mac (menu shortcuts always takes precedence)
+		[TestCase(true, Keys.E | Keys.Control, true, false)] // Fails in Gtk, Mac (menu shortcuts always takes precedence)
+		[TestCase(false, Keys.E | Keys.Control, true, false)]
+		[TestCase(false, Keys.E | Keys.Control, false, false)]
+		[ManualTest]
+		public void DrawableShouldAcceptInputEvenWhenShortcutDefined(bool enabled, Keys key, bool handleKey, bool shouldBeIntrinsic)
+		{
+			ControlShouldAcceptInputEvenWhenShortcutDefined<Drawable>(enabled, key, handleKey, shouldBeIntrinsic, d => d.CanFocus = true);
 		}
 		
+		void ControlShouldAcceptInputEvenWhenShortcutDefined<T>(bool enabled, Keys key, bool handleKey, bool shouldBeIntrinsic, Action<T> initialize = null)
+			where T: Control, new()
+		{
+			var itemWasClicked = false;
+			var keyWasPressed = false;
+			ManualForm($"Press the {key.ToShortcutString()} key", form =>
+			{
+				var menu = new MenuBar();
+				var item = new ButtonMenuItem { Text = "Disabled Item", Enabled = enabled, Shortcut = key };
+				item.Click += (sender, e) =>
+				{
+					itemWasClicked = true;
+					Log.Write(sender, "Item was clicked");
+				};
+				menu.Items.Add(new SubMenuItem { Text = "File", Items = { item } });
+				form.Menu = menu;
+				var control = new T { Size = new Size(200, 200) };
+				initialize?.Invoke(control);
+				control.KeyDown += (sender, e) =>
+				{
+					if (e.KeyData == key)
+					{
+						// key was pressed! yay.
+						Log.Write(sender, "Key was pressed on control");
+						keyWasPressed = true;
+						
+						if (handleKey)
+							e.Handled = true;
+					}
+				};
+				form.Shown += (sender, e) => control.Focus();
+
+				return control;
+			});
+
+			if (!enabled || handleKey || shouldBeIntrinsic)
+			{
+				Assert.That(itemWasClicked, Is.False, "#1 - ButtonMenuItem was triggered, but should not have been");
+			}
+			else
+			{
+				Assert.That(itemWasClicked, Is.True, "#1 - ButtonMenuItem was not triggered");
+			}
+
+			Assert.That(keyWasPressed, Is.True, "#2 - Key was not pressed");
+		}
+
 	}
 }

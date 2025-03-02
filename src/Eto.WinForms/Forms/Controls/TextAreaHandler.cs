@@ -213,12 +213,15 @@ namespace Eto.WinForms.Forms.Controls
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 
+		TextAlignment _textAlignment;
+
 		public TextAlignment TextAlignment
 		{
-			get { return Control.SelectionAlignment.ToEto(); }
+			get => _textAlignment;
 			set
 			{
 				if (value == TextAlignment) return;
+				_textAlignment = value;
 				var sel = Selection;
 				Control.SelectAll();
 				Control.SelectionAlignment = value.ToSWF();
@@ -277,18 +280,23 @@ namespace Eto.WinForms.Forms.Controls
 			Win32.SendMessage(Control.Handle, Win32.WM.EM_SETSCROLLPOS, IntPtr.Zero, ref scrollPosition);
 		}
 
+		Win32.SB GetScrollX() => Control.RightToLeft switch
+		{
+			swf.RightToLeft.Yes => Win32.SB.RIGHT,
+			_ => Win32.SB.LEFT
+		};
+
 		public void ScrollToStart()
 		{
 			Win32.SendMessage(Control.Handle, Win32.WM.VSCROLL, (IntPtr)Win32.SB.TOP, IntPtr.Zero);
-			Win32.SendMessage(Control.Handle, Win32.WM.HSCROLL, (IntPtr)Win32.SB.LEFT, IntPtr.Zero);
+			Win32.SendMessage(Control.Handle, Win32.WM.HSCROLL, (IntPtr)GetScrollX(), IntPtr.Zero);
 		}
 
 		public void ScrollToEnd()
 		{
 			Win32.SendMessage(Control.Handle, Win32.WM.VSCROLL, (IntPtr)Win32.SB.BOTTOM, IntPtr.Zero);
-			Win32.SendMessage(Control.Handle, Win32.WM.HSCROLL, (IntPtr)Win32.SB.LEFT, IntPtr.Zero);
+			Win32.SendMessage(Control.Handle, Win32.WM.HSCROLL, (IntPtr)GetScrollX(), IntPtr.Zero);
 		}
-
 
 	}
 }

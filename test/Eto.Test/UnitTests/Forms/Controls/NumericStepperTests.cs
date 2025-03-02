@@ -14,11 +14,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				int valueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
-				Assert.AreEqual(double.MinValue, numeric.MinValue, "MinValue should be double.MinValue");
-				Assert.AreEqual(double.MaxValue, numeric.MaxValue, "MaxValue should be double.MaxValue");
-				Assert.AreEqual(0, numeric.Value, "initial value should be 0");
+				Assert.That(numeric.MinValue, Is.EqualTo(double.MinValue), "MinValue should be double.MinValue");
+				Assert.That(numeric.MaxValue, Is.EqualTo(double.MaxValue), "MaxValue should be double.MaxValue");
+				Assert.That(numeric.Value, Is.EqualTo(0), "initial value should be 0");
 
-				Assert.AreEqual(0, valueChanged, "ValueChanged event should not fire when setting to default values");
+				Assert.That(valueChanged, Is.EqualTo(0), "ValueChanged event should not fire when setting to default values");
 			});
 		}
 
@@ -34,19 +34,19 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				numeric.MinValue = 100;
 				numeric.MaxValue = 1000;
-				Assert.AreEqual(100, numeric.MinValue, "MinValue should return the same value as set");
-				Assert.AreEqual(1000, numeric.MaxValue, "MaxValue should return the same value as set");
-				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event should fire when changing the MinValue");
+				Assert.That(numeric.MinValue, Is.EqualTo(100), "MinValue should return the same value as set");
+				Assert.That(numeric.MaxValue, Is.EqualTo(1000), "MaxValue should return the same value as set");
+				Assert.That(valueChanged, Is.EqualTo(++currentValueChanged), "ValueChanged event should fire when changing the MinValue");
 
 				numeric.MinValue = double.MinValue;
 				numeric.MaxValue = double.MaxValue;
 				numeric.Value = 0;
 
-				Assert.AreEqual(double.MinValue, numeric.MinValue, "MinValue should be double.MinValue");
-				Assert.AreEqual(double.MaxValue, numeric.MaxValue, "MaxValue should be double.MaxValue");
-				Assert.AreEqual(0, numeric.Value, "Value should be back to 0");
+				Assert.That(numeric.MinValue, Is.EqualTo(double.MinValue), "MinValue should be double.MinValue");
+				Assert.That(numeric.MaxValue, Is.EqualTo(double.MaxValue), "MaxValue should be double.MaxValue");
+				Assert.That(numeric.Value, Is.EqualTo(0), "Value should be back to 0");
 
-				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event should fire when changing the MinValue");
+				Assert.That(valueChanged, Is.EqualTo(++currentValueChanged), "ValueChanged event should fire when changing the MinValue");
 			});
 		}
 
@@ -62,33 +62,33 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				numeric.MinValue = 0;
 				numeric.MaxValue = 2000;
-				Assert.AreEqual(0, numeric.MinValue, "Could not correctly set MinValue");
-				Assert.AreEqual(2000, numeric.MaxValue, "Could not correctly set MaxValue");
+				Assert.That(numeric.MinValue, Is.EqualTo(0), "Could not correctly set MinValue");
+				Assert.That(numeric.MaxValue, Is.EqualTo(2000), "Could not correctly set MaxValue");
 
 				numeric.MinValue = 100;
-				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event was not fired the correct number of times");
-				Assert.AreEqual(100, numeric.Value, "Value should be set after MinValue is set");
+				Assert.That(valueChanged, Is.EqualTo(++currentValueChanged), "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(100), "Value should be set after MinValue is set");
 
 				numeric.Value = 1000;
-				Assert.AreEqual(1000, numeric.Value, "Could not correctly set Value after Min/Max is set");
-				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(1000), "Could not correctly set Value after Min/Max is set");
+				Assert.That(valueChanged, Is.EqualTo(++currentValueChanged), "ValueChanged event was not fired the correct number of times");
 
 				numeric.Value = 2001;
-				Assert.AreEqual(2000, numeric.Value, "Value should be limited to Min/Max value");
-				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(2000), "Value should be limited to Min/Max value");
+				Assert.That(valueChanged, Is.EqualTo(++currentValueChanged), "ValueChanged event was not fired the correct number of times");
 
 				numeric.Value = -1000;
-				Assert.AreEqual(100, numeric.Value, "Value should be limited to Min/Max value");
-				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(100), "Value should be limited to Min/Max value");
+				Assert.That(valueChanged, Is.EqualTo(++currentValueChanged), "ValueChanged event was not fired the correct number of times");
 
 				numeric.MinValue = 1000;
-				Assert.AreEqual(1000, numeric.Value, "Value should be changed to match new MinValue");
-				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(1000), "Value should be changed to match new MinValue");
+				Assert.That(valueChanged, Is.EqualTo(++currentValueChanged), "ValueChanged event was not fired the correct number of times");
 
 				numeric.MinValue = 0;
 				numeric.MaxValue = 500;
-				Assert.AreEqual(500, numeric.Value, "Value should be changed to match new MaxValue");
-				Assert.AreEqual(++currentValueChanged, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(500), "Value should be changed to match new MaxValue");
+				Assert.That(valueChanged, Is.EqualTo(++currentValueChanged), "ValueChanged event was not fired the correct number of times");
 			});
 		}
 
@@ -107,10 +107,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				numeric.DecimalPlaces = decimalPlaces;
 
 				numeric.Value = value;
-				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(valueChanged, Is.EqualTo(1), "ValueChanged event was not fired the correct number of times");
 				numeric.MaxValue = maxValue;
-				Assert.AreEqual(newValue, numeric.Value, "Value should be changed to match new MaxValue");
-				Assert.AreEqual(2, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(newValue), "Value should be changed to match new MaxValue");
+				Assert.That(valueChanged, Is.EqualTo(2), "ValueChanged event was not fired the correct number of times");
 			});
 		}
 
@@ -130,8 +130,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				numeric.Value = value;
 				numeric.MinValue = minValue;
-				Assert.AreEqual(newValue, numeric.Value, "Value should be changed to match new MaxValue");
-				Assert.AreEqual(2, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(newValue), "Value should be changed to match new MaxValue");
+				Assert.That(valueChanged, Is.EqualTo(2), "ValueChanged event was not fired the correct number of times");
 			});
 		}
 
@@ -149,8 +149,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				numeric.DecimalPlaces = decimalPlaces;
 
 				numeric.Value = value;
-				Assert.AreEqual(newValue, numeric.Value, "Value should be be rounded to the number of decimal places");
-				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(newValue), "Value should be be rounded to the number of decimal places");
+				Assert.That(valueChanged, Is.EqualTo(1), "ValueChanged event was not fired the correct number of times");
 			});
 		}
 
@@ -166,12 +166,12 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
 				numeric.Value = value;
-				Assert.AreEqual(Math.Round(value, 0), numeric.Value, "Value should be set to the initial value");
+				Assert.That(numeric.Value, Is.EqualTo(Math.Round(value, 0)), "Value should be set to the initial value");
 
 				numeric.DecimalPlaces = decimalPlaces;
 
-				Assert.AreEqual(newValue, numeric.Value, "Value should be be rounded to the number of decimal places");
-				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(newValue), "Value should be be rounded to the number of decimal places");
+				Assert.That(valueChanged, Is.EqualTo(1), "ValueChanged event was not fired the correct number of times");
 			});
 		}
 
@@ -199,12 +199,12 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
 				numeric.Value = value;
-				Assert.AreEqual(Math.Round(value, maxDecimalPlaces), numeric.Value, "Value should be set to the initial value");
+				Assert.That(numeric.Value, Is.EqualTo(Math.Round(value, maxDecimalPlaces)), "Value should be set to the initial value");
 
 				numeric.DecimalPlaces = decimalPlaces;
 
-				Assert.AreEqual(newValue, numeric.Value, "Value should be rounded to the maximum number of decimal places");
-				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
+				Assert.That(numeric.Value, Is.EqualTo(newValue), "Value should be rounded to the maximum number of decimal places");
+				Assert.That(valueChanged, Is.EqualTo(1), "ValueChanged event was not fired the correct number of times");
 			});
 		}
 
@@ -216,25 +216,25 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var numeric = new NumericStepper();
 
 				numeric.DecimalPlaces = 3;
-				Assert.AreEqual(3, numeric.DecimalPlaces, "DecimalPlaces isn't roundtripping set values");
-				Assert.AreEqual(3, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces should be changed to at minimum DecimalPlaces");
+				Assert.That(numeric.DecimalPlaces, Is.EqualTo(3), "DecimalPlaces isn't roundtripping set values");
+				Assert.That(numeric.MaximumDecimalPlaces, Is.EqualTo(3), "MaximumDecimalPlaces should be changed to at minimum DecimalPlaces");
 
 				numeric.DecimalPlaces = 2;
-				Assert.AreEqual(2, numeric.DecimalPlaces, "DecimalPlaces isn't roundtripping set values");
-				Assert.AreEqual(3, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces should only be changed when DecimalPlaces is greater than its current value");
+				Assert.That(numeric.DecimalPlaces, Is.EqualTo(2), "DecimalPlaces isn't roundtripping set values");
+				Assert.That(numeric.MaximumDecimalPlaces, Is.EqualTo(3), "MaximumDecimalPlaces should only be changed when DecimalPlaces is greater than its current value");
 
 
 				numeric.MaximumDecimalPlaces = 2;
-				Assert.AreEqual(2, numeric.DecimalPlaces, "DecimalPlaces should keep its original value");
-				Assert.AreEqual(2, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces wasn't updated to the new value");
+				Assert.That(numeric.DecimalPlaces, Is.EqualTo(2), "DecimalPlaces should keep its original value");
+				Assert.That(numeric.MaximumDecimalPlaces, Is.EqualTo(2), "MaximumDecimalPlaces wasn't updated to the new value");
 
 				numeric.MaximumDecimalPlaces = 1;
-				Assert.AreEqual(1, numeric.DecimalPlaces, "DecimalPlaces should be updated to the new value of MaximumDecimalPlaces when its current value is greater");
-				Assert.AreEqual(1, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces wasn't updated to the new value");
+				Assert.That(numeric.DecimalPlaces, Is.EqualTo(1), "DecimalPlaces should be updated to the new value of MaximumDecimalPlaces when its current value is greater");
+				Assert.That(numeric.MaximumDecimalPlaces, Is.EqualTo(1), "MaximumDecimalPlaces wasn't updated to the new value");
 
 				numeric.MaximumDecimalPlaces = 0;
-				Assert.AreEqual(0, numeric.DecimalPlaces, "DecimalPlaces should be updated to the new value of MaximumDecimalPlaces when its current value is greater");
-				Assert.AreEqual(0, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces wasn't updated to the new value");
+				Assert.That(numeric.DecimalPlaces, Is.EqualTo(0), "DecimalPlaces should be updated to the new value of MaximumDecimalPlaces when its current value is greater");
+				Assert.That(numeric.MaximumDecimalPlaces, Is.EqualTo(0), "MaximumDecimalPlaces wasn't updated to the new value");
 			});
 		}
 
@@ -253,9 +253,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			},
 			() =>
 			{
-				Assert.AreEqual(0, numericStepper.Value);
+				Assert.That(numericStepper.Value, Is.EqualTo(0));
 				numericStepper.Value = 2;
-				Assert.AreEqual(10, numericStepper.Value);
+				Assert.That(numericStepper.Value, Is.EqualTo(10));
 			});
 		}
 		[Test, ManualTest]
@@ -267,7 +267,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			{
 				var label = new Label();
 				var numericStepper = new NumericStepper();
-				Assert.AreEqual(0, numericStepper.Value, "#1");
+				Assert.That(numericStepper.Value, Is.EqualTo(0), "#1");
 				var changedCount = 0;
 				numericStepper.ValueChanged += (sender, e) =>
 				{
@@ -277,13 +277,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					{
 						changedCount++;
 						if (changedCount == 1)
-							Assert.AreEqual(2, numericStepper.Value, "#2");
+							Assert.That(numericStepper.Value, Is.EqualTo(2), "#2");
 						else if (changedCount == 2)
-							Assert.AreEqual(10, numericStepper.Value, "#3");
+							Assert.That(numericStepper.Value, Is.EqualTo(10), "#3");
 						else if (changedCount > 2)
 							Assert.Fail($"#4. ValueChanged should only fire twice. New value is '{numericStepper.Value}' but should stay at 10.");
 						numericStepper.Value = 10;
-						Assert.AreEqual(10, numericStepper.Value, "#5");
+						Assert.That(numericStepper.Value, Is.EqualTo(10), "#5");
 						Application.Instance.AsyncInvoke(() => label.Text = $"Value is {numericStepper.Value}. ValueChanged called {changedCount} times.");
 					}
 					catch (Exception ex)

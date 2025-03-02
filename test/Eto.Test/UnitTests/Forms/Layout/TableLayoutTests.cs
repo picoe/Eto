@@ -19,7 +19,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 									new TextBox()
 								)
 							);
-				Assert.AreEqual(layout.Dimensions, new Size(2, 2), "Table size should be 2x2");
+				Assert.That(new Size(2, 2), Is.EqualTo(layout.Dimensions), "Table size should be 2x2");
 			});
 		}
 
@@ -38,7 +38,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 					layout.Rows.Add(row);
 
 
-				CollectionAssert.AreEqual(rows.SelectMany(r => r.Cells).Select(r => r.Control), layout.Children);
+				Assert.That(layout.Children, Is.EqualTo(rows.SelectMany(r => r.Cells).Select(r => r.Control)));
 			});
 		}
 
@@ -52,33 +52,33 @@ namespace Eto.Test.UnitTests.Forms.Layout
 
 				// adding/removing rows
 				table.Rows.Add(child);
-				Assert.AreSame(table, child.Parent);
+				Assert.That(table, Is.SameAs(child.Parent));
 				table.Rows.Clear();
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 				table.Rows.Add(child);
-				Assert.AreSame(table, child.Parent);
+				Assert.That(table, Is.SameAs(child.Parent));
 				table.Rows.RemoveAt(0);
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 				table.Rows.Insert(0, child);
-				Assert.AreSame(table, child.Parent);
+				Assert.That(table, Is.SameAs(child.Parent));
 				table.Rows[0] = new TableRow();
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 
 				var row = new TableRow();
 				row.Cells.Add(child);
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 				table.Rows.Add(row);
-				Assert.AreSame(table, child.Parent);
+				Assert.That(table, Is.SameAs(child.Parent));
 				row.Cells.Clear();
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 				row.Cells.Add(child);
-				Assert.AreSame(table, child.Parent);
+				Assert.That(table, Is.SameAs(child.Parent));
 				row.Cells.RemoveAt(0);
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 				row.Cells.Insert(0, child);
-				Assert.AreSame(table, child.Parent);
+				Assert.That(table, Is.SameAs(child.Parent));
 				row.Cells[0] = new TableCell();
-				Assert.IsNull(child.Parent);
+				Assert.That(child.Parent, Is.Null);
 			});
 		}
 
@@ -185,8 +185,8 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				return label;
 			}, label =>
 			{
-				Assert.Greater(label.Width, 0, "Label didn't get correct width!");
-				Assert.Greater(label.Height, 0, "Label didn't get correct height!");
+				Assert.That(label.Width, Is.GreaterThan(0), "Label didn't get correct width!");
+				Assert.That(label.Height, Is.GreaterThan(0), "Label didn't get correct height!");
 			});
 		}
 
@@ -208,9 +208,9 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				form.Content = layout;
 			}, () =>
 			{
-				Assert.IsTrue(child.IsDisposed);
-				Assert.IsNull(child.Parent);
-				CollectionAssert.DoesNotContain(layout.Children, child);
+				Assert.That(child.IsDisposed, Is.True);
+				Assert.That(child.Parent, Is.Null);
+				Assert.That(layout.Children, Does.Not.Contain(child));
 			});
 		}
 
@@ -223,17 +223,17 @@ namespace Eto.Test.UnitTests.Forms.Layout
 
 				var layout1 = new TableLayout { ID = "layout1" };
 				layout1.Rows.Add(child);
-				Assert.AreEqual(child.Parent, layout1, "#1.1 Child's parent should now be the 2nd table");
-				Assert.AreEqual(child.LogicalParent, layout1, "#1.2 Child's logical parent should now be the 2nd table");
+				Assert.That(layout1, Is.EqualTo(child.Parent), "#1.1 Child's parent should now be the 2nd table");
+				Assert.That(layout1, Is.EqualTo(child.LogicalParent), "#1.2 Child's logical parent should now be the 2nd table");
 
 				// copy rows to a new layout
 				var layout2 = new TableLayout { ID = "layout2" };
 				foreach (var row in layout1.Rows.ToList())
 					layout2.Rows.Add(row);
 
-				Assert.AreEqual(0, layout1.Rows.Count, "#2.1 All rows should now be in the 2nd table");
-				Assert.AreEqual(child.Parent, layout2, "#2.2 Child's parent should now be the 2nd table");
-				Assert.AreEqual(child.LogicalParent, layout2, "#2.3 Child's logical parent should now be the 2nd table");
+				Assert.That(layout1.Rows.Count, Is.EqualTo(0), "#2.1 All rows should now be in the 2nd table");
+				Assert.That(layout2, Is.EqualTo(child.Parent), "#2.2 Child's parent should now be the 2nd table");
+				Assert.That(layout2, Is.EqualTo(child.LogicalParent), "#2.3 Child's logical parent should now be the 2nd table");
 				return layout2;
 			});
 		}
@@ -249,8 +249,8 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				var cell1 = new TableCell(child);
 				var row1 = new TableRow(child);
 				layout1.Rows.Add(row1);
-				Assert.AreEqual(child.Parent, layout1, "#1.1 Child's parent should now be the 2nd table");
-				Assert.AreEqual(child.LogicalParent, layout1, "#1.2 Child's logical parent should now be the 2nd table");
+				Assert.That(layout1, Is.EqualTo(child.Parent), "#1.1 Child's parent should now be the 2nd table");
+				Assert.That(layout1, Is.EqualTo(child.LogicalParent), "#1.2 Child's logical parent should now be the 2nd table");
 
 				// copy rows to a new layout
 				var layout2 = new TableLayout { ID = "layout2" };
@@ -262,12 +262,12 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				}
 				layout2.Rows.Add(row2);
 
-				Assert.AreEqual(1, layout1.Rows.Count, "#2.1 Should still have a single row");
-				Assert.AreEqual(0, layout1.Rows[0].Cells.Count, "#2.2 Cells should be removed from old table");
-				Assert.AreEqual(1, layout2.Rows.Count, "#2.3 2nd table should have a single row");
-				Assert.AreEqual(1, layout2.Rows[0].Cells.Count, "#2.4 All cells should now be in the 2nd table");
-				Assert.AreEqual(child.Parent, layout2, "#2.5 Child's parent should now be the 2nd table");
-				Assert.AreEqual(child.LogicalParent, layout2, "#2.6 Child's logical parent should now be the 2nd table");
+				Assert.That(layout1.Rows.Count, Is.EqualTo(1), "#2.1 Should still have a single row");
+				Assert.That(layout1.Rows[0].Cells.Count, Is.EqualTo(0), "#2.2 Cells should be removed from old table");
+				Assert.That(layout2.Rows.Count, Is.EqualTo(1), "#2.3 2nd table should have a single row");
+				Assert.That(layout2.Rows[0].Cells.Count, Is.EqualTo(1), "#2.4 All cells should now be in the 2nd table");
+				Assert.That(layout2, Is.EqualTo(child.Parent), "#2.5 Child's parent should now be the 2nd table");
+				Assert.That(layout2, Is.EqualTo(child.LogicalParent), "#2.6 Child's logical parent should now be the 2nd table");
 				return layout2;
 			});
 		}
@@ -281,19 +281,19 @@ namespace Eto.Test.UnitTests.Forms.Layout
 
 				var layout1 = new TableLayout { ID = "layout1" };
 				layout1.Rows.Add(child);
-				Assert.AreEqual(child.Parent, layout1, "#1.1 Child's parent should now be layout1");
-				Assert.AreEqual(child.LogicalParent, layout1, "#1.2 Child's logical parent should now be layout1");
+				Assert.That(layout1, Is.EqualTo(child.Parent), "#1.1 Child's parent should now be layout1");
+				Assert.That(layout1, Is.EqualTo(child.LogicalParent), "#1.2 Child's logical parent should now be layout1");
 
 				// use the child somewheres else
 				var panel = new Panel { ID = "panel" };
 				panel.Content = child;
 
-				Assert.AreEqual(1, layout1.Rows.Count, "#2.1 layout1 should still have a row");
-				CollectionAssert.DoesNotContain(layout1.Children, child, "#2.2 Child should no longer be in layout1");
+				Assert.That(layout1.Rows.Count, Is.EqualTo(1), "#2.1 layout1 should still have a row");
+				Assert.That(layout1.Children, Does.Not.Contain(child), "#2.2 Child should no longer be in layout1");
 
-				Assert.AreEqual(child.Parent, panel, "#2.3 Child's parent should now be panel");
-				Assert.AreEqual(child.LogicalParent, panel, "#2.4 Child's logical parent should now be panel");
-				CollectionAssert.Contains(panel.Children, child, "#2.5 Child should be in panel");
+				Assert.That(panel, Is.EqualTo(child.Parent), "#2.3 Child's parent should now be panel");
+				Assert.That(panel, Is.EqualTo(child.LogicalParent), "#2.4 Child's logical parent should now be panel");
+				Assert.That(panel.Children, Does.Contain(child), "#2.5 Child should be in panel");
 			});
 		}
 		

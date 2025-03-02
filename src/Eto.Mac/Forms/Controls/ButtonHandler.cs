@@ -181,7 +181,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var cell = (EtoButtonCell)Control.Cell;
 			cell.Color = color;
-			Control.SetNeedsDisplay();
+			Control.NeedsDisplay = true;
 		}
 
 		public Image Image

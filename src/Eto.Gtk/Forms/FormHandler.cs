@@ -1,3 +1,5 @@
+using Eto.GtkSharp.CustomControls;
+
 namespace Eto.GtkSharp.Forms
 {
 	public class FormHandler : GtkWindow<Gtk.Window, Form, Form.ICallback>, Form.IHandler
@@ -26,6 +28,8 @@ namespace Eto.GtkSharp.Forms
 		{
 			DisableAutoSizeUpdate++;
 			Control.Child.ShowAll();
+			Control.Realize();
+			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			if (ShowActivated || !Control.AcceptFocus)
 				Control.Show();
 			else
@@ -52,6 +56,19 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return Widget.Properties.Get<bool>(CanFocus_Key, true); }
 			set { Widget.Properties.Set(CanFocus_Key, value, () => Control.AcceptFocus = value, true); }
+		}
+
+		public override bool Visible
+		{
+			get => base.Visible;
+			set
+			{
+				base.Visible = value;
+				if (ShowActivated && value)
+				{
+					Focus();
+				}
+			}
 		}
 	}
 }

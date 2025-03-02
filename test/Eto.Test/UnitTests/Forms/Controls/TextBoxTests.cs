@@ -7,6 +7,34 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		where T: TextBox, new()
 	{
 		[Test, ManualTest]
+		public void SettingTextShouldClearUndoBuffer()
+		{
+			ManualForm("Try typing and undo/redo, then press the button to reset. After reset, it should not undo to previous values", form =>
+			{
+				var textBox = new T();
+				textBox.Text = "Hello";
+				textBox.SelectAll();
+
+				var button = new Button { Text = "Click Me" };
+				button.Click += (sender, e) =>
+				{
+					textBox.Text = "Thanks, now try to undo";
+					textBox.Focus();
+				};
+				
+				return new TableLayout
+				{
+					Spacing = new Size(5, 5),
+					Padding = 10,
+					Rows = {
+						textBox,
+						button
+					}
+				};
+			});
+		}
+		
+		[Test, ManualTest]
 		public void CaretIndexShouldStartInInitialPosition()
 		{
 			ManualForm("Caret should be at index 2, between the 'e' and 'l'.", form =>
@@ -14,8 +42,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var textBox = new T();
 				textBox.Text = "Hello";
 				textBox.CaretIndex = 2;
-				Assert.AreEqual(2, textBox.CaretIndex, "#1");
-				Assert.AreEqual(new Range<int>(2, 1), textBox.Selection, "#2");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(2), "#1");
+				Assert.That(textBox.Selection, Is.EqualTo(new Range<int>(2, 1)), "#2");
 				return textBox;
 			});
 		}
@@ -28,13 +56,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var textBox = new T();
 				textBox.Text = "Hello";
 				textBox.CaretIndex = 2;
-				Assert.AreEqual(2, textBox.CaretIndex, "#1");
-				Assert.AreEqual(new Range<int>(2, 1), textBox.Selection, "#2");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(2), "#1");
+				Assert.That(textBox.Selection, Is.EqualTo(new Range<int>(2, 1)), "#2");
 				return textBox;
 			}, textBox =>
 			{
-				Assert.AreEqual(2, textBox.CaretIndex, "#3");
-				Assert.AreEqual(new Range<int>(2, 1), textBox.Selection, "#4");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(2), "#3");
+				Assert.That(textBox.Selection, Is.EqualTo(new Range<int>(2, 1)), "#4");
 			});
 		}
 
@@ -48,8 +76,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var textBox = new T();
 				textBox.Text = text;
 				textBox.Selection = selection;
-				Assert.AreEqual(selection, textBox.Selection, "#1");
-				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#2");
+				Assert.That(textBox.Selection, Is.EqualTo(selection), "#1");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(selection.Start), "#2");
 				return textBox;
 			});
 		}
@@ -64,13 +92,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var textBox = new T();
 				textBox.Text = text;
 				textBox.Selection = selection;
-				Assert.AreEqual(selection, textBox.Selection, "#1");
-				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#2");
+				Assert.That(textBox.Selection, Is.EqualTo(selection), "#1");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(selection.Start), "#2");
 				return textBox;
 			}, textBox =>
 			{
-				Assert.AreEqual(selection, textBox.Selection, "#3");
-				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#4");
+				Assert.That(textBox.Selection, Is.EqualTo(selection), "#3");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(selection.Start), "#4");
 			});
 		}
 
@@ -85,19 +113,19 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				textBox = new T();
 				textBox.Text = text;
 				textBox.Selection = selection;
-				Assert.AreEqual(selection, textBox.Selection, "#1");
-				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#2");
+				Assert.That(textBox.Selection, Is.EqualTo(selection), "#1");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(selection.Start), "#2");
 				form.Content = new TableLayout(
 					new TextBox(),
 					textBox
 					);
 			}, () =>
 			{
-				Assert.AreEqual(selection, textBox.Selection, "#3");
-				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#4");
+				Assert.That(textBox.Selection, Is.EqualTo(selection), "#3");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(selection.Start), "#4");
 				textBox.Focus();
-				Assert.AreEqual(selection, textBox.Selection, "#5");
-				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#6");
+				Assert.That(textBox.Selection, Is.EqualTo(selection), "#5");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(selection.Start), "#6");
 			});
 		}
 
@@ -111,19 +139,19 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var textBox = new T();
 				textBox.Text = text;
 				textBox.Selection = selection;
-				Assert.AreEqual(selection, textBox.Selection, "#1");
-				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#2");
+				Assert.That(textBox.Selection, Is.EqualTo(selection), "#1");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(selection.Start), "#2");
 				textBox.CaretIndex = 2;
-				Assert.AreEqual(new Range<int>(2, 1), textBox.Selection, "#3");
-				Assert.AreEqual(2, textBox.CaretIndex, "#4");
+				Assert.That(textBox.Selection, Is.EqualTo(new Range<int>(2, 1)), "#3");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(2), "#4");
 				return textBox;
 			}, textBox =>
 			{
-				Assert.AreEqual(new Range<int>(2, 1), textBox.Selection, "#5");
-				Assert.AreEqual(2, textBox.CaretIndex, "#6");
+				Assert.That(textBox.Selection, Is.EqualTo(new Range<int>(2, 1)), "#5");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(2), "#6");
 				textBox.Selection = selection;
-				Assert.AreEqual(selection, textBox.Selection, "#7");
-				Assert.AreEqual(selection.Start, textBox.CaretIndex, "#8");
+				Assert.That(textBox.Selection, Is.EqualTo(selection), "#7");
+				Assert.That(textBox.CaretIndex, Is.EqualTo(selection.Start), "#8");
 			});
 		}
 
@@ -139,11 +167,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				tb.TextChanging += (sender, e) => args = e;
 				tb.Text = newText;
 
-				Assert.IsNotNull(args, "#1");
-				Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#2");
-				Assert.AreEqual(newText ?? string.Empty, args.NewText, "#3");
-				Assert.AreEqual(text, args.Text, "#4");
-				Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#5");
+				Assert.That(args, Is.Not.Null, "#1");
+				Assert.That(args.OldText, Is.EqualTo(oldText ?? string.Empty), "#2");
+				Assert.That(args.NewText, Is.EqualTo(newText ?? string.Empty), "#3");
+				Assert.That(args.Text, Is.EqualTo(text), "#4");
+				Assert.That(args.Range, Is.EqualTo(Range.FromLength(rangeStart, rangeLength)), "#5");
 
 			});
 		}
@@ -169,7 +197,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 				tb.Focus();
 
-				Assert.AreEqual(textToSelect, tb.SelectedText, "#1");
+				Assert.That(tb.SelectedText, Is.EqualTo(textToSelect), "#1");
 
 				new Clipboard().Text = text;
 
@@ -186,11 +214,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 			}, -1);
 
-			Assert.IsNotNull(args, "#2.1");
-			Assert.AreEqual(oldText ?? string.Empty, args.OldText, "#2.2");
-			Assert.AreEqual(newText ?? string.Empty, args.NewText, "#2.3");
-			Assert.AreEqual(text, args.Text, "#2.4");
-			Assert.AreEqual(Range.FromLength(rangeStart, rangeLength), args.Range, "#2.5");
+			Assert.That(args, Is.Not.Null, "#2.1");
+			Assert.That(args.OldText, Is.EqualTo(oldText ?? string.Empty), "#2.2");
+			Assert.That(args.NewText, Is.EqualTo(newText ?? string.Empty), "#2.3");
+			Assert.That(args.Text, Is.EqualTo(text), "#2.4");
+			Assert.That(args.Range, Is.EqualTo(Range.FromLength(rangeStart, rangeLength)), "#2.5");
 		}
 		
 		[Test, ManualTest]
@@ -239,7 +267,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				return layout;
 			});
-			Assert.Less(maxElapsed, TimeSpan.FromSeconds(1), "There were long pauses in the UI");
+			Assert.That(maxElapsed, Is.LessThan(TimeSpan.FromSeconds(1)), "There were long pauses in the UI");
 		}
 	}
 

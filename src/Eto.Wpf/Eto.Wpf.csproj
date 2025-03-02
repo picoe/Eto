@@ -101,6 +101,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Eto.WinForms\Win32.dpi.cs">
       <Link>Win32.dpi.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.WinForms\Win32.gdi.cs">
+      <Link>Win32.gdi.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.WinForms\WinConversions.shared.cs">
       <Link>WinConversions.shared.cs</Link>
     </Compile>

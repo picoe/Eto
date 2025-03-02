@@ -143,6 +143,8 @@ namespace Eto.Mac.Forms
 
 		public virtual void ShowModal()
 		{
+			Control.LayoutIfNeeded();
+			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			MacView.InMouseTrackingLoop = false;
 			session = null;
 			EnsureOwner();
@@ -160,6 +162,8 @@ namespace Eto.Mac.Forms
 
 		public virtual Task ShowModalAsync()
 		{
+			Control.LayoutIfNeeded();
+			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			MacView.InMouseTrackingLoop = false;
 			var tcs = new TaskCompletionSource<bool>();
 			session = null;

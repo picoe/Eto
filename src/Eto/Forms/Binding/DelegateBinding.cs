@@ -221,8 +221,9 @@ public class DelegateBinding<T, TValue> : IndirectBinding<TValue>
 		DefaultSetValue = defaultSetValue;
 		if (!string.IsNullOrEmpty(notifyProperty))
 		{
-			AddChangeEvent = (obj, eh) => { AddPropertyEvent(obj, notifyProperty, eh); return obj; };
-			RemoveChangeEvent = (obj, eh) => RemovePropertyEvent(obj, eh);
+			var binding = new PropertyBinding<object>(notifyProperty);
+			AddChangeEvent = (obj, eh) => binding.AddValueChangedHandler(obj, eh);
+			RemoveChangeEvent = (obj, eh) => binding.RemoveValueChangedHandler(obj, eh);
 		}
 	}
 

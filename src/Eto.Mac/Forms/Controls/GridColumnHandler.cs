@@ -214,9 +214,10 @@ namespace Eto.Mac.Forms.Controls
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					cellHandler.Editable = value;
 				}
-				if (IsLoaded)
+				var tableView = Control.TableView;
+				if (IsLoaded && tableView != null)
 				{
-					Control.TableView?.SetNeedsDisplay();
+					tableView.NeedsDisplay = true;
 				}
 
 			}

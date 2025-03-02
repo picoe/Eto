@@ -18,22 +18,22 @@ namespace Eto.Test.Mac64.UnitTests
 
 			var newSize = new Size(32, 32);
 			// initial sanity check
-			Assert.AreEqual(oldSize, bitmapRep.Size.ToEtoSize(), "#1");
+			Assert.That(bitmapRep.Size.ToEtoSize(), Is.EqualTo(oldSize), "#1");
 
 			var icon = bmp.WithSize(newSize);
 
 			var iconNSImage = icon.ControlObject as NSImage;
 			var iconRep = iconNSImage.Representations()[0] as NSBitmapImageRep;
 
-			Assert.AreEqual(bmp.Size, oldSize, "#2.1");
-			Assert.AreEqual(newSize, icon.Size, "#2.2");
-			Assert.AreEqual(bmp.Size, icon.Frames.First().PixelSize, "#2.3");
+			Assert.That(oldSize, Is.EqualTo(bmp.Size), "#2.1");
+			Assert.That(icon.Size, Is.EqualTo(newSize), "#2.2");
+			Assert.That(icon.Frames.First().PixelSize, Is.EqualTo(bmp.Size), "#2.3");
 
 			// rep in icon needs the new size
-			Assert.AreEqual(newSize, iconRep.Size.ToEtoSize(), "#2.4");
+			Assert.That(iconRep.Size.ToEtoSize(), Is.EqualTo(newSize), "#2.4");
 
 			// rep in bitmap should have the old size still..
-			Assert.AreEqual(oldSize, bitmapRep.Size.ToEtoSize(), "#3");
+			Assert.That(bitmapRep.Size.ToEtoSize(), Is.EqualTo(oldSize), "#3");
 
 			icon.Dispose();
 			bmp.Dispose();

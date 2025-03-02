@@ -47,10 +47,12 @@ namespace Eto.Mac.Forms
 				var isCmdDown = mods.HasFlag(NSEventModifierMask.CommandKeyMask);
 				if ((mods == 0 && theEvent.KeyCode == 53) || (isCmdDown && typed == "."))
 				{
-					if (Window.IsSheet)
-						NSApplication.SharedApplication.EndSheet(Window, Code);
+					if (Window.IsSheet && Window.SheetParent != null)
+						Window.SheetParent.EndSheet(Window, (NSModalResponse)Code);
 					else
 						NSApplication.SharedApplication.StopModalWithCode(Code);
+						
+					return true;
 				}
 				return base.PerformKeyEquivalent(theEvent);
 			}

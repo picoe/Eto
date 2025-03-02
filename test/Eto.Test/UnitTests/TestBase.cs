@@ -57,6 +57,138 @@ namespace Eto.Test.UnitTests
 		}
 	}
 
+    [SetUpFixture]
+    public class EtoTestSetup
+    {
+		static bool _initialized;
+		static bool _appWasCreated;
+		
+		/// <summary>
+		/// Timeout for application initialization
+		/// </summary>
+		protected const int ApplicationTimeout = 2000;
+
+		/// <summary>
+		/// initializes the application when running unit tests directly through the IDE or NUnit gui.
+		/// To run on specific platforms, run it through the test runner in the Eto.Test app
+		/// </summary>
+		public static void Initialize()
+		{
+			if (_initialized)
+				return;
+			var platform = Platform.Instance;
+			if (platform == null)
+			{
+				try
+				{
+					// use config file to specify which generator to use for testing
+					var doc = System.Xml.Linq.XDocument.Load("Eto.Test.dll.config");
+					var setting = doc?.Root?.Element("appSettings")?.Elements("add").FirstOrDefault(r => r.Attribute("key").Value == "generator") ?? null;
+					var generatorTypeName = setting != null ? setting.Attribute("value").Value : null;
+					if (!string.IsNullOrEmpty(generatorTypeName))
+						platform = Platform.Get(generatorTypeName);
+				}
+				catch (FileNotFoundException)
+				{
+				}
+#if DEBUG
+				if (platform == null)
+				{
+					// search AppContext.BaseDirectory for artifacts folder
+					var dir = new DirectoryInfo(AppContext.BaseDirectory);
+					while (dir != null && dir.Name != "artifacts")
+						dir = dir.Parent;
+					if (dir != null)
+					{
+						var platformType = EtoEnvironment.Platform.IsMac ? Platforms.Mac64 : EtoEnvironment.Platform.IsLinux ? Platforms.Gtk : Platforms.Wpf;
+						var platformAssembly = platformType.Substring(platformType.IndexOf(',') + 1).Trim();
+						var names = platformAssembly.Split('.');
+						var testPlatformAssembly = $"{names[0]}.Test.{names[1]}";
+						var platformTypeName = platformType.Substring(0, platformType.IndexOf(','));
+						var platformDir = new DirectoryInfo(Path.Combine(dir.FullName, "test", testPlatformAssembly, "Debug"));
+						#if NET
+						platformDir = platformDir.EnumerateDirectories().FirstOrDefault(r => !r.Name.StartsWith("net4"));
+						#else
+						platformDir = platformDir.EnumerateDirectories().FirstOrDefault(r => r.Name.StartsWith("net4"));
+						#endif
+						var platformPath = Path.Combine(platformDir.FullName, $"{platformAssembly}.dll");
+						if (File.Exists(platformPath))
+						{
+							var asm = Assembly.LoadFrom(platformPath);
+							var type = asm.GetType(platformTypeName);
+							if (type != null)
+								platform = Activator.CreateInstance(type) as Platform;
+						}
+					}
+					
+				}
+#endif
+				Platform.Initialize(platform ?? Platform.Detect);
+			}
+
+			if (Application.Instance == null)
+			{
+				if (platform.Supports<Application>())
+				{
+					var ev = new ManualResetEvent(false);
+					Exception exception = null;
+					var thread = new Thread(() =>
+					{
+						try
+						{
+							var app = new Application(platform);
+							app.Initialized += (sender, e) => ev.Set();
+							if (platform.IsMac)
+							{
+								app.Attach();
+								app.Run();
+							}
+							else
+								app.Run();
+						}
+						catch (Exception ex)
+						{
+							Debug.WriteLine("Error running test application: {0}", ex);
+							exception = ex;
+							ev.Set();
+						}
+					}
+					);
+
+#pragma warning disable CA1416 // Validate platform compatibility
+					if (EtoEnvironment.Platform.IsWindows)
+						thread.SetApartmentState(ApartmentState.STA);
+#pragma warning restore CA1416 // Validate platform compatibility
+
+					thread.Start();
+					if (!ev.WaitOne(ApplicationTimeout))
+						Assert.Fail("Could not initialize application");
+
+					_appWasCreated = true;
+					if (exception != null)
+						ExceptionDispatchInfo.Capture(exception).Throw();
+				}
+			}
+			_initialized = true;
+		}
+		
+        [OneTimeSetUp]
+        public void GlobalSetup()
+        {
+			Initialize();
+        }
+
+        [OneTimeTearDown]
+        public void GlobalTeardown()
+        {
+			if (!_appWasCreated)
+				return;
+			Application.Instance?.AsyncInvoke(() =>
+			{
+				Application.Instance?.Quit();
+			});
+		}
+	}
 
 	/// <summary>
 	/// Unit test utilities
@@ -76,69 +208,8 @@ namespace Eto.Test.UnitTests
 		/// <summary>
 		/// Default timeout for form operations
 		/// </summary>
-		const int DefaultTimeout = 4000;
-
-		/// <summary>
-		/// Timeout for application initialization
-		/// </summary>
-		const int ApplicationTimeout = 10000;
-
-		/// <summary>
-		/// initializes the application when running unit tests directly through the IDE or NUnit gui.
-		/// To run on specific platforms, run it through the test runner in the Eto.Test app
-		/// </summary>
-		public static void Initialize()
-		{
-			var platform = Platform.Instance;
-			if (platform == null)
-			{
-				try
-				{
-					// use config file to specify which generator to use for testing
-#if PCL
-					var doc = System.Xml.Linq.XDocument.Load("Eto.Test.dll.config");
-					var setting = doc != null ? doc.Root.Element("appSettings").Elements("add").FirstOrDefault(r => r.Attribute("key").Value == "generator") : null;
-					var generatorTypeName = setting != null ? setting.Attribute("value").Value : null;
-#else
-					var generatorTypeName = System.Configuration.ConfigurationManager.AppSettings["generator"];
-#endif
-					if (!string.IsNullOrEmpty(generatorTypeName))
-						platform = Platform.Get(generatorTypeName);
-				}
-				catch (FileNotFoundException)
-				{
-				}
-				Platform.Initialize(platform);
-			}
-
-			if (Application.Instance == null)
-			{
-				if (platform.Supports<Application>())
-				{
-					var ev = new ManualResetEvent(false);
-					Exception exception = null;
-					Task.Factory.StartNew(() =>
-					{
-						try
-						{
-							var app = new Application(platform);
-							app.Initialized += (sender, e) => ev.Set();
-							app.Run();
-						}
-						catch (Exception ex)
-						{
-							Debug.WriteLine("Error running test application: {0}", ex);
-							exception = ex;
-							ev.Set();
-						}
-					});
-					if (!ev.WaitOne(ApplicationTimeout))
-						Assert.Fail("Could not initialize application");
-					if (exception != null)
-						ExceptionDispatchInfo.Capture(exception).Throw();
-				}
-			}
-		}
+		protected const int DefaultTimeout = 4000;
+		
 
 		static Application Application
 		{
@@ -159,14 +230,17 @@ namespace Eto.Test.UnitTests
 		/// <param name="timeout">Timeout to wait for the operation to complete</param>
 		public static void Run(Action<Application, Action> test, int timeout = DefaultTimeout)
 		{
-			Initialize();
+			var evStart = new ManualResetEvent(false);
 			var ev = new ManualResetEvent(false);
 			var application = Application;
 			Exception exception = null;
-			Action finished = () => ev.Set();
 			var context = TestExecutionContext.CurrentContext;
-			Action run = () =>
+			
+			void finished() => ev.Set();
+			
+			void run()
 			{
+				evStart.Set();
 				try
 				{
 					context.EstablishExecutionEnvironment();
@@ -177,16 +251,19 @@ namespace Eto.Test.UnitTests
 					exception = ex;
 					ev.Set();
 				}
-			};
+			}
+
 			if (application != null)
 				application.AsyncInvoke(run);
 			else
 				run();
+				
+			if (!evStart.WaitOne(DefaultTimeout))
+				Assert.Fail("Could not start test in time");
 
 			if (!ev.WaitOne(timeout))
-			{
 				Assert.Fail("Test did not complete in time");
-			}
+
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
@@ -264,12 +341,16 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
-		public static void Async(Func<Task> test)
+		public static void Async(Func<Task> test) => Async(DefaultTimeout, test);
+		
+		public static void Async(int timeout, Func<Task> test)
 		{
 			Exception exception = null;
+			var mreStart = new ManualResetEvent(false);
 			var mre = new ManualResetEvent(false);
-			Application.Instance.Invoke(async () =>
+			Application.Instance.AsyncInvoke(async () =>
 			{
+				mreStart.Set();
 				try
 				{
 					await test();
@@ -283,7 +364,16 @@ namespace Eto.Test.UnitTests
 					mre.Set();
 				}
 			});
-			mre.WaitOne();
+			if (!mreStart.WaitOne(DefaultTimeout))
+			{
+				Assert.Fail("Could not start test in time");
+				return;
+			}
+			if (!mre.WaitOne(timeout))
+			{
+				Assert.Fail("Test did not complete in time");
+				return;
+			}
 			if (exception != null)
 			{
 				ExceptionDispatchInfo.Capture(exception).Throw();
@@ -660,7 +750,7 @@ namespace Eto.Test.UnitTests
 					var defValAttr = propertyInfo.GetCustomAttribute<DefaultValueAttribute>();
 					var defaultValue = defValAttr != null ? defValAttr.Value : propertyInfo.PropertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyInfo.PropertyType) : null;
 					var val = propertyInfo.GetValue(obj);
-					Assert.AreEqual(defaultValue, val, string.Format("Property '{0}' of type '{1}' is expected to be '{2}'", propertyName, Type.Name, defaultValue));
+					Assert.That(val, Is.EqualTo(defaultValue), $"Property '{propertyName}' of type '{Type.Name}' is expected to be '{defaultValue}'");
 				}
 			}
 

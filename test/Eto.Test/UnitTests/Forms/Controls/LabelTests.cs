@@ -28,7 +28,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			{
 				var label = new Label
 				{
-					Text = Utility.LoremTextWithTwoParagraphs,
+					Text = LoremGenerator.GenerateLines(2, 50),
 					Wrap = WrapMode.None
 				};
 				var layout = new PixelLayout

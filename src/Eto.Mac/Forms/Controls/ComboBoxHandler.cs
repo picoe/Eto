@@ -266,7 +266,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value != TextColor)
 				{
 					((NSComboBoxCell)Control.Cell).TextColor = value.ToNSUI();
-					Control.SetNeedsDisplay();
+					Control.NeedsDisplay = true;
 				}
 			}
 		}

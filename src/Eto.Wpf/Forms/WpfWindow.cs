@@ -30,6 +30,11 @@ namespace Eto.Wpf.Forms
 		internal static readonly object Icon_Key = new object();
 		internal static readonly object ShowSystemMenu_Key = new object();
 	}
+	
+	public class EtoWindowContent : swc.DockPanel
+	{
+		
+	}
 
 	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
 		where TControl : sw.Window
@@ -99,7 +104,7 @@ namespace Eto.Wpf.Forms
 		{
 			if (IsAttached)
 				return;
-			content = new swc.DockPanel();
+			content = new EtoWindowContent();
 			UseShellDropManager = true;
 
 			base.Initialize();
@@ -109,7 +114,6 @@ namespace Eto.Wpf.Forms
 			main = new swc.DockPanel();
 			menuHolder = new swc.ContentControl { IsTabStop = false };
 			toolBarHolder = new swc.ContentControl { IsTabStop = false };
-			content.SetResourceReference(swc.Panel.BackgroundProperty, sw.SystemColors.ControlBrushKey);
 			swc.DockPanel.SetDock(menuHolder, swc.Dock.Top);
 			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
 			main.Children.Add(menuHolder);
@@ -134,16 +138,18 @@ namespace Eto.Wpf.Forms
 		private void Control_SourceInitialized(object sender, EventArgs e)
 		{
 			isSourceInitialized = true;
-			
-			if (WindowStyle == WindowStyle.None)
+
+			if (Resizable && WindowStyle == WindowStyle.None)
 			{
-				SetWindowChrome(Resizable);
+				SetWindowChrome();
 			}
 			
 			if (!Minimizable || !Maximizable)
 			{
 				SetResizeMode();
 			}
+			
+			SetSystemMenu();
 
 			if (initialLocation != null)
 			{
@@ -173,21 +179,26 @@ namespace Eto.Wpf.Forms
 
 		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
-			// NOTE: If the window size is set, it will be made visible BEFORE this is called.
-			
 			SetMinimumSize();
 			if (initialClientSize != null)
 			{
 				initialClientSize = null;
 				SetContentSize();
 			}
-			// stop form from auto-sizing after it is shown
+
+			// Set sizing mode - if it is set to manual before here it will be visible before it is loaded
+			// which we do not want.
 			SetSizeToContent();
 			if (Control.ShowActivated)
 				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 
 			((swin.HwndSource)sw.PresentationSource.FromVisual(Control))?.AddHook(HookProc);
+
+			if (FireOnLoadComplete)
+				Callback.OnLoadComplete(Widget, EventArgs.Empty);
 		}
+
+		protected bool FireOnLoadComplete { get; set; }
 
 		private void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
 		{
@@ -377,7 +388,7 @@ namespace Eto.Wpf.Forms
 		private void SetSizeToContent()
 		{
 			sw.SizeToContent sizing;
-			if (Widget.Loaded && !AutoSize)
+			if (Control.IsLoaded && !AutoSize)
 			{
 				sizing = sw.SizeToContent.Manual;
 			}
@@ -400,6 +411,11 @@ namespace Eto.Wpf.Forms
 					sizing = sw.SizeToContent.Manual;
 				}
 			}
+
+			// If we set it to manual before loaded, it gets shown before Loaded event fires,
+			// which we do not want.
+			if (sizing == sw.SizeToContent.Manual && !Control.IsLoaded)
+				return;
 
 			Control.SizeToContent = sizing;
 		}
@@ -462,16 +478,6 @@ namespace Eto.Wpf.Forms
 
 		}
 
-		void CopyKeyBindings(swc.ItemCollection items)
-		{
-			foreach (var item in items.OfType<swc.MenuItem>())
-			{
-				Control.InputBindings.AddRange(item.InputBindings);
-				if (item.HasItems)
-					CopyKeyBindings(item.Items);
-			}
-		}
-
 		public MenuBar Menu
 		{
 			get { return menu; }
@@ -480,6 +486,7 @@ namespace Eto.Wpf.Forms
 				if (IsAttached)
 					throw new NotSupportedException();
 				menu = value;
+				Control.InputBindings.Clear();
 				if (menu != null)
 				{
 					var handler = (MenuBarHandler)menu.Handler;
@@ -495,20 +502,32 @@ namespace Eto.Wpf.Forms
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			var _ = NativeHandle;
-			var old = Control.SizeToContent;
-			if (!Control.IsLoaded)
-				Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
-			var available = availableSize.ToWpf();
 			var preferred = UserPreferredSize;
+			var available = preferred.IfNaN(availableSize.ToWpf());
+
+			SizeF desired;
+			if (!Control.IsLoaded)
+			{
+				var oldSizeToContent = Control.SizeToContent;
+				var oldVisibility = Control.Visibility;
+				var _ = NativeHandle; // Ensure SourceInitialized is triggered
+				Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+				Control.Visibility = sw.Visibility.Hidden; // Set to hidden (instead of Collapsed)
+				Control.Measure(available);
+				desired = Control.DesiredSize.ToEto();
+				Control.Visibility = oldVisibility;
+				Control.SizeToContent = oldSizeToContent;
+			}
+			else
+			{
+				Control.Measure(available);
+				desired = Control.DesiredSize.ToEto();
+			}
+			desired = SizeF.Max(MinimumSize, desired);
 			if (!double.IsNaN(preferred.Width))
-				available.Width = preferred.Width;
+				desired.Width = (float)preferred.Width;
 			if (!double.IsNaN(preferred.Height))
-				available.Width = preferred.Height;
-			Control.ApplyAllTemplates();
-			Control.Measure(available);
-			var desired = SizeF.Max(MinimumSize, Control.DesiredSize.ToEto());
-			Control.SizeToContent = old;
+				desired.Height = (float)preferred.Height;
 			return desired;
 		}
 		
@@ -538,7 +557,7 @@ namespace Eto.Wpf.Forms
 				if (Widget.Properties.TrySet(WpfWindow.Resizable_Key, value, true))
 				{
 					SetResizeMode();
-					SetWindowChrome(WindowStyle == WindowStyle.None && value);
+					SetWindowChrome();
 				}
 			}
 		}
@@ -592,6 +611,9 @@ namespace Eto.Wpf.Forms
 		
 		void SetSystemMenu()
 		{
+			if (!isSourceInitialized)
+				return;
+				
 			// hide system menu (and close button) if all commands are disabled
 			var useSystemMenu = ShowSystemMenu ?? (Closeable || Minimizable || Maximizable);
 			SetStyle(Win32.WS.SYSMENU, useSystemMenu);
@@ -932,7 +954,7 @@ namespace Eto.Wpf.Forms
 				if (WindowStyle != value)
 				{
 					Control.WindowStyle = value.ToWpf();
-					SetWindowChrome(value == WindowStyle.None && Resizable);
+					SetWindowChrome();
 				}
 			}
 		}
@@ -966,13 +988,14 @@ namespace Eto.Wpf.Forms
 			Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style);
 		}
 		
-		void SetWindowChrome(bool enabled)
+		void SetWindowChrome()
 		{
 			if (!isSourceInitialized)
 				return;
 			var oldStyle = SaveWindowStyle();
+			var needsCustomWindowChrome = Resizable && WindowStyle == WindowStyle.None;
 
-			if (enabled)
+			if (needsCustomWindowChrome)
 			{
 				var windowChrome = new sw.Shell.WindowChrome
 				{
@@ -1043,22 +1066,25 @@ namespace Eto.Wpf.Forms
 			child.Owner = Control;
 		}
 
-		public void SetOwner(Window owner)
+		public virtual void SetOwner(Window owner)
 		{
 			if (owner == null)
 			{
+				// Clear out WPF owner
 				Control.Owner = null;
-				return;
+
+				// If the owner was set to an HWND clear that out too.
+				var interop = windowInterop ?? new sw.Interop.WindowInteropHelper(Control);
+				interop.Owner = IntPtr.Zero;
 			}
-			var wpfWindow = owner.Handler as IWpfWindow;
-			if (wpfWindow != null)
+			else if (owner.Handler is IWpfWindow wpfWindow)
+			{
+				// Owner could be an HwndWindowHandler (or other) which sets owner differently
 				wpfWindow.SetOwnerFor(Control);
+			}
 		}
 
-		public double WpfScale
-		{
-			get { return dpiHelper?.WpfScale ?? 1f; }
-		}
+		public double WpfScale => dpiHelper?.WpfScale ?? 1f;
 
 		public float LogicalPixelSize
 		{
@@ -1087,10 +1113,18 @@ namespace Eto.Wpf.Forms
 			set
 			{
 				if (value)
+				{
+					// set owner back if we weren't visible beforehand
+					SetOwner(Widget.Owner);
 					Control.Show();
+				}
 				else
+				{
+					// hiding will hide entire owner chain, so clear that out before making it invisible.
+					SetOwner(null);
 					Control.Hide();
 			}
 		}
 	}
+}
 }

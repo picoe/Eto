@@ -18,6 +18,7 @@ namespace Eto.GtkSharp.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control.Modal = true;
 			Control.KeyPressEvent += Connector.Control_KeyPressEvent;
 
 			var vbox = new EtoBox(Gtk.Orientation.Vertical, 0) { Handler = this };
@@ -96,14 +97,24 @@ namespace Eto.GtkSharp.Forms
 			DisableAutoSizeUpdate++;
 			ReloadButtons();
 
-			Control.Modal = true;
+			Control.Child?.ShowAll();
+			if (!Control.IsRealized)
+			{
+				Control.Realize();
+			}
+			Control.QueueResize();
+			Callback.OnLoadComplete(Widget, EventArgs.Empty);
+			
 			Control.ShowAll();
 			DisableAutoSizeUpdate--;
 
-			do
+			if (!WasClosed)
 			{
-				Control.Run();
-			} while (!WasClosed && !CloseWindow());
+				do
+				{
+					Control.Run();
+				} while (!WasClosed && !CloseWindow());
+			}
 
 			WasClosed = false;
 			Control.Hide();
@@ -185,20 +196,13 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		static readonly object WasClosedKey = new object();
-
-		bool WasClosed
-		{
-			get { return Widget.Properties.Get<bool>(WasClosedKey); }
-			set { Widget.Properties.Set(WasClosedKey, value); }
-		}
-
 		public override void Close()
 		{
-			if (CloseWindow())
+			if (Widget.Loaded && CloseWindow())
 			{
-				WasClosed = true;
 				Control.Hide();
+				Control.Unrealize();
+				WasClosed = true;
 			}
 		}
 

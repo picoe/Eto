@@ -28,11 +28,12 @@ namespace Eto.Test.Wpf.UnitTests
 
 				// check to make sure the input binding for the command made it
 				var host = form.Handler as IInputBindingHost;
-				Assert.AreEqual(1, host.InputBindings.Count);
-				Assert.IsInstanceOf<swi.KeyBinding>(host.InputBindings[0]);
-				var kb = (swi.KeyBinding)host.InputBindings[0];
-				Assert.AreEqual(swi.Key.N, kb.Key);
-				Assert.AreEqual(swi.ModifierKeys.Control, kb.Modifiers);
+				Assert.That(host.InputBindings.Count, Is.EqualTo(1));
+				Assert.That(host.InputBindings[0], Is.InstanceOf<swi.InputBinding>());
+				Assert.That(host.InputBindings[0].Gesture, Is.InstanceOf<EtoKeyGesture>());
+				var kb = (EtoKeyGesture)host.InputBindings[0].Gesture;
+				Assert.That(kb.Key, Is.EqualTo(swi.Key.N));
+				Assert.That(kb.Modifiers, Is.EqualTo(swi.ModifierKeys.Control));
 			});
 		}
 	}

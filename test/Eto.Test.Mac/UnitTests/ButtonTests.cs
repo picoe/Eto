@@ -23,18 +23,18 @@ namespace Eto.Test.Mac.UnitTests
 				form.ClientSize = new Size(200, 200);
 
 				var handler = button?.Handler as ButtonHandler;
-				Assert.IsNotNull(handler, "#1.1");
+				Assert.That(handler, Is.Not.Null, "#1.1");
 				
 				// big sur changed default height from 21 to 22.
 				var defaultButtonHeight = ButtonHandler.DefaultButtonSize.Height;
 				
 				var b = new EtoButton(NSButtonType.MomentaryPushIn);
 				var originalSize = b.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, b.FittingSize)).Size;
-				Assert.AreEqual((nfloat)defaultButtonHeight, originalSize.Height, "#2.1");
+				Assert.That(originalSize.Height, Is.EqualTo((nfloat)defaultButtonHeight), "#2.1");
 
 				var preferred = handler.GetPreferredSize(SizeF.PositiveInfinity);
-				Assert.AreEqual(originalSize.Height, preferred.Height, "#2.1");
-				Assert.AreEqual(NSBezelStyle.Rounded, handler.Control.BezelStyle, "#2.2");
+				Assert.That(preferred.Height, Is.EqualTo(originalSize.Height), "#2.1");
+				Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.Rounded), "#2.2");
 
 				form.Shown += async (sender, e) =>
 				{
@@ -45,27 +45,27 @@ namespace Eto.Test.Mac.UnitTests
 						await Task.Delay(1000);
 						await Application.Instance.InvokeAsync(() =>
 						{
-							Assert.AreEqual(NSBezelStyle.RegularSquare, handler.Control.BezelStyle, "#3.1");
-							Assert.AreEqual(defaultButtonHeight + 1, handler.Widget.Height, "#3.2");
+							Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.RegularSquare), "#3.1");
+							Assert.That(handler.Widget.Height, Is.EqualTo(defaultButtonHeight + 1), "#3.2");
 						});
 						panel.Size = new Size(-1, -1);
 						await Application.Instance.InvokeAsync(() =>
 						{
-							Assert.AreEqual(NSBezelStyle.Rounded, handler.Control.BezelStyle, "#4.1");
-							Assert.AreEqual(defaultButtonHeight, handler.Widget.Height, "#4.2");
+							Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.Rounded), "#4.1");
+							Assert.That(handler.Widget.Height, Is.EqualTo(defaultButtonHeight), "#4.2");
 						});
 						panel.Size = new Size(-1, defaultButtonHeight - 1);
 						await Task.Delay(1000);
 						await Application.Instance.InvokeAsync(() =>
 						{
-							Assert.AreEqual(NSBezelStyle.SmallSquare, handler.Control.BezelStyle, "#5.1");
-							Assert.AreEqual(defaultButtonHeight - 1, handler.Widget.Height, "#5.2");
+							Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.SmallSquare), "#5.1");
+							Assert.That(handler.Widget.Height, Is.EqualTo(defaultButtonHeight - 1), "#5.2");
 						});
 						panel.Size = new Size(-1, -1);
 						await Application.Instance.InvokeAsync(() =>
 						{
-							Assert.AreEqual(NSBezelStyle.Rounded, handler.Control.BezelStyle, "#6.1");
-							Assert.AreEqual(defaultButtonHeight, handler.Widget.Height, "#6.2");
+							Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.Rounded), "#6.1");
+							Assert.That(handler.Widget.Height, Is.EqualTo(defaultButtonHeight), "#6.2");
 						});
 
 					}

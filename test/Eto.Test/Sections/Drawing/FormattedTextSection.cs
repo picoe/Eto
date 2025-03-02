@@ -23,7 +23,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var formattedText = new FormattedText
 			{
-				Text = Utility.LoremTextWithTwoParagraphs,
+				Text = LoremGenerator.GenerateLines(2, 10, 30),
 				MaximumSize = new SizeF(500, 80),
 				Wrap = FormattedTextWrapMode.Word,
 				Trimming = FormattedTextTrimming.CharacterEllipsis,
@@ -34,7 +34,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var formattedTextWithNewLines = new FormattedText
 			{
-				Text = Utility.LoremTextWithNewLines,
+				Text = LoremGenerator.GenerateLines(6, 10, 20),
 				Wrap = FormattedTextWrapMode.Word,
 				Trimming = FormattedTextTrimming.CharacterEllipsis,
 				ForegroundBrush = Brushes.White,

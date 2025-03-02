@@ -306,7 +306,11 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Control.HorizontallyResizable = true;
 					Control.TextContainer.WidthTracksTextView = false;
-					Control.TextContainer.ContainerSize = new CGSize(float.MaxValue, float.MaxValue);
+					
+					// anything greater then selection isn't shown when alignment isn't Left
+					// even though the default size is 10000000, setting it to that doesn't work.
+					// must be some weird magic going on behind the scenes..
+					Control.TextContainer.Size = new CGSize(9999999, float.MaxValue); 
 				}
 			}
 		}
@@ -448,11 +452,40 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public int TextLength => (int)Control.TextStorage.Length;
-		
-		public void ScrollTo(Range<int> range) => Control.ScrollRangeToVisible(range.ToNS());
 
-		public void ScrollToStart() => ScrollTo(new Range<int>(0));
+		public void ScrollTo(Range<int> range)
+		{
+			var nsRange = range.ToNS();
+			Control.LayoutManager.EnsureLayoutForCharacterRange(nsRange);
+			Control.ScrollRangeToVisible(nsRange);
+		}
 
-		public void ScrollToEnd() => ScrollTo(Range.FromLength(TextLength, 0));
+		public void ScrollToStart()
+		{ 
+			Control.LayoutManager.EnsureLayoutForCharacterRange(new NSRange(0, Control.TextStorage.Length));
+			Control.ScrollRectToVisible(new CGRect(GetScrollX(), 0, 1, 1));
+		}
+
+		nfloat GetScrollX() => Control.UserInterfaceLayoutDirection switch
+		{
+			NSUserInterfaceLayoutDirection.RightToLeft => Control.Alignment switch
+			{
+				NSTextAlignment.Right => Control.Bounds.Left,
+				NSTextAlignment.Center => Control.Bounds.GetMidX() - Scroll.DocumentVisibleRect.Width / 2,
+				_ => Control.Bounds.Right,
+			},
+			_ => Control.Alignment switch
+			{
+				NSTextAlignment.Right => Control.Bounds.Right,
+				NSTextAlignment.Center => Control.Bounds.GetMidX() - Scroll.DocumentVisibleRect.Width / 2,
+				_ => Control.Bounds.Left,
+			},
+		};
+
+		public void ScrollToEnd()
+		{
+			Control.LayoutManager.EnsureLayoutForCharacterRange(new NSRange(0, Control.TextStorage.Length));
+			Control.ScrollPoint(new CGPoint(GetScrollX(), Control.Bounds.Bottom));
+		}
 	}
 }

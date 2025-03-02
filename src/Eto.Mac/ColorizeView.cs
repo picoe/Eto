@@ -28,14 +28,14 @@
 			var size = controlView.Frame.Size;
 			if (size.Width <= 0 || size.Height <= 0)
 			{
+				_image?.Dispose();
+				_image = null;
 				return;
 			}
 			
 			if (_image == null || size != _image.Size)
 			{
-				if (_image != null)
-					_image.Dispose();
-
+				_image?.Dispose();
 				_image = new NSImage(size);
 			}
 

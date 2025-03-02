@@ -26,8 +26,8 @@ namespace Eto.Test.WinForms.UnitTests
 				// get the parent window
 				var parentWindow = panel.ParentWindow;
 
-				Assert.IsNotNull(parentWindow, "#1");
-				Assert.AreEqual(windowhandle, parentWindow.NativeHandle, "#2");
+				Assert.That(parentWindow, Is.Not.Null, "#1");
+				Assert.That(parentWindow.NativeHandle, Is.EqualTo(windowhandle), "#2");
 			});
 		}
 
@@ -102,7 +102,7 @@ namespace Eto.Test.WinForms.UnitTests
 				nativeWindow.Show();
 			});
 			ev.WaitOne();
-			Assert.IsTrue(passed);
+			Assert.That(passed, Is.True);
 		}
 	}
 }

@@ -259,7 +259,7 @@ namespace Eto.Mac.Forms
 			set => Control.MovableByWindowBackground = value;
 		}
 
-		protected override Color DefaultBackgroundColor => NSColor.WindowBackground.ToEtoWithAppearance(false);
+		protected override Color DefaultBackgroundColor => NSColor.WindowBackground.ToEtoWithAppearance();
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -281,7 +281,9 @@ namespace Eto.Mac.Forms
 					naturalSize.Height = preferredClientSize.Value.Height;
 			}
 
-			return naturalSize;
+			var frame = Control.FrameRectFor(new RectangleF(naturalSize).ToNS());
+
+			return frame.Size.ToEto();
 		}
 
 		public NSMenu MenuBar
@@ -543,7 +545,9 @@ namespace Eto.Mac.Forms
 				Control.ContentView.AddConstraint(NSLayoutConstraint.Create(Control.ContentView, NSLayoutAttribute.Leading, NSLayoutRelation.Equal, Control.ContentView, NSLayoutAttribute.Leading, 1, 0));
 			}
 
+#if Mac64
 			Control.ReleasedWhenClosed = false;
+#endif
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
 			Control.AutorecalculatesKeyViewLoop = true;
@@ -788,7 +792,7 @@ namespace Eto.Mac.Forms
 				if (UserPreferredSize.Height != -1)
 					availableSize.Height = UserPreferredSize.Height - borderSize.Height;
 				var size = GetPreferredSize(availableSize);
-				SetContentSize(size.ToNS());
+				SetSize(size.ToNS());
 			}
 		}
 
@@ -950,13 +954,6 @@ namespace Eto.Mac.Forms
 			get { return Control.ContentView.Frame.Size.ToEtoSize(); }
 			set
 			{
-				if (value.Height != -1)
-				{
-					var oldFrame = Control.Frame;
-					var oldSize = Control.ContentView.Frame;
-					Control.SetFrameOrigin(new CGPoint(oldFrame.X, (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldSize.Height))));
-				}
-
 				PreferredClientSize = value;
 				if (value.Width != -1 && value.Height != -1)
 					UserPreferredSize = new Size(-1, -1);
@@ -983,9 +980,15 @@ namespace Eto.Mac.Forms
 			{
 				if (Visible != value)
 				{
+					if (!value)
+						InternalSetOwner(null);
+						
 					Control.IsVisible = value;
 					if (Widget.Loaded && value)
+					{
+						EnsureOwner();
 						FireOnShown();
+					}
 				}
 			}
 		}
@@ -1170,33 +1173,18 @@ namespace Eto.Mac.Forms
 
 		#region IMacContainer implementation
 
-		void SetContentSize(CGSize contentSize)
+		void SetSize(CGSize newSize)
 		{
 			if (MinimumSize != Size.Empty)
 			{
-				contentSize.Width = (nfloat)Math.Max(contentSize.Width, MinimumSize.Width);
-				contentSize.Height = (nfloat)Math.Max(contentSize.Height, MinimumSize.Height);
+				newSize.Width = (nfloat)Math.Max(newSize.Width, MinimumSize.Width);
+				newSize.Height = (nfloat)Math.Max(newSize.Height, MinimumSize.Height);
 			}
 
-			if (Widget.Loaded)
-			{
-				var clientSize = ClientSize;
-				var diffy = clientSize.Height - (int)contentSize.Height;
-				var diffx = clientSize.Width - (int)contentSize.Width;
-				var frame = Control.Frame;
-				if (diffx != 0 || setInitialSize)
-				{
-					frame.Width -= diffx;
-				}
-				if (diffy != 0 || setInitialSize)
-				{
-					frame.Y += diffy;
-					frame.Height -= diffy;
-				}
-				Control.SetFrame(frame, true, AnimateSizeChanges);
-			}
-			else
-				Control.SetContentSize(contentSize);
+			var frame = Control.Frame;
+			frame.Y += frame.Height - newSize.Height;
+			frame.Size = newSize;
+			Control.SetFrame(frame, Widget.Loaded, AnimateSizeChanges);
 		}
 
 		#endregion
@@ -1339,7 +1327,7 @@ namespace Eto.Mac.Forms
 				// since this can get called multiple times
 				Widget.GotFocus -= HandleGotFocusAsChild;
 				
-				if (owner != null)
+				if (owner != null && Visible)
 				{
 					var macWindow = owner.Handler as IMacWindow;
 					if (macWindow != null && macWindow.Control.TabbedWindows?.Contains(Control) != true)

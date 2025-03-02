@@ -14,21 +14,21 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					Items = { "Item 1", "Item 2", "Item 3" },
 					SelectedIndex = 1
 				};
-				Assert.AreEqual(1, rbl.SelectedIndex, "#1.1");
+				Assert.That(rbl.SelectedIndex, Is.EqualTo(1), "#1.1");
 				
 				return rbl;
 			}, rbl => {
-				Assert.AreEqual(1, rbl.SelectedIndex, "#2.1");
+				Assert.That(rbl.SelectedIndex, Is.EqualTo(1), "#2.1");
 				
 				
 				rbl.SelectedIndex = -1;
-				Assert.AreEqual(-1, rbl.SelectedIndex, "#3.1");
+				Assert.That(rbl.SelectedIndex, Is.EqualTo(-1), "#3.1");
 				
 				rbl.SelectedKey = "Item 3";
-				Assert.AreEqual(2, rbl.SelectedIndex, "#3.1");
+				Assert.That(rbl.SelectedIndex, Is.EqualTo(2), "#3.1");
 
 				rbl.SelectedKey = null;
-				Assert.AreEqual(-1, rbl.SelectedIndex, "#3.1");
+				Assert.That(rbl.SelectedIndex, Is.EqualTo(-1), "#3.1");
 			});
 		}
         

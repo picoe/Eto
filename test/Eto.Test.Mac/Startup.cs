@@ -44,7 +44,7 @@ namespace Eto.Test.Mac
 				{
 					handler.Border = BorderType.None;
 
-					handler.Control.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
+					handler.Control.Style = NSTableViewStyle.SourceList;
 					handler.Control.FloatsGroupRows = false;
 
 					handler.ShowGroups = true;

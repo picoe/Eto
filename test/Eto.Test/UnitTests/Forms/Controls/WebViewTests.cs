@@ -54,7 +54,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				webView =>
 				{
 					var value = webView.ExecuteScript("return 'hello';");
-					Assert.AreEqual("hello", value, "#1");
+					Assert.That(value, Is.EqualTo("hello"), "#1");
 				});
 		}
 
@@ -69,7 +69,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				async webView =>
 				{
 					var value = await webView.ExecuteScriptAsync("return 'hello';");
-					Assert.AreEqual("hello", value, "#1");
+					Assert.That(value, Is.EqualTo("hello"), "#1");
 				});
 		}
 		

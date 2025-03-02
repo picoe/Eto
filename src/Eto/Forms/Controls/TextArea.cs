@@ -320,12 +320,12 @@ public class TextArea : TextControl
 	public void ScrollTo(Range<int> range) => Handler.ScrollTo(range);
 
 	/// <summary>
-	/// Scrolls to the start of the text in the text area.
+	/// Scrolls to the start of the text aligned on the same horizontal side as <see cref="TextAlignment"/>.
 	/// </summary>
 	public void ScrollToStart() => Handler.ScrollToStart();
 
 	/// <summary>
-	/// Scrolls to the end of the text in the text area.
+	/// Scrolls to the end of the text aligned on the same horizontal side as <see cref="TextAlignment"/>.
 	/// </summary>
 	public void ScrollToEnd() => Handler.ScrollToEnd();
 

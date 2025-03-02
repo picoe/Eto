@@ -281,7 +281,7 @@ namespace Eto.Mac.Forms
 			var obj = Runtime.GetNSObject(sender);
 			Messaging.void_objc_msgSendSuper_SizeF(obj.SuperHandle, sel, size);
 
-			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler && !handler.Widget.IsDisposed)
 			{
 				handler.OnSizeChanged(EventArgs.Empty);
 				handler.Callback.OnSizeChanged(handler.Widget, EventArgs.Empty);
@@ -1246,7 +1246,7 @@ namespace Eto.Mac.Forms
 			pt.Y = mainFrame.Height - pt.Y;
 			var window = view.Window ?? NSApplication.SharedApplication.CurrentEvent?.Window;
 			if (window != null)
-				pt = window.ConvertScreenToBase(pt);
+				pt = window.ConvertPointFromScreen(pt);
 
 			pt = view.ConvertPointFromView(pt, null);
 			if (!view.IsFlipped)
@@ -1265,7 +1265,7 @@ namespace Eto.Mac.Forms
 			pt = view.ConvertPointToView(pt, null);
 			var window = view.Window ?? NSApplication.SharedApplication.CurrentEvent?.Window;
 			if (window != null)
-				pt = window.ConvertBaseToScreen(pt);
+				pt = window.ConvertPointToScreen(pt);
 
 			var mainFrame = NSScreen.Screens[0].Frame;
 			pt.Y = mainFrame.Height - pt.Y;
@@ -1343,12 +1343,20 @@ namespace Eto.Mac.Forms
 			// don't use GetMacViewHandler() extension, as that will trigger OnShown for themed controls, which will
 			// trigger Shown multiple times for the same themed control
 			var handler = control.Handler as IMacViewHandler;
-			handler?.Callback.OnShown(control, EventArgs.Empty);
+			var isWindow = control is Window;
+			
+			// Parent controls get shown event first, then children
+			if (!isWindow)
+				handler?.Callback.OnShown(control, EventArgs.Empty);
 
 			foreach (var ctl in control.VisualControls)
 			{
 				FireOnShown(ctl);
 			}
+
+			// Window fires shown after all child controls
+			if (isWindow)
+				handler?.Callback.OnShown(control, EventArgs.Empty);
 		}
 
 		protected virtual void FireOnShown() => FireOnShown(Widget);

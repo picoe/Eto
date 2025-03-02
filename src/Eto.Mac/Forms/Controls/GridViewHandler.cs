@@ -329,11 +329,15 @@ namespace Eto.Mac.Forms.Controls
 
 			public override bool ShouldEditTableColumn(NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
-				var colHandler = Handler.GetColumn(tableColumn);
-				var item = Handler.collection.ElementAt((int)row);
+				var h = Handler;
+				if (h == null)
+					return false;
+					
+				var colHandler = h.GetColumn(tableColumn);
+				var item = h.collection.ElementAt((int)row);
 				var args = new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item);
-				Handler.Callback.OnCellEditing(Handler.Widget, args);
-				Handler.SetIsEditing(true);
+				h.Callback.OnCellEditing(h.Widget, args);
+				h.SetIsEditing(true);
 				return true;
 			}
 			
@@ -362,13 +366,19 @@ namespace Eto.Mac.Forms.Controls
 
 			public override nfloat GetSizeToFitColumnWidth(NSTableView tableView, nint column)
 			{
-				var colHandler = Handler.GetColumn(tableView.TableColumns()[column]);
+				var h = Handler;
+				if (h == null)
+					return 20;
+				var columns = tableView.TableColumns();
+				if (column >= (int)columns.Length)
+					return 20;
+				var colHandler = h.GetColumn(columns[column]);
 				if (colHandler != null)
 				{
 					// turn on autosizing for this column again
 					colHandler.AutoSize = true;
-					Handler.DidSetAutoSizeColumn = true;
-					Application.Instance.AsyncInvoke(() => Handler.DidSetAutoSizeColumn = false);
+					h.DidSetAutoSizeColumn = true;
+					Application.Instance.AsyncInvoke(() => h.DidSetAutoSizeColumn = false);
 					return colHandler.GetPreferredWidth();
 				}
 				return 20;
@@ -376,9 +386,12 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn)
 			{
-				var colHandler = Handler.GetColumn(tableColumn);
+				var h = Handler;
+				if (h == null)
+					return;
+				var colHandler = h.GetColumn(tableColumn);
 				if (colHandler.Sortable)
-					Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(colHandler.Widget));
+					h.Callback.OnColumnHeaderClick(h.Widget, new GridColumnEventArgs(colHandler.Widget));
 			}
 
 			public override void ColumnDidResize(NSNotification notification)
@@ -388,17 +401,17 @@ namespace Eto.Mac.Forms.Controls
 
 			public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
-				var colHandler = Handler.GetColumn(tableColumn);
-				if (colHandler != null)
+				var h = Handler;
+				if (h != null)
 				{
-					var cellHandler = colHandler.DataCellHandler;
+					var cellHandler = h.GetColumn(tableColumn)?.DataCellHandler;
 					if (cellHandler != null)
 					{
-						return cellHandler.GetViewForItem(tableView, tableColumn, (int)row, null, (obj, r) => Handler.GetItem(r));
+						return cellHandler.GetViewForItem(tableView, tableColumn, (int)row, null, (obj, r) => h.GetItem(r));
 					}
 				}
 
-				return tableView.MakeView(tableColumn.Identifier, this);
+				return tableView.MakeView(tableColumn?.Identifier ?? string.Empty, this);
 			}
 
 			public override void DidAddRowView(NSTableView tableView, NSTableRowView rowView, nint row)
@@ -408,7 +421,10 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DidRemoveRowView(NSTableView tableView, NSTableRowView rowView, nint row)
 			{
-				foreach (var col in Handler.ColumnHandlers)
+				var h = Handler;
+				if (h == null)
+					return;
+				foreach (var col in h.ColumnHandlers)
 				{
 					if (col.DisplayIndex != -1)
 					{
@@ -517,84 +533,47 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public GridViewHandler Handler { get; set; }
 
+			protected override void BeginUpdates()
+			{
+				base.BeginUpdates();
+				Handler.Control.BeginUpdates();
+			}
+
+			protected override void EndUpdates()
+			{
+				base.EndUpdates();
+				Handler.Control.EndUpdates();
+				Handler.AutoSizeColumns(true);
+			}
+
 			public override void AddRange(IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData();
-				Handler.AutoSizeColumns(true);
 			}
-
-			static Selector selInsertRowsWithAnimation = new Selector("insertRowsAtIndexes:withAnimation:");
-			static Selector selRemoveRowsWithAnimation = new Selector("removeRowsAtIndexes:withAnimation:");
 
 			public override void AddItem(object item)
 			{
-				if (Handler.Control.RespondsToSelector(selInsertRowsWithAnimation))
-				{
-					Handler.Control.BeginUpdates();
-					Handler.Control.InsertRows(new NSIndexSet(Count), NSTableViewAnimation.SlideDown);
-					Handler.Control.EndUpdates();
-				}
-				else
-					Handler.Control.ReloadData();
-
-				Handler.AutoSizeColumns(true);
+				Handler.Control.InsertRows(new NSIndexSet(Count), NSTableViewAnimation.SlideDown);
 			}
 
+			public override void ReplaceItem(int index, object newItem)
+			{
+				Handler.Control.ReloadData(NSIndexSet.FromIndex((nint)index), NSIndexSet.FromNSRange(new NSRange(0, Handler.Control.TableColumns().Length)));
+			}
+			
 			public override void InsertItem(int index, object item)
 			{
-				if (Handler.Control.RespondsToSelector(selInsertRowsWithAnimation))
-				{
-					Handler.Control.BeginUpdates();
-					Handler.Control.InsertRows(new NSIndexSet(index), NSTableViewAnimation.SlideDown);
-					Handler.Control.EndUpdates();
-				}
-				else
-				{
-					var rows = Handler.SelectedRows.Select(r => r >= index ? r + 1 : r).ToArray();
-					Handler.SuppressSelectionChanged++;
-					Handler.Control.ReloadData();
-					Handler.SelectedRows = rows;
-					Handler.SuppressSelectionChanged--;
-				}
-
-				Handler.AutoSizeColumns(true);
+				Handler.Control.InsertRows(new NSIndexSet(index), NSTableViewAnimation.SlideDown);
 			}
 
 			public override void RemoveItem(int index)
 			{
-				if (Handler.Control.RespondsToSelector(selRemoveRowsWithAnimation))
-				{
-					Handler.Control.BeginUpdates();
-					Handler.Control.RemoveRows(new NSIndexSet(index), NSTableViewAnimation.SlideUp);
-					Handler.Control.EndUpdates();
-				}
-				else
-				{
-					// need to adjust selected rows to shift them up
-					bool isSelected = false;
-					var rows = Handler.SelectedRows.Where(r =>
-					{
-						if (r != index)
-							return true;
-						isSelected = true;
-						return false;
-					}).Select(r => r > index ? r - 1 : r).ToArray();
-					Handler.SuppressSelectionChanged++;
-					Handler.Control.ReloadData();
-					Handler.SelectedRows = rows;
-					Handler.SuppressSelectionChanged--;
-					// item being removed was selected, so trigger change
-					if (isSelected)
-						Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
-				}
-
-				Handler.AutoSizeColumns(true);
+				Handler.Control.RemoveRows(new NSIndexSet(index), NSTableViewAnimation.SlideUp);
 			}
 
 			public override void RemoveAllItems()
 			{
 				Handler.Control.ReloadData();
-				Handler.AutoSizeColumns(true);
 			}
 		}
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Eto.Test.UnitTests;
 
 namespace Eto.Test
 {
@@ -27,6 +28,10 @@ namespace Eto.Test
 	
     public static class NativeHostControls
     {
+		static NativeHostControls()
+		{
+			EtoTestSetup.Initialize();
+		}
 		static INativeHostControls Handler => Platform.Instance.CreateShared<INativeHostControls>();
 
 		public static IEnumerable<NativeHostTest> GetNativeHostTests() => Handler.GetNativeHostTests();

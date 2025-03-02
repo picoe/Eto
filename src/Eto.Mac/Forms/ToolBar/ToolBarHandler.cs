@@ -101,10 +101,8 @@ namespace Eto.Mac.Forms.ToolBar
 
 			static string[] systemIdentifiers = {
 				DividerIdentifier,
-				NSToolbar.NSToolbarSeparatorItemIdentifier,
 				NSToolbar.NSToolbarSpaceItemIdentifier,
-				NSToolbar.NSToolbarFlexibleSpaceItemIdentifier,
-				NSToolbar.NSToolbarCustomizeToolbarItemIdentifier
+				NSToolbar.NSToolbarFlexibleSpaceItemIdentifier
 			};
 
 			public override string[] AllowedItemIdentifiers(NSToolbar toolbar)

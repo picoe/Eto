@@ -40,9 +40,9 @@ namespace Eto.Test.UnitTests.Forms
 			style.Add<Control>(null, c => c.Visible = false);
 
 			var label = new Label();
-			Assert.IsTrue(label.Visible);
+			Assert.That(label.Visible, Is.True);
 			provider.ApplyDefault(label);
-			Assert.IsFalse(label.Visible);
+			Assert.That(label.Visible, Is.False);
 		}
 
 		[Test, InvokeOnUI]
@@ -53,9 +53,9 @@ namespace Eto.Test.UnitTests.Forms
 			style.Add<Control>("style", c => c.Visible = false);
 
 			var label = new Label();
-			Assert.IsTrue(label.Visible);
+			Assert.That(label.Visible, Is.True);
 			provider.ApplyStyle(label, "style");
-			Assert.IsFalse(label.Visible);
+			Assert.That(label.Visible, Is.False);
 		}
 
 		[Test, InvokeOnUI]
@@ -66,9 +66,9 @@ namespace Eto.Test.UnitTests.Forms
 			style.Add<Button>(null, c => c.Visible = false);
 
 			var label = new Label();
-			Assert.IsTrue(label.Visible);
+			Assert.That(label.Visible, Is.True);
 			provider.ApplyDefault(label);
-			Assert.IsTrue(label.Visible);
+			Assert.That(label.Visible, Is.True);
 		}
 
 		[Test, InvokeOnUI]
@@ -79,9 +79,9 @@ namespace Eto.Test.UnitTests.Forms
 			style.Add<Button>("style", c => c.Visible = false);
 
 			var label = new Label();
-			Assert.IsTrue(label.Visible);
+			Assert.That(label.Visible, Is.True);
 			provider.ApplyStyle(label, "style");
-			Assert.IsTrue(label.Visible);
+			Assert.That(label.Visible, Is.True);
 		}
 
 		[Test, InvokeOnUI]
@@ -92,9 +92,9 @@ namespace Eto.Test.UnitTests.Forms
 			style.Add<StyledWidgetHandler>(null, h => h.SomeProperty = true);
 
 			var styledWidget = new StyledWidget();
-			Assert.IsFalse(styledWidget.SomeProperty);
+			Assert.That(styledWidget.SomeProperty, Is.False);
 			provider.ApplyDefault(styledWidget.Handler);
-			Assert.IsTrue(styledWidget.SomeProperty);
+			Assert.That(styledWidget.SomeProperty, Is.True);
 		}
 
 		[Test, InvokeOnUI]
@@ -105,9 +105,9 @@ namespace Eto.Test.UnitTests.Forms
 			style.Add<StyledWidgetHandler>("style", h => h.SomeProperty = true);
 
 			var styledWidget = new StyledWidget();
-			Assert.IsFalse(styledWidget.SomeProperty);
+			Assert.That(styledWidget.SomeProperty, Is.False);
 			provider.ApplyStyle(styledWidget.Handler, "style");
-			Assert.IsTrue(styledWidget.SomeProperty);
+			Assert.That(styledWidget.SomeProperty, Is.True);
 		}
 	}
 }

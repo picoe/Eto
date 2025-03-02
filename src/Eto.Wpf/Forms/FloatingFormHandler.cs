@@ -1,80 +1,79 @@
-namespace Eto.Wpf.Forms
+namespace Eto.Wpf.Forms;
+
+public class FloatingFormHandler : FormHandler, FloatingForm.IHandler
 {
-	public class FloatingFormHandler : FormHandler, FloatingForm.IHandler
+	static readonly object Visible_Key = new object();
+	
+	bool _wasActive;
+
+	protected override void Initialize()
 	{
-		static readonly object Visible_Key = new object();
-		
-		bool _wasActive;
+		base.Initialize();
+		// defaults for a floating form
+		Maximizable = false;
+		Minimizable = false;
+		ShowInTaskbar = false;
+		Topmost = true;
+	}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
-			// defaults for a floating form
-			Maximizable = false;
-			Minimizable = false;
-			ShowInTaskbar = false;
-			Topmost = true;
-		}
+	public override void OnLoad(EventArgs e)
+	{
+		base.OnLoad(e);
+		Application.Instance.IsActiveChanged += Application_IsActiveChanged;
+		if (!Application.Instance.IsActive)
+			base.Visible = false;
+	}
 
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			Application.Instance.IsActiveChanged += Application_IsActiveChanged;
-			if (!Application.Instance.IsActive)
-				base.Visible = false;
-		}
+	public override void OnUnLoad(EventArgs e)
+	{
+		base.OnUnLoad(e);
+		Application.Instance.IsActiveChanged -= Application_IsActiveChanged;
+	}
 
-		public override void OnUnLoad(EventArgs e)
+	private void Application_IsActiveChanged(object sender, EventArgs e)
+	{
+		SetVisibility(true);
+	}
+	
+	public override bool Visible
+	{
+		get => Widget.Properties.Get<bool>(Visible_Key, false);
+		set
 		{
-			base.OnUnLoad(e);
-			Application.Instance.IsActiveChanged -= Application_IsActiveChanged;
+			Widget.Properties.Set(Visible_Key, value, false);
+			SetVisibility(false);
 		}
-
-		private void Application_IsActiveChanged(object sender, EventArgs e)
+	}
+	
+	public override void Show()
+	{
+		Widget.Properties.Set(Visible_Key, true, false);
+		base.Show();
+	}
+	
+	void SetVisibility(bool setActive)
+	{
+		var currentlyVisible = base.Visible;
+		var isVisible = Application.Instance.IsActive && Visible;
+		if (isVisible == currentlyVisible)
+			return;
+			
+		if (!isVisible)
 		{
-			SetVisibility(true);
-		}
-		
-		public override bool Visible
-		{
-			get => Widget.Properties.Get<bool>(Visible_Key, true);
-			set
+			if (currentlyVisible)
 			{
-				Widget.Properties.Set(Visible_Key, value, true);
-				SetVisibility(false);
+				_wasActive = Win32.GetThreadFocusWindow() == NativeHandle;
 			}
+			base.Visible = isVisible;
 		}
-		
-		public override void Show()
+		else if (setActive)
 		{
-			Widget.Properties.Set(Visible_Key, true, true);
-			base.Show();
+			var oldShowActivated = Control.ShowActivated;
+			Control.ShowActivated = _wasActive;
+			base.Visible = isVisible;
+			Control.ShowActivated = oldShowActivated;
 		}
-		
-		void SetVisibility(bool setActive)
-		{
-			var currentlyVisible = base.Visible;
-			var isVisible = Application.Instance.IsActive && Visible;
-			if (isVisible == currentlyVisible)
-				return;
-				
-			if (!isVisible)
-			{
-				if (currentlyVisible)
-				{
-					_wasActive = Win32.GetThreadFocusWindow() == NativeHandle;
-				}
-				base.Visible = isVisible;
-			}
-			else if (setActive)
-			{
-				var oldShowActivated = Control.ShowActivated;
-				Control.ShowActivated = _wasActive;
-				base.Visible = isVisible;
-				Control.ShowActivated = oldShowActivated;
-			}
-			else
-				base.Visible = isVisible;
-		}
+		else
+			base.Visible = isVisible;
 	}
 }

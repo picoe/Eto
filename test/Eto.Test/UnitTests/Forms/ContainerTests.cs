@@ -13,7 +13,7 @@ namespace Eto.Test.UnitTests.Forms
 				form =>
 				{
 					var panel = type.CreateControl();
-					Assert.IsNotNull(panel);
+					Assert.That(panel, Is.Not.Null);
 
 					panel.Padding = 40;
 					panel.Content = new Panel
@@ -33,7 +33,7 @@ namespace Eto.Test.UnitTests.Forms
 				form =>
 				{
 					var panel = type.CreateControl();
-					Assert.IsNotNull(panel);
+					Assert.That(panel, Is.Not.Null);
 
 					panel.Padding = new Padding(0, 0, 40, 40);
 					panel.Content = new Panel
@@ -80,34 +80,34 @@ namespace Eto.Test.UnitTests.Forms
 				enabledChild.Enabled = true;
 
 				// default values
-				Assert.IsTrue(container.Enabled, "#1.1");
-				Assert.IsTrue(enabledChild.Enabled, "#1.2");
-				Assert.IsFalse(disabledChild.Enabled, "#1.3");
-				Assert.AreEqual(neutralEnabled, neutralChild.Enabled, "#1.4");
+				Assert.That(container.Enabled, Is.True, "#1.1");
+				Assert.That(enabledChild.Enabled, Is.True, "#1.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#1.3");
+				Assert.That(neutralChild.Enabled, Is.EqualTo(neutralEnabled), "#1.4");
 
 				// setting container to disabled
 				container.Enabled = false;
 
-				Assert.IsFalse(container.Enabled, "#2.1");
-				Assert.IsFalse(enabledChild.Enabled, "#2.2");
-				Assert.IsFalse(disabledChild.Enabled, "#2.3");
-				Assert.IsFalse(neutralChild.Enabled, "#2.4");
+				Assert.That(container.Enabled, Is.False, "#2.1");
+				Assert.That(enabledChild.Enabled, Is.False, "#2.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#2.3");
+				Assert.That(neutralChild.Enabled, Is.False, "#2.4");
 
 				// set child to enabled when parent is disabled, should still stay disabled
 				enabledChild.Enabled = true;
 
-				Assert.IsFalse(container.Enabled, "#3.1");
-				Assert.IsFalse(enabledChild.Enabled, "#3.2");
-				Assert.IsFalse(disabledChild.Enabled, "#3.3");
-				Assert.IsFalse(neutralChild.Enabled, "#3.4");
+				Assert.That(container.Enabled, Is.False, "#3.1");
+				Assert.That(enabledChild.Enabled, Is.False, "#3.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#3.3");
+				Assert.That(neutralChild.Enabled, Is.False, "#3.4");
 
 				// set container back to enabled
 				container.Enabled = true;
 
-				Assert.IsTrue(container.Enabled, "#4.1");
-				Assert.IsTrue(enabledChild.Enabled, "#4.2");
-				Assert.IsFalse(disabledChild.Enabled, "#4.3");
-				Assert.AreEqual(neutralEnabled, neutralChild.Enabled, "#4.4");
+				Assert.That(container.Enabled, Is.True, "#4.1");
+				Assert.That(enabledChild.Enabled, Is.True, "#4.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#4.3");
+				Assert.That(neutralChild.Enabled, Is.EqualTo(neutralEnabled), "#4.4");
 			});
 		}
 
@@ -139,18 +139,18 @@ namespace Eto.Test.UnitTests.Forms
 				enabledChild.Enabled = true;
 
 				// default values
-				Assert.IsTrue(container.Enabled, "#1.1");
-				Assert.IsTrue(enabledChild.Enabled, "#1.2");
-				Assert.IsFalse(disabledChild.Enabled, "#1.3");
-				Assert.AreEqual(neutralEnabled, neutralChild.Enabled, "#1.4");
+				Assert.That(container.Enabled, Is.True, "#1.1");
+				Assert.That(enabledChild.Enabled, Is.True, "#1.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#1.3");
+				Assert.That(neutralChild.Enabled, Is.EqualTo(neutralEnabled), "#1.4");
 
 				addControls();
 
 				// default values after added to the container
-				Assert.IsTrue(container.Enabled, "#2.1");
-				Assert.IsTrue(enabledChild.Enabled, "#2.2");
-				Assert.IsFalse(disabledChild.Enabled, "#2.3");
-				Assert.AreEqual(neutralEnabled, neutralChild.Enabled, "#2.4");
+				Assert.That(container.Enabled, Is.True, "#2.1");
+				Assert.That(enabledChild.Enabled, Is.True, "#2.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#2.3");
+				Assert.That(neutralChild.Enabled, Is.EqualTo(neutralEnabled), "#2.4");
 
 				removeControls();
 
@@ -158,40 +158,40 @@ namespace Eto.Test.UnitTests.Forms
 				container.Enabled = false;
 
 				// default values after removed from the container (and container set to disabled)
-				Assert.IsTrue(enabledChild.Enabled, "#3.1");
-				Assert.IsFalse(disabledChild.Enabled, "#3.2");
-				Assert.AreEqual(neutralEnabled, neutralChild.Enabled, "#3.3");
+				Assert.That(enabledChild.Enabled, Is.True, "#3.1");
+				Assert.That(disabledChild.Enabled, Is.False, "#3.2");
+				Assert.That(neutralChild.Enabled, Is.EqualTo(neutralEnabled), "#3.3");
 
 				addControls();
 				// values after adding back to the container
-				Assert.IsFalse(container.Enabled, "#4.1");
-				Assert.IsFalse(enabledChild.Enabled, "#4.2");
-				Assert.IsFalse(disabledChild.Enabled, "#4.3");
-				Assert.IsFalse(neutralChild.Enabled, "#4.4");
+				Assert.That(container.Enabled, Is.False, "#4.1");
+				Assert.That(enabledChild.Enabled, Is.False, "#4.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#4.3");
+				Assert.That(neutralChild.Enabled, Is.False, "#4.4");
 
 				// set child to enabled when parent is disabled, should still stay disabled
 				enabledChild.Enabled = true;
 
-				Assert.IsFalse(container.Enabled, "#5.1");
-				Assert.IsFalse(enabledChild.Enabled, "#5.2");
-				Assert.IsFalse(disabledChild.Enabled, "#5.3");
-				Assert.IsFalse(neutralChild.Enabled, "#5.4");
+				Assert.That(container.Enabled, Is.False, "#5.1");
+				Assert.That(enabledChild.Enabled, Is.False, "#5.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#5.3");
+				Assert.That(neutralChild.Enabled, Is.False, "#5.4");
 
 				removeControls();
 				// default values after removed from the container (again)
-				Assert.IsTrue(enabledChild.Enabled, "#6.1");
-				Assert.IsFalse(disabledChild.Enabled, "#6.2");
-				Assert.AreEqual(neutralEnabled, neutralChild.Enabled, "#6.3");
+				Assert.That(enabledChild.Enabled, Is.True, "#6.1");
+				Assert.That(disabledChild.Enabled, Is.False, "#6.2");
+				Assert.That(neutralChild.Enabled, Is.EqualTo(neutralEnabled), "#6.3");
 
 				// set container back to enabled
 				container.Enabled = true;
 
 				addControls();
 
-				Assert.IsTrue(container.Enabled, "#7.1");
-				Assert.IsTrue(enabledChild.Enabled, "#7.2");
-				Assert.IsFalse(disabledChild.Enabled, "#7.3");
-				Assert.AreEqual(neutralEnabled, neutralChild.Enabled, "#7.4");
+				Assert.That(container.Enabled, Is.True, "#7.1");
+				Assert.That(enabledChild.Enabled, Is.True, "#7.2");
+				Assert.That(disabledChild.Enabled, Is.False, "#7.3");
+				Assert.That(neutralChild.Enabled, Is.EqualTo(neutralEnabled), "#7.4");
 			});
 		}
 
@@ -207,18 +207,18 @@ namespace Eto.Test.UnitTests.Forms
 				// if it's already enabled, it shouldn't fire a changed event when we set it.
 				var expectedCount = control.Enabled ? 0 : 1;
 				control.Enabled = true;
-				Assert.IsTrue(control.Enabled, "#1.1");
-				Assert.AreEqual(expectedCount, enabledChanged, "#1.2");
+				Assert.That(control.Enabled, Is.True, "#1.1");
+				Assert.That(enabledChanged, Is.EqualTo(expectedCount), "#1.2");
 
 				// test setting to false without container, should trigger event
 				control.Enabled = false;
-				Assert.IsFalse(control.Enabled, "#1.3");
-				Assert.AreEqual(++expectedCount, enabledChanged, "#1.4");
+				Assert.That(control.Enabled, Is.False, "#1.3");
+				Assert.That(enabledChanged, Is.EqualTo(++expectedCount), "#1.4");
 
 				// set back to true, should trigger event
 				control.Enabled = true;
-				Assert.IsTrue(control.Enabled, "#1.5");
-				Assert.AreEqual(++expectedCount, enabledChanged, "#1.6");
+				Assert.That(control.Enabled, Is.True, "#1.5");
+				Assert.That(enabledChanged, Is.EqualTo(++expectedCount), "#1.6");
 
 				panel.Content = new TableLayout
 				{
@@ -229,28 +229,28 @@ namespace Eto.Test.UnitTests.Forms
 
 				// set panel to enabled (which it should already be at), so no change event
 				panel.Enabled = true;
-				Assert.IsTrue(control.Enabled, "#2.1");
-				Assert.AreEqual(expectedCount, enabledChanged, "#2.2"); // shouldn't have changed
+				Assert.That(control.Enabled, Is.True, "#2.1");
+				Assert.That(enabledChanged, Is.EqualTo(expectedCount), "#2.2"); // shouldn't have changed
 
 				// change panel to disabled, which should now trigger the event
 				panel.Enabled = false;
-				Assert.IsFalse(control.Enabled, "#3.1");
-				Assert.AreEqual(++expectedCount, enabledChanged, "#3.2");
+				Assert.That(control.Enabled, Is.False, "#3.1");
+				Assert.That(enabledChanged, Is.EqualTo(++expectedCount), "#3.2");
 
 				// set control to enabled, which should still stay false and not trigger the event
 				control.Enabled = true;
-				Assert.IsFalse(control.Enabled, "#4.1");
-				Assert.AreEqual(expectedCount, enabledChanged, "#4.2");
+				Assert.That(control.Enabled, Is.False, "#4.1");
+				Assert.That(enabledChanged, Is.EqualTo(expectedCount), "#4.2");
 
 				// set to same value again, should not fire changed event
 				panel.Enabled = false;
-				Assert.IsFalse(control.Enabled, "#5.1");
-				Assert.AreEqual(expectedCount, enabledChanged, "#5.2");
+				Assert.That(control.Enabled, Is.False, "#5.1");
+				Assert.That(enabledChanged, Is.EqualTo(expectedCount), "#5.2");
 
 				// remove from parent, should trigger changed event
 				panel.Content = null;
-				Assert.IsTrue(control.Enabled, "#6.1");
-				Assert.AreEqual(++expectedCount, enabledChanged, "#6.2");
+				Assert.That(control.Enabled, Is.True, "#6.1");
+				Assert.That(enabledChanged, Is.EqualTo(++expectedCount), "#6.2");
 
 			});
 		}
@@ -278,7 +278,7 @@ namespace Eto.Test.UnitTests.Forms
 					var check = new CheckBox { Text = "Enable radio buttons", Checked = initiallyEnabled };
 					radio.EnabledChanged += (sender, e) => label.Text = $"EnabledChanged->radio.Enabled({radio.Enabled})";
 					radio.Enabled = initiallyEnabled;
-					Assert.AreEqual(initiallyEnabled, radio.Enabled, "#1.1");
+					Assert.That(radio.Enabled, Is.EqualTo(initiallyEnabled), "#1.1");
 					check.CheckedChanged += (sender, e) => {
 						var isChecked = check.Checked == true;
 						radio.Enabled = isChecked;
@@ -301,9 +301,9 @@ namespace Eto.Test.UnitTests.Forms
 					return new TableLayout { Rows = { check, radio, label } };
 				});
 
-			Assert.AreEqual(0, incorrectTableLayoutEnabledState, "#2.1 - internal TableLayout did not have the correct enabled state");
-			Assert.GreaterOrEqual(changedCount, 2, "#2.2 - The check box was not toggled at least twice");
-			Assert.IsTrue(initialStateMatchesInitiallyEnabled, "#2.3 - initial state of radio button did not match");
+			Assert.That(incorrectTableLayoutEnabledState, Is.EqualTo(0), "#2.1 - internal TableLayout did not have the correct enabled state");
+			Assert.That(changedCount, Is.GreaterThanOrEqualTo(2), "#2.2 - The check box was not toggled at least twice");
+			Assert.That(initialStateMatchesInitiallyEnabled, Is.True, "#2.3 - initial state of radio button did not match");
 		}
 
 	}

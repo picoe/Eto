@@ -539,7 +539,7 @@ public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 	{
 		if (disposing)
 		{
-			if (Handler is IDisposable handler)
+			if (!IsDisposed && Handler is IDisposable handler)
 				handler.Dispose();
 			IsDisposed = true;
 			Handler = null;

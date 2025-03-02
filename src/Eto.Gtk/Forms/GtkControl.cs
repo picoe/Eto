@@ -21,6 +21,8 @@ namespace Eto.GtkSharp.Forms
 
 		void TriggerMouseEnterIfNeeded();
 		void TriggerMouseLeaveIfNeeded();
+		
+		Control.ICallback Callback { get; }
 	}
 
 	public static class GtkControlExtensions
@@ -1150,8 +1152,12 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (!ContainerControl.IsRealized)
 			{
+				if (ContainerControl is Gtk.Window window)
+					window.Child.ShowAll();
+				else
+					ContainerControl.ShowAll();
+
 				ContainerControl.Realize();
-				ContainerControl.ShowAll();
 			}
 #if GTK3
 			var requestMode = ContainerControl.RequestMode;
@@ -1235,6 +1241,8 @@ namespace Eto.GtkSharp.Forms
 		}
 
 		Control IGtkControl.Widget => Widget;
+
+		Control.ICallback IGtkControl.Callback => Callback;
 
 		public void TriggerMouseEnterIfNeeded() => Connector.TriggerMouseEnterIfNeeded();
 		public void TriggerMouseLeaveIfNeeded() => Connector.TriggerMouseLeaveIfNeeded();

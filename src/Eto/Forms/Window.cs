@@ -629,6 +629,10 @@ public abstract class Window : Panel
 		/// Raises the logical pixel size changed event.
 		/// </summary>
 		void OnLogicalPixelSizeChanged(Window widget, EventArgs e);
+		/// <summary>
+		/// Raises the load complete event.
+		/// </summary>
+		void OnLoadComplete(Window widget, EventArgs e);
 	}
 
 	/// <summary>
@@ -675,6 +679,14 @@ public abstract class Window : Panel
 		{
 			using (widget.Platform.Context)
 				widget.OnLogicalPixelSizeChanged(e);
+		}
+		/// <summary>
+		/// Raises the load completed event.
+		/// </summary>
+		public void OnLoadComplete(Window widget, EventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnLoadComplete(e);
 		}
 	}
 

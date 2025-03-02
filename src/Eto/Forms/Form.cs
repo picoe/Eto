@@ -79,7 +79,7 @@ public class Form : Window
 	}
 
 	/// <summary>
-	/// Show the form
+	/// Show the form, and make it the active window if <see cref="ShowActivated"/> is <c>true</c>
 	/// </summary>
 	public void Show()
 	{
@@ -88,12 +88,26 @@ public class Form : Window
 		{
 			OnPreLoad(EventArgs.Empty);
 			OnLoad(EventArgs.Empty);
-			OnLoadComplete(EventArgs.Empty);
-
 			Application.Instance.AddWindow(this);
+			Handler.Show();
 		}
-
-		Handler.Show();
+		else
+		{
+			// Already shown, make it visible
+			base.Visible = true;
+		}
+	}
+	
+	/// <summary>
+	/// Shows the form with a task that can be awaited until it is closed
+	/// </summary>
+	/// <returns>Task that completes when the form is closed.</returns>
+	public Task ShowAsync()
+	{
+		var tcs = new TaskCompletionSource<bool>();
+		Closed += (sender, e) => tcs.TrySetResult(true);
+		Show();
+		return tcs.Task;
 	}
 
 	/// <summary>
