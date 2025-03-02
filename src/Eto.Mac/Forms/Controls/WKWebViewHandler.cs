@@ -10,7 +10,12 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public override NSView ContainerControl { get { return Control; } }
 
-		public wk.WKWebViewConfiguration Configuration { get; set; } = new wk.WKWebViewConfiguration();
+		public wk.WKWebViewConfiguration Configuration { get; set; }
+
+		public WKWebViewHandler()
+		{
+			Configuration = CreateConfiguration();
+		}
 
 		protected override wk.WKWebView CreateControl()
 		{
@@ -82,7 +87,6 @@ namespace Eto.Mac.Forms.Controls
 
 		}
 		
-
 		protected override void Initialize()
 		{
 			Enabled = true;
@@ -107,6 +111,19 @@ namespace Eto.Mac.Forms.Controls
 			public EtoWebView(IntPtr handle)
 				: base(handle)
 			{
+			}
+		}
+
+		class ScriptMessageHandler : wk.WKScriptMessageHandler
+		{
+			private readonly WKWebViewHandler Handler;
+			public ScriptMessageHandler(WKWebViewHandler handler) : base()
+			{
+				Handler = handler;
+			}
+			public override void DidReceiveScriptMessage(wk.WKUserContentController userContentController, wk.WKScriptMessage message)
+			{
+				Handler.Callback.OnMessageReceived(Handler.Widget, new WebViewMessageEventArgs(message.Body.ToString()));
 			}
 		}
 
@@ -241,10 +258,30 @@ namespace Eto.Mac.Forms.Controls
 					AddControlObserver(s_titleKey, TitleChangedObserver);
 					// todo. need to observe the Title property.
 					break;
+				case WebView.MessageReceivedEvent:
+					// Handled in constructor
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		protected wk.WKWebViewConfiguration CreateConfiguration()
+		{
+			wk.WKUserContentController contentController = new();
+
+			// Handle messages sent from JS window.webkit.messageHandlers.__eto__.postMessage
+			contentController.AddScriptMessageHandler(new ScriptMessageHandler(this), "__eto__");
+
+			// Wrap the handler for x-plat consistency as window.eto.postMessage
+			const string wrapper = @"window.eto = { postMessage: function(message) { window.webkit.messageHandlers.__eto__.postMessage(message); } };";
+			contentController.AddUserScript(new wk.WKUserScript(new NSString(wrapper), wk.WKUserScriptInjectionTime.AtDocumentStart, false));
+
+			return new wk.WKWebViewConfiguration()
+			{
+				UserContentController = contentController
+			};
 		}
 
 		static void TitleChangedObserver(ObserverActionEventArgs obj)

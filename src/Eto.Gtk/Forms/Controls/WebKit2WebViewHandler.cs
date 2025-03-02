@@ -1,8 +1,43 @@
 ﻿#if GTKCORE || GTK3
+using GLib;
+
 namespace Eto.GtkSharp.Forms.Controls
 {
+	public class WebKitJavascriptResult : Opaque
+	{
+		public static GType GType => new GType(NativeMethods.webkit_javascript_result_get_type());
+
+		public WebKitJavascriptResult(IntPtr raw)
+			: base(raw)
+		{
+		}
+
+		public string Value
+		{
+			get
+			{
+				IntPtr jsvalue = NativeMethods.webkit_javascript_result_get_js_value(Handle);
+				return NativeMethods.jsc_value_to_string(jsvalue);
+			}
+		}
+	}
+
+	class WebKitUserContentManager : GLib.InitiallyUnowned
+	{
+		public WebKitUserContentManager(IntPtr raw)
+			: base(raw)
+		{
+		}
+		
+	}
+
 	public class WebViewHandler : GtkControl<Gtk.Widget, WebView, WebView.ICallback>, WebView.IHandler
 	{
+		static WebViewHandler()
+		{
+			GType.Register(WebKitJavascriptResult.GType, typeof(WebKitJavascriptResult));
+		}
+
 		public bool BrowserContextMenuEnabled { get; set; }
 
 		public string DocumentTitle
@@ -40,7 +75,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		readonly Gtk.ScrolledWindow scroll;
 		Queue<TaskCompletionSource<string>> jscs;
-		
+
 
 		public WebViewHandler()
 		{
@@ -76,6 +111,18 @@ namespace Eto.GtkSharp.Forms.Controls
 				(Action<object, GLib.SignalArgs>)WebViewHandler_DecidePolicy,
 				typeof(GLib.SignalArgs)
 			);
+
+			var scriptSource = "window.eto = { postMessage: function(message) { window.webkit.messageHandlers.__eto__.postMessage(message); } };";
+			IntPtr script = NativeMethods.webkit_user_script_new(scriptSource, NativeMethods.WebKitUserContentInjectedFrames.WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES, NativeMethods.WebKitUserScriptInjectionTime.WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START, null, null);
+			NativeMethods.webkit_user_content_manager_add_script(NativeMethods.webkit_web_view_get_user_content_manager(Control.Handle), script);
+		}
+
+		private void WebViewHandler_MessageReceived(object arg1, SignalArgs args)
+		{
+			if (args.Args[0] is WebKitJavascriptResult result)
+			{
+				Callback.OnMessageReceived(Widget, new WebViewMessageEventArgs(result.Value));
+			}
 		}
 
 		private void WebViewHandler_TitleChanged(object o, GLib.SignalArgs args)
@@ -111,7 +158,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			if (type != 0 && type != 1)
 				return;
-			
+
 			var request = NativeMethods.webkit_navigation_policy_decision_get_request(decision.Handle);
 			var uri = new Uri(NativeMethods.webkit_uri_request_get_uri(request));
 
@@ -148,6 +195,18 @@ namespace Eto.GtkSharp.Forms.Controls
 					break;
 				case WebView.DocumentTitleChangedEvent:
 					titleChanged += (sender, e) => Callback.OnDocumentTitleChanged(Widget, e);
+					break;
+				case WebView.MessageReceivedEvent:
+					var managerPtr = NativeMethods.webkit_web_view_get_user_content_manager(Control.Handle);
+					var manager = new WebKitUserContentManager(managerPtr);
+
+					manager.AddSignalHandler(
+						"script-message-received::__eto__",
+						WebViewHandler_MessageReceived,
+						typeof(SignalArgs)
+					);
+
+					NativeMethods.webkit_user_content_manager_register_script_message_handler(managerPtr, "__eto__");
 					break;
 				default:
 					base.AttachEvent(id);

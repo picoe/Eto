@@ -25,6 +25,18 @@ namespace Eto.GtkSharp
 	    	public int		sfont;
 	    	public IntPtr	fonts;
 		}
+		
+		public enum WebKitUserContentInjectedFrames : int
+		{
+			WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES = 0,
+			WEBKIT_USER_CONTENT_INJECT_TOP_FRAME = 1
+		}
+		
+		public enum WebKitUserScriptInjectionTime : int
+		{
+			WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START = 0,
+			WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_END = 1
+		}
 
 
 		static class NMWindows
@@ -69,6 +81,7 @@ namespace Eto.GtkSharp
 			const string libpangoft2 = "libpangoft2-1.0" + ext;
 			const string libfontconfig = "libfontconfig" + extalt;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
+			const string libjavascriptcore = "libjavascriptcoregtk-4.1.so.0";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
@@ -135,6 +148,27 @@ namespace Eto.GtkSharp
 
 			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr webkit_uri_request_get_uri(IntPtr request);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_user_content_manager(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_user_content_manager_add_script(IntPtr manager, IntPtr script);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_user_content_manager_register_script_message_handler(IntPtr manager, string name);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_user_script_new(string source, WebKitUserContentInjectedFrames injected_frames, WebKitUserScriptInjectionTime injection_time, string whitelist, string blacklist);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_type();
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_js_value(IntPtr js_result);
+
+			[DllImport(libjavascriptcore, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr jsc_value_to_string (IntPtr value);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
@@ -294,6 +328,7 @@ namespace Eto.GtkSharp
 			const string libpangoft2 = "libpangoft2-1.0" + ext;
 			const string libfontconfig = "libfontconfig" + extalt;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
+			const string libjavascriptcore = "libjavascriptcoregtk-4.1.so.0";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
@@ -360,6 +395,27 @@ namespace Eto.GtkSharp
 
 			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr webkit_uri_request_get_uri(IntPtr request);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_user_content_manager(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_user_content_manager_add_script(IntPtr manager, IntPtr script);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_user_content_manager_register_script_message_handler(IntPtr manager, string name);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_user_script_new(string source, WebKitUserContentInjectedFrames injected_frames, WebKitUserScriptInjectionTime injection_time, string whitelist, string blacklist);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_type();
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_js_value(IntPtr js_result);
+
+			[DllImport(libjavascriptcore, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr jsc_value_to_string (IntPtr value);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
@@ -519,6 +575,7 @@ namespace Eto.GtkSharp
 			const string libpangoft2 = "libpangoft2-1.0" + ext;
 			const string libfontconfig = "libfontconfig" + extalt;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
+			const string libjavascriptcore = "libjavascriptcoregtk-4.1.so.0";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
@@ -585,6 +642,27 @@ namespace Eto.GtkSharp
 
 			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr webkit_uri_request_get_uri(IntPtr request);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_user_content_manager(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_user_content_manager_add_script(IntPtr manager, IntPtr script);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_user_content_manager_register_script_message_handler(IntPtr manager, string name);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_user_script_new(string source, WebKitUserContentInjectedFrames injected_frames, WebKitUserScriptInjectionTime injection_time, string whitelist, string blacklist);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_type();
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_js_value(IntPtr js_result);
+
+			[DllImport(libjavascriptcore, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr jsc_value_to_string (IntPtr value);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
@@ -1234,6 +1312,76 @@ namespace Eto.GtkSharp
 				return GetString(NMMac.webkit_uri_request_get_uri(request));
 			else
 				return GetString(NMWindows.webkit_uri_request_get_uri(request));
+		}
+
+		public static IntPtr webkit_web_view_get_user_content_manager(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_web_view_get_user_content_manager(web_view);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_web_view_get_user_content_manager(web_view);
+			else
+				return NMWindows.webkit_web_view_get_user_content_manager(web_view);
+		}
+
+		public static void webkit_user_content_manager_add_script(IntPtr manager, IntPtr script)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.webkit_user_content_manager_add_script(manager, script);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.webkit_user_content_manager_add_script(manager, script);
+			else
+				NMWindows.webkit_user_content_manager_add_script(manager, script);
+		}
+
+		public static bool webkit_user_content_manager_register_script_message_handler(IntPtr manager, string name)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_user_content_manager_register_script_message_handler(manager, name);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_user_content_manager_register_script_message_handler(manager, name);
+			else
+				return NMWindows.webkit_user_content_manager_register_script_message_handler(manager, name);
+		}
+
+		public static IntPtr webkit_user_script_new(string source, WebKitUserContentInjectedFrames injected_frames, WebKitUserScriptInjectionTime injection_time, string whitelist, string blacklist)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_user_script_new(source, injected_frames, injection_time, whitelist, blacklist);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_user_script_new(source, injected_frames, injection_time, whitelist, blacklist);
+			else
+				return NMWindows.webkit_user_script_new(source, injected_frames, injection_time, whitelist, blacklist);
+		}
+
+		public static IntPtr webkit_javascript_result_get_type()
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_javascript_result_get_type();
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_javascript_result_get_type();
+			else
+				return NMWindows.webkit_javascript_result_get_type();
+		}
+
+		public static IntPtr webkit_javascript_result_get_js_value(IntPtr js_result)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_javascript_result_get_js_value(js_result);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_javascript_result_get_js_value(js_result);
+			else
+				return NMWindows.webkit_javascript_result_get_js_value(js_result);
+		}
+
+		public static string jsc_value_to_string (IntPtr value)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return GetString(NMLinux.jsc_value_to_string(value));
+			else if (EtoEnvironment.Platform.IsMac)
+				return GetString(NMMac.jsc_value_to_string(value));
+			else
+				return GetString(NMWindows.jsc_value_to_string(value));
 		}
 
 		public static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect)
