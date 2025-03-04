@@ -430,7 +430,7 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate
 			{
-				var url = PromptString("Url", "https://html5test.com", "Go");
+				var url = PromptString("Url", "https://html5test.co", "Go");
 				if (!string.IsNullOrEmpty(url) && Uri.TryCreate(url, UriKind.Absolute, out var uri))
 				{
 					webView.Url = uri;
