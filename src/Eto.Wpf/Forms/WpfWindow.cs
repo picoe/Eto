@@ -1114,17 +1114,17 @@ namespace Eto.Wpf.Forms
 			{
 				if (value)
 				{
-					// set owner back if we weren't visible beforehand
-					SetOwner(Widget.Owner);
 					Control.Show();
 				}
 				else
 				{
-					// hiding will hide entire owner chain, so clear that out before making it invisible.
-					SetOwner(null);
-					Control.Hide();
+					// hiding when it has focus can hide entire owner chain, so set focus to owner first
+					if (HasFocus)
+						Widget.Owner?.Focus();
+
+					Control.Hide();	
+				}
 			}
-		}
 	}
 }
 }

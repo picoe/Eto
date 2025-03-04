@@ -5,7 +5,7 @@ namespace Eto.Forms;
 /// </summary>
 /// <remarks>
 /// Some platforms (e.g. OS X) have limitations on how many tabs are visible.
-/// It is advised to utilize different methods (e.g. a listbox or combo box) to switch between many sections
+/// It is advised to utilize different methods (e.g. a DocumentControl, listbox or combo box) to switch between many sections
 /// if there are too many tabs.
 /// </remarks>
 [ContentProperty("Pages")]

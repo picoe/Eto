@@ -38,7 +38,18 @@ var webkitmethods = new[]
 	"void JSStringGetUTF8CString(IntPtr js_str_value, IntPtr str_value, int str_length)",
 	"void JSStringRelease(IntPtr js_str_value)",
 	"IntPtr webkit_navigation_policy_decision_get_request(IntPtr decision)",
-	"string webkit_uri_request_get_uri(IntPtr request)"
+	"string webkit_uri_request_get_uri(IntPtr request)",
+	"IntPtr webkit_web_view_get_user_content_manager(IntPtr web_view)",
+	"void webkit_user_content_manager_add_script(IntPtr manager, IntPtr script)",
+	"bool webkit_user_content_manager_register_script_message_handler(IntPtr manager, string name)",
+	"IntPtr webkit_user_script_new(string source, WebKitUserContentInjectedFrames injected_frames, WebKitUserScriptInjectionTime injection_time, string whitelist, string blacklist)",
+	"IntPtr webkit_javascript_result_get_type()",
+	"IntPtr webkit_javascript_result_get_js_value(IntPtr js_result)",
+};
+
+var javascriptcoremethods = new[]
+{
+	"string jsc_value_to_string (IntPtr value)",
 };
 
 var gtkmethods = new[]
@@ -109,6 +120,7 @@ var fontconfigmethods = new []
 var methods = giomethods
 	.Concat(gtkmethods)
 	.Concat(webkitmethods)
+	.Concat(javascriptcoremethods)
 	.Concat(gdkmethods)
 	.Concat(pangomethods)
 	.Concat(pangocairomethods)
@@ -142,6 +154,18 @@ namespace Eto.GtkSharp
 	    	public int		nfont;
 	    	public int		sfont;
 	    	public IntPtr	fonts;
+		}
+		
+		public enum WebKitUserContentInjectedFrames : int
+		{
+			WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES = 0,
+			WEBKIT_USER_CONTENT_INJECT_TOP_FRAME = 1
+		}
+		
+		public enum WebKitUserScriptInjectionTime : int
+		{
+			WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START = 0,
+			WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_END = 1
 		}
 
 <#
@@ -191,6 +215,7 @@ namespace Eto.GtkSharp
 			const string libpangoft2 = "libpangoft2-1.0" + ext;
 			const string libfontconfig = "libfontconfig" + extalt;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
+			const string libjavascriptcore = "libjavascriptcoregtk-4.1.so.0";
 <#
 		foreach (var method in giomethods)
 		{
@@ -207,6 +232,16 @@ namespace Eto.GtkSharp
 #>
 
 			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
+<#
+		}
+#>
+<#
+		foreach (var method in javascriptcoremethods)
+		{
+#>
+
+			[DllImport(libjavascriptcore, CallingConvention = CallingConvention.Cdecl)]
 			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
 <#
 		}
