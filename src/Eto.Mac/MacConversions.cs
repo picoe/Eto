@@ -28,6 +28,9 @@ namespace Eto.Mac
 				: NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
 		}
 
+		[Obsolete("Use ToEtoWithAppearance(NSColor) instead")]
+		public static Color ToEtoWithAppearance(this NSColor color, bool calibrated) => ToEtoWithAppearance(color);
+		
 		public static Color ToEtoWithAppearance(this NSColor color)
 		{
 			if (color == null)
@@ -46,13 +49,16 @@ namespace Eto.Mac
 			return result;
 		}
 
+		[Obsolete("Use ToEto(NSColor) instead")]
+		public static Color ToEto(this NSColor color, bool calibrated) => ToEto(color);
+
 		public static Color ToEto(this NSColor color)
 		{
 			if (color == null)
 				return Colors.Transparent;
 
 			var colorspace = NSColorSpace.DeviceRGBColorSpace;
-			
+
 			var converted = color.UsingColorSpace(colorspace);
 			if (converted == null)
 			{
