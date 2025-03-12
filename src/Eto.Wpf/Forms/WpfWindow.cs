@@ -75,6 +75,8 @@ namespace Eto.Wpf.Forms
 
 		public swc.DockPanel MainPanel { get { return main; } }
 
+		protected override sw.FrameworkElement KeyEventControl => main;
+
 		public bool MovableByWindowBackground
 		{
 			get => Widget.Properties.Get<bool>(WpfWindow.MovableByWindowBackground_Key);
