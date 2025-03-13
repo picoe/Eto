@@ -1,6 +1,6 @@
 namespace Eto.Mac.Forms
 {
-	class MacViewTextInput
+	static class MacViewTextInput
 	{
 		internal static IntPtr HasMarkedText_Selector = Selector.GetHandle("hasMarkedText");
 		internal static MarshalDelegates.Func_IntPtr_IntPtr_bool HasMarkedText_Delegate = HasMarkedText;
@@ -57,6 +57,10 @@ namespace Eto.Mac.Forms
 		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr DoCommandBySelector_Delegate = DoCommandBySelector;
 		static void DoCommandBySelector(IntPtr sender, IntPtr sel, IntPtr selector)
 		{
+			var obj = Runtime.GetNSObject(sender);
+			
+			if (obj != null && ObjCExtensions.SuperClassInstancesRespondsToSelector(obj, sel))
+				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, selector);
 		}
 
 		internal static IntPtr NSTextInputClientProtocol_Handle = ObjCExtensions.GetProtocolHandle("NSTextInputClient");
