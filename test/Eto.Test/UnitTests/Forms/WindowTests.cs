@@ -200,14 +200,14 @@ public abstract class WindowTests<T> : TestBase
 			var timer = new UITimer { Interval = 0.5 };
 			timer.Elapsed += (sender, e) =>
 		{
-			  var window = Window.FromPoint(Mouse.Position);
-			  content.Content = $"Window: {window?.Title}";
-		  };
+			var window = Window.FromPoint(Mouse.Position);
+			content.Content = $"Window: {window?.Title}";
+		};
 			timer.Start();
 			form.Closed += (sender, e) =>
 		{
-			  timer.Stop();
-		  };
+			timer.Stop();
+		};
 			form.Title = "Test Form";
 			return content;
 		}
@@ -395,4 +395,92 @@ public abstract class WindowTests<T> : TestBase
 		Assert.That(loadComplete, Is.True, "#1.1 - Window should be visible during LoadComplete");
 		Assert.That(shown, Is.True, "#1.2 - Window should be visible during Shown");
 	});
+
+	[Test]
+	[ManualTest]
+	public void HandlingTextInputOnWindowShouldNotPreventShortcuts()
+	{
+		bool? copyCalled = null;
+		bool? keyDownInControl = null;
+		bool? keyDownInWindow = null;
+		ManualTest(Platform.Instance.IsMac ? "Press CMD+C" : "Press Ctrl+C", form =>
+		{
+			// var ctl = new Drawable { CanFocus = true, Size = new Size(200, 200), BackgroundColor = Colors.Blue };
+			var ctl = new WebView { Size = new Size(200, 200) };
+			ctl.KeyDown += (sender, e) =>
+			{
+				if (e.KeyData == (Application.Instance.CommonModifier | Keys.C))
+				{
+					keyDownInControl = true;
+				}
+			};
+			ctl.TextInput += (sender, e) =>
+			{
+				Log.Write(ctl, "TextInput called!");
+			};
+
+			form.KeyDown += (sender, e) =>
+			{
+				if (e.KeyData == (Application.Instance.CommonModifier | Keys.C))
+				{
+					keyDownInWindow = true;
+				}
+			};
+			form.TextInput += (sender, e) =>
+			{
+				Log.Write(form, "TextInput called!");
+			};
+
+			void Close(object sender, EventArgs e)
+			{
+				form.Close();
+			}
+
+			void Copy(object sender, EventArgs e)
+			{
+				Log.Write(null, "Copy called!");
+				copyCalled = true;
+				form.Close();
+			}
+
+			ctl.DocumentLoaded += (sender, e) =>
+			{
+				ctl.Focus();
+			};
+			ctl.LoadHtml("<html><body><p>Test</p></body></html>");
+
+			var bar = new MenuBar
+			{
+				IncludeSystemItems = MenuBarSystemItems.Quit,
+				Items = {
+					new SubMenuItem { Text = "Close", Items = {
+							new ButtonMenuItem(Close) { Text = "Close", Shortcut = Application.Instance.CommonModifier | Keys.W }
+						}
+					},
+					new SubMenuItem { Text = "Edit", Items = {
+							new ButtonMenuItem(Copy) { Text = "Copy", Shortcut = Application.Instance.CommonModifier | Keys.C }
+						}
+					}
+				}
+			};
+
+			form.Menu = bar;
+
+
+			return ctl;
+		});
+		Assert.That(copyCalled, Is.True, "#1 - Copy menuItem was not called");
+		if (Platform.Instance.IsMac || Platform.Instance.IsGtk)
+		{
+			// in case this gets "fixed" later to behave like other platforms.
+			// Gtk and Mac prioritize menu shortcuts over control key events
+			Assert.That(keyDownInControl, Is.Null, "#2 - KeyDown is not called on control on Mac or Gtk with a menu shortcut");
+			Assert.That(keyDownInWindow, Is.Null, "#3 - KeyDown is not called on Window on Mac or Gtk with a menu shortcut");
+		}
+		else
+		{
+			Assert.That(keyDownInControl, Is.True, "#2 - KeyDown was not called in control");
+			Assert.That(keyDownInWindow, Is.True, "#3 - KeyDown was not called in window");
+		}
+	}
 }

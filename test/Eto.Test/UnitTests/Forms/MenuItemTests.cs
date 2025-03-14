@@ -129,7 +129,25 @@ namespace Eto.Test.UnitTests.Forms
 		[ManualTest]
 		public void DrawableShouldAcceptInputEvenWhenShortcutDefined(bool enabled, Keys key, bool handleKey, bool shouldBeIntrinsic)
 		{
-			ControlShouldAcceptInputEvenWhenShortcutDefined<Drawable>(enabled, key, handleKey, shouldBeIntrinsic, d => d.CanFocus = true);
+			ControlShouldAcceptInputEvenWhenShortcutDefined<Drawable>(enabled, key, handleKey, shouldBeIntrinsic, d =>
+			{
+				d.CanFocus = true;
+				d.BackgroundColor = Colors.Blue;
+				d.KeyDown += (sender, e) =>
+				{
+					if (e.KeyData == key)
+					{
+						d.BackgroundColor = Colors.Green;
+					}
+				};
+				d.KeyUp += (sender, e) =>
+				{
+					if (e.KeyData == key)
+					{
+						d.BackgroundColor = Colors.Blue;
+					}
+				};
+			});
 		}
 		
 		void ControlShouldAcceptInputEvenWhenShortcutDefined<T>(bool enabled, Keys key, bool handleKey, bool shouldBeIntrinsic, Action<T> initialize = null)

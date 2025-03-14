@@ -373,6 +373,8 @@ namespace Eto.Wpf.Forms
 
 		protected virtual sw.FrameworkElement FocusControl => Control;
 
+		protected virtual sw.FrameworkElement KeyEventControl => Control;
+
 		public virtual void Focus()
 		{
 			if (FocusControl.IsLoaded)
@@ -461,20 +463,20 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.KeyDownEvent:
 					if (UseKeyPreview)
 					{
-						Control.PreviewKeyDown += HandleKeyDown;
-						Control.PreviewTextInput += HandleTextInput;
+						KeyEventControl.PreviewKeyDown += HandleKeyDown;
+						KeyEventControl.PreviewTextInput += HandleTextInput;
 					}
 					else
 					{
-						Control.KeyDown += HandleKeyDown;
-						Control.TextInput += HandleTextInput;
+						KeyEventControl.KeyDown += HandleKeyDown;
+						KeyEventControl.TextInput += HandleTextInput;
 					}
 					break;
 				case Eto.Forms.Control.TextInputEvent:
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += HandleKeyUp;
+					KeyEventControl.KeyUp += HandleKeyUp;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					ContainerControl.IsVisibleChanged += HandleIsVisibleChanged;
