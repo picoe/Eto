@@ -91,6 +91,17 @@ public class ListBox : ListControl
 		get { return Handler.ContextMenu; }
 		set { Handler.ContextMenu = value; }
 	}
+	
+	/// <summary>
+	/// Gets or sets the border type
+	/// </summary>
+	/// <value>The border.</value>
+	public BorderType Border
+	{
+		get { return Handler.Border; }
+		set { Handler.Border = value; }
+	}
+	
 
 	static readonly object callback = new Callback();
 	/// <summary>
@@ -130,5 +141,10 @@ public class ListBox : ListControl
 	/// </summary>
 	public new interface IHandler : ListControl.IHandler, IContextMenuHost
 	{
+		/// <summary>
+		/// Gets or sets the border type
+		/// </summary>
+		/// <value>The border.</value>
+		BorderType Border { get; set; }
 	}
 }

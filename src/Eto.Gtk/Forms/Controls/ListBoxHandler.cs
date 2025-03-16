@@ -17,8 +17,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public ListBoxHandler()
 		{
-			model = new GtkEnumerableModel<object>{ Handler = this };
-			
+			model = new GtkEnumerableModel<object> { Handler = this };
+
 			scroll = new Gtk.ScrolledWindow();
 			scroll.ShadowType = Gtk.ShadowType.In;
 			Control = new Gtk.TreeView(new Gtk.TreeModelAdapter(model));
@@ -90,7 +90,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					if (val >= 0)
 						return val;
 				}
-				
+
 				return -1;
 			}
 			set
@@ -134,7 +134,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			protected override void OnRegisterCollection(EventArgs e)
 			{
-				Handler.model = new GtkEnumerableModel<object>{ Handler = Handler, Count = Count };
+				Handler.model = new GtkEnumerableModel<object> { Handler = Handler, Count = Count };
 				Handler.Control.Model = new Gtk.TreeModelAdapter(Handler.model);
 			}
 
@@ -169,7 +169,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public override void RemoveAllItems()
 			{
-				Handler.model = new GtkEnumerableModel<object>{ Handler = Handler };
+				Handler.model = new GtkEnumerableModel<object> { Handler = Handler };
 				Handler.Control.Model = new Gtk.TreeModelAdapter(Handler.model);
 			}
 		}
@@ -181,7 +181,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (collection != null)
 					collection.Unregister();
-				collection = new CollectionHandler{ Handler = this };
+				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
 			}
 		}
@@ -233,5 +233,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+		
+		internal static readonly object Border_Key = new object();
+		public BorderType Border
+		{
+			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
+			set
+			{
+				if (Widget.Properties.TrySet(Border_Key, value, BorderType.Bezel))
+					scroll.ShadowType = value.ToGtk();
+			}
+		}
+
 	}
 }
