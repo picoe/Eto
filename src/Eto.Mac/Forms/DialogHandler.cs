@@ -179,6 +179,11 @@ namespace Eto.Mac.Forms
 				Control.MakeKeyWindow();
 				Application.Instance.AsyncInvoke(() =>
 				{
+					if (Widget.IsDisposed)
+					{
+						tcs.SetResult(false);
+						return;
+					}
 					Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 					MacModal.Run(Widget, Control, out session);
 
