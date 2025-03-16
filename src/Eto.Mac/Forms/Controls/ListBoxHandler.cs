@@ -69,7 +69,7 @@ namespace Eto.Mac.Forms.Controls
 				var item = h.collection.ElementAt((int)row);
 				return new MacImageData
 				{
-					Text = new NSString(Convert.ToString(w.ItemTextBinding.GetValue(item))),
+					Text = new NSString(Convert.ToString(w.ItemTextBinding.GetValue(item)) ?? string.Empty),
 					Image = w.ItemImageBinding != null ? ((Image)w.ItemImageBinding.GetValue(item)).ToNS() : null
 				};
 			}
@@ -116,9 +116,9 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 
 			public ListBoxHandler Handler
-			{ 
+			{
 				get { return (ListBoxHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 
 			public override NSMenu MenuForEvent(NSEvent theEvent)
@@ -132,6 +132,7 @@ namespace Eto.Mac.Forms.Controls
 			public EtoListBoxTableView()
 			{
 				HeaderView = null;
+				Style = NSTableViewStyle.Plain;
 			}
 
 			public EtoListBoxTableView(IntPtr handle) : base(handle)
@@ -153,7 +154,7 @@ namespace Eto.Mac.Forms.Controls
 		public ContextMenu ContextMenu { get; set; }
 
 		protected override NSTableView CreateControl() => new EtoListBoxTableView();
-			
+
 		protected override void Initialize()
 		{
 			collection = new CollectionHandler { Handler = this };
@@ -206,7 +207,8 @@ namespace Eto.Mac.Forms.Controls
 						cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					Control.ReloadData();
 					InvalidateMeasure();
-				};
+				}
+				;
 			}
 		}
 
@@ -295,7 +297,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return cell.TextColor.ToEto(); }
 			set
-			{ 
+			{
 				cell.TextColor = value.ToNSUI();
 				Control.NeedsDisplay = true;
 			}
@@ -357,6 +359,16 @@ namespace Eto.Mac.Forms.Controls
 				NaturalSize = etoFrameSize;
 
 			return etoFrameSize;
+		}
+
+		public BorderType Border
+		{
+			get => scroll.BorderType.ToEto();
+			set
+			{
+				scroll.BorderType = value.ToNS();
+				Control.FocusRingType = value == BorderType.None ? NSFocusRingType.None : NSFocusRingType.Default;
+			}
 		}
 
 	}
