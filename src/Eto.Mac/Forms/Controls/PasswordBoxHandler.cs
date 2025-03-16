@@ -98,12 +98,60 @@ namespace Eto.Mac.Forms.Controls
 				case TextControl.TextChangedEvent:
 					Control.Changed += HandleChanged;
 					break;
+				case TextControl.KeyDownEvent:
+					Control.DoCommandBySelector += KeyDownEvent;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
 
+		static bool KeyDownEvent(NSControl control, NSTextView textView, Selector commandSelector)
+		{
+			var handler = GetHandler(control) as PasswordBoxHandler;
+			if (handler == null)
+				return false;
+			Keys? key = commandSelector.Name switch
+			{
+				"insertNewline:" => Keys.Enter,
+				"deleteBackward:" => Keys.Backspace,
+				"moveLeft:" => Keys.Left,
+				"moveRight:" => Keys.Right,
+				"moveUp:" => Keys.Up,
+				"moveDown:" => Keys.Down,
+				"cancel:" => Keys.Escape,
+				"deleteForward:" => Keys.Delete,
+				"scrollToBeginningOfDocument:" => Keys.Home,
+				"scrollToEndOfDocument:" => Keys.End,
+				"scrollPageUp:" => Keys.PageUp,
+				"scrollPageDown:" => Keys.PageDown,
+
+				"pageUpAndModifySelection:" => Keys.PageUp | Keys.Shift,
+				"pageDownAndModifySelection:" => Keys.PageDown | Keys.Shift,
+				"moveToBeginningOfDocumentAndModifySelection:" => Keys.Home | Keys.Shift,
+				"moveToEndOfDocumentAndModifySelection:" => Keys.End | Keys.Shift,
+				
+				"moveLeftAndModifySelection:" => Keys.Left | Keys.Shift,
+				"moveRightAndModifySelection:" => Keys.Right | Keys.Shift,
+				"moveUpAndModifySelection:" => Keys.Up | Keys.Shift,
+				"moveDownAndModifySelection:" => Keys.Down | Keys.Shift,
+
+				"moveWordLeft:" => Keys.Alt | Keys.Left,
+				"moveWordRight:" => Keys.Alt | Keys.Right,
+				"moveToBeginningOfParagraph:" => Keys.Alt | Keys.Up,
+				"moveToEndOfParagraph:" => Keys.Alt | Keys.Down,
+
+				_ => null,
+			};
+
+			if (key == null)
+				return false;
+			var args = new KeyEventArgs(key.Value, KeyEventType.KeyDown);
+			handler.Callback.OnKeyDown(handler.Widget, args);
+			return args.Handled;
+		}
+		
 		static void HandleChanged(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as PasswordBoxHandler;
