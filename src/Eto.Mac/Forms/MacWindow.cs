@@ -261,6 +261,11 @@ namespace Eto.Mac.Forms
 
 		protected override Color DefaultBackgroundColor => NSColor.WindowBackground.ToEtoWithAppearance();
 
+		protected override void SetBackgroundColor(Color? color)
+		{
+			Control.BackgroundColor = (color ?? DefaultBackgroundColor).ToNSUI();
+		}
+
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			SizeF naturalSize = new SizeF(200, 200);

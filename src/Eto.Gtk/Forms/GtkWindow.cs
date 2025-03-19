@@ -336,9 +336,12 @@ namespace Eto.GtkSharp.Forms
 				if (Widget.Properties.TrySet(GtkWindow.MovableByWindowBackground_Key, value))
 				{
 					if (value)
-						Control.ButtonPressEvent += Connector.ButtonPressEvent_Movable;
+					{
+						containerBox.AddEvents((int)Gdk.EventMask.ButtonPressMask);
+						containerBox.ButtonPressEvent += Connector.ButtonPressEvent_Movable;
+					}
 					else
-						Control.ButtonPressEvent -= Connector.ButtonPressEvent_Movable;
+						containerBox.ButtonPressEvent -= Connector.ButtonPressEvent_Movable;
 				}
 			}
 		}
@@ -547,11 +550,36 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 				var evt = args.Event;
-				if (handler != null && evt.Type == Gdk.EventType.ButtonPress && evt.Button == 1)
-				{
+				if (!Equals(args.RetVal, true) && evt.Type == Gdk.EventType.ButtonPress && evt.Button == 1)
+				{					
 					handler.Control.BeginMoveDrag((int)evt.Button, (int)evt.XRoot, (int)evt.YRoot, evt.Time);
+					args.RetVal = true;
 				}
 			}
+			
+			[GLib.ConnectBefore]
+			internal void HandleDrawnEvent(object o, Gtk.DrawnArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				// use cairo to draw the background color with alpha
+				var cr = args.Cr;
+				var color = handler.BackgroundColor;
+				cr.Save();
+				if (color.A > 0)
+				{
+					cr.SetSourceRGBA(color.R, color.G, color.B, color.A);
+					cr.Operator = Cairo.Operator.Source;
+				}
+				else
+				{
+					cr.Operator = Cairo.Operator.Clear;
+				}
+				cr.Paint();
+				cr.Restore();
+			}
+			
 		}
 
 		public MenuBar Menu
@@ -923,6 +951,39 @@ namespace Eto.GtkSharp.Forms
 				isInvalidated = true;
 				DisableAutoSizeUpdate++;
 				Application.Instance.AsyncInvoke(PerformResize);
+			}
+		}
+
+		public override Gtk.Widget BackgroundControl => Control;
+
+		bool isDrawingBackground;
+				
+		protected override void SetBackgroundColor(Color? color)
+		{
+			if (color?.A < 1 || isDrawingBackground)
+			{
+				if (!isDrawingBackground)
+				{
+					Control.AppPaintable = true;
+					var screen = Gdk.Screen.Default;
+					var visual = screen.RgbaVisual;
+
+					if (visual != null && screen.IsComposited)
+						Control.Visual = visual;
+						
+					Control.Drawn -= Connector.HandleDrawnEvent;
+					Control.Drawn += Connector.HandleDrawnEvent;
+					isDrawingBackground = true;
+					base.SetBackgroundColor(null);
+				}
+
+				Control.QueueDraw();
+			}
+			else
+			{
+				Control.AppPaintable = false;
+				Control.Drawn -= Connector.HandleDrawnEvent;
+				base.SetBackgroundColor(color);
 			}
 		}
 	}

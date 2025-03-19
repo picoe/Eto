@@ -483,4 +483,44 @@ public abstract class WindowTests<T> : TestBase
 			Assert.That(keyDownInWindow, Is.True, "#3 - KeyDown was not called in window");
 		}
 	}
+	
+	[ManualTest]
+	[TestCase(0x00000000)] // transparent
+	[TestCase(0x017F7F7F)] // almost transparent, should allow window to move
+	[TestCase(0x7F007F00)] // semi-transparent green
+	[TestCase(unchecked((int)0xFF7F7F7F))] // non-transparent
+	public void TransparentWindowShouldWork(int argb) => Async(-1, async () =>
+	{
+		var closeButton = new Button { Text = "Close" };
+		var window = new T
+		{
+			Owner = Application.Instance.MainForm,
+			WindowStyle = WindowStyle.None,
+			BackgroundColor = Color.FromArgb(argb),
+			MovableByWindowBackground = true,
+			Size = new Size(400, 300),
+			Topmost = true,
+			Content = new TableLayout
+			{
+				Rows = {
+					new Label {
+						BackgroundColor = Colors.Blue,
+						Text = "There should be two blue bars with space in between\nClicking in the space should click through the window on Wpf/Mac\nWinForms does not support this.",
+						VerticalAlignment = VerticalAlignment.Center,
+						TextAlignment = TextAlignment.Center,
+					 	TextColor = Colors.White
+						},
+					null,
+					new Panel { 
+						BackgroundColor = Colors.Blue, 
+						Height = 40,
+						Content = TableLayout.AutoSized(closeButton, centered: true)
+						}
+				}
+			}
+		};
+		closeButton.Click += (sender, e) => window.Close();
+
+		await ShowAsync(window);
+	});
 }
