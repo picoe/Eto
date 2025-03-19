@@ -252,6 +252,7 @@ public class Command : IBindable, ICommand
 
 	/// <summary>
 	/// Gets or sets the shortcut to trigger this command.
+	/// This property requires the <see cref="Command"/> to be hosted on a <see cref="ToolBar"/> or the command will not be raised when the shortcut is used.
 	/// </summary>
 	/// <value>The command shortcut.</value>
 	public Keys Shortcut { get; set; }
