@@ -12,6 +12,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		where TCallback : Button.ICallback
 	{
 		readonly Gtk.AccelLabel label;
+		string _text;
 
 		Gtk.Image gtkimage;
 
@@ -22,6 +23,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public ButtonHandler()
 		{
 			label = new Gtk.AccelLabel(string.Empty);
+			label.UseUnderline = true;
 			label.Ellipsize = Pango.EllipsizeMode.End;
 			label.Show();
 		}
@@ -52,10 +54,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override string Text
 		{
-			get { return label.Text.ToEtoMnemonic(); }
+			get => _text;
 			set
 			{
-				label.TextWithMnemonic = value.ToPlatformMnemonic();
+				_text = value;
+				if (label.UseUnderline)
+					label.TextWithMnemonic = _text.ToPlatformMnemonic();
+				else
+					label.Text = _text;
 				SetImagePosition();
 			}
 		}
@@ -176,6 +182,25 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.QueueResize(); 
 				}
 			}
+		}
+
+		public bool UseMnemonic
+		{
+			get => label.UseUnderline;
+			set
+			{
+				if (value == label.UseUnderline)
+					return; // no change
+				var text = Text;
+				label.UseUnderline = value;
+				Text = text;
+			}
+		}
+		
+		public bool AlwaysShowMnemonic
+		{
+			get => false;
+			set { /* not supported in GTK */ }
 		}
 
 		protected override void SetSize(Size size)

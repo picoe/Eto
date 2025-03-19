@@ -948,5 +948,59 @@ namespace Eto.Wpf
 			}
 			return null;
 		}
+
+		static swc.TextBlock UnderlineCharacter(string text, int indexToUnderline)
+		{
+			var textBlock = new swc.TextBlock();
+
+			if (indexToUnderline > 0)
+			{
+				textBlock.Inlines.Add(new swd.Run(text.Substring(0, indexToUnderline)));
+			}
+
+			if (indexToUnderline >= 0 && indexToUnderline < text.Length)
+			{
+				var underline = new swd.Underline(new swd.Run(text[indexToUnderline].ToString()));
+				textBlock.Inlines.Add(underline);
+			}
+
+			if (indexToUnderline + 1 < text.Length)
+			{
+				textBlock.Inlines.Add(new swd.Run(text.Substring(indexToUnderline + 1)));
+			}
+
+			return textBlock;
+		}
+		
+		public static sw.TextWrapping ToWpf(this WrapMode value)
+		{
+			switch (value)
+			{
+				case WrapMode.Word:
+					return sw.TextWrapping.WrapWithOverflow;
+				case WrapMode.Character:
+					return sw.TextWrapping.Wrap;
+				case WrapMode.None:
+					return sw.TextWrapping.NoWrap;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+
+		public static WrapMode ToEto(this sw.TextWrapping wrapping)
+		{
+			switch (wrapping)
+			{
+				case sw.TextWrapping.NoWrap:
+					return WrapMode.None;
+				case sw.TextWrapping.Wrap:
+					return WrapMode.Character;
+				case sw.TextWrapping.WrapWithOverflow:
+					return WrapMode.Word;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

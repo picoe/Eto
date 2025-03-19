@@ -17,6 +17,8 @@ public class CheckBoxHandler : WinUIControl<muc.CheckBox, CheckBox, CheckBox.ICa
 		get => Control.IsThreeState;
 		set => Control.IsThreeState = value;
 	}
+	public bool UseMnemonic { get; set; }
+	public bool AlwaysShowMnemonic { get; set; }
 
 	protected override muc.CheckBox CreateControl() => new();
 
