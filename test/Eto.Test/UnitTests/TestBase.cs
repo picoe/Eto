@@ -380,21 +380,6 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
-		public static void Shown(Action<Form> init, Action test, bool replay = false, int timeout = DefaultTimeout)
-		{
-			Shown(form =>
-			{
-				init(form);
-				return null;
-			},
-				(Control c) =>
-				{
-					test();
-				},
-				replay,
-				timeout
-			);
-		}
 
 		public static void ManualForm(string description, Func<Form, Control> init, bool allowPass = true, bool allowFail = true)
 		{
@@ -583,6 +568,50 @@ namespace Eto.Test.UnitTests
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
+
+
+		public static void Shown(Action<Form> init, Action test, bool replay = false, int timeout = DefaultTimeout)
+		{
+			ShownAsync(init, () =>
+				{
+					test();
+					return Task.CompletedTask;
+				},
+				replay,
+				timeout
+			);
+		}
+
+		public static void ShownAsync(Action<Form> init, Func<Task> test, bool replay = false, int timeout = DefaultTimeout)
+		{
+			ShownAsync(form =>
+			{
+				init(form);
+				return null;
+			},
+				(Control c) => test(),
+				replay,
+				timeout
+			);
+		}
+
+		public static void Shown<T>(Func<Form, T> init, Action<T> test = null, bool replay = false, int timeout = DefaultTimeout)
+			where T : Control
+		{
+			ShownAsync(form =>
+			{
+				return init(form);
+			},
+				c =>
+				{
+					test(c);
+					return Task.CompletedTask;
+				},
+				replay,
+				timeout
+			);
+		}
+		
 		/// <summary>
 		/// Test operations on a form once it is shown
 		/// </summary>
@@ -590,7 +619,7 @@ namespace Eto.Test.UnitTests
 		/// <param name="test">Delegate to execute on the form when shown</param>
 		/// <param name="replay">Replay the init and test again after shown</param>
 		/// <param name="timeout">Timeout to wait for the operation to complete</param>
-		public static void Shown<T>(Func<Form, T> init, Action<T> test = null, bool replay = false, int timeout = DefaultTimeout)
+		public static void ShownAsync<T>(Func<Form, T> init, Func<T, Task> test = null, bool replay = false, int timeout = DefaultTimeout)
 			where T : Control
 		{
 			var application = Application;
@@ -598,13 +627,13 @@ namespace Eto.Test.UnitTests
 			Form(form =>
 			{
 				var control = init(form);
-				form.Shown += (sender, e) =>
+				form.Shown += async (sender, e) =>
 				{
 					try
 					{
 						if (test != null)
 						{
-							test(control);
+							await test(control);
 							if (replay)
 							{
 								form.Content = null;
@@ -612,7 +641,7 @@ namespace Eto.Test.UnitTests
 								if (control != null && form.Content == null && control != form)
 									form.Content = control;
 								if (application == null)
-									test(control);
+									await test(control);
 							}
 						}
 					}
@@ -732,7 +761,7 @@ namespace Eto.Test.UnitTests
 				test = PropertyTest<T>(() => ctl, properties);
 				test.Run();
 				return ctl as Control;
-			}, ctl => test.Run());
+			}, async ctl => test.Run());
 		}
 
 		public class PropertyTestInfo

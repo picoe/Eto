@@ -181,7 +181,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						Panel2 = new Panel()
 					};
 					return it;
-				}, 
+				},
 				it =>
 				{
 					Assert.That(it.Position, Is.EqualTo(40), $"#1 {fix}; {orient}; Replay:{replay}");
@@ -486,6 +486,30 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			c =>
 			{
 				// if we got here it was successful
+			});
+		}
+
+		[Test]
+		public void SplitterShouldGetAutoSizedAppropriately()
+		{
+			// ManualForm("blah", form =>
+			ShownAsync(form =>
+			{
+				var splitter = new Splitter
+				{
+					FixedPanel = SplitterFixedPanel.Panel2,
+					Orientation = Orientation.Horizontal,
+					Panel1 = new Panel { Content = "Something that should be shown" },
+					Panel2 = new Panel { Size = new Size(200, 200), Content = "Panel2" },
+				};
+				form.Content = splitter;
+				return splitter;
+			},
+			async splitter =>
+			{
+				await Task.Delay(200);
+				Assert.That(splitter.Panel1.Width, Is.GreaterThan(100), "#1");
+				Assert.That(splitter.Panel2.Width, Is.EqualTo(200), "#2");
 			});
 		}
 	}
