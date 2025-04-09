@@ -172,6 +172,7 @@ namespace Eto.Mac.Forms
 			Widget.Closed += HandleClosed;
 			if (ShowAttached)
 			{
+				Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
 				MacModal.BeginSheet(Widget, Control, Control.OwnerWindow, out session, () => tcs.SetResult(true));
 			}
 			else
