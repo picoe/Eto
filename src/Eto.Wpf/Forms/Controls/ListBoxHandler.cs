@@ -125,5 +125,12 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+
+		static readonly object Border_Key = new object();
+		public BorderType Border
+		{
+			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
+			set { if (Widget.Properties.TrySet(Border_Key, value)) Control.SetEtoBorderType(value); }
+		}
 	}
 }

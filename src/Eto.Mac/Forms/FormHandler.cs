@@ -92,9 +92,12 @@ namespace Eto.Mac.Forms
 				{
 					if (value != Visible)
 					{
-						Control.OrderFront(ApplicationHandler.Instance.AppDelegate);
+						if (!EnsureOwner())
+						{
+							// only order front when there is no owner as it'll bring the owner above any existing non-child windows
+							Control.OrderFront(ApplicationHandler.Instance.AppDelegate);
+						}
 						FireOnShown();
-						EnsureOwner();
 					}
 				}
 				else
