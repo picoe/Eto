@@ -2,10 +2,11 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ProgressBarHandler : GtkControl<Gtk.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
-		int minValue;
-		int maxValue = 100;
-		bool indeterminate;
-		UITimer timer;
+		int _value;
+		int _minValue;
+		int _maxValue = 100;
+		bool _indeterminate;
+		UITimer _timer;
 		public static double UpdateInterval = 0.2;
 		public static double PulseStep = 0.1;
 
@@ -41,53 +42,54 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public bool Indeterminate
 		{
-			get { return indeterminate; }
+			get { return _indeterminate; }
 			set
 			{
-				indeterminate = value;
-				if (indeterminate)
+				_indeterminate = value;
+				if (_indeterminate)
 				{
-					if (timer == null)
+					if (_timer == null)
 					{
-						timer = new UITimer();
-						timer.Elapsed += Connector.TimerElapsed;
+						_timer = new UITimer();
+						_timer.Elapsed += Connector.TimerElapsed;
 					}
-					timer.Interval = UpdateInterval;
+					_timer.Interval = UpdateInterval;
 					Control.PulseStep = PulseStep;
-					timer.Start();
+					_timer.Start();
 				}
-				else if (timer != null)
-					timer.Stop();
+				else if (_timer != null)
+					_timer.Stop();
 			}
 		}
 
 		public int MaxValue
 		{
-			get { return maxValue; }
+			get { return _maxValue; }
 			set
 			{
 				var val = Value;
-				maxValue = value;
+				_maxValue = value;
 				Value = val;
 			}
 		}
 
 		public int MinValue
 		{
-			get { return minValue; }
+			get { return _minValue; }
 			set
 			{
 				var val = Value;
-				minValue = value;
+				_minValue = value;
 				Value = val;
 			}
 		}
 
 		public int Value
 		{
-			get { return (int)((Control.Fraction * MaxValue) + MinValue); }
+			get => _value;
 			set
 			{
+				_value = value;
 				Control.Fraction = Math.Max(0, Math.Min(1, ((double)value - MinValue) / (double)MaxValue));
 			}
 		}
@@ -95,8 +97,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			if (timer != null)
-				timer.Stop();
+			if (_timer != null)
+				_timer.Stop();
 		}
 	}
 }

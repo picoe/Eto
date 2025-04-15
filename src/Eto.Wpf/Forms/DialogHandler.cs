@@ -141,6 +141,11 @@ namespace Eto.Wpf.Forms
 			var tcs = new TaskCompletionSource<bool>();
 			Application.Instance.AsyncInvoke(() =>
 			{
+				if (Widget.IsDisposed)
+				{
+					tcs.SetResult(false);
+					return;
+				}
 				ShowModal();
 				tcs.SetResult(true);
 			});

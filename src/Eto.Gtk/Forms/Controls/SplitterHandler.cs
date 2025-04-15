@@ -5,7 +5,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		readonly Gtk.EventBox container;
 		Control panel1;
 		Control panel2;
-		Orientation orientation;
 		SplitterFixedPanel fixedPanel;
 		int? position;
 		double relative = double.NaN;
@@ -38,12 +37,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			return width1 + width2 + SplitterWidth;
 		}
-
-		class EtoHPaned : Gtk.Paned
+		
+		class EtoPaned : Gtk.Paned
 		{
 			WeakReference handler;
 
-			public EtoHPaned() : base(Gtk.Orientation.Horizontal)
+			public EtoPaned(Gtk.Orientation orientation) : base(orientation)
 			{
 			}
 
@@ -53,101 +52,52 @@ namespace Eto.GtkSharp.Forms.Controls
 				set => handler = new WeakReference(value);
 			}
 
-			#if GTK2
-			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
+			protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
 			{
-				var size1 = Child1.SizeRequest();
-				var size2 = Child2.SizeRequest();
-				requisition.Height = Math.Max(size1.Height, size2.Height);
-				requisition.Width = Handler.GetPreferredPanelSize(size1.Width, size2.Width);
-			}
-			#else
-			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
-			{
-				base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
-				minimum_height = 0;
+				if (Orientation == Gtk.Orientation.Horizontal)
+				{
+					Child1.GetPreferredWidthForHeight(height, out int min1, out int width1);
+					Child2.GetPreferredWidthForHeight(height, out int min2, out int width2);
+					minimum_width = Handler.GetPreferredPanelSize(min1, min2);
+					natural_width = Handler.GetPreferredPanelSize(width1, width2);
+				}
+				else
+				{
+					base.OnGetPreferredWidthForHeight(height, out minimum_width, out natural_width);
+					minimum_width = 0;
+				}
 			}
 
 			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
 			{
-				int min1, width1, min2, width2, sw = Handler.SplitterWidth;
-				Child1.GetPreferredWidth(out min1, out width1);
-				Child2.GetPreferredWidth(out min2, out width2);
+				Child1.GetPreferredWidth(out int min1, out int width1);
+				Child2.GetPreferredWidth(out int min2, out int width2);
 				minimum_width = Handler.GetPreferredPanelSize(min1, min2);
 				natural_width = Handler.GetPreferredPanelSize(width1, width2);
-			}
-			protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
-			{
-				int min1, width1, min2, width2, sw = Handler.SplitterWidth;
-				Child1.GetPreferredWidthForHeight(height, out min1, out width1);
-				Child2.GetPreferredWidthForHeight(height, out min2, out width2);
-				minimum_width = Handler.GetPreferredPanelSize(min1, min2);
-				natural_width = Handler.GetPreferredPanelSize(width1, width2);
-			}
-			#endif
-
-			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
-			{
-				var it = Handler;
-				if (it == null || double.IsNaN(it.relative))
-				{
-					base.OnSizeAllocated(allocation);
-					return;
-				}
-				it.suppressSplitterMoved++;
-				base.OnSizeAllocated(allocation);
-				it.suppressSplitterMoved--;
-
-				it.EnsurePosition();
-			}
-		}
-
-		class EtoVPaned : Gtk.Paned
-		{
-			WeakReference handler;
-
-			public EtoVPaned() : base(Gtk.Orientation.Vertical)
-			{
-			}
-
-			public SplitterHandler Handler
-			{
-				get => handler?.Target as SplitterHandler;
-				set => handler = new WeakReference(value);
-			}
-
-			#if GTK2
-			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
-			{
-				var size1 = Child1.SizeRequest();
-				var size2 = Child2.SizeRequest();
-				requisition.Width = Math.Max(size1.Width, size2.Width);
-				requisition.Height = Handler.GetPreferredPanelSize(size1.Height, size2.Height);
-			}
-			#else
-			protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
-			{
-				base.OnGetPreferredWidthForHeight(height, out minimum_width, out natural_width);
-				minimum_width = 0;
 			}
 
 			protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
 			{
-				int min1, height1, min2, height2, sw = Handler.SplitterWidth;
-				Child1.GetPreferredHeight(out min1, out height1);
-				Child2.GetPreferredHeight(out min2, out height2);
+				Child1.GetPreferredHeight(out int min1, out int height1);
+				Child2.GetPreferredHeight(out int min2, out int height2);
 				minimum_height = Handler.GetPreferredPanelSize(min1, min2);
 				natural_height = Handler.GetPreferredPanelSize(height1, height2);
 			}
 			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
 			{
-				int min1, height1, min2, height2, sw = Handler.SplitterWidth;
-				Child1.GetPreferredHeightForWidth(width, out min1, out height1);
-				Child2.GetPreferredHeightForWidth(width, out min2, out height2);
-				minimum_height = Handler.GetPreferredPanelSize(min1, min2);
-				natural_height = Handler.GetPreferredPanelSize(height1, height2);
+				if (Orientation == Gtk.Orientation.Horizontal)
+				{
+					base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
+					minimum_height = 0;
+				}
+				else
+				{
+					Child1.GetPreferredHeightForWidth(width, out int min1, out int height1);
+					Child2.GetPreferredHeightForWidth(width, out int min2, out int height2);
+					minimum_height = Handler.GetPreferredPanelSize(min1, min2);
+					natural_height = Handler.GetPreferredPanelSize(height1, height2);
+				}
 			}
-			#endif
 
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
@@ -194,8 +144,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public int SplitterWidth
 		{
-			get { return Control.StyleGetProperty("handle-size") as int? ?? 5; }
-			set { /* not implemented */ }
+			get => Control.HandleSize;
+			set => Control.WideHandle = value >= 4;
 		}
 
 		int GetAvailableSize()
@@ -310,15 +260,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Orientation Orientation
 		{
-			get	{ return (Control is Gtk.HPaned) ? Orientation.Horizontal : Orientation.Vertical; }
-			set
-			{
-				if (orientation != value)
-				{
-					orientation = value;
-					Create();
-				}
-			}
+			get => Control.Orientation == Gtk.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical;
+			set => Control.Orientation = value == Orientation.Horizontal ? Gtk.Orientation.Horizontal : Gtk.Orientation.Vertical;
 		}
 
 		protected override void RealizedSetup()
@@ -332,39 +275,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		void Create()
 		{
-			Gtk.Paned old = Control;
-			
-			if (orientation == Orientation.Horizontal)
-				Control = new EtoHPaned() { Handler = this };
-			else
-				Control = new EtoVPaned() { Handler = this };
+			Control = new EtoPaned(Gtk.Orientation.Horizontal) { Handler = this };
 
 			Control.ShowAll();
 
-			if (container.Child != null)
-				container.Remove(container.Child);
-
-			if (old != null)
-			{
-				Control.Realized += Connector.HandleControlRealized;
-				old.Realized -= Connector.HandleControlRealized;
-				var child1 = old.Child1;
-				var child2 = old.Child2;
-				old.Remove(child2);
-				old.Remove(child1);
-				Control.Pack1(child1 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
-				Control.Pack2(child2 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
-#if GTKCORE
-				old.Dispose();
-#else
-				old.Destroy();
-#endif
-			}
-			else
-			{
-				Control.Pack1(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
-				Control.Pack2(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
-			}
+			Control.Pack1(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
+			Control.Pack2(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
 
 			container.Child = Control;
 		}
@@ -457,7 +373,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			WasLoaded = false;
 			suppressSplitterMoved++;
 			if (Control.IsRealized)
-				SetInitialPosition();
+			SetInitialPosition();
 		}
 
 		public override void OnLoadComplete(EventArgs e)
@@ -559,7 +475,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		static Gtk.Widget EmptyContainer()
 		{
-			var bin = new Gtk.Box(Gtk.Orientation.Horizontal, 0);
+			var bin = new Gtk.Box(Gtk.Orientation.Vertical, 0);
 			bin.Visible = false;
 			bin.NoShowAll = true;
 			return bin;

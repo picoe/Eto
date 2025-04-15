@@ -23,7 +23,8 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new ListBox
 			{
-				Size = new Size(100, 150)
+				Size = new Size(100, 150),
+				Border = BorderType.None
 			};
 			LogEvents(control);
 

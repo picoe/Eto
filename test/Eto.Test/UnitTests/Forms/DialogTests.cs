@@ -212,6 +212,25 @@ namespace Eto.Test.UnitTests.Forms
 			);
 		}
 
+		[Test]
+		public void DisposingBeforeShowingAsyncShouldNotCrash()
+		{
+			Invoke(() =>
+			{
+				try
+				{
+					var dialog = new Dialog();
+					_ = dialog.ShowModalAsync();
+					dialog.Dispose();
+				}
+				catch (Exception ex)
+				{
+					Assert.Fail($"Exception thrown: {ex}");
+				}
+			});
+			
+		}
+
 		protected override void Test(Action<Dialog> test, int timeout = 4000) => Dialog(test, timeout);
 
 		protected override void ManualTest(string message, Func<Dialog, Control> test) => ManualDialog(message, test);
