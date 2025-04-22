@@ -17,11 +17,13 @@ namespace Eto.Mac.Forms
 
 		public override bool ShouldEnableUrl(NSSavePanel panel, NSUrl url)
 		{
-			if (Directory.Exists(url.Path))
+			var h = Handler;
+			if (h == null || url == null || Directory.Exists(url.Path))
 				return true;
 
 			var extension = Path.GetExtension(url.Path).TrimStart(new[] { '.' });
-			if (Handler.MacFilters == null || Handler.MacFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
+			var macFilters = h.MacFilters;
+			if (macFilters == null || macFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
 				return true;
 			return false;
 		}
@@ -41,7 +43,7 @@ namespace Eto.Mac.Forms
 			fileTypes.SelectedIndexChanged += (sender, e) => OnFileTypeChanged();
 		}
 
-		void Create()
+		internal virtual void Create()
 		{
 			if (Widget.Filters.Count > 0)
 			{
@@ -52,6 +54,7 @@ namespace Eto.Mac.Forms
 				layout.Rows.Add(new TableRow(null, fileTypes, null));
 
 				Control.AccessoryView = layout.ToNative(true);
+
 				SetAllowedFileTypes();
 			}
 			else
@@ -137,10 +140,12 @@ namespace Eto.Mac.Forms
 		public virtual DialogResult ShowDialog(Window parent)
 		{
 			//Control.AllowsOtherFileTypes = false;
+			var oldDelegate = Control.Delegate;
 			Control.Delegate = new SavePanelDelegate{ Handler = this };
 			Create();
 
 			int ret = MacModal.Run(Control, parent);
+			Control.Delegate = oldDelegate;
 			
 			if (ret == 1)
 				fileName = null;
