@@ -1,4 +1,4 @@
-﻿﻿using Eto.Drawing;
+﻿using Eto.Drawing;
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(NumericStepper))]

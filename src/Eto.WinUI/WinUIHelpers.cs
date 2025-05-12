@@ -20,7 +20,7 @@ namespace Eto.Forms
 		/// <returns>The native control that can be used to add this control to an existing application.</returns>
 		/// <param name="control">Control to get the native control for.</param>
 		/// <param name="attach">If set to <c>true</c> the control is to be attached to an existing application, or <c>false</c> to get the native control directly.</param>
-		public static mux.FrameworkElement ToNative(this Control control, bool attach = false)
+		public static mux.FrameworkElement? ToNative(this Control control, bool attach = false)
 		{
 			if (control?.Handler is not IWinUIFrameworkElement handler)
 				return null;
@@ -38,7 +38,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="window">Eto window to get the native control for</param>
 		/// <returns>The native WPF window object.</returns>
-		public static mux.Window ToNative(this Window window)
+		public static mux.Window? ToNative(this Window? window)
 		{
 			if (window == null)
 				return null;
@@ -50,7 +50,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The eto control wrapper around the native control.</returns>
 		/// <param name="nativeControl">Native control to wrap.</param>
-		public static Control ToEto(this mux.FrameworkElement nativeControl)
+		public static Control? ToEto(this mux.FrameworkElement nativeControl)
 		{
 			if (nativeControl == null)
 				return null;
@@ -62,7 +62,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The eto window wrapper around the native WPF window.</returns>
 		/// <param name="window">WPF Window to wrap.</param>
-		public static Window ToEtoWindow(this mux.Window window)
+		public static Window? ToEtoWindow(this mux.Window window)
 		{
 			if (window == null)
 				return null;
@@ -78,7 +78,7 @@ namespace Eto.Forms
 		/// </remarks>
 		/// <returns>The eto window wrapper around the win32 window with the specified handle.</returns>
 		/// <param name="windowHandle">Handle of the win32 window.</param>
-		public static Window ToEtoWindow(IntPtr windowHandle)
+		public static Window? ToEtoWindow(IntPtr windowHandle)
 		{
 			if (windowHandle == IntPtr.Zero)
 				return null;

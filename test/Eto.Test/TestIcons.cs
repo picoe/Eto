@@ -4,7 +4,7 @@ namespace Eto.Test
 	{
 		public static Icon TestIcon => Icon.FromResource("Eto.Test.Images.TestIcon.ico");
 
-		public static Bitmap TestImage => Bitmap.FromResource("Eto.Test.Images.TestImage.png");
+		public static Bitmap TestImage => Platform.Instance.Supports<Bitmap>() ? Bitmap.FromResource("Eto.Test.Images.TestImage.png") : null;
 
 		public static Bitmap Textures => Bitmap.FromResource("Eto.Test.Images.Textures.png");
 
