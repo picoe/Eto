@@ -44,15 +44,18 @@ namespace Eto.Test
 			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());
 
 			var nodes = topNodes.ToList();
-			if (Platform.IsAndroid)
-				SectionList = new SectionListGridView(nodes);
-			else
+			if (Platform.Supports<TreeGridView>())
 				SectionList = new SectionListTreeGridView(nodes);
+			else if (Platform.Supports<GridView>())
+				SectionList = new SectionListGridView(nodes);
+			else if (Platform.Supports<ListBox>())
+				SectionList = new SectionListListBox(nodes);
 
 			SectionList.SelectedItemChanged += SectionList_SelectedItemChanged;
 
 
-			this.Icon = TestIcons.TestIcon;
+			if (Platform.Supports<Icon>())
+				this.Icon = TestIcons.TestIcon;
 
 			if (Platform.IsDesktop)
 				ClientSize = new Size(1024, 700);
