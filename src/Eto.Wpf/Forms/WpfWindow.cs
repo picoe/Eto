@@ -2,6 +2,7 @@ using Eto.Wpf.CustomControls;
 using Eto.Wpf.Forms.Menu;
 using Eto.Wpf.Drawing;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace Eto.Wpf.Forms
 {
@@ -313,15 +314,19 @@ namespace Eto.Wpf.Forms
 			IsClosing = true;
 			var args = new CancelEventArgs { Cancel = e.Cancel };
 			Callback.OnClosing(Widget, args);
-			var willShutDown =
-				(
-					sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
-					&& sw.Application.Current.Windows.Count == 1
-				)
-				|| (
-					sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
-					&& sw.Application.Current.MainWindow == Control
-				);
+			bool willShutDown = false;
+			if (sw.Application.Current.Dispatcher == Dispatcher.CurrentDispatcher)
+			{
+				willShutDown =
+					(
+						sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
+						&& sw.Application.Current.Windows.Count == 1
+					)
+					|| (
+						sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
+						&& sw.Application.Current.MainWindow == Control
+					);
+			}
 
 			if (!args.Cancel && willShutDown)
 			{
