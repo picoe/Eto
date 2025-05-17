@@ -87,7 +87,14 @@ public enum PlatformFeatures
 	/// For example, setting a TabIndex for controls in DynamicLayout and StackLayout might not behave as expected on platforms
 	/// that do not support this.
 	/// </summary>
-	TabIndexWithCustomContainers = 1 << 2
+	TabIndexWithCustomContainers = 1 << 2,
+	
+	/// <summary>
+	/// Specifies that the Platform supports multi-threaded user interfaces.
+	/// 
+	/// Create
+	/// </summary>
+	MultiThreadedUI = 1 << 3
 }
 
 /// <summary>
@@ -456,6 +463,43 @@ public abstract class Platform
 	public static void Initialize(string platformType)
 	{
 		Initialize(Get(platformType));
+	}
+
+	/// <summary>
+	/// Creates a copy of the specified <paramref name="platform"/>, or the global instance if one is created.
+	/// </summary>
+	/// <remarks>
+	/// This can be used to create a plaform instance for a secondary thread to show UI.
+	/// It requires that the platform has a public constructor with no parameters.
+	/// 
+	/// For example, you can initialize Eto for use in a separate thread (for platforms that support it) like so:
+	/// <code>
+	///	var app = new Application(Eto.Platform.Copy());
+	///	app.Attach();
+	///	
+	///	var dialog = new Dialog();
+	///	dialog.ShowModal();
+	/// </code>
+	/// 
+	/// Note that <c>Application.Instance</c> will return the application instance for the current thread.
+	/// If you want to invoke on the secondary thread when you already have a main thread, you will have to
+	/// keep an instance of the new application instance manually and call Invoke/AsyncInvoke on that instance.
+	/// </remarks>
+	/// <param name="platform">Platform to copy, or null to copy the global (first) platform.</param>
+	/// <returns>A new copy of the platform instance</returns>
+	/// <exception cref="ArgumentNullException">Throws if platform is null, and, if the global instance has not been created.</exception>
+	public static Platform Copy(Platform platform = null)
+	{
+		platform ??= globalInstance;
+		if (platform == null)
+			throw new ArgumentNullException(nameof(platform), "No global platform created yet, and/or specified platform is null");
+
+		var copy = (Platform)Activator.CreateInstance(platform.GetType());
+		foreach (var instantiator in platform.instantiatorMap)
+		{
+			copy.instantiatorMap[instantiator.Key] = instantiator.Value;
+		}
+		return copy;
 	}
 
 	/// <summary>
