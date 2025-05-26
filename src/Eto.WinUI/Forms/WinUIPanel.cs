@@ -1,3 +1,5 @@
+using Eto.WinUI.Forms.Controls;
+
 namespace Eto.WinUI.Forms;
 
 public abstract class WinUIPanel<TControl, TWidget, TCallback> : WinUIContainer<TControl, TWidget, TCallback>, Panel.IHandler
@@ -18,18 +20,24 @@ public abstract class WinUIPanel<TControl, TWidget, TCallback> : WinUIContainer<
 			}
 		}
 	}
-	public Padding Padding { get; set; }
-	public Size MinimumSize { get; set; }
+	public virtual Padding Padding
+	{
+		get => _border.Padding.ToEto();
+		set => _border.Padding = value.ToWinUI();
+	}
+	public virtual Size MinimumSize
+	{
+		get => ContainerControl.GetMinSize().ToEtoSize();
+		set => ContainerControl.SetMinSize(value);
+	}
+
 	public ContextMenu ContextMenu { get; set; }
 
-	muc.Border _border;
+	EtoDockPanel _border;
 
 	public WinUIPanel()
 	{
-		_border = new muc.Border
-		{
-			AllowFocusOnInteraction = false
-		};
+		_border = new EtoDockPanel { Handler = this };
 	}
 	public override mux.FrameworkElement ContainerControl => _border;
 

@@ -3,7 +3,6 @@ namespace Eto.Test.Sections.Behaviors
 	[Section("Behaviors", "Clipboard")]
 	public class ClipboardSection : Panel
 	{
-		Clipboard clipboard = new Clipboard();
 		Scrollable pasteData = new Scrollable();
 
 		public ClipboardSection()
@@ -11,31 +10,31 @@ namespace Eto.Test.Sections.Behaviors
 			var copyTextButton = new Button { Text = "Copy Text" };
 			copyTextButton.Click += (sender, e) =>
 			{
-				clipboard.Text = "Some text";
+				new Clipboard().Text = "Some text";
 				Update();
 			};
 			var copyHtmlButton = new Button { Text = "Copy Html" };
 			copyHtmlButton.Click += (sender, e) =>
 			{
-				clipboard.Html = "Some <strong style='color:blue'>HTML</strong>";
+				new Clipboard().Html = "Some <strong style='color:blue'>HTML</strong>";
 				Update();
 			};
 			var copyImageButton = new Button { Text = "Copy Image" };
 			copyImageButton.Click += (sender, e) =>
 			{
-				clipboard.Image = TestIcons.TestImage;
+				new Clipboard().Image = TestIcons.TestImage;
 				Update();
 			};
 			var copyCustomButton = new Button { Text = "Copy Custom" };
 			copyCustomButton.Click += (sender, e) =>
 			{
-				clipboard.SetString("my value", "my.custom.type");
+				new Clipboard().SetString("my value", "my.custom.type");
 				Update();
 			};
 			var copyObjectButton = new Button { Text = "Copy Object" };
 			copyObjectButton.Click += (sender, e) =>
 			{
-				clipboard.SetObject(new DragDropSection.CustomSerializableType { Name = "Woot" }, "my.custom.object");
+				new Clipboard().SetObject(new DragDropSection.CustomSerializableType { Name = "Woot" }, "my.custom.object");
 				Update();
 			};
 
@@ -45,7 +44,8 @@ namespace Eto.Test.Sections.Behaviors
 			var clearButton = new Button { Text = "Clear" };
 			clearButton.Click += (sender, e) =>
 			{
-				clipboard.Clear();
+				using var cb = new Clipboard();
+				cb.Clear();
 				Update();
 			};
 
@@ -69,6 +69,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		void Update()
 		{
+			using var clipboard = new Clipboard();
 			var panel = new StackLayout { Padding = new Padding(10) };
 			if (clipboard.Text != null)
 			{

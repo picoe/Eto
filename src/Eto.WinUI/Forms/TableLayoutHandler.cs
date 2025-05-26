@@ -79,9 +79,9 @@ public class TableLayoutHandler : WinUILayout<EtoGrid, TableLayout, TableLayout.
 {
 	readonly muc.Border border;
 	Size spacing;
-	Control[,] controls;
-	bool[] columnScale;
-	bool[] rowScale;
+	Control?[,]? controls;
+	bool[]? columnScale;
+	bool[]? rowScale;
 	int lastColumnScale;
 	int lastRowScale;
 	bool inGroupBox;
@@ -175,7 +175,7 @@ public class TableLayoutHandler : WinUILayout<EtoGrid, TableLayout, TableLayout.
 	private void SetupGrid()
 	{
 		InitializeSizes();
-		SetScale(true);
+		//SetScale(true);
 		SetMargins(true);
 		SetChildrenSizes(true);
 	}
@@ -195,8 +195,8 @@ public class TableLayoutHandler : WinUILayout<EtoGrid, TableLayout, TableLayout.
 	//	SetScale();
 	//}
 
-	void SetScale(bool force = false)
-	{
+	//void SetScale(bool force = false)
+	//{
 		//if (Control == null || (!Widget.Loaded && !force))
 		//	return;
 		//for (int y = 0; y < controls.GetLength(1); y++)
@@ -208,7 +208,7 @@ public class TableLayoutHandler : WinUILayout<EtoGrid, TableLayout, TableLayout.
 		//			SetScale(handler, x, y);
 		//	}
 		//}
-	}
+	//}
 
 	//public override void UpdatePreferredSize()
 	//{
@@ -291,6 +291,8 @@ public class TableLayoutHandler : WinUILayout<EtoGrid, TableLayout, TableLayout.
 
 	public void SetColumnScale(int column, bool scale)
 	{
+		if (columnScale == null)
+			return;
 		columnScale[column] = scale;
 		if (Widget.Loaded)
 		{
@@ -301,13 +303,13 @@ public class TableLayoutHandler : WinUILayout<EtoGrid, TableLayout, TableLayout.
 			{
 				Control.ColumnDefinitions[columnScale.Length - 1].Width = GetColumnWidth(columnScale.Length - 1);
 			}
-			SetScale();
+			//SetScale();
 		}
 	}
 
 	public bool GetColumnScale(int column)
 	{
-		return columnScale[column];
+		return columnScale?[column] ?? false;
 	}
 
 	public void SetRowScale(int row, bool scale)
@@ -322,13 +324,13 @@ public class TableLayoutHandler : WinUILayout<EtoGrid, TableLayout, TableLayout.
 			{
 				Control.RowDefinitions[rowScale.Length - 1].Height = GetRowHeight(rowScale.Length - 1);
 			}
-			SetScale();
+			//SetScale();
 		}
 	}
 
 	public bool GetRowScale(int row)
 	{
-		return rowScale[row];
+		return rowScale?[row] ?? false;
 	}
 
 	public Size Spacing

@@ -183,19 +183,6 @@ namespace Eto.Wpf
 			return false;
 		}
 
-		public static void EnsureLoaded(this sw.FrameworkElement control)
-		{
-			if (control.IsLoaded)
-				return;
-			ApplicationHandler.InvokeIfNecessary(() =>
-			{
-				if (!control.IsLoaded)
-				{
-					control.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ApplicationIdle, null);
-				}
-			});
-		}
-
 		public static double Horizontal(this sw.Thickness thickness)
 		{
 			return thickness.Left + thickness.Right;
