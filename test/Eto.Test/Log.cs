@@ -16,34 +16,31 @@ namespace Eto.Test
 				sb.Append(message);
 			sb.Append("\n");
 
-			if (Platform.Instance.IsDesktop)
+			var form = Application.Instance?.MainForm as MainForm;
+			var eventLog = form?.EventLog;
+			if (eventLog != null)
 			{
-				var form = Application.Instance?.MainForm as MainForm;
-				var eventLog = form?.EventLog;
-				if (eventLog != null)
-				{
-					eventLog.Append(sb.ToString(), true);
-					return;
-				}
+				eventLog.Append(sb.ToString(), true);
+				return;
+			}
 
-				if (Application.Instance != null)
+			if (Application.Instance != null)
+			{
+				if (s_deferredLog == null)
 				{
-					if (s_deferredLog == null)
+					// so we can show log events before the main form is shown
+					Application.Instance.Initialized += (s2, e) =>
 					{
-						// so we can show log events before the main form is shown
-						Application.Instance.Initialized += (s2, e) =>
+						var eventLog2 = (Application.Instance.MainForm as MainForm)?.EventLog;
+						if (eventLog2 != null)
 						{
-							var eventLog2 = (Application.Instance.MainForm as MainForm)?.EventLog;
-							if (eventLog2 != null)
-							{
-								eventLog2.Append(s_deferredLog.ToString(), true);
-								s_deferredLog.Clear();
-							}
-						};
-						s_deferredLog = new StringBuilder();
-					}
-					s_deferredLog.Append(sb.ToString());
+							eventLog2.Append(s_deferredLog.ToString(), true);
+							s_deferredLog.Clear();
+						}
+					};
+					s_deferredLog = new StringBuilder();
 				}
+				s_deferredLog.Append(sb.ToString());
 			}
 
 			Debug.WriteLine(sb.ToString());

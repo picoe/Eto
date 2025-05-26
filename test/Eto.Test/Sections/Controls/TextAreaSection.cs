@@ -127,13 +127,15 @@ namespace Eto.Test.Sections.Controls
 					text.ScrollTo(new Range<int>((int)start.Value, (int)end.Value));
 				}
 			}
-			
-			
-			var contextMenu = new ContextMenu();
-			contextMenu.Items.Add(new ButtonMenuItem((sender, e) => text.ScrollToStart()) { Text = "ScrollToStart" });
-			contextMenu.Items.Add(new ButtonMenuItem((sender, e) => text.ScrollToEnd()) { Text = "ScrollToEnd" });
-			contextMenu.Items.Add(new ButtonMenuItem(ScrollToRange) { Text = "ScrollTo(Range<int>)" });
-			button.Items.Add(new MenuSegmentedItem { Text = "ScrollTo", Menu = contextMenu });
+
+			if (Platform.Instance.Supports<ContextMenu>())
+			{
+				var contextMenu = new ContextMenu();
+				contextMenu.Items.Add(new ButtonMenuItem((sender, e) => text.ScrollToStart()) { Text = "ScrollToStart" });
+				contextMenu.Items.Add(new ButtonMenuItem((sender, e) => text.ScrollToEnd()) { Text = "ScrollToEnd" });
+				contextMenu.Items.Add(new ButtonMenuItem(ScrollToRange) { Text = "ScrollTo(Range<int>)" });
+				button.Items.Add(new MenuSegmentedItem { Text = "ScrollTo", Menu = contextMenu });
+			}
 
 			return button;
 		}

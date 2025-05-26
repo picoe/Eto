@@ -28,6 +28,8 @@ namespace Eto.GtkSharp.Forms
 			Control = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
 		}
 
+		protected override bool DisposeControl => false;
+
 		void Update()
 		{
 			Control.SetWithData((Gtk.TargetEntry[])targets, (clip, selectionData, info) =>

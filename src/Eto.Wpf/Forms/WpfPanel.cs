@@ -44,7 +44,8 @@ namespace Eto.Wpf.Forms
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
-			SetContentScale(xscale, yscale);
+			var preferredSize = UserPreferredSize;
+			SetContentScale(xscale || !double.IsNaN(preferredSize.Width), yscale || !double.IsNaN(preferredSize.Height));
 		}
 
 		protected virtual void SetContentScale(bool xscale, bool yscale)
