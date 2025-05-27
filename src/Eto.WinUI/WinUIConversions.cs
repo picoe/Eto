@@ -109,67 +109,6 @@ public static class WinUIConversions
 		return new sw.Point(value.X, value.Y);
 	}
 
-	public static Windows.Graphics.PointInt32 ToWinUIPointInt32(this Point value)
-	{
-		return new Windows.Graphics.PointInt32(value.X, value.Y);
-	}
-
-	public static Point ToEto(this Windows.Graphics.PointInt32 value)
-	{
-		return new Point(value.X, value.Y);
-	}
-
-	public static mux.VerticalAlignment ToWinUI(this VerticalAlignment value) => value switch
-	{
-		VerticalAlignment.Top => mux.VerticalAlignment.Top,
-		VerticalAlignment.Bottom => mux.VerticalAlignment.Bottom,
-		VerticalAlignment.Center => mux.VerticalAlignment.Center,
-		VerticalAlignment.Stretch => mux.VerticalAlignment.Stretch,
-		_ => throw new NotImplementedException()
-	};
-
-	public static VerticalAlignment ToEto(this mux.VerticalAlignment value) => value switch
-	{
-		mux.VerticalAlignment.Top => VerticalAlignment.Top,
-		mux.VerticalAlignment.Bottom => VerticalAlignment.Bottom,
-		mux.VerticalAlignment.Center => VerticalAlignment.Center,
-		mux.VerticalAlignment.Stretch => VerticalAlignment.Stretch,
-		_ => throw new NotImplementedException()
-	};
-
-	public static mux.TextWrapping ToWinUI(this WrapMode value) => value switch
-	{
-		WrapMode.Character => mux.TextWrapping.Wrap,
-		WrapMode.None => mux.TextWrapping.NoWrap,
-		WrapMode.Word => mux.TextWrapping.WrapWholeWords,
-		_ => throw new NotImplementedException()
-	};
-
-	public static WrapMode ToEto(this mux.TextWrapping value) => value switch
-	{
-		mux.TextWrapping.Wrap => WrapMode.Character,
-		mux.TextWrapping.NoWrap => WrapMode.None,
-		mux.TextWrapping.WrapWholeWords => WrapMode.Word,
-		_ => throw new NotImplementedException()
-	};
-	public static mux.TextAlignment ToWinUI(this TextAlignment value) => value switch
-	{
-		TextAlignment.Left => mux.TextAlignment.Left,
-		TextAlignment.Center => mux.TextAlignment.Center,
-		TextAlignment.Right => mux.TextAlignment.Right,
-		//TextAlignment.Justify => mux.TextAlignment.Justify,
-		_ => throw new NotImplementedException()
-	};
-
-	public static TextAlignment ToEto(this mux.TextAlignment value) => value switch
-	{
-		mux.TextAlignment.Left => TextAlignment.Left,
-		mux.TextAlignment.Center => TextAlignment.Center,
-		mux.TextAlignment.Right => TextAlignment.Right,
-		//TextAlignment.Justify => mux.TextAlignment.Justify,
-		_ => TextAlignment.Left
-	};
-
 	/*
 	public static KeyEventArgs ToEto(this swi.KeyEventArgs e, KeyEventType keyType)
 	{
@@ -331,50 +270,43 @@ public static class WinUIConversions
 				throw new NotSupportedException();
 		}
 	}
-	*/
 
-	public static Size GetSize(this mux.FrameworkElement element)
+	public static Size GetSize(this sw.FrameworkElement element)
 	{
 		if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
 			return new Size((int)Math.Ceiling(element.ActualWidth), (int)Math.Ceiling(element.ActualHeight));
 		return new Size((int)(double.IsNaN(element.Width) ? -1 : Math.Ceiling(element.Width)), (int)(double.IsNaN(element.Height) ? -1 : Math.Ceiling(element.Height)));
 	}
 
-	public static sw.Size GetMinSize(this mux.FrameworkElement element)
+	public static sw.Size GetMinSize(this sw.FrameworkElement element)
 	{
 		return new sw.Size(element.MinWidth, element.MinHeight);
 	}
 
-	public static void SetMinSize(this mux.FrameworkElement element, Size size)
-	{
-		element.MinWidth = size.Width == -1 ? double.NaN : size.Width;
-		element.MinHeight = size.Height == -1 ? double.NaN : size.Height;
-	}
-
-	public static void SetSize(this mux.FrameworkElement element, Size size)
+	public static void SetSize(this sw.FrameworkElement element, Size size)
 	{
 		element.Width = size.Width == -1 ? double.NaN : size.Width;
 		element.Height = size.Height == -1 ? double.NaN : size.Height;
 	}
 
-	public static void SetMaxSize(this mux.FrameworkElement element, Size size)
+	public static void SetMaxSize(this sw.FrameworkElement element, Size size)
 	{
 		element.MaxWidth = size.Width == -1 ? double.NaN : size.Width;
 		element.MaxHeight = size.Height == -1 ? double.NaN : size.Height;
 	}
 
-	public static sw.Size GetMaxSize(this mux.FrameworkElement element)
+	public static sw.Size GetMaxSize(this sw.FrameworkElement element)
 	{
 		return new sw.Size(element.MaxWidth, element.MaxHeight);
 	}
 
-	public static void SetSize(this mux.FrameworkElement element, sw.Size size)
+	public static void SetSize(this sw.FrameworkElement element, sw.Size size)
 	{
 		element.Width = size.Width;
 		element.Height = size.Height;
 	}
 
-	/*public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight)
+	public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight)
 	{
 		var style = FontStyle.None;
 		if (fontStyle == sw.FontStyles.Italic)

@@ -6,11 +6,15 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 	bool _attached;
 	bool _shutdown;
 	string _badgeLabel;
+	static ApplicationHandler _instance;
 	List<FormHandler> _delayShownWindows;
-	Dispatcher _dispatcher;
+	static Dispatcher _dispatcher;
 	bool? _isActive;
 
-	public static ApplicationHandler Instance => Application.Instance?.Handler as ApplicationHandler;
+	public static ApplicationHandler Instance
+	{
+		get { return _instance; }
+	}
 
 	public static bool EnableVisualStyles = true;
 
@@ -21,6 +25,31 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 	/// Set this before creating the Eto Application instance.
 	/// </remarks>
 	public static bool EnableCustomThemes = true;
+
+	public static void InvokeIfNecessary(Action action)
+	{
+		if (_dispatcher == null || Thread.CurrentThread == _dispatcher.Thread)
+			action();
+		else
+		{
+			sw.Application.Current.Dispatcher.Invoke(action);
+		}
+	}
+
+	public static T InvokeIfNecessary<T>(Func<T> action)
+	{
+		if (_dispatcher == null || Thread.CurrentThread == _dispatcher.Thread)
+			return action();
+		else
+		{
+			T ret = default(T);
+			_dispatcher.Invoke(new Action(() =>
+			{
+				ret = action();
+			}));
+			return ret;
+		}
+	}
 
 	internal List<FormHandler> DelayShownWindows => _delayShownWindows ??= new List<FormHandler>();
 
@@ -44,6 +73,9 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 
 	protected override void Initialize()
 	{
+		if (SynchronizationContext.Current == null)
+			SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext());
+
 		Control = sw.Application.Current;
 		if (Control == null)
 		{
@@ -61,10 +93,8 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 		// This is a hack, but no way around it thus far..
 		var temp = sw.SystemFonts.MessageFontFamily.Baseline;
 
-		_dispatcher = Dispatcher.CurrentDispatcher;
-
-		if (SynchronizationContext.Current == null)
-			SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(_dispatcher));
+		_dispatcher = sw.Application.Current.Dispatcher ?? Dispatcher.CurrentDispatcher;
+		_instance = this;
 		ApplyThemes();
 		base.Initialize();
 	}
@@ -187,17 +217,12 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 
 	public void Invoke(Action action)
 	{
-		if (_dispatcher == null || Thread.CurrentThread == _dispatcher.Thread)
-			action();
-		else
-		{
-			_dispatcher.Invoke(action);
-		}
+		ApplicationHandler.InvokeIfNecessary(action);
 	}
 
 	public void AsyncInvoke(Action action)
 	{
-		_dispatcher.BeginInvoke(action, sw.Threading.DispatcherPriority.Normal);
+		Control.Dispatcher.BeginInvoke(action, sw.Threading.DispatcherPriority.Normal);
 	}
 
 	public Keys CommonModifier

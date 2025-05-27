@@ -21,11 +21,25 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); }
 			}
 
-			public override void DrawGrid(CGRect clipRect)
+			/// <summary>
+			/// The area to the right and below the rows is not filled with the background
+			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
+			/// </summary>
+			public override void DrawBackground(CGRect clipRect)
 			{
-				// Only draw gridlines for rows/columns with data, not for the empty space
+				var h = Handler;
+				if (h == null)
+					return;
+				var backgroundColor = h.BackgroundColor;
+				if (backgroundColor != Colors.Transparent)
+				{
+					backgroundColor.ToNSUI().Set();
+					NSGraphics.RectFill(Bounds);
+				}
+				else
+					base.DrawBackground(clipRect);
 			}
-			
+
 			public override void RightMouseDown(NSEvent theEvent)
 			{
 				if (Handler?.HandleMouseEvent(theEvent) == true)

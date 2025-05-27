@@ -18,8 +18,7 @@ namespace Eto.WinForms
 		public override string ID => "WinForms";
 
 		public override PlatformFeatures SupportedFeatures =>
-			PlatformFeatures.DrawableWithTransparentContent
-			| PlatformFeatures.MultiThreadedUI;
+			PlatformFeatures.DrawableWithTransparentContent;
 
 		static Platform()
 		{

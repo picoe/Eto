@@ -389,6 +389,11 @@ namespace Eto.Wpf.Forms
 			FocusControl.Loaded -= HandleFocus;
 		}
 
+		protected virtual void EnsureLoaded()
+		{
+			Control.EnsureLoaded();
+		}
+
 		public virtual bool HasFocus
 		{
 			get { return Control.IsKeyboardFocusWithin; }
