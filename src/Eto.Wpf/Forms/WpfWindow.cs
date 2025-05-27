@@ -1,8 +1,7 @@
 using Eto.Wpf.CustomControls;
-using Eto.Wpf.Drawing;
 using Eto.Wpf.Forms.Menu;
+using Eto.Wpf.Drawing;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace Eto.Wpf.Forms
 {
@@ -148,8 +147,7 @@ namespace Eto.Wpf.Forms
 			{
 				SetWindowChrome();
 			}
-			SetBlurBehind();
-
+			
 			if (!Minimizable || !Maximizable)
 			{
 				SetResizeMode();
@@ -315,19 +313,15 @@ namespace Eto.Wpf.Forms
 			IsClosing = true;
 			var args = new CancelEventArgs { Cancel = e.Cancel };
 			Callback.OnClosing(Widget, args);
-			bool willShutDown = false;
-			if (sw.Application.Current.Dispatcher == Dispatcher.CurrentDispatcher)
-			{
-				willShutDown =
-					(
-						sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
-						&& sw.Application.Current.Windows.Count == 1
-					)
-					|| (
-						sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
-						&& sw.Application.Current.MainWindow == Control
-					);
-			}
+			var willShutDown =
+				(
+					sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
+					&& sw.Application.Current.Windows.Count == 1
+				)
+				|| (
+					sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
+					&& sw.Application.Current.MainWindow == Control
+				);
 
 			if (!args.Cancel && willShutDown)
 			{
@@ -926,20 +920,27 @@ namespace Eto.Wpf.Forms
 			get { return Control.Opacity; }
 			set
 			{
-				Control.Opacity = value;
-				SetBlurBehind();
-				SetWindowTransparency();
-			}
-		}
-
-		private void SetBlurBehind()
-		{
-			if (isSourceInitialized)
-			{
-				if (Math.Abs(Control.Opacity - 1.0) > 0.01f)
+				if (Math.Abs(value - 1.0) > 0.01f)
 				{
-					GlassHelper.BlurBehindWindow(Control);
-					//GlassHelper.ExtendGlassFrame (Control);
+					if (Control.IsLoaded)
+					{
+						GlassHelper.BlurBehindWindow(Control);
+						//GlassHelper.ExtendGlassFrame (Control);
+						Control.Opacity = value;
+					}
+					else
+					{
+						Control.Loaded += delegate
+						{
+							GlassHelper.BlurBehindWindow(Control);
+							//GlassHelper.ExtendGlassFrame (Control);
+							Control.Opacity = value;
+						};
+					}
+				}
+				else
+				{
+					Control.Opacity = value;
 				}
 			}
 		}
@@ -1002,22 +1003,14 @@ namespace Eto.Wpf.Forms
 		{
 			if (!isSourceInitialized)
 				return;
-			var needsCustomWindowChrome = (Resizable || Opacity < 1) && WindowStyle == WindowStyle.None;
-			
-			if (sw.Shell.WindowChrome.GetWindowChrome(Control) != null && WindowStyle == WindowStyle.None)
-			{
-				// keep window chrome if it is already set, unless WindowStyle is different
-				// E.g. turning off Resizable makes the background opaque if we remove the WindowChrome
-				return;
-			}
-
 			var oldStyle = SaveWindowStyle();
+			var needsCustomWindowChrome = Resizable && WindowStyle == WindowStyle.None;
+
 			if (needsCustomWindowChrome)
 			{
 				var windowChrome = new sw.Shell.WindowChrome
 				{
 					CaptionHeight = 0,
-					GlassFrameThickness = sw.Shell.WindowChrome.GlassFrameCompleteThickness,
 					ResizeBorderThickness = new sw.Thickness(4)
 				};
 				sw.Shell.WindowChrome.SetWindowChrome(Control, windowChrome);
@@ -1069,13 +1062,7 @@ namespace Eto.Wpf.Forms
 		
 		void SetWindowTransparency()
 		{
-			// Windows doesn't support transparency otherwise..
-			if (WindowStyle != WindowStyle.None)
-				return;
-			var isTransparent =
-				Control.Background is swm.SolidColorBrush scb && scb.Color.A < 255
-				| Control.Opacity < 1.0;
-				
+			var isTransparent = Control.Background is swm.SolidColorBrush scb && scb.Color.A < 255 && WindowStyle == WindowStyle.None;
 			if (isSourceInitialized)
 			{
 				if (isTransparent != Control.AllowsTransparency)
