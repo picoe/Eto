@@ -13,18 +13,13 @@ public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TW
 	where TWidget : Window
 	where TCallback : Window.ICallback
 {
-	readonly muc.Grid _rootGrid = new();
-	readonly muc.TextBlock _title = new();
 
 	public override IntPtr NativeHandle => WindowNative.GetWindowHandle(Control);
-	public override mui.FrameworkElement ContainerControl => _rootGrid;
+	public override mui.FrameworkElement ContainerControl { get; }
+	public override mui.FrameworkElement FocusControl { get; }
 	public ToolBar ToolBar { get; set; }
 	public double Opacity { get; set; }
-	public string Title
-	{
-		get => _title.Text;
-		set => _title.Text = value;	
-	}
+	public string Title { get; set; }
 	public Screen Screen { get; }
 	public MenuBar Menu { get; set; }
 	public Icon Icon { get; set; }
@@ -40,26 +35,21 @@ public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TW
 	public float LogicalPixelSize { get; }
 	public bool MovableByWindowBackground { get; set; }
 	public bool AutoSize { get; set; }
-
-	public override Color BackgroundColor
-	{
-		get => _rootGrid.Background.ToEtoColor();
-		set => _rootGrid.Background = value.ToWinUIBrush();
-	}
-
-	Point Window.IHandler.Location
-	{
-		get => Control.AppWindow.Position.ToEto();
-		set => Control.AppWindow.Move(value.ToWinUIPointInt32());
-	}
+	Point Window.IHandler.Location { get; set; }
 
 	protected override TControl CreateControl() => (TControl)new mui.Window();
 
-	public void BringToFront() => Control.AppWindow.MoveInZOrderAtTop();
+	public void BringToFront()
+	{
+		throw new NotImplementedException();
+	}
 
 	public void Close() => Control.Close();
 
-	public void SendToBack() => Control.AppWindow.MoveInZOrderAtBottom();
+	public void SendToBack()
+	{
+		throw new NotImplementedException();
+	}
 
 	public void SetOwner(Window owner)
 	{
@@ -67,21 +57,14 @@ public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TW
 
 	public override void SetContainerContent(mui.FrameworkElement content)
 	{
-		muc.Grid.SetRow(content, 1);
-		_rootGrid.Children.Add(content);
-		//Control.Content = content;
+		Control.Content = content;
 	}
 
 	public override bool Visible
 	{
 		get => Control.Visible;
-		set
-		{
-			if (value)
-				Control.AppWindow.Show();
-			else
-				Control.AppWindow.Hide();
-		}
+		set {  }
+		//set => Control..CoreWindow..Visible = value;
 	}
 
 	mui.Window IWinUIWindow.Control => Control;
@@ -89,33 +72,10 @@ public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TW
 	protected override void Initialize()
 	{
 		base.Initialize();
-
 		Control.ExtendsContentIntoTitleBar = true;
-
-		_rootGrid.Background = mux.Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] as muxm.Brush;
-
-		// Define rows: one for toolbar, one for content
-		_rootGrid.RowDefinitions.Add(new muc.RowDefinition { Height = mux.GridLength.Auto });
-		_rootGrid.RowDefinitions.Add(new muc.RowDefinition { Height = new mux.GridLength(1, mux.GridUnitType.Star) });
-
-		// Create CommandBar
-		var toolbar = new muc.CommandBar
-		{
-			
-		};
-
-		// add title to the toolbar
-		_title.FontSize = 14;
-		_title.Margin = new mui.Thickness(8);
-
-		toolbar.Content = _title;
-
-
-		muc.Grid.SetRow(toolbar, 0);
-		_rootGrid.Children.Add(toolbar);
-
-
-		Control.Content = _rootGrid;
+		//var grid = new mui.Controls.Grid();
+		//grid.Children.Add(new mui.Controls.TextBlock { Text = "Hello" });
+		//Control.SetTitleBar(grid);
 
 	}
 

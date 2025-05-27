@@ -34,8 +34,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		[Test, ManualTest]
 		public void LabelsShouldGetCorrectSize()
 		{
-			ManualForm("Labels should end with a period", form =>
-			{
+			ManualForm("Labels should end with a period", form => {
 				// note: this actually failed only when the form was the initial window, as it calculated its size before it was even shown.
 				form.ClientSize = new Size(200, 200);
 
@@ -46,32 +45,5 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				return layout;
 			});
 		}
-		
-		[Test]
-		public void ChildShouldExpandWhenParentAndChildSizeIsExplicitlySet()
-		{
-			ShownAsync(form =>
-			{
-				var childPanel = new Panel { ID = "childPanel", Size = new Size(50, 50), BackgroundColor = Colors.Blue };
-				
-				var panel = new Panel { ID = "panel1", Size = new Size(200, 200), BackgroundColor = Colors.Red };
-				panel.Content = childPanel;
-
-				var layout = new PixelLayout();
-				layout.Add(panel, 0, 0);
-
-				return layout;
-			}, 
-			async layout =>
-			{
-				await Task.Delay(1000);
-				var panel = layout.FindChild("panel1");
-				var childPanel = layout.FindChild("childPanel");
-				Assert.That(childPanel, Is.Not.Null, "#1");
-				Assert.That(childPanel.Width, Is.EqualTo(panel.Width), "#2");
-				Assert.That(childPanel.Height, Is.EqualTo(panel.Width), "#3");
-			});
-		}
-		
 	}
 }

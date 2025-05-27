@@ -1,3 +1,6 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -19,7 +22,6 @@ namespace Eto.Test.WinUI
 	/// </summary>
 	public partial class App : Microsoft.UI.Xaml.Application
 	{
-		Application app;
 		/// <summary>
 		/// Initializes the singleton application object.  This is the first line of authored code
 		/// executed, and as such is the logical equivalent of main() or WinMain().
@@ -27,7 +29,7 @@ namespace Eto.Test.WinUI
 		public App()
 		{
 			this.InitializeComponent();
-			app = new TestApplication(new Eto.WinUI.Platform());
+			new Eto.Forms.Application(new Eto.WinUI.Platform()).Attach(this);
 		}
 
 		/// <summary>
@@ -36,7 +38,10 @@ namespace Eto.Test.WinUI
 		/// <param name="args">Details about the launch request and process.</param>
 		protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
 		{
-			app.Attach(this);
+			m_window = new MainWindow();
+			m_window.Show();
 		}
+
+		private MainWindow m_window;
 	}
 }

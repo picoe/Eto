@@ -15,8 +15,7 @@ namespace Eto.Test.Sections.Controls
 
 			layout.AddRow("EnumDropDown<Key>", TableLayout.AutoSized(EnumCombo()));
 
-			if (Platform.Supports<Font>())
-				layout.AddRow("FormatItem", TableLayout.AutoSized(DropDownWithFonts()));
+			layout.AddRow("FormatItem", TableLayout.AutoSized(DropDownWithFonts()));
 			
 			// TODO: get this working on Gtk as it is unusably slow and WinForms is a wee slow.
 			if (!Platform.IsGtk)
@@ -62,21 +61,14 @@ namespace Eto.Test.Sections.Controls
 			var control = new Button { Text = "Add Rows" };
 			control.Click += (sender, e) =>
 			{
-				if (AddWithImages && Platform.Supports<Icon>())
+				var image1 = TestIcons.Logo.WithSize(32, 32);
+				var image2 = TestIcons.TestIcon.WithSize(16, 16);
+				for (int i = 0; i < 10; i++)
 				{
-					var image1 = TestIcons.Logo.WithSize(32, 32);
-					var image2 = TestIcons.TestIcon.WithSize(16, 16);
-					for (int i = 0; i < 10; i++)
-					{
+					if (AddWithImages)
 						list.Items.Add(new ImageListItem { Text = "Item " + list.Items.Count, Image = i % 2 == 0 ? image1 : image2 });
-					}
-				}
-				else
-				{
-					for (int i = 0; i < 10; i++)
-					{
+					else
 						list.Items.Add(new ListItem { Text = "Item " + list.Items.Count });
-					}
 				}
 			};
 			return control;

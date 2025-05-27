@@ -102,17 +102,5 @@ namespace Eto.Wpf.Forms
 			if (suspended == 0 && Widget.Loaded)
 				base.UpdatePreferredSize();
 		}
-
-		public override void SetScale(bool xscale, bool yscale)
-		{
-			base.SetScale(xscale, yscale);
-			// ensure we propagate down so all controls can set their scale properly
-			foreach (var child in Widget.Controls)
-			{
-				var element = child.GetWpfFrameworkElement();
-				element?.SetScale(false, false);
-			}
-		}
-
 	}
 }

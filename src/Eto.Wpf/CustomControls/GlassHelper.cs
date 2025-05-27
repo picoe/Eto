@@ -95,13 +95,14 @@ namespace Eto.Wpf.CustomControls
 
 		public static bool BlurBehindWindow (sw.Window window)
 		{
-			if (!DwmIsCompositionEnabled())
+			if (!DwmIsCompositionEnabled ())
 				return false;
 
 			var windowInteropHelper = new sw.Interop.WindowInteropHelper (window);
 			IntPtr myHwnd = windowInteropHelper.Handle;
 			var mainWindowSrc = System.Windows.Interop.HwndSource.FromHwnd (myHwnd);
 
+			window.Background = swm.Brushes.Transparent;
 			mainWindowSrc.CompositionTarget.BackgroundColor = swm.Colors.Transparent;
 
 			var blurBehindParameters = new DWM_BLURBEHIND ();

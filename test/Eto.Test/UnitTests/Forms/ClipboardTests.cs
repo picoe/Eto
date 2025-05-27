@@ -59,26 +59,26 @@ namespace Eto.Test.UnitTests.Forms
 		[Serializable]
 		public class SerializableObject : ISerializable
 		{
-
+			
 			public string SomeValue { get; set; }
 			public ChildObject ChildObject { get; set; } = new ChildObject();
 			public SerializableObject()
 			{
 			}
-
+			
 			public SerializableObject(SerializationInfo info, StreamingContext context)
 			{
 				SomeValue = info.GetString("SomeValue");
 				ChildObject = info.GetValue("Child", typeof(ChildObject)) as ChildObject;
 			}
-
+			
 			public void GetObjectData(SerializationInfo info, StreamingContext context)
 			{
 				info.AddValue("SomeValue", SomeValue);
 				info.AddValue("Child", ChildObject);
 			}
 		}
-
+		
 		[Serializable]
 		public class SomeOtherObject
 		{
@@ -86,7 +86,7 @@ namespace Eto.Test.UnitTests.Forms
 
 			public ChildObject ChildObject { get; set; } = new ChildObject();
 		}
-
+		
 		public class ChildObject
 		{
 			public bool SomeProperty { get; set; } = new Random().Next() % 2 == 0;
@@ -98,8 +98,7 @@ namespace Eto.Test.UnitTests.Forms
 		static Uri[] SampleUrlUris => new[] { new Uri("http://google.com") };
 		static Uri[] SampleFileUris
 		{
-			get
-			{
+			get {
 				var path = EtoEnvironment.GetFolderPath(EtoSpecialFolder.Documents);
 				return new[] { new Uri(path) };
 			}
@@ -186,8 +185,8 @@ namespace Eto.Test.UnitTests.Forms
 					Assert.That(dataObject.Html, Is.EqualTo(SampleHtml));
 					break;
 				//case DataType.Icon:
-				//Assert.That(dataObject.Image, Is.Not.Null);
-				//break;
+					//Assert.That(dataObject.Image, Is.Not.Null);
+					//break;
 				case DataType.Bitmap:
 					Assert.That(dataObject.ContainsImage, Is.True);
 					Assert.That(dataObject.Image, Is.Not.Null);
@@ -250,8 +249,8 @@ namespace Eto.Test.UnitTests.Forms
 					dataObject.Html = SampleHtml;
 					break;
 				//case DataType.Icon:
-				//dataObject.Image = TestIcons.Logo;
-				//break;
+					//dataObject.Image = TestIcons.Logo;
+					//break;
 				case DataType.Bitmap:
 					dataObject.Image = TestIcons.TestImage;
 					break;
@@ -293,14 +292,14 @@ namespace Eto.Test.UnitTests.Forms
 			});
 			// if it's a clipboard, test a new instance of the clipboard has the same values that we set.
 			if (IsClipboard)
-				Invoke(() =>
+			Invoke(() =>
+			{
+				using (var clipboard = new T())
 				{
-					using (var clipboard = new T())
-					{
-						TestValue(clipboard, property);
-						TestIsNullExcept(clipboard, property);
-					}
-				});
+					TestValue(clipboard, property);
+					TestIsNullExcept(clipboard, property);
+				}
+			});
 		}
 
 		[TestCaseSource(nameof(GetDataTypes))]
@@ -379,30 +378,5 @@ namespace Eto.Test.UnitTests.Forms
 					}
 				});
 		}
-
-		[Test]
-		public void DisposedClipboardShouldNotBreak() => Async(async () =>
-		{
-			var clipboard1 = new Clipboard();
-			clipboard1.Text = "Hello";
-			Assert.That(clipboard1.Text, Is.EqualTo("Hello"), "#1");
-			clipboard1.Dispose();
-			
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
-			
-			var clipboard2 = new Clipboard();
-			Assert.That(clipboard2.Text, Is.EqualTo("Hello"), "#1");
-			clipboard2.Text = "Hello2";
-			Assert.That(clipboard2.Text, Is.EqualTo("Hello2"), "#1");
-			clipboard2.Dispose();
-
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
-			
-			using var clipboard3 = new Clipboard();
-			Assert.That(clipboard3.Text, Is.EqualTo("Hello2"), "#1");
-			clipboard3.Dispose();
-		});
 	}
 }

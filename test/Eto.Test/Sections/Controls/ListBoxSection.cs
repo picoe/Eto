@@ -9,8 +9,7 @@ namespace Eto.Test.Sections.Controls
 
 			layout.AddRow(new Label { Text = "Default" }, Default());
 
-			if (Platform.Supports<Icon>())
-				layout.AddRow(new Label { Text = "Virtual list, with Icons" }, WithIcons());
+			layout.AddRow(new Label { Text = "Virtual list, with Icons" }, WithIcons());
 
 			if (Platform.Supports<ContextMenu>())
 				layout.AddRow(new Label { Text = "Context Menu" }, WithContextMenu());
