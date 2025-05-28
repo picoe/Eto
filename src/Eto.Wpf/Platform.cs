@@ -20,7 +20,8 @@ namespace Eto.Wpf
 		public override PlatformFeatures SupportedFeatures =>
 			PlatformFeatures.DrawableWithTransparentContent
 			| PlatformFeatures.CustomCellSupportsControlView
-			| PlatformFeatures.TabIndexWithCustomContainers;
+			| PlatformFeatures.TabIndexWithCustomContainers
+			| PlatformFeatures.MultiThreadedUI;
 
 		static Platform()
 		{

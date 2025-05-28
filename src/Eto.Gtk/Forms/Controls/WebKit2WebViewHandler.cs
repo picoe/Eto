@@ -75,13 +75,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		readonly Gtk.ScrolledWindow scroll;
 		Queue<TaskCompletionSource<string>> jscs;
-
+		private readonly FinishScriptExecutionDelegate _finishScriptExecutionDelegate;
 
 		public WebViewHandler()
 		{
 			scroll = new Gtk.ScrolledWindow();
 			Control = new Gtk.Widget(NativeMethods.webkit_web_view_new());
 			scroll.Add(Control);
+			_finishScriptExecutionDelegate = FinishScriptExecution;
 		}
 
 		protected override void Initialize()
@@ -233,7 +234,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				jscs = new Queue<TaskCompletionSource<string>>();
 			jscs.Enqueue(tcs);
 
-			NativeMethods.webkit_web_view_run_javascript(Control.Handle, $"function _fn() {{{script}}} _fn();", IntPtr.Zero, (FinishScriptExecutionDelegate)FinishScriptExecution, IntPtr.Zero);
+			NativeMethods.webkit_web_view_run_javascript(Control.Handle, $"function _fn() {{{script}}} _fn();", IntPtr.Zero, _finishScriptExecutionDelegate, IntPtr.Zero);
 
 			return tcs.Task;
 		}

@@ -95,14 +95,13 @@ namespace Eto.Wpf.CustomControls
 
 		public static bool BlurBehindWindow (sw.Window window)
 		{
-			if (!DwmIsCompositionEnabled ())
+			if (!DwmIsCompositionEnabled())
 				return false;
 
 			var windowInteropHelper = new sw.Interop.WindowInteropHelper (window);
 			IntPtr myHwnd = windowInteropHelper.Handle;
 			var mainWindowSrc = System.Windows.Interop.HwndSource.FromHwnd (myHwnd);
 
-			window.Background = swm.Brushes.Transparent;
 			mainWindowSrc.CompositionTarget.BackgroundColor = swm.Colors.Transparent;
 
 			var blurBehindParameters = new DWM_BLURBEHIND ();
@@ -146,8 +145,6 @@ namespace Eto.Wpf.CustomControls
 					throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The Window must be shown before extending glass."));
 				}
 
-				// Set the background to transparent from both the WPF and Win32 perspectives
-				window.Background = swm.Brushes.Transparent;
 				sw.Interop.HwndSource.FromHwnd (hwnd).CompositionTarget.BackgroundColor = swm.Colors.Transparent;
 
 				var margins = new MARGINS (margin);

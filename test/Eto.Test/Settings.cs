@@ -1,4 +1,7 @@
-﻿namespace Eto.Test
+﻿
+using Eto.Test.Sections.Behaviors;
+
+namespace Eto.Test
 {
 	public class Settings
 	{
@@ -33,6 +36,8 @@
 		public List<bool> GridViewSection_ColumnAutoSize { get; set; }
 		public List<int> GridViewSection_DisplayIndexes { get; set; }
 		public List<bool> GridViewSection_VisibleIndexes { get; set; }
+		public WindowsSection.SettingsWindow WindowSettings { get; set; } = new WindowsSection.SettingsWindow();
+
 
 		public static Settings Load()
 		{

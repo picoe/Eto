@@ -672,6 +672,11 @@ namespace Eto.Mac.Forms.Controls
 				SetDraggingSourceOperationMask(NSDragOperation.All, false);
 			}
 
+			public override void DrawGrid(CGRect clipRect)
+			{
+				// Only draw gridlines for rows/columns with data, not for the empty space
+			}
+			
 			public override void Layout()
 			{
 				// layout must occur after autosizing columns otherwise expanders don't show for some reason..
