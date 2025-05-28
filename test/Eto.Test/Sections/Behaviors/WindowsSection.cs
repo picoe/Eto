@@ -42,6 +42,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.Styles.Add<Label>(null, l => l.VerticalAlignment = VerticalAlignment.Center);
 
 			layout.AddSpace();
+			layout.AddSeparateRow(null, CreateResetButton(), null);
 			layout.AddSeparateRow(null, Resizable(), AutoSize(), Minimizable(), Maximizable(), MovableByWindowBackground(), null);
 			layout.AddSeparateRow(null, ShowInTaskBar(), CloseableCheckBox(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControl(), "DisplayMode", DisplayModeDropDown(), null);
@@ -60,19 +61,33 @@ namespace Eto.Test.Sections.Behaviors
 
 			Content = layout;
 
-			DataContext = settings = new SettingsWindow();
+			DataContext = settings = TestApplication.Settings.WindowSettings;
 		}
+
+		Control CreateResetButton()
+		{
+			var resetButton = new Button { Text = "Reset Settings" };
+			resetButton.Click += (sender, e) =>
+			{
+				settings = new SettingsWindow();
+				DataContext = settings;
+				TestApplication.Settings.WindowSettings = settings;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(settings)));
+			};
+			return resetButton;
+		}
+
 
 		SettingsWindow settings;
 
-		enum WindowType
+		public enum WindowType
 		{
 			Form,
 			FloatingForm,
 			Dialog
 		}
 
-		class SettingsWindow : INotifyPropertyChanged
+		public class SettingsWindow : INotifyPropertyChanged
 		{
 			public bool ThreeState => true; // enable three state for these settings
 			public bool? AutoSize { get; set; }
@@ -85,6 +100,7 @@ namespace Eto.Test.Sections.Behaviors
 			public bool? ShowInTaskbar { get; set; }
 			public bool? ShowActivated { get; set; }
 			public bool? Topmost { get; set; }
+			public bool SetOwner { get; set; }
 			public WindowStyle WindowStyle { get; set; }
 			public WindowType WindowType { get; set; }
 			public double Opacity { get; set; } = 1;
@@ -182,8 +198,17 @@ namespace Eto.Test.Sections.Behaviors
 		Control CreateSetOwnerCheckBox()
 		{
 			setOwnerCheckBox = new CheckBox { Text = "Set Owner" };
+			setOwnerCheckBox.BindDataContext(c => c.Checked, Binding.Delegate<object, bool?>((object w) =>
+			{
+				if (w is SettingsWindow settingsWindow)
+					return settingsWindow.SetOwner;
+				if (w is Window window)
+					return window.Owner != null;
+				return false;
+			}));
 			setOwnerCheckBox.CheckedChanged += (sender, e) =>
 			{
+				settings.SetOwner = setOwnerCheckBox.Checked ?? false;
 				if (Child != null)
 					Child.Owner = setOwnerCheckBox.Checked ?? false ? ParentWindow : null;
 			};
@@ -611,7 +636,6 @@ namespace Eto.Test.Sections.Behaviors
 		void child_Closed(object sender, EventArgs e)
 		{
 			Log.Write(Child, "Closed");
-			DataContext = settings;
 			Child.OwnerChanged -= child_OwnerChanged;
 			Child.WindowStateChanged -= child_WindowStateChanged;
 			Child.Closed -= child_Closed;
@@ -624,6 +648,7 @@ namespace Eto.Test.Sections.Behaviors
 			bringToFrontButton.Enabled = focusButton.Enabled = false;
 			Child.Unbind();
 			Child = null;
+			DataContext = settings;
 			// write out number of open windows after the closed event is called
 			Application.Instance.AsyncInvoke(() => Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count()));
 		}

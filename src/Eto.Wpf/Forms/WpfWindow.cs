@@ -183,6 +183,8 @@ namespace Eto.Wpf.Forms
 			return IntPtr.Zero;
 		}
 
+		swin.HwndSource HwndSource => sw.PresentationSource.FromVisual(Control) as swin.HwndSource;
+
 		private void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			SetMinimumSize();
@@ -198,7 +200,7 @@ namespace Eto.Wpf.Forms
 			if (Control.ShowActivated)
 				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 
-			((swin.HwndSource)sw.PresentationSource.FromVisual(Control))?.AddHook(HookProc);
+			HwndSource?.AddHook(HookProc);
 
 			if (FireOnLoadComplete)
 				Callback.OnLoadComplete(Widget, EventArgs.Empty);
@@ -932,14 +934,15 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+
 		private void SetBlurBehind()
 		{
 			if (isSourceInitialized)
 			{
-				if (Math.Abs(Control.Opacity - 1.0) > 0.01f)
+				if (Control.Opacity < 1 || BackgroundColor.A < 1)
 				{
 					GlassHelper.BlurBehindWindow(Control);
-					//GlassHelper.ExtendGlassFrame (Control);
+					// GlassHelper.ExtendGlassFrame(Control); // this is nice, but the title bar becomes transparent
 				}
 			}
 		}
@@ -1017,7 +1020,7 @@ namespace Eto.Wpf.Forms
 				var windowChrome = new sw.Shell.WindowChrome
 				{
 					CaptionHeight = 0,
-					GlassFrameThickness = sw.Shell.WindowChrome.GlassFrameCompleteThickness,
+					GlassFrameThickness = Control.AllowsTransparency ? sw.Shell.WindowChrome.GlassFrameCompleteThickness : default,
 					ResizeBorderThickness = new sw.Thickness(4)
 				};
 				sw.Shell.WindowChrome.SetWindowChrome(Control, windowChrome);
@@ -1064,9 +1067,10 @@ namespace Eto.Wpf.Forms
 			{
 				Control.Background = value.ToWpfBrush();
 				SetWindowTransparency();
+				SetBlurBehind();
 			}
 		}
-		
+
 		void SetWindowTransparency()
 		{
 			// Windows doesn't support transparency otherwise..
@@ -1075,7 +1079,7 @@ namespace Eto.Wpf.Forms
 			var isTransparent =
 				Control.Background is swm.SolidColorBrush scb && scb.Color.A < 255
 				| Control.Opacity < 1.0;
-				
+
 			if (isSourceInitialized)
 			{
 				if (isTransparent != Control.AllowsTransparency)

@@ -145,8 +145,6 @@ namespace Eto.Wpf.CustomControls
 					throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The Window must be shown before extending glass."));
 				}
 
-				// Set the background to transparent from both the WPF and Win32 perspectives
-				window.Background = swm.Brushes.Transparent;
 				sw.Interop.HwndSource.FromHwnd (hwnd).CompositionTarget.BackgroundColor = swm.Colors.Transparent;
 
 				var margins = new MARGINS (margin);
