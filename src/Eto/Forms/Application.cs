@@ -61,7 +61,7 @@ public class UIThreadAccessException : System.Exception
 [Handler(typeof(Application.IHandler))]
 public class Application : Widget
 {
-	Thread mainThread;
+	int mainThreadId;
 	LocalizeEventArgs localizeArgs;
 	readonly object localizeLock = new object();
 	static readonly object ApplicationKey = new object();
@@ -307,7 +307,7 @@ public class Application : Widget
 		: this(InitializePlatform(platform))
 	{
 		Instance = this;
-		mainThread = System.Threading.Thread.CurrentThread;
+		mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 	}
 
 	Application(InitHelper init)
@@ -344,13 +344,18 @@ public class Application : Widget
 	{
 		if (UIThreadCheckMode == UIThreadCheckMode.None)
 			return;
-		if (mainThread == Thread.CurrentThread)
+		if (mainThreadId == Thread.CurrentThread.ManagedThreadId)
 			return;
 		if (UIThreadCheckMode == UIThreadCheckMode.Warning)
 			System.Diagnostics.Trace.WriteLine("Warning: Accessing UI object from a non-UI thread. UI objects can only be used from the main thread.");
 		else if (UIThreadCheckMode == UIThreadCheckMode.Error)
 			throw new UIThreadAccessException();
 	}
+
+	/// <summary>
+	/// Gets a value indicating that the current thread is on the UI thread for this Application instance.
+	/// </summary>
+	public bool IsUIThread => mainThreadId == Thread.CurrentThread.ManagedThreadId;
 
 	/// <summary>
 	/// Runs the application and begins the main loop.

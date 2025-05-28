@@ -315,7 +315,8 @@ namespace Eto.Wpf.Forms.Controls
 
 				try
 				{
-					endNoGCRegion &= GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
+					if (endNoGCRegion)
+						endNoGCRegion &= GC.TryStartNoGCRegion(1000000); // is this magic number reasonable??
 				}
 				catch
 				{

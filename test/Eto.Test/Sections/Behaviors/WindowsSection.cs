@@ -46,7 +46,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow(null, ShowInTaskBar(), CloseableCheckBox(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControl(), "DisplayMode", DisplayModeDropDown(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
-			layout.AddSeparateRow(null, "BackgroundColor", CreateBackgroundColorControl(), null);
+			layout.AddSeparateRow(null, "BackgroundColor", CreateBackgroundColorControl(), "Opacity", CreateOpacityControl(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
 			layout.AddSeparateRow(null, CreateMenuBarControls(), null);
 			layout.AddSeparateRow(null, CreateInitialLocationControls(), null);
@@ -87,6 +87,7 @@ namespace Eto.Test.Sections.Behaviors
 			public bool? Topmost { get; set; }
 			public WindowStyle WindowStyle { get; set; }
 			public WindowType WindowType { get; set; }
+			public double Opacity { get; set; } = 1;
 			bool setBackgroundColor;
 			public bool SetBackgroundColor
 			{
@@ -220,6 +221,14 @@ namespace Eto.Test.Sections.Behaviors
 			
 			backgroundColor.BindDataContext(c => c.Enabled, enabledBindingElseTrue);
 			return new TableLayout(new TableRow(enableBackgroundColor, backgroundColor));
+		}
+
+		Control CreateOpacityControl()
+		{
+			var opacity = new NumericStepper { MinValue = 0, MaxValue = 1, Increment = 0.1, DecimalPlaces = 2 };
+			opacity.ValueBinding.BindDataContext((SettingsWindow w) => w.Opacity);
+
+			return opacity;
 		}
 
 		Control DisplayModeDropDown()
@@ -589,6 +598,8 @@ namespace Eto.Test.Sections.Behaviors
 				Child.Menu = CreateMenuBar();
 			if (settings.SetBackgroundColor)
 				Child.BackgroundColor = settings.BackgroundColor;
+			if (settings.Opacity < 1)
+				Child.Opacity = settings.Opacity;
 			bringToFrontButton.Enabled = focusButton.Enabled = true;
 			DataContext = Child;
 			show();
