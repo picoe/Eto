@@ -151,7 +151,7 @@ namespace Eto.Mac.Forms
 						return objs.OfType<NSUrl>().Select(UrlToUri).ToArray();
 				}
 
-				var availableType = Control.GetAvailableTypeFromArray(new string[] { NSPasteboard.NSFilenamesType });
+				var availableType = Control.GetAvailableTypeFromArray(new string[] { NSPasteboard.NSPasteboardTypeFileUrl });
 				if (availableType != null)
 				{
 					// old-school way of passing files

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net7.0-macos</TargetFrameworks>
+    <TargetFrameworks>net8.0-macos</TargetFrameworks>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>

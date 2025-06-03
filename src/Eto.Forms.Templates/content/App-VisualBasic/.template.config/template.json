@@ -76,6 +76,14 @@
 			"replaces": "net6.0",
 			"choices": [
 				{
+					"choice": "net10.0",
+					"description": ".NET 10.0"
+				},
+				{
+					"choice": "net9.0",
+					"description": ".NET 9.0"
+				},
+				{
 					"choice": "net8.0",
 					"description": ".NET 8.0"
 				},
