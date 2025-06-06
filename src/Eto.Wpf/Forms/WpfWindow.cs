@@ -31,6 +31,7 @@ namespace Eto.Wpf.Forms
 		internal static readonly object Resizable_Key = new object();
 		internal static readonly object Icon_Key = new object();
 		internal static readonly object ShowSystemMenu_Key = new object();
+		internal static readonly object DidBlurBehindWindow_Key = new object();
 	}
 	
 	public class EtoWindowContent : swc.DockPanel
@@ -937,9 +938,12 @@ namespace Eto.Wpf.Forms
 
 		private void SetBlurBehind()
 		{
-			if (isSourceInitialized)
+			if (!isSourceInitialized)
+				return;
+				
+			if (Control.Opacity < 1 || BackgroundColor.A < 1)
 			{
-				if (Control.Opacity < 1 || BackgroundColor.A < 1)
+				if (Widget.Properties.TrySet(WpfWindow.DidBlurBehindWindow_Key, true))
 				{
 					GlassHelper.BlurBehindWindow(Control);
 					// GlassHelper.ExtendGlassFrame(Control); // this is nice, but the title bar becomes transparent
