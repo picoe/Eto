@@ -100,6 +100,9 @@ namespace Eto.Wpf.CustomControls
 
 			var windowInteropHelper = new sw.Interop.WindowInteropHelper (window);
 			IntPtr myHwnd = windowInteropHelper.Handle;
+			if (myHwnd == IntPtr.Zero)
+				return false;
+				
 			var mainWindowSrc = System.Windows.Interop.HwndSource.FromHwnd (myHwnd);
 
 			mainWindowSrc.CompositionTarget.BackgroundColor = swm.Colors.Transparent;
