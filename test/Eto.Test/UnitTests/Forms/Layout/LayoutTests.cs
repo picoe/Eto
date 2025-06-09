@@ -39,7 +39,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				// Gtk is annoying and returns 1,1 for size at this stage, others return 0,0.
 				Assert.That(control.Width, Is.LessThanOrEqualTo(1), "#2.1");
 				Assert.That(control.Height, Is.LessThanOrEqualTo(1), "#2.2");
-				
+
 				// macOS gives us a "flipped" view of the location at this point..
 				// the value of Location isn't valid here anyway.
 				if (!Platform.Instance.IsMac)
@@ -52,7 +52,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 					// Gtk, Wpf, and Mac all use deferred layouts so it still isn't set up here.
 					Assert.That(control.Width, Is.LessThanOrEqualTo(1), "#3.1");
 					Assert.That(control.Height, Is.LessThanOrEqualTo(1), "#3.2");
-					
+
 					if (!Platform.Instance.IsMac)
 						Assert.That(control.Location, Is.EqualTo(new Point(0, 0)), "#3.3");
 				}
@@ -75,5 +75,52 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				Assert.That(Point.Round(table.PointFromScreen(control.PointToScreen(PointF.Empty))), Is.EqualTo(new Point(100, 100)), "#4.4");
 			});
 		}
+		
+		[Test]
+		public void LabelShouldGetProperSizeWhenContainerSizeIsSetInScrollable()
+		{
+			Label label = null;
+			ShownAsync(form =>
+			{
+				label = new Label { Text = "This label should be fully visible, but then mucks up the scroll size way too much", Wrap = WrapMode.Word };
+				var container = new Panel { Content = label, Width = 10 };
+				container.BackgroundColor = Colors.Blue;
+				var scrollable = new Scrollable
+				{
+					Size = new Size(300, 300),
+					Content = container
+				};
+				return scrollable;
+			},
+			async scrollable =>
+			{
+				await Task.Delay(100); // wait to see the results
+				Assert.That(label.Width, Is.GreaterThan(20), "#1");
+				Assert.That(scrollable.Content.Size, Is.EqualTo(scrollable.ClientSize), "#2");
+			});	
+		}		
+		[Test]
+		public void LabelShouldGetProperSizeWhenContainerSizeIsSet()
+		{
+			Label label = null;
+			ShownAsync(form =>
+			{
+				label = new Label { Text = "This label should be fully visible, but then mucks up the scroll size way too much", Wrap = WrapMode.Word };
+				var container = new Panel { Content = label, Width = 10 };
+				container.BackgroundColor = Colors.Blue;
+				var panel = new Panel
+				{
+					Size = new Size(300, 300),
+					Content = container
+				};
+				return panel;
+			},
+			async panel =>
+			{
+				await Task.Delay(100); // wait to see the results
+				Assert.That(label.Width, Is.GreaterThan(20), "#1");
+				Assert.That(panel.Content.Size, Is.EqualTo(panel.ClientSize), "#2");
+			});	
+		}		
 	}
 }

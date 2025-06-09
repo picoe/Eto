@@ -761,7 +761,7 @@ namespace Eto.Test.UnitTests
 				test = PropertyTest<T>(() => ctl, properties);
 				test.Run();
 				return ctl as Control;
-			}, async ctl => test.Run());
+			}, ctl => test.Run());
 		}
 
 		public class PropertyTestInfo
