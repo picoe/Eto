@@ -280,11 +280,11 @@ public abstract class Container : Control, IBindableWidgetContainer
 	{
 		if (Handler is IThemedControlHandler)
 		{
-			if (!ReferenceEquals(child, null))
+			if (child is not null)
 				RemoveLogicalParent(child);
 			return;
 		}
-		if (!ReferenceEquals(child, null) && !ReferenceEquals(child.VisualParent, null))
+		if (child is not null && child.VisualParent is not null)
 		{
 #if DEBUG
 			if (!ReferenceEquals(child.VisualParent, this))
@@ -374,24 +374,7 @@ public abstract class Container : Control, IBindableWidgetContainer
 		}
 		if (previousChild is not null && !ReferenceEquals(previousChild, child))
 		{
-#if DEBUG
-			if (!ReferenceEquals(previousChild.VisualParent, this))
-				throw new ArgumentException("The previous child control is not a child of this container. Ensure you only remove children that you own.");
-#endif
-
-			if (previousChild.VisualParent is not null)
-			{
-				if (previousChild.Loaded)
-				{
-					previousChild.TriggerUnLoad(EventArgs.Empty);
-				}
-				previousChild.VisualParent = null;
-			}
-
-			if (ReferenceEquals(previousChild.InternalLogicalParent, this))
-			{
-				previousChild.InternalLogicalParent = null;
-			}
+			RemoveParent(previousChild);
 		}
 		if (child is not null && !ReferenceEquals(child.VisualParent, this))
 		{

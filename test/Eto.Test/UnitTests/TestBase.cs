@@ -604,7 +604,7 @@ namespace Eto.Test.UnitTests
 			},
 				c =>
 				{
-					test(c);
+					test?.Invoke(c);
 					return Task.CompletedTask;
 				},
 				replay,
