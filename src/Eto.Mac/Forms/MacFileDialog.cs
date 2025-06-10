@@ -21,7 +21,7 @@ namespace Eto.Mac.Forms
 			if (h == null || url == null || Directory.Exists(url.Path))
 				return true;
 
-			var extension = Path.GetExtension(url.Path).TrimStart(new[] { '.' });
+			var extension = Path.GetExtension(url.Path)?.TrimStart(new[] { '.' }) ?? string.Empty;
 			var macFilters = h.MacFilters;
 			if (macFilters == null || macFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
 				return true;
