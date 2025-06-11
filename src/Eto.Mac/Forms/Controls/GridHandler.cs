@@ -870,18 +870,17 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
 			var colHandler = GetColumn(column);
+			if (colHandler == null)
+				return;
+
 			if (!IsAutoSizingColumns && Widget.Loaded && hasAutoSizedColumns == true)
 			{
 				// when the user resizes the column, don't autosize anymore when data/scroll changes
-				if (column != null)
-				{
-					if (!DidSetAutoSizeColumn)
-						colHandler.AutoSize = false;
-					InvalidateMeasure();
-				}
+				if (!DidSetAutoSizeColumn && !colHandler.Expand)
+					colHandler.AutoSize = false;
+				InvalidateMeasure();
 			}
-			if (colHandler != null)
-				Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(colHandler.Widget));
+			Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(colHandler.Widget));
 		}
 		
 		protected virtual bool HandleMouseEvent(NSEvent theEvent)
