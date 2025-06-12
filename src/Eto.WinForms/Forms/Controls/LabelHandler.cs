@@ -37,6 +37,19 @@ namespace Eto.WinForms.Forms.Controls
 					BeginInvoke(new Action(Handler.SizeChanged));
 				}
 			}
+			
+			public new bool UseMnemonic
+			{
+				get => base.UseMnemonic;
+				set
+				{
+					base.UseMnemonic = value;
+					if (value)
+						textFormat &= ~swf.TextFormatFlags.NoPrefix;
+					else
+						textFormat |= swf.TextFormatFlags.NoPrefix;
+				}
+			}
 
 			public override sd.Font Font
 			{
@@ -313,6 +326,18 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			if (Widget != null && Widget.Loaded)
 				SetMinimumSize(true);
+		}
+
+		public bool UseMnemonic
+		{
+			get => Control.UseMnemonic;
+			set => Control.UseMnemonic = value;
+		}
+
+		public bool AlwaysShowMnemonic
+		{
+			get => true; // WinForms always shows mnemonics in the label
+			set { /* not supported */ }
 		}
 	}
 }

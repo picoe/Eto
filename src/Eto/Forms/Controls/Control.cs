@@ -971,8 +971,10 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		internal set
 		{
 			var old = VisualParent;
-			Properties.Set(VisualParent_Key, value);
-			Handler.SetParent(old, value);
+			if (Properties.TrySet(VisualParent_Key, value))
+			{
+				Handler.SetParent(old, value);
+			}
 		}
 	}
 

@@ -1,6 +1,3 @@
-using Eto.GtkSharp.Drawing;
-using Gtk;
-
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
@@ -13,7 +10,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public CheckBoxHandler()
 		{
-			Control = new Gtk.CheckButton();
+			Control = new Gtk.CheckButton { UseUnderline = true };
 			box = new Gtk.EventBox { Child = Control };
 		}
 
@@ -66,7 +63,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.Label.ToEtoMnemonic(); }
 			set {
 				var needsFont = Control.Child == null && Widget.Properties.ContainsKey(GtkControl.Font_Key);
-				Control.Label = value.ToPlatformMnemonic();
+				Control.Label = Control.UseUnderline ? value.ToPlatformMnemonic() : value;
 				if (needsFont)
 					Control.Child?.SetFont(Font.ToPango());
 			}
@@ -116,6 +113,25 @@ namespace Eto.GtkSharp.Forms.Controls
 				child.SetForeground(value, GtkStateFlags.Active);
 				child.SetForeground(value, GtkStateFlags.Prelight);
 			}
+		}
+
+		public bool UseMnemonic
+		{
+			get => Control.UseUnderline;
+			set
+			{
+				if (value == Control.UseUnderline)
+					return; // no change
+				var text = Text;
+				Control.UseUnderline = value;
+				Text = text;
+			}
+		}
+		
+		public bool AlwaysShowMnemonic
+		{
+			get => false;
+			set { /* not supported in GTK */ }
 		}
 
 		public override void AttachEvent(string id)

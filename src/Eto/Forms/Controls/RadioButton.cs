@@ -12,7 +12,7 @@ namespace Eto.Forms;
 /// </remarks>
 /// <seealso cref="RadioButtonList"/>
 [Handler(typeof(RadioButton.IHandler))]
-public class RadioButton : TextControl
+public class RadioButton : TextControl, IMnemonicControl
 {
 	/// <summary>
 	/// Occurs when the <see cref="Checked"/> property is changed.
@@ -103,6 +103,20 @@ public class RadioButton : TextControl
 		set { Handler.Checked = value; }
 	}
 
+	/// <inheritdoc/>
+	public bool UseMnemonic
+	{
+		get => Handler.UseMnemonic;
+		set => Handler.UseMnemonic = value;
+	}
+
+	/// <inheritdoc/>
+	public bool AlwaysShowMnemonic
+	{
+		get => Handler.AlwaysShowMnemonic;
+		set => Handler.AlwaysShowMnemonic = value;
+	}
+
 	/// <summary>
 	/// Callback interface for the <see cref="RadioButton"/>
 	/// </summary>
@@ -155,7 +169,7 @@ public class RadioButton : TextControl
 	/// When using this handler, you must call <see cref="Eto.Widget.Initialize"/> in the constructor.
 	/// </remarks>
 	[AutoInitialize(false)]
-	public new interface IHandler : TextControl.IHandler
+	public new interface IHandler : TextControl.IHandler, IMnemonicControl
 	{
 		/// <summary>
 		/// Used when creating a new instance of the RadioButton to specify the controller

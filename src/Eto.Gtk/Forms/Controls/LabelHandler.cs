@@ -4,6 +4,7 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler
 	{
+		string _text;
 		readonly Gtk.EventBox eventBox;
 		TextAlignment horizontalAlign = TextAlignment.Left;
 		VerticalAlignment verticalAlign = VerticalAlignment.Top;
@@ -119,6 +120,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			eventBox.ResizeMode = Gtk.ResizeMode.Immediate;
 #endif
 			Control = new EtoLabel();
+			Control.UseUnderline = true;
 			Control.Xalign = 0;
 			Control.Yalign = 0;
 			eventBox.Child = Control;
@@ -188,11 +190,15 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override string Text
 		{
-			get { return Control.Text.ToEtoMnemonic(); }
+			get => _text;
 			set
 			{
 				Control.ResetWidth();
-				Control.TextWithMnemonic = value.ToPlatformMnemonic();
+				_text = value;
+				if (Control.UseUnderline)
+					Control.TextWithMnemonic = _text.ToPlatformMnemonic();
+				else
+					Control.Text = _text;
 				InvalidateMeasure();
 			}
 		}
@@ -237,6 +243,25 @@ namespace Eto.GtkSharp.Forms.Controls
 				base.Font = value;
 				Control.Attributes = value != null ? ((FontHandler)value.Handler).Attributes : null;
 			}
+		}
+
+		public bool UseMnemonic
+		{
+			get => Control.UseUnderline;
+			set
+			{
+				if (value == Control.UseUnderline)
+					return; // no change
+				var text = Text;
+				Control.UseUnderline = value;
+				Text = text;
+			}
+		}
+
+		public bool AlwaysShowMnemonic
+		{
+			get => false;
+			set { /* not supported in GTK */ }
 		}
 	}
 }
