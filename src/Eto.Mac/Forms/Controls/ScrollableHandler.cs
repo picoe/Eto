@@ -212,30 +212,47 @@ namespace Eto.Mac.Forms.Controls
 			else
 			{
 				var preferred = (Content?.GetPreferredSize(SizeF.PositiveInfinity) ?? Size.Empty) + Padding.Size;
-
-				if ((ExpandContentWidth && preferred.Width < clientSize.Width)
-					|| (ExpandContentHeight && preferred.Height < clientSize.Height))
-				{
-					var availableSize = SizeF.PositiveInfinity;
-					if (ExpandContentWidth && preferred.Width < clientSize.Width)
-						availableSize.Width = clientSize.Width;
-					if (ExpandContentHeight && preferred.Height < clientSize.Height)
-						availableSize.Height = clientSize.Height;
-
-					preferred = (Content?.GetPreferredSize(availableSize) ?? Size.Empty) + Padding.Size;
-
-					if (ExpandContentWidth && preferred.Width < clientSize.Width)
-						preferred.Width = clientSize.Width;
-					if (ExpandContentHeight && preferred.Height < clientSize.Height)
-						preferred.Height = clientSize.Height;
-				}					
 				
-				var vbar = preferred.Height > clientSize.Height;
-				var hbar = preferred.Width > clientSize.Width;
-				if (hbar || vbar)
-					clientSize = Control.ContentSizeForFrame(Control.Frame.Size, hbar, vbar).ToEto();
+				for (int i = 0; i < 2; i++)
+				{
+					var proposedSize = preferred;
+					if ((ExpandContentWidth && proposedSize.Width < clientSize.Width)
+							|| (ExpandContentHeight && proposedSize.Height < clientSize.Height))
+					{
+						var availableSize = SizeF.PositiveInfinity;
+						if (ExpandContentWidth && proposedSize.Width < clientSize.Width)
+							availableSize.Width = clientSize.Width - Padding.Horizontal;
+						if (ExpandContentHeight && proposedSize.Height < clientSize.Height)
+							availableSize.Height = clientSize.Height - Padding.Vertical;
 
-				size = SizeF.Max(clientSize, preferred);
+						preferred = (Content?.GetPreferredSize(availableSize) ?? Size.Empty) + Padding.Size;
+					}
+
+					var vbar = preferred.Height > clientSize.Height;
+					var hbar = preferred.Width > clientSize.Width;
+
+					// if we have scrollbars, we need to recalculate the client size again given the scrollbars as they can take space
+					if (hbar || vbar)
+					{
+						clientSize = Control.ContentSizeForFrame(Control.Frame.Size, hbar, vbar).ToEto();
+
+						// if we have overlay scrollbars, we can break out of the loop as they don't take up space
+						if (Control.ScrollerStyle == NSScrollerStyle.Overlay)
+							break;
+					}
+					else
+					{
+						// no scrollbars are needed, so we don't need to recaculate
+						break;
+					}
+				}
+
+				size = preferred;
+				
+				if (ExpandContentWidth && size.Width < clientSize.Width)
+					size.Width = clientSize.Width;
+				if (ExpandContentHeight && size.Height < clientSize.Height)
+					size.Height = clientSize.Height;
 			}
 
 			ContentControl.SetFrameSize(size.ToNS());
