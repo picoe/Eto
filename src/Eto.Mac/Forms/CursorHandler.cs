@@ -89,7 +89,7 @@ namespace Eto.Mac.Forms
 			if (!File.Exists(pdfPath) || !File.Exists(infoPath))
 				return null;
 			var image = new NSImage(pdfPath);
-			var info = new NSDictionary(infoPath);
+			var info = new NSMutableDictionary(infoPath);
 			return new NSCursor(image, new CGPoint(((NSNumber)info.ValueForKey((NSString)"hotx")).DoubleValue, ((NSNumber)info.ValueForKey((NSString)"hoty")).DoubleValue));
 		}
 

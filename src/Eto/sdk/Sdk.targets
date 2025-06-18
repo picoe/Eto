@@ -45,6 +45,8 @@
     <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net6\.\d)(?=;|$)'))">$(TargetFrameworks);net6.0$(_TfmSuffix)</TargetFrameworks>
     <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net7\.\d)(?=;|$)'))">$(TargetFrameworks);net7.0$(_TfmSuffix)</TargetFrameworks>
     <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net8\.\d)(?=;|$)'))">$(TargetFrameworks);net8.0$(_TfmSuffix)</TargetFrameworks>
+    <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net9\.\d)(?=;|$)'))">$(TargetFrameworks);net9.0$(_TfmSuffix)</TargetFrameworks>
+    <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net10\.\d)(?=;|$)'))">$(TargetFrameworks);net10.0$(_TfmSuffix)</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
