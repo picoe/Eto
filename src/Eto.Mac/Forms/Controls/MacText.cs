@@ -71,6 +71,11 @@ namespace Eto.Mac.Forms.Controls
 						Control.AttributedStringValue = Font.AttributedString(newText, oldValue);
 					else
 						Control.AttributedStringValue = oldValue.ToMutable(newText);
+
+					if (AutoSelectMode == AutoSelectMode.Never)
+					{
+						Selection = Eto.Forms.Range.FromLength(newText.Length, 0);
+					}
 					
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}

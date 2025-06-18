@@ -306,8 +306,6 @@ namespace Eto.Wpf.Forms.Controls
 				if (args.Cancel)
 					return;
 
-				var needsTextChanged = TextBox.Text == newText;
-
 				// Improve performance when setting text often
 				// See https://github.com/dotnet/wpf/issues/5887#issuecomment-1604577981
 				var endNoGCRegion = EnableNoGCRegion
@@ -326,7 +324,9 @@ namespace Eto.Wpf.Forms.Controls
 
 				try 
 				{
-					TextBox.Text = newText; 
+					DisableTextChanged++;
+					TextBox.Text = newText;
+					DisableTextChanged--;
 				}
 				finally
 				{
@@ -334,7 +334,7 @@ namespace Eto.Wpf.Forms.Controls
 						GC.EndNoGCRegion();
 				}
 				
-				if (value != null && AutoSelectMode == AutoSelectMode.Never && !HasFocus)
+				if (value != null && AutoSelectMode == AutoSelectMode.Never)
 				{
 					TextBox.BeginChange();
 					TextBox.SelectionStart = value.Length;
@@ -342,10 +342,7 @@ namespace Eto.Wpf.Forms.Controls
 					TextBox.EndChange();
 				}
 				
-				if (needsTextChanged)
-				{
-					Callback.OnTextChanged(Widget, EventArgs.Empty);
-				}
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 

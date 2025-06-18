@@ -1,3 +1,4 @@
+
 namespace Eto.WinForms.Forms.Controls
 {
 	[DesignerCategory("Code")]
@@ -76,6 +77,8 @@ namespace Eto.WinForms.Forms.Controls
 				SetPlaceholderText(); // setting border clears this out for some reason
 			}
 		}
+
+		public override Size? GetDefaultSize(Size availableSize) => new Size(100, 23);
 
 		public TextAlignment TextAlignment
 		{
@@ -316,9 +319,14 @@ namespace Eto.WinForms.Forms.Controls
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
 						return;
+
+					DisableTextChanged++;
 					base.Text = value;
+					DisableTextChanged--;
 					if (AutoSelectMode == AutoSelectMode.Never)
 						Selection = new Range<int>(value.Length, value.Length - 1);
+						
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
