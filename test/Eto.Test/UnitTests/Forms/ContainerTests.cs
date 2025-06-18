@@ -279,7 +279,8 @@ namespace Eto.Test.UnitTests.Forms
 					radio.EnabledChanged += (sender, e) => label.Text = $"EnabledChanged->radio.Enabled({radio.Enabled})";
 					radio.Enabled = initiallyEnabled;
 					Assert.That(radio.Enabled, Is.EqualTo(initiallyEnabled), "#1.1");
-					check.CheckedChanged += (sender, e) => {
+					check.CheckedChanged += (sender, e) =>
+					{
 						var isChecked = check.Checked == true;
 						radio.Enabled = isChecked;
 						changedCount++;
@@ -305,6 +306,52 @@ namespace Eto.Test.UnitTests.Forms
 			Assert.That(changedCount, Is.GreaterThanOrEqualTo(2), "#2.2 - The check box was not toggled at least twice");
 			Assert.That(initialStateMatchesInitiallyEnabled, Is.True, "#2.3 - initial state of radio button did not match");
 		}
+
+
+		[Test]
+		public void ChildrenShouldAllowRemingAndAddingToAnotherContainer() => ShownAsync(form =>
+		{
+			var content = new Panel { Size = new Size(200, 200) };
+			form.Content = content;
+			return content;			
+		}, async panel =>
+		{
+			var container = new Panel();
+			var control = new TextBox(); // { BackgroundColor = Colors.Blue, Size = new Size(200, 200) };
+			container.Content = control;
+			panel.Content = container;
+
+			await Task.Delay(1000);
+
+			Assert.That(container.Content, Is.EqualTo(control), "#1.1 - Content should be set correctly");
+			Assert.That(control.Parent, Is.EqualTo(container), "#1.2 - Child's parent should be the container");
+
+			var container2 = new TableLayout();
+			container2.Rows.Add(new TableRow(new TableCell(control)));
+			panel.Content = container2;
+
+			await Task.Delay(1000);
+
+			Assert.That(container.Content, Is.Null, "#2.1 - Content should be removed");
+			Assert.That(container2.Rows[0].Cells[0].Control, Is.EqualTo(control), "#2.2 - Content on the second container should be set correctly");
+			Assert.That(control.Parent, Is.EqualTo(container2), "#2.3 - Child's parent should be the second container");
+
+			var container3 = new GroupBox();
+			container3.Content = control;
+			panel.Content = container3;
+
+			await Task.Delay(1000);
+
+			Assert.That(container2.Rows[0].Cells[0].Control, Is.Null, "#3.1 - Content on the second container should be set correctly");
+			Assert.That(container3.Content, Is.EqualTo(control), "#3.2 - Content should be set correctly");
+			Assert.That(control.Parent, Is.EqualTo(container3), "#3.3 - Child's parent should be the second container");
+
+			container3.Content = null;
+
+			await Task.Delay(1000);
+			
+			Assert.That(control.Parent, Is.Null, "#4.2 - Control should not have a parent");
+		}, timeout: 10000);
 
 	}
 }

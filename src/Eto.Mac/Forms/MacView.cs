@@ -772,9 +772,9 @@ namespace Eto.Mac.Forms
 			// only get natural size if the size isn't explicitly set.
 			if (preferredSize.Width == -1 || preferredSize.Height == -1)
 			{
-				if (preferredSize.Width >= 0)
+				if (preferredSize.Width >= 0 && double.IsPositiveInfinity(availableSize.Width))
 					availableSize.Width = preferredSize.Width;
-				if (preferredSize.Height >= 0)
+				if (preferredSize.Height >= 0 && double.IsPositiveInfinity(availableSize.Height))
 					availableSize.Height = preferredSize.Height;
 				size = GetNaturalSize(availableSize);
 			}

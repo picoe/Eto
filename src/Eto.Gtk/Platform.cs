@@ -51,7 +51,7 @@ namespace Eto.GtkSharp
 		public override string ID => "Gtk3";
 #endif
 
-		public override PlatformFeatures SupportedFeatures => PlatformFeatures.DrawableWithTransparentContent;
+		public override PlatformFeatures SupportedFeatures => PlatformFeatures.DrawableWithTransparentContent | PlatformFeatures.Mnemonics;
 
 #endif
 		public Platform()

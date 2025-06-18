@@ -12,6 +12,8 @@ public class ButtonHandler : WinUIControl<muc.Button, Button, Button.ICallback>,
 		get => _textBlock.Text;
 		set => _textBlock.Text = value;
 	}
+	public bool UseMnemonic { get; set; }
+	public bool AlwaysShowMnemonic { get; set; }
 
 	protected override muc.Button CreateControl() => new muc.Button();
 

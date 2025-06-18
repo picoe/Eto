@@ -55,6 +55,8 @@ namespace Eto.Wpf.Forms
 		Point? initialLocation;
 		bool isSourceInitialized;
 
+		public bool IsSourceInitialized => isSourceInitialized;
+
 		protected virtual bool IsAttached => false;
 
 		sw.Interop.WindowInteropHelper windowInterop;
@@ -126,7 +128,7 @@ namespace Eto.Wpf.Forms
 			main.Children.Add(toolBarHolder);
 			main.Children.Add(content);
 			Control.Content = main;
-			Control.SourceInitialized += Control_SourceInitialized;
+			Control.SourceInitialized += (sender, e) => OnSourceInitialized();
 			Control.Loaded += Control_Loaded;
 			Control.PreviewKeyDown += (sender, e) =>
 			{
@@ -141,7 +143,7 @@ namespace Eto.Wpf.Forms
 			HandleEvent(Window.ClosingEvent);
 		}
 
-		private void Control_SourceInitialized(object sender, EventArgs e)
+		protected virtual void OnSourceInitialized()
 		{
 			isSourceInitialized = true;
 

@@ -69,6 +69,18 @@ namespace Eto.WinForms.Forms.Controls
 			set { SetChecked(value); }
 		}
 
+		public bool UseMnemonic
+		{
+			get => Control.UseMnemonic;
+			set => Control.UseMnemonic = value;
+		}
+
+		public bool AlwaysShowMnemonic
+		{
+			get => false;
+			set { /* not supported */ }
+		}
+
 		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
 		public override bool ShouldBubbleEvent(swf.Message msg)
 		{

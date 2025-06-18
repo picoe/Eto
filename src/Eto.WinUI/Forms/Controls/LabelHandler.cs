@@ -40,6 +40,8 @@ public class LabelHandler : WinUIBorderedControl<muc.TextBlock, Label, Label.ICa
 	}
 
 	public Font Font { get; set; }
+	public bool UseMnemonic { get; set; }
+	public bool AlwaysShowMnemonic { get; set; }
 
 	public override void AttachEvent(string id)
 	{

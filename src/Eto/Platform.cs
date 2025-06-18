@@ -88,13 +88,21 @@ public enum PlatformFeatures
 	/// that do not support this.
 	/// </summary>
 	TabIndexWithCustomContainers = 1 << 2,
-	
+
 	/// <summary>
 	/// Specifies that the Platform supports multi-threaded user interfaces.
 	/// 
 	/// Create
 	/// </summary>
-	MultiThreadedUI = 1 << 3
+	MultiThreadedUI = 1 << 3,
+	/// <summary>
+	/// Specifies that the Platform supports mnemonics in controls, such as the &amp; character in text.
+	/// </summary>
+	/// <remarks>
+	/// Even withoutout support, the platform will parse the &amp; character in text, but it will not
+	/// be activated by pressing the mnemonic key (e.g. Alt key on Windows).
+	/// </remarks>
+	Mnemonics = 1 << 4,
 }
 
 /// <summary>

@@ -16,7 +16,7 @@ namespace Eto.Forms;
 /// </code>
 /// </example>
 [Handler(typeof(CheckBox.IHandler))]
-public class CheckBox : TextControl
+public class CheckBox : TextControl, IMnemonicControl
 {
 	new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -81,6 +81,21 @@ public class CheckBox : TextControl
 		}
 	}
 
+	/// <inheritdoc/>
+	public bool UseMnemonic
+	{
+		get => Handler.UseMnemonic;
+		set => Handler.UseMnemonic = value;
+	}
+
+	/// <inheritdoc/>
+	public bool AlwaysShowMnemonic
+	{
+		get => Handler.AlwaysShowMnemonic;
+		set => Handler.AlwaysShowMnemonic = value;
+	}
+
+
 	static readonly object callback = new Callback();
 		
 	/// <inheritdoc/>
@@ -114,7 +129,7 @@ public class CheckBox : TextControl
 	/// <summary>
 	/// Handler interface for the <see cref="CheckBox"/> control.
 	/// </summary>
-	public new interface IHandler : TextControl.IHandler
+	public new interface IHandler : TextControl.IHandler, IMnemonicControl
 	{
 		/// <inheritdoc cref="CheckBox.Checked"/>
 		bool? Checked { get; set; }

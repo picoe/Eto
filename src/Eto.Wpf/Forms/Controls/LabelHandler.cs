@@ -1,42 +1,34 @@
 namespace Eto.Wpf.Forms.Controls
 {
-	public class EtoLabel : swc.Label
+	
+	public class EtoLabel : EtoAccessLabel
 	{
-		public LabelHandler Handler { get; set; }
-		protected override void OnAccessKey(swi.AccessKeyEventArgs e)
-		{
-			// move focus to the next control after the label
-			var tRequest = new swi.TraversalRequest(swi.FocusNavigationDirection.Next);
-			MoveFocus(tRequest);
-		}
+		public IWpfFrameworkElement Handler { get; set; }
 
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
-			var size = Handler.MeasureOverride(constraint, base.MeasureOverride);
+			var size = Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 			size.Width += 1;
 			return size;
 		}
 	}
 
-	public class LabelHandler : WpfControl<swc.Label, Label, Label.ICallback>, Label.IHandler
+	public class LabelHandler : WpfControl<EtoAccessLabel, Label, Label.ICallback>, Label.IHandler
 	{
-		readonly swc.AccessText accessText;
 		double? previousDesiredHeight;
 		string text;
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
 		{
-			accessText.TextDecorations = decorations;
+			Control.TextDecorations = decorations;
 		}
 
 		public LabelHandler()
 		{
-			accessText = new swc.AccessText();
+			// accessText = new swc.AccessText();
 			Control = new EtoLabel
 			{
-				Handler = this,
-				Padding = new sw.Thickness(0),
-				Content = accessText
+				Handler = this
 			};
 			Control.Target = Control;
 			Control.SizeChanged += Control_SizeChanged;
@@ -100,11 +92,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		public TextAlignment TextAlignment
 		{
-			get { return Control.HorizontalContentAlignment.ToEto(); }
+			get { return Control.TextAlignment.ToEto(); }
 			set
 			{
-				Control.HorizontalContentAlignment = value.ToWpf();
-				accessText.TextAlignment = value.ToWpfTextAlignment();
+				Control.TextAlignment = value.ToWpfTextAlignment();
 			}
 		}
 
@@ -116,43 +107,18 @@ namespace Eto.Wpf.Forms.Controls
 
 		public WrapMode Wrap
 		{
-			get
-			{
-				switch (accessText.TextWrapping)
-				{
-					case sw.TextWrapping.NoWrap:
-						return WrapMode.None;
-					case sw.TextWrapping.Wrap:
-						return WrapMode.Character;
-					case sw.TextWrapping.WrapWithOverflow:
-						return WrapMode.Word;
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			get => Control.TextWrapping.ToEto();
 			set
 			{
 				if (value != Wrap)
 				{
-					switch (value)
-					{
-						case WrapMode.Word:
-							accessText.TextWrapping = sw.TextWrapping.WrapWithOverflow;
-							break;
-						case WrapMode.Character:
-							accessText.TextWrapping = sw.TextWrapping.Wrap;
-							break;
-						case WrapMode.None:
-							accessText.TextWrapping = sw.TextWrapping.NoWrap;
-							break;
-						default:
-							throw new NotSupportedException();
-					}
+					Control.TextWrapping = value.ToWpf();
 					SetText();
 					UpdatePreferredSize();
 				}
 			}
 		}
+
 
 		public override void UpdatePreferredSize()
 		{
@@ -162,8 +128,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override Color TextColor
 		{
-			get { return accessText.Foreground.ToEtoColor(); }
-			set { accessText.Foreground = value.ToWpfBrush(accessText.Foreground); }
+			get { return Control.Foreground.ToEtoColor(); }
+			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
 
 		public string Text
@@ -176,6 +142,24 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public bool UseMnemonic
+		{
+			get => Control.UseMnemonic;
+			set => Control.UseMnemonic = value;
+		}
+
+		public bool AlwaysShowMnemonic
+		{
+			get => Control.AlwaysShowMnemonic;
+			set => Control.AlwaysShowMnemonic = value;
+		}
+
+		public bool EnableMnemonic
+		{
+			get => Control.EnableMnemonic;
+			set => Control.EnableMnemonic = value;
+		}
+
 		void SetText()
 		{
 			var newText = text;
@@ -186,7 +170,7 @@ namespace Eto.Wpf.Forms.Controls
 				newText = newText.Replace(' ', (char)0xa0); // no break space
 			}
 
-			accessText.Text = newText.ToPlatformMnemonic();
+			Control.Text = newText;
 		}
 	}
 }

@@ -78,26 +78,17 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	static class MacLabel
-	{
-		public static readonly object InSizingKey = new object();
-
-		public static readonly object FontKey = new object();
-
-		public static readonly object TextColorKey = new object();
-	}
-
 	public abstract class MacLabel<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
 		where TControl: NSTextField
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
-		readonly NSMutableAttributedString str;
-		readonly NSMutableParagraphStyle paragraphStyle;
-		int underlineIndex;
-		Size availableSizeCached;
-
+		readonly MacMnemonicString _str = new();
+		Size _availableSizeCached;
+		
 		public override NSView ContainerControl => Control;
+
+		protected override bool DefaultUseAlignmentFrame => true;
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -112,8 +103,13 @@ namespace Eto.Mac.Forms.Controls
 
 				var width = UserPreferredSize.Width;
 				if (width < 0) width = int.MaxValue;
-				var size = Control.Cell.CellSizeForBounds(new CGRect(0, 0, width, int.MaxValue)).ToEto();
-				NaturalSizeInfinity = Size.Ceiling(size);
+				if (UseAlignmentFrame && width < int.MaxValue)
+					width = (int)Control.GetFrameForAlignmentRect(new CGRect(0, 0, width, int.MaxValue)).Size.Width;
+				var size = Control.Cell.CellSizeForBounds(new CGRect(0, 0, width, int.MaxValue));
+				if (UseAlignmentFrame)
+					size = Control.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, size)).Size;
+				
+				NaturalSizeInfinity = Size.Ceiling(size.ToEto());
 				return NaturalSizeInfinity.Value;
 			}
 
@@ -130,11 +126,17 @@ namespace Eto.Mac.Forms.Controls
 			}
 
 			var availableSizeTruncated = availableSize.TruncateInfinity();
-			if (NaturalSize == null || availableSizeCached != availableSizeTruncated)
+			if (NaturalSize == null || _availableSizeCached != availableSizeTruncated)
 			{
-				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSizeTruncated.ToNS())).ToEto();
-				NaturalSize = Size.Ceiling(size);
-				availableSizeCached = availableSizeTruncated;
+				// var size = _str.AttributedString.BoundingRectWithSize(availableSizeTruncated.ToNS(), 0).Size;
+				if (UseAlignmentFrame)
+					availableSizeTruncated = Control.GetFrameForAlignmentRect(new CGRect(CGPoint.Empty, availableSizeTruncated.ToNS())).Size.ToEtoSize();
+				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSizeTruncated.ToNS()));
+				if (UseAlignmentFrame)
+					size = Control.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, size)).Size;
+					
+				NaturalSize = Size.Ceiling(size.ToEto());
+				_availableSizeCached = availableSizeTruncated;
 			}
 
 			return NaturalSize.Value;
@@ -142,11 +144,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected MacLabel()
 		{
-			paragraphStyle = new NSMutableParagraphStyle();
-			str = new NSMutableAttributedString();
-
-			underlineIndex = -1;
-			paragraphStyle.LineBreakMode = NSLineBreakMode.ByWordWrapping;
+			_str.Wrap = WrapMode.Word;
 		}
 
 		protected override void Initialize()
@@ -162,10 +160,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Widget.Properties.Get<Color?>(MacLabel.TextColorKey) ?? SystemColors.ControlText; }
+			get => _str.TextColor ?? SystemColors.ControlText;
 			set
 			{
-				Widget.Properties[MacLabel.TextColorKey] = value;
+				_str.TextColor = value;
 				SetAttributes();
 			}
 		}
@@ -184,30 +182,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public WrapMode Wrap
 		{
-			get
-			{
-				if (paragraphStyle.LineBreakMode == NSLineBreakMode.Clipping)
-					return WrapMode.None;
-				if (paragraphStyle.LineBreakMode == NSLineBreakMode.ByWordWrapping)
-					return WrapMode.Word;
-				return WrapMode.Character;
-			}
+			get => _str.Wrap;
 			set
 			{
-				switch (value)
-				{
-					case WrapMode.None:
-						paragraphStyle.LineBreakMode = NSLineBreakMode.Clipping;
-						break;
-					case WrapMode.Word:
-						paragraphStyle.LineBreakMode = NSLineBreakMode.ByWordWrapping;
-						break;
-					case WrapMode.Character:
-						paragraphStyle.LineBreakMode = NSLineBreakMode.CharWrapping;
-						break;
-					default:
-						throw new NotSupportedException();
-				}
+				_str.Wrap = value;
 				SetAttributes();
 				InvalidateMeasure();
 			}
@@ -215,32 +193,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public string Text
 		{
-			get { return str.Value; }
+			get => _str.Text;
 			set
 			{
-				if (string.IsNullOrEmpty(value))
-				{
-					str.SetString(new NSMutableAttributedString());
-				}
-				else
-				{
-					var match = Regex.Match(value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
-					if (match.Success)
-					{
-						var val = value.Remove(match.Index, match.Length).Replace("&&", "&");
-
-						var matches = Regex.Matches(value, @"[&][&]");
-						var prefixCount = matches.Cast<Match>().Count(r => r.Index < match.Index);
-
-						str.SetString(new NSAttributedString(val));
-						underlineIndex = match.Index - prefixCount;
-					}
-					else
-					{
-						str.SetString(new NSAttributedString(value.Replace("&&", "&")));
-						underlineIndex = -1;
-					}
-				}
+				_str.Text = value;
 				SetAttributes();
 				InvalidateMeasure();
 			}
@@ -248,10 +204,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public TextAlignment TextAlignment
 		{
-			get { return paragraphStyle.Alignment.ToEto(); }
+			get { return _str.Alignment; }
 			set
 			{
-				paragraphStyle.Alignment = value.ToNS();
+				_str.Alignment = value;
 				SetAttributes();
 				InvalidateMeasure();
 			}
@@ -259,15 +215,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public virtual Font Font
 		{
-			get
-			{
-				return Widget.Properties.Create<Font>(MacLabel.FontKey, () => new Font(new FontHandler(Control.Font)));
-			}
+			get => _str.Font ??= new Font(new FontHandler(Control.Font));
 			set
 			{
-				if (Widget.Properties.Get<Font>(MacLabel.FontKey) != value)
+				if (_str.Font != value)
 				{
-					Widget.Properties[MacLabel.FontKey] = value;
+					_str.Font = value;
 					SetAttributes();
 					InvalidateMeasure();
 				}
@@ -284,44 +237,44 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected virtual void SetAttributes()
-		{
-			SetAttributes(false);
-		}
+		protected virtual void SetAttributes() => SetAttributes(false);
 
 		void SetAttributes(bool force)
 		{
 			if (Widget.Loaded || force)
 			{
-				if (str.Length > 0)
-				{
-					var range = new NSRange(0, (int)str.Length);
-					var attr = new NSMutableDictionary();
-					Widget.Properties.Get<Font>(MacLabel.FontKey).Apply(attr);
-					// need a copy of the paragraph style otherwise they don't get applied correctly when changed
-					attr.Add(NSStringAttributeKey.ParagraphStyle, (NSParagraphStyle)paragraphStyle.Copy());
-					var col = CurrentColor;	
-					if (col != null)
-						attr.Add(NSStringAttributeKey.ForegroundColor, col);
-					str.SetAttributes(attr, range);
-					if (underlineIndex >= 0)
-					{
-						var num = (NSNumber)str.GetAttribute(NSStringAttributeKey.UnderlineStyle, underlineIndex, out range);
-						var newStyle = (num != null && (NSUnderlineStyle)num.Int64Value == NSUnderlineStyle.Single) ? NSUnderlineStyle.Double : NSUnderlineStyle.Single;
-						str.AddAttribute(NSStringAttributeKey.UnderlineStyle, new NSNumber((int)newStyle), new NSRange(underlineIndex, 1));
-					}
-				}
-				Control.AttributedStringValue = str;
+				Control.AttributedStringValue = _str.AttributedString;
+			}
+		}
+		
+		public bool UseMnemonic
+		{
+			get => _str.UseMnemonic;
+			set
+			{
+				_str.UseMnemonic = value;
+				SetAttributes();
+			}
+		}
+		
+		public bool AlwaysShowMnemonic
+		{
+			get => _str.AlwaysShowMnemonic;
+			set
+			{
+				_str.AlwaysShowMnemonic = value;
+				SetAttributes();
 			}
 		}
 
 		protected virtual NSColor CurrentColor
 		{
-			get { 
-				var col = Widget.Properties.Get<Color?>(MacLabel.TextColorKey);
+			get
+			{
+				var col = _str.TextColor;
 				if (col != null)
 					return col.Value.ToNSUI();
-				return null; 
+				return null;
 			}
 		}
 

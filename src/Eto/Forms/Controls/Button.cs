@@ -44,7 +44,7 @@ public enum ButtonImagePosition
 /// </code> 
 /// </example>
 [Handler(typeof(Button.IHandler))]
-public class Button : TextControl
+public class Button : TextControl, IMnemonicControl
 {
 	new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -182,6 +182,20 @@ public class Button : TextControl
 			}
 		}
 	}
+	
+	/// <inheritdoc/>
+	public bool UseMnemonic
+	{
+		get => Handler.UseMnemonic;
+		set => Handler.UseMnemonic = value;
+	}
+
+	/// <inheritdoc/>
+	public bool AlwaysShowMnemonic
+	{
+		get => Handler.AlwaysShowMnemonic;
+		set => Handler.AlwaysShowMnemonic = value;
+	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
@@ -256,7 +270,7 @@ public class Button : TextControl
 	/// <summary>
 	/// Handler interface for the <see cref="Button"/> control.
 	/// </summary>
-	public new interface IHandler : TextControl.IHandler
+	public new interface IHandler : TextControl.IHandler, IMnemonicControl
 	{
 		/// <inheritdoc cref="Button.Image"/>
 		Image Image { get; set; }

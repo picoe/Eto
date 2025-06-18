@@ -1,47 +1,76 @@
 namespace Eto.Mac.Forms.Controls
 {
 	public abstract class MacButton<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler
-		where TControl: NSButton
-		where TWidget: Control
-		where TCallback: Control.ICallback
+		where TControl : NSButton
+		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
-		static readonly object textKey = new object();
+		MacMnemonicString _str;
+
+		MacMnemonicString MnemonicString => _str ??= new();
 
 		public virtual string Text
 		{
-			get { return Widget.Properties.Get<string>(textKey); }
+			get { return _str?.Text ?? string.Empty; }
 			set
 			{
-				Widget.Properties[textKey] = value;
-				SetText(value);
+				MnemonicString.Text = value;
+				SetAttributes();
 				InvalidateMeasure();
 			}
 		}
 
-		static readonly object textColorKey = new object();
-
 		public virtual Color TextColor
 		{
-			get { return Widget.Properties.Get<Color?>(textColorKey) ?? NSColor.ControlText.ToEto(); }
-			set {
+			get { return _str?.TextColor ?? NSColor.ControlText.ToEto(); }
+			set
+			{
 				if (value != TextColor)
 				{
-					Widget.Properties[textColorKey] = value;
-					SetText(Text);
+					MnemonicString.TextColor = value;
+					SetAttributes();
 				}
 			}
 		}
-
-		void SetText(string text)
+		
+		public bool UseMnemonic
 		{
-			Control.Title = MacConversions.StripAmpersands(text ?? string.Empty);
-			var color = Widget.Properties.Get<Color?>(textColorKey);
-			if (color != null)
+			get => _str.UseMnemonic;
+			set
 			{
-				var attr = NSDictionary.FromObjectAndKey(color.Value.ToNSUI(), NSStringAttributeKey.ForegroundColor);
-				var str = new NSMutableAttributedString(Control.AttributedTitle);
-				str.AddAttributes(attr, new NSRange(0, str.Length));
-				Control.AttributedTitle = str;
+				MnemonicString.UseMnemonic = value;
+				SetAttributes();
+			}
+		}
+		
+		public bool AlwaysShowMnemonic
+		{
+			get => _str.AlwaysShowMnemonic;
+			set
+			{
+				MnemonicString.AlwaysShowMnemonic = value;
+				SetAttributes();
+			}
+		}
+		
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			SetAttributes(true);
+		}
+
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			if (!Widget.Loaded)
+				SetAttributes(true);
+			return base.GetNaturalSize(availableSize);
+		}
+
+		void SetAttributes(bool force = false)
+		{
+			if (Widget.Loaded || force)
+			{
+				Control.AttributedTitle = _str?.AttributedString ?? new NSAttributedString();
 			}
 		}
 	}

@@ -939,12 +939,9 @@ namespace Eto.Wpf.Forms
 
 		public virtual void SetParent(Container oldParent, Container newParent)
 		{
-			if (newParent == null && Widget.VisualParent != null)
+			if (oldParent?.Handler is IWpfContainer oldContainer)
 			{
-				// don't use GetWpfContainer() extension as we don't want to traverse themed controls
-				var currentParent = Widget.VisualParent.Handler as IWpfContainer;
-				if (currentParent != null)
-					currentParent.Remove(ContainerControl);
+				oldContainer.Remove(ContainerControl);
 			}
 		}
 
