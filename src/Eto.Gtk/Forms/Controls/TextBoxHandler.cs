@@ -2,6 +2,8 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TextBoxHandler : TextBoxHandler<Gtk.Entry, TextBox, TextBox.ICallback>
 	{
+		internal static object DisableTextChanged_Key = new object();
+
 		public TextBoxHandler()
 		{
 			Control = new Gtk.Entry();
@@ -84,6 +86,13 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			return new TextBoxConnector();
 		}
+		
+		protected int DisableTextChanged
+		{
+			get => Widget.Properties.Get<int>(TextBoxHandler.DisableTextChanged_Key);
+			set => Widget.Properties.Set(TextBoxHandler.DisableTextChanged_Key, value);
+		}
+		
 
 		protected class TextBoxConnector : GtkControlConnector
 		{
@@ -91,7 +100,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
-				Handler?.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				var h = Handler;
+				if (h == null)
+					return;
+				if (h.DisableTextChanged > 0)
+					return;
+					
+				h.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			static Clipboard clipboard;
@@ -243,8 +258,15 @@ namespace Eto.GtkSharp.Forms.Controls
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
 						return;
+					DisableTextChanged++;
 					Control.Text = newText;
 					lastSelection = null;
+					DisableTextChanged--;
+					if (AutoSelectMode == AutoSelectMode.Never)
+					{
+						Selection = Eto.Forms.Range.FromLength(newText.Length, 0);
+					}
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}

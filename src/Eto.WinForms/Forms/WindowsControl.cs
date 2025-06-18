@@ -96,6 +96,8 @@ namespace Eto.WinForms.Forms
 		public static readonly object Enabled_Key = new object();
 		public static readonly object UseShellDropManager_Key = new object();
 		public static readonly object MouseCaptured_Key = new object();
+		public static readonly object DisableTextChanged_Key = new object();
+
 
 		public static bool SkipMouseCapture { get; set; }
 		internal static Control DragSourceControl { get; set; }
@@ -880,14 +882,20 @@ namespace Eto.WinForms.Forms
 			e.Handled = kpea.Handled;
 		}
 
+		protected int DisableTextChanged
+		{
+			get => Widget.Properties.Get<int>(WindowsControl.DisableTextChanged_Key);
+			set => Widget.Properties.Set(WindowsControl.DisableTextChanged_Key, value);
+		}
+
 		void Control_TextChanged(object sender, EventArgs e)
 		{
-			var widget = Widget as TextControl;
-			if (widget != null)
-			{
-				var callback = (TextControl.ICallback)((ICallbackSource)widget).Callback;
-				callback.OnTextChanged(widget, e);
-			}
+			if (Widget is not TextControl widget || DisableTextChanged > 0)
+				return;
+				
+			var callback = (TextControl.ICallback)((ICallbackSource)widget).Callback;
+			callback.OnTextChanged(widget, e);
+
 		}
 
 		internal virtual bool SetFontTwiceForSomeReason => false;
