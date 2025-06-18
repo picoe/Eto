@@ -12,6 +12,8 @@ namespace Eto.Wpf.Forms.Controls
 			};
 		}
 
+		protected override swc.Border CreateContentBorder() => Control;
+
 		public override Color BackgroundColor
 		{
 			get { return Control.Background.ToEtoColor(); }
@@ -20,7 +22,6 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
-			Control.Child = content;
 		}
 	}
 }

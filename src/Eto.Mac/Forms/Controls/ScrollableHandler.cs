@@ -202,7 +202,7 @@ namespace Eto.Mac.Forms.Controls
 				else if (availableSize.Height < 0)
 					availableSize.Height = float.PositiveInfinity;
 
-				var preferred = (Content?.GetPreferredSize(availableSize) ?? Size.Empty);
+				var preferred = Content?.GetPreferredSize(availableSize) ?? Size.Empty;
 
 				if (availableSize.Width < 0)
 					size.Width = preferred.Width;
@@ -212,6 +212,24 @@ namespace Eto.Mac.Forms.Controls
 			else
 			{
 				var preferred = (Content?.GetPreferredSize(SizeF.PositiveInfinity) ?? Size.Empty) + Padding.Size;
+
+				if ((ExpandContentWidth && preferred.Width < clientSize.Width)
+					|| (ExpandContentHeight && preferred.Height < clientSize.Height))
+				{
+					var availableSize = SizeF.PositiveInfinity;
+					if (ExpandContentWidth && preferred.Width < clientSize.Width)
+						availableSize.Width = clientSize.Width;
+					if (ExpandContentHeight && preferred.Height < clientSize.Height)
+						availableSize.Height = clientSize.Height;
+
+					preferred = (Content?.GetPreferredSize(availableSize) ?? Size.Empty) + Padding.Size;
+
+					if (ExpandContentWidth && preferred.Width < clientSize.Width)
+						preferred.Width = clientSize.Width;
+					if (ExpandContentHeight && preferred.Height < clientSize.Height)
+						preferred.Height = clientSize.Height;
+				}					
+				
 				var vbar = preferred.Height > clientSize.Height;
 				var hbar = preferred.Width > clientSize.Width;
 				if (hbar || vbar)
@@ -230,17 +248,24 @@ namespace Eto.Mac.Forms.Controls
 			if (ctl == null)
 				return;
 			
-			var size = Content.GetPreferredSize(SizeF.PositiveInfinity).ToNS();
-
 			var padding = Padding;
 			var clientSize = ContentControl.Frame.Size.ToEto() - padding.Size;
+			
+			SizeF availableSize = SizeF.PositiveInfinity;
+			if (ExpandContentWidth)
+				availableSize.Width = clientSize.Width;
+			if (ExpandContentHeight)
+				availableSize.Height = clientSize.Height;
+			
+			var size = (Content?.GetPreferredSize(availableSize - Padding.Size) ?? Size.Empty) + Padding.Size;
+
 
 			if (ExpandContentWidth)
-				size.Width = (nfloat)Math.Max(clientSize.Width, size.Width);
+				size.Width = (float)Math.Max(clientSize.Width, size.Width);
 			if (ExpandContentHeight)
-				size.Height = (nfloat)Math.Max(clientSize.Height, size.Height);
+				size.Height = (float)Math.Max(clientSize.Height, size.Height);
 
-			var clientFrame = new CGRect(new CGPoint(padding.Left, (nfloat)(padding.Bottom + clientSize.Height - size.Height)), size);
+			var clientFrame = new CGRect(new CGPoint(padding.Left, (nfloat)(padding.Bottom + clientSize.Height - size.Height)), size.ToNS());
 
 			ctl.Frame = clientFrame;
 		}

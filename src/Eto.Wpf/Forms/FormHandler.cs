@@ -88,11 +88,25 @@ public class FormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, Form.IHan
 		set
 		{
 			Control.Focusable = value;
-			SetStyleEx(Win32.WS_EX.NOACTIVATE, !value);
-			SetStyle(Win32.WS.CHILD, !value);
+			if (IsSourceInitialized)
+			{
+				SetStyleEx(Win32.WS_EX.NOACTIVATE, !value);
+				SetStyle(Win32.WS.CHILD, !value);
+			}
 		}
 	}
-	
+
+	protected override void OnSourceInitialized()
+	{
+		base.OnSourceInitialized();
+		var focusable = Control.Focusable;
+		if (!focusable)
+		{
+			SetStyleEx(Win32.WS_EX.NOACTIVATE, !focusable);
+			SetStyle(Win32.WS.CHILD, !focusable);
+		}
+	}
+
 	public override void Focus()
 	{
 		if (!Control.Focusable)

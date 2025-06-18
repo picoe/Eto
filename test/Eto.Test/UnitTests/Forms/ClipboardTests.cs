@@ -381,16 +381,16 @@ namespace Eto.Test.UnitTests.Forms
 		}
 
 		[Test]
-		public void DisposedClipboardShouldNotBreak() => Async(async () =>
+		public void DisposedClipboardShouldNotBreak() => Async(() =>
 		{
 			var clipboard1 = new Clipboard();
 			clipboard1.Text = "Hello";
 			Assert.That(clipboard1.Text, Is.EqualTo("Hello"), "#1");
 			clipboard1.Dispose();
-			
+
 			GC.Collect();
 			GC.WaitForPendingFinalizers();
-			
+
 			var clipboard2 = new Clipboard();
 			Assert.That(clipboard2.Text, Is.EqualTo("Hello"), "#1");
 			clipboard2.Text = "Hello2";
@@ -399,10 +399,11 @@ namespace Eto.Test.UnitTests.Forms
 
 			GC.Collect();
 			GC.WaitForPendingFinalizers();
-			
+
 			using var clipboard3 = new Clipboard();
 			Assert.That(clipboard3.Text, Is.EqualTo("Hello2"), "#1");
 			clipboard3.Dispose();
+			return Task.CompletedTask;
 		});
 	}
 }

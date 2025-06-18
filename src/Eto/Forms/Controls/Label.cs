@@ -45,7 +45,7 @@ public enum WrapMode
 /// Displays a string of text on the form
 /// </summary>
 [Handler(typeof(Label.IHandler))]
-public class Label : TextControl
+public class Label : TextControl, IMnemonicControl
 {
 	new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -122,10 +122,23 @@ public class Label : TextControl
 		set { Handler.VerticalAlignment = value; }
 	}
 
+	/// <inheritdoc/>
+	public bool UseMnemonic
+	{
+		get => Handler.UseMnemonic;
+		set => Handler.UseMnemonic = value;
+	}
+	/// <inheritdoc/>
+	public bool AlwaysShowMnemonic
+	{
+		get => Handler.AlwaysShowMnemonic;
+		set => Handler.AlwaysShowMnemonic = value;
+	}
+
 	/// <summary>
 	/// Handler interface for the <see cref="Label"/>
 	/// </summary>
-	public new interface IHandler : TextControl.IHandler
+	public new interface IHandler : TextControl.IHandler, IMnemonicControl
 	{
 		/// <summary>
 		/// Gets or sets the horizontal alignment of the text.

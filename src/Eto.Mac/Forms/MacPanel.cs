@@ -132,7 +132,15 @@ namespace Eto.Mac.Forms
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (content != null && content.Visible)
+			{
+				var preferredSize = UserPreferredSize;
+				if (preferredSize.Width >= 0 && double.IsPositiveInfinity(availableSize.Width))
+					availableSize.Width = preferredSize.Width;
+				if (preferredSize.Height >= 0 && double.IsPositiveInfinity(availableSize.Height))
+					availableSize.Height = preferredSize.Height;
+				
 				return content.GetPreferredSize(SizeF.Max(SizeF.Empty, availableSize - Padding.Size)) + Padding.Size;
+			}
 			
 			return Padding.Size;
 		}

@@ -21,7 +21,8 @@ namespace Eto.Wpf
 			PlatformFeatures.DrawableWithTransparentContent
 			| PlatformFeatures.CustomCellSupportsControlView
 			| PlatformFeatures.TabIndexWithCustomContainers
-			| PlatformFeatures.MultiThreadedUI;
+			| PlatformFeatures.MultiThreadedUI
+			| PlatformFeatures.Mnemonics;
 
 		static Platform()
 		{

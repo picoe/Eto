@@ -324,7 +324,7 @@ namespace Eto.Mac.Forms.Controls
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,
-				BorderType = NSBorderType.BezelBorder,
+				BorderType = NSBorderType.BezelBorder
 			};
 			ScrollView.ContentView.PostsBoundsChangedNotifications = true;
 			this.AddObserver(NSView.BoundsChangedNotification, HandleScrolled, ScrollView.ContentView);
@@ -404,7 +404,7 @@ namespace Eto.Mac.Forms.Controls
 
 		static Lazy<bool> supportsTableStyle = new Lazy<bool>(() => ObjCExtensions.InstancesRespondToSelector<NSTableView>(Selector.GetHandle("effectiveStyle")));
 		
-		nfloat GetTableRowInsets()
+		CGSize GetTableRowInsets()
 		{
 			// oh I love magic numbers, but there doesn't seem to be any APIs that will return these..
 			// https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-12
@@ -413,19 +413,19 @@ namespace Eto.Mac.Forms.Controls
 				switch (Control.EffectiveStyle)
 				{
 					case NSTableViewStyle.Inset:
-						return 32; 
+						return new CGSize(32, 16);
 					case NSTableViewStyle.FullWidth:
-						return 12;
+						return new CGSize(12, 12);
 					case NSTableViewStyle.SourceList:
-						return 32;
+						return new CGSize(32, 32);
 					case NSTableViewStyle.Plain:
 					default:
-						return Control.IntercellSpacing.Width;
+						return Control.IntercellSpacing;
 				}
 			}
 			else
 			{
-				return Control.IntercellSpacing.Width;
+				return Control.IntercellSpacing;
 			}
 		}
 
@@ -463,7 +463,7 @@ namespace Eto.Mac.Forms.Controls
 				// remove all spacing that isn't part of column widths
 				var intercellSpacingWidth = Table.IntercellSpacing.Width;
 				rect.Width -= intercellSpacingWidth * (Table.ColumnCount - 1);
-				rect.Width -= GetTableRowInsets();
+				rect.Width -= GetTableRowInsets().Width;
 
 				foreach (var col in ColumnHandlers)
 				{
@@ -700,7 +700,7 @@ namespace Eto.Mac.Forms.Controls
 			var range = new NSRange(0, rowCount);
 			var loaded = loadComplete;
 			var size = new SizeF();
-			size.Width = (float)ColumnHandlers.Sum(r => loaded ? r.Control.Width : r.GetPreferredWidth(range));
+			size.Width = (float)ColumnHandlers.Sum(r => /*loaded ? r.Control.Width :*/ r.GetPreferredWidth(range));
 			if (size.Width == 0)
 				size.Width = 100;
 
@@ -709,7 +709,7 @@ namespace Eto.Mac.Forms.Controls
 
 			var intercellSpacing = Control.IntercellSpacing;
 			size.Width += (Control.ColumnCount - 1) * (float)intercellSpacing.Width;
-			size.Width += (float)GetTableRowInsets();
+			size += GetTableRowInsets().ToEto();
 
 			var contentHeight = (float)((RowHeight + intercellSpacing.Height) * rowCount);
 			if (ScrollView.HasVerticalScroller && ScrollView.VerticalScroller.ScrollerStyle == NSScrollerStyle.Legacy)
@@ -719,6 +719,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 
 			size.Height += contentHeight;
+			size += ScrollView.ContentInsets.ToEto().Size;
 
 			if (ShowHeader)
 				size.Height += 2 + (int)Control.HeaderView.Frame.Height;
@@ -869,18 +870,17 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
 			var colHandler = GetColumn(column);
+			if (colHandler == null)
+				return;
+
 			if (!IsAutoSizingColumns && Widget.Loaded && hasAutoSizedColumns == true)
 			{
 				// when the user resizes the column, don't autosize anymore when data/scroll changes
-				if (column != null)
-				{
-					if (!DidSetAutoSizeColumn)
-						colHandler.AutoSize = false;
-					InvalidateMeasure();
-				}
+				if (!DidSetAutoSizeColumn && !colHandler.Expand)
+					colHandler.AutoSize = false;
+				InvalidateMeasure();
 			}
-			if (colHandler != null)
-				Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(colHandler.Widget));
+			Callback.OnColumnWidthChanged(Widget, new GridColumnEventArgs(colHandler.Widget));
 		}
 		
 		protected virtual bool HandleMouseEvent(NSEvent theEvent)

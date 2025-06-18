@@ -129,5 +129,17 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
+
+		public bool UseMnemonic
+		{
+			get => Control.UseMnemonic;
+			set => Control.UseMnemonic = value;
+		}
+
+		public bool AlwaysShowMnemonic
+		{
+			get => false;
+			set { /* not supported */ }
+		}
 	}
 }
