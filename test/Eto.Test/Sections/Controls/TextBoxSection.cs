@@ -44,10 +44,13 @@ namespace Eto.Test.Sections.Controls
 
 			var selectionMode = new EnumDropDown<AutoSelectMode>();
 			selectionMode.SelectedValueBinding.Bind(textBox, c => c.AutoSelectMode);
+			
+			var alwaysShowSelection = new CheckBox { Text = "AlwaysShowSelection" };
+			alwaysShowSelection.CheckedBinding.Bind(textBox, c => c.AlwaysShowSelection);
 
 			var layout = new DynamicLayout { Padding = 10, DefaultSpacing = new Size(5, 5) };
 			layout.AddSeparateRow(null, enabledCheckBox, readOnlyCheckBox, showBorderCheckBox, null);
-			layout.AddSeparateRow(null, "TextAlignment", alignmentDropDown, "SelectionMode", selectionMode, null);
+			layout.AddSeparateRow(null, "TextAlignment", alignmentDropDown, "SelectionMode", selectionMode, alwaysShowSelection, null);
 			layout.AddSeparateRow(null, "MaxLength", maxLengthStepper, "PlaceholderText", placeholderText, null);
 			layout.AddSeparateRow(null, setTextButton, selectAllButton, null);
 			layout.Add(null);

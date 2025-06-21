@@ -5,7 +5,7 @@ namespace Eto.Mac.Forms.Controls
 	public interface IMacText
 	{
 		void SetLastSelection(Range<int>? range);
-
+		Range<int>? LastSelection { get; }
 		AutoSelectMode AutoSelectMode { get; }
 	}
 
@@ -260,6 +260,23 @@ namespace Eto.Mac.Forms.Controls
 						|| ReferenceEquals(fieldEditor.Handler, this);
 				}
 				return false;
+			}
+		}
+		
+		public bool AlwaysShowSelection
+		{
+			get => Control.Cell is EtoTextFieldCell cell ? cell.AlwaysShowSelection : false;
+			set
+			{
+				if (Control.Cell is EtoTextFieldCell cell)
+				{
+					cell.AlwaysShowSelection = value;
+					Control.NeedsDisplay = true; // force redraw
+				}
+				else
+				{
+					Debug.WriteLine("Warning: AlwaysShowSelection is not supported for this text field cell type.");
+				}
 			}
 		}
 
