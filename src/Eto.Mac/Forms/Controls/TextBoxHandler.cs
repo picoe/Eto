@@ -54,12 +54,12 @@ namespace Eto.Mac.Forms.Controls
 			return null;
 		}
 	}
-	
+
 	public interface IColorizeCell
 	{
 		Color? Color { get; set; }
 	}
-	
+
 	public class EtoTextFieldCell : NSTextFieldCell, IColorizeCell
 	{
 		ColorizeView colorize;
@@ -68,9 +68,11 @@ namespace Eto.Mac.Forms.Controls
 		{
 			StringValue = string.Empty;
 		}
+		
+		public bool AlwaysShowSelection { get; set; }
 
-		public Color? Color 
-		{ 
+		public Color? Color
+		{
 			get => colorize?.Color;
 			set => ColorizeView.Create(ref colorize, value);
 		}
@@ -78,7 +80,44 @@ namespace Eto.Mac.Forms.Controls
 		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 		{
 			colorize?.End();
-			base.DrawInteriorWithFrame(cellFrame, inView);
+			if (AlwaysShowSelection && ControlView is NSTextField textField && textField.CurrentEditor == null)
+			{
+				var attributedString = new NSMutableAttributedString(AttributedStringValue);
+
+				var selectedRange = SelectedRange;
+				if (selectedRange.Location != NSRange.NotFound
+					&& selectedRange.Length > 0
+					&& selectedRange.Location + selectedRange.Length <= attributedString.Length)
+									{
+					attributedString.AddAttribute(
+						NSStringAttributeKey.BackgroundColor,
+						NSColor.SelectedTextBackground,
+						selectedRange
+					);
+
+					attributedString.AddAttribute(
+						NSStringAttributeKey.ForegroundColor,
+						NSColor.SelectedText,
+						selectedRange
+					);
+				}
+				var titleRect = this.TitleRectForBounds(cellFrame);
+				titleRect = titleRect.Inset(2, 0); // magic!
+				
+				attributedString.DrawString(titleRect);
+			}
+			else
+				base.DrawInteriorWithFrame(cellFrame, inView);
+		}
+		
+		NSRange SelectedRange
+		{
+			get
+			{
+				if (ControlView is IMacControl ctl && ctl.WeakHandler?.Target is IMacText textHandler)
+					return textHandler.LastSelection?.ToNS() ?? new NSRange();
+				return new NSRange();
+			}
 		}
 		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
 		{
@@ -96,9 +135,9 @@ namespace Eto.Mac.Forms.Controls
 		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler?.Target as ITextBoxWithMaxLength;
 
 		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? 0; } }
-		
+
 		public EtoTextField(IntPtr handle)
-			: base(handle)	
+			: base(handle)
 		{
 		}
 
@@ -134,14 +173,14 @@ namespace Eto.Mac.Forms.Controls
 			{
 				CurrentEditor?.SelectAll(this);
 			}
-			
+
 			var handler = Handler;
 			if (handler == null)
 				return;
 			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				handler.Callback.OnMouseDoubleClick(handler.Widget, args);
-			
+
 			if (!args.Handled)
 			{
 				handler.Callback.OnMouseDown(handler.Widget, args);
@@ -151,7 +190,7 @@ namespace Eto.Mac.Forms.Controls
 				handler.SuppressMouseEvents++;
 				base.MouseDown(theEvent);
 				handler.SuppressMouseEvents--;
-				
+
 				// some controls use event loops until mouse up, so we need to trigger the mouse up here.
 				handler.TriggerMouseCallback();
 			}
@@ -164,8 +203,8 @@ namespace Eto.Mac.Forms.Controls
 	}
 
 	public class TextBoxHandler<TWidget, TCallback> : MacText<EtoTextField, TWidget, TCallback>, TextBox.IHandler, ITextBoxWithMaxLength, IMacTextBoxHandler
-		where TWidget: TextBox
-		where TCallback: TextBox.ICallback
+		where TWidget : TextBox
+		where TCallback : TextBox.ICallback
 	{
 		protected override void Initialize()
 		{
@@ -203,7 +242,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static void HandleTextChanged (object sender, EventArgs e)
+		static void HandleTextChanged(object sender, EventArgs e)
 		{
 			var h = GetHandler(sender) as TextBoxHandler<TWidget, TCallback>;
 			h.Callback.OnTextChanged(h.Widget, EventArgs.Empty);
