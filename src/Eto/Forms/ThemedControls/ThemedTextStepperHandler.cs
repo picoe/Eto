@@ -1,4 +1,4 @@
-﻿namespace Eto.Forms.ThemedControls;
+namespace Eto.Forms.ThemedControls;
 
 /// <summary>
 /// Themed implementation of the <see cref="TextStepper"/> control composed of a <see cref="TextBox"/> and <see cref="Stepper"/>.
@@ -253,6 +253,15 @@ public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextSt
 	/// </summary>
 	/// <value><c>true</c> if this instance has focus; otherwise, <c>false</c>.</value>
 	public override bool HasFocus => base.HasFocus || TextBox.HasFocus || Stepper.HasFocus;
+
+	/// <summary>
+	/// Gets or sets a value indicating whether the selection should always be shown, even when the control does not have focus.
+	/// </summary>
+	public bool AlwaysShowSelection
+	{
+		get => TextBox.AlwaysShowSelection;
+		set => TextBox.AlwaysShowSelection = value;
+	}
 
 	/// <summary>
 	/// Attaches the specified event to the platform-specific control

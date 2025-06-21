@@ -112,6 +112,8 @@ namespace Eto.Mac.Forms.Cells
 
 		public AutoSelectMode AutoSelectMode { get; set; }
 
+		public Range<int>? LastSelection => null;
+
 		class CellView : MacImageTextView, IMacControl
 		{
 			NSObject _objectValue;
