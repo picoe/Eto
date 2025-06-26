@@ -280,16 +280,10 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
+		protected override void InnerMapPlatformCommand(string systemAction, Command command, object control)
 		{
-			var window = Widget.ParentWindow?.Handler as IMacWindow;
-			if (window == null)
-			{
-				Debug.WriteLine("Warning: Cannot map commands to text fields before they have been added to their window");
-				return;
-			}
 
-			base.InnerMapPlatformCommand(systemAction, command, window.FieldEditor);
+			base.InnerMapPlatformCommand(systemAction, command, typeof(MacFieldEditor));
 		}
 
 		public virtual void SetLastSelection(Range<int>? range)

@@ -417,33 +417,43 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			// Super hack: Refresh the highlight, WPF only does this when has focus or loses focus.
 			// it does not reflect changes to the selection when it is not focused.
-			if (!TextBox.IsLoaded && !HasFocus)
+			if (!TextBox.IsLoaded || HasFocus || string.IsNullOrEmpty(Text))
 				return;
 				
 			// got this by poking at various methods
 			var textEditor = TextBox.GetType().GetProperty("TextEditor", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(TextBox);
-			if (textEditor != null)
-			{
-				var selection = textEditor.GetType().GetProperty("Selection", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(textEditor);
-				if (selection != null)
-				{
-					// update the caret and selection highlight state
-					var updateMethod = selection.GetType().GetMethod("System.Windows.Documents.ITextSelection.UpdateCaretAndHighlight", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-					updateMethod?.Invoke(selection, null);
+			if (textEditor == null)
+				return;
+			
+			var selection = textEditor.GetType().GetProperty("Selection", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(textEditor);
+			if (selection == null)
+				return;
 
-					var caretElementProperty = selection.GetType().GetProperty("CaretElement", BindingFlags.Instance | BindingFlags.NonPublic);
-					if (caretElementProperty != null)
-					{
-						var caretElement = caretElementProperty.GetValue(selection);
-						if (caretElement != null)
-						{
-							// update the caret element adorner so that it shows the new selection
-							var updateSelectionMethod = caretElement.GetType().GetMethod("UpdateSelection", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-							updateSelectionMethod?.Invoke(caretElement, null);
-						}
-					}
-				}
-			}
+			// update the caret and selection highlight state
+			var updateMethod = selection.GetType().GetMethod("System.Windows.Documents.ITextSelection.UpdateCaretAndHighlight", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+			updateMethod?.Invoke(selection, null);
+
+
+			// ensure TextView is valid and renders its own selection
+			var textView = selection.GetType().GetProperty("System.Windows.Documents.ITextSelection.TextView", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)?.GetValue(selection);
+			if (textView == null)
+				return;
+
+			var isValid = textView.GetType().GetProperty("System.Windows.Documents.ITextView.IsValid", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)?.GetValue(textView);
+			if (!Equals(isValid, true))
+				return;
+
+			var rendersOwnSelection = textView.GetType().GetProperty("System.Windows.Documents.ITextView.RendersOwnSelection", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)?.GetValue(textView);
+			if (!Equals(rendersOwnSelection, false))
+				return;
+
+			var caretElement = selection.GetType().GetProperty("CaretElement", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(selection);
+			if (caretElement == null)
+				return;
+
+			// update the caret element adorner so that it shows the new selection
+			var updateSelectionMethod = caretElement.GetType().GetMethod("UpdateSelection", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+			updateSelectionMethod?.Invoke(caretElement, null);
 		}
 
 	}
