@@ -556,13 +556,10 @@ namespace Eto.Mac.Forms
 			var control = Runtime.GetNSObject(sender);
 			if (MacBase.GetHandler(control) is IMacViewHandler handler)
 			{
-				if (handler.SystemActions != null && handler.SystemActions.TryGetValue(sel, out var command))
+				if (handler.SystemActions?.TryGetValue(sel, out var command) == true && command != null)
 				{
-					if (command != null)
-					{
-						command.Execute();
-						return;
-					}
+					command.Execute();
+					return;
 				}
 			}
 			Messaging.void_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, e);
@@ -1305,7 +1302,7 @@ namespace Eto.Mac.Forms
 			InnerMapPlatformCommand(systemAction, command, null);
 		}
 
-		protected virtual void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
+		protected virtual void InnerMapPlatformCommand(string systemAction, Command command, object control)
 		{
 			IntPtr sel;
 			if (MacView.systemActionSelectors.TryGetValue(systemAction, out sel))
