@@ -182,6 +182,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow(null,
 						CreateScrollToRow(grid),
 						CreateBeginEditButton(grid),
+						CreateSetFocusButton(grid),
 						null
 					);
 			layout.AddSeparateRow(null,
@@ -203,6 +204,17 @@ namespace Eto.Test.Sections.Controls
 			AddExtraControls(layout);
 			return layout;
 		}
+
+		private Control CreateSetFocusButton(T grid)
+		{
+			var control = new Button { Text = "Set Focus" };
+			control.Click += (sender, e) =>
+			{
+				grid.Focus();
+			};
+			return control;
+		}
+
 
 		protected virtual void AddExtraControls(DynamicLayout layout)
 		{
