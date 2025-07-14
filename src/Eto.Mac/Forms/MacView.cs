@@ -556,13 +556,15 @@ namespace Eto.Mac.Forms
 			var control = Runtime.GetNSObject(sender);
 			if (MacBase.GetHandler(control) is IMacViewHandler handler)
 			{
-				if (handler.SystemActions?.TryGetValue(sel, out var command) == true && command != null)
+				if (handler.SystemActions?.TryGetValue(sel, out var command) == true && command != null && command.Enabled)
 				{
 					command.Execute();
 					return;
 				}
 			}
-			Messaging.void_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, e);
+			
+			if (ObjCExtensions.SuperClassInstancesRespondsToSelector(sender, sel))
+				Messaging.void_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, e);
 		}
 
 		internal static MarshalDelegates.Func_IntPtr_IntPtr_IntPtr_bool ValidateSystemUserInterfaceItem_Delegate = ValidateSystemUserInterfaceItem;
