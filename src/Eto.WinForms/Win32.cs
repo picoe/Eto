@@ -146,7 +146,7 @@ namespace Eto
 			RIGHT = 7
 		}
 
-		public enum WM
+		public enum WM : uint
 		{
 			SETREDRAW = 0xB,
 
@@ -434,17 +434,28 @@ namespace Eto
 		public enum WH
 		{
 			KEYBOARD = 2,
+			GETMESSAGE = 3,
 			KEYBOARD_LL = 13,
 			MOUSE_LL = 14
 		}
 
+		[StructLayout(LayoutKind.Sequential)]
+		public struct MSG
+		{
+			public IntPtr hwnd;       // Handle to the window that receives the message
+			public uint message;      // The message identifier
+			public IntPtr wParam;     // Additional message information (depends on the message)
+			public IntPtr lParam;     // Additional message information (depends on the message)
+			public uint time;         // The time at which the message was posted
+			public POINT pt;          // The cursor position, in screen coordinates, when the message was posted
+		}
 
-		public static IntPtr SetHook(WH hookId, HookProc proc)
+		public static IntPtr SetHook(WH hookId, HookProc proc, uint threadId = 0)
 		{
 			using (Process curProcess = Process.GetCurrentProcess())
 			using (ProcessModule curModule = curProcess.MainModule)
 			{
-				return SetWindowsHookEx((IntPtr)hookId, proc, GetModuleHandle(curModule.ModuleName), 0);
+				return SetWindowsHookEx((IntPtr)hookId, proc, GetModuleHandle(curModule.ModuleName), threadId);
 			}
 		}
 
@@ -455,7 +466,7 @@ namespace Eto
 		public static extern IntPtr GetModuleHandle(string moduleName);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-		public static extern IntPtr SetWindowsHookEx(IntPtr hookId, HookProc function, IntPtr instance, int threadId);
+		public static extern IntPtr SetWindowsHookEx(IntPtr hookId, HookProc function, IntPtr instance, uint threadId);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
@@ -528,7 +539,7 @@ namespace Eto
 		}
 
 		[DllImport("kernel32.dll")]
-		static extern uint GetCurrentThreadId();
+		public static extern uint GetCurrentThreadId();
 
 		public static bool GetInfo(out GUITHREADINFO lpgui, uint? threadId = null)
 		{
