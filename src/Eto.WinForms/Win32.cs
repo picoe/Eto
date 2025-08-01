@@ -84,6 +84,8 @@ namespace Eto
 		public static readonly IntPtr HWND_TOP = new IntPtr(0);
 		public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
 
+		public delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
 		public enum GWL
 		{
 			EXSTYLE = -20,
@@ -197,6 +199,9 @@ namespace Eto
 			USER = 0x400,
 			EM_GETSCROLLPOS = USER + 221,
 			EM_SETSCROLLPOS = USER + 222,
+
+			MOVE = 0x0003,
+			SIZE = 0x0005,
 		}
 
 		public enum VK : long
@@ -341,6 +346,12 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		public static extern int SetWindowLong(IntPtr hWnd, GWL nIndex, uint dwNewLong);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, GWL nIndex, IntPtr dwNewLong);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
