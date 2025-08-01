@@ -6,7 +6,112 @@ namespace Eto.Wpf.Forms
 namespace Eto.WinForms.Forms
 #endif
 {
-	public class HwndFormHandler : WidgetHandler<IntPtr, Form>, Form.IHandler,
+
+	class WindowHookHelper<T>
+	{
+		class HookData
+		{
+			public IntPtr OldHookHandle;
+			public List<WeakReference> Handlers = new();
+		}
+
+		IntPtr _newHookHandle;
+		private readonly Func<T, IntPtr, uint, IntPtr, IntPtr, IntPtr> _callHook;
+
+		private readonly Dictionary<IntPtr, HookData> _hooks = new();
+
+		Win32.WndProcDelegate _wndProc;
+
+		public WindowHookHelper(Func<T, IntPtr, uint, IntPtr, IntPtr, IntPtr> callHook)
+		{
+			_callHook = callHook;
+			_wndProc = WndProc;
+		}
+
+		IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+		{
+			lock (_hooks)
+			{
+				if (_hooks.TryGetValue(hWnd, out var data))
+				{
+					for (int i = 0; i < data.Handlers.Count; i++)
+					{
+						WeakReference weakRef = data.Handlers[i];
+						if (weakRef.Target is T handler)
+						{
+							var ret = _callHook?.Invoke(handler, hWnd, msg, wParam, lParam) ?? IntPtr.Zero;
+							if (ret != IntPtr.Zero)
+								return ret; // if a handler has handled the message, return its result
+						}
+						if (weakRef.Target == null)
+						{
+							data.Handlers.RemoveAt(i);
+							i--;
+						}
+					}
+					if (data.Handlers.Count == 0)
+					{
+						// no handlers left, remove the hook
+						Win32.SetWindowLongPtr(hWnd, Win32.GWL.WNDPROC, data.OldHookHandle);
+						_hooks.Remove(hWnd);
+					}
+					return Win32.CallWindowProc(data.OldHookHandle, hWnd, msg, wParam, lParam);
+				}
+			}
+			return IntPtr.Zero; // no hook found, return zero
+		}
+
+		public void AddHook(IntPtr hwnd, T handler)
+		{
+			lock (_hooks)
+			{
+				if (!_hooks.TryGetValue(hwnd, out var data))
+				{
+					data = new HookData();
+					_hooks[hwnd] = data;
+				}
+				else
+				{
+					if (data.Handlers.Any(w => w.Target is T h && h.Equals(handler)))
+						return; // already added
+				}
+				data.Handlers.Add(new WeakReference(handler));
+				if (data.OldHookHandle == IntPtr.Zero)
+				{
+					_newHookHandle = Marshal.GetFunctionPointerForDelegate(_wndProc);
+					data.OldHookHandle = Win32.SetWindowLongPtr(hwnd, Win32.GWL.WNDPROC, _newHookHandle);
+				}
+			}
+		}
+
+		internal void RemoveHook(IntPtr hwnd, T handler)
+		{
+			lock (_hooks)
+			{
+				if (_hooks.TryGetValue(hwnd, out var data))
+				{
+					for (int i = 0; i < data.Handlers.Count; i++)
+					{
+						WeakReference weakRef = data.Handlers[i];
+						if (weakRef.Target is null || (weakRef.Target is T h && h.Equals(handler)))
+						{
+							data.Handlers.RemoveAt(i);
+							i--;
+						}
+					}
+					if (data.Handlers.Count == 0)
+					{
+						// remove
+						Win32.SetWindowLongPtr(hwnd, Win32.GWL.WNDPROC, data.OldHookHandle);
+						_hooks.Remove(hwnd);
+					}
+				}
+			}
+		}
+	}
+
+
+	public class HwndFormHandler : WidgetHandler<IntPtr, Form, Form.ICallback>, Form.IHandler,
 #if WPF
  IWpfWindow
 #elif WINFORMS
@@ -45,6 +150,28 @@ namespace Eto.WinForms.Forms
     }
 
 #endif
+
+		public static Form Create(IntPtr window)
+		{
+			for (int i = 0; i < g_windows.Count; i++)
+			{
+				WeakReference w = g_windows[i];
+				if (w.Target is HwndFormHandler handler && handler.Control == window)
+				{
+					return handler.Widget;
+				}
+				if (w.Target == null)
+				{
+					g_windows.RemoveAt(i);
+					i--;
+				}
+			}
+			var form = new Form(new HwndFormHandler(window));
+			g_windows.Add(new WeakReference(form.Handler));
+			return form;
+		}
+
+		private static readonly List<WeakReference> g_windows = new();
 
 		public HwndFormHandler(IntPtr hWnd)
 		{
@@ -602,10 +729,93 @@ namespace Eto.WinForms.Forms
 			throw new NotImplementedException();
 		}
 
+		~HwndFormHandler()
+		{
+			Dispose(false);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				_hookHelper?.RemoveHook(Control, this);
+			}
+
+			base.Dispose(disposing);
+		}
+
+		Win32.WndProcDelegate _customWndProcDelegate;
+		static WindowHookHelper<HwndFormHandler> _hookHelper;
+
+		void HookWndProc()
+		{
+			_hookHelper ??= new WindowHookHelper<HwndFormHandler>((handler, hWnd, msg, wParam, lParam) =>
+			{
+				return handler.HandleWndProc(hWnd, msg, wParam, lParam);
+			});
+			_hookHelper.AddHook(Control, this);
+		}
+
+		internal event Win32.WndProcDelegate WndProc
+		{
+			add
+			{
+				if (_customWndProcDelegate == null)
+					HookWndProc();
+				_customWndProcDelegate += value;
+			}
+			remove
+			{
+				_customWndProcDelegate -= value;
+				if (_customWndProcDelegate == null)
+					_hookHelper?.RemoveHook(Control, this);
+			}
+		}
+
+
+		private IntPtr HandleWndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+		{
+			return _customWndProcDelegate?.Invoke(hWnd, msg, wParam, lParam) ?? IntPtr.Zero;
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
+				case Window.LocationChangedEvent:
+					PointF? location = null;
+					// attach window message hook to track location changes
+					WndProc += (hWnd, msg, wParam, lParam) =>
+					{
+						if (msg == (uint)Win32.WM.MOVE || msg == (uint)Win32.WM.SIZE)
+						{
+							var newLocation = Location;
+							if (location == newLocation)
+								return IntPtr.Zero; // no change, do not trigger event
+							location = newLocation;
+							Callback.OnLocationChanged(Widget, EventArgs.Empty);
+						}
+						return IntPtr.Zero;
+					};
+
+					break;
+				case Window.SizeChangedEvent:
+					SizeF? size = null;
+					// attach window message hook to track location changes
+					WndProc += (hWnd, msg, wParam, lParam) =>
+					{
+						if (msg == (uint)Win32.WM.SIZE)
+						{
+							var newSize = Size;
+							if (size == newSize)
+								return IntPtr.Zero; // no change, do not trigger event
+							size = newSize;
+							Callback.OnSizeChanged(Widget, EventArgs.Empty);
+						}
+						return IntPtr.Zero;
+					};
+
+					break;
 				case Window.LogicalPixelSizeChangedEvent:
 					// don't spam the output with warnings for this, many controls use it internally
 					break;
