@@ -27,7 +27,7 @@ namespace Eto.Wpf
 		{
 			if (windowHandle == IntPtr.Zero)
 				return null;
-			return new Form(new HwndFormHandler(windowHandle));
+			return HwndFormHandler.Create(windowHandle);
 		}
 
 		static readonly object Form_Key = new object();
@@ -41,9 +41,10 @@ namespace Eto.Wpf
 		{
 			if (form == null)
 				return null;
-			var etoForm = new Form(new HwndFormHandler(form.Handle));
+			var etoForm = HwndFormHandler.Create(form.Handle);
 			etoForm.Properties[Form_Key] = form;
 			return etoForm;
 		}
+
 	}
 }

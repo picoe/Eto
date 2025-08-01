@@ -66,8 +66,10 @@ namespace Eto.Forms
 		{
 			if (window == null)
 				return null;
-			return new Form(new NativeFormHandler(window));
+
+			return NativeFormHandler.Create(window);
 		}
+
 
 		/// <summary>
 		/// Wraps a native win32 window in an Eto control so it can be used as a parent when showing dialogs, etc.
@@ -81,7 +83,7 @@ namespace Eto.Forms
 		{
 			if (windowHandle == IntPtr.Zero)
 				return null;
-			return new Form(new HwndFormHandler(windowHandle));
+			return HwndFormHandler.Create(windowHandle);
 		}
 
 		/// <summary>
