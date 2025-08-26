@@ -172,10 +172,19 @@
 			"command": "sudo dotnet workload install macos --from-rollback-file dotnet-workloads.json",
 			"problemMatcher": "$msCompile",
 			"presentation": {
-			  "clear": true,
-			  "focus": true
+				"clear": true,
+				"focus": true
 			}
-		  }
+		},
+		{
+			"label": "host docfx",
+			"type": "shell",
+			"command": "docfx docfx.json --serve",
+			"problemMatcher": "$msCompile",
+			"options": {
+				"cwd": "${workspaceFolder}/docs"
+			}
+		}
 	],
 	"inputs": [
 		{

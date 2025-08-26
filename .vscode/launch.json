@@ -136,6 +136,6 @@
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false
-		},
+		}
 	]
 }

@@ -17,3 +17,4 @@ packages/
 .DS_Store
 *.proj.Backup.tmp
 ._.*
+docs/api
