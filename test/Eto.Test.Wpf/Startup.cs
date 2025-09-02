@@ -1,4 +1,4 @@
-﻿using Eto.Wpf.Forms.Controls;
+using Eto.Wpf.Forms.Controls;
 using System.Windows.Media;
 
 namespace Eto.Test.Wpf
@@ -8,6 +8,9 @@ namespace Eto.Test.Wpf
 		[STAThread]
 		static void Main(string[] args)
 		{
+#if DEBUG
+			Eto.HotReloadService.Initialize();
+#endif
 			var platform = new Eto.Wpf.Platform();
 			platform.Add<INativeHostControls>(() => new NativeHostControls());
 

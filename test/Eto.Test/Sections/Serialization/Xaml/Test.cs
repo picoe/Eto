@@ -20,6 +20,7 @@ namespace Eto.Test.Sections.Serialization.Xaml
 		}
 	}
 
+	[HotReload(nameof(InitializeComponent))]
 	public class Test : Panel
 	{
 		public class MyModel
@@ -56,6 +57,16 @@ namespace Eto.Test.Sections.Serialization.Xaml
 			var sw = new Stopwatch();
 			sw.Start();
 
+			InitializeComponent();
+
+			sw.Stop();
+			Log.Write(this, "loaded in {0} seconds", sw.Elapsed.TotalSeconds);
+
+			DataContext = new MyModel { SomeText = "Text from data model" };
+		}
+
+		void InitializeComponent()
+		{
 			XamlReader.Load(this);
 
 			var items = new List<MyItem>();
@@ -63,14 +74,11 @@ namespace Eto.Test.Sections.Serialization.Xaml
 			items.Add(new MyItem { MyText = "My Item 2" });
 			items.Add(new MyItem { MyText = "My Item 3" });
 			MyDropDown.DataStore = items;
-			sw.Stop();
-			Log.Write(this, "loaded in {0} seconds", sw.Elapsed.TotalSeconds);
 
 			MyCheckBox.Checked = true;
 			MyTextArea.Text = "This form was created via xaml!";
-
-			DataContext = new MyModel { SomeText = "Text from data model" };
 		}
+
 
 		protected void HandleButtonClick(object sender, EventArgs e)
 		{
