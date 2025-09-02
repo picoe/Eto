@@ -9,7 +9,7 @@ class BaseAttributeWrapper<T>
 
 	public static T Get(PropertyDescriptor descriptor) => descriptor.Attributes.OfType<T>().FirstOrDefault();
 
-	public static T Get(IPropertyDescriptor descriptor) => descriptor.GetCustomAttribute<T>();	}
+}
 
 class EditorAttributeWrapper : BaseAttributeWrapper<EditorAttribute> { }
 
