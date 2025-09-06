@@ -771,6 +771,7 @@ namespace Eto.Mac.Forms.Controls
 				suppressExpandCollapseEvents--;
 				Control.EndUpdates();
 
+				AutoSizeColumns(true);
 				ResetAutoSizedColumns();
 				InvalidateMeasure();
 			}
