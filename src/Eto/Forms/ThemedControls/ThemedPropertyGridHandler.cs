@@ -1041,6 +1041,15 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			return control;
 		}
 
+		protected override void OnConfigureCell(CellEventArgs args, Control control)
+		{
+			base.OnConfigureCell(args, control);
+			if (args.Item is PropertyItem m)
+			{
+				m.IsSelected = args.IsSelected && _parent.HasFocus;
+			}
+		}
+
 		protected override float OnGetPreferredWidth(CellEventArgs args)
 		{
 			if (args.Item is IItem m && m.Name != null)
