@@ -8,7 +8,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			public string Text { get; set; }
 			public bool? BooleanValue { get; set; }
-			
+
 			public Image Image { get; set; }
 
 			public override string ToString() => Text ?? base.ToString();
@@ -307,10 +307,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test, ManualTest]
 		public void RowFormattingShouldWork() => ManualDialog(
 			"Should be background",
-			dlg => {
-				
+			dlg =>
+			{
+
 				dlg.Resizable = true;
-				
+
 				var grid = new T();
 				grid.Height = 500;
 				grid.RowHeight = 32;
@@ -329,8 +330,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				grid.Columns.Add(new GridColumn { DataCell = new CheckBoxCell { Binding = Binding.Property((GridTestItem m) => m.BooleanValue) } });
 				grid.Columns.Add(new GridColumn { DataCell = new DrawableCell { }, Width = 20 });
 				grid.Columns.Add(new GridColumn { DataCell = new CustomCell { CreateCell = d => new Panel() }, Width = 20 });
-				grid.Columns.Add(new GridColumn { DataCell = new ImageViewCell { Binding = Binding.Property((GridTestItem m) => m.Image) }});
-				
+				grid.Columns.Add(new GridColumn { DataCell = new ImageViewCell { Binding = Binding.Property((GridTestItem m) => m.Image) } });
+
 				SetDataStore(grid, CreateDataStore(500));
 
 				return grid;
@@ -441,7 +442,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase("Short", 15, -1)]
 		[TestCase("Short", 100, 180)]
 		public void AutoSizedColumnShouldChangeSizeOfControl(string text, int rows, int height) => AutoSizedColumnShouldChangeSizeOfControl(text, rows, height, null);
-		
+
 		public void AutoSizedColumnShouldChangeSizeOfControl(string text, int rows, int height, Action<T> customize)
 		{
 			ManualForm($"GridView should auto size to the\ncolumn content and not scroll horizontally{(height == -1 ? " or vertically" : "")}", form =>
@@ -451,14 +452,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					gridView.Height = height;
 
 				gridView.ShowHeader = false;
-					
+
 				customize?.Invoke(gridView);
 				gridView.Columns.Add(new GridColumn
 				{
 					AutoSize = true,
 					DataCell = new TextBoxCell { Binding = Binding.Property((DataItem m) => m.TextValue) }
 				});
-				
+
 				var collection = new TreeGridItemCollection();
 				DataItem mainItem = null;
 				for (int i = 0; i < rows; i++)
@@ -491,13 +492,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				return layout;
 			});
 		}
-		
+
 		[Test]
 		public void ReloadingFocusedItemShouldKeepFocus()
 		{
 			bool? hasFocusBefore = null;
 			bool? hasFocusAfter = null;
-			Form(form => {
+			Form(form =>
+			{
 				var grid = new T();
 				grid.ShowHeader = false;
 				grid.Size = new Size(200, 200);
@@ -510,7 +512,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				form.Content = grid;
 				var gv = grid as GridView;
 				var tgv = grid as TreeGridView;
-				
+
 				form.Shown += async (s, e) =>
 				{
 					grid.Focus();
@@ -520,14 +522,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					tgv?.ReloadItem((ITreeGridItem)list[0]);
 
 					await Task.Delay(TimeSpan.FromSeconds(0.1));
-					
+
 					// We should still have focus, then reload the item that does have focus
-					hasFocusBefore = grid.HasFocus; 
+					hasFocusBefore = grid.HasFocus;
 					gv?.ReloadData(1);
 					tgv?.ReloadItem((ITreeGridItem)list[1]);
-					
+
 					await Task.Delay(TimeSpan.FromSeconds(0.1));
-					
+
 					// Focus should still be kept
 					hasFocusAfter = grid.HasFocus;
 					form.Close();
@@ -536,13 +538,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.That(hasFocusBefore, Is.True, "Grid did not have focus before reloading");
 			Assert.That(hasFocusAfter, Is.True, "Grid did not have focus after reloading");
 		}
-		
+
 		[Test]
 		public void ReloadingDataShouldKeepFocus()
 		{
 			bool? hasFocusBefore = null;
 			bool? hasFocusAfter = null;
-			Form(form => {
+			Form(form =>
+			{
 				var grid = new T();
 				grid.ShowHeader = false;
 				grid.Size = new Size(200, 200);
@@ -551,23 +554,23 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var list = (IList)dataStore;
 				SetDataStore(grid, dataStore);
 				grid.SelectedRow = 1;
-				
+
 				form.Content = grid;
 				var gv = grid as GridView;
 				var tgv = grid as TreeGridView;
-				
+
 				form.Shown += async (s, e) =>
 				{
 					grid.Focus();
 					await Task.Delay(TimeSpan.FromSeconds(0.1));
-					
+
 					// We should still have focus, then reload the data
-					hasFocusBefore = grid.HasFocus; 
+					hasFocusBefore = grid.HasFocus;
 					gv?.ReloadData(Enumerable.Range(0, list.Count));
 					tgv?.ReloadData();
-					
+
 					await Task.Delay(TimeSpan.FromSeconds(0.1));
-					
+
 					// Focus should still be kept
 					hasFocusAfter = grid.HasFocus;
 					form.Close();
@@ -575,6 +578,36 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 			Assert.That(hasFocusBefore, Is.True, "Grid did not have focus before reloading");
 			Assert.That(hasFocusAfter, Is.True, "Grid did not have focus after reloading");
+		}
+
+		[Test]
+		public void ColumnsShouldAutoSizeWhenSettingDataAfterLoaded()
+		{
+			ShownAsync(form =>
+			{
+				var grid = new T();
+				grid.Size = new Size(300, 200);
+				grid.ShowHeader = false;
+
+				// grid.Columns.Add(new GridColumn { DataCell = new ImageTextCell { TextBinding = Binding.Property((GridTestItem m) => m.Text), ImageBinding = Binding.Property((GridTestItem m) => m.Image) } });
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) }, AutoSize = true });
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0), Expand = true, AutoSize = true });
+				return grid;
+
+			}, async grid =>
+			{
+				await Task.Delay(500);
+				var list = new TreeGridItemCollection();
+				list.Add(new GridTestItem { Text = "A bit longer text 1", Values = new[] { "Some longer text in the second column 1" } });
+				list.Add(new GridTestItem { Text = "A bit longer text 2", Values = new[] { "Some longer text in the second column 2" } });
+				list.Add(new GridTestItem { Text = "A bit longer text 3", Values = new[] { "Some longer text in the second column 3" } });
+				SetDataStore(grid, list);
+				await Task.Delay(500);
+				Assert.That(grid.Columns[0].Width, Is.GreaterThan(50), "First column should be auto-sized to be greater than 50px");
+				Assert.That(grid.Columns[1].Width, Is.GreaterThan(50), "Second column should be auto-sized to be greater than 50px");
+			});
+			
+			
 		}
 	}
 }
