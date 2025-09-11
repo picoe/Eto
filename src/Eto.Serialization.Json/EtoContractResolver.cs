@@ -27,11 +27,7 @@ namespace Eto.Serialization.Json
 				return addMethod.IsPublic && !addMethod.IsStatic 
 					&& (
 						(
-							#if PCL
-							r.EventHandlerType.GetTypeInfo().IsGenericType
-							#else
 							r.EventHandlerType.IsGenericType
-							#endif
 							&& r.EventHandlerType.GetGenericTypeDefinition() == typeof(EventHandler<>)
 						)
 						|| r.EventHandlerType == typeof(EventHandler)

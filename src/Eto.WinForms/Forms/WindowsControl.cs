@@ -1025,7 +1025,7 @@ namespace Eto.WinForms.Forms
 			else
 			{
 				if (image != null)
-					Debug.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
+					Trace.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
 
 				effects = Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
 			}

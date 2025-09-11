@@ -228,7 +228,7 @@ public abstract class BitmapData : IDisposable
 		}
 		else
 		{
-			Debug.WriteLine("Caller is missing a call to BitmapData.Dispose()");
+			Trace.WriteLine("Caller is missing a call to BitmapData.Dispose()");
 		}
 	}
 

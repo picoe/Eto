@@ -195,7 +195,7 @@ public class DynamicRow : Collection<DynamicItem>
 /// The maximum number of items in the <see cref="DynamicTable.Rows"/> determines the columns of the table.
 /// </remarks>
 [ContentProperty("Rows")]
-public class DynamicTable : DynamicItem, ISupportInitialize
+public class DynamicTable : DynamicItem
 {
 	internal DynamicLayout layout;
 	bool visible = true;
@@ -396,14 +396,6 @@ public class DynamicTable : DynamicItem, ISupportInitialize
 			}
 		}
 		return table;
-	}
-
-	void ISupportInitialize.BeginInit()
-	{
-	}
-
-	void ISupportInitialize.EndInit()
-	{
 	}
 
 	internal override IEnumerable<Control> Controls

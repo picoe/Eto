@@ -7,7 +7,6 @@
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;MONOMAC;Mac64</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
-    <LangVersion>10.0</LangVersion>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 
   </PropertyGroup>

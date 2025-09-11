@@ -10,8 +10,6 @@
     
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
     <DefineConstants>MONOMAC</DefineConstants>
-    <LangVersion>10.0</LangVersion>
-    <DebugType>embedded</DebugType>
     
     <TrimMode>partial</TrimMode>
   </PropertyGroup>
