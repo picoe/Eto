@@ -203,7 +203,7 @@ namespace Eto.WinForms
 			}
 			catch
 			{
-				Debug.WriteLine("Warning: Could not create WebView2 handler. Add Microsoft.Web.WebView2 nuget package to your project to take advantage of the latest web control.");
+				Trace.WriteLine("Warning: Could not create WebView2 handler. Add Microsoft.Web.WebView2 nuget package to your project to take advantage of the latest web control.");
 				// switch to SWF version for subsequent controls
 				UseSwfWebView();
 				return new WebViewHandler();
