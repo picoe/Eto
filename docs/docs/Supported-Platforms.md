@@ -1,43 +1,47 @@
-These are the supported *runtime* plaforms. For the requirments for developing with Eto.Forms, see [[Contributing]].
+# Supported Platforms
 
-### Windows 7 or greater
+These are the supported *runtime* plaforms. For the requirments for developing with Eto.Forms, see [Contributing](./Contributing.md).
 
-#### .NET Core 3.x or greater:
+## Windows 7 or greater
+
+### .NET Core 6.x
+
 * Eto.Wpf: Windows Presentation Foundation (WPF)
 * Eto.WinForms: WinForms with System.Drawing
 * Eto.Direct2D: WinForms with Direct2D drawing
 * Eto.Gtk: Gtk+ 3.20 or greater
 
-#### .NET Framework 4.5 or greater:
+### .NET Framework 4.5
+
 * Eto.Wpf: Windows Presentation Foundation (WPF)
 * Eto.WinForms: WinForms with System.Drawing
 * Eto.Direct2D: WinForms with Direct2D drawing
 * Eto.Gtk: Gtk+ 3.20 or greater
-* Eto.Gtk2: Gtk# 2.12 or greater
 
-### macOS 10.9 or greater
+## macOS 10.15 or greater
 
-#### .NET Core 3.x:
+### .NET Core 6.x
+
+* Eto.Mac64: MonoMac (included with Eto)
+* Eto.macOS: using the macos workload
+* Eto.Gtk: Gtk+ 3.20 or greater
+
+### Mono 6.x
+
 * Eto.Mac64: MonoMac (included with Eto)
 * Eto.Gtk: Gtk+ 3.20 or greater
 
-#### Mono 6.x:
-* Eto.Mac64: MonoMac (included with Eto)
-* Eto.XamMac2: Xamarin.Mac
-* Eto.Gtk: Gtk+ 3.20 or greater
-* Eto.Gtk2: Gtk# 2.12 or greater
-
-
-### Linux
+## Linux
 
 Any popular distro of linux using:
 
-#### .NET Core 3.x
+### .NET Core 6.x
+
 * Eto.Gtk: Gtk+ 3.20 or greater
 
-#### Mono 5.4
+### Mono 5.4
+
 * Eto.Gtk: Gtk+ 3.20 or greater
-* Eto.Gtk2: Gtk# 2.12 or greater
 
 ## Other platforms
 

@@ -1,3 +1,5 @@
+# Data Binding
+
 Eto.Forms provides a very comprehensive binding mechanism that allows for direct and MVVM binding of controls.
 
 All control and model properties can be bound together using direct or extension methods through code. Using expressions you can specify a property to bind to of a particular object, which will automatically hook into its changed event or use `INotifyPropertyChanged` to detect changes. The benefits of using expressions is that they are completely refactorable.
@@ -36,41 +38,41 @@ For example, this shows a simple model with a single MyString property and binds
 ```cs
 public class MyForm : Form
 {
-	public MyForm()
-	{
-		var textBox = new TextBox();
-		textBox.TextBinding.BindDataContext((MyModel m) => m.MyString);
+    public MyForm()
+    {
+        var textBox = new TextBox();
+        textBox.TextBinding.BindDataContext((MyModel m) => m.MyString);
 
-		Content = textBox;
+        Content = textBox;
 
-		// set the view model for the form and all child controls
-		var model = new MyModel { MyString = "Hello!" };
-		DataContext = model;
-	}
+        // set the view model for the form and all child controls
+        var model = new MyModel { MyString = "Hello!" };
+        DataContext = model;
+    }
 }
 
 // typically implemented view model
 public class MyModel : INotifyPropertyChanged
 {
-	string myString;
-	public string MyString
-	{
-		get { return myString; }
-		set
-		{
-			if (myString != value)
-			{
-				myString = value;
-				OnPropertyChanged();
-			}
-		}
-	}
-
-	void OnPropertyChanged([CallerMemberName] string memberName = null)
-	{
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+    string myString;
+    public string MyString
+    {
+        get { return myString; }
+        set
+        {
+            if (myString != value)
+            {
+                myString = value;
+                OnPropertyChanged();
+            }
+        }
     }
-	public event PropertyChangedEventHandler PropertyChanged;
+
+    void OnPropertyChanged([CallerMemberName] string memberName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+    }
+    public event PropertyChangedEventHandler PropertyChanged;
 }
 
 ```
@@ -85,21 +87,21 @@ textBox.BindDataContext(c => c.Enabled, (MyModel m) => m.IsEnabled);
 // and on your model:
 public class MyModel : INotifyPropertyChanged
 {
-	// ... snipped for brevity
-	
-	bool isEnabled = true;
-	public bool IsEnabled
-	{
-		get { return isEnabled; }
-		set
-		{
-			if (isEnabled != value)
-			{
-				isEnabled = true;
-				OnPropertyChanged();
-			}
-		}
-	}
+    // ... snipped for brevity
+
+    bool isEnabled = true;
+    public bool IsEnabled
+    {
+        get { return isEnabled; }
+        set
+        {
+            if (isEnabled != value)
+            {
+                isEnabled = true;
+                OnPropertyChanged();
+            }
+        }
+    }
 }
 
 ```
@@ -141,8 +143,8 @@ With the Binding.Property, we can then call `Convert()`, `Cast()`, etc.  For exa
 
 ```cs
 textBox.TextBinding.BindDataContext(
-	Binding.Property((MyModel m) => m.MyEnum)
-	.Convert(r => r.ToString(), v => (MyEnum)Enum.Parse(typeof(MyEnum), v))
+    Binding.Property((MyModel m) => m.MyEnum)
+    .Convert(r => r.ToString(), v => (MyEnum)Enum.Parse(typeof(MyEnum), v))
 );
 ```
 

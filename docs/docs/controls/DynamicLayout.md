@@ -1,4 +1,6 @@
-The DynamicLayout is the most flexible layout for Eto.Forms.  Internally, it uses [[TableLayout]] Panels to create its content. Unlike other layouts, the DynamicLayout can only be modified during creation.  Once generated, the controls cannot be moved or re-positioned like a [[TableLayout]] or [[PixelLayout]]
+# DynamicLayout
+
+The DynamicLayout is the most flexible layout for Eto.Forms.  Internally, it uses [TableLayout](./TableLayout.md) Panels to create its content. Unlike other layouts, the DynamicLayout can only be modified during creation.  Once generated, the controls cannot be moved or re-positioned like a [TableLayout](./TableLayout.md) or [PixelLayout](./PixelLayout.md)
 
 Controls in a dynamic layout can be positioned vertically and horizontally.  Each vertical set of controls can be aligned with controls in previous horizontal sections, giving a very easy way to build forms.
 
@@ -44,30 +46,30 @@ layout.BeginVertical (); // buttons section
 // passing null in AddRow () creates a scaled column
 layout.AddRow (null, new Button { Text = "Cancel" }, new Button { Text = "Ok" });
 layout.EndVertical ();
-```	
+```
 
 Or a XAML example:
 
 ```xml
 <DynamicLayout Spacing="10,5">
-	<DynamicRow>
-		<Label VerticalAlignment="Center">Server url:</Label>
-		<TextBox PlaceholderText="https://192.168.1.101:8443" />
-	</DynamicRow>
-	<DynamicRow>
-		<Label VerticalAlignment="Center">Username:</Label>
-		<TextBox PlaceholderText="myusername" />
-	</DynamicRow>
-	<DynamicRow>
-		<Label VerticalAlignment="Center">Password:</Label>
-		<PasswordBox Height="25" />
-	</DynamicRow>
-	<DynamicRow>
-		<Label VerticalAlignment="Center">Client certificate fingerprint:</Label>
-		<TextBox PlaceholderText="c94955f0e345b1e1248aa97abf01ec0e8f0f9dd7" />
-	</DynamicRow>
-	<DynamicRow>
-		<CheckBox Text="Use values next time" />
-	</DynamicRow>
+    <DynamicRow>
+        <Label VerticalAlignment="Center">Server url:</Label>
+        <TextBox PlaceholderText="https://192.168.1.101:8443" />
+    </DynamicRow>
+    <DynamicRow>
+        <Label VerticalAlignment="Center">Username:</Label>
+        <TextBox PlaceholderText="myusername" />
+    </DynamicRow>
+    <DynamicRow>
+        <Label VerticalAlignment="Center">Password:</Label>
+        <PasswordBox Height="25" />
+    </DynamicRow>
+    <DynamicRow>
+        <Label VerticalAlignment="Center">Client certificate fingerprint:</Label>
+        <TextBox PlaceholderText="c94955f0e345b1e1248aa97abf01ec0e8f0f9dd7" />
+    </DynamicRow>
+    <DynamicRow>
+        <CheckBox Text="Use values next time" />
+    </DynamicRow>
 </DynamicLayout>
-```	
+```

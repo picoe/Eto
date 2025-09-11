@@ -1,9 +1,12 @@
+# TableLayout
+
 The ```TableLayout``` is useful to align controls in a grid-like fashion and works similarly to an HTML table.  Rows and columns can be *scaled* to equally share the flexible space of the container. When a row or column is not scaled, it will only take up space necessary for the contained controls in that row and/or column.
 
 To define space around the border of the table, use the ```Padding``` property to specify the top/left/bottom/right padding.  The ```Spacing``` property is used to specify the vertical/horizontal space between each cell.
 
 ## Declarative Approach
-The ```TableLayout``` allows you to declaratively define a table layout, either via one of the constructors that take a set of ```TableRow``` objects, or via the ```Rows``` property. 
+
+The ```TableLayout``` allows you to declaratively define a table layout, either via one of the constructors that take a set of ```TableRow``` objects, or via the ```Rows``` property.
 Each ```TableRow``` can take an array of ```TableCell``` objects via its constructor or ```Cells``` property.  Each ```TableCell``` can only contain a single control.
 
 Instead of having to create TableRow and TableCell objects directly, you can specify any ```Control``` class which will convert implicitly.
@@ -12,25 +15,25 @@ For example, the following three variations are identical:
 
 ```c#
 var layout = new TableLayout(new Label(), new TextBox());
-	
+
 var layout = new TableLayout { Rows = { new Label(), new TextBox() } };
-	
+
 var layout = new TableLayout();
 layout.Rows.Add(new TableRow(new TableCell(new Label())));
 layout.Rows.Add(new TableRow(new TableCell(new TextBox())));
 ```
-	
+
 ## Scaling
 
 Each row or column in a ```TableLayout``` can be scaled so that the controls expand to fit the height or width of the remaining space for the table.  If none are specified, the **last** row or column will automatically be scaled, as all controls must fill the space of its container.
 
-To specify that a _row_ should scale (expand/contract with the height of the form) other than the last row, set `TableRow.ScaleHeight` to `true`:
+To specify that a *row* should scale (expand/contract with the height of the form) other than the last row, set `TableRow.ScaleHeight` to `true`:
 
 ```c#
 new TableRow { ScaleHeight = true, Cells = { myCell, myControl, etc } }
 ```
 
-To specify that a _column_ should scale (expand/contract with the width of the form) other than the last column, set `TableCell.ScaleWidth` to `true`:
+To specify that a *column* should scale (expand/contract with the width of the form) other than the last column, set `TableCell.ScaleWidth` to `true`:
 
 ```c#
 new TableCell { ScaleWidth = true, Control = myControl }
@@ -46,11 +49,11 @@ new TableLayout { Rows = { topRow, null, bottomRow } }
 new TableRow { Cells = { controlOnLeft, null, controlOnRight }
 ```
 
-
 ## Helpers
+
 There are a few helper methods that provide a way to organize your layout:
 
-### ```TableLayout.AutoSized()``` 
+### ```TableLayout.AutoSized()```
 
 This method creates a new table that auto-sizes your control in its container.  This creates extra space to the right and bottom to fill the container.  You can also center the control by setting the centered parameter to true.
 
@@ -58,10 +61,10 @@ Example:
 
 ```c#
 var layout = new TableLayout(
-	new TableRow(
-		new Label { Text = "Auto-Sized drop down" },
-		TableLayout.AutoSized(new DropDown { Items = { "Item 1", "Item 2" })
-	)
+    new TableRow(
+        new Label { Text = "Auto-Sized drop down" },
+        TableLayout.AutoSized(new DropDown { Items = { "Item 1", "Item 2" })
+    )
 );
 ```
 
@@ -97,18 +100,18 @@ This example shows how you can create a table with 2 columns and 3 rows
 
 var layout = new TableLayout
 {
-	Padding = new Padding(10), // padding around cells
-	Spacing = new Size(5, 5), // spacing between each cell
-	Rows =
-	{
-		new TableRow(new Label {Text = "First Row"}, new TextBox()),
-		new TableRow(new Label {Text = "Second Row"}, new ListBox()),
-		new TableRow(
-			new Label {Text = "Third Row"},
-			TableLayout.AutoSized(new DropDown {Items = {"Item 1", "Item 2"}})
-		),
-		null
-	}
+    Padding = new Padding(10), // padding around cells
+    Spacing = new Size(5, 5), // spacing between each cell
+    Rows =
+    {
+        new TableRow(new Label {Text = "First Row"}, new TextBox()),
+        new TableRow(new Label {Text = "Second Row"}, new ListBox()),
+        new TableRow(
+            new Label {Text = "Third Row"},
+            TableLayout.AutoSized(new DropDown {Items = {"Item 1", "Item 2"}})
+        ),
+        null
+    }
 };
 ```
 
@@ -137,27 +140,27 @@ This example shows how to scale different rows/columns
 
 var layout = new TableLayout
 {
-	Padding = new Padding(10), // padding around cells
-	Spacing = new Size(5, 5), // spacing between each cell
-	Rows =
-	{
-		new TableRow(
-			new Label { Text = "First Row" }, 
-			new TableCell(new TextBox(), true), 
-			new Button { Text = "Button" }
-		),
-		new TableRow {
-			ScaleHeight = true,
-			Cells = {
-				new Label { Text = "Second Row" }, 
-				new ListBox()
-			}
-		},
-		new TableRow(
-			new Label { Text = "Third Row" }, 
-			TableLayout.AutoSized(new DropDown())
-		),
-	}
+    Padding = new Padding(10), // padding around cells
+    Spacing = new Size(5, 5), // spacing between each cell
+    Rows =
+    {
+        new TableRow(
+            new Label { Text = "First Row" }, 
+            new TableCell(new TextBox(), true), 
+            new Button { Text = "Button" }
+        ),
+        new TableRow {
+            ScaleHeight = true,
+            Cells = {
+                new Label { Text = "Second Row" }, 
+                new ListBox()
+            }
+        },
+        new TableRow(
+            new Label { Text = "Third Row" }, 
+            TableLayout.AutoSized(new DropDown())
+        ),
+    }
 }
 ```
 

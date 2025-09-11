@@ -1,3 +1,5 @@
+# Embedding Eto.Forms in an existing application
+
 Eto.Forms makes it easy to either embed Eto.Forms controls in an existing application or embed native controls within Eto.Forms.  
 
 Helper extension methods are provided in the Eto.Forms namespace such as `myEtoControl.ToNative()` to convert an Eto.Forms control to a native control, and `myNativeControl.ToEto()` to convert a native control to an Eto.Forms control.  These extension methods are available when you reference the platform assembly directly, such as **Eto.WinForms**, **Eto.Mac**, etc.

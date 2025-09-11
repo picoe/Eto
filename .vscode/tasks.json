@@ -177,9 +177,18 @@
 			}
 		},
 		{
-			"label": "host docfx",
+			"label": "docfx-host",
 			"type": "shell",
 			"command": "docfx docfx.json --serve",
+			"problemMatcher": "$msCompile",
+			"options": {
+				"cwd": "${workspaceFolder}/docs"
+			}
+		},
+		{
+			"label": "docfx-build",
+			"type": "shell",
+			"command": "docfx build docfx.json",
 			"problemMatcher": "$msCompile",
 			"options": {
 				"cwd": "${workspaceFolder}/docs"

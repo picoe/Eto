@@ -7,18 +7,18 @@ namespace Eto.Forms;
 /// The RadioMenuItem works with other radio items to present a list of options that the user can select from.
 /// When a radio button is toggled on, all others that are linked together will be toggled off.
 /// 
-/// To link radio buttons together, use the <see cref="C:Eto.Forms.RadioMenuItem(RadioMenuItem)"/> constructor
+/// To link radio buttons together, use the <see cref="RadioMenuItem(RadioMenuItem)"/> constructor
 /// to specify the controller radio item, which can be created with the default constructor.
 /// </remarks>
 /// <copyright>(c) 2014 by Curtis Wensley</copyright>
 /// <license type="BSD-3">See LICENSE for full terms</license>
-[Handler(typeof(RadioMenuItem.IHandler))]
+[Handler(typeof(IHandler))]
 public class RadioMenuItem : MenuItem
 {
 	new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="Eto.Forms.RadioMenuItem"/> class.
+	/// Initializes a new instance of the <see cref="RadioMenuItem"/> class.
 	/// </summary>
 	public RadioMenuItem()
 	{

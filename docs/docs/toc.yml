@@ -3,11 +3,11 @@
 - name: Quick Start
   href: Quick-Start.md
 - name: Tutorials
-  href: Tutorials.md
+  href: tutorials/index.md
 - name: Containers
-  href: Containers.md
+  href: controls/Containers.md
 - name: Controls
-  href: Controls.md
+  href: controls/index.md
 - name: Styling
   href: Styling.md
 - name: Custom Platform Controls
@@ -16,8 +16,6 @@
   href: Embedding-Eto.Forms-in-an-existing-application.md
 - name: Xaml Tips and Tricks
   href: Xaml-Tips-And-Tricks.md
-- name: API Documentation
-  href: http://api.etoforms.picoe.ca
 - name: Publishing your app
   href: Publishing-your-App.md
 - name: Troubleshooting and Common Problems

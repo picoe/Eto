@@ -1,3 +1,5 @@
+# Versioning
+
 Eto.Forms uses the following versioning scheme:
 
 1. The master branch is the stable/release branch.
@@ -11,14 +13,12 @@ Branch       | Version      | File Version | Informational/Nuget
 master-2.0   |  2.0.0.0     | 2.0.0.0      | 2.0.0
 develop-2.1  |  2.0.*       | 2.0.*        | 2.1.0-build{build}
 
-
 ### v2.1 stable, 2.2 in development
 
 Branch       | Version      | File Version | Informational/Nuget
 ------------ | ------------ | ------------ | -------------------
-master-2.1   |  2.1.0.0     | 2.1.0.0      | 2.1.0         
+master-2.1   |  2.1.0.0     | 2.1.0.0      | 2.1.0
 develop-2.2  |  2.1.*       | 2.1.*        | 2.2.0-build{build}
-
 
 ## Patches
 

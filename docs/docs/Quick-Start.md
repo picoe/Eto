@@ -4,7 +4,7 @@ The easiest way to get started with Eto.Forms is to use the Visual Studio extens
 
 ## Visual Studio for Windows
 
-Make sure you have installed the latest Visual Studio updates.  Then, install the extension by following these steps (or download for [VS 2019](https://marketplace.visualstudio.com/items?itemName=CurtisWensley.EtoFormsVisualStudioAddin) or [VS 2022](https://marketplace.visualstudio.com/items?itemName=CurtisWensley.EtoDevExtensionVisualStudio2022)):
+Make sure you have installed the latest Visual Studio updates.  Then, install the extension by following these steps (or download for [VS 2022](https://marketplace.visualstudio.com/items?itemName=CurtisWensley.EtoDevExtensionVisualStudio2022)):
 
 1. Open **Extensions > Manage Extensions**
 2. Select **Online > Visual Studio Marketplace**
@@ -37,7 +37,7 @@ You can then run using `dotnet run` in the target folders for the platform you a
 
 VS Code is a great alternative to using VS for Mac or Windows and supports .NET Core and mono debugging.
 
-For Eto.Mac targets, you need to set the "program" variable to the executable within the .app bundle, something like `${workspaceFolder}/MyApp.Mac/bin/Debug/net6.0/MyApp.Mac.app/Contents/MacOS/MyApp.Mac`
+For Eto.Mac targets, you need to set the "program" variable to the executable within the .app bundle, something like `${workspaceFolder}/MyApp.Mac/bin/Debug/net8.0/MyApp.Mac.app/Contents/MacOS/MyApp.Mac`
 
 ## JetBrains Rider
 
@@ -46,4 +46,4 @@ With the [.NET Core SDK](https://www.microsoft.com/net/download) installed, run 
 
 Now you can easily create a new project using the **Eto Application** template.
 
-For Eto.Mac targets, you need to set the startup program to the executable within the .app bundle, something like `bin/Debug/net6.0/MyApp.Mac.app/Contents/MacOS/MyApp.Mac`.
+For Eto.Mac targets, you need to set the startup program to the executable within the .app bundle, something like `bin/Debug/net8.0/MyApp.Mac.app/Contents/MacOS/MyApp.Mac`.

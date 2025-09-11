@@ -377,7 +377,7 @@ public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 	/// </summary>
 	/// <remarks>
 	/// Styles allow you to attach custom platform-specific logic to a widget.
-	/// In your platform-specific assembly, use <see cref="M:Style.Add{H}(string, StyleHandler{H})"/>
+	/// In your platform-specific assembly, use <see cref="Style.Add{H}(string, StyleHandler{H})"/>
 	/// to add the style logic with the same id.
 	/// </remarks>
 	/// <example>

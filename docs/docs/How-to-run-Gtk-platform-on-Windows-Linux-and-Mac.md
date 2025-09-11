@@ -1,3 +1,5 @@
+# How to run GTK on Windows, Linux, and macOS
+
 Most platforms can only run on a single Operating System. For example, WinForms and Wpf only run on Windows and Mac/XamMac only run on macOS.  However, Gtk+ applications can run on many operating systems.
 
 Eto _does not_ package Gtk+, as this is a huge dependency and is not necessary because of Eto's mission (run using the native toolkit on each platform).  For development purposes however, you may wish to run your Gtk port on either Mac or Windows for easier testing and debugging.  This document outlines what you need to install to get that running.
@@ -14,7 +16,7 @@ For **Eto.Gtk**, you must install [Gtk+ 3](https://www.gtk.org/docs/installation
 
 For **Eto.Gtk2**, you must install [gtk# for .NET](https://www.mono-project.com/docs/gui/gtksharp/installer-for-net-framework/), then restart your computer.
 
-## Mac
+## macOS
 
 On macOS, you can run either **Eto.Gtk** or **Eto.Gtk2**.
 

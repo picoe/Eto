@@ -7,7 +7,7 @@ namespace Eto.Forms;
 /// The RadioButton works with other radio buttons to present a list of options that the user can select from.
 /// When a radio button is toggled on, all others that are linked together will be toggled off.
 /// 
-/// To link radio buttons together, use the <see cref="C:Eto.Forms.RadioButton(RadioButton)"/> constructor
+/// To link radio buttons together, use the <see cref="RadioButton(RadioButton)"/> constructor
 /// to specify the controller radio button, which can be created with the default constructor.
 /// </remarks>
 /// <seealso cref="RadioButtonList"/>
