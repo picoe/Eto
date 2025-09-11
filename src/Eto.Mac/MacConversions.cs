@@ -470,19 +470,25 @@ namespace Eto.Mac
 			}
 		}
 
-		public static NSTextAlignment ToNS(this TextAlignment align)
+		public static NSTextAlignment ToNS(this TextAlignment align, NSUserInterfaceLayoutDirection? direction = null)
 		{
-			switch (align)
-			{
-				case TextAlignment.Left:
-					return NSTextAlignment.Left;
-				case TextAlignment.Center:
-					return NSTextAlignment.Center;
-				case TextAlignment.Right:
-					return NSTextAlignment.Right;
-				default:
-					throw new NotSupportedException();
-			}
+			var dir = direction ?? (NSUserInterfaceLayoutDirection)NSApplication.SharedApplication.UserInterfaceLayoutDirection;
+			if (dir == NSUserInterfaceLayoutDirection.RightToLeft)
+				return align switch
+				{
+					TextAlignment.Left => NSTextAlignment.Right,
+					TextAlignment.Right => NSTextAlignment.Left,
+					TextAlignment.Center => NSTextAlignment.Center,
+					_ => throw new NotSupportedException()
+				};
+			else
+				return align switch
+				{
+					TextAlignment.Left => NSTextAlignment.Left,
+					TextAlignment.Right => NSTextAlignment.Right,
+					TextAlignment.Center => NSTextAlignment.Center,
+					_ => throw new NotSupportedException()
+				};
 		}
 
 		public static Font ToEto(this NSFont font)

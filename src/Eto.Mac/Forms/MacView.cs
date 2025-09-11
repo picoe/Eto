@@ -749,6 +749,11 @@ namespace Eto.Mac.Forms
 			Widget.VisualParent.GetMacControl()?.InvalidateMeasure();
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+		}
+
 		protected virtual SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var naturalSize = NaturalSize;
@@ -1727,6 +1732,22 @@ namespace Eto.Mac.Forms
 		}
 
 		public bool IsMouseCaptured => MacView.CapturedControl == this;
+
+		public LayoutDirection LayoutDirection
+		{
+			get => EventControl.UserInterfaceLayoutDirection switch
+			{
+				NSUserInterfaceLayoutDirection.LeftToRight => LayoutDirection.LeftToRight,
+				NSUserInterfaceLayoutDirection.RightToLeft => LayoutDirection.RightToLeft,
+				_ => LayoutDirection.LeftToRight
+			};
+			set => EventControl.UserInterfaceLayoutDirection = value switch
+			{
+				LayoutDirection.LeftToRight => NSUserInterfaceLayoutDirection.LeftToRight,
+				LayoutDirection.RightToLeft => NSUserInterfaceLayoutDirection.RightToLeft,
+				_ => NSUserInterfaceLayoutDirection.LeftToRight,
+			};
+		}
 
 		public bool CaptureMouse()
 		{

@@ -48,6 +48,11 @@ namespace Eto.Mac
 			}
 			return args.Cancel ? NSApplicationTerminateReply.Cancel : NSApplicationTerminateReply.Now;
 		}
+
+		public override void WillTerminate(NSNotification notification)
+		{
+			ApplicationHandler.ResetRtlPreference();
+		}
 	}
 }
 
