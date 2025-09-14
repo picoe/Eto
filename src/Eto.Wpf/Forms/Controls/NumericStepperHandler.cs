@@ -62,7 +62,8 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				Handler = this,
 				FormatString = "0",
-				Value = 0
+				Value = 0,
+				TextAlignment = Eto.Forms.TextAlignment.Left.ToWpfTextAlignment()
 			};
 			Control.ValueChanged += Control_ValueChanged;
 			Control.Loaded += Control_Loaded;
@@ -128,7 +129,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (valueChanging > 0)
 				return;
-				
+
 			var val = Value;
 			var newval = GetPreciseValue(val);
 			if (newval != val)
@@ -315,6 +316,15 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			else
 				Control.FormatString = "0";
+		}
+
+		public Eto.Forms.TextAlignment TextAlignment
+		{
+			get { return Control.TextAlignment.ToEto(); }
+			set
+			{
+				Control.TextAlignment = value.ToWpfTextAlignment();
+			}
 		}
 	}
 }
