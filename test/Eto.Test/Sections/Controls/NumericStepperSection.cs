@@ -1,4 +1,3 @@
-﻿using Eto.Drawing;
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(NumericStepper))]
@@ -52,14 +51,18 @@ namespace Eto.Test.Sections.Controls
 
 			var cultureDropDown = new CultureDropDown();
 			cultureDropDown.SelectedValueBinding.Bind(numeric, c => c.CultureInfo);
-			
+
 			var wrap = new CheckBox { Text = "Wrap" };
 			wrap.CheckedBinding.Bind(numeric, n => n.Wrap);
-			
+
 
 			var increment = new NumericStepper { MaximumDecimalPlaces = 15 };
 			increment.ValueBinding.Bind(numeric, n => n.Increment);
-			
+
+			var leftAligned = new NumericStepper { TextAlignment = TextAlignment.Left };
+			var centerAligned = new NumericStepper { TextAlignment = TextAlignment.Center };
+			var rightAligned = new NumericStepper { TextAlignment = TextAlignment.Right };
+
 			var options1 = new StackLayout
 			{
 				Spacing = 5,
@@ -84,6 +87,7 @@ namespace Eto.Test.Sections.Controls
 					"Increment", increment
 				}
 			};
+
 			var options3 = new StackLayout
 			{
 				Spacing = 5,
@@ -96,6 +100,19 @@ namespace Eto.Test.Sections.Controls
 				}
 			};
 
+			var options4 = new StackLayout
+			{
+				Spacing = 5,
+				Orientation = Orientation.Horizontal,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				Items =
+				{
+					"Left Aligned", leftAligned,
+					"Center Aligned", centerAligned,
+					"Right Aligned", rightAligned
+				}
+			};
+
 			Content = new StackLayout
 			{
 				Spacing = 5,
@@ -104,6 +121,7 @@ namespace Eto.Test.Sections.Controls
 					options1,
 					options2,
 					options3,
+					options4,
 					TableLayout.Horizontal(5, "FormatString", formatString, "CultureInfo", cultureDropDown),
 					"Result:", numeric
 				}
