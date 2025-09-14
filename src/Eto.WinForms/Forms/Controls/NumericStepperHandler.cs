@@ -132,7 +132,8 @@ namespace Eto.WinForms.Forms.Controls
 				Handler = this,
 				Maximum = DoubleToDecimal(double.MaxValue),
 				Minimum = DoubleToDecimal(double.MinValue),
-				Width = 80
+				Width = 80,
+				TextAlign = TextAlignment.Left.ToSWF()
 			};
 			Control.ValueChanged += Control_ValueChanged;
 			Control.LostFocus += (sender, e) =>
@@ -145,7 +146,6 @@ namespace Eto.WinForms.Forms.Controls
 				}
 			};
 		}
-		
 		int valueChanging;
 		double? lastValue;
 
@@ -351,7 +351,6 @@ namespace Eto.WinForms.Forms.Controls
 			}
 			valueChanging--;
 		}
-		
 		decimal DoubleToDecimal(double value)
 		{
 			if (double.IsNegativeInfinity(value) || value < (double)decimal.MinValue)
@@ -379,6 +378,12 @@ namespace Eto.WinForms.Forms.Controls
 			Widget.Properties.Remove(ComputedFormatString_Key);
 			Control.DecimalPlaces = Math.Max(Math.Min(GetNumberOfDigits(), MaximumDecimalPlaces), DecimalPlaces);
 			Control.UpdateText();
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get => Control.TextAlign.ToEto();
+			set => Control.TextAlign = value.ToSWF();
 		}
 	}
 }

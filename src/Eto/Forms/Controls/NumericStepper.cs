@@ -1,4 +1,4 @@
-﻿namespace Eto.Forms;
+namespace Eto.Forms;
 
 /// <summary>
 /// Control for the user to enter a numeric value (obsolete, use NumericStepper instead)
@@ -212,6 +212,16 @@ public class NumericStepper : CommonControl
 	}
 
 	/// <summary>
+	/// Gets or sets the alignment of the text.
+	/// </summary>
+	/// <value>The text alignment.</value>
+	public TextAlignment TextAlignment
+	{
+		get => Handler.TextAlignment;
+		set => Handler.TextAlignment = value;
+	}
+
+	/// <summary>
 	/// Gets the binding for the <see cref="Value"/> property.
 	/// </summary>
 	/// <value>The value binding.</value>
@@ -371,11 +381,17 @@ public class NumericStepper : CommonControl
 		/// for the thousands separator, decimal separator, and currency symbol.
 		/// </remarks>
 		CultureInfo CultureInfo { get; set; }
-			
+
 		/// <summary>
 		/// A value indicating whether to wrap the value after the user steps past the min or max value
 		/// </summary>
 		/// <value><c>true</c> to wrap the value when stepping past its bounds, <c>false</c> to stop</value>
 		bool Wrap { get; set; }
+
+		/// <summary>
+		/// Gets or sets the alignment of the text.
+		/// </summary>
+		/// <value>The text alignment.</value>
+		TextAlignment TextAlignment { get; set; }
 	}
 }
