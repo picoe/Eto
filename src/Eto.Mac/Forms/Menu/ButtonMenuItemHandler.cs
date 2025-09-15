@@ -4,6 +4,14 @@ namespace Eto.Mac.Forms.Menu
 {
 	public class ButtonMenuItemHandler : ButtonMenuItemHandler<ButtonMenuItem, ButtonMenuItem.ICallback>
 	{
+		public ButtonMenuItemHandler()
+		{
+		}
+
+		public ButtonMenuItemHandler(NSMenuItem item)
+			: base(item)
+		{
+		}
 	}
 
 	public class ButtonMenuItemHandler<TWidget, TCallback> : MenuHandler<NSMenuItem, TWidget, TCallback>, ButtonMenuItem.IHandler, IMenuActionHandler
@@ -24,18 +32,24 @@ namespace Eto.Mac.Forms.Menu
 				SetImage();
 			}
 		}
+		
+		public ButtonMenuItemHandler()
+		{
+		}
+		
+		public ButtonMenuItemHandler(NSMenuItem item)
+		{
+			Control = item;
+		}
 
 		protected override NSMenuItem CreateControl()
 		{
-			return new NSMenuItem();
-		}
-
-		protected override void Initialize()
-		{
-			Enabled = true;
-			Control.Target = new MenuActionHandler{ Handler = this };
-			Control.Action = MenuActionHandler.selActivate;
-			base.Initialize();
+			return new NSMenuItem
+			{
+				Target = new MenuActionHandler { Handler = this },
+				Action = MenuActionHandler.selActivate,
+				Enabled = true
+			};
 		}
 
 		public override void Activate()

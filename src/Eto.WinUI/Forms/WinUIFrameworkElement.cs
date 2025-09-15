@@ -303,6 +303,8 @@ public abstract partial class WinUIFrameworkElement<TControl, TWidget, TCallback
 
 	protected virtual mux.FrameworkElement MouseEventElement => ContainerControl;
 
+	public ContextMenu ContextMenu { get; set; }
+
 	public override void AttachEvent(string id)
 	{
 		switch (id)

@@ -32,16 +32,49 @@ namespace Eto.Mac.Forms.Menu
 		}
 	}
 
-	public class ContextMenuHandler : WidgetHandler<EtoMenu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
+	public class ContextMenuHandler : WidgetHandler<NSMenu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
 	{
-		protected override EtoMenu CreateControl() => new EtoMenu();
+		protected override NSMenu CreateControl() => new EtoMenu();
+		ContextHandler _delegate;
+
+		public ContextMenuHandler()
+		{
+		}
+
+		public ContextMenuHandler(NSMenu control)
+		{
+			Control = control;
+		}
+		
+		internal static IEnumerable<MenuItem> GetMenuItems(NSMenu menu)
+		{
+			for (nint i = 0; i < menu.Count; i++)
+			{
+				var item = menu.ItemAt(i);
+				
+				if (item.HasSubmenu)
+				{
+					yield return new SubMenuItem(new SubMenuItemHandler(item), GetMenuItems(item.Submenu));
+				}
+				else if (item.IsSeparatorItem)
+				{
+					yield return new SeparatorMenuItem(new SeparatorMenuItemHandler(item));
+				}
+				else
+				{
+					yield return new ButtonMenuItem(new ButtonMenuItemHandler(item));
+				}
+			}
+		}
 
 		protected override void Initialize()
 		{
-			Control.WorksWhenModal = true;
+			if (Control is EtoMenu etoMenu)
+				etoMenu.WorksWhenModal = true;
 			Control.AutoEnablesItems = false;
 			Control.ShowsStateColumn = true;
-			Control.Delegate = new ContextHandler() { Handler = this };
+			if (Control.WeakDelegate == null)
+				Control.Delegate = _delegate = new ContextHandler { Handler = this };
 
 			base.Initialize();
 		}

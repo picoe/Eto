@@ -14,9 +14,9 @@ namespace Eto.Android.Forms
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class AndroidControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IAndroidControl
-		where TControl: av.View
-		where TWidget: Control
-		where TCallback: Control.ICallback
+		where TControl : av.View
+		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		public abstract av.View ContainerControl { get; }
 
@@ -29,7 +29,7 @@ namespace Eto.Android.Forms
 			switch (id)
 			{
 				case Eto.Forms.Control.MouseDownEvent:
-					if(!attachedTouchEvent)
+					if (!attachedTouchEvent)
 						Control.Touch += Control_Touch;
 					attachedMouseDown = attachedTouchEvent = true;
 					break;
@@ -174,7 +174,7 @@ namespace Eto.Android.Forms
 			{
 				if (!Widget.Loaded)
 					return UserPreferredSize;
-				
+
 				var SizeInDp = new Size(ContainerControl.Width, ContainerControl.Height);
 				return Platform.PxToDp(SizeInDp);
 			}
@@ -219,7 +219,7 @@ namespace Eto.Android.Forms
 		public bool Visible
 		{
 			get { return Control.Visibility == av.ViewStates.Visible; }
-			set 
+			set
 			{
 				var Requested = value ? av.ViewStates.Visible : av.ViewStates.Gone;
 
@@ -307,5 +307,8 @@ namespace Eto.Android.Forms
 		public virtual void UpdateLayout()
 		{
 		}
+		
+		public ContextMenu ContextMenu { get; set; }
+
 	}
 }

@@ -10,6 +10,11 @@ namespace Eto.WinForms.Forms.Menu
 			Control.DropDownItems.Add(hiddenItem);
 		}
 
+		public SubMenuItemHandler(swf.ToolStripMenuItem menuItem)
+			: base(menuItem)
+		{
+		}
+
 		public override void AddMenu(int index, MenuItem item)
 		{
 			if (hiddenItem != null)

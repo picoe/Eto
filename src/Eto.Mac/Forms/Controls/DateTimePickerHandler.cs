@@ -1,3 +1,5 @@
+using Eto.Mac.Forms.Menu;
+
 namespace Eto.Mac.Forms.Controls
 {
 	public class DateTimePickerHandler : MacControl<NSDatePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
@@ -108,6 +110,15 @@ namespace Eto.Mac.Forms.Controls
 					handler.curValue = handler.Control.DateValue.ToEto();
 					handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 					handler.Control.NeedsDisplay = true;
+				}
+			}
+			else if (e.Buttons == MouseButtons.Alternate)
+			{
+				var menu = handler.Widget.ContextMenu;
+				if (menu != null)
+				{
+					menu.Show();
+					e.Handled = true;
 				}
 			}
 		}

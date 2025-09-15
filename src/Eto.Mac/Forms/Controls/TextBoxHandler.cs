@@ -1,4 +1,5 @@
 using Eto.Mac.Forms.Controls;
+using Eto.Mac.Forms.Menu;
 namespace Eto.Mac.Forms.Controls
 {
 	public interface ITextBoxWithMaxLength
@@ -195,6 +196,16 @@ namespace Eto.Mac.Forms.Controls
 				handler.TriggerMouseCallback();
 			}
 		}
+
+		public override NSMenu MenuForEvent(NSEvent theEvent)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return base.MenuForEvent(theEvent);
+			var control = (handler.Widget.ContextMenu?.Handler as ContextMenuHandler)?.Control;
+			return control ?? base.MenuForEvent(theEvent);
+		}
+
 	}
 
 

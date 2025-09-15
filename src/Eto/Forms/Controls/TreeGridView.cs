@@ -566,10 +566,10 @@ public class TreeGridView : Grid
 	/// Gets or sets the context menu when right clicking or pressing the menu key on an item.
 	/// </summary>
 	/// <value>The context menu.</value>
-	public ContextMenu ContextMenu
+	public new ContextMenu ContextMenu
 	{
-		get { return Handler.ContextMenu; }
-		set { Handler.ContextMenu = value; }
+		get { return base.ContextMenu; }
+		set { base.ContextMenu = value; }
 	}
 
 	/// <summary>

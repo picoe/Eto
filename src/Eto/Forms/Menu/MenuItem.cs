@@ -146,6 +146,15 @@ public abstract class MenuItem : Menu, ICommandItem
 	}
 
 	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.MenuItem"/> class with the specified handler.
+	/// </summary>
+	/// <param name="handler">The handler for the menu item.</param>
+	protected MenuItem(IHandler handler)
+		: base(handler)
+	{
+	}
+
+	/// <summary>
 	/// Initializes a new instance of the <see cref="Eto.Forms.MenuItem"/> class with the specified command.
 	/// </summary>
 	/// <remarks>

@@ -97,6 +97,16 @@ public class SubMenuItem : ButtonMenuItem, ISubmenu, IBindableWidgetContainer
 	public SubMenuItem()
 	{
 	}
+	
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.SubMenuItem"/> class with the specified handler.
+	/// </summary>
+	/// <param name="handler">The handler for the submenu item.</param>
+	/// <param name="items">Initial items in the submenu</param>
+	public SubMenuItem(IHandler handler, IEnumerable<MenuItem> items = null)
+		: base(handler, items)
+	{
+	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Eto.Forms.SubMenuItem"/> class with the specified <paramref name="items" />.

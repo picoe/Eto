@@ -93,17 +93,5 @@ namespace Eto.Android.Forms
 				ContainerControl.SetMinimumHeight(value.Height);
 			}
 		}
-
-		public ContextMenu ContextMenu
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
 	}
 }

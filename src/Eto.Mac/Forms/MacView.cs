@@ -1,4 +1,5 @@
 using Eto.Mac.Forms.Controls;
+using Eto.Mac.Forms.Menu;
 using Eto.Mac.Forms.Printing;
 #if MACOS_NET
 using NSDraggingInfo = AppKit.INSDraggingInfo;
@@ -241,6 +242,7 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selInitWithPasteboardWriter_Handle = Selector.GetHandle("initWithPasteboardWriter:");
 		public static readonly IntPtr selClass_Handle = Selector.GetHandle("class");
 		public const string FlagsChangedEvent = "MacView.FlagsChangedEvent";
+		public static readonly object ContextMenu_Key = new object();		
 
 		// before 10.12, we have to call base.Layout() AFTER we do our layout otherwise it doesn't work correctly..
 		// however, that causes (temporary) glitches when resizing especially with Scrollable >= 10.12
@@ -639,6 +641,8 @@ namespace Eto.Mac.Forms
 
 		public virtual NSView FocusControl => EventControl;
 
+		public virtual NSView MenuControl => EventControl;
+
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 		internal override bool DelayRegisterNotificationCenter => Widget?.Loaded != true;
@@ -737,7 +741,7 @@ namespace Eto.Mac.Forms
 			get { return Widget.Properties.Get<SizeF?>(MacView.NaturalSizeInfinity_Key); }
 			set { Widget.Properties[MacView.NaturalSizeInfinity_Key] = value; }
 		}
-		
+
 		public virtual void InvalidateMeasure()
 		{
 			NaturalSize = null;
@@ -785,11 +789,11 @@ namespace Eto.Mac.Forms
 			if (preferredSize.Height >= 0)
 				size.Height = preferredSize.Height;
 
-			size =  SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
+			size = SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
 
 			return size;
 		}
-		
+
 		public virtual void UpdateTrackingAreas()
 		{
 			if (!mouseMove)
@@ -950,36 +954,36 @@ namespace Eto.Mac.Forms
 				case NSEventType.LeftMouseDown:
 				case NSEventType.RightMouseDown:
 				case NSEventType.OtherMouseDown:
-				{
-					if (!includeMouseDown)
-						return false;
-					var args = MacConversions.GetMouseEvent(this, evt, false);
-					Callback.OnMouseDown(Widget, args);
-					return args.Handled;
-				}
+					{
+						if (!includeMouseDown)
+							return false;
+						var args = MacConversions.GetMouseEvent(this, evt, false);
+						Callback.OnMouseDown(Widget, args);
+						return args.Handled;
+					}
 				case NSEventType.LeftMouseUp:
 				case NSEventType.RightMouseUp:
 				case NSEventType.OtherMouseUp:
-				{
-					var args = MacConversions.GetMouseEvent(this, evt, false);
-					Callback.OnMouseUp(Widget, args);
-					SuppressMouseTriggerCallback = true;
-					MacView.CapturedControl = null;
-					return args.Handled;
-				}
+					{
+						var args = MacConversions.GetMouseEvent(this, evt, false);
+						Callback.OnMouseUp(Widget, args);
+						SuppressMouseTriggerCallback = true;
+						MacView.CapturedControl = null;
+						return args.Handled;
+					}
 				case NSEventType.LeftMouseDragged:
 				case NSEventType.RightMouseDragged:
 				case NSEventType.OtherMouseDragged:
-				{
-					var args = MacConversions.GetMouseEvent(this, evt, false);
-					Callback.OnMouseMove(Widget, args);
-					return args.Handled;
-				}
+					{
+						var args = MacConversions.GetMouseEvent(this, evt, false);
+						Callback.OnMouseMove(Widget, args);
+						return args.Handled;
+					}
 			}
 			return false;
 		}
 
-		
+
 		public virtual void OnSizeChanged(EventArgs e)
 		{
 		}
@@ -1046,13 +1050,13 @@ namespace Eto.Mac.Forms
 		}
 
 		protected virtual bool DefaultUseNSBoxBackgroundColor => true;
-		
+
 		protected virtual IColorizeCell ColorizeCell => null;
-		
+
 		protected virtual bool UseColorizeCellWithAlphaOnly => false;
 
 		protected void SetBackgroundColor() => SetBackgroundColor(Widget.Properties.Get<Color?>(MacView.BackgroundColorKey));
-		
+
 		protected virtual void SetBackgroundColor(Color? color)
 		{
 			if (color != null)
@@ -1160,7 +1164,7 @@ namespace Eto.Mac.Forms
 				}
 			}
 		}
-		
+
 		public void Print()
 		{
 			MacView.InMouseTrackingLoop = false;
@@ -1238,7 +1242,7 @@ namespace Eto.Mac.Forms
 		{
 			var pt = point.ToNS();
 			var view = ContainerControl;
-			
+
 			// macOS has flipped co-ordinates starting at the bottom left of the main screen,
 			// so we flip to make 0,0 top left
 			var mainFrame = NSScreen.Screens[0].Frame;
@@ -1343,7 +1347,7 @@ namespace Eto.Mac.Forms
 			// trigger Shown multiple times for the same themed control
 			var handler = control.Handler as IMacViewHandler;
 			var isWindow = control is Window;
-			
+
 			// Parent controls get shown event first, then children
 			if (!isWindow)
 				handler?.Callback.OnShown(control, EventArgs.Empty);
@@ -1428,7 +1432,7 @@ namespace Eto.Mac.Forms
 
 			// stop mouse capture, if any
 			MacView.InMouseTrackingLoop = false;
-			
+
 			var session = ContainerControl.BeginDraggingSession(draggingItems, NSApplication.SharedApplication.CurrentEvent, source);
 			handler.Apply(session.DraggingPasteboard);
 
@@ -1466,7 +1470,7 @@ namespace Eto.Mac.Forms
 		}
 
 		public static bool SuppressMouseTriggerCallback { get; set; }
-		
+
 		/// <summary>
 		/// Value to indicate that a mouse tracking loop should be used when a MouseDown is handled by user code.
 		/// Defaults to true.
@@ -1542,7 +1546,7 @@ namespace Eto.Mac.Forms
 			return point;
 		}
 
-		
+
 		/// <summary>
 		/// Provides an event to specify that this control should trigger an initial MouseDown event when clicked on an inactive window
 		/// </summary>
@@ -1596,10 +1600,10 @@ namespace Eto.Mac.Forms
 			// do a mouse tracking loop.  This is needed since the mouse up event gets buried when 
 			// showing context menus, dialogs, etc.
 			MacView.InMouseTrackingLoop = true;
-				
+
 			if (theEvent.ClickCount >= 2)
 				Callback.OnMouseDoubleClick(Widget, args);
-			
+
 			if (!args.Handled)
 			{
 				Callback.OnMouseDown(Widget, args);
@@ -1610,7 +1614,7 @@ namespace Eto.Mac.Forms
 				SuppressMouseEvents++;
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, theEvent.Handle);
 				SuppressMouseEvents--;
-				
+
 				// some controls use event loops until mouse up, so we need to trigger the mouse up here.
 				if (!SuppressMouseTriggerCallback)
 					TriggerMouseCallback(theEvent, includeMouseDown: false);
@@ -1683,24 +1687,24 @@ namespace Eto.Mac.Forms
 			}
 			return args;
 		}
-		
+
 		bool IMacViewHandler.TextInputCancelled
 		{
 			get => Widget.Properties.Get<bool>(MacView.TextInputCancelled_Key);
 			set => Widget.Properties.Set(MacView.TextInputCancelled_Key, value);
 		}
-		
+
 		public bool TextInputImplemented
 		{
 			get => Widget.Properties.Get<bool>(MacView.TextInputImplemented_Key);
 			private set => Widget.Properties.Set(MacView.TextInputImplemented_Key, value);
 		}
-		
+
 		public virtual void UpdateLayout()
 		{
 			ContainerControl?.Window?.LayoutIfNeeded();
 		}
-		
+
 		public bool AutoAttachNative
 		{
 			get => Widget.Properties.Get<bool>(MacView.AutoAttachNative_Key);
@@ -1736,7 +1740,7 @@ namespace Eto.Mac.Forms
 			// already captured?
 			if (MacView.CapturedControl == this && CaptureLoopEnabled)
 				return true;
-			
+
 			// ensure we release capture of any previous control
 			if (MacView.CapturedControl != this)
 				MacView.CapturedControl?.Widget.ReleaseMouseCapture();
@@ -1773,7 +1777,7 @@ namespace Eto.Mac.Forms
 
 			if (!Widget.RectangleToScreen(new RectangleF(Widget.Size)).Contains(mousePosition))
 				FireMouseLeaveIfNeeded();
-				
+
 			foreach (var parent in parentControls)
 			{
 				if (!parent.Widget.RectangleToScreen(new RectangleF(parent.Widget.Size)).Contains(mousePosition))
@@ -1797,6 +1801,41 @@ namespace Eto.Mac.Forms
 			CaptureLoopEnabled = false;
 			MacView.CapturedControl = null;
 		}
+		
+#if OSX
+
+		public virtual ContextMenu ContextMenu
+		{
+			get
+			{
+
+				var value = Widget.Properties.Get<ContextMenu>(MacView.ContextMenu_Key);
+				if (value == null)
+				{
+					var menu = MenuControl.Menu;
+					if (menu != null)
+					{
+						// create a copy of the menu, this could be shared (and usually is) between multiple controls
+						menu = menu.Copy() as NSMenu;
+						if (menu == null)
+							return null;
+						MenuControl.Menu = menu;
+						value = new ContextMenu(new ContextMenuHandler(menu), ContextMenuHandler.GetMenuItems(menu));
+						Widget.Properties.Set(MacView.ContextMenu_Key, value);
+						return value;
+					}
+				}
+				return value;
+			}
+			set
+			{
+				Widget.Properties.Set(MacView.ContextMenu_Key, value);
+				MenuControl.Menu = (value?.Handler as ContextMenuHandler)?.Control;
+			}
+		}
+#else
+		public virtual ContextMenu ContextMenu { get; set; }
+#endif
 	}
 }
 

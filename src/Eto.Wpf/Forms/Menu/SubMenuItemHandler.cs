@@ -12,6 +12,11 @@ namespace Eto.Wpf.Forms.Menu
 			Control.Items.Add(hiddenItem);
 		}
 
+		public SubMenuItemHandler(swc.MenuItem mi)
+		{
+			Control = mi;
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)

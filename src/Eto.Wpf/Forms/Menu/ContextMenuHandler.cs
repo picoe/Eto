@@ -13,6 +13,11 @@ namespace Eto.Wpf.Forms.Menu
 		{
 			Control = new swc.ContextMenu();
 		}
+		
+		public ContextMenuHandler(swc.ContextMenu control)
+		{
+			Control = control;
+		}
 
 		public swi.InputBindingCollection InputBindings
 		{
@@ -124,5 +129,22 @@ namespace Eto.Wpf.Forms.Menu
 			Control.IsOpen = true;
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 		}
+
+		internal static IEnumerable<MenuItem> GetItems(swc.ItemsControl contextMenu)
+		{
+			foreach (var item in contextMenu.Items)
+			{
+				if (item is swc.MenuItem mi)
+				{
+					if (mi.HasItems)
+						yield return new SubMenuItem(new SubMenuItemHandler(mi), GetItems(mi));
+					else
+						yield return new ButtonMenuItem(new ButtonMenuItemHandler(mi));
+				}
+				else if (item is swc.Separator sep)
+					yield return new SeparatorMenuItem(new SeparatorMenuItemHandler(sep));
+			}
+		}
+
 	}
 }

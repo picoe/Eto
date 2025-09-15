@@ -151,8 +151,6 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public ContextMenu ContextMenu { get; set; }
-
 		protected override NSTableView CreateControl() => new EtoListBoxTableView();
 
 		protected override void Initialize()

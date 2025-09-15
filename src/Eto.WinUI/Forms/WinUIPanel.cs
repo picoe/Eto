@@ -31,8 +31,6 @@ public abstract class WinUIPanel<TControl, TWidget, TCallback> : WinUIContainer<
 		set => ContainerControl.SetMinSize(value);
 	}
 
-	public ContextMenu ContextMenu { get; set; }
-
 	EtoDockPanel _border;
 
 	public WinUIPanel()

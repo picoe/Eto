@@ -1,3 +1,4 @@
+using Eto.Wpf.Forms.Menu;
 using System.Windows.Interop;
 using static System.Windows.WpfDataObjectExtensions;
 
@@ -85,6 +86,7 @@ namespace Eto.Wpf.Forms
 		internal static IWpfFrameworkElement LastDragTarget;
 		
 		internal static readonly object LoadActionList_Key = new object();
+		internal static readonly object ContextMenu_Key = new object();
 	}
 
 	public abstract partial class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
@@ -184,6 +186,7 @@ namespace Eto.Wpf.Forms
 		}
 
 		public virtual sw.FrameworkElement ContainerControl => Control;
+		public virtual sw.FrameworkElement MenuControl => Control;
 
 		public virtual Size Size
 		{
@@ -1160,6 +1163,35 @@ namespace Eto.Wpf.Forms
 		}
 
 		public bool IsMouseCaptured => ContainerControl.IsMouseCaptured;
+		
+		protected virtual swc.ContextMenu GetDefaultContextMenu() => null;
+
+		public ContextMenu ContextMenu
+		{
+			get
+			{
+				var contextMenu = Widget.Properties.Get<ContextMenu>(WpfFrameworkElement.ContextMenu_Key);
+				if (contextMenu != null)
+					return contextMenu;
+				var defaultMenu = MenuControl.ContextMenu ?? GetDefaultContextMenu();
+				if (defaultMenu != null)
+				{
+					contextMenu = new ContextMenu(new ContextMenuHandler(defaultMenu), ContextMenuHandler.GetItems(defaultMenu));
+					Widget.Properties.Set(WpfFrameworkElement.ContextMenu_Key, contextMenu);
+					if (MenuControl.ContextMenu == null)
+						MenuControl.ContextMenu = defaultMenu;
+				}
+				return contextMenu;
+			}
+			set
+			{
+				if (Widget.Properties.TrySet(WpfFrameworkElement.ContextMenu_Key, value))
+				{
+					MenuControl.ContextMenu = (value?.Handler as ContextMenuHandler)?.Control;
+				}
+			}
+		}
+
 		public bool CaptureMouse()
 		{
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;

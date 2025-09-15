@@ -400,10 +400,10 @@ public class TreeView : Control
 	/// Gets or sets the context menu to show when the user right clicks or presses the menu key
 	/// </summary>
 	/// <value>The context menu to show, or null to have no menu</value>
-	public ContextMenu ContextMenu
+	public new ContextMenu ContextMenu
 	{
-		get { return Handler.ContextMenu; }
-		set { Handler.ContextMenu = value; }
+		get { return base.ContextMenu; }
+		set { base.ContextMenu = value; }
 	}
 
 	#region Callback

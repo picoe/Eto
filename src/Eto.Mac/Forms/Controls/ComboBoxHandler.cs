@@ -81,7 +81,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override bool DefaultUseAlignmentFrame => true;
 
-		protected override NSComboBox CreateControl() => new EtoComboBox();
+		protected override NSComboBox CreateControl() => new EtoComboBox { Handler = this };
 
 		protected override void Initialize()
 		{

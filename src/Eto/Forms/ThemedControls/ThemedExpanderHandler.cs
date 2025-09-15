@@ -133,10 +133,10 @@ public class ThemedExpanderHandler : ThemedContainerHandler<StackLayout, Expande
 	/// <summary>
 	/// Gets or sets the context menu of the expander.
 	/// </summary>
-	public ContextMenu ContextMenu
+	public new ContextMenu ContextMenu
 	{
-		get { return Control.ContextMenu; }
-		set { Control.ContextMenu = value; }
+		get { return base.ContextMenu; }
+		set { base.ContextMenu = value; }
 	}
 
 	/// <summary>

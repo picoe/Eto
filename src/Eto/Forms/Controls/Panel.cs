@@ -72,10 +72,10 @@ public class Panel : Container
 	/// user taps and holds their finger down on the control.
 	/// </remarks>
 	/// <value>The context menu.</value>
-	public ContextMenu ContextMenu
+	public new ContextMenu ContextMenu
 	{
-		get { return Handler.ContextMenu; }
-		set { Handler.ContextMenu = value; }
+		get { return base.ContextMenu; }
+		set { base.ContextMenu = value; }
 	}
 
 	/// <summary>

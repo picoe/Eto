@@ -10,10 +10,15 @@ public class MenuItemCollection : Collection<MenuItem>, IList
 	internal readonly Menu.ISubmenuHandler parent;
 	internal readonly Menu parentItem;
 
-	internal MenuItemCollection(Menu.ISubmenuHandler parent, Menu parentItem)
+	internal MenuItemCollection(Menu.ISubmenuHandler parent, Menu parentItem, IEnumerable<MenuItem> items = null)
 	{
 		this.parent = parent;
 		this.parentItem = parentItem;
+		if (items != null)
+		{
+			foreach (var item in items)
+				base.InsertItem(Count, item);
+		}
 	}
 
 	/// <summary>

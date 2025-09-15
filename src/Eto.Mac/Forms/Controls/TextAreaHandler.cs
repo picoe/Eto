@@ -1,4 +1,5 @@
 using Eto.Mac.Drawing;
+using Eto.Mac.Forms.Menu;
 using Range = Eto.Forms.Range;
 
 namespace Eto.Mac.Forms.Controls
@@ -101,6 +102,8 @@ namespace Eto.Mac.Forms.Controls
 		Range<int> ITextAreaHandler.lastSelection { get; set; }
 		int ITextAreaHandler.SuppressSelectionChanged => suppressSelectionChanged;
 
+		public override NSView MenuControl => Control;
+
 		public override void OnKeyDown(KeyEventArgs e)
 		{
 			if (!AcceptsTab)
@@ -124,6 +127,24 @@ namespace Eto.Mac.Forms.Controls
 				return;
 			}
 			base.OnKeyDown(e);
+		}
+
+		public override ContextMenu ContextMenu
+		{
+			get => base.ContextMenu;
+			set
+			{
+				base.ContextMenu = value;
+				Control.MenuForEvent = OnMenuForEvent;
+			}
+		}
+
+		private NSMenu OnMenuForEvent(NSTextView view, NSMenu menu, NSEvent theEvent, nuint charIndex)
+		{
+			var contextMenu = ContextMenu;
+			if (contextMenu != null)
+				return (contextMenu.Handler as ContextMenuHandler)?.Control;
+			return menu;
 		}
 
 		public NSScrollView Scroll { get; private set; }
