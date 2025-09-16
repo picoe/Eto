@@ -32,7 +32,6 @@ public class ListBoxHandler : WinUIControl<muc.ListView, ListBox, ListBox.ICallb
 	}
 	public IIndirectBinding<string> ItemTextBinding { get; set; }
 	public IIndirectBinding<string> ItemKeyBinding { get; set; }
-	public ContextMenu ContextMenu { get; set; }
 	public BorderType Border
 	{
 		get => Control.BorderThickness == new mux.Thickness(0) ? BorderType.None : BorderType.Line;

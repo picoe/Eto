@@ -6,7 +6,6 @@ namespace Eto.Wpf.Forms.Controls
 	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
 	public class TreeViewHandler : WpfControl<TreeViewHandler.EtoTreeView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
-		ContextMenu contextMenu;
 		ITreeStore topNode;
 		ITreeItem selectedItem;
 		sw.Setter foreground;
@@ -399,19 +398,6 @@ namespace Eto.Wpf.Forms.Controls
 			Control.CurrentItem = selectedItem;
 			selectedItem = null;
 			Control.Loaded -= HandleSelectedItemLoad;
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set
-			{
-				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.ContextMenu = null;
-			}
 		}
 
 		public void RefreshData()

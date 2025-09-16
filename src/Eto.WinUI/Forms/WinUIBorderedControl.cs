@@ -20,7 +20,6 @@ public class WinUIBorderedControl<TControl, TWidget, TCallback> : WinUIFramework
 		set => _border.SetMinSize(value);
 
 	}
-	public ContextMenu ContextMenu { get; set; }
 	public sealed override mux.FrameworkElement ContainerControl => _border;
 
 	public override Color BackgroundColor

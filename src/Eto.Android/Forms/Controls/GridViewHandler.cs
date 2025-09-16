@@ -263,18 +263,6 @@ namespace Eto.Android.Forms.Controls
 			get { return Control; }
 		}
 
-		public ContextMenu ContextMenu
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-
 		public void BeginEdit(int row, int column)
 		{
 			throw new NotImplementedException();

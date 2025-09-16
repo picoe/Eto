@@ -120,7 +120,6 @@ namespace Eto.Wpf.Forms.Controls
 		const double DragScrollDelay = 0.1;
 		const double DragScrollFastDelay = 0.01;
 		
-		ContextMenu contextMenu;
 		bool hadFocus;
 		protected bool SkipSelectionChanged { get; set; }
 		protected swc.DataGridColumn CurrentColumn { get; set; }
@@ -390,16 +389,6 @@ namespace Eto.Wpf.Forms.Controls
 			public override void RemoveAllItems()
 			{
 				Handler.Control.Columns.Clear();
-			}
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set
-			{
-				contextMenu = value;
-				Control.ContextMenu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 

@@ -468,6 +468,14 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 
 	/// <inheritdoc />
 	public bool IsMouseCaptured => Control.IsMouseCaptured;
+
+	/// <inheritdoc />
+	public ContextMenu ContextMenu
+	{
+		get => Control.ContextMenu;
+		set => Control.ContextMenu = value;
+	}
+
 	/// <inheritdoc />
 	public bool CaptureMouse() => Control.CaptureMouse();
 	/// <inheritdoc />

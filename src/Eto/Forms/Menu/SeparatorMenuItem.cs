@@ -14,4 +14,20 @@ public class SeparatorMenuItem : MenuItem
 	public new interface IHandler : MenuItem.IHandler
 	{
 	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.SeparatorMenuItem"/> class.
+	/// </summary>
+	public SeparatorMenuItem()
+	{
+	}
+	
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.SeparatorMenuItem"/> class with the specified handler.
+	/// </summary>
+	/// <param name="handler">The handler for the separator menu item.</param>
+	public SeparatorMenuItem(IHandler handler)
+		: base(handler)
+	{
+	}
 }

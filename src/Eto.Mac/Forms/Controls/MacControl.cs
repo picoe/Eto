@@ -1,10 +1,11 @@
 using Eto.Mac.Drawing;
+using Eto.Mac.Forms.Menu;
 
 namespace Eto.Mac.Forms.Controls
 {
 	static class MacControl
 	{
-		internal static readonly object Font_Key = new object();
+		public static readonly object Font_Key = new object();
 	}
 
 	public abstract class MacControl<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
@@ -20,6 +21,8 @@ namespace Eto.Mac.Forms.Controls
 			set => Control.Enabled = value;
 		}
 
+		public override NSView MenuControl => Control;
+
 		protected bool HasFont => Widget.Properties.ContainsKey(MacControl.Font_Key);
 
 		public virtual Font Font
@@ -32,11 +35,12 @@ namespace Eto.Mac.Forms.Controls
 					Control.Font = value.ToNS() ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
 					Control.AttributedStringValue = value.AttributedString(Control.AttributedStringValue);
 					InvalidateMeasure();
-				};
+				}
 			}
 		}
 
 		protected override IColorizeCell ColorizeCell => Control.Cell as IColorizeCell;
+
 
 	}
 }

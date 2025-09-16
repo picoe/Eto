@@ -121,8 +121,10 @@ public class ApplicationTests : TestBase
 				tcs.SetException(e);
 			}
 		});
+#pragma warning disable CA1416
 		if (EtoEnvironment.Platform.IsWindows)
 			thread.SetApartmentState(ApartmentState.STA);
+#pragma warning restore CA1416
 		thread.Start();
 		return tcs.Task;
 	}	

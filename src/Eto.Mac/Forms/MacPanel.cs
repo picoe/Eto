@@ -40,11 +40,6 @@ namespace Eto.Mac.Forms
 		}
 	}
 
-	static class MacPanel
-	{
-		public static readonly object ContextMenu_Key = new object();
-	}
-
 	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, Panel.IHandler, IMacPanel
 		where TControl: NSObject
 		where TWidget: Panel
@@ -105,30 +100,6 @@ namespace Eto.Mac.Forms
 #endif
 		}
 
-#if OSX
-
-		public ContextMenu ContextMenu
-		{
-			get => Widget.Properties.Get<ContextMenu>(MacPanel.ContextMenu_Key);
-			set
-			{
-				Widget.Properties.Set(MacPanel.ContextMenu_Key, value);
-				EventControl.Menu = (value?.Handler as ContextMenuHandler)?.Control;
-			}
-		}
-#else
-		public virtual ContextMenu ContextMenu
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-#endif
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (content != null && content.Visible)

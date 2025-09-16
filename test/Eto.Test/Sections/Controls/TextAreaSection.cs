@@ -13,6 +13,12 @@ namespace Eto.Test.Sections.Controls
 			var text = new TextArea { Text = LoremGenerator.GenerateLines(3, 100) };
 			LogEvents(text);
 
+			if (text.ContextMenu != null)
+			{
+				text.ContextMenu.Items.Insert(0, new ButtonMenuItem(TestItemClick) { Text = "Test" });
+				text.ContextMenu.Items.Insert(1, new SeparatorMenuItem());
+			}
+
 			return new TableLayout
 			{
 				Padding = new Padding(10),
@@ -26,6 +32,11 @@ namespace Eto.Test.Sections.Controls
 					text
 				}
 			};
+		}
+
+		private void TestItemClick(object sender, EventArgs e)
+		{
+			Log.Write(sender, "Test item clicked");
 		}
 
 		public static Control TextAreaOptions(TextArea text)
@@ -83,7 +94,7 @@ namespace Eto.Test.Sections.Controls
 					SetBorderType(text),
 					null
 				}
-				};
+			};
 		}
 
 		private static Control SetBorderType(TextArea text)
@@ -103,7 +114,7 @@ namespace Eto.Test.Sections.Controls
 		private static Control ScrollToDropDown(TextArea text)
 		{
 			var button = new SegmentedButton { SelectionMode = SegmentedSelectionMode.None };
-			
+
 			void ScrollToRange(object sender, EventArgs e)
 			{
 				var dlg = new Dialog<bool> { Title = "Select Range" };
@@ -121,7 +132,7 @@ namespace Eto.Test.Sections.Controls
 
 				dlg.PositiveButtons.Add(done);
 				dlg.DefaultButton = done;
-				
+
 				if (dlg.ShowModal())
 				{
 					text.ScrollTo(new Range<int>((int)start.Value, (int)end.Value));
@@ -184,7 +195,8 @@ namespace Eto.Test.Sections.Controls
 		static Control TextReplacementsDropDown(TextArea text)
 		{
 			var control = new Button { Text = "TextReplacements" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				var replacements = text.TextReplacements;
 				var supported = text.SupportedTextReplacements;
 				var contextMenu = new ContextMenu();
@@ -200,7 +212,8 @@ namespace Eto.Test.Sections.Controls
 					if (!supported.HasFlag(val))
 						continue;
 					var checkItem = new CheckMenuItem { Text = val.ToString(), Checked = replacements.HasFlag(val) };
-					checkItem.CheckedChanged += (sender2, e2) => {
+					checkItem.CheckedChanged += (sender2, e2) =>
+					{
 						var rep = text.TextReplacements;
 						if (checkItem.Checked)
 							rep |= val;

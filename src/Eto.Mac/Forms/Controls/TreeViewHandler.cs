@@ -5,7 +5,6 @@ namespace Eto.Mac.Forms.Controls
 	public class TreeViewHandler : MacControl<NSOutlineView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
 		ITreeStore top;
-		ContextMenu contextMenu;
 		readonly Dictionary<ITreeItem, EtoTreeItem> cachedItems = new Dictionary<ITreeItem, EtoTreeItem>();
 		readonly Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem>();
 		bool selectionChanging;
@@ -433,16 +432,6 @@ namespace Eto.Mac.Forms.Controls
 						Control.ScrollRowToVisible(row.Value);
 					Control.SelectRow((nint)row.Value, false);
 				}
-			}
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set
-			{
-				contextMenu = value;
-				Control.Menu = contextMenu == null ? null : ((ContextMenuHandler)contextMenu.Handler).Control;
 			}
 		}
 

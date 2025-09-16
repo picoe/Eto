@@ -86,10 +86,10 @@ public class ListBox : ListControl
 	/// Gets or sets the context menu for the control.
 	/// </summary>
 	/// <value>The context menu.</value>
-	public ContextMenu ContextMenu
+	public new ContextMenu ContextMenu
 	{
-		get { return Handler.ContextMenu; }
-		set { Handler.ContextMenu = value; }
+		get { return base.ContextMenu; }
+		set { base.ContextMenu = value; }
 	}
 	
 	/// <summary>

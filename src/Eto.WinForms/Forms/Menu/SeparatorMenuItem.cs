@@ -8,6 +8,11 @@ namespace Eto.WinForms.Forms.Menu
 			Control = new swf.ToolStripSeparator();
 		}
 
+		public SeparatorMenuItemHandler(swf.ToolStripSeparator sep)
+		{
+			Control = sep;
+		}
+
 		public string Text
 		{
 			get { return null; }

@@ -13,7 +13,6 @@ namespace Eto.Wpf.Forms.Controls
 	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
 		IEnumerable<object> store;
-		ContextMenu contextMenu;
 
 		protected override sw.Size DefaultSize => new sw.Size(100, 120);
 
@@ -101,16 +100,6 @@ namespace Eto.Wpf.Forms.Controls
 					var item = store.AsEnumerable().Skip(value).FirstOrDefault();
 					Control.ScrollIntoView(item);
 				}
-			}
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set
-			{
-				contextMenu = value;
-				Control.ContextMenu = contextMenu != null ? contextMenu.ControlObject as sw.Controls.ContextMenu : null;
 			}
 		}
 

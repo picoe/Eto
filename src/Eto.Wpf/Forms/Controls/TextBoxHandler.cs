@@ -43,7 +43,7 @@ namespace Eto.Wpf.Forms.Controls
 	public abstract class TextBoxHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextBox.IHandler
 		where TControl : swc.Control
 		where TWidget : TextBox
-		where TCallback: TextBox.ICallback
+		where TCallback : TextBox.ICallback
 	{
 		bool initialSelection;
 
@@ -89,7 +89,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public TextBoxHandler ()
+		public TextBoxHandler()
 		{
 		}
 
@@ -129,9 +129,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		static Clipboard clipboard;
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
+			switch (id)
+			{
 				case TextControl.TextChangedEvent:
 					TextBox.TextChanged += TextBox_TextChanged;
 					break;
@@ -261,7 +262,7 @@ namespace Eto.Wpf.Forms.Controls
 					}));
 					break;
 				default:
-					base.AttachEvent (id);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -322,7 +323,7 @@ namespace Eto.Wpf.Forms.Controls
 					endNoGCRegion = false;
 				}
 
-				try 
+				try
 				{
 					DisableTextChanged++;
 					TextBox.Text = newText;
@@ -333,7 +334,7 @@ namespace Eto.Wpf.Forms.Controls
 					if (endNoGCRegion && GCSettings.LatencyMode == GCLatencyMode.NoGCRegion)
 						GC.EndNoGCRegion();
 				}
-				
+
 				if (value != null && AutoSelectMode == AutoSelectMode.Never)
 				{
 					TextBox.BeginChange();
@@ -341,7 +342,7 @@ namespace Eto.Wpf.Forms.Controls
 					TextBox.SelectionLength = 0;
 					TextBox.EndChange();
 				}
-				
+
 				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
@@ -385,7 +386,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public Range<int> Selection
 		{
-			get => CurrentSelection ??　new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1);
+			get => CurrentSelection ?? new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1);
 			set
 			{
 				CurrentSelection = null;
@@ -419,12 +420,12 @@ namespace Eto.Wpf.Forms.Controls
 			// it does not reflect changes to the selection when it is not focused.
 			if (!TextBox.IsLoaded || HasFocus || string.IsNullOrEmpty(Text))
 				return;
-				
+
 			// got this by poking at various methods
 			var textEditor = TextBox.GetType().GetProperty("TextEditor", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(TextBox);
 			if (textEditor == null)
 				return;
-			
+
 			var selection = textEditor.GetType().GetProperty("Selection", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(textEditor);
 			if (selection == null)
 				return;
@@ -455,6 +456,9 @@ namespace Eto.Wpf.Forms.Controls
 			var updateSelectionMethod = caretElement.GetType().GetMethod("UpdateSelection", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
 			updateSelectionMethod?.Invoke(caretElement, null);
 		}
+
+		protected override swc.ContextMenu GetDefaultContextMenu() => TextAreaHandler.CreateDefaultContextMenu();
+
 
 	}
 }

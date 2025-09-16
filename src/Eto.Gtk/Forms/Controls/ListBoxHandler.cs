@@ -6,7 +6,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		IIndirectBinding<string> _itemTextBinding;
 		readonly Gtk.ScrolledWindow scroll;
 		GtkEnumerableModel<object> model;
-		ContextMenu contextMenu;
 		CollectionHandler collection;
 		public static Size MaxImageSize = new Size(16, 16);
 
@@ -37,7 +36,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			base.Initialize();
 			Size = new Size(80, 80);
-			Control.ButtonPressEvent += Connector.HandleTreeButtonPressEvent;
 			Control.Selection.Changed += Connector.HandleSelectionChanged;
 			Control.RowActivated += Connector.HandleTreeRowActivated;
 		}
@@ -53,19 +51,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			public new ListBoxHandler Handler { get { return (ListBoxHandler)base.Handler; } }
 
-			[GLib.ConnectBefore]
-			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
-			{
-				var handler = Handler;
-				if (handler == null)
-					return;
-				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
-				{
-					var menu = (Gtk.Menu)handler.contextMenu.ControlObject;
-					menu.Popup();
-					menu.ShowAll();
-				}
-			}
 
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
@@ -107,12 +92,6 @@ namespace Eto.GtkSharp.Forms.Controls
 
 				Control.SetCursor(path, focus_column, false);
 			}
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set { contextMenu = value; }
 		}
 
 		public GLib.Value GetColumnValue(object item, int column, int row)

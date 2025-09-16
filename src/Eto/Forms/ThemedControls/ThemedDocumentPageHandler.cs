@@ -52,10 +52,10 @@ public class ThemedDocumentPageHandler : ThemedContainerHandler<Panel, DocumentP
 	/// Gets or sets the context menu.
 	/// </summary>
 	/// <value>The context menu.</value>
-	public ContextMenu ContextMenu
+	public new ContextMenu ContextMenu
 	{
-		get { return Control.ContextMenu; }
-		set { Control.ContextMenu = value; }
+		get { return base.ContextMenu; }
+		set { base.ContextMenu = value; }
 	}
 
 	/// <summary>

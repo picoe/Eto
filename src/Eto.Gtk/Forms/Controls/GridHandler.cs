@@ -18,7 +18,6 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		ColumnCollection columns;
 		Gtk.TreeViewColumn spacingColumn;
-		ContextMenu contextMenu;
 		readonly Dictionary<int, int> columnMap = new Dictionary<int, int>();
 
 		protected bool SkipSelectedChange { get; set; }
@@ -132,9 +131,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.HeadersVisible = true;
 			ScrolledWindow.Child = Control;
 
-			Control.Events |= Gdk.EventMask.ButtonPressMask;
-			Control.ButtonPressEvent += Connector.HandleButtonPress;
-
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
 			base.Initialize();
@@ -154,6 +150,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			Control.QueryTooltip += Control_QueryTooltip;
 			Control.HasTooltip = true;
+
+			HandleEvent(Eto.Forms.Control.MouseDownEvent);			
 		}
 
 		private void Control_QueryTooltip(object o, Gtk.QueryTooltipArgs args)
@@ -193,16 +191,19 @@ namespace Eto.GtkSharp.Forms.Controls
 			public new GridHandler<TWidget, TCallback> Handler { get { return (GridHandler<TWidget, TCallback>)base.Handler; } }
 
 			[GLib.ConnectBefore]
-			public void HandleButtonPress(object o, Gtk.ButtonPressEventArgs args)
+			public override void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
 			{
-				var treeview = o as Gtk.TreeView;
+				base.HandleButtonPressEvent(sender, args);
+
+				if (!Equals(args.RetVal, true))
+					OnTreeButtonPress(sender, args);
 
 				// Gtk default behaviout for multiselect treeview is that
 				// left and right click act the same, which is problematic
 				// when it comes to user selecting multiple items and than
 				// right clicking to find only one item remains selected
 				// or if ctrl is held the current item gets unselected.
-				if (args.Event.Button == 3 && treeview != null)
+				if (!Equals(args.RetVal, true) && args.Event.Button == 3 && sender is Gtk.TreeView treeview)
 				{
 					Gtk.TreeViewDropPosition pos;
 					Gtk.TreePath path;
@@ -221,17 +222,6 @@ namespace Eto.GtkSharp.Forms.Controls
 								args.RetVal = true;
 						}
 					}
-				}
-
-				var handler = Handler;
-				if (handler == null)
-					return;
-					
-				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
-				{
-					var menu = ((ContextMenuHandler)handler.contextMenu.Handler).Control;
-					menu.Popup();
-					menu.ShowAll();
 				}
 			}
 
@@ -271,10 +261,9 @@ namespace Eto.GtkSharp.Forms.Controls
 						selectedRows = selected;
 					}
 				}
-			}
+			}			
 
-			[GLib.ConnectBefore]
-			public virtual void OnTreeButtonPress(object sender, Gtk.ButtonPressEventArgs e)
+			void OnTreeButtonPress(object sender, Gtk.ButtonPressEventArgs e)
 			{
 				if (e.Event.Type == Gdk.EventType.TwoButtonPress || e.Event.Type == Gdk.EventType.ThreeButtonPress)
 					return;
@@ -341,7 +330,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					SetupColumnEvents();
 					break;
 				case Grid.CellClickEvent:
-					Control.ButtonPressEvent += Connector.OnTreeButtonPress;
+					HandleEvent(Eto.Forms.Control.MouseDownEvent);
 					break;
 				case Grid.CellDoubleClickEvent:
 					Control.RowActivated += (sender, e) =>
@@ -514,12 +503,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		public void SetColumnMap(int dataIndex, int column)
 		{
 			columnMap[dataIndex] = column;
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set { contextMenu = value; }
 		}
 
 		public void EndCellEditing(Gtk.TreePath path, int column)
