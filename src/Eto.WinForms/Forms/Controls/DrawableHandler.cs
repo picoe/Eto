@@ -36,6 +36,12 @@ namespace Eto.WinForms.Forms.Controls
 				set { canFocus = value; SetStyle(swf.ControlStyles.Selectable, value); }
 			}
 
+			public bool CanFocus
+			{
+				get { return canFocus; }
+				set { canFocus = value; SetStyle(swf.ControlStyles.Selectable, value); }
+			}
+
 			protected override void OnGotFocus(EventArgs e)
 			{
 				base.OnGotFocus(e);
