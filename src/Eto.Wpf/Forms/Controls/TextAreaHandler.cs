@@ -277,6 +277,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public virtual void ScrollToEnd()
 		{
+			Control.UpdateLayout(); // ensure layout and extents are calculated
 			Control.ScrollToVerticalOffset(Control.ExtentHeight);
 			Control.ScrollToHorizontalOffset(GetScrollX());
 		}
