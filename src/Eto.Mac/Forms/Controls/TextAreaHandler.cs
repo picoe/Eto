@@ -52,6 +52,18 @@ namespace Eto.Mac.Forms.Controls
 				handler.lastCaretIndex = caretIndex;
 			}
 		}
+
+		public override NSMenu MenuForEvent(NSTextView view, NSMenu menu, NSEvent theEvent, nuint charIndex)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return menu;
+			
+			var contextMenu = handler.Widget.ContextMenu;
+			if (contextMenu != null)
+				return (contextMenu.Handler as ContextMenuHandler)?.Control;
+			return menu;
+		}
 	}
 
 	public class EtoTextView : NSTextView, IMacControl
@@ -127,24 +139,6 @@ namespace Eto.Mac.Forms.Controls
 				return;
 			}
 			base.OnKeyDown(e);
-		}
-
-		public override ContextMenu ContextMenu
-		{
-			get => base.ContextMenu;
-			set
-			{
-				base.ContextMenu = value;
-				Control.MenuForEvent = OnMenuForEvent;
-			}
-		}
-
-		private NSMenu OnMenuForEvent(NSTextView view, NSMenu menu, NSEvent theEvent, nuint charIndex)
-		{
-			var contextMenu = ContextMenu;
-			if (contextMenu != null)
-				return (contextMenu.Handler as ContextMenuHandler)?.Control;
-			return menu;
 		}
 
 		public NSScrollView Scroll { get; private set; }
