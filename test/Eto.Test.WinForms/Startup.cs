@@ -8,6 +8,9 @@ namespace Eto.Test.WinForms
 		[STAThread]
 		static void Main(string[] args)
 		{
+#if DEBUG
+			HotReloadService.Initialize();
+#endif
 			var platform = new Eto.WinForms.Platform();
 			platform.Add<INativeHostControls>(() => new NativeHostControls());
 

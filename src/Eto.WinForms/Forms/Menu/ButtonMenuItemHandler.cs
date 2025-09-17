@@ -2,6 +2,15 @@ namespace Eto.WinForms.Forms.Menu
 {
 	public class ButtonMenuItemHandler : ButtonMenuItemHandler<ButtonMenuItem, ButtonMenuItem.ICallback>
 	{
+		public ButtonMenuItemHandler()
+			: base()
+		{
+		}
+		
+		public ButtonMenuItemHandler(swf.ToolStripMenuItem menuItem)
+			: base(menuItem)
+		{
+		}
 	}
 
 	public class ButtonMenuItemHandler<TWidget, TCallback> : MenuItemHandler<swf.ToolStripMenuItem, TWidget, TCallback>, ButtonMenuItem.IHandler
@@ -14,6 +23,13 @@ namespace Eto.WinForms.Forms.Menu
 		public ButtonMenuItemHandler()
 		{
 			Control = new swf.ToolStripMenuItem();
+			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
+			Control.DropDownOpening += HandleDropDownOpened;
+		}
+		
+		public ButtonMenuItemHandler(swf.ToolStripMenuItem menuItem)
+		{
+			Control = menuItem;
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 			Control.DropDownOpening += HandleDropDownOpened;
 		}

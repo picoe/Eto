@@ -52,7 +52,6 @@ public class PanelHandler : WinUIContainer<EtoDockPanel, Panel, Panel.ICallback>
 		get => Control.GetMinSize().ToEtoSize();
 		set => Control.SetMinSize(value);
 	}
-	public ContextMenu ContextMenu { get; set; }
 	public override mux.FrameworkElement ContainerControl => Control;
 
 	public override Color BackgroundColor

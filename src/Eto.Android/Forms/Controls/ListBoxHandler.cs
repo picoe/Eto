@@ -164,12 +164,6 @@ namespace Eto.Android.Forms.Controls
 			get;
 			set;
 		}
-
-		public ContextMenu ContextMenu
-		{
-			get;
-			set;
-		}
 	}
 
 	public class EtoListBoxItem

@@ -76,7 +76,7 @@ namespace Eto.Wpf.Forms
 					if (_hookId == IntPtr.Zero)
 					{
 						int error = Marshal.GetLastWin32Error();
-						Debug.WriteLine($"Failed to set hook. Error: {error}");
+						Trace.WriteLine($"Failed to set hook. Error: {error}");
 					}
 					_modifiers = Modifiers;
 					_oldLockedKeys.Clear();

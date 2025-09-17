@@ -6,6 +6,15 @@ namespace Eto.Mac.Forms.Menu
 		{
 			return NSMenuItem.SeparatorItem;
 		}
+		
+		public SeparatorMenuItemHandler()
+		{
+		}
+		
+		public SeparatorMenuItemHandler(NSMenuItem item)
+		{
+			Control = item;
+		}
 
 		protected override bool DisposeControl { get { return false; } }
 

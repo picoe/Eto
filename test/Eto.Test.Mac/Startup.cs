@@ -9,6 +9,9 @@ namespace Eto.Test.Mac
 		static void Main(string[] args)
 		{
 			AddStyles();
+#if DEBUG
+			HotReloadService.Initialize();
+#endif
 
 			var stopwatch = new Stopwatch();
 			stopwatch.Start();

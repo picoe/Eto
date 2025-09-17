@@ -23,15 +23,15 @@ public interface IContextMenuHost
 [Handler(typeof(ContextMenu.IHandler))]
 public class ContextMenu : Menu, ISubmenu
 {
-	MenuItemCollection items;
+	MenuItemCollection _items;
 
-	new IHandler Handler { get { return (IHandler)base.Handler; } }
+	new IHandler Handler => (IHandler)base.Handler;
 
 	/// <summary>
 	/// Gets the menu items in the context menu
 	/// </summary>
 	/// <value>The items.</value>
-	public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler, this)); } }
+	public MenuItemCollection Items => _items ??= new MenuItemCollection(Handler, this);
 
 	/// <summary>
 	/// Gets a value indicating whether this sub menu should trim its child menu items when loaded onto a form
@@ -54,6 +54,22 @@ public class ContextMenu : Menu, ISubmenu
 	{
 		Trim = true;
 		Closed += HandleClosed;
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class with a specified handler.
+	/// </summary>
+	/// <param name="handler">The handler for the context menu.</param>
+	/// <param name="items">Items to populate the menu</param>
+	public ContextMenu(IHandler handler, IEnumerable<MenuItem> items = null)
+		: base(handler)
+	{
+		Trim = true;
+		Closed += HandleClosed;
+		if (items != null)
+		{
+			_items = new MenuItemCollection(Handler, this, items);
+		}
 	}
 
 	void HandleClosed(object sender, EventArgs e)

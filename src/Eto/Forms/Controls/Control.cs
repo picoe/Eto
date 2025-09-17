@@ -1421,6 +1421,24 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		}
 	}
 
+	/// <summary>
+	/// Gets or sets the context menu that appears when the user right-clicks on the control.
+	/// </summary>
+	/// <remarks>
+	/// On some platforms and controls, such as macOS, the context menu can have additional items added by the system.
+	/// 
+	/// Also the menu may appear when pressing different keys, such as a control-click on macOS, or when
+	/// pressing the menu key on Windows keyboards.
+	/// 
+	/// There is also some other semantic differences of using this vs. showing a context menu manually, such as on Windows, 
+	/// right clicking on a TextBox or TextArea will keep the selection visible, whereas this would not be the case if you showed
+	/// the context menu manually.
+	/// </remarks>
+	public ContextMenu ContextMenu
+	{
+		get { return Handler.ContextMenu; }
+		set { Handler.ContextMenu = value; }
+	}
 
 	/// <summary>
 	/// Handles the disposal of this control
@@ -1739,7 +1757,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public new interface IHandler : Widget.IHandler
+	public new interface IHandler : Widget.IHandler, IContextMenuHost
 	{
 		/// <summary>
 		/// Gets or sets the color for the background of the control

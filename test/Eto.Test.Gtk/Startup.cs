@@ -7,6 +7,9 @@ namespace Eto.Test.Gtk
 		[STAThread]
 		static void Main(string[] args)
 		{
+#if DEBUG
+			HotReloadService.Initialize();
+#endif
 			var platform = new Eto.GtkSharp.Platform();
 			platform.Add<INativeHostControls>(() => new NativeHostControls());
 			

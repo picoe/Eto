@@ -17,7 +17,7 @@ public class ButtonMenuItem : MenuItem, ISubmenu, IBindableWidgetContainer
 	/// Gets the collection of menu items.
 	/// </summary>
 	/// <value>The items.</value>
-	public MenuItemCollection Items => items ?? (items = new MenuItemCollection(Handler, this));
+	public MenuItemCollection Items => items ??= new MenuItemCollection(Handler, this);
 
 	/// <summary>
 	/// Gets a value indicating whether this sub menu should trim its child menu items when loaded onto a form
@@ -30,6 +30,17 @@ public class ButtonMenuItem : MenuItem, ISubmenu, IBindableWidgetContainer
 	/// </summary>
 	public ButtonMenuItem()
 	{
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class with the specified handler.
+	/// </summary>
+	/// <param name="handler">The handler for the button menu item.</param>
+	/// <param name="items">Initial items in the menu</param>
+	public ButtonMenuItem(IHandler handler, IEnumerable<MenuItem> items = null)
+		: base(handler)
+	{
+		this.items = new MenuItemCollection(Handler, this, items);
 	}
 
 	/// <summary>

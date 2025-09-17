@@ -25,12 +25,6 @@
 			set { Tab.Text = value; }
 		}
 
-		public ContextMenu ContextMenu
-		{
-			get { return Control.ContextMenu; }
-			set { Control.ContextMenu = value; } // TODO
-		}
-
 		public Image Image
 		{
 			get { return Tab.Image; }

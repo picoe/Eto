@@ -1,3 +1,4 @@
+using System.Windows.Forms.PropertyGridInternal;
 using Eto.WinForms.Drawing;
 using Eto.WinForms.Forms.Menu;
 namespace Eto.WinForms.Forms
@@ -97,7 +98,7 @@ namespace Eto.WinForms.Forms
 		public static readonly object UseShellDropManager_Key = new object();
 		public static readonly object MouseCaptured_Key = new object();
 		public static readonly object DisableTextChanged_Key = new object();
-
+		internal static readonly object ContextMenu_Key = new object();
 
 		public static bool SkipMouseCapture { get; set; }
 		internal static Control DragSourceControl { get; set; }
@@ -338,16 +339,34 @@ namespace Eto.WinForms.Forms
 			SetScale(XScale, YScale);
 		}
 
-		ContextMenu contextMenu;
+		protected virtual swf.ContextMenuStrip GetDefaultContextMenu() => null;
+
 		public ContextMenu ContextMenu
 		{
-			get { return contextMenu; }
+			get
+			{
+				var contextMenu = Widget.Properties.Get<ContextMenu>(WindowsControl.ContextMenu_Key);
+				if (contextMenu != null)
+					return contextMenu;
+				var defaultMenu = Control.ContextMenuStrip ?? GetDefaultContextMenu();
+				if (defaultMenu != null)
+				{
+					contextMenu = new ContextMenu(new ContextMenuHandler(defaultMenu), ContextMenuHandler.GetMenuItems(defaultMenu.Items));
+					Widget.Properties.Set(WindowsControl.ContextMenu_Key, contextMenu);
+					if (Control.ContextMenuStrip == null)
+						Control.ContextMenuStrip = defaultMenu;
+				}
+				return contextMenu;
+			}
 			set
 			{
-				contextMenu = value;
-				Control.ContextMenuStrip = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+				if (Widget.Properties.TrySet(WindowsControl.ContextMenu_Key, value))
+				{
+					Control.ContextMenuStrip = (value?.Handler as ContextMenuHandler)?.Control;
+				}
 			}
 		}
+
 
 		public override void AttachEvent(string id)
 		{
@@ -1025,7 +1044,7 @@ namespace Eto.WinForms.Forms
 			else
 			{
 				if (image != null)
-					Debug.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
+					Trace.WriteLine("DoDragDrop cannot show drag image when UseShellDropManager is false");
 
 				effects = Control.DoDragDrop(dataObject, allowedEffects.ToSwf());
 			}

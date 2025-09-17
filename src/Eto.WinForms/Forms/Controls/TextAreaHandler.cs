@@ -262,21 +262,21 @@ namespace Eto.WinForms.Forms.Controls
 			var pos = Control.GetPositionFromCharIndex(range.End);
 			sd.Point scrollPosition = sd.Point.Empty;
 			Win32.SendMessage(Control.Handle, Win32.WM.EM_GETSCROLLPOS, IntPtr.Zero, ref scrollPosition);
-			
+
 			var si = new Win32.SCROLLINFO();
 			si.cbSize = Marshal.SizeOf(si);
-      		si.fMask = (int)Win32.ScrollInfoMask.SIF_ALL;
+			si.fMask = (int)Win32.ScrollInfoMask.SIF_ALL;
 			Win32.GetScrollInfo(Control.Handle, (int)Win32.SBOrientation.SB_VERT, ref si);
 
 			if (si.nPage > 0)
 				scrollPosition.Y = Math.Min(si.nMax - si.nPage, Math.Max(si.nMin, scrollPosition.Y + pos.Y));
 
 			Win32.GetScrollInfo(Control.Handle, (int)Win32.SBOrientation.SB_HORZ, ref si);
-			
+
 			// only scroll X if not in view already
 			if (si.nPage > 0 && (pos.X < si.nPos || pos.X > si.nPos + si.nPage))
 				scrollPosition.X = Math.Min(si.nMax - si.nPage, Math.Max(si.nMin, scrollPosition.X + pos.X));
-			
+
 			Win32.SendMessage(Control.Handle, Win32.WM.EM_SETSCROLLPOS, IntPtr.Zero, ref scrollPosition);
 		}
 
@@ -296,6 +296,44 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			Win32.SendMessage(Control.Handle, Win32.WM.VSCROLL, (IntPtr)Win32.SB.BOTTOM, IntPtr.Zero);
 			Win32.SendMessage(Control.Handle, Win32.WM.HSCROLL, (IntPtr)GetScrollX(), IntPtr.Zero);
+		}
+
+		protected override swf.ContextMenuStrip GetDefaultContextMenu() => CreateDefaultContextMenu(Control);
+
+		private swf.ContextMenuStrip CreateDefaultContextMenu(swf.TextBoxBase control)
+		{
+			var menu = new swf.ContextMenuStrip();
+
+			var undoItem = new swf.ToolStripMenuItem("Undo", null, (s, e) => control.Undo());
+			var cutItem = new swf.ToolStripMenuItem("Cut", null, (s, e) => control.Cut());
+			var copyItem = new swf.ToolStripMenuItem("Copy", null, (s, e) => control.Copy());
+			var pasteItem = new swf.ToolStripMenuItem("Paste", null, (s, e) => control.Paste());
+			var deleteItem = new swf.ToolStripMenuItem("Delete", null, (s, e) => control.SelectedText = "");
+			var selectAllItem = new swf.ToolStripMenuItem("Select All", null, (s, e) => control.SelectAll());
+
+			menu.Items.AddRange(new swf.ToolStripItem[] {
+				undoItem,
+				new swf.ToolStripSeparator(),
+				cutItem,
+				copyItem,
+				pasteItem,
+				deleteItem,
+				new swf.ToolStripSeparator(),
+				selectAllItem
+			});
+
+			// Dynamically enable/disable items when menu opens
+			menu.Opening += (s, e) =>
+			{
+				undoItem.Enabled = control.CanUndo;
+				cutItem.Enabled = !string.IsNullOrEmpty(control.SelectedText);
+				copyItem.Enabled = !string.IsNullOrEmpty(control.SelectedText);
+				pasteItem.Enabled = swf.Clipboard.ContainsText();
+				deleteItem.Enabled = !string.IsNullOrEmpty(control.SelectedText);
+				selectAllItem.Enabled = control.TextLength > 0 && control.SelectionLength < control.TextLength;
+			};
+
+			return menu;
 		}
 
 	}

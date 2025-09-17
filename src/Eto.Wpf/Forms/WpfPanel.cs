@@ -57,17 +57,6 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		ContextMenu contextMenu;
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set
-			{
-				contextMenu = value;
-				Control.ContextMenu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
-			}
-		}
-
 		protected WpfPanel()
 		{
 		}

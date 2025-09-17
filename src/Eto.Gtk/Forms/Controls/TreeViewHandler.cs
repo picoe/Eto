@@ -9,7 +9,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		GtkTreeModel<ITreeItem, ITreeStore> model;
 		CollectionHandler collection;
 		readonly Gtk.TreeView tree;
-		ContextMenu contextMenu;
 		bool cancelExpandCollapseEvents;
 		readonly Gtk.CellRendererText textCell;
 		public static Size MaxImageSize = new Size(16, 16);
@@ -123,14 +122,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control = new Gtk.ScrolledWindow();
 			Control.ShadowType = Gtk.ShadowType.In;
 			Control.Add(tree);
-			
-			tree.Events |= Gdk.EventMask.ButtonPressMask;
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-			tree.ButtonPressEvent += Connector.HandleTreeButtonPressEvent;
 		}
 
 		public override void AttachEvent(string id)
@@ -274,20 +265,6 @@ namespace Eto.GtkSharp.Forms.Controls
 					item.Text = args.NewText;
 				}
 			}
-
-			[GLib.ConnectBefore]
-			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
-			{
-				var handler = Handler;
-				if (handler == null)
-					return;
-				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
-				{
-					var menu = ((ContextMenuHandler)handler.contextMenu.Handler).Control;
-					menu.Popup();
-					menu.ShowAll();
-				}
-			}
 		}
 
 		public ITreeStore DataStore
@@ -300,12 +277,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
 			}
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set { contextMenu = value; }
 		}
 
 		public ITreeItem SelectedItem

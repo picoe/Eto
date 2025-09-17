@@ -28,7 +28,7 @@ namespace Eto.Serialization.Xaml.Extensions
 			var fileName = FileName;
 			if (!Path.IsPathRooted(fileName))
 				fileName = Path.Combine(EtoEnvironment.GetFolderPath(EtoSpecialFolder.ApplicationResources), fileName);
-			return null;//*PCL File.OpenRead(fileName);
+			return File.OpenRead(fileName);
 		}
 
 		public override object ProvideValue(IServiceProvider serviceProvider)

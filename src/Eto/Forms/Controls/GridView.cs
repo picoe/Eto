@@ -444,10 +444,10 @@ public class GridView : Grid, ISelectableControl<object>
 	/// Gets or sets the context menu when right clicking or pressing the menu button on the control.
 	/// </summary>
 	/// <value>The context menu.</value>
-	public ContextMenu ContextMenu
+	public new ContextMenu ContextMenu
 	{
-		get { return Handler.ContextMenu; }
-		set { Handler.ContextMenu = value; }
+		get { return base.ContextMenu; }
+		set { base.ContextMenu = value; }
 	}
 
 	/// <summary>
@@ -500,7 +500,7 @@ public class GridView : Grid, ISelectableControl<object>
 	/// <summary>
 	/// Handler interface for the <see cref="GridView"/>.
 	/// </summary>
-	public new interface IHandler : Grid.IHandler, IContextMenuHost
+	public new interface IHandler : Grid.IHandler
 	{
 		/// <summary>
 		/// Gets or sets the data store for the items to show in the grid.

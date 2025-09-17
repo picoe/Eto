@@ -1,4 +1,5 @@
 using Eto.Mac.Drawing;
+using Eto.Mac.Forms.Menu;
 using Range = Eto.Forms.Range;
 
 namespace Eto.Mac.Forms.Controls
@@ -51,6 +52,18 @@ namespace Eto.Mac.Forms.Controls
 				handler.lastCaretIndex = caretIndex;
 			}
 		}
+
+		public override NSMenu MenuForEvent(NSTextView view, NSMenu menu, NSEvent theEvent, nuint charIndex)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return menu;
+			
+			var contextMenu = handler.Widget.ContextMenu;
+			if (contextMenu != null)
+				return (contextMenu.Handler as ContextMenuHandler)?.Control;
+			return menu;
+		}
 	}
 
 	public class EtoTextView : NSTextView, IMacControl
@@ -100,6 +113,8 @@ namespace Eto.Mac.Forms.Controls
 		int? ITextAreaHandler.lastCaretIndex { get; set; }
 		Range<int> ITextAreaHandler.lastSelection { get; set; }
 		int ITextAreaHandler.SuppressSelectionChanged => suppressSelectionChanged;
+
+		public override NSView MenuControl => Control;
 
 		public override void OnKeyDown(KeyEventArgs e)
 		{

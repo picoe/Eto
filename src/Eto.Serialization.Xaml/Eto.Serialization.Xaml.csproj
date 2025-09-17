@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);PCL;PORTABLE</DefineConstants>
+    <DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
   </PropertyGroup>
   
   <PropertyGroup>
