@@ -67,19 +67,26 @@ public static class HotReloadService
 
 		private void Watcher_Changed(object sender, FileSystemEventArgs e)
 		{
+			var fileName = Path.GetFileName(e.FullPath);
 			Application.Instance?.Invoke(() =>
 			{
 				var cleanWatchers = new List<int>();
+				
 				for (int i = 0; i < Instances.Count; i++)
 				{
 					InstanceInfo? instance = Instances[i];
+					
+					if (instance.File != fileName)
+						continue;
+
 					if (!instance.Update())
 					{
 						cleanWatchers.Add(i);
 					}
 				}
-				foreach (var index in cleanWatchers)
+				for (int i = cleanWatchers.Count - 1; i >= 0; i--)
 				{
+					int index = cleanWatchers[i];
 					Instances.RemoveAt(index);
 				}
 			});
@@ -93,21 +100,26 @@ public static class HotReloadService
 				{
 					if (arg != null)
 						onChanged?.Invoke(arg);
+
+					// Ensure we clean up old references
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
 				}
 				catch (Exception ex)
 				{
 					Trace.WriteLine(ex);
 				}
-			}
+			}			
 
 			var cleanWatchers = new List<int>();
+			bool found = false;
 			for (int i = 0; i < Instances.Count; i++)
 			{
 				var instanceInfo = Instances[i];
 				if (!instanceInfo.Instance.IsAlive || instanceInfo.Instance.Target == null)
 					cleanWatchers.Add(i);
 				if (ReferenceEquals(instanceInfo.Instance.Target, control))
-					return true; // already watching this instance
+					found = true; // already watching this instance
 			}
 
 			// clean up any dead references
@@ -116,8 +128,11 @@ public static class HotReloadService
 				int index = cleanWatchers[j];
 				Instances.RemoveAt(index);
 			}
+			
+			if (found)
+				return true;
 
-			Instances.Add(new InstanceInfo(control, DoUpdate));
+			Instances.Add(new InstanceInfo(control, file, DoUpdate));
 
 #if NET
 			if (Watcher.Filters.Contains(file))
@@ -134,12 +149,14 @@ public static class HotReloadService
 
 	class InstanceInfo
 	{
-		public WeakReference Instance { get; set; }
-		public Action<object> OnChanged { get; set; }
+		public WeakReference Instance { get; }
+		public string File { get; }
+		public Action<object> OnChanged { get; }
 
-		public InstanceInfo(object instance, Action<object> onChanged)
+		public InstanceInfo(object instance, string file, Action<object> onChanged)
 		{
 			Instance = new WeakReference(instance);
+			File = file;
 			OnChanged = onChanged;
 		}
 
