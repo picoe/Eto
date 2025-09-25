@@ -106,7 +106,16 @@ namespace Eto.WinForms.Forms.Controls
 		public bool CanFocus
 		{
 			get { return Control.CanFocusMe; }
-			set { Control.CanFocusMe = value; }
+			set {
+				if (value != Control.CanFocusMe)
+				{
+					if (Control is swf.Control control)
+					{
+						control.TabStop = value;
+					}
+				}
+				Control.CanFocusMe = value;
+			}
 		}
 
 		public virtual void Update(Rectangle rect)
