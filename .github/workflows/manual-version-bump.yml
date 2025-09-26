@@ -26,22 +26,11 @@ jobs:
         run: |
           dotnet build build/Build.proj /t:UpdateVersion /p:SetVersion=${{ github.event.inputs.version }}
 
-      - name: Configure git
-        run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-
-      - name: Create branch and commit
-        run: |
-          branch=version-bump/${{ github.event.inputs.version }}
-          git checkout -b "$branch"
-          git add .
-          git commit -m "bump version to ${{ github.event.inputs.version }}"
-          git push origin "$branch"
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "bump version to ${{ github.event.inputs.version }}"
           body: "Automated version bump to ${{ github.event.inputs.version }}."
+          branch: version-bump/${{ github.event.inputs.version }}
+          commit-message: "Bump version to ${{ github.event.inputs.version }}"
