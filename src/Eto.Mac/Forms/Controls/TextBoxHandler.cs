@@ -69,6 +69,11 @@ namespace Eto.Mac.Forms.Controls
 		{
 			StringValue = string.Empty;
 		}
+
+		public EtoTextFieldCell(NativeHandle handle) : base(handle)
+		{
+		}
+		
 		
 		public bool AlwaysShowSelection { get; set; }
 
@@ -143,7 +148,14 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		EtoFormatter formatter;
-
+		NSTextFieldCell cell;
+		
+		public new NSTextFieldCell Cell
+		{
+			get => cell ??= base.Cell;
+			set => base.Cell = cell = value;
+		}
+		
 		public EtoTextField()
 		{
 			Cell = new EtoTextFieldCell();
@@ -273,8 +285,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public string PlaceholderText
 		{
-			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
-			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
+			get { return Control.Cell.PlaceholderString; }
+			set { Control.Cell.PlaceholderString = value ?? string.Empty; }
 		}
 
 		TextBox.ICallback IMacTextBoxHandler.Callback => Callback;
