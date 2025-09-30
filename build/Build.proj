@@ -43,7 +43,7 @@
 
     <FileUpdate Files="$(BasePath)build\Common.props"
       WarnOnNoUpdate="true"
-      Pattern='(?&lt;=&lt;Version\s*[^&gt;]+?&gt;)[^&lt;]+(?=&lt;/Version&gt;)'
+      Pattern='(?&lt;=&lt;Version\s*[^&gt;]+?&gt;)[\d\.]+(?=&lt;/Version&gt;)'
       Replacement='$(AssemblyVersion)' />
 
     <PropertyGroup>
