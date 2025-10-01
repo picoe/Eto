@@ -265,6 +265,8 @@ namespace Eto.Mac.Forms.Controls
 				if (h == null)
 					return false;
 
+				if (h.Widget?.IsDisposed != false) return false;
+
 				if (h.IsMouseDragging)
 				{
 					h.DragInfo = null;

@@ -883,6 +883,7 @@ namespace Eto.Mac.Forms.Controls
 		
 		protected virtual bool HandleMouseEvent(NSEvent theEvent)
 		{
+			if (Widget?.IsDisposed != false) return false;
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 			{
