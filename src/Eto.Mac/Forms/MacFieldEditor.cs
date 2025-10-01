@@ -49,6 +49,8 @@ namespace Eto.Mac.Forms
 			var handler = Handler as IMacViewHandler;
 			if (handler == null)
 				return;
+			
+			if (handler.Widget?.IsDisposed != false) return;
 
 			if (handler.SuppressMouseEvents > 0)
 			{
@@ -80,6 +82,8 @@ namespace Eto.Mac.Forms
 			var handler = Handler as IMacViewHandler;
 			if (handler == null)
 				return false;
+
+			if (handler.Widget?.IsDisposed != false) return false;
 
 			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 			handler.Callback.OnMouseUp(handler.Widget, args);

@@ -21,6 +21,7 @@ namespace Eto.Mac.Forms
 		{
 			var h = Handler;
 			if (h == null || !h.Enabled) return;
+			if (h.Widget?.IsDisposed != false) return;
 			h.Callback.OnMouseMove(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
 		}
 
@@ -30,6 +31,7 @@ namespace Eto.Mac.Forms
 			// we could be entered already after using CaptureMouse()
 			var h = Handler;
 			if (h == null || !h.Enabled || _entered) return;
+			if (h.Widget?.IsDisposed != false) return;
 			_entered = true;
 			// Debug.WriteLine($"MouseEnter: {h.Widget.GetType()}");
 			h.Callback.OnMouseEnter(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
@@ -46,6 +48,7 @@ namespace Eto.Mac.Forms
 		{
 			var h = Handler;
 			if (h == null || !h.Enabled || !_entered) return;
+			if (h.Widget?.IsDisposed != false) return;
 			_entered = false;
 			// Debug.WriteLine($"MouseLeave: {h.Widget.GetType()}");
 			h.Callback.OnMouseLeave(h.Widget, MacConversions.GetMouseEvent(h, theEvent, false));
@@ -57,6 +60,7 @@ namespace Eto.Mac.Forms
 		{
 			var h = Handler;
 			if (h == null) return;
+			if (h.Widget?.IsDisposed != false) return;
 			h.Callback.OnMouseWheel(h.Widget, MacConversions.GetMouseEvent(h, theEvent, true));
 		}
 		
@@ -64,6 +68,7 @@ namespace Eto.Mac.Forms
 		{
 			var h = Handler;
 			if (h == null || !_entered) return;
+			if (h.Widget?.IsDisposed != false) return;
 			_entered = false;
 			var theEvent = NSApplication.SharedApplication.CurrentEvent;
 			var args = MacConversions.GetMouseEvent(h, theEvent, false);
@@ -86,6 +91,7 @@ namespace Eto.Mac.Forms
 		{
 			var h = Handler;
 			if (h == null || _entered) return;
+			if (h.Widget?.IsDisposed != false) return;
 			_entered = true;
 			var theEvent = NSApplication.SharedApplication.CurrentEvent;
 			var args = MacConversions.GetMouseEvent(h, theEvent, false);
@@ -265,6 +271,7 @@ namespace Eto.Mac.Forms
 			var obj = Runtime.GetNSObject(sender);
 			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
 			{
+				if (handler.Widget?.IsDisposed != false) return;
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 				handler.Callback.OnMouseMove(handler.Widget, args);
@@ -317,6 +324,7 @@ namespace Eto.Mac.Forms
 			var obj = Runtime.GetNSObject(sender);
 			if (MacBase.GetHandler(obj) is IMacViewHandler handler && handler.Enabled)
 			{
+				if (handler.Widget?.IsDisposed != false) return;
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = MacConversions.GetMouseEvent(handler, theEvent, true);
 				if (!args.Delta.IsZero)
@@ -942,6 +950,7 @@ namespace Eto.Mac.Forms
 		/// </summary>
 		public bool TriggerMouseCallback(NSEvent evt = null, bool includeMouseDown = true)
 		{
+			if (this.Widget?.IsDisposed != false) return false;
 			// trigger mouse up event since it's buried by cocoa
 			evt ??= NSApplication.SharedApplication.CurrentEvent;
 			if (evt == null)
@@ -1560,6 +1569,7 @@ namespace Eto.Mac.Forms
 
 		protected virtual bool OnAcceptsFirstMouse(NSEvent theEvent)
 		{
+			if (Widget?.IsDisposed != false) return false;
 			if (!Widget.Properties.ContainsKey(MacView.AcceptsFirstMouse_Key))
 			{
 				if (ContainerControl.Window is NSPanel)
@@ -1578,6 +1588,8 @@ namespace Eto.Mac.Forms
 		{
 			if (!Enabled)
 				return null;
+			
+			if (Widget?.IsDisposed != false) return null;
 
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
 
@@ -1671,6 +1683,13 @@ namespace Eto.Mac.Forms
 
 		public virtual MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent)
 		{
+			if (Widget?.IsDisposed != false)
+			{
+				return new MouseEventArgs(theEvent?.GetMouseButtons() ?? MouseButtons.None,
+										  theEvent?.ModifierFlags.ToEto() ?? Keyboard.Modifiers,
+										  PointF.Empty);
+			}
+			
 			var args = MacConversions.GetMouseEvent(this, theEvent, false);
 			if (!SuppressMouseUp)
 			{
