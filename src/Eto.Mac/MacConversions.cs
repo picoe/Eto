@@ -200,7 +200,7 @@ namespace Eto.Mac
 			MouseButtons buttons;
 			if (theEvent != null)
 			{
-				var view = handler.ContainerControl;
+				NSView view = handler.ContainerControl;
 				var pt = theEvent.LocationInWindow;
 				pt = handler.GetAlignmentPointForFramePoint(pt);
 				if (theEvent.Window == null)
@@ -209,7 +209,7 @@ namespace Eto.Mac
 					pt.Y = NSScreen.Screens[0].Frame.Height - pt.Y;
 					point = handler.Widget.PointFromScreen(pt.ToEto());
 				}
-				else if (view.Window != theEvent.Window)
+				else if (view == null || view.Window != theEvent.Window)
 				{
 					var loc = theEvent.Window.Frame.Location.ToEto();
 					pt.X += loc.X;
@@ -218,8 +218,10 @@ namespace Eto.Mac
 					point = handler.Widget.PointFromScreen(pt.ToEto());
 				}
 				else
+				{
 					point = pt.ToEto(view);
-					
+				}
+
 				if (includeWheel)
 					delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
 				modifiers = theEvent.ModifierFlags.ToEto();
@@ -231,6 +233,7 @@ namespace Eto.Mac
 				modifiers = Keyboard.Modifiers;
 				buttons = Mouse.Buttons;
 			}
+
 			return new MouseEventArgs(buttons, modifiers, point, delta);
 		}
 

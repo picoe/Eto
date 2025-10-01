@@ -149,6 +149,9 @@ namespace Eto.Mac.Forms.Controls
 			var handler = Handler;
 			if (handler == null)
 				return;
+			
+			if (handler.Widget?.IsDisposed != false) return;
+
 			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				handler.Callback.OnMouseDoubleClick(handler.Widget, args);
