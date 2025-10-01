@@ -203,13 +203,13 @@ namespace Eto.Mac
 				NSView view = handler.ContainerControl;
 				var pt = theEvent.LocationInWindow;
 				pt = handler.GetAlignmentPointForFramePoint(pt);
-				if (theEvent.Window == null || view == null)
+				if (theEvent.Window == null)
 				{
 					// flip to top down first
 					pt.Y = NSScreen.Screens[0].Frame.Height - pt.Y;
 					point = handler.Widget.PointFromScreen(pt.ToEto());
 				}
-				else if (view.Window != theEvent.Window)
+				else if (view == null || view.Window != theEvent.Window)
 				{
 					var loc = theEvent.Window.Frame.Location.ToEto();
 					pt.X += loc.X;
