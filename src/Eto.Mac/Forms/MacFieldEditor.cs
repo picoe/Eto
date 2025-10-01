@@ -51,6 +51,8 @@ namespace Eto.Mac.Forms
 			if (handler == null)
 				return;
 
+			if (handler.Widget?.IsDisposed != false) return;
+
 			if (handler.SuppressMouseEvents > 0)
 			{
 				// we can get called from a MouseDown from the owning object
@@ -81,6 +83,8 @@ namespace Eto.Mac.Forms
 			var handler = Handler as IMacViewHandler;
 			if (handler == null)
 				return false;
+
+			if (handler.Widget?.IsDisposed != false) return false;
 
 			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 			handler.Callback.OnMouseUp(handler.Widget, args);
