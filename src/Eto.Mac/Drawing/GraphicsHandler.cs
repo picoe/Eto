@@ -376,7 +376,7 @@ namespace Eto.iOS.Drawing
 
 			var rect = new CGRect(x, y, width, height);
 			pen.Apply(this);
-			var yscale = rect.Height / rect.Width;
+			var yscale = rect.Width != 0 ? rect.Height / rect.Width : 0;
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
 			Control.SaveState(); // save so the drawing of the pen isn't affected by the transform
@@ -394,7 +394,7 @@ namespace Eto.iOS.Drawing
 
 			var rect = new CGRect(x, y, width, height);
 			Control.SaveState(); // save so the drawing of the brush isn't affected by the transform
-			var yscale = rect.Height / rect.Width;
+			var yscale = rect.Width != 0 ? rect.Height / rect.Width : 0;
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
 			Control.ConcatCTM(new CGAffineTransform(1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
