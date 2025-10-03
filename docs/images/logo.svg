@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="48px" height="48px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.4 (17249) - http://www.bohemiancoding.com/sketch -->
+    <title>Logo</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="252" cy="252" r="252"></circle>
+        <radialGradient cx="50%" cy="0%" fx="50%" fy="0%" r="100%" id="radialGradient-3">
+            <stop stop-color="#88DAED" offset="0%"></stop>
+            <stop stop-color="#50B2D6" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="50%" cy="0%" fx="50%" fy="0%" r="100%" id="radialGradient-4">
+            <stop stop-color="#AFEBBF" offset="0%"></stop>
+            <stop stop-color="#76D18A" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="50%" cy="0%" fx="50%" fy="0%" r="100%" id="radialGradient-5">
+            <stop stop-color="#EEEEC0" offset="0%"></stop>
+            <stop stop-color="#EDED65" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="50%" cy="0%" fx="50%" fy="0%" r="100%" id="radialGradient-6">
+            <stop stop-color="#F0F0F0" offset="0%"></stop>
+            <stop stop-color="#C2C2C2" offset="100%"></stop>
+        </radialGradient>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-7">
+            <feMorphology radius="1" in="SourceAlpha" operator="dilate" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="0" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.35 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-8">
+            <feMorphology radius="10" in="SourceAlpha" operator="dilate" result="shadowSpreadInner1"></feMorphology>
+            <feOffset dx="0" dy="1" in="shadowSpreadInner1" result="shadowOffsetInner1"></feOffset>
+            <feGaussianBlur stdDeviation="7.5" in="shadowOffsetInner1" result="shadowBlurInner1"></feGaussianBlur>
+            <feComposite in="shadowBlurInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.35 0" in="shadowInnerInner1" type="matrix" result="shadowMatrixInner1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+                <feMergeNode in="shadowMatrixInner1"></feMergeNode>
+            </feMerge>
+        </filter>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-9">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.35 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Logo-With-Name" sketch:type="MSArtboardGroup"></g>
+        <g id="Logo" sketch:type="MSArtboardGroup">
+            <g id="Large-Diamond" sketch:type="MSLayerGroup" transform="translate(4.000000, 4.000000)">
+                <mask id="mask-2" sketch:name="Mask" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Mask" stroke-opacity="0.509454257" stroke="#979797" stroke-width="8" sketch:type="MSShapeGroup" xlink:href="#path-1"></use>
+                <g id="Icon" mask="url(#mask-2)">
+                    <g transform="translate(-4.000000, -4.000000)">
+                        <g id="Base-Quadrants">
+                            <path d="M0,0 L256,256 L512,0 L0,0 Z" id="Path-3" fill="url(#radialGradient-3)" sketch:type="MSShapeGroup"></path>
+                            <path d="M128,128 L384,384 L640,128 L128,128 Z" id="Path-3" fill="url(#radialGradient-4)" sketch:type="MSShapeGroup" transform="translate(384.000000, 256.000000) scale(-1, 1) rotate(-90.000000) translate(-384.000000, -256.000000) "></path>
+                            <g id="Yellow-on-bottom" sketch:type="MSShapeGroup">
+                                <path d="M0,256 L256,512 L512,256 L0,256 Z" id="yellow" fill="url(#radialGradient-5)" transform="translate(256.000000, 384.000000) rotate(-180.000000) translate(-256.000000, -384.000000) "></path>
+                                <path d="M-128,128 L128,384 L384,128 L-128,128 Z" id="gray" fill="url(#radialGradient-6)" transform="translate(128.000000, 256.000000) scale(1, -1) rotate(-90.000000) translate(-128.000000, -256.000000) "></path>
+                            </g>
+                            <path d="M256,508 C395.175757,508 508,395.175757 508,256 C508,116.824243 395.175757,4 256,4 C116.824243,4 4,116.824243 4,256 C4,395.175757 116.824243,508 256,508 Z" id="Oval-1" stroke-opacity="0.349750906" stroke="#979797" stroke-width="8" filter="url(#filter-7)" sketch:type="MSShapeGroup"></path>
+                            <path d="M0,0 L512,512" id="Line" stroke-opacity="0.6" stroke="#979797" stroke-width="6" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                            <path d="M0,512 L512,0" id="Line" stroke-opacity="0.6" stroke="#979797" stroke-width="6" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                        </g>
+                        <g id="Medim-Diamond" transform="translate(106.000000, 106.000000)" opacity="0.599999964" filter="url(#filter-8)" stroke-opacity="0.509454257">
+                            <rect id="Rectangle-2" stroke="#979797" stroke-width="4" fill="#888888" sketch:type="MSShapeGroup" x="43.9339828" y="43.9339828" width="212.132034" height="212.132034" rx="24"></rect>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
