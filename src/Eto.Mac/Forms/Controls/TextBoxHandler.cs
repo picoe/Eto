@@ -88,13 +88,13 @@ namespace Eto.Mac.Forms.Controls
 			colorize?.End();
 			if (AlwaysShowSelection && ControlView is NSTextField textField && textField.CurrentEditor == null)
 			{
-				var attributedString = new NSMutableAttributedString(AttributedStringValue);
-
 				var selectedRange = SelectedRange;
 				if (selectedRange.Location != NSRange.NotFound
 					&& selectedRange.Length > 0
-					&& selectedRange.Location + selectedRange.Length <= attributedString.Length)
-									{
+					&& selectedRange.Location + selectedRange.Length <= AttributedStringValue.Length)
+				{
+					var attributedString = new NSMutableAttributedString(AttributedStringValue);
+
 					attributedString.AddAttribute(
 						NSStringAttributeKey.BackgroundColor,
 						NSColor.SelectedTextBackground,
@@ -106,14 +106,15 @@ namespace Eto.Mac.Forms.Controls
 						NSColor.SelectedText,
 						selectedRange
 					);
+					var titleRect = TitleRectForBounds(cellFrame);
+					titleRect = titleRect.Inset(2, 0); // magic!
+
+					attributedString.DrawString(titleRect);
+					return;
 				}
-				var titleRect = this.TitleRectForBounds(cellFrame);
-				titleRect = titleRect.Inset(2, 0); // magic!
-				
-				attributedString.DrawString(titleRect);
 			}
-			else
-				base.DrawInteriorWithFrame(cellFrame, inView);
+			
+			base.DrawInteriorWithFrame(cellFrame, inView);
 		}
 		
 		NSRange SelectedRange
