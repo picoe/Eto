@@ -54,7 +54,7 @@ namespace Eto.Mac
 
 		public static CGSize ToNS(this Size size)
 		{
-			return new CGSize((float)size.Width, (float)size.Height);
+			return new CGSize(size.Width, size.Height);
 		}
 
 		public static Size ToEtoSize(this CGSize size)
