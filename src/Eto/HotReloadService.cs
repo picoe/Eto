@@ -293,6 +293,7 @@ public static class HotReloadService
 	/// </remarks>
 	public static void Initialize()
 	{
+		if (Enabled) return;
 		Enabled = true;
 		if (!Debugger.IsAttached)
 			return;
