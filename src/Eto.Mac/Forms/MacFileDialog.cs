@@ -111,7 +111,7 @@ namespace Eto.Mac.Forms
 			macfilters = filters;
 
 #if MACOS_NET
-			Control.AllowedContentTypes = macfilters.Distinct().Select(UniformTypeIdentifiers.UTType.CreateFromExtension).ToArray()
+			Control.AllowedContentTypes = macfilters?.Distinct().Select(UniformTypeIdentifiers.UTType.CreateFromExtension).ToArray()
 				?? Array.Empty<UniformTypeIdentifiers.UTType>();
 #else			
 
