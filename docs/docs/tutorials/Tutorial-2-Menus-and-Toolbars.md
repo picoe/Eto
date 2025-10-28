@@ -1,3 +1,5 @@
+# Tutorial 2 Menus and Toolbars
+
 Most desktop platforms have similar features and functionality with menus and toolbars, with a few exceptions:
 
 * Mac OS X applications typically only have a single toolbar
@@ -34,7 +36,7 @@ In Eto.Forms, you can create your toolbars and menus directly using the ``ToolIt
 
 ## Adding a MenuBar and ToolBar to your form
 
-In this tutorial, we will start from [[Tutorial 1 Hello Eto.Forms]].
+In this tutorial, we will start from [Tutorial 1 Hello Eto.Forms](Tutorial-1-Hello-Eto.Forms.md)
 
 1. Create a new custom command to share between the menu and toolbar
 		
@@ -125,4 +127,4 @@ In this tutorial, we will start from [[Tutorial 1 Hello Eto.Forms]].
 - [C# Source](https://github.com/picoe/Eto/blob/develop/samples/Tutorials/CSharp/Tutorial2/Main.cs)
 - [F# Source](https://github.com/picoe/Eto/blob/develop/samples/Tutorials/FSharp/Tutorial2/Program.fs)
 
-Next: [[Tutorial 3 Table Layout]]
+Next: [Tutorial 3 Table Layout](Tutorial-3-Table-Layout.md)

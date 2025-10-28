@@ -5,7 +5,7 @@
 [![Build](https://github.com/picoe/Eto/actions/workflows/build.yml/badge.svg)](https://github.com/picoe/Eto/actions/workflows/build.yml)
 [![discussions](https://img.shields.io/badge/join-the%20discussions-yellowgreen.svg)](https://github.com/picoe/Eto/discussions)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/picoe/Eto)
-[![wiki](https://img.shields.io/badge/browse-the%20wiki-orange.svg)](https://github.com/picoe/Eto/wiki)
+[![docs](https://img.shields.io/badge/browse-the%20docs-orange.svg)](http://pages.picoe.ca/docs/docs)
 [![NuGet](http://img.shields.io/nuget/v/Eto.Forms.svg?style=flat)](https://www.nuget.org/packages/Eto.Forms/)
 [![MyGet](http://img.shields.io/myget/eto/vpre/Eto.Forms.svg?style=flat&label=MyGet)](https://www.myget.org/gallery/eto)
 
@@ -65,9 +65,9 @@ form.Show()
 
 ## Getting Started
 
-To begin creating apps using Eto.Forms, follow the [Quick Start Guide](https://github.com/picoe/Eto/wiki/Quick-Start).
+To begin creating apps using Eto.Forms, follow the [Quick Start Guide](http://pages.picoe.ca/docs/docs/Quick-Start.html).
 
-To compile or contribute to Eto.Forms, read the [Contributing Guide](https://github.com/picoe/Eto/wiki/Contributing).
+To compile or contribute to Eto.Forms, read the [Contributing Guide](http://pages.picoe.ca/docs/docs/Contributing.html).
 
 ## Screenshots
 
@@ -118,7 +118,7 @@ Linux via GTK#3:
 
 ## Assemblies
 
-Your project only needs to reference Eto.dll, and include the corresponding platform assembly that you wish to target. To run on a Mac platform, you need to [bundle your app](https://github.com/picoe/Eto/wiki/Running-your-application).
+Your project only needs to reference Eto.dll, and include the corresponding platform assembly that you wish to target. To run on a Mac platform, you need to [bundle your app](http://pages.picoe.ca/docs/docs/Running-your-application.html).
 
 * Eto.dll - Eto.Forms (UI), Eto.Drawing (Graphics), and platform loading
 * Eto.Mac64.dll - Lightweight Mac platform using .NET 6+ or mono

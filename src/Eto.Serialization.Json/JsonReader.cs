@@ -128,7 +128,7 @@ namespace Eto.Serialization.Json
 		/// If your class name is MyNamespace.MyType, then this will attempt to load MyNamespace.MyType.json
 		/// for the json definition in the same assembly.
 		/// 
-		/// If you want to specify a different json, use <see cref="Load{T}(Stream)"/>
+		/// If you want to specify a different json, use <see cref="Load{T}(Stream, NamespaceManager)"/>
 		/// </remarks>
 		/// <typeparam name="T">Type of object to load from json</typeparam>
 		/// <returns>A new instance of the specified type with the contents loaded from json</returns>
@@ -167,7 +167,7 @@ namespace Eto.Serialization.Json
 		/// If your class name is MyNamespace.MyType, then this will attempt to load MyNamespace.MyType.json
 		/// for the json definition in the same assembly.
 		/// 
-		/// If you want to specify a different json, use <see cref="Load{T}(Stream, T)"/>
+		/// If you want to specify a different json, use <see cref="Load{T}(Stream, T, NamespaceManager)"/>
 		/// </remarks>
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="instance">Instance to use as the starting object</param>
@@ -213,7 +213,7 @@ namespace Eto.Serialization.Json
 		/// This will load the embedded resource from the same assembly as <paramref name="instance"/> with the 
 		/// specified <paramref name="resourceName"/> embedded resource.
 		/// 
-		/// If you want to specify a different json, use <see cref="Load{T}(Stream, T)"/>
+		/// If you want to specify a different json, use <see cref="Load{T}(Stream, T, NamespaceManager)"/>
 		/// </remarks>
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="instance">Instance to use as the starting object</param>

@@ -2,7 +2,7 @@
 
 Eto.Forms comes with a standard set of controls.  Controls can be subclassed to override or implement behaviour.  Each control has an implementation for each supported platform, which can be customized or replaced entirely if a particular implementation is not suitable for your use.
 
-Custom controls can either be composed entirely of Eto.Forms controls, which would work across all platforms.  If you wish to create a more complex control, or use functionality of a platform that isn't exposed in Eto.Forms, then you can create your own custom controls with implementations for each platform (see [[Custom Platform Controls]]).
+Custom controls can either be composed entirely of Eto.Forms controls, which would work across all platforms.  If you wish to create a more complex control, or use functionality of a platform that isn't exposed in Eto.Forms, then you can create your own custom controls with implementations for each platform (see [Custom Platform Controls](../Custom-Platform-Controls.md)).
 
 The standard controls are:
 

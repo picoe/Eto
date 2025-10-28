@@ -35,17 +35,17 @@ jobs:
         with:
           docfx-file-path: "docs/docfx.json"
           
-      - name: Push files to target repo
+      - name: Checkout target repository
         uses: actions/checkout@v4
         with:
           repository: picoe/Eto.Support 
           token: ${{ secrets.PUBLISH_DOCS_PAT }}
           path: target-repo
 
-      - name: Copy files
+      - name: Copy files to target repository
         run: |
           rm -rf ./target-repo/docs/*
-          cp -r ./artifacts/docs/* ./target-repo/docs/
+          cp -R ./artifacts/docs/_site/* ./target-repo/docs/
 
       - name: Commit and push changes
         run: |

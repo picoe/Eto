@@ -182,16 +182,22 @@
 			"command": "docfx docfx.json --serve",
 			"problemMatcher": "$msCompile",
 			"options": {
-				"cwd": "${workspaceFolder}/docs"
+				"cwd": "${workspaceFolder}/docs",
+			},
+			"presentation": {
+				"clear": true
 			}
 		},
 		{
 			"label": "docfx-build",
 			"type": "shell",
-			"command": "docfx build docfx.json",
+			"command": "docfx ${input:docfx-config} docfx.json",
 			"problemMatcher": "$msCompile",
 			"options": {
 				"cwd": "${workspaceFolder}/docs"
+			},
+			"presentation": {
+				"clear": true
 			}
 		}
 	],
@@ -219,6 +225,15 @@
 			"id": "version",
 			"description": "Enter the version to update to",
 			"default": "2.5.x-dev"
-		}
+		},
+		{
+			"type": "pickString",
+			"id": "docfx-config",
+			"description": "Docfx Configuration",
+			"options": [
+				"build",
+				"metadata"
+			]
+		},
 	]
 }

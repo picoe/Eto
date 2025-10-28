@@ -1,3 +1,5 @@
+# Tutorial 3 Table Layout
+
 The ``TableLayout`` is the main layout for Eto.Forms to organize your controls.  It is far preferred over using a ``PixelLayout`` as it will accomodate various sizes of each control in all platforms.
 
 A TableLayout is somewhat similar to an HTML table, but with a few differences: 
@@ -6,10 +8,9 @@ A TableLayout is somewhat similar to an HTML table, but with a few differences:
 2. The width of a column or height of a row is determined by the controls added to the column/row
 3. If you set the scaling on a column or row, it will share the remaining space of the TableLayout's container with all other scaled columns/rows equally.
 
-
 ## Simple Table
 
-In this tutorial, we will start from [[Tutorial 1 Hello Eto.Forms]].
+In this tutorial, we will start from [Tutorial 1 Hello Eto.Forms](Tutorial-1-Hello-Eto.Forms.md).
 
 This shows how to create a simple table with three columns and three rows.
 

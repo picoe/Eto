@@ -1,5 +1,5 @@
 - name: Introduction
-  href: introduction.md
+  href: index.md
 - name: Quick Start
   href: Quick-Start.md
 - name: Tutorials
@@ -17,7 +17,7 @@
 - name: Xaml Tips and Tricks
   href: Xaml-Tips-And-Tricks.md
 - name: Publishing your app
-  href: Publishing-your-App.md
+  href: Publishing-your-app.md
 - name: Troubleshooting and Common Problems
   href: Troubleshooting-and-Common-Problems.md
 - name: Contributing

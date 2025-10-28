@@ -4,9 +4,11 @@
     {
       "src": [
         {
-          "src": "../src/Eto",
+          "src": "../src/",
           "files": [
-            "**/*.csproj"
+            "Eto/Eto.csproj",
+            "Eto.Serialization.Xaml/Eto.Serialization.Xaml.csproj",
+            "Eto.Serialization.Json/Eto.Serialization.Json.csproj"
           ]
         }
       ],
@@ -21,15 +23,15 @@
 		  "../README.md"
         ],
         "exclude": [
-          "_site/**"
+          "_site/**",
+		  "filterConfig*.yml"
         ]
       }
     ],
     "resource": [
       {
         "files": [
-          "images/**",
-		  "favicon.ico"
+          "images/**"
         ]
       }
     ],
@@ -42,7 +44,7 @@
       "_appName": "Eto.Forms",
       "_appTitle": "Eto.Forms",
       "_enableSearch": true,
-	  "_appFaviconPath": "favicon.ico",
+	  "_appFaviconPath": "images/logo.svg",
 	  "_appLogoPath": "images/logo.svg"
     }
 	
