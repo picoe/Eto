@@ -1154,7 +1154,9 @@ namespace Eto.GtkSharp.Forms
 
 		public Window GetNativeParentWindow() => (Control.Toplevel as Gtk.Window).ToEtoWindow();
 
-		public virtual SizeF GetPreferredSize(SizeF availableSize)
+		public virtual SizeF GetPreferredSize(SizeF availableSize) => GetPreferredSizeForControl(availableSize, ContainerControl);
+
+		public virtual SizeF GetPreferredSizeForControl(SizeF availableSize, Gtk.Widget control)
 		{
 			if (!ContainerControl.IsRealized)
 			{
@@ -1177,10 +1179,10 @@ namespace Eto.GtkSharp.Forms
 					width = natural_width = preferred.Width;
 				else
 				{
-					ContainerControl.GetPreferredWidth(out var minimum_width, out natural_width);
+					control.GetPreferredWidth(out var minimum_width, out natural_width);
 					width = Math.Max(minimum_width, Math.Min(size.Width, natural_width));
 				}
-				ContainerControl.GetPreferredHeightForWidth(width, out var minimum_height, out var natural_height);
+				control.GetPreferredHeightForWidth(width, out var minimum_height, out var natural_height);
 				return new SizeF(natural_width, natural_height);
 			}
 			else if (requestMode == Gtk.SizeRequestMode.WidthForHeight && preferred.Width < 0)
@@ -1191,20 +1193,20 @@ namespace Eto.GtkSharp.Forms
 					height = natural_height = preferred.Height;
 				else
 				{
-					ContainerControl.GetPreferredHeight(out var minimum_height, out natural_height);
+					control.GetPreferredHeight(out var minimum_height, out natural_height);
 					height = Math.Max(minimum_height, Math.Min(size.Height, natural_height));
 				}
-				ContainerControl.GetPreferredHeightForWidth(height, out var minimum_width, out var natural_width);
+				control.GetPreferredHeightForWidth(height, out var minimum_width, out var natural_width);
 				return new SizeF(natural_width, natural_height);
 			}
-			ContainerControl.GetPreferredSize(out var minimum, out var natural);
+			control.GetPreferredSize(out var minimum, out var natural);
 			if (preferred.Width >= 0)
 				natural.Width = preferred.Width;
 			if (preferred.Height >= 0)
 				natural.Height = preferred.Height;
 			return new SizeF(natural.Width, natural.Height);
 #else
-			var size = ContainerControl.SizeRequest();
+			var size = control.SizeRequest();
 			return new SizeF(size.Width, size.Height);
 #endif
 		}
