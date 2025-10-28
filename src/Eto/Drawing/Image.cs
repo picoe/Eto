@@ -42,7 +42,9 @@ public interface ILockableImage
 [sc.TypeConverter(typeof(ImageConverterInternal))]
 public abstract class Image : Widget
 {
-	new IHandler Handler { get { return (IHandler)base.Handler; } }
+	private Size? _size;
+
+	new IHandler Handler => (IHandler)base.Handler;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Eto.Drawing.Image"/> class.
@@ -63,10 +65,7 @@ public abstract class Image : Widget
 	/// <summary>
 	/// Gets the size of the image, in pixels
 	/// </summary>
-	public Size Size
-	{
-		get { return Handler.Size; }
-	}
+	public Size Size => _size ??= Handler.Size;
 
 	/// <summary>
 	/// Gets the width of the image, in pixels.
@@ -76,7 +75,7 @@ public abstract class Image : Widget
 	/// </remarks>
 	/// <value>The width of the image, in pixels</value>
 	/// <seealso cref="Size"/>
-	public int Width { get { return Size.Width; } }
+	public int Width => Size.Width;
 
 	/// <summary>
 	/// Gets the height of the image, in pixels.
@@ -86,7 +85,7 @@ public abstract class Image : Widget
 	/// </remarks>
 	/// <value>The height of the image, in pixels</value>
 	/// <seealso cref="Size"/>
-	public int Height { get { return Size.Height; } }
+	public int Height => Size.Height;
 
 	/// <summary>
 	/// Handler interface for the <see cref="Image"/> class
