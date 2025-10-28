@@ -4,6 +4,36 @@ namespace Eto.Test.UnitTests.Forms.Layout
 	[TestFixture]
 	public class StackLayoutTests : TestBase
 	{
+		[Test, ManualTest]
+		public void WindowShouldShrinkToFitContents()
+		{
+			ManualForm(
+				"WindowShouldShrinkToFitContents",
+				form =>
+				{
+					var stackLayout = new StackLayout();
+					form.AutoSize = true;
+					Application.Instance.InvokeAsync(() =>
+					{
+						stackLayout.Items.Add(
+							new Label
+							{
+								Text = "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...",
+							}
+						);
+						stackLayout.Items.Add(
+							new Panel
+							{
+								BackgroundColor = Colors.Thistle,
+								Width = 2,
+								Height = 2,
+							}
+						);
+					});
+					return stackLayout;
+				});
+		}
+
 		[Test]
 		public void AddingItemShouldSetChildrenAndParent()
 		{
