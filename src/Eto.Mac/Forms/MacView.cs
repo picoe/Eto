@@ -1773,6 +1773,9 @@ namespace Eto.Mac.Forms
 
 		private void DoMouseCaptureLoop()
 		{
+			if (Widget?.IsDisposed != false)
+				return;
+				
 			// fire mouse leave of current control(s)
 			var enteredControls = MouseDelegate.EnteredControls.ToList();
 			var parentControls = Widget.Parents.Select(r => r.Handler).OfType<IMacViewHandler>().ToList();
@@ -1791,12 +1794,12 @@ namespace Eto.Mac.Forms
 			DoMouseTrackingLoop(false);
 			var mousePosition = Mouse.Position;
 
-			if (!Widget.RectangleToScreen(new RectangleF(Widget.Size)).Contains(mousePosition))
+			if (!Widget.IsDisposed && !Widget.RectangleToScreen(new RectangleF(Widget.Size)).Contains(mousePosition))
 				FireMouseLeaveIfNeeded();
 				
 			foreach (var parent in parentControls)
 			{
-				if (!parent.Widget.RectangleToScreen(new RectangleF(parent.Widget.Size)).Contains(mousePosition))
+				if (!parent.Widget.IsDisposed && !parent.Widget.RectangleToScreen(new RectangleF(parent.Widget.Size)).Contains(mousePosition))
 					parent.FireMouseLeaveIfNeeded();
 			}
 			// fire mouse enter of previous control if still in bounds
@@ -1805,7 +1808,7 @@ namespace Eto.Mac.Forms
 				if (ctl.Handler == this)
 					continue;
 				var widget = ctl.Handler?.Widget;
-				if (widget != null && widget.RectangleToScreen(new RectangleF(widget.Size)).Contains(mousePosition))
+				if (widget != null && !widget.IsDisposed && widget.RectangleToScreen(new RectangleF(widget.Size)).Contains(mousePosition))
 					ctl.FireMouseEnterIfNeeded(false);
 			}
 		}
