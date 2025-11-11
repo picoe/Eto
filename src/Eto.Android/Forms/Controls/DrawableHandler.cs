@@ -316,8 +316,6 @@ namespace Eto.Android.Forms.Controls
 				base.Focus();
 		}
 
-		public ContextMenu ContextMenu { get; set; }
-
 		public override av.View ContainerControl => Control;
 
 		public Size ScrollSize

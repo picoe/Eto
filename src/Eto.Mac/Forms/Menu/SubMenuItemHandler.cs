@@ -31,6 +31,15 @@ namespace Eto.Mac.Forms.Menu
 
 	public class SubMenuItemHandler : ButtonMenuItemHandler<SubMenuItem, SubMenuItem.ICallback>, SubMenuItem.IHandler
 	{
+		public SubMenuItemHandler()
+		{
+		}
+
+		public SubMenuItemHandler(NSMenuItem item)
+		{
+			Control = item;
+		}
+
 		protected override void Initialize()
 		{
 			base.Initialize();

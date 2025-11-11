@@ -5,7 +5,7 @@ namespace Eto.Mac.Forms.Controls
 	public interface IMacText
 	{
 		void SetLastSelection(Range<int>? range);
-
+		Range<int>? LastSelection { get; }
 		AutoSelectMode AutoSelectMode { get; }
 	}
 
@@ -71,6 +71,11 @@ namespace Eto.Mac.Forms.Controls
 						Control.AttributedStringValue = Font.AttributedString(newText, oldValue);
 					else
 						Control.AttributedStringValue = oldValue.ToMutable(newText);
+
+					if (AutoSelectMode == AutoSelectMode.Never)
+					{
+						Selection = Eto.Forms.Range.FromLength(newText.Length, 0);
+					}
 					
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
@@ -257,17 +262,28 @@ namespace Eto.Mac.Forms.Controls
 				return false;
 			}
 		}
-
-		protected override void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
+		
+		public bool AlwaysShowSelection
 		{
-			var window = Widget.ParentWindow?.Handler as IMacWindow;
-			if (window == null)
+			get => Control.Cell is EtoTextFieldCell cell ? cell.AlwaysShowSelection : false;
+			set
 			{
-				Debug.WriteLine("Warning: Cannot map commands to text fields before they have been added to their window");
-				return;
+				if (Control.Cell is EtoTextFieldCell cell)
+				{
+					cell.AlwaysShowSelection = value;
+					Control.NeedsDisplay = true; // force redraw
+				}
+				else
+				{
+					Debug.WriteLine("Warning: AlwaysShowSelection is not supported for this text field cell type.");
+				}
 			}
+		}
 
-			base.InnerMapPlatformCommand(systemAction, command, window.FieldEditor);
+		protected override void InnerMapPlatformCommand(string systemAction, Command command, object control)
+		{
+
+			base.InnerMapPlatformCommand(systemAction, command, typeof(MacFieldEditor));
 		}
 
 		public virtual void SetLastSelection(Range<int>? range)

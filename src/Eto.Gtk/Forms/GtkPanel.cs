@@ -2,7 +2,6 @@ namespace Eto.GtkSharp.Forms
 {
 	static class GtkPanel
 	{
-		public static readonly object ContextMenu_Key = new object();
 		public static readonly object MinimumSize_Key = new object();
 	}
 
@@ -63,13 +62,6 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 			#endif
-		}
-
-
-		public ContextMenu ContextMenu
-		{
-			get => Widget.Properties.Get<ContextMenu>(GtkPanel.ContextMenu_Key);
-			set => Widget.Properties.Set(GtkPanel.ContextMenu_Key, value); // TODO
 		}
 
 		public virtual Size MinimumSize

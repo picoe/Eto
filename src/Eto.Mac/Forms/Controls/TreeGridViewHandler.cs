@@ -520,7 +520,7 @@ namespace Eto.Mac.Forms.Controls
 				var h = Handler;
 				if (h == null)
 					return false;
-			
+
 				if (h.Widget?.IsDisposed != false) return false;
 
 				if (h.IsMouseDragging)
@@ -773,6 +773,7 @@ namespace Eto.Mac.Forms.Controls
 				suppressExpandCollapseEvents--;
 				Control.EndUpdates();
 
+				AutoSizeColumns(true);
 				ResetAutoSizedColumns();
 				InvalidateMeasure();
 			}

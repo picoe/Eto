@@ -151,7 +151,7 @@ public class PropertyBinding<T> : IndirectBinding<T>
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine($"Could not convert object of type {val.GetType()} to {propertyType}\n{ex}");
+					Trace.WriteLine($"Could not convert object of type {val.GetType()} to {propertyType}\n{ex}");
 					val = propertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyType) : null;
 				}
 			}
@@ -180,7 +180,7 @@ public class PropertyBinding<T> : IndirectBinding<T>
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine($"Could not convert object of type {val.GetType()} to {propertyType}\n{ex}");
+					Trace.WriteLine($"Could not convert object of type {val.GetType()} to {propertyType}\n{ex}");
 					val = propertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyType) : null;
 				}
 			}

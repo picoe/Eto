@@ -329,8 +329,8 @@
 		  { Keys.Period, "." },
 		  { Keys.Slash, "/" },
 		
-		  { Keys.RightBracket, "[" },
-		  { Keys.LeftBracket, "]" }
+		  { Keys.RightBracket, "]" },
+		  { Keys.LeftBracket, "[" }
 	  };
 
 	  /// <summary>

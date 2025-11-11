@@ -1,3 +1,4 @@
+
 namespace Eto.Wpf.Forms.Controls
 {
 	public class EtoTextBox : swc.TextBox, IEtoWpfControl
@@ -112,7 +113,7 @@ namespace Eto.Wpf.Forms.Controls
 			};
 			Wrap = true;
 		}
-		
+
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -247,7 +248,7 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 		public TextReplacements SupportedTextReplacements => TextReplacements.None;
-		
+
 		static readonly object Border_Key = new object();
 
 		public virtual BorderType Border
@@ -276,6 +277,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public virtual void ScrollToEnd()
 		{
+			Control.UpdateLayout(); // ensure layout and extents are calculated
 			Control.ScrollToVerticalOffset(Control.ExtentHeight);
 			Control.ScrollToHorizontalOffset(GetScrollX());
 		}
@@ -287,6 +289,22 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 		public abstract int TextLength { get; }
+
+
+		protected override swc.ContextMenu GetDefaultContextMenu() => CreateDefaultContextMenu();
+		
+		internal static swc.ContextMenu CreateDefaultContextMenu()
+		{
+			var menu = new swc.ContextMenu();
+
+			// Cut / Copy / Paste
+			menu.Items.Add(new swc.MenuItem { Command = swi.ApplicationCommands.Cut });
+			menu.Items.Add(new swc.MenuItem { Command = swi.ApplicationCommands.Copy });
+			menu.Items.Add(new swc.MenuItem { Command = swi.ApplicationCommands.Paste });
+
+			return menu;
+		}
+
 
 	}
 }

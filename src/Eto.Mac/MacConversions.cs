@@ -221,7 +221,7 @@ namespace Eto.Mac
 				{
 					point = pt.ToEto(view);
 				}
-
+					
 				if (includeWheel)
 					delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
 				modifiers = theEvent.ModifierFlags.ToEto();
@@ -233,7 +233,6 @@ namespace Eto.Mac
 				modifiers = Keyboard.Modifiers;
 				buttons = Mouse.Buttons;
 			}
-
 			return new MouseEventArgs(buttons, modifiers, point, delta);
 		}
 

@@ -1,4 +1,5 @@
 using Eto.Mac.Forms.Controls;
+using Eto.Mac.Forms.Menu;
 namespace Eto.Mac.Forms.Controls
 {
 	public interface ITextBoxWithMaxLength
@@ -54,12 +55,12 @@ namespace Eto.Mac.Forms.Controls
 			return null;
 		}
 	}
-	
+
 	public interface IColorizeCell
 	{
 		Color? Color { get; set; }
 	}
-	
+
 	public class EtoTextFieldCell : NSTextFieldCell, IColorizeCell
 	{
 		ColorizeView colorize;
@@ -73,6 +74,9 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 		
+		
+		public bool AlwaysShowSelection { get; set; }
+
 		public Color? Color
 		{
 			get => colorize?.Color;
@@ -82,7 +86,45 @@ namespace Eto.Mac.Forms.Controls
 		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 		{
 			colorize?.End();
+			if (AlwaysShowSelection && ControlView is NSTextField textField && textField.CurrentEditor == null)
+			{
+				var selectedRange = SelectedRange;
+				if (selectedRange.Location != NSRange.NotFound
+					&& selectedRange.Length > 0
+					&& selectedRange.Location + selectedRange.Length <= AttributedStringValue.Length)
+				{
+					var attributedString = new NSMutableAttributedString(AttributedStringValue);
+
+					attributedString.AddAttribute(
+						NSStringAttributeKey.BackgroundColor,
+						NSColor.SelectedTextBackground,
+						selectedRange
+					);
+
+					attributedString.AddAttribute(
+						NSStringAttributeKey.ForegroundColor,
+						NSColor.SelectedText,
+						selectedRange
+					);
+					var titleRect = TitleRectForBounds(cellFrame);
+					titleRect = titleRect.Inset(2, 0); // magic!
+
+					attributedString.DrawString(titleRect);
+					return;
+				}
+			}
+			
 			base.DrawInteriorWithFrame(cellFrame, inView);
+		}
+		
+		NSRange SelectedRange
+		{
+			get
+			{
+				if (ControlView is IMacControl ctl && ctl.WeakHandler?.Target is IMacText textHandler)
+					return textHandler.LastSelection?.ToNS() ?? new NSRange();
+				return new NSRange();
+			}
 		}
 		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
 		{
@@ -100,9 +142,9 @@ namespace Eto.Mac.Forms.Controls
 		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler?.Target as ITextBoxWithMaxLength;
 
 		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? 0; } }
-		
+
 		public EtoTextField(IntPtr handle)
-			: base(handle)	
+			: base(handle)
 		{
 		}
 
@@ -145,7 +187,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				CurrentEditor?.SelectAll(this);
 			}
-			
+
 			var handler = Handler;
 			if (handler == null)
 				return;
@@ -155,7 +197,7 @@ namespace Eto.Mac.Forms.Controls
 			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				handler.Callback.OnMouseDoubleClick(handler.Widget, args);
-			
+
 			if (!args.Handled)
 			{
 				handler.Callback.OnMouseDown(handler.Widget, args);
@@ -165,11 +207,21 @@ namespace Eto.Mac.Forms.Controls
 				handler.SuppressMouseEvents++;
 				base.MouseDown(theEvent);
 				handler.SuppressMouseEvents--;
-				
+
 				// some controls use event loops until mouse up, so we need to trigger the mouse up here.
 				handler.TriggerMouseCallback();
 			}
 		}
+
+		public override NSMenu MenuForEvent(NSEvent theEvent)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return base.MenuForEvent(theEvent);
+			var control = (handler.Widget.ContextMenu?.Handler as ContextMenuHandler)?.Control;
+			return control ?? base.MenuForEvent(theEvent);
+		}
+
 	}
 
 
@@ -178,8 +230,8 @@ namespace Eto.Mac.Forms.Controls
 	}
 
 	public class TextBoxHandler<TWidget, TCallback> : MacText<EtoTextField, TWidget, TCallback>, TextBox.IHandler, ITextBoxWithMaxLength, IMacTextBoxHandler
-		where TWidget: TextBox
-		where TCallback: TextBox.ICallback
+		where TWidget : TextBox
+		where TCallback : TextBox.ICallback
 	{
 		protected override void Initialize()
 		{
@@ -217,7 +269,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static void HandleTextChanged (object sender, EventArgs e)
+		static void HandleTextChanged(object sender, EventArgs e)
 		{
 			var h = GetHandler(sender) as TextBoxHandler<TWidget, TCallback>;
 			h.Callback.OnTextChanged(h.Widget, EventArgs.Empty);

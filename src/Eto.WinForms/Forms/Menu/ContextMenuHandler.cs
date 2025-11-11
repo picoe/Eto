@@ -1,3 +1,4 @@
+
 namespace Eto.WinForms.Forms.Menu
 {
 	public class ContextMenuHandler : WidgetHandler<swf.ContextMenuStrip, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
@@ -6,6 +7,13 @@ namespace Eto.WinForms.Forms.Menu
 		public ContextMenuHandler()
 		{
 			Control = new swf.ContextMenuStrip();
+			Control.Opening += HandleOpening;
+			Control.KeyDown += HandleKeyDown;
+		}
+
+		public ContextMenuHandler(swf.ContextMenuStrip contextMenuStrip)
+		{
+			Control = contextMenuStrip;
 			Control.Opening += HandleOpening;
 			Control.KeyDown += HandleKeyDown;
 		}
@@ -85,6 +93,22 @@ namespace Eto.WinForms.Forms.Menu
 			{
 				var position = location?.ToSDPoint() ?? swf.Control.MousePosition;
 				Control.Show(position);
+			}
+		}
+
+		internal static IEnumerable<MenuItem> GetMenuItems(swf.ToolStripItemCollection items)
+		{
+			foreach (swf.ToolStripItem item in items)
+			{
+				if (item is swf.ToolStripSeparator sep)
+					yield return new SeparatorMenuItem(new SeparatorMenuItemHandler(sep));
+				else if (item is swf.ToolStripMenuItem menuItem)
+				{
+					if (menuItem.HasDropDownItems)
+						yield return new SubMenuItem(new SubMenuItemHandler(menuItem), GetMenuItems(menuItem.DropDown.Items));
+					else
+						yield return new ButtonMenuItem(new ButtonMenuItemHandler(menuItem));
+				}
 			}
 		}
 	}

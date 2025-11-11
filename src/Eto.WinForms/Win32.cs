@@ -84,6 +84,8 @@ namespace Eto
 		public static readonly IntPtr HWND_TOP = new IntPtr(0);
 		public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
 
+		public delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
 		public enum GWL
 		{
 			EXSTYLE = -20,
@@ -146,7 +148,7 @@ namespace Eto
 			RIGHT = 7
 		}
 
-		public enum WM
+		public enum WM : uint
 		{
 			SETREDRAW = 0xB,
 
@@ -197,6 +199,9 @@ namespace Eto
 			USER = 0x400,
 			EM_GETSCROLLPOS = USER + 221,
 			EM_SETSCROLLPOS = USER + 222,
+
+			MOVE = 0x0003,
+			SIZE = 0x0005,
 		}
 
 		public enum VK : long
@@ -342,6 +347,12 @@ namespace Eto
 		[DllImport("user32.dll")]
 		public static extern int SetWindowLong(IntPtr hWnd, GWL nIndex, uint dwNewLong);
 
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, GWL nIndex, IntPtr dwNewLong);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
 
@@ -434,17 +445,28 @@ namespace Eto
 		public enum WH
 		{
 			KEYBOARD = 2,
+			GETMESSAGE = 3,
 			KEYBOARD_LL = 13,
 			MOUSE_LL = 14
 		}
 
+		[StructLayout(LayoutKind.Sequential)]
+		public struct MSG
+		{
+			public IntPtr hwnd;       // Handle to the window that receives the message
+			public uint message;      // The message identifier
+			public IntPtr wParam;     // Additional message information (depends on the message)
+			public IntPtr lParam;     // Additional message information (depends on the message)
+			public uint time;         // The time at which the message was posted
+			public POINT pt;          // The cursor position, in screen coordinates, when the message was posted
+		}
 
-		public static IntPtr SetHook(WH hookId, HookProc proc)
+		public static IntPtr SetHook(WH hookId, HookProc proc, uint threadId = 0)
 		{
 			using (Process curProcess = Process.GetCurrentProcess())
 			using (ProcessModule curModule = curProcess.MainModule)
 			{
-				return SetWindowsHookEx((IntPtr)hookId, proc, GetModuleHandle(curModule.ModuleName), 0);
+				return SetWindowsHookEx((IntPtr)hookId, proc, GetModuleHandle(curModule.ModuleName), threadId);
 			}
 		}
 
@@ -455,7 +477,7 @@ namespace Eto
 		public static extern IntPtr GetModuleHandle(string moduleName);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-		public static extern IntPtr SetWindowsHookEx(IntPtr hookId, HookProc function, IntPtr instance, int threadId);
+		public static extern IntPtr SetWindowsHookEx(IntPtr hookId, HookProc function, IntPtr instance, uint threadId);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
@@ -528,7 +550,7 @@ namespace Eto
 		}
 
 		[DllImport("kernel32.dll")]
-		static extern uint GetCurrentThreadId();
+		public static extern uint GetCurrentThreadId();
 
 		public static bool GetInfo(out GUITHREADINFO lpgui, uint? threadId = null)
 		{

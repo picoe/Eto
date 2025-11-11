@@ -14,7 +14,7 @@
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) == ''">bin\</BaseOutputAppPath>
     <BaseOutputAppPath>$(BaseOutputAppPath)$(Configuration)\</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(AppendTargetFrameworkToOutputPath) != 'False' AND $(TargetFramework) != ''">$(BaseOutputAppPath)$(TargetFramework)\</BaseOutputAppPath>
-    <BaseOutputAppPath Condition="$(AppendRuntimeIdentifierToOutputPath) == 'True' AND $(RuntimeIdentifer) != ''">$(BaseOutputAppPath)$(RuntimeIdentifer)\</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(AppendRuntimeIdentifierToOutputPath) == 'True' AND $(RuntimeIdentifier) != ''">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) != ''">$([MSBuild]::EnsureTrailingSlash('$(BaseOutputAppPath)'))</BaseOutputAppPath>
   </PropertyGroup>
 

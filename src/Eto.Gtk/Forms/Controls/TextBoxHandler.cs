@@ -1,10 +1,71 @@
 namespace Eto.GtkSharp.Forms.Controls
 {
+	public class EtoEntry : Gtk.Entry
+	{
+		public bool AlwaysShowSelection { get; set; }
+
+		public WeakReference WeakHandler { get; set; }
+
+		protected override bool OnDrawn(Cairo.Context cr)
+		{
+			var ret = base.OnDrawn(cr);
+
+			if (!AlwaysShowSelection || HasVisibleFocus)
+				return ret;
+
+			// can have selection even without focus			
+			GetSelectionBounds(out var selectionStart, out var selectionEnd);
+			if (selectionStart != selectionEnd)
+				return ret;
+
+			// Gtk.Entry has a ScrollOffset property in GTK3/GTK4
+			var xOffset = ScrollOffset;
+
+			// Get the layout and entry padding
+			var layout = Layout;
+
+			// Get layout size for alignment
+			layout.GetPixelSize(out int layoutWidth, out int layoutHeight);
+			var padding = StyleContext.GetPadding(StateFlags);
+
+			int xPadding = padding.Left;
+			int yPadding = (Allocation.Height - layoutHeight) / 2;
+
+			var selection = (WeakHandler?.Target as TextBox.IHandler)?.Selection ?? new Range<int>(0, 0);
+
+			// Draw selection manually if not focused
+			if (selection.Length() > 0)
+			{
+				// Get selection bounds in layout
+				var startRect = layout.IndexToPos(selection.Start);
+				var endRect = layout.IndexToPos(selection.End + 1);
+
+				// Convert from Pango units to pixels
+				double x0 = startRect.X / Pango.Scale.PangoScale;
+				double x1 = endRect.X / Pango.Scale.PangoScale;
+
+				int selectionX = (int)x0 + xPadding - xOffset;
+				int selectionWidth = (int)(x1 - x0);
+				int selectionY = yPadding;
+				int selectionHeight = layoutHeight;
+
+				// Draw selection background, but since this is actually drawn overtop, set alpha so we can still see the text
+				var color = new Color(SystemColors.Highlight, 0.4f).ToCairo();
+				cr.SetSourceColor(color);
+				cr.Rectangle(selectionX, selectionY, selectionWidth, selectionHeight);
+				cr.Fill();
+			}
+
+			return ret;
+		}
+	}
 	public class TextBoxHandler : TextBoxHandler<Gtk.Entry, TextBox, TextBox.ICallback>
 	{
+		internal static object DisableTextChanged_Key = new object();
+
 		public TextBoxHandler()
 		{
-			Control = new Gtk.Entry();
+			Control = new EtoEntry { WeakHandler = new WeakReference(this) };
 			Control.WidthRequest = 100;
 			Control.WidthChars = 0;
 		}
@@ -12,9 +73,9 @@ namespace Eto.GtkSharp.Forms.Controls
 	}
 
 	public class TextBoxHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, TextBox.IHandler
-		where TControl: Gtk.Entry
-		where TWidget: TextBox
-		where TCallback: TextBox.ICallback
+		where TControl : Gtk.Entry
+		where TWidget : TextBox
+		where TCallback : TextBox.ICallback
 	{
 		string placeholderText;
 		Range<int>? lastSelection;
@@ -28,7 +89,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			HandleEvent(Eto.Forms.Control.LostFocusEvent);
 		}
 
- 		void SetSelection()
+		void SetSelection()
 		{
 			if (AutoSelectMode == AutoSelectMode.Always)
 			{
@@ -85,13 +146,26 @@ namespace Eto.GtkSharp.Forms.Controls
 			return new TextBoxConnector();
 		}
 
+		protected int DisableTextChanged
+		{
+			get => Widget.Properties.Get<int>(TextBoxHandler.DisableTextChanged_Key);
+			set => Widget.Properties.Set(TextBoxHandler.DisableTextChanged_Key, value);
+		}
+
+
 		protected class TextBoxConnector : GtkControlConnector
 		{
 			public new TextBoxHandler<TControl, TWidget, TCallback> Handler { get { return (TextBoxHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
-				Handler?.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				var h = Handler;
+				if (h == null)
+					return;
+				if (h.DisableTextChanged > 0)
+					return;
+
+				h.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			static Clipboard clipboard;
@@ -159,7 +233,10 @@ namespace Eto.GtkSharp.Forms.Controls
 				base.FocusOutEvent(o, args);
 				var handler = Handler;
 				if (handler != null)
+				{
+					handler.lastSelection = null;
 					handler.lastSelection = handler.Selection;
+				}
 			}
 
 #if GTK2
@@ -218,7 +295,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected override void SetBackgroundColor(Eto.Drawing.Color? color)
 		{
 		}
-		#endif
+#endif
 
 		public override Size Size
 		{
@@ -243,8 +320,16 @@ namespace Eto.GtkSharp.Forms.Controls
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
 						return;
+					DisableTextChanged++;
 					Control.Text = newText;
 					lastSelection = null;
+					initialSelection = null;
+					DisableTextChanged--;
+					if (AutoSelectMode == AutoSelectMode.Never)
+					{
+						Selection = Eto.Forms.Range.FromLength(newText.Length, 0);
+					}
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
@@ -301,9 +386,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Control.GetBackground(); }
 			set
-			{ 
-				Control.SetBackground(value); 
-				Control.SetBase(value); 
+			{
+				Control.SetBackground(value);
+				Control.SetBase(value);
 			}
 		}
 
@@ -330,10 +415,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				if (!HasFocus && initialSelection != null)
-					return initialSelection.Value;
-				int start, end;
-				Control.GetSelectionBounds(out start, out end);
+				if (!HasFocus)
+				{
+					if (lastSelection != null)
+						return lastSelection.Value;
+					if (initialSelection != null)
+						return initialSelection.Value;
+				}
+				Control.GetSelectionBounds(out var start, out var end);
 				return new Range<int>(Math.Min(start, end), Math.Max(start, end) - 1);
 			}
 			set
@@ -341,7 +430,11 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.SelectRegion(value.Start, value.End + 1);
 				lastSelection = value;
 				if (!HasFocus)
+				{
 					initialSelection = lastSelection;
+					if (AlwaysShowSelection)
+						Control.QueueDraw();
+				}
 			}
 		}
 
@@ -380,5 +473,19 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 
 		public AutoSelectMode AutoSelectMode { get; set; }
+		public bool AlwaysShowSelection
+		{
+			get => Control is EtoEntry entry && entry.AlwaysShowSelection;
+			set
+			{
+				if (Control is EtoEntry entry)
+				{
+					entry.AlwaysShowSelection = value;
+					entry.QueueDraw();
+				}
+				else
+					Debug.WriteLine("This control does not support AlwaysShowSelection");
+			}
+		}
 	}
 }

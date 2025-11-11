@@ -81,7 +81,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override bool DefaultUseAlignmentFrame => true;
 
-		protected override NSComboBox CreateControl() => new EtoComboBox();
+		protected override NSComboBox CreateControl() => new EtoComboBox { Handler = this };
 
 		protected override void Initialize()
 		{
@@ -278,7 +278,6 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (Text != value)
 				{
-					Control.StringValue = value ?? string.Empty;
 					if (collection != null)
 					{
 						var binding = Widget.ItemTextBinding;
@@ -287,6 +286,7 @@ namespace Eto.Mac.Forms.Controls
 
 						SelectedIndex = index;
 					}
+					Control.StringValue = value ?? string.Empty;
 
 				}
 			}

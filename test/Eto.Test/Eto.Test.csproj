@@ -3,7 +3,6 @@
     <TargetFrameworks>net48;net8.0;net8.0-windows</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);PCL</DefineConstants>
-    <LangVersion>10</LangVersion>
     <UseWpf Condition="$(TargetFramework) == 'net8.0-windows'">true</UseWpf>
   </PropertyGroup>
   

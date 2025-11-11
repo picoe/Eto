@@ -19,18 +19,16 @@ namespace Eto.Wpf.Forms
 
 		IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
 		{
-			// only trigger event when the application is active
-			if (nCode == 0 && Application.Instance.IsActive)
+			// Process messages retrieved from the message queue
+			if (nCode >= 0)
 			{
-				if (wParam == (IntPtr)Win32.WM.KEYDOWN || wParam == (IntPtr)Win32.WM.KEYUP
-				|| wParam == (IntPtr)Win32.WM.SYSKEYDOWN || wParam == (IntPtr)Win32.WM.SYSKEYUP)
+				var msg = Marshal.PtrToStructure<Win32.MSG>(lParam);
+
+				if (msg.message == (uint)Win32.WM.KEYDOWN || msg.message == (uint)Win32.WM.KEYUP ||
+					msg.message == (uint)Win32.WM.SYSKEYDOWN || msg.message == (uint)Win32.WM.SYSKEYUP)
 				{
-					var kb = Marshal.PtrToStructure<Win32.KeyboardLowLevelHook>(lParam);
-					// Console.WriteLine($"Callback: {wParam:x}, {lParam}, {kb.VirtualKeyCode:x}, {kb.ScanCode:x}");
-					
-					// this event happens before the state is updated, so we check which key was pressed.
 					var keys = Keys.None;
-					switch (kb.VirtualKeyCode)
+					switch (msg.wParam.ToInt32())
 					{
 						case (int)Win32.VK.RMENU:
 						case (int)Win32.VK.LMENU:
@@ -52,11 +50,14 @@ namespace Eto.Wpf.Forms
 							keys = Keys.Application;
 							break;
 					}
-					if (wParam == (IntPtr)Win32.WM.KEYDOWN || wParam == (IntPtr)Win32.WM.SYSKEYDOWN)
+
+					if (msg.message == (uint)Win32.WM.KEYDOWN || msg.message == (uint)Win32.WM.SYSKEYDOWN)
 						_downKeys = keys;
-					else if (wParam == (IntPtr)Win32.WM.KEYUP || wParam == (IntPtr)Win32.WM.SYSKEYUP)
+					else if (msg.message == (uint)Win32.WM.KEYUP || msg.message == (uint)Win32.WM.SYSKEYUP)
 						_upKeys = keys;
+
 					TriggerChanged();
+
 					_downKeys = null;
 					_upKeys = null;
 				}
@@ -71,7 +72,12 @@ namespace Eto.Wpf.Forms
 				if (_modifiersChanged == null)
 				{
 					_hookProc = new Win32.HookProc(HookCallback);
-					_hookId = Win32.SetHook(Win32.WH.KEYBOARD_LL, _hookProc);
+					_hookId = Win32.SetHook(Win32.WH.GETMESSAGE, _hookProc, Win32.GetCurrentThreadId());
+					if (_hookId == IntPtr.Zero)
+					{
+						int error = Marshal.GetLastWin32Error();
+						Trace.WriteLine($"Failed to set hook. Error: {error}");
+					}
 					_modifiers = Modifiers;
 					_oldLockedKeys.Clear();
 					_oldLockedKeys.AddRange(SupportedLockKeys.Where(IsKeyLocked));

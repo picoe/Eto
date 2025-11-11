@@ -2,9 +2,14 @@ namespace Eto.Wpf.Forms.Menu
 {
 	public class SeparatorMenuItemHandler : WidgetHandler<swc.Separator, SeparatorMenuItem>, SeparatorMenuItem.IHandler
 	{
-		public SeparatorMenuItemHandler ()
+		public SeparatorMenuItemHandler()
 		{
-			Control = new swc.Separator ();
+			Control = new swc.Separator();
+		}
+
+		public SeparatorMenuItemHandler(swc.Separator control)
+		{
+			Control = control ?? new swc.Separator();
 		}
 
 		public string Text

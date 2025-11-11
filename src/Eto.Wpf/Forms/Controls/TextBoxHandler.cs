@@ -43,7 +43,7 @@ namespace Eto.Wpf.Forms.Controls
 	public abstract class TextBoxHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextBox.IHandler
 		where TControl : swc.Control
 		where TWidget : TextBox
-		where TCallback: TextBox.ICallback
+		where TCallback : TextBox.ICallback
 	{
 		bool initialSelection;
 
@@ -89,7 +89,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public TextBoxHandler ()
+		public TextBoxHandler()
 		{
 		}
 
@@ -129,9 +129,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		static Clipboard clipboard;
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
+			switch (id)
+			{
 				case TextControl.TextChangedEvent:
 					TextBox.TextChanged += TextBox_TextChanged;
 					break;
@@ -261,7 +262,7 @@ namespace Eto.Wpf.Forms.Controls
 					}));
 					break;
 				default:
-					base.AttachEvent (id);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -306,8 +307,6 @@ namespace Eto.Wpf.Forms.Controls
 				if (args.Cancel)
 					return;
 
-				var needsTextChanged = TextBox.Text == newText;
-
 				// Improve performance when setting text often
 				// See https://github.com/dotnet/wpf/issues/5887#issuecomment-1604577981
 				var endNoGCRegion = EnableNoGCRegion
@@ -324,28 +323,27 @@ namespace Eto.Wpf.Forms.Controls
 					endNoGCRegion = false;
 				}
 
-				try 
+				try
 				{
-					TextBox.Text = newText; 
+					DisableTextChanged++;
+					TextBox.Text = newText;
+					DisableTextChanged--;
 				}
 				finally
 				{
 					if (endNoGCRegion && GCSettings.LatencyMode == GCLatencyMode.NoGCRegion)
 						GC.EndNoGCRegion();
 				}
-				
-				if (value != null && AutoSelectMode == AutoSelectMode.Never && !HasFocus)
+
+				if (value != null && AutoSelectMode == AutoSelectMode.Never)
 				{
 					TextBox.BeginChange();
 					TextBox.SelectionStart = value.Length;
 					TextBox.SelectionLength = 0;
 					TextBox.EndChange();
 				}
-				
-				if (needsTextChanged)
-				{
-					Callback.OnTextChanged(Widget, EventArgs.Empty);
-				}
+
+				Callback.OnTextChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -367,7 +365,11 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			TextBox.SelectAll();
 			if (!HasFocus)
+			{
 				initialSelection = true;
+				if (AlwaysShowSelection)
+					RefreshSelectionHighlight();
+			}
 		}
 
 		int DisableTextChanged
@@ -384,7 +386,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public Range<int> Selection
 		{
-			get => CurrentSelection ??　new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1);
+			get => CurrentSelection ?? new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1);
 			set
 			{
 				CurrentSelection = null;
@@ -393,10 +395,70 @@ namespace Eto.Wpf.Forms.Controls
 				TextBox.SelectionLength = value.Length();
 				TextBox.EndChange();
 				if (!HasFocus)
+				{
 					initialSelection = true;
+					if (AlwaysShowSelection)
+						RefreshSelectionHighlight();
+				}
 			}
 		}
 
 		public AutoSelectMode AutoSelectMode { get; set; }
+		public bool AlwaysShowSelection
+		{
+			get => TextBox.IsInactiveSelectionHighlightEnabled;
+			set
+			{
+				TextBox.IsInactiveSelectionHighlightEnabled = value;
+				RefreshSelectionHighlight();
+			}
+		}
+
+		private void RefreshSelectionHighlight()
+		{
+			// Super hack: Refresh the highlight, WPF only does this when has focus or loses focus.
+			// it does not reflect changes to the selection when it is not focused.
+			if (!TextBox.IsLoaded || HasFocus || string.IsNullOrEmpty(Text))
+				return;
+
+			// got this by poking at various methods
+			var textEditor = TextBox.GetType().GetProperty("TextEditor", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(TextBox);
+			if (textEditor == null)
+				return;
+
+			var selection = textEditor.GetType().GetProperty("Selection", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(textEditor);
+			if (selection == null)
+				return;
+
+			// update the caret and selection highlight state
+			var updateMethod = selection.GetType().GetMethod("System.Windows.Documents.ITextSelection.UpdateCaretAndHighlight", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+			updateMethod?.Invoke(selection, null);
+
+
+			// ensure TextView is valid and renders its own selection
+			var textView = selection.GetType().GetProperty("System.Windows.Documents.ITextSelection.TextView", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)?.GetValue(selection);
+			if (textView == null)
+				return;
+
+			var isValid = textView.GetType().GetProperty("System.Windows.Documents.ITextView.IsValid", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)?.GetValue(textView);
+			if (!Equals(isValid, true))
+				return;
+
+			var rendersOwnSelection = textView.GetType().GetProperty("System.Windows.Documents.ITextView.RendersOwnSelection", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)?.GetValue(textView);
+			if (!Equals(rendersOwnSelection, false))
+				return;
+
+			var caretElement = selection.GetType().GetProperty("CaretElement", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(selection);
+			if (caretElement == null)
+				return;
+
+			// update the caret element adorner so that it shows the new selection
+			var updateSelectionMethod = caretElement.GetType().GetMethod("UpdateSelection", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+			updateSelectionMethod?.Invoke(caretElement, null);
+		}
+
+		protected override swc.ContextMenu GetDefaultContextMenu() => TextAreaHandler.CreateDefaultContextMenu();
+
+
 	}
 }

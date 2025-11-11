@@ -1,4 +1,5 @@
 using Eto.Mac.Forms.Controls;
+using Eto.Mac.Forms.Menu;
 
 
 namespace Eto.Mac.Forms
@@ -17,7 +18,7 @@ namespace Eto.Mac.Forms
 
 		public IMacControl MacControl => WeakDelegate as IMacControl;
 		public object Handler => MacControl?.WeakHandler?.Target;
-		
+
 		public IMacViewHandler MacViewHandler => Handler as IMacViewHandler;
 
 		WeakReference IMacControl.WeakHandler
@@ -49,7 +50,7 @@ namespace Eto.Mac.Forms
 			var handler = Handler as IMacViewHandler;
 			if (handler == null)
 				return;
-			
+
 			if (handler.Widget?.IsDisposed != false) return;
 
 			if (handler.SuppressMouseEvents > 0)
@@ -58,7 +59,7 @@ namespace Eto.Mac.Forms
 				baseMethod(theEvent);
 				return;
 			}
-			
+
 			var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				handler.Callback.OnMouseDoubleClick(handler.Widget, args);
@@ -67,7 +68,7 @@ namespace Eto.Mac.Forms
 			{
 				handler.Callback.OnMouseDown(handler.Widget, args);
 			}
-			
+
 			if (!args.Handled)
 			{
 				baseMethod(theEvent);
@@ -100,7 +101,7 @@ namespace Eto.Mac.Forms
 			if (!MouseUpEvent(theEvent))
 				base.MouseUp(theEvent);
 		}
-		
+
 		public override void RightMouseDown(NSEvent theEvent)
 		{
 			MouseDownEvent(theEvent, base.RightMouseDown);
@@ -136,6 +137,19 @@ namespace Eto.Mac.Forms
 
 			return base.ShouldChangeText(affectedCharRange, replacementString);
 		}
+
+		[Export("menuForEvent:")]
+		public NSMenu OnMenuForEvent(NSEvent theEvent)
+		{
+			var handler = MacViewHandler;
+			if (handler != null)
+			{
+				var nativeMenu = (handler.Widget.ContextMenu?.Handler as ContextMenuHandler)?.Control;
+				return nativeMenu;
+			}
+			return null;
+		}
+
 
 		public override bool ResignFirstResponder()
 		{

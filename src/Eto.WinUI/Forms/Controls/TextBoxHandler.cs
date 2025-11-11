@@ -51,6 +51,11 @@ public class TextBoxHandler : WinUIControl<muc.TextBox, TextBox, TextBox.ICallba
 		get => Control.Text;
 		set => Control.Text = value;
 	}
+	public bool AlwaysShowSelection
+	{
+		get => Control.SelectionHighlightColorWhenNotFocused != null;
+		set => Control.SelectionHighlightColorWhenNotFocused = value ? Control.SelectionHighlightColor : null;
+	}
 
 	public void SelectAll() => Control.SelectAll();
 

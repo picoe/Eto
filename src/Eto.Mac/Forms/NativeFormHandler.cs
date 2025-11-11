@@ -11,11 +11,16 @@ namespace Eto.Mac.Forms
 		{
 		}
 
+		internal override bool DelayRegisterNotificationCenter => false;
+
 		public override void AttachEvent(string id)
 		{
 			// native window, so attach observers instead of using the delegate so we don't clobber existing functionality
 			switch (id)
 			{
+				case Window.LocationChangedEvent:
+					AddObserver(NSWindow.DidMoveNotification, n => Callback.OnLocationChanged(Widget, EventArgs.Empty));
+					break;
 				case Window.ClosedEvent:
 					AddObserver(NSWindow.WillCloseNotification, n => Callback.OnClosed(Widget, EventArgs.Empty));
 					break;
@@ -40,13 +45,19 @@ namespace Eto.Mac.Forms
 		{
 			var handle = windowController?.Handle ?? nswindow.Handle;
 			
+			foreach (var w in Application.Instance.Windows)
+			{
+				if (w.NativeHandle == handle)
+					return w;
+			}
+
 			s_cachedWindows ??= new Dictionary<NativeHandle, WeakReference>();
-			
+
 			if (s_cachedWindows.TryGetValue(handle, out var windowReference) && windowReference.Target is Window window)
 				return window;
-				
+
 			var handler = windowController != null ? new NativeFormHandler(windowController) : new NativeFormHandler(nswindow);
- 			window = new Form(handler);
+			window = new Form(handler);
 			s_cachedWindows[handle] = new WeakReference(window);
 			List<NativeHandle> toRemove = null;
 			foreach (var entry in s_cachedWindows)
@@ -59,7 +70,7 @@ namespace Eto.Mac.Forms
 			}
 			if (toRemove != null)
 			{
-				foreach	(var entry in toRemove)
+				foreach (var entry in toRemove)
 				{
 					s_cachedWindows.Remove(entry);
 				}

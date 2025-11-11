@@ -366,7 +366,7 @@ public class DataObject : Widget, IDataObject
 		catch (Exception ex)
 		{
 			// log error in debug
-			Debug.WriteLine(ex);
+			Trace.WriteLine(ex);
 		}
 		return default;
 	}

@@ -222,6 +222,15 @@ public class TextBox : TextControl
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether to always show the selection in the text box, even if it does not have focus.
+	/// </summary>
+	public bool AlwaysShowSelection
+	{
+		get => Handler.AlwaysShowSelection;
+		set => Handler.AlwaysShowSelection = value;
+	}
+
+	/// <summary>
 	/// Handler interface for the <see cref="TextBox"/>.
 	/// </summary>
 	public new interface IHandler : TextControl.IHandler
@@ -301,6 +310,11 @@ public class TextBox : TextControl
 		/// </summary>
 		/// <value>The auto selection mode.</value>
 		AutoSelectMode AutoSelectMode { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to always show the selection in the text box, even if it does not have focus.
+		/// </summary>
+		bool AlwaysShowSelection { get; set; }
 	}
 
 	#region Callback

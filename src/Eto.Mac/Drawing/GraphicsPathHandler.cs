@@ -87,7 +87,7 @@ namespace Eto.iOS.Drawing
 
 		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			var yscale = height / width;
+			var yscale = width != 0 ? height / width : 0;
 			var centerY = y + height / 2;
 			var affine = new CGAffineTransform(1.0f, 0, 0, yscale, 0, centerY - centerY * yscale);
 

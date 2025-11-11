@@ -180,7 +180,7 @@ namespace Eto.WinForms.Forms.Controls
 		void HandleDataError(object sender, swf.DataGridViewDataErrorEventArgs e)
 		{
 			// ignore errors to prevent ugly popup when clearing data
-			Debug.WriteLine("Data Error: {0}", e.Exception);
+			Trace.WriteLine($"Data Error: {e.Exception}");
 		}
 
 		void HandleFirstSelection(object sender, EventArgs e)

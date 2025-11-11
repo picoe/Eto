@@ -91,7 +91,7 @@ public class ThemedPropertyGridHandler : ThemedControlHandler<ThemedPropertyGrid
 public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 {
 	List<object> _selectedObjects;
-	IComparer<IPropertyDescriptor> _propertySort = Comparer<IPropertyDescriptor>.Create((x, y) => string.Compare(x.Name, y.Name, StringComparison.CurrentCulture));
+	IComparer<PropertyDescriptor> _propertySort = Comparer<PropertyDescriptor>.Create((x, y) => string.Compare(x.Name, y.Name, StringComparison.CurrentCulture));
 	IComparer<string> _categorySort = Comparer<string>.Default;
 	bool _showCategories = true;
 	bool _showDescription = true;
@@ -263,7 +263,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 		}
 	}
 
-	IComparer<IPropertyDescriptor> PropertySort
+	IComparer<PropertyDescriptor> PropertySort
 	{
 		get => _propertySort;
 		set
@@ -318,7 +318,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 
 		void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-		public IPropertyDescriptor Property { get; set; }
+		public PropertyDescriptor Property { get; set; }
 
 		public object GetPropertyValue(object instance)
 		{
@@ -349,7 +349,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			return true;
 		}
 
-		public IPropertyDescriptor GetProperty(object instance)
+		public PropertyDescriptor GetProperty(object instance)
 		{
 			if (instance == null)
 				return null;
@@ -357,9 +357,9 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			// cache per type?
 			var instanceType = instance.GetType();
 			var prop = Property;
-			if (!prop.ComponentType.GetTypeInfo().IsAssignableFrom(instanceType.GetTypeInfo()))
+			if (prop == null || !prop.ComponentType.IsAssignableFrom(instanceType))
 			{
-				prop = EtoTypeDescriptor.GetProperty(instanceType, prop.Name);
+				prop = sc.TypeDescriptor.GetProperties(instanceType).OfType<PropertyDescriptor>().FirstOrDefault(r => r.Name == prop.Name);
 			}
 			return prop;
 		}
@@ -379,7 +379,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 
 		public string ReadOnlyValue => GetDisplayString();
 
-		public bool IsNullable => PropertyType.GetTypeInfo().IsClass || Nullable.GetUnderlyingType(PropertyType) != null;
+		public bool IsNullable => PropertyType.IsClass || Nullable.GetUnderlyingType(PropertyType) != null;
 
 		public PropertyGridTypeEditor Editor => (_editor ?? (_editor = new Lazy<PropertyGridTypeEditor>(CreateEditor))).Value;
 
@@ -439,7 +439,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 				var interfaces = PropertyType.GetTypeInfo().ImplementedInterfaces;
 				foreach (var i in interfaces)
 				{
-					if (i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+					if (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)
 					                                  && i.GenericTypeArguments.Length == 1)
 					{
 						return i.GenericTypeArguments[0];
@@ -457,12 +457,8 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			       ?? Property.Name;
 		}
 
-		public PropertyItem(ThemedPropertyGrid grid, PropertyInfo property)
-			: this(grid, new PropertyInfoDescriptor(property))
-		{
-		}
 
-		public PropertyItem(ThemedPropertyGrid grid, IPropertyDescriptor property)
+		public PropertyItem(ThemedPropertyGrid grid, PropertyDescriptor property)
 		{
 			_grid = grid;
 			Property = property;
@@ -489,14 +485,22 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 
 		string GetDataTypeText()
 		{
-			if (!HasValue)
-				return null;
-			if (PropertyType.IsArray)
-				return string.Format(Application.Instance.Localize(_grid, "{0} Array"), PropertyType.Name);
-			if (typeof(IList).GetTypeInfo().IsAssignableFrom(PropertyType.GetTypeInfo()))
-				return Application.Instance.Localize(_grid, "(Collection)");
+			try
+			{
+				if (!HasValue)
+					return null;
+				if (PropertyType.IsArray)
+					return string.Format(Application.Instance.Localize(_grid, "{0} Array"), PropertyType.Name);
+				if (IsCollection)
+					return Application.Instance.Localize(_grid, "(Collection)");
 
-			return null;
+				return null;
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Error getting data type text for {PropertyType}: {ex}");
+				return null;
+			}
 		}
 
 		public bool GetIsExpandable() => Converter?.GetPropertiesSupported() == true;
@@ -543,7 +547,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 				}
 				return val;
 			}
-			if (_grid.UseValueTypeDefaults && PropertyType.GetTypeInfo().IsValueType)
+			if (_grid.UseValueTypeDefaults && PropertyType.IsValueType)
 			{
 				// is it nullable?  return null for default.
 				if (IsNullable)
@@ -565,7 +569,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 		{
 			get
 			{
-				if (typeof(IList).GetTypeInfo().IsAssignableFrom(PropertyType.GetTypeInfo()))
+				if (typeof(IList).IsAssignableFrom(PropertyType))
 					return true;
 				return false;
 			}
@@ -588,7 +592,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			if (IsCollection && !IsArray)
 				return !HasValue;
 
-			var typeInfo = PropertyType.GetTypeInfo();
+			var typeInfo = PropertyType;
 
 			// we can use the object editor to edit a read-only property
 			if (!(typeInfo.IsValueType || typeInfo.IsArray || typeInfo.IsInterface))
@@ -646,29 +650,21 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 
 		void EnsureChildren()
 		{
-			if (_childrenInitialized || Converter == null || !HasValue || !PropertyDescriptorDescriptor.IsSupported)
+			if (_childrenInitialized || Converter == null || !HasValue)
 				return;
 
 			_childrenInitialized = true;
 			Children.Clear();
-			var properties = Converter.GetProperties(Value);
+			var properties = Converter.GetProperties(Value)?.OfType<PropertyDescriptor>().ToList();
 			if (properties == null)
 				return;
 
-			var descriptors = new List<IPropertyDescriptor>();
+			if (_grid.PropertySort != null)
+				properties.Sort(_grid.PropertySort);
+
 			for (int i = 0; i < properties.Count; i++)
 			{
-				var descriptor = EtoTypeDescriptor.Get(properties[i]);
-				if (descriptor != null)
-					descriptors.Add(descriptor);
-			}
-
-			if (_grid.PropertySort != null)
-				descriptors.Sort(_grid.PropertySort);
-
-			for (int i = 0; i < descriptors.Count; i++)
-			{
-				Children.Add(new PropertyItem(_grid, descriptors[i]));
+				Children.Add(new PropertyItem(_grid, properties[i]));
 			}
 		}
 
@@ -801,7 +797,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 				return false;
 			if (type.IsArray)
 				return true;
-			if (typeof(IList).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+			if (typeof(IList).IsAssignableFrom(type))
 				return true;
 			return false;
 		}
@@ -829,7 +825,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 					editor.ElementType = pi.ElementType;
 					editor.DataStore = collection;
 					var editorDialog = new CollectionEditorDialog(editor);
-					editorDialog.Title = $"{pi.ElementType.Name} Collection Editor";
+					editorDialog.Title = $"{pi.ElementType?.Name} Collection Editor";
 
 					if (editorDialog.ShowModal(button))
 					{
@@ -904,7 +900,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 			var type = itemType as Type;
 			if (type == null)
 				return false;
-			var typeInfo = type.GetTypeInfo();
+			var typeInfo = type;
 			if (typeInfo.IsValueType || typeInfo.IsArray || typeInfo.IsInterface)
 				return false;
 			return true;
@@ -1039,6 +1035,15 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 				}
 			};
 			return control;
+		}
+
+		protected override void OnConfigureCell(CellEventArgs args, Control control)
+		{
+			base.OnConfigureCell(args, control);
+			if (args.Item is PropertyItem m)
+			{
+				m.IsSelected = args.IsSelected && _parent.HasFocus;
+			}
 		}
 
 		protected override float OnGetPreferredWidth(CellEventArgs args)
@@ -1225,7 +1230,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 		});
 	}
 
-	private void ToTreeWithCategories(TreeGridItem top, Dictionary<string, IList<IPropertyDescriptor>> categories)
+	private void ToTreeWithCategories(TreeGridItem top, Dictionary<string, IList<PropertyDescriptor>> categories)
 	{
 		IEnumerable<string> categoryKeys = categories.Keys;
 		if (CategorySort != null)
@@ -1241,7 +1246,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 		}
 	}
 
-	private void ToTreeWithProperties(TreeGridItem categoryItem, IEnumerable<IPropertyDescriptor> properties)
+	private void ToTreeWithProperties(TreeGridItem categoryItem, IEnumerable<PropertyDescriptor> properties)
 	{
 		if (properties == null)
 			return;
@@ -1255,9 +1260,9 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 		}
 	}
 
-	Dictionary<string, IList<IPropertyDescriptor>> SplitIntoCategories(IEnumerable<IPropertyDescriptor> properties)
+	Dictionary<string, IList<PropertyDescriptor>> SplitIntoCategories(IEnumerable<PropertyDescriptor> properties)
 	{
-		var categories = new Dictionary<string, IList<IPropertyDescriptor>>();
+		var categories = new Dictionary<string, IList<PropertyDescriptor>>();
 		foreach (var prop in properties)
 		{
 			string categoryName =
@@ -1267,7 +1272,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 
 			if (!categories.TryGetValue(categoryName, out var categoryProperties))
 			{
-				categories[categoryName] = categoryProperties = new List<IPropertyDescriptor>();
+				categories[categoryName] = categoryProperties = new List<PropertyDescriptor>();
 			}
 			categoryProperties.Add(prop);
 		}
@@ -1275,28 +1280,24 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 		return categories;
 	}
 
-	List<IPropertyDescriptor> GetTypeProperties(Type type)
+	List<PropertyDescriptor> GetTypeProperties(Type type)
 	{
-		List<IPropertyDescriptor> properties = new List<IPropertyDescriptor>();
-		foreach (var prop in EtoTypeDescriptor.GetProperties(type))
+		List<PropertyDescriptor> properties = new List<PropertyDescriptor>();
+		foreach (var prop in sc.TypeDescriptor.GetProperties(type).OfType<PropertyDescriptor>())
 		{
-			if (!prop.CanRead)
+			if (!prop.IsBrowsable)
 				continue;
-
-			var browsable = prop.GetCustomAttribute<BrowsableAttribute>();
-			if (browsable?.Browsable == false)
-				continue;
-
+				
 			properties.Add(prop);
 		}
 		return properties;
 	}
 
-	IEnumerable<IPropertyDescriptor> GetCommonProperties()
+	IEnumerable<PropertyDescriptor> GetCommonProperties()
 	{
 		if (_selectedObjects == null)
-			return Enumerable.Empty<IPropertyDescriptor>();
-		List<IPropertyDescriptor> properties = null;
+			return Enumerable.Empty<PropertyDescriptor>();
+		List<PropertyDescriptor> properties = null;
 		var types = new HashSet<Type>();
 		for (int i = 0; i < _selectedObjects.Count; i++)
 		{
@@ -1323,7 +1324,7 @@ public class ThemedPropertyGrid : Panel, IValueTypeWrapperHost
 				}
 			}
 		}
-		return properties ?? Enumerable.Empty<IPropertyDescriptor>();
+		return properties ?? Enumerable.Empty<PropertyDescriptor>();
 	}
 
 	object IValueTypeWrapperHost.GetValue(object key)

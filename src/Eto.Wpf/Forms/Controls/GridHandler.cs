@@ -120,7 +120,6 @@ namespace Eto.Wpf.Forms.Controls
 		const double DragScrollDelay = 0.1;
 		const double DragScrollFastDelay = 0.01;
 		
-		ContextMenu contextMenu;
 		bool hadFocus;
 		protected bool SkipSelectionChanged { get; set; }
 		protected swc.DataGridColumn CurrentColumn { get; set; }
@@ -390,16 +389,6 @@ namespace Eto.Wpf.Forms.Controls
 			public override void RemoveAllItems()
 			{
 				Handler.Control.Columns.Clear();
-			}
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set
-			{
-				contextMenu = value;
-				Control.ContextMenu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 
@@ -803,6 +792,13 @@ namespace Eto.Wpf.Forms.Controls
 			SaveColumnFocus();
 			base.Focus();
 			RestoreColumnFocus();
+
+			// ensure we focus the first row if no current cell is set, otherwise using arrow keys after
+			// will not work as expected and actually focus the next/previous control on the form instead of the next/previous row.
+			if (Control.CurrentCell.Item is null && Control.ItemContainerGenerator.ContainerFromIndex(0) is swc.DataGridRow row)
+			{
+				row.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+			}
 		}
 
 		public override void Invalidate(bool invalidateChildren)
@@ -986,7 +982,13 @@ namespace Eto.Wpf.Forms.Controls
 		public bool AllowEmptySelection
 		{
 			get => Widget.Properties.Get<bool>(GridHandler.AllowEmptySelection_Key, true);
-			set => Widget.Properties.Set(GridHandler.AllowEmptySelection_Key, value, true);
+			set
+			{
+				if (Widget.Properties.TrySet(GridHandler.AllowEmptySelection_Key, value, true) && !value)
+				{
+					EnsureSelection();
+				}
+			}
 		}
 		public bool DisableAutoScrollToSelection { get; set; }
 

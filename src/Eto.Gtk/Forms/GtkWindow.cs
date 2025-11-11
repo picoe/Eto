@@ -932,7 +932,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			Control.GetSize(out var width, out var height);
 			var availableSize = Screen?.WorkingArea.Size ?? SizeF.PositiveInfinity;
-			var preferred = Size.Round(SizeF.Min(base.GetPreferredSize(availableSize), availableSize));
+			var preferred = Size.Round(SizeF.Min(base.GetPreferredSizeForControl(availableSize, Control.Child), availableSize));
 			if (preferred.Width != width || preferred.Height != height)
 			{
 				// signal that we are auto sizing ourselves so don't turn off AutoSize.

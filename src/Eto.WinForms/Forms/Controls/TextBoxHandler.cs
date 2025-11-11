@@ -1,3 +1,4 @@
+
 namespace Eto.WinForms.Forms.Controls
 {
 	[DesignerCategory("Code")]
@@ -59,9 +60,9 @@ namespace Eto.WinForms.Forms.Controls
 	}
 
 	public abstract class TextBoxHandler<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, TextBox.IHandler
-		where TControl: swf.Control
-		where TWidget: TextBox
-		where TCallback: TextBox.ICallback
+		where TControl : swf.Control
+		where TWidget : TextBox
+		where TCallback : TextBox.ICallback
 	{
 		public abstract swf.TextBox SwfTextBox { get; }
 
@@ -76,6 +77,8 @@ namespace Eto.WinForms.Forms.Controls
 				SetPlaceholderText(); // setting border clears this out for some reason
 			}
 		}
+
+		public override Size? GetDefaultSize(Size availableSize) => new Size(100, 23);
 
 		public TextAlignment TextAlignment
 		{
@@ -214,7 +217,7 @@ namespace Eto.WinForms.Forms.Controls
 				Widget.Properties.Set(PlaceholderText_Key, value, SetPlaceholderText);
 			}
 		}
-		
+
 		void SetPlaceholderText()
 		{
 			Win32.SendMessage(SwfTextBox.Handle, Win32.WM.EM_SETCUEBANNER, IntPtr.Zero, PlaceholderText);
@@ -316,9 +319,14 @@ namespace Eto.WinForms.Forms.Controls
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
 						return;
+
+					DisableTextChanged++;
 					base.Text = value;
+					DisableTextChanged--;
 					if (AutoSelectMode == AutoSelectMode.Never)
 						Selection = new Range<int>(value.Length, value.Length - 1);
+
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
@@ -336,5 +344,12 @@ namespace Eto.WinForms.Forms.Controls
 			get { return Widget.Properties.Get(ShouldSelect_Key, true); }
 			set { Widget.Properties.Set(ShouldSelect_Key, value, true); }
 		}
+
+		public bool AlwaysShowSelection
+		{
+			get => SwfTextBox.HideSelection == false;
+			set => SwfTextBox.HideSelection = !value;
+		}
+
 	}
 }

@@ -14,7 +14,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Windows" Version="2.9.0-dev" />
+    <PackageReference Include="Eto.Platform.Windows" Version="2.11.0-dev" />
   </ItemGroup>
 
 </Project>

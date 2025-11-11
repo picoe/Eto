@@ -4,7 +4,7 @@ using Range = Eto.Forms.Range;
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	public abstract class TextBoxBase<T> : TestBase
-		where T: TextBox, new()
+		where T : TextBox, new()
 	{
 		[Test, ManualTest]
 		public void SettingTextShouldClearUndoBuffer()
@@ -21,7 +21,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					textBox.Text = "Thanks, now try to undo";
 					textBox.Focus();
 				};
-				
+
 				return new TableLayout
 				{
 					Spacing = new Size(5, 5),
@@ -33,7 +33,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				};
 			});
 		}
-		
+
 		[Test, ManualTest]
 		public void CaretIndexShouldStartInInitialPosition()
 		{
@@ -220,10 +220,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.That(args.Text, Is.EqualTo(text), "#2.4");
 			Assert.That(args.Range, Is.EqualTo(Range.FromLength(rangeStart, rangeLength)), "#2.5");
 		}
-		
+
 		[Test, ManualTest]
 		public void ManyUpdatesShouldNotCauseHangs()
-		{	
+		{
 			TimeSpan maxElapsed = TimeSpan.MinValue;
 			ManualForm(
 			"There should not be any pausing",
@@ -268,6 +268,43 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				return layout;
 			});
 			Assert.That(maxElapsed, Is.LessThan(TimeSpan.FromSeconds(1)), "There were long pauses in the UI");
+		}
+		
+		[TestCase(false)]
+		[TestCase(true)]
+		public void TextChangedShouldFireAfterSelectionWasChangedForNeverAutoSelectMode(bool withFocus)
+		{
+			bool textChangedFired = false;
+			Range<int>? selection = null;
+			string newText = null;
+			Shown(form =>
+			{
+				var textBox = new T();
+				textBox.AutoSelectMode = AutoSelectMode.Never;
+				textBox.Text = "Hello";
+				textBox.Selection = new Range<int>(1, 3);
+				textBox.TextChanged += (sender, e) =>
+				{
+					textChangedFired = true;
+					selection = textBox.Selection;
+					newText = textBox.Text;
+				};
+				
+				return textBox;
+			}, textBox =>
+			{
+				if (withFocus)
+					textBox.Focus();
+
+				Assert.That(textChangedFired, Is.False, "#1");
+				var setText = "Something else";
+				textBox.Text = setText;
+				Assert.That(textChangedFired, Is.True, "#2");
+				Assert.That(selection, Is.EqualTo(Range.FromLength(setText.Length, 0)), "#3");
+				Assert.That(newText, Is.EqualTo(setText), "#4");
+				Assert.That(textBox.Text, Is.EqualTo(setText), "#5");
+				Assert.That(textBox.Selection, Is.EqualTo(Range.FromLength(setText.Length, 0)), "#6");
+			});
 		}
 	}
 

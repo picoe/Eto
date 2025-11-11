@@ -25,7 +25,6 @@ namespace Eto.Mac.Forms.Controls
 		public static readonly object ScrolledToRow_Key = new object();
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object IsMouseDragging_Key = new object();
-		public static readonly object ContextMenu_Key = new object();
 		public static readonly object IsCancelEdit_Key = new object();
 	}
 
@@ -545,13 +544,12 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.AllowsColumnReordering = value; }
 		}
 
-		public virtual ContextMenu ContextMenu
+		public override ContextMenu ContextMenu
 		{
-			get { return Widget.Properties.Get<ContextMenu>(GridHandler.ContextMenu_Key); }
+			get => base.ContextMenu;
 			set
 			{
-				Widget.Properties.Set(GridHandler.ContextMenu_Key, value);
-				Control.Menu = value.ToNS();
+				base.ContextMenu = value;
 				if (Control.HeaderView != null)
 					Control.HeaderView.Menu = value.ToNS();
 			}

@@ -21,9 +21,12 @@
   <PropertyGroup>
     <!-- global nuget/assembly properties -->
 
-    <DevVersion>2.9.0</DevVersion>
+    <DevVersion>2.11.0</DevVersion>
 
-    <Version Condition="$(Version) == ''">2.9.0.0</Version>
+    <!-- Extract the first two components (Major.Minor) from an assembly version like 2.10.1 to make it 2.10.0.0 -->
+    <Version Condition="$(Version) == '' AND $(BuildBranch.StartsWith('refs/tags/'))">$([System.Version]::Parse($(BuildBranch.Substring(10))).ToString(2)).0.0</Version>
+    
+    <Version Condition="$(Version) == ''">2.11.0.0</Version>
 
     <InformationalVersion Condition="$(SetVersion) != ''">$(SetVersion)</InformationalVersion>
     <!-- set version from tag -->
@@ -34,7 +37,7 @@
     <InformationalVersion Condition="$(InformationalVersion) == ''">$(DevVersion)-dev</InformationalVersion>
 
     <Company>Picoe Software Solutions</Company>
-    <Copyright>(c) 2010-2021 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
+    <Copyright>(c) 2010-2025 by Curtis Wensley, 2012-2014 by Vivek Jhaveri and contributors</Copyright>
     
     <PackageVersion>$(InformationalVersion)</PackageVersion>
     <PackageLicenseFile>Eto-LICENSE.txt</PackageLicenseFile>
