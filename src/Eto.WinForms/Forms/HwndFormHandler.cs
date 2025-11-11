@@ -151,8 +151,14 @@ namespace Eto.WinForms.Forms
 
 #endif
 
-		public static Form Create(IntPtr window)
+		public static Window Create(IntPtr window)
 		{
+			foreach (var w in Application.Instance.Windows)
+			{
+				if (w.NativeHandle == window)
+					return w;
+			}
+
 			for (int i = 0; i < g_windows.Count; i++)
 			{
 				WeakReference w = g_windows[i];

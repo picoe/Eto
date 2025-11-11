@@ -58,6 +58,13 @@ namespace Eto.Forms
 		{
 			if (window == null)
 				return null;
+
+			foreach (var w in Application.Instance.Windows)
+			{
+				if (ReferenceEquals(w.ControlObject, window))
+					return w;
+			}
+			
 			return new Form(new FormHandler(window));
 		}
 

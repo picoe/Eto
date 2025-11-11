@@ -44,6 +44,12 @@ namespace Eto.Mac.Forms
 		internal static Window CreateWrapper(NSWindowController windowController, NSWindow nswindow)
 		{
 			var handle = windowController?.Handle ?? nswindow.Handle;
+			
+			foreach (var w in Application.Instance.Windows)
+			{
+				if (w.NativeHandle == handle)
+					return w;
+			}
 
 			s_cachedWindows ??= new Dictionary<NativeHandle, WeakReference>();
 
