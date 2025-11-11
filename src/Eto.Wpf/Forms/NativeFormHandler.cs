@@ -2,8 +2,14 @@ namespace Eto.Wpf.Forms
 {
 	public class NativeFormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, Form.IHandler
 	{
-		public static Form Create(sw.Window window)
+		public static Window Create(sw.Window window)
 		{
+			foreach (var w in Application.Instance.Windows)
+			{
+				if (w.ControlObject is sw.Window etoWindow && etoWindow == window)
+					return w;
+			}
+
 			for (int i = 0; i < g_windows.Count; i++)
 			{
 				WeakReference w = g_windows[i];
