@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0-macos</TargetFrameworks>
+    <TargetFrameworks>net10.0-macos</TargetFrameworks>
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
