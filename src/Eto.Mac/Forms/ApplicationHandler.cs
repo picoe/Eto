@@ -119,7 +119,7 @@ namespace Eto.Mac.Forms
 				string.Empty,
 				NSBundle.MainBundle.BundlePath
 			};
-#if ( MACOS10_15_OR_GREATER && NET8_0_OR_GREATER ) || MONOMAC
+#if ( MACOS10_15_OR_GREATER && NET10_0_OR_GREATER ) || MONOMAC
 			NSTask.LaunchFromUrl(NSUrl.FromFilename("/bin/sh"), args, out var error, null);
 #else
 			NSTask.LaunchFromPath("/bin/sh", args);
