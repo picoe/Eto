@@ -273,6 +273,7 @@ namespace Eto.Mac.Forms
 			var obj = Runtime.GetNSObject(sender);
 			if (MacBase.GetHandler(obj) is IMacViewHandler handler)
 			{
+				if (handler.Widget?.IsDisposed != false) return;
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = MacConversions.GetMouseEvent(handler, theEvent, false);
 				handler.Callback.OnMouseMove(handler.Widget, args);
