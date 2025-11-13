@@ -1,6 +1,4 @@
 using System.Windows.Threading;
-using System.Runtime.InteropServices;
-using System.Reflection;
 
 namespace Eto.Wpf.Forms;
 public class ApplicationHandler : WidgetHandler<sw.Application, Application, Application.ICallback>, Application.IHandler
@@ -42,66 +40,6 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 		// Add themes to our controls
 		var uri = AssemblyAbsoluteResourceDictionary.GetAbsolutePackUri("themes/generic.xaml");
 		Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = uri });
-
-		// Try to merge Fluent theme resources and set ThemeMode = Dark only when running in WPF
-		try
-		{
-			var app = sw.Application.Current;
-			if (app == null)
-				return; // not running in WPF application
-
-			// Check if Application exposes the experimental ThemeMode API (only in newer frameworks)
-			var appType = app.GetType();
-			var themePropOnApp = appType.GetProperty("ThemeMode", BindingFlags.Public | BindingFlags.Instance);
-
-			// Only attempt to load Fluent if ThemeMode API exists (indicates newer WPF/Fluent support)
-			if (themePropOnApp == null)
-				return;
-
-			// Look for PresentationFramework.Fluent in loaded assemblies first
-			var fluentAsm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "PresentationFramework.Fluent");
-			if (fluentAsm == null)
-			{
-				try { fluentAsm = Assembly.Load(new AssemblyName("PresentationFramework.Fluent")); } catch { fluentAsm = null; }
-			}
-
-			if (fluentAsm == null)
-				return;
-
-			// Merge the Fluent resource dictionary
-			var fluentUri = new Uri("pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml", UriKind.Absolute);
-			Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = fluentUri });
-
-			// Set Application.ThemeMode = Dark
-			if (themePropOnApp.PropertyType.IsEnum)
-			{
-				try
-				{
-					var darkVal = Enum.Parse(themePropOnApp.PropertyType, "Dark");
-					themePropOnApp.SetValue(app, darkVal);
-				}
-				catch { }
-			}
-
-			// Set Window.ThemeMode on all existing windows if available
-			var windowThemeProp = typeof(sw.Window).GetProperty("ThemeMode", BindingFlags.Public | BindingFlags.Instance);
-			if (windowThemeProp != null && windowThemeProp.PropertyType.IsEnum)
-			{
-				try
-				{
-					var darkWindowVal = Enum.Parse(windowThemeProp.PropertyType, "Dark");
-					foreach (sw.Window w in app.Windows)
-					{
-						windowThemeProp.SetValue(w, darkWindowVal);
-					}
-				}
-				catch { }
-			}
-		}
-		catch
-		{
-			// ignore any errors - Fluent is optional
-		}
 	}
 
 	protected override void Initialize()
