@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net6.0-windows;net461</TargetFrameworks>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net461;net8.0-windows;net10.0-windows</TargetFrameworks>
     <TargetFrameworks Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -129,7 +129,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
 
   <ItemGroup>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
-  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" PrivateAssets="all" />
+   	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" PrivateAssets="all" />
     <PackageReference Include="System.Resources.Extensions" Version="7.0.0" />
   </ItemGroup>
 

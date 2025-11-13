@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net10.0-windows;net6.0-windows;net462</TargetFrameworks>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net462;net8.0-windows;net10.0-windows</TargetFrameworks>
     <TargetFrameworks Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Wpf</RootNamespace>
