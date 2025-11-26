@@ -24,6 +24,7 @@
     <NoWarn>$(NoWarn);NU5105;CS8981;NETSDK1138;SYSLIB0050;SYSLIB0051</NoWarn>
     <LangVersion Condition="$(MSBuildProjectExtension) == '.csproj'">10</LangVersion>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ValidateXcodeVersion>false</ValidateXcodeVersion>
   </PropertyGroup>
 
   <!-- support t4 templates in projects -->

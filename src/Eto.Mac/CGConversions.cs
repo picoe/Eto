@@ -12,16 +12,9 @@ namespace Eto.iOS
 {
 	public static partial class CGConversions
 	{
-		static CGColorSpace deviceRGB;
+		static CGColorSpace colorSpace;
 
-		static CGColorSpace CreateDeviceRGB()
-		{
-			if (deviceRGB != null)
-				return deviceRGB;
-
-			deviceRGB = CGColorSpace.CreateDeviceRGB();
-			return deviceRGB;
-		}
+		static CGColorSpace CreateColorSpace() => colorSpace ??= CGColorSpace.CreateSrgb();
 
 		public static CGColor ToCG(this NSColor color)
 		{
@@ -34,7 +27,7 @@ namespace Eto.iOS
 				return cgColor;
 
 			// try to convert to RGB colorspace so we can convert it to CGColor
-			var converted = color.UsingColorSpaceFast(NSColorSpace.DeviceRGB);
+			var converted = color.UsingColorSpace(NSColorSpace.SRGBColorSpace);
 			if (converted == null)
 				return new CGColor(0, 0, 0, 1f);
 
@@ -52,7 +45,7 @@ namespace Eto.iOS
 				return nscolor.ToCG();
 			if (color.ControlObject is CGColor cgcolor)
 				return cgcolor;
-			return new CGColor(CreateDeviceRGB(), new nfloat[] { color.R, color.G, color.B, color.A });
+			return new CGColor(CreateColorSpace(), new nfloat[] { color.R, color.G, color.B, color.A });
 		}
 
 		public static Color ToEto(this CGColor color)
