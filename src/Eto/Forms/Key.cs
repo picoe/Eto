@@ -359,7 +359,7 @@
 		  string val;
 		  if (keymap.TryGetValue(mainKey, out val))
 			  AppendSeparator(sb, separator, val);
-		  else
+		  else if (mainKey != Keys.None)
 			  AppendSeparator(sb, separator, mainKey.ToString());
 
 		  return sb.ToString();
