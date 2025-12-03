@@ -26,6 +26,8 @@ namespace Eto.Mac.Forms.Controls
 		void OnCellEditing(GridViewCellEventArgs e);
 
 		void OnCellEdited(GridViewCellEventArgs e);
+		
+		bool OnCellEditCancelled(GridViewCellEventArgs e);
 
 		Grid Widget { get; }
 

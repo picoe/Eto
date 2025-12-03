@@ -129,6 +129,20 @@ namespace Eto.Mac.Forms.Cells
 				};
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
+				view.EditingAborted += (sender, e) =>
+				{
+					var colHandler = ColumnHandler;
+					if (colHandler == null)
+						return;
+					var table = colHandler.DataViewHandler?.Table;
+					if (table == null)
+						return;
+					var control = (CellView)sender;
+					var r = (int)control.Tag;
+					var item = getItem(control.Item, r);
+					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, table, r, col, item);
+					e.Cancel = colHandler.DataViewHandler?.OnCellEditCancelled(ee) ?? false;
+				};
 				view.BecameFirstResponder += (sender, e) =>
 				{
 					var colHandler = ColumnHandler;

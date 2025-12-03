@@ -576,6 +576,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		public void BeginEdit(int row, int column)
 		{
 			var nameColumn = Control.Columns[column];
+			if (nameColumn.Cells.Length == 0)
+				return;
 			var cellRenderer = nameColumn.Cells[0];
 			var path = Control.Model.GetPath(GetIterAtRow(row));
 			Control.Model.IterNChildren();
