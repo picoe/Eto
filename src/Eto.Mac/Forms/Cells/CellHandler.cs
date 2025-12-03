@@ -52,6 +52,7 @@ namespace Eto.Mac.Forms.Cells
 		bool isFirstResponder;
 		public event EventHandler<EventArgs> BecameFirstResponder;
 		public event EventHandler<EventArgs> ResignedFirstResponder;
+		public event EventHandler<CancelEventArgs> EditingAborted;
 
 		public override bool BecomeFirstResponder()
 		{
@@ -69,6 +70,22 @@ namespace Eto.Mac.Forms.Cells
 			isFirstResponder = false;
 		}
 
+		public override bool AbortEditing()
+		{
+			var ret = base.AbortEditing();
+			if (ret && EditingAborted != null)
+			{
+				var e = new CancelEventArgs();
+				EditingAborted(this, e);
+				ret = !e.Cancel;
+				if (ret)
+				{
+					isFirstResponder = false;
+				}
+			}
+			return ret;
+		}
+
 		public override bool ResignFirstResponder()
 		{
 			var ret = base.ResignFirstResponder();
@@ -82,7 +99,7 @@ namespace Eto.Mac.Forms.Cells
 	}
 
 	public abstract class CellHandler<TWidget, TCallback> : MacObject<NSObject, TWidget, TCallback>, Cell.IHandler, ICellHandler
-		where TWidget: Cell
+		where TWidget : Cell
 	{
 		WeakReference _columnHandler;
 		public IDataColumnHandler ColumnHandler
@@ -140,7 +157,7 @@ namespace Eto.Mac.Forms.Cells
 		public virtual void SetForegroundColor(NSView view, Color color)
 		{
 		}
-		
+
 		public virtual void ViewRemoved(NSView view)
 		{
 		}

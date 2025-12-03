@@ -794,6 +794,13 @@ namespace Eto.Mac.Forms.Controls
 				AutoSizeColumns(true);
 			}
 		}
+		
+		bool IDataViewHandler.OnCellEditCancelled(GridViewCellEventArgs e)
+		{
+			SetIsEditing(false);
+			return false;
+		}
+		
 
 		Grid IDataViewHandler.Widget => Widget;
 
