@@ -15,6 +15,57 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[Test, ManualTest]
+		public void PressingEscapeToCancelShouldEndEditing()
+		{
+			bool? isEditingOnUnload = null;
+			ManualForm("Start editing a cell, then press Escape to cancel editing", form =>
+			{
+				form.Size = new Size(300, 200);
+				
+				var grid = new T();
+				grid.ShowHeader = true;
+				grid.AllowMultipleSelection = true;
+
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) }, HeaderText = "TextBoxCell", Editable = true });
+				grid.Columns.Add(new GridColumn
+				{
+					DataCell = new ComboBoxCell
+					{
+						Binding = Binding.Property((GridTestItem m) => (object)m.Text),
+						DataStore = new List<string> { "Item 1", "Item 2", "Item 3" }
+					},
+					HeaderText = "ComboBoxCell",
+					Editable = true
+				});
+
+				var list = new TreeGridItemCollection();
+				list.Add(new GridTestItem { Text = "Item 1" });
+				list.Add(new GridTestItem { Text = "Item 2" });
+				list.Add(new GridTestItem { Text = "Item 3" });
+				SetDataStore(grid, list);
+
+				grid.Shown += (sender, e) =>
+				{
+					grid.BeginEdit(1, 0);
+				};
+
+				grid.CellEdited += (sender, e) =>
+				{
+					Log.Write(sender, $"CellEdited Row: {e.Row}, Column: {e.Column}, IsEditing: {grid.IsEditing}");
+				};
+
+				grid.UnLoad += (sender, e) =>
+				{
+					isEditingOnUnload = grid.IsEditing;
+				};
+
+
+				return grid;
+			});
+			Assert.That(isEditingOnUnload, Is.False, "Grid should not be editing when unloading");
+		}
+
+		[Test, ManualTest]
 		public void BeginEditShoudWorkOnCustomCells()
 		{
 			ManualForm("The custom cell should go in edit mode when clicking the BeginEdit button", form =>
@@ -606,8 +657,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.That(grid.Columns[0].Width, Is.GreaterThan(50), "First column should be auto-sized to be greater than 50px");
 				Assert.That(grid.Columns[1].Width, Is.GreaterThan(50), "Second column should be auto-sized to be greater than 50px");
 			});
-			
-			
+
+
 		}
 	}
 }

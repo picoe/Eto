@@ -346,7 +346,7 @@ namespace Eto.Wpf.Forms
 		public string ToolTip
 		{
 			get { return Control.ToolTip as string; }
-			set { Control.ToolTip = value; }
+			set { Control.ToolTip = string.IsNullOrEmpty(value) ? null : value; }
 		}
 
 		public virtual bool AllowDrop
