@@ -97,7 +97,7 @@ namespace Eto.Test.Mac.UnitTests
 		[TestCase(NSTableViewStyle.Plain, -1, "Some Text", 100, 180)]
 		[TestCase(NSTableViewStyle.Plain, -1, "Some Text", 15, -1)]
 		[TestCase(NSTableViewStyle.Plain, -1, "Some Much Longer Text That Should Still Work", 100, 180)]
-		[TestCase(NSTableViewStyle.Plain, 20, "Some Text", 100)]
+		[TestCase(NSTableViewStyle.Plain, 20, "Some Text", 100, -1)]
 		[TestCase(NSTableViewStyle.Plain, 20, "Some Text", 15, -1)]
 		[TestCase(NSTableViewStyle.Plain, 3, "Some Text", 100, 180)]
 		[TestCase(NSTableViewStyle.Plain, 3, "Some Text", 15, -1)]

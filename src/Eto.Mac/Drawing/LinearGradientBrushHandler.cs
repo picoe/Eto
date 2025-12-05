@@ -77,7 +77,7 @@ namespace Eto.iOS.Drawing
 				if (wrap == GradientWrapMode.Pad)
 				{
 					if (Gradient == null)
-						Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new [] { StartColor, EndColor }, new nfloat[] { (nfloat)0f, (nfloat)1f });
+						Gradient = new CGGradient(CGColorSpace.CreateSrgb(), new [] { StartColor, EndColor }, new nfloat[] { (nfloat)0f, (nfloat)1f });
 				}
 				else
 				{
@@ -86,7 +86,7 @@ namespace Eto.iOS.Drawing
 					if (Gradient == null || scale > lastScale)
 					{
 						var stops = GradientHelper.GetGradientStops(StartColor, EndColor, scale, wrap).ToList();
-						Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), stops.Select(r => r.Item2).ToArray(), stops.Select(r => (nfloat)r.Item1).ToArray());
+						Gradient = new CGGradient(CGColorSpace.CreateSrgb(), stops.Select(r => r.Item2).ToArray(), stops.Select(r => (nfloat)r.Item1).ToArray());
 						lastScale = scale;
 					}
 				}

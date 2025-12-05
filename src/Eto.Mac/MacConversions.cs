@@ -14,18 +14,7 @@ namespace Eto.Mac
 				return nscolor;
 			if (color.ControlObject is CGColor cgcolor && MacVersion.IsAtLeast(10, 8))
 				return NSColor.FromCGColor(cgcolor);
-			return NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
-		}
-
-		public static NSColor ToNSUI(this Color color, bool calibrated)
-		{
-			if (color.ControlObject is NSColor nscolor)
-				return nscolor;
-			if (color.ControlObject is CGColor cgcolor && MacVersion.IsAtLeast(10, 8))
-				return NSColor.FromCGColor(cgcolor);
-			return calibrated
-				? NSColor.FromCalibratedRgba(color.R, color.G, color.B, color.A)
-				: NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
+			return NSColor.FromSrgb(color.R, color.G, color.B, color.A);
 		}
 
 		[Obsolete("Use ToEtoWithAppearance(NSColor) instead")]
@@ -57,7 +46,7 @@ namespace Eto.Mac
 			if (color == null)
 				return Colors.Transparent;
 
-			var colorspace = NSColorSpace.DeviceRGBColorSpace;
+			var colorspace = NSColorSpace.SRGBColorSpace;
 
 			var converted = color.UsingColorSpace(colorspace);
 			if (converted == null)

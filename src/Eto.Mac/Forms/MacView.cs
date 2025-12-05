@@ -1042,7 +1042,7 @@ namespace Eto.Mac.Forms
 			get { return Widget.Properties.Get<Color?>(MacView.BackgroundColorKey) ?? DefaultBackgroundColor; }
 			set
 			{
-				if (value != BackgroundColor)
+				if (value != Widget.Properties.Get<Color?>(MacView.BackgroundColorKey))
 				{
 					Widget.Properties[MacView.BackgroundColorKey] = value;
 					SetBackgroundColor(value);

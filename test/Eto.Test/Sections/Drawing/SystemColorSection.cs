@@ -36,7 +36,19 @@ namespace Eto.Test.Sections.Drawing
 
 		IEnumerable<ControlType> GetControlTypes()
 		{
-			yield return ControlType.Create<Drawable>(c => c.Size = new Size(100, 20));
+			yield return ControlType.Create<Drawable>(c =>
+			{
+				c.Paint += (sender, e) =>
+				{
+					var color = c.BackgroundColor;
+					var g = e.Graphics;
+					var rect = new RectangleF(c.Size);
+					rect.Inset(4);
+					g.FillRectangle(color, rect.X, rect.Y, rect.Width / 2, rect.Height);
+					g.FillRectangle(Color.FromArgb(color.ToArgb()), rect.X + rect.Width / 2, rect.Y, rect.Width / 2, rect.Height);
+				};
+				c.Size = new Size(100, 20);
+			});
 			yield return ControlType.Create<Label>(set: (c,v) => c.Text = v, getTextColor: c => c.TextColor, setTextColor: (c, v) => c.TextColor = v);
 			yield return ControlType.Create<TextBox>(set: (c, v) => c.Text = v, getTextColor: c => c.TextColor, setTextColor: (c, v) => c.TextColor = v);
 			yield return ControlType.Create<TextArea>(set: (c, v) => c.Text = v, getTextColor: c => c.TextColor, setTextColor: (c, v) => c.TextColor = v);

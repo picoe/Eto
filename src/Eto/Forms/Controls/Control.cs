@@ -1120,7 +1120,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// characteristics of the control and its children, since it must enable layers to do so.
 	/// </remarks>
 	/// <value>The color of the background.</value>
-	public Color BackgroundColor
+	public virtual Color BackgroundColor
 	{
 		get { return Handler.BackgroundColor; }
 		set { Handler.BackgroundColor = value; }
