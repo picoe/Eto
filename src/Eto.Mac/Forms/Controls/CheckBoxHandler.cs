@@ -27,6 +27,9 @@ namespace Eto.Mac.Forms.Controls
 
 		nfloat GetButtonOffset(CGRect rect)
 		{
+			if (MacVersion.IsUsingGlass)
+				return 0;
+
 			var titleSize = AttributedTitle.Size;
 			// big sur and later calculate the position a wee differently..
 			if (MacVersion.IsAtLeast(10, 16))

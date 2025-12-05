@@ -685,7 +685,7 @@ public struct Color : IEquatable<Color>, IComparable<Color>, IControlObjectSourc
 	/// <returns>The 32-bit ARGB value that corresponds to this color</returns>
 	public int ToArgb()
 	{
-		return (int)((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
+		return (int)((uint)Bb | (uint)Gb << 8 | (uint)Rb << 16 | (uint)Ab << 24);
 	}
 		
 	/// <summary>
@@ -694,7 +694,7 @@ public struct Color : IEquatable<Color>, IComparable<Color>, IControlObjectSourc
 	/// <returns>A premultiplied ARGB value</returns>
 	public int ToPremultipliedArgb()
 	{
-		return (int)((uint)(B * A * byte.MaxValue) | (uint)(G * A * byte.MaxValue) << 8 | (uint)(R * A * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
+		return (int)((uint)Math.Round(B * A * byte.MaxValue + .5f) | (uint)Math.Round(G * A * byte.MaxValue + .5f) << 8 | (uint)Math.Round(R * A * byte.MaxValue + .5f) << 16 | (uint)Ab << 24);
 	}
 
 	/// <summary>
@@ -704,12 +704,12 @@ public struct Color : IEquatable<Color>, IComparable<Color>, IControlObjectSourc
 	public int ToArgb(ColorStyles style)
 	{
 		if (style.HasFlag(ColorStyles.ExcludeAlpha))
-			return (int)((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16);
+			return (int)((uint)Bb | (uint)Gb << 8 | (uint)Rb << 16);
 
 		if (style.HasFlag(ColorStyles.AlphaLast))
-			return (int)((uint)(A * byte.MaxValue) | (uint)(B * byte.MaxValue) << 8 | (uint)(G * byte.MaxValue) << 16 | (uint)(R * byte.MaxValue) << 24);
+			return (int)((uint)Ab | (uint)Bb << 8 | (uint)Gb << 16 | (uint)Rb << 24);
 		else
-			return (int)((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
+			return (int)((uint)Bb | (uint)Gb << 8 | (uint)Rb << 16 | (uint)Ab << 24);
 	}
 
 	/// <summary>

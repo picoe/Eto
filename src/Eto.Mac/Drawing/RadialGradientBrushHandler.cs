@@ -79,7 +79,7 @@ namespace Eto.iOS.Drawing
 				{
 					var stops = GradientHelper.GetGradientStops(StartColor.ToCG(), EndColor.ToCG(), scale, wrap).ToList();
 					lastScale = scale;
-					Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), stops.Select(r => r.Item2).ToArray(), stops.Select(r => (nfloat)r.Item1).ToArray());
+					Gradient = new CGGradient(CGColorSpace.CreateSrgb(), stops.Select(r => r.Item2).ToArray(), stops.Select(r => (nfloat)r.Item1).ToArray());
 				}
 				else
 				{

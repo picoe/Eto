@@ -64,8 +64,8 @@ namespace Eto.Mac.Forms.Controls
 		public const int ImagePadding = 2;
 		NSShadow textShadow;
 		NSShadow textHighlightShadow;
-		NSColor groupColor = NSColor.FromCalibratedRgba(0x6F / (float)0xFF, 0x7E / (float)0xFF, 0x8B / (float)0xFF, 1.0F);
-		//light shade: NSColor.FromCalibratedRgba (0x82 / (float)0xFF, 0x90 / (float)0xFF, 0x9D / (float)0xFF, 1.0F);
+		NSColor groupColor = NSColor.FromSrgb(0x6F / (float)0xFF, 0x7E / (float)0xFF, 0x8B / (float)0xFF, 1.0F);
+		//light shade: NSColor.FromSrgb (0x82 / (float)0xFF, 0x90 / (float)0xFF, 0x9D / (float)0xFF, 1.0F);
 		
 
 		public MacImageListItemCell()

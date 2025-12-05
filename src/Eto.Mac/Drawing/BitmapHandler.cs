@@ -113,7 +113,8 @@ namespace Eto.Mac.Drawing
 						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
 
-						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, 3, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+						var cgimage = new CGBitmapContext(IntPtr.Zero, width, height, bitsPerComponent, bytesPerRow, CGColorSpace.CreateSrgb(), CGBitmapFlags.NoneSkipLast).ToImage();
+						rep = bmprep = new NSBitmapImageRep(cgimage);
 						Control = new NSImage();
 						Control.AddRepresentation(rep);
 						break;
@@ -126,8 +127,13 @@ namespace Eto.Mac.Drawing
 						const int bitsPerPixel = numComponents * bitsPerComponent;
 						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
-				
-						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+
+						// no way to create a CGImage with 24bpp AND there's no way to get the sRGB colorspace name,
+						// so create NSBitmapImageRep directly then change colorspace to sRGB.
+						// why oh why apple didn't you make a new version of this API with a colorspace instance vs. name..?
+						using var tmpbmp = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.CalibratedRGB, bytesPerRow, bitsPerPixel);
+						rep = bmprep = tmpbmp.ConvertingToColorSpace(NSColorSpace.SRGBColorSpace, NSColorRenderingIntent.Default);
+						
 						Control = new NSImage();
 						Control.AddRepresentation(rep);
 						break;
@@ -140,8 +146,11 @@ namespace Eto.Mac.Drawing
 						const int bitsPerPixel = numComponents * bitsPerComponent;
 						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
+						
+						var cgimage = new CGBitmapContext(IntPtr.Zero, width, height, bitsPerComponent, bytesPerRow, CGColorSpace.CreateSrgb(), CGBitmapFlags.PremultipliedLast).ToImage();
 
-						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+						// rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+						rep = bmprep = new NSBitmapImageRep(cgimage);
 						Control = new NSImage();
 						Control.AddRepresentation(rep);
 						break;
