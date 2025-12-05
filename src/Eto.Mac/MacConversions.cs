@@ -14,18 +14,7 @@ namespace Eto.Mac
 				return nscolor;
 			if (color.ControlObject is CGColor cgcolor && MacVersion.IsAtLeast(10, 8))
 				return NSColor.FromCGColor(cgcolor);
-			return NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
-		}
-
-		public static NSColor ToNSUI(this Color color, bool calibrated)
-		{
-			if (color.ControlObject is NSColor nscolor)
-				return nscolor;
-			if (color.ControlObject is CGColor cgcolor && MacVersion.IsAtLeast(10, 8))
-				return NSColor.FromCGColor(cgcolor);
-			return calibrated
-				? NSColor.FromCalibratedRgba(color.R, color.G, color.B, color.A)
-				: NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
+			return NSColor.FromSrgb(color.R, color.G, color.B, color.A);
 		}
 
 		[Obsolete("Use ToEtoWithAppearance(NSColor) instead")]
@@ -35,18 +24,44 @@ namespace Eto.Mac
 		{
 			if (color == null)
 				return Colors.Transparent;
-			if (!MacVersion.IsAtLeast(10, 9))
-				return color.ToEto();
 
-			// use the current appearance to get the proper RGB values (it can be different than when the application started).
-			NSAppearance saved = NSAppearance.CurrentAppearance;
-			var appearance = NSApplication.SharedApplication.MainWindow?.EffectiveAppearance;
-			if (appearance != null)
-				NSAppearance.CurrentAppearance = appearance;
+			if (MacVersion.IsAtLeast(11, 0))
+			{
+				// use the effective appearance to get the proper RGB values, 
+				// otherwise it uses NSAppearance.CurrentDrawingAppearance which can be different than the app appearance
+				// when not in a drawing context
+				var effectiveAppearance = NSApplication.SharedApplication.EffectiveAppearance;
+				if (NSAppearance.CurrentDrawingAppearance == effectiveAppearance)
+					return color.ToEto();
+					
+				Color result = Colors.Black;
+				effectiveAppearance.PerformAsCurrentDrawingAppearance(() =>
+				{
+					result = color.ToEto();
+				});
+				return result;
+			}
 
-			var result = color.ToEto();
-			NSAppearance.CurrentAppearance = saved;
-			return result;
+			if (MacVersion.IsAtLeast(10, 14))
+			{
+				// for macOS 10.14/10.15.. should I really be supporting this?  meh.
+				// Save and restore the current appearance around the color conversion
+#pragma warning disable CA1422
+				NSAppearance saved = NSAppearance.CurrentAppearance;
+				var effectiveAppearance = NSApplication.SharedApplication.EffectiveAppearance;
+				if (saved == effectiveAppearance)
+					return color.ToEto();
+					
+				if (effectiveAppearance != null)
+					NSAppearance.CurrentAppearance = effectiveAppearance;
+
+				var result = color.ToEto();
+				NSAppearance.CurrentAppearance = saved;
+#pragma warning restore CA1422
+				return result;
+			}
+			
+			return color.ToEto();
 		}
 
 		[Obsolete("Use ToEto(NSColor) instead")]
@@ -57,7 +72,7 @@ namespace Eto.Mac
 			if (color == null)
 				return Colors.Transparent;
 
-			var colorspace = NSColorSpace.DeviceRGBColorSpace;
+			var colorspace = NSColorSpace.SRGBColorSpace;
 
 			var converted = color.UsingColorSpace(colorspace);
 			if (converted == null)

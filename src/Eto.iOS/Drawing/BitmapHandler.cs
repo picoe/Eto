@@ -73,7 +73,7 @@ namespace Eto.iOS.Drawing
 						Data = NSMutableData.FromLength(bytesPerRow * height);
 
 						provider = new CGDataProvider(Data.MutableBytes, (int)Data.Length, false);
-						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
+						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRgb(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
 						Control = UIImage.FromImage(cgimage, 0f, UIImageOrientation.Up);
 				
 						break;
@@ -89,7 +89,7 @@ namespace Eto.iOS.Drawing
 						//Data = new NSMutableData ((uint)(bytesPerRow * height));
 				
 						provider = new CGDataProvider(Data.MutableBytes, (int)Data.Length, false);
-						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.NoneSkipFirst, provider, null, true, CGColorRenderingIntent.Default);
+						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRgb(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.NoneSkipFirst, provider, null, true, CGColorRenderingIntent.Default);
 						Control = UIImage.FromImage(cgimage, 0f, UIImageOrientation.Up);
 				
 						break;
@@ -104,7 +104,7 @@ namespace Eto.iOS.Drawing
 						Data = new NSMutableData((uint)(bytesPerRow * height));
 				
 						provider = new CGDataProvider(Data.MutableBytes, (int)Data.Length, false);
-						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
+						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRgb(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
 						Control = UIImage.FromImage(cgimage, 0f, UIImageOrientation.Up);
 						break;
 					}

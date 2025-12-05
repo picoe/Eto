@@ -7,7 +7,7 @@
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;UNIFIED;MACOS_NET;USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
-    <NoWarn>$(NoWarn);CA1416;CS8981</NoWarn>
+    <NoWarn>$(NoWarn);CA1416;CS8981;NETSDK1202</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="AppKit" />
