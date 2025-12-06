@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net8.0-macos14;net10.0-macos14</TargetFrameworks>
-    <TargetFramework Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFramework>
+	  <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net9.0-macos15;net10.0-macos26.0</TargetFrameworks>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFrameworks>
     <RootNamespace>Eto.Mac</RootNamespace>
     <DefineConstants>$(DefineConstants);OSX;DESKTOP;UNIFIED;MACOS_NET;USE_CFSTRING</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
     <NoWarn>$(NoWarn);CA1416;CS8981</NoWarn>
+    <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="AppKit" />

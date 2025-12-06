@@ -11,7 +11,7 @@
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
     <DefineConstants>MACOS_NET</DefineConstants>
-    <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
     <NoWarn>CA1416;CS8981</NoWarn>
 
     <TrimMode>partial</TrimMode>
