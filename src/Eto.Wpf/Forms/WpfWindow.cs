@@ -264,8 +264,13 @@ namespace Eto.Wpf.Forms
 							// this is a trick to achieve similar behaviour as in WinForms
 							// (IsVisibleChanged triggers too early, we want it after measure-lay-render)
 							Control.Dispatcher.BeginInvoke(new Action(() =>
-								Callback.OnShown(Widget, EventArgs.Empty)),
-								sw.Threading.DispatcherPriority.ContextIdle, null);
+							{
+								if (Widget.IsDisposed)
+									return;
+								Callback.OnShown(Widget, EventArgs.Empty);
+								
+							}),
+							sw.Threading.DispatcherPriority.ContextIdle, null);
 						}
 					};
 					break;
