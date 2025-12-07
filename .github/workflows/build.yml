@@ -63,7 +63,7 @@ jobs:
 
   build-mac:
 
-    runs-on: macos-14
+    runs-on: macos-26
 
     steps:
     - uses: actions/checkout@v4
@@ -77,6 +77,9 @@ jobs:
 
     - name: Create global.json
       run: del global.json || echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
+      
+    - name: Clear nuget cache
+      run: dotnet nuget locals all --clear
 
     - name: Install macos workload
       run: sudo dotnet workload install macos --from-rollback-file dotnet-workloads.json
@@ -96,6 +99,10 @@ jobs:
     - name: Enable code signing
       if: github.event_name != 'pull_request'
       run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSignBuild=True" >> $GITHUB_ENV
+
+    - name: Disable code signing for PR builds
+      if: github.event_name == 'pull_request'
+      run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSigning=False" >> $GITHUB_ENV
 
     - name: Set notarization credentials
       if: startsWith(github.ref, 'refs/tags/')
