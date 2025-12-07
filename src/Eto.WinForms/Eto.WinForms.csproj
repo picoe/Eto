@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
-    <NoWarn>MSB4011;$(NoWarn)</NoWarn>
+    <NoWarn>MSB4011;WFO1000;$(NoWarn)</NoWarn>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
   </PropertyGroup>

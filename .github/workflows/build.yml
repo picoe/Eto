@@ -9,9 +9,9 @@ on:
     types: [ published, prereleased ]
 
 env:
-  DotNetVersion: "8.0.115"
+  DotNetVersion: "10.0.100"
   BuildConfiguration: "Release"
-  BuildParameters: "build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
+  BuildParameters: 'build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release "/p:BuildVersion=${{ github.run_id }}" "/p:BuildBranch=${{ github.ref }}"'
 
 jobs:
   build-windows:
