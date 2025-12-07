@@ -482,7 +482,7 @@ namespace Eto.Test.UnitTests.Drawing
 			{
 				Assert.That(bmp, Is.Not.Null);
 				Assert.That(savedBitmap, Is.Not.Null);
-				
+
 				Assert.That(bmp.GetPixel(0, 0), Is.EqualTo(topLeft), test + ".1.1");
 				Assert.That(bmp.GetPixel(halfSize, 0), Is.EqualTo(topRight), test + ".1.2");
 				Assert.That(bmp.GetPixel(0, halfSize), Is.EqualTo(bottomLeft), test + ".1.3");
@@ -541,6 +541,43 @@ namespace Eto.Test.UnitTests.Drawing
 
 			GetSavedBitmap();
 			TestPixels(redColor, emptyColor, greenColor, blueColor, "#3");
+		}
+
+		[TestCase(PixelFormat.Format24bppRgb, 24)]
+		[TestCase(PixelFormat.Format32bppRgb, 32)]
+		[TestCase(PixelFormat.Format32bppRgba, 32)]
+		public void BitmapShouldHaveCorrectBits(PixelFormat format, int expectedBits)
+		{
+			Invoke(() =>
+			{
+				var bitmap = new Bitmap(10, 10, format);
+				using var bd = bitmap.Lock();
+				Assert.That(bd.BitsPerPixel, Is.EqualTo(expectedBits));
+			});
+		}
+
+		[TestCase(PixelFormat.Format24bppRgb)]
+		[TestCase(PixelFormat.Format32bppRgb)]
+		public void BitmapShouldNotHaveTransparency(PixelFormat format)
+		{
+			Invoke(() =>
+			{
+				var bitmap = new Bitmap(10, 10, format);
+				using var bd = bitmap.Lock();
+				var color = Color.FromArgb(255, 0, 0, 255); // fully transparent blue
+				bd.SetPixel(0, 0, color);
+				var ms = new MemoryStream();
+				bitmap.Save(ms, ImageFormat.Png);
+				ms.Position = 0;
+				
+				var loadedBitmap = new Bitmap(ms);
+				using var bdLoaded = loadedBitmap.Lock();
+				var gottenColor = bd.GetPixel(0, 0);
+				Assert.That(gottenColor.A, Is.EqualTo(255), "Alpha should be 255");
+				Assert.That(gottenColor.R, Is.EqualTo(0), "Red should be 0");
+				Assert.That(gottenColor.G, Is.EqualTo(0), "Green should be 0");
+				Assert.That(gottenColor.B, Is.EqualTo(255), "Blue should be 255");
+			});
 		}
 	}
 }
