@@ -40,6 +40,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CustomControls\DragDropLib.Swf.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\lib\SHDocVw\Interop.SHDocVw.dll</HintPath>
       <Private>False</Private>
@@ -116,6 +120,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\NetFxCompatibility.cs">
+      <Link>NetFxCompatibility.cs</Link>
+    </Compile>
     <Compile Update="Properties\FontDialogResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -145,6 +152,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="XPThemes.manifest" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="CustomControls\DragDropLib.Swf.cs" />
   </ItemGroup>
 
   <ItemGroup>

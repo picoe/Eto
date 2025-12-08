@@ -116,7 +116,11 @@ namespace Eto.WinForms
 							var gUID = typeof(ITextDocument).GUID;
 							try
 							{
+#if NET7_0_OR_GREATER
+								Marshal.QueryInterface(iunkHandle, in gUID, out itextDocumentHandle);
+#else
 								Marshal.QueryInterface(iunkHandle, ref gUID, out itextDocumentHandle);
+#endif
 								var textDocument = Marshal.GetObjectForIUnknown(itextDocumentHandle) as ITextDocument;
 								if (textDocument != null)
 								{
