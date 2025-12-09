@@ -5,7 +5,8 @@ namespace Eto.Mac
 		public static NSImage Resize(this NSImage image, CGSize newsize, ImageInterpolation interpolation = ImageInterpolation.Default, CGSize? imageSize = null)
 		{
 			var newimage = new NSImage(imageSize ?? newsize);
-			var newrep = new NSBitmapImageRep(IntPtr.Zero, (nint)newsize.Width, (nint)newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * (nint)newsize.Width, 32);
+			var cgimage = new CGBitmapContext(IntPtr.Zero, (nint)newsize.Width, (nint)newsize.Height, 8, 4 * (nint)newsize.Width, CGColorSpace.CreateSrgb(), CGBitmapFlags.PremultipliedLast).ToImage();
+			var newrep = new NSBitmapImageRep(cgimage);
 			newrep.Size = imageSize ?? newsize;
 			newimage.AddRepresentation(newrep);
 
@@ -24,7 +25,8 @@ namespace Eto.Mac
 
 		public static NSImageRep Resize(this NSImageRep image, CGSize newsize, ImageInterpolation interpolation = ImageInterpolation.Default, CGSize? imageSize = null)
 		{
-			var newrep = new NSBitmapImageRep(IntPtr.Zero, (nint)newsize.Width, (nint)newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * (nint)newsize.Width, 32);
+			var cgimage = new CGBitmapContext(IntPtr.Zero, (nint)newsize.Width, (nint)newsize.Height, 8, 4 * (nint)newsize.Width, CGColorSpace.CreateSrgb(), CGBitmapFlags.PremultipliedLast).ToImage();
+			var newrep = new NSBitmapImageRep(cgimage);
 			newrep.Size = imageSize ?? newsize;
 
 			var graphics = NSGraphicsContext.FromBitmap(newrep);
