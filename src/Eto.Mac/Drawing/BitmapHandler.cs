@@ -265,14 +265,8 @@ namespace Eto.Mac.Drawing
 			if (bmprep == null)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep?.GetType()));
 
-			// don't convert colorspace here otherwise we get incorrect data.. why?
 			var nscolor = bmprep.ColorAt(x, y);
-			if (nscolor.ComponentCount >= 3)
-			{
-				nscolor.GetRgba(out var red, out var green, out var blue, out var alpha);
-				return new Color(nscolor, (float)red, (float)green, (float)blue, (float)alpha);
-			}
-			
+			// always convert to sRGB
 			return nscolor.ToEto();
 		}
 
@@ -334,7 +328,7 @@ namespace Eto.Mac.Drawing
 			{
 				bmprep = rep as NSBitmapImageRep ?? GetBestRepresentation() as NSBitmapImageRep;
 			}
-
+			
 			if (bmprep != null)
 				return;
 
@@ -358,9 +352,10 @@ namespace Eto.Mac.Drawing
 			int bitsPerPixel = numComponents * bitsPerComponent;
 			int bytesPerPixel = bitsPerPixel / 8;
 			int bytesPerRow = bytesPerPixel * size.Width;
-#pragma warning disable CA1422 // Validate platform compatibility - no alternative right now.
-			bmprep = new NSBitmapImageRep(IntPtr.Zero, size.Width, size.Height, bitsPerComponent, numComponents, rep.HasAlpha, false, rep.ColorSpaceName, bytesPerRow, bitsPerPixel);
-#pragma warning restore CA1422 // Validate platform compatibility
+			CGBitmapFlags flags = rep.HasAlpha ? CGBitmapFlags.PremultipliedLast : CGBitmapFlags.NoneSkipLast;
+			var cgimage = new CGBitmapContext(IntPtr.Zero, size.Width, size.Height, bitsPerComponent, bytesPerRow, CGColorSpace.CreateSrgb(), flags).ToImage();
+			bmprep = new NSBitmapImageRep(cgimage);
+
 			var graphicsContext = NSGraphicsContext.FromBitmap(bmprep);
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphicsContext;
