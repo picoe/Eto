@@ -287,6 +287,9 @@ namespace Eto.Mac
 							break;
 					}
 					break;
+				default:
+					buttons = Mouse.Buttons;
+					break;
 			}
 			return buttons;
 		}
