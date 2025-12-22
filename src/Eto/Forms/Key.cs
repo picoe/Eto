@@ -1,4 +1,4 @@
-﻿﻿
+﻿
   namespace Eto.Forms; 
 
   /// <summary>
@@ -281,19 +281,19 @@
 
   }
 
-  /// <summary>
-  /// Extensions for the <see cref="Keys"/> enumeration
-  /// </summary>
-  public static class KeysExtensions
-  {
-	  static void AppendSeparator (StringBuilder sb, string separator, string value)
-	  {
-		  if (sb.Length > 0)
-			  sb.Append (separator);
-		  sb.Append (value);
-	  }
+/// <summary>
+/// Extensions for the <see cref="Keys"/> enumeration
+/// </summary>
+public static class KeysExtensions
+{
+	static void AppendSeparator(StringBuilder sb, string separator, string value)
+	{
+		if (sb.Length > 0)
+			sb.Append(separator);
+		sb.Append(value);
+	}
 
-	  static readonly Dictionary<Keys, string> keymap = new Dictionary<Keys,string> {
+	static readonly Dictionary<Keys, string> keymap = new Dictionary<Keys, string> {
 		  { Keys.D0, "0" },
 		  { Keys.D1, "1" },
 		  { Keys.D2, "2" },
@@ -324,44 +324,85 @@
 
 		  { Keys.Semicolon, ";" },
 		  { Keys.Quote, "'" },
-		
+
 		  { Keys.Comma, "," },
 		  { Keys.Period, "." },
 		  { Keys.Slash, "/" },
-		
+
 		  { Keys.RightBracket, "]" },
 		  { Keys.LeftBracket, "[" }
 	  };
 
-	  /// <summary>
-	  /// Converts the specified key to a shortcut string such as Ctrl+Alt+Z
-	  /// </summary>
-	  /// <param name="key">Key to convert</param>
-	  /// <param name="separator">Separator between each modifier and key</param>
-	  /// <returns>A human-readable string representing the key combination including modifiers</returns>
-	  public static string ToShortcutString(this Keys key, string separator = "+")
-	  {
-		  var sb = new StringBuilder();
-		  if (key.HasFlag(Keys.Application))
-			  AppendSeparator(sb, separator,
-			  	Application.Instance.Localize(key, 
-				  EtoEnvironment.Platform.IsMac ? "\x2318" : 
-				  EtoEnvironment.Platform.IsWindows ? "Win" :
-				  "App"));
-		  if (key.HasFlag(Keys.Control))
-			  AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "^" : "Ctrl"));
-		  if (key.HasFlag(Keys.Shift))
-			  AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "\x21e7" : "Shift"));
-		  if (key.HasFlag(Keys.Alt))
-			  AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "\x2325" : "Alt"));
+	static readonly Dictionary<string, Keys> reverseKeymap = keymap
+		.GroupBy(kvp => kvp.Value)
+		.ToDictionary(g => g.Key, g => g.First().Key); // skip dupes, and take first value.
 
-		  var mainKey = key & Keys.KeyMask;
-		  string val;
-		  if (keymap.TryGetValue(mainKey, out val))
-			  AppendSeparator(sb, separator, val);
-		  else if (mainKey != Keys.None)
-			  AppendSeparator(sb, separator, mainKey.ToString());
+	/// <summary>
+	/// Converts the specified key to a shortcut string such as Ctrl+Alt+Z
+	/// </summary>
+	/// <param name="key">Key to convert</param>
+	/// <param name="separator">Separator between each modifier and key</param>
+	/// <returns>A human-readable string representing the key combination including modifiers</returns>
+	public static string ToShortcutString(this Keys key, string separator = "+")
+	{
+		var sb = new StringBuilder();
+		if (key.HasFlag(Keys.Application))
+			AppendSeparator(sb, separator,
+				Application.Instance.Localize(key,
+				EtoEnvironment.Platform.IsMac ? "\x2318" :
+				EtoEnvironment.Platform.IsWindows ? "Win" :
+				"App"));
+		if (key.HasFlag(Keys.Control))
+			AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "^" : "Ctrl"));
+		if (key.HasFlag(Keys.Shift))
+			AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "\x21e7" : "Shift"));
+		if (key.HasFlag(Keys.Alt))
+			AppendSeparator(sb, separator, Application.Instance.Localize(key, EtoEnvironment.Platform.IsMac ? "\x2325" : "Alt"));
 
-		  return sb.ToString();
-	  }
-  }
+		var mainKey = key & Keys.KeyMask;
+		string val;
+		if (keymap.TryGetValue(mainKey, out val))
+			AppendSeparator(sb, separator, val);
+		else if (mainKey != Keys.None)
+			AppendSeparator(sb, separator, mainKey.ToString());
+
+		return sb.ToString();
+	}
+
+	/// <summary>
+	/// Parses a shortcut string such as "Ctrl+Alt+Z" into a <see cref="Keys"/> value
+	/// </summary>
+	/// <param name="shortcutString">The shortcut string to parse</param>
+	/// <returns>The key equivalent, or Keys.None if not found</returns>
+	public static Keys FromShortcutString(string shortcutString)
+	{
+		if (string.IsNullOrEmpty(shortcutString))
+			return Keys.None;
+		var parts = shortcutString.Split(new[] { '+', '-', '|' }, StringSplitOptions.RemoveEmptyEntries);
+		Keys keys = Keys.None;
+		foreach (var part in parts)
+		{
+			var trimmedPart = part.Trim();
+			if (reverseKeymap.TryGetValue(trimmedPart, out var mappedKey))
+				keys |= mappedKey;
+			else if (Enum.TryParse<Keys>(trimmedPart, true, out var key))
+				keys |= key;
+			else keys |= trimmedPart.ToLowerInvariant() switch
+			{
+				"commonmodifier" => Application.Instance.CommonModifier,
+				"alternatemodifier" => Application.Instance.AlternateModifier,
+				"\x2325" => Keys.Alt,
+				"alt" => Keys.Alt,
+				"\x21e7" => Keys.Shift,
+				"shift" => Keys.Shift,
+				"^" => Keys.Control,
+				"ctrl" => Keys.Control,
+				"\x2318" => Keys.Application,
+				"win" => Keys.Application,
+				"app" => Keys.Application,
+				_ => Keys.None,
+			};
+		}
+		return keys;
+	}
+}
