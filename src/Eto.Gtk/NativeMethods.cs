@@ -46,7 +46,7 @@ namespace Eto.GtkSharp
 
 			static NMWindows()
 			{
-				NativeLibrary.SetDllImportResolver(typeof(NMWindows).Assembly, (name, assembly, path) =>
+				DllImportResolverManager.Add((name, assembly, path) =>
 				{
 					// Use custom import resolver for libwebkit2gtk
 					// Try loading 4.1 first, if that fails, return to default handling
@@ -293,7 +293,7 @@ namespace Eto.GtkSharp
 
 			static NMLinux()
 			{
-				NativeLibrary.SetDllImportResolver(typeof(NMLinux).Assembly, (name, assembly, path) =>
+				DllImportResolverManager.Add((name, assembly, path) =>
 				{
 					// Use custom import resolver for libwebkit2gtk
 					// Try loading 4.1 first, if that fails, return to default handling
@@ -540,7 +540,7 @@ namespace Eto.GtkSharp
 
 			static NMMac()
 			{
-				NativeLibrary.SetDllImportResolver(typeof(NMMac).Assembly, (name, assembly, path) =>
+				DllImportResolverManager.Add((name, assembly, path) =>
 				{
 					// Use custom import resolver for libwebkit2gtk
 					// Try loading 4.1 first, if that fails, return to default handling
