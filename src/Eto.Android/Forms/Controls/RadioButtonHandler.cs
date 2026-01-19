@@ -49,6 +49,8 @@ namespace Eto.Android.Forms.Controls
 					item.Checked = (item.ControlObject == sender);
 				}
 			}
+
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 	}
 }

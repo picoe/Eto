@@ -32,6 +32,7 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			if (Enabled)
 				SetChecked(true);
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public void Create(RadioButton controller)
