@@ -62,7 +62,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleCheckedChanged(object sender, EventArgs e) => Handler?.Callback.OnCheckedChanged(Handler.Widget, EventArgs.Empty);
 
-			public void HandleClick(object sender, EventArgs e) => Handler?.Callback.OnClick(Handler.Widget, EventArgs.Empty);
+			public void HandleClick(object sender, EventArgs e)
+			{
+				// GTK raises Clicked when other grouped radios are unchecked; only fire for the active (user-clicked) one.
+				if (Handler?.Control?.Active == true)
+					Handler.Callback.OnClick(Handler.Widget, EventArgs.Empty);
+			}
 
 			internal void Control_Realized(object sender, EventArgs e) => Handler?.Control_Realized(sender, e);
 		}

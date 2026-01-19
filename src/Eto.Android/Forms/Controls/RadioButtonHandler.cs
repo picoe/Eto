@@ -32,12 +32,17 @@ namespace Eto.Android.Forms.Controls
 				{
 					controllerInner.group = new List<RadioButton>();
 					controllerInner.group.Add(controller);
-					controllerInner.Control.Click += controllerInner.control_RadioSwitch;
 				}
 
-				controllerInner.group.Add(Widget);
-				Control.Click += controllerInner.control_RadioSwitch;
+				group = controllerInner.group;
+				group.Add(Widget);
 			}
+			else
+			{
+				group = new List<RadioButton> { Widget };
+			}
+
+			Control.Click += control_RadioSwitch;
 		}
 
 		private void control_RadioSwitch(object sender, EventArgs e)
@@ -50,7 +55,8 @@ namespace Eto.Android.Forms.Controls
 				}
 			}
 
-			Callback.OnClick(Widget, EventArgs.Empty);
+			if (ReferenceEquals(sender, Control))
+				Callback.OnClick(Widget, EventArgs.Empty);
 		}
 	}
 }
