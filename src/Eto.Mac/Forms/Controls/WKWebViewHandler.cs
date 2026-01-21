@@ -215,7 +215,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 				else
 				{
-					completionHandler(null);
+					completionHandler(Array.Empty<NSUrl>());
 				}
 			}
 
