@@ -1,3 +1,4 @@
+using Eto.GtkSharp;
 using Eto.GtkSharp.Drawing;
 using Eto.GtkSharp.Forms.Menu;
 
@@ -51,10 +52,8 @@ namespace Eto.GtkSharp.Forms
 		public LinuxTrayIndicatorHandler()
 		{
 #if NET
-			NativeLibrary.SetDllImportResolver(typeof(LinuxTrayIndicatorHandler).Assembly, (name, assembly, path) =>
+			DllImportResolverManager.Add((name, assembly, path) =>
 			{
-				// Use custom import resolver for libappindicator
-				// Try loading ayatana version first, if that fails, return to default handling
 				if (name == libappindicator) 
 				{
 					IntPtr result = IntPtr.Zero;
