@@ -194,6 +194,7 @@ namespace Eto.Mac.Forms.Controls
 				completionHandler(result);
 			}
 
+			[Obsolete]
 			public override void RunJavaScriptTextInputPanel(wk.WKWebView webView, string prompt, string defaultText, wk.WKFrameInfo frame, Action<string> completionHandler)
 			{
 				var dialog = new PromptDialog
