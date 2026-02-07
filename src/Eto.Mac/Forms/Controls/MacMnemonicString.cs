@@ -11,6 +11,7 @@ namespace Eto.Mac.Forms.Controls
 		Color? _textColor;
 		Font _font;
 		bool _useMnemonic = true;
+		bool _enabled = true;
 
 		public string Text
 		{
@@ -28,6 +29,16 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				_useMnemonic = value;
+				_str = null;
+			}
+		}
+		
+		public bool Enabled
+		{
+			get => _enabled;
+			set
+			{
+				_enabled = value;
 				_str = null;
 			}
 		}
@@ -152,6 +163,11 @@ namespace Eto.Mac.Forms.Controls
 			if (_textColor != null)
 			{
 				var attr = NSDictionary.FromObjectAndKey(_textColor.Value.ToNSUI(), NSStringAttributeKey.ForegroundColor);
+				_str.AddAttributes(attr, strRange);
+			}
+			else if (!_enabled)
+			{
+				var attr = NSDictionary.FromObjectAndKey(NSColor.DisabledControlText, NSStringAttributeKey.ForegroundColor);
 				_str.AddAttributes(attr, strRange);
 			}
 		}

@@ -8,6 +8,7 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.Add(NormalLabel());
+			layout.Add(DisabledLabel());
 			if (Platform.Supports<Font>())
 				layout.Add(FontLabel());
 			layout.Add(WrapLabel());
@@ -27,6 +28,15 @@ namespace Eto.Test.Sections.Controls
 			return new Label
 			{
 				Text = "Normal Label"
+			};
+		}
+		
+		Control DisabledLabel()
+		{
+			return new Label
+			{
+				Text = "Disabled Label",
+				Enabled = false
 			};
 		}
 
