@@ -14,23 +14,11 @@
 			"justMyCode": false
         },
 		{
-            "name": "Eto.Test.Mac64 - mono",
-            "type": "mono",
-			"request": "launch",
-			"preLaunchTask": "build-mac64",
-			"program": ".",
-			"runtimeExecutable": "${workspaceFolder}/artifacts/test/Eto.Test.Mac64/${config:var.configuration}/net48/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
-			"passDebugOptionsViaEnvironmentVariable": true,
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
-        },
-		{
             "name": "Eto.Test.macOS",
             "type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-macos",
-			"program": "${workspaceFolder}/artifacts/test/Eto.Test.macOS/${config:var.configuration}/net10.0-macos/Eto.Test.macOS.app/Contents/MacOS/Eto.Test.macOS",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.macOS/${config:var.configuration}/net10.0-macos/osx-arm64/Eto.Test.macOS.app/Contents/MacOS/Eto.Test.macOS",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart",

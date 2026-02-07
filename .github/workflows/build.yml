@@ -126,7 +126,7 @@ jobs:
         name: test-mac
         path: |
           artifacts/test/Eto.Test.Mac64/${{ env.BuildConfiguration }}/**/Eto.Test.Mac64.dmg
-          artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/*/Eto.Test.macOS.app
+          artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/**/Eto.Test.macOS*.pkg
 
     - name: Upload log files
       if: ${{ failure() }}
