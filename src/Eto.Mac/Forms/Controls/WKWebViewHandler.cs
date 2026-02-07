@@ -194,7 +194,7 @@ namespace Eto.Mac.Forms.Controls
 				completionHandler(result);
 			}
 
-#pragma warning disable CS0809
+#pragma warning disable CS0809, CS0672
 			public override void RunJavaScriptTextInputPanel(wk.WKWebView webView, string prompt, string defaultText, wk.WKFrameInfo frame, Action<string> completionHandler)
 			{
 				var dialog = new PromptDialog
@@ -206,7 +206,7 @@ namespace Eto.Mac.Forms.Controls
 				var result = dialog.ShowModal(Handler.Widget) ? dialog.Value : string.Empty;
 				completionHandler(result);
 			}
-#pragma warning restore CS0809
+#pragma warning restore CS0809, CS0672
 
 			public override void RunOpenPanel(wk.WKWebView webView, wk.WKOpenPanelParameters parameters, wk.WKFrameInfo frame, Action<NSUrl[]> completionHandler)
 			{
