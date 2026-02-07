@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0-windows;net48</TargetFrameworks>
+    <TargetFrameworks>net10.0-windows;net48</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ApplicationIcon>..\Eto.Test\Images\TestIcon.ico</ApplicationIcon>

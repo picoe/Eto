@@ -60,7 +60,11 @@ namespace Eto.WinForms.Forms
 			try
 			{
 				// WPF can throw exceptions here for FileContents, maybe others.
+#if NET10_0_OR_GREATER
+				Control.TryGetData<object>(type, out var data);
+#else
 				var data = Control.GetData(type);
+#endif
 				if (data != null)
 					return data;
 			}
@@ -189,7 +193,7 @@ namespace Eto.WinForms.Forms
 					else
 						Control.SetData(sw.DataFormats.Dib, dib);
 				}
-#if WPF				
+#if WPF
 				else if (IsExtended)
 					Control.SetDataEx(sw.DataFormats.Bitmap, value.ToWpf());
 				else

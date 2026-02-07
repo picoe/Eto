@@ -44,7 +44,15 @@ namespace Eto.WinForms.Forms
 
 		protected override sd.Image InnerGetImage() => swf.Clipboard.GetImage();
 
-		protected override object InnerGetData(string type) => swf.Clipboard.GetData(type);
+		protected override object InnerGetData(string type)
+		{
+#if NET10_0_OR_GREATER
+			swf.Clipboard.TryGetData<object>(type, out var data);
+			return data;
+#else
+			return swf.Clipboard.GetData(type);
+#endif
+		}
 
 
 		protected override void Update() => swf.Clipboard.SetDataObject(Control);

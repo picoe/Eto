@@ -230,22 +230,9 @@ public class DataObject : Widget, IDataObject
 	/// <param name="type">Type identifier when retrieving the stream.</param>
 	public void SetDataStream(Stream stream, string type)
 	{
-		if (stream.CanSeek)
-		{
-			var buffer = new byte[stream.Length];
-			if (stream.Position != 0)
-				stream.Seek(0, SeekOrigin.Begin);
-			stream.Read(buffer, 0, buffer.Length);
-			SetData(buffer, type);
-		}
-		else
-		{
-			using (var ms = new MemoryStream())
-			{
-				stream.CopyTo(ms);
-				SetData(ms.ToArray(), type);
-			}
-		}
+		using var ms = new MemoryStream();
+		stream.CopyTo(ms);
+		SetData(ms.ToArray(), type);
 	}
 	
 	[Serializable]

@@ -28,7 +28,9 @@
 			"label": "generate-templates",
 			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:GenerateTemplates",
 			"type": "shell",
-			"dependsOn": [ "build-templates" ],
+			"dependsOn": [
+				"build-templates"
+			],
 			"problemMatcher": "$msCompile",
 			"group": "build",
 			"presentation": {
@@ -145,8 +147,8 @@
 			"type": "shell",
 			"problemMatcher": "$msCompile"
 		},
-        {
-            "label": "Git clean + submodule init (DANGEROUS!)",
+		{
+			"label": "Git clean + submodule init (DANGEROUS!)",
 			"type": "shell",
 			"command": "[ '${input:confirm}' = 'Yes' ] && git clean -dxff && git submodule foreach git clean -dxff && git submodule update --init --recursive",
 			"windows": {
@@ -172,10 +174,26 @@
 			"command": "sudo dotnet workload install macos --from-rollback-file dotnet-workloads.json",
 			"problemMatcher": "$msCompile",
 			"presentation": {
-			  "clear": true,
-			  "focus": true
+				"clear": true,
+				"focus": true
 			}
-		  }
+		},
+		{
+			"label": "act-pull-request",
+			"type": "shell",
+			"osx": {
+				"command": "sudo act pull_request -P macos-14=-self-hosted"
+			},
+			"windows": {
+				// winget install gerardog.gsudo
+				"command": "gsudo act pull_request -P windows-2022=-self-hosted",
+			},
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true,
+				"focus": true
+			}
+		}
 	],
 	"inputs": [
 		{

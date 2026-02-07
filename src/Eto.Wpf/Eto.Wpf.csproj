@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net6.0-windows;net462</TargetFrameworks>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net462;net6.0-windows;net8.0-windows;net10.0-windows</TargetFrameworks>
     <TargetFrameworks Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Wpf</RootNamespace>
@@ -38,6 +38,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="CustomControls\DragDropLib.Swf.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Interop.SHDocVw">
@@ -116,6 +120,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\NetFxCompatibility.cs">
+      <Link>NetFxCompatibility.cs</Link>
+    </Compile>
     <Compile Update="Properties\FontDialogResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -146,6 +153,10 @@ You do not need to use any of the classes of this assembly (unless customizing t
     </EmbeddedResource>
     <EmbeddedResource Include="XPThemes.manifest" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="CustomControls\DragDropLib.Swf.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />
@@ -154,7 +165,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.6.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
-  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" PrivateAssets="all" />
+   	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
