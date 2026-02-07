@@ -3,8 +3,6 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net10.0-macos</TargetFrameworks>
-    <CodeSigningKey>Mac Developer</CodeSigningKey>
-    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
     <EnableDefaultImageAssets>False</EnableDefaultImageAssets>
     <TrimMode>partial</TrimMode>
