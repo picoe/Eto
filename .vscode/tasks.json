@@ -172,10 +172,34 @@
 			"command": "sudo dotnet workload install macos --from-rollback-file dotnet-workloads.json",
 			"problemMatcher": "$msCompile",
 			"presentation": {
-			  "clear": true,
-			  "focus": true
+				"clear": true,
+				"focus": true
 			}
-		  }
+		},
+		{
+			"label": "docfx-host",
+			"type": "shell",
+			"command": "docfx docfx.json --serve",
+			"problemMatcher": "$msCompile",
+			"options": {
+				"cwd": "${workspaceFolder}/docs",
+			},
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "docfx-build",
+			"type": "shell",
+			"command": "docfx ${input:docfx-config} docfx.json",
+			"problemMatcher": "$msCompile",
+			"options": {
+				"cwd": "${workspaceFolder}/docs"
+			},
+			"presentation": {
+				"clear": true
+			}
+		}
 	],
 	"inputs": [
 		{
@@ -201,6 +225,15 @@
 			"id": "version",
 			"description": "Enter the version to update to",
 			"default": "2.5.x-dev"
-		}
+		},
+		{
+			"type": "pickString",
+			"id": "docfx-config",
+			"description": "Docfx Configuration",
+			"options": [
+				"build",
+				"metadata"
+			]
+		},
 	]
 }

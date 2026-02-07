@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../src/",
+          "files": [
+            "Eto/Eto.csproj",
+            "Eto.Serialization.Xaml/Eto.Serialization.Xaml.csproj",
+            "Eto.Serialization.Json/Eto.Serialization.Json.csproj"
+          ]
+        }
+      ],
+	  "output": "api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.{md,yml}",
+		  "../README.md"
+        ],
+        "exclude": [
+          "_site/**",
+		  "filterConfig*.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "output": "../artifacts/docs/_site",
+    "template": [
+      "default",
+      "modern"
+    ],
+    "globalMetadata": {
+      "_appName": "Eto.Forms",
+      "_appTitle": "Eto.Forms",
+      "_enableSearch": true,
+	  "_appFaviconPath": "images/logo.svg",
+	  "_appLogoPath": "images/logo.svg"
+    }
+	
+  }
+}

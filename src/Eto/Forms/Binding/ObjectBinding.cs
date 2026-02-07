@@ -10,7 +10,7 @@ namespace Eto.Forms;
 /// This acts as a bridge between the <see cref="IndirectBinding{T}"/> and <see cref="DirectBinding{T}"/>
 /// so that you can utilize the <see cref="DirectBinding{T}.DataValueChanged"/> method.
 /// 
-/// Typically, one would use the <see cref="PropertyBinding{T}"/>, or the <see cref="C:ObjectBinding{T,TValue}(T, string)"/>
+/// Typically, one would use the <see cref="PropertyBinding{T}"/>, or the <see cref="ObjectBinding{T,TValue}(T, string)"/>
 /// constructor to hook up this binding to a particular property of the specified object
 /// </remarks>
 /// <typeparam name="TValue">The type of value for the binding.</typeparam>
@@ -51,7 +51,7 @@ public class ObjectBinding<TValue> : ObjectBinding<object, TValue>
 /// This acts as a bridge between the <see cref="IndirectBinding{T}"/> and <see cref="DirectBinding{T}"/>
 /// so that you can utilize the <see cref="DirectBinding{T}.DataValueChanged"/> method.
 /// 
-/// Typically, one would use the <see cref="PropertyBinding{T}"/>, or the <see cref="C:ObjectBinding{T,TValue}(T, string)"/>
+/// Typically, one would use the <see cref="PropertyBinding{T}"/>, or the <see cref="ObjectBinding{T,TValue}(T, string)"/>
 /// constructor to hook up this binding to a particular property of the specified object
 /// </remarks>
 /// <typeparam name="T">The type of object to bind to.</typeparam>

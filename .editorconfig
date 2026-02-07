@@ -32,7 +32,11 @@ indent_size = 2
 tab_size = 2
 
 [*.yml]
-intent_style = space
+indent_style = space
+indent_size = 2
+
+[*.md]
+indent_style = space
 indent_size = 2
 
 [*.{cs,vb}]

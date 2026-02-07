@@ -1,0 +1,57 @@
+name: Publish Documentation
+
+on:
+  release:
+    types: [released]
+  
+  workflow_dispatch:
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Setup DocFx
+        uses: clFaster/docfx-setup-action@v1
+
+        
+      - name: Build Documentation
+        uses: clFaster/docfx-build-action@v1
+        with:
+          docfx-file-path: "docs/docfx.json"
+          
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: picoe/Eto.Support 
+          token: ${{ secrets.PUBLISH_DOCS_PAT }}
+          path: target-repo
+
+      - name: Copy files to target repository
+        run: |
+          rm -rf ./target-repo/docs/*
+          cp -R ./artifacts/docs/_site/* ./target-repo/docs/
+
+      - name: Commit and push changes
+        run: |
+          cd target-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Publish from $GITHUB_REPOSITORY@$GITHUB_SHA" || echo "No changes to commit"
+          git push origin main

@@ -1,16 +1,15 @@
-Eto.Forms
-=========
+# Eto.Forms
+
 ### A cross platform desktop and mobile user interface framework
 
 [![Build](https://github.com/picoe/Eto/actions/workflows/build.yml/badge.svg)](https://github.com/picoe/Eto/actions/workflows/build.yml)
 [![discussions](https://img.shields.io/badge/join-the%20discussions-yellowgreen.svg)](https://github.com/picoe/Eto/discussions)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/picoe/Eto)
-[![wiki](https://img.shields.io/badge/browse-the%20wiki-orange.svg)](https://github.com/picoe/Eto/wiki)
+[![docs](https://img.shields.io/badge/browse-the%20docs-orange.svg)](http://pages.picoe.ca/docs/docs)
 [![NuGet](http://img.shields.io/nuget/v/Eto.Forms.svg?style=flat)](https://www.nuget.org/packages/Eto.Forms/)
 [![MyGet](http://img.shields.io/myget/eto/vpre/Eto.Forms.svg?style=flat&label=MyGet)](https://www.myget.org/gallery/eto)
 
-Description
------------
+## Description
 
 This framework can be used to build applications that run across multiple platforms using their native toolkit, with an easy to use API. This will make your applications look and work as a native application on all platforms, using a single UI codebase.
 
@@ -27,18 +26,18 @@ using Eto.Drawing;
 
 public class MyForm : Form
 {
-	public MyForm ()
-	{
-		Title = "My Cross-Platform App";
-		ClientSize = new Size(200, 200);
-		Content = new Label { Text = "Hello World!" };
-	}
-	
-	[STAThread]
-	static void Main()
-	{
-		new Application().Run(new MyForm());
-	}
+    public MyForm ()
+    {
+        Title = "My Cross-Platform App";
+        ClientSize = new Size(200, 200);
+        Content = new Label { Text = "Hello World!" };
+    }
+
+    [STAThread]
+    static void Main()
+    {
+        new Application().Run(new MyForm());
+    }
 }
 ```
 
@@ -64,25 +63,25 @@ let form = new MyForm()
 form.Show()
 ```
 
-Getting Started
----------------
+## Getting Started
 
-To begin creating apps using Eto.Forms, follow the [Quick Start Guide](https://github.com/picoe/Eto/wiki/Quick-Start).
+To begin creating apps using Eto.Forms, follow the [Quick Start Guide](http://pages.picoe.ca/docs/docs/Quick-Start.html).
 
-To compile or contribute to Eto.Forms, read the [Contributing Guide](https://github.com/picoe/Eto/wiki/Contributing).
+To compile or contribute to Eto.Forms, read the [Contributing Guide](http://pages.picoe.ca/docs/docs/Contributing.html).
 
+## Screenshots
 
-Screenshots
------------
 Windows via WPF:  
-<img src="./images/windows.png" width=75% height=75%>  
-Mac via MonoMac:  
-<img src="./images/mac.png" width=75% height=75%>  
-Linux via GTK#3:  
-<img src="./images/linux.png" width=75% height=75%>  
+<img src="./images/windows.png" width=75% height=75% style="max-width:900px" alt="Windows preview">
 
-Applications
-------------
+Mac via MonoMac:  
+<img src="./images/mac.png" width=75% height=75% style="max-width:900px" alt="macOS preview">
+
+Linux via GTK#3:  
+<img src="./images/linux.png" width=75% height=75% style="max-width:900px" alt="linux preview">
+
+## Applications
+
 * [MonoGame Pipeline Tool](https://github.com/MonoGame/MonoGame) - Content manager for MonoGame
 * [Manager](http://www.manager.io) - Accounting Software
 * [PabloDraw](http://picoe.ca/products/pablodraw) - Character based drawing application
@@ -96,8 +95,7 @@ Applications
 * [GEDKeeper (v3)](https://github.com/Serg-Norseman/GEDKeeper) - Cross-platform application for working with personal genealogical databases
 * [Rhinoceros 3D](https://www.rhino3d.com) - 3D computer graphics and computer-aided design (CAD) application
 
-Third party libraries
-----------
+## Third party libraries
 
 | |Pure Eto.Forms|[SkiaSharp](https://github.com/mono/SkiaSharp) edition| | |
 |---|---|---|---|---|
@@ -118,10 +116,9 @@ Third party libraries
 
 &#128073; Note : Some packages are in the pipeline but will not appear until next release is created.
 
-Assemblies
-----------
+## Assemblies
 
-Your project only needs to reference Eto.dll, and include the corresponding platform assembly that you wish to target. To run on a Mac platform, you need to [bundle your app](https://github.com/picoe/Eto/wiki/Running-your-application).
+Your project only needs to reference Eto.dll, and include the corresponding platform assembly that you wish to target. To run on a Mac platform, you need to [bundle your app](http://pages.picoe.ca/docs/docs/Running-your-application.html).
 
 * Eto.dll - Eto.Forms (UI), Eto.Drawing (Graphics), and platform loading
 * Eto.Mac64.dll - Lightweight Mac platform using .NET 6+ or mono
@@ -133,17 +130,16 @@ Your project only needs to reference Eto.dll, and include the corresponding plat
 * Eto.iOS.dll - Xamarin.iOS platform
 * Eto.Android.dll - Xamarin.Android platform
 
-Currently supported targets
----------------------------
+## Currently supported targets
 
 * OS X: MonoMac or net6.0-macos
 * Linux: GTK+ 3
 * Windows: Windows Forms (using GDI or Direct2D) or WPF
-	
-Under development
------------------
+
+## Under development
 
 These platforms are currently incomplete or in development. Any eager bodies willing to help feel free to do so!
 
-* iOS using Xamarin.iOS
-* Android using Xamarin.Android (Eto.Android)
+* iOS
+* Android
+* WinUI

@@ -115,7 +115,7 @@ public abstract class BitmapData : IDisposable
 	/// Each platform can have a different pixel format, and this allows you to abstract 
 	/// getting the data into a 32-bit colour.
 	/// 
-	/// The ARGB value can be easily handled using <see cref="C:Eto.Drawing.Color(uint)"/>.
+	/// The ARGB value can be easily handled using <see cref="Color.FromArgb(int)"/>.
 	/// 
 	/// For non-alpha bitmaps, the alpha component will be ignored
 	/// </remarks>
