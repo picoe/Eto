@@ -98,7 +98,7 @@ jobs:
 
     - name: Enable code signing
       if: github.event_name != 'pull_request'
-      run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSignBuild=True \"/p:CodeSignKey=${{ secrets.DEVID_NAME }}\"" >> $GITHUB_ENV
+      run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSignBuild=True /p:CodeSignKey=\"${{ secrets.DEVID_NAME }}\"" >> $GITHUB_ENV
 
     - name: Disable code signing for PR builds
       if: github.event_name == 'pull_request'
