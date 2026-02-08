@@ -80,7 +80,17 @@
 		{
 			control.CheckedChanged += delegate
 			{
-				Log.Write(control, "CheckedChanged, Value: {0}, Checked: {1}", control.Text, control.Checked);
+				Log.Write(control, $"CheckedChanged, Value: {control.Text}, Checked: {control.Checked}");
+			};
+
+			control.Click += delegate
+			{
+				Log.Write(control, $"Click, {control.Text}");
+			};
+			
+			control.MouseDoubleClick += delegate
+			{
+				Log.Write(control, $"MouseDoubleClick, {control.Text}");
 			};
 		}
 	}
