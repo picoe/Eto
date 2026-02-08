@@ -121,6 +121,7 @@
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
             "program": "${workspaceFolder}/artifacts/test/Eto.Test.WinForms/${config:var.configuration}/net48/Eto.Test.WinForms.exe",
+			"targetArchitecture": "x86_64",
             "args": [],
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart",

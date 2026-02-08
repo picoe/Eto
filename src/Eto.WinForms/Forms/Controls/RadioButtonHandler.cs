@@ -6,10 +6,6 @@ namespace Eto.WinForms.Forms.Controls
 
 		public class EtoRadioButton : swf.RadioButton
 		{
-			public EtoRadioButton()
-			{
-				this.SetStyle(swf.ControlStyles.StandardClick | swf.ControlStyles.StandardDoubleClick, true);
-			}
 		}
 
 		public RadioButtonHandler()
