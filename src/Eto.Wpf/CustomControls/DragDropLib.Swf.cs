@@ -14,6 +14,7 @@ namespace System.Windows.Forms
 	using ComIDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 	using ComTypes = System.Runtime.InteropServices.ComTypes;
 
+#if !NET8_0_OR_GREATER
 	public enum DropImageType
 	{
 		Invalid = -1,
@@ -24,6 +25,7 @@ namespace System.Windows.Forms
 		Label = 6,
 		Warning = 7
 	}
+#endif
 
 	/// <summary>
 	/// Provides extended functionality to the System.Windows.Forms.IDataObject interface.

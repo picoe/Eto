@@ -2,16 +2,16 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0-macos</TargetFrameworks>
-    <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+    <TargetFrameworks>net10.0-macos</TargetFrameworks>
+    <!-- <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers> -->
+    <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
-    <CodeSigningKey>Mac Developer</CodeSigningKey>
-    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <MonoBundlingExtraArgs>--nowarn:2006 --nowarn:0176</MonoBundlingExtraArgs>
     <DefineConstants>MACOS_NET</DefineConstants>
     <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
+    <CreatePackage Condition="$(Configuration) == 'Release'">true</CreatePackage>
     <NoWarn>CA1416;CS8981</NoWarn>
 
     <TrimMode>partial</TrimMode>

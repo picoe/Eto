@@ -9,9 +9,9 @@ on:
     types: [ published, prereleased ]
 
 env:
-  DotNetVersion: "8.0.115"
+  DotNetVersion: "10.0.100"
   BuildConfiguration: "Release"
-  BuildParameters: "build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release /p:BuildVersion=${{ github.run_id }} /p:BuildBranch=${{ github.ref }}"
+  BuildParameters: 'build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release "/p:BuildVersion=${{ github.run_id }}" "/p:BuildBranch=${{ github.ref }}"'
 
 jobs:
   build-windows:
@@ -63,7 +63,7 @@ jobs:
 
   build-mac:
 
-    runs-on: macos-14
+    runs-on: macos-26
 
     steps:
     - uses: actions/checkout@v4
@@ -77,6 +77,9 @@ jobs:
 
     - name: Create global.json
       run: del global.json || echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
+      
+    - name: Clear nuget cache
+      run: dotnet nuget locals all --clear
 
     - name: Install macos workload
       run: sudo dotnet workload install macos --from-rollback-file dotnet-workloads.json
@@ -95,7 +98,11 @@ jobs:
 
     - name: Enable code signing
       if: github.event_name != 'pull_request'
-      run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSignBuild=True" >> $GITHUB_ENV
+      run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSignBuild=True /p:CodeSignKey=\"${{ secrets.DEVID_NAME }}\"" >> $GITHUB_ENV
+
+    - name: Disable code signing for PR builds
+      if: github.event_name == 'pull_request'
+      run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSigning=False" >> $GITHUB_ENV
 
     - name: Set notarization credentials
       if: startsWith(github.ref, 'refs/tags/')
@@ -119,7 +126,7 @@ jobs:
         name: test-mac
         path: |
           artifacts/test/Eto.Test.Mac64/${{ env.BuildConfiguration }}/**/Eto.Test.Mac64.dmg
-          artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/*/Eto.Test.macOS.app
+          artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/**/Eto.Test.macOS*.pkg
 
     - name: Upload log files
       if: ${{ failure() }}

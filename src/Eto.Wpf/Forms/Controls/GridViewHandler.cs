@@ -169,7 +169,7 @@ namespace Eto.Wpf.Forms.Controls
 			get { return store; }
 			set
 			{
-				if (store is EtoGridCollectionView coll)
+				if (Control.ItemsSource is EtoGridCollectionView coll)
 					coll.Unregister();
 
 				store = value;
