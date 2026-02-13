@@ -8,7 +8,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
     <NoWarn>$(NoWarn);CA1416;CS8981;NETSDK1202</NoWarn>
-    <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == ''">12.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="AppKit" />
