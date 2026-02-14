@@ -77,6 +77,9 @@ namespace Eto.Wpf.Forms
 	class WpfFrameworkElement
 	{
 		internal static readonly object Cursor_Key = new object();
+		internal static readonly object LoadActionList_Key = new object();
+		internal static readonly object ContextMenu_Key = new object();
+		internal static readonly object ParentWindow_Key = new object();
 
 		// source Eto control for drag operations
 		internal static Control DragSourceControl { get; set; }
@@ -84,9 +87,6 @@ namespace Eto.Wpf.Forms
 		internal const string CustomCursor_DataKey = "Eto.CustomCursor";
 
 		internal static IWpfFrameworkElement LastDragTarget;
-		
-		internal static readonly object LoadActionList_Key = new object();
-		internal static readonly object ContextMenu_Key = new object();
 	}
 
 	public abstract partial class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
@@ -898,6 +898,12 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
+		Window ParentWindow
+		{
+			get => Widget.Properties.Get<Window>(WpfFrameworkElement.ParentWindow_Key);
+			set => Widget.Properties.Set(WpfFrameworkElement.ParentWindow_Key, value);
+		}
+
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
@@ -906,6 +912,7 @@ namespace Eto.Wpf.Forms
 				if (parent != null)
 				{
 					parent.LogicalPixelSizeChanged += Parent_PixelSizeChanged;
+					ParentWindow = parent;
 				}
 			}
 		}
@@ -934,9 +941,12 @@ namespace Eto.Wpf.Forms
 		{
 			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
 			{
-				var parent = Widget.ParentWindow;
+				var parent = ParentWindow;
 				if (parent != null)
+				{
 					parent.LogicalPixelSizeChanged -= Parent_PixelSizeChanged;
+					ParentWindow = null;
+				}
 			}
 		}
 

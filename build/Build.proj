@@ -196,7 +196,7 @@
       <Combined Include="combined" Value="-c" />
       <Combined Include="separate" Value="" />
 
-      <Framework Include="net80" Value="net8.0" />
+      <Framework Include="net100" Value="net10.0" />
       <Framework Include="net48" Value="net48" />
 
       <OtherOptions Include="none" Value="" />

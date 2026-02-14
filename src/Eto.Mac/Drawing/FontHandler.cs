@@ -25,6 +25,8 @@ namespace Eto.Mac.Drawing
 		static NSLayoutManager s_layoutManager;
 		static NSLayoutManager SharedLayoutManager => s_layoutManager ?? (s_layoutManager = new NSLayoutManager { UsesFontLeading = true });
 
+		protected override bool DisposeControl => false;
+
 		public FontHandler()
 		{
 		}

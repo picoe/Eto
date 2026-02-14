@@ -13,7 +13,7 @@
     
 		<EnableDefaultItems>false</EnableDefaultItems>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<NoBuild>True</NoBuild>
+		<!-- <NoBuild>True</NoBuild> -->
 		<IncludeBuildOutput>False</IncludeBuildOutput>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<GenerateAssemblyVersion>False</GenerateAssemblyVersion>

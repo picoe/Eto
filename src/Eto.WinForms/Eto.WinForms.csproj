@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net6.0-windows;net461</TargetFrameworks>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net461;net6.0-windows;net8.0-windows;net10.0-windows</TargetFrameworks>
     <TargetFrameworks Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
-    <NoWarn>MSB4011;$(NoWarn)</NoWarn>
+    <NoWarn>MSB4011;WFO1000;$(NoWarn)</NoWarn>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
@@ -96,6 +96,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\OpenTypeFontInfo.cs">
       <Link>Drawing\OpenTypeFontInfo.cs</Link>
     </Compile>    
+    <Compile Include="..\Shared\NetFxCompatibility.cs">
+      <Link>NetFxCompatibility.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.Wpf\Forms\TaskbarHandler.cs">
       <Link>Forms\TaskbarHandler.cs</Link>
     </Compile>
@@ -129,7 +132,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
 
   <ItemGroup>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
-  	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" PrivateAssets="all" />
+   	<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" PrivateAssets="all" />
     <PackageReference Include="System.Resources.Extensions" Version="7.0.0" />
   </ItemGroup>
 

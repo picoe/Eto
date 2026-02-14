@@ -87,7 +87,7 @@ namespace Eto.Shared.Drawing
 
 		static UInt16 ReadUInt16(Stream stream)
 		{
-			stream.Read(bufferUInt16, 0, bufferUInt16.Length);
+			stream.ReadExactly(bufferUInt16, 0, bufferUInt16.Length);
 			Array.Reverse(bufferUInt16);
 			return BitConverter.ToUInt16(bufferUInt16, 0);
 		}
@@ -95,7 +95,7 @@ namespace Eto.Shared.Drawing
 		static byte[] bufferUInt32 = new byte[4];
 		static unsafe UInt32 ReadUInt32(Stream stream)
 		{
-			stream.Read(bufferUInt32, 0, bufferUInt32.Length);
+			stream.ReadExactly(bufferUInt32, 0, bufferUInt32.Length);
 			Array.Reverse(bufferUInt32);
 			return BitConverter.ToUInt32(bufferUInt32, 0);
 		}
@@ -113,7 +113,7 @@ namespace Eto.Shared.Drawing
 			{
 				var pos = stream.Position;
 				var ttcTag = new byte[4];
-				stream.Read(ttcTag, 0, ttcTag.Length);
+				stream.ReadExactly(ttcTag, 0, ttcTag.Length);
 				if (!ttcTag.SequenceEqual(ttcTagIdentifier))
 				{
 					stream.Position = pos;
@@ -187,7 +187,7 @@ namespace Eto.Shared.Drawing
 
 			public OTTableRecord(Stream stream)
 			{
-				stream.Read(tableTag, 0, tableTag.Length);
+				stream.ReadExactly(tableTag, 0, tableTag.Length);
 				checksum = ReadUInt32(stream);
 				offset = ReadUInt32(stream);
 				length = ReadUInt32(stream);
@@ -251,7 +251,7 @@ namespace Eto.Shared.Drawing
 				stream.Position = absoluteOffset;
 
 				var stringBuffer = new byte[length];
-				stream.Read(stringBuffer, 0, length);
+				stream.ReadExactly(stringBuffer, 0, length);
 
 				var isBigEndian = platformID == 3 || (platformID == 0 && encodingID == 1 || encodingID == 3);
 				var encoding = isBigEndian ? Encoding.BigEndianUnicode : Encoding.UTF8;

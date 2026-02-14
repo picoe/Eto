@@ -2,10 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0-macos</TargetFrameworks>
-    <CodeSigningKey>Mac Developer</CodeSigningKey>
-    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
-    <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
+    <TargetFrameworks>net10.0-macos</TargetFrameworks>
+    <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
     <TrimMode>partial</TrimMode>
   </PropertyGroup>
 

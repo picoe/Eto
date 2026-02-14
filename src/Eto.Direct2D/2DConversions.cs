@@ -244,16 +244,14 @@ namespace Eto.Direct2D
 
 		public static DashStyle ToEto(this sd.DashStyle d)
 		{
-			if (object.ReferenceEquals(d, sd.DashStyle.Dash))
-				return DashStyles.Dash;
-			else if (object.ReferenceEquals(d, sd.DashStyle.DashDot))
-				return DashStyles.DashDot;
-			else if (object.ReferenceEquals(d, sd.DashStyle.DashDotDot))
-				return DashStyles.DashDotDot;
-			else if (object.ReferenceEquals(d, sd.DashStyle.Dot))
-				return DashStyles.Dot;
-			else
-				return DashStyles.Solid;
+			return d switch
+			{
+				sd.DashStyle.Dash => DashStyles.Dash,
+				sd.DashStyle.DashDot => DashStyles.DashDot,
+				sd.DashStyle.DashDotDot => DashStyles.DashDotDot,
+				sd.DashStyle.Dot => DashStyles.Dot,
+				_ => DashStyles.Solid
+			};
 		}
 
 		public static FillMode ToEto(this sd.FillMode f)

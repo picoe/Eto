@@ -61,9 +61,9 @@ namespace Eto.Mac.Forms.Controls
 		public WeakReference WeakHandler { get; set; }
 
 		public object Handler
-		{ 
+		{
 			get { return WeakHandler.Target; }
-			set { WeakHandler = new WeakReference(value); } 
+			set { WeakHandler = new WeakReference(value); }
 		}
 
 		public EtoLabel()
@@ -79,16 +79,30 @@ namespace Eto.Mac.Forms.Controls
 	}
 
 	public abstract class MacLabel<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
-		where TControl: NSTextField
-		where TWidget: Control
-		where TCallback: Control.ICallback
+		where TControl : NSTextField
+		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		readonly MacMnemonicString _str = new();
 		Size _availableSizeCached;
-		
+
 		public override NSView ContainerControl => Control;
 
 		protected override bool DefaultUseAlignmentFrame => true;
+
+		protected override bool ControlEnabled
+		{
+			get => Control.Enabled;
+			set
+			{
+				if (value == Enabled)
+					return;
+
+				Control.Enabled = value;
+				_str.Enabled = value;
+				SetAttributes();
+			}
+		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -108,7 +122,7 @@ namespace Eto.Mac.Forms.Controls
 				var size = Control.Cell.CellSizeForBounds(new CGRect(0, 0, width, int.MaxValue));
 				if (UseAlignmentFrame)
 					size = Control.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, size)).Size;
-				
+
 				NaturalSizeInfinity = Size.Ceiling(size.ToEto());
 				return NaturalSizeInfinity.Value;
 			}
@@ -134,7 +148,7 @@ namespace Eto.Mac.Forms.Controls
 				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSizeTruncated.ToNS()));
 				if (UseAlignmentFrame)
 					size = Control.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, size)).Size;
-					
+
 				NaturalSize = Size.Ceiling(size.ToEto());
 				_availableSizeCached = availableSizeTruncated;
 			}
@@ -229,10 +243,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public VerticalAlignment VerticalAlignment
 		{
-			get { return ((EtoLabelFieldCell)Control.Cell).VerticalAlignment; }
+			get => (Control.Cell as EtoLabelFieldCell)?.VerticalAlignment ?? VerticalAlignment.Top;
 			set
 			{
-				((EtoLabelFieldCell)Control.Cell).VerticalAlignment = value;
+				if (Control.Cell is EtoLabelFieldCell cell)
+					cell.VerticalAlignment = value;
 				Control.NeedsDisplay = true;
 			}
 		}
@@ -243,10 +258,11 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (Widget.Loaded || force)
 			{
+				// Control.StringValue = _str.Text ?? string.Empty;
 				Control.AttributedStringValue = _str.AttributedString;
 			}
 		}
-		
+
 		public bool UseMnemonic
 		{
 			get => _str.UseMnemonic;
@@ -256,7 +272,7 @@ namespace Eto.Mac.Forms.Controls
 				SetAttributes();
 			}
 		}
-		
+
 		public bool AlwaysShowMnemonic
 		{
 			get => _str.AlwaysShowMnemonic;
