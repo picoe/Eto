@@ -58,6 +58,9 @@ namespace Eto.Mac.Forms
 				case CursorType.SizeBottomLeft:
 					Control = GetHICursor("resizenortheastsouthwest") ?? GetNonStandardCursor("_windowResizeNorthEastSouthWestCursor") ?? NSCursor.ArrowCursor;
 					break;
+				case CursorType.NotAllowed:
+					Control = NSCursor.OperationNotAllowedCursor;
+					break;
 				default:
 					throw new NotSupportedException();
 			}

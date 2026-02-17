@@ -208,6 +208,8 @@ namespace Eto.GtkSharp
 					return Gdk.CursorType.BottomLeftCorner;
 				case CursorType.SizeBottomRight:
 					return Gdk.CursorType.BottomRightCorner;
+				case CursorType.NotAllowed:
+					return Gdk.CursorType.XCursor;
 				default:
 					throw new NotSupportedException();
 			}
