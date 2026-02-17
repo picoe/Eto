@@ -133,4 +133,9 @@ public static class Cursors
 	/// Bottom-right corner sizing cursor, which on some platforms is the same as <see cref="SizeTopLeft"/>
 	/// </summary>
 	public static Cursor SizeBottomRight => GetCursor(CursorType.SizeBottomRight);
+
+	/// <summary>
+	/// Cursor for not allowed actions
+	/// </summary>
+	public static Cursor NotAllowed => GetCursor(CursorType.NotAllowed);
 }
