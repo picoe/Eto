@@ -57,6 +57,9 @@ namespace Eto.WinForms.Forms
 				case CursorType.SizeBottomRight:
 					Control = swf.Cursors.SizeNWSE;
 					break;
+				case CursorType.NotAllowed:
+					Control = swf.Cursors.No;
+					break;
 				default:
 					throw new NotSupportedException();
 			}
