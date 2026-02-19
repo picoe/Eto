@@ -265,6 +265,14 @@ public abstract class MenuItem : Menu, ICommandItem
 		OnValidate(EventArgs.Empty);
 	}
 
+	/// <inheritdoc/>
+	public override void Unbind()
+	{
+		base.Unbind();
+
+		Properties.UnbindCommand(Command_Key);
+	}
+
 	/// <summary>
 	/// Callback interface for the <see cref="MenuItem"/>
 	/// </summary>

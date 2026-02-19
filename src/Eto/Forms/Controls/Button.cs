@@ -237,6 +237,14 @@ public class Button : TextControl, IMnemonicControl
 			OnClick(EventArgs.Empty);
 	}
 
+	/// <inheritdoc/>
+	public override void Unbind()
+	{
+		base.Unbind();
+
+		Properties.UnbindCommand(Command_Key);
+	}
+
 	static readonly object callback = new Callback();
 		
 	/// <inheritdoc/>

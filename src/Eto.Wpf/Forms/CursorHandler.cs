@@ -57,6 +57,9 @@ namespace Eto.Wpf.Forms
 				case CursorType.SizeBottomRight:
 					Control = swi.Cursors.SizeNWSE;
 					break;
+				case CursorType.NotAllowed:
+					Control = swi.Cursors.No;
+					break;
 				default:
 					throw new NotSupportedException();
 			}

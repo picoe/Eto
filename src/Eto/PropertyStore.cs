@@ -437,6 +437,24 @@ public class PropertyStore : Dictionary<object, object>
 	}
 
 	/// <summary>
+	/// Unbinds the command associated with the specified key, removing its registration.
+	/// </summary>
+	/// <remarks>
+	/// If the command associated with the specified key is found, it will be unregistered, allowing for
+	/// cleanup of resources or state related to the command.
+	/// </remarks>
+	/// <param name="key">The key used to identify the command to be unbound. Cannot be null.</param>
+	public void UnbindCommand(object key)
+	{
+		var cmd = Get<CommandWrapper>(key);
+		if (cmd != null)
+		{
+			cmd.Unregister();
+		}
+	}
+
+
+	/// <summary>
 	/// Updates the command's execute status, typically when the CommandParameter changes.
 	/// </summary>
 	/// <param name="key">Key of the command to execute.</param>

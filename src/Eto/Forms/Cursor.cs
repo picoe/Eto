@@ -89,7 +89,12 @@ public enum CursorType
 	/// <summary>
 	/// Bottom-right corner sizing cursor, which on some platforms is the same as <see cref="SizeTopLeft"/>
 	/// </summary>
-	SizeBottomRight
+	SizeBottomRight,
+
+	/// <summary>
+	/// Not allowed cursor
+	/// </summary>
+	NotAllowed
 }
 
 /// <summary>

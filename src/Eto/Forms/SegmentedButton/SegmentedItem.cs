@@ -188,6 +188,14 @@ public abstract class SegmentedItem : BindableWidget
 		set { Properties.Set(CommandParameter_Key, value, () => Properties.UpdateCommandCanExecute(Command_Key)); }
 	}
 
+	/// <inheritdoc/>
+	public override void Unbind()
+	{
+		base.Unbind();
+
+		Properties.UnbindCommand(Command_Key);
+	}
+
 	#region Events
 
 	/// <summary>
