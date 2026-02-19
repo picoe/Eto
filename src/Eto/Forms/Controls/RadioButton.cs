@@ -117,6 +117,14 @@ public class RadioButton : TextControl, IMnemonicControl
 		set => Handler.AlwaysShowMnemonic = value;
 	}
 
+	/// <inheritdoc/>
+	public override void Unbind()
+	{
+		base.Unbind();
+
+		Properties.UnbindCommand(Command_Key);
+	}
+
 	/// <summary>
 	/// Callback interface for the <see cref="RadioButton"/>
 	/// </summary>
