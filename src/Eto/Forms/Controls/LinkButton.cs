@@ -75,6 +75,14 @@ public class LinkButton : TextControl
 		set { Handler.DisabledTextColor = value; }
 	}
 
+	/// <inheritdoc/>
+	public override void Unbind()
+	{
+		base.Unbind();
+
+		Properties.UnbindCommand(Command_Key);
+	}
+
 	static readonly object callback = new Callback();
 	/// <summary>
 	/// Gets an instance of an object used to perform callbacks to the widget from handler implementations

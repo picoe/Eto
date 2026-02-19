@@ -142,6 +142,14 @@ public abstract class ToolItem : Tool, ICommandItem
 	/// <value>The user-defined tag.</value>
 	public object Tag { get; set; }
 
+	/// <inheritdoc/>
+	public override void Unbind()
+	{
+		base.Unbind();
+
+		Properties.UnbindCommand(Command_Key);
+	}
+
 	/// <summary>
 	/// Handler interface for the <see cref="ToolItem"/>.
 	/// </summary>
