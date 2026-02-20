@@ -381,14 +381,23 @@ namespace Eto.Wpf.Forms
 		public virtual void Focus()
 		{
 			if (FocusControl.IsLoaded)
+			{
+				swc.ToolTipService.SetIsEnabled(Control, false);
 				FocusControl.Focus();
+				swc.ToolTipService.SetIsEnabled(Control, true);
+			}
 			else
+			{
+				FocusControl.Loaded -= HandleFocus;
 				FocusControl.Loaded += HandleFocus;
+			}
 		}
 
 		void HandleFocus(object sender, sw.RoutedEventArgs e)
 		{
+			swc.ToolTipService.SetIsEnabled(Control, false);
 			FocusControl.Focus();
+			swc.ToolTipService.SetIsEnabled(Control, true);
 			FocusControl.Loaded -= HandleFocus;
 		}
 
