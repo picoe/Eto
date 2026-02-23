@@ -768,6 +768,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// </remarks>
 	public void Invalidate()
 	{
+		if (IsDisposed || !Visible) return;
 		Handler.Invalidate(true);
 	}
 
@@ -780,6 +781,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
 	public void Invalidate(bool invalidateChildren)
 	{
+		if (IsDisposed || !Visible) return;
 		Handler.Invalidate(invalidateChildren);
 	}
 
@@ -792,6 +794,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <param name="rect">Rectangle to repaint</param>
 	public void Invalidate(Rectangle rect)
 	{
+		if (IsDisposed || !Visible) return;
 		Handler.Invalidate(rect, true);
 	}
 
@@ -805,6 +808,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
 	public void Invalidate(Rectangle rect, bool invalidateChildren)
 	{
+		if (IsDisposed || !Visible) return;
 		Handler.Invalidate(rect, invalidateChildren);
 	}
 
