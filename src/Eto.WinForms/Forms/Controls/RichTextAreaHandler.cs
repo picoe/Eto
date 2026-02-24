@@ -99,9 +99,9 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			SetAttribute(range, () => SelectionBold = bold);
 		}
-		public void SetItalic(Range<int> range, bool bold)
+		public void SetItalic(Range<int> range, bool italic)
 		{
-			SetAttribute(range, () => SelectionBold = bold);
+			SetAttribute(range, () => SelectionItalic = italic);
 		}
 		public void SetUnderline(Range<int> range, bool bold)
 		{
