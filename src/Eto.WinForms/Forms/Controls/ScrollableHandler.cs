@@ -35,7 +35,7 @@ namespace Eto.WinForms.Forms.Controls
 				return AutoScrollPosition;
 			}
 
-			sd.Size lastClientSize;
+			Size lastClientSize;
 
 			protected override void OnLayout(swf.LayoutEventArgs levent)
 			{
@@ -45,7 +45,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			void UpdateScrollSize()
 			{
-				var clientSize = lastClientSize = ClientSize;
+				var clientSize = lastClientSize = this.DeviceUnitsToLogical(ClientSize);
 
 				var contentControl = Handler.Content.GetWindowsHandler();
 				if (contentControl != null)
@@ -77,7 +77,7 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				base.OnClientSizeChanged(e);
 				// when scrollbar is shown/hidden, need to perform layout
-				if (ClientSize != lastClientSize)
+				if (this.DeviceUnitsToLogical(ClientSize) != lastClientSize)
 					PerformLayout();
 			}
 		}

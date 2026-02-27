@@ -2,6 +2,7 @@ using sdp = System.Drawing.Printing;
 #if WPF
 namespace Eto.Wpf
 #else
+using Eto.WinForms.Forms;
 namespace Eto.WinForms
 #endif
 {
@@ -11,7 +12,11 @@ namespace Eto.WinForms
 
 		public static MouseEventArgs ToEto(this swf.MouseEventArgs e, swf.Control control)
 		{
-			var point = control.PointToClient(swf.Control.MousePosition).ToEto();
+#if WINFORMS
+			var point = control.DeviceUnitsToLogical(e.Location);
+#else
+			var point = e.Location.ToEto();
+#endif
 			var buttons = ToEto(e.Button);
 			var modifiers = swf.Control.ModifierKeys.ToEto();
 

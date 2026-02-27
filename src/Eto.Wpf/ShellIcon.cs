@@ -77,6 +77,26 @@ static class ShellIcon
 			return icon;
 		}
 	}
+
+	public static System.Drawing.Icon GetFileIcon(string name, int desiredPixels, bool linkOverlay)
+	{
+		var shfi = new Shell32.SHFILEINFO();
+		uint flags = Shell32.SHGFI_SYSICONINDEX | Shell32.SHGFI_USEFILEATTRIBUTES;
+
+		if (linkOverlay) flags |= Shell32.SHGFI_LINKOVERLAY;
+
+		Shell32.SHGetFileInfo(name,
+			Shell32.FILE_ATTRIBUTE_NORMAL,
+			ref shfi,
+			(uint)Marshal.SizeOf(shfi),
+			flags);
+
+		if (shfi.iIcon == 0)
+			return null;
+
+		var imageListType = Win32.GetBestImageListType(desiredPixels);
+		return Win32.GetIconFromImageList(imageListType, shfi.iIcon);
+	}
 	/// <summary>
 	/// Used to access system folder icons.
 	/// </summary>

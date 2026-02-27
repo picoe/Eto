@@ -86,6 +86,7 @@ namespace Eto.WinForms.Forms
 
 		public override Size? GetDefaultSize(Size availableSize)
 		{
+			var availableSizeSd = LogicalToDeviceUnits(availableSize);
 			var container = ContainerControl;
 			var min = container.MinimumSize;
 			if (min != sd.Size.Empty)
@@ -94,14 +95,14 @@ namespace Eto.WinForms.Forms
 				if (parent != null)
 					parent.SuspendLayout();
 				container.MinimumSize = sd.Size.Empty;
-				var size = container.GetPreferredSize(availableSize.ToSD()).ToEto();
+				var size = DeviceUnitsToLogical(container.GetPreferredSize(availableSizeSd));
 				container.MinimumSize = min;
 				if (parent != null)
 					parent.ResumeLayout(false);
 				return size;
 			}
 			else
-				return ContainerControl.GetPreferredSize(availableSize.ToSD()).ToEto();
+				return DeviceUnitsToLogical(ContainerControl.GetPreferredSize(availableSizeSd));
 		}
 
 		static readonly object enableRedrawDuringSuspendKey = new object();

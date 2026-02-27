@@ -344,15 +344,16 @@ namespace Eto.WinForms.Drawing
 		public void DrawText(Font font, Brush brush, float x, float y, string text)
 		{
 			SetOffset(false);
+			var sdFont = GetScaledFont(font);
 			if (!UseCompatibleTextRendering && brush is SolidBrush solidBrush)
 			{
-				swf.TextRenderer.DrawText(Control, text, (sd.Font)font.ControlObject, new sd.Point((int)x, (int)y), solidBrush.Color.ToSD(), DefaultTextFormat);
+				swf.TextRenderer.DrawText(Control, text, sdFont, new sd.Point((int)x, (int)y), solidBrush.Color.ToSD(), DefaultTextFormat);
 			}
 			else
 			{
 				var size = MeasureString(font, text);
 				var bounds = new RectangleF(x, y, size.Width, size.Height);
-				Control.DrawString(text, (sd.Font)font.ControlObject, brush.ToSD(bounds), x, y, DefaultStringFormat);
+				Control.DrawString(text, sdFont, brush.ToSD(bounds), x, y, DefaultStringFormat);
 			}
 		}
 
@@ -361,16 +362,29 @@ namespace Eto.WinForms.Drawing
 			(formattedText.Handler as FormattedTextHandler)?.Draw(this, location);
 		}
 
+		internal sd.Font GetScaledFont(Font font)
+		{
+			var sdFont = FontHandler.GetControl(font);
+			var dpi = Control.DpiX / 96f;
+			if (dpi != 1f)
+			{
+				// Divide font size by DpiScale to counteract the ScaleTransform applied for high DPI
+				var scaledSize = sdFont.SizeInPoints / dpi;
+				return new sd.Font(sdFont.FontFamily, scaledSize, sdFont.Style, sd.GraphicsUnit.Point);
+			}
+			return sdFont;
+		}
+
 		public SizeF MeasureString(Font font, string text)
 		{
 			if (string.IsNullOrEmpty(text))
 				return Size.Empty;
 
-			var sdFont = FontHandler.GetControl(font);
 			if (UseCompatibleTextRendering)
 			{
 				lock (DefaultStringFormat)
 				{
+					var sdFont = GetScaledFont(font);
 					sd.CharacterRange[] ranges = { new sd.CharacterRange(0, text.Length) };
 					DefaultStringFormat.SetMeasurableCharacterRanges(ranges);
 
@@ -381,7 +395,7 @@ namespace Eto.WinForms.Drawing
 				}
 			}
 
-			var size = swf.TextRenderer.MeasureText(Control, text, sdFont, sd.Size.Empty, DefaultTextFormat);
+			var size = swf.TextRenderer.MeasureText(Control, text, font.ToSD(), sd.Size.Empty, DefaultTextFormat);
 			return size.ToEto();
 		}
 
@@ -469,5 +483,11 @@ namespace Eto.WinForms.Drawing
 			else
 				Control.Clear(sd.Color.Transparent);
 		}
+
+		internal void SetDpiScale()
+		{
+			Control.ScaleTransform(Control.DpiX / 96f, Control.DpiY / 96f);
+		}
+
 	}
 }

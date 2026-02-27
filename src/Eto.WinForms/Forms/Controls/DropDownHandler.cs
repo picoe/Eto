@@ -55,7 +55,7 @@ namespace Eto.WinForms.Forms.Controls
 				foreach (object item in Items)
 				{
 					var text = GetItemText(item);
-					var itemSize = swf.TextRenderer.MeasureText(text, font);
+					var itemSize = this.DeviceUnitsToLogical(swf.TextRenderer.MeasureText(text, font));
 					var image = (item as EtoComboBoxItem)?.Image;
 					if (image != null)
 						itemSize.Width += 18;
@@ -67,6 +67,7 @@ namespace Eto.WinForms.Forms.Controls
 					size.Width += 4;
 				size.Width += 18;
 				size.Height += 4;
+				size = this.LogicalToDeviceUnits(size);
 				size.Width = Math.Max(size.Width, MinSize.Width);
 				size.Height = Math.Max(size.Height, MinSize.Height);
 				cachedSize = size;
@@ -209,7 +210,7 @@ namespace Eto.WinForms.Forms.Controls
 		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
 			if (Control.AutoSize)
-				return Control.GetPreferredSize(sd.Size.Empty).ToEto();
+				return Control.DeviceUnitsToLogical(Control.GetPreferredSize(sd.Size.Empty));
 			return base.GetPreferredSize(availableSize, useCache);
 		}
 

@@ -71,11 +71,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int Width
 		{
-			get { return Control.Width; }
+			get => (int)(Control.Width / Win32.SystemDpi);
 			set
 			{
 				AutoSize = value == -1;
-				Control.Width = value;
+				Control.Width = (int)(value * Win32.SystemDpi);
 			}
 		}
 
@@ -139,8 +139,11 @@ namespace Eto.WinForms.Forms.Controls
 			get => Control.HeaderCell.Style.Alignment.ToEtoTextAlignment();
 			set => Control.HeaderCell.Style.Alignment = value.ToSWFGridViewContentAlignment();
 		}
-		public int MinWidth { get => Control.MinimumWidth; set => Control.MinimumWidth = value; }
-
+		public int MinWidth
+		{
+			get => (int)(Control.MinimumWidth / Win32.SystemDpi);
+			set => Control.MinimumWidth = (int)(value * Win32.SystemDpi);
+		}
 		int maxWidth = int.MaxValue;
 		public int MaxWidth
 		{
@@ -152,9 +155,9 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					Control.DataGridView?.AutoResizeColumn(Control.Index);
 				}
-				else if (Control.Width > maxWidth)
+				else if (Control.Width > maxWidth * Win32.SystemDpi)
 				{
-					Control.Width = maxWidth;
+					Control.Width = (int)(maxWidth * Win32.SystemDpi);
 				}
 
 			}

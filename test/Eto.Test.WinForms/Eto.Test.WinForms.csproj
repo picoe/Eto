@@ -11,7 +11,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- <ApplicationManifest>app.manifest</ApplicationManifest> -->
+    <ApplicationVisualStyles>true</ApplicationVisualStyles>
+    <ApplicationUseCompatibleTextRendering>false</ApplicationUseCompatibleTextRendering>
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+    <!-- <ApplicationDefaultFont>Microsoft Sans Serif, 8.25pt</ApplicationDefaultFont> -->
   </PropertyGroup>
   
   <ItemGroup>
@@ -46,8 +50,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="app.manifest" />
+    <!-- <None Include="app.config" />
+    <None Include="app.manifest" /> -->
   </ItemGroup>
   
   <ItemGroup>

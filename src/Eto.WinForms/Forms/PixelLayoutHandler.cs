@@ -20,7 +20,7 @@ namespace Eto.WinForms.Forms
 
 		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
-			return Size.Max(base.GetPreferredSize(availableSize, useCache), Control.PreferredSize.ToEto());
+			return Size.Max(base.GetPreferredSize(availableSize, useCache), DeviceUnitsToLogical(Control.PreferredSize));
 		}
 
 		public void Add(Control child, int x, int y)
@@ -28,7 +28,7 @@ namespace Eto.WinForms.Forms
 			var childHandler = child.GetWindowsHandler();
 			var childControl = childHandler.ContainerControl;
 			childControl.Dock = swf.DockStyle.None;
-			childControl.Location = new sd.Point(x, y);
+			childControl.Location = LogicalToDeviceUnits(new Point(x, y));
 			childHandler.BeforeAddControl(Widget.Loaded);
 			Control.Controls.Add(childControl);
 			childControl.BringToFront();
@@ -37,7 +37,7 @@ namespace Eto.WinForms.Forms
 		public void Move(Control child, int x, int y)
 		{
 			var ctl = child.GetContainerControl();
-			ctl.Location = new sd.Point(x, y);
+			ctl.Location = LogicalToDeviceUnits(new Point(x, y));
 		}
 
 		public void Remove(Control child)

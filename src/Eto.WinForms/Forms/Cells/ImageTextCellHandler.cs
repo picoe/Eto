@@ -78,9 +78,9 @@ namespace Eto.WinForms.Forms.Cells
 				if (val != null)
 				{
 					var img = val[0] as sd.Image;
-					if (img != null) size.Width += IconSize + IconPadding * 2;
+					if (img != null) size.Width += DataGridView.LogicalToDeviceUnits(IconSize + IconPadding * 2);
 				}
-				size.Width += Handler.GetRowOffset(rowIndex);
+				size.Width += DataGridView.LogicalToDeviceUnits(Handler.GetRowOffset(rowIndex));
 				return size;
 			}
 
@@ -92,10 +92,12 @@ namespace Eto.WinForms.Forms.Cells
 				var img = val[0] as sd.Image;
 				if (img != null)
 				{
+					var iconSize = DataGridView.LogicalToDeviceUnits(IconSize);
+					var iconPadding = DataGridView.LogicalToDeviceUnits(IconPadding);
 					if (paintParts.HasFlag(swf.DataGridViewPaintParts.Background))
 						using (var b = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor))
 						{
-							graphics.FillRectangle(b, new sd.Rectangle(cellBounds.X, cellBounds.Y, IconSize + IconPadding * 2, cellBounds.Height));
+							graphics.FillRectangle(b, new sd.Rectangle(cellBounds.X, cellBounds.Y, iconSize + iconPadding * 2, cellBounds.Height));
 						}
 					
 					var container = graphics.BeginContainer();
@@ -104,10 +106,10 @@ namespace Eto.WinForms.Forms.Cells
 						using (var background = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor))
 							graphics.FillRectangle(background, cellBounds);
 					graphics.InterpolationMode = InterpolationMode;
-					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + IconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(IconSize, cellBounds.Height)) / 2, IconSize, IconSize));
+					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + iconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(iconSize, cellBounds.Height)) / 2, iconSize, iconSize));
 					graphics.EndContainer(container);
-					cellBounds.X += IconSize + IconPadding * 2;
-					cellBounds.Width -= IconSize + IconPadding * 2;
+					cellBounds.X += iconSize + iconPadding * 2;
+					cellBounds.Width -= iconSize + iconPadding * 2;
 				}
 				base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 			}

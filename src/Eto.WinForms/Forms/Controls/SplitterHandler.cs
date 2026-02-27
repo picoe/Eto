@@ -49,8 +49,8 @@ namespace Eto.WinForms.Forms.Controls
 		sd.Size GetPreferredSize(bool limit = false)
 		{
 			var size = new sd.Size();
-			var size1 = panel1 == null || !panel1.Visible ? Size.Empty : panel1.GetPreferredSize();
-			var size2 = panel2 == null || !panel2.Visible ? Size.Empty : panel2.GetPreferredSize();
+			var size1 = panel1 == null || !panel1.Visible ? sd.SizeF.Empty : LogicalToDeviceUnits(panel1.GetPreferredSize());
+			var size2 = panel2 == null || !panel2.Visible ? sd.SizeF.Empty : LogicalToDeviceUnits(panel2.GetPreferredSize());
 			if (Orientation == Orientation.Horizontal)
 			{
 				if (position.HasValue)
@@ -140,7 +140,7 @@ namespace Eto.WinForms.Forms.Controls
 				return;
 
 			splitterMoving++;
-			var originalPosition = Control.SplitterDistance;
+			var originalPosition = DeviceUnitsToLogical(Control.SplitterDistance);
 			var newPosition = originalPosition;
 			if (newPosition > controlsize - panel2MinimumSize)
 				newPosition = controlsize - panel2MinimumSize;
@@ -162,7 +162,7 @@ namespace Eto.WinForms.Forms.Controls
 			}
 
 			// always set splitter distance 
-			Control.SplitterDistance = newPosition;
+			Control.SplitterDistance = LogicalToDeviceUnits(newPosition);
 
 			if (lastPosition != newPosition)
 			{
@@ -201,7 +201,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int Position
 		{
-			get { return position ?? Control.SplitterDistance; }
+			get { return position ?? DeviceUnitsToLogical(Control.SplitterDistance); }
 			set
 			{
 				if (value != position)
@@ -219,8 +219,8 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int SplitterWidth
 		{
-			get { return Control.SplitterWidth; }
-			set { Control.SplitterWidth = value; }
+			get { return DeviceUnitsToLogical(Control.SplitterWidth); }
+			set { Control.SplitterWidth = LogicalToDeviceUnits(value); }
 		}
 
 		int GetAvailableSize(bool desired = false)
@@ -230,9 +230,9 @@ namespace Eto.WinForms.Forms.Controls
 				var size = UserPreferredSize;
 				var pick = Orientation == Orientation.Horizontal ? size.Width : size.Height;
 				if (pick >= 0)
-					return pick - Control.SplitterWidth;
+					return pick - DeviceUnitsToLogical(Control.SplitterWidth);
 			}
-			return (Orientation == Orientation.Horizontal ? Control.Width : Control.Height) - Control.SplitterWidth;
+			return (Orientation == Orientation.Horizontal ? Control.Width : Control.Height) - DeviceUnitsToLogical(Control.SplitterWidth);
 		}
 
 		void UpdateRelative()
@@ -281,7 +281,7 @@ namespace Eto.WinForms.Forms.Controls
 				: fixedPanel == SplitterFixedPanel.Panel2 ? Math.Max(0, size - newPosition)
 				: size <= 0 ? 0.5 : Math.Max(0.0, Math.Min(1.0, newPosition / (double)size));
 			if (size > 0)
-				Control.SplitterDistance = lastPosition = Math.Max(0, Math.Min(size, newPosition));
+				Control.SplitterDistance = LogicalToDeviceUnits(lastPosition = Math.Max(0, Math.Min(size, newPosition)));
 		}
 		void SetRelative(double newRelative)
 		{
@@ -304,7 +304,7 @@ namespace Eto.WinForms.Forms.Controls
 						lastPosition = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
 						break;
 				}
-				Control.SplitterDistance = lastPosition;
+				Control.SplitterDistance = LogicalToDeviceUnits(lastPosition);
 			}
 			catch
 			{

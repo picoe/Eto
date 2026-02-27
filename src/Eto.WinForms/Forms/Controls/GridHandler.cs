@@ -234,10 +234,16 @@ namespace Eto.WinForms.Forms.Controls
 				var colHandler = col.Handler as GridColumnHandler;
 				if (col.AutoSize)
 				{
-					Control.AutoResizeColumn(colNum, colHandler.Control.InheritedAutoSizeMode);
-					var width = colHandler.Control.Width;
-					colHandler.Control.Width = width;
-					colHandler.Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.None;
+					var autoSizeMode = colHandler.Control.InheritedAutoSizeMode;
+					if (autoSizeMode != swf.DataGridViewAutoSizeColumnMode.Fill
+						&& autoSizeMode != swf.DataGridViewAutoSizeColumnMode.None
+						&& autoSizeMode != swf.DataGridViewAutoSizeColumnMode.NotSet)
+					{
+						Control.AutoResizeColumn(colNum, autoSizeMode);
+						var width = colHandler.Control.Width;
+						colHandler.Control.Width = width;
+						colHandler.Control.AutoSizeMode = swf.DataGridViewAutoSizeColumnMode.None;
+					}
 				}
 				colNum++;
 			}
@@ -517,13 +523,14 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int RowHeight
 		{
-			get { return Control.RowTemplate.Height; }
+			get => DeviceUnitsToLogical(Control.RowTemplate.Height);
 			set
 			{
-				Control.RowTemplate.Height = value;
+				var scaledValue = LogicalToDeviceUnits(value);
+				Control.RowTemplate.Height = scaledValue;
 				foreach (swf.DataGridViewRow row in Control.Rows)
 				{
-					row.Height = value;
+					row.Height = scaledValue;
 				}
 			}
 		}

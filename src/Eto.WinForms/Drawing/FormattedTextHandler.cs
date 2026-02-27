@@ -64,10 +64,22 @@ namespace Eto.WinForms.Drawing
 				}
 			}
 		}
+
+		Font _font = SystemFonts.Default();
+		sd.Font _scaledFont;
+		
 		public string Text { get; set; }
 
 		public SizeF MaximumSize { get; set; } = SizeF.MaxValue;
-		public Font Font { get; set; } = SystemFonts.Default();
+		public Font Font
+		{
+			get => _font;
+			set
+			{
+				_font = value;
+				_scaledFont = null;
+			}
+		}
 		public Brush ForegroundBrush { get; set; } = new SolidBrush(SystemColors.ControlText);
 
 		public FormattedTextAlignment Alignment
@@ -101,15 +113,18 @@ namespace Eto.WinForms.Drawing
 		public SizeF Measure()
 		{
 			if (measureGraphics == null)
-				measureGraphics = sd.Graphics.FromImage(new sd.Bitmap(1, 1));
+			{
+				var bmp = new sd.Bitmap(1, 1);
+				bmp.SetResolution(96, 96);
+				measureGraphics = sd.Graphics.FromImage(bmp);
+			}
 			var size = measureGraphics.MeasureString(Text, Font.ToSD(), MaximumSize.ToSD(), Control);
 			return size.ToEto();
 		}
 
-		void DrawJustifiedLines(GraphicsHandler graphics, RectangleF rect)
+		void DrawJustifiedLines(GraphicsHandler graphics, RectangleF rect, sd.Font font)
 		{
 			var brush = ForegroundBrush.ToSD(rect);
-			var font = Font.ToSD();
 			var text = Text;
 			var lineHeight = font.GetHeight(graphics.Control);
 			var format = new sd.StringFormat(Control);
@@ -191,6 +206,8 @@ namespace Eto.WinForms.Drawing
 		public void Draw(GraphicsHandler graphics, PointF location)
 		{
 			var size = Measure();
+			
+			_scaledFont ??= graphics.GetScaledFont(Font);
 
 			if (Alignment != FormattedTextAlignment.Left && MaximumSize.Width < int.MaxValue)
 				size.Width = MaximumSize.Width;
@@ -198,11 +215,11 @@ namespace Eto.WinForms.Drawing
 			var rect = new RectangleF(location.X, location.Y, size.Width, size.Height);
 			if (Wrap != FormattedTextWrapMode.None && Alignment == FormattedTextAlignment.Justify && rect.Width < int.MaxValue)
 			{
-				DrawJustifiedLines(graphics, rect);
+				DrawJustifiedLines(graphics, rect, _scaledFont);
 			}
 			else
 			{
-				graphics.Control.DrawString(Text, Font.ToSD(), ForegroundBrush.ToSD(rect), rect.ToSD(), Control);
+				graphics.Control.DrawString(Text, _scaledFont, ForegroundBrush.ToSD(rect), rect.ToSD(), Control);
 			}
 		}
 	}

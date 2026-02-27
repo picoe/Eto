@@ -83,12 +83,12 @@ namespace Eto.WinForms.Forms
 			{
 				if (Widget.Loaded)
 				{
-					var size = Control.Size - content.Size;
-					Control.Size = new sd.Size(value.Width + size.Width, value.Height + size.Height);
+					var size = DeviceUnitsToLogical(Control.Size - content.Size);
+					Control.Size = LogicalToDeviceUnits(new Size(value.Width + size.Width, value.Height + size.Height));
 				}
 				else
 				{
-					content.MinimumSize = content.MaximumSize = value.ToSD();
+					content.MinimumSize = content.MaximumSize = LogicalToDeviceUnits(value);
 				}
 				clientWidthSet = value.Width != -1;
 				clientHeightSet = value.Height != -1;
@@ -122,7 +122,7 @@ namespace Eto.WinForms.Forms
 
 		protected override bool SetMinimumSize(Size size)
 		{
-			var sdsize = Size.Max(size, MinimumSize).ToSD();
+			var sdsize = LogicalToDeviceUnits(Size.Max(size, MinimumSize));
 			if (Control.MinimumSize != sdsize)
 			{
 				Control.MinimumSize = sdsize;
@@ -180,13 +180,13 @@ namespace Eto.WinForms.Forms
 			// ensure we auto size to the content
 			if ((!clientWidthSet || !clientHeightSet) /*&& Control.AutoSize*/ && contentSize != null)
 			{
-				var sz = contentSize.Value.ToSD(); // Content.GetPreferredSize().ToSD();
-				var min = new sd.Size();
+				var sz = contentSize.Value; // Content.GetPreferredSize().ToSD();
+				var min = new Size();
 				if (!clientWidthSet)
 					min.Width = sz.Width;
 				if (!clientHeightSet)
 					min.Height = sz.Height;
-				ContainerContentControl.MinimumSize = min;
+				ContainerContentControl.MinimumSize = LogicalToDeviceUnits(min);
 			}
 			// turn off auto sizing so user can then resize the forms
 			var size = Control.Size;
@@ -475,10 +475,10 @@ namespace Eto.WinForms.Forms
 
 		public new Point Location
 		{
-			get => Control.Location.ToEto();
+			get => Control.DeviceUnitsToLogical(Control.Location);
 			set
 			{
-				Control.Location = value.ToSD();
+				Control.Location = Control.LogicalToDeviceUnits(value);
 				Control.StartPosition = swf.FormStartPosition.Manual;
 			}
 		}
@@ -598,7 +598,17 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public float LogicalPixelSize => 1f;
+		public float LogicalPixelSize
+		{
+			get
+			{
+#if NET9_0_OR_GREATER
+				return Control.DeviceDpi / 96f;
+#else
+				return 1f;
+#endif
+			}
+		}
 
 		public bool AutoSize
 		{

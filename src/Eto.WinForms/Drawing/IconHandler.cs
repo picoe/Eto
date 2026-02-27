@@ -60,7 +60,8 @@ namespace Eto.WinForms.Drawing
 			if (_idealFrame != null)
 				return _idealFrame;
 			var orderedFrames = SplitIcon(Control).OrderByDescending(r => r.PixelSize.Width * r.PixelSize.Height);
-			_idealFrame = orderedFrames.FirstOrDefault(r => r.Scale == 1) ?? orderedFrames.First();
+			var dpi = Win32.SystemDpi;
+			_idealFrame = orderedFrames.FirstOrDefault(r => Math.Abs(r.Scale - dpi) < 0.0001f) ?? orderedFrames.First();
 			return _idealFrame;
 		}
 
