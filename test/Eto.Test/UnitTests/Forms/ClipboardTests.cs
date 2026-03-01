@@ -183,7 +183,18 @@ namespace Eto.Test.UnitTests.Forms
 				case DataType.Html:
 					Assert.That(dataObject.ContainsHtml, Is.True);
 					Assert.That(dataObject.Html, Is.Not.Null);
-					Assert.That(dataObject.Html, Is.EqualTo(SampleHtml));
+					if (IsClipboard)
+					{
+						Assert.That(dataObject.Html, Does.Contain(SampleHtml));
+						Assert.That(dataObject.Html, Does.Not.Contain("StartHTML:"));
+						Assert.That(dataObject.Html, Does.Not.Contain("EndHTML:"));
+						Assert.That(dataObject.Html, Does.Not.Contain("StartFragment:"));
+						Assert.That(dataObject.Html, Does.Not.Contain("EndFragment:"));
+					}
+					else
+					{
+						Assert.That(dataObject.Html, Is.EqualTo(SampleHtml));
+					}
 					break;
 				//case DataType.Icon:
 				//Assert.That(dataObject.Image, Is.Not.Null);
