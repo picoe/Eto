@@ -56,8 +56,8 @@ namespace Eto.Test.Sections.Behaviors
 				Items =
 				{
 					new StackLayout
-					{ 
-						Orientation = Orientation.Horizontal, 
+					{
+						Orientation = Orientation.Horizontal,
 						Spacing = 5,
 						Padding = new Padding(10),
 						Items = { copyTextButton, copyHtmlButton, copyImageButton, copyCustomButton, copyObjectButton, pasteTextButton, clearButton }
@@ -66,34 +66,36 @@ namespace Eto.Test.Sections.Behaviors
 				}
 			};
 		}
+		
+		TextArea ReadOnlyTextArea(string text) => new TextArea { Text = text, ReadOnly = true, Border = BorderType.None, BackgroundColor = Colors.Transparent };
 
 		void Update()
 		{
 			using var clipboard = new Clipboard();
-			var panel = new StackLayout { Padding = new Padding(10) };
+			var panel = new StackLayout { Padding = new Padding(10), HorizontalContentAlignment = HorizontalAlignment.Stretch, Spacing = 5 };
 			if (clipboard.Text != null)
 			{
 				panel.Items.Add(new Label { Text = "\nText:", Font = SystemFonts.Bold() });
-				panel.Items.Add(clipboard.Text);
+				panel.Items.Add(ReadOnlyTextArea(clipboard.Text));
 			}
 			if (clipboard.Image != null)
 			{
 				panel.Items.Add(new Label { Text = "\nImage:", Font = SystemFonts.Bold() });
 				panel.Items.Add(new ImageView
-					{
-						Image = clipboard.Image
-					});
+				{
+					Image = clipboard.Image
+				});
 			}
 			if (clipboard.Html != null)
 			{
 				panel.Items.Add(new Label { Text = "\nHtml:", Font = SystemFonts.Bold() });
-				panel.Items.Add(clipboard.Html);
+				panel.Items.Add(ReadOnlyTextArea(clipboard.Html));
 			}
 			var uris = clipboard.Uris;
 			if (uris != null)
 			{
 				panel.Items.Add(new Label { Text = "\nUris:", Font = SystemFonts.Bold() });
-				panel.Items.Add(string.Join(", ", uris.Select(r => r.AbsoluteUri)));
+				panel.Items.Add(ReadOnlyTextArea(string.Join(", ", uris.Select(r => r.AbsoluteUri))));
 			}
 
 			var types = clipboard.Types;
@@ -102,23 +104,47 @@ namespace Eto.Test.Sections.Behaviors
 				foreach (var type in types)
 				{
 					panel.Items.Add(new Label { Text = $"\n{type}:", Font = SystemFonts.Bold() });
-					var data = clipboard.GetData(type);
-					if (data != null)
+					string str = null;
+					byte[] data = null;
+					try
 					{
-						panel.Items.Add($"- Data, Length: {data.Length}");
-						var hexString = BitConverter.ToString(data);
-						panel.Items.Add(hexString.Substring(0, Math.Min(hexString.Length, 1000)));
+						str = clipboard.GetString(type);
+						if (str != null)
+						{
+							panel.Items.Add($"- String, Length: {str.Length}");
+							panel.Items.Add(ReadOnlyTextArea(str));
+						}
 					}
-					var str = clipboard.GetString(type);
-					if (str != null)
+					catch (Exception ex)
 					{
-						panel.Items.Add($"- String, Length: {str.Length}");
-						panel.Items.Add(str);
+						panel.Items.Add($"- Error getting string: {ex.Message}");
 					}
-					var obj = clipboard.GetObject(type);
-					if (obj != null)
+					try
 					{
-						panel.Items.Add($"- Object, Type: {obj.GetType()}: {obj}");
+						data = clipboard.GetData(type);
+						if (data != null)
+						{
+							panel.Items.Add($"- Data, Length: {data.Length}");
+							var hexString = BitConverter.ToString(data);
+							panel.Items.Add(ReadOnlyTextArea(hexString.Substring(0, Math.Min(hexString.Length, 1000))));
+						}
+					}
+					catch (Exception ex)
+					{
+						panel.Items.Add($"- Error getting data: {ex.Message}");
+					}
+					try
+					{
+						var obj = clipboard.GetObject(type);
+						if (obj != null && str == null && data == null)
+						{
+							panel.Items.Add($"- Object, Type: {obj.GetType()}:");
+							panel.Items.Add(ReadOnlyTextArea(obj.ToString()));
+						}
+					}
+					catch (Exception ex)
+					{
+						panel.Items.Add($"- Error getting object: {ex.Message}");
 					}
 				}
 			}
