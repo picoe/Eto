@@ -13,6 +13,22 @@ namespace Eto.GtkSharp.Drawing
 
 		public string Name => Control?.FaceName;
 
+		const string FcPostScriptName = "postscriptname";
+		string postscriptName;
+		bool postscriptNameLoaded;
+
+		public string PostScriptName
+		{
+			get
+			{
+				if (postscriptNameLoaded)
+					return postscriptName;
+				postscriptNameLoaded = true;
+				postscriptName = GetPostScriptName();
+				return postscriptName;
+			}
+		}
+
 		public string LocalizedName => Name;
 
 		public FontStyle FontStyle
@@ -36,6 +52,114 @@ namespace Eto.GtkSharp.Drawing
 
 		public FontFamily Family { get; private set; }
 
+		string GetPostScriptName()
+		{
+#if GTKCORE
+			if (Control == null)
+				return null;
+
+			if (FontsHandler.Context.FontMap?.NativeType.ToString() == "PangoCairoFcFontMap")
+			{
+				var fontDescription = Control.Describe();
+				using (var pangoFont = FontsHandler.Context.LoadFont(fontDescription))
+				{
+					if (pangoFont != null)
+					{
+						var pattern = NativeMethods.pango_fc_font_get_pattern(pangoFont.Handle);
+						if (pattern != IntPtr.Zero &&
+							NativeMethods.FcPatternGetString(pattern, FcPostScriptName, 0, out var postscriptNamePtr) == 0)
+						{
+							var value = NativeMethods.GetString(postscriptNamePtr);
+							if (!string.IsNullOrWhiteSpace(value))
+								return value;
+						}
+					}
+				}
+
+				// Some environments return null from pango_context_load_font() for face-only
+				// descriptions; query FontConfig directly as a fallback.
+				var fontConfigValue = TryGetPostScriptNameFromFontConfig(fontDescription);
+				if (!string.IsNullOrWhiteSpace(fontConfigValue))
+					return fontConfigValue;
+			}
+#endif
+			return CreatePostScriptFallbackName();
+		}
+
+#if GTKCORE
+		string TryGetPostScriptNameFromFontConfig(Pango.FontDescription targetDescription)
+		{
+			var fcconfig = NativeMethods.FcConfigGetCurrent();
+			if (fcconfig == IntPtr.Zero)
+				return null;
+
+			foreach (var setName in new[] { NativeMethods.FcSetName.FcSetApplication, NativeMethods.FcSetName.FcSetSystem })
+			{
+				var fcfontsPtr = NativeMethods.FcConfigGetFonts(fcconfig, setName);
+				if (fcfontsPtr == IntPtr.Zero)
+					continue;
+
+				var fcfonts = Marshal.PtrToStructure<NativeMethods.FcFontSet>(fcfontsPtr);
+				if (fcfonts.nfont <= 0 || fcfonts.fonts == IntPtr.Zero)
+					continue;
+
+				var fonts = new IntPtr[fcfonts.nfont];
+				Marshal.Copy(fcfonts.fonts, fonts, 0, fcfonts.nfont);
+
+				foreach (var pattern in fonts)
+				{
+					var fontDescriptionPtr = NativeMethods.pango_fc_font_description_from_pattern(pattern, false);
+					if (fontDescriptionPtr == IntPtr.Zero)
+						continue;
+
+					using (var candidate = new Pango.FontDescription(fontDescriptionPtr))
+					{
+						if (!MatchesDescription(targetDescription, candidate))
+							continue;
+					}
+
+					if (NativeMethods.FcPatternGetString(pattern, FcPostScriptName, 0, out var postscriptNamePtr) == 0)
+					{
+						var value = NativeMethods.GetString(postscriptNamePtr);
+						if (!string.IsNullOrWhiteSpace(value))
+							return value;
+					}
+				}
+			}
+
+			return null;
+		}
+
+		static bool MatchesDescription(Pango.FontDescription target, Pango.FontDescription candidate)
+		{
+			if (target == null || candidate == null)
+				return false;
+
+			var targetFamily = target.Family?.TrimStart('.');
+			var candidateFamily = candidate.Family?.TrimStart('.');
+			if (!string.Equals(targetFamily, candidateFamily, StringComparison.InvariantCultureIgnoreCase))
+				return false;
+
+			return target.Style == candidate.Style
+				&& target.Stretch == candidate.Stretch
+				&& target.Weight == candidate.Weight;
+		}
+#endif
+
+		string CreatePostScriptFallbackName()
+		{
+			var description = Control?.Describe();
+			var family = description?.Family?.Replace(" ", string.Empty);
+			var face = Name?.Replace(" ", string.Empty);
+
+			if (string.IsNullOrWhiteSpace(family))
+				return Name;
+			if (string.IsNullOrWhiteSpace(face) || string.Equals(face, "Regular", StringComparison.OrdinalIgnoreCase))
+				return family;
+
+			return $"{family}-{face}";
+		}
+
 		static Pango.AttrList noFallbackAttributes;
 		static object noFallbackLock = new object();
 
@@ -47,7 +171,7 @@ namespace Eto.GtkSharp.Drawing
 			{
 				lock (noFallbackLock)
 				{
-					if (noFallbackAttributes != null)
+					if (noFallbackAttributes == null)
 					{
 						noFallbackAttributes = new Pango.AttrList();
 						noFallbackAttributes.Change(new Pango.AttrFallback(false));
@@ -182,4 +306,3 @@ namespace Eto.GtkSharp.Drawing
 		}
 	}
 }
-

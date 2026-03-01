@@ -34,6 +34,8 @@ namespace Eto.Direct2D.Drawing
 
 		public FontFamily Family { get; private set; }
 
+		public string PostScriptName => $"{Family?.Name.Replace(" ", "")}-{Name}";
+
 		public bool HasCharacterRanges(IEnumerable<Range<int>> ranges)
 		{
 			foreach (var range in ranges)

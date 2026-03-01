@@ -29,6 +29,16 @@ public class FontTypeface : Widget
 	/// The name of the typeface typically includes hints to the style of the type
 	/// </remarks>
 	public string Name => Handler.Name;
+	
+	/// <summary>
+	/// Gets the PostScript name of this typeface, which is a unique name for this typeface that is used by the operating system to identify it.
+	/// </summary>
+	/// <remarks>
+	/// The PostScript name is typically used to create a font from the operating system, and is not generally used for display purposes. 
+	/// The value of this property may be null if the platform does not support it, or if the font does not have a PostScript name.
+	/// In some implementations and as a fallback, this can be a combination of the family name and typeface name, but this is not guaranteed to be unique across all fonts.
+	/// </remarks>
+	public string PostScriptName => Handler.PostScriptName;
 
 	/// <summary>
 	/// Gets the localized name of this typeface
@@ -210,6 +220,11 @@ public class FontTypeface : Widget
 		/// The name of the typeface typically includes hints to the style of the type
 		/// </remarks>
 		string Name { get; }
+		
+		/// <summary>
+		/// Gets the PostScript name of this typeface, which is a unique name for this typeface that is used by the operating system to identify it.
+		/// </summary>
+		string PostScriptName { get; }
 
 		/// <summary>
 		/// Gets the localized name of this typeface
