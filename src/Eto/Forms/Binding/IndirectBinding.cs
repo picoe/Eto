@@ -148,6 +148,28 @@ public abstract class IndirectBinding<T> : Binding, IIndirectBinding<T>
 	}
 
 	/// <summary>
+	/// Converts this binding's value to another value using delegates.
+	/// </summary>
+	/// <remarks>
+	/// This differs from <see cref="Convert{TValue}(Func{T, TValue}, Func{TValue, T})"/> in that it allows the 
+	/// set value delegate to have access to the original parent value, which can be useful when needing to call
+	/// a method of the parent binding instead of converting the value directly, or performing other logic.
+	/// </remarks>
+	/// <typeparam name="TValue">The type to convert to.</typeparam>
+	/// <param name="getValue">Delegate to get the value from the original binding's type.</param>
+	/// <param name="setValue">Delegate to set the value to the original binding's type.</param>
+	/// <returns>A new binding that will be converted using the specified delegates.</returns>
+	public IndirectBinding<TValue> Convert<TValue>(Func<T, TValue> getValue, Action<T, TValue> setValue)
+	{
+		return new DelegateBinding<object, TValue>(
+			m => getValue != null ? getValue(GetValue(m)) : default(TValue),
+			(m, val) => { if (setValue != null) setValue(GetValue(m), val); },
+			addChangeEvent: AddValueChangedHandler,
+			removeChangeEvent: RemoveValueChangedHandler
+		);
+	}
+
+	/// <summary>
 	/// Converts the binding using the specified <paramref name="converter"/> object.
 	/// </summary>
 	/// <returns>A new binding that will be converted using the specified IValueConverter.</returns>

@@ -13,6 +13,12 @@ public class BindingChangedEventArgs : EventArgs
 	public object Value => InternalValue;
 
 	internal virtual object InternalValue { get; set; }
+	
+	/// <summary>
+	/// Gets or sets the update mode for this change event
+	/// This is used to determine if the change is being set to the source or target of the binding
+	/// </summary>
+	public BindingUpdateMode? UpdateMode { get; internal set; }
 
 	/// <summary>
 	/// Initializes a new instance of the BindingChangedEventArgs with the specified value
@@ -20,7 +26,18 @@ public class BindingChangedEventArgs : EventArgs
 	/// <param name="value">value that the binding was set to</param>
 	public BindingChangedEventArgs(object value)
 	{
-		this.InternalValue = value;
+		InternalValue = value;
+	}
+	
+	/// <summary>
+	/// Initializes a new instance of the BindingChangedEventArgs with the specified value and update mode
+	/// </summary>
+	/// <param name="value">value that the binding was set to</param>
+	/// <param name="updateMode">update mode for this change event</param>
+	public BindingChangedEventArgs(object value, BindingUpdateMode? updateMode)
+	{
+		InternalValue = value;
+		UpdateMode = updateMode;
 	}
 
 	/// <summary>

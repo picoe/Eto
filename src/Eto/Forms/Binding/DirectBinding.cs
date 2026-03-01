@@ -84,6 +84,49 @@ public abstract class DirectBinding<T> : Binding
 	}
 
 	/// <summary>
+	/// Converts this binding's value to another value using delegates.
+	/// </summary>
+	/// <remarks>
+	/// This differs from <see cref="Convert{TValue}(Func{T, TValue}, Func{TValue, T})"/> in that it allows the 
+	/// set value delegate to have access to the original parent value, which can be useful when needing to call
+	/// a method of the parent binding instead of converting the value directly, or performing other logic.
+	/// </remarks>
+	/// <typeparam name="TValue">The type of the value for the new binding.</typeparam>
+	/// <param name="getValue">Delegate to get the value from the original binding's type.</param>
+	/// <param name="setValue">Delegate to set the value to the original binding's type.</param>
+	/// <returns>A new binding with the specified <typeparamref name="TValue"/> type.</returns>
+	public DirectBinding<TValue> Convert<TValue>(Func<T, TValue> getValue, Action<T, TValue> setValue)
+	{
+		return new DelegateBinding<TValue>(
+			() => getValue != null ? getValue(DataValue) : default(TValue),
+			r => setValue?.Invoke(DataValue, r),
+			addChangeEvent: ev => DataValueChanged += ev,
+			removeChangeEvent: ev => DataValueChanged -= ev
+		);
+	}
+	
+	/// <summary>
+	/// Converts this binding's value to another value using an <see cref="IValueConverter"/>.
+	/// </summary>
+	/// <typeparam name="TValue">The type of the value for the new binding.</typeparam>
+	/// <param name="converter">The value converter to use.</param>
+	/// <param name="conveterParameter">An optional parameter to pass to the converter.</param>
+	/// <param name="culture">An optional culture to use for the conversion.</param>
+	/// <returns>A new binding with the specified <typeparamref name="TValue"/> type.</returns>
+	/// <exception cref="ArgumentNullException"></exception>
+	public DirectBinding<TValue> Convert<TValue>(IValueConverter converter, object conveterParameter = null, CultureInfo culture = null)
+	{
+		if (converter == null)
+			throw new ArgumentNullException(nameof(converter));
+		return new DelegateBinding<TValue>(
+			() => (TValue)converter.Convert(DataValue, typeof(TValue), conveterParameter, culture),
+			r => DataValue = (T)converter.ConvertBack(r, typeof(T), conveterParameter, culture),
+			addChangeEvent: ev => DataValueChanged += ev,
+			removeChangeEvent: ev => DataValueChanged -= ev
+		);
+	}
+
+	/// <summary>
 	/// Casts this binding value to another (compatible) type.
 	/// </summary>
 	/// <typeparam name="TValue">The type to cast the values of this binding to.</typeparam>
