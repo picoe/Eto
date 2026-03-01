@@ -166,12 +166,12 @@ public class DualBinding<T> : Binding
 		{
 			channeling = true;
 			var value = Destination.DataValue;
-			var args = new BindingChangingEventArgs(value);
+			var args = new BindingChangingEventArgs(value, BindingUpdateMode.Source);
 			OnChanging(args);
 			if (!args.Cancel)
 			{
 				Source.DataValue = value;
-				OnChanged(new BindingChangedEventArgs(value));
+				OnChanged(new BindingChangedEventArgs(value, BindingUpdateMode.Source));
 			}
 			channeling = false;
 		}
@@ -186,12 +186,12 @@ public class DualBinding<T> : Binding
 		{
 			channeling = true;
 			var value = Source.DataValue;
-			var args = new BindingChangingEventArgs(value);
+			var args = new BindingChangingEventArgs(value, BindingUpdateMode.Destination);
 			OnChanging(args);
 			if (!args.Cancel)
 			{
 				Destination.DataValue = value;
-				OnChanged(new BindingChangedEventArgs(value));
+				OnChanged(new BindingChangedEventArgs(value, BindingUpdateMode.Destination));
 			}
 			channeling = false;
 		}
