@@ -1,0 +1,86 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Linux" />
+    <Platform Name="Mac" />
+    <Platform Name="Windows" />
+  </Configurations>
+  <Folder Name="/build/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/Eto/">
+    <Project Path="../src/Eto.Gtk/Eto.Gtk.csproj" />
+    <Project Path="../src/Eto.Mac/Eto.Mac64.csproj" />
+    <Project Path="../src/Eto.Mac/Eto.macOS.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Windows" Project="false" />
+    </Project>
+    <Project Path="../src/Eto.WinForms/Eto.WinForms.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+    </Project>
+    <Project Path="../src/Eto.Wpf/Eto.Wpf.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+    </Project>
+    <Project Path="../src/Eto/Eto.csproj" />
+  </Folder>
+  <Folder Name="/Eto/monomac/">
+    <Project Path="../lib/monomac/src/core.csproj" />
+    <Project Path="../lib/monomac/src/generator.csproj" />
+    <Project Path="../lib/monomac/src/MonoMac.csproj" />
+  </Folder>
+  <Folder Name="/Gtk/">
+    <Project Path="Gtk/EmbedEtoInGtk/EmbedEtoInGtk.csproj" />
+    <Project Path="Gtk/EmbedGtkInEto/EmbedGtkInEto.csproj" />
+    <Properties Name="MonoDevelopProperties">
+      <Property Name="BaseDirectory" Value="Gtk" />
+    </Properties>
+  </Folder>
+  <Folder Name="/MacOS/">
+    <Project Path="MacOS/EmbedEtoInMacOS/EmbedEtoInMacOS.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Windows" Project="false" />
+    </Project>
+    <Project Path="MacOS/EmbedMacOSInEto/EmbedMacOSInEto.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Windows" Project="false" />
+    </Project>
+    <Properties Name="MonoDevelopProperties">
+      <Property Name="BaseDirectory" Value="MacOS" />
+    </Properties>
+  </Folder>
+  <Folder Name="/Tutorials/" />
+  <Folder Name="/Tutorials/CSharp/">
+    <Project Path="Tutorials/CSharp/Tutorial1/CS.Tutorial1.HelloWorld.csproj" />
+    <Project Path="Tutorials/CSharp/Tutorial2/CS.Tutorial2.MenusAndToolbars.csproj" />
+    <Project Path="Tutorials/CSharp/Tutorial3/CS.Tutorial3.TableLayout.csproj" />
+    <Project Path="Tutorials/CSharp/Tutorial4/CS.Tutorial4.Binding.csproj" />
+  </Folder>
+  <Folder Name="/Tutorials/FSharp/">
+    <Project Path="Tutorials/FSharp/Tutorial1/FS.Tutorial1.HelloWorld.fsproj" />
+    <Project Path="Tutorials/FSharp/Tutorial2/FS.Tutorial2.MenusAndToolbars.fsproj" />
+    <Project Path="Tutorials/FSharp/Tutorial3/FS.Tutorial3.TableLayout.fsproj" />
+    <Project Path="Tutorials/FSharp/Tutorial4/FS.Tutorial4.Binding.fsproj" />
+  </Folder>
+  <Folder Name="/WinForms/">
+    <Project Path="WinForms/EmbedEtoInWinForms/EmbedEtoInWinForms.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+    </Project>
+    <Project Path="WinForms/EmbedWinFormsInEto/EmbedWinFormsInEto.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/Wpf/">
+    <Project Path="Wpf/EmbedEtoInWpf/EmbedEtoInWpf.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+    </Project>
+    <Project Path="Wpf/EmbedWpfInEto/EmbedWpfInEto.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+    </Project>
+  </Folder>
+</Solution>
