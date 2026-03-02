@@ -483,7 +483,7 @@ public abstract class WindowTests<T> : TestBase
 			Assert.That(keyDownInWindow, Is.True, "#3 - KeyDown was not called in window");
 		}
 	}
-	
+
 	[ManualTest]
 	[TestCase(0x00000000)] // transparent
 	[TestCase(0x017F7F7F)] // almost transparent, should allow window to move
@@ -511,8 +511,8 @@ public abstract class WindowTests<T> : TestBase
 					 	TextColor = Colors.White
 						},
 					null,
-					new Panel { 
-						BackgroundColor = Colors.Blue, 
+					new Panel {
+						BackgroundColor = Colors.Blue,
 						Height = 40,
 						Content = TableLayout.AutoSized(closeButton, centered: true)
 						}
@@ -523,4 +523,48 @@ public abstract class WindowTests<T> : TestBase
 
 		await ShowAsync(window);
 	});
+
+	[Test]
+	[ManualTest]
+	public void TransparentWindowShouldWorkWhenNotResiable() => Async(-1, async () =>
+	{
+		var closeButton = new Button { Text = "Close" };
+		var popup = new Form
+		{
+			Size = new Size(200, 300),
+			Title = "Popup Panel Dialog",
+			Location = new Point((int)Mouse.Position.X, (int)Mouse.Position.Y),
+			WindowStyle = WindowStyle.None,
+			BackgroundColor = Colors.Transparent,
+			MovableByWindowBackground = true,
+			ShowInTaskbar = false,
+			Resizable = false,
+			Topmost = true,
+			ShowActivated = true,
+			Content = new TableLayout
+			{
+				Padding = new Padding(20),
+				Rows =
+				{
+					new Label {
+						BackgroundColor = Colors.Blue,
+						Text = "There should not be any background on this window",
+						VerticalAlignment = VerticalAlignment.Center,
+						TextAlignment = TextAlignment.Center,
+						TextColor = Colors.White
+					},
+					null,
+					new Panel {
+						BackgroundColor = Colors.Blue,
+						Height = 40,
+						Content = TableLayout.AutoSized(closeButton, centered: true)
+					}
+				}
+			}
+		};
+		closeButton.Click += (sender, e) => popup.Close();
+
+		popup.Show();
+	}
+	);
 }

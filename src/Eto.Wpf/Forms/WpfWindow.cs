@@ -147,10 +147,7 @@ namespace Eto.Wpf.Forms
 		{
 			isSourceInitialized = true;
 
-			if (Resizable && WindowStyle == WindowStyle.None)
-			{
-				SetWindowChrome();
-			}
+			SetWindowChrome();
 			SetBlurBehind();
 
 			if (!Minimizable || !Maximizable)
@@ -948,7 +945,7 @@ namespace Eto.Wpf.Forms
 			if (!isSourceInitialized)
 				return;
 				
-			if (Control.Opacity < 1 || BackgroundColor.A < 1)
+			if (HasTransparency)
 			{
 				if (Widget.Properties.TrySet(WpfWindow.DidBlurBehindWindow_Key, true))
 				{
@@ -1000,30 +997,35 @@ namespace Eto.Wpf.Forms
 			}
 			return oldStyle;
 		}
-		
+
 		void RestoreWindowStyle(uint? oldStyle)
 		{
 			if (oldStyle == null)
 				return;
-				
+
 			// reapply the old style bit
 			var style = Win32.GetWindowLong(NativeHandle, Win32.GWL.STYLE);
 			style |= oldStyle.Value;
 			Win32.SetWindowLong(NativeHandle, Win32.GWL.STYLE, style);
 		}
-		
+
 		void SetWindowChrome()
 		{
 			if (!isSourceInitialized)
 				return;
-			var needsCustomWindowChrome = (Resizable || Opacity < 1) && WindowStyle == WindowStyle.None;
 			
-			if (sw.Shell.WindowChrome.GetWindowChrome(Control) != null && WindowStyle == WindowStyle.None)
+			var needsCustomWindowChrome = (Resizable || HasTransparency) && WindowStyle == WindowStyle.None;
+
+			var currentWindowChrome = sw.Shell.WindowChrome.GetWindowChrome(Control);
+			if (currentWindowChrome != null && WindowStyle == WindowStyle.None)
 			{
 				// keep window chrome if it is already set, unless WindowStyle is different
 				// E.g. turning off Resizable makes the background opaque if we remove the WindowChrome
 				return;
 			}
+
+			if (currentWindowChrome == null && !needsCustomWindowChrome)
+				return;
 
 			var oldStyle = SaveWindowStyle();
 			if (needsCustomWindowChrome)
@@ -1031,8 +1033,12 @@ namespace Eto.Wpf.Forms
 				var windowChrome = new sw.Shell.WindowChrome
 				{
 					CaptionHeight = 0,
+					// CornerRadius = new sw.CornerRadius(0),
+					// ResizeBorderThickness = Resizable ? new sw.Thickness(4) : new sw.Thickness(0),
+					// non-zero enables DWM NC rendering/shadow for borderless opaque windows
+					// GlassFrameThickness = wantsShadow ? new sw.Thickness(1) : default
 					GlassFrameThickness = Control.AllowsTransparency ? sw.Shell.WindowChrome.GlassFrameCompleteThickness : default,
-					ResizeBorderThickness = new sw.Thickness(4)
+					ResizeBorderThickness = Resizable ? new sw.Thickness(4) : new sw.Thickness(0)
 				};
 				sw.Shell.WindowChrome.SetWindowChrome(Control, windowChrome);
 			}
@@ -1081,15 +1087,15 @@ namespace Eto.Wpf.Forms
 				SetBlurBehind();
 			}
 		}
+		
+		bool HasTransparency => Control.Background is swm.SolidColorBrush scb && scb.Color.A < 255 || Control.Opacity < 1.0;
 
 		void SetWindowTransparency()
 		{
 			// Windows doesn't support transparency otherwise..
 			if (WindowStyle != WindowStyle.None)
 				return;
-			var isTransparent =
-				Control.Background is swm.SolidColorBrush scb && scb.Color.A < 255
-				| Control.Opacity < 1.0;
+			var isTransparent = HasTransparency;
 
 			if (isSourceInitialized)
 			{
