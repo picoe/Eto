@@ -13,6 +13,6 @@
 		"src",
 		"samples"
 	],
-	"dotnet.defaultSolution": "src/Eto.sln"
+	"dotnet.defaultSolution": "src/Eto.slnx"
 
 }
