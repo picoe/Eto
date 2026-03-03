@@ -1,0 +1,72 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="Linux" />
+    <Platform Name="Mac" />
+    <Platform Name="Windows" />
+    <Platform Name="Windows-x64" />
+  </Configurations>
+  <Folder Name="/build/">
+    <File Path="../.editorconfig" />
+    <File Path="../build/Build.proj" />
+    <File Path="../build/Common.Build.props" />
+    <File Path="../build/Common.Build.targets" />
+    <File Path="../build/Common.Mac.targets" />
+    <File Path="../build/Common.props" />
+    <File Path="../build/Utilities.targets" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/monomac/">
+    <Project Path="../lib/monomac/src/core.csproj" />
+    <Project Path="../lib/monomac/src/generator.csproj" />
+    <Project Path="../lib/monomac/src/MonoMac.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="../test/Eto.Test.Gtk/Eto.Test.Gtk.csproj" />
+    <Project Path="../test/Eto.Test.Mac/Eto.Test.Mac64.csproj" />
+    <Project Path="../test/Eto.Test.Mac/Eto.Test.macOS.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Windows" Project="false" />
+      <Build Solution="*|Windows-x64" Project="false" />
+    </Project>
+    <Project Path="../test/Eto.Test.WinForms/Eto.Test.WinForms.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+    </Project>
+    <Project Path="../test/Eto.Test.WinUI/Eto.Test.WinUI.csproj">
+      <Platform Solution="*|Windows-x64" Project="x64" />
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+      <Deploy Solution="Debug|Any CPU" />
+    </Project>
+    <Project Path="../test/Eto.Test.Wpf/Eto.Test.Wpf.csproj">
+      <Build Solution="*|Linux" Project="false" />
+      <Build Solution="*|Mac" Project="false" />
+    </Project>
+    <Project Path="../test/Eto.Test/Eto.Test.csproj" />
+  </Folder>
+  <Project Path="Eto.Forms.Templates/Eto.Forms.Templates.csproj" />
+  <Project Path="Eto.Gtk/Eto.Gtk.csproj" />
+  <Project Path="Eto.Mac/Eto.Mac64.csproj" />
+  <Project Path="Eto.Mac/Eto.macOS.csproj">
+    <Build Solution="*|Linux" Project="false" />
+    <Build Solution="*|Windows" Project="false" />
+    <Build Solution="*|Windows-x64" Project="false" />
+  </Project>
+  <Project Path="Eto.Serialization.Json/Eto.Serialization.Json.csproj" />
+  <Project Path="Eto.Serialization.Xaml/Eto.Serialization.Xaml.csproj" />
+  <Project Path="Eto.WinForms/Eto.WinForms.csproj">
+    <Build Solution="*|Linux" Project="false" />
+    <Build Solution="*|Mac" Project="false" />
+  </Project>
+  <Project Path="Eto.WinUI/Eto.WinUI.csproj">
+    <Build Solution="*|Linux" Project="false" />
+    <Build Solution="*|Mac" Project="false" />
+  </Project>
+  <Project Path="Eto.Wpf/Eto.Wpf.csproj">
+    <Build Solution="*|Linux" Project="false" />
+    <Build Solution="*|Mac" Project="false" />
+  </Project>
+  <Project Path="Eto/Eto.csproj" />
+</Solution>

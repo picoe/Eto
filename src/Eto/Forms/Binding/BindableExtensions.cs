@@ -39,7 +39,7 @@ public static class BindableExtensions
 	{
 		var binding = new DualBinding<T>(
 			sourceBinding,
-			new BindableBinding<IBindable,T>(bindable, Binding.Property<T>(widgetPropertyName)),
+			new BindableBinding<IBindable, T>(bindable, Binding.Property<T>(widgetPropertyName)),
 			mode
 		);
 		bindable.Bindings.Add(binding);
@@ -77,7 +77,7 @@ public static class BindableExtensions
 	/// <param name="mode">Mode of the binding</param>
 	public static DualBinding<T> Bind<T>(this IBindable bindable, IndirectBinding<T> controlBinding, DirectBinding<T> valueBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 	{
-		var binding = new BindableBinding<IBindable,T>(bindable, controlBinding);
+		var binding = new BindableBinding<IBindable, T>(bindable, controlBinding);
 		return binding.Bind(sourceBinding: valueBinding, mode: mode);
 	}
 
@@ -93,7 +93,7 @@ public static class BindableExtensions
 	/// <param name="defaultContextValue">Default context value to set to the control, if the objectValue or value of the objectBinding is null.</param>
 	public static DualBinding<T> Bind<T>(this IBindable bindable, IndirectBinding<T> controlBinding, object objectValue, IndirectBinding<T> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay, T defaultControlValue = default(T), T defaultContextValue = default(T))
 	{
-		var valueBinding = new ObjectBinding<object,T>(objectValue, objectBinding) {
+		var valueBinding = new ObjectBinding<object, T>(objectValue, objectBinding) {
 			SettingNullValue = defaultContextValue,
 			GettingNullValue = defaultControlValue
 		};
@@ -216,7 +216,7 @@ public static class BindableExtensions
 	/// <param name="binding">Binding to invert.</param>
 	/// <typeparam name="T">The type of the bindable object.</typeparam>
 	public static BindableBinding<T, bool?> Inverse<T>(this BindableBinding<T, bool?> binding)
-		where T: IBindable
+		where T : IBindable
 	{
 		return binding.Convert(c => !c, c => !c);
 	}
@@ -228,7 +228,7 @@ public static class BindableExtensions
 	/// <param name="binding">Binding to invert.</param>
 	/// <typeparam name="T">The type of the bindable object.</typeparam>
 	public static BindableBinding<T, bool> Inverse<T>(this BindableBinding<T, bool> binding)
-		where T: IBindable
+		where T : IBindable
 	{
 		return binding.Convert(c => !c, c => !c);
 	}
@@ -262,8 +262,8 @@ public static class BindableExtensions
 	/// <typeparam name="T">The type of the bindable object.</typeparam>
 	/// <typeparam name="TValue">The value type to convert from nullable to non-nullable.</typeparam>
 	public static BindableBinding<T, TValue> DefaultIfNull<T, TValue>(this BindableBinding<T, TValue?> binding, TValue? defaultValue = null)
-		where T: IBindable
-		where TValue: struct
+		where T : IBindable
+		where TValue : struct
 	{
 		return binding.Convert(c => c ?? defaultValue ?? default(TValue), c => c);
 	}
@@ -281,5 +281,47 @@ public static class BindableExtensions
 		where TValue : class
 	{
 		return binding.Convert(c => c ?? defaultValue, c => c);
+	}
+
+	/// <summary>
+	/// Converts a binding of an enumerable of items to a single value by using the provided <paramref name="getValue"/> function to get the value from each item, and if there are multiple items with different values, returns the specified <paramref name="mixedValue"/>.
+	/// When setting the value, it will use the provided <paramref name="setValue"/> function to set the value for each item in the enumerable.
+	/// </summary>
+	/// <typeparam name="T">The type of the items in the enumerable.</typeparam>
+	/// <typeparam name="TValue">The type of the value to extract from each item.</typeparam>
+	/// <param name="binding">The binding of the enumerable of items.</param>
+	/// <param name="getValue">A function to get the value from each item.</param>
+	/// <param name="setValue">A function to set the value for each item.</param>
+	/// <param name="mixedValue">The default value to return if there are multiple different values.</param>
+	/// <returns>A binding that represents a single value extracted from the enumerable.</returns>
+	public static IndirectBinding<TValue> ManyToSingle<T, TValue>(this IndirectBinding<IEnumerable<T>> binding, Func<T, TValue> getValue, Action<T, TValue> setValue = null, TValue mixedValue = default)
+	{
+		return binding.Convert(c =>
+		{
+			TValue result = default;
+			bool first = true;
+			foreach (var item in c)
+			{
+				var value = getValue(item);
+				if (first)
+				{
+					result = value;
+					first = false;
+				}
+				else if (Comparer<TValue>.Default.Compare(result, value) != 0)
+				{
+					result = mixedValue;
+					break;
+				}
+			}
+			return result;
+		},
+		(c, v) =>
+		{
+			foreach (var item in c)
+			{
+				setValue(item, v);
+			}
+		});
 	}
 }

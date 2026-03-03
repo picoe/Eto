@@ -422,6 +422,7 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddRow("Ascent", Ascender());
 			layout.AddRow("Leading", Leading());
 			layout.AddRow("MeasureString", MeasureString());
+			layout.AddRow("PostScriptName", PostScriptName());
 			layout.Add(null);
 			layout.EndBeginVertical();
 			layout.Add(null);
@@ -436,6 +437,13 @@ namespace Eto.Test.Sections.Dialogs
 			layout.EndVertical();
 			layout.EndHorizontal();
 			return layout;
+		}
+
+		Control PostScriptName()
+		{
+			var control = new Label();
+			control.TextBinding.BindDataContext<Font>(r => r.Typeface.PostScriptName);
+			return control;
 		}
 
 		Control MetricsPreview()

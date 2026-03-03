@@ -140,19 +140,19 @@
 
   <!-- Build all source code -->
   <Target Name="BuildCore" DependsOnTargets="UpdateVersion;PrintInfo">
-    <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True" />
-    <MSBuild Projects="$(SourceDir)Eto.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)" />
+    <MSBuild Projects="$(SourceDir)Eto.slnx" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True" />
+    <MSBuild Projects="$(SourceDir)Eto.slnx" Targets="$(PackageTargets)" Properties="$(BuildProperties)" />
   </Target>
 
   <Target Name="BuildSamples" DependsOnTargets="BuildCore">
-    <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True"/>
-    <MSBuild Projects="$(BasePath)samples\Samples.sln" Targets="$(PackageTargets)" Properties="$(BuildProperties)"/>
+    <MSBuild Projects="$(BasePath)samples\Samples.slnx" Targets="Restore" Properties="$(BuildProperties);_RestoreEnforceEvaluate=True"/>
+    <MSBuild Projects="$(BasePath)samples\Samples.slnx" Targets="$(PackageTargets)" Properties="$(BuildProperties)"/>
   </Target>
 
   <!-- Package everything up into nuget packages -->
   <Target Name="Package">
-    <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Restore" Properties="$(BuildProperties);IsPacking=True;_RestoreEnforceEvaluate=True" />
-    <MSBuild Projects="$(SourceDir)Eto.sln" Targets="Pack" Properties="$(BuildProperties);IsPacking=True" />
+    <MSBuild Projects="$(SourceDir)Eto.slnx" Targets="Restore" Properties="$(BuildProperties);IsPacking=True;_RestoreEnforceEvaluate=True" />
+    <MSBuild Projects="$(SourceDir)Eto.slnx" Targets="Pack" Properties="$(BuildProperties);IsPacking=True" />
 
     <ItemGroup>
       <EtoFormsPackages Include="$([System.IO.Directory]::GetDirectories('$(ArtifactsDir)packages', 'eto.*'))" Condition="Exists('$(ArtifactsDir)packages')"/>

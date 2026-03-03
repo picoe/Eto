@@ -98,17 +98,27 @@ jobs:
 
     - name: Enable code signing
       if: github.event_name != 'pull_request'
-      run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSignBuild=True /p:CodeSignKey=\"${{ secrets.DEVID_NAME }}\"" >> $GITHUB_ENV
+      env:
+        BUILD_PARAMETERS: ${{ env.BuildParameters }}
+        DEVID_NAME: ${{ secrets.DEVID_NAME }}
+      run: printf 'BuildParameters=%s /p:EnableCodeSignBuild=True /p:CodeSignKey="%s"\n' "$BUILD_PARAMETERS" "$DEVID_NAME" >> "$GITHUB_ENV"
 
     - name: Disable code signing for PR builds
       if: github.event_name == 'pull_request'
-      run: echo "BuildParameters=${{ env.BuildParameters }} /p:EnableCodeSigning=False" >> $GITHUB_ENV
+      env:
+        BUILD_PARAMETERS: ${{ env.BuildParameters }}
+      run: printf 'BuildParameters=%s /p:EnableCodeSigning=False\n' "$BUILD_PARAMETERS" >> "$GITHUB_ENV"
 
     - name: Set notarization credentials
       if: startsWith(github.ref, 'refs/tags/')
+      env:
+        BUILD_PARAMETERS: ${{ env.BuildParameters }}
+        AC_USERNAME: ${{ secrets.AC_USERNAME }}
+        AC_TEAMID: ${{ secrets.AC_TEAMID }}
+        AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
       run: |
-        xcrun notarytool store-credentials "AC_PASSWORD" --apple-id "${{ secrets.AC_USERNAME }}" --team-id "${{ secrets.AC_TEAMID }}" --password "${{ secrets.AC_PASSWORD }}"
-        echo "BuildParameters=${{ env.BuildParameters }} /p:EnableNotarizationBuild=True" >> $GITHUB_ENV
+        xcrun notarytool store-credentials "AC_PASSWORD" --apple-id "$AC_USERNAME" --team-id "$AC_TEAMID" --password "$AC_PASSWORD"
+        printf 'BuildParameters=%s /p:EnableNotarizationBuild=True\n' "$BUILD_PARAMETERS" >> "$GITHUB_ENV"
 
     - name: Build
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Build /bl:artifacts/log/Build.Mac.binlog

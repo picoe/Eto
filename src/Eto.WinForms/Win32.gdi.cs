@@ -1,4 +1,7 @@
 using System.Windows;
+using Microsoft.Win32;
+using System.Linq;
+using System.Text;
 #if WPF
 using Eto.Wpf.Forms;
 #elif WINFORMS
@@ -89,5 +92,135 @@ namespace Eto
 		
 		[DllImport("gdi32.dll")]
 		public static extern bool DeleteObject(IntPtr hObject);
+
+		[DllImport("gdi32.dll", CharSet = CharSet.Unicode)]
+		static extern int GetTextFace(IntPtr hdc, int nCount, StringBuilder lpFaceName);
+
+		static string GetFaceName(sd.Font font)
+		{
+			var graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
+			var hdc = graphics.GetHdc();
+			var hFont = IntPtr.Zero;
+			var old = IntPtr.Zero;
+			try
+			{
+				hFont = font.ToHfont();
+				old = SelectObject(hdc, hFont);
+
+				var sb = new StringBuilder(64);
+				if (GetTextFace(hdc, sb.Capacity, sb) > 0)
+					return sb.ToString();
+
+				return font.FontFamily?.Name;
+			}
+			finally
+			{
+				if (old != IntPtr.Zero)
+					SelectObject(hdc, old);
+				if (hFont != IntPtr.Zero)
+					DeleteObject(hFont);
+				graphics.ReleaseHdc(hdc);
+				graphics.Dispose();
+			}
+		}
+
+		static string ResolveFontPath(string fileName)
+		{
+			if (string.IsNullOrWhiteSpace(fileName))
+				return null;
+
+			if (Path.IsPathRooted(fileName))
+				return File.Exists(fileName) ? fileName : null;
+
+			var fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+			var fullPath = Path.Combine(fontsFolder, fileName);
+			return File.Exists(fullPath) ? fullPath : null;
+		}
+
+		static int GetFontNameMatchScore(string registryName, string faceName, bool bold, bool italic)
+		{
+			if (string.IsNullOrWhiteSpace(registryName) || string.IsNullOrWhiteSpace(faceName))
+				return -1;
+
+			var normalizedRegistryName = registryName;
+			const string trueTypeSuffix = "(TrueType)";
+			var suffixIndex = normalizedRegistryName.IndexOf(trueTypeSuffix, StringComparison.OrdinalIgnoreCase);
+			if (suffixIndex >= 0)
+				normalizedRegistryName = normalizedRegistryName.Remove(suffixIndex, trueTypeSuffix.Length);
+			normalizedRegistryName = normalizedRegistryName.Trim();
+			var normalizedFaceName = faceName.Trim();
+
+			int score;
+			if (normalizedRegistryName.StartsWith(normalizedFaceName, StringComparison.OrdinalIgnoreCase))
+				score = 100;
+			else if (normalizedRegistryName.IndexOf(normalizedFaceName, StringComparison.OrdinalIgnoreCase) >= 0)
+				score = 70;
+			else
+				return -1;
+
+			var regBold = normalizedRegistryName.IndexOf("bold", StringComparison.OrdinalIgnoreCase) >= 0;
+			var regItalic = normalizedRegistryName.IndexOf("italic", StringComparison.OrdinalIgnoreCase) >= 0
+				|| normalizedRegistryName.IndexOf("oblique", StringComparison.OrdinalIgnoreCase) >= 0;
+
+			score += regBold == bold ? 20 : -10;
+			score += regItalic == italic ? 20 : -10;
+			return score;
+		}
+
+		static void AddMatchesFromRegistry(RegistryKey key, string faceName, bool bold, bool italic, List<(string path, int score)> matches)
+		{
+			if (key == null)
+				return;
+
+			foreach (var valueName in key.GetValueNames())
+			{
+				if (string.IsNullOrWhiteSpace(valueName))
+					continue;
+
+				var score = GetFontNameMatchScore(valueName, faceName, bold, italic);
+				if (score < 0)
+					continue;
+
+				var value = key.GetValue(valueName) as string;
+				var path = ResolveFontPath(value);
+				if (!string.IsNullOrWhiteSpace(path))
+					matches.Add((path, score));
+			}
+		}
+
+		public static string GetFontFilePath(sd.Font font)
+		{
+			if (font == null)
+				return null;
+
+			try
+			{
+				var faceName = GetFaceName(font);
+				if (string.IsNullOrWhiteSpace(faceName))
+					return null;
+
+				var bold = font.Style.HasFlag(sd.FontStyle.Bold);
+				var italic = font.Style.HasFlag(sd.FontStyle.Italic);
+				var matches = new List<(string path, int score)>();
+
+				using (var machineKey = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\Fonts"))
+				{
+					AddMatchesFromRegistry(machineKey, faceName, bold, italic, matches);
+				}
+				using (var userKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\Fonts"))
+				{
+					AddMatchesFromRegistry(userKey, faceName, bold, italic, matches);
+				}
+
+				return matches
+					.OrderByDescending(r => r.score)
+					.Select(r => r.path)
+					.FirstOrDefault();
+			}
+			catch
+			{
+				return null;
+			}
+		}
 	}
 }

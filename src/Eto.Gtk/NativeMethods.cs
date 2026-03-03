@@ -277,6 +277,8 @@ namespace Eto.GtkSharp
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize);
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_fc_font_get_pattern(IntPtr font);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool FcInit();
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr FcConfigGetCurrent();
@@ -284,6 +286,8 @@ namespace Eto.GtkSharp
 			public extern static bool FcConfigAppFontAddFile(IntPtr fc, string fileName);
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static int FcPatternGetString(IntPtr p, string objectname, int n, out IntPtr s);
 		}
 
 		static class NMLinux
@@ -524,6 +528,8 @@ namespace Eto.GtkSharp
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize);
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_fc_font_get_pattern(IntPtr font);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool FcInit();
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr FcConfigGetCurrent();
@@ -531,6 +537,8 @@ namespace Eto.GtkSharp
 			public extern static bool FcConfigAppFontAddFile(IntPtr fc, string fileName);
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static int FcPatternGetString(IntPtr p, string objectname, int n, out IntPtr s);
 		}
 
 		static class NMMac
@@ -771,6 +779,8 @@ namespace Eto.GtkSharp
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize);
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_fc_font_get_pattern(IntPtr font);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool FcInit();
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr FcConfigGetCurrent();
@@ -778,6 +788,8 @@ namespace Eto.GtkSharp
 			public extern static bool FcConfigAppFontAddFile(IntPtr fc, string fileName);
 			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName);
+			[DllImport(libpangoft2, CallingConvention = CallingConvention.Cdecl)]
+			public extern static int FcPatternGetString(IntPtr p, string objectname, int n, out IntPtr s);
 		}
 
 		public static string GetString(IntPtr handle)
@@ -1454,6 +1466,16 @@ namespace Eto.GtkSharp
 				return NMWindows.pango_fc_font_description_from_pattern(fcpattern, includeSize);
 		}
 
+		public static IntPtr pango_fc_font_get_pattern(IntPtr font)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.pango_fc_font_get_pattern(font);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.pango_fc_font_get_pattern(font);
+			else
+				return NMWindows.pango_fc_font_get_pattern(font);
+		}
+
 		public static bool FcInit()
 		{
 			if (EtoEnvironment.Platform.IsLinux)
@@ -1492,6 +1514,16 @@ namespace Eto.GtkSharp
 				return NMMac.FcConfigGetFonts(fc, setName);
 			else
 				return NMWindows.FcConfigGetFonts(fc, setName);
+		}
+
+		public static int FcPatternGetString(IntPtr p, string objectname, int n, out IntPtr s)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.FcPatternGetString(p, objectname, n, out s);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.FcPatternGetString(p, objectname, n, out s);
+			else
+				return NMWindows.FcPatternGetString(p, objectname, n, out s);
 		}
 	}
 }

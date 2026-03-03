@@ -7,6 +7,7 @@ namespace Eto.Wpf.Drawing
 	public class FontTypefaceHandler : WidgetHandler<swm.Typeface, FontTypeface>, FontTypeface.IHandler
 	{
 		string _name;
+		string _postScriptName;
 		string _localizedName;
 
 		~FontTypefaceHandler()
@@ -41,6 +42,61 @@ namespace Eto.Wpf.Drawing
 		}
 
 		public string Name => _name ?? (_name = NameDictionaryExtensions.GetEnglishName(Control.FaceNames));
+		
+		public string PostScriptName
+		{
+			get
+			{
+				if (_postScriptName != null)
+					return _postScriptName;
+				// Try to read PostScript name from the font file via OpenTypeFontInfo
+				_postScriptName = GetPostScriptNameFromOpenType();
+				if (!string.IsNullOrWhiteSpace(_postScriptName))
+					return _postScriptName;
+
+				// Fallback: build a PostScript-like name from family/face
+				var family = NameDictionaryExtensions.GetEnglishName(Control.FontFamily.FamilyNames);
+				var face = NameDictionaryExtensions.GetEnglishName(Control.FaceNames);
+
+				if (string.IsNullOrWhiteSpace(family))
+					return null;
+
+				family = family.Replace(" ", string.Empty);
+				face = face?.Replace(" ", string.Empty);
+
+				if (string.IsNullOrWhiteSpace(face) || string.Equals(face, "Regular", StringComparison.OrdinalIgnoreCase))
+					return _postScriptName = family;
+
+				return _postScriptName = $"{family}-{face}";
+			}
+		}
+
+		string GetPostScriptNameFromOpenType()
+		{
+			if (!Control.TryGetGlyphTypeface(out var glyph) || glyph?.FontUri == null)
+				return null;
+
+			if (!glyph.FontUri.IsFile)
+				return null;
+
+			var path = glyph.FontUri.LocalPath;
+			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+				return null;
+
+			var faceName = NameDictionaryExtensions.GetEnglishName(Control.FaceNames);
+
+			var infos = OpenTypeFontInfo.FromFile(path);
+			if (infos == null)
+				return null;
+
+			// Prefer the matching face in the file
+			var match = infos.Where(i => i != null).FirstOrDefault(i =>
+				string.Equals(i.TypographicSubFamilyName ?? i.SubFamilyName, faceName, StringComparison.OrdinalIgnoreCase))
+				?? infos.FirstOrDefault();
+
+			// NOTE: If your OpenTypeFontInfo uses a different property name, adjust here.
+			return match?.PostScriptName;
+		}
 
 		public string LocalizedName => _localizedName ?? (_localizedName = NameDictionaryExtensions.GetDisplayName(Control.FaceNames));
 

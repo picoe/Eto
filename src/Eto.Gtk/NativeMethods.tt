@@ -106,7 +106,8 @@ var pangocairomethods = new []
 
 var pangoft2methods = new []
 {
-	"IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize)"
+	"IntPtr pango_fc_font_description_from_pattern(IntPtr fcpattern, bool includeSize)",
+	"IntPtr pango_fc_font_get_pattern(IntPtr font)"
 };
 
 var fontconfigmethods = new []
@@ -114,7 +115,8 @@ var fontconfigmethods = new []
 	"bool FcInit()",
 	"IntPtr FcConfigGetCurrent()",
 	"bool FcConfigAppFontAddFile(IntPtr fc, string fileName)",
-	"IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName)"
+	"IntPtr FcConfigGetFonts(IntPtr fc, FcSetName setName)",
+	"int FcPatternGetString(IntPtr p, string objectname, int n, out IntPtr s)"
 };
 
 var methods = giomethods

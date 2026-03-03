@@ -6,6 +6,7 @@ namespace Eto.WinForms.Drawing
 	public class FontTypefaceHandler : WidgetHandler<sd.FontStyle, FontTypeface>, FontTypeface.IHandler
 	{
 		string _name;
+		string _postScriptName;
 		bool? _isSymbol;
 		sd.Font _font;
 		List<Win32.FontRange> _fontRanges;
@@ -26,6 +27,7 @@ namespace Eto.WinForms.Drawing
 		{
 			_sdfamily = sdfamily;
 			_name = variationName ?? info.TypographicSubFamilyName ?? info.SubFamilyName;
+			_postScriptName = info?.PostScriptName;
 			SetFontStyle(info.SubFamilyName);
 		}
 		
@@ -34,6 +36,89 @@ namespace Eto.WinForms.Drawing
 		}
 
 		public string Name => _name ?? (_name = GetName());
+		
+		public string PostScriptName
+		{
+			get
+			{
+				if (_postScriptName != null)
+					return _postScriptName;
+				// Try to read PostScript name from the font file via OpenTypeFontInfo
+				_postScriptName = GetPostScriptNameFromOpenType();
+				if (!string.IsNullOrWhiteSpace(_postScriptName))
+					return _postScriptName;
+
+				// Fallback: build a PostScript-like name from family/face
+				var family = SDFontFamily.GetName(0);
+				var face = Name;
+
+				if (string.IsNullOrWhiteSpace(family))
+					return null;
+
+				family = family.Replace(" ", string.Empty);
+				face = face?.Replace(" ", string.Empty);
+
+				if (string.IsNullOrWhiteSpace(face) || string.Equals(face, "Regular", StringComparison.OrdinalIgnoreCase))
+					return family;
+
+				return $"{family}-{face}";
+			}
+		}
+		
+		string GetPostScriptNameFromOpenType()
+		{
+			try
+			{
+				var font = Font;
+				var fontFilePath = Win32.GetFontFilePath(font);
+				if (string.IsNullOrEmpty(fontFilePath))
+					return null;
+
+				var infos = OpenTypeFontInfo.FromFile(fontFilePath)
+					.Where(r => r != null)
+					.ToList();
+				if (infos.Count == 0)
+					return null;
+
+				var familyName = SDFontFamily?.GetName(0) ?? SDFontFamily?.Name;
+				if (!string.IsNullOrWhiteSpace(familyName))
+				{
+					var familyMatches = infos.Where(i =>
+						string.Equals(i.TypographicFamilyName ?? i.FamilyName, familyName, StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(i.FamilyName, familyName, StringComparison.OrdinalIgnoreCase))
+						.ToList();
+					if (familyMatches.Count > 0)
+						infos = familyMatches;
+				}
+
+				var faceName = Name;
+				var match = infos.FirstOrDefault(i =>
+					string.Equals(i.TypographicSubFamilyName ?? i.SubFamilyName, faceName, StringComparison.OrdinalIgnoreCase))
+					?? infos.FirstOrDefault(i => MatchesFontStyle(i, Control))
+					?? infos.FirstOrDefault();
+
+				return match?.PostScriptName;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		static bool MatchesFontStyle(OpenTypeFontInfo info, sd.FontStyle style)
+		{
+			var subFamily = info?.TypographicSubFamilyName ?? info?.SubFamilyName;
+			if (string.IsNullOrWhiteSpace(subFamily))
+				return false;
+
+			var isBold = subFamily.IndexOf("bold", StringComparison.OrdinalIgnoreCase) >= 0;
+			var isItalic = subFamily.IndexOf("italic", StringComparison.OrdinalIgnoreCase) >= 0
+				|| subFamily.IndexOf("oblique", StringComparison.OrdinalIgnoreCase) >= 0;
+
+			return isBold == style.HasFlag(sd.FontStyle.Bold)
+				&& isItalic == style.HasFlag(sd.FontStyle.Italic);
+		}
+
 
 		public string LocalizedName => Name;
 
@@ -119,6 +204,7 @@ namespace Eto.WinForms.Drawing
 
 
 			_name = fontInfo?.TypographicSubFamilyName ?? fontInfo?.SubFamilyName;
+			_postScriptName = fontInfo?.PostScriptName;
 			SetFontStyle(fontInfo?.SubFamilyName);
 
 			var sdfamily = families[0];
@@ -141,6 +227,7 @@ namespace Eto.WinForms.Drawing
 
 			var fontInfo = OpenTypeFontInfo.FromFile(fileName).Single();
 			_name = fontInfo?.TypographicSubFamilyName ?? fontInfo?.SubFamilyName;
+			_postScriptName = fontInfo?.PostScriptName;
 			SetFontStyle(fontInfo?.SubFamilyName);
 
 			var sdfamily = families[0];
