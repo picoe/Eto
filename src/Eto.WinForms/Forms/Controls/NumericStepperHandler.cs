@@ -132,7 +132,7 @@ namespace Eto.WinForms.Forms.Controls
 				Handler = this,
 				Maximum = DoubleToDecimal(double.MaxValue),
 				Minimum = DoubleToDecimal(double.MinValue),
-				Width = 80
+				Width = (int)(80 * Win32.SystemDpi)
 			};
 			Control.ValueChanged += Control_ValueChanged;
 			Control.LostFocus += (sender, e) =>

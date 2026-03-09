@@ -4,10 +4,16 @@
 	{
 		public ColorPickerHandler()
 		{
-			Control = new swf.Button { Width = 40 };
+			Control = new swf.Button();
 			Control.Click += HandleClick;
 			Control.BackColor = sd.Color.Black;
 		}
+
+		public override Size? GetDefaultSize(Size availableSize)
+		{
+			return new Size(49, 24);
+		}
+
 
 		public override Color BackgroundColor
 		{

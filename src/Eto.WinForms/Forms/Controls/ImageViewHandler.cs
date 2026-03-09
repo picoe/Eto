@@ -39,11 +39,11 @@ namespace Eto.WinForms.Forms.Controls
 		void SetImage()
 		{
 			var handler = image?.Handler as IWindowsImageSource;
-			Control.Image = handler?.GetImageWithSize(Widget.Loaded || sizeSet ? (Size?)Size : null);
+			Control.Image = handler?.GetImageWithSize(Widget.Loaded || sizeSet ? (Size?)LogicalToDeviceUnits(Size).ToEto() : null);
 
-			if (!sizeSet)
+			if (!sizeSet && image != null)
 			{
-				Control.Size = image?.Size.ToSD() ?? sd.Size.Empty;
+				Control.Size = LogicalToDeviceUnits(image.Size);
 			}
 		}
 

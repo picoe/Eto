@@ -128,8 +128,10 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected virtual void OnPaint(swf.PaintEventArgs e)
 		{
-			using (var g = e.Graphics.ToEto(false))
-				Callback.OnPaint(Widget, new PaintEventArgs(g, e.ClipRectangle.ToEto()));
+			var handler = new Drawing.GraphicsHandler(e.Graphics, false);
+			handler.SetDpiScale();
+			using (var g = new Graphics(handler))
+				Callback.OnPaint(Widget, new PaintEventArgs(g, DeviceUnitsToLogical(e.ClipRectangle)));
 		}
 
 		protected override void SetContent(Control control, swf.Control contentControl)

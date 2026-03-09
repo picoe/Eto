@@ -16,6 +16,8 @@ namespace Eto.WinForms.Forms.Controls
 			};
 		}
 
+		public override Size? GetDefaultSize(Size availableSize) => new Size(200, 23);
+
 		public bool ShowBorder
 		{
 			get { return Control.ShowBorder; }

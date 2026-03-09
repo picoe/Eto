@@ -199,8 +199,8 @@ namespace Eto.WinForms.Forms.Controls
 
 				var node = controller.GetNodeAtRow(rowIndex);
 				var treeRect = cellBounds;
-				treeRect.X += node.Level * INDENT_WIDTH;
-				treeRect.Width = 16;
+				treeRect.X += node.Level * LogicalToDeviceUnits(INDENT_WIDTH);
+				treeRect.Width = LogicalToDeviceUnits(16);
 
 				if (ClassicStyle && ClassicGridLines)
 				{
@@ -280,11 +280,12 @@ namespace Eto.WinForms.Forms.Controls
 					if (swf.Application.RenderWithVisualStyles)
 					{
 						EnsureGlyphRenderers();
+						var size = LogicalToDeviceUnits(16);
 						if (controller.IsExpanded(rowIndex))
-							openRenderer.DrawBackground(graphics, new sd.Rectangle(treeRect.X, treeRect.Y + (treeRect.Height / 2) - 8, 16, 16));
+							openRenderer.DrawBackground(graphics, new sd.Rectangle(treeRect.X, treeRect.Y + (treeRect.Height / 2) - size / 2, size, size));
 						else
 						{
-							closedRenderer.DrawBackground(graphics, new sd.Rectangle(treeRect.X, treeRect.Y + (treeRect.Height / 2) - 8, 16, 16));
+							closedRenderer.DrawBackground(graphics, new sd.Rectangle(treeRect.X, treeRect.Y + (treeRect.Height / 2) - size / 2, size, size));
 						}
 					}
 					else
@@ -313,7 +314,7 @@ namespace Eto.WinForms.Forms.Controls
 		public override int GetRowOffset(GridColumnHandler column, int rowIndex)
 		{
 			if (object.ReferenceEquals(column.Widget, this.Widget.Columns[0]))
-				return INDENT_WIDTH + controller.LevelAtRow(rowIndex) * INDENT_WIDTH;
+				return LogicalToDeviceUnits(INDENT_WIDTH + controller.LevelAtRow(rowIndex) * INDENT_WIDTH);
 			else
 				return 0;
 		}
@@ -322,8 +323,8 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			if (rowIndex >= 0 && object.ReferenceEquals(column.Widget, this.Widget.Columns[0]))
 			{
-				var offset = INDENT_WIDTH + controller.LevelAtRow(rowIndex) * INDENT_WIDTH;
-				if (e.X < offset && e.X >= offset - INDENT_WIDTH)
+				var offset = LogicalToDeviceUnits(INDENT_WIDTH + controller.LevelAtRow(rowIndex) * INDENT_WIDTH);
+				if (e.X < offset && e.X >= offset - LogicalToDeviceUnits(INDENT_WIDTH))
 				{
 					if (controller.IsExpanded(rowIndex))
 						controller.CollapseRow(rowIndex);

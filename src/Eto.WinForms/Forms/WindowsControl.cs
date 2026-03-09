@@ -109,6 +109,86 @@ namespace Eto.WinForms.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
+		
+		protected Size DeviceUnitsToLogical(sd.Size size)
+		{
+#if NET9_0_OR_GREATER
+			return Control.DeviceUnitsToLogical(size);
+#else
+			return size.ToEto();
+#endif
+		}
+
+		protected Rectangle DeviceUnitsToLogical(sd.Rectangle rect)
+		{
+#if NET9_0_OR_GREATER
+			var location = Control.DeviceUnitsToLogical(rect.Location);
+			var size = Control.DeviceUnitsToLogical(rect.Size);
+			return new Rectangle(location, size);
+#else
+			return rect.ToEto();
+#endif
+		}
+
+		protected Point DeviceUnitsToLogical(sd.Point point)
+		{
+#if NET9_0_OR_GREATER
+			return (Point)Control.DeviceUnitsToLogical((sd.Size)point);
+#else
+			return point.ToEto();
+#endif
+		}
+		protected int DeviceUnitsToLogical(int size)
+		{
+#if NET9_0_OR_GREATER
+			return Control.DeviceUnitsToLogical(size);
+#else
+			return size;
+#endif
+		}
+		protected sd.Size LogicalToDeviceUnits(Size size)
+		{
+#if NET9_0_OR_GREATER
+			return Control.LogicalToDeviceUnits(size.ToSD());
+#else
+			return size.ToSD();
+#endif
+		}
+
+		protected sd.SizeF LogicalToDeviceUnits(SizeF size)
+		{
+#if NET9_0_OR_GREATER
+			return (size * Win32.SystemDpi).ToSD();
+#else
+			return size.ToSD();
+#endif
+		}
+		protected sd.Point LogicalToDeviceUnits(Point point)
+		{
+#if NET9_0_OR_GREATER
+			return ((sd.Point)Control.LogicalToDeviceUnits((sd.Size)point.ToSD()));
+#else
+			return point.ToSD();
+#endif
+		}
+		protected sd.PointF LogicalToDeviceUnits(PointF point)
+		{
+#if NET9_0_OR_GREATER
+			var dpi = Control.DeviceDpi;
+			return new sd.PointF((float)(point.X * 96.0 / dpi), (float)(point.Y * 96.0 / dpi));
+#else
+			return point.ToSD();
+#endif
+		}
+
+		protected int LogicalToDeviceUnits(int size)
+		{
+#if NET9_0_OR_GREATER
+			return Control.LogicalToDeviceUnits(size);
+#else
+			return size;
+#endif
+		}
 
 		// used in DrawableHandler
 		public class PanelBase<THandler> : swf.Panel
@@ -317,7 +397,7 @@ namespace Eto.WinForms.Forms
 
 		protected virtual bool SetMinimumSize(Size size)
 		{
-			var sdsize = size.ToSD();
+			var sdsize = LogicalToDeviceUnits(size);
 			if (ContainerControl.MinimumSize != sdsize)
 			{
 				ContainerControl.MinimumSize = sdsize;
@@ -580,7 +660,7 @@ namespace Eto.WinForms.Forms
 			{
 				if (!Widget.Loaded)
 					return UserPreferredSize;
-				return ContainerControl.Size.ToEto();
+				return DeviceUnitsToLogical(ContainerControl.Size);
 			}
 			set
 			{
@@ -590,7 +670,7 @@ namespace Eto.WinForms.Forms
 				if (Widget.Loaded)
 					SetScale();
 				var minset = SetMinimumSize();
-				ContainerControl.Size = value.ToSD();
+				ContainerControl.Size = LogicalToDeviceUnits(value);
 				if (minset && ContainerControl.IsHandleCreated)
 				{
 					var parent = Widget.VisualParent.GetWindowsHandler();
@@ -625,12 +705,12 @@ namespace Eto.WinForms.Forms
 			{
 				if (!Widget.Loaded)
 					return UserDesiredClientSize;
-				return Control.ClientSize.ToEto();
+				return DeviceUnitsToLogical(Control.ClientSize);
 			}
 			set
 			{
 				UserDesiredClientSize = value;
-				Control.ClientSize = value.ToSD();
+				Control.ClientSize = LogicalToDeviceUnits(value);
 			}
 		}
 
@@ -946,17 +1026,17 @@ namespace Eto.WinForms.Forms
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
-			return !Control.IsDisposed ? Control.PointToClient(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
+			return !Control.IsDisposed ? DeviceUnitsToLogical(Control.PointToClient(LogicalToDeviceUnits(Point.Round(point)))) : PointF.Empty; // safety check added because this is hit in certain situations.
 		}
 
 		public virtual PointF PointToScreen(PointF point)
 		{
-			return !Control.IsDisposed ? Control.PointToScreen(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
+			return !Control.IsDisposed ? DeviceUnitsToLogical(Control.PointToScreen(LogicalToDeviceUnits(Point.Round(point)))) : PointF.Empty; // safety check added because this is hit in certain situations.
 		}
 
 		public Point Location
 		{
-			get { return Control.Location.ToEto(); }
+			get { return DeviceUnitsToLogical(Control.Location); }
 		}
 
 

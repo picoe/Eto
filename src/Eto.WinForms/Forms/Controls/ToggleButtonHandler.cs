@@ -21,14 +21,14 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					if (!string.IsNullOrEmpty(Text))
 						// fix bug where text will wrap if it has both an image and text
-						size.Width += 3;
+						size.Width += this.LogicalToDeviceUnits(3);
 					else
 						// fix bug with image and no text
-						size.Height += 1;
+						size.Height += this.LogicalToDeviceUnits(1);
 				}
 				if (Image != null)
 				{
-					var imgSize = Image.Size.ToEto() + 8;
+					var imgSize = this.LogicalToDeviceUnits((Size)(Image.Size.ToEto() + 8));
 					size.Width = Math.Max(size.Width, imgSize.Width);
 					size.Height = Math.Max(size.Height, imgSize.Height);
 				}

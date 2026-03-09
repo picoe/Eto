@@ -106,7 +106,11 @@ namespace Eto.WinForms.Drawing
 			if (UseCompatibleTextRendering)
 			{
 				if (measureGraphics == null)
-					measureGraphics = sd.Graphics.FromImage(new sd.Bitmap(1, 1));
+				{
+					var bmp = new sd.Bitmap(1, 1);
+					bmp.SetResolution(96, 96);
+					measureGraphics = sd.Graphics.FromImage(bmp);
+				}
 
 				sd.CharacterRange[] ranges = { new sd.CharacterRange(0, text.Length) };
 				var stringFormat = GraphicsHandler.DefaultStringFormat;

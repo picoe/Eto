@@ -95,6 +95,7 @@ namespace Eto.WinForms.Forms.Cells
 					var args = CreateArgs(rowIndex);
 					size.Width = (int)Math.Ceiling(Handler.Callback.OnGetPreferredWidth(Handler.Widget, args));
 					size.Width += Handler.GetRowOffset(rowIndex);
+					size.Width = DataGridView.LogicalToDeviceUnits(size.Width);
 				}
 				return size;
 			}
@@ -110,23 +111,30 @@ namespace Eto.WinForms.Forms.Cells
 
 				// save graphics state to prevent artifacts in other paint operations in the grid
 				var state = graphics.Save();
+				GraphicsHandler handler;
 				if (!ReferenceEquals(cachedGraphicsKey, graphics) || cachedGraphics == null)
 				{
 					cachedGraphicsKey = graphics;
-					cachedGraphics = new Graphics(new GraphicsHandler(graphics, dispose: false));
+					cachedGraphics = new Graphics(handler = new GraphicsHandler(graphics, dispose: false));
 				}
 				else
 				{
-					((GraphicsHandler)cachedGraphics.Handler).SetInitialState();
+					handler = (GraphicsHandler)cachedGraphics.Handler;
+					handler.SetInitialState();
 				}
 
 				var offset = graphics.PixelOffsetMode;
 				graphics.PixelOffsetMode = sd.Drawing2D.PixelOffsetMode.Half;
 				graphics.SetClip(cellBounds);
 				var color = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor);
-                graphics.FillRectangle(color, cellBounds);
-				var args = new CellPaintEventArgs(cachedGraphics, cellBounds.ToEto(), cellState.ToEto(), value);
+				graphics.FillRectangle(color, cellBounds);
+
+				handler.SaveTransform();
+				handler.SetDpiScale();
+				var logicalCellBounds = DataGridView?.DeviceUnitsToLogical(cellBounds) ?? cellBounds.ToEto();
+				var args = new CellPaintEventArgs(cachedGraphics, logicalCellBounds, cellState.ToEto(), value);
 				Handler.Callback.OnPaint(Handler.Widget, args);
+				handler.RestoreTransform();
 				graphics.ResetClip();
 				graphics.PixelOffsetMode = offset;
 				graphics.Restore(state);

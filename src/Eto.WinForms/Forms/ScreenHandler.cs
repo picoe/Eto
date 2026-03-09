@@ -10,12 +10,13 @@ namespace Eto.WinForms.Forms
 			Control = screen;
 		}
 
-		public float RealScale => scale ?? (scale = Control.GetLogicalPixelSize()) ?? 1;
+		public float RealScale => scale ?? (scale = Control.GetLogicalPixelSize() * Scale) ?? Scale;
 
 		public float Scale => 96f / 72f;
-		public RectangleF Bounds => Control.Bounds.ToEto();
+		
+		public RectangleF Bounds => Control.Bounds.ToEto().ScreenToLogical(Control);
 
-		public RectangleF WorkingArea => Control.WorkingArea.ToEto();
+		public RectangleF WorkingArea => Control.WorkingArea.ToEto().ScreenToLogical(Control);
 
 		public int BitsPerPixel => Control.BitsPerPixel;
 

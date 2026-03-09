@@ -815,6 +815,119 @@ namespace Eto
 			public System.Drawing.Point ptMaxPosition;
 			public System.Drawing.Rectangle rcNormalPosition;
 		}
+
+		public const int SHIL_LARGE = 0x0;
+		public const int SHIL_SMALL = 0x1;
+		public const int SHIL_EXTRALARGE = 0x2;
+		public const int SHIL_JUMBO = 0x3;
+
+		public static readonly Guid IID_IImageList = new Guid("46EB5926-582E-4017-9FDF-E8998DAA0950");
+
+		[DllImport("Shell32.dll", EntryPoint = "#727")]
+		public static extern int SHGetImageList(int iImageList, ref Guid riid, out IImageList ppv);
+
+		[ComImport]
+		[Guid("46EB5926-582E-4017-9FDF-E8998DAA0950")]
+		[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		public interface IImageList
+		{
+			[PreserveSig] int Add(IntPtr hbmImage, IntPtr hbmMask, ref int pi);
+			[PreserveSig] int ReplaceIcon(int i, IntPtr hicon, ref int pi);
+			[PreserveSig] int SetOverlayImage(int iImage, int iOverlay);
+			[PreserveSig] int Replace(int i, IntPtr hbmImage, IntPtr hbmMask);
+			[PreserveSig] int AddMasked(IntPtr hbmImage, int crMask, ref int pi);
+			[PreserveSig] int Draw(ref IMAGELISTDRAWPARAMS pimldp);
+			[PreserveSig] int Remove(int i);
+			[PreserveSig] int GetIcon(int i, int flags, ref IntPtr picon);
+			[PreserveSig] int GetImageInfo(int i, ref IMAGEINFO pImageInfo);
+			[PreserveSig] int Copy(int iDst, IImageList punkSrc, int iSrc, int uFlags);
+			[PreserveSig] int Merge(int i1, IImageList punk2, int i2, int dx, int dy, ref Guid riid, ref IntPtr ppv);
+			[PreserveSig] int Clone(ref Guid riid, ref IntPtr ppv);
+			[PreserveSig] int GetImageRect(int i, ref RECT prc);
+			[PreserveSig] int GetIconSize(ref int cx, ref int cy);
+			[PreserveSig] int SetIconSize(int cx, int cy);
+			[PreserveSig] int GetImageCount(ref int pi);
+			[PreserveSig] int SetImageCount(int uNewCount);
+			[PreserveSig] int SetBkColor(int clrBk, ref int pclr);
+			[PreserveSig] int GetBkColor(ref int pclr);
+			[PreserveSig] int BeginDrag(int iTrack, int dxHotspot, int dyHotspot);
+			[PreserveSig] int EndDrag();
+			[PreserveSig] int DragEnter(IntPtr hwndLock, int x, int y);
+			[PreserveSig] int DragLeave(IntPtr hwndLock);
+			[PreserveSig] int DragMove(int x, int y);
+			[PreserveSig] int SetDragCursorImage(ref IImageList punk, int iDrag, int dxHotspot, int dyHotspot);
+			[PreserveSig] int DragShowNolock(int fShow);
+			[PreserveSig] int GetDragImage(ref POINT ppt, ref POINT pptHotspot, ref Guid riid, ref IntPtr ppv);
+			[PreserveSig] int GetItemFlags(int i, ref int dwFlags);
+			[PreserveSig] int GetOverlayImage(int iOverlay, ref int piIndex);
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct IMAGELISTDRAWPARAMS
+		{
+			public int cbSize;
+			public IntPtr himl;
+			public int i;
+			public IntPtr hdcDst;
+			public int x;
+			public int y;
+			public int cx;
+			public int cy;
+			public int xBitmap;
+			public int yBitmap;
+			public int rgbBk;
+			public int rgbFg;
+			public int fStyle;
+			public int dwRop;
+			public int fState;
+			public int Frame;
+			public int crEffect;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct IMAGEINFO
+		{
+			public IntPtr hbmImage;
+			public IntPtr hbmMask;
+			public int Unused1;
+			public int Unused2;
+			public RECT rcImage;
+		}
+
+		public const int ILD_TRANSPARENT = 0x00000001;
+
+		public static System.Drawing.Icon GetIconFromImageList(int imageListType, int iconIndex)
+		{
+			var iid = IID_IImageList;
+			if (SHGetImageList(imageListType, ref iid, out var imageList) != 0)
+				return null;
+
+			try
+			{
+				var hIcon = IntPtr.Zero;
+				if (imageList.GetIcon(iconIndex, ILD_TRANSPARENT, ref hIcon) != 0 || hIcon == IntPtr.Zero)
+					return null;
+
+				var icon = (System.Drawing.Icon)System.Drawing.Icon.FromHandle(hIcon).Clone();
+				DestroyIcon(hIcon);
+				return icon;
+			}
+			finally
+			{
+				Marshal.ReleaseComObject(imageList);
+			}
+		}
+
+		public static int GetBestImageListType(int desiredPixels)
+		{
+			if (desiredPixels > 48)
+				return SHIL_JUMBO;    // 256x256
+			if (desiredPixels > 32)
+				return SHIL_EXTRALARGE; // 48x48
+			if (desiredPixels > 16)
+				return SHIL_LARGE;    // 32x32
+			return SHIL_SMALL;       // 16x16
+		}
 		
 	}
 }

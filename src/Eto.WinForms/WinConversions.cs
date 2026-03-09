@@ -221,15 +221,15 @@ namespace Eto.WinForms
 			switch (systemFont)
 			{
 				case SystemFont.Default:
-					return sd.SystemFonts.DefaultFont;
+					return swf.Control.DefaultFont;
 				case SystemFont.User:
-					return sd.SystemFonts.DefaultFont;
+					return swf.Control.DefaultFont;
 				case SystemFont.Bold:
-					return new sd.Font(sd.SystemFonts.DefaultFont, sd.FontStyle.Bold);
+					return new sd.Font(swf.Control.DefaultFont, sd.FontStyle.Bold);
 				case SystemFont.TitleBar:
 					return sd.SystemFonts.CaptionFont;
 				case SystemFont.ToolTip:
-					return sd.SystemFonts.DefaultFont;
+					return swf.Control.DefaultFont;
 				case SystemFont.Label:
 					return sd.SystemFonts.DialogFont;
 				case SystemFont.MenuBar:

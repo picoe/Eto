@@ -138,7 +138,7 @@ namespace Eto.WinForms
 			if (modifyButtons != null)
 				buttons = modifyButtons(buttons);
 			var handler = be.WindowsControl;
-			var mousePosition = swf.Control.MousePosition.ToEto();
+			var mousePosition = handler.ContainerControl.DeviceUnitsToLogical(swf.Control.MousePosition);
 
 			var msg = be.Message;
 			var me = new MouseEventArgs(buttons, modifiers, mainControl.PointFromScreen(mousePosition), delta);
