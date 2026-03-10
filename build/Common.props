@@ -21,12 +21,12 @@
   <PropertyGroup>
     <!-- global nuget/assembly properties -->
 
-    <DevVersion>2.11.0</DevVersion>
+    <DevVersion>2.12.0</DevVersion>
 
     <!-- Extract the first two components (Major.Minor) from an assembly version like 2.10.1 to make it 2.10.0.0 -->
     <Version Condition="$(Version) == '' AND $(BuildBranch.StartsWith('refs/tags/'))">$([System.Version]::Parse($(BuildBranch.Substring(10))).ToString(2)).0.0</Version>
     
-    <Version Condition="$(Version) == ''">2.11.0.0</Version>
+    <Version Condition="$(Version) == ''">2.12.0.0</Version>
 
     <InformationalVersion Condition="$(SetVersion) != ''">$(SetVersion)</InformationalVersion>
     <!-- set version from tag -->
