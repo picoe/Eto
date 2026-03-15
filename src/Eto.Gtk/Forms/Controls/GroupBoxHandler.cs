@@ -4,7 +4,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		public GroupBoxHandler ()
 		{
-			Control = new Gtk.Frame ();
+			Control = new EtoFrame { Handler = this };
 		}
 
 		protected override Gtk.Widget FontControl => Control.LabelWidget ?? new Gtk.Label();
