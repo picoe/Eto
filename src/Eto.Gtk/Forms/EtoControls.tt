@@ -9,7 +9,7 @@ using Eto;
 namespace Eto.GtkSharp.Forms
 {
 <#
-var controls = new[] { "Fixed", "EventBox", "Box", "ScrolledWindow" };
+var controls = new[] { "Frame", "Fixed", "EventBox", "Box", "ScrolledWindow" };
 
 foreach (var control in controls)
 {
