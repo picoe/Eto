@@ -232,7 +232,15 @@ namespace Eto.Test.Sections.Controls
 		void LoadHtml()
 		{
 			webView.LoadHtml(@"<html>
-<head><title>Hello!</title></head>
+<head>
+  <title>Hello!</title>
+  <style>
+    html, body {
+      background: white;
+      color: black;
+    }
+  </style>
+</head>
 <body>
 	<h1>Some custom html</h1>
 	<script type='text/javascript'>

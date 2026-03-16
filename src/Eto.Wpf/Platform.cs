@@ -32,7 +32,8 @@ namespace Eto.Wpf
 			{
 				h.Widget.Items.CollectionChanged += (sender, e) =>
 				{
-					for (int i = 0; i < h.Widget.Items.Count; i++)
+					var count = h.Widget.Items.Count;
+					for (int i = 0; i < count; i++)
 					{
 						SegmentedItem item = h.Widget.Items[i];
 						if (item.ControlObject is Control control)
@@ -42,8 +43,13 @@ namespace Eto.Wpf
 							{
 								WpfProperties.SetEtoStyle(native, "SegmentedButton");
 								if (i == 0)
-									WpfProperties.SetEtoModifier(native, "first");
-								else if (i == h.Widget.Items.Count - 1)
+								{
+									if (i == count - 1)
+										WpfProperties.SetEtoModifier(native, "only");
+									else
+										WpfProperties.SetEtoModifier(native, "first");
+								}
+								else if (i == count - 1)
 									WpfProperties.SetEtoModifier(native, "last");
 								else
 									native.ClearValue(WpfProperties.EtoModifierProperty);
@@ -112,7 +118,7 @@ namespace Eto.Wpf
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
 			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
-			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
+			p.Add<ColorPicker.IHandler>(() => new ThemedColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<Expander.IHandler>(() => new ExpanderHandler());
@@ -124,7 +130,8 @@ namespace Eto.Wpf
 			p.Add<Label.IHandler>(() => new LabelHandler());
 			p.Add<LinkButton.IHandler>(() => new LinkButtonHandler());
 			p.Add<ListBox.IHandler>(() => new ListBoxHandler());
-			p.Add<NumericStepper.IHandler>(() => new NumericStepperHandler());
+			// p.Add<ListBox.IHandler>(() => new ThemedListBoxHandler());
+			p.Add<NumericStepper.IHandler>(() => new ThemedNumericStepperHandler());
 			p.Add<Panel.IHandler>(() => new PanelHandler());
 			p.Add<PasswordBox.IHandler>(() => new PasswordBoxHandler());
 			p.Add<ProgressBar.IHandler>(() => new ProgressBarHandler());
@@ -140,7 +147,7 @@ namespace Eto.Wpf
 			p.Add<TextBox.IHandler>(() => new TextBoxHandler());
 			p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
 #pragma warning disable CS0618 // Type or member is obsolete
-			p.Add<TreeView.IHandler>(() => new TreeViewHandler());
+			p.Add<TreeView.IHandler>(() => new ThemedTreeViewHandler());
 #pragma warning restore CS0618 // Type or member is obsolete
 			//p.Add<WebView.IHandler>(()  => new WebViewHandler ());
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
@@ -184,13 +191,14 @@ namespace Eto.Wpf
 			p.Add<AboutDialog.IHandler>(() => new ThemedAboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
-			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+			p.Add<ColorDialog.IHandler>(() => new ThemedColorDialogHandler());
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
-			p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
+			p.Add<FontDialog.IHandler>(() => new ThemedFontDialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());
 			p.Add<FloatingForm.IHandler>(() => new FloatingFormHandler());
-			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
+			// p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
+			p.Add<MessageBox.IHandler>(() => new ThemedMessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
 			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
@@ -211,6 +219,8 @@ namespace Eto.Wpf
 			p.Add<DataFormats.IHandler>(() => new DataFormatsHandler());
 			p.Add<Taskbar.IHandler>(() => new TaskbarHandler());
 			p.Add<Window.IWindowHandler>(() => new WindowHandler());
+			p.Add<Themes.IHandler>(() => new ThemesHandler());
+			p.Add<Theme.IHandler>(() => throw new InvalidOperationException());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

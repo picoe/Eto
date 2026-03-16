@@ -44,7 +44,11 @@ public class ListBox : ListControl
 	/// By default will be an public Image property on your object
 	/// </remarks>
 	/// <value>The image binding.</value>
-	public IIndirectBinding<Image> ItemImageBinding { get; set; }
+	public IIndirectBinding<Image> ItemImageBinding
+	{
+		get { return Handler.ItemImageBinding; }
+		set { Handler.ItemImageBinding = value; }
+	}
 
 	/// <summary>
 	/// Gets or sets the binding for the Image of each item
@@ -144,7 +148,12 @@ public class ListBox : ListControl
 		/// <summary>
 		/// Gets or sets the border type
 		/// </summary>
-		/// <value>The border.</value>
 		BorderType Border { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the binding for the Image of each item
+		/// </summary>
+		IIndirectBinding<Image> ItemImageBinding { get; set; }
+
 	}
 }

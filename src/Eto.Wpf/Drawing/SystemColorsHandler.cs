@@ -2,24 +2,37 @@ namespace Eto.Wpf.Drawing
 {
 	public class SystemColorsHandler : SystemColors.IHandler
 	{
-		public Color ControlBackground => sw.SystemColors.WindowColor.ToEto();
+		static Color? GetResourceColor(string key)
+		{
+			var app = sw.Application.Current;
+			if (app == null)
+				return null;
+			var resource = app.TryFindResource(key);
+			if (resource is swm.SolidColorBrush brush)
+				return brush.Color.ToEto();
+			if (resource is swm.Color color)
+				return color.ToEto();
+			return null;
+		}
 
-		public Color Control => sw.SystemColors.ControlColor.ToEto();
+		public Color ControlBackground => GetResourceColor("WindowBackground") ?? sw.SystemColors.WindowColor.ToEto();
 
-		public Color ControlText => sw.SystemColors.ControlTextColor.ToEto();
+		public Color Control => GetResourceColor("ControlFillColorDefaultBrush") ?? sw.SystemColors.ControlColor.ToEto();
 
-		public Color HighlightText => sw.SystemColors.HighlightTextColor.ToEto();
+		public Color ControlText => GetResourceColor("TextFillColorPrimaryBrush") ?? sw.SystemColors.ControlTextColor.ToEto();
 
-		public Color Highlight => sw.SystemColors.HighlightColor.ToEto();
+		public Color HighlightText => GetResourceColor("TextOnAccentFillColorPrimaryBrush") ?? sw.SystemColors.HighlightTextColor.ToEto();
 
-		public Color WindowBackground => sw.SystemColors.WindowColor.ToEto();
+		public Color Highlight => GetResourceColor("AccentFillColorDefaultBrush") ?? sw.SystemColors.HighlightColor.ToEto();
 
-		public Color DisabledText => sw.SystemColors.GrayTextColor.ToEto();
+		public Color WindowBackground => GetResourceColor("WindowBackground") ?? sw.SystemColors.WindowColor.ToEto();
 
-		public Color SelectionText => sw.SystemColors.HighlightTextColor.ToEto();
+		public Color DisabledText => GetResourceColor("TextFillColorDisabledBrush") ?? sw.SystemColors.GrayTextColor.ToEto();
 
-		public Color Selection => sw.SystemColors.HighlightColor.ToEto();
+		public Color SelectionText => GetResourceColor("TextOnAccentFillColorSelectedTextBrush") ?? sw.SystemColors.HighlightTextColor.ToEto();
 
-		public Color LinkText => sw.SystemColors.HighlightColor.ToEto();
+		public Color Selection => GetResourceColor("AccentFillColorSelectedTextBackgroundBrush") ?? sw.SystemColors.HighlightColor.ToEto();
+
+		public Color LinkText => GetResourceColor("HyperlinkForeground") ?? sw.SystemColors.HighlightColor.ToEto();
 	}
 }

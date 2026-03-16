@@ -1,5 +1,37 @@
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoScrollViewer : swc.ScrollViewer
+	{
+		public ScrollableHandler Handler { get; set; }
+
+		public swc.Primitives.IScrollInfo GetScrollInfo() => ScrollInfo;
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			var content = (sw.FrameworkElement)Content;
+
+			// reset to preferred size to calculate scroll sizes initially based on that
+			content.Width = Handler.scrollSize.Width;
+			content.Height = Handler.scrollSize.Height;
+			return base.MeasureOverride(constraint);
+		}
+
+		protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
+		{
+			var content = (sw.FrameworkElement)Content;
+
+			// expand to width or height of viewport, now that we know which scrollbars are mandatory
+			var desiredSize = content.DesiredSize;
+
+			if (Handler.ExpandContentWidth)
+				content.Width = Math.Max(desiredSize.Width, ScrollInfo.ViewportWidth);
+			if (Handler.ExpandContentHeight)
+				content.Height = Math.Max(desiredSize.Height, ScrollInfo.ViewportHeight);
+
+			return base.ArrangeOverride(arrangeSize);
+		}
+	}
+
 	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{
 		bool expandContentWidth = true;
@@ -8,37 +40,6 @@ namespace Eto.Wpf.Forms.Controls
 
 		public sw.FrameworkElement ContentControl => scroller;
 
-		public class EtoScrollViewer : swc.ScrollViewer
-		{
-			public ScrollableHandler Handler { get; set; }
-
-			public swc.Primitives.IScrollInfo GetScrollInfo() => ScrollInfo;
-
-			protected override sw.Size MeasureOverride(sw.Size constraint)
-			{
-				var content = (sw.FrameworkElement)Content;
-
-				// reset to preferred size to calculate scroll sizes initially based on that
-				content.Width = Handler.scrollSize.Width;
-				content.Height = Handler.scrollSize.Height;
-				return base.MeasureOverride(constraint);
-			}
-
-			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
-			{
-				var content = (sw.FrameworkElement)Content;
-
-				// expand to width or height of viewport, now that we know which scrollbars are mandatory
-				var desiredSize = content.DesiredSize;
-
-				if (Handler.ExpandContentWidth)
-					content.Width = Math.Max(desiredSize.Width, ScrollInfo.ViewportWidth);
-				if (Handler.ExpandContentHeight)
-					content.Height = Math.Max(desiredSize.Height, ScrollInfo.ViewportHeight);
-
-				return base.ArrangeOverride(arrangeSize);
-			}
-		}
 
 		public override Color BackgroundColor
 		{
@@ -118,7 +119,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		sw.Size scrollSize = new sw.Size(double.NaN, double.NaN);
+		internal sw.Size scrollSize = new sw.Size(double.NaN, double.NaN);
 		public Size ScrollSize
 		{
 			get

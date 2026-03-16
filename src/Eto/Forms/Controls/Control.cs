@@ -466,6 +466,31 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		Properties.TriggerEvent(ShownEvent, this, e);
 	}
 
+	/// <summary>
+	/// Event identifier for handlers when attaching the <see cref="Control.ThemeChanged"/> event
+	/// </summary>
+	public const string ThemeChangedEvent = "Control.ThemeChanged";
+
+	/// <summary>
+	/// Occurs when the control's theme changes either due to a system theme change 
+	/// or when Application.Instance.CurrentTheme is set.
+	/// </summary>
+	public event EventHandler<EventArgs> ThemeChanged
+	{
+		add { Properties.AddHandlerEvent(ThemeChangedEvent, value); }
+		remove { Properties.RemoveEvent(ThemeChangedEvent, value); }
+	}
+
+	/// <summary>
+	/// Raises the <see cref="ThemeChanged"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments</param>
+	protected virtual void OnThemeChanged(EventArgs e)
+	{
+		Properties.TriggerEvent(ThemeChangedEvent, this, e);
+	}
+
+
 	static readonly object PreLoadKey = new object();
 
 	/// <summary>
@@ -742,6 +767,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		EventLookup.Register<Control>(c => c.OnDragLeave(null), Control.DragLeaveEvent);
 		EventLookup.Register<Control>(c => c.OnDragEnd(null), Control.DragEndEvent);
 		EventLookup.Register<Control>(c => c.OnEnabledChanged(null), Control.EnabledChangedEvent);
+		EventLookup.Register<Control>(c => c.OnThemeChanged(null), Control.ThemeChangedEvent);
 	}
 
 	/// <summary>
@@ -1574,6 +1600,11 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// Raises the EnabledChanged event.
 		/// </summary>
 		void OnEnabledChanged(Control widget, EventArgs e);
+		
+		/// <summary>
+		/// Raises the ThemeChanged event.
+		/// </summary>
+		void OnThemeChanged(Control widget, EventArgs e);
 	}
 
 	/// <summary>
@@ -1746,6 +1777,15 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		{
 			using (widget.Platform.Context)
 				widget.OnEnabledChanged(e);
+		}
+		
+		/// <summary>
+		/// Raises the ThemeChanged event.
+		/// </summary>
+		public void OnThemeChanged(Control widget, EventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnThemeChanged(e);
 		}
 	}
 

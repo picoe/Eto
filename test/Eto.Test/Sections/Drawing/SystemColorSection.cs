@@ -117,10 +117,11 @@ namespace Eto.Test.Sections.Drawing
 			{
 				if (skip.Contains(property))
 					continue;
-				var color = (Color)property.GetValue(null);
-				var textColor = Colors.Black;
+				var color = () => (Color)property.GetValue(null);
+				var textColor = () => Colors.Black;
 				var name = property.Name;
-				var colorName = color.ToString();
+				var colorName = () => color().ToString();
+				var colorNameText = colorName;
 				var label = new Label();
 				var panel = new Panel
 				{
@@ -138,29 +139,35 @@ namespace Eto.Test.Sections.Drawing
 				}
 				else
 				{
-					colorName = $"bg:{colorName}";
-					panel.BackgroundColor = color;
-					control.BackgroundColor = color;
+					colorNameText = () => $"bg:{colorName()}";
+					panel.BackgroundColor = color();
+					panel.ThemeChanged += (sender, e) => panel.BackgroundColor = color();
+					control.BackgroundColor = color();
+					control.ThemeChanged += (sender, e) => control.BackgroundColor = color();
 					var textProp = colorProperties.FirstOrDefault(r => r.Name == property.Name + "Text");
 					if (textProp != null)
 					{
-						textColor = (Color)textProp.GetValue(null);
+						textColor = () => (Color)textProp.GetValue(null);
 						name = $"{name}, {textProp.Name}";
-						colorName = $"{colorName}, fg:{textColor}";
+						colorNameText = () => $"bg:{colorName()}, fg:{textColor()}";
 						skip.Add(textProp);
 					}
-					else if (color.ToHSB().B < 0.5)
+					else
 					{
-						textColor = Colors.White;
+						textColor = () => color().ToHSB().B < 0.5 ? Colors.White : Colors.Black;
 					}
 				}
-
-				controlType.SetTextColor?.Invoke(control, textColor);
+				controlType.SetTextColor?.Invoke(control, textColor());
+				control.ThemeChanged += (sender, e) => controlType.SetTextColor?.Invoke(control, textColor());
 				controlType.SetText?.Invoke(control, name);
-				label.TextColor = textColor;
+				label.TextColor = textColor();
+				label.ThemeChanged += (sender, e) => label.TextColor = textColor();
 				label.Text = name;
+				
+				var colorNameLabel = new Label { Text = colorNameText() };
+				colorNameLabel.ThemeChanged += (sender, e) => colorNameLabel.Text = colorNameText();
 
-				layout.AddRow(panel, control, colorName);
+				layout.AddRow(panel, control, colorNameLabel);
 			}
 			layout.EndCentered();
 			layout.AddSpace();

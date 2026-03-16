@@ -1,4 +1,3 @@
-using Xceed.Wpf.Toolkit;
 using static Eto.Win32;
 namespace Eto.Wpf.Forms.Controls
 {
@@ -33,7 +32,7 @@ namespace Eto.Wpf.Forms.Controls
 
 	}
 
-	public class SearchBoxHandler : TextBoxHandler<xwt.WatermarkTextBox, TextBox, TextBox.ICallback>, SearchBox.IHandler
+	public class SearchBoxHandler : TextBoxHandler<Eto.Wpf.CustomControls.WatermarkTextBox, TextBox, TextBox.ICallback>, SearchBox.IHandler
 	{
 		internal static object CurrentText_Key = new object();
 		internal static object CurrentSelection_Key = new object();
@@ -41,7 +40,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override swc.TextBox TextBox => Control;
 
-		protected override WatermarkTextBox CreateControl() => new EtoSearchTextBox { Handler = this, KeepWatermarkOnGotFocus = true };
+		protected override Eto.Wpf.CustomControls.WatermarkTextBox CreateControl() => new EtoSearchTextBox { Handler = this, KeepWatermarkOnGotFocus = true };
 
 		public override string PlaceholderText
 		{

@@ -17,7 +17,7 @@
     <SolidColorBrush x:Key="ToggleButton.Disabled.Border" Color="#FFADB2B5"/>
     <SolidColorBrush x:Key="ToggleButton.Disabled.Foreground" Color="#FF838383"/>
 
-    <Style TargetType="efc:EtoToggleButton">
+    <Style TargetType="efc:EtoToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
         <Setter Property="Padding" Value="2" />
         <Style.Triggers>
             <Trigger Property="e:WpfProperties.EtoStyle" Value="SegmentedButton">
@@ -34,6 +34,9 @@
                                 <Trigger Property="e:WpfProperties.EtoModifier" Value="first">
                                     <Setter TargetName="border" Property="Margin" Value="0" />
                                     <Setter TargetName="border" Property="CornerRadius" Value="4,0,0,4" />
+                                </Trigger>
+                                <Trigger Property="e:WpfProperties.EtoModifier" Value="only">
+                                    <Setter TargetName="border" Property="CornerRadius" Value="4,4,4,4" />
                                 </Trigger>
                                 <Trigger Property="e:WpfProperties.EtoModifier" Value="last">
                                     <Setter TargetName="border" Property="CornerRadius" Value="0,4,4,0" />

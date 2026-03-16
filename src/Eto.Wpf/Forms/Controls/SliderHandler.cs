@@ -19,6 +19,7 @@
 				Handler = this,
 				Minimum = 0,
 				Maximum = 100,
+				TickFrequency = 5,
 				TickPlacement = swc.Primitives.TickPlacement.BottomRight
 			};
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);

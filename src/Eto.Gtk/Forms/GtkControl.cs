@@ -476,6 +476,9 @@ namespace Eto.GtkSharp.Forms
 					ContainerControl.StateFlagsChanged += Connector.HandleStateFlagsChangedForEnabled;
 #endif
 					break;
+				case Eto.Forms.Control.ThemeChangedEvent:
+					ContainerControl.StyleUpdated += Connector.HandleStyleUpdated;
+					break;
 				default:
 					base.AttachEvent(id);
 					return;
@@ -976,6 +979,14 @@ namespace Eto.GtkSharp.Forms
 				{
 					handler.Callback.OnEnabledChanged(handler.Widget, EventArgs.Empty);
 				}
+			}
+
+			internal void HandleStyleUpdated(object sender, EventArgs e)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				handler.Callback.OnThemeChanged(handler.Widget, EventArgs.Empty);
 			}
 #endif
 		}

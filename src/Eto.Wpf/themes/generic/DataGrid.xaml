@@ -12,8 +12,8 @@
         <Setter Property="UseLayoutRounding" Value="False"/>
     </Style>
 
-    <Style TargetType="efc:EtoDataGrid">
-        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+    <Style TargetType="efc:EtoDataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
+<!--        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>-->
     </Style>
 
 </ResourceDictionary>

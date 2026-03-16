@@ -264,6 +264,8 @@ namespace Eto.WinForms.Forms
 				case Application.NotificationActivatedEvent:
 					// handled by NotificationHandler
 					break;
+				case Application.ThemeChangedEvent:
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -299,5 +301,35 @@ namespace Eto.WinForms.Forms
 				return Keys.Alt;
 			}
 		}
+
+#if NET9_0_OR_GREATER
+		Theme _theme;
+		public Theme Theme
+		{
+			get => _theme ??= new Theme(new ThemeHandler(swf.Application.ColorMode));
+			set
+			{
+				if (value != null)
+				{
+					var handler = value.Handler as ThemeHandler;
+					if (handler != null)
+						handler.SetTheme();
+				}
+				_theme = value;
+				
+				// invalidate all windows to update theme
+				// doesn't seem to work for all controls, especially scroll bars.
+				foreach (var window in swf.Application.OpenForms)
+				{
+					if (window is swf.Form form)
+						form.Invalidate(true);
+				}
+				Callback.OnThemeChanged(Widget, EventArgs.Empty);
+			}
+		}
+#else
+		public Theme Theme { get; set; }
+#endif
+
 	}
 }

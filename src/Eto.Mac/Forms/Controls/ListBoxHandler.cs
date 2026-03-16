@@ -369,5 +369,6 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public IIndirectBinding<Image> ItemImageBinding { get; set; }
 	}
 }

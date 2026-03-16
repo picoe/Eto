@@ -3,7 +3,7 @@ using Eto.Mac.Drawing;
 using System.Runtime.CompilerServices;
 namespace Eto.Mac.Forms
 {
-	public class ApplicationHandler : WidgetHandler<NSApplication, Application, Application.ICallback>, Application.IHandler
+	public class ApplicationHandler : MacObject<NSApplication, Application, Application.ICallback>, Application.IHandler
 	{
 		bool attached;
 
@@ -133,7 +133,7 @@ namespace Eto.Mac.Forms
 			else
 				Control.InvokeOnMainThread(action);
 		}
-		
+
 		public void AsyncInvoke(Action action)
 		{
 			Control.BeginInvokeOnMainThread(action);
@@ -154,23 +154,23 @@ namespace Eto.Mac.Forms
 			Control.Delegate = oldDelegate;
 		}
 
-		static readonly IntPtr selNextEventMatchingMaskUntilDateInModeDequeue_Handle = Selector.GetHandle ("nextEventMatchingMask:untilDate:inMode:dequeue:");
-		static readonly IntPtr selSendEvent_Handle = Selector.GetHandle ("sendEvent:");
-		
+		static readonly IntPtr selNextEventMatchingMaskUntilDateInModeDequeue_Handle = Selector.GetHandle("nextEventMatchingMask:untilDate:inMode:dequeue:");
+		static readonly IntPtr selSendEvent_Handle = Selector.GetHandle("sendEvent:");
+
 		public void RunIteration()
 		{
 			MacView.InMouseTrackingLoop = false;
 			// drain the event queue only for a short period of time so it doesn't lock up
 			var date = NSDate.FromTimeIntervalSinceNow(0.001);
-			for (;;)
+			for (; ; )
 			{
 				// dequeue the event
 				var evt = Control.NextEvent(NSEventMask.AnyEvent, date, NSRunLoopMode.Default, true);
-				
+
 				// no event? cool, let's get out of here
 				if (evt == null)
 					break;
-				
+
 				// dispatch the event
 				Control.SendEvent(evt);
 			}
@@ -200,7 +200,7 @@ namespace Eto.Mac.Forms
 
 
 				EtoBundle.Init();
-				
+
 				EtoFontManager.Install();
 
 				if (Control.Delegate == null)
@@ -231,7 +231,7 @@ namespace Eto.Mac.Forms
 
 #if Mac64
 		delegate void UncaughtExceptionHandlerDelegate(IntPtr nsexceptionPtr);
-		
+
 		[DllImport(Constants.FoundationLibrary)]
 		static extern void NSSetUncaughtExceptionHandler(UncaughtExceptionHandlerDelegate handler);
 
@@ -278,6 +278,13 @@ namespace Eto.Mac.Forms
 				case Application.IsActiveChangedEvent:
 					NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidBecomeActiveNotification, SharedApplication_ActiveChanged);
 					NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidResignActiveNotification, SharedApplication_ActiveChanged);
+					break;
+				case Application.ThemeChangedEvent:
+					AddControlObserver(new NSString("effectiveAppearance"), e =>
+					{
+						if (Theme == Themes.System)
+							Callback.OnThemeChanged(Widget, EventArgs.Empty);
+					});
 					break;
 				default:
 					base.AttachEvent(id);
@@ -329,5 +336,16 @@ namespace Eto.Mac.Forms
 		public Keys AlternateModifier => Keys.Alt;
 
 		public bool IsActive => NSApplication.SharedApplication.Active;
+
+		Theme _currentTheme = Themes.System;
+		public Theme Theme
+		{
+			get => _currentTheme;
+			set
+			{
+				_currentTheme = value;
+				NSApplication.SharedApplication.Appearance = ThemeHandler.GetControl(value);
+			}
+		}
 	}
 }

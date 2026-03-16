@@ -4,8 +4,7 @@
     xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls"
     xmlns:e="clr-namespace:Eto.Wpf"
     xmlns:s="clr-namespace:System;assembly=mscorlib"
-    xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
-    xmlns:local="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit">
+    xmlns:local="clr-namespace:Eto.Wpf.CustomControls">
 
     <DataTemplate x:Key="DefaultWatermarkTemplate">
 
@@ -31,9 +30,11 @@
     <!-- WatermarkTextBox                                                                -->
     <!-- =============================================================================== -->
 
-    <Style x:Key="WatermarkTextBox" TargetType="local:WatermarkTextBox">
+    <Style x:Key="WatermarkTextBox" TargetType="local:WatermarkTextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="AllowDrop" Value="true" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Padding" Value="2" />
         <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
         <Setter Property="WatermarkTemplate" Value="{StaticResource DefaultWatermarkTemplate}" />
@@ -48,7 +49,7 @@
                             <Grid>
                                 <ScrollViewer 
                                     x:Name="PART_ContentHost" 
-                                    Margin="-2,0"
+                                    Margin="0"
                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                 <ContentPresenter x:Name="PART_WatermarkHost"
                                   Content="{TemplateBinding Watermark}"
@@ -95,10 +96,10 @@
                             </MultiTrigger.Setters>
                         </MultiTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlMouseOverBorderKey}}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlSelectedBorderKey}}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />

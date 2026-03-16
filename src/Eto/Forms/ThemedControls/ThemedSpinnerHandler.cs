@@ -138,6 +138,11 @@ public class ThemedSpinnerHandler : ThemedControlHandler<Drawable, Spinner, Spin
 		Control = new Drawable();
 		Control.Enabled = false;
 		Control.Size = new Size(16, 16);
+		Control.ThemeChanged += (sender, e) =>
+		{
+			ElementColor = SystemColors.ControlText;
+			Control.Invalidate();
+		};
 		Control.Paint += HandlePaint;
 		timer = new UITimer();
 		timer.Interval = 0.05f;
@@ -149,7 +154,7 @@ public class ThemedSpinnerHandler : ThemedControlHandler<Drawable, Spinner, Spin
 		currentValue = 0.5f; // so line starts vertical at top
 		Increment = 1f;
 		DisabledAlpha = 1f / 8f;
-		ElementColor = Colors.Black;
+		ElementColor = SystemColors.ControlText;
 		ElementSize = 0.6f;
 		LineThickness = 1f;
 		LineCap = PenLineCap.Round;

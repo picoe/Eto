@@ -211,7 +211,10 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.QueueDraw();
 			}
 		}
+		
 		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+		
+		public IIndirectBinding<Image> ItemImageBinding { get; set; }
 		
 		internal static readonly object Border_Key = new object();
 		public BorderType Border

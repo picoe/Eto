@@ -15,6 +15,8 @@ namespace Eto.Test
 		public string LastUnitTestFilter { get; set; }
 
 		public Rectangle? LastFormPosition { get; set; }
+		
+		public string LastTheme { get; set; }
 
 		bool _GridViewSection_SaveColumnDisplayIndexes;
 		public bool GridViewSection_SaveColumnDisplayIndexes
