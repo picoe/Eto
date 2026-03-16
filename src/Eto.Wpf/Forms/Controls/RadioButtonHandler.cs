@@ -1,5 +1,15 @@
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoRadioButton : swc.RadioButton, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+	
 	public class RadioButtonHandler : WpfControl<swc.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
 		swc.Border _border;
@@ -11,8 +21,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void Create(RadioButton controller)
 		{
-			Control = new swc.RadioButton
+			Control = new EtoRadioButton
 			{
+				Handler = this,
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				VerticalContentAlignment = sw.VerticalAlignment.Center,
 			};

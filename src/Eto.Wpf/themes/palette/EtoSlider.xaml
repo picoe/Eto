@@ -1,0 +1,253 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoSlider - custom style for the custom theme
+    =========================================================================
+    Replaces the default WPF slider chrome with a flat track and a circular
+    thumb while preserving horizontal/vertical orientation and tick placement.
+    =========================================================================
+    -->
+
+    <ControlTemplate x:Key="EtoSliderRepeatButtonTemplate" TargetType="{x:Type RepeatButton}">
+        <Border Background="Transparent" />
+    </ControlTemplate>
+
+    <Style x:Key="EtoSliderThumbStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="14" />
+        <Setter Property="Height" Value="14" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                        <Ellipse x:Name="ThumbEllipse"
+                                 Fill="{DynamicResource Eto.Palette.AccentBrush}"
+                                 Stroke="{DynamicResource Eto.Palette.AccentForegroundBrush}"
+                                 StrokeThickness="1" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ThumbEllipse" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.AccentHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="ThumbEllipse" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.AccentPressedBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="ThumbEllipse" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="ThumbEllipse" Property="Stroke"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type efc:EtoSlider}">
+        <Setter Property="Background" Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="MinWidth" Value="24" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoSlider}">
+                    <Grid x:Name="TemplateRoot" Margin="2" SnapsToDevicePixels="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TickBar x:Name="TopTick"
+                                 Grid.Row="0"
+                                 Grid.Column="1"
+                                 Height="4"
+                                 Margin="7,0"
+                                 Fill="{DynamicResource Eto.Palette.SubtleForegroundBrush}"
+                                 Placement="Top"
+                                 Visibility="Collapsed"
+                                 Minimum="{TemplateBinding Minimum}"
+                                 Maximum="{TemplateBinding Maximum}"
+                                 TickFrequency="{TemplateBinding TickFrequency}"
+                                 Ticks="{TemplateBinding Ticks}"
+                                 IsSelectionRangeEnabled="{TemplateBinding IsSelectionRangeEnabled}"
+                                 SelectionStart="{TemplateBinding SelectionStart}"
+                                 SelectionEnd="{TemplateBinding SelectionEnd}"
+                                 IsDirectionReversed="{TemplateBinding IsDirectionReversed}" />
+
+                        <TickBar x:Name="BottomTick"
+                                 Grid.Row="2"
+                                 Grid.Column="1"
+                                 Height="4"
+                                 Margin="7,0"
+                                 Fill="{DynamicResource Eto.Palette.SubtleForegroundBrush}"
+                                 Placement="Bottom"
+                                 Visibility="Collapsed"
+                                 Minimum="{TemplateBinding Minimum}"
+                                 Maximum="{TemplateBinding Maximum}"
+                                 TickFrequency="{TemplateBinding TickFrequency}"
+                                 Ticks="{TemplateBinding Ticks}"
+                                 IsSelectionRangeEnabled="{TemplateBinding IsSelectionRangeEnabled}"
+                                 SelectionStart="{TemplateBinding SelectionStart}"
+                                 SelectionEnd="{TemplateBinding SelectionEnd}"
+                                 IsDirectionReversed="{TemplateBinding IsDirectionReversed}" />
+
+                        <TickBar x:Name="LeftTick"
+                                 Grid.Row="1"
+                                 Grid.Column="0"
+                                 Width="4"
+                                 Margin="0,7"
+                                 Fill="{DynamicResource Eto.Palette.SubtleForegroundBrush}"
+                                 Placement="Left"
+                                 Visibility="Collapsed"
+                                 Minimum="{TemplateBinding Minimum}"
+                                 Maximum="{TemplateBinding Maximum}"
+                                 TickFrequency="{TemplateBinding TickFrequency}"
+                                 Ticks="{TemplateBinding Ticks}"
+                                 IsSelectionRangeEnabled="{TemplateBinding IsSelectionRangeEnabled}"
+                                 SelectionStart="{TemplateBinding SelectionStart}"
+                                 SelectionEnd="{TemplateBinding SelectionEnd}"
+                                 IsDirectionReversed="{TemplateBinding IsDirectionReversed}" />
+
+                        <TickBar x:Name="RightTick"
+                                 Grid.Row="1"
+                                 Grid.Column="2"
+                                 Width="4"
+                                 Margin="0,7"
+                                 Fill="{DynamicResource Eto.Palette.SubtleForegroundBrush}"
+                                 Placement="Right"
+                                 Visibility="Collapsed"
+                                 Minimum="{TemplateBinding Minimum}"
+                                 Maximum="{TemplateBinding Maximum}"
+                                 TickFrequency="{TemplateBinding TickFrequency}"
+                                 Ticks="{TemplateBinding Ticks}"
+                                 IsSelectionRangeEnabled="{TemplateBinding IsSelectionRangeEnabled}"
+                                 SelectionStart="{TemplateBinding SelectionStart}"
+                                 SelectionEnd="{TemplateBinding SelectionEnd}"
+                                 IsDirectionReversed="{TemplateBinding IsDirectionReversed}" />
+
+                        <Border x:Name="HorizontalTrackBackground"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Height="4"
+                                CornerRadius="2"
+                                Background="{DynamicResource Eto.Palette.BorderBrush}"
+                                VerticalAlignment="Center" />
+
+                        <Border x:Name="VerticalTrackBackground"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Width="4"
+                                CornerRadius="2"
+                                Background="{DynamicResource Eto.Palette.BorderBrush}"
+                                HorizontalAlignment="Center"
+                                Visibility="Collapsed" />
+
+                        <Track x:Name="PART_Track"
+                               Grid.Row="1"
+                               Grid.Column="1">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                              Template="{StaticResource EtoSliderRepeatButtonTemplate}" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                              Template="{StaticResource EtoSliderRepeatButtonTemplate}" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource EtoSliderThumbStyle}" />
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Vertical">
+                            <Setter TargetName="HorizontalTrackBackground" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="VerticalTrackBackground" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <Trigger Property="TickPlacement" Value="TopLeft">
+                            <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="TickPlacement" Value="BottomRight">
+                            <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="TickPlacement" Value="Both">
+                            <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Orientation" Value="Vertical" />
+                                <Condition Property="TickPlacement" Value="TopLeft" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="TopTick" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="LeftTick" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Orientation" Value="Vertical" />
+                                <Condition Property="TickPlacement" Value="BottomRight" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="BottomTick" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="RightTick" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Orientation" Value="Vertical" />
+                                <Condition Property="TickPlacement" Value="Both" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="TopTick" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="BottomTick" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="LeftTick" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="RightTick" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="HorizontalTrackBackground" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.BorderHoverBrush}" />
+                            <Setter TargetName="VerticalTrackBackground" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.BorderHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="HorizontalTrackBackground" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter TargetName="VerticalTrackBackground" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="HorizontalTrackBackground" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter TargetName="VerticalTrackBackground" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter TargetName="TopTick" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="BottomTick" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="LeftTick" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="RightTick" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -6,11 +6,19 @@
     xmlns:ef="clr-namespace:Eto.Wpf.Forms"
     xmlns:s="clr-namespace:System;assembly=mscorlib">
 
-    <Style TargetType="ef:EtoFormWindow">
-        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>	
-    </Style>
-    <Style TargetType="ef:EtoWindow">
+    <Style x:Key="{x:Type Window}" TargetType="Window">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
     </Style>
-	
+
+	<Style TargetType="ef:EtoWindow" BasedOn="{StaticResource {x:Type Window}}">
+	</Style>
+
+	<Style TargetType="ef:EtoFormWindow" BasedOn="{StaticResource {x:Type Window}}">
+	</Style>
+
+    <!-- Report the window chrome colour (grey, matching the Window style above) for
+         Eto.Drawing.SystemColors.WindowBackground. The None theme is the exception where the
+         window uses ControlBrush rather than the white WindowBrush; consumed by SystemColorsHandler. -->
+    <SolidColorBrush x:Key="WindowBackground" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+
 </ResourceDictionary>

@@ -33,9 +33,6 @@ namespace Eto.Test
 				NotificationActivated += (sender, e) => Log.Write(this, $"Notification: {e.ID}, userData: {e.UserData}");
 			}
 
-			if (platform.Supports<Themes.IHandler>() && !string.IsNullOrEmpty(Settings.LastTheme))
-				Theme = Themes.AllThemes.FirstOrDefault(t => t.Name == Settings.LastTheme) ?? Themes.System;
-
 		}
 
 		protected override void OnThemeChanged(EventArgs e)
@@ -52,6 +49,9 @@ namespace Eto.Test
 
 		protected override void OnInitialized(EventArgs e)
 		{
+			if (Platform.Supports<Themes.IHandler>() && !string.IsNullOrEmpty(Settings.LastTheme))
+				Theme = Themes.AllThemes.FirstOrDefault(t => t.Name == Settings.LastTheme) ?? Themes.System;
+
 			MainForm = new MainForm(TestSections.Get(TestAssemblies));
 
 			base.OnInitialized(e);

@@ -1,0 +1,65 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+        EtoGroupBox: the WPF Fluent theme's GroupBox has no frame around its content
+        (WinUI has no GroupBox concept), which leaves grouped content looking unbounded.
+        Give it a titled card instead - the header above a rounded, bordered content
+        area - so it has a visible border consistent with the other themes. The border
+        uses the same Fluent control stroke colour (ControlStrokeColorDefault, via
+        EtoBorderBezelBrush in themes/fluent.xaml) as the other Fluent controls. This
+        style lives under themes/fluent so it only affects the Fluent theme; the None
+        theme (which also consumes generic.xaml) gets its own copy under themes/none.
+    -->
+    <Style TargetType="efc:EtoGroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+        <Setter Property="BorderBrush" Value="{DynamicResource EtoBorderBezelBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <!-- The Fluent base GroupBox style carries a MinHeight/MinWidth (and its own
+             content padding) sized for its frameless header layout; reset them so the
+             titled card sizes to its content like the other themes. -->
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="efc:EtoGroupBox">
+                    <Grid SnapsToDevicePixels="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <ContentPresenter x:Name="HeaderPresenter"
+                                          Grid.Row="0"
+                                          ContentSource="Header"
+                                          RecognizesAccessKey="True"
+                                          Margin="2,0,2,4"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        <Border Grid.Row="1"
+                                CornerRadius="4"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <!-- Stretch explicitly: a ContentPresenter aliases the templated
+                                 parent's VerticalContentAlignment/HorizontalContentAlignment onto
+                                 its own alignment, and the Fluent GroupBox base style sets those to
+                                 Top/Left, which would pin the content and leave a gap on the far
+                                 sides. -->
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              ContentSource="Content"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasHeader" Value="False">
+                            <Setter TargetName="HeaderPresenter" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

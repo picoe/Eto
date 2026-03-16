@@ -119,10 +119,8 @@ namespace Eto.WinForms.Forms
 #endif
 	{
 #if WPF
-		System.Windows.Window IWpfWindow.Control
-		{
-			get { throw new NotImplementedException(); }
-		}
+		System.Windows.Window IWpfWindow.Control => null;
+		
 		public void SetOwnerFor(System.Windows.Window child)
 		{
 			new swin.WindowInteropHelper(child).Owner = Control;

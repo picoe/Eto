@@ -1,0 +1,70 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoScrollViewer - themed scrollbars for the custom theme
+    =========================================================================
+    Merges the shared ScrollBarStyles (thumb, arrows, track templates, and
+    global ScrollBar style) then adds the EtoScrollViewer template on top.
+    =========================================================================
+    -->
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Eto.Wpf;component/themes/palette/ScrollBarStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- == EtoScrollViewer style =========================================== -->
+    <Style TargetType="{x:Type efc:EtoScrollViewer}">
+        <Setter Property="Background"  Value="{DynamicResource Eto.Palette.BackgroundBrush}" />
+        <Setter Property="Foreground"  Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="Template">	
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoScrollViewer}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                                Grid.Row="0" Grid.Column="0"
+                                                CanContentScroll="{TemplateBinding CanContentScroll}"
+                                                Content="{TemplateBinding Content}"
+                                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                Margin="{TemplateBinding Padding}" />
+
+                        <ScrollBar x:Name="PART_VerticalScrollBar"
+                                   Grid.Row="0" Grid.Column="1"
+                                   Orientation="Vertical"
+                                   Template="{StaticResource EtoVerticalScrollBar}"
+                                   Maximum="{TemplateBinding ScrollableHeight}"
+                                   ViewportSize="{TemplateBinding ViewportHeight}"
+                                   Value="{TemplateBinding VerticalOffset}"
+                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+
+                        <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                   Grid.Row="1" Grid.Column="0"
+                                   Orientation="Horizontal"
+                                   Template="{StaticResource EtoHorizontalScrollBar}"
+                                   Maximum="{TemplateBinding ScrollableWidth}"
+                                   ViewportSize="{TemplateBinding ViewportWidth}"
+                                   Value="{TemplateBinding HorizontalOffset}"
+                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+
+                        <!-- Corner fill when both scrollbars visible -->
+                        <Border Grid.Row="1" Grid.Column="1"
+                                Background="{DynamicResource Eto.Palette.BackgroundBrush}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

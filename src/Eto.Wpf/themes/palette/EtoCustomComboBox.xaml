@@ -1,0 +1,47 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoCustomComboBox - custom theme skin
+    =========================================================================
+    EtoCustomComboBox is the ComboBox-like control used by DateTimePicker (and
+    other pickers).  Its ControlTemplate lives in Eto.Wpf's
+    themes/generic/CustomComboBox.xaml and is driven by a handful of named
+    resource keys.  The implicit style there (EtoCustomComboBoxStyle) binds
+    Background / Foreground / glyph / hover / corner-radius and the trigger
+    backgrounds to those keys via DynamicResource.
+
+    Rather than retemplate the control (or re-base its style, which a merged
+    dictionary can't do - a StaticResource BasedOn can't see sibling merged
+    dictionaries), we simply redefine those keys with our palette brushes.
+    Because this file is merged AFTER themes/generic.xaml, these keys win in the
+    DynamicResource lookup, so the existing style picks them up and the control
+    matches the DropDown (EtoComboBox) skin in EtoComboBox.xaml.
+
+    This is the same override strategy the Fluent theme uses in
+    Eto.Wpf/themes/fluent.xaml.  Note the border already matches the DropDown:
+    the base style binds BorderBrush to EtoBorderBezelBrush, which custom.xaml
+    redirects to the palette Border color.
+    =========================================================================
+    -->
+
+    <!-- Control fill - surface color, same as EtoComboBox's Background -->
+    <SolidColorBrush x:Key="EtoCustomComboBoxBackground"
+                     Color="{DynamicResource Eto.Palette.Surface.Color}" />
+    <!-- Foreground text + chevron glyph color -->
+    <SolidColorBrush x:Key="EtoCustomComboBoxGlyphBrush"
+                     Color="{DynamicResource Eto.Palette.Foreground.Color}" />
+    <!-- Toggle-button hover fill -->
+    <SolidColorBrush x:Key="EtoCustomComboBoxButtonHoverBrush"
+                     Color="{DynamicResource Eto.Palette.HoverBackground.Color}" />
+    <!-- Corner radius is inherited from the shared Eto.Palette.CornerRadius key (see
+         themes/palette.xaml), so the DateTimePicker matches the DropDown / TextBox rounding. -->
+
+    <!-- The state brushes its template triggers use (TextControlBackgroundFocused,
+         TextControlBorderBrushFocused, TextControlBackgroundPointerOver) are the shared
+         text-input keys defined in themes/palette.xaml, so the focus / hover behavior
+         matches the TextBox, DropDown and NumericStepper skins. -->
+
+</ResourceDictionary>

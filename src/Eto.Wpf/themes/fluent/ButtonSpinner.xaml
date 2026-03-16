@@ -8,10 +8,10 @@
         binds to, plus a style that supplies the Fluent chrome colours. The ControlTemplate itself is NOT redefined.
     -->
 
-    <!-- Buttons side by side (horizontal) with Fluent rounding -->
+    <!-- Buttons side by side (horizontal). The outer corner radius (4) is supplied by the shared
+         Eto.Palette.CornerRadius key in themes/fluent.xaml, consumed by the shared spinner template. -->
     <s:Int32 x:Key="SpinnerButtonColumns">2</s:Int32>
     <s:Double x:Key="SpinnerButtonAreaWidth">NaN</s:Double>
-    <CornerRadius x:Key="SpinnerCornerRadius">4</CornerRadius>
 
     <Geometry x:Key="FluentIncreaseChevron">M1,3 L4.5,0 8,3</Geometry>
     <Geometry x:Key="FluentDecreaseChevron">M1,0 L4.5,3 8,0</Geometry>

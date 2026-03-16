@@ -1,5 +1,15 @@
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoCheckBox : swc.CheckBox, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+	
 	public class CheckBoxHandler : WpfControl<swc.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		readonly swc.Border _border;
@@ -11,7 +21,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public CheckBoxHandler()
 		{
-			Control = new swc.CheckBox {
+			Control = new EtoCheckBox {
+				Handler = this,
 				IsThreeState = false,
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				VerticalContentAlignment = sw.VerticalAlignment.Center

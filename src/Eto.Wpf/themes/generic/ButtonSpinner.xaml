@@ -9,8 +9,12 @@
 		theme. Themes only override the resource keys it binds to:
 		SpinnerButtonColumns        - 1 => buttons stacked vertically, 2 => side by side (fluent)
 		SpinnerButtonAreaWidth      - width of the spin-button area (NaN = auto)
-		SpinnerCornerRadius         - corner radius of the outer chrome
 		SpinnerRepeatButtonStyle    - style for the increase/decrease RepeatButtons
+
+		The outer chrome corner radius is driven by the shared Eto.Palette.CornerRadius key (see
+		themes/generic/CustomComboBox.xaml) so it stays consistent with the other input controls:
+		undefined here / in the "none" theme falls back to 0 (square), fluent.xaml sets 4, and the
+		palette theme lets a palette opt into rounded corners.
 		SpinnerIncreaseGlyph / SpinnerDecreaseGlyph                 - normal glyphs
 		SpinnerIncreaseGlyphDisabled / SpinnerDecreaseGlyphDisabled - disabled glyphs
 		Hover/focus/disabled chrome colours are theme specific and live in each theme's Style.Triggers
@@ -26,7 +30,6 @@
 	<!--  Vertical buttons, system colours: the default ("none"/classic) look  -->
 	<s:Int32 x:Key="SpinnerButtonColumns">1</s:Int32>
 	<s:Double x:Key="SpinnerButtonAreaWidth">17</s:Double>
-	<CornerRadius x:Key="SpinnerCornerRadius">0</CornerRadius>
 
 	<DataTemplate x:Key="SpinnerIncreaseGlyph">
 		<Path
@@ -114,7 +117,7 @@
 			Background="{TemplateBinding Background}"
 			BorderBrush="{TemplateBinding BorderBrush}"
 			BorderThickness="{TemplateBinding BorderThickness}"
-			CornerRadius="{DynamicResource SpinnerCornerRadius}"
+			CornerRadius="{DynamicResource Eto.Palette.CornerRadius}"
 			SnapsToDevicePixels="True">
 			<Grid>
 				<Grid.ColumnDefinitions>

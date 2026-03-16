@@ -1,10 +1,14 @@
 namespace Eto.Wpf.Forms.Menu
 {
+	public class EtoMenu : swc.Menu
+	{
+	}
+	
 	public class MenuBarHandler : MenuHandler<swc.Menu, MenuBar, MenuBar.ICallback>, MenuBar.IHandler
 	{
 		public MenuBarHandler()
 		{
-			Control = new swc.Menu();
+			Control = new EtoMenu();
 		}
 
 		public void AddMenu(int index, MenuItem item)

@@ -1,0 +1,298 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:e="clr-namespace:Eto.Wpf"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    PALETTE THEME
+    =========================================================================
+    A reusable, palette-driven theme for Eto.Wpf applications. All control
+    styles reference named palette brushes/colors via DynamicResource, so an
+    application creates a custom theme by supplying ONLY a palette resource
+    dictionary defining the Eto.Palette.* colors and brushes, e.g.:
+
+        ThemesHandler.Instance.RegisterTheme(
+			new PaletteThemeHandler(
+				"My Theme", 
+				ThemeStyle.Dark,
+            	new Uri("pack://application:,,,/MyApp;component/themes/MyPalette.xaml")
+			)
+		);
+
+    See test/Eto.Test.Wpf/themes/custom/*Palette.xaml for complete example
+    palettes (the keys defined there are the contract this theme consumes).
+
+    Layout
+    ======
+    1. MergedDictionaries (lowest priority, searched last):
+         a. themes/generic.xaml    — Eto.Wpf base control templates
+         b. themes/palette/*.xaml  — style overrides using DynamicResource
+                                     palette references
+    2. Outer dictionary resources (highest priority, searched first):
+         • SystemColors brush overrides — redirect WPF's System brush keys to
+           the palette so every standard WPF control (Button, TextBox,
+           ComboBox, DataGrid, …) picks up the palette via its built-in
+           DynamicResource references. These use DynamicResource for the
+           Color values because the application's palette dictionary is a
+           sibling merged dictionary supplied at runtime.
+         • EtoBorderBezelBrush — Eto-specific border brush.
+
+    The matching SystemColors *ColorKey* resources (WindowColorKey,
+    ControlTextColorKey, HighlightColorKey, …), which a few generic control
+    templates consume directly, are NOT overridden here: a Color resource entry
+    cannot reference another resource (neither DynamicResource nor StaticResource
+    parses into a Color), and this file is parsed before the palette is merged, so
+    the literal colors are unknown. PaletteThemeHandler.ThemeResourcesMerged copies
+    each Eto.Palette.*.Color into the corresponding *ColorKey in code once the
+    palette has been merged. Keep that mapping in sync with the brush overrides below.
+
+    To change colors at runtime (live theme preview), replace the *brush* in
+    Application.Current.Resources (main dict, not a merged one):
+        Application.Current.Resources["Eto.Palette.AccentBrush"] = new SolidColorBrush(color);
+    =========================================================================
+    -->
+
+    <ResourceDictionary.MergedDictionaries>
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/generic.xaml" />
+
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoComboBox.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoCustomComboBox.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoTextBox.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoButtonSpinner.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoSearchBox.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoButton.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoToggleButton.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoBooleanControls.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoSlider.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoProgressBar.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoGroupBox.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoExpander.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoTabControl.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/ScrollBarStyles.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoScrollViewer.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoListBox.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoDataGrid.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoCalendar.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoToolBar.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoMenu.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/palette/EtoMenuItem.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- ═ Backgrounds ══════════════════════════════════════════════════════ -->
+    <!-- Window / TextBox / ListBox / DataGrid cell background -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Background.Color}" />
+    <!-- Panel / GroupBox / control fill (ControlBrush is used by Button etc.) -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Surface.Color}" />
+    <!-- Eto.Drawing.SystemColors.ControlBackground (the entry area of controls such as a TextBox).
+         Palette inputs use the Surface brush, so report that rather than the tinted window background. -->
+    <SolidColorBrush x:Key="ControlBackground"
+                     Color="{DynamicResource Eto.Palette.Surface.Color}" />
+    <!-- Lighter inset controls (ControlLightBrush used by some WPF templates) -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlLightBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Background.Color}" />
+    <!-- Scroll area / info tip background -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.InfoBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Background.Color}" />
+
+    <!-- ═ Text-input chrome ════════════════════════════════════════════════ -->
+    <!--
+    The TextControl* keys are the contract the shared Eto templates use for the
+    fill and border of a text-entry area (originally Fluent's naming, see
+    themes/fluent/*.xaml). Any style that fills a text entry area references
+    these rather than the palette Surface brush directly, because the generic
+    ButtonSpinner and CustomComboBox templates redefine them to Transparent
+    within their content area (themes/generic/ButtonSpinner.xaml and
+    themes/generic/CustomComboBox.xaml). That way a text control hosted inside
+    one of those - e.g. the masked text box + spinner inside a DateTimePicker -
+    does not paint a second, differently-colored rectangle over the outer
+    chrome, which would read as an inner border.
+    -->
+    <SolidColorBrush x:Key="TextControlBackground"
+                     Color="{DynamicResource Eto.Palette.Surface.Color}" />
+    <!-- Keyboard-focus / hover keep the surface fill; only the border changes -->
+    <SolidColorBrush x:Key="TextControlBackgroundFocused"
+                     Color="{DynamicResource Eto.Palette.Surface.Color}" />
+    <SolidColorBrush x:Key="TextControlBackgroundPointerOver"
+                     Color="{DynamicResource Eto.Palette.Surface.Color}" />
+    <SolidColorBrush x:Key="TextControlBackgroundDisabled"
+                     Color="{DynamicResource Eto.Palette.DisabledBackground.Color}" />
+    <SolidColorBrush x:Key="TextControlBorderBrushFocused"
+                     Color="{DynamicResource Eto.Palette.Accent.Color}" />
+
+    <!-- ═ Foregrounds ══════════════════════════════════════════════════════ -->
+    <!-- Primary text color -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Foreground.Color}" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Foreground.Color}" />
+    <!-- Info-tip text -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.InfoTextBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Foreground.Color}" />
+    <!-- Placeholder / watermark / disabled text -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.GrayTextBrushKey}"
+                     Color="{DynamicResource Eto.Palette.SubtleForeground.Color}" />
+
+    <!-- ═ Selection / highlight ════════════════════════════════════════════ -->
+    <!-- Active selection background (focused ListBox rows, selected text, …) -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Accent.Color}" />
+    <!-- Text drawn over the active selection background -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
+                     Color="{DynamicResource Eto.Palette.AccentForeground.Color}" />
+    <!-- Inactive selection background (unfocused list, etc.) -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
+                     Color="{DynamicResource Eto.Palette.HoverBackground.Color}" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Foreground.Color}" />
+
+    <!-- ═ Borders ══════════════════════════════════════════════════════════ -->
+    <!-- Standard control border (used by ButtonSpinner, ComboBox, etc.) -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Border.Color}" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkDarkBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Border.Color}" />
+    <!-- Window / dialog frame -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowFrameBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Border.Color}" />
+    <!-- Active window border (focus rings, active caption) -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.ActiveBorderBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Accent.Color}" />
+    <!-- Inactive / unfocused window border -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveBorderBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Border.Color}" />
+
+    <!-- ═ Menus ════════════════════════════════════════════════════════════ -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Background.Color}" />
+    <!-- Menu bar strip - the window background by default, see the menu / tool bar
+         chrome section below -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuBarBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Background.Color}" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuTextBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Foreground.Color}" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuHighlightBrushKey}"
+                     Color="{DynamicResource Eto.Palette.Accent.Color}" />
+
+    <!--
+    Chrome of the hovered / keyboard-selected menu item (menu bar, submenus,
+    context menus - themes/palette/EtoMenuItem.xaml). These are DEFAULTS a
+    palette may override; out of the box the highlight is a plain solid fill,
+    rounded with Eto.Palette.CornerRadius like every other control.
+    To outline it instead - the way the stock WPF theme does - a palette sets
+    Eto.Palette.MenuHighlightBorderBrush; to make it read as a selection, it
+    sets the background to the accent color and the foreground to match:
+
+        <SolidColorBrush x:Key="Eto.Palette.MenuHighlightBackgroundBrush"
+                         Color="{StaticResource Eto.Palette.Accent.Color}" />
+        <SolidColorBrush x:Key="Eto.Palette.MenuHighlightForegroundBrush"
+                         Color="{StaticResource Eto.Palette.AccentForeground.Color}" />
+    -->
+    <SolidColorBrush x:Key="Eto.Palette.MenuHighlightBackgroundBrush"
+                     Color="{DynamicResource Eto.Palette.HoverBackground.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.MenuHighlightForegroundBrush"
+                     Color="{DynamicResource Eto.Palette.Foreground.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.MenuHighlightBorderBrush"
+                     Color="Transparent" />
+
+    <!--
+    Chrome of the menu bar and tool bar strips themselves
+    (themes/palette/EtoMenu.xaml, themes/palette/EtoToolBar.xaml). By default
+    both blend into the window - the same background as the window content and
+    no border - so they read as part of the window rather than as separate bands
+    of chrome laid over it. The submenu / context menu popups a menu bar opens
+    are unaffected: a floating popup still needs to separate itself from what is
+    behind it, so those keep the Surface fill and palette border from
+    themes/palette/EtoMenuItem.xaml.
+
+    These are DEFAULTS a palette may override to give either bar a look of its
+    own - e.g. to sit the tool bar on the inset surface color with a separator
+    line beneath it:
+
+        <SolidColorBrush x:Key="Eto.Palette.ToolBarBackgroundBrush"
+                         Color="{StaticResource Eto.Palette.Surface.Color}" />
+        <SolidColorBrush x:Key="Eto.Palette.ToolBarBorderBrush"
+                         Color="{StaticResource Eto.Palette.Border.Color}" />
+        <Thickness x:Key="Eto.Palette.ToolBarBorderThickness">0,0,0,1</Thickness>
+
+    A palette that gives the menu bar a background of its own will usually want
+    to override SystemColors.MenuBarBrushKey (and MenuBarColorKey) to match, for
+    any plain WPF menu that isn't picking up the Eto style.
+    -->
+    <SolidColorBrush x:Key="Eto.Palette.MenuBarBackgroundBrush"
+                     Color="{DynamicResource Eto.Palette.Background.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.MenuBarBorderBrush"
+                     Color="Transparent" />
+    <Thickness x:Key="Eto.Palette.MenuBarBorderThickness">0</Thickness>
+
+    <SolidColorBrush x:Key="Eto.Palette.ToolBarBackgroundBrush"
+                     Color="{DynamicResource Eto.Palette.Background.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.ToolBarBorderBrush"
+                     Color="Transparent" />
+    <Thickness x:Key="Eto.Palette.ToolBarBorderThickness">0</Thickness>
+
+    <!-- ── Eto-specific ─────────────────────────────────────────────────── -->
+    <!-- Used by EtoButtonSpinner and a handful of other Eto controls -->
+    <SolidColorBrush x:Key="EtoBorderBezelBrush"
+                     Color="{DynamicResource Eto.Palette.Border.Color}" />
+
+    <!-- ═ Shape / spacing (optional palette overrides) ═════════════════════ -->
+    <!--
+    These are the DEFAULTS for the palette-tunable shape keys. A palette file
+    (e.g. MochaPalette.xaml) is merged AFTER this dictionary, so it can override
+    any of these to opt into rounded corners and matching padding. If a palette
+    does not define them, these defaults apply and the controls keep their
+    original square, tightly-padded look — so the feature is fully opt-in.
+
+        Eto.Palette.CornerRadius   - corner radius applied to the outer chrome of
+                                     TextBox / ComboBox (DropDown) / Button, the combo
+                                     drop-down popup, the menu item highlight,
+                                     DateTimePicker and NumericStepper.
+                                     (This same key also drives DateTimePicker/NumericStepper
+                                     rounding in the generic + fluent themes.)
+        Eto.Palette.ControlPadding - inner padding for text-entry & combo controls;
+                                     widen it to keep content clear of rounded corners.
+        Eto.Palette.ButtonPadding  - inner padding for buttons.
+    -->
+    <!--
+    The OS-drawn window frame (title bar background, its text, and the window
+    border) is tinted to match the palette by PaletteThemeHandler.StyleWindow so
+    the caption isn't a strip of system chrome above a themed window. By default
+    it uses Eto.Palette.Background / Foreground / Border; a palette overrides any
+    part by defining the matching Color key below. These are Colors, not brushes -
+    they are read in code and handed to DWM.
+
+        Eto.Palette.TitleBarBackground.Color - default Eto.Palette.Background.Color
+        Eto.Palette.TitleBarForeground.Color - default Eto.Palette.Foreground.Color
+        Eto.Palette.TitleBarBorder.Color     - default Eto.Palette.Border.Color
+
+    Windows 11 (build 22000) or later only; on Windows 10 the caption just stays
+    light or dark according to the theme's ThemeStyle.
+    -->
+
+    <CornerRadius x:Key="Eto.Palette.CornerRadius">0</CornerRadius>
+    <Thickness x:Key="Eto.Palette.ControlPadding">4,2</Thickness>
+    <Thickness x:Key="Eto.Palette.ButtonPadding">8,4</Thickness>
+
+    <!-- ═ Styles that re-base a shared style ═══════════════════════════════ -->
+    <!--
+    Unlike the themes/palette/*.xaml files (which are sibling merged dictionaries and so cannot
+    resolve a StaticResource BasedOn), this outer dictionary can re-base a style defined in its
+    own merged dictionaries - the same thing themes/fluent.xaml does.
+    -->
+    <!-- The shared CustomComboBox template (themes/generic/CustomComboBox.xaml) only dims itself
+         when disabled, relying on the hosted editor to paint the disabled fill. Palette content
+         hosted in the edit area is transparent (see themes/palette/EtoButtonSpinner.xaml), so
+         supply the disabled fill here to match the TextBox / NumericStepper skins. -->
+    <Style TargetType="{x:Type efc:EtoCustomComboBox}" BasedOn="{StaticResource EtoCustomComboBoxStyle}">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

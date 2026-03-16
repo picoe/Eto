@@ -1,0 +1,165 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoSearchTextBox - custom ControlTemplate for the custom theme
+    =========================================================================
+    The generic SearchTextBox template hard-codes a pill corner radius (11) and
+    the generic gradient/system mouse-over & focus visuals, so under the palette
+    theme its border didn't match the themed TextBox. This template keeps the
+    search chrome (magnifier icon + clear button) but uses the SAME border,
+    background, corner radius, hover, focus and disabled behavior as the palette
+    EtoTextBox (see EtoTextBox.xaml).
+    =========================================================================
+    -->
+
+    <!-- Watermark placeholder text, palette subtle foreground -->
+    <DataTemplate x:Key="EtoSearchWatermarkTemplate">
+        <ContentControl Content="{Binding}"
+                        Foreground="{DynamicResource Eto.Palette.SubtleForegroundBrush}"
+                        Margin="2,0"
+                        Focusable="False" />
+    </DataTemplate>
+
+    <Style TargetType="{x:Type efc:EtoSearchTextBox}">
+        <Setter Property="Background"      Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"     Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding"         Value="{DynamicResource Eto.Palette.ControlPadding}" />
+        <Setter Property="CaretBrush"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="SelectionBrush"  Value="{DynamicResource Eto.Palette.AccentBrush}" />
+        <Setter Property="efc:EtoTextSelection.TextBrush" Value="{DynamicResource Eto.Palette.AccentForegroundBrush}" />
+        <Setter Property="SelectionOpacity" Value="1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="WatermarkTemplate" Value="{StaticResource EtoSearchWatermarkTemplate}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoSearchTextBox}">
+                    <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource Eto.Palette.CornerRadius}"
+                            SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="18" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Magnifier icon -->
+                            <Border x:Name="PART_SearchIcon"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right">
+                                <Path x:Name="SearchGlyph"
+                                      Margin="-2"
+                                      Stroke="{DynamicResource Eto.Palette.SubtleForegroundBrush}"
+                                      StrokeThickness="1"
+                                      Data="M 0,4 5,4 A 4,4 0 1 0 13,4 A 4,4 0 1 0 5,4">
+                                    <Path.LayoutTransform>
+                                        <RotateTransform Angle="-135" />
+                                    </Path.LayoutTransform>
+                                </Path>
+                            </Border>
+
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Grid.Column="1"
+                                          Margin="-2,0"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+
+                            <ContentPresenter x:Name="PART_WatermarkHost"
+                                              Grid.Column="1"
+                                              Content="{TemplateBinding Watermark}"
+                                              ContentTemplate="{Binding WatermarkTemplate, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={StaticResource EtoSearchWatermarkTemplate}}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              Margin="{TemplateBinding Padding}"
+                                              IsHitTestVisible="False"
+                                              Visibility="Collapsed" />
+
+                            <!-- Clear button -->
+                            <Button x:Name="PART_ClearButton"
+                                    Grid.Column="2"
+                                    Focusable="False"
+                                    Background="Transparent"
+                                    Command="{TemplateBinding ClearCommand}"
+                                    Visibility="Collapsed"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    Foreground="{DynamicResource Eto.Palette.SubtleForegroundBrush}">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <Border Background="{TemplateBinding Background}">
+                                            <Path VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                  Stroke="{TemplateBinding Foreground}"
+                                                  StrokeThickness="1"
+                                                  Data="M 0,0 7,7 M 7,0 0,7" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Show the clear button once there's text -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="True" />
+                                <Condition Property="IsEmpty" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_ClearButton" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <Trigger SourceName="PART_ClearButton" Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_ClearButton" Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+                        </Trigger>
+
+                        <!-- Watermark visibility -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="KeepWatermarkOnGotFocus" Value="False" />
+                                <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="Text" Value="" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_WatermarkHost" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="KeepWatermarkOnGotFocus" Value="True" />
+                                <Condition Property="Text" Value="" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_WatermarkHost" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+
+                        <!-- Border states - match the palette TextBox -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.BorderHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="SearchGlyph" Property="Stroke"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

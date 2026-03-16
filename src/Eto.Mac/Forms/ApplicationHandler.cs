@@ -307,8 +307,7 @@ namespace Eto.Mac.Forms
 				case Application.ThemeChangedEvent:
 					AddControlObserver(new NSString("effectiveAppearance"), e =>
 					{
-						if (Theme == Themes.System)
-							Callback.OnThemeChanged(Widget, EventArgs.Empty);
+						Callback.OnThemeChanged(Widget, EventArgs.Empty);
 					});
 					break;
 				default:

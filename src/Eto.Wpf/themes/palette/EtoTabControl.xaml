@@ -1,0 +1,236 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoTabControl - custom ControlTemplate for the custom theme
+    =========================================================================
+    The WPF default TabControl template uses hard-coded gradient brushes in the
+    tab headers and content border. This template replaces that chrome with
+    flat, DynamicResource-based brushes from the palette and supports all four
+    TabStripPlacements (Top / Bottom / Left / Right).
+
+    Tabs follow the palette corner radius on their OUTER edge (the two corners
+    away from the content) via TabCornerRadiusConverter; the inner edge stays
+    square and the selected tab overlaps the content border by 1px so it reads
+    as connected to its page.
+    =========================================================================
+    -->
+
+    <efc:TabCornerRadiusConverter x:Key="EtoTabCornerRadiusConverter" />
+
+    <Style TargetType="{x:Type efc:EtoTabControl}">
+        <Setter Property="Background"      Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"     Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding"         Value="2" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoTabControl}">
+                    <Grid x:Name="TemplateRoot"
+                          KeyboardNavigation.TabNavigation="Local"
+                          SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition x:Name="ColumnDefinition0" Width="*" />
+                            <ColumnDefinition x:Name="ColumnDefinition1" Width="0" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition x:Name="RowDefinition0" Height="Auto" />
+                            <RowDefinition x:Name="RowDefinition1" Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Content area - rendered first (lower ZIndex) so the selected
+                             tab can paint over the edge it shares with the content -->
+                        <Border x:Name="ContentBorder"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                KeyboardNavigation.DirectionalNavigation="Contained"
+                                KeyboardNavigation.TabNavigation="Local"
+                                KeyboardNavigation.TabIndex="2">
+                            <ContentPresenter x:Name="PART_SelectedContentHost"
+                                              Margin="{TemplateBinding Padding}"
+                                              ContentSource="SelectedContent"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+
+                        <!-- Tab header strip - higher ZIndex so the selected tab's
+                             negative margin overlaps the content border -->
+                        <TabPanel x:Name="HeaderPanel"
+                                  Grid.Row="0"
+                                  Grid.Column="0"
+                                  Margin="2,2,2,0"
+                                  Panel.ZIndex="1"
+                                  Background="Transparent"
+                                  IsItemsHost="True"
+                                  KeyboardNavigation.TabIndex="1" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <!-- Bottom tabs -->
+                        <Trigger Property="TabStripPlacement" Value="Bottom">
+                            <Setter TargetName="HeaderPanel"     Property="Grid.Row" Value="1" />
+                            <Setter TargetName="ContentBorder"   Property="Grid.Row" Value="0" />
+                            <Setter TargetName="RowDefinition0"  Property="Height"   Value="*" />
+                            <Setter TargetName="RowDefinition1"  Property="Height"   Value="Auto" />
+                            <Setter TargetName="HeaderPanel"     Property="Margin"   Value="2,0,2,2" />
+                        </Trigger>
+                        <!-- Left tabs -->
+                        <Trigger Property="TabStripPlacement" Value="Left">
+                            <Setter TargetName="HeaderPanel"     Property="Grid.Row"    Value="0" />
+                            <Setter TargetName="ContentBorder"   Property="Grid.Row"    Value="0" />
+                            <Setter TargetName="HeaderPanel"     Property="Grid.Column" Value="0" />
+                            <Setter TargetName="ContentBorder"   Property="Grid.Column" Value="1" />
+                            <Setter TargetName="ColumnDefinition0" Property="Width"  Value="Auto" />
+                            <Setter TargetName="ColumnDefinition1" Property="Width"  Value="*" />
+                            <Setter TargetName="RowDefinition0"  Property="Height"   Value="*" />
+                            <Setter TargetName="RowDefinition1"  Property="Height"   Value="0" />
+                            <Setter TargetName="HeaderPanel"     Property="Margin"   Value="2,2,0,2" />
+                        </Trigger>
+                        <!-- Right tabs -->
+                        <Trigger Property="TabStripPlacement" Value="Right">
+                            <Setter TargetName="HeaderPanel"     Property="Grid.Row"    Value="0" />
+                            <Setter TargetName="ContentBorder"   Property="Grid.Row"    Value="0" />
+                            <Setter TargetName="HeaderPanel"     Property="Grid.Column" Value="1" />
+                            <Setter TargetName="ContentBorder"   Property="Grid.Column" Value="0" />
+                            <Setter TargetName="ColumnDefinition0" Property="Width"  Value="*" />
+                            <Setter TargetName="ColumnDefinition1" Property="Width"  Value="Auto" />
+                            <Setter TargetName="RowDefinition0"  Property="Height"   Value="*" />
+                            <Setter TargetName="RowDefinition1"  Property="Height"   Value="0" />
+                            <Setter TargetName="HeaderPanel"     Property="Margin"   Value="0,2,2,2" />
+                        </Trigger>
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- TabItem style - flat themed tab headers with palette-rounded outer corners -->
+    <Style TargetType="{x:Type TabItem}">
+        <Setter Property="Background"  Value="Transparent" />
+        <Setter Property="Foreground"  Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Padding"     Value="8,4" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <!-- Tag carries the palette scalar corner radius so the converter can
+                         produce a side-specific (outer-only) CornerRadius that tracks it. -->
+                    <Border x:Name="TabBorder"
+                            Margin="0,0,2,0"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            Tag="{DynamicResource Eto.Palette.CornerRadius}"
+                            CornerRadius="{Binding Tag, RelativeSource={RelativeSource Self},
+                                           Converter={StaticResource EtoTabCornerRadiusConverter},
+                                           ConverterParameter=Top}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter x:Name="ContentSite"
+                                          Margin="{TemplateBinding Padding}"
+                                          ContentSource="Header"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- ═ Per-placement: outer-corner rounding + inter-tab spacing ═ -->
+                        <Trigger Property="TabStripPlacement" Value="Bottom">
+                            <Setter TargetName="TabBorder" Property="CornerRadius"
+                                    Value="{Binding Tag, RelativeSource={RelativeSource Self},
+                                            Converter={StaticResource EtoTabCornerRadiusConverter},
+                                            ConverterParameter=Bottom}" />
+                        </Trigger>
+                        <Trigger Property="TabStripPlacement" Value="Left">
+                            <Setter TargetName="TabBorder" Property="Margin" Value="0,0,0,2" />
+                            <Setter TargetName="TabBorder" Property="CornerRadius"
+                                    Value="{Binding Tag, RelativeSource={RelativeSource Self},
+                                            Converter={StaticResource EtoTabCornerRadiusConverter},
+                                            ConverterParameter=Left}" />
+                        </Trigger>
+                        <Trigger Property="TabStripPlacement" Value="Right">
+                            <Setter TargetName="TabBorder" Property="Margin" Value="0,0,0,2" />
+                            <Setter TargetName="TabBorder" Property="CornerRadius"
+                                    Value="{Binding Tag, RelativeSource={RelativeSource Self},
+                                            Converter={StaticResource EtoTabCornerRadiusConverter},
+                                            ConverterParameter=Right}" />
+                        </Trigger>
+
+                        <!-- ═ Hover (unselected) ═ -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsSelected" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="TabBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                            <Setter TargetName="TabBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.HoverBorderBrush}" />
+                        </MultiTrigger>
+
+                        <!-- ═ Selected: fill with surface + accent-matching border ═ -->
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="TabBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+                            <Setter TargetName="TabBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.BorderBrush}" />
+                            <Setter Property="Panel.ZIndex" Value="1" />
+                        </Trigger>
+
+                        <!-- Selected + placement: drop the inner border and extend 1px over
+                             the content border so the tab connects to its page. -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="TabStripPlacement" Value="Top" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="TabBorder" Property="BorderThickness" Value="1,1,1,0" />
+                            <Setter TargetName="TabBorder" Property="Margin" Value="0,0,2,-1" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="TabStripPlacement" Value="Bottom" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="TabBorder" Property="BorderThickness" Value="1,0,1,1" />
+                            <Setter TargetName="TabBorder" Property="Margin" Value="0,-1,2,0" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="TabStripPlacement" Value="Left" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="TabBorder" Property="BorderThickness" Value="1,1,0,1" />
+                            <Setter TargetName="TabBorder" Property="Margin" Value="0,0,-1,2" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="TabStripPlacement" Value="Right" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="TabBorder" Property="BorderThickness" Value="0,1,1,1" />
+                            <Setter TargetName="TabBorder" Property="Margin" Value="-1,0,0,2" />
+                        </MultiTrigger>
+
+                        <!-- ═ Disabled ═ -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

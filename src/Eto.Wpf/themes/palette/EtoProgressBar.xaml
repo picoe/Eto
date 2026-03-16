@@ -1,0 +1,123 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoProgressBar - custom style for the custom theme
+    =========================================================================
+    Uses a rounded track, layered accent fill, and a soft shimmer in
+    indeterminate mode so the control feels more lively without clashing with
+    the rest of the theme.
+    =========================================================================
+    -->
+
+    <Style x:Key="EtoProgressBarStyle" TargetType="{x:Type ProgressBar}">
+        <Setter Property="Foreground" Value="{DynamicResource Eto.Palette.AccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="MinHeight" Value="18" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ProgressBar}">
+                    <Grid x:Name="Root" SnapsToDevicePixels="True" ClipToBounds="True">
+                        <Border x:Name="TrackBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8" />
+
+                        <Grid x:Name="PART_Track" Margin="1" ClipToBounds="True">
+                            <Border x:Name="TrackInner"
+                                    Background="{DynamicResource Eto.Palette.BackgroundBrush}"
+                                    CornerRadius="7"
+                                    Opacity="0.65" />
+
+                            <Grid x:Name="PART_Indicator"
+                                  HorizontalAlignment="Left"
+                                  Width="0"
+                                  ClipToBounds="True">
+                                <Border CornerRadius="7">
+                                    <Grid>
+                                        <Rectangle Fill="{DynamicResource Eto.Palette.AccentBrush}" />
+                                        <Rectangle Margin="0,1,0,1">
+                                            <Rectangle.Fill>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                    <GradientStop Color="#00FFFFFF" Offset="0" />
+                                                    <GradientStop Color="#40FFFFFF" Offset="0.45" />
+                                                    <GradientStop Color="#10FFFFFF" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                        <Rectangle x:Name="Shimmer"
+                                                   Width="46"
+                                                   HorizontalAlignment="Left"
+                                                   Opacity="0.55"
+                                                   RenderTransformOrigin="0.5,0.5">
+                                            <Rectangle.Fill>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                    <GradientStop Color="#00FFFFFF" Offset="0" />
+                                                    <GradientStop Color="#A0FFFFFF" Offset="0.5" />
+                                                    <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Rectangle.Fill>
+                                            <Rectangle.RenderTransform>
+                                                <TranslateTransform X="-60" />
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsIndeterminate" Value="True">
+                            <Setter TargetName="PART_Indicator" Property="Opacity" Value="0.95" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="IndeterminateStoryboard">
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimation Storyboard.TargetName="Shimmer"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                         From="-60"
+                                                         To="260"
+                                                         Duration="0:0:1.3" />
+                                        <DoubleAnimation Storyboard.TargetName="PART_Indicator"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         From="0.82"
+                                                         To="1"
+                                                         Duration="0:0:0.65"
+                                                         AutoReverse="True"
+                                                         RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <StopStoryboard BeginStoryboardName="IndeterminateStoryboard" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <Trigger Property="IsIndeterminate" Value="False">
+                            <Setter TargetName="Shimmer" Property="Opacity" Value="0.35" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="TrackBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter TargetName="TrackInner" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                            <Setter TargetName="PART_Indicator" Property="Opacity" Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Every plain ProgressBar in the app, including the cells of a ProgressCell column -->
+    <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource EtoProgressBarStyle}" />
+    <!-- Eto's own ProgressBar: implicit styles key on the exact type, so it needs its own entry -->
+    <Style TargetType="{x:Type efc:EtoProgressBar}" BasedOn="{StaticResource EtoProgressBarStyle}" />
+
+</ResourceDictionary>

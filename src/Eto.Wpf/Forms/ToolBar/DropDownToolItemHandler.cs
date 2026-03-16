@@ -13,7 +13,10 @@ namespace Eto.Wpf.Forms.ToolBar
 			Control = new swc.Menu();
 			Control.Background = swm.Brushes.Transparent;
 			Control.Items.Add(root);
-			arrow = new sw.Shapes.Path { Data = swm.Geometry.Parse("M 0 0 L 3 3 L 6 0 Z"), VerticalAlignment = sw.VerticalAlignment.Center, Margin = new Thickness(2, 2, 0, 0), Fill = swm.Brushes.Black };
+			arrow = new sw.Shapes.Path { Data = swm.Geometry.Parse("M 0 0 L 3 3 L 6 0 Z"), VerticalAlignment = sw.VerticalAlignment.Center, Margin = new Thickness(2, 2, 0, 0) };
+			// Follow the themed control-text brush (redirected to the palette foreground by the
+			// palette theme) instead of a hard-coded black so the arrow is visible on dark themes.
+			arrow.SetResourceReference(sw.Shapes.Shape.FillProperty, sw.SystemColors.ControlTextBrushKey);
 
 			root.Click += Control_Click;
 			root.SubmenuOpened += Control_Click;

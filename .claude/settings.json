@@ -1,10 +1,34 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet test *)",
-      "Bash(dotnet build *)",
-      "Bash(dotnet restore *)",
-      "Bash(dotnet workload *)"
-    ]
+      "// --- read/write anywhere under the project root (path-agnostic; matches C:\\ or UNC) ---",
+      "Read(**)",
+      "Edit(**)",
+      "Write(**)",
+      "// --- text processing (unix) ---",
+      "Bash(sort *)",
+      "Bash(grep *)",
+      "Bash(cd *)",
+      "Bash(awk *)",
+      "Bash(sed *)",
+      "Bash(find *)",
+      "// --- text processing (pwsh equivalents) ---",
+      "PowerShell(Sort-Object *)",
+      "PowerShell(Select-String *)",
+      "PowerShell(Where-Object *)",
+      "PowerShell(ForEach-Object *)",
+      "PowerShell(Measure-Object *)",
+      "PowerShell(Group-Object *)",
+      "PowerShell(Select-Object *)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(dotnet *)",
+      "// --- tools ---",
+      "Bash(git *)",
+      "Bash(dotnet *)",
+      "Bash(echo *)",
+      "Bash(dotnet --version)"
+    ],
+    "additionalDirectories": []
   }
 }

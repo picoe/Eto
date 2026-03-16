@@ -9,15 +9,23 @@
         <e:AssemblyAbsoluteResourceDictionary Path="themes/fluent/ButtonSpinner.xaml" />
         <e:AssemblyAbsoluteResourceDictionary Path="themes/fluent/ToggleButton.xaml" />
         <e:AssemblyAbsoluteResourceDictionary Path="themes/fluent/WatermarkTextBox.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/fluent/GroupBox.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Override border brush for Eto controls to use the Fluent theme color that adapts to dark/light mode -->
     <SolidColorBrush x:Key="EtoBorderBezelBrush" Color="{DynamicResource ControlStrokeColorDefault}" />
 
+    <!-- Redirect the classic system control-text brush to the Fluent text colour so Eto controls
+         that follow it (e.g. the DropDownToolItem chevron, via SystemColors.ControlTextBrushKey)
+         are visible in both light and dark Fluent modes instead of defaulting to black. The palette
+         theme does the same in palette.xaml; the Fluent theme otherwise leaves it at the OS default. -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="{DynamicResource TextFillColorPrimary}" />
+
     <!-- Override the custom combo box brushes (defined in themes/generic/CustomComboBox.xaml) with Fluent theme colors -->
     <SolidColorBrush x:Key="EtoCustomComboBoxGlyphBrush" Color="{DynamicResource TextFillColorPrimary}" />
     <SolidColorBrush x:Key="EtoCustomComboBoxButtonHoverBrush" Color="{DynamicResource SubtleFillColorSecondary}" />
-    <CornerRadius x:Key="EtoCustomComboBoxCornerRadius">4</CornerRadius>
+    <!-- Shared corner radius consumed by the CustomComboBox and ButtonSpinner templates (themes/generic/*.xaml) -->
+    <CornerRadius x:Key="Eto.Palette.CornerRadius">4</CornerRadius>
 
 	<Style TargetType="{x:Type efc:EtoCustomComboBox}" BasedOn="{StaticResource EtoCustomComboBoxStyle}">
 		<Setter Property="Background" Value="{DynamicResource TextControlBackground}" />
