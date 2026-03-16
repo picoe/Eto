@@ -77,8 +77,11 @@ namespace Eto.GtkSharp.CustomControls
 
 		public void ShowPopup (Gtk.Widget parent)
 		{
-			int x, y;
+			var toplevel = parent.Toplevel as Gtk.Window;
+			if (toplevel != null)
+				TransientFor = toplevel;
 
+			int x, y;
 
 			parent.ParentWindow.GetOrigin (out x, out y);
 			Move(x + parent.Allocation.Left, y + parent.Allocation.Top + parent.Allocation.Height);
