@@ -331,8 +331,8 @@ public abstract class GirControl<TControl, TWidget, TCallback> : WidgetHandler<T
 
 	public override void AttachEvent(string id)
 	{
-		switch (id)
-		{
+			switch (id)
+			{
 			// 			case Eto.Forms.Control.KeyDownEvent:
 			// 				EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
 			// 				EventControl.KeyPressEvent += Connector.HandleKeyPressEvent;
@@ -344,10 +344,20 @@ public abstract class GirControl<TControl, TWidget, TCallback> : WidgetHandler<T
 			// 				EventControl.AddEvents((int)Gdk.EventMask.KeyReleaseMask);
 			// 				EventControl.KeyReleaseEvent += Connector.HandleKeyReleaseEvent;
 			// 				break;
-			// 			case Eto.Forms.Control.SizeChangedEvent:
-			// 				EventControl.AddEvents((int)Gdk.EventMask.StructureMask);
-			// 				EventControl.SizeAllocated += Connector.HandleSizeAllocated;
-			// 				break;
+			case Eto.Forms.Control.SizeChangedEvent:
+				void handleAllocatedSizeChanged(GObject.Object sender, GObject.Object.NotifySignalArgs args)
+				{
+					var size = EventControl.GetAllocation();
+					if (asize != size)
+					{
+						asize = size;
+						Callback.OnSizeChanged(Widget, EventArgs.Empty);
+					}
+				}
+
+				GObject.Object.NotifySignal.Connect(EventControl, handleAllocatedSizeChanged, detail: "allocated-width");
+				GObject.Object.NotifySignal.Connect(EventControl, handleAllocatedSizeChanged, detail: "allocated-height");
+				break;
 			// 			case Eto.Forms.Control.MouseDoubleClickEvent:
 			// 				HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			// 				break;
@@ -618,22 +628,27 @@ public abstract class GirControl<TControl, TWidget, TCallback> : WidgetHandler<T
 
 			if (!mouseArgs.Handled && buttons == MouseButtons.Alternate && handler.ContextMenu != null)
 			{
-				handler.ContextMenu.Show();
+				handler.ContextMenu.Show(handler.Widget, mouseArgs.Location);
 				mouseArgs.Handled = true;
 			}
 			args.RetVal = mouseArgs.Handled;
 		}
 
-		public void HandleSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
+		public void HandleSizeNotify(GObject.Object o, GObject.Object.NotifySignalArgs args)
 		{
 			var handler = Handler;
 			if (handler == null)
 				return;
 
-			if (handler.asize != args.Allocation.Size.ToEto())
+			var propertyName = args.Pspec?.Name;
+			if (propertyName != "allocated-width" && propertyName != "allocated-height" && propertyName != "width-request" && propertyName != "height-request")
+				return;
+
+			var size = handler.EventControl.GetAllocation();
+			if (handler.asize != size)
 			{
-				// only call when the size has actually changed, gtk likes to call anyway!!  grr.
-				handler.asize = args.Allocation.Size.ToEto();
+				// Only raise when the allocated size actually changed.
+				handler.asize = size;
 				handler.Callback.OnSizeChanged(handler.Widget, EventArgs.Empty);
 			}
 		}

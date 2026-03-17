@@ -1,5 +1,7 @@
+using Eto.Forms.ThemedControls;
 using Eto.GirCore.Forms;
 using Eto.GirCore.Forms.Controls;
+using Eto.GirCore.Forms.Menu;
 using Eto.Shared.Forms;
 
 namespace Eto.GirCore;
@@ -70,7 +72,7 @@ public class Platform : Eto.Platform
 		p.Add<Button.IHandler>(() => new ButtonHandler());
 // 		p.Add<Calendar.IHandler>(() => new CalendarHandler());
 		p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
-// 		p.Add<DropDown.IHandler>(() => new DropDownHandler());
+		p.Add<DropDown.IHandler>(() => new DropDownHandler());
 // 		p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 // 		p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 // 		p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
@@ -93,11 +95,11 @@ public class Platform : Eto.Platform
 // 		p.Add<ProgressBar.IHandler>(() => new ProgressBarHandler());
 		p.Add<RadioButton.IHandler>(() => new RadioButtonHandler());
 		p.Add<Scrollable.IHandler>(() => new ScrollableHandler());
-// 		p.Add<SearchBox.IHandler>(() => new SearchBoxHandler());
-// 		p.Add<Slider.IHandler>(() => new SliderHandler());
-// 		p.Add<Splitter.IHandler>(() => new SplitterHandler());
-// 		p.Add<TabControl.IHandler>(() => new TabControlHandler());
-// 		p.Add<TabPage.IHandler>(() => new TabPageHandler());
+		p.Add<SearchBox.IHandler>(() => new SearchBoxHandler());
+		p.Add<Slider.IHandler>(() => new SliderHandler());
+		p.Add<Splitter.IHandler>(() => new SplitterHandler());
+		p.Add<TabControl.IHandler>(() => new TabControlHandler());
+		p.Add<TabPage.IHandler>(() => new TabPageHandler());
 		p.Add<TextArea.IHandler>(() => new TextAreaHandler());
 		p.Add<TextBox.IHandler>(() => new TextBoxHandler());
 // 		p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
@@ -106,23 +108,23 @@ public class Platform : Eto.Platform
 // #pragma warning restore CS0618 // Type or member is obsolete
 // 		p.Add<WebView.IHandler>(() => new WebViewHandler());
 // 		p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
-// 		p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
+		p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
 // 		p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
-// 		p.Add<ButtonSegmentedItem.IHandler>(() => new ThemedButtonSegmentedItemHandler());
-// 		p.Add<MenuSegmentedItem.IHandler>(() => new ThemedMenuSegmentedItemHandler());
-// 		p.Add<SegmentedButton.IHandler>(() => new ThemedSegmentedButtonHandler());
-// 		p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
-// 		p.Add<PropertyGrid.IHandler>(() => new ThemedPropertyGridHandler());
-// 		p.Add<CollectionEditor.IHandler>(() => new ThemedCollectionEditorHandler());
+		p.Add<ButtonSegmentedItem.IHandler>(() => new ThemedButtonSegmentedItemHandler());
+		p.Add<MenuSegmentedItem.IHandler>(() => new ThemedMenuSegmentedItemHandler());
+		p.Add<SegmentedButton.IHandler>(() => new ThemedSegmentedButtonHandler());
+		p.Add<ToggleButton.IHandler>(() => new ToggleButtonHandler());
+		p.Add<PropertyGrid.IHandler>(() => new ThemedPropertyGridHandler());
+		p.Add<CollectionEditor.IHandler>(() => new ThemedCollectionEditorHandler());
 
 // 		// Forms.Menu
-// 		p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
-// 		p.Add<ContextMenu.IHandler>(() => new ContextMenuHandler());
-// 		p.Add<ButtonMenuItem.IHandler>(() => new ButtonMenuItemHandler());
-// 		p.Add<MenuBar.IHandler>(() => new MenuBarHandler());
-// 		p.Add<RadioMenuItem.IHandler>(() => new RadioMenuItemHandler());
-// 		p.Add<SeparatorMenuItem.IHandler>(() => new SeparatorMenuItemHandler());
-// 		p.Add<SubMenuItem.IHandler>(() => new SubMenuItemHandler());
+		p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
+		p.Add<ContextMenu.IHandler>(() => new ContextMenuHandler());
+		p.Add<ButtonMenuItem.IHandler>(() => new ButtonMenuItemHandler());
+		p.Add<MenuBar.IHandler>(() => new MenuBarHandler());
+		p.Add<RadioMenuItem.IHandler>(() => new RadioMenuItemHandler());
+		p.Add<SeparatorMenuItem.IHandler>(() => new SeparatorMenuItemHandler());
+		p.Add<SubMenuItem.IHandler>(() => new SubMenuItemHandler());
 
 // 		// Forms.Printing
 // 		p.Add<PrintDialog.IHandler>(() => new PrintDialogHandler());
@@ -180,6 +182,6 @@ public class Platform : Eto.Platform
 
 // 		p.Add<Spinner.IHandler>(() => new SpinnerHandler());
 // 		p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
-// 		p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());
+		p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());
 	}
 }

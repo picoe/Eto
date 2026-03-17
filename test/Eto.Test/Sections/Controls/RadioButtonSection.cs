@@ -15,8 +15,11 @@
 			layout.AddRow(new Label { Text = "Disabled" }, Disabled(), null);
 			layout.EndVertical();
 
-			layout.Add(new RadioButton { Text = "With Larger Font", Font = SystemFonts.Label(40) });
-			layout.Add(new RadioButton { Text = "With Smaller Font", Font = SystemFonts.Label(6) });
+			if (Platform.Supports<Font>())
+			{
+				layout.Add(new RadioButton { Text = "With Larger Font", Font = SystemFonts.Label(40) });
+				layout.Add(new RadioButton { Text = "With Smaller Font", Font = SystemFonts.Label(6) });
+			}
 
 			layout.AddSeparateRow(new RadioButton { Text = "Should be aligned with text" }, new Panel { Size = new Size(50, 50), BackgroundColor = Colors.Green });
 
