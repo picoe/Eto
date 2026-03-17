@@ -29,7 +29,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-gircore",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.GirCore/${config:var.configuration}/net8.0/Eto.Test.GirCore.dll",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.GirCore/${config:var.configuration}/net10.0/Eto.Test.GirCore.dll",
             "args": [],
 			"osx": {
 				"env": {

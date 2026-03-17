@@ -111,7 +111,9 @@ namespace Eto.Test.Sections.Behaviors
 				set => Set(ref setBackgroundColor, value);
 			}
 
-			public Color BackgroundColor { get; set; } = SystemColors.WindowBackground;
+			public Color BackgroundColor { get; set; } =
+				Platform.Instance.Supports<SystemColors.IHandler>() ? SystemColors.WindowBackground 
+				: Colors.White;
 
 			bool windowStyleEnabled;
 			public bool WindowStyleEnabled

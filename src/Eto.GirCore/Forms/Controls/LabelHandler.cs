@@ -116,29 +116,29 @@ namespace Eto.GirCore.Forms.Controls
 				return (T)value;
 			return default;
 		}
-		
+
 		void SetProperty<T>(object key, T value, string style, [CallerMemberName] string caller = null)
 		{
 			if (style != null)
 				AddStyle(style, caller);
 			Widget.Properties[key] = value;
 		}
-		
-		
+
+
 		Gtk.CssProvider cssProvider = null;
 		Dictionary<string, string> styleCache = new Dictionary<string, string>();
 		void AddStyle(string style, [CallerMemberName] string caller = null)
 		{
 			if (cssProvider == null)
 			{
-				cssProvider = new Gtk.CssProvider();
+				cssProvider = Gtk.CssProvider.New();
 				Control.GetStyleContext().AddProvider(cssProvider, 600); // Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
 			}
 			styleCache[caller] = style;
 			cssProvider.LoadFromString(string.Join("\n", styleCache.Values));
 		}
 
-		public override string Text
+		public virtual string Text
 		{
 			get => _text;
 			set

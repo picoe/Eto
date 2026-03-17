@@ -25,6 +25,7 @@ static class GtkWindow
 	internal static readonly object AutoSize_Key = new object();
 	internal static readonly object Minimizable_Key = new object();
 	internal static readonly object Maximizable_Key = new object();
+	internal static readonly object ShowInTaskbar_Key = new object();
 }
 
 public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
@@ -73,7 +74,7 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 
 	protected override Color DefaultBackgroundColor
 	{
-		get => throw new NotImplementedException(); //return Control.GetBackground();
+		get => Colors.Transparent;
 	}
 
 	protected override bool UseMinimumSizeRequested
@@ -91,7 +92,7 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 		}
 	}
 
-	public override bool HasFocus => throw new NotImplementedException();  //Control.HasToplevelFocus;
+	public override bool HasFocus => Control.HasFocus;
 
 	public Gtk.Widget WindowContentControl
 	{
@@ -155,8 +156,8 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 
 	public bool ShowInTaskbar
 	{
-		get => throw new NotImplementedException(); // !Control.SkipTaskbarHint;
-		set => throw new NotImplementedException(); // Control.SkipTaskbarHint = !value;
+		get => Widget.Properties.Get<bool>(GtkWindow.ShowInTaskbar_Key, true);
+		set => Widget.Properties.Set(GtkWindow.ShowInTaskbar_Key, value, true);
 	}
 
 	public bool Closeable
@@ -210,17 +211,7 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 
 	void SetTypeHint()
 	{
-		throw new NotImplementedException();
-		/*
-		if (WindowStyle == WindowStyle.Default && (Minimizable || Maximizable))
-		{
-			Control.TypeHint = DefaultTypeHint;
-		}
-		else
-		{
-			Control.TypeHint = Gdk.WindowTypeHint.Utility;
-		}
-		*/
+		// GTK4 no longer exposes the GTK3/GDK type hint APIs used by the GTK backend.
 	}
 
 	public override Size Size
@@ -233,9 +224,9 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 
 			if (Widget.Loaded)
 			{
-				var diff = WindowDecorationSize;
-				throw new NotImplementedException();
-				// Control.Resize(value.Width - diff.Width, value.Height - diff.Height);
+				clientSize = null;
+				Control.SetDefaultSize(value.Width, value.Height);
+				Control.QueueResize();
 			}
 			else
 			{
@@ -253,26 +244,23 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 	{
 		get
 		{
-			throw new NotImplementedException();
-			// return containerBox.IsRealized ? containerBox.GetAllocation() : containerBox.GetPreferredSize().ToEto();
+			if (Widget.Loaded && containerBox.Visible)
+			{
+				var size = containerBox.GetAllocation();
+				if (size.Width >= 0 && size.Height >= 0)
+					return size;
+			}
+
+			return clientSize ?? UserPreferredSize;
 		}
 		set
 		{
 			DisableAutoSizeUpdate++;
-			throw new NotImplementedException();
-			/*
-			if (Control.IsRealized)
-			{
-				var diff = vbox.Allocation.Size.ToEto() - containerBox.Allocation.Size.ToEto();
-				Control.Resize(value.Width + diff.Width, value.Height + diff.Height);
-				SetMinMax(value + diff);
-			}
-			else
-			{
-				clientSize = value;
-				Control.SetDefaultSize(value.Width, value.Height);
-				SetMinMax(value);
-			}*/
+			clientSize = value;
+			UserPreferredSize = value;
+			Control.SetDefaultSize(value.Width, value.Height);
+			Control.QueueResize();
+			SetMinMax(value);
 			DisableAutoSizeUpdate--;
 		}
 	}
@@ -281,19 +269,7 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 		get => Widget.Properties.Get<bool>(GtkWindow.MovableByWindowBackground_Key);
 		set
 		{
-			if (Widget.Properties.TrySet(GtkWindow.MovableByWindowBackground_Key, value))
-			{
-				throw new NotImplementedException();
-				/*
-				if (value)
-				{
-					containerBox.AddEvents((int)Gdk.EventMask.ButtonPressMask);
-					containerBox.ButtonPressEvent += Connector.ButtonPressEvent_Movable;
-				}
-				else
-					containerBox.ButtonPressEvent -= Connector.ButtonPressEvent_Movable;
-				*/
-			}
+			Widget.Properties.Set(GtkWindow.MovableByWindowBackground_Key, value);
 		}
 	}
 
@@ -541,26 +517,15 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 		get { return menuBar; }
 		set
 		{
-			throw new NotImplementedException();
-			/*
 			if (menuBar != null)
 				menuBox.Remove((Gtk.Widget)menuBar.ControlObject);
-			if (accelGroup != null)
-				Control.RemoveAccelGroup(accelGroup);
-			accelGroup = new Gtk.AccelGroup();
-			Control.AddAccelGroup(accelGroup);
-			// set accelerators
-			menuBar = value;
-			var handler = menuBar != null ? menuBar.Handler as IMenuHandler : null;
-			if (handler != null)
-				handler.SetAccelGroup(accelGroup);
 
-			if (value != null)
+			menuBar = value;
+
+			if (menuBar != null)
 			{
-				menuBox.Append((Gtk.Widget)value.ControlObject);
-				// ((Gtk.Widget)value.ControlObject).ShowAll();
+				menuBox.Append((Gtk.Widget)menuBar.ControlObject);
 			}
-			*/
 		}
 	}
 
@@ -664,10 +629,8 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 			if (toolBar != null)
 				topToolbarBox.Remove((Gtk.Widget)toolBar.ControlObject);
 			toolBar = value;
-			throw new NotImplementedException();
-			// if (toolBar != null)
-			// 	topToolbarBox.Add((Gtk.Widget)toolBar.ControlObject);
-			// topToolbarBox.ShowAll();
+			if (toolBar != null)
+				topToolbarBox.Append((Gtk.Widget)toolBar.ControlObject);
 		}
 	}
 
@@ -677,8 +640,6 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 		set
 		{
 			icon = value;
-			throw new NotImplementedException();
-			// Control.Icon = ((IconHandler)icon.Handler).Pixbuf;
 		}
 	}
 
@@ -704,62 +665,29 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 	{
 		get
 		{
-			throw new NotImplementedException();
-			/*
-			var gdkWindow = Control.GetWindow();
-			if (gdkWindow == null)
-				return state;
-
-			if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
-				return WindowState.Minimized;
-			if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
-				return WindowState.Maximized;
-			if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
-				return WindowState.Maximized;
-			return WindowState.Normal;
-			*/
+			return state;
 		}
 		set
 		{
-			throw new NotImplementedException();
-			/*
 			if (WindowState != value)
 			{
 				state = value;
-				var gdkWindow = Control.GetWindow();
 				switch (value)
 				{
 					case WindowState.Maximized:
-						if (gdkWindow != null)
-						{
-							if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
-								Control.Unfullscreen();
-							if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
-								Control.Deiconify();
-							if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
-								Control.Present();
-						}
 						Control.Maximize();
 						break;
 					case WindowState.Minimized:
-						Control.Iconify();
+						Control.Minimize();
 						break;
 					case WindowState.Normal:
-						if (gdkWindow != null)
-						{
-							if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
-								Control.Unfullscreen();
-							if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
-								Control.Unmaximize();
-							if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
-								Control.Deiconify();
-							if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
-								Control.Present();
-						}
+						Control.Unmaximize();
+						Control.Unminimize();
 						break;
 				}
+
+				Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
 			}
-			*/
 		}
 	}
 
@@ -797,7 +725,7 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 		}
 	}
 
-	protected override void GrabFocus() => throw new NotImplementedException(); // Control.GetWindow().SetFocus(null);
+	protected override void GrabFocus() => Control.GrabFocus();
 
 	public void BringToFront()
 	{
@@ -812,7 +740,10 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 		Control.Present();
 	}
 
-	public void SendToBack() => throw new NotImplementedException();  //Control.GetWindow()?();
+	public void SendToBack()
+	{
+		// No GTK4/GirCore equivalent for lowering a toplevel window is exposed here.
+	}
 
 	public virtual void SetOwner(Window owner)
 	{
@@ -834,16 +765,7 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 	{
 		get
 		{
-			throw new NotImplementedException();
-			/*
-			var screen = Control.Screen;
-			var gdkWindow = Control.GetWindow();
-			if (screen != null && gdkWindow != null)
-			{
-				var monitor = screen.Display.GetMonitorAtWindow(gdkWindow);
-				return monitor?.ScaleFactor ?? 1f;
-			}
-			return 1f;*/
+			return 1f;
 		}
 	}
 
@@ -880,19 +802,7 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 	{
 		get
 		{
-			throw new NotImplementedException();
-			/*
-			if (!Control.IsRealized)
-			{
-				Control.Child?.ShowAll();
-				Control.Realize();
-			}
-
-			var window = Control.GetWindow();
-			if (window == null)
-				return Size.Empty;
-			return window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
-			*/
+			return Size.Empty;
 		}
 	}
 
@@ -902,20 +812,19 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 
 	internal void PerformResize()
 	{
-		throw new NotImplementedException();
-		/*
-		Control.GetSize(out var width, out var height);
-		var availableSize = Screen?.WorkingArea.Size ?? SizeF.PositiveInfinity;
-		var preferred = Size.Round(SizeF.Min(base.GetPreferredSizeForControl(availableSize, Control.Child), availableSize));
-		if (preferred.Width != width || preferred.Height != height)
+		var preferred = ClientSize;
+		if (preferred.Width < 0 || preferred.Height < 0)
+			preferred = Size;
+
+		if (preferred.Width >= 0 && preferred.Height >= 0)
 		{
-			// signal that we are auto sizing ourselves so don't turn off AutoSize.
 			AutoSizePerformed++;
-			Control.Resize(preferred.Width, preferred.Height);
+			Control.SetDefaultSize(preferred.Width, preferred.Height);
+			Control.QueueResize();
 		}
+
 		isInvalidated = false;
 		DisableAutoSizeUpdate--;
-		*/
 	}
 
 	public override void InvalidateMeasure()
@@ -935,32 +844,7 @@ public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TContro
 
 	protected override void SetBackgroundColor(Color? color)
 	{
-		throw new NotImplementedException();
-		/*
-		if (color?.A < 1 || isDrawingBackground)
-		{
-			if (!isDrawingBackground)
-			{
-				Control.AppPaintable = true;
-				var screen = Gdk.Screen.Default;
-				var visual = screen.RgbaVisual;
-
-				if (visual != null && screen.IsComposited)
-					Control.Visual = visual;
-
-				Control.Drawn -= Connector.HandleDrawnEvent;
-				Control.Drawn += Connector.HandleDrawnEvent;
-				isDrawingBackground = true;
-				base.SetBackgroundColor(null);
-			}
-
-			Control.QueueDraw();
-		}
-		else
-		{
-			Control.AppPaintable = false;
-			Control.Drawn -= Connector.HandleDrawnEvent;
-			base.SetBackgroundColor(color);
-		}*/
+		isDrawingBackground = color?.A < 1;
+		base.SetBackgroundColor(color);
 	}
 }

@@ -170,12 +170,6 @@ public abstract class GirControl<TControl, TWidget, TCallback> : WidgetHandler<T
 		}
 	}
 
-	public virtual string Text
-	{
-		get { return Control.Name; }
-		set { Control.Name = value; }
-	}
-
 	public void Invalidate(bool invalidateChildren)
 	{
 		Control.QueueDraw();

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <DefineConstants>$(DefineConstants);GIRCORE</DefineConstants>
     <TreatWarningsAsErrors Condition="$(Configuration) == 'Release'">true</TreatWarningsAsErrors>
   	<RollForward>LatestMajor</RollForward>

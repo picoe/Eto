@@ -30,7 +30,7 @@ static class GirConversions
 			_ => throw new NotSupportedException(),
 		};
 	}
-	
+
 	public static float ToGtkAlign(this VerticalAlignment alignment)
 	{
 		return alignment switch
@@ -40,6 +40,11 @@ static class GirConversions
 			VerticalAlignment.Bottom => 1f,
 			_ => throw new NotSupportedException(),
 		};
+	}
+	
+	public static Color ToEto(this Gdk.RGBA color)
+	{
+		return new Color((byte)(color.Red * 255), (byte)(color.Green * 255), (byte)(color.Blue * 255), (byte)(color.Alpha * 255));
 	}
 	
 }

@@ -23,7 +23,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0" />
+    <PackageReference Include="GirCore.Gtk-4.0" Version="0.8.0-preview.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />

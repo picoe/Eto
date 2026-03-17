@@ -67,9 +67,9 @@ public class Platform : Eto.Platform
 // 		p.Add<CustomCell.IHandler>(() => new CustomCellHandler());
 
 // 		// Forms.Controls
-// 		p.Add<Button.IHandler>(() => new ButtonHandler());
+		p.Add<Button.IHandler>(() => new ButtonHandler());
 // 		p.Add<Calendar.IHandler>(() => new CalendarHandler());
-// 		p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+		p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
 // 		p.Add<DropDown.IHandler>(() => new DropDownHandler());
 // 		p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 // 		p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
@@ -86,20 +86,20 @@ public class Platform : Eto.Platform
 // 		p.Add<ImageView.IHandler>(() => new ImageViewHandler());
 		p.Add<Label.IHandler>(() => new LabelHandler());
 // 		p.Add<LinkButton.IHandler>(() => new LinkButtonHandler());
-// 		p.Add<ListBox.IHandler>(() => new ListBoxHandler());
+		p.Add<ListBox.IHandler>(() => new ListBoxHandler());
 // 		p.Add<NumericStepper.IHandler>(() => new NumericStepperHandler());
-// 		p.Add<Panel.IHandler>(() => new PanelHandler());
+		p.Add<Panel.IHandler>(() => new PanelHandler());
 // 		p.Add<PasswordBox.IHandler>(() => new PasswordBoxHandler());
 // 		p.Add<ProgressBar.IHandler>(() => new ProgressBarHandler());
-// 		p.Add<RadioButton.IHandler>(() => new RadioButtonHandler());
-// 		p.Add<Scrollable.IHandler>(() => new ScrollableHandler());
+		p.Add<RadioButton.IHandler>(() => new RadioButtonHandler());
+		p.Add<Scrollable.IHandler>(() => new ScrollableHandler());
 // 		p.Add<SearchBox.IHandler>(() => new SearchBoxHandler());
 // 		p.Add<Slider.IHandler>(() => new SliderHandler());
 // 		p.Add<Splitter.IHandler>(() => new SplitterHandler());
 // 		p.Add<TabControl.IHandler>(() => new TabControlHandler());
 // 		p.Add<TabPage.IHandler>(() => new TabPageHandler());
-// 		p.Add<TextArea.IHandler>(() => new TextAreaHandler());
-// 		p.Add<TextBox.IHandler>(() => new TextBoxHandler());
+		p.Add<TextArea.IHandler>(() => new TextAreaHandler());
+		p.Add<TextBox.IHandler>(() => new TextBoxHandler());
 // 		p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
 // #pragma warning disable CS0618 // Type or member is obsolete
 // 		// p.Add<TreeView.IHandler>(() => new TreeViewHandler());
@@ -153,7 +153,7 @@ public class Platform : Eto.Platform
 // 		p.Add<SaveFileDialog.IHandler>(() => new SaveFileDialogHandler());
 // 		p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
 // 		p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
-// 		p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
+		p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 // 		p.Add<UITimer.IHandler>(() => new UITimerHandler());
 // 		p.Add<Mouse.IHandler>(() => new MouseHandler());
 // 		p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
@@ -176,7 +176,7 @@ public class Platform : Eto.Platform
 // 		p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
 
 // 		// General
-// 		p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
+		p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
 
 // 		p.Add<Spinner.IHandler>(() => new SpinnerHandler());
 // 		p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());

@@ -25,6 +25,7 @@ public class ApplicationHandler : WidgetHandler<Gtk.Application, Application, Ap
 	public bool IsActive => throw new NotImplementedException();
 
 	public int MainThreadID { get; private set; }
+	public Theme Theme { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public void AsyncInvoke(Action action)
 	{
@@ -56,7 +57,6 @@ public class ApplicationHandler : WidgetHandler<Gtk.Application, Application, Ap
 
 	public void OnMainFormChanged()
 	{
-		throw new NotImplementedException();
 	}
 
 	public void Open(string url)
