@@ -61,6 +61,16 @@
 			}
 		},
 		{
+			"label": "build-gircore",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.GirCore/Eto.Test.GirCore.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "build-gtk",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.Gtk/Eto.Test.Gtk.csproj",
 			"type": "shell",

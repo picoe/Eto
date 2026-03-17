@@ -25,6 +25,23 @@
 			"justMyCode": false
         },
         {
+            "name": "Eto.Test.GirCore",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-gircore",
+            "program": "${workspaceFolder}/artifacts/test/Eto.Test.GirCore/${config:var.configuration}/net8.0/Eto.Test.GirCore.dll",
+            "args": [],
+			"osx": {
+				"env": {
+					"DYLD_FALLBACK_LIBRARY_PATH": "/opt/homebrew/lib"
+				}
+			},
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false,
+        },
+        {
             "name": "Eto.Test.Gtk",
 			"type": "coreclr",
 			"request": "launch",
