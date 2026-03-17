@@ -4,6 +4,7 @@ namespace Eto.GirCore.Forms.Controls
 	{
 		readonly Gtk.Box tab;
 		readonly Gtk.Label label;
+		Gtk.Image? imageView;
 		Image? image;
 
 		public TabPageHandler()
@@ -35,7 +36,20 @@ namespace Eto.GirCore.Forms.Controls
 		public Image? Image
 		{
 			get => image;
-			set => image = value;
+			set
+			{
+				image = value;
+				if (imageView != null)
+				{
+					tab.Remove(imageView);
+					imageView = null;
+				}
+				if (image != null)
+				{
+					imageView = Drawing.GirImageHelper.CreateImage(image, new Size(16, 16));
+					tab.Prepend(imageView);
+				}
+			}
 		}
 	}
 }

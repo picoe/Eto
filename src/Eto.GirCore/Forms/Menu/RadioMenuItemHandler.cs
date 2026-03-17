@@ -1,3 +1,5 @@
+using Gtk;
+
 namespace Eto.GirCore.Forms.Menu
 {
 	public class RadioMenuItemHandler : MenuItemHandler<Gtk.CheckButton, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
@@ -5,10 +7,14 @@ namespace Eto.GirCore.Forms.Menu
 		RadioMenuItem? controller;
 		bool suppressClick;
 
+		protected override CheckButton CreateControl()
+		{
+			return Gtk.CheckButton.New();
+		}
+
 		public void Create(RadioMenuItem controller)
 		{
 			this.controller = controller;
-			Control = Gtk.CheckButton.New();
 			Control.UseUnderline = true;
 			Control.OnToggled += (sender, e) =>
 			{

@@ -2,6 +2,7 @@ using Eto.Forms.ThemedControls;
 using Eto.GirCore.Forms;
 using Eto.GirCore.Forms.Controls;
 using Eto.GirCore.Forms.Menu;
+using Eto.GirCore.Drawing;
 using Eto.Shared.Forms;
 
 namespace Eto.GirCore;
@@ -39,15 +40,15 @@ public class Platform : Eto.Platform
 	public static void AddTo(Eto.Platform p)
 	{
 // 		// Drawing
-// 		p.Add<Bitmap.IHandler>(() => new BitmapHandler());
+		p.Add<Bitmap.IHandler>(() => new BitmapHandler());
 // 		p.Add<FontFamily.IHandler>(() => new FontFamilyHandler());
 // 		p.Add<FontTypeface.IHandler>(() => new FontTypefaceHandler());
 // 		p.Add<Font.IHandler>(() => new FontHandler());
 // 		p.Add<Fonts.IHandler>(() => new FontsHandler());
 // 		p.Add<Graphics.IHandler>(() => new GraphicsHandler());
 // 		p.Add<GraphicsPath.IHandler>(() => new GraphicsPathHandler());
-// 		p.Add<Icon.IHandler>(() => new IconHandler());
-// 		p.Add<IconFrame.IHandler>(() => new IconFrameHandler());
+		p.Add<Icon.IHandler>(() => new IconHandler());
+		p.Add<IconFrame.IHandler>(() => new IconFrameHandler());
 // 		p.Add<IndexedBitmap.IHandler>(() => new IndexedBitmapHandler());
 // 		p.Add<Matrix.IHandler>(() => new MatrixHandler());
 // 		p.Add<Pen.IHandler>(() => new PenHandler());

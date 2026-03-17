@@ -10,9 +10,13 @@ namespace Eto.GirCore.Forms.Menu
 	{
 		Gtk.Widget? buttonWidget;
 		Gtk.Button? button;
+		Gtk.Box? buttonContent;
+		Gtk.Label? buttonLabel;
+		Gtk.Image? imageView;
 		Gtk.Popover? popover;
 		Gtk.Box? submenuBox;
 		bool pendingClosed;
+		Image? image;
 
 		protected virtual bool AlwaysHasSubmenu => false;
 
@@ -33,8 +37,7 @@ namespace Eto.GirCore.Forms.Menu
 		{
 			if (button != null)
 			{
-				button.Label = GirMenuHelper.ToMnemonic(Text);
-				button.UseUnderline = true;
+				buttonLabel!.SetTextWithMnemonic(GirMenuHelper.ToMnemonic(Text));
 			}
 		}
 
@@ -60,13 +63,17 @@ namespace Eto.GirCore.Forms.Menu
 				Control.Remove(buttonWidget);
 
 			button = Gtk.Button.New();
-			button.Label = GirMenuHelper.ToMnemonic(Text);
-			button.UseUnderline = true;
+			buttonContent = Gtk.Box.New(Gtk.Orientation.Horizontal, 6);
+			buttonLabel = Gtk.Label.New(null);
+			buttonLabel.SetTextWithMnemonic(GirMenuHelper.ToMnemonic(Text));
+			buttonContent.Append(buttonLabel);
+			button.SetChild(buttonContent);
 			button.Sensitive = Enabled;
 			button.Visible = Visible;
 			button.OnClicked += (sender, e) => OnButtonClicked();
 			buttonWidget = button;
 			Control.Append(buttonWidget);
+			UpdateImage();
 
 			if (!HasSubmenu && popover != null)
 			{
@@ -118,7 +125,15 @@ namespace Eto.GirCore.Forms.Menu
 			}
 		}
 
-		public Image Image { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public Image Image
+		{
+			get => image!;
+			set
+			{
+				image = value;
+				UpdateImage();
+			}
+		}
 
 		public void AddMenu(int index, MenuItem item)
 		{
@@ -164,6 +179,24 @@ namespace Eto.GirCore.Forms.Menu
 		public void ChildUpdated()
 		{
 			RebuildSubmenu();
+		}
+
+		void UpdateImage()
+		{
+			if (buttonContent == null)
+				return;
+
+			if (imageView != null)
+			{
+				buttonContent.Remove(imageView);
+				imageView = null;
+			}
+
+			if (image != null)
+			{
+				imageView = Drawing.GirImageHelper.CreateImage(image, new Size(16, 16));
+				buttonContent.Prepend(imageView);
+			}
 		}
 	}
 }
