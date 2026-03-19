@@ -409,10 +409,16 @@ namespace Eto.Test.UnitTests
 					var table = new TableLayout { Spacing = new Size(2, 2) };
 					var row = new TableRow();
 					table.Rows.Add(row);
+					Control focusControl = null;
+					form.Shown += (sender, e) =>
+					{
+						focusControl?.Focus();
+					};
 
 					if (allowFail)
 					{
 						var failButton = new Button { Text = "Fail" };
+						focusControl = failButton;
 						failButton.Click += (sender, e) =>
 						{
 							try
@@ -443,6 +449,7 @@ namespace Eto.Test.UnitTests
 					{
 						var passButton = new Button { Text = "Pass" };
 						passButton.Click += (sender, e) => form.Close();
+						focusControl = passButton;
 						row.Cells.Add(passButton);
 						
 						form.KeyDown += (sender, e) =>

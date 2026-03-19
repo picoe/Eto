@@ -2,7 +2,7 @@ using NUnit.Framework;
 namespace Eto.Test.UnitTests.Drawing
 {
 	[TestFixture]
-	public class GraphicsTests
+	public class GraphicsTests : TestBase
 	{
 		[Test]
 		public void DefaultValuesShouldBeCorrect()
@@ -147,5 +147,57 @@ namespace Eto.Test.UnitTests.Drawing
 				checkNonInterpolated(bd, 100, 100);
 			}
 		}
+		
+		[Test, ManualTest]
+		public void ColorsInDrawableAndBitmapShouldBeCorrect() => ManualForm("There should be horizontal stripes of matching color", form =>
+		{
+			var layout = new DynamicLayout();
+			layout.BeginHorizontal();
+			
+			var colors = new[] { Colors.Red, Colors.Green, Colors.Blue, Colors.Gray, Colors.DarkGray, Colors.Magenta };
+			var bandHeight = 50;
+			var height = colors.Length * bandHeight;
+			var drawable = new Drawable { Size = new Size(100, height) };
+			drawable.Paint += (sender, e) =>
+			{
+				var g = e.Graphics;
+				for (int i = 0; i < colors.Length; i++)
+				{
+					g.FillRectangle(colors[i], 0, i * bandHeight, 100, bandHeight);
+				}
+			};
+			
+			layout.Add(drawable);
+			
+			var pixelFormats = new []
+			{
+				PixelFormat.Format24bppRgb,
+				PixelFormat.Format32bppRgb,
+				PixelFormat.Format32bppRgba
+			};
+
+			foreach (var format in pixelFormats)
+			{
+				var bitmap = new Bitmap(100, height, format);
+				using (var g = new Graphics(bitmap))
+				{
+					for (int i = 0; i < colors.Length; i++)
+					{
+						g.FillRectangle(colors[i], 0, i * bandHeight, 100, bandHeight);
+					}
+				}
+				// bitmap.Save(Path.Combine(EtoEnvironment.GetFolderPath(Eto.EtoSpecialFolder.Downloads), "GraphicsTest-ColorsInDrawableAndBitmapShouldBeCorrect" + format + ".png"), ImageFormat.Png);
+				var imageView = new ImageView { Image = bitmap };
+				layout.Add(imageView);
+			}
+
+
+			var bmp = Bitmap.FromResource("Eto.Test.Images.GraphicsTest-ColorsInDrawableAndBitmapShouldBeCorrectFormat32bppRgb.png");
+			var imageView2 = new ImageView { Image = bmp };
+			layout.Add(imageView2);
+			
+			layout.EndHorizontal();
+			return layout;
+		});
 	}
 }

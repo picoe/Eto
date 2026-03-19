@@ -118,10 +118,10 @@ namespace Eto.Test.UnitTests.Drawing
 		}
 
 		[TestCase(1.0f, 0.0f, 0.0f, 1.0f)]
-		[TestCase(0.0f, 1.0f, 0.0f, 20f/255f)]
+		[TestCase(0.0f, 1.0f, 0.0f, 20f / 255f)]
 		// [TestCase(0.0f, 0.0f, 1.0f, 0.0f)]
 		[TestCase(0.0f, 1.0f, 1.0f, 1.0f)]
-		[TestCase(1.0f, 0.0f, 1.0f, 20f/255f)]
+		[TestCase(1.0f, 0.0f, 1.0f, 20f / 255f)]
 		// [TestCase(1.0f, 1.0f, 0.0f, 0.0f)]
 		public void TestGetPixelWithoutLock32bit(float red, float green, float blue, float alpha)
 		{
@@ -563,21 +563,132 @@ namespace Eto.Test.UnitTests.Drawing
 			Invoke(() =>
 			{
 				var bitmap = new Bitmap(10, 10, format);
-				using var bd = bitmap.Lock();
-				var color = Color.FromArgb(255, 0, 0, 255); // fully transparent blue
-				bd.SetPixel(0, 0, color);
+				using (var bd = bitmap.Lock())
+				{
+					var color = Color.FromArgb(0, 0, 255, 255); // fully transparent blue
+					bd.SetPixel(0, 0, color);
+				}
 				var ms = new MemoryStream();
 				bitmap.Save(ms, ImageFormat.Png);
 				ms.Position = 0;
-				
+
 				var loadedBitmap = new Bitmap(ms);
-				using var bdLoaded = loadedBitmap.Lock();
-				var gottenColor = bd.GetPixel(0, 0);
-				Assert.That(gottenColor.A, Is.EqualTo(255), "Alpha should be 255");
-				Assert.That(gottenColor.R, Is.EqualTo(0), "Red should be 0");
-				Assert.That(gottenColor.G, Is.EqualTo(0), "Green should be 0");
-				Assert.That(gottenColor.B, Is.EqualTo(255), "Blue should be 255");
+				using (var bdLoaded = loadedBitmap.Lock())
+				{
+					var gottenColor = bdLoaded.GetPixel(0, 0);
+					Assert.That(gottenColor.Ab, Is.EqualTo(255), "Alpha should be 255");
+					Assert.That(gottenColor.Rb, Is.EqualTo(0), "Red should be 0");
+					Assert.That(gottenColor.Gb, Is.EqualTo(0), "Green should be 0");
+					Assert.That(gottenColor.Bb, Is.EqualTo(255), "Blue should be 255");
+				}
 			});
 		}
+
+		[TestCase(PixelFormat.Format24bppRgb)]
+		[TestCase(PixelFormat.Format32bppRgb)]
+		[TestCase(PixelFormat.Format32bppRgba)]
+		public void BitmapPixelsShouldRoundtripWithBitmapDataGetPixel(PixelFormat format) => Invoke(() =>
+		{
+			var bitmap = new Bitmap(10, 10, format);
+			using var bd = bitmap.Lock();
+			var color = Color.FromArgb(255, 0, 255, 128); // semi-transparent magenta
+			bd.SetPixel(0, 0, color);
+			var gottenColor = bd.GetPixel(0, 0);
+			Assert.That(gottenColor.Rb, Is.EqualTo(255), "Red should be 255");
+			Assert.That(gottenColor.Gb, Is.EqualTo(0), "Green should be 0");
+			Assert.That(gottenColor.Bb, Is.EqualTo(255), "Blue should be 255");
+		});
+
+		[TestCase(PixelFormat.Format24bppRgb, true)]
+		[TestCase(PixelFormat.Format32bppRgb, true)]
+		[TestCase(PixelFormat.Format32bppRgba, true)]
+		[TestCase(PixelFormat.Format24bppRgb, false)]
+		[TestCase(PixelFormat.Format32bppRgb, false)]
+		[TestCase(PixelFormat.Format32bppRgba, false)]
+		public void BitmapPixelsShouldRoundtripWithGraphicsAndGetPixel(PixelFormat format, bool withAlpha) => Invoke(() =>
+		{
+			var bitmap = new Bitmap(10, 10, format);
+			var color = Color.FromArgb(255, 0, 255, withAlpha ? 128 : 255); // semi-transparent magenta if withAlpha, otherwise fully opaque
+			using (var g = new Graphics(bitmap))
+			{
+				g.Clear(Colors.Transparent);
+				g.PixelOffsetMode = PixelOffsetMode.Half;
+				g.FillRectangle(color, 0, 0, 10, 10);
+			}
+			var gottenColor = bitmap.GetPixel(2, 2);
+			if (withAlpha && format != PixelFormat.Format32bppRgba)
+			{
+				// drawn with alpha, now we expect it to be blended with the non transparent background, so we should get a semi-transparent magenta instead of fully opaque
+				Assert.That(gottenColor.Rb, Is.EqualTo(128), "Red should be 128");
+				Assert.That(gottenColor.Gb, Is.EqualTo(0), "Green should be 0");
+				Assert.That(gottenColor.Bb, Is.EqualTo(128), "Blue should be 128");
+			}
+			else
+			{
+				Assert.That(gottenColor.Rb, Is.EqualTo(255), "Red should be 255");
+				Assert.That(gottenColor.Gb, Is.EqualTo(0), "Green should be 0");
+				Assert.That(gottenColor.Bb, Is.EqualTo(255), "Blue should be 255");
+			}
+			if (format != PixelFormat.Format32bppRgba)
+			{
+				Assert.That(gottenColor.Ab, Is.EqualTo(255), "Alpha should be 255 for 24bpp or 32bpp without alpha");
+			}
+			else if (withAlpha)
+			{
+				Assert.That(gottenColor.Ab, Is.EqualTo(128), "Alpha should be 128 for 32bpp with alpha");
+			}
+			else
+			{
+				Assert.That(gottenColor.Ab, Is.EqualTo(255), "Alpha should be 255 for 32bpp without alpha");
+			}
+		});
+
+		[TestCase(PixelFormat.Format24bppRgb, true)]
+		[TestCase(PixelFormat.Format32bppRgb, true)]
+		[TestCase(PixelFormat.Format32bppRgba, true)]
+		[TestCase(PixelFormat.Format24bppRgb, false)]
+		[TestCase(PixelFormat.Format32bppRgb, false)]
+		[TestCase(PixelFormat.Format32bppRgba, false)]
+		public void BitmapPixelsShouldRoundtripWithGraphicsAndLock(PixelFormat format, bool withAlpha) => Invoke(() =>
+		{
+			var bitmap = new Bitmap(10, 10, format);
+			var color = Color.FromArgb(255, 0, 255, withAlpha ? 128 : 255); // semi-transparent magenta if withAlpha, otherwise fully opaque
+			using (var g = new Graphics(bitmap))
+			{
+				g.Clear(Colors.Transparent);
+				g.PixelOffsetMode = PixelOffsetMode.Half;
+				g.FillRectangle(color, 0, 0, 10, 10);
+			}
+			using (var bd = bitmap.Lock())
+			{
+				var gottenColor = bd.GetPixel(2, 2);
+				if (withAlpha && format != PixelFormat.Format32bppRgba)
+				{
+					// drawn with alpha, now we expect it to be blended with the non transparent background, so we should get a semi-transparent magenta instead of fully opaque
+					Assert.That(gottenColor.Rb, Is.EqualTo(128), "Red should be 128");
+					Assert.That(gottenColor.Gb, Is.EqualTo(0), "Green should be 0");
+					Assert.That(gottenColor.Bb, Is.EqualTo(128), "Blue should be 128");
+				}
+				else
+				{
+					Assert.That(gottenColor.Rb, Is.EqualTo(255), "Red should be 255");
+					Assert.That(gottenColor.Gb, Is.EqualTo(0), "Green should be 0");
+					Assert.That(gottenColor.Bb, Is.EqualTo(255), "Blue should be 255");
+				}
+				if (format == PixelFormat.Format24bppRgb)
+				{
+					Warn.If(gottenColor.Ab, Is.Not.EqualTo(255), "Alpha should be 255 for 24bpp, but 128 is okay as long as the other values are correct");
+					Assert.That(gottenColor.Ab, Is.EqualTo(255).Or.EqualTo(128), "Alpha should be 255 for 24bpp, but 128 is okay as long as the other values are correct");
+				}
+				else if (withAlpha)
+				{
+					Assert.That(gottenColor.Ab, Is.EqualTo(128), "Alpha should be 128 for 32bpp");
+				}
+				else
+				{
+					Assert.That(gottenColor.Ab, Is.EqualTo(255), "Alpha should be 255 for 32bpp");
+				}
+			}
+		});
 	}
 }

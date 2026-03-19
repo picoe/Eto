@@ -127,12 +127,26 @@ namespace Eto.Mac.Drawing
 						const int bitsPerPixel = numComponents * bitsPerComponent;
 						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
+						
+						var buffer = new byte[bytesPerRow * height];
 
-						// no way to create a CGImage with 24bpp AND there's no way to get the sRGB colorspace name,
-						// so create NSBitmapImageRep directly then change colorspace to sRGB.
-						// why oh why apple didn't you make a new version of this API with a colorspace instance vs. name..?
-						using var tmpbmp = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.CalibratedRGB, bytesPerRow, bitsPerPixel);
-						rep = bmprep = tmpbmp.ConvertingToColorSpace(NSColorSpace.SRGBColorSpace, NSColorRenderingIntent.Default);
+						using var colorSpace = CGColorSpace.CreateSrgb();
+						using var provider = new CGDataProvider(buffer, 0, buffer.Length);
+
+						var cgimage = new CGImage(
+							width,
+							height,
+							bitsPerComponent,
+							bitsPerPixel,
+							bytesPerRow,
+							colorSpace,
+							CGImageAlphaInfo.None,
+							provider,
+							null,
+							false,
+							CGColorRenderingIntent.Default
+						);
+						rep = bmprep = new NSBitmapImageRep(cgimage);
 						
 						Control = new NSImage();
 						Control.AddRepresentation(rep);
@@ -266,8 +280,9 @@ namespace Eto.Mac.Drawing
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep?.GetType()));
 
 			var nscolor = bmprep.ColorAt(x, y);
-			// always convert to sRGB
-			return nscolor.ToEto();
+			// Special case, we use CalibratedRGB/GenericRGB (they are the same thing) otherwise this is the wrong value
+			// not sure why, the bmprep is in sRGB colorspace?!
+			return nscolor.ToEto(NSColorSpace.GenericRGBColorSpace);
 		}
 
 		protected override void Dispose(bool disposing)

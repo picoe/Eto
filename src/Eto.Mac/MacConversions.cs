@@ -67,12 +67,14 @@ namespace Eto.Mac
 		[Obsolete("Use ToEto(NSColor) instead")]
 		public static Color ToEto(this NSColor color, bool calibrated) => ToEto(color);
 
-		public static Color ToEto(this NSColor color)
+		public static Color ToEto(this NSColor color) => ToEto(color, null);
+	
+		public static Color ToEto(this NSColor color, NSColorSpace colorspace)
 		{
 			if (color == null)
 				return Colors.Transparent;
 
-			var colorspace = NSColorSpace.SRGBColorSpace;
+			colorspace ??= NSColorSpace.SRGBColorSpace;
 
 			var converted = color.UsingColorSpace(colorspace);
 			if (converted == null)
@@ -87,7 +89,7 @@ namespace Eto.Mac
 			converted.GetRgba(out red, out green, out blue, out alpha);
 			return new Color(color, (float)red, (float)green, (float)blue, (float)alpha);
 		}
-
+		
 		public static NSRange ToNS(this Range<int> range)
 		{
 			return new NSRange(range.Start, range.End - range.Start + 1);
