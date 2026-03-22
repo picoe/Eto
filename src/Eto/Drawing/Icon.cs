@@ -205,7 +205,7 @@ public class Icon : Image
 		float lastScale = 0;
 		foreach (var frame in Frames.OrderBy(r => r.Scale).ThenByDescending(r => r.Size.Width * r.Size.Height))
 		{
-			var ps = Size.Ceiling((SizeF)Size * scale);
+			var ps = Size.Ceiling((SizeF)Handler.Size * scale);
 			var pixelSizeNeeded = ps.Width * ps.Height;
 			var diff = scale - frame.Scale;
 			if (selected == null || (diff < scaleDiff && (diff >= 0 || scaleDiff > 0)))
