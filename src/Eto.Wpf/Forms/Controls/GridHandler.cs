@@ -23,7 +23,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
-
+		
 		protected override void OnPreviewKeyDown(swi.KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
@@ -47,7 +47,7 @@ namespace Eto.Wpf.Forms.Controls
 			Loaded += EtoDataGrid_Loaded;
 		}
 
-				private void EtoDataGrid_Loaded(object sender, sw.RoutedEventArgs e)
+		private void EtoDataGrid_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			var scp = this.FindChild<swc.ScrollContentPresenter>();
 			if (scp != null) scp.RequestBringIntoView += OnRequestBringIntoView;
@@ -127,6 +127,7 @@ namespace Eto.Wpf.Forms.Controls
 		protected override sw.Size DefaultSize => new sw.Size(100, 100);
 		public override bool UseMousePreview => true;
 		public override bool UseKeyPreview => true;
+		protected override bool ContainsScrollViewer => true;
 
 		protected GridHandler()
 		{
@@ -1054,7 +1055,7 @@ namespace Eto.Wpf.Forms.Controls
 			var scrollViewer = ScrollViewer;
 			if (scrollViewer == null)
 				return;
-				
+
 			void ScrollWithIncrement(bool fast, double increment)
 			{
 				var now = DateTime.Now;
@@ -1063,7 +1064,7 @@ namespace Eto.Wpf.Forms.Controls
 					startDragOverTime = now;
 					return;
 				}
-				
+
 				var diff = now - startDragOverTime;
 				if (diff > TimeSpan.FromSeconds(fast ? DragScrollFastDelay : DragScrollDelay))
 				{
@@ -1092,7 +1093,7 @@ namespace Eto.Wpf.Forms.Controls
 				var child = scrollViewer.FindChild<swcp.ScrollBar>("PART_HorizontalScrollBar");
 				height -= child.ActualHeight;
 			}
-			
+
 			if (args.Location.Y > height - DragScrollSize)
 			{
 				ScrollWithIncrement(args.Location.Y > height - DragScrollFastSize, 1);

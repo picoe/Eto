@@ -110,12 +110,24 @@ namespace Eto.Wpf.Forms
 				return hwnd != null ? hwnd.Handle : IntPtr.Zero;
 			}
 		}
+		
+		protected virtual bool ContainsScrollViewer => false;
 
 		public virtual sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
 		{
 			// enforce eto-style sizing to wpf controls
 			var size = UserPreferredSize;
 			var control = ContainerControl;
+
+			if (ContainsScrollViewer)
+			{
+				// enclosed scrollable does not size appropriately on Arrange, so we need to 
+				// constrain the size here to prevent it from using the available space incorrectly.
+				if (!double.IsPositiveInfinity(constraint.Width) && size.Width >= 0 && size.Width < constraint.Width)
+					constraint.Width = size.Width;
+				if (!double.IsPositiveInfinity(constraint.Height) && size.Height >= 0 && size.Height < constraint.Height)
+					constraint.Height = size.Height;
+			}
 
 			// Constrain content to the preferred size of this control, if specified.
 			var desired = measure(constraint.IfInfinity(size.InfinityIfNan()));

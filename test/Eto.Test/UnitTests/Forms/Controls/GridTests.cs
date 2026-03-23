@@ -21,7 +21,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			ManualForm("Start editing a cell, then press Escape to cancel editing", form =>
 			{
 				form.Size = new Size(300, 200);
-				
+
 				var grid = new T();
 				grid.ShowHeader = true;
 				grid.AllowMultipleSelection = true;
@@ -660,5 +660,28 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 
 		}
+
+		[Test, ManualTest]
+		public void GridInAutosizedWindowShouldShowContentCorrectly() => ManualForm("Grid should show the vertical scrollbar correctly", form =>
+		{
+			form.Resizable = true;
+			form.AutoSize = true;
+
+			var grid = new T();
+			grid.ShowHeader = false;
+			grid.Size = new Size(300, 200);
+
+			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) }, AutoSize = true });
+			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0), Expand = true, AutoSize = true });
+
+			var list = new TreeGridItemCollection();
+			for (int i = 0; i < 100; i++)
+			{
+				list.Add(new GridTestItem { Text = $"Item {i}", Values = new[] { $"col {i}.2", $"col {i}.3", $"col {i}.4", $"col {i}.5" } });
+			}
+			SetDataStore(grid, list);
+
+			return grid;
+		});
 	}
 }
