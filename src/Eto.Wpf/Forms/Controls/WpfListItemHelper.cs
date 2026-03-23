@@ -38,6 +38,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Binding = binding;
 			SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Converter = this });
+			SetValue(sw.FrameworkElement.HorizontalAlignmentProperty, sw.HorizontalAlignment.Stretch);
 			if (setMargin)
 				SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(2,0, 2, 0));
 		}
@@ -80,14 +81,29 @@ namespace Eto.Wpf.Forms.Controls
 		}
 	}
 
+	class WpfImageTextGrid : swc.Grid
+	{
+		public WpfImageTextGrid()
+		{
+			ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(0, sw.GridUnitType.Auto)});
+			ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Star) });
+		}
+	}
+
 	public class WpfImageTextBindingBlock : sw.FrameworkElementFactory
 	{
 		public WpfImageTextBindingBlock(Func<IIndirectBinding<string>> textBinding, Func<IIndirectBinding<Image>> imageBinding, swd.RelativeSource relativeSource = null)
-			: base(typeof(swc.StackPanel))
+			: base(typeof(WpfImageTextGrid))
 		{
-			SetValue(swc.StackPanel.OrientationProperty, swc.Orientation.Horizontal);
-			AppendChild(new WpfImageBindingBlock(imageBinding));
-			AppendChild(new WpfTextBindingBlock(textBinding));
+			SetValue(sw.FrameworkElement.HorizontalAlignmentProperty, sw.HorizontalAlignment.Stretch);
+
+			var image = new WpfImageBindingBlock(imageBinding);
+			image.SetValue(swc.Grid.ColumnProperty, 0);
+			AppendChild(image);
+
+			var text = new WpfTextBindingBlock(textBinding);
+			text.SetValue(swc.Grid.ColumnProperty, 1);
+			AppendChild(text);
 		}
 	}
 }
