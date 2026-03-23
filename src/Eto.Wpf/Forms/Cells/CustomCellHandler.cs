@@ -37,6 +37,7 @@ namespace Eto.Wpf.Forms.Cells
 				var focused = grid?.IsKeyboardFocusWithin != false;
 				CellTextColor = selected && focused 
 					? (cell.GetResourceColor("TextOnAccentFillColorPrimaryBrush", sw.SystemColors.HighlightTextColorKey, sw.SystemColors.HighlightTextBrushKey) ?? Eto.Drawing.SystemColors.HighlightText) 
+					: selected ? (cell.GetResourceColor("TextOnAccentFillColorPrimaryBrush", sw.SystemColors.ControlTextColorKey, sw.SystemColors.ControlTextBrushKey) ?? Eto.Drawing.SystemColors.ControlText)
 					: (cell.GetResourceColor("TextFillColorPrimaryBrush", sw.SystemColors.ControlTextColorKey, sw.SystemColors.ControlTextBrushKey) ?? Eto.Drawing.SystemColors.ControlText);
 			}
 			public void SetRow(sw.FrameworkElement element)

@@ -12,7 +12,7 @@ namespace Eto.Wpf.Forms.Controls
 	}
 
 	public class TextAreaHandler : TextAreaHandler<EtoTextBox, TextArea, TextArea.ICallback>
-	{
+	{		
 		public override string Text
 		{
 			get { return Control.Text; }
@@ -100,6 +100,8 @@ namespace Eto.Wpf.Forms.Controls
 		protected override sw.Size DefaultSize => new sw.Size(100, 60);
 
 		protected override bool PreventUserResize { get { return true; } }
+		
+		protected override bool ContainsScrollViewer => true;		
 
 		public TextAreaHandler()
 		{
