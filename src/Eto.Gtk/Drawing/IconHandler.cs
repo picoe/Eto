@@ -173,10 +173,8 @@ namespace Eto.GtkSharp.Drawing
 			Pixbuf = this.frames.FirstOrDefault(r => r.Scale == 1)?.Bitmap.ToGdk();
 			if (Pixbuf == null)
 			{
-				var frame = this.frames.OrderBy(r => r.Scale).Last();
-				Pixbuf = frame.Bitmap.ToGdk();
-
-				Pixbuf = Widget.GetFrame(1).Bitmap.ToGdk().ScaleSimple(frame.Size.Width, frame.Size.Height, Gdk.InterpType.Bilinear);
+				var frame = this.frames.OrderByDescending(r => r.Scale).FirstOrDefault();
+				Pixbuf = frame?.Bitmap.ToGdk().ScaleSimple(frame.Size.Width, frame.Size.Height, Gdk.InterpType.Bilinear);
 			}
 		}
 
