@@ -1,24 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Project="$(BasePath)\src\Eto\sdk\Sdk.props" />
+
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Tutorial3</RootNamespace>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <MacBundleMono>False</MacBundleMono>
+    <MacBundleDotNet>False</MacBundleDotNet>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Eto.Gtk\Eto.Gtk.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Eto.Mac\Eto.Mac64.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Eto.WinForms\Eto.WinForms.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Eto\Eto.csproj" />
-  </ItemGroup>
-
-  <Import Project="$(BuildDir)\Common.Mac.targets" />
+  <Import Project="$(BasePath)\src\Eto\sdk\Sdk.targets" />
 
 </Project>
