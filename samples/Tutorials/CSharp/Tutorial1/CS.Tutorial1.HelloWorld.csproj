@@ -1,13 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
   
-  <Import Project="$(BasePath)\src\Eto\sdk\Sdk.props" />
+  <Import Project="..\..\..\..\src\Eto\sdk\Sdk.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Tutorial1</RootNamespace>
-    <Name>Tutorial1 - Hello World</Name>
-    <MacBundleDotNet>False</MacBundleDotNet>
+    <Name>Tutorial1 - Hello World</Name>    
   </PropertyGroup>
 
   <Import Project="$(BasePath)\src\Eto\sdk\Sdk.targets" />

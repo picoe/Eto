@@ -1,13 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <Import Project="$(BasePath)\src\Eto\sdk\Sdk.props" />
+﻿<Project>
+  
+  <Import Project="..\..\..\..\src\Eto\sdk\Sdk.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Tutorial3</RootNamespace>
     <Name>Tutorial3 - Table Layout</Name>
-    <MacBundleDotNet>False</MacBundleDotNet>
   </PropertyGroup>
 
   <ItemGroup>
