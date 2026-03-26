@@ -19,6 +19,8 @@
   <PropertyGroup>
     <!-- Windows requires windows TFM suffix -->
     <_TfmSuffix Condition="$(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows'">-windows</_TfmSuffix>
+    <!-- WinUI requires windows TFM suffix with minimum version -->
+    <_TfmSuffix Condition="$(BuildPlatform) == 'WinUI'">-windows10.0.22621</_TfmSuffix>
     <!-- MacOS requires macos TFM suffix -->
     <_TfmSuffix Condition="$(BuildPlatform) == 'MacOS'">-macos</_TfmSuffix>
 
@@ -47,13 +49,28 @@
     <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net8\.\d)(?=;|$)'))">$(TargetFrameworks);net8.0$(_TfmSuffix)</TargetFrameworks>
     <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net9\.\d)(?=;|$)'))">$(TargetFrameworks);net9.0$(_TfmSuffix)</TargetFrameworks>
     <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net10\.\d)(?=;|$)'))">$(TargetFrameworks);net10.0$(_TfmSuffix)</TargetFrameworks>
+    <TargetFrameworks Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(_CurrentFrameworks), '(?&lt;=;|^)?(net11\.\d)(?=;|$)'))">$(TargetFrameworks);net11.0$(_TfmSuffix)</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="$(LocalEtoPath) == ''">
     <PackageReference Include="Eto.Forms" Version="2.12.0-dev" />
     <PackageReference Include="Eto.Platform.$(BuildPlatform)" Version="2.12.0-dev" />
     <PackageReference Include="Eto.Serialization.Json" Version="2.12.0-dev" Condition="$(UseJeto) == 'True'" />
     <PackageReference Include="Eto.Serialization.Xaml" Version="2.12.0-dev" Condition="$(UseXeto) == 'True'" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="$(LocalEtoPath) != ''">
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto\Eto.csproj" />
+    
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto.Mac\Eto.Mac64.csproj" Condition="$(BuildPlatform) == 'Mac64'" />
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto.Mac\Eto.macOS.csproj" Condition="$(BuildPlatform) == 'macOS'" />
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto.Wpf\Eto.Wpf.csproj" Condition="$(BuildPlatform) == 'Wpf'" />
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto.WinForms\Eto.WinForms.csproj" Condition="$(BuildPlatform) == 'Windows'" />
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto.Gtk\Eto.Gtk.csproj" Condition="$(BuildPlatform) == 'Gtk'" />
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto.$(BuildPlatform)\Eto.$(BuildPlatform).csproj" Condition="Exists('$(LocalEtoPath)\src\Eto.$(BuildPlatform)\Eto.$(BuildPlatform).csproj')" />
+    
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" Condition="$(UseJeto) == 'True'" />
+    <ProjectReference Include="$(LocalEtoPath)\src\Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
 
   <PropertyGroup>

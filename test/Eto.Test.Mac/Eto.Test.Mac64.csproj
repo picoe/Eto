@@ -73,8 +73,8 @@
   <ItemGroup>
     <BundleResource Include="Assets\TestBundleResource.txt" />
   </ItemGroup>
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-  
   <Import Project="..\..\src\Eto.Mac\build\Mac.targets" Condition="'$(ExcludeRestorePackageImports)' != 'true'" />
+  
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
   
 </Project>

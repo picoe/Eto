@@ -2,7 +2,6 @@
 
   <PropertyGroup Condition="$(BaseOutputAppPath) == ''">
     <!-- Compute where the .app bundle should be created, if not specified -->
-    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(OutputPath) != ''">$(OutputPath)</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(TargetDir) != ''">$(TargetDir)</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) != ''">$([MSBuild]::EnsureTrailingSlash('$(BaseOutputAppPath)'))</BaseOutputAppPath>
   </PropertyGroup>
@@ -14,7 +13,7 @@
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) == ''">bin\</BaseOutputAppPath>
     <BaseOutputAppPath>$(BaseOutputAppPath)$(Configuration)\</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(AppendTargetFrameworkToOutputPath) != 'False' AND $(TargetFramework) != ''">$(BaseOutputAppPath)$(TargetFramework)\</BaseOutputAppPath>
-    <BaseOutputAppPath Condition="$(AppendRuntimeIdentifierToOutputPath) == 'True' AND $(RuntimeIdentifier) != ''">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
+    <BaseOutputAppPath Condition="$(AppendRuntimeIdentifierToOutputPath) != 'False' AND $(RuntimeIdentifier) != ''">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) != ''">$([MSBuild]::EnsureTrailingSlash('$(BaseOutputAppPath)'))</BaseOutputAppPath>
   </PropertyGroup>
 
@@ -46,8 +45,6 @@
 
   <PropertyGroup>
     <!-- internal properties -->
-    <MacUseDotNetCore Condition="$(MacUseDotNetCore) == '' AND !$(TargetFramework.StartsWith('net4'))">True</MacUseDotNetCore>
-    <MacUseDotNetCore Condition="$(MacUseDotNetCore) == ''">False</MacUseDotNetCore>
     <OutputContents>$(OutputAppPath)Contents\</OutputContents>
     <OutputResourcesPath>$(OutputContents)Resources\</OutputResourcesPath>
 
@@ -55,8 +52,7 @@
     <LauncherPath>$(OutputContents)MacOS\</LauncherPath>
     <LauncherFileWithPath>$(LauncherPath)$(LauncherFile)</LauncherFileWithPath>
     
-    <_MacRunConfigurationStartPath Condition="$(MacUseDotNetCore) == 'False'">$(OutputAppPath)</_MacRunConfigurationStartPath>
-    <_MacRunConfigurationStartPath Condition="$(MacUseDotNetCore) == 'True'">$(LauncherFileWithPath)</_MacRunConfigurationStartPath>
+    <_MacRunConfigurationStartPath Condition="">$(LauncherFileWithPath)</_MacRunConfigurationStartPath>
   </PropertyGroup>
 
   <!-- dotnet run should launch the .app on macOS -->
@@ -287,8 +283,7 @@
     <Warning Text="You can only create dmg's, code sign, or notarize on macOS" />
   </Target>
 
-  <Import Project="BundleMono.targets" Condition="$(MacUseDotNetCore) != 'True' AND $(MacBuildBundle) == 'True'" />
-  <Import Project="BundleDotNetCore.targets" Condition="$(MacUseDotNetCore) == 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="BundleDotNetCore.targets" Condition="$(MacBuildBundle) == 'True'" />
 
   <Import Project="Dmg.targets" Condition="$(EnableDmgBuild) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
   <Import Project="CodeSign.targets" Condition="$(EnableCodeSigning) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />

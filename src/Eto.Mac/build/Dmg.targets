@@ -7,6 +7,7 @@
     <DmgVolumeName Condition="$(DmgVolumeName) == ''">$(DmgName)</DmgVolumeName>
     <!-- Where to put the DMG -->
     <DmgOutputPath Condition="$(DmgOutputPath) == ''">$(OutputPath)</DmgOutputPath>
+    <DmgOutputPath Condition="$(DmgOutputPath) != ''">$([MSBuild]::EnsureTrailingSlash('$(DmgOutputPath)'))</DmgOutputPath>
 
     <!-- True to add typical formatting to the DMG, add application shortcut icon, background, auto-open, etc. -->
     <DmgBeautify Condition="$(DmgBeautify) == ''">True</DmgBeautify>

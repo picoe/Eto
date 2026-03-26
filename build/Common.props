@@ -5,6 +5,7 @@
 
     <BasePath>$(MSBuildThisFileDirectory)..\</BasePath>
     <BasePath>$([System.IO.Path]::GetFullPath($(BasePath)))</BasePath>
+    <LocalEtoPath>$(BasePath)</LocalEtoPath>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</OSPlatform>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</OSPlatform>
     <OSPlatform Condition="$(OSPlatform) == '' and '$(OS)' != 'Unix'">Windows</OSPlatform>
