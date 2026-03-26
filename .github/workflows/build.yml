@@ -19,12 +19,12 @@ jobs:
     runs-on: windows-2022
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
@@ -35,13 +35,13 @@ jobs:
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Build /bl:artifacts/log/Build.Windows.binlog
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: nuget-win
         path: artifacts/nuget/${{ env.BuildConfiguration }}/*.nupkg
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: test-win
         path: |
@@ -49,14 +49,14 @@ jobs:
           !artifacts/test/Eto.Test.Mac64/**/*
 
     - name: Upload sample artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: samples-win
         path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
 
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: log-win
         path: artifacts/log/**/*
@@ -66,12 +66,12 @@ jobs:
     runs-on: macos-26
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
@@ -124,14 +124,14 @@ jobs:
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Build /bl:artifacts/log/Build.Mac.binlog
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: nuget-mac
         path: |
           artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.macOS*.nupkg
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: test-mac
         path: |
@@ -140,7 +140,7 @@ jobs:
 
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: log-mac
         path: |

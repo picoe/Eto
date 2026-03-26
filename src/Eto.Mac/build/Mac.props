@@ -3,8 +3,6 @@
 
   <PropertyGroup>
     <IsMac Condition="$([MSBuild]::IsOsPlatform(OSX))">True</IsMac>
-    <IsUnix Condition="$(OS) == 'Unix'">True</IsUnix>
-    <IsWindows Condition="$([MSBuild]::IsOsPlatform(Windows))">True</IsWindows>
   </PropertyGroup>
   
   <!-- for .NET Core publishing -->

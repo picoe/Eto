@@ -4,5 +4,6 @@
   <PropertyGroup>
     <Deterministic>false</Deterministic>
     <BaseOutputPath>$(BasePath)artifacts\samples\$(MSBuildProjectName)\</BaseOutputPath>
+    <MacBundleDotNet>False</MacBundleDotNet>
   </PropertyGroup>
 </Project>

@@ -91,6 +91,11 @@
     <RuntimeIdentifiers Condition="$(BuildPlatform) == 'Gtk'">linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
+  <!-- Not exactly the right place, but no way to put it before we've computed BuildPlatform -->
+  <Import Project="$(LocalEtoPath)\src\Eto.Mac\build\Mac.props" Condition="$(LocalEtoPath) != '' and ( $(BuildPlatform) == 'Mac64' OR $(BuildPlatform) == 'macOS' )" />
+  
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  
+  <Import Project="$(LocalEtoPath)\src\Eto.Mac\build\Mac.targets" Condition="$(LocalEtoPath) != '' and ( $(BuildPlatform) == 'Mac64' OR $(BuildPlatform) == 'macOS' )" />
 
 </Project>
