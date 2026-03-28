@@ -1,30 +1,67 @@
 namespace Eto.Mac.Forms
 {
+	interface IMacTextInputHandler
+	{
+		bool HasMarkedText { get; }
+		NSRange MarkedRange { get; }
+		NSRange SelectedRange { get; }
+		CGRect FirstRectForCharacterRange(NSRange range);
+		void FinishComposition();
+		void SetMarkedText(string text, NSRange selectedRange, NSRange replacementRange);
+		void UnmarkText();
+	}
+
 	static class MacViewTextInput
 	{
 		internal static IntPtr HasMarkedText_Selector = Selector.GetHandle("hasMarkedText");
 		internal static MarshalDelegates.Func_IntPtr_IntPtr_bool HasMarkedText_Delegate = HasMarkedText;
-		static bool HasMarkedText(IntPtr sender, IntPtr sel) => false;
+		static bool HasMarkedText(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			return MacBase.GetHandler(obj) is IMacTextInputHandler handler && handler.HasMarkedText;
+		}
 
 
 		internal static IntPtr MarkedRange_Selector = Selector.GetHandle("markedRange");
 		internal static MarshalDelegates.Func_IntPtr_IntPtr_NSRange MarkedRange_Delegate = MarkedRange;
-		static NSRange MarkedRange(IntPtr sender, IntPtr sel) => new NSRange(0, 0);
+		static NSRange MarkedRange(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			return MacBase.GetHandler(obj) is IMacTextInputHandler handler
+				? handler.MarkedRange
+				: new NSRange(NSRange.NotFound, 0);
+		}
 
 		internal static IntPtr SelectedRange_Selector = Selector.GetHandle("selectedRange");
 		internal static MarshalDelegates.Func_IntPtr_IntPtr_NSRange SelectedRange_Delegate = SelectedRange;
-		static NSRange SelectedRange(IntPtr sender, IntPtr sel) => new NSRange(0, 0);
+		static NSRange SelectedRange(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			return MacBase.GetHandler(obj) is IMacTextInputHandler handler
+				? handler.SelectedRange
+				: new NSRange(0, 0);
+		}
 
 		internal static IntPtr SetMarkedText_Selector = Selector.GetHandle("setMarkedText:selectedRange:replacementRange:");
 		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr_NSRange_NSRange SetMarkedText_Delegate = SetMarkedText;
 		static void SetMarkedText(IntPtr sender, IntPtr sel, IntPtr text, NSRange selectedRange, NSRange replacementRange)
 		{
+			var obj = Runtime.GetNSObject(sender);
+			if (MacBase.GetHandler(obj) is IMacTextInputHandler handler)
+			{
+				handler.SetMarkedText(GetText(text), selectedRange, replacementRange);
+			}
 		}
 
 		internal static IntPtr UnmarkText_Selector = Selector.GetHandle("unmarkText");
 		internal static MarshalDelegates.Action_IntPtr_IntPtr UnmarkText_Delegate = UnmarkText;
 		static void UnmarkText(IntPtr sender, IntPtr sel)
 		{
+			var obj = Runtime.GetNSObject(sender);
+			if (MacBase.GetHandler(obj) is IMacTextInputHandler handler)
+			{
+				handler.UnmarkText();
+			}
 		}
 
 		internal static IntPtr ValidAttributesForMarkedText_Selector = Selector.GetHandle("validAttributesForMarkedText");
@@ -45,6 +82,10 @@ namespace Eto.Mac.Forms
 		static CGRect FirstRectForCharacterRange(IntPtr sender, IntPtr sel, NSRange range, IntPtr actualRange)
 		{
 			var obj = Runtime.GetNSObject(sender);
+			if (MacBase.GetHandler(obj) is IMacTextInputHandler textInputHandler)
+			{
+				return textInputHandler.FirstRectForCharacterRange(range);
+			}
 			if (obj is NSView ctl && MacBase.GetHandler(obj) is IMacViewHandler handler)
 			{
 				var rect = ctl.ConvertRectToView(ctl.Bounds, null);
@@ -64,6 +105,28 @@ namespace Eto.Mac.Forms
 		}
 
 		internal static IntPtr NSTextInputClientProtocol_Handle = ObjCExtensions.GetProtocolHandle("NSTextInputClient");
+
+		static Selector selString = new Selector("string");
+		static string GetText(IntPtr text)
+		{
+			if (text == IntPtr.Zero)
+				return string.Empty;
+
+			var obj = Runtime.GetNSObject(text);
+			if (obj == null)
+				return string.Empty;
+
+			if (obj is NSString str)
+				return str.ToString();
+
+			if (obj.RespondsToSelector(selString))
+			{
+				var stringHandle = Messaging.IntPtr_objc_msgSend(obj.Handle, selString.Handle);
+				return (string)Runtime.GetNSObject<NSString>(stringHandle) ?? string.Empty;
+			}
+
+			return obj.ToString() ?? string.Empty;
+		}
 	}
 
 	partial class MacView<TControl, TWidget, TCallback>
