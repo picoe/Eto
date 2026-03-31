@@ -68,6 +68,17 @@ namespace Eto.Android.Forms.Controls
 			set { Control.SetSelection(value.Start, value.End); }
 		}
 
+		public int GetCharacterIndex(PointF location)
+		{
+			var layout = Control.Layout;
+			if (layout == null)
+				return 0;
+
+			var line = layout.GetLineForVertical((int)(location.Y - Control.TotalPaddingTop + Control.ScrollY));
+			var x = (float)(location.X - Control.TotalPaddingLeft + Control.ScrollX);
+			return layout.GetOffsetForHorizontal(line, x);
+		}
+
 		public TextAlignment TextAlignment
 		{
 			get

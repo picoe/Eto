@@ -75,6 +75,18 @@ namespace Eto.iOS.Forms.Controls
 			set { throw new NotImplementedException(); }
 		}
 
+		public int GetCharacterIndex(PointF location)
+		{
+			var textField = UIDevice.CurrentDevice.CheckSystemVersion(13, 0)
+				? Control.SearchTextField
+				: Control.ValueForKey(new Foundation.NSString("searchField")) as UITextField;
+			if (textField == null)
+				return 0;
+
+			var position = textField.GetClosestPosition(location.ToNS());
+			return position != null ? (int)textField.GetOffsetFromPosition(textField.BeginningOfDocument, position) : 0;
+		}
+
 		public bool ShowBorder
 		{
 			get { throw new NotImplementedException(); }
@@ -88,4 +100,3 @@ namespace Eto.iOS.Forms.Controls
 		}
 	}
 }
-

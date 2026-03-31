@@ -127,6 +127,13 @@ public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextSt
 	}
 
 	/// <summary>
+	/// Gets the character index closest to the specified location.
+	/// </summary>
+	/// <param name="location">Location relative to the text box.</param>
+	/// <returns>The character index closest to <paramref name="location"/>.</returns>
+	public int GetCharacterIndex(PointF location) => TextBox.GetCharacterIndex(location);
+
+	/// <summary>
 	/// Gets or sets a value indicating whether to show the control's border.
 	/// </summary>
 	/// <remarks>

@@ -231,6 +231,13 @@ public class TextBox : TextControl
 	}
 
 	/// <summary>
+	/// Gets the character index closest to the specified location.
+	/// </summary>
+	/// <param name="location">Location relative to the text box.</param>
+	/// <returns>The character index closest to <paramref name="location"/>.</returns>
+	public int GetCharacterIndex(PointF location) => Handler.GetCharacterIndex(location);
+
+	/// <summary>
 	/// Handler interface for the <see cref="TextBox"/>.
 	/// </summary>
 	public new interface IHandler : TextControl.IHandler
@@ -315,6 +322,13 @@ public class TextBox : TextControl
 		/// Gets or sets a value indicating whether to always show the selection in the text box, even if it does not have focus.
 		/// </summary>
 		bool AlwaysShowSelection { get; set; }
+
+		/// <summary>
+		/// Gets the character index closest to the specified location.
+		/// </summary>
+		/// <param name="location">Location relative to the text box.</param>
+		/// <returns>The character index closest to <paramref name="location"/>.</returns>
+		int GetCharacterIndex(PointF location);
 	}
 
 	#region Callback
