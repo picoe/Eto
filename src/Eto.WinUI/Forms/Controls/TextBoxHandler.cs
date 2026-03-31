@@ -2,6 +2,8 @@ namespace Eto.WinUI.Forms.Controls;
 
 public class TextBoxHandler : WinUIControl<muc.TextBox, TextBox, TextBox.ICallback>, TextBox.IHandler, SearchBox.IHandler
 {
+	int TextLength => Control.Text?.Length ?? 0;
+
 	public bool ReadOnly
 	{
 		get => Control.IsReadOnly;
@@ -57,7 +59,44 @@ public class TextBoxHandler : WinUIControl<muc.TextBox, TextBox, TextBox.ICallba
 		set => Control.SelectionHighlightColorWhenNotFocused = value ? Control.SelectionHighlightColor : null;
 	}
 
+	public int GetCharacterIndex(PointF location)
+	{
+		var length = TextLength;
+		if (length == 0)
+			return 0;
+
+		if (location.X <= GetInsertionX(0))
+			return 0;
+
+		if (location.X >= GetInsertionX(length))
+			return length;
+
+		var low = 0;
+		var high = length;
+		while (low < high)
+		{
+			var mid = (low + high) / 2;
+			if (location.X <= GetInsertionX(mid))
+				high = mid;
+			else
+				low = mid + 1;
+		}
+
+		var right = low;
+		var left = Math.Max(0, right - 1);
+		return Math.Abs(location.X - GetInsertionX(left)) <= Math.Abs(GetInsertionX(right) - location.X) ? left : right;
+	}
+
 	public void SelectAll() => Control.SelectAll();
+
+	double GetInsertionX(int index)
+	{
+		if (index <= 0)
+			return Control.GetRectFromCharacterIndex(0, false).Left;
+		if (index >= TextLength)
+			return Control.GetRectFromCharacterIndex(TextLength - 1, true).Right;
+		return Control.GetRectFromCharacterIndex(index, false).Left;
+	}
 
 	protected override muc.TextBox CreateControl() => new EtoTextBox { Handler = this };
 

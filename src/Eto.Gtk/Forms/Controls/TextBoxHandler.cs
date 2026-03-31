@@ -438,6 +438,22 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		public int GetCharacterIndex(PointF location)
+		{
+			var text = Control.Text ?? string.Empty;
+			if (text.Length == 0)
+				return 0;
+
+			Control.GetLayoutOffsets(out var layoutX, out var layoutY);
+			var x = (int)((location.X - layoutX + Control.ScrollOffset) * Pango.Scale.PangoScale);
+			var y = (int)((location.Y - layoutY) * Pango.Scale.PangoScale);
+
+			if (Control.Layout.XyToIndex(x, y, out var index, out var trailing))
+				return Control.LayoutIndexToTextIndex(index + trailing);
+
+			return location.X <= layoutX ? 0 : text.Length;
+		}
+
 		public TextAlignment TextAlignment
 		{
 			get

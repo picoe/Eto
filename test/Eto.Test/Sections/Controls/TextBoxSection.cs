@@ -70,6 +70,7 @@ namespace Eto.Test.Sections.Controls
 
 		void LogEvents(TextBox control)
 		{
+			control.MouseDown += (sender, e) => Log.Write(control, $"MouseDown: {e.Location}, Index: {control.GetCharacterIndex(e.Location)}");
 			control.TextChanging += (sender, e) => Log.Write(control, $"TextChanging, Range: {e.Range}, Text: {e.Text}");
 			control.TextChanged += (sender, e) => Log.Write(control, $"TextChanged, Text: {control.Text}, Selection: {control.Selection}");
 			control.TextInput += (sender, e) => Log.Write(control, "TextInput: {0}", e.Text);

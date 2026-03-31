@@ -125,6 +125,12 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
+		public int GetCharacterIndex(PointF location)
+		{
+			var position = Control.GetClosestPosition(location.ToNS());
+			return position != null ? (int)Control.GetOffsetFromPosition(Control.BeginningOfDocument, position) : 0;
+		}
+
 		public bool ShowBorder
 		{
 			get { return Control.BorderStyle != UITextBorderStyle.None; }
@@ -138,4 +144,3 @@ namespace Eto.iOS.Forms.Controls
 		}
 	}
 }
-

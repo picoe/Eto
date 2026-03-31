@@ -261,6 +261,8 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		public int GetCharacterIndex(PointF location) => SwfTextBox.GetCharIndexFromPosition(new sd.Point((int)location.X, (int)location.Y));
+
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);

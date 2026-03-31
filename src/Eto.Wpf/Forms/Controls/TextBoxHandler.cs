@@ -89,6 +89,8 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public int GetCharacterIndex(PointF location) => TextBox.GetCharacterIndexFromPoint(location.ToWpf(), true);
+
 		public TextBoxHandler()
 		{
 		}

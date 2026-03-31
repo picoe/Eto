@@ -125,5 +125,10 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control.Cell.PlaceholderString; }
 			set { Control.Cell.PlaceholderString = value ?? string.Empty; }
 		}
+
+		public int GetCharacterIndex(PointF location)
+		{
+			return MacTextHitTest.GetCharacterIndex(Control, location);
+		}
 	}
 }

@@ -61,6 +61,21 @@ namespace Eto.Mac.Forms.Controls
 		Color? Color { get; set; }
 	}
 
+	static class MacTextHitTest
+	{
+		static readonly IntPtr characterIndexForInsertionAtPointSelector = Selector.GetHandle("characterIndexForInsertionAtPoint:");
+
+		public static int GetCharacterIndex(NSControl control, PointF location)
+		{
+			var editor = control.CurrentEditor ?? control.Window?.FieldEditor(true, control) as NSTextView;
+			if (editor == null)
+				return 0;
+
+			var point = editor.ConvertPointFromView(location.ToNS(), control);
+			return (int)Messaging.nuint_objc_msgSend_CGPoint(editor.Handle, characterIndexForInsertionAtPointSelector, point);
+		}
+	}
+
 	public class EtoTextFieldCell : NSTextFieldCell, IColorizeCell
 	{
 		ColorizeView colorize;
@@ -291,6 +306,11 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.Cell.PlaceholderString; }
 			set { Control.Cell.PlaceholderString = value ?? string.Empty; }
+		}
+
+		public int GetCharacterIndex(PointF location)
+		{
+			return MacTextHitTest.GetCharacterIndex(Control, location);
 		}
 
 		TextBox.ICallback IMacTextBoxHandler.Callback => Callback;
