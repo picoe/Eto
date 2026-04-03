@@ -10,9 +10,17 @@ namespace Eto.Mac.Forms.Controls
 		NSRange selectedRange;
 		bool isComposing;
 
+		static readonly object MouseDownCanMoveWindow_Key = new object();
+
 		public bool SupportsCreateGraphics => false;
 
 		public override NSView ContainerControl => Control;
+		
+		public bool? MouseDownCanMoveWindow
+		{
+			get => Widget.Properties.Get<bool?>(MouseDownCanMoveWindow_Key);
+			set => Widget.Properties.Set(MouseDownCanMoveWindow_Key, value);
+		}
 
 		public class EtoDrawableView : MacPanelView
 		{
@@ -40,6 +48,22 @@ namespace Eto.Mac.Forms.Controls
 			// public override bool IsFlipped => true;  // uncomment to test flipped views with GraphicsHandler.
 
 			public bool CanFocus { get; set; }
+
+			public override bool MouseDownCanMoveWindow
+			{
+				get
+				{
+					if (Handler is DrawableHandler drawableHandler)
+					{
+						var canMove = drawableHandler.MouseDownCanMoveWindow;
+						if (canMove.HasValue)
+							return canMove.Value;
+					}
+					if (AcceptsFirstResponder() || AcceptsFirstMouse(NSApplication.SharedApplication.CurrentEvent))
+						return false;
+					return base.MouseDownCanMoveWindow;
+				}
+			}
 
 			public override bool AcceptsFirstResponder() => CanFocus && Drawable?.Enabled == true;
 
