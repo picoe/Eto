@@ -567,4 +567,29 @@ public abstract class WindowTests<T> : TestBase
 		popup.Show();
 	}
 	);
+
+	[Test]
+	[ManualTest]
+	public void DrawableWithHandledMouseDownShouldNotMoveWindowWithMovableByWindowBackground() => ManualTest(
+		"Click and drag on the blue area to move the window.\nIt should NOT move.",
+		form =>
+		{
+			form.Owner = Application.Instance.MainForm;
+			form.MovableByWindowBackground = true;
+			form.Padding = 20;
+			form.Size = new Size(400, 300);
+			var drawable = new Drawable
+			{
+				BackgroundColor = Colors.Blue,
+				Size = new Size(400, 300),
+				CanFocus = true
+			};
+
+			drawable.MouseDown += (sender, e) =>
+			{
+				e.Handled = true;
+			};
+
+			return drawable;
+		});
 }
