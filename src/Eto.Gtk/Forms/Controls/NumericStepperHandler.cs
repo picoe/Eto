@@ -293,5 +293,19 @@ namespace Eto.GtkSharp.Forms.Controls
 			get => Control.Wrap;
 			set => Control.Wrap = value;
 		}
+		
+		public TextAlignment TextAlignment
+		{
+			get => Control.Alignment < 0.5f ? TextAlignment.Left
+						  : Control.Alignment > 0.5f ? TextAlignment.Right
+						  : TextAlignment.Center;
+			set => Control.Alignment = value switch
+			{
+				TextAlignment.Left => 0,
+				TextAlignment.Center => 0.5f,
+				TextAlignment.Right => 1,
+				_ => throw new NotSupportedException(),
+			};
+		}
 	}
 }

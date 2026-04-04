@@ -26,7 +26,7 @@ public class CheckBoxList : Panel
 	Orientation orientation;
 	ItemDataStore dataStore;
 	readonly List<CheckBox> buttons = new List<CheckBox>();
-	Size spacing = new Size(0, 0);
+	Size spacing = new Size(2, 2);
 	bool settingChecked;
 
 	/// <summary>

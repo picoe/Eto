@@ -22,6 +22,8 @@ namespace Eto.Wpf.Forms.Controls
 			};
 		}
 
+		protected override sw.Size DefaultSize => new sw.Size(120, double.NaN);
+		
 		public override sw.FrameworkElement TabControl => WatermarkTextBox;
 
 		public override string PlaceholderText

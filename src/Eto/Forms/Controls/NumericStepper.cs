@@ -210,7 +210,16 @@ public class NumericStepper : CommonControl
 		get => Handler.Wrap;
 		set => Handler.Wrap = value;
 	}
-
+	
+	/// <summary>
+	/// Gets or sets the text alignment of the numeric value.
+	/// </summary>
+	public TextAlignment TextAlignment
+	{
+		get => Handler.TextAlignment;
+		set => Handler.TextAlignment = value;
+	}
+	
 	/// <summary>
 	/// Gets the binding for the <see cref="Value"/> property.
 	/// </summary>
@@ -377,5 +386,10 @@ public class NumericStepper : CommonControl
 		/// </summary>
 		/// <value><c>true</c> to wrap the value when stepping past its bounds, <c>false</c> to stop</value>
 		bool Wrap { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the text alignment of the numeric value.
+		/// </summary>
+		TextAlignment TextAlignment { get; set; }
 	}
 }

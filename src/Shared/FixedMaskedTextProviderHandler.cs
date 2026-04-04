@@ -197,6 +197,10 @@
 		{
 			get { return Provider.MaskFull; }
 		}
+		
+		public virtual void CommitText()
+		{
+		}
 	}
 }
 

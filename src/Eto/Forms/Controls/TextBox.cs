@@ -88,8 +88,26 @@ public class TextBox : TextControl
 	public bool ReadOnly
 	{
 		get { return Handler.ReadOnly; }
-		set { Handler.ReadOnly = value; }
+		set
+		{
+			if (Handler.ReadOnly != value)
+			{
+				Handler.ReadOnly = value;
+				OnReadOnlyChanged(EventArgs.Empty);
+			}
+		}
 	}
+
+	/// <summary>
+	/// Event to handle when the <see cref="ReadOnly"/> property changes.
+	/// </summary>
+	public event EventHandler ReadOnlyChanged;
+	
+	/// <summary>
+	/// Raises the <see cref="ReadOnlyChanged"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments</param>
+	protected virtual void OnReadOnlyChanged(EventArgs e) => ReadOnlyChanged?.Invoke(this, e);
 
 	/// <summary>
 	/// Gets or sets the maximum length of the text that can be entered in the control, 0 for no limit.

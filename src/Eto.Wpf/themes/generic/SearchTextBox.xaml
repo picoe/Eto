@@ -10,7 +10,8 @@
         <ResourceDictionary Source="WatermarkTextBox.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Style TargetType="efc:EtoSearchTextBox" BasedOn="{StaticResource WatermarkTextBox}">
+    <Style x:Key="EtoSearchTextBox" TargetType="efc:EtoSearchTextBox" BasedOn="{StaticResource WatermarkTextBox}">
+		<Setter Property="Padding" Value="4,2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="efc:EtoSearchTextBox">
@@ -128,6 +129,9 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="efc:EtoSearchTextBox" BasedOn="{StaticResource EtoSearchTextBox}">
     </Style>
 
 

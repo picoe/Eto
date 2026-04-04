@@ -602,5 +602,11 @@ namespace Eto.Mac.Forms.Controls
 			get => Stepper.ValueWraps;
 			set => Stepper.ValueWraps = value;
 		}
+		
+		public TextAlignment TextAlignment
+		{
+			get => TextField.Alignment.ToEto();
+			set => TextField.Alignment = value.ToNS();
+		}
 	}
 }

@@ -144,4 +144,9 @@ public abstract class VariableMaskedTextProvider : IMaskedTextProvider
 	{
 		get { return sb.Length == 0; }
 	}
+	
+	/// <inheritdoc/>
+	public virtual void CommitText()
+	{
+	}
 }

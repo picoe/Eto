@@ -81,6 +81,16 @@ public interface IMaskedTextProvider
 	/// </summary>
 	/// <value><c>true</c> if the mask value is empty; otherwise, <c>false</c>.</value>
 	bool IsEmpty { get; }
+
+	/// <summary>
+	/// Called to update the display text after changes to the mask value.
+	/// </summary>
+	/// <remarks>
+	/// This is called after user changes to the mask value is complete, such as when the control loses focus, or when the user presses enter.
+	/// This allows the mask provider to update the display text after changes are made to the value, 
+	/// while still allowing the user to type in the text without it changing until they are done.
+	/// </remarks>
+	void CommitText();
 }
 
 /// <summary>

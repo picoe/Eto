@@ -380,5 +380,11 @@ namespace Eto.WinForms.Forms.Controls
 			Control.DecimalPlaces = Math.Max(Math.Min(GetNumberOfDigits(), MaximumDecimalPlaces), DecimalPlaces);
 			Control.UpdateText();
 		}
+
+		public TextAlignment TextAlignment
+		{
+			get => Control.TextAlign.ToEto();
+			set => Control.TextAlign = value.ToSWF();
+		}
 	}
 }

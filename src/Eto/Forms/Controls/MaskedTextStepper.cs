@@ -1,82 +1,6 @@
+
 namespace Eto.Forms;
 
-/// <summary>
-/// Masked text box with a variable length numeric mask.
-/// </summary>
-/// <remarks>
-/// This provides a text box that limits the user input to only allow numeric values.
-/// </remarks>
-/// <typeparam name="T">Numeric type such as int, decimal, double, etc.</typeparam>
-public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
-{
-	/// <summary>
-	/// Gets the numeric provider.
-	/// </summary>
-	/// <value>The masked text provider.</value>
-	public new NumericMaskedTextProvider<T> Provider => (NumericMaskedTextProvider<T>)base.Provider;
-
-	/// <summary>
-	/// Gets or sets a value indicating whether the mask can accept a sign.
-	/// </summary>
-	/// <remarks>
-	/// This defaults to whether the type specified by <typeparamref name="T"/> allows negative values.
-	/// </remarks>
-	/// <value><c>true</c> to allow sign character; otherwise, <c>false</c>.</value>
-	public bool AllowSign
-	{
-		get { return Provider.AllowSign; }
-		set { Provider.AllowSign = value; }
-	}
-
-	/// <summary>
-	/// Gets or sets a value indicating whether the mask can input a decimal.
-	/// </summary>
-	/// <remarks>
-	/// This defaults to whether the type specified by <typeparamref name="T"/> allows decimals, such as when
-	/// it is a decimal, double, or float.
-	/// </remarks>
-	/// <value><c>true</c> to allow decimal; otherwise, <c>false</c>.</value>
-	public bool AllowDecimal
-	{
-		get { return Provider.AllowDecimal; }
-		set { Provider.AllowDecimal = value; }
-	}
-
-	/// <summary>
-	/// Gets or sets the culture for the <see cref="NumericMaskedTextProvider.DecimalCharacter"/> and <see cref="NumericMaskedTextProvider.SignCharacters"/> formatting characters.
-	/// </summary>
-	public CultureInfo Culture
-	{
-		get => Provider.Culture;
-		set
-		{
-			Provider.Culture = value;
-			UpdateText();
-		}
-	}
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="Forms.NumericMaskedTextStepper{T}"/> class.
-	/// </summary>
-	public NumericMaskedTextStepper()
-		: base(new NumericMaskedTextProvider<T>())
-	{
-	}
-
-	/// <inheritdoc/>
-	protected override void OnKeyDown(KeyEventArgs e)
-	{
-		base.OnKeyDown(e);
-		if (e.KeyData == Keys.Decimal)
-		{
-			var pos = CaretIndex;
-			Provider.Insert(Provider.DecimalCharacter, ref pos);
-			UpdateText();
-			CaretIndex = pos;
-			e.Handled = true;
-		}
-	}
-}
 
 /// <summary>
 /// Masked text box that provides a value converted to/from text
@@ -88,13 +12,32 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 /// </remarks>
 public class MaskedTextStepper<T> : MaskedTextStepper
 {
+	T _lastValue;
 	/// <summary>
 	/// Event to handle when the <see cref="Value"/> property changes
 	/// </summary>
-	public event EventHandler<EventArgs> ValueChanged
+	public event EventHandler<EventArgs> ValueChanged;
+
+	/// <inheritdoc/>
+	override protected void OnTextChanged(EventArgs e)
 	{
-		add { TextChanged += value; }
-		remove { TextChanged -= value; }
+		base.OnTextChanged(e);
+
+		var val = Value;
+		if (!EqualityComparer<T>.Default.Equals(val, _lastValue))
+		{
+			OnValueChanged(EventArgs.Empty);
+			_lastValue = val;
+		}
+	}
+
+	/// <summary>
+	/// Raises the <see cref="ValueChanged"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments.</param>
+	protected virtual void OnValueChanged(EventArgs e)
+	{
+		ValueChanged?.Invoke(this, e);
 	}
 
 	/// <summary>
@@ -127,13 +70,15 @@ public class MaskedTextStepper<T> : MaskedTextStepper
 	/// Gets or sets the translated value of the masked text.
 	/// </summary>
 	/// <value>The translated value.</value>
-	public T Value
+	public virtual T Value
 	{
 		get { return Provider != null ? Provider.Value : default(T); }
 		set
 		{
 			if (Provider != null)
 				Provider.Value = value;
+			// if (HasFocus)
+			Provider?.CommitText();
 			UpdateText();
 		}
 	}
@@ -336,8 +281,10 @@ public class MaskedTextStepper : TextStepper
 	{
 		if (provider == null)
 			return;
-		IsUpdatingText++;
 		var hasFocus = HasFocus;
+		if (!hasFocus)
+			provider.CommitText();
+		IsUpdatingText++;
 		if (!hasFocus && ShowPlaceholderWhenEmpty && provider.IsEmpty && !string.IsNullOrEmpty(PlaceholderText))
 			base.Text = null;
 		else if ((hasFocus && ShowPromptMode == ShowPromptMode.OnFocus) || ShowPromptMode == ShowPromptMode.Always)
@@ -375,8 +322,9 @@ public class MaskedTextStepper : TextStepper
 	protected override void OnLostFocus(EventArgs e)
 	{
 		base.OnLostFocus(e);
-		if (ShowPromptMode == ShowPromptMode.OnFocus || ShowPlaceholderWhenEmpty)
-			UpdateText();
+		// if (ShowPromptMode == ShowPromptMode.OnFocus || ShowPlaceholderWhenEmpty)
+		provider?.CommitText();
+		UpdateText();
 	}
 
 	/// <summary>
