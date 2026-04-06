@@ -1259,17 +1259,17 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	public PointF PointToScreen(PointF point) => Handler.PointToScreen(point);
 
 	/// <summary>
-	/// Converts a rectangle from screen space to control space.
-	/// </summary>
-	/// <returns>The rectangle in control space</returns>
-	/// <param name="rect">Rectangle in screen space</param>
-	public RectangleF RectangleToScreen(RectangleF rect) => new RectangleF(PointToScreen(rect.Location), PointToScreen(rect.EndLocation));
-
-	/// <summary>
 	/// Converts a rectangle from control space to screen space
 	/// </summary>
 	/// <returns>The rectangle in screen space</returns>
 	/// <param name="rect">Rectangle in control space</param>
+	public RectangleF RectangleToScreen(RectangleF rect) => new RectangleF(PointToScreen(rect.Location), PointToScreen(rect.EndLocation));
+
+	/// <summary>
+	/// Converts a rectangle from screen space to control space.
+	/// </summary>
+	/// <returns>The rectangle in control space</returns>
+	/// <param name="rect">Rectangle in screen space</param>
 	public RectangleF RectangleFromScreen(RectangleF rect) => new RectangleF(PointFromScreen(rect.Location), PointFromScreen(rect.EndLocation));
 
 	/// <summary>
