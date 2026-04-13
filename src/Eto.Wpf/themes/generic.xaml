@@ -75,6 +75,11 @@
 	</Style>
 	<Style TargetType="efc:EtoExpander" BasedOn="{StaticResource {x:Type Expander}}">
 	</Style>
+	
+	<Style TargetType="PasswordBox" BasedOn="{StaticResource {x:Type PasswordBox}}">
+		<Setter Property="Padding" Value="4,2" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+	</Style>
 
 
 </ResourceDictionary>

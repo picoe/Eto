@@ -10,6 +10,7 @@
 
         <ContentControl Content="{Binding}"
                     Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+					Margin="2,0"
                     Focusable="False" />
     </DataTemplate>
 

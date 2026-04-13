@@ -50,6 +50,12 @@ public class NumericStepperHandler : WinUIBorderedControl<muc.NumberBox, Numeric
 		get => Control.IsWrapEnabled;
 		set => Control.IsWrapEnabled = value;
 	}
+	public TextAlignment TextAlignment
+	{
+		get => TextBox.TextAlignment.ToEto();
+		set => TextBox.TextAlignment = value.ToWinUI();
+	}
+	
 	public Color TextColor { get; set; }
 	public Font Font { get; set; }
 

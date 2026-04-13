@@ -102,6 +102,7 @@ namespace Eto.Wpf.Forms.Controls
 			AppendChild(image);
 
 			var text = new WpfTextBindingBlock(textBinding);
+			text.SetValue(sw.FrameworkElement.VerticalAlignmentProperty, sw.VerticalAlignment.Center);
 			text.SetValue(swc.Grid.ColumnProperty, 1);
 			AppendChild(text);
 		}

@@ -55,7 +55,9 @@ namespace Eto.Test.Sections.Controls
 			
 			var wrap = new CheckBox { Text = "Wrap" };
 			wrap.CheckedBinding.Bind(numeric, n => n.Wrap);
-			
+
+			var textAlignment = new EnumDropDown<TextAlignment>();
+			textAlignment.SelectedValueBinding.Bind(numeric, n => n.TextAlignment);
 
 			var increment = new NumericStepper { MaximumDecimalPlaces = 15 };
 			increment.ValueBinding.Bind(numeric, n => n.Increment);
@@ -67,9 +69,9 @@ namespace Eto.Test.Sections.Controls
 				VerticalContentAlignment = VerticalAlignment.Center,
 				Items =
 				{
+					"TextAlignment", textAlignment,
 					enabled,
 					readOnly,
-					wrap
 				}
 			};
 			var options2 = new StackLayout
@@ -81,7 +83,8 @@ namespace Eto.Test.Sections.Controls
 				{
 					chkMinValue, minValue,
 					chkMaxValue, maxValue,
-					"Increment", increment
+					"Increment", increment,
+					wrap,
 				}
 			};
 			var options3 = new StackLayout
@@ -95,6 +98,18 @@ namespace Eto.Test.Sections.Controls
 					"MaximumDecimalPlaces", maxDecimalPlaces
 				}
 			};
+			
+			var options4 = new StackLayout
+			{
+				Spacing = 5,
+				Orientation = Orientation.Horizontal,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				Items =
+				{
+					"FormatString", formatString,
+					"CultureInfo", cultureDropDown
+				}
+			};
 
 			Content = new StackLayout
 			{
@@ -104,7 +119,7 @@ namespace Eto.Test.Sections.Controls
 					options1,
 					options2,
 					options3,
-					TableLayout.Horizontal(5, "FormatString", formatString, "CultureInfo", cultureDropDown),
+					options4,
 					"Result:", numeric
 				}
 			};

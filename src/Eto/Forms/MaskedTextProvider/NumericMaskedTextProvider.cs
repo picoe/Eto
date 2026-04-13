@@ -5,8 +5,11 @@ namespace Eto.Forms;
 /// </summary>
 public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTextProvider<T>
 {
-	Func<string, T> parse;
-	Func<T, string> toString;
+	Func<string, T> _parse;
+	Func<T, string> _toString;
+	string _formatString;
+	int _decimalPlaces;
+	int _maximumDecimalPlaces;
 
 	class Info
 	{
@@ -14,6 +17,7 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 		public bool AllowDecimal;
 		public Func<string, object> Parse;
 		public Func<object, string> ToText;
+		public int MaxDecimalPlaces;
 	}
 
 	// do all conversions with invariant culture
@@ -22,9 +26,9 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 	// use dictionary instead of reflection for linking
 	static readonly Dictionary<Type, Info> numericTypes = new Dictionary<Type, Info>
 	{
-		{ typeof(decimal), new Info { Parse = s => decimal.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true, AllowDecimal = true } },
-		{ typeof(double), new Info { Parse = s => double.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, ToText = DoubleToText, AllowSign = true, AllowDecimal = true } },
-		{ typeof(float), new Info { Parse = s => float.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, ToText = FloatToText, AllowSign = true, AllowDecimal = true } },
+		{ typeof(decimal), new Info { Parse = s => decimal.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true, AllowDecimal = true, MaxDecimalPlaces = 28 } },
+		{ typeof(double), new Info { Parse = s => double.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, ToText = DoubleToText, AllowSign = true, AllowDecimal = true, MaxDecimalPlaces = 17 } },
+		{ typeof(float), new Info { Parse = s => float.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, ToText = FloatToText, AllowSign = true, AllowDecimal = true, MaxDecimalPlaces = 8 } },
 		{ typeof(int), new Info { Parse = s => int.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true } },
 		{ typeof(uint), new Info { Parse = s => uint.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null } },
 		{ typeof(long), new Info { Parse = s => long.TryParse(s, NumberStyles.Any, Inv, out var d) ? (object)d : null, AllowSign = true } },
@@ -69,16 +73,17 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 		{
 			AllowSign = info.AllowSign;
 			AllowDecimal = info.AllowDecimal;
-			parse = text =>
+			MaximumDecimalPlaces = info.MaxDecimalPlaces;
+			_parse = text =>
 			{
 				var val = info.Parse(text);
 				return val == null ? default : (T)val;
 			};
 
 			if (info.ToText != null)
-				toString = val => info.ToText(val);
+				_toString = val => info.ToText(val);
 			else
-				toString = val => Convert.ToString(val, CultureInfo.InvariantCulture);
+				_toString = val => Convert.ToString(val, CultureInfo.InvariantCulture);
 			Validate = text => info.Parse(text?.Replace(DecimalCharacter, '.')) != null;
 		}
 		else
@@ -91,7 +96,7 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 			if (tryParseMethod == null || tryParseMethod.ReturnType != typeof(bool))
 				throw new ArgumentException(string.Format("Type of T ({0}) must implement a static bool TryParse(string, out T) method", typeof(T)));
 
-			parse = text =>
+			_parse = text =>
 			{
 				var parameters = new object[] { Text, null };
 				if ((bool)tryParseMethod.Invoke(null, parameters))
@@ -100,7 +105,7 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 				}
 				return default;
 			};
-			toString = val => Convert.ToString(val, CultureInfo.InvariantCulture);
+			_toString = val => Convert.ToString(val, CultureInfo.InvariantCulture);
 
 			Validate = text =>
 			{
@@ -116,15 +121,137 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 	/// <value>The value of the mask.</value>
 	public T Value
 	{
-		get => parse(Text?.Replace(DecimalCharacter, '.'));
-		set => Text = toString(value)?.Replace('.', DecimalCharacter);
+		get => _parse(Text?.Replace(DecimalCharacter, '.'));
+		set => Text = _toString(value)?.Replace('.', DecimalCharacter);
 	}
+	
+	/// <summary>
+	/// Gets or sets the minimum number of decimal places to include in the output.
+	/// </summary>
+	public int DecimalPlaces
+	{
+		get => _decimalPlaces;
+		set
+		{
+			value = Math.Max(0, value);
+			if (_decimalPlaces == value)
+				return;
+			_decimalPlaces = value;
+			if (_maximumDecimalPlaces < value)
+				_maximumDecimalPlaces = value;
+			_formatString = null; // reset format string since it will override decimal places
+			CommitText();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the maximum number of decimal places to include in the output.
+	/// </summary>
+	public int MaximumDecimalPlaces
+	{
+		get => _maximumDecimalPlaces;
+		set
+		{
+			value = Math.Max(0, value);
+			if (_maximumDecimalPlaces == value)
+				return;
+			_maximumDecimalPlaces = value;
+			if (_decimalPlaces > value)
+				_decimalPlaces = value;
+			_formatString = null; // reset format string since it will override decimal places
+			CommitText();
+		}
+	}
+	
+	/// <summary>
+	/// Gets or sets the format string to use for formatting the value. 
+	/// If specified, this will override the <see cref="DecimalPlaces"/> and <see cref="MaximumDecimalPlaces"/> properties.
+	/// </summary>
+	public string FormatString
+	{
+		get => _formatString;
+		set
+		{
+			if (_formatString == value)
+				return;
+			_formatString = value;
+			if (!string.IsNullOrEmpty(value))
+			{
+				_decimalPlaces = 0;
+				_maximumDecimalPlaces = 0;
+			}
+			CommitText();
+		}
+	}
+	
 
 	internal override void SetCulture()
 	{
 		var value = Value;
 		base.SetCulture();
 		Value = value;
+	}
+
+	/// <inheritdoc/>
+	public override void CommitText()
+	{
+		if (TryFormatText(base.Text, out var displayText))
+			SetBuilderText(displayText);
+	}
+
+	void SetBuilderText(string text)
+	{
+		Builder.Clear();
+		if (text != null)
+			Builder.Append(text);
+	}
+
+	bool TryFormatText(string text, out string displayText)
+	{
+		displayText = text ?? string.Empty;
+		if (string.IsNullOrEmpty(text))
+			return true;
+
+		var normalizedInput = text.Replace(DecimalCharacter, '.');
+		if (normalizedInput.Length == 1)
+		{
+			if ((AllowSign && SignCharacters.Contains(normalizedInput[0])) || (AllowDecimal && normalizedInput[0] == '.'))
+				return false;
+		}
+		else if (normalizedInput.Length == 2 && AllowSign && AllowDecimal && SignCharacters.Contains(normalizedInput[0]) && normalizedInput[1] == '.')
+		{
+			return false;
+		}
+
+		// if (Validate != null && !Validate(text))
+		// 	return false;
+
+		var value = _parse(normalizedInput);
+		if (value is IFormattable formattable)
+		{
+			var maximumDecimalPlaces = Math.Max(DecimalPlaces, MaximumDecimalPlaces);
+			var displayFormat = CreateNumberFormat(DecimalPlaces, maximumDecimalPlaces);
+			displayText = formattable.ToString(displayFormat, Inv).Replace('.', DecimalCharacter);
+			return true;
+		}
+
+		displayText = _toString(value)?.Replace('.', DecimalCharacter) ?? string.Empty;
+		return true;
+	}
+
+	string CreateNumberFormat(int decimalPlaces, int maximumDecimalPlaces)
+	{
+		if (!string.IsNullOrEmpty(_formatString))
+			return _formatString;
+		if (maximumDecimalPlaces == int.MaxValue)
+			return "G";
+		if (maximumDecimalPlaces <= 0)
+			return "0";
+		if (decimalPlaces <= 0)
+			return $"0.{new string('#', maximumDecimalPlaces)}";
+		if (maximumDecimalPlaces <= decimalPlaces)
+			return $"0.{new string('0', decimalPlaces)}";
+		return $"0.{new string('0', decimalPlaces)}{new string('#', maximumDecimalPlaces - decimalPlaces)}";
 	}
 }
 

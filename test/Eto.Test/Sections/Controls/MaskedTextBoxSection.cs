@@ -20,6 +20,7 @@ namespace Eto.Test.Sections.Controls
 
 			var tb = new NumericMaskedTextBox<double> { Value = rememberValue ? lastValue : 123.456 };
 			tb.ValueChanged += (sender, e) => lastValue = tb.Value;
+			LogValueChanged(tb);
 
 			var l = new Label();
 			l.TextBinding.Bind(Binding.Property(tb, c => c.Value).Convert(r => "Value: " + Convert.ToString(r)));
@@ -35,7 +36,7 @@ namespace Eto.Test.Sections.Controls
 
 			BeginGroup("FixedMaskedTextProvider", padding: 10);
 			AddAutoSized(new MaskedTextBox(new FixedMaskedTextProvider("(999) 000-0000")) { ShowPromptMode = ShowPromptMode.OnFocus, PlaceholderText = "(123) 456-7890" });
-			AddAutoSized(new MaskedTextBox<DateTime>(new FixedMaskedTextProvider<DateTime>("&&/90/0000") { ConvertToValue = DateTime.Parse }));
+			AddAutoSized(LogValueChanged(new MaskedTextBox<DateTime>(new FixedMaskedTextProvider<DateTime>("&&/90/0000") { ConvertToValue = DateTime.Parse })));
 			AddAutoSized(new MaskedTextBox(new FixedMaskedTextProvider(">L0L 0L0")));
 			AddAutoSized(new MaskedTextBox { InsertMode = InsertKeyMode.Toggle });
 			EndGroup();
@@ -48,6 +49,7 @@ namespace Eto.Test.Sections.Controls
 			EndGroup();
 
 			AddSpace();
+			
 		}
 
 		void Set(Action<MaskedTextBox> action)
@@ -56,7 +58,13 @@ namespace Eto.Test.Sections.Controls
 			{
 				action(child);
 			}
-
+		}
+		
+		MaskedTextBox<T> LogValueChanged<T>(MaskedTextBox<T> maskedTextBox)
+		{
+			maskedTextBox.ValueChanged += (sender, e) => Log.Write(sender, $"Value changed: {maskedTextBox.Value}");
+			maskedTextBox.TextChanged += (sender, e) => Log.Write(sender, $"Text changed: {maskedTextBox.Text}");
+			return maskedTextBox;
 		}
 	}
 }

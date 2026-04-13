@@ -456,30 +456,16 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public TextAlignment TextAlignment
 		{
-			get
-			{
-				return Control.Alignment < 0.5f ? TextAlignment.Left
+			get => Control.Alignment < 0.5f ? TextAlignment.Left
 						  : Control.Alignment > 0.5f ? TextAlignment.Right
 						  : TextAlignment.Center;
-			}
-			set
+			set => Control.Alignment = value switch
 			{
-				switch (value)
-				{
-					case TextAlignment.Left:
-						Control.Alignment = 0;
-						break;
-					case TextAlignment.Center:
-						Control.Alignment = 0.5f;
-						break;
-					case TextAlignment.Right:
-						Control.Alignment = 1;
-						break;
-					default:
-						throw new NotSupportedException();
-				}
-
-			}
+				TextAlignment.Left => 0,
+				TextAlignment.Center => 0.5f,
+				TextAlignment.Right => 1,
+				_ => throw new NotSupportedException(),
+			};
 		}
 
 		public override bool ShowBorder

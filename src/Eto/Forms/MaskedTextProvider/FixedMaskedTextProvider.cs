@@ -302,6 +302,12 @@ public class FixedMaskedTextProvider : IMaskedTextProvider
 		get { return handler.MaskFull; }
 	}
 
+	/// <inheritdoc/>
+	public virtual void CommitText()
+	{
+		handler.CommitText();
+	}
+
 	/// <summary>
 	/// Handler interface for implementations of the <see cref="FixedMaskedTextProvider"/>.
 	/// </summary>
