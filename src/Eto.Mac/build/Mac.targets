@@ -56,7 +56,7 @@
   </PropertyGroup>
 
   <!-- dotnet run should launch the .app on macOS -->
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform(OSX)) AND $(RunCommand) == ''">
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform(OSX)) AND $(RunCommand) == '' AND $(MacBuildBundle) == 'True'">
     <RunCommand>$(LauncherFileWithPath)</RunCommand>
     <RunArguments> $(RunArguments)</RunArguments> <!-- space is intentional so it doesn't get overridden -->
   </PropertyGroup>
