@@ -68,7 +68,10 @@ public class DefaultStyleProvider : IStyleProvider
 			else if (widget is IHandlerSource handlerSource && handlerSource.Handler is T handlerControl)
 				handler(handlerControl);
 		});
-		cascadingStyleMap.Clear();
+		lock (cascadingStyleMap)
+		{
+			cascadingStyleMap.Clear();
+		}
 	}
 
 	/// <summary>
@@ -76,53 +79,68 @@ public class DefaultStyleProvider : IStyleProvider
 	/// </summary>
 	public void Clear()
 	{
-		styleMap.Clear();
-		cascadingStyleMap.Clear();
+		lock (styleMap)
+		{
+			styleMap.Clear();
+		}
+		lock (cascadingStyleMap)
+		{
+			cascadingStyleMap.Clear();
+		}
 	}
 
 	IList<Action<object>> CreateStyleList(object style)
 	{
-		if (!styleMap.TryGetValue(style, out var styleHandlers))
+		lock (styleMap)
 		{
-			styleHandlers = new List<Action<object>>();
-			styleMap[style] = styleHandlers;
+			if (!styleMap.TryGetValue(style, out var styleHandlers))
+			{
+				styleHandlers = new List<Action<object>>();
+				styleMap[style] = styleHandlers;
+			}
+			return styleHandlers;
 		}
-		return styleHandlers;
 	}
 
 	IList<Action<object>> GetStyleList(object style)
 	{
-		return styleMap.TryGetValue(style, out var styleHandlers) ? styleHandlers : null;
+		lock (styleMap)
+		{
+			return styleMap.TryGetValue(style, out var styleHandlers) ? styleHandlers : null;
+		}
 	}
 
 	IList<Action<object>> GetCascadingStyleList(Type type)
 	{
 		if (type == null)
 			return null;
-		// get a cached list of cascading styles so we don't have to traverse each time
-		if (cascadingStyleMap.TryGetValue(type, out var childHandlers))
+		lock (cascadingStyleMap)
 		{
+			// get a cached list of cascading styles so we don't have to traverse each time
+			if (cascadingStyleMap.TryGetValue(type, out var childHandlers))
+			{
+				return childHandlers;
+			}
+
+			// don't have a cascading style set, so build one
+			// styles are applied in order from superclass styles down to subclass styles.
+			IEnumerable<Action<object>> styleHandlers = Enumerable.Empty<Action<object>>();
+			Type currentType = type;
+			do
+			{
+				if (styleMap.TryGetValue(currentType, out var typeStyles) && typeStyles != null)
+					styleHandlers = typeStyles.Concat(styleHandlers);
+			}
+			while ((currentType = currentType.BaseType) != null);
+
+			// create a cached list, but if its empty don't store it
+			childHandlers = styleHandlers.ToList();
+			if (childHandlers.Count == 0)
+				childHandlers = null;
+			cascadingStyleMap.Add(type, childHandlers);
+
 			return childHandlers;
 		}
-
-		// don't have a cascading style set, so build one
-		// styles are applied in order from superclass styles down to subclass styles.
-		IEnumerable<Action<object>> styleHandlers = Enumerable.Empty<Action<object>>();
-		Type currentType = type;
-		do
-		{
-			if (styleMap.TryGetValue(currentType, out var typeStyles) && typeStyles != null)
-				styleHandlers = typeStyles.Concat(styleHandlers);
-		}
-		while ((currentType = currentType.BaseType) != null);
-
-		// create a cached list, but if its empty don't store it
-		childHandlers = styleHandlers.ToList();
-		if (childHandlers.Count == 0)
-			childHandlers = null;
-		cascadingStyleMap.Add(type, childHandlers);
-
-		return childHandlers;
 	}
 
 	void ApplyStyles(object widget, string style)
