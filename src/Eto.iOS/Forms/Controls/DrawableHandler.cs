@@ -128,5 +128,13 @@ namespace Eto.iOS.Forms.Controls
 				}
 			}
 		}
+
+		public void CancelTextComposition()
+		{
+		}
+
+		public void CommitTextComposition()
+		{
+		}
 	}
 }

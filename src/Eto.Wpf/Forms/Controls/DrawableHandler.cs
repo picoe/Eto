@@ -9,6 +9,8 @@ namespace Eto.Wpf.Forms.Controls
 	where TWidget : Drawable
 	where TCallback : Drawable.ICallback
 	{
+		TextStore textStore;
+		bool usesTextStore;
 		bool tiled;
 		sw.FrameworkElement content;
 		Scrollable scrollable;
@@ -159,18 +161,22 @@ namespace Eto.Wpf.Forms.Controls
 			base.OnLoadComplete(e);
 
 			RegisterScrollable();
+			EnsureTextStore();
+			textStore?.Attach();
 		}
 
 		protected override void OnLogicalPixelSizeChanged()
 		{
 			if (Control.IsLoaded)
 				Invalidate(false);
+			NotifyTextStoreLayoutChanged();
 		}
 
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
 			UnRegisterScrollable();
+			DisposeTextStore();
 		}
 
 		protected override TControl CreateControl()
@@ -189,6 +195,8 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 
 			Control.Loaded += Control_Loaded;
+			Control.GotKeyboardFocus += Control_GotKeyboardFocus;
+			Control.LostKeyboardFocus += Control_LostKeyboardFocus;
 		}
 
 		public void Create() { }
@@ -203,12 +211,102 @@ namespace Eto.Wpf.Forms.Controls
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			UpdateTiles(true);
+			textStore?.Attach();
 			Control.Loaded -= Control_Loaded; // only perform once
+		}
+
+		void Control_GotKeyboardFocus(object sender, swi.KeyboardFocusChangedEventArgs e)
+		{
+			if (!CanFocus)
+				return;
+
+			EnsureTextStore();
+			textStore?.Attach();
+			textStore?.SetFocused(true);
+		}
+
+		void Control_LostKeyboardFocus(object sender, swi.KeyboardFocusChangedEventArgs e)
+		{
+			textStore?.SetFocused(false);
+		}
+
+		void EnsureTextStore()
+		{
+			if (!usesTextStore || !CanFocus || textStore != null)
+				return;
+
+			textStore = new TextStore(Control, HandleTextStoreCommit, HandleTextStoreComposition, GetInputMethodBounds);
+		}
+
+		void DisposeTextStore()
+		{
+			if (textStore == null)
+				return;
+
+			textStore.Dispose();
+			textStore = null;
+		}
+
+		void NotifyTextStoreLayoutChanged()
+		{
+			textStore?.NotifyLayoutChanged();
+		}
+
+		void HandleTextStoreCommit(string text)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			var args = new TextInputEventArgs(text);
+			Callback.OnTextInput(Widget, args);
+		}
+
+		void HandleTextStoreComposition(string text, bool isActive)
+		{
+			var args = new TextCompositionEventArgs(text, isActive);
+			Callback.OnTextComposition(Widget, args);
+			Invalidate(false);
+			NotifyTextStoreLayoutChanged();
+		}
+
+		RectangleF? GetInputMethodBounds()
+		{
+			var args = new TextInsertionBoundsEventArgs();
+			Callback.OnTextInsertionBoundsRequested(Widget, args);
+			return args.Bounds;
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Drawable.TextCompositionEvent:
+				case Drawable.TextInsertionBoundsRequestedEvent:
+					usesTextStore = true;
+					EnsureTextStore();
+					textStore?.Attach();
+					if (Control.IsKeyboardFocusWithin)
+						textStore?.SetFocused(true);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 
 		public virtual Graphics CreateGraphics()
 		{
 			throw new NotSupportedException();
+		}
+
+		public void CancelTextComposition()
+		{
+			textStore?.CancelComposition();
+		}
+
+		public void CommitTextComposition()
+		{
+			textStore?.CommitComposition();
 		}
 
 		void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
@@ -218,6 +316,7 @@ namespace Eto.Wpf.Forms.Controls
 			Invalidate(false);
 			content.Width = e.NewSize.Width;
 			content.Height = e.NewSize.Height;
+			NotifyTextStoreLayoutChanged();
 		}
 
 		void SetMaxTiles()
@@ -387,6 +486,7 @@ namespace Eto.Wpf.Forms.Controls
 				Invalidate(false);
 			}
 			UpdateTiles();
+			NotifyTextStoreLayoutChanged();
 		}
 
 		public override void Invalidate(bool invalidateChildren)

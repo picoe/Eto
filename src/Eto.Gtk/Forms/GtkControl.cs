@@ -706,6 +706,89 @@ namespace Eto.GtkSharp.Forms
 
 			Gtk.IMContext context;
 			bool commitHandled;
+			string lastCompositionText;
+			bool? lastCompositionActive;
+
+			bool HandlesDrawableComposition(GtkControl<TControl, TWidget, TCallback> handler)
+			{
+				if (!(handler.Widget is Drawable))
+					return false;
+
+				return handler.IsEventHandled(Drawable.TextCompositionEvent) || handler.IsEventHandled(Drawable.TextInsertionBoundsRequestedEvent);
+			}
+			
+			void UpdateDrawableInputMethodLocation(GtkControl<TControl, TWidget, TCallback> handler)
+			{
+				if (!HandlesDrawableComposition(handler))
+					return;
+
+				var drawable = handler.Widget as Drawable;
+				var callback = handler.Callback as Drawable.ICallback;
+				var window = handler.EventControl?.GetWindow();
+				if (drawable == null || callback == null || window == null)
+					return;
+
+				Context.ClientWindow = window;
+
+				var args = new TextInsertionBoundsEventArgs();
+				callback.OnTextInsertionBoundsRequested(drawable, args);
+				var bounds = args.Bounds ?? new RectangleF(0, 0, 1, Math.Max(1, handler.EventControl.Allocation.Height));
+				if (bounds.Width <= 0)
+					bounds.Width = 1;
+				if (bounds.Height <= 0)
+					bounds.Height = 1;
+
+				Context.CursorLocation = new Gdk.Rectangle(
+					(int)Math.Floor(bounds.X),
+					(int)Math.Floor(bounds.Y),
+					(int)Math.Ceiling(bounds.Width),
+					(int)Math.Ceiling(bounds.Height)
+				);
+			}
+
+			void NotifyDrawableTextComposition(GtkControl<TControl, TWidget, TCallback> handler, string text, bool isActive)
+			{
+				if (!(handler.Widget is Drawable drawable) || !(handler.Callback is Drawable.ICallback callback))
+					return;
+
+				text = text ?? string.Empty;
+				if (lastCompositionActive == isActive && string.Equals(lastCompositionText, text, StringComparison.Ordinal))
+					return;
+
+				lastCompositionText = text;
+				lastCompositionActive = isActive;
+
+				var args = new TextCompositionEventArgs(text, isActive);
+				callback.OnTextComposition(drawable, args);
+				UpdateDrawableInputMethodLocation(handler);
+			}
+
+			public void CancelDrawableTextComposition()
+			{
+				var handler = Handler;
+				if (handler == null || !HandlesDrawableComposition(handler) || context == null)
+					return;
+
+				context.Reset();
+				NotifyDrawableTextComposition(handler, string.Empty, false);
+			}
+
+			public void CommitDrawableTextComposition()
+			{
+				var handler = Handler;
+				if (handler == null || !HandlesDrawableComposition(handler) || context == null)
+					return;
+
+				context.GetPreeditString(out var text, out _, out _);
+				if (!string.IsNullOrEmpty(text))
+				{
+					var tia = new TextInputEventArgs(text);
+					handler.Callback.OnTextInput(handler.Widget, tia);
+				}
+
+				context.Reset();
+				NotifyDrawableTextComposition(handler, string.Empty, false);
+			}
 
 			Gtk.IMContext Context
 			{
@@ -713,7 +796,33 @@ namespace Eto.GtkSharp.Forms
 				{
 					if (context != null)
 						return context;
-					context = new Gtk.IMContextSimple();
+					context = new Gtk.IMMulticontext();
+					context.UsePreedit = true;
+					context.PreeditStart += (o, args) =>
+					{
+						var handler = Handler;
+						if (handler == null || !HandlesDrawableComposition(handler))
+							return;
+
+						UpdateDrawableInputMethodLocation(handler);
+					};
+					context.PreeditChanged += (o, args) =>
+					{
+						var handler = Handler;
+						if (handler == null || !HandlesDrawableComposition(handler))
+							return;
+
+						context.GetPreeditString(out var text, out _, out _);
+						NotifyDrawableTextComposition(handler, text, !string.IsNullOrEmpty(text));
+					};
+					context.PreeditEnd += (o, args) =>
+					{
+						var handler = Handler;
+						if (handler == null || !HandlesDrawableComposition(handler))
+							return;
+
+						NotifyDrawableTextComposition(handler, string.Empty, false);
+					};
 
 					context.Commit += (o, args) =>
 					{
@@ -724,8 +833,16 @@ namespace Eto.GtkSharp.Forms
 						var tia = new TextInputEventArgs(args.Str);
 						handler.Callback.OnTextInput(handler.Widget, tia);
 						commitHandled = tia.Cancel;
+						UpdateDrawableInputMethodLocation(handler);
 						context.Reset();
 					};
+					var currentHandler = Handler;
+					if (currentHandler != null)
+					{
+						UpdateDrawableInputMethodLocation(currentHandler);
+						if (currentHandler.EventControl?.HasFocus == true)
+							context.FocusIn();
+					}
 					return context;
 				}
 			}
@@ -747,6 +864,7 @@ namespace Eto.GtkSharp.Forms
 				if (e == null || !e.Handled)
 				{
 					commitHandled = false;
+					UpdateDrawableInputMethodLocation(handler);
 					if (Context.FilterKeypress(args.Event))
 					{
 						args.RetVal = commitHandled;
@@ -772,6 +890,15 @@ namespace Eto.GtkSharp.Forms
 				var handler = Handler;
 				if (handler == null)
 					return;
+
+				var shouldFocusInputContext = handler.IsEventHandled(Eto.Forms.Control.TextInputEvent)
+					|| HandlesDrawableComposition(handler);
+				if (shouldFocusInputContext)
+				{
+					var inputContext = Context;
+					UpdateDrawableInputMethodLocation(handler);
+					inputContext.FocusIn();
+				}
 				Application.Instance.AsyncInvoke(() => handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty));
 			}
 
@@ -780,7 +907,17 @@ namespace Eto.GtkSharp.Forms
 				// Handler can be null here after window is closed
 				var handler = Handler;
 				if (handler != null)
+				{
+					if (context != null)
+					{
+						lastCompositionText = null;
+						lastCompositionActive = null;
+						context.FocusOut();
+						if (HandlesDrawableComposition(handler))
+							NotifyDrawableTextComposition(handler, string.Empty, false);
+					}
 					handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
+				}
 			}
 
 			public void HandleControlRealized(object sender, EventArgs e)

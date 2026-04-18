@@ -103,6 +103,14 @@ namespace Eto.WinForms.Forms.Controls
 			return new Graphics(new GraphicsHandler(Control.CreateGraphics(), true));
 		}
 
+		public virtual void CancelTextComposition()
+		{
+		}
+
+		public virtual void CommitTextComposition()
+		{
+		}
+
 		public bool CanFocus
 		{
 			get { return Control.CanFocusMe; }

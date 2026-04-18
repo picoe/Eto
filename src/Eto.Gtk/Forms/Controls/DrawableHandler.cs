@@ -38,6 +38,21 @@ namespace Eto.GtkSharp.Forms.Controls
 			Create();
 		}
 
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Drawable.TextCompositionEvent:
+				case Drawable.TextInsertionBoundsRequestedEvent:
+					HandleEvent(Eto.Forms.Control.TextInputEvent);
+					HandleEvent(Eto.Forms.Control.GotFocusEvent);
+					HandleEvent(Eto.Forms.Control.LostFocusEvent);
+					return;
+			}
+
+			base.AttachEvent(id);
+		}
+
 		public bool CanFocus
 		{
 			get { return Control.CanFocus; }
@@ -114,6 +129,16 @@ namespace Eto.GtkSharp.Forms.Controls
 		public Graphics CreateGraphics()
 		{
 			return new Graphics(new GraphicsHandler(Control, Control.GetWindow()));
+		}
+
+		public void CancelTextComposition()
+		{
+			Connector.CancelDrawableTextComposition();
+		}
+
+		public void CommitTextComposition()
+		{
+			Connector.CommitDrawableTextComposition();
 		}
 
 		protected override void SetContainerContent(Gtk.Widget content)
