@@ -43,12 +43,64 @@ public class PaintEventArgs : EventArgs
 [Handler(typeof(Drawable.IHandler))]
 public class Drawable : Panel
 {
-	new IHandler Handler { get { return (IHandler)base.Handler; } }
+	new IHandler Handler => (IHandler)base.Handler;
+
+	static Drawable()
+	{
+		EventLookup.Register<Drawable>(d => d.OnTextComposition(null), TextCompositionEvent);
+		EventLookup.Register<Drawable>(d => d.OnTextInsertionBoundsRequested(null), TextInsertionBoundsRequestedEvent);
+	}
 
 	/// <summary>
 	/// Event to handle custom painting on the control
 	/// </summary>
 	public event EventHandler<PaintEventArgs> Paint;
+
+
+	/// <summary>
+	/// Event identifier for handlers when attaching the <see cref="TextComposition"/> event.
+	/// </summary>
+	public const string TextCompositionEvent = "Drawable.TextComposition";
+
+	/// <summary>
+	/// Event identifier for handlers when attaching the <see cref="TextInsertionBoundsRequested"/> event.
+	/// </summary>
+	public const string TextInsertionBoundsRequestedEvent = "Drawable.TextInsertionBoundsRequested";
+
+	/// <summary>
+	/// Event raised when live text composition changes, such as inline composition preview text.
+	/// </summary>
+	/// <remarks>
+	/// This event is raised when composing text with an input method editor (IME).  
+	/// The event will be raised whenever the composition text changes, or when the composition becomes active or inactive.
+	/// 
+	/// The composition text is typically shown inline at the caret position, and is used to show the current 
+	/// composition state of the IME, such as when entering complex characters in East Asian languages.
+	/// The <see cref="TextInsertionBoundsRequested"/> event is used to specify where the composition text interface
+	/// should be displayed.
+	/// 
+	/// The composition text is not committed text, and should not be treated as such.  The completed text will 
+	/// be provided in the <see cref="Control.TextInput"/> event when the composition is committed.
+	/// </remarks>
+	public event EventHandler<TextCompositionEventArgs> TextComposition
+	{
+		add => Properties.AddHandlerEvent(TextCompositionEvent, value);
+		remove => Properties.RemoveEvent(TextCompositionEvent, value);
+	}
+
+	/// <summary>
+	/// Event raised when the platform needs the current text insertion bounds for text UI placement.
+	/// </summary>
+	/// <remarks>
+	/// Handle this event to provide the current caret or insertion rectangle in drawable client coordinates.
+	/// Platforms can query this whenever they need to position text-related UI such as composition, candidate,
+	/// or emoji panels.
+	/// </remarks>
+	public event EventHandler<TextInsertionBoundsEventArgs> TextInsertionBoundsRequested
+	{
+		add => Properties.AddHandlerEvent(TextInsertionBoundsRequestedEvent, value);
+		remove => Properties.RemoveEvent(TextInsertionBoundsRequestedEvent, value);
+	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Eto.Forms.Drawable"/> class.
@@ -94,6 +146,24 @@ public class Drawable : Panel
 	{
 		if (Paint != null)
 			Paint(this, e);
+	}
+
+	/// <summary>
+	/// Raises the <see cref="TextComposition"/> event.
+	/// </summary>
+	/// <param name="e">Composition event arguments.</param>
+	protected virtual void OnTextComposition(TextCompositionEventArgs e)
+	{
+		Properties.TriggerEvent(TextCompositionEvent, this, e);
+	}
+
+	/// <summary>
+	/// Raises the <see cref="TextInsertionBoundsRequested"/> event.
+	/// </summary>
+	/// <param name="e">Text insertion bounds event arguments.</param>
+	protected virtual void OnTextInsertionBoundsRequested(TextInsertionBoundsEventArgs e)
+	{
+		Properties.TriggerEvent(TextInsertionBoundsRequestedEvent, this, e);
 	}
 
 	/// <summary>
@@ -145,6 +215,30 @@ public class Drawable : Panel
 		Handler.Update(region);
 	}
 
+	/// <summary>
+	/// Cancels any active text composition associated with this drawable.
+	/// </summary>
+	/// <remarks>
+	/// This can be used when the insertion point changes while an input method editor (IME) composition
+	/// is active, such as when clicking to move the caret.
+	/// </remarks>
+	public void CancelTextComposition()
+	{
+		Handler.CancelTextComposition();
+	}
+
+	/// <summary>
+	/// Commits any active text composition associated with this drawable.
+	/// </summary>
+	/// <remarks>
+	/// This finalizes the current input method editor (IME) composition and raises the resulting text
+	/// through the normal <see cref="Control.TextInput"/> flow.
+	/// </remarks>
+	public void CommitTextComposition()
+	{
+		Handler.CommitTextComposition();
+	}
+
 	static readonly object callback = new Callback();
 	/// <summary>
 	/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
@@ -161,6 +255,16 @@ public class Drawable : Panel
 		/// Raises the paint event.
 		/// </summary>
 		void OnPaint(Drawable widget, PaintEventArgs e);
+
+		/// <summary>
+		/// Raises the live text composition event.
+		/// </summary>
+		void OnTextComposition(Drawable widget, TextCompositionEventArgs e);
+
+		/// <summary>
+		/// Raises the text insertion bounds requested event.
+		/// </summary>
+		void OnTextInsertionBoundsRequested(Drawable widget, TextInsertionBoundsEventArgs e);
 	}
 
 	/// <summary>
@@ -175,6 +279,24 @@ public class Drawable : Panel
 		{
 			using (widget.Platform.Context)
 				widget.OnPaint(e);
+		}
+
+		/// <summary>
+		/// Raises the live text composition event.
+		/// </summary>
+		public void OnTextComposition(Drawable widget, TextCompositionEventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnTextComposition(e);
+		}
+
+		/// <summary>
+		/// Raises the text insertion bounds requested event.
+		/// </summary>
+		public void OnTextInsertionBoundsRequested(Drawable widget, TextInsertionBoundsEventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnTextInsertionBoundsRequested(e);
 		}
 	}
 
@@ -242,6 +364,17 @@ public class Drawable : Panel
 		/// </remarks>
 		/// <returns>A new graphics context that can be used to draw directly onto the control</returns>
 		Graphics CreateGraphics();
+
+		/// <summary>
+		/// Cancels any active text composition associated with this drawable.
+		/// </summary>
+		void CancelTextComposition();
+
+		/// <summary>
+		/// Commits any active text composition associated with this drawable.
+		/// </summary>
+		void CommitTextComposition();
+
 	}
 
 	#endregion

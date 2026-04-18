@@ -473,6 +473,10 @@ namespace Eto.Mac.Forms
 			{
 				handler.TextInputCancelled = false;
 				var text = (string)Messaging.GetNSObject<NSString>(textPtr);
+				if (handler is IMacTextInputHandler textInputHandler)
+				{
+					textInputHandler.FinishComposition();
+				}
 				var args = new TextInputEventArgs(text);
 				handler.Callback.OnTextInput(handler.Widget, args);
 				if (args.Cancel)
@@ -1860,4 +1864,3 @@ namespace Eto.Mac.Forms
 #endif
 	}
 }
-

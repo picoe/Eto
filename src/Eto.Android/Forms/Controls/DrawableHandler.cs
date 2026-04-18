@@ -286,6 +286,14 @@ namespace Eto.Android.Forms.Controls
 			return new Graphics(new GraphicsHandler(new ag.Canvas()));
 		}
 
+		public void CancelTextComposition()
+		{
+		}
+
+		public void CommitTextComposition()
+		{
+		}
+
 		public Control Content { get; set; }
 
 		public Padding Padding

@@ -49,6 +49,11 @@ namespace Eto.Test.Sections.Controls
 						)
 					)),
 
+					new TableLayout(
+						"IME Input",
+						InputMethodDrawable()
+					),
+
 					(Platform.SupportedFeatures & PlatformFeatures.DrawableWithTransparentContent) == 0 ?
 					new TableRow(
 						"(Transparent content on drawable not supported on this platform)"
@@ -277,6 +282,121 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+		Control InputMethodDrawable()
+		{
+			const int padding = 12;
+			var text = string.Empty;
+			var compositionText = string.Empty;
+			var compositionActive = false;
+			var drawable = new Drawable
+			{
+				CanFocus = true,
+				Size = new Size(420, 60),
+				BackgroundColor = Colors.White
+			};
+			var font = SystemFonts.Default();
+
+			RectangleF getCaretRect(float pointsToPixels = 1f, bool forInputMethod = false)
+			{
+				var displayText = text;
+				if (!forInputMethod || Platform.IsGtk)
+					displayText += compositionText;
+					
+				var size = font.MeasureString(displayText);
+				return new RectangleF(
+					padding + size.Width,
+					padding,
+					2,
+					font.LineHeight * pointsToPixels
+				);
+			}
+
+			void updateCaret()
+			{
+				drawable.Invalidate();
+			}
+
+			drawable.Paint += (sender, pe) =>
+			{
+				var size = font.MeasureString(text);
+				size.Height = font.LineHeight * pe.Graphics.PixelsPerPoint;
+				pe.Graphics.Clear(Colors.White);
+				pe.Graphics.DrawRectangle(Colors.DarkGray, 0, 0, drawable.Width - 1, drawable.Height - 1);
+				pe.Graphics.DrawText(font, Colors.Black, padding, padding, text);
+				if (compositionActive && !string.IsNullOrEmpty(compositionText))
+				{
+					var compositionX = padding + size.Width;
+					pe.Graphics.DrawText(font, Colors.DarkSlateBlue, compositionX, padding, compositionText);
+					var compositionWidth = Math.Max(1, font.MeasureString(compositionText).Width);
+					var underlineY = padding + size.Height;
+					pe.Graphics.DrawLine(Colors.DarkSlateBlue, compositionX, underlineY, compositionX + compositionWidth, underlineY);
+				}
+				if (drawable.HasFocus)
+				{
+					var caret = getCaretRect(pe.Graphics.PixelsPerPoint);
+					pe.Graphics.FillRectangle(Colors.DarkBlue, caret);
+				}
+			};
+			drawable.GotFocus += (sender, e) => drawable.Invalidate();
+			drawable.LostFocus += (sender, e) => drawable.Invalidate();
+			drawable.MouseDown += (sender, e) =>
+			{
+				if (e.Buttons == MouseButtons.Primary)
+					drawable.CommitTextComposition();
+				else
+					drawable.CancelTextComposition();
+				drawable.Focus();
+				e.Handled = true;
+			};
+			drawable.TextInput += (sender, e) =>
+			{
+				if (!string.IsNullOrEmpty(e.Text))
+				{
+					text += e.Text;
+					compositionText = string.Empty;
+					compositionActive = false;
+					Log.Write(sender, $"TextInput: '{e.Text}'");
+					updateCaret();
+				}
+				e.Cancel = true;
+			};
+			drawable.TextComposition += (sender, e) =>
+			{
+				compositionText = e.Text ?? string.Empty;
+				compositionActive = e.IsActive && !string.IsNullOrEmpty(compositionText);
+				Log.Write(sender, $"TextComposition: '{compositionText}', Active={e.IsActive}");
+				updateCaret();
+				e.Handled = true;
+			};
+			drawable.TextInsertionBoundsRequested += (sender, e) => e.Bounds = getCaretRect(forInputMethod: true);
+			drawable.KeyDown += (sender, e) =>
+			{
+				if (e.KeyData == Keys.Backspace)
+				{
+					if (text.Length > 0)
+					{
+						text = text.Substring(0, text.Length - 1);
+						updateCaret();
+					}
+					e.Handled = true;
+				}
+				Log.Write(sender, $"KeyDown: {e.KeyData}");
+			};
+
+			updateCaret();
+
+			return new StackLayout
+			{
+				HorizontalContentAlignment = HorizontalAlignment.Stretch,
+				Spacing = 6,
+				Items =
+				{
+					"Click inside the drawable and type with an IME. The candidate/composition UI should follow the caret.",
+					drawable
+				}
+			};
+		}
+
 		void LogEvents(Drawable control, string name)
 		{
 			control.Paint += delegate(object sender, PaintEventArgs pe)
@@ -286,4 +406,3 @@ namespace Eto.Test.Sections.Controls
 		}
 	}
 }
-
