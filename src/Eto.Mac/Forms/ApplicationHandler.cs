@@ -5,7 +5,8 @@ namespace Eto.Mac.Forms
 {
 	public class ApplicationHandler : MacObject<NSApplication, Application, Application.ICallback>, Application.IHandler
 	{
-		bool attached;
+		bool _attached;
+		bool? _activateOnStartup;
 
 		internal static bool QueueResizing { get; set; }
 
@@ -14,6 +15,12 @@ namespace Eto.Mac.Forms
 		public bool AddFullScreenMenuItem { get; set; }
 
 		public bool AllowClosingMainForm { get; set; }
+
+		public bool ActivateOnStartup
+		{
+			get { return _activateOnStartup ?? !_attached && Debugger.IsAttached; }
+			set { _activateOnStartup = value; }
+		}
 
 		// pointer to the initial menu so we know whether we want to keep it or not for the main form
 		internal IntPtr InitialMenu { get; set; }
@@ -178,7 +185,7 @@ namespace Eto.Mac.Forms
 
 		public void Attach(object context)
 		{
-			attached = true;
+			_attached = true;
 		}
 
 		public void OnMainFormChanged()
@@ -187,7 +194,7 @@ namespace Eto.Mac.Forms
 
 		public void Run()
 		{
-			if (!attached)
+			if (!_attached)
 			{
 				if (EnableNativeCrashReport)
 					CrashReporter.Attach();
@@ -214,6 +221,11 @@ namespace Eto.Mac.Forms
 		public void Initialize(NSApplicationDelegate appdelegate)
 		{
 			AppDelegate = appdelegate;
+			if (ActivateOnStartup)
+			{
+				// if we're debugging, make the app active when it starts
+				Control.Activate();
+			}
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 		}
 
