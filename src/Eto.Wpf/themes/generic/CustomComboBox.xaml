@@ -1,0 +1,147 @@
+<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+	<!--
+		Default (classic / "none" theme) brushes for the custom combo box.
+		These keys are overridden in themes/fluent.xaml so the same template adapts to the Fluent theme,
+		the same way EtoBorderBezelBrush is overridden.
+	-->
+	<SolidColorBrush x:Key="EtoCustomComboBoxBackground" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+	<SolidColorBrush x:Key="EtoCustomComboBoxGlyphBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+	<SolidColorBrush x:Key="EtoCustomComboBoxFocusBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+	<SolidColorBrush x:Key="EtoCustomComboBoxButtonHoverBrush" Color="#22000000" />
+	<CornerRadius x:Key="EtoCustomComboBoxCornerRadius">0</CornerRadius>
+
+	<Style x:Key="EtoCustomComboBoxStyle" TargetType="{x:Type efc:EtoCustomComboBox}">
+		<Setter Property="Background" Value="{DynamicResource EtoCustomComboBoxBackground}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource EtoBorderBezelBrush}" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Foreground" Value="{DynamicResource EtoCustomComboBoxGlyphBrush}" />
+		<Setter Property="SnapsToDevicePixels" Value="True" />
+		<Setter Property="VerticalContentAlignment" Value="Stretch" />
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="Padding" Value="2" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type efc:EtoCustomComboBox}">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+
+						<Border
+							x:Name="RootBorder"
+							Grid.ColumnSpan="2"
+							Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							CornerRadius="{DynamicResource EtoCustomComboBoxCornerRadius}"
+							SnapsToDevicePixels="True" />
+
+						<ContentPresenter
+							Grid.Column="0"
+							Margin="{TemplateBinding Padding}"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							Content="{TemplateBinding EditContent}"
+							SnapsToDevicePixels="True">
+							<ContentPresenter.Resources>
+								<SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
+								<SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="Transparent" />
+								<SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
+							</ContentPresenter.Resources>
+						</ContentPresenter>
+
+						<ToggleButton
+							x:Name="PART_Toggle"
+							Grid.Column="1"
+							Margin="2"
+							VerticalAlignment="Stretch"
+							ClickMode="Press"
+							Focusable="False"
+							IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+							IsTabStop="False">
+							<ToggleButton.Template>
+								<ControlTemplate TargetType="{x:Type ToggleButton}">
+									<Border
+										x:Name="ToggleBackground"
+										Padding="7,0"
+										Background="Transparent"
+										CornerRadius="{DynamicResource EtoCustomComboBoxCornerRadius}"
+										SnapsToDevicePixels="True">
+										<Path
+											x:Name="Chevron"
+											Width="10"
+											Height="10"
+											HorizontalAlignment="Center"
+											VerticalAlignment="Center"
+											Data="M 1 1 L 5 5 L 9 1"
+											SnapsToDevicePixels="True"
+											Stretch="Uniform"
+											Stroke="{DynamicResource EtoCustomComboBoxGlyphBrush}"
+											StrokeEndLineCap="Round"
+											StrokeStartLineCap="Round"
+											StrokeThickness="1.4" />
+									</Border>
+									<ControlTemplate.Triggers>
+										<Trigger Property="IsMouseOver" Value="True">
+											<Setter TargetName="ToggleBackground" Property="Background" Value="{DynamicResource EtoCustomComboBoxButtonHoverBrush}" />
+										</Trigger>
+									</ControlTemplate.Triggers>
+								</ControlTemplate>
+							</ToggleButton.Template>
+						</ToggleButton>
+
+						<Popup
+							x:Name="PART_Popup"
+							Grid.ColumnSpan="2"
+							AllowsTransparency="True"
+							IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+							Placement="Bottom"
+							PopupAnimation="Slide"
+							StaysOpen="False">
+							<Border
+								Margin="0"
+								SnapsToDevicePixels="True">
+								<Border.Effect>
+									<DropShadowEffect
+										BlurRadius="8"
+										Opacity="0.35"
+										ShadowDepth="2" />
+								</Border.Effect>
+								<ContentPresenter Content="{TemplateBinding DropDownContent}" />
+							</Border>
+						</Popup>
+					</Grid>
+
+					<ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource TextControlBackgroundFocused}" />
+                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="{DynamicResource TextControlBorderBrushFocused}" />
+                        </Trigger>
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter TargetName="RootBorder" Property="Opacity" Value="0.6" />
+						</Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsKeyboardFocusWithin" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource TextControlBackgroundPointerOver}" />
+                        </MultiTrigger>
+					</ControlTemplate.Triggers>
+					
+					<ControlTemplate.Resources>
+					</ControlTemplate.Resources>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<Style TargetType="{x:Type efc:EtoCustomComboBox}" BasedOn="{StaticResource EtoCustomComboBoxStyle}" />
+
+</ResourceDictionary>

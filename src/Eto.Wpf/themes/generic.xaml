@@ -13,6 +13,7 @@
         <e:AssemblyAbsoluteResourceDictionary Path="themes/generic/TreeToggleButton.xaml" />
         <e:AssemblyAbsoluteResourceDictionary Path="themes/generic/ButtonSpinner.xaml" />
 		<e:AssemblyAbsoluteResourceDictionary Path="themes/generic/ListBox.xaml" />
+		<e:AssemblyAbsoluteResourceDictionary Path="themes/generic/CustomComboBox.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 	<SolidColorBrush x:Key="EtoBorderBezelBrush" Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}" />
@@ -80,6 +81,5 @@
 		<Setter Property="Padding" Value="4,2" />
 		<Setter Property="VerticalContentAlignment" Value="Center" />
 	</Style>
-
 
 </ResourceDictionary>

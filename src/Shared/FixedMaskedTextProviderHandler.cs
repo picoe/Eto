@@ -6,6 +6,8 @@
 
 		public void Create(string mask, CultureInfo culture, bool allowPromptAsInput, bool restrictToAscii)
 		{
+			mask = mask.Replace("\u00A0", " "); // non-breaking space causes issues with the provider, so replace with regular space
+			mask = mask.Replace("\u202F", " "); // narrow non-breaking space causes issues with the provider, so remove it
 			Provider = new MaskedTextProvider(mask, culture, allowPromptAsInput, '_', (char)0, restrictToAscii);
 		}
 
