@@ -35,15 +35,22 @@ namespace Eto.Test.UnitTests
 
 				var result = Application.Instance.Invoke(() =>
 				{
+					var uiSynchronizationContext = SynchronizationContext.Current;
 					try
 					{
 						context.EstablishExecutionEnvironment();
+						SynchronizationContext.SetSynchronizationContext(
+							SafeSynchronizationContext.Create(uiSynchronizationContext, context));
 						return innerCommand.Execute(context);
 					}
 					catch (Exception ex)
 					{
 						exception = ex;
 						return null;
+					}
+					finally
+					{
+						SynchronizationContext.SetSynchronizationContext(uiSynchronizationContext);
 					}
 				});
 
@@ -57,12 +64,12 @@ namespace Eto.Test.UnitTests
 		}
 	}
 
-    [SetUpFixture]
-    public class EtoTestSetup
-    {
+	[SetUpFixture]
+	public class EtoTestSetup
+	{
 		static bool _initialized;
 		static bool _appWasCreated;
-		
+
 		/// <summary>
 		/// Timeout for application initialization
 		/// </summary>
@@ -106,11 +113,11 @@ namespace Eto.Test.UnitTests
 						var testPlatformAssembly = $"{names[0]}.Test.{names[1]}";
 						var platformTypeName = platformType.Substring(0, platformType.IndexOf(','));
 						var platformDir = new DirectoryInfo(Path.Combine(dir.FullName, "test", testPlatformAssembly, "Debug"));
-						#if NET
+#if NET
 						platformDir = platformDir.EnumerateDirectories().FirstOrDefault(r => !r.Name.StartsWith("net4"));
-						#else
+#else
 						platformDir = platformDir.EnumerateDirectories().FirstOrDefault(r => r.Name.StartsWith("net4"));
-						#endif
+#endif
 						var platformPath = Path.Combine(platformDir.FullName, $"{platformAssembly}.dll");
 						if (File.Exists(platformPath))
 						{
@@ -120,7 +127,7 @@ namespace Eto.Test.UnitTests
 								platform = Activator.CreateInstance(type) as Platform;
 						}
 					}
-					
+
 				}
 #endif
 				Platform.Initialize(platform ?? Platform.Detect);
@@ -171,16 +178,16 @@ namespace Eto.Test.UnitTests
 			}
 			_initialized = true;
 		}
-		
-        [OneTimeSetUp]
-        public void GlobalSetup()
-        {
-			Initialize();
-        }
 
-        [OneTimeTearDown]
-        public void GlobalTeardown()
-        {
+		[OneTimeSetUp]
+		public void GlobalSetup()
+		{
+			Initialize();
+		}
+
+		[OneTimeTearDown]
+		public void GlobalTeardown()
+		{
 			if (!_appWasCreated)
 				return;
 			Application.Instance?.AsyncInvoke(() =>
@@ -209,7 +216,7 @@ namespace Eto.Test.UnitTests
 		/// Default timeout for form operations
 		/// </summary>
 		protected const int DefaultTimeout = 4000;
-		
+
 
 		static Application Application
 		{
@@ -235,15 +242,18 @@ namespace Eto.Test.UnitTests
 			var application = Application;
 			Exception exception = null;
 			var context = TestExecutionContext.CurrentContext;
-			
+
 			void finished() => ev.Set();
-			
+
 			void run()
 			{
 				evStart.Set();
+				var uiSynchronizationContext = SynchronizationContext.Current;
 				try
 				{
 					context.EstablishExecutionEnvironment();
+					SynchronizationContext.SetSynchronizationContext(
+						SafeSynchronizationContext.Create(uiSynchronizationContext, context));
 					test(application, finished);
 				}
 				catch (Exception ex)
@@ -251,13 +261,17 @@ namespace Eto.Test.UnitTests
 					exception = ex;
 					ev.Set();
 				}
+				finally
+				{
+					SynchronizationContext.SetSynchronizationContext(uiSynchronizationContext);
+				}
 			}
 
 			if (application != null)
 				application.AsyncInvoke(run);
 			else
 				run();
-				
+
 			if (!evStart.WaitOne(DefaultTimeout))
 				Assert.Fail("Could not start test in time");
 
@@ -342,7 +356,7 @@ namespace Eto.Test.UnitTests
 		}
 
 		public static void Async(Func<Task> test) => Async(DefaultTimeout, test);
-		
+
 		public static void Async(int timeout, Func<Task> test)
 		{
 			Exception exception = null;
@@ -451,7 +465,7 @@ namespace Eto.Test.UnitTests
 						passButton.Click += (sender, e) => form.Close();
 						focusControl = passButton;
 						row.Cells.Add(passButton);
-						
+
 						form.KeyDown += (sender, e) =>
 						{
 							if (e.KeyData == Keys.Enter)
@@ -618,7 +632,7 @@ namespace Eto.Test.UnitTests
 				timeout
 			);
 		}
-		
+
 		/// <summary>
 		/// Test operations on a form once it is shown
 		/// </summary>
@@ -891,7 +905,7 @@ namespace Eto.Test.UnitTests
 					numericStepper.Value = 100;
 				else if (control is TabControl tabControl)
 				{
-					tabControl.Pages.Add(new TabPage { Text = "Tab 1", Content = new Panel { Size = new Size(100, 100), Content = "Hello" }  });
+					tabControl.Pages.Add(new TabPage { Text = "Tab 1", Content = new Panel { Size = new Size(100, 100), Content = "Hello" } });
 					tabControl.Pages.Add(new TabPage { Text = "Tab 2" });
 					tabControl.Pages.Add(new TabPage { Text = "Tab 3" });
 				}

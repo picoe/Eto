@@ -343,6 +343,23 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		internal void EnsureActivated(bool showInTaskbar, bool showActivated, Icon icon)
+		{
+			if (showInTaskbar && NSApplication.SharedApplication.ActivationPolicy == NSApplicationActivationPolicy.Prohibited)
+			{
+				// use the window icon as the app icon if the app is not in the dock yet
+				if (icon != null)
+					NSApplication.SharedApplication.ApplicationIconImage = icon.ToNS();
+				
+				// ensure the dock icon is visible (so we can get a menu, etc)
+				NSApplication.SharedApplication.ActivationPolicy = NSApplicationActivationPolicy.Regular;
+
+				// make the application active so the window is shown in front of other apps
+				if (showActivated)
+					NSApplication.SharedApplication.Activate();
+			}
+		}
+
 		public Keys CommonModifier => Keys.Application;
 
 		public Keys AlternateModifier => Keys.Alt;

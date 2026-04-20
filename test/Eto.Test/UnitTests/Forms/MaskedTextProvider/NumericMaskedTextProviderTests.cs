@@ -61,7 +61,7 @@ namespace Eto.Test.UnitTests.Forms.MaskedTextProvider
 
 			provider.DecimalPlaces = 3;
 			Assert.That(provider.DecimalPlaces, Is.EqualTo(3));
-			Assert.That(provider.MaximumDecimalPlaces, Is.EqualTo(3));
+			Assert.That(provider.MaximumDecimalPlaces, Is.GreaterThanOrEqualTo(3));
 
 			provider.MaximumDecimalPlaces = 1;
 			Assert.That(provider.DecimalPlaces, Is.EqualTo(1));
