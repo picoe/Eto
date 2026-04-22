@@ -242,6 +242,9 @@ namespace Eto.Mac.Forms.Controls
 			isComposing = true;
 			var args = new TextCompositionEventArgs(markedText, true);
 			Callback.OnTextComposition(Widget, args);
+			if (this is IMacViewHandler handler)
+				handler.TextInputCancelled |= args.Handled;
+
 			Invalidate(false);
 		}
 
