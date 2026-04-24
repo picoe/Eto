@@ -70,9 +70,6 @@ namespace Eto.Mac.Forms.Cells
 				base.DrawRect(dirtyRect);
 			}
 
-			static Color AlternateSelectedControlText = NSColor.AlternateSelectedControlText.ToEto();
-			static Color ControlText = NSColor.ControlText.ToEto();
-
 			public override NSBackgroundStyle BackgroundStyle
 			{
 				get { return base.BackgroundStyle; }
@@ -80,9 +77,9 @@ namespace Eto.Mac.Forms.Cells
 				{
 					base.BackgroundStyle = value;
 					if (value == NSBackgroundStyle.Dark)
-						Args.SetTextColor(AlternateSelectedControlText);
+						Args.SetTextColor(SystemColors.HighlightText);
 					else
-						Args.SetTextColor(ControlText);
+						Args.SetTextColor(SystemColors.ControlText);
 				}
 			}
 
