@@ -63,6 +63,7 @@
     <ProjectReference Include="$(LocalEtoPath)\src\Eto\Eto.csproj" />
     
     <ProjectReference Include="$(LocalEtoPath)\src\Eto.Mac\Eto.Mac64.csproj" Condition="$(BuildPlatform) == 'Mac64'" />
+    <ProjectReference Include="$(LocalEtoPath)\lib\monomac\src\MonoMac.csproj" Condition="$(BuildPlatform) == 'Mac64'" />
     <ProjectReference Include="$(LocalEtoPath)\src\Eto.Mac\Eto.macOS.csproj" Condition="$(BuildPlatform) == 'macOS'" />
     <ProjectReference Include="$(LocalEtoPath)\src\Eto.Wpf\Eto.Wpf.csproj" Condition="$(BuildPlatform) == 'Wpf'" />
     <ProjectReference Include="$(LocalEtoPath)\src\Eto.WinForms\Eto.WinForms.csproj" Condition="$(BuildPlatform) == 'Windows'" />
