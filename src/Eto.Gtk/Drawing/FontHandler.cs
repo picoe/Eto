@@ -126,8 +126,24 @@ namespace Eto.GtkSharp.Drawing
 				if (attributes == null)
 				{
 					attributes = new Pango.AttrList();
-					attributes.Insert(new Pango.AttrUnderline(FontDecoration.HasFlag(FontDecoration.Underline) ? Pango.Underline.Single : Pango.Underline.None));
-					attributes.Insert(new Pango.AttrStrikethrough(FontDecoration.HasFlag(FontDecoration.Strikethrough)));
+					// Only insert decoration attributes when actually requested.
+					// Inserting AttrUnderline(None) / AttrStrikethrough(false)
+					// over the whole text range would override any per-span
+					// underline/strikethrough that consumers set via Pango
+					// markup (e.g. Gtk.Label.Markup = "<u>X</u>foo"), wiping
+					// it out the moment Font is reassigned.
+					if (FontDecoration.HasFlag(FontDecoration.Underline))
+						attributes.Insert(new Pango.AttrUnderline(Pango.Underline.Single));
+					if (FontDecoration.HasFlag(FontDecoration.Strikethrough))
+						attributes.Insert(new Pango.AttrStrikethrough(true));
+					// Widget consumers (Gtk.Label.Attributes etc.) honor what's in
+					// this AttrList but don't pick up the layout's default
+					// FontDescription. Historically the FontDescription was
+					// communicated via Widget.OverrideFont, which is a deprecated
+					// no-op on Gtk 3.20+. AttrFontDesc carries the whole
+					// description -- family, size, weight, style -- in one shot.
+					if (Control != null)
+						attributes.Insert(new Pango.AttrFontDesc(Control));
 				}
 				return attributes;
 			}
