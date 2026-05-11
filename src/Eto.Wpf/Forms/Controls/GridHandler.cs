@@ -143,7 +143,7 @@ namespace Eto.Wpf.Forms.Controls
 				RowHeaderWidth = 0,
 				SelectionMode = swc.DataGridSelectionMode.Single,
 				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
-				EnableColumnVirtualization = true,
+				EnableColumnVirtualization = false,
 				EnableRowVirtualization = true,
 			};
 		}
@@ -656,8 +656,13 @@ namespace Eto.Wpf.Forms.Controls
 
 		public int RowHeight
 		{
-			get { return (int)Control.RowHeight; }
-			set { Control.RowHeight = value; }
+			get { return double.IsNaN(Control.RowHeight) ? -1 : (int)Control.RowHeight; }
+			set
+			{
+				Control.RowHeight = value <= -1 ? double.NaN : value;
+				// allow column virtualization only when row heights won't change
+				Control.EnableColumnVirtualization = value > 0;
+			}
 		}
 
 		public void SelectAll()
