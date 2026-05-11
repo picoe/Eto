@@ -49,7 +49,10 @@ namespace Eto.Mac.Forms
 		{
 			var handler = Handler as IMacViewHandler;
 			if (handler == null)
+			{
+				baseMethod(theEvent);
 				return;
+			}
 
 			if (handler.Widget?.IsDisposed != false) return;
 
