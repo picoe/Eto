@@ -70,12 +70,12 @@ namespace Eto.Mac.Forms.Controls
 					str.AddAttributes(textAttributes, range);
 				}
 
-				// Pre-Tahoe (macOS < 26): NSPopUpButton's title cell didn't honor per-item
-				// fonts when measuring, so forcing control.Font here matched measure to draw.
-				// macOS 26 (Liquid Glass) does honor the AttributedTitle's font in measurement,
-				// so forcing control.Font here creates a measure/draw mismatch that elides
-				// short titles (e.g. "Arial" -> "Ar...").
-				if (!MacVersion.IsAtLeast(26, 0) && controlView is NSControl control)
+				// Pre-Liquid-Glass: NSPopUpButton's title cell didn't honor per-item fonts
+				// when measuring, so forcing control.Font in the draw matched measure to draw.
+				// Liquid Glass (macOS 26 w/o UIDesignRequiresCompatibility) does honor the
+				// AttributedTitle's font in measurement, so forcing control.Font here causes a
+				// measure/draw mismatch that elides short titles (e.g. "Arial" -> "Ar...").
+				if (!MacVersion.IsUsingGlass && controlView is NSControl control)
 					str.AddAttribute(NSStringAttributeKey.Font, control.Font, range);
 
 				title = str;
