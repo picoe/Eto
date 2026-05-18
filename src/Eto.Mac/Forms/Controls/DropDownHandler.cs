@@ -61,21 +61,30 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 
-			public override CGRect DrawTitle(NSAttributedString title, CGRect frame, NSView controlView)
+			public override NSAttributedString AttributedTitle
 			{
-				var str = new NSMutableAttributedString(title);
-				var range = new NSRange(0, str.Length);
-				if (textAttributes != null)
+				get
 				{
-					str.AddAttributes(textAttributes, range);
+					var title = base.AttributedTitle;
+					if (title == null || title.Length == 0)
+						return title;
+					var attribute = title.GetAttribute(NSStringAttributeKey.Font, 0, out var range);
+					if (attribute != null)
+					{
+						// don't include custom fonts for the title (selected item), it does not work great with NSPopUpButton.
+						var str = new NSMutableAttributedString(title);
+						str.RemoveAttribute(NSStringAttributeKey.Font, range);
+						title = str;
+					}
+					if (textAttributes != null)
+					{
+						var str = title as NSMutableAttributedString ?? new NSMutableAttributedString(title);
+						str.AddAttributes(textAttributes, new NSRange(0, str.Length));
+						title = str;
+					}
+					return title;
 				}
-
-				// enforce the control font if it had been overridden for this item, macOS doesn't support non-standard fonts for its NSPopUpButton.
-				if (controlView is NSControl control)
-					str.AddAttribute(NSStringAttributeKey.Font, control.Font, range);
-
-				title = str;
-				return base.DrawTitle(title, frame, controlView);
+				set => base.AttributedTitle = value;
 			}
 		}
 
@@ -117,11 +126,8 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var handler = GetHandler(sender) as DropDownHandler;
 			handler?.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
-
-			
-
 		}
-
+		
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public DropDownHandler Handler { get; set; }
