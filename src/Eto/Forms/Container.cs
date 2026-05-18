@@ -399,9 +399,9 @@ public abstract class Container : Control, IBindableWidgetContainer
 					child.TriggerPreLoad(EventArgs.Empty);
 					child.TriggerLoad(EventArgs.Empty);
 					assign?.Invoke();
+					ResumeLayout();
 					child.TriggerLoadComplete(EventArgs.Empty);
 				}
-				ResumeLayout();
 				return;
 			}
 		}

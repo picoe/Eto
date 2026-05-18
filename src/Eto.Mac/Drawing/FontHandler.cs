@@ -215,10 +215,13 @@ namespace Eto.Mac.Drawing
 		public float LineHeight => (float)SharedLayoutManager.DefaultLineHeightForFont(Control);
 #endif
 
+		public float UnderlinePosition => (float)-Control.UnderlinePosition;
+		public float UnderlineThickness => (float)Control.UnderlineThickness;
+
 		public NSDictionary Attributes
 		{
 			get
-			{ 
+			{
 				if (_attributes == null)
 					CreateAttributes();
 				return _attributes ?? (_attributes = CreateAttributes());
