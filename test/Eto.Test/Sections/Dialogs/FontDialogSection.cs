@@ -384,10 +384,15 @@ namespace Eto.Test.Sections.Dialogs
 			var newFamily = selectedFont == null || selectedFont.Family != font.Family;
 			selectedFont = font;
 			DataContext = selectedFont;
-			preview.Font = selectedFont;
-			labelPreview.Font = selectedFont;
-			textBoxPreview.Font = selectedFont;
-			preview.Invalidate();
+			if (preview != null)
+			{
+				preview.Font = selectedFont;
+				preview.Invalidate();
+			}
+			if (labelPreview != null)
+				labelPreview.Font = selectedFont;
+			if (textBoxPreview != null)
+				textBoxPreview.Font = selectedFont;
 
 			var family = selectedFont.Family;
 			if (newFamily || forceNewFamily)
@@ -423,6 +428,8 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddRow("Leading", Leading());
 			layout.AddRow("MeasureString", MeasureString());
 			layout.AddRow("PostScriptName", PostScriptName());
+			layout.AddRow("UnderlinePosition", UnderlinePosition());
+			layout.AddRow("UnderlineThickness", UnderlineThickness());
 			layout.Add(null);
 			layout.EndBeginVertical();
 			layout.Add(null);
@@ -437,6 +444,20 @@ namespace Eto.Test.Sections.Dialogs
 			layout.EndVertical();
 			layout.EndHorizontal();
 			return layout;
+		}
+
+		Control UnderlinePosition()
+		{
+			var control = new Label { TextColor = Colors.Purple };
+			control.TextBinding.BindDataContext<Font>(r => r.UnderlinePosition.ToString());
+			return control;			
+		}
+
+		Control UnderlineThickness()
+		{
+			var control = new Label { TextColor = Colors.Purple };
+			control.TextBinding.BindDataContext<Font>(r => r.UnderlineThickness.ToString());
+			return control;			
 		}
 
 		Control PostScriptName()
@@ -479,6 +500,10 @@ namespace Eto.Test.Sections.Dialogs
 
 				var lineheight = ypos + selectedFont.LineHeight * scale;
 				pe.Graphics.DrawLine(Pens.Orange, 0, lineheight, width, lineheight);
+
+				var underline = baseline + selectedFont.UnderlinePosition * scale;
+				var underlineThickness = selectedFont.UnderlineThickness * scale;
+				pe.Graphics.DrawLine(new Pen(Colors.Purple, underlineThickness), 0, underline, width, underline);
 			};
 			return metricsPreview;
 		}

@@ -228,10 +228,7 @@ public class Font : Widget
 	/// <summary>
 	/// Gets the name of the family of this font
 	/// </summary>
-	public string FamilyName
-	{
-		get { return Handler.FamilyName; }
-	}
+	public string FamilyName => Handler.FamilyName;
 
 	/// <summary>
 	/// Gets the style flags for this font
@@ -240,10 +237,7 @@ public class Font : Widget
 	/// This does not represent all of the style properties of the font. Each <see cref="Typeface"/>
 	/// has its own style relative to the font family.
 	/// </remarks>
-	public FontStyle FontStyle
-	{
-		get { return Handler.FontStyle; }
-	}
+	public FontStyle FontStyle => Handler.FontStyle;
 
 	/// <summary>
 	/// Gets the decorations applied to the font
@@ -252,120 +246,88 @@ public class Font : Widget
 	/// Decorations can be applied to any typeface/style of font.
 	/// </remarks>
 	/// <value>The font decoration.</value>
-	public FontDecoration FontDecoration
-	{
-		get { return Handler.FontDecoration; }
-	}
+	public FontDecoration FontDecoration => Handler.FontDecoration;
 
 	/// <summary>
 	/// Gets the family information for this font
 	/// </summary>
-	public FontFamily Family
-	{
-		get { return Handler.Family; }
-	}
+	public FontFamily Family => Handler.Family;
 
 	/// <summary>
 	/// Gets the typeface information for this font
 	/// </summary>
-	public FontTypeface Typeface
-	{
-		get { return Handler.Typeface; }
-	}
+	public FontTypeface Typeface => Handler.Typeface;
 
 	/// <summary>
 	/// Gets the height of the lower case 'x' character
 	/// </summary>
 	/// <value>The height of the x character</value>
-	public float XHeight
-	{
-		get { return Handler.XHeight; }
-	}
+	public float XHeight => Handler.XHeight;
 
 	/// <summary>
 	/// Gets the top y co-ordinate from the baseline to the tallest character ascent
 	/// </summary>
 	/// <value>The tallest ascent of the font</value>
-	public float Ascent
-	{
-		get { return Handler.Ascent; }
-	}
+	public float Ascent => Handler.Ascent;
 
 	/// <summary>
 	/// Gets the bottom y co-ordinate from the baseline to the longest character descent
 	/// </summary>
 	/// <value>The longest descent of the font</value>
-	public float Descent
-	{
-		get { return Handler.Descent; }
-	}
+	public float Descent => Handler.Descent;
 
 	/// <summary>
 	/// Gets the height of a single line of the font
 	/// </summary>
 	/// <value>The height of a single line</value>
-	public float LineHeight
-	{
-		get { return Handler.LineHeight; }
-	}
+	public float LineHeight => Handler.LineHeight;
 
 	/// <summary>
 	/// Gets the leading space between each line
 	/// </summary>
 	/// <value>The leading.</value>
-	public float Leading
-	{
-		get { return Handler.Leading; }
-	}
+	public float Leading => Handler.Leading;
 
 	/// <summary>
 	/// Gets the offset of the baseline from the drawing point
 	/// </summary>
 	/// <value>The baseline offset from the drawing point</value>
-	public float Baseline
-	{
-		get { return Handler.Baseline; }
-	}
+	public float Baseline => Handler.Baseline;
+
+	/// <summary>
+	/// Gets the offset of the underline from the baseline
+	/// </summary>
+	public float UnderlinePosition => Handler.UnderlinePosition;
+	
+	/// <summary>
+	/// Gets the thickness of the underline
+	/// </summary>
+	public float UnderlineThickness => Handler.UnderlineThickness;
 
 	/// <summary>
 	/// Gets the size, in points, of this font
 	/// </summary>
-	public float Size
-	{
-		get { return Handler.Size; }
-	}
+	public float Size => Handler.Size;
 
 	/// <summary>
 	/// Gets a value indicating that this font has a bold style
 	/// </summary>
-	public bool Bold
-	{
-		get { return FontStyle.HasFlag(FontStyle.Bold); }
-	}
+	public bool Bold => FontStyle.HasFlag(FontStyle.Bold);
 
 	/// <summary>
 	/// Gets a value indicating that this font has an italic style
 	/// </summary>
-	public bool Italic
-	{
-		get { return FontStyle.HasFlag(FontStyle.Italic); }
-	}
+	public bool Italic => FontStyle.HasFlag(FontStyle.Italic);
 
 	/// <summary>
 	/// Gets a value indicating that this font has an underline decoration
 	/// </summary>
-	public bool Underline
-	{
-		get { return FontDecoration.HasFlag(FontDecoration.Underline); }
-	}
+	public bool Underline => FontDecoration.HasFlag(FontDecoration.Underline);
 
 	/// <summary>
 	/// Gets a value indicating that this font has a strikethrough decoration
 	/// </summary>
-	public bool Strikethrough
-	{
-		get { return FontDecoration.HasFlag(FontDecoration.Strikethrough); }
-	}
+	public bool Strikethrough => FontDecoration.HasFlag(FontDecoration.Strikethrough);
 
 	/// <summary>
 	/// Measures the specified string to get its size in logical pixels.
@@ -377,10 +339,7 @@ public class Font : Widget
 	/// <seealso cref="Graphics.MeasureString"/>
 	/// <returns>The size of the text in logical pixels if drawn using Graphics.DrawText.</returns>
 	/// <param name="text">Text string to measure.</param>
-	public SizeF MeasureString(string text)
-	{
-		return Handler.MeasureString(text);
-	}
+	public SizeF MeasureString(string text) => Handler.MeasureString(text);
 
 	/// <summary>
 	/// Gets a string representation of the font object
@@ -485,6 +444,16 @@ public class Font : Widget
 		/// </summary>
 		/// <value>The baseline offset from the drawing point</value>
 		float Baseline { get; }
+		
+		/// <summary>
+		/// Gets the offset of the underline from the baseline
+		/// </summary>
+		float UnderlinePosition { get; }
+		
+		/// <summary>
+		/// Gets the thickness of the underline
+		/// </summary>
+		float UnderlineThickness { get; }		
 
 		/// <summary>
 		/// Gets the size of the font in points

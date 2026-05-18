@@ -273,11 +273,7 @@ namespace Eto.Wpf.Drawing
 		}
 
 
-		public FontFamily Family
-		{
-			get;
-			set;
-		}
+		public FontFamily Family { get; set; }
 
 		public FontTypeface Typeface
 		{
@@ -291,13 +287,7 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
-		public FontStyle FontStyle
-		{
-			get
-			{
-				return WpfConversions.Convert(WpfFontStyle, WpfFontWeight);
-			}
-		}
+		public FontStyle FontStyle => WpfConversions.Convert(WpfFontStyle, WpfFontWeight);
 
 		public FontDecoration FontDecoration
 		{
@@ -314,18 +304,9 @@ namespace Eto.Wpf.Drawing
 			get { return ((FontTypefaceHandler)Typeface.Handler).Control; }
 		}
 
-		float Font.IHandler.Size
-		{
-			get { return (float)Size; }
-		}
+		float Font.IHandler.Size => (float)Size;
 
-		public float Ascent
-		{
-			get
-			{
-				return (float)(Size * WpfFamily.Baseline);
-			}
-		}
+		public float Ascent => (float)(Size * WpfFamily.Baseline);
 
 		float? descent;
 		public float Descent
@@ -340,25 +321,17 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
-		public float LineHeight
-		{
-			get { return (float)(Size * WpfFamily.LineSpacing); }
-		}
+		public float LineHeight => (float)(Size * WpfFamily.LineSpacing);
 
-		public float XHeight
-		{
-			get { return (float)(Size * WpfTypeface.XHeight); }
-		}
+		public float XHeight => (float)(Size * WpfTypeface.XHeight);
 
-		public float Baseline
-		{
-			get { return (float)(Size * WpfFamily.Baseline); }
-		}
+		public float Baseline => (float)(Size * WpfFamily.Baseline);
 
-		public float Leading
-		{
-			get { return LineHeight - (Ascent + Descent); }
-		}
+		public float Leading => LineHeight - (Ascent + Descent);
+		
+		public float UnderlinePosition => (float)(Size * -WpfTypeface.UnderlinePosition);
+
+		public float UnderlineThickness => (float)(Size * WpfTypeface.UnderlineThickness);
 
 		public string FamilyName
 		{

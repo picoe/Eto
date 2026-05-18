@@ -90,6 +90,13 @@ namespace Eto.WinForms.Drawing
 			}
 		}
 
+		Win32.OUTLINETEXTMETRICW? outlineTextMetrics;
+		Win32.OUTLINETEXTMETRICW OutlineTextMetrics => outlineTextMetrics ?? (outlineTextMetrics = Control.GetOutlineTextMetrics()) ?? default;
+
+		public float UnderlinePosition => -OutlineTextMetrics.otmsUnderscorePosition;
+
+		public float UnderlineThickness => OutlineTextMetrics.otmsUnderscoreSize;
+
 		public float LineHeight => Size * Control.FontFamily.GetLineSpacing(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
 
 		public float Size => Control.SizeInPoints;
