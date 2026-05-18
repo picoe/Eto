@@ -14,10 +14,6 @@
 	<string>12.0</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>NSRequiresAquaSystemAppearance</key>
-	<false/>
-	<key>UIDesignRequiresCompatibility</key>
-	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
