@@ -38,13 +38,13 @@ namespace Eto.Mac.Forms.Controls
 			public override void DidFinishNavigation(wk.WKWebView webView, wk.WKNavigation navigation)
 			{
 				var h = Handler;
-				if (h != null)
-				{
-					h.SetupContextMenu();
-					var args = new WebViewLoadedEventArgs(h.Url);
-					h.Callback.OnNavigated(h.Widget, args);
-					h.Callback.OnDocumentLoaded(h.Widget, args);
-				}
+				if (h == null || h.Widget.IsDisposed)
+					return;
+					
+				h.SetupContextMenu();
+				var args = new WebViewLoadedEventArgs(h.Url);
+				h.Callback.OnNavigated(h.Widget, args);
+				h.Callback.OnDocumentLoaded(h.Widget, args);
 			}
 
 			public override void DecidePolicy(wk.WKWebView webView, wk.WKNavigationAction navigationAction, Action<wk.WKNavigationActionPolicy> decisionHandler)
@@ -56,7 +56,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void DecidePolicy(wk.WKWebView webView, wk.WKNavigationAction navigationAction, wk.WKWebpagePreferences preferences, Action<wk.WKNavigationActionPolicy, wk.WKWebpagePreferences> decisionHandler)
 			{
 				var h = Handler;
-				if (h == null)
+				if (h == null || h.Widget.IsDisposed)
 					return;
 					
 				var requestUrl = navigationAction.Request.Url;
