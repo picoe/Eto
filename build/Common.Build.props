@@ -5,7 +5,6 @@
     
     <!-- Prevent VS2015 from copying files from the GAC to the output folder -->
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
-    <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <Deterministic Condition="$(Deterministic) == '' and $(GenerateAssemblyVersion) == 'True'">True</Deterministic>
     <Deterministic Condition="$(Deterministic) == ''">False</Deterministic>
@@ -61,4 +60,8 @@
   </ItemGroup>
 
   <Import Condition="Exists('$(BasePath)..\Eto.Common.props')" Project="$(BasePath)..\Eto.Common.props" />
+  
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(BasePath)artifacts\obj\$(OSPlatform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>    
+  </PropertyGroup>
 </Project>
