@@ -18,7 +18,7 @@ namespace Eto.WinForms
 
 		public bool PreFilterMessage(ref swf.Message m)
 		{
-			if (m.Msg == (int)Win32.WM.MOUSEWHEEL)
+			if (m.Msg == (int)Win32.WM.MOUSEWHEEL || m.Msg == (int)Win32.WM.MOUSEHWHEEL)
 			{
 				var c = swf.Control.FromHandle(m.HWnd);
 				if (c == null)

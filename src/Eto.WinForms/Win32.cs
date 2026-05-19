@@ -173,6 +173,10 @@ namespace Eto
 			MBUTTONUP = 0x0208,
 			MBUTTONDBLCLK = 0x0209,
 			MOUSEWHEEL = 0x20A,
+			MOUSEHWHEEL = 0x20E,
+
+			GESTURE = 0x0119,
+			GESTURENOTIFY = 0x011A,
 
 			CUT = 0x0300,
 			COPY = 0x0301,
@@ -340,6 +344,67 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct POINTS
+		{
+			public short x;
+			public short y;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct GESTUREINFO
+		{
+			public int cbSize;
+			public int dwFlags;
+			public int dwID;
+			public IntPtr hwndTarget;
+			public POINTS ptsLocation;
+			public int dwInstanceID;
+			public int dwSequenceID;
+			public long ullArguments;
+			public int cbExtraArgs;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct GESTURECONFIG
+		{
+			public int dwID;
+			public int dwWant;
+			public int dwBlock;
+		}
+
+		public const int GID_BEGIN = 1;
+		public const int GID_END = 2;
+		public const int GID_ZOOM = 3;
+		public const int GID_PAN = 4;
+		public const int GID_ROTATE = 5;
+		public const int GID_TWOFINGERTAP = 6;
+		public const int GID_PRESSANDTAP = 7;
+
+		public const int GF_BEGIN = 0x00000001;
+		public const int GF_INERTIA = 0x00000002;
+		public const int GF_END = 0x00000004;
+
+		public const int GC_ALLGESTURES = 0x00000001;
+		public const int GC_ZOOM = 0x00000001;
+		public const int GC_PAN = 0x00000001;
+		public const int GC_PAN_WITH_SINGLE_FINGER_VERTICALLY = 0x00000002;
+		public const int GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY = 0x00000004;
+		public const int GC_PAN_WITH_GUTTER = 0x00000008;
+		public const int GC_PAN_WITH_INERTIA = 0x00000010;
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool GetGestureInfo(IntPtr hGestureInfo, ref GESTUREINFO pGestureInfo);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool CloseGestureInfoHandle(IntPtr hGestureInfo);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool SetGestureConfig(IntPtr hwnd, int dwReserved, int cIDs, [In] GESTURECONFIG[] pGestureConfig, int cbSize);
 
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern uint GetWindowLong(IntPtr hWnd, GWL nIndex);

@@ -169,6 +169,10 @@ public abstract partial class WinUIFrameworkElement<TControl, TWidget, TCallback
 		throw new NotImplementedException();
 	}
 
+	public virtual void AddGesture(Gesture item) { }
+	public virtual void ClearGestures() { }
+	public virtual void RemoveGesture(Gesture item) { }
+
 	public virtual void ResumeLayout()
 	{
 	}

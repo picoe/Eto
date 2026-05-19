@@ -1471,5 +1471,40 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 		}
+
+#if GTKCORE
+		public virtual void AddGesture(Gesture item)
+		{
+			if (item == null)
+				throw new ArgumentNullException(nameof(item));
+
+			var handler = ((IHandlerSource)item).Handler as Eto.GtkSharp.Forms.Controls.IGtkGestureHandler;
+			if (handler == null)
+				throw new NotSupportedException($"Gesture '{item.GetType().FullName}' is not supported on GTK");
+
+			handler.AttachTo(EventControl);
+		}
+
+		public virtual void ClearGestures()
+		{
+			foreach (var gesture in Widget.Gestures)
+			{
+				if (((IHandlerSource)gesture).Handler is Eto.GtkSharp.Forms.Controls.IGtkGestureHandler handler)
+					handler.Detach();
+			}
+		}
+
+		public virtual void RemoveGesture(Gesture item)
+		{
+			if (item == null)
+				return;
+			if (((IHandlerSource)item).Handler is Eto.GtkSharp.Forms.Controls.IGtkGestureHandler handler)
+				handler.Detach();
+		}
+#else
+		public virtual void AddGesture(Gesture item) { }
+		public virtual void ClearGestures() { }
+		public virtual void RemoveGesture(Gesture item) { }
+#endif
 	}
 }

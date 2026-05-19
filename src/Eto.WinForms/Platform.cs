@@ -117,6 +117,12 @@ namespace Eto.WinForms
 			p.Add<CollectionEditor.IHandler>(() => new ThemedCollectionEditorHandler());
 			p.Add<NativeControlHost.IHandler>(() => new NativeControlHandler());
 
+			// Forms.Gestures
+			p.Add<MagnificationGesture.IHandler>(() => new MagnificationGestureHandler());
+			p.Add<RotationGesture.IHandler>(() => new RotationGestureHandler());
+			p.Add<PanGesture.IHandler>(() => new PanGestureHandler());
+			p.Add<ScrollGesture.IHandler>(() => new ScrollGestureHandler());
+
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
 			p.Add<ContextMenu.IHandler>(() => new ContextMenuHandler());

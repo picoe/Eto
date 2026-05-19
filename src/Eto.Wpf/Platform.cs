@@ -101,6 +101,10 @@ namespace Eto.Wpf
 			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 			p.Add<SystemColors.IHandler>(() => new SystemColorsHandler());
 			p.Add<FormattedText.IHandler>(() => new FormattedTextHandler());
+			p.Add<MagnificationGesture.IHandler>(() => new MagnificationGestureHandler());
+			p.Add<RotationGesture.IHandler>(() => new RotationGestureHandler());
+			p.Add<PanGesture.IHandler>(() => new PanGestureHandler());
+			p.Add<ScrollGesture.IHandler>(() => new ScrollGestureHandler());
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());

@@ -111,6 +111,12 @@ namespace Eto.GtkSharp
 			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 			p.Add<SystemColors.IHandler>(() => new SystemColorsHandler());
 			p.Add<FormattedText.IHandler>(() => new FormattedTextHandler());
+#if GTKCORE
+			p.Add<MagnificationGesture.IHandler>(() => new MagnificationGestureHandler());
+			p.Add<RotationGesture.IHandler>(() => new RotationGestureHandler());
+			p.Add<PanGesture.IHandler>(() => new PanGestureHandler());
+			p.Add<ScrollGesture.IHandler>(() => new ScrollGestureHandler());
+#endif
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());

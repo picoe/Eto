@@ -307,6 +307,10 @@ namespace Eto.Android.Forms
 		public virtual void UpdateLayout()
 		{
 		}
+
+		public virtual void AddGesture(Gesture item) { }
+		public virtual void ClearGestures() { }
+		public virtual void RemoveGesture(Gesture item) { }
 		
 		public ContextMenu ContextMenu { get; set; }
 
