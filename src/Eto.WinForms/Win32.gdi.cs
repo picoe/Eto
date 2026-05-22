@@ -26,8 +26,48 @@ namespace Eto
 			}
 		}
 
+		public static OUTLINETEXTMETRICW GetOutlineTextMetrics(this sd.Font font)
+		{
+			var graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
+			var hdc = IntPtr.Zero;
+			var hFont = IntPtr.Zero;
+			var old = IntPtr.Zero;
+			var outlineTextMetric = IntPtr.Zero;
+			try
+			{
+				hdc = graphics.GetHdc();
+				hFont = font.ToHfont();
+				old = SelectObject(hdc, hFont);
+
+				var size = GetOutlineTextMetrics(hdc, 0, IntPtr.Zero);
+				if (size == 0)
+					return default;
+
+				outlineTextMetric = Marshal.AllocHGlobal((int)size);
+				if (GetOutlineTextMetrics(hdc, size, outlineTextMetric) == 0)
+					return default;
+
+				return Marshal.PtrToStructure<OUTLINETEXTMETRICW>(outlineTextMetric);
+			}
+			finally
+			{
+				if (outlineTextMetric != IntPtr.Zero)
+					Marshal.FreeHGlobal(outlineTextMetric);
+				if (old != IntPtr.Zero)
+					SelectObject(hdc, old);
+				if (hFont != IntPtr.Zero)
+					DeleteObject(hFont);
+				if (hdc != IntPtr.Zero)
+					graphics.ReleaseHdc(hdc);
+				graphics.Dispose();
+			}
+		}
+
 		[DllImport("gdi32.dll", CharSet = CharSet.Auto)]
 		public static extern bool GetTextMetrics(IntPtr hdc, out TEXTMETRICW lptm);
+
+		[DllImport("gdi32.dll", CharSet = CharSet.Unicode)]
+		public static extern uint GetOutlineTextMetrics(IntPtr hdc, uint cbData, IntPtr lpOTM);
 
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 		public struct TEXTMETRICW
@@ -53,6 +93,59 @@ namespace Eto
 			public byte tmPitchAndFamily;
 			public byte tmCharSet;
 		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct PANOSE
+		{
+			public byte bFamilyType;
+			public byte bSerifStyle;
+			public byte bWeight;
+			public byte bProportion;
+			public byte bContrast;
+			public byte bStrokeVariation;
+			public byte bArmStyle;
+			public byte bLetterform;
+			public byte bMidline;
+			public byte bXHeight;
+		}
+
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+		public struct OUTLINETEXTMETRICW
+		{
+			public uint otmSize;
+			public TEXTMETRICW otmTextMetrics;
+			public byte otmFiller;
+			public PANOSE otmPanoseNumber;
+			public uint otmfsSelection;
+			public uint otmfsType;
+			public int otmsCharSlopeRise;
+			public int otmsCharSlopeRun;
+			public int otmItalicAngle;
+			public uint otmEMSquare;
+			public int otmAscent;
+			public int otmDescent;
+			public uint otmLineGap;
+			public uint otmsCapEmHeight;
+			public uint otmsXHeight;
+			public RECT otmrcFontBox;
+			public int otmMacAscent;
+			public int otmMacDescent;
+			public uint otmMacLineGap;
+			public uint otmusMinimumPPEM;
+			public POINT otmptSubscriptSize;
+			public POINT otmptSubscriptOffset;
+			public POINT otmptSuperscriptSize;
+			public POINT otmptSuperscriptOffset;
+			public uint otmsStrikeoutSize;
+			public int otmsStrikeoutPosition;
+			public int otmsUnderscoreSize;
+			public int otmsUnderscorePosition;
+			public IntPtr otmpFamilyName;
+			public IntPtr otmpFaceName;
+			public IntPtr otmpStyleName;
+			public IntPtr otmpFullName;
+		}
+
 		[DllImport("gdi32.dll")]
 		public static extern uint GetFontUnicodeRanges(IntPtr hdc, IntPtr lpgs);
 

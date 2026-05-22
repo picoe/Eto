@@ -305,6 +305,9 @@ namespace Eto.GtkSharp.Drawing
 			}
 		}
 
+		public float UnderlinePosition => -((float)Metrics.UnderlinePosition / (float)Pango.Scale.PangoScale);
+		public float UnderlineThickness => (float)Metrics.UnderlineThickness / (float)Pango.Scale.PangoScale;
+
 		Pango.Layout measureLayout;
 
 		public SizeF MeasureString(string text)

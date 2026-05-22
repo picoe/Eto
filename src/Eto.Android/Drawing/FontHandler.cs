@@ -147,6 +147,9 @@ namespace Eto.Android.Drawing
 			get { return 0f; }
 		}
 
+		public float UnderlinePosition => 0f;
+		public float UnderlineThickness => 1f;
+
 		public float Size
 		{
 			get { return size; }
