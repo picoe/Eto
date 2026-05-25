@@ -1175,7 +1175,11 @@ namespace Eto.Wpf.Forms
 		public void UpdateLayout()
 		{
 			// allow WPF controls to actually get their Loaded event fired.
-			ContainerControl.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ApplicationIdle, null);
+			// Skip when already loaded: ApplicationIdle priority never drains
+			// during a host modal sizing/move loop (DefWindowProc's pump doesn't
+			// reach idle), so this Invoke would deadlock the caller.
+			if (!ContainerControl.IsLoaded)
+				ContainerControl.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ApplicationIdle, null);
 
 			// update the layout
 			ContainerControl.UpdateLayout();
