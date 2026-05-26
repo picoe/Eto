@@ -98,7 +98,7 @@ namespace Eto.Wpf.Forms
 					element.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
 					ContentBorder.Child = element;
 					if (Widget.Loaded)
-						SetContentScale(XScale, YScale);
+						SetScale(XScale, YScale);
 				}
 				else
 					ContentBorder.Child = null;
