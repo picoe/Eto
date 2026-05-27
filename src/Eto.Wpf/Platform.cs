@@ -32,7 +32,8 @@ namespace Eto.Wpf
 			{
 				h.Widget.Items.CollectionChanged += (sender, e) =>
 				{
-					for (int i = 0; i < h.Widget.Items.Count; i++)
+					var count = h.Widget.Items.Count;
+					for (int i = 0; i < count; i++)
 					{
 						SegmentedItem item = h.Widget.Items[i];
 						if (item.ControlObject is Control control)
@@ -42,8 +43,13 @@ namespace Eto.Wpf
 							{
 								WpfProperties.SetEtoStyle(native, "SegmentedButton");
 								if (i == 0)
-									WpfProperties.SetEtoModifier(native, "first");
-								else if (i == h.Widget.Items.Count - 1)
+								{
+									if (i == count - 1)
+										WpfProperties.SetEtoModifier(native, "only");
+									else
+										WpfProperties.SetEtoModifier(native, "first");
+								}
+								else if (i == count - 1)
 									WpfProperties.SetEtoModifier(native, "last");
 								else
 									native.ClearValue(WpfProperties.EtoModifierProperty);
