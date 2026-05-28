@@ -313,7 +313,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 
 	Control GetControl(SegmentedItem item) => item.ControlObject as Control;
 
-	TableCell GetCell(SegmentedItem item) => new TableCell(GetControl(item));
+	TableCell GetCell(SegmentedItem item) => new TableCell(GetControl(item), scaleWidth: true);
 
 	/// <inheritdoc/>
 	public virtual void ClearSelection()
@@ -486,7 +486,7 @@ public class ThemedSegmentedButtonHandler : ThemedControlHandler<Panel, Segmente
 					Spacing = new Size(Spacing, 0),
 					Rows = { new TableRow(Widget.Items.Select(GetCell)) }
 				};
-				Control.Content = TableLayout.AutoSized(buttonTable, centered: true);
+				Control.Content = buttonTable;
 			}
 			else
 				Control.Content = null;
