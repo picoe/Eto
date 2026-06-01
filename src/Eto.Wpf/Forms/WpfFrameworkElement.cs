@@ -1216,7 +1216,7 @@ namespace Eto.Wpf.Forms
 			// during a host modal sizing/move loop (DefWindowProc's pump doesn't
 			// reach idle), so this Invoke would deadlock the caller.
 			if (!ContainerControl.IsLoaded)
-				ContainerControl.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ApplicationIdle, null);
+				ContainerControl.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.Loaded, null);
 
 			// update the layout
 			ContainerControl.UpdateLayout();
