@@ -37,6 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 		readonly EtoScrollViewer scroller;
+		Size? _lastSize;
 
 		public sw.FrameworkElement ContentControl => scroller;
 
@@ -79,8 +80,17 @@ namespace Eto.Wpf.Forms.Controls
 
 		void HandleSizeChanged(object sender, EventArgs e)
 		{
-			if (Widget.Loaded)
-				UpdateSizes();
+			if (!Widget.Loaded)
+				return;
+
+			// Avoid updating sizes if the size didn't actually change, as this can cause a loop when the content is set to expand
+			var newSize = Size;
+			if (_lastSize == newSize)
+				return;
+
+			UpdateSizes();
+
+			_lastSize = Size;
 		}
 
 		void UpdateSizes()
