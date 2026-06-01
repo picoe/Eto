@@ -347,11 +347,32 @@ namespace Eto
 		[DllImport("user32.dll")]
 		public static extern int SetWindowLong(IntPtr hWnd, GWL nIndex, uint dwNewLong);
 
+		[DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", SetLastError = true)]
+		static extern IntPtr SetWindowLongPtrA(IntPtr hWnd, GWL nIndex, IntPtr dwNewLong);
 		[DllImport("user32.dll", SetLastError = true)]
-		public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, GWL nIndex, IntPtr dwNewLong);
+		static extern IntPtr SetWindowLongPtrW(IntPtr hWnd, GWL nIndex, IntPtr dwNewLong);
+		
+		public static IntPtr SetWindowLongPtr(IntPtr hWnd, GWL nIndex, IntPtr dwNewLong)
+		{
+			if (Environment.Is64BitProcess)
+				return SetWindowLongPtrW(hWnd, nIndex, dwNewLong);
+			else
+				return SetWindowLongPtrA(hWnd, nIndex, dwNewLong);
+		}
 
-		[DllImport("user32.dll", SetLastError = true)]
-		public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+		[DllImport("user32.dll", EntryPoint = "CallWindowProc", SetLastError = true)]
+		static extern IntPtr CallWindowProcA(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+		[DllImport("user32.dll", EntryPoint = "CallWindowProcW", SetLastError = true)]
+		static extern IntPtr CallWindowProcW(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+		
+		public static IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam)
+		{
+			if (Environment.Is64BitProcess)
+				return CallWindowProcW(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+			else
+				return CallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+		}
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
