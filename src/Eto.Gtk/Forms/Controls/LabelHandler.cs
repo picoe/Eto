@@ -5,6 +5,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler
 	{
 		string _text;
+		bool _alwaysShowMnemonic;
 		readonly Gtk.EventBox eventBox;
 		TextAlignment horizontalAlign = TextAlignment.Left;
 		VerticalAlignment verticalAlign = VerticalAlignment.Top;
@@ -196,9 +197,17 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.ResetWidth();
 				_text = value;
 				if (Control.UseUnderline)
+				{
 					Control.TextWithMnemonic = _text.ToPlatformMnemonic();
+					// Keep Gtk's mnemonic behavior via TextWithMnemonic, and
+					// use the label pattern only to make the underline visible.
+					Control.Pattern = _alwaysShowMnemonic ? GtkMnemonicHelper.ToPatternWithMnemonicUnderline(_text) : null;
+				}
 				else
+				{
+					Control.Pattern = null;
 					Control.Text = _text;
+				}
 				InvalidateMeasure();
 			}
 		}
@@ -260,8 +269,15 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public bool AlwaysShowMnemonic
 		{
-			get => false;
-			set { /* not supported in GTK */ }
+			get => _alwaysShowMnemonic;
+			set
+			{
+				if (_alwaysShowMnemonic == value)
+					return;
+				_alwaysShowMnemonic = value;
+				if (_text != null)
+					Text = _text;
+			}
 		}
 	}
 }

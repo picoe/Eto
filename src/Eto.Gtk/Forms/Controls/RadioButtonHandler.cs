@@ -5,6 +5,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		Gtk.EventBox _box;
 		Gtk.AccelLabel _label;
 		string _text;
+		bool _alwaysShowMnemonic;
 
 		protected override Gtk.Widget FontControl => _label;
 
@@ -79,9 +80,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				_text = value;
 				if (_label.UseUnderline)
+				{
 					_label.TextWithMnemonic = _text.ToPlatformMnemonic();
+					_label.Pattern = _alwaysShowMnemonic ? GtkMnemonicHelper.ToPatternWithMnemonicUnderline(_text) : null;
+				}
 				else
+				{
+					_label.Pattern = null;
 					_label.Text = _text;
+				}
 				UpdateLabel();
 			}
 		}
@@ -118,8 +125,15 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public bool AlwaysShowMnemonic
 		{
-			get => false;
-			set { /* not supported in GTK */ }
+			get => _alwaysShowMnemonic;
+			set
+			{
+				if (_alwaysShowMnemonic == value)
+					return;
+				_alwaysShowMnemonic = value;
+				if (_text != null)
+					Text = _text;
+			}
 		}
 	}
 }
