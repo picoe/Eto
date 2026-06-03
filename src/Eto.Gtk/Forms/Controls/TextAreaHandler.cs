@@ -125,7 +125,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				var sel = Selection;
 				suppressSelectionAndTextChanged++;
-				Control.Buffer.Text = value;
+				// gtk_text_buffer_set_text asserts non-null; treat null as ""
+				// to match Win/Mac/WPF semantics. Eto bindings (e.g. data-context
+				// bound string properties that default to null) routinely
+				// deliver null here.
+				Control.Buffer.Text = value ?? string.Empty;
 				if (tag != null)
 					Control.Buffer.ApplyTag(tag, Control.Buffer.StartIter, Control.Buffer.EndIter);
 				Callback.OnTextChanged(Widget, EventArgs.Empty);
