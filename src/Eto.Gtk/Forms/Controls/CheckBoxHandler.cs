@@ -3,6 +3,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		readonly Gtk.EventBox box;
+		bool _alwaysShowMnemonic;
 
 		public override Gtk.Widget ContainerControl => box;
 
@@ -64,6 +65,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			set {
 				var needsFont = Control.Child == null && Widget.Properties.ContainsKey(GtkControl.Font_Key);
 				Control.Label = Control.UseUnderline ? value.ToPlatformMnemonic() : value;
+				var label = Control.Child as Gtk.Label;
+				if (label != null)
+					label.Pattern = Control.UseUnderline && _alwaysShowMnemonic ? GtkMnemonicHelper.ToPatternWithMnemonicUnderline(value) : null;
 				if (needsFont)
 					Control.Child?.SetFont(Font.ToPango());
 			}
@@ -130,8 +134,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		
 		public bool AlwaysShowMnemonic
 		{
-			get => false;
-			set { /* not supported in GTK */ }
+			get => _alwaysShowMnemonic;
+			set
+			{
+				if (_alwaysShowMnemonic == value)
+					return;
+				_alwaysShowMnemonic = value;
+				Text = Text;
+			}
 		}
 
 		public override void AttachEvent(string id)

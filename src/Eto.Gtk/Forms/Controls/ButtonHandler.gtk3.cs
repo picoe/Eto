@@ -13,6 +13,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		readonly Gtk.AccelLabel label;
 		string _text;
+		bool _alwaysShowMnemonic;
 
 		Gtk.Image gtkimage;
 
@@ -59,9 +60,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				_text = value;
 				if (label.UseUnderline)
+				{
 					label.TextWithMnemonic = _text.ToPlatformMnemonic();
+					label.Pattern = _alwaysShowMnemonic ? GtkMnemonicHelper.ToPatternWithMnemonicUnderline(_text) : null;
+				}
 				else
+				{
+					label.Pattern = null;
 					label.Text = _text;
+				}
 				SetImagePosition();
 			}
 		}
@@ -199,8 +206,15 @@ namespace Eto.GtkSharp.Forms.Controls
 		
 		public bool AlwaysShowMnemonic
 		{
-			get => false;
-			set { /* not supported in GTK */ }
+			get => _alwaysShowMnemonic;
+			set
+			{
+				if (_alwaysShowMnemonic == value)
+					return;
+				_alwaysShowMnemonic = value;
+				if (_text != null)
+					Text = _text;
+			}
 		}
 
 		protected override void SetSize(Size size)
