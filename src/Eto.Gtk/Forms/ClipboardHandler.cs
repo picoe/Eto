@@ -35,6 +35,9 @@ namespace Eto.GtkSharp.Forms
 
 		readonly List<ClipboardData> clipboard = new List<ClipboardData>();
 		bool changedAttached;
+#if NET6_0_OR_GREATER
+		bool changedAttachedToWayland;
+#endif
 
 		public ClipboardHandler()
 		{
@@ -43,6 +46,22 @@ namespace Eto.GtkSharp.Forms
 
 		protected override bool DisposeControl => false;
 
+#if NET6_0_OR_GREATER
+		// On Wayland with the data-control protocol available, route clipboard access through
+		// it instead of GTK's focus-gated Gtk.Clipboard. Falls back to GTK otherwise.
+		static bool UseWayland => WaylandClipboard.IsAvailable;
+
+		static readonly string[] WaylandImageTypes =
+		{
+			"image/png",
+			"image/tiff",
+			"image/bmp",
+			"image/jpeg"
+		};
+#else
+		static bool UseWayland => false;
+#endif
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -50,7 +69,15 @@ namespace Eto.GtkSharp.Forms
 				case Clipboard.ChangedEvent:
 					if (changedAttached)
 						break;
-					Control.OwnerChange += Connector.HandleOwnerChange;
+#if NET6_0_OR_GREATER
+					if (UseWayland)
+					{
+						WaylandClipboard.SelectionChanged += Connector.HandleWaylandSelectionChanged;
+						changedAttachedToWayland = true;
+					}
+					else
+#endif
+						Control.OwnerChange += Connector.HandleOwnerChange;
 					changedAttached = true;
 					break;
 				default:
@@ -63,7 +90,15 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (disposing && changedAttached)
 			{
-				Control.OwnerChange -= Connector.HandleOwnerChange;
+#if NET6_0_OR_GREATER
+				if (changedAttachedToWayland)
+				{
+					WaylandClipboard.SelectionChanged -= Connector.HandleWaylandSelectionChanged;
+					changedAttachedToWayland = false;
+				}
+				else
+#endif
+					Control.OwnerChange -= Connector.HandleOwnerChange;
 				changedAttached = false;
 			}
 			base.Dispose(disposing);
@@ -86,6 +121,21 @@ namespace Eto.GtkSharp.Forms
 				if (handler != null)
 					handler.Callback.OnChanged(handler.Widget, EventArgs.Empty);
 			}
+
+#if NET6_0_OR_GREATER
+			public void HandleWaylandSelectionChanged()
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
+				var application = Eto.Forms.Application.Instance;
+				if (application != null)
+					application.AsyncInvoke(() => handler.Callback.OnChanged(handler.Widget, EventArgs.Empty));
+				else
+					handler.Callback.OnChanged(handler.Widget, EventArgs.Empty);
+			}
+#endif
 		}
 
 		void Update()
@@ -145,6 +195,13 @@ namespace Eto.GtkSharp.Forms
 
 		public void SetString(string value, string type)
 		{
+#if NET6_0_OR_GREATER
+			if (UseWayland)
+			{
+				WaylandClipboard.SetData(type, Encoding.UTF8.GetBytes(value ?? string.Empty));
+				return;
+			}
+#endif
 			SetEntry(
 				ClipboardEntryKind.Exact,
 				type,
@@ -164,6 +221,13 @@ namespace Eto.GtkSharp.Forms
 		{
 			set
 			{
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+				{
+					WaylandClipboard.SetText(value);
+					return;
+				}
+#endif
 				SetEntry(
 					ClipboardEntryKind.Text,
 					null,
@@ -172,13 +236,28 @@ namespace Eto.GtkSharp.Forms
 					(targetList, info) => targetList.AddTextTargets(info)
 				);
 			}
-			get { return Control.WaitForText(); }
+			get
+			{
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+					return WaylandClipboard.GetText();
+#endif
+				return Control.WaitForText();
+			}
 		}
 
 		public Image Image
 		{
 			set
 			{
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+				{
+					var bitmap = value as Bitmap ?? new Bitmap(value);
+					WaylandClipboard.SetData("image/png", bitmap.ToByteArray(ImageFormat.Png));
+					return;
+				}
+#endif
 				var icon = value as Icon;
 				if (icon != null)
 				{
@@ -203,6 +282,25 @@ namespace Eto.GtkSharp.Forms
 				{
 					return new Icon(new MemoryStream(iconData, false));
 				}
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+				{
+					foreach (var type in WaylandImageTypes)
+					{
+						var imageData = WaylandClipboard.GetData(type);
+						if (imageData == null)
+							continue;
+						try
+						{
+							return new Bitmap(imageData);
+						}
+						catch
+						{
+						}
+					}
+					return null;
+				}
+#endif
 				var image = Control.WaitForImage();
 				if (image != null)
 				{
@@ -214,6 +312,13 @@ namespace Eto.GtkSharp.Forms
 
 		public void SetData(byte[] value, string type)
 		{
+#if NET6_0_OR_GREATER
+			if (UseWayland)
+			{
+				WaylandClipboard.SetData(type, value);
+				return;
+			}
+#endif
 			SetEntry(
 				ClipboardEntryKind.Exact,
 				type,
@@ -225,6 +330,10 @@ namespace Eto.GtkSharp.Forms
 
 		public string GetString(string type)
 		{
+#if NET6_0_OR_GREATER
+			if (UseWayland)
+				return WaylandClipboard.GetString(type);
+#endif
 			var data = GetSelectionData(type)?.Data;
 			if (data != null)
 			{
@@ -235,12 +344,23 @@ namespace Eto.GtkSharp.Forms
 
 		public byte[] GetData(string type)
 		{
+#if NET6_0_OR_GREATER
+			if (UseWayland)
+				return WaylandClipboard.GetData(type);
+#endif
 			var selection = GetSelectionData(type);
 			return selection != null && selection.Length > 0 ? selection.Data : null;
 		}
 
 		public void Clear()
 		{
+#if NET6_0_OR_GREATER
+			if (UseWayland)
+			{
+				WaylandClipboard.Clear();
+				return;
+			}
+#endif
 			Control.Clear();
 			targets = new Gtk.TargetList();
 			clipboard.Clear();
@@ -248,6 +368,10 @@ namespace Eto.GtkSharp.Forms
 
 		public bool Contains(string type)
 		{
+#if NET6_0_OR_GREATER
+			if (UseWayland)
+				return WaylandClipboard.Contains(type);
+#endif
 			return Control.WaitIsTargetAvailable(Gdk.Atom.Intern(type, false));
 		}
 
@@ -286,6 +410,10 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+					return WaylandClipboard.GetMimeTypes();
+#endif
 				Gdk.Atom[] atoms;
 				IntPtr atomPtrs;
 				int count;
@@ -313,11 +441,31 @@ namespace Eto.GtkSharp.Forms
 		}
 
 
-		public bool ContainsText => Control.WaitIsTextAvailable();
+		public bool ContainsText
+		{
+			get
+			{
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+					return WaylandClipboard.ContainsText;
+#endif
+				return Control.WaitIsTextAvailable();
+			}
+		}
 
 		public bool ContainsHtml => Contains("text/html");
 
-		public bool ContainsImage => Control.WaitIsImageAvailable() || Contains("eto-icon");
+		public bool ContainsImage
+		{
+			get
+			{
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+					return Contains("eto-icon") || WaylandImageTypes.Any(Contains);
+#endif
+				return Control.WaitIsImageAvailable() || Contains("eto-icon");
+			}
+		}
 
 		public bool ContainsUris => Contains("text/uri-list");
 
@@ -325,6 +473,14 @@ namespace Eto.GtkSharp.Forms
 		{
 			set
 			{
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+				{
+					var list = value == null ? string.Empty : string.Join("\r\n", value.Select(r => r.AbsoluteUri));
+					WaylandClipboard.SetData("text/uri-list", Encoding.UTF8.GetBytes(list));
+					return;
+				}
+#endif
 				var uris = value?.Select(r => r.AbsoluteUri).ToArray();
 				SetEntry(
 					ClipboardEntryKind.Uris,
@@ -336,6 +492,21 @@ namespace Eto.GtkSharp.Forms
 			}
 			get
 			{
+#if NET6_0_OR_GREATER
+				if (UseWayland)
+				{
+					var bytes = WaylandClipboard.GetData("text/uri-list");
+					if (bytes == null)
+						return null;
+					return Encoding.UTF8.GetString(bytes)
+						.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+						.Select(l => l.Trim())
+						.Where(l => l.Length > 0 && !l.StartsWith("#"))
+						.Select(l => Uri.TryCreate(l, UriKind.Absolute, out var u) ? u : null)
+						.Where(u => u != null)
+						.ToArray();
+				}
+#endif
 				var selection = GetSelectionData("text/uri-list");
 				return selection?.GetSelectedUris()?.Select(r => new Uri(r)).ToArray();
 			}
