@@ -7,7 +7,7 @@ namespace Eto.Forms.ThemedControls
 	/// <summary>
 	/// A themed message box handler to allow more customization and theming
 	/// </summary>
-	public class ThemedMessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
+	public class ThemedMessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler, MessageBox.IAsyncHandler
 	{
 		/// <inheritdoc />
 		public string Text { get; set; }
@@ -23,10 +23,64 @@ namespace Eto.Forms.ThemedControls
 		/// <inheritdoc />
 		public DialogResult ShowDialog(Control parent)
 		{
+			var dlg = CreateDialog(parent);
+
+			dlg.ShowModal(parent);
+
+			return dlg.Result as DialogResult? ?? DialogResult.Cancel;
+		}
+		
+		/// <inheritdoc />
+		public Task<DialogResult> ShowDialogAsync(Control parent, CancellationToken cancellationToken = default)
+		{
+			var dlg = CreateDialog(parent);
+			var tcs = new TaskCompletionSource<DialogResult>();
+			var registration = default(CancellationTokenRegistration);
+
+			void CancelDialog()
+			{
+				Application.Instance.Invoke(() =>
+				{
+					if (tcs.TrySetCanceled())
+						dlg.Close();
+				});
+			}
+
+			if (cancellationToken.CanBeCanceled)
+				registration = cancellationToken.Register(CancelDialog);
+
+			dlg.Shown += (_, _) => {
+				if (tcs.Task.IsCanceled)
+				{
+					dlg.Close();
+				}
+			};
+
+			if (tcs.Task.IsCompleted)
+			{
+				registration.Dispose();
+				return tcs.Task;
+			}
+
+			dlg.ShowModalAsync(parent).ContinueWith(t =>
+			{
+				registration.Dispose();
+				if (t.IsFaulted)
+					tcs.TrySetException(t.Exception.InnerExceptions);
+				else if (t.IsCanceled)
+					tcs.TrySetCanceled();
+				else
+					tcs.TrySetResult(dlg.Result as DialogResult? ?? DialogResult.None);
+			}, TaskScheduler.FromCurrentSynchronizationContext());
+
+			return tcs.Task;
+		}
+
+		private ThemedMessageBox CreateDialog(Control parent)
+		{
 			var dlg = new ThemedMessageBox();
 			dlg.Title = Caption ?? parent?.ParentWindow?.Title ?? Application.Instance.Localize(Widget, "Error");
 			dlg.Text = Text;
-			// todo: add ability to get icons needed from SystemIcons
 			dlg.Image = GetImage();
 
 			var defaultButton = DefaultButton;
@@ -51,7 +105,6 @@ namespace Eto.Forms.ThemedControls
 				}
 			}
 
-
 			var app = Application.Instance;
 			switch (Buttons)
 			{
@@ -73,9 +126,7 @@ namespace Eto.Forms.ThemedControls
 					break;
 			}
 
-			dlg.ShowModal(parent);
-
-			return dlg.Result as DialogResult? ?? DialogResult.Cancel;
+			return dlg;
 		}
 
 		private Image GetImage()

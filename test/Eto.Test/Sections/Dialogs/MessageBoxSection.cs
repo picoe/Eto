@@ -15,6 +15,8 @@ namespace Eto.Test.Sections.Dialogs
 
 		public bool AttachToParent { get; set; }
 
+		readonly AsyncDialogOptions asyncOptions = new AsyncDialogOptions();
+
 		public MessageBoxSection()
 		{
 			MessageBoxText = "Some message";
@@ -48,6 +50,7 @@ namespace Eto.Test.Sections.Dialogs
 
 			layout.EndVertical();
 
+			layout.AddSeparateRow(null, asyncOptions, null);
 			layout.AddSeparateRow(null, ShowDialogButton(), null);
 			layout.Add(null);
 
@@ -108,15 +111,16 @@ namespace Eto.Test.Sections.Dialogs
 			control.Click += (sender, e) =>
 			{
 				var caption = string.IsNullOrEmpty(MessageBoxCaption) ? null : MessageBoxCaption;
-				DialogResult result;
-				if (AttachToParent)
-					result = MessageBox.Show(this, text: MessageBoxText, caption: caption, type: MessageBoxType, buttons: MessageBoxButtons, defaultButton: MessageBoxDefaultButton);
-				else
-					result = MessageBox.Show(text: MessageBoxText, caption: caption, type: MessageBoxType, buttons: MessageBoxButtons, defaultButton: MessageBoxDefaultButton);
-				Log.Write(this, "MessageBox Result: {0}", result);
+				asyncOptions.Run(this,
+					() => AttachToParent
+						? MessageBox.Show(this, text: MessageBoxText, caption: caption, type: MessageBoxType, buttons: MessageBoxButtons, defaultButton: MessageBoxDefaultButton)
+						: MessageBox.Show(text: MessageBoxText, caption: caption, type: MessageBoxType, buttons: MessageBoxButtons, defaultButton: MessageBoxDefaultButton),
+					token => AttachToParent
+						? MessageBox.ShowAsync(this, text: MessageBoxText, caption: caption, type: MessageBoxType, buttons: MessageBoxButtons, defaultButton: MessageBoxDefaultButton, cancellationToken: token)
+						: MessageBox.ShowAsync(text: MessageBoxText, caption: caption, type: MessageBoxType, buttons: MessageBoxButtons, defaultButton: MessageBoxDefaultButton, cancellationToken: token),
+					result => Log.Write(this, "MessageBox Result: {0}", result));
 			};
 			return control;
 		}
 	}
 }
-

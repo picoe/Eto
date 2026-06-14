@@ -96,6 +96,11 @@ namespace Eto
 			WNDPROC = -4
 		}
 
+		public enum GW : uint
+		{
+			OWNER = 4
+		}
+
 		[Flags]
 		public enum WS : uint
 		{
@@ -151,6 +156,7 @@ namespace Eto
 		public enum WM : uint
 		{
 			SETREDRAW = 0xB,
+			CLOSE = 0x0010,
 
 			GETDLGCODE = 0x0087,
 
@@ -326,6 +332,25 @@ namespace Eto
 		[DllImport("user32.dll")]
 		public static extern IntPtr SetActiveWindow(IntPtr hWnd);
 
+		public delegate bool EnumThreadProc(IntPtr hWnd, IntPtr lParam);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool EnumThreadWindows(uint dwThreadId, EnumThreadProc lpfn, IntPtr lParam);
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetWindow(IntPtr hWnd, GW uCmd);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+		public static bool IsDialogWindow(IntPtr hWnd)
+		{
+			var className = new StringBuilder(256);
+			return GetClassName(hWnd, className, className.Capacity) != 0
+				&& className.ToString() == "#32770";
+		}
+
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool EnableWindow(IntPtr hWnd, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
@@ -376,6 +401,10 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool PostMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
@@ -467,9 +496,14 @@ namespace Eto
 		{
 			KEYBOARD = 2,
 			GETMESSAGE = 3,
+			CBT = 5,
 			KEYBOARD_LL = 13,
 			MOUSE_LL = 14
 		}
+
+		// WH_CBT notification codes (see HCBT_* in winuser.h)
+		public const int HCBT_CREATEWND = 3;
+		public const int HCBT_ACTIVATE = 5;
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct MSG
@@ -508,6 +542,138 @@ namespace Eto
 		public static extern bool ReleaseCapture();
 
 		public delegate IntPtr HookProc(int code, IntPtr wParam, IntPtr lParam);
+
+		/// <summary>
+		/// Installs a thread-local <c>WH_CBT</c> hook that records the window handle of the next modal dialog shown
+		/// on the current thread. This lets asynchronous dialog cancellation target the exact native dialog window
+		/// unambiguously - even when several dialogs are open - without needing a hidden owner/host window.
+		/// </summary>
+		/// <remarks>
+		/// Create the hook on the UI thread immediately before the blocking native <c>ShowDialog</c> call. The hook
+		/// captures the dialog window when it is first activated and then unhooks itself. <see cref="Cancel"/> posts a
+		/// close request to the captured window, dismissing the dialog as if the user cancelled it. Always
+		/// <see cref="Dispose"/> the hook once the dialog returns. Handlers normally use <see cref="CancellableModalDialog"/>
+		/// rather than driving this directly.
+		/// </remarks>
+		public sealed class ModalDialogHook : IDisposable
+		{
+			readonly HookProc _proc; // keep the delegate rooted for the duration of the unmanaged callback
+			readonly object _sync = new object();
+			IntPtr _hook;
+			IntPtr _dialogHandle;
+			bool _cancelRequested;
+
+			public ModalDialogHook()
+			{
+				_proc = HookCallback;
+				_hook = SetWindowsHookEx((IntPtr)WH.CBT, _proc, IntPtr.Zero, GetCurrentThreadId());
+			}
+
+			/// <summary>
+			/// The captured dialog window, or <see cref="IntPtr.Zero"/> if it has not been shown yet.
+			/// </summary>
+			public IntPtr DialogHandle
+			{
+				get { lock (_sync) return _dialogHandle; }
+			}
+
+			IntPtr HookCallback(int code, IntPtr wParam, IntPtr lParam)
+			{
+				if (code == HCBT_ACTIVATE)
+				{
+					bool cancel = false;
+					lock (_sync)
+					{
+						if (_dialogHandle == IntPtr.Zero)
+						{
+							// wParam is the handle of the window being activated - i.e. the modal dialog.
+							_dialogHandle = wParam;
+							cancel = _cancelRequested;
+						}
+					}
+					// We only need the first activated (modal) window, so stop intercepting once captured.
+					Unhook();
+					if (cancel)
+						PostMessage(wParam, WM.CLOSE, IntPtr.Zero, IntPtr.Zero);
+				}
+				// hhk is ignored by CallNextHookEx, so passing Zero after unhooking is safe.
+				return CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+			}
+
+			/// <summary>
+			/// Requests the captured dialog to close. If the dialog has not appeared yet it is closed as soon as it is
+			/// shown. Safe to call on the UI thread while the dialog is being displayed.
+			/// </summary>
+			public void Cancel()
+			{
+				IntPtr handle;
+				lock (_sync)
+				{
+					_cancelRequested = true;
+					handle = _dialogHandle;
+				}
+				if (handle != IntPtr.Zero)
+					PostMessage(handle, WM.CLOSE, IntPtr.Zero, IntPtr.Zero);
+			}
+
+			void Unhook()
+			{
+				IntPtr hook;
+				lock (_sync)
+				{
+					hook = _hook;
+					_hook = IntPtr.Zero;
+				}
+				if (hook != IntPtr.Zero)
+					UnhookWindowsHookEx(hook);
+			}
+
+			public void Dispose() => Unhook();
+		}
+
+		/// <summary>
+		/// Reusable helper that handlers embed to implement cancellable modal dialogs via <see cref="ModalDialogHook"/>.
+		/// Wrap the blocking native show in <see cref="Show{T}"/> and forward the handler's <c>CancelDialog</c> to
+		/// <see cref="Cancel"/>.
+		/// </summary>
+		public sealed class CancellableModalDialog
+		{
+			readonly object _sync = new object();
+			ModalDialogHook _hook;
+
+			/// <summary>
+			/// Shows a blocking modal dialog, installing a hook beforehand so it can be cancelled by <see cref="Cancel"/>
+			/// while it is displayed.
+			/// </summary>
+			/// <param name="showDialog">Synchronous, blocking call that displays the native dialog and returns its result.</param>
+			public T Show<T>(Func<T> showDialog)
+			{
+				var hook = new ModalDialogHook();
+				lock (_sync)
+					_hook = hook;
+				try
+				{
+					return showDialog();
+				}
+				finally
+				{
+					lock (_sync)
+						_hook = null;
+					hook.Dispose();
+				}
+			}
+
+			/// <summary>
+			/// Cancels the dialog currently being shown by <see cref="Show{T}"/>, if any.
+			/// </summary>
+			public void Cancel()
+			{
+				ModalDialogHook hook;
+				lock (_sync)
+					hook = _hook;
+				hook?.Cancel();
+			}
+		}
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct MouseLowLevelHook

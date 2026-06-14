@@ -1,6 +1,6 @@
 namespace Eto.GtkSharp.Forms
 {
-	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
+	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler, CommonDialog.ICancellableHandler
 #if GTKCORE
 		where TControl: Gtk.FileChooserNative
 #else
@@ -112,6 +112,15 @@ namespace Eto.GtkSharp.Forms
 				System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
 			
 			return response;
+		}
+
+		public void CancelDialog()
+		{
+#if GTKCORE
+			Control.Hide();
+#else
+			Control.Respond((int)Gtk.ResponseType.Cancel);
+#endif
 		}
 
 		public void InsertFilter(int index, FileFilter filter)

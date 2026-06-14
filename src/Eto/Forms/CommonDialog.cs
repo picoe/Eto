@@ -76,6 +76,47 @@ public abstract class CommonDialog : Widget
 	}
 
 	/// <summary>
+	/// Shows the dialog asynchronously with the specified parent.
+	/// </summary>
+	public Task<DialogResult> ShowDialogAsync(Control parent, CancellationToken cancellationToken = default)
+	{
+		return ShowDialogAsync(parent != null ? parent.ParentWindow : null, cancellationToken);
+	}
+
+	/// <summary>
+	/// Shows the dialog asynchronously with the specified parent window.
+	/// </summary>
+	/// <remarks>
+	/// The dialog is shown using the platform's native modal display, which keeps the UI responsive while the
+	/// returned task is awaited.
+	///
+	/// Passing a <see cref="CancellationToken"/> that <see cref="CancellationToken.CanBeCanceled">can be cancelled</see>
+	/// requires the platform handler to implement <see cref="ICancellableHandler"/>, otherwise a
+	/// <see cref="NotSupportedException"/> is thrown. When no cancellable token is supplied the dialog is shown
+	/// asynchronously on all platforms regardless of cancellation support.
+	/// </remarks>
+	/// <param name="parent">Parent window.</param>
+	/// <param name="cancellationToken">Token used to cancel the dialog while it is displayed.</param>
+	public virtual Task<DialogResult> ShowDialogAsync(Window parent, CancellationToken cancellationToken = default)
+	{
+		Application.Instance.EnsureUIThread();
+
+		if (cancellationToken.IsCancellationRequested)
+			return Task.FromCanceled<DialogResult>(cancellationToken);
+
+		// Only require cancellation support when the caller actually supplies a token that can be cancelled.
+		// A missing/non-cancellable token still shows the dialog asynchronously on every platform.
+		var cancellableHandler = Handler as ICancellableHandler;
+		if (cancellationToken.CanBeCanceled && cancellableHandler == null)
+			throw new NotSupportedException($"{GetType().Name} does not support cancellation of asynchronous display.");
+
+		return AsyncModalDialog.Show(
+			() => Handler.ShowDialog(parent),
+			cancellableHandler != null ? cancellableHandler.CancelDialog : (Action)null,
+			cancellationToken);
+	}
+
+	/// <summary>
 	/// Handler interface for the <see cref="CommonDialog"/>
 	/// </summary>
 	public new interface IHandler : Widget.IHandler
@@ -86,5 +127,21 @@ public abstract class CommonDialog : Widget
 		/// <returns>The dialog result.</returns>
 		/// <param name="parent">Parent window.</param>
 		DialogResult ShowDialog(Window parent);
+	}
+
+	/// <summary>
+	/// Handler interface for common dialogs which support cancelling an active modal display.
+	/// </summary>
+	/// <remarks>
+	/// Handlers implement this to allow <see cref="ShowDialogAsync(Window, CancellationToken)"/> to be cancelled
+	/// via a <see cref="CancellationToken"/> while the dialog is shown. <see cref="CancelDialog"/> is always
+	/// invoked on the UI thread while the dialog is being displayed.
+	/// </remarks>
+	public interface ICancellableHandler : IHandler
+	{
+		/// <summary>
+		/// Cancels the active dialog, dismissing it as if the user cancelled it.
+		/// </summary>
+		void CancelDialog();
 	}
 }

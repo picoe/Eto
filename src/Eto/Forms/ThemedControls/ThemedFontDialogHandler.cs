@@ -3,9 +3,10 @@ namespace Eto.Forms.ThemedControls;
 /// <summary>
 /// A themed handler for the <see cref="FontDialog"/> control.
 /// </summary>
-public class ThemedFontDialogHandler : WidgetHandler<Widget, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
+public class ThemedFontDialogHandler : WidgetHandler<Widget, FontDialog, FontDialog.ICallback>, FontDialog.IHandler, CommonDialog.ICancellableHandler
 {
 	Font _font;
+	ThemedFontDialog _activeDialog;
 
 	/// <inheritdoc/>
 	public Font Font
@@ -41,7 +42,16 @@ public class ThemedFontDialogHandler : WidgetHandler<Widget, FontDialog, FontDia
 			Callback.OnFontChanged(Widget, EventArgs.Empty);
 		};
 
-		var result = parent != null ? dialog.ShowModal(parent) : dialog.ShowModal();
+		_activeDialog = dialog;
+		DialogResult result;
+		try
+		{
+			result = parent != null ? dialog.ShowModal(parent) : dialog.ShowModal();
+		}
+		finally
+		{
+			_activeDialog = null;
+		}
 
 		if (result == DialogResult.Ok)
 		{
@@ -54,6 +64,13 @@ public class ThemedFontDialogHandler : WidgetHandler<Widget, FontDialog, FontDia
 		Callback.OnFontChanged(Widget, EventArgs.Empty);
 		return DialogResult.Cancel;
 	}
+
+	/// <summary>
+	/// Closes the dialog while it is being shown, allowing the asynchronous
+	/// <see cref="CommonDialog.ShowDialogAsync(Window, CancellationToken)"/> to be cancelled. Because the dialog is a
+	/// managed Eto <see cref="Dialog"/>, closing it ends the modal display directly without any native interop.
+	/// </summary>
+	public void CancelDialog() => _activeDialog?.Close();
 
 	class ThemedFontDialog : Dialog<DialogResult>
 	{

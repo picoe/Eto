@@ -6,8 +6,10 @@ namespace Eto.WinForms.Forms
 namespace Eto.Wpf.Forms
 #endif
 {
-	public class VistaSelectFolderDialogHandler : WidgetHandler<cp.CommonOpenFileDialog, SelectFolderDialog>, SelectFolderDialog.IHandler
+	public class VistaSelectFolderDialogHandler : WidgetHandler<cp.CommonOpenFileDialog, SelectFolderDialog>, SelectFolderDialog.IHandler, CommonDialog.ICancellableHandler
 	{
+		readonly Win32.CancellableModalDialog _cancellable = new Win32.CancellableModalDialog();
+
 		public VistaSelectFolderDialogHandler()
 		{
 			Control = new cp.CommonOpenFileDialog
@@ -16,28 +18,29 @@ namespace Eto.Wpf.Forms
 			};
 		}
 
+		// A WH_CBT hook captured the native dialog's window handle when it was shown (see CancellableModalDialog),
+		// so the async ShowDialogAsync can dismiss exactly this dialog when its cancellation token is signalled.
+		public void CancelDialog() => _cancellable.Cancel();
+
 		public DialogResult ShowDialog(Window parent)
 		{
 			if (parent?.HasFocus == false)
 				parent.Focus();
-				
+
 #if WINFORMS
 			// use reflection since adding a parameter requires us to reference PresentationFramework which we don't want in winforms
-			cp.CommonFileDialogResult result;
 			var handle = parent.ToNative()?.Handle;
-			if (handle == null)
+			var result = _cancellable.Show(() =>
 			{
-				result = Control.ShowDialog();
-			}
-			else
-			{
+				if (handle == null)
+					return Control.ShowDialog();
 				var showDialogMethod = Control.GetType().GetMethod("ShowDialog", new[] { typeof(IntPtr) });
-				result = (cp.CommonFileDialogResult)showDialogMethod.Invoke(Control, new object[] { handle.Value });
-			}
+				return (cp.CommonFileDialogResult)showDialogMethod.Invoke(Control, new object[] { handle.Value });
+			});
 #elif WPF
 			// don't use WPF window, parent might be a HwndFormHandler
 			var wpfParent = parent?.NativeHandle;
-			var result = wpfParent != null ? Control.ShowDialog(wpfParent.Value) : Control.ShowDialog();
+			var result = _cancellable.Show(() => wpfParent != null ? Control.ShowDialog(wpfParent.Value) : Control.ShowDialog());
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 #endif
 			switch (result)

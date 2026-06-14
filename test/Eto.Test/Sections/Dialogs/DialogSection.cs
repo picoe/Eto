@@ -3,7 +3,8 @@ namespace Eto.Test.Sections.Dialogs
 	[Section("Dialogs", typeof(Dialog))]
 	public class DialogSection : Scrollable
 	{
-		public bool UseAsync { get; set; }
+		readonly AsyncDialogOptions asyncOptions = new AsyncDialogOptions();
+
 		public bool AddButtons { get; set; }
 		public bool SetResizable { get; set; }
 		public bool SetMinimizable { get; set; }
@@ -16,7 +17,8 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			var layout = new DynamicLayout { Spacing = new Size(20, 20), DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddSeparateRow(null, UseAsyncCheckBox(), AddButtonsCheckBox(), SetOwnerCheckBox(), null);
+			layout.AddSeparateRow(null, AddButtonsCheckBox(), SetOwnerCheckBox(), null);
+			layout.AddSeparateRow(null, asyncOptions, null);
 			layout.AddSeparateRow(null, ResizableCheckBox(), MinimizableCheckBox(), MaximizableCheckBox(), null);
 			layout.AddSeparateRow(null, "DisplayMode", DisplayModeDropDown(), "WindowState", WindowStateDropDown(), null);
 			layout.BeginVertical();
@@ -33,13 +35,6 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			var control = new CheckBox { Text = "Set owner" };
 			control.CheckedBinding.Bind(this, c => c.SetOwner);
-			return control;
-		}
-
-		Control UseAsyncCheckBox()
-		{
-			var control = new CheckBox { Text = "Use Async" };
-			control.CheckedBinding.Bind(this, c => c.UseAsync);
 			return control;
 		}
 
@@ -177,25 +172,11 @@ namespace Eto.Test.Sections.Dialogs
 			return control;
 		}
 
-		public async void Show(Dialog dialog, Control parent)
+		public void Show(Dialog dialog, Control parent)
 		{
-			if (UseAsync)
-			{
-				Log.Write(null, "Showing dialog async...");
-				var dialogTask = SetOwner ? dialog.ShowModalAsync(parent) : dialog.ShowModalAsync();
-				Log.Write(null, "Waiting for dialog to close...");
-				await dialogTask;
-				Log.Write(null, "Dialog closed");
-			}
-			else
-			{
-				Log.Write(null, "Showing dialog (blocking)...");
-				if (SetOwner)
-					dialog.ShowModal(parent);
-				else
-					dialog.ShowModal();
-				Log.Write(null, "Dialog closed");
-			}
+			asyncOptions.RunModal(dialog,
+				() => { if (SetOwner) dialog.ShowModal(parent); else dialog.ShowModal(); },
+				token => SetOwner ? dialog.ShowModalAsync(parent, token) : dialog.ShowModalAsync(token));
 		}
 	}
 }

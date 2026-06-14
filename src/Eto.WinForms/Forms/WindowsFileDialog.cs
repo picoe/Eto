@@ -1,9 +1,15 @@
 namespace Eto.WinForms.Forms
 {
-	public abstract class WindowsFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
+	public abstract class WindowsFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler, CommonDialog.ICancellableHandler
 		where TControl : swf.FileDialog
 		where TWidget : FileDialog
 	{
+		readonly Win32.CancellableModalDialog _cancellable = new Win32.CancellableModalDialog();
+
+		// A WH_CBT hook captured the native dialog's window handle when it was shown (see CancellableModalDialog),
+		// allowing the async ShowDialogAsync to dismiss exactly this dialog when its cancellation token is signalled.
+		public void CancelDialog() => _cancellable.Cancel();
+
 		public string FileName
 		{
 			get { return Control.FileName; }
@@ -85,11 +91,9 @@ namespace Eto.WinForms.Forms
 
 			SetFilters();
 
-			swf.DialogResult dr;
-			if (parent != null)
-				dr = Control.ShowDialog((swf.Control)parent.ControlObject);
-			else
-				dr = Control.ShowDialog();
+			var dr = _cancellable.Show(() => parent != null
+				? Control.ShowDialog((swf.Control)parent.ControlObject)
+				: Control.ShowDialog());
 			return dr.ToEto();
 		}
 	}

@@ -1,9 +1,9 @@
 namespace Eto.GtkSharp.Forms
 {
 #if GTKCORE
-	public class SelectFolderDialogHandler : WidgetHandler<Gtk.FileChooserNative, SelectFolderDialog>, SelectFolderDialog.IHandler
+	public class SelectFolderDialogHandler : WidgetHandler<Gtk.FileChooserNative, SelectFolderDialog>, SelectFolderDialog.IHandler, CommonDialog.ICancellableHandler
 #else
-	public class SelectFolderDialogHandler : WidgetHandler<Gtk.FileChooserDialog, SelectFolderDialog>, SelectFolderDialog.IHandler
+	public class SelectFolderDialogHandler : WidgetHandler<Gtk.FileChooserDialog, SelectFolderDialog>, SelectFolderDialog.IHandler, CommonDialog.ICancellableHandler
 #endif
 	{
 		public SelectFolderDialogHandler()
@@ -36,6 +36,15 @@ namespace Eto.GtkSharp.Forms
 			if (response == DialogResult.Ok) System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
 
 			return response;
+		}
+
+		public void CancelDialog()
+		{
+#if GTKCORE
+			Control.Hide();
+#else
+			Control.Respond((int)Gtk.ResponseType.Cancel);
+#endif
 		}
 
 		public string Title

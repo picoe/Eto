@@ -11,12 +11,15 @@ namespace Eto.Test.Sections.Dialogs
 
 		string InitialFolder { get; set; } = EtoEnvironment.GetFolderPath(EtoSpecialFolder.Documents);
 
+		readonly AsyncDialogOptions asyncOptions = new AsyncDialogOptions();
+
 		public SelectFolderSection()
 		{
 			var layout = new DynamicLayout { Spacing = new Size(20, 20), DefaultSpacing = new Size(5, 5), Padding = 10 };
 
 			layout.AddSeparateRow(null, "Title:", TitleTextBox(), null);
 			layout.AddSeparateRow(null, SetParentCheckBox(), SetInitialFolderCheckBox(), null);
+			layout.AddSeparateRow(null, asyncOptions, null);
 			layout.AddSeparateRow(null, SelectFolder(), null);
 
 			layout.Add(null);
@@ -59,14 +62,18 @@ namespace Eto.Test.Sections.Dialogs
 
 				if (SetInitialFolder)
 					dialog.Directory = InitialFolder;
-				
-				var result = SetDialogParent ? dialog.ShowDialog(ParentWindow) : dialog.ShowDialog(null);
-				if (result == DialogResult.Ok)
-				{
-					Log.Write(dialog, "Result: {0}, Folder: {1}", result, dialog.Directory);
-				}
-				else
-					Log.Write(dialog, "Result: {0}", result);
+
+				var parent = SetDialogParent ? ParentWindow : null;
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(parent),
+					token => dialog.ShowDialogAsync(parent, token),
+					result =>
+					{
+						if (result == DialogResult.Ok)
+							Log.Write(dialog, "Result: {0}, Folder: {1}", result, dialog.Directory);
+						else
+							Log.Write(dialog, "Result: {0}", result);
+					});
 			};
 			return button;
 		}

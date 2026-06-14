@@ -5,6 +5,8 @@ namespace Eto.Test.Sections.Dialogs
 	{
 		public bool AllowAlpha { get; set; }
 
+		readonly AsyncDialogOptions asyncOptions = new AsyncDialogOptions();
+
 		public ColorDialogSection() : this(true)
 		{
 
@@ -19,6 +21,7 @@ namespace Eto.Test.Sections.Dialogs
 
 			layout.BeginCentered();
 			layout.Add(CreateAllowAlphaCheckBox());
+			layout.Add(asyncOptions);
 			layout.Add(PickColor());
 			layout.Add(PickColorWithStartingColor());
 			if (showCreateDialog)
@@ -62,13 +65,16 @@ namespace Eto.Test.Sections.Dialogs
 					// you need to handle this event for OS X, where the dialog is a floating window
 					Log.Write(dialog, "ColorChanged, Color: {0}", dialog.Color);
 				};
-				var result = dialog.ShowDialog(ParentWindow);
-				if (result == DialogResult.Ok)
-				{
-					Log.Write(dialog, "Result: {0}, Color: {1}", result, dialog.Color);
-				}
-				else
-					Log.Write(dialog, "Result: {0}", result);
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(ParentWindow),
+					token => dialog.ShowDialogAsync(ParentWindow, token),
+					result =>
+					{
+						if (result == DialogResult.Ok)
+							Log.Write(dialog, "Result: {0}, Color: {1}", result, dialog.Color);
+						else
+							Log.Write(dialog, "Result: {0}", result);
+					});
 			};
 			return button;
 		}
@@ -88,13 +94,16 @@ namespace Eto.Test.Sections.Dialogs
 					// need to handle this event for OS X, where the dialog is a floating window
 					Log.Write(dialog, "ColorChanged, Color: {0}", dialog.Color);
 				};
-				var result = dialog.ShowDialog(ParentWindow);
-				if (result == DialogResult.Ok)
-				{
-					Log.Write(dialog, "Result: {0}, Color: {1}", result, dialog.Color);
-				}
-				else
-					Log.Write(dialog, "Result: {0}", result);
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(ParentWindow),
+					token => dialog.ShowDialogAsync(ParentWindow, token),
+					result =>
+					{
+						if (result == DialogResult.Ok)
+							Log.Write(dialog, "Result: {0}, Color: {1}", result, dialog.Color);
+						else
+							Log.Write(dialog, "Result: {0}", result);
+					});
 			};
 			return button;
 		}

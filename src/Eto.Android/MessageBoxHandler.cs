@@ -10,7 +10,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android
 {
-	internal class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
+	internal class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler, MessageBox.IAsyncHandler
 	{
 		public System.String Text
 		{
@@ -51,10 +51,36 @@ namespace Eto.Android
 			throw new NotSupportedException("Android platform supports only async dialogs. Use ShowAsync()");
 		}
 
-		public void ShowDialogWithCallback(Action<DialogResult> callback, Control parent)
+		public Task<DialogResult> ShowDialogAsync(Control parent, CancellationToken cancellationToken = default)
+		{
+			var tcs = new TaskCompletionSource<DialogResult>();
+			CancellationTokenRegistration ctr = default;
+
+			var dialog = ShowDialogWithCallback(result => tcs.TrySetResult(result), parent);
+
+			if (cancellationToken.CanBeCanceled)
+			{
+				ctr = cancellationToken.Register(() =>
+				{
+					dialog?.Dismiss();
+					tcs.TrySetCanceled();
+				});
+
+				tcs.Task.ContinueWith(_ => ctr.Dispose(), TaskScheduler.Default);
+			}
+			else if (cancellationToken.IsCancellationRequested)
+			{
+				dialog?.Dismiss();
+				tcs.TrySetCanceled();
+			}
+
+			return tcs.Task;
+		}
+
+		public aa.AlertDialog ShowDialogWithCallback(Action<DialogResult> callback, Control parent)
 		{
 			var Builder = CreateDialog(callback);
-			Builder.Show();
+			return Builder.Show();
 		}
 
 		private aa.AlertDialog.Builder CreateDialog(Action<DialogResult> callback)
