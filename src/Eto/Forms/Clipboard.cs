@@ -15,6 +15,34 @@ public class Clipboard : Widget, IDataObject
 	static readonly object Clipboard_Key = new object();
 
 	/// <summary>
+	/// Identifier for handlers when attaching the <see cref="Changed"/> event.
+	/// </summary>
+	public const string ChangedEvent = "Clipboard.Changed";
+
+	/// <summary>
+	/// Occurs when the system clipboard contents have changed.
+	/// </summary>
+	public event EventHandler<EventArgs> Changed
+	{
+		add { Properties.AddHandlerEvent(ChangedEvent, value); }
+		remove { Properties.RemoveEvent(ChangedEvent, value); }
+	}
+
+	/// <summary>
+	/// Raises the <see cref="Changed"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments.</param>
+	protected virtual void OnChanged(EventArgs e)
+	{
+		Properties.TriggerEvent(ChangedEvent, this, e);
+	}
+
+	static Clipboard()
+	{
+		EventLookup.Register<Clipboard>(c => c.OnChanged(null), Clipboard.ChangedEvent);
+	}
+
+	/// <summary>
 	/// Gets the shared clipboard instance
 	/// </summary>
 	/// <value>The clipboard instance.</value>
@@ -306,5 +334,34 @@ public class Clipboard : Widget, IDataObject
 		/// <param name="value">Value returned</param>
 		/// <returns>True if the value was returned, false otherwise</returns>
 		bool TryGetObject(string type, Type objectType, out object value);
+	}
+
+	/// <summary>
+	/// Callback interface for <see cref="Clipboard"/>.
+	/// </summary>
+	public new interface ICallback : Widget.ICallback
+	{
+		/// <summary>
+		/// Raises the <see cref="Changed"/> event.
+		/// </summary>
+		void OnChanged(Clipboard widget, EventArgs e);
+	}
+
+	static readonly object callback = new Callback();
+
+	/// <inheritdoc/>
+	protected override object GetCallback() => callback;
+
+	/// <summary>
+	/// Callback implementation for handlers of <see cref="Clipboard"/>.
+	/// </summary>
+	protected class Callback : ICallback
+	{
+		/// <inheritdoc cref="ICallback.OnChanged"/>.
+		public void OnChanged(Clipboard widget, EventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnChanged(e);
+		}
 	}
 }
