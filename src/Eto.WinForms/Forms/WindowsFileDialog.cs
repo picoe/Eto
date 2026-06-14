@@ -84,6 +84,7 @@ namespace Eto.WinForms.Forms
 				parent.Focus();
 
 			SetFilters();
+			Control.RestoreDirectory = true;
 
 			swf.DialogResult dr;
 			if (parent != null)

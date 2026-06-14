@@ -33,8 +33,7 @@ namespace Eto.GtkSharp.Forms
 #endif
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto();
-			if (response == DialogResult.Ok) System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
-
+			
 			return response;
 		}
 

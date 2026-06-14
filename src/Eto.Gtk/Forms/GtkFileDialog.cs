@@ -108,9 +108,7 @@ namespace Eto.GtkSharp.Forms
 #endif
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
-			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))
-				System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
-			
+
 			return response;
 		}
 

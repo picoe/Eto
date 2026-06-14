@@ -64,6 +64,7 @@ namespace Eto.Wpf.Forms
 			if (parent?.HasFocus == false)
 				parent.Focus();
 			SetFilters();
+			Control.RestoreDirectory = true;
 			return base.ShowDialog(parent);
 		}
 
