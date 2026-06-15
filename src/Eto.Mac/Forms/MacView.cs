@@ -1462,6 +1462,8 @@ namespace Eto.Mac.Forms
 			MacView.InMouseTrackingLoop = false;
 
 			var session = ContainerControl.BeginDraggingSession(draggingItems, NSApplication.SharedApplication.CurrentEvent, source);
+			if (session == null) // could not start dragging, likely because the mouse event was not a mouse down
+				return;
 			handler.Apply(session.DraggingPasteboard);
 
 			SetupDragPasteboard(session.DraggingPasteboard);
