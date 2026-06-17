@@ -133,7 +133,8 @@ namespace Eto.WinForms
 				return false;
 
 			var modifiers = swf.Control.ModifierKeys.ToEto();
-			var delta = new SizeF(0, Win32.GetWheelDeltaWParam(be.Message.WParam) / WinConversions.WheelDelta);
+			var wheelDelta = Win32.GetWheelDeltaWParam(be.Message.WParam) / WinConversions.WheelDelta;
+			var delta = be.Message.Msg == (int)Win32.WM.MOUSEHWHEEL ? new SizeF(-wheelDelta, 0) : new SizeF(0, wheelDelta);
 			var buttons = Win32.GetMouseButtonWParam(be.Message.WParam).ToEto();
 			if (modifyButtons != null)
 				buttons = modifyButtons(buttons);

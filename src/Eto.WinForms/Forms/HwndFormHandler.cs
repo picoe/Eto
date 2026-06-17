@@ -844,5 +844,8 @@ namespace Eto.WinForms.Forms
 		public bool IsMouseCaptured => throw new NotImplementedException();
 		public bool CaptureMouse() => throw new NotImplementedException();
 		public void ReleaseMouseCapture() => throw new NotImplementedException();
+		public void AddGesture(Gesture item) { }
+		public void ClearGestures() { }
+		public void RemoveGesture(Gesture item) { }
 	}
 }

@@ -481,6 +481,24 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 	/// <inheritdoc />
 	public void ReleaseMouseCapture() => Control.ReleaseMouseCapture();
 
+	/// <inheritdoc />
+	public virtual void AddGesture(Gesture item)
+	{
+		Control.Gestures.Add(item);
+	}
+
+	/// <inheritdoc />
+	public virtual void ClearGestures()
+	{
+		Control.Gestures.Clear();
+	}
+
+	/// <inheritdoc />
+	public virtual void RemoveGesture(Gesture item)
+	{
+		Control.Gestures.Remove(item);
+	}
+
 	#endregion
 
 }

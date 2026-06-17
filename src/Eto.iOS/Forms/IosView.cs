@@ -334,6 +334,9 @@ namespace Eto.iOS.Forms
 			get { return null; }
 			set { }
 		}
+
+		public virtual void AddGesture(Gesture item) { }
+		public virtual void ClearGestures() { }
+		public virtual void RemoveGesture(Gesture item) { }
 	}
 }
-

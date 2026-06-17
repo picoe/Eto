@@ -23,6 +23,58 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		}
 	}
 
+	static readonly object GesturesKey = new object();
+
+	/// <summary>
+	/// Gets the gestures attached to this control.
+	/// </summary>
+	public Collection<Gesture> Gestures => Properties.Create(GesturesKey, () => new GestureCollection(this));
+
+	class GestureCollection : Collection<Gesture>
+	{
+		public GestureCollection(Control control)
+		{
+			this.control = control;
+		}
+
+		private readonly Control control;
+
+		protected override void InsertItem(int index, Gesture item)
+		{
+			control.Handler.AddGesture(item);
+			item.Control = control;
+			base.InsertItem(index, item);
+		}
+
+		protected override void ClearItems()
+		{
+			foreach (var item in this)
+			{
+				item.Control = null;
+			}
+			control.Handler.ClearGestures();
+			base.ClearItems();
+		}
+
+		protected override void RemoveItem(int index)
+		{
+			var item = this[index];
+			control.Handler.RemoveGesture(item);
+			item.Control = null;
+			base.RemoveItem(index);
+		}
+
+		protected override void SetItem(int index, Gesture item)
+		{
+			var oldItem = this[index];
+			control.Handler.AddGesture(item);
+			control.Handler.RemoveGesture(oldItem);
+			oldItem.Control = null;
+			item.Control = control;
+			base.SetItem(index, item);
+		}
+	}
+
 	/// <summary>
 	/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown
 	/// </summary>
@@ -2106,6 +2158,20 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// Releases the mouse capture after a call to <see cref="CaptureMouse"/>.
 		/// </summary>
 		void ReleaseMouseCapture();
+		/// <summary>
+		/// Adds a gesture to the control.
+		/// </summary>
+		/// <param name="item">Gesture to add.</param>
+		void AddGesture(Gesture item);
+		/// <summary>
+		/// Removes all gestures from the control.
+		/// </summary>
+		void ClearGestures();
+		/// <summary>
+		/// Removes a gesture from the control.
+		/// </summary>
+		/// <param name="item">Gesture to remove.</param>
+		void RemoveGesture(Gesture item);
 	}
 	#endregion
 }
