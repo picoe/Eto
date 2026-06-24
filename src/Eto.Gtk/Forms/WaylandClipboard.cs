@@ -32,7 +32,12 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		/// <summary>Default time budget for a blocking clipboard read, in milliseconds.</summary>
+		/// <summary>
+		/// Inactivity budget for a blocking clipboard read, in milliseconds. A read gives up only after this
+		/// long with no further data, so large but steady transfers complete while a stalled or dead source
+		/// bails promptly. Reads run synchronously on the calling (often UI) thread, so this also bounds how
+		/// long a paste can stall the UI when the owning application is unresponsive.
+		/// </summary>
 		public static int ReadTimeoutMs { get; set; } = 1000;
 
 		public static string GetText()
@@ -146,6 +151,11 @@ namespace Eto.GtkSharp.Forms
 			{
 				if (initTried)
 					return;
+				// One-shot by design: the platform (X11/Wayland, compositor, data-control support) is fixed for
+				// the process, and the choice between this backend and the GTK handler is made once at handler
+				// registration. We latch before attempting so a failure can't make every clipboard call retry
+				// (and re-spawn the connection/dispatch thread). A transient first-attempt failure therefore
+				// disables this backend for the process; in practice the failure modes here are all permanent.
 				initTried = true;
 				try
 				{
@@ -217,10 +227,17 @@ namespace Eto.GtkSharp.Forms
 		static extern int close(int fd);
 		[DllImport("libc", SetLastError = true)]
 		static extern int poll([In, Out] Pollfd[] fds, nuint nfds, int timeout);
+		[DllImport("libc", SetLastError = true)]
+		static extern int fcntl(int fd, int cmd, int arg);
 
 		const int O_CLOEXEC = 0x80000;
 		const int O_NONBLOCK = 0x800;
 		const short POLLIN = 0x001;
+		const short POLLOUT = 0x004;
+		const int F_GETFL = 3;
+		const int F_SETFL = 4;
+		const int EAGAIN = 11;     // == EWOULDBLOCK on Linux
+		const int EINTR = 4;
 
 		[StructLayout(LayoutKind.Explicit, Size = 8)]
 		struct WlArgument
@@ -293,7 +310,11 @@ namespace Eto.GtkSharp.Forms
 			IntPtr seat;
 			IntPtr manager;
 			IntPtr device;
-			IntPtr source;                 // our currently-owned source (or zero)
+			// 'source' (our currently-owned data source proxy) is touched by PublishSelection on the caller
+			// thread and OnSourceCancelled on the dispatch thread; all reads/writes/destroys go through sourceLock
+			// so a republish can never race a cancellation into a double-destroy. weOwn is also written under it.
+			readonly object sourceLock = new object();
+			IntPtr source;                 // our currently-owned source (or zero); guarded by sourceLock
 			Thread dispatchThread;
 			volatile bool running;
 			int[] wakePipe;
@@ -459,9 +480,17 @@ namespace Eto.GtkSharp.Forms
 					return currentMimes.ToArray();
 			}
 
+				// Absolute bounds for a single read so a hostile/buggy source cannot wedge the (often UI) thread
+				// or exhaust memory with a steady trickle: MaxReadMs caps total wall-clock regardless of progress,
+				// MaxReadBytes caps accumulated size. timeoutMs remains the idle (no-progress) bound on top of these.
+				const int MaxReadMs = 5000;
+				const long MaxReadBytes = 256L * 1024 * 1024;
+
 				public byte[] Receive(string mime, int timeoutMs)
 				{
-					// If we own the selection, serve our own data directly (no compositor round-trip).
+					// If we own the selection, serve our own data directly (no compositor round-trip). weOwn is a
+					// best-effort fast path: if ownership is lost concurrently we may serve the data we last
+					// published, which is the inherent "value just before the change" clipboard race and harmless.
 					if (weOwn)
 						lock (entriesLock)
 						{
@@ -472,121 +501,147 @@ namespace Eto.GtkSharp.Forms
 									return (byte[])entry.Value.Clone();
 						}
 
-					IntPtr offer;
-					string offerMime;
-					lock (stateLock)
+					var fds = new int[2];
+					if (pipe2(fds, O_CLOEXEC) != 0)
+						return null;
+					int rfd = fds[0], wfd = fds[1];
+
+					try
 					{
-						offer = currentOffer;
-						offerMime = currentMimes.FirstOrDefault(m => string.Equals(m, mime, StringComparison.OrdinalIgnoreCase));
-						if (offer == IntPtr.Zero || offerMime == null)
-							return null;
+						// Hold stateLock across the receive request: OnDeviceSelection (dispatch thread) destroys the
+						// current offer under the same lock, so this prevents it from freeing the proxy between us
+						// reading currentOffer and marshalling the request on it (use-after-free).
+						lock (stateLock)
+						{
+							var offer = currentOffer;
+							var offerMime = currentMimes.FirstOrDefault(m => string.Equals(m, mime, StringComparison.OrdinalIgnoreCase));
+							if (offer == IntPtr.Zero || offerMime == null)
+								return null;
+							var mimePtr = Utf8(offerMime);
+							try
+							{
+								// offer.receive(mime, wfd)  (opcode 0, sig "sh")
+								wl_proxy_marshal_array_flags(offer, 0, IntPtr.Zero, 0, 0, new[] { ArgP(mimePtr), ArgI(wfd) });
+								wl_display_flush(display);
+							}
+							finally
+							{
+								Marshal.FreeHGlobal(mimePtr);
+							}
+						}
+
+						close(wfd); // we only read; the sending client owns the write end now
+						wfd = -1;
+
+						using var ms = new MemoryStream();
+						var buf = new byte[8192];
+						var pfd = new Pollfd[1];
+						// idleDeadline: bail after timeoutMs with NO progress, so steady transfers complete but a
+						// stalled/dead source bails promptly. hardDeadline: absolute ceiling so a steady trickle
+						// can't wedge the thread indefinitely. MaxReadBytes bounds memory either way.
+						var idleDeadline = System.Environment.TickCount64 + timeoutMs;
+						var hardDeadline = System.Environment.TickCount64 + System.Math.Max(timeoutMs, MaxReadMs);
+						while (true)
+						{
+							long now = System.Environment.TickCount64;
+							int remaining = (int)(System.Math.Min(idleDeadline, hardDeadline) - now);
+							if (remaining <= 0)
+								return null; // no progress for timeoutMs, or absolute MaxReadMs ceiling hit
+							pfd[0].fd = rfd; pfd[0].events = POLLIN; pfd[0].revents = 0;
+							int pr = poll(pfd, 1, remaining);
+							if (pr <= 0)
+								return null; // timeout or poll error
+							nint n = read(rfd, buf, (nuint)buf.Length);
+							if (n < 0)
+							{
+								int err = Marshal.GetLastWin32Error();
+								if (err == EAGAIN || err == EINTR)
+									continue;
+								return null; // read error
+							}
+							if (n == 0)
+								break; // EOF: transfer complete
+							ms.Write(buf, 0, (int)n);
+							if (ms.Length > MaxReadBytes)
+								return null; // refuse a pathologically large payload
+							idleDeadline = System.Environment.TickCount64 + timeoutMs; // progress: reset idle timer only
+						}
+						return ms.ToArray();
 					}
-
-				var fds = new int[2];
-				if (pipe2(fds, O_CLOEXEC) != 0)
-					return null;
-				int rfd = fds[0], wfd = fds[1];
-
-				var mimePtr = Utf8(offerMime);
-				try
-				{
-					// offer.receive(mime, wfd)  (opcode 0, sig "sh")
-					wl_proxy_marshal_array_flags(offer, 0, IntPtr.Zero, 0, 0, new[] { ArgP(mimePtr), ArgI(wfd) });
-					wl_display_flush(display);
-				}
-				finally
-				{
-					Marshal.FreeHGlobal(mimePtr);
-					close(wfd); // we only read
-				}
-
-				try
-				{
-					using var ms = new MemoryStream();
-					var buf = new byte[8192];
-					var pfd = new Pollfd[1];
-					var deadline = System.Environment.TickCount64 + timeoutMs;
-					while (true)
+					finally
 					{
-						int remaining = (int)(deadline - System.Environment.TickCount64);
-						if (remaining <= 0)
-							return null;
-						pfd[0].fd = rfd; pfd[0].events = POLLIN; pfd[0].revents = 0;
-						int pr = poll(pfd, 1, remaining);
-						if (pr <= 0)
-							return pr == 0 ? null : null; // timeout or error
-						nint n = read(rfd, buf, (nuint)buf.Length);
-						if (n <= 0)
-							break; // EOF
-						ms.Write(buf, 0, (int)n);
+						if (wfd >= 0)
+							close(wfd);
+						close(rfd);
 					}
-					return ms.ToArray();
 				}
-				finally
-				{
-					close(rfd);
-				}
-			}
 
 			// ---- publishing our own selection ----
 
 			public void PublishSelection()
 			{
-				// Rebuild a fresh data source from the accumulated entries and own the selection.
-				// All proxy calls are thread-safe in libwayland; the dispatch thread serves send events.
+				// Snapshot the mime set under entriesLock, then do all proxy/source work under sourceLock.
+				// The two locks are never held at once (here or anywhere), so there is no ordering hazard.
+				// Wire marshalling is internally serialised by libwayland; sourceLock only protects the
+				// lifetime of the 'source' proxy against a concurrent OnSourceCancelled on the dispatch thread.
 				string[] mimes;
 				lock (entriesLock)
 				{
 					if (entries.Count == 0)
 					{
+						mimes = null;
+					}
+					else
+					{
+						mimes = new string[entries.Count];
+						entries.Keys.CopyTo(mimes, 0);
+					}
+				}
+
+				lock (sourceLock)
+				{
+					// destroy the previous source (if any) exactly once
+					if (source != IntPtr.Zero)
+					{
+						var old = source;
+						source = IntPtr.Zero;
+						wl_proxy_marshal_array_flags(old, 1, IntPtr.Zero, 0, WL_MARSHAL_FLAG_DESTROY, null);
+					}
+
+					if (mimes == null)
+					{
+						// nothing to offer: clear ownership
 						weOwn = false;
-						// clear ownership
-						if (source != IntPtr.Zero)
-						{
-							var old = source;
-							source = IntPtr.Zero;
-							wl_proxy_marshal_array_flags(old, 1, IntPtr.Zero, 0, WL_MARSHAL_FLAG_DESTROY, null);
-						}
 						// device.set_selection(null)  (opcode 0, sig "?o")
 						wl_proxy_marshal_array_flags(device, 0, IntPtr.Zero, 0, 0, new[] { ArgP(IntPtr.Zero) });
 						wl_display_flush(display);
 						Wake();
 						return;
 					}
-					mimes = new string[entries.Count];
-					entries.Keys.CopyTo(mimes, 0);
-				}
 
-				// destroy previous source
-				if (source != IntPtr.Zero)
-				{
-					var old = source;
-					source = IntPtr.Zero;
-					wl_proxy_marshal_array_flags(old, 1, IntPtr.Zero, 0, WL_MARSHAL_FLAG_DESTROY, null);
-				}
+					// manager.create_data_source (opcode 0) -> source
+					source = wl_proxy_marshal_array_flags(manager, 0, ifSource, 1, 0, new[] { ArgNew });
+					if (source == IntPtr.Zero)
+					{
+						weOwn = false;
+						return;
+					}
+					wl_proxy_add_listener(source, sourceVtable, IntPtr.Zero);
 
-				// manager.create_data_source (opcode 0) -> source
-				source = wl_proxy_marshal_array_flags(manager, 0, ifSource, 1, 0, new[] { ArgNew });
-				if (source == IntPtr.Zero)
-				{
-					weOwn = false;
-					return;
-				}
-				wl_proxy_add_listener(source, sourceVtable, IntPtr.Zero);
+					foreach (var mime in mimes)
+					{
+						var p = Utf8(mime);
+						// source.offer(mime)  (opcode 0, sig "s")
+						wl_proxy_marshal_array_flags(source, 0, IntPtr.Zero, 0, 0, new[] { ArgP(p) });
+						Marshal.FreeHGlobal(p);
+					}
 
-				foreach (var mime in mimes)
-				{
-					var p = Utf8(mime);
-					// source.offer(mime)  (opcode 0, sig "s")
-					wl_proxy_marshal_array_flags(source, 0, IntPtr.Zero, 0, 0, new[] { ArgP(p) });
-					Marshal.FreeHGlobal(p);
+					// device.set_selection(source)  (opcode 0)
+					wl_proxy_marshal_array_flags(device, 0, IntPtr.Zero, 0, 0, new[] { ArgP(source) });
+					wl_display_flush(display);
+					weOwn = true;
+					Wake();
 				}
-
-				// device.set_selection(source)  (opcode 0)
-				wl_proxy_marshal_array_flags(device, 0, IntPtr.Zero, 0, 0, new[] { ArgP(source) });
-				wl_display_flush(display);
-				weOwn = true;
-				Wake();
 			}
 
 			// ---- listener callbacks (fire on dispatch thread) ----
@@ -645,19 +700,28 @@ namespace Eto.GtkSharp.Forms
 
 					currentOffer = offer;
 					if (offer != IntPtr.Zero && pendingOffers.TryGetValue(offer, out var list))
-					{
 						currentMimes = list;
-						pendingOffers.Remove(offer);
-					}
 					else
-					{
 						currentMimes = new List<string>();
+
+					// Destroy and drop every other announced-but-unselected offer. The compositor mints a
+					// fresh wl_data_offer per selection change, so anything still pending here is an orphan;
+					// without this they (and their proxies) accumulate for the life of the connection.
+					foreach (var kv in pendingOffers)
+					{
+						if (kv.Key != offer)
+							wl_proxy_marshal_array_flags(kv.Key, 1, IntPtr.Zero, 0, WL_MARSHAL_FLAG_DESTROY, null);
 					}
+					pendingOffers.Clear();
 				}
 				try { onSelectionChanged?.Invoke(); } catch { }
 			}
 
 			void OnDeviceFinished(IntPtr data, IntPtr dev) { }
+
+			// Maximum time a single selection transfer may take before we give up. A consumer that stops
+			// reading must never wedge us; this only bounds a stuck transfer, normal ones finish far sooner.
+			const int SendTimeoutMs = 5000;
 
 			void OnSourceSend(IntPtr data, IntPtr src, IntPtr mimePtr, int fd)
 			{
@@ -669,27 +733,64 @@ namespace Eto.GtkSharp.Forms
 						if (entries.TryGetValue(mime, out var entry))
 							payload = (byte[])entry.Clone();
 					}
+
+				// Serve on a background thread: writing to the consumer's fd can block on a large payload
+				// or a slow/non-reading consumer, and this runs on the single dispatch thread — blocking it
+				// would freeze all clipboard event processing. The fd ownership transfers to the writer; if the
+				// enqueue itself fails (e.g. OOM/teardown) we close it here so it can't leak.
 				try
 				{
-					if (payload != null && payload.Length > 0)
+					System.Threading.Tasks.Task.Run(() => WritePayload(fd, payload));
+				}
+				catch
+				{
+					close(fd);
+				}
+			}
+
+			static void WritePayload(int fd, byte[] payload)
+			{
+				try
+				{
+					if (payload == null || payload.Length == 0)
+						return;
+					// The poll(POLLOUT)+deadline bound below only works on a non-blocking fd; a blocking write()
+					// never returns EAGAIN and could wedge this thread forever on a stuck consumer. If we can't
+					// make it non-blocking, abandon the transfer (the finally closes fd -> consumer sees EOF).
+					if (!SetNonBlocking(fd))
+						return;
+					var handle = GCHandle.Alloc(payload, GCHandleType.Pinned);
+					try
 					{
-						var handle = GCHandle.Alloc(payload, GCHandleType.Pinned);
-						try
+						var ptr = handle.AddrOfPinnedObject();
+						int off = 0;
+						var pfd = new Pollfd[1];
+						var deadline = System.Environment.TickCount64 + SendTimeoutMs;
+						while (off < payload.Length)
 						{
-							var ptr = handle.AddrOfPinnedObject();
-							int off = 0;
-							while (off < payload.Length)
+							nint n = write(fd, ptr + off, (nuint)(payload.Length - off));
+							if (n > 0)
 							{
-								nint n = write(fd, ptr + off, (nuint)(payload.Length - off));
-								if (n <= 0)
-									break;
 								off += (int)n;
+								continue;
 							}
+							if (n < 0)
+							{
+								int err = Marshal.GetLastWin32Error();
+								if (err != EAGAIN && err != EINTR)
+									break; // real error (e.g. EPIPE: consumer closed its end)
+							}
+							int remaining = (int)(deadline - System.Environment.TickCount64);
+							if (remaining <= 0)
+								break; // stuck consumer: give up rather than leak this thread/fd forever
+							pfd[0].fd = fd; pfd[0].events = POLLOUT; pfd[0].revents = 0;
+							if (poll(pfd, 1, remaining) <= 0)
+								break; // timeout or error
 						}
-						finally
-						{
-							handle.Free();
-						}
+					}
+					finally
+					{
+						handle.Free();
 					}
 				}
 				finally
@@ -698,14 +799,27 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
+			static bool SetNonBlocking(int fd)
+			{
+				int flags = fcntl(fd, F_GETFL, 0);
+				if (flags < 0)
+					return false;
+				return fcntl(fd, F_SETFL, flags | O_NONBLOCK) >= 0;
+			}
+
 			void OnSourceCancelled(IntPtr data, IntPtr src)
 			{
-				if (src == source)
+				// Destroy the cancelled source exactly once. If it is no longer the current source, PublishSelection
+				// has already replaced and destroyed it, so destroying again here would be a double-free. Both
+				// paths take sourceLock, which serialises this decision against a concurrent republish.
+				lock (sourceLock)
 				{
+					if (src != source)
+						return;
 					source = IntPtr.Zero;
 					weOwn = false; // another client took ownership of the selection
+					wl_proxy_marshal_array_flags(src, 1, IntPtr.Zero, 0, WL_MARSHAL_FLAG_DESTROY, null);
 				}
-				wl_proxy_marshal_array_flags(src, 1, IntPtr.Zero, 0, WL_MARSHAL_FLAG_DESTROY, null);
 			}
 
 			// ---- building delegate vtables and interface tables ----

@@ -197,7 +197,13 @@ namespace Eto.GtkSharp
 			// Forms
 			p.Add<AboutDialog.IHandler>(() => new AboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
+#if NET6_0_OR_GREATER
+			p.Add<Clipboard.IHandler>(() => WaylandClipboard.IsAvailable
+				? (Clipboard.IHandler)new WaylandClipboardHandler()
+				: new ClipboardHandler());
+#else
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
+#endif
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());
