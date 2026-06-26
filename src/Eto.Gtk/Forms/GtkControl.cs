@@ -796,7 +796,13 @@ namespace Eto.GtkSharp.Forms
 				{
 					if (context != null)
 						return context;
-					context = new Gtk.IMMulticontext();
+					// Native TextBox/TextArea already own a system-IM (ibus) context on
+					// their GtkEntry/GtkTextView; a second focused IMMulticontext steals
+					// their input. Only Drawables (custom-drawn text) need a full IME
+					// here -- native widgets use the standalone IMContextSimple.
+					context = (Handler != null && HandlesDrawableComposition(Handler))
+						? (Gtk.IMContext)new Gtk.IMMulticontext()
+						: new Gtk.IMContextSimple();
 					context.UsePreedit = true;
 					context.PreeditStart += (o, args) =>
 					{
