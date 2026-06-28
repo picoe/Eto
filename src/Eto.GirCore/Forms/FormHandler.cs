@@ -1,0 +1,70 @@
+using System;
+
+namespace Eto.GirCore.Forms;
+
+public class FormHandler : GirWindow<Gtk.Window, Form, Form.ICallback>, Form.IHandler
+{
+	public FormHandler(Gtk.Window window)
+	{
+		Control = window;
+	}
+
+	public FormHandler()
+	{
+		Control = Gtk.ApplicationWindow.New((Gtk.Application)Application.Instance.ControlObject); //Gtk.WindowType.Toplevel);
+		Resizable = true;
+		// Control.SetPosition(Gtk.WindowPosition.Center);
+
+		var vbox = Gtk.Box.New(Gtk.Orientation.Vertical, 0);
+		vbox.Append(WindowActionControl);
+		vbox.Append(WindowContentControl);
+		Control.Child = vbox;
+	}
+
+	public async void Show()
+	{
+		DisableAutoSizeUpdate++;
+		// Control.Child.ShowAll();
+		Control.Realize();
+		Callback.OnLoadComplete(Widget, EventArgs.Empty);
+		if (ShowActivated) // || !Control.AcceptFocus)
+			Control.Show();
+		else
+		{
+			// Control.AcceptFocus = false;
+			Control.Show();
+			await Task.Delay(1); // why???  Only way I can get it to work properly on ubuntu 16.04
+								 // Control.AcceptFocus = CanFocus; // in case user changes it right after this call, but should be true
+		}
+		DisableAutoSizeUpdate--;
+	}
+
+	static object ShowActivated_Key = new object();
+
+	public bool ShowActivated
+	{
+		get { return Widget.Properties.Get<bool>(ShowActivated_Key, true); }
+		set { Widget.Properties.Set(ShowActivated_Key, value, true); }
+	}
+
+	static object CanFocus_Key = new object();
+
+	public bool CanFocus
+	{
+		get { return Widget.Properties.Get<bool>(CanFocus_Key, true); }
+		set => throw new NotImplementedException(); // Widget.Properties.Set(CanFocus_Key, value, () => Control.AcceptFocus = value, true);
+	}
+
+	public override bool Visible
+	{
+		get => base.Visible;
+		set
+		{
+			base.Visible = value;
+			if (ShowActivated && value)
+			{
+				Focus();
+			}
+		}
+	}
+}

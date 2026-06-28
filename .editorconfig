@@ -25,6 +25,7 @@ csharp_style_expression_bodied_accessors = true:silent
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
 csharp_space_around_binary_operators = before_and_after
+csharp_style_namespace_declarations = file_scoped
 
 [*.{csproj,vbproj,fsproj,proj,targets,props}]
 indent_style = space

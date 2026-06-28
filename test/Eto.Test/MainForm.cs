@@ -10,7 +10,7 @@ namespace Eto.Test
 		{
 			get
 			{
-				if (eventLog == null)
+				if (eventLog == null && Platform.Supports<TextArea>())
 				{
 					eventLog = new TextArea
 					{
@@ -89,7 +89,7 @@ namespace Eto.Test
 				Log.Write(this, "Error loading section: {0}", ex.ToString());
 				contentContainer.Content = null;
 			}
-			finally
+			try
 			{
 				if (navigation != null)
 				{
@@ -101,6 +101,11 @@ namespace Eto.Test
 					contentContainer.Content = content;
 				}
 			}
+			catch (Exception ex)
+			{
+				Log.Write(this, "Error showing section: {0}", ex.ToString());
+				contentContainer.Content = null;
+			}
 
 			// save the initial section
 			TestApplication.Settings.InitialSection = item?.Text;
@@ -109,7 +114,7 @@ namespace Eto.Test
 			GC.Collect();
 			GC.WaitForPendingFinalizers();
 #endif
-		}
+			}
 
 		public SectionList SectionList { get; set; }
 
@@ -138,19 +143,36 @@ namespace Eto.Test
 				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
 			}
+			if (Platform.Instance.Supports<TableLayout>())
+			{
+				return new TableLayout(new TableRow(SectionList.Control, RightPane())) { Padding = 5 };
+			}
 			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Platform must support splitter or navigation"));
 
 		}
 
 		Control RightPane()
 		{
-			return new Splitter
+			if (!Platform.Supports<TextArea>())
+				return contentContainer;
+
+			if (Platform.Supports<Splitter>())
 			{
-				Orientation = Orientation.Vertical,
-				FixedPanel = SplitterFixedPanel.Panel2,
-				Panel1 = contentContainer,
-				Panel2 = EventLogSection()
-			};
+				return new Splitter
+				{
+					Orientation = Orientation.Vertical,
+					FixedPanel = SplitterFixedPanel.Panel2,
+					Panel1 = contentContainer,
+					Panel2 = EventLogSection()
+				};
+			}
+
+			if (Platform.Supports<TableLayout>())
+			{
+				return new TableLayout(new TableRow(contentContainer) { ScaleHeight = true }, EventLogSection()) { Padding = 5 };
+			}
+
+			return contentContainer;
 		}
 
 		Control EventLogSection()

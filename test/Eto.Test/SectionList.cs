@@ -147,7 +147,7 @@ namespace Eto.Test
 
 		TableLayout layout;
 		GridView gridView;
-		SearchBox filterText;
+		TextBox filterText;
 
 		public override Control Control { get { return layout; } }
 		public override ISection SelectedItem
@@ -187,8 +187,13 @@ namespace Eto.Test
 			gridView.DataStore = items;
 			gridView.SelectionChanged += (sender, e) => OnSelectedItemChanged(e);
 
+			if (Platform.Instance.Supports<SearchBox>())
+				filterText = new SearchBox { PlaceholderText = "Filter" };
+			else
+				filterText = new TextBox { PlaceholderText = "Filter" };
+
 			layout = new TableLayout(
-				filterText = new SearchBox { PlaceholderText = "Filter" },
+				filterText,
 				gridView
 			);
 
@@ -228,7 +233,7 @@ namespace Eto.Test
 
 		TableLayout layout;
 		ListBox listBox;
-		SearchBox filterText;
+		TextBox filterText;
 
 		public override Control Control { get { return layout; } }
 		public override ISection SelectedItem
@@ -266,8 +271,13 @@ namespace Eto.Test
 			listBox.DataStore = items;
 			listBox.SelectedValueChanged += (sender, e) => OnSelectedItemChanged(e);
 
+			if (Platform.Instance.Supports<SearchBox>())
+				filterText = new SearchBox { PlaceholderText = "Filter" };
+			else
+				filterText = new TextBox { PlaceholderText = "Filter" };
+
 			layout = new TableLayout(
-				filterText = new SearchBox { PlaceholderText = "Filter" },
+				filterText,
 				listBox
 			);
 

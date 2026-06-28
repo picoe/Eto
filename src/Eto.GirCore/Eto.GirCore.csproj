@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) == ''">net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="$(TargetFrameworkOverride) != ''">$(TargetFrameworkOverride)</TargetFrameworks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>Eto.GirCore</RootNamespace>
+    <DefineConstants>$(DefineConstants);GTK4</DefineConstants>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>Eto.Platform.GirCore</PackageId>
+    <Title>Eto.Forms - GirCore Platform</Title>
+    <PackageTags>cross platform gui ui framework desktop gtk eto.forms</PackageTags>
+    <Description>GirCore Platform for the Eto.Forms UI Framework</Description>
+    <PackageDescription>
+This is the Gtk+4 platform for Eto.Forms UI Framework using GirCore.Gtk-4.0.
+
+Include this along with your Eto.Forms application to provide a GTK+4 interface, typically for Linux users.
+
+You do not need to use any of the classes of this assembly (unless customizing the GTK functionality of the platform), and should just use the UI controls from the Eto assembly.
+    </PackageDescription>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GirCore.Gtk-4.0" Version="0.8.0-preview.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\Conversions.cs">
+      <Link>Conversions.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
+      <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
+      <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>GradientHelper.cs</Link>
+    </Compile>
+  </ItemGroup>
+</Project>

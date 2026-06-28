@@ -1,0 +1,850 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Eto.GirCore.Forms;
+
+public interface IGtkWindow
+{
+	bool CloseWindow(Action<CancelEventArgs> closing = null);
+
+	Gtk.Window Control { get; }
+
+	Size UserPreferredSize { get; }
+
+	Window.ICallback Callback { get; }
+}
+
+
+static class GtkWindow
+{
+	internal static readonly object MovableByWindowBackground_Key = new object();
+	internal static readonly object DisableAutoSizeUpdate_Key = new object();
+	internal static readonly object AutoSizePerformed_Key = new object();
+	internal static readonly object AutoSize_Key = new object();
+	internal static readonly object Minimizable_Key = new object();
+	internal static readonly object Maximizable_Key = new object();
+	internal static readonly object ShowInTaskbar_Key = new object();
+}
+
+public abstract class GirWindow<TControl, TWidget, TCallback> : GirPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
+	where TControl : Gtk.Window
+	where TWidget : Window
+	where TCallback : Window.ICallback
+{
+	Gtk.Box vbox;
+	readonly Gtk.Box actionvbox;
+	readonly Gtk.Box topToolbarBox;
+	Gtk.Box menuBox;
+	Gtk.Box containerBox;
+	readonly Gtk.Box bottomToolbarBox;
+	MenuBar menuBar;
+	Icon icon;
+	Eto.Forms.ToolBar toolBar;
+	// Gtk.AccelGroup accelGroup;
+	Rectangle? restoreBounds;
+	Point? currentLocation;
+	Size minimumSize;
+	WindowState state;
+	WindowStyle style;
+	bool topmost;
+	bool resizable;
+	Size? clientSize;
+
+	protected GirWindow()
+	{
+		vbox = Gtk.Box.New(Gtk.Orientation.Vertical, 0);
+		actionvbox = Gtk.Box.New(Gtk.Orientation.Vertical, 0);
+
+		menuBox = Gtk.Box.New(Gtk.Orientation.Horizontal, 0);
+		topToolbarBox = Gtk.Box.New(Gtk.Orientation.Vertical, 0);
+
+		containerBox = Gtk.Box.New(Gtk.Orientation.Vertical, 0);
+		// containerBox.Resizable = true;
+		containerBox.Visible = true;
+
+		bottomToolbarBox = Gtk.Box.New(Gtk.Orientation.Vertical, 0);
+
+		actionvbox.Append(menuBox);
+		actionvbox.Append(topToolbarBox);
+		vbox.Append(containerBox);
+		vbox.Append(bottomToolbarBox);
+	}
+
+	protected override Color DefaultBackgroundColor
+	{
+		get => Colors.Transparent;
+	}
+
+	protected override bool UseMinimumSizeRequested
+	{
+		get { return false; }
+	}
+
+	public override Size MinimumSize
+	{
+		get { return minimumSize; }
+		set
+		{
+			minimumSize = value;
+			SetMinMax(null);
+		}
+	}
+
+	public override bool HasFocus => Control.HasFocus;
+
+	public Gtk.Widget WindowContentControl
+	{
+		get { return vbox; }
+	}
+
+	public Gtk.Widget WindowActionControl
+	{
+		get { return actionvbox; }
+	}
+
+	public override Gtk.Widget ContainerContentControl
+	{
+		get { return containerBox; }
+	}
+
+	public bool Resizable
+	{
+		get { return resizable; }
+		set
+		{
+			// containerBox.Resizable = value;
+			resizable = value;
+			Control.Resizable = value;
+			SetMinMax(null);
+		}
+	}
+
+	private void SetMinMax(Size? size)
+	{
+		// throw new NotImplementedException();
+		/*
+		var geom = new Gdk.Geometry();
+		geom.MinWidth = minimumSize.Width;
+		geom.MinHeight = minimumSize.Height;
+
+		Control.SetGeometryHints(Control, geom, Gdk.WindowHints.MinSize);
+		*/
+	}
+
+
+	public bool Minimizable
+	{
+		get => Widget.Properties.Get<bool>(GtkWindow.Minimizable_Key, true);
+		set
+		{
+			if (Widget.Properties.TrySet(GtkWindow.Minimizable_Key, value, true))
+				SetTypeHint();
+		}
+	}
+
+	public bool Maximizable
+	{
+		get => Widget.Properties.Get<bool>(GtkWindow.Maximizable_Key, true);
+		set
+		{
+			if (Widget.Properties.TrySet(GtkWindow.Maximizable_Key, value, true))
+				SetTypeHint();
+		}
+	}
+
+	public bool ShowInTaskbar
+	{
+		get => Widget.Properties.Get<bool>(GtkWindow.ShowInTaskbar_Key, true);
+		set => Widget.Properties.Set(GtkWindow.ShowInTaskbar_Key, value, true);
+	}
+
+	public bool Closeable
+	{
+		get => Control.Deletable;
+		set => Control.Deletable = value;
+	}
+
+	public bool Topmost
+	{
+		get { return topmost; }
+		set
+		{
+			if (topmost != value)
+			{
+				topmost = value;
+				// Control.KeepAbove = topmost;
+			}
+		}
+	}
+
+	public WindowStyle WindowStyle
+	{
+		get { return style; }
+		set
+		{
+			if (style != value)
+			{
+				style = value;
+
+				switch (style)
+				{
+					case WindowStyle.Default:
+						Control.Decorated = true;
+						break;
+					case WindowStyle.None:
+						Control.Decorated = false;
+						break;
+					case WindowStyle.Utility:
+						Control.Decorated = true;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+				SetTypeHint();
+			}
+		}
+	}
+
+	// protected virtual Gdk.WindowTypeHint DefaultTypeHint => Gdk.WindowTypeHint.Normal;
+
+	void SetTypeHint()
+	{
+		// GTK4 no longer exposes the GTK3/GDK type hint APIs used by the GTK backend.
+	}
+
+	public override Size Size
+	{
+		get => Widget.Loaded ? Control.GetAllocation() : UserPreferredSize;
+		set
+		{
+			DisableAutoSizeUpdate++;
+			UserPreferredSize = value;
+
+			if (Widget.Loaded)
+			{
+				clientSize = null;
+				Control.SetDefaultSize(value.Width, value.Height);
+				Control.QueueResize();
+			}
+			else
+			{
+				clientSize = null;
+				// this doesn't take into account window decoration size
+				// there doesn't seem to be an (easy) way to do that currently..
+				Control.SetDefaultSize(value.Width, value.Height);
+			}
+			SetMinMax(value);
+			DisableAutoSizeUpdate--;
+		}
+	}
+
+	public override Size ClientSize
+	{
+		get
+		{
+			if (Widget.Loaded && containerBox.Visible)
+			{
+				var size = containerBox.GetAllocation();
+				if (size.Width >= 0 && size.Height >= 0)
+					return size;
+			}
+
+			return clientSize ?? UserPreferredSize;
+		}
+		set
+		{
+			DisableAutoSizeUpdate++;
+			clientSize = value;
+			UserPreferredSize = value;
+			Control.SetDefaultSize(value.Width, value.Height);
+			Control.QueueResize();
+			SetMinMax(value);
+			DisableAutoSizeUpdate--;
+		}
+	}
+	public bool MovableByWindowBackground
+	{
+		get => Widget.Properties.Get<bool>(GtkWindow.MovableByWindowBackground_Key);
+		set
+		{
+			Widget.Properties.Set(GtkWindow.MovableByWindowBackground_Key, value);
+		}
+	}
+
+	/*
+	private void Control_Realized(object sender, EventArgs e)
+	{
+		Control.Realized -= Control_Realized;
+		Size size;
+		if (clientSize.HasValue)
+		{
+			size = clientSize.Value;
+		}
+		else
+		{
+			size = UserPreferredSize - WindowDecorationSize;
+		}
+
+		if (size.Width > 0 || size.Height > 0)
+		{
+			var allocated = Control.Allocation.Size;
+			if (size.Width < 0)
+				size.Width = allocated.Width;
+			if (size.Height < 0)
+				size.Height = allocated.Height;
+			Control.Resize(size.Width, size.Height);
+		}
+	}
+	*/
+
+	protected override void Initialize()
+	{
+		base.Initialize();
+
+		DisableAutoSizeUpdate++;
+		HandleEvent(Window.WindowStateChangedEvent); // to set restore bounds properly
+		HandleEvent(Window.ClosingEvent); // to chain application termination events
+		HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
+		HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
+		Control.SetSizeRequest(-1, -1);
+		// Control.Realized += Connector.Control_Realized;
+
+		// ApplicationHandler.Instance.RegisterIsActiveChanged(Control);
+	}
+
+	public override void OnLoadComplete(EventArgs e)
+	{
+		base.OnLoadComplete(e);
+		DisableAutoSizeUpdate--;
+	}
+
+	public override void AttachEvent(string id)
+	{
+		switch (id)
+		{
+			// case Eto.Forms.Control.KeyDownEvent:
+			// 	EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
+			// 	EventControl.KeyPressEvent += Connector.HandleWindowKeyPressEvent;
+			// 	break;
+			// case Window.ClosedEvent:
+			// 	HandleEvent(Window.ClosingEvent);
+			// 	break;
+			// case Window.ClosingEvent:
+			// 	Control.DeleteEvent += Connector.HandleDeleteEvent;
+			// 	break;
+			// case Eto.Forms.Control.ShownEvent:
+			// 	Control.Shown += Connector.HandleShownEvent;
+			// 	break;
+			// case Window.WindowStateChangedEvent:
+			// 	Connector.OldState = WindowState;
+			// 	Control.WindowStateEvent += Connector.HandleWindowStateEvent;
+			// 	break;
+			// case Eto.Forms.Control.SizeChangedEvent:
+			// 	Control.SizeAllocated += Connector.HandleWindowSizeAllocated;
+			// 	break;
+			// case Window.LocationChangedEvent:
+			// 	Control.ConfigureEvent += Connector.HandleConfigureEvent;
+			// 	break;
+			// case Window.LogicalPixelSizeChangedEvent:
+			// 	// not supported on GTK, yet.
+			// 	break;
+			default:
+				base.AttachEvent(id);
+				break;
+		}
+	}
+
+	protected new GirWindowConnector Connector { get { return (GirWindowConnector)base.Connector; } }
+
+	protected override WeakConnector CreateConnector()
+	{
+		return new GirWindowConnector();
+	}
+
+	protected class GirWindowConnector : GirPanelEventConnector
+	{
+		Size? oldSize;
+
+		public WindowState OldState { get; set; }
+
+		public new GirWindow<TControl, TWidget, TCallback> Handler => (GirWindow<TControl, TWidget, TCallback>)base.Handler;
+
+/*
+		public void HandleDeleteEvent(object o, Gtk.DeleteEventArgs args)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return;
+			args.RetVal = !handler.CloseWindow();
+		}
+
+		public void HandleShownEvent(object sender, EventArgs e)
+		{
+			var h = Handler;
+			if (h == null || h.WasClosed)
+				return;
+			Application.Instance.AsyncInvoke(() => h.Callback.OnShown(Handler.Widget, EventArgs.Empty));
+		}
+
+		public void HandleWindowStateEvent(object o, Gtk.WindowStateEventArgs args)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return;
+			var windowState = handler.WindowState;
+			if (windowState == WindowState.Normal)
+			{
+				if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Maximized) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Maximized))
+				{
+					handler.restoreBounds = handler.Widget.Bounds;
+				}
+				else if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Iconified) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Iconified))
+				{
+					handler.restoreBounds = handler.Widget.Bounds;
+				}
+				else if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Fullscreen) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Fullscreen))
+				{
+					handler.restoreBounds = handler.Widget.Bounds;
+				}
+			}
+
+			if (windowState != OldState)
+			{
+				OldState = windowState;
+				Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
+			}
+		}
+
+		// do not connect before, otherwise it is sent before sending to child
+		public void HandleWindowKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return;
+			var e = args.Event.ToEto();
+			if (e != null)
+			{
+				handler.Callback.OnKeyDown(handler.Widget, e);
+				args.RetVal = e.Handled;
+			}
+		}
+
+		public void HandleWindowSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return;
+			var newSize = handler.Control.Allocation.Size.ToEto();
+			if (handler.Control.IsRealized && oldSize != newSize)
+			{
+				handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
+
+				// annoyingly, there's no way to tell if the user is resizing things
+				if (handler.AutoSizePerformed == 0 && handler.DisableAutoSizeUpdate == 0)
+					handler.AutoSize = false;
+
+				if (handler.WindowState == WindowState.Normal)
+					handler.restoreBounds = handler.Widget.Bounds;
+				oldSize = newSize;
+			}
+			if (handler.AutoSizePerformed > 0)
+				handler.AutoSizePerformed--;
+		}
+
+		Point? oldLocation;
+
+		[GLib.ConnectBefore]
+		public void HandleConfigureEvent(object o, Gtk.ConfigureEventArgs args)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return;
+			handler.currentLocation = new Point(args.Event.X, args.Event.Y);
+			if (handler.Control.IsRealized && handler.Widget.Loaded && oldLocation != handler.currentLocation)
+			{
+				handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
+				if (handler.WindowState == WindowState.Normal)
+					handler.restoreBounds = handler.Widget.Bounds;
+				oldLocation = handler.currentLocation;
+			}
+			handler.currentLocation = null;
+		}
+
+		internal void Control_Realized(object sender, EventArgs e) => Handler?.Control_Realized(sender, e);
+
+		internal void ButtonPressEvent_Movable(object o, Gtk.ButtonPressEventArgs args)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return;
+			var evt = args.Event;
+			if (!Equals(args.RetVal, true) && evt.Type == Gdk.EventType.ButtonPress && evt.Button == 1)
+			{
+				handler.Control.BeginMoveDrag((int)evt.Button, (int)evt.XRoot, (int)evt.YRoot, evt.Time);
+				args.RetVal = true;
+			}
+		}
+
+		[GLib.ConnectBefore]
+		internal void HandleDrawnEvent(object o, Gtk.DrawnArgs args)
+		{
+			var handler = Handler;
+			if (handler == null)
+				return;
+			// use cairo to draw the background color with alpha
+			var cr = args.Cr;
+			var color = handler.BackgroundColor;
+			cr.Save();
+			if (color.A > 0)
+			{
+				cr.SetSourceRGBA(color.R, color.G, color.B, color.A);
+				cr.Operator = Cairo.Operator.Source;
+			}
+			else
+			{
+				cr.Operator = Cairo.Operator.Clear;
+			}
+			cr.Paint();
+			cr.Restore();
+		}
+*/
+	}
+
+	public MenuBar Menu
+	{
+		get { return menuBar; }
+		set
+		{
+			if (menuBar != null)
+				menuBox.Remove((Gtk.Widget)menuBar.ControlObject);
+
+			menuBar = value;
+
+			if (menuBar != null)
+			{
+				menuBox.Append((Gtk.Widget)menuBar.ControlObject);
+			}
+		}
+	}
+
+	protected override void SetContainerContent(Gtk.Widget content)
+	{
+		containerBox.Append(content);
+	}
+
+	protected override void RemoveContainerContent(Gtk.Widget content)
+	{
+		containerBox.Remove(content);
+	}
+
+	public string Title
+	{
+		get { return Control.Title; }
+		set { Control.Title = value; }
+	}
+
+	public bool CloseWindow(Action<CancelEventArgs>? closing = null)
+	{
+		var args = new CancelEventArgs();
+		Callback.OnClosing(Widget, args);
+		var shouldQuit = false;
+		if (!args.Cancel)
+		{
+			if (closing != null)
+				closing(args);
+			else
+			{
+				/*
+				var windows = Gdk.Screen.Default.ToplevelWindows.Where(r => r.State != Gdk.WindowState.Withdrawn && r.WindowType != Gdk.WindowType.Temp).ToList();
+				if (windows.Count == 1 && ReferenceEquals(windows[0], Control.GetWindow()))
+				{
+					var app = ((ApplicationHandler)Application.Instance.Handler);
+					app.Callback.OnTerminating(app.Widget, args);
+					shouldQuit = !args.Cancel;
+				}*/
+			}
+		}
+		if (!args.Cancel)
+		{
+			Callback.OnClosed(Widget, EventArgs.Empty);
+			if (shouldQuit)
+				Application.Instance.Quit();
+
+		}
+		return !args.Cancel;
+	}
+
+	static readonly object WasClosedKey = new object();
+
+	protected bool WasClosed
+	{
+		get { return Widget.Properties.Get<bool>(WasClosedKey); }
+		set { Widget.Properties.Set(WasClosedKey, value); }
+	}
+
+
+	public virtual void Close()
+	{
+		if (Widget.Loaded && CloseWindow())
+		{
+			Control.Hide();
+			Control.Unrealize();
+			WasClosed = true;
+		}
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		if (disposing)
+		{
+			if (menuBox != null)
+			{
+				menuBox.Dispose();
+				menuBox = null;
+			}
+			if (vbox != null)
+			{
+				vbox.Dispose();
+				vbox = null;
+			}
+			if (containerBox != null)
+			{
+				containerBox.Dispose();
+				containerBox = null;
+			}
+		}
+		base.Dispose(disposing);
+	}
+
+	public Eto.Forms.ToolBar ToolBar
+	{
+		get
+		{
+			return toolBar;
+		}
+		set
+		{
+			if (toolBar != null)
+				topToolbarBox.Remove((Gtk.Widget)toolBar.ControlObject);
+			toolBar = value;
+			if (toolBar != null)
+				topToolbarBox.Append((Gtk.Widget)toolBar.ControlObject);
+		}
+	}
+
+	public Icon Icon
+	{
+		get { return icon; }
+		set
+		{
+			icon = value;
+		}
+	}
+
+	public new Point Location
+	{
+		get
+		{
+			if (currentLocation != null)
+				return currentLocation.Value;
+			throw new NotImplementedException();
+			// int x, y;
+			// Control.GetPosition(out x, out y);
+			// return new Point(x, y);
+		}
+		set
+		{
+			throw new NotImplementedException();
+			// Control.Move(value.X, value.Y);
+		}
+	}
+
+	public WindowState WindowState
+	{
+		get
+		{
+			return state;
+		}
+		set
+		{
+			if (WindowState != value)
+			{
+				state = value;
+				switch (value)
+				{
+					case WindowState.Maximized:
+						Control.Maximize();
+						break;
+					case WindowState.Minimized:
+						Control.Minimize();
+						break;
+					case WindowState.Normal:
+						Control.Unmaximize();
+						Control.Unminimize();
+						break;
+				}
+
+				Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
+			}
+		}
+	}
+
+	public Rectangle RestoreBounds
+	{
+		get
+		{
+			return WindowState == WindowState.Normal ? Widget.Bounds : restoreBounds ?? Widget.Bounds;
+		}
+	}
+
+	public double Opacity
+	{
+		get { return Control.Opacity; }
+		set { Control.Opacity = value; }
+	}
+
+	Gtk.Window IGtkWindow.Control { get { return Control; } }
+
+	public Screen Screen
+	{
+		get
+		{
+			throw new NotImplementedException();
+			/*
+			var screen = Control.Screen;
+			var gdkWindow = Control.GetWindow();
+			if (screen != null && gdkWindow != null)
+			{
+				var monitor = screen.Display.GetMonitorAtWindow(gdkWindow);
+				return new Screen(new ScreenHandler(monitor));
+			}
+			return null;
+			*/
+		}
+	}
+
+	protected override void GrabFocus() => Control.GrabFocus();
+
+	public void BringToFront()
+	{
+		if (WindowState == WindowState.Minimized)
+		{
+			Control.Unminimize();
+			// if it didn't work, present it
+			if (WindowState == WindowState.Minimized)
+				Control.Present();
+		}
+
+		Control.Present();
+	}
+
+	public void SendToBack()
+	{
+		// No GTK4/GirCore equivalent for lowering a toplevel window is exposed here.
+	}
+
+	public virtual void SetOwner(Window owner)
+	{
+		throw new NotImplementedException();
+		// Control.TransientFor = owner.ToGtk();
+	}
+
+	public override bool Visible
+	{
+		get { return base.Visible; }
+		set
+		{
+			base.Visible = value;
+			// Control.NoShowAll = false; // always show all.
+		}
+	}
+
+	public float LogicalPixelSize
+	{
+		get
+		{
+			return 1f;
+		}
+	}
+
+	internal int DisableAutoSizeUpdate
+	{
+		get => Widget.Properties.Get<int>(GtkWindow.DisableAutoSizeUpdate_Key);
+		set => Widget.Properties.Set(GtkWindow.DisableAutoSizeUpdate_Key, value);
+	}
+	internal int AutoSizePerformed
+	{
+		get => Widget.Properties.Get<int>(GtkWindow.AutoSizePerformed_Key);
+		set => Widget.Properties.Set(GtkWindow.AutoSizePerformed_Key, value);
+	}
+
+	public bool AutoSize
+	{
+		get => Widget.Properties.Get<bool>(GtkWindow.AutoSize_Key) || !Resizable; // gtk always auto sizes when the window is not resizable
+		set
+		{
+			if (Widget.Properties.TrySet(GtkWindow.AutoSize_Key, value))
+			{
+				InvalidateMeasure();
+			}
+		}
+	}
+
+	public override SizeF GetPreferredSize(SizeF availableSize)
+	{
+		var size = base.GetPreferredSize(availableSize);
+		return size + WindowDecorationSize;
+	}
+
+	Size WindowDecorationSize
+	{
+		get
+		{
+			return Size.Empty;
+		}
+	}
+
+	Window.ICallback IGtkWindow.Callback => Callback;
+
+	bool isInvalidated;
+
+	internal void PerformResize()
+	{
+		var preferred = ClientSize;
+		if (preferred.Width < 0 || preferred.Height < 0)
+			preferred = Size;
+
+		if (preferred.Width >= 0 && preferred.Height >= 0)
+		{
+			AutoSizePerformed++;
+			Control.SetDefaultSize(preferred.Width, preferred.Height);
+			Control.QueueResize();
+		}
+
+		isInvalidated = false;
+		DisableAutoSizeUpdate--;
+	}
+
+	public override void InvalidateMeasure()
+	{
+		base.InvalidateMeasure();
+		if (!isInvalidated && Resizable && Widget.Loaded && !Widget.IsSuspended && AutoSize && DisableAutoSizeUpdate == 0 && AutoSizePerformed == 0)
+		{
+			isInvalidated = true;
+			DisableAutoSizeUpdate++;
+			Application.Instance.AsyncInvoke(PerformResize);
+		}
+	}
+
+	public override Gtk.Widget BackgroundControl => Control;
+
+	bool isDrawingBackground;
+
+	protected override void SetBackgroundColor(Color? color)
+	{
+		isDrawingBackground = color?.A < 1;
+		base.SetBackgroundColor(color);
+	}
+}
