@@ -664,11 +664,9 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public bool ShowInTaskbar
-		{
-			get;
-			set;
-		}
+		// Defaults to true to match the documented behavior (and the Windows platform handler):
+		// windows show in the taskbar/Dock unless explicitly told not to.
+		public bool ShowInTaskbar { get; set; } = true;
 
 		public bool Closeable
 		{
