@@ -143,6 +143,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void ShowModal()
 		{
+			ApplicationHandler.Instance.EnsureActivated(ShowInTaskbar, true, Icon);
 			Control.LayoutIfNeeded();
 			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			MacView.InMouseTrackingLoop = false;
@@ -162,6 +163,7 @@ namespace Eto.Mac.Forms
 
 		public virtual Task ShowModalAsync()
 		{
+			ApplicationHandler.Instance.EnsureActivated(ShowInTaskbar, true, Icon);
 			Control.LayoutIfNeeded();
 			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			MacView.InMouseTrackingLoop = false;

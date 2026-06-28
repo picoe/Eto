@@ -268,11 +268,18 @@ namespace Eto.Mac
 		{
 			return new NSAutoreleasePool();
 		}
+		
+		public bool RequireAppBundle { get; set; }
 
 		public override bool IsValid
 		{
 			get
 			{
+				if (NSApplication.SharedApplication == null)
+					return false;
+				if (!RequireAppBundle)
+					return true;
+					
 				var bundle = NSBundle.MainBundle;
 				if (bundle == null)
 					return false;

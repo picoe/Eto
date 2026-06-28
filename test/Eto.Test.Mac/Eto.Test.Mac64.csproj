@@ -54,7 +54,7 @@
     <ProjectReference Include="..\..\lib\monomac\src\MonoMac.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="4.3.2" />
+    <PackageReference Include="NUnit" Version="4.6.1" />
   </ItemGroup>
   
   <ItemGroup>

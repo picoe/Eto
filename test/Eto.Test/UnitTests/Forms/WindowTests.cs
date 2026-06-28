@@ -264,6 +264,7 @@ public abstract class WindowTests<T> : TestBase
 			Content = parent
 		};
 		bool? visibleAfterShown = null;
+		bool? wasClosed = null;
 		SizeF? preferredSize = null;
 		Size? shownSize = null;
 		Size? loadCompleteSize = null;
@@ -273,22 +274,24 @@ public abstract class WindowTests<T> : TestBase
 			preferredSize = window.GetPreferredSize();
 
 		window.LoadComplete += (sender, e) =>
-	  {
-		  loadCompleteSize = window.Size;
-		  loadCompleteChildSize = child.Size;
-		  if (inLoadComplete)
-			  preferredSize = window.GetPreferredSize();
-	  };
-		window.Shown +=
-		async
-		 (sender, e) =>
-	  {
-		  shownSize = window.Size;
-		  shownChildSize = child.Size;
-		  await Task.Delay(100);
-		  visibleAfterShown = window.Visible;
-		  window.Close();
-	  };
+		{
+			loadCompleteSize = window.Size;
+			loadCompleteChildSize = child.Size;
+			if (inLoadComplete)
+				preferredSize = window.GetPreferredSize();
+		};
+		window.Shown += async (sender, e) =>
+		{
+			shownSize = window.Size;
+			shownChildSize = child.Size;
+			await Task.Delay(100);
+			visibleAfterShown = window.Visible;
+			window.Close();
+		};
+		window.Closed += (sender, e) =>
+		{
+			wasClosed = true;
+		};
 
 		// await Task.Delay(100);
 
@@ -319,6 +322,8 @@ public abstract class WindowTests<T> : TestBase
 		Assert.That(visibleAfterShown, Is.Not.Null, "#4.1 VisibleWhenShown not set");
 		Assert.That(visibleAfterShown, Is.True, "#4.2 Window was not visible when shown");
 		Assert.That(visibleBeforeShown, Is.False, "#4.3 Visible should not be true before shown");
+		
+		Assert.That(wasClosed, Is.True, "#5.1 Closed event was not triggered");
 	});
 
 	[Test]

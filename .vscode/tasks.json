@@ -131,6 +131,16 @@
 			}
 		},
 		{
+			"label": "build-unittests",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "build-sdk-test",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/samples/SdkTest/SdkTest.csproj",
 			"type": "shell",
@@ -157,6 +167,16 @@
 			"problemMatcher": [],
 			"presentation": {
 				"clear": true
+			}
+		},
+		{
+			"label": "test non-manual",
+			"type": "shell",
+			"command": "dotnet test --project ${workspaceFolder}/test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj --filter \"TestCategory!=ManualTest&Name=DialogTests\"",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true,
+				"focus": true
 			}
 		},
 		{
