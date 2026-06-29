@@ -7,9 +7,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
-			var size = Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
-			size.Width += 1;
-			return size;
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
 	}
 

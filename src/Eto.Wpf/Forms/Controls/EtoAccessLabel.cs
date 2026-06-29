@@ -151,7 +151,7 @@ public class EtoAccessLabel : swc.Label
 			swi.AccessKeyManager.Unregister(_accessKey, this);
 			_accessKey = null;
 		}
-			
+
 		if (string.IsNullOrEmpty(_text))
 		{
 			Content = null;
@@ -207,6 +207,18 @@ public class EtoAccessLabel : swc.Label
 		else
 			Content = new swc.TextBlock { Text = text, TextWrapping = _textWrapping, TextAlignment = _textAlignment, TextDecorations = _textDecorations };
 	}
+
+	protected override sw.Size MeasureOverride(sw.Size constraint)
+	{
+		var size = base.MeasureOverride(constraint);
+		 
+		 // add a little extra width to avoid WPF bug wrapping with Display (GDI) font rendering in some DPI settings (e.g. 150%, 175%)
+		var textFormattingMode = swm.TextOptions.GetTextFormattingMode(this);
+		if (textFormattingMode == swm.TextFormattingMode.Display)
+			size.Width += 1;
+		return size;
+	}
+
 
 
 }
