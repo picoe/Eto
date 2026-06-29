@@ -122,7 +122,11 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 	public T Value
 	{
 		get => _parse(Text?.Replace(DecimalCharacter, '.'));
-		set => Text = _toString(value)?.Replace('.', DecimalCharacter);
+		set
+		{
+			Text = _toString(value)?.Replace('.', DecimalCharacter);
+			CommitText();
+		}
 	}
 	
 	/// <summary>

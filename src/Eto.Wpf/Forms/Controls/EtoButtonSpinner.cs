@@ -44,7 +44,7 @@ namespace Eto.Wpf.Forms.Controls
 		public bool Handled { get; set; }
 	}
 
-	public class EtoButtonSpinner : swc.ContentControl, IEtoWpfControl
+	public class EtoButtonSpinner : swc.Control, IEtoWpfControl
 	{
 		swcp.RepeatButton increaseButton;
 		swcp.RepeatButton decreaseButton;
@@ -93,6 +93,12 @@ namespace Eto.Wpf.Forms.Controls
 			typeof(EtoButtonSpinner),
 			new sw.FrameworkPropertyMetadata(true));
 
+		public static readonly sw.DependencyProperty EditContentProperty = sw.DependencyProperty.Register(
+			nameof(EditContent),
+			typeof(object),
+			typeof(EtoButtonSpinner),
+			new sw.FrameworkPropertyMetadata(null));
+
 		public ValidSpinDirections ValidSpinDirection
 		{
 			get => (ValidSpinDirections)GetValue(ValidSpinDirectionProperty);
@@ -121,6 +127,20 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get => (bool)GetValue(ShowContentAreaProperty);
 			set => SetValue(ShowContentAreaProperty, value);
+		}
+
+		/// <summary>
+		/// Gets or sets the control shown in the editable content area of the spinner.
+		/// </summary>
+		/// <remarks>
+		/// This is hosted by the template's ContentPresenter (bound via <c>Content="{TemplateBinding EditContent}"</c>)
+		/// rather than via a <c>ContentControl.Content</c> property, so the editor becomes a logical child of that
+		/// presenter and picks up the transparent background overrides defined in its resources.
+		/// </remarks>
+		public object EditContent
+		{
+			get => GetValue(EditContentProperty);
+			set => SetValue(EditContentProperty, value);
 		}
 
 		public event EventHandler<SpinEventArgs> Spin;
@@ -200,7 +220,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		bool CanSpin(SpinDirection direction)
 		{
-			if (!IsEnabled || !ShowButtonSpinner)
+			if (!IsEnabled)
 				return false;
 
 			if (direction == SpinDirection.Increase)
@@ -210,7 +230,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		bool CanSpinUsingMouseWheel()
 		{
-			var textBox = Content as swc.TextBox;
+			var textBox = EditContent as swc.TextBox;
 			var hasFocus = textBox?.IsKeyboardFocusWithin == true || IsKeyboardFocusWithin;
 			switch (MouseWheelActiveTrigger)
 			{

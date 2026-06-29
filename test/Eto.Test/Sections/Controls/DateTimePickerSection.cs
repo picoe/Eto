@@ -8,10 +8,10 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.BeginVertical();
-			layout.AddRow("Default", Default(), "Default with Value", DefaultWithValue(), null);
-			layout.AddRow("Date", DateControl(), "Date with Value", DateControlWithValue());
-			layout.AddRow("Time", TimeControl(), "Time with Value", TimeControlWithValue());
-			layout.AddRow("Date/Time", DateTimeControl(), "Date/Time with Value", DateTimeControlWithValue());
+			layout.AddRow("Default", AutoSize(Default()), "Default with Value", AutoSize(DefaultWithValue()), null);
+			layout.AddRow("Date", AutoSize(DateControl()), "Date with Value", AutoSize(DateControlWithValue()));
+			layout.AddRow("Time", AutoSize(TimeControl()), "Time with Value", AutoSize(TimeControlWithValue()));
+			layout.AddRow("Date/Time", AutoSize(DateTimeControl()), "Date/Time with Value", AutoSize(DateTimeControlWithValue()));
 			layout.EndVertical();
 
 			layout.AddCentered(TestProperties());
@@ -21,6 +21,8 @@ namespace Eto.Test.Sections.Controls
 
 			Content = layout;
 		}
+		
+		Control AutoSize(Control control) => TableLayout.AutoSized(control);
 
 		Control TestProperties()
 		{
@@ -39,7 +41,7 @@ namespace Eto.Test.Sections.Controls
 			layout.EndHorizontal();
 			layout.EndVertical();
 			layout.EndHorizontal();
-			layout.AddRow("Value", current = new DateTimePicker());
+			layout.AddRow("Value", AutoSize(current = new DateTimePicker()));
 
 			min.ValueChanged += (sender, e) => current.MinDate = min.Value ?? DateTime.MinValue;
 			max.ValueChanged += (sender, e) => current.MaxDate = max.Value ?? DateTime.MaxValue;
