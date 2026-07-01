@@ -435,6 +435,8 @@ namespace Eto.Wpf.Forms
 				return;
 
 			Control.SizeToContent = sizing;
+			Control.InvalidateMeasure();
+			Control.UpdateLayout();
 		}
 
 		static readonly object AutoSize_Key = new object();

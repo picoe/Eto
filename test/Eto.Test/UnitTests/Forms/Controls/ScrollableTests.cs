@@ -5,6 +5,121 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	[TestFixture]
 	public class ScrollableTests : TestBase
 	{
+		[Test]
+		public void AutoSizedWindowShouldNotExpandToScreen()
+		{
+			// An auto-sized window stays SizeToContent on WPF, which measures its content with the monitor
+			// work-area as the constraint. The Scrollable must size to its content, not blow up to the
+			// width/height of the screen, and (with the default ExpandContentWidth/Height) its content must
+			// expand exactly to the viewport, not past it. AutoSize=true is required to reproduce: without
+			// it the window reverts to a fixed size after load and a corrective layout pass hides the bug.
+			// See ScrollableHandler.ArrangeOverride.
+			Form theForm = null;
+			Panel content = null;
+			Shown(form =>
+			{
+				theForm = form;
+				form.AutoSize = true;
+				content = new Panel { Size = new Size(100, 100), BackgroundColor = Colors.Blue };
+				return new Scrollable { Content = content };
+			},
+			scrollable =>
+			{
+				var screen = Screen.PrimaryScreen.Bounds.Size;
+				Assert.Multiple(() =>
+				{
+					Assert.That(theForm.Width, Is.LessThan(screen.Width / 2), "#1 Window width should size to content, not the screen");
+					Assert.That(theForm.Height, Is.LessThan(screen.Height / 2), "#2 Window height should size to content, not the screen");
+					// the content should expand to exactly the viewport, not overflow it (e.g. to the screen size)
+					Assert.That(content.Size, Is.EqualTo(scrollable.ClientSize), "#3 Content should expand to the viewport, not past it");
+				});
+			});
+		}
+
+		[Test]
+		public void ExpandedWidthShouldNotInflateScrollHeight()
+		{
+			// When ExpandContentWidth expands content that has a narrower preferred width to fill the
+			// viewport, wrapping content (labels, checkboxes) is displayed wider — and therefore shorter —
+			// than at its preferred width. The vertical scroll extent must reflect that shorter, displayed
+			// height rather than the taller height the content would have at its narrow preferred width.
+			Label label = null;
+			Scrollable theScrollable = null;
+			Shown(form =>
+			{
+				form.ClientSize = new Size(300, 220);
+				label = new Label
+				{
+					Text = "This is a long label that wraps to many lines when narrow but fits in fewer lines when wider",
+					Wrap = WrapMode.Word
+				};
+				// content with a small preferred width that ExpandContentWidth will stretch to the viewport
+				var content = new StackLayout
+				{
+					HorizontalContentAlignment = HorizontalAlignment.Stretch,
+					Width = 120,
+					Items = { label }
+				};
+				theScrollable = new Scrollable
+				{
+					Content = content,
+					ExpandContentWidth = true,
+					ExpandContentHeight = false
+				};
+				return theScrollable;
+			},
+			scrollable =>
+			{
+				Assert.Multiple(() =>
+				{
+					// content is expanded past its 120px preferred width to fill the viewport
+					Assert.That(scrollable.Content.Size.Width, Is.GreaterThan(120), "#1 Content should expand to the viewport width");
+					// the scroll extent height matches the displayed content height, not the inflated narrow-width height
+					Assert.That(scrollable.ScrollSize.Height, Is.EqualTo(scrollable.Content.Size.Height).Within(1), "#2 Scroll height should match the displayed content height");
+				});
+			});
+		}
+
+		[Test]
+		public void AutoSizedWindowWithScrollableShouldNotInflateHeight()
+		{
+			// An auto-sized window sizes its height to the scroll content. If the Scrollable reports an
+			// inflated extent height (from measuring expanded content at its narrow preferred width) the
+			// window becomes too tall. This is the same root cause as ExpandedWidthShouldNotInflateScrollHeight,
+			// but reproduced through a window's SizeToContent rather than a fixed viewport.
+			Label label = null;
+			Scrollable theScrollable = null;
+			Shown(form =>
+			{
+				form.AutoSize = true;
+				form.Width = 400;
+				label = new Label
+				{
+					Text = "This is a long label that wraps to many lines when narrow but fits in fewer lines when wider",
+					Wrap = WrapMode.Word
+				};
+				var content = new StackLayout
+				{
+					HorizontalContentAlignment = HorizontalAlignment.Stretch,
+					Width = 150,
+					Items = { label }
+				};
+				theScrollable = new Scrollable
+				{
+					Content = content,
+					ExpandContentWidth = true,
+					ExpandContentHeight = false
+				};
+				return theScrollable;
+			},
+			scrollable =>
+			{
+				// the scroll extent (which drives the auto-sized window height) must match the displayed
+				// content height, not the taller height the content has at its narrow preferred width
+				Assert.That(scrollable.ScrollSize.Height, Is.EqualTo(scrollable.Content.Size.Height).Within(1), "Scroll height should match the displayed content height in an auto-sized window");
+			});
+		}
+
 		[Test, ManualTest]
 		public void TwoScrollablesShouldNotClipControls()
 		{
