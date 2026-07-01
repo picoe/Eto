@@ -1,6 +1,6 @@
 ﻿namespace Eto.GtkSharp.Forms
 {
-	public class AboutDialogHandler : WidgetHandler<Gtk.AboutDialog, AboutDialog, AboutDialog.ICallback>, AboutDialog.IHandler
+	public class AboutDialogHandler : WidgetHandler<Gtk.AboutDialog, AboutDialog, AboutDialog.ICallback>, AboutDialog.IHandler, CommonDialog.ICancellableHandler
 	{
 		Image image;
 
@@ -104,5 +104,7 @@
 
 			return DialogResult.Cancel;
 		}
+
+		public void CancelDialog() => Control.Respond((int)Gtk.ResponseType.Cancel);
 	}
 }

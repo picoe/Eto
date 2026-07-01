@@ -11,6 +11,8 @@ namespace Eto.Test.Sections.Dialogs
 
 		public bool MultiSelect { get; set; }
 
+		readonly AsyncDialogOptions asyncOptions = new AsyncDialogOptions();
+
 		public FileDialogSection()
 		{
 			Content = new TableLayout
@@ -23,6 +25,7 @@ namespace Eto.Test.Sections.Dialogs
 					TableLayout.Horizontal(null, new Label { Text = "Directory" }, GetDirectory(), null),
 					TableLayout.Horizontal(null, GetMultiSelect(), null),
 					TableLayout.Horizontal(null, new Label { Text = "Title" }, GetTitle(), null),
+					TableLayout.Horizontal(null, asyncOptions, null),
 					TableLayout.Horizontal(null, OpenFile(), OpenFileWithFilters(), null),
 					TableLayout.Horizontal(null, SaveFile(), SaveFileWithFilters(), null),
 					null
@@ -89,8 +92,10 @@ namespace Eto.Test.Sections.Dialogs
 			{
 				var dialog = new OpenFileDialog();
 				SetAttributes(dialog);
-				var result = dialog.ShowDialog(ParentWindow);
-				Log.Write(dialog, "Result: {0}, FileName: {1}\nFiles: {2}", result, dialog.FileName, string.Join(", ", dialog.Filenames));
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(ParentWindow),
+					token => dialog.ShowDialogAsync(ParentWindow, token),
+					result => Log.Write(dialog, "Result: {0}, FileName: {1}\nFiles: {2}", result, dialog.FileName, string.Join(", ", dialog.Filenames)));
 			};
 			return button;
 		}
@@ -114,8 +119,10 @@ namespace Eto.Test.Sections.Dialogs
 				};
 				SetAttributes(dialog);
 
-				var result = dialog.ShowDialog(ParentWindow);
-				Log.Write(dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}\nFiles: {3}", result, dialog.CurrentFilter, dialog.FileName, string.Join(", ", dialog.Filenames));
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(ParentWindow),
+					token => dialog.ShowDialogAsync(ParentWindow, token),
+					result => Log.Write(dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}\nFiles: {3}", result, dialog.CurrentFilter, dialog.FileName, string.Join(", ", dialog.Filenames)));
 			};
 			return button;
 		}
@@ -140,9 +147,14 @@ namespace Eto.Test.Sections.Dialogs
 				};
 				SetAttributes(dialog);
 
-				var result = dialog.ShowDialog(ParentWindow);
-				Log.Write(dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}", result, dialog.CurrentFilter, dialog.FileName);
-				dialog.Dispose();
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(ParentWindow),
+					token => dialog.ShowDialogAsync(ParentWindow, token),
+					result =>
+					{
+						Log.Write(dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}", result, dialog.CurrentFilter, dialog.FileName);
+						dialog.Dispose();
+					});
 			};
 			return button;
 		}
@@ -154,9 +166,14 @@ namespace Eto.Test.Sections.Dialogs
 			{
 				var dialog = new SaveFileDialog();
 				SetAttributes(dialog);
-				var result = dialog.ShowDialog(ParentWindow);
-				Log.Write(dialog, "Result: {0}, FileName: {1}", result, dialog.FileName);
-				dialog.Dispose();
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(ParentWindow),
+					token => dialog.ShowDialogAsync(ParentWindow, token),
+					result =>
+					{
+						Log.Write(dialog, "Result: {0}, FileName: {1}", result, dialog.FileName);
+						dialog.Dispose();
+					});
 			};
 			return button;
 		}

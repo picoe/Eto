@@ -2,7 +2,7 @@ using WpfMessageBox = System.Windows.MessageBox;
 
 namespace Eto.Wpf.Forms
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
+	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler, MessageBox.ICancellableHandler
 	{
 		public string Text { get; set; }
 
@@ -14,6 +14,8 @@ namespace Eto.Wpf.Forms
 
 		public MessageBoxDefaultButton DefaultButton { get; set; }
 
+		readonly Win32.CancellableModalDialog _cancellable = new Win32.CancellableModalDialog();
+
 		public DialogResult ShowDialog(Control parent)
 		{
 			using (var visualStyles = new EnableThemingInScope(ApplicationHandler.EnableVisualStyles))
@@ -24,17 +26,21 @@ namespace Eto.Wpf.Forms
 
 				var element = parent == null ? null : parent.GetContainerControl();
 				var window = element == null ? null : element.GetVisualParent<sw.Window>();
-				sw.MessageBoxResult result;
 				var buttons = Convert(Buttons);
 				var defaultButton = Convert(DefaultButton, Buttons);
 				var icon = Convert(Type);
 				var caption = Caption ?? parentWindow?.Title;
-				if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
-				else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
+				var result = _cancellable.Show(() => window != null
+					? WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton)
+					: WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton));
 				WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 				return Convert(result);
 			}
 		}
+
+		// WPF's MessageBox is a native Win32 message box running its modal loop on the UI thread; a WH_CBT hook
+		// captured its window handle when shown (see CancellableModalDialog), so we dismiss exactly that dialog.
+		public void CancelDialog() => _cancellable.Cancel();
 
 		public static sw.MessageBoxResult Convert(MessageBoxDefaultButton defaultButton, MessageBoxButtons buttons)
 		{

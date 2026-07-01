@@ -1,8 +1,10 @@
 namespace Eto.WinForms.Forms
 {
-	public class ColorDialogHandler : WidgetHandler<swf.ColorDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
+	public class ColorDialogHandler : WidgetHandler<swf.ColorDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler, CommonDialog.ICancellableHandler
 	{
 		static int[] customColors;
+		readonly Win32.CancellableModalDialog _cancellable = new Win32.CancellableModalDialog();
+
 		public ColorDialogHandler()
 		{
 			Control = new swf.ColorDialog
@@ -25,16 +27,14 @@ namespace Eto.WinForms.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
-			swf.DialogResult result;
 			if (customColors != null) Control.CustomColors = customColors;
 
 			if (parent?.HasFocus == false)
 				parent.Focus();
 
-			if (parent != null)
-				result = Control.ShowDialog(parent.GetContainerControl());
-			else
-				result = Control.ShowDialog();
+			var result = _cancellable.Show(() => parent != null
+				? Control.ShowDialog(parent.GetContainerControl())
+				: Control.ShowDialog());
 
 			if (result == swf.DialogResult.OK)
 			{
@@ -45,6 +45,10 @@ namespace Eto.WinForms.Forms
 
 			return result.ToEto();
 		}
+
+		// A WH_CBT hook captured the native dialog's window handle when it was shown (see CancellableModalDialog),
+		// so the async ShowDialogAsync can dismiss exactly this dialog when its cancellation token is signalled.
+		public void CancelDialog() => _cancellable.Cancel();
 	}
 }
 

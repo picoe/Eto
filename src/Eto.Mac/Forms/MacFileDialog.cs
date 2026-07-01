@@ -30,7 +30,7 @@ namespace Eto.Mac.Forms
 		
 	}
 
-	public abstract class MacFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler, IMacFileDialog
+	public abstract class MacFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler, CommonDialog.ICancellableHandler, IMacFileDialog
      where TControl: NSSavePanel
      where TWidget: FileDialog
 	{
@@ -151,6 +151,13 @@ namespace Eto.Mac.Forms
 				fileName = null;
 
 			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
+		}
+
+		public void CancelDialog()
+		{
+			// Use the panel's own cancel action so it is dismissed cleanly whether shown standalone or as a
+			// sheet attached to a parent window (StopModal alone would leave an attached sheet dangling).
+			Control.Cancel(Control);
 		}
 
 		public void InsertFilter(int index, FileFilter filter)

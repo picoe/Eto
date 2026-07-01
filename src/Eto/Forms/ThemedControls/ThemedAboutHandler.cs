@@ -3,7 +3,7 @@
 /// <summary>
 /// A themed handler for the <see cref="AboutDialog"/> dialog.
 /// </summary>
-public class ThemedAboutDialogHandler : WidgetHandler<Dialog, AboutDialog, AboutDialog.ICallback>, AboutDialog.IHandler
+public class ThemedAboutDialogHandler : WidgetHandler<Dialog, AboutDialog, AboutDialog.ICallback>, AboutDialog.IHandler, CommonDialog.ICancellableHandler
 {
 	string[] designers, developers, documenters;
 	string license;
@@ -242,4 +242,11 @@ public class ThemedAboutDialogHandler : WidgetHandler<Dialog, AboutDialog, About
 
 		return DialogResult.Cancel;
 	}
+
+	/// <summary>
+	/// Closes the about dialog while it is being shown, allowing the asynchronous
+	/// <see cref="CommonDialog.ShowDialogAsync(Window, CancellationToken)"/> to be cancelled. Because the dialog is a
+	/// managed Eto <see cref="Dialog"/>, closing it ends the modal display directly without any native interop.
+	/// </summary>
+	public void CancelDialog() => Control.Close();
 }

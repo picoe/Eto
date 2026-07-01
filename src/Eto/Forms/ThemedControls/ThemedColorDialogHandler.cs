@@ -6,10 +6,11 @@ using Eto.Drawing;
 /// A themed handler for the <see cref="ColorDialog"/> control that provides
 /// a color spectrum, hue strip, RGB/Alpha sliders, hex input, and color preview.
 /// </summary>
-public class ThemedColorDialogHandler : WidgetHandler<Widget, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
+public class ThemedColorDialogHandler : WidgetHandler<Widget, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler, CommonDialog.ICancellableHandler
 {
 	Color _color = Colors.White;
 	bool _allowAlpha;
+	ThemedColorDialog _activeDialog;
 
 	/// <inheritdoc/>
 	public Color Color
@@ -42,7 +43,16 @@ public class ThemedColorDialogHandler : WidgetHandler<Widget, ColorDialog, Color
 			Callback.OnColorChanged(Widget, EventArgs.Empty);
 		};
 
-		var result = parent != null ? dialog.ShowModal(parent) : dialog.ShowModal();
+		_activeDialog = dialog;
+		DialogResult result;
+		try
+		{
+			result = parent != null ? dialog.ShowModal(parent) : dialog.ShowModal();
+		}
+		finally
+		{
+			_activeDialog = null;
+		}
 
 		if (result == DialogResult.Ok)
 		{
@@ -54,6 +64,13 @@ public class ThemedColorDialogHandler : WidgetHandler<Widget, ColorDialog, Color
 		Callback.OnColorChanged(Widget, EventArgs.Empty);
 		return DialogResult.Cancel;
 	}
+
+	/// <summary>
+	/// Closes the dialog while it is being shown, allowing the asynchronous
+	/// <see cref="CommonDialog.ShowDialogAsync(Window, CancellationToken)"/> to be cancelled. Because the dialog is a
+	/// managed Eto <see cref="Dialog"/>, closing it ends the modal display directly without any native interop.
+	/// </summary>
+	public void CancelDialog() => _activeDialog?.Close();
 
 	class ThemedColorDialog : Dialog<DialogResult>
 	{

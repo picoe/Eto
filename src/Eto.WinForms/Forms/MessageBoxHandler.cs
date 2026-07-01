@@ -1,6 +1,6 @@
 namespace Eto.WinForms.Forms
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
+	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler, MessageBox.ICancellableHandler
 	{
 		public string Text { get; set; }
 
@@ -12,6 +12,8 @@ namespace Eto.WinForms.Forms
 
 		public MessageBoxDefaultButton DefaultButton { get; set; }
 
+		readonly Win32.CancellableModalDialog _cancellable = new Win32.CancellableModalDialog();
+
 		public DialogResult ShowDialog(Control parent)
 		{
 			var parentWindow = parent?.ParentWindow;
@@ -20,9 +22,13 @@ namespace Eto.WinForms.Forms
 
 			var caption = Caption ?? parentWindow?.Title;
 			swf.Control c = (parent == null) ? null : (swf.Control)parent.ControlObject;
-			swf.DialogResult result = swf.MessageBox.Show(c, Text, caption, Convert(Buttons), Convert(Type), Convert(DefaultButton, Buttons));
+			swf.DialogResult result = _cancellable.Show(() => swf.MessageBox.Show(c, Text, caption, Convert(Buttons), Convert(Type), Convert(DefaultButton, Buttons)));
 			return result.ToEto();
 		}
+
+		// The native message box runs its modal loop on the UI thread; a WH_CBT hook captured its window handle when
+		// it was shown (see CancellableModalDialog), so we can dismiss exactly that dialog to unblock ShowDialog.
+		public void CancelDialog() => _cancellable.Cancel();
 
 		public static swf.MessageBoxDefaultButton Convert(MessageBoxDefaultButton defaultButton, MessageBoxButtons buttons)
 		{

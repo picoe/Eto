@@ -2,9 +2,10 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms
 {
-	public class FontDialogHandler : WidgetHandler<swf.FontDialog, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
+	public class FontDialogHandler : WidgetHandler<swf.FontDialog, FontDialog, FontDialog.ICallback>, FontDialog.IHandler, CommonDialog.ICancellableHandler
 	{
 		Font _font;
+		readonly Win32.CancellableModalDialog _cancellable = new Win32.CancellableModalDialog();
 
 		public FontDialogHandler()
 		{
@@ -56,7 +57,7 @@ namespace Eto.WinForms.Forms
 			if (parent?.HasFocus == false)
 				parent.Focus();
 
-			var result = Control.ShowDialog();
+			var result = _cancellable.Show(() => Control.ShowDialog());
 			if (result == swf.DialogResult.OK)
 			{
 				_font = null;
@@ -65,5 +66,9 @@ namespace Eto.WinForms.Forms
 			}
 			return DialogResult.Cancel;
 		}
+
+		// A WH_CBT hook captured the native dialog's window handle when it was shown (see CancellableModalDialog),
+		// so the async ShowDialogAsync can dismiss exactly this dialog when its cancellation token is signalled.
+		public void CancelDialog() => _cancellable.Cancel();
 	}
 }

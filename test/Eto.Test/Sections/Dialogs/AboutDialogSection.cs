@@ -6,6 +6,7 @@
 		TextBox entryTitle, entryProgramName, entryVersion, entryCopyright, entryLicense, entryWebsiteURL, entryWebsiteLabel;
 		TextArea entryDescription, entryDevelopers, entryDesigners, entryDocumenters;
 		Button buttonShowDialog;
+		readonly AsyncDialogOptions asyncOptions = new AsyncDialogOptions();
 
 		public AboutDialogSection()
 		{
@@ -75,6 +76,8 @@
 
 			layout4.Add(null, true, true);
 
+			layout4.Add(asyncOptions);
+
 			buttonShowDialog = new Button();
 			buttonShowDialog.Text = "Show Dialog";
 			buttonShowDialog.Click += ButtonShowDialog_Click;
@@ -132,7 +135,10 @@
 			dialog.Developers = entryDevelopers.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 			dialog.Documenters = entryDocumenters.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
-			dialog.ShowDialog(this);
+			asyncOptions.Run(dialog,
+				() => dialog.ShowDialog(this),
+				token => dialog.ShowDialogAsync(this, token),
+				result => Log.Write(dialog, "Result: {0}", result));
 		}
 	}
 }

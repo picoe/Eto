@@ -13,6 +13,8 @@ namespace Eto.Test.Sections.Dialogs
 		bool updating;
 		Drawable metricsPreview;
 
+		readonly AsyncDialogOptions asyncOptions = new AsyncDialogOptions();
+
 		public FontDialogSection()
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
@@ -31,6 +33,7 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddSpace();
 			layout.EndHorizontal();
 			layout.EndVertical();
+			layout.AddSeparateRow(null, asyncOptions, null);
 			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlignment = VerticalAlignment.Center }, PickFontFamily(), null);
 
 			layout.AddSeparateRow(null, FontList(), FontStyles(), FontSizes(), null);
@@ -229,8 +232,10 @@ namespace Eto.Test.Sections.Dialogs
 					UpdatePreview(dialog.Font);
 					Log.Write(dialog, "FontChanged, Font: {0}", dialog.Font);
 				};
-				var result = dialog.ShowDialog(ParentWindow);
-				Log.Write(dialog, "Result: {0}", result);
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(ParentWindow),
+					token => dialog.ShowDialogAsync(ParentWindow, token),
+					result => Log.Write(dialog, "Result: {0}", result));
 			};
 			return button;
 		}
@@ -250,9 +255,11 @@ namespace Eto.Test.Sections.Dialogs
 					UpdatePreview(dialog.Font);
 					Log.Write(dialog, "FontChanged, Font: {0}", dialog.Font);
 				};
-				var result = dialog.ShowDialog(ParentWindow);
-				// do not get the font here, it may return immediately with a result of DialogResult.None on certain platforms
-				Log.Write(dialog, "Result: {0}", result);
+				// do not get the font in the result handler, it may return immediately with a result of DialogResult.None on certain platforms
+				asyncOptions.Run(dialog,
+					() => dialog.ShowDialog(ParentWindow),
+					token => dialog.ShowDialogAsync(ParentWindow, token),
+					result => Log.Write(dialog, "Result: {0}", result));
 			};
 			return button;
 		}

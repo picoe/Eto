@@ -1,7 +1,7 @@
 #if GTKCORE
 namespace Eto.GtkSharp.Forms
 {
-	public class ColorDialogHandler : WidgetHandler<Gtk.ColorChooserDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
+	public class ColorDialogHandler : WidgetHandler<Gtk.ColorChooserDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler, CommonDialog.ICancellableHandler
 	{
 		public ColorDialogHandler()
 		{
@@ -38,9 +38,11 @@ namespace Eto.GtkSharp.Forms
 
 			if (response == Gtk.ResponseType.Ok)
 				Callback.OnColorChanged(Widget, EventArgs.Empty);
-			
+
 			return response.ToEto();
 		}
+
+		public void CancelDialog() => Control.Respond((int)Gtk.ResponseType.Cancel);
 	}
 }
 #endif

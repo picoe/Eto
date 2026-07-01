@@ -3,7 +3,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class FontDialogHandler : WidgetHandler<Gtk.FontChooserDialog, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
+	public class FontDialogHandler : WidgetHandler<Gtk.FontChooserDialog, FontDialog, FontDialog.ICallback>, FontDialog.IHandler, CommonDialog.ICancellableHandler
 	{
 		public FontDialogHandler()
 		{
@@ -54,6 +54,8 @@ namespace Eto.GtkSharp.Forms
 
 			return response.ToEto();
 		}
+
+		public void CancelDialog() => Control.Respond((int)Gtk.ResponseType.Cancel);
 	}
 }
 #endif

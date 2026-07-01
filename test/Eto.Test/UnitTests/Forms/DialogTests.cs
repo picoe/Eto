@@ -213,6 +213,77 @@ namespace Eto.Test.UnitTests.Forms
 		}
 
 		[Test]
+		public void ShowModalAsyncWithAlreadyCancelledTokenShouldNotShow()
+		{
+			Async(async () =>
+			{
+				var dlg = new Dialog { Content = "Should never be shown", Size = new Size(200, 200) };
+				var cts = new CancellationTokenSource();
+				cts.Cancel();
+
+				OperationCanceledException caught = null;
+				try
+				{
+					await dlg.ShowModalAsync(cts.Token);
+				}
+				catch (OperationCanceledException ex)
+				{
+					caught = ex;
+				}
+
+				Assert.That(caught, Is.Not.Null, "Should throw OperationCanceledException for an already-cancelled token");
+				Assert.That(dlg.Loaded, Is.False, "Dialog should never have been shown");
+			});
+		}
+
+		[Test]
+		public void ShowModalAsyncShouldCancelWhenTokenSignalled()
+		{
+			Async(10000, async () =>
+			{
+				var dlg = new Dialog<bool> { Content = "Should auto-cancel", Size = new Size(200, 200) };
+				using var cts = new CancellationTokenSource();
+
+				var task = dlg.ShowModalAsync(cts.Token);
+				// let the dialog get shown, then cancel from outside
+				await Task.Delay(250);
+				cts.Cancel();
+
+				OperationCanceledException caught = null;
+				try
+				{
+					await task;
+				}
+				catch (OperationCanceledException ex)
+				{
+					caught = ex;
+				}
+
+				Assert.That(caught, Is.Not.Null, "Dialog should throw OperationCanceledException when cancelled");
+				Assert.That(dlg.Loaded, Is.False, "Dialog should be closed after cancellation");
+			});
+		}
+
+		[Test]
+		public void ShowModalAsyncShouldPreserveResultWhenClosedBeforeCancellation()
+		{
+			Async(10000, async () =>
+			{
+				var dlg = new Dialog<bool> { Content = "Closes with a result", Size = new Size(200, 200) };
+				using var cts = new CancellationTokenSource();
+
+				var task = dlg.ShowModalAsync(cts.Token);
+				await Task.Delay(250);
+				// user-style close that carries a result, before the token is ever signalled
+				dlg.Close(true);
+
+				var result = await task;
+
+				Assert.That(result, Is.True, "Result should be preserved when the dialog is closed before cancellation");
+			});
+		}
+
+		[Test]
 		public void DisposingBeforeShowingAsyncShouldNotCrash()
 		{
 			Invoke(() =>

@@ -1,6 +1,6 @@
 namespace Eto.GtkSharp.Forms
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
+	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler, MessageBox.ICancellableHandler
 	{
 		Gtk.MessageDialog control;
 
@@ -16,35 +16,47 @@ namespace Eto.GtkSharp.Forms
 
 		public DialogResult ShowDialog(Control parent)
 		{
+			control = CreateDialog(parent);
+			int ret = control.Run();
+			var result = ToResult((Gtk.ResponseType)ret);
+			CleanupDialog();
+			return result;
+		}
+
+		public void CancelDialog() => control?.Respond((int)Gtk.ResponseType.None);
+
+		Gtk.MessageDialog CreateDialog(Control parent)
+		{
 			Gtk.Window parentWindow = null;
 			if (parent != null && parent.ParentWindow != null)
 				parentWindow = parent.ParentWindow.ControlObject as Gtk.Window;
 
-			control = new Gtk.MessageDialog(parentWindow, Gtk.DialogFlags.Modal, Type.ToGtk(), Buttons.ToGtk(), false, string.Empty);
-			control.Text = Text;
-			control.TypeHint = Gdk.WindowTypeHint.Dialog;
+			var dialog = new Gtk.MessageDialog(parentWindow, Gtk.DialogFlags.Modal, Type.ToGtk(), Buttons.ToGtk(), false, string.Empty)
+			{
+				Text = Text,
+				TypeHint = Gdk.WindowTypeHint.Dialog
+			};
+
 			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
 			if (!string.IsNullOrEmpty(caption))
-				control.Title = caption;
+				dialog.Title = caption;
 			// must add buttons manually for this case
 			if (Buttons == MessageBoxButtons.YesNoCancel)
 			{
-				var bn = (Gtk.Button)control.AddButton(Gtk.Stock.No, (int)Gtk.ResponseType.No);
+				var bn = (Gtk.Button)dialog.AddButton(Gtk.Stock.No, (int)Gtk.ResponseType.No);
 				bn.UseStock = true;
-				var bc = (Gtk.Button)control.AddButton(Gtk.Stock.Cancel, (int)Gtk.ResponseType.Cancel);
+				var bc = (Gtk.Button)dialog.AddButton(Gtk.Stock.Cancel, (int)Gtk.ResponseType.Cancel);
 				bc.UseStock = true;
-				var by = (Gtk.Button)control.AddButton(Gtk.Stock.Yes, (int)Gtk.ResponseType.Yes);
+				var by = (Gtk.Button)dialog.AddButton(Gtk.Stock.Yes, (int)Gtk.ResponseType.Yes);
 				by.UseStock = true;
 			}
-			control.DefaultResponse = DefaultButton.ToGtk(Buttons);
-			int ret = control.Run();
-			control.Hide();
-#if GTKCORE
-			control.Dispose();
-#else
-			control.Destroy();
-#endif
-			var result = ((Gtk.ResponseType)ret).ToEto();
+			dialog.DefaultResponse = DefaultButton.ToGtk(Buttons);
+			return dialog;
+		}
+
+		DialogResult ToResult(Gtk.ResponseType response)
+		{
+			var result = response.ToEto();
 			if (result == DialogResult.None)
 			{
 				switch (Buttons)
@@ -62,6 +74,17 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 			return result;
+		}
+
+		void CleanupDialog()
+		{
+			control?.Hide();
+#if GTKCORE
+			control?.Dispose();
+#else
+			control?.Destroy();
+#endif
+			control = null;
 		}
 	}
 
