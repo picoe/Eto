@@ -5,9 +5,40 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		public IWpfFrameworkElement Handler { get; set; }
 
+		// the width the text was last laid out (wrapped) at
+		double _formattedWidth = double.NaN;
+
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
-			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+			var size = Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+
+			// The handler constrains the measure to the preferred width so the text box doesn't grow to
+			// its content (or the monitor work-area in an auto-sized window). A WPF TextBox wraps its text
+			// at the width it is measured at, so that would leave the text wrapped at the narrow preferred
+			// width instead of the width the control is actually displayed at. Re-lay out the text at the
+			// real displayed width (the last arranged width) so it wraps to fill the control. ArrangeOverride
+			// invalidates the measure when that width changes so this converges.
+			// Measure at the real displayed height as well (not infinity): measuring at infinite height makes
+			// the internal ScrollViewer report its viewport as the full content height, so it thinks nothing
+			// needs scrolling and vertical scrolling stops working.
+			if (TextWrapping == sw.TextWrapping.Wrap && ActualWidth > 0)
+			{
+				base.MeasureOverride(new sw.Size(ActualWidth, ActualHeight));
+				_formattedWidth = ActualWidth;
+			}
+			return size;
+		}
+
+		protected override sw.Size ArrangeOverride(sw.Size arrangeBounds)
+		{
+			var result = base.ArrangeOverride(arrangeBounds);
+
+			// If the displayed width changed (or the text hasn't been laid out to a width yet), it needs
+			// to be re-wrapped to the new width (see MeasureOverride). The negated compare also handles
+			// the initial NaN case, where a direct `> 0.5` compare would be false.
+			if (TextWrapping == sw.TextWrapping.Wrap && !(Math.Abs(_formattedWidth - arrangeBounds.Width) <= 0.5))
+				InvalidateMeasure();
+			return result;
 		}
 	}
 
