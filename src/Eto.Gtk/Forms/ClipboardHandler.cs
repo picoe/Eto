@@ -83,9 +83,48 @@ namespace Eto.GtkSharp.Forms
 			public void HandleOwnerChange(object sender, Gtk.OwnerChangeArgs e)
 			{
 				var handler = Handler;
-				if (handler != null)
-					handler.Callback.OnChanged(handler.Widget, EventArgs.Empty);
+				if (handler == null || !IsNewOwnerChange(e.Event))
+					return;
+				handler.Callback.OnChanged(handler.Widget, EventArgs.Empty);
 			}
+
+			// Fire only for owner-change events that hand the selection to a NEW owner, ignoring the ones that
+			// merely tear an owner down (owner==NULL, reason DESTROY/CLOSE).
+			//
+			// Every real "clipboard now holds new content" is a single reason==NEW_OWNER event. But a selection
+			// source that exits (short-lived tools, or GTK's own Wayland double-emit -- GNOME #775631) produces a
+			// spurious owner==NULL teardown event first, and often a follow-up as a clipboard manager re-takes
+			// ownership to persist the data. Firing on the teardown double-reports a single change. Gating on
+			// NEW_OWNER drops exactly the teardown event without reading any clipboard content, so it also can't
+			// suppress a genuine change to identical content (that is still a NEW_OWNER event) -- matching AHK's
+			// "fire once per SetClipboard" semantics.
+			//
+			// GtkSharp's managed EventOwnerChange marshals owner/reason from the wrong struct offsets (owner always
+			// reads 0, reason reads garbage), so we read the native GdkEventOwnerChange directly. Its 64-bit layout
+			// is fixed ABI: type@0, GdkWindow* window@8, gint8 send_event@16, GdkWindow* owner@24, GdkOwnerChange
+			// reason@32. owner==NULL and reason!=NEW_OWNER are perfectly correlated; we key on owner (a teardown is
+			// exactly "no new owner").
+			static bool IsNewOwnerChange(Gdk.EventOwnerChange ev)
+			{
+				// OwnerFieldOffset is the 64-bit (LP64) layout; on other word sizes fall back to firing so we
+				// never silently drop a real change on an untested ABI.
+				if (IntPtr.Size != 8)
+					return true;
+				try
+				{
+					var h = ev?.Handle ?? IntPtr.Zero;
+					if (h == IntPtr.Zero)
+						return true; // can't inspect -> don't drop a possibly-real change
+					return Marshal.ReadIntPtr(h, OwnerFieldOffset) != IntPtr.Zero;
+				}
+				catch
+				{
+					return true;
+				}
+			}
+
+			// Byte offset of GdkWindow* owner within GdkEventOwnerChange on 64-bit (LP64). See IsNewOwnerChange.
+			const int OwnerFieldOffset = 24;
 		}
 
 		void Update()

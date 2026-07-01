@@ -690,6 +690,12 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
+			// The compositor sends exactly one `selection` event per real clipboard change, each carrying a fresh
+			// wl_data_offer (the data_offer + offer.offer events arrive immediately before it). So firing once per
+			// `selection` event is inherently single-fire per change -- no content compare or offer/mime dedup is
+			// needed (and would only risk suppressing a genuine re-copy of identical content, which AHK reports).
+			// A `selection` with a NULL offer means the selection was cleared, which is itself a change worth
+			// reporting.
 			void OnDeviceSelection(IntPtr data, IntPtr dev, IntPtr offer)
 			{
 				lock (stateLock)
