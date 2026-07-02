@@ -15,7 +15,7 @@ namespace Eto.Wpf.Forms
 				if (!string.IsNullOrEmpty(dir))
 					Control.InitialDirectory = dir;
 
-				Control.FileName = Path.GetFileName(value);
+				Control.FileName = value;
 			}
 		}
 
