@@ -1,5 +1,14 @@
 namespace Eto.GtkSharp.Forms
 {
+	// Remembers the last folder used by any file/folder dialog so subsequent dialogs
+	// open where the user left off, without modifying the process working directory.
+	static class GtkFileDialogHelper
+	{
+		public static string LastUsedFolder;
+
+		public static string InitialFolder => LastUsedFolder ?? System.IO.Directory.GetCurrentDirectory();
+	}
+
 	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
 #if GTKCORE
 		where TControl: Gtk.FileChooserNative
@@ -109,8 +118,8 @@ namespace Eto.GtkSharp.Forms
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
 			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))
-				System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
-			
+				GtkFileDialogHelper.LastUsedFolder = Control.CurrentFolder;
+
 			return response;
 		}
 

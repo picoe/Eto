@@ -6,6 +6,12 @@ namespace Eto.Wpf.Forms
 		where TControl: mw.FileDialog
 		where TWidget: FileDialog
 	{
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.RestoreDirectory = true;
+		}
+
 		public string FileName
 		{
 			get { return Control.FileName; }
