@@ -6,6 +6,12 @@ namespace Eto.Wpf.Forms
 		where TControl: mw.FileDialog
 		where TWidget: FileDialog
 	{
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.RestoreDirectory = true;
+		}
+
 		public string FileName
 		{
 			get { return Control.FileName; }
@@ -64,7 +70,6 @@ namespace Eto.Wpf.Forms
 			if (parent?.HasFocus == false)
 				parent.Focus();
 			SetFilters();
-			Control.RestoreDirectory = true;
 			return base.ShowDialog(parent);
 		}
 

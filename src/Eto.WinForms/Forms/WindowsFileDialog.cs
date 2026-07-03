@@ -4,6 +4,12 @@ namespace Eto.WinForms.Forms
 		where TControl : swf.FileDialog
 		where TWidget : FileDialog
 	{
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.RestoreDirectory = true;
+		}
+
 		public string FileName
 		{
 			get { return Control.FileName; }
@@ -84,7 +90,6 @@ namespace Eto.WinForms.Forms
 				parent.Focus();
 
 			SetFilters();
-			Control.RestoreDirectory = true;
 
 			swf.DialogResult dr;
 			if (parent != null)
