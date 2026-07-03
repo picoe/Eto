@@ -17,15 +17,19 @@ namespace Eto.GtkSharp.Forms
 #endif
 		where TWidget: FileDialog
 	{
+		// Cache the full path so FileName round-trips it; cleared on OK so the chosen path wins.
+		string fileName;
+
 		public virtual string FileName
 		{
 #if GTKCORE
-			get => Control.Filename ?? Control.CurrentName;
+			get => fileName ?? Control.Filename ?? Control.CurrentName;
 #else
-			get => Control.Filename;
+			get => fileName ?? Control.Filename;
 #endif
 			set
 			{
+				fileName = string.IsNullOrEmpty(value) ? null : value;
 				if (string.IsNullOrEmpty(value))
 				{
 					Control.UnselectAll();
@@ -117,8 +121,12 @@ namespace Eto.GtkSharp.Forms
 #endif
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
-			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))
-				GtkFileDialogHelper.LastUsedFolder = Control.CurrentFolder;
+			if (response == DialogResult.Ok)
+			{
+				fileName = null;
+				if (!string.IsNullOrEmpty(Control.CurrentFolder))
+					GtkFileDialogHelper.LastUsedFolder = Control.CurrentFolder;
+			}
 
 			return response;
 		}
