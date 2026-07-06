@@ -18,7 +18,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		ColumnCollection columns;
 		Gtk.TreeViewColumn spacingColumn;
-		readonly Dictionary<int, int> columnMap = new Dictionary<int, int>();
+		readonly Dictionary<int, (int column, GLib.GType type)> columnMap = new();
 
 		protected bool SkipSelectedChange { get; set; }
 
@@ -27,7 +27,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		Gtk.TreeView IGridHandler.Tree => Control;
 
-		protected Dictionary<int, int> ColumnMap { get { return columnMap; } }
+		protected Dictionary<int, (int column, GLib.GType type)> ColumnMap { get { return columnMap; } }
 
 		public override Gtk.Widget ContainerControl => ScrolledWindow;
 
@@ -500,9 +500,9 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public abstract Gtk.TreePath GetPathAtRow(int row);
 
-		public void SetColumnMap(int dataIndex, int column)
+		public void SetColumnMap(int dataIndex, int column, GLib.GType type)
 		{
-			columnMap[dataIndex] = column;
+			columnMap[dataIndex] = (column, type);
 		}
 
 		public void EndCellEditing(Gtk.TreePath path, int column)

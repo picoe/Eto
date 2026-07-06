@@ -275,5 +275,32 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
+
+		[Test]
+		public void UsingStringListAsDataStoreShouldNotEmitCriticalWarnings()
+		{
+			var output = StandardErrorCapture.Capture(() =>
+			{
+				ShownAsync(form =>
+				{
+					var grid = new GridView { Size = new Size(200, 200) };
+					grid.Columns.Add(new GridColumn
+					{
+						HeaderText = "Text",
+						DataCell = new TextBoxCell { Binding = Binding.Property((string s) => s) }
+					});
+					grid.DataStore = new List<string> { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+					return grid;
+				}, async grid =>
+				{
+					// let the grid render its cells - that's when GTK emits the critical if the data store is unsupported
+					await Task.Delay(500);
+					grid.ReloadData(Enumerable.Range(0, 5));
+					await Task.Delay(500);
+				});
+			});
+
+			Assert.That(output, Does.Not.Contain("CRITICAL"), $"A critical warning was emitted while rendering a List<string> data store:{Environment.NewLine}{output}");
+		}
 	}
 }
