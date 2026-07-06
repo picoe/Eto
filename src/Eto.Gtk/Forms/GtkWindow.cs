@@ -853,7 +853,7 @@ namespace Eto.GtkSharp.Forms
 
 		public override bool Visible
 		{
-			get { return base.Visible; }
+			get { return base.Visible && Control.IsMapped; }
 			set
 			{
 				base.Visible = value;
