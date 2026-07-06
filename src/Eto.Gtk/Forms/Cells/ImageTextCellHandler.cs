@@ -104,9 +104,9 @@ namespace Eto.GtkSharp.Forms.Cells
 		{
 			Column.Control.ClearAttributes(Control);
 			Column.Control.ClearAttributes(imageCell);
-			imageDataIndex = SetColumnMap(dataIndex);
+			imageDataIndex = SetColumnMap(dataIndex, (GLib.GType)typeof(object));
 			Column.Control.AddAttribute(imageCell, "pixbuf", dataIndex++);
-			textDataIndex = SetColumnMap(dataIndex);
+			textDataIndex = SetColumnMap(dataIndex, GLib.GType.String);
 			Column.Control.AddAttribute(Control, "text", dataIndex++);
 			base.BindCell(ref dataIndex);
 
