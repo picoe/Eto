@@ -1309,11 +1309,13 @@ namespace Eto.GtkSharp.Forms
 			if (!ContainerControl.IsRealized)
 			{
 				if (ContainerControl is Gtk.Window window)
+				{
 					window.Child.ShowAll();
+					window.Realize();
+				}
 				else
 					ContainerControl.ShowAll();
 
-				ContainerControl.Realize();
 			}
 #if GTK3
 			var requestMode = ContainerControl.RequestMode;
