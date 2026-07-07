@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Behaviors
 		Button focusButton;
 		EnumRadioButtonList<WindowStyle> styleCombo;
 		EnumRadioButtonList<WindowState> stateCombo;
-		EnumRadioButtonList<WindowType> typeRadio;
+		EnumRadioButtonList<WindowType> typeRadio = new();
 		CheckBox setOwnerCheckBox;
 		CheckBox createMenuBar;
 		EnumCheckBoxList<MenuBarSystemItems> systemMenuItems;
@@ -188,8 +188,6 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control CreateTypeControl()
 		{
-			typeRadio = new EnumRadioButtonList<WindowType>();
-
 			typeRadio.SelectedValueBinding.BindDataContext((SettingsWindow m) => m.WindowType);
 			typeRadio.BindDataContext(c => c.Enabled, Binding.Delegate((object m) => m is SettingsWindow));
 			return typeRadio;
@@ -366,7 +364,7 @@ namespace Eto.Test.Sections.Behaviors
 			var showActivatedCheckBox = new CheckBox { Text = "ShowActivated" };
 			showActivatedCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow s) => s.ThreeState);
 			showActivatedCheckBox.CheckedBinding.BindDataContext((Form w) => w.ShowActivated);
-			showActivatedCheckBox.Bind(c => c.Enabled, typeRadio, Binding.Property((RadioButtonList t) => t.SelectedKey).ToBool("dialog").Convert(v => !v));
+			showActivatedCheckBox.Bind(c => c.Enabled, typeRadio, Binding.Property((EnumRadioButtonList<WindowType> t) => t.SelectedValue).Convert(r => r != WindowType.Dialog));
 			return showActivatedCheckBox;
 
 		}

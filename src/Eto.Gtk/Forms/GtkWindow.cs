@@ -920,7 +920,10 @@ namespace Eto.GtkSharp.Forms
 				var window = Control.GetWindow();
 				if (window == null)
 					return Size.Empty;
-				return window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
+				var allocationSize = Control.Allocation.Size.ToEto();
+				if (allocationSize.Width <= 1 || allocationSize.Height <= 1)
+					return Size.Empty;
+				return window.FrameExtents.Size.ToEto() - allocationSize;
 			}
 		}
 
