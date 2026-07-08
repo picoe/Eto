@@ -761,6 +761,34 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		public Rectangle Bounds
+		{
+			// GTK positions (gtk_window_move) and sizes (gtk_window_resize) windows with separate
+			// calls, so there is no combined API - set size then location.
+			get => new Rectangle(Location, Size);
+			set
+			{
+				if (Control.IsMapped)
+				{
+					var size = Size;
+					UserPreferredSize = value.Size;
+					if (value.Size != size)
+					{
+						// if the size is different, resize the window and wait for the size to be applied
+						Control.GetWindow().Resize(value.Width, value.Height);
+						while (Gtk.Application.EventsPending())
+							Gtk.Application.RunIteration();
+					}
+						
+					if (!TryMovePopupToRect(value.Location))
+						Control.GetWindow().Move(value.X, value.Y);
+					return;
+				}
+				Size = value.Size;
+				Location = value.Location;
+			}
+		}
+
 		static bool IsWaylandDisplay =>
 			(Gdk.Display.Default?.Name ?? string.Empty).StartsWith("wayland", StringComparison.OrdinalIgnoreCase);
 

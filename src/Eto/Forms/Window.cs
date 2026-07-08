@@ -271,12 +271,8 @@ public abstract class Window : Panel
 	/// <value>The bounding rectangle of the window</value>
 	public new Rectangle Bounds
 	{
-		get { return new Rectangle(Handler.Location, Handler.Size); }
-		set
-		{
-			Handler.Location = value.Location;
-			Handler.Size = value.Size;
-		}
+		get { return Handler.Bounds; }
+		set { Handler.Bounds = value; }
 	}
 
 	/// <summary>
@@ -740,6 +736,16 @@ public abstract class Window : Panel
 		/// can be used to position the window relative to specific elements of the owner.
 		/// </remarks>
 		new Point Location { get; set; }
+
+		/// <summary>
+		/// Gets or sets the size and location of the window
+		/// </summary>
+		/// <remarks>
+		/// Where the platform provides an API to set both the size and location at once, handlers should use it
+		/// so the window is repositioned and resized in a single operation instead of two separate steps.
+		/// </remarks>
+		/// <value>The bounding rectangle of the window</value>
+		Rectangle Bounds { get; set; }
 
 		/// <summary>
 		/// Gets or sets the opacity of the window

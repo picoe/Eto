@@ -199,5 +199,15 @@ namespace Eto.Android.Forms
 
 		public Size MaximumSize { get; set; }
 		public bool AutoSize { get; set; }
+
+		public Rectangle Bounds
+		{
+			get => new Rectangle(Location, Size);
+			set
+			{
+				Size = value.Size;
+				Location = value.Location;
+			}
+		}
 	}
 }

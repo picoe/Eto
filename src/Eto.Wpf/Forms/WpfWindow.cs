@@ -874,6 +874,18 @@ namespace Eto.Wpf.Forms
 			Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(NativeHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE));
 		}
 
+		public Rectangle Bounds
+		{
+			// WPF sizes windows in logical (WPF) units but positions them in device pixels via Win32,
+			// so there is no single API that sets both cleanly - set size then location.
+			get => new Rectangle(Location, Size);
+			set
+			{
+				Size = value.Size;
+				Location = value.Location;
+			}
+		}
+
 		public WindowState WindowState
 		{
 			get

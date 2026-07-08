@@ -101,6 +101,20 @@ namespace Eto
 				rect.Height / pixelSize
 				);
 		}
+		
+		public static Eto.Drawing.Rectangle LogicalToScreen(this Eto.Drawing.RectangleF rect, swf.Screen sdscreen = null, bool usePerMonitor = true)
+		{
+			sdscreen = sdscreen ?? swf.Screen.FromPoint(rect.Location.ToSDPoint());
+			var location = sdscreen.GetLogicalLocation();
+			var pixelSize = sdscreen.GetLogicalPixelSize(usePerMonitor);
+			var sdscreenBounds = usePerMonitor ? sdscreen.GetBounds() : sdscreen.Bounds.ToEto();
+			return Rectangle.Round(new Eto.Drawing.RectangleF(
+				sdscreenBounds.X + (rect.X - location.X) * pixelSize,
+				sdscreenBounds.Y + (rect.Y - location.Y) * pixelSize,
+				rect.Width * pixelSize,
+				rect.Height * pixelSize
+				));
+		}
 
 		public static float GetMaxLogicalPixelSize() => locationHelper.GetMaxLogicalPixelSize();
 
