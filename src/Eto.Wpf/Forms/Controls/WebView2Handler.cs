@@ -473,10 +473,23 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		InitializeAsync();
 	}
 
+	// E_ABORT - reported when initialization is aborted because the control was
+	// torn down before EnsureCoreWebView2Async completed.
+	const int E_ABORT = unchecked((int)0x80004004);
+
 	void Control_CoreWebView2Ready(object sender, CoreWebView2InitializationCompletedEventArgs e)
 	{
 		if (!e.IsSuccess)
 		{
+			// When the control is disposed/unloaded before WebView2 finishes initializing
+			// (e.g. closing a panel or switching the window/viewport layout) the
+			// initialization is aborted with E_ABORT. This is benign and must not be
+			// allowed to escape this native callback, since it would surface as an
+			// unhandled exception on the dispatcher and crash the application.
+			// https://github.com/MicrosoftEdge/WebView2Feedback/issues/2410
+			if (Widget.IsDisposed || e.InitializationException?.HResult == E_ABORT)
+				return;
+
 			throw new WebView2InitializationException("Failed to initialize WebView2", e.InitializationException);
 		}
 

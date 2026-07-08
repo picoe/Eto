@@ -39,7 +39,7 @@ namespace Eto.GtkSharp.Forms
 
 		public override bool Visible
 		{
-			get => _visible;
+			get => (!Application.Instance.IsActive && _visible) || base.Visible;
 			set
 			{
 				_visible = value;

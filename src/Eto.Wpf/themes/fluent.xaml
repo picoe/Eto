@@ -14,6 +14,18 @@
     <!-- Override border brush for Eto controls to use the Fluent theme color that adapts to dark/light mode -->
     <SolidColorBrush x:Key="EtoBorderBezelBrush" Color="{DynamicResource ControlStrokeColorDefault}" />
 
+    <!-- Override the custom combo box brushes (defined in themes/generic/CustomComboBox.xaml) with Fluent theme colors -->
+    <SolidColorBrush x:Key="EtoCustomComboBoxGlyphBrush" Color="{DynamicResource TextFillColorPrimary}" />
+    <SolidColorBrush x:Key="EtoCustomComboBoxButtonHoverBrush" Color="{DynamicResource SubtleFillColorSecondary}" />
+    <CornerRadius x:Key="EtoCustomComboBoxCornerRadius">4</CornerRadius>
+
+	<Style TargetType="{x:Type efc:EtoCustomComboBox}" BasedOn="{StaticResource EtoCustomComboBoxStyle}">
+		<Setter Property="Background" Value="{DynamicResource TextControlBackground}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource TextControlElevationBorderBrush}" />
+		<Setter Property="BorderThickness" Value="{DynamicResource TextControlBorderThemeThickness}" />
+		<Setter Property="Padding" Value="3" />
+	</Style>
+
     <Style TargetType="efc:EtoSearchTextBox" BasedOn="{StaticResource EtoSearchTextBox}">
 		<Setter Property="Padding" Value="4" />
 	</Style>

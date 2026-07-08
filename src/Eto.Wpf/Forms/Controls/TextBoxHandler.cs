@@ -461,6 +461,14 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override swc.ContextMenu GetDefaultContextMenu() => TextAreaHandler.CreateDefaultContextMenu();
 
-
+		public override Color TextColor
+		{
+			get => base.TextColor;
+			set
+			{
+				base.TextColor = value;
+				TextBox.CaretBrush = value.ToWpfBrush(TextBox.CaretBrush);
+			}
+		}
 	}
 }

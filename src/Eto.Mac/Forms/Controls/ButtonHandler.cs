@@ -25,24 +25,8 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	public class EtoButtonCell : NSButtonCell, IColorizeCell
+	public class EtoButtonCell : NSButtonCell
 	{
-		ColorizeView colorize;
-		public Color? Color
-		{
-			get => colorize?.Color;
-			set => ColorizeView.Create(ref colorize, value);
-		}
-
-		public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
-		{
-			if (!NSGraphicsContext.IsCurrentContextDrawingToScreen)
-				return;
-			colorize?.Begin(frame, controlView);
-			base.DrawBezelWithFrame(frame, controlView);
-			colorize?.End();
-		}
-
 		public EtoButtonCell()
 		{
 			ImageScale = NSImageScale.ProportionallyDown;
@@ -175,12 +159,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override Color DefaultBackgroundColor => ((EtoButtonCell)Control.Cell).Color ?? Control.Cell.BackgroundColor.ToEto();
+		protected override Color DefaultBackgroundColor => Control.BezelColor?.ToEto() ?? Control.Cell.BackgroundColor.ToEto();
 		
 		protected override void SetBackgroundColor(Color? color)
 		{
-			var cell = (EtoButtonCell)Control.Cell;
-			cell.Color = color;
+			Control.BezelColor = color?.ToNSUI();
 			Control.NeedsDisplay = true;
 		}
 

@@ -177,19 +177,8 @@ namespace Eto.GtkSharp.Drawing
 		public void Save(Stream stream, ImageFormat format)
 		{
 			EnsureData();
-			string fileName = Guid.NewGuid().ToString();
-			Control.Save(fileName, format.ToGdk());
-			Stream fileStream = File.OpenRead(fileName);
-			var buffer = new byte[4096];
-
-			int size = fileStream.Read(buffer, 0, buffer.Length);
-			while (size > 0)
-			{
-				stream.Write(buffer, 0, size);
-				size = fileStream.Read(buffer, 0, buffer.Length);
-			}
-			fileStream.Close();
-			File.Delete(fileName);
+			var buffer = Control.SaveToBuffer(format.ToGdk());
+			stream.Write(buffer, 0, buffer.Length);
 		}
 
 		public override Size Size

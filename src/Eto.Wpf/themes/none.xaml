@@ -10,5 +10,8 @@
         <e:AssemblyAbsoluteResourceDictionary Path="themes/none/Window.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+	<SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+	<SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+	<SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
 
 </ResourceDictionary>

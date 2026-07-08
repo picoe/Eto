@@ -97,6 +97,7 @@ namespace Eto.Wpf.Forms
 		bool _needsThemeChanged;
 		Size? newSize;
 		sw.Size parentMinimumSize;
+		HwndSource _mouseHWheelSource;
 		bool isMouseOver;
 		bool isMouseCaptured;
 		public bool XScale { get; private set; }
@@ -476,6 +477,9 @@ namespace Eto.Wpf.Forms
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
 					ContainerControl.PreviewMouseWheel += HandlePreviewMouseWheel;
+					ContainerControl.Loaded += HandleMouseWheelLoaded;
+					ContainerControl.Unloaded += HandleMouseWheelUnloaded;
+					AddMouseHWheelHook();
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					ContainerControl.SizeChanged += HandleSizeChanged;
@@ -578,6 +582,51 @@ namespace Eto.Wpf.Forms
 			var args = e.ToEto(Control);
 			Callback.OnMouseWheel(Widget, args);
 			e.Handled = args.Handled;
+		}
+
+		const int WM_MOUSEHWHEEL = 0x020E;
+
+		private void HandleMouseWheelLoaded(object sender, sw.RoutedEventArgs e)
+		{
+			AddMouseHWheelHook();
+		}
+
+		private void HandleMouseWheelUnloaded(object sender, sw.RoutedEventArgs e)
+		{
+			RemoveMouseHWheelHook();
+		}
+
+		void AddMouseHWheelHook()
+		{
+			if (_mouseHWheelSource != null || ContainerControl == null)
+				return;
+			_mouseHWheelSource = sw.PresentationSource.FromVisual(ContainerControl) as HwndSource;
+			_mouseHWheelSource?.AddHook(MouseHWheelHook);
+		}
+
+		void RemoveMouseHWheelHook()
+		{
+			if (_mouseHWheelSource == null)
+				return;
+			_mouseHWheelSource.RemoveHook(MouseHWheelHook);
+			_mouseHWheelSource = null;
+		}
+
+		IntPtr MouseHWheelHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+		{
+			if (msg != WM_MOUSEHWHEEL || Control == null || ContainerControl?.IsMouseOver != true)
+				return IntPtr.Zero;
+
+			var delta = -GetWheelDelta(wParam) / WpfConversions.WheelDelta;
+			var args = new MouseEventArgs(Mouse.Buttons, Keyboard.Modifiers, PointFromScreen(Mouse.Position), new SizeF(delta, 0));
+			Callback.OnMouseWheel(Widget, args);
+			handled = args.Handled;
+			return IntPtr.Zero;
+		}
+
+		static int GetWheelDelta(IntPtr wParam)
+		{
+			return (short)(((long)wParam >> 16) & 0xFFFF);
 		}
 
 		private void HandleIsVisibleChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
@@ -1258,5 +1307,33 @@ namespace Eto.Wpf.Forms
 			return ContainerControl.CaptureMouse();
 		}
 		public void ReleaseMouseCapture() => ContainerControl.ReleaseMouseCapture();
+		public virtual void AddGesture(Gesture item)
+		{
+			if (item == null)
+				throw new ArgumentNullException(nameof(item));
+
+			var handler = ((IHandlerSource)item).Handler as Eto.Wpf.Forms.Controls.IWpfGestureHandler;
+			if (handler == null)
+				throw new NotSupportedException($"Gesture '{item.GetType().FullName}' is not supported on WPF");
+
+			handler.AttachTo(ContainerControl);
+		}
+
+		public virtual void ClearGestures()
+		{
+			foreach (var gesture in Widget.Gestures)
+			{
+				if (((IHandlerSource)gesture).Handler is Eto.Wpf.Forms.Controls.IWpfGestureHandler handler)
+					handler.Detach();
+			}
+		}
+
+		public virtual void RemoveGesture(Gesture item)
+		{
+			if (item == null)
+				return;
+			if (((IHandlerSource)item).Handler is Eto.Wpf.Forms.Controls.IWpfGestureHandler handler)
+				handler.Detach();
+		}
 	}
 }

@@ -357,8 +357,38 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	}
 
 #if !NET7_0_OR_GREATER
-	MethodInfo _addMethod = typeof(T).GetMethod("op_Addition", new[] { typeof(T), typeof(T) });
-	MethodInfo _subtractMethod = typeof(T).GetMethod("op_Subtraction", new[] { typeof(T), typeof(T) });
+	static Delegate GetAddDelegate(Type type)
+	{
+		// 1. Create expression parameters targeting those types
+		ParameterExpression paramA = Expression.Parameter(type, "a");
+		ParameterExpression paramB = Expression.Parameter(type, "b");
+
+		// 2. Generate the mathematical Add expression
+		BinaryExpression addExpression = Expression.Add(paramA, paramB);
+
+		// 3. Compile the expression into a reusable delegate execution block
+		var lambda = Expression.Lambda(addExpression, paramA, paramB);
+		var compiledDelegate = lambda.Compile();
+		return compiledDelegate;
+	}
+	
+	static Delegate GetSubtractDelegate(Type type)
+	{
+		// 1. Create expression parameters targeting those types
+		ParameterExpression paramA = Expression.Parameter(type, "a");
+		ParameterExpression paramB = Expression.Parameter(type, "b");
+	
+		// 2. Generate the mathematical Subtract expression
+		BinaryExpression subtractExpression = Expression.Subtract(paramA, paramB);
+
+		// 3. Compile the expression into a reusable delegate execution block
+		var lambda = Expression.Lambda(subtractExpression, paramA, paramB);
+		var compiledDelegate = lambda.Compile();
+		return compiledDelegate;
+	} 
+
+	static Delegate _addDelegate = GetAddDelegate(typeof(T));
+	static Delegate _subtractDelegate = GetSubtractDelegate(typeof(T));
 #endif
 
 	private T Add(T val, T increment)
@@ -366,7 +396,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 #if NET7_0_OR_GREATER
 		return val + increment;
 #else
-		return _addMethod != null ? (T)_addMethod.Invoke(null, new object[] { val, increment }) : throw new InvalidOperationException($"The type {typeof(T)} does not support addition operator.");
+		return _addDelegate != null ? (T)_addDelegate.DynamicInvoke(val, increment) : throw new InvalidOperationException($"The type {typeof(T)} does not support addition operator.");
 #endif
 		
 	}
@@ -376,7 +406,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 #if NET7_0_OR_GREATER
 		return val - increment;
 #else
-		return _subtractMethod != null ? (T)_subtractMethod.Invoke(null, new object[] { val, increment }) : throw new InvalidOperationException($"The type {typeof(T)} does not support subtraction operator.");
+		return _subtractDelegate != null ? (T)_subtractDelegate.DynamicInvoke(val, increment) : throw new InvalidOperationException($"The type {typeof(T)} does not support subtraction operator.");
 #endif
 	}
 }

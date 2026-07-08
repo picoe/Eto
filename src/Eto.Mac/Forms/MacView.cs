@@ -329,6 +329,7 @@ namespace Eto.Mac.Forms
 			{
 				if (handler.Widget?.IsDisposed != false) return;
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
+				TriggerScrollWheelGestures(handler, theEvent);
 				var args = MacConversions.GetMouseEvent(handler, theEvent, true);
 				if (!args.Delta.IsZero)
 				{
@@ -341,6 +342,20 @@ namespace Eto.Mac.Forms
 			}
 			else
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+		}
+
+		static void TriggerScrollWheelGestures(IMacViewHandler handler, NSEvent theEvent)
+		{
+			var gestures = handler.Widget.Gestures
+				.Select(gesture => ((IHandlerSource)gesture).Handler as IMacScrollWheelGestureHandler)
+				.Where(gesture => gesture != null)
+				.ToArray();
+			var firstGesture = gestures.FirstOrDefault();
+			foreach (var gesture in gestures)
+			{
+				if (gesture == firstGesture || firstGesture.Gesture.CanRecognizeSimultaneouslyWith(gesture.Gesture))
+					gesture.OnScrollWheel(theEvent);
+			}
 		}
 
 		static int _interpretingKeyEvents;
@@ -650,6 +665,13 @@ namespace Eto.Mac.Forms
 		NSTrackingArea tracking;
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
+		List<GestureRecognizerReference> gestureRecognizers;
+
+		class GestureRecognizerReference
+		{
+			public Gesture Gesture { get; set; }
+			public NSGestureRecognizer Recognizer { get; set; }
+		}
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
@@ -1010,7 +1032,6 @@ namespace Eto.Mac.Forms
 			}
 			return false;
 		}
-
 
 		public virtual void OnSizeChanged(EventArgs e)
 		{
@@ -1462,6 +1483,8 @@ namespace Eto.Mac.Forms
 			MacView.InMouseTrackingLoop = false;
 
 			var session = ContainerControl.BeginDraggingSession(draggingItems, NSApplication.SharedApplication.CurrentEvent, source);
+			if (session == null) // could not start dragging, likely because the mouse event was not a mouse down
+				return;
 			handler.Apply(session.DraggingPasteboard);
 
 			SetupDragPasteboard(session.DraggingPasteboard);
@@ -1841,6 +1864,40 @@ namespace Eto.Mac.Forms
 		{
 			CaptureLoopEnabled = false;
 			MacView.CapturedControl = null;
+		}
+
+		public void AddGesture(Gesture item)
+		{
+			if (item == null)
+				throw new ArgumentNullException(nameof(item));
+
+			var itemHandler = ((IHandlerSource)item).Handler;
+			var handler = itemHandler as IMacGestureHandler;
+			var scrollWheelHandler = itemHandler as IMacScrollWheelGestureHandler;
+			if (handler == null && scrollWheelHandler == null)
+				throw new NotSupportedException($"Gesture '{item.GetType().FullName}' is not supported on Mac");
+
+			if (handler != null)
+				EventControl.AddGestureRecognizer(handler.Recognizer);
+			if (scrollWheelHandler != null)
+				AddMethod(MacView.selScrollWheel, MacView.TriggerMouseWheel_Delegate, "v@:@");
+		}
+
+		public void ClearGestures()
+		{
+			foreach (var gesture in Widget.Gestures)
+			{
+				if (((IHandlerSource)gesture).Handler is IMacGestureHandler handler)
+					EventControl.RemoveGestureRecognizer(handler.Recognizer);
+			}
+		}
+
+		public void RemoveGesture(Gesture item)
+		{
+			if (item == null)
+				return;
+			if (((IHandlerSource)item).Handler is IMacGestureHandler handler)
+				EventControl.RemoveGestureRecognizer(handler.Recognizer);
 		}
 		
 #if OSX

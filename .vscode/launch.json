@@ -1,129 +1,134 @@
 {
-   "version": "0.2.0",
-   "configurations": [
-        {
-            "name": "Eto.Test.Mac64",
-            "type": "coreclr",
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Eto.Test.Mac64",
+			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-mac64",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Mac64/${config:var.configuration}/net10.0/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.Mac64/${config:var.configuration}/net10.0/Eto.Test.Mac64.app/Contents/MacOS/Eto.Test.Mac64",
 			// "targetArchitecture": "x86_64", // uncomment to test intel on M1
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
+			"args": [],
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false
-        },
+		},
 		{
-            "name": "Eto.Test.macOS",
-            "type": "coreclr",
+			"name": "Eto.Test.macOS",
+			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-macos",
 			"program": "${workspaceFolder}/artifacts/test/Eto.Test.macOS/${config:var.configuration}/net10.0-macos/osx-arm64/Eto.Test.macOS.app/Contents/MacOS/Eto.Test.macOS",
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
+			"args": [],
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false
-        },
-        {
-            "name": "Eto.Test.Gtk",
+		},
+		{
+			"name": "Eto.Test.Gtk",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-gtk",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk/${config:var.configuration}/net10.0/Eto.Test.Gtk.dll",
-            "args": [],
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk/${config:var.configuration}/net10.0/Eto.Test.Gtk.dll",
+			"args": [],
 			"osx": {
 				"env": {
 					"DYLD_FALLBACK_LIBRARY_PATH": "/opt/homebrew/lib"
 				}
 			},
-            "console": "internalConsole",
-            "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart",
+			"env": {
+                // "GDK_BACKEND": "x11",
+				// "WAYLAND_DEBUG": "1",
+				// "G_DEBUG_MESSAGES": "all"
+			},
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false,
-        },
-        {
-            "name": "Eto.Test.Gtk - mono",
+		},
+		{
+			"name": "Eto.Test.Gtk - mono",
 			"type": "mono",
 			"request": "launch",
 			"preLaunchTask": "build-gtk",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk/${config:var.configuration}/net48/Eto.Test.Gtk.exe",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk/${config:var.configuration}/net48/Eto.Test.Gtk.exe",
 			"passDebugOptionsViaEnvironmentVariable": true,
-            "args": [],
+			"args": [],
 			"osx": {
 				"env": {
 					"DYLD_FALLBACK_LIBRARY_PATH": "/opt/homebrew/lib"
 				}
 			},
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
-        },
-        {
-            "name": "Eto.Test.Gtk2",
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart"
+		},
+		{
+			"name": "Eto.Test.Gtk2",
 			"type": "mono",
 			"request": "launch",
 			"preLaunchTask": "build-gtk2",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk2/${config:var.configuration}/net48/Eto.Test.Gtk2.exe",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk2/${config:var.configuration}/net48/Eto.Test.Gtk2.exe",
 			"passDebugOptionsViaEnvironmentVariable": true,
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
-        },
-        {
-            "name": "Eto.Test.Wpf",
+			"args": [],
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart"
+		},
+		{
+			"name": "Eto.Test.Wpf",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Wpf/${config:var.configuration}/net10.0-windows/Eto.Test.Wpf.exe",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.Wpf/${config:var.configuration}/net10.0-windows/Eto.Test.Wpf.exe",
 			// "targetArchitecture": "x86_64",
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
+			"args": [],
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false
-        },
-        {
-            "name": "Eto.Test.Wpf - .NET 4.8",
+		},
+		{
+			"name": "Eto.Test.Wpf - .NET 4.8",
 			"type": "clr",
 			"request": "launch",
 			"preLaunchTask": "build-wpf",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Wpf/${config:var.configuration}/net48/Eto.Test.Wpf.exe",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.Wpf/${config:var.configuration}/net48/Eto.Test.Wpf.exe",
 			"targetArchitecture": "x86_64",
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
+			"args": [],
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false
-        },
-        {
-            "name": "Eto.Test.WinForms",
+		},
+		{
+			"name": "Eto.Test.WinForms",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.WinForms/${config:var.configuration}/net10.0-windows/Eto.Test.WinForms.exe",
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.WinForms/${config:var.configuration}/net10.0-windows/Eto.Test.WinForms.exe",
+			"args": [],
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false
 		},
-        {
-            "name": "Eto.Test.WinForms - .NET 4.8",
+		{
+			"name": "Eto.Test.WinForms - .NET 4.8",
 			"type": "clr",
 			"request": "launch",
 			"preLaunchTask": "build-winforms",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.WinForms/${config:var.configuration}/net48/Eto.Test.WinForms.exe",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.WinForms/${config:var.configuration}/net48/Eto.Test.WinForms.exe",
 			"targetArchitecture": "x86_64",
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
+			"args": [],
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false
 		},
-        {
-            "name": "Eto.Test.Direct2D",
+		{
+			"name": "Eto.Test.Direct2D",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-direct2d",
-            "program": "${workspaceFolder}/artifacts/test/Eto.Test.Direct2D/${config:var.configuration}/net10.0-windows/Eto.Test.Direct2D.exe",
-            "args": [],
-            "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.Direct2D/${config:var.configuration}/net10.0-windows/Eto.Test.Direct2D.exe",
+			"args": [],
+			"console": "internalConsole",
+			"internalConsoleOptions": "openOnSessionStart",
 			"justMyCode": false
 		},
 	]

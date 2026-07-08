@@ -37,6 +37,32 @@ namespace Eto.GtkSharp
 			WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START = 0,
 			WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_END = 1
 		}
+		
+		// GdkAnchorHints / GdkGravity values. move_to_rect isn't exposed by the
+		// GtkSharp managed binding, so it's P/Invoked here. This lives in the
+		// non-generic type because [DllImport] can't be applied inside a generic
+		// class (CS7042).
+		[Flags]
+		public enum Gravity : int
+		{
+			GDK_GRAVITY_NORTH_WEST = 1
+		}
+		
+		[Flags]
+		public enum AnchorHint : int
+		{
+			None = 0,
+			GDK_ANCHOR_SLIDE_X = 1 << 2,
+			GDK_ANCHOR_SLIDE_Y = 1 << 3,
+			GDK_ANCHOR_FLIP_X = 1 << 4,
+			GDK_ANCHOR_FLIP_Y = 1 << 5,
+			GDK_ANCHOR_RESIZE_X = 1 << 6,
+			GDK_ANCHOR_RESIZE_Y = 1 << 7
+		}
+		
+		[StructLayout(LayoutKind.Sequential)]
+		public struct GdkRect { public int X, Y, Width, Height; }
+
 
 
 		static class NMWindows
@@ -268,6 +294,9 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gdk_window_move_to_rect(IntPtr window, ref GdkRect rect, Gravity rect_anchor, Gravity window_anchor, AnchorHint anchor_hints, int rect_anchor_dx, int rect_anchor_dy);
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
@@ -519,6 +548,9 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gdk_window_move_to_rect(IntPtr window, ref GdkRect rect, Gravity rect_anchor, Gravity window_anchor, AnchorHint anchor_hints, int rect_anchor_dx, int rect_anchor_dy);
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
@@ -770,6 +802,9 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gdk_pixbuf_get_from_window(IntPtr window, int x, int y, int width, int height);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gdk_window_move_to_rect(IntPtr window, ref GdkRect rect, Gravity rect_anchor, Gravity window_anchor, AnchorHint anchor_hints, int rect_anchor_dx, int rect_anchor_dy);
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
@@ -1424,6 +1459,16 @@ namespace Eto.GtkSharp
 				return NMMac.gdk_pixbuf_get_from_window(window, x, y, width, height);
 			else
 				return NMWindows.gdk_pixbuf_get_from_window(window, x, y, width, height);
+		}
+
+		public static void gdk_window_move_to_rect(IntPtr window, ref GdkRect rect, Gravity rect_anchor, Gravity window_anchor, AnchorHint anchor_hints, int rect_anchor_dx, int rect_anchor_dy)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gdk_window_move_to_rect(window, ref rect, rect_anchor, window_anchor, anchor_hints, rect_anchor_dx, rect_anchor_dy);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gdk_window_move_to_rect(window, ref rect, rect_anchor, window_anchor, anchor_hints, rect_anchor_dx, rect_anchor_dy);
+			else
+				NMWindows.gdk_window_move_to_rect(window, ref rect, rect_anchor, window_anchor, anchor_hints, rect_anchor_dx, rect_anchor_dy);
 		}
 
 		public static bool pango_font_has_char(IntPtr font, int wc)

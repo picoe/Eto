@@ -23,6 +23,8 @@
     <Project Path="../lib/monomac/src/MonoMac.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <Project Path="../test/Eto.Test/Eto.Test.csproj" />
+    <Project Path="../test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj" />
     <Project Path="../test/Eto.Test.Gtk/Eto.Test.Gtk.csproj" />
     <Project Path="../test/Eto.Test.Mac/Eto.Test.Mac64.csproj" />
     <Project Path="../test/Eto.Test.Mac/Eto.Test.macOS.csproj">
@@ -44,7 +46,6 @@
       <Build Solution="*|Linux" Project="false" />
       <Build Solution="*|Mac" Project="false" />
     </Project>
-    <Project Path="../test/Eto.Test/Eto.Test.csproj" />
   </Folder>
   <Project Path="Eto.Forms.Templates/Eto.Forms.Templates.csproj" />
   <Project Path="Eto.Gtk/Eto.Gtk.csproj" />

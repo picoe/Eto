@@ -1,4 +1,5 @@
 using Eto.GtkSharp.Forms.Cells;
+
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler, ICellDataSource, IGtkEnumerableModelHandler<object>
@@ -140,17 +141,32 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (dataColumn == RowDataColumn)
 				return new GLib.Value(row);
 			if (dataColumn == ItemDataColumn)
-				return new GLib.Value(item);
-			int column;
-			if (ColumnMap.TryGetValue(dataColumn, out column))
 			{
-				var colHandler = (GridColumnHandler)Widget.Columns[column].Handler;
+				var gtype = (GLib.GType)typeof(object);
+				var val = new GLib.Value(gtype);
+				val.Val = item;
+				return val;
+			}
+			if (ColumnMap.TryGetValue(dataColumn, out var map))
+			{
+				var colHandler = (GridColumnHandler)Widget.Columns[map.column].Handler;
 				return colHandler.GetValue(item, dataColumn, row);
 			}
 			return new GLib.Value((string)null);
 		}
 
-		public override int GetRowOfItem(object item) =>collection?.IndexOf(item) ?? -1;
+		public GLib.GType GetColumnType(int col)
+		{
+			if (col == RowDataColumn)
+				return GLib.GType.Int;
+			if (col == ItemDataColumn)
+				return (GLib.GType)typeof(object);
+			if (ColumnMap.TryGetValue(col, out var map))
+				return map.type;
+			return GLib.GType.String;
+		}
+
+		public override int GetRowOfItem(object item) => collection?.IndexOf(item) ?? -1;
 
 		public EnumerableChangedHandler<object> Collection
 		{
