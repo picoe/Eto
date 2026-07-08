@@ -1028,6 +1028,30 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		public Rectangle Bounds
+		{
+			get => new Rectangle(Location, Size);
+			set
+			{
+				if (!Widget.Loaded)
+				{
+					// Window is not shown yet; store the desired size/location to apply on load.
+					Size = value.Size;
+					Location = value.Location;
+					return;
+				}
+				// Apply the size and location in a single SetFrame call rather than resizing and
+				// then moving the window, which would move it twice.
+				UserPreferredSize = value.Size;
+				if (Control is EtoWindow etoWindow)
+					etoWindow.DisableCenterParent = true;
+				// location is relative to the top left of the main screen; translate to a bottom-left origin frame
+				var mainFrame = NSScreen.Screens[0].Frame;
+				var frame = new CGRect((nfloat)value.X, mainFrame.Height - value.Y - value.Height, (nfloat)value.Width, (nfloat)value.Height);
+				Control.SetFrame(frame, true, AnimateSizeChanges);
+			}
+		}
+
 		private Point GetLocation()
 		{
 			// translate location relative to the top left corner of main screen

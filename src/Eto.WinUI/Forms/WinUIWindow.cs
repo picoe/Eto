@@ -53,6 +53,13 @@ public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TW
 		set => Control.AppWindow.Move(value.ToWinUIPointInt32());
 	}
 
+	Rectangle Window.IHandler.Bounds
+	{
+		get => new Rectangle(Control.AppWindow.Position.ToEto(), new Size(Control.AppWindow.Size.Width, Control.AppWindow.Size.Height));
+		// AppWindow.MoveAndResize sets the position and size in a single operation.
+		set => Control.AppWindow.MoveAndResize(new Windows.Graphics.RectInt32(value.X, value.Y, value.Width, value.Height));
+	}
+
 	protected override TControl CreateControl() => (TControl)new mui.Window();
 
 	public void BringToFront() => Control.AppWindow.MoveInZOrderAtTop();

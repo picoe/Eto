@@ -483,6 +483,20 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public Rectangle Bounds
+		{
+			get => new Rectangle(Location, Size);
+			set
+			{
+				// Form.Bounds sets the location and size in a single operation.
+				UserPreferredSize = value.Size;
+				Control.Bounds = new sd.Rectangle(LogicalToDeviceUnits(value.Location), LogicalToDeviceUnits(value.Size));
+				Control.StartPosition = swf.FormStartPosition.Manual;
+				clientWidthSet = value.Width != -1;
+				clientHeightSet = value.Height != -1;
+			}
+		}
+
 		public virtual WindowState WindowState
 		{
 			get
