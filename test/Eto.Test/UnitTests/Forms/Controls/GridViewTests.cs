@@ -308,7 +308,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		public void PreferredSizeShouldAccountForAllRowsWhenLargerThanWindow(WindowStyle windowStyle, bool positionRelativeToParent) => Async(10000, async () =>
 		{
 			const int rowHeight = 20;
-			const int rowCount = 3;
+			const int rowCount = 5;
 			const int largerRowCount = 10;
 
 			static ObservableCollection<DataItem> CreateRows(int rows)
@@ -327,6 +327,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			grid.DataStore = CreateRows(rowCount);
 
 			Window parent = Application.Instance.MainForm;
+			bool closeParent = false;
 			var form = new FloatingForm
 			{
 				WindowStyle = windowStyle,
@@ -346,6 +347,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						// a WindowStyle.None form (e.g. a popup) is typically owned by and
 						// positioned relative to a parent window
 						var parentForm = new Form { Content = new Panel(), ClientSize = new Size(400, 400), Location = new Point(100, 100) };
+						closeParent = true;
 						parentForm.Show();
 						parent = parentForm;
 						await Task.Delay(100);
@@ -381,7 +383,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			finally
 			{
 				form.Close();
-				// parent?.Close();
+				if (closeParent)
+					parent?.Close();
 			}
 		});
 	}

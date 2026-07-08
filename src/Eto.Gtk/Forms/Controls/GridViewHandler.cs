@@ -168,6 +168,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override int GetRowOfItem(object item) => collection?.IndexOf(item) ?? -1;
 
+		protected override int NumberOfRows => collection?.Count ?? 0;
+
 		public EnumerableChangedHandler<object> Collection
 		{
 			get { return collection; }

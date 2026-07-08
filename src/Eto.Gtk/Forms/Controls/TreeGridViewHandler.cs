@@ -514,6 +514,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			return -1;
 		}
+
+		protected override int NumberOfRows => DataStore?.GetExpandedRowCount() ?? 0;
 		
 
 		public void ReloadData()
