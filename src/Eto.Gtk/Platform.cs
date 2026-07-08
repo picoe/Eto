@@ -13,6 +13,21 @@ namespace Eto.GtkSharp
 	{
 		public static bool UseHeaderBar;
 
+		// Whether GTK is running on its Wayland GDK backend (vs X11/XWayland). Honors GDK_BACKEND (a
+		// comma-separated priority list) which can force X11 under a Wayland session; otherwise a set
+		// WAYLAND_DISPLAY indicates Wayland. Fixed for the process. NOTE: this is deliberately distinct from
+		// WaylandClipboard's probe, which asks whether a Wayland *compositor* is reachable for wl_data_control
+		// (independent of the backend GTK chose); here we care specifically about GTK's active backend.
+		public static readonly bool IsWaylandBackend = DetectWaylandBackend();
+
+		static bool DetectWaylandBackend()
+		{
+			var backend = Environment.GetEnvironmentVariable("GDK_BACKEND");
+			if (!string.IsNullOrWhiteSpace(backend))
+				return backend.Split(',')[0].Trim().Equals("wayland", StringComparison.OrdinalIgnoreCase);
+			return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY"));
+		}
+
 		public static void Init()
 		{
 			var args = new string[0];
@@ -203,7 +218,13 @@ namespace Eto.GtkSharp
 			// Forms
 			p.Add<AboutDialog.IHandler>(() => new AboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
+#if NET6_0_OR_GREATER
+			p.Add<Clipboard.IHandler>(() => WaylandClipboard.IsAvailable
+				? (Clipboard.IHandler)new WaylandClipboardHandler()
+				: new ClipboardHandler());
+#else
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
+#endif
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());

@@ -35,10 +35,41 @@ namespace Eto.GtkSharp.Forms
 
 		readonly List<ClipboardData> clipboard = new List<ClipboardData>();
 		bool changedAttached;
+		bool changeQueued;
 
 		public ClipboardHandler()
 		{
 			Control = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
+		}
+
+		// Debounce owner-change into a single Changed per event-loop turn, via a GLib idle callback that runs
+		// once the current batch of events has drained. Reads no clipboard content. Invoked only on the Wayland
+		// backend (see HandleOwnerChange) — X11 fires directly.
+		//
+		// This works around GNOME/GTK bug #775631 (https://gitlab.gnome.org/GNOME/gtk/-/issues/715): on Wayland
+		// GTK emits SEVERAL NEW_OWNER owner-change signals for a single clipboard change, which would otherwise
+		// raise Changed multiple times per copy. Remove this debounce once #775631 is fixed upstream. Compositors
+		// that expose wl_data_control never reach this path (the native WaylandClipboardHandler is single-fire by
+		// protocol).
+		//
+		// Known limitation, inherent to debouncing: the burst events are metadata-identical to genuine changes
+		// (owner/time/selection_time are all 0 on Wayland), so nothing but the clipboard content distinguishes a
+		// duplicate from a real change. Distinct writes issued back-to-back within one loop turn therefore
+		// collapse into one Changed. In practice that is only synchronous UI-thread writes with no yield between
+		// them -- and on Wayland only the final value of such a run ever becomes the live selection anyway; writes
+		// spaced by any yield, or made from another thread, each fire.
+		void QueueChanged()
+		{
+			if (changeQueued)
+				return;
+			changeQueued = true;
+			GLib.Idle.Add(() =>
+			{
+				changeQueued = false;
+				if (changedAttached)
+					Callback.OnChanged(Widget, EventArgs.Empty);
+				return false;
+			});
 		}
 
 		protected override bool DisposeControl => false;
@@ -83,9 +114,55 @@ namespace Eto.GtkSharp.Forms
 			public void HandleOwnerChange(object sender, Gtk.OwnerChangeArgs e)
 			{
 				var handler = Handler;
-				if (handler != null)
+				if (handler == null || !IsNewOwnerChange(e.Event))
+					return;
+				// Only debounce on Wayland, which is where the #775631 burst happens. X11 emits exactly one
+				// NEW_OWNER per change, so fire directly there: the debounce would coalesce nothing real on X11,
+				// while still merging synchronous back-to-back distinct writes — a regression on a backend that
+				// has no burst to work around.
+				if (Helper.IsWaylandBackend)
+					handler.QueueChanged();
+				else
 					handler.Callback.OnChanged(handler.Widget, EventArgs.Empty);
 			}
+
+			// Whether this owner-change hands the selection to a NEW owner (GDK_OWNER_CHANGE_NEW_OWNER), as
+			// opposed to merely tearing an owner down (DESTROY/CLOSE). A clipboard content change is reported as a
+			// NEW_OWNER event; DESTROY/CLOSE just signal an owner going away, not new content, so we do not raise
+			// Changed for them. This reads no clipboard content, so a genuine re-copy of identical content (still a
+			// NEW_OWNER event) still fires.
+			//
+			// We key on the REASON, not the owner window: on Wayland there is no X11-style selection-owner window,
+			// so GTK reports owner==NULL for EVERY owner-change (NEW_OWNER included); gating on owner!=NULL would
+			// suppress all clipboard changes on Wayland. The reason field is NEW_OWNER on both backends.
+			//
+			// (On Wayland GTK emits several NEW_OWNER events per change — GNOME bug #775631 — which QueueChanged
+			// debounces into one Changed; see its comment for the rationale and the known limitation.)
+			//
+			// GtkSharp's managed EventOwnerChange marshals owner/reason from the wrong struct offsets, so we read
+			// the native GdkEventOwnerChange directly. Its 64-bit (LP64) layout is fixed ABI: type@0,
+			// GdkWindow* window@8, gint8 send_event@16, GdkWindow* owner@24, GdkOwnerChange reason@32.
+			static bool IsNewOwnerChange(Gdk.EventOwnerChange ev)
+			{
+				// On non-LP64 / unknown ABIs, fall back to firing so we never silently drop a real change.
+				if (IntPtr.Size != 8)
+					return true;
+				try
+				{
+					var h = ev?.Handle ?? IntPtr.Zero;
+					if (h == IntPtr.Zero)
+						return true; // can't inspect -> don't drop a possibly-real change
+					return Marshal.ReadInt32(h, ReasonFieldOffset) == GdkOwnerChangeNewOwner;
+				}
+				catch
+				{
+					return true;
+				}
+			}
+
+			// GdkEventOwnerChange.reason byte offset (LP64) and the GDK_OWNER_CHANGE_NEW_OWNER enum value.
+			const int ReasonFieldOffset = 32;
+			const int GdkOwnerChangeNewOwner = 0;
 		}
 
 		void Update()
@@ -286,29 +363,26 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				Gdk.Atom[] atoms;
 				IntPtr atomPtrs;
 				int count;
 				var success = NativeMethods.gtk_clipboard_wait_for_targets(Control.Handle, out atomPtrs, out count);
 
-				if (!success || count <= 0)
+				if (!success || count <= 0 || atomPtrs == IntPtr.Zero)
 				{
-					atoms = null;
 					return new string[0];
 				}
 
-				atoms = new Gdk.Atom[count];
-				unsafe
+				try
 				{
-					byte* p = (byte*)atomPtrs.ToPointer();
+					var atoms = new Gdk.Atom[count];
 					for (int i = 0; i < count; i++)
-					{
-						atoms[i] = new Gdk.Atom(new IntPtr(*p));
-						p += IntPtr.Size;
-					}
+						atoms[i] = new Gdk.Atom(Marshal.ReadIntPtr(atomPtrs, i * IntPtr.Size));
+					return atoms.Select(r => r.Name).ToArray();
 				}
-
-				return atoms.Select(r => r.Name).ToArray();
+				finally
+				{
+					GLib.Marshaller.Free(atomPtrs);
+				}
 			}
 		}
 
