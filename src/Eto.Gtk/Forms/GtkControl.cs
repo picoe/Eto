@@ -1322,6 +1322,13 @@ namespace Eto.GtkSharp.Forms
 				else
 					ContainerControl.ShowAll();
 
+#if GTK3
+				// GTK returns a stale (minimal) size on the first size request after ShowAll -- some
+				// widgets (e.g. GtkTreeView) only settle their preferred size on a subsequent request.
+				// Prime it here so the measurement below returns the settled value for controls that
+				// haven't been shown yet.
+				control.GetPreferredSize(out _, out _);
+#endif
 			}
 #if GTK3
 			var requestMode = ContainerControl.RequestMode;
