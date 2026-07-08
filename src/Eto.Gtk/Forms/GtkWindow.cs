@@ -645,7 +645,9 @@ namespace Eto.GtkSharp.Forms
 				else
 				{
 					var windows = Gdk.Screen.Default.ToplevelWindows.Where(r => r.State != Gdk.WindowState.Withdrawn && r.WindowType != Gdk.WindowType.Temp).ToList();
-					if (windows.Count == 1 && ReferenceEquals(windows[0], Control.GetWindow()))
+					// only terminate the application when closing the last window if there is a main form set,
+					// otherwise fall through so the Closed event still fires without quitting the run loop
+					if (windows.Count == 1 && ReferenceEquals(windows[0], Control.GetWindow()) && Application.Instance.MainForm != null)
 					{
 						var app = ((ApplicationHandler)Application.Instance.Handler);
 						app.Callback.OnTerminating(app.Widget, args);
