@@ -748,7 +748,10 @@ namespace Eto.Test.UnitTests
 			where TEventArgs : EventArgs
 		{
 			var tcs = new TaskCompletionSource<TEventArgs>();
-			hookEvent((sender, e) => tcs.SetResult(e));
+			// The event may fire more than once (e.g. a window shown, hidden, then shown
+			// again), so complete only on the first invocation to avoid transitioning the
+			// task to a completed state twice.
+			hookEvent((sender, e) => tcs.TrySetResult(e));
 			return tcs.Task;
 		}
 

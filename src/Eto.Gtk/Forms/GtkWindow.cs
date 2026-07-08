@@ -84,6 +84,7 @@ namespace Eto.GtkSharp.Forms
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		Point? currentLocation;
+		Point? initialLocation;
 		Size minimumSize;
 		WindowState state;
 		WindowStyle style;
@@ -267,6 +268,14 @@ namespace Eto.GtkSharp.Forms
 
 		protected virtual Gdk.WindowTypeHint DefaultTypeHint => Gdk.WindowTypeHint.Normal;
 
+		// Type hint applied to undecorated / non-resizable windows. Overridable so
+		// FloatingForm can request a menu-style popup hint instead of Utility: on
+		// Wayland GTK maps popup hints as xdg_popup surfaces (which don't take
+		// keyboard focus from their parent), whereas a Utility toplevel grabs focus
+		// and makes focus-sensitive popups (autocomplete, tooltips) dismiss
+		// themselves the moment they appear.
+		protected virtual Gdk.WindowTypeHint UndecoratedTypeHint => Gdk.WindowTypeHint.Utility;
+
 		void SetTypeHint()
 		{
 			if (WindowStyle == WindowStyle.Default && (Minimizable || Maximizable))
@@ -275,7 +284,7 @@ namespace Eto.GtkSharp.Forms
 			}
 			else
 			{
-				Control.TypeHint = Gdk.WindowTypeHint.Utility;
+				Control.TypeHint = UndecoratedTypeHint;
 			}
 		}
 
@@ -349,6 +358,12 @@ namespace Eto.GtkSharp.Forms
 		private void Control_Realized(object sender, EventArgs e)
 		{
 			Control.Realized -= Control_Realized;
+			if (initialLocation != null)
+			{
+				TryMovePopupToRect(initialLocation.Value);
+				initialLocation = null;
+			}
+			
 			Size size;
 			if (clientSize.HasValue)
 			{
@@ -726,14 +741,54 @@ namespace Eto.GtkSharp.Forms
 			{
 				if (currentLocation != null)
 					return currentLocation.Value;
+				if (initialLocation != null)
+					return initialLocation.Value;
 				int x, y;
 				Control.GetPosition(out x, out y);
 				return new Point(x, y);
 			}
 			set
 			{
-				Control.Move(value.X, value.Y);
+				// On Wayland an xdg_popup surface has no global coordinate space:
+				// gtk_window_move is ignored and the popup lands at its parent's
+				// origin. Position popups relative to their transient parent via
+				// gdk_window_move_to_rect instead. On X11/XWayland absolute Move
+				// works (and popups are override-redirect), so keep using it there.
+				if (!TryMovePopupToRect(value))
+					Control.Move(value.X, value.Y);
 			}
+		}
+
+		static bool IsWaylandDisplay =>
+			(Gdk.Display.Default?.Name ?? string.Empty).StartsWith("wayland", StringComparison.OrdinalIgnoreCase);
+
+		// Anchor a Wayland popup's top-left at `location`, which is in the transient
+		// parent's coordinate space -- exactly what Eto's RectangleToScreen yields
+		// on Wayland (a toplevel's surface origin is 0,0). Returns false when this
+		// isn't a realized Wayland popup with a parent, so the caller falls back to
+		// absolute Move.
+		bool TryMovePopupToRect(Point location)
+		{
+			if (!IsWaylandDisplay)
+				return false;
+
+			var gdkWindow = Control.Window;
+			if (gdkWindow == null || Control.TransientFor == null)
+			{
+				initialLocation = location;
+				return false;
+			}
+
+			var rect = new NativeMethods.GdkRect { X = location.X, Y = location.Y, Width = 1, Height = 1 };
+			NativeMethods.gdk_window_move_to_rect(
+				gdkWindow.Handle,
+				ref rect,
+				NativeMethods.Gravity.GDK_GRAVITY_NORTH_WEST,
+				NativeMethods.Gravity.GDK_GRAVITY_NORTH_WEST,
+				NativeMethods.AnchorHint.None,
+				0, 0);
+
+			return true;
 		}
 
 		public WindowState WindowState
@@ -829,7 +884,7 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		protected override void GrabFocus() => Control.GetWindow().Focus(0);
+		protected override void GrabFocus() => Control.GrabFocus();
 
 		public void BringToFront()
 		{
