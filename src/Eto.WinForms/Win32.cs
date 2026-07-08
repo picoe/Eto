@@ -182,6 +182,7 @@ namespace Eto
 			COPY = 0x0301,
 			PASTE = 0x0302,
 			CLEAR = 0x0303,
+			CLIPBOARDUPDATE = 0x031D,
 
 			ERASEBKGND = 0x14,
 
@@ -739,6 +740,14 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		public static extern bool DestroyWindow(IntPtr hWnd);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool AddClipboardFormatListener(IntPtr hwnd);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool RemoveClipboardFormatListener(IntPtr hwnd);
 
 		[DllImport("User32.dll", SetLastError = true)]
 		public static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);

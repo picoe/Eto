@@ -5,13 +5,43 @@ using Eto.iOS.Drawing;
 
 namespace Eto.iOS.Forms
 {
-	public class ClipboardHandler : WidgetHandler<UIPasteboard, Clipboard>, Clipboard.IHandler
+	public class ClipboardHandler : WidgetHandler<UIPasteboard, Clipboard, Clipboard.ICallback>, Clipboard.IHandler
 	{
 		nint changeCount;
+		NSObject changedObserver;
 
 		public ClipboardHandler()
 		{
 			Control = UIPasteboard.General;
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Clipboard.ChangedEvent:
+					changedObserver ??= NSNotificationCenter.DefaultCenter.AddObserver(UIPasteboard.ChangedNotification, HandleChanged, Control);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		void HandleChanged(NSNotification notification)
+		{
+			Callback.OnChanged(Widget, EventArgs.Empty);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && changedObserver != null)
+			{
+				NSNotificationCenter.DefaultCenter.RemoveObserver(changedObserver);
+				changedObserver.Dispose();
+				changedObserver = null;
+			}
+			base.Dispose(disposing);
 		}
 
 		void ClearIfNeeded()
@@ -114,4 +144,3 @@ namespace Eto.iOS.Forms
 
 	}
 }
-

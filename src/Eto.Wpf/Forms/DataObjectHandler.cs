@@ -179,7 +179,18 @@ namespace Eto.WinForms.Forms
 						return img;
 				}
 				if (Contains(sw.DataFormats.Dib) && GetObjectData(sw.DataFormats.Dib) is Stream stream)
-					return Win32.FromDIB(stream);
+				{
+					try
+					{
+						if (stream.CanSeek)
+							stream.Position = 0;
+						return Win32.FromDIB(stream);
+					}
+					catch (IOException)
+					{
+						// Invalid or truncated DIB data should be treated as unavailable.
+					}
+				}
 				return null;
 			}
 			set
@@ -335,7 +346,18 @@ namespace Eto.WinForms.Forms
 					}
 				}
 
-				return GetAsData(GetObjectData(type)) ?? GetAsData(GetStream(type));
+				var data = GetAsData(GetObjectData(type));
+				if (data != null)
+					return data;
+
+				try
+				{
+					return GetAsData(GetStream(type));
+				}
+				catch
+				{
+					return null;
+				}
 			}
 			return null;
 		}

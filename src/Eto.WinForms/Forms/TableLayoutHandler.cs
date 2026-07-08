@@ -254,6 +254,9 @@ namespace Eto.WinForms.Forms
 
 		void FillEmptyCells()
 		{
+			if (views == null || views.GetLength(0) == 0 || views.GetLength(1) == 0)
+				return;
+
 			for (int x = 1; x < views.GetLength(0); x++)
 			{
 				if (Control.GetControlFromPosition(x, 0) == null && views[x, 0] == null)

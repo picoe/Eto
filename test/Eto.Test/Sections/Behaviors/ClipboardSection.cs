@@ -3,7 +3,11 @@ namespace Eto.Test.Sections.Behaviors
 	[Section("Behaviors", "Clipboard")]
 	public class ClipboardSection : Panel
 	{
+		const string CustomObjectType = "my.custom.object";
 		Scrollable pasteData = new Scrollable();
+		Clipboard monitoredClipboard;
+		ToggleButton monitorChangesButton;
+		int changeCount;
 
 		public ClipboardSection()
 		{
@@ -34,7 +38,7 @@ namespace Eto.Test.Sections.Behaviors
 			var copyObjectButton = new Button { Text = "Copy Object" };
 			copyObjectButton.Click += (sender, e) =>
 			{
-				new Clipboard().SetObject(new DragDropSection.CustomSerializableType { Name = "Woot" }, "my.custom.object");
+				new Clipboard().SetObject(new DragDropSection.CustomSerializableType { Name = "Woot" }, CustomObjectType);
 				Update();
 			};
 
@@ -49,6 +53,15 @@ namespace Eto.Test.Sections.Behaviors
 				Update();
 			};
 
+			monitorChangesButton = new ToggleButton { Text = "Monitor Changes" };
+			monitorChangesButton.CheckedChanged += (sender, e) =>
+			{
+				if (monitorChangesButton.Checked == true)
+					StartMonitoring();
+				else
+					StopMonitoring();
+			};
+
 			Content = new StackLayout
 			{
 				HorizontalContentAlignment = HorizontalAlignment.Stretch,
@@ -58,16 +71,58 @@ namespace Eto.Test.Sections.Behaviors
 					new StackLayout
 					{
 						Orientation = Orientation.Horizontal,
+						VerticalContentAlignment = VerticalAlignment.Stretch,
 						Spacing = 5,
 						Padding = new Padding(10),
-						Items = { copyTextButton, copyHtmlButton, copyImageButton, copyCustomButton, copyObjectButton, pasteTextButton, clearButton }
+						Items = { copyTextButton, copyHtmlButton, copyImageButton, copyCustomButton, copyObjectButton, pasteTextButton, clearButton, monitorChangesButton }
 					},
 					new StackLayoutItem(pasteData, expand: true)
 				}
 			};
 		}
-		
-		TextArea ReadOnlyTextArea(string text) => new TextArea { Text = text, ReadOnly = true, Border = BorderType.None, BackgroundColor = Colors.Transparent };
+
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			if (monitorChangesButton.Checked == true)
+				StartMonitoring();
+		}
+
+		protected override void OnUnLoad(EventArgs e)
+		{
+			StopMonitoring();
+			base.OnUnLoad(e);
+		}
+
+		void StartMonitoring()
+		{
+			if (monitoredClipboard != null)
+				return;
+
+			monitoredClipboard = new Clipboard();
+			monitoredClipboard.Changed += Clipboard_Changed;
+			Log.Write(monitoredClipboard, "Clipboard monitoring started");
+		}
+
+		void StopMonitoring()
+		{
+			if (monitoredClipboard != null)
+			{
+				monitoredClipboard.Changed -= Clipboard_Changed;
+				monitoredClipboard.Dispose();
+				monitoredClipboard = null;
+				Log.Write(this, "Clipboard monitoring stopped");
+			}
+		}
+
+		void Clipboard_Changed(object sender, EventArgs e)
+		{
+			changeCount++;
+			Log.Write(sender, $"Clipboard changed ({changeCount})");
+			Update();
+		}
+
+		TextArea ReadOnlyTextArea(string text) => new TextArea { Text = text, ReadOnly = true, Border = BorderType.None };
 
 		void Update()
 		{
@@ -133,18 +188,21 @@ namespace Eto.Test.Sections.Behaviors
 					{
 						panel.Items.Add($"- Error getting data: {ex.Message}");
 					}
-					try
+					if (type == CustomObjectType)
 					{
-						var obj = clipboard.GetObject(type);
-						if (obj != null && str == null && data == null)
+						try
 						{
-							panel.Items.Add($"- Object, Type: {obj.GetType()}:");
-							panel.Items.Add(ReadOnlyTextArea(obj.ToString()));
+							var obj = clipboard.GetObject(type);
+							if (obj != null)
+							{
+								panel.Items.Add($"- Object, Type: {obj.GetType()}:");
+								panel.Items.Add(ReadOnlyTextArea(obj.ToString()));
+							}
 						}
-					}
-					catch (Exception ex)
-					{
-						panel.Items.Add($"- Error getting object: {ex.Message}");
+						catch (Exception ex)
+						{
+							panel.Items.Add($"- Error getting object: {ex.Message}");
+						}
 					}
 				}
 			}
@@ -152,4 +210,3 @@ namespace Eto.Test.Sections.Behaviors
 		}
 	}
 }
-
