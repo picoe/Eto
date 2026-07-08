@@ -248,8 +248,16 @@ public abstract class Window : Panel
 	/// Gets or sets the location of the window
 	/// </summary>
 	/// <remarks>
-	/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Eto.Forms.Screen.PrimaryScreen"/>. <br/>
-	/// Also note, that on Linux systems running GTK via Wayland, this will always point to <c>0, 0</c>, and setting it to different values will have no effect.
+	/// Note that in multi-monitor setups, the origin of the location is at the upper-left 
+	/// of <see cref="Eto.Forms.Screen.PrimaryScreen"/>.
+	/// 
+	/// Also note, that on Linux systems running GTK via Wayland, the location is relative 
+	/// to the <see cref="Owner"/> when one is set and the <see cref="WindowStyle"/> is 
+	/// <see cref="WindowStyle.None"/>; otherwise it will always point to <c>0, 0</c> and 
+	/// setting it to different values will have no effect.
+	/// 
+	/// Using <see cref="Control.PointToScreen"/> on a control within the <see cref="Owner"/> 
+	/// can be used to position the window relative to specific elements of the owner.
 	/// </remarks>
 	public new Point Location
 	{
@@ -720,8 +728,16 @@ public abstract class Window : Panel
 		/// Gets or sets the location of the window
 		/// </summary>
 		/// <remarks>
-		/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Eto.Forms.Screen.PrimaryScreen"/> <br/>
-		/// Also note, that on Linux systems running GTK via Wayland, this will always point to <c>0, 0</c>, and setting it to different values will have no effect.
+		/// Note that in multi-monitor setups, the origin of the location is at the upper-left 
+		/// of <see cref="Eto.Forms.Screen.PrimaryScreen"/>.
+		/// 
+		/// Also note, that on Linux systems running GTK via Wayland, the location is relative 
+		/// to the <see cref="Owner"/> when one is set and the <see cref="WindowStyle"/> is 
+		/// <see cref="WindowStyle.None"/>; otherwise it will always point to <c>0, 0</c> and 
+		/// setting it to different values will have no effect.
+		/// 
+		/// Using <see cref="Control.PointToScreen"/> on a control within the <see cref="Owner"/> 
+		/// can be used to position the window relative to specific elements of the owner.
 		/// </remarks>
 		new Point Location { get; set; }
 
