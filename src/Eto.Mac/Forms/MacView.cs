@@ -329,7 +329,9 @@ namespace Eto.Mac.Forms
 			{
 				if (handler.Widget?.IsDisposed != false) return;
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
-				TriggerScrollWheelGestures(handler, theEvent);
+				if (TriggerScrollWheelGestures(handler, theEvent))
+					return;
+					
 				var args = MacConversions.GetMouseEvent(handler, theEvent, true);
 				if (!args.Delta.IsZero)
 				{
@@ -344,7 +346,7 @@ namespace Eto.Mac.Forms
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
 		}
 
-		static void TriggerScrollWheelGestures(IMacViewHandler handler, NSEvent theEvent)
+		static bool TriggerScrollWheelGestures(IMacViewHandler handler, NSEvent theEvent)
 		{
 			var gestures = handler.Widget.Gestures
 				.Select(gesture => ((IHandlerSource)gesture).Handler as IMacScrollWheelGestureHandler)
@@ -354,8 +356,12 @@ namespace Eto.Mac.Forms
 			foreach (var gesture in gestures)
 			{
 				if (gesture == firstGesture || firstGesture.Gesture.CanRecognizeSimultaneouslyWith(gesture.Gesture))
-					gesture.OnScrollWheel(theEvent);
+				{
+					if (gesture.OnScrollWheel(theEvent))
+						return true;
+				}
 			}
+			return false;
 		}
 
 		static int _interpretingKeyEvents;

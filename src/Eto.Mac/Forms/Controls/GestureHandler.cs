@@ -223,7 +223,9 @@ namespace Eto.Mac.Forms.Controls
 			get => enabled;
 			set => enabled = value;
 		}
-
+		
+		public bool UseMouseWheel { get; set; }
+		
 		public SizeF Delta => delta;
 
 		public PointF Velocity => velocity;
@@ -233,6 +235,9 @@ namespace Eto.Mac.Forms.Controls
 		public bool OnScrollWheel(NSEvent theEvent)
 		{
 			if (!Enabled)
+				return false;
+				
+			if (!UseMouseWheel && !theEvent.HasPreciseScrollingDeltas)
 				return false;
 
 			delta = theEvent.HasPreciseScrollingDeltas
