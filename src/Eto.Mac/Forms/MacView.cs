@@ -671,13 +671,6 @@ namespace Eto.Mac.Forms
 		NSTrackingArea tracking;
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
-		List<GestureRecognizerReference> gestureRecognizers;
-
-		class GestureRecognizerReference
-		{
-			public Gesture Gesture { get; set; }
-			public NSGestureRecognizer Recognizer { get; set; }
-		}
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
