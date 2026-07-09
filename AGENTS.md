@@ -24,11 +24,29 @@ dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10
 - **Always pass `-f`** — the project multi-targets `net48;net10.0;net10.0-windows`.
   On Linux/macOS use `-f net10.0`; the Windows-only TFMs won't build there.
 - Test runner is Microsoft.Testing.Platform (set in `global.json`), NUnit 4.
+- **Reflection gotcha (net48 vs net):** `Type.GetType("Ns.Type, PresentationCore")` (partial assembly
+  name) resolves on .NET but returns **null** on .NET Framework, so tests that reflect over WPF types
+  (e.g. finding the native `ScrollViewer`) silently no-op on net48. Search loaded assemblies instead:
+  `AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(fullName)).FirstOrDefault(t => t != null)`.
 - **Windowed/GUI tests run without special setup on all platforms** (Linux, Mac, Windows) as
   long as a display is available — on Linux that's a real X display (e.g. `DISPLAY=:0`; no
   `xvfb-run` needed). Tests that `Show()`/`Close()` windows (e.g.
   `PreferredSizeShouldAccountForAllRowsWhenLargerThanWindow`, anything via
   `ShownAsync`/`Form`/`Paint`) actually execute.
+- **Wpf gotcha (fixed in `Eto.Test.UnitTests/Program.cs`) — showing a themed control like
+  `TreeGridView` under the test host used to crash with a bogus `FileLoadException: Could not load
+  file or assembly 'Eto.Wpf.Aero2'` (`E_POINTER`) → `NullReferenceException` in
+  `NUnit.Engine.Internal.RuntimeLibrariesStrategy.TryToResolve`.** Laying out a themed Eto.Wpf
+  control makes WPF probe an *external* per-OS-theme satellite assembly (`Eto.Wpf.Aero2`, etc.)
+  before falling back to the embedded `themes/generic.xaml`; that satellite never exists and in the
+  real app the probe just returns "not found", but the NUnit test host's assembly `Resolving`
+  handler throws an NRE instead of returning null, surfacing as a fatal load error during layout.
+  Fix: `Program.Main` registers an `AssemblyLoadContext.Default.Resolving` handler FIRST (before
+  NUnit's) that throws `FileNotFoundException` for `Eto.*` theme-satellite names (`.Aero2`, `.Aero`,
+  `.AeroLite`, `.Classic`, `.Luna`, `.Royale`, `.Generic`) so WPF falls back cleanly and NUnit's
+  broken handler never runs (`#if NET` — .NET-Core test host only). Was deterministic per grid type
+  (GridView fine, TreeGridView crashed), observed on arm64. (Surfaced writing the b46b9827
+  scrollable-fill regression tests.)
 
 ## Screenshotting a window to diagnose visual/layout bugs
 

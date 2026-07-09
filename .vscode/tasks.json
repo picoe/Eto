@@ -172,7 +172,7 @@
 		{
 			"label": "test non-manual",
 			"type": "shell",
-			"command": "dotnet test --project ${workspaceFolder}/test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj --filter \"TestCategory!=ManualTest&Name=DialogTests\"",
+			"command": "dotnet test --project ${workspaceFolder}/test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj --filter \"TestCategory!=ManualTest\"",
 			"problemMatcher": "$msCompile",
 			"presentation": {
 				"clear": true,
