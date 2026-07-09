@@ -80,6 +80,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		string placeholderText;
 		Range<int>? lastSelection;
 		Range<int>? initialSelection;
+		bool textChangedPending;
 
 		protected override void Initialize()
 		{
@@ -165,7 +166,30 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (h.DisableTextChanged > 0)
 					return;
 
-				h.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				// Gtk raises the native "changed" signal once per edit primitive, so a
+				// single keystroke that replaces the current selection emits it TWICE
+				// (delete-selection, then insert-character). WPF and Mac raise TextChanged
+				// once per keystroke. Without coalescing, a handler that synchronously
+				// rewrites Text from the intermediate (post-delete) state -- e.g. the
+				// command line's autocomplete ghost-completion (AutoCompletePopup.SetInput)
+				// -- corrupts the pending insert and the typed character is dropped.
+				// Coalesce consecutive native changes within the same main-loop iteration
+				// into a single TextChanged so consumers see one change per keystroke.
+				//
+				// Only the native path is coalesced: programmatic Text/SelectedText writes
+				// raise OnTextChanged directly (guarded here by DisableTextChanged), so they
+				// stay synchronous.
+				if (h.textChangedPending)
+					return;
+				h.textChangedPending = true;
+				Application.Instance.AsyncInvoke(() =>
+				{
+					var handler = Handler;
+					if (handler == null)
+						return;
+					handler.textChangedPending = false;
+					handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty);
+				});
 			}
 
 			static Clipboard clipboard;
