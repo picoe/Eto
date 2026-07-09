@@ -120,10 +120,17 @@ namespace Eto.Wpf.Forms
 			var size = UserPreferredSize;
 			var control = ContainerControl;
 
-			if (ContainsScrollViewer)
+			var parentWindow = Widget.ParentWindow;
+			if (ContainsScrollViewer && parentWindow?.AutoSize == true && parentWindow.WindowState == WindowState.Normal)
 			{
-				// enclosed scrollable does not size appropriately on Arrange, so we need to 
-				// constrain the size here to prevent it from using the available space incorrectly.
+				// The enclosed scrollable is measured with this constraint, which becomes its viewport size.
+				// In an auto-sizing window the content is probed with the monitor size, so without constraining
+				// to the preferred size here the scroll viewer would measure its content as fitting that huge
+				// space and not show scrollbars. When NOT auto-sizing, the constraint is the real space the
+				// control will be arranged to, so we must NOT constrain it or the content won't expand to fill
+				// the scrollable area when the control is scaled larger than its preferred size.
+				// Also skip when the auto-size window is maximized: it then has a fixed (screen) size the content
+				// should fill, so constraining to the preferred size would pin the content until it's re-measured.
 				if (!double.IsPositiveInfinity(constraint.Width) && size.Width >= 0 && size.Width < constraint.Width)
 					constraint.Width = size.Width;
 				if (!double.IsPositiveInfinity(constraint.Height) && size.Height >= 0 && size.Height < constraint.Height)
