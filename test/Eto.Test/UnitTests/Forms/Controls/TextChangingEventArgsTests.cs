@@ -40,5 +40,36 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.That(args.Range, Is.EqualTo(Range.FromLength(rangeStart, rangeLength)), "#3");
 			Assert.That(args.Text, Is.EqualTo(text), "#4");
 		}
+
+		[TestCase(TextChangeSource.Programmatic, false)]
+		[TestCase(TextChangeSource.Unknown, true)]
+		[TestCase(TextChangeSource.Keyboard, true)]
+		[TestCase(TextChangeSource.Composition, true)]
+		[TestCase(TextChangeSource.Paste, true)]
+		[TestCase(TextChangeSource.Cut, true)]
+		public void SourceShouldRoundTripAndDeriveFromUser(TextChangeSource source, bool expectedFromUser)
+		{
+			var args = new TextChangingEventArgs("old", "new", source);
+			Assert.That(args.Source, Is.EqualTo(source), "#1");
+			Assert.That(args.FromUser, Is.EqualTo(expectedFromUser), "#2");
+		}
+
+		[TestCase(true, TextChangeSource.Unknown)]
+		[TestCase(false, TextChangeSource.Programmatic)]
+		public void LegacyFromUserShouldMapToSource(bool fromUser, TextChangeSource expectedSource)
+		{
+			// The legacy bool constructors must keep FromUser working and map to a sensible source.
+			var byOldNew = new TextChangingEventArgs("old", "new", fromUser);
+			Assert.That(byOldNew.Source, Is.EqualTo(expectedSource), "#1");
+			Assert.That(byOldNew.FromUser, Is.EqualTo(fromUser), "#2");
+
+			var byRange = new TextChangingEventArgs("text", Range.FromLength(0, 0), fromUser);
+			Assert.That(byRange.Source, Is.EqualTo(expectedSource), "#3");
+			Assert.That(byRange.FromUser, Is.EqualTo(fromUser), "#4");
+
+			var byRangeOld = new TextChangingEventArgs("text", Range.FromLength(0, 0), "old", fromUser);
+			Assert.That(byRangeOld.Source, Is.EqualTo(expectedSource), "#5");
+			Assert.That(byRangeOld.FromUser, Is.EqualTo(fromUser), "#6");
+		}
 	}
 }

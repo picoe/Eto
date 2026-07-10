@@ -111,7 +111,7 @@ namespace Eto.WinForms.Forms.Controls
 									selection = new Range<int>(e.KeyData == Keys.Delete ? CaretIndex : CaretIndex - 1);
 								if (selection.Start >= 0 && selection.End < SwfTextBox.TextLength)
 								{
-									var tia = new TextChangingEventArgs(string.Empty, selection, true);
+									var tia = new TextChangingEventArgs(string.Empty, selection, TextChangeSource.Keyboard);
 									Callback.OnTextChanging(Widget, tia);
 									e.Handled = tia.Cancel;
 								}
@@ -132,7 +132,7 @@ namespace Eto.WinForms.Forms.Controls
 
 									if (end > start)
 									{
-										var tia = new TextChangingEventArgs(string.Empty, new Range<int>(start, end - 1), true);
+										var tia = new TextChangingEventArgs(string.Empty, new Range<int>(start, end - 1), TextChangeSource.Keyboard);
 										Callback.OnTextChanging(Widget, tia);
 										e.Handled = tia.Cancel;
 									}
@@ -153,7 +153,7 @@ namespace Eto.WinForms.Forms.Controls
 
 									if (end > start)
 									{
-										var tia = new TextChangingEventArgs(string.Empty, new Range<int>(start, end - 1), true);
+										var tia = new TextChangingEventArgs(string.Empty, new Range<int>(start, end - 1), TextChangeSource.Keyboard);
 										Callback.OnTextChanging(Widget, tia);
 										e.Handled = tia.Cancel;
 									}
@@ -163,7 +163,7 @@ namespace Eto.WinForms.Forms.Controls
 					};
 					Widget.TextInput += (sender, e) =>
 					{
-						var tia = new TextChangingEventArgs(e.Text, Selection, true);
+						var tia = new TextChangingEventArgs(e.Text, Selection, TextChangeSource.Keyboard);
 						Callback.OnTextChanging(Widget, tia);
 						e.Cancel = tia.Cancel;
 					};
@@ -173,13 +173,13 @@ namespace Eto.WinForms.Forms.Controls
 						{
 							clipboard.Clear();
 							clipboard.Text = SwfTextBox.SelectedText;
-							var tia = new TextChangingEventArgs(string.Empty, Selection, true);
+							var tia = new TextChangingEventArgs(string.Empty, Selection, TextChangeSource.Cut);
 							Callback.OnTextChanging(Widget, tia);
 							e.Cancel = tia.Cancel;
 						};
 						EtoTextBox.Pasting += (sender, e) =>
 						{
-							var tia = new TextChangingEventArgs(clipboard.Text, Selection, true);
+							var tia = new TextChangingEventArgs(clipboard.Text, Selection, TextChangeSource.Paste);
 							Callback.OnTextChanging(Widget, tia);
 							e.Cancel = tia.Cancel;
 						};
@@ -317,7 +317,7 @@ namespace Eto.WinForms.Forms.Controls
 				var newText = value ?? string.Empty;
 				if (newText != oldText)
 				{
-					var args = new TextChangingEventArgs(oldText, newText, false);
+					var args = new TextChangingEventArgs(oldText, newText, TextChangeSource.Programmatic);
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
 						return;

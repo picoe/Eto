@@ -132,12 +132,33 @@ namespace Eto.GtkSharp.Forms.Controls
 				case TextBox.TextChangingEvent:
 					Control.ClipboardPasted += Connector.HandleClipboardPasted;
 					Control.TextDeleted += Connector.HandleTextDeleted;
-					Widget.TextInput += Connector.HandleTextInput;
+					HandleEvent(Eto.Forms.Control.TextInputEvent);
+					break;
+				case Eto.Forms.Control.TextInputEvent:
+					// A native GtkEntry commits text -- ordinary keystrokes, IME/dead-key composition,
+					// drag/drop -- through its OWN system input-method context, which the base
+					// IMContextSimple-based TextInput path never observes (see the comment on the shadow
+					// IMContextSimple in GtkControl). Hook the entry's insert-text signal instead so
+					// TextInput fires for every committed insertion, not just simple keystrokes. The base
+					// keypress path is suppressed for TextBox (see TextBoxConnector.HandleKeyPressEvent) so
+					// plain keystrokes don't fire TextInput twice.
+					Control.TextInserted += Connector.HandleTextInserted;
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		// A native GtkEntry can't distinguish an IME/composition commit from ordinary typing (its
+		// preedit state isn't exposed), so per the TextChangeSource contract a key-driven insert is
+		// reported as Keyboard; anything else (drag/drop, primary-selection paste, dictation) is Unknown.
+		TextChangeSource GetInsertSource()
+		{
+			var currentEvent = Gtk.Application.CurrentEvent;
+			if (currentEvent != null && currentEvent.Type == Gdk.EventType.KeyPress)
+				return TextChangeSource.Keyboard;
+			return TextChangeSource.Unknown;
 		}
 
 		protected new TextBoxConnector Connector { get { return (TextBoxConnector)base.Connector; } }
@@ -199,16 +220,71 @@ namespace Eto.GtkSharp.Forms.Controls
 				get { return clipboard ?? (clipboard = new Clipboard()); }
 			}
 
-			public void HandleTextInput(object sender, TextInputEventArgs e)
+			// Suppress the base IMContextSimple-based TextInput path for a native TextBox. The GtkEntry
+			// owns its own system input-method context and inserts committed text (plain, IME-composed,
+			// dead-key, etc.) itself; Eto observes those via the entry's insert-text signal
+			// (HandleTextInserted). Feeding a second shadow IMContextSimple here would double-fire
+			// TextInput for ordinary keystrokes and still miss IME text entirely.
+			[GLib.ConnectBefore]
+			public override void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
 			{
-				if (!e.Cancel)
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var e = args.Event.ToEto();
+				if (e != null)
 				{
-					var h = Handler;
-					if (h == null)
+					handler.Callback.OnKeyDown(handler.Widget, e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			bool inserting;
+			bool pasting;
+
+			// Fires for every committed insertion into the entry regardless of origin -- ordinary typing,
+			// IME/dead-key composition, and drag/drop -- which is the only path that also sees IME text.
+			[GLib.ConnectBefore]
+			public void HandleTextInserted(object o, Gtk.TextInsertedArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				// Programmatic Text changes raise TextChanging(Programmatic) explicitly under
+				// DisableTextChanged; don't report their native insert a second time.
+				if (handler.DisableTextChanged > 0)
+					return;
+				// A paste is already reported by HandleClipboardPasted with the correct source.
+				if (pasting || inserting)
+					return;
+				inserting = true;
+				try
+				{
+					var text = args.NewText ?? string.Empty;
+					if (text.Length == 0)
 						return;
-					var tia = new TextChangingEventArgs(e.Text, h.Selection, true);
-					h.Callback.OnTextChanging(h.Widget, tia);
-					e.Cancel = tia.Cancel;
+					// Pure insertion at the caret -- any selected text was already removed via delete-text.
+					var range = new Range<int>(args.Position, args.Position - 1);
+					var cancel = false;
+					if (handler.IsEventHandled(TextBox.TextChangingEvent))
+					{
+						var tia = new TextChangingEventArgs(text, range, handler.GetInsertSource());
+						handler.Callback.OnTextChanging(handler.Widget, tia);
+						cancel = tia.Cancel;
+					}
+					// TextInput fires after TextChanging (matching WPF/Mac ordering) and can also cancel.
+					if (!cancel && handler.IsEventHandled(Eto.Forms.Control.TextInputEvent))
+					{
+						var tie = new TextInputEventArgs(text);
+						handler.Callback.OnTextInput(handler.Widget, tie);
+						cancel = tie.Cancel;
+					}
+					if (cancel)
+						NativeMethods.g_signal_stop_emission_by_name(handler.Control.Handle, "insert-text");
+				}
+				finally
+				{
+					inserting = false;
 				}
 			}
 
@@ -218,7 +294,12 @@ namespace Eto.GtkSharp.Forms.Controls
 				var h = Handler;
 				if (h == null)
 					return;
-				var tia = new TextChangingEventArgs(Clipboard.Text, h.Selection, true);
+				// The pasted characters also arrive through insert-text; flag the paste so
+				// HandleTextInserted doesn't report them a second time as a keyboard change. Cleared on
+				// the next main-loop iteration, after the synchronous insert paste-clipboard performs.
+				pasting = true;
+				Application.Instance.AsyncInvoke(() => pasting = false);
+				var tia = new TextChangingEventArgs(Clipboard.Text, h.Selection, TextChangeSource.Paste);
 				Handler.Callback.OnTextChanging(h.Widget, tia);
 				if (tia.Cancel)
 					NativeMethods.g_signal_stop_emission_by_name(Handler.Control.Handle, "paste-clipboard");
@@ -237,7 +318,9 @@ namespace Eto.GtkSharp.Forms.Controls
 					deleting = true;
 					if (args.StartPos < args.EndPos)
 					{
-						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, handler.Control.Text.Length - 1)), true);
+						// The delete-text signal doesn't identify the origin (keyboard, cut, etc.); that it's a
+						// deletion is derivable from the empty replacement text.
+						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, handler.Control.Text.Length - 1)), TextChangeSource.Unknown);
 						handler.Callback.OnTextChanging(handler.Widget, tia);
 						if (tia.Cancel)
 							args.RetVal = true;
@@ -340,7 +423,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var newText = value ?? string.Empty;
 				if (newText != oldText)
 				{
-					var args = new TextChangingEventArgs(oldText, newText, false);
+					var args = new TextChangingEventArgs(oldText, newText, TextChangeSource.Programmatic);
 					Callback.OnTextChanging(Widget, args);
 					if (args.Cancel)
 						return;

@@ -854,7 +854,7 @@ namespace Eto.GtkSharp.Forms
 			}
 
 			[GLib.ConnectBefore]
-			public void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
+			public virtual void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
 			{
 				var handler = Handler;
 				if (handler == null)
