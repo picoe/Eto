@@ -129,18 +129,21 @@ namespace Eto.Wpf.Forms.Controls
 
 		static Func<char, bool> testIsNonWord = ch => char.IsWhiteSpace(ch) || char.IsPunctuation(ch);
 
-		static Clipboard clipboard;
+		protected override bool SuppressKeyEvents => base.SuppressKeyEvents || DisableTextChanged > 0;
 
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
+				case Eto.Forms.Control.KeyDownEvent:
+				case Eto.Forms.Control.KeyUpEvent:
+					base.AttachEvent(id);
+					HandleEvent(Eto.Forms.TextBox.TextChangingEvent);
+					break;
 				case TextControl.TextChangedEvent:
 					TextBox.TextChanged += TextBox_TextChanged;
 					break;
 				case Eto.Forms.TextBox.TextChangingEvent:
-					if (clipboard == null)
-						clipboard = new Clipboard();
 					bool didUpdate = false;
 
 					swi.TextCompositionManager.AddPreviewTextInputStartHandler(TextBox, (sender, e) =>
@@ -194,13 +197,13 @@ namespace Eto.Wpf.Forms.Controls
 							if (tia.Cancel)
 							{
 								if (command == swi.ApplicationCommands.Cut)
-									clipboard.Text = text;
+									Clipboard.Instance.Text = text;
 								e.Handled = true;
 							}
 						}
 						else if (command == swi.ApplicationCommands.Paste)
 						{
-							var text = clipboard.Text;
+							var text = Clipboard.Instance.Text;
 							var tia = new TextChangingEventArgs(text, Selection, TextChangeSource.Paste);
 							Callback.OnTextChanging(Widget, tia);
 							e.Handled = tia.Cancel;

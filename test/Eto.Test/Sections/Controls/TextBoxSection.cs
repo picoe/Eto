@@ -101,7 +101,11 @@ namespace Eto.Test.Sections.Controls
 					e.Handled = true;
 					Log.Write(control, $"Selection: {control.Selection}");
 				}
+				else
+					Log.Write(control, $"KeyDown: {e.KeyData}");
 			};
+
+			control.KeyUp += (sender, e) => Log.Write(control, $"KeyUp: {e.KeyData}");
 		}
 	}
 }

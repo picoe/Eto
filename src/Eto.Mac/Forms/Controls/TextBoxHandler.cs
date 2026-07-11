@@ -262,7 +262,7 @@ namespace Eto.Mac.Forms.Controls
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var size = base.GetNaturalSize(availableSize);
-			size.Width = Math.Max(100, size.Height);
+			size.Width = Math.Max(100, size.Width);
 			return size;
 		}
 
@@ -322,6 +322,30 @@ namespace Eto.Mac.Forms.Controls
 			var args = new TextChangingEventArgs(oldText, newText, TextChangeSource.Programmatic);
 			Callback.OnTextChanging(Widget, args);
 			return args.Cancel;
+		}
+
+		public override void OnKeyDown(KeyEventArgs e)
+		{
+			if (Control.CurrentEditor is NSTextView textView && textView.HasMarkedText)
+			{
+				// While an IME composition is in progress the input method owns the keystroke (building, navigating, or committing the composition), so don't surface it as a KeyDown to the app. This matches WPF/Windows, where IME-processed keys aren't raised as key events.
+				// When starting a composition, the KeyDown event is sent for the first key, but not for subsequent keys. Only the last KeyUp for Enter key is sent, but not the KeyDown.
+				return;
+			}
+
+			base.OnKeyDown(e);
+		}
+		
+		public override void OnKeyUp(KeyEventArgs e)
+		{
+			if (Control.CurrentEditor is NSTextView textView && textView.HasMarkedText)
+			{
+				// While an IME composition is in progress the input method owns the keystroke (building, navigating, or committing the composition), so don't surface it as a KeyDown to the app. This matches WPF/Windows, where IME-processed keys aren't raised as key events.
+				// Only the last KeyUp for Enter key is sent, but not the KeyDown.
+				return;
+			}
+
+			base.OnKeyUp(e);
 		}
 	}
 }

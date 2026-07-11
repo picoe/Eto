@@ -151,7 +151,7 @@ namespace Eto.Mac.Forms
 			var handler = settingMarkedText ? null : Handler as IMacTextBoxHandler;
 			if (handler != null)
 			{
-				var source = GetChangeSource(replacementString);
+				var source = GetChangeSource();
 				pendingSource = null;
 				var args = new TextChangingEventArgs(replacementString, affectedCharRange.ToEto(), source);
 				handler.Callback.OnTextChanging(handler.Widget, args);
@@ -187,7 +187,7 @@ namespace Eto.Mac.Forms
 		// ShouldChangeText delegate, so the semantic source is derived here: an action method
 		// (paste:/cut:) sets it explicitly, otherwise it's inferred from the composition state
 		// and finally the current event as a coarse fallback.
-		TextChangeSource GetChangeSource(string replacementString)
+		TextChangeSource GetChangeSource()
 		{
 			if (pendingSource != null)
 				return pendingSource.Value;
