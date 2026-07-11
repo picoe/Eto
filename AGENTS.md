@@ -91,6 +91,20 @@ native window and use that toolkit's capture API:
 
 Only the Gtk path above has been exercised; treat the others as starting points to verify.
 
+## Injecting real keystrokes to test input (Gtk)
+
+To exercise the *real* keypress→widget path (e.g. verifying a TextBox fires input events exactly
+once), drive a shown window with **xdotool over the real X display** — `gtk_test_widget_send_key`
+P/Invoke is a no-op here (needs a focused toplevel under a WM). There's **no window manager**, so:
+
+- Launch the app (`DISPLAY=:0 GDK_BACKEND=x11`), give the target widget focus, print a `READY`
+  marker, and add a `UITimer` auto-quit so the process never hangs (no `kill` — it's forbidden).
+- `xdotool` isn't on the login-shell PATH here; call it as `/usr/bin/xdotool`.
+- `search --name <title>` returns *two* window ids (client + GTK helper) — use the **last** one.
+- `windowactivate` fails `BadWindow` without a WM; use `windowfocus --sync <id>` then inject with
+  **XTEST** (`xdotool key a` / `xdotool type "ab"` — *no* `--window`, which uses XSendEvent that GTK
+  ignores). XTEST goes to whatever holds X input focus, which `windowfocus` just set.
+
 ## Test project layout (non-obvious)
 
 - Unit-test **source `.cs` files live in `test/Eto.Test/UnitTests/`** (compiled as part of

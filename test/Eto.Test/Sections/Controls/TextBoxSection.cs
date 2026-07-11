@@ -13,10 +13,19 @@ namespace Eto.Test.Sections.Controls
 	public class TextBoxSection<T> : Scrollable
 		where T: TextBox, new()
 	{
+		bool cancelTextChanging;
+		bool cancelTextInput;
+
 		public TextBoxSection()
 		{
 			var textBox = new T();
 			LogEvents(textBox);
+
+			var cancelTextChangingCheckBox = new CheckBox { Text = "Cancel TextChanging" };
+			cancelTextChangingCheckBox.CheckedBinding.Bind(() => cancelTextChanging, v => cancelTextChanging = v ?? false);
+
+			var cancelTextInputCheckBox = new CheckBox { Text = "Cancel TextInput" };
+			cancelTextInputCheckBox.CheckedBinding.Bind(() => cancelTextInput, v => cancelTextInput = v ?? false);
 
 			var placeholderText = new TextBox();
 			placeholderText.TextBinding.Bind(textBox, c => c.PlaceholderText);
@@ -52,6 +61,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow(null, enabledCheckBox, readOnlyCheckBox, showBorderCheckBox, null);
 			layout.AddSeparateRow(null, "TextAlignment", alignmentDropDown, "SelectionMode", selectionMode, alwaysShowSelection, null);
 			layout.AddSeparateRow(null, "MaxLength", maxLengthStepper, "PlaceholderText", placeholderText, null);
+			layout.AddSeparateRow(null, cancelTextChangingCheckBox, cancelTextInputCheckBox, null);
 			layout.AddSeparateRow(null, setTextButton, selectAllButton, null);
 			layout.Add(null);
 			layout.AddCentered(textBox);
@@ -71,9 +81,19 @@ namespace Eto.Test.Sections.Controls
 		void LogEvents(TextBox control)
 		{
 			control.MouseDown += (sender, e) => Log.Write(control, $"MouseDown: {e.Location}, Index: {control.GetCharacterIndex(e.Location)}");
-			control.TextChanging += (sender, e) => Log.Write(control, $"TextChanging, Range: {e.Range}, Text: {e.Text}");
+			control.TextChanging += (sender, e) =>
+			{
+				if (cancelTextChanging)
+					e.Cancel = true;
+				Log.Write(control, $"TextChanging, Source: {e.Source}, Range: {e.Range}, Text: {e.Text}, Cancel: {e.Cancel}");
+			};
 			control.TextChanged += (sender, e) => Log.Write(control, $"TextChanged, Text: {control.Text}, Selection: {control.Selection}");
-			control.TextInput += (sender, e) => Log.Write(control, "TextInput: {0}", e.Text);
+			control.TextInput += (sender, e) =>
+			{
+				if (cancelTextInput)
+					e.Cancel = true;
+				Log.Write(control, "TextInput: {0}, Cancel: {1}", e.Text, e.Cancel);
+			};
 			control.KeyDown += (sender, e) =>
 			{
 				if (e.KeyData == (Keys.Slash | Keys.Shift))
