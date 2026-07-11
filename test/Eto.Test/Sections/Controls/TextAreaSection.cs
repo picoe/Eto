@@ -313,6 +313,10 @@ namespace Eto.Test.Sections.Controls
 			control.SelectionChanged += (sender, e) => Log.Write(control, "SelectionChanged, Selection: {0}", control.Selection);
 
 			control.CaretIndexChanged += (sender, e) => Log.Write(control, "CaretIndexChanged, CaretIndex: {0}", control.CaretIndex);
+
+			control.KeyDown += (sender, e) => Log.Write(control, $"KeyDown: {e.KeyData}");
+			
+			control.KeyUp += (sender, e) => Log.Write(control, $"KeyUp: {e.KeyData}");
 		}
 	}
 }

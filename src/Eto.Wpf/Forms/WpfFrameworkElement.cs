@@ -193,6 +193,8 @@ namespace Eto.Wpf.Forms
 
 		public virtual bool UseDragDropPreview => UseMousePreview;
 
+		protected virtual bool SuppressKeyEvents => false;
+
 		public sw.Size ParentMinimumSize
 		{
 			get { return parentMinimumSize; }
@@ -871,6 +873,9 @@ namespace Eto.Wpf.Forms
 
 		void HandleKeyDown(object sender, swi.KeyEventArgs e)
 		{
+			if (SuppressKeyEvents)
+				return;
+
 			var args = e.ToEto(KeyEventType.KeyDown);
 			if (args.KeyData != Keys.None)
 			{
@@ -881,6 +886,9 @@ namespace Eto.Wpf.Forms
 
 		void HandleKeyUp(object sender, swi.KeyEventArgs e)
 		{
+			if (SuppressKeyEvents)
+				return;
+			
 			var args = e.ToEto(KeyEventType.KeyUp);
 			if (args.KeyData != Keys.None)
 			{
