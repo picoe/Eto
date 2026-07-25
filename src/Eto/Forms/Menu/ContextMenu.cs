@@ -15,6 +15,23 @@ public interface IContextMenuHost
 }
 
 /// <summary>
+/// Flags for the groups of system <see cref="MenuBar"/> items
+/// </summary>
+[Flags]
+public enum ContextMenuSystemItems
+{
+	/// <summary>
+	/// Do not add any system items to the menu
+	/// </summary>
+	None = 0,
+	
+	/// <summary>
+	/// Add all system-defined menu bar items
+	/// </summary>
+	All = 1
+}
+
+/// <summary>
 /// Represents a context menu that can be shown typically when users right click or press the menu key on a control
 /// </summary>
 /// <copyright>(c) 2014 by Curtis Wensley</copyright>
@@ -133,6 +150,14 @@ public class ContextMenu : Menu, ISubmenu
 		OnLoad(EventArgs.Empty);
 		Handler.Show(relativeTo, location);
 	}
+
+	/// <summary>
+	/// Gets or sets which system items will be automatically included with the menu.
+	/// </summary>
+	/// <remarks>
+	/// Some operating systems, such as OS X include contextual menu items such as AutoFill
+	/// </remarks>
+	public ContextMenuSystemItems IncludeSystemItems { get; set; } = ContextMenuSystemItems.All;
 
 	/// <summary>
 	/// Called when the menu is assigned to a control/window

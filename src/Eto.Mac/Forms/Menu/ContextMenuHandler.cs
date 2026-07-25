@@ -115,6 +115,8 @@ namespace Eto.Mac.Forms.Menu
 			var view = relativeTo?.GetContainerView();
 			MacView.InMouseTrackingLoop = false;
 
+			Control.AllowsContextMenuPlugIns = Widget.IncludeSystemItems.HasFlag(ContextMenuSystemItems.All);
+
 			if (location != null || view == null)
 			{
 				CGPoint cglocation;
