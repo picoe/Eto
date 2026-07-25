@@ -411,7 +411,13 @@ namespace Eto.Mac
 		public static KeyEventArgs ToEtoKeyEventArgs(this NSEvent theEvent)
 		{
 			char keyChar = !string.IsNullOrEmpty(theEvent.Characters) ? theEvent.Characters[0] : '\0';
-			Keys key = KeyMap.MapKey(theEvent.KeyCode, theEvent.ModifierFlags);
+			Keys key = KeyMap.Convert(theEvent.CharactersIgnoringModifiers, 0);
+			if (key == Keys.None)
+			{
+				// We only use NSEvent.KeyCode for non-character keys since it doesn't respect
+				// alternative keyboard layouts, it always maps to the physical key value.
+				key = KeyMap.MapKey(theEvent.KeyCode, theEvent.ModifierFlags);
+			}
 			KeyEventArgs kpea;
 			Keys modifiers = theEvent.ModifierFlags.ToEto();
 			key |= modifiers;
