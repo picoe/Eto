@@ -105,12 +105,9 @@ namespace Eto.WinForms.Forms
 
 		protected override object InnerGetData(string type)
 		{
-#if NET10_0_OR_GREATER
-			swf.Clipboard.TryGetData<object>(type, out var data);
-			return data;
-#else
+#pragma warning disable WFDEV005
 			return swf.Clipboard.GetData(type);
-#endif
+#pragma warning restore WFDEV005
 		}
 
 

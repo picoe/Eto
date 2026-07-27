@@ -60,11 +60,9 @@ namespace Eto.WinForms.Forms
 			try
 			{
 				// WPF can throw exceptions here for FileContents, maybe others.
-#if NET10_0_OR_GREATER
-				Control.TryGetData<object>(type, out var data);
-#else
+#pragma warning disable WFDEV005
 				var data = Control.GetData(type);
-#endif
+#pragma warning restore WFDEV005
 				if (data != null)
 					return data;
 			}
