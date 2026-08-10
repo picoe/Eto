@@ -3,10 +3,12 @@
 Eto.Forms cross-platform UI toolkit. Keep this file compact — it loads every
 session. Record only durable, non-obvious Eto facts; skip anything obvious from code/git.
 
-**Standing instruction:** whenever you discover a non-obvious fact about this repo — a
-build/test broke for a surprising reason, an undocumented quirk/flag/path/ordering, or
-something behaved unexpectedly — record it here immediately in the right section. Curate:
-merge into existing entries and fix stale ones rather than appending near-duplicates.
+**AGENTS.md admission rule:** add a fact only when it is broadly useful across future tasks,
+stable, genuinely difficult or costly to rediscover, and not better captured by code, tests,
+comments, or focused documentation. Do not record machine-specific state, one-off failures,
+routine implementation details, or facts already evident from the repository. When in doubt,
+do not add it. Curate existing entries and remove stale or low-value notes to justify the token
+cost this file imposes on every request.
 
 ## Running unit tests
 
@@ -24,6 +26,10 @@ dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10
 - **Always pass `-f`** — the project multi-targets `net48;net10.0;net10.0-windows`.
   On Linux/macOS use `-f net10.0`; the Windows-only TFMs won't build there.
 - Test runner is Microsoft.Testing.Platform (set in `global.json`), NUnit 4.
+- **The modern Mac-specific tests are in `test/Eto.Test.Mac/Eto.Test.macOS.csproj` and require
+  the matching .NET macOS workload.** The presence of `Microsoft.macOS.Ref` packs alone is not
+  sufficient. If the workload rejects a newer Xcode patch version, set
+  `<ValidateXcodeVersion>false</ValidateXcodeVersion>` (already set in `build/Common.Build.props`).
 - **Reflection gotcha (net48 vs net):** `Type.GetType("Ns.Type, PresentationCore")` (partial assembly
   name) resolves on .NET but returns **null** on .NET Framework, so tests that reflect over WPF types
   (e.g. finding the native `ScrollViewer`) silently no-op on net48. Search loaded assemblies instead:

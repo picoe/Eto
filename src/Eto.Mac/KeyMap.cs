@@ -246,6 +246,9 @@
 			inverse.Add(Keys.Grave, "`");
 			inverse.Add(Keys.Minus, "-");
 			inverse.Add(Keys.Semicolon, ";");
+			inverse.Add(Keys.Quote, "'");
+			inverse.Add(Keys.LeftBracket, "[");
+			inverse.Add(Keys.RightBracket, "]");
 			inverse.Add(Keys.Up, "\xF700");
 			inverse.Add(Keys.Down, "\xF701");
 			inverse.Add(Keys.Left, "\xF702");
@@ -282,4 +285,3 @@
 		}
 	}
 }
-
