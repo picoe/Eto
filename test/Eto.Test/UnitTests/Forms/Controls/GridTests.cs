@@ -632,6 +632,40 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[Test]
+		public void SettingSelectedRowsToEmptyShouldNotSelectAnyRow()
+		{
+			Shown(form =>
+			{
+				var grid = new T();
+				grid.ShowHeader = false;
+				grid.Size = new Size(200, 200);
+				grid.AllowMultipleSelection = false;
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) } });
+				SetDataStore(grid, CreateDataStore());
+
+				form.Content = grid;
+				return grid;
+			}, grid =>
+			{
+				// nothing should be selected to start with
+				Assert.That(grid.SelectedRows, Is.Empty, "#1 Grid should not have any selection initially");
+
+				// setting an empty enumeration should keep the selection empty, not select the first row
+				grid.SelectedRows = Enumerable.Empty<int>();
+				Assert.That(grid.SelectedRows, Is.Empty, "#2 Setting SelectedRows to an empty enumeration should not select a row");
+				Assert.That(grid.SelectedRow, Is.EqualTo(-1), "#3 SelectedRow should be -1 when nothing is selected");
+
+				// ..and it should also clear an existing selection
+				grid.SelectedRow = 2;
+				Assert.That(grid.SelectedRow, Is.EqualTo(2), "#4 SelectedRow should be set");
+
+				grid.SelectedRows = Enumerable.Empty<int>();
+				Assert.That(grid.SelectedRows, Is.Empty, "#5 Setting SelectedRows to an empty enumeration should clear the selection, not select the first row");
+				Assert.That(grid.SelectedRow, Is.EqualTo(-1), "#6 SelectedRow should be -1 after clearing the selection");
+			});
+		}
+
+		[Test]
 		public void ColumnsShouldAutoSizeWhenSettingDataAfterLoaded()
 		{
 			ShownAsync(form =>

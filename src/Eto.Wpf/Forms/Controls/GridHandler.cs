@@ -649,7 +649,11 @@ namespace Eto.Wpf.Forms.Controls
 				else
 				{
 					UnselectAll();
-					SelectRow(value.FirstOrDefault());
+					foreach (var row in value)
+					{
+						SelectRow(row);
+						break;
+					}
 				}
 			}
 		}
