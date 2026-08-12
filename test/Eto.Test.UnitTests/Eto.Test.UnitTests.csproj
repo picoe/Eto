@@ -20,8 +20,19 @@
     <PackageReference Include="Microsoft.Testing.Platform" Version="2.2.3" />
   </ItemGroup>
 
+  <!-- The WPF-specific fixtures live in the Eto.Test.Wpf app assembly (test/Eto.Test.Wpf/UnitTests).
+       Reference it so they are discovered here too rather than only in that app's GUI test runner.
+       Only registered as a test assembly on .NET: NUnit's net48 engine runs in a separate app domain
+       and fails to load a second test assembly ("Zero tests ran" plus an appdomain unload error), so
+       there we only take the reference, which is still needed anyway: EtoTestSetup.Initialize probes
+       the Eto.Test.Wpf output directory to locate the platform. -->
+  <PropertyGroup Condition="$(TargetFramework) == 'net10.0-windows'">
+    <DefineConstants>$(DefineConstants);WPF_PLATFORM_TESTS</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+    <ProjectReference Include="..\Eto.Test.Wpf\Eto.Test.Wpf.csproj" Condition="$(TargetFramework) == 'net10.0-windows' or $(TargetFramework) == 'net48' " PrivateAssets="all" />
     <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj" Condition="$(TargetFramework) == 'net10.0-windows' or $(TargetFramework) == 'net48' " PrivateAssets="all" />
     <ProjectReference Include="..\..\src\Eto.Gtk\Eto.Gtk.csproj" Condition="$(TargetFramework) == 'net10.0'" PrivateAssets="all" />
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.Mac64.csproj" Condition="$(TargetFramework) == 'net10.0'" PrivateAssets="all" />

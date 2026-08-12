@@ -43,6 +43,14 @@ You do not need to use any of the classes of this assembly (unless customizing t
   </ItemGroup>
 
   <ItemGroup>
+    <!-- So the WPF-specific unit tests can exercise internals directly, notably
+         DragDropLib.DataObject and the COM IDataObject extensions around it.
+         A build that strong-name signs this assembly must set $(PublicKey) so the SDK emits the
+         matching key here; a signed assembly cannot grant internals access to an unsigned one. -->
+    <InternalsVisibleTo Include="Eto.Test.Wpf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\lib\SHDocVw\Interop.SHDocVw.dll</HintPath>
       <Private>False</Private>

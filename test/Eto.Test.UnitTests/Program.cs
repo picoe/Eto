@@ -18,7 +18,16 @@ internal static class Program
 {
 	static IEnumerable<Assembly> GetTestAssemblies()
 	{
+#if WPF_PLATFORM_TESTS
+		// When more than one assembly is listed, the VSTest bridge requires the test application's
+		// own assembly to be among them.
+		yield return typeof(Program).Assembly;
+#endif
 		yield return typeof(Eto.Test.MainForm).Assembly;
+#if WPF_PLATFORM_TESTS
+		// platform-specific fixtures from test/Eto.Test.Wpf/UnitTests
+		yield return typeof(Eto.Test.Wpf.UnitTests.ScreenTests).Assembly;
+#endif
 	}
 
 	[STAThread]

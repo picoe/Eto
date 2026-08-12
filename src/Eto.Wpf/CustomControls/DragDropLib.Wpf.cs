@@ -301,7 +301,7 @@ namespace System.Windows
 			}
 		}
 
-		/// <summary>Some text
+		/// <summary>
 		/// Provides a default GiveFeedback event handler for drag sources.
 		/// </summary>
 		/// <param name="data">The associated data object for the event.</param>
