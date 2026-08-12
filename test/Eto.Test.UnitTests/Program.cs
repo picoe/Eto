@@ -18,15 +18,33 @@ internal static class Program
 {
 	static IEnumerable<Assembly> GetTestAssemblies()
 	{
-#if WPF_PLATFORM_TESTS
 		// When more than one assembly is listed, the VSTest bridge requires the test application's
 		// own assembly to be among them.
 		yield return typeof(Program).Assembly;
-#endif
+
 		yield return typeof(Eto.Test.MainForm).Assembly;
-#if WPF_PLATFORM_TESTS
-		// platform-specific fixtures from test/Eto.Test.Wpf/UnitTests
-		yield return typeof(Eto.Test.Wpf.UnitTests.ScreenTests).Assembly;
+#if WINDOWS || NETFRAMEWORK
+		if (Platform.Instance.IsWpf)
+		{
+			// WPF-specific fixtures from test/Eto.Test.Wpf/UnitTests
+			yield return typeof(Eto.Test.Wpf.UnitTests.BitmapTests).Assembly;
+		}
+		if (Platform.Instance.IsWinForms)
+		{
+			// WinForms-specific fixtures from test/Eto.Test.WinForms/UnitTests
+			yield return typeof(Eto.Test.WinForms.UnitTests.NativeTests).Assembly;
+		}
+#elif NET
+		if (Platform.Instance.IsGtk)
+		{
+			// GTK-specific fixtures from test/Eto.Test.Gtk/UnitTests
+			yield return typeof(Eto.Test.Gtk.UnitTests.NativeParentWindowTests).Assembly;
+		}
+		if (Platform.Instance.IsMac)
+		{
+			// Mac-specific fixtures from test/Eto.Test.Mac/UnitTests
+			yield return typeof(Eto.Test.Mac.UnitTests.BitmapTests).Assembly;
+		}
 #endif
 	}
 
@@ -35,7 +53,49 @@ internal static class Program
 	{
 		AvoidThemeSatelliteResolverCrash();
 
-		using var app = new Application();
+		List<string> testArgs = new();
+		// check any of the args for platform override
+		Platform? platform = null;
+		foreach (var arg in args)
+		{
+			if (arg.StartsWith("--platform=", StringComparison.OrdinalIgnoreCase))
+			{
+				Console.WriteLine($"Overriding platform with '{arg}'");
+				var platformName = arg.Substring("--platform=".Length);
+				if (!string.IsNullOrEmpty(platformName))
+				{
+					switch (platformName.ToLowerInvariant())
+					{
+#if WINDOWS || NETFRAMEWORK
+						case "wpf":
+							platform = new Eto.Wpf.Platform();
+							break;
+						case "winforms":
+							platform = new Eto.WinForms.Platform();
+							break;
+#elif NET
+						case "gtk":
+							platform = new Eto.GtkSharp.Platform();
+							break;
+						case "mac":
+							platform = new Eto.Mac.Platform();
+							break;
+#endif
+						default:
+							throw new ArgumentException($"Unknown platform '{platformName}'");
+					}
+				}
+			}
+			else
+			{
+				testArgs.Add(arg);
+			}
+		}
+		
+		if (platform == null)
+			platform = Platform.Detect;
+
+		using var app = new Application(platform);
 
 		var exitCodeSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -45,7 +105,7 @@ internal static class Program
 			_ = Task.Run(async () =>
 			{
 				SynchronizationContext.SetSynchronizationContext(context);
-				await RunTestsAndQuitAsync(app, args, exitCodeSource);
+				await RunTestsAndQuitAsync(app, testArgs.ToArray(), exitCodeSource);
 			});
 		};
 		app.Run();
@@ -89,11 +149,19 @@ internal static class Program
 		}
 		catch (Exception ex)
 		{
+			// log it here as well, the exception from Main is not always reported before we exit
+			Console.Error.WriteLine($"Error running tests: {ex}");
 			exitCodeSource.TrySetException(ex);
 		}
 		finally
 		{
-			app.Invoke(() => app.Quit()); // quit app after tests complete
+			// Quit the app once tests complete, exiting with the test result so a failing run actually
+			// fails the process. Environment.Exit is needed rather than returning from Main: on Mac
+			// NSApplication.Terminate() ends the process itself with exit(0) and never returns from
+			// Application.Run(), so both Main's return value and Environment.ExitCode are discarded and
+			// every run would report success. Reports are already flushed by the time we get here.
+			var exitCode = exitCodeSource.Task.IsCompletedSuccessfully ? exitCodeSource.Task.Result : 1;
+			app.Invoke(() => Environment.Exit(exitCode));
 		}
 	}
 }
