@@ -938,7 +938,7 @@ namespace Eto.Wpf.Forms
 				// this can happen when something happens during the mouse dragging, such as showing a dialog.
 				isMouseCaptured = false;
 
-				var args = e.ToEto(ContainerControl, swi.MouseButtonState.Released);
+				var args = e.ToEto(ContainerControl, swi.MouseButtonState.Pressed);
 				Callback.OnMouseUp(Widget, args);
 			}
 		}
