@@ -1,7 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net10.0;net10.0-windows</TargetFrameworks>
+    <!-- The Wpf/WinForms fixtures these TFMs reference can only be built on Windows (the Wpf,
+         WinForms, Eto.Test.Wpf and Eto.Test.WinForms projects are excluded from *|Mac and *|Linux
+         in Eto.slnx), so only target them there. -->
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <TargetFrameworks Condition="$(OSPlatform) == 'Windows'">net48;net10.0;net10.0-windows</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
@@ -20,19 +24,13 @@
     <PackageReference Include="Microsoft.Testing.Platform" Version="2.2.3" />
   </ItemGroup>
 
-  <!-- The WPF-specific fixtures live in the Eto.Test.Wpf app assembly (test/Eto.Test.Wpf/UnitTests).
-       Reference it so they are discovered here too rather than only in that app's GUI test runner.
-       Only registered as a test assembly on .NET: NUnit's net48 engine runs in a separate app domain
-       and fails to load a second test assembly ("Zero tests ran" plus an appdomain unload error), so
-       there we only take the reference, which is still needed anyway: EtoTestSetup.Initialize probes
-       the Eto.Test.Wpf output directory to locate the platform. -->
-  <PropertyGroup Condition="$(TargetFramework) == 'net10.0-windows'">
-    <DefineConstants>$(DefineConstants);WPF_PLATFORM_TESTS</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
   </ItemGroup>
+  <!-- The platform-specific fixtures live in the Eto.Test.<Platform> app assemblies (e.g.
+       test/Eto.Test.Wpf/UnitTests). Reference them so they are discovered here too rather than only
+       in those apps' own GUI test runners. The references are needed regardless of discovery:
+       EtoTestSetup.Initialize probes the platform app's output directory to locate the platform. -->
   <ItemGroup Condition="$(TargetFramework) == 'net10.0-windows' or $(TargetFramework) == 'net48'">
     <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\Eto.Test.Wpf\Eto.Test.Wpf.csproj" PrivateAssets="all" />

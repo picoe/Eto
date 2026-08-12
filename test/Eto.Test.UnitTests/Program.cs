@@ -160,7 +160,8 @@ internal static class Program
 			// NSApplication.Terminate() ends the process itself with exit(0) and never returns from
 			// Application.Run(), so both Main's return value and Environment.ExitCode are discarded and
 			// every run would report success. Reports are already flushed by the time we get here.
-			var exitCode = exitCodeSource.Task.IsCompletedSuccessfully ? exitCodeSource.Task.Result : 1;
+			// Task.IsCompletedSuccessfully isn't available on .NET Framework, so check the status directly.
+			var exitCode = exitCodeSource.Task.Status == TaskStatus.RanToCompletion ? exitCodeSource.Task.Result : 1;
 			app.Invoke(() => Environment.Exit(exitCode));
 		}
 	}
