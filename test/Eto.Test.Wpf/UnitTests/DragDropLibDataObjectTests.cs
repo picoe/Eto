@@ -34,8 +34,6 @@ namespace Eto.Test.Wpf.UnitTests
 		[DllImport("kernel32.dll")]
 		static extern bool GlobalUnlock(IntPtr hMem);
 
-		const int DV_E_FORMATETC = unchecked((int)0x80040064);
-
 		#endregion
 
 		#region Helpers
@@ -118,6 +116,20 @@ namespace Eto.Test.Wpf.UnitTests
 			public void OnClose() { }
 		}
 
+		/// <summary>
+		/// An advise sink that fails, to make SetData throw after it has already stored the data.
+		/// </summary>
+		class ThrowingAdviseSink : ComTypes.IAdviseSink
+		{
+			public void OnDataChange(ref ComTypes.FORMATETC format, ref ComTypes.STGMEDIUM stgmedium)
+				=> throw new InvalidOperationException("sink failed");
+
+			public void OnViewChange(int aspect, int index) { }
+			public void OnRename(ComTypes.IMoniker moniker) { }
+			public void OnSave() { }
+			public void OnClose() { }
+		}
+
 		#endregion
 
 		[Test]
@@ -190,19 +202,20 @@ namespace Eto.Test.Wpf.UnitTests
 		}
 
 		[Test]
-		public void GetDataForMissingFormatShouldReportAnError()
+		public void GetDataForMissingFormatShouldReturnAnEmptyMedium()
 		{
 			var dataObject = new DragDropDataObject();
 			var data = (ComDataObject)dataObject;
 			var format = MakeFormat("eto-test-missing");
 			var medium = default(ComTypes.STGMEDIUM);
 
-			// returning normally reports S_OK to a COM caller, which then treats the zeroed
-			// STGMEDIUM as valid data
-			var exception = Assert.Catch(() => data.GetData(ref format, out medium));
-			Assert.That(exception.HResult, Is.EqualTo(DV_E_FORMATETC), "expected DV_E_FORMATETC");
-			Assert.That(medium.unionmember, Is.EqualTo(IntPtr.Zero));
+			// Must NOT raise DV_E_FORMATETC. WPF and Eto read this object through in-process managed
+			// calls without checking QueryGetData first, so an HRESULT here becomes a COMException in
+			// the middle of a drag. An empty medium (TYMED_NULL) is the contract callers rely on.
+			Assert.DoesNotThrow(() => data.GetData(ref format, out medium));
 			Assert.That(medium.tymed, Is.EqualTo(ComTypes.TYMED.TYMED_NULL));
+			Assert.That(medium.unionmember, Is.EqualTo(IntPtr.Zero));
+			Assert.That(medium.pUnkForRelease, Is.Null);
 			Assert.That(data.QueryGetData(ref format), Is.Not.EqualTo(0), "QueryGetData claimed the format is present");
 
 			dataObject.Dispose();
@@ -264,6 +277,68 @@ namespace Eto.Test.Wpf.UnitTests
 
 			data.DUnadvise(connection);
 			dataObject.Dispose();
+		}
+
+		[Test]
+		public void SetDataThatFailsShouldNotHaveReleasedTheCallersHandle()
+		{
+			// Callers that pass release: true free the medium themselves when SetData throws --
+			// ComDataObjectExtensions.SetDropDescription and SetByteData both do. So a failure must
+			// leave the caller's handle untouched, or their own cleanup double frees it.
+			var dataObject = new DragDropDataObject();
+			var data = (ComDataObject)dataObject;
+			var format = MakeFormat("eto-test-throwing-sink");
+
+			int connection;
+			data.DAdvise(ref format, default(ComTypes.ADVF), new ThrowingAdviseSink(), out connection);
+
+			var medium = MakeMedium(0x0abcdef0);
+			var callerHandle = medium.unionmember;
+
+			Assert.Throws<InvalidOperationException>(() => data.SetData(ref format, ref medium, true));
+
+			Assert.That(ReadMediumInt(callerHandle), Is.EqualTo(0x0abcdef0),
+				"SetData released the caller's medium before failing, so the caller's own cleanup would free it twice");
+
+			Marshal.FreeHGlobal(callerHandle);
+			dataObject.Dispose();
+		}
+
+		[Test]
+		public void CallerCleanupAfterSetDataFailsShouldNotLeaveStorageDangling()
+		{
+			// The shape of RH-95450 / RH-97411. Every Eto WPF drag registers an advise sink on the
+			// DropDescription format (DragSourceHelper.RegisterDefaultDragSource) and then calls
+			// SetDropDescription with release: true on every DragOver. If SetData fails after it has
+			// stored the entry, SetDropDescription's finally frees the HGLOBAL it passed in -- so if
+			// storage kept that very handle instead of a duplicate, the entry is left dangling and
+			// the ReleaseStgMedium in ClearStorage faults when the data object is finally released,
+			// which is where the reported crash lands.
+			var dataObject = new DragDropDataObject();
+			var data = (ComDataObject)dataObject;
+			var format = MakeFormat("eto-test-dangling");
+
+			int connection;
+			data.DAdvise(ref format, default(ComTypes.ADVF), new ThrowingAdviseSink(), out connection);
+
+			var medium = MakeMedium(0x0d0a0d0a);
+			var callerHandle = medium.unionmember;
+
+			Assert.Throws<InvalidOperationException>(() => data.SetData(ref format, ref medium, true));
+
+			// the entry was stored before the failure, and it must not be the caller's handle
+			Assert.That(dataObject.storage, Has.Count.EqualTo(1));
+			var storedHandle = dataObject.storage[0].Value.unionmember;
+			Assert.That(storedHandle, Is.Not.EqualTo(callerHandle),
+				"storage kept the caller's handle, so the caller's own cleanup leaves this entry dangling");
+
+			// exactly what SetDropDescription's finally does when SetData throws
+			Marshal.FreeHGlobal(callerHandle);
+
+			// so releasing storage is still safe: this is the ClearStorage call that crashed
+			Assert.That(ReadMediumInt(storedHandle), Is.EqualTo(0x0d0a0d0a),
+				"the caller's cleanup freed the handle that storage is still holding");
+			Assert.DoesNotThrow(() => dataObject.Dispose());
 		}
 
 		[Test]

@@ -13,17 +13,17 @@
 //   2. DataObject.SetData always stores a *duplicate* of the medium, so nothing outside
 //      this class can end the lifetime of a resource held in `storage` and leave
 //      ClearStorage releasing a dangling handle.
-//   3. GetData / GetDataHere no longer report S_OK together with a zeroed STGMEDIUM for
-//      a format we don't have -- a COM caller (the shell's drag image manager, for one)
-//      takes that as valid data. They return DV_E_FORMATETC instead.
-//   4. Advise sinks are handed their own copy of the medium instead of the live entry
+//   3. Advise sinks are handed their own copy of the medium instead of the live entry
 //      out of `storage`.
-//   5. RaiseDataChanged no longer enumerates `connections` while ADVF_ONLYONCE handling
+//   4. RaiseDataChanged no longer enumerates `connections` while ADVF_ONLYONCE handling
 //      removes entries from it.
-//   6. Dispose is idempotent and suppresses finalization.
-//   7. GetMediumFromObject sizes the HGLOBAL by the serialized length rather than the
+//   5. Dispose is idempotent and suppresses finalization.
+//   6. GetMediumFromObject sizes the HGLOBAL by the serialized length rather than the
 //      MemoryStream's capacity, so no uninitialized tail is published.
-//   8. Doc-comment typos cleaned up.
+//   7. Doc-comment typos cleaned up.
+//
+// Deliberately NOT changed: GetData/GetDataHere still report S_OK with an empty STGMEDIUM for a
+// format that isn't present, rather than DV_E_FORMATETC. See the comment in GetDataHere.
 
 #region DragDropLibCore\DragDropHelper.cs
 
@@ -805,17 +805,22 @@ namespace DragDropLib
 		{
 			// Locate the data
 			KeyValuePair<FORMATETC, STGMEDIUM> dataEntry;
-			if (!GetDataEntry(ref format, out dataEntry))
+			if (GetDataEntry(ref format, out dataEntry))
 			{
-				// Don't hand back an empty medium with S_OK: this is a COM server, so
-				// returning normally reports success and a caller -- the shell's drag image
-				// manager, for one -- will then treat the zeroed STGMEDIUM as valid data.
-				medium = default(STGMEDIUM);
-				throw Marshal.GetExceptionForHR(DV_E_FORMATETC);
+				STGMEDIUM source = dataEntry.Value;
+				medium = CopyMedium(ref source);
+				return;
 			}
 
-			STGMEDIUM source = dataEntry.Value;
-			medium = CopyMedium(ref source);
+			// Didn't find it. Return an empty data medium.
+			//
+			// Strictly this should report DV_E_FORMATETC, since returning normally tells a COM caller
+			// S_OK. Don't: this object is handed to System.Windows.DataObject and read back through
+			// in-process *managed* calls, so an HRESULT here is raised as a COMException rather than
+			// being handled as a return code -- and neither WPF's OleConverter nor Eto's own readers
+			// (DataObjectHandler.GetStream) check QueryGetData first, so a drag/drop that probes for a
+			// format it doesn't have would fail outright. Callers must check medium.tymed before use.
+			medium = default(STGMEDIUM);
 		}
 
 		/// <summary>
@@ -894,11 +899,6 @@ namespace DragDropLib
 				else
 				{
 					sm = CopyMedium(ref medium);
-
-					// release == true transferred ownership to us; we hold a duplicate now,
-					// so let the caller's original go.
-					if (release)
-						ReleaseStgMedium(ref medium);
 				}
 
 				// If the format already exists in storage, drop the old entry.
@@ -926,6 +926,15 @@ namespace DragDropLib
 				KeyValuePair<FORMATETC, STGMEDIUM> addPair = new KeyValuePair<FORMATETC, STGMEDIUM>(formatIn, sm);
 				storage.Add(addPair);
 				RaiseDataChanged(ref addPair);
+
+				// release == true transferred ownership to us, and we hold a duplicate, so drop the
+				// caller's original. This has to be the LAST thing we do: callers that pass
+				// release: true free the medium themselves if SetData throws (see
+				// SetDropDescription), so releasing it before anything that can fail would let them
+				// free an already-freed handle. Failing before this point simply leaves the caller
+				// owning its medium and us owning the duplicate, which is safe.
+				if (release && medium.unionmember != IntPtr.Zero)
+					ReleaseStgMedium(ref medium);
 			}
 		}
 
