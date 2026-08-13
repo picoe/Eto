@@ -62,7 +62,6 @@ jobs:
     # assemblies would be recompiled with a different version stamp than the uploaded artifacts.
     - name: Run unit tests (Wpf)
       timeout-minutes: 30
-      continue-on-error: true # TODO: remove once the existing test failures are fixed
       run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-windows -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=wpf --report-trx --report-trx-filename wpf.trx
 
     - name: Test summary (Wpf)

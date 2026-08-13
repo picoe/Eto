@@ -61,6 +61,10 @@ namespace Eto.Wpf.Forms.Controls
 		bool _showBorder = true;
 
 		EtoCustomComboBox _combo;
+		// hosts the stepper inside the combo box so it can be detached from it synchronously when
+		// switching modes. Clearing the combo's EditContent alone doesn't disconnect the stepper from
+		// the visual tree until the content presenter is re-measured.
+		swc.Decorator _comboEditHost;
 		swc.Calendar _calendar;
 		DateTimeMaskedTextStepper _stepper;
 		int _suppress;
@@ -83,15 +87,22 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			EnsureStepper();
 			_stepper.Mode = _mode;
+			var stepperControl = _stepper.ToNative(true);
 			if (_mode == DateTimePickerMode.Time)
 			{
+				// the stepper is shown directly, so detach it from the combo first
+				if (_comboEditHost != null)
+					_comboEditHost.Child = null;
 				_stepper.ShowStepper = true;
-				Control.Child = _stepper.ToNative(true);
+				Control.Child = stepperControl;
 			}
 			else
 			{
 				_stepper.ShowStepper = false;
 				_stepper.ShowBorder = false;
+				// the stepper goes inside the combo, so detach it from this control first
+				if (ReferenceEquals(Control.Child, stepperControl))
+					Control.Child = null;
 				EnsureCombo();
 				Control.Child = _combo;
 			}
@@ -107,12 +118,14 @@ namespace Eto.Wpf.Forms.Controls
 
 			if (_combo != null)
 			{
-				_combo.EditContent = _stepper.ToNative(true);
+				_comboEditHost.Child = _stepper.ToNative(true);
 				return;
 			}
 
 			_calendar = new swc.Calendar { SelectionMode = swc.CalendarSelectionMode.SingleDate };
 			_calendar.SelectedDatesChanged += Calendar_SelectedDatesChanged;
+
+			_comboEditHost = new swc.Decorator { Child = _stepper.ToNative(true) };
 
 			// the combo box visuals (background, border, chevron) come from the theme style in
 			// themes/generic/CustomComboBox.xaml so it follows the active WPF theme.
@@ -120,7 +133,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				Handler = this,
 				Focusable = false,
-				EditContent = _stepper.ToNative(true),
+				EditContent = _comboEditHost,
 				DropDownContent = _calendar
 			};
 			_combo.DropDownOpened += (sender, e) => SyncCalendarFromValue();

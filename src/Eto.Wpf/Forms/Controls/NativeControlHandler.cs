@@ -90,7 +90,12 @@ public class NativeControlHandler : WpfFrameworkElement<sw.FrameworkElement, Con
 
 sealed class EtoHwndHost : HwndHost
 {
+	// there's nothing to measure when we host our own (empty) window, so use a default size
+	// so the control still reports a sane preferred size like other Eto controls.
+	static readonly Size s_defaultSize = new Size(100, 100);
+
 	HandleRef? _hwnd;
+	readonly bool _createsOwnWindow;
 	swc.ScrollViewer _parentScrollViewer;
 	sd.Rectangle _regionRect = sd.Rectangle.Empty;
 
@@ -99,6 +104,24 @@ sealed class EtoHwndHost : HwndHost
 	public EtoHwndHost(HandleRef? hwnd)
 	{
 		_hwnd = hwnd;
+		_createsOwnWindow = hwnd == null;
+	}
+
+	protected override sw.Size MeasureOverride(sw.Size constraint)
+	{
+		var size = base.MeasureOverride(constraint);
+
+		// HwndHost cannot measure the window it hosts, so fall back to the default size for the
+		// placeholder window created in BuildWindowCore. Any user-specified size is applied by
+		// WpfFrameworkElement.SetSize() via Width/Height so it still takes precedence here.
+		if (_createsOwnWindow)
+		{
+			if (size.Width <= 0)
+				size.Width = Math.Min(s_defaultSize.Width, constraint.Width);
+			if (size.Height <= 0)
+				size.Height = Math.Min(s_defaultSize.Height, constraint.Height);
+		}
+		return size;
 	}
 
 	protected override HandleRef BuildWindowCore(HandleRef hwndParent)
@@ -106,7 +129,7 @@ sealed class EtoHwndHost : HwndHost
 		if (_hwnd == null)
 		{
 			// create a new WinForms Usercontrol to host whatever we want
-			var size = GetPreferredSize?.Invoke() ?? new Size(100, 100);
+			var size = GetPreferredSize?.Invoke() ?? s_defaultSize;
 			var ctl = new swf.UserControl();
 			ctl.Size = size.ToSD();
 			_hwnd = new HandleRef(ctl, ctl.Handle);
