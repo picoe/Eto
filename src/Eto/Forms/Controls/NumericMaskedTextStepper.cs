@@ -21,6 +21,8 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	bool _wrap;
 	T? _value;
 	Func<object, int, object> _roundFunc;
+	int _valueVersion;
+	int _suppressValueChanged;
 
 	/// <summary>
 	/// Gets the numeric provider.
@@ -78,17 +80,14 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 		{
 			if (value == Provider.DecimalPlaces)
 				return;
-			var oldValue = _value;
-			Provider.DecimalPlaces = value;
-			Provider.AllowDecimal = value > 0 || MaximumDecimalPlaces > 0;
-			if (oldValue.HasValue)
-				Provider.Value = oldValue.Value;
-			UpdateText();
-			if (oldValue.HasValue)
-				_value = oldValue.Value;
+			UpdateFormat(() =>
+			{
+				Provider.DecimalPlaces = value;
+				Provider.AllowDecimal = value > 0 || MaximumDecimalPlaces > 0;
+			});
 		}
 	}
-	
+
 	/// <summary>
 	/// Gets or sets the maximum number of decimal places allowed.  This will round the value to the specified number of decimal places when set.
 	/// </summary>
@@ -99,17 +98,14 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 		{
 			if (value == Provider.MaximumDecimalPlaces)
 				return;
-			var oldValue = _value;
-			Provider.MaximumDecimalPlaces = value;
-			Provider.AllowDecimal = DecimalPlaces > 0 || value > 0;
-			if (oldValue.HasValue)
-				Provider.Value = oldValue.Value;
-			UpdateText();
-			if (oldValue.HasValue)
-				_value = oldValue.Value;
+			UpdateFormat(() =>
+			{
+				Provider.MaximumDecimalPlaces = value;
+				Provider.AllowDecimal = DecimalPlaces > 0 || value > 0;
+			});
 		}
 	}
-	
+
 	/// <summary>
 	/// Gets or sets the format string for the numeric value.
 	/// </summary>
@@ -120,14 +116,34 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 		{
 			if (value == Provider.FormatString)
 				return;
-			var oldValue = _value;
-			Provider.FormatString = value;
+			UpdateFormat(() => Provider.FormatString = value);
+		}
+	}
+
+	/// <summary>
+	/// Applies a change to how the value is formatted, keeping the current value intact.
+	/// </summary>
+	/// <remarks>
+	/// Changing the format only affects how the value is displayed and how it is rounded when read,
+	/// the underlying value does not change so <see cref="MaskedTextStepper{T}.ValueChanged"/> is not raised.
+	/// </remarks>
+	void UpdateFormat(Action apply)
+	{
+		var oldValue = _value;
+		_suppressValueChanged++;
+		try
+		{
+			apply();
 			if (oldValue.HasValue)
 				Provider.Value = oldValue.Value;
 			UpdateText();
-			if (oldValue.HasValue)
-				_value = oldValue.Value;
 		}
+		finally
+		{
+			_suppressValueChanged--;
+		}
+		if (oldValue.HasValue)
+			_value = oldValue.Value;
 	}
 	
 	/// <inheritdoc/>
@@ -136,10 +152,10 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 		get => _minValue;
 		set
 		{
+			var oldValue = Value;
 			_minValue = value;
 			AllowSign = value.CompareTo(default(T)) < 0 || _maxValue.CompareTo(default(T)) < 0;
-			if (base.Value.CompareTo(value) < 0)
-				base.Value = value;
+			UpdateValueForRange(oldValue);
 			UpdateValidDirection();
 		}
 	}
@@ -152,12 +168,24 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 		get => _maxValue;
 		set
 		{
+			var oldValue = Value;
 			_maxValue = value;
 			AllowSign = _minValue.CompareTo(default(T)) < 0 || value.CompareTo(default(T)) < 0;
-			if (base.Value.CompareTo(value) > 0)
-				base.Value = value;
+			UpdateValueForRange(oldValue);
 			UpdateValidDirection();
 		}
+	}
+
+	/// <summary>
+	/// Updates the displayed value after the min/max range has changed, raising ValueChanged if it is now clamped to a different value.
+	/// </summary>
+	void UpdateValueForRange(T oldValue)
+	{
+		// the getter already clamps to the new range
+		var newValue = Value;
+		if (EqualityComparer<T>.Default.Equals(newValue, oldValue))
+			return;
+		SetValueInternal(newValue);
 	}
 	
 	/// <summary>
@@ -192,12 +220,14 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 		get
 		{
 			var val = _value ?? base.Value;
-			
-			if (string.IsNullOrEmpty(FormatString) && MaximumDecimalPlaces > 0 && _roundFunc != null)
+
+			// clamp before rounding so the value is rounded to the same precision as it is displayed
+			if (val.CompareTo(_minValue) < 0) val = _minValue;
+			else if (val.CompareTo(_maxValue) > 0) val = _maxValue;
+
+			if (string.IsNullOrEmpty(FormatString) && _roundFunc != null)
 				val = (T)_roundFunc(val, MaximumDecimalPlaces);
-			
-			if (val.CompareTo(_minValue) < 0) return _minValue;
-			if (val.CompareTo(_maxValue) > 0) return _maxValue;
+
 			return val;
 		}
 		set
@@ -207,9 +237,20 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 			var clamped = value;
 			if (clamped.CompareTo(_minValue) < 0) clamped = _minValue;
 			if (clamped.CompareTo(_maxValue) > 0) clamped = _maxValue;
-			base.Value = clamped;
-			_value = value;
+			SetValueInternal(clamped, value);
 		}
+	}
+
+	void SetValueInternal(T value) => SetValueInternal(value, value);
+
+	void SetValueInternal(T displayValue, T value)
+	{
+		// keep the unrounded/unclamped value so precision isn't lost by the text representation
+		var version = ++_valueVersion;
+		base.Value = displayValue;
+		// don't clobber the value if it was changed while updating, e.g. from a ValueChanged handler
+		if (version == _valueVersion)
+			_value = value;
 	}
 
 
@@ -279,7 +320,8 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	/// <inheritdoc/>
 	protected override void OnValueChanged(EventArgs e)
 	{
-		base.OnValueChanged(e);
+		if (_suppressValueChanged == 0)
+			base.OnValueChanged(e);
 		UpdateValidDirection();
 	}
 

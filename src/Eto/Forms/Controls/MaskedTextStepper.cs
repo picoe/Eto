@@ -26,8 +26,10 @@ public class MaskedTextStepper<T> : MaskedTextStepper
 		var val = Value;
 		if (!EqualityComparer<T>.Default.Equals(val, _lastValue))
 		{
-			OnValueChanged(EventArgs.Empty);
+			// set the last value before raising the event so changing the value in a handler
+			// doesn't get overwritten when unwinding a re-entrant change.
 			_lastValue = val;
+			OnValueChanged(EventArgs.Empty);
 		}
 	}
 
