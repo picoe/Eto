@@ -29,7 +29,7 @@ jobs:
         dotnet-version: ${{ env.DotNetVersion }}
 
     - name: Create global.json
-      run: echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
+      run: echo '{"sdk":{"version":"${{ env.DotNetVersion }}"},"test":{"runner":"Microsoft.Testing.Platform"}}' > global.json
 
     - name: Build
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Build /bl:artifacts/log/Build.Windows.binlog
@@ -54,6 +54,22 @@ jobs:
         name: samples-win
         path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
 
+    # These are GUI tests that create real windows, so they need a desktop session to run in.
+    # Windows runners already provide one, so no extra setup is needed here - only the timeout
+    # guard so a test that blocks waiting on the UI can't hang the job for its full 6 hours.
+    # --no-build (which implies --no-restore) runs exactly the binaries the Build step produced
+    # above; without it dotnet test rebuilds them without Platform/BuildVersion set, so the tested
+    # assemblies would be recompiled with a different version stamp than the uploaded artifacts.
+    - name: Run unit tests (Wpf)
+      timeout-minutes: 30
+      continue-on-error: true # TODO: remove once the existing test failures are fixed
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-windows -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=wpf --report-trx --report-trx-filename wpf.trx
+
+    - name: Test summary (Wpf)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Wpf)" -FileName wpf.trx
+
     - name: Upload log files
       if: ${{ failure() }}
       uses: actions/upload-artifact@v6
@@ -76,7 +92,7 @@ jobs:
         dotnet-version: ${{ env.DotNetVersion }}
 
     - name: Create global.json
-      run: del global.json || echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
+      run: del global.json || echo '{"sdk":{"version":"${{ env.DotNetVersion }}"},"test":{"runner":"Microsoft.Testing.Platform"}}' > global.json
       
     - name: Clear nuget cache
       run: dotnet nuget locals all --clear
@@ -137,6 +153,20 @@ jobs:
         path: |
           artifacts/test/Eto.Test.Mac64/${{ env.BuildConfiguration }}/**/Eto.Test.Mac64.dmg
           artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/**/Eto.Test.macOS*.pkg
+
+    # These are GUI tests that create real windows, so they need a desktop session to run in. The
+    # macOS runners are auto-logged in to one, so AppKit can reach the window server without any
+    # extra setup - only the timeout guard so a test that blocks waiting on the UI can't hang the
+    # job for its full 6 hours. See the Wpf step above for why --no-build is used.
+    - name: Run unit tests (Mac)
+      timeout-minutes: 30
+      continue-on-error: true # TODO: remove once the existing test failures are fixed
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=mac --report-trx --report-trx-filename mac.trx
+
+    - name: Test summary (Mac)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Mac)" -FileName mac.trx
 
     - name: Upload log files
       if: ${{ failure() }}
