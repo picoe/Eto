@@ -63,7 +63,12 @@ jobs:
     - name: Run unit tests (Wpf)
       timeout-minutes: 30
       continue-on-error: true # TODO: remove once the existing test failures are fixed
-      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-windows -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=wpf
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-windows -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=wpf --report-trx --report-trx-filename wpf.trx
+
+    - name: Test summary (Wpf)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Wpf)" -FileName wpf.trx
 
     - name: Upload log files
       if: ${{ failure() }}
@@ -156,7 +161,12 @@ jobs:
     - name: Run unit tests (Mac)
       timeout-minutes: 30
       continue-on-error: true # TODO: remove once the existing test failures are fixed
-      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=mac
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=mac --report-trx --report-trx-filename mac.trx
+
+    - name: Test summary (Mac)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Mac)" -FileName mac.trx
 
     - name: Upload log files
       if: ${{ failure() }}

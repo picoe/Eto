@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 #endif
 using System.Threading.Tasks;
+using Microsoft.Testing.Extensions;
 using Microsoft.Testing.Platform.Builder;
 using NUnit.Framework;
 using NUnit.VisualStudio.TestAdapter.TestingPlatformAdapter;
@@ -142,6 +143,8 @@ internal static class Program
 			var options = new TestApplicationOptions();
 			ITestApplicationBuilder builder = await Microsoft.Testing.Platform.Builder.TestApplication.CreateBuilderAsync(args);
 			builder.AddNUnit(GetTestAssemblies);
+			// registered explicitly (adds the trx report options) as we don't use the generated entry point
+			builder.AddTrxReportProvider();
 
 			using ITestApplication testApplication = await builder.BuildAsync();
 			int exitCode = await testApplication.RunAsync();
