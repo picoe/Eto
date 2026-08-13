@@ -162,6 +162,38 @@ namespace Eto.Wpf.Forms
 				SetLocation(initialLocation.Value);
 				initialLocation = null;
 			}
+
+			UpdateMinimumTrackingSize();
+		}
+
+		/// <summary>
+		/// Refreshes the minimum size WPF allows the window to be sized to.
+		/// </summary>
+		/// <remarks>
+		/// WPF caches the minimum tracking size of the window (which it uses as a lower bound when sizing to
+		/// content) from the system metrics before the window is created. Those metrics are for a window with a
+		/// border at the system dpi, so a borderless window could never be smaller than that even though Windows
+		/// allows it to be. Resizing the window to its current size makes Windows send a WM_GETMINMAXINFO with
+		/// the actual values for this window, which WPF then uses instead.
+		/// </remarks>
+		void UpdateMinimumTrackingSize()
+		{
+			if (IsAttached)
+				return;
+
+			var handle = NativeHandle;
+			if (handle == IntPtr.Zero)
+				return;
+
+			Win32.ExecuteInDpiAwarenessContext(() =>
+			{
+				if (Win32.GetWindowRect(handle, out var rect))
+				{
+					// note: must not use SWP.NOSIZE or SWP.NOSENDCHANGING, otherwise WM_GETMINMAXINFO is not sent
+					Win32.SetWindowPos(handle, IntPtr.Zero, 0, 0, rect.width, rect.height, Win32.SWP.NOMOVE | Win32.SWP.NOZORDER | Win32.SWP.NOACTIVATE);
+				}
+				return true;
+			});
 		}
 
 		private IntPtr HookProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
