@@ -101,7 +101,8 @@ Only the Gtk path above has been exercised; treat the others as starting points 
 
 To exercise the *real* keypress→widget path (e.g. verifying a TextBox fires input events exactly
 once), drive a shown window with **xdotool over the real X display** — `gtk_test_widget_send_key`
-P/Invoke is a no-op here (needs a focused toplevel under a WM). There's **no window manager**, so:
+P/Invoke is a no-op here (needs a focused toplevel under a WM). Window management can't be relied
+on (see the mouse section below — the session is mutter/XWayland), so:
 
 - Launch the app (`DISPLAY=:0 GDK_BACKEND=x11`), give the target widget focus, print a `READY`
   marker, and add a `UITimer` auto-quit so the process never hangs (no `kill` — it's forbidden).
@@ -110,6 +111,33 @@ P/Invoke is a no-op here (needs a focused toplevel under a WM). There's **no win
 - `windowactivate` fails `BadWindow` without a WM; use `windowfocus --sync <id>` then inject with
   **XTEST** (`xdotool key a` / `xdotool type "ab"` — *no* `--window`, which uses XSendEvent that GTK
   ignores). XTEST goes to whatever holds X input focus, which `windowfocus` just set.
+
+## Injecting mouse events to test drag/capture behaviour (Gtk)
+
+**xdotool pointer injection does not work here** (only keyboard does): under a mutter/XWayland
+session a full-screen `mutter guard window` sits above all X clients, so XTEST `mousemove`/
+`mousedown`/`click` never reach the app (`xdotool getmouselocation` reports the root window even
+when the pointer is over your window). Also `xdotool search --name` returns both the mutter frame
+*and* the client window — the frame's geometry is offset from the client's, so clicking `frame + n`
+lands on the decoration; check `xwininfo -id <id>` (`Width`/`Height`) to pick the client.
+
+Instead synthesize GDK events and push them through GTK's real dispatch, which honours grabs
+(`gtk_grab_add` from `gtk_dialog_run`, etc.), so capture/grab behaviour is exercised faithfully:
+
+```csharp
+var ev = Gdk.EventHelper.New(Gdk.EventType.ButtonPress); // or MotionNotify/ButtonRelease
+var bev = new Gdk.EventButton(ev.Handle) { Window = eventBoxGdkWindow, SendEvent = true,
+    Time = time += 100, X = 60, Y = 60, Button = 1, State = 0,
+    Device = Gdk.Display.Default.DefaultSeat.Pointer }; // XRoot/YRoot from Window.GetOrigin
+Gtk.Main.DoEvent(ev);
+```
+
+- Get the widget to target from the handler's `EventControl` (an `EtoEventBox` for `Panel`) and use
+  its `.Window` as the event window, otherwise GTK routes the event elsewhere.
+- A modal `Dialog` blocks in a nested main loop inside your handler, so schedule each later step on
+  its **own** `GLib.Timeout` source — a single source won't re-enter while its callback is blocked.
+- Anything reading the *real* pointer (`Mouse.Position`, `Mouse.Buttons`, and so the location and
+  buttons of events Eto synthesizes itself) still reports the physical mouse, not your fake events.
 
 ## Test project layout (non-obvious)
 

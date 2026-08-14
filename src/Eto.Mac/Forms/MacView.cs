@@ -644,6 +644,28 @@ namespace Eto.Mac.Forms
 		/// </summary>
 		public static bool InMouseTrackingLoop;
 
+		/// <summary>
+		/// Triggers the MouseUp of the control that is currently in a mouse tracking loop, if any.
+		/// </summary>
+		internal static Action TriggerMouseUpWhenCancelled;
+
+		/// <summary>
+		/// Cancels the mouse tracking loop when the MouseUp event is going to be buried, such as when
+		/// showing a modal dialog or context menu during a mouse down or drag.
+		/// </summary>
+		/// <remarks>
+		/// This triggers the MouseUp of the control being tracked right away (with <see cref="MouseButtons.None"/>)
+		/// so user code can unwind any dragging logic before the modal loop starts, instead of getting it
+		/// only after the modal loop has finished (or not at all).
+		/// </remarks>
+		public static void CancelMouseTracking()
+		{
+			InMouseTrackingLoop = false;
+			var triggerMouseUp = TriggerMouseUpWhenCancelled;
+			TriggerMouseUpWhenCancelled = null;
+			triggerMouseUp?.Invoke();
+		}
+
 		public static IMacViewHandler CapturedControl;
 
 		public static IntPtr selViewDidMoveToWindow = Selector.GetHandle("viewDidMoveToWindow");
@@ -1015,6 +1037,9 @@ namespace Eto.Mac.Forms
 				case NSEventType.OtherMouseUp:
 					{
 						var args = MacConversions.GetMouseEvent(this, evt, false);
+						// the real mouse up is being delivered, so don't trigger another one if the mouse
+						// tracking is cancelled from this event (e.g. showing a dialog during MouseUp).
+						MacView.TriggerMouseUpWhenCancelled = null;
 						Callback.OnMouseUp(Widget, args);
 						SuppressMouseTriggerCallback = true;
 						MacView.CapturedControl = null;
@@ -1215,7 +1240,7 @@ namespace Eto.Mac.Forms
 
 		public void Print()
 		{
-			MacView.InMouseTrackingLoop = false;
+			MacView.CancelMouseTracking();
 			PrintSettingsHandler.SetDefaults(NSPrintInfo.SharedPrintInfo);
 			ContainerControl.Print(ContainerControl);
 		}
@@ -1688,41 +1713,79 @@ namespace Eto.Mac.Forms
 		{
 			var app = NSApplication.SharedApplication;
 			MacView.CapturedControl = this;
+			var oldTriggerMouseUp = MacView.TriggerMouseUpWhenCancelled;
+			// when the mouse up gets buried (e.g. a dialog is shown during a drag), fire the MouseUp ourselves.
+			// only for the automatic loop, an explicit CaptureMouse() is up to the user to release.
+			if (autoRelease)
+				MacView.TriggerMouseUpWhenCancelled = TriggerMouseUpForCancelledTracking;
 			bool continueLoop;
 			// Console.WriteLine("Entered MouseTrackingLoop");
-			do
+			try
 			{
-				var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, MouseTrackingRunLoopMode, true);
-
-				switch (evt.Type)
+				do
 				{
-					case NSEventType.LeftMouseUp:
-					case NSEventType.RightMouseUp:
-					case NSEventType.OtherMouseUp:
-						TriggerMouseCallback(evt);
-						if (autoRelease)
-						{
-							MacView.InMouseTrackingLoop = false;
-							MacView.CapturedControl = null;
-						}
-						break;
-					case NSEventType.LeftMouseDragged:
-					case NSEventType.RightMouseDragged:
-					case NSEventType.OtherMouseDragged:
-					case NSEventType.LeftMouseDown:
-					case NSEventType.RightMouseDown:
-					case NSEventType.OtherMouseDown:
-						TriggerMouseCallback(evt);
-						break;
-					default:
-						// not a mouse event, send it along.
-						app.SendEvent(evt);
-						break;
+					var evt = app.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, MouseTrackingRunLoopMode, true);
+
+					switch (evt.Type)
+					{
+						case NSEventType.LeftMouseUp:
+						case NSEventType.RightMouseUp:
+						case NSEventType.OtherMouseUp:
+							TriggerMouseCallback(evt);
+							if (autoRelease)
+							{
+								MacView.InMouseTrackingLoop = false;
+								MacView.CapturedControl = null;
+							}
+							break;
+						case NSEventType.LeftMouseDragged:
+						case NSEventType.RightMouseDragged:
+						case NSEventType.OtherMouseDragged:
+						case NSEventType.LeftMouseDown:
+						case NSEventType.RightMouseDown:
+						case NSEventType.OtherMouseDown:
+							TriggerMouseCallback(evt);
+							break;
+						default:
+							// not a mouse event, send it along.
+							app.SendEvent(evt);
+							break;
+					}
+					continueLoop = autoRelease ? MacView.InMouseTrackingLoop : CaptureLoopEnabled;
 				}
-				continueLoop = autoRelease ? MacView.InMouseTrackingLoop : CaptureLoopEnabled;
+				while (continueLoop);
 			}
-			while (continueLoop);
+			finally
+			{
+				if (autoRelease)
+					MacView.TriggerMouseUpWhenCancelled = oldTriggerMouseUp;
+			}
 			// Console.WriteLine("Exited MouseTrackingLoop");
+		}
+
+		/// <summary>
+		/// Triggers MouseUp when the mouse tracking loop is cancelled before the mouse button was released.
+		/// </summary>
+		/// <remarks>
+		/// This happens when something buries the mouse up event during a mouse down or drag, such as showing
+		/// a modal dialog or context menu.  Without this, user code would only get the MouseUp after the modal
+		/// loop finishes (if at all) so any dragging logic would never get a chance to unwind.
+		/// <see cref="MouseButtons.None"/> is passed as the user may not have released the button yet, so it
+		/// isn't mistakenly taken as a mouse click.
+		/// </remarks>
+		void TriggerMouseUpForCancelledTracking()
+		{
+			if (Widget?.IsDisposed != false)
+				return;
+
+			if (MacView.CapturedControl == this)
+				MacView.CapturedControl = null;
+
+			// don't fire MouseUp again if the real mouse up event does eventually get delivered
+			SuppressMouseUp = true;
+
+			var location = PointFromScreen(Mouse.Position);
+			Callback.OnMouseUp(Widget, new MouseEventArgs(MouseButtons.None, Keyboard.Modifiers, location));
 		}
 
 		public virtual MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent)
@@ -1738,6 +1801,10 @@ namespace Eto.Mac.Forms
 			if (!SuppressMouseUp)
 			{
 				Callback.OnMouseUp(Widget, args);
+			}
+			else
+			{
+				// only suppress a single mouse up
 				SuppressMouseUp = false;
 			}
 

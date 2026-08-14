@@ -14,7 +14,7 @@ namespace Eto.Mac.Forms
 
 		public DialogResult ShowDialog(Control parent)
 		{
-			MacView.InMouseTrackingLoop = false;
+			MacView.CancelMouseTracking();
 			var alert = new NSAlert();
 
 			AddButtons(alert);

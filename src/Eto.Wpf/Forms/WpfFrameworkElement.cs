@@ -940,7 +940,10 @@ namespace Eto.Wpf.Forms
 				// this can happen when something happens during the mouse dragging, such as showing a dialog.
 				isMouseCaptured = false;
 
-				var args = e.ToEto(ContainerControl, swi.MouseButtonState.Pressed);
+				// MouseButtons.None is passed as the user may not have released the button yet,
+				// so it isn't mistakenly taken as a mouse click.
+				var location = e.GetPosition(ContainerControl).ToEto();
+				var args = new MouseEventArgs(MouseButtons.None, swi.Keyboard.Modifiers.ToEto(), location);
 				Callback.OnMouseUp(Widget, args);
 			}
 		}
