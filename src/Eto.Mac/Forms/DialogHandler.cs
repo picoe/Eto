@@ -146,7 +146,7 @@ namespace Eto.Mac.Forms
 			ApplicationHandler.Instance.EnsureActivated(ShowInTaskbar, true, Icon);
 			Control.LayoutIfNeeded();
 			Callback.OnLoadComplete(Widget, EventArgs.Empty);
-			MacView.InMouseTrackingLoop = false;
+			MacView.CancelMouseTracking();
 			session = null;
 			EnsureOwner();
 			Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
@@ -166,7 +166,7 @@ namespace Eto.Mac.Forms
 			ApplicationHandler.Instance.EnsureActivated(ShowInTaskbar, true, Icon);
 			Control.LayoutIfNeeded();
 			Callback.OnLoadComplete(Widget, EventArgs.Empty);
-			MacView.InMouseTrackingLoop = false;
+			MacView.CancelMouseTracking();
 			var tcs = new TaskCompletionSource<bool>();
 			session = null;
 			EnsureOwner();

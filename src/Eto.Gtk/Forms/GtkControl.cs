@@ -67,6 +67,7 @@ namespace Eto.GtkSharp.Forms
 		public static readonly object AllowDrop_Key = new object();
 		public static readonly object DeferMouseLeave_Key = new object();
 		public static readonly object IsMouseCaptured_Key = new object();
+		public static readonly object LostMouseCaptureAttached_Key = new object();
 		public static readonly object LastEnteredControls_Key = new object();
 		public static readonly object ShouldTranslatePoints_Key = new object();
 		internal static readonly object ContextMenu_Key = new object();
@@ -417,10 +418,12 @@ namespace Eto.GtkSharp.Forms
 					EventControl.AddEvents((int)Gdk.EventMask.ButtonPressMask);
 					EventControl.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
 					EventControl.ButtonPressEvent += Connector.HandleButtonPressEvent;
+					AttachLostMouseCaptureEvents();
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
 					EventControl.ButtonReleaseEvent += Connector.HandleButtonReleaseEvent;
+					AttachLostMouseCaptureEvents();
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.EnterNotifyMask);
@@ -483,6 +486,43 @@ namespace Eto.GtkSharp.Forms
 					base.AttachEvent(id);
 					return;
 			}
+		}
+
+		/// <summary>
+		/// Attaches the events used to detect when this control loses the mouse capture.
+		/// </summary>
+		/// <remarks>
+		/// Both MouseDown and MouseUp need this, so guard against attaching them twice.
+		/// </remarks>
+		void AttachLostMouseCaptureEvents()
+		{
+			if (Widget.Properties.Get<bool>(GtkControl.LostMouseCaptureAttached_Key))
+				return;
+			Widget.Properties.Set(GtkControl.LostMouseCaptureAttached_Key, true);
+			// a gtk grab elsewhere (e.g. showing a modal dialog) shadows this control
+			EventControl.GrabNotify += Connector.HandleGrabNotify;
+			// the gdk (device) grab was taken away, e.g. by another application or a drag operation
+			EventControl.GrabBrokenEvent += Connector.HandleGrabBrokenEvent;
+		}
+
+		/// <summary>
+		/// Triggers MouseUp when the mouse capture is lost without a button release being sent.
+		/// </summary>
+		/// <remarks>
+		/// This can happen when something takes the grab away in the middle of a drag, such as showing
+		/// a dialog.  GTK sends the button release to whatever has the grab instead of this control, so
+		/// without this any dragging logic in user code would never get a chance to unwind.
+		/// This is the equivalent of WPF's LostMouseCapture.
+		/// <see cref="MouseButtons.None"/> is passed as the user may not have released the button yet, so it
+		/// isn't mistakenly taken as a mouse click.
+		/// </remarks>
+		void TriggerMouseUpForLostCapture()
+		{
+			if (!IsMouseCaptured)
+				return;
+			IsMouseCaptured = false;
+			var location = Widget.PointFromScreen(Mouse.Position);
+			Callback.OnMouseUp(Widget, new MouseEventArgs(MouseButtons.None, Keyboard.Modifiers, location));
 		}
 
 		protected new GtkControlConnector Connector { get { return (GtkControlConnector)base.Connector; } }
@@ -651,6 +691,19 @@ namespace Eto.GtkSharp.Forms
 				var mouseArgs = new MouseEventArgs(buttons, modifiers, p);
 				handler.Callback.OnMouseUp(handler.Widget, mouseArgs);
 				args.RetVal = mouseArgs.Handled;
+			}
+
+			public void HandleGrabNotify(object o, Gtk.GrabNotifyArgs args)
+			{
+				// WasGrabbed is false when a grab was added elsewhere, so this control no longer gets events
+				if (!args.WasGrabbed)
+					Handler?.TriggerMouseUpForLostCapture();
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleGrabBrokenEvent(object o, Gtk.GrabBrokenEventArgs args)
+			{
+				Handler?.TriggerMouseUpForLostCapture();
 			}
 
 			[GLib.ConnectBefore]
