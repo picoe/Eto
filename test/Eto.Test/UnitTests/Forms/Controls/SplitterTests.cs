@@ -272,6 +272,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				},
 				it =>
 				{
+					it.UpdateLayout();
 					double pos = fix == SplitterFixedPanel.None ? 0.5 : 50.0;
 					Assert.That(it.RelativePosition, Is.EqualTo(pos).Within(1e-2), $"Fix: {fix}; {orient} [replay={replay}]");
 					if (ReplayTests)

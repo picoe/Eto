@@ -15,7 +15,6 @@ namespace Eto.Test.UnitTests.Forms
 			{
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
-				Thread.Sleep(10);
 				var item = new ButtonToolItem { Text = i.ToString() };
 				tb.Items.Add(item);
 

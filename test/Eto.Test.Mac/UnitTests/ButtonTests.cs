@@ -40,28 +40,34 @@ namespace Eto.Test.Mac.UnitTests
 				{
 					try
 					{
-						// need to use invokes to wait for the layout pass to complete
+						// wait for the layout pass to settle after each resize before asserting - polling
+						// on the expected state rather than a fixed delay so this doesn't cost seconds.
+						Task WaitForBezel(NSBezelStyle style, int height) =>
+							WaitUntil(() => handler.Control.BezelStyle == style && handler.Widget.Height == height, 1000);
+
 						panel.Size = new Size(-1, defaultButtonHeight + 1);
-						await Task.Delay(1000);
+						await WaitForBezel(NSBezelStyle.RegularSquare, defaultButtonHeight + 1);
 						await Application.Instance.InvokeAsync(() =>
 						{
 							Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.RegularSquare), "#3.1");
 							Assert.That(handler.Widget.Height, Is.EqualTo(defaultButtonHeight + 1), "#3.2");
 						});
 						panel.Size = new Size(-1, -1);
+						await WaitForBezel(NSBezelStyle.Rounded, defaultButtonHeight);
 						await Application.Instance.InvokeAsync(() =>
 						{
 							Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.Rounded), "#4.1");
 							Assert.That(handler.Widget.Height, Is.EqualTo(defaultButtonHeight), "#4.2");
 						});
 						panel.Size = new Size(-1, defaultButtonHeight - 1);
-						await Task.Delay(1000);
+						await WaitForBezel(NSBezelStyle.SmallSquare, defaultButtonHeight - 1);
 						await Application.Instance.InvokeAsync(() =>
 						{
 							Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.SmallSquare), "#5.1");
 							Assert.That(handler.Widget.Height, Is.EqualTo(defaultButtonHeight - 1), "#5.2");
 						});
 						panel.Size = new Size(-1, -1);
+						await WaitForBezel(NSBezelStyle.Rounded, defaultButtonHeight);
 						await Application.Instance.InvokeAsync(() =>
 						{
 							Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.Rounded), "#6.1");

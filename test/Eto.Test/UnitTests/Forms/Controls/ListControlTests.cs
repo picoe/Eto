@@ -64,7 +64,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					{
 						list.DataStore = null;
 						list.Invalidate();
-						new UITimer((sender2, e2) => { form.Close(); }) { Interval = 1 }.Start();
+						// Interval is in seconds - one full second here just to let the invalidate repaint
+						// is far more than needed, and this test has a case per list control type.
+						new UITimer((sender2, e2) => { form.Close(); }) { Interval = 0.05 }.Start();
 					});
 				};
 			});
