@@ -22,6 +22,13 @@ namespace Eto.Mac.Forms.Controls
 			return new EtoWebView(this);
 		}
 
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			// WKWebView has no intrinsic size as its content is entirely up to the loaded document,
+			// so report a default size like other controls that can't be measured.
+			return new SizeF(100, 100);
+		}
+
 		public class EtoNavigationDelegate : wk.WKNavigationDelegate
 		{
 			public EtoNavigationDelegate()
@@ -116,14 +123,22 @@ namespace Eto.Mac.Forms.Controls
 
 		class ScriptMessageHandler : wk.WKScriptMessageHandler
 		{
-			private readonly WKWebViewHandler Handler;
+			// WKUserContentController retains its script message handlers, and the content controller is kept
+			// alive by the configuration the handler itself owns. Referencing the handler strongly here would
+			// close that loop with a native retain in it, keeping the WebView alive forever.
+			readonly WeakReference handler;
+			WKWebViewHandler Handler => handler.Target as WKWebViewHandler;
+
 			public ScriptMessageHandler(WKWebViewHandler handler) : base()
 			{
-				Handler = handler;
+				this.handler = new WeakReference(handler);
 			}
 			public override void DidReceiveScriptMessage(wk.WKUserContentController userContentController, wk.WKScriptMessage message)
 			{
-				Handler.Callback.OnMessageReceived(Handler.Widget, new WebViewMessageEventArgs(message.Body.ToString()));
+				var h = Handler;
+				if (h == null || h.Widget.IsDisposed)
+					return;
+				h.Callback.OnMessageReceived(h.Widget, new WebViewMessageEventArgs(message.Body.ToString()));
 			}
 		}
 
