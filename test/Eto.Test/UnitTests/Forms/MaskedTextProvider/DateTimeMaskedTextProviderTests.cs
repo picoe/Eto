@@ -9,6 +9,30 @@ namespace Eto.Test.UnitTests.Forms.MaskedTextProvider
 	{
 		static readonly CultureInfo EnUS = CultureInfo.GetCultureInfo("en-US");
 
+		/// <summary>
+		/// A mask can only use regular spaces, but ICU-based cultures (macOS/Linux) use a narrow no-break space
+		/// in front of the AM/PM designator, so the format has to be normalized to match the mask it feeds.
+		/// This uses an explicit culture rather than en-US so it is covered no matter which ICU version, if any,
+		/// the platform running the tests uses.
+		/// </summary>
+		static CultureInfo NarrowSpaceCulture()
+		{
+			var culture = (CultureInfo)CultureInfo.GetCultureInfo("en-US").Clone();
+			culture.DateTimeFormat.ShortTimePattern = "h:mm\u202Ftt";
+			return culture;
+		}
+
+		[Test]
+		public void ValueShouldRoundTripWithNarrowSpaceInTimePattern()
+		{
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, NarrowSpaceCulture());
+			provider.Value = DateTime.Today + new TimeSpan(14, 30, 0);
+			provider.CommitText();
+
+			Assert.That(provider.Text, Is.EqualTo("02:30 PM"), "#1 - the narrow no-break space should become a regular space");
+			Assert.That(provider.Value?.TimeOfDay, Is.EqualTo(new TimeSpan(14, 30, 0)), "#2");
+		}
+
 		[Test]
 		public void ValueShouldRoundTripInDateMode()
 		{

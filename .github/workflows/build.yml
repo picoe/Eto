@@ -159,7 +159,6 @@ jobs:
     # job for its full 6 hours. See the Wpf step above for why --no-build is used.
     - name: Run unit tests (Mac)
       timeout-minutes: 30
-      continue-on-error: true # TODO: remove once the existing test failures are fixed
       run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=mac --report-trx --report-trx-filename mac.trx
 
     - name: Test summary (Mac)
