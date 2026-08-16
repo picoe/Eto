@@ -396,6 +396,12 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 			_ => culture.DateTimeFormat.ShortDatePattern
 		};
 
+		// ICU-based cultures (e.g. en-US on macOS/Linux) separate the time from its AM/PM designator with a
+		// narrow no-break space, which a mask can't contain - normalize the pattern the same way the mask is so
+		// the text we format still lines up with the mask literals and can be set and parsed back.
+		// See FixedMaskedTextProvider.NormalizeWhitespace for why the character can't be kept as-is.
+		format = FixedMaskedTextProvider.NormalizeWhitespace(format);
+
 		var formatBuilder = new StringBuilder();
 		var parseBuilder = new StringBuilder();
 		var maskBuilder = new StringBuilder();

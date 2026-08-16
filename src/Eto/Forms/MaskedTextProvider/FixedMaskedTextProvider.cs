@@ -143,7 +143,38 @@ public class FixedMaskedTextProvider : IMaskedTextProvider
 	public FixedMaskedTextProvider(string mask, CultureInfo culture = null, bool allowPromptAsInput = true, bool restrictToAscii = false)
 	{
 		handler = Platform.Instance.Create<IHandler>();
-		handler.Create(mask, culture, allowPromptAsInput, restrictToAscii);
+		handler.Create(NormalizeWhitespace(mask), culture, allowPromptAsInput, restrictToAscii);
+	}
+
+	/// <summary>
+	/// Replaces every whitespace character in <paramref name="text"/> that isn't a regular space with one.
+	/// </summary>
+	/// <remarks>
+	/// A mask can only use the regular space (U+0020) as whitespace. Any other whitespace character - such as the
+	/// narrow no-break space that ICU-based cultures use in front of the AM/PM designator - is rejected as an
+	/// invalid mask character, and cannot be escaped as a literal either, so it has to be substituted instead.
+	///
+	/// Text that is going to be set on a mask has to be normalized the same way, otherwise it no longer lines up
+	/// with the literals of the mask it was formatted for. See <see cref="DateTimeMaskedTextProvider"/>, which
+	/// normalizes the date/time format it builds from the culture for that reason.
+	/// </remarks>
+	/// <param name="text">Mask or text to normalize the whitespace of.</param>
+	/// <returns>The text with all of its whitespace characters turned into regular spaces.</returns>
+	public static string NormalizeWhitespace(string text)
+	{
+		if (string.IsNullOrEmpty(text))
+			return text;
+
+		char[] normalized = null;
+		for (int i = 0; i < text.Length; i++)
+		{
+			var ch = text[i];
+			if (ch == ' ' || !char.IsWhiteSpace(ch))
+				continue;
+			normalized ??= text.ToCharArray();
+			normalized[i] = ' ';
+		}
+		return normalized != null ? new string(normalized) : text;
 	}
 
 	/// <summary>
