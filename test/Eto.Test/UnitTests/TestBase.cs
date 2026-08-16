@@ -744,6 +744,63 @@ namespace Eto.Test.UnitTests
 				Assert.Fail("Paint event did not finish");
 		}
 
+		/// <summary>
+		/// Closes <paramref name="window"/> and waits until it is no longer visible.
+		/// </summary>
+		/// <remarks>
+		/// Closing a window is asynchronous on most platforms, so a test that simply calls
+		/// <see cref="Window.Close"/> as it finishes can leave the window on screen while the next test
+		/// starts - which stops that test's window from becoming active and breaks anything relying on
+		/// focus. Prefer this when a test shows a window it manages itself (as opposed to the one
+		/// <see cref="Form(Action{Form}, int)"/> and friends create and tear down for you).
+		/// </remarks>
+		public static async Task CloseAsync(Window window, int timeout = DefaultTimeout)
+		{
+			if (window == null)
+				return;
+			var closed = false;
+			window.Closed += (sender, e) => closed = true;
+			window.Close();
+			await WaitUntil(() => closed && !window.Visible, timeout);
+		}
+
+		/// <summary>
+		/// Waits for <paramref name="condition"/> to become true, polling until <paramref name="timeout"/> elapses.
+		/// </summary>
+		/// <remarks>
+		/// Prefer this over a fixed <c>await Task.Delay(n)</c> when waiting for the UI to settle before
+		/// asserting on its state: it returns as soon as the state is correct so a normal run doesn't pay
+		/// the full delay, while still giving a slow platform the same worst case. Pass whatever fixed
+		/// delay you would have used as the <paramref name="timeout"/>.
+		/// <para>
+		/// It never returns before the first poll, so a pending layout/paint pass always gets a chance to
+		/// run - a condition that is (incorrectly) already true isn't silently accepted on the first check.
+		/// </para>
+		/// Don't use it to wait for something that should *not* happen (e.g. "the window must still be
+		/// hidden after setting its owner"), or where the test needs the platform to fully settle rather
+		/// than just reach the expected state: in both cases the fixed delay is the point.
+		/// <para>
+		/// This does not assert on timeout; let the test's own assertion produce the failure message.
+		/// </para>
+		/// </remarks>
+		/// <param name="condition">Condition to check, evaluated on the calling (UI) thread</param>
+		/// <param name="timeout">Maximum time to wait for the condition, in milliseconds, or -1 to wait indefinitely</param>
+		/// <param name="pollInterval">Time to wait between checks of the condition, in milliseconds</param>
+		/// <returns>True if the condition became true within the timeout, false if it timed out</returns>
+		public static async Task<bool> WaitUntil(Func<bool> condition, int timeout = DefaultTimeout, int pollInterval = 10)
+		{
+			var delay = timeout < 0 ? pollInterval : Math.Min(pollInterval, timeout);
+			var stopwatch = Stopwatch.StartNew();
+			while (true)
+			{
+				await Task.Delay(delay);
+				if (condition())
+					return true;
+				if (timeout >= 0 && stopwatch.ElapsedMilliseconds >= timeout)
+					return false;
+			}
+		}
+
 		public static Task<TEventArgs> WaitEventAsync<TEventArgs>(Action<EventHandler<TEventArgs>> hookEvent)
 			where TEventArgs : EventArgs
 		{

@@ -187,8 +187,10 @@ public class FormTests : WindowTests<Form>
 			parent.Size = new Size(200, 200);
 			parent.Location = new Point(400, 400);
 			parent.Show();
-			await Task.Delay(250);
+			await WaitUntil(() => parent.Visible, 250);
 			child.Owner = parent;
+			// setting the owner must not un-hide the child, so this one stays a fixed delay - there is
+			// no settled state to poll for, we're waiting to confirm that nothing happens.
 			await Task.Delay(250);
 			
 			Assert.That(child.Visible, Is.False, "Child should not be visible");
@@ -196,21 +198,23 @@ public class FormTests : WindowTests<Form>
 			
 			// Set visible and test
 			child.Visible = true;
-			await Task.Delay(250);
+			await WaitUntil(() => child.Visible, 250);
 			Assert.That(child.Visible, Is.True, "Child should be visible");
 			Assert.That(parent.Visible, Is.True, "Parent should be visible");
 			
 			// Hide again
 			child.Visible = false;
-			await Task.Delay(250);
+			await WaitUntil(() => !child.Visible, 250);
 
 			Assert.That(child.Visible, Is.False, "Child should not be visible");
 			Assert.That(parent.Visible, Is.True, "Parent should be visible");
 		}
 		finally
 		{
-			child.Close();
-			parent.Close();
+			// wait for them to actually be gone - a window still on screen when the next test starts
+			// stops that test's window from becoming active
+			await CloseAsync(child);
+			await CloseAsync(parent);
 		}
 	});
 }

@@ -681,13 +681,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 			}, async grid =>
 			{
-				await Task.Delay(500);
+				await Task.Delay(100);
 				var list = new TreeGridItemCollection();
 				list.Add(new GridTestItem { Text = "A bit longer text 1", Values = new[] { "Some longer text in the second column 1" } });
 				list.Add(new GridTestItem { Text = "A bit longer text 2", Values = new[] { "Some longer text in the second column 2" } });
 				list.Add(new GridTestItem { Text = "A bit longer text 3", Values = new[] { "Some longer text in the second column 3" } });
 				SetDataStore(grid, list);
-				await Task.Delay(500);
+				await WaitUntil(() => grid.Columns[0].Width > 50 && grid.Columns[1].Width > 50, 500);
 				Assert.That(grid.Columns[0].Width, Is.GreaterThan(50), "First column should be auto-sized to be greater than 50px");
 				Assert.That(grid.Columns[1].Width, Is.GreaterThan(50), "Second column should be auto-sized to be greater than 50px");
 			});

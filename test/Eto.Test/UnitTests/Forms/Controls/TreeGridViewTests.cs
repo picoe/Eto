@@ -182,7 +182,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				}
 				tree.DataStore = items;
 			}
-			await Task.Delay(500);
+			// let any pending reload from the loop above finish before tearing the form down
+			await Task.Delay(100);
 			form.Close();
 
 		});

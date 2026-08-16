@@ -245,9 +245,17 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				reference = new WeakReference(obj);
 				obj = null;
 			});
-			Thread.Sleep(100);
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
+			// Some platforms only drop their own reference to the control once a posted message has been
+			// processed, so retry for a short while instead of always paying a fixed delay - this test has
+			// ~60 cases, so an unconditional sleep here is a large chunk of the whole suite's runtime.
+			for (int i = 0; ; i++)
+			{
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				if (reference?.IsAlive != true || i >= 10)
+					break;
+				Thread.Sleep(10);
+			}
 			Assert.That(reference, Is.Not.Null);
 			Assert.That(reference.Target, Is.Null);
 			Assert.That(reference.IsAlive, Is.False);

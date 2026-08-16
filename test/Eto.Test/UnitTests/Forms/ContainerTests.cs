@@ -321,7 +321,7 @@ namespace Eto.Test.UnitTests.Forms
 			container.Content = control;
 			panel.Content = container;
 
-			await Task.Delay(1000);
+			await WaitUntil(() => control.Parent == container, 1000);
 
 			Assert.That(container.Content, Is.EqualTo(control), "#1.1 - Content should be set correctly");
 			Assert.That(control.Parent, Is.EqualTo(container), "#1.2 - Child's parent should be the container");
@@ -330,7 +330,7 @@ namespace Eto.Test.UnitTests.Forms
 			container2.Rows.Add(new TableRow(new TableCell(control)));
 			panel.Content = container2;
 
-			await Task.Delay(1000);
+			await WaitUntil(() => control.Parent == container2 && container.Content == null, 1000);
 
 			Assert.That(container.Content, Is.Null, "#2.1 - Content should be removed");
 			Assert.That(container2.Rows[0].Cells[0].Control, Is.EqualTo(control), "#2.2 - Content on the second container should be set correctly");
@@ -340,7 +340,7 @@ namespace Eto.Test.UnitTests.Forms
 			container3.Content = control;
 			panel.Content = container3;
 
-			await Task.Delay(1000);
+			await WaitUntil(() => control.Parent == container3 && container2.Rows[0].Cells[0].Control == null, 1000);
 
 			Assert.That(container2.Rows[0].Cells[0].Control, Is.Null, "#3.1 - Content on the second container should be set correctly");
 			Assert.That(container3.Content, Is.EqualTo(control), "#3.2 - Content should be set correctly");
@@ -348,8 +348,8 @@ namespace Eto.Test.UnitTests.Forms
 
 			container3.Content = null;
 
-			await Task.Delay(1000);
-			
+			await WaitUntil(() => control.Parent == null, 1000);
+
 			Assert.That(control.Parent, Is.Null, "#4.2 - Control should not have a parent");
 		}, timeout: 10000);
 

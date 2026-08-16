@@ -284,7 +284,7 @@ public abstract class WindowTests<T> : TestBase
 		{
 			shownSize = window.Size;
 			shownChildSize = child.Size;
-			await Task.Delay(100);
+			await WaitUntil(() => window.Visible, 100);
 			visibleAfterShown = window.Visible;
 			window.Close();
 		};

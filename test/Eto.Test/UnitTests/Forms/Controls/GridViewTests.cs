@@ -218,14 +218,17 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					f.Show();
 				});
 
-				Thread.Sleep(1000);
+				// give the grid time to render its custom cells (where the crash used to happen) before
+				// and after the reload. There's nothing observable to wait on, so this stays a fixed
+				// sleep - just a short one, as a few frames is all the render pass needs.
+				Thread.Sleep(250);
 
 				Application.Instance.Invoke(() =>
 				{
 					g.DataStore = Enumerable.Range(0, 10).Cast<object>().ToList();
 				});
 
-				Thread.Sleep(1000);
+				Thread.Sleep(250);
 			}
 			finally
 			{
@@ -293,10 +296,12 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					return grid;
 				}, async grid =>
 				{
-					// let the grid render its cells - that's when GTK emits the critical if the data store is unsupported
-					await Task.Delay(500);
+					// let the grid render its cells - that's when GTK emits the critical if the data store is
+					// unsupported. Nothing to poll on (we're waiting for output that should never arrive),
+					// so this is a fixed delay, kept to a handful of frames.
+					await Task.Delay(200);
 					grid.ReloadData(Enumerable.Range(0, 5));
-					await Task.Delay(500);
+					await Task.Delay(200);
 				});
 			});
 
@@ -348,9 +353,10 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						// positioned relative to a parent window
 						var parentForm = new Form { Content = new Panel(), ClientSize = new Size(400, 400), Location = new Point(100, 100) };
 						closeParent = true;
+						var parentShown = WaitEventAsync<EventArgs>(h => parentForm.Shown += h);
 						parentForm.Show();
 						parent = parentForm;
-						await Task.Delay(100);
+						await parentShown;
 					}
 					form.Owner = parent;
 					form.Location = parent.Location + new Size(20, 20);
@@ -359,7 +365,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				var shown = WaitEventAsync<EventArgs>(h => form.Shown += h);
 				form.Show();
 				await shown;
-				await Task.Delay(1000);
+				await WaitUntil(() => grid.GetPreferredSize().Height >= rowCount * rowHeight, 1000);
 
 				var preferredSize = grid.GetPreferredSize();
 
@@ -370,11 +376,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				// content, then re-show it and ensure the preferred size grows to account for the
 				// additional rows.
 				form.Visible = false;
-				await Task.Delay(100);
+				await WaitUntil(() => !form.Visible, 100);
 				grid.DataStore = CreateRows(largerRowCount);
 				form.Size = Size.Ceiling(grid.GetPreferredSize());
 				form.Visible = true;
-				await Task.Delay(1000);
+				await WaitUntil(() => grid.GetPreferredSize().Height >= largerRowCount * rowHeight, 1000);
 
 				var largerSize = grid.GetPreferredSize();
 				Assert.That(largerSize.Height, Is.GreaterThanOrEqualTo(largerRowCount * rowHeight), "#2 Preferred height should account for all rows in the larger list");
@@ -382,9 +388,12 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			}
 			finally
 			{
-				form.Close();
+				// Wait for the windows to actually be gone before returning. Closing is asynchronous, so
+				// without this the next test's window can come up while these are still on screen and
+				// never becomes active - which breaks tests that need their control to take focus.
+				await CloseAsync(form);
 				if (closeParent)
-					parent?.Close();
+					await CloseAsync(parent);
 			}
 		});
 	}

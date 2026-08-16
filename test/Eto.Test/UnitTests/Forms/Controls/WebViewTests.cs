@@ -91,7 +91,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					child.Owner = parent;
 					webView.DocumentLoaded += async (s2, e2) =>
 					{
-						await Task.Delay(2000);
+						// let the web view settle after loading before the owner window is closed under it
+						await Task.Delay(250);
 						parent.Close();
 					};
 					child.Show();
