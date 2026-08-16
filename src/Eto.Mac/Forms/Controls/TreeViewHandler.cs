@@ -293,6 +293,20 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override NSOutlineView CreateControl() => new EtoOutlineView();
 
+		static readonly SizeF MinimumNaturalSize = new SizeF(100, 100);
+
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			// NSScrollView has no intrinsic size of its own and the outline view's cells aren't measured
+			// until it has been laid out, so calculate the content size from its column and rows instead,
+			// with a minimum so it always reports a sane preferred size (e.g. when it has no items yet).
+			var rowHeight = (float)Control.RowHeight + (float)Control.IntercellSpacing.Height;
+			var contentSize = new SizeF(
+				Math.Max((float)(column?.Width ?? 0), MinimumNaturalSize.Width),
+				Math.Max(Control.RowCount * rowHeight, MinimumNaturalSize.Height));
+			return Scroll.FrameSizeForContentSize(contentSize.ToNS(), false, false).ToEto();
+		}
+
 		protected override void Initialize()
 		{
 			Control.Delegate = new EtoOutlineDelegate{ Handler = this };
