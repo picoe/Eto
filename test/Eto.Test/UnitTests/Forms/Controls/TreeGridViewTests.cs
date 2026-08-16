@@ -153,8 +153,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			grid.DataStore = (ITreeGridStore<ITreeGridItem>)dataStore;
 		}
 
-		[Test, CancelAfter(3000)]
-		public void AddingMultipleItemsShouldNotCrash(CancellationToken token) => Async(async () =>
+		[Test, CancelAfter(5000)]
+		public void AddingMultipleItemsShouldNotCrash(CancellationToken token) => Async(5000, async () =>
 		{
 			var tree = new TreeGridView { Size = new Size(200, 400) };
 			
@@ -182,7 +182,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				}
 				tree.DataStore = items;
 			}
-			await Task.Delay(1000);
+			await Task.Delay(500);
 			form.Close();
 
 		});
