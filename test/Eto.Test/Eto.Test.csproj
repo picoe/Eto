@@ -24,6 +24,11 @@
     <Compile Include="..\..\src\Eto\Helper.cs">
       <Link>Helper.cs</Link>
     </Compile>
+    <!-- shared with each platform backend (see src/Shared), compiled here so UnitTests\Drawing\BaseBitmapDataTests
+         can test it directly against a data buffer it controls -->
+    <Compile Include="..\..\src\Shared\BaseBitmapData.cs">
+      <Link>BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.jeto">
