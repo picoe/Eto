@@ -137,6 +137,7 @@ namespace Eto.Mac.Forms
 		int SuppressMouseEvents { get; set; }
 		bool TextInputCancelled { get; set; }
 		bool TextInputImplemented { get; }
+		bool HandlesTextInput { get; }
 		bool UseNSBoxBackgroundColor { get; set; }
 		bool Enabled { get; set; }
 
@@ -175,6 +176,7 @@ namespace Eto.Mac.Forms
 		public static readonly object AcceptsFirstMouse_Key = new object();
 		public static readonly object TextInputCancelled_Key = new object();
 		public static readonly object TextInputImplemented_Key = new object();
+		public static readonly object HandlesTextInput_Key = new object();
 		public static readonly object AutoAttachNative_Key = new object();
 		public static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
 		public static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
@@ -1758,6 +1760,12 @@ namespace Eto.Mac.Forms
 		{
 			get => Widget.Properties.Get<bool>(MacView.TextInputImplemented_Key);
 			private set => Widget.Properties.Set(MacView.TextInputImplemented_Key, value);
+		}
+
+		public bool HandlesTextInput
+		{
+			get => Widget.Properties.Get<bool>(MacView.HandlesTextInput_Key);
+			private set => Widget.Properties.Set(MacView.HandlesTextInput_Key, value);
 		}
 
 		public virtual void UpdateLayout()

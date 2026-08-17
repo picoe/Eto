@@ -110,12 +110,18 @@ namespace Eto.Mac.Forms.Menu
 			Control.RemoveAllItems();
 		}
 
+		public ContextMenuSystemItems IncludeSystemItems
+		{
+			// NSMenu.AllowsContextMenuPlugIns defaults to true, which matches ContextMenuSystemItems.All.
+			// Note All has every bit set, so test against None rather than using HasFlag(All) here.
+			get => Control.AllowsContextMenuPlugIns ? ContextMenuSystemItems.All : ContextMenuSystemItems.None;
+			set => Control.AllowsContextMenuPlugIns = value != ContextMenuSystemItems.None;
+		}
+
 		public void Show(Control relativeTo, PointF? location)
 		{
 			var view = relativeTo?.GetContainerView();
 			MacView.InMouseTrackingLoop = false;
-
-			Control.AllowsContextMenuPlugIns = Widget.IncludeSystemItems.HasFlag(ContextMenuSystemItems.All);
 
 			if (location != null || view == null)
 			{

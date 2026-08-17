@@ -111,6 +111,74 @@ P/Invoke is a no-op here (needs a focused toplevel under a WM). There's **no win
   the shared `Eto.Test` project) — that's where you edit tests.
 - You **run** them via `test/Eto.Test.UnitTests/` — a thin runner project (only `Program.cs`)
   that references `Eto.Test.csproj`. Don't look for test code there.
+- **Backend-specific tests go in `test/Eto.Test.<Platform>/UnitTests/`** (e.g.
+  `test/Eto.Test.Mac/UnitTests/`, namespace `Eto.Test.Mac.UnitTests`, deriving from the shared
+  `Eto.Test.UnitTests.TestBase`). Put a test there rather than P/Invoking or reflecting your way to
+  native APIs from the shared project — those projects reference the backend and its bindings
+  directly (`Eto.Mac.Messaging`, `ObjCExtensions`, MonoMac types via global usings; note `Messaging`
+  is ambiguous with `MonoMac.ObjCRuntime.Messaging`, so qualify it as `Eto.Mac.Messaging`).
+- They run **both** ways: `Eto.Test.UnitTests` references the platform test apps and its
+  `Program.GetTestAssemblies()` yields each one (gated on `Platform.Instance.IsMac`/`IsGtk`/…), so
+  `dotnet test` picks them up; and the Eto.Test GUI app's **Unit Tests section** runs them via
+  `app.TestAssemblies.Add(typeof(Startup).Assembly)` in each platform's `Startup`. Discovery is
+  per-assembly, so a new fixture in an existing `Eto.Test.<Platform>/UnitTests/` folder needs no
+  registration. `dotnet test ... -- --platform=mac|gtk|wpf|winforms` overrides platform detection.
+
+## Mac: `AddMethod`/`ClassAddProtocol` are per-CLASS, not per-instance
+
+`MacBase.AddMethod` and `ObjCExtensions.ClassAddProtocol` both resolve `Class.GetHandle(view.GetType())`,
+so anything they add applies to **every instance of that native class, app-wide, forever**. The delegate
+bodies compensate by looking the handler up per instance (`MacBase.GetHandler(obj)`), but *conformance*
+does not — e.g. hooking `TextInput` on one `Drawable` used to make every `EtoDrawableView` conform to
+`NSTextInputClient`, so the OS treated them all as text input (AutoFill in their context menus).
+`MacViewTextInput` handles this by also overriding `inputContext`/`conformsToProtocol:` to answer per
+instance from `IMacViewHandler.HandlesTextInput`. Apply the same pattern for any new class-level state.
+
+**`e.Handled = true` in `MouseDown` silently kills the control's `ContextMenu` on Mac.**
+`MacView.TriggerMouseDown` only forwards to `objc_msgSendSuper` when `!args.Handled`, and it's that super
+call to `rightMouseDown:` that makes AppKit show the view's menu. A handler that blanket-sets `Handled`
+must exclude `MouseButtons.Alternate` (see `DrawableSection.InputMethodDrawable`).
+
+**Verifying such overrides needs raw `objc_msgSend`.** MonoMac's managed members (`NSView.InputContext`,
+`NSObject.ConformsToProtocol`, …) dispatch via `objc_msgSendSuper` for *managed subclasses*
+(`IsDirectBinding == false`), which skips the very override you added — so the managed API reports the
+un-overridden answer and the fix looks broken. Use `Eto.Mac.Messaging.*_objc_msgSend*` on `view.Handle`
+instead (see `Eto.Test.Mac/UnitTests/DrawableTests.IsTextInputClient`). AppKit itself calls through
+normal dispatch, so it does see the override.
+
+## Adding a member to a widget's `IHandler`
+
+Handler interfaces have no default implementations (core targets `netstandard2.0`), so a new member
+must be implemented in **every** registered backend or the build breaks. For a given widget, find
+them via `grep -rn "<Widget>.IHandler" src/ --include="*.cs"` — note `Eto.iOS`/`Eto.WinUI` often have
+theirs commented out in `Platform.cs` and so need nothing. On macOS/Linux you can only compile
+`Eto`, `Eto.Gtk` and `Eto.Mac`; `Eto.Wpf`/`Eto.WinForms` need Windows (net48 also needs the targeting
+pack) and `Eto.Android` needs the android workload — so those edits go in unverified by compile.
+
+Note this is a binary-breaking change for any third-party handler implementation.
+
+## `CheckBoxList` / `EnumCheckBoxList` gotcha
+
+**`SelectedValues`/`SelectedKeys` silently no-op until the control is loaded.** The setters iterate
+an internal `buttons` list that isn't populated until `CheckBoxList.OnLoad` assigns
+`DataStore = CreateDefaultItems()` — and that happens *after* `base.OnLoad` raises the `Load` event,
+so a `Load` handler is still too early. Set an initial selection from `LoadComplete` (or after
+touching `.Items`, which materializes the data store), never from the constructor.
+
+Also, `EnumCheckBoxList`'s `AddValue` filter matches on the enum **value**, not the name, so it can't
+tell apart two members that share a value — filtering out an aggregate like `All` also drops any
+single flag that happens to equal it, and the list can come up empty. Same reason `Enum.GetNames`
+reports both names for that value.
+
+## `[Flags]` enums that mean "everything, including future values"
+
+Enum members are inlined into consumers as **compile-time constants**, so redefining an aggregate
+(`All = A` → `All = A | B`) silently leaves already-compiled callers passing the old bits. Where a
+value means "all of it, whatever gets added later", give it every bit: `All = ~0` (see
+`ContextMenuSystemItems`; the BCL does the same with `EventKeywords.All = -1`). Handlers must then
+test `value != None` rather than `value.HasFlag(All)`, which only matches when *every* bit is set.
+`ToString()` still prints `All`, since exact member matches win over bitfield decomposition.
+Note `MenuBarSystemItems.All = Common | Quit` predates this and has the older shape.
 
 ## Platform / TFM mapping
 
