@@ -230,16 +230,20 @@ namespace Eto.Mac.Forms
 			pendingSource = null;
 		}
 
+		static readonly IntPtr selMenuForEvent = Selector.GetHandle("menuForEvent:");
+
 		[Export("menuForEvent:")]
 		public NSMenu OnMenuForEvent(NSEvent theEvent)
 		{
-			var handler = MacViewHandler;
-			if (handler != null)
-			{
-				var nativeMenu = (handler.Widget.ContextMenu?.Handler as ContextMenuHandler)?.Control;
+			var nativeMenu = (MacViewHandler?.Widget.ContextMenu?.Handler as ContextMenuHandler)?.Control;
+			if (nativeMenu != null)
 				return nativeMenu;
-			}
-			return null;
+
+			// Fall back to the standard editing menu (Cut/Copy/Paste, Spelling, etc) when there is no ContextMenu,
+			// otherwise the control gets no menu at all - it is the field editor that supplies it for an NSTextField,
+			// not the NSTextField itself.  NSTextView hides NSView.MenuForEvent(NSEvent) with a different overload,
+			// so the base implementation has to be called directly.
+			return Messaging.GetNSObject<NSMenu>(Messaging.IntPtr_objc_msgSendSuper_IntPtr(SuperHandle, selMenuForEvent, theEvent.Handle));
 		}
 
 

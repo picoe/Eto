@@ -15,6 +15,7 @@ namespace Eto.Test.Sections.Controls
 
 			if (text.ContextMenu != null)
 			{
+				// text.ContextMenu.IncludeSystemItems = ContextMenuSystemItems.None;
 				text.ContextMenu.Items.Insert(0, new ButtonMenuItem(TestItemClick) { Text = "Test" });
 				text.ContextMenu.Items.Insert(1, new SeparatorMenuItem());
 			}

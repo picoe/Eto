@@ -81,6 +81,9 @@ namespace Eto.WinForms.Forms.Menu
 			Control.Items.Clear();
 		}
 
+		// WinForms does not add any system items to a context menu, so this is only stored to round-trip the value.
+		public ContextMenuSystemItems IncludeSystemItems { get; set; } = ContextMenuSystemItems.All;
+
 		public void Show(Control relativeTo, PointF? location)
 		{
 			if (relativeTo != null)
