@@ -288,9 +288,48 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		/// <summary>
+		/// Height of the client side decoration titlebar while it is not yet part of the window frame.
+		/// </summary>
+		/// <remarks>
+		/// GTK only lays out the titlebar when the window is mapped, and the frame grows to include it
+		/// some time after that. Until it does, the frame is short by the height of the titlebar and
+		/// the window would report a different size before and after being shown.
+		/// </remarks>
+		int MissingTitlebarHeight(Size frame)
+		{
+#if GTKCORE
+			if (!Control.Decorated)
+				return 0;
+			var titlebar = Control.Titlebar;
+			if (titlebar == null || !titlebar.Visible)
+				return 0;
+			// the titlebar has its own allocation, so it is laid out and included in the frame.
+			if (titlebar.Allocation.Height > 1)
+				return 0;
+			// ..otherwise the frame only includes it once it is taller than our own allocation.
+			if (frame.Height > Control.Allocation.Height)
+				return 0;
+			titlebar.GetPreferredHeight(out _, out var natural);
+			return natural;
+#else
+			return 0;
+#endif
+		}
+
+		Size GetFrameSize()
+		{
+			var frame = Control.GetWindow()?.FrameExtents.Size.ToEto();
+			if (frame == null)
+				return UserPreferredSize;
+			var size = frame.Value;
+			size.Height += MissingTitlebarHeight(size);
+			return size;
+		}
+
 		public override Size Size
 		{
-			get => Widget.Loaded ? Control.GetWindow()?.FrameExtents.Size.ToEto() ?? UserPreferredSize : UserPreferredSize;
+			get => Widget.Loaded ? GetFrameSize() : UserPreferredSize;
 			set
 			{
 				DisableAutoSizeUpdate++;
@@ -396,6 +435,9 @@ namespace Eto.GtkSharp.Forms
 			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
 			Control.SetSizeRequest(-1, -1);
 			Control.Realized += Connector.Control_Realized;
+			// always hook this up - the window cascades Shown to all of its children, which may have
+			// handlers even when the window itself does not.
+			Control.Shown += Connector.HandleShownEvent;
 
 			ApplicationHandler.Instance.RegisterIsActiveChanged(Control);
 		}
@@ -421,7 +463,7 @@ namespace Eto.GtkSharp.Forms
 					Control.DeleteEvent += Connector.HandleDeleteEvent;
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					Control.Shown += Connector.HandleShownEvent;
+					// always hooked up in Initialize
 					break;
 				case Window.WindowStateChangedEvent:
 					Connector.OldState = WindowState;
@@ -470,7 +512,12 @@ namespace Eto.GtkSharp.Forms
 				var h = Handler;
 				if (h == null || h.WasClosed)
 					return;
-				Application.Instance.AsyncInvoke(() => h.Callback.OnShown(Handler.Widget, EventArgs.Empty));
+				// cascade to the child controls first, the window raises Shown last
+				Application.Instance.AsyncInvoke(() =>
+				{
+					if (!h.WasClosed)
+						h.FireOnShown();
+				});
 			}
 
 			public void HandleWindowStateEvent(object o, Gtk.WindowStateEventArgs args)
@@ -988,20 +1035,38 @@ namespace Eto.GtkSharp.Forms
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
+			PrepareForMeasure();
 			var size = base.GetPreferredSize(availableSize);
 			return size + WindowDecorationSize;
+		}
+
+		void PrepareForMeasure()
+		{
+			if (!Control.IsRealized)
+			{
+				Control.Child?.ShowAll();
+				Control.Realize();
+			}
+#if GTKCORE
+			// GTK doesn't show the client side decoration titlebar until the window itself is shown,
+			// so until then it measures as zero and the window reports a preferred size that is too
+			// small by the height of the titlebar. Showing it now has no visual effect as the window
+			// isn't visible yet.
+			if (Control.Decorated)
+			{
+				var titlebar = Control.Titlebar;
+				if (titlebar != null && !titlebar.Visible)
+					titlebar.ShowAll();
+			}
+#endif
 		}
 
 		Size WindowDecorationSize
 		{
 			get
 			{
-				if (!Control.IsRealized)
-				{
-					Control.Child?.ShowAll();
-					Control.Realize();
-				}
-					
+				PrepareForMeasure();
+
 				var window = Control.GetWindow();
 				if (window == null)
 					return Size.Empty;

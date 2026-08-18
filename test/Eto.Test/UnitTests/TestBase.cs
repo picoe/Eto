@@ -661,6 +661,11 @@ namespace Eto.Test.UnitTests
 								control = init(form);
 								if (control != null && form.Content == null && control != form)
 									form.Content = control;
+								// The replaced content isn't laid out until the platform gets around to it, so
+								// anything the test reads from it (size, splitter position, ...) would still be
+								// zero. Force a layout pass so the replay measures a settled window instead of
+								// racing it - without this the replay assertions fail intermittently on Mac.
+								form.UpdateLayout();
 								if (application == null)
 									await test(control);
 							}

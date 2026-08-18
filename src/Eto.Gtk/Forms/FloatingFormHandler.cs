@@ -39,7 +39,9 @@ namespace Eto.GtkSharp.Forms
 
 		public override bool Visible
 		{
-			get => (!Application.Instance.IsActive && _visible) || base.Visible;
+			// the form hides itself natively when the application isn't active, so report the
+			// requested visibility in that case - but only once it has actually been shown.
+			get => (!Application.Instance.IsActive && _visible && Widget.Loaded) || base.Visible;
 			set
 			{
 				_visible = value;

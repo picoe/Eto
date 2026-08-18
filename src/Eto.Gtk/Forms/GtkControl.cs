@@ -329,6 +329,7 @@ namespace Eto.GtkSharp.Forms
 				if (value && Widget.Loaded)
 				{
 					ContainerControl.ShowAll();
+					FireOnShown();
 				}
 			}
 		}
@@ -370,7 +371,38 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			if (Widget.VisualParent?.Loaded != false && !(Widget is Window))
+			{
+				// adding dynamically or loading without a parent (e.g. embedding into a native app)
+				Application.Instance.AsyncInvoke(FireOnShown);
+			}
 		}
+
+		// GTK maps children before their parent, so the ::map signal can't be used to raise Shown -
+		// it has to go top down like the other platforms. The window drives this when it is shown.
+		static void FireOnShown(Control control)
+		{
+			if (control.IsDisposed || !control.Visible)
+				return;
+
+			var handler = control.Handler as IGtkControl;
+			var isWindow = control is Window;
+
+			// Parent controls get shown event first, then children
+			if (!isWindow)
+				handler?.Callback.OnShown(control, EventArgs.Empty);
+
+			foreach (var ctl in control.VisualControls)
+			{
+				FireOnShown(ctl);
+			}
+
+			// Window fires shown after all child controls
+			if (isWindow)
+				handler?.Callback.OnShown(control, EventArgs.Empty);
+		}
+
+		protected internal virtual void FireOnShown() => FireOnShown(Widget);
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
@@ -453,7 +485,7 @@ namespace Eto.GtkSharp.Forms
 					EventControl.FocusOutEvent += Connector.FocusOutEvent;
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					EventControl.Mapped += Connector.MappedEvent;
+					// raised by FireOnShown, not a native signal
 					break;
 				case Eto.Forms.Control.DragDropEvent:
 					DragControl.DragDrop += Connector.HandleDragDrop;
@@ -986,11 +1018,6 @@ namespace Eto.GtkSharp.Forms
 					return;
 				handler.RealizedSetup();
 				handler.Control.Realized -= HandleControlRealized;
-			}
-
-			public virtual void MappedEvent(object sender, EventArgs e)
-			{
-				Handler?.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
 
 			protected virtual DragEventArgs GetDragEventArgs(Gdk.DragContext context, PointF? location = null, uint time = 0, object controlObject = null, DataObject data = null)
