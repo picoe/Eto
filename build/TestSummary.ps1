@@ -9,6 +9,9 @@
     also emitted as workflow error annotations, which surface them on the PR diff when the trx
     stack trace points at a file in the repository.
 
+    A summary is always written, even when a report is missing or unreadable (a test host killed
+    mid-write leaves an empty or truncated trx) - the reason is reported in place of the results.
+
     Writes to stdout when run outside of Actions, so it can be tested locally:
         pwsh build/TestSummary.ps1 -Title "Unit tests (Mac)"
 #>
@@ -43,13 +46,20 @@ $files = @(Get-ChildItem -Path $ResultsRoot -Recurse -Filter $FileName -File -Er
 Add-Line "## $Title"
 Add-Line
 
+# Everything is buffered and only written to $GITHUB_STEP_SUMMARY at the very end, so any error in
+# between would otherwise produce no summary at all - the one case where the reader most needs one.
+# Reporting the error into the summary (and still failing the step) keeps it self-diagnosing.
+try
+{
+
 if ($files.Count -eq 0)
 {
-	# No report at all means the host died before it could write one (a crash, or a timeout kill),
-	# which is worth calling out - the totals table would otherwise just be missing with no reason.
+	# No report at all means the host never wrote one: it crashed, was killed by the step timeout, or
+	# was terminated during shutdown before the trx was flushed (a run whose tests all completed can
+	# still end up here). Worth calling out - the totals table would otherwise be missing with no reason.
 	Add-Line '> [!WARNING]'
-	Add-Line "> No test results found under ``$ResultsRoot`` - the test run likely crashed or timed out before writing a report. See the job log."
-	Write-Output "::warning title=$Title::No test results found, the run likely crashed or timed out before writing a report"
+	Add-Line "> No test results found under ``$ResultsRoot`` - the test host didn't write a report. It may have crashed, hit the step timeout, or been terminated during shutdown before flushing the trx. See the job log."
+	Write-Output "::warning title=$Title::No test results found, the test host didn't write a report (crash, timeout, or terminated during shutdown)"
 }
 else
 {
@@ -57,10 +67,25 @@ else
 	$total = 0; $passed = 0; $failed = 0; $skipped = 0
 	$seconds = 0.0
 	$failures = [System.Collections.Generic.List[object]]::new()
+	$unreadable = [System.Collections.Generic.List[object]]::new()
 
 	foreach ($file in $files)
 	{
-		$xml = [xml](Get-Content -LiteralPath $file.FullName -Raw)
+		# A trx from a host that died mid-write is empty or truncated, so it can't be parsed. Record it
+		# and carry on rather than letting the run's totals disappear along with it.
+		try
+		{
+			# An empty file reads back as $null rather than throwing, so check before casting.
+			$content = Get-Content -LiteralPath $file.FullName -Raw
+			if ([string]::IsNullOrWhiteSpace($content)) { throw 'The file is empty.' }
+			$xml = [xml]$content
+		}
+		catch
+		{
+			# The parse error quotes the file content, so flatten it - it goes in a single-line blockquote.
+			$unreadable.Add([pscustomobject]@{ Name = $file.Name; Reason = ($_.Exception.Message -replace '\s+', ' ').Trim() })
+			continue
+		}
 
 		$counters = Select-Xml -Xml $xml -Namespace $ns -XPath '/t:TestRun/t:ResultSummary/t:Counters' | Select-Object -First 1
 		if ($counters)
@@ -100,7 +125,15 @@ else
 		}
 	}
 
-	$outcome = if ($failed -gt 0) { "❌ $failed failed" } elseif ($total -eq 0) { '⚠️ no tests ran' } else { '✅ passed' }
+	$outcome = if ($failed -gt 0) { "❌ $failed failed" } elseif ($unreadable.Count -gt 0) { '⚠️ incomplete' } elseif ($total -eq 0) { '⚠️ no tests ran' } else { '✅ passed' }
+
+	foreach ($bad in $unreadable)
+	{
+		Add-Line '> [!WARNING]'
+		Add-Line "> ``$($bad.Name)`` could not be read, so its results are missing from the totals below - the test host was likely terminated while writing it. $($bad.Reason)"
+		Add-Line
+		Write-Output "::warning title=$Title::$($bad.Name) could not be read, the test host was likely terminated while writing it"
+	}
 
 	Add-Line '| Result | Total | Passed | Failed | Skipped | Duration |'
 	Add-Line '|:---|---:|---:|---:|---:|---:|'
@@ -148,11 +181,22 @@ else
 	}
 }
 
-if ($env:GITHUB_STEP_SUMMARY)
-{
-	Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Value $summary.ToString()
 }
-else
+catch
 {
-	Write-Output $summary.ToString()
+	Add-Line '> [!CAUTION]'
+	Add-Line "> The test summary could not be generated: $($_.Exception.Message)"
+	Write-Output "::error title=$Title::Test summary failed: $(($_.Exception.Message -replace '\s+', ' ').Replace('::', ':'))"
+	throw
+}
+finally
+{
+	if ($env:GITHUB_STEP_SUMMARY)
+	{
+		Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Value $summary.ToString()
+	}
+	else
+	{
+		Write-Output $summary.ToString()
+	}
 }

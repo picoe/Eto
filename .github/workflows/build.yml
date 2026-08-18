@@ -175,8 +175,77 @@ jobs:
           artifacts/log/**/*
           lib/monomac/artifacts/generated/**/*.binlog
   
+  build-linux:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: true
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ env.DotNetVersion }}
+
+    - name: Create global.json
+      run: echo '{"sdk":{"version":"${{ env.DotNetVersion }}"},"test":{"runner":"Microsoft.Testing.Platform"}}' > global.json
+
+    # The Gtk tests create real windows, so the job needs the native GTK3 libraries GtkSharp
+    # p/invokes into plus an X display to map them on (Xvfb, used in the test step below).
+    # libgtk-3-0t64 is the name on 24.04+; older images call it libgtk-3-0.
+    # WebView needs webkit2gtk as well - without it every WebView test throws DllNotFoundException and
+    # ControlShouldFireShownEventWhenAddedDynamically hangs until its timeout, which leaves the GTK loop
+    # dirty enough that NUnit can't stop the engine and the test host dies before writing its trx report.
+    # Eto asks for 4.0 and falls back to 4.1 (see NativeMethods.cs); only 4.1 is packaged on 24.04+.
+    - name: Install GTK and Xvfb
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends xvfb libgtk-3-0t64 libwebkit2gtk-4.1-0 \
+          || sudo apt-get install -y --no-install-recommends xvfb libgtk-3-0 libwebkit2gtk-4.0-37
+
+    - name: Build
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Linux /t:Build /bl:artifacts/log/Build.Linux.binlog
+
+    # The nuget packages built here are the same ones the Windows job uploads, so they aren't
+    # published again from this job - the publish job merges the artifacts by file name.
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v6
+      with:
+        name: test-linux
+        path: |
+          artifacts/test/*/${{ env.BuildConfiguration }}/**/*
+          !artifacts/test/Eto.Test.Mac64/**/*
+
+    - name: Upload sample artifacts
+      uses: actions/upload-artifact@v6
+      with:
+        name: samples-linux
+        path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
+
+    # Unlike the Windows/Mac runners there's no desktop session here, so the GUI tests run under a
+    # virtual X server (xvfb-run -a picks a free display number). See the Wpf step above for why
+    # --no-build is used, and the timeout guard so a test blocked on the UI can't hang the job.
+    - name: Run unit tests (Gtk)
+      timeout-minutes: 30
+      continue-on-error: true
+      run: xvfb-run -a dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=gtk --report-trx --report-trx-filename gtk.trx
+
+    - name: Test summary (Gtk)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Gtk)" -FileName gtk.trx
+
+    - name: Upload log files
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v6
+      with:
+        name: log-linux
+        path: artifacts/log/**/*
+
   publish:
-    needs: [ build-windows, build-mac ]
+    needs: [ build-windows, build-mac, build-linux ]
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && github.ref == 'refs/heads/develop') || (github.event_name == 'release' && github.event.action == 'published' && startsWith(github.ref, 'refs/tags/'))
     steps:
