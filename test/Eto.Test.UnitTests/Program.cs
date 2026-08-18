@@ -111,7 +111,9 @@ internal static class Program
 		};
 		app.Run();
 
-		return exitCodeSource.Task.Result;
+		// Only reached when the app quits normally (see RunTestsAndQuitAsync); the task is always complete
+		// by then, and a failure to even run the tests was already reported there.
+		return GetExitCode(exitCodeSource);
 	}
 
 	static readonly string[] WpfThemeSuffixes = { ".Aero2", ".Aero", ".AeroLite", ".Classic", ".Luna", ".Royale", ".Generic" };
@@ -146,6 +148,7 @@ internal static class Program
 			// registered explicitly (adds the trx report options) as we don't use the generated entry point
 			builder.AddTrxReportProvider();
 
+			// ITestApplication is IDisposable only, there's no async disposal to await here.
 			using ITestApplication testApplication = await builder.BuildAsync();
 			int exitCode = await testApplication.RunAsync();
 			exitCodeSource.TrySetResult(exitCode);
@@ -159,13 +162,33 @@ internal static class Program
 		finally
 		{
 			// Quit the app once tests complete, exiting with the test result so a failing run actually
-			// fails the process. Environment.Exit is needed rather than returning from Main: on Mac
-			// NSApplication.Terminate() ends the process itself with exit(0) and never returns from
-			// Application.Run(), so both Main's return value and Environment.ExitCode are discarded and
-			// every run would report success. Reports are already flushed by the time we get here.
-			// Task.IsCompletedSuccessfully isn't available on .NET Framework, so check the status directly.
-			var exitCode = exitCodeSource.Task.Status == TaskStatus.RanToCompletion ? exitCodeSource.Task.Result : 1;
-			app.Invoke(() => Environment.Exit(exitCode));
+			// fails the process. Task.IsCompletedSuccessfully isn't available on .NET Framework, so check
+			// the status directly.
+			var exitCode = GetExitCode(exitCodeSource);
+
+			// On Mac NSApplication.Terminate() ends the process itself with exit(0) and never returns from
+			// Application.Run(), so both Main's return value and Environment.ExitCode are discarded there -
+			// Environment.Exit is the only way to report the result. Everywhere else quit normally and let
+			// Main return it: Environment.Exit terminates the process immediately, which can kill the test
+			// host before the testing platform finishes shutting down and writes its trx report (seen on
+			// Gtk, where a test that leaves the loop dirty makes NUnit's engine shutdown time out first).
+			if (Platform.Instance.IsMac)
+			{
+				app.Invoke(() => Environment.Exit(exitCode));
+			}
+			else
+			{
+				app.Invoke(() => app.Quit());
+				// A test that left the UI loop in a bad state can keep it from quitting, so force the
+				// process down if that happens rather than letting the run sit until the CI step timeout.
+				// The report is already written by this point, so nothing is lost by exiting here.
+				_ = Task.Delay(TimeSpan.FromSeconds(30)).ContinueWith(_ => Environment.Exit(exitCode));
+			}
 		}
+	}
+
+	static int GetExitCode(TaskCompletionSource<int> exitCodeSource)
+	{
+		return exitCodeSource.Task.Status == TaskStatus.RanToCompletion ? exitCodeSource.Task.Result : 1;
 	}
 }
