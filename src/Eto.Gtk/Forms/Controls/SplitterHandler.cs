@@ -52,50 +52,126 @@ namespace Eto.GtkSharp.Forms.Controls
 				set => handler = new WeakReference(value);
 			}
 
+			int? realHandleSize;
+			bool measuringHandleSize;
+
+			/// <summary>
+			/// Gets the size GTK actually allocates for the handle.
+			/// </summary>
+			/// <remarks>
+			/// This is the size of the handle's "separator" CSS node, which the legacy handle-size style
+			/// property that <see cref="Gtk.Paned.HandleSize"/> reports does not reflect - it is 5 regardless
+			/// of the theme or <see cref="Gtk.Paned.WideHandle"/> (which is typically 1 and 5 respectively).
+			/// GTK's own preferred size does include it though, so derive it from there.
+			/// </remarks>
+			public int RealHandleSize
+			{
+				get
+				{
+					// not measured yet, ask GTK for our preferred size to calculate it
+					if (realHandleSize == null && !measuringHandleSize)
+					{
+						measuringHandleSize = true;
+						try
+						{
+							if (Orientation == Gtk.Orientation.Horizontal)
+								GetPreferredWidth(out _, out _);
+							else
+								GetPreferredHeight(out _, out _);
+						}
+						finally
+						{
+							measuringHandleSize = false;
+						}
+					}
+					return realHandleSize ?? HandleSize;
+				}
+			}
+
+			void UpdateHandleSize(int naturalSize, int size1, int size2)
+			{
+				// GTK only accounts for the handle when both children are visible
+				if (Child1?.Visible == true && Child2?.Visible == true)
+					realHandleSize = Math.Max(0, naturalSize - size1 - size2);
+			}
+
+			public void InvalidateHandleSize() => realHandleSize = null;
+
+			protected override void OnStyleUpdated()
+			{
+				base.OnStyleUpdated();
+				InvalidateHandleSize();
+			}
+
+			// The splitter only divides the available space along its own orientation; in the other
+			// direction both panels get the full size, so it is the largest of the two (which is what
+			// the base implementation reports).
+
 			protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
 			{
 				if (Orientation == Gtk.Orientation.Horizontal)
 				{
 					Child1.GetPreferredWidthForHeight(height, out int min1, out int width1);
 					Child2.GetPreferredWidthForHeight(height, out int min2, out int width2);
+					base.OnGetPreferredWidthForHeight(height, out _, out int natural);
+					UpdateHandleSize(natural, width1, width2);
 					minimum_width = Handler.GetPreferredPanelSize(min1, min2);
 					natural_width = Handler.GetPreferredPanelSize(width1, width2);
 				}
 				else
 				{
 					base.OnGetPreferredWidthForHeight(height, out minimum_width, out natural_width);
-					minimum_width = 0;
 				}
 			}
 
 			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
 			{
-				Child1.GetPreferredWidth(out int min1, out int width1);
-				Child2.GetPreferredWidth(out int min2, out int width2);
-				minimum_width = Handler.GetPreferredPanelSize(min1, min2);
-				natural_width = Handler.GetPreferredPanelSize(width1, width2);
+				if (Orientation == Gtk.Orientation.Horizontal)
+				{
+					Child1.GetPreferredWidth(out int min1, out int width1);
+					Child2.GetPreferredWidth(out int min2, out int width2);
+					base.OnGetPreferredWidth(out _, out int natural);
+					UpdateHandleSize(natural, width1, width2);
+					minimum_width = Handler.GetPreferredPanelSize(min1, min2);
+					natural_width = Handler.GetPreferredPanelSize(width1, width2);
+				}
+				else
+				{
+					base.OnGetPreferredWidth(out minimum_width, out natural_width);
+				}
 			}
 
 			protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
 			{
-				Child1.GetPreferredHeight(out int min1, out int height1);
-				Child2.GetPreferredHeight(out int min2, out int height2);
-				minimum_height = Handler.GetPreferredPanelSize(min1, min2);
-				natural_height = Handler.GetPreferredPanelSize(height1, height2);
-			}
-			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
-			{
-				if (Orientation == Gtk.Orientation.Horizontal)
+				if (Orientation == Gtk.Orientation.Vertical)
 				{
-					base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
-					minimum_height = 0;
+					Child1.GetPreferredHeight(out int min1, out int height1);
+					Child2.GetPreferredHeight(out int min2, out int height2);
+					base.OnGetPreferredHeight(out _, out int natural);
+					UpdateHandleSize(natural, height1, height2);
+					minimum_height = Handler.GetPreferredPanelSize(min1, min2);
+					natural_height = Handler.GetPreferredPanelSize(height1, height2);
 				}
 				else
 				{
+					base.OnGetPreferredHeight(out minimum_height, out natural_height);
+				}
+			}
+
+			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
+			{
+				if (Orientation == Gtk.Orientation.Vertical)
+				{
 					Child1.GetPreferredHeightForWidth(width, out int min1, out int height1);
 					Child2.GetPreferredHeightForWidth(width, out int min2, out int height2);
+					base.OnGetPreferredHeightForWidth(width, out _, out int natural);
+					UpdateHandleSize(natural, height1, height2);
 					minimum_height = Handler.GetPreferredPanelSize(min1, min2);
 					natural_height = Handler.GetPreferredPanelSize(height1, height2);
+				}
+				else
+				{
+					base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
 				}
 			}
 
@@ -142,10 +218,16 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		EtoPaned Paned => (EtoPaned)Control;
+
 		public int SplitterWidth
 		{
-			get => Control.HandleSize;
-			set => Control.WideHandle = value >= 4;
+			get => Paned.RealHandleSize;
+			set
+			{
+				Control.WideHandle = value >= 4;
+				Paned.InvalidateHandleSize();
+			}
 		}
 
 		int GetAvailableSize()
