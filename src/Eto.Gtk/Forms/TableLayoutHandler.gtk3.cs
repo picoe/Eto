@@ -243,7 +243,7 @@ namespace Eto.GtkSharp.Forms
 			switch (id)
 			{
 				case Eto.Forms.Control.ShownEvent:
-					Control.Mapped += Connector.MappedEvent;
+					// raised by FireOnShown, not a native signal
 					break;
 				default:
 					base.AttachEvent(id);
