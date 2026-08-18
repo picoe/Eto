@@ -142,26 +142,30 @@ namespace Eto.GtkSharp.Forms.Controls
 			columns.Register(Widget.Columns);
 			base.Initialize();
 
-			Control.Selection.Changed += (sender, args) =>
-			{
-				// Prevent unselecting last selected item.
-				if (!AllowEmptySelection && AllowMultipleSelection && Control.Selection.CountSelectedRows() == 0)
-				{
-					Control.GetCursor(out var cursorRow, out _);
-					if (cursorRow != null)
-					{
-						Control.Selection.SelectPath(cursorRow);
-					}
-				}
-			};
+			// note: these must go through the (weakly referencing) connector, otherwise the native
+			// signal keeps a strong reference to this handler and the control can never be collected.
+			Control.Selection.Changed += Connector.HandlePreventEmptySelection;
 
-			Control.QueryTooltip += Control_QueryTooltip;
+			Control.QueryTooltip += Connector.HandleQueryTooltip;
 			Control.HasTooltip = true;
 
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);			
 		}
 
-		private void Control_QueryTooltip(object o, Gtk.QueryTooltipArgs args)
+		void PreventEmptySelection()
+		{
+			// Prevent unselecting last selected item.
+			if (!AllowEmptySelection && AllowMultipleSelection && Control.Selection.CountSelectedRows() == 0)
+			{
+				Control.GetCursor(out var cursorRow, out _);
+				if (cursorRow != null)
+				{
+					Control.Selection.SelectPath(cursorRow);
+				}
+			}
+		}
+
+		void OnQueryTooltip(object o, Gtk.QueryTooltipArgs args)
 		{
 			var offset = 0;
 			if (Control.HeadersVisible)
@@ -196,6 +200,10 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected class GridConnector : GtkControlConnector
 		{
 			public new GridHandler<TWidget, TCallback> Handler { get { return (GridHandler<TWidget, TCallback>)base.Handler; } }
+
+			public void HandlePreventEmptySelection(object sender, EventArgs e) => Handler?.PreventEmptySelection();
+
+			public void HandleQueryTooltip(object o, Gtk.QueryTooltipArgs args) => Handler?.OnQueryTooltip(o, args);
 
 			[GLib.ConnectBefore]
 			public override void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
