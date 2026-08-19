@@ -2,6 +2,8 @@ using NUnit.Framework;
 using ComTypes = System.Runtime.InteropServices.ComTypes;
 using ComDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 using DragDropDataObject = DragDropLib.DataObject;
+using IStream = System.Runtime.InteropServices.ComTypes.IStream;
+using STATSTG = System.Runtime.InteropServices.ComTypes.STATSTG;
 
 namespace Eto.Test.Wpf.UnitTests
 {
@@ -462,5 +464,235 @@ namespace Eto.Test.Wpf.UnitTests
 
 			dataObject.Dispose();
 		}
+
+		#region COM pointer / thread affinity
+
+		// Not everything in storage is plain memory. The shell's drag image manager parks its drag
+		// context in the data object as a TYMED_ISTREAM, so ReleaseStgMedium ends up calling Release
+		// straight through a raw interface pointer -- no proxy, no apartment switch. Running that on
+		// the finalizer thread (which is MTA) tears an STA object down on the wrong thread, and takes
+		// the process out with an access violation inside ReleaseStgMedium in ClearStorage, with
+		// ~DataObject on the stack. That is RH-95450 / RH-97411.
+
+		/// <summary>
+		/// A no-op IStream, only there to be handed out as a real COM pointer whose reference count
+		/// the tests can watch.
+		/// </summary>
+		class CountedStream : IStream
+		{
+			public void Clone(out IStream ppstm) => ppstm = null;
+			public void Commit(int grfCommitFlags) { }
+			public void CopyTo(IStream pstm, long cb, IntPtr pcbRead, IntPtr pcbWritten) { }
+			public void LockRegion(long libOffset, long cb, int dwLockType) { }
+			public void Read(byte[] pv, int cb, IntPtr pcbRead) { }
+			public void Revert() { }
+			public void Seek(long dlibMove, int dwOrigin, IntPtr plibNewPosition) { }
+			public void SetSize(long libNewSize) { }
+			public void Stat(out STATSTG pstatstg, int grfStatFlag) => pstatstg = new STATSTG();
+			public void UnlockRegion(long libOffset, long cb, int dwLockType) { }
+			public void Write(byte[] pv, int cb, IntPtr pcbWritten) { }
+		}
+
+		/// <summary>
+		/// Reads a COM object's reference count without changing it. Only safe while the caller holds
+		/// a reference of its own.
+		/// </summary>
+		static int RefCount(IntPtr unknown)
+		{
+			int count = Marshal.AddRef(unknown);
+			Marshal.Release(unknown);
+			return count - 1;
+		}
+
+		/// <summary>
+		/// A synchronization context that just queues, so a test can decide when the owning thread
+		/// gets to run the work posted back to it.
+		/// </summary>
+		class QueueingSynchronizationContext : SynchronizationContext
+		{
+			readonly Queue<Action> queue = new Queue<Action>();
+
+			public int Count { get { lock (queue) return queue.Count; } }
+
+			public override void Post(SendOrPostCallback d, object state)
+			{
+				lock (queue)
+					queue.Enqueue(() => d(state));
+			}
+
+			public override void Send(SendOrPostCallback d, object state) => d(state);
+
+			public int Drain()
+			{
+				int ran = 0;
+				while (true)
+				{
+					Action action;
+					lock (queue)
+					{
+						if (queue.Count == 0)
+							break;
+						action = queue.Dequeue();
+					}
+					action();
+					ran++;
+				}
+				return ran;
+			}
+		}
+
+		/// <summary>
+		/// Creates a data object on a dedicated thread, so the tests below are running somewhere
+		/// other than the thread that owns it -- the position the finalizer thread is in.
+		/// </summary>
+		static DragDropDataObject CreateOnOtherThread(SynchronizationContext context)
+		{
+			DragDropDataObject dataObject = null;
+			var thread = new Thread(() =>
+			{
+				SynchronizationContext.SetSynchronizationContext(context);
+				dataObject = new DragDropDataObject();
+			});
+			thread.IsBackground = true;
+			thread.Start();
+			Assert.That(thread.Join(TimeSpan.FromSeconds(10)), Is.True, "the owning thread did not finish");
+			return dataObject;
+		}
+
+		/// <summary>
+		/// Adds a TYMED_ISTREAM entry, as the shell's drag context does, and returns the raw pointer.
+		/// The caller keeps one reference of its own so the pointer stays valid for the assertions.
+		/// </summary>
+		static IntPtr AddStreamEntry(DragDropDataObject dataObject, string format)
+		{
+			var unknown = Marshal.GetComInterfaceForObject(new CountedStream(), typeof(IStream));
+
+			var formatetc = MakeFormat(format);
+			formatetc.tymed = ComTypes.TYMED.TYMED_ISTREAM;
+			var medium = new ComTypes.STGMEDIUM
+			{
+				tymed = ComTypes.TYMED.TYMED_ISTREAM,
+				unionmember = unknown,
+				pUnkForRelease = null
+			};
+
+			// release: false -- we keep our reference, the data object takes its own.
+			((ComDataObject)dataObject).SetData(ref formatetc, ref medium, false);
+			return unknown;
+		}
+
+		static void DisposeAsFinalizer(DragDropDataObject dataObject)
+		{
+			var dispose = typeof(DragDropDataObject).GetMethod("Dispose", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(bool) }, null);
+			Assert.That(dispose, Is.Not.Null, "DragDropLib.DataObject.Dispose(bool) is gone");
+			dispose.Invoke(dataObject, new object[] { false });
+		}
+
+		[Test]
+		public void SetDataShouldAddReferenceToStreamMedium()
+		{
+			var context = new QueueingSynchronizationContext();
+			var dataObject = CreateOnOtherThread(context);
+			var unknown = AddStreamEntry(dataObject, "eto-test-stream-ref");
+			try
+			{
+				// ours plus the data object's
+				Assert.That(RefCount(unknown), Is.EqualTo(2), "storage did not take its own reference to the stream");
+				Assert.That(dataObject.storage, Has.Count.EqualTo(1));
+				Assert.That(dataObject.storage[0].Value.tymed, Is.EqualTo(ComTypes.TYMED.TYMED_ISTREAM));
+			}
+			finally
+			{
+				dataObject.Dispose();
+				Marshal.Release(unknown);
+			}
+		}
+
+		[Test]
+		public void FinalizingOffThreadShouldNotReleaseComPointersInPlace()
+		{
+			var context = new QueueingSynchronizationContext();
+			var dataObject = CreateOnOtherThread(context);
+			var unknown = AddStreamEntry(dataObject, "eto-test-stream-finalize");
+			try
+			{
+				Assert.That(RefCount(unknown), Is.EqualTo(2));
+
+				DisposeAsFinalizer(dataObject);
+
+				Assert.That(RefCount(unknown), Is.EqualTo(2),
+					"the stream was released from the wrong thread instead of being posted back to its owner");
+				Assert.That(dataObject.storage, Has.Count.EqualTo(1), "storage was cleared from the wrong thread");
+				Assert.That(context.Count, Is.EqualTo(1), "nothing was posted back to the owning thread");
+
+				// the owning thread gets around to it
+				Assert.That(context.Drain(), Is.EqualTo(1));
+				Assert.That(RefCount(unknown), Is.EqualTo(1), "the owning thread did not release the stream");
+				Assert.That(dataObject.storage, Is.Empty);
+			}
+			finally
+			{
+				Marshal.Release(unknown);
+			}
+		}
+
+		[Test]
+		public void FinalizingWithNoWayHomeShouldFreeMemoryAndLeakComPointers()
+		{
+			// No synchronization context on the creating thread, so there is nowhere to post to.
+			var dataObject = CreateOnOtherThread(null);
+			var unknown = AddStreamEntry(dataObject, "eto-test-stream-orphan");
+			try
+			{
+				var format = MakeFormat("eto-test-orphan-memory");
+				var medium = MakeMedium(0x5150);
+				((ComDataObject)dataObject).SetData(ref format, ref medium, true);
+				Assert.That(dataObject.storage, Has.Count.EqualTo(2));
+
+				DisposeAsFinalizer(dataObject);
+
+				// The HGLOBAL is safe to free from any thread, the stream is not: leaking it beats
+				// releasing an STA object from the finalizer thread.
+				Assert.That(dataObject.storage, Has.Count.EqualTo(1), "the plain memory entry should have been released");
+				Assert.That(dataObject.storage[0].Value.tymed, Is.EqualTo(ComTypes.TYMED.TYMED_ISTREAM));
+				Assert.That(RefCount(unknown), Is.EqualTo(2), "the stream was released off its owning thread");
+			}
+			finally
+			{
+				Marshal.Release(unknown);
+			}
+		}
+
+		[Test]
+		public void DisposeOnOwningThreadShouldReleaseEverythingInPlace()
+		{
+			var context = new QueueingSynchronizationContext();
+			DragDropDataObject dataObject = null;
+			IntPtr unknown = IntPtr.Zero;
+
+			var thread = new Thread(() =>
+			{
+				SynchronizationContext.SetSynchronizationContext(context);
+				dataObject = new DragDropDataObject();
+				unknown = AddStreamEntry(dataObject, "eto-test-stream-owner");
+				dataObject.Dispose();
+			});
+			thread.IsBackground = true;
+			thread.Start();
+			Assert.That(thread.Join(TimeSpan.FromSeconds(10)), Is.True, "the owning thread did not finish");
+
+			try
+			{
+				Assert.That(dataObject.storage, Is.Empty);
+				Assert.That(context.Count, Is.EqualTo(0), "nothing needed posting -- Dispose ran on the owning thread");
+				Assert.That(RefCount(unknown), Is.EqualTo(1), "Dispose did not release the stream");
+			}
+			finally
+			{
+				Marshal.Release(unknown);
+			}
+		}
+
+		#endregion
 	}
 }

@@ -692,6 +692,9 @@ namespace Eto
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
 		public static extern int GlobalSize(IntPtr handle);
 
+		[DllImport("ole32.dll")]
+		public static extern void ReleaseStgMedium(ref System.Runtime.InteropServices.ComTypes.STGMEDIUM pmedium);
+
 
 		public enum SBB
 		{
