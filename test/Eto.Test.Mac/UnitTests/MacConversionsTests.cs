@@ -43,6 +43,21 @@ public class MacConversionsTests : TestBase
 
 	[Test]
 	[InvokeOnUI]
+	public void ConvertShouldIgnoreCaseOfKeyEquivalent()
+	{
+		Assert.Multiple(() =>
+		{
+			Assert.That(KeyMap.Convert("Q", 0), Is.EqualTo(Keys.Q));
+			Assert.That(KeyMap.Convert("q", 0), Is.EqualTo(Keys.Q));
+			Assert.That(KeyMap.Convert("Q", NSEventModifierMask.ShiftKeyMask), Is.EqualTo(Keys.Q | Keys.Shift));
+			Assert.That(KeyMap.Convert(null, 0), Is.EqualTo(Keys.None));
+			Assert.That(KeyMap.Convert(string.Empty, 0), Is.EqualTo(Keys.None));
+			Assert.That(KeyMap.Convert("\u0001", 0), Is.EqualTo(Keys.None));
+		});
+	}
+
+	[Test]
+	[InvokeOnUI]
 	public void ToEtoKeyEventArgsShouldUseCharactersIgnoringModifiersForKey()
 	{
 		using var keyEvent = CreateKeyEvent(

@@ -4,8 +4,10 @@
 	{
 		static Dictionary<ushort, Keys> _map;
 		static Dictionary<Keys, string> _inverseMap;
+		static Dictionary<string, Keys> _keyEquivalentMap;
 		static Dictionary<ushort, Keys> Map => _map ?? (_map = GetMap());
 		static Dictionary<Keys, string> InverseMap = _inverseMap ?? (_inverseMap = GetInverseMap());
+		static Dictionary<string, Keys> KeyEquivalentMap => _keyEquivalentMap ?? (_keyEquivalentMap = GetKeyEquivalentMap());
 
 		public static Keys MapKey(ushort key, NSEventModifierMask modifiers)
 		{
@@ -37,7 +39,11 @@
 
 		public static Keys Convert(string keyEquivalent, NSEventModifierMask modifier)
 		{
-			return InverseMap.FirstOrDefault(pair => pair.Value == keyEquivalent).Key | modifier.ToEto();
+			var key = Keys.None;
+			// key equivalents are lower case, but e.g. shift+A comes through as "A", so match case insensitively
+			if (!string.IsNullOrEmpty(keyEquivalent))
+				KeyEquivalentMap.TryGetValue(keyEquivalent, out key);
+			return key | modifier.ToEto();
 		}
 
 		public static string KeyEquivalent(Keys key)
@@ -282,6 +288,18 @@
 			inverse.Add(Keys.F11, "\xF70E");
 			inverse.Add(Keys.F12, "\xF70F");
 			return inverse;
+		}
+
+		static Dictionary<string, Keys> GetKeyEquivalentMap()
+		{
+			var map = new Dictionary<string, Keys>(InverseMap.Count, StringComparer.OrdinalIgnoreCase);
+			foreach (var pair in InverseMap)
+			{
+				// first entry wins, to match the previous FirstOrDefault behaviour
+				if (!map.ContainsKey(pair.Value))
+					map.Add(pair.Value, pair.Key);
+			}
+			return map;
 		}
 	}
 }
