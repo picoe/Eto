@@ -866,8 +866,18 @@ namespace System.Windows
 			// BitmapSource to a System.Drawing.Bitmap.
 			Bitmap bmp = GetBitmapFromBitmapSource(image, Colors.Magenta);
 
-			// Sets the drag image from a Bitmap
-			SetDragImage(dataObject, bmp, cursorOffset);
+			try
+			{
+				// Sets the drag image from a Bitmap
+				SetDragImage(dataObject, bmp, cursorOffset);
+			}
+			finally
+			{
+				// GetHbitmap() hands the drag image manager its own copy of the bits, so this
+				// intermediate Bitmap is ours to dispose. A drag sets a drag image every time, so
+				// leaking it here leaks a GDI object per drag.
+				bmp.Dispose();
+			}
 		}
 
 		/// <summary>

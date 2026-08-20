@@ -21,6 +21,19 @@
 //   6. GetMediumFromObject sizes the HGLOBAL by the serialized length rather than the
 //      MemoryStream's capacity, so no uninitialized tail is published.
 //   7. Doc-comment typos cleaned up.
+//   8. Storage is released on the thread that created the DataObject, never on the
+//      finalizer thread. Not everything in there is plain memory -- the shell's drag image
+//      manager parks its drag context in the data object as a TYMED_ISTREAM -- and
+//      ReleaseStgMedium on such a medium calls Release straight through the raw interface
+//      pointer, with no proxy and no apartment switch. From the finalizer thread (MTA) that
+//      runs an STA object's teardown on the wrong thread, which either corrupts the heap or
+//      hangs the finalizer. See Dispose.
+//   9. That same drag context (CFSTR_DRAGCONTEXT) is now never released by this class at all.
+//      The shell hands it to SetData with release: true, but keeps the raw interface pointer
+//      without a counted reference and frees the stream itself when the next drag begins -- so
+//      releasing our entry at teardown was a second free, which is why the crash needed two
+//      drags to show up. See IsShellOwnedMedium. This, rather than fix 8, is what actually
+//      fixes RH-95450 / RH-97411.
 //
 // Deliberately NOT changed: GetData/GetDataHere still report S_OK with an empty STGMEDIUM for a
 // format that isn't present, rather than DV_E_FORMATETC. See the comment in GetDataHere.
@@ -615,6 +628,16 @@ namespace DragDropLib
 		// Guards against double-dispose / dispose-then-finalize (0 = live, 1 = disposed)
 		private int disposed;
 
+		// The thread that created this object, and its synchronization context.
+		//
+		// Not every STGMEDIUM we hold is plain memory: the shell's drag image manager stores its
+		// drag context in here as a TYMED_ISTREAM, so `storage` ends up owning raw COM interface
+		// pointers with thread affinity. ReleaseStgMedium on one of those calls IStream::Release
+		// straight through the pointer -- no proxy, no apartment switch -- so doing it from the
+		// finalizer thread runs the shell's teardown in the wrong (MTA) apartment. See Dispose.
+		private readonly SynchronizationContext ownerContext = SynchronizationContext.Current;
+		private readonly int ownerThreadId = Thread.CurrentThread.ManagedThreadId;
+
 		// Represents an advisory connection entry.
 		private class AdviseEntry
 		{
@@ -656,18 +679,102 @@ namespace DragDropLib
 		/// </remarks>
 		private void ClearStorage()
 		{
+			ClearStorage(true);
+		}
+
+		/// <summary>
+		/// Clears the internal storage array, releasing every entry it is safe to release.
+		/// </summary>
+		/// <param name="releaseComPointers">True to release entries that carry a COM interface pointer
+		/// (TYMED_ISTREAM / TYMED_ISTORAGE, or any medium with a pUnkForRelease). Pass false when running
+		/// on a thread that doesn't own those pointers -- they are leaked rather than released.</param>
+		private void ClearStorage(bool releaseComPointers)
+		{
 			if (storage == null)
 				return;
 
 			lock (storage)
 			{
-				foreach (KeyValuePair<FORMATETC, STGMEDIUM> pair in storage)
+				for (int i = storage.Count - 1; i >= 0; i--)
 				{
-					STGMEDIUM medium = pair.Value;
+					STGMEDIUM medium = storage[i].Value;
+					FORMATETC entryFormat = storage[i].Key;
+
+					if (!releaseComPointers && HoldsComPointer(ref medium))
+						continue;
+
+					// The shell frees its own drag context. Drop the entry, but don't release it --
+					// by this point the object is already gone, so even reading through the pointer
+					// is a use-after-free. See IsShellOwnedMedium.
+					if (IsShellOwnedMedium(ref entryFormat, ref medium))
+					{
+						storage.RemoveAt(i);
+						continue;
+					}
+
+					storage.RemoveAt(i);
 					ReleaseStgMedium(ref medium);
 				}
-				storage.Clear();
 			}
+		}
+
+		/// <summary>
+		/// Determines whether releasing the medium means calling Release on a COM interface pointer.
+		/// </summary>
+		/// <param name="medium">The medium to test.</param>
+		/// <returns>True if the medium's lifetime is tied to a COM object, otherwise False.</returns>
+		private static bool HoldsComPointer(ref STGMEDIUM medium)
+		{
+			return medium.pUnkForRelease != null
+				|| medium.tymed == TYMED.TYMED_ISTREAM
+				|| medium.tymed == TYMED.TYMED_ISTORAGE;
+		}
+
+		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
+		private static extern uint RegisterClipboardFormat(string lpszFormat);
+
+		// CFSTR_DRAGCONTEXT. Registered lazily; 0 is not a valid registered format id, so it
+		// doubles as the "not yet looked up" sentinel.
+		private static short dragContextFormat;
+
+		private static short DragContextFormat
+		{
+			get
+			{
+				if (dragContextFormat == 0)
+					dragContextFormat = (short)RegisterClipboardFormat("DragContext");
+				return dragContextFormat;
+			}
+		}
+
+		/// <summary>
+		/// True for the shell drag image manager's private drag context stream, which we must
+		/// never release even though it was handed to us with release: true.
+		/// </summary>
+		/// <remarks>
+		/// The shell authors this IStream and passes it to SetData claiming to transfer ownership,
+		/// but keeps the raw interface pointer and frees it itself when the next drag starts -- it
+		/// never took a counted reference for that pointer, so nothing we do to our own reference
+		/// can keep the object alive. Releasing our entry at teardown is therefore a second free of
+		/// an object already gone, which corrupts the heap and surfaces as an access violation
+		/// (reported as System.ExecutionEngineException) inside ReleaseStgMedium, on the drag
+		/// *after* the one that created it. That is RH-95450 / RH-97411.
+		///
+		/// Traced refcounts for one such entry: 1 after SetData (we are the only holder, so the
+		/// shell is holding nothing countable), 2 after handing a copy to a GetData caller, then
+		/// dead by teardown -- one more release than anything in this class performed.
+		///
+		/// Declining to release it is not a leak: the shell frees the stream regardless. Scoped to
+		/// TYMED_ISTREAM deliberately -- the other shell-private formats in a drag (DragImageBits,
+		/// DragWindow, IsShowingLayered, DropDescription, ...) are all TYMED_HGLOBAL, and
+		/// CopyStgMedium genuinely duplicates an HGLOBAL, so for those our copy is a distinct
+		/// block that we do own and must free.
+		/// </remarks>
+		private static bool IsShellOwnedMedium(ref FORMATETC format, ref STGMEDIUM medium)
+		{
+			return medium.tymed == TYMED.TYMED_ISTREAM
+				&& medium.unionmember != IntPtr.Zero
+				&& format.cfFormat == DragContextFormat;
 		}
 
 		/// <summary>
@@ -691,8 +798,42 @@ namespace DragDropLib
 			if (Interlocked.Exchange(ref disposed, 1) != 0)
 				return;
 
-			// Always release unmanaged objects
-			ClearStorage();
+			// On the owning thread we can release everything right here.
+			if (Thread.CurrentThread.ManagedThreadId == ownerThreadId)
+			{
+				ClearStorage();
+				return;
+			}
+
+			// Otherwise -- almost always the finalizer thread -- get back to the thread that owns
+			// the handles before releasing them. `storage` can hold raw COM interface pointers (the
+			// shell's drag context is a TYMED_ISTREAM), and ReleaseStgMedium calls Release directly
+			// through the pointer. Doing that from the finalizer thread, which is in the MTA, runs
+			// an STA object's teardown in the wrong apartment: it either corrupts the heap -- an
+			// access violation reported as System.ExecutionEngineException, from inside
+			// ReleaseStgMedium in ClearStorage, with ~DataObject on the stack -- or wedges the
+			// finalizer thread outright. That is RH-95450 / RH-97411.
+			//
+			// Posting resurrects this instance until the callback runs, which is fine: `disposed` is
+			// already set, so nothing can queue a second pass, and ClearStorage is idempotent.
+			SynchronizationContext context = ownerContext;
+			if (context != null)
+			{
+				try
+				{
+					context.Post(state => ((DataObject)state).ClearStorage(), this);
+					return;
+				}
+				catch (Exception)
+				{
+					// The owning thread is gone (shutdown, dispatcher already torn down). Fall
+					// through and release what we safely can from here.
+				}
+			}
+
+			// No way home. Release the plain memory and leak the COM pointers -- a leak at
+			// shutdown is better than taking the process down.
+			ClearStorage(false);
 		}
 
 		#region COM IDataObject Members
@@ -918,8 +1059,13 @@ namespace DragDropLib
 				if (existingIndex >= 0)
 				{
 					STGMEDIUM releaseMedium = storage[existingIndex].Value;
+					FORMATETC releaseFormat = storage[existingIndex].Key;
 					storage.RemoveAt(existingIndex);
-					ReleaseStgMedium(ref releaseMedium);
+
+					// Same reasoning as ClearStorage: a re-set of the drag context must drop the old
+					// entry without releasing it. See IsShellOwnedMedium.
+					if (!IsShellOwnedMedium(ref releaseFormat, ref releaseMedium))
+						ReleaseStgMedium(ref releaseMedium);
 				}
 
 				// Add it to the internal storage
